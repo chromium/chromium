@@ -2664,6 +2664,7 @@
 <translation id="3943494825379372497">要還原應用程式和網頁嗎？</translation>
 <translation id="3943582379552582368">返回(&amp;B)</translation>
 <translation id="3943857333388298514">貼上</translation>
+<translation id="3944266449990965865">整個螢幕</translation>
 <translation id="3948116654032448504">透過 <ph name="SEARCH_ENGINE" /> 搜尋圖片(&amp;S)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> 可編輯以下資料夾中的檔案</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2716,6 +2717,7 @@
 <translation id="3994374631886003300">解鎖手機並靠近您的 <ph name="DEVICE_TYPE" /> 即可解鎖。</translation>
 <translation id="3994878504415702912">縮放(&amp;Z)</translation>
 <translation id="3995138139523574647">USB-C 裝置 (右側後方連接埠)</translation>
+<translation id="4002066346123236978">標題</translation>
 <translation id="4002329649066944389">管理特定網站的例外情況</translation>
 <translation id="4002440992267487163">PIN 設定</translation>
 <translation id="4005817994523282006">時區偵測方法</translation>
@@ -6426,7 +6428,6 @@
 <translation id="8316618172731049784">傳送至 <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">新增網絡連線</translation>
 <translation id="8319414634934645341">擴充金鑰使用方法</translation>
-<translation id="8320459152843401447">整個畫面</translation>
 <translation id="8321476692217554900">通知</translation>
 <translation id="8321837372750396788">此 <ph name="DEVICE_TYPE" /> 將由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="8322814362483282060">系統已封鎖這個網頁存取您的麥克風。</translation>

@@ -2665,6 +2665,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3943494825379372497">Pulihkan apl &amp; halaman?</translation>
 <translation id="3943582379552582368">&amp;Kembali</translation>
 <translation id="3943857333388298514">Tampal</translation>
+<translation id="3944266449990965865">Keseluruhan Skrin</translation>
 <translation id="3948116654032448504">&amp;Cari Imej di <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> boleh mengedit fail dalam folder berikut</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2717,6 +2718,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3994374631886003300">Buka kunci telefon anda dan rapatkan untuk membuka kunci <ph name="DEVICE_TYPE" /> anda.</translation>
 <translation id="3994878504415702912">&amp;Zum</translation>
 <translation id="3995138139523574647">Peranti USB-C (port belakang sebelah kanan)</translation>
+<translation id="4002066346123236978">Tajuk</translation>
 <translation id="4002329649066944389">Urus pengecualian khusus tapak</translation>
 <translation id="4002440992267487163">Persediaan PIN</translation>
 <translation id="4005817994523282006">Kaedah pengesanan zon waktu</translation>
@@ -6428,7 +6430,6 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8316618172731049784">Hantar ke <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Tambahkan sambungan rangkaian</translation>
 <translation id="8319414634934645341">Penggunaan Penting Dilanjutkan</translation>
-<translation id="8320459152843401447">Seluruh Skrin Anda</translation>
 <translation id="8321476692217554900">pemberitahuan</translation>
 <translation id="8321837372750396788"><ph name="DEVICE_TYPE" /> ini akan diurus oleh <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">Halaman ini telah disekat daripada mengakses mikrofon anda.</translation>

@@ -2665,6 +2665,7 @@
 <translation id="3943494825379372497">ஆப்ஸையும் பக்கங்களையும் மீட்டெடுக்க வேண்டுமா?</translation>
 <translation id="3943582379552582368">&amp;முந்தைய பக்கம்</translation>
 <translation id="3943857333388298514">ஒட்டு</translation>
+<translation id="3944266449990965865">திரை முழுவதும்</translation>
 <translation id="3948116654032448504">படத்தைத் &amp;தேடு <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786">பின்வரும் கோப்புறைகளில் உள்ள கோப்புகளை <ph name="ORIGIN" /> தளத்தால் திருத்த முடியும்</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2717,6 +2718,7 @@
 <translation id="3994374631886003300"><ph name="DEVICE_TYPE" />ஐத் திறக்க, உங்கள் மொபைலைத் திறந்து, சாதனத்திற்கு அருகில் எடுத்து வரவும்.</translation>
 <translation id="3994878504415702912">&amp;பெரிதாக்கு</translation>
 <translation id="3995138139523574647">USB-C சாதனம் (வலது பக்கம் பின்னே இருக்கும் போர்ட்)</translation>
+<translation id="4002066346123236978">தலைப்பு</translation>
 <translation id="4002329649066944389">தளம் சார்ந்த விதிவிலக்குகளை நிர்வகித்தல்</translation>
 <translation id="4002440992267487163">பின் அமைவு</translation>
 <translation id="4005817994523282006">நேர மண்டலம் கண்டறிதல் முறை</translation>
@@ -6429,7 +6431,6 @@
 <translation id="8316618172731049784"><ph name="DEVICE_NAME" /> சாதனத்துக்கு அனுப்பு</translation>
 <translation id="8317671367883557781">நெட்வொர்க் இணைப்பைச் சேர்</translation>
 <translation id="8319414634934645341">நீட்டிக்கப்பட்ட விசைப் பயன்பாடு</translation>
-<translation id="8320459152843401447">உங்கள் முழுத் திரை</translation>
 <translation id="8321476692217554900">அறிவிப்புகள்</translation>
 <translation id="8321837372750396788">இனி இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கும்.</translation>
 <translation id="8322814362483282060">இந்தப் பக்கம் உங்கள் மைக்ரோஃபோனை அணுகுவதிலிருந்து தடுக்கப்பட்டுள்ளது.</translation>

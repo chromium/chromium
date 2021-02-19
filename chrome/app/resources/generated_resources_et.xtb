@@ -2665,6 +2665,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="3943494825379372497">Kas taastada rakendused ja lehed?</translation>
 <translation id="3943582379552582368">&amp;Tagasi</translation>
 <translation id="3943857333388298514">Kleebi</translation>
+<translation id="3944266449990965865">Kogu ekraan</translation>
 <translation id="3948116654032448504">&amp;Otsi teenusest <ph name="SEARCH_ENGINE" /> kujutist</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> saab muuta järgmistes kaustades olevaid faile</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2717,6 +2718,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="3994374631886003300">Seadme <ph name="DEVICE_TYPE" /> avamiseks avage oma telefon ja tooge see lähemale.</translation>
 <translation id="3994878504415702912">&amp;Suumi</translation>
 <translation id="3995138139523574647">C-tüüpi USB-seade (tagumine parempoolne port)</translation>
+<translation id="4002066346123236978">Pealkiri</translation>
 <translation id="4002329649066944389">Saidipõhiste erandite haldamine</translation>
 <translation id="4002440992267487163">PIN-koodi seadistamine</translation>
 <translation id="4005817994523282006">Ajavööndi tuvastamismeetod</translation>
@@ -6428,7 +6430,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8316618172731049784">Saada seadmesse <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Lisa võrguühendus</translation>
 <translation id="8319414634934645341">Laiendatud võtmekasutus</translation>
-<translation id="8320459152843401447">Kogu teie ekraan</translation>
 <translation id="8321476692217554900">märguanded</translation>
 <translation id="8321837372750396788">Seda seadet <ph name="DEVICE_TYPE" /> haldab <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">Sellel lehel on juurdepääs teie mikrofonile blokeeritud.</translation>

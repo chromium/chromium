@@ -2663,6 +2663,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3943494825379372497">Buyisela izinhlelo zokusebenza namakhasi?</translation>
 <translation id="3943582379552582368">Emuva</translation>
 <translation id="3943857333388298514">Namathisela</translation>
+<translation id="3944266449990965865">Sonke isikrini</translation>
 <translation id="3948116654032448504">&amp;Seshela i-<ph name="SEARCH_ENGINE" /> isithombe</translation>
 <translation id="3948507072814225786">I-<ph name="ORIGIN" /> ingahlela amafayela kumafolda alandelayo</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2715,6 +2716,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3994374631886003300">Vula ifoni yakho bese uyisondeze ukuze uvule i-<ph name="DEVICE_TYPE" /> yakho.</translation>
 <translation id="3994878504415702912">Sondeza isithombe</translation>
 <translation id="3995138139523574647">Idivayisi ye-USB-C (imbobo yasemuva yohlangothi lwesinxele)</translation>
+<translation id="4002066346123236978">Isihloko</translation>
 <translation id="4002329649066944389">Phatha okuhlukile okuthile kwamasayithi</translation>
 <translation id="4002440992267487163">Ukusetha iphini</translation>
 <translation id="4005817994523282006">Indlela yokutholwa kwendawo yesikhathi</translation>
@@ -6428,7 +6430,6 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="8316618172731049784">Thumela ku-<ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Engeza uxhumo lenethiwekhi</translation>
 <translation id="8319414634934645341">Ukusetshenziswa kokhiye onwetshiwe</translation>
-<translation id="8320459152843401447">Isikrini sakho sonke</translation>
 <translation id="8321476692217554900">izaziso</translation>
 <translation id="8321837372750396788">Le <ph name="DEVICE_TYPE" /> izophathwa i-<ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">Leli khasi livinjelwe kusukela ekufinyeleleni kumakrofoni yakho.</translation>

@@ -2662,6 +2662,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3943494825379372497">Të restaurohen aplikacionet dhe faqet?</translation>
 <translation id="3943582379552582368">&amp;Prapa</translation>
 <translation id="3943857333388298514">Ngjite</translation>
+<translation id="3944266449990965865">Ekrani i plotë</translation>
 <translation id="3948116654032448504">&amp;Kërko në <ph name="SEARCH_ENGINE" /> për imazhin</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> mund t'i modifikojnë skedarët në dosjet e mëposhtme</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2714,6 +2715,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3994374631886003300">Shkyçe telefonin dhe afroje më shumë për të shkyçur pajisjen tënde <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3994878504415702912">&amp;Zmadho</translation>
 <translation id="3995138139523574647">Pajisja USB-C (porta e pasme, djathtas)</translation>
+<translation id="4002066346123236978">Titulli</translation>
 <translation id="4002329649066944389">Menaxho përjashtimet specifike të sajtit</translation>
 <translation id="4002440992267487163">Konfigurimi i kodit PIN</translation>
 <translation id="4005817994523282006">Metoda e zbulimit të brezit orar</translation>
@@ -6423,7 +6425,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8316618172731049784">Dërgo te <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Shto lidhje rrjeti</translation>
 <translation id="8319414634934645341">Përdorimi i zgjeruar i çelësit</translation>
-<translation id="8320459152843401447">I gjithë ekrani</translation>
 <translation id="8321476692217554900">njoftimet</translation>
 <translation id="8321837372750396788">Kjo pajisje <ph name="DEVICE_TYPE" /> do të menaxhohet nga <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">Për këtë faqe është bllokuar qasja te mikrofoni.</translation>

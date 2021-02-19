@@ -2665,6 +2665,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3943494825379372497">Aplikazioak eta orriak leheneratu nahi dituzu?</translation>
 <translation id="3943582379552582368">&amp;Atzera</translation>
 <translation id="3943857333388298514">Itsatsi</translation>
+<translation id="3944266449990965865">Pantaila osoa</translation>
 <translation id="3948116654032448504">&amp;Bilatu irudia <ph name="SEARCH_ENGINE" /> bilatzailean</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> webguneak karpeta hauetako fitxategiak editatzeko baimena du</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2717,6 +2718,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3994374631886003300"><ph name="DEVICE_TYPE" /> gailua desblokeatzeko, desblokeatu telefonoa eta hurbil ezazu.</translation>
 <translation id="3994878504415702912">&amp;Zooma</translation>
 <translation id="3995138139523574647">USB-C gailua (eskuinaldeko atzeko ataka)</translation>
+<translation id="4002066346123236978">Izena</translation>
 <translation id="4002329649066944389">Kudeatu webgunearen salbuespen zehatzak</translation>
 <translation id="4002440992267487163">PIN kodearen konfigurazioa</translation>
 <translation id="4005817994523282006">Ordu-zona hautemateko metodoa</translation>
@@ -6427,7 +6429,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8316618172731049784">Bidali <ph name="DEVICE_NAME" /> helbidera</translation>
 <translation id="8317671367883557781">Gehitu sareko konexioa</translation>
 <translation id="8319414634934645341">Teklen erabilera hedatua</translation>
-<translation id="8320459152843401447">Pantaila osoa</translation>
 <translation id="8321476692217554900">jakinarazpenak</translation>
 <translation id="8321837372750396788"><ph name="MANAGER" /> domeinuak kudeatuko du <ph name="DEVICE_TYPE" /> gailua.</translation>
 <translation id="8322814362483282060">Orriari zure kamera atzitzeko aukera blokeatu zaio.</translation>
@@ -6940,7 +6941,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="8892168913673237979">Dena prest!</translation>
 <translation id="8893801527741465188">Desinstalatu da</translation>
 <translation id="8893928184421379330">Ezin izan da ezagutu <ph name="DEVICE_LABEL" /> gailua.</translation>
-<translation id="8894761918470382415">Datuetarako sarbidearen babesa periferikoetarako</translation>
+<translation id="8894761918470382415">Periferikoen aurreko datu-sarbidearen babesa</translation>
 <translation id="8895454554629927345">Laster-marken zerrenda</translation>
 <translation id="8898786835233784856">Hautatu hurrengo fitxa</translation>
 <translation id="8898822736010347272">Erabiltzen dituzun orri batzuen URLak, sistemari buruzko informazio mugatua eta orrietako eduki batzuk bidaltzen dizkio Google-ri mehatxuak aurkitzeko eta sarearen erabiltzaile guztiak babesteko.</translation>

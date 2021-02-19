@@ -2661,6 +2661,7 @@
 <translation id="3943494825379372497">ആപ്പുകളും പേജുകളും പുനഃസ്ഥാപിക്കണോ?</translation>
 <translation id="3943582379552582368">&amp;പിന്നോട്ട്</translation>
 <translation id="3943857333388298514">ഒട്ടിക്കുക</translation>
+<translation id="3944266449990965865">മുഴുവൻ സ്‌ക്രീൻ</translation>
 <translation id="3948116654032448504">&amp;ചിത്രത്തിനായി <ph name="SEARCH_ENGINE" />-ൽ തിരയുക</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> എന്നതിന് ഇനിപ്പറയുന്ന ഫോൾഡറുകളിലെ ഫയലുകൾ എഡിറ്റ് ചെയ്യാനാവും</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2713,6 +2714,7 @@
 <translation id="3994374631886003300">നിങ്ങളുടെ ഫോൺ അൺലോക്ക് ചെയ്‌ത്, <ph name="DEVICE_TYPE" /> അൺലോക്ക് ചെയ്യാൻ അടുത്തേക്ക് കൊണ്ടുവരിക.</translation>
 <translation id="3994878504415702912">&amp;സൂം ചെയ്യുക</translation>
 <translation id="3995138139523574647">USB-C ഉപകരണം (വലതുവശത്ത് പിന്നിലെ പോർട്ട്)</translation>
+<translation id="4002066346123236978">ശീർഷകം</translation>
 <translation id="4002329649066944389">സൈറ്റ് നിർദ്ദിഷ്‌ട ഒഴിവാക്കലുകൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="4002440992267487163">സജ്ജീകരണം പിൻ ചെയ്യുക</translation>
 <translation id="4005817994523282006">സമയ മേഖല തിരിച്ചറിയൽ രീതി</translation>
@@ -6426,7 +6428,6 @@
 <translation id="8316618172731049784"><ph name="DEVICE_NAME" /> എന്നതിലേക്ക് അയയ്ക്കുക</translation>
 <translation id="8317671367883557781">നെറ്റ്‌വർക്ക് കണക്ഷൻ ചേർക്കുക</translation>
 <translation id="8319414634934645341">വിപുലീകരിച്ച കീ ഉപയോഗം</translation>
-<translation id="8320459152843401447">നിങ്ങളുടെ മുഴുവൻ സ്‌ക്രീനും</translation>
 <translation id="8321476692217554900">അറിയിപ്പുകൾ</translation>
 <translation id="8321837372750396788">ഈ <ph name="DEVICE_TYPE" /> മാനേജ് ചെയ്യുന്നത് <ph name="MANAGER" /> ആണ്.</translation>
 <translation id="8322814362483282060">നിങ്ങളുടെ മൈക്രോഫോൺ ആക്‌സസ്സുചെയ്യുന്നതിൽ നിന്ന് ഈ പേജിനെ തടഞ്ഞിരിക്കുന്നു.</translation>

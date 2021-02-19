@@ -2662,6 +2662,7 @@
 <translation id="3943494825379372497">Қолданбалар мен беттерді қалпына келтіру керек пе?</translation>
 <translation id="3943582379552582368">&amp;Артқа</translation>
 <translation id="3943857333388298514">Қою</translation>
+<translation id="3944266449990965865">Бүкіл экран</translation>
 <translation id="3948116654032448504">Кескінді <ph name="SEARCH_ENGINE" /> арқылы &amp;іздеу</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> мына қалталардағы файлдарды өңдей алады.</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2714,6 +2715,7 @@
 <translation id="3994374631886003300"><ph name="DEVICE_TYPE" /> құрылғысының құлпын ашу үшін телефонның құлпын ашып, оны жақындатыңыз.</translation>
 <translation id="3994878504415702912">&amp;Масштабтау</translation>
 <translation id="3995138139523574647">USB-C құрылғысы (оң жақ артқы порты)</translation>
+<translation id="4002066346123236978">Тақырып</translation>
 <translation id="4002329649066944389">Сайттың арнайы ерекшеліктерін басқару</translation>
 <translation id="4002440992267487163">PIN кодын орнату</translation>
 <translation id="4005817994523282006">Уақыт белдеуін анықтау әдісі</translation>
@@ -6424,7 +6426,6 @@
 <translation id="8316618172731049784"><ph name="DEVICE_NAME" /> құрылғысына жіберу</translation>
 <translation id="8317671367883557781">Желі байланысын енгізу</translation>
 <translation id="8319414634934645341">Кеңейтілген кілтті пайдалану</translation>
-<translation id="8320459152843401447">Толық экран</translation>
 <translation id="8321476692217554900">хабарландырулар</translation>
 <translation id="8321837372750396788">Бұл <ph name="DEVICE_TYPE" /> құрылғысын <ph name="MANAGER" /> домені басқарады.</translation>
 <translation id="8322814362483282060">Бұл беттің микрофонды пайдалану мүмкіндігі шектелді.</translation>

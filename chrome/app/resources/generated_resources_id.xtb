@@ -2665,6 +2665,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3943494825379372497">Pulihkan aplikasi &amp; halaman?</translation>
 <translation id="3943582379552582368">&amp;Mundur</translation>
 <translation id="3943857333388298514">Sisipkan</translation>
+<translation id="3944266449990965865">Seluruh Layar</translation>
 <translation id="3948116654032448504">&amp;Telusuri <ph name="SEARCH_ENGINE" /> untuk Gambar</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> dapat mengedit file dalam folder berikut ini</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2717,6 +2718,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3994374631886003300">Buka kunci ponsel dan dekatkan untuk membuka kunci <ph name="DEVICE_TYPE" /> Anda.</translation>
 <translation id="3994878504415702912">&amp;Zum</translation>
 <translation id="3995138139523574647">Perangkat USB-C (port belakang sebelah kanan)</translation>
+<translation id="4002066346123236978">Judul</translation>
 <translation id="4002329649066944389">Kelola pengecualian untuk situs tertentu</translation>
 <translation id="4002440992267487163">Penyiapan pin</translation>
 <translation id="4005817994523282006">Metode deteksi zona waktu</translation>
@@ -6428,7 +6430,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8316618172731049784">Kirim ke <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Tambahkan koneksi jaringan</translation>
 <translation id="8319414634934645341">Extended Key Usage</translation>
-<translation id="8320459152843401447">Seluruh Layar Anda</translation>
 <translation id="8321476692217554900">notifikasi</translation>
 <translation id="8321837372750396788"><ph name="DEVICE_TYPE" /> ini akan dikelola oleh <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">Halaman ini telah diblokir agar tidak dapat mengakses mikrofon Anda.</translation>

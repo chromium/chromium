@@ -2666,6 +2666,7 @@
 <translation id="3943494825379372497">Восстановить приложения и страницы?</translation>
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Вставить</translation>
+<translation id="3944266449990965865">Полноэкранный режим</translation>
 <translation id="3948116654032448504">&amp;Найти картинку (<ph name="SEARCH_ENGINE" />)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> может изменять файлы в указанных ниже папках.</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2718,6 +2719,7 @@
 <translation id="3994374631886003300">Разблокируйте телефон и поднесите его к устройству <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3994878504415702912">&amp;Размер текста</translation>
 <translation id="3995138139523574647">Устройство USB-C (дальний порт справа)</translation>
+<translation id="4002066346123236978">Название</translation>
 <translation id="4002329649066944389">Управление отдельными исключениями для сайтов</translation>
 <translation id="4002440992267487163">Установить PIN-код</translation>
 <translation id="4005817994523282006">Способ определения часового пояса</translation>
@@ -6428,7 +6430,6 @@
 <translation id="8316618172731049784">Отправить на устройство "<ph name="DEVICE_NAME" />"</translation>
 <translation id="8317671367883557781">Добавить сетевое подключение</translation>
 <translation id="8319414634934645341">Расширенное использование ключа</translation>
-<translation id="8320459152843401447">Весь экран</translation>
 <translation id="8321476692217554900">Уведомления</translation>
 <translation id="8321837372750396788">Этим устройством <ph name="DEVICE_TYPE" /> будет управлять <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">Доступ к вашему микрофону для этой страницы заблокирован.</translation>

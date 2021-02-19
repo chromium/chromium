@@ -1677,15 +1677,6 @@
       注: <ph name="MS_AD_NAME" /> の管理対象デバイスの場合、このポリシーは <ph name="MACHINE_NAME_VARIABLE" /> から <ph name="MS_AD_NAME" /> のマシン名またはその部分文字列への展開をサポートします。たとえばマシン名が <ph name="MACHINE_NAME_EXAMPLE" /> の場合、<ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> は 6 文字目以降の 4 文字（<ph name="MACHINE_NAME_PART_EXAMPLE" />）に置き換えられます（先頭をゼロ文字目として数えます）。
 
       このポリシーはサポートが終了しています。代わりに <ph name="PRINTERS_POLICY_NAME" /> を使用してください。</translation>
-<translation id="3295118731207421797">このポリシーで、管理者はページの終了中にページから同期 XHR リクエストを送信するかどうかを指定できます。
-
-      このポリシーを有効に設定した場合は、ページの終了中にページから同期 XHR リクエストを送信できます。
-
-      このポリシーを無効に設定するか未設定のままにした場合は、ページの終了中にページから同期 XHR リクエストを送信することはできません。
-
-      このポリシーは Chrome 88 で削除されます。
-
-      詳しくは、https://www.chromestatus.com/feature/4664843055398912 をご覧ください。</translation>
 <translation id="3302829897293005699">このポリシーを有効にするか、未設定のままにすると、登録済みのデバイスはアプリの ID やバージョンなどのアクティブなキオスク セッション情報を報告します。
 
       このポリシーを無効に設定すると、登録済みのデバイスはキオスク セッション情報を報告しません。</translation>

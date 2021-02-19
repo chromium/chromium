@@ -189,7 +189,7 @@ Qidiruvni boshlash uchun istalgan soʻz ustiga bosing. Soʻrovni aniqlashtirish 
 <translation id="2321958826496381788">Sudragichni matn o‘qish uchun qulay bo‘lguncha suring. Satr boshiga ikki marta bosilganda matn hajmi shunday bo‘lishi kerak.</translation>
 <translation id="2323763861024343754">Sayt xotirasi</translation>
 <translation id="2328985652426384049">Kirish amalga oshmadi</translation>
-<translation id="2336549603503100420">Yoqilsa, saytlar oʻzlarining kontent va xizmatlarini taqdim etish uchun bu yerda koʻrsatilgan maxfiylikni saqlash texnikalaridan foydalanishlari mumkin. Bunga muqobil saytlararo kuzatuv ham kiradi. Vaqti-vaqti bilan koʻproq sinov funksiyalari kiritiladi.
+<translation id="2336549603503100420">Agar bu qoqilsa, saytlar oʻzlarining kontent va xizmatlarini taqdim etish uchun bu yerda koʻrsatilgan maxfiylikni saqlash texnikalaridan foydalanishi mumkin. Bunga muqobil saytlararo kuzatuv ham kiradi. Vaqti-vaqti bilan koʻproq sinov funksiyalari kiritiladi.
 
 <ph name="BEGIN_LIST_ITEM1" />Reklama beruvchilar minglab foydalanuvchilar uchun qiziqarli boʻlgan narsalarni koʻrishlari va faqatgina bitta odam uchun emas, balki butun bir guruh uchun reklama tanlashlari mumkin boʻladi.<ph name="END_LIST_ITEM1" />
 
@@ -265,7 +265,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="2833452327385637152">Soʻz yoki iborani qidirish uchun ularning ustiga bosib turing</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 kun oldin tekshirilgan}other{# kun oldin tekshirilgan}}</translation>
 <translation id="2842985007712546952">Ota jild</translation>
-<translation id="2856503607207334158">Kirmadi</translation>
+<translation id="2856503607207334158">Kirish amalga oshmadi</translation>
 <translation id="2860954141821109167">Bu qurilmada telefon ilovasi yoniqligini tekshiring</translation>
 <translation id="2870560284913253234">Sayt</translation>
 <translation id="2876369937070532032">Xavfli vaziyatlarda siz tashrif buyurgan ayrim URL manzillarni Google serverlariga yuboradi</translation>
@@ -281,7 +281,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="2923908459366352541">Ism yaroqsiz</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> xotirasi</translation>
 <translation id="2942036813789421260">Razm solish sahifasi yopildi</translation>
-<translation id="2946377063371973287">Ulanish biroz koʻproq vaqt olyapti…</translation>
+<translation id="2946377063371973287">Ulanish odatdagidan uzunroq vaqt olyapti…</translation>
 <translation id="2956410042958133412">Bu hisob <ph name="PARENT_NAME_1" /> va <ph name="PARENT_NAME_2" /> tomonlaridan boshqariladi.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ta sahifa oʻqilmagan}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ta sahifa oʻqilmagan}}</translation>
 <translation id="2962095958535813455">Inkognito rejimidagi varaqlar o‘tildi</translation>
@@ -911,7 +911,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="7304873321153398381">Oflayn. Chrome parollaringizni tekshira olmadi.</translation>
 <translation id="7313188324932846546">Sinxronizatsiyani sozlash uchun bosing</translation>
 <translation id="7328017930301109123">Lite rejimida Chrome sahifalarni tezroq yuklaydi va 60 foizgacha trafik tejaydi.</translation>
-<translation id="7332075081379534664">Kirdi</translation>
+<translation id="7332075081379534664">Kirish amalga oshdi</translation>
 <translation id="7333031090786104871">Avvalgi sayt qo‘shilmoqda</translation>
 <translation id="7340958967809483333">Discover parametrlari</translation>
 <translation id="7352651011704765696">Xatolik yuz berdi.</translation>

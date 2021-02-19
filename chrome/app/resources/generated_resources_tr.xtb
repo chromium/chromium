@@ -2665,6 +2665,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3943494825379372497">Uygulamalar ve sayfalar geri yüklensin mi?</translation>
 <translation id="3943582379552582368">&amp;Geri</translation>
 <translation id="3943857333388298514">Yapıştır</translation>
+<translation id="3944266449990965865">Tüm Ekran</translation>
 <translation id="3948116654032448504"><ph name="SEARCH_ENGINE" /> içinde Resim &amp;ara</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> sitesi şu klasörlerdeki dosyaları düzenleyebilir:</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2717,6 +2718,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3994374631886003300"><ph name="DEVICE_TYPE" /> cihazınızın kilidini açmak için telefonunuzun kilidini açın ve cihaza yaklaştırın.</translation>
 <translation id="3994878504415702912">Y&amp;aklaştır</translation>
 <translation id="3995138139523574647">USB-C cihaz (sağ arka bağlantı noktası)</translation>
+<translation id="4002066346123236978">Başlık</translation>
 <translation id="4002329649066944389">Siteye özgü istisnaları yönetme</translation>
 <translation id="4002440992267487163">Pin kurulumu</translation>
 <translation id="4005817994523282006">Saat dilimi algılama yöntemi</translation>
@@ -6428,7 +6430,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8316618172731049784"><ph name="DEVICE_NAME" /> cihazına gönder</translation>
 <translation id="8317671367883557781">Ağ bağlantısı ekle</translation>
 <translation id="8319414634934645341">Uzatılmış Anahtar Kullanımı</translation>
-<translation id="8320459152843401447">Ekranınızın Tamamı</translation>
 <translation id="8321476692217554900">bildirimler</translation>
 <translation id="8321837372750396788">Bu <ph name="DEVICE_TYPE" /> cihaz, <ph name="MANAGER" /> tarafından yönetilecek.</translation>
 <translation id="8322814362483282060">Bu sayfanın mikrofonunuza erişimi engellenmiştir.</translation>

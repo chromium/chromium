@@ -2668,6 +2668,7 @@
 <translation id="3943494825379372497">Відновити додатки та сторінки?</translation>
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Вставити</translation>
+<translation id="3944266449990965865">Повний екран</translation>
 <translation id="3948116654032448504">Шукати зображення в <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786">Сайт <ph name="ORIGIN" /> може змінювати файли в указаних нижче папках</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2720,6 +2721,7 @@
 <translation id="3994374631886003300">Щоб розблокувати пристрій <ph name="DEVICE_TYPE" />, розблокуйте свій телефон і розташуйте його ближче до пристрою.</translation>
 <translation id="3994878504415702912">&amp;Масштаб</translation>
 <translation id="3995138139523574647">пристрій, під’єднаний до порту USB-C (праворуч на задній панелі)</translation>
+<translation id="4002066346123236978">Назва</translation>
 <translation id="4002329649066944389">Як керувати винятками для певних сайтів</translation>
 <translation id="4002440992267487163">Налаштування PIN-коду</translation>
 <translation id="4005817994523282006">Спосіб визначення часового поясу</translation>
@@ -6431,7 +6433,6 @@
 <translation id="8316618172731049784">Надіслати на пристрій "<ph name="DEVICE_NAME" />"</translation>
 <translation id="8317671367883557781">Додати з’єднання з мережею</translation>
 <translation id="8319414634934645341">Використання розширеного ключа</translation>
-<translation id="8320459152843401447">екран</translation>
 <translation id="8321476692217554900">сповіщення</translation>
 <translation id="8321837372750396788">Цим пристроєм <ph name="DEVICE_TYPE" /> керуватиме <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">Доступ цієї сторінки до вашого мікрофона заблоковано.</translation>

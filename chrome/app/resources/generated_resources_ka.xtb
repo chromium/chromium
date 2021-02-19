@@ -2664,6 +2664,7 @@
 <translation id="3943494825379372497">გსურთ აპებისა და გვერდების აღდგენა?</translation>
 <translation id="3943582379552582368">&amp;უკან</translation>
 <translation id="3943857333388298514">ჩასმა</translation>
+<translation id="3944266449990965865">მთლიანი ეკრანი</translation>
 <translation id="3948116654032448504"><ph name="SEARCH_ENGINE" />-ში სურათის ძ&amp;იება</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" />-ს შეუძლია მითითებულ საქაღალდეებში ფაილების რედაქტირება</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2716,6 +2717,7 @@
 <translation id="3994374631886003300"><ph name="DEVICE_TYPE" />-ის განსაბლოკად მოაახლოვეთ და განბლოკეთ თქვენი ტელეფონი.</translation>
 <translation id="3994878504415702912">&amp;მასშტაბი</translation>
 <translation id="3995138139523574647">USB-C მოწყობილობა (მარჯვენა უკანა პორტი)</translation>
+<translation id="4002066346123236978">სათაური</translation>
 <translation id="4002329649066944389">გამონაკლისების მართვა საიტების მიხედვით</translation>
 <translation id="4002440992267487163">PIN-კოდის დაყენება</translation>
 <translation id="4005817994523282006">სასაათო სარტყლის ამოცნობის მეთოდი</translation>
@@ -6425,7 +6427,6 @@
 <translation id="8316618172731049784"><ph name="DEVICE_NAME" />-ზე გაგზავნა</translation>
 <translation id="8317671367883557781">ქსელის კავშირის დამატება</translation>
 <translation id="8319414634934645341">გაფართოებული კოდის გამოყენება</translation>
-<translation id="8320459152843401447">მთლიანი ეკრანი</translation>
 <translation id="8321476692217554900">შეტყობინებები</translation>
 <translation id="8321837372750396788">ამ <ph name="DEVICE_TYPE" />-ის მმართველი იქნება <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">წვდომა თქვენს მიკროფონზე ამ გვერდიდან დაიბლოკა.</translation>

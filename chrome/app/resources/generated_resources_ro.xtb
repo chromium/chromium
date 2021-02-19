@@ -2666,6 +2666,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3943494825379372497">Restabilești aplicațiile și paginile?</translation>
 <translation id="3943582379552582368">&amp;Înapoi</translation>
 <translation id="3943857333388298514">Inserează</translation>
+<translation id="3944266449990965865">Pe întregul ecran</translation>
 <translation id="3948116654032448504">&amp;Caută imaginea cu <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> poate edita fișierele din următoarele dosare</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2718,6 +2719,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3994374631886003300">Deblochează telefonul și apropie-l mai mult pentru a debloca dispozitivul <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3994878504415702912">&amp;Zoom</translation>
 <translation id="3995138139523574647">Dispozitiv USB-C (portul din dreapta spate)</translation>
+<translation id="4002066346123236978">Titlu</translation>
 <translation id="4002329649066944389">Gestionează excepțiile specifice site-ului</translation>
 <translation id="4002440992267487163">Configurează codul PIN</translation>
 <translation id="4005817994523282006">Metoda de detectare a fusului orar</translation>
@@ -6429,7 +6431,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8316618172731049784">Trimite la <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Adaugă o conexiune la rețea</translation>
 <translation id="8319414634934645341">Utilizare de cheie extinsă</translation>
-<translation id="8320459152843401447">Tot ecranul</translation>
 <translation id="8321476692217554900">Notificări</translation>
 <translation id="8321837372750396788">Dispozitivul <ph name="DEVICE_TYPE" /> va fi gestionat de <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">Accesul acestei pagini la microfonul dvs. a fost blocat.</translation>

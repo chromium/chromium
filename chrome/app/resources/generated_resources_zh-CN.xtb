@@ -2653,6 +2653,7 @@
 <translation id="3943494825379372497">恢复应用和网页？</translation>
 <translation id="3943582379552582368">返回(&amp;B)</translation>
 <translation id="3943857333388298514">粘贴</translation>
+<translation id="3944266449990965865">全屏</translation>
 <translation id="3948116654032448504">通过<ph name="SEARCH_ENGINE" />搜索图片(&amp;S)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> 可修改以下文件夹内的文件</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2705,6 +2706,7 @@
 <translation id="3994374631886003300">请解锁您的手机并将它靠近您的 <ph name="DEVICE_TYPE" />，以解锁此设备。</translation>
 <translation id="3994878504415702912">缩放(&amp;Z)</translation>
 <translation id="3995138139523574647">USB-C 设备（右侧后端端口）</translation>
+<translation id="4002066346123236978">标题</translation>
 <translation id="4002329649066944389">管理针对具体网站的例外情况</translation>
 <translation id="4002440992267487163">PIN 码设置</translation>
 <translation id="4005817994523282006">时区检测方法</translation>
@@ -6409,7 +6411,6 @@
 <translation id="8316618172731049784">发送到<ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">添加网络连接</translation>
 <translation id="8319414634934645341">扩展密钥用法</translation>
-<translation id="8320459152843401447">您的整个屏幕</translation>
 <translation id="8321476692217554900">通知</translation>
 <translation id="8321837372750396788">此 <ph name="DEVICE_TYPE" /> 将由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="8322814362483282060">系统已阻止此网页使用您的麦克风。</translation>

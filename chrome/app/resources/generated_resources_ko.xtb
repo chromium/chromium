@@ -2665,6 +2665,7 @@
 <translation id="3943494825379372497">앱과 페이지를 복원하시겠습니까?</translation>
 <translation id="3943582379552582368">뒤로(&amp;B)</translation>
 <translation id="3943857333388298514">붙여넣기</translation>
+<translation id="3944266449990965865">전체 화면</translation>
 <translation id="3948116654032448504"><ph name="SEARCH_ENGINE" />에서 이미지 검색(&amp;S)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" />에서 다음 폴더의 파일을 수정할 수 있습니다.</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" />(<ph name="DEVICE_ID" />)</translation>
@@ -2717,6 +2718,7 @@
 <translation id="3994374631886003300"><ph name="DEVICE_TYPE" />을(를) 잠금 해제하려면 휴대전화를 잠금 해제하고 더 가까이 가져오세요.</translation>
 <translation id="3994878504415702912">글꼴 크기(&amp;Z)</translation>
 <translation id="3995138139523574647">USB-C 기기(우측 후면 포트)</translation>
+<translation id="4002066346123236978">제목</translation>
 <translation id="4002329649066944389">사이트별 예외 관리</translation>
 <translation id="4002440992267487163">PIN 설정</translation>
 <translation id="4005817994523282006">시간대 감지 방법</translation>
@@ -6426,7 +6428,6 @@
 <translation id="8316618172731049784"><ph name="DEVICE_NAME" />(으)로 보내기</translation>
 <translation id="8317671367883557781">네트워크 연결 추가</translation>
 <translation id="8319414634934645341">확장된 키 사용</translation>
-<translation id="8320459152843401447">내 전체 화면</translation>
 <translation id="8321476692217554900">알림</translation>
 <translation id="8321837372750396788">이 <ph name="DEVICE_TYPE" />은(는) <ph name="MANAGER" />에서 관리할 예정입니다.</translation>
 <translation id="8322814362483282060">마이크 액세스가 차단된 페이지입니다.</translation>

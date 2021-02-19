@@ -2720,6 +2720,7 @@
 <translation id="3994374631886003300">Разблакіруйце тэлефон і паднясіце яго бліжэй, каб разблакіраваць <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3994878504415702912">&amp;Маштаб</translation>
 <translation id="3995138139523574647">Прылада USB-C (задні порт справа)</translation>
+<translation id="4002066346123236978">Назва</translation>
 <translation id="4002329649066944389">Кіраванне выключэннямі для канкрэтных сайтаў</translation>
 <translation id="4002440992267487163">Наладзіць PIN-код</translation>
 <translation id="4005817994523282006">Спосаб выяўлення часавага пояса</translation>
@@ -6430,7 +6431,6 @@
 <translation id="8316618172731049784">Адправіць на прыладу "<ph name="DEVICE_NAME" />"</translation>
 <translation id="8317671367883557781">Дадаць падключэнне да сеткі</translation>
 <translation id="8319414634934645341">Пашыранае выкарыстанне ключа</translation>
-<translation id="8320459152843401447">Увесь экран</translation>
 <translation id="8321476692217554900">апавяшчэнні</translation>
 <translation id="8321837372750396788">Гэтай прыладай <ph name="DEVICE_TYPE" /> будзе кіраваць <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">Гэтай старонцы быў заблакіраваны доступ да вашага мікрафона.</translation>

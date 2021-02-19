@@ -2663,6 +2663,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3943494825379372497">Ilova va sahifalar tiklansinmi?</translation>
 <translation id="3943582379552582368">&amp;Orqaga</translation>
 <translation id="3943857333388298514">Joylash</translation>
+<translation id="3944266449990965865">Butun ekran</translation>
 <translation id="3948116654032448504">Tasvirni qidirish (<ph name="SEARCH_ENGINE" />)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> quyidagi jildlardagi fayllarni tahrirlay oladi</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2715,6 +2716,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3994374631886003300">Telefoningizni qulfdan chiqaring va uni <ph name="DEVICE_TYPE" /> qurilmasiga yaqinlashtiring.</translation>
 <translation id="3994878504415702912">&amp;Matn o‘lchami</translation>
 <translation id="3995138139523574647">USB-C qurilma (o‘ng tomondagi orqa port)</translation>
+<translation id="4002066346123236978">Nomi</translation>
 <translation id="4002329649066944389">Saytga oid istisnolarni boshqarish</translation>
 <translation id="4002440992267487163">PIN-kodni sozlash</translation>
 <translation id="4005817994523282006">Vaqt mintaqasi aniqlanish uslubi</translation>
@@ -5457,7 +5459,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7234010996000898150">Linux tasvirini tiklash bekor qilinmoqda</translation>
 <translation id="7235716375204803342">Harakatlar tarixi yuklanmoqda...</translation>
 <translation id="7235737137505019098">Elektron kalitda boshqa hisoblar uchun yetarli joy qolmadi.</translation>
-<translation id="7238640585329759787">Yoqilsa, saytlar oʻzlarining kontent va xizmatlarini taqdim etish uchun bu yerda koʻrsatilgan maxfiylikni saqlash texnikalaridan foydalanishlari mumkin. Bunga muqobil saytlararo kuzatuv ham kiradi. Vaqti-vaqti bilan koʻproq sinov funksiyalari kiritiladi.</translation>
+<translation id="7238640585329759787">Agar bu qoqilsa, saytlar oʻzlarining kontent va xizmatlarini taqdim etish uchun bu yerda koʻrsatilgan maxfiylikni saqlash texnikalaridan foydalanishlari mumkin. Bunga muqobil saytlararo kuzatuv ham kiradi. Vaqti-vaqti bilan koʻproq sinov funksiyalari kiritiladi.</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Batafsil</translation>
 <translation id="7240339475467890413">Yangi hotspotga ulanilsinmi?</translation>
 <translation id="7241389281993241388">Mijoz sertifikatini import qilish uchun, <ph name="TOKEN_NAME" />’ga kiring.</translation>
@@ -6424,7 +6426,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8316618172731049784">Bunga yuborish: <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Yangi tarmoqqa ulanish</translation>
 <translation id="8319414634934645341">Kalitdan keng miqyosda foydalanish</translation>
-<translation id="8320459152843401447">Butun ekran</translation>
 <translation id="8321476692217554900">bildirishnomalar</translation>
 <translation id="8321837372750396788">Bu <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> tomonidan boshqariladi.</translation>
 <translation id="8322814362483282060">Bu sahifaning mikrofoningizdan foydalanishi bloklandi.</translation>

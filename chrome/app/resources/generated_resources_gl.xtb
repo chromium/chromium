@@ -2664,6 +2664,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3943494825379372497">Queres restaurar as aplicacións e as páxinas?</translation>
 <translation id="3943582379552582368">&amp;Atrás</translation>
 <translation id="3943857333388298514">Pegar</translation>
+<translation id="3944266449990965865">Pantalla completa</translation>
 <translation id="3948116654032448504">&amp;Buscar imaxe en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> pode editar os ficheiros dos seguintes cartafoles</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2716,6 +2717,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3994374631886003300">Desbloquea o teléfono e achégao ao <ph name="DEVICE_TYPE" /> para desbloquealo.</translation>
 <translation id="3994878504415702912">&amp;Zoom</translation>
 <translation id="3995138139523574647">Dispositivo USB-C (porto dereito posterior)</translation>
+<translation id="4002066346123236978">Título</translation>
 <translation id="4002329649066944389">Xestionar as excepcións para sitios web específicos</translation>
 <translation id="4002440992267487163">Configuración do PIN</translation>
 <translation id="4005817994523282006">Método de detección de fuso horario</translation>
@@ -6426,7 +6428,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8316618172731049784">Enviar pestana a <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Engadir conexión de rede</translation>
 <translation id="8319414634934645341">Uso ampliado de claves</translation>
-<translation id="8320459152843401447">Toda a túa pantalla</translation>
 <translation id="8321476692217554900">notificacións</translation>
 <translation id="8321837372750396788"><ph name="MANAGER" /> xestionará este dispositivo (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="8322814362483282060">Bloqueouse o acceso desta páxina ao teu micrófono.</translation>

@@ -2663,6 +2663,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3943494825379372497">Przywrócić aplikacje i strony?</translation>
 <translation id="3943582379552582368">&amp;Wstecz</translation>
 <translation id="3943857333388298514">Wklej</translation>
+<translation id="3944266449990965865">Cały ekran</translation>
 <translation id="3948116654032448504">&amp;Szukaj obrazu w <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786">Strona <ph name="ORIGIN" /> może edytować pliki w tych folderach</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2715,6 +2716,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3994374631886003300">Aby odblokować system, <ph name="DEVICE_TYPE" /> i odblokowany telefon muszą być bliżej siebie.</translation>
 <translation id="3994878504415702912">&amp;Rozmiar tekstu</translation>
 <translation id="3995138139523574647">Urządzenie USB-C (tylny port na prawym boku)</translation>
+<translation id="4002066346123236978">Tytuł</translation>
 <translation id="4002329649066944389">Zarządzanie wyjątkami dotyczącymi strony</translation>
 <translation id="4002440992267487163">Skonfiguruj kod PIN</translation>
 <translation id="4005817994523282006">Metoda wykrywania strefy czasowej</translation>
@@ -6426,7 +6428,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8316618172731049784">Wyślij na: <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Dodaj połączenie sieciowe</translation>
 <translation id="8319414634934645341">Rozszerzone użycie klucza</translation>
-<translation id="8320459152843401447">Cały ekran</translation>
 <translation id="8321476692217554900">powiadomienia</translation>
 <translation id="8321837372750396788">Tym urządzeniem <ph name="DEVICE_TYPE" /> będzie zarządzać <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">Ta strona ma zablokowany dostęp do mikrofonu.</translation>

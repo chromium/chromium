@@ -2666,6 +2666,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3943494825379372497">I-restore ang mga app at page?</translation>
 <translation id="3943582379552582368">&amp;Bumalik</translation>
 <translation id="3943857333388298514">Paste</translation>
+<translation id="3944266449990965865">Buong Screen</translation>
 <translation id="3948116654032448504">&amp;Maghanap sa <ph name="SEARCH_ENGINE" /> para sa Larawan</translation>
 <translation id="3948507072814225786">Puwedeng i-edit ng <ph name="ORIGIN" /> ang mga file sa mga sumusunod na folder</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2718,6 +2719,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3994374631886003300">I-unlock ang iyong telepono at ilapit pa ito upang ma-unlock ang <ph name="DEVICE_TYPE" /> mo.</translation>
 <translation id="3994878504415702912">&amp;I-zoom</translation>
 <translation id="3995138139523574647">USB-C device (port sa kanang bahagi sa likod)</translation>
+<translation id="4002066346123236978">Pamagat</translation>
 <translation id="4002329649066944389">Pamahalaan ang mga exception na partikular sa site</translation>
 <translation id="4002440992267487163">I-pin ang pag-set up</translation>
 <translation id="4005817994523282006">Paraan ng pagtukoy ng time zone</translation>
@@ -6429,7 +6431,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8316618172731049784">Ipadala sa <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Idagdag ang koneksyon sa network</translation>
 <translation id="8319414634934645341">Extended na Paggamit ng Key</translation>
-<translation id="8320459152843401447">Ang Iyong Buong Screen</translation>
 <translation id="8321476692217554900">mga notification</translation>
 <translation id="8321837372750396788">Papamahalaan ng <ph name="MANAGER" /> ang <ph name="DEVICE_TYPE" /> na ito.</translation>
 <translation id="8322814362483282060">Na-block na ang pahinang ito sa pag-access sa iyong mikropono.</translation>

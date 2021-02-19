@@ -2662,6 +2662,7 @@
 <translation id="3943494825379372497">ઍપ અને પેજ રિસ્ટોર કરીએ?</translation>
 <translation id="3943582379552582368">&amp;પાછળ</translation>
 <translation id="3943857333388298514">પેસ્ટ કરો</translation>
+<translation id="3944266449990965865">સમગ્ર સ્ક્રીન</translation>
 <translation id="3948116654032448504">છબી માટે <ph name="SEARCH_ENGINE" /> પર &amp;શોધો</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> નીચેના ફોલ્ડરોમાં સાચવેલી ફાઇલોમાં ફેરફાર કરી શકે છે</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2714,6 +2715,7 @@
 <translation id="3994374631886003300">તમારો ફોન અનલૉક કરો અને તમારા <ph name="DEVICE_TYPE" />ને અનલૉક કરવા માટે તેને વધુ નજીક લાવો.</translation>
 <translation id="3994878504415702912">&amp;ઝૂમ કરો</translation>
 <translation id="3995138139523574647">USB-C ડિવાઇસ (જમણી બાજુનું પાછળનું પોર્ટ)</translation>
+<translation id="4002066346123236978">શીર્ષક</translation>
 <translation id="4002329649066944389">સાઇટ મુજબ અપવાદો મેનેજ કરો</translation>
 <translation id="4002440992267487163">પિનને સેટઅપ કરો</translation>
 <translation id="4005817994523282006">સમય ઝોન ઓળખ પદ્ધતિ</translation>
@@ -6421,7 +6423,6 @@ USB ડિવાઇસ</translation>
 <translation id="8316618172731049784"><ph name="DEVICE_NAME" /> પર મોકલો</translation>
 <translation id="8317671367883557781">નેટવર્ક કનેક્શન ઉમેરો</translation>
 <translation id="8319414634934645341">વિસ્તૃત કી ઉપયોગ</translation>
-<translation id="8320459152843401447">તમારી સંપૂર્ણ સ્ક્રીન</translation>
 <translation id="8321476692217554900">નોટિફિકેશન</translation>
 <translation id="8321837372750396788">આ <ph name="DEVICE_TYPE" />ને <ph name="MANAGER" /> દ્વારા મેનેજ કરવામાં આવશે.</translation>
 <translation id="8322814362483282060">આ પૃષ્ઠને તમારા માઇક્રોફોનને ઍક્સેસ કરવાથી અવરોધિત કરવામાં આવ્યું છે.</translation>

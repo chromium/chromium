@@ -996,7 +996,7 @@
 <translation id="7857691613771368249">詢問何時儲存檔案</translation>
 <translation id="7875915731392087153">建立電郵</translation>
 <translation id="7876243839304621966">全部移除</translation>
-<translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{您有 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> 個未讀網頁}other{您有 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> 個未讀網頁}}</translation>
+<translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{您有 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> 個未讀頁面}other{您有 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> 個未讀頁面}}</translation>
 <translation id="7882131421121961860">找不到任何記錄</translation>
 <translation id="7886917304091689118">正在 Chrome 中執行</translation>
 <translation id="789763218334337857">如何使用 Chrome</translation>

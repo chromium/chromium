@@ -2665,6 +2665,7 @@
 <translation id="3943494825379372497">アプリとページを復元しますか？</translation>
 <translation id="3943582379552582368">戻る(&amp;B)</translation>
 <translation id="3943857333388298514">貼り付け</translation>
+<translation id="3944266449990965865">全画面</translation>
 <translation id="3948116654032448504"><ph name="SEARCH_ENGINE" /> で画像を検索(&amp;S)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> は次のフォルダのファイルを編集できます</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" />（<ph name="DEVICE_ID" />）</translation>
@@ -2717,6 +2718,7 @@
 <translation id="3994374631886003300"><ph name="DEVICE_TYPE" /> のロックを解除するには、スマートフォンのロックを解除してデバイスに近づけます。</translation>
 <translation id="3994878504415702912">ズーム(&amp;Z)</translation>
 <translation id="3995138139523574647">USB-C デバイス（右奥のポート）</translation>
+<translation id="4002066346123236978">タイトル</translation>
 <translation id="4002329649066944389">サイト固有の例外の管理</translation>
 <translation id="4002440992267487163">PIN の設定</translation>
 <translation id="4005817994523282006">タイムゾーンの検出方法</translation>
@@ -6428,7 +6430,6 @@
 <translation id="8316618172731049784"><ph name="DEVICE_NAME" /> に送信</translation>
 <translation id="8317671367883557781">ネットワーク接続を追加</translation>
 <translation id="8319414634934645341">拡張キーの用途</translation>
-<translation id="8320459152843401447">あなたの全画面</translation>
 <translation id="8321476692217554900">通知</translation>
 <translation id="8321837372750396788">この <ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> で管理されます。</translation>
 <translation id="8322814362483282060">このページはマイクへのアクセスを禁止されています。</translation>

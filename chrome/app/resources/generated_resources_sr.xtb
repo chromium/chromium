@@ -2664,6 +2664,7 @@
 <translation id="3943494825379372497">Желите да вратите апликације и странице?</translation>
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Налепи</translation>
+<translation id="3944266449990965865">Цео екран</translation>
 <translation id="3948116654032448504">&amp;Потражи слику у претраживачу <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> може да мења датотеке у директоријумима у наставку</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2716,6 +2717,7 @@
 <translation id="3994374631886003300">Откључајте телефон и приближите га да бисте откључали <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3994878504415702912">&amp;Зумирај</translation>
 <translation id="3995138139523574647">Уређај са USB прикључком типа C (десни задњи порт)</translation>
+<translation id="4002066346123236978">Наслов</translation>
 <translation id="4002329649066944389">Управљајте посебним изузецима за сајтове</translation>
 <translation id="4002440992267487163">Подешавање PIN-а</translation>
 <translation id="4005817994523282006">Метод откривања временске зоне</translation>
@@ -6428,7 +6430,6 @@
 <translation id="8316618172731049784">Пошаљи на <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Додај мрежну везу</translation>
 <translation id="8319414634934645341">Употреба проширеног кључа</translation>
-<translation id="8320459152843401447">Цео екран</translation>
 <translation id="8321476692217554900">обавештења</translation>
 <translation id="8321837372750396788">Овим <ph name="DEVICE_TYPE" /> ће управљати <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">Овој страници је забрањен приступ микрофону.</translation>

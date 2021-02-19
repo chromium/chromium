@@ -2667,6 +2667,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3943494825379372497">Restaurar apps e páginas?</translation>
 <translation id="3943582379552582368">&amp;Voltar</translation>
 <translation id="3943857333388298514">Colar</translation>
+<translation id="3944266449990965865">Tela cheia</translation>
 <translation id="3948116654032448504">&amp;Procurar imagem no <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> pode editar arquivos nas seguintes pastas</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2719,6 +2720,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3994374631886003300">Desbloqueie seu smartphone e aproxime-o para desbloquear o <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3994878504415702912">&amp;Zoom</translation>
 <translation id="3995138139523574647">Dispositivo USB-C (porta traseira da direita)</translation>
+<translation id="4002066346123236978">Título</translation>
 <translation id="4002329649066944389">Gerenciar exceções específicas do site</translation>
 <translation id="4002440992267487163">Configuração do PIN</translation>
 <translation id="4005817994523282006">Método de detecção de fuso horário</translation>
@@ -6431,7 +6433,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8316618172731049784">Enviar para este dispositivo: <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Adicionar conexão de rede</translation>
 <translation id="8319414634934645341">Uso estendido de chave</translation>
-<translation id="8320459152843401447">A tela inteira</translation>
 <translation id="8321476692217554900">notificações</translation>
 <translation id="8321837372750396788">Este <ph name="DEVICE_TYPE" /> será gerenciado por <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">Esta página foi impedida de acessar seu microfone.</translation>

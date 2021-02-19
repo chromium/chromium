@@ -2665,6 +2665,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3943494825379372497">Apps en pagina's herstellen?</translation>
 <translation id="3943582379552582368">&amp;Vorige</translation>
 <translation id="3943857333388298514">Plak</translation>
+<translation id="3944266449990965865">Volledig scherm</translation>
 <translation id="3948116654032448504">&amp;Afbeelding zoeken in <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> kan bestanden bewerken in de volgende mappen</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2717,6 +2718,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3994374631886003300">Ontgrendel je telefoon en plaatst deze dichterbij om je <ph name="DEVICE_TYPE" /> te ontgrendelen.</translation>
 <translation id="3994878504415702912">&amp;Zoomen</translation>
 <translation id="3995138139523574647">USB-C-apparaat (poort rechts aan de achterkant)</translation>
+<translation id="4002066346123236978">Titel</translation>
 <translation id="4002329649066944389">Sitespecifieke uitzonderingen beheren</translation>
 <translation id="4002440992267487163">Pincode instellen</translation>
 <translation id="4005817994523282006">Detectiemethode voor tijdzone</translation>
@@ -6427,7 +6429,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8316618172731049784">Verzenden naar <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Netwerkverbinding toevoegen</translation>
 <translation id="8319414634934645341">Uitgebreid sleutelgebruik</translation>
-<translation id="8320459152843401447">Je volledige scherm</translation>
 <translation id="8321476692217554900">meldingen</translation>
 <translation id="8321837372750396788">Deze <ph name="DEVICE_TYPE" /> wordt beheerd door <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">Deze pagina heeft geen toegang tot je microfoon.</translation>

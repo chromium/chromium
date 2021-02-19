@@ -1001,7 +1001,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2108349519800154983">{COUNT,plural, =1{Số điện thoại}other{# số điện thoại}}</translation>
 <translation id="211144231511833662">Xóa các loại thiết bị</translation>
 <translation id="2111670510994270194">Thẻ mới ở bên phải</translation>
-<translation id="2111810003053064883">Các nhà quảng cáo có thể nghiên cứu tính hiệu quả của quảng cáo theo cách thức khiến bạn không bị theo dõi trên các trang web.</translation>
+<translation id="2111810003053064883">Các nhà quảng cáo có thể nghiên cứu tính hiệu quả của quảng cáo mà không cần theo dõi bạn trên các trang web.</translation>
 <translation id="21133533946938348">Ghim Thẻ</translation>
 <translation id="2113479184312716848">Mở &amp;tệp...</translation>
 <translation id="2113921862428609753">Quyền Truy cập Thông tin Tổ chức Cấp Chứng chỉ</translation>
@@ -2005,7 +2005,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3238192140106069382">Đang kết nối và xác minh</translation>
 <translation id="3239373508713281971">Đã xóa giới hạn thời gian đối với <ph name="APP_NAME" /></translation>
 <translation id="3241680850019875542">Chọn thư mục gốc của tiện ích để đóng gói. Để cập nhật tiện ích, bạn cũng chọn tệp khóa cá nhân để sử dụng lại.</translation>
-<translation id="3242905690080165035">Hộp cát về quyền riêng tư vẫn đang trong giai đoạn tích cực phát triển và được cung cấp ở một số khu vực. Giờ đây, các trang web có thể dùng thử Hộp cát về quyền riêng tư, dù vẫn tiếp tục sử dụng các công nghệ web hiện tại như cookie của bên thứ ba. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
+<translation id="3242905690080165035">Hộp cát về quyền riêng tư vẫn đang trong giai đoạn phát triển và được cung cấp ở một số khu vực. Các trang hiện web có thể dùng thử Hộp cát về quyền riêng tư trong khi tiếp tục sử dụng các công nghệ web hiện tại như cookie của bên thứ ba. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="3244294424315804309">Tiếp tục tắt tiếng</translation>
 <translation id="3246107497225150582">{0,plural, =1{Cập nhật thiết bị trong vòng 1 ngày}other{Cập nhật thiết bị trong vòng # ngày}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Lỗi mạng</translation>
@@ -2166,7 +2166,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3428419049384081277">Bạn đã đăng nhập!</translation>
 <translation id="3428747202529429621">Giúp bạn an toàn trên Chrome và có thể dùng để tăng cường bảo mật cho bạn trong các ứng dụng khác của Google sau khi đăng nhập</translation>
 <translation id="3428800329481094896">Đang tìm nạp các khóa SSH của vùng chứa Linux</translation>
-<translation id="3429160811076349561">Tính năng dùng thử đang tắt</translation>
+<translation id="3429160811076349561">Các tính năng dùng thử đang tắt</translation>
 <translation id="3429271624041785769">Ngôn ngữ dùng cho nội dung web</translation>
 <translation id="3429275422858276529">Đánh dấu trang này để dễ dàng tìm kiếm về sau</translation>
 <translation id="3432227430032737297">Xóa tất cả cookie hiển thị</translation>
@@ -2665,6 +2665,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3943494825379372497">Khôi phục các ứng dụng và trang?</translation>
 <translation id="3943582379552582368">&amp;Quay lại</translation>
 <translation id="3943857333388298514">Dán</translation>
+<translation id="3944266449990965865">Toàn màn hình</translation>
 <translation id="3948116654032448504">&amp;Tìm kiếm hình ảnh trên <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> có thể chỉnh sửa tệp trong các thư mục sau đây</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2717,6 +2718,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3994374631886003300">Mở khóa điện thoại và mang điện thoại tới gần hơn để mở khóa <ph name="DEVICE_TYPE" /> của bạn.</translation>
 <translation id="3994878504415702912">Thu &amp;phóng</translation>
 <translation id="3995138139523574647">Thiết bị USB-C (cổng phía sau, bên phải)</translation>
+<translation id="4002066346123236978">Tiêu đề</translation>
 <translation id="4002329649066944389">Quản lý các ngoại lệ cụ thể của trang web</translation>
 <translation id="4002440992267487163">Thiết lập mã PIN</translation>
 <translation id="4005817994523282006">Phương pháp phát hiện múi giờ</translation>
@@ -3149,7 +3151,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4541662893742891060">Không thể kết nối với hồ sơ này. Nếu cần hỗ trợ kỹ thuật, hãy liên hệ với nhà mạng của bạn.</translation>
 <translation id="4541810033354695636">thực tế tăng cường</translation>
 <translation id="4542520061254486227">Đọc dữ liệu của bạn trên <ph name="WEBSITE_1" /> và <ph name="WEBSITE_2" /></translation>
-<translation id="454331522350252598">Các nhà quảng cáo chỉ có thể biết rằng hàng nghìn người dùng có cùng một mối quan tâm – tương tự như đám đông trong một buổi hòa nhạc – và chọn quảng cáo cho đám đông đó, chứ không chọn được quảng cáo cho riêng một cá nhân.</translation>
+<translation id="454331522350252598">Các nhà quảng cáo có thể xác định khi nào hàng nghìn người dùng có cùng một mối quan tâm – tương tự như đám đông trong một buổi hòa nhạc – và chọn quảng cáo cho đám đông đó thay vì cho một cá nhân.</translation>
 <translation id="4543778593405494224">Trình quản lý chứng chỉ</translation>
 <translation id="4544174279960331769">Hình đại diện màu xanh lam mặc định</translation>
 <translation id="4545028762441890696">Để bật lại, hãy chấp nhận các quyền mới:</translation>
@@ -4625,7 +4627,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6271348838875430303">đã hủy thao tác sửa</translation>
 <translation id="6272643420381259437">Đã xảy ra lỗi (<ph name="ERROR" />) khi tải xuống plugin</translation>
 <translation id="6273677812470008672">Chất lượng</translation>
-<translation id="6275846828483490454">Hộp cát về quyền riêng tư là một sáng kiến đang được thực hiện nhằm bảo vệ web mở. Sáng kiến này sẽ giúp bảo vệ bạn khỏi cơ chế theo dõi.</translation>
+<translation id="6275846828483490454">Hộp cát về quyền riêng tư là một sáng kiến đang được thực hiện nhằm bảo vệ web mở. Sáng kiến này sẽ giúp bảo vệ bạn khỏi các cơ chế theo dõi.</translation>
 <translation id="6276210637549544171">Proxy <ph name="PROXY_SERVER" /> yêu cầu nhập tên người dùng và mật khẩu.</translation>
 <translation id="6277105963844135994">Hết thời gian chờ mạng</translation>
 <translation id="6277518330158259200">Chụp ảnh màn hình</translation>
@@ -5280,7 +5282,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7018275672629230621">Đọc và thay đổi lịch sử duyệt web của bạn</translation>
 <translation id="7019805045859631636">Nhanh</translation>
 <translation id="7022562585984256452">Trang chủ của bạn đã được đặt.</translation>
-<translation id="7023206482239788111">Hộp cát về quyền riêng tư giúp bảo vệ các chỉ số quan trọng của web mở bằng cách tạo ra các cách thực hiện hiệu quả hơn cho những dịch vụ này – mà không làm ảnh hưởng đến trang web, đồng thời giúp bạn không bị bí mật theo dõi trên web.</translation>
+<translation id="7023206482239788111">Hộp cát về quyền riêng tư duy trì sức mạnh của môi trường web mở bằng cách tạo ra các thức hiệu quả hơn để chạy những dịch vụ này mà không làm ảnh hưởng đến các trang web, đồng thời giúp bạn không bị bí mật theo dõi trên web.</translation>
 <translation id="7025082428878635038">Giới thiệu một cách mới để thao tác bằng các cử chỉ</translation>
 <translation id="7025190659207909717">Quản lý dịch vụ dữ liệu di động</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Mở tất cả trong cửa sổ ẩ&amp;n danh}=1{Mở trong cửa sổ ẩ&amp;n danh}other{Mở tất cả ({COUNT}) trong cửa sổ ẩ&amp;n danh}}</translation>
@@ -5459,7 +5461,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7234010996000898150">Đang hủy quá trình khôi phục Linux</translation>
 <translation id="7235716375204803342">Đang tìm nạp hoạt động...</translation>
 <translation id="7235737137505019098">Khóa bảo mật của bạn không có đủ dung lượng cho bất kỳ tài khoản nào khác nữa.</translation>
-<translation id="7238640585329759787">Khi được bật, các trang web có thể dùng kỹ thuật bảo vệ quyền riêng tư hiển thị ở đây để bảo vệ nội dung và dịch vụ của các trang web đó. Các kỹ thuật này gồm có những biện pháp thay thế cho hoạt động theo dõi trên nhiều trang web. Theo thời gian, chúng tôi có thể có thêm nhiều tính năng dùng thử.</translation>
+<translation id="7238640585329759787">Khi bạn bật Hộp cát về quyền riêng tư, các trang web có thể dùng kỹ thuật bảo vệ quyền riêng tư theo mô tả ở đây để cung cấp nội dung và dịch vụ của mình. Các kỹ thuật này gồm có những biện pháp thay thế cho hoạt động theo dõi trên nhiều trang web. Theo thời gian, chúng tôi có thể có thêm nhiều tính năng dùng thử.</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Thông tin chi tiết</translation>
 <translation id="7240339475467890413">Kết nối với điểm phát sóng mới?</translation>
 <translation id="7241389281993241388">Vui lòng đăng nhập vào <ph name="TOKEN_NAME" /> để nhập chứng chỉ ứng dụng khách.</translation>
@@ -6428,7 +6430,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8316618172731049784">Gửi đến <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Thêm kết nối mạng</translation>
 <translation id="8319414634934645341">Sử dụng Khoá Mở rộng</translation>
-<translation id="8320459152843401447">Toàn bộ màn hình của bạn</translation>
 <translation id="8321476692217554900">thông báo</translation>
 <translation id="8321837372750396788"><ph name="DEVICE_TYPE" /> này sẽ do <ph name="MANAGER" /> quản lý.</translation>
 <translation id="8322814362483282060">Trang này đã bị chặn truy cập micrô của bạn.</translation>
@@ -6557,7 +6558,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8480082892550707549">Ngay cả khi bạn đã tải xuống các tệp từ trang web này trước đó, trang web này có thể tạm thời không an toàn (bị tấn công). Hãy thử tải xuống tệp này sau.</translation>
 <translation id="8480869669560681089">Thiết bị không xác định từ <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Xác nhận quyền đối với USB</translation>
-<translation id="8481980314595922412">Tính năng dùng thử đang bật</translation>
+<translation id="8481980314595922412">Các tính năng dùng thử đang bật</translation>
 <translation id="8487678622945914333">Phóng To</translation>
 <translation id="8489156414266187072">Nội dung đề xuất cá nhân chỉ hiển thị trên tài khoản của bạn</translation>
 <translation id="8490896350101740396">Các ứng dụng kiosk sau đây "<ph name="UPDATED_APPS" />" đã được cập nhật. Hãy khởi động lại thiết bị để hoàn tất quá trình cập nhật.</translation>
@@ -6941,6 +6942,7 @@ Nhấn một công tắc đã gán để xóa.</translation>
 <translation id="8892168913673237979">Đã hoàn tất!</translation>
 <translation id="8893801527741465188">Đã gỡ cài đặt xong</translation>
 <translation id="8893928184421379330">Rất tiếc, không thể nhận dạng thiết bị <ph name="DEVICE_LABEL" />.</translation>
+<translation id="8894761918470382415">Ngăn thiết bị ngoại vi truy cập vào dữ liệu</translation>
 <translation id="8895454554629927345">Danh sách dấu trang</translation>
 <translation id="8898786835233784856">Chọn Thẻ Tiếp theo</translation>
 <translation id="8898822736010347272">Gửi URL của một số trang bạn truy cập, thông tin về hệ thống (có giới hạn) và một số nội dung trang cho Google, nhằm phát hiện các mối đe dọa mới và bảo vệ mọi người khi dùng web.</translation>
@@ -7247,6 +7249,7 @@ Nhấn một công tắc đã gán để xóa.</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> đang chia sẻ âm thanh và một thẻ trong Chrome.</translation>
 <translation id="945522503751344254">Gửi phản hồi</translation>
 <translation id="947329552760389097">&amp;Kiểm tra các yếu tố</translation>
+<translation id="949052952791086881">Quản trị viên của bạn yêu cầu người dùng này phải đăng nhập khi thiết bị có kết nối mạng</translation>
 <translation id="951991426597076286">Từ chối</translation>
 <translation id="956500788634395331">Bạn sẽ được bảo vệ khỏi các tiện ích có thể gây hại</translation>
 <translation id="957960681186851048">Trang web này đã cố gắng tự động tải nhiều tệp xuống</translation>

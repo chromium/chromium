@@ -198,7 +198,7 @@
 <translation id="1640180200866533862">سياسات المستخدم</translation>
 <translation id="1640244768702815859">جرّب <ph name="BEGIN_LINK" />الانتقال إلى الصفحة الرئيسية للموقع<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">تأخير الإخراج حتى</translation>
-<translation id="164212631332220697">الدفع باستخدام <ph name="CARD_DETAIL" /> عند الدفع.</translation>
+<translation id="164212631332220697">الدفع باستخدام <ph name="CARD_DETAIL" />.</translation>
 <translation id="1644574205037202324">السجل</translation>
 <translation id="1645368109819982629">بروتوكول غير معتمد</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -1013,7 +1013,7 @@
 <translation id="4879725228911483934">يمكنك فتح النوافذ ووضعها على شاشتك.</translation>
 <translation id="4880827082731008257">سجلّ البحث</translation>
 <translation id="4881695831933465202">فتح</translation>
-<translation id="4885256590493466218">الدفع باستخدام <ph name="CARD_DETAIL" /> عند الدفع.</translation>
+<translation id="4885256590493466218">الدفع باستخدام <ph name="CARD_DETAIL" />.</translation>
 <translation id="4889420713887366944">‏زر "فتح نافذة التصفُّح المتخفي"، اضغط على مفتاح Enter لفتح نافذة تصفُّح متخفٍ جديدة للتصفُّح بخصوصية تامّة.</translation>
 <translation id="4892518386797173871">الجزء الخلفي</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />، <ph name="TYPE_2" />، <ph name="TYPE_3" /></translation>

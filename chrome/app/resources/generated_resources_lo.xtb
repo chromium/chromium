@@ -2663,6 +2663,7 @@
 <translation id="3943494825379372497">ກູ້ຄືນແອັບ ແລະ ໜ້າບໍ?</translation>
 <translation id="3943582379552582368">ກັບ​ຄືນ​</translation>
 <translation id="3943857333388298514">ແປະໃສ່</translation>
+<translation id="3944266449990965865">ທັງ​ຫມົດຫນ້າ​ຈໍ​</translation>
 <translation id="3948116654032448504">&amp;ຊອກຫາ <ph name="SEARCH_ENGINE" /> ຮູບ</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> ສາມາດແກ້ໄຂໄຟລ໌ໃນໂຟນເດີຕໍ່ໄປນີ້ໄດ້</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2715,6 +2716,7 @@
 <translation id="3994374631886003300">ປົດລັອກໂທລະສັບຂອງງທ່ານ ແລະ ຈັບມັນເຂົ້າມາໃກ້ໆເພື່ອປົດລັອກ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ.</translation>
 <translation id="3994878504415702912">ຊູມ</translation>
 <translation id="3995138139523574647">ອຸປະກອນ USB-C (ຊ່ອງທາງຫຼັງເບື້ອງຂວາ)</translation>
+<translation id="4002066346123236978">ຫົວຂໍ້</translation>
 <translation id="4002329649066944389">ຈັດການຂໍ້ຍົກເວັ້ນສະເພາະເວັບໄຊ</translation>
 <translation id="4002440992267487163">ການຕັ້ງຄ່າ PIN</translation>
 <translation id="4005817994523282006">ວິທີການກວດຫາເຂດເວລາ</translation>
@@ -6424,7 +6426,6 @@
 <translation id="8316618172731049784">ສົ່ງຫາ <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">ເພີ່ມການເຊື່ອມຕໍ່ເຄືອຂ່າຍ</translation>
 <translation id="8319414634934645341">ການໃຊ້ຄີບອດຂະຫຍາຍ</translation>
-<translation id="8320459152843401447">ທັງໝົດໜ້າຈໍຂອງທ່ານ</translation>
 <translation id="8321476692217554900">ການແຈ້ງເຕືອນ</translation>
 <translation id="8321837372750396788"><ph name="DEVICE_TYPE" /> ນີ້ຈະຖືກຈັດການໂດຍ <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">ໜ້ານີ້ຖືກບລັອກຈາກການເຂົ້າໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານ.</translation>

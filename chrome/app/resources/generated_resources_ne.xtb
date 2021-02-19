@@ -2654,6 +2654,7 @@
 <translation id="3943494825379372497">एप र पेजहरू रिस्टोर गर्ने हो?</translation>
 <translation id="3943582379552582368">&amp;पछाडि</translation>
 <translation id="3943857333388298514">टाँस्नुहोस्</translation>
+<translation id="3944266449990965865">फुल स्क्रिन</translation>
 <translation id="3948116654032448504">र छविको लागि <ph name="SEARCH_ENGINE" /> खोज्नुहोस्</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> ले निम्न फोल्डरमा रहेका फाइलहरू सम्पादन गर्न सक्छ</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2706,6 +2707,7 @@
 <translation id="3994374631886003300">आफ्नो फोन अनलक गर्नुहोस्‌ र तपाईंको <ph name="DEVICE_TYPE" /> अनलक गर्न यसलाई नजिक ल्याउनुहोस्‌।</translation>
 <translation id="3994878504415702912">&amp;जूम गर्नुहोस्</translation>
 <translation id="3995138139523574647">USB-C यन्त्र (दायाँ भागको पछाडिको पोर्ट)</translation>
+<translation id="4002066346123236978">शीर्षक</translation>
 <translation id="4002329649066944389">कुनै विशेष साइटमा लागू हुने अपवादहरूको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4002440992267487163">Pin सेटअप गर्नुहोस्</translation>
 <translation id="4005817994523282006">समय क्षेत्र पत्ता लगाउने विधि</translation>
@@ -6409,7 +6411,6 @@
 <translation id="8316618172731049784"><ph name="DEVICE_NAME" /> मा पठाउनुहोस्</translation>
 <translation id="8317671367883557781">नेटवर्क जडान थप्नुहोस्</translation>
 <translation id="8319414634934645341">विस्तारित कुञ्जी प्रयोग</translation>
-<translation id="8320459152843401447">तपाईँको सम्पूर्ण स्क्रिन</translation>
 <translation id="8321476692217554900">सूचनाहरू</translation>
 <translation id="8321837372750396788"><ph name="MANAGER" /> ले यो <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्ने छ।</translation>
 <translation id="8322814362483282060">यो पृष्ठलाई तपाईंको माइक्रोफोनको पहुँच गर्नबाट ब्लक गरिएको छ।</translation>
@@ -6921,6 +6922,7 @@
 <translation id="8892168913673237979">सबै सेट गर्नुहोस्!</translation>
 <translation id="8893801527741465188">स्थापना रद्द गर्ने कार्य सम्पन्न भयो</translation>
 <translation id="8893928184421379330">माफ गर्नुहोस्, यन्त्र <ph name="DEVICE_LABEL" /> पहिचान गर्न सकिएन।</translation>
+<translation id="8894761918470382415">सहायक यन्त्रलाई डेटा प्रयोग गर्न रोक लगाउने सुविधा</translation>
 <translation id="8895454554629927345">पुस्तक चिन्हहरूको सूची</translation>
 <translation id="8898786835233784856">अर्को ट्याब चयन गर्नुहोस्</translation>
 <translation id="8898822736010347272">नयाँ खतराहरू पत्ता लगाउन र वेब प्रयोग गर्ने सम्पूर्ण प्रयोगकर्ताहरूलाई सुरक्षित राख्न Google लाई तपाईंले हेर्ने केही पृष्ठका URL, प्रणालीसम्बन्धी निश्चित जानकारी र पृष्ठका केही सामग्रीहरू पठाउँछ।</translation>
@@ -7226,6 +7228,7 @@
 <translation id="942532530371314860"><ph name="APP_NAME" /> Chrome को एउटा ट्याब र अडियोलाई साझेदारी गर्दैछ।</translation>
 <translation id="945522503751344254">पृष्ठपोषण पठाउनुहोस्</translation>
 <translation id="947329552760389097">तत्त्वहरूको निरीक्षण गर्नुहोस्</translation>
+<translation id="949052952791086881">तपाईंका एड्मिनका अनुसार यी प्रयोगकर्ताले यो यन्त्र इन्टरनेटमा कनेक्ट भएका बेला साइन इन गर्नु पर्ने हुन्छ</translation>
 <translation id="951991426597076286">अस्वीकार गर्नुहोस्</translation>
 <translation id="956500788634395331">तपाईं हानिकारक हुन सक्ने एक्स्टेन्सनहरूबाट सुरक्षित हुनुहुन्छ</translation>
 <translation id="957960681186851048">यो साइटले स्वतः एकभन्दा बढी फाइलहरू डाउनलोड गर्ने प्रयास गर्‍यो</translation>

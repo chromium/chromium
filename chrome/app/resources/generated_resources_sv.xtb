@@ -2665,6 +2665,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3943494825379372497">Vill du återställa appar och sidor?</translation>
 <translation id="3943582379552582368">&amp;Bakåt</translation>
 <translation id="3943857333388298514">Klistra in</translation>
+<translation id="3944266449990965865">Helskärm</translation>
 <translation id="3948116654032448504">&amp;Sök på <ph name="SEARCH_ENGINE" /> efter bild</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> har redigeringsbehörighet till filer i följande mappar</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2717,6 +2718,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3994374631886003300">Lås upp mobilen och håll den närmare din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3994878504415702912">&amp;Zooma in</translation>
 <translation id="3995138139523574647">USB-C-enhet (bakre porten på högra sidan)</translation>
+<translation id="4002066346123236978">Titel</translation>
 <translation id="4002329649066944389">Hantera webbplatsspecifika undantag</translation>
 <translation id="4002440992267487163">Konfigurera pinkod</translation>
 <translation id="4005817994523282006">Metod för tidszonsidentifiering</translation>
@@ -6428,7 +6430,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8316618172731049784">Skicka till <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Lägg till nätverksanslutning</translation>
 <translation id="8319414634934645341">Utökad nyckelanvändning</translation>
-<translation id="8320459152843401447">Hela skärmen</translation>
 <translation id="8321476692217554900">aviseringar</translation>
 <translation id="8321837372750396788">Denna <ph name="DEVICE_TYPE" /> hanteras av <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">Den här sidan har blockerats och kan inte komma åt mikrofonen.</translation>

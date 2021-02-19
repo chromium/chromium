@@ -2662,6 +2662,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3943494825379372497">Ungependa kurejesha programu na kurasa?</translation>
 <translation id="3943582379552582368">&amp;Nyuma</translation>
 <translation id="3943857333388298514">Bandika</translation>
+<translation id="3944266449990965865">Skrini Nzima</translation>
 <translation id="3948116654032448504">Tafuta <ph name="SEARCH_ENGINE" /> Picha</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> inaweza kubadilisha faili zilizo katika folda zifuatazo</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2714,6 +2715,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3994374631886003300">Ifungue simu yako na uilete karibu ili ukifungue kifaa chako cha <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3994878504415702912">&amp;Kuza</translation>
 <translation id="3995138139523574647">Kifaa cha USB-C (mlango wa upande wa kulia nyuma)</translation>
+<translation id="4002066346123236978">Kichwa</translation>
 <translation id="4002329649066944389">Dhibiti hali zisizofuata kanuni katika tovuti mahususi</translation>
 <translation id="4002440992267487163">Mipangilio ya Pin</translation>
 <translation id="4005817994523282006">Mbinu ya kutambua saa za eneo</translation>
@@ -6425,7 +6427,6 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="8316618172731049784">Tuma kwenye <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Ongeza muunganisho wa mtandao</translation>
 <translation id="8319414634934645341">Matumizi ya Ziada ya Ufunguo</translation>
-<translation id="8320459152843401447">Skrini Yako Yote</translation>
 <translation id="8321476692217554900">arifa</translation>
 <translation id="8321837372750396788"><ph name="DEVICE_TYPE" /> hii itadhibitiwa na <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">Ukurasa huu umezuiwa usifikie maikrofoni yako.</translation>

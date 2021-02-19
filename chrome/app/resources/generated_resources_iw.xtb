@@ -2665,6 +2665,7 @@
 <translation id="3943494825379372497">לשחזר אפליקציות ודפים?</translation>
 <translation id="3943582379552582368">&amp;אחורה</translation>
 <translation id="3943857333388298514">הדבקה</translation>
+<translation id="3944266449990965865">כל המסך</translation>
 <translation id="3948116654032448504">&amp;חיפוש תמונה ב-<ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786">ל-<ph name="ORIGIN" /> יש הרשאה לערוך קבצים בתיקיות הבאות</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2717,6 +2718,7 @@
 <translation id="3994374631886003300">עליך לבטל את נעילת הטלפון ולקרב אותו ל-<ph name="DEVICE_TYPE" /> כדי לבטל את הנעילה שלו.</translation>
 <translation id="3994878504415702912">מרחק מתצוגה</translation>
 <translation id="3995138139523574647">‏מכשיר עם יציאת USB-C (יציאה ימנית-אחורית)</translation>
+<translation id="4002066346123236978">כותרת</translation>
 <translation id="4002329649066944389">ניהול חריגים הספציפיים לאתר</translation>
 <translation id="4002440992267487163">הגדרת קוד אימות</translation>
 <translation id="4005817994523282006">שיטה לזיהוי אזור זמן</translation>
@@ -6429,7 +6431,6 @@
 <translation id="8316618172731049784">שליחה אל <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">הוספת חיבור רשת</translation>
 <translation id="8319414634934645341">שימוש מורחב במפתח</translation>
-<translation id="8320459152843401447">כל המסך שלך</translation>
 <translation id="8321476692217554900">התראות</translation>
 <translation id="8321837372750396788">מכשיר <ph name="DEVICE_TYPE" /> זה ינוהל על ידי <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">דף זה נחסם לגישה למיקרופון שלך.</translation>

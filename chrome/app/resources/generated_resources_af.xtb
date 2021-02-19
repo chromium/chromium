@@ -2665,6 +2665,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3943494825379372497">Stel programme en bladsye terug?</translation>
 <translation id="3943582379552582368">Terug</translation>
 <translation id="3943857333388298514">Plak</translation>
+<translation id="3944266449990965865">Hele skerm</translation>
 <translation id="3948116654032448504">Deursoek <ph name="SEARCH_ENGINE" /> vir prent</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> kan jou lêers in die volgende vouers wysig</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2717,6 +2718,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3994374631886003300">Ontsluit jou foon en bring dit nader om jou <ph name="DEVICE_TYPE" /> te ontsluit.</translation>
 <translation id="3994878504415702912">Zoem</translation>
 <translation id="3995138139523574647">USB C-toestel (agterste poort aan regterkant)</translation>
+<translation id="4002066346123236978">Titel</translation>
 <translation id="4002329649066944389">Bestuur werfspesifieke uitsonderings</translation>
 <translation id="4002440992267487163">PIN-opstelling</translation>
 <translation id="4005817994523282006">Tydsone-bespeuringsmetode</translation>
@@ -6428,7 +6430,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8316618172731049784">Stuur na <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Voeg netwerkverbinding by</translation>
 <translation id="8319414634934645341">Uitgebreide sleutelgebruik</translation>
-<translation id="8320459152843401447">Jou hele skerm</translation>
 <translation id="8321476692217554900">kennisgewings</translation>
 <translation id="8321837372750396788">Hierdie <ph name="DEVICE_TYPE" /> sal bestuur word deur <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">Hierdie bladsy word geblokkeer om by jou mikrofoon in te gaan.</translation>

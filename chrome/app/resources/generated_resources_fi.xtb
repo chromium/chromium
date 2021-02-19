@@ -2662,6 +2662,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3943494825379372497">Palautetaanko sovellukset ja sivut?</translation>
 <translation id="3943582379552582368">&amp;Edellinen</translation>
 <translation id="3943857333388298514">Liitä</translation>
+<translation id="3944266449990965865">Koko ruutu</translation>
 <translation id="3948116654032448504">&amp;Hae kuvaa (<ph name="SEARCH_ENGINE" />)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> saa muokata seuraavien kansioiden tiedostoja</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2714,6 +2715,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3994374631886003300">Avaa laitteen <ph name="DEVICE_TYPE" /> lukitus avaamalla ensin puhelimesi ja tuomalla se lähelle laitetta.</translation>
 <translation id="3994878504415702912">&amp;Koko</translation>
 <translation id="3995138139523574647">C-tyypin USB-laite (oikean sivun taaimmainen portti)</translation>
+<translation id="4002066346123236978">Nimi</translation>
 <translation id="4002329649066944389">Ylläpidä sivustokohtaisia poikkeuksia</translation>
 <translation id="4002440992267487163">Aseta PIN</translation>
 <translation id="4005817994523282006">Aikavyöhykkeen tunnistusmenetelmä</translation>
@@ -6424,7 +6426,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8316618172731049784">Lähetä: <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Lisää verkkoyhteys</translation>
 <translation id="8319414634934645341">Laajennettu avaimen käyttö</translation>
-<translation id="8320459152843401447">Koko näyttösi</translation>
 <translation id="8321476692217554900">ilmoitukset</translation>
 <translation id="8321837372750396788"><ph name="MANAGER" /> ylläpitää tätä: <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8322814362483282060">Tältä sivulta on estetty mikrofonin käyttö.</translation>

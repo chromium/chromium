@@ -2660,6 +2660,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3943494825379372497">Tətbiq və səhifələr bərpa edilsin?</translation>
 <translation id="3943582379552582368">Geri</translation>
 <translation id="3943857333388298514">Yapışdırın.</translation>
+<translation id="3944266449990965865">Bütün Ekran</translation>
 <translation id="3948116654032448504"><ph name="SEARCH_ENGINE" /> şəkil axtarır</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> aşağıdakı qovluqlarda olan faylları redaktə edə bilər</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2712,6 +2713,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3994374631886003300">Telefonu kiliddən çıxarın və <ph name="DEVICE_TYPE" /> cihazını kiliddən çıxarmaq üçün onu yaxın tutun.</translation>
 <translation id="3994878504415702912">&amp;Zoom</translation>
 <translation id="3995138139523574647">USB-C cihazı (arxa sağ port)</translation>
+<translation id="4002066346123236978">Başlıq</translation>
 <translation id="4002329649066944389">Sayta aid istisnaları idarə edin</translation>
 <translation id="4002440992267487163">Pin ayarlanması</translation>
 <translation id="4005817994523282006">Saat qurşağının aşkarlanması üsulu</translation>
@@ -6418,7 +6420,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8316618172731049784"><ph name="DEVICE_NAME" /> cihazına göndərin</translation>
 <translation id="8317671367883557781">Şəbəkə bağlantısı əlavə edin</translation>
 <translation id="8319414634934645341">Genişləndirilmiş Açar İstifadəsi</translation>
-<translation id="8320459152843401447">Bütün ekranınız</translation>
 <translation id="8321476692217554900">bildirişlər</translation>
 <translation id="8321837372750396788">Bu <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> tərəfindən idarə ediləcək.</translation>
 <translation id="8322814362483282060">Bu səhifəyə mikrofonunuza giriş qadağan edilib.</translation>

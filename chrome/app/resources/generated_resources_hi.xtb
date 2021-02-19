@@ -2665,6 +2665,7 @@
 <translation id="3943494825379372497">क्या आप ऐप्लिकेशन और पेजों को वापस लाना चाहते हैं?</translation>
 <translation id="3943582379552582368">&amp;वापस</translation>
 <translation id="3943857333388298514">चिपकाएं</translation>
+<translation id="3944266449990965865">संपूर्ण स्क्रीन</translation>
 <translation id="3948116654032448504">इमेज को <ph name="SEARCH_ENGINE" /> पर खोजें</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> नीचे दिए गए फ़ोल्डर में मौजूद फ़ाइलों में बदलाव कर सकती है</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2717,6 +2718,7 @@
 <translation id="3994374631886003300">अपना फ़ोन अनलॉक करें और उसे पास लाकर अपने <ph name="DEVICE_TYPE" /> को अनलॉक करें.</translation>
 <translation id="3994878504415702912">&amp;ज़ूम</translation>
 <translation id="3995138139523574647">USB-C डिवाइस (दायां पिछला पोर्ट)</translation>
+<translation id="4002066346123236978">शीर्षक</translation>
 <translation id="4002329649066944389">किसी साइट के खास अपवाद प्रबंधित करें</translation>
 <translation id="4002440992267487163">पिन सेटअप</translation>
 <translation id="4005817994523282006">समय क्षेत्र की पहचान विधि</translation>
@@ -6427,7 +6429,6 @@
 <translation id="8316618172731049784"><ph name="DEVICE_NAME" /> पर भेजें</translation>
 <translation id="8317671367883557781">नेटवर्क कनेक्शन जोड़ें</translation>
 <translation id="8319414634934645341">विस्तृत कुंजी उपयोग</translation>
-<translation id="8320459152843401447">आपकी पूरी स्क्रीन</translation>
 <translation id="8321476692217554900">सूचनाएं</translation>
 <translation id="8321837372750396788">इस <ph name="DEVICE_TYPE" /> को <ph name="MANAGER" /> प्रबंधित करेगा.</translation>
 <translation id="8322814362483282060">इस पेज को आपके कैमरे और माइक्रोफ़ोन को ऐक्सेस करने से अवरोधित कर दिया गया है.</translation>

@@ -2659,6 +2659,7 @@
 <translation id="3943494825379372497">Аппууд болон хуудаснуудыг сэргээх үү?</translation>
 <translation id="3943582379552582368">&amp; Буцах</translation>
 <translation id="3943857333388298514">Хуулан буулгах</translation>
+<translation id="3944266449990965865">Дэлгэцийг бүхлээр нь харах</translation>
 <translation id="3948116654032448504">&amp;Зураг харахын тулд <ph name="SEARCH_ENGINE" />-г хайна уу</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> нь дараах фолдерт байгаа файлыг засах боломжтой</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2711,6 +2712,7 @@
 <translation id="3994374631886003300"><ph name="DEVICE_TYPE" />-н түгжээг тайлахын тулд утасныхаа түгжээг тайлж, ойртуулна уу.</translation>
 <translation id="3994878504415702912">&amp;Томруулах</translation>
 <translation id="3995138139523574647">USB-C төхөөрөмж (ард талын портын баруун тал)</translation>
+<translation id="4002066346123236978">Гарчиг</translation>
 <translation id="4002329649066944389">Сайтын хувьд тодорхойлсон онцгой тохиолдлуудыг удирдах</translation>
 <translation id="4002440992267487163">Пинийн тохируулга</translation>
 <translation id="4005817994523282006">Цагийн бүс илрүүлэх арга</translation>
@@ -6418,7 +6420,6 @@
 <translation id="8316618172731049784"><ph name="DEVICE_NAME" />-д илгээх</translation>
 <translation id="8317671367883557781">Сүлжээний холболт нэмэх</translation>
 <translation id="8319414634934645341">Өргөтгөсөн гол хэрэглээ</translation>
-<translation id="8320459152843401447">Таны бүтэн дэлгэц</translation>
 <translation id="8321476692217554900">мэдэгдэл</translation>
 <translation id="8321837372750396788">Энэ <ph name="DEVICE_TYPE" />-г <ph name="MANAGER" /> удирдана.</translation>
 <translation id="8322814362483282060">Энэ хуудсанд таны микрофон рүү нэвтрэхийг хориглосон байна.</translation>

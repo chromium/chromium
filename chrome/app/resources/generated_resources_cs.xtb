@@ -2665,6 +2665,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3943494825379372497">Obnovit aplikace a stránky?</translation>
 <translation id="3943582379552582368">&amp;Zpět</translation>
 <translation id="3943857333388298514">Vložit</translation>
+<translation id="3944266449990965865">Celá obrazovka</translation>
 <translation id="3948116654032448504">&amp;Vyhledat obrázek pomocí vyhledávače <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786">Web <ph name="ORIGIN" /> může upravovat soubory v následujících složkách</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2717,6 +2718,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3994374631886003300">Chcete-li zařízení <ph name="DEVICE_TYPE" /> odemknout, odemkněte telefon a umístěte jej blíže.</translation>
 <translation id="3994878504415702912">Velikost písma</translation>
 <translation id="3995138139523574647">Zařízení USB Type-C (pravý zadní port)</translation>
+<translation id="4002066346123236978">Název</translation>
 <translation id="4002329649066944389">Spravovat výjimky pro konkrétní weby</translation>
 <translation id="4002440992267487163">Nastavení kódu PIN</translation>
 <translation id="4005817994523282006">Metoda zjišťování časového pásma</translation>
@@ -6427,7 +6429,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8316618172731049784">Odeslat na zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Přidat připojení k síti</translation>
 <translation id="8319414634934645341">Rozšířené použití klíče</translation>
-<translation id="8320459152843401447">Celá vaše obrazovka</translation>
 <translation id="8321476692217554900">oznámení</translation>
 <translation id="8321837372750396788">Toto zařízení <ph name="DEVICE_TYPE" /> bude spravováno doménou <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">Přístup této stránky k vašemu mikrofonu je zablokován.</translation>

@@ -2665,6 +2665,7 @@
 <translation id="3943494825379372497">คืนค่าแอปและหน้าเว็บไหม</translation>
 <translation id="3943582379552582368">&amp;กลับ</translation>
 <translation id="3943857333388298514">วาง</translation>
+<translation id="3944266449990965865">ทั้งหน้าจอ</translation>
 <translation id="3948116654032448504">ค้นหา&amp;รูปภาพด้วย <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> แก้ไขไฟล์ในโฟลเดอร์ต่อไปนี้ได้</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2717,6 +2718,7 @@
 <translation id="3994374631886003300">ปลดล็อกโทรศัพท์และนำเข้ามาใกล้ๆ เพื่อปลดล็อก <ph name="DEVICE_TYPE" /></translation>
 <translation id="3994878504415702912">ซู&amp;ม</translation>
 <translation id="3995138139523574647">อุปกรณ์ USB-C (พอร์ตด้านหลังขวา)</translation>
+<translation id="4002066346123236978">ชื่อ</translation>
 <translation id="4002329649066944389">จัดการข้อยกเว้นเฉพาะเว็บไซต์</translation>
 <translation id="4002440992267487163">ตั้งค่า PIN</translation>
 <translation id="4005817994523282006">วิธีการตรวจหาเขตเวลา</translation>
@@ -6428,7 +6430,6 @@
 <translation id="8316618172731049784">ส่งไปที่ <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">เพิ่มการเชื่อมต่อเครือข่าย</translation>
 <translation id="8319414634934645341">การใช้คีย์เพิ่มเติม</translation>
-<translation id="8320459152843401447">หน้าจอทั้งหมด</translation>
 <translation id="8321476692217554900">การแจ้งเตือน</translation>
 <translation id="8321837372750396788"><ph name="MANAGER" /> จะจัดการ <ph name="DEVICE_TYPE" /> นี้</translation>
 <translation id="8322814362483282060">หน้านี้ถูกบล็อกไม่ให้เข้าถึงไมโครโฟนของคุณ</translation>

@@ -1708,15 +1708,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Remarque : Pour les appareils gérés par <ph name="MS_AD_NAME" />, cette règle permet l'extension de <ph name="MACHINE_NAME_VARIABLE" /> sur le nom de machine <ph name="MS_AD_NAME" /> ou l'une de ses sous-chaînes. Par exemple, si le nom de machine est <ph name="MACHINE_NAME_EXAMPLE" />, <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> est remplacé par les quatre caractères suivant la sixième position, soit <ph name="MACHINE_NAME_PART_EXAMPLE" />. La position prend en compte le zéro.
 
       Cette règle étant obsolète, veuillez utiliser <ph name="PRINTERS_POLICY_NAME" /> à la place.</translation>
-<translation id="3295118731207421797">Cette règle permet à un administrateur de spécifier qu'une page peut envoyer des requêtes XHR synchrones pendant sa fermeture.
-
-      Si cette règle est activée, les pages sont autorisées à envoyer des requêtes XHR synchrones pendant leur fermeture.
-
-      Si cette règle est désactivée ou n'est pas configurée, les pages ne sont pas autorisées à envoyer des requêtes XHR synchrones pendant leur fermeture.
-
-      Cette règle sera supprimée dans Chrome 88.
-
-      Pour en savoir plus, consultez l'article à l'adresse https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="3302829897293005699">Si cette règle est activée ou qu'elle n'est pas configurée, les appareils enregistrés communiquent des informations sur la session kiosque active telles que l'ID et la version de l'application.
 
       Si cette règle est désactivée, les appareils enregistrés ne communiquent pas ces informations.</translation>

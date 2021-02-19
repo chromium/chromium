@@ -2668,6 +2668,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3943494825379372497">Želite obnoviti aplikacije in strani?</translation>
 <translation id="3943582379552582368">&amp;Nazaj</translation>
 <translation id="3943857333388298514">Prilepi</translation>
+<translation id="3944266449990965865">Cel zaslon</translation>
 <translation id="3948116654032448504">&amp;Išči sliko tu: <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786">Spletno mesto <ph name="ORIGIN" /> lahko ureja datoteke v naslednjih mapah</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2720,6 +2721,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3994374631886003300">Odklenite telefon in ga približajte napravi <ph name="DEVICE_TYPE" />, če jo želite odkleniti.</translation>
 <translation id="3994878504415702912">&amp;Povečaj</translation>
 <translation id="3995138139523574647">Naprava USB-C (vrata desno zadaj)</translation>
+<translation id="4002066346123236978">Naslov</translation>
 <translation id="4002329649066944389">Upravljanje izjem za spletna mesta</translation>
 <translation id="4002440992267487163">Nastavitev kode PIN</translation>
 <translation id="4005817994523282006">Način zaznavanja časovnega pasu</translation>
@@ -6433,7 +6435,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8316618172731049784">Pošlji v napravo <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Dodaj omrežno povezavo</translation>
 <translation id="8319414634934645341">Razširjena raba ključa</translation>
-<translation id="8320459152843401447">Vaš celotni zaslon</translation>
 <translation id="8321476692217554900">obvestila</translation>
 <translation id="8321837372750396788">To napravo <ph name="DEVICE_TYPE" /> bo upravljala domena <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">Tej strani je onemogočen dostop do mikrofona.</translation>
@@ -7256,7 +7257,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="942532530371314860">Aplikacija <ph name="APP_NAME" /> je v skupno rabo dala zavihek v Chromu in zvok.</translation>
 <translation id="945522503751344254">Pošiljanje povratnih informacij</translation>
 <translation id="947329552760389097">&amp;Pregled elementov</translation>
-<translation id="949052952791086881">Skrbnik zahteva, da se uporabnik prijavi, ko je naprava povezana v splet.</translation>
+<translation id="949052952791086881">Skrbnik zahteva, da se ta uporabnik prijavi, ko je naprava povezana v splet.</translation>
 <translation id="951991426597076286">Zavrni</translation>
 <translation id="956500788634395331">Zaščiteni ste pred morebiti škodljivimi razširitvami</translation>
 <translation id="957960681186851048">Spletno mesto je poskušalo samodejno prenesti več datotek</translation>

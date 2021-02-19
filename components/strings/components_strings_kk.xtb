@@ -198,7 +198,7 @@
 <translation id="1640180200866533862">Пайдаланушы саясаттары</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />Сайттың негізгі бетіне кіріп<ph name="END_LINK" /> көріңіз.</translation>
 <translation id="1641976391427233992">Шығысты кідірту</translation>
-<translation id="164212631332220697">Тапсырысты рәсімдегенде <ph name="CARD_DETAIL" /> картасымен төлеңіз.</translation>
+<translation id="164212631332220697">Тапсырысты рәсімдегенде, <ph name="CARD_DETAIL" /> картасымен төлеңіз.</translation>
 <translation id="1644574205037202324">Тарих</translation>
 <translation id="1645368109819982629">Қолдау көрсетілмейтін протокол</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -1012,7 +1012,7 @@
 <translation id="4879725228911483934">Терезелерді ашу және экрандарда орналастыру</translation>
 <translation id="4880827082731008257">Тарихтан іздеу</translation>
 <translation id="4881695831933465202">Ашу</translation>
-<translation id="4885256590493466218">Тапсырысты рәсімдегенде <ph name="CARD_DETAIL" /> картасымен төлеңіз</translation>
+<translation id="4885256590493466218">Тапсырысты рәсімдегенде, <ph name="CARD_DETAIL" /> картасымен төлеңіз.</translation>
 <translation id="4889420713887366944">"Инкогнито терезесін ашу" түймесі. Жаңа инкогнито терезесін ашу үшін Enter пернесін басыңыз.</translation>
 <translation id="4892518386797173871">Артқы</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>

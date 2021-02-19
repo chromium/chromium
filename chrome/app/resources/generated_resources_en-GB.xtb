@@ -2665,6 +2665,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3943494825379372497">Restore apps and pages?</translation>
 <translation id="3943582379552582368">&amp;Back</translation>
 <translation id="3943857333388298514">Paste</translation>
+<translation id="3944266449990965865">Entire Screen</translation>
 <translation id="3948116654032448504">&amp;Search <ph name="SEARCH_ENGINE" /> for Image</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> can edit files in the following folders</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2717,6 +2718,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3994374631886003300">Unlock your phone and bring it closer to unlock your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3994878504415702912">&amp;Zoom</translation>
 <translation id="3995138139523574647">USB-C device (right-hand-side back port)</translation>
+<translation id="4002066346123236978">Title</translation>
 <translation id="4002329649066944389">Manage site specific exceptions</translation>
 <translation id="4002440992267487163">Pin setup</translation>
 <translation id="4005817994523282006">Time zone detection method</translation>
@@ -6428,7 +6430,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8316618172731049784">Send to <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Add network connection</translation>
 <translation id="8319414634934645341">Extended Key Usage</translation>
-<translation id="8320459152843401447">Your Entire Screen</translation>
 <translation id="8321476692217554900">notifications</translation>
 <translation id="8321837372750396788">This <ph name="DEVICE_TYPE" /> will be managed by <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">This page has been blocked from accessing your microphone.</translation>

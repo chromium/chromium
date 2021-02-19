@@ -2665,6 +2665,7 @@
 <translation id="3943494825379372497">အက်ပ်နှင့် စာမျက်နှာများ ပြန်ယူမလား။</translation>
 <translation id="3943582379552582368">&amp;နောက်သို့</translation>
 <translation id="3943857333388298514">ကူးဖြည့်ရန်</translation>
+<translation id="3944266449990965865">မျက်နှာပြင် တစ်ခုလုံး</translation>
 <translation id="3948116654032448504">ပုံကို <ph name="SEARCH_ENGINE" />ဖြင့် ရှာရန်</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> က အောက်ပါဖိုင်တွဲများ အတွင်းရှိ ဖိုင်များကို တည်းဖြတ်နိုင်သည်</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2717,6 +2718,7 @@
 <translation id="3994374631886003300"><ph name="DEVICE_TYPE" /> ကို လော့ခ်ဖွင့်ရန်အတွက် သင့်ဖုန်းကို လော့ခ်ဖွင့်ပြီး အနီးအနားတွင် ထားရှိပါ။</translation>
 <translation id="3994878504415702912">&amp;ဇူးမ်</translation>
 <translation id="3995138139523574647">USB-C ကိရိယာ (ညာဘက် နောက်ပိုင်း ပို့တ်)</translation>
+<translation id="4002066346123236978">ခေါင်းစဉ်</translation>
 <translation id="4002329649066944389">ဝဘ်ဆိုက်အလိုက် သတ်မှတ်ထားသော ခြွင်းချက်များ စီမံခြင်း</translation>
 <translation id="4002440992267487163">ပင်သုံးရန် စနစ်ထည့်သွင်းပါ</translation>
 <translation id="4005817994523282006">စံတော်ချိန် သိရှိနိုင်မှု နည်းလမ်း</translation>
@@ -6425,7 +6427,6 @@
 <translation id="8316618172731049784"><ph name="DEVICE_NAME" /> သို့ပို့ရန်</translation>
 <translation id="8317671367883557781">ကွန်ရက်ချိတ်ဆက်မှု ထည့်ပါ</translation>
 <translation id="8319414634934645341">သော့ အသုံးပြမှု တိုးချဲ့ထား</translation>
-<translation id="8320459152843401447">သင့်စခရင်တစ်ခုလုံး</translation>
 <translation id="8321476692217554900">အကြောင်းကြားချက်များ</translation>
 <translation id="8321837372750396788">ဤ <ph name="DEVICE_TYPE" /> ကို <ph name="MANAGER" /> က စီမံခန့်ခွဲပါမည်။</translation>
 <translation id="8322814362483282060">ဒီစာမျက်နှာကို သင်၏ မိုက်ခရိုဖုန်းကို ရယူသုံးမရအောင် ပိတ်ဆို့ထားသည်။</translation>

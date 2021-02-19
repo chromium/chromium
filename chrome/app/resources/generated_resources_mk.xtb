@@ -2666,6 +2666,7 @@
 <translation id="3943494825379372497">Да се вратат апликациите и страниците?</translation>
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Залепи</translation>
+<translation id="3944266449990965865">Цел екран</translation>
 <translation id="3948116654032448504">&amp;Пребарувај слика на <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> може да изменува датотеки во следниве папки</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2718,6 +2719,7 @@
 <translation id="3994374631886003300">Отклучете го телефонот и приближете го за отклучување на вашиот <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3994878504415702912">&amp;Зумирај</translation>
 <translation id="3995138139523574647">USB-Ц уред (задна порта од десна страна)</translation>
+<translation id="4002066346123236978">Наслов</translation>
 <translation id="4002329649066944389">Управувајте со исклучоците за конкретни сајтови</translation>
 <translation id="4002440992267487163">Закачи го поставувањето</translation>
 <translation id="4005817994523282006">Метод за откривање на временската зона</translation>
@@ -6431,7 +6433,6 @@
 <translation id="8316618172731049784">Испрати до <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Додај мрежна врска</translation>
 <translation id="8319414634934645341">Користење продолжен клуч</translation>
-<translation id="8320459152843401447">Целиот екран</translation>
 <translation id="8321476692217554900">известувања</translation>
 <translation id="8321837372750396788"><ph name="MANAGER" /> ќе управува со овој <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8322814362483282060">Страницата е блокирана да не пристапува кон вашиот микрофон.</translation>

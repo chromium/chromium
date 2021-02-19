@@ -1033,7 +1033,7 @@
 <translation id="2138398485845393913">Կապի հաստատում «<ph name="DEVICE_NAME" />» սարքի հետ</translation>
 <translation id="2139545522194199494">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, կառավարվում է ձեր ադմինիստրատորի կողմից, կապակցում</translation>
 <translation id="2139919072249842737">Կարգավորման կոճակ</translation>
-<translation id="2140788884185208305">Մարտկոցի կարգավիճակը</translation>
+<translation id="2140788884185208305">Մարտկոցի լիցքը</translation>
 <translation id="214169863967063661">Բացել արտաքին տեսքի կարգավորումները</translation>
 <translation id="2142328300403846845">Բացել հղումը որպես</translation>
 <translation id="2142582065325732898">Միացրեք <ph name="LINK1_BEGIN" />Chrome Sync-ը<ph name="LINK1_END" />՝ Chrome-ի վերջին բացված ներդիրները դիտելու համար։ <ph name="LINK2_BEGIN" />Իմանալ ավելին<ph name="LINK2_END" /></translation>
@@ -2667,6 +2667,7 @@
 <translation id="3943494825379372497">Վերականգնե՞լ հավելվածներն ու էջերը</translation>
 <translation id="3943582379552582368">&amp;Հետ</translation>
 <translation id="3943857333388298514">Տեղադրել</translation>
+<translation id="3944266449990965865">Լիաէկրան</translation>
 <translation id="3948116654032448504">Որոնել պատկեր <ph name="SEARCH_ENGINE" />-ում</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> կայքը կարող է փոփոխել ֆայլեր հետևյալ պանակներում</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2719,6 +2720,7 @@
 <translation id="3994374631886003300"><ph name="DEVICE_TYPE" /> սարքն ապակողպելու համար ապակողպեք ձեր հեռախոսը և այն մոտեցրեք սարքին։</translation>
 <translation id="3994878504415702912">&amp;Խոշորացնել</translation>
 <translation id="3995138139523574647">USB-C սարք (հետևի ձախակողմյան միացք)</translation>
+<translation id="4002066346123236978">Վերնագիր</translation>
 <translation id="4002329649066944389">Կայքի բացառությունների կառավարում</translation>
 <translation id="4002440992267487163">Կարգավորել PIN կոդ</translation>
 <translation id="4005817994523282006">Ժամային գոտու որոշման եղանակ</translation>
@@ -6431,7 +6433,6 @@
 <translation id="8316618172731049784">Ուղարկել <ph name="DEVICE_NAME" /> սարքին</translation>
 <translation id="8317671367883557781">Ավելացնել ցանցային կապ</translation>
 <translation id="8319414634934645341">Բանալու ընդարձակված օգտագործում</translation>
-<translation id="8320459152843401447">Ամբողջ էկրանը</translation>
 <translation id="8321476692217554900">ծանուցումներ</translation>
 <translation id="8321837372750396788"><ph name="DEVICE_TYPE" /> սարքը կկառավարվի <ph name="MANAGER" />-ի կողմից։</translation>
 <translation id="8322814362483282060">Այս էջին արգելված է օգտագործել ձեր խոսափողը:</translation>

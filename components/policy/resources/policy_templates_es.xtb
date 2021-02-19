@@ -1727,15 +1727,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Nota: En los dispositivos administrados de <ph name="MS_AD_NAME" />, esta política admite una expansión de <ph name="MACHINE_NAME_VARIABLE" /> al nombre de máquina de <ph name="MS_AD_NAME" /> o una subcadena de este. Por ejemplo, si el nombre del equipo es <ph name="MACHINE_NAME_EXAMPLE" />, <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> se sustituye por 4 caracteres después de la sexta posición; es decir, <ph name="MACHINE_NAME_PART_EXAMPLE" />. La posición se basa en cero.
 
       Esta política está obsoleta. Usa <ph name="PRINTERS_POLICY_NAME" /> en su lugar.</translation>
-<translation id="3295118731207421797">Esta política permite que un administrador especifique si las páginas pueden enviar solicitudes XHR síncronas durante el cierre de la página.
-
-      Si la política se habilita, las páginas podrán enviar solicitudes XHR síncronas durante el cierre de la página.
-
-      Si la política se inhabilita o no se establece, las páginas no podrán enviar solicitudes XHR síncronas durante el cierre de la página.
-
-      Esta política se eliminará de la versión 88 de Chrome.
-
-      Consulta https://www.chromestatus.com/feature/4664843055398912</translation>
 <translation id="3302829897293005699">Si se habilita la política o no se establece, los dispositivos registrados enviarán información sobre las sesiones activas del kiosko, como el ID de la aplicación o la versión.
 
       Si se inhabilita la política, los dispositivos registrados no enviarán información sobre las sesiones activas del kiosko.</translation>

@@ -2665,6 +2665,7 @@
 <translation id="3943494825379372497">Επαναφορά εφαρμογών και σελίδων;</translation>
 <translation id="3943582379552582368">&amp;Πίσω</translation>
 <translation id="3943857333388298514">Επικόλληση</translation>
+<translation id="3944266449990965865">Πλήρης οθόνη</translation>
 <translation id="3948116654032448504">&amp;Αναζήτηση <ph name="SEARCH_ENGINE" /> για εικόνα</translation>
 <translation id="3948507072814225786">Ο ιστότοπος <ph name="ORIGIN" /> μπορεί να επεξεργαστεί τα αρχεία στους παρακάτω φακέλους</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2717,6 +2718,7 @@
 <translation id="3994374631886003300">Ξεκλειδώστε το τηλέφωνό σας και πλησιάστε το, για να ξεκλειδώσετε το <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3994878504415702912">&amp;Εστίαση</translation>
 <translation id="3995138139523574647">Συσκευή USB-C (πίσω δεξιά θύρα)</translation>
+<translation id="4002066346123236978">Τίτλος</translation>
 <translation id="4002329649066944389">Διαχειριστείτε εξαιρέσεις συγκεκριμένων ιστοτόπων</translation>
 <translation id="4002440992267487163">Ρύθμιση PIN</translation>
 <translation id="4005817994523282006">Μέθοδος ανίχνευσης ζώνης ώρας</translation>
@@ -6429,7 +6431,6 @@
 <translation id="8316618172731049784">Αποστολή στη διεύθυνση <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Προσθήκη σύνδεσης δικτύου</translation>
 <translation id="8319414634934645341">Εκτεταμένη χρήση κλειδιού</translation>
-<translation id="8320459152843401447">Ολόκληρη η οθόνη σας</translation>
 <translation id="8321476692217554900">ειδοποιήσεις</translation>
 <translation id="8321837372750396788">Η διαχείριση της συσκευής <ph name="DEVICE_TYPE" /> θα γίνεται από τον τομέα <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">Αυτή η σελίδα δεν έχει πρόσβαση στο μικρόφωνό σας.</translation>

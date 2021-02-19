@@ -189,11 +189,11 @@ Nhấn vào từ bất kỳ để tìm kiếm. Để điều chỉnh nội dung 
 <translation id="2321958826496381788">Kéo thanh trượt cho đến khi bạn có thể đọc nội dung này thoải mái. Chữ tối thiểu phải to như này sau khi bấm đúp vào một đoạn.</translation>
 <translation id="2323763861024343754">Bộ nhớ trang web</translation>
 <translation id="2328985652426384049">Không thể đăng nhập</translation>
-<translation id="2336549603503100420">Khi được bật, các trang web có thể dùng kỹ thuật bảo vệ quyền riêng tư hiển thị ở đây để bảo vệ nội dung và dịch vụ của các trang web đó. Các kỹ thuật này gồm có những biện pháp thay thế cho hoạt động theo dõi trên nhiều trang web. Theo thời gian, chúng tôi có thể có thêm nhiều tính năng dùng thử.
+<translation id="2336549603503100420">Khi bạn bật Hộp cát về quyền riêng tư, các trang web có thể dùng kỹ thuật bảo vệ quyền riêng tư theo mô tả ở đây để cung cấp nội dung và dịch vụ của mình. Các kỹ thuật này gồm có những biện pháp thay thế cho hoạt động theo dõi trên nhiều trang web. Theo thời gian, chúng tôi có thể có thêm nhiều tính năng dùng thử.
 
-<ph name="BEGIN_LIST_ITEM1" />Các nhà quảng cáo chỉ có thể biết rằng hàng nghìn người dùng có cùng một mối quan tâm – tương tự như đám đông trong một buổi hòa nhạc – và chọn quảng cáo cho đám đông đó, chứ không chọn được quảng cáo cho riêng một cá nhân.<ph name="END_LIST_ITEM1" />
+<ph name="BEGIN_LIST_ITEM1" />Các nhà quảng cáo có thể xác định khi nào hàng nghìn người dùng có cùng một mối quan tâm – tương tự như đám đông trong một buổi hòa nhạc – và chọn quảng cáo cho đám đông đó thay vì cho một cá nhân.<ph name="END_LIST_ITEM1" />
 
-<ph name="BEGIN_LIST_ITEM2" />Các nhà quảng cáo có thể nghiên cứu tính hiệu quả của quảng cáo theo cách thức khiến bạn không bị theo dõi trên các trang web.<ph name="END_LIST_ITEM2" /></translation>
+<ph name="BEGIN_LIST_ITEM2" />Các nhà quảng cáo có thể nghiên cứu tính hiệu quả của quảng cáo mà không cần theo dõi bạn trên các trang web.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="234265804618409743">Không thể mở máy ảnh. Đã xảy ra lỗi.</translation>
 <translation id="2345671828921229300">Để tìm kiếm, hãy chạm và giữ một từ</translation>
 <translation id="2349710944427398404">Tổng số dữ liệu mà Chrome sử dụng, bao gồm tài khoản, dấu trang và cài đặt đã lưu</translation>
@@ -265,7 +265,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="2833452327385637152">Để tìm một từ hoặc cụm từ, hãy chạm và giữ từ/cụm từ đó thay vì nhấn</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Đã kiểm tra 1 ngày trước}other{Đã kiểm tra # ngày trước}}</translation>
 <translation id="2842985007712546952">Thư mục mẹ</translation>
-<translation id="2856503607207334158">Đăng nhập không thành công</translation>
+<translation id="2856503607207334158">Không đăng nhập được</translation>
 <translation id="2860954141821109167">Hãy đảm bảo bạn đã bật ứng dụng điện thoại trên thiết bị này</translation>
 <translation id="2870560284913253234">Trang web</translation>
 <translation id="2876369937070532032">Gửi URL của một số trang mà bạn truy cập cho Google khi bạn gặp rủi ro về bảo mật</translation>
@@ -352,7 +352,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3389286852084373014">Văn bản quá lớn</translation>
 <translation id="3398320232533725830">Mở trình quản lý dấu trang</translation>
 <translation id="3414952576877147120">Kích thước:</translation>
-<translation id="3429160811076349561">Tính năng dùng thử đang tắt</translation>
+<translation id="3429160811076349561">Các tính năng dùng thử đang tắt</translation>
 <translation id="3443221991560634068">Tải lại trang hiện tại</translation>
 <translation id="3478363558367712427">Bạn có thể chọn công cụ tìm kiếm theo ý mình</translation>
 <translation id="3492207499832628349">Thẻ ẩn danh mới</translation>
@@ -405,6 +405,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3819178904835489326">Đã xóa <ph name="NUMBER_OF_DOWNLOADS" /> bản tải xuống</translation>
 <translation id="3856096718352044181">Vui lòng xác minh rằng đây là nhà cung cấp hợp lệ hoặc thử lại sau</translation>
 <translation id="3861633093716975811">Video phổ biến</translation>
+<translation id="386944881686624613">Không thể tạo đường liên kết đến văn bản. Hãy chia sẻ đường liên kết đến trang.</translation>
 <translation id="3892148308691398805">Sao chép văn bản</translation>
 <translation id="3894427358181296146">Thêm thư mục</translation>
 <translation id="3895926599014793903">Buộc bật thu phóng</translation>
@@ -650,6 +651,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5620928963363755975">Tìm tệp và trang của bạn trong Tài nguyên đã tải xuống từ nút Tùy chọn khác</translation>
 <translation id="562289928968387744">Quản lý lượt bày tỏ cảm xúc</translation>
 <translation id="5626134646977739690">Tên:</translation>
+<translation id="5628604359369369630">Chưa đọc – Có thể đọc khi không có mạng</translation>
 <translation id="5639724618331995626">Cho phép tất cả trang web</translation>
 <translation id="5648166631817621825">7 ngày qua</translation>
 <translation id="5655963694829536461">Tìm kiếm trong các tệp đã tải xuống</translation>
@@ -895,6 +897,7 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="718926126787620637">Danh sách thư mục dấu trang đã được mở ở toàn độ cao</translation>
 <translation id="7189372733857464326">Đợi Dịch vụ của Google Play cập nhật xong</translation>
 <translation id="7191430249889272776">Thẻ được mở dưới nền.</translation>
+<translation id="72180057821664864">Không thể tạo đường liên kết đến văn bản</translation>
 <translation id="7233236755231902816">Để duyệt web bằng ngôn ngữ của bạn, hãy tải phiên bản Chrome mới nhất</translation>
 <translation id="7248069434667874558">Hãy đảm bảo <ph name="TARGET_DEVICE_NAME" /> đã bật tính năng đồng bộ hóa trên Chrome</translation>
 <translation id="7274013316676448362">Trang web bị chặn</translation>
@@ -993,6 +996,7 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="7857691613771368249">Hỏi thời điểm lưu tệp</translation>
 <translation id="7875915731392087153">Tạo email</translation>
 <translation id="7876243839304621966">Xóa tất cả</translation>
+<translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Bạn chưa đọc <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> trang}other{Bạn chưa đọc <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> trang}}</translation>
 <translation id="7882131421121961860">Không tìm thấy nội dung nào khớp</translation>
 <translation id="7886917304091689118">Đang chạy trong Chrome</translation>
 <translation id="789763218334337857">Cách sử dụng Chrome</translation>
@@ -1029,6 +1033,7 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="806745655614357130">Giữ dữ liệu của tôi riêng biệt</translation>
 <translation id="8073388330009372546">Mở ảnh trong thẻ mới</translation>
 <translation id="8076492880354921740">Thẻ</translation>
+<translation id="8078096376109663956">Chỉ chia sẻ văn bản</translation>
 <translation id="8084114998886531721">Mật khẩu đã lưu</translation>
 <translation id="808747664143081553">Đã kết nối với thiết bị</translation>
 <translation id="8103578431304235997">Thẻ ẩn danh</translation>
@@ -1082,7 +1087,7 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="8445448999790540984">Không xuất được mật khẩu</translation>
 <translation id="8461694314515752532">Mã hóa dữ liệu đã đồng bộ hóa bằng cụm mật khẩu đồng bộ hóa của riêng bạn</translation>
 <translation id="8466613982764129868">Hãy đảm bảo <ph name="TARGET_DEVICE_NAME" /> có kết nối Internet</translation>
-<translation id="8481980314595922412">Tính năng dùng thử đang bật</translation>
+<translation id="8481980314595922412">Các tính năng dùng thử đang bật</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8487700953926739672">Có thể dùng khi không có mạng</translation>
 <translation id="8489271220582375723">Mở trang lịch sử</translation>
@@ -1131,6 +1136,7 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="8812260976093120287">Trên một số trang web, bạn có thể thanh toán bằng các ứng dụng thanh toán được hỗ trợ bên trên trên thiết bị của bạn.</translation>
 <translation id="881688628773363275">Không thể xem nội dung trên thẻ Xem trước.</translation>
 <translation id="8820817407110198400">Dấu trang</translation>
+<translation id="8827407626219585697">Hãy thêm đường liên kết đến văn bản</translation>
 <translation id="883806473910249246">Đã xảy ra lỗi khi tải nội dung xuống.</translation>
 <translation id="8840953339110955557">Trang này có thể khác với phiên bản trực tuyến.</translation>
 <translation id="8853345339104747198">Thẻ <ph name="TAB_TITLE" /></translation>

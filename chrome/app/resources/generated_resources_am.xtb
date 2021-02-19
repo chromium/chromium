@@ -2665,6 +2665,7 @@
 <translation id="3943494825379372497">መተግበሪያዎች እና ገጾች ወደነበሩበት ይመለሱ?</translation>
 <translation id="3943582379552582368">&amp;ተመለስ</translation>
 <translation id="3943857333388298514">ለጥፍ</translation>
+<translation id="3944266449990965865">መላው የማያ ገጽ</translation>
 <translation id="3948116654032448504">ለምስል <ph name="SEARCH_ENGINE" />ን ይ&amp;ፈልጉ</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> በሚከተሉት አቃፊዎች ውስጥ ያሉ ፋይሎችን ማርትዕ ይችላል</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2717,6 +2718,7 @@
 <translation id="3994374631886003300">የእርስዎን <ph name="DEVICE_TYPE" /> ለመክፈት የእርስዎን ስልክ ይክፈቱና ያስጠጉት።</translation>
 <translation id="3994878504415702912">&amp;ማጉሊያ</translation>
 <translation id="3995138139523574647">የUSB-C መሣሪያ (የቀኝ ጎን የኋላ ወደብ)</translation>
+<translation id="4002066346123236978">ርዕስ</translation>
 <translation id="4002329649066944389">በየጣቢያው የማይመለከታቸውን ያቀናብሩ</translation>
 <translation id="4002440992267487163">ፒን ውቅረት</translation>
 <translation id="4005817994523282006">የሰዓት ሰቅ ማወቂያ ዘዴ</translation>
@@ -6430,7 +6432,6 @@ nil</translation>
 <translation id="8316618172731049784">ወደ <ph name="DEVICE_NAME" /> ላክ</translation>
 <translation id="8317671367883557781">የአውታረ መረብ ግንኙነት ያክሉ</translation>
 <translation id="8319414634934645341">የተስፋፋ ቁልፍ አጠቃቀም</translation>
-<translation id="8320459152843401447">የእርስዎ ሙሉ ማያ ገጽ</translation>
 <translation id="8321476692217554900">ማሳወቂያዎች</translation>
 <translation id="8321837372750396788">ይህ <ph name="DEVICE_TYPE" /> በ<ph name="MANAGER" /> ነው የሚተዳደረው።</translation>
 <translation id="8322814362483282060">ይህ ገጽ ማይክሮፎንዎን እንዳይደርስበት ታግዷል።</translation>

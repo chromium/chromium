@@ -1427,14 +1427,14 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2972531017545674240">Wenn die Richtlinie konfiguriert ist, wird eine Liste von Web-Apps festgelegt, die automatisch installiert werden, also ohne Interaktion des Nutzers, und die vom Nutzer weder deinstalliert noch deaktiviert werden können.
 
       Jedes Listenelement der Richtlinie ist ein Objekt, das aus der obligatorischen Komponente
-      <ph name="URL_LABEL" /> (die URL der Web-App, die installiert werden soll)
+      „<ph name="URL_LABEL" />“ (die URL der Web-App, die installiert werden soll)
 
       und drei optionalen Komponenten
       „<ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />“
       (legt fest, wie die Web-App geöffnet wird – standardmäßig in einem neuen Tab),
 
       „<ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />“
-      (ist auf „True“ gesetzt, wenn Sie Desktopverknüpfungen für <ph name="LINUX_OS_NAME" /> und
+      (auf „True“ setzen, wenn Sie Desktopverknüpfungen für <ph name="LINUX_OS_NAME" /> und
       <ph name="MS_WIN_NAME" /> erstellen möchten) und
 
       „<ph name="FALLBACK_APP_NAME_LABEL" />“ besteht.
@@ -1700,15 +1700,6 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
       Hinweis: Bei Geräten, die über <ph name="MS_AD_NAME" /> verwaltet werden, unterstützt diese Richtlinie die Erweiterung von <ph name="MACHINE_NAME_VARIABLE" /> auf den <ph name="MS_AD_NAME" />-Computernamen oder einen Teilstring davon. Wenn der Computername beispielsweise „<ph name="MACHINE_NAME_EXAMPLE" />“ lautet, wird „<ph name="MACHINE_NAME_VARIABLE_EXAMPLE" />“ durch die vier Zeichen nach der sechsten Stelle ersetzt, z. B. „<ph name="MACHINE_NAME_PART_EXAMPLE" />“. Die Position basiert auf null.
 
       Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie <ph name="PRINTERS_POLICY_NAME" />.</translation>
-<translation id="3295118731207421797">Mit dieser Richtlinie kann ein Administrator festlegen, ob eine Seite beim Schließen eine synchrone XHR-Anfrage senden darf.
-
-      Wenn die Richtlinie aktiviert ist, dürfen Seiten beim Schließen synchrone XHR-Anfragen senden.
-
-      Wenn sie deaktiviert oder nicht konfiguriert ist, dürfen Seiten beim Schließen keine synchronen XHR-Anfragen senden.
-
-      Diese Richtlinie wird in Chrome 88 entfernt.
-
-      Siehe https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="3302829897293005699">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden über registrierte Geräte Informationen zur aktiven Kiosksitzung gemeldet, z. B. die Anwendungs-ID und -version.
 
       Ist sie deaktiviert, senden registrierte Geräte keine Informationen zur Kiosksitzung.</translation>

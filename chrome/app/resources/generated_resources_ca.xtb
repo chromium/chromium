@@ -2663,6 +2663,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3943494825379372497">Vols restaurar les aplicacions i les pàgines?</translation>
 <translation id="3943582379552582368">&amp;Enrere</translation>
 <translation id="3943857333388298514">Enganxa</translation>
+<translation id="3944266449990965865">Tota la pantalla</translation>
 <translation id="3948116654032448504">&amp;Cerca la imatge a <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> pot editar els fitxers de les carpetes següents</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2715,6 +2716,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3994374631886003300">Desbloqueja el telèfon i acosta'l per desbloquejar <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3994878504415702912">&amp;Zoom</translation>
 <translation id="3995138139523574647">Dispositiu USB-C (port posterior dret)</translation>
+<translation id="4002066346123236978">Títol</translation>
 <translation id="4002329649066944389">Gestiona les excepcions de cada lloc web</translation>
 <translation id="4002440992267487163">Configuració del PIN</translation>
 <translation id="4005817994523282006">Mètode de detecció de la zona horària</translation>
@@ -5280,7 +5282,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7018275672629230621">Llegir i canviar l'historial de navegació</translation>
 <translation id="7019805045859631636">Ràpid</translation>
 <translation id="7022562585984256452">S'ha definit la pàgina d'inici.</translation>
-<translation id="7023206482239788111">La zona de proves de privadesa preserva la vitalitat del web obert creant millors mètodes de dur a terme aquests serveis, sense que els llocs web es vegin afectats i impedint que es faci un seguiment ocult de les teves accions al web.</translation>
+<translation id="7023206482239788111">La zona de proves de privadesa preserva la vitalitat del web obert creant millors maneres de dur a terme aquests serveis, sense que els llocs web es vegin afectats i impedint que es faci un seguiment ocult de les teves accions al web.</translation>
 <translation id="7025082428878635038">Presentem una nova manera de navegar amb gestos</translation>
 <translation id="7025190659207909717">Gestió de serveis de dades mòbils</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Obre-les totes en una finestra d'&amp;incògnit}=1{Obre en una finestra d'&amp;incògnit}other{Obre-les totes ({COUNT}) en una finestra d'&amp;incògnit}}</translation>
@@ -6428,7 +6430,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8316618172731049784">Envia a <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Afegeix una connexió a la xarxa</translation>
 <translation id="8319414634934645341">Ús ampliat de claus</translation>
-<translation id="8320459152843401447">La pantalla completa</translation>
 <translation id="8321476692217554900">notificacions</translation>
 <translation id="8321837372750396788">Aquest dispositiu <ph name="DEVICE_TYPE" /> estarà gestionat per <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">Aquesta pàgina no té permís per accedir al micròfon.</translation>

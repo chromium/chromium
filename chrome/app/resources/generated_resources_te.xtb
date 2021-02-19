@@ -2665,6 +2665,7 @@
 <translation id="3943494825379372497">యాప్‌లు, పేజీలను రీస్టోర్ చేయాలా?</translation>
 <translation id="3943582379552582368">&amp;వెనుకకు</translation>
 <translation id="3943857333388298514">అతికించు</translation>
+<translation id="3944266449990965865">పూర్తి స్క్రీన్</translation>
 <translation id="3948116654032448504">చిత్రం కోసం <ph name="SEARCH_ENGINE" />లో &amp;శోధించండి</translation>
 <translation id="3948507072814225786">కింది ఫోల్డర్‌లలోని ఫైల్‌లను <ph name="ORIGIN" /> సవరించగలదు</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2717,6 +2718,7 @@
 <translation id="3994374631886003300">మీ <ph name="DEVICE_TYPE" />ను అన్‌లాక్ చేయడానికి, మీ ఫోన్‌ను అన్‌లాక్ చేసి దానిని దగ్గరికి తీసుకురండి.</translation>
 <translation id="3994878504415702912">&amp;జూమ్ చేయి</translation>
 <translation id="3995138139523574647">USB-C పరికరం (కుడివైపు వెనుక పోర్ట్)</translation>
+<translation id="4002066346123236978">శీర్షిక</translation>
 <translation id="4002329649066944389">సైట్‌కు ప్రత్యేకమైన మినహాయింపులను మేనేజ్ చేయండి</translation>
 <translation id="4002440992267487163">పిన్ సెటప్</translation>
 <translation id="4005817994523282006">సమయ మండలి గుర్తింపు పద్ధతి</translation>
@@ -6424,7 +6426,6 @@
 <translation id="8316618172731049784"><ph name="DEVICE_NAME" />కు పంపు</translation>
 <translation id="8317671367883557781">నెట్‌వర్క్ కనెక్షన్‌ను జోడించు</translation>
 <translation id="8319414634934645341">విస్తరించిన కీ ఉపయోగం</translation>
-<translation id="8320459152843401447">మీ పూర్తి స్క్రీన్</translation>
 <translation id="8321476692217554900">నోటిఫికేషన్‌లు</translation>
 <translation id="8321837372750396788"><ph name="MANAGER" /> ఈ <ph name="DEVICE_TYPE" />ను మేనేజ్ చేస్తుంది.</translation>
 <translation id="8322814362483282060">మీ మైక్రోఫోన్‌ను ప్రాప్యత చేయనీయకుండా ఈ పేజీ బ్లాక్ చేయబడింది.</translation>

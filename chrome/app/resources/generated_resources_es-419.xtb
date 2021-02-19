@@ -998,7 +998,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2108349519800154983">{COUNT,plural, =1{Número de teléfono}other{# números de teléfono}}</translation>
 <translation id="211144231511833662">Borrar tipos</translation>
 <translation id="2111670510994270194">Nueva pestaña a la derecha</translation>
-<translation id="2111810003053064883">Los anunciantes pueden analizar la eficacia de los anuncios sin hacer un seguimiento de los sitios que visitas.</translation>
+<translation id="2111810003053064883">Los anunciantes pueden analizar la eficacia de los anuncios sin que estos hagan un seguimiento de los sitios que visitas.</translation>
 <translation id="21133533946938348">Fijar pestaña</translation>
 <translation id="2113479184312716848">Abrir &amp;archivo...</translation>
 <translation id="2113921862428609753">Acceso a la información de la autoridad</translation>
@@ -2163,7 +2163,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3428419049384081277">¡Accediste!</translation>
 <translation id="3428747202529429621">Te protege en Chrome y puede usarse para mejorar tu seguridad en otras apps de Google cuando accedes a tu cuenta.</translation>
 <translation id="3428800329481094896">Obteniendo claves SSH del contenedor de Linux</translation>
-<translation id="3429160811076349561">Las funciones de prueba están desactivadas.</translation>
+<translation id="3429160811076349561">Las funciones de prueba están desactivadas</translation>
 <translation id="3429271624041785769">Idiomas del contenido web</translation>
 <translation id="3429275422858276529">Agrega esta página a favoritos para encontrarla fácilmente más tarde</translation>
 <translation id="3432227430032737297">Quitar todo lo que se muestra</translation>
@@ -2662,6 +2662,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3943494825379372497">¿Deseas restablecer las apps y las páginas?</translation>
 <translation id="3943582379552582368">&amp;Atrás</translation>
 <translation id="3943857333388298514">Pegar</translation>
+<translation id="3944266449990965865">Pantalla completa</translation>
 <translation id="3948116654032448504">Buscar imagen en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> puede editar archivos en las siguientes carpetas</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2714,6 +2715,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3994374631886003300">Desbloquea tu teléfono y acércalo para desbloquear tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3994878504415702912">&amp;Tamaño</translation>
 <translation id="3995138139523574647">Dispositivo USB-C (puerto lateral derecho trasero)</translation>
+<translation id="4002066346123236978">Título</translation>
 <translation id="4002329649066944389">Administra las excepciones de sitios específicos</translation>
 <translation id="4002440992267487163">Configuración del PIN</translation>
 <translation id="4005817994523282006">Método de detección de la zona horaria</translation>
@@ -6425,7 +6427,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8316618172731049784">Enviar a <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Agregar conexión de red</translation>
 <translation id="8319414634934645341">Uso extendido de la clave</translation>
-<translation id="8320459152843401447">Tu pantalla completa</translation>
 <translation id="8321476692217554900">notificaciones</translation>
 <translation id="8321837372750396788"><ph name="MANAGER" /> administrará este dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8322814362483282060">Esta página no tiene permiso para acceder al micrófono.</translation>
@@ -6554,7 +6555,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8480082892550707549">Aunque hayas descargado archivos de este sitio anteriormente, es posible que en este momento el sitio esté pirateado. Intenta descargar el archivo más tarde.</translation>
 <translation id="8480869669560681089">Dispositivo desconocido de <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Confirmar el permiso para USB</translation>
-<translation id="8481980314595922412">Las funciones de prueba están activadas.</translation>
+<translation id="8481980314595922412">Las funciones de prueba están activadas</translation>
 <translation id="8487678622945914333">Acercar</translation>
 <translation id="8489156414266187072">Las sugerencias personales solo se muestran en tu cuenta</translation>
 <translation id="8490896350101740396">Se actualizaron las siguientes aplicaciones de kiosco "<ph name="UPDATED_APPS" />". Reinicia el dispositivo para completar el proceso de actualización.</translation>

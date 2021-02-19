@@ -193,7 +193,7 @@ Para buscar una palabra, presiónala. Si quieres definir mejor la búsqueda, man
 
 <ph name="BEGIN_LIST_ITEM1" />Cuando haya miles de usuarios con un interés similar (como una multitud en un concierto), los anunciantes podrán saberlo y seleccionar anuncios para esa multitud, en lugar de para cada persona de forma individual.<ph name="END_LIST_ITEM1" />
 
-<ph name="BEGIN_LIST_ITEM2" />Los anunciantes pueden analizar la eficacia de los anuncios sin hacer un seguimiento de los sitios que visitas.<ph name="END_LIST_ITEM2" /></translation>
+<ph name="BEGIN_LIST_ITEM2" />Los anunciantes pueden analizar la eficacia de los anuncios sin que estos hagan un seguimiento de los sitios que visitas.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="234265804618409743">No se puede abrir la cámara. Se produjo un error.</translation>
 <translation id="2345671828921229300">Para realizar una búsqueda, mantén presionada una palabra</translation>
 <translation id="2349710944427398404">Cantidad total de datos que usa Chrome, lo que incluye las cuentas, favoritos y opciones de configuración guardadas</translation>
@@ -352,7 +352,7 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="3389286852084373014">El texto es demasiado largo</translation>
 <translation id="3398320232533725830">Abrir el administrador de favoritos</translation>
 <translation id="3414952576877147120">Tamaño:</translation>
-<translation id="3429160811076349561">Las funciones de prueba están desactivadas.</translation>
+<translation id="3429160811076349561">Las funciones de prueba están desactivadas</translation>
 <translation id="3443221991560634068">Volver a cargar la página actual</translation>
 <translation id="3478363558367712427">Puedes elegir tu motor de búsqueda</translation>
 <translation id="3492207499832628349">Nueva pestaña de incógnito</translation>
@@ -1087,7 +1087,7 @@ Solo se borran de Chrome los datos de las sesiones de incógnito cuando <ph name
 <translation id="8445448999790540984">No se pueden exportar las contraseñas</translation>
 <translation id="8461694314515752532">Encriptar los datos sincronizados con tu propia frase de contraseña de sincronización</translation>
 <translation id="8466613982764129868">Comprueba que <ph name="TARGET_DEVICE_NAME" /> tenga conexión a Internet</translation>
-<translation id="8481980314595922412">Las funciones de prueba están activadas.</translation>
+<translation id="8481980314595922412">Las funciones de prueba están activadas</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8487700953926739672">Disponible sin conexión</translation>
 <translation id="8489271220582375723">Abrir la página del historial</translation>

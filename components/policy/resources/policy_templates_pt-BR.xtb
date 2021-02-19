@@ -1719,15 +1719,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Observação: para dispositivos gerenciados com o <ph name="MS_AD_NAME" />, esta política é compatível com a expansão de <ph name="MACHINE_NAME_VARIABLE" /> para o nome de máquina do <ph name="MS_AD_NAME" /> ou uma substring correspondente. Por exemplo, se o nome de máquina for <ph name="MACHINE_NAME_EXAMPLE" />, <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> será substituído pelos quatro caracteres que começam depois da sexta posição, ou seja, <ph name="MACHINE_NAME_PART_EXAMPLE" />. A posição se baseia em zero.
 
       Esta política foi suspensa. Use a <ph name="PRINTERS_POLICY_NAME" />.</translation>
-<translation id="3295118731207421797">Esta política permite que um administrador especifique que uma página pode enviar solicitações XHR síncronas durante a dispensa de páginas.
-
-      Quando a política for definida como ativada, as páginas poderão enviar solicitações XHR síncronas durante a dispensa de páginas.
-
-      Quando a política for definida como desativada ou não for configurada, as páginas não poderão enviar solicitações XHR síncronas durante a dispensa de páginas.
-
-      Essa política será removida no Chrome 88.
-
-      Consulte https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="3302829897293005699">Se a política for definida como "Ativada" ou não for definida, as informações da sessão de quiosque ativa, como versão e ID do aplicativo, serão comunicadas pelos dispositivos registrados.
 
       Se a política for definida como "Desativada", os dispositivos registrados não comunicarão as informações da sessão de quiosque.</translation>

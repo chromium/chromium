@@ -2665,6 +2665,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3943494825379372497">Колдонмолор менен барактар калыбына келтирилсинби?</translation>
 <translation id="3943582379552582368">&amp;Артка</translation>
 <translation id="3943857333388298514">Чаптоо</translation>
+<translation id="3944266449990965865">Бүтүндөй экран</translation>
 <translation id="3948116654032448504">&amp;Сүрөт <ph name="SEARCH_ENGINE" /> издөө</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> төмөнкү папкалардагы файлдарды түзөтө алат</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2717,6 +2718,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3994374631886003300">Телефонуңуздун кулпусун ачып туруп, <ph name="DEVICE_TYPE" /> түзмөгүн ачуу үчүн, аны жакыныраак алып келиңиз.</translation>
 <translation id="3994878504415702912">&amp;Ченөлчөм</translation>
 <translation id="3995138139523574647">USB-C түзмөгү (оң жактагы арткы оюкча)</translation>
+<translation id="4002066346123236978">Аталышы</translation>
 <translation id="4002329649066944389">Сайтка тийиштүү өзгөчө учурларды башкаруу</translation>
 <translation id="4002440992267487163">PIN-кодду жөндөө</translation>
 <translation id="4005817994523282006">Убакыт алкагын аныктоо ыкмасы</translation>
@@ -5459,7 +5461,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7234010996000898150">Linux'ту калыбына келтирүү жокко чыгарылууда</translation>
 <translation id="7235716375204803342">Аракеттер алынууда…</translation>
 <translation id="7235737137505019098">Кошумча аккаунттарды кошуу үчүн коопсуздук ачкычыңызда орун жетишсиз.</translation>
-<translation id="7238640585329759787">Иштетилсе, сайттар мазмунун жана кызматтарын көрсөтүү үчүн купуялык корголгон ыкмаларды колдонушат. Буга сайттарга кайчылаш көз салуу кирет. Жаңы сыноолорду да кошуп турууга болот.</translation>
+<translation id="7238640585329759787">Иштетилсе, сайттар мазмунун жана кызматтарын көрсөтүү үчүн купуялык корголгон ыкмаларды колдонушат. Буга сайттарга кайчылаш көз салуу кирет. Жаңы сыноолорду да кийинчерээк кошуп турууга болот.</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Чоо-жайы</translation>
 <translation id="7240339475467890413">Жаңы түйүнгө туташсынбы?</translation>
 <translation id="7241389281993241388">Кардар тастыктамасын импорттоо үчүн <ph name="TOKEN_NAME" /> ичине кириңиз.</translation>
@@ -6427,7 +6429,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8316618172731049784"><ph name="DEVICE_NAME" /> дарегине жөнөтүү</translation>
 <translation id="8317671367883557781">Тармак туташуусун кошуу</translation>
 <translation id="8319414634934645341">Кеңейтилген ачкыч колдонуу</translation>
-<translation id="8320459152843401447">Толук экран</translation>
 <translation id="8321476692217554900">билдирмелер</translation>
 <translation id="8321837372750396788">Бул <ph name="DEVICE_TYPE" /> түзмөгү <ph name="MANAGER" /> тарабынан башкарылат.</translation>
 <translation id="8322814362483282060">Бул беттин микрофонуңузду пайдалануу мүмкүнчүлүгү бөгөттөлгөн.</translation>

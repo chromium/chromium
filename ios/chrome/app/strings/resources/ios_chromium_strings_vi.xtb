@@ -74,7 +74,6 @@
 <translation id="8013573822802650211">Để xem các thẻ của bạn trên bất cứ thiết bị nào mà bạn có dùng Chromium, hãy đăng nhập trên tất cả thiết bị</translation>
 <translation id="8073677936375100957">Xóa dữ liệu Chromium của bạn khỏi thiết bị này?</translation>
 <translation id="8175055321229419309">Mẹo: <ph name="BEGIN_LINK" />Di chuyển Chromium sang thanh dock<ph name="END_LINK" /></translation>
-<translation id="8235785158661376110">Để đặt Chromium làm trình duyệt mặc định, hãy mở phần Cài đặt, nhấn vào Ứng dụng trình duyệt mặc định rồi chọn Chromium.</translation>
 <translation id="8240981428553046115">Chromium không thể kiểm tra xem có bản cập nhật mới nào không. Hãy thử lại sau.</translation>
 <translation id="8252885722420466166">Có được trải nghiệm Google tốt hơn trong Chromium dựa trên vị trí của bạn.</translation>
 <translation id="8586442755830160949">Bản quyền <ph name="YEAR" /> Tác giả Chromium. Mọi quyền được bảo lưu.</translation>
@@ -85,5 +84,5 @@
 <translation id="9089354809943900324">Chromium đã lỗi thời</translation>
 <translation id="921174536258924340">Chromium không thể kiểm tra một số mật khẩu. Hãy thử lại vào ngày mai hoặc <ph name="BEGIN_LINK" />kiểm tra các mật khẩu trong Tài khoản Google của bạn.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Tác giả Chromium</translation>
-<translation id="994708389219151914">Tài khoản của bạn do <ph name="HOSTED_DOMAIN" /> quản lý, nên dữ liệu của bạn trên Chromium sẽ bị xóa khỏi thiết bị này.</translation>
+<translation id="994708389219151914">Tài khoản của bạn do <ph name="HOSTED_DOMAIN" /> quản lý nên dữ liệu của bạn trên Chromium sẽ bị xóa khỏi thiết bị này.</translation>
 </translationbundle>

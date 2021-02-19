@@ -2667,6 +2667,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="3943494825379372497">Vai atjaunot lietotnes un lapas?</translation>
 <translation id="3943582379552582368">Atpakaļ</translation>
 <translation id="3943857333388298514">Ielīmēt</translation>
+<translation id="3944266449990965865">Viss ekrāns</translation>
 <translation id="3948116654032448504">Meklēt attēlu <ph name="SEARCH_ENGINE" /> tīklā</translation>
 <translation id="3948507072814225786">Vietne <ph name="ORIGIN" /> var rediģēt tālāk norādītajās mapēs esošos failus.</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2719,6 +2720,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="3994374631886003300">Atbloķējiet tālruni un pietuviniet to, lai atbloķētu savu ierīci (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="3994878504415702912">Tālummaiņa</translation>
 <translation id="3995138139523574647">USB-C ierīce (pieslēgvieta labajā pusē aizmugurē)</translation>
+<translation id="4002066346123236978">Nosaukums</translation>
 <translation id="4002329649066944389">Konkrētu vietņu izņēmumu pārvaldība</translation>
 <translation id="4002440992267487163">PIN koda iestatīšana</translation>
 <translation id="4005817994523282006">Laika joslas noteikšanas metode</translation>
@@ -6429,7 +6431,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8316618172731049784">Sūtīt: <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Pievienot tīkla savienojumu</translation>
 <translation id="8319414634934645341">Paplašināta atslēgas lietošana</translation>
-<translation id="8320459152843401447">Viss jūsu ekrāns</translation>
 <translation id="8321476692217554900">paziņojumi</translation>
 <translation id="8321837372750396788">Šo <ph name="DEVICE_TYPE" /> ierīci pārvaldīs <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">Šīs lapas piekļuve jūsu mikrofonam ir bloķēta.</translation>

@@ -2666,6 +2666,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3943494825379372497">Vil du gendanne apps og sider?</translation>
 <translation id="3943582379552582368">&amp;Tilbage</translation>
 <translation id="3943857333388298514">Indsæt</translation>
+<translation id="3944266449990965865">Hele skærmen</translation>
 <translation id="3948116654032448504">&amp;Søg efter billedet på <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> kan redigere filer i følgende mapper</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2718,6 +2719,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3994374631886003300">Lås din telefon op, og flyt den tættere på din <ph name="DEVICE_TYPE" /> for at låse den op.</translation>
 <translation id="3994878504415702912">&amp;Zoom</translation>
 <translation id="3995138139523574647">USB-C-enhed (porten bagpå i højre side)</translation>
+<translation id="4002066346123236978">Titel</translation>
 <translation id="4002329649066944389">Administrer websitespecifikke undtagelser</translation>
 <translation id="4002440992267487163">Konfiguration af pinkode</translation>
 <translation id="4005817994523282006">Metode til registrering af tidszone</translation>
@@ -6428,7 +6430,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8316618172731049784">Send til <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Tilføj netværksforbindelse</translation>
 <translation id="8319414634934645341">Udvidet brug af nøgle</translation>
-<translation id="8320459152843401447">Hele din skærm</translation>
 <translation id="8321476692217554900">notifikationer</translation>
 <translation id="8321837372750396788">Denne <ph name="DEVICE_TYPE" /> vil blive administreret af <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">Denne side er blokeret fra at få adgang til din mikrofon.</translation>

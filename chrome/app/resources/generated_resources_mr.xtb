@@ -2664,6 +2664,7 @@
 <translation id="3943494825379372497">अ‍ॅप्स आणि पेज रिस्टोअर करायची का?</translation>
 <translation id="3943582379552582368">&amp;मागील</translation>
 <translation id="3943857333388298514">पेस्ट करा</translation>
+<translation id="3944266449990965865">संपूर्ण स्क्रीन</translation>
 <translation id="3948116654032448504">इमेज <ph name="SEARCH_ENGINE" /> वर शोधा</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> खालील फोल्डरमधील फाइल संपादित करू शकते</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2716,6 +2717,7 @@
 <translation id="3994374631886003300">तुमचा फोन अनलॉक करा आणि तुमचे <ph name="DEVICE_TYPE" /> अनलॉक करण्यासाठी तो जवळ आणा.</translation>
 <translation id="3994878504415702912">&amp;झूम करा</translation>
 <translation id="3995138139523574647">USB-C डिव्‍हाइस (उजव्या बाजूचे मागील पोर्ट)</translation>
+<translation id="4002066346123236978">शीर्षक</translation>
 <translation id="4002329649066944389">विशिष्ट साइटसाठी असलेली एक्सेप्शन व्यवस्थापित करा</translation>
 <translation id="4002440992267487163">पिन सेटअप</translation>
 <translation id="4005817994523282006">टाइमझोन शोध पद्धत</translation>
@@ -6424,7 +6426,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8316618172731049784"><ph name="DEVICE_NAME" /> ला पाठवा</translation>
 <translation id="8317671367883557781">नेटवर्क कनेक्शन जोडा</translation>
 <translation id="8319414634934645341">विस्तारित की वापर</translation>
-<translation id="8320459152843401447">तुमची संपूर्ण स्क्रीन</translation>
 <translation id="8321476692217554900">सूचना</translation>
 <translation id="8321837372750396788">हे <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> द्वारे व्यवस्थापित केले जाईल.</translation>
 <translation id="8322814362483282060">या पृष्ठाला आपल्या मायक्रोफोनवर प्रवेश करण्यापासून अवरोधित केले गेले आहे.</translation>
@@ -6938,6 +6939,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8892168913673237979">सर्व सेट झाले!</translation>
 <translation id="8893801527741465188">अनइंस्टॉल पूर्ण झाले</translation>
 <translation id="8893928184421379330">क्षमस्व, <ph name="DEVICE_LABEL" /> डिव्हाइस ओळखले जाऊ शकले नाही.</translation>
+<translation id="8894761918470382415">पेरिफेरलसाठी डेटा अ‍ॅक्सेस संरक्षण</translation>
 <translation id="8895454554629927345">बुकमार्क सूची</translation>
 <translation id="8898786835233784856">पुढील टॅब निवडा</translation>
 <translation id="8898822736010347272">नवीन धोके शोधण्यात आणि वेबवरील प्रत्येकाचे संरक्षण करण्यात मदत करण्यासाठी, तुम्ही भेट देत असलेल्या काही पेजच्या URL, मर्यादित सिस्टम माहिती आणि काही पेज आशय Google ला पाठवते.</translation>
@@ -7244,6 +7246,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="942532530371314860"><ph name="APP_NAME" /> Chrome टॅब आणि ऑडिओ शेअर करीत आहे.</translation>
 <translation id="945522503751344254">अभिप्राय पाठवा</translation>
 <translation id="947329552760389097">&amp;तपासणी घटक</translation>
+<translation id="949052952791086881">तुमच्या अ‍ॅडमिनिस्ट्रेटरला डिव्हाइस ऑनलाइन असताना या वापरकर्त्याने साइन इन करण्याची आवश्यकता आहे</translation>
 <translation id="951991426597076286">नकार द्या</translation>
 <translation id="956500788634395331">हानीकारक असू शकणार्‍या एक्स्टेंशनपासून तुम्ही संरक्षित आहात</translation>
 <translation id="957960681186851048">या साइटने एकाहून अधिक फाइल आपोआप डाउनलोड करण्याचा प्रयत्न केला</translation>

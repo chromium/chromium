@@ -1693,15 +1693,6 @@
       注意：如果是 <ph name="MS_AD_NAME" /> 管理的裝置，這項政策支援將 <ph name="MACHINE_NAME_VARIABLE" /> 擴充為 <ph name="MS_AD_NAME" /> 電腦名稱或其子字串。舉例來說，如果電腦名稱為 <ph name="MACHINE_NAME_EXAMPLE" />，系統將以第 6 個字元後的 4 個字元取代 <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" />，也就是 <ph name="MACHINE_NAME_PART_EXAMPLE" />。字元序數是從 0 開始計算。
 
       這項政策已遭淘汰，請改用 <ph name="PRINTERS_POLICY_NAME" />。</translation>
-<translation id="3295118731207421797">這項政策可讓管理員指定頁面是否能在關閉時傳送同步 XHR 要求。
-
-      如果將這項政策設為啟用，頁面可以在關閉時傳送同步 XHR 要求。
-
-      如果將這項政策設為停用或不予設定，則頁面無法在關閉時傳送同步 XHR 要求。
-
-      這項政策將在 Chrome 第 88 版中移除。
-
-      詳情請參閱 https://www.chromestatus.com/feature/4664843055398912。</translation>
 <translation id="3302829897293005699">如果將這項政策設為啟用或不設定，已註冊的裝置會回報運作中資訊站工作階段相關資訊，例如應用程式 ID 和版本。
 
       如果將這項政策設為停用，已註冊的裝置不會回報資訊站工作階段相關資訊。</translation>

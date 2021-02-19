@@ -2661,6 +2661,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3943494825379372497">Apps und Seiten wiederherstellen?</translation>
 <translation id="3943582379552582368">&amp;Zurück</translation>
 <translation id="3943857333388298514">Einfügen</translation>
+<translation id="3944266449990965865">Vollbild</translation>
 <translation id="3948116654032448504">Mit <ph name="SEARCH_ENGINE" /> nach Bild &amp;suchen</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> kann Dateien in den folgenden Ordnern bearbeiten</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2713,6 +2714,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3994374631886003300">Entsperren Sie Ihr Smartphone und verringern Sie den Abstand zu Ihrem <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3994878504415702912">&amp;Zoom</translation>
 <translation id="3995138139523574647">USB-C-Gerät (Port hinten rechts)</translation>
+<translation id="4002066346123236978">Titel</translation>
 <translation id="4002329649066944389">Websitespezifische Ausnahmen verwalten</translation>
 <translation id="4002440992267487163">PIN einrichten</translation>
 <translation id="4005817994523282006">Methode zur Zeitzonenerkennung</translation>
@@ -4621,7 +4623,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6271348838875430303">Korrektur rückgängig gemacht</translation>
 <translation id="6272643420381259437">Beim Herunterladen des Plug-ins ist ein Fehler aufgetreten (<ph name="ERROR" />)</translation>
 <translation id="6273677812470008672">Qualität</translation>
-<translation id="6275846828483490454">Privacy Sandbox ist eine fortlaufende Initiative zum Erhalt des offenen Webs, die Sie vor Tracking-Mechanismen schützt.</translation>
+<translation id="6275846828483490454">Privacy Sandbox ist eine fortlaufende Initiative zum Erhalt des offenen Webs, um Sie vor Tracking-Mechanismen zu schützen.</translation>
 <translation id="6276210637549544171">Für den Proxy <ph name="PROXY_SERVER" /> sind ein Nutzername und ein Passwort erforderlich.</translation>
 <translation id="6277105963844135994">Zeitüberschreitung im Netzwerk</translation>
 <translation id="6277518330158259200">Screenshot &amp;erstellen</translation>
@@ -4719,7 +4721,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6387674443318562538">Vertikal teilen</translation>
 <translation id="6388429472088318283">Nach Sprache suchen</translation>
 <translation id="6388711141388085034">Beschäftigt</translation>
-<translation id="6390020764191254941">Tab in neues Fenster verschieben</translation>
+<translation id="6390020764191254941">Tab in ein neues Fenster verschieben</translation>
 <translation id="6390799748543157332">In diesem Fenster aufgerufene Seiten erscheinen nicht im Browserverlauf und hinterlassen auch keine anderweitigen Spuren wie Cookies auf dem Computer, nachdem Sie alle geöffneten Gastmodus-Fenster geschlossen haben. Heruntergeladene Dateien bleiben jedoch erhalten.</translation>
 <translation id="6393156038355142111">Starkes Passwort vorschlagen</translation>
 <translation id="6393550101331051049">Unsichere Inhalte dürfen angezeigt werden</translation>
@@ -5455,7 +5457,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7234010996000898150">Linux-Wiederherstellung wird abgebrochen</translation>
 <translation id="7235716375204803342">Aktivitäten werden abgerufen...</translation>
 <translation id="7235737137505019098">Auf Ihrem Sicherheitsschlüssel ist nicht genügend Platz für weitere Konten.</translation>
-<translation id="7238640585329759787">Wenn diese Option aktiviert ist, können Websites die hier aufgeführten Technologien zur Einhaltung des Datenschutzes zur Bereitstellung ihrer Inhalte und Dienste verwenden. Hierzu zählen unter anderem Alternativen zum websiteübergreifenden Tracking. Mit der Zeit können weitere Testfunktionen hinzukommen.</translation>
+<translation id="7238640585329759787">Wenn diese Option aktiviert ist, können Websites die hier aufgeführten Technologien, die zu besserem Datenschutz beitragen, zur Bereitstellung ihrer Inhalte und Dienste verwenden. Hierzu zählen unter anderem Alternativen zum websiteübergreifenden Tracking. Mit der Zeit können weitere Testfunktionen hinzukommen.</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Details</translation>
 <translation id="7240339475467890413">Mit neuem Hotspot verbinden?</translation>
 <translation id="7241389281993241388">Melden Sie sich in <ph name="TOKEN_NAME" /> an, um das Clientzertifikat zu importieren.</translation>
@@ -6016,7 +6018,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7851720427268294554">IPP-Parser</translation>
 <translation id="78526636422538552">Option zum Hinzufügen weiterer Google-Konten ist deaktiviert</translation>
 <translation id="7853747251428735">Weitere Too&amp;ls</translation>
-<translation id="7855678561139483478">Tab in neues Fenster verschieben</translation>
+<translation id="7855678561139483478">Tab in ein neues Fenster verschieben</translation>
 <translation id="7857117644404132472">Ausnahme hinzufügen</translation>
 <translation id="7857949311770343000">Ist das die "Neuer Tab"-Seite, die Sie erwartet hatten?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
@@ -6423,7 +6425,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8316618172731049784">An <ph name="DEVICE_NAME" /> senden</translation>
 <translation id="8317671367883557781">Netzwerkverbindung hinzufügen</translation>
 <translation id="8319414634934645341">Erweiterte Schlüsselverwendung</translation>
-<translation id="8320459152843401447">Gesamter Bildschirm</translation>
 <translation id="8321476692217554900">Benachrichtigungen</translation>
 <translation id="8321837372750396788">Dieses Gerät (<ph name="DEVICE_TYPE" />) wird nun von <ph name="MANAGER" /> verwaltet.</translation>
 <translation id="8322814362483282060">Diese Seite darf nicht auf Ihr Mikrofon zugreifen.</translation>

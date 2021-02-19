@@ -2664,6 +2664,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3943494825379372497">¿Restaurar aplicaciones y páginas?</translation>
 <translation id="3943582379552582368">&amp;Atrás</translation>
 <translation id="3943857333388298514">Pegar</translation>
+<translation id="3944266449990965865">Toda la pantalla</translation>
 <translation id="3948116654032448504">&amp;Buscar imagen en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> puede editar archivos de las siguientes carpetas</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2716,6 +2717,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3994374631886003300">Desbloquea el teléfono y acércalo para desbloquear tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3994878504415702912">&amp;Tamaño</translation>
 <translation id="3995138139523574647">Dispositivo USB tipo C (puerto trasero derecho)</translation>
+<translation id="4002066346123236978">Título</translation>
 <translation id="4002329649066944389">Gestionar excepciones específicas del sitio web</translation>
 <translation id="4002440992267487163">Configuración del PIN</translation>
 <translation id="4005817994523282006">Método de detección de zona horaria</translation>
@@ -6427,7 +6429,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8316618172731049784">Enviar a <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Añadir conexión de red</translation>
 <translation id="8319414634934645341">Uso mejorado de clave</translation>
-<translation id="8320459152843401447">Toda la pantalla</translation>
 <translation id="8321476692217554900">notificaciones</translation>
 <translation id="8321837372750396788"><ph name="MANAGER" /> gestionará este <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8322814362483282060">Esta página no tiene permiso para acceder al micrófono</translation>

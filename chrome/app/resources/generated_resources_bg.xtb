@@ -2663,6 +2663,7 @@
 <translation id="3943494825379372497">Да бъдат ли възстановени приложенията и страниците?</translation>
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Поставяне</translation>
+<translation id="3944266449990965865">Цял екран</translation>
 <translation id="3948116654032448504">&amp;Търсене на изображението чрез <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> може да редактира файловете в следните папки</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2715,6 +2716,7 @@
 <translation id="3994374631886003300">За да отключите своя <ph name="DEVICE_TYPE" />, отключете телефона си и го приближете до него.</translation>
 <translation id="3994878504415702912">&amp;Мащаб</translation>
 <translation id="3995138139523574647">устройство с USB-C (задният десен порт)</translation>
+<translation id="4002066346123236978">Заглавие</translation>
 <translation id="4002329649066944389">Управление на изключенията за конкретни сайтове</translation>
 <translation id="4002440992267487163">Настройване на ПИН код</translation>
 <translation id="4005817994523282006">Метод за установяване на часовата зона</translation>
@@ -6427,7 +6429,6 @@
 <translation id="8316618172731049784">Изпращане до <ph name="DEVICE_NAME" /></translation>
 <translation id="8317671367883557781">Добавяне на мрежова връзка</translation>
 <translation id="8319414634934645341">Удължена употреба на ключа</translation>
-<translation id="8320459152843401447">Целият ви екран</translation>
 <translation id="8321476692217554900">известия</translation>
 <translation id="8321837372750396788">Това устройство <ph name="DEVICE_TYPE" /> ще се управлява от <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">Достъпът на тази страница до микрофона ви е блокиран.</translation>

@@ -2664,6 +2664,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="3943494825379372497">යෙදුම් සහ පිටු ප්‍රතිසාධනය කරන්නද?</translation>
 <translation id="3943582379552582368">&amp;ආපසු</translation>
 <translation id="3943857333388298514">අලවන්න</translation>
+<translation id="3944266449990965865">සමස්ථ තිරය</translation>
 <translation id="3948116654032448504">පින්තූරය සඳහා <ph name="SEARCH_ENGINE" /> හි සොයන්න</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> හට පහත ෆෝල්ඩර තුළ ඇති ගොනු සංස්කරණ කර හැක</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2716,6 +2717,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="3994374631886003300">ඔබේ දුරකථනය අගුලු හැර <ph name="DEVICE_TYPE" /> අගුලු හැරීමට එය සමීපයට ගෙන එන්න.</translation>
 <translation id="3994878504415702912">විශාලනය (&amp;Z)</translation>
 <translation id="3995138139523574647">USB-C උපාංගය (දකුණුපස පසු තොට)</translation>
+<translation id="4002066346123236978">සිරස්තලය</translation>
 <translation id="4002329649066944389">වෙබ් අඩවියට නිශ්චිත ව්‍යතිරේක කළමනා කරන්න</translation>
 <translation id="4002440992267487163">රහස් අංකය සැකසීම</translation>
 <translation id="4005817994523282006">වේලා කලාපය හඳුනාගැනීමේ ක්‍රමය</translation>
@@ -6424,7 +6426,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8316618172731049784"><ph name="DEVICE_NAME" /> වෙත යවන්න</translation>
 <translation id="8317671367883557781">ජාල සම්බන්ධතාවය එක් කරන්න</translation>
 <translation id="8319414634934645341">දීර්ඝ යතුරු භාවිතය</translation>
-<translation id="8320459152843401447">ඔබගේ මුළු තිරයම</translation>
 <translation id="8321476692217554900">දැනුම්දීම්</translation>
 <translation id="8321837372750396788"><ph name="MANAGER" /> විසින් මෙම <ph name="DEVICE_TYPE" /> කළමනාකරණය කෙරේ.</translation>
 <translation id="8322814362483282060">ඔබේ මයික්‍රෙෆෝනය වෙත පිවිසීමෙන් මෙම පිටුව අවහිර කර තිබේ</translation>
