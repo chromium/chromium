@@ -524,4 +524,5 @@ Polymer({
     }
   },
 });
+/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');
 })();

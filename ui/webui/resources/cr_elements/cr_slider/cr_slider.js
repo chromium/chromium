@@ -470,6 +470,7 @@ cr.define('cr_slider', function() {
   });
 
   // #cr_define_end
+  console.warn('crbug/1173575, non-JS module files deprecated.');
   return {
     SliderTick: SliderTick,
   };

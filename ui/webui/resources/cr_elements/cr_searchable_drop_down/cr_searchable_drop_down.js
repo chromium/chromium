@@ -479,3 +479,4 @@ Polymer({
         !this.updateValueOnInput && (this.value !== this.$.search.value);
   },
 });
+/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');
