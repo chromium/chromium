@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
+#include "third_party/blink/renderer/core/editing/testing/selection_sample.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -50,6 +51,9 @@ TEST_F(ApplyBlockElementCommandTest, selectionCrossingOverBody) {
   command->Apply();
 
   EXPECT_EQ(
+      "<head>"
+      "<style> .CLASS13 { -webkit-user-modify: read-write; }</style>"
+      "</head>foo"
       "<body contenteditable=\"false\">\n"
       "<pre><var id=\"va\" class=\"CLASS13\">\nC\n</var></pre><input></body>",
       GetDocument().documentElement()->innerHTML());
@@ -164,6 +168,28 @@ TEST_F(ApplyBlockElementCommandTest,
       "<table>^</table>"
       "<kbd style=\"-webkit-user-modify:read-only\"><button>|</button></kbd>",
       GetSelectionTextFromBody());
+}
+
+// https://crbug.com/1172656
+TEST_F(ApplyBlockElementCommandTest, FormatBlockWithDirectChildrenOfRoot) {
+  GetDocument().setDesignMode("on");
+  DocumentFragment* fragment = DocumentFragment::Create(GetDocument());
+  Element* root = GetDocument().documentElement();
+  fragment->ParseXML("a<div>b</div>c", root);
+  root->setTextContent("");
+  root->appendChild(fragment);
+  UpdateAllLifecyclePhasesForTest();
+
+  Selection().SetSelection(
+      SelectionInDOMTree::Builder().SelectAllChildren(*root).Build(),
+      SetSelectionOptions());
+  auto* command = MakeGarbageCollected<FormatBlockCommand>(GetDocument(),
+                                                           html_names::kPreTag);
+  // Shouldn't crash here.
+  EXPECT_FALSE(command->Apply());
+  const SelectionInDOMTree& selection = Selection().GetSelectionInDOMTree();
+  EXPECT_EQ("^a<div>b</div>c|",
+            SelectionSample::GetSelectionText(*root, selection));
 }
 
 }  // namespace blink
