@@ -263,13 +263,11 @@ void CompositorFrameSinkSupport::OnSurfacePresented(
 
 void CompositorFrameSinkSupport::RefResources(
     const std::vector<TransferableResource>& resources) {
-  surface_animation_manager_.RefResources(resources);
   surface_resource_holder_.RefResources(resources);
 }
 
 void CompositorFrameSinkSupport::UnrefResources(
     const std::vector<ReturnedResource>& resources) {
-  surface_animation_manager_.UnrefResources(resources);
   surface_resource_holder_.UnrefResources(resources);
 }
 
