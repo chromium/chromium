@@ -697,6 +697,9 @@ void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
       base::SysUTF8ToNSString(policy::key::kSafeBrowsingProtectionLevel) : @2,
 
       base::SysUTF8ToNSString(policy::key::kSearchSuggestEnabled) : @YES,
+
+      // 0 = browser sign-in disabled
+      base::SysUTF8ToNSString(policy::key::kBrowserSignin) : @0,
     }];
   }
 
