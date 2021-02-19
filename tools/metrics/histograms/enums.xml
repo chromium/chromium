@@ -27151,6 +27151,10 @@ Called by update_extension_permission.py.-->
   <int value="39" label="DEPRECATED_ERROR_PARSING_DNR_RULESET"/>
   <int value="40" label="ERROR_INDEXING_DNR_RULESET"/>
   <int value="41" label="CRX_REQUIRED_PROOF_MISSING"/>
+  <int value="42" label="CRX_HEADER_VERIFIED_CONTENTS_UNCOMPRESSING_FAILURE"/>
+  <int value="43" label="MALFORMED_VERIFIED_CONTENTS"/>
+  <int value="44" label="COULD_NOT_CREATE_METADATA_DIRECTORY"/>
+  <int value="45" label="COULD_NOT_WRITE_VERIFIED_CONTENTS_INTO_FILE"/>
 </enum>
 
 <enum name="ExtensionUpdateCheckDataKey">

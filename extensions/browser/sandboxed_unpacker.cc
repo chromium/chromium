@@ -32,10 +32,12 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/declarative_net_request/index_helper.h"
 #include "extensions/browser/computed_hashes.h"
+#include "extensions/browser/content_verifier/content_verifier_key.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/install/crx_install_error.h"
 #include "extensions/browser/install/sandboxed_unpacker_failure_reason.h"
 #include "extensions/browser/install_stage.h"
+#include "extensions/browser/verified_contents.h"
 #include "extensions/browser/zipfile_installer.h"
 #include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
 #include "extensions/common/constants.h"
@@ -356,8 +358,81 @@ void SandboxedUnpacker::UnzipDone(const base::FilePath& zip_file,
                   l10n_util::GetStringUTF16(IDS_EXTENSION_PACKAGE_UNZIP_ERROR));
     return;
   }
+  base::FilePath verified_contents_path =
+      file_util::GetVerifiedContentsPath(extension_root_);
+  // If the verified contents are already present in the _metadata folder, we
+  // can ignore the verified contents in the header.
+  if (compressed_verified_contents_.empty() ||
+      base::PathExists(verified_contents_path)) {
+    Unpack(unzip_dir);
+    return;
+  }
+  data_decoder_.GzipUncompress(
+      compressed_verified_contents_,
+      base::BindOnce(&SandboxedUnpacker::OnVerifiedContentsUncompressed, this,
+                     unzip_dir));
+}
 
+void SandboxedUnpacker::OnVerifiedContentsUncompressed(
+    const base::FilePath& unzip_dir,
+    data_decoder::DataDecoder::ResultOrError<mojo_base::BigBuffer> result) {
+  DCHECK(unpacker_io_task_runner_->RunsTasksInCurrentSequence());
+  if (!result.value) {
+    ReportFailure(
+        SandboxedUnpackerFailureReason::
+            CRX_HEADER_VERIFIED_CONTENTS_UNCOMPRESSING_FAILURE,
+        l10n_util::GetStringFUTF16(
+            IDS_EXTENSION_PACKAGE_INSTALL_ERROR,
+            ASCIIToUTF16(
+                "CRX_HEADER_VERIFIED_CONTENTS_UNCOMPRESSING_FAILURE")));
+    return;
+  }
+  if (!StoreVerifiedContentsInExtensionDir(result.value.value().byte_span()))
+    return;
   Unpack(unzip_dir);
+}
+
+bool SandboxedUnpacker::StoreVerifiedContentsInExtensionDir(
+    base::span<const uint8_t> verified_contents) {
+  DCHECK(unpacker_io_task_runner_->RunsTasksInCurrentSequence());
+
+  if (!VerifiedContents::Create(
+          ContentVerifierKey(kWebstoreSignaturesPublicKey,
+                             kWebstoreSignaturesPublicKeySize),
+          {reinterpret_cast<const char*>(verified_contents.data()),
+           verified_contents.size()})) {
+    ReportFailure(SandboxedUnpackerFailureReason::MALFORMED_VERIFIED_CONTENTS,
+                  l10n_util::GetStringFUTF16(
+                      IDS_EXTENSION_PACKAGE_INSTALL_ERROR,
+                      ASCIIToUTF16("MALFORMED_VERIFIED_CONTENTS")));
+    return false;
+  }
+
+  base::FilePath metadata_path = extension_root_.Append(kMetadataFolder);
+  if (!base::CreateDirectory(metadata_path)) {
+    ReportFailure(
+        SandboxedUnpackerFailureReason::COULD_NOT_CREATE_METADATA_DIRECTORY,
+        l10n_util::GetStringFUTF16(
+            IDS_EXTENSION_PACKAGE_INSTALL_ERROR,
+            ASCIIToUTF16("COULD_NOT_CREATE_METADATA_DIRECTORY")));
+    return false;
+  }
+
+  base::FilePath verified_contents_path =
+      file_util::GetVerifiedContentsPath(extension_root_);
+
+  // Cannot write the verified contents file.
+  if (!base::WriteFile(verified_contents_path, verified_contents)) {
+    ReportFailure(
+        SandboxedUnpackerFailureReason::
+            COULD_NOT_WRITE_VERIFIED_CONTENTS_INTO_FILE,
+        l10n_util::GetStringFUTF16(
+            IDS_EXTENSION_PACKAGE_INSTALL_ERROR,
+            ASCIIToUTF16("COULD_NOT_WRITE_VERIFIED_CONTENTS_INTO_FILE")));
+    return false;
+  }
+
+  return true;
 }
 
 void SandboxedUnpacker::Unpack(const base::FilePath& directory) {

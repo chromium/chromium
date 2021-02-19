@@ -359,6 +359,17 @@ ConvertUnpackerFailureReasonToProto(
       return em::ExtensionInstallReportLogEvent::ERROR_INDEXING_DNR_RULESET;
     case FailureReason::CRX_REQUIRED_PROOF_MISSING:
       return em::ExtensionInstallReportLogEvent::CRX_REQUIRED_PROOF_MISSING;
+    case FailureReason::CRX_HEADER_VERIFIED_CONTENTS_UNCOMPRESSING_FAILURE:
+      return em::ExtensionInstallReportLogEvent::
+          CRX_HEADER_VERIFIED_CONTENTS_UNCOMPRESSING_FAILURE;
+    case FailureReason::MALFORMED_VERIFIED_CONTENTS:
+      return em::ExtensionInstallReportLogEvent::MALFORMED_VERIFIED_CONTENTS;
+    case FailureReason::COULD_NOT_CREATE_METADATA_DIRECTORY:
+      return em::ExtensionInstallReportLogEvent::
+          COULD_NOT_CREATE_METADATA_DIRECTORY;
+    case FailureReason::COULD_NOT_WRITE_VERIFIED_CONTENTS_INTO_FILE:
+      return em::ExtensionInstallReportLogEvent::
+          COULD_NOT_WRITE_VERIFIED_CONTENTS_INTO_FILE;
     default:
       NOTREACHED();
       return em::ExtensionInstallReportLogEvent::
