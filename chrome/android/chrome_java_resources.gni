@@ -636,8 +636,6 @@ chrome_java_resources = [
   "java/res/drawable/ic_translate.xml",
   "java/res/drawable/ic_trending_down_black.xml",
   "java/res/drawable/ic_tv_options_input_settings_rotated_grey.xml",
-  "java/res/drawable/ic_visibility_black.xml",
-  "java/res/drawable/ic_visibility_off_black.xml",
   "java/res/drawable/ic_vpn_key_blue.xml",
   "java/res/drawable/ic_wb_sunny_round.xml",
   "java/res/drawable/ic_widgets.xml",
