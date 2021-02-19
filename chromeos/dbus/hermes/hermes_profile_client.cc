@@ -26,7 +26,8 @@ template <>
 bool Property<hermes::profile::State>::PopValueFromReader(
     MessageReader* reader) {
   int32_t int_value;
-  if (!reader->PopInt32(&int_value)) {
+  if (!reader->PopVariantOfInt32(&int_value)) {
+    NET_LOG(ERROR) << "Unable to pop value for eSIM profile state.";
     return false;
   }
   switch (int_value) {
@@ -43,7 +44,7 @@ bool Property<hermes::profile::State>::PopValueFromReader(
 template <>
 void Property<hermes::profile::State>::AppendSetValueToWriter(
     MessageWriter* writer) {
-  writer->AppendInt32(set_value_);
+  writer->AppendVariantOfInt32(set_value_);
 }
 
 // dbus::Property specialization to read and write
@@ -56,7 +57,8 @@ template <>
 bool Property<hermes::profile::ProfileClass>::PopValueFromReader(
     MessageReader* reader) {
   int32_t int_value;
-  if (!reader->PopInt32(&int_value)) {
+  if (!reader->PopVariantOfInt32(&int_value)) {
+    NET_LOG(ERROR) << "Unable to pop value for eSIM profile class";
     return false;
   }
   switch (int_value) {
@@ -73,7 +75,7 @@ bool Property<hermes::profile::ProfileClass>::PopValueFromReader(
 template <>
 void Property<hermes::profile::ProfileClass>::AppendSetValueToWriter(
     MessageWriter* writer) {
-  writer->AppendInt32(set_value_);
+  writer->AppendVariantOfInt32(set_value_);
 }
 
 }  // namespace dbus
