@@ -247,7 +247,6 @@ network::mojom::URLLoaderFactory* ChildURLLoaderFactoryBundle::GetFactory(
     // ScopedOriginCrashKey in the anonymous namespace above.
     ScopedRequestCrashKeys request_crash_keys(request);
     NOTREACHED() << "request.url = " << request.url;
-    base::debug::DumpWithoutCrashing();
   }
 
   InitDirectNetworkFactoryIfNecessary();
