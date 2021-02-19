@@ -37,7 +37,6 @@ const char kHistogramsAttachmentName[] = "histograms.zip";
 
 FeedbackData::FeedbackData(feedback::FeedbackUploader* uploader)
     : uploader_(uploader),
-      context_(nullptr),
       trace_id_(0),
       pending_op_count_(1),
       report_sent_(false),

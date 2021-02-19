@@ -56,8 +56,6 @@ class FeedbackUploader : public KeyedService,
 
   bool QueueEmpty() const { return reports_queue_.empty(); }
 
-  content::BrowserContext* context() { return context_; }
-
   const base::FilePath& feedback_reports_path() const {
     return feedback_reports_path_;
   }
@@ -75,6 +73,8 @@ class FeedbackUploader : public KeyedService,
   }
 
  protected:
+  content::BrowserContext* context() { return context_; }
+
   // Virtual to give implementers a chance to do work before the report is
   // disptached. Implementers can then call
   // FeedbackUploader::StartSendingReport() when ready so that the report is

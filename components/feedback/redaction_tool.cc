@@ -14,7 +14,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/chromeos_buildflags.h"
-#include "content/public/browser/browser_thread.h"
 #include "net/base/ip_address.h"
 #include "third_party/re2/src/re2/re2.h"
 

@@ -313,7 +313,6 @@ ExtensionFunction::ResponseAction FeedbackPrivateSendFeedbackFunction::Run() {
   scoped_refptr<FeedbackData> feedback_data =
       base::MakeRefCounted<FeedbackData>(
           delegate->GetFeedbackUploaderForContext(browser_context()));
-  feedback_data->set_context(browser_context());
   feedback_data->set_description(feedback_info.description);
 
   if (feedback_info.product_id)

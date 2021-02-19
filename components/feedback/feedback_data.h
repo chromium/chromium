@@ -17,10 +17,6 @@
 namespace base {
 class RefCountedString;
 }
-namespace content {
-class BrowserContext;
-}
-
 namespace feedback {
 
 class FeedbackData : public FeedbackCommon {
@@ -49,7 +45,6 @@ class FeedbackData : public FeedbackCommon {
   void SendReport();
 
   // Getters
-  content::BrowserContext* context() const { return context_; }
   const std::string& attached_file_uuid() const { return attached_file_uuid_; }
   const std::string& screenshot_uuid() const { return screenshot_uuid_; }
   bool from_assistant() const { return from_assistant_; }
@@ -58,7 +53,6 @@ class FeedbackData : public FeedbackCommon {
   }
 
   // Setters
-  void set_context(content::BrowserContext* context) { context_ = context; }
   void set_attached_filename(const std::string& attached_filename) {
     attached_filename_ = attached_filename;
   }
@@ -86,8 +80,6 @@ class FeedbackData : public FeedbackCommon {
                       scoped_refptr<base::RefCountedString> trace_data);
 
   feedback::FeedbackUploader* uploader_;  // Not owned.
-
-  content::BrowserContext* context_;
 
   std::string attached_filename_;
   std::string attached_file_uuid_;
