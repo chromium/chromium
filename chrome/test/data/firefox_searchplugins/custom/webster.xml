@@ -1,9 +1,0 @@
-<SearchPlugin xmlns="http://www.mozilla.org/2006/browser/search/" xmlns:os="http://a9.com/-/spec/opensearch/1.1/">
-<os:ShortName>Webster</os:ShortName>
-<os:Description>The Webster Dictionary</os:Description>
-<os:InputEncoding>ISO-8859-1</os:InputEncoding>
-<os:Image width="16" height="16">data:image/x-icon;base64,R0lGODlhEAAQAKIEAP////8AAAAA/7+/v////wAAAAAAAAAAACH5BAEAAAQALAAAAAAQABAAAANCSLrRsZCFQUeLaoLNbQxcyD3ZIJ4kCJjn9oCCMMQyTTcbPeuxpbYiXM3W670AxWEMkGIBmYwnFKIReTCNig9DdWASADs=</os:Image>
-<SearchForm>http://www.webster.com/</SearchForm>
-<os:Url type="text/html" method="GET" template="http://www.webster.com/cgi-bin/dictionary?sourceid=Mozilla-search&amp;va={searchTerms}">
-</os:Url>
-</SearchPlugin>

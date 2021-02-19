@@ -1079,7 +1079,6 @@ if (!is_android) {
       "../browser/idle/idle_browsertest.cc",
       "../browser/iframe_browsertest.cc",
       "../browser/image_fetcher/image_fetcher_impl_browsertest.cc",
-      "../browser/importer/firefox_importer_browsertest.cc",
       "../browser/importer/importer_unittest_utils.cc",
       "../browser/importer/importer_unittest_utils.h",
       "../browser/infobars/infobar_observer.cc",

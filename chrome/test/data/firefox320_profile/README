@@ -1,9 +1,0 @@
-This directory is created to hold test data for Firefox importer browser tests.
-
-Since Firefox 32.0, instead of signons.sqlite, all passwords are stored in
-logins.json. The test data in this directory is intended for Firefox 32.0 and
-later.
-
-All other files are grabbed from
-/src/chrome/test/data/firefox_profile because the format and content for those
-data have not changed.
