@@ -405,14 +405,18 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
       ChildMap::iterator child_it,
       DeleteStyle style,
       const std::vector<ResourceId>& unused);
-  std::vector<ReturnedResource> DeleteAndReturnUnusedResourcesToChildImpl(
+  virtual std::vector<ReturnedResource>
+  DeleteAndReturnUnusedResourcesToChildImpl(
       Child& child_info,
       DeleteStyle style,
-      const std::vector<ResourceId>& unused);
+      const std::vector<ResourceId>& unused) = 0;
   CanDeleteNowResult CanDeleteNow(const Child& child_info,
                                   const ChildResource& resource,
                                   DeleteStyle style);
 
+  // Destroys DisplayResourceProvider, must be called before destructor because
+  // it might call virtual functions from inside.
+  void Destroy();
   void DestroyChildInternal(ChildMap::iterator it, DeleteStyle style);
 
   void SetBatchReturnResources(bool aggregate);

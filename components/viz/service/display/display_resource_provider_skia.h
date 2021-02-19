@@ -19,6 +19,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderSkia
  public:
   explicit DisplayResourceProviderSkia(
       SharedBitmapManager* shared_bitmap_manager);
+  ~DisplayResourceProviderSkia() override;
 
   // Maintains set of resources locked for external use by SkiaRenderer.
   class VIZ_SERVICE_EXPORT LockSetForExternalUse {
@@ -55,6 +56,13 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderSkia
     DisplayResourceProviderSkia* const resource_provider_;
     std::vector<std::pair<ResourceId, ChildResource*>> resources_;
   };
+
+ private:
+  // DisplayResourceProvider overrides:
+  std::vector<ReturnedResource> DeleteAndReturnUnusedResourcesToChildImpl(
+      Child& child_info,
+      DeleteStyle style,
+      const std::vector<ResourceId>& unused) override;
 };
 
 }  // namespace viz

@@ -4,9 +4,27 @@
 
 #include "components/viz/service/display/display_resource_provider_skia.h"
 
+#include <memory>
 #include <utility>
+#include <vector>
+
+#include "build/build_config.h"
+#include "gpu/ipc/scheduler_sequence.h"
 
 namespace viz {
+
+class ScopedAllowGpuAccessForDisplayResourceProvider {
+ public:
+  ~ScopedAllowGpuAccessForDisplayResourceProvider() = default;
+
+  explicit ScopedAllowGpuAccessForDisplayResourceProvider(
+      DisplayResourceProvider* provider) {
+    DCHECK(provider->can_access_gpu_thread_);
+  }
+
+ private:
+  gpu::ScopedAllowScheduleGpuTask allow_gpu_;
+};
 
 DisplayResourceProviderSkia::DisplayResourceProviderSkia(
     SharedBitmapManager* shared_bitmap_manager)
@@ -14,6 +32,76 @@ DisplayResourceProviderSkia::DisplayResourceProviderSkia(
                               /*compositor_context_provider=*/nullptr,
                               shared_bitmap_manager,
                               /*enable_shared_images=*/true) {}
+
+DisplayResourceProviderSkia::~DisplayResourceProviderSkia() {
+  Destroy();
+}
+
+std::vector<ReturnedResource>
+DisplayResourceProviderSkia::DeleteAndReturnUnusedResourcesToChildImpl(
+    Child& child_info,
+    DeleteStyle style,
+    const std::vector<ResourceId>& unused) {
+  std::vector<ReturnedResource> to_return;
+  std::vector<std::unique_ptr<ExternalUseClient::ImageContext>>
+      image_contexts_to_return;
+  std::vector<ReturnedResource*> external_used_resources;
+
+  // Reserve enough space to avoid re-allocating, so we can keep item pointers
+  // for later using.
+  to_return.reserve(unused.size());
+  image_contexts_to_return.reserve(unused.size());
+  external_used_resources.reserve(unused.size());
+
+  DCHECK(external_use_client_);
+
+  for (ResourceId local_id : unused) {
+    auto it = resources_.find(local_id);
+    CHECK(it != resources_.end());
+    ChildResource& resource = it->second;
+
+    ResourceId child_id = resource.transferable.id;
+    DCHECK(child_info.child_to_parent_map.count(child_id));
+    DCHECK(resource.is_gpu_resource_type());
+
+    bool is_lost = lost_context_provider_;
+    auto can_delete = CanDeleteNow(child_info, resource, style);
+    if (can_delete == CanDeleteNowResult::kNo) {
+      // Defer this resource deletion.
+      resource.marked_for_deletion = true;
+      continue;
+    }
+
+    is_lost = is_lost || can_delete == CanDeleteNowResult::kYesButLoseResource;
+
+    to_return.emplace_back(child_id, resource.sync_token(),
+                           resource.imported_count, is_lost);
+    auto& returned = to_return.back();
+
+    if (resource.image_context) {
+      image_contexts_to_return.emplace_back(std::move(resource.image_context));
+      external_used_resources.push_back(&returned);
+    }
+
+    child_info.child_to_parent_map.erase(child_id);
+    resource.imported_count = 0;
+#if defined(OS_ANDROID)
+    DeletePromotionHint(it);
+#endif
+    DeleteResourceInternal(it);
+  }
+
+  if (!image_contexts_to_return.empty()) {
+    ScopedAllowGpuAccessForDisplayResourceProvider allow_gpu(this);
+    gpu::SyncToken sync_token = external_use_client_->ReleaseImageContexts(
+        std::move(image_contexts_to_return));
+    for (auto* resource : external_used_resources) {
+      resource->sync_token = sync_token;
+    }
+  }
+
+  return to_return;
+}
 
 DisplayResourceProviderSkia::LockSetForExternalUse::LockSetForExternalUse(
     DisplayResourceProviderSkia* resource_provider,

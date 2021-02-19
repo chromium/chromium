@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_DISPLAY_RESOURCE_PROVIDER_GL_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_DISPLAY_RESOURCE_PROVIDER_GL_H_
 
+#include <vector>
+
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/viz_service_export.h"
 
@@ -17,6 +19,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderGL
   DisplayResourceProviderGL(ContextProvider* compositor_context_provider,
                             SharedBitmapManager* shared_bitmap_manager,
                             bool enable_shared_images = true);
+  ~DisplayResourceProviderGL() override;
 
   GLenum GetResourceTextureTarget(ResourceId id);
   void WaitSyncToken(ResourceId id);
@@ -94,6 +97,12 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderGL
  private:
   const ChildResource* LockForRead(ResourceId id, bool overlay_only);
   void UnlockForRead(ResourceId id, bool overlay_only);
+
+  // DisplayResourceProvider overrides:
+  std::vector<ReturnedResource> DeleteAndReturnUnusedResourcesToChildImpl(
+      Child& child_info,
+      DeleteStyle style,
+      const std::vector<ResourceId>& unused) override;
 
   GLenum BindForSampling(ResourceId resource_id, GLenum unit, GLenum filter);
   void WaitSyncTokenInternal(ChildResource* resource);

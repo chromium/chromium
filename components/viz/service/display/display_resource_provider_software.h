@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_DISPLAY_RESOURCE_PROVIDER_SOFTWARE_H_
 
 #include <utility>
+#include <vector>
 
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/viz_service_export.h"
@@ -18,6 +19,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderSoftware
  public:
   explicit DisplayResourceProviderSoftware(
       SharedBitmapManager* shared_bitmap_manager);
+  ~DisplayResourceProviderSoftware() override;
 
   class VIZ_SERVICE_EXPORT ScopedReadLockSkImage {
    public:
@@ -47,6 +49,12 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderSoftware
   // resources.
   const ChildResource* LockForRead(ResourceId id);
   void UnlockForRead(ResourceId id);
+
+  // DisplayResourceProvider overrides:
+  std::vector<ReturnedResource> DeleteAndReturnUnusedResourcesToChildImpl(
+      Child& child_info,
+      DeleteStyle style,
+      const std::vector<ResourceId>& unused) override;
 
   void PopulateSkBitmapWithResource(SkBitmap* sk_bitmap,
                                     const ChildResource* resource);
