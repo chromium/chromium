@@ -87,9 +87,9 @@ class AutofillAssistantActionHandlerImpl implements AutofillAssistantActionHandl
             String experimentIds, Bundle arguments, Callback<Boolean> callback) {
         Map<String, String> parameters = toArgumentMap(arguments);
         BaseOnboardingCoordinator coordinator =
-                OnboardingCoordinatorFactory.createOnboardingCoordinator(
-                        /* isDialogOnboardingEnabled = */ false, experimentIds, parameters,
-                        mContext, mBottomSheetController, mBrowserControls, mCompositorViewHolder);
+                OnboardingCoordinatorFactory.createBottomSheetOnboardingCoordinator(experimentIds,
+                        parameters, mContext, mBottomSheetController, mBrowserControls,
+                        mCompositorViewHolder);
         coordinator.show(result -> {
             coordinator.hide();
             callback.onResult(result == AssistantOnboardingResult.ACCEPTED);
@@ -113,10 +113,9 @@ class AutofillAssistantActionHandlerImpl implements AutofillAssistantActionHandl
 
         if (!AutofillAssistantPreferencesUtil.isAutofillOnboardingAccepted()) {
             BaseOnboardingCoordinator coordinator =
-                    OnboardingCoordinatorFactory.createOnboardingCoordinator(
-                            /* isDialogOnboardingEnabled = */ false, experimentIds, argumentMap,
-                            mContext, mBottomSheetController, mBrowserControls,
-                            mCompositorViewHolder);
+                    OnboardingCoordinatorFactory.createBottomSheetOnboardingCoordinator(
+                            experimentIds, argumentMap, mContext, mBottomSheetController,
+                            mBrowserControls, mCompositorViewHolder);
             coordinator.show(result -> {
                 if (result != AssistantOnboardingResult.ACCEPTED) {
                     coordinator.hide();

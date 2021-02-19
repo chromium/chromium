@@ -16,16 +16,24 @@ import java.util.Map;
  * Onboarding coordinator factory to decide which onboarding subclass to use.
  */
 public class OnboardingCoordinatorFactory {
-    /** Creates an instance of onboarding coordinator subclass to be used. */
-    public static BaseOnboardingCoordinator createOnboardingCoordinator(
-            boolean isDialogOnboardingEnabled, String experimentIds, Map<String, String> parameters,
-            Context context, BottomSheetController bottomSheetController,
+    /**
+     * Creates an onboarding coordinator ready to be shown in the bottom sheet.
+     */
+    public static BaseOnboardingCoordinator createBottomSheetOnboardingCoordinator(
+            String experimentIds, Map<String, String> parameters, Context context,
+            BottomSheetController bottomSheetController,
             BrowserControlsStateProvider browserControls,
             CompositorViewHolder compositorViewHolder) {
-        return isDialogOnboardingEnabled
-                ? new DialogOnboardingCoordinator(experimentIds, parameters, context)
-                : new BottomSheetOnboardingCoordinator(experimentIds, parameters, context,
-                        bottomSheetController, browserControls, compositorViewHolder,
-                        bottomSheetController.getScrimCoordinator());
+        return new BottomSheetOnboardingCoordinator(experimentIds, parameters, context,
+                bottomSheetController, browserControls, compositorViewHolder,
+                bottomSheetController.getScrimCoordinator());
+    }
+
+    /**
+     * Creates an onboarding coordinator that will appear as a standalong popup dialog.
+     */
+    public static BaseOnboardingCoordinator createDialogOnboardingCoordinator(
+            String experimentIds, Map<String, String> parameters, Context context) {
+        return new DialogOnboardingCoordinator(experimentIds, parameters, context);
     }
 }

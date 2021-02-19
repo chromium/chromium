@@ -106,10 +106,9 @@ public class BottomSheetOnboardingCoordinatorTest {
     private BaseOnboardingCoordinator createCoordinator(
             String experimentIds, Map<String, String> parameters) {
         BaseOnboardingCoordinator coordinator =
-                OnboardingCoordinatorFactory.createOnboardingCoordinator(
-                        /* isDialogOnboardingEnabled = */ false, experimentIds, parameters,
-                        mActivity, mBottomSheetController, mActivity.getBrowserControlsManager(),
-                        mActivity.getCompositorViewHolder());
+                OnboardingCoordinatorFactory.createBottomSheetOnboardingCoordinator(experimentIds,
+                        parameters, mActivity, mBottomSheetController,
+                        mActivity.getBrowserControlsManager(), mActivity.getCompositorViewHolder());
         coordinator.disableAnimationForTesting();
         return coordinator;
     }

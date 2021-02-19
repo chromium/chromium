@@ -138,9 +138,9 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
         }
 
         BaseOnboardingCoordinator onboardingCoordinator =
-                OnboardingCoordinatorFactory.createOnboardingCoordinator(
-                        /* isDialogOnboardingEnabled = */ false, experimentIds, parameters, context,
-                        bottomSheetController, browserControls, compositorViewHolder);
+                OnboardingCoordinatorFactory.createBottomSheetOnboardingCoordinator(experimentIds,
+                        parameters, context, bottomSheetController, browserControls,
+                        compositorViewHolder);
         onboardingCoordinator.show(result -> {
             switch (result) {
                 case AssistantOnboardingResult.DISMISSED:

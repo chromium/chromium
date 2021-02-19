@@ -278,10 +278,15 @@ public class AssistantTriggerScriptBridge {
     }
 
     private void showOnboardingForTriggerScript(boolean isDialogOnboardingEnabled) {
-        mOnboardingCoordinator = OnboardingCoordinatorFactory.createOnboardingCoordinator(
-                isDialogOnboardingEnabled, mExperimentIds, mScriptParameters, mContext,
-                mBottomSheetController, mBrowserControls, mCompositorViewHolder);
-
+        if (isDialogOnboardingEnabled) {
+            mOnboardingCoordinator = OnboardingCoordinatorFactory.createDialogOnboardingCoordinator(
+                    mExperimentIds, mScriptParameters, mContext);
+        } else {
+            mOnboardingCoordinator =
+                    OnboardingCoordinatorFactory.createBottomSheetOnboardingCoordinator(
+                            mExperimentIds, mScriptParameters, mContext, mBottomSheetController,
+                            mBrowserControls, mCompositorViewHolder);
+        }
         mOnboardingCoordinator.show(result -> {
             safeNativeOnOnboardingFinished(/* onboardingShown= */ true, result);
         }, mWebContents, mInitialUrl);
