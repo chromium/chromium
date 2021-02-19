@@ -114,7 +114,7 @@ TEST_F(D3D11TextureWrapperUnittest, BGRA8InitSucceeds) {
 TEST_F(D3D11TextureWrapperUnittest, FP16InitSucceeds) {
   STOP_IF_WIN7();
   const DXGI_FORMAT dxgi_format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-  const VideoPixelFormat pixel_format = PIXEL_FORMAT_ARGB;
+  const VideoPixelFormat pixel_format = PIXEL_FORMAT_RGBAF16;
 
   auto wrapper = std::make_unique<DefaultTexture2DWrapper>(size_, dxgi_format,
                                                            pixel_format);

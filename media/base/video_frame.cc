@@ -146,6 +146,7 @@ gfx::Size VideoFrame::SampleSize(VideoPixelFormat format, size_t plane) {
         case PIXEL_FORMAT_XR30:
         case PIXEL_FORMAT_XB30:
         case PIXEL_FORMAT_BGRA:
+        case PIXEL_FORMAT_RGBAF16:
           break;
       }
   }
@@ -178,6 +179,7 @@ static bool RequiresEvenSizeAllocation(VideoPixelFormat format) {
     case PIXEL_FORMAT_XR30:
     case PIXEL_FORMAT_XB30:
     case PIXEL_FORMAT_BGRA:
+    case PIXEL_FORMAT_RGBAF16:
       return false;
     case PIXEL_FORMAT_NV12:
     case PIXEL_FORMAT_NV21:
@@ -310,7 +312,7 @@ bool VideoFrame::IsValidConfig(VideoPixelFormat format,
     return true;
 
   // Make sure new formats are properly accounted for in the method.
-  static_assert(PIXEL_FORMAT_MAX == 32,
+  static_assert(PIXEL_FORMAT_MAX == 33,
                 "Added pixel format, please review IsValidConfig()");
 
   if (format == PIXEL_FORMAT_UNKNOWN) {
@@ -369,7 +371,8 @@ scoped_refptr<VideoFrame> VideoFrame::WrapNativeTextures(
   if (format != PIXEL_FORMAT_ARGB && format != PIXEL_FORMAT_XRGB &&
       format != PIXEL_FORMAT_NV12 && format != PIXEL_FORMAT_I420 &&
       format != PIXEL_FORMAT_ABGR && format != PIXEL_FORMAT_XR30 &&
-      format != PIXEL_FORMAT_XB30 && format != PIXEL_FORMAT_P016LE) {
+      format != PIXEL_FORMAT_XB30 && format != PIXEL_FORMAT_P016LE &&
+      format != PIXEL_FORMAT_RGBAF16) {
     DLOG(ERROR) << "Unsupported pixel format: "
                 << VideoPixelFormatToString(format);
     return nullptr;
@@ -1021,6 +1024,8 @@ size_t VideoFrame::RowBytes(size_t plane, VideoPixelFormat format, int width) {
 int VideoFrame::BytesPerElement(VideoPixelFormat format, size_t plane) {
   DCHECK(IsValidPlane(format, plane));
   switch (format) {
+    case PIXEL_FORMAT_RGBAF16:
+      return 8;
     case PIXEL_FORMAT_ARGB:
     case PIXEL_FORMAT_BGRA:
     case PIXEL_FORMAT_XRGB:

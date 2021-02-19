@@ -116,7 +116,7 @@ TEST_F(D3D11TextureSelectorUnittest, P010CopiesToFP16InHDR) {
       CreateWithDefaultGPUInfo(DXGI_FORMAT_P010, ZeroCopyEnabled::kTrue,
                                TextureSelector::HDRMode::kSDROrHDR);
 
-  EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_ARGB);
+  EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_RGBAF16);
   EXPECT_EQ(tex_sel->OutputDXGIFormat(), DXGI_FORMAT_R16G16B16A16_FLOAT);
   EXPECT_TRUE(tex_sel->WillCopyForTesting());
   // TODO(liberato): Check output color space, somehow.

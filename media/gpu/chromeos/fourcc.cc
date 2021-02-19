@@ -98,6 +98,7 @@ base::Optional<Fourcc> Fourcc::FromVideoPixelFormat(
       case PIXEL_FORMAT_Y16:
       case PIXEL_FORMAT_XR30:
       case PIXEL_FORMAT_XB30:
+      case PIXEL_FORMAT_RGBAF16:
       case PIXEL_FORMAT_UNKNOWN:
         break;
     }
@@ -139,6 +140,7 @@ base::Optional<Fourcc> Fourcc::FromVideoPixelFormat(
       case PIXEL_FORMAT_XR30:
       case PIXEL_FORMAT_XB30:
       case PIXEL_FORMAT_BGRA:
+      case PIXEL_FORMAT_RGBAF16:
       case PIXEL_FORMAT_UNKNOWN:
         break;
     }

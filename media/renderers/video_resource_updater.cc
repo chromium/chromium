@@ -133,6 +133,11 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
       buffer_formats[1] = gfx::BufferFormat::RG_88;
       return VideoFrameResourceType::YUV;
 
+    case PIXEL_FORMAT_RGBAF16:
+      DCHECK_EQ(num_textures, 1);
+      buffer_formats[0] = gfx::BufferFormat::RGBA_F16;
+      return VideoFrameResourceType::RGBA;
+
     case PIXEL_FORMAT_UYVY:
       NOTREACHED();
       FALLTHROUGH;

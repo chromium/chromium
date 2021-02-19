@@ -112,6 +112,7 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
                 DXGI_FORMAT_R16G16B16A16_FLOAT)) {
           MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: fp16 scRGBLinear";
           output_dxgi_format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+          output_pixel_format = PIXEL_FORMAT_RGBAF16;
           output_color_space = gfx::ColorSpace::CreateSCRGBLinear();
         } else if (format_checker->CheckOutputFormatSupport(
                        DXGI_FORMAT_R10G10B10A2_UNORM)) {

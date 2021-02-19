@@ -51,9 +51,8 @@ bool DXGIFormatToVizFormat(
       return true;
     case DXGI_FORMAT_R16G16B16A16_FLOAT:
       DCHECK_EQ(textures_per_picture, 1u);
-      if (pixel_format != PIXEL_FORMAT_ARGB) {
+      if (pixel_format != PIXEL_FORMAT_RGBAF16)
         return false;
-      }
       texture_formats[0] = viz::RGBA_F16;
       return true;
     default:  // Unsupported
