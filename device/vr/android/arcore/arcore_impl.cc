@@ -506,10 +506,9 @@ ArCoreImpl::ConfigureFeatures(
 
   const bool depth_api_optional =
       base::Contains(optional_features, device::mojom::XRSessionFeature::DEPTH);
-  const bool depth_api_requested =
-      base::Contains(required_features,
-                     device::mojom::XRSessionFeature::DEPTH) ||
-      depth_api_optional;
+  const bool depth_api_required =
+      base::Contains(required_features, device::mojom::XRSessionFeature::DEPTH);
+  const bool depth_api_requested = depth_api_required || depth_api_optional;
 
   const bool depth_api_configuration_successful =
       depth_api_requested && ConfigureDepthSensing(depth_sensing_config);
@@ -522,14 +521,15 @@ ArCoreImpl::ConfigureFeatures(
   }
 
   ArStatus status = ArSession_configure(ar_session, arcore_config.get());
-  if (status != AR_SUCCESS && depth_api_configuration_successful &&
-      depth_api_optional) {
-    // Configuring an ARCore session failed for some reason.
-    // Depth API may not be available on some ARCore-capable devices - if it was
-    // requested optionally, let's try to request the session w/o it.
+  if (status != AR_SUCCESS && depth_api_requested &&
+      depth_api_configuration_successful && !depth_api_required) {
+    // Configuring an ARCore session failed for some reason, and we know depth
+    // API was requested but is not required to be enabled.
+    // Depth API may not be available on some ARCore-capable devices - since it
+    // was requested optionally, let's try to request the session w/o it.
     // Currently, Depth API is the only feature that is not supported across the
-    // board, so we assume that it is the reason why the session creation
-    // failed.
+    // board, so we speculatively assume that it is the reason why the session
+    // creation failed.
 
     DLOG(WARNING) << __func__
                   << ": Depth API was optionally requested and the session "

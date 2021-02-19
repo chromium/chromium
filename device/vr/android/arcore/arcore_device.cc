@@ -366,7 +366,8 @@ void ArCoreDevice::RequestArCoreGlInitialization(
 
 void ArCoreDevice::OnArCoreGlInitializationComplete(
     base::Optional<ArCoreGlInitializeResult> arcore_initialization_result) {
-  DVLOG(1) << __func__;
+  DVLOG(1) << __func__ << ": arcore_initialization_result.has_value()="
+           << arcore_initialization_result.has_value();
   DCHECK(IsOnMainThread());
 
   session_state_->is_arcore_gl_initialized_ =

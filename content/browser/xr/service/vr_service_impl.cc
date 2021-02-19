@@ -290,6 +290,27 @@ void VRServiceImpl::OnImmersiveSessionCreated(
   DVLOG(3) << __func__
            << ": enabled_features.size()=" << enabled_features.size();
 
+  // Try to find a required feature that was not enabled on the created session:
+  auto required_but_not_enabled_it =
+      std::find_if(request.options->required_features.begin(),
+                   request.options->required_features.end(),
+                   [&enabled_features](const auto& required_feature) {
+                     return !base::Contains(enabled_features, required_feature);
+                   });
+  if (required_but_not_enabled_it != request.options->required_features.end()) {
+    DVLOG(2) << __func__
+             << ": one of the required features was not enabled on the created "
+                "session, feature: "
+             << *required_but_not_enabled_it;
+    // UNKNOWN_FAILURE since a runtime should not return a session if there
+    // exists a required feature that was not enabled - this would signify a bug
+    // in the runtime.
+    std::move(request.callback)
+        .Run(device::mojom::RequestSessionResult::NewFailureReason(
+            device::mojom::RequestSessionError::UNKNOWN_FAILURE));
+    return;
+  }
+
   // Get the metrics tracker for the new immersive session
   mojo::PendingRemote<device::mojom::XRSessionMetricsRecorder>
       session_metrics_recorder =
