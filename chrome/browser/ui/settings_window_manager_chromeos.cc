@@ -9,6 +9,7 @@
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/window_properties.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -77,6 +78,16 @@ void SettingsWindowManager::ShowChromePageForProfile(Profile* profile,
   if (!profile->IsGuestSession() && profile->IsOffTheRecord())
     profile = profile->GetOriginalProfile();
 
+  // If this profile isn't allowed to create browser windows (e.g. the login
+  // screen profile) then bail out. Neither the new SWA code path nor the legacy
+  // code path can successfully open the window for these profiles.
+  if (Browser::GetCreationStatusForProfile(profile) !=
+      Browser::CreationStatus::kOk) {
+    LOG(ERROR) << "Unable to open settings for this profile, url "
+               << gurl.spec();
+    return;
+  }
+
   // TODO(crbug.com/1067073): Remove legacy Settings Window.
   if (!UseDeprecatedSettingsWindow(profile)) {
     web_app::LaunchSystemWebAppAsync(profile, web_app::SystemAppType::SETTINGS,
@@ -113,6 +124,7 @@ void SettingsWindowManager::ShowChromePageForProfile(Profile* profile,
   params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
   Navigate(&params);
   browser = params.browser;
+  CHECK(browser);  // See https://crbug.com/1174525
 
   // operator[] not used because SessionID has no default constructor.
   settings_session_map_.emplace(profile, SessionID::InvalidValue())
