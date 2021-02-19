@@ -88,15 +88,6 @@ GPUTexture* GPUTexture::Create(GPUDevice* device,
   DCHECK(device);
   DCHECK(webgpu_desc);
 
-  // Check size is correctly formatted before further processing.
-  const UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& size =
-      webgpu_desc->size();
-  if (size.IsUnsignedLongEnforceRangeSequence() &&
-      size.GetAsUnsignedLongEnforceRangeSequence().size() != 3) {
-    exception_state.ThrowRangeError("size length must be 3");
-    return nullptr;
-  }
-
   std::string label;
   WGPUTextureDescriptor dawn_desc = AsDawnType(webgpu_desc, &label, device);
 
