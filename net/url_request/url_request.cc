@@ -616,8 +616,8 @@ void URLRequest::StartJob(std::unique_ptr<URLRequestJob> job) {
 
   net_log_.BeginEvent(NetLogEventType::URL_REQUEST_START_JOB, [&] {
     return NetLogURLRequestStartParams(
-        url(), method_, load_flags_, privacy_mode_,
-        isolation_info_.network_isolation_key(), site_for_cookies_, initiator_,
+        url(), method_, load_flags_, privacy_mode_, isolation_info_,
+        site_for_cookies_, initiator_,
         upload_data_stream_ ? upload_data_stream_->identifier() : -1);
   });
 

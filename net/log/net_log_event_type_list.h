@@ -833,6 +833,8 @@ EVENT_TYPE(SOCKET_POOL_CLOSING_SOCKET)
 //      "load_flags": <Numeric value of the combined load flags>,
 //      "privacy_mode": <Privacy mode associated with the request>,
 //      "network_isolation_key": <NIK associated with the request>,
+//      "request_type": <Type of the request, which is "main frame", "subframe",
+//                       or "other">,
 //      "priority": <Numeric priority of the request>,
 //      "site_for_cookies": <SiteForCookies associated with the request>,
 //      "traffic_annotation": <int32 for the request's TrafficAnnotationTag>,
