@@ -2244,6 +2244,11 @@ float ComputedStyle::GetOutlineStrokeWidthForFocusRing() const {
 #endif
 }
 
+bool ComputedStyle::StrokeDashArrayDataEquivalent(
+    const ComputedStyle& other) const {
+  return StrokeDashArray()->data == other.StrokeDashArray()->data;
+}
+
 bool ComputedStyle::ColumnRuleEquivalent(
     const ComputedStyle& other_style) const {
   return ColumnRuleStyle() == other_style.ColumnRuleStyle() &&

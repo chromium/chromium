@@ -36,25 +36,16 @@ namespace blink {
 SVGComputedStyle::SVGComputedStyle() {
   static SVGComputedStyle* initial_style = new SVGComputedStyle(kCreateInitial);
 
-  stroke = initial_style->stroke;
   inherited_resources = initial_style->inherited_resources;
-
-  SetBitDefaults();
 }
 
 SVGComputedStyle::SVGComputedStyle(CreateInitialType) {
-  SetBitDefaults();
-
-  stroke.Init();
   inherited_resources.Init();
 }
 
 SVGComputedStyle::SVGComputedStyle(const SVGComputedStyle& other)
     : RefCounted<SVGComputedStyle>() {
-  stroke = other.stroke;
   inherited_resources = other.inherited_resources;
-
-  svg_inherited_flags = other.svg_inherited_flags;
 }
 
 SVGComputedStyle::~SVGComputedStyle() = default;
@@ -64,22 +55,11 @@ bool SVGComputedStyle::operator==(const SVGComputedStyle& other) const {
 }
 
 bool SVGComputedStyle::InheritedEqual(const SVGComputedStyle& other) const {
-  return stroke == other.stroke &&
-         inherited_resources == other.inherited_resources &&
-         svg_inherited_flags == other.svg_inherited_flags;
+  return inherited_resources == other.inherited_resources;
 }
 
 void SVGComputedStyle::InheritFrom(const SVGComputedStyle& svg_inherit_parent) {
-  stroke = svg_inherit_parent.stroke;
   inherited_resources = svg_inherit_parent.inherited_resources;
-
-  svg_inherited_flags = svg_inherit_parent.svg_inherited_flags;
-}
-
-scoped_refptr<SVGDashArray> SVGComputedStyle::InitialStrokeDashArray() {
-  DEFINE_STATIC_REF(SVGDashArray, initial_dash_array,
-                    base::MakeRefCounted<SVGDashArray>());
-  return initial_dash_array;
 }
 
 StyleDifference SVGComputedStyle::Diff(const SVGComputedStyle& other) const {
@@ -102,47 +82,11 @@ bool SVGComputedStyle::DiffNeedsLayoutAndPaintInvalidation(
   if (inherited_resources != other.inherited_resources)
     return true;
 
-  // These properties affect the cached stroke bounding box rects.
-  if (svg_inherited_flags.cap_style != other.svg_inherited_flags.cap_style ||
-      svg_inherited_flags.join_style != other.svg_inherited_flags.join_style)
-    return true;
-
-  // Some stroke properties require relayouts as the cached stroke boundaries
-  // need to be recalculated.
-  if (stroke.Get() != other.stroke.Get()) {
-    if (stroke->width != other.stroke->width ||
-        stroke->miter_limit != other.stroke->miter_limit)
-      return true;
-    // If the stroke is toggled from/to 'none' we need to relayout, because the
-    // stroke shape will have changed.
-    if (stroke->paint.IsNone() != other.stroke->paint.IsNone())
-      return true;
-    // If the dash array is toggled from/to 'none' we need to relayout, because
-    // some shapes will decide on which codepath to use based on the presence
-    // of a dash array.
-    if (stroke->dash_array->data.IsEmpty() !=
-        other.stroke->dash_array->data.IsEmpty())
-      return true;
-  }
-
   return false;
 }
 
 bool SVGComputedStyle::DiffNeedsPaintInvalidation(
     const SVGComputedStyle& other) const {
-  if (stroke.Get() != other.stroke.Get()) {
-    if (stroke->paint != other.stroke->paint ||
-        stroke->opacity != other.stroke->opacity ||
-        stroke->visited_link_paint != other.stroke->visited_link_paint)
-      return true;
-    // Changes to the dash effect only require a repaint because we don't
-    // include it when computing (approximating) the stroke boundaries during
-    // layout.
-    if (stroke->dash_offset != other.stroke->dash_offset ||
-        stroke->dash_array->data != other.stroke->dash_array->data)
-      return true;
-  }
-
   return false;
 }
 

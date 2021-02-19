@@ -126,15 +126,14 @@ void CSSPaintInterpolationType::ApplyStandardPropertyValue(
     StyleResolverState& state) const {
   Color color = CSSColorInterpolationType::ResolveInterpolableColor(
       interpolable_color, state);
-  SVGComputedStyle& mutable_svg_style = state.Style()->AccessSVGStyle();
   switch (CssProperty().PropertyID()) {
     case CSSPropertyID::kFill:
       state.Style()->SetFillPaint(SVGPaint(color));
       state.Style()->SetInternalVisitedFillPaint(SVGPaint(color));
       break;
     case CSSPropertyID::kStroke:
-      mutable_svg_style.SetStrokePaint(SVGPaint(color));
-      mutable_svg_style.SetInternalVisitedStrokePaint(SVGPaint(color));
+      state.Style()->SetStrokePaint(SVGPaint(color));
+      state.Style()->SetInternalVisitedStrokePaint(SVGPaint(color));
       break;
     default:
       NOTREACHED();

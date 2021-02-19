@@ -33,32 +33,6 @@
 
 namespace blink {
 
-StyleStrokeData::StyleStrokeData()
-    : opacity(SVGComputedStyle::InitialStrokeOpacity()),
-      miter_limit(SVGComputedStyle::InitialStrokeMiterLimit()),
-      width(SVGComputedStyle::InitialStrokeWidth()),
-      dash_offset(SVGComputedStyle::InitialStrokeDashOffset()),
-      dash_array(SVGComputedStyle::InitialStrokeDashArray()),
-      paint(SVGComputedStyle::InitialStrokePaint()),
-      visited_link_paint(SVGComputedStyle::InitialStrokePaint()) {}
-
-StyleStrokeData::StyleStrokeData(const StyleStrokeData& other)
-    : RefCounted<StyleStrokeData>(),
-      opacity(other.opacity),
-      miter_limit(other.miter_limit),
-      width(other.width),
-      dash_offset(other.dash_offset),
-      dash_array(other.dash_array),
-      paint(other.paint),
-      visited_link_paint(other.visited_link_paint) {}
-
-bool StyleStrokeData::operator==(const StyleStrokeData& other) const {
-  return width == other.width && opacity == other.opacity &&
-         miter_limit == other.miter_limit && dash_offset == other.dash_offset &&
-         dash_array->data == other.dash_array->data && paint == other.paint &&
-         visited_link_paint == other.visited_link_paint;
-}
-
 StyleInheritedResourceData::StyleInheritedResourceData()
     : marker_start(SVGComputedStyle::InitialMarkerStartResource()),
       marker_mid(SVGComputedStyle::InitialMarkerMidResource()),

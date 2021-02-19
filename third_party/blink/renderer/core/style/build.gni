@@ -113,5 +113,4 @@ blink_core_tests_style = [
   "style_name_or_keyword_test.cc",
   "style_name_test.cc",
   "style_variables_test.cc",
-  "svg_computed_style_test.cc",
 ]

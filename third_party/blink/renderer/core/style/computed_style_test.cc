@@ -1132,6 +1132,31 @@ TEST(ComputedStyleTest, ApplyInitialAnimationNameAndTransitionProperty) {
     EXPECT_FALSE(diff.HasDifference());                             \
   }
 
+// Ensures ref-counted values are compared by their values, not by pointers.
+#define TEST_STYLE_REFCOUNTED_VALUE_NO_DIFF(type, field_name)              \
+  {                                                                        \
+    scoped_refptr<ComputedStyle> style1 = ComputedStyle::Create();         \
+    scoped_refptr<ComputedStyle> style2 = ComputedStyle::Create();         \
+    scoped_refptr<type> value1 = base::MakeRefCounted<type>();             \
+    scoped_refptr<type> value2 = base::MakeRefCounted<type>(value1->data); \
+    style1->Set##field_name(value1);                                       \
+    style2->Set##field_name(value2);                                       \
+    auto diff = style1->VisualInvalidationDiff(*document, *style2);        \
+    EXPECT_FALSE(diff.HasDifference());                                    \
+  }
+
+TEST(ComputedStyleTest, SvgStrokeStyleShouldCompareValue) {
+  Persistent<Document> document = Document::CreateForTest();
+  TEST_STYLE_VALUE_NO_DIFF(StrokeOpacity);
+  TEST_STYLE_VALUE_NO_DIFF(StrokeMiterLimit);
+  TEST_STYLE_VALUE_NO_DIFF(StrokeWidth);
+  TEST_STYLE_VALUE_NO_DIFF(StrokeDashOffset);
+  TEST_STYLE_REFCOUNTED_VALUE_NO_DIFF(SVGDashArray, StrokeDashArray);
+
+  TEST_STYLE_VALUE_NO_DIFF(StrokePaint);
+  TEST_STYLE_VALUE_NO_DIFF(InternalVisitedStrokePaint);
+}
+
 TEST(ComputedStyleTest, SvgMiscStyleShouldCompareValue) {
   Persistent<Document> document = Document::CreateForTest();
   TEST_STYLE_VALUE_NO_DIFF(FloodColor);

@@ -62,58 +62,9 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   bool operator!=(const SVGComputedStyle& o) const { return !(*this == o); }
 
   // Initial values for all the properties
-  static LineCap InitialCapStyle() { return kButtCap; }
-  static LineJoin InitialJoinStyle() { return kMiterJoin; }
-  static float InitialStrokeOpacity() { return 1; }
-  static SVGPaint InitialStrokePaint() { return SVGPaint(); }
-  static scoped_refptr<SVGDashArray> InitialStrokeDashArray();
-  static Length InitialStrokeDashOffset() { return Length::Fixed(); }
-  static float InitialStrokeMiterLimit() { return 4; }
-  static UnzoomedLength InitialStrokeWidth() {
-    return UnzoomedLength(Length::Fixed(1));
-  }
   static StyleSVGResource* InitialMarkerStartResource() { return nullptr; }
   static StyleSVGResource* InitialMarkerMidResource() { return nullptr; }
   static StyleSVGResource* InitialMarkerEndResource() { return nullptr; }
-
-  // SVG CSS Property setters
-  void SetCapStyle(LineCap val) { svg_inherited_flags.cap_style = val; }
-  void SetJoinStyle(LineJoin val) { svg_inherited_flags.join_style = val; }
-
-  void SetStrokeOpacity(float obj) {
-    if (!(stroke->opacity == obj))
-      stroke.Access()->opacity = obj;
-  }
-
-  void SetStrokePaint(const SVGPaint& paint) {
-    if (!(stroke->paint == paint))
-      stroke.Access()->paint = paint;
-  }
-
-  void SetInternalVisitedStrokePaint(const SVGPaint& paint) {
-    if (!(stroke->visited_link_paint == paint))
-      stroke.Access()->visited_link_paint = paint;
-  }
-
-  void SetStrokeDashArray(scoped_refptr<SVGDashArray> dash_array) {
-    if (stroke->dash_array->data != dash_array->data)
-      stroke.Access()->dash_array = std::move(dash_array);
-  }
-
-  void SetStrokeMiterLimit(float obj) {
-    if (!(stroke->miter_limit == obj))
-      stroke.Access()->miter_limit = obj;
-  }
-
-  void SetStrokeWidth(const UnzoomedLength& stroke_width) {
-    if (!(stroke->width == stroke_width))
-      stroke.Access()->width = stroke_width;
-  }
-
-  void SetStrokeDashOffset(const Length& dash_offset) {
-    if (!(stroke->dash_offset == dash_offset))
-      stroke.Access()->dash_offset = dash_offset;
-  }
 
   // Setters for inherited resources
   void SetMarkerStartResource(scoped_refptr<StyleSVGResource> resource);
@@ -123,16 +74,6 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   void SetMarkerEndResource(scoped_refptr<StyleSVGResource> resource);
 
   // Read accessors for all the properties
-  LineCap CapStyle() const { return (LineCap)svg_inherited_flags.cap_style; }
-  LineJoin JoinStyle() const {
-    return (LineJoin)svg_inherited_flags.join_style;
-  }
-  float StrokeOpacity() const { return stroke->opacity; }
-  const SVGPaint& StrokePaint() const { return stroke->paint; }
-  SVGDashArray* StrokeDashArray() const { return stroke->dash_array.get(); }
-  float StrokeMiterLimit() const { return stroke->miter_limit; }
-  const UnzoomedLength& StrokeWidth() const { return stroke->width; }
-  const Length& StrokeDashOffset() const { return stroke->dash_offset; }
   StyleSVGResource* MarkerStartResource() const {
     return inherited_resources->marker_start.get();
   }
@@ -143,27 +84,8 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
     return inherited_resources->marker_end.get();
   }
 
-  const SVGPaint& InternalVisitedStrokePaint() const {
-    return stroke->visited_link_paint;
-  }
-
  protected:
-  // inherit
-  struct InheritedFlags {
-    bool operator==(const InheritedFlags& other) const {
-      return (cap_style == other.cap_style) && (join_style == other.join_style);
-    }
-
-    bool operator!=(const InheritedFlags& other) const {
-      return !(*this == other);
-    }
-
-    unsigned cap_style : 2;                    // LineCap
-    unsigned join_style : 2;                   // LineJoin
-  } svg_inherited_flags;
-
   // inherited attributes
-  DataRef<StyleStrokeData> stroke;
   DataRef<StyleInheritedResourceData> inherited_resources;
 
  private:
@@ -176,11 +98,6 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
 
   bool DiffNeedsLayoutAndPaintInvalidation(const SVGComputedStyle& other) const;
   bool DiffNeedsPaintInvalidation(const SVGComputedStyle& other) const;
-
-  void SetBitDefaults() {
-    svg_inherited_flags.cap_style = InitialCapStyle();
-    svg_inherited_flags.join_style = InitialJoinStyle();
-  }
 };
 
 }  // namespace blink

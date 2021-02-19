@@ -104,7 +104,8 @@
                 "column-rule-width", "column-rule-color", "-internal-visited-column-rule-color",
                 "column-count", "HasAutoColumnCount", "HasAutoColumnWidth", "column-fill", "column-span",
                 "cx", "cy", "d", "rx", "ry", "x", "y", "r", "alignment-baseline", "vector-effect",
-                "BaselineShiftType", "baseline-shift", "dominant-baseline", "text-anchor",],
+                "BaselineShiftType", "baseline-shift", "dominant-baseline", "text-anchor",
+                "stroke-width", "stroke-miterlimit", "stroke-linecap", "stroke-linejoin",],
         methods_to_diff: [
           {
             method: "BorderLeftWidth()",
@@ -161,6 +162,14 @@
           {
             method: "OriginalDisplay()",
             field_dependencies: ["OriginalDisplay"]
+          },
+          {
+            method: "HasStroke()",
+            field_dependencies: ["stroke"]
+          },
+          {
+            method: "HasDashArray()",
+            field_dependencies: ["stroke-dasharray"]
           },
         ],
         predicates_to_test: [
@@ -242,7 +251,8 @@
                 "stop-color", "stop-opacity", "flood-color", "flood-opacity",
                 "lighting-color", "shape-rendering", "clip-rule", "fill-rule",
                 "color-interpolation", "color-interpolation-filters", "paint-order",
-                "fill", "fill-opacity"],
+                "fill", "fill-opacity", "stroke", "stroke-opacity",
+                "-internal-visited-stroke", "stroke-dashoffset"],
         methods_to_diff: [
           {
             method: "Visibility()",
@@ -305,6 +315,10 @@
           {
             predicate: "a.InternalVisitedOutlineColorHasNotChanged(b)",
             field_dependencies: ["-internal-visited-outline-color"]
+          },
+          {
+            predicate: "a.StrokeDashArrayDataEquivalent(b)",
+            field_dependencies: ["stroke-dasharray"]
           },
         ]
     },

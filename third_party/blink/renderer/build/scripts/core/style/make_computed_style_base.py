@@ -64,6 +64,7 @@ ALIGNMENT_ORDER = [
     'FloatSize',
     'LengthPoint',
     'Length',
+    'UnzoomedLength',
     'TextSizeAdjust',
     'TabSize',
     'float',
