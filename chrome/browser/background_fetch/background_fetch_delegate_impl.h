@@ -12,18 +12,20 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/download/public/background_service/download_params.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/offline_items_collection/core/update_delta.h"
 #include "content/public/browser/background_fetch_delegate.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/gfx/image/image.h"
 #include "url/origin.h"
 
-class Profile;
+class HostContentSettingsMap;
+
+namespace content {
+class BrowserContext;
+}
 
 namespace download {
 class DownloadService;
@@ -41,9 +43,40 @@ class BackgroundFetchDelegateImpl
       public offline_items_collection::OfflineContentProvider,
       public KeyedService {
  public:
-  BackgroundFetchDelegateImpl(Profile* profile,
-                              const std::string& provider_namespace);
+  // Provides embedder-specific KeyedServices and functionality to
+  // BackgroundFetchDelegateImpl.
+  class Embedder {
+   public:
+    virtual ~Embedder() = default;
 
+    // Gets the OfflineContentAggregator associated with |context_|. Should not
+    // return null.
+    virtual offline_items_collection::OfflineContentAggregator*
+    GetOfflineContentAggregator() = 0;
+
+    // Gets the download service associated with |context_|. Should not return
+    // null.
+    virtual download::DownloadService* GetDownloadService() = 0;
+
+    // Gets the content settings map associated with |context_|. Should not
+    // return null.
+    virtual HostContentSettingsMap* GetHostContentSettingsMap() = 0;
+
+    // Called to give the embedder a chance to do any extra setup necessary for
+    // |offline_item|, which is associated with a download job.
+    virtual void UpdateOfflineItem(
+        offline_items_collection::OfflineItem* offline_item) = 0;
+
+    // Called when the job is done; used by Chrome to record UKM.
+    virtual void OnJobCompleted(const url::Origin& origin,
+                                bool user_initiated_abort) = 0;
+  };
+
+  BackgroundFetchDelegateImpl(content::BrowserContext* context,
+                              std::unique_ptr<Embedder> embedder);
+  BackgroundFetchDelegateImpl(const BackgroundFetchDelegateImpl&) = delete;
+  BackgroundFetchDelegateImpl& operator=(const BackgroundFetchDelegateImpl&) =
+      delete;
   ~BackgroundFetchDelegateImpl() override;
 
   // Lazily initializes and returns the DownloadService.
@@ -140,10 +173,6 @@ class BackgroundFetchDelegateImpl
  private:
   FRIEND_TEST_ALL_PREFIXES(BackgroundFetchBrowserTest, ClickEventIsDispatched);
   FRIEND_TEST_ALL_PREFIXES(BackgroundFetchDelegateImplTest, RecordUkmEvent);
-  FRIEND_TEST_ALL_PREFIXES(BackgroundFetchDelegateImplTest,
-                           HistoryServiceIntegration);
-  FRIEND_TEST_ALL_PREFIXES(BackgroundFetchDelegateImplTest,
-                           HistoryServiceIntegrationUrlVsOrigin);
 
   struct JobDetails {
     // If a job is part of the |job_details_map_|, it will have one of these
@@ -163,11 +192,7 @@ class BackgroundFetchDelegateImpl
     };
 
     JobDetails(JobDetails&&);
-    JobDetails(
-        base::WeakPtr<Client> client,
-        std::unique_ptr<content::BackgroundFetchDescription> fetch_description,
-        const std::string& provider_namespace,
-        const Profile* profile);
+    JobDetails();
     ~JobDetails();
 
     void UpdateOfflineItem();
@@ -255,17 +280,10 @@ class BackgroundFetchDelegateImpl
   // Returns the client for a given |job_unique_id|.
   base::WeakPtr<Client> GetClient(const std::string& job_unique_id);
 
-  // Helper methods for recording BackgroundFetchDeletingRegistration UKM event.
-  // We check with UkmBackgroundRecorderService whether this event for |origin|
-  // can be recorded.
-  void RecordBackgroundFetchDeletingRegistrationUkmEvent(
-      const url::Origin& origin,
-      bool user_initiated_abort);
-  void DidGetBackgroundSourceId(bool user_initiated_abort,
-                                base::Optional<ukm::SourceId> source_id);
+  // The browser context this service is being created for.
+  content::BrowserContext* context_;
 
-  // The profile this service is being created for.
-  Profile* profile_;
+  std::unique_ptr<Embedder> embedder_;
 
   // The namespace provided to the |offline_content_aggregator_| and used when
   // creating Content IDs.
@@ -285,8 +303,6 @@ class BackgroundFetchDelegateImpl
       offline_content_aggregator_;
 
   base::WeakPtrFactory<BackgroundFetchDelegateImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchDelegateImpl);
 };
 
 #endif  // CHROME_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_DELEGATE_IMPL_H_
