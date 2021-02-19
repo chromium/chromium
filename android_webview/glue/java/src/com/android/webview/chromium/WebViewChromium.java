@@ -305,10 +305,6 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             } else if (!mFactory.hasStarted()) {
                 if (Looper.myLooper() == Looper.getMainLooper()) {
                     mFactory.startYourEngines(true);
-                } else {
-                    // Record which thread we're on now so we can track whether the final UI thread
-                    // decision differed.
-                    mFactory.getAwInit().setFirstWebViewConstructedOn(Looper.myLooper());
                 }
             }
 

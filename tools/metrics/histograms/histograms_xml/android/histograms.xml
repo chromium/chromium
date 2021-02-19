@@ -2242,6 +2242,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.WebView.ActualUiThread"
     enum="AndroidWebViewActualUiThread" expires_after="2021-03-31">
+  <obsolete>
+    Removed Feb 2021; they virtually always use the main thread.
+  </obsolete>
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>

@@ -16,8 +16,6 @@ import android.webkit.GeolocationPermissions;
 import android.webkit.WebStorage;
 import android.webkit.WebViewDatabase;
 
-import androidx.annotation.IntDef;
-
 import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContents;
@@ -94,7 +92,6 @@ public class WebViewChromiumAwInit {
     private static final int INIT_FINISHED = 2;
     // Read/write protected by mLock
     private int mInitState;
-    private Looper mFirstWebViewConstructedOn;
 
     private final WebViewChromiumFactoryProvider mFactory;
 
@@ -249,32 +246,6 @@ public class WebViewChromiumAwInit {
         }
     }
 
-    // Only called for apps which target <JB MR2, and which construct WebView on a non-main thread.
-    void setFirstWebViewConstructedOn(Looper looper) {
-        synchronized (mLock) {
-            if (mInitState != INIT_FINISHED && mFirstWebViewConstructedOn == null) {
-                mFirstWebViewConstructedOn = looper;
-            }
-        }
-    }
-
-    // Used to record the UMA histogram Android.WebView.ActualUiThread. Since these values are
-    // persisted to logs, they should never be renumbered or reused.
-    @IntDef({ActualUiThread.FIRST_WEBVIEW_CONSTRUCTED, ActualUiThread.MAIN_LOOPER,
-            ActualUiThread.OTHER})
-    @interface ActualUiThread {
-        int FIRST_WEBVIEW_CONSTRUCTED = 0;
-        int MAIN_LOOPER = 1;
-        int OTHER = 2;
-
-        int COUNT = 3;
-    }
-
-    private static void recordActualUiThread(@ActualUiThread int value) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.WebView.ActualUiThread", value, ActualUiThread.COUNT);
-    }
-
     boolean hasStarted() {
         return mInitState == INIT_FINISHED;
     }
@@ -347,23 +318,6 @@ public class WebViewChromiumAwInit {
                         + (Looper.getMainLooper().equals(looper) ? "main" : "background")
                         + " looper " + looper);
         ThreadUtils.setUiThread(looper);
-
-        // For apps targeting <JBMR2 which aren't required to commit to a thread in
-        // WebViewChromium.init, record a metric stating which thread we picked.
-        if (mFirstWebViewConstructedOn != null) {
-            if (looper == mFirstWebViewConstructedOn) {
-                // Using the same thread that the first WebView was constructed on.
-                recordActualUiThread(ActualUiThread.FIRST_WEBVIEW_CONSTRUCTED);
-            } else if (looper == Looper.getMainLooper()) {
-                // Using the main looper.
-                recordActualUiThread(ActualUiThread.MAIN_LOOPER);
-            } else {
-                // Using some other thread.
-                recordActualUiThread(ActualUiThread.OTHER);
-            }
-            // Reset to null to avoid leaking the app's looper.
-            mFirstWebViewConstructedOn = null;
-        }
     }
 
     private void initPlatSupportLibrary() {

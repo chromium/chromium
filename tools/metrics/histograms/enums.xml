@@ -2135,6 +2135,9 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <enum name="AndroidWebViewActualUiThread">
+  <obsolete>
+    Removed 02/2020. The ActualUiThread metric has been removed.
+  </obsolete>
   <int value="0" label="The thread on which the first WebView was constructed"/>
   <int value="1" label="The main looper"/>
   <int value="2" label="Some other thread"/>
