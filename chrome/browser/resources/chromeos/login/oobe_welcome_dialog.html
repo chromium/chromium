@@ -154,9 +154,7 @@
       }
 
       :host-context([orientation=vertical]) #newTitle {
-        align-self: center;
         margin-top: 40px;
-        text-align: center;
       }
 
       #newSubtitle {
@@ -172,17 +170,26 @@
       }
 
       :host-context([orientation=vertical]) #newSubtitle {
-        align-self: center;
         margin-bottom: 40px;
+      }
+
+      .new-welcome-header-text {
+        font-weight: 500; /* medium */
+      }
+      :host-context([orientation=vertical]) .new-welcome-header-text {
+        align-self: center;
         text-align: center;
+      }
+      :host-context([orientation=horizontal]) .new-welcome-header-text {
+        text-align: start;
       }
     </style>
     <link rel="stylesheet" href="oobe_welcome_dialog.css">
     <div id="newDialog" class="layout vertical" hidden="[[!isNewLayout_]]">
-      <h1 id="newTitle">
+      <h1 id="newTitle" class="new-welcome-header-text">
         [[i18nDynamic(locale, 'newWelcomeScreenGreeting')]]
       </h1>
-      <div id="newSubtitle">
+      <div id="newSubtitle" class="new-welcome-header-text">
         [[i18nDynamic(locale, 'newWelcomeScreenGreetingSubtitle')]]
       </div>
       <div id="newContent">
