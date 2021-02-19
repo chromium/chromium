@@ -155,7 +155,6 @@ crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-02
 crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-028.html [ Failure ]
 crbug.com/1154572 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-030.html [ Failure ]
 crbug.com/1157740 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-024.html [ Failure ]
-crbug.com/1168717 external/wpt/css/css-sizing/aspect-ratio/intrinsic-size-010.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-sizing/clone-nowrap-intrinsic-size-bidi.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-sizing/intrinsic-percent-non-replaced-004.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-sizing/intrinsic-percent-non-replaced-005.html [ Failure ]

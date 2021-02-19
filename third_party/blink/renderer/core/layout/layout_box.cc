@@ -1280,8 +1280,10 @@ LayoutUnit LayoutBox::ConstrainLogicalWidthByMinMax(
 
   // If we have an aspect-ratio, check if we need to apply min-width: auto.
   Length min_length = style_to_use.LogicalMinWidth();
-  if (!style_to_use.AspectRatio().IsAuto() &&
-      style_to_use.LogicalWidth().IsAuto() && min_length.IsAuto() &&
+  if (!style_to_use.AspectRatio().IsAuto() && min_length.IsAuto() &&
+      (style_to_use.LogicalWidth().IsAuto() ||
+       style_to_use.LogicalWidth().IsMinContent() ||
+       style_to_use.LogicalWidth().IsMaxContent()) &&
       style_to_use.OverflowInlineDirection() == EOverflow::kVisible) {
     // Make sure we actually used the aspect ratio.
     if (ShouldComputeLogicalWidthFromAspectRatio())
