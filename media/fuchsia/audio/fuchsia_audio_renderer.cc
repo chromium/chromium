@@ -287,7 +287,7 @@ void FuchsiaAudioRenderer::StopTicking() {
   audio_consumer_->Stop();
 
   base::AutoLock lock(timeline_lock_);
-  UpdateTimelineAfterStop();
+  UpdateTimelineOnStop();
   SetPlaybackState(PlaybackState::kStopped);
 }
 
@@ -296,9 +296,17 @@ void FuchsiaAudioRenderer::SetPlaybackRate(double playback_rate) {
 
   audio_consumer_->SetRate(playback_rate);
 
+  // AudioConsumer will update media timeline asynchronously. That update is
+  // processed in OnAudioConsumerStatusChanged(). This might cause the clock to
+  // go back. It's not desirable, e.g. because VideoRenderer could drop some
+  // video frames that should be shown when the stream is resumed. To avoid this
+  // issue update the timeline synchronously. OnAudioConsumerStatusChanged()
+  // will still process the update from AudioConsumer to save the position when
+  // the stream was actually paused, but that update would not move the clock
+  // backward.
   if (playback_rate == 0.0) {
     base::AutoLock lock(timeline_lock_);
-    UpdateTimelineAfterStop();
+    UpdateTimelineOnStop();
   }
 }
 
@@ -312,8 +320,8 @@ void FuchsiaAudioRenderer::SetMediaTime(base::TimeDelta time) {
 
     // Reset reference timestamp. This is necessary to ensure that the correct
     // value is returned from GetWallClockTimes() until playback is resumed:
-    // the interface requires to return 0 wall clock between SetMediaTime() and
-    // StartTicking().
+    // GetWallClockTimes() is required to return 0 wall clock between
+    // SetMediaTime() and StartTicking().
     reference_time_ = base::TimeTicks();
   }
 
@@ -634,7 +642,7 @@ bool FuchsiaAudioRenderer::IsTimeMoving() {
          (media_delta_ > 0);
 }
 
-void FuchsiaAudioRenderer::UpdateTimelineAfterStop() {
+void FuchsiaAudioRenderer::UpdateTimelineOnStop() {
   if (!IsTimeMoving())
     return;
 

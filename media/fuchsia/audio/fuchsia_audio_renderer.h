@@ -124,13 +124,13 @@ class FuchsiaAudioRenderer : public AudioRenderer, public TimeSource {
 
   // Updates TimelineFunction parameters after StopTicking() or
   // SetPlaybackRate(0.0). Normally these parameters are provided by
-  // AudioConsumer, but this happens asynchronously, while we need to make sure
+  // AudioConsumer, but this happens asynchronously and we need to make sure
   // that StopTicking() and SetPlaybackRate(0.0) stop the media clock
-  // synchronously.
-  void UpdateTimelineAfterStop() EXCLUSIVE_LOCKS_REQUIRED(timeline_lock_);
+  // synchronously. Must be called before updating the |state_|.
+  void UpdateTimelineOnStop() EXCLUSIVE_LOCKS_REQUIRED(timeline_lock_);
 
   // Calculates media position based on the TimelineFunction returned from
-  // AudioConsumer. Should be called only when IsTimeMoving() is true.
+  // AudioConsumer. Must be called only when IsTimeMoving() is true.
   base::TimeDelta CurrentMediaTimeLocked()
       EXCLUSIVE_LOCKS_REQUIRED(timeline_lock_);
 
