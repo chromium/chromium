@@ -3,51 +3,8 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
 import("../os_settings.gni")
-
-js_type_check("closure_compile") {
-  uses_legacy_modules = true
-  deps = [
-    ":android_apps_browser_proxy",
-    ":android_apps_subpage",
-    ":os_apps_page",
-  ]
-}
-
-js_library("android_apps_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr" ]
-}
-
-js_library("android_apps_subpage") {
-  deps = [
-    ":android_apps_browser_proxy",
-    "..:deep_linking_behavior",
-    "..:os_route",
-    "../..:router",
-    "../../prefs:prefs_behavior",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink",
-  ]
-}
-
-js_library("os_apps_page") {
-  deps = [
-    ":android_apps_browser_proxy",
-    ":android_apps_subpage",
-    "..:deep_linking_behavior",
-    "..:os_route",
-    "../../:router",
-    "../../prefs:prefs_behavior",
-    "../../settings_page:settings_animated_pages",
-    "../localized_link:localized_link",
-    "app_management_page",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-  ]
-
-  externs_list = [ "$externs_path/metrics_private.js" ]
-}
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
@@ -99,8 +56,6 @@ js_library("os_apps_page.m") {
   extra_deps = [ ":os_apps_page_module" ]
   externs_list = [ "$externs_path/metrics_private.js" ]
 }
-
-import("//tools/polymer/polymer.gni")
 
 group("polymer3_elements") {
   public_deps = [
