@@ -15,11 +15,13 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chrome/browser/android/contextualsearch/contextual_search_context.h"
 #include "chrome/browser/android/contextualsearch/resolved_search_term.h"
 #include "chrome/browser/android/proto/client_discourse_context.pb.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/search_engines/template_url_service.h"
 #include "net/base/escape.h"
@@ -56,6 +58,7 @@ class ContextualSearchDelegateTest : public testing::Test {
         base::BindRepeating(
             &ContextualSearchDelegateTest::recordSampleSelectionAvailable,
             base::Unretained(this))));
+    feature_list_.InitAndEnableFeature(chrome::android::kRelatedSearches);
   }
 
   void TearDown() override {
@@ -300,6 +303,9 @@ class ContextualSearchDelegateTest : public testing::Test {
 
   // Will be owned by the delegate.
   ContextualSearchContext* test_context_;
+
+  // Features to enable
+  base::test::ScopedFeatureList feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(ContextualSearchDelegateTest);
 };
@@ -559,7 +565,8 @@ TEST_F(ContextualSearchDelegateTest, DecodeSearchTermFromJsonResponse) {
       "search?q=define+obscure&ctxs=2\","
       "\"search_url_preload\":\"https://www.google.com/"
       "search?q=define+obscure&ctxs=2&pf=c&sns=1\","
-      "\"card_tag\":12"
+      "\"card_tag\":12,"
+      "\"searches\":[\"Barack Obama\",\"Donald Trump\"]"
       "}";
   std::string search_term;
   std::string display_text;
@@ -591,6 +598,8 @@ TEST_F(ContextualSearchDelegateTest, DecodeSearchTermFromJsonResponse) {
   EXPECT_EQ("barack obama", alternate_term);
   EXPECT_EQ("/m/02mjmr", mid);
   EXPECT_EQ("", prevent_preload);
+  EXPECT_EQ(0, mention_start);
+  EXPECT_EQ(15, mention_end);
   EXPECT_EQ("", context_language);
   EXPECT_EQ("", thumbnail_url);
   EXPECT_EQ("", caption);
@@ -602,7 +611,9 @@ TEST_F(ContextualSearchDelegateTest, DecodeSearchTermFromJsonResponse) {
   EXPECT_EQ("https://www.google.com/search?q=define+obscure&ctxs=2&pf=c&sns=1",
             search_url_preload);
   EXPECT_EQ(12, coca_card_tag);
-  EXPECT_EQ(0u, related_searches.size());
+  EXPECT_EQ(2u, related_searches.size());
+  EXPECT_EQ("Barack Obama", related_searches[0]);
+  EXPECT_EQ("Donald Trump", related_searches[1]);
 }
 
 TEST_F(ContextualSearchDelegateTest, ResponseWithLanguage) {
@@ -695,4 +706,29 @@ TEST_F(ContextualSearchDelegateTest, ResponseWithStringCocaCardTag) {
   SimulateResponseReturned(response);
   EXPECT_EQ("obscure", search_term());
   EXPECT_EQ(0, coca_card_tag());
+}
+
+TEST_F(ContextualSearchDelegateTest, ResponseWithRelatedSearches) {
+  CreateDefaultSearchContextAndRequestSearchTerm();
+  std::string response("{\"searches\":[\"RSS 1\",\"RSS 2\"]}");
+  SimulateResponseReturned(response);
+  EXPECT_EQ(2u, related_searches().size());
+  EXPECT_EQ("RSS 1", related_searches()[0]);
+  EXPECT_EQ("RSS 2", related_searches()[1]);
+}
+
+TEST_F(ContextualSearchDelegateTest, ResponseWithRelatedSearchesWhenDisabled) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndDisableFeature(chrome::android::kRelatedSearches);
+  CreateDefaultSearchContextAndRequestSearchTerm();
+  std::string response("{\"searches\":[\"RSS 1\",\"RSS 2\"]}");
+  SimulateResponseReturned(response);
+  EXPECT_EQ(0u, related_searches().size());
+}
+
+TEST_F(ContextualSearchDelegateTest, ResponseWithEmptyRelatedSearches) {
+  CreateDefaultSearchContextAndRequestSearchTerm();
+  std::string response("{\"searches\":[]}");
+  SimulateResponseReturned(response);
+  EXPECT_EQ(0u, related_searches().size());
 }

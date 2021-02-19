@@ -550,23 +550,6 @@ void ContextualSearchDelegate::DecodeSearchTermFromJsonResponse(
     *logged_event_id = std::stoll(logged_event_id_string, nullptr);
   }
 
-  // Do minimal decoding of Related Searches.
-  // This should not be needed because the server shouldn't return any
-  // Related Searches to this client because it should know that it's
-  // too old to display them properly. As a fallback we just display
-  // the first one.
-  base::ListValue* search_query_list = nullptr;
-  dict->GetList(kRelatedSearchesQueryList, &search_query_list);
-  if (search_query_list && search_query_list->GetSize() >= 1) {
-    // For now, just use the first search from the list as the text to
-    // display and the query to search for.
-    // TODO(donnd): Decode the searches and associated metadata once the
-    // server sends all of that. Also use the non-deprecated ListValue
-    // accessors.
-    search_query_list->GetString(0, display_text);
-    search_query_list->GetString(0, search_term);
-  }
-
   // For Related Searches extract the array.
   base::ListValue* searches_list = nullptr;
   dict->GetList(kRelatedSearchesQueryList, &searches_list);
