@@ -124,9 +124,8 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExtensionPageCaptureApiTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
-// Flaky on all platforms: https://crbug.com/1156323
 IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest,
-                       DISABLED_SaveAsMHTMLWithoutFileAccess) {
+                       SaveAsMHTMLWithoutFileAccess) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   PageCaptureSaveAsMHTMLDelegate delegate;
   ASSERT_TRUE(RunTestWithFlagsAndArg("page_capture",
