@@ -102,6 +102,10 @@ var InlineLoginWelcomePageBrowserTest = class extends InlineLoginBrowserTest {
   }
 };
 
+TEST_F('InlineLoginWelcomePageBrowserTest', 'Reauthentication', function() {
+  this.runMochaTest(inline_login_welcome_page_test.TestNames.Reauthentication);
+});
+
 TEST_F('InlineLoginWelcomePageBrowserTest', 'OkButton', function() {
   this.runMochaTest(inline_login_welcome_page_test.TestNames.OkButton);
 });

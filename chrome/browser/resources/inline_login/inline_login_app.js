@@ -90,6 +90,15 @@ Polymer({
       },
       readOnly: true,
     },
+
+    /*
+     * True if the dialog is open for reauthentication.
+     * @private
+     */
+    isReauthentication_: {
+      type: Boolean,
+      value: false,
+    },
     // </if>
 
     /**
@@ -124,7 +133,6 @@ Polymer({
 
   /** @override */
   ready() {
-    this.switchView_(this.getDefaultView_());
     this.authExtHost_ = new Authenticator(
         /** @type {!WebView} */ (this.$.signinFrame));
     this.addAuthExtHostListeners_();
@@ -238,6 +246,11 @@ Polymer({
     this.loading_ = true;
     this.isLoginPrimaryAccount_ = data.isLoginPrimaryAccount;
     this.enableGaiaActionButtons_ = data.enableGaiaActionButtons;
+    // Skip welcome page for reauthentication.
+    if (data.email) {
+      this.isReauthentication_ = true;
+    }
+    this.switchView_(this.getDefaultView_());
   },
 
   /**
@@ -336,7 +349,7 @@ Polymer({
       return false;
     }
     return this.isAccountManagementFlowsV2Enabled_ &&
-        !this.shouldSkipWelcomePage_;
+        !this.shouldSkipWelcomePage_ && !this.isReauthentication_;
   },
 
   // <if expr="chromeos">
