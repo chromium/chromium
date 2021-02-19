@@ -384,9 +384,12 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.FamilyLinkUser.LogSegment"
-    enum="FamilyLinkUserLogSegment" expires_after="2021-10-12">
+    enum="FamilyLinkUserLogSegment" expires_after="never">
+<!-- expires-never: used internally for filtering -->
+
   <owner>tobyhuang@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
+  <owner>chrome-metrics-team@google.com</owner>
   <summary>
     Categorizes the current user for the Family Experiences team's metrics.
     Other is for all other users that do not fall into any of the below
@@ -397,9 +400,12 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.FamilyUser.LogSegment" enum="FamilyUserLogSegment"
-    expires_after="2021-07-23">
+    expires_after="never">
+<!-- expires-never: used internally for filtering -->
+
   <owner>tobyhuang@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
+  <owner>chrome-metrics-team@google.com</owner>
   <summary>
     Categorizes the current user for the Family Experiences team's metrics.
     Other is for all other users that do not fall into any of the below

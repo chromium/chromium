@@ -68,10 +68,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UMA.EnrollmentStatus" enum="EnrollmentStatus"
-    expires_after="2021-06-20">
+    expires_after="never">
+<!-- expires-never: used internally for filtering -->
+
   <owner>asvitkine@chromium.org</owner>
   <owner>kaznacheev@chromium.org</owner>
-  <owner>src/base/metrics/OWNERS</owner>
+  <owner>chrome-metrics-team@google.com</owner>
   <summary>
     Logs the device enrollment status for Chrome OS device. Logged with every
     UMA upload.
