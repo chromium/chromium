@@ -48,6 +48,8 @@ LibassistantService::LibassistantService(
       media_controller_.get());
   service_controller_->AddAndFireAssistantManagerObserver(
       speaker_id_enrollment_controller_.get());
+  service_controller_->AddAndFireAssistantManagerObserver(
+      conversation_controller_.get());
 
   platform_api_->SetAudioInputProvider(
       &audio_input_controller_->audio_input_provider());
@@ -64,6 +66,8 @@ LibassistantService::~LibassistantService() {
   service_controller_->RemoveAssistantManagerObserver(media_controller_.get());
   service_controller_->RemoveAssistantManagerObserver(
       speaker_id_enrollment_controller_.get());
+  service_controller_->RemoveAssistantManagerObserver(
+      conversation_controller_.get());
 }
 
 void LibassistantService::Bind(

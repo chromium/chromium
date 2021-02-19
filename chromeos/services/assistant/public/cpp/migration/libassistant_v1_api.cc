@@ -26,5 +26,10 @@ LibassistantV1Api::~LibassistantV1Api() {
   instance_ = nullptr;
 }
 
+void LibassistantV1Api::SetActionModule(
+    assistant::action::CrosActionModule* action_module) {
+  action_module_ = action_module;
+}
+
 }  // namespace assistant
 }  // namespace chromeos

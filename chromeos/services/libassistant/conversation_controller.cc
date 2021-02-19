@@ -4,7 +4,11 @@
 
 #include "chromeos/services/libassistant/conversation_controller.h"
 
+#include <memory>
+
 #include "chromeos/assistant/internal/internal_util.h"
+#include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/services/assistant/public/cpp/migration/libassistant_v1_api.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom.h"
 #include "chromeos/services/libassistant/service_controller.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
@@ -15,7 +19,11 @@ namespace libassistant {
 
 ConversationController::ConversationController(
     ServiceController* service_controller)
-    : receiver_(this), service_controller_(service_controller) {
+    : receiver_(this),
+      service_controller_(service_controller),
+      action_module_(std::make_unique<assistant::action::CrosActionModule>(
+          assistant::features::IsAppSupportEnabled(),
+          assistant::features::IsWaitSchedulingEnabled())) {
   DCHECK(service_controller_);
 }
 
@@ -26,6 +34,24 @@ void ConversationController::Bind(
   // Cannot bind the receiver twice.
   DCHECK(!receiver_.is_bound());
   receiver_.Bind(std::move(receiver));
+}
+
+void ConversationController::OnAssistantManagerCreated(
+    assistant_client::AssistantManager* assistant_manager,
+    assistant_client::AssistantManagerInternal* assistant_manager_internal) {
+  // Registers ActionModule when AssistantManagerInternal has been created
+  // but not yet started.
+  assistant_manager_internal->RegisterActionModule(action_module_.get());
+}
+
+void ConversationController::OnAssistantManagerStarted(
+    assistant_client::AssistantManager* assistant_manager,
+    assistant_client::AssistantManagerInternal* assistant_manager_internal) {
+  auto* v1_api = assistant::LibassistantV1Api::Get();
+  // LibassistantV1Api should be ready to use by this time.
+  DCHECK(v1_api);
+
+  v1_api->SetActionModule(action_module_.get());
 }
 
 void ConversationController::SendTextQuery(

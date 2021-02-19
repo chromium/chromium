@@ -15,6 +15,10 @@ class AssistantManagerInternal;
 namespace chromeos {
 namespace assistant {
 
+namespace action {
+class CrosActionModule;
+}  // namespace action
+
 // Singleton access to the Libassistant V1 objects.
 // Only a single instance of this class may exist at any given time.
 // TODO(b/171748795): Remove once all Libassistant access has been moved in the
@@ -29,6 +33,9 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC_MIGRATION) LibassistantV1Api {
   // Return the registered instance. Can be null if no instance was registered.
   static LibassistantV1Api* Get() { return instance_; }
 
+  // Provides a pointer to the |action_module| owned by ConversationController.
+  void SetActionModule(assistant::action::CrosActionModule* action_module);
+
   assistant_client::AssistantManager* assistant_manager() {
     return assistant_manager_;
   }
@@ -37,10 +44,17 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC_MIGRATION) LibassistantV1Api {
     return assistant_manager_internal_;
   }
 
+  assistant::action::CrosActionModule* action_module() {
+    return action_module_;
+  }
+
  private:
   static LibassistantV1Api* instance_;
   assistant_client::AssistantManager* const assistant_manager_;
   assistant_client::AssistantManagerInternal* const assistant_manager_internal_;
+
+  // Owned by ConversationController.
+  assistant::action::CrosActionModule* action_module_;
 };
 
 }  // namespace assistant

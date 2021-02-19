@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/optional.h"
+#include "chromeos/services/libassistant/assistant_manager_observer.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -16,12 +17,19 @@ class AssistantManagerInternal;
 }  // namespace assistant_client
 
 namespace chromeos {
+namespace assistant {
+namespace action {
+class CrosActionModule;
+}  // namespace action
+}  // namespace assistant
+
 namespace libassistant {
 
 class ServiceController;
 
 class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
-    : public mojom::ConversationController {
+    : public mojom::ConversationController,
+      public AssistantManagerObserver {
  public:
   using AssistantNotification = ::chromeos::assistant::AssistantNotification;
   using AssistantFeedback = ::chromeos::assistant::AssistantFeedback;
@@ -32,6 +40,16 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
   ~ConversationController() override;
 
   void Bind(mojo::PendingReceiver<mojom::ConversationController> receiver);
+
+  // AssistantManagerObserver:
+  void OnAssistantManagerCreated(
+      assistant_client::AssistantManager* assistant_manager,
+      assistant_client::AssistantManagerInternal* assistant_manager_internal)
+      override;
+  void OnAssistantManagerStarted(
+      assistant_client::AssistantManager* assistant_manager,
+      assistant_client::AssistantManagerInternal* assistant_manager_internal)
+      override;
 
   // mojom::ConversationController implementation:
   void SendTextQuery(
@@ -55,6 +73,8 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
 
   // Owned by |LibassistantService|.
   ServiceController* const service_controller_;
+
+  std::unique_ptr<assistant::action::CrosActionModule> action_module_;
 };
 
 }  // namespace libassistant

@@ -219,10 +219,7 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
     base::Optional<std::string> s3_server_uri_override,
     base::Optional<std::string> device_id_override,
     std::unique_ptr<LibassistantServiceHost> libassistant_service_host)
-    : action_module_(std::make_unique<action::CrosActionModule>(
-          features::IsAppSupportEnabled(),
-          features::IsWaitSchedulingEnabled())),
-      assistant_settings_(
+    : assistant_settings_(
           std::make_unique<AssistantSettingsImpl>(context, this)),
       assistant_proxy_(std::make_unique<AssistantProxy>()),
       platform_delegate_(std::make_unique<PlatformDelegateImpl>()),
@@ -240,8 +237,6 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
           device_id_override,
           ShouldPutLogsInHomeDirectory())),
       weak_factory_(this) {
-  scoped_action_observer_.Observe(action_module_.get());
-
   if (libassistant_service_host) {
     // During unittests a custom host is passed in, so we'll use that one.
     libassistant_service_host_ = std::move(libassistant_service_host);
@@ -303,6 +298,7 @@ void AssistantManagerServiceImpl::Stop() {
 
   media_host_->Stop();
   scoped_app_list_event_subscriber_.Reset();
+  scoped_action_observer_.Reset();
 
   // When user disables the feature, we also delete all data.
   if (!assistant_state()->settings_enabled().value())
@@ -651,8 +647,8 @@ void AssistantManagerServiceImpl::OnScheduleWait(int id, int time_ms) {
       base::BindOnce(
           [](const base::WeakPtr<AssistantManagerServiceImpl>& weak_ptr,
              int id) {
-            if (weak_ptr) {
-              weak_ptr->action_module_->OnScheduledWaitDone(
+            if (weak_ptr && weak_ptr->action_module()) {
+              weak_ptr->action_module()->OnScheduledWaitDone(
                   id, /*cancelled=*/false);
             }
           },
@@ -884,7 +880,6 @@ void AssistantManagerServiceImpl::InitAssistant(
   DCHECK(!IsServiceStarted());
 
   service_controller().Start(
-      action_module_.get(),
       /*assistant_manager_delegate=*/this,
       /*conversation_state_listener=*/this, bootup_config_.Clone(), locale,
       GetLocaleOrDefault(assistant_state()->locale().value()),
@@ -908,6 +903,8 @@ void AssistantManagerServiceImpl::OnServiceStarted() {
 
   if (base::FeatureList::IsEnabled(assistant::features::kAssistantAppSupport))
     scoped_app_list_event_subscriber_.Observe(device_actions());
+
+  scoped_action_observer_.Observe(action_module());
 }
 
 bool AssistantManagerServiceImpl::IsServiceStarted() const {
@@ -1038,7 +1035,7 @@ void AssistantManagerServiceImpl::OnDeviceAppsEnabled(bool enabled) {
     return;
 
   display_controller().SetDeviceAppsEnabled(enabled);
-  action_module_->SetAppSupportEnabled(
+  action_module()->SetAppSupportEnabled(
       assistant::features::IsAppSupportEnabled() && enabled);
 }
 
@@ -1186,6 +1183,12 @@ assistant_client::AssistantManagerInternal*
 AssistantManagerServiceImpl::assistant_manager_internal() {
   auto* api = LibassistantV1Api::Get();
   return api ? api->assistant_manager_internal() : nullptr;
+}
+
+assistant::action::CrosActionModule*
+AssistantManagerServiceImpl::action_module() {
+  auto* api = LibassistantV1Api::Get();
+  return api ? api->action_module() : nullptr;
 }
 
 void AssistantManagerServiceImpl::SetMicState(bool mic_open) {

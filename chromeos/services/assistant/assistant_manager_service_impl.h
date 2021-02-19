@@ -211,12 +211,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
 
   assistant_client::AssistantManager* assistant_manager();
   assistant_client::AssistantManagerInternal* assistant_manager_internal();
+  action::CrosActionModule* action_module();
   void SetMicState(bool mic_open);
-
-  // Get the action module for testing.
-  action::CrosActionModule* action_module_for_testing() {
-    return action_module_.get();
-  }
 
   base::Thread& GetBackgroundThreadForTesting();
 
@@ -279,7 +275,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   void SetStateAndInformObservers(State new_state);
 
   State state_ = State::STOPPED;
-  std::unique_ptr<action::CrosActionModule> action_module_;
   std::unique_ptr<AssistantSettingsImpl> assistant_settings_;
 
   std::unique_ptr<AssistantProxy> assistant_proxy_;
