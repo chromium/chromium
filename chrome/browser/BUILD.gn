@@ -3564,6 +3564,8 @@ static_library("browser") {
       "enterprise/connectors/connectors_prefs.h",
       "enterprise/connectors/connectors_service.cc",
       "enterprise/connectors/connectors_service.h",
+      "enterprise/connectors/device_trust/signal_reporter.cc",
+      "enterprise/connectors/device_trust/signal_reporter.h",
       "enterprise/connectors/enterprise_connectors_policy_handler.cc",
       "enterprise/connectors/enterprise_connectors_policy_handler.h",
       "enterprise/connectors/file_system/access_token_fetcher.cc",
