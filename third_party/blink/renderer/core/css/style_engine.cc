@@ -1862,7 +1862,7 @@ void StyleEngine::NodeWillBeRemoved(Node& node) {
 void StyleEngine::ChildrenRemoved(ContainerNode& parent) {
   if (!parent.isConnected())
     return;
-  if (in_dom_removal_) {
+  if (InDOMRemoval()) {
     // This is necessary for nested removals. There are elements which
     // removes parts of its UA shadow DOM as part of being removed which means
     // we do a removal from within another removal where isConnected() is not
@@ -2170,7 +2170,7 @@ void StyleEngine::UpdateStyleInvalidationRoot(ContainerNode* ancestor,
                                               Node* dirty_node) {
   DCHECK(!IsHTMLImport());
   if (GetDocument().IsActive()) {
-    if (in_dom_removal_) {
+    if (InDOMRemoval()) {
       ancestor = nullptr;
       dirty_node = document_;
     }
@@ -2193,7 +2193,7 @@ void StyleEngine::UpdateStyleRecalcRoot(ContainerNode* ancestor,
     return;
   }
   DCHECK(!InRebuildLayoutTree());
-  if (in_dom_removal_) {
+  if (InDOMRemoval()) {
     ancestor = nullptr;
     dirty_node = document_;
   }
@@ -2202,7 +2202,7 @@ void StyleEngine::UpdateStyleRecalcRoot(ContainerNode* ancestor,
 
 void StyleEngine::UpdateLayoutTreeRebuildRoot(ContainerNode* ancestor,
                                               Node* dirty_node) {
-  DCHECK(!in_dom_removal_);
+  DCHECK(!InDOMRemoval());
   if (!GetDocument().IsActive())
     return;
   if (InRebuildLayoutTree()) {

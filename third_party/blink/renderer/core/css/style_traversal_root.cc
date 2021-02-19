@@ -56,4 +56,12 @@ void StyleTraversalRoot::Update(ContainerNode* common_ancestor,
   root_type_ = RootType::kCommonRoot;
 }
 
+#if DCHECK_IS_ON()
+bool StyleTraversalRoot::RootIsBeingRemoved() const {
+  DCHECK(root_node_);
+  return !root_node_->isConnected() &&
+         root_node_->GetDocument().GetStyleEngine().InDOMRemoval();
+}
+#endif
+
 }  // namespace blink
