@@ -113,6 +113,10 @@ There are two mechanisms for compressing Chrome l10n files.
 
 ## Android Focused Advice
 
+Googlers: See also [go/abp-performance/apk-size].
+
+[go/abp-performance/apk-size]: https://goto.google.com/abp-performance/apk-size
+
 ### How To Tell if It's Worth Spending Time on Binary Size?
 
  * Binary size is a shared resource, and thus its growth is largely due to the
