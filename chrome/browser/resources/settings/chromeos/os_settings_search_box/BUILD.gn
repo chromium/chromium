@@ -3,42 +3,8 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
 import("../os_settings.gni")
-
-js_type_check("closure_compile") {
-  uses_legacy_modules = true
-  deps = [
-    ":os_search_result_row",
-    ":os_settings_search_box",
-  ]
-}
-
-js_library("os_settings_search_box") {
-  deps = [
-    ":os_search_result_row",
-    "..:metrics_recorder",
-    "..:search_handler",
-    "//third_party/polymer/v1_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer-extracted",
-    "//third_party/polymer/v1_0/components-chromium/iron-dropdown:iron-dropdown-extracted",
-    "//third_party/polymer/v1_0/components-chromium/iron-list:iron-list-extracted",
-    "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar_search_field",
-    "//ui/webui/resources/js:assert",
-  ]
-  externs_list = [ "$externs_path/metrics_private.js" ]
-}
-
-js_library("os_search_result_row") {
-  deps = [
-    "..:os_route",
-    "..:search_handler",
-    "../..:router",
-    "//third_party/polymer/v1_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer-extracted",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js/cr/ui:focus_row_behavior",
-  ]
-  externs_list = [ "$externs_path/metrics_private.js" ]
-}
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
@@ -84,8 +50,6 @@ js_library("os_settings_search_box.m") {
   extra_deps = [ ":os_settings_search_box_module" ]
   externs_list = [ "$externs_path/metrics_private.js" ]
 }
-
-import("//tools/polymer/polymer.gni")
 
 group("polymer3_elements") {
   public_deps = [
