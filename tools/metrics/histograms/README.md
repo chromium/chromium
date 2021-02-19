@@ -671,11 +671,11 @@ As [with histogram entries](#Cleaning-Up-Histogram-Entries), never delete
 variants. If the variant expansion is no longer used, mark it as `<obsolete>`.
 
 *** promo
-Tip: You can run `print_expanded_histogram.py --pattern=` to show all generated
+Tip: You can run `print_expanded_histograms.py --pattern=` to show all generated
 histograms by patterned histograms or histogram suffixes including their
 summaries and owners. For example, this can be run (from the repo root) as:
 ```
-./tools/metrics/histograms/print_expanded_histogram.py --pattern=^UMA.A.B
+./tools/metrics/histograms/print_expanded_histograms.py --pattern=^UMA.A.B
 ```
 ***
 
