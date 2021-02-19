@@ -2,10 +2,12 @@
 <meta charset="utf-8">
 <link rel=author title="Mason Freed" href="mailto:masonfreed@chromium.org">
 <link rel=help href="https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/Popup/explainer.md">
-<link rel=match href="popup-open-display-ref.tentative.html">
+<link rel=match href="popup-open-overflow-display-ref.tentative.html">
 
 <div id=container>
-    <popup>This is a popup</popup>
+  <popup id=p1>This is popup 1<div id=anchor2></div></popup>
+  <popup id=p2 anchor=anchor2>This is popup 2<div id=anchor3></div></popup>
+  <popup id=p3 anchor=anchor3>This is popup 3</popup>
 </div>
 
 <style>
@@ -17,8 +19,15 @@
     width: 30px;
     height: 30px;
   }
+  popup#p2 {
+    position: absolute;
+    top: 100px;
+  }
+  popup#p3 {
+    position: relative;
+    top:200px;
+  }
   popup {
-    position: absolute; /* Make sure position:absolute is not clipped */
     width: fit-content;
     height: fit-content;
     border: 1px solid;
@@ -29,5 +38,7 @@
 </style>
 
 <script>
-  document.querySelector('popup').show();
+  document.querySelector('#p1').show();
+  document.querySelector('#p2').show();
+  document.querySelector('#p3').show();
 </script>
