@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
@@ -18,6 +19,12 @@
 #if defined(OS_IOS)
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #endif
+
+namespace {
+// The maximum number of seconds to wait for the connection type to be
+// determined.
+const double kMaxWaitForConnectionTypeInSeconds = 2.0;
+}  // namespace
 
 namespace net {
 
@@ -71,11 +78,32 @@ NetworkChangeNotifierMac::GetCurrentConnectionType() const {
   // https://crbug.com/125097
   base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
   base::AutoLock lock(connection_type_lock_);
-  // Make sure the initial connection type is set before returning.
-  while (!connection_type_initialized_) {
-    initial_connection_type_cv_.Wait();
+
+  if (connection_type_initialized_)
+    return connection_type_;
+
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "Net.NetworkChangeNotifierMac.GetCurrentConnectionTypeWaitTime");
+
+  // Wait up to a limited amount of time for the connection type to be
+  // determined, to avoid blocking the main thread indefinitely. Since
+  // ConditionVariables are susceptible to spurious wake-ups, each call to
+  // TimedWait can spuriously return even though the connection type hasn't been
+  // initialized and the timeout hasn't been reached; so TimedWait must be
+  // called repeatedly until either the timeout is reached or the connection
+  // type has been determined.
+  base::TimeDelta remaining_time =
+      base::TimeDelta::FromSecondsD(kMaxWaitForConnectionTypeInSeconds);
+  base::TimeTicks end_time = base::TimeTicks::Now() + remaining_time;
+  while (remaining_time > base::TimeDelta()) {
+    initial_connection_type_cv_.TimedWait(remaining_time);
+    if (connection_type_initialized_)
+      return connection_type_;
+
+    remaining_time = end_time - base::TimeTicks::Now();
   }
-  return connection_type_;
+
+  return CONNECTION_UNKNOWN;
 }
 
 void NetworkChangeNotifierMac::Forwarder::Init() {
