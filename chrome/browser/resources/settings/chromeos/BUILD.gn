@@ -1128,7 +1128,6 @@ group("closure_compile") {
     ":route_origin_behavior",
     ":search_handler",
     "google_assistant_page:closure_compile",
-    "kerberos_page:closure_compile",
     "localized_link:closure_compile",
     "parental_controls_page:closure_compile",
   ]

@@ -7,60 +7,6 @@ import("//tools/polymer/polymer.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../os_settings.gni")
 
-js_type_check("closure_compile") {
-  uses_legacy_modules = true
-  deps = [
-    ":kerberos_accounts",
-    ":kerberos_accounts_browser_proxy",
-    ":kerberos_page",
-    "//chrome/browser/resources/settings/people_page:account_manager_browser_proxy",
-  ]
-}
-
-js_library("kerberos_accounts") {
-  deps = [
-    ":kerberos_accounts_browser_proxy",
-    "..:deep_linking_behavior",
-    "..:metrics_recorder",
-    "..:os_route",
-    "../..:router",
-    "../../people_page:account_manager_browser_proxy",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:icon",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("kerberos_accounts_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr" ]
-}
-
-js_library("kerberos_add_account_dialog") {
-  deps = [
-    ":kerberos_accounts_browser_proxy",
-    "..:metrics_recorder",
-    "//chrome/browser/resources/settings/controls:settings_textarea",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("kerberos_page") {
-  deps = [
-    "..:os_route",
-    "../..:router",
-    "../../settings_page:settings_animated_pages",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
