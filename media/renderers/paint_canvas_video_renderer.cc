@@ -249,7 +249,6 @@ sk_sp<SkImage> WrapGLTexture(
     GLenum target,
     GLuint texture_id,
     const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
     viz::RasterContextProvider* raster_context_provider) {
   GrGLTextureInfo texture_info;
   texture_info.fID = texture_id;
@@ -262,8 +261,7 @@ sk_sp<SkImage> WrapGLTexture(
                                    GrMipMapped::kNo, texture_info);
   return SkImage::MakeFromAdoptedTexture(
       raster_context_provider->GrContext(), backend_texture,
-      kTopLeft_GrSurfaceOrigin, kRGBA_8888_SkColorType, kPremul_SkAlphaType,
-      color_space.ToSkColorSpace());
+      kTopLeft_GrSurfaceOrigin, kRGBA_8888_SkColorType, kPremul_SkAlphaType);
 }
 
 void VideoFrameCopyTextureOrSubTexture(gpu::gles2::GLES2Interface* gl,
@@ -1878,9 +1876,9 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
       cache_->visible_rect = video_frame->visible_rect();
       if (!cache_->texture_backing) {
         if (supports_oop_raster) {
-          SkImageInfo sk_image_info = SkImageInfo::Make(
-              gfx::SizeToSkISize(cache_->coded_size), kRGBA_8888_SkColorType,
-              kPremul_SkAlphaType, video_frame->ColorSpace().ToSkColorSpace());
+          SkImageInfo sk_image_info =
+              SkImageInfo::Make(gfx::SizeToSkISize(cache_->coded_size),
+                                kRGBA_8888_SkColorType, kPremul_SkAlphaType);
           cache_->texture_backing = sk_make_sp<VideoTextureBacking>(
               mailbox, sk_image_info, wraps_video_frame_texture,
               raster_context_provider);
@@ -1896,7 +1894,7 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
                                 ? video_frame->mailbox_holder(0).texture_target
                                 : GL_TEXTURE_2D,
                             cache_->source_texture, video_frame->coded_size(),
-                            video_frame->ColorSpace(), raster_context_provider);
+                            raster_context_provider);
           if (!source_image) {
             // Couldn't create the SkImage.
             cache_.reset();
