@@ -87,10 +87,11 @@ int CreateFirstRunTrial(
       default_percent = 1;
       break;
     case version_info::Channel::STABLE:
-      fre_modal_enabled_percent = 15;
-      remove_fre_prompt_enabled_percent = 15;
-      disabled_percent = 15;
-      default_percent = 55;
+      // Disabled on Stable.
+      fre_modal_enabled_percent = 0;
+      remove_fre_prompt_enabled_percent = 0;
+      disabled_percent = 0;
+      default_percent = 100;
       break;
   }
 
