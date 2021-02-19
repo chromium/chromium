@@ -3,107 +3,9 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../os_settings.gni")
-
-js_type_check("closure_compile") {
-  uses_legacy_modules = true
-  deps = [
-    ":crostini_arc_adb",
-    ":crostini_browser_proxy",
-    ":crostini_disk_resize_dialog",
-    ":crostini_export_import",
-    ":crostini_page",
-    ":crostini_port_forwarding",
-    ":crostini_port_forwarding_add_port_dialog",
-    ":crostini_subpage",
-  ]
-}
-
-js_library("crostini_arc_adb") {
-  deps = [
-    ":crostini_browser_proxy",
-    "..:deep_linking_behavior",
-    "..:metrics_recorder",
-    "..:os_route",
-    "../localized_link:localized_link",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("crostini_browser_proxy") {
-  deps = [
-    "//ui/webui/resources/cr_elements/cr_input:cr_input",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:load_time_data",
-  ]
-}
-
-js_library("crostini_export_import") {
-  deps = [
-    ":crostini_browser_proxy",
-    "..:deep_linking_behavior",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("crostini_disk_resize_dialog") {
-  deps = [
-    ":crostini_browser_proxy",
-    "//ui/webui/resources/cr_elements/cr_slider:cr_slider",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("crostini_page") {
-  deps = [
-    ":crostini_browser_proxy",
-    "..:deep_linking_behavior",
-    "..:os_route",
-    "../..:router",
-    "../../prefs:prefs_behavior",
-    "../localized_link:localized_link",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-  externs_list = [ "$externs_path/settings_private.js" ]
-}
-
-js_library("crostini_port_forwarding") {
-  deps = [
-    ":crostini_browser_proxy",
-    "..:metrics_recorder",
-    "..:os_route",
-    "../../prefs:prefs_behavior",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
-    "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("crostini_port_forwarding_add_port_dialog") {
-  deps = [
-    ":crostini_browser_proxy",
-    "..:metrics_recorder",
-    "//ui/webui/resources/js:cr",
-  ]
-}
-
-js_library("crostini_subpage") {
-  deps = [
-    ":crostini_browser_proxy",
-    ":crostini_port_forwarding",
-    "..:deep_linking_behavior",
-    "..:metrics_recorder",
-    "..:os_route",
-    "..:route_origin_behavior",
-    "../..:router",
-    "../../controls:settings_toggle_button",
-    "../../prefs:prefs_behavior",
-  ]
-}
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
@@ -316,8 +218,6 @@ js_library("crostini_subpage.m") {
   extra_deps = [ ":crostini_subpage_module" ]
 }
 
-import("//tools/polymer/polymer.gni")
-
 group("polymer3_elements") {
   public_deps = [
     ":crostini_arc_adb_confirmation_dialog_module",
@@ -422,8 +322,6 @@ polymer_modulizer("crostini_subpage") {
   auto_imports = os_settings_auto_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
-
-import("//ui/webui/resources/tools/js_modulizer.gni")
 
 js_modulizer("modulize") {
   input_files = [ "crostini_browser_proxy.js" ]

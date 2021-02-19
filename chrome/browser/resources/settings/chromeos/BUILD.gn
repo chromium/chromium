@@ -1128,7 +1128,6 @@ group("closure_compile") {
     ":route_origin_behavior",
     ":search_handler",
     "ambient_mode_page:closure_compile",
-    "crostini_page:closure_compile",
     "device_page:closure_compile",
     "google_assistant_page:closure_compile",
     "kerberos_page:closure_compile",
