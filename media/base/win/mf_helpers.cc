@@ -4,6 +4,8 @@
 
 #include "media/base/win/mf_helpers.h"
 
+#include <d3d11.h>
+
 #include "base/check_op.h"
 
 namespace media {
@@ -92,6 +94,12 @@ HRESULT CopyCoTaskMemWideString(LPCWSTR in_string, LPWSTR* out_string) {
   wcscpy(copy, in_string);
   *out_string = copy;
   return S_OK;
+}
+
+HRESULT SetDebugName(ID3D11DeviceChild* d3d11_device_child,
+                     const char* debug_string) {
+  return d3d11_device_child->SetPrivateData(WKPDID_D3DDebugObjectName,
+                                            strlen(debug_string), debug_string);
 }
 
 }  // namespace media

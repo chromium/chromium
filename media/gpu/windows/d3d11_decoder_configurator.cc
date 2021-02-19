@@ -13,6 +13,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/status_codes.h"
 #include "media/base/win/hresult_status_helper.h"
+#include "media/base/win/mf_helpers.h"
 #include "media/gpu/windows/av1_guids.h"
 #include "media/gpu/windows/d3d11_copying_texture_wrapper.h"
 #include "ui/gfx/geometry/size.h"
@@ -93,11 +94,15 @@ StatusOr<ComD3D11Texture2D> D3D11DecoderConfigurator::CreateOutputTexture(
   ComD3D11Texture2D texture;
   HRESULT hr =
       device->CreateTexture2D(&output_texture_desc_, nullptr, &texture);
-  if (!SUCCEEDED(hr)) {
+  if (FAILED(hr)) {
     return Status(StatusCode::kCreateDecoderOutputTextureFailed)
         .AddCause(HresultToStatus(hr));
   }
-
+  hr = SetDebugName(texture.Get(), "D3D11Decoder_ConfiguratorOutput");
+  if (FAILED(hr)) {
+    return Status(StatusCode::kCreateDecoderOutputTextureFailed)
+        .AddCause(HresultToStatus(hr));
+  }
   return texture;
 }
 

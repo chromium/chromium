@@ -248,6 +248,9 @@ bool PbufferPictureBuffer::InitializeTexture(
     HRESULT hr = decoder.d3d11_device_->CreateTexture2D(
         &desc, nullptr, &dx11_decoding_texture_);
     RETURN_ON_HR_FAILURE(hr, "Failed to create texture", false);
+    RETURN_ON_HR_FAILURE(
+        SetDebugName(dx11_decoding_texture_.Get(), "DXVADecoder_PictureBuffer"),
+        "SetDebugNameFail", false);
     if (decoder.use_keyed_mutex_) {
       hr = dx11_decoding_texture_.As(&dx11_keyed_mutex_);
       RETURN_ON_HR_FAILURE(hr, "Failed to get keyed mutex", false);
@@ -724,6 +727,9 @@ bool EGLStreamCopyPictureBuffer::Initialize(
   HRESULT hr = decoder.d3d11_device_->CreateTexture2D(&desc, nullptr,
                                                       &decoder_copy_texture_);
   RETURN_ON_HR_FAILURE(hr, "Failed to create texture", false);
+  RETURN_ON_HR_FAILURE(SetDebugName(decoder_copy_texture_.Get(),
+                                    "DXVADecoder_EGLStreamCopyPictureBuffer"),
+                       "SetDebugNameFail", false);
   DCHECK(decoder.use_keyed_mutex_);
   hr = decoder_copy_texture_.As(&dx11_keyed_mutex_);
   RETURN_ON_HR_FAILURE(hr, "Failed to get keyed mutex", false);

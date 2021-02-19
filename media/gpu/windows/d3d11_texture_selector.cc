@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
+#include "media/base/win/mf_helpers.h"
 #include "media/gpu/windows/d3d11_copying_texture_wrapper.h"
 #include "media/gpu/windows/d3d11_video_device_format_support.h"
 #include "ui/gfx/geometry/size.h"
@@ -218,7 +219,11 @@ std::unique_ptr<Texture2DWrapper> CopyTextureSelector::CreateTextureWrapper(
   texture_desc.Height = size.height();
 
   ComD3D11Texture2D out_texture;
-  if (!SUCCEEDED(device->CreateTexture2D(&texture_desc, nullptr, &out_texture)))
+  if (FAILED(device->CreateTexture2D(&texture_desc, nullptr, &out_texture)))
+    return nullptr;
+
+  if (FAILED(
+          SetDebugName(out_texture.Get(), "D3D11Decoder_CopyTextureSelector")))
     return nullptr;
 
   return std::make_unique<CopyingTexture2DWrapper>(
