@@ -103,7 +103,7 @@ TEST_F(AwComponentUpdaterConfiguratorTest, TestCustomImpl) {
       MakeAwComponentUpdaterConfigurator(GetCommandLine(), GetPrefService());
 
   EXPECT_STREQ(update_client::UpdateQueryParams::GetProdIdString(
-                   update_client::UpdateQueryParams::ProdId::CRX),
+                   update_client::UpdateQueryParams::ProdId::WEBVIEW),
                config->GetProdId().c_str());
 
   EXPECT_TRUE(config->GetBrand().empty());

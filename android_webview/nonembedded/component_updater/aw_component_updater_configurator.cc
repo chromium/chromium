@@ -118,10 +118,8 @@ std::vector<GURL> AwConfigurator::PingUrl() const {
 }
 
 std::string AwConfigurator::GetProdId() const {
-  // TODO(crbug.com/1176894) add WebView to the ProdId enum. This would allow us
-  // to distinguish requests from this stack but it's fine to use CRX for now.
   return update_client::UpdateQueryParams::GetProdIdString(
-      update_client::UpdateQueryParams::ProdId::CRX);
+      update_client::UpdateQueryParams::ProdId::WEBVIEW);
 }
 
 base::Version AwConfigurator::GetBrowserVersion() const {
