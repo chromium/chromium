@@ -27,7 +27,7 @@ message ChromeMemoryPressureNotification {
 }
 
 message ChromeTrackEvent {
-  // Extension range for Chrome: 1000-1099
+  // Extension range for Chrome: 1000-1999
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
