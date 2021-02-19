@@ -144,6 +144,19 @@ bool CanIgnoreSpaceNextTo(LayoutObject* layout_object, bool is_after) {
   if (!layout_object)
     return true;
 
+  auto* elem = DynamicTo<Element>(layout_object->GetNode());
+
+  // Can usually ignore space next to a <br>.
+  // Exception: if the space was next to a <br> with an ARIA role.
+  if (layout_object->IsBR()) {
+    // As an example of a <br> with a role, Google Docs uses:
+    // <span contenteditable=false> <br role="presentation></span>.
+    // This construct hides the <br> from the AX tree and uses the space
+    // instead, presenting a hard line break as a soft line break.
+    DCHECK(elem);
+    return !is_after || !elem->FastHasAttribute(html_names::kRoleAttr);
+  }
+
   // If adjacent to a whitespace character, the current space can be ignored.
   if (layout_object->IsText()) {
     auto* layout_text = To<LayoutText>(layout_object);
@@ -174,7 +187,6 @@ bool CanIgnoreSpaceNextTo(LayoutObject* layout_object, bool is_after) {
   // indicate separation.
   // False negatives are acceptable in that they merely lead to extra whitespace
   // static text nodes.
-  auto* elem = DynamicTo<Element>(layout_object->GetNode());
   if (elem && HasAriaCellRole(elem))
     return true;
 
@@ -182,6 +194,14 @@ bool CanIgnoreSpaceNextTo(LayoutObject* layout_object, bool is_after) {
   auto* layout_inline = To<LayoutInline>(layout_object);
   LayoutObject* child =
       is_after ? layout_inline->FirstChild() : layout_inline->LastChild();
+  if (!child && elem) {
+    // No children of inline element. Check adjacent sibling in same direction.
+    Node* adjacent_node =
+        is_after ? FlatTreeTraversal::NextSkippingChildren(*elem)
+                 : FlatTreeTraversal::PreviousAbsoluteSibling(*elem);
+    return adjacent_node &&
+           CanIgnoreSpaceNextTo(adjacent_node->GetLayoutObject(), is_after);
+  }
   return CanIgnoreSpaceNextTo(child, is_after);
 }
 

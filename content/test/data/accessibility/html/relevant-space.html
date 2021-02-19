@@ -1,0 +1,13 @@
+<!-- An extra empty span between actual content and the space -->
+<p>
+  <span>A(</span><span></span> <span>)B</span>
+</p>
+<!-- Normally we can ignore space before a br  -->
+<p>
+  <span>C(</span><span><span> <br></span></span><span>)D</span>
+</p>
+<!-- Google Docs end-of line markup that is used to simulate a soft line break while forcing a line break with <br>.
+     Do not ignore the space next to the <br> as it is marked role=presentation and won't be exposed -->
+<p>
+  <span>E(</span><span><span contenteditable="false"> <br role="presentation"></span></span><span>)F</span>
+</p>

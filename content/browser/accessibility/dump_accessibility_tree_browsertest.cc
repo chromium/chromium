@@ -2456,6 +2456,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityQ) {
   RunHtmlTest(FILE_PATH_LITERAL("q.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityRelevantSpace) {
+  RunHtmlTest(FILE_PATH_LITERAL("relevant-space.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityReparentCrash) {
   RunHtmlTest(FILE_PATH_LITERAL("reparent-crash.html"));
 }
