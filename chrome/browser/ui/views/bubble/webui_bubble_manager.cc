@@ -66,11 +66,11 @@ void WebUIBubbleManager::ResetContentsWrapperForTesting() {
 }
 
 void WebUIBubbleManager::ResetContentsWrapper() {
-  if (!contents_wrapper_)
+  if (!cached_contents_wrapper_)
     return;
 
   if (bubble_view_)
     CloseBubble();
-  DCHECK(!contents_wrapper_->GetHost());
-  contents_wrapper_.reset();
+  DCHECK(!cached_contents_wrapper_->GetHost());
+  cached_contents_wrapper_.reset();
 }
