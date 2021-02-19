@@ -23,7 +23,7 @@ console-dir.js:24 Object
     "  ": "  "
     " a b ": " a b "
     $foo5_: 0
-    "a↵↵b↵c": "a↵↵b↵c"
+    "a↵↵b↵c": "a\n\nb\nc"
     c d: "c d"
     negZero: -0
     __proto__: Object

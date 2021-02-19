@@ -5555,12 +5555,6 @@ crbug.com/1154940 [ Win7 ] inspector-protocol/overlay/overlay-persistent-overlay
 # DevTools roll
 crbug.com/1144171 http/tests/devtools/report-API-errors.js [ Skip ]
 
-# Tests that need to be rebaselined after https://crrev.com/c/2697190 lands
-crbug.com/1178530 http/tests/devtools/console/console-dir.js [ Pass Failure ]
-crbug.com/1178530 http/tests/devtools/console/console-format.js [ Pass Failure ]
-crbug.com/1178530 http/tests/devtools/console/console-format-broken-unicode.js [ Pass Failure ]
-crbug.com/1178530 http/tests/devtools/console/console-truncate-long-messages.js [ Pass Failure ]
-
 # Sheriff 2020-12-07
 crbug.com/1156175 external/wpt/requestidlecallback/callback-iframe.html [ Pass Timeout ]
 

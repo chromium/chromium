@@ -25,7 +25,7 @@ globals[2]
 console-format.js:21 test named "test"
 console-format.js:22 ["test named "test""]
 globals[3]
-"test named "test""
+"test named \"test\""
 console-format.js:21 Error
 console-format.js:22 [Error
 ]
@@ -259,11 +259,11 @@ globals[2]
 "test"
 console-format.js:21 test named "test"
 console-format.js:22 ["test named "test""]
-    0: "test named "test""
+    0: "test named \"test\""
     length: 1
     __proto__: Array(0)
 globals[3]
-"test named "test""
+"test named \"test\""
 console-format.js:21 Error
 console-format.js:22 [Error
 ]
