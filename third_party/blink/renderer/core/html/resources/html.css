@@ -916,6 +916,19 @@ select:-internal-list-box:focus-visible option:-internal-multi-select-focus {
     outline-offset: -1px;
 }
 
+/* selectmenu */
+
+/* TODO(crbug.com/1121840) It's deliberate for now that this provides styles
+for <option> but not other element types with part="option".  Could this
+be a mechanism for allowing authors to specify their own styles for
+option parts by using e.g. <div part="option">, while authors that
+want the default styles can instead just use <option>? */
+selectmenu option:hover {
+    background-color: lightgray;
+    cursor: default;
+    user-select: none;
+}
+
 output {
     display: inline;
 }

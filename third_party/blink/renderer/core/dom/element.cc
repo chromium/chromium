@@ -3415,6 +3415,7 @@ bool Element::CanAttachShadowRoot() const {
          tag_name == html_names::kH6Tag || tag_name == html_names::kHeaderTag ||
          tag_name == html_names::kNavTag || tag_name == html_names::kMainTag ||
          tag_name == html_names::kPTag || tag_name == html_names::kSectionTag ||
+         tag_name == html_names::kSelectmenuTag ||
          tag_name == html_names::kSpanTag;
 }
 

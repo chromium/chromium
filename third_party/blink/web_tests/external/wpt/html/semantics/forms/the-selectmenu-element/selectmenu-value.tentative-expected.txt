@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS Test that HTMLSelectMenu with no options has empty string for value
+PASS Test value with HTMLOptionElement element option parts
+PASS Test value with non-HTMLOptionElement element option parts
+FAIL Test that value is updated when options are removed assert_equals: When the selected option is removed, the new first option should become selected expected "two" but got "one"
+FAIL Test that value is updated when the part attribute is removed assert_equals: value should start with the text of the first option part expected "one" but got "two"
+PASS Test that slotted-in selected-value part is updated to value of selectmenu
+PASS Test that option parts in a slotted-in listbox are reflected in the value property
+Harness: the test ran to completion.
+

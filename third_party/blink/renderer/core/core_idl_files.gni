@@ -233,6 +233,7 @@ core_interface_idl_files_core_only =
                     "html/forms/html_options_collection.idl",
                     "html/forms/html_output_element.idl",
                     "html/forms/html_select_element.idl",
+                    "html/forms/html_select_menu_element.idl",
                     "html/forms/html_text_area_element.idl",
                     "html/forms/radio_node_list.idl",
                     "html/forms/submit_event.idl",

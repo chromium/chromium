@@ -873,6 +873,8 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_html_script_element.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_html_select_element.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_html_select_element.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_html_select_menu_element.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_html_select_menu_element.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_html_slot_element.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_html_slot_element.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_html_source_element.cc",

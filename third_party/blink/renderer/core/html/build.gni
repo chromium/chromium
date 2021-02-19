@@ -166,6 +166,8 @@ blink_core_sources_html = [
   "forms/html_output_element.h",
   "forms/html_select_element.cc",
   "forms/html_select_element.h",
+  "forms/html_select_menu_element.cc",
+  "forms/html_select_menu_element.h",
   "forms/html_text_area_element.cc",
   "forms/html_text_area_element.h",
   "forms/image_input_type.cc",

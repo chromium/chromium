@@ -1040,6 +1040,11 @@
     {
       name: "HTMLPopupElement",
       status: "experimental",
+      implied_by: ["HTMLSelectMenuElement"],
+    },
+    {
+      name: "HTMLSelectMenuElement",
+      status: "experimental",
     },
     {
       name: "IDBPutAll",

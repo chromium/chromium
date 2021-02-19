@@ -958,6 +958,8 @@ html element select
     property validity
     property value
     property willValidate
+html element selectmenu
+    property value
 html element slot
     property assign
     property assignedElements
