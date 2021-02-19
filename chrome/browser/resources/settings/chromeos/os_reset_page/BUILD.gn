@@ -7,40 +7,6 @@ import("//tools/polymer/polymer.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../os_settings.gni")
 
-js_type_check("closure_compile") {
-  uses_legacy_modules = true
-  deps = [
-    ":os_powerwash_dialog",
-    ":os_reset_browser_proxy",
-    ":os_reset_page",
-  ]
-}
-
-js_library("os_powerwash_dialog") {
-  deps = [
-    ":os_reset_browser_proxy",
-    "..:metrics_recorder",
-    "../..:lifetime_browser_proxy",
-    "../localized_link:localized_link",
-  ]
-}
-
-js_library("os_reset_page") {
-  deps = [
-    "..:deep_linking_behavior",
-    "..:os_route",
-    "../..:router",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink",
-  ]
-}
-
-js_library("os_reset_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr" ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
