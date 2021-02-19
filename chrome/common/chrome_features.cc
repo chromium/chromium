@@ -126,9 +126,6 @@ const base::Feature kClearOldBrowsingData{"ClearOldBrowsingData",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-const base::Feature kClickToOpenPDFPlaceholder{
-    "ClickToOpenPDFPlaceholder", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kClientStorageAccessContextAuditing{
     "ClientStorageAccessContextAuditing", base::FEATURE_DISABLED_BY_DEFAULT};
 

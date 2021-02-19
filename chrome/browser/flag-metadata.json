@@ -580,11 +580,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "click-to-open-pdf",
-    "owners": [ "tommycli" ],
-    "expiry_milestone": 76
-  },
-  {
     "name": "client-storage-access-context-auditing",
     "owners": [
       "sauski",

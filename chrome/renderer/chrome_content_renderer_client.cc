@@ -744,12 +744,11 @@ bool ChromeContentRendererClient::OverrideCreatePlugin(
   if (orig_mime_type == kPDFMimeType) {
     ReportPDFLoadStatus(
         PDFLoadStatus::kShowedDisabledPluginPlaceholderForEmbeddedPdf);
-    if (base::FeatureList::IsEnabled(features::kClickToOpenPDFPlaceholder)) {
-      PDFPluginPlaceholder* placeholder =
-          PDFPluginPlaceholder::CreatePDFPlaceholder(render_frame, params);
-      *plugin = placeholder->plugin();
-      return true;
-    }
+
+    PDFPluginPlaceholder* placeholder =
+        PDFPluginPlaceholder::CreatePDFPlaceholder(render_frame, params);
+    *plugin = placeholder->plugin();
+    return true;
   }
   auto* placeholder = NonLoadablePluginPlaceholder::CreateNotSupportedPlugin(
       render_frame, params);
@@ -999,12 +998,9 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
           ReportPDFLoadStatus(
               PDFLoadStatus::kShowedDisabledPluginPlaceholderForEmbeddedPdf);
 
-          if (base::FeatureList::IsEnabled(
-                  features::kClickToOpenPDFPlaceholder)) {
-            return PDFPluginPlaceholder::CreatePDFPlaceholder(render_frame,
-                                                              params)
-                ->plugin();
-          }
+          return PDFPluginPlaceholder::CreatePDFPlaceholder(render_frame,
+                                                            params)
+              ->plugin();
         }
 
         placeholder = create_blocked_plugin(
