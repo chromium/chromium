@@ -309,8 +309,22 @@ webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
   if (configuration->hasSdpSemantics()) {
     if (configuration->sdpSemantics() == "plan-b") {
       web_configuration.sdp_semantics = webrtc::SdpSemantics::kPlanB;
-      Deprecation::CountDeprecation(
-          context, WebFeature::kRTCPeerConnectionSdpSemanticsPlanB);
+      if (!RuntimeEnabledFeatures::RTCExtendDeadlineForPlanBRemovalEnabled(
+              context)) {
+        // TODO(https://crbug.com/857004): In M93, replace this deprecation
+        // warning with the throwing of an exception (Reverse Origin Trial is
+        // required to continue to use Plan B).
+        Deprecation::CountDeprecation(
+            context, WebFeature::kRTCPeerConnectionSdpSemanticsPlanB);
+      } else {
+        // TODO(https://crbug.com/857004): In M96, replace this deprecation
+        // warning with the throwing of an exception (Reverse Origin Trial has
+        // ended).
+        Deprecation::CountDeprecation(
+            context,
+            WebFeature::
+                kRTCPeerConnectionSdpSemanticsPlanBWithReverseOriginTrial);
+      }
     } else {
       DCHECK_EQ(configuration->sdpSemantics(), "unified-plan");
       web_configuration.sdp_semantics = webrtc::SdpSemantics::kUnifiedPlan;

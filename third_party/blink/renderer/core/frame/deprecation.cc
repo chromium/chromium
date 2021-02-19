@@ -72,6 +72,9 @@ enum Milestone {
   kM91 = 91,
   kM92 = 92,
   kM93 = 93,
+  kM94 = 94,
+  kM95 = 95,
+  kM96 = 96,
 };
 
 // Returns estimated milestone dates as milliseconds since January 1, 1970.
@@ -136,6 +139,12 @@ base::Time::Exploded MilestoneDate(Milestone milestone) {
       return {2021, 7, 0, 20, 4};
     case kM93:
       return {2021, 8, 0, 31, 4};
+    case kM94:
+      return {2021, 10, 0, 12, 4};
+    case kM95:
+      return {2021, 11, 0, 30, 4};
+    case kM96:
+      return {2022, 1, 0, 25, 4};
   }
 
   NOTREACHED();
@@ -592,6 +601,18 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
               "format, \"unified-plan\", has been used by default since M72 "
               "(January, 2019). Dropping support for Plan B is targeted for "
               "M93 (Canary: July 15, 2021; Stable: August 24, 2021)."};
+
+    case WebFeature::kRTCPeerConnectionSdpSemanticsPlanBWithReverseOriginTrial:
+      return {"RTCPeerConnectionSdpSemanticsPlanBWithReverseOriginTrial", kM96,
+              "Plan B SDP semantics, which is used when constructing an "
+              "RTCPeerConnection with {sdpSemantics:\"plan-b\"}, is a legacy "
+              "version of the Session Description Protocol that has severe "
+              "compatibility issues on modern browsers. The standardized SDP "
+              "format, \"unified-plan\", has been used by default since M72 "
+              "(January, 2019). Dropping support for Plan B is targeted for "
+              "M93 (Canary: July 15, 2021; Stable: August 24, 2021), but "
+              "because you have opted in to the Reverse Origin Trial, you have "
+              "until M96 (Canary: November, 2021; Stable: January, 2022)."};
 
     // Features that aren't deprecated don't have a deprecation message.
     default:

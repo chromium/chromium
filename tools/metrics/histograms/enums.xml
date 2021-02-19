@@ -31471,6 +31471,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3809" label="CSSAtRuleCounterStyle"/>
   <int value="3810" label="CanvasUseColorSpace"/>
   <int value="3811" label="SelectMenuElement"/>
+  <int value="3812"
+      label="RTCPeerConnectionSdpSemanticsPlanBWithReverseOriginTrial"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

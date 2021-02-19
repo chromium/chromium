@@ -1748,6 +1748,13 @@
       origin_trial_feature_name: "RtcAudioJitterBufferRtxHandling",
       status: "experimental",
     },
+    // Reverse Origin Trial for Plan B. When enabled through the Origin Trial,
+    // Plan B is available beyond the initial removal date of Plan B (M93).
+    {
+      name: "RTCExtendDeadlineForPlanBRemoval",
+      origin_trial_feature_name: "RTCExtendDeadlineForPlanBRemoval",
+      status: "test",
+    },
     // Enables the use of the RTCIceTransport with extensions.
     {
       name: "RTCIceTransportExtension",
