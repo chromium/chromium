@@ -162,7 +162,7 @@ void PasswordSyncTokenVerifier::OnTokenVerified(bool is_valid) {
   // Re-auth on lock.
   InSessionPasswordSyncManager* password_sync_manager =
       InSessionPasswordSyncManagerFactory::GetForProfile(primary_profile_);
-  if (password_sync_manager && password_sync_manager->IsLockReauthEnabled()) {
+  if (password_sync_manager) {
     password_sync_manager->MaybeForceReauthOnLockScreen(
         InSessionPasswordSyncManager::ReauthenticationReason::kInvalidToken);
   }

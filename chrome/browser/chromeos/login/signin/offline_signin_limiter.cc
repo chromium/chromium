@@ -216,7 +216,7 @@ void OfflineSigninLimiter::ForceOnlineLogin() {
   // Re-auth on lock - enabled only for the primary user.
   InSessionPasswordSyncManager* password_sync_manager =
       InSessionPasswordSyncManagerFactory::GetForProfile(profile_);
-  if (password_sync_manager && password_sync_manager->IsLockReauthEnabled()) {
+  if (password_sync_manager) {
     password_sync_manager->MaybeForceReauthOnLockScreen(
         InSessionPasswordSyncManager::ReauthenticationReason::kPolicy);
   }

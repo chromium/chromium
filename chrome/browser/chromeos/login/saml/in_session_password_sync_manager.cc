@@ -52,6 +52,10 @@ bool InSessionPasswordSyncManager::IsLockReauthEnabled() {
 
 void InSessionPasswordSyncManager::MaybeForceReauthOnLockScreen(
     ReauthenticationReason reauth_reason) {
+  if (!IsLockReauthEnabled()) {
+    // Reauth on lock is disabled by a policy.
+    return;
+  }
   if (lock_screen_reauth_reason_ == ReauthenticationReason::kInvalidToken) {
     // Re-authentication already enforced, no other action is needed.
     return;
