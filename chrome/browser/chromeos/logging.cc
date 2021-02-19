@@ -24,9 +24,9 @@ namespace logging {
 
 namespace {
 
-// This should be true for exactly the period between the end of
-// InitChromeLogging() and the beginning of CleanupChromeLogging().
-bool g_chrome_logging_redirected = false;
+// This is true when logging redirect was tried for the first user in the
+// session.
+bool g_chrome_logging_redirect_tried = false;
 
 // This should be set to true for tests that rely on log redirection.
 bool g_force_log_redirection = false;
@@ -48,7 +48,6 @@ void SymlinkSetUp(const base::CommandLine& command_line,
         base::BindOnce(&RemoveSymlinkAndLog, log_path, target_path));
     return;
   }
-  g_chrome_logging_redirected = true;
 
   // Redirect the Network Service's logs as well if it's running out of process.
   if (content::IsOutOfProcessNetworkService()) {
@@ -80,11 +79,12 @@ void RedirectChromeLogging(const base::CommandLine& command_line) {
   if (!base::SysInfo::IsRunningOnChromeOS() && !g_force_log_redirection)
     return;
 
-  if (g_chrome_logging_redirected) {
-    // TODO: Support multiple active users. http://crbug.com/230345
+  if (g_chrome_logging_redirect_tried) {
     LOG(WARNING) << "NOT redirecting logging for multi-profiles case.";
     return;
   }
+
+  g_chrome_logging_redirect_tried = true;
 
   if (command_line.HasSwitch(switches::kDisableLoggingRedirect))
     return;
