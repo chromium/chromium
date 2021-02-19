@@ -103,6 +103,8 @@ class ReadingListModelImpl : public ReadingListModel,
 
     ~ScopedReadingListBatchUpdate() override;
 
+    void ReadingListModelBeingShutdown(const ReadingListModel* model) override;
+
    private:
     std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate> storage_token_;
 

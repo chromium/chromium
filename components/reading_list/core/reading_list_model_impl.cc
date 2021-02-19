@@ -517,6 +517,13 @@ ReadingListModelImpl::ScopedReadingListBatchUpdate::
   storage_token_.reset();
 }
 
+void ReadingListModelImpl::ScopedReadingListBatchUpdate::
+    ReadingListModelBeingShutdown(const ReadingListModel* model) {
+  storage_token_.reset();
+  ReadingListModel::ScopedReadingListBatchUpdate::ReadingListModelBeingShutdown(
+      model);
+}
+
 void ReadingListModelImpl::LeavingBatchUpdates() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (storage_layer_) {
