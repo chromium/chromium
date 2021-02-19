@@ -456,6 +456,40 @@ void TranslatePrefs::GetLanguageInfoList(
   }
 }
 
+void TranslatePrefs::GetTranslatableContentLanguages(
+    const std::string& app_locale,
+    std::vector<std::string>* codes) {
+  DCHECK(codes != nullptr);
+
+  if (app_locale.empty()) {
+    return;
+  }
+  codes->clear();
+
+  // Get the language codes of user content languages.
+  // Returned in Chrome format.
+  std::vector<std::string> language_codes;
+  GetLanguageList(&language_codes);
+
+  std::set<std::string> unique_languages;
+  for (auto& entry : language_codes) {
+    std::string supports_translate_code = entry;
+    // Get the language in Translate format.
+    language::ToTranslateLanguageSynonym(&supports_translate_code);
+    // Extract the language code, for example for en-US it returns en.
+    std::string lang_code =
+        TranslateDownloadManager::GetLanguageCode(supports_translate_code);
+    // If the language code for a translatable language hasn't yet been added,
+    // add it to the result list.
+    if (TranslateDownloadManager::IsSupportedLanguage(lang_code)) {
+      if (unique_languages.count(lang_code) == 0) {
+        unique_languages.insert(lang_code);
+        codes->push_back(lang_code);
+      }
+    }
+  }
+}
+
 void TranslatePrefs::BlockLanguage(base::StringPiece input_language) {
   DCHECK(!input_language.empty());
   language_prefs_->SetFluent(input_language);

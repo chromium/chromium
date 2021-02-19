@@ -137,6 +137,10 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
   bool triggered_from_menu() const {
     return triggered_from_menu_;
   }
+  // Languages supporting translate.
+  virtual void GetLanguagesNames(std::vector<base::string16>* languages) const;
+  virtual void GetLanguagesCodes(
+      std::vector<std::string>* languages_codes) const;
 
   virtual void Translate();
   virtual void RevertTranslation();
@@ -166,6 +170,14 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
 
   void ResetTranslationAcceptedCount();
   void ResetTranslationDeniedCount();
+
+  // Translatable content languages.
+  virtual void GetContentLanguagesNames(
+      std::vector<base::string16>* content_languages) const;
+  virtual void GetContentLanguagesNativeNames(
+      std::vector<base::string16>* native_content_languages) const;
+  virtual void GetContentLanguagesCodes(
+      std::vector<std::string>* content_languages_codes) const;
 
   // Returns whether "Always Translate Language" should automatically trigger.
   // If true, this method has the side effect of mutating some prefs.

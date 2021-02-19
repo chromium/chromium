@@ -268,7 +268,7 @@ TEST_F(TranslatePrefsTest, GetLanguageInfoListCorrectLocale) {
   std::vector<std::string> expected_codes;
 
   l10n_util::GetAcceptLanguagesForLocale("en-US", &expected_codes);
-  TranslatePrefs::GetLanguageInfoList("en-US", true /* translate_enabled */,
+  TranslatePrefs::GetLanguageInfoList("en-US", true /* translate_allowed */,
                                       &language_list);
   std::vector<std::string> codes = ExtractLanguageCodes(language_list);
   EXPECT_THAT(codes, UnorderedElementsAreArray(expected_codes));
@@ -277,7 +277,7 @@ TEST_F(TranslatePrefsTest, GetLanguageInfoListCorrectLocale) {
   expected_codes.clear();
   codes.clear();
   l10n_util::GetAcceptLanguagesForLocale("ja", &expected_codes);
-  TranslatePrefs::GetLanguageInfoList("ja", true /* translate_enabled */,
+  TranslatePrefs::GetLanguageInfoList("ja", true /* translate_allowed */,
                                       &language_list);
   codes = ExtractLanguageCodes(language_list);
   EXPECT_THAT(codes, UnorderedElementsAreArray(expected_codes));
@@ -286,7 +286,7 @@ TEST_F(TranslatePrefsTest, GetLanguageInfoListCorrectLocale) {
   expected_codes.clear();
   codes.clear();
   l10n_util::GetAcceptLanguagesForLocale("es-AR", &expected_codes);
-  TranslatePrefs::GetLanguageInfoList("es-AR", true /* translate_enabled */,
+  TranslatePrefs::GetLanguageInfoList("es-AR", true /* translate_allowed */,
                                       &language_list);
   codes = ExtractLanguageCodes(language_list);
   EXPECT_THAT(codes, UnorderedElementsAreArray(expected_codes));
@@ -297,13 +297,13 @@ TEST_F(TranslatePrefsTest, GetLanguageInfoListOutput) {
   std::vector<TranslateLanguageInfo> language_list;
 
   // Empty locale returns empty output.
-  TranslatePrefs::GetLanguageInfoList("", true /* translate_enabled */,
+  TranslatePrefs::GetLanguageInfoList("", true /* translate_allowed */,
                                       &language_list);
   EXPECT_TRUE(language_list.empty());
 
   // Output is sorted.
   language_list.clear();
-  TranslatePrefs::GetLanguageInfoList("en-US", true /* translate_enabled */,
+  TranslatePrefs::GetLanguageInfoList("en-US", true /* translate_allowed */,
                                       &language_list);
   const std::vector<base::string16> display_names =
       ExtractDisplayNames(language_list);
@@ -317,7 +317,7 @@ TEST_F(TranslatePrefsTest, GetLanguageInfoList) {
   std::vector<TranslateLanguageInfo> language_list;
   TranslateLanguageInfo language;
 
-  TranslatePrefs::GetLanguageInfoList("en-US", true /* translate_enabled */,
+  TranslatePrefs::GetLanguageInfoList("en-US", true /* translate_allowed */,
                                       &language_list);
 
   language = GetLanguageByCode("en", language_list);
@@ -339,6 +339,49 @@ TEST_F(TranslatePrefsTest, GetLanguageInfoList) {
   language = GetLanguageByCode("zh-HK", language_list);
   EXPECT_EQ("zh-HK", language.code);
   EXPECT_TRUE(language.supports_translate);
+}
+
+// Test that GetTranslatableContentLanguages() returns the correct list.
+TEST_F(TranslatePrefsTest, GetTranslatableContentLanguagesCorrectLocale) {
+  std::vector<std::string> result_codes;
+
+  std::vector<std::string> content_languages;
+  std::vector<std::string> expected_translatable_codes;
+
+  // Set content languages.
+  content_languages = {"en"};
+  expected_translatable_codes = {"en"};
+  accept_languages_tester_->SetLanguagePrefs(content_languages);
+
+  // Empty locale returns empty output.
+  translate_prefs_->GetTranslatableContentLanguages("", &result_codes);
+  EXPECT_TRUE(result_codes.empty());
+
+  translate_prefs_->GetTranslatableContentLanguages("en-US", &result_codes);
+  EXPECT_THAT(expected_translatable_codes, result_codes);
+
+  // Set content languages. Waloon ("wa") is not translatable and shouldn't
+  // be included in the list.
+  content_languages = {"ja", "en", "en-US", "wa"};
+  expected_translatable_codes = {"ja", "en"};
+  accept_languages_tester_->SetLanguagePrefs(content_languages);
+  translate_prefs_->GetTranslatableContentLanguages("ja", &result_codes);
+  EXPECT_THAT(result_codes, expected_translatable_codes);
+
+  // Test with only untranslatable languages.
+  content_languages = {"wa", "ln"};
+  expected_translatable_codes = {};
+  accept_languages_tester_->SetLanguagePrefs(content_languages);
+
+  translate_prefs_->GetTranslatableContentLanguages("en-US", &result_codes);
+  EXPECT_THAT(expected_translatable_codes, result_codes);
+
+  // Verify that language codes are translated from Chrome to Translate format.
+  content_languages = {"en", "nb", "zh-HK"};
+  expected_translatable_codes = {"en", "no", "zh-TW"};
+  accept_languages_tester_->SetLanguagePrefs(content_languages);
+  translate_prefs_->GetTranslatableContentLanguages("ja", &result_codes);
+  EXPECT_THAT(result_codes, expected_translatable_codes);
 }
 
 TEST_F(TranslatePrefsTest, BlockLanguage) {

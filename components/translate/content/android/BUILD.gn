@@ -93,3 +93,17 @@ android_library("javatests") {
     "//third_party/junit:junit",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "translate_utils_unittest.cc" ]
+  deps = [
+    ":android",
+    "//base",
+    "//components/infobars/core",
+    "//components/metrics:metrics",
+    "//components/translate/core/browser:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -9,18 +9,21 @@
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/infobars/core/infobar.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/language/core/common/language_experiments.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/translate/core/browser/mock_translate_client.h"
 #include "components/translate/core/browser/mock_translate_driver.h"
 #include "components/translate/core/browser/mock_translate_ranker.h"
 #include "components/translate/core/browser/translate_client.h"
+#include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_infobar_delegate.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_pref_names.h"
@@ -86,6 +89,7 @@ class TranslateUIDelegateTest : public ::testing::Test {
   std::unique_ptr<MockLanguageModel> language_model_;
   std::unique_ptr<TranslateManager> manager_;
   std::unique_ptr<TranslateUIDelegate> delegate_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TranslateUIDelegateTest);
@@ -217,6 +221,61 @@ TEST_F(TranslateUIDelegateTest, GetPageHost) {
   const GURL url("https://www.example.com/hello/world?fg=1");
   driver_.SetLastCommittedURL(url);
   EXPECT_EQ("www.example.com", delegate_->GetPageHost());
+}
+
+TEST_F(TranslateUIDelegateTest, ContentLanguagesWhenEnabled) {
+  scoped_feature_list_.InitAndEnableFeature(
+      language::kContentLanguagesInLanguagePicker);
+  TranslateDownloadManager::GetInstance()->set_application_locale("en");
+  std::unique_ptr<TranslatePrefs> prefs(client_->GetTranslatePrefs());
+  prefs->AddToLanguageList("de", /*force_blocked=*/false);
+  prefs->AddToLanguageList("pl", /*force_blocked=*/false);
+
+  std::unique_ptr<TranslateUIDelegate> delegate =
+      std::make_unique<TranslateUIDelegate>(manager_->GetWeakPtr(), "en", "fr");
+  std::vector<base::string16> expected_names = {base::UTF8ToUTF16("German"),
+                                                base::UTF8ToUTF16("Polish")};
+  std::vector<base::string16> expected_native_names = {
+      base::UTF8ToUTF16("Deutsch"), base::UTF8ToUTF16("polski")};
+  std::vector<std::string> expected_codes = {"de", "pl"};
+
+  std::vector<base::string16> actual_names;
+  std::vector<base::string16> actual_native_names;
+  std::vector<std::string> actual_codes;
+
+  delegate->GetContentLanguagesCodes(&actual_codes);
+  delegate->GetContentLanguagesNames(&actual_names);
+  delegate->GetContentLanguagesNativeNames(&actual_native_names);
+
+  EXPECT_THAT(expected_codes, ::testing::ContainerEq(actual_codes));
+  EXPECT_THAT(expected_names, ::testing::ContainerEq(actual_names));
+  EXPECT_THAT(expected_native_names,
+              ::testing::ContainerEq(actual_native_names));
+}
+
+TEST_F(TranslateUIDelegateTest, ContentLanguagesWhenDisabled) {
+  scoped_feature_list_.InitAndDisableFeature(
+      language::kContentLanguagesInLanguagePicker);
+
+  TranslateDownloadManager::GetInstance()->set_application_locale("en");
+  std::unique_ptr<TranslatePrefs> prefs(client_->GetTranslatePrefs());
+  prefs->AddToLanguageList("de", /*force_blocked=*/false);
+  prefs->AddToLanguageList("pl", /*force_blocked=*/false);
+
+  std::unique_ptr<TranslateUIDelegate> delegate =
+      std::make_unique<TranslateUIDelegate>(manager_->GetWeakPtr(), "en", "fr");
+
+  std::vector<base::string16> actual_names;
+  std::vector<base::string16> actual_native_names;
+  std::vector<std::string> actual_codes;
+
+  delegate->GetContentLanguagesCodes(&actual_codes);
+  delegate->GetContentLanguagesNames(&actual_names);
+  delegate->GetContentLanguagesNativeNames(&actual_native_names);
+
+  EXPECT_TRUE(actual_codes.empty());
+  EXPECT_TRUE(actual_names.empty());
+  EXPECT_TRUE(actual_native_names.empty());
 }
 
 }  // namespace translate

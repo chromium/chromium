@@ -222,6 +222,16 @@ class TranslatePrefs {
       bool translate_allowed,
       std::vector<TranslateLanguageInfo>* languages);
 
+  // Returns a list of language codes representing content language set by the
+  // user that are translatable for given app_language. The list returned in
+  // |codes| is ordered based on the user's ordering. In case user has
+  // country variants for a specific language set, the language main
+  // translatable language is returned, e.g. if a user has "de" and "de-CH", the
+  // result is "de", if a user only has "de-CH" content language set, "de" is
+  // returned.
+  void GetTranslatableContentLanguages(const std::string& app_locale,
+                                       std::vector<std::string>* codes);
+
   bool IsSiteOnNeverPromptList(base::StringPiece site) const;
   void AddSiteToNeverPromptList(base::StringPiece site);
   void RemoveSiteFromNeverPromptList(base::StringPiece site);

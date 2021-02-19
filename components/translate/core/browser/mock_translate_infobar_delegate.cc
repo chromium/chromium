@@ -13,6 +13,55 @@ MockLanguageModel::GetLanguages() {
   return {MockLanguageModel::LanguageDetails("en", 1.0)};
 }
 
+void MockTranslateInfoBarDelegate::SetTranslateLanguagesForTest(
+    std::vector<std::pair<std::string, base::string16>> languages) {
+  for (auto pair : languages) {
+    languages_.push_back(pair);
+  }
+}
+
+void MockTranslateInfoBarDelegate::GetLanguagesNames(
+    std::vector<base::string16>* names) const {
+  for (auto& entry : languages_) {
+    names->push_back(entry.second);
+  }
+}
+
+void MockTranslateInfoBarDelegate::GetLanguagesCodes(
+    std::vector<std::string>* codes) const {
+  for (auto& entry : languages_) {
+    codes->push_back(entry.first);
+  }
+}
+
+void MockTranslateInfoBarDelegate::SetContentLanguagesForTest(
+    std::vector<LanguageNameTriple> languages) {
+  for (auto& entry : languages) {
+    content_languages_.push_back(entry);
+  }
+}
+
+void MockTranslateInfoBarDelegate::GetContentLanguagesNames(
+    std::vector<base::string16>* languages) const {
+  for (auto& entry : content_languages_) {
+    languages->push_back(entry.name);
+  }
+}
+
+void MockTranslateInfoBarDelegate::GetContentLanguagesNativeNames(
+    std::vector<base::string16>* languages) const {
+  for (auto& entry : content_languages_) {
+    languages->push_back(entry.native_name);
+  }
+}
+
+void MockTranslateInfoBarDelegate::GetContentLanguagesCodes(
+    std::vector<std::string>* codes) const {
+  for (auto& entry : content_languages_) {
+    codes->push_back(entry.code);
+  }
+}
+
 MockTranslateInfoBarDelegate::MockTranslateInfoBarDelegate(
     const base::WeakPtr<translate::TranslateManager>& translate_manager,
     bool is_off_the_record,

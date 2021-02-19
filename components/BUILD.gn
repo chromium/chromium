@@ -387,6 +387,7 @@ test("components_unittests") {
       "//components/signin/core/browser",
       "//components/signin/public/android:java",
       "//components/spellcheck/browser/android:java",
+      "//components/translate/content/android:unit_tests",
       "//components/variations/android:variations_java",
       "//components/webapps/browser/android:java",
       "//components/webapps/browser/android:unit_tests",
