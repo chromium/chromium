@@ -252,7 +252,7 @@ void GpuArcVideoEncodeAccelerator::EncodeDmabuf(
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
       support_.CreateGpuMemoryBufferImplFromHandle(
           std::move(gmb_handle).value(), coded_size_, *buffer_format,
-          gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE,
+          gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
           base::NullCallback());
 
   gpu::MailboxHolder dummy_mailbox[media::VideoFrame::kMaxPlanes];

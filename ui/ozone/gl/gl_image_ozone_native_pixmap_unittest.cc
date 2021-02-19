@@ -40,7 +40,7 @@ class GLImageNativePixmapTestDelegate : public GLImageTestDelegateBase {
     DCHECK(pixmap) << "Offending format: " << gfx::BufferFormatToString(format);
     if (usage == gfx::BufferUsage::GPU_READ_CPU_READ_WRITE ||
         usage == gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE ||
-        usage == gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE) {
+        usage == gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE) {
       auto client_pixmap = client_native_pixmap_factory_->ImportFromHandle(
           pixmap->ExportHandle(), size, format, usage);
       bool mapped = client_pixmap->Map();
@@ -120,14 +120,14 @@ using GLImageBindTestTypes = testing::Types<
     GLImageNativePixmapTestDelegate<gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
                                     gfx::BufferFormat::YVU_420>,
     GLImageNativePixmapTestDelegate<
-        gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE,
+        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
         gfx::BufferFormat::YVU_420>,
     GLImageNativePixmapTestDelegate<gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
                                     gfx::BufferFormat::YUV_420_BIPLANAR>,
     GLImageNativePixmapTestDelegate<gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE,
                                     gfx::BufferFormat::YUV_420_BIPLANAR>,
     GLImageNativePixmapTestDelegate<
-        gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE,
+        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
         gfx::BufferFormat::YUV_420_BIPLANAR>,
     GLImageNativePixmapTestDelegate<gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
                                     gfx::BufferFormat::P010>>;

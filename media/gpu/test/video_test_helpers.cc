@@ -432,7 +432,7 @@ scoped_refptr<VideoFrame> AlignedDataHelper::GetNextFrame() {
     gpu::GpuMemoryBufferSupport support;
     auto gpu_memory_buffer = support.CreateGpuMemoryBufferImplFromHandle(
         std::move(dup_handle), layout_->coded_size(), *buffer_format,
-        gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE,
+        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
         base::DoNothing());
     if (!gpu_memory_buffer) {
       LOG(ERROR) << "Failed to create GpuMemoryBuffer from "
@@ -529,7 +529,7 @@ void AlignedDataHelper::InitializeGpuMemoryBufferFrames(
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   layout_ = GetPlatformVideoFrameLayout(
       gpu_memory_buffer_factory_, pixel_format, dst_coded_size,
-      gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE);
+      gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
   ASSERT_TRUE(layout_) << "Failed getting platform VideoFrameLayout";
 
   std::vector<size_t> src_plane_rows;
@@ -554,10 +554,10 @@ void AlignedDataHelper::InitializeGpuMemoryBufferFrames(
                         src_plane_rows[i]);
     }
     src_frame_ptr += src_video_frame_size;
-    auto frame = CloneVideoFrame(
-        gpu_memory_buffer_factory_, memory_frame.get(), *layout_,
-        VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
-        gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE);
+    auto frame =
+        CloneVideoFrame(gpu_memory_buffer_factory_, memory_frame.get(),
+                        *layout_, VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
+                        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
     LOG_ASSERT(!!frame) << "Failed creating GpuMemoryBuffer VideoFrame";
     auto gmb_handle = CreateGpuMemoryBufferHandle(frame.get());
     LOG_ASSERT(!gmb_handle.is_null())

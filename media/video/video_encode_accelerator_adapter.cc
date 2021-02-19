@@ -703,7 +703,7 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
 
   auto gmb = gpu_factories_->CreateGpuMemoryBuffer(
       size, gfx::BufferFormat::YUV_420_BIPLANAR,
-      gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE);
+      gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
 
   if (!gmb)
     return Status(StatusCode::kEncoderFailedEncode);

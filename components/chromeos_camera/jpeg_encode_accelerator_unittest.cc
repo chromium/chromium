@@ -661,7 +661,7 @@ void JpegClient::StartEncodeDmaBuf(int32_t bitstream_buffer_id) {
 
   auto input_buffer = gpu_memory_buffer_manager_->CreateGpuMemoryBuffer(
       test_image->visible_size, gfx::BufferFormat::YUV_420_BIPLANAR,
-      gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE,
+      gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
       gpu::kNullSurfaceHandle);
   ASSERT_EQ(input_buffer->Map(), true);
 

@@ -101,7 +101,7 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, CreateFromHandle) {
         gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE,
         gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
         gfx::BufferUsage::SCANOUT_VEA_CPU_READ,
-        gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE,
+        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
     };
     for (auto usage : usages) {
       if (!TestFixture::gpu_memory_buffer_support()
@@ -144,7 +144,7 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, CreateFromHandleSmallBuffer) {
         gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE,
         gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
         gfx::BufferUsage::SCANOUT_VEA_CPU_READ,
-        gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE,
+        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
     };
     for (auto usage : usages) {
       if (!TestFixture::gpu_memory_buffer_support()
@@ -323,7 +323,7 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, SerializeAndDeserialize) {
         gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE,
         gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
         gfx::BufferUsage::SCANOUT_VEA_CPU_READ,
-        gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE,
+        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
     };
     for (auto usage : usages) {
       if (!TestFixture::gpu_memory_buffer_support()

@@ -110,7 +110,7 @@ TEST_F(VideoCaptureDeviceClientTest, Minimal) {
   std::unique_ptr<gfx::GpuMemoryBuffer> buffer =
       gpu_memory_buffer_manager_->CreateFakeGpuMemoryBuffer(
           kBufferDimensions, gfx::BufferFormat::YUV_420_BIPLANAR,
-          gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE,
+          gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
           gpu::kNullSurfaceHandle);
   {
     InSequence s;

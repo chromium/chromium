@@ -252,7 +252,7 @@ void CameraHalDelegate::GetSupportedFormats(
     // There's no consumer information here to determine the buffer usage, so
     // hard-code the usage that all the clients should be using.
     constexpr gfx::BufferUsage kClientBufferUsage =
-        gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE;
+        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
     const ChromiumPixelFormat cr_format =
         camera_buffer_factory_->ResolveStreamBufferFormat(hal_format,
                                                           kClientBufferUsage);

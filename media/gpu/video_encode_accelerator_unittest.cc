@@ -2169,7 +2169,7 @@ scoped_refptr<VideoFrame> VEAClient::CreateFrame(off_t position) {
       video_frame = test::CloneVideoFrame(
           gpu_memory_buffer_factory_.get(), video_frame.get(),
           video_frame->layout(), VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
-          gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE);
+          gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
     } else {
       // We want MOJO_SHARED_BUFFER memory for the Chrome OS VEA if it needs to
       // use the image processor.

@@ -27,7 +27,7 @@ namespace media {
 // GpuMemoryBuffer and it must outlive the returned VideoFrame. If it's null,
 // the buffer is allocated using the render node (this is intended to be used
 // only for the internals of video encoding when the usage is
-// SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE). It's safe to call this function
+// VEA_READ_CAMERA_AND_CPU_READ_WRITE). It's safe to call this function
 // concurrently from multiple threads (as long as either
 // |gpu_memory_buffer_factory| is thread-safe or nullptr).
 MEDIA_GPU_EXPORT scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
@@ -45,7 +45,7 @@ MEDIA_GPU_EXPORT scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
 // video frame's storage and it must outlive the returned VideoFrame. If it's
 // null, the buffer is allocated using the render node (this is intended to be
 // used only for the internals of video encoding when the usage is
-// SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE). It's safe to call this function
+// VEA_READ_CAMERA_AND_CPU_READ_WRITE). It's safe to call this function
 // concurrently from multiple threads (as long as either
 // |gpu_memory_buffer_factory| is thread-safe or nullptr).
 MEDIA_GPU_EXPORT scoped_refptr<VideoFrame> CreatePlatformVideoFrame(
@@ -63,7 +63,7 @@ MEDIA_GPU_EXPORT scoped_refptr<VideoFrame> CreatePlatformVideoFrame(
 // If |gpu_memory_buffer_factory| is not null, it's used to allocate the
 // video frame's storage. If it's null, the storage is allocated using the
 // render node (this is intended to be used only for the internals of video
-// encoding when the usage is SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE). It's
+// encoding when the usage is VEA_READ_CAMERA_AND_CPU_READ_WRITE). It's
 // safe to call this function concurrently from multiple threads (as long as
 // either |gpu_memory_buffer_factory| is thread-safe or nullptr).
 MEDIA_GPU_EXPORT base::Optional<VideoFrameLayout> GetPlatformVideoFrameLayout(
