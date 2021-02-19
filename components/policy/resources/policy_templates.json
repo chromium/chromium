@@ -3307,11 +3307,13 @@
       'id': 15,
       'caption': '''Enable reporting of usage and crash-related data''',
       'tags': ['google-sharing'],
-      'desc': '''Setting the policy to Enabled turns on anonymous reporting of usage and crash-related data about Chrome to Google and prevents users from changing this setting. Setting the policy to Disabled means this information is not sent to Google.
+      'desc': '''When this policy is enabled, anonymous reporting of usage and crash-related data about Chrome to Google is enabled by default. Users will still be able to change this setting in the Chrome settings.
 
-      If you set the policy, users can't change it. If not set, users choose the behavior at installation or first run.
+      When this policy is disabled, anonymous reporting is disabled and no usage or crash data is sent to Google. Users won't be able to change this setting.
 
-      This policy is available only on Windows instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain. or Windows 10 Pro or Enterprise instances that enrolled for device management and macOS instances that are managed via MDM or joined to a domain via MCX.
+      When this policy isn't set, users can choose the anonymous reporting behavior at installation or first run, and can later change the setting in the Chrome settings.
+
+      This policy is available only on Windows instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain or Windows 10 Pro or Enterprise instances that are enrolled for device management, and macOS instances that are managed via MDM or joined to a domain via MCX.
 
       (For Chrome OS, see DeviceMetricsReportingEnabled.)''',
     },
