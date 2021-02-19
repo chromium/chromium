@@ -107,6 +107,12 @@ bool ShouldInstallAllocatorShim() {
 }
 #endif
 
+// If enabled, always pass |true| to MetricsServicesManager
+// UpdateUploadPermissions.  Once impact of the UmaCellular logic to check
+// cellular is determined, this flag and the incorrect logic can be removed.
+const base::Feature kFixUmaCellularMetricsRecording{
+    "FixUmaCellularMetricsRecording", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace
 
 IOSChromeMainParts::IOSChromeMainParts(
@@ -370,8 +376,17 @@ void IOSChromeMainParts::StartMetricsRecording() {
       net::NetworkChangeNotifier::GetConnectionType());
   bool mayUpload = false;
   if (base::FeatureList::IsEnabled(kUmaCellular)) {
-    mayUpload = !isConnectionCellular;
+    if (base::FeatureList::IsEnabled(kFixUmaCellularMetricsRecording)) {
+      mayUpload = true;
+    } else {
+      // This is wrong and should be removed, but the fix is gated by the
+      // feature flag above to measure impact.
+      mayUpload = !isConnectionCellular;
+    }
   } else {
+    // TODO(crbug.com/1179809): Now that kUmaCellular is default, all references
+    // to kUmaCellular and kMetricsReportingWifiOnly should be removed, but only
+    // after a study of kFixUmaCellularMetricsRecording is completed.
     bool wifiOnly = local_state_->GetBoolean(prefs::kMetricsReportingWifiOnly);
     mayUpload = !wifiOnly || !isConnectionCellular;
   }
