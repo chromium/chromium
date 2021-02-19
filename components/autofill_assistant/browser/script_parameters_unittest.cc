@@ -19,9 +19,6 @@ TEST(ScriptParametersTest, Create) {
   EXPECT_THAT(parameters.ToProto(),
               UnorderedElementsAreArray(std::map<std::string, std::string>(
                   {{"key_a", "value_a"}, {"key_b", "value_b"}})));
-  EXPECT_THAT(parameters.GetParameter("key_a"), Eq("value_a"));
-  EXPECT_THAT(parameters.GetParameter("key_b"), Eq("value_b"));
-  EXPECT_THAT(parameters.GetParameter("not_found"), Eq(base::nullopt));
 }
 
 TEST(ScriptParametersTest, MergeEmpty) {
@@ -84,6 +81,86 @@ TEST(ScriptParametersTest, TriggerScriptAllowList) {
                    {"DEBUG_SOCKET_ID", "678"},
                    {"FALLBACK_BUNDLE_ID", "fallback_id"},
                    {"FALLBACK_BUNDLE_VERSION", "fallback_ver"}})));
+}
+
+TEST(ScriptParametersTest, SpecialScriptParameters) {
+  ScriptParameters parameters = {
+      {{"START_IMMEDIATELY", "false"},
+       {"REQUEST_TRIGGER_SCRIPT", "true"},
+       {"TRIGGER_SCRIPTS_BASE64", "abc123"},
+       {"PASSWORD_CHANGE_USERNAME", "fake_username"},
+       {"OVERLAY_COLORS", "#123456"},
+       {"DETAILS_SHOW_INITIAL", "true"},
+       {"DETAILS_TITLE", "title"},
+       {"DETAILS_DESCRIPTION_LINE_1", "line1"},
+       {"DETAILS_DESCRIPTION_LINE_2", "line2"},
+       {"DETAILS_DESCRIPTION_LINE_3", "line3"},
+       {"DETAILS_IMAGE_URL", "image"},
+       {"DETAILS_IMAGE_ACCESSIBILITY_HINT", "hint"},
+       {"DETAILS_IMAGE_CLICKTHROUGH_URL", "clickthrough"},
+       {"DETAILS_TOTAL_PRICE_LABEL", "total"},
+       {"DETAILS_TOTAL_PRICE", "12"}}};
+
+  EXPECT_THAT(parameters.GetStartImmediately(), Eq(false));
+  EXPECT_THAT(parameters.GetRequestsTriggerScript(), Eq(true));
+  EXPECT_THAT(parameters.GetBase64TriggerScriptsResponseProto(), Eq("abc123"));
+  EXPECT_THAT(parameters.GetPasswordChangeUsername(), Eq("fake_username"));
+  EXPECT_THAT(parameters.GetOverlayColors(), Eq("#123456"));
+  EXPECT_THAT(parameters.GetDetailsShowInitial(), Eq(true));
+  EXPECT_THAT(parameters.GetDetailsTitle(), Eq("title"));
+  EXPECT_THAT(parameters.GetDetailsDescriptionLine1(), Eq("line1"));
+  EXPECT_THAT(parameters.GetDetailsDescriptionLine2(), Eq("line2"));
+  EXPECT_THAT(parameters.GetDetailsDescriptionLine3(), Eq("line3"));
+  EXPECT_THAT(parameters.GetDetailsImageUrl(), Eq("image"));
+  EXPECT_THAT(parameters.GetDetailsImageAccessibilityHint(), Eq("hint"));
+  EXPECT_THAT(parameters.GetDetailsImageClickthroughUrl(), Eq("clickthrough"));
+  EXPECT_THAT(parameters.GetDetailsTotalPriceLabel(), Eq("total"));
+  EXPECT_THAT(parameters.GetDetailsTotalPrice(), Eq("12"));
+}
+
+TEST(ScriptParametersTest, ScriptParameterMatch) {
+  ScriptParameters parameters = {{{"must_exist_and_exists", "exists"},
+                                  {"must_not_exist_and_exists", "exists"},
+                                  {"must_match", "matching_value"},
+                                  {"must_match_empty", ""}}};
+
+  ScriptParameterMatchProto must_exist;
+  must_exist.set_name("must_exist_and_exists");
+  must_exist.set_exists(true);
+  EXPECT_TRUE(parameters.Matches(must_exist));
+
+  must_exist.set_name("must_exist_and_doesnt_exist");
+  EXPECT_FALSE(parameters.Matches(must_exist));
+
+  ScriptParameterMatchProto must_not_exist;
+  must_not_exist.set_name("must_not_exist_and_doesnt_exist");
+  must_not_exist.set_exists(false);
+  EXPECT_TRUE(parameters.Matches(must_not_exist));
+
+  must_not_exist.set_name("must_not_exist_and_exists");
+  EXPECT_FALSE(parameters.Matches(must_not_exist));
+
+  ScriptParameterMatchProto must_match;
+  must_match.set_name("must_match");
+  must_match.set_value_equals("matching_value");
+  EXPECT_TRUE(parameters.Matches(must_match));
+
+  must_match.set_value_equals("not_matching_value");
+  EXPECT_FALSE(parameters.Matches(must_match));
+
+  must_match.set_value_equals("");
+  EXPECT_FALSE(parameters.Matches(must_match));
+
+  must_match.set_name("must_match_doesnt_exist");
+  EXPECT_FALSE(parameters.Matches(must_match));
+
+  ScriptParameterMatchProto must_match_empty;
+  must_match_empty.set_name("must_match_empty");
+  must_match_empty.set_value_equals("");
+  EXPECT_TRUE(parameters.Matches(must_match_empty));
+
+  must_match_empty.set_value_equals("not_empty");
+  EXPECT_FALSE(parameters.Matches(must_match_empty));
 }
 
 }  // namespace autofill_assistant

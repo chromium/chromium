@@ -47,7 +47,6 @@ bool StaticTriggerConditions::has_stored_login_credentials() const {
 }
 
 bool StaticTriggerConditions::is_in_experiment(int experiment_id) const {
-  DCHECK(trigger_context_);
   return trigger_context_->HasExperimentId(base::NumberToString(experiment_id));
 }
 
@@ -57,17 +56,7 @@ bool StaticTriggerConditions::has_results() const {
 
 bool StaticTriggerConditions::script_parameter_matches(
     const ScriptParameterMatchProto& param) const {
-  auto opt_value =
-      trigger_context_->GetScriptParameters().GetParameter(param.name());
-  if (!param.exists()) {
-    return !opt_value;
-  }
-
-  if (!param.has_value_equals()) {
-    return opt_value.has_value();
-  }
-
-  return opt_value && param.value_equals() == opt_value.value();
+  return trigger_context_->GetScriptParameters().Matches(param);
 }
 
 void StaticTriggerConditions::OnGetLogins(

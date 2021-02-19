@@ -27,22 +27,37 @@ class ScriptParameters {
   // Merges |another| into this. Does not overwrite existing values.
   void MergeWith(const ScriptParameters& another);
 
+  // Returns whether there is a script parameter that satisfies |proto|.
+  bool Matches(const ScriptParameterMatchProto& proto) const;
+
   // Returns a proto representation of this class. If
   // |only_trigger_script_allowlisted| is set to true, this will only return the
   // list of trigger-script-approved script parameters.
   google::protobuf::RepeatedPtrField<ScriptParameterProto> ToProto(
       bool only_trigger_script_allowlisted = false) const;
 
-  // Returns the value of a specific parameter, if present.
-  // TODO(arbesser): Remove this, provide getters for relevant params instead.
-  base::Optional<std::string> GetParameter(const std::string& name) const;
-
   // Getters for specific parameters.
   base::Optional<std::string> GetOverlayColors() const;
   base::Optional<std::string> GetPasswordChangeUsername() const;
   base::Optional<std::string> GetBase64TriggerScriptsResponseProto() const;
+  base::Optional<bool> GetRequestsTriggerScript() const;
+  base::Optional<bool> GetStartImmediately() const;
+
+  // Details parameters.
+  base::Optional<bool> GetDetailsShowInitial() const;
+  base::Optional<std::string> GetDetailsTitle() const;
+  base::Optional<std::string> GetDetailsDescriptionLine1() const;
+  base::Optional<std::string> GetDetailsDescriptionLine2() const;
+  base::Optional<std::string> GetDetailsDescriptionLine3() const;
+  base::Optional<std::string> GetDetailsImageUrl() const;
+  base::Optional<std::string> GetDetailsImageAccessibilityHint() const;
+  base::Optional<std::string> GetDetailsImageClickthroughUrl() const;
+  base::Optional<std::string> GetDetailsTotalPriceLabel() const;
+  base::Optional<std::string> GetDetailsTotalPrice() const;
 
  private:
+  base::Optional<std::string> GetParameter(const std::string& name) const;
+
   std::map<std::string, std::string> parameters_;
 };
 

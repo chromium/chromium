@@ -5,6 +5,33 @@
 #include "components/autofill_assistant/browser/script_parameters.h"
 
 #include <array>
+#include <sstream>
+#include "base/logging.h"
+
+namespace {
+
+// Converts a value to a target type. Returns nullopt for invalid or
+// non-existent values. Expects bool parameters as 'false' and 'true'.
+template <typename T>
+base::Optional<T> GetTypedParameter(
+    const std::map<std::string, std::string> parameters,
+    const std::string& key) {
+  auto iter = parameters.find(key);
+  if (iter == parameters.end())
+    return base::nullopt;
+
+  std::stringstream ss;
+  ss << iter->second;
+  T out;
+  if (!(ss >> std::boolalpha >> out)) {
+    LOG(ERROR) << "Error trying to convert parameter '" << key
+               << "' with value '" << iter->second << "' to target type";
+    return base::nullopt;
+  }
+  return out;
+}
+
+}  // namespace
 
 namespace autofill_assistant {
 
@@ -24,11 +51,37 @@ const char kPasswordChangeUsernameParameterName[] = "PASSWORD_CHANGE_USERNAME";
 const char kBase64TriggerScriptsResponseProtoParameterName[] =
     "TRIGGER_SCRIPTS_BASE64";
 
+// Special parameter for instructing the client to request and run a trigger
+// script from a remote RPC prior to starting the regular flow.
+const char kRequestTriggerScriptParameterName[] = "REQUEST_TRIGGER_SCRIPT";
+
+// Special bool parameter that MUST be present in all intents. It allows the
+// caller to either request immediate start of autofill assistant (if set to
+// true), or a delayed start using trigger scripts (if set to false). If this is
+// set to false, REQUEST_TRIGGER_SCRIPT or TRIGGER_SCRIPTS_BASE_64 must be set.
+const char kStartImmediatelyParameterName[] = "START_IMMEDIATELY";
+
 // The list of script parameters that trigger scripts are allowed to send to
 // the backend.
 constexpr std::array<const char*, 5> kAllowlistedTriggerScriptParameters = {
     "DEBUG_BUNDLE_ID", "DEBUG_BUNDLE_VERSION", "DEBUG_SOCKET_ID",
     "FALLBACK_BUNDLE_ID", "FALLBACK_BUNDLE_VERSION"};
+
+// Parameters to specify details before the first backend roundtrip.
+const char kDetailsShowInitialParameterName[] = "DETAILS_SHOW_INITIAL";
+const char kDetailsTitleParameterName[] = "DETAILS_TITLE";
+const char kDetailsDescriptionLine1ParameterName[] =
+    "DETAILS_DESCRIPTION_LINE_1";
+const char kDetailsDescriptionLine2ParameterName[] =
+    "DETAILS_DESCRIPTION_LINE_2";
+const char kDetailsDescriptionLine3ParameterName[] =
+    "DETAILS_DESCRIPTION_LINE_3";
+const char kDetailsImageUrl[] = "DETAILS_IMAGE_URL";
+const char kDetailsImageAccessibilityHint[] =
+    "DETAILS_IMAGE_ACCESSIBILITY_HINT";
+const char kDetailsImageClickthroughUrl[] = "DETAILS_IMAGE_CLICKTHROUGH_URL";
+const char kDetailsTotalPriceLabel[] = "DETAILS_TOTAL_PRICE_LABEL";
+const char kDetailsTotalPrice[] = "DETAILS_TOTAL_PRICE";
 
 ScriptParameters::ScriptParameters(
     const std::map<std::string, std::string>& parameters)
@@ -41,6 +94,19 @@ void ScriptParameters::MergeWith(const ScriptParameters& another) {
   for (const auto& param : another.parameters_) {
     parameters_.insert(param);
   }
+}
+
+bool ScriptParameters::Matches(const ScriptParameterMatchProto& proto) const {
+  auto opt_value = GetParameter(proto.name());
+  if (!proto.exists()) {
+    return !opt_value;
+  }
+
+  if (!proto.has_value_equals()) {
+    return opt_value.has_value();
+  }
+
+  return opt_value && proto.value_equals() == opt_value.value();
 }
 
 google::protobuf::RepeatedPtrField<ScriptParameterProto>
@@ -89,6 +155,61 @@ base::Optional<std::string> ScriptParameters::GetPasswordChangeUsername()
 base::Optional<std::string>
 ScriptParameters::GetBase64TriggerScriptsResponseProto() const {
   return GetParameter(kBase64TriggerScriptsResponseProtoParameterName);
+}
+
+base::Optional<bool> ScriptParameters::GetRequestsTriggerScript() const {
+  return GetTypedParameter<bool>(parameters_,
+                                 kRequestTriggerScriptParameterName);
+}
+
+base::Optional<bool> ScriptParameters::GetStartImmediately() const {
+  return GetTypedParameter<bool>(parameters_, kStartImmediatelyParameterName);
+}
+
+base::Optional<bool> ScriptParameters::GetDetailsShowInitial() const {
+  return GetTypedParameter<bool>(parameters_, kDetailsShowInitialParameterName);
+}
+
+base::Optional<std::string> ScriptParameters::GetDetailsTitle() const {
+  return GetParameter(kDetailsTitleParameterName);
+}
+
+base::Optional<std::string> ScriptParameters::GetDetailsDescriptionLine1()
+    const {
+  return GetParameter(kDetailsDescriptionLine1ParameterName);
+}
+
+base::Optional<std::string> ScriptParameters::GetDetailsDescriptionLine2()
+    const {
+  return GetParameter(kDetailsDescriptionLine2ParameterName);
+}
+
+base::Optional<std::string> ScriptParameters::GetDetailsDescriptionLine3()
+    const {
+  return GetParameter(kDetailsDescriptionLine3ParameterName);
+}
+
+base::Optional<std::string> ScriptParameters::GetDetailsImageUrl() const {
+  return GetParameter(kDetailsImageUrl);
+}
+
+base::Optional<std::string> ScriptParameters::GetDetailsImageAccessibilityHint()
+    const {
+  return GetParameter(kDetailsImageAccessibilityHint);
+}
+
+base::Optional<std::string> ScriptParameters::GetDetailsImageClickthroughUrl()
+    const {
+  return GetParameter(kDetailsImageClickthroughUrl);
+}
+
+base::Optional<std::string> ScriptParameters::GetDetailsTotalPriceLabel()
+    const {
+  return GetParameter(kDetailsTotalPriceLabel);
+}
+
+base::Optional<std::string> ScriptParameters::GetDetailsTotalPrice() const {
+  return GetParameter(kDetailsTotalPrice);
 }
 
 }  // namespace autofill_assistant

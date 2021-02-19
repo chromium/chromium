@@ -109,23 +109,6 @@ TEST_F(DetailsTest, UpdateFromParametersUpdateFromDetails) {
   EXPECT_THAT(details.totalPrice(), Eq("12"));
 }
 
-TEST_F(DetailsTest, UpdateFromParametersBackwardsCompatibility) {
-  base::test::ScopedRestoreICUDefaultLocale restore_locale;
-  base::i18n::SetICUDefaultLocale("en_US");
-
-  Details details;
-  EXPECT_TRUE(details.UpdateFromParameters(
-      {{{"MOVIES_MOVIE_NAME", "movie_name"},
-        {"MOVIES_THEATER_NAME", "movie_theater"},
-        {"MOVIES_SCREENING_DATETIME", "2019-09-26T16:40:02"}}}));
-
-  EXPECT_TRUE(details.placeholders().show_image_placeholder());
-  EXPECT_THAT(details.title(), Eq("movie_name"));
-  EXPECT_THAT(details.descriptionLine2(), Eq("movie_theater"));
-  EXPECT_THAT(details.descriptionLine1(),
-              Eq("4:40 PM \xE2\x80\xA2 Thu, Sep 26"));
-}
-
 TEST_F(DetailsTest, UpdateFromProtoNoDetails) {
   Details details;
   EXPECT_FALSE(Details::UpdateFromProto(ShowDetailsProto(), &details));

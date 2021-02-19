@@ -409,11 +409,10 @@ TEST_F(ControllerTest, RunDirectActionWithArguments) {
                           const std::string& global_payload,
                           const std::string& script_payload,
                           Service::ResponseCallback& callback) {
-        EXPECT_THAT(
-            trigger_context.GetScriptParameters().GetParameter("required"),
-            Eq("value"));
-        EXPECT_THAT(trigger_context.GetScriptParameters().GetParameter("arg0"),
-                    Eq("value0"));
+        EXPECT_THAT(trigger_context.GetScriptParameters().ToProto(),
+                    testing::UnorderedElementsAreArray(
+                        std::map<std::string, std::string>(
+                            {{"required", "value"}, {"arg0", "value0"}})));
         EXPECT_TRUE(trigger_context.GetDirectAction());
 
         std::move(callback).Run(true, "");

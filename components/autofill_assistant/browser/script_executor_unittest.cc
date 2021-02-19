@@ -44,6 +44,7 @@ using ::testing::SaveArg;
 using ::testing::SizeIs;
 using ::testing::StrEq;
 using ::testing::StrictMock;
+using ::testing::UnorderedElementsAreArray;
 using ::testing::WithArgs;
 
 const char* kScriptPath = "script_path";
@@ -205,11 +206,12 @@ TEST_F(ScriptExecutorTest, ForwardParameters) {
         // delegate's TriggerContext.
         EXPECT_THAT(trigger_context.GetExperimentIds(),
                     Eq("exp,additional_exp"));
-        EXPECT_THAT(trigger_context.GetScriptParameters().GetParameter(
-                        "additional_param"),
-                    Eq("additional_param_value"));
-        EXPECT_THAT(trigger_context.GetScriptParameters().GetParameter("param"),
-                    Eq("value"));
+
+        EXPECT_THAT(
+            trigger_context.GetScriptParameters().ToProto(),
+            UnorderedElementsAreArray(std::map<std::string, std::string>(
+                {{"additional_param", "additional_param_value"},
+                 {"param", "value"}})));
 
         std::move(callback).Run(net::HTTP_OK, "");
       }));

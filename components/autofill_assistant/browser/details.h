@@ -33,8 +33,6 @@ class Details {
 
   // Update details from the given parameters. Returns true if changes were
   // made.
-  // If one of the generic detail parameter is present then vertical specific
-  // parameters are not used for Details creation.
   bool UpdateFromParameters(const ScriptParameters& script_parameters);
 
   // Updates the details to show data directly from proto. Returns true if
@@ -91,11 +89,6 @@ class Details {
   void SetDetailsChangesProto(const DetailsChangesProto& change_flags) {
     change_flags_ = change_flags;
   }
-
-  // Tries updating the details using generic detail parameters. Returns true
-  // if at least one generic detail parameter was found and used.
-  bool MaybeUpdateFromDetailsParameters(
-      const ScriptParameters& script_parameters);
 
   // Updates fields by taking the current |proto_| values into account.
   void Update();
