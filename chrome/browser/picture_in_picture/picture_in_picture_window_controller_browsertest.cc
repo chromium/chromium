@@ -54,6 +54,7 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
 #include "ui/display/display_switches.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/view_observer.h"
@@ -272,6 +273,14 @@ class PictureInPictureWindowControllerBrowserTest
       ASSERT_EQ(IsOverlayWindowControlVisible(control), expected_visible);
   }
 
+  void MoveMouseOverOverlayWindow() {
+    auto* const window = GetOverlayWindow();
+    const gfx::Point p(window->GetBounds().origin());
+    ui::MouseEvent moved_over(ui::ET_MOUSE_MOVED, p, p, ui::EventTimeForNow(),
+                              ui::EF_NONE, ui::EF_NONE);
+    window->OnMouseEvent(&moved_over);
+  }
+
  private:
   content::PictureInPictureWindowController* pip_window_controller_ = nullptr;
   MockPictureInPictureWindowController mock_controller_;
@@ -312,6 +321,16 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   EXPECT_TRUE(platform_util::IsWindowActive(native_window));
 #endif
 #endif
+}
+
+IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+                       ControlsVisibility) {
+  LoadTabAndEnterPictureInPicture(
+      browser(), base::FilePath(kPictureInPictureWindowSizePage));
+
+  EXPECT_FALSE(GetOverlayWindow()->AreControlsVisible());
+  MoveMouseOverOverlayWindow();
+  EXPECT_TRUE(GetOverlayWindow()->AreControlsVisible());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

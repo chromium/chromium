@@ -244,7 +244,8 @@ class OverlayWindowViews : public content::OverlayWindow,
   bool show_previous_track_button_ = false;
 
   // If set, controls will always either be shown or hidden, instead of showing
-  // and hiding automatically. Only used for testing.
+  // and hiding automatically. Only used for testing via
+  // ForceControlsVisibleForTesting().
   base::Optional<bool> force_controls_visible_;
 
   DISALLOW_COPY_AND_ASSIGN(OverlayWindowViews);
