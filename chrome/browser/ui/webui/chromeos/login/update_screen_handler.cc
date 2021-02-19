@@ -20,6 +20,16 @@ namespace chromeos {
 
 constexpr StaticOobeScreenId UpdateView::kScreenId;
 
+namespace {
+
+constexpr bool strings_equal(char const* a, char const* b) {
+  return *a == *b && (*a == '\0' || strings_equal(a + 1, b + 1));
+}
+static_assert(strings_equal(UpdateView::kScreenId.name, "oobe-update"),
+              "The update screen id must never change");
+
+}  // namespace
+
 UpdateScreenHandler::UpdateScreenHandler(JSCallsContainer* js_calls_container)
     : BaseScreenHandler(kScreenId, js_calls_container) {
   set_user_acted_method_path("login.UpdateScreen.userActed");
