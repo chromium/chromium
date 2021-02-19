@@ -454,6 +454,11 @@ TEST_F(StyleResolverTest, BackgroundImageFetch) {
       #first-line-none::first-line {
         background-image: url(first-line-none.png);
       }
+      frameset {
+        display: none;
+        border-color: currentColor; /* UA inherit defeats caching */
+        background-image: url(frameset-none.png);
+      }
     </style>
     <div id="none">
       <div id="inside-none"></div>
@@ -473,6 +478,11 @@ TEST_F(StyleResolverTest, BackgroundImageFetch) {
     <span id="first-line-span">XXX</span>
     <div id="first-line-none">XXX</div>
   )HTML");
+
+  auto* frameset1 = GetDocument().CreateRawElement(html_names::kFramesetTag);
+  auto* frameset2 = GetDocument().CreateRawElement(html_names::kFramesetTag);
+  GetDocument().documentElement()->AppendChild(frameset1);
+  GetDocument().documentElement()->AppendChild(frameset2);
 
   GetDocument().getElementById("host")->AttachShadowRootInternal(
       ShadowRootType::kOpen);
@@ -525,6 +535,17 @@ TEST_F(StyleResolverTest, BackgroundImageFetch) {
       << "Fetch for image inherited from display:contents";
   EXPECT_TRUE(GetBackgroundImageValue(non_slotted).IsCachePending())
       << "No fetch for element outside the flat tree";
+
+  // Added two frameset elements to hit the MatchedPropertiesCache for the
+  // second one. Frameset adjusts style to display:block in StyleAdjuster, but
+  // adjustments are not run before ComputedStyle is added to the
+  // MatchedPropertiesCache leaving the cached style with StylePendingImage
+  // unless we also check for LayoutObjectIsNeeded in
+  // StyleResolverState::LoadPendingImages.
+  EXPECT_FALSE(GetBackgroundImageValue(frameset1).IsCachePending())
+      << "Fetch for display:none frameset";
+  EXPECT_FALSE(GetBackgroundImageValue(frameset2).IsCachePending())
+      << "Fetch for display:none frameset - cached";
 }
 
 TEST_F(StyleResolverTest, NoFetchForAtPage) {
