@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_CROSTINI_CROSTINI_FEATURES_H_
 #define CHROME_BROWSER_CHROMEOS_CROSTINI_CROSTINI_FEATURES_H_
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -22,8 +24,22 @@ class CrostiniFeatures {
   // Returns false if this |profile| will never be allowed to run crostini for
   // the lifetime of this process, otherwise returns true. The return value of
   // this method is guaranteed not to change for a given |profile| within the
+  // lifetime of the process. Also provides the |reason| if crostini is
+  // disallowed. The |reason| string is to only be used in crosh/vmc error
+  // messages.
+  virtual bool CouldBeAllowed(Profile* profile, std::string* reason);
+
+  // Returns false if this |profile| will never be allowed to run crostini for
+  // the lifetime of this process, otherwise returns true. The return value of
+  // this method is guaranteed not to change for a given |profile| within the
   // lifetime of the process.
   virtual bool CouldBeAllowed(Profile* profile);
+
+  // Returns true if |profile| is allowed to run crostini at this moment. This
+  // method will never return true if CouldBeAllowed returns false for the same
+  // profile, but otherwise may change return value at any time. Also provides
+  // the reason if crostini is disallowed.
+  virtual bool IsAllowedNow(Profile* profile, std::string* reason);
 
   // Returns true if |profile| is allowed to run crostini at this moment. This
   // method will never return true if CouldBeAllowed returns false for the same

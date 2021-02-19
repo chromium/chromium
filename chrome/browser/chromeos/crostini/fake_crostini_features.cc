@@ -37,18 +37,25 @@ void FakeCrostiniFeatures::ClearAll() {
   port_forwarding_allowed_ = base::nullopt;
 }
 
-bool FakeCrostiniFeatures::CouldBeAllowed(Profile* profile) {
-  if (could_be_allowed_.has_value())
+bool FakeCrostiniFeatures::CouldBeAllowed(Profile* profile,
+                                          std::string* reason) {
+  if (could_be_allowed_.has_value()) {
+    *reason = "some reason";
     return *could_be_allowed_;
-  return original_features_->CouldBeAllowed(profile);
+  }
+  return original_features_->CouldBeAllowed(profile, reason);
 }
 
-bool FakeCrostiniFeatures::IsAllowedNow(Profile* profile) {
-  if (could_be_allowed_.has_value() && !could_be_allowed_)
+bool FakeCrostiniFeatures::IsAllowedNow(Profile* profile, std::string* reason) {
+  if (could_be_allowed_.has_value() && !could_be_allowed_) {
+    *reason = "some reason";
     return false;
-  if (allowed_now_.has_value())
+  }
+  if (allowed_now_.has_value()) {
+    *reason = "some reason";
     return *allowed_now_;
-  return original_features_->IsAllowedNow(profile);
+  }
+  return original_features_->IsAllowedNow(profile, reason);
 }
 
 bool FakeCrostiniFeatures::IsEnabled(Profile* profile) {

@@ -183,10 +183,10 @@ void ChromeFeaturesServiceProvider::IsCrostiniEnabled(
   if (!profile)
     return;
 
-  SendResponse(method_call, std::move(response_sender),
-               profile
-                   ? crostini::CrostiniFeatures::Get()->IsAllowedNow(profile)
-                   : false);
+  std::string reason;
+  bool answer =
+      crostini::CrostiniFeatures::Get()->IsAllowedNow(profile, &reason);
+  SendResponse(method_call, std::move(response_sender), answer, reason);
 }
 
 void ChromeFeaturesServiceProvider::IsCryptohomeDistributedModelEnabled(
