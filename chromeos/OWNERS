@@ -4,6 +4,7 @@
 # see also https://crbug.com/917623 and https://crbug.com/919552.
 
 per-file BUILD.gn=*
+per-file CHROMEOS_LKGM=*
 # Translation artifacts:
 per-file *.xtb=file://tools/translation/TRANSLATION_OWNERS
 # Strings
