@@ -168,12 +168,15 @@ struct ShapeResult::RunInfo : public RefCounted<ShapeResult::RunInfo> {
   }
 
   // Creates a new RunInfo instance representing a subset of the current run.
+  // Returns |nullptr| if there are no glyphs in the specified range.
   scoped_refptr<RunInfo> CreateSubRun(unsigned start, unsigned end) {
     DCHECK(end > start);
     unsigned number_of_characters = std::min(end - start, num_characters_);
     auto glyphs = FindGlyphDataRange(start, end);
     unsigned number_of_glyphs =
         static_cast<unsigned>(std::distance(glyphs.begin, glyphs.end));
+    if (UNLIKELY(!number_of_glyphs))
+      return nullptr;
 
     auto run =
         Create(font_data_.get(), direction_, canvas_rotation_, script_,

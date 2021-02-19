@@ -427,15 +427,21 @@ size_t ShapeResult::ByteSize() const {
 }
 
 bool ShapeResult::IsStartSafeToBreak() const {
-  CHECK(!runs_.IsEmpty());
+  // Empty is likely a |SubRange| at the middle of a cluster or a ligature.
+  if (UNLIKELY(runs_.IsEmpty()))
+    return false;
+  const RunInfo* run = nullptr;
+  const HarfBuzzRunGlyphData* glyph_data = nullptr;
   if (!Rtl()) {
-    const scoped_refptr<RunInfo>& run = runs_.front();
-    const HarfBuzzRunGlyphData& glyph_data = run->glyph_data_.front();
-    return glyph_data.safe_to_break_before;
+    run = runs_.front().get();
+    glyph_data = &run->glyph_data_.front();
+  } else {
+    run = runs_.back().get();
+    glyph_data = &run->glyph_data_.back();
   }
-  const scoped_refptr<RunInfo>& run = runs_.back();
-  const HarfBuzzRunGlyphData& glyph_data = run->glyph_data_.back();
-  return glyph_data.safe_to_break_before;
+  return glyph_data->safe_to_break_before &&
+         // If the glyph for the first character is missing, consider not safe.
+         StartIndex() == run->start_index_ + glyph_data->character_index;
 }
 
 unsigned ShapeResult::NextSafeToBreakOffset(unsigned index) const {
@@ -1324,16 +1330,17 @@ unsigned ShapeResult::CopyRangeInternal(unsigned run_index,
       unsigned end = std::min(end_offset, run_end) - run_start;
       DCHECK(end > start);
 
-      auto sub_run = run->CreateSubRun(start, end);
-      sub_run->start_index_ += index_diff;
-      target->width_ += sub_run->width_;
-      target->num_glyphs_ += sub_run->glyph_data_.size();
-      if (auto merged_run =
-              should_merge ? target->runs_.back()->MergeIfPossible(*sub_run)
-                           : scoped_refptr<RunInfo>()) {
-        target->runs_.back() = std::move(merged_run);
-      } else {
-        target->runs_.push_back(std::move(sub_run));
+      if (scoped_refptr<RunInfo> sub_run = run->CreateSubRun(start, end)) {
+        sub_run->start_index_ += index_diff;
+        target->width_ += sub_run->width_;
+        target->num_glyphs_ += sub_run->glyph_data_.size();
+        if (auto merged_run =
+                should_merge ? target->runs_.back()->MergeIfPossible(*sub_run)
+                             : scoped_refptr<RunInfo>()) {
+          target->runs_.back() = std::move(merged_run);
+        } else {
+          target->runs_.push_back(std::move(sub_run));
+        }
       }
       should_merge = false;
 
