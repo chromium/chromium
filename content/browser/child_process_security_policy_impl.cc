@@ -149,7 +149,7 @@ base::debug::CrashKeyString* GetKilledProcessOriginLockKey() {
 
 base::debug::CrashKeyString* GetCanAccessDataFailureReasonKey() {
   static auto* crash_key = base::debug::AllocateCrashKeyString(
-      "can_access_data_failure_reason", base::debug::CrashKeySize::Size64);
+      "can_access_data_failure_reason", base::debug::CrashKeySize::Size256);
   return crash_key;
 }
 
@@ -1633,7 +1633,15 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
         // BrowsingInstances are registered in the process. Allow this for now,
         // to maintain legacy behavior, until we rule out all the ways it can
         // happen.
-        return true;
+        RenderProcessHostImpl* child_host = static_cast<RenderProcessHostImpl*>(
+            RenderProcessHost::FromID(child_id));
+        DCHECK(child_host);
+        failure_reason =
+            base::StringPrintf("No BIids, keep_alive_count = %zu, sources = %s",
+                               child_host->keep_alive_ref_count(),
+                               child_host->keep_alive_sources().c_str());
+        // This will fall through to the call to
+        // LogCanAccessDataForOriginCrashKeys and log the failure reason.
       }
       for (auto browsing_instance_id :
            security_state->browsing_instance_ids()) {
