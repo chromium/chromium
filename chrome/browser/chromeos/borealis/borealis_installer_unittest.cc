@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/borealis/borealis_context_manager_mock.h"
 #include "chrome/browser/chromeos/borealis/borealis_installer_impl.h"
 
 #include <memory>
@@ -10,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/borealis/borealis_context_manager.h"
+#include "chrome/browser/chromeos/borealis/borealis_context_manager_mock.h"
 #include "chrome/browser/chromeos/borealis/borealis_features.h"
 #include "chrome/browser/chromeos/borealis/borealis_metrics.h"
 #include "chrome/browser/chromeos/borealis/borealis_prefs.h"
@@ -503,6 +503,30 @@ TEST_F(BorealisUninstallerTest, UninstallationIsIdempotent) {
 
   installer_->Uninstall(callback_factory.BindOnce());
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(BorealisUninstallerTest, SuccessfulUninstallationRecordsMetrics) {
+  installer_->Uninstall(base::DoNothing());
+  task_environment_.RunUntilIdle();
+
+  histogram_tester_->ExpectTotalCount(kBorealisUninstallNumAttemptsHistogram,
+                                      1);
+  histogram_tester_->ExpectUniqueSample(kBorealisUninstallResultHistogram,
+                                        BorealisUninstallResult::kSuccess, 1);
+}
+
+TEST_F(BorealisUninstallerTest, FailedUninstallationRecordsMetrics) {
+  // Arbitrarily choose to fail via DLC removal.
+  fake_dlcservice_client_->set_uninstall_error("some failure");
+
+  installer_->Uninstall(base::DoNothing());
+  task_environment_.RunUntilIdle();
+
+  histogram_tester_->ExpectTotalCount(kBorealisUninstallNumAttemptsHistogram,
+                                      1);
+  histogram_tester_->ExpectUniqueSample(
+      kBorealisUninstallResultHistogram,
+      BorealisUninstallResult::kRemoveDlcFailed, 1);
 }
 
 }  // namespace

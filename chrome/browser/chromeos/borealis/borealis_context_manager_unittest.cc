@@ -18,6 +18,7 @@
 #include "chrome/browser/chromeos/guest_os/guest_os_stability_monitor.h"
 #include "chrome/browser/chromeos/login/users/mock_user_manager.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_concierge_client.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -297,6 +298,8 @@ TEST_F(BorealisContextManagerTest, ShutDownCancelsRequestsAndTerminatesVm) {
           chromeos::DBusThreadManager::Get()->GetConciergeClient());
   EXPECT_TRUE(fake_concierge_client->stop_vm_called());
   histogram_tester_->ExpectTotalCount(kBorealisShutdownNumAttemptsHistogram, 1);
+  histogram_tester_->ExpectUniqueSample(kBorealisShutdownResultHistogram,
+                                        BorealisShutdownResult::kSuccess, 1);
 }
 
 TEST_F(BorealisContextManagerTest, ShutdownWhenNotRunningCompletesImmediately) {
@@ -306,6 +309,28 @@ TEST_F(BorealisContextManagerTest, ShutdownWhenNotRunningCompletesImmediately) {
 
   NeverCompletingContextManager context_manager(profile_.get());
   context_manager.ShutDownBorealis(shutdown_callback_handler.GetCallback());
+}
+
+TEST_F(BorealisContextManagerTest, FailureToShutdownReportsError) {
+  BorealisContextManagerImplForTesting context_manager(
+      profile_.get(), /*tasks=*/0, /*success=*/true);
+  context_manager.StartBorealis(base::DoNothing());
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(context_manager.IsRunning());
+
+  vm_tools::concierge::StopVmResponse response;
+  response.set_success(false);
+  response.set_failure_reason("expected failure");
+  chromeos::FakeConciergeClient* fake_concierge_client =
+      static_cast<chromeos::FakeConciergeClient*>(
+          chromeos::DBusThreadManager::Get()->GetConciergeClient());
+  fake_concierge_client->set_stop_vm_response(std::move(response));
+
+  ShutdownCallbackHandler shutdown_callback_handler;
+  EXPECT_CALL(shutdown_callback_handler,
+              Callback(BorealisShutdownResult::kFailed));
+  context_manager.ShutDownBorealis(shutdown_callback_handler.GetCallback());
+  task_environment_.RunUntilIdle();
 }
 
 class MockContextManager : public BorealisContextManagerImpl {

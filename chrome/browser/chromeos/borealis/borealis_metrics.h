@@ -12,11 +12,14 @@ namespace borealis {
 extern const char kBorealisInstallNumAttemptsHistogram[];
 extern const char kBorealisInstallResultHistogram[];
 extern const char kBorealisInstallOverallTimeHistogram[];
+extern const char kBorealisShutdownNumAttemptsHistogram[];
+extern const char kBorealisShutdownResultHistogram[];
 extern const char kBorealisStabilityHistogram[];
 extern const char kBorealisStartupNumAttemptsHistogram[];
 extern const char kBorealisStartupResultHistogram[];
 extern const char kBorealisStartupOverallTimeHistogram[];
-extern const char kBorealisShutdownNumAttemptsHistogram[];
+extern const char kBorealisUninstallNumAttemptsHistogram[];
+extern const char kBorealisUninstallResultHistogram[];
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -70,10 +73,15 @@ enum class BorealisShutdownResult {
 void RecordBorealisInstallNumAttemptsHistogram();
 void RecordBorealisInstallResultHistogram(BorealisInstallResult install_result);
 void RecordBorealisInstallOverallTimeHistogram(base::TimeDelta install_time);
+void RecordBorealisUninstallNumAttemptsHistogram();
+void RecordBorealisUninstallResultHistogram(
+    BorealisUninstallResult uninstall_result);
 void RecordBorealisStartupNumAttemptsHistogram();
 void RecordBorealisStartupResultHistogram(BorealisStartupResult startup_result);
 void RecordBorealisStartupOverallTimeHistogram(base::TimeDelta startup_time);
 void RecordBorealisShutdownNumAttemptsHistogram();
+void RecordBorealisShutdownResultHistogram(
+    BorealisShutdownResult shutdown_result);
 
 }  // namespace borealis
 

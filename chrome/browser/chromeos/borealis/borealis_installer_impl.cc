@@ -168,6 +168,7 @@ void BorealisInstallerImpl::Uninstall(
         .Run(BorealisUninstallResult::kAlreadyInProgress);
     return;
   }
+  RecordBorealisUninstallNumAttemptsHistogram();
   // TODO(b/179303903): The installer should own the relevant bits so the VM and
   // container names are kept by it (and not context_manager).
   auto uninstall_info = std::make_unique<UninstallInfo>();
@@ -326,7 +327,7 @@ void BorealisInstallerImpl::OnUninstallComplete(
   if (!result) {
     uninstall_result = result.Error();
   }
-  // TODO metrics
+  RecordBorealisUninstallResultHistogram(uninstall_result);
   std::move(on_uninstall_callback).Run(uninstall_result);
 }
 

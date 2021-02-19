@@ -152,19 +152,17 @@ void BorealisContextManagerImpl::ShutDownBorealis(
             // We don't have a good way to deal with a vm failing to stop (and
             // this would be a very rare occurrence anyway). We log an error if
             // it actually wasn't successful.
+            BorealisShutdownResult result = BorealisShutdownResult::kSuccess;
             if (!response.has_value()) {
               LOG(ERROR) << "Failed to stop Borealis VM: No response";
-              std::move(on_shutdown_callback)
-                  .Run(BorealisShutdownResult::kFailed);
+              result = BorealisShutdownResult::kFailed;
             } else if (!response.value().success()) {
               LOG(ERROR) << "Failed to stop Borealis VM: "
                          << response.value().failure_reason();
-              std::move(on_shutdown_callback)
-                  .Run(BorealisShutdownResult::kFailed);
-            } else {
-              std::move(on_shutdown_callback)
-                  .Run(BorealisShutdownResult::kSuccess);
+              result = BorealisShutdownResult::kFailed;
             }
+            RecordBorealisShutdownResultHistogram(result);
+            std::move(on_shutdown_callback).Run(result);
           },
           std::move(on_shutdown_callback)));
 }
