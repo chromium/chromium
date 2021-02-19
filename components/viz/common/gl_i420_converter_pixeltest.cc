@@ -4,6 +4,8 @@
 
 #include "components/viz/common/gl_i420_converter.h"
 
+#include <GLES2/gl2ext.h>
+
 #include "cc/test/pixel_test.h"
 #include "cc/test/pixel_test_utils.h"
 #include "components/viz/common/gl_scaler_test_util.h"

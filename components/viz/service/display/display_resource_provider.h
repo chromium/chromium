@@ -27,7 +27,6 @@
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/khronos/GLES2/gl2.h"
-#include "third_party/khronos/GLES2/gl2ext.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
@@ -36,15 +35,8 @@ namespace gfx {
 class ColorSpace;
 }  // namespace gfx
 
-namespace gpu {
-namespace gles2 {
-class GLES2Interface;
-}  // namespace gles2
-}  // namespace gpu
-
 namespace viz {
 
-class ContextProvider;
 class ScopedAllowGpuAccessForDisplayResourceProvider;
 class SharedBitmapManager;
 
@@ -114,7 +106,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   // only use GL locks on GL resources, etc, and this is enforced by assertions.
 
  protected:
-  // Forward declared for LockSetForExternalUse below.
+  // Forward declared for ScopedReadLockSharedImage below.
   struct ChildResource;
 
  public:
@@ -158,29 +150,6 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
    private:
     DisplayResourceProvider* const resource_provider_;
     const bool was_access_to_gpu_thread_allowed_;
-  };
-
-  class VIZ_SERVICE_EXPORT SynchronousFence : public ResourceFence {
-   public:
-    explicit SynchronousFence(gpu::gles2::GLES2Interface* gl);
-
-    SynchronousFence(const SynchronousFence&) = delete;
-    SynchronousFence& operator=(const SynchronousFence&) = delete;
-
-    // ResourceFence implementation.
-    void Set() override;
-    bool HasPassed() override;
-
-    // Returns true if fence has been set but not yet synchornized.
-    bool has_synchronized() const { return has_synchronized_; }
-
-   private:
-    ~SynchronousFence() override;
-
-    void Synchronize();
-
-    gpu::gles2::GLES2Interface* gl_;
-    bool has_synchronized_;
   };
 
   // Sets the current read fence. If a resource is locked for read
@@ -373,12 +342,8 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   using ChildMap = std::unordered_map<int, Child>;
   using ResourceMap = std::unordered_map<ResourceId, ChildResource>;
 
-  // TODO(cblume, crbug.com/900973): |enable_shared_images| is a temporary
-  // solution that unblocks us until SharedImages are threadsafe in WebView.
   DisplayResourceProvider(Mode mode,
-                          ContextProvider* compositor_context_provider,
-                          SharedBitmapManager* shared_bitmap_manager,
-                          bool enable_shared_images = true);
+                          SharedBitmapManager* shared_bitmap_manager);
 
   ChildResource* GetResource(ResourceId id);
 
@@ -386,11 +351,6 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   // where resources which should be available are missing. This version may
   // return nullptr if a resource is not found. https://crbug.com/811858
   ChildResource* TryGetResource(ResourceId id);
-
-  void DeleteResourceInternal(ResourceMap::iterator it);
-
-  // Returns null if we do not have a ContextProvider.
-  gpu::gles2::GLES2Interface* ContextGL() const;
 
   void TryReleaseResource(ResourceId id, ChildResource* resource);
   // Binds the given GL resource to a texture target for sampling using the
@@ -424,14 +384,11 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
 
   THREAD_CHECKER(thread_checker_);
   const Mode mode_;
-  ContextProvider* const compositor_context_provider_;
   SharedBitmapManager* const shared_bitmap_manager_;
 
   ResourceMap resources_;
   ChildMap children_;
   base::flat_map<ResourceId, sk_sp<SkImage>> resource_sk_images_;
-  // Used to release resources held by an external consumer.
-  ExternalUseClient* external_use_client_ = nullptr;
 
   base::flat_map<int, std::vector<ResourceId>> batched_returning_resources_;
   scoped_refptr<ResourceFence> current_read_lock_fence_;
@@ -454,8 +411,6 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   // Set of ResourceIds that would like to be notified about promotion hints.
   ResourceIdSet wants_promotion_hints_set_;
 #endif
-
-  bool enable_shared_images_;
 
   // Indicates that gpu thread is available and calls like
   // ReleaseImageContexts() are expected to finish in finite time. It's always

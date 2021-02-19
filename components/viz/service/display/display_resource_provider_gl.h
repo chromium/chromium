@@ -10,12 +10,22 @@
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/viz_service_export.h"
 
+namespace gpu {
+namespace gles2 {
+class GLES2Interface;
+}  // namespace gles2
+}  // namespace gpu
+
 namespace viz {
+
+class ContextProvider;
 
 // DisplayResourceProvider implementation used with GLRenderer.
 class VIZ_SERVICE_EXPORT DisplayResourceProviderGL
     : public DisplayResourceProvider {
  public:
+  // Android with GLRenderer doesn't support overlays with shared images
+  // enabled. For everything else |enable_shared_images| is true.
   DisplayResourceProviderGL(ContextProvider* compositor_context_provider,
                             SharedBitmapManager* shared_bitmap_manager,
                             bool enable_shared_images = true);
@@ -94,6 +104,29 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderGL
     GLuint texture_id_ = 0;
   };
 
+  class VIZ_SERVICE_EXPORT SynchronousFence : public ResourceFence {
+   public:
+    explicit SynchronousFence(gpu::gles2::GLES2Interface* gl);
+
+    SynchronousFence(const SynchronousFence&) = delete;
+    SynchronousFence& operator=(const SynchronousFence&) = delete;
+
+    // ResourceFence implementation.
+    void Set() override;
+    bool HasPassed() override;
+
+    // Returns true if fence has been set but not yet synchornized.
+    bool has_synchronized() const { return has_synchronized_; }
+
+   private:
+    ~SynchronousFence() override;
+
+    void Synchronize();
+
+    gpu::gles2::GLES2Interface* gl_;
+    bool has_synchronized_;
+  };
+
  private:
   const ChildResource* LockForRead(ResourceId id, bool overlay_only);
   void UnlockForRead(ResourceId id, bool overlay_only);
@@ -104,8 +137,13 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderGL
       DeleteStyle style,
       const std::vector<ResourceId>& unused) override;
 
+  gpu::gles2::GLES2Interface* ContextGL() const;
+  void DeleteResourceInternal(ResourceMap::iterator it);
   GLenum BindForSampling(ResourceId resource_id, GLenum unit, GLenum filter);
   void WaitSyncTokenInternal(ChildResource* resource);
+
+  ContextProvider* const compositor_context_provider_;
+  const bool enable_shared_images_;
 };
 
 }  // namespace viz

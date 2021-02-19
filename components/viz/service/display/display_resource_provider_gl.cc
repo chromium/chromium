@@ -7,7 +7,9 @@
 #include <vector>
 
 #include "base/dcheck_is_on.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/viz/common/gpu/context_provider.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 
@@ -48,12 +50,37 @@ DisplayResourceProviderGL::DisplayResourceProviderGL(
     SharedBitmapManager* shared_bitmap_manager,
     bool enable_shared_images)
     : DisplayResourceProvider(DisplayResourceProvider::kGpu,
-                              compositor_context_provider,
-                              shared_bitmap_manager,
-                              enable_shared_images) {}
+                              shared_bitmap_manager),
+      compositor_context_provider_(compositor_context_provider),
+      enable_shared_images_(enable_shared_images) {}
 
 DisplayResourceProviderGL::~DisplayResourceProviderGL() {
   Destroy();
+  GLES2Interface* gl = ContextGL();
+  if (gl)
+    gl->Finish();
+
+  while (!resources_.empty())
+    DeleteResourceInternal(resources_.begin());
+}
+
+void DisplayResourceProviderGL::DeleteResourceInternal(
+    ResourceMap::iterator it) {
+  TRACE_EVENT0("viz", "DisplayResourceProvider::DeleteResourceInternal");
+  ChildResource* resource = &it->second;
+
+  if (resource->gl_id) {
+    GLES2Interface* gl = ContextGL();
+    DCHECK(gl);
+    gl->DeleteTextures(1, &resource->gl_id);
+  }
+
+  resources_.erase(it);
+}
+
+GLES2Interface* DisplayResourceProviderGL::ContextGL() const {
+  DCHECK(compositor_context_provider_);
+  return compositor_context_provider_->ContextGL();
 }
 
 const DisplayResourceProvider::ChildResource*
@@ -155,7 +182,6 @@ DisplayResourceProviderGL::DeleteAndReturnUnusedResourcesToChildImpl(
     Child& child_info,
     DeleteStyle style,
     const std::vector<ResourceId>& unused) {
-  DCHECK(!external_use_client_);
   std::vector<ReturnedResource> to_return;
   // Reserve enough space to avoid re-allocating, so we can keep item pointers
   // for later using.
@@ -349,6 +375,29 @@ DisplayResourceProviderGL::ScopedOverlayLockGL::ScopedOverlayLockGL(
 
 DisplayResourceProviderGL::ScopedOverlayLockGL::~ScopedOverlayLockGL() {
   resource_provider_->UnlockForRead(resource_id_, true /* overlay_only */);
+}
+
+DisplayResourceProviderGL::SynchronousFence::SynchronousFence(
+    gpu::gles2::GLES2Interface* gl)
+    : gl_(gl), has_synchronized_(true) {}
+
+DisplayResourceProviderGL::SynchronousFence::~SynchronousFence() = default;
+
+void DisplayResourceProviderGL::SynchronousFence::Set() {
+  has_synchronized_ = false;
+}
+
+bool DisplayResourceProviderGL::SynchronousFence::HasPassed() {
+  if (!has_synchronized_) {
+    has_synchronized_ = true;
+    Synchronize();
+  }
+  return true;
+}
+
+void DisplayResourceProviderGL::SynchronousFence::Synchronize() {
+  TRACE_EVENT0("viz", "DisplayResourceProvider::SynchronousFence::Synchronize");
+  gl_->Finish();
 }
 
 }  // namespace viz

@@ -15,9 +15,7 @@ namespace viz {
 DisplayResourceProviderSoftware::DisplayResourceProviderSoftware(
     SharedBitmapManager* shared_bitmap_manager)
     : DisplayResourceProvider(DisplayResourceProvider::kSoftware,
-                              /*compositor_context_provider=*/nullptr,
-                              shared_bitmap_manager,
-                              /*enable_shared_images=*/true) {}
+                              shared_bitmap_manager) {}
 
 DisplayResourceProviderSoftware::~DisplayResourceProviderSoftware() {
   Destroy();
@@ -79,8 +77,6 @@ DisplayResourceProviderSoftware::DeleteAndReturnUnusedResourcesToChildImpl(
     Child& child_info,
     DeleteStyle style,
     const std::vector<ResourceId>& unused) {
-  DCHECK(!external_use_client_);
-
   std::vector<ReturnedResource> to_return;
   // Reserve enough space to avoid re-allocating, so we can keep item pointers
   // for later using.
@@ -114,7 +110,7 @@ DisplayResourceProviderSoftware::DeleteAndReturnUnusedResourcesToChildImpl(
 
     child_info.child_to_parent_map.erase(child_id);
     resource.imported_count = 0;
-    DeleteResourceInternal(it);
+    resources_.erase(it);
   }
 
   return to_return;
