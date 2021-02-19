@@ -956,7 +956,8 @@ void ResourceFetcher::AttachWebBundleTokenIfNeeded(
     if (!bundle->CanHandleRequest(resource_request.Url()))
       continue;
     resource_request.SetWebBundleTokenParams(
-        ResourceRequestHead::WebBundleTokenParams(bundle->WebBundleToken(),
+        ResourceRequestHead::WebBundleTokenParams(bundle->GetBundleUrl(),
+                                                  bundle->WebBundleToken(),
                                                   mojo::NullRemote()));
     return;
   }

@@ -2334,9 +2334,9 @@ const GURL& NavigationRequest::GetOriginalRequestURL() {
 }
 
 GURL NavigationRequest::GetWebBundleURL() {
-  if (!response())
+  if (!begin_params_->web_bundle_token)
     return GURL();
-  return response()->web_bundle_url;
+  return begin_params_->web_bundle_token->bundle_url;
 }
 
 void NavigationRequest::OnResponseStarted(

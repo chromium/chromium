@@ -46,6 +46,7 @@ class CORE_EXPORT LinkWebBundle final : public LinkResource,
   // SubresourceWebBundle overrides:
   bool CanHandleRequest(const KURL& url) const override;
   String GetCacheIdentifier() const override;
+  const KURL& GetBundleUrl() const override;
   const base::UnguessableToken& WebBundleToken() const override;
 
   // Parse the given |str| as a url. If |str| doesn't meet the criteria which

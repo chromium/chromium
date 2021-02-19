@@ -44,6 +44,7 @@ namespace blink {
 ResourceRequestHead::WebBundleTokenParams&
 ResourceRequestHead::WebBundleTokenParams::operator=(
     const WebBundleTokenParams& other) {
+  bundle_url = other.bundle_url;
   token = other.token;
   handle = other.CloneHandle();
   return *this;
@@ -55,9 +56,12 @@ ResourceRequestHead::WebBundleTokenParams::WebBundleTokenParams(
 }
 
 ResourceRequestHead::WebBundleTokenParams::WebBundleTokenParams(
+    const KURL& bundle_url,
     const base::UnguessableToken& web_bundle_token,
     mojo::PendingRemote<network::mojom::WebBundleHandle> web_bundle_handle)
-    : token(web_bundle_token), handle(std::move(web_bundle_handle)) {}
+    : bundle_url(bundle_url),
+      token(web_bundle_token),
+      handle(std::move(web_bundle_handle)) {}
 
 mojo::PendingRemote<network::mojom::WebBundleHandle>
 ResourceRequestHead::WebBundleTokenParams::CloneHandle() const {

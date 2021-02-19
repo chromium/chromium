@@ -105,7 +105,7 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
       "some_header");
   original.web_bundle_token_params =
       base::make_optional(ResourceRequest::WebBundleTokenParams(
-          base::UnguessableToken::Create(),
+          GURL("https://bundle.test/"), base::UnguessableToken::Create(),
           mojo::PendingRemote<network::mojom::WebBundleHandle>()));
 
   network::ResourceRequest copied;

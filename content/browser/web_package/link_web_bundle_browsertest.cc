@@ -163,6 +163,25 @@ IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, SubframeLoad) {
                                       web_bundle_size, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, SubframeLoadError) {
+  GURL url(
+      embedded_test_server()->GetURL("/web_bundle/invalid_web_bundle.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Attempt to create an iframe with a resource in a broken WebBundle.
+  base::RunLoop run_loop;
+  FinishNavigationObserver finish_navigation_observer(
+      shell()->web_contents(), GURL(kUrnUuidURL), run_loop.QuitClosure());
+  ExecuteScriptAsync(
+      shell(),
+      "let iframe = document.createElement('iframe');"
+      "iframe.src = 'urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae';"
+      "document.body.appendChild(iframe);");
+  run_loop.Run();
+  EXPECT_EQ(net::ERR_INVALID_WEB_BUNDLE,
+            *finish_navigation_observer.error_code());
+}
+
 IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, FollowLink) {
   GURL url(embedded_test_server()->GetURL("/web_bundle/link_web_bundle.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));

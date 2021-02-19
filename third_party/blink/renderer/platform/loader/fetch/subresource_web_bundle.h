@@ -26,6 +26,7 @@ class PLATFORM_EXPORT SubresourceWebBundle : public GarbageCollectedMixin {
  public:
   void Trace(Visitor* visitor) const override {}
   virtual bool CanHandleRequest(const KURL& url) const = 0;
+  virtual const KURL& GetBundleUrl() const = 0;
   virtual const base::UnguessableToken& WebBundleToken() const = 0;
   virtual String GetCacheIdentifier() const = 0;
 };

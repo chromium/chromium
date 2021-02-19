@@ -511,6 +511,16 @@ void WebBundleURLLoaderFactory::StartSubresourceRequest(
   URLLoader* loader = new URLLoader(
       std::move(receiver), url_request, std::move(client),
       request_initiator_origin_lock_, std::move(trusted_header_client));
+
+  // Verify that WebBundle URL associated with the request is correct.
+  DCHECK(url_request.web_bundle_token_params.has_value());
+  if (url_request.web_bundle_token_params->bundle_url != bundle_url_) {
+    mojo::ReportBadMessage(
+        "WebBundleURLLoaderFactory: Bundle URL does not match");
+    loader->OnFail(net::ERR_INVALID_ARGUMENT);
+    return;
+  }
+
   if (!loader->trusted_header_client()) {
     QueueOrStartLoader(loader->GetWeakPtr());
     return;

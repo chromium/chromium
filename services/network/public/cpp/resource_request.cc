@@ -99,6 +99,7 @@ ResourceRequest::WebBundleTokenParams::WebBundleTokenParams(
 ResourceRequest::WebBundleTokenParams&
 ResourceRequest::WebBundleTokenParams::operator=(
     const WebBundleTokenParams& other) {
+  bundle_url = other.bundle_url;
   token = other.token;
   handle = other.CloneHandle();
   render_process_id = other.render_process_id;
@@ -106,18 +107,22 @@ ResourceRequest::WebBundleTokenParams::operator=(
 }
 
 ResourceRequest::WebBundleTokenParams::WebBundleTokenParams(
+    const GURL& bundle_url,
     const base::UnguessableToken& token,
     mojo::PendingRemote<mojom::WebBundleHandle> handle)
-    : token(token), handle(std::move(handle)) {}
+    : bundle_url(bundle_url), token(token), handle(std::move(handle)) {}
 
 ResourceRequest::WebBundleTokenParams::WebBundleTokenParams(
+    const GURL& bundle_url,
     const base::UnguessableToken& token,
     int32_t render_process_id)
-    : token(token), render_process_id(render_process_id) {}
+    : bundle_url(bundle_url),
+      token(token),
+      render_process_id(render_process_id) {}
 
 bool ResourceRequest::WebBundleTokenParams::EqualsForTesting(
     const WebBundleTokenParams& other) const {
-  return token == other.token &&
+  return bundle_url == other.bundle_url && token == other.token &&
          ((handle && other.handle) || (!handle && !other.handle)) &&
          render_process_id == other.render_process_id;
 }

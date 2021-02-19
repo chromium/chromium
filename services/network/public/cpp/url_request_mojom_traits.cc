@@ -170,6 +170,9 @@ bool StructTraits<network::mojom::WebBundleTokenParamsDataView,
                   network::ResourceRequest::WebBundleTokenParams>::
     Read(network::mojom::WebBundleTokenParamsDataView data,
          network::ResourceRequest::WebBundleTokenParams* out) {
+  if (!data.ReadBundleUrl(&out->bundle_url)) {
+    return false;
+  }
   if (!data.ReadToken(&out->token)) {
     return false;
   }

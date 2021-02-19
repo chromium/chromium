@@ -225,8 +225,8 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
     DCHECK(frame_tree_node->parent());
     int render_process_id = frame_tree_node->parent()->GetProcess()->GetID();
     new_request->web_bundle_token_params =
-        network::ResourceRequest::WebBundleTokenParams(
-            *request_info->begin_params->web_bundle_token, render_process_id);
+        request_info->begin_params->web_bundle_token;
+    new_request->web_bundle_token_params->render_process_id = render_process_id;
   }
 
   new_request->resource_type = static_cast<int>(

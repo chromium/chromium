@@ -155,7 +155,7 @@ struct BeginNavigationParams {
 
   // Token to identify a WebBundle. Set on navigation to a resource in a
   // WebBundle.
-  mojo_base.mojom.UnguessableToken? web_bundle_token;
+  network.mojom.WebBundleTokenParams? web_bundle_token;
 };
 
 // Provided by the browser or the renderer -------------------------------------

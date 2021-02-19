@@ -89,11 +89,13 @@ class PLATFORM_EXPORT ResourceRequestHead {
     WebBundleTokenParams& operator=(const WebBundleTokenParams& other);
 
     WebBundleTokenParams(
+        const KURL& bundle_url,
         const base::UnguessableToken& token,
         mojo::PendingRemote<network::mojom::WebBundleHandle> handle);
 
     mojo::PendingRemote<network::mojom::WebBundleHandle> CloneHandle() const;
 
+    KURL bundle_url;
     base::UnguessableToken token;
     mojo::PendingRemote<network::mojom::WebBundleHandle> handle;
   };

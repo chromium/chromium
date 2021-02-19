@@ -92,6 +92,8 @@ struct TrustedUrlRequestParams {
 
 // Options that may only be set on URLRequests which are related to WebBundle.
 struct WebBundleTokenParams {
+  // The URL of the WebBundle.
+  url.mojom.Url bundle_url;
   // Unique token to identify a WebBundle.
   mojo_base.mojom.UnguessableToken token;
   // Handle for the WebBundle-related communication between the network process

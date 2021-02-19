@@ -71,7 +71,7 @@ class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
     web_bundle_handles_.Add(this,
                             web_bundle_handle.InitWithNewPipeAndPassReceiver());
     request.SetWebBundleTokenParams(ResourceRequestHead::WebBundleTokenParams(
-        web_bundle_token_, std::move(web_bundle_handle)));
+        url_, web_bundle_token_, std::move(web_bundle_handle)));
 
     ExecutionContext* execution_context = document.GetExecutionContext();
     ResourceLoaderOptions resource_loader_options(
@@ -270,6 +270,11 @@ bool LinkWebBundle::ResourcesOrScopesMatch(const KURL& url) const {
 String LinkWebBundle::GetCacheIdentifier() const {
   DCHECK(bundle_loader_);
   return bundle_loader_->url().GetString();
+}
+
+const KURL& LinkWebBundle::GetBundleUrl() const {
+  DCHECK(bundle_loader_);
+  return bundle_loader_->url();
 }
 
 const base::UnguessableToken& LinkWebBundle::WebBundleToken() const {

@@ -322,6 +322,7 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
   if (src.GetWebBundleTokenParams().has_value()) {
     dest->web_bundle_token_params =
         base::make_optional(network::ResourceRequest::WebBundleTokenParams(
+            src.GetWebBundleTokenParams()->bundle_url,
             src.GetWebBundleTokenParams()->token,
             src.GetWebBundleTokenParams()->CloneHandle()));
   }

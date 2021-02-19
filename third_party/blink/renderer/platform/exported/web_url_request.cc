@@ -556,6 +556,13 @@ network::OptionalTrustTokenParams WebURLRequest::TrustTokenParams() const {
   return ConvertTrustTokenParams(resource_request_->TrustTokenParams());
 }
 
+base::Optional<WebURL> WebURLRequest::WebBundleUrl() const {
+  if (resource_request_->GetWebBundleTokenParams()) {
+    return resource_request_->GetWebBundleTokenParams()->bundle_url;
+  }
+  return base::nullopt;
+}
+
 base::Optional<base::UnguessableToken> WebURLRequest::WebBundleToken() const {
   if (resource_request_->GetWebBundleTokenParams()) {
     return resource_request_->GetWebBundleTokenParams()->token;

@@ -102,6 +102,10 @@ template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     StructTraits<network::mojom::WebBundleTokenParamsDataView,
                  network::ResourceRequest::WebBundleTokenParams> {
+  static const GURL& bundle_url(
+      const network::ResourceRequest::WebBundleTokenParams& params) {
+    return params.bundle_url;
+  }
   static const base::UnguessableToken& token(
       const network::ResourceRequest::WebBundleTokenParams& params) {
     return params.token;

@@ -5820,6 +5820,16 @@ void RenderFrameImpl::BeginNavigationInternal(
         base::JSONReader::ReadDeprecated(info->devtools_initiator_info.Utf8()));
   }
 
+  base::Optional<network::ResourceRequest::WebBundleTokenParams>
+      web_bundle_token_params;
+  if (info->url_request.WebBundleToken()) {
+    web_bundle_token_params =
+        base::make_optional(network::ResourceRequest::WebBundleTokenParams(
+            *info->url_request.WebBundleUrl(),
+            *info->url_request.WebBundleToken(),
+            -1 /* render_process_id, to be filled in the browser process */));
+  }
+
   mojom::BeginNavigationParamsPtr begin_navigation_params =
       mojom::BeginNavigationParams::New(
           info->initiator_frame_token,
@@ -5840,7 +5850,7 @@ void RenderFrameImpl::BeginNavigationInternal(
                     blink::ConvertWebImpressionToImpression(*info->impression))
               : base::nullopt,
           renderer_before_unload_start, renderer_before_unload_end,
-          info->url_request.WebBundleToken());
+          web_bundle_token_params);
 
   mojo::PendingAssociatedRemote<mojom::NavigationClient>
       navigation_client_remote;
