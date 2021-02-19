@@ -498,11 +498,13 @@ void SystemTrayClient::ShowThirdPartyVpnCreate(
 void SystemTrayClient::ShowArcVpnCreate(const std::string& app_id) {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
 
-  if (!profile)
+  if (!profile ||
+      !apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
     return;
+  }
 
-  arc::LaunchApp(profile, app_id, ui::EF_NONE,
-                 arc::UserInteractionType::APP_STARTED_FROM_SETTINGS);
+  apps::AppServiceProxyFactory::GetForProfile(profile)->Launch(
+      app_id, ui::EF_NONE, apps::mojom::LaunchSource::kFromParentalControls);
 }
 
 void SystemTrayClient::ShowNetworkSettings(const std::string& network_id) {
