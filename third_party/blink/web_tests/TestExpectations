@@ -5722,3 +5722,4 @@ crbug.com/1179219 external/wpt/html/semantics/embedded-content/media-elements/lo
 # Sheriff 2021-02-18
 crbug.com/1179772 [ Win7 ] http/tests/devtools/console/console-preserve-log-x-process-navigation.js [ Pass Failure ]
 crbug.com/1179857 [ Linux ] http/tests/inspector-protocol/dom/dom-getFrameOwner.js [ Pass Failure ]
+crbug.com/1179905 [ Linux ] fast/multicol/nested-very-tall-inside-short-crash.html [ Pass Failure ]
