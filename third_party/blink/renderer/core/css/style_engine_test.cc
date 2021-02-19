@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
+#include "third_party/blink/renderer/core/layout/list_marker.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
@@ -4130,6 +4131,54 @@ TEST_F(StyleEngineTest, AtCounterStyleUseCounter) {
   GetDocument().body()->setInnerHTML("<style>@counter-style foo {}</style>");
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsUseCounted(WebFeature::kCSSAtRuleCounterStyle));
+}
+
+TEST_F(StyleEngineTest, CounterStyleDisabledInShadowDOM) {
+  ScopedCSSAtRuleCounterStyleForTest counter_style_enabled(true);
+  ScopedCSSAtRuleCounterStyleInShadowDOMForTest
+      counter_style_in_shadow_dom_disabled(false);
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      @counter-style foo { symbols: A; }
+    </style>
+    <ol id="foo" style="list-style-type: foo"><li></li></ol>
+    <div id="host"></div>
+  )HTML");
+
+  Element* host = GetDocument().getElementById("host");
+  ShadowRoot& shadow_root =
+      host->AttachShadowRootInternal(ShadowRootType::kOpen);
+  shadow_root.setInnerHTML(R"HTML(
+    <style>
+      @counter-style bar { symbols: B; }
+    </style>
+    <ol id="foo" style="list-style-type: foo"><li></li></ol>
+    <ol id="bar" style="list-style-type: bar"><li></li></ol>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  // Only @counter-style rules defined in the document scope are effective,
+  // matching the spec status as of Feb 2021.
+
+  LayoutObject* document_foo =
+      GetDocument().getElementById("foo")->firstChild()->GetLayoutObject();
+  LayoutText* document_foo_marker_text = To<LayoutText>(
+      ListMarker::MarkerFromListItem(document_foo)->SlowFirstChild());
+  EXPECT_EQ("A. ", document_foo_marker_text->GetText());
+
+  LayoutObject* shadow_foo =
+      shadow_root.getElementById("foo")->firstChild()->GetLayoutObject();
+  LayoutText* shadow_foo_marker_text = To<LayoutText>(
+      ListMarker::MarkerFromListItem(shadow_foo)->SlowFirstChild());
+  EXPECT_EQ("A. ", shadow_foo_marker_text->GetText());
+
+  LayoutObject* shadow_bar =
+      shadow_root.getElementById("bar")->firstChild()->GetLayoutObject();
+  LayoutText* shadow_bar_marker_text = To<LayoutText>(
+      ListMarker::MarkerFromListItem(shadow_bar)->SlowFirstChild());
+  EXPECT_EQ("1. ", shadow_bar_marker_text->GetText());
 }
 
 }  // namespace blink
