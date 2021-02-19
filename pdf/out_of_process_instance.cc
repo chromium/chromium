@@ -23,6 +23,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -845,10 +846,12 @@ void OutOfProcessInstance::GetPrintPresetOptionsFromDocument(
   options->duplex =
       static_cast<PP_PrivateDuplexMode_Dev>(engine()->GetDuplexType());
   options->copies = engine()->GetCopiesToPrint();
-  gfx::Size uniform_page_size;
-  options->is_page_size_uniform =
-      PP_FromBool(engine()->GetPageSizeAndUniformity(&uniform_page_size));
-  options->uniform_page_size = PPSizeFromSize(uniform_page_size);
+
+  base::Optional<gfx::Size> uniform_page_size =
+      engine()->GetUniformPageSizePoints();
+  options->is_page_size_uniform = PP_FromBool(uniform_page_size.has_value());
+  options->uniform_page_size = PPSizeFromSize(
+      uniform_page_size.has_value() ? uniform_page_size.value() : gfx::Size());
 }
 
 void OutOfProcessInstance::EnableAccessibility() {

@@ -156,7 +156,7 @@ class PDFiumEngine : public PDFEngine,
   bool GetPrintScaling() override;
   int GetCopiesToPrint() override;
   int GetDuplexType() override;
-  bool GetPageSizeAndUniformity(gfx::Size* size) override;
+  base::Optional<gfx::Size> GetUniformPageSizePoints() override;
   void AppendBlankPages(size_t num_pages) override;
   void AppendPage(PDFEngine* engine, int index) override;
   std::vector<uint8_t> GetSaveData() override;

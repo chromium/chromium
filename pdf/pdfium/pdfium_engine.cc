@@ -2628,22 +2628,20 @@ int PDFiumEngine::GetDuplexType() {
   return static_cast<int>(FPDF_VIEWERREF_GetDuplex(doc()));
 }
 
-bool PDFiumEngine::GetPageSizeAndUniformity(gfx::Size* size) {
+base::Optional<gfx::Size> PDFiumEngine::GetUniformPageSizePoints() {
   if (pages_.empty())
-    return false;
+    return base::nullopt;
 
   gfx::Size page_size = GetPageSize(0);
   for (size_t i = 1; i < pages_.size(); ++i) {
     if (page_size != GetPageSize(i))
-      return false;
+      return base::nullopt;
   }
 
   // Convert |page_size| back to points.
-  size->set_width(
-      ConvertUnit(page_size.width(), kPixelsPerInch, kPointsPerInch));
-  size->set_height(
+  return gfx::Size(
+      ConvertUnit(page_size.width(), kPixelsPerInch, kPointsPerInch),
       ConvertUnit(page_size.height(), kPixelsPerInch, kPointsPerInch));
-  return true;
 }
 
 void PDFiumEngine::AppendBlankPages(size_t num_pages) {
