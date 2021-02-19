@@ -281,9 +281,8 @@ class ChannelLinux::SharedBuffer {
       return nullptr;
     }
 
-    uint8_t* ptr = reinterpret_cast<uint8_t*>(
-        mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED,
-             memfd.get(), 0));
+    uint8_t* ptr = reinterpret_cast<uint8_t*>(mmap(
+        nullptr, size, PROT_READ | PROT_WRITE, MAP_SHARED, memfd.get(), 0));
 
     if (ptr == MAP_FAILED) {
       PLOG(ERROR) << "Unable to map shared memory";
