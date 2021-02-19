@@ -3417,7 +3417,7 @@
     },
     {
         "duration": "39.0",
-        "name": "system_health.common_desktop/browse:media:googleplaystore:2018"
+        "name": "system_health.common_desktop/browse:media:googleplaystore:2021"
     },
     {
         "duration": "68.0",
@@ -3729,7 +3729,7 @@
     },
     {
         "duration": "1.0",
-        "name": "system_health.memory_desktop/browse:media:googleplaystore:2018"
+        "name": "system_health.memory_desktop/browse:media:googleplaystore:2021"
     },
     {
         "duration": "63.0",
@@ -4081,7 +4081,7 @@
     },
     {
         "duration": "46.0",
-        "name": "v8.browsing_desktop-future/browse:media:googleplaystore:2018"
+        "name": "v8.browsing_desktop-future/browse:media:googleplaystore:2021"
     },
     {
         "duration": "12.0",
@@ -4185,7 +4185,7 @@
     },
     {
         "duration": "45.0",
-        "name": "v8.browsing_desktop/browse:media:googleplaystore:2018"
+        "name": "v8.browsing_desktop/browse:media:googleplaystore:2021"
     },
     {
         "duration": "10.0",

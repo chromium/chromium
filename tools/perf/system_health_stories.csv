@@ -10,8 +10,8 @@ browse:chrome:newtab:2019,Story that loads new tab page and performs searches.,m
 browse:chrome:omnibox:2019,Story that peforms search by using omnibox search provider,mobile,"2019,emerging_market"
 browse:media:facebook_photos:2019,Load a photo page from Rihanna's facebook page then navigate a few next,mobile,"2019,emerging_market"
 browse:media:flickr_infinite_scroll:2019,,mobile,"2019,infinite_scroll"
-browse:media:googleplaystore:2018,"Navigate to the movies page of Google Play Store, scroll to the bottom,",desktop,"2018,images"
 browse:media:googleplaystore:2019,"Navigate to the movies page of Google Play Store, scroll to the bottom,",mobile,"2019,emerging_market,images"
+browse:media:googleplaystore:2021,"Navigate to the movies page of Google Play Store, scroll to the bottom,",desktop,"2018,images"
 browse:media:imgur,,desktop,2016
 browse:media:imgur:2019,,mobile,"2019,emerging_market"
 browse:media:pinterest:2018,,desktop,2018
