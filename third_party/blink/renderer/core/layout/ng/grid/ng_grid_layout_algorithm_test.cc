@@ -234,7 +234,8 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmBaseSetSizes) {
   EXPECT_EQ(BaseRowSizeForChild(algorithm, 4), kIndefiniteSize);
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmMeasuring) {
+// Flaky; see https://crbug.com/1146112 for suggestions on fixing.
+TEST_F(NGGridLayoutAlgorithmTest, DISABLED_NGGridLayoutAlgorithmMeasuring) {
   if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
     return;
 
