@@ -48,6 +48,7 @@ var EmojiPickerStoreTest = class extends EmojiPickerBrowserTest {
   }
 };
 
-TEST_F('EmojiPickerStoreTest', 'All', function() {
+// TODO(https://crbug.com/1179762): Re-enable once flakiness is fixed.
+TEST_F('EmojiPickerStoreTest', 'DISABLED_All', function() {
   mocha.run();
 });
