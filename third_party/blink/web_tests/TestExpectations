@@ -5719,6 +5719,8 @@ crbug.com/1179263 [ Linux ] http/tests/devtools/sources/debugger-breakpoints/set
 # Ecosystem-Infra Sheriff 2021-02-17
 crbug.com/1179219 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-currentSrc.html [ Failure ]
 
+crbug.com/1165690 external/wpt/service-workers/service-worker/fetch-event.https.html [ Crash ]
+
 # Sheriff 2021-02-18
 crbug.com/1179772 [ Win7 ] http/tests/devtools/console/console-preserve-log-x-process-navigation.js [ Pass Failure ]
 crbug.com/1179857 [ Linux ] http/tests/inspector-protocol/dom/dom-getFrameOwner.js [ Pass Failure ]
