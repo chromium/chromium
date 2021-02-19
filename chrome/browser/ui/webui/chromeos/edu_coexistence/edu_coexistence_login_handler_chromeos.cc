@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/webui/chromeos/edu_coexistence/edu_coexistence_state_tracker.h"
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/chrome_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
@@ -279,7 +280,7 @@ void EduCoexistenceLoginHandler::SendInitializeEduArgs() {
                       GaiaUrls::GetInstance()->oauth2_chrome_client_id());
   params.SetStringKey("sourceUi", GetSourceUI());
 
-  params.SetStringKey("clientVersion", chrome::GetVersionString());
+  params.SetStringKey("clientVersion", chrome::kChromeVersion);
   params.SetStringKey("eduCoexistenceAccessToken", oauth_access_token_->token);
   params.SetStringKey("eduCoexistenceId", GetOrCreateEduCoexistenceUserId());
   params.SetStringKey("platformVersion",
