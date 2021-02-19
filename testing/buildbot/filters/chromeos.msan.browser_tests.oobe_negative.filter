@@ -81,6 +81,7 @@
 -LoginCursorTest.*
 -LoginOfflineTest.*
 -LoginPolicyTestBase.*
+-LoginUIShelfVisibilityTest.*
 -MarketingOptInDefaultContries/MarketingOptInScreenTest.*
 -MarketingOptInDoubleOptInCountriesContries/MarketingOptInScreenTest.*
 -MarketingOptInExtendedContries/MarketingOptInScreenTest.*
