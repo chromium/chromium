@@ -15,6 +15,17 @@ TEST_F(ChromeLabsBubbleViewModelTest, CheckFeaturesHaveSupportedTypes) {
       std::make_unique<ChromeLabsBubbleViewModel>();
   const std::vector<LabInfo>& all_labs = model->GetLabInfo();
 
+  // Make sure feature flags are set in about_flags, because a previous
+  // test might have cleared them.
+  size_t num_features;
+  std::vector<flags_ui::FeatureEntry> feature_vec;
+  const flags_ui::FeatureEntry* feature_array =
+      about_flags::testing::GetFeatureEntries(&num_features);
+  for (size_t i = 0; i < num_features; ++i)
+    feature_vec.push_back(feature_array[i]);
+
+  about_flags::testing::SetFeatureEntries(feature_vec);
+
   for (const auto& lab : all_labs) {
     const flags_ui::FeatureEntry* entry =
         about_flags::GetCurrentFlagsState()->FindFeatureEntryByName(
