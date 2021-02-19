@@ -64,8 +64,6 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   // Initial values for all the properties
   static LineCap InitialCapStyle() { return kButtCap; }
   static LineJoin InitialJoinStyle() { return kMiterJoin; }
-  static float InitialFillOpacity() { return 1; }
-  static SVGPaint InitialFillPaint() { return SVGPaint(Color::kBlack); }
   static float InitialStrokeOpacity() { return 1; }
   static SVGPaint InitialStrokePaint() { return SVGPaint(); }
   static scoped_refptr<SVGDashArray> InitialStrokeDashArray();
@@ -81,20 +79,6 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   // SVG CSS Property setters
   void SetCapStyle(LineCap val) { svg_inherited_flags.cap_style = val; }
   void SetJoinStyle(LineJoin val) { svg_inherited_flags.join_style = val; }
-  void SetFillOpacity(float obj) {
-    if (!(fill->opacity == obj))
-      fill.Access()->opacity = obj;
-  }
-
-  void SetFillPaint(const SVGPaint& paint) {
-    if (!(fill->paint == paint))
-      fill.Access()->paint = paint;
-  }
-
-  void SetInternalVisitedFillPaint(const SVGPaint& paint) {
-    if (!(fill->visited_link_paint == paint))
-      fill.Access()->visited_link_paint = paint;
-  }
 
   void SetStrokeOpacity(float obj) {
     if (!(stroke->opacity == obj))
@@ -143,8 +127,6 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   LineJoin JoinStyle() const {
     return (LineJoin)svg_inherited_flags.join_style;
   }
-  float FillOpacity() const { return fill->opacity; }
-  const SVGPaint& FillPaint() const { return fill->paint; }
   float StrokeOpacity() const { return stroke->opacity; }
   const SVGPaint& StrokePaint() const { return stroke->paint; }
   SVGDashArray* StrokeDashArray() const { return stroke->dash_array.get(); }
@@ -161,9 +143,6 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
     return inherited_resources->marker_end.get();
   }
 
-  const SVGPaint& InternalVisitedFillPaint() const {
-    return fill->visited_link_paint;
-  }
   const SVGPaint& InternalVisitedStrokePaint() const {
     return stroke->visited_link_paint;
   }
@@ -184,7 +163,6 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   } svg_inherited_flags;
 
   // inherited attributes
-  DataRef<StyleFillData> fill;
   DataRef<StyleStrokeData> stroke;
   DataRef<StyleInheritedResourceData> inherited_resources;
 

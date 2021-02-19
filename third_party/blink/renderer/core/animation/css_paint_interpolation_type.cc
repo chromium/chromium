@@ -129,8 +129,8 @@ void CSSPaintInterpolationType::ApplyStandardPropertyValue(
   SVGComputedStyle& mutable_svg_style = state.Style()->AccessSVGStyle();
   switch (CssProperty().PropertyID()) {
     case CSSPropertyID::kFill:
-      mutable_svg_style.SetFillPaint(SVGPaint(color));
-      mutable_svg_style.SetInternalVisitedFillPaint(SVGPaint(color));
+      state.Style()->SetFillPaint(SVGPaint(color));
+      state.Style()->SetInternalVisitedFillPaint(SVGPaint(color));
       break;
     case CSSPropertyID::kStroke:
       mutable_svg_style.SetStrokePaint(SVGPaint(color));

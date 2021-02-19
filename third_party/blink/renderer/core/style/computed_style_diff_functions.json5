@@ -241,7 +241,8 @@
                 "mix-blend-mode", "isolation", "Mask", "MaskBoxImage", "mask", "mask-type",
                 "stop-color", "stop-opacity", "flood-color", "flood-opacity",
                 "lighting-color", "shape-rendering", "clip-rule", "fill-rule",
-                "color-interpolation", "color-interpolation-filters", "paint-order"],
+                "color-interpolation", "color-interpolation-filters", "paint-order",
+                "fill", "fill-opacity"],
         methods_to_diff: [
           {
             method: "Visibility()",

@@ -49,6 +49,7 @@ ALIGNMENT_ORDER = [
     'Font',
     'FillLayer',
     'NinePieceImage',
+    'SVGPaint',
     'IntrinsicLength',
     'TextDecorationThickness',
     'StyleAspectRatio',

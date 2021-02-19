@@ -201,7 +201,9 @@ class StyleBuilderConverter {
   static StyleAutoColor ConvertStyleAutoColor(StyleResolverState&,
                                               const CSSValue&,
                                               bool for_visited_link = false);
-  static SVGPaint ConvertSVGPaint(StyleResolverState&, const CSSValue&);
+  static SVGPaint ConvertSVGPaint(StyleResolverState&,
+                                  const CSSValue&,
+                                  bool for_visited_link = false);
   static TextDecorationThickness ConvertTextDecorationThickness(
       StyleResolverState&,
       const CSSValue&);

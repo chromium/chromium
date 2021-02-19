@@ -36,7 +36,6 @@ namespace blink {
 SVGComputedStyle::SVGComputedStyle() {
   static SVGComputedStyle* initial_style = new SVGComputedStyle(kCreateInitial);
 
-  fill = initial_style->fill;
   stroke = initial_style->stroke;
   inherited_resources = initial_style->inherited_resources;
 
@@ -46,14 +45,12 @@ SVGComputedStyle::SVGComputedStyle() {
 SVGComputedStyle::SVGComputedStyle(CreateInitialType) {
   SetBitDefaults();
 
-  fill.Init();
   stroke.Init();
   inherited_resources.Init();
 }
 
 SVGComputedStyle::SVGComputedStyle(const SVGComputedStyle& other)
     : RefCounted<SVGComputedStyle>() {
-  fill = other.fill;
   stroke = other.stroke;
   inherited_resources = other.inherited_resources;
 
@@ -67,13 +64,12 @@ bool SVGComputedStyle::operator==(const SVGComputedStyle& other) const {
 }
 
 bool SVGComputedStyle::InheritedEqual(const SVGComputedStyle& other) const {
-  return fill == other.fill && stroke == other.stroke &&
+  return stroke == other.stroke &&
          inherited_resources == other.inherited_resources &&
          svg_inherited_flags == other.svg_inherited_flags;
 }
 
 void SVGComputedStyle::InheritFrom(const SVGComputedStyle& svg_inherit_parent) {
-  fill = svg_inherit_parent.fill;
   stroke = svg_inherit_parent.stroke;
   inherited_resources = svg_inherit_parent.inherited_resources;
 
@@ -144,14 +140,6 @@ bool SVGComputedStyle::DiffNeedsPaintInvalidation(
     // layout.
     if (stroke->dash_offset != other.stroke->dash_offset ||
         stroke->dash_array->data != other.stroke->dash_array->data)
-      return true;
-  }
-
-  // If fill changes, we just need to issue paint invalidations. Fill boundaries
-  // are not influenced by this, only by the Path, that LayoutSVGPath contains.
-  if (fill.Get() != other.fill.Get()) {
-    if (fill->paint != other.fill->paint ||
-        fill->opacity != other.fill->opacity)
       return true;
   }
 

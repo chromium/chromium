@@ -33,22 +33,6 @@
 
 namespace blink {
 
-StyleFillData::StyleFillData()
-    : opacity(SVGComputedStyle::InitialFillOpacity()),
-      paint(SVGComputedStyle::InitialFillPaint()),
-      visited_link_paint(SVGComputedStyle::InitialFillPaint()) {}
-
-StyleFillData::StyleFillData(const StyleFillData& other)
-    : RefCounted<StyleFillData>(),
-      opacity(other.opacity),
-      paint(other.paint),
-      visited_link_paint(other.visited_link_paint) {}
-
-bool StyleFillData::operator==(const StyleFillData& other) const {
-  return opacity == other.opacity && paint == other.paint &&
-         visited_link_paint == other.visited_link_paint;
-}
-
 StyleStrokeData::StyleStrokeData()
     : opacity(SVGComputedStyle::InitialStrokeOpacity()),
       miter_limit(SVGComputedStyle::InitialStrokeMiterLimit()),

@@ -1100,21 +1100,12 @@ class ComputedStyle : public ComputedStyleBase,
   const SVGComputedStyle& SvgStyle() const { return *svg_style_.Get(); }
   SVGComputedStyle& AccessSVGStyle() { return *svg_style_.Access(); }
 
-  const SVGPaint& FillPaint() const { return SvgStyle().FillPaint(); }
-  const SVGPaint& InternalVisitedFillPaint() const {
-    return SvgStyle().InternalVisitedFillPaint();
-  }
-
   // fill helpers
   bool HasFill() const { return !FillPaint().IsNone(); }
   bool IsFillColorCurrentColor() const {
     return FillPaint().HasCurrentColor() ||
            InternalVisitedFillPaint().HasCurrentColor();
   }
-
-  // fill-opacity
-  float FillOpacity() const { return SvgStyle().FillOpacity(); }
-  void SetFillOpacity(float f) { AccessSVGStyle().SetFillOpacity(f); }
 
   // marker-* helpers
   StyleSVGResource* MarkerStartResource() const {

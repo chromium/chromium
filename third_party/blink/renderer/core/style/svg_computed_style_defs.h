@@ -43,32 +43,6 @@ namespace blink {
 
 class StyleSVGResource;
 
-// Inherited/Non-Inherited Style Datastructures
-class StyleFillData : public RefCounted<StyleFillData> {
-  USING_FAST_MALLOC(StyleFillData);
-
- public:
-  static scoped_refptr<StyleFillData> Create() {
-    return base::AdoptRef(new StyleFillData);
-  }
-  scoped_refptr<StyleFillData> Copy() const {
-    return base::AdoptRef(new StyleFillData(*this));
-  }
-
-  bool operator==(const StyleFillData&) const;
-  bool operator!=(const StyleFillData& other) const {
-    return !(*this == other);
-  }
-
-  float opacity;
-  SVGPaint paint;
-  SVGPaint visited_link_paint;
-
- private:
-  StyleFillData();
-  StyleFillData(const StyleFillData&);
-};
-
 class CORE_EXPORT StyleStrokeData : public RefCounted<StyleStrokeData> {
   USING_FAST_MALLOC(StyleStrokeData);
 
