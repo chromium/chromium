@@ -69,7 +69,7 @@ CharacterRange ShapeResultBuffer::GetCharacterRange(
     for (unsigned i = 0; i < result->runs_.size(); i++) {
       if (!result->runs_[i])
         continue;
-      DCHECK_EQ(direction == TextDirection::kRtl, result->runs_[i]->Rtl());
+      DCHECK_EQ(direction == TextDirection::kRtl, result->runs_[i]->IsRtl());
       int num_characters = result->runs_[i]->num_characters_;
       if (!found_from_x && from >= 0 && from < num_characters) {
         from_x = result->runs_[i]->XPositionForVisualOffset(
@@ -141,14 +141,14 @@ void ShapeResultBuffer::AddRunInfoAdvances(const ShapeResult::RunInfo& run_info,
   const unsigned num_glyphs = run_info.glyph_data_.size();
   const unsigned num_chars = run_info.num_characters_;
 
-  if (run_info.Rtl())
+  if (run_info.IsRtl())
     offset += run_info.width_;
 
   double current_width = 0;
   for (unsigned glyph_id = 0; glyph_id < num_glyphs; glyph_id++) {
-    unsigned gid = run_info.Rtl() ? num_glyphs - glyph_id - 1 : glyph_id;
+    unsigned gid = run_info.IsRtl() ? num_glyphs - glyph_id - 1 : glyph_id;
     unsigned next_gid =
-        run_info.Rtl() ? num_glyphs - glyph_id - 2 : glyph_id + 1;
+        run_info.IsRtl() ? num_glyphs - glyph_id - 2 : glyph_id + 1;
     const HarfBuzzRunGlyphData& glyph = run_info.glyph_data_[gid];
 
     unsigned char_id = glyph.character_index;
@@ -165,19 +165,19 @@ void ShapeResultBuffer::AddRunInfoAdvances(const ShapeResult::RunInfo& run_info,
     unsigned num_graphemes = run_info.NumGraphemes(char_id, next_char_id);
 
     for (unsigned i = char_id; i < next_char_id; i++) {
-      if (run_info.Rtl()) {
+      if (run_info.IsRtl()) {
         advances.push_back(offset - (current_width / num_graphemes));
       } else {
         advances.push_back(offset);
       }
 
       if (num_graphemes == next_char_id - char_id) {
-        offset += (current_width / num_graphemes) * (run_info.Rtl() ? -1 : 1);
+        offset += (current_width / num_graphemes) * (run_info.IsRtl() ? -1 : 1);
       }
     }
 
     if (num_graphemes != next_char_id - char_id) {
-      offset += current_width * (run_info.Rtl() ? -1 : 1);
+      offset += current_width * (run_info.IsRtl() ? -1 : 1);
     }
 
     current_width = 0;
@@ -198,7 +198,7 @@ Vector<double> ShapeResultBuffer::IndividualCharacterAdvances(
     result->EnsureGraphemes(
         StringView(text, character_offset, result->NumCharacters()));
 
-    if (result->Rtl()) {
+    if (result->IsRtl()) {
       for (int index = run_count - 1; index >= 0; index--) {
         current_x -= result->runs_[index]->width_;
         AddRunInfoAdvances(*result->runs_[index], current_x, advances);

@@ -114,7 +114,8 @@ class PLATFORM_EXPORT ShapeResultView final
   TextDirection Direction() const {
     return static_cast<TextDirection>(direction_);
   }
-  bool Rtl() const { return Direction() == TextDirection::kRtl; }
+  bool IsLtr() const { return blink::IsLtr(Direction()); }
+  bool IsRtl() const { return blink::IsRtl(Direction()); }
   bool HasVerticalOffsets() const { return has_vertical_offsets_; }
   void FallbackFonts(HashSet<const SimpleFontData*>* fallback) const;
 
