@@ -243,14 +243,18 @@ bool StaticSocketDataHelper::VerifyWriteData(const std::string& data,
   std::string expected_data(next_write.data, next_write.data_len);
   std::string actual_data(data.substr(0, next_write.data_len));
   EXPECT_GE(data.length(), expected_data.length());
-  EXPECT_TRUE(actual_data == expected_data)
-      << "Actual write data:\n" << HexDump(data)
-      << "Expected write data:\n" << HexDump(expected_data);
   if (printer) {
     EXPECT_TRUE(actual_data == expected_data)
+        << "Actual formatted write data:\n"
+        << printer->PrintWrite(data) << "Expected formatted write data:\n"
+        << printer->PrintWrite(expected_data) << "Actual raw write data:\n"
+        << HexDump(data) << "Expected raw write data:\n"
+        << HexDump(expected_data);
+  } else {
+    EXPECT_TRUE(actual_data == expected_data)
         << "Actual write data:\n"
-        << printer->PrintWrite(data) << "Expected write data:\n"
-        << printer->PrintWrite(expected_data);
+        << HexDump(data) << "Expected write data:\n"
+        << HexDump(expected_data);
   }
   return expected_data == actual_data;
 }

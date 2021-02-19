@@ -2355,7 +2355,7 @@ void QuicChromiumClientSession::OnPortMigrationProbeSucceeded(
   LogMigrateToSocketStatus(true);
 
   // Notify the connection that migration succeeds after probing.
-  connection()->OnSuccessfulMigration();
+  connection()->OnSuccessfulMigration(/*is_port_change=*/true);
   num_migrations_++;
   HistogramAndLogMigrationSuccess(connection_id());
 }
@@ -2418,7 +2418,10 @@ void QuicChromiumClientSession::OnConnectionMigrationProbeSucceeded(
   LogMigrateToSocketStatus(true);
 
   // Notify the connection that migration succeeds after probing.
-  connection()->OnSuccessfulMigration();
+  // TODO(b/159074035) Change is_port_change to false here once the
+  // QuicStreamFactoryTest migration tests have been fixed to account for the
+  // retransmitted STREAM frames.
+  connection()->OnSuccessfulMigration(/*is_port_change=*/true);
 
   net_log_.AddEventWithInt64Params(
       NetLogEventType::QUIC_CONNECTION_MIGRATION_SUCCESS_AFTER_PROBING,
