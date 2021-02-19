@@ -20,6 +20,7 @@ public class LensQueryParams {
     private WebContents mWebContents;
     private String mSrcUrl;
     private boolean mIsIncognito;
+    private @LensEntryPoint int mLensEntryPoint;
 
     /**
      * Builder class for LensQueryParams.
@@ -32,8 +33,27 @@ public class LensQueryParams {
         private WebContents mWebContents;
         private String mSrcUrl;
         private boolean mIsIncognito;
+        private @LensEntryPoint int mLensEntryPoint;
 
         public Builder() {}
+
+        // TODO(yusuyoutube): remove the with* methods for the required params once
+        // downstream references are updated.
+        public Builder(@LensEntryPoint int lensEntryPoint, boolean isIncognito) {
+            this();
+            this.mLensEntryPoint = lensEntryPoint;
+            this.mIsIncognito = isIncognito;
+        }
+
+        /**
+         * Sets the Lens entry point.
+         *
+         * @param lensEntryPoint The entry point to set as a parameter
+         */
+        public Builder withLensEntryPoint(@LensEntryPoint int lensEntryPoint) {
+            this.mLensEntryPoint = lensEntryPoint;
+            return this;
+        }
 
         public Builder withImageUri(Uri imageUri) {
             this.mImageUri = imageUri;
@@ -72,6 +92,7 @@ public class LensQueryParams {
 
         public LensQueryParams build() {
             LensQueryParams lensQueryParams = new LensQueryParams();
+            lensQueryParams.mLensEntryPoint = this.mLensEntryPoint;
             lensQueryParams.mImageUri = this.mImageUri;
             lensQueryParams.mPageUrl = this.mPageUrl;
             lensQueryParams.mImageTitleOrAltText = this.mImageTitleOrAltText;
@@ -113,5 +134,10 @@ public class LensQueryParams {
 
     public boolean getIsIncognito() {
         return mIsIncognito;
+    }
+
+    /** Returns the {@link LensEntryPoint} for this set of params. */
+    public @LensEntryPoint int getLensEntryPoint() {
+        return mLensEntryPoint;
     }
 }

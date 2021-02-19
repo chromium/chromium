@@ -18,6 +18,7 @@ public class LensIntentParams {
     private boolean mIsIncognito;
     private boolean mRequiresConfirmation;
     private int mIntentType;
+    private @LensEntryPoint int mLensEntryPoint;
 
     /**
      * Builder class for LensIntentParams.
@@ -30,8 +31,27 @@ public class LensIntentParams {
         private boolean mIsIncognito;
         private boolean mRequiresConfirmation;
         private int mIntentType;
+        private @LensEntryPoint int mLensEntryPoint;
 
         public Builder() {}
+
+        // TODO(yusuyoutube): remove the with* methods for the required params once
+        // downstream references are updated.
+        public Builder(@LensEntryPoint int lensEntryPoint, boolean isIncognito) {
+            this();
+            this.mLensEntryPoint = lensEntryPoint;
+            this.mIsIncognito = isIncognito;
+        }
+
+        /**
+         * Sets the Lens entry point.
+         *
+         * @param lensEntryPoint The entry point to set as a parameter
+         */
+        public Builder withLensEntryPoint(@LensEntryPoint int lensEntryPoint) {
+            this.mLensEntryPoint = lensEntryPoint;
+            return this;
+        }
 
         /**
          * Sets the image URI.
@@ -109,9 +129,10 @@ public class LensIntentParams {
          */
         public LensIntentParams build() {
             LensIntentParams lensIntentParams = new LensIntentParams();
+            lensIntentParams.mIsIncognito = mIsIncognito;
+            lensIntentParams.mLensEntryPoint = mLensEntryPoint;
             if (!Uri.EMPTY.equals(mImageUri)) {
                 lensIntentParams.mImageUri = mImageUri;
-                lensIntentParams.mIsIncognito = mIsIncognito;
                 lensIntentParams.mIntentType = mIntentType;
                 lensIntentParams.mRequiresConfirmation = mRequiresConfirmation;
                 if (mSrcUrl != null) {
@@ -161,5 +182,10 @@ public class LensIntentParams {
     /** Retrieve the intent type. */
     public int getIntentType() {
         return mIntentType;
+    }
+
+    /** Returns the {@link LensEntryPoint} for this set of params. */
+    public @LensEntryPoint int getLensEntryPoint() {
+        return mLensEntryPoint;
     }
 }

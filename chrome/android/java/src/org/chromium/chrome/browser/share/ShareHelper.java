@@ -28,8 +28,8 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.lens.LensController;
+import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
-import org.chromium.chrome.browser.lens.LensQueryResult;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.browser_ui.share.ShareParams;
@@ -129,25 +129,22 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
      * @param srcUrl The 'src' attribute of the image.
      * @param titleOrAltText The 'title' or, if empty, the 'alt' attribute of the image.
      * @param pageUrl The page url.
-     * @param lensQueryResult The wrapper object which contains the classify result of Lens image
-     *         query.
-     * @param requiresConfirmation Whether the request requires an confirmation dialog.
+     * @param lensEntryPoint The entry point that launches the Lens app.
+     * @param requiresConfirmation Whether the request requires an account dialog.
      */
     public static void shareImageWithGoogleLens(final WindowAndroid window, Uri imageUri,
             boolean isIncognito, GURL srcUrl, String titleOrAltText, GURL pageUrl,
-            LensQueryResult lensQueryResult, boolean requiresConfirmation) {
+            @LensEntryPoint int lensEntryPoint, boolean requiresConfirmation) {
         if (LensUtils.useDirectIntentSdkIntegration(ContextUtils.getApplicationContext())) {
-            // Extract intent type from query result if available.
-            int intentType = lensQueryResult != null ? lensQueryResult.getLensIntentType() : 0;
             LensIntentParams intentParams = LensUtils.buildLensIntentParams(imageUri, isIncognito,
                     srcUrl.getValidSpecOrEmpty(), titleOrAltText, pageUrl.getValidSpecOrEmpty(),
-                    requiresConfirmation, intentType);
+                    lensEntryPoint, requiresConfirmation);
             LensController.getInstance().startLens(window, intentParams);
         } else {
             Intent shareIntent =
                     LensUtils.getShareWithGoogleLensIntent(ContextUtils.getApplicationContext(),
                             imageUri, isIncognito, SystemClock.elapsedRealtimeNanos(), srcUrl,
-                            titleOrAltText, pageUrl, lensQueryResult, requiresConfirmation);
+                            titleOrAltText, pageUrl, lensEntryPoint, requiresConfirmation);
             try {
                 // Pass an empty callback to ensure the triggered activity can identify the source
                 // of the intent (startActivityForResult allows app identification).

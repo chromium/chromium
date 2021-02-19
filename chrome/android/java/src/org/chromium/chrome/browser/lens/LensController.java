@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
@@ -131,4 +132,15 @@ public class LensController {
 
     /** Terminate any active Lens connections. */
     public void terminateLensConnections() {}
+
+    // TODO(yusuyoutube): revisit the wrapper object for this enablement check. LensQueryParams
+    // was designed to be only used in the Prime classification query.
+    /**
+     * Whether the Lens is enabled based on user signals.
+     * @param lensQueryParams A wrapper object which contains params for the enablement check.
+     * @return True if Lens is enabled.
+     */
+    public boolean isLensEnabled(@NonNull LensQueryParams lensQueryParams) {
+        return false;
+    }
 }

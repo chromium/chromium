@@ -8,6 +8,7 @@ import android.net.Uri;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.lens.LensController;
+import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensQueryParams;
 import org.chromium.content_public.browser.WebContents;
 
@@ -28,14 +29,14 @@ public class LensChipDelegate implements ChipDelegate {
         if (!mLensController.isQueryEnabled()) {
             return;
         }
-        mLensQueryParams = (new LensQueryParams.Builder())
-                                   .withPageUrl(pageUrl)
-                                   .withImageTitleOrAltText(titleOrAltText)
-                                   .withSrcUrl(srcUrl)
-                                   .withPageTitle(pageTitle)
-                                   .withIsIncognito(isIncognito)
-                                   .withWebContents(webContents)
-                                   .build();
+        mLensQueryParams =
+                (new LensQueryParams.Builder(LensEntryPoint.CONTEXT_MENU_CHIP, isIncognito))
+                        .withPageUrl(pageUrl)
+                        .withImageTitleOrAltText(titleOrAltText)
+                        .withSrcUrl(srcUrl)
+                        .withPageTitle(pageTitle)
+                        .withWebContents(webContents)
+                        .build();
         mNativeDelegate = nativeDelegate;
         mOnChipClickedCallback = onChipClickedCallback;
         mOnChipShownCallback = onChipShownCallback;
