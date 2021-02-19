@@ -53,6 +53,7 @@
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/scoped_active_url.h"
+#include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/frame_messages.h"
 #include "content/common/render_message_filter.mojom.h"
@@ -419,24 +420,36 @@ bool RenderViewHostImpl::CreateRenderView(
       main_rfh ? main_rfh->frame_tree_node() : main_rfph->frame_tree_node();
 
   mojom::CreateViewParamsPtr params = mojom::CreateViewParams::New();
+
   params->renderer_preferences = delegate_->GetRendererPrefs();
   RenderViewHostImpl::GetPlatformSpecificPrefs(&params->renderer_preferences);
   params->web_preferences = delegate_->GetOrCreateWebPreferences();
   params->view_id = GetRoutingID();
-  if (main_rfh) {
-    params->main_frame_routing_id = main_frame_routing_id_;
-    mojo::PendingAssociatedRemote<mojom::Frame> pending_frame_remote;
-    params->frame = pending_frame_remote.InitWithNewEndpointAndPassReceiver();
-    main_rfh->SetMojomFrameRemote(std::move(pending_frame_remote));
-    params->main_frame_widget_routing_id =
-        main_rfh->GetRenderWidgetHost()->GetRoutingID();
-    main_rfh->BindBrowserInterfaceBrokerReceiver(
-        params->main_frame_interface_broker.InitWithNewPipeAndPassReceiver());
+  params->opener_frame_token = opener_frame_token;
 
-    std::tie(params->widget_host, params->widget) =
-        main_rfh->GetRenderWidgetHost()->BindNewWidgetInterfaces();
-    std::tie(params->frame_widget_host, params->frame_widget) =
-        main_rfh->GetRenderWidgetHost()->BindNewFrameWidgetInterfaces();
+  params->main_frame_common_params = mojom::CreateFrameCommonParams::New();
+  if (main_rfh) {
+    params->main_frame_common_params->frame_token = main_rfh->GetFrameToken();
+  } else {
+    params->main_frame_common_params->frame_token = main_rfph->GetFrameToken();
+  }
+  params->main_frame_common_params->replicated_state =
+      frame_tree_node->current_replication_state().Clone();
+  params->main_frame_common_params->devtools_token =
+      frame_tree_node->devtools_frame_token();
+
+  if (main_rfh) {
+    auto local_frame_params = mojom::CreateLocalMainFrameParams::New();
+    local_frame_params->routing_id = main_frame_routing_id_;
+    mojo::PendingAssociatedRemote<mojom::Frame> pending_frame_remote;
+    local_frame_params->frame =
+        pending_frame_remote.InitWithNewEndpointAndPassReceiver();
+    main_rfh->SetMojomFrameRemote(std::move(pending_frame_remote));
+    main_rfh->BindBrowserInterfaceBrokerReceiver(
+        local_frame_params->interface_broker.InitWithNewPipeAndPassReceiver());
+
+    local_frame_params->has_committed_real_load =
+        main_rfh->frame_tree_node()->has_committed_real_load();
 
     // If this is a new RenderFrameHost for a frame that has already committed a
     // document, we don't have a PolicyContainerHost yet. Indeed, in that case,
@@ -445,31 +458,26 @@ bool RenderViewHostImpl::CreateRenderView(
     // to Blink at CommitNavigation time and then stored in this RenderFrameHost
     // in DidCommitNewDocument.
     if (main_rfh->policy_container_host()) {
-      params->policy_container =
+      local_frame_params->policy_container =
           main_rfh->policy_container_host()->CreatePolicyContainerForBlink();
     }
-  }
-  if (main_rfh) {
-    params->main_frame_frame_token = main_rfh->GetFrameToken();
+
+    local_frame_params->widget_params =
+        main_rfh->GetRenderWidgetHost()
+            ->BindAndGenerateCreateFrameWidgetParams();
+
+    params->main_frame = mojom::CreateMainFrameUnion::NewLocalParams(
+        std::move(local_frame_params));
   } else {
-    params->main_frame_frame_token = main_rfph->GetFrameToken();
+    params->main_frame = mojom::CreateMainFrameUnion::NewRemoteParams(
+        mojom::CreateRemoteMainFrameParams::New(proxy_route_id));
   }
+
   params->session_storage_namespace_id =
       delegate_->GetSessionStorageNamespace(instance_.get())->id();
-  // Ensure the RenderView sets its opener correctly.
-  params->opener_frame_token = opener_frame_token;
-  params->replicated_frame_state =
-      frame_tree_node->current_replication_state().Clone();
-  params->proxy_routing_id = proxy_route_id;
   params->hidden = GetWidget()->delegate()->IsHidden();
   params->never_composited = delegate_->IsNeverComposited();
   params->window_was_created_with_opener = window_was_created_with_opener;
-  if (main_rfh) {
-    params->has_committed_real_load =
-        main_rfh->frame_tree_node()->has_committed_real_load();
-    DCHECK_EQ(params->main_frame_frame_token, main_rfh->GetFrameToken());
-  }
-  params->devtools_main_frame_token = frame_tree_node->devtools_frame_token();
   // GuestViews in the same StoragePartition need to find each other's frames.
   params->renderer_wide_named_frame_lookup = instance_->IsGuest();
 
@@ -491,10 +499,6 @@ bool RenderViewHostImpl::CreateRenderView(
   page_broadcast_.reset();
   params->blink_page_broadcast =
       page_broadcast_.BindNewEndpointAndPassReceiver();
-  // TODO(danakj): Make the visual_properties optional in the message.
-  if (proxy_route_id == MSG_ROUTING_NONE) {
-    params->visual_properties = GetWidget()->GetInitialVisualProperties();
-  }
 
   // The renderer process's `RenderView` is owned by this `RenderViewHost`. This
   // call must, therefore, be accompanied by a `DestroyView()` [see destructor]

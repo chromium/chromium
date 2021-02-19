@@ -1549,27 +1549,26 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
     RenderViewImpl* render_view,
     CompositorDependencies* compositor_deps,
     blink::WebFrame* opener,
-    mojom::CreateViewParamsPtr* params_ptr) {
-  mojom::CreateViewParamsPtr& params = *params_ptr;
-
+    bool is_for_nested_main_frame,
+    mojom::CreateFrameCommonParamsPtr common_params,
+    mojom::CreateLocalMainFrameParamsPtr params) {
   // A main frame RenderFrame must have a RenderWidget.
-  DCHECK_NE(MSG_ROUTING_NONE, params->main_frame_widget_routing_id);
+  DCHECK_NE(MSG_ROUTING_NONE, params->widget_params->routing_id);
 
   RenderFrameImpl* render_frame = RenderFrameImpl::Create(
-      agent_scheduling_group, render_view, params->main_frame_routing_id,
-      std::move(params->frame), std::move(params->main_frame_interface_broker),
-      params->devtools_main_frame_token);
+      agent_scheduling_group, render_view, params->routing_id,
+      std::move(params->frame), std::move(params->interface_broker),
+      common_params->devtools_token);
   render_frame->InitializeBlameContext(nullptr);
 
   WebLocalFrame* web_frame = WebLocalFrame::CreateMainFrame(
       render_view->GetWebView(), render_frame,
-      render_frame->blink_interface_registry_.get(),
-      params->main_frame_frame_token,
+      render_frame->blink_interface_registry_.get(), common_params->frame_token,
       ToWebPolicyContainer(std::move(params->policy_container)), opener,
       // This conversion is a little sad, as this often comes from a
       // WebString...
-      WebString::FromUTF8(params->replicated_frame_state->name),
-      params->replicated_frame_state->frame_policy.sandbox_flags);
+      WebString::FromUTF8(common_params->replicated_state->name),
+      common_params->replicated_state->frame_policy.sandbox_flags);
   if (params->has_committed_real_load)
     render_frame->frame_->SetCommittedFirstRealLoad();
 
@@ -1577,17 +1576,18 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
   // Close(). The RenderViewImpl has a RenderWidget already, but not a
   // WebFrameWidget, which is now attached here.
   blink::WebFrameWidget* web_frame_widget = web_frame->InitializeFrameWidget(
-      std::move(params->frame_widget_host), std::move(params->frame_widget),
-      std::move(params->widget_host), std::move(params->widget),
+      std::move(params->widget_params->frame_widget_host),
+      std::move(params->widget_params->frame_widget),
+      std::move(params->widget_params->widget_host),
+      std::move(params->widget_params->widget),
       viz::FrameSinkId(RenderThread::Get()->GetClientId(),
-                       params->main_frame_widget_routing_id),
-      /*is_for_nested_main_frame=*/params->type !=
-          mojom::ViewWidgetType::kTopLevel,
+                       params->widget_params->routing_id),
+      is_for_nested_main_frame,
       /*hidden=*/true, render_view->widgets_never_composited());
   web_frame_widget->InitializeCompositing(
       agent_scheduling_group.agent_group_scheduler(),
       compositor_deps->GetTaskGraphRunner(),
-      params->visual_properties.screen_info,
+      params->widget_params->visual_properties.screen_info,
       compositor_deps->CreateUkmRecorderFactory(),
       /*settings=*/nullptr);
 
@@ -1602,7 +1602,8 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
   // we need at least one update to them in order to meet expectations in the
   // renderer, and that update comes as part of the CreateFrame message.
   // TODO(crbug.com/419087): This could become part of WebFrameWidget Init.
-  web_frame_widget->ApplyVisualProperties(params->visual_properties);
+  web_frame_widget->ApplyVisualProperties(
+      params->widget_params->visual_properties);
 
   render_frame->in_frame_tree_ = true;
   render_frame->Initialize(nullptr);

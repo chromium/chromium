@@ -599,24 +599,12 @@ void RenderWidgetHostImpl::UpdatePriority() {
     GetProcess()->UpdateClientPriority(this);
 }
 
-std::pair<mojo::PendingAssociatedRemote<blink::mojom::WidgetHost>,
-          mojo::PendingAssociatedReceiver<blink::mojom::Widget>>
-RenderWidgetHostImpl::BindNewWidgetInterfaces() {
-  // This API may get called on a RenderWidgetHostImpl from a
-  // reused RenderViewHostImpl so we need to ensure old channels are dropped.
-  blink_widget_host_receiver_.reset();
-  blink_widget_.reset();
-  widget_input_handler_.reset();
-  return std::make_pair(
-      blink_widget_host_receiver_.BindNewEndpointAndPassRemote(),
-      blink_widget_.BindNewEndpointAndPassReceiver());
-}
-
 void RenderWidgetHostImpl::BindWidgetInterfaces(
     mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost> widget_host,
     mojo::PendingAssociatedRemote<blink::mojom::Widget> widget) {
   // This API may get called on a RenderWidgetHostImpl from a
   // reused RenderViewHostImpl so we need to ensure old channels are dropped.
+  // TODO(dcheng): Rather than resetting here, reset when the process goes away.
   blink_widget_host_receiver_.reset();
   blink_widget_.reset();
   widget_input_handler_.reset();
@@ -631,27 +619,13 @@ void RenderWidgetHostImpl::BindPopupWidgetInterface(
   blink_popup_widget_host_receiver_.Bind(std::move(popup_widget_host));
 }
 
-std::pair<mojo::PendingAssociatedRemote<blink::mojom::FrameWidgetHost>,
-          mojo::PendingAssociatedReceiver<blink::mojom::FrameWidget>>
-RenderWidgetHostImpl::BindNewFrameWidgetInterfaces() {
-  // This API may get called on a RenderWidgetHostImpl from a
-  // reused RenderViewHostImpl so we need to ensure old channels are dropped.
-  blink_frame_widget_host_receiver_.reset();
-  blink_frame_widget_.reset();
-  frame_widget_input_handler_.reset();
-  input_target_client_.reset();
-  widget_compositor_.reset();
-  return std::make_pair(
-      blink_frame_widget_host_receiver_.BindNewEndpointAndPassRemote(),
-      blink_frame_widget_.BindNewEndpointAndPassReceiver());
-}
-
 void RenderWidgetHostImpl::BindFrameWidgetInterfaces(
     mojo::PendingAssociatedReceiver<blink::mojom::FrameWidgetHost>
         frame_widget_host,
     mojo::PendingAssociatedRemote<blink::mojom::FrameWidget> frame_widget) {
   // This API may get called on a RenderWidgetHostImpl from a
   // reused RenderViewHostImpl so we need to ensure old channels are dropped.
+  // TODO(dcheng): Rather than resetting here, reset when the process goes away.
   blink_frame_widget_host_receiver_.reset();
   blink_frame_widget_.reset();
   frame_widget_input_handler_.reset();
@@ -2963,6 +2937,51 @@ RenderWidgetHostImpl::LastComputedVisualProperties() const {
   if (!old_visual_properties_)
     return base::nullopt;
   return *old_visual_properties_;
+}
+
+mojom::CreateFrameWidgetParamsPtr
+RenderWidgetHostImpl::BindAndGenerateCreateFrameWidgetParams() {
+  auto params = mojom::CreateFrameWidgetParams::New();
+
+  params->routing_id = GetRoutingID();
+
+  mojo::PendingAssociatedRemote<blink::mojom::Widget> widget_remote;
+  params->widget = widget_remote.InitWithNewEndpointAndPassReceiver();
+  BindWidgetInterfaces(params->widget_host.InitWithNewEndpointAndPassReceiver(),
+                       std::move(widget_remote));
+  mojo::PendingAssociatedRemote<blink::mojom::FrameWidget> frame_widget_remote;
+  params->frame_widget =
+      frame_widget_remote.InitWithNewEndpointAndPassReceiver();
+  BindFrameWidgetInterfaces(
+      params->frame_widget_host.InitWithNewEndpointAndPassReceiver(),
+      std::move(frame_widget_remote));
+
+  params->visual_properties = GetInitialVisualProperties();
+
+  return params;
+}
+
+mojom::CreateFrameWidgetParamsPtr
+RenderWidgetHostImpl::BindAndGenerateCreateFrameWidgetParamsForNewWindow() {
+  auto params = mojom::CreateFrameWidgetParams::New();
+  params->routing_id = GetRoutingID();
+  mojo::PendingAssociatedRemote<blink::mojom::Widget> widget_remote;
+  params->widget = widget_remote.InitWithNewEndpointAndPassReceiver();
+  BindWidgetInterfaces(params->widget_host.InitWithNewEndpointAndPassReceiver(),
+                       std::move(widget_remote));
+  mojo::PendingAssociatedRemote<blink::mojom::FrameWidget> frame_widget_remote;
+  params->frame_widget =
+      frame_widget_remote.InitWithNewEndpointAndPassReceiver();
+  BindFrameWidgetInterfaces(
+      params->frame_widget_host.InitWithNewEndpointAndPassReceiver(),
+      std::move(frame_widget_remote));
+  // TODO(danakj): For some reason, there is no RenderWidgetHostView here, but
+  // it seems like there should be one? In the meantime we send some nonsense
+  // with a semi-valid but incorrect ScreenInfo (it needs a RenderWidgetHostView
+  // to be correct). An updated VisualProperties will get to the RenderWidget
+  // eventually.
+  GetScreenInfo(&params->visual_properties.screen_info);
+  return params;
 }
 
 void RenderWidgetHostImpl::DispatchInputEventWithLatencyInfo(

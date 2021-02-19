@@ -174,7 +174,9 @@ class CONTENT_EXPORT RenderFrameImpl
       RenderViewImpl* render_view,
       CompositorDependencies* compositor_deps,
       blink::WebFrame* opener,
-      mojom::CreateViewParamsPtr* params);
+      bool is_for_nested_main_frame,
+      mojom::CreateFrameCommonParamsPtr common_params,
+      mojom::CreateLocalMainFrameParamsPtr params);
 
   // Creates a new RenderFrame with |routing_id|. If |previous_routing_id| is
   // MSG_ROUTING_NONE, it creates the Blink WebLocalFrame and inserts it into

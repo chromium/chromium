@@ -227,7 +227,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void ForwardGestureEvent(
       const blink::WebGestureEvent& gesture_event) override;
   RenderProcessHost* GetProcess() override;
-  int GetRoutingID() override;
+  int GetRoutingID() final;
   RenderWidgetHostViewBase* GetView() override;
   bool IsCurrentlyUnresponsive() override;
   bool SynchronizeVisualProperties() override;
@@ -339,11 +339,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   RenderWidgetHostDelegate* delegate() const { return delegate_; }
 
-  // Allocate and bind new widget interfaces.
-  std::pair<mojo::PendingAssociatedRemote<blink::mojom::WidgetHost>,
-            mojo::PendingAssociatedReceiver<blink::mojom::Widget>>
-  BindNewWidgetInterfaces();
-
   // Bind the provided widget interfaces.
   void BindWidgetInterfaces(
       mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost> widget_host,
@@ -353,11 +348,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void BindPopupWidgetInterface(
       mojo::PendingAssociatedReceiver<blink::mojom::PopupWidgetHost>
           popup_widget_host);
-
-  // Allocate and bind new frame widget interfaces.
-  std::pair<mojo::PendingAssociatedRemote<blink::mojom::FrameWidgetHost>,
-            mojo::PendingAssociatedReceiver<blink::mojom::FrameWidget>>
-  BindNewFrameWidgetInterfaces();
 
   // Bind the provided frame widget interfaces.
   void BindFrameWidgetInterfaces(
@@ -661,6 +651,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   //
   // This has the side effect of resetting state that should match a newly
   // created RenderWidget in the renderer.
+  //
+  // TODO(dcheng): Tests call this directly but shouldn't have to. Investigate
+  // getting rid of this.
   blink::VisualProperties GetInitialVisualProperties();
 
   // Pushes updated visual properties to the renderer as well as whether the
@@ -825,6 +818,17 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   GetLastVisualPropertiesSentToRendererForTesting();
 
   base::Optional<blink::VisualProperties> LastComputedVisualProperties() const;
+
+  // Generates widget creation params that will be passed to the renderer to
+  // create a new widget. As a side effect, this resets various widget and frame
+  // widget Mojo interfaces and rebinds them, passing the new endpoints in the
+  // returned params.
+  mojom::CreateFrameWidgetParamsPtr BindAndGenerateCreateFrameWidgetParams();
+  // TODO(danakj): This is a CreateNewWindow()-specific version of the above
+  // helper to work around the fact that things are in a weird state. Figure out
+  // why that's happening and remove this.
+  mojom::CreateFrameWidgetParamsPtr
+  BindAndGenerateCreateFrameWidgetParamsForNewWindow();
 
  protected:
   // |routing_id| must not be MSG_ROUTING_NONE.

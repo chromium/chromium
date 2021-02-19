@@ -2355,17 +2355,7 @@ bool RenderFrameHostImpl::CreateRenderFrame(
   }
 
   if (auto* rwh = GetLocalRenderWidgetHost()) {
-    params->widget_params = mojom::CreateFrameWidgetParams::New();
-    params->widget_params->routing_id =
-        GetLocalRenderWidgetHost()->GetRoutingID();
-    params->widget_params->visual_properties =
-        GetLocalRenderWidgetHost()->GetInitialVisualProperties();
-
-    std::tie(params->widget_params->widget_host,
-             params->widget_params->widget) = rwh->BindNewWidgetInterfaces();
-    std::tie(params->widget_params->frame_widget_host,
-             params->widget_params->frame_widget) =
-        rwh->BindNewFrameWidgetInterfaces();
+    params->widget_params = rwh->BindAndGenerateCreateFrameWidgetParams();
   }
   mojo::PendingAssociatedRemote<mojom::Frame> pending_frame_remote;
   params->frame = pending_frame_remote.InitWithNewEndpointAndPassReceiver();
@@ -5424,26 +5414,6 @@ void RenderFrameHostImpl::CreateNewWindow(
   main_frame->BindBrowserInterfaceBrokerReceiver(
       browser_interface_broker.InitWithNewPipeAndPassReceiver());
 
-  mojo::PendingAssociatedRemote<blink::mojom::FrameWidget> blink_frame_widget;
-  mojo::PendingAssociatedReceiver<blink::mojom::FrameWidget>
-      blink_frame_widget_receiver =
-          blink_frame_widget.InitWithNewEndpointAndPassReceiver();
-
-  mojo::PendingAssociatedRemote<blink::mojom::FrameWidgetHost>
-      blink_frame_widget_host;
-  mojo::PendingAssociatedReceiver<blink::mojom::FrameWidgetHost>
-      blink_frame_widget_host_receiver =
-          blink_frame_widget_host.InitWithNewEndpointAndPassReceiver();
-
-  mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget;
-  mojo::PendingAssociatedReceiver<blink::mojom::Widget> blink_widget_receiver =
-      blink_widget.InitWithNewEndpointAndPassReceiver();
-
-  mojo::PendingAssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
-  mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost>
-      blink_widget_host_receiver =
-          blink_widget_host.InitWithNewEndpointAndPassReceiver();
-
   // With this path, RenderViewHostImpl::CreateRenderView is never called
   // because RenderView is already created on the renderer side. Thus we need to
   // establish the connection here.
@@ -5452,19 +5422,10 @@ void RenderFrameHostImpl::CreateNewWindow(
       page_broadcast_receiver =
           page_broadcast.InitWithNewEndpointAndPassReceiver();
 
-  // TODO(danakj): The main frame's RenderWidgetHost has no RenderWidgetHostView
-  // yet here. It seems like it should though? In the meantime we send some
-  // nonsense with a semi-valid but incorrect ScreenInfo (it needs a
-  // RenderWidgetHostView to be correct). An updates VisualProperties will get
-  // to the RenderWidget eventually.
-  blink::VisualProperties visual_properties;
-  main_frame->GetLocalRenderWidgetHost()->GetScreenInfo(
-      &visual_properties.screen_info);
-  main_frame->GetLocalRenderWidgetHost()->BindFrameWidgetInterfaces(
-      std::move(blink_frame_widget_host_receiver),
-      std::move(blink_frame_widget));
-  main_frame->GetLocalRenderWidgetHost()->BindWidgetInterfaces(
-      std::move(blink_widget_host_receiver), std::move(blink_widget));
+  auto widget_params =
+      main_frame->GetLocalRenderWidgetHost()
+          ->BindAndGenerateCreateFrameWidgetParamsForNewWindow();
+
   main_frame->render_view_host()->BindPageBroadcast(std::move(page_broadcast));
 
   bool wait_for_debugger =
@@ -5472,13 +5433,10 @@ void RenderFrameHostImpl::CreateNewWindow(
   mojom::CreateNewWindowReplyPtr reply = mojom::CreateNewWindowReply::New(
       main_frame->GetRenderViewHost()->GetRoutingID(),
       main_frame->GetRoutingID(), std::move(pending_frame_receiver),
-      main_frame->GetFrameToken(),
-      main_frame->GetLocalRenderWidgetHost()->GetRoutingID(), visual_properties,
-      std::move(blink_frame_widget_host),
-      std::move(blink_frame_widget_receiver), std::move(blink_widget_host),
-      std::move(blink_widget_receiver), std::move(page_broadcast_receiver),
-      std::move(browser_interface_broker), cloned_namespace->id(),
-      main_frame->GetDevToolsFrameToken(), wait_for_debugger,
+      main_frame->GetFrameToken(), std::move(widget_params),
+      std::move(page_broadcast_receiver), std::move(browser_interface_broker),
+      cloned_namespace->id(), main_frame->GetDevToolsFrameToken(),
+      wait_for_debugger,
       main_frame->policy_container_host()->CreatePolicyContainerForBlink());
 
   std::move(callback).Run(mojom::CreateNewWindowStatus::kSuccess,

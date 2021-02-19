@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "content/app/mojo/mojo_init.h"
 #include "content/common/agent_scheduling_group.mojom.h"
+#include "content/common/frame.mojom.h"
 #include "content/common/frame_messages.h"
 #include "content/common/renderer.mojom.h"
 #include "content/public/browser/content_browser_client.h"
@@ -490,30 +491,39 @@ void RenderViewTest::SetUp() {
   view_params->renderer_preferences = blink::RendererPreferences();
   view_params->web_preferences = blink::web_pref::WebPreferences();
   view_params->view_id = render_thread_->GetNextRoutingID();
-  view_params->main_frame_widget_routing_id =
-      render_thread_->GetNextRoutingID();
-  view_params->main_frame_frame_token = base::UnguessableToken::Create();
-  view_params->main_frame_routing_id = render_thread_->GetNextRoutingID();
-  view_params->frame = TestRenderFrame::CreateStubFrameReceiver();
 
+  auto main_frame_common_params = mojom::CreateFrameCommonParams::New();
+  main_frame_common_params->frame_token = base::UnguessableToken::Create();
+  main_frame_common_params->replicated_state =
+      mojom::FrameReplicationState::New();
+  view_params->main_frame_common_params = std::move(main_frame_common_params);
+
+  auto main_frame_params = mojom::CreateLocalMainFrameParams::New();
+  main_frame_params->routing_id = render_thread_->GetNextRoutingID();
+  main_frame_params->frame = TestRenderFrame::CreateStubFrameReceiver();
   // Ignoring the returned PendingReceiver because it is not bound to anything
-  ignore_result(view_params->main_frame_interface_broker
-                    .InitWithNewPipeAndPassReceiver());
+  ignore_result(
+      main_frame_params->interface_broker.InitWithNewPipeAndPassReceiver());
+  policy_container_host_ = std::make_unique<MockPolicyContainerHost>();
+  main_frame_params->policy_container =
+      policy_container_host_->CreatePolicyContainerForBlink();
+
+  auto widget_params = mojom::CreateFrameWidgetParams::New();
+  widget_params->routing_id = render_thread_->GetNextRoutingID();
+  std::tie(widget_params->widget_host, widget_params->widget) =
+      render_widget_host_->BindNewWidgetInterfaces();
+  std::tie(widget_params->frame_widget_host, widget_params->frame_widget) =
+      render_widget_host_->BindNewFrameWidgetInterfaces();
+  widget_params->visual_properties = InitialVisualProperties();
+  main_frame_params->widget_params = std::move(widget_params);
+
+  view_params->main_frame =
+      mojom::CreateMainFrameUnion::NewLocalParams(std::move(main_frame_params));
+
   view_params->session_storage_namespace_id =
       blink::AllocateSessionStorageNamespaceId();
-  view_params->replicated_frame_state = mojom::FrameReplicationState::New();
-  view_params->proxy_routing_id = MSG_ROUTING_NONE;
   view_params->hidden = false;
   view_params->never_composited = false;
-  view_params->visual_properties = InitialVisualProperties();
-  std::tie(view_params->widget_host, view_params->widget) =
-      render_widget_host_->BindNewWidgetInterfaces();
-  std::tie(view_params->frame_widget_host, view_params->frame_widget) =
-      render_widget_host_->BindNewFrameWidgetInterfaces();
-
-  policy_container_host_ = std::make_unique<MockPolicyContainerHost>();
-  view_params->policy_container =
-      policy_container_host_->CreatePolicyContainerForBlink();
 
   RenderViewImpl* view = RenderViewImpl::Create(
       *agent_scheduling_group_, compositor_deps_.get(), std::move(view_params),
