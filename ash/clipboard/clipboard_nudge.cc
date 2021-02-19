@@ -117,8 +117,8 @@ class ClipboardNudge::ClipboardNudgeView : public views::View {
 
     // Set the text for |label_|.
     base::string16 shortcut_key = l10n_util::GetStringUTF16(
-        use_launcher_key ? IDS_ASH_MULTIPASTE_CONTEXTUAL_NUDGE_LAUNCHER_KEY
-                         : IDS_ASH_MULTIPASTE_CONTEXTUAL_NUDGE_SEARCH_KEY);
+        use_launcher_key ? IDS_ASH_SHORTCUT_MODIFIER_LAUNCHER
+                         : IDS_ASH_SHORTCUT_MODIFIER_SEARCH);
     size_t offset;
     base::string16 label_text = l10n_util::GetStringFUTF16(
         IDS_ASH_MULTIPASTE_CONTEXTUAL_NUDGE, shortcut_key, &offset);

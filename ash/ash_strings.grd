@@ -3441,15 +3441,17 @@ Here are some things you can try to get started.
         Switched to laptop mode
       </message>
 
+      <!-- Modifier key names -->
+      <message name="IDS_ASH_SHORTCUT_MODIFIER_LAUNCHER" desc="Name of the [Launcher] key. This key has a different name and keyboard glyph/icon depending on the device. This is the string for when it is called Launcher and has a circle/launcher icon.">
+        Launcher
+      </message>
+      <message name="IDS_ASH_SHORTCUT_MODIFIER_SEARCH" desc="Name of the [Search] key. This key has a different name and keyboard glyph/icon depending on the device. This is the string for when it is called Search and has a magnifier icon.">
+        Search
+      </message>
+
       <!-- Multipaste -->
       <message name="IDS_ASH_MULTIPASTE_CONTEXTUAL_NUDGE" desc="The label used for the multipaste nudge, to be seen once the user copies and pastes multiple times in a short time span.">
         Press <ph name="SHORTCUT_KEY_NAME">$1<ex>Launcher</ex></ph> + V to view your clipboard. The last 5 items you've copied are saved to your clipboard.
-      </message>
-      <message name="IDS_ASH_MULTIPASTE_CONTEXTUAL_NUDGE_LAUNCHER_KEY" desc="The name of the first key to be used for the keyboard shortcut for activating multipaste, when the device has a launcher key.">
-        Launcher
-      </message>
-      <message name="IDS_ASH_MULTIPASTE_CONTEXTUAL_NUDGE_SEARCH_KEY" desc="The name of the first key to be used for the keyboard shortcut for activating multipaste, when the device has a search key.">
-        Search
       </message>
 
       <message name="IDS_APP_LIST_BLOCKED_APP" desc="The spoken feedback text when a focused app is blocked.">
