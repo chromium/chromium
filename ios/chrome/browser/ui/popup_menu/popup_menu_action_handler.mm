@@ -182,6 +182,12 @@ using base::UserMetricsAction;
           ClipboardRecentContent::GetInstance();
       clipboardRecentContent->GetRecentImageFromClipboard(
           base::BindOnce(^(base::Optional<gfx::Image> image) {
+            // Sometimes, the image can be nil even though the clipboard said it
+            // had an image. This most likely a UIKit issue, but practice
+            // defensive coding.
+            if (!image) {
+              return;
+            }
             [self.dispatcher searchByImage:[image.value().ToUIImage() copy]];
           }));
       break;
