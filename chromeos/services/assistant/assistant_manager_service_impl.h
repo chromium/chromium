@@ -41,7 +41,6 @@
 #include "ui/accessibility/mojom/ax_assistant_structure.mojom.h"
 
 namespace ash {
-class AssistantAlarmTimerController;
 class AssistantNotificationController;
 class AssistantStateBase;
 }  // namespace ash
@@ -69,6 +68,7 @@ class PlatformDelegateImpl;
 class ServiceContext;
 class ServiceControllerProxy;
 class SpeechRecognitionObserverWrapper;
+class TimerHost;
 
 // Enumeration of Assistant query response type, also recorded in histograms.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -226,12 +226,9 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   void OnServiceRunning();
   bool IsServiceStarted() const;
 
-  void OnAlarmTimerStateChanged();
   void OnModifySettingsAction(const std::string& modify_setting_args_proto);
 
   void OnDeviceAppsEnabled(bool enabled);
-
-  void RegisterAlarmsTimersListener();
 
   void FillServerExperimentIds(std::vector<std::string>* server_experiment_ids);
 
@@ -256,7 +253,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
 
   void MaybeStopPreviousInteraction();
 
-  ash::AssistantAlarmTimerController* assistant_alarm_timer_controller();
   ash::AssistantNotificationController* assistant_notification_controller();
   ash::AssistantScreenContextController* assistant_screen_context_controller();
   ash::AssistantStateBase* assistant_state();
@@ -290,6 +286,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   std::unique_ptr<LibassistantServiceHost> libassistant_service_host_;
   std::unique_ptr<AssistantDeviceSettingsDelegate> settings_delegate_;
   std::unique_ptr<MediaHost> media_host_;
+  std::unique_ptr<TimerHost> timer_host_;
   std::unique_ptr<AudioOutputDelegateImpl> audio_output_delegate_;
   std::unique_ptr<SpeechRecognitionObserverWrapper>
       speech_recognition_observer_;

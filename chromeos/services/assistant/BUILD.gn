@@ -82,6 +82,8 @@ component("lib") {
       "assistant_settings_impl.h",
       "libassistant_service_host_impl.cc",
       "libassistant_service_host_impl.h",
+      "timer_host.cc",
+      "timer_host.h",
     ]
 
     if (enable_fake_assistant_microphone) {

@@ -11,7 +11,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/assistant/assistant_state_base.h"
-#include "ash/public/cpp/assistant/controller/assistant_alarm_timer_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_notification_controller.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
@@ -47,11 +46,10 @@
 #include "chromeos/services/assistant/public/cpp/migration/libassistant_v1_api.h"
 #include "chromeos/services/assistant/public/shared/utils.h"
 #include "chromeos/services/assistant/service_context.h"
+#include "chromeos/services/assistant/timer_host.h"
 #include "chromeos/services/libassistant/public/mojom/android_app_info.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/speech_recognition_observer.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
-#include "libassistant/shared/internal_api/alarm_timer_manager.h"
-#include "libassistant/shared/internal_api/alarm_timer_types.h"
 #include "libassistant/shared/internal_api/assistant_manager_delegate.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
 #include "libassistant/shared/public/assistant_manager.h"
@@ -83,19 +81,6 @@ namespace {
 static bool is_first_init = true;
 
 constexpr char kAndroidSettingsAppPackage[] = "com.android.settings";
-
-ash::AssistantTimerState GetTimerState(assistant_client::Timer::State state) {
-  switch (state) {
-    case assistant_client::Timer::State::UNKNOWN:
-      return ash::AssistantTimerState::kUnknown;
-    case assistant_client::Timer::State::SCHEDULED:
-      return ash::AssistantTimerState::kScheduled;
-    case assistant_client::Timer::State::PAUSED:
-      return ash::AssistantTimerState::kPaused;
-    case assistant_client::Timer::State::FIRED:
-      return ash::AssistantTimerState::kFired;
-  }
-}
 
 CommunicationErrorType CommunicationErrorTypeFromLibassistantErrorCode(
     int error_code) {
@@ -227,6 +212,7 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
       delegate_(std::move(delegate)),
       media_host_(std::make_unique<MediaHost>(AssistantClient::Get(),
                                               &interaction_subscribers_)),
+      timer_host_(std::make_unique<TimerHost>(context)),
       audio_output_delegate_(std::make_unique<AudioOutputDelegateImpl>(
           &media_host_->media_session())),
       speech_recognition_observer_(
@@ -297,6 +283,7 @@ void AssistantManagerServiceImpl::Stop() {
   SetStateAndInformObservers(State::STOPPED);
 
   media_host_->Stop();
+  timer_host_->Stop();
   scoped_app_list_event_subscriber_.Reset();
   scoped_action_observer_.Reset();
 
@@ -318,45 +305,6 @@ void AssistantManagerServiceImpl::SetUser(
 
   VLOG(1) << "Set user information (Gaia ID and access token).";
   service_controller().SetAuthTokens(ToAuthTokensOrEmpty(user));
-}
-
-void AssistantManagerServiceImpl::RegisterAlarmsTimersListener() {
-  if (!IsServiceStarted())
-    return;
-
-  auto* alarm_timer_manager =
-      assistant_manager_internal()->GetAlarmTimerManager();
-
-  // Can be nullptr during unittests.
-  if (!alarm_timer_manager)
-    return;
-
-  auto listener_callback = base::BindRepeating(
-      [](scoped_refptr<base::SequencedTaskRunner> task_runner,
-         base::RepeatingClosure task) {
-        task_runner->PostTask(FROM_HERE, task);
-      },
-      main_task_runner(),
-      base::BindRepeating(
-          &AssistantManagerServiceImpl::OnAlarmTimerStateChanged,
-          weak_factory_.GetWeakPtr()));
-
-  // We always want to know when a timer has started ringing.
-  alarm_timer_manager->RegisterRingingStateListener(
-      [listener = listener_callback] { listener.Run(); });
-
-  if (features::IsTimersV2Enabled()) {
-    // In timers v2, we also want to know when timers are scheduled, updated,
-    // and/or removed so that we can represent those states in UI.
-    alarm_timer_manager->RegisterTimerActionListener(
-        [listener = listener_callback](
-            assistant_client::AlarmTimerManager::EventActionType ignore) {
-          listener.Run();
-        });
-
-    // Force sync initial alarm/timer state.
-    OnAlarmTimerStateChanged();
-  }
 }
 
 void AssistantManagerServiceImpl::EnableListening(bool enable) {
@@ -942,7 +890,7 @@ void AssistantManagerServiceImpl::OnServiceRunning() {
 
   SetAssistantContextEnabled(assistant_state()->IsScreenContextAllowed());
 
-  RegisterAlarmsTimersListener();
+  timer_host_->Start();
 
   if (assistant_state()->arc_play_store_enabled().has_value())
     SetArcPlayStoreEnabled(assistant_state()->arc_play_store_enabled().value());
@@ -959,58 +907,6 @@ void AssistantManagerServiceImpl::OnAndroidAppListRefreshed(
     filtered_apps_info.push_back(app_info);
   }
   display_controller().SetAndroidAppList(std::move(filtered_apps_info));
-}
-
-// TODO(dmblack): Handle non-firing (e.g. paused or scheduled) timers.
-void AssistantManagerServiceImpl::OnAlarmTimerStateChanged() {
-  ENSURE_MAIN_THREAD(&AssistantManagerServiceImpl::OnAlarmTimerStateChanged);
-
-  // |assistant_manager_internal()| may not exist if we are receiving this event
-  // as part of a shutdown sequence. When this occurs, we notify our alarm/timer
-  // controller to clear its cache to remain in sync with LibAssistant.
-  if (!IsServiceStarted()) {
-    assistant_alarm_timer_controller()->OnTimerStateChanged({});
-    return;
-  }
-
-  std::vector<ash::AssistantTimerPtr> timers;
-
-  auto* manager = assistant_manager_internal()->GetAlarmTimerManager();
-  for (const auto& event : manager->GetAllEvents()) {
-    // Note that we currently only handle timers, alarms are unsupported.
-    if (event.type != assistant_client::AlarmTimerEvent::TIMER)
-      continue;
-
-    // We always handle timers that have fired. Only for timers v2, however, do
-    // we handle scheduled/paused timers so we can represent those states in UI.
-    if (event.timer_data.state != assistant_client::Timer::State::FIRED &&
-        !features::IsTimersV2Enabled()) {
-      continue;
-    }
-
-    auto timer = std::make_unique<ash::AssistantTimer>();
-    timer->id = event.timer_data.timer_id;
-    timer->label = event.timer_data.label;
-    timer->state = GetTimerState(event.timer_data.state);
-    timer->original_duration = base::TimeDelta::FromMilliseconds(
-        event.timer_data.original_duration_ms);
-
-    // LibAssistant provides |fire_time_ms| as an offset from unix epoch.
-    timer->fire_time =
-        base::Time::UnixEpoch() +
-        base::TimeDelta::FromMilliseconds(event.timer_data.fire_time_ms);
-
-    // If the |timer| is paused, LibAssistant will specify the amount of time
-    // remaining. Otherwise we calculate it based on |fire_time|.
-    timer->remaining_time = timer->state == ash::AssistantTimerState::kPaused
-                                ? base::TimeDelta::FromMilliseconds(
-                                      event.timer_data.remaining_duration_ms)
-                                : timer->fire_time - base::Time::Now();
-
-    timers.push_back(std::move(timer));
-  }
-
-  assistant_alarm_timer_controller()->OnTimerStateChanged(std::move(timers));
 }
 
 void AssistantManagerServiceImpl::OnAccessibilityStatusChanged(
@@ -1041,26 +937,19 @@ void AssistantManagerServiceImpl::OnDeviceAppsEnabled(bool enabled) {
 
 void AssistantManagerServiceImpl::AddTimeToTimer(const std::string& id,
                                                  base::TimeDelta duration) {
-  if (!IsServiceStarted())
-    return;
-
-  assistant_manager_internal()->GetAlarmTimerManager()->AddTimeToTimer(
-      id, duration.InSeconds());
+  timer_host_->AddTimeToTimer(id, duration);
 }
 
 void AssistantManagerServiceImpl::PauseTimer(const std::string& id) {
-  if (assistant_manager_internal())
-    assistant_manager_internal()->GetAlarmTimerManager()->PauseTimer(id);
+  timer_host_->PauseTimer(id);
 }
 
 void AssistantManagerServiceImpl::RemoveAlarmOrTimer(const std::string& id) {
-  if (assistant_manager_internal())
-    assistant_manager_internal()->GetAlarmTimerManager()->RemoveEvent(id);
+  timer_host_->RemoveAlarmOrTimer(id);
 }
 
 void AssistantManagerServiceImpl::ResumeTimer(const std::string& id) {
-  if (assistant_manager_internal())
-    assistant_manager_internal()->GetAlarmTimerManager()->ResumeTimer(id);
+  timer_host_->ResumeTimer(id);
 }
 
 void AssistantManagerServiceImpl::NotifyEntryIntoAssistantUi(
@@ -1138,11 +1027,6 @@ std::string AssistantManagerServiceImpl::NewPendingInteraction(
       id, std::make_unique<AssistantInteractionMetadata>(interaction_type,
                                                          source, query));
   return id;
-}
-
-ash::AssistantAlarmTimerController*
-AssistantManagerServiceImpl::assistant_alarm_timer_controller() {
-  return context_->assistant_alarm_timer_controller();
 }
 
 ash::AssistantNotificationController*
