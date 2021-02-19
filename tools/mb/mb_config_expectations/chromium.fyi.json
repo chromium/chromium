@@ -214,6 +214,25 @@
       "use_goma": true
     }
   },
+  "TSAN Debug (reclient)": {
+    "gn_args": {
+      "enable_nacl": false,
+      "is_component_build": true,
+      "is_debug": true,
+      "is_tsan": true,
+      "symbol_level": 1,
+      "use_rbe": true
+    }
+  },
+  "TSAN Release (reclient)": {
+    "gn_args": {
+      "enable_nacl": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "is_tsan": true,
+      "use_rbe": true
+    }
+  },
   "VR Linux": {
     "gn_args": {
       "enable_vr": true,
