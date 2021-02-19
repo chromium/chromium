@@ -335,8 +335,21 @@ void PredictionManager::AddObserverForOptimizationTargetModel(
     proto::OptimizationTarget optimization_target,
     const base::Optional<proto::Any>& model_metadata,
     OptimizationTargetModelObserver* observer) {
-  // TODO(crbug/1171871): Probably do not allow for multiple observers to be
-  // registered for the same optimization target.
+  DCHECK(registered_observers_for_optimization_targets_.find(
+             optimization_target) ==
+         registered_observers_for_optimization_targets_.end());
+
+  // As DCHECKS don't run in the wild, just do not register the observer if
+  // something is already registered for the type. Otherwise, file reads may
+  // blow up.
+  if (registered_observers_for_optimization_targets_.find(
+          optimization_target) !=
+      registered_observers_for_optimization_targets_.end()) {
+    DLOG(ERROR) << "Did not add observer for optimization target "
+                << static_cast<int>(optimization_target)
+                << " since an observer for the target was already registered";
+    return;
+  }
 
   registered_observers_for_optimization_targets_[optimization_target]
       .AddObserver(observer);

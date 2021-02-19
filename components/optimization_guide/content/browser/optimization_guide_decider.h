@@ -73,6 +73,10 @@ class OptimizationGuideDecider {
   //
   // It is assumed that any model retrieved this way will be passed to the
   // Machine Learning Service for inference.
+  //
+  // It is also assumed that there will only be one observer per optimization
+  // target, so if multiple observers are registered, this will crash in debug
+  // builds and be a no-op in release builds.
   virtual void AddObserverForOptimizationTargetModel(
       proto::OptimizationTarget optimization_target,
       const base::Optional<proto::Any>& model_metadata,

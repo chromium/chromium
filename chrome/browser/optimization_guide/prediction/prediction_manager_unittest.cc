@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -795,7 +796,7 @@ TEST_F(PredictionManagerTest, AddObserverForOptimizationTargetModel) {
 }
 
 TEST_F(PredictionManagerTest,
-       AddObserverForOptimizationTargetModelExistingFile) {
+       AddObserverForOptimizationTargetModelAddAnotherObserverForSameTarget) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
 
@@ -828,19 +829,18 @@ TEST_F(PredictionManagerTest,
                 .value(),
             FILE_PATH_LITERAL("whatever"));
 
-  // Now, register a new observer.
-  FakeOptimizationTargetModelObserver observer2;
-  prediction_manager()->AddObserverForOptimizationTargetModel(
-      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-      /*model_metadata=*/base::nullopt, &observer2);
+#if !defined(OS_WIN)
+  // Do not run the DCHECK death test on Windows since there's some weird
+  // behavior there.
 
-  // Observer2 should receive a notification for the current model path.
-  EXPECT_EQ(observer2
-                .last_received_model_for_target(
-                    proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
-                ->second.BaseName()
-                .value(),
-            FILE_PATH_LITERAL("whatever"));
+  // Now, register a new observer - it should die.
+  FakeOptimizationTargetModelObserver observer2;
+  EXPECT_DCHECK_DEATH(
+      prediction_manager()->AddObserverForOptimizationTargetModel(
+          proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+          /*model_metadata=*/base::nullopt, &observer2));
+  RunUntilIdle();
+#endif
 }
 
 TEST_F(PredictionManagerTest,
