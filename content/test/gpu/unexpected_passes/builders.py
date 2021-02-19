@@ -6,9 +6,10 @@
 import fnmatch
 import json
 import logging
-import multiprocessing
 import os
 import subprocess
+
+from unexpected_passes import multiprocessing_utils
 
 TESTING_BUILDBOT_DIR = os.path.realpath(
     os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', 'testing',
@@ -154,7 +155,7 @@ def GetTryBuilders(ci_builders):
   mirrored_builders = set()
   no_output_builders = set()
 
-  pool = _GetPool()
+  pool = multiprocessing_utils.GetProcessPool()
   results = pool.map(_GetMirroredBuildersForCiBuilder, ci_builders)
   for (builders, found_mirror) in results:
     if found_mirror:
@@ -214,12 +215,6 @@ def _GetMirroredBuildersForCiBuilder(ci_builder):
     logging.debug('Got mirrored builder for %s: %s', ci_builder, split[1])
     mirrored_builders.add(split[1])
   return mirrored_builders, True
-
-
-def _GetPool():
-  # Split out for testing - multiprocessing very much dislikes mocking/monkey
-  # patching functions that it's trying to use.
-  return multiprocessing.Pool()
 
 
 def _GetBuildbucketOutputForCiBuilder(ci_builder):

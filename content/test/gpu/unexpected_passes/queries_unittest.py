@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import copy
 import json
 import subprocess
 import unittest
@@ -9,7 +10,9 @@ import unittest
 import mock
 
 from unexpected_passes import data_types
+from unexpected_passes import multiprocessing_utils
 from unexpected_passes import queries
+from unexpected_passes import unittest_utils
 
 
 class AddResultToMapUnittest(unittest.TestCase):
@@ -498,6 +501,11 @@ class FillExpectationMapForBuildersUnittest(unittest.TestCase):
     self._patcher = mock.patch.object(queries, 'QueryBuilder')
     self._query_mock = self._patcher.start()
     self.addCleanup(self._patcher.stop)
+    self._pool_patcher = mock.patch.object(multiprocessing_utils,
+                                           'GetProcessPool')
+    self._pool_mock = self._pool_patcher.start()
+    self._pool_mock.return_value = unittest_utils.FakePool()
+    self.addCleanup(self._pool_patcher.stop)
 
   def testValidResults(self):
     """Tests functionality when valid results are returned by the query."""
@@ -542,6 +550,170 @@ class FillExpectationMapForBuildersUnittest(unittest.TestCase):
                 data_types.Result('bar', [], 'Pass', 'step_name', 'build_id'),
             ],
         })
+
+
+class MergeExpectationMapsUnittest(unittest.TestCase):
+  maxDiff = None
+
+  def testEmptyBaseMap(self):
+    """Tests that a merge with an empty base map copies the merge map."""
+    base_map = {}
+    merge_map = {
+        'foo': {
+            data_types.Expectation('foo', ['win'], 'Failure'): {
+                'builder': {
+                    'step': data_types.BuildStats(),
+                },
+            },
+        },
+    }
+    original_merge_map = copy.deepcopy(merge_map)
+    queries._MergeExpectationMaps(base_map, merge_map)
+    self.assertEqual(base_map, merge_map)
+    self.assertEqual(merge_map, original_merge_map)
+
+  def testEmptyMergeMap(self):
+    """Tests that a merge with an empty merge map is a no-op."""
+    base_map = {
+        'foo': {
+            data_types.Expectation('foo', ['win'], 'Failure'): {
+                'builder': {
+                    'step': data_types.BuildStats(),
+                },
+            },
+        },
+    }
+    merge_map = {}
+    original_base_map = copy.deepcopy(base_map)
+    queries._MergeExpectationMaps(base_map, merge_map)
+    self.assertEqual(base_map, original_base_map)
+    self.assertEqual(merge_map, {})
+
+  def testMissingKeys(self):
+    """Tests that missing keys are properly copied to the base map."""
+    base_map = {
+        'foo': {
+            data_types.Expectation('foo', ['win'], 'Failure'): {
+                'builder': {
+                    'step': data_types.BuildStats(),
+                },
+            },
+        },
+    }
+    merge_map = {
+        'foo': {
+            data_types.Expectation('foo', ['win'], 'Failure'): {
+                'builder': {
+                    'step2': data_types.BuildStats(),
+                },
+                'builder2': {
+                    'step': data_types.BuildStats(),
+                },
+            },
+            data_types.Expectation('foo', ['mac'], 'Failure'): {
+                'builder': {
+                    'step': data_types.BuildStats(),
+                }
+            }
+        },
+        'bar': {
+            data_types.Expectation('bar', ['win'], 'Failure'): {
+                'builder': {
+                    'step': data_types.BuildStats(),
+                },
+            },
+        },
+    }
+    expected_base_map = {
+        'foo': {
+            data_types.Expectation('foo', ['win'], 'Failure'): {
+                'builder': {
+                    'step': data_types.BuildStats(),
+                    'step2': data_types.BuildStats(),
+                },
+                'builder2': {
+                    'step': data_types.BuildStats(),
+                },
+            },
+            data_types.Expectation('foo', ['mac'], 'Failure'): {
+                'builder': {
+                    'step': data_types.BuildStats(),
+                }
+            }
+        },
+        'bar': {
+            data_types.Expectation('bar', ['win'], 'Failure'): {
+                'builder': {
+                    'step': data_types.BuildStats(),
+                },
+            },
+        },
+    }
+    queries._MergeExpectationMaps(base_map, merge_map)
+    self.assertEqual(base_map, expected_base_map)
+
+  def testMergeBuildStats(self):
+    """Tests that BuildStats for the same step are merged properly."""
+    base_map = {
+        'foo': {
+            data_types.Expectation('foo', ['win'], 'Failure'): {
+                'builder': {
+                    'step': data_types.BuildStats(),
+                },
+            },
+        },
+    }
+    merge_stats = data_types.BuildStats()
+    merge_stats.AddFailedBuild('1')
+    merge_map = {
+        'foo': {
+            data_types.Expectation('foo', ['win'], 'Failure'): {
+                'builder': {
+                    'step': merge_stats,
+                },
+            },
+        },
+    }
+    expected_stats = data_types.BuildStats()
+    expected_stats.AddFailedBuild('1')
+    expected_base_map = {
+        'foo': {
+            data_types.Expectation('foo', ['win'], 'Failure'): {
+                'builder': {
+                    'step': expected_stats,
+                },
+            },
+        },
+    }
+    queries._MergeExpectationMaps(base_map, merge_map)
+    self.assertEqual(base_map, expected_base_map)
+
+  def testInvalidMerge(self):
+    """Tests that updating a BuildStats instance twice is an error."""
+    base_map = {
+        'foo': {
+            data_types.Expectation('foo', ['win'], 'Failure'): {
+                'builder': {
+                    'step': data_types.BuildStats(),
+                },
+            },
+        },
+    }
+    merge_stats = data_types.BuildStats()
+    merge_stats.AddFailedBuild('1')
+    merge_map = {
+        'foo': {
+            data_types.Expectation('foo', ['win'], 'Failure'): {
+                'builder': {
+                    'step': merge_stats,
+                },
+            },
+        },
+    }
+    original_base_map = copy.deepcopy(base_map)
+    queries._MergeExpectationMaps(base_map, merge_map, original_base_map)
+    with self.assertRaises(AssertionError):
+      queries._MergeExpectationMaps(base_map, merge_map, original_base_map)
 
 
 if __name__ == '__main__':

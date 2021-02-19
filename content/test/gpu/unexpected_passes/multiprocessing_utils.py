@@ -1,0 +1,17 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+from pathos import pools
+
+
+def GetProcessPool():
+  """Returns a pathos.pools.ProcessPool instance.
+
+  Split out for ease of unittesting since pathos can still run into pickling
+  issues with MagicMocks used in tests.
+
+  Returns:
+    A pathos.pools.ProcessPool instance.
+  """
+  return pools.ProcessPool()

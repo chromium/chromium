@@ -13,3 +13,18 @@ def CreateStatsWithPassFails(passes, fails):
   for i in xrange(fails):
     stats.AddFailedBuild('build_id%d' % i)
   return stats
+
+
+class FakePool(object):
+  """A fake pathos.pools.ProcessPool instance.
+
+  Real pools don't like being given MagicMocks, so this allows testing of
+  code that uses pathos.pools.ProcessPool by returning this from
+  multiprocessing_utils.GetProcessPool().
+  """
+
+  def map(self, f, inputs):
+    retval = []
+    for i in inputs:
+      retval.append(f(i))
+    return retval

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Methods related to querying the ResultDB BigQuery tables."""
 
+import copy
 import json
 import logging
 import multiprocessing.pool
@@ -12,6 +13,7 @@ import subprocess
 from typ import expectations_parser
 from unexpected_passes import builders as builders_module
 from unexpected_passes import data_types
+from unexpected_passes import multiprocessing_utils
 
 DEFAULT_NUM_SAMPLES = 100
 MAX_ROWS = (2**31) - 1
@@ -125,24 +127,87 @@ def _FillExpectationMapForBuilders(expectation_map, builders, builder_type,
     }
   """
   all_unmatched_results = {}
-  # This is not officially documented, but comes up frequently when looking for
-  # information on Python thread pools. It has the same API as
-  # multiprocessing.Pool(), but uses threads instead of subprocesses. This
-  # results in us being able to avoid jumping through some hoops with regards to
-  # pickling that come with multiple processes. Since each thread is going to be
-  # I/O bound on the query, there shouldn't be a noticeable performance loss
-  # despite the default CPython interpreter not being truly multithreaded.
-  pool = multiprocessing.pool.ThreadPool()
-  curried_query = lambda b: QueryBuilder(b, builder_type, suite, project,
-                                         num_samples)
-  results_list = pool.map(curried_query, builders)
-  for (builder_name, results) in results_list:
-    prefixed_builder_name = '%s:%s' % (builder_type, builder_name)
-    unmatched_results = _AddResultListToMap(expectation_map,
-                                            prefixed_builder_name, results)
+
+  # We use two separate pools since each is better for a different task. Adding
+  # retrieved results to the expectation map is computationally intensive, so
+  # properly parallelizing it results in large speedup. Python's default
+  # interpreter does not support true multithreading, and the multiprocessing
+  # module throws a fit when using custom data types due to pickling, so use
+  # pathos' ProcessPool for this, which is like multiprocessing but handles all
+  # the pickling automatically.
+  #
+  # However, ProcessPool appears to add a non-trivial amount of overhead when
+  # passing data back and forth, so use a thread pool for triggering BigQuery
+  # queries. Each query is already started in its own subprocess, so the lack
+  # of multithreading is not an issue. multiprocessing.pool.ThreadPool() is not
+  # officially documented, but comes up frequently when looking for information
+  # on Python thread pools and is used in other places in the Chromium code
+  # base.
+  result_pool = multiprocessing_utils.GetProcessPool()
+  query_pool = multiprocessing.pool.ThreadPool()
+
+  arguments = [(b, builder_type, suite, project, num_samples) for b in builders]
+  results_list = query_pool.map(_QueryBuilderMultiprocess, arguments)
+
+  arguments = [(expectation_map, builder_type, bn, r)
+               for (bn, r) in results_list]
+  add_results = result_pool.map(_AddResultToMapMultiprocessing, arguments)
+  tmp_expectation_map = {}
+
+  for (unmatched_results, prefixed_builder_name, merge_map) in add_results:
+    _MergeExpectationMaps(tmp_expectation_map, merge_map, expectation_map)
     if unmatched_results:
       all_unmatched_results[prefixed_builder_name] = unmatched_results
+
+  expectation_map.clear()
+  expectation_map.update(tmp_expectation_map)
+
   return all_unmatched_results
+
+
+def _MergeExpectationMaps(base_map, merge_map, reference_map=None):
+  """Merges |merge_map| into |base_map|.
+
+  Args:
+    base_map: A dict to be updated with the contents of |merge_map|. Will be
+        modified in place.
+    merge_map: A dict in the format returned by
+        expectations.CreateTestExpectationMap() whose contents will be merged
+        into |base_map|.
+    reference_map: A dict containing the information that was originally in
+        |base_map|. Used for ensuring that a single expectation/builder/step
+        combination is only ever updated once. If None, a copy of |base_map|
+        will be used.
+  """
+  # We should only ever encounter a single updated BuildStats for an
+  # expectation/builder/step combination. Use the reference map to determine
+  # if a particular BuildStats has already been updated or not.
+  reference_map = reference_map or copy.deepcopy(base_map)
+  for key, value in merge_map.iteritems():
+    if key not in base_map:
+      base_map[key] = value
+    else:
+      if isinstance(value, dict):
+        _MergeExpectationMaps(base_map[key], value, reference_map.get(key, {}))
+      else:
+        assert isinstance(value, data_types.BuildStats)
+        # Ensure we haven't updated this BuildStats already. If the reference
+        # map doesn't have a corresponding BuildStats, then base_map shouldn't
+        # have initially either, and thus it would have been added before
+        # reaching this point. Otherwise, the two values must match, meaning
+        # that base_map's BuildStats hasn't been updated yet.
+        reference_stats = reference_map.get(key, None)
+        assert reference_stats is not None
+        assert reference_stats == base_map[key]
+        base_map[key] = value
+
+
+def _AddResultToMapMultiprocessing(inputs):
+  expectation_map, builder_type, builder_name, results = inputs
+  prefixed_builder_name = '%s:%s' % (builder_type, builder_name)
+  unmatched_results = _AddResultListToMap(expectation_map,
+                                          prefixed_builder_name, results)
+  return unmatched_results, prefixed_builder_name, expectation_map
 
 
 def _AddResultListToMap(expectation_map, builder, results):
@@ -215,6 +280,11 @@ def _AddResultToMap(result, builder, expectation_map):
         else:
           stats.AddFailedBuild(result.build_id)
   return found_matching_expectation
+
+
+def _QueryBuilderMultiprocess(inputs):
+  builder, builder_type, suite, project, num_samples = inputs
+  return QueryBuilder(builder, builder_type, suite, project, num_samples)
 
 
 def QueryBuilder(builder, builder_type, suite, project, num_samples):
