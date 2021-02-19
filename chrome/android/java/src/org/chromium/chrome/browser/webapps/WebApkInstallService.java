@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
@@ -40,8 +41,9 @@ public class WebApkInstallService {
         Context context = ContextUtils.getApplicationContext();
         Intent intent = WebApkNavigationClient.createLaunchWebApkIntent(webApkPackage, url, false
                 /* forceNavigation */);
-        PendingIntent clickPendingIntent =
-                PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent clickPendingIntent = PendingIntent.getActivity(context, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+                        | IntentUtils.getPendingIntentMutabilityFlag(false));
 
         if (isIconMaskable && WebappsIconUtils.doesAndroidSupportMaskableIcons()) {
             icon = WebappsIconUtils.generateAdaptiveIconBitmap(icon);
