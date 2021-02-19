@@ -120,6 +120,12 @@ ContextType ComputeSameSiteContext(const GURL& url,
             .IsFirstPartyWithSchemefulMode(url, compute_schemefully)) {
       return ContextType::SAME_SITE_STRICT;
     }
+
+    if (is_http) {
+      base::UmaHistogramBoolean("Cookie.SameSiteContextAffectedByBugfix1166211",
+                                !is_main_frame_navigation);
+    }
+
     // Preserve old behavior if the bugfix is disabled.
     if (!base::FeatureList::IsEnabled(features::kSameSiteCookiesBugfix1166211))
       return ContextType::SAME_SITE_LAX;

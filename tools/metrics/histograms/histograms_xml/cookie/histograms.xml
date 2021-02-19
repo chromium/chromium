@@ -521,6 +521,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Cookie.SameSiteContextAffectedByBugfix1166211"
+    enum="BooleanAffected" expires_after="2021-08-18">
+  <owner>chlily@chromium.org</owner>
+  <owner>miketaylr@chromium.org</owner>
+  <summary>
+    Whether the SameSite context was affected by the fix for crbug.com/1166211,
+    i.e. whether it would have been laxly same-site before the fix but is
+    considered cross-site after the fix. Logged for each HTTP(S)
+    request/response that potentially accesses cookies, whose site-for-cookies
+    is same-site with the request URL, but whose initiator is cross-site to the
+    request URL. This is logged regardless of whether the change in SameSite
+    context actually changed the outcome of any cookie inclusion calculation.
+    Logged regardless of whether the bugfix's base::Feature is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.SameSiteContextDowngradeRequest"
     enum="SameSiteCookieContextBreakingDowngradeWithSecureness"
     expires_after="2021-07-04">

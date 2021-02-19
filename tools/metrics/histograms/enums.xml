@@ -7697,6 +7697,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Prevented"/>
 </enum>
 
+<enum name="BooleanAffected">
+  <int value="0" label="Not Affected"/>
+  <int value="1" label="Affected"/>
+</enum>
+
 <enum name="BooleanAllowed">
   <int value="0" label="Not Allowed"/>
   <int value="1" label="Allowed"/>
