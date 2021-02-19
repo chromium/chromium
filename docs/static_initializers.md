@@ -6,6 +6,8 @@ Some background on the original decision to ban static initializers:
 
 http://neugierig.org/software/chromium/notes/2011/08/static-initializers.html
 
+Note: Another name for static initializers is "global constructors".
+
 # How Static Initializers are Checked
 
 * For Linux and Mac:
@@ -23,17 +25,7 @@ Common fixes include:
 
 ## Listing Static Initializers
 
-### Method 1 - Ask compiler to report them
-1. Edit [//build/config/BUILDCONFIG.gn](https://cs.chromium.org/chromium/src/build/config/BUILDCONFIG.gn)
-and add `"//build/config/compiler:wglobal_constructors"` to `default_compiler_configs`
-2. Set GN arg `treat_warnings_as_errors=false`
-3. Compile and look at warnings
-
-This will produce far more warnings than there are static initializers because
-it (seems to) trigger on global variables initialized with constexpr
-constructors.
-
-### Method 2 - Use objdump to report them
+### Step 1 - Use objdump to report them
 For Linux:
 
     tools/linux/dump-static-initializers.py out/Release/chrome
@@ -46,8 +38,32 @@ For Android (from easiest to hardest):
     ninja chrome/android:monochrome_static_initializers
     # or:
     tools/binary_size/diagnose_bloat.py HEAD  # See README.md for flags.
-    # or:
-    tools/linux/dump-static-initializers.py --toolchain-prefix third_party/android_ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/arm-linux-androideabi- out/Release/libmonochrome.so 
+    # or (the other two use this under the hood):
+    tools/linux/dump-static-initializers.py --toolchain-prefix third_party/android_ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/arm-linux-androideabi- out/Release/lib.unstripped/libmonochrome.so
+    # arm32 ^^ vv arm64
+    tools/linux/dump-static-initializers.py --toolchain-prefix third_party/android_ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android- out/Release/lib.unstripped/libmonochrome.so
+    # Note: For arm64, having use_thin_lto=true seems to dump a couple extra
+    #     initializers that don't actually exist.
+
+The last one may actually be the easiest if you've already properly built
+`libmonochrome.so` with `is_official_build=true`.
+
+### Step 2 - Ask compiler to report them
+
+If the source of the new initiazers is not obvious from Step 1, you can ask the
+compiler to pinpoint the exact source line.
+
+1. Edit [//build/config/BUILDCONFIG.gn](https://cs.chromium.org/chromium/src/build/config/BUILDCONFIG.gn)
+and add `"//build/config/compiler:wglobal_constructors"` to `default_compiler_configs`
+2. Remove the config from the `configs` in `//base:base`
+3. Set GN arg `treat_warnings_as_errors=false`
+4. Compile and look for warnings **from the files identified by step 1** (may want to pipe ninja output to a file).
+
+*** note
+The compiler warning triggers for every static initializer that exists
+*before optimization*. We care only about those that survive optimization.
+More details in [crbug/1136086](https://bugs.chromium.org/p/chromium/issues/detail?id=1136086).
+***
 
 * For more information about `diagnose_bloat.py`, refer to its [README.md](/tools/binary_size/README.md#diagnose_bloat.py)
 * List of existing static initializers documented in [static_initializers.gni](/chrome/android/static_initializers.gni)
