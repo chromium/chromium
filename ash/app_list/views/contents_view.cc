@@ -678,10 +678,10 @@ void ContentsView::UpdateYPositionAndOpacity() {
   } else {
     progress = AppListView::GetTransitionProgressForState(target_view_state());
   }
-
   const bool restore_opacity = !app_list_view_->is_in_drag() &&
                                target_view_state() != AppListViewState::kClosed;
-  if (current_state != AppListState::kStateApps ||
+  if (!(current_state == AppListState::kStateApps ||
+        current_state == AppListState::kStateEmbeddedAssistant) ||
       app_list_view_->is_side_shelf()) {
     expand_arrow_view_->layer()->SetOpacity(0.0f);
   } else if (restore_opacity) {
