@@ -504,9 +504,6 @@ extern const base::Feature kPrivacyReorderedAndroid;
 #endif
 
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kPrivacySettingsRedesign;
-
-COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kPushMessagingBackgroundMode;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

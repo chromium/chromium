@@ -1137,9 +1137,6 @@ extern const char kPrivacyReorderedAndroidDescription[];
 extern const char kPrivacySandboxSettingsName[];
 extern const char kPrivacySandboxSettingsDescription[];
 
-extern const char kPrivacySettingsRedesignName[];
-extern const char kPrivacySettingsRedesignDescription[];
-
 extern const char kForceEnablePrivetPrintingName[];
 extern const char kForceEnablePrivetPrintingDescription[];
 

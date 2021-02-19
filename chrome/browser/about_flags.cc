@@ -5742,11 +5742,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(features::kPrivacySandboxSettings)},
 
-    {"privacy-settings-redesign",
-     flag_descriptions::kPrivacySettingsRedesignName,
-     flag_descriptions::kPrivacySettingsRedesignDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kPrivacySettingsRedesign)},
-
 #if defined(OS_ANDROID)
     {"safety-check-android", flag_descriptions::kSafetyCheckAndroidName,
      flag_descriptions::kSafetyCheckAndroidDescription, kOsAndroid,

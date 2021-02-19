@@ -243,10 +243,6 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
     html_source->AddLocalizedString("privacyPageTitle", IDS_SETTINGS_PRIVACY);
   }
 
-  html_source->AddBoolean(
-      "privacySettingsRedesignEnabled",
-      base::FeatureList::IsEnabled(::features::kPrivacySettingsRedesign));
-
   html_source->AddString("suggestedContentLearnMoreURL",
                          chrome::kSuggestedContentLearnMoreURL);
 

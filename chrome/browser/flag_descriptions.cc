@@ -1953,11 +1953,6 @@ const char kPrivacySandboxSettingsDescription[] =
     "Enables privacy sandbox settings. Requires at least one of the Privacy "
     "Sandbox APIs to be enabled.";
 
-const char kPrivacySettingsRedesignName[] = "Privacy Settings Redesign";
-const char kPrivacySettingsRedesignDescription[] =
-    "Redesign of the privacy settings card to make it more prominent and "
-    "and easier to use.";
-
 const char kForceEnablePrivetPrintingName[] = "Force enable Privet Printing";
 const char kForceEnablePrivetPrintingDescription[] =
     "Override to force enabling printing to existing registered Privet "
