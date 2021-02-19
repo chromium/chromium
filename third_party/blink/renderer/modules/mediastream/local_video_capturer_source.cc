@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "media/base/bind_to_current_loop.h"
+#include "base/bind_post_task.h"
 #include "third_party/blink/public/platform/modules/video_capture/web_video_capture_impl_manager.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -47,8 +47,8 @@ void LocalVideoCapturerSource::StartCapture(
 
   stop_capture_cb_ = manager_->StartCapture(
       session_id_, params,
-      media::BindToLoop(task_runner_,
-                        ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+      base::BindPostTask(
+          task_runner_, ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
                             &LocalVideoCapturerSource::OnStateUpdate,
                             weak_factory_.GetWeakPtr()))),
       new_frame_callback);

@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/bind_post_task.h"
 #include "base/hash/hash.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
@@ -170,7 +171,7 @@ WebMediaPlayerMSCompositor::WebMediaPlayerMSCompositor(
         *video_frame_compositor_task_runner_, FROM_HERE,
         CrossThreadBindOnce(&WebMediaPlayerMSCompositor::InitializeSubmitter,
                             weak_ptr_factory_.GetWeakPtr()));
-    update_submission_state_callback_ = media::BindToLoop(
+    update_submission_state_callback_ = base::BindPostTask(
         video_frame_compositor_task_runner_,
         ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
             &WebMediaPlayerMSCompositor::SetIsSurfaceVisible,

@@ -17,6 +17,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/bind_post_task.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
@@ -811,7 +812,7 @@ void VideoCaptureImpl::OnBufferReady(
                        media::BindToCurrentLoop(base::BindOnce(
                            &VideoCaptureImpl::OnVideoFrameReady,
                            weak_factory_.GetWeakPtr(), reference_time)),
-                       media::BindToLoop(
+                       base::BindPostTask(
                            main_task_runner_,
                            base::BindOnce(&VideoCaptureImpl::OnGpuContextLost,
                                           weak_factory_.GetWeakPtr()))));
