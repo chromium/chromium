@@ -4,7 +4,6 @@
 
 #include "ui/ozone/platform/wayland/host/gtk_ui_delegate_wayland.h"
 
-#include <gdk/gdkwayland.h>
 #include <gtk/gtk.h>
 
 #include <memory>
@@ -21,9 +20,15 @@
 #include "ui/ozone/platform/wayland/host/xdg_foreign_wrapper.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
+#if GTK_CHECK_VERSION(3, 90, 0)
+#include <gdk/wayland/gdkwayland.h>
+#else
+#include <gdk/gdkwayland.h>
+
 #define WEAK_GTK_FN(x) extern "C" __attribute__((weak)) decltype(x) x
 
 WEAK_GTK_FN(gdk_wayland_window_set_transient_for_exported);
+#endif
 
 namespace ui {
 
@@ -56,12 +61,14 @@ GdkWindow* GtkUiDelegateWayland::GetGdkWindow(
 bool GtkUiDelegateWayland::SetGdkWindowTransientFor(
     GdkWindow* window,
     gfx::AcceleratedWidget parent) {
+#if !GTK_CHECK_VERSION(3, 90, 0)
   if (!gdk_wayland_window_set_transient_for_exported) {
     LOG(WARNING) << "set_transient_for_exported not supported in GTK version "
                  << GTK_MAJOR_VERSION << '.' << GTK_MINOR_VERSION << '.'
                  << GTK_MICRO_VERSION;
     return false;
   }
+#endif
 
   auto* parent_window =
       connection_->wayland_window_manager()->GetWindow(parent);
@@ -94,8 +101,12 @@ int GtkUiDelegateWayland::GetGdkKeyState() {
 
 void GtkUiDelegateWayland::OnHandle(GdkWindow* window,
                                     const std::string& handle) {
-  gdk_wayland_window_set_transient_for_exported(
-      window, const_cast<char*>(handle.c_str()));
+  char* parent = const_cast<char*>(handle.c_str());
+#if GTK_CHECK_VERSION(3, 90, 0)
+  gdk_wayland_toplevel_set_transient_for_exported(GDK_TOPLEVEL(window), parent);
+#else
+  gdk_wayland_window_set_transient_for_exported(window, parent);
+#endif
 }
 
 }  // namespace ui
