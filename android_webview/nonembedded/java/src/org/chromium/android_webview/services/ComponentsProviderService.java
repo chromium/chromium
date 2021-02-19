@@ -4,7 +4,9 @@
 package org.chromium.android_webview.services;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -33,13 +35,14 @@ import javax.annotation.concurrent.GuardedBy;
 public class ComponentsProviderService extends Service {
     private static final String TAG = "AW_CPS";
     private static final String COMPONENTS_DIRECTORY_PATH = "components/cps";
+    private static final String SHARED_PREFERENCES_FILE_NAME = "ComponentsProviderService Versions";
     public static final int RESULT_OK = 0;
     public static final int RESULT_FAILED = 1;
     public static final String KEY_RESULT = "RESULT";
 
     // Maps componentIds to their version, which is also the relative path where they are installed.
-    // Components are installed in: <data-dir>/components/cps/<component-id>/<compontent-version>
-    // TODO(crbug.com/1176297): persist map
+    // Components are installed in: <data-dir>/components/cps/<component-id>/<compontent-version>.
+    // The map is persisted to memory and loaded when the service is created.
     @GuardedBy("mLock")
     private final Map<String, String> mComponentVersions = new HashMap<>();
     private File mDirectory;
@@ -76,19 +79,27 @@ public class ComponentsProviderService extends Service {
             return;
         }
 
-        synchronized (mLock) {
-            File[] files = mDirectory.listFiles();
-            if (files == null) {
-                return;
-            }
+        loadComponentVersionsMap();
+    }
 
-            for (File file : files) {
-                String componentId = file.getName();
-                String componentVersion = getComponentVersion(componentId);
-                mComponentVersions.put(componentId, componentVersion);
-                // TODO(crbug.com/1176297): load persisted map from memory
+    private void loadComponentVersionsMap() {
+        synchronized (mLock) {
+            SharedPreferences sharedPreferences =
+                    getSharedPreferences(SHARED_PREFERENCES_FILE_NAME, Context.MODE_PRIVATE);
+            for (String key : sharedPreferences.getAll().keySet()) {
+                String value = sharedPreferences.getString(key, null);
+                assert value != null : "Map values should never be null";
+                mComponentVersions.put(key, value);
                 // TODO(crbug.com/1176248): delete older versions if there are any
             }
+        }
+    }
+
+    private void saveComponent(String componentId, String version) {
+        synchronized (mLock) {
+            SharedPreferences sharedPreferences =
+                    getSharedPreferences(SHARED_PREFERENCES_FILE_NAME, Context.MODE_PRIVATE);
+            sharedPreferences.edit().putString(componentId, version).apply();
         }
     }
 
@@ -107,6 +118,10 @@ public class ComponentsProviderService extends Service {
             File versionDir = getComponentDirectory(componentId, componentVersion);
             if (!versionDir.exists()) {
                 Log.w(TAG, "Component " + componentId + " directory not found");
+                mComponentVersions.remove(componentId);
+                // Remove this component by setting its value to null, which is equivalent to
+                // removing that key from SharedPreferences.
+                saveComponent(componentId, null);
                 resultReceiver.send(RESULT_FAILED, null);
                 return;
             }
@@ -150,6 +165,7 @@ public class ComponentsProviderService extends Service {
             try {
                 Os.rename(installPath, targetDir.getAbsolutePath());
                 mComponentVersions.put(componentId, version);
+                saveComponent(componentId, version);
                 if (currentVersion != null) {
                     FileUtils.recursivelyDeleteFile(
                             getComponentDirectory(componentId, currentVersion), null);
@@ -191,15 +207,5 @@ public class ComponentsProviderService extends Service {
 
     private File getComponentDirectory(String componentId, String version) {
         return new File(mDirectory, componentId + "/" + version + "/");
-    }
-
-    private String getComponentVersion(String componentId) {
-        File[] versions = new File(mDirectory, componentId).listFiles();
-        if (versions == null || versions.length == 0) {
-            Log.w(TAG, "No versions found for component " + componentId);
-            return null;
-        }
-        assert versions.length == 1 : "More than one version found for component " + componentId;
-        return versions[0].getName();
     }
 }
