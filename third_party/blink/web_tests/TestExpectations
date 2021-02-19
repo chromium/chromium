@@ -5713,3 +5713,6 @@ crbug.com/1179857 [ Linux ] http/tests/inspector-protocol/dom/dom-getFrameOwner.
 crbug.com/1179905 [ Linux ] fast/multicol/nested-very-tall-inside-short-crash.html [ Pass Failure ]
 crbug.com/1179969 [ Mac ] external/wpt/service-workers/service-worker/claim-fetch.https.html [ Failure ]
 crbug.com/1179969 [ Mac ] virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/claim-fetch.https.html [ Failure ]
+
+# DevTools roll
+crbug.com/1134103 http/tests/devtools/coverage/decorations-after-script-formatter.js [ Skip ]
