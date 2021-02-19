@@ -516,8 +516,7 @@ void Display::SetOutputIsSecure(bool secure) {
 
 void Display::InitializeRenderer(bool enable_shared_images) {
   if (skia_output_surface_) {
-    auto resource_provider =
-        std::make_unique<DisplayResourceProviderSkia>(bitmap_manager_);
+    auto resource_provider = std::make_unique<DisplayResourceProviderSkia>();
     renderer_ = std::make_unique<SkiaRenderer>(
         &settings_, debug_settings_, output_surface_.get(),
         resource_provider.get(), overlay_processor_.get(),
@@ -525,8 +524,7 @@ void Display::InitializeRenderer(bool enable_shared_images) {
     resource_provider_ = std::move(resource_provider);
   } else if (output_surface_->context_provider()) {
     auto resource_provider = std::make_unique<DisplayResourceProviderGL>(
-        output_surface_->context_provider(), bitmap_manager_,
-        enable_shared_images);
+        output_surface_->context_provider(), enable_shared_images);
     renderer_ = std::make_unique<GLRenderer>(
         &settings_, debug_settings_, output_surface_.get(),
         resource_provider.get(), overlay_processor_.get(),
@@ -536,8 +534,7 @@ void Display::InitializeRenderer(bool enable_shared_images) {
     // We use DisplayResourceProviderGL because the actual resources are gpu
     // backed.
     auto resource_provider = std::make_unique<DisplayResourceProviderGL>(
-        output_surface_->context_provider(), bitmap_manager_,
-        enable_shared_images);
+        output_surface_->context_provider(), enable_shared_images);
     renderer_ = std::make_unique<NullRenderer>(
         &settings_, debug_settings_, output_surface_.get(),
         resource_provider.get(), overlay_processor_.get());

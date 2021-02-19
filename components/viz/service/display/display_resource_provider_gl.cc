@@ -47,12 +47,12 @@ class ScopedSetActiveTexture {
 
 DisplayResourceProviderGL::DisplayResourceProviderGL(
     ContextProvider* compositor_context_provider,
-    SharedBitmapManager* shared_bitmap_manager,
     bool enable_shared_images)
-    : DisplayResourceProvider(DisplayResourceProvider::kGpu,
-                              shared_bitmap_manager),
+    : DisplayResourceProvider(DisplayResourceProvider::kGpu),
       compositor_context_provider_(compositor_context_provider),
-      enable_shared_images_(enable_shared_images) {}
+      enable_shared_images_(enable_shared_images) {
+  DCHECK(compositor_context_provider_);
+}
 
 DisplayResourceProviderGL::~DisplayResourceProviderGL() {
   Destroy();

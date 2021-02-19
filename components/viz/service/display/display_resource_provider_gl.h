@@ -27,7 +27,6 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderGL
   // Android with GLRenderer doesn't support overlays with shared images
   // enabled. For everything else |enable_shared_images| is true.
   DisplayResourceProviderGL(ContextProvider* compositor_context_provider,
-                            SharedBitmapManager* shared_bitmap_manager,
                             bool enable_shared_images = true);
   ~DisplayResourceProviderGL() override;
 

@@ -26,11 +26,8 @@ class ScopedAllowGpuAccessForDisplayResourceProvider {
   gpu::ScopedAllowScheduleGpuTask allow_gpu_;
 };
 
-DisplayResourceProviderSkia::DisplayResourceProviderSkia(
-    SharedBitmapManager* shared_bitmap_manager)
-    : DisplayResourceProvider(DisplayResourceProvider::kGpu,
-
-                              shared_bitmap_manager) {}
+DisplayResourceProviderSkia::DisplayResourceProviderSkia()
+    : DisplayResourceProvider(DisplayResourceProvider::kGpu) {}
 
 DisplayResourceProviderSkia::~DisplayResourceProviderSkia() {
   Destroy();

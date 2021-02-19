@@ -27,7 +27,6 @@
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/khronos/GLES2/gl2.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -38,7 +37,6 @@ class ColorSpace;
 namespace viz {
 
 class ScopedAllowGpuAccessForDisplayResourceProvider;
-class SharedBitmapManager;
 
 // This class provides abstractions for receiving and using resources from other
 // modules/threads/processes. It abstracts away GL textures vs GpuMemoryBuffers
@@ -342,8 +340,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   using ChildMap = std::unordered_map<int, Child>;
   using ResourceMap = std::unordered_map<ResourceId, ChildResource>;
 
-  DisplayResourceProvider(Mode mode,
-                          SharedBitmapManager* shared_bitmap_manager);
+  explicit DisplayResourceProvider(Mode mode);
 
   ChildResource* GetResource(ResourceId id);
 
@@ -384,11 +381,9 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
 
   THREAD_CHECKER(thread_checker_);
   const Mode mode_;
-  SharedBitmapManager* const shared_bitmap_manager_;
 
   ResourceMap resources_;
   ChildMap children_;
-  base::flat_map<ResourceId, sk_sp<SkImage>> resource_sk_images_;
 
   base::flat_map<int, std::vector<ResourceId>> batched_returning_resources_;
   scoped_refptr<ResourceFence> current_read_lock_fence_;

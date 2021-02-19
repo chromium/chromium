@@ -40,7 +40,6 @@
 #include "components/viz/service/display/overlay_strategy_underlay_cast.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_gles2_interface.h"
-#include "components/viz/test/test_shared_bitmap_manager.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -597,9 +596,8 @@ class OverlayTest : public testing::Test {
     output_surface_ = std::make_unique<OverlayOutputSurface>(provider_);
     output_surface_->BindToClient(&client_);
 
-    shared_bitmap_manager_ = std::make_unique<TestSharedBitmapManager>();
-    resource_provider_ = std::make_unique<DisplayResourceProviderGL>(
-        provider_.get(), shared_bitmap_manager_.get());
+    resource_provider_ =
+        std::make_unique<DisplayResourceProviderGL>(provider_.get());
 
     child_provider_ = TestContextProvider::Create();
     child_provider_->BindToCurrentThread();
@@ -614,7 +612,6 @@ class OverlayTest : public testing::Test {
     child_resource_provider_ = nullptr;
     child_provider_ = nullptr;
     resource_provider_ = nullptr;
-    shared_bitmap_manager_ = nullptr;
     output_surface_ = nullptr;
     provider_ = nullptr;
   }
@@ -630,7 +627,6 @@ class OverlayTest : public testing::Test {
   scoped_refptr<TestContextProvider> provider_;
   std::unique_ptr<OverlayOutputSurface> output_surface_;
   cc::FakeOutputSurfaceClient client_;
-  std::unique_ptr<SharedBitmapManager> shared_bitmap_manager_;
   std::unique_ptr<DisplayResourceProvider> resource_provider_;
   scoped_refptr<TestContextProvider> child_provider_;
   std::unique_ptr<ClientResourceProvider> child_resource_provider_;
@@ -657,9 +653,8 @@ TEST(OverlayTest, OverlaysProcessorHasStrategy) {
   cc::FakeOutputSurfaceClient client;
   output_surface.BindToClient(&client);
 
-  auto shared_bitmap_manager = std::make_unique<TestSharedBitmapManager>();
-  auto resource_provider = std::make_unique<DisplayResourceProviderGL>(
-      provider.get(), shared_bitmap_manager.get());
+  auto resource_provider =
+      std::make_unique<DisplayResourceProviderGL>(provider.get());
 
   auto overlay_processor = std::make_unique<TestOverlayProcessor>();
   EXPECT_GE(2U, overlay_processor->GetStrategyCount());
@@ -3124,7 +3119,7 @@ class GLRendererWithOverlaysTest : public testing::Test {
     output_surface_ = std::make_unique<OverlayOutputSurface>(provider_);
     output_surface_->BindToClient(&output_surface_client_);
     resource_provider_ =
-        std::make_unique<DisplayResourceProviderGL>(provider_.get(), nullptr);
+        std::make_unique<DisplayResourceProviderGL>(provider_.get());
 
     provider_->support()->SetScheduleOverlayPlaneCallback(base::BindRepeating(
         &MockOverlayScheduler::Schedule, base::Unretained(&scheduler_)));

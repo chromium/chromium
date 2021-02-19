@@ -22,9 +22,7 @@
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/single_release_callback.h"
-#include "components/viz/service/display/shared_bitmap_manager.h"
 #include "components/viz/test/test_context_provider.h"
-#include "components/viz/test/test_shared_bitmap_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/khronos/GLES2/gl2.h"
@@ -76,11 +74,7 @@ class DisplayResourceProviderSkiaTest : public testing::Test {
     child_context_provider_ = TestContextProvider::Create();
     child_context_provider_->BindToCurrentThread();
 
-    // SharedBitmapManager may always be present, even if gpu compositing.
-    shared_bitmap_manager_ = std::make_unique<TestSharedBitmapManager>();
-
-    resource_provider_ = std::make_unique<DisplayResourceProviderSkia>(
-        shared_bitmap_manager_.get());
+    resource_provider_ = std::make_unique<DisplayResourceProviderSkia>();
 
     lock_set_.emplace(resource_provider_.get(), &client_);
 
@@ -122,7 +116,6 @@ class DisplayResourceProviderSkiaTest : public testing::Test {
   scoped_refptr<TestContextProvider> child_context_provider_;
   std::unique_ptr<DisplayResourceProviderSkia> resource_provider_;
   std::unique_ptr<ClientResourceProvider> child_resource_provider_;
-  std::unique_ptr<TestSharedBitmapManager> shared_bitmap_manager_;
   testing::NiceMock<MockExternalUseClient> client_;
   base::Optional<DisplayResourceProviderSkia::LockSetForExternalUse> lock_set_;
 };

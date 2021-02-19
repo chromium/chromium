@@ -267,7 +267,6 @@ void PixelTest::SetUpGLWithoutRenderer(
       std::move(context_provider), output_surface_origin);
   output_surface_->BindToClient(output_surface_client_.get());
 
-  shared_bitmap_manager_ = std::make_unique<viz::TestSharedBitmapManager>();
   child_context_provider_ =
       base::MakeRefCounted<viz::TestInProcessContextProvider>(
           /*enable_gpu_rasterization=*/false,
@@ -280,7 +279,7 @@ void PixelTest::SetUpGLWithoutRenderer(
 void PixelTest::SetUpGLRenderer(gfx::SurfaceOrigin output_surface_origin) {
   SetUpGLWithoutRenderer(output_surface_origin);
   auto resource_provider = std::make_unique<viz::DisplayResourceProviderGL>(
-      output_surface_->context_provider(), shared_bitmap_manager_.get());
+      output_surface_->context_provider());
   renderer_ = std::make_unique<viz::GLRenderer>(
       &renderer_settings_, &debug_settings_, output_surface_.get(),
       resource_provider.get(), nullptr, base::ThreadTaskRunnerHandle::Get());
@@ -304,8 +303,7 @@ void PixelTest::SetUpSkiaRenderer(gfx::SurfaceOrigin output_surface_origin) {
   output_surface_->BindToClient(output_surface_client_.get());
   static_cast<viz::SkiaOutputSurfaceImpl*>(output_surface_.get())
       ->SetCapabilitiesForTesting(output_surface_origin);
-  auto resource_provider = std::make_unique<viz::DisplayResourceProviderSkia>(
-      /*shared_bitmap_manager=*/nullptr);
+  auto resource_provider = std::make_unique<viz::DisplayResourceProviderSkia>();
   renderer_ = std::make_unique<viz::SkiaRenderer>(
       &renderer_settings_, &debug_settings_, output_surface_.get(),
       resource_provider.get(), nullptr,

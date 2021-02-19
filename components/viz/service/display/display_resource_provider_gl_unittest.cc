@@ -22,10 +22,8 @@
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/single_release_callback.h"
-#include "components/viz/service/display/shared_bitmap_manager.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_gles2_interface.h"
-#include "components/viz/test/test_shared_bitmap_manager.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -96,11 +94,8 @@ class DisplayResourceProviderGLTest : public testing::Test {
         ->set_support_texture_format_bgra8888(true);
     child_context_provider_->BindToCurrentThread();
 
-    // SharedBitmapManager may always be present, even if gpu compositing.
-    shared_bitmap_manager_ = std::make_unique<TestSharedBitmapManager>();
-
-    resource_provider_ = std::make_unique<DisplayResourceProviderGL>(
-        context_provider_.get(), shared_bitmap_manager_.get());
+    resource_provider_ =
+        std::make_unique<DisplayResourceProviderGL>(context_provider_.get());
 
     child_resource_provider_ = std::make_unique<ClientResourceProvider>();
   }
@@ -169,7 +164,6 @@ class DisplayResourceProviderGLTest : public testing::Test {
   scoped_refptr<TestContextProvider> child_context_provider_;
   std::unique_ptr<DisplayResourceProviderGL> resource_provider_;
   std::unique_ptr<ClientResourceProvider> child_resource_provider_;
-  std::unique_ptr<TestSharedBitmapManager> shared_bitmap_manager_;
 };
 
 TEST_F(DisplayResourceProviderGLTest, ReadLockCountStopsReturnToChildOrDelete) {
@@ -537,16 +531,14 @@ class TextureStateTrackingGLES2Interface : public TestGLES2Interface {
 
 class ResourceProviderTestImportedResourceGLFilters {
  public:
-  static void RunTest(TestSharedBitmapManager* shared_bitmap_manager,
-                      bool mailbox_nearest_neighbor,
-                      GLenum sampler_filter) {
+  static void RunTest(bool mailbox_nearest_neighbor, GLenum sampler_filter) {
     auto gl_owned = std::make_unique<TextureStateTrackingGLES2Interface>();
     TextureStateTrackingGLES2Interface* gl = gl_owned.get();
     auto context_provider = TestContextProvider::Create(std::move(gl_owned));
     context_provider->BindToCurrentThread();
 
-    auto resource_provider = std::make_unique<DisplayResourceProviderGL>(
-        context_provider.get(), shared_bitmap_manager);
+    auto resource_provider =
+        std::make_unique<DisplayResourceProviderGL>(context_provider.get());
 
     auto child_gl_owned =
         std::make_unique<TextureStateTrackingGLES2Interface>();
@@ -648,23 +640,19 @@ class ResourceProviderTestImportedResourceGLFilters {
 };
 
 TEST_F(DisplayResourceProviderGLTest, ReceiveGLTexture2D_LinearToLinear) {
-  ResourceProviderTestImportedResourceGLFilters::RunTest(
-      shared_bitmap_manager_.get(), false, GL_LINEAR);
+  ResourceProviderTestImportedResourceGLFilters::RunTest(false, GL_LINEAR);
 }
 
 TEST_F(DisplayResourceProviderGLTest, ReceiveGLTexture2D_NearestToNearest) {
-  ResourceProviderTestImportedResourceGLFilters::RunTest(
-      shared_bitmap_manager_.get(), true, GL_NEAREST);
+  ResourceProviderTestImportedResourceGLFilters::RunTest(true, GL_NEAREST);
 }
 
 TEST_F(DisplayResourceProviderGLTest, ReceiveGLTexture2D_NearestToLinear) {
-  ResourceProviderTestImportedResourceGLFilters::RunTest(
-      shared_bitmap_manager_.get(), true, GL_LINEAR);
+  ResourceProviderTestImportedResourceGLFilters::RunTest(true, GL_LINEAR);
 }
 
 TEST_F(DisplayResourceProviderGLTest, ReceiveGLTexture2D_LinearToNearest) {
-  ResourceProviderTestImportedResourceGLFilters::RunTest(
-      shared_bitmap_manager_.get(), false, GL_NEAREST);
+  ResourceProviderTestImportedResourceGLFilters::RunTest(false, GL_NEAREST);
 }
 
 TEST_F(DisplayResourceProviderGLTest, ReceiveGLTextureExternalOES) {
@@ -673,8 +661,8 @@ TEST_F(DisplayResourceProviderGLTest, ReceiveGLTextureExternalOES) {
   auto context_provider = TestContextProvider::Create(std::move(gl_owned));
   context_provider->BindToCurrentThread();
 
-  auto resource_provider = std::make_unique<DisplayResourceProviderGL>(
-      context_provider.get(), shared_bitmap_manager_.get());
+  auto resource_provider =
+      std::make_unique<DisplayResourceProviderGL>(context_provider.get());
 
   auto child_gl_owned = std::make_unique<TextureStateTrackingGLES2Interface>();
   TextureStateTrackingGLES2Interface* child_gl = child_gl_owned.get();
@@ -763,8 +751,8 @@ TEST_F(DisplayResourceProviderGLTest, WaitSyncTokenIfNeeded) {
   auto context_provider = TestContextProvider::Create(std::move(gl_owned));
   context_provider->BindToCurrentThread();
 
-  auto resource_provider = std::make_unique<DisplayResourceProviderGL>(
-      context_provider.get(), shared_bitmap_manager_.get());
+  auto resource_provider =
+      std::make_unique<DisplayResourceProviderGL>(context_provider.get());
 
   EXPECT_CALL(*gl, BindTexture(_, _)).Times(0);
   EXPECT_CALL(*gl, WaitSyncTokenCHROMIUM(_)).Times(0);

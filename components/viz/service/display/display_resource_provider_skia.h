@@ -18,8 +18,7 @@ namespace viz {
 class VIZ_SERVICE_EXPORT DisplayResourceProviderSkia
     : public DisplayResourceProvider {
  public:
-  explicit DisplayResourceProviderSkia(
-      SharedBitmapManager* shared_bitmap_manager);
+  DisplayResourceProviderSkia();
   ~DisplayResourceProviderSkia() override;
 
   // Maintains set of resources locked for external use by SkiaRenderer.

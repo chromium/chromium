@@ -14,8 +14,10 @@ namespace viz {
 
 DisplayResourceProviderSoftware::DisplayResourceProviderSoftware(
     SharedBitmapManager* shared_bitmap_manager)
-    : DisplayResourceProvider(DisplayResourceProvider::kSoftware,
-                              shared_bitmap_manager) {}
+    : DisplayResourceProvider(DisplayResourceProvider::kSoftware),
+      shared_bitmap_manager_(shared_bitmap_manager) {
+  DCHECK(shared_bitmap_manager);
+}
 
 DisplayResourceProviderSoftware::~DisplayResourceProviderSoftware() {
   Destroy();

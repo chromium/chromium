@@ -15,7 +15,6 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/resources/resource_sizes.h"
-#include "components/viz/service/display/shared_bitmap_manager.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "ui/gl/trace_util.h"
 
@@ -28,17 +27,10 @@ base::AtomicSequenceNumber g_next_display_resource_provider_tracing_id;
 
 }  // namespace
 
-DisplayResourceProvider::DisplayResourceProvider(
-    Mode mode,
-    SharedBitmapManager* shared_bitmap_manager)
+DisplayResourceProvider::DisplayResourceProvider(Mode mode)
     : mode_(mode),
-      shared_bitmap_manager_(shared_bitmap_manager),
       tracing_id_(g_next_display_resource_provider_tracing_id.GetNext()) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  // If no ContextProvider, then we are doing software compositing and a
-  // SharedBitmapManager must be given.
-  DCHECK(mode_ == kGpu || shared_bitmap_manager);
-
   // In certain cases, ThreadTaskRunnerHandle isn't set (Android Webview).
   // Don't register a dump provider in these cases.
   // TODO(crbug.com/517156): Get this working in Android Webview.
