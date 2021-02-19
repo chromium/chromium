@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.PopupWindow.OnDismissListener;
 import android.widget.TextView;
@@ -176,7 +177,7 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
             RectProvider anchorRectProvider, boolean isAccessibilityEnabled) {
         this(context, rootView, context.getString(stringId),
                 context.getString(accessibilityStringId), showArrow, anchorRectProvider,
-                /*imageDrawable=*/null, isAccessibilityEnabled);
+                /*imageDrawable=*/null, /*isRoundBubble=*/false, isAccessibilityEnabled);
     }
 
     /**
@@ -194,7 +195,7 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
             String accessibilityString, boolean showArrow, RectProvider anchorRectProvider,
             boolean isAccessibilityEnabled) {
         this(context, rootView, contentString, accessibilityString, showArrow, anchorRectProvider,
-                /*imageDrawable=*/null, isAccessibilityEnabled);
+                /*imageDrawable=*/null, /*isRoundBubble=*/false, isAccessibilityEnabled);
     }
 
     /**
@@ -203,19 +204,22 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
      * @param rootView The {@link View} to use for size calculations and for display.
      * @param stringId The id of the string resource for the text that should be shown.
      * @param accessibilityStringId The id of the string resource of the accessibility text.
-     * @param showArrow Whether the bubble should have an arrow.
+     * @param showArrow Whether the bubble should have an arrow. Should be false if {@code
+     *         isRoundBubble} is true.
      * @param anchorRectProvider The {@link RectProvider} used to anchor the text bubble.
      * @param imageDrawableId The resource id of the image to show at the start of the text bubble.
+     * @param isRoundBubble Whether the bubble should be round.
      * @param isAccessibilityEnabled Whether accessibility mode is enabled. Used to determine bubble
      *         text and dismiss UX.
      */
     public TextBubble(Context context, View rootView, @StringRes int stringId,
             @StringRes int accessibilityStringId, boolean showArrow,
             RectProvider anchorRectProvider, @DrawableRes int imageDrawableId,
-            boolean isAccessibilityEnabled) {
+            boolean isRoundBubble, boolean isAccessibilityEnabled) {
         this(context, rootView, context.getString(stringId),
                 context.getString(accessibilityStringId), showArrow, anchorRectProvider,
-                AppCompatResources.getDrawable(context, imageDrawableId), isAccessibilityEnabled);
+                AppCompatResources.getDrawable(context, imageDrawableId), isRoundBubble,
+                isAccessibilityEnabled);
     }
 
     /**
@@ -224,23 +228,26 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
      * @param rootView The {@link View} to use for size calculations and for display.
      * @param contentString The string for the text that should be shown.
      * @param accessibilityString The string shown in the bubble when accessibility is enabled.
-     * @param showArrow Whether the bubble should have an arrow.
+     * @param showArrow Whether the bubble should have an arrow. Should be false if {@code
+     *         isRoundBubble} is true.
      * @param anchorRectProvider The {@link RectProvider} used to anchor the text bubble.
      * @param imageDrawable The image to show at the start of the text bubble, or null if there
      *         should be no image.
+     * @param isRoundBubble Whether the bubble should be round.
      * @param isAccessibilityEnabled Whether accessibility mode is enabled. Used to determine bubble
      *         text and dismiss UX.
      */
     public TextBubble(Context context, View rootView, String contentString,
             String accessibilityString, boolean showArrow, RectProvider anchorRectProvider,
-            @Nullable Drawable imageDrawable, boolean isAccessibilityEnabled) {
+            @Nullable Drawable imageDrawable, boolean isRoundBubble,
+            boolean isAccessibilityEnabled) {
         mContext = context;
         mString = contentString;
         mAccessibilityString = accessibilityString;
         mImageDrawable = imageDrawable;
         mIsAccessibilityEnabled = isAccessibilityEnabled;
 
-        mBubbleDrawable = new ArrowBubbleDrawable(context);
+        mBubbleDrawable = new ArrowBubbleDrawable(context, isRoundBubble);
         mBubbleDrawable.setShowArrow(showArrow);
 
         mContentView = createContentView();
@@ -399,6 +406,7 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
         }
         View view =
                 LayoutInflater.from(mContext).inflate(R.layout.textbubble_text_with_image, null);
+        ((ImageView) view.findViewById(R.id.image)).setImageDrawable(mImageDrawable);
         setText(view.findViewById(R.id.message));
         return view;
     }
