@@ -187,6 +187,11 @@ crbug.com/1179722 [ Linux ] http/tests/devtools/console/console-string-format.js
 crbug.com/1179784 [ Linux ] http/tests/devtools/indexeddb/database-data.js [ Pass Failure ]
 crbug.com/1179784 [ Linux ] http/tests/devtools/indexeddb/transaction-promise-console.js [ Pass Failure ]
 
+# Sheriff 2021-02-18
+crbug.com/1180251 [ Linux ] virtual/wheel-event-regions/fast/events/platform-wheelevent-paging-xy-in-scrolling-div.html [ Pass Failure ]
+crbug.com/1180251 [ Linux ] http/tests/devtools/sources/debugger-pause/debugger-pause-on-promise-rejection.js [ Pass Failure ]
+crbug.com/1180251 [ Linux ] http/tests/devtools/sources/debugger-async/async-await/async-pause-on-exception.js [ Pass Failure ]
+
 ###########################################################################
 # WARNING: Memory leaks must be fixed asap. Sheriff is expected to revert #
 # culprit CLs instead of suppressing the leaks. If you have any question, #
