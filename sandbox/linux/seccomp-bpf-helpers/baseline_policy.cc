@@ -263,6 +263,12 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
     return RestrictKillTarget(current_pid, sysno);
   }
 
+  // memfd_create is considered a file system syscall which below will be denied
+  // with fs_denied_errno, we need memfd_create for Mojo shared memory channels.
+  if (sysno == __NR_memfd_create) {
+    return Allow();
+  }
+
   if (SyscallSets::IsFileSystem(sysno) ||
       SyscallSets::IsCurrentDirectory(sysno)) {
     return Error(fs_denied_errno);
