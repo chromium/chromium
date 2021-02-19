@@ -59,12 +59,13 @@ class BrowserInterfaceBrokerImpl : public blink::mojom::BrowserInterfaceBroker {
     }
   }
 
-  // Sets MojoBinderPolicyApplier to control when to bind interfaces.
+  // Sets MojoBinderPolicyApplier to control when to bind interfaces. Also,
+  // discards the existing policy applier, if any, dropping any deferred
+  // callbacks.
   void ApplyMojoBinderPolicies(
       std::unique_ptr<MojoBinderPolicyApplier> policy_applier) {
     DCHECK(blink::features::IsPrerender2Enabled());
     DCHECK(policy_applier);
-    DCHECK(!policy_applier_);
     policy_applier_ = std::move(policy_applier);
   }
 

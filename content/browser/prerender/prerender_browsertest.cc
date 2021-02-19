@@ -202,7 +202,6 @@ class PrerenderBrowserTest
     ignore_result(
         ExecJs(shell()->web_contents(), JsReplace("location = $1", url)));
     observer.Wait();
-    EXPECT_EQ(shell()->web_contents()->GetURL(), url);
   }
 
   GURL GetUrl(const std::string& path) {
@@ -262,6 +261,7 @@ class PrerenderBrowserTest
 
     // Activate the prerendered page.
     NavigateWithLocation(prerender_url);
+    EXPECT_EQ(shell()->web_contents()->GetURL(), prerender_url);
 
     // The activated page should no longer be in the prerendering state.
     RenderFrameHostImpl* navigated_render_frame_host =
@@ -314,6 +314,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LinkRelPrerender) {
 
   // Activate the prerendered page.
   NavigateWithLocation(kPrerenderingUrl);
+  EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl);
 
   // The prerender host should be consumed.
   EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
@@ -353,6 +354,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LinkRelPrerender_Multiple) {
 
   // Activate the prerendered page.
   NavigateWithLocation(kPrerenderingUrl2);
+  EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl2);
 
   // The prerender hosts should be consumed or destroyed for activation.
   EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl1), nullptr);
@@ -688,6 +690,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, MojoCapabilityControl) {
 
   // Activate the prerendered page.
   NavigateWithLocation(kPrerenderingUrl);
+  EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl);
   EXPECT_EQ(test_browser_client.GetDeferReceiverSetSize(), frames.size());
 
   SetBrowserClientForTesting(old_browser_client);
@@ -856,19 +859,177 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, CookieAccess) {
   PrerenderHost* prerender_host =
       registry.FindHostByUrlForTesting(kPrerenderingUrl);
   ASSERT_TRUE(prerender_host);
-  WebContents* prerender_contents = WebContents::FromRenderFrameHost(
-      prerender_host->GetPrerenderedMainFrameHostForTesting());
+  RenderFrameHostImpl* prerendered_render_frame_host =
+      prerender_host->GetPrerenderedMainFrameHostForTesting();
 
   // Verify the prerendered page can read the cookie.
-  EXPECT_EQ(initial_cookie, EvalJs(prerender_contents, "document.cookie"));
+  EXPECT_EQ(initial_cookie,
+            EvalJs(prerendered_render_frame_host, "document.cookie"));
 
   // Verify the prerendered page can update cookies.
-  EvalJsResult prerender_result = EvalJs(
-      prerender_contents, "document.cookie='" + prerender_cookie + "; path=/'");
+  EvalJsResult prerender_result =
+      EvalJs(prerendered_render_frame_host,
+             "document.cookie='" + prerender_cookie + "; path=/'");
   EXPECT_TRUE(prerender_result.error.empty()) << prerender_result.error;
   // Read the updated cookie from the initial page.
   EXPECT_EQ(initial_cookie + "; " + prerender_cookie,
             EvalJs(shell()->web_contents(), "document.cookie"));
+}
+
+// Test that a cross-site navigation from prerendering browser context will
+// load a new page and this page will later be activated on activating the
+// prerendered page.
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
+                       PrerenderedPageCrossSiteNavigation) {
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html");
+  const GURL kCrossSitePrerenderingUrl = GetCrossOriginUrl("/title1.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start a prerender.
+  AddPrerender(kPrerenderingUrl);
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  PrerenderHost* prerender_host =
+      registry.FindHostByUrlForTesting(kPrerenderingUrl);
+  ASSERT_TRUE(prerender_host);
+  RenderFrameHostImpl* prerendered_render_frame_host =
+      prerender_host->GetPrerenderedMainFrameHostForTesting();
+
+  EXPECT_TRUE(ExecJs(
+      prerendered_render_frame_host,
+      JsReplace("window.location.href = $1", kCrossSitePrerenderingUrl)));
+  prerender_host->WaitForLoadStopForTesting();
+
+  // The prerender host should be registered for the initial request URL, not
+  // the navigated cross-site URL.
+  EXPECT_TRUE(registry.FindHostByUrlForTesting(kPrerenderingUrl));
+  EXPECT_FALSE(registry.FindHostByUrlForTesting(kCrossSitePrerenderingUrl));
+
+  // Activate the prerendered page.
+  NavigateWithLocation(kPrerenderingUrl);
+
+  if (IsActivationDisabled()) {
+    // Activation is disabled. The navigation should issue a request again
+    // pointing to kPrerenderingUrl.
+    EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl);
+    EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 2);
+  } else {
+    // Activating the prerendered page should point to the navigated cross-site
+    // URL without issuing a request again.
+    EXPECT_EQ(shell()->web_contents()->GetURL(), kCrossSitePrerenderingUrl);
+    EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+  }
+
+  // The prerender host should be consumed.
+  EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
+}
+
+// Test that a cross-site navigation with subframes from prerendering browser
+// context will load a new page and this page will later be activated on
+// activating the prerendered page.
+//
+// This test covers the same scenario has PrerenderedPageCrossSiteNavigation,
+// except that the navigating URL has subframes. This shouldn't make any
+// difference as prerendering is a page level concept.
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
+                       PrerenderedPageCrossSiteNavigationWithSubframes) {
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html");
+  const GURL kCrossSitePrerenderingUrl =
+      GetCrossOriginUrl("/cross_site_iframe_factory.html?a(b)");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start a prerender.
+  AddPrerender(kPrerenderingUrl);
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  PrerenderHost* prerender_host =
+      registry.FindHostByUrlForTesting(kPrerenderingUrl);
+  ASSERT_TRUE(prerender_host);
+  RenderFrameHostImpl* prerendered_render_frame_host =
+      prerender_host->GetPrerenderedMainFrameHostForTesting();
+
+  // Navigate cross-site from the prerendered page.
+  EXPECT_TRUE(ExecJs(
+      prerendered_render_frame_host,
+      JsReplace("window.location.href = $1", kCrossSitePrerenderingUrl)));
+  prerender_host->WaitForLoadStopForTesting();
+
+  // The prerender host should be registered for the initial request URL, not
+  // the navigated cross-site URL.
+  EXPECT_TRUE(registry.FindHostByUrlForTesting(kPrerenderingUrl));
+  EXPECT_FALSE(registry.FindHostByUrlForTesting(kCrossSitePrerenderingUrl));
+
+  // Activate the prerendered page.
+  NavigateWithLocation(kPrerenderingUrl);
+
+  if (IsActivationDisabled()) {
+    // Activation is disabled. The navigation should issue a request again
+    // pointing to kPrerenderingUrl.
+    EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl);
+    EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 2);
+  } else {
+    // Activating the prerendered page should point to the navigated cross-site
+    // URL without issuing a request again.
+    EXPECT_EQ(shell()->web_contents()->GetURL(), kCrossSitePrerenderingUrl);
+    EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+  }
+
+  // The prerender host should be consumed.
+  EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
+}
+
+// Test that a same-site navigation from prerendering browser context will
+// load a new page and this page will later be activated on activating the
+// prerendered page.
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
+                       PrerenderedPageSameSiteNavigation) {
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html");
+  const GURL kSameSitePrerenderingUrl = GetUrl("/title1.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start a prerender.
+  AddPrerender(kPrerenderingUrl);
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  PrerenderHost* prerender_host =
+      registry.FindHostByUrlForTesting(kPrerenderingUrl);
+  ASSERT_TRUE(prerender_host);
+  RenderFrameHostImpl* prerendered_render_frame_host =
+      prerender_host->GetPrerenderedMainFrameHostForTesting();
+
+  // Navigate same-site from the prerendered page.
+  EXPECT_TRUE(
+      ExecJs(prerendered_render_frame_host,
+             JsReplace("window.location.href = $1", kSameSitePrerenderingUrl)));
+  prerender_host->WaitForLoadStopForTesting();
+
+  // The prerender host should be registered for the initial request URL, not
+  // the navigated same-site URL.
+  EXPECT_TRUE(registry.FindHostByUrlForTesting(kPrerenderingUrl));
+  EXPECT_FALSE(registry.FindHostByUrlForTesting(kSameSitePrerenderingUrl));
+
+  // Activate the prerendered page.
+  NavigateWithLocation(kPrerenderingUrl);
+  if (IsActivationDisabled()) {
+    // Activation is disabled. The navigation should issue a request again
+    // pointing to kPrerenderingUrl.
+    EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl);
+    EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 2);
+  } else {
+    // Activating the prerendered page should point to the navigated same-site
+    // URL without issuing a request again.
+    EXPECT_EQ(shell()->web_contents()->GetURL(), kSameSitePrerenderingUrl);
+    EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+  }
+
+  // The prerender host should be consumed.
+  EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 }
 
 // Tests that prerendering pages can access local storage.
@@ -892,17 +1053,17 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LocalStorageAccess) {
   PrerenderHost* prerender_host =
       registry.FindHostByUrlForTesting(kPrerenderingUrl);
   ASSERT_TRUE(prerender_host);
-  WebContents* prerender_contents = WebContents::FromRenderFrameHost(
-      prerender_host->GetPrerenderedMainFrameHostForTesting());
+  RenderFrameHostImpl* prerendered_render_frame_host =
+      prerender_host->GetPrerenderedMainFrameHostForTesting();
 
   // Verify the prerendered page can read the item that the initial page wrote.
   EXPECT_EQ(initial_value,
-            EvalJs(prerender_contents,
+            EvalJs(prerendered_render_frame_host,
                    JsReplace("window.localStorage.getItem($1)", key)));
 
   // Verify the prerendered page can update local storage.
   EvalJsResult prerender_result = EvalJs(
-      prerender_contents,
+      prerendered_render_frame_host,
       JsReplace("window.localStorage.setItem($1, $2)", key, prerender_value));
   EXPECT_TRUE(prerender_result.error.empty()) << prerender_result.error;
   // Read the updated item value from the initial page.
