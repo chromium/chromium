@@ -35,7 +35,9 @@
     `);
 
   function dumFlexHighlight(id) {
-    return new Promise(resolve => ElementsTestRunner.dumpInspectorHighlightJSON(id, resolve));
+    return new Promise(resolve => ElementsTestRunner.dumpInspectorHighlightJSON(id,
+      ['flexItemInfo'],
+      resolve));
   }
 
   await dumFlexHighlight('fixed-flex-basis');
