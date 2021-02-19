@@ -404,15 +404,6 @@ shared_library("test_shared_library") {
   deps = [ ":native_library_test_utils" ]
 }
 
-static_library("run_all_base_unittests") {
-  # Only targets in base should depend on this, targets outside base
-  # should depend on run_all_unittests above.
-  visibility = [ "//base/*" ]
-  testonly = true
-  sources = [ "run_all_base_unittests.cc" ]
-  deps = [ ":test_support" ]
-}
-
 if (is_linux || is_chromeos) {
   source_set("fontconfig_util_linux") {
     sources = [

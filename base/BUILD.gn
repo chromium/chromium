@@ -3140,7 +3140,7 @@ if (build_base_unittests) {
       ":sanitizer_buildflags",
       "//base/allocator:buildflags",
       "//base/test:native_library_test_utils",
-      "//base/test:run_all_base_unittests",
+      "//base/test:run_all_unittests",
       "//base/test:test_support",
       "//base/third_party/dynamic_annotations",
       "//build:chromecast_buildflags",
