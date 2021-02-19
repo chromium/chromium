@@ -33,18 +33,13 @@
 
 #include "base/macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/rejected_promises.h"
-#include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 #include "v8/include/v8.h"
 
 namespace blink {
 
-class ScriptSourceCode;
 class WorkerOrWorkletGlobalScope;
 
 class CORE_EXPORT WorkerOrWorkletScriptController final
@@ -55,14 +50,6 @@ class CORE_EXPORT WorkerOrWorkletScriptController final
   void Dispose();
 
   bool IsExecutionForbidden() const;
-
-  // https://html.spec.whatwg.org/C/#run-a-classic-script
-  // Callers should enter ScriptState::Scope before calling this.
-  ScriptEvaluationResult EvaluateAndReturnValue(
-      const ScriptSourceCode&,
-      SanitizeScriptErrors sanitize_script_errors,
-      V8ScriptRunner::RethrowErrorsOption =
-          V8ScriptRunner::RethrowErrorsOption::DoNotRethrow());
 
   // Prevents future JavaScript execution.
   void ForbidExecution();
@@ -82,7 +69,6 @@ class CORE_EXPORT WorkerOrWorkletScriptController final
   // Disables `eval()` on JavaScript. This must be called before Evaluate().
   void DisableEval(const String&);
 
-  // Used by Inspector agents:
   ScriptState* GetScriptState() { return script_state_; }
 
   // Used by V8 bindings:
@@ -100,6 +86,7 @@ class CORE_EXPORT WorkerOrWorkletScriptController final
   bool IsContextInitialized() const {
     return script_state_ && !!script_state_->PerContextData();
   }
+  bool IsReadyToEvaluate() const { return is_ready_to_evaluate_; }
 
  private:
   void DisableEvalInternal(const String& error_message);

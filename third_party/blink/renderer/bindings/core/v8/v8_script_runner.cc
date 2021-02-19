@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_initializer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -46,8 +47,10 @@
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/module_script.h"
+#include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
@@ -376,27 +379,45 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::RunCompiledScript(
 }
 
 ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
-    v8::Isolate* isolate,
     ScriptState* script_state,
-    ExecutionContext* execution_context,
-    const ScriptSourceCode& source,
-    const KURL& base_url,
-    SanitizeScriptErrors sanitize_script_errors,
-    const ScriptFetchOptions& fetch_options,
+    ClassicScript* classic_script,
     ExecuteScriptPolicy policy,
     RethrowErrorsOption rethrow_errors) {
-  DCHECK_EQ(isolate, script_state->GetIsolate());
+  if (!script_state)
+    return ScriptEvaluationResult::FromClassicNotRun();
+
+  // |script_state->GetContext()| must be initialized here already, typically
+  // due to a WindowProxy() call inside ToScriptState*() that is used to get the
+  // ScriptState.
+
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  DCHECK(execution_context->IsContextThread());
 
   if (policy == ExecuteScriptPolicy::kDoNotExecuteScriptWhenScriptsDisabled &&
       !execution_context->CanExecuteScripts(kAboutToExecuteScript)) {
     return ScriptEvaluationResult::FromClassicNotRun();
   }
 
+  v8::Isolate* isolate = script_state->GetIsolate();
+  const ScriptSourceCode& source = classic_script->GetScriptSourceCode();
+  const SanitizeScriptErrors sanitize_script_errors =
+      classic_script->GetSanitizeScriptErrors();
+
   LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(execution_context);
+  WorkerOrWorkletGlobalScope* worker_or_worklet_global_scope =
+      DynamicTo<WorkerOrWorkletGlobalScope>(execution_context);
   LocalFrame* frame = window ? window->GetFrame() : nullptr;
 
   if (window && window->document()->IsInitialEmptyDocument()) {
     window->GetFrame()->Loader().DidAccessInitialDocument();
+  } else if (worker_or_worklet_global_scope) {
+    DCHECK_EQ(
+        script_state,
+        worker_or_worklet_global_scope->ScriptController()->GetScriptState());
+    DCHECK(worker_or_worklet_global_scope->ScriptController()
+               ->IsContextInitialized());
+    DCHECK(worker_or_worklet_global_scope->ScriptController()
+               ->IsReadyToEvaluate());
   }
 
   v8::Context::Scope scope(script_state->GetContext());
@@ -421,6 +442,7 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
     // Omit storing base URL if it is same as source URL.
     // Note: This improves chance of getting into a fast path in
     //       ReferrerScriptInfo::ToV8HostDefinedOptions.
+    const KURL base_url = classic_script->BaseURL();
     KURL stored_base_url = (base_url == source.Url()) ? KURL() : base_url;
 
     // TODO(hiroshige): Remove this code and related use counters once the
@@ -441,8 +463,8 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
           break;
       }
     }
-    const ReferrerScriptInfo referrer_info(stored_base_url, fetch_options,
-                                           base_url_source);
+    const ReferrerScriptInfo referrer_info(
+        stored_base_url, classic_script->FetchOptions(), base_url_source);
 
     v8::Local<v8::Script> script;
 
@@ -468,6 +490,8 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
     // TODO(crbug/1114601): Investigate whether to check CanContinue() in other
     // script evaluation code paths.
     if (!try_catch.CanContinue()) {
+      if (worker_or_worklet_global_scope)
+        worker_or_worklet_global_scope->ScriptController()->ForbidExecution();
       return ScriptEvaluationResult::FromClassicAborted();
     }
 

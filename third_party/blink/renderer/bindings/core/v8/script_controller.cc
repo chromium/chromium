@@ -36,7 +36,6 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
@@ -78,26 +77,6 @@ void ScriptController::Trace(Visitor* visitor) const {
 void ScriptController::UpdateSecurityOrigin(
     const SecurityOrigin* security_origin) {
   window_proxy_manager_->UpdateSecurityOrigin(security_origin);
-}
-
-// TODO(crbug/1129743): Use ScriptEvaluationResult instead of
-// v8::Local<v8::Value> as the return type.
-v8::Local<v8::Value> ScriptController::ExecuteScriptAndReturnValue(
-    v8::Local<v8::Context> context,
-    const ScriptSourceCode& source,
-    const KURL& base_url,
-    SanitizeScriptErrors sanitize_script_errors,
-    const ScriptFetchOptions& fetch_options,
-    ExecuteScriptPolicy policy) {
-  ScriptEvaluationResult result = V8ScriptRunner::CompileAndRunScript(
-      GetIsolate(), ScriptState::From(context), window_.Get(), source, base_url,
-      sanitize_script_errors, fetch_options, policy,
-      V8ScriptRunner::RethrowErrorsOption::DoNotRethrow());
-
-  if (result.GetResultType() == ScriptEvaluationResult::ResultType::kSuccess)
-    return result.GetSuccessValue();
-
-  return v8::Local<v8::Value>();
 }
 
 TextPosition ScriptController::EventHandlerPosition() const {
@@ -269,25 +248,6 @@ void ScriptController::ExecuteJavaScriptURL(
                                                  CommitReason::kJavascriptUrl);
 }
 
-v8::Local<v8::Value> ScriptController::EvaluateScriptInMainWorld(
-    const ScriptSourceCode& source_code,
-    const KURL& base_url,
-    SanitizeScriptErrors sanitize_script_errors,
-    const ScriptFetchOptions& fetch_options,
-    ExecuteScriptPolicy policy) {
-  // |script_state->GetContext()| should be initialized already due to the
-  // WindowProxy() call inside ToScriptStateForMainWorld().
-  ScriptState* script_state = ToScriptStateForMainWorld(window_->GetFrame());
-  if (!script_state) {
-    return v8::Local<v8::Value>();
-  }
-  DCHECK_EQ(script_state->GetIsolate(), GetIsolate());
-
-  return ExecuteScriptAndReturnValue(script_state->GetContext(), source_code,
-                                     base_url, sanitize_script_errors,
-                                     fetch_options, policy);
-}
-
 v8::Local<v8::Value> ScriptController::EvaluateMethodInMainWorld(
     v8::Local<v8::Function> function,
     v8::Local<v8::Value> receiver,
@@ -333,29 +293,6 @@ bool ScriptController::CanExecuteScript(ExecuteScriptPolicy policy) {
     window_->GetFrame()->Loader().DidAccessInitialDocument();
 
   return true;
-}
-
-v8::Local<v8::Value> ScriptController::ExecuteScriptInIsolatedWorld(
-    int32_t world_id,
-    const ScriptSourceCode& source,
-    const KURL& base_url,
-    SanitizeScriptErrors sanitize_script_errors) {
-  DCHECK_GT(world_id, 0);
-
-  ScriptState* script_state = ToScriptState(
-      window_, *DOMWrapperWorld::EnsureIsolatedWorld(GetIsolate(), world_id));
-  if (!script_state) {
-    return v8::Local<v8::Value>();
-  }
-
-  // TODO(dcheng): Context must always be initialized here, due to the call to
-  // WindowProxy() inside ToScriptState() above. Add a helper which makes that
-  // obvious?
-
-  return ExecuteScriptAndReturnValue(
-      script_state->GetContext(), source, base_url, sanitize_script_errors,
-      ScriptFetchOptions(),
-      ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
 }
 
 scoped_refptr<DOMWrapperWorld>

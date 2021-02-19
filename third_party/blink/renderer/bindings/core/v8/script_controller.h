@@ -34,14 +34,10 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_location_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy_manager.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
-#include "third_party/blink/renderer/platform/loader/fetch/script_fetch_options.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8.h"
@@ -49,10 +45,8 @@
 namespace blink {
 
 class DOMWrapperWorld;
-class ExecutionContext;
 class KURL;
 class LocalDOMWindow;
-class ScriptSourceCode;
 class SecurityOrigin;
 
 enum class ExecuteScriptPolicy;
@@ -74,37 +68,11 @@ class CORE_EXPORT ScriptController final
     return window_proxy_manager_->WindowProxy(world);
   }
 
-  v8::Local<v8::Value> ExecuteScriptAndReturnValue(v8::Local<v8::Context>,
-                                                   const ScriptSourceCode&,
-                                                   const KURL& base_url,
-                                                   SanitizeScriptErrors,
-                                                   const ScriptFetchOptions&,
-                                                   ExecuteScriptPolicy);
-
   v8::Local<v8::Value> EvaluateMethodInMainWorld(
       v8::Local<v8::Function> function,
       v8::Local<v8::Value> receiver,
       int argc,
       v8::Local<v8::Value> argv[]);
-
-  // Evaluate JavaScript in the main world.
-  v8::Local<v8::Value> EvaluateScriptInMainWorld(const ScriptSourceCode&,
-                                                 const KURL& base_url,
-                                                 SanitizeScriptErrors,
-                                                 const ScriptFetchOptions&,
-                                                 ExecuteScriptPolicy);
-
-  // Executes JavaScript in an isolated world. The script gets its own global
-  // scope, its own prototypes for intrinsic JavaScript objects (String, Array,
-  // and so-on), and its own wrappers for all DOM nodes and DOM constructors.
-  //
-  // If an isolated world with the specified ID already exists, it is reused.
-  // Otherwise, a new world is created.
-  v8::Local<v8::Value> ExecuteScriptInIsolatedWorld(
-      int32_t world_id,
-      const ScriptSourceCode&,
-      const KURL& base_url,
-      SanitizeScriptErrors sanitize_script_errors);
 
   // Executes a javascript url in the main world. |world_for_csp| denotes the
   // javascript world in which this navigation initiated and which should be

@@ -157,9 +157,11 @@ class AnimationWorkletGlobalScopeTest : public PageTestBase {
     DCHECK(isolate);
     v8::HandleScope scope(isolate);
 
+    ClassicScript* classic_script =
+        ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(script));
+
     ScriptEvaluationResult result =
-        global_scope->ScriptController()->EvaluateAndReturnValue(
-            ScriptSourceCode(script), SanitizeScriptErrors::kSanitize);
+        classic_script->RunScriptOnScriptStateAndReturnValue(script_state);
     DCHECK_EQ(result.GetResultType(),
               ScriptEvaluationResult::ResultType::kSuccess);
     return ToBoolean(isolate, result.GetSuccessValue(), ASSERT_NO_EXCEPTION);

@@ -39,13 +39,12 @@ class TextPosition;
 
 namespace blink {
 
+class ClassicScript;
 class ExecutionContext;
-class KURL;
 class ModuleScript;
 class ModuleScriptCreationParams;
 class ReferrerScriptInfo;
 class ScriptEvaluationResult;
-class ScriptFetchOptions;
 class ScriptSourceCode;
 class ScriptState;
 
@@ -123,13 +122,8 @@ class CORE_EXPORT V8ScriptRunner final {
       v8::ScriptCompiler::CompileOptions,
       v8::ScriptCompiler::NoCacheReason,
       const ReferrerScriptInfo&);
-  static ScriptEvaluationResult CompileAndRunScript(v8::Isolate*,
-                                                    ScriptState*,
-                                                    ExecutionContext*,
-                                                    const ScriptSourceCode&,
-                                                    const KURL&,
-                                                    SanitizeScriptErrors,
-                                                    const ScriptFetchOptions&,
+  static ScriptEvaluationResult CompileAndRunScript(ScriptState*,
+                                                    ClassicScript*,
                                                     ExecuteScriptPolicy,
                                                     RethrowErrorsOption);
   static v8::MaybeLocal<v8::Value> CompileAndRunInternalScript(
