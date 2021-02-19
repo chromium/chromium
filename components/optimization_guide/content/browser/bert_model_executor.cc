@@ -41,7 +41,7 @@ BertModelExecutor::BuildModelExecutionTask(base::MemoryMappedFile* model_file) {
   if (maybe_nl_classifier.ok())
     return std::move(maybe_nl_classifier.value());
   DLOG(ERROR) << "Unable to load BERT model: "
-              << maybe_nl_classifier.status().message();
+              << maybe_nl_classifier.status().ToString();
   return nullptr;
 }
 

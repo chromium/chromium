@@ -53,8 +53,7 @@ class BaseModelExecutor
         reinterpret_cast<const char*>(model_file->data()),
         model_file->length());
     if (!model_load_status.ok()) {
-      DLOG(ERROR) << "Failed to load model: "
-                  << static_cast<int>(model_load_status.code());
+      DLOG(ERROR) << "Failed to load model: " << model_load_status.ToString();
       return nullptr;
     }
 
@@ -63,7 +62,7 @@ class BaseModelExecutor
                                        /*num_threads=*/1);
     if (!interpreter_status.ok()) {
       DLOG(ERROR) << "Failed to initialize model interpreter: "
-                  << static_cast<int>(interpreter_status.code());
+                  << interpreter_status.ToString();
       return nullptr;
     }
 
