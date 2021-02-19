@@ -30,11 +30,23 @@
 #include "printing/print_job_constants.h"
 #include "printing/print_settings.h"
 #include "printing/printing_features.h"
+#include "printing/printing_utils.h"
 #include "printing/units.h"
 
 namespace printing {
 
 namespace {
+
+// We only support sending username for secure printers.
+const char kUsernamePlaceholder[] = "chronos";
+
+// We only support sending document name for secure printers.
+const char kDocumentNamePlaceholder[] = "-";
+
+bool IsUriInsecure(const base::StringPiece uri) {
+  return !base::StartsWith(uri, "ipps:") && !base::StartsWith(uri, "https:") &&
+         !base::StartsWith(uri, "usb:") && !base::StartsWith(uri, "ippusb:");
+}
 
 // Returns a new char buffer which is a null-terminated copy of |value|.  The
 // caller owns the returned string.
@@ -178,7 +190,7 @@ std::vector<ScopedCupsOption> SettingsToCupsOptions(
   options.push_back(
       ConstructOption(kIppColor,
                       GetIppColorModelForModel(settings.color())));  // color
-  options.push_back(ConstructOption(kIppDuplex, sides));         // duplexing
+  options.push_back(ConstructOption(kIppDuplex, sides));  // duplexing
   options.push_back(
       ConstructOption(kIppMedia,
                       settings.requested_media().vendor_id));  // paper size
@@ -241,6 +253,13 @@ std::unique_ptr<PrintingContext> PrintingContext::Create(Delegate* delegate) {
 PrintingContextChromeos::PrintingContextChromeos(Delegate* delegate)
     : PrintingContext(delegate),
       connection_(CupsConnection::Create(GURL(), HTTP_ENCRYPT_NEVER, true)),
+      send_user_info_(false) {}
+
+PrintingContextChromeos::PrintingContextChromeos(
+    Delegate* delegate,
+    std::unique_ptr<CupsConnection> connection)
+    : PrintingContext(delegate),
+      connection_(std::move(connection)),
       send_user_info_(false) {}
 
 PrintingContextChromeos::~PrintingContextChromeos() {
@@ -355,14 +374,12 @@ PrintingContext::Result PrintingContextChromeos::UpdatePrinterSettings(
   send_user_info_ = settings_->send_user_info();
   if (send_user_info_) {
     DCHECK(printer_);
-    std::string uri_string = printer_->GetUri();
-    const base::StringPiece uri(uri_string);
-    if (!base::StartsWith(uri, "ipps:") && !base::StartsWith(uri, "https:") &&
-        !base::StartsWith(uri, "usb:") && !base::StartsWith(uri, "ippusb:")) {
-      return OnError();
+    if (IsUriInsecure(printer_->GetUri())) {
+      username_ = kUsernamePlaceholder;
+    } else {
+      username_ = settings_->username();
     }
   }
-  username_ = send_user_info_ ? settings_->username() : std::string();
 
   return OK;
 }
@@ -388,8 +405,14 @@ PrintingContext::Result PrintingContextChromeos::NewDocument(
   in_print_job_ = true;
 
   std::string converted_name;
-  if (send_user_info_)
-    converted_name = base::UTF16ToUTF8(document_name);
+  if (send_user_info_) {
+    DCHECK(printer_);
+    if (IsUriInsecure(printer_->GetUri())) {
+      converted_name = kDocumentNamePlaceholder;
+    } else {
+      converted_name = base::UTF16ToUTF8(document_name);
+    }
+  }
 
   std::vector<cups_option_t> options;
   for (const ScopedCupsOption& option : cups_options_) {

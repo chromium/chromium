@@ -129,8 +129,6 @@ class CupsPrintersManagerImpl
     print_servers_manager_->AddObserver(this);
 
     user_printers_allowed_.Init(prefs::kUserPrintersAllowed, pref_service);
-    send_username_and_filename_.Init(
-        prefs::kPrintingSendUsernameAndFilenameEnabled, pref_service);
   }
 
   ~CupsPrintersManagerImpl() override = default;
@@ -144,12 +142,6 @@ class CupsPrintersManagerImpl
       LOG(WARNING) << "Attempting to retrieve printers when "
                       "UserPrintersAllowed is set to false";
       return {};
-    }
-
-    if (send_username_and_filename_.GetValue()) {
-      // If |send_username_and_filename_| is set, only return printers with a
-      // secure protocol over which we can send username and filename.
-      return printers_.GetSecurePrinters(printer_class);
     }
 
     // Without user data there is not need to filter out non-enterprise or
@@ -776,10 +768,6 @@ class CupsPrintersManagerImpl
 
   // Holds the current value of the pref |UserPrintersAllowed|.
   BooleanPrefMember user_printers_allowed_;
-
-  // Holds the current value of the pref
-  // |PrintingSendUsernameAndFilenameEnabled|.
-  BooleanPrefMember send_username_and_filename_;
 
   base::WeakPtrFactory<CupsPrintersManagerImpl> weak_ptr_factory_{this};
 };

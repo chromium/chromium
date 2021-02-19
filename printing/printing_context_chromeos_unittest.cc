@@ -6,12 +6,26 @@
 
 #include <string.h>
 
+#include "base/strings/utf_string_conversions.h"
 #include "printing/backend/cups_ipp_constants.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace printing {
 
 namespace {
+
+using ::testing::_;
+using ::testing::ByMove;
+using ::testing::DoAll;
+using ::testing::Return;
+using ::testing::SaveArg;
+
+constexpr char kPrinterName[] = "printer";
+
+constexpr char kUsername[] = "test user";
+
+constexpr char kDocumentName[] = "document name";
 
 const char* GetOptionValue(const std::vector<ScopedCupsOption>& options,
                            const char* option_name) {
@@ -29,17 +43,97 @@ const char* GetOptionValue(const std::vector<ScopedCupsOption>& options,
   return ret;
 }
 
+class MockCupsPrinter : public CupsPrinter {
+ public:
+  MOCK_CONST_METHOD0(is_default, bool());
+  MOCK_CONST_METHOD0(GetName, std::string());
+  MOCK_CONST_METHOD0(GetMakeAndModel, std::string());
+  MOCK_CONST_METHOD0(GetInfo, std::string());
+  MOCK_CONST_METHOD0(GetUri, std::string());
+  MOCK_CONST_METHOD0(EnsureDestInfo, bool());
+  MOCK_CONST_METHOD1(ToPrinterInfo, bool(PrinterBasicInfo* basic_info));
+  MOCK_METHOD4(CreateJob,
+               ipp_status_t(int* job_id,
+                            const std::string& title,
+                            const std::string& username,
+                            const std::vector<cups_option_t>& options));
+  MOCK_METHOD5(StartDocument,
+               bool(int job_id,
+                    const std::string& docname,
+                    bool last_doc,
+                    const std::string& username,
+                    const std::vector<cups_option_t>& options));
+  MOCK_METHOD1(StreamData, bool(const std::vector<char>& buffer));
+  MOCK_METHOD0(FinishDocument, bool());
+  MOCK_METHOD2(CloseJob, ipp_status_t(int job_id, const std::string& username));
+  MOCK_METHOD1(CancelJob, bool(int job_id));
+  MOCK_METHOD1(GetMediaMarginsByName,
+               CupsMediaMargins(const std::string& media_id));
+
+  MOCK_CONST_METHOD1(GetSupportedOptionValues,
+                     ipp_attribute_t*(const char* option_name));
+  MOCK_CONST_METHOD1(GetSupportedOptionValueStrings,
+                     std::vector<base::StringPiece>(const char* option_name));
+  MOCK_CONST_METHOD1(GetDefaultOptionValue,
+                     ipp_attribute_t*(const char* option_name));
+  MOCK_CONST_METHOD2(CheckOptionSupported,
+                     bool(const char* name, const char* value));
+};
+
+class MockCupsConnection : public CupsConnection {
+ public:
+  MOCK_METHOD0(GetDests, std::vector<std::unique_ptr<CupsPrinter>>());
+  MOCK_METHOD2(GetJobs,
+               bool(const std::vector<std::string>& printer_ids,
+                    std::vector<QueueStatus>* jobs));
+  MOCK_METHOD2(GetPrinterStatus,
+               bool(const std::string& printer_id,
+                    PrinterStatus* printer_status));
+  MOCK_CONST_METHOD0(server_name, std::string());
+  MOCK_CONST_METHOD0(last_error, int());
+
+  MOCK_METHOD1(GetPrinter,
+               std::unique_ptr<CupsPrinter>(const std::string& printer_name));
+};
+
 class TestPrintSettings : public PrintSettings {
  public:
   TestPrintSettings() { set_duplex_mode(mojom::DuplexMode::kSimplex); }
 };
 
-class PrintingContextTest : public testing::Test {
+class PrintingContextTest : public testing::Test,
+                            public PrintingContext::Delegate {
  public:
+  void SetDefaultSettings(bool send_user_info, const std::string& uri) {
+    auto unique_connection = std::make_unique<MockCupsConnection>();
+    auto* connection = unique_connection.get();
+    auto unique_printer = std::make_unique<MockCupsPrinter>();
+    printer_ = unique_printer.get();
+    EXPECT_CALL(*printer_, GetUri()).WillRepeatedly(Return(uri));
+    EXPECT_CALL(*connection, GetPrinter(kPrinterName))
+        .WillOnce(Return(ByMove(std::move(unique_printer))));
+    printing_context_ = std::make_unique<PrintingContextChromeos>(
+        this, std::move(unique_connection));
+    auto settings = std::make_unique<PrintSettings>();
+    settings->set_device_name(base::ASCIIToUTF16(kPrinterName));
+    settings->set_send_user_info(send_user_info);
+    settings->set_duplex_mode(mojom::DuplexMode::kLongEdge);
+    settings->set_username(kUsername);
+    printing_context_->UpdatePrintSettingsFromPOD(std::move(settings));
+  }
+
   const char* Get(const char* name) const {
     return GetOptionValue(SettingsToCupsOptions(settings_), name);
   }
+
   TestPrintSettings settings_;
+
+  // PrintingContext::Delegate methods.
+  gfx::NativeView GetParentView() override { return nullptr; }
+  std::string GetAppLocale() override { return std::string(); }
+
+  std::unique_ptr<PrintingContextChromeos> printing_context_;
+  MockCupsPrinter* printer_;
 };
 
 TEST_F(PrintingContextTest, SettingsToCupsOptions_Color) {
@@ -92,6 +186,81 @@ TEST_F(PrintingContextTest, SettingsToCupsOptions_Resolution) {
   EXPECT_STREQ("600dpi", Get(kIppResolution));
   settings_.set_dpi_xy(600, 1200);
   EXPECT_STREQ("600x1200dpi", Get(kIppResolution));
+}
+
+TEST_F(PrintingContextTest, SettingsToCupsOptions_SendUserInfo_Secure) {
+  std::string uri = "ipps://test-uri";
+  ipp_status_t status = ipp_status_t::IPP_STATUS_OK;
+  base::string16 document_name = base::ASCIIToUTF16(kDocumentName);
+  SetDefaultSettings(true, uri);
+  std::string create_job_document_name;
+  std::string create_job_username;
+  std::string start_document_document_name;
+  std::string start_document_username;
+  EXPECT_CALL(*printer_, CreateJob)
+      .WillOnce(DoAll(SaveArg<1>(&create_job_document_name),
+                      SaveArg<2>(&create_job_username), Return(status)));
+  EXPECT_CALL(*printer_, StartDocument)
+      .WillOnce(DoAll(SaveArg<1>(&start_document_document_name),
+                      SaveArg<3>(&start_document_username), Return(true)));
+
+  printing_context_->NewDocument(document_name);
+
+  EXPECT_EQ(create_job_document_name, kDocumentName);
+  EXPECT_EQ(start_document_document_name, kDocumentName);
+  EXPECT_EQ(create_job_username, kUsername);
+  EXPECT_EQ(start_document_username, kUsername);
+}
+
+TEST_F(PrintingContextTest, SettingsToCupsOptions_SendUserInfo_Insecure) {
+  std::string uri = "ipp://test-uri";
+  ipp_status_t status = ipp_status_t::IPP_STATUS_OK;
+  base::string16 document_name = base::ASCIIToUTF16(kDocumentName);
+  std::string default_username = "chronos";
+  std::string default_document_name = "-";
+  SetDefaultSettings(true, uri);
+  std::string create_job_document_name;
+  std::string create_job_username;
+  std::string start_document_document_name;
+  std::string start_document_username;
+  EXPECT_CALL(*printer_, CreateJob)
+      .WillOnce(DoAll(SaveArg<1>(&create_job_document_name),
+                      SaveArg<2>(&create_job_username), Return(status)));
+  EXPECT_CALL(*printer_, StartDocument)
+      .WillOnce(DoAll(SaveArg<1>(&start_document_document_name),
+                      SaveArg<3>(&start_document_username), Return(true)));
+
+  printing_context_->NewDocument(document_name);
+
+  EXPECT_EQ(create_job_document_name, default_document_name);
+  EXPECT_EQ(start_document_document_name, default_document_name);
+  EXPECT_EQ(create_job_username, default_username);
+  EXPECT_EQ(start_document_username, default_username);
+}
+
+TEST_F(PrintingContextTest, SettingsToCupsOptions_DoNotSendUserInfo) {
+  std::string uri = "ipps://test-uri";
+  ipp_status_t status = ipp_status_t::IPP_STATUS_OK;
+  base::string16 document_name = base::ASCIIToUTF16(kDocumentName);
+  std::string blank;
+  SetDefaultSettings(false, uri);
+  std::string create_job_document_name;
+  std::string create_job_username;
+  std::string start_document_document_name;
+  std::string start_document_username;
+  EXPECT_CALL(*printer_, CreateJob)
+      .WillOnce(DoAll(SaveArg<1>(&create_job_document_name),
+                      SaveArg<2>(&create_job_username), Return(status)));
+  EXPECT_CALL(*printer_, StartDocument)
+      .WillOnce(DoAll(SaveArg<1>(&start_document_document_name),
+                      SaveArg<3>(&start_document_username), Return(true)));
+
+  printing_context_->NewDocument(document_name);
+
+  EXPECT_EQ(create_job_document_name, blank);
+  EXPECT_EQ(start_document_document_name, blank);
+  EXPECT_EQ(create_job_username, blank);
+  EXPECT_EQ(start_document_username, blank);
 }
 
 }  // namespace
