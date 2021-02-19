@@ -13,21 +13,44 @@
 #include "android_webview/nonembedded/webview_apk_process.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/timer_update_scheduler.h"
 
 namespace android_webview {
 
+namespace {
+
+AwComponentUpdateService* g_aw_component_update_service_for_testing = nullptr;
+
+}  // namespace
+
 // static
 AwComponentUpdateService* AwComponentUpdateService::GetInstance() {
+  if (g_aw_component_update_service_for_testing) {
+    return g_aw_component_update_service_for_testing;
+  }
   static base::NoDestructor<AwComponentUpdateService> instance;
   return instance.get();
+}
+
+void SetAwComponentUpdateServiceForTesting(AwComponentUpdateService* service) {
+  g_aw_component_update_service_for_testing = service;
 }
 
 AwComponentUpdateService::AwComponentUpdateService() = default;
 
 AwComponentUpdateService::~AwComponentUpdateService() = default;
+
+bool AwComponentUpdateService::NotifyNewVersion(
+    const std::string& component_id,
+    const base::FilePath& install_dir,
+    const base::Version& version) {
+  // TODO(crbug.com/1171771) notify ComponentProviderService about the new
+  // version.
+  return false;
+}
 
 // Start ComponentUpdateService once.
 void AwComponentUpdateService::MaybeStartComponentUpdateService() {

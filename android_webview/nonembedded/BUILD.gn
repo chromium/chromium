@@ -117,6 +117,8 @@ android_library("services_java") {
 
 source_set("nonembedded") {
   sources = [
+    "component_updater/aw_component_installer_policy_delegate.cc",
+    "component_updater/aw_component_installer_policy_delegate.h",
     "component_updater/aw_component_update_service.cc",
     "component_updater/aw_component_update_service.h",
     "component_updater/aw_component_updater_configurator.cc",

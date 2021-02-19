@@ -505,8 +505,7 @@ test("android_webview_unittests") {
     "../browser/scoped_add_feature_flags_unittests.cc",
     "../browser/state_serializer_unittest.cc",
     "../lib/webview_tests.cc",
-
-    # TODO(crbug.com/1173887) move to nonembedded unit tests suite.
+    "../nonembedded/component_updater/aw_component_installer_policy_delegate_unittest.cc",
     "../nonembedded/component_updater/aw_component_updater_configurator_unittest.cc",
   ]
 
