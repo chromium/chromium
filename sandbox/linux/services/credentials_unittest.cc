@@ -147,7 +147,7 @@ SANDBOX_TEST(Credentials, CanDetectRoot) {
 
 // Disabled on ASAN because of crbug.com/451603.
 // Disabled on MSAN due to crbug.com/1180105
-SANDBOX_TEST(Credentials, DISABLE_ON_ASAN(DropFileSystemAccessIsSafe)) {
+SANDBOX_TEST(Credentials, DISABLE_ON_SANITIZERS(DropFileSystemAccessIsSafe)) {
   CHECK(Credentials::HasFileSystemAccess());
   CHECK(Credentials::DropAllCapabilities());
   // Probably missing kernel support.
@@ -254,7 +254,8 @@ void SignalHandler(int sig) {
 // verifies that these values are correct after DropFilesystemAccess.
 // Disabled on ASAN because of crbug.com/451603.
 // Disabled on MSAN due to crbug.com/1180105
-SANDBOX_TEST(Credentials, DISABLE_ON_ASAN(DropFileSystemAccessPreservesTLS)) {
+SANDBOX_TEST(Credentials,
+             DISABLE_ON_SANITIZERS(DropFileSystemAccessPreservesTLS)) {
   // Probably missing kernel support.
   if (!Credentials::MoveToNewUserNS()) return;
   CHECK(Credentials::DropFileSystemAccess(ProcUtil::OpenProc().get()));
