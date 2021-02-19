@@ -1127,7 +1127,6 @@ group("closure_compile") {
     ":pref_to_setting_metric_converter",
     ":route_origin_behavior",
     ":search_handler",
-    "localized_link:closure_compile",
   ]
 }
 
