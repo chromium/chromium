@@ -7,11 +7,18 @@
 
 #import <Foundation/Foundation.h>
 
+namespace safe_browsing {
+enum class WarningAction;
+}
+
 // Commands related to Password Protection.
 @protocol PasswordProtectionCommands
 
-// Shows the Password Protection warning with |warningText|.
-- (void)showPasswordProtectionWarning:(NSString*)warningText;
+// Shows the Password Protection warning with |warningText|. |completion| should
+// be called when the warning is dismissed with the user's |action|.
+- (void)showPasswordProtectionWarning:(NSString*)warningText
+                           completion:(void (^)(safe_browsing::WarningAction))
+                                          completion;
 
 @end
 

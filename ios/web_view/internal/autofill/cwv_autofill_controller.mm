@@ -665,7 +665,9 @@ showUnmaskPromptForCard:(const autofill::CreditCard&)creditCard
   }
 }
 
-- (void)showPasswordProtectionWarning:(NSString*)warningText {
+- (void)showPasswordProtectionWarning:(NSString*)warningText
+                           completion:(void (^)(safe_browsing::WarningAction))
+                                          completion {
   // No op.
 }
 

@@ -994,12 +994,14 @@
 
 #pragma mark - PasswordProtectionCommands
 
-- (void)showPasswordProtectionWarning:(NSString*)warningText {
+- (void)showPasswordProtectionWarning:(NSString*)warningText
+                           completion:(void (^)(safe_browsing::WarningAction))
+                                          completion {
   self.passwordProtectionCoordinator = [[PasswordProtectionCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
                      warningText:warningText];
-  [self.passwordProtectionCoordinator start];
+  [self.passwordProtectionCoordinator startWithCompletion:completion];
 }
 
 #pragma mark - PolicySignoutPromptCommands

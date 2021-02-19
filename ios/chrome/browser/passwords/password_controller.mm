@@ -342,8 +342,11 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
                                                            URL:URL];
 }
 
-- (void)showPasswordProtectionWarning:(NSString*)warningText {
-  [self.passwordProtectionDispatcher showPasswordProtectionWarning:warningText];
+- (void)showPasswordProtectionWarning:(NSString*)warningText
+                           completion:(void (^)(safe_browsing::WarningAction))
+                                          completion {
+  [self.passwordProtectionDispatcher showPasswordProtectionWarning:warningText
+                                                        completion:completion];
 }
 
 #pragma mark - Private methods

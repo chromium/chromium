@@ -4,8 +4,9 @@
 
 #import "ios/chrome/browser/ui/passwords/password_protection_coordinator.h"
 
+#include "base/check.h"
 #include "base/notreached.h"
-#include "components/password_manager/core/browser/ui/password_check_referrer.h"
+#include "components/safe_browsing/core/password_protection/metrics_util.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
@@ -24,6 +25,9 @@
 // The warning text to display.
 @property(nonatomic, copy) NSString* warningText;
 
+// The completion block.
+@property(nonatomic, copy) void (^completion)(safe_browsing::WarningAction);
+
 @end
 
 @implementation PasswordProtectionCoordinator
@@ -38,7 +42,9 @@
   return self;
 }
 
-- (void)start {
+- (void)startWithCompletion:(void (^)(safe_browsing::WarningAction))completion {
+  DCHECK(completion);
+  self.completion = completion;
   self.viewController = [[PasswordProtectionViewController alloc] init];
   self.viewController.subtitleString = self.warningText;
   self.viewController.actionHandler = self;
@@ -56,16 +62,17 @@
       dismissViewControllerAnimated:YES
                          completion:nil];
   self.viewController = nil;
-  [super stop];
 }
 
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertDismissAction {
+  self.completion(safe_browsing::WarningAction::CLOSE);
   [self stop];
 }
 
 - (void)confirmationAlertPrimaryAction {
+  self.completion(safe_browsing::WarningAction::CHANGE_PASSWORD);
   // Opening Password page will stop the presentation. No need to send |stop|.
   [self startPasswordCheck];
 }
@@ -83,8 +90,6 @@
 - (void)startPasswordCheck {
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
-  password_manager::LogPasswordCheckReferrer(
-      password_manager::PasswordCheckReferrer::kPhishGuardDialog);
   [handler showSavedPasswordsSettingsAndStartPasswordCheckFromViewController:
                self.baseViewController];
 }

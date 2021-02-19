@@ -25,6 +25,7 @@ source_set("passwords") {
     "//base",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/common",
+    "//components/safe_browsing/core/password_protection:password_protection_metrics_util",
     "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/main:public",

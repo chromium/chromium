@@ -9,6 +9,10 @@
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
+namespace safe_browsing {
+enum class WarningAction;
+}
+
 // Presents and stops the Password Protection feature.
 @interface PasswordProtectionCoordinator : ChromeCoordinator
 
@@ -19,6 +23,10 @@
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
+
+// Presents the password protection UI. |completion| should be called when the
+// UI is dismissed with the user's |action|.
+- (void)startWithCompletion:(void (^)(safe_browsing::WarningAction))completion;
 
 @end
 

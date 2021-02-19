@@ -24,8 +24,17 @@ class PasswordProtectionService : public PasswordProtectionServiceBase {
   using PasswordProtectionServiceBase::PasswordProtectionServiceBase;
 
  public:
+  // Callback invoked when user dismisses the password protection UI. |action|
+  // is the user action to dismiss the UI.
+  using WarningCompletionCallback =
+      base::OnceCallback<void(safe_browsing::WarningAction action)>;
+
+  // Callback invoked when the password protection UI should be shown.
+  // |warning_text| is the displayed text. |completion_callback| should be
+  // invoked when the user dismisses the UI.
   using ShowWarningCallback =
-      base::OnceCallback<void(const base::string16& warning_text)>;
+      base::OnceCallback<void(const base::string16& warning_text,
+                              WarningCompletionCallback completion_callback)>;
 
   virtual void MaybeStartProtectedPasswordEntryRequest(
       web::WebState* web_state,

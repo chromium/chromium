@@ -59,6 +59,7 @@ source_set("safe_browsing") {
     "//components/safe_browsing/core/db:database_manager",
     "//components/safe_browsing/core/db:v4_local_database_manager",
     "//components/safe_browsing/core/db:v4_protocol_manager_util",
+    "//components/safe_browsing/core/password_protection:password_protection_metrics_util",
     "//components/safe_browsing/core/realtime:url_lookup_service",
     "//components/safe_browsing/ios/browser:allow_list",
     "//components/safe_browsing/ios/password_protection",

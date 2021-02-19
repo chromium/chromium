@@ -9,9 +9,11 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
+#include "components/safe_browsing/core/password_protection/metrics_util.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #import "components/safe_browsing/ios/password_protection/password_protection_service.h"
 #include "components/sync/protocol/gaia_password_reuse.pb.h"
@@ -213,11 +215,21 @@ class ChromePasswordProtectionService
       safe_browsing::PasswordProtectionService::ShowWarningCallback
           show_warning_callback);
 
+  // Called when user interacts with password protection UIs.
+  void OnUserAction(web::WebState* web_state,
+                    safe_browsing::ReusedPasswordAccountType password_type,
+                    safe_browsing::WarningAction action);
+
  protected:
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
                            VerifySendsPingForAboutBlank);
 
  private:
+  // Returns true if the |web_state| is already showing a warning dialog.
+  bool IsModalWarningShowingInWebState(web::WebState* web_state);
+  // Removes all warning requests for |web_state|.
+  void RemoveWarningRequestsByWebState(web::WebState* web_state);
+
   password_manager::PasswordStore* GetStoreForReusedCredential(
       const password_manager::MatchingReusedCredential& reused_credential);
 
@@ -241,6 +253,8 @@ class ChromePasswordProtectionService
       show_warning_callbacks_;
 
   ChromeBrowserState* browser_state_;
+
+  base::WeakPtrFactory<ChromePasswordProtectionService> weak_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_SAFE_BROWSING_CHROME_PASSWORD_PROTECTION_SERVICE_H_

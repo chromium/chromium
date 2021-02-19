@@ -346,9 +346,14 @@ void IOSChromePasswordManagerClient::LogPasswordReuseDetectedEvent() {
 }
 
 void IOSChromePasswordManagerClient::NotifyUserPasswordProtectionWarning(
-    const base::string16& warning_text) {
+    const base::string16& warning_text,
+    base::OnceCallback<void(safe_browsing::WarningAction)> callback) {
+  __block auto block_callback = std::move(callback);
   [bridge_
-      showPasswordProtectionWarning:base::SysUTF16ToNSString(warning_text)];
+      showPasswordProtectionWarning:base::SysUTF16ToNSString(warning_text)
+                         completion:^(safe_browsing::WarningAction action) {
+                           std::move(block_callback).Run(action);
+                         }];
 }
 
 void IOSChromePasswordManagerClient::DidFinishNavigation(

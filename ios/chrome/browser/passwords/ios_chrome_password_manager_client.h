@@ -39,6 +39,10 @@ class PasswordFormManagerForUI;
 class PasswordManagerDriver;
 }
 
+namespace safe_browsing {
+enum class WarningAction;
+}
+
 namespace web {
 class NavigationContext;
 }
@@ -144,8 +148,11 @@ class IOSChromePasswordManagerClient
 
   void LogPasswordReuseDetectedEvent() override;
 
-  // Notifies user with password protection warning.
-  void NotifyUserPasswordProtectionWarning(const base::string16& warning_text);
+  // Shows the password protection UI. |warning_text| is the displayed text.
+  // |callback| is invoked when the user dismisses the UI.
+  void NotifyUserPasswordProtectionWarning(
+      const base::string16& warning_text,
+      base::OnceCallback<void(safe_browsing::WarningAction)> callback);
 
  private:
   // web::WebStateObserver:

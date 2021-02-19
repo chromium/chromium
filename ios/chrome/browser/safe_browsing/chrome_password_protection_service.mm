@@ -7,11 +7,15 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/ui/password_check_referrer.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
@@ -44,6 +48,8 @@
 #error "This file requires ARC support."
 #endif
 
+using base::RecordAction;
+using base::UserMetricsAction;
 using password_manager::metrics_util::PasswordType;
 using safe_browsing::LoginReputationClientRequest;
 using safe_browsing::LoginReputationClientResponse;
@@ -52,6 +58,7 @@ using safe_browsing::RequestOutcome;
 using safe_browsing::ReusedPasswordAccountType;
 using sync_pb::UserEventSpecifics;
 using safe_browsing::ReferrerChain;
+using safe_browsing::WarningAction;
 
 using InteractionResult = sync_pb::GaiaPasswordReuse::
     PasswordReuseDialogInteraction::InteractionResult;
@@ -137,6 +144,12 @@ void ChromePasswordProtectionService::ShowModalWarning(
     LoginReputationClientResponse::VerdictType verdict_type,
     const std::string& verdict_token,
     ReusedPasswordAccountType password_type) {
+  safe_browsing::PasswordProtectionRequestIOS* request_ios =
+      static_cast<safe_browsing::PasswordProtectionRequestIOS*>(request);
+  // Don't show warning again if there is already a modal warning showing.
+  if (IsModalWarningShowingInWebState(request_ios->web_state()))
+    return;
+
   auto callback = std::move(show_warning_callbacks_[request]);
   if (callback) {
     ReusedPasswordAccountType reused_password_account_type =
@@ -145,7 +158,11 @@ void ChromePasswordProtectionService::ShowModalWarning(
     std::vector<size_t> placeholder_offsets;
     const base::string16 warning_text = GetWarningDetailText(
         reused_password_account_type, &placeholder_offsets);
-    std::move(callback).Run(warning_text);
+    // Partial bind WebState and password_type.
+    auto completion_callback = base::BindOnce(
+        &ChromePasswordProtectionService::OnUserAction,
+        weak_factory_.GetWeakPtr(), request_ios->web_state(), password_type);
+    std::move(callback).Run(warning_text, std::move(completion_callback));
   }
 }
 
@@ -668,8 +685,59 @@ void ChromePasswordProtectionService::StartRequest(
           password_type, matching_reused_credentials, trigger_type,
           password_field_exists, this, GetRequestTimeoutInMS()));
   request->Start();
-  pending_requests_.insert(std::move(request));
   show_warning_callbacks_[request.get()] = std::move(show_warning_callback);
+  pending_requests_.insert(std::move(request));
+}
+
+void ChromePasswordProtectionService::OnUserAction(
+    web::WebState* web_state,
+    ReusedPasswordAccountType password_type,
+    WarningAction action) {
+  // Only SAVED_PASSWORD is supported in iOS.
+  DCHECK_EQ(ReusedPasswordAccountType::SAVED_PASSWORD,
+            password_type.account_type());
+  LogWarningAction(safe_browsing::WarningUIType::MODAL_DIALOG, action,
+                   password_type);
+  switch (action) {
+    case WarningAction::CHANGE_PASSWORD:
+      RecordAction(UserMetricsAction(
+          "PasswordProtection.ModalWarning.ChangePasswordButtonClicked"));
+      password_manager::LogPasswordCheckReferrer(
+          password_manager::PasswordCheckReferrer::kPhishGuardDialog);
+      break;
+    case WarningAction::CLOSE:
+      RecordAction(
+          UserMetricsAction("PasswordProtection.ModalWarning.CloseWarning"));
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+  RemoveWarningRequestsByWebState(web_state);
+}
+
+bool ChromePasswordProtectionService::IsModalWarningShowingInWebState(
+    web::WebState* web_state) {
+  for (const auto& request : warning_requests_) {
+    safe_browsing::PasswordProtectionRequestIOS* request_ios =
+        static_cast<safe_browsing::PasswordProtectionRequestIOS*>(
+            request.get());
+    if (request_ios->web_state() == web_state)
+      return true;
+  }
+  return false;
+}
+
+void ChromePasswordProtectionService::RemoveWarningRequestsByWebState(
+    web::WebState* web_state) {
+  for (auto it = warning_requests_.begin(); it != warning_requests_.end();) {
+    safe_browsing::PasswordProtectionRequestIOS* request_ios =
+        static_cast<safe_browsing::PasswordProtectionRequestIOS*>(it->get());
+    if (request_ios->web_state() == web_state)
+      it = warning_requests_.erase(it);
+    else
+      ++it;
+  }
 }
 
 password_manager::PasswordStore*
