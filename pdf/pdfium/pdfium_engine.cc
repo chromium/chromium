@@ -4010,7 +4010,11 @@ void PDFiumEngine::LoadDocumentAttachmentInfoList() {
   doc_attachment_info_list_.resize(attachment_count);
   for (int i = 0; i < attachment_count; ++i) {
     FPDF_ATTACHMENT attachment = FPDFDoc_GetAttachment(doc(), i);
-    DCHECK(attachment);
+
+    if (!attachment) {
+      doc_attachment_info_list_[i].is_readable = false;
+      continue;
+    }
 
     doc_attachment_info_list_[i].name = GetAttachmentName(attachment);
     doc_attachment_info_list_[i].creation_date =

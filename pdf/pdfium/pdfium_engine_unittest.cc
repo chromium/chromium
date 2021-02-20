@@ -312,7 +312,28 @@ TEST_F(PDFiumEngineTest, GetDocumentAttachments) {
   }
 }
 
-TEST_F(PDFiumEngineTest, DocumentWithInvalidAttachment) {
+TEST_F(PDFiumEngineTest, GetInvalidDocumentAttachment) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("invalid_attachment.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Test on a document with one invalid attachment, which can make
+  // FPDFDoc_GetAttachment() fail. This particular attachment is invalid due
+  // to its key value violating the `Limits` entry.
+  const std::vector<DocumentAttachmentInfo>& attachments =
+      engine->GetDocumentAttachmentInfoList();
+  ASSERT_EQ(1u, attachments.size());
+
+  const DocumentAttachmentInfo& attachment = attachments[0];
+  EXPECT_THAT(attachment.name, IsEmpty());
+  EXPECT_FALSE(attachment.is_readable);
+  EXPECT_EQ(0u, attachment.size_bytes);
+  EXPECT_THAT(attachment.creation_date, IsEmpty());
+  EXPECT_THAT(attachment.modified_date, IsEmpty());
+}
+
+TEST_F(PDFiumEngineTest, GetDocumentAttachmentWithInvalidData) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("embedded_attachments_invalid_data.pdf"));
