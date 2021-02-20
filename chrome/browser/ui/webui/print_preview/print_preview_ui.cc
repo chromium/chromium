@@ -100,8 +100,6 @@ const char kBasicPrintShortcut[] = "(Ctrl+Shift+P)";
 
 constexpr char kInvalidArgsForDidStartPreview[] =
     "Invalid arguments for DidStartPreview";
-constexpr char kInvalidArgsForDidGetDefaultPageLayout[] =
-    "Invalid arguments for DidGetDefaultPageLayout";
 constexpr char kInvalidPageNumberForDidPreviewPage[] =
     "Invalid page number for DidPreviewPage";
 constexpr char kInvalidPageCountForMetafileReadyForPrinting[] =
@@ -907,19 +905,23 @@ void PrintPreviewUI::DidGetDefaultPageLayout(
     const gfx::Rect& printable_area_in_points,
     bool has_custom_page_size_style,
     int32_t request_id) {
+  if (printable_area_in_points.width() <= 0 ||
+      printable_area_in_points.height() <= 0) {
+    NOTREACHED();
+    return;
+  }
+  // Save printable_area_in_points information for N-up conversion.
+  printable_area_ = printable_area_in_points;
+
   if (page_layout_in_points->margin_top < 0 ||
       page_layout_in_points->margin_left < 0 ||
       page_layout_in_points->margin_bottom < 0 ||
       page_layout_in_points->margin_right < 0 ||
       page_layout_in_points->content_width < 0 ||
-      page_layout_in_points->content_height < 0 ||
-      printable_area_in_points.width() <= 0 ||
-      printable_area_in_points.height() <= 0) {
-    receiver_.ReportBadMessage(kInvalidArgsForDidGetDefaultPageLayout);
+      page_layout_in_points->content_height < 0) {
+    // Even though it early returns here, it doesn't block printing the page.
     return;
   }
-  // Save printable_area_in_points information for N-up conversion.
-  printable_area_ = printable_area_in_points;
 
   base::DictionaryValue layout;
   layout.SetDouble(kSettingMarginTop, page_layout_in_points->margin_top);
