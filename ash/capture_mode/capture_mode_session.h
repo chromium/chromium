@@ -13,6 +13,7 @@
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/containers/flat_set.h"
 #include "base/optional.h"
+#include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_owner.h"
@@ -32,6 +33,7 @@ namespace ash {
 class CaptureModeBarView;
 class CaptureModeController;
 class CaptureModeSettingsView;
+class CaptureModeSessionFocusCycler;
 class CaptureWindowObserver;
 class WindowDimmer;
 
@@ -112,8 +114,10 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
                                uint32_t metrics) override;
 
  private:
+  friend class CaptureModeSessionFocusCycler;
   friend class CaptureModeSessionTestApi;
   class CursorSetter;
+  class ScopedA11yOverrideWindowSetter;
 
   // Gets the bounds of current window selected for |kWindow| capture source.
   gfx::Rect GetSelectedWindowBounds() const;
@@ -238,9 +242,10 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   void SelectDefaultRegion();
 
   // Updates the region either horizontally or vertically. Called when the arrow
-  // keys are pressed.
-  void UpdateRegionHorizontally(bool left, bool is_shift_down);
-  void UpdateRegionVertically(bool up, bool is_shift_down);
+  // keys are pressed. |event_flags| are the flags from the event that triggers
+  // these calls. Different modifiers will move the region more or less.
+  void UpdateRegionHorizontally(bool left, int event_flags);
+  void UpdateRegionVertically(bool up, int event_flags);
 
   // Returns true if the event is on a visible settings menu. This includes the
   // space between the capture bar and the menu.
@@ -321,16 +326,19 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // changed. Used for metrics collection.
   bool capture_source_changed_ = false;
 
-  // The current focused fine tune position. This changes as user tabs while a
-  // in capture region mode.
-  FineTunePosition focused_fine_tune_position_ = FineTunePosition::kNone;
-
   // The window which had input capture prior to entering the session. It may be
   // null if no such window existed.
   aura::Window* input_capture_window_ = nullptr;
 
   // False only when we end the session to start recording.
   bool a11y_alert_on_session_exit_ = true;
+
+  // The object which handles tab focus while in a capture session.
+  std::unique_ptr<CaptureModeSessionFocusCycler> focus_cycler_;
+
+  // Accessibility features will focus on the capture bar widget while this
+  // object is alive.
+  std::unique_ptr<ScopedA11yOverrideWindowSetter> scoped_a11y_overrider_;
 };
 
 }  // namespace ash

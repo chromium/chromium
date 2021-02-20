@@ -41,16 +41,16 @@ class ASH_EXPORT CaptureModeSettingsView : public views::View {
   CaptureModeSettingsView& operator=(const CaptureModeSettingsView&) = delete;
   ~CaptureModeSettingsView() override;
 
+  CaptureModeSettingsEntryView* microphone_view() const {
+    return microphone_view_;
+  }
+
   // Gets the ideal bounds in screen coordinates of the settings widget on
   // the given |capture_mode_bar_view|.
   static gfx::Rect GetBounds(CaptureModeBarView* capture_mode_bar_view);
 
   // Called when the settings change.
   void OnMicrophoneChanged(bool microphone_enabled);
-
-  CaptureModeSettingsEntryView* microphone_view_for_testing() const {
-    return microphone_view_;
-  }
 
  private:
   void OnMicrophoneToggled();

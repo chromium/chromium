@@ -57,6 +57,7 @@ class ASH_EXPORT CaptureModeBarView : public views::View {
     return capture_source_view_;
   }
   CaptureModeToggleButton* settings_button() const { return settings_button_; }
+  CaptureModeButton* close_button() const { return close_button_; }
 
   // Gets the ideal bounds in screen coordinates of the bar of widget on the
   // given |root| window.
@@ -68,8 +69,6 @@ class ASH_EXPORT CaptureModeBarView : public views::View {
 
   // Called when settings is toggled on or off.
   void SetSettingsMenuShown(bool shown);
-
-  CaptureModeButton* close_button_for_testing() const { return close_button_; }
 
  private:
   void OnSettingsButtonPressed();

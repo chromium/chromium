@@ -4,6 +4,7 @@
 
 #include "ash/capture_mode/capture_label_view.h"
 
+#include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -23,8 +24,10 @@
 #include "ui/gfx/transform_util.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/style/platform_style.h"
 
 namespace ash {
 
@@ -143,6 +146,7 @@ CaptureLabelView::CaptureLabelView(CaptureModeSession* capture_mode_session)
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kCaptureLabelRadius));
   layer()->SetBackgroundBlur(
       static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault));
+  layer()->SetBackdropFilterQuality(capture_mode::kBlurQuality);
 
   SkColor text_color = color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary);
@@ -280,11 +284,15 @@ bool CaptureLabelView::IsInCountDownAnimation() const {
 }
 
 void CaptureLabelView::Layout() {
-  label_button_->SetBoundsRect(GetLocalBounds());
-
   gfx::Rect label_bounds = GetLocalBounds();
+  label_button_->SetBoundsRect(label_bounds);
+
   label_bounds.ClampToCenteredSize(label_->GetPreferredSize());
   label_->SetBoundsRect(label_bounds);
+
+  // This is necessary to update the focus ring, which is a child view of
+  // |this|.
+  views::View::Layout();
 }
 
 gfx::Size CaptureLabelView::CalculatePreferredSize() const {
@@ -307,6 +315,20 @@ gfx::Size CaptureLabelView::CalculatePreferredSize() const {
   DCHECK(is_label_visible && !is_label_button_visible);
   return gfx::Size(label_->GetPreferredSize().width() + kCaptureLabelRadius * 2,
                    kCaptureLabelRadius * 2);
+}
+
+views::View* CaptureLabelView::GetView() {
+  return label_button_;
+}
+
+std::unique_ptr<views::HighlightPathGenerator>
+CaptureLabelView::CreatePathGenerator() {
+  // Regular focus rings are drawn outside the view's bounds. Since this view is
+  // the same size as its widget, inset by half the focus ring thickness to
+  // ensure the focus ring is drawn inside the widget bounds.
+  return std::make_unique<views::RoundRectHighlightPathGenerator>(
+      gfx::Insets(views::PlatformStyle::kFocusHaloThickness / 2),
+      kCaptureLabelRadius);
 }
 
 void CaptureLabelView::ScheduleCountDownAnimation() {

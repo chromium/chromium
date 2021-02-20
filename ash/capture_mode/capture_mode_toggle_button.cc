@@ -61,6 +61,10 @@ void CaptureModeToggleButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
                                           : ax::mojom::CheckedState::kFalse);
 }
 
+views::View* CaptureModeToggleButton::GetView() {
+  return this;
+}
+
 void CaptureModeToggleButton::SetIcon(const gfx::VectorIcon& icon) {
   auto* color_provider = AshColorProvider::Get();
   const SkColor normal_color = color_provider->GetContentLayerColor(

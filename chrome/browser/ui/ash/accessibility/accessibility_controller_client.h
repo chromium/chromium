@@ -36,6 +36,7 @@ class AccessibilityControllerClient
   void OnSwitchAccessDisabled() override;
   void OnSelectToSpeakPanelAction(ash::SelectToSpeakPanelAction action,
                                   double value) override;
+  void SetA11yOverrideWindow(aura::Window* a11y_override_window) override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(AccessibilityControllerClient);
