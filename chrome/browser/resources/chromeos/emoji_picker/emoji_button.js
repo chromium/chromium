@@ -26,6 +26,8 @@ export class EmojiButton extends PolymerElement {
       variants: {type: Array, readonly: true},
       /** @type {!boolean} */
       variantsVisible: {type: Boolean, value: false},
+      /** @type {!Boolean} */
+      variant: {type: Boolean, value: false, readonly: true},
       /** @type {!boolean} */
       disabled: {type: Boolean, value: false, readonly: true},
     };
@@ -46,8 +48,8 @@ export class EmojiButton extends PolymerElement {
   onClick(ev) {
     if (this.disabled)
       return;
-    this.dispatchEvent(
-        createCustomEvent(EMOJI_BUTTON_CLICK, {emoji: this.emoji}));
+    this.dispatchEvent(createCustomEvent(
+        EMOJI_BUTTON_CLICK, {emoji: this.emoji, isVariant: this.variant}));
   }
 
   onContextMenu(ev) {

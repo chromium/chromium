@@ -78607,6 +78607,8 @@ Full version information for the fingerprint enum values:
   <int value="1" label="Variant emoji from the emoji picker"/>
   <int value="2" label="Base emoji from the popup"/>
   <int value="3" label="Variant emoji from the popup"/>
+  <int value="4" label="Base emoji from the chromium emoji picker"/>
+  <int value="5" label="Variant emoji from the chromium emoji picker"/>
 </enum>
 
 <enum name="VirtualKeyboardErrorTypeHashes">

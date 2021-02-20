@@ -158,7 +158,8 @@ export class EmojiPicker extends PolymerElement {
       this.addEventListener(
           GROUP_BUTTON_CLICK, ev => this.selectGroup(ev.detail.group));
       this.addEventListener(
-          EMOJI_BUTTON_CLICK, ev => this.insertEmoji(ev.detail.emoji));
+          EMOJI_BUTTON_CLICK,
+          ev => this.insertEmoji(ev.detail.emoji, ev.detail.isVariant));
 
       // variant popup related handlers
       this.addEventListener(
@@ -176,8 +177,8 @@ export class EmojiPicker extends PolymerElement {
   /**
    * @param {!string} emoji
    */
-  insertEmoji(emoji) {
-    chrome.send('insertEmoji', [emoji]);
+  insertEmoji(emoji, isVariant) {
+    chrome.send('insertEmoji', [emoji, isVariant]);
     this.recentEmojiStore.bumpEmoji(emoji);
     this.set(
         ['history', 'emoji'], makeRecentlyUsed(this.recentEmojiStore.data));

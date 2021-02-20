@@ -10,7 +10,7 @@ export let GroupButtonClickEvent;
 export const GROUP_BUTTON_CLICK = 'group-button-click';
 
 /**
- * @typedef {!CustomEvent<{emoji: string}>}
+ * @typedef {!CustomEvent<{emoji: string, isVariant: boolean}>}
  */
 export let EmojiButtonClickEvent;
 

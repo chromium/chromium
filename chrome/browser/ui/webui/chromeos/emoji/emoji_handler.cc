@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/chromeos/emoji/emoji_handler.h"
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 
 #include "chrome/browser/ui/webui/chromeos/emoji/emoji_dialog.h"
@@ -16,6 +17,22 @@ namespace chromeos {
 EmojiHandler::EmojiHandler() {}
 EmojiHandler::~EmojiHandler() = default;
 
+// Keep in sync with entry in enums.xml.
+enum class EmojiVariantType {
+  // smaller entries only used by Chrome OS VK
+  kEmojiPickerBase = 4,
+  kEmojiPickerVariant = 5,
+  kMaxValue = kEmojiPickerVariant,
+};
+
+void LogInsertEmoji(bool isVariant) {
+  EmojiVariantType insertValue = isVariant
+                                     ? EmojiVariantType::kEmojiPickerVariant
+                                     : EmojiVariantType::kEmojiPickerBase;
+  base::UmaHistogramEnumeration("InputMethod.VirtualKeyboard.Emoji.TriggerType",
+                                insertValue);
+}
+
 void EmojiHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "insertEmoji", base::BindRepeating(&EmojiHandler::HandleInsertEmoji,
@@ -23,13 +40,14 @@ void EmojiHandler::RegisterMessages() {
 }
 
 void EmojiHandler::HandleInsertEmoji(const base::ListValue* args) {
-  if (args->GetSize() != 1) {
+  if (args->GetSize() != 2) {
     DLOG(WARNING)
-        << "insertEmoji called with incorrect number of arguments (expected 1)";
+        << "insertEmoji called with incorrect number of arguments (expected 2)";
     return;
   }
 
   const std::string& emoji = args->GetList()[0].GetString();
+  LogInsertEmoji(args->GetList()[1].GetBool());
 
   // Hide emoji picker window to restore focus to original text field
   if (EmojiPickerDialog::window) {
