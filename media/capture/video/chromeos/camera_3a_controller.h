@@ -61,10 +61,6 @@ class CAPTURE_EXPORT Camera3AController final
   // pixel array.
   void SetPointOfInterest(gfx::Point point);
 
-  // Updates the availability of Zero-Shutter Lag (ZSL). We skip 3A (AE, AF,
-  // AWB) if ZSL is enabled.
-  void UpdateZeroShutterLagAvailability(bool enabled);
-
   base::WeakPtr<Camera3AController> GetWeakPtr();
 
  private:
@@ -103,6 +99,7 @@ class CAPTURE_EXPORT Camera3AController final
   bool ae_region_supported_;
   bool af_region_supported_;
   bool point_of_interest_supported_;
+  bool zero_shutter_lag_supported_;
 
   CaptureMetadataDispatcher* capture_metadata_dispatcher_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
@@ -131,8 +128,6 @@ class CAPTURE_EXPORT Camera3AController final
   bool set_point_of_interest_running_;
 
   bool ae_locked_for_point_of_interest_;
-
-  bool zero_shutter_lag_enabled_;
 
   base::TimeDelta latest_sensor_timestamp_;
 

@@ -52,8 +52,7 @@ Camera3AController::Camera3AController(
                      ANDROID_CONTROL_AWB_STATE_INACTIVE),
       awb_mode_set_(false),
       set_point_of_interest_running_(false),
-      ae_locked_for_point_of_interest_(false),
-      zero_shutter_lag_enabled_(false) {
+      ae_locked_for_point_of_interest_(false) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
   capture_metadata_dispatcher_->AddResultMetadataObserver(this);
@@ -173,6 +172,14 @@ Camera3AController::Camera3AController(
         cros::mojom::CameraMetadataTag::ANDROID_STATISTICS_FACE_DETECT_MODE,
         face_mode_simple);
   }
+
+  auto request_keys = GetMetadataEntryAsSpan<int32_t>(
+      static_metadata_,
+      cros::mojom::CameraMetadataTag::ANDROID_REQUEST_AVAILABLE_REQUEST_KEYS);
+  zero_shutter_lag_supported_ = base::Contains(
+      request_keys,
+      static_cast<int32_t>(
+          cros::mojom::CameraMetadataTag::ANDROID_CONTROL_ENABLE_ZSL));
 }
 
 Camera3AController::~Camera3AController() {
@@ -200,7 +207,7 @@ void Camera3AController::Stabilize3AForStillCapture(
     return;
   }
 
-  if (Is3AStabilized() || zero_shutter_lag_enabled_) {
+  if (Is3AStabilized() || zero_shutter_lag_supported_) {
     std::move(on_3a_stabilized_callback).Run();
     return;
   }
@@ -597,10 +604,6 @@ void Camera3AController::SetPointOfInterestUnlockAe() {
 
   ae_locked_for_point_of_interest_ = false;
   ClearRepeatingCaptureMetadata();
-}
-
-void Camera3AController::UpdateZeroShutterLagAvailability(bool enabled) {
-  zero_shutter_lag_enabled_ = enabled;
 }
 
 base::WeakPtr<Camera3AController> Camera3AController::GetWeakPtr() {

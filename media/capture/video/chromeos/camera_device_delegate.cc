@@ -971,16 +971,6 @@ void CameraDeviceDelegate::OnConfiguredStreams(
     return;
   }
 
-  bool zero_shutter_lag_enabled = false;
-  for (const auto& stream : updated_config->streams) {
-    if (stream->usage & cros::mojom::GRALLOC_USAGE_ZERO_SHUTTER_LAG_ENABLED) {
-      zero_shutter_lag_enabled = true;
-      break;
-    }
-  }
-  camera_3a_controller_->UpdateZeroShutterLagAvailability(
-      zero_shutter_lag_enabled);
-
   current_blob_resolution_.SetSize(blob_resolution.width(),
                                    blob_resolution.height());
 

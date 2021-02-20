@@ -28,10 +28,6 @@ const uint32 GRALLOC_USAGE_FORCE_I420 = 0x10000000;
 // into a new HAL request for Zero-Shutter Lag (ZSL). See crrev.com/c/1877636
 // for the CL that does the aforementioned things.
 const uint32 GRALLOC_USAGE_STILL_CAPTURE = 0x20000000;
-// Flag to indicate ZSL is enabled for this session. Returned in the updated
-// stream configuration returned from configure_streams(). Refer to
-// crrev.com/c/2055927 which returns this flag.
-const uint32 GRALLOC_USAGE_ZERO_SHUTTER_LAG_ENABLED = 0x40000000;
 
 [Extensible]
 enum HalPixelFormat {
