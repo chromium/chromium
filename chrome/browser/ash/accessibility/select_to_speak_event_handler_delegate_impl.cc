@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/accessibility/select_to_speak_event_handler_delegate.h"
+#include "chrome/browser/ash/accessibility/select_to_speak_event_handler_delegate_impl.h"
 
 #include <memory>
 
@@ -20,18 +20,20 @@
 #include "ui/events/blink/web_input_event.h"
 #include "ui/events/event.h"
 
-SelectToSpeakEventHandlerDelegate::SelectToSpeakEventHandlerDelegate() {
+namespace ash {
+
+SelectToSpeakEventHandlerDelegateImpl::SelectToSpeakEventHandlerDelegateImpl() {
   // Set this object as the SelectToSpeakEventHandlerDelegate.
-  ash::AccessibilityController::Get()->SetSelectToSpeakEventHandlerDelegate(
-      this);
+  AccessibilityController::Get()->SetSelectToSpeakEventHandlerDelegate(this);
 }
 
-SelectToSpeakEventHandlerDelegate::~SelectToSpeakEventHandlerDelegate() {
-  if (auto* controller = ash::AccessibilityController::Get())
+SelectToSpeakEventHandlerDelegateImpl::
+    ~SelectToSpeakEventHandlerDelegateImpl() {
+  if (auto* controller = AccessibilityController::Get())
     controller->SetSelectToSpeakEventHandlerDelegate(nullptr);
 }
 
-void SelectToSpeakEventHandlerDelegate::DispatchKeyEvent(
+void SelectToSpeakEventHandlerDelegateImpl::DispatchKeyEvent(
     const ui::KeyEvent& event) {
   // We can only call the STS extension on the UI thread, make sure we
   // don't ever try to run this code on some other thread.
@@ -46,7 +48,7 @@ void SelectToSpeakEventHandlerDelegate::DispatchKeyEvent(
   ForwardKeyToExtension(*key_event, host);
 }
 
-void SelectToSpeakEventHandlerDelegate::DispatchMouseEvent(
+void SelectToSpeakEventHandlerDelegateImpl::DispatchMouseEvent(
     const ui::MouseEvent& event) {
   // We can only call the STS extension on the UI thread, make sure we
   // don't ever try to run this code on some other thread.
@@ -67,3 +69,5 @@ void SelectToSpeakEventHandlerDelegate::DispatchMouseEvent(
   main_frame->GetRenderWidgetHost()->ForwardMouseEvent(
       ui::MakeWebMouseEvent(event));
 }
+
+}  // namespace ash

@@ -35,7 +35,7 @@
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/ash/accessibility/accessibility_event_rewriter_delegate.h"
+#include "chrome/browser/ash/accessibility/accessibility_event_rewriter_delegate_impl.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
@@ -1054,7 +1054,7 @@ void ChromeBrowserMainPartsChromeos::PostBrowserStart() {
   // Construct a delegate to connect the accessibility component extensions and
   // AccessibilityEventRewriter.
   accessibility_event_rewriter_delegate_ =
-      std::make_unique<AccessibilityEventRewriterDelegate>();
+      std::make_unique<ash::AccessibilityEventRewriterDelegateImpl>();
 
   event_rewriter_delegate_ = std::make_unique<EventRewriterDelegateImpl>(
       ash::Shell::Get()->activation_client());

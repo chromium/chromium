@@ -12,6 +12,8 @@ namespace ui {
 class InputMethod;
 }
 
+namespace ash {
+
 // Observes an input method for text input caret changes. Forwards the caret
 // bounds to ash over mojo (via AccessibilityManager) so that ash can show the
 // caret highlight ring.
@@ -40,5 +42,7 @@ class AccessibilityInputMethodObserver : public ui::InputMethodObserver {
 
   DISALLOW_COPY_AND_ASSIGN(AccessibilityInputMethodObserver);
 };
+
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ACCESSIBILITY_ACCESSIBILITY_INPUT_METHOD_OBSERVER_H_

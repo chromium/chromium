@@ -43,7 +43,7 @@ class AccessibilityMainHandler : public ::settings::SettingsPageUIHandler {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnAccessibilityStatusChanged(
-      const AccessibilityStatusEventDetails& details);
+      const ash::AccessibilityStatusEventDetails& details);
 
   base::CallbackListSubscription accessibility_subscription_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

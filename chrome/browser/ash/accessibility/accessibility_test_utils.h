@@ -11,7 +11,9 @@
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "content/public/test/browser_test_utils.h"
 
-using extensions::ErrorConsole;
+namespace ash {
+
+using ::extensions::ErrorConsole;
 
 // Instantiate this class to get errors and warnings for an extension.
 // This will catch console.error and console.warn messages as well as
@@ -48,4 +50,5 @@ class ExtensionConsoleErrorObserver : public ErrorConsole::Observer {
   ErrorConsole* error_console_;
 };
 
+}  // namespace ash
 #endif  // CHROME_BROWSER_ASH_ACCESSIBILITY_ACCESSIBILITY_TEST_UTILS_H_

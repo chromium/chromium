@@ -41,6 +41,9 @@
 
 namespace chromeos {
 
+using ::ash::AccessibilityManager;
+using ::ash::MagnificationManager;
+
 constexpr StaticOobeScreenId WelcomeView::kScreenId;
 
 // WelcomeScreenHandler, public: -----------------------------------------------
@@ -317,9 +320,9 @@ void WelcomeScreenHandler::HandleRecordChromeVoxHintSpokenSuccess() {
 }
 
 void WelcomeScreenHandler::OnAccessibilityStatusChanged(
-    const AccessibilityStatusEventDetails& details) {
+    const ash::AccessibilityStatusEventDetails& details) {
   if (details.notification_type ==
-      AccessibilityNotificationType::kManagerShutdown) {
+      ash::AccessibilityNotificationType::kManagerShutdown) {
     accessibility_subscription_ = {};
   } else {
     UpdateA11yState();

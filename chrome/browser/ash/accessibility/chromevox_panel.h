@@ -8,6 +8,8 @@
 #include "base/macros.h"
 #include "chrome/browser/ash/accessibility/accessibility_panel.h"
 
+namespace ash {
+
 // Displays spoken feedback UI controls for the ChromeVox component extension
 class ChromeVoxPanel : public AccessibilityPanel {
  public:
@@ -31,5 +33,7 @@ class ChromeVoxPanel : public AccessibilityPanel {
 
   DISALLOW_COPY_AND_ASSIGN(ChromeVoxPanel);
 };
+
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ACCESSIBILITY_CHROMEVOX_PANEL_H_

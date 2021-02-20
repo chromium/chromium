@@ -84,7 +84,7 @@ class UpdateScreenHandler : public UpdateView, public BaseScreenHandler {
   void SetCancelUpdateShortcutEnabled(bool value) override;
 
   void OnAccessibilityStatusChanged(
-      const AccessibilityStatusEventDetails& details);
+      const ash::AccessibilityStatusEventDetails& details);
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(

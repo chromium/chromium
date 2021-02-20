@@ -96,12 +96,12 @@ class TopControlsSlideControllerChromeOS : public TopControlsSlideController,
   // sliding behavior *before* immersive mode is entered.
   bool CanEnable(base::Optional<bool> fullscreen_state) const;
 
-  // Called back from the AccessibilityManager so that we're updated by the
+  // Called back from the ash::AccessibilityManager so that we're updated by the
   // status of Chromevox, which when enabled, sliding the top-controls should
   // be disabled. This is important for users who want to touch explore and need
   // this to be consistent.
   void OnAccessibilityStatusChanged(
-      const AccessibilityStatusEventDetails& event_details);
+      const ash::AccessibilityStatusEventDetails& event_details);
 
   void OnEnabledStateChanged(bool new_state);
 

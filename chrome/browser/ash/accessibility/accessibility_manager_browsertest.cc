@@ -40,9 +40,10 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
 namespace extension_ime_util = chromeos::extension_ime_util;
+using chromeos::LoggedInUserMixin;
+using chromeos::input_method::InputMethodDescriptors;
 using chromeos::input_method::InputMethodManager;
 using chromeos::input_method::InputMethodUtil;
-using chromeos::input_method::InputMethodDescriptors;
 using content::BrowserThread;
 using extensions::api::braille_display_private::BrailleObserver;
 using extensions::api::braille_display_private::DisplayState;
@@ -146,14 +147,14 @@ bool IsAutoclickEnabled() {
 }
 
 void SetAutoclickDelay(int delay_ms) {
-  GetActiveUserPrefs()->SetInteger(ash::prefs::kAccessibilityAutoclickDelayMs,
+  GetActiveUserPrefs()->SetInteger(prefs::kAccessibilityAutoclickDelayMs,
                                    delay_ms);
   GetActiveUserPrefs()->CommitPendingWrite();
 }
 
 int GetAutoclickDelay() {
   return GetActiveUserPrefs()->GetInteger(
-      ash::prefs::kAccessibilityAutoclickDelayMs);
+      prefs::kAccessibilityAutoclickDelayMs);
 }
 
 void SetVirtualKeyboardEnabled(bool enabled) {
@@ -181,48 +182,48 @@ bool IsSelectToSpeakEnabled() {
 }
 
 void SetAlwaysShowMenuEnabledPref(bool enabled) {
-  GetActiveUserPrefs()->SetBoolean(
-      ash::prefs::kShouldAlwaysShowAccessibilityMenu, enabled);
+  GetActiveUserPrefs()->SetBoolean(prefs::kShouldAlwaysShowAccessibilityMenu,
+                                   enabled);
 }
 
 void SetLargeCursorEnabledPref(bool enabled) {
-  GetActiveUserPrefs()->SetBoolean(ash::prefs::kAccessibilityLargeCursorEnabled,
+  GetActiveUserPrefs()->SetBoolean(prefs::kAccessibilityLargeCursorEnabled,
                                    enabled);
 }
 
 void SetHighContrastEnabledPref(bool enabled) {
-  GetActiveUserPrefs()->SetBoolean(
-      ash::prefs::kAccessibilityHighContrastEnabled, enabled);
+  GetActiveUserPrefs()->SetBoolean(prefs::kAccessibilityHighContrastEnabled,
+                                   enabled);
 }
 
 void SetSpokenFeedbackEnabledPref(bool enabled) {
-  GetActiveUserPrefs()->SetBoolean(
-      ash::prefs::kAccessibilitySpokenFeedbackEnabled, enabled);
+  GetActiveUserPrefs()->SetBoolean(prefs::kAccessibilitySpokenFeedbackEnabled,
+                                   enabled);
 }
 
 void SetAutoclickEnabledPref(bool enabled) {
-  GetActiveUserPrefs()->SetBoolean(ash::prefs::kAccessibilityAutoclickEnabled,
+  GetActiveUserPrefs()->SetBoolean(prefs::kAccessibilityAutoclickEnabled,
                                    enabled);
 }
 
 void SetAutoclickDelayPref(int delay_ms) {
-  GetActiveUserPrefs()->SetInteger(ash::prefs::kAccessibilityAutoclickDelayMs,
+  GetActiveUserPrefs()->SetInteger(prefs::kAccessibilityAutoclickDelayMs,
                                    delay_ms);
 }
 
 void SetVirtualKeyboardEnabledPref(bool enabled) {
-  GetActiveUserPrefs()->SetBoolean(
-      ash::prefs::kAccessibilityVirtualKeyboardEnabled, enabled);
+  GetActiveUserPrefs()->SetBoolean(prefs::kAccessibilityVirtualKeyboardEnabled,
+                                   enabled);
 }
 
 void SetMonoAudioEnabledPref(bool enabled) {
-  GetActiveUserPrefs()->SetBoolean(ash::prefs::kAccessibilityMonoAudioEnabled,
+  GetActiveUserPrefs()->SetBoolean(prefs::kAccessibilityMonoAudioEnabled,
                                    enabled);
 }
 
 void SetSelectToSpeakEnabledPref(bool enabled) {
-  GetActiveUserPrefs()->SetBoolean(
-      ash::prefs::kAccessibilitySelectToSpeakEnabled, enabled);
+  GetActiveUserPrefs()->SetBoolean(prefs::kAccessibilitySelectToSpeakEnabled,
+                                   enabled);
 }
 
 bool IsBrailleImeActive() {
@@ -675,8 +676,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerLoginTest, AshState) {
   CreateSession(test_account_id_);
   StartUserSession(test_account_id_);
 
-  auto ash_a11y_controller_test_api =
-      ash::AccessibilityControllerTestApi::Create();
+  auto ash_a11y_controller_test_api = AccessibilityControllerTestApi::Create();
 
   // Ash and browser has the same state.
   EXPECT_FALSE(IsLargeCursorEnabled());
@@ -701,8 +701,8 @@ class AccessibilityManagerUserTypeTest
     if (GetParam() == user_manager::USER_TYPE_GUEST) {
       guest_session_ = std::make_unique<GuestSessionMixin>(&mixin_host_);
     } else if (GetParam() == user_manager::USER_TYPE_CHILD) {
-      logged_in_user_mixin_ = std::make_unique<chromeos::LoggedInUserMixin>(
-          &mixin_host_, chromeos::LoggedInUserMixin::LogInType::kChild,
+      logged_in_user_mixin_ = std::make_unique<LoggedInUserMixin>(
+          &mixin_host_, LoggedInUserMixin::LogInType::kChild,
           embedded_test_server(), this);
     }
   }
@@ -726,7 +726,7 @@ class AccessibilityManagerUserTypeTest
 
   std::unique_ptr<GuestSessionMixin> guest_session_;
 
-  std::unique_ptr<chromeos::LoggedInUserMixin> logged_in_user_mixin_;
+  std::unique_ptr<LoggedInUserMixin> logged_in_user_mixin_;
 
   MockBrailleController braille_controller_;
 

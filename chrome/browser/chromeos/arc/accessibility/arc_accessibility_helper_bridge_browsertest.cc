@@ -35,6 +35,8 @@
 
 namespace arc {
 
+using ::ash::AccessibilityManager;
+
 struct ArcTestWindow {
   std::unique_ptr<exo::Buffer> buffer;
   std::unique_ptr<exo::Surface> surface;

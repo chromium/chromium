@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/accessibility/accessibility_event_rewriter_delegate.h"
+#include "chrome/browser/ash/accessibility/accessibility_event_rewriter_delegate_impl.h"
 
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/app_types.h"
@@ -21,41 +21,42 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/events/event.h"
 
+namespace ash {
 namespace {
 
-std::string ToString(ash::SwitchAccessCommand command) {
+std::string ToString(SwitchAccessCommand command) {
   switch (command) {
-    case ash::SwitchAccessCommand::kSelect:
+    case SwitchAccessCommand::kSelect:
       return extensions::api::accessibility_private::ToString(
           extensions::api::accessibility_private::SWITCH_ACCESS_COMMAND_SELECT);
-    case ash::SwitchAccessCommand::kNext:
+    case SwitchAccessCommand::kNext:
       return extensions::api::accessibility_private::ToString(
           extensions::api::accessibility_private::SWITCH_ACCESS_COMMAND_NEXT);
-    case ash::SwitchAccessCommand::kPrevious:
+    case SwitchAccessCommand::kPrevious:
       return extensions::api::accessibility_private::ToString(
           extensions::api::accessibility_private::
               SWITCH_ACCESS_COMMAND_PREVIOUS);
-    case ash::SwitchAccessCommand::kNone:
+    case SwitchAccessCommand::kNone:
       NOTREACHED();
       return "";
   }
 }
 
-std::string ToString(ash::MagnifierCommand command) {
+std::string ToString(MagnifierCommand command) {
   switch (command) {
-    case ash::MagnifierCommand::kMoveStop:
+    case MagnifierCommand::kMoveStop:
       return extensions::api::accessibility_private::ToString(
           extensions::api::accessibility_private::MAGNIFIER_COMMAND_MOVESTOP);
-    case ash::MagnifierCommand::kMoveUp:
+    case MagnifierCommand::kMoveUp:
       return extensions::api::accessibility_private::ToString(
           extensions::api::accessibility_private::MAGNIFIER_COMMAND_MOVEUP);
-    case ash::MagnifierCommand::kMoveDown:
+    case MagnifierCommand::kMoveDown:
       return extensions::api::accessibility_private::ToString(
           extensions::api::accessibility_private::MAGNIFIER_COMMAND_MOVEDOWN);
-    case ash::MagnifierCommand::kMoveLeft:
+    case MagnifierCommand::kMoveLeft:
       return extensions::api::accessibility_private::ToString(
           extensions::api::accessibility_private::MAGNIFIER_COMMAND_MOVELEFT);
-    case ash::MagnifierCommand::kMoveRight:
+    case MagnifierCommand::kMoveRight:
       return extensions::api::accessibility_private::ToString(
           extensions::api::accessibility_private::MAGNIFIER_COMMAND_MOVERIGHT);
   }
@@ -65,13 +66,13 @@ std::string ToString(ash::MagnifierCommand command) {
 
 }  // namespace
 
-AccessibilityEventRewriterDelegate::AccessibilityEventRewriterDelegate() =
-    default;
+AccessibilityEventRewriterDelegateImpl::
+    AccessibilityEventRewriterDelegateImpl() = default;
 
-AccessibilityEventRewriterDelegate::~AccessibilityEventRewriterDelegate() =
-    default;
+AccessibilityEventRewriterDelegateImpl::
+    ~AccessibilityEventRewriterDelegateImpl() = default;
 
-void AccessibilityEventRewriterDelegate::DispatchKeyEventToChromeVox(
+void AccessibilityEventRewriterDelegateImpl::DispatchKeyEventToChromeVox(
     std::unique_ptr<ui::Event> event,
     bool capture) {
   extensions::ExtensionHost* host =
@@ -87,14 +88,14 @@ void AccessibilityEventRewriterDelegate::DispatchKeyEventToChromeVox(
   ForwardKeyToExtension(*(event->AsKeyEvent()), host);
 }
 
-void AccessibilityEventRewriterDelegate::DispatchMouseEvent(
+void AccessibilityEventRewriterDelegateImpl::DispatchMouseEvent(
     std::unique_ptr<ui::Event> event) {
   AutomationManagerAura::GetInstance()->HandleEvent(
       ax::mojom::Event::kMouseMoved);
 }
 
-void AccessibilityEventRewriterDelegate::SendSwitchAccessCommand(
-    ash::SwitchAccessCommand command) {
+void AccessibilityEventRewriterDelegateImpl::SendSwitchAccessCommand(
+    SwitchAccessCommand command) {
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(AccessibilityManager::Get()->profile());
 
@@ -110,7 +111,7 @@ void AccessibilityEventRewriterDelegate::SendSwitchAccessCommand(
       extension_misc::kSwitchAccessExtensionId, std::move(event));
 }
 
-void AccessibilityEventRewriterDelegate::SendPointScanPoint(
+void AccessibilityEventRewriterDelegateImpl::SendPointScanPoint(
     const gfx::PointF& point) {
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(AccessibilityManager::Get()->profile());
@@ -132,8 +133,8 @@ void AccessibilityEventRewriterDelegate::SendPointScanPoint(
       extension_misc::kSwitchAccessExtensionId, std::move(event));
 }
 
-void AccessibilityEventRewriterDelegate::SendMagnifierCommand(
-    ash::MagnifierCommand command) {
+void AccessibilityEventRewriterDelegateImpl::SendMagnifierCommand(
+    MagnifierCommand command) {
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(AccessibilityManager::Get()->profile());
 
@@ -149,15 +150,17 @@ void AccessibilityEventRewriterDelegate::SendMagnifierCommand(
       extension_misc::kAccessibilityCommonExtensionId, std::move(event));
 }
 
-void AccessibilityEventRewriterDelegate::OnUnhandledSpokenFeedbackEvent(
+void AccessibilityEventRewriterDelegateImpl::OnUnhandledSpokenFeedbackEvent(
     std::unique_ptr<ui::Event> event) const {
-  ash::EventRewriterController::Get()->OnUnhandledSpokenFeedbackEvent(
+  EventRewriterController::Get()->OnUnhandledSpokenFeedbackEvent(
       std::move(event));
 }
 
-bool AccessibilityEventRewriterDelegate::HandleKeyboardEvent(
+bool AccessibilityEventRewriterDelegateImpl::HandleKeyboardEvent(
     content::WebContents* source,
     const content::NativeWebKeyboardEvent& event) {
   OnUnhandledSpokenFeedbackEvent(ui::Event::Clone(*event.os_event));
   return true;
 }
+
+}  // namespace ash

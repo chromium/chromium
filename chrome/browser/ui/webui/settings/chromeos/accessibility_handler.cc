@@ -18,8 +18,9 @@
 
 namespace chromeos {
 namespace settings {
-
 namespace {
+
+using ::ash::AccessibilityManager;
 
 void RecordShowShelfNavigationButtonsValueChange(bool enabled) {
   base::UmaHistogramBoolean(

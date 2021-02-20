@@ -1493,7 +1493,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
 
 // TODO(crbug.com/1149893): Migrate to KioskDeviceOwnedTest.
 IN_PROC_BROWSER_TEST_F(KioskTest, SpokenFeedback) {
-  ::test::SpeechMonitor sm;
+  test::SpeechMonitor sm;
   // Disable the TTS engine for testing so that we don't wait for the TTS engine
   // to load (the engine will never load on linux-chromeos builds).
   TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
@@ -1545,7 +1545,7 @@ IN_PROC_BROWSER_TEST_F(KioskTest, SpokenFeedback) {
 IN_PROC_BROWSER_TEST_F(
     KioskDeviceOwnedTest,
     PRE_AccessibilityExtensionsResetTheirStateUponSessionRestart) {
-  ::test::SpeechMonitor speech_monitor;
+  test::SpeechMonitor speech_monitor;
   StartAppLaunchFromLoginScreen(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
   WaitForAppLaunchWithOptions(true /* check_launch_data */,
@@ -1594,7 +1594,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // The data should persist when extension is restarted.
   AccessibilityManager::Get()->EnableSpokenFeedback(false);
-  ::test::SpeechMonitor speech_monitor2;
+  test::SpeechMonitor speech_monitor2;
   AccessibilityManager::Get()->EnableSpokenFeedback(true);
   speech_monitor2.ExpectSpeech("ChromeVox spoken feedback is ready");
   speech_monitor2.Replay();
@@ -1616,7 +1616,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     KioskDeviceOwnedTest,
     AccessibilityExtensionsResetTheirStateUponSessionRestart) {
-  ::test::SpeechMonitor speech_monitor;
+  test::SpeechMonitor speech_monitor;
   StartAppLaunchFromLoginScreen(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
   WaitForAppLaunchWithOptions(true /* check_launch_data */,

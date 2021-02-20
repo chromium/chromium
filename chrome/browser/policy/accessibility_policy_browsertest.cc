@@ -16,6 +16,10 @@
 
 namespace policy {
 
+using ::ash::AccessibilityManager;
+using ::ash::MagnificationManager;
+using ::ash::MagnifierType;
+
 class AccessibilityPolicyTest : public PolicyTest {};
 
 IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, LargeCursorEnabled) {

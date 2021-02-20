@@ -15,6 +15,10 @@
 
 namespace accessibility_state_utils {
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+using ::ash::AccessibilityManager;
+#endif
+
 bool IsScreenReaderEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return AccessibilityManager::Get() &&

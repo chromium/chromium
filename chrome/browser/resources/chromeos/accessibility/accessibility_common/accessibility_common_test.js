@@ -34,8 +34,8 @@ AccessibilityCommonE2ETest = class extends E2ETestBase {
     // have a place to be injected.
     GEN(`
   base::OnceClosure load_cb =
-      base::BindOnce(&AccessibilityManager::EnableAutoclick,
-          base::Unretained(AccessibilityManager::Get()),
+      base::BindOnce(&ash::AccessibilityManager::EnableAutoclick,
+          base::Unretained(ash::AccessibilityManager::Get()),
           true);
     `);
     super.testGenPreambleCommon('kAccessibilityCommonExtensionId');

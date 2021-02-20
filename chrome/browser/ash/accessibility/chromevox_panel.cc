@@ -11,6 +11,7 @@
 #include "extensions/common/constants.h"
 #include "ui/views/widget/widget.h"
 
+namespace ash {
 namespace {
 
 const char kChromeVoxPanelRelativeUrl[] = "/chromevox/panel/panel.html";
@@ -80,10 +81,9 @@ void ChromeVoxPanel::Focus() {
 
 void ChromeVoxPanel::SetAccessibilityPanelFullscreen(bool fullscreen) {
   gfx::Rect bounds(0, 0, 0, kPanelHeight);
-  auto state = fullscreen ? ash::AccessibilityPanelState::FULLSCREEN
-                          : ash::AccessibilityPanelState::FULL_WIDTH;
-  ash::AccessibilityController::Get()->SetAccessibilityPanelBounds(bounds,
-                                                                   state);
+  auto state = fullscreen ? AccessibilityPanelState::FULLSCREEN
+                          : AccessibilityPanelState::FULL_WIDTH;
+  AccessibilityController::Get()->SetAccessibilityPanelBounds(bounds, state);
 }
 
 std::string ChromeVoxPanel::GetUrlForContent() {
@@ -93,3 +93,5 @@ std::string ChromeVoxPanel::GetUrlForContent() {
 
   return url;
 }
+
+}  // namespace ash

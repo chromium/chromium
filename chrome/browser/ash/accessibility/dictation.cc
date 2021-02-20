@@ -21,6 +21,7 @@
 #include "ui/base/ime/chromeos/input_method_util.h"
 #include "ui/base/ime/composition_text.h"
 
+namespace ash {
 namespace {
 
 const char kDefaultProfileLanguage[] = "en-US";
@@ -104,8 +105,7 @@ void Dictation::OnSpeechSoundLevelChanged(int16_t level) {}
 void Dictation::OnSpeechRecognitionStateChanged(
     SpeechRecognizerStatus new_state) {
   if (new_state == SPEECH_RECOGNIZER_RECOGNIZING)
-    audio::SoundsManager::Get()->Play(
-        static_cast<int>(ash::Sound::kDictationStart));
+    audio::SoundsManager::Get()->Play(static_cast<int>(Sound::kDictationStart));
   else if (new_state == SPEECH_RECOGNIZER_READY)
     // This state is only reached when nothing has been said for a fixed time.
     // In this case, the expected behavior is for dictation to terminate.
@@ -131,8 +131,7 @@ void Dictation::DictationOff() {
     return;
 
   if (!composition_->text.empty()) {
-    audio::SoundsManager::Get()->Play(
-        static_cast<int>(ash::Sound::kDictationEnd));
+    audio::SoundsManager::Get()->Play(static_cast<int>(Sound::kDictationEnd));
 
     ui::IMEInputContextHandlerInterface* input_context = GetInputContext();
     if (input_context)
@@ -143,7 +142,7 @@ void Dictation::DictationOff() {
     composition_->text = base::string16();
   } else {
     audio::SoundsManager::Get()->Play(
-        static_cast<int>(ash::Sound::kDictationCancel));
+        static_cast<int>(Sound::kDictationCancel));
   }
 
   AccessibilityStatusEventDetails details(
@@ -151,3 +150,5 @@ void Dictation::DictationOff() {
   AccessibilityManager::Get()->NotifyAccessibilityStatusChanged(details);
   speech_recognizer_.reset();
 }
+
+}  // namespace ash

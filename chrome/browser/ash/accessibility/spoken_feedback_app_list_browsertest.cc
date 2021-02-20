@@ -31,6 +31,7 @@
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 
+namespace ash {
 namespace {
 
 void SendKeyPressWithShiftAndControl(ui::KeyboardCode key) {
@@ -42,10 +43,10 @@ void SendKeyPressWithShiftAndControl(ui::KeyboardCode key) {
 
 enum SpokenFeedbackAppListTestVariant { kTestAsNormalUser, kTestAsGuestUser };
 
-class TestSuggestionChipResult : public ash::TestSearchResult {
+class TestSuggestionChipResult : public TestSearchResult {
  public:
   explicit TestSuggestionChipResult(const base::string16& title) {
-    set_display_type(ash::SearchResultDisplayType::kChip);
+    set_display_type(SearchResultDisplayType::kChip);
     set_title(title);
   }
   ~TestSuggestionChipResult() override = default;
@@ -64,33 +65,32 @@ class SpokenFeedbackAppListTest
   void SetUp() override {
     // Do not run expand arrow hinting animation to avoid msan test crash.
     // (See https://crbug.com/926038)
-    ash::AppListView::SetShortAnimationForTesting(true);
+    AppListView::SetShortAnimationForTesting(true);
     LoggedInSpokenFeedbackTest::SetUp();
   }
 
   void TearDown() override {
     LoggedInSpokenFeedbackTest::TearDown();
-    ash::AppListView::SetShortAnimationForTesting(false);
+    AppListView::SetShortAnimationForTesting(false);
   }
 
   void SetUpOnMainThread() override {
     LoggedInSpokenFeedbackTest::SetUpOnMainThread();
-    auto* controller = ash::Shell::Get()->app_list_controller();
+    auto* controller = Shell::Get()->app_list_controller();
     controller->SetAppListModelForTest(
-        std::make_unique<ash::test::AppListTestModel>());
+        std::make_unique<test::AppListTestModel>());
     app_list_test_model_ =
-        static_cast<ash::test::AppListTestModel*>(controller->GetModel());
+        static_cast<test::AppListTestModel*>(controller->GetModel());
     search_model = controller->GetSearchModel();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     if (GetParam() == kTestAsGuestUser) {
-      command_line->AppendSwitch(ash::switches::kGuestSession);
+      command_line->AppendSwitch(switches::kGuestSession);
       command_line->AppendSwitch(::switches::kIncognito);
-      command_line->AppendSwitchASCII(ash::switches::kLoginProfile, "user");
+      command_line->AppendSwitchASCII(switches::kLoginProfile, "user");
       command_line->AppendSwitchASCII(
-          ash::switches::kLoginUser,
-          user_manager::GuestAccountId().GetUserEmail());
+          switches::kLoginUser, user_manager::GuestAccountId().GetUserEmail());
     }
   }
 
@@ -112,8 +112,8 @@ class SpokenFeedbackAppListTest
   }
 
  private:
-  ash::test::AppListTestModel* app_list_test_model_ = nullptr;
-  ash::SearchModel* search_model = nullptr;
+  test::AppListTestModel* app_list_test_model_ = nullptr;
+  SearchModel* search_model = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(TestAsNormalAndGuestUser,
@@ -128,16 +128,14 @@ class TabletModeSpokenFeedbackAppListTest : public SpokenFeedbackAppListTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SpokenFeedbackAppListTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(ash::switches::kAshEnableTabletMode);
+    command_line->AppendSwitch(switches::kAshEnableTabletMode);
   }
 
   void SetTabletMode(bool enabled) {
-    ash::ShellTestApi().SetTabletModeEnabledForTest(enabled);
+    ShellTestApi().SetTabletModeEnabledForTest(enabled);
   }
 
-  bool IsTabletModeEnabled() const {
-    return ash::TabletMode::Get()->InTabletMode();
-  }
+  bool IsTabletModeEnabled() const { return TabletMode::Get()->InTabletMode(); }
 };
 
 INSTANTIATE_TEST_SUITE_P(TestAsNormalAndGuestUser,
@@ -154,11 +152,11 @@ class NotificationSpokenFeedbackAppListTest : public SpokenFeedbackAppListTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SpokenFeedbackAppListTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(ash::switches::kAshEnableTabletMode);
+    command_line->AppendSwitch(switches::kAshEnableTabletMode);
   }
 
   void SetNotificationBadgeForApp(const std::string& id, bool has_badge) {
-    auto* model = ash::Shell::Get()->app_list_controller()->GetModel();
+    auto* model = Shell::Get()->app_list_controller()->GetModel();
     auto* item = model->FindItem(id);
 
     item->UpdateNotificationBadgeForTesting(has_badge);
@@ -182,8 +180,9 @@ IN_PROC_BROWSER_TEST_P(NotificationSpokenFeedbackAppListTest,
 
   EnableChromeVox();
 
-  sm_.Call(
-      [this]() { EXPECT_TRUE(PerformAcceleratorAction(ash::FOCUS_SHELF)); });
+  sm_.Call([this]() {
+    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
+  });
   sm_.ExpectSpeech("Shelf");
   // Press space on the launcher button in shelf, this opens peeking
   // launcher.
@@ -209,16 +208,17 @@ IN_PROC_BROWSER_TEST_P(NotificationSpokenFeedbackAppListTest,
 IN_PROC_BROWSER_TEST_P(TabletModeSpokenFeedbackAppListTest,
                        AppListItemPausedAppAnnounced) {
   PopulateApps(1);
-  ash::Shell::Get()
+  Shell::Get()
       ->app_list_controller()
       ->GetModel()
       ->FindItem("Item 0")
-      ->UpdateAppStatusForTesting(ash::AppStatus::kPaused);
+      ->UpdateAppStatusForTesting(AppStatus::kPaused);
 
   EnableChromeVox();
 
-  sm_.Call(
-      [this]() { EXPECT_TRUE(PerformAcceleratorAction(ash::FOCUS_SHELF)); });
+  sm_.Call([this]() {
+    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
+  });
   sm_.ExpectSpeech("Shelf");
   // Press space on the launcher button in shelf, this opens peeking
   // launcher.
@@ -244,16 +244,17 @@ IN_PROC_BROWSER_TEST_P(TabletModeSpokenFeedbackAppListTest,
 IN_PROC_BROWSER_TEST_P(TabletModeSpokenFeedbackAppListTest,
                        AppListItemBlockedAppAnnounced) {
   PopulateApps(1);
-  ash::Shell::Get()
+  Shell::Get()
       ->app_list_controller()
       ->GetModel()
       ->FindItem("Item 0")
-      ->UpdateAppStatusForTesting(ash::AppStatus::kBlocked);
+      ->UpdateAppStatusForTesting(AppStatus::kBlocked);
 
   EnableChromeVox();
 
-  sm_.Call(
-      [this]() { EXPECT_TRUE(PerformAcceleratorAction(ash::FOCUS_SHELF)); });
+  sm_.Call([this]() {
+    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
+  });
   sm_.ExpectSpeech("Shelf");
   // Press space on the launcher button in shelf, this opens peeking
   // launcher.
@@ -296,16 +297,17 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     TabletModeSpokenFeedbackAppListTest,
     LauncherAppListScreenRotationDoesNotCreateAccessibilityEvent) {
-  display::DisplayManager* display_manager =
-      ash::Shell::Get()->display_manager();
+  display::DisplayManager* display_manager = Shell::Get()->display_manager();
   const int display_id = display_manager->GetDisplayAt(0).id();
   EnableChromeVox();
 
-  sm_.Call(
-      [this]() { EXPECT_TRUE(PerformAcceleratorAction(ash::FOCUS_SHELF)); });
+  sm_.Call([this]() {
+    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
+  });
 
-  sm_.Call(
-      [this]() { EXPECT_TRUE(PerformAcceleratorAction(ash::FOCUS_SHELF)); });
+  sm_.Call([this]() {
+    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
+  });
   sm_.ExpectSpeech("Shelf");
 
   // Press space on the launcher button in shelf, this opens peeking launcher.
@@ -351,8 +353,9 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, LauncherStateTransition) {
   EnableChromeVox();
 
-  sm_.Call(
-      [this]() { EXPECT_TRUE(PerformAcceleratorAction(ash::FOCUS_SHELF)); });
+  sm_.Call([this]() {
+    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
+  });
   sm_.ExpectSpeechPattern("Launcher");
   sm_.ExpectSpeech("Button");
   sm_.ExpectSpeech("Shelf");
@@ -385,8 +388,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
                        DisabledFullscreenExpandButton) {
   EnableChromeVox();
 
-  sm_.Call(
-      [this]() { EXPECT_TRUE(PerformAcceleratorAction(ash::FOCUS_SHELF)); });
+  sm_.Call([this]() {
+    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
+  });
   sm_.ExpectSpeech("Shelf");
 
   // Press space on the launcher button in shelf, this opens peeking launcher.
@@ -422,8 +426,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
 
   EnableChromeVox();
 
-  sm_.Call(
-      [this]() { EXPECT_TRUE(PerformAcceleratorAction(ash::FOCUS_SHELF)); });
+  sm_.Call([this]() {
+    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
+  });
   sm_.ExpectSpeech("Press Search plus Space to activate");
   // Press space on the launcher button in shelf, this opens peeking
   // launcher.
@@ -459,8 +464,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
 
   EnableChromeVox();
 
-  sm_.Call(
-      [this]() { EXPECT_TRUE(PerformAcceleratorAction(ash::FOCUS_SHELF)); });
+  sm_.Call([this]() {
+    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
+  });
   sm_.ExpectSpeech("Press Search plus Space to activate");
   // Press space on the launcher button in shelf, this opens peeking
   // launcher.
@@ -507,8 +513,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, AppListFoldering) {
 
   EnableChromeVox();
 
-  sm_.Call(
-      [this]() { EXPECT_TRUE(PerformAcceleratorAction(ash::FOCUS_SHELF)); });
+  sm_.Call([this]() {
+    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
+  });
   sm_.ExpectSpeech("Shelf");
   // Press space on the launcher button in shelf, this opens peeking
   // launcher.
@@ -560,8 +567,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, AppListReordering) {
 
   EnableChromeVox();
 
-  sm_.Call(
-      [this]() { EXPECT_TRUE(PerformAcceleratorAction(ash::FOCUS_SHELF)); });
+  sm_.Call([this]() {
+    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
+  });
   sm_.ExpectSpeech("Shelf");
   // Press space on the launcher button in shelf, this opens peeking
   // launcher.
@@ -623,8 +631,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
                        LauncherWindowTitleAnnouncement) {
   EnableChromeVox();
 
-  sm_.Call(
-      [this]() { EXPECT_TRUE(PerformAcceleratorAction(ash::FOCUS_SHELF)); });
+  sm_.Call([this]() {
+    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
+  });
   sm_.ExpectSpeechPattern("Launcher");
   sm_.ExpectSpeech("Button");
   sm_.ExpectSpeech("Shelf");
@@ -654,3 +663,5 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
   sm_.ExpectSpeech("Launcher");
   sm_.Replay();
 }
+
+}  // namespace ash

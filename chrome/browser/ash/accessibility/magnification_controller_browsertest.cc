@@ -26,6 +26,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
+namespace ash {
+
 namespace {
 
 const char kDataURIPrefix[] = "data:text/html;charset=utf-8,";
@@ -37,11 +39,11 @@ const char kTestHtmlContent[] =
     "</body>";
 
 aura::Window* GetRootWindow() {
-  return ash::Shell::GetPrimaryRootWindow();
+  return Shell::GetPrimaryRootWindow();
 }
 
-ash::MagnificationController* GetMagnificationController() {
-  return ash::Shell::Get()->magnification_controller();
+MagnificationController* GetMagnificationController() {
+  return Shell::Get()->magnification_controller();
 }
 
 bool IsMagnifierEnabled() {
@@ -62,7 +64,7 @@ gfx::Rect GetViewPort() {
 
 class MagnifierAnimationWaiter {
  public:
-  explicit MagnifierAnimationWaiter(ash::MagnificationController* controller)
+  explicit MagnifierAnimationWaiter(MagnificationController* controller)
       : controller_(controller) {}
 
   void Wait() {
@@ -81,7 +83,7 @@ class MagnifierAnimationWaiter {
     }
   }
 
-  ash::MagnificationController* controller_;  // not owned
+  MagnificationController* controller_;  // not owned
   scoped_refptr<content::MessageLoopRunner> runner_;
   DISALLOW_COPY_AND_ASSIGN(MagnifierAnimationWaiter);
 };
@@ -185,3 +187,5 @@ IN_PROC_BROWSER_TEST_F(MagnificationControllerTest,
   EXPECT_TRUE(view_port_after_focus.Contains(button_bounds));
   EXPECT_EQ(view_port_before_focus, view_port_after_focus);
 }
+
+}  // namespace ash

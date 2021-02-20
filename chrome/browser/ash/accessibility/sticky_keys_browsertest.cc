@@ -29,6 +29,8 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/native_widget_types.h"
 
+namespace ash {
+
 class StickyKeysBrowserTest : public InProcessBrowserTest {
  protected:
   StickyKeysBrowserTest() = default;
@@ -41,7 +43,7 @@ class StickyKeysBrowserTest : public InProcessBrowserTest {
   }
 
   bool IsSystemTrayBubbleOpen() {
-    return ash::Shell::Get()
+    return Shell::Get()
         ->GetPrimaryRootWindowController()
         ->GetStatusAreaWidget()
         ->unified_system_tray()
@@ -49,7 +51,7 @@ class StickyKeysBrowserTest : public InProcessBrowserTest {
   }
 
   void CloseSystemTrayBubble() {
-    ash::Shell::Get()
+    Shell::Get()
         ->GetPrimaryRootWindowController()
         ->GetStatusAreaWidget()
         ->unified_system_tray()
@@ -194,8 +196,7 @@ IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, OverlayShown) {
                                             ui::VKEY_MENU, ui::VKEY_COMMAND};
 
   // Overlay should not be visible if sticky keys is not enabled.
-  ash::StickyKeysController* controller =
-      ash::Shell::Get()->sticky_keys_controller();
+  StickyKeysController* controller = Shell::Get()->sticky_keys_controller();
   EXPECT_FALSE(controller->GetOverlayForTest());
   for (auto key_code : modifier_keys) {
     SendKeyPress(key_code);
@@ -204,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, OverlayShown) {
 
   // Cycle through the modifier keys and make sure each gets shown.
   SetStickyKeysEnabled(true);
-  ash::StickyKeysOverlay* sticky_keys_overlay = controller->GetOverlayForTest();
+  StickyKeysOverlay* sticky_keys_overlay = controller->GetOverlayForTest();
   for (auto key_code : modifier_keys) {
     SendKeyPress(key_code);
     EXPECT_TRUE(sticky_keys_overlay->is_visible());
@@ -224,3 +225,5 @@ IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, OverlayShown) {
     EXPECT_FALSE(controller->GetOverlayForTest());
   }
 }
+
+}  // namespace ash

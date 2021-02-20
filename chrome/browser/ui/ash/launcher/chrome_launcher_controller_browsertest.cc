@@ -122,13 +122,14 @@
 #include "ui/events/types/event_type.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 
-using ash::Shelf;
-using content::WebContents;
-using extensions::AppWindow;
-using extensions::Extension;
-using web_app::WebAppProviderBase;
-
 namespace {
+
+using ::ash::AccessibilityManager;
+using ::ash::Shelf;
+using ::content::WebContents;
+using ::extensions::AppWindow;
+using ::extensions::Extension;
+using ::web_app::WebAppProviderBase;
 
 ash::ShelfAction SelectItem(
     const ash::ShelfID& id,
@@ -2618,7 +2619,7 @@ IN_PROC_BROWSER_TEST_F(HotseatShelfAppBrowserTest,
 // TODO(crbug.com/1177126) Re-enable test
 IN_PROC_BROWSER_TEST_F(HotseatShelfAppBrowserTest, DISABLED_EnableChromeVox) {
   ash::Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  test::SpeechMonitor speech_monitor;
+  ash::test::SpeechMonitor speech_monitor;
 
   // Enable ChromeVox.
   ASSERT_FALSE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());

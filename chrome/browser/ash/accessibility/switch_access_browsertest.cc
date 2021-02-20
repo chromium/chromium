@@ -19,6 +19,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/browsertest_util.h"
 
+namespace ash {
+
 namespace {
 constexpr char kTestSupportPath[] =
     "chrome/browser/resources/chromeos/accessibility/switch_access/"
@@ -39,13 +41,12 @@ class SwitchAccessTest : public InProcessBrowserTest {
     manager->SetSwitchAccessEnabled(true);
     manager->SetSwitchAccessKeysForTest(
         select_key_codes,
-        ash::prefs::kAccessibilitySwitchAccessSelectDeviceKeyCodes);
+        prefs::kAccessibilitySwitchAccessSelectDeviceKeyCodes);
     manager->SetSwitchAccessKeysForTest(
-        next_key_codes,
-        ash::prefs::kAccessibilitySwitchAccessNextDeviceKeyCodes);
+        next_key_codes, prefs::kAccessibilitySwitchAccessNextDeviceKeyCodes);
     manager->SetSwitchAccessKeysForTest(
         previous_key_codes,
-        ash::prefs::kAccessibilitySwitchAccessPreviousDeviceKeyCodes);
+        prefs::kAccessibilitySwitchAccessPreviousDeviceKeyCodes);
 
     EXPECT_TRUE(manager->IsSwitchAccessEnabled());
 
@@ -245,3 +246,5 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, NavigateButtonsInTextFieldMenu) {
   // Wrap back around to the "keyboard" button.
   WaitForFocusRing("primary", "button", "Keyboard");
 }
+
+}  // namespace ash

@@ -42,8 +42,9 @@
 #include "url/gurl.h"
 
 namespace policy {
-
 namespace {
+
+using ::ash::MagnifierType;
 
 const char kSubkeyURL[] = "url";
 const char kSubkeyHash[] = "hash";

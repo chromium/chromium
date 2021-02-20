@@ -435,8 +435,8 @@ source_set("chromeos") {
   ]
 
   sources = [
-    "../ash/accessibility/accessibility_event_rewriter_delegate.cc",
-    "../ash/accessibility/accessibility_event_rewriter_delegate.h",
+    "../ash/accessibility/accessibility_event_rewriter_delegate_impl.cc",
+    "../ash/accessibility/accessibility_event_rewriter_delegate_impl.h",
     "../ash/accessibility/accessibility_extension_loader.cc",
     "../ash/accessibility/accessibility_extension_loader.h",
     "../ash/accessibility/accessibility_input_method_observer.cc",
@@ -454,8 +454,8 @@ source_set("chromeos") {
     "../ash/accessibility/magnification_manager.cc",
     "../ash/accessibility/magnification_manager.h",
     "../ash/accessibility/magnifier_type.h",
-    "../ash/accessibility/select_to_speak_event_handler_delegate.cc",
-    "../ash/accessibility/select_to_speak_event_handler_delegate.h",
+    "../ash/accessibility/select_to_speak_event_handler_delegate_impl.cc",
+    "../ash/accessibility/select_to_speak_event_handler_delegate_impl.h",
     "../ash/accessibility/soda_installer_impl_chromeos.cc",
     "../ash/accessibility/soda_installer_impl_chromeos.h",
     "../ash/account_manager/account_manager_edu_coexistence_controller.cc",

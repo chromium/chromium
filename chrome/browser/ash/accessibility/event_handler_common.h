@@ -8,6 +8,8 @@
 #include "extensions/browser/extension_host.h"
 #include "ui/events/event_handler.h"
 
+namespace ash {
+
 // Gets the extension host for the corresponding extension ID.
 extensions::ExtensionHost* GetAccessibilityExtensionHost(
     const std::string& extension_id);
@@ -21,5 +23,7 @@ void ForwardKeyToExtension(const ui::KeyEvent& key_event,
 // corresponding host.
 void ForwardMouseToExtension(const ui::MouseEvent& mouse_event,
                              extensions::ExtensionHost* host);
+
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ACCESSIBILITY_EVENT_HANDLER_COMMON_H_

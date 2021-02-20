@@ -21,6 +21,8 @@
 #include "ui/events/test/event_generator.h"
 #include "url/url_constants.h"
 
+namespace ash {
+
 class AccessibilityLiveSiteTest : public InProcessBrowserTest {
  protected:
   void SetUpOnMainThread() override {
@@ -32,7 +34,7 @@ class AccessibilityLiveSiteTest : public InProcessBrowserTest {
     AccessibilityManager::Get()->SetSelectToSpeakEnabled(true);
     extension_load_waiter.Wait();
 
-    aura::Window* root_window = ash::Shell::Get()->GetPrimaryRootWindow();
+    aura::Window* root_window = Shell::Get()->GetPrimaryRootWindow();
     generator_.reset(new ui::test::EventGenerator(root_window));
 
     ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
@@ -100,3 +102,5 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLiveSiteTest,
   speech_monitor_.ExpectSpeech(kTextFoundInGoogleDoc);
   speech_monitor_.Replay();
 }
+
+}  // namespace ash

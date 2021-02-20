@@ -19,6 +19,8 @@
 
 class PrefChangeRegistrar;
 
+namespace ash {
+
 // MagnificationManager controls the Fullscreen and Docked magnifier from
 // chrome-browser side (not ash side).
 //
@@ -102,7 +104,7 @@ class MagnificationManager
   void SetMagnifierKeepFocusCenteredInternal(bool keep_focus_centered);
   void SetMagnifierScaleInternal(double scale);
   void SetMagnifierMouseFollowingModeInternal(
-      ash::MagnifierMouseFollowingMode mouse_following_mode);
+      MagnifierMouseFollowingMode mouse_following_mode);
   void UpdateMagnifierFromPrefs();
   void UpdateDockedMagnifierFromPrefs();
 
@@ -129,5 +131,13 @@ class MagnificationManager
 
   DISALLOW_COPY_AND_ASSIGN(MagnificationManager);
 };
+
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the Chrome OS source code
+// directory migration is finished.
+namespace chromeos {
+using ::ash::MagnificationManager;
+}
 
 #endif  // CHROME_BROWSER_ASH_ACCESSIBILITY_MAGNIFICATION_MANAGER_H_

@@ -380,7 +380,7 @@ void SystemTrayClient::ShowHelp() {
 void SystemTrayClient::ShowAccessibilityHelp() {
   chrome::ScopedTabbedBrowserDisplayer displayer(
       ProfileManager::GetActiveUserProfile());
-  AccessibilityManager::ShowAccessibilityHelp(displayer.browser());
+  ash::AccessibilityManager::ShowAccessibilityHelp(displayer.browser());
 }
 
 void SystemTrayClient::ShowAccessibilitySettings() {

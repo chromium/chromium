@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "ash/components/audio/cras_audio_handler.h"
-#include "ash/components/audio/sounds.h"
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
 #include "base/macros.h"
@@ -38,19 +37,18 @@
 
 class Browser;
 
-namespace ash {
-struct AccessibilityFocusRingInfo;
-enum class SelectToSpeakState;
-enum class SelectToSpeakPanelAction;
-}  // namespace ash
-
 namespace gfx {
 class Rect;
 }  // namespace gfx
 
+namespace ash {
 class AccessibilityExtensionLoader;
 class Dictation;
-class SelectToSpeakEventHandlerDelegate;
+class SelectToSpeakEventHandlerDelegateImpl;
+enum class SelectToSpeakState;
+enum class SelectToSpeakPanelAction;
+enum class Sound;
+struct AccessibilityFocusRingInfo;
 
 enum class AccessibilityNotificationType {
   kManagerShutdown,
@@ -104,7 +102,7 @@ class AccessibilityManager
       public extensions::ExtensionRegistryObserver,
       public user_manager::UserManager::UserSessionStateObserver,
       public chromeos::input_method::InputMethodManager::Observer,
-      public ash::CrasAudioHandler::AudioObserver,
+      public CrasAudioHandler::AudioObserver,
       public ProfileObserver {
  public:
   // Creates an instance of AccessibilityManager, this should be called once,
@@ -210,7 +208,7 @@ class AccessibilityManager
   void RequestSelectToSpeakStateChange();
 
   // Called when the Select-to-Speak extension state has changed.
-  void SetSelectToSpeakState(ash::SelectToSpeakState state);
+  void SetSelectToSpeakState(SelectToSpeakState state);
 
   // Invoked to enable or disable Switch Access.
   void SetSwitchAccessEnabled(bool enabled);
@@ -261,7 +259,7 @@ class AccessibilityManager
   // Plays an earcon. Earcons are brief and distinctive sounds that indicate
   // the their mapped event has occurred. The |sound_key| enums can be found in
   // ash/components/audio/sounds.h.
-  bool PlayEarcon(ash::Sound sound_key, PlaySoundOption option);
+  bool PlayEarcon(Sound sound_key, PlaySoundOption option);
 
   // Forward an accessibility gesture from the touch exploration controller
   // to ChromeVox.
@@ -292,9 +290,8 @@ class AccessibilityManager
   bool ToggleDictation();
 
   // Sets the focus ring with the given ID based on |focus_ring|.
-  void SetFocusRing(
-      std::string focus_ring_id,
-      std::unique_ptr<ash::AccessibilityFocusRingInfo> focus_ring);
+  void SetFocusRing(std::string focus_ring_id,
+                    std::unique_ptr<AccessibilityFocusRingInfo> focus_ring);
 
   // Hides focus ring on screen.
   void HideFocusRing(std::string caller_id);
@@ -336,7 +333,7 @@ class AccessibilityManager
                                    const std::string& focus_ring_name);
 
   // Sends a panel action event to the Select-to-speak extension.
-  void OnSelectToSpeakPanelAction(ash::SelectToSpeakPanelAction action,
+  void OnSelectToSpeakPanelAction(SelectToSpeakPanelAction action,
                                   double value);
 
   // Test helpers:
@@ -476,7 +473,7 @@ class AccessibilityManager
 
   std::unique_ptr<AccessibilityExtensionLoader> select_to_speak_loader_;
 
-  std::unique_ptr<SelectToSpeakEventHandlerDelegate>
+  std::unique_ptr<SelectToSpeakEventHandlerDelegateImpl>
       select_to_speak_event_handler_delegate_;
 
   std::unique_ptr<AccessibilityExtensionLoader> switch_access_loader_;
@@ -507,4 +504,14 @@ class AccessibilityManager
   DISALLOW_COPY_AND_ASSIGN(AccessibilityManager);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the Chrome OS source code
+// directory migration is finished.
+namespace chromeos {
+using ::ash::AccessibilityManager;
+using ::ash::AccessibilityNotificationType;
+using ::ash::AccessibilityStatusEventDetails;
+using ::ash::PlaySoundOption;
+}  // namespace chromeos
 #endif  // CHROME_BROWSER_ASH_ACCESSIBILITY_ACCESSIBILITY_MANAGER_H_

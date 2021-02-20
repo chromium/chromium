@@ -34,6 +34,8 @@
 
 namespace {
 
+using ::ash::AccessibilityManager;
+
 bool IsTabletModeEnabled() {
   return ash::TabletMode::Get() && ash::TabletMode::Get()->InTabletMode();
 }
@@ -598,9 +600,9 @@ bool TopControlsSlideControllerChromeOS::CanEnable(
 }
 
 void TopControlsSlideControllerChromeOS::OnAccessibilityStatusChanged(
-    const AccessibilityStatusEventDetails& event_details) {
+    const ash::AccessibilityStatusEventDetails& event_details) {
   if (event_details.notification_type !=
-      AccessibilityNotificationType::kToggleSpokenFeedback) {
+      ash::AccessibilityNotificationType::kToggleSpokenFeedback) {
     return;
   }
 

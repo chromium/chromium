@@ -11,6 +11,8 @@
 
 class Profile;
 
+namespace ash {
+
 class AccessibilityExtensionLoader {
  public:
   AccessibilityExtensionLoader(
@@ -54,5 +56,7 @@ class AccessibilityExtensionLoader {
 
   DISALLOW_COPY_AND_ASSIGN(AccessibilityExtensionLoader);
 };
+
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ACCESSIBILITY_ACCESSIBILITY_EXTENSION_LOADER_H_

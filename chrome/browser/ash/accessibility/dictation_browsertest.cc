@@ -13,6 +13,7 @@
 #include "ui/base/ime/dummy_text_input_client.h"
 #include "ui/base/ime/input_method_base.h"
 
+namespace ash {
 namespace {
 
 const char kFirstSpeechResult[] = "help";
@@ -165,3 +166,5 @@ IN_PROC_BROWSER_TEST_F(DictationTest, ChangeInputField) {
   EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
   EXPECT_EQ(kFinalSpeechResult, input_context_handler_->last_commit_text());
 }
+
+}  // namespace ash

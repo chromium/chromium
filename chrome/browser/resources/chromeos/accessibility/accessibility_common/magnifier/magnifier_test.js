@@ -58,8 +58,8 @@ MagnifierE2ETest = class extends E2ETestBase {
     super.testGenPreamble();
     GEN(`
     base::OnceClosure load_cb =
-        base::BindOnce(&MagnificationManager::SetMagnifierEnabled,
-            base::Unretained(MagnificationManager::Get()),
+        base::BindOnce(&ash::MagnificationManager::SetMagnifierEnabled,
+            base::Unretained(ash::MagnificationManager::Get()),
             true);
       `);
     super.testGenPreambleCommon('kAccessibilityCommonExtensionId');

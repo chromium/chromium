@@ -11,9 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/extension_system.h"
 
-// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
-// source migration is finished.
-using ::ash::ProfileHelper;
+namespace ash {
 
 AccessibilityExtensionLoader::AccessibilityExtensionLoader(
     const std::string& extension_id,
@@ -140,3 +138,5 @@ void AccessibilityExtensionLoader::ReinstallExtensionForKiosk(
   if (done_cb)
     done_cb.Run();
 }
+
+}  // namespace ash

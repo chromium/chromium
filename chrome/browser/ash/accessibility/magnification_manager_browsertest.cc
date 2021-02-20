@@ -30,11 +30,8 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace ash {
 namespace {
-
-// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
-// source migration is finished.
-using ::ash::ProfileHelper;
 
 constexpr char kTestUserName[] = "owner@invalid.domain";
 constexpr char kTestUserGaiaId[] = "9876543210";
@@ -44,11 +41,11 @@ void SetMagnifierEnabled(bool enabled) {
 }
 
 void SetFullScreenMagnifierScale(double scale) {
-  ash::Shell::Get()->magnification_controller()->SetScale(scale, false);
+  Shell::Get()->magnification_controller()->SetScale(scale, false);
 }
 
 double GetFullScreenMagnifierScale() {
-  return ash::Shell::Get()->magnification_controller()->GetScale();
+  return Shell::Get()->magnification_controller()->GetScale();
 }
 
 void SetSavedFullScreenMagnifierScale(double scale) {
@@ -74,16 +71,15 @@ PrefService* prefs() {
 }
 
 void SetScreenMagnifierEnabledPref(bool enabled) {
-  prefs()->SetBoolean(ash::prefs::kAccessibilityScreenMagnifierEnabled,
-                      enabled);
+  prefs()->SetBoolean(prefs::kAccessibilityScreenMagnifierEnabled, enabled);
 }
 
 void SetFullScreenMagnifierScalePref(double scale) {
-  prefs()->SetDouble(ash::prefs::kAccessibilityScreenMagnifierScale, scale);
+  prefs()->SetDouble(prefs::kAccessibilityScreenMagnifierScale, scale);
 }
 
 bool GetScreenMagnifierEnabledFromPref() {
-  return prefs()->GetBoolean(ash::prefs::kAccessibilityScreenMagnifierEnabled);
+  return prefs()->GetBoolean(prefs::kAccessibilityScreenMagnifierEnabled);
 }
 
 // Creates and logs into a profile with account |account_id|, and makes sure
@@ -156,8 +152,8 @@ class MagnificationManagerTest : public InProcessBrowserTest {
   ~MagnificationManagerTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(ash::switches::kLoginManager);
-    command_line->AppendSwitchASCII(ash::switches::kLoginProfile,
+    command_line->AppendSwitch(switches::kLoginManager);
+    command_line->AppendSwitchASCII(switches::kLoginProfile,
                                     TestingProfile::kTestUserProfileDir);
   }
 
@@ -424,3 +420,5 @@ IN_PROC_BROWSER_TEST_F(MagnificationManagerTest, MagnificationObserver) {
   EXPECT_FALSE(observer.observed());
   observer.reset();
 }
+
+}  // namespace ash

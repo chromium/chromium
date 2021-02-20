@@ -19,6 +19,8 @@ namespace views {
 class Widget;
 }
 
+namespace ash {
+
 const char EXTENSION_PREFIX[] = "chrome-extension://";
 
 // Creates a panel onscreen on which an accessibility extension can draw a
@@ -63,5 +65,7 @@ class AccessibilityPanel : public views::WidgetDelegate,
 
   DISALLOW_COPY_AND_ASSIGN(AccessibilityPanel);
 };
+
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ACCESSIBILITY_ACCESSIBILITY_PANEL_H_

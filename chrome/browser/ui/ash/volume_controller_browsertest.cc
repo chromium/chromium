@@ -21,6 +21,8 @@
 
 namespace {
 
+using ::ash::AccessibilityManager;
+
 class SoundsManagerTestImpl : public audio::SoundsManager {
  public:
   SoundsManagerTestImpl() = default;

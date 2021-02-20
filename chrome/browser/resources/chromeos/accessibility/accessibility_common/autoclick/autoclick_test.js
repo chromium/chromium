@@ -48,8 +48,8 @@ import('/accessibility_common/accessibility_common_loader.js').then(reinit);
   testGenPreamble() {
     GEN(`
   base::OnceClosure load_cb =
-      base::BindOnce(&AccessibilityManager::EnableAutoclick,
-          base::Unretained(AccessibilityManager::Get()),
+      base::BindOnce(&ash::AccessibilityManager::EnableAutoclick,
+          base::Unretained(ash::AccessibilityManager::Get()),
           true);
     `);
     super.testGenPreambleCommon('kAccessibilityCommonExtensionId');

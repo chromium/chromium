@@ -34,6 +34,8 @@
 
 namespace {
 
+using ::ash::AccessibilityManager;
+
 void UninstallApp(Profile* profile, const std::string& app_id) {
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);

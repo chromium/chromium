@@ -151,8 +151,11 @@
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 
 namespace policy {
-
 namespace {
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+using ::ash::MagnifierType;
+#endif
 
 // List of policy types to preference names. This is used for simple policies
 // that directly map to a single preference.

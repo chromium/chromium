@@ -24,6 +24,9 @@
 
 namespace {
 
+using ::ash::AccessibilityManager;
+using ::ash::AccessibilityNotificationType;
+
 void UpdateGoogleSpeechSynthesisKeepAliveCountHelper(
     content::BrowserContext* context,
     bool increment) {
@@ -226,7 +229,7 @@ void TtsEngineExtensionObserverChromeOS::OnExtensionUnloaded(
 }
 
 void TtsEngineExtensionObserverChromeOS::OnAccessibilityStatusChanged(
-    const AccessibilityStatusEventDetails& details) {
+    const ash::AccessibilityStatusEventDetails& details) {
   if (details.notification_type !=
           AccessibilityNotificationType::kToggleSpokenFeedback &&
       details.notification_type !=

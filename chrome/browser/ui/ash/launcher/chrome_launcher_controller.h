@@ -37,6 +37,8 @@ class ShelfSpinnerController;
 
 namespace ash {
 class ShelfModel;
+FORWARD_DECLARE_TEST(SpokenFeedbackTest, ShelfIconFocusForward);
+FORWARD_DECLARE_TEST(SpokenFeedbackTest, SpeakingTextUnderMouseForShelfItem);
 }  // namespace ash
 
 namespace content {
@@ -50,9 +52,6 @@ class Image;
 namespace ui {
 class BaseWindow;
 }
-
-FORWARD_DECLARE_TEST(SpokenFeedbackTest, ShelfIconFocusForward);
-FORWARD_DECLARE_TEST(SpokenFeedbackTest, SpeakingTextUnderMouseForShelfItem);
 
 // ChromeLauncherController helps manage Ash's shelf for Chrome prefs and apps.
 // It helps synchronize shelf state with profile preferences and app content.
@@ -287,8 +286,8 @@ class ChromeLauncherController
   friend class ShelfAppBrowserTest;
   friend class TestChromeLauncherController;
 
-  FRIEND_TEST_ALL_PREFIXES(SpokenFeedbackTest, ShelfIconFocusForward);
-  FRIEND_TEST_ALL_PREFIXES(SpokenFeedbackTest,
+  FRIEND_TEST_ALL_PREFIXES(ash::SpokenFeedbackTest, ShelfIconFocusForward);
+  FRIEND_TEST_ALL_PREFIXES(ash::SpokenFeedbackTest,
                            SpeakingTextUnderMouseForShelfItem);
 
   using WebContentsToAppIDMap = std::map<content::WebContents*, std::string>;

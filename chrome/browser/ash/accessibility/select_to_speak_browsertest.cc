@@ -40,6 +40,8 @@
 #include "ui/events/test/event_generator.h"
 #include "url/url_constants.h"
 
+namespace ash {
+
 class SelectToSpeakTest : public InProcessBrowserTest {
  public:
   void OnFocusRingChanged() {
@@ -63,14 +65,14 @@ class SelectToSpeakTest : public InProcessBrowserTest {
     console_observer_ = std::make_unique<ExtensionConsoleErrorObserver>(
         browser()->profile(), extension_misc::kSelectToSpeakExtensionId);
 
-    tray_test_api_ = ash::SystemTrayTestApi::Create();
+    tray_test_api_ = SystemTrayTestApi::Create();
     content::WindowedNotificationObserver extension_load_waiter(
         extensions::NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD,
         content::NotificationService::AllSources());
     AccessibilityManager::Get()->SetSelectToSpeakEnabled(true);
     extension_load_waiter.Wait();
 
-    aura::Window* root_window = ash::Shell::Get()->GetPrimaryRootWindow();
+    aura::Window* root_window = Shell::Get()->GetPrimaryRootWindow();
     generator_.reset(new ui::test::EventGenerator(root_window));
 
     ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
@@ -78,7 +80,7 @@ class SelectToSpeakTest : public InProcessBrowserTest {
 
   test::SpeechMonitor sm_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
-  std::unique_ptr<ash::SystemTrayTestApi> tray_test_api_;
+  std::unique_ptr<SystemTrayTestApi> tray_test_api_;
 
   gfx::Rect GetWebContentsBounds() const {
     // TODO(katie): Find a way to get the exact bounds programmatically.
@@ -168,7 +170,7 @@ class SelectToSpeakTestWithLanguageDetection : public SelectToSpeakTest {
 // The status tray is not active on official builds.
 // Disable the test on Chromium due to flaky: crbug.com/1165749
 IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, DISABLED_SpeakStatusTray) {
-  gfx::Rect tray_bounds = ash::Shell::Get()
+  gfx::Rect tray_bounds = Shell::Get()
                               ->GetPrimaryRootWindowController()
                               ->GetStatusAreaWidget()
                               ->unified_system_tray()
@@ -341,10 +343,10 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, FocusRingMovesWithMouse) {
   std::string focus_ring_id = AccessibilityManager::Get()->GetFocusRingId(
       extension_misc::kSelectToSpeakExtensionId, "");
 
-  ash::AccessibilityFocusRingControllerImpl* controller =
-      ash::Shell::Get()->accessibility_focus_ring_controller();
+  AccessibilityFocusRingControllerImpl* controller =
+      Shell::Get()->accessibility_focus_ring_controller();
   controller->SetNoFadeForTesting();
-  const ash::AccessibilityFocusRingGroup* focus_ring_group =
+  const AccessibilityFocusRingGroup* focus_ring_group =
       controller->GetFocusRingGroupForTesting(focus_ring_id);
   // No focus rings to start.
   EXPECT_EQ(nullptr, focus_ring_group);
@@ -361,8 +363,8 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, FocusRingMovesWithMouse) {
   WaitForFocusRingChanged();
   focus_ring_group = controller->GetFocusRingGroupForTesting(focus_ring_id);
   ASSERT_NE(nullptr, focus_ring_group);
-  std::vector<std::unique_ptr<ash::AccessibilityFocusRingLayer>> const&
-      focus_rings = focus_ring_group->focus_layers_for_testing();
+  std::vector<std::unique_ptr<AccessibilityFocusRingLayer>> const& focus_rings =
+      focus_ring_group->focus_layers_for_testing();
   EXPECT_EQ(focus_rings.size(), 1u);
 
   gfx::Rect target_bounds = focus_rings.at(0)->layer()->GetTargetBounds();
@@ -471,7 +473,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTestWithNavigationControl,
 
   // Search key + click the avatar button.
   generator_->PressKey(ui::VKEY_LWIN, 0 /* flags */);
-  tray_test_api_->ClickBubbleView(ash::VIEW_ID_USER_AVATAR_BUTTON);
+  tray_test_api_->ClickBubbleView(ViewID::VIEW_ID_USER_AVATAR_BUTTON);
   generator_->ReleaseKey(ui::VKEY_LWIN, 0 /* flags */);
 
   // Should read out text.
@@ -481,3 +483,5 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTestWithNavigationControl,
   // Tray bubble menu should remain open.
   ASSERT_TRUE(tray_test_api_->IsTrayBubbleOpen());
 }
+
+}  // namespace ash

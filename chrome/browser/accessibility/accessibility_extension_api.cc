@@ -55,9 +55,13 @@
 #include "ui/display/screen.h"
 #endif
 
-namespace accessibility_private = extensions::api::accessibility_private;
-
 namespace {
+
+namespace accessibility_private = ::extensions::api::accessibility_private;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+using ::ash::AccessibilityManager;
+#endif
 
 const char kErrorNotSupported[] = "This API is not supported on this platform.";
 
@@ -458,7 +462,7 @@ AccessibilityPrivateMoveMagnifierToRectFunction::Run() {
   gfx::Rect bounds(params->rect.left, params->rect.top, params->rect.width,
                    params->rect.height);
 
-  MagnificationManager* magnification_manager = MagnificationManager::Get();
+  auto* magnification_manager = ash::MagnificationManager::Get();
   if (magnification_manager)
     magnification_manager->HandleMoveMagnifierToRectIfEnabled(bounds);
 

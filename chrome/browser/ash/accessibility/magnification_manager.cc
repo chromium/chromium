@@ -28,11 +28,8 @@
 #include "ui/views/accessibility/ax_event_manager.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
+namespace ash {
 namespace {
-
-// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
-// source migration is finished.
-using ::ash::ProfileHelper;
 
 // The duration of time to ignore focus changes after the last mouse event.
 // Keep under one frame length (~16ms at 60hz).
@@ -70,13 +67,13 @@ void MagnificationManager::SetMagnifierEnabled(bool enabled) {
     return;
 
   PrefService* prefs = profile_->GetPrefs();
-  prefs->SetBoolean(ash::prefs::kAccessibilityScreenMagnifierEnabled, enabled);
+  prefs->SetBoolean(prefs::kAccessibilityScreenMagnifierEnabled, enabled);
   prefs->CommitPendingWrite();
 }
 
 bool MagnificationManager::IsDockedMagnifierEnabled() const {
   return profile_ &&
-         profile_->GetPrefs()->GetBoolean(ash::prefs::kDockedMagnifierEnabled);
+         profile_->GetPrefs()->GetBoolean(prefs::kDockedMagnifierEnabled);
 }
 
 void MagnificationManager::SetDockedMagnifierEnabled(bool enabled) {
@@ -84,7 +81,7 @@ void MagnificationManager::SetDockedMagnifierEnabled(bool enabled) {
     return;
 
   PrefService* prefs = profile_->GetPrefs();
-  prefs->SetBoolean(ash::prefs::kDockedMagnifierEnabled, enabled);
+  prefs->SetBoolean(prefs::kDockedMagnifierEnabled, enabled);
   prefs->CommitPendingWrite();
 }
 
@@ -92,8 +89,8 @@ void MagnificationManager::SaveScreenMagnifierScale(double scale) {
   if (!profile_)
     return;
 
-  profile_->GetPrefs()->SetDouble(
-      ash::prefs::kAccessibilityScreenMagnifierScale, scale);
+  profile_->GetPrefs()->SetDouble(prefs::kAccessibilityScreenMagnifierScale,
+                                  scale);
 }
 
 double MagnificationManager::GetSavedScreenMagnifierScale() const {
@@ -101,7 +98,7 @@ double MagnificationManager::GetSavedScreenMagnifierScale() const {
     return std::numeric_limits<double>::min();
 
   return profile_->GetPrefs()->GetDouble(
-      ash::prefs::kAccessibilityScreenMagnifierScale);
+      prefs::kAccessibilityScreenMagnifierScale);
 }
 
 void MagnificationManager::OnProfileWillBeDestroyed(Profile* profile) {
@@ -122,12 +119,11 @@ void MagnificationManager::HandleMoveMagnifierToRectIfEnabled(
     const gfx::Rect& rect) {
   // Fullscreen magnifier and docked magnifier are mutually exclusive.
   if (fullscreen_magnifier_enabled_) {
-    ash::Shell::Get()->magnification_controller()->HandleMoveMagnifierToRect(
-        rect);
+    Shell::Get()->magnification_controller()->HandleMoveMagnifierToRect(rect);
     return;
   }
   if (IsDockedMagnifierEnabled()) {
-    ash::DockedMagnifierController::Get()->MoveMagnifierToRect(rect);
+    DockedMagnifierController::Get()->MoveMagnifierToRect(rect);
   }
 }
 
@@ -219,23 +215,23 @@ void MagnificationManager::SetProfile(Profile* profile) {
     pref_change_registrar_.reset(new PrefChangeRegistrar);
     pref_change_registrar_->Init(profile->GetPrefs());
     pref_change_registrar_->Add(
-        ash::prefs::kAccessibilityScreenMagnifierEnabled,
+        prefs::kAccessibilityScreenMagnifierEnabled,
         base::BindRepeating(&MagnificationManager::UpdateMagnifierFromPrefs,
                             base::Unretained(this)));
     pref_change_registrar_->Add(
-        ash::prefs::kAccessibilityScreenMagnifierCenterFocus,
+        prefs::kAccessibilityScreenMagnifierCenterFocus,
         base::BindRepeating(&MagnificationManager::UpdateMagnifierFromPrefs,
                             base::Unretained(this)));
     pref_change_registrar_->Add(
-        ash::prefs::kAccessibilityScreenMagnifierScale,
+        prefs::kAccessibilityScreenMagnifierScale,
         base::BindRepeating(&MagnificationManager::UpdateMagnifierFromPrefs,
                             base::Unretained(this)));
     pref_change_registrar_->Add(
-        ash::prefs::kAccessibilityScreenMagnifierMouseFollowingMode,
+        prefs::kAccessibilityScreenMagnifierMouseFollowingMode,
         base::BindRepeating(&MagnificationManager::UpdateMagnifierFromPrefs,
                             base::Unretained(this)));
     pref_change_registrar_->Add(
-        ash::prefs::kDockedMagnifierEnabled,
+        prefs::kDockedMagnifierEnabled,
         base::BindRepeating(
             &MagnificationManager::UpdateDockedMagnifierFromPrefs,
             base::Unretained(this)));
@@ -259,7 +255,7 @@ void MagnificationManager::SetMagnifierEnabledInternal(bool enabled) {
 
   fullscreen_magnifier_enabled_ = enabled;
 
-  ash::Shell::Get()->magnification_controller()->SetEnabled(enabled);
+  Shell::Get()->magnification_controller()->SetEnabled(enabled);
 }
 
 void MagnificationManager::SetMagnifierKeepFocusCenteredInternal(
@@ -269,7 +265,7 @@ void MagnificationManager::SetMagnifierKeepFocusCenteredInternal(
 
   keep_focus_centered_ = keep_focus_centered;
 
-  ash::Shell::Get()->magnification_controller()->SetKeepFocusCentered(
+  Shell::Get()->magnification_controller()->SetKeepFocusCentered(
       keep_focus_centered_);
 }
 
@@ -279,13 +275,13 @@ void MagnificationManager::SetMagnifierScaleInternal(double scale) {
 
   scale_ = scale;
 
-  ash::Shell::Get()->magnification_controller()->SetScale(scale_,
-                                                          false /* animate */);
+  Shell::Get()->magnification_controller()->SetScale(scale_,
+                                                     false /* animate */);
 }
 
 void MagnificationManager::SetMagnifierMouseFollowingModeInternal(
-    ash::MagnifierMouseFollowingMode mouse_following_mode) {
-  ash::Shell::Get()->magnification_controller()->set_mouse_following_mode(
+    MagnifierMouseFollowingMode mouse_following_mode) {
+  Shell::Get()->magnification_controller()->set_mouse_following_mode(
       mouse_following_mode);
 }
 
@@ -295,14 +291,14 @@ void MagnificationManager::UpdateMagnifierFromPrefs() {
 
   PrefService* prefs = profile_->GetPrefs();
   const bool enabled =
-      prefs->GetBoolean(ash::prefs::kAccessibilityScreenMagnifierEnabled);
+      prefs->GetBoolean(prefs::kAccessibilityScreenMagnifierEnabled);
   const bool keep_focus_centered =
-      prefs->GetBoolean(ash::prefs::kAccessibilityScreenMagnifierCenterFocus);
+      prefs->GetBoolean(prefs::kAccessibilityScreenMagnifierCenterFocus);
   const double scale =
-      prefs->GetDouble(ash::prefs::kAccessibilityScreenMagnifierScale);
-  const ash::MagnifierMouseFollowingMode mouse_following_mode =
-      static_cast<ash::MagnifierMouseFollowingMode>(prefs->GetInteger(
-          ash::prefs::kAccessibilityScreenMagnifierMouseFollowingMode));
+      prefs->GetDouble(prefs::kAccessibilityScreenMagnifierScale);
+  const MagnifierMouseFollowingMode mouse_following_mode =
+      static_cast<MagnifierMouseFollowingMode>(prefs->GetInteger(
+          prefs::kAccessibilityScreenMagnifierMouseFollowingMode));
 
   SetMagnifierMouseFollowingModeInternal(mouse_following_mode);
   SetMagnifierScaleInternal(scale);
@@ -316,8 +312,8 @@ void MagnificationManager::UpdateMagnifierFromPrefs() {
   if (!AccessibilityManager::Get())
     return;
   AccessibilityManager::Get()->NotifyAccessibilityStatusChanged(details);
-  if (ash::Shell::Get())
-    ash::Shell::Get()->UpdateCursorCompositingEnabled();
+  if (Shell::Get())
+    Shell::Get()->UpdateCursorCompositingEnabled();
 }
 
 void MagnificationManager::UpdateDockedMagnifierFromPrefs() {
@@ -325,7 +321,7 @@ void MagnificationManager::UpdateDockedMagnifierFromPrefs() {
     return;
 
   PrefService* prefs = profile_->GetPrefs();
-  const bool enabled = prefs->GetBoolean(ash::prefs::kDockedMagnifierEnabled);
+  const bool enabled = prefs->GetBoolean(prefs::kDockedMagnifierEnabled);
   AccessibilityStatusEventDetails details(
       AccessibilityNotificationType::kToggleDockedMagnifier, enabled);
 
@@ -368,11 +364,13 @@ void MagnificationManager::HandleFocusChanged(const gfx::Rect& bounds_in_screen,
 
   // Fullscreen magnifier and docked magnifier are mutually exclusive.
   if (fullscreen_magnifier_enabled_) {
-    ash::Shell::Get()->magnification_controller()->HandleFocusedNodeChanged(
+    Shell::Get()->magnification_controller()->HandleFocusedNodeChanged(
         is_editable, bounds_in_screen);
     return;
   }
   DCHECK(IsDockedMagnifierEnabled());
-  ash::DockedMagnifierController::Get()->CenterOnPoint(
+  DockedMagnifierController::Get()->CenterOnPoint(
       bounds_in_screen.CenterPoint());
 }
+
+}  // namespace ash

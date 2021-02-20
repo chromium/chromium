@@ -55,7 +55,7 @@ void ChromeHelpAppUIDelegate::PopulateLoadTimeData(
     content::WebUIDataSource* source) {
   // Enable accessibility mode (slower balloons) if either spoken feedback
   // or switch access is enabled.
-  auto* accessibility_manager = AccessibilityManager::Get();
+  auto* accessibility_manager = ash::AccessibilityManager::Get();
   source->AddBoolean("accessibility",
                      accessibility_manager->IsSpokenFeedbackEnabled() ||
                          accessibility_manager->IsSwitchAccessEnabled());

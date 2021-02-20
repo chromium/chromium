@@ -186,7 +186,8 @@ BrailleDisplayPrivateUpdateBluetoothBrailleDisplayAddressFunction::Run() {
 #else
   std::string address;
   EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &address));
-  AccessibilityManager::Get()->UpdateBluetoothBrailleDisplayAddress(address);
+  ash::AccessibilityManager::Get()->UpdateBluetoothBrailleDisplayAddress(
+      address);
   return RespondNow(NoArguments());
 #endif
 }

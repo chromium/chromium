@@ -167,7 +167,7 @@ class BrailleDisplayPrivateApiTest : public ExtensionApiTest {
   // steal events.  Some tests override this to keep the normal behaviour
   // of the accessibility manager.
   virtual void DisableAccessibilityManagerBraille() {
-    AccessibilityManager::SetBrailleControllerForTest(
+    ash::AccessibilityManager::SetBrailleControllerForTest(
         &stub_braille_controller_);
   }
 

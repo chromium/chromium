@@ -10,6 +10,8 @@
 #include "ui/base/ime/text_input_type.h"
 #include "ui/gfx/geometry/rect.h"
 
+namespace ash {
+
 AccessibilityInputMethodObserver::AccessibilityInputMethodObserver(
     ui::InputMethod* input_method)
     : input_method_(input_method) {
@@ -50,3 +52,5 @@ void AccessibilityInputMethodObserver::UpdateCaretBounds(
   else
     accessibility_manager->SetCaretBounds(client->GetCaretBounds());
 }
+
+}  // namespace ash

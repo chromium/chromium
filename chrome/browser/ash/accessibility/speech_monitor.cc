@@ -10,8 +10,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/tts_controller.h"
 
+namespace ash {
 namespace test {
-
 namespace {
 
 constexpr int kPrintExpectationDelayMs = 3000;
@@ -268,3 +268,4 @@ void SpeechMonitor::MaybePrintExpectations() {
 }
 
 }  // namespace test
+}  // namespace ash

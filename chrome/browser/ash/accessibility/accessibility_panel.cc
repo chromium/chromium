@@ -18,6 +18,8 @@
 #include "ui/wm/core/shadow_types.h"
 #include "ui/wm/core/window_animations.h"
 
+namespace ash {
+
 // Monitors the contents of the accessibility panel for relevant changes
 class AccessibilityPanel::AccessibilityPanelWebContentsObserver
     : public content::WebContentsObserver {
@@ -60,7 +62,7 @@ AccessibilityPanel::AccessibilityPanel(content::BrowserContext* browser_context,
   // Placing the panel in the accessibility panel container allows ash to manage
   // both the window bounds and display work area.
   ash_util::SetupWidgetInitParamsForContainer(
-      &params, ash::kShellWindowId_AccessibilityPanelContainer);
+      &params, ShellWindowId::kShellWindowId_AccessibilityPanelContainer);
   params.bounds = display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
   params.delegate = this;
   params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
@@ -107,3 +109,5 @@ bool AccessibilityPanel::HandleContextMenu(
 void AccessibilityPanel::DidFirstVisuallyNonEmptyPaint() {
   widget_->Show();
 }
+
+}  // namespace ash

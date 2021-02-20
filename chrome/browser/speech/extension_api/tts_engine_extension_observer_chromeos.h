@@ -56,7 +56,7 @@ class TtsEngineExtensionObserverChromeOS
   bool IsLoadedTtsEngine(const std::string& extension_id);
 
   void OnAccessibilityStatusChanged(
-      const AccessibilityStatusEventDetails& details);
+      const ash::AccessibilityStatusEventDetails& details);
 
   ScopedObserver<extensions::ExtensionRegistry,
                  extensions::ExtensionRegistryObserver>

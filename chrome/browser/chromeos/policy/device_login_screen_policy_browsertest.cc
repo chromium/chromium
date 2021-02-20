@@ -115,12 +115,12 @@ void DeviceLoginScreenPolicyBrowsertest::SetUpOnMainThread() {
   login_profile_ = chromeos::ProfileHelper::GetSigninProfile();
   ASSERT_TRUE(login_profile_);
   // Set the login screen profile.
-  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
+  auto* accessibility_manager = ash::AccessibilityManager::Get();
   ASSERT_TRUE(accessibility_manager);
   accessibility_manager->SetProfileForTest(
       chromeos::ProfileHelper::GetSigninProfile());
 
-  MagnificationManager* magnification_manager = MagnificationManager::Get();
+  auto* magnification_manager = ash::MagnificationManager::Get();
   ASSERT_TRUE(magnification_manager);
   magnification_manager->SetProfileForTest(
       chromeos::ProfileHelper::GetSigninProfile());

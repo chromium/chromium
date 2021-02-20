@@ -17,6 +17,8 @@
 
 namespace extensions {
 
+using ::ash::AccessibilityManager;
+
 class AccessibilityPrivateApiTest : public ExtensionApiTest {
  public:
   void SetUp() override {

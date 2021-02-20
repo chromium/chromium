@@ -49,12 +49,13 @@
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
-using content::BrowserThread;
-
 namespace chromeos {
 namespace settings {
-
 namespace {
+
+using ::ash::AccessibilityManager;
+using ::ash::PlaySoundOption;
+using ::content::BrowserThread;
 
 // Returns info about extensions for files we support as user images.
 ui::SelectFileDialog::FileTypeInfo GetUserImageFileTypeInfo() {

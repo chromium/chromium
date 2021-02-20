@@ -8,6 +8,8 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
+namespace ash {
+
 ExtensionConsoleErrorObserver::ExtensionConsoleErrorObserver(
     Profile* profile,
     const char* extension_id) {
@@ -53,3 +55,5 @@ std::string ExtensionConsoleErrorObserver::GetErrorOrWarningAt(
 size_t ExtensionConsoleErrorObserver::GetErrorsAndWarningsCount() const {
   return errors_.size();
 }
+
+}  // namespace ash

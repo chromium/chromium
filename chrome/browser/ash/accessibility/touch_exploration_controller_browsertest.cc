@@ -26,6 +26,8 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/events/test/test_event_handler.h"
 
+namespace ash {
+
 class TouchExplorationTest : public InProcessBrowserTest {
  public:
   TouchExplorationTest() : simulated_clock_(new base::SimpleTestTickClock()) {
@@ -46,7 +48,7 @@ class TouchExplorationTest : public InProcessBrowserTest {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     content::WaitForResizeComplete(web_contents);
-    root_window_ = ash::Shell::Get()->GetPrimaryRootWindow();
+    root_window_ = Shell::Get()->GetPrimaryRootWindow();
     event_handler_.reset(new ui::test::TestEventHandler());
     root_window_->AddPreTargetHandler(event_handler_.get());
   }
@@ -243,3 +245,5 @@ IN_PROC_BROWSER_TEST_F(TouchExplorationTest, DISABLED_SplitTapExplore) {
   EXPECT_TRUE(cursor_client->IsMouseEventsEnabled());
   EXPECT_FALSE(cursor_client->IsCursorVisible());
 }
+
+}  // namespace ash

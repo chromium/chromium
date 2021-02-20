@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_ACCESSIBILITY_ACCESSIBILITY_EVENT_REWRITER_DELEGATE_H_
-#define CHROME_BROWSER_ASH_ACCESSIBILITY_ACCESSIBILITY_EVENT_REWRITER_DELEGATE_H_
+#ifndef CHROME_BROWSER_ASH_ACCESSIBILITY_ACCESSIBILITY_EVENT_REWRITER_DELEGATE_IMPL_H_
+#define CHROME_BROWSER_ASH_ACCESSIBILITY_ACCESSIBILITY_EVENT_REWRITER_DELEGATE_IMPL_H_
 
 #include <memory>
 
@@ -13,32 +13,31 @@
 #include "ui/gfx/geometry/point_f.h"
 
 namespace ash {
-enum class SwitchAccessCommand;
 enum class MagnifierCommand;
-}
+enum class SwitchAccessCommand;
 
 // Passes key events from Ash's EventRewriter to accessibility component
 // extension code. Used by ChromeVox and Switch Access. Reports ChromeVox's
 // unhandled key events back to Ash for continued dispatch.
 // TODO(http://crbug.com/839541): Avoid reposting unhandled events.
-class AccessibilityEventRewriterDelegate
-    : public ash::AccessibilityEventRewriterDelegate,
+class AccessibilityEventRewriterDelegateImpl
+    : public AccessibilityEventRewriterDelegate,
       public content::WebContentsDelegate {
  public:
-  AccessibilityEventRewriterDelegate();
-  AccessibilityEventRewriterDelegate(
-      const AccessibilityEventRewriterDelegate&) = delete;
-  AccessibilityEventRewriterDelegate& operator=(
-      const AccessibilityEventRewriterDelegate&) = delete;
-  ~AccessibilityEventRewriterDelegate() override;
+  AccessibilityEventRewriterDelegateImpl();
+  AccessibilityEventRewriterDelegateImpl(
+      const AccessibilityEventRewriterDelegateImpl&) = delete;
+  AccessibilityEventRewriterDelegateImpl& operator=(
+      const AccessibilityEventRewriterDelegateImpl&) = delete;
+  ~AccessibilityEventRewriterDelegateImpl() override;
 
-  // ash::AccessibilityEventRewriterDelegate:
+  // AccessibilityEventRewriterDelegate:
   void DispatchKeyEventToChromeVox(std::unique_ptr<ui::Event> event,
                                    bool capture) override;
   void DispatchMouseEvent(std::unique_ptr<ui::Event> event) override;
-  void SendSwitchAccessCommand(ash::SwitchAccessCommand command) override;
+  void SendSwitchAccessCommand(SwitchAccessCommand command) override;
   void SendPointScanPoint(const gfx::PointF& point) override;
-  void SendMagnifierCommand(ash::MagnifierCommand command) override;
+  void SendMagnifierCommand(MagnifierCommand command) override;
 
  private:
   // Reports unhandled key events to the EventRewriterController for dispatch.
@@ -50,4 +49,6 @@ class AccessibilityEventRewriterDelegate
       const content::NativeWebKeyboardEvent& event) override;
 };
 
-#endif  // CHROME_BROWSER_ASH_ACCESSIBILITY_ACCESSIBILITY_EVENT_REWRITER_DELEGATE_H_
+}  // namespace ash
+
+#endif  // CHROME_BROWSER_ASH_ACCESSIBILITY_ACCESSIBILITY_EVENT_REWRITER_DELEGATE_IMPL_H_

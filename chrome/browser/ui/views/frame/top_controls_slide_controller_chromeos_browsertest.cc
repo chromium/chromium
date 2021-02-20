@@ -54,6 +54,8 @@
 
 namespace {
 
+using ::ash::AccessibilityManager;
+
 enum class TopChromeShownState {
   kFullyShown,
   kFullyHidden,

@@ -20,6 +20,8 @@
 
 namespace {
 
+using ::ash::MagnificationManager;
+
 class ExtensionDialogBoundsTest
     : public SupportsTestDialog<extensions::ExtensionBrowserTest> {
  public:
@@ -42,7 +44,7 @@ class ExtensionDialogBoundsTest
   void EnableDockedMagnifier() const {
     extensions::TestExtensionRegistryObserver registry_observer(
         extensions::ExtensionRegistry::Get(
-            AccessibilityManager::Get()->profile()));
+            ash::AccessibilityManager::Get()->profile()));
     MagnificationManager::Get()->SetDockedMagnifierEnabled(true);
     registry_observer.WaitForExtensionLoaded();
     ASSERT_TRUE(MagnificationManager::Get()->IsDockedMagnifierEnabled());

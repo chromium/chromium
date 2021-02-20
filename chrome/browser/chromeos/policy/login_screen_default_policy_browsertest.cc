@@ -30,11 +30,12 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace em = enterprise_management;
-
 namespace policy {
-
 namespace {
+
+namespace em = ::enterprise_management;
+using ::ash::AccessibilityManager;
+using ::ash::MagnificationManager;
 
 const em::AccessibilitySettingsProto_ScreenMagnifierType kFullScreenMagnifier =
     em::AccessibilitySettingsProto_ScreenMagnifierType_SCREEN_MAGNIFIER_TYPE_FULL;

@@ -16,6 +16,8 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/notification_types.h"
 
+namespace ash {
+
 class AccessibilityCommonTest : public InProcessBrowserTest {
  public:
   bool DoesComponentExtensionExist(const std::string& id) {
@@ -59,34 +61,30 @@ IN_PROC_BROWSER_TEST_F(AccessibilityCommonTest, ToggleFeatures) {
       accessibility_common_extension_load_waiter(
           extensions::NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD,
           content::NotificationService::AllSources());
-  pref_service->SetBoolean(ash::prefs::kAccessibilityAutoclickEnabled, true);
+  pref_service->SetBoolean(prefs::kAccessibilityAutoclickEnabled, true);
   accessibility_common_extension_load_waiter.Wait();
 
   EXPECT_EQ(1U, enabled_features.size());
-  EXPECT_EQ(1U,
-            enabled_features.count(ash::prefs::kAccessibilityAutoclickEnabled));
+  EXPECT_EQ(1U, enabled_features.count(prefs::kAccessibilityAutoclickEnabled));
   EXPECT_TRUE(DoesComponentExtensionExist(
       extension_misc::kAccessibilityCommonExtensionId));
 
-  pref_service->SetBoolean(ash::prefs::kAccessibilityScreenMagnifierEnabled,
-                           true);
+  pref_service->SetBoolean(prefs::kAccessibilityScreenMagnifierEnabled, true);
   EXPECT_EQ(2U, enabled_features.size());
-  EXPECT_EQ(1U,
-            enabled_features.count(ash::prefs::kAccessibilityAutoclickEnabled));
-  EXPECT_EQ(1U, enabled_features.count(
-                    ash::prefs::kAccessibilityScreenMagnifierEnabled));
+  EXPECT_EQ(1U, enabled_features.count(prefs::kAccessibilityAutoclickEnabled));
+  EXPECT_EQ(
+      1U, enabled_features.count(prefs::kAccessibilityScreenMagnifierEnabled));
   EXPECT_TRUE(DoesComponentExtensionExist(
       extension_misc::kAccessibilityCommonExtensionId));
 
-  pref_service->SetBoolean(ash::prefs::kAccessibilityAutoclickEnabled, false);
+  pref_service->SetBoolean(prefs::kAccessibilityAutoclickEnabled, false);
   EXPECT_EQ(1U, enabled_features.size());
-  EXPECT_EQ(1U, enabled_features.count(
-                    ash::prefs::kAccessibilityScreenMagnifierEnabled));
+  EXPECT_EQ(
+      1U, enabled_features.count(prefs::kAccessibilityScreenMagnifierEnabled));
   EXPECT_TRUE(DoesComponentExtensionExist(
       extension_misc::kAccessibilityCommonExtensionId));
 
-  pref_service->SetBoolean(ash::prefs::kAccessibilityScreenMagnifierEnabled,
-                           false);
+  pref_service->SetBoolean(prefs::kAccessibilityScreenMagnifierEnabled, false);
   EXPECT_TRUE(enabled_features.empty());
   EXPECT_FALSE(DoesComponentExtensionExist(
       extension_misc::kAccessibilityCommonExtensionId));
@@ -95,8 +93,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityCommonTest, ToggleFeatures) {
   content::WindowedNotificationObserver spoken_feedback_extension_load_waiter(
       extensions::NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD,
       content::NotificationService::AllSources());
-  pref_service->SetBoolean(ash::prefs::kAccessibilitySpokenFeedbackEnabled,
-                           true);
+  pref_service->SetBoolean(prefs::kAccessibilitySpokenFeedbackEnabled, true);
   spoken_feedback_extension_load_waiter.Wait();
   EXPECT_TRUE(enabled_features.empty());
   EXPECT_FALSE(DoesComponentExtensionExist(
@@ -104,3 +101,5 @@ IN_PROC_BROWSER_TEST_F(AccessibilityCommonTest, ToggleFeatures) {
   EXPECT_TRUE(
       DoesComponentExtensionExist(extension_misc::kChromeVoxExtensionId));
 }
+
+}  // namespace ash

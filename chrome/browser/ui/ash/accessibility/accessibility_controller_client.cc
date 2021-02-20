@@ -17,6 +17,8 @@
 
 namespace {
 
+using ::ash::AccessibilityManager;
+
 void SetAutomationManagerEnabled(content::BrowserContext* context,
                                  bool enabled) {
   DCHECK(context);
@@ -101,7 +103,7 @@ void AccessibilityControllerClient::TriggerAccessibilityAlertWithMessage(
 
 void AccessibilityControllerClient::PlayEarcon(ash::Sound sound_key) {
   AccessibilityManager::Get()->PlayEarcon(
-      sound_key, PlaySoundOption::kOnlyIfSpokenFeedbackEnabled);
+      sound_key, ash::PlaySoundOption::kOnlyIfSpokenFeedbackEnabled);
 }
 
 base::TimeDelta AccessibilityControllerClient::PlayShutdownSound() {

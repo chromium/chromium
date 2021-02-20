@@ -58,12 +58,11 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/views/widget/widget.h"
 
+namespace ash {
 namespace {
-// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
-// source migration is finished.
-using ::ash::ProfileHelper;
 
 const double kExpectedPhoneticSpeechAndHintDelayMS = 1000;
+
 }  // namespace
 
 LoggedInSpokenFeedbackTest::LoggedInSpokenFeedbackTest()
@@ -133,8 +132,8 @@ void LoggedInSpokenFeedbackTest::SendMouseMoveTo(const gfx::Point& location) {
 }
 
 bool LoggedInSpokenFeedbackTest::PerformAcceleratorAction(
-    ash::AcceleratorAction action) {
-  return ash::AcceleratorController::Get()->PerformActionIfEnabled(action, {});
+    AcceleratorAction action) {
+  return AcceleratorController::Get()->PerformActionIfEnabled(action, {});
 }
 
 void LoggedInSpokenFeedbackTest::DisableEarcons() {
@@ -221,7 +220,8 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, NavigateNotificationCenter) {
   EnableChromeVox();
 
   sm_.Call([this]() {
-    EXPECT_TRUE(PerformAcceleratorAction(ash::TOGGLE_MESSAGE_CENTER_BUBBLE));
+    EXPECT_TRUE(PerformAcceleratorAction(
+        AcceleratorAction::TOGGLE_MESSAGE_CENTER_BUBBLE));
   });
   sm_.ExpectSpeech(
       "Quick Settings, Press search plus left to access the notification "
@@ -292,12 +292,11 @@ class SpokenFeedbackTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     if (GetParam() == kTestAsGuestUser) {
-      command_line->AppendSwitch(ash::switches::kGuestSession);
+      command_line->AppendSwitch(switches::kGuestSession);
       command_line->AppendSwitch(::switches::kIncognito);
-      command_line->AppendSwitchASCII(ash::switches::kLoginProfile, "user");
+      command_line->AppendSwitchASCII(switches::kLoginProfile, "user");
       command_line->AppendSwitchASCII(
-          ash::switches::kLoginUser,
-          user_manager::GuestAccountId().GetUserEmail());
+          switches::kLoginUser, user_manager::GuestAccountId().GetUserEmail());
     }
   }
 };
@@ -360,8 +359,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DISABLED_TypeInOmnibox) {
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, FocusShelf) {
   EnableChromeVox();
 
-  sm_.Call(
-      [this]() { EXPECT_TRUE(PerformAcceleratorAction(ash::FOCUS_SHELF)); });
+  sm_.Call([this]() {
+    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
+  });
   sm_.ExpectSpeechPattern("Launcher");
   sm_.ExpectSpeech("Button");
   sm_.ExpectSpeech("Shelf");
@@ -386,12 +386,13 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ShelfIconFocusForward) {
   EnableChromeVox();
   sm_.Call([controller, title]() {
     controller->CreateAppShortcutLauncherItem(
-        ash::ShelfID("FakeApp"), controller->shelf_model()->item_count(),
+        ShelfID("FakeApp"), controller->shelf_model()->item_count(),
         base::ASCIIToUTF16(title));
   });
 
   // Focus on the shelf.
-  sm_.Call([this]() { PerformAcceleratorAction(ash::FOCUS_SHELF); });
+  sm_.Call(
+      [this]() { PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF); });
   sm_.ExpectSpeech("Launcher");
   sm_.ExpectSpeech("Button");
   sm_.ExpectSpeech("Shelf");
@@ -430,27 +431,27 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, SpeakingTextUnderMouseForShelfItem) {
     for (int i = 0; i < insert_app_num; i++) {
       std::string app_title = title + base::NumberToString(i);
       std::string app_id = id + base::NumberToString(i);
-      controller->CreateAppShortcutLauncherItem(
-          ash::ShelfID(app_id), base_index + i, base::ASCIIToUTF16(app_title));
+      controller->CreateAppShortcutLauncherItem(ShelfID(app_id), base_index + i,
+                                                base::ASCIIToUTF16(app_title));
     }
 
     // Enable the function of speaking text under mouse.
-    ash::EventRewriterController::Get()->SetSendMouseEvents(true);
+    EventRewriterController::Get()->SetSendMouseEvents(true);
 
     // Focus on the Shelf because voice text for focusing on Shelf is fixed.
     // Wait until voice announcements are finished.
-    EXPECT_TRUE(PerformAcceleratorAction(ash::FOCUS_SHELF));
+    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
   });
   sm_.ExpectSpeechPattern("Launcher");
 
   // Hover mouse on the Shelf button. Verifies that text under mouse is spoken.
   sm_.Call([this]() {
-    ash::ShelfView* shelf_view =
-        ash::Shelf::ForWindow(ash::Shell::Get()->GetPrimaryRootWindow())
+    ShelfView* shelf_view =
+        Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
             ->shelf_widget()
             ->shelf_view_for_testing();
-    const int first_app_index =
-        shelf_view->model()->GetItemIndexForType(ash::TYPE_PINNED_APP);
+    const int first_app_index = shelf_view->model()->GetItemIndexForType(
+        ShelfItemType::TYPE_PINNED_APP);
     SendMouseMoveTo(shelf_view->view_model()
                         ->view_at(first_app_index)
                         ->GetBoundsInScreen()
@@ -486,17 +487,18 @@ IN_PROC_BROWSER_TEST_P(ShelfNotificationBadgeSpokenFeedbackTest,
   EnableChromeVox();
 
   // Create and add a test app to the shelf model.
-  ash::ShelfItem item;
-  item.id = ash::ShelfID("TestApp");
+  ShelfItem item;
+  item.id = ShelfID("TestApp");
   item.title = base::ASCIIToUTF16("TestAppTitle");
-  item.type = ash::ShelfItemType::TYPE_APP;
-  ash::ShelfModel::Get()->Add(item);
+  item.type = ShelfItemType::TYPE_APP;
+  ShelfModel::Get()->Add(item);
 
   // Set the notification badge to be shown for the test app.
-  ash::ShelfModel::Get()->UpdateItemNotification("TestApp", /*has_badge=*/true);
+  ShelfModel::Get()->UpdateItemNotification("TestApp", /*has_badge=*/true);
 
   // Focus on the shelf.
-  sm_.Call([this]() { PerformAcceleratorAction(ash::FOCUS_SHELF); });
+  sm_.Call(
+      [this]() { PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF); });
   sm_.ExpectSpeech("Launcher");
   sm_.ExpectSpeech("Button");
   sm_.ExpectSpeech("Shelf");
@@ -538,15 +540,16 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
               false /* should_notify_initialized */);
 
   // Create and add a test app to the shelf model.
-  ash::ShelfItem item;
-  item.id = ash::ShelfID(app_id);
+  ShelfItem item;
+  item.id = ShelfID(app_id);
   item.title = base::ASCIIToUTF16("TestAppTitle");
-  item.type = ash::ShelfItemType::TYPE_APP;
-  item.app_status = ash::AppStatus::kPaused;
-  ash::ShelfModel::Get()->Add(item);
+  item.type = ShelfItemType::TYPE_APP;
+  item.app_status = AppStatus::kPaused;
+  ShelfModel::Get()->Add(item);
 
   // Focus on the shelf.
-  sm_.Call([this]() { PerformAcceleratorAction(ash::FOCUS_SHELF); });
+  sm_.Call(
+      [this]() { PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF); });
   sm_.ExpectSpeech("Launcher");
   sm_.ExpectSpeech("Button");
   sm_.ExpectSpeech("Shelf");
@@ -587,15 +590,16 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
               false /* should_notify_initialized */);
 
   // Create and add a test app to the shelf model.
-  ash::ShelfItem item;
-  item.id = ash::ShelfID(app_id);
+  ShelfItem item;
+  item.id = ShelfID(app_id);
   item.title = base::ASCIIToUTF16("TestAppTitle");
-  item.type = ash::ShelfItemType::TYPE_APP;
-  item.app_status = ash::AppStatus::kBlocked;
-  ash::ShelfModel::Get()->Add(item);
+  item.type = ShelfItemType::TYPE_APP;
+  item.app_status = AppStatus::kBlocked;
+  ShelfModel::Get()->Add(item);
 
   // Focus on the shelf.
-  sm_.Call([this]() { PerformAcceleratorAction(ash::FOCUS_SHELF); });
+  sm_.Call(
+      [this]() { PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF); });
   sm_.ExpectSpeech("Launcher");
   sm_.ExpectSpeech("Button");
   sm_.ExpectSpeech("Shelf");
@@ -618,7 +622,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OpenStatusTray) {
   EnableChromeVox();
 
   sm_.Call([this]() {
-    EXPECT_TRUE(PerformAcceleratorAction(ash::TOGGLE_SYSTEM_TRAY_BUBBLE));
+    EXPECT_TRUE(
+        PerformAcceleratorAction(AcceleratorAction::TOGGLE_SYSTEM_TRAY_BUBBLE));
   });
   sm_.ExpectSpeech(
       "Quick Settings, Press search plus left to access the notification "
@@ -632,8 +637,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OpenStatusTray) {
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigateSystemTray) {
   EnableChromeVox();
 
-  sm_.Call(
-      [this]() { (PerformAcceleratorAction(ash::TOGGLE_SYSTEM_TRAY_BUBBLE)); });
+  sm_.Call([this]() {
+    (PerformAcceleratorAction(AcceleratorAction::TOGGLE_SYSTEM_TRAY_BUBBLE));
+  });
   sm_.ExpectSpeechPattern(
       "Quick Settings, Press search plus left to access the notification "
       "center., window");
@@ -656,10 +662,14 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigateSystemTray) {
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DISABLED_ScreenBrightness) {
   EnableChromeVox();
 
-  sm_.Call([this]() { (PerformAcceleratorAction(ash::BRIGHTNESS_UP)); });
+  sm_.Call([this]() {
+    (PerformAcceleratorAction(AcceleratorAction::BRIGHTNESS_UP));
+  });
   sm_.ExpectSpeechPattern("Brightness * percent");
 
-  sm_.Call([this]() { (PerformAcceleratorAction(ash::BRIGHTNESS_DOWN)); });
+  sm_.Call([this]() {
+    (PerformAcceleratorAction(AcceleratorAction::BRIGHTNESS_DOWN));
+  });
   sm_.ExpectSpeechPattern("Brightness * percent");
 
   sm_.Replay();
@@ -671,8 +681,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, VolumeSlider) {
   sm_.Call([this]() {
     // Volume slider does not fire valueChanged event on first key press because
     // it has no widget.
-    PerformAcceleratorAction(ash::VOLUME_UP);
-    PerformAcceleratorAction(ash::VOLUME_UP);
+    PerformAcceleratorAction(AcceleratorAction::VOLUME_UP);
+    PerformAcceleratorAction(AcceleratorAction::VOLUME_UP);
   });
   sm_.ExpectSpeechPattern("* percent*");
   sm_.Replay();
@@ -688,7 +698,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OverviewMode) {
 
   sm_.ExpectSpeech("Click me");
 
-  sm_.Call([this]() { (PerformAcceleratorAction(ash::TOGGLE_OVERVIEW)); });
+  sm_.Call([this]() {
+    (PerformAcceleratorAction(AcceleratorAction::TOGGLE_OVERVIEW));
+  });
 
   sm_.ExpectSpeech(
       "Entered window overview mode. Swipe to navigate, or press tab if using "
@@ -815,13 +827,13 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, TouchExploreStatusTray) {
   auto* clock_ptr = &clock;
   ui::SetEventTickClockForTesting(clock_ptr);
 
-  auto* root_window = ash::Shell::Get()->GetPrimaryRootWindow();
+  auto* root_window = Shell::Get()->GetPrimaryRootWindow();
   ui::test::EventGenerator generator(root_window);
   auto* generator_ptr = &generator;
 
   // Touch the status tray.
   sm_.Call([clock_ptr, generator_ptr]() {
-    const gfx::Point& tray_center = ash::Shell::Get()
+    const gfx::Point& tray_center = Shell::Get()
                                         ->GetPrimaryRootWindowController()
                                         ->GetStatusAreaWidget()
                                         ->unified_system_tray()
@@ -855,13 +867,13 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
   auto* clock_ptr = &clock;
   ui::SetEventTickClockForTesting(clock_ptr);
 
-  auto* root_window = ash::Shell::Get()->GetPrimaryRootWindow();
+  auto* root_window = Shell::Get()->GetPrimaryRootWindow();
   ui::test::EventGenerator generator(root_window);
   auto* generator_ptr = &generator;
 
   // Force right edge volume slider gesture on.
   sm_.Call([] {
-    ash::AccessibilityController::Get()->EnableChromeVoxVolumeSlideGesture();
+    AccessibilityController::Get()->EnableChromeVoxVolumeSlideGesture();
   });
 
   // Touch and slide on the right edge of the screen.
@@ -900,7 +912,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
   auto* clock_ptr = &clock;
   ui::SetEventTickClockForTesting(clock_ptr);
 
-  auto* root_window = ash::Shell::Get()->GetPrimaryRootWindow();
+  auto* root_window = Shell::Get()->GetPrimaryRootWindow();
   ui::test::EventGenerator generator(root_window);
   auto* generator_ptr = &generator;
 
@@ -1252,11 +1264,10 @@ class OobeSpokenFeedbackTest : public OobeBaseTest {
     OobeBaseTest::SetUpCommandLine(command_line);
     // Many bots don't have keyboard/mice which triggers the HID detection
     // dialog in the OOBE.  Avoid confusing the tests with that.
-    command_line->AppendSwitch(
-        ash::switches::kDisableHIDDetectionOnOOBEForTesting);
+    command_line->AppendSwitch(switches::kDisableHIDDetectionOnOOBEForTesting);
     // We only start the tutorial in OOBE if the device is a Chromebook, so set
     // the device type so tutorial-related behavior can be tested.
-    command_line->AppendSwitchASCII(ash::switches::kFormFactor, "CHROMEBOOK");
+    command_line->AppendSwitchASCII(switches::kFormFactor, "CHROMEBOOK");
   }
 
   test::SpeechMonitor sm_;
@@ -1327,7 +1338,7 @@ class SigninToUserProfileSwitchTest : public OobeSpokenFeedbackTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     OobeSpokenFeedbackTest::SetUpCommandLine(command_line);
     // Force the help app to launch in the background.
-    command_line->AppendSwitch(ash::switches::kForceFirstRunUI);
+    command_line->AppendSwitch(switches::kForceFirstRunUI);
   }
 
  protected:
@@ -1358,9 +1369,8 @@ IN_PROC_BROWSER_TEST_F(SigninToUserProfileSwitchTest, LoginAsNewUser) {
         nullptr, ui::VKEY_ESCAPE, false, false, false, false));
   });
 
-  std::string button_title = ash::features::IsSplitSettingsSyncEnabled()
-                                 ? "Got it"
-                                 : "Accept and continue";
+  std::string button_title =
+      features::IsSplitSettingsSyncEnabled() ? "Got it" : "Accept and continue";
   sm_.ExpectSpeech(button_title);
 
   // Check that profile switched to the active user.
@@ -1370,3 +1380,5 @@ IN_PROC_BROWSER_TEST_F(SigninToUserProfileSwitchTest, LoginAsNewUser) {
   });
   sm_.Replay();
 }
+
+}  // namespace ash

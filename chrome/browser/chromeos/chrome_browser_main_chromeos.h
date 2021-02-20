@@ -22,7 +22,6 @@
 #include "chrome/browser/chromeos/external_metrics.h"
 #include "chrome/browser/memory/memory_kills_monitor.h"
 
-class AccessibilityEventRewriterDelegate;
 class AssistantClientImpl;
 class AssistantStateClient;
 class ChromeKeyboardControllerClient;
@@ -35,6 +34,10 @@ class ArcDataSnapshotdManager;
 
 class ArcServiceLauncher;
 }  // namespace arc
+
+namespace ash {
+class AccessibilityEventRewriterDelegateImpl;
+}
 
 namespace crosapi {
 class BrowserManager;
@@ -149,7 +152,7 @@ class ChromeBrowserMainPartsChromeos : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<EventRewriterDelegateImpl> event_rewriter_delegate_;
 
   // Handles event dispatch to the accessibility component extensions.
-  std::unique_ptr<AccessibilityEventRewriterDelegate>
+  std::unique_ptr<ash::AccessibilityEventRewriterDelegateImpl>
       accessibility_event_rewriter_delegate_;
 
   scoped_refptr<chromeos::ExternalMetrics> external_metrics_;

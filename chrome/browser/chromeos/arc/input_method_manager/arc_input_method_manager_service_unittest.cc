@@ -42,7 +42,8 @@
 namespace arc {
 namespace {
 
-namespace im = chromeos::input_method;
+namespace im = ::chromeos::input_method;
+using ::ash::AccessibilityNotificationType;
 
 mojom::ImeInfoPtr GenerateImeInfo(const std::string& id,
                                   const std::string& name,

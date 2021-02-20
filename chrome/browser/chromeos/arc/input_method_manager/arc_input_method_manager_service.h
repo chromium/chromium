@@ -94,7 +94,7 @@ class ArcInputMethodManagerService
   // Called when a11y keyboard option changed and disables ARC IME while a11y
   // keyboard option is enabled.
   void OnAccessibilityStatusChanged(
-      const AccessibilityStatusEventDetails& event_details);
+      const ash::AccessibilityStatusEventDetails& event_details);
 
   void OnArcInputMethodBoundsChanged(const gfx::Rect& bounds);
 

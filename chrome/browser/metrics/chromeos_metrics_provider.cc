@@ -203,7 +203,7 @@ void ChromeOSMetricsProvider::ProvideSystemProfileMetrics(
 
 void ChromeOSMetricsProvider::ProvideAccessibilityMetrics() {
   bool is_spoken_feedback_enabled =
-      AccessibilityManager::Get()->IsSpokenFeedbackEnabled();
+      ash::AccessibilityManager::Get()->IsSpokenFeedbackEnabled();
   UMA_HISTOGRAM_BOOLEAN("Accessibility.CrosSpokenFeedback.EveryReport",
                         is_spoken_feedback_enabled);
 }

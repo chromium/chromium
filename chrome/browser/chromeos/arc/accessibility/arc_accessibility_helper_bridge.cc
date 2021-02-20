@@ -44,10 +44,14 @@
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/widget/widget.h"
 
-using ash::ArcNotificationSurface;
-using ash::ArcNotificationSurfaceManager;
-
+namespace arc {
 namespace {
+
+using ::ash::AccessibilityManager;
+using ::ash::AccessibilityNotificationType;
+using ::ash::ArcNotificationSurface;
+using ::ash::ArcNotificationSurfaceManager;
+using ::ash::MagnificationManager;
 
 // ClassName for toast from ARC++ R onwards.
 constexpr char kToastEventSourceArcR[] = "android.widget.Toast";
@@ -118,12 +122,6 @@ void SetChildAxTreeIDForWindow(aura::Window* window,
   static_cast<exo::ShellSurfaceBase*>(widget->widget_delegate())
       ->SetChildAxTreeId(treeID);
 }
-
-}  // namespace
-
-namespace arc {
-
-namespace {
 
 // Singleton factory for ArcAccessibilityHelperBridge.
 class ArcAccessibilityHelperBridgeFactory
@@ -692,7 +690,7 @@ ArcAccessibilityHelperBridge::OnGetTextLocationDataResultInternal(
 }
 
 void ArcAccessibilityHelperBridge::OnAccessibilityStatusChanged(
-    const AccessibilityStatusEventDetails& event_details) {
+    const ash::AccessibilityStatusEventDetails& event_details) {
   if (event_details.notification_type !=
           AccessibilityNotificationType::kToggleFocusHighlight &&
       event_details.notification_type !=
