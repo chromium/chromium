@@ -63,7 +63,7 @@ namespace {
 constexpr int kButtonPadding = 8;
 constexpr int kButtonWidth = 92;
 constexpr int kCornerRadius = 12;
-constexpr int kBubbleTopPaddingFromWindow = 36;
+constexpr int kBubbleTopPaddingFromWindow = 28;
 constexpr int kDefaultBubbleWidth = 416;
 constexpr int kNoExtensionBubbleHeight = 340;
 constexpr int kDefaultBubbleHeight = 380;
