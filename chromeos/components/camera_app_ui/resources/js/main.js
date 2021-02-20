@@ -371,9 +371,6 @@ let instance = null;
     metrics.setMetricsEnabled(false);
   }
 
-  // TODO(crbug.com/1082585): Initializes it before any other javascript loaded.
-  error.initialize();
-
   // Setup listener for performance events.
   perfLogger.addListener(({event, duration, perfInfo}) => {
     metrics.sendPerfEvent({event, duration, perfInfo});
