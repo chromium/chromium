@@ -5,6 +5,7 @@
 #include "media/base/win/hresult_status_helper.h"
 
 #include "base/logging.h"
+#include "base/strings/string_util.h"
 
 namespace media {
 
@@ -15,8 +16,12 @@ Status HresultToStatus(HRESULT hresult,
   if (SUCCEEDED(hresult))
     return OkStatus();
 
+  std::string sys_err = logging::SystemErrorCodeToString(hresult);
+  if (!base::IsStringUTF8AllowingNoncharacters(sys_err))
+    sys_err = "System error string is invalid";
+
   return Status(code, message == nullptr ? "HRESULT" : message, location)
-      .WithData("value", logging::SystemErrorCodeToString(hresult));
+      .WithData("value", sys_err);
 }
 
 }  // namespace media
