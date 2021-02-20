@@ -1857,6 +1857,14 @@ TabStripSelectionChange TabStripModel::SetSelection(
   selection.new_model = new_model;
   selection.reason = reason;
 
+#if DCHECK_IS_ON()
+  // Validate that |new_model| only selects tabs that actually exist.
+  DCHECK(ContainsIndex(new_model.active()));
+  for (int selected_index : new_model.selected_indices()) {
+    DCHECK(ContainsIndex(selected_index));
+  }
+#endif
+
   // This is done after notifying TabDeactivated() because caller can assume
   // that TabStripModel::active_index() would return the index for
   // |selection.old_contents|.
