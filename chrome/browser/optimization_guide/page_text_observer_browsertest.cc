@@ -20,7 +20,10 @@
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 
 namespace optimization_guide {
 
@@ -91,6 +94,14 @@ class PageTextObserverBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     InProcessBrowserTest::SetUpOnMainThread();
+
+    embedded_test_server()->RegisterRequestHandler(
+        base::BindRepeating(&PageTextObserverBrowserTest::HandleSlowRequest,
+                            base::Unretained(this)));
+    embedded_test_server()->ServeFilesFromSourceDirectory(
+        "chrome/test/data/optimization_guide");
+
+    ASSERT_TRUE(embedded_test_server()->Start());
   }
 
   content::WebContents* web_contents() {
@@ -100,12 +111,28 @@ class PageTextObserverBrowserTest : public InProcessBrowserTest {
   PageTextObserver* observer() {
     return PageTextObserver::FromWebContents(web_contents());
   }
+
+ private:
+  // This script is render blocking in the HTML, but is intentionally slow. This
+  // provides important time between commit and first layout for any text dump
+  // requests to make it to the renderer, reducing flakes.
+  std::unique_ptr<net::test_server::HttpResponse> HandleSlowRequest(
+      const net::test_server::HttpRequest& request) {
+    std::string path_value;
+    if (request.GetURL().path() == "/slow-first-layout.js") {
+      std::unique_ptr<net::test_server::DelayedHttpResponse> resp =
+          std::make_unique<net::test_server::DelayedHttpResponse>(
+              base::TimeDelta::FromMilliseconds(500));
+      resp->set_code(net::HTTP_OK);
+      resp->set_content_type("application/javascript");
+      resp->set_content(std::string());
+      return resp;
+    }
+    return nullptr;
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, SimpleCase) {
-  embedded_test_server()->ServeFilesFromSourceDirectory(
-      "chrome/test/data/optimization_guide");
-  ASSERT_TRUE(embedded_test_server()->Start());
   PageTextObserver::CreateForWebContents(web_contents());
   ASSERT_TRUE(observer());
 
@@ -124,9 +151,6 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, SimpleCase) {
 }
 
 IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, FirstLayoutAndOnLoad) {
-  embedded_test_server()->ServeFilesFromSourceDirectory(
-      "chrome/test/data/optimization_guide");
-  ASSERT_TRUE(embedded_test_server()->Start());
   PageTextObserver::CreateForWebContents(web_contents());
   ASSERT_TRUE(observer());
 
