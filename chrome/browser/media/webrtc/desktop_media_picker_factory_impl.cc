@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/media/webrtc/current_tab_desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_ash.h"
 #include "chrome/browser/media/webrtc/native_desktop_media_list.h"
 #include "chrome/browser/media/webrtc/tab_desktop_media_list.h"
@@ -35,12 +36,14 @@ std::unique_ptr<DesktopMediaPicker> DesktopMediaPickerFactoryImpl::CreatePicker(
 
 std::vector<std::unique_ptr<DesktopMediaList>>
 DesktopMediaPickerFactoryImpl::CreateMediaList(
-    const std::vector<DesktopMediaList::Type>& types) {
+    const std::vector<DesktopMediaList::Type>& types,
+    content::WebContents* web_contents) {
   // Keep same order as the input |sources| and avoid duplicates.
   std::vector<std::unique_ptr<DesktopMediaList>> source_lists;
   bool have_screen_list = false;
   bool have_window_list = false;
   bool have_tab_list = false;
+  bool have_current_tab = false;
   for (auto source_type : types) {
     switch (source_type) {
       case DesktopMediaList::Type::kNone:
@@ -97,6 +100,14 @@ DesktopMediaPickerFactoryImpl::CreateMediaList(
             std::make_unique<TabDesktopMediaList>();
         have_tab_list = true;
         source_lists.push_back(std::move(tab_list));
+        break;
+      }
+      case DesktopMediaList::Type::kCurrentTab: {
+        if (have_current_tab)
+          continue;
+        have_current_tab = true;
+        source_lists.push_back(
+            std::make_unique<CurrentTabDesktopMediaList>(web_contents));
         break;
       }
     }

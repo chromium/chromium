@@ -225,7 +225,13 @@ void DisplayMediaAccessHandler::ProcessQueuedAccessRequest(
     base::Erase(media_types, DesktopMediaList::Type::kWindow);
   }
 
-  auto source_lists = picker_factory_->CreateMediaList(media_types);
+  if (pending_request.request.video_type ==
+      blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB) {
+    media_types.push_back(DesktopMediaList::Type::kCurrentTab);
+  }
+
+  auto source_lists =
+      picker_factory_->CreateMediaList(media_types, web_contents);
 
   DesktopMediaPicker::DoneCallback done_callback =
       base::BindOnce(&DisplayMediaAccessHandler::OnPickerDialogResults,

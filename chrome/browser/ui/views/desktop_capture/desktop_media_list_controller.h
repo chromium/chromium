@@ -106,6 +106,10 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   // dialog.
   void AcceptSpecificSource(content::DesktopMediaID source);
 
+  // Analogous to AcceptSpecificSource, but rejects rather than accepts.
+  // Used in tests.
+  void Reject();
+
   // DesktopMediaListObserver:
   void OnSourceAdded(DesktopMediaList* list, int index) override;
   void OnSourceRemoved(DesktopMediaList* list, int index) override;
@@ -118,11 +122,19 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   // ViewObserver:
   void OnViewIsDeleting(views::View* view) override;
 
+  bool ShouldAutoAccept(const DesktopMediaList::Source& source) const;
+  bool ShouldAutoReject(const DesktopMediaList::Source& source) const;
+
   DesktopMediaPickerDialogView* dialog_;
   std::unique_ptr<DesktopMediaList> media_list_;
   ListView* view_ = nullptr;
   base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
       view_observations_{this};
+
+  // Auto-selection. Used only in tests.
+  const std::string auto_select_source_;
+  const bool auto_accept_tab_capture_;
+  const bool auto_reject_tab_capture_;
 
   base::WeakPtrFactory<DesktopMediaListController> weak_factory_{this};
 };

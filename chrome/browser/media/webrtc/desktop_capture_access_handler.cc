@@ -535,8 +535,8 @@ void DesktopCaptureAccessHandler::ProcessQueuedAccessRequest(
     }
   }
 
-  auto source_lists =
-      picker_factory_->CreateMediaList({DesktopMediaList::Type::kWebContents});
+  auto source_lists = picker_factory_->CreateMediaList(
+      {DesktopMediaList::Type::kWebContents}, web_contents);
 
   DesktopMediaPicker::DoneCallback done_callback =
       base::BindOnce(&DesktopCaptureAccessHandler::OnPickerDialogResults,

@@ -3681,6 +3681,8 @@ static_library("browser") {
       "media/feeds/media_feeds_service_factory.h",
       "media/unified_autoplay_config.cc",
       "media/unified_autoplay_config.h",
+      "media/webrtc/current_tab_desktop_media_list.cc",
+      "media/webrtc/current_tab_desktop_media_list.h",
       "media/webrtc/desktop_capture_devices_util.cc",
       "media/webrtc/desktop_capture_devices_util.h",
       "media/webrtc/desktop_media_picker_controller.cc",

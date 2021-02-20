@@ -53,7 +53,8 @@ void DesktopMediaPickerController::Show(
   Observe(params.web_contents);
 
   // Keep same order as the input |sources| and avoid duplicates.
-  source_lists_ = picker_factory_->CreateMediaList(sources);
+  source_lists_ =
+      picker_factory_->CreateMediaList(sources, params.web_contents);
   if (source_lists_.empty()) {
     OnPickerDialogResults("At least one source type must be specified.", {});
     return;

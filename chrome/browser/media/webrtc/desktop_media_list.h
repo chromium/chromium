@@ -30,6 +30,7 @@ class DesktopMediaList {
     kScreen,       // TYPE_SCREEN
     kWindow,       // TYPE_WINDOW
     kWebContents,  // TYPE_WEB_CONTENTS
+    kCurrentTab,   // TYPE_WEB_CONTENTS of the current tab.
   };
 
   // Struct used to represent each entry in the list.
@@ -45,6 +46,9 @@ class DesktopMediaList {
   };
 
   using UpdateCallback = base::OnceClosure;
+
+  // TODO(crbug.com/1136942): Add support for this flow.
+  static constexpr bool kConfirmationOnlyDialogSupported = false;
 
   virtual ~DesktopMediaList() {}
 

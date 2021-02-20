@@ -43,6 +43,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   void OnSelectionChanged();
   void AcceptSource();
   void AcceptSpecificSource(content::DesktopMediaID source);
+  void Reject();
   void OnSourceListLayoutChanged();
 
   // views::TabbedPaneListener:

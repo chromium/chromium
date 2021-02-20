@@ -48,6 +48,9 @@ class DesktopMediaListBase : public DesktopMediaList {
     base::string16 name;
   };
 
+  DesktopMediaListBase(base::TimeDelta update_period,
+                       DesktopMediaListObserver* observer);
+
   // Before this method is called, |refresh_callback_| must be non-null, and
   // after it completes (usually asychnonrously), |refresh_callback_| must be
   // null.  Since |refresh_callback_| is private, subclasses can check this

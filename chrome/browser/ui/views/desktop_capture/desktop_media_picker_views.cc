@@ -91,6 +91,8 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
 
   std::vector<std::pair<base::string16, std::unique_ptr<View>>> panes;
 
+  int selected_tab = 0;
+
   for (auto& source_list : source_lists) {
     switch (source_list->GetMediaListType()) {
       case DesktopMediaList::Type::kNone: {
@@ -182,6 +184,34 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
 
         break;
       }
+      case DesktopMediaList::Type::kCurrentTab: {
+        selected_tab = source_types_.size();
+        source_types_.push_back(DesktopMediaList::Type::kCurrentTab);
+        const DesktopMediaSourceViewStyle kCurrentTabStyle(
+            1,                                       // columns
+            gfx::Size(360, 280),                     // item_size
+            gfx::Rect(),                             // icon_rect
+            gfx::Rect(),                             // label_rect
+            gfx::HorizontalAlignment::ALIGN_CENTER,  // text_alignment
+            gfx::Rect(20, 20, 320, 240),             // image_rect
+            5);                                      // focus_rectangle_inset
+        std::unique_ptr<views::ScrollView> window_scroll_view =
+            views::ScrollView::CreateScrollViewWithBorder();
+        const base::string16 title = l10n_util::GetStringUTF16(
+            IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_CURRENT_TAB);
+        auto list_controller = std::make_unique<DesktopMediaListController>(
+            this, std::move(source_list));
+        window_scroll_view->SetContents(list_controller->CreateView(
+            kCurrentTabStyle, kCurrentTabStyle, title));
+        list_controllers_.push_back(std::move(list_controller));
+        window_scroll_view->ClipHeightTo(
+            kCurrentTabStyle.item_size.height(),
+            kCurrentTabStyle.item_size.height() * 2);
+        window_scroll_view->SetHorizontalScrollBarMode(
+            views::ScrollView::ScrollBarMode::kDisabled);
+        panes.emplace_back(title, std::move(window_scroll_view));
+        break;
+      }
     }
   }
 
@@ -207,8 +237,11 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
 
   DCHECK(!source_types_.empty());
 
-  // Focus on the first non-null media_list.
-  OnSourceTypeSwitched(0);
+  // Focus on the correct dialog-tab.
+  OnSourceTypeSwitched(selected_tab);
+  if (tabbed_pane_) {
+    tabbed_pane_->SelectTabAt(selected_tab);
+  }
 
   // If |params.web_contents| is set and it's not a background page then the
   // picker will be shown modal to the web contents. Otherwise the picker is
@@ -282,6 +315,7 @@ void DesktopMediaPickerDialogView::OnSourceTypeSwitched(int index) {
         audio_share_checkbox_->SetVisible(false);
         break;
       case DesktopMediaList::Type::kWebContents:
+      case DesktopMediaList::Type::kCurrentTab:
         audio_share_checkbox_->SetVisible(true);
         break;
       case DesktopMediaList::Type::kNone:
@@ -410,6 +444,10 @@ void DesktopMediaPickerDialogView::AcceptSpecificSource(DesktopMediaID source) {
   AcceptSource();
 }
 
+void DesktopMediaPickerDialogView::Reject() {
+  CancelDialog();
+}
+
 void DesktopMediaPickerDialogView::OnSourceListLayoutChanged() {
   PreferredSizeChanged();
   // TODO(pbos): Ideally this would use shared logic similar to
@@ -474,7 +512,7 @@ void DesktopMediaPickerViews::NotifyDialogResult(DesktopMediaID source) {
 // static
 std::unique_ptr<DesktopMediaPicker> DesktopMediaPicker::Create(
     const content::MediaStreamRequest* request) {
-  if (request &&
+  if (request && DesktopMediaList::kConfirmationOnlyDialogSupported &&
       request->video_type ==
           blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB) {
     return std::make_unique<GetCurrentBrowsingContextMediaDialog>();
