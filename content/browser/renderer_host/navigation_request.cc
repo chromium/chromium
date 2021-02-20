@@ -807,6 +807,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
     const scoped_refptr<network::ResourceRequestBody>& post_body,
     std::unique_ptr<NavigationUIData> navigation_ui_data,
     const base::Optional<blink::Impression>& impression) {
+  TRACE_EVENT0("navigation", "NavigationRequest::CreateBrowserInitiated");
   // TODO(arthursonzogni): Form submission with the "GET" method is possible.
   // This is not currently handled here.
   bool is_form_submission = !!post_body;
@@ -896,6 +897,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
     scoped_refptr<PrefetchedSignedExchangeCache>
         prefetched_signed_exchange_cache,
     std::unique_ptr<WebBundleHandleTracker> web_bundle_handle_tracker) {
+  TRACE_EVENT0("navigation", "NavigationRequest::CreateRendererInitiated");
   // Only normal navigations to a different document or reloads are expected.
   // - Renderer-initiated same document navigations never start in the browser.
   // - Restore-navigations are always browser-initiated.
@@ -1008,6 +1010,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
     std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
     std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info,
     int http_response_code) {
+  TRACE_EVENT0("navigation", "NavigationRequest::CreateForCommit");
   // TODO(clamy): Improve the *NavigationParams and *CommitParams to avoid
   // copying so many parameters here.
   mojom::CommonNavigationParamsPtr common_params =

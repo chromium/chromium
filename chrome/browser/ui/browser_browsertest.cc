@@ -1110,21 +1110,18 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NullOpenerRedirectForksProcess) {
   redirect_popup += "w.document.location=\"";
   redirect_popup += https_url.spec();
   redirect_popup += "\";";
+  EXPECT_TRUE(content::ExecJs(oldtab->GetMainFrame(), redirect_popup));
 
-  ui_test_utils::TabAddedWaiter tab_add(browser());
-  content::WindowedNotificationObserver nav_observer(
-      content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      content::NotificationService::AllSources());
-  oldtab->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
-      ASCIIToUTF16(redirect_popup));
-
-  // Wait for popup window to appear and finish navigating.
-  tab_add.Wait();
+  // The tab should be created by the time the script finished running.
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
   WebContents* newtab = browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(newtab);
   EXPECT_NE(oldtab, newtab);
-  nav_observer.Wait();
+
+  // New tab should be in the middle of document.location navigation.
+  EXPECT_TRUE(newtab->IsLoading());
+  content::WaitForLoadStop(newtab);
+
   ASSERT_TRUE(newtab->GetController().GetLastCommittedEntry());
   EXPECT_EQ(https_url.spec(),
             newtab->GetController().GetLastCommittedEntry()->GetURL().spec());
@@ -1142,21 +1139,17 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NullOpenerRedirectForksProcess) {
   refresh_popup += "'<META HTTP-EQUIV=\"refresh\" content=\"0; url=";
   refresh_popup += https_url.spec();
   refresh_popup += "\">');w.document.close();";
+  EXPECT_TRUE(content::ExecJs(oldtab->GetMainFrame(), refresh_popup));
 
-  ui_test_utils::TabAddedWaiter tab_add2(browser());
-  content::WindowedNotificationObserver nav_observer2(
-      content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      content::NotificationService::AllSources());
-  oldtab->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
-      ASCIIToUTF16(refresh_popup));
-
-  // Wait for popup window to appear and finish navigating.
-  tab_add2.Wait();
+  // The tab should be created by the time the script finished running.
   ASSERT_EQ(3, browser()->tab_strip_model()->count());
   WebContents* newtab2 = browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(newtab2);
   EXPECT_NE(oldtab, newtab2);
-  nav_observer2.Wait();
+
+  // Wait for the refresh navigation.
+  content::TestNavigationObserver(newtab2, 1).Wait();
+
   ASSERT_TRUE(newtab2->GetController().GetLastCommittedEntry());
   EXPECT_EQ(https_url.spec(),
             newtab2->GetController().GetLastCommittedEntry()->GetURL().spec());
@@ -1195,19 +1188,18 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, OtherRedirectsDontForkProcess) {
   dont_fork_popup += "\";";
 
   ui_test_utils::TabAddedWaiter tab_add(browser());
-  content::WindowedNotificationObserver nav_observer(
-      content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      content::NotificationService::AllSources());
-  oldtab->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
-      ASCIIToUTF16(dont_fork_popup));
+  EXPECT_TRUE(content::ExecJs(oldtab->GetMainFrame(), dont_fork_popup));
 
-  // Wait for popup window to appear and finish navigating.
-  tab_add.Wait();
+  // The tab should be created by the time the script finished running.
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
   WebContents* newtab = browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(newtab);
   EXPECT_NE(oldtab, newtab);
-  nav_observer.Wait();
+
+  // New tab should be in the middle of document.location navigation.
+  EXPECT_TRUE(newtab->IsLoading());
+  content::WaitForLoadStop(newtab);
+
   ASSERT_TRUE(newtab->GetController().GetLastCommittedEntry());
   EXPECT_EQ(https_url.spec(),
             newtab->GetController().GetLastCommittedEntry()->GetURL().spec());
@@ -1225,13 +1217,12 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, OtherRedirectsDontForkProcess) {
   std::string navigate_str = "document.location=\"";
   navigate_str += https_url.spec();
   navigate_str += "\";";
+  EXPECT_TRUE(content::ExecJs(oldtab->GetMainFrame(), navigate_str));
 
-  content::WindowedNotificationObserver nav_observer2(
-      content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      content::NotificationService::AllSources());
-  oldtab->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
-      ASCIIToUTF16(navigate_str));
-  nav_observer2.Wait();
+  // The old tab should be in the middle of document.location navigation.
+  EXPECT_TRUE(oldtab->IsLoading());
+  content::WaitForLoadStop(oldtab);
+
   ASSERT_TRUE(oldtab->GetController().GetLastCommittedEntry());
   EXPECT_EQ(https_url.spec(),
             oldtab->GetController().GetLastCommittedEntry()->GetURL().spec());

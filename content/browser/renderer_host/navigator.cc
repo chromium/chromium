@@ -768,6 +768,7 @@ void Navigator::OnBeginNavigation(
     scoped_refptr<PrefetchedSignedExchangeCache>
         prefetched_signed_exchange_cache,
     std::unique_ptr<WebBundleHandleTracker> web_bundle_handle_tracker) {
+  TRACE_EVENT0("navigation", "Navigator::OnBeginNavigation");
   // TODO(clamy): the url sent by the renderer should be validated with
   // FilterURL.
   // This is a renderer-initiated navigation.

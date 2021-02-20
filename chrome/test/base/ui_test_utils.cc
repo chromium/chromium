@@ -574,6 +574,7 @@ TabAddedWaiter::TabAddedWaiter(Browser* browser) {
 }
 
 void TabAddedWaiter::Wait() {
+  TRACE_EVENT0("test", "TabAddedWaiter::Wait");
   run_loop_.Run();
 }
 

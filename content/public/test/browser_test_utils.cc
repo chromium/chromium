@@ -788,6 +788,7 @@ void WaitForLoadStopWithoutSuccessCheck(WebContents* web_contents) {
 }
 
 bool WaitForLoadStop(WebContents* web_contents) {
+  TRACE_EVENT0("test", "content::WaitForLoadStop");
   WebContentsDestroyedWatcher watcher(web_contents);
   WaitForLoadStopWithoutSuccessCheck(web_contents);
   if (watcher.IsDestroyed()) {
@@ -1695,6 +1696,7 @@ EvalJsResult EvalJs(const ToRenderFrameHost& execution_target,
                     const std::string& script,
                     int options,
                     int32_t world_id) {
+  TRACE_EVENT1("test", "EvalJs", "script", script);
   // The sourceURL= parameter provides a string that replaces <anonymous> in
   // stack traces, if an Error is thrown. 'std::string' is meant to communicate
   // that this is a dynamic argument originating from C++ code.
