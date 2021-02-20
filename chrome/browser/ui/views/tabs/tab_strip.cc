@@ -1313,10 +1313,6 @@ void TabStrip::AddTabAt(int model_index, TabRendererData data, bool is_active) {
   SwapLayoutIfNecessary();
   UpdateAccessibleTabIndices();
 
-  // Need to ensure an old cached preferred size isn't used before the first
-  // tick of the animation. See crbug.com/1172910.
-  PreferredSizeChanged();
-
   for (TabStripObserver& observer : observers_)
     observer.OnTabAdded(model_index);
 
@@ -2792,6 +2788,12 @@ void TabStrip::AnimateToIdealBounds() {
             base::BindRepeating(&TabStrip::OnTabSlotAnimationProgressed,
                                 base::Unretained(this))));
   }
+
+  // Because the preferred size of the tabstrip depends on the IsAnimating()
+  // condition, but starting an animation  doesn't necessarily invalidate the
+  // existing preferred size and layout (which may now be incorrect), we need to
+  // signal this explicitly.
+  PreferredSizeChanged();
 }
 
 void TabStrip::SnapToIdealBounds() {
