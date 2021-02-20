@@ -9,6 +9,7 @@
 #include "device/fido/cros/authenticator.h"
 
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/dbus/u2f/u2f_interface.pb.h"
@@ -37,6 +38,12 @@ namespace {
 
 // DBus timeout for method calls that doesn't involve user interaction.
 constexpr int kShortTimeoutMs = 3000;
+
+// UMA histogram names.
+constexpr char kMakeCredentialStatusHistogram[] =
+    "WebAuthentication.ChromeOS.MakeCredentialStatus";
+constexpr char kGetAssertionStatusHistogram[] =
+    "WebAuthentication.ChromeOS.GetAssertionStatus";
 
 AuthenticatorSupportedOptions ChromeOSAuthenticatorOptions() {
   AuthenticatorSupportedOptions options;
@@ -146,6 +153,10 @@ void ChromeOSAuthenticator::OnMakeCredentialResp(
   }
 
   FIDO_LOG(DEBUG) << "Make credential status: " << resp.status();
+  base::UmaHistogramEnumeration(
+      kMakeCredentialStatusHistogram, resp.status(),
+      static_cast<u2f::MakeCredentialResponse_MakeCredentialStatus>(
+          u2f::MakeCredentialResponse::MakeCredentialStatus_ARRAYSIZE));
   if (resp.status() !=
       u2f::MakeCredentialResponse_MakeCredentialStatus_SUCCESS) {
     std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOperationDenied,
@@ -257,6 +268,10 @@ void ChromeOSAuthenticator::OnGetAssertionResp(CtapGetAssertionRequest request,
   }
 
   FIDO_LOG(DEBUG) << "GetAssertion status: " << resp.status();
+  base::UmaHistogramEnumeration(
+      kGetAssertionStatusHistogram, resp.status(),
+      static_cast<u2f::GetAssertionResponse_GetAssertionStatus>(
+          u2f::GetAssertionResponse::GetAssertionStatus_ARRAYSIZE));
   if (resp.status() != u2f::GetAssertionResponse_GetAssertionStatus_SUCCESS ||
       resp.assertion_size() < 1) {
     std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOperationDenied,

@@ -78187,6 +78187,30 @@ others/histograms.xml -->
   <int value="10" label="Invalid server link data"/>
 </enum>
 
+<enum name="WebAuthenticationChromeOSGetAssertionResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Verification failed"/>
+  <int value="3" label="Verification timeout"/>
+  <int value="4" label="Invalid request"/>
+  <int value="5" label="Internal error"/>
+  <int value="6" label="No credential id matched"/>
+  <int value="7" label="Another request pending"/>
+  <int value="8" label="Canceled"/>
+</enum>
+
+<enum name="WebAuthenticationChromeOSMakeCredentialResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Verification failed"/>
+  <int value="3" label="Verification timeout"/>
+  <int value="4" label="Invalid request"/>
+  <int value="5" label="Internal error"/>
+  <int value="6" label="Excluded credential id matched"/>
+  <int value="7" label="Another request pending"/>
+  <int value="8" label="Canceled"/>
+</enum>
+
 <enum name="WebAuthenticationFidoTransport">
   <int value="0" label="USB HID"/>
   <int value="1" label="Near Field Communication"/>
