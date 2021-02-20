@@ -215,13 +215,13 @@ void NavigateToURLWithPost(Browser* browser, const GURL& url) {
   NavigateToURL(&params);
 }
 
-content::RenderProcessHost* NavigateToURL(Browser* browser, const GURL& url) {
+content::RenderFrameHost* NavigateToURL(Browser* browser, const GURL& url) {
   return NavigateToURLWithDisposition(browser, url,
                                       WindowOpenDisposition::CURRENT_TAB,
                                       BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 }
 
-content::RenderProcessHost*
+content::RenderFrameHost*
 NavigateToURLWithDispositionBlockUntilNavigationsComplete(
     Browser* browser,
     const GURL& url,
@@ -270,13 +270,13 @@ NavigateToURLWithDispositionBlockUntilNavigationsComplete(
   }
   if (disposition == WindowOpenDisposition::CURRENT_TAB) {
     same_tab_observer.Wait();
-    return web_contents->GetMainFrame()->GetProcess();
+    return web_contents->GetMainFrame();
   } else if (web_contents) {
     content::TestNavigationObserver observer(
         web_contents, number_of_navigations,
         content::MessageLoopRunner::QuitMode::DEFERRED);
     observer.Wait();
-    return web_contents->GetMainFrame()->GetProcess();
+    return web_contents->GetMainFrame();
   }
   EXPECT_TRUE(web_contents)
       << " Unable to wait for navigation to \"" << url.spec() << "\""
@@ -284,7 +284,7 @@ NavigateToURLWithDispositionBlockUntilNavigationsComplete(
   return nullptr;
 }
 
-content::RenderProcessHost* NavigateToURLWithDisposition(
+content::RenderFrameHost* NavigateToURLWithDisposition(
     Browser* browser,
     const GURL& url,
     WindowOpenDisposition disposition,
@@ -293,7 +293,7 @@ content::RenderProcessHost* NavigateToURLWithDisposition(
       browser, url, 1, disposition, browser_test_flags);
 }
 
-content::RenderProcessHost* NavigateToURLBlockUntilNavigationsComplete(
+content::RenderFrameHost* NavigateToURLBlockUntilNavigationsComplete(
     Browser* browser,
     const GURL& url,
     int number_of_navigations) {
