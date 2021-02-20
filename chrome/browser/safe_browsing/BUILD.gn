@@ -95,6 +95,8 @@ static_library("safe_browsing") {
       "certificate_reporting_service_factory.h",
       "chrome_password_protection_service.cc",
       "chrome_password_protection_service.h",
+      "chrome_password_protection_service_factory.cc",
+      "chrome_password_protection_service_factory.h",
       "client_side_detection_host_delegate.cc",
       "client_side_detection_host_delegate.h",
       "client_side_detection_service_delegate.cc",

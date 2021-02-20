@@ -15,6 +15,7 @@
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/security_events/security_event_recorder.h"
 #include "chrome/browser/security_events/security_event_recorder_factory.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
@@ -73,7 +74,8 @@ MaybeCreateNavigationThrottle(content::NavigationHandle* navigation_handle);
 
 // ChromePasswordProtectionService extends PasswordProtectionService by adding
 // access to SafeBrowsingNaivigationObserverManager and Profile.
-class ChromePasswordProtectionService : public PasswordProtectionService {
+class ChromePasswordProtectionService : public PasswordProtectionService,
+                                        public KeyedService {
  public:
   // Observer is used to coordinate password protection UIs (e.g. modal warning,
   // change password card, etc) in reaction to user events.
@@ -289,6 +291,10 @@ class ChromePasswordProtectionService : public PasswordProtectionService {
 #endif
   // Gets |account_info_| based on |profile_|.
   AccountInfo GetAccountInfo() const override;
+
+  // KeyedService:
+  // Called before the actual deletion of the object.
+  void Shutdown() override;
 
  protected:
   // PasswordProtectionService overrides.

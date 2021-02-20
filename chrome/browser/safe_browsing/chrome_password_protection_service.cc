@@ -303,10 +303,13 @@ void ChromePasswordProtectionService::Init() {
 #endif
 }
 
-ChromePasswordProtectionService::~ChromePasswordProtectionService() {
+void ChromePasswordProtectionService::Shutdown() {
   if (pref_change_registrar_)
     pref_change_registrar_->RemoveAll();
+  hash_password_manager_subscription_ = {};
 }
+
+ChromePasswordProtectionService::~ChromePasswordProtectionService() = default;
 
 // static
 ChromePasswordProtectionService*
