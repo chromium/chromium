@@ -37,18 +37,6 @@ std::string UserStateToPrefKey(const UserState& user_state) {
   return base::NumberToString(static_cast<int>(user_state));
 }
 
-UserState SafeBrowsingStateToUserState(const SafeBrowsingState& sb_state) {
-  switch (sb_state) {
-    case SafeBrowsingState::ENHANCED_PROTECTION:
-      return UserState::ENHANCED_PROTECTION;
-    case SafeBrowsingState::STANDARD_PROTECTION:
-      return UserState::STANDARD_PROTECTION;
-    case SafeBrowsingState::NO_SAFE_BROWSING:
-      NOTREACHED() << "Unexpected Safe Browsing state.";
-      return UserState::STANDARD_PROTECTION;
-  }
-}
-
 base::Value TimeToPrefValue(const base::Time& time) {
   return util::Int64ToValue(time.ToDeltaSinceWindowsEpoch().InSeconds());
 }
@@ -125,7 +113,7 @@ void SafeBrowsingMetricsCollector::LogDailyEventMetrics() {
   if (sb_state == SafeBrowsingState::NO_SAFE_BROWSING) {
     return;
   }
-  UserState user_state = SafeBrowsingStateToUserState(sb_state);
+  UserState user_state = GetUserState();
 
   int total_bypass_count = 0;
   for (int event_type_int = 0; event_type_int <= EventType::kMaxValue;
@@ -164,8 +152,7 @@ void SafeBrowsingMetricsCollector::AddSafeBrowsingEventToPref(
   // Safe Browsing events should not be triggered when Safe Browsing is
   // disabled.
   DCHECK(sb_state != SafeBrowsingState::NO_SAFE_BROWSING);
-  AddSafeBrowsingEventAndUserStateToPref(SafeBrowsingStateToUserState(sb_state),
-                                         event_type);
+  AddSafeBrowsingEventAndUserStateToPref(GetUserState(), event_type);
 }
 
 void SafeBrowsingMetricsCollector::AddSafeBrowsingEventAndUserStateToPref(
@@ -199,6 +186,11 @@ void SafeBrowsingMetricsCollector::AddSafeBrowsingEventAndUserStateToPref(
 }
 
 void SafeBrowsingMetricsCollector::OnEnhancedProtectionPrefChanged() {
+  // Pref changed by policy is not initiated by users, so this case is ignored.
+  if (IsSafeBrowsingPolicyManaged(*pref_service_)) {
+    return;
+  }
+
   if (!pref_service_->GetBoolean(prefs::kSafeBrowsingEnhanced)) {
     AddSafeBrowsingEventAndUserStateToPref(UserState::ENHANCED_PROTECTION,
                                            EventType::USER_STATE_DISABLED);
@@ -217,8 +209,8 @@ void SafeBrowsingMetricsCollector::OnEnhancedProtectionPrefChanged() {
 void SafeBrowsingMetricsCollector::LogEnhancedProtectionDisabledMetrics() {
   const base::DictionaryValue* state_dict =
       pref_service_->GetDictionary(prefs::kSafeBrowsingEventTimestamps);
-  const base::Value* event_dict = state_dict->FindDictKey(UserStateToPrefKey(
-      SafeBrowsingStateToUserState(SafeBrowsingState::ENHANCED_PROTECTION)));
+  const base::Value* event_dict = state_dict->FindDictKey(
+      UserStateToPrefKey(UserState::ENHANCED_PROTECTION));
   if (!event_dict) {
     return;
   }
@@ -273,6 +265,23 @@ int SafeBrowsingMetricsCollector::GetEventCountSince(UserState user_state,
                        });
 }
 
+UserState SafeBrowsingMetricsCollector::GetUserState() {
+  if (IsSafeBrowsingPolicyManaged(*pref_service_)) {
+    return UserState::MANAGED;
+  }
+
+  SafeBrowsingState sb_state = GetSafeBrowsingState(*pref_service_);
+  switch (sb_state) {
+    case SafeBrowsingState::ENHANCED_PROTECTION:
+      return UserState::ENHANCED_PROTECTION;
+    case SafeBrowsingState::STANDARD_PROTECTION:
+      return UserState::STANDARD_PROTECTION;
+    case SafeBrowsingState::NO_SAFE_BROWSING:
+      NOTREACHED() << "Unexpected Safe Browsing state.";
+      return UserState::STANDARD_PROTECTION;
+  }
+}
+
 bool SafeBrowsingMetricsCollector::IsBypassEventType(const EventType& type) {
   switch (type) {
     case EventType::USER_STATE_DISABLED:
@@ -292,6 +301,8 @@ std::string SafeBrowsingMetricsCollector::GetUserStateMetricSuffix(
       return "StandardProtection";
     case UserState::ENHANCED_PROTECTION:
       return "EnhancedProtection";
+    case UserState::MANAGED:
+      return "Managed";
   }
 }
 

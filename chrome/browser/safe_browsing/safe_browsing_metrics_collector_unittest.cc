@@ -227,6 +227,26 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
 }
 
 TEST_F(SafeBrowsingMetricsCollectorTest,
+       AddSafeBrowsingEventToPref_SafeBrowsingManaged) {
+  SetSafeBrowsingState(&pref_service_, ENHANCED_PROTECTION);
+  metrics_collector_->AddSafeBrowsingEventToPref(
+      EventType::DATABASE_INTERSTITIAL_BYPASS);
+  pref_service_.SetManagedPref(prefs::kSafeBrowsingEnabled,
+                               std::make_unique<base::Value>(true));
+  metrics_collector_->AddSafeBrowsingEventToPref(
+      EventType::DATABASE_INTERSTITIAL_BYPASS);
+  metrics_collector_->AddSafeBrowsingEventToPref(
+      EventType::DATABASE_INTERSTITIAL_BYPASS);
+
+  const base::Value* enhanced_timestamps = GetTsFromUserStateAndEventType(
+      UserState::ENHANCED_PROTECTION, EventType::DATABASE_INTERSTITIAL_BYPASS);
+  EXPECT_EQ(1u, enhanced_timestamps->GetList().size());
+  const base::Value* managed_timestamps = GetTsFromUserStateAndEventType(
+      UserState::MANAGED, EventType::DATABASE_INTERSTITIAL_BYPASS);
+  EXPECT_EQ(2u, managed_timestamps->GetList().size());
+}
+
+TEST_F(SafeBrowsingMetricsCollectorTest,
        LogEnhancedProtectionDisabledMetrics_GetLastBypassEventType) {
   base::HistogramTester histograms;
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
@@ -316,6 +336,20 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   // ago.
   histograms.ExpectTotalCount("SafeBrowsing.EsbDisabled.LastBypassEventType",
                               /* expected_count */ 4);
+}
+
+TEST_F(SafeBrowsingMetricsCollectorTest,
+       LogEnhancedProtectionDisabledMetrics_NotLoggedIfManaged) {
+  base::HistogramTester histograms;
+  SetSafeBrowsingState(&pref_service_, ENHANCED_PROTECTION);
+
+  FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
+                         EventType::DATABASE_INTERSTITIAL_BYPASS);
+
+  pref_service_.SetManagedPref(prefs::kSafeBrowsingEnabled,
+                               std::make_unique<base::Value>(false));
+  histograms.ExpectTotalCount("SafeBrowsing.EsbDisabled.LastBypassEventType",
+                              /* expected_count */ 0);
 }
 
 TEST_F(SafeBrowsingMetricsCollectorTest, LogDailyEventMetrics_LoggedDaily) {
@@ -441,6 +475,23 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   task_environment_->FastForwardBy(base::TimeDelta::FromDays(1));
   // The CSD event is also removed because it was logged more than 30 days now.
   EXPECT_EQ(0u, csd_timestamps->GetList().size());
+}
+
+TEST_F(SafeBrowsingMetricsCollectorTest, GetUserState) {
+  SetSafeBrowsingState(&pref_service_, ENHANCED_PROTECTION);
+  EXPECT_EQ(UserState::ENHANCED_PROTECTION, metrics_collector_->GetUserState());
+
+  SetSafeBrowsingState(&pref_service_, STANDARD_PROTECTION);
+  EXPECT_EQ(UserState::STANDARD_PROTECTION, metrics_collector_->GetUserState());
+
+  pref_service_.SetManagedPref(prefs::kSafeBrowsingEnabled,
+                               std::make_unique<base::Value>(true));
+  EXPECT_EQ(UserState::MANAGED, metrics_collector_->GetUserState());
+
+  pref_service_.RemoveManagedPref(prefs::kSafeBrowsingEnabled);
+  pref_service_.SetManagedPref(prefs::kSafeBrowsingEnhanced,
+                               std::make_unique<base::Value>(true));
+  EXPECT_EQ(UserState::MANAGED, metrics_collector_->GetUserState());
 }
 
 }  // namespace safe_browsing

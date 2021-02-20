@@ -167,6 +167,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <token key="UserState">
     <variant name="EnhancedProtection"
         summary="The user is under enhanced protection mode."/>
+    <variant name="Managed"
+        summary="The user's Safe Browsing mode is managed."/>
     <variant name="StandardProtection"
         summary="The user is under standard protection mode."/>
   </token>

@@ -51,7 +51,9 @@ class SafeBrowsingMetricsCollector : public KeyedService {
     // Standard protection is enabled.
     STANDARD_PROTECTION = 0,
     // Enhanced protection is enabled.
-    ENHANCED_PROTECTION = 1
+    ENHANCED_PROTECTION = 1,
+    // Safe Browsing is managed.
+    MANAGED = 2
   };
 
   explicit SafeBrowsingMetricsCollector(PrefService* pref_service_);
@@ -69,6 +71,7 @@ class SafeBrowsingMetricsCollector : public KeyedService {
   void Shutdown() override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(SafeBrowsingMetricsCollectorTest, GetUserState);
   struct Event {
     Event(EventType type, base::Time timestamp);
     EventType type;
@@ -94,6 +97,7 @@ class SafeBrowsingMetricsCollector : public KeyedService {
   int GetEventCountSince(UserState user_state,
                          EventType event_type,
                          base::Time since_time);
+  UserState GetUserState();
 
   PrefService* pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
