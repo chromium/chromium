@@ -175,9 +175,9 @@ test("cast_runner_integration_tests") {
   deps = [
     ":cast_runner_core",
     ":cast_runner_test_core",
-    "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//components/cast/message_port",
+    "//fuchsia/base:run_all_integration_tests",
     "//fuchsia/base:test_support",
     "//net:test_support",
     "//testing/gtest",
@@ -256,10 +256,10 @@ test("web_runner_integration_tests") {
   sources = [ "web/web_runner_smoke_test.cc" ]
   deps = [
     "//base",
-    "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//components/cast/message_port",
     "//fuchsia/base:modular",
+    "//fuchsia/base:run_all_integration_tests",
     "//net:test_support",
     "//testing/gtest",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys",

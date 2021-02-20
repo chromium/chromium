@@ -26,7 +26,9 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_timeouts.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "fuchsia/base/agent_impl.h"
@@ -545,6 +547,11 @@ class CastRunnerIntegrationTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   net::EmbeddedTestServer test_server_;
+
+  // TODO(1168538): Override the RunLoop timeout set by |task_environment_| to
+  // allow for the very high variability in web.Context launch times.
+  const base::test::ScopedRunLoopTimeout scoped_timeout_{
+      FROM_HERE, TestTimeouts::action_max_timeout()};
 
   fuchsia::sys::ComponentControllerPtr web_engine_controller_;
   fuchsia::sys::ComponentControllerPtr cast_runner_controller_;
