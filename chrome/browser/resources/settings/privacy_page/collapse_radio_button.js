@@ -36,6 +36,8 @@ Polymer({
 
     label: String,
 
+    indicatorAriaLabel: String,
+
     icon: {
       type: String,
       value: null,
