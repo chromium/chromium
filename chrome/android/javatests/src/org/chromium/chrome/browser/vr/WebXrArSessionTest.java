@@ -22,7 +22,6 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction;
@@ -79,7 +78,6 @@ public class WebXrArSessionTest {
      * Tests that consenting causes future attempts to skip the permission prompt as long as no
      * navigation occurs.
      */
-    @DisabledTest(message = "https://crbug.com/1174857")
     @Test
     @MediumTest
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
@@ -107,7 +105,6 @@ public class WebXrArSessionTest {
      * Tests that repeatedly starting and stopping AR sessions does not cause any unexpected
      * behavior. Regression test for https://crbug.com/837894.
      */
-    @DisabledTest(message = "https://crbug.com/1174857")
     @Test
     @MediumTest
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
