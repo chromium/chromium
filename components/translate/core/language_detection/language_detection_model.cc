@@ -11,7 +11,7 @@
 
 namespace {
 
-constexpr char kTFLiteModelVersion[] = "TFLiteLanguageDetection_v1";
+constexpr char kTFLiteModelVersion[] = "TFLite_v1";
 
 // Util class for recording the result of loading the detection model. The
 // result is recorded when it goes out of scope and its destructor is called.
