@@ -1254,6 +1254,9 @@ class OobeSpokenFeedbackTest : public OobeBaseTest {
     // dialog in the OOBE.  Avoid confusing the tests with that.
     command_line->AppendSwitch(
         ash::switches::kDisableHIDDetectionOnOOBEForTesting);
+    // We only start the tutorial in OOBE if the device is a Chromebook, so set
+    // the device type so tutorial-related behavior can be tested.
+    command_line->AppendSwitchASCII(ash::switches::kFormFactor, "CHROMEBOOK");
   }
 
   test::SpeechMonitor sm_;

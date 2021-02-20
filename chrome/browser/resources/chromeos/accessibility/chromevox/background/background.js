@@ -121,14 +121,20 @@ export class Background extends ChromeVoxState {
     sessionStorage.setItem('darkScreen', 'false');
 
     chrome.loginState.getSessionState((sessionState) => {
-      // If starting ChromeVox from OOBE, start the tutorial.
       if (sessionState === chrome.loginState.SessionState.IN_OOBE_SCREEN) {
-        chrome.chromeosInfoPrivate.isTabletModeEnabled((enabled) => {
-          // Only start the tutorial if we are not in tablet mode. This
-          // is a temporary workaround until we implement a touch-specific
-          // tutorial.
-          if (!enabled) {
-            (new PanelCommand(PanelCommandType.TUTORIAL)).send();
+        chrome.chromeosInfoPrivate.get(['deviceType'], (result) => {
+          if (result['deviceType'] ===
+              chrome.chromeosInfoPrivate.DeviceType.CHROMEBOOK) {
+            chrome.chromeosInfoPrivate.isTabletModeEnabled((enabled) => {
+              // Start the tutorial if all of the following are true:
+              // 1. We are in the OOBE.
+              // 2. The device is a Chromebook.
+              // 3. The device is not in tablet mode, since a tutorial for
+              // ChromeVox touch is still under development.
+              if (!enabled) {
+                (new PanelCommand(PanelCommandType.TUTORIAL)).send();
+              }
+            });
           }
         });
       }
