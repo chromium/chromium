@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/extension_checkup.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -21,7 +20,7 @@ class ExtensionCheckupTest : public ExtensionServiceTestBase,
   ~ExtensionCheckupTest() override {}
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+    feature_list_.InitAndEnableFeatureWithParameters(
         extensions_features::kExtensionsCheckup,
         {{extensions_features::kExtensionsCheckupEntryPointParameter,
           GetParam()}});
@@ -72,36 +71,15 @@ class ExtensionCheckupTest : public ExtensionServiceTestBase,
       EXPECT_FALSE(ShouldShowExtensionsCheckupPromo(browser_context()));
   }
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   DISALLOW_COPY_AND_ASSIGN(ExtensionCheckupTest);
 };
 
-// Checkup is not shown if no extensions are installed.
-// Flaky on TSAN: https://crbug.com/1163813
-#if defined(THREAD_SANITIZER)
-#define MAYBE_NoInstalledExtensions DISABLED_NoInstalledExtensions
-#else
-#define MAYBE_NoInstalledExtensions NoInstalledExtensions
-#endif
-TEST_P(ExtensionCheckupTest, MAYBE_NoInstalledExtensions) {
+TEST_P(ExtensionCheckupTest, NoInstalledExtensions) {
   VerifyNonExperimentCheckupDisabled();
   EXPECT_FALSE(ShouldShowExperimentCheckup());
 }
 
-// Checkup is not shown if the only extensions installed are policy
-// installed, component extensions, or installed by default.
-//
-// Flaky on various Linux bots.  http://crbug.com/1163917
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_NoUserInstalledExtensions DISABLED_NoUserInstalledExtensions
-#else
-#define MAYBE_NoUserInstalledExtensions NoUserInstalledExtensions
-#endif
-TEST_P(ExtensionCheckupTest, MAYBE_NoUserInstalledExtensions) {
+TEST_P(ExtensionCheckupTest, NoUserInstalledExtensions) {
   AddExemptExtensions();
   VerifyNonExperimentCheckupDisabled();
   EXPECT_FALSE(ShouldShowExperimentCheckup());
