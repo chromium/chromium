@@ -379,6 +379,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   LayerTreeHostImpl& GetImplDeprecated() override;
   const LayerTreeHostImpl& GetImplDeprecated() const override;
 
+  bool CanInjectJankOnMain() const;
   FrameSequenceTrackerCollection& frame_trackers() { return frame_trackers_; }
 
   // VisualDeviceViewportSize is the size of the global viewport across all

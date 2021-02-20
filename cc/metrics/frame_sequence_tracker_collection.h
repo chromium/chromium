@@ -105,7 +105,7 @@ class CC_EXPORT FrameSequenceTrackerCollection {
   // Return the type of each active frame tracker, encoded into a 16 bit
   // integer with the bit at each position corresponding to the enum value of
   // each type.
-  ActiveFrameSequenceTrackers FrameSequenceTrackerActiveTypes();
+  ActiveFrameSequenceTrackers FrameSequenceTrackerActiveTypes() const;
 
   FrameSequenceTracker* GetRemovalTrackerForTesting(
       FrameSequenceTrackerType type);

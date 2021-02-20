@@ -24,6 +24,7 @@ class LayerTreeHost;
 class ProxyMain;
 class RenderFrameMetadataObserver;
 
+class JankInjector;
 class ScopedCompletionEvent;
 
 // This class aggregates all the interactions that the main side of the
@@ -178,6 +179,8 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
 
   bool send_compositor_frame_ack_;
 
+  std::unique_ptr<JankInjector> jank_injector_;
+
   TreePriority last_raster_priority_;
 
   TaskRunnerProvider* task_runner_provider_;
@@ -189,6 +192,8 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   // Use accessors instead of this variable directly.
   BlockedMainCommitOnly main_thread_blocked_commit_vars_unsafe_;
   BlockedMainCommitOnly& blocked_main_commit();
+
+  bool is_jank_injection_enabled_ = false;
 
   // Used to post tasks to ProxyMain on the main thread.
   base::WeakPtr<ProxyMain> proxy_main_weak_ptr_;

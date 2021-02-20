@@ -186,6 +186,8 @@ cc_component("cc") {
     "metrics/frame_sequence_tracker_collection.h",
     "metrics/frame_sorter.cc",
     "metrics/frame_sorter.h",
+    "metrics/jank_injector.cc",
+    "metrics/jank_injector.h",
     "metrics/jank_metrics.cc",
     "metrics/jank_metrics.h",
     "metrics/latency_ukm_reporter.cc",
