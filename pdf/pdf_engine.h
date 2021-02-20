@@ -43,7 +43,6 @@ typedef void (*PDFEnsureTypefaceCharactersAccessible)(const LOGFONT* font,
                                                       size_t text_length);
 #endif
 
-struct PP_PdfAccessibilityActionData;
 struct PP_PdfPrintSettings_Dev;
 class SkBitmap;
 
@@ -60,6 +59,7 @@ namespace chrome_pdf {
 class InputEvent;
 class Thumbnail;
 class UrlLoader;
+struct AccessibilityActionData;
 struct AccessibilityLinkInfo;
 struct AccessibilityHighlightInfo;
 struct AccessibilityImageInfo;
@@ -347,7 +347,7 @@ class PDFEngine {
   virtual void Redo() = 0;
   // Handles actions invoked by Accessibility clients.
   virtual void HandleAccessibilityAction(
-      const PP_PdfAccessibilityActionData& action_data) = 0;
+      const AccessibilityActionData& action_data) = 0;
   virtual std::string GetLinkAtPosition(const gfx::Point& point) = 0;
   // Checks the permissions associated with this document.
   virtual bool HasPermission(DocumentPermission permission) const = 0;

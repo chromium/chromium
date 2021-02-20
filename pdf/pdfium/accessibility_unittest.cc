@@ -10,8 +10,9 @@
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_test_base.h"
 #include "pdf/test/test_client.h"
-#include "ppapi/c/private/ppp_pdf.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d.h"
 
@@ -209,95 +210,77 @@ TEST_F(AccessibilityTest, TestScrollIntoViewActionHandling) {
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
   ASSERT_TRUE(engine);
   engine->PluginSizeUpdated({400, 400});
-  PP_PdfAccessibilityActionData action_data;
-  action_data.action = PP_PdfAccessibilityAction::PP_PDF_SCROLL_TO_MAKE_VISIBLE;
+  AccessibilityActionData action_data;
+  action_data.action = AccessibilityAction::kScrollToMakeVisible;
   action_data.target_rect = {{120, 0}, {10, 10}};
 
   // Horizontal and Vertical scroll alignment of none should not scroll.
-  action_data.horizontal_scroll_alignment =
-      PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_NONE;
-  action_data.vertical_scroll_alignment =
-      PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_NONE;
+  action_data.horizontal_scroll_alignment = AccessibilityScrollAlignment::kNone;
+  action_data.vertical_scroll_alignment = AccessibilityScrollAlignment::kNone;
   engine->HandleAccessibilityAction(action_data);
   EXPECT_EQ(gfx::Vector2d(0, 0), client.GetScrollRequestDelta());
 
-  action_data.horizontal_scroll_alignment =
-      PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_LEFT;
-  action_data.vertical_scroll_alignment =
-      PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_TOP;
+  action_data.horizontal_scroll_alignment = AccessibilityScrollAlignment::kLeft;
+  action_data.vertical_scroll_alignment = AccessibilityScrollAlignment::kTop;
   engine->HandleAccessibilityAction(action_data);
   EXPECT_EQ(gfx::Vector2d(120, 0), client.GetScrollRequestDelta());
 
-  action_data.horizontal_scroll_alignment =
-      PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_LEFT;
-  action_data.vertical_scroll_alignment =
-      PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_BOTTOM;
+  action_data.horizontal_scroll_alignment = AccessibilityScrollAlignment::kLeft;
+  action_data.vertical_scroll_alignment = AccessibilityScrollAlignment::kBottom;
   engine->HandleAccessibilityAction(action_data);
   EXPECT_EQ(gfx::Vector2d(120, -400), client.GetScrollRequestDelta());
 
   action_data.horizontal_scroll_alignment =
-      PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_RIGHT;
-  action_data.vertical_scroll_alignment =
-      PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_TOP;
+      AccessibilityScrollAlignment::kRight;
+  action_data.vertical_scroll_alignment = AccessibilityScrollAlignment::kTop;
   engine->HandleAccessibilityAction(action_data);
   EXPECT_EQ(gfx::Vector2d(-280, 0), client.GetScrollRequestDelta());
 
   action_data.horizontal_scroll_alignment =
-      PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_RIGHT;
-  action_data.vertical_scroll_alignment =
-      PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_BOTTOM;
+      AccessibilityScrollAlignment::kRight;
+  action_data.vertical_scroll_alignment = AccessibilityScrollAlignment::kBottom;
   engine->HandleAccessibilityAction(action_data);
   EXPECT_EQ(gfx::Vector2d(-280, -400), client.GetScrollRequestDelta());
 
   action_data.horizontal_scroll_alignment =
-      PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_CENTER;
-  action_data.vertical_scroll_alignment =
-      PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_CENTER;
+      AccessibilityScrollAlignment::kCenter;
+  action_data.vertical_scroll_alignment = AccessibilityScrollAlignment::kCenter;
   engine->HandleAccessibilityAction(action_data);
   EXPECT_EQ(gfx::Vector2d(-80, -200), client.GetScrollRequestDelta());
 
   // Simulate a 150% zoom update in the PDFiumEngine.
   engine->PluginSizeUpdated({600, 600});
 
-  action_data.horizontal_scroll_alignment =
-      PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_NONE;
-  action_data.vertical_scroll_alignment =
-      PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_NONE;
+  action_data.horizontal_scroll_alignment = AccessibilityScrollAlignment::kNone;
+  action_data.vertical_scroll_alignment = AccessibilityScrollAlignment::kNone;
   engine->HandleAccessibilityAction(action_data);
   EXPECT_EQ(gfx::Vector2d(0, 0), client.GetScrollRequestDelta());
 
-  action_data.horizontal_scroll_alignment =
-      PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_LEFT;
-  action_data.vertical_scroll_alignment =
-      PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_TOP;
+  action_data.horizontal_scroll_alignment = AccessibilityScrollAlignment::kLeft;
+  action_data.vertical_scroll_alignment = AccessibilityScrollAlignment::kTop;
   engine->HandleAccessibilityAction(action_data);
   EXPECT_EQ(gfx::Vector2d(120, 0), client.GetScrollRequestDelta());
 
-  action_data.horizontal_scroll_alignment =
-      PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_LEFT;
-  action_data.vertical_scroll_alignment =
-      PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_BOTTOM;
+  action_data.horizontal_scroll_alignment = AccessibilityScrollAlignment::kLeft;
+  action_data.vertical_scroll_alignment = AccessibilityScrollAlignment::kBottom;
   engine->HandleAccessibilityAction(action_data);
   EXPECT_EQ(gfx::Vector2d(120, -600), client.GetScrollRequestDelta());
 
   action_data.horizontal_scroll_alignment =
-      PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_RIGHT;
-  action_data.vertical_scroll_alignment =
-      PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_TOP;
+      AccessibilityScrollAlignment::kRight;
+  action_data.vertical_scroll_alignment = AccessibilityScrollAlignment::kTop;
   engine->HandleAccessibilityAction(action_data);
   EXPECT_EQ(gfx::Vector2d(-480, 0), client.GetScrollRequestDelta());
 
   action_data.horizontal_scroll_alignment =
-      PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_RIGHT;
-  action_data.vertical_scroll_alignment =
-      PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_BOTTOM;
+      AccessibilityScrollAlignment::kRight;
+  action_data.vertical_scroll_alignment = AccessibilityScrollAlignment::kBottom;
   engine->HandleAccessibilityAction(action_data);
   EXPECT_EQ(gfx::Vector2d(-480, -600), client.GetScrollRequestDelta());
 
   action_data.horizontal_scroll_alignment =
-      PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_CENTER;
-  action_data.vertical_scroll_alignment =
-      PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_CENTER;
+      AccessibilityScrollAlignment::kCenter;
+  action_data.vertical_scroll_alignment = AccessibilityScrollAlignment::kCenter;
   engine->HandleAccessibilityAction(action_data);
   EXPECT_EQ(gfx::Vector2d(-180, -300), client.GetScrollRequestDelta());
 }
@@ -308,13 +291,13 @@ TEST_F(AccessibilityTest, TestScrollToNearestEdge) {
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
   ASSERT_TRUE(engine);
   engine->PluginSizeUpdated({400, 400});
-  PP_PdfAccessibilityActionData action_data;
-  action_data.action = PP_PdfAccessibilityAction::PP_PDF_SCROLL_TO_MAKE_VISIBLE;
+  AccessibilityActionData action_data;
+  action_data.action = AccessibilityAction::kScrollToMakeVisible;
 
   action_data.horizontal_scroll_alignment =
-      PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_CLOSEST_EDGE;
+      AccessibilityScrollAlignment::kClosestToEdge;
   action_data.vertical_scroll_alignment =
-      PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_CLOSEST_EDGE;
+      AccessibilityScrollAlignment::kClosestToEdge;
   // Point which is in the middle of the viewport.
   action_data.target_rect = {{200, 200}, {10, 10}};
   engine->HandleAccessibilityAction(action_data);
@@ -347,18 +330,18 @@ TEST_F(AccessibilityTest, TestScrollToGlobalPoint) {
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
   ASSERT_TRUE(engine);
   engine->PluginSizeUpdated({400, 400});
-  PP_PdfAccessibilityActionData action_data;
-  action_data.action = PP_PdfAccessibilityAction::PP_PDF_SCROLL_TO_GLOBAL_POINT;
+  AccessibilityActionData action_data;
+  action_data.action = AccessibilityAction::kScrollToGlobalPoint;
 
   // Scroll up if global point is below the target rect
   action_data.target_rect = {{201, 201}, {10, 10}};
-  action_data.target_point = {230, 230};
+  action_data.target_point = gfx::Point(230, 230);
   engine->HandleAccessibilityAction(action_data);
   EXPECT_EQ(gfx::Vector2d(-29, -29), client.GetScrollRequestDelta());
 
   // Scroll down if global point is above the target rect
   action_data.target_rect = {{230, 230}, {10, 10}};
-  action_data.target_point = {201, 201};
+  action_data.target_point = gfx::Point(201, 201);
   engine->HandleAccessibilityAction(action_data);
   EXPECT_EQ(gfx::Vector2d(29, 29), client.GetScrollRequestDelta());
 }
@@ -412,10 +395,10 @@ TEST_F(AccessibilityTest, TestWebLinkClickActionHandling) {
       InitializeEngine(&client, FILE_PATH_LITERAL("weblinks.pdf"));
   ASSERT_TRUE(engine);
 
-  PP_PdfAccessibilityActionData action_data;
-  action_data.action = PP_PdfAccessibilityAction::PP_PDF_DO_DEFAULT_ACTION;
+  AccessibilityActionData action_data;
+  action_data.action = AccessibilityAction::kDoDefaultAction;
   action_data.page_index = 0;
-  action_data.annotation_type = PP_PdfAccessibilityAnnotationType::PP_PDF_LINK;
+  action_data.annotation_type = AccessibilityAnnotationType::kLink;
   action_data.annotation_index = 0;
   engine->HandleAccessibilityAction(action_data);
   EXPECT_EQ("http://yahoo.com", client.url());
@@ -428,10 +411,10 @@ TEST_F(AccessibilityTest, TestInternalLinkClickActionHandling) {
       InitializeEngine(&client, FILE_PATH_LITERAL("link_annots.pdf"));
   ASSERT_TRUE(engine);
 
-  PP_PdfAccessibilityActionData action_data;
-  action_data.action = PP_PdfAccessibilityAction::PP_PDF_DO_DEFAULT_ACTION;
+  AccessibilityActionData action_data;
+  action_data.action = AccessibilityAction::kDoDefaultAction;
   action_data.page_index = 0;
-  action_data.annotation_type = PP_PdfAccessibilityAnnotationType::PP_PDF_LINK;
+  action_data.annotation_type = AccessibilityAnnotationType::kLink;
   action_data.annotation_index = 1;
   engine->HandleAccessibilityAction(action_data);
   EXPECT_EQ(1, client.page());
@@ -612,8 +595,8 @@ TEST_F(AccessibilityTest, TestSelectionActionHandling) {
   ASSERT_TRUE(engine);
 
   for (const auto& test_case : kTestCases) {
-    PP_PdfAccessibilityActionData action_data;
-    action_data.action = PP_PdfAccessibilityAction::PP_PDF_SET_SELECTION;
+    AccessibilityActionData action_data;
+    action_data.action = AccessibilityAction::kSetSelection;
     const Selection& sel_action = test_case.action;
     action_data.selection_start_index.page_index = sel_action.start_page_index;
     action_data.selection_start_index.char_index = sel_action.start_char_index;
@@ -667,8 +650,8 @@ TEST_F(AccessibilityTest, TestSetSelectionAndScroll) {
 
   int index = 0;
   for (const auto& test_case : kTestCases) {
-    PP_PdfAccessibilityActionData action_data;
-    action_data.action = PP_PdfAccessibilityAction::PP_PDF_SET_SELECTION;
+    AccessibilityActionData action_data;
+    action_data.action = AccessibilityAction::kSetSelection;
     const Selection& sel_action = test_case.action;
     action_data.selection_start_index.page_index = sel_action.start_page_index;
     action_data.selection_start_index.char_index = sel_action.start_char_index;

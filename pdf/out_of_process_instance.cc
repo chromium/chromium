@@ -363,13 +363,36 @@ void Redo(PP_Instance instance) {
   }
 }
 
+PageCharacterIndex ToPageCharacterIndex(
+    const PP_PdfPageCharacterIndex& pp_page_char_index) {
+  return {pp_page_char_index.page_index, pp_page_char_index.char_index};
+}
+
+AccessibilityActionData ToAccessibilityActionData(
+    const PP_PdfAccessibilityActionData& pp_action_data) {
+  return {
+      static_cast<AccessibilityAction>(pp_action_data.action),
+      static_cast<AccessibilityAnnotationType>(pp_action_data.annotation_type),
+      PointFromPPPoint(pp_action_data.target_point),
+      RectFromPPRect(pp_action_data.target_rect),
+      pp_action_data.annotation_index,
+      pp_action_data.page_index,
+      static_cast<AccessibilityScrollAlignment>(
+          pp_action_data.horizontal_scroll_alignment),
+      static_cast<AccessibilityScrollAlignment>(
+          pp_action_data.vertical_scroll_alignment),
+      ToPageCharacterIndex(pp_action_data.selection_start_index),
+      ToPageCharacterIndex(pp_action_data.selection_end_index)};
+}
+
 void HandleAccessibilityAction(
     PP_Instance instance,
     const PP_PdfAccessibilityActionData& action_data) {
   void* object = pp::Instance::GetPerInstanceObject(instance, kPPPPdfInterface);
   if (object) {
     auto* obj_instance = static_cast<OutOfProcessInstance*>(object);
-    obj_instance->HandleAccessibilityAction(action_data);
+    obj_instance->HandleAccessibilityAction(
+        ToAccessibilityActionData(action_data));
   }
 }
 
@@ -946,7 +969,7 @@ void OutOfProcessInstance::Redo() {
 }
 
 void OutOfProcessInstance::HandleAccessibilityAction(
-    const PP_PdfAccessibilityActionData& action_data) {
+    const AccessibilityActionData& action_data) {
   engine()->HandleAccessibilityAction(action_data);
 }
 

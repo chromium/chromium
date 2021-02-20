@@ -41,12 +41,15 @@
 
 namespace chrome_pdf {
 
+enum class AccessibilityScrollAlignment;
 class KeyboardInputEvent;
 class MouseInputEvent;
 class PDFiumDocument;
 class PDFiumPermissions;
 class TouchInputEvent;
+struct AccessibilityActionData;
 struct AccessibilityTextRunInfo;
+struct PageCharacterIndex;
 
 namespace draw_utils {
 class ShadowMatrix;
@@ -117,7 +120,7 @@ class PDFiumEngine : public PDFEngine,
   void Undo() override;
   void Redo() override;
   void HandleAccessibilityAction(
-      const PP_PdfAccessibilityActionData& action_data) override;
+      const AccessibilityActionData& action_data) override;
   std::string GetLinkAtPosition(const gfx::Point& point) override;
   bool HasPermission(DocumentPermission permission) const override;
   void SelectAll() override;
@@ -557,8 +560,7 @@ class PDFiumEngine : public PDFEngine,
                                           int form_type) const;
 
   bool PageIndexInBounds(int index) const;
-  bool IsPageCharacterIndexInBounds(
-      const PP_PdfPageCharacterIndex& index) const;
+  bool IsPageCharacterIndexInBounds(const PageCharacterIndex& index) const;
 
   void ScheduleTouchTimer(const TouchInputEvent& event);
   void KillTouchTimer();
@@ -572,8 +574,8 @@ class PDFiumEngine : public PDFEngine,
 
   void ScrollBasedOnScrollAlignment(
       const gfx::Rect& scroll_rect,
-      const PP_PdfAccessibilityScrollAlignment& horizontal_scroll_alignment,
-      const PP_PdfAccessibilityScrollAlignment& vertical_scroll_alignment);
+      const AccessibilityScrollAlignment& horizontal_scroll_alignment,
+      const AccessibilityScrollAlignment& vertical_scroll_alignment);
 
   // Scrolls top left of a rect in page |target_rect| to |global_point|.
   // Global point is point relative to viewport in screen.
@@ -594,8 +596,8 @@ class PDFiumEngine : public PDFEngine,
 
   // Used for text selection. Given the start and end of selection, sets the
   // text range in |selection_|.
-  void SetSelection(const PP_PdfPageCharacterIndex& selection_start_index,
-                    const PP_PdfPageCharacterIndex& selection_end_index);
+  void SetSelection(const PageCharacterIndex& selection_start_index,
+                    const PageCharacterIndex& selection_end_index);
 
   // Scroll the current focused annotation into view if not already in view.
   void ScrollFocusedAnnotationIntoView();

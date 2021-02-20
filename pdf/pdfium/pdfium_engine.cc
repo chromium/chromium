@@ -2242,18 +2242,17 @@ void PDFiumEngine::Redo() {
 }
 
 void PDFiumEngine::HandleAccessibilityAction(
-    const PP_PdfAccessibilityActionData& action_data) {
+    const AccessibilityActionData& action_data) {
   switch (action_data.action) {
-    case PP_PdfAccessibilityAction::PP_PDF_SCROLL_TO_MAKE_VISIBLE: {
-      ScrollBasedOnScrollAlignment(RectFromPPRect(action_data.target_rect),
+    case AccessibilityAction::kScrollToMakeVisible: {
+      ScrollBasedOnScrollAlignment(action_data.target_rect,
                                    action_data.horizontal_scroll_alignment,
                                    action_data.vertical_scroll_alignment);
       break;
     }
-    case PP_PdfAccessibilityAction::PP_PDF_DO_DEFAULT_ACTION: {
+    case AccessibilityAction::kDoDefaultAction: {
       if (PageIndexInBounds(action_data.page_index)) {
-        if (action_data.annotation_type ==
-            PP_PdfAccessibilityAnnotationType::PP_PDF_LINK) {
+        if (action_data.annotation_type == AccessibilityAnnotationType::kLink) {
           PDFiumPage::LinkTarget target;
           PDFiumPage::Area area =
               pages_[action_data.page_index]->GetLinkTargetAtIndex(
@@ -2264,17 +2263,16 @@ void PDFiumEngine::HandleAccessibilityAction(
       }
       break;
     }
-    case PP_PdfAccessibilityAction::PP_PDF_SCROLL_TO_GLOBAL_POINT: {
-      ScrollToGlobalPoint(RectFromPPRect(action_data.target_rect),
-                          PointFromPPPoint(action_data.target_point));
+    case AccessibilityAction::kScrollToGlobalPoint: {
+      ScrollToGlobalPoint(action_data.target_rect, action_data.target_point);
       break;
     }
-    case PP_PdfAccessibilityAction::PP_PDF_SET_SELECTION: {
+    case AccessibilityAction::kSetSelection: {
       if (IsPageCharacterIndexInBounds(action_data.selection_start_index) &&
           IsPageCharacterIndexInBounds(action_data.selection_end_index)) {
         SetSelection(action_data.selection_start_index,
                      action_data.selection_end_index);
-        gfx::Rect target_rect = RectFromPPRect(action_data.target_rect);
+        gfx::Rect target_rect = action_data.target_rect;
         if (GetVisibleRect().Contains(target_rect))
           return;
         client_->ScrollBy(GetScreenRect(target_rect).OffsetFromOrigin());
@@ -2423,53 +2421,53 @@ base::Value PDFiumEngine::TraverseBookmarks(FPDF_BOOKMARK bookmark,
 
 void PDFiumEngine::ScrollBasedOnScrollAlignment(
     const gfx::Rect& scroll_rect,
-    const PP_PdfAccessibilityScrollAlignment& horizontal_scroll_alignment,
-    const PP_PdfAccessibilityScrollAlignment& vertical_scroll_alignment) {
+    const AccessibilityScrollAlignment& horizontal_scroll_alignment,
+    const AccessibilityScrollAlignment& vertical_scroll_alignment) {
   gfx::Vector2d scroll_offset = GetScreenRect(scroll_rect).OffsetFromOrigin();
   switch (horizontal_scroll_alignment) {
-    case PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_RIGHT:
+    case AccessibilityScrollAlignment::kRight:
       scroll_offset.set_x(scroll_offset.x() - plugin_size_.width());
       break;
-    case PP_PDF_SCROLL_ALIGNMENT_CENTER:
+    case AccessibilityScrollAlignment::kCenter:
       scroll_offset.set_x(scroll_offset.x() - (plugin_size_.width() / 2));
       break;
-    case PP_PDF_SCROLL_ALIGNMENT_CLOSEST_EDGE: {
+    case AccessibilityScrollAlignment::kClosestToEdge: {
       scroll_offset.set_x((std::abs(scroll_offset.x()) <=
                            std::abs(scroll_offset.x() - plugin_size_.width()))
                               ? scroll_offset.x()
                               : scroll_offset.x() - plugin_size_.width());
       break;
     }
-    case PP_PDF_SCROLL_NONE:
+    case AccessibilityScrollAlignment::kNone:
       scroll_offset.set_x(0);
       break;
-    case PP_PDF_SCROLL_ALIGNMENT_LEFT:
-    case PP_PDF_SCROLL_ALIGNMENT_TOP:
-    case PP_PDF_SCROLL_ALIGNMENT_BOTTOM:
+    case AccessibilityScrollAlignment::kLeft:
+    case AccessibilityScrollAlignment::kTop:
+    case AccessibilityScrollAlignment::kBottom:
     default:
       break;
   }
 
   switch (vertical_scroll_alignment) {
-    case PP_PDF_SCROLL_ALIGNMENT_BOTTOM:
+    case AccessibilityScrollAlignment::kBottom:
       scroll_offset.set_y(scroll_offset.y() - plugin_size_.height());
       break;
-    case PP_PDF_SCROLL_ALIGNMENT_CENTER:
+    case AccessibilityScrollAlignment::kCenter:
       scroll_offset.set_y(scroll_offset.y() - (plugin_size_.height() / 2));
       break;
-    case PP_PDF_SCROLL_ALIGNMENT_CLOSEST_EDGE: {
+    case AccessibilityScrollAlignment::kClosestToEdge: {
       scroll_offset.set_y((std::abs(scroll_offset.y()) <=
                            std::abs(scroll_offset.y() - plugin_size_.height()))
                               ? scroll_offset.y()
                               : scroll_offset.y() - plugin_size_.height());
       break;
     }
-    case PP_PDF_SCROLL_NONE:
+    case AccessibilityScrollAlignment::kNone:
       scroll_offset.set_y(0);
       break;
-    case PP_PDF_SCROLL_ALIGNMENT_TOP:
-    case PP_PDF_SCROLL_ALIGNMENT_LEFT:
-    case PP_PDF_SCROLL_ALIGNMENT_RIGHT:
+    case AccessibilityScrollAlignment::kTop:
+    case AccessibilityScrollAlignment::kLeft:
+    case AccessibilityScrollAlignment::kRight:
     default:
       break;
   }
@@ -3826,7 +3824,7 @@ bool PDFiumEngine::PageIndexInBounds(int index) const {
 }
 
 bool PDFiumEngine::IsPageCharacterIndexInBounds(
-    const PP_PdfPageCharacterIndex& index) const {
+    const PageCharacterIndex& index) const {
   return PageIndexInBounds(index.page_index) &&
          pages_[index.page_index]->IsCharIndexInBounds(index.char_index);
 }
@@ -3837,14 +3835,13 @@ FPDF_BOOL PDFiumEngine::Pause_NeedToPauseNow(IFSDK_PAUSE* param) {
          engine->progressive_paint_timeout_;
 }
 
-void PDFiumEngine::SetSelection(
-    const PP_PdfPageCharacterIndex& selection_start_index,
-    const PP_PdfPageCharacterIndex& selection_end_index) {
+void PDFiumEngine::SetSelection(const PageCharacterIndex& selection_start_index,
+                                const PageCharacterIndex& selection_end_index) {
   SelectionChangeInvalidator selection_invalidator(this);
   selection_.clear();
 
-  PP_PdfPageCharacterIndex sel_start_index = selection_start_index;
-  PP_PdfPageCharacterIndex sel_end_index = selection_end_index;
+  PageCharacterIndex sel_start_index = selection_start_index;
+  PageCharacterIndex sel_end_index = selection_end_index;
   if (sel_end_index.page_index < sel_start_index.page_index) {
     std::swap(sel_end_index.page_index, sel_start_index.page_index);
     std::swap(sel_end_index.char_index, sel_start_index.char_index);
