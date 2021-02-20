@@ -4,6 +4,7 @@
 
 #include "chrome/browser/speech/cros_speech_recognition_service.h"
 
+#include "chrome/browser/accessibility/soda_installer.h"
 #include "chrome/services/speech/cros_speech_recognition_recognizer_impl.h"
 #include "components/soda/constants.h"
 #include "media/base/media_switches.h"
@@ -32,10 +33,20 @@ void CrosSpeechRecognitionService::BindRecognizer(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizer> receiver,
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> client,
     BindRecognizerCallback callback) {
-  // TODO(robsc): Create this with appropriate file locations.
+  base::FilePath binary_path, languagepack_path;
+  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
+  if (soda_installer->IsSodaInstalled()) {
+    binary_path = soda_installer->GetSodaBinaryPath();
+    languagepack_path = soda_installer->GetLanguagePath();
+  } else {
+    LOG(DFATAL)
+        << "Instantiation of SODA requested without SODA being installed.";
+  }
+
   CrosSpeechRecognitionRecognizerImpl::Create(
-      std::move(receiver), std::move(client), nullptr, base::FilePath(),
-      base::FilePath());
+      std::move(receiver), std::move(client),
+      nullptr /* =SpeechRecognitionService WeakPtr*/, binary_path,
+      languagepack_path);
   std::move(callback).Run(
       CrosSpeechRecognitionRecognizerImpl::IsMultichannelSupported());
 }
