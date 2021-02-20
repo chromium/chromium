@@ -116,9 +116,9 @@ TEST_F(AndroidTelemetryServiceTest, CantSendPing_NonApk) {
   profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingScoutReportingEnabled,
                                     true);
   // Simulate non-APK download.
-  ON_CALL(*download_item_, GetTargetFilePath())
-      .WillByDefault(testing::ReturnRefOfCopy(
-          base::FilePath(FILE_PATH_LITERAL("file.txt"))));
+  ON_CALL(*download_item_, GetFileNameToReportUser())
+      .WillByDefault(
+          testing::Return(base::FilePath(FILE_PATH_LITERAL("file.txt"))));
 
   EXPECT_FALSE(CanSendPing(download_item_.get()));
 
@@ -134,9 +134,9 @@ TEST_F(AndroidTelemetryServiceTest, CantSendPing_SafeBrowsingDisabled) {
   profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingScoutReportingEnabled,
                                     true);
   // Simulate APK download.
-  ON_CALL(*download_item_, GetTargetFilePath())
-      .WillByDefault(testing::ReturnRefOfCopy(
-          base::FilePath(FILE_PATH_LITERAL("file.apk"))));
+  ON_CALL(*download_item_, GetFileNameToReportUser())
+      .WillByDefault(
+          testing::Return(base::FilePath(FILE_PATH_LITERAL("file.apk"))));
 
   EXPECT_FALSE(CanSendPing(download_item_.get()));
 
@@ -156,9 +156,9 @@ TEST_F(AndroidTelemetryServiceTest, CantSendPing_IncognitoMode) {
   profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingScoutReportingEnabled,
                                     true);
   // Simulate APK download.
-  ON_CALL(*download_item_, GetTargetFilePath())
-      .WillByDefault(testing::ReturnRefOfCopy(
-          base::FilePath(FILE_PATH_LITERAL("file.apk"))));
+  ON_CALL(*download_item_, GetFileNameToReportUser())
+      .WillByDefault(
+          testing::Return(base::FilePath(FILE_PATH_LITERAL("file.apk"))));
 
   EXPECT_FALSE(CanSendPing(download_item_.get()));
 
@@ -180,9 +180,9 @@ TEST_F(AndroidTelemetryServiceTest,
   // Enable Safe Browsing.
   profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
   // Simulate APK download.
-  ON_CALL(*download_item_, GetTargetFilePath())
-      .WillByDefault(testing::ReturnRefOfCopy(
-          base::FilePath(FILE_PATH_LITERAL("file.apk"))));
+  ON_CALL(*download_item_, GetFileNameToReportUser())
+      .WillByDefault(
+          testing::Return(base::FilePath(FILE_PATH_LITERAL("file.apk"))));
 
   EXPECT_FALSE(CanSendPing(download_item_.get()));
 
@@ -199,9 +199,9 @@ TEST_F(AndroidTelemetryServiceTest, CanSendPing_AllConditionsMet) {
   profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingScoutReportingEnabled,
                                     true);
   // Simulate APK download.
-  ON_CALL(*download_item_, GetTargetFilePath())
-      .WillByDefault(testing::ReturnRefOfCopy(
-          base::FilePath(FILE_PATH_LITERAL("file.apk"))));
+  ON_CALL(*download_item_, GetFileNameToReportUser())
+      .WillByDefault(
+          testing::Return(base::FilePath(FILE_PATH_LITERAL("file.apk"))));
 
   // The ping should be sent.
   EXPECT_TRUE(CanSendPing(download_item_.get()));
@@ -218,16 +218,41 @@ TEST_F(AndroidTelemetryServiceTest,
   // Enable Scout Reporting.
   profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingScoutReportingEnabled,
                                     true);
-  // Simulate APK download.
-  ON_CALL(*download_item_, GetTargetFilePath())
-      .WillByDefault(testing::ReturnRefOfCopy(
-          base::FilePath(FILE_PATH_LITERAL("file.apk"))));
+  // Simulate APK download. Set file type to APK.
+  ON_CALL(*download_item_, GetFileNameToReportUser())
+      .WillByDefault(
+          testing::Return(base::FilePath(FILE_PATH_LITERAL("file.apk"))));
 
   // Set MIME type to non-APK.
   ON_CALL(*download_item_, GetMimeType())
       .WillByDefault(testing::Return("text/plain"));
 
   // The ping should be sent even though the MIME type is not apk.
+  EXPECT_TRUE(CanSendPing(download_item_.get()));
+
+  // No metric is logged in this case, because SENT is logged in another
+  // function.
+  get_histograms()->ExpectTotalCount(kApkDownloadTelemetryOutcomeMetric, 0);
+}
+
+TEST_F(AndroidTelemetryServiceTest,
+       CanSendPing_AllConditionsMetFilePathNotApk) {
+  // Enable Safe Browsing.
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+  // Enable Scout Reporting.
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingScoutReportingEnabled,
+                                    true);
+  // Simulate APK download. Set file type to non-APK.
+  ON_CALL(*download_item_, GetFileNameToReportUser())
+      .WillByDefault(
+          testing::Return(base::FilePath(FILE_PATH_LITERAL("file.txt"))));
+
+  // Set MIME type to APK.
+  ON_CALL(*download_item_, GetMimeType())
+      .WillByDefault(
+          testing::Return("application/vnd.android.package-archive"));
+
+  // The ping should be sent even though the file type is not apk.
   EXPECT_TRUE(CanSendPing(download_item_.get()));
 
   // No metric is logged in this case, because SENT is logged in another

@@ -102,16 +102,18 @@ void AndroidTelemetryService::OnDownloadCreated(
   if (!coordinator->has_all_history_downloads())
     return;
 
-  if (!CanSendPing(item)) {
-    return;
-  }
-
   item->AddObserver(this);
 }
 
 void AndroidTelemetryService::OnDownloadUpdated(download::DownloadItem* item) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(item->GetTargetFilePath().MatchesExtension(kApkSuffix));
+
+  if (!CanSendPing(item)) {
+    // No longer interested in this |DownloadItem| since the download is
+    // not APK.
+    item->RemoveObserver(this);
+    return;
+  }
 
   if (item->GetState() == download::DownloadItem::COMPLETE) {
     base::UmaHistogramBoolean(
@@ -134,7 +136,8 @@ void AndroidTelemetryService::OnDownloadUpdated(download::DownloadItem* item) {
 }
 
 bool AndroidTelemetryService::CanSendPing(download::DownloadItem* item) {
-  if (!item->GetTargetFilePath().MatchesExtension(kApkSuffix)) {
+  if (!item->GetFileNameToReportUser().MatchesExtension(kApkSuffix) &&
+      (item->GetMimeType() != kApkMimeType)) {
     // This case is not recorded since we are not interested here in finding out
     // how often people download non-APK files.
     return false;
