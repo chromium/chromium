@@ -147,7 +147,7 @@ public class AppMenuPropertiesDelegateUnitTest {
         when(mTabModelSelector.getModel(true)).thenReturn((mIncognitoTabModel));
         when(mTabModel.isIncognito()).thenReturn(false);
         when(mIncognitoTabModel.isIncognito()).thenReturn(true);
-        when(mWebFeedBridge.isFollowed(any())).thenReturn(false);
+        when(mWebFeedBridge.getFollowedIds(any())).thenReturn(null);
 
         UpdateMenuItemHelper.setInstanceForTesting(mUpdateMenuItemHelper);
         mMenuUiState = new UpdateMenuItemHelper.MenuUiState();
@@ -735,7 +735,7 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Test
     @Config(qualifiers = "sw320dp")
     public void testWebFeedFollow_isNotFollowed_showsFollow() {
-        when(mWebFeedBridge.isFollowed(any())).thenReturn(false);
+        when(mWebFeedBridge.getFollowedIds(any())).thenReturn(null);
         setUpMocksForPageMenu();
         setMenuOptions(false /*isNativePage*/, true /*showTranslate*/, false /*showUpdate*/,
                 false /*showMoveToOtherWindow*/, false /*showReaderModePrefs*/,
@@ -752,8 +752,9 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @Test
     @Config(qualifiers = "sw320dp")
-    public void testWebFeedFollow_isFollowed_showsFollowing() {
-        when(mWebFeedBridge.isFollowed(any())).thenReturn(true);
+    public void testWebFeedFollow_getFollowedIds_showsFollowing() {
+        when(mWebFeedBridge.getFollowedIds(any()))
+                .thenReturn(new WebFeedBridge.FollowedIds("aFollowId", "aWebFeedId"));
         setUpMocksForPageMenu();
         setMenuOptions(false /*isNativePage*/, true /*showTranslate*/, false /*showUpdate*/,
                 false /*showMoveToOtherWindow*/, false /*showReaderModePrefs*/,

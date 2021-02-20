@@ -133,7 +133,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mContentFeatureListJniMock.isEnabled(
                      ContentFeatureList.EXPERIMENTAL_ACCESSIBILITY_LABELS))
                 .thenReturn(false);
-        when(mWebFeedBridge.isFollowed(any())).thenReturn(false);
+        when(mWebFeedBridge.getFollowedIds(any())).thenReturn(null);
         FeatureList.setTestCanUseDefaultsForTesting();
 
         mTabbedAppMenuPropertiesDelegate = Mockito.spy(

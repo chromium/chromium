@@ -509,7 +509,9 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         MenuItem followMenuItem = menu.findItem(R.id.feed_follow_id);
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)) {
             followMenuItem.setVisible(true);
-            if (mWebFeedBridge.isFollowed(currentTab.getUrl())) {
+            WebFeedBridge.FollowedIds followedIds =
+                    mWebFeedBridge.getFollowedIds(currentTab.getUrl());
+            if (followedIds != null) {
                 followMenuItem.setIcon(R.drawable.ic_checkmark_24dp);
                 followMenuItem.setTitle(R.string.menu_following);
             }
