@@ -304,8 +304,13 @@ PaintArtifactCompositor::CompositedLayerForPendingLayer(
   // Set properties that foreign layers would normally control for themselves
   // here to avoid changing foreign layers. This includes things set by
   // GraphicsLayer on the ContentsLayer() or by video clients etc.
-  cc_layer->SetContentsOpaque(pending_layer.rect_known_to_be_opaque.Contains(
-      FloatRect(cc_combined_bounds)));
+  bool contents_opaque = pending_layer.rect_known_to_be_opaque.Contains(
+      FloatRect(cc_combined_bounds));
+  cc_layer->SetContentsOpaque(contents_opaque);
+  if (!contents_opaque) {
+    cc_layer->SetContentsOpaqueForText(
+        pending_layer.text_known_to_be_on_opaque_background);
+  }
 
   return cc_layer;
 }
@@ -340,6 +345,8 @@ PaintArtifactCompositor::PendingLayer::PendingLayer(
     : bounds(first_chunk->bounds),
       rect_known_to_be_opaque(first_chunk->known_to_be_opaque ? bounds
                                                               : FloatRect()),
+      text_known_to_be_on_opaque_background(
+          first_chunk->text_known_to_be_on_opaque_background),
       chunks(&chunks.GetPaintArtifact(), first_chunk.IndexInPaintArtifact()),
       property_tree_state(
           first_chunk->properties.GetPropertyTreeState().Unalias()),
@@ -438,13 +445,19 @@ FloatRect PaintArtifactCompositor::PendingLayer::VisualRectForOverlapTesting()
 
 bool PaintArtifactCompositor::PendingLayer::Merge(const PendingLayer& guest) {
   PropertyTreeState new_state = PropertyTreeState::Uninitialized();
-  if (!CanMerge(guest, guest.property_tree_state, &new_state, &bounds))
+  FloatRect guest_bounds;
+  if (!CanMerge(guest, guest.property_tree_state, &new_state, &guest_bounds,
+                &bounds)) {
     return false;
+  }
 
   chunks.Merge(guest.chunks);
   rect_known_to_be_opaque =
       UniteRectsKnownToBeOpaque(MapRectKnownToBeOpaque(new_state),
                                 guest.MapRectKnownToBeOpaque(new_state));
+  text_known_to_be_on_opaque_background &=
+      (guest.text_known_to_be_on_opaque_background ||
+       rect_known_to_be_opaque.Contains(guest_bounds));
   property_tree_state = new_state;
   change_of_decomposited_transforms =
       std::max(change_of_decomposited_transforms,
@@ -564,6 +577,7 @@ bool PaintArtifactCompositor::PendingLayer::CanMerge(
     const PendingLayer& guest,
     const PropertyTreeState& guest_state,
     PropertyTreeState* out_merged_state,
+    FloatRect* out_guest_bounds,
     FloatRect* out_merged_bounds) const {
   if (&chunks.GetPaintArtifact() != &guest.chunks.GetPaintArtifact())
     return false;
@@ -600,6 +614,8 @@ bool PaintArtifactCompositor::PendingLayer::CanMerge(
 
   if (out_merged_state)
     *out_merged_state = *merged_state;
+  if (out_guest_bounds)
+    *out_guest_bounds = new_guest_bounds.Rect();
   if (out_merged_bounds)
     *out_merged_bounds = merged_bounds;
   return true;

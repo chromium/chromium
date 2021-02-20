@@ -19,7 +19,8 @@ CASE 1, original layer tree:
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1'",
       "position": [140, 140],
-      "bounds": [260, 260]
+      "bounds": [260, 260],
+      "contentsOpaqueForText": true
     }
   ],
   "transforms": [

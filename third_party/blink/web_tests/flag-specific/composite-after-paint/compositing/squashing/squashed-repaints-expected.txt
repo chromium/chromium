@@ -19,7 +19,8 @@ CASE 1, original layer tree:
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1'",
       "position": [140, 140],
-      "bounds": [260, 260]
+      "bounds": [260, 260],
+      "contentsOpaqueForText": true
     }
   ],
   "transforms": [
@@ -55,6 +56,7 @@ CASE 2, overlap1 changes color:
       "name": "LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1'",
       "position": [140, 140],
       "bounds": [260, 260],
+      "contentsOpaqueForText": true,
       "invalidations": [
         [0, 0, 100, 100]
       ]
@@ -93,6 +95,7 @@ CASE 3, overlap1 and overlap2 change color:
       "name": "LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1'",
       "position": [140, 140],
       "bounds": [260, 260],
+      "contentsOpaqueForText": true,
       "invalidations": [
         [80, 80, 100, 100],
         [0, 0, 100, 100]
@@ -132,6 +135,7 @@ CASE 4, overlap2 and overlap3 change color:
       "name": "LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1'",
       "position": [140, 140],
       "bounds": [260, 260],
+      "contentsOpaqueForText": true,
       "invalidations": [
         [160, 160, 100, 100],
         [80, 80, 100, 100]
@@ -171,6 +175,7 @@ CASE 5, overlap3 and overlap1 change color:
       "name": "LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1'",
       "position": [140, 140],
       "bounds": [260, 260],
+      "contentsOpaqueForText": true,
       "invalidations": [
         [160, 160, 100, 100],
         [0, 0, 100, 100]

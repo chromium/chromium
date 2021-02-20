@@ -15,7 +15,8 @@
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='software'",
-      "bounds": [125, 125]
+      "bounds": [125, 125],
+      "contentsOpaqueForText": true
     }
   ],
   "transforms": [

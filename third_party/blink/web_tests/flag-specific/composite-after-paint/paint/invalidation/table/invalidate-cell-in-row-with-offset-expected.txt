@@ -9,11 +9,13 @@
     {
       "name": "LayoutNGTableRow TR",
       "bounds": [214, 102],
+      "contentsOpaqueForText": true,
       "transform": 1
     },
     {
       "name": "LayoutNGTableRow TR class='shadow-inset'",
       "bounds": [214, 102],
+      "contentsOpaqueForText": true,
       "invalidations": [
         [0, 0, 102, 102]
       ],

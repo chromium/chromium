@@ -20,6 +20,7 @@
       "name": "LayoutNGBlockFlow DIV id='scroller'",
       "position": [10, 10],
       "bounds": [185, 300],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#008000",
       "invalidations": [
         [0, 0, 185, 300]
@@ -30,6 +31,7 @@
       "name": "HorizontalScrollbar",
       "position": [10, 195],
       "bounds": [200, 15],
+      "contentsOpaqueForText": true,
       "transform": 1
     },
     {

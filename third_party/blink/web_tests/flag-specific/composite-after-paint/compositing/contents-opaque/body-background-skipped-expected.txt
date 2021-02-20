@@ -17,6 +17,7 @@
       "name": "LayoutNGBlockFlow HTML",
       "position": [8, 8],
       "bounds": [100, 100],
+      "contentsOpaqueForText": true,
       "drawsContent": false
     }
   ],

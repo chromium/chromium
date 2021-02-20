@@ -24,6 +24,7 @@ In all iframes, the green fixed-position element should not be composited.
     {
       "name": "LayoutIFrame (positioned) IFRAME id='iframe2' class='composited'",
       "bounds": [154, 154],
+      "contentsOpaqueForText": true,
       "transform": 4
     },
     {
@@ -36,7 +37,8 @@ In all iframes, the green fixed-position element should not be composited.
     {
       "name": "LayoutIFrame (positioned) IFRAME id='iframe3'",
       "position": [10, 380],
-      "bounds": [154, 154]
+      "bounds": [154, 154],
+      "contentsOpaqueForText": true
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='fixed lime box'",

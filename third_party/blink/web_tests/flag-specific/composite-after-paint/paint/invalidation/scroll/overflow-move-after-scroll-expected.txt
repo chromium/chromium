@@ -9,6 +9,7 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='scroller' class='scroller'",
       "bounds": [700, 400],
+      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 1
     },
@@ -22,6 +23,7 @@
       "name": "HorizontalScrollbar",
       "position": [0, 385],
       "bounds": [700, 15],
+      "contentsOpaqueForText": true,
       "transform": 1
     },
     {
@@ -33,6 +35,7 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='scroller' class='scroller'",
       "bounds": [685, 600],
+      "contentsOpaqueForText": true,
       "invalidations": [
         [300, 200, 120, 50],
         [50, 200, 120, 50]

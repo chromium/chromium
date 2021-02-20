@@ -16,6 +16,7 @@
       "name": "HorizontalScrollbar",
       "position": [0, 185],
       "bounds": [200, 15],
+      "contentsOpaqueForText": true,
       "transform": 1
     },
     {
@@ -27,6 +28,7 @@
     {
       "name": "LayoutNGBlockFlow DIV id='scroller'",
       "bounds": [185, 1200],
+      "contentsOpaqueForText": true,
       "invalidations": [
         [0, 0, 185, 200]
       ],

@@ -11,6 +11,7 @@ layer tree before image style change
     {
       "name": "LayoutImage IMG class='composited'",
       "bounds": [256, 256],
+      "contentsOpaqueForText": true,
       "transform": 1
     }
   ],
@@ -40,6 +41,7 @@ layer tree after image style change
     {
       "name": "LayoutImage IMG class='composited border'",
       "bounds": [260, 260],
+      "contentsOpaqueForText": true,
       "transform": 1
     }
   ],

@@ -11,12 +11,14 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV class='main box'",
       "position": [-30, -30],
       "bounds": [340, 340],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#FF0000",
       "transform": 1
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='negative child'",
       "bounds": [50, 50],
+      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 3
     },
@@ -24,6 +26,7 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV class='main box'",
       "position": [40, 40],
       "bounds": [200, 205],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#008000",
       "transform": 1
     },
@@ -31,12 +34,14 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV class='main box'",
       "position": [-30, -30],
       "bounds": [340, 340],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#FF0000",
       "transform": 4
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='negative child'",
       "bounds": [50, 50],
+      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 6
     },
@@ -44,6 +49,7 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV class='main box'",
       "position": [40, 40],
       "bounds": [200, 200],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#008000",
       "transform": 4
     }

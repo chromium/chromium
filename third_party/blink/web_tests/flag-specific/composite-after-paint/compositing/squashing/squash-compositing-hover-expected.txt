@@ -19,7 +19,8 @@ Case 1, original layer tree:
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='box middle'",
       "position": [180, 180],
-      "bounds": [260, 260]
+      "bounds": [260, 260],
+      "contentsOpaqueForText": true
     }
   ],
   "transforms": [
@@ -61,7 +62,8 @@ Case 2: hovering over the "middle" element (causes that div to become its own co
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='box middle2'",
       "position": [260, 260],
-      "bounds": [180, 180]
+      "bounds": [180, 180],
+      "contentsOpaqueForText": true
     }
   ],
   "transforms": [
@@ -165,7 +167,8 @@ Case 4: hovering over the "top" element (causes that div to become its own compo
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='box middle'",
       "position": [180, 180],
-      "bounds": [180, 180]
+      "bounds": [180, 180],
+      "contentsOpaqueForText": true
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='box top'",
@@ -216,7 +219,8 @@ Case 5: back to situation in case 1
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='box middle'",
       "position": [180, 180],
-      "bounds": [260, 260]
+      "bounds": [260, 260],
+      "contentsOpaqueForText": true
     }
   ],
   "transforms": [

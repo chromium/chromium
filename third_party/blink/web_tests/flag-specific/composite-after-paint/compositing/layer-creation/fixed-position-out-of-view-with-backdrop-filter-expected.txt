@@ -9,11 +9,13 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
       "bounds": [10, 10],
+      "contentsOpaqueForText": true,
       "transform": 1
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
-      "bounds": [10, 10]
+      "bounds": [10, 10],
+      "contentsOpaqueForText": true
     },
     {
       "name": "VerticalScrollbar",

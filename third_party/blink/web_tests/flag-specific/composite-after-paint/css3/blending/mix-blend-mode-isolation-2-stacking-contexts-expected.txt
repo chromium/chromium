@@ -16,6 +16,7 @@
     {
       "name": "LayoutImage IMG class='accelerated blended'",
       "bounds": [160, 90],
+      "contentsOpaqueForText": true,
       "transform": 1
     },
     {
@@ -28,6 +29,7 @@
     {
       "name": "LayoutImage IMG class='accelerated blended'",
       "bounds": [160, 90],
+      "contentsOpaqueForText": true,
       "transform": 2
     },
     {

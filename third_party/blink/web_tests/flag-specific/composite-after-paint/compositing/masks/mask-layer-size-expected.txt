@@ -16,6 +16,7 @@
     {
       "name": "LayoutNGBlockFlow DIV id='masked'",
       "bounds": [400, 200],
+      "contentsOpaqueForText": true,
       "transform": 1
     }
   ],

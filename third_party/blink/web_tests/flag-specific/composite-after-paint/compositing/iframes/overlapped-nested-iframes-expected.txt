@@ -24,6 +24,7 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='banner'",
       "bounds": [785, 120],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#00000080"
     },
     {

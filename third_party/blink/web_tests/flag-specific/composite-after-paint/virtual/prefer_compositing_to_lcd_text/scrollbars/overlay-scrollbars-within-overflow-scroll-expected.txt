@@ -16,6 +16,7 @@
       "name": "LayoutNGBlockFlow DIV id='outer'",
       "position": [1, 1],
       "bounds": [400, 602],
+      "contentsOpaqueForText": true,
       "transform": 1
     },
     {
@@ -29,6 +30,7 @@
       "name": "LayoutNGBlockFlow DIV id='inner'",
       "position": [1, 1],
       "bounds": [100, 500],
+      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 2
     },

@@ -9,6 +9,7 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='clip'",
       "bounds": [800, 300],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#FF0000E6",
       "transform": 2
     },

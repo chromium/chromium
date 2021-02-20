@@ -9,6 +9,7 @@
     {
       "name": "LayoutHTMLCanvas CANVAS id='canvas-simple'",
       "bounds": [50, 50],
+      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 1
     },
@@ -59,6 +60,7 @@
     {
       "name": "LayoutHTMLCanvas CANVAS id='canvas-transparent-background'",
       "bounds": [50, 50],
+      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 5
     },

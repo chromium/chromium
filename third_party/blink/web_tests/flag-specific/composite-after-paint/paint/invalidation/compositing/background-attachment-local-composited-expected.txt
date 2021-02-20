@@ -9,6 +9,7 @@
     {
       "name": "LayoutNGBlockFlow DIV id='container'",
       "bounds": [400, 400],
+      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 1
     },

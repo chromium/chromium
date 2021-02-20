@@ -10,6 +10,7 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV",
       "bounds": [200, 200],
+      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 2
     },

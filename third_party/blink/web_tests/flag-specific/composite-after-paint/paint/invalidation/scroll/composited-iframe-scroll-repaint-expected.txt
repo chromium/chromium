@@ -16,6 +16,7 @@
     {
       "name": "LayoutNGBlockFlow BODY",
       "bounds": [284, 500],
+      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 3
     }

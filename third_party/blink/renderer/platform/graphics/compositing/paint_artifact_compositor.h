@@ -244,8 +244,9 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
     // current state).
     bool CanMerge(const PendingLayer& guest,
                   const PropertyTreeState& guest_state,
-                  PropertyTreeState* merged_state = nullptr,
-                  FloatRect* merged_bounds = nullptr) const;
+                  PropertyTreeState* out_merged_state = nullptr,
+                  FloatRect* out_guest_bounds = nullptr,
+                  FloatRect* out_merged_bounds = nullptr) const;
 
     // Mutate this layer's property tree state to a more general (shallower)
     // state, thus the name "upcast". The concrete effect of this is to
@@ -277,6 +278,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
     // The rects are in the space of property_tree_state.
     FloatRect bounds;
     FloatRect rect_known_to_be_opaque;
+    bool text_known_to_be_on_opaque_background;
     PaintChunkSubset chunks;
     PropertyTreeState property_tree_state;
     FloatPoint offset_of_decomposited_transforms;

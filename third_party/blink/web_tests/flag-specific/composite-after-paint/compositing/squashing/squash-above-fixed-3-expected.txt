@@ -144,6 +144,7 @@ CASE 3, scrolling y further so that "inner" no longer overlaps the fixed-pos lay
       "name": "LayoutNGBlockFlow (positioned) DIV id='container'",
       "position": [100, 100],
       "bounds": [200, 4000],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#008000",
       "invalidations": [
         [100, 0, 100, 100]

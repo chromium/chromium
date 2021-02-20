@@ -9,6 +9,7 @@
     {
       "name": "LayoutNGBlockFlow DIV id='scroller'",
       "bounds": [302, 302],
+      "contentsOpaqueForText": true,
       "backfaceVisibility": "hidden",
       "invalidations": [
         [1, 201, 100, 100]

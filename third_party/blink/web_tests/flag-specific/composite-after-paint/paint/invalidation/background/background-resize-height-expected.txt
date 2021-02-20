@@ -50,6 +50,7 @@
       "name": "LayoutNGBlockFlow (positioned) DIV class='test image no-repeat'",
       "position": [408, 8],
       "bounds": [110, 44],
+      "contentsOpaqueForText": true,
       "invalidations": [
         [50, 0, 60, 44],
         [0, 40, 60, 4]
@@ -79,6 +80,7 @@
       "name": "LayoutNGBlockFlow (positioned) DIV class='test generated size-contain'",
       "position": [108, 108],
       "bounds": [160, 44],
+      "contentsOpaqueForText": true,
       "invalidations": [
         [100, 0, 60, 44],
         [0, 0, 60, 44]
@@ -88,6 +90,7 @@
       "name": "LayoutNGBlockFlow (positioned) DIV class='test generated top'",
       "position": [258, 108],
       "bounds": [110, 44],
+      "contentsOpaqueForText": true,
       "invalidations": [
         [50, 0, 60, 44],
         [0, 0, 60, 44]

@@ -10,6 +10,7 @@
       "name": "LayoutNGBlockFlow (positioned) DIV id='target' class='green'",
       "position": [-1, 0],
       "bounds": [15, 14],
+      "contentsOpaqueForText": true,
       "invalidations": [
         [0, 0, 15, 14]
       ],

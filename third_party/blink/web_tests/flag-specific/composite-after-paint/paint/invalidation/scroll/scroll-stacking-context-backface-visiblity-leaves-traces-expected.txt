@@ -10,6 +10,7 @@
     {
       "name": "LayoutNGBlockFlow (relative positioned) HEADER",
       "bounds": [769, 20],
+      "contentsOpaqueForText": true,
       "drawsContent": false,
       "backfaceVisibility": "hidden",
       "transform": 2

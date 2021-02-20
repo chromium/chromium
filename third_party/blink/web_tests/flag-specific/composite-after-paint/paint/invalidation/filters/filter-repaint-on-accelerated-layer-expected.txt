@@ -9,7 +9,8 @@
     {
       "name": "LayoutNGBlockFlow DIV class='blur'",
       "position": [8, 8],
-      "bounds": [200, 200]
+      "bounds": [200, 200],
+      "contentsOpaqueForText": true
     },
     {
       "name": "LayoutNGBlockFlow DIV id='resize' class='accelerated'",

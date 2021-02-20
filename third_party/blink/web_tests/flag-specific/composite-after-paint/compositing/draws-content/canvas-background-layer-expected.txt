@@ -9,6 +9,7 @@
     {
       "name": "LayoutHTMLCanvas CANVAS id='canvas-simple'",
       "bounds": [50, 50],
+      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 1
     },
@@ -21,6 +22,7 @@
     {
       "name": "LayoutHTMLCanvas CANVAS id='canvas-transparent-background'",
       "bounds": [50, 50],
+      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 2
     },
@@ -71,6 +73,7 @@
     {
       "name": "LayoutHTMLCanvas CANVAS id='canvas-opaque'",
       "bounds": [50, 50],
+      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 6
     },
@@ -98,6 +101,7 @@
     {
       "name": "LayoutHTMLCanvas CANVAS id='canvas-opaque-box-shadow'",
       "bounds": [60, 60],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#008000",
       "transform": 8
     },

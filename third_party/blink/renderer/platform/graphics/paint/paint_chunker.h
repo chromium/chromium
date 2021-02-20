@@ -102,6 +102,7 @@ class PLATFORM_EXPORT PaintChunker final {
       PropertyTreeState::Uninitialized();
 
   Region last_chunk_known_to_be_opaque_region_;
+  bool last_chunk_text_known_to_be_on_opaque_background_ = true;
 
   // True when an item forces a new chunk (e.g., foreign display items), and for
   // the item following a forced chunk. PaintController also forces new chunks

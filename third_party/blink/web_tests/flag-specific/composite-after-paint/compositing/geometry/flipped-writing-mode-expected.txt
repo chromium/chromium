@@ -17,6 +17,7 @@
       "name": "LayoutNGBlockFlow DIV class='composited box'",
       "position": [-95, 0],
       "bounds": [195, 100],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#0000FF",
       "transform": 2
     }
