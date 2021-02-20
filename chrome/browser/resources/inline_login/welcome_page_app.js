@@ -9,6 +9,8 @@ import './account_manager_shared_css.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {InlineLoginBrowserProxyImpl} from './inline_login_browser_proxy.js';
+
 Polymer({
   is: 'welcome-page-app',
 
@@ -20,6 +22,8 @@ Polymer({
         .addEventListener(
             'click',
             () => this.dispatchEvent(new CustomEvent('opened-new-window')));
+    this.$$('#incognitoLink')
+        .addEventListener('click', () => this.openIncognitoLink_());
   },
 
   /** @return {boolean} */
@@ -31,18 +35,14 @@ Polymer({
    * @return {string}
    * @private
    */
-  getWelcomeBody_() {
-    return loadTimeData.getStringF(
-        'accountManagerDialogWelcomeBody', loadTimeData.getString('userName'),
-        loadTimeData.getString('accountManagerOsSettingsUrl'));
-  },
-
-  /**
-   * @return {string}
-   * @private
-   */
   getWelcomeTitle_() {
     return loadTimeData.getStringF(
         'accountManagerDialogWelcomeTitle', loadTimeData.getString('userName'));
+  },
+
+  /** @private */
+  openIncognitoLink_() {
+    InlineLoginBrowserProxyImpl.getInstance().showIncognito();
+    this.dispatchEvent(new CustomEvent('opened-new-window'));
   },
 });

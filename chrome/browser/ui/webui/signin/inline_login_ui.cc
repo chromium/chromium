@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/webui/signin/inline_login_handler_chromeos.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/devicetype_utils.h"
 #include "ui/strings/grit/ui_strings.h"
 #else
 #include "chrome/browser/ui/webui/signin/inline_login_handler_impl.h"
@@ -186,8 +187,6 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
     {"ok", IDS_APP_OK},
     {"accountManagerDialogWelcomeTitle",
      IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_TITLE},
-    {"accountManagerDialogWelcomeBody",
-     IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY},
     {"accountManagerDialogWelcomeCheckbox",
      IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_CHECKBOX},
     {"accountManagerErrorNoInternetTitle",
@@ -208,6 +207,15 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
   source->AddBoolean("shouldSkipWelcomePage",
                      profile->GetPrefs()->GetBoolean(
                          chromeos::prefs::kShouldSkipInlineLoginWelcomePage));
+  source->AddString(
+      "accountManagerDialogWelcomeBody",
+      l10n_util::GetStringFUTF16(
+          IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY,
+          base::UTF8ToUTF16(
+              chrome::GetOSSettingsUrl(
+                  chromeos::settings::mojom::kMyAccountsSubpagePath)
+                  .spec()),
+          ui::GetChromeOSDeviceName()));
 
   user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
