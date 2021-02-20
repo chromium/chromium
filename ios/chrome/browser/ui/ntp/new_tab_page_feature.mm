@@ -15,6 +15,8 @@
 const base::Feature kRefactoredNTP{"RefactoredNTP",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
+const char kRefactoredNTPLoggingEnabled[] = "RefactoredNTPLoggingEnabled";
+
 bool IsRefactoredNTP() {
   // This feature is dependent on the DiscoverFeed being enabled, only having
   // kRefactoredNTP enabled can lead to unexpected behavior.

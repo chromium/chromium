@@ -223,6 +223,12 @@ const FeatureEntry::FeatureVariation kDiscoverFeedInNtpVariations[] = {
     {"Native UI", kDiscoverFeedInNtpEnableNativeUI,
      base::size(kDiscoverFeedInNtpEnableNativeUI), nullptr}};
 
+const FeatureEntry::FeatureParam kRefactoredNTPLogging[] = {
+    {kRefactoredNTPLoggingEnabled, "true"}};
+const FeatureEntry::FeatureVariation kRefactoredNTPLoggingVariations[] = {
+    {"Logging Enabled", kRefactoredNTPLogging,
+     base::size(kRefactoredNTPLogging), nullptr}};
+
 const FeatureEntry::FeatureParam kStartSurfaceReturnImmediately[] = {
     {kReturnToStartSurfaceInactiveDurationInSeconds, "0"}};
 const FeatureEntry::FeatureParam kStartSurfaceReturnInOneHour[] = {
@@ -465,7 +471,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
                                     "IOSDiscoverFeed")},
     {"refactored-ntp", flag_descriptions::kRefactoredNTPName,
      flag_descriptions::kRefactoredNTPDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kRefactoredNTP)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kRefactoredNTP,
+                                    kRefactoredNTPLoggingVariations,
+                                    "RefactoredNTP")},
     {"illustrated-empty-states", flag_descriptions::kIllustratedEmptyStatesName,
      flag_descriptions::kIllustratedEmptyStatesDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIllustratedEmptyStates)},
