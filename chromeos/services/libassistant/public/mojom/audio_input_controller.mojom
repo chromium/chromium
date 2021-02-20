@@ -41,8 +41,6 @@ interface AudioInputController {
   // However, this is required until we migrate the conversation listening APIs
   // to the Libassistant mojom service.
   OnConversationTurnStarted();
-  // Called when the conversation is finished.
-  OnConversationTurnFinished();
 };
 
 // Whether the lid of the current device is open or closed.

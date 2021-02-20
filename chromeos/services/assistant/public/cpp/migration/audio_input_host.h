@@ -25,7 +25,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputHost {
   virtual void OnHotwordEnabled(bool enable) = 0;
 
   virtual void OnConversationTurnStarted() = 0;
-  virtual void OnConversationTurnFinished() = 0;
 };
 
 }  // namespace assistant

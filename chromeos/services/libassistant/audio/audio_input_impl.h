@@ -83,6 +83,8 @@ class AudioInputImpl : public assistant_client::AudioInput {
   bool IsRecordingForTesting() const;
   // Returns if the hotword device is used for recording now.
   bool IsUsingHotwordDeviceForTesting() const;
+  // Returns if the state of device's microphone is currently open.
+  bool IsMicOpenForTesting() const;
   // Returns the id of the device that is currently recording audio.
   // Returns nullopt if no audio is being recorded.
   base::Optional<std::string> GetOpenDeviceIdForTesting() const;

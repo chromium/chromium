@@ -16,6 +16,11 @@ ConversationControllerProxy::ConversationControllerProxy(
 
 ConversationControllerProxy::~ConversationControllerProxy() = default;
 
+void ConversationControllerProxy::AddConversationObserver(
+    mojo::PendingRemote<libassistant::mojom::ConversationObserver> observer) {
+  conversation_controller_remote_->AddRemoteObserver(std::move(observer));
+}
+
 void ConversationControllerProxy::SendTextQuery(
     const std::string& query,
     bool allow_tts,

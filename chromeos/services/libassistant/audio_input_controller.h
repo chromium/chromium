@@ -6,8 +6,10 @@
 #define CHROMEOS_SERVICES_LIBASSISTANT_AUDIO_INPUT_CONTROLLER_H_
 
 #include "chromeos/services/libassistant/audio/audio_input_provider_impl.h"
+#include "chromeos/services/libassistant/conversation_state_listener_impl.h"
 #include "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace chromeos {
@@ -18,6 +20,8 @@ namespace libassistant {
 class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) AudioInputController
     : public mojom::AudioInputController {
  public:
+  using Resolution = assistant_client::ConversationStateListener::Resolution;
+
   AudioInputController();
   AudioInputController(AudioInputController&) = delete;
   AudioInputController& operator=(AudioInputController&) = delete;
@@ -34,7 +38,9 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) AudioInputController
       const base::Optional<std::string>& device_id) override;
   void SetLidState(mojom::LidState new_state) override;
   void OnConversationTurnStarted() override;
-  void OnConversationTurnFinished() override;
+
+  // Invoked when the current conversation turn has finished.
+  void OnInteractionFinished(Resolution resolution);
 
   AudioInputProviderImpl& audio_input_provider() {
     return audio_input_provider_;

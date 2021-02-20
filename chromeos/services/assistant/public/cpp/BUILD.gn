@@ -18,6 +18,8 @@ component("cpp") {
     "assistant_service.h",
     "assistant_settings.cc",
     "assistant_settings.h",
+    "conversation_observer.cc",
+    "conversation_observer.h",
     "device_actions.cc",
     "device_actions.h",
     "features.cc",
