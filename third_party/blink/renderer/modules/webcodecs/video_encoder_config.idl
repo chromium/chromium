@@ -4,15 +4,9 @@
 
 // https://github.com/WICG/web-codecs
 
-enum VideoEncoderAccelerationPreference {
-  "allow",
-  "deny",
-  "require"
-};
-
 dictionary VideoEncoderConfig {
   required DOMString codec;
-  VideoEncoderAccelerationPreference acceleration = "allow";
+  HardwarePreference hardwareAcceleration = "allow";
 
   unsigned long long bitrate;
 

@@ -116,6 +116,11 @@ class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
   std::unique_ptr<media::H264ToAnnexBBitstreamConverter> h264_converter_;
   std::unique_ptr<media::mp4::AVCDecoderConfigurationRecord> h264_avcc_;
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+
+ private:
+  // DecoderTemplate implementation.
+  HardwarePreference GetHardwarePreference(const ConfigType& config) override;
+  void SetHardwarePreference(HardwarePreference preference) override;
 };
 
 }  // namespace blink

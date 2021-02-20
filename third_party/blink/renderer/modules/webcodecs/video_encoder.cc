@@ -195,18 +195,10 @@ VideoEncoder::ParsedConfig* VideoEncoder::ParseConfig(
     parsed->options.bitrate = config->bitrate();
 
   // The IDL defines a default value of "allow".
-  DCHECK(config->hasAcceleration());
+  DCHECK(config->hasHardwareAcceleration());
 
-  std::string preference = IDLEnumAsString(config->acceleration()).Utf8();
-  if (preference == "allow") {
-    parsed->acc_pref = AccelerationPreference::kAllow;
-  } else if (preference == "require") {
-    parsed->acc_pref = AccelerationPreference::kRequire;
-  } else if (preference == "deny") {
-    parsed->acc_pref = AccelerationPreference::kDeny;
-  } else {
-    NOTREACHED();
-  }
+  parsed->hw_pref = StringToHardwarePreference(
+      IDLEnumAsString(config->hardwareAcceleration()));
 
   bool is_codec_ambiguous = true;
   parsed->codec = media::kUnknownVideoCodec;
@@ -353,22 +345,22 @@ std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateMediaVideoEncoder(
     media::GpuVideoAcceleratorFactories* gpu_factories) {
   // TODO(https://crbug.com/1119636): Implement / call a proper method for
   // detecting support of encoder configs.
-  switch (config.acc_pref) {
-    case AccelerationPreference::kRequire: {
+  switch (config.hw_pref) {
+    case HardwarePreference::kRequire: {
       auto result = CreateAcceleratedVideoEncoder(
           config.profile, config.options, gpu_factories);
       if (result)
         UpdateEncoderLog("AcceleratedVideoEncoder", true);
       return result;
     }
-    case AccelerationPreference::kAllow:
+    case HardwarePreference::kAllow:
       if (auto result = CreateAcceleratedVideoEncoder(
               config.profile, config.options, gpu_factories)) {
         UpdateEncoderLog("AcceleratedVideoEncoder", true);
         return result;
       }
       FALLTHROUGH;
-    case AccelerationPreference::kDeny: {
+    case HardwarePreference::kDeny: {
       std::unique_ptr<media::VideoEncoder> result;
       switch (config.codec) {
         case media::kCodecVP8:
@@ -402,7 +394,7 @@ bool VideoEncoder::CanReconfigure(ParsedConfig& original_config,
          original_config.profile == new_config.profile &&
          original_config.level == new_config.level &&
          original_config.color_space == new_config.color_space &&
-         original_config.acc_pref == new_config.acc_pref;
+         original_config.hw_pref == new_config.hw_pref;
 }
 
 void VideoEncoder::ProcessEncode(Request* request) {
@@ -506,7 +498,7 @@ void VideoEncoder::ProcessConfigure(Request* request) {
 
   stall_request_processing_ = true;
 
-  if (active_config_->acc_pref == AccelerationPreference::kDeny) {
+  if (active_config_->hw_pref == HardwarePreference::kDeny) {
     CreateAndInitializeEncoderWithoutAcceleration(request);
     return;
   }

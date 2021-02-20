@@ -36,6 +36,8 @@ blink_modules_sources("webcodecs") {
     "encoded_video_metadata.h",
     "encoder_base.cc",
     "encoder_base.h",
+    "hardware_preference.cc",
+    "hardware_preference.h",
     "image_decoder_external.cc",
     "image_decoder_external.h",
     "plane.cc",

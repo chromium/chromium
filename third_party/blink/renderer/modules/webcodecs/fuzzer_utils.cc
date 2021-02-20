@@ -75,7 +75,7 @@ VideoEncoderConfig* MakeEncoderConfig(
     const wc_fuzzer::ConfigureVideoEncoder& proto) {
   VideoEncoderConfig* config = VideoEncoderConfig::Create();
   config->setCodec(proto.codec().c_str());
-  config->setAcceleration(ToAccelerationType(proto.acceleration()));
+  config->setHardwareAcceleration(ToAccelerationType(proto.acceleration()));
   config->setFramerate(proto.framerate());
   config->setWidth(proto.width());
   config->setHeight(proto.height());

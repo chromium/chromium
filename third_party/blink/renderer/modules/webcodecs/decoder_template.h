@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_config_eval.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_logger.h"
+#include "third_party/blink/renderer/modules/webcodecs/hardware_preference.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -73,6 +74,18 @@ class MODULES_EXPORT DecoderTemplate
                                           MediaConfigType* out_media_config,
                                           String* out_console_message) = 0;
 
+  // Gets the AccelerationPreference from a config.
+  // If derived classes do not override this, this will default to kAllow.
+  virtual HardwarePreference GetHardwarePreference(const ConfigType& config);
+
+  // Sets the HardwarePreference on the |decoder_|.
+  // The default implementation does nothing and must be overridden by derived
+  // classes if needed.
+  // Decoder
+  virtual void SetHardwarePreference(HardwarePreference preference);
+
+  MediaDecoderType* decoder() { return decoder_.get(); }
+
   // Convert a chunk to a DecoderBuffer. You can assume that the last
   // configuration sent to MakeMediaConfig() is the active configuration for
   // |chunk|. If there is an error in the conversion process, the resulting
@@ -96,6 +109,7 @@ class MODULES_EXPORT DecoderTemplate
 
     // For kConfigure Requests.
     std::unique_ptr<MediaConfigType> media_config;
+    HardwarePreference hw_pref = HardwarePreference::kAllow;
 
     // For kDecode Requests.
     scoped_refptr<media::DecoderBuffer> decoder_buffer;
