@@ -26,6 +26,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -86,11 +87,10 @@ class InstantExtendedTest : public InProcessBrowserTest,
   }
 
   void PressEnterAndWaitForNavigation() {
-    content::WindowedNotificationObserver nav_observer(
-        content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-        content::NotificationService::AllSources());
+    content::TestNavigationObserver observer(
+        browser()->tab_strip_model()->GetActiveWebContents(), 1);
     browser()->window()->GetLocationBar()->AcceptInput();
-    nav_observer.Wait();
+    observer.WaitForNavigationFinished();
   }
 
   void PressEnterAndWaitForFrameLoad() {

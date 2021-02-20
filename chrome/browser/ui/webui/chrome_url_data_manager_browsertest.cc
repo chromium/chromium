@@ -25,36 +25,6 @@
 
 namespace {
 
-class NavigationNotificationObserver : public content::NotificationObserver {
- public:
-  NavigationNotificationObserver()
-      : got_navigation_(false),
-        http_status_code_(0) {
-    registrar_.Add(this, content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-                   content::NotificationService::AllSources());
-  }
-
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
-    DCHECK_EQ(content::NOTIFICATION_NAV_ENTRY_COMMITTED, type);
-    got_navigation_ = true;
-    http_status_code_ =
-        content::Details<content::LoadCommittedDetails>(details)->
-        http_status_code;
-  }
-
-  int http_status_code() const { return http_status_code_; }
-  bool got_navigation() const { return got_navigation_; }
-
- private:
-  content::NotificationRegistrar registrar_;
-  int got_navigation_;
-  int http_status_code_;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationNotificationObserver);
-};
-
 class NavigationObserver : public content::WebContentsObserver {
 public:
   enum NavigationResult {
@@ -72,10 +42,19 @@ public:
     navigation_result_ =
         navigation_handle->IsErrorPage() ? ERROR_PAGE : SUCCESS;
     net_error_ = navigation_handle->GetNetErrorCode();
+    got_navigation_ = true;
+    if (navigation_handle->HasCommitted() &&
+        !navigation_handle->IsSameDocument() &&
+        !navigation_handle->IsErrorPage()) {
+      http_status_code_ =
+          navigation_handle->GetResponseHeaders()->response_code();
+    }
   }
 
   NavigationResult navigation_result() const { return navigation_result_; }
   net::Error net_error() const { return net_error_; }
+  bool got_navigation() const { return got_navigation_; }
+  int http_status_code() const { return http_status_code_; }
 
   void Reset() {
     navigation_result_ = NOT_FINISHED;
@@ -85,6 +64,8 @@ public:
  private:
   NavigationResult navigation_result_;
   net::Error net_error_ = net::OK;
+  bool got_navigation_ = false;
+  int http_status_code_ = -1;
 
   DISALLOW_COPY_AND_ASSIGN(NavigationObserver);
 };
@@ -96,7 +77,8 @@ typedef InProcessBrowserTest ChromeURLDataManagerTest;
 // Makes sure navigating to the new tab page results in a http status code
 // of 200.
 IN_PROC_BROWSER_TEST_F(ChromeURLDataManagerTest, 200) {
-  NavigationNotificationObserver observer;
+  NavigationObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
   ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUINewTabURL));
   EXPECT_TRUE(observer.got_navigation());
   EXPECT_EQ(200, observer.http_status_code());
