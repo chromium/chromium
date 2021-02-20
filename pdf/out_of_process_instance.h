@@ -47,7 +47,6 @@ class Graphics;
 class PDFiumEngine;
 class Thumbnail;
 class UrlLoader;
-struct AccessibilityActionData;
 
 class OutOfProcessInstance : public PdfViewPluginBase,
                              public pp::Instance,
@@ -95,7 +94,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   bool CanRedo();
   void Undo();
   void Redo();
-  void HandleAccessibilityAction(const AccessibilityActionData& action_data);
   int32_t PdfPrintBegin(const PP_PrintSettings_Dev* print_settings,
                         const PP_PdfPrintSettings_Dev* pdf_print_settings);
 

@@ -968,11 +968,6 @@ void OutOfProcessInstance::Redo() {
   engine()->Redo();
 }
 
-void OutOfProcessInstance::HandleAccessibilityAction(
-    const AccessibilityActionData& action_data) {
-  engine()->HandleAccessibilityAction(action_data);
-}
-
 int32_t OutOfProcessInstance::PdfPrintBegin(
     const PP_PrintSettings_Dev* print_settings,
     const PP_PdfPrintSettings_Dev* pdf_print_settings) {

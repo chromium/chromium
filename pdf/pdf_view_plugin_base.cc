@@ -142,6 +142,11 @@ void PdfViewPluginBase::OnPaint(const std::vector<gfx::Rect>& paint_rects,
   DoPaint(paint_rects, ready, pending);
 }
 
+void PdfViewPluginBase::HandleAccessibilityAction(
+    const AccessibilityActionData& action_data) {
+  engine_->HandleAccessibilityAction(action_data);
+}
+
 void PdfViewPluginBase::InitializeEngine(
     PDFiumFormFiller::ScriptOption script_option) {
   engine_ = std::make_unique<PDFiumEngine>(this, script_option);

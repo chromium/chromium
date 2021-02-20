@@ -30,6 +30,7 @@ namespace chrome_pdf {
 class Image;
 class PDFiumEngine;
 class UrlLoader;
+struct AccessibilityActionData;
 struct AccessibilityCharInfo;
 struct AccessibilityDocInfo;
 struct AccessibilityPageInfo;
@@ -55,6 +56,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void OnPaint(const std::vector<gfx::Rect>& paint_rects,
                std::vector<PaintReadyRect>& ready,
                std::vector<gfx::Rect>& pending) override;
+
+  // Handle invoked accessibility actions.
+  void HandleAccessibilityAction(const AccessibilityActionData& action_data);
 
  protected:
   enum class AccessibilityState {
