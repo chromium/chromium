@@ -78,7 +78,9 @@ enum VpnType {
 
 // Filter used for requesting lists of network states.
 enum FilterType {
-  // Return active (Connected or Connecting) networks.
+  // Return active networks. A network is active when its ConnectionStateType
+  // != kNotConnected. The ConnectionStateType is defined in
+  // network_types.mojom.
   kActive,
   // Return visible (active, physically connected or in-range) networks.
   // Active networks will be listed first.
