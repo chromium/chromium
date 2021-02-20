@@ -37,8 +37,7 @@ bool AreWebAppsEnabled(const Profile* profile) {
   }
   // Disable Web Apps if running any kiosk app.
   auto* user_manager = user_manager::UserManager::Get();
-  if (user_manager && (user_manager->IsLoggedInAsKioskApp() ||
-                       user_manager->IsLoggedInAsArcKioskApp())) {
+  if (user_manager && user_manager->IsLoggedInAsAnyKioskApp()) {
     return false;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
