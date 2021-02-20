@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <map>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "base/strings/string16.h"
@@ -21,6 +22,8 @@
 #include "url/gurl.h"
 
 namespace autofill {
+
+class CreditCard;
 
 // Manages all Autofill related offers. One per frame; owned by the
 // AutofillManager.
@@ -45,10 +48,10 @@ class AutofillOfferManager : public KeyedService,
   // Returns true only if the domain of |last_committed_url| has an offer.
   bool IsUrlEligible(const GURL& last_committed_url);
 
-  // Returns the set of domains linked to a specific offer that contains the
-  // domain of |last_committed_url|.
-  std::vector<GURL> GetEligibleDomainsForOfferForUrl(
-      const GURL& last_committed_url);
+  // Returns the set of domains and the card linked to a specific offer that
+  // contains the domain of |last_committed_url|.
+  std::tuple<std::vector<GURL>, CreditCard*>
+  GetEligibleDomainsAndCardForOfferForUrl(const GURL& last_committed_url);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AutofillOfferManagerTest, IsUrlEligible);

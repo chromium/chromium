@@ -510,9 +510,11 @@ class AutofillClient : public RiskDataLoader {
   // Will show a bubble or infobar indicating that the current web domain has an
   // eligible offer or reward if no other notification bubble is currently
   // visible. See bubble controller for details. The bubble is sticky over a set
-  // of domains given in |domains_to_display_bubble|.
+  // of domains given in |domains_to_display_bubble|. The bubble displays the
+  // information of the |card| if the offer is card-related.
   virtual void ShowOfferNotificationIfApplicable(
-      const std::vector<GURL>& domains_to_display_bubble);
+      const std::vector<GURL>& domains_to_display_bubble,
+      const CreditCard* card);
 
   // Whether the Autocomplete feature of Autofill should be enabled.
   virtual bool IsAutocompleteEnabled() = 0;

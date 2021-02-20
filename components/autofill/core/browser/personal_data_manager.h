@@ -247,7 +247,11 @@ class PersonalDataManager : public KeyedService,
   // no credit card with the specified |number|.
   virtual CreditCard* GetCreditCardByNumber(const std::string& number);
 
-  // Gets the field types availabe in the stored address and credit card data.
+  // Returns the credit card with the specified |instrument_id|, or nullptr if
+  // there is no credit card with the specified |instrument_id|.
+  CreditCard* GetCreditCardByInstrumentId(int64_t instrument_id);
+
+  // Gets the field types available in the stored address and credit card data.
   void GetNonEmptyTypes(ServerFieldTypeSet* non_empty_types) const;
 
   // Returns whether the personal data has been loaded from the web database.

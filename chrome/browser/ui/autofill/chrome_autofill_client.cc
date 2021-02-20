@@ -643,7 +643,8 @@ void ChromeAutofillClient::HideAutofillPopup(PopupHidingReason reason) {
 }
 
 void ChromeAutofillClient::ShowOfferNotificationIfApplicable(
-    const std::vector<GURL>& domains_to_display_bubble) {
+    const std::vector<GURL>& domains_to_display_bubble,
+    const CreditCard* card) {
   // TODO(crbug.com/1093057): Finish bubble controller/view and wire it up.
 }
 

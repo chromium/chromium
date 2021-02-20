@@ -14,6 +14,7 @@
 #include "base/timer/timer.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -87,11 +88,13 @@ bool AutofillOfferManager::IsUrlEligible(const GURL& last_committed_url) {
                              last_committed_url_origin);
 }
 
-std::vector<GURL> AutofillOfferManager::GetEligibleDomainsForOfferForUrl(
+std::tuple<std::vector<GURL>, CreditCard*>
+AutofillOfferManager::GetEligibleDomainsAndCardForOfferForUrl(
     const GURL& last_committed_url) {
   std::vector<GURL> linked_domains;
   std::vector<AutofillOfferData*> offers =
       personal_data_->GetCreditCardOffers();
+  CreditCard* card = nullptr;
 
   // Check which offer is eligible on current domain, then return the full set
   // of domains for that offer.
@@ -100,16 +103,22 @@ std::vector<GURL> AutofillOfferManager::GetEligibleDomainsForOfferForUrl(
       for (auto& domain : offer->merchant_domain) {
         linked_domains.emplace_back(domain);
       }
+      // Pick first card in the vector. The UI shows only one card's
+      // information.
+      card = offer->eligible_instrument_id.empty()
+                 ? nullptr
+                 : personal_data_->GetCreditCardByInstrumentId(
+                       offer->eligible_instrument_id[0]);
       break;
     }
   }
 
-  // Remove duplicates.
+  // Remove duplicates in domains.
   base::ranges::sort(linked_domains);
   linked_domains.erase(base::ranges::unique(linked_domains),
                        linked_domains.end());
 
-  return linked_domains;
+  return std::make_tuple(linked_domains, card);
 }
 
 void AutofillOfferManager::UpdateEligibleMerchantDomains() {
