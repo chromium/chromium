@@ -59,7 +59,9 @@ class CORE_EXPORT SourceLocation {
     return std::move(stack_trace_);
   }
 
-  bool HasStackTrace() const { return !!stack_trace_; }
+  bool HasStackTrace() const {
+    return stack_trace_ && !stack_trace_->isEmpty();
+  }
 
   // Safe to pass between threads, drops async chain in stack trace.
   std::unique_ptr<SourceLocation> Clone() const;
