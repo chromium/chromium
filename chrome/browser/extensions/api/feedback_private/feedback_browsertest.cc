@@ -324,7 +324,8 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_GetTargetTabUrl) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(FeedbackTest, SubmissionTest) {
+// Disabled due to flake: https://crbug.com/1180373
+IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_SubmissionTest) {
   WaitForExtensionViewsToLoad();
 
   ASSERT_TRUE(IsFeedbackAppAvailable());
