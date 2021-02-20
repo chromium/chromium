@@ -44,7 +44,8 @@ std::string WindowInfo::ToString() const {
                           "Visible on all workspaces") +
          ToPrefixedString(restore_bounds, "Restore bounds") +
          ToPrefixedString(current_bounds, "Current bounds") +
-         ToPrefixedString(window_state_type, "Window state");
+         ToPrefixedString(window_state_type, "Window state") +
+         ToPrefixedString(display_id, "Display id");
 }
 
 }  // namespace full_restore

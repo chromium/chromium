@@ -128,6 +128,7 @@ class RestoreDataTest : public testing::Test {
     window_info1.restore_bounds = kRestoreBounds1;
     window_info1.current_bounds = kCurrentBounds1;
     window_info1.window_state_type = kWindowStateType1;
+    window_info1.display_id = kDisplayId2;
 
     WindowInfo window_info2;
     window_info2.activation_index = kActivationIndex2;
@@ -135,6 +136,7 @@ class RestoreDataTest : public testing::Test {
     window_info2.restore_bounds = kRestoreBounds2;
     window_info2.current_bounds = kCurrentBounds2;
     window_info2.window_state_type = kWindowStateType2;
+    window_info2.display_id = kDisplayId1;
 
     WindowInfo window_info3;
     window_info3.activation_index = kActivationIndex3;
@@ -143,6 +145,7 @@ class RestoreDataTest : public testing::Test {
     window_info3.restore_bounds = kRestoreBounds3;
     window_info3.current_bounds = kCurrentBounds3;
     window_info3.window_state_type = kWindowStateType3;
+    window_info3.display_id = kDisplayId1;
 
     restore_data().ModifyWindowInfo(kAppId1, kWindowId1, window_info1);
     restore_data().ModifyWindowInfo(kAppId1, kWindowId2, window_info2);
@@ -220,7 +223,7 @@ class RestoreDataTest : public testing::Test {
     VerifyAppRestoreData(
         app_restore_data_it1->second,
         apps::mojom::LaunchContainer::kLaunchContainerWindow,
-        WindowOpenDisposition::NEW_WINDOW, kDisplayId1,
+        WindowOpenDisposition::NEW_WINDOW, kDisplayId2,
         std::vector<base::FilePath>{base::FilePath(kFilePath1),
                                     base::FilePath(kFilePath2)},
         CreateIntent(kIntentActionSend, kMimeType, kShareText1),
@@ -232,7 +235,7 @@ class RestoreDataTest : public testing::Test {
     VerifyAppRestoreData(
         app_restore_data_it2->second,
         apps::mojom::LaunchContainer::kLaunchContainerTab,
-        WindowOpenDisposition::NEW_FOREGROUND_TAB, kDisplayId2,
+        WindowOpenDisposition::NEW_FOREGROUND_TAB, kDisplayId1,
         std::vector<base::FilePath>{base::FilePath(kFilePath2)},
         CreateIntent(kIntentActionView, kMimeType, kShareText2),
         kActivationIndex2, kDeskId2, kVisibleOnAllWorkspaces2, kRestoreBounds2,
@@ -248,7 +251,7 @@ class RestoreDataTest : public testing::Test {
     VerifyAppRestoreData(
         launch_list_it2->second.begin()->second,
         apps::mojom::LaunchContainer::kLaunchContainerNone,
-        WindowOpenDisposition::NEW_POPUP, kDisplayId2,
+        WindowOpenDisposition::NEW_POPUP, kDisplayId1,
         std::vector<base::FilePath>{base::FilePath(kFilePath1)},
         CreateIntent(kIntentActionView, kMimeType, kShareText1),
         kActivationIndex3, kDeskId3, kVisibleOnAllWorkspaces3, kRestoreBounds3,
@@ -405,6 +408,8 @@ TEST_F(RestoreDataTest, GetWindowInfo) {
 
   EXPECT_TRUE(window_info->window_state_type.has_value());
   EXPECT_EQ(kWindowStateType1, window_info->window_state_type.value());
+
+  EXPECT_FALSE(window_info->display_id.has_value());
 }
 
 TEST_F(RestoreDataTest, GetAppWindowInfo) {
@@ -429,7 +434,7 @@ TEST_F(RestoreDataTest, GetAppWindowInfo) {
 
   app_window_info = data_it->second->GetAppWindowInfo();
   EXPECT_EQ(static_cast<int32_t>(kWindowStateType3), app_window_info->state);
-  EXPECT_EQ(kDisplayId2, app_window_info->display_id);
+  EXPECT_EQ(kDisplayId1, app_window_info->display_id);
   EXPECT_TRUE(app_window_info->bounds);
   EXPECT_EQ(kCurrentBounds3,
             gfx::Rect(app_window_info->bounds->x, app_window_info->bounds->y,

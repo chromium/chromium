@@ -296,6 +296,9 @@ void AppRestoreData::ModifyWindowInfo(const WindowInfo& window_info) {
 
   if (window_info.window_state_type.has_value())
     window_state_type = window_info.window_state_type.value();
+
+  if (window_info.display_id.has_value())
+    display_id = window_info.display_id.value();
 }
 
 std::unique_ptr<WindowInfo> AppRestoreData::GetWindowInfo() const {
@@ -319,6 +322,8 @@ std::unique_ptr<WindowInfo> AppRestoreData::GetWindowInfo() const {
   if (window_state_type.has_value())
     window_info->window_state_type = window_state_type.value();
 
+  // Display id is set as the app launch parameter, so we don't need to return
+  // the display id to restore the display id.
   return window_info;
 }
 
