@@ -1125,6 +1125,8 @@ void PaintArtifactCompositor::Update(
   DCHECK(root_layer_);
   DCHECK(NeedsUpdate());
 
+  TRACE_EVENT0("blink", "PaintArtifactCompositor::Update");
+
   // The tree will be null after detaching and this update can be ignored.
   // See: WebViewImpl::detachPaintArtifactCompositor().
   cc::LayerTreeHost* host = root_layer_->layer_tree_host();
@@ -1134,26 +1136,26 @@ void PaintArtifactCompositor::Update(
   for (auto& request : transition_requests)
     host->AddDocumentTransitionRequest(std::move(request));
 
-  TRACE_EVENT0("blink", "PaintArtifactCompositor::Update");
-
   host->property_trees()->scroll_tree.SetScrollCallbacks(scroll_callbacks_);
   root_layer_->set_property_tree_sequence_number(
       g_s_property_tree_sequence_number);
+
+  // Make compositing decisions, storing the result in |pending_layers_|.
+  CollectPendingLayers(pre_composited_layers);
+  DecompositeTransforms();
 
   LayerListBuilder layer_list_builder;
   PropertyTreeManager property_tree_manager(*this, *host->property_trees(),
                                             *root_layer_, layer_list_builder,
                                             g_s_property_tree_sequence_number);
-  CollectPendingLayers(pre_composited_layers);
 
   UpdateCompositorViewportProperties(viewport_properties, property_tree_manager,
                                      host);
 
   // With ScrollUnification, we ensure a cc::ScrollNode for all
   // |scroll_translation_nodes|.
-  if (RuntimeEnabledFeatures::ScrollUnificationEnabled()) {
+  if (RuntimeEnabledFeatures::ScrollUnificationEnabled())
     property_tree_manager.EnsureCompositorScrollNodes(scroll_translation_nodes);
-  }
 
   Vector<std::unique_ptr<ContentLayerClientImpl>> new_content_layer_clients;
   new_content_layer_clients.ReserveCapacity(pending_layers_.size());
@@ -1167,11 +1169,7 @@ void PaintArtifactCompositor::Update(
   for (auto& entry : synthesized_clip_cache_)
     entry.in_use = false;
 
-  // See if we can de-composite any transforms.
-  DecompositeTransforms();
-
   cc::LayerSelection layer_selection;
-  const PendingLayer* previous_pending_layer = nullptr;
   for (auto& pending_layer : pending_layers_) {
     const auto& property_state = pending_layer.property_tree_state;
     const auto& transform = property_state.Transform();
@@ -1251,8 +1249,6 @@ void PaintArtifactCompositor::Update(
       layer->SetSubtreePropertyChanged();
       root_layer_->SetNeedsCommit();
     }
-
-    previous_pending_layer = &pending_layer;
   }
 
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
