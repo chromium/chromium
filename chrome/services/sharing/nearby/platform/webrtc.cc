@@ -215,6 +215,7 @@ class WebRtcSignalingMessengerImpl : public api::WebRtcSignalingMessenger {
         // This is a one-way message so it is safe to bind, send, and forget.
         // When the Remote goes out of scope it will close the pipe and cause
         // the other side to clean up the ReceiveMessagesExpress instance.
+        // If the receiver/pipe is already down, this does nothing.
         session->StopReceivingMessages();
       }
     }
@@ -224,6 +225,13 @@ class WebRtcSignalingMessengerImpl : public api::WebRtcSignalingMessenger {
   bool receiving_messages_ = false;
   std::string self_id_;
   connections::LocationHint location_hint_;
+  // This is received and stored on a successful StartReceiveMessages(). We
+  // choose to not bind right away because multiple threads end up
+  // creating/calling/destroying WebRtcSignalingMessengerImpl by the design
+  // of NearbyConnections. We need to ensure the thread that
+  // binds/calls/destroys the remote is the same sequence, so we do all three at
+  // once in StopReceivingMessages(). If the other side of the pipe is already
+  // down, binding, calling, and destorying will be a no-op.
   mojo::PendingRemote<sharing::mojom::ReceiveMessagesSession>
       pending_session_remote_;
   mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger> messenger_;
