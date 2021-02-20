@@ -6,6 +6,7 @@
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_BUTTON_H_
 
 #include "ash/ash_export.h"
+#include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ash/capture_mode/view_with_ink_drop.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
@@ -19,7 +20,8 @@ namespace ash {
 
 // A view that shows a button which is part of the CaptureBarView.
 class ASH_EXPORT CaptureModeButton
-    : public ViewWithInkDrop<views::ImageButton> {
+    : public ViewWithInkDrop<views::ImageButton>,
+      public CaptureModeSessionFocusCycler::HighlightableView {
  public:
   METADATA_HEADER(CaptureModeButton);
 
@@ -28,6 +30,9 @@ class ASH_EXPORT CaptureModeButton
   CaptureModeButton(const CaptureModeButton&) = delete;
   CaptureModeButton& operator=(const CaptureModeButton&) = delete;
   ~CaptureModeButton() override = default;
+
+  // CaptureModeSessionFocusCycler::HighlightableView:
+  views::View* GetView() override;
 };
 
 }  // namespace ash

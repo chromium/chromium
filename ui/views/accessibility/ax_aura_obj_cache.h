@@ -12,9 +12,12 @@
 #include <set>
 #include <vector>
 
+#include "base/scoped_observation.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/client/focus_change_observer.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
 #include "ui/views/views_export.h"
 
 namespace base {
@@ -22,17 +25,14 @@ template <typename T>
 class NoDestructor;
 }  // namespace base
 
-namespace aura {
-class Window;
-}  // namespace aura
-
 namespace views {
 class AXAuraObjWrapper;
 class View;
 class Widget;
 
 // A cache responsible for assigning id's to a set of interesting Aura views.
-class VIEWS_EXPORT AXAuraObjCache : public aura::client::FocusChangeObserver {
+class VIEWS_EXPORT AXAuraObjCache : public aura::client::FocusChangeObserver,
+                                    public aura::WindowObserver {
  public:
   AXAuraObjCache();
   AXAuraObjCache(const AXAuraObjCache&) = delete;
@@ -99,6 +99,13 @@ class VIEWS_EXPORT AXAuraObjCache : public aura::client::FocusChangeObserver {
   // Notifies this cache of a change in root window.
   void OnRootWindowObjDestroyed(aura::Window* window);
 
+  // Sets a window to take a11y focus. This is for windows that need to work
+  // with accessibility clients that consume accessibility APIs, but cannot take
+  // real focus themselves. |a11y_override_window_| will be set to null when
+  // destroyed, or can be set back to null using this function.
+  // TODO(sammiequon): Merge this with set_focused_widget_for_testing().
+  void SetA11yOverrideWindow(aura::Window* a11y_override_window);
+
   void SetDelegate(Delegate* delegate) { delegate_ = delegate; }
 
   // Changes the behavior of GetFocusedView() so that it only considers
@@ -117,6 +124,9 @@ class VIEWS_EXPORT AXAuraObjCache : public aura::client::FocusChangeObserver {
   void OnWindowFocused(aura::Window* gained_focus,
                        aura::Window* lost_focus) override;
 
+  // aura::WindowObserver:
+  void OnWindowDestroying(aura::Window* window) override;
+
   template <typename AuraViewWrapper, typename AuraView>
   AXAuraObjWrapper* CreateInternal(
       AuraView* aura_view,
@@ -131,6 +141,11 @@ class VIEWS_EXPORT AXAuraObjCache : public aura::client::FocusChangeObserver {
   void RemoveInternal(AuraView* aura_view,
                       std::map<AuraView*, ui::AXNodeID>* aura_view_to_id_map);
 
+  // The window that should take a11y focus. This is for a window that needs to
+  // work with accessiblity features, but cannot take real focus. Gets set to
+  // null if the window is destroyed.
+  aura::Window* a11y_override_window_ = nullptr;
+
   std::map<views::View*, ui::AXNodeID> view_to_id_map_;
   std::map<views::Widget*, ui::AXNodeID> widget_to_id_map_;
   std::map<aura::Window*, ui::AXNodeID> window_to_id_map_;
@@ -142,6 +157,10 @@ class VIEWS_EXPORT AXAuraObjCache : public aura::client::FocusChangeObserver {
   std::set<aura::Window*> root_windows_;
 
   views::Widget* focused_widget_for_testing_ = nullptr;
+
+  // Watches |a11y_override_window_| for destruction.
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      a11y_override_window_observer_{this};
 };
 
 }  // namespace views

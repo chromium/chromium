@@ -71,6 +71,10 @@ void CaptureModeSettingsEntryView::SetIcon(const gfx::VectorIcon& icon) {
                 AshColorProvider::ContentLayerType::kButtonIconColor)));
 }
 
+views::View* CaptureModeSettingsEntryView::GetView() {
+  return toggle_button_view_;
+}
+
 BEGIN_METADATA(CaptureModeSettingsEntryView, views::View)
 END_METADATA
 

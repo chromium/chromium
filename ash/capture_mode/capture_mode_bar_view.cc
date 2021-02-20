@@ -42,8 +42,6 @@ constexpr gfx::RoundedCornersF kBorderRadius{20.f};
 
 constexpr int kSeparatorHeight = 20;
 
-constexpr float kBlurQuality = 0.33f;
-
 // Distance from the bottom of the bar to the bottom of the display, top of the
 // hotseat or top of the shelf depending on the shelf alignment or hotseat
 // visibility.
@@ -74,7 +72,8 @@ CaptureModeBarView::CaptureModeBarView()
   layer()->SetRoundedCornerRadius(kBorderRadius);
   layer()->SetBackgroundBlur(
       static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault));
-  layer()->SetBackdropFilterQuality(kBlurQuality);
+  layer()->SetBackdropFilterQuality(capture_mode::kBlurQuality);
+
   auto* box_layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, kBarPadding,
       capture_mode::kBetweenChildSpacing));

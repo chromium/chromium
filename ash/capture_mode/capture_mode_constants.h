@@ -28,8 +28,9 @@ constexpr SkColor kInkDropBaseColor = SK_ColorWHITE;
 constexpr int kBetweenChildSpacing = 16;
 
 // The amount the capture region changes when using the arrow keys to adjust it.
-constexpr int kArrowKeyboardRegionChangeDp = 1;
-constexpr int kShiftArrowKeyboardRegionChangeDp = 10;
+constexpr int kCtrlArrowKeyboardRegionChangeDp = 1;
+constexpr int kArrowKeyboardRegionChangeDp = 15;
+constexpr int kShiftArrowKeyboardRegionChangeDp = 40;
 
 // Blur quality applied to the capture bar and settings menu backdrop.
 constexpr float kBlurQuality = 0.33f;
