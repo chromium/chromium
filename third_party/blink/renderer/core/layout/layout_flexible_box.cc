@@ -936,6 +936,36 @@ void LayoutFlexibleBox::ClearCachedMainSizeForChild(const LayoutBox& child) {
   intrinsic_size_along_main_axis_.erase(&child);
 }
 
+bool LayoutFlexibleBox::CanAvoidLayoutForNGChild(const LayoutBox& child) const {
+  NOT_DESTROYED();
+  if (!child.IsLayoutNGMixin())
+    return false;
+
+  // If the last layout was done with a different override size, or different
+  // definite-ness, we need to force-relayout so that percentage sizes are
+  // resolved correctly.
+  const NGLayoutResult* cached_layout_result = child.GetCachedLayoutResult();
+  if (!cached_layout_result)
+    return false;
+
+  const NGConstraintSpace& old_space =
+      cached_layout_result->GetConstraintSpaceForCaching();
+  if (old_space.IsFixedInlineSize() != child.HasOverrideLogicalWidth())
+    return false;
+  if (old_space.IsFixedBlockSize() != child.HasOverrideLogicalHeight())
+    return false;
+  if (!old_space.IsFixedBlockSizeIndefinite() !=
+      UseOverrideLogicalHeightForPerentageResolution(child))
+    return false;
+  if (child.HasOverrideLogicalWidth() &&
+      old_space.AvailableSize().inline_size != child.OverrideLogicalWidth())
+    return false;
+  if (child.HasOverrideLogicalHeight() &&
+      old_space.AvailableSize().block_size != child.OverrideLogicalHeight())
+    return false;
+  return true;
+}
+
 DISABLE_CFI_PERF
 LayoutUnit LayoutFlexibleBox::ComputeInnerFlexBaseSizeForChild(
     LayoutBox& child,
@@ -1023,8 +1053,6 @@ void LayoutFlexibleBox::LayoutFlexItems(bool relayout_children,
       PrepareChildForPositionedLayout(*child);
       continue;
     }
-    DCHECK(!child->IsLayoutNGMixin()) << "Legacy flexboxes aren't supposed to "
-                                         "lay out NG objects! File a crbug.";
 
     ConstructAndAppendFlexItem(&flex_algorithm, *child, layout_type);
   }
@@ -1597,9 +1625,12 @@ void LayoutFlexibleBox::LayoutLineItems(FlexLine* current_line,
     // computeInnerFlexBaseSizeForChild.
     bool force_child_relayout =
         relayout_children && !relaid_out_children_.Contains(child);
+    // TODO(dgrogan): Broaden the NG part of this check once NG types other
+    // than Mixin derivatives are cached.
     auto* child_layout_block = DynamicTo<LayoutBlock>(child);
     if (child_layout_block &&
-        child_layout_block->HasPercentHeightDescendants()) {
+        child_layout_block->HasPercentHeightDescendants() &&
+        !CanAvoidLayoutForNGChild(*child)) {
       // Have to force another relayout even though the child is sized
       // correctly, because its descendants are not sized correctly yet. Our
       // previous layout of the child was done without an override height set.
@@ -1768,7 +1799,8 @@ void LayoutFlexibleBox::ApplyStretchAlignmentToChild(FlexItem& flex_item) {
     child.SetOverrideLogicalHeight(flex_item.cross_axis_size_);
 
     auto* child_block = DynamicTo<LayoutBlock>(child);
-    if (child_block && child_block->HasPercentHeightDescendants()) {
+    if (child_block && child_block->HasPercentHeightDescendants() &&
+        !CanAvoidLayoutForNGChild(child)) {
       // Have to force another relayout even though the child is sized
       // correctly, because its descendants are not sized correctly yet. Our
       // previous layout of the child was done without an override height set.
