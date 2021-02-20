@@ -6,7 +6,7 @@ package org.chromium.components.browser_ui.widget.chips;
 
 import java.util.List;
 
-/** A source of Chips meant to be visually represented by a {@link ChipCoordinator}. */
+/** A source of Chips meant to be visually represented by a {@link ChipsCoordinator}. */
 public interface ChipsProvider {
     /** Interface to be called a Chip's state changes. */
     interface Observer {

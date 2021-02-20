@@ -6,10 +6,11 @@ package org.chromium.components.browser_ui.widget.chips;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
-import org.chromium.chrome.browser.download.internal.R;
+import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.modelutil.RecyclerViewAdapter;
 import org.chromium.ui.widget.ChipView;
 
@@ -48,8 +49,22 @@ public class ChipsViewHolder extends ViewHolder {
         getChipView().setEnabled(chip.enabled);
         getChipView().setSelected(chip.selected);
         getChipView().setOnClickListener(v -> chip.chipSelectedListener.run());
-        getChipView().getPrimaryTextView().setText(chip.text);
-        getChipView().setIcon(chip.selected ? R.drawable.ic_check_googblue_24dp : chip.icon, true);
-        getChipView().getPrimaryTextView().setContentDescription(chip.contentDescription);
+        // Set the text if it has been provided in one form or another.
+        TextView primaryTextView = getChipView().getPrimaryTextView();
+        if (chip.rawText != null) {
+            primaryTextView.setText(chip.rawText);
+        } else if (chip.text != Chip.INVALID_STRING_RES_ID) {
+            primaryTextView.setText(chip.text);
+        } else {
+            primaryTextView.setText("");
+        }
+        // Set the icon if it's been provided - if selected we use the "check" icon.
+        if (chip.icon != Chip.INVALID_ICON_ID || chip.selected) {
+            getChipView().setIcon(
+                    chip.selected ? R.drawable.ic_check_googblue_24dp : chip.icon, true);
+        } else {
+            getChipView().setIcon(Chip.INVALID_ICON_ID, false);
+        }
+        primaryTextView.setContentDescription(chip.contentDescription);
     }
 }
