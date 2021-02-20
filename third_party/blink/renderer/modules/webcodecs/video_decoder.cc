@@ -198,9 +198,6 @@ VideoDecoderConfig* CopyConfig(const VideoDecoderConfig& config) {
   if (config.hasDisplayHeight())
     copy->setDisplayHeight(config.displayHeight());
 
-  if (config.hasHardwareAcceleration())
-    copy->setHardwareAcceleration(config.hardwareAcceleration());
-
   return copy;
 }
 
@@ -280,19 +277,6 @@ ScriptPromise VideoDecoder::isConfigSupported(ScriptState* script_state,
   support->setConfig(CopyConfig(*config));
 
   return ScriptPromise::Cast(script_state, ToV8(support, script_state));
-}
-
-HardwarePreference VideoDecoder::GetHardwarePreference(
-    const ConfigType& config) {
-  // The IDL defines a default value of "allow".
-  DCHECK(config.hasHardwareAcceleration());
-  return StringToHardwarePreference(
-      IDLEnumAsString(config.hardwareAcceleration()));
-}
-
-void VideoDecoder::SetHardwarePreference(HardwarePreference preference) {
-  static_cast<VideoDecoderBroker*>(decoder())->SetHardwarePreference(
-      preference);
 }
 
 // static

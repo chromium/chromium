@@ -97,7 +97,7 @@ class MediaVideoTaskWrapper {
         media_interface_factory.InitWithNewPipeAndPassReceiver());
 
     // Mojo remote must be bound on media thread where it will be used.
-    // |Unretained| is safe because |this| must be destroyed on the media task
+    //|Unretained| is safe because |this| must be destroyed on the media task
     // runner.
     PostCrossThreadTask(
         *media_task_runner_, FROM_HERE,
@@ -169,44 +169,20 @@ class MediaVideoTaskWrapper {
                               weak_factory_.GetWeakPtr(), cb_id));
   }
 
-  void UpdateHardwarePreference(HardwarePreference preference) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-    if (hardware_preference_ != preference) {
-      hardware_preference_ = preference;
-      decoder_factory_needs_update_ = true;
-    }
-  }
-
  private:
   void BindOnTaskRunner(
       mojo::PendingRemote<media::mojom::InterfaceFactory> interface_factory) {
     DVLOG(2) << __func__;
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     media_interface_factory_.Bind(std::move(interface_factory));
-  }
-
-  void UpdateDecoderFactory() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(decoder_factory_needs_update_);
-
-    decoder_factory_needs_update_ = false;
 
     // Bind the |interface_factory_| above before passing to
     // |external_decoder_factory|.
     std::unique_ptr<media::DecoderFactory> external_decoder_factory;
 #if BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
-    if (hardware_preference_ != HardwarePreference::kDeny) {
-      external_decoder_factory = std::make_unique<media::MojoDecoderFactory>(
-          media_interface_factory_.get());
-    }
+    external_decoder_factory = std::make_unique<media::MojoDecoderFactory>(
+        media_interface_factory_.get());
 #endif
-
-    if (hardware_preference_ == HardwarePreference::kRequire) {
-      decoder_factory_ = std::move(external_decoder_factory);
-      return;
-    }
-
     decoder_factory_ = std::make_unique<media::DefaultDecoderFactory>(
         std::move(external_decoder_factory));
   }
@@ -225,20 +201,12 @@ class MediaVideoTaskWrapper {
     DVLOG(2) << __func__;
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    if (decoder_factory_needs_update_)
-      UpdateDecoderFactory();
-
     std::vector<std::unique_ptr<media::VideoDecoder>> video_decoders;
-
-    // We can end up with a null |decoder_factory_| if
-    // |hardware_preference_| filtered out all available factories.
-    if (decoder_factory_) {
-      decoder_factory_->CreateVideoDecoders(
-          media_task_runner_, gpu_factories_, media_log_,
-          WTF::BindRepeating(&MediaVideoTaskWrapper::OnRequestOverlayInfo,
-                             weak_factory_.GetWeakPtr()),
-          target_color_space_, &video_decoders);
-    }
+    decoder_factory_->CreateVideoDecoders(
+        media_task_runner_, gpu_factories_, media_log_,
+        WTF::BindRepeating(&MediaVideoTaskWrapper::OnRequestOverlayInfo,
+                           weak_factory_.GetWeakPtr()),
+        target_color_space_, &video_decoders);
 
     return video_decoders;
   }
@@ -306,11 +274,9 @@ class MediaVideoTaskWrapper {
   media::GpuVideoAcceleratorFactories* gpu_factories_;
   mojo::Remote<media::mojom::InterfaceFactory> media_interface_factory_;
   std::unique_ptr<WebCodecsVideoDecoderSelector> selector_;
-  std::unique_ptr<media::DecoderFactory> decoder_factory_;
+  std::unique_ptr<media::DefaultDecoderFactory> decoder_factory_;
   std::unique_ptr<media::VideoDecoder> decoder_;
   gfx::ColorSpace target_color_space_;
-  HardwarePreference hardware_preference_ = HardwarePreference::kAllow;
-  bool decoder_factory_needs_update_ = true;
 
   media::MediaLog* media_log_;
 
@@ -361,15 +327,6 @@ std::string VideoDecoderBroker::GetDisplayName() const {
 
 bool VideoDecoderBroker::IsPlatformDecoder() const {
   return decoder_details_ ? decoder_details_->is_platform_decoder : false;
-}
-
-void VideoDecoderBroker::SetHardwarePreference(
-    HardwarePreference hardware_preference) {
-  PostCrossThreadTask(
-      *media_task_runner_, FROM_HERE,
-      WTF::CrossThreadBindOnce(&MediaVideoTaskWrapper::UpdateHardwarePreference,
-                               WTF::CrossThreadUnretained(media_tasks_.get()),
-                               hardware_preference));
 }
 
 void VideoDecoderBroker::Initialize(const media::VideoDecoderConfig& config,
