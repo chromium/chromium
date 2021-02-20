@@ -478,7 +478,7 @@
       'name': 'Extensions',
       'type': 'group',
       'caption': '''Extensions''',
-      'desc': '''Configures extension-related policies. The user is not allowed to install blacklisted extensions unless they are whitelisted. You can also force <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to automatically install extensions by specifying them in <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME">ExtensionInstallForcelist</ph>. Force-installed extensions are installed regardless whether they are present in the blacklist.''',
+      'desc': '''Configures extension-related policies. The user is not allowed to install blocked extensions unless they are whitelisted. You can also force <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to automatically install extensions by specifying them in <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME">ExtensionInstallForcelist</ph>. Force-installed extensions are installed regardless whether they are present in the blocklist.''',
       'policies': [
         'ExtensionInstallAllowlist',
         'ExtensionInstallBlocklist',
@@ -580,7 +580,7 @@
       'name': 'NativeMessaging',
       'type': 'group',
       'caption': '''Native Messaging''',
-      'desc': '''Configures policies for Native Messaging. Blacklisted native messaging hosts won't be allowed unless they are whitelisted.''',
+      'desc': '''Configures policies for Native Messaging. Blocked native messaging hosts won't be allowed unless they are whitelisted.''',
       'policies': [
         'NativeMessagingBlacklist',
         'NativeMessagingBlocklist',
@@ -3556,9 +3556,9 @@
 
       If you enable this setting, the specified list of plugins can be used in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. Users can enable or disable them in 'about:plugins', even if the plugin also matches a pattern in DisabledPlugins. Users can also enable and disable plugins that don't match any patterns in DisabledPlugins, DisabledPluginsExceptions and EnabledPlugins.
 
-      This policy is meant to allow for strict plugin blacklisting where the 'DisabledPlugins' list contains wildcarded entries like disable all plugins '*' or disable all Java plugins '*Java*' but the administrator wishes to enable some particular version like 'IcedTea Java 2.3'. This particular versions can be specified in this policy.
+      This policy is meant to allow for strict plugin blocking where the 'DisabledPlugins' list contains wildcarded entries like disable all plugins '*' or disable all Java plugins '*Java*' but the administrator wishes to enable some particular version like 'IcedTea Java 2.3'. This particular versions can be specified in this policy.
 
-      Note that both the plugin name and the plugin's group name have to be exempted. Each plugin group is shown in a separate section in about:plugins; each section may have one or more plugins. For example, the "Shockwave Flash" plugin belongs to the "Adobe Flash Player" group, and both names have to have a match in the exceptions list if that plugin is to be exempted from the blacklist.
+      Note that both the plugin name and the plugin's group name have to be exempted. Each plugin group is shown in a separate section in about:plugins; each section may have one or more plugins. For example, the "Shockwave Flash" plugin belongs to the "Adobe Flash Player" group, and both names have to have a match in the exceptions list if that plugin is to be exempted from the blocklist.
 
       If this policy is left not set any plugin that matches the patterns in the 'DisabledPlugins' will be locked disabled and the user won't be able to enable them.''',
       'label': '''List of exceptions to the list of disabled plugins''',
@@ -9721,7 +9721,7 @@
       'id': 764,
       'caption': '''Login user allow list''',
       'tags': [],
-      'desc': '''Defines the list of users that are allowed to login to the device. Entries are of the form <ph name="USER_ALLOWLIST_ENTRY_FORMAT">user@domain</ph>, such as <ph name="USER_WHITELIST_ENTRY_EXAMPLE">madmax@managedchrome.com</ph>. To allow arbitrary users on a domain, use entries of the form <ph name="USER_ALLOWLIST_ENTRY_WILDCARD">*@domain</ph>.
+      'desc': '''Defines the list of users that are allowed to login to the device. Entries are of the form <ph name="USER_ALLOWLIST_ENTRY_FORMAT">user@domain</ph>, such as <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE">madmax@managedchrome.com</ph>. To allow arbitrary users on a domain, use entries of the form <ph name="USER_ALLOWLIST_ENTRY_WILDCARD">*@domain</ph>.
 
       If this policy is not configured, there are no restrictions on which users are allowed to sign in. Note that creating new users still requires the <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME">DeviceAllowNewUsers</ph> policy to be configured appropriately.
       If <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME">DeviceFamilyLinkAccountsAllowed</ph> is enabled, Family Link users will be allowed additionally to the accounts defined in this policy.''',
@@ -17652,7 +17652,7 @@
       as "*.example.com") for which security restrictions on insecure origins
       will not apply.
 
-      The intent is to allow organizations to whitelist origins for legacy
+      The intent is to allow organizations to allow origins for legacy
       applications that cannot deploy TLS, or to set up a staging server for
       internal web development so that their developers can test out features
       requiring secure contexts without having to deploy TLS on the staging
@@ -17996,7 +17996,7 @@
 
       * PasswordProtectionWarningOff, no password protection warning will be shown.
 
-      * PasswordProtectionWarningOnPasswordReuse, password protection warning will be shown when the user reuses their protected password on a non-whitelisted site.
+      * PasswordProtectionWarningOnPasswordReuse, password protection warning will be shown when the user reuses their protected password on a non-allowed site.
 
       * PasswordProtectionWarningOnPhishingReuse, password protection warning will be shown when the user reuses their protected password on a phishing site.
 
@@ -18516,7 +18516,7 @@
       'deprecated': True,
       'example_value': ['https://www.example.com', '[*.]example.edu'],
       'id': 431,
-      'caption': '''Allow media autoplay on a whitelist of URL patterns''',
+      'caption': '''Allow media autoplay on a allowlist of URL patterns''',
       'tags': [],
       'desc': '''This policy is deprecated, please use the '<ph name="AUTOPLAY_ALLOWLIST_POLICY_NAME">AutoplayAllowlist</ph>' policy instead.
 
@@ -19691,7 +19691,7 @@
       When this policy is left unset or set to disabled, extension installation requests are not created or uploaded.
       When this policy is set to enabled, extension installation requests are created and uploaded to Google Admin console.
 
-      Extension installation requests are created when users try to install an extension that is not whitelisted by <ph name="EXTENSION_INSTALL_WHITELIST">ExtesionInstallWhitelist</ph> or <ph name="EXTENSION_SETTINGS">ExtensionSettings</ph>.
+      Extension installation requests are created when users try to install an extension that is not allowed by <ph name="EXTENSION_INSTALL_ALLOWLIST">ExtesionInstallAllowlist</ph> or <ph name="EXTENSION_SETTINGS">ExtensionSettings</ph>.
 
       This policy is only effective when the machine is enrolled with <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN">CloudManagementEnrollmentToken</ph> for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
       This policy is always effective for <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>.'''
