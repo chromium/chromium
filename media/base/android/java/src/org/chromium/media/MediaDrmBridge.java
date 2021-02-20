@@ -8,7 +8,6 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.media.MediaCrypto;
 import android.media.MediaDrm;
-import android.media.MediaDrm.MediaDrmStateException;
 import android.os.Build;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -731,9 +730,11 @@ public class MediaDrmBridge {
                     keyType == MediaDrm.KEY_TYPE_RELEASE ? sessionId.keySetId() : sessionId.drmId();
             assert scopeId != null;
             request = mMediaDrm.getKeyRequest(scopeId, data, mime, keyType, optionalParameters);
-        } catch (MediaDrmStateException e) {
-            // See b/21307186 for details.
-            Log.e(TAG, "MediaDrmStateException fired during getKeyRequest().", e);
+        } catch (java.lang.IllegalStateException e) {
+            // We've seen both MediaDrmStateException and MediaDrmResetException happening.
+            // Since both are IllegalStateExceptions, so they will be handled here.
+            // See b/21307186 and crbug.com/1169050 for details.
+            Log.e(TAG, "Failed to getKeyRequest().", e);
         }
 
         String result = (request != null) ? "successed" : "failed";
