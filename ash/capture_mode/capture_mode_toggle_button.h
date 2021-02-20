@@ -6,7 +6,6 @@
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_TOGGLE_BUTTON_H_
 
 #include "ash/ash_export.h"
-#include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ash/capture_mode/view_with_ink_drop.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
@@ -22,8 +21,7 @@ namespace ash {
 // toggle between image and video capture, and between fullscreen, window, and
 // region capture sources.
 class ASH_EXPORT CaptureModeToggleButton
-    : public ViewWithInkDrop<views::ToggleImageButton>,
-      public CaptureModeSessionFocusCycler::HighlightableView {
+    : public ViewWithInkDrop<views::ToggleImageButton> {
  public:
   METADATA_HEADER(CaptureModeToggleButton);
 
@@ -40,9 +38,6 @@ class ASH_EXPORT CaptureModeToggleButton
   // views::ToggleImageButton:
   void OnPaintBackground(gfx::Canvas* canvas) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
-  // CaptureModeSessionFocusCycler::HighlightableView:
-  views::View* GetView() override;
 
  private:
   // Called by the constructor to set the icon in both normal and toggled

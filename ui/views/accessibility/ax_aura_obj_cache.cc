@@ -12,6 +12,7 @@
 #include "ui/accessibility/ax_node.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/focus_client.h"
+#include "ui/aura/window.h"
 #include "ui/views/accessibility/ax_aura_obj_wrapper.h"
 #include "ui/views/accessibility/ax_view_obj_wrapper.h"
 #include "ui/views/accessibility/ax_widget_obj_wrapper.h"
@@ -150,12 +151,7 @@ View* AXAuraObjCache::GetFocusedView() {
     if (!focus_client)
       return nullptr;
 
-    // Uses the a11y override window for focus if it exists, otherwise gets the
-    // current focused window.
-    focused_window = a11y_override_window_;
-    if (!focused_window)
-      focused_window = focus_client->GetFocusedWindow();
-
+    focused_window = focus_client->GetFocusedWindow();
     if (!focused_window)
       return nullptr;
 
@@ -201,12 +197,6 @@ void AXAuraObjCache::OnWindowFocused(aura::Window* gained_focus,
   OnFocusedViewChanged();
 }
 
-void AXAuraObjCache::OnWindowDestroying(aura::Window* window) {
-  DCHECK_EQ(a11y_override_window_, window);
-  a11y_override_window_ = nullptr;
-  a11y_override_window_observer_.Reset();
-}
-
 void AXAuraObjCache::OnRootWindowObjCreated(aura::Window* window) {
   if (root_windows_.empty() && GetFocusClient(window))
     GetFocusClient(window)->AddObserver(this);
@@ -217,13 +207,6 @@ void AXAuraObjCache::OnRootWindowObjDestroyed(aura::Window* window) {
   root_windows_.erase(window);
   if (root_windows_.empty() && GetFocusClient(window))
     GetFocusClient(window)->RemoveObserver(this);
-}
-
-void AXAuraObjCache::SetA11yOverrideWindow(aura::Window* a11y_override_window) {
-  a11y_override_window_observer_.Reset();
-  a11y_override_window_ = a11y_override_window;
-  if (a11y_override_window_)
-    a11y_override_window_observer_.Observe(a11y_override_window_);
 }
 
 template <typename AuraViewWrapper, typename AuraView>

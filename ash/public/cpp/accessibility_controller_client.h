@@ -8,10 +8,6 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/time/time.h"
 
-namespace aura {
-class Window;
-}  // namespace aura
-
 namespace ax {
 namespace mojom {
 enum class Gesture;
@@ -102,8 +98,6 @@ class ASH_PUBLIC_EXPORT AccessibilityControllerClient {
   // floating control panel, with an optional value.
   virtual void OnSelectToSpeakPanelAction(SelectToSpeakPanelAction action,
                                           double value) = 0;
-
-  virtual void SetA11yOverrideWindow(aura::Window* a11y_override_window) = 0;
 };
 
 }  // namespace ash
