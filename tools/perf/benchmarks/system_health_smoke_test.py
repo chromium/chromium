@@ -94,8 +94,8 @@ _DISABLED_TESTS = frozenset({
     'system_health.memory_desktop/browse:media:tumblr:2018',
     # ]
 
-    # crbug.com/1180277 - flaky.
-    'system_health.memory_desktop/browse:media:googleplaystore:2018',
+    # crbug.com/1180271 - flaky.
+    'system_health.memory_desktop/browse:media:googleplaystore:2021',
 })
 
 
