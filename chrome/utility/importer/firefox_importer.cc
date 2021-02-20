@@ -33,8 +33,8 @@
 
 namespace {
 
-// Original definition is in http://mxr.mozilla.org/firefox/source/toolkit/
-//  components/places/public/nsINavBookmarksService.idl
+// Original definition is in:
+//   toolkit/components/places/nsINavBookmarksService.idl
 enum BookmarkItemType {
   TYPE_BOOKMARK = 1,
   TYPE_FOLDER = 2,
@@ -57,8 +57,8 @@ void LoadDefaultBookmarks(const base::FilePath& app_path,
       base::RepeatingCallback<bool(void)>(),
       base::RepeatingCallback<bool(const GURL&)>(), file, &bookmarks,
       &search_engines, nullptr);
-  for (size_t i = 0; i < bookmarks.size(); ++i)
-    urls->insert(bookmarks[i].url);
+  for (const auto& bookmark : bookmarks)
+    urls->insert(bookmark.url);
 }
 
 // Returns true if |url| has a valid scheme that we allow to import. We
@@ -70,8 +70,8 @@ bool CanImportURL(const GURL& url) {
 
   // Filter out the URLs with unsupported schemes.
   const char* const kInvalidSchemes[] = {"wyciwyg", "place", "about", "chrome"};
-  for (size_t i = 0; i < base::size(kInvalidSchemes); ++i) {
-    if (url.SchemeIs(kInvalidSchemes[i]))
+  for (const auto* scheme : kInvalidSchemes) {
+    if (url.SchemeIs(scheme))
       return false;
   }
 
@@ -109,11 +109,9 @@ struct FirefoxImporter::BookmarkItem {
   bool empty_folder;
 };
 
-FirefoxImporter::FirefoxImporter() {
-}
+FirefoxImporter::FirefoxImporter() = default;
 
-FirefoxImporter::~FirefoxImporter() {
-}
+FirefoxImporter::~FirefoxImporter() = default;
 
 void FirefoxImporter::StartImport(const importer::SourceProfile& source_profile,
                                   uint16_t items,
@@ -180,7 +178,7 @@ void FirefoxImporter::ImportHistory() {
   // redirect, bookmark, etc.) We eliminate some URLs like sub-frames and
   // redirects, since we don't want them to appear in history.
   // Firefox transition types are defined in:
-  //   toolkit/components/places/public/nsINavHistoryService.idl
+  //   toolkit/components/places/nsINavHistoryService.idl
   const char query[] =
       "SELECT h.url, h.title, h.visit_count, "
       "h.hidden, h.typed, v.visit_date "
@@ -253,8 +251,8 @@ void FirefoxImporter::ImportBookmarks() {
   std::vector<importer::SearchEngineInfo> search_engines;
   FaviconMap favicon_map;
 
-  // TODO(jcampan): http://b/issue?id=1196285 we do not support POST based
-  //                keywords yet.  We won't include them in the list.
+  // TODO(https://crbug.com/18107): We do not support POST based keywords yet.
+  // We won't include them in the list.
   std::set<int> post_keyword_ids;
   const char query[] =
       "SELECT b.id FROM moz_bookmarks b "
@@ -386,30 +384,19 @@ void FirefoxImporter::ImportPasswords() {
     return;
   }
 
+  // Since Firefox 32, passwords are in logins.json.
+  base::FilePath json_file = source_path_.AppendASCII("logins.json");
+  if (!base::PathExists(json_file))
+    return;
+
   std::vector<importer::ImportedPasswordForm> forms;
-  base::FilePath source_path = source_path_;
-  const base::FilePath sqlite_file = source_path.AppendASCII("signons.sqlite");
-  const base::FilePath json_file = source_path.AppendASCII("logins.json");
-  const base::FilePath signon3_file = source_path.AppendASCII("signons3.txt");
-  const base::FilePath signon2_file = source_path.AppendASCII("signons2.txt");
-  if (base::PathExists(json_file)) {
-    // Since Firefox 32, passwords are in logins.json.
-    decryptor.ReadAndParseLogins(json_file, &forms);
-  } else if (base::PathExists(sqlite_file)) {
-    // Since Firefox 3.1, passwords are in signons.sqlite db.
-    decryptor.ReadAndParseSignons(sqlite_file, &forms);
-  } else if (base::PathExists(signon3_file)) {
-    // Firefox 3.0 uses signons3.txt to store the passwords.
-    decryptor.ParseSignons(signon3_file, &forms);
-  } else {
-    decryptor.ParseSignons(signon2_file, &forms);
-  }
+  decryptor.ReadAndParseLogins(json_file, &forms);
 
   if (!cancelled()) {
-    for (size_t i = 0; i < forms.size(); ++i) {
-      if (!forms[i].username_value.empty() ||
-          !forms[i].password_value.empty() || forms[i].blocked_by_user) {
-        bridge_->SetPasswordForm(forms[i]);
+    for (const auto& form : forms) {
+      if (!form.username_value.empty() || !form.password_value.empty() ||
+          form.blocked_by_user) {
+        bridge_->SetPasswordForm(form);
       }
     }
   }
@@ -552,7 +539,7 @@ void FirefoxImporter::GetWholeBookmarkFolder(sql::Database* db,
     item->empty_folder = true;
 
     temp_list.push_back(std::move(item));
-    if (empty_folder != NULL)
+    if (empty_folder)
       *empty_folder = false;
   }
 
@@ -577,8 +564,8 @@ void FirefoxImporter::LoadFavicons(
   if (!s.is_valid())
     return;
 
-  for (auto i = favicon_map.begin(); i != favicon_map.end(); ++i) {
-    s.BindInt64(0, i->first);
+  for (const auto& i : favicon_map) {
+    s.BindInt64(0, i.first);
     if (s.Step()) {
       std::vector<unsigned char> data;
       if (!s.ColumnBlobAsVector(1, &data))
@@ -588,7 +575,7 @@ void FirefoxImporter::LoadFavicons(
       if (!SetFaviconData(s.ColumnString(0), data, &usage_data))
         continue;
 
-      usage_data.urls = i->second;
+      usage_data.urls = i.second;
       favicons->push_back(usage_data);
     }
     s.Reset(true);

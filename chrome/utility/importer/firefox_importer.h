@@ -31,7 +31,7 @@ namespace sql {
 class Database;
 }
 
-// Importer for Mozilla Firefox 3 and later.
+// Importer for Mozilla Firefox.
 // Firefox stores its persistent information in a system called places.
 // http://wiki.mozilla.org/Places
 class FirefoxImporter : public Importer {

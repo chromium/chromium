@@ -128,18 +128,6 @@ class NSSDecryptor {
   // make sure Init() returns true.
   base::string16 Decrypt(const std::string& crypt) const;
 
-  // Parses the Firefox password file content, decrypts the
-  // username/password and reads other related information.
-  // The result will be stored in |forms|.
-  void ParseSignons(const base::FilePath& signon_file,
-                    std::vector<importer::ImportedPasswordForm>* forms);
-
-  // Reads and parses the Firefox password sqlite db, decrypts the
-  // username/password and reads other related information.
-  // The result will be stored in |forms|.
-  bool ReadAndParseSignons(const base::FilePath& sqlite_file,
-                           std::vector<importer::ImportedPasswordForm>* forms);
-
   // Reads and parses the Firefox password file logins.json, decrypts the
   // username/password and reads other related information.
   // The result will be stored in |forms|.
