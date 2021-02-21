@@ -29,6 +29,8 @@ constexpr uint32_t kMinVersionWithGetAccounts = 2;
 // MinVersion of crosapi::mojom::AccountManager::ShowAddAccountDialog and
 // crosapi::mojom::AccountManager::ShowReauthAccountDialog.
 constexpr uint32_t kMinVersionWithShowAddAccountDialog = 3;
+// MinVersion of crosapi::mojom::AccountManager::ShowManageAccountsSettings.
+constexpr uint32_t kMinVersionWithManageAccountsSettings = 4;
 
 void UnmarshalAccounts(
     base::OnceCallback<void(const std::vector<Account>&)> callback,
@@ -139,6 +141,17 @@ void AccountManagerFacadeImpl::ShowReauthAccountDialog(
   base::UmaHistogramEnumeration(kAccountAdditionSource, source);
 
   account_manager_remote_->ShowReauthAccountDialog(email, base::DoNothing());
+}
+
+void AccountManagerFacadeImpl::ShowManageAccountsSettings() {
+  if (remote_version_ < kMinVersionWithManageAccountsSettings) {
+    LOG(WARNING) << "Found remote at: " << remote_version_
+                 << ", expected: " << kMinVersionWithManageAccountsSettings
+                 << " for ShowManageAccountsSettings.";
+    return;
+  }
+
+  account_manager_remote_->ShowManageAccountsSettings();
 }
 
 // static

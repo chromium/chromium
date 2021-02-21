@@ -94,6 +94,10 @@ void AccountManagerAsh::ShowReauthAccountDialog(const std::string& email,
   account_manager_ui_->ShowReauthAccountDialog(email, std::move(closure));
 }
 
+void AccountManagerAsh::ShowManageAccountsSettings() {
+  // TODO(https://crbug.com/1177728): implement this.
+}
+
 void AccountManagerAsh::OnTokenUpserted(
     const account_manager::Account& account) {
   for (auto& observer : observers_)

@@ -100,6 +100,9 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
   // Launches account reauthentication dialog for provided `email`.
   virtual void ShowReauthAccountDialog(const AccountAdditionSource& source,
                                        const std::string& email) = 0;
+
+  // Launches OS Settings > Accounts.
+  virtual void ShowManageAccountsSettings() = 0;
 };
 
 }  // namespace account_manager

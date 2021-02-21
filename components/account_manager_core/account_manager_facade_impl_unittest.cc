@@ -70,6 +70,10 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
     std::move(closure).Run();
   }
 
+  void ShowManageAccountsSettings() override {
+    show_manage_accounts_settings_calls_++;
+  }
+
   mojo::Remote<crosapi::mojom::AccountManager> CreateRemote() {
     mojo::Remote<crosapi::mojom::AccountManager> remote;
     receivers_.Add(this, remote.BindNewPipeAndPassReceiver());
@@ -97,15 +101,22 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
     add_account_result_ = result;
   }
 
-  int show_add_account_dialog_calls() { return show_add_account_dialog_calls_; }
+  int show_add_account_dialog_calls() const {
+    return show_add_account_dialog_calls_;
+  }
 
-  int show_reauth_account_dialog_calls() {
+  int show_reauth_account_dialog_calls() const {
     return show_reauth_account_dialog_calls_;
+  }
+
+  int show_manage_accounts_settings_calls() const {
+    return show_manage_accounts_settings_calls_;
   }
 
  private:
   int show_add_account_dialog_calls_ = 0;
   int show_reauth_account_dialog_calls_ = 0;
+  int show_manage_accounts_settings_calls_ = 0;
   bool is_initialized_{false};
   std::vector<Account> accounts_;
   AccountAdditionResult add_account_result_{
@@ -351,6 +362,15 @@ TEST_F(AccountManagerFacadeImplTest, ShowReauthAccountDialogUMA) {
   // Check that UMA stats were sent.
   tester.ExpectUniqueSample(AccountManagerFacade::kAccountAdditionSource,
                             /*sample=*/source, /*expected_count=*/1);
+}
+
+TEST_F(AccountManagerFacadeImplTest, ShowManageAccountsSettingsCallsMojo) {
+  std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
+      CreateFacade();
+  EXPECT_EQ(0, account_manager().show_manage_accounts_settings_calls());
+  account_manager_facade->ShowManageAccountsSettings();
+  account_manager_facade->FlushMojoForTesting();
+  EXPECT_EQ(1, account_manager().show_manage_accounts_settings_calls());
 }
 
 }  // namespace account_manager

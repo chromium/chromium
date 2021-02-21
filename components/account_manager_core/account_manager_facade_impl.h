@@ -50,6 +50,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
                                   result)> callback) override;
   void ShowReauthAccountDialog(const AccountAdditionSource& source,
                                const std::string& email) override;
+  void ShowManageAccountsSettings() override;
 
   // crosapi::mojom::AccountManagerObserver overrides:
   void OnTokenUpserted(crosapi::mojom::AccountPtr account) override;
@@ -64,6 +65,8 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
                            ShowReauthAccountDialogCallsMojo);
   FRIEND_TEST_ALL_PREFIXES(AccountManagerFacadeImplTest,
                            ShowReauthAccountDialogUMA);
+  FRIEND_TEST_ALL_PREFIXES(AccountManagerFacadeImplTest,
+                           ShowManageAccountsSettingsCallsMojo);
   static std::string GetAccountAdditionResultStatusHistogramNameForTesting();
 
   void OnReceiverReceived(

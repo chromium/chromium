@@ -46,6 +46,7 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_ACCOUNT_MANAGER) AccountManagerAsh
   void ShowAddAccountDialog(ShowAddAccountDialogCallback callback) override;
   void ShowReauthAccountDialog(const std::string& email,
                                base::OnceClosure closure) override;
+  void ShowManageAccountsSettings() override;
 
   // ash::AccountManager::Observer:
   void OnTokenUpserted(const account_manager::Account& account) override;
