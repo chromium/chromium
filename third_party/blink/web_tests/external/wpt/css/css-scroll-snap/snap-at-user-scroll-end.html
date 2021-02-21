@@ -3,6 +3,10 @@
 <title>Tests that window should snap at user scroll end.</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="support/common.js"></script>
 <style>
 html {
   margin: 0px;
@@ -55,6 +59,9 @@ var scrolled_x = false;
 var scrolled_y = false;
 var start_x = window.scrollX;
 var start_y = window.scrollY;
+var actions_promise;
+
+scrollTop = () => window.scrollY;
 
 window.onscroll = function() {
   if (scrolled_x && scrolled_y) {
@@ -84,7 +91,21 @@ button.onclick = function() {
   // To make the test result visible.
   var content = document.getElementById("content");
   body.removeChild(content);
-  snap_test.done();
+  actions_promise.then( () => {
+    snap_test.done();
+  });
 }
 
+// Inject scroll actions.
+const pos_x = 20;
+const pos_y = 20;
+const scroll_delta_x = 100;
+const scroll_delta_y = 100;
+actions_promise = new test_driver.Actions()
+    .scroll(pos_x, pos_y, scroll_delta_x, scroll_delta_y)
+    .send().then(() => {
+  return waitForAnimationEnd(scrollTop);
+}).then(() => {
+  return test_driver.click(button);
+});
 </script>
