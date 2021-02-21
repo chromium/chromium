@@ -1,6 +1,6 @@
 android.webkit.WebView focusable focused scrollable
 ++android.view.View
-++++android.view.View role_description='math'
+++++android.view.View role_description='math' name='𝐴 2 + 𝐵 2'
 ++++++android.view.View name='𝐴'
 ++++++android.view.View name='2'
 ++++++android.view.View name='+'

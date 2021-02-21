@@ -2934,6 +2934,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, ComboboxItemVisibility) {
   RunHtmlTest(FILE_PATH_LITERAL("combobox-item-visibility.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MathNameFromContents) {
+  RunHtmlTest(FILE_PATH_LITERAL("math-name-from-contents.html"));
+}
+
 //
 // These tests cover features of the testing infrastructure itself.
 //

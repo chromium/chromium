@@ -81,7 +81,7 @@ AXRole: AXGenericContainer
         AXRole: AXDescriptionListDetail
             AXRole: AXStaticText "- white cold drink"
                 AXRole: AXInlineTextBox "- white cold drink"
-    AXRole: AXMath
+    AXRole: AXMath "x + a / b"
         AXRole: AXGenericContainer
             AXRole: AXGenericContainer
                 AXRole: AXStaticText "x"

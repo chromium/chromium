@@ -1,6 +1,6 @@
 Document
 ++Group IsControlElement=false
-++++Group IsControlElement=false
+++++Group Name='𝐴 2 + 𝐵 2'
 ++++++Group IsControlElement=false
 ++++++++Text Name='𝐴'
 ++++++Group IsControlElement=false

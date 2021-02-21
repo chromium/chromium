@@ -1,0 +1,29 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++radioButton name='Both 1 + 4 and 2 + 3' checkedState=false
+++++++++staticText name='Both '
+++++++++++inlineTextBox name='Both '
+++++++++math name='1 + 4'
+++++++++++genericContainer
+++++++++++++staticText name='1'
+++++++++++++++inlineTextBox name='1'
+++++++++++genericContainer
+++++++++++++staticText name='+'
+++++++++++++++inlineTextBox name='+'
+++++++++++genericContainer
+++++++++++++staticText name='4'
+++++++++++++++inlineTextBox name='4'
+++++++++staticText name=' and '
+++++++++++inlineTextBox name=' and '
+++++++++math name='2 + 3'
+++++++++++genericContainer
+++++++++++++staticText name='2'
+++++++++++++++inlineTextBox name='2'
+++++++++++genericContainer
+++++++++++++staticText name='+'
+++++++++++++++inlineTextBox name='+'
+++++++++++genericContainer
+++++++++++++staticText name='3'
+++++++++++++++inlineTextBox name='3'
+

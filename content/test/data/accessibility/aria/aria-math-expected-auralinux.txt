@@ -1,2 +1,2 @@
 [document web]
-++[math]
+++[math] name='ARIA role math.'

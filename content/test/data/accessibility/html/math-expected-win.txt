@@ -1,6 +1,6 @@
 ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++IA2_ROLE_SECTION
-++++ROLE_SYSTEM_EQUATION inner_html='<newline>    <mrow><newline>      <msup><mi>𝐴</mi><mn>2</mn></msup><newline>      <mo>+</mo><newline>      <msup><mi>𝐵</mi><mn>2</mn></msup><newline>    </mrow><newline> '
+++++ROLE_SYSTEM_EQUATION name='𝐴 2 + 𝐵 2' inner_html='<newline>    <mrow><newline>      <msup><mi>𝐴</mi><mn>2</mn></msup><newline>      <mo>+</mo><newline>      <msup><mi>𝐵</mi><mn>2</mn></msup><newline>    </mrow><newline> '
 ++++++IA2_ROLE_SECTION
 ++++++++ROLE_SYSTEM_STATICTEXT name='𝐴'
 ++++++IA2_ROLE_SECTION

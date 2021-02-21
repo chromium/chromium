@@ -1,6 +1,6 @@
 [document web]
 ++[section]
-++++[math]
+++++[math] name='𝐴 2 + 𝐵 2'
 ++++++[section]
 ++++++++[static] name='𝐴'
 ++++++[section]
