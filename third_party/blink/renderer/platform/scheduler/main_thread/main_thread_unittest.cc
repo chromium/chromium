@@ -51,13 +51,13 @@ class MainThreadTest : public testing::Test {
 
   void SetUp() override {
     clock_.Advance(base::TimeDelta::FromMicroseconds(5000));
-    scheduler_.reset(new MainThreadSchedulerImpl(
+    scheduler_ = std::make_unique<MainThreadSchedulerImpl>(
         base::sequence_manager::CreateSequenceManagerOnCurrentThreadWithPump(
             base::MessagePump::Create(base::MessagePumpType::DEFAULT),
             base::sequence_manager::SequenceManager::Settings::Builder()
                 .SetTickClock(&clock_)
                 .Build()),
-        base::nullopt));
+        base::nullopt);
     scheduler_overrider_ =
         std::make_unique<ScopedSchedulerOverrider>(scheduler_.get());
     thread_ = Thread::Current();
