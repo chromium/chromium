@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/nearby_sharing/instantmessaging/token_fetcher.h"
 
 namespace chrome_browser_nearby_sharing_instantmessaging {
 class SendMessageExpressRequest;
@@ -23,21 +22,15 @@ class SharedURLLoaderFactory;
 class SimpleURLLoader;
 }  // namespace network
 
-namespace signin {
-class IdentityManager;
-}  // namespace signin
+class TokenFetcher;
 
-// Sends messages using the Instant Messaging API over HTTP. This object is
-// intended to service exactly one request to SendMessage per object. The
-// WebRtcSignalingMessenger that creates this object may choose to clean it up
-// after the SuccessCallback is invoked so no interaction with the |this|
-// pointer should happen after that point.
+// Sends messages using the Instant Messaging API over HTTP.
 class SendMessageExpress {
  public:
   using SuccessCallback = base::OnceCallback<void(bool success)>;
 
   SendMessageExpress(
-      signin::IdentityManager* identity_manager,
+      TokenFetcher* token_fetcher,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~SendMessageExpress();
 
@@ -56,7 +49,7 @@ class SendMessageExpress {
       SuccessCallback callback,
       std::unique_ptr<std::string> response_body);
 
-  TokenFetcher token_fetcher_;
+  TokenFetcher* token_fetcher_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   base::WeakPtrFactory<SendMessageExpress> weak_ptr_factory_{this};
 };

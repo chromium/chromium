@@ -10,16 +10,12 @@
 #include "chrome/browser/nearby_sharing/instantmessaging/constants.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/fake_token_fetcher.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/proto/instantmessaging.pb.h"
-#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-
-const char kOAuthToken[] = "oauth_token";
-const char kTestAccount[] = "test@test.test";
 
 chrome_browser_nearby_sharing_instantmessaging::SendMessageExpressRequest
 CreateRequest() {
@@ -35,20 +31,13 @@ class SendMessageExpressTest : public testing::Test {
       : test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)),
-        send_message_express_(identity_test_environment_.identity_manager(),
-                              test_shared_loader_factory_) {
-    identity_test_environment_.MakeUnconsentedPrimaryAccountAvailable(
-        kTestAccount);
-  }
+        send_message_express_(&fake_token_fetcher_,
+                              test_shared_loader_factory_) {}
   ~SendMessageExpressTest() override = default;
 
-  void SetOAuthTokenSuccessful(bool success) {
-    identity_test_environment_
-        .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-            success ? kOAuthToken : "", base::Time::Now());
-  }
-
   SendMessageExpress& GetMessenger() { return send_message_express_; }
+
+  FakeTokenFetcher& GetFakeTokenFetcher() { return fake_token_fetcher_; }
 
   network::TestURLLoaderFactory& GetTestUrlLoaderFactory() {
     return test_url_loader_factory_;
@@ -56,9 +45,10 @@ class SendMessageExpressTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  signin::IdentityTestEnvironment identity_test_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
+
+  FakeTokenFetcher fake_token_fetcher_;
   SendMessageExpress send_message_express_;
 };
 
@@ -69,19 +59,18 @@ TEST_F(SendMessageExpressTest, OAuthTokenFailed) {
                                EXPECT_FALSE(success);
                                run_loop.Quit();
                              }));
-  SetOAuthTokenSuccessful(false);
   ASSERT_EQ(0, GetTestUrlLoaderFactory().NumPending());
   run_loop.Run();
 }
 
 TEST_F(SendMessageExpressTest, HttpResponseError) {
   base::RunLoop run_loop;
+  GetFakeTokenFetcher().SetAccessToken("token");
   GetMessenger().SendMessage(CreateRequest(),
                              base::BindLambdaForTesting([&](bool success) {
                                EXPECT_FALSE(success);
                                run_loop.Quit();
                              }));
-  SetOAuthTokenSuccessful(true);
   ASSERT_TRUE(
       GetTestUrlLoaderFactory().IsPending(kInstantMessagingSendMessageAPI));
   GetTestUrlLoaderFactory().AddResponse(kInstantMessagingSendMessageAPI,
@@ -91,12 +80,12 @@ TEST_F(SendMessageExpressTest, HttpResponseError) {
 
 TEST_F(SendMessageExpressTest, EmptyResponse) {
   base::RunLoop run_loop;
+  GetFakeTokenFetcher().SetAccessToken("token");
   GetMessenger().SendMessage(CreateRequest(),
                              base::BindLambdaForTesting([&](bool success) {
                                EXPECT_FALSE(success);
                                run_loop.Quit();
                              }));
-  SetOAuthTokenSuccessful(true);
   ASSERT_TRUE(
       GetTestUrlLoaderFactory().IsPending(kInstantMessagingSendMessageAPI));
   GetTestUrlLoaderFactory().AddResponse(kInstantMessagingSendMessageAPI, "",
@@ -106,13 +95,12 @@ TEST_F(SendMessageExpressTest, EmptyResponse) {
 
 TEST_F(SendMessageExpressTest, SuccessfulResponse) {
   base::RunLoop run_loop;
-
+  GetFakeTokenFetcher().SetAccessToken("token");
   GetMessenger().SendMessage(CreateRequest(),
                              base::BindLambdaForTesting([&](bool success) {
                                EXPECT_TRUE(success);
                                run_loop.Quit();
                              }));
-  SetOAuthTokenSuccessful(true);
   ASSERT_TRUE(
       GetTestUrlLoaderFactory().IsPending(kInstantMessagingSendMessageAPI));
   GetTestUrlLoaderFactory().AddResponse(kInstantMessagingSendMessageAPI,

@@ -77,10 +77,12 @@ void LogSendResult(bool success, const NearbyShareHttpStatus& http_status) {
 }  // namespace
 
 SendMessageExpress::SendMessageExpress(
-    signin::IdentityManager* identity_manager,
+    TokenFetcher* token_fetcher,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : token_fetcher_(identity_manager),
-      url_loader_factory_(std::move(url_loader_factory)) {}
+    : token_fetcher_(token_fetcher),
+      url_loader_factory_(std::move(url_loader_factory)) {
+  DCHECK(token_fetcher_);
+}
 
 SendMessageExpress::~SendMessageExpress() = default;
 
@@ -88,7 +90,7 @@ void SendMessageExpress::SendMessage(
     const chrome_browser_nearby_sharing_instantmessaging::
         SendMessageExpressRequest& request,
     SuccessCallback callback) {
-  token_fetcher_.GetAccessToken(base::BindOnce(
+  token_fetcher_->GetAccessToken(base::BindOnce(
       &SendMessageExpress::DoSendMessage, weak_ptr_factory_.GetWeakPtr(),
       request, std::move(callback)));
 }
@@ -104,7 +106,6 @@ void SendMessageExpress::DoSendMessage(
   if (oauth_token.empty()) {
     NS_LOG(ERROR) << __func__ << ": Failed to fetch OAuth token.";
     std::move(callback).Run(false);
-    // NOTE: |this| might be destroyed here after running the callback
     return;
   }
 
@@ -145,5 +146,4 @@ void SendMessageExpress::OnSendMessageResponse(
       http_status.IsSuccess() && response_body && !response_body->empty();
   LogSendResult(success, http_status);
   std::move(callback).Run(success);
-  // NOTE: |this| might be destroyed here after running the callback
 }
