@@ -47,6 +47,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
@@ -1550,7 +1551,8 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
     CompositorDependencies* compositor_deps,
     blink::WebFrame* opener,
     bool is_for_nested_main_frame,
-    mojom::CreateFrameCommonParamsPtr common_params,
+    mojom::FrameReplicationStatePtr replication_state,
+    const base::UnguessableToken& devtools_frame_token,
     mojom::CreateLocalMainFrameParamsPtr params) {
   // A main frame RenderFrame must have a RenderWidget.
   DCHECK_NE(MSG_ROUTING_NONE, params->widget_params->routing_id);
@@ -1558,17 +1560,17 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
   RenderFrameImpl* render_frame = RenderFrameImpl::Create(
       agent_scheduling_group, render_view, params->routing_id,
       std::move(params->frame), std::move(params->interface_broker),
-      common_params->devtools_token);
+      devtools_frame_token);
   render_frame->InitializeBlameContext(nullptr);
 
   WebLocalFrame* web_frame = WebLocalFrame::CreateMainFrame(
       render_view->GetWebView(), render_frame,
-      render_frame->blink_interface_registry_.get(), common_params->frame_token,
+      render_frame->blink_interface_registry_.get(), params->token,
       ToWebPolicyContainer(std::move(params->policy_container)), opener,
       // This conversion is a little sad, as this often comes from a
       // WebString...
-      WebString::FromUTF8(common_params->replicated_state->name),
-      common_params->replicated_state->frame_policy.sandbox_flags);
+      WebString::FromUTF8(replication_state->name),
+      replication_state->frame_policy.sandbox_flags);
   if (params->has_committed_real_load)
     render_frame->frame_->SetCommittedFirstRealLoad();
 
@@ -1614,6 +1616,7 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
 // static
 void RenderFrameImpl::CreateFrame(
     AgentSchedulingGroup& agent_scheduling_group,
+    const blink::LocalFrameToken& token,
     int routing_id,
     mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver,
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
@@ -1622,7 +1625,6 @@ void RenderFrameImpl::CreateFrame(
     const base::Optional<base::UnguessableToken>& opener_frame_token,
     int parent_routing_id,
     int previous_sibling_routing_id,
-    const blink::LocalFrameToken& frame_token,
     const base::UnguessableToken& devtools_frame_token,
     mojom::FrameReplicationStatePtr replicated_state,
     CompositorDependencies* compositor_deps,
@@ -1676,7 +1678,7 @@ void RenderFrameImpl::CreateFrame(
         render_frame->blink_interface_registry_.get(),
         previous_sibling_web_frame,
         frame_owner_properties->To<blink::WebFrameOwnerProperties>(),
-        replicated_state->frame_owner_element_type, frame_token, opener,
+        replicated_state->frame_owner_element_type, token, opener,
         ToWebPolicyContainer(std::move(policy_container)));
 
     // The RenderFrame is created and inserted into the frame tree in the above
@@ -1709,8 +1711,8 @@ void RenderFrameImpl::CreateFrame(
         devtools_frame_token);
     render_frame->InitializeBlameContext(nullptr);
     web_frame = blink::WebLocalFrame::CreateProvisional(
-        render_frame, render_frame->blink_interface_registry_.get(),
-        frame_token, previous_web_frame, replicated_state->frame_policy,
+        render_frame, render_frame->blink_interface_registry_.get(), token,
+        previous_web_frame, replicated_state->frame_policy,
         WebString::FromUTF8(replicated_state->name));
     // The new |web_frame| is a main frame iff the previous frame was.
     DCHECK_EQ(!previous_web_frame->Parent(), !web_frame->Parent());

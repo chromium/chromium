@@ -491,12 +491,7 @@ void RenderViewTest::SetUp() {
   view_params->renderer_preferences = blink::RendererPreferences();
   view_params->web_preferences = blink::web_pref::WebPreferences();
   view_params->view_id = render_thread_->GetNextRoutingID();
-
-  auto main_frame_common_params = mojom::CreateFrameCommonParams::New();
-  main_frame_common_params->frame_token = base::UnguessableToken::Create();
-  main_frame_common_params->replicated_state =
-      mojom::FrameReplicationState::New();
-  view_params->main_frame_common_params = std::move(main_frame_common_params);
+  view_params->replication_state = mojom::FrameReplicationState::New();
 
   auto main_frame_params = mojom::CreateLocalMainFrameParams::New();
   main_frame_params->routing_id = render_thread_->GetNextRoutingID();

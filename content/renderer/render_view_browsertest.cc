@@ -74,6 +74,7 @@
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/switches.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/widget/device_emulation_params.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom.h"
@@ -1258,13 +1259,13 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
   widget_params->widget_host = blink_widget_host.Unbind();
 
   RenderFrameImpl::CreateFrame(
-      *agent_scheduling_group_, routing_id,
+      *agent_scheduling_group_, blink::LocalFrameToken(), routing_id,
       TestRenderFrame::CreateStubFrameReceiver(),
       TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote(),
       kProxyRoutingId, base::nullopt, MSG_ROUTING_NONE, MSG_ROUTING_NONE,
-      base::UnguessableToken::Create(), base::UnguessableToken::Create(),
-      std::move(replication_state), compositor_deps_.get(),
-      std::move(widget_params), blink::mojom::FrameOwnerProperties::New(),
+      base::UnguessableToken::Create(), std::move(replication_state),
+      compositor_deps_.get(), std::move(widget_params),
+      blink::mojom::FrameOwnerProperties::New(),
       /*has_committed_real_load=*/true, CreateStubPolicyContainer());
 
   TestRenderFrame* provisional_frame =
@@ -1322,12 +1323,11 @@ TEST_F(RenderViewImplTest, DetachingProxyAlsoDestroysProvisionalFrame) {
   // which is to create a provisional local frame.
   int routing_id = kProxyRoutingId + 1;
   RenderFrameImpl::CreateFrame(
-      *agent_scheduling_group_, routing_id,
+      *agent_scheduling_group_, blink::LocalFrameToken(), routing_id,
       TestRenderFrame::CreateStubFrameReceiver(),
       TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote(),
       kProxyRoutingId, base::nullopt, frame()->GetRoutingID(), MSG_ROUTING_NONE,
-      base::UnguessableToken::Create(), base::UnguessableToken::Create(),
-      std::move(replication_state), nullptr,
+      base::UnguessableToken::Create(), std::move(replication_state), nullptr,
       /*widget_params=*/nullptr, blink::mojom::FrameOwnerProperties::New(),
       /*has_committed_real_load=*/true, CreateStubPolicyContainer());
   {

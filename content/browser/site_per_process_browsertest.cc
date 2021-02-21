@@ -136,6 +136,7 @@
 #include "third_party/blink/public/common/feature_policy/policy_value.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/leak_detector/leak_detector.mojom-test-utils.h"
@@ -6276,8 +6277,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // used to crash, as parent_routing_id refers to a proxy that doesn't exist
   // anymore.
   agent_scheduling_group_a->CreateFrameProxy(
-      new_routing_id, view_routing_id, base::nullopt, parent_routing_id,
-      mojom::FrameReplicationState::New(), base::UnguessableToken::Create(),
+      blink::RemoteFrameToken(), new_routing_id, base::nullopt, view_routing_id,
+      parent_routing_id, mojom::FrameReplicationState::New(),
       base::UnguessableToken::Create());
 
   // Ensure the subframe is detached in the browser process.
@@ -6351,7 +6352,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
         shell()->web_contents()->GetMainFrame()->GetRoutingID();
     params->previous_sibling_routing_id = IPC::mojom::kRoutingIdNone;
     params->frame_owner_properties = blink::mojom::FrameOwnerProperties::New();
-    params->frame_token = frame_token;
+    params->token = frame_token;
     params->devtools_frame_token = base::UnguessableToken::Create();
     params->policy_container = CreateStubPolicyContainer();
     params->replication_state = mojom::FrameReplicationState::New();
@@ -6446,7 +6447,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ParentDetachRemoteChild) {
     params->replication_state = mojom::FrameReplicationState::New();
     params->replication_state->name = "name";
     params->replication_state->unique_name = "name";
-    params->frame_token = frame_token;
+    params->token = frame_token;
     params->devtools_frame_token = base::UnguessableToken::Create();
     params->policy_container = CreateStubPolicyContainer();
     agent_scheduling_group->CreateFrame(std::move(params));

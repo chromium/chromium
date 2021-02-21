@@ -88,7 +88,21 @@ struct CreateViewParams {
   // otherwise.
   mojo_base.mojom.UnguessableToken? opener_frame_token;
 
-  CreateFrameCommonParams main_frame_common_params;
+  // Information that needs to be replicated to the view's main frame, e.g.
+  // frame name and sandbox flags.
+  FrameReplicationState replication_state;
+
+  // Used for devtools instrumentation and trace-ability. The token is shared
+  // across all frames (local or remotes) representing the same logical frame
+  // tree node, and is used by Blink and content to tag calls and requests for
+  // instrumentation purposes, allowing them to be attributed to a context
+  // frame.
+  //
+  // Must not be used to look up a RenderFrameHostImpl or RenderFrameProxyHost
+  // in the browser process, as the token is shared, making the mapping
+  // ambiguous and non-authoritative.
+  mojo_base.mojom.UnguessableToken devtools_main_frame_token;
+
   CreateMainFrameUnion main_frame;
 
   // Whether the RenderView should initially be hidden.
@@ -116,23 +130,6 @@ struct CreateViewParams {
   pending_associated_receiver<blink.mojom.PageBroadcast> blink_page_broadcast;
 };
 
-// Parameters that are common to making local and remote frames.
-struct CreateFrameCommonParams {
-  // Information that needs to be replicated to the view's main frame, e.g.
-  // frame name and sandbox flags.
-  FrameReplicationState replicated_state;
-
-  mojo_base.mojom.UnguessableToken frame_token;
-
-  // Used for devtools instrumentation and trace-ability. The token is shared by
-  // all frames representing the same logical frame tree node. Blink and content
-  // use this to tag calls and requests for context frame attribution.
-  //
-  // |devtools_main_frame_token| is only defined by the browser and should never
-  // be sent back from the renderer in control calls.
-  mojo_base.mojom.UnguessableToken devtools_token;
-};
-
 // A union to distinguish between parameters specific to local main frame
 // creation and remote main frame creation.
 union CreateMainFrameUnion {
@@ -142,6 +139,9 @@ union CreateMainFrameUnion {
 
 // Parameters used for browser-initiated local main frame creation.
 struct CreateLocalMainFrameParams {
+  // The frame token. Used to map between LocalFrame and RenderFrameHostImpl.
+  blink.mojom.LocalFrameToken token;
+
   // The ID of the main frame hosted in the view. Must not be kRoutingIdNone.
   int32 routing_id = IPC.mojom.kRoutingIdNone;
 
@@ -163,6 +163,8 @@ struct CreateLocalMainFrameParams {
 
 // Parameters used for brower-initiated remote main frame creation.
 struct CreateRemoteMainFrameParams {
+  blink.mojom.RemoteFrameToken token;
+
   // The ID of the proxy object for the main frame in this view. Must not be
   // kRoutingIdNone.
   int32 routing_id = IPC.mojom.kRoutingIdNone;
@@ -195,8 +197,10 @@ struct CreateFrameWidgetParams {
 // tab, or renderer-initiated, e.g. window.open()) also do not use these params
 // and are routed via CreateView() and CreateNewWindow() respectively.
 //
-// TODO(dcheng): Use CreateFrameCommonParams here.
 struct CreateFrameParams {
+  // The frame token. Used to map between LocalFrame and RenderFrameHostImpl.
+  blink.mojom.LocalFrameToken token;
+
   // Specifies the routing ID of the new RenderFrame object.
   int32 routing_id;
 
@@ -204,10 +208,6 @@ struct CreateFrameParams {
   // configured to replace either the previous frame or the previous proxy on
   // commit.
   int32 previous_routing_id;
-
-  // The frame token. It is a unique identifier for
-  // the LocalFrame<-->RenderFrameHostImpl mapping.
-  mojo_base.mojom.UnguessableToken frame_token;
 
   // Specifies the new frame's opener.  The opener will be null if this is
   // base::nullopt.
@@ -542,22 +542,21 @@ enum CreateNewWindowStatus {
 };
 
 // All routing IDs in this struct must be set to a valid routing ID.
-// TODO(dcheng): It's almost possible to use CreateLocalMainFrameParams and
-// CreateFrameCommonParams here. See if there's a reasonable way to factor
-// out state here by splitting things into browser-created params vs
-// renderer-created params.
+// TODO(dcheng): It's almost possible to use CreateLocalMainFrameParams here.
+// See if there's a reasonable way to factor out state here by splitting things
+// into browser-created params vs renderer-created params.
 struct CreateNewWindowReply {
   // The ID of the view to be created.
   int32 route_id;
+
+  // The unique identifier of the RenderFrameHost
+  blink.mojom.LocalFrameToken main_frame_token;
 
   // The ID of the main frame hosted in the view.
   int32 main_frame_route_id;
 
   // The pending mojo connection to the Frame implementation in the renderer.
   pending_associated_receiver<content.mojom.Frame> frame;
-
-  // The unique identifier of the RenderFrameHost
-  blink.mojom.LocalFrameToken main_frame_frame_token;
 
   CreateFrameWidgetParams widget_params;
 
@@ -570,12 +569,15 @@ struct CreateNewWindowReply {
   // Duplicated from CreateNewWindowParams because legacy code.
   string cloned_session_storage_namespace_id;
 
-  // Used for devtools instrumentation and trace-ability. The token is
-  // propagated to Blink's LocalFrame and both Blink and content/
-  // can tag calls and requests with this instrumentation token in order to
-  // attribute them to the context frame.
-  // |devtools_frame_token| is only defined by the browser and is never
-  // sent back from the renderer in the control calls.
+  // Used for devtools instrumentation and trace-ability. The token is shared
+  // across all frames (local or remotes) representing the same logical frame
+  // tree node, and is used by Blink and content to tag calls and requests for
+  // instrumentation purposes, allowing them to be attributed to a context
+  // frame.
+  //
+  // Must not be used to look up a RenderFrameHostImpl or RenderFrameProxyHost
+  // in the browser process, as the token is shared, making the mapping
+  // ambiguous and non-authoritative.
   mojo_base.mojom.UnguessableToken devtools_main_frame_token;
 
   // Used by devtools instrumentation to tell devtools agent in the renderer

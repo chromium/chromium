@@ -48,6 +48,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom.h"
@@ -131,13 +132,13 @@ class RenderFrameImplTest : public RenderViewTest {
         ->Unload(kFrameProxyRouteId, false, frame_replication_state->Clone(),
                  base::UnguessableToken::Create());
     RenderFrameImpl::CreateFrame(
-        *agent_scheduling_group_, kSubframeRouteId,
+        *agent_scheduling_group_, blink::LocalFrameToken(), kSubframeRouteId,
         TestRenderFrame::CreateStubFrameReceiver(),
         TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote(),
         MSG_ROUTING_NONE, base::nullopt, kFrameProxyRouteId, MSG_ROUTING_NONE,
-        base::UnguessableToken::Create(), base::UnguessableToken::Create(),
-        std::move(frame_replication_state), &compositor_deps_,
-        std::move(widget_params), blink::mojom::FrameOwnerProperties::New(),
+        base::UnguessableToken::Create(), std::move(frame_replication_state),
+        &compositor_deps_, std::move(widget_params),
+        blink::mojom::FrameOwnerProperties::New(),
         /*has_committed_real_load=*/true, CreateStubPolicyContainer());
 
     frame_ = static_cast<TestRenderFrame*>(

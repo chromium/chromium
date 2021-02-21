@@ -426,20 +426,13 @@ bool RenderViewHostImpl::CreateRenderView(
   params->web_preferences = delegate_->GetOrCreateWebPreferences();
   params->view_id = GetRoutingID();
   params->opener_frame_token = opener_frame_token;
-
-  params->main_frame_common_params = mojom::CreateFrameCommonParams::New();
-  if (main_rfh) {
-    params->main_frame_common_params->frame_token = main_rfh->GetFrameToken();
-  } else {
-    params->main_frame_common_params->frame_token = main_rfph->GetFrameToken();
-  }
-  params->main_frame_common_params->replicated_state =
+  params->replication_state =
       frame_tree_node->current_replication_state().Clone();
-  params->main_frame_common_params->devtools_token =
-      frame_tree_node->devtools_frame_token();
+  params->devtools_main_frame_token = frame_tree_node->devtools_frame_token();
 
   if (main_rfh) {
     auto local_frame_params = mojom::CreateLocalMainFrameParams::New();
+    local_frame_params->token = main_rfh->GetFrameToken();
     local_frame_params->routing_id = main_frame_routing_id_;
     mojo::PendingAssociatedRemote<mojom::Frame> pending_frame_remote;
     local_frame_params->frame =
@@ -470,7 +463,8 @@ bool RenderViewHostImpl::CreateRenderView(
         std::move(local_frame_params));
   } else {
     params->main_frame = mojom::CreateMainFrameUnion::NewRemoteParams(
-        mojom::CreateRemoteMainFrameParams::New(proxy_route_id));
+        mojom::CreateRemoteMainFrameParams::New(main_rfph->GetFrameToken(),
+                                                proxy_route_id));
   }
 
   params->session_storage_namespace_id =

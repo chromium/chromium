@@ -176,7 +176,8 @@ class CONTENT_EXPORT RenderFrameImpl
       CompositorDependencies* compositor_deps,
       blink::WebFrame* opener,
       bool is_for_nested_main_frame,
-      mojom::CreateFrameCommonParamsPtr common_params,
+      mojom::FrameReplicationStatePtr replication_state,
+      const base::UnguessableToken& devtools_frame_token,
       mojom::CreateLocalMainFrameParamsPtr params);
 
   // Creates a new RenderFrame with |routing_id|. If |previous_routing_id| is
@@ -203,6 +204,7 @@ class CONTENT_EXPORT RenderFrameImpl
   // through Blink and Create.
   static void CreateFrame(
       AgentSchedulingGroup& agent_scheduling_group,
+      const blink::LocalFrameToken& token,
       int routing_id,
       mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver,
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
@@ -211,7 +213,6 @@ class CONTENT_EXPORT RenderFrameImpl
       const base::Optional<base::UnguessableToken>& opener_frame_token,
       int parent_routing_id,
       int previous_sibling_routing_id,
-      const blink::LocalFrameToken& frame_token,
       const base::UnguessableToken& devtools_frame_token,
       mojom::FrameReplicationStatePtr replicated_state,
       CompositorDependencies* compositor_deps,

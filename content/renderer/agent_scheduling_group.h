@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/associated_interfaces/associated_interfaces.mojom.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
@@ -90,12 +91,12 @@ class CONTENT_EXPORT AgentSchedulingGroup
   void DestroyView(int32_t view_id, DestroyViewCallback callback) override;
   void CreateFrame(mojom::CreateFrameParamsPtr params) override;
   void CreateFrameProxy(
+      const blink::RemoteFrameToken& token,
       int32_t routing_id,
-      int32_t render_view_routing_id,
       const base::Optional<base::UnguessableToken>& opener_frame_token,
+      int32_t view_routing_id,
       int32_t parent_routing_id,
       mojom::FrameReplicationStatePtr replicated_state,
-      const base::UnguessableToken& frame_token,
       const base::UnguessableToken& devtools_frame_token) override;
 
   // mojom::RouteProvider

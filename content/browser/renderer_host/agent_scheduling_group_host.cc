@@ -337,17 +337,17 @@ void AgentSchedulingGroupHost::DestroyView(
 }
 
 void AgentSchedulingGroupHost::CreateFrameProxy(
+    const blink::RemoteFrameToken& token,
     int32_t routing_id,
-    int32_t render_view_routing_id,
     const base::Optional<base::UnguessableToken>& opener_frame_token,
+    int32_t view_routing_id,
     int32_t parent_routing_id,
     mojom::FrameReplicationStatePtr replicated_state,
-    const base::UnguessableToken& frame_token,
     const base::UnguessableToken& devtools_frame_token) {
   DCHECK_EQ(state_, LifecycleState::kBound);
   mojo_remote_.get()->CreateFrameProxy(
-      routing_id, render_view_routing_id, opener_frame_token, parent_routing_id,
-      std::move(replicated_state), frame_token, devtools_frame_token);
+      token, routing_id, opener_frame_token, view_routing_id, parent_routing_id,
+      std::move(replicated_state), devtools_frame_token);
 }
 
 void AgentSchedulingGroupHost::ReportNoBinderForInterface(

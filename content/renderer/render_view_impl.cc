@@ -154,16 +154,15 @@ void RenderViewImpl::Initialize(
     main_render_frame_ = RenderFrameImpl::CreateMainFrame(
         agent_scheduling_group_, this, compositor_deps, opener_frame,
         params->type != mojom::ViewWidgetType::kTopLevel,
-        std::move(params->main_frame_common_params),
+        std::move(params->replication_state), params->devtools_main_frame_token,
         std::move(params->main_frame->get_local_params()));
   } else {
     RenderFrameProxy::CreateFrameProxy(
-        agent_scheduling_group_,
-        params->main_frame->get_remote_params()->routing_id, GetRoutingID(),
-        params->opener_frame_token, MSG_ROUTING_NONE,
-        std::move(params->main_frame_common_params->replicated_state),
-        params->main_frame_common_params->frame_token,
-        params->main_frame_common_params->devtools_token);
+        agent_scheduling_group_, params->main_frame->get_remote_params()->token,
+        params->main_frame->get_remote_params()->routing_id,
+        params->opener_frame_token, GetRoutingID(), MSG_ROUTING_NONE,
+        std::move(params->replication_state),
+        params->devtools_main_frame_token);
   }
 
   // TODO(davidben): Move this state from Blink into content.
@@ -400,19 +399,13 @@ WebView* RenderViewImpl::CreateView(
   view_params->web_preferences = webview_->GetWebPreferences();
   view_params->view_id = reply->route_id;
 
-  view_params->main_frame_common_params = mojom::CreateFrameCommonParams::New();
-  view_params->main_frame_common_params->frame_token =
-      reply->main_frame_frame_token;
-  view_params->main_frame_common_params->replicated_state =
-      mojom::FrameReplicationState::New();
-  view_params->main_frame_common_params->replicated_state->frame_policy
-      .sandbox_flags = sandbox_flags;
-  view_params->main_frame_common_params->replicated_state->name =
-      frame_name_utf8;
-  view_params->main_frame_common_params->devtools_token =
-      reply->devtools_main_frame_token;
+  view_params->replication_state = mojom::FrameReplicationState::New();
+  view_params->replication_state->frame_policy.sandbox_flags = sandbox_flags;
+  view_params->replication_state->name = frame_name_utf8;
+  view_params->devtools_main_frame_token = reply->devtools_main_frame_token;
 
   auto main_frame_params = mojom::CreateLocalMainFrameParams::New();
+  main_frame_params->token = reply->main_frame_token;
   main_frame_params->routing_id = reply->main_frame_route_id;
   main_frame_params->frame = std::move(reply->frame);
   main_frame_params->interface_broker =

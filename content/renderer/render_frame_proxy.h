@@ -97,12 +97,12 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
   // as a frame, not a proxy.
   static RenderFrameProxy* CreateFrameProxy(
       AgentSchedulingGroup& agent_scheduling_group,
+      const blink::RemoteFrameToken& frame_token,
       int routing_id,
-      int render_view_routing_id,
       const base::Optional<base::UnguessableToken>& opener_frame_token,
+      int render_view_routing_id,
       int parent_routing_id,
       mojom::FrameReplicationStatePtr replicated_state,
-      const blink::RemoteFrameToken& frame_token,
       const base::UnguessableToken& devtools_frame_token);
 
   // Creates a RenderFrameProxy to be used with a portal owned by |parent|.

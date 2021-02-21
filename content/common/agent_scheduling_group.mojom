@@ -9,6 +9,7 @@ import "content/common/frame.mojom";
 import "content/common/frame_replication_state.mojom";
 import "content/common/native_types.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
 // Interface for general communication between the renderer process's
 // AgentSchedulingGroup and the browser process's AgentSchedulingGroupHost.
@@ -53,24 +54,30 @@ interface AgentSchedulingGroup {
   // Tells the renderer to create a new RenderFrame.
   CreateFrame(CreateFrameParams params);
 
-  // Tells the renderer to create a new RenderFrameProxy object with
-  // |routing_id|.  |render_view_routing_id| identifies the
-  // RenderView to be associated with this proxy. The new proxy's opener should
-  // be set to the object identified by |opener_frame_token|, or to null if that
-  // is base::nullopt.  The new proxy should be created as a child of the
-  // object identified by |parent_routing_id| or as top level if that is
-  // MSG_ROUTING_NONE.
-  // |proxy_frame_token| is used uniquely identify the
-  // RemoteFrame <--> RenderFrameProxyHost mapping.
-  // |devtools_frame_token| is used for devtools instrumentation
-  // and trace-ability. It is defined by the browser and is never
-  // sent back from the renderer in the control calls.
-  // TODO(dcheng): Pass CreateFrameCommonParams here.
-  CreateFrameProxy(int32 routing_id, int32 render_view_routing_id,
+  // Tells the renderer to create a new RenderFrameProxy.
+  //
+  // `token`: The frame token. Used to map between RemoteFrame and
+  //     RenderFrameProxyHost.
+  // `routing_id`: The legacy IPC routing ID.
+  // `opener_frame_token`: Frame token that identifies the opener frame if one
+  //     exists, or base::nullopt otherwise.
+  // `view_routing_id`: routing ID of the RenderView for this RenderFrameProxy.
+  //     Must not be `MSG_ROUTING_NONE`.
+  // `parent_routing_id`: `MSG_ROUTING_NONE` for a top-level RenderFrameProxy;
+  //     otherwise, Identifies the parent frame of the RenderFrameProxy.
+  // `devtools_frame_token`: Used for devtools instrumentation and
+  //    trace-ability. The token is shared across all frames (local or remotes)
+  //    representing the same logical frame tree node, and is used by Blink and
+  //    content to tag calls and requests for instrumentation purposes,
+  //    allowing them to be attributed to a context frame.
+  //
+  //    Must not be used to look up a RenderFrameHostImpl or
+  //    RenderFrameProxyHost in the browser process, as the token is shared,
+  //    making the mapping ambiguous and non-authoritative.
+  CreateFrameProxy(blink.mojom.RemoteFrameToken token, int32 routing_id,
                    mojo_base.mojom.UnguessableToken? opener_frame_token,
-                   int32 parent_routing_id,
+                   int32 view_routing_id, int32 parent_routing_id,
                    FrameReplicationState replication_state,
-                   mojo_base.mojom.UnguessableToken proxy_frame_token,
                    mojo_base.mojom.UnguessableToken devtools_frame_token);
 
 };

@@ -294,10 +294,10 @@ bool RenderFrameProxyHost::InitRenderFrameProxy() {
   int view_routing_id = GetRenderViewHost()->GetRoutingID();
   static_cast<SiteInstanceImpl*>(site_instance_.get())
       ->GetAgentSchedulingGroup()
-      .CreateFrameProxy(routing_id_, view_routing_id, opener_frame_token,
-                        parent_routing_id,
+      .CreateFrameProxy(frame_token_, routing_id_, opener_frame_token,
+                        view_routing_id, parent_routing_id,
                         frame_tree_node_->current_replication_state().Clone(),
-                        frame_token_, frame_tree_node_->devtools_frame_token());
+                        frame_tree_node_->devtools_frame_token());
 
   SetRenderFrameProxyCreated(true);
 
