@@ -17,6 +17,7 @@
 #include "components/cbor/reader.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_util.h"
+#include "url/url_constants.h"
 
 namespace web_package {
 
@@ -281,7 +282,7 @@ GURL ParseExchangeURL(base::StringPiece str) {
   // For now, we allow only http:, https: and urn: schemes in Web Bundle URLs.
   // TODO(crbug.com/966753): Revisit this once
   // https://github.com/WICG/webpackage/issues/468 is resolved.
-  if (!url.SchemeIsHTTPOrHTTPS() && !url.SchemeIs("urn"))
+  if (!url.SchemeIsHTTPOrHTTPS() && !url.SchemeIs(url::kUrnScheme))
     return GURL();
 
   return url;

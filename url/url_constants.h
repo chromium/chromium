@@ -32,6 +32,7 @@ COMPONENT_EXPORT(URL) extern const char kJavaScriptScheme[];
 COMPONENT_EXPORT(URL) extern const char kMailToScheme[];
 COMPONENT_EXPORT(URL) extern const char kQuicTransportScheme[];
 COMPONENT_EXPORT(URL) extern const char kTelScheme[];
+COMPONENT_EXPORT(URL) extern const char kUrnScheme[];
 COMPONENT_EXPORT(URL) extern const char kWsScheme[];
 COMPONENT_EXPORT(URL) extern const char kWssScheme[];
 

@@ -35,6 +35,7 @@
 #include "content/public/common/url_utils.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 namespace content {
 
@@ -408,7 +409,7 @@ GURL SiteInfo::GetSiteForURLInternal(const IsolationContext& isolation_context,
   // TODO(acolwell): Update this so we can use url::Origin::Resolve() for all
   // cases.
   url::Origin origin;
-  if (url.SchemeIs("urn") && real_url_info.origin.opaque()) {
+  if (url.SchemeIs(url::kUrnScheme) && real_url_info.origin.opaque()) {
     auto precursor = real_url_info.origin.GetTupleOrPrecursorTupleIfOpaque();
     if (precursor.IsValid()) {
       // Use the precursor as the origin. This should be the origin of the

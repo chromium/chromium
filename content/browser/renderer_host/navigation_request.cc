@@ -712,7 +712,7 @@ url::Origin GetOriginForURLLoaderFactoryUnchecked(
 
   // urn: subframes from WebBundles have opaque origins derived from the
   // Bundle's origin.
-  if (common_params.url.SchemeIs("urn") &&
+  if (common_params.url.SchemeIs(url::kUrnScheme) &&
       navigation_request->GetWebBundleURL().is_valid()) {
     return url::Origin::Resolve(
         common_params.url,
@@ -3416,10 +3416,10 @@ void NavigationRequest::CommitNavigation() {
   AddOldPageInfoToCommitParamsIfNeeded();
 
   // For urn: resources served from WebBundles, use the Bundle's origin.
-  url::Origin origin =
-      (common_params_->url.SchemeIs("urn") && GetWebBundleURL().is_valid())
-          ? url::Origin::Create(GetWebBundleURL())
-          : GetOriginForURLLoaderFactory();
+  url::Origin origin = (common_params_->url.SchemeIs(url::kUrnScheme) &&
+                        GetWebBundleURL().is_valid())
+                           ? url::Origin::Create(GetWebBundleURL())
+                           : GetOriginForURLLoaderFactory();
   // TODO(crbug.com/979296): Consider changing this code to copy an origin
   // instead of creating one from a URL which lacks opacity information.
   isolation_info_for_subresources_ =

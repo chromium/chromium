@@ -2732,7 +2732,7 @@ void RenderFrameHostImpl::DidNavigate(
 
   // For urn: resources served from WebBundles, use the Bundle's origin.
   url::Origin origin =
-      (params.url.SchemeIs("urn") &&
+      (params.url.SchemeIs(url::kUrnScheme) &&
        navigation_request->GetWebBundleURL().is_valid())
           ? url::Origin::Create(navigation_request->GetWebBundleURL())
           : GetLastCommittedOrigin();
@@ -5617,7 +5617,8 @@ void RenderFrameHostImpl::BeginNavigation(
 
   // Only urn: URL is allowed for navigation to a resource in
   // <link rel="webbundle">.
-  if (begin_params->web_bundle_token && !common_params->url.SchemeIs("urn")) {
+  if (begin_params->web_bundle_token &&
+      !common_params->url.SchemeIs(url::kUrnScheme)) {
     bad_message::ReceivedBadMessage(
         GetProcess(), bad_message::WEB_BUNDLE_INVALID_NAVIGATION_URL);
     return;

@@ -28,6 +28,7 @@ const char kMailToScheme[] = "mailto";
 // See also: https://www.iana.org/assignments/uri-schemes/prov/quic-transport
 const char kQuicTransportScheme[] = "quic-transport";
 const char kTelScheme[] = "tel";
+const char kUrnScheme[] = "urn";
 const char kWsScheme[] = "ws";
 const char kWssScheme[] = "wss";
 
