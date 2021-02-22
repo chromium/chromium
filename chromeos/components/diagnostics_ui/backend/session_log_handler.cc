@@ -24,7 +24,7 @@ namespace {
 const char kRoutineLogSectionHeader[] = "=== Routine Log === \n";
 const char kTelemetryLogSectionHeader[] = "=== Telemetry Log === \n";
 const char kDefaultSessionLogFileName[] = "session_log.txt";
-const char kRoutineLogPath[] = "/var/log/diagnostics_routine_log";
+const char kRoutineLogPath[] = "/tmp/diagnostics/diagnostics_routine_log";
 
 }  // namespace
 

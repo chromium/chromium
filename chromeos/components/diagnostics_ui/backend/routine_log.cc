@@ -35,7 +35,7 @@ RoutineLog::~RoutineLog() = default;
 
 void RoutineLog::LogRoutineStarted(mojom::RoutineType type) {
   if (!base::PathExists(routine_log_file_path_)) {
-    base::WriteFile(routine_log_file_path_, "");
+    CreateFile();
   }
 
   std::stringstream log_line;
@@ -76,6 +76,24 @@ std::string RoutineLog::GetContents() const {
 
 void RoutineLog::AppendToLog(const std::string& content) {
   base::AppendToFile(routine_log_file_path_, content.data(), content.size());
+}
+
+void RoutineLog::CreateFile() {
+  DCHECK(!base::PathExists(routine_log_file_path_));
+
+  if (!base::PathExists(routine_log_file_path_.DirName())) {
+    const bool create_dir_success =
+        base::CreateDirectory(routine_log_file_path_.DirName());
+    if (!create_dir_success) {
+      LOG(ERROR) << "Failed to create Diagnostics Routine Log directory.";
+      return;
+    }
+  }
+
+  const bool create_file_success = base::WriteFile(routine_log_file_path_, "");
+  if (!create_file_success) {
+    LOG(ERROR) << "Failed to create Diagnostics Routine Log file.";
+  }
 }
 
 }  // namespace diagnostics

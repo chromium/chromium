@@ -37,6 +37,8 @@ class RoutineLog {
  private:
   void AppendToLog(const std::string& content);
 
+  void CreateFile();
+
   const base::FilePath routine_log_file_path_;
 };
 
