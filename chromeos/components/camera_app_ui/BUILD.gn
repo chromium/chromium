@@ -233,10 +233,6 @@ generate_grd("build_platform_app_compatible_grdp") {
       path = "js/browser_proxy/webui_browser_proxy.js"
       rewrite_path = "js/browser_proxy/browser_proxy.js"
     },
-    {
-      path = "js/window_controller/mojo_window_controller.js"
-      rewrite_path = "js/window_controller/window_controller.js"
-    },
   ]
 
   input_files = []

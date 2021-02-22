@@ -9,7 +9,7 @@ import {
 import * as dom from '../../dom.js';
 import * as state from '../../state.js';
 import {Mode} from '../../type.js';
-import {windowController} from '../../window_controller/window_controller.js';
+import {windowController} from '../../window_controller.js';
 
 /**
  * CSS rules.

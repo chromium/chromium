@@ -38,7 +38,6 @@ import {
 import {View} from './views/view.js';
 import {Warning, WarningType} from './views/warning.js';
 import {WaitableEvent} from './waitable_event.js';
-import {windowController} from './window_controller/window_controller.js';
 
 /**
  * The app window instance which is used for communication with Tast tests. For
@@ -229,7 +228,6 @@ export class App {
     }
 
     const showWindow = (async () => {
-      windowController.enable();
       // For intent only requiring open camera with specific mode without
       // returning the capture result, finish it directly.
       if (this.intent_ !== null && !this.intent_.shouldHandleResult) {
@@ -321,7 +319,6 @@ export class App {
   async suspend() {
     state.set(state.State.SUSPEND, true);
     await this.cameraView_.start();
-    windowController.disable();
     nav.open(ViewName.WARNING, WarningType.CAMERA_PAUSED);
   }
 
@@ -330,7 +327,6 @@ export class App {
    */
   resume() {
     state.set(state.State.SUSPEND, false);
-    windowController.enable();
     nav.close(ViewName.WARNING, WarningType.CAMERA_PAUSED);
   }
 }

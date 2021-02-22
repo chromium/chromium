@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {windowController} from '../window_controller/window_controller.js';
+import {windowController} from '../window_controller.js';
 
 /**
  * The singleton instance of ChromeHelper. Initialized by the first

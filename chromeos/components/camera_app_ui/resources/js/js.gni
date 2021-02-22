@@ -81,9 +81,8 @@ compile_js_files = [
   "views/view.js",
   "views/warning.js",
   "waitable_event.js",
-  "window_controller/mojo_window_controller.js",
+  "window_controller.js",
   "window_controller/window_controller.js",
-  "window_controller/window_controller_interface.js",
 ]
 
 no_compile_js_files = [

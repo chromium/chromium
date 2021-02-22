@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertInstanceof} from '../chrome_util.js';
-
-// eslint-disable-next-line no-unused-vars
-import {WindowController} from './window_controller_interface.js';
+import {assertInstanceof} from './chrome_util.js';
 
 /**
- * WindowController which relies on our specific Mojo interface.
- * @implements {WindowController}
+ * Controller to get/set/listener for window state.
  */
-export class MojoWindowController {
+export class WindowController {
   /**
    * @public
    */
@@ -29,7 +25,11 @@ export class MojoWindowController {
     this.windowStates_ = [];
   }
 
-  /** @override */
+  /**
+   * Binds the controller remote from Mojo interface.
+   * @param {!chromeosCamera.mojom.WindowStateControllerRemote} remoteController
+   * @return {!Promise}
+   */
   async bind(remoteController) {
     this.windowStateController_ = remoteController;
 
@@ -43,7 +43,10 @@ export class MojoWindowController {
     this.windowStates_ = states;
   }
 
-  /** @override */
+  /**
+   * Minimizes the window.
+   * @return {!Promise}
+   */
   async minimize() {
     return assertInstanceof(
                this.windowStateController_,
@@ -51,7 +54,10 @@ export class MojoWindowController {
         .minimize();
   }
 
-  /** @override */
+  /**
+   * Maximizes the window.
+   * @return {!Promise}
+   */
   async maximize() {
     return assertInstanceof(
                this.windowStateController_,
@@ -59,7 +65,10 @@ export class MojoWindowController {
         .maximize();
   }
 
-  /** @override */
+  /**
+   * Restores the window and leaves maximized/minimized/fullscreen state.
+   * @return {!Promise}
+   */
   async restore() {
     return assertInstanceof(
                this.windowStateController_,
@@ -67,7 +76,10 @@ export class MojoWindowController {
         .restore();
   }
 
-  /** @override */
+  /**
+   * Makes the window fullscreen.
+   * @return {!Promise}
+   */
   async fullscreen() {
     return assertInstanceof(
                this.windowStateController_,
@@ -75,7 +87,10 @@ export class MojoWindowController {
         .fullscreen();
   }
 
-  /** @override */
+  /**
+   * Focuses the window.
+   * @return {!Promise}
+   */
   async focus() {
     return assertInstanceof(
                this.windowStateController_,
@@ -83,34 +98,25 @@ export class MojoWindowController {
         .focus();
   }
 
-  /** @override */
+  /**
+   * Returns true if the window is currently minimized.
+   * @return {boolean}
+   */
   isMinimized() {
     return this.windowStates_.includes(
         chromeosCamera.mojom.WindowStateType.MINIMIZED);
   }
 
-  /** @override */
+  /**
+   * Returns true if the window is currently fullscreen or maximized.
+   * @return {boolean}
+   */
   isFullscreenOrMaximized() {
     return this.windowStates_.includes(
                chromeosCamera.mojom.WindowStateType.FULLSCREEN) ||
         this.windowStates_.includes(
             chromeosCamera.mojom.WindowStateType.MAXIMIZED);
   }
-
-  /** @override */
-  enable() {
-    // TODO(980846): Implement by hiding "Camera is in-use" message to user.
-  }
-
-  /** @override */
-  disable() {
-    // TODO(980846): Implement by showing "Camera is in-use" message to user.
-  }
-
-  /** @override */
-  addOnMinimizedListener(listener) {
-    // TODO(980846): Remove the method once we migrate to SWA.
-  }
 }
 
-export const windowController = new MojoWindowController();
+export const windowController = new WindowController();

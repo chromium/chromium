@@ -34,7 +34,7 @@ import {
   ViewName,
 } from '../type.js';
 import * as util from '../util.js';
-import {windowController} from '../window_controller/window_controller.js';
+import {windowController} from '../window_controller.js';
 
 import {Layout} from './camera/layout.js';
 import {
@@ -275,10 +275,6 @@ export class Camera extends View {
       if (this.locked_) {
         this.start();
       }
-    });
-
-    windowController.addOnMinimizedListener(() => {
-      this.start();
     });
 
     document.addEventListener('visibilitychange', () => {

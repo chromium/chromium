@@ -13,7 +13,7 @@ import {ViewName} from './type.js';
 import * as util from './util.js';
 // eslint-disable-next-line no-unused-vars
 import {View} from './views/view.js';
-import {windowController} from './window_controller/window_controller.js';
+import {windowController} from './window_controller.js';
 
 /**
  * All views stacked in ascending z-order (DOM order) for navigation, and only
