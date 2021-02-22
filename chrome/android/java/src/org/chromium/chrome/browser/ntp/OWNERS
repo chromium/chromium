@@ -1,6 +1,3 @@
 tedchoc@chromium.org
 twellington@chromium.org
 
-# For changes related to the feed.
-per-file *SectionHeader.java=file://chrome/browser/android/feed/OWNERS
-per-file *SectionHeaderView.java=file://chrome/browser/android/feed/OWNERS
