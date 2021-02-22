@@ -346,6 +346,10 @@ class IdentityManager : public KeyedService,
     virtual void OnRefreshTokenRemovedForAccountFromSource(
         const CoreAccountId& account_id,
         const std::string& source) {}
+
+    // Called on Shutdown(), for observers that aren't KeyedServices to remove
+    // their observers.
+    virtual void OnIdentityManagerShutdown() {}
   };
 
   void AddDiagnosticsObserver(DiagnosticsObserver* observer);
@@ -385,6 +389,9 @@ class IdentityManager : public KeyedService,
 
   explicit IdentityManager(IdentityManager::InitParameters&& parameters);
   ~IdentityManager() override;
+
+  // KeyedService:
+  void Shutdown() override;
 
   // Performs initialization that is dependent on the network being
   // initialized.

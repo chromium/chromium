@@ -166,8 +166,8 @@ void IdentityTestEnvironment::Initialize() {
       << "IdentityTestEnvironment requires the ProfileOAuth2TokenService used "
          "to subclass FakeProfileOAuth2TokenServiceForTesting.";
   test_identity_manager_observer_ =
-      std::make_unique<TestIdentityManagerObserver>(this->identity_manager());
-  this->identity_manager()->AddDiagnosticsObserver(this);
+      std::make_unique<TestIdentityManagerObserver>(identity_manager());
+  diagnostics_observation_.Observe(identity_manager());
 }
 
 IdentityTestEnvironment::IdentityTestEnvironment(
@@ -343,11 +343,7 @@ IdentityTestEnvironment::FinishBuildIdentityManagerForTests(
   return std::make_unique<IdentityManager>(std::move(init_params));
 }
 
-IdentityTestEnvironment::~IdentityTestEnvironment() {
-  // Remove the Observer that IdentityTestEnvironment added during its
-  // initialization.
-  identity_manager()->RemoveDiagnosticsObserver(this);
-}
+IdentityTestEnvironment::~IdentityTestEnvironment() = default;
 
 IdentityManager* IdentityTestEnvironment::identity_manager() {
   DCHECK(raw_identity_manager_ || owned_identity_manager_);
@@ -562,6 +558,13 @@ void IdentityTestEnvironment::OnAccessTokenRequested(
       FROM_HERE,
       base::BindOnce(&IdentityTestEnvironment::HandleOnAccessTokenRequested,
                      weak_ptr_factory_.GetWeakPtr(), account_id));
+}
+
+void IdentityTestEnvironment::OnIdentityManagerShutdown() {
+  // Remove the Observers that IdentityTestEnvironment added during its
+  // initialization.
+  test_identity_manager_observer_.reset();
+  diagnostics_observation_.Reset();
 }
 
 void IdentityTestEnvironment::HandleOnAccessTokenRequested(

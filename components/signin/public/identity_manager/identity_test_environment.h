@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/optional.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/account_consistency_method.h"
@@ -399,6 +400,7 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver {
   void OnAccessTokenRequested(const CoreAccountId& account_id,
                               const std::string& consumer_id,
                               const ScopeSet& scopes) override;
+  void OnIdentityManagerShutdown() override;
 
   // Handles the notification that an access token request was received for
   // |account_id|. Invokes |on_access_token_request_callback_| if the latter
@@ -438,6 +440,12 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver {
   IdentityManager* raw_identity_manager_ = nullptr;
 
   std::unique_ptr<TestIdentityManagerObserver> test_identity_manager_observer_;
+
+  base::ScopedObservation<IdentityManager,
+                          IdentityManager::DiagnosticsObserver,
+                          &IdentityManager::AddDiagnosticsObserver,
+                          &IdentityManager::RemoveDiagnosticsObserver>
+      diagnostics_observation_{this};
 
   base::OnceClosure on_access_token_requested_callback_;
   std::vector<AccessTokenRequestState> requesters_;

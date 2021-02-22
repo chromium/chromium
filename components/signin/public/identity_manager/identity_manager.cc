@@ -104,6 +104,11 @@ IdentityManager::~IdentityManager() {
 #endif
 }
 
+void IdentityManager::Shutdown() {
+  for (auto& observer : diagnostics_observation_list_)
+    observer.OnIdentityManagerShutdown();
+}
+
 void IdentityManager::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
 }
