@@ -132,6 +132,9 @@ class LocationBarPhone extends LocationBarLayout {
                 mLocationBarDataProvider.isIncognito());
         setShowIconsWhenUrlFocused(shouldShowLogo);
 
+        // Reset the alpha of the StatusIcon.
+        mStatusView.setAlpha(1.0f);
+
         if (!shouldShowLogo) return;
 
         if (mSearchEngineLogoUtils.currentlyOnNTP(mLocationBarDataProvider)) {
