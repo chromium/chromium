@@ -457,6 +457,15 @@ interface CrosHealthdEventService {
   // The request:
   // * |observer| - power observer to be added to cros_healthd.
   AddPowerObserver(CrosHealthdPowerObserver observer);
+
+  // Adds an observer to be notified on network events. The caller can remove
+  // the observer created by this call by closing their end of the message pipe.
+  //
+  // The request:
+  // * |observer| - network observer to be added to cros_healthd.
+  AddNetworkObserver(
+      pending_remote<
+          chromeos.network_health.mojom.NetworkEventsObserver> observer);
 };
 
 // Probe interface exposed by the cros_healthd daemon.

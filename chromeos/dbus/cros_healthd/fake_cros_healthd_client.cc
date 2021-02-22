@@ -155,6 +155,25 @@ void FakeCrosHealthdClient::EmitLidOpenedEventForTesting() {
   fake_service_.EmitLidOpenedEventForTesting();
 }
 
+void FakeCrosHealthdClient::EmitConnectionStateChangedEventForTesting(
+    const std::string& network_guid,
+    chromeos::network_health::mojom::NetworkState state) {
+  // Flush the receiver, so any pending observers are registered before the
+  // event is emitted.
+  receiver_.FlushForTesting();
+  fake_service_.EmitConnectionStateChangedEventForTesting(network_guid, state);
+}
+
+void FakeCrosHealthdClient::EmitSignalStrengthChangedEventForTesting(
+    const std::string& network_guid,
+    chromeos::network_health::mojom::UInt32ValuePtr signal_strength) {
+  // Flush the receiver, so any pending observers are registered before the
+  // event is emitted.
+  receiver_.FlushForTesting();
+  fake_service_.EmitSignalStrengthChangedEventForTesting(
+      network_guid, std::move(signal_strength));
+}
+
 void FakeCrosHealthdClient::RequestNetworkHealthForTesting(
     chromeos::network_health::mojom::NetworkHealthService::
         GetHealthSnapshotCallback callback) {

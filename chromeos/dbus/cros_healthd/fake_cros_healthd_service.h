@@ -133,6 +133,10 @@ class FakeCrosHealthdService final
       mojom::CrosHealthdBluetoothObserverPtr observer) override;
   void AddLidObserver(mojom::CrosHealthdLidObserverPtr observer) override;
   void AddPowerObserver(mojom::CrosHealthdPowerObserverPtr observer) override;
+  void AddNetworkObserver(
+      mojo::PendingRemote<
+          chromeos::network_health::mojom::NetworkEventsObserver> observer)
+      override;
 
   // CrosHealthdProbeService overrides:
   void ProbeTelemetryInfo(
@@ -209,6 +213,18 @@ class FakeCrosHealthdService final
   // Calls the lid event OnLidOpened for all registered lid observers.
   void EmitLidOpenedEventForTesting();
 
+  // Calls the network event OnConnectionStateChangedEvent on all registered
+  // network observers.
+  void EmitConnectionStateChangedEventForTesting(
+      const std::string& network_guid,
+      chromeos::network_health::mojom::NetworkState state);
+
+  // Calls the network event OnSignalStrengthChangedEvent on all registered
+  // network observers.
+  void EmitSignalStrengthChangedEventForTesting(
+      const std::string& network_guid,
+      chromeos::network_health::mojom::UInt32ValuePtr signal_strength);
+
   // Requests the network health state using the network_health_remote_.
   void RequestNetworkHealthForTesting(
       chromeos::network_health::mojom::NetworkHealthService::
@@ -254,6 +270,9 @@ class FakeCrosHealthdService final
   mojo::RemoteSet<mojom::CrosHealthdLidObserver> lid_observers_;
   // Collection of registered power observers.
   mojo::RemoteSet<mojom::CrosHealthdPowerObserver> power_observers_;
+  // Collection of registered network observers.
+  mojo::RemoteSet<chromeos::network_health::mojom::NetworkEventsObserver>
+      network_observers_;
 
   // Contains the most recent params passed to `GetRoutineUpdate`, if it has
   // been called.

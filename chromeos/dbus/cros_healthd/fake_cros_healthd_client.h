@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_DBUS_CROS_HEALTHD_FAKE_CROS_HEALTHD_CLIENT_H_
 #define CHROMEOS_DBUS_CROS_HEALTHD_FAKE_CROS_HEALTHD_CLIENT_H_
 
+#include <string>
+
 #include "base/callback_forward.h"
 #include "base/files/scoped_file.h"
 #include "base/macros.h"
@@ -104,6 +106,18 @@ class COMPONENT_EXPORT(CROS_HEALTHD) FakeCrosHealthdClient
 
   // Calls the lid event OnLidOpened on all registered lid observers.
   void EmitLidOpenedEventForTesting();
+
+  // Calls the network event OnConnectionStateChangedEvent on all registered
+  // network observers.
+  void EmitConnectionStateChangedEventForTesting(
+      const std::string& network_guid,
+      chromeos::network_health::mojom::NetworkState state);
+
+  // Calls the network event OnSignalStrengthChangedEvent on all registered
+  // network observers.
+  void EmitSignalStrengthChangedEventForTesting(
+      const std::string& network_guid,
+      chromeos::network_health::mojom::UInt32ValuePtr signal_strength);
 
   // Requests the network health state using the NetworkHealthService remote.
   void RequestNetworkHealthForTesting(

@@ -143,6 +143,10 @@ class ServiceConnectionImpl : public ServiceConnection {
                           pending_observer) override;
   void AddPowerObserver(mojo::PendingRemote<mojom::CrosHealthdPowerObserver>
                             pending_observer) override;
+  void AddNetworkObserver(
+      mojo::PendingRemote<
+          chromeos::network_health::mojom::NetworkEventsObserver>
+          pending_observer) override;
   void ProbeTelemetryInfo(
       const std::vector<mojom::ProbeCategoryEnum>& categories_to_test,
       mojom::CrosHealthdProbeService::ProbeTelemetryInfoCallback callback)
@@ -535,6 +539,14 @@ void ServiceConnectionImpl::AddPowerObserver(
   BindCrosHealthdEventServiceIfNeeded();
   mojom::CrosHealthdPowerObserverPtr ptr{std::move(pending_observer)};
   cros_healthd_event_service_->AddPowerObserver(std::move(ptr));
+}
+
+void ServiceConnectionImpl::AddNetworkObserver(
+    mojo::PendingRemote<chromeos::network_health::mojom::NetworkEventsObserver>
+        pending_observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  BindCrosHealthdEventServiceIfNeeded();
+  cros_healthd_event_service_->AddNetworkObserver(std::move(pending_observer));
 }
 
 void ServiceConnectionImpl::ProbeTelemetryInfo(
