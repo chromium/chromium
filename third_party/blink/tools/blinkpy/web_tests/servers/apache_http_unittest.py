@@ -54,7 +54,8 @@ class TestApacheHTTP(unittest.TestCase):
         output_dir = '/mock/output_dir'
         host.filesystem.maybe_make_directory(output_dir)
         host.filesystem.maybe_make_directory(
-            '/mock-checkout/out/Release/resources/inspector')
+            '/mock-checkout/out/Release/gen/third_party/devtools-frontend/src/front_end'
+        )
         host.filesystem.maybe_make_directory('/mock-checkout/out/Release/gen')
 
         server = ApacheHTTP(
