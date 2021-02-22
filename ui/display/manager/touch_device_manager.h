@@ -216,7 +216,7 @@ class DISPLAY_MANAGER_EXPORT TouchDeviceManager {
   void AssociateFromHistoricalData(std::vector<ManagedDisplayInfo*>* displays,
                                    std::vector<ui::TouchscreenDevice>* devices);
 
-  void AssociateUdlDevices(std::vector<ManagedDisplayInfo*>* displays,
+  void AssociateUsbDevices(std::vector<ManagedDisplayInfo*>* displays,
                            std::vector<ui::TouchscreenDevice>* devices);
 
   void AssociateSameSizeDevices(std::vector<ManagedDisplayInfo*>* displays,
