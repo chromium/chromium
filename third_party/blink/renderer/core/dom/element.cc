@@ -3346,9 +3346,11 @@ void Element::SetNeedsCompositingUpdate() {
   LayoutBoxModelObject* layout_object = GetLayoutBoxModelObject();
   if (!layout_object)
     return;
+  // TODO(pdr): Do not depend on PaintLayer for compositing decisions.
   if (!layout_object->HasLayer())
     return;
   layout_object->Layer()->SetNeedsCompositingInputsUpdate();
+  GetDocument().View()->SetPaintArtifactCompositorNeedsUpdate();
 
   // Changes to RequiresAcceleratedCompositing change if the PaintLayer is
   // self-painting (see: LayoutEmbeddedContent::LayerTypeRequired).

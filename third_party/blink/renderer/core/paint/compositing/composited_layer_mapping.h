@@ -179,6 +179,7 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   bool ShouldSkipPaintingSubtree() const override;
   bool IsTrackingRasterInvalidations() const override;
   void GraphicsLayersDidChange() override;
+  PaintArtifactCompositor* GetPaintArtifactCompositor() override;
 
 #if DCHECK_IS_ON()
   void VerifyNotPainting() override;
