@@ -322,6 +322,25 @@ struct ToV8Traits<T,
   }
 };
 
+// NotShared
+template <typename T>
+struct ToV8Traits<NotShared<T>> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        NotShared<T> value) WARN_UNUSED_RESULT {
+    return ToV8Traits<T>::ToV8(script_state, value.Get());
+  }
+};
+
+// MaybeShared
+template <typename T>
+struct ToV8Traits<MaybeShared<T>> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        MaybeShared<T> value)
+      WARN_UNUSED_RESULT {
+    return ToV8Traits<T>::ToV8(script_state, value.Get());
+  }
+};
+
 // Array
 
 namespace bindings {

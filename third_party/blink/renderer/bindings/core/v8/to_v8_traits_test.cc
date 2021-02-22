@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/streams/stream_promise_resolver.h"
 #include "third_party/blink/renderer/core/testing/garbage_collected_script_wrappable.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/dictionary_base.h"
 
 namespace blink {
@@ -191,6 +192,24 @@ TEST(ToV8TraitsTest, Promise) {
   ScriptPromise::InternalResolver resolver(scope.GetScriptState());
   ScriptPromise promise = resolver.Promise();
   TEST_TOV8_TRAITS(scope, IDLPromise, "[object Promise]", promise);
+}
+
+TEST(ToV8TraitsTest, NotShared) {
+  const V8TestingScope scope;
+  auto not_shared = NotShared<DOMUint8Array>(DOMUint8Array::Create(2));
+  not_shared->Data()[0] = static_cast<uint8_t>(0);
+  not_shared->Data()[1] = static_cast<uint8_t>(255);
+  TEST_TOV8_TRAITS(scope, NotShared<DOMUint8Array>, "0,255", not_shared);
+}
+
+TEST(ToV8TraitsTest, MaybeShared) {
+  const V8TestingScope scope;
+  auto maybe_shared = MaybeShared<DOMInt8Array>(DOMInt8Array::Create(3));
+  maybe_shared->Data()[0] = static_cast<int8_t>(-128);
+  maybe_shared->Data()[1] = static_cast<int8_t>(0);
+  maybe_shared->Data()[2] = static_cast<int8_t>(127);
+  TEST_TOV8_TRAITS(scope, MaybeShared<DOMInt8Array>, "-128,0,127",
+                   maybe_shared);
 }
 
 TEST(ToV8TraitsTest, Vector) {
