@@ -114,7 +114,7 @@ class NewUnion(WithIdentifier, WithCodeGeneratorInfo, WithComponent,
             union_members.add(sub_union_ir.public_object)
 
         components = set()
-        for_testing = False
+        for_testing = [False]
 
         def collect_primary_component(idl_type):
             type_definition_object = idl_type.type_definition_object
@@ -122,12 +122,12 @@ class NewUnion(WithIdentifier, WithCodeGeneratorInfo, WithComponent,
                 components.add(type_definition_object.components[0])
             if (type_definition_object and
                     type_definition_object.code_generator_info.for_testing):
-                for_testing = True
+                for_testing[0] = True
 
         for idl_type in flattened_member_types:
             idl_type.apply_to_all_composing_elements(collect_primary_component)
         code_generator_info = CodeGeneratorInfoMutable()
-        code_generator_info.set_for_testing(for_testing)
+        code_generator_info.set_for_testing(for_testing[0])
 
         WithIdentifier.__init__(self, identifier)
         WithCodeGeneratorInfo.__init__(self,

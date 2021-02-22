@@ -546,6 +546,7 @@ def make_v8_to_blink_value(blink_var_name,
                            v8_value_expr,
                            idl_type,
                            argument=None,
+                           error_exit_return_statement="return;",
                            cg_context=None):
     """
     Returns a SymbolNode whose definition converts a v8::Value to a Blink value.
@@ -554,6 +555,7 @@ def make_v8_to_blink_value(blink_var_name,
     assert isinstance(v8_value_expr, str)
     assert isinstance(idl_type, web_idl.IdlType)
     assert argument is None or isinstance(argument, web_idl.Argument)
+    assert isinstance(error_exit_return_statement, str)
 
     T = TextNode
     F = lambda *args, **kwargs: T(_format(*args, **kwargs))
@@ -610,7 +612,8 @@ def make_v8_to_blink_value(blink_var_name,
         else:
             default_expr = None
         exception_exit_node = CxxUnlikelyIfNode(
-            cond="${exception_state}.HadException()", body=T("return;"))
+            cond="${exception_state}.HadException()",
+            body=T(error_exit_return_statement))
 
         if not (default_expr or fast_path_cond):
             return SymbolDefinitionNode(symbol_node, [

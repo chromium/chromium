@@ -453,6 +453,7 @@ component("platform") {
     "bindings/trace_wrapper_v8_reference.h",
     "bindings/trace_wrapper_v8_string.cc",
     "bindings/trace_wrapper_v8_string.h",
+    "bindings/union_base.cc",
     "bindings/union_base.h",
     "bindings/v8_binding.cc",
     "bindings/v8_binding.h",

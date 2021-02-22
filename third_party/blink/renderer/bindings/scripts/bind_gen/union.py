@@ -7,14 +7,20 @@ import web_idl
 from . import name_style
 from .blink_v8_bridge import blink_class_name
 from .blink_v8_bridge import blink_type_info
+from .blink_v8_bridge import make_v8_to_blink_value
+from .blink_v8_bridge import v8_bridge_class_name
 from .code_node import EmptyNode
 from .code_node import ListNode
+from .code_node import SymbolNode
+from .code_node import SymbolScopeNode
 from .code_node import TextNode
+from .code_node_cxx import CxxBlockNode
 from .code_node_cxx import CxxClassDefNode
 from .code_node_cxx import CxxFuncDeclNode
 from .code_node_cxx import CxxFuncDefNode
 from .code_node_cxx import CxxNamespaceNode
 from .code_node_cxx import CxxSwitchNode
+from .code_node_cxx import CxxUnlikelyIfNode
 from .codegen_accumulator import CodeGenAccumulator
 from .codegen_context import CodeGenContext
 from .codegen_format import format_template as _format
@@ -45,6 +51,7 @@ class _UnionMember(object):
         self._api_get = "GetAs{}".format(self._base_name)
         self._api_set = "Set"
         self._var_name = name_style.member_var("member", self._base_name)
+        self._idl_type = None
         self._type_info = None
         self._typedef_aliases = ()
 
@@ -75,6 +82,10 @@ class _UnionMember(object):
         return self._var_name
 
     @property
+    def idl_type(self):
+        return self._idl_type
+
+    @property
     def type_info(self):
         return self._type_info
 
@@ -96,6 +107,7 @@ class _UnionMemberImpl(_UnionMember):
         _UnionMember.__init__(self, base_name=base_name)
         self._is_null = idl_type is None
         if not self._is_null:
+            self._idl_type = idl_type
             self._type_info = blink_type_info(idl_type)
         self._typedef_aliases = tuple([
             _UnionMemberAlias(impl=self, typedef=typedef)
@@ -160,6 +172,170 @@ def make_content_type_enum_class_def(cg_context):
         ListNode(map(TextNode, entries), separator=", "),
         TextNode("};"),
     ])
+
+
+def make_factory_methods(cg_context):
+    assert isinstance(cg_context, CodeGenContext)
+
+    S = SymbolNode
+    T = TextNode
+
+    func_decl = CxxFuncDeclNode(name="Create",
+                                arg_decls=[
+                                    "v8::Isolate* isolate",
+                                    "v8::Local<v8::Value> v8_value",
+                                    "ExceptionState& exception_state",
+                                ],
+                                return_type="${class_name}*",
+                                static=True)
+
+    func_def = CxxFuncDefNode(name="Create",
+                              arg_decls=[
+                                  "v8::Isolate* isolate",
+                                  "v8::Local<v8::Value> v8_value",
+                                  "ExceptionState& exception_state",
+                              ],
+                              return_type="${class_name}*",
+                              class_name="${class_name}")
+    func_def.set_base_template_vars(cg_context.template_bindings())
+
+    body = func_def.body
+    body.add_template_vars({
+        "isolate": "isolate",
+        "v8_value": "v8_value",
+        "exception_state": "exception_state",
+    })
+
+    # Create an instance from v8::Value based on the overload resolution
+    # algorithm.
+    # https://heycam.github.io/webidl/#dfn-overload-resolution-algorithm
+
+    union_members = cg_context.union_members
+    member = None  # Will be a found member in union_members.
+
+    def find_by_member(test):
+        for member in union_members:
+            if test(member):
+                return member
+        return None
+
+    def find_by_type(test):
+        for member in union_members:
+            if member.idl_type and test(member.idl_type):
+                return member
+        return None
+
+    def dispatch_if(cond_text, value_symbol=None):
+        scope_node = SymbolScopeNode(
+            [T("return MakeGarbageCollected<${class_name}>(${blink_value});")])
+        if not value_symbol:
+            value_symbol = make_v8_to_blink_value(
+                "blink_value",
+                "${v8_value}",
+                member.idl_type,
+                error_exit_return_statement="return nullptr;")
+        scope_node.register_code_symbol(value_symbol)
+        if cond_text is True:
+            body.append(CxxBlockNode(body=scope_node))
+        else:
+            body.append(CxxUnlikelyIfNode(cond=cond_text, body=scope_node))
+
+    # 12.3. if V is null or undefined, ...
+    member = find_by_member(lambda m: m.is_null)
+    if member:
+        dispatch_if("${v8_value}->IsNullOrUndefined()",
+                    S("blink_value", "auto&& ${blink_value} = nullptr;"))
+
+    # 12.4. if V is a platform object, ...
+    interface_members = filter(
+        lambda member: member.idl_type and member.idl_type.is_interface,
+        union_members)
+    interface_members = sorted(
+        interface_members,
+        key=lambda member: (len(member.idl_type.type_definition_object.
+                                inclusive_inherited_interfaces), member.
+                            idl_type.type_definition_object.identifier),
+        reverse=True)
+    # Attempt to match from most derived to least derived.
+    for member in interface_members:
+        v8_bridge_name = v8_bridge_class_name(
+            member.idl_type.type_definition_object)
+        dispatch_if(
+            _format("{}::HasInstance(${isolate}, ${v8_value})",
+                    v8_bridge_name))
+
+    # 12.5. if Type(V) is Object, V has an [[ArrayBufferData]] internal
+    #   slot, ...
+    member = find_by_type(lambda t: t.is_array_buffer)
+    if member:
+        dispatch_if("${v8_value}->IsArrayBuffer() || "
+                    "${v8_value}->IsSharedArrayBuffer()")
+
+    # V8 specific optimization: ArrayBufferView
+    member = find_by_type(lambda t: t.is_array_buffer_view)
+    if member:
+        dispatch_if("${v8_value}->IsArrayBufferView()")
+
+    # 12.6. if Type(V) is Object, V has a [[DataView]] internal slot, ...
+    member = find_by_type(lambda t: t.is_data_view)
+    if member:
+        dispatch_if("${v8_value}->IsDataView()")
+
+    # 12.7. if Type(V) is Object, V has a [[TypedArrayName]] internal slot, ...
+    typed_array_types = ("Int8Array", "Int16Array", "Int32Array", "Uint8Array",
+                         "Uint16Array", "Uint32Array", "Uint8ClampedArray",
+                         "Float32Array", "Float64Array")
+    for typed_array_type in typed_array_types:
+        member = find_by_type(lambda t: t.keyword_typename == typed_array_type)
+        if member:
+            dispatch_if(_format("${v8_value}->Is{}()", typed_array_type))
+
+    # 12.8. if IsCallable(V) is true, ...
+    member = find_by_type(lambda t: t.is_callback_function)
+    if member:
+        dispatch_if("${v8_value}->IsFunction()")
+
+    # 12.9. if Type(V) is Object and ... @@iterator ...
+    member = find_by_type(lambda t: t.is_sequence or t.is_frozen_array)
+    if member:
+        dispatch_if("${v8_value}->IsArray() || "  # Excessive optimization
+                    "bindings::IsEsIterableObject"
+                    "(${isolate}, ${v8_value}, ${exception_state})")
+        body.append(
+            CxxUnlikelyIfNode(cond="${exception_state}.HadException()",
+                              body=T("return nullptr;")))
+
+    # 12.10. if Type(V) is Object and ...
+    member = find_by_type(lambda t: t.is_callback_interface or t.is_dictionary
+                          or t.is_record or t.is_object)
+    if member:
+        dispatch_if("${v8_value}->IsObject()")
+
+    # 12.11. if Type(V) is Boolean and ...
+    member = find_by_type(lambda t: t.is_boolean)
+    if member:
+        dispatch_if("${v8_value}->IsBoolean()")
+
+    # 12.12. if Type(V) is Number and ...
+    member = find_by_type(lambda t: t.is_numeric)
+    if member:
+        dispatch_if("${v8_value}->IsNumber()")
+
+    # 12.13. if there is an entry in S that has ... a string type ...
+    # 12.14. if there is an entry in S that has ... a numeric type ...
+    # 12.15. if there is an entry in S that has ... boolean ...
+    member = find_by_type(lambda t: t.is_enumeration or t.is_string or t.
+                          is_numeric or t.is_boolean)
+    if member:
+        dispatch_if(True)
+    else:
+        body.append(
+            T("${exception_state}.ThrowTypeError("
+              "ExceptionMessages::ValueNotOfType("
+              "UnionNameInIDL().Ascii().c_str()));"))
+        body.append(T("return nullptr;"))
+
+    return func_decl, func_def
 
 
 def make_constructors(cg_context):
@@ -400,6 +576,32 @@ def make_trace_function(cg_context):
     return func_decl, func_def
 
 
+def make_name_function(cg_context):
+    assert isinstance(cg_context, CodeGenContext)
+
+    func_def = CxxFuncDefNode(name="UnionNameInIDL",
+                              arg_decls=[],
+                              return_type="String",
+                              static=True)
+    func_def.set_base_template_vars(cg_context.template_bindings())
+    body = func_def.body
+
+    body.extend([
+        TextNode("static constexpr const char* const member_names[] = {"),
+        ListNode(list(
+            map(
+                lambda name: TextNode("\"{}\"".format(name)),
+                sorted(
+                    map(lambda idl_type: idl_type.syntactic_form,
+                        cg_context.union.flattened_member_types)))),
+                 separator=", "),
+        TextNode("};"),
+        TextNode("return ProduceUnionNameInIDL(member_names);"),
+    ])
+
+    return func_def, None
+
+
 def make_member_vars_def(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
@@ -463,10 +665,12 @@ def generate_union(union_identifier):
 
     # Implementation parts
     content_type_enum_class_def = make_content_type_enum_class_def(cg_context)
+    factory_decls, factory_defs = make_factory_methods(cg_context)
     ctor_decls, ctor_defs = make_constructors(cg_context)
     accessor_decls, accessor_defs = make_accessor_functions(cg_context)
     clear_func_decls, clear_func_defs = make_clear_function(cg_context)
     trace_func_decls, trace_func_defs = make_trace_function(cg_context)
+    name_func_decls, name_func_defs = make_name_function(cg_context)
     member_vars_def = make_member_vars_def(cg_context)
 
     # Header part (copyright, include directives, and forward declarations)
@@ -499,15 +703,27 @@ def generate_union(union_identifier):
     ])
 
     # Assemble the parts.
+    header_node.accumulator.add_class_decls([
+        "ExceptionState",
+    ])
     header_node.accumulator.add_include_headers([
         component_export_header(api_component, for_testing),
         "third_party/blink/renderer/platform/bindings/union_base.h",
+    ])
+    source_node.accumulator.add_include_headers([
+        "third_party/blink/renderer/bindings/core/v8/generated_code_helper.h",
+        "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h",
+        "third_party/blink/renderer/platform/bindings/exception_state.h",
     ])
     header_node.accumulator.add_class_decls(
         map(blink_class_name, union.union_members))
     source_node.accumulator.add_include_headers(
         map(lambda subunion: PathManager(subunion).api_path(ext="h"),
             union.union_members))
+    source_node.accumulator.add_include_headers([
+        PathManager(idl_type.type_definition_object).api_path(ext="h")
+        for idl_type in union.flattened_member_types if idl_type.is_interface
+    ])
     (header_forward_decls, header_include_headers, source_forward_decls,
      source_include_headers) = collect_forward_decls_and_include_headers(
          union.flattened_member_types)
@@ -521,6 +737,11 @@ def generate_union(union_identifier):
 
     class_def.public_section.append(content_type_enum_class_def)
     class_def.public_section.append(EmptyNode())
+
+    class_def.public_section.append(factory_decls)
+    class_def.public_section.append(EmptyNode())
+    source_blink_ns.body.append(factory_defs)
+    source_blink_ns.body.append(EmptyNode())
 
     class_def.public_section.append(ctor_decls)
     class_def.public_section.append(EmptyNode())
@@ -540,6 +761,11 @@ def generate_union(union_identifier):
     class_def.public_section.append(trace_func_decls)
     class_def.public_section.append(EmptyNode())
     source_blink_ns.body.append(trace_func_defs)
+    source_blink_ns.body.append(EmptyNode())
+
+    class_def.private_section.append(name_func_decls)
+    class_def.private_section.append(EmptyNode())
+    source_blink_ns.body.append(name_func_defs)
     source_blink_ns.body.append(EmptyNode())
 
     class_def.private_section.append(member_vars_def)
