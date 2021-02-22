@@ -343,7 +343,7 @@ public class ShareDelegateImpl implements ShareDelegate {
                         AppHooks.get().getImageEditorModuleProvider(),
                         TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile()));
                 // TODO(crbug/1009124): open custom share sheet.
-                coordinator.showShareSheet(params, chromeShareExtras, shareStartTime);
+                coordinator.showInitialShareSheet(params, chromeShareExtras, shareStartTime);
             } else {
                 RecordHistogram.recordEnumeratedHistogram(
                         "Sharing.DefaultSharesheetAndroid.Opened", shareOrigin, ShareOrigin.COUNT);

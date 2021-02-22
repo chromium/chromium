@@ -219,9 +219,6 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
                         || contentTypes.contains(ContentType.TEXT))) {
             setDefaultIconForPreview(
                     AppCompatResources.getDrawable(mContext, R.drawable.text_icon));
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMTIVE_LINK_TO_TEXT_GENERATION)) {
-                setLinkImageViewForPreview();
-            }
             title = "";
             subtitle = mParams.getText();
             setSubtitleMaxLines(2);
@@ -229,7 +226,13 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
             fetchFavicon(mParams.getUrl());
         }
 
-        if (contentTypes.contains(ContentType.TEXT)
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMTIVE_LINK_TO_TEXT_GENERATION)
+                && contentTypes.contains(ContentType.HIGHLIGHTED_TEXT)) {
+            setLinkImageViewForPreview();
+        }
+
+        if ((contentTypes.contains(ContentType.TEXT)
+                    || contentTypes.contains(ContentType.HIGHLIGHTED_TEXT))
                 && contentTypes.contains(ContentType.LINK_PAGE_NOT_VISIBLE)) {
             title = mParams.getText();
             setTitleStyle(R.style.TextAppearance_TextMedium_Primary);

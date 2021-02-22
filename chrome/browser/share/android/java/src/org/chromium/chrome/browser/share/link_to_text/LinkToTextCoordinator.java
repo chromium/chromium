@@ -9,6 +9,7 @@ import android.net.Uri;
 
 import org.chromium.blink.mojom.TextFragmentSelectorProducer;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -30,6 +31,9 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     private final String mVisibleUrl;
     private final String mSelectedText;
     private final Tab mTab;
+    private final ChromeShareExtras mChromeShareExtras;
+    private final long mShareStartTime;
+    private final ShareParams mShareParams;
 
     private TextFragmentSelectorProducer mProducer;
     private boolean mCancelRequest;
@@ -44,6 +48,27 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         mTab = tab;
         mTab.addObserver(this);
         mCancelRequest = false;
+        mChromeShareExtras = null;
+        mShareStartTime = 0;
+        mShareParams = null;
+
+        requestSelector();
+    }
+
+    // Constructor for preemptive link-to-text generation.
+    public LinkToTextCoordinator(ShareParams shareParams, Tab tab,
+            ChromeOptionShareCallback chromeOptionShareCallback,
+            ChromeShareExtras chromeShareExtras, long shareStartTime, String visibleUrl) {
+        mShareParams = shareParams;
+        mTab = tab;
+        mChromeOptionShareCallback = chromeOptionShareCallback;
+        mChromeShareExtras = chromeShareExtras;
+        mShareStartTime = shareStartTime;
+        mVisibleUrl = visibleUrl;
+        mSelectedText = mShareParams.getText();
+        mTab.addObserver(this);
+        mCancelRequest = false;
+        mContext = null;
 
         requestSelector();
     }
@@ -51,13 +76,30 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     public void onSelectorReady(String selector) {
         if (mCancelRequest) return;
 
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMTIVE_LINK_TO_TEXT_GENERATION)) {
+            ShareParams params = selector.isEmpty()
+                    ? mShareParams
+                    : new ShareParams
+                              .Builder(mTab.getWindowAndroid(), /*title=*/"",
+                                      getUrlToShare(selector))
+                              .setText(String.format(SHARE_TEXT_TEMPLATE, mSelectedText))
+                              .setLinkToTextSuccessful(true)
+                              .build();
+
+            mChromeOptionShareCallback.showShareSheet(params, mChromeShareExtras, mShareStartTime);
+            cleanup();
+            return;
+        }
+
         ShareParams params =
                 new ShareParams
                         .Builder(mTab.getWindowAndroid(), /*title=*/"", getUrlToShare(selector))
                         .setText(String.format(SHARE_TEXT_TEMPLATE, mSelectedText))
                         .build();
-        mChromeOptionShareCallback.showThirdPartyShareSheet(
-                params, new ChromeShareExtras.Builder().build(), System.currentTimeMillis());
+
+        mChromeOptionShareCallback.showThirdPartyShareSheet(params,
+                new ChromeShareExtras.Builder().setIsUserHighlightedText(true).build(),
+                System.currentTimeMillis());
 
         if (selector.isEmpty()) {
             // TODO(gayane): Android toast should be replace by another toast like UI which allows

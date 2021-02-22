@@ -346,46 +346,6 @@ public class ChromeProvidedSharingOptionsProviderTest {
                         mActivity.getResources().getString(R.string.sharing_highlights)));
     }
 
-    @Test
-    @MediumTest
-    public void getUrlToShare_noShareParamsUrl_returnsImageUrl() {
-        GURL gurl = new GURL(URL);
-        ShareParams shareParams = new ShareParams.Builder(null, /*title=*/"", /*url=*/"").build();
-        ChromeShareExtras chromeShareExtras =
-                new ChromeShareExtras.Builder().setImageSrcUrl(gurl).build();
-
-        assertEquals("URL should be imageSrcUrl.",
-                ChromeProvidedSharingOptionsProvider.getUrlToShare(
-                        shareParams, chromeShareExtras, ""),
-                URL);
-    }
-
-    @Test
-    @MediumTest
-    public void getUrlToShare_shareParamsUrlExists_returnsShareParamsUrl() {
-        ShareParams shareParams = new ShareParams.Builder(null, /*title=*/"", URL).build();
-        ChromeShareExtras chromeShareExtras =
-                new ChromeShareExtras.Builder().setImageSrcUrl(GURL.emptyGURL()).build();
-
-        assertEquals("URL should be ShareParams URL.",
-                ChromeProvidedSharingOptionsProvider.getUrlToShare(
-                        shareParams, chromeShareExtras, ""),
-                URL);
-    }
-
-    @Test
-    @MediumTest
-    public void getUrlToShare_noShareParamsUrl_noImageUrl() {
-        ShareParams shareParams = new ShareParams.Builder(null, /*title=*/"", /*url=*/"").build();
-        ChromeShareExtras chromeShareExtras =
-                new ChromeShareExtras.Builder().setImageSrcUrl(GURL.emptyGURL()).build();
-
-        assertEquals("URL should be ShareParams URL.",
-                ChromeProvidedSharingOptionsProvider.getUrlToShare(
-                        shareParams, chromeShareExtras, URL),
-                URL);
-    }
-
     private void setUpChromeProvidedSharingOptionsProviderTest(boolean printingEnabled) {
         Mockito.when(mPrefService.getBoolean(anyString())).thenReturn(printingEnabled);
 
@@ -401,7 +361,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
                         /*settingsLauncher=*/null,
                         /*syncState=*/false,
                         /*shareStartTime=*/0, mShareSheetCoordinator,
-                        /*imageEditorModuleProvider*/ null, mTracker);
+                        /*imageEditorModuleProvider*/ null, mTracker, URL);
     }
 
     private void assertCorrectModelsAreInTheRightOrder(

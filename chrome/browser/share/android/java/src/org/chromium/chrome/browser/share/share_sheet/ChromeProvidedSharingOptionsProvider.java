@@ -9,7 +9,6 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.text.TextUtils;
 import android.view.View;
 
 import androidx.appcompat.content.res.AppCompatResources;
@@ -95,7 +94,8 @@ class ChromeProvidedSharingOptionsProvider {
             ChromeShareExtras chromeShareExtras, Callback<Tab> printTab,
             SettingsLauncher settingsLauncher, boolean isSyncEnabled, long shareStartTime,
             ChromeOptionShareCallback chromeOptionShareCallback,
-            ImageEditorModuleProvider imageEditorModuleProvider, Tracker featureEngagementTracker) {
+            ImageEditorModuleProvider imageEditorModuleProvider, Tracker featureEngagementTracker,
+            String url) {
         mActivity = activity;
         mTabProvider = tabProvider;
         mBottomSheetController = bottomSheetController;
@@ -110,8 +110,7 @@ class ChromeProvidedSharingOptionsProvider {
         mOrderedFirstPartyOptions = new ArrayList<>();
         initializeFirstPartyOptionsInOrder();
         mChromeOptionShareCallback = chromeOptionShareCallback;
-        mUrl = getUrlToShare(shareParams, chromeShareExtras,
-                mTabProvider.get().isInitialized() ? mTabProvider.get().getUrl().getSpec() : "");
+        mUrl = url;
     }
 
     /**
@@ -422,26 +421,6 @@ class ChromeProvidedSharingOptionsProvider {
                                     mChromeOptionShareCallback, mUrl, mShareParams.getText());
                 })
                 .build();
-    }
-
-    /**
-     * Returns the url to share.
-     *
-     * <p>This prioritizes the URL in {@link ShareParams}, but if it does not exist, we look for an
-     * image source URL from {@link ChromeShareExtras}. The image source URL is not contained in
-     * {@link ShareParams#getUrl()} because we do not want to share the image URL with the image
-     * file in third-party app shares. If both are empty then current tab URL is used. This is
-     * useful for {@link LinkToTextCoordinator} that needs URL but it cannot be provided through
-     * {@link ShareParams}.
-     */
-    static String getUrlToShare(
-            ShareParams shareParams, ChromeShareExtras chromeShareExtras, String tabUrl) {
-        if (!TextUtils.isEmpty(shareParams.getUrl())) {
-            return shareParams.getUrl();
-        } else if (!chromeShareExtras.getImageSrcUrl().isEmpty()) {
-            return chromeShareExtras.getImageSrcUrl().getSpec();
-        }
-        return tabUrl;
     }
 
     static void recordTimeToShare(long shareStartTime) {
