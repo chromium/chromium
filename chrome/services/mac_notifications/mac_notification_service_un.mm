@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/files/file_path.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/services/mac_notifications/mac_notification_service_utils.h"
@@ -18,6 +19,20 @@
 #include "chrome/services/mac_notifications/public/cpp/notification_operation.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_utils_mac.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/gfx/image/image.h"
+
+// This uses a private API so that updated banners do not keep reappearing on
+// the screen, for example banners that are used to show progress would keep
+// reappearing on the screen without the usage of this private API.
+API_AVAILABLE(macosx(10.14))
+@interface UNUserNotificationCenter (Private)
+- (void)replaceContentForRequestWithIdentifier:(NSString*)identifier
+                            replacementContent:
+                                (UNMutableNotificationContent*)content
+                             completionHandler:
+                                 (void (^)(NSError* _Nullable error))
+                                     completionHandler;
+@end
 
 API_AVAILABLE(macosx(10.14))
 @interface AlertUNNotificationCenterDelegate
@@ -91,15 +106,46 @@ void MacNotificationServiceUN::DisplayNotification(
   base::scoped_nsobject<UNMutableNotificationContent> content(
       [[UNMutableNotificationContent alloc] init]);
 
-  // TODO(knollr): Fill with actual values from |notification|.
-  [content setTitle:@"title"];
-  [content setSubtitle:@"subtitle"];
-  [content setBody:@"body"];
+  [content setTitle:base::SysUTF16ToNSString(notification->title)];
+  [content setSubtitle:base::SysUTF16ToNSString(notification->subtitle)];
+  [content setBody:base::SysUTF16ToNSString(notification->body)];
   [content setUserInfo:GetMacNotificationUserInfo(notification)];
 
   const mojom::NotificationIdentifierPtr& identifier = notification->meta->id;
   std::string notification_id = DeriveMacNotificationId(
       identifier->profile->incognito, identifier->profile->id, identifier->id);
+  NSString* notification_id_ns = base::SysUTF8ToNSString(notification_id);
+
+  // TODO(knollr): Also pass placeholder once we support inline replies.
+  NotificationCategoryManager::Buttons buttons;
+  for (const auto& button : notification->buttons)
+    buttons.push_back(button->title);
+
+  NSString* category_id = category_manager_.GetOrCreateCategory(
+      notification_id, buttons, notification->show_settings_button);
+  [content setCategoryIdentifier:category_id];
+
+  if (!notification->icon.isNull()) {
+    gfx::Image icon(notification->icon);
+    base::FilePath path = image_retainer_.RegisterTemporaryImage(icon);
+    NSURL* url = [NSURL fileURLWithPath:base::SysUTF8ToNSString(path.value())];
+    // When the files are saved using NotificationImageRetainer, they're saved
+    // without the .png extension. So |options| here is used to tell the system
+    // that the file is of type PNG, as NotificationImageRetainer converts files
+    // to PNG before writing them.
+    NSDictionary* options = @{
+      UNNotificationAttachmentOptionsTypeHintKey :
+          (__bridge NSString*)kUTTypePNG
+    };
+    UNNotificationAttachment* attachment =
+        [UNNotificationAttachment attachmentWithIdentifier:notification_id_ns
+                                                       URL:url
+                                                   options:options
+                                                     error:nil];
+
+    if (attachment != nil)
+      [content setAttachments:@[ attachment ]];
+  }
 
   // This uses a private API to prevent notifications from dismissing after
   // clicking on them. This only affects the default action though, other action
@@ -110,18 +156,35 @@ void MacNotificationServiceUN::DisplayNotification(
                forKey:@"shouldPreventNotificationDismissalAfterDefaultAction"];
   }
 
-  NSString* notification_id_ns = base::SysUTF8ToNSString(notification_id);
-  UNNotificationRequest* request =
-      [UNNotificationRequest requestWithIdentifier:notification_id_ns
-                                           content:content.get()
-                                           trigger:nil];
-
   auto completion_handler = ^(NSError* _Nullable error) {
     // TODO(knollr): Add UMA logging for display errors.
     if (error != nil) {
       DVLOG(1) << "Displaying notification did not succeed";
     }
   };
+
+  // If the renotify is not set try to replace the notification silently.
+  bool should_replace = !notification->renotify;
+  bool can_replace = [notification_center_
+      respondsToSelector:@selector
+      (replaceContentForRequestWithIdentifier:
+                           replacementContent:completionHandler:)];
+  if (should_replace && can_replace) {
+    // If the notification has been delivered before, it will get updated in the
+    // notification center. If it hasn't been delivered before it will deliver
+    // it and show it on the screen.
+    [notification_center_
+        replaceContentForRequestWithIdentifier:notification_id_ns
+                            replacementContent:content.get()
+                             completionHandler:completion_handler];
+    return;
+  }
+
+  UNNotificationRequest* request =
+      [UNNotificationRequest requestWithIdentifier:notification_id_ns
+                                           content:content.get()
+                                           trigger:nil];
+
   [notification_center_ addNotificationRequest:request
                          withCompletionHandler:completion_handler];
 }

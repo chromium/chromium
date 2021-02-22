@@ -19,6 +19,7 @@
 #include "content/public/common/content_switches.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
 namespace {
@@ -175,11 +176,47 @@ void DispatchGetAllNotificationsReply(
       std::move(notificationIdentifier), type, std::move(originUrl),
       creatorPid);
 
-  // TODO(knollr): Pass properties from |notificationData| into
-  // |notification|.
-  auto notification =
-      mac_notifications::mojom::Notification::New(std::move(meta));
+  base::string16 title = base::SysNSStringToUTF16([notificationData
+      objectForKey:notification_constants::kNotificationTitle]);
+  base::string16 subtitle = base::SysNSStringToUTF16([notificationData
+      objectForKey:notification_constants::kNotificationSubTitle]);
+  base::string16 body = base::SysNSStringToUTF16([notificationData
+      objectForKey:notification_constants::kNotificationInformativeText]);
+  bool renotify = [[notificationData
+      objectForKey:notification_constants::kNotificationRenotify] boolValue];
+  bool showSettingsButton = [[notificationData
+      objectForKey:notification_constants::kNotificationHasSettingsButton]
+      boolValue];
 
+  std::vector<mac_notifications::mojom::NotificationActionButtonPtr> buttons;
+  if ([notificationData
+          objectForKey:notification_constants::kNotificationButtonOne]) {
+    base::string16 title = base::SysNSStringToUTF16([notificationData
+        objectForKey:notification_constants::kNotificationButtonOne]);
+    auto button = mac_notifications::mojom::NotificationActionButton::New(
+        std::move(title), /*placeholder=*/base::nullopt);
+    buttons.push_back(std::move(button));
+  }
+  if ([notificationData
+          objectForKey:notification_constants::kNotificationButtonTwo]) {
+    base::string16 title = base::SysNSStringToUTF16([notificationData
+        objectForKey:notification_constants::kNotificationButtonTwo]);
+    auto button = mac_notifications::mojom::NotificationActionButton::New(
+        std::move(title), /*placeholder=*/base::nullopt);
+    buttons.push_back(std::move(button));
+  }
+
+  gfx::ImageSkia icon;
+  if ([notificationData
+          objectForKey:notification_constants::kNotificationIcon]) {
+    NSImage* image = [notificationData
+        objectForKey:notification_constants::kNotificationIcon];
+    icon = gfx::Image(image).AsImageSkia();
+  }
+
+  auto notification = mac_notifications::mojom::Notification::New(
+      std::move(meta), std::move(title), std::move(subtitle), std::move(body),
+      renotify, showSettingsButton, std::move(buttons), std::move(icon));
   _service->DisplayNotification(std::move(notification));
 }
 

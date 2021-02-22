@@ -19,8 +19,8 @@ NSDictionary* GetMacNotificationUserInfo(
   NSString* origin_url = base::SysUTF8ToNSString(meta->origin_url.spec());
   NSNumber* type = @(meta->type);
   NSNumber* creator_pid = @(meta->creator_pid);
-  // TODO(knollr): Fill with actual value from |notification|.
-  NSNumber* settings_button = @YES;
+  NSNumber* settings_button =
+      [NSNumber numberWithBool:notification->show_settings_button];
 
   return @{
     notification_constants::kNotificationId : notification_id,

@@ -16,7 +16,11 @@ source_set("mac_notifications") {
 
   deps = [
     "//base",
+    "//chrome/app:generated_resources",
     "//chrome/common:chrome_features",
+    "//chrome/common/notifications",
+    "//ui/base",
+    "//ui/gfx",
   ]
 
   public_deps = [

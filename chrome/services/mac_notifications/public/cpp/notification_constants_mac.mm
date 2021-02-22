@@ -26,6 +26,7 @@ NSString* const kNotificationId = @"notificationId";
 NSString* const kNotificationProfileId = @"notificationProfileId";
 NSString* const kNotificationIncognito = @"notificationIncognito";
 NSString* const kNotificationType = @"notificationType";
+NSString* const kNotificationRenotify = @"notificationRenotify";
 NSString* const kNotificationHasSettingsButton =
     @"notificationHasSettingsButton";
 NSString* const kNotificationCreatorPid = @"notificationCreatorPid";

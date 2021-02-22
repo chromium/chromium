@@ -10,12 +10,16 @@
 #include <utility>
 #include <vector>
 
+#include "base/mac/mac_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/services/mac_notifications/mac_notification_service_utils.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_operation.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_utils_mac.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/base/l10n/l10n_util_mac.h"
+#include "ui/gfx/image/image.h"
 
 @interface AlertNSNotificationCenterDelegate
     : NSObject <NSUserNotificationCenterDelegate>
@@ -88,6 +92,74 @@ int GetActionButtonIndexFromNotification(NSUserNotification* notification) {
   return [[notification valueForKey:@"_alternateActionIndex"] intValue];
 }
 
+void AddActionButtons(
+    NSUserNotification* notification,
+    const std::vector<mac_notifications::mojom::NotificationActionButtonPtr>&
+        buttons,
+    bool show_settings_button) {
+  DCHECK_LE(buttons.size(), 2u);
+  if (![notification respondsToSelector:@selector(_showsButtons)])
+    return;
+
+  // Force the notification to always show its action buttons.
+  [notification setValue:@YES forKey:@"_showsButtons"];
+
+  // A default close button label is provided by the platform but we explicitly
+  // override it in case the user decides to not use the OS language in Chrome.
+  // macOS 11 already shows a close button in the top-left corner.
+  if (!base::mac::IsAtLeastOS11()) {
+    [notification setOtherButtonTitle:l10n_util::GetNSString(
+                                          IDS_NOTIFICATION_BUTTON_CLOSE)];
+  }
+
+  NSMutableArray* action_buttons = [NSMutableArray arrayWithCapacity:3];
+  for (const auto& button : buttons)
+    [action_buttons addObject:base::SysUTF16ToNSString(button->title)];
+
+  if (show_settings_button) {
+    // If we can't show an action menu but need a settings button, only show the
+    // settings button and don't show developer provided actions.
+    if (![notification
+            respondsToSelector:@selector(_alwaysShowAlternateActionMenu)]) {
+      [action_buttons removeAllObjects];
+    }
+    [action_buttons
+        addObject:l10n_util::GetNSString(IDS_NOTIFICATION_BUTTON_SETTINGS)];
+  }
+
+  if ([action_buttons count] == 0) {
+    // Don't show action button if no actions needed.
+    [notification setHasActionButton:NO];
+    return;
+  }
+
+  if ([action_buttons count] == 1) {
+    // Only one action so we don't need a menu. Just set the button title.
+    [notification setActionButtonTitle:[action_buttons firstObject]];
+    return;
+  }
+
+  DCHECK([notification
+      respondsToSelector:@selector(_alwaysShowAlternateActionMenu)]);
+  DCHECK([notification
+      respondsToSelector:@selector(_alternateActionButtonTitles)]);
+
+  // macOS 11 does not support overriding the text of the overflow button and
+  // will always show "Options" via this API. Setting actionButtonTitle just
+  // appends another button into the overflow menu. Only the new UNNotification
+  // API allows overriding this title on macOS 11.
+  if (base::mac::IsAtLeastOS11()) {
+    [notification setValue:@NO forKey:@"_hasActionButton"];
+  } else {
+    [notification setActionButtonTitle:l10n_util::GetNSString(
+                                           IDS_NOTIFICATION_BUTTON_MORE)];
+  }
+
+  // Show the alternate menu with developer actions and settings if needed.
+  [notification setValue:@YES forKey:@"_alwaysShowAlternateActionMenu"];
+  [notification setValue:action_buttons forKey:@"_alternateActionButtonTitles"];
+}
+
 }  // namespace
 
 namespace mac_notifications {
@@ -112,11 +184,16 @@ void MacNotificationServiceNS::DisplayNotification(
   base::scoped_nsobject<NSUserNotification> toast(
       [[NSUserNotification alloc] init]);
 
-  // TODO(knollr): Fill with values from |notification|.
-  [toast setTitle:@"title"];
-  [toast setSubtitle:@"subtitle"];
-  [toast setInformativeText:@"informative"];
+  [toast setTitle:base::SysUTF16ToNSString(notification->title)];
+  [toast setSubtitle:base::SysUTF16ToNSString(notification->subtitle)];
+  [toast setInformativeText:base::SysUTF16ToNSString(notification->body)];
   [toast setUserInfo:GetMacNotificationUserInfo(notification)];
+
+  AddActionButtons(toast.get(), notification->buttons,
+                   notification->show_settings_button);
+
+  if (!notification->icon.isNull())
+    [toast setContentImage:gfx::Image(notification->icon).ToNSImage()];
 
   const mojom::NotificationIdentifierPtr& identifier = notification->meta->id;
   NSString* notification_id = base::SysUTF8ToNSString(DeriveMacNotificationId(

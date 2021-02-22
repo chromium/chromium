@@ -28,6 +28,7 @@ extern NSString* const kNotificationIncognito;
 extern NSString* const kNotificationType;
 extern NSString* const kNotificationOperation;
 extern NSString* const kNotificationButtonIndex;
+extern NSString* const kNotificationRenotify;
 extern NSString* const kNotificationHasSettingsButton;
 extern NSString* const kNotificationCreatorPid;
 

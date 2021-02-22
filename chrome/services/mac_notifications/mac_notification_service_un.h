@@ -6,6 +6,7 @@
 #define CHROME_SERVICES_MAC_NOTIFICATIONS_MAC_NOTIFICATION_SERVICE_UN_H_
 
 #include "base/mac/scoped_nsobject.h"
+#include "chrome/common/notifications/notification_image_retainer.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_category_manager.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -49,6 +50,8 @@ class API_AVAILABLE(macos(10.14)) MacNotificationServiceUN
 
   // Category manager for action buttons.
   NotificationCategoryManager category_manager_;
+  // Image retainer to pass image attachments to notifications.
+  NotificationImageRetainer image_retainer_;
 };
 
 }  // namespace mac_notifications

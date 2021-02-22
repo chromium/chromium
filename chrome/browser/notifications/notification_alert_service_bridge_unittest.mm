@@ -7,6 +7,7 @@
 
 #include "base/mac/scoped_nsobject.h"
 #include "base/run_loop.h"
+#include "base/strings/string16.h"
 #include "base/test/mock_callback.h"
 #import "chrome/browser/notifications/notification_alert_service_bridge.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
@@ -110,14 +111,30 @@ TEST_F(NotificationAlertServiceBridgeTest, DeliverNotification) {
         EXPECT_EQ("notificationId", identifier->id);
         EXPECT_EQ("profileId", identifier->profile->id);
         EXPECT_TRUE(identifier->profile->incognito);
+
+        EXPECT_EQ(STRING16_LITERAL("title"), notification->title);
+        EXPECT_EQ(STRING16_LITERAL("subtitle"), notification->subtitle);
+        EXPECT_EQ(STRING16_LITERAL("body"), notification->body);
+        EXPECT_FALSE(notification->renotify);
+        EXPECT_TRUE(notification->show_settings_button);
+
+        ASSERT_EQ(2u, notification->buttons.size());
+        EXPECT_EQ(STRING16_LITERAL("button1"), notification->buttons[0]->title);
+        EXPECT_EQ(STRING16_LITERAL("button2"), notification->buttons[1]->title);
         run_loop.Quit();
       });
 
-  // TODO(knollr): pass and verify expected notification data.
   [bridge_ deliverNotification:@{
     notification_constants::kNotificationId : @"notificationId",
     notification_constants::kNotificationProfileId : @"profileId",
     notification_constants::kNotificationIncognito : @YES,
+    notification_constants::kNotificationTitle : @"title",
+    notification_constants::kNotificationSubTitle : @"subtitle",
+    notification_constants::kNotificationInformativeText : @"body",
+    notification_constants::kNotificationRenotify : @NO,
+    notification_constants::kNotificationHasSettingsButton : @YES,
+    notification_constants::kNotificationButtonOne : @"button1",
+    notification_constants::kNotificationButtonTwo : @"button2",
   }];
   run_loop.Run();
 }

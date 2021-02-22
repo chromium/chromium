@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/run_loop.h"
+#include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -23,6 +24,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 // Make dynamic properties accessible for OCMock.
@@ -184,6 +186,9 @@ TEST_F(MacNotificationServiceNSTest, DisplayNotification) {
             objectForKey:notification_constants::kNotificationIncognito]
             boolValue]);
 
+        EXPECT_NSEQ(@"title", [notification title]);
+        EXPECT_NSEQ(@"subtitle", [notification subtitle]);
+        EXPECT_NSEQ(@"body", [notification informativeText]);
         quit_closure.Run();
         return YES;
       }]];
@@ -197,7 +202,12 @@ TEST_F(MacNotificationServiceNSTest, DisplayNotification) {
       std::move(notification_identifier), /*type=*/0, /*origin_url=*/GURL(),
       /*creator_pid=*/0);
 
-  auto notification = mojom::Notification::New(std::move(meta));
+  std::vector<mac_notifications::mojom::NotificationActionButtonPtr> buttons;
+  auto notification = mac_notifications::mojom::Notification::New(
+      std::move(meta), STRING16_LITERAL("title"), STRING16_LITERAL("subtitle"),
+      STRING16_LITERAL("body"), /*renotify=*/true,
+      /*show_settings_button=*/true, std::move(buttons),
+      /*icon=*/gfx::ImageSkia());
   service_remote_->DisplayNotification(std::move(notification));
 
   run_loop.Run();

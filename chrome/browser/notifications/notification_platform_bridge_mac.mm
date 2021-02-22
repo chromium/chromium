@@ -150,6 +150,7 @@ void NotificationPlatformBridgeMac::Display(
     [builder setIcon:notification.icon().ToNSImage()];
   }
 
+  [builder setRenotify:notification.renotify()];
   [builder setShowSettingsButton:(notification.should_show_settings_button())];
   std::vector<message_center::ButtonInfo> buttons = notification.buttons();
   if (!buttons.empty()) {

@@ -40,6 +40,7 @@
 - (void)setIncognito:(BOOL)incognito;
 - (void)setCreatorPid:(NSNumber*)pid;
 - (void)setNotificationType:(NSNumber*)notificationType;
+- (void)setRenotify:(BOOL)renotify;
 - (void)setShowSettingsButton:(BOOL)showSettingsButton;
 - (void)setIcon:(NSImage*)icon;
 

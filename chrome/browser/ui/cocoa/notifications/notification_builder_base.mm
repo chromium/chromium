@@ -107,6 +107,11 @@
                         forKey:notification_constants::kNotificationType];
 }
 
+- (void)setRenotify:(BOOL)renotify {
+  [_notificationData setObject:[NSNumber numberWithBool:renotify]
+                        forKey:notification_constants::kNotificationRenotify];
+}
+
 - (void)setShowSettingsButton:(BOOL)showSettingsButton {
   [_notificationData
       setObject:[NSNumber numberWithBool:showSettingsButton]

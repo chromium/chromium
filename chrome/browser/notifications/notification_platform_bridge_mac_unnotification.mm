@@ -124,7 +124,6 @@ void NotificationPlatformBridgeMacUNNotification::Display(
     // its dimensions are uniform and do not get resized once sent to the
     // notification center.
     if (is_alert) {
-      // TODO(crbug.com/1127306): Use the gfx::Image when sending via Mojo?
       [builder setIcon:notification.icon().ToNSImage()];
     } else {
       base::FilePath path =
@@ -133,6 +132,7 @@ void NotificationPlatformBridgeMacUNNotification::Display(
     }
   }
 
+  [builder setRenotify:notification.renotify()];
   [builder setShowSettingsButton:notification.should_show_settings_button()];
   const std::vector<message_center::ButtonInfo>& buttons =
       notification.buttons();

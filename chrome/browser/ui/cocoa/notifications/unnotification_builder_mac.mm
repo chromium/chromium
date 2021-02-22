@@ -86,7 +86,7 @@
                              URL:url
                          options:@{
                            UNNotificationAttachmentOptionsTypeHintKey :
-                               (NSString*)kUTTypePNG
+                               (__bridge NSString*)kUTTypePNG
                          }
                            error:nil];
 

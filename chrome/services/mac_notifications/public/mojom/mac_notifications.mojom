@@ -6,6 +6,7 @@ module mac_notifications.mojom;
 
 import "mojo/public/mojom/base/process_id.mojom";
 import "mojo/public/mojom/base/string16.mojom";
+import "ui/gfx/image/mojom/image.mojom";
 import "url/mojom/url.mojom";
 
 // Represents a profile being used to display notifications. A profile with a
@@ -75,11 +76,34 @@ struct NotificationActionInfo {
   mojo_base.mojom.String16? reply;
 };
 
+// Represents a notification action button to be shown to the user.
+struct NotificationActionButton {
+  // The title of this action button.
+  mojo_base.mojom.String16 title;
+  // The placeholder value for inline reply action buttons if set.
+  mojo_base.mojom.String16? placeholder;
+};
+
 // Represents a notification to be shown to the user via the helper app.
 struct Notification {
   // Metadata about this notification.
   NotificationMetadata meta;
-  // TODO(knollr): Fill struct.
+  // The title of this notification shown as the first row.
+  mojo_base.mojom.String16 title;
+  // The subtitle of this notification shown as the second row. Typically shows
+  // the origin of the notification.
+  mojo_base.mojom.String16 subtitle;
+  // The body of this notification shown as the third and final row.
+  mojo_base.mojom.String16 body;
+  // If true we should close and show the notification again if one with the
+  // same identifier already exists. Otherwise just update its content.
+  bool renotify;
+  // Whether this notification should show a settings button to the user.
+  bool show_settings_button;
+  // Additional action buttons to be shown to the user.
+  array<NotificationActionButton> buttons;
+  // An optional icon shown on the right hand side of the notification.
+  gfx.mojom.ImageSkia? icon;
 };
 
 // Interface to control notifications shown by the helper app. Implemented by
