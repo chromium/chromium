@@ -64,6 +64,12 @@ const multideviceFeatureViolationFilter =
    'MultideviceFeatures', 'multidevice_features_a11y_v3_test.js',
    {filter: multideviceFeatureViolationFilter, options: axeOptionsDocumentTitle}
  ],
+ [
+   'Tts', 'tts_subpage_a11y_v3_test.js', {
+     switches: ['enable-experimental-a11y-features'],
+     options: axeOptionsDocumentTitle
+   }
+ ],
 ].forEach(test => defineTest(...test));
 
 function defineTest(testName, module, config) {
@@ -73,6 +79,14 @@ function defineTest(testName, module, config) {
     get browsePreload() {
       return `chrome://os-settings/test_loader.html?module=settings/chromeos/a11y/${
           module}`;
+    }
+
+    /** @override */
+    get commandLineSwitches() {
+      if (config && config.switches) {
+        return config.switches;
+      }
+      return [];
     }
   };
 
