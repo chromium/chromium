@@ -7,6 +7,8 @@ module nearby_share.mojom;
 // Describes the type of device for a share target.
 // The numeric values are used to encode/decode advertisement bytes, and must
 // kept in sync with Android implementation.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum ShareTargetType {
   // Unknown device type.
   kUnknown = 0,

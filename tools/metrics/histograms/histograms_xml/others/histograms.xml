@@ -10307,6 +10307,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Nearby.Share.DeviceType{Direction}"
+    enum="NearbyShareDeviceType" expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the device type that the user {Direction}. Emitted when a transfer
+    completes successfully, fails, or was aborted by the user, for example, by
+    cancelling the transfer.
+  </summary>
+  <token key="Direction">
+    <variant name="" summary="sent to or received from"/>
+    <variant name=".Receive" summary="received from"/>
+    <variant name=".Send" summary="sent to"/>
+  </token>
+</histogram>
+
 <histogram name="Nearby.Share.Discovery.Delay.FromStartDiscoveryTo{EndState}"
     units="ms" expires_after="2021-08-19">
   <owner>nohle@chromium.org</owner>
@@ -10388,6 +10404,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     allowed by policy, or the user onboarded but later disabled the feature.
     Emitted when the Nearby Share service starts. This happens at login if the
     feature flag is on.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Share.IsKnownContact" enum="BooleanKnown"
+    expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records whether or not the device shared with is a known contact, i.e.,
+    contact-based sharing. Emitted when a transfer completes successfully,
+    fails, or was aborted by the user, for example, by cancelling the transfer.
   </summary>
 </histogram>
 

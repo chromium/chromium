@@ -358,9 +358,15 @@ void RecordNearbyShareTransferFinalStatusMetric(
     bool is_known) {
   DCHECK(TransferMetadata::IsFinalStatus(status));
 
+  base::UmaHistogramBoolean("Nearby.Share.IsKnownContact", is_known);
+
   std::string send_or_receive = GetDirectionSubcategoryName(is_incoming);
   std::string share_target_type = GetShareTargetTypeSubcategoryName(type);
   std::string contact_or_not = GetIsKnownSubcategoryName(is_known);
+
+  base::UmaHistogramEnumeration("Nearby.Share.DeviceType", type);
+  base::UmaHistogramEnumeration("Nearby.Share.DeviceType" + send_or_receive,
+                                type);
 
   TransferFinalStatus final_status =
       TransferMetadataStatusToTransferFinalStatus(status);

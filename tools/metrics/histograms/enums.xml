@@ -52080,6 +52080,13 @@ Called by update_use_counter_css.py.-->
   <int value="4" label="Invalid Operation"/>
 </enum>
 
+<enum name="NearbyShareDeviceType">
+  <int value="0" label="Unknown device type"/>
+  <int value="1" label="Phone"/>
+  <int value="2" label="Tablet"/>
+  <int value="3" label="Laptop"/>
+</enum>
+
 <enum name="NearbyShareDiscoveryProgress">
   <int value="0" label="Discovery not attempted"/>
   <int value="1" label="Failed to start discovery"/>
