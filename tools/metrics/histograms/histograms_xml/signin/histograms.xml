@@ -203,6 +203,9 @@ prefs when the profile is loaded.  -->
 
 <histogram name="Signin.AuthenticatedLaunchUserEvent"
     enum="AuthenticatedLaunchUserEvent" expires_after="M95">
+  <obsolete>
+    Removed in M90.
+  </obsolete>
   <owner>zmin@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>

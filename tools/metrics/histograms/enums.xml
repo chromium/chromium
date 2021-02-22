@@ -4486,6 +4486,9 @@ others/histograms.xml -->
 </enum>
 
 <enum name="AuthenticatedLaunchUserEvent">
+  <obsolete>
+    Removed in M90.
+  </obsolete>
   <int value="0" label="Local Reauth Dialog"/>
   <int value="1" label="Gaia Reauth Dialog"/>
   <int value="2" label="Supervised Profile Blocked Warning"/>
@@ -18061,8 +18064,8 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="72" label="Tab Modal Confirm"/>
   <int value="73" label="Task Manager"/>
   <int value="74" label="Teleport Warning"/>
-  <int value="75" label="User Manager"/>
-  <int value="76" label="User Manager Profile"/>
+  <int value="75" label="User Manager (Obsolete)"/>
+  <int value="76" label="User Manager Profile (Obsolete)"/>
   <int value="77" label="Validation Message"/>
   <int value="78" label="Web Share Target Picker"/>
   <int value="79" label="Zoom"/>
@@ -18094,6 +18097,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="105" label="Signin Reauth Dialog"/>
   <int value="106"
       label="Confirmation Box for getCurrentBrowsingContextMedia API"/>
+  <int value="107" label="Profile picker force signin"/>
 </enum>
 
 <enum name="DialogOriginRelationship">
@@ -62626,6 +62630,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="ProfileCreateResult">
+  <obsolete>
+    Removed M90.
+  </obsolete>
   <int value="0" label="Failed locally"/>
   <int value="1" label="Failed remotely"/>
   <int value="2" label="Created but not initialized (should never happen)"/>

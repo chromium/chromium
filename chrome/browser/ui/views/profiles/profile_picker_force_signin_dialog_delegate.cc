@@ -47,7 +47,8 @@ ProfilePickerForceSigninDialogDelegate::ProfilePickerForceSigninDialogDelegate(
 
   web_view_->LoadInitialURL(url);
 
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::USER_MANAGER_PROFILE);
+  chrome::RecordDialogCreation(
+      chrome::DialogIdentifier::PROFILE_PICKER_FORCE_SIGNIN);
 }
 
 ProfilePickerForceSigninDialogDelegate::

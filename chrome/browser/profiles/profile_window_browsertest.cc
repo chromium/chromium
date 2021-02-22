@@ -101,22 +101,6 @@ class EmptyAcceleratorHandler : public ui::AcceleratorProvider {
   }
 };
 
-base::FilePath CreateTestingProfile(const std::string& name,
-                                    const std::string& relative_path) {
-  ProfileManager* manager = g_browser_process->profile_manager();
-  ProfileAttributesStorage& storage = manager->GetProfileAttributesStorage();
-  size_t starting_number_of_profiles = storage.GetNumberOfProfiles();
-
-  base::FilePath profile_path =
-      manager->user_data_dir().AppendASCII(relative_path);
-  storage.AddProfile(profile_path, base::ASCIIToUTF16(name), std::string(),
-                     base::string16(), false, 0u, std::string(),
-                     EmptyAccountId());
-
-  EXPECT_EQ(starting_number_of_profiles + 1u, storage.GetNumberOfProfiles());
-  return profile_path;
-}
-
 }  // namespace
 
 class ProfileWindowBrowserTest : public InProcessBrowserTest {
@@ -416,41 +400,3 @@ class ProfileWindowWebUIBrowserTest : public WebUIBrowserTest {
         FILE_PATH_LITERAL("profile_window_browsertest.js")));
   }
 };
-
-IN_PROC_BROWSER_TEST_F(ProfileWindowWebUIBrowserTest,
-                       UserManagerFocusSingleProfile) {
-  std::string url_to_test;
-  base::RunLoop run_loop;
-  profiles::CreateSystemProfileForUserManager(
-      browser()->profile()->GetPath(),
-      profiles::USER_MANAGER_SELECT_PROFILE_NO_ACTION,
-      base::BindRepeating(
-          &ProfileWindowWebUIBrowserTest::OnSystemProfileCreated,
-          base::Unretained(this), &url_to_test, run_loop.QuitClosure()));
-  run_loop.Run();
-
-  ui_test_utils::NavigateToURL(browser(), GURL(url_to_test));
-  EXPECT_TRUE(RunJavascriptTest("testNoPodFocused"));
-}
-
-// This test is flaky, see https://crbug.com/611619.
-IN_PROC_BROWSER_TEST_F(ProfileWindowWebUIBrowserTest,
-                       DISABLED_UserManagerFocusMultipleProfiles) {
-  // The profile names are meant to sort differently by ICU collation and by
-  // naive sorting. See crbug/596280.
-  base::FilePath expected_path = CreateTestingProfile("#abc", "Profile 1");
-  CreateTestingProfile("?abc", "Profile 2");
-
-  std::string url_to_test;
-  base::RunLoop run_loop;
-  profiles::CreateSystemProfileForUserManager(
-      expected_path, profiles::USER_MANAGER_SELECT_PROFILE_NO_ACTION,
-      base::BindRepeating(
-          &ProfileWindowWebUIBrowserTest::OnSystemProfileCreated,
-          base::Unretained(this), &url_to_test, run_loop.QuitClosure()));
-  run_loop.Run();
-
-  ui_test_utils::NavigateToURL(browser(), GURL(url_to_test));
-  EXPECT_TRUE(RunJavascriptTest("testPodFocused",
-                                base::Value(expected_path.AsUTF8Unsafe())));
-}

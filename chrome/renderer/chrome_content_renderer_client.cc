@@ -1628,8 +1628,7 @@ bool ChromeContentRendererClient::RequiresHtmlImports(const GURL& url) {
   if (url.SchemeIs(content::kChromeUIScheme)) {
     base::StringPiece host_piece = url.host_piece();
     // TODO(crbug.com/1014322): Remove when migrated to Polymer3.
-    return host_piece == chrome::kChromeUIMdUserManagerHost ||
-           host_piece == content::kChromeUIResourcesHost ||
+    return host_piece == content::kChromeUIResourcesHost ||
            // TODO(crbug.com/1006778): Remove when chrome://tracing is fully
            // removed.
            host_piece == content::kChromeUITracingHost ||
