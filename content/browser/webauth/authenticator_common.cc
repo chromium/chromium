@@ -693,7 +693,6 @@ std::string ToJSONString(base::StringPiece in) {
 
 }  // namespace
 
-// static
 std::string SerializeWebAuthnCollectedClientDataToJson(
     const std::string& type,
     const std::string& origin,
@@ -866,7 +865,6 @@ void AuthenticatorCommon::OnLargeBlobUncompressed(
                                  app_id_, requested_extensions_));
 }
 
-// static
 // mojom::Authenticator
 void AuthenticatorCommon::MakeCredential(
     url::Origin caller_origin,
@@ -1083,9 +1081,12 @@ void AuthenticatorCommon::MakeCredential(
                 client_data::kCreateType, caller_origin_.Serialize(),
                 options->challenge, is_cross_origin);
 
-  // Cryptotoken requests should be proxied without UI.
-  if (origin_is_crypto_token_extension || disable_ui_)
+  // Cryptotoken requests, making payment credentials, and Touch-to-Autofill
+  // should be proxied without UI.
+  if (origin_is_crypto_token_extension ||
+      options->is_payment_credential_creation || disable_ui_) {
     request_delegate_->DisableUI();
+  }
 
   ctap_make_credential_request_ = device::CtapMakeCredentialRequest(
       client_data_json_, options->relying_party, options->user,

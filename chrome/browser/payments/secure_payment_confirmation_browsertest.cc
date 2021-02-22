@@ -23,6 +23,7 @@
 #include "chrome/browser/web_data_service_factory.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/payments/content/payment_credential_enrollment_controller.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/secure_payment_confirmation_app.h"
 #include "components/payments/core/secure_payment_confirmation_instrument.h"
@@ -285,8 +286,28 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDisabledByFinchTest,
 // override authenticator creation.
 #if !defined(OS_ANDROID)
 class SecurePaymentConfirmationCreationTest
-    : public SecurePaymentConfirmationTest {
+    : public SecurePaymentConfirmationTest,
+      public PaymentCredentialEnrollmentController::ObserverForTest {
  public:
+  void RespondToFutureEnrollments(bool confirm) {
+    confirm_enroll_ = confirm;
+    PaymentCredentialEnrollmentController::CreateForWebContents(
+        GetActiveWebContents());
+    PaymentCredentialEnrollmentController::FromWebContents(
+        GetActiveWebContents())
+        ->set_observer_for_test(this);
+  }
+
+  // PaymentCredentialEnrollmentController::ObserverForTest
+  void OnDialogOpened() override {
+    auto* controller = PaymentCredentialEnrollmentController::FromWebContents(
+        GetActiveWebContents());
+    if (confirm_enroll_)
+      controller->OnConfirm();
+    else
+      controller->OnCancel();
+  }
+
   // PaymentCredential creation uses the normal Web Authentication code path
   // for creating the public key credential, rather than using
   // IntenralAuthenticator. This stubs out authenticator instantiation in
@@ -337,12 +358,25 @@ class SecurePaymentConfirmationCreationTest
   }
 
   base::HistogramTester histogram_tester_;
+  bool confirm_enroll_ = false;
 };
+
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest, UserCancel) {
+  ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
+  NavigateTo("a.com", "/secure_payment_confirmation.html");
+  RespondToFutureEnrollments(/*confirm=*/false);
+
+  EXPECT_EQ("AbortError: Request has been aborted.",
+            content::EvalJs(GetActiveWebContents(),
+                            content::JsReplace("createPaymentCredential($1)",
+                                               GetDefaultIconURL())));
+}
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
                        CreatePaymentCredential) {
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
+  RespondToFutureEnrollments(/*confirm=*/true);
 
   EXPECT_EQ("OK",
             content::EvalJs(GetActiveWebContents(),
@@ -359,6 +393,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
                        LookupPaymentCredential) {
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
+  RespondToFutureEnrollments(/*confirm=*/true);
   std::string credentialIdentifier =
       content::EvalJs(
           GetActiveWebContents(),
@@ -389,6 +424,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
                        ConfirmPaymentInCrossOriginIframe) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
+  RespondToFutureEnrollments(/*confirm=*/true);
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
   std::string credentialIdentifier =
       content::EvalJs(
@@ -415,6 +451,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
                        ChallengeIsReturned) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
+  RespondToFutureEnrollments(/*confirm=*/true);
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
   std::string credentialIdentifier =
       content::EvalJs(
@@ -481,6 +518,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
                        UserVerificationFails) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
+  RespondToFutureEnrollments(/*confirm=*/true);
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
   std::string credentialIdentifier =
       content::EvalJs(
@@ -513,6 +551,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest, NonexistentIcon) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
+  RespondToFutureEnrollments(/*confirm=*/true);
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
 
   EXPECT_EQ(
@@ -528,6 +567,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest, NonexistentIcon) {
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest, InsecureIcon) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
+  RespondToFutureEnrollments(/*confirm=*/true);
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
 
   // Get the instrument icon from an insecure http server.

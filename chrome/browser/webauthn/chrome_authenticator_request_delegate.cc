@@ -509,11 +509,13 @@ void ChromeAuthenticatorRequestDelegate::DisableUI() {
 }
 
 bool ChromeAuthenticatorRequestDelegate::IsWebAuthnUIEnabled() {
-  // The UI is fully disabled for the entire request duration only if the
-  // request originates from cryptotoken. The UI may be hidden in other
+  // The UI is fully disabled for the entire request duration if either:
+  // 1) The request originates from cryptotoken. The UI may be hidden in other
   // circumstances (e.g. while showing the native Windows WebAuthn UI). But in
   // those cases the UI is still enabled and can be shown e.g. for an
   // attestation consent prompt.
+  // 2) A specialized UI is replacing the default WebAuthn UI, such as
+  // Secure Payment Confirmation or Autofill.
   return !disable_ui_;
 }
 

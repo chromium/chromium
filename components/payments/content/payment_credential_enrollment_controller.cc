@@ -13,23 +13,23 @@
 namespace payments {
 
 PaymentCredentialEnrollmentController::PaymentCredentialEnrollmentController(
-    content::WebContents* web_contents,
-    AcceptCallback accept_callback,
-    CancelCallback cancel_callback)
-    : content::WebContentsObserver(web_contents),
-      accept_callback_(std::move(accept_callback)),
-      cancel_callback_(std::move(cancel_callback)) {}
+    content::WebContents* web_contents)
+    : content::WebContentsObserver(web_contents) {}
 
 PaymentCredentialEnrollmentController::
     ~PaymentCredentialEnrollmentController() = default;
 
-void PaymentCredentialEnrollmentController::ShowDialog() {
+void PaymentCredentialEnrollmentController::ShowDialog(
+    ResponseCallback response_callback) {
 #if defined(OS_ANDROID)
   NOTREACHED();
 #endif  // OS_ANDROID
   DCHECK(!view_);
 
+  response_callback_ = std::move(response_callback);
   model_.set_progress_bar_visible(false);
+  model_.set_accept_button_enabled(true);
+  model_.set_cancel_button_enabled(true);
 
   // TODO(crbug.com/1176368): Set dialog strings on the model.
 
@@ -40,6 +40,9 @@ void PaymentCredentialEnrollmentController::ShowDialog() {
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&PaymentCredentialEnrollmentController::OnCancel,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  if (observer_for_test_)
+    observer_for_test_->OnDialogOpened();
 }
 
 void PaymentCredentialEnrollmentController::ShowProcessingSpinner() {
@@ -52,15 +55,28 @@ void PaymentCredentialEnrollmentController::ShowProcessingSpinner() {
   view_->OnModelUpdated();
 }
 
+bool PaymentCredentialEnrollmentController::IsShowing() const {
+  // The `view_` is created when the dialog is being shown, is owned by the
+  // Views framework, and is destroyed when it is hidden.
+  return !!view_;
+}
+
 void PaymentCredentialEnrollmentController::CloseDialog() {
   if (view_)
     view_->HideDialog();
 }
 
 void PaymentCredentialEnrollmentController::OnCancel() {
-  CloseDialog();
+  // Prevent use-after-move on `response_callback_` due to CloseDialog()
+  // re-entering into OnCancel().
+  ResponseCallback callback = std::move(response_callback_);
 
-  std::move(cancel_callback_).Run();
+  if (!callback)
+    return;  // The dialog is closing after user interaction has completed.
+
+  CloseDialog();  // CloseDialog() will re-enter into OnCancel().
+
+  std::move(callback).Run(false);
 }
 
 void PaymentCredentialEnrollmentController::OnConfirm() {
@@ -72,7 +88,7 @@ void PaymentCredentialEnrollmentController::OnConfirm() {
   // with its animated processing spinner. For example, on Linux, there's no
   // OS-level UI, while on MacOS, there's an OS-level prompt for the Touch ID
   // that shows on top of Chrome.
-  std::move(accept_callback_).Run();
+  std::move(response_callback_).Run(true);
 }
 
 base::WeakPtr<PaymentCredentialEnrollmentController>

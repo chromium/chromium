@@ -20,12 +20,15 @@ class PaymentCredentialEnrollmentController
       public content::WebContentsUserData<
           PaymentCredentialEnrollmentController> {
  public:
-  using AcceptCallback = base::OnceCallback<void()>;
-  using CancelCallback = base::OnceCallback<void()>;
+  using ResponseCallback = base::OnceCallback<void(bool user_confirm_from_ui)>;
 
-  PaymentCredentialEnrollmentController(content::WebContents* web_contents,
-                                        AcceptCallback accept_callback,
-                                        CancelCallback cancel_callback);
+  class ObserverForTest {
+   public:
+    virtual void OnDialogOpened() = 0;
+  };
+
+  explicit PaymentCredentialEnrollmentController(
+      content::WebContents* web_contents);
   ~PaymentCredentialEnrollmentController() override;
 
   PaymentCredentialEnrollmentController(
@@ -33,13 +36,18 @@ class PaymentCredentialEnrollmentController
   PaymentCredentialEnrollmentController& operator=(
       const PaymentCredentialEnrollmentController& other) = delete;
 
-  void ShowDialog();
+  void ShowDialog(ResponseCallback response_callback);
   void CloseDialog();
   void ShowProcessingSpinner();
+  bool IsShowing() const;
 
   // Dialog callbacks.
   void OnCancel();
   void OnConfirm();
+
+  void set_observer_for_test(ObserverForTest* observer_for_test) {
+    observer_for_test_ = observer_for_test;
+  }
 
   base::WeakPtr<PaymentCredentialEnrollmentController> GetWeakPtr();
 
@@ -48,8 +56,7 @@ class PaymentCredentialEnrollmentController
       PaymentCredentialEnrollmentController>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
-  AcceptCallback accept_callback_;
-  CancelCallback cancel_callback_;
+  ResponseCallback response_callback_;
 
   PaymentCredentialEnrollmentModel model_;
 
@@ -58,6 +65,8 @@ class PaymentCredentialEnrollmentController
   // views::DialogDelegateView::DeleteDelegate() is called by its corresponding
   // views::Widget.
   base::WeakPtr<PaymentCredentialEnrollmentView> view_;
+
+  ObserverForTest* observer_for_test_ = nullptr;
 
   base::WeakPtrFactory<PaymentCredentialEnrollmentController> weak_ptr_factory_{
       this};

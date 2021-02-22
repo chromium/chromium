@@ -9,6 +9,7 @@
 
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/payments/content/payment_credential_enrollment_controller.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/core/secure_payment_confirmation_instrument.h"
 #include "components/payments/core/url_util.h"
@@ -30,19 +31,18 @@ PaymentCredential::PaymentCredential(
 }
 
 PaymentCredential::~PaymentCredential() {
-  if (web_data_service_) {
-    std::for_each(callbacks_.begin(), callbacks_.end(), [&](const auto& pair) {
-      web_data_service_->CancelRequest(pair.first);
-    });
-  }
+  AbortAndCleanup();
 }
 
-void PaymentCredential::DownloadFavicon(const GURL& icon_url,
-                                        DownloadFaviconCallback callback) {
-  if (!web_contents() ||
-      !UrlUtil::IsOriginAllowedToUseWebPaymentApis(icon_url)) {
+void PaymentCredential::DownloadIconAndShowUserPrompt(
+    payments::mojom::PaymentCredentialInstrumentPtr instrument,
+    DownloadIconAndShowUserPromptCallback callback) {
+  if (!web_contents() || !instrument || instrument->display_name.empty() ||
+      controller_ || IsDialogShowing() ||
+      !UrlUtil::IsOriginAllowedToUseWebPaymentApis(instrument->icon)) {
+    AbortAndCleanup();
     std::move(callback).Run(
-        mojom::PaymentCredentialIconDownloadStatus::FAILED_TO_DOWNLOAD_ICON);
+        mojom::PaymentCredentialUserPromptStatus::FAILED_TO_DOWNLOAD_ICON);
     return;
   }
 
@@ -51,37 +51,40 @@ void PaymentCredential::DownloadFavicon(const GURL& icon_url,
   content::RenderFrameHost* render_frame_host =
       content::RenderFrameHost::FromID(initiator_frame_routing_id_);
   if (!render_frame_host || !render_frame_host->IsCurrent()) {
+    AbortAndCleanup();
     std::move(callback).Run(
-        mojom::PaymentCredentialIconDownloadStatus::FAILED_TO_DOWNLOAD_ICON);
+        mojom::PaymentCredentialUserPromptStatus::FAILED_TO_DOWNLOAD_ICON);
     return;
   }
 
   // Only one PaymentCredential enrollment at a time.
   if (pending_icon_download_request_id_) {
+    AbortAndCleanup();
     std::move(callback).Run(
-        mojom::PaymentCredentialIconDownloadStatus::FAILED_TO_DOWNLOAD_ICON);
+        mojom::PaymentCredentialUserPromptStatus::FAILED_TO_DOWNLOAD_ICON);
     return;
   }
 
   pending_icon_download_request_id_ = web_contents()->DownloadImageInFrame(
       initiator_frame_routing_id_,
-      icon_url,  // source URL
-      true,      // is_favicon
-      0,         // no preferred size
-      0,         // no max size
-      false,     // normal cache policy (a.k.a. do not bypass cache)
-      base::BindOnce(&PaymentCredential::DidDownloadFavicon,
+      instrument->icon,  // source URL
+      true,              // is_favicon
+      0,                 // no preferred size
+      0,                 // no max size
+      false,             // normal cache policy (a.k.a. do not bypass cache)
+      base::BindOnce(&PaymentCredential::DidDownloadIcon,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void PaymentCredential::StorePaymentCredential(
+void PaymentCredential::StorePaymentCredentialAndHideUserPrompt(
     payments::mojom::PaymentCredentialInstrumentPtr instrument,
     const std::vector<uint8_t>& credential_id,
     const std::string& rp_id,
-    StorePaymentCredentialCallback callback) {
-  if (!web_data_service_) {
+    StorePaymentCredentialAndHideUserPromptCallback callback) {
+  if (!web_data_service_ || !controller_) {
+    AbortAndCleanup();
     std::move(callback).Run(
-        mojom::PaymentCredentialCreationStatus::FAILED_TO_STORE_INSTRUMENT);
+        mojom::PaymentCredentialStorageStatus::FAILED_TO_STORE_INSTRUMENT);
     return;
   }
 
@@ -94,8 +97,49 @@ void PaymentCredential::StorePaymentCredential(
   callbacks_[handle] = std::move(callback);
 }
 
-void PaymentCredential::DidDownloadFavicon(
-    DownloadFaviconCallback callback,
+void PaymentCredential::HideUserPrompt(HideUserPromptCallback callback) {
+  AbortAndCleanup();
+  std::move(callback).Run();
+}
+
+void PaymentCredential::OnWebDataServiceRequestDone(
+    WebDataServiceBase::Handle h,
+    std::unique_ptr<WDTypedResult> result) {
+  auto iterator = callbacks_.find(h);
+  if (iterator == callbacks_.end()) {
+    AbortAndCleanup();
+    return;
+  }
+
+  auto callback = std::move(iterator->second);
+  DCHECK(callback);
+  callbacks_.erase(iterator);
+
+  if (!controller_) {
+    AbortAndCleanup();
+    std::move(callback).Run(
+        mojom::PaymentCredentialStorageStatus::FAILED_TO_STORE_INSTRUMENT);
+    return;
+  }
+
+  controller_->CloseDialog();
+  controller_.reset();
+
+  std::move(callback).Run(
+      static_cast<WDResult<bool>*>(result.get())->GetValue()
+          ? mojom::PaymentCredentialStorageStatus::SUCCESS
+          : mojom::PaymentCredentialStorageStatus::FAILED_TO_STORE_INSTRUMENT);
+}
+
+bool PaymentCredential::IsDialogShowing() const {
+  auto* controller =
+      payments::PaymentCredentialEnrollmentController::FromWebContents(
+          web_contents());
+  return controller && controller->IsShowing();
+}
+
+void PaymentCredential::DidDownloadIcon(
+    DownloadIconAndShowUserPromptCallback callback,
     int request_id,
     int unused_http_status_code,
     const GURL& image_url,
@@ -105,9 +149,10 @@ void PaymentCredential::DidDownloadFavicon(
   DCHECK_EQ(pending_icon_download_request_id_.value(), request_id);
   pending_icon_download_request_id_.reset();
 
-  if (bitmaps.empty()) {
+  if (bitmaps.empty() || !web_contents() || controller_ || IsDialogShowing()) {
+    AbortAndCleanup();
     std::move(callback).Run(
-        mojom::PaymentCredentialIconDownloadStatus::FAILED_TO_DOWNLOAD_ICON);
+        mojom::PaymentCredentialUserPromptStatus::FAILED_TO_DOWNLOAD_ICON);
     return;
   }
 
@@ -120,24 +165,39 @@ void PaymentCredential::DidDownloadFavicon(
       std::vector<uint8_t>(raw_data->front_as<uint8_t>(),
                            raw_data->front_as<uint8_t>() + raw_data->size());
 
-  std::move(callback).Run(mojom::PaymentCredentialIconDownloadStatus::SUCCESS);
+  PaymentCredentialEnrollmentController::CreateForWebContents(web_contents());
+  controller_ =
+      PaymentCredentialEnrollmentController::FromWebContents(web_contents())
+          ->GetWeakPtr();
+  controller_->ShowDialog(
+      base::BindOnce(&PaymentCredential::OnUserResponseFromUI,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void PaymentCredential::OnWebDataServiceRequestDone(
-    WebDataServiceBase::Handle h,
-    std::unique_ptr<WDTypedResult> result) {
-  auto iterator = callbacks_.find(h);
-  if (iterator == callbacks_.end())
-    return;
-
-  auto callback = std::move(iterator->second);
-  DCHECK(callback);
-  callbacks_.erase(iterator);
+void PaymentCredential::OnUserResponseFromUI(
+    DownloadIconAndShowUserPromptCallback callback,
+    bool user_confirm_from_ui) {
+  if (!user_confirm_from_ui)
+    AbortAndCleanup();
 
   std::move(callback).Run(
-      static_cast<WDResult<bool>*>(result.get())->GetValue()
-          ? mojom::PaymentCredentialCreationStatus::SUCCESS
-          : mojom::PaymentCredentialCreationStatus::FAILED_TO_STORE_INSTRUMENT);
+      user_confirm_from_ui
+          ? mojom::PaymentCredentialUserPromptStatus::USER_CONFIRM_FROM_UI
+          : mojom::PaymentCredentialUserPromptStatus::USER_CANCEL_FROM_UI);
+}
+
+void PaymentCredential::AbortAndCleanup() {
+  if (web_data_service_) {
+    std::for_each(callbacks_.begin(), callbacks_.end(), [&](const auto& pair) {
+      web_data_service_->CancelRequest(pair.first);
+    });
+  }
+  callbacks_.clear();
+  encoded_icon_.clear();
+  pending_icon_download_request_id_.reset();
+  if (controller_)
+    controller_->CloseDialog();
+  controller_.reset();
 }
 
 }  // namespace payments
