@@ -135,9 +135,17 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
         }
 
         updateHeader(false);
+        BookmarkId shopping = BookmarkUtils.findShoppingFolder(mDelegate.getModel());
         for (BookmarkId bId : bookmarks) {
             BookmarkItem item = mDelegate.getModel().getBookmarkById(bId);
-            mElements.add(BookmarkListEntry.createBookmarkEntry(item));
+            if (item.getId().getId() == shopping.getId()) {
+                BookmarkItem shoppingItem = new BookmarkItem(shopping, item.getTitle(),
+                        item.getUrl(), item.isFolder(), item.getParentId(), false, true,
+                        item.getDateAdded(), item.isRead());
+                mElements.add(BookmarkListEntry.createBookmarkEntry(shoppingItem));
+            } else {
+                mElements.add(BookmarkListEntry.createBookmarkEntry(item));
+            }
             // Add a divider below the reading list folder.
             if (item.getId().getType() == BookmarkType.READING_LIST && item.isFolder()) {
                 mElements.add(BookmarkListEntry.createDivider());
