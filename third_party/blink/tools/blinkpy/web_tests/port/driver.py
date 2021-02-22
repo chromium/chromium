@@ -328,6 +328,7 @@ class Driver(object):
     HTTP_LOCAL_DIR = 'http/tests/local/'
     HTTP_HOST_AND_PORTS = ('127.0.0.1', 8000, 8443)
     WPT_HOST_AND_PORTS = ('web-platform.test', 8001, 8444)
+    WPT_H2_PORT = 9000
 
     def is_http_test(self, test_name):
         return (test_name.startswith(self.HTTP_DIR)
@@ -365,6 +366,8 @@ class Driver(object):
             hostname, insecure_port, secure_port = self.WPT_HOST_AND_PORTS
             if '.www.' in test_name:
                 hostname = "www.%s" % hostname
+            if '.h2.' in test_name:
+                secure_port = self.WPT_H2_PORT
         else:
             test_dir_prefix = self.HTTP_DIR
             test_url_prefix = '/'
@@ -372,7 +375,8 @@ class Driver(object):
 
         relative_path = test_name[len(test_dir_prefix):]
 
-        if '/https/' in test_name or '.https.' in test_name or '.serviceworker.' in test_name:
+        if ('/https/' in test_name or '.https.' in test_name
+                or '.h2.' in test_name or '.serviceworker.' in test_name):
             return 'https://%s:%d%s%s' % (hostname, secure_port,
                                           test_url_prefix, relative_path)
         return 'http://%s:%d%s%s' % (hostname, insecure_port, test_url_prefix,
