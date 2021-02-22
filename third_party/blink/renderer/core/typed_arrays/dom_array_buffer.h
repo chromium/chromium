@@ -78,6 +78,7 @@ class CORE_EXPORT DOMArrayBuffer final : public DOMArrayBufferBase {
 
   v8::Local<v8::Value> Wrap(v8::Isolate*,
                             v8::Local<v8::Object> creation_context) override;
+  v8::MaybeLocal<v8::Value> WrapV2(ScriptState*) override;
 
  private:
   bool TransferDetachable(v8::Isolate*, ArrayBufferContents& result);

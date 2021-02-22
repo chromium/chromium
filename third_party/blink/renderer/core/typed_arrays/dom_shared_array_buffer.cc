@@ -21,4 +21,17 @@ v8::Local<v8::Value> DOMSharedArrayBuffer::Wrap(
   return AssociateWithWrapper(isolate, wrapper_type_info, wrapper);
 }
 
+v8::MaybeLocal<v8::Value> DOMSharedArrayBuffer::WrapV2(
+    ScriptState* script_state) {
+  DCHECK(!DOMDataStore::ContainsWrapper(this, script_state->GetIsolate()));
+
+  const WrapperTypeInfo* wrapper_type_info = this->GetWrapperTypeInfo();
+  v8::Local<v8::SharedArrayBuffer> wrapper = v8::SharedArrayBuffer::New(
+      script_state->GetIsolate(), Content()->BackingStore());
+  wrapper->Externalize(Content()->BackingStore());
+
+  return AssociateWithWrapper(script_state->GetIsolate(), wrapper_type_info,
+                              wrapper);
+}
+
 }  // namespace blink

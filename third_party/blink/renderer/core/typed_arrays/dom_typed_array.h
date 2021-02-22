@@ -98,6 +98,7 @@ class DOMTypedArray final : public DOMArrayBufferView {
 
   v8::Local<v8::Value> Wrap(v8::Isolate*,
                             v8::Local<v8::Object> creation_context) override;
+  v8::MaybeLocal<v8::Value> WrapV2(ScriptState*) override;
 
  private:
   // It may be stale after Detach. Use length() instead.

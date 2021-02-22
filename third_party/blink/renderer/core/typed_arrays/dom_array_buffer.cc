@@ -117,6 +117,24 @@ v8::Local<v8::Value> DOMArrayBuffer::Wrap(
   return AssociateWithWrapper(isolate, wrapper_type_info, wrapper);
 }
 
+v8::MaybeLocal<v8::Value> DOMArrayBuffer::WrapV2(ScriptState* script_state) {
+  DCHECK(!DOMDataStore::ContainsWrapper(this, script_state->GetIsolate()));
+
+  const WrapperTypeInfo* wrapper_type_info = this->GetWrapperTypeInfo();
+
+  v8::Local<v8::ArrayBuffer> wrapper;
+  {
+    v8::Context::Scope context_scope(script_state->GetContext());
+    wrapper = v8::ArrayBuffer::New(script_state->GetIsolate(),
+                                   Content()->BackingStore());
+
+    wrapper->Externalize(Content()->BackingStore());
+  }
+
+  return AssociateWithWrapper(script_state->GetIsolate(), wrapper_type_info,
+                              wrapper);
+}
+
 DOMArrayBuffer* DOMArrayBuffer::Create(
     scoped_refptr<SharedBuffer> shared_buffer) {
   ArrayBufferContents contents(shared_buffer->size(), 1,
