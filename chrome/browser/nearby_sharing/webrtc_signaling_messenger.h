@@ -41,8 +41,6 @@ class WebRtcSignalingMessenger
 
  private:
   signin::IdentityManager* identity_manager_ = nullptr;
-  TokenFetcher token_fetcher_;
-  SendMessageExpress send_message_express_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 };
 

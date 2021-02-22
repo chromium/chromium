@@ -14,8 +14,6 @@ WebRtcSignalingMessenger::WebRtcSignalingMessenger(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : identity_manager_(identity_manager),
-      token_fetcher_(identity_manager),
-      send_message_express_(&token_fetcher_, url_loader_factory),
       url_loader_factory_(url_loader_factory) {}
 
 WebRtcSignalingMessenger::~WebRtcSignalingMessenger() = default;
@@ -44,7 +42,25 @@ void WebRtcSignalingMessenger::SendMessage(
   inbox_message->set_message_type(
       chrome_browser_nearby_sharing_instantmessaging::InboxMessage::BASIC);
 
-  send_message_express_.SendMessage(request, std::move(callback));
+  // We tie the lifetime of the SendMessageExpress object to the lifetime of the
+  // mojo call. Once the call completes, we allow the unique_ptr to go out of
+  // scope in the lambda cleaning up all resources.
+  auto send_message_express = std::make_unique<SendMessageExpress>(
+      identity_manager_, url_loader_factory_);
+  // The call to SendMessage is done on the raw pointer so we can std::move the
+  // unique_ptr into the bind closure without 'use-after-move' warnings.
+  auto* send_message_express_ptr = send_message_express.get();
+  send_message_express_ptr->SendMessage(
+      request,
+      base::BindOnce(
+          [](SendMessageCallback cb,
+             std::unique_ptr<SendMessageExpress> send_message, bool success) {
+            // Complete the original mojo call.
+            std::move(cb).Run(success);
+            // Intentionally let |send_message| go out of scope and delete the
+            // object.
+          },
+          std::move(callback), std::move(send_message_express)));
 }
 
 void WebRtcSignalingMessenger::StartReceivingMessages(
