@@ -88,6 +88,21 @@
         align-items: flex-end;
       }
 
+      .account-list-header-description {
+        align-items: center;
+        display: flex;
+        width: 100%;
+      }
+
+      .account-list-header-description > .secondary {
+        flex-grow: 1;
+      }
+
+      .account-list-header-description > .secondary,
+      .secondary-accounts-disabled-tooltip {
+        padding-inline-end: 12px;
+      }
+
       #account-list-header > h2 {
         padding-bottom: 12px;
         padding-top: 12px;
@@ -95,7 +110,6 @@
 
       #account-list-header {
         padding-bottom: 12px;
-        padding-inline-end: 12px;
       }
 
       cr-policy-indicator {
@@ -103,7 +117,7 @@
         margin-top: var(--add-account-margin-top);
       }
 
-      #add-account-button {
+      .secondary-accounts-box > #add-account-button {
         margin-bottom: 12px;
         margin-top: 12px;
       }
@@ -251,17 +265,20 @@
       </div>
     </template>
 
-    <!-- Message saying that secondary account signin is not allowed -->
-    <div id="settings-box-user-message" class="settings-box first user-message"
-        hidden="[[isSecondaryGoogleAccountSigninAllowed_]]">
-      <cr-policy-pref-indicator class="secondary-accounts-policy-indicator"
-          pref=
-          "[[prefs.account_manager.secondary_google_account_signin_allowed]]">
-      </cr-policy-pref-indicator>
-      <div id="user-message-text" class="secondary">
-        [[getSecondaryAccountsDisabledUserMessage_()]]
+    <template is="dom-if" if="[[!isAccountManagementFlowsV2Enabled_]]">
+      <!-- Message saying that secondary account signin is not allowed -->
+      <div id="settings-box-user-message"
+          class="settings-box first user-message"
+          hidden="[[isSecondaryGoogleAccountSigninAllowed_]]">
+        <cr-policy-pref-indicator class="secondary-accounts-policy-indicator"
+            pref=
+            "[[prefs.account_manager.secondary_google_account_signin_allowed]]">
+        </cr-policy-pref-indicator>
+        <div id="user-message-text" class="secondary">
+          [[getSecondaryAccountsDisabledUserMessage_()]]
+        </div>
       </div>
-    </div>
+    </template>
 
     <!-- Secondary Accounts list header -->
     <div class="secondary-accounts-box settings-box first">
@@ -269,19 +286,43 @@
         <h2>
           [[getAccountListHeader_(isChildUser_)]]
         </h2>
-        <span class="secondary"
+        <div class="account-list-header-description"
             hidden$="[[!isAccountManagementFlowsV2Enabled_]]">
-          [[getAccountListDescription_(isChildUser_)]]
-        </span>
+          <span class="secondary">
+            [[getAccountListDescription_(isChildUser_)]]
+          </span>
+          <template is="dom-if" if="[[showSecondaryAccountsDisabledTooltip_(
+                                    isSecondaryGoogleAccountSigninAllowed_)]]">
+            <cr-tooltip-icon
+                class="secondary-accounts-disabled-tooltip"
+                icon-class="[[getManagedAccountTooltipIcon_(isChildUser_)]]"
+                tooltip-text="[[getSecondaryAccountsDisabledUserMessage_(
+                                    isChildUser_)]]"
+                icon-aria-label="[[getSecondaryAccountsDisabledUserMessage_(
+                                      isChildUser_)]]">
+            </cr-tooltip-icon>
+          </template>
+          <template is="dom-if" if="[[isAccountManagementFlowsV2Enabled_]]">
+            <cr-button disabled="[[!isSecondaryGoogleAccountSigninAllowed_]]"
+                id="add-account-button" on-click="addAccount_"
+                deep-link-focus-id$="[[Setting.kAddAccount]]">
+              <div id="add-account-icon"></div>
+              [[getAddAccountLabel_(isChildUser_,
+                  isSecondaryGoogleAccountSigninAllowed_)]]
+            </cr-button>
+          </template>
+        </div>
       </div>
-      <cr-button disabled="[[!isSecondaryGoogleAccountSigninAllowed_]]"
-          id="add-account-button" on-click="addAccount_"
-          deep-link-focus-id$="[[Setting.kAddAccount]]">
-        <div id="add-account-icon"></div>
-        [[getAddAccountLabel_(isChildUser_,
-            isSecondaryGoogleAccountSigninAllowed_)]]
-      </cr-button>
-    </div>
+      <template is="dom-if" if="[[!isAccountManagementFlowsV2Enabled_]]">
+        <cr-button disabled="[[!isSecondaryGoogleAccountSigninAllowed_]]"
+            id="add-account-button" on-click="addAccount_"
+            deep-link-focus-id$="[[Setting.kAddAccount]]">
+          <div id="add-account-icon"></div>
+          [[getAddAccountLabel_(isChildUser_,
+              isSecondaryGoogleAccountSigninAllowed_)]]
+        </cr-button>
+      </template>
+  </div>
 
     <!-- Secondary Accounts list -->
     <div id="outer" class="layout vertical nowrap" role="list">

@@ -180,6 +180,16 @@ Polymer({
   },
 
   /**
+   * @return {boolean} whether 'Secondary Accounts disabled' tooltip should be
+   *     shown.
+   * @private
+   */
+  showSecondaryAccountsDisabledTooltip_() {
+    return this.isAccountManagementFlowsV2Enabled_ &&
+        !this.isSecondaryGoogleAccountSigninAllowed_;
+  },
+
+  /**
    * @return {string} 'Secondary Accounts disabled' message depending on
    *    account type
    * @private

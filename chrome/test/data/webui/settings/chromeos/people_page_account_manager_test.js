@@ -150,6 +150,7 @@ cr.define('settings_people_page_account_manager', function() {
       assertTrue(!!accountList);
 
       settings.Router.getInstance().navigateTo(settings.routes.ACCOUNT_MANAGER);
+      Polymer.dom.flush();
     });
 
     teardown(function() {
@@ -172,7 +173,12 @@ cr.define('settings_people_page_account_manager', function() {
 
     test('AddAccount', function() {
       assertFalse(accountManager.$$('#add-account-button').disabled);
-      assertTrue(accountManager.$$('#settings-box-user-message').hidden);
+      if (accountManager.isAccountManagementFlowsV2Enabled_) {
+        assertTrue(
+            accountManager.$$('.secondary-accounts-disabled-tooltip') === null);
+      } else {
+        assertTrue(accountManager.$$('#settings-box-user-message').hidden);
+      }
       accountManager.$$('#add-account-button').click();
       assertEquals(1, browserProxy.getCallCount('addAccount'));
     });
@@ -332,6 +338,7 @@ cr.define('settings_people_page_account_manager', function() {
       assertTrue(!!accountList);
 
       settings.Router.getInstance().navigateTo(settings.routes.ACCOUNT_MANAGER);
+      Polymer.dom.flush();
     });
 
     teardown(function() {
@@ -340,13 +347,27 @@ cr.define('settings_people_page_account_manager', function() {
 
     test('AddAccountCanBeDisabledByPolicy', function() {
       assertTrue(accountManager.$$('#add-account-button').disabled);
-      assertFalse(accountManager.$$('#settings-box-user-message').hidden);
+      if (accountManager.isAccountManagementFlowsV2Enabled_) {
+        assertFalse(
+            accountManager.$$('.secondary-accounts-disabled-tooltip') === null);
+      } else {
+        assertFalse(accountManager.$$('#settings-box-user-message').hidden);
+      }
     });
 
     test('UserMessageSetForAccountType', function() {
-      assertEquals(
-          loadTimeData.getString('accountManagerSecondaryAccountsDisabledText'),
-          accountManager.$$('#user-message-text').textContent.trim());
+      if (accountManager.isAccountManagementFlowsV2Enabled_) {
+        assertEquals(
+            loadTimeData.getString(
+                'accountManagerSecondaryAccountsDisabledText'),
+            accountManager.$$('.secondary-accounts-disabled-tooltip')
+                .tooltipText);
+      } else {
+        assertEquals(
+            loadTimeData.getString(
+                'accountManagerSecondaryAccountsDisabledText'),
+            accountManager.$$('#user-message-text').textContent.trim());
+      }
     });
   });
 
@@ -371,6 +392,7 @@ cr.define('settings_people_page_account_manager', function() {
       assertTrue(!!accountList);
 
       settings.Router.getInstance().navigateTo(settings.routes.ACCOUNT_MANAGER);
+      Polymer.dom.flush();
     });
 
     teardown(function() {
@@ -378,10 +400,18 @@ cr.define('settings_people_page_account_manager', function() {
     });
 
     test('UserMessageSetForAccountType', function() {
-      assertEquals(
-          loadTimeData.getString(
-              'accountManagerSecondaryAccountsDisabledChildText'),
-          accountManager.$$('#user-message-text').textContent.trim());
+      if (accountManager.isAccountManagementFlowsV2Enabled_) {
+        assertEquals(
+            loadTimeData.getString(
+                'accountManagerSecondaryAccountsDisabledChildText'),
+            accountManager.$$('.secondary-accounts-disabled-tooltip')
+                .tooltipText);
+      } else {
+        assertEquals(
+            loadTimeData.getString(
+                'accountManagerSecondaryAccountsDisabledChildText'),
+            accountManager.$$('#user-message-text').textContent.trim());
+      }
     });
   });
 
