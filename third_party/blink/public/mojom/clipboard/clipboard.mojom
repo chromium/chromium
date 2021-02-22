@@ -4,10 +4,12 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
 import "skia/public/mojom/bitmap.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom";
 import "url/mojom/url.mojom";
 
 enum ClipboardFormat {
@@ -24,6 +26,25 @@ enum ClipboardBuffer {
   // TODO(crbug.com/676224): When preprocessing of mojom is available only
   // define this value for USE_X11.
   kSelection,
+};
+
+// Used for pasting a list of files.
+struct ClipboardFile {
+  // Absolute file system path.
+  mojo_base.mojom.FilePath path;
+  // Display name (typically last part of path).
+  mojo_base.mojom.FilePath display_name;
+  // Unguessable token associated with this file. Passed back from renderer to
+  // browser in mojo FileSystemAccessManager GetEntryFromDataTransferToken() to
+  // retrieve a FileSystemAccessEntry.
+  pending_remote<FileSystemAccessDataTransferToken>? file_system_access_token;
+};
+
+struct ClipboardFiles {
+  // Files on the system clipboard.
+  array<ClipboardFile> files;
+  // Isolated file system ID for the files.
+  string? file_system_id;
 };
 
 // Allows communication with the system clipboard.
@@ -60,6 +81,17 @@ interface ClipboardHost {
 
   [Sync]
   ReadImage(ClipboardBuffer buffer) => (skia.mojom.BitmapN32? image);
+
+  // Read Files from clipboard. Called on paste event to provide
+  // clipboardData.files.
+  // Security notes:
+  // 1. This function must only be used with user activation, similar to drag
+  //    and drop.
+  // 2. We do not allow/implement WriteFiles(). Any such future function must
+  //    ensure that renderers cannot place arbitrary paths on the clipboard,
+  //    and then read them via ReadFiles().
+  [Sync]
+  ReadFiles(ClipboardBuffer buffer) => (ClipboardFiles result);
 
   [Sync]
   ReadCustomData(ClipboardBuffer buffer, mojo_base.mojom.String16 type) =>

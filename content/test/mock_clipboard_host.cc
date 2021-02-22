@@ -99,6 +99,11 @@ void MockClipboardHost::ReadImage(ui::ClipboardBuffer clipboard_buffer,
   std::move(callback).Run(image_);
 }
 
+void MockClipboardHost::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
+                                  ReadFilesCallback callback) {
+  std::move(callback).Run(blink::mojom::ClipboardFiles::New());
+}
+
 void MockClipboardHost::ReadCustomData(ui::ClipboardBuffer clipboard_buffer,
                                        const base::string16& type,
                                        ReadCustomDataCallback callback) {

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
@@ -16,22 +17,31 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
+#include "content/browser/file_system/browser_file_system_helper.h"
+#include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/permissions/permission_controller_impl.h"
+#include "content/browser/renderer_host/drop_data_util.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/child_process_host.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/drop_data.h"
 #include "ipc/ipc_message.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "skia/ext/skia_utils_base.h"
+#include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
+#include "third_party/blink/public/mojom/page/drag.mojom-forward.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/custom_data_helper.h"
+#include "ui/base/clipboard/file_info.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "ui/base/ui_base_features.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -332,6 +342,80 @@ void ClipboardHostImpl::OnReadImage(ui::ClipboardBuffer clipboard_buffer,
             std::move(callback).Run(bitmap);
           },
           std::move(bitmap), std::move(callback)));
+}
+
+void ClipboardHostImpl::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
+                                  ReadFilesCallback callback) {
+  blink::mojom::ClipboardFilesPtr result = blink::mojom::ClipboardFiles::New();
+  if (!IsClipboardPasteAllowed(render_frame_routing_id_)) {
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
+  if (!base::FeatureList::IsEnabled(features::kClipboardFilenames)) {
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
+  std::vector<ui::FileInfo> filenames;
+  auto data_dst = CreateDataEndpoint();
+  clipboard_->ReadFilenames(clipboard_buffer, data_dst.get(), &filenames);
+  std::string data = ui::FileInfosToURIList(filenames);
+
+  RenderFrameHostImpl* render_frame_host =
+      RenderFrameHostImpl::FromID(render_frame_routing_id_);
+  DCHECK(render_frame_host);
+  // TODO(crbug.com/1175483): Rename '*Drop*' names to '*DataTransfer*'.
+  // The functions and data structures are used by both clipboard, and
+  // drag-and-drop, which are both represented in JS by type 'DataTransfer'.
+
+  // This code matches the drag-and-drop DataTransfer code in
+  // RenderWidgetHostImpl::DragTargetDrop().
+
+  // Create DropData with filenames.
+  DropData drop_data;
+  drop_data.filenames = std::move(filenames);
+
+  // Call PrepareDropDataForChildProcess() to register files so they can be
+  // accessed by the renderer.
+  RenderProcessHost* process = render_frame_host->GetProcess();
+  PrepareDropDataForChildProcess(
+      &drop_data, ChildProcessSecurityPolicyImpl::GetInstance(),
+      process->GetID(), process->GetStoragePartition()->GetFileSystemContext());
+  StoragePartitionImpl* storage_partition = static_cast<StoragePartitionImpl*>(
+      render_frame_host->GetProcess()->GetStoragePartition());
+
+  // Convert to DragData which creates the access token and remaps paths.
+  blink::mojom::DragDataPtr drag_data = DropDataToDragData(
+      drop_data, storage_partition->GetFileSystemAccessManager(),
+      process->GetID());
+
+  // Extract mojom::ClipboardFiles from mojom::DragData.
+  for (const auto& item : drag_data->items) {
+    DCHECK_EQ(item->which(), blink::mojom::DragItemDataView::Tag::FILE);
+    const blink::mojom::DragItemFilePtr& file_item = item->get_file();
+    blink::mojom::ClipboardFilePtr file = blink::mojom::ClipboardFile::New();
+    file->path = std::move(file_item->path);
+    file->display_name = std::move(file_item->display_name);
+    file->file_system_access_token =
+        std::move(file_item->file_system_access_token);
+    result->files.push_back(std::move(file));
+  }
+  result->file_system_id = std::move(drag_data->file_system_id);
+
+  PerformPasteIfContentAllowed(
+      clipboard_->GetSequenceNumber(clipboard_buffer),
+      ui::ClipboardFormatType::GetFilenamesType(), std::move(data),
+      base::BindOnce(
+          [](blink::mojom::ClipboardFilesPtr result, ReadFilesCallback callback,
+             ClipboardPasteContentAllowed allowed) {
+            if (!allowed) {
+              result->files.clear();
+              result->file_system_id->clear();
+            }
+            std::move(callback).Run(std::move(result));
+          },
+          std::move(result), std::move(callback)));
 }
 
 void ClipboardHostImpl::ReadCustomData(ui::ClipboardBuffer clipboard_buffer,

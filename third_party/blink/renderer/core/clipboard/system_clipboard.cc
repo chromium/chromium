@@ -215,6 +215,14 @@ void SystemClipboard::WriteImage(const SkBitmap& bitmap) {
   clipboard_->WriteImage(bitmap);
 }
 
+mojom::blink::ClipboardFilesPtr SystemClipboard::ReadFiles() {
+  mojom::blink::ClipboardFilesPtr files;
+  if (!IsValidBufferType(buffer_) || !clipboard_.is_bound())
+    return files;
+  clipboard_->ReadFiles(buffer_, &files);
+  return files;
+}
+
 String SystemClipboard::ReadCustomData(const String& type) {
   if (!IsValidBufferType(buffer_) || !clipboard_.is_bound())
     return String();

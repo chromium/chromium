@@ -30,7 +30,9 @@
 
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
+#include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_drag_data.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
@@ -40,6 +42,7 @@
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "ui/base/ui_base_features.h"
 
 namespace blink {
 
@@ -54,8 +57,28 @@ DataObject* DataObject::CreateFromClipboard(SystemClipboard* system_clipboard,
   for (const String& type : system_clipboard->ReadAvailableTypes()) {
     if (paste_mode == PasteMode::kPlainTextOnly && type != kMimeTypeTextPlain)
       continue;
-    data_object->item_list_.push_back(DataObjectItem::CreateFromClipboard(
-        system_clipboard, type, sequence_number));
+    mojom::blink::ClipboardFilesPtr files;
+    if (type == kMimeTypeTextURIList &&
+        base::FeatureList::IsEnabled(features::kClipboardFilenames)) {
+      files = system_clipboard->ReadFiles();
+      // Ignore ReadFiles() result if clipboard sequence number has changed.
+      if (system_clipboard->SequenceNumber() != sequence_number) {
+        files->files.clear();
+      }
+      for (const mojom::blink::ClipboardFilePtr& file : files->files) {
+        data_object->AddFilename(
+            FilePathToString(file->path), FilePathToString(file->display_name),
+            files->file_system_id,
+            base::MakeRefCounted<FileSystemAccessDropData>(
+                std::move(file->file_system_access_token)));
+      }
+    }
+    if (files && !files->files.IsEmpty()) {
+      DraggedIsolatedFileSystem::PrepareForDataObject(data_object);
+    } else {
+      data_object->item_list_.push_back(DataObjectItem::CreateFromClipboard(
+          system_clipboard, type, sequence_number));
+    }
 #if DCHECK_IS_ON()
     DCHECK(types_seen.insert(type).is_new_entry);
 #endif

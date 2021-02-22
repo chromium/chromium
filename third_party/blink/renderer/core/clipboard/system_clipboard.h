@@ -70,6 +70,9 @@ class CORE_EXPORT SystemClipboard final
   // Write the image only.
   void WriteImage(const SkBitmap&);
 
+  // Read files.
+  mojom::blink::ClipboardFilesPtr ReadFiles();
+
   String ReadCustomData(const String& type);
   void WriteDataObject(DataObject*);
 

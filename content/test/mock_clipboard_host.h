@@ -41,6 +41,8 @@ class MockClipboardHost : public blink::mojom::ClipboardHost {
                ReadRtfCallback callback) override;
   void ReadImage(ui::ClipboardBuffer clipboard_buffer,
                  ReadImageCallback callback) override;
+  void ReadFiles(ui::ClipboardBuffer clipboard_buffer,
+                 ReadFilesCallback callback) override;
   void ReadCustomData(ui::ClipboardBuffer clipboard_buffer,
                       const base::string16& type,
                       ReadCustomDataCallback callback) override;
