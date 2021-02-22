@@ -3019,8 +3019,15 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       self.fullscreenController->FreezeToolbarHeight(true);
     }
   }
+
+  // Close all keyboards if the thumb strip is transitioning to the tab grid.
   if (nextViewRevealState == ViewRevealState::Revealed) {
     [self.view endEditing:YES];
+  }
+
+  // Close the omnibox when opening the thumb strip
+  if (nextViewRevealState == ViewRevealState::Peeked) {
+    [self.omniboxHandler cancelOmniboxEdit];
   }
 
   // Stop scrolling in the current web state when transitioning.
