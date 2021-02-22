@@ -3682,6 +3682,10 @@ AXObject* AXObject::DeepestFirstChildIncludingIgnored() const {
 }
 
 AXObject* AXObject::DeepestLastChildIncludingIgnored() const {
+  if (IsDetached()) {
+    NOTREACHED();
+    return nullptr;
+  }
   if (!ChildCountIncludingIgnored())
     return nullptr;
 

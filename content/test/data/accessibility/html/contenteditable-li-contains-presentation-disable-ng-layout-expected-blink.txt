@@ -1,0 +1,14 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer multiline value='A list item with both a br and<newline>an inner p role=presentation'
+++++++++list
+++++++++++listItem
+++++++++++++listMarker name='• ' nextOnLineId=inlineTextBox:"A list item with both a br and "
+++++++++++++presentational ignored
+++++++++++++++staticText name='A list item with both a br and ' nextOnLineId=inlineTextBox:"<newline>" previousOnLineId=listMarker:"• "
+++++++++++++++++inlineTextBox name='A list item with both a br and ' nextOnLineId=inlineTextBox:"<newline>" previousOnLineId=listMarker:"• "
+++++++++++++++lineBreak name='<newline>' previousOnLineId=inlineTextBox:"A list item with both a br and "
+++++++++++++++++inlineTextBox name='<newline>' previousOnLineId=inlineTextBox:"A list item with both a br and "
+++++++++++++++staticText name='an inner p role=presentation'
+++++++++++++++++inlineTextBox name='an inner p role=presentation'

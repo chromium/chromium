@@ -1640,6 +1640,20 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityGraphicsRoles) {
   RunAriaTest(FILE_PATH_LITERAL("graphics-roles.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityContenteditableBr) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kEnableBlinkFeatures, "LayoutNG");  // Should be default.
+  RunHtmlTest(FILE_PATH_LITERAL("contenteditable-br.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityContenteditableBrDisableNGLayout) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kDisableBlinkFeatures, "LayoutNG");
+  RunHtmlTest(FILE_PATH_LITERAL("contenteditable-br-disable-ng-layout.html"));
+}
+
 #if defined(OS_ANDROID) || defined(OS_MAC)
 // Flaky failures: http://crbug.com/445929.
 // Mac failures: http://crbug.com/571712.
@@ -1652,6 +1666,53 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityGraphicsRoles) {
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        MAYBE_AccessibilityContenteditableDescendants) {
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-descendants.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityContenteditableDocsLi) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kEnableBlinkFeatures, "LayoutNG");  // Should be default.
+  RunHtmlTest(FILE_PATH_LITERAL("contenteditable-docs-li.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityContenteditableDocsLiDisableNGLayout) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kDisableBlinkFeatures, "LayoutNG");
+  RunHtmlTest(
+      FILE_PATH_LITERAL("contenteditable-docs-li-disable-ng-layout.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityContenteditableLiContainsPresentation) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kEnableBlinkFeatures, "LayoutNG");  // Should be default.
+  RunHtmlTest(
+      FILE_PATH_LITERAL("contenteditable-li-contains-presentation.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    DumpAccessibilityTreeTest,
+    AccessibilityContenteditableLiContainsPresentationDisableNGLayout) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kDisableBlinkFeatures, "LayoutNG");
+  RunHtmlTest(FILE_PATH_LITERAL(
+      "contenteditable-li-contains-presentation-disable-ng-layout.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityContenteditableSpans) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kEnableBlinkFeatures, "LayoutNG");  // Should be default.
+  RunHtmlTest(FILE_PATH_LITERAL("contenteditable-spans.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityContenteditableSpansDisableNGLayout) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kDisableBlinkFeatures, "LayoutNG");
+  RunHtmlTest(
+      FILE_PATH_LITERAL("contenteditable-spans-disable-ng-layout.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,

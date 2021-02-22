@@ -68,7 +68,30 @@ std::string IntAttrToString(const ui::AXNode& node,
     ui::AXNode* target = ui::AXTreeManagerMap::GetInstance()
                              .GetManager(tree_id)
                              ->GetNodeFromTree(tree_id, value);
-    return target ? ui::ToString(target->data().role) : std::string("null");
+    if (!target)
+      return "null";
+
+    std::string result = ui::ToString(target->data().role);
+    // Provide some extra info about the related object via the name or
+    // possibly the class (if an element).
+    // TODO(accessibility) Include all relational attributes here.
+    // TODO(accessibility) Consider using line numbers from the results instead.
+    if (attr == ax::mojom::IntAttribute::kNextOnLineId ||
+        attr == ax::mojom::IntAttribute::kPreviousOnLineId) {
+      if (target->data().HasStringAttribute(
+              ax::mojom::StringAttribute::kName)) {
+        result += ":\"";
+        result += target->data().GetStringAttribute(
+            ax::mojom::StringAttribute::kName);
+        result += "\"";
+      } else if (target->data().HasStringAttribute(
+                     ax::mojom::StringAttribute::kClassName)) {
+        result += ".";
+        result += target->data().GetStringAttribute(
+            ax::mojom::StringAttribute::kClassName);
+      }
+    }
+    return result;
   }
 
   switch (attr) {
