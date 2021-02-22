@@ -1061,8 +1061,9 @@ def _make_overload_dispatcher_per_arg_size(cg_context, items):
 
     # 12.4. if V is a platform object, ...
     def inheritance_length(func_and_type):
-        return len(func_and_type[1].type_definition_object.
-                   inclusive_inherited_interfaces)
+        return (len(func_and_type[1].type_definition_object.
+                    inclusive_inherited_interfaces),
+                func_and_type[1].type_definition_object.identifier)
 
     # Attempt to match from most derived to least derived.
     for func_like, idl_type in sorted(
@@ -1119,16 +1120,12 @@ def _make_overload_dispatcher_per_arg_size(cg_context, items):
                     "bindings::IsEsIterableObject"
                     "(${isolate}, {value}, ${exception_state})")
         dispatcher_nodes.append(
-            TextNode("if (${exception_state}.HadException()) {\n"
-                     "  return;\n"
-                     "}"))
+            CxxUnlikelyIfNode(cond="${exception_state}.HadException()",
+                              body=TextNode("return;")))
 
     # 12.10. if Type(V) is Object and ...
-    def is_es_object_type(t, u):
-        return (u.is_callback_interface or u.is_dictionary or u.is_record
-                or u.is_object)
-
-    func_like = find(is_es_object_type)
+    func_like = find(lambda t, u: u.is_callback_interface or u.is_dictionary or
+                     u.is_record or u.is_object)
     if func_like:
         dispatch_if("{value}->IsObject()")
 
