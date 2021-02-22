@@ -19,7 +19,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/autofill/cells/autofill_data_item.h"
+#import "ios/chrome/browser/ui/settings/autofill/cells/autofill_profile_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
@@ -195,6 +195,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (TableViewItem*)itemForProfile:
     (const autofill::AutofillProfile&)autofillProfile {
+  assert(autofillProfile.record_type() ==
+         autofill::AutofillProfile::LOCAL_PROFILE);
   std::string guid(autofillProfile.guid());
   NSString* title = base::SysUTF16ToNSString(
       autofillProfile.GetInfo(autofill::AutofillType(autofill::NAME_FULL),
@@ -202,21 +204,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSString* subTitle = base::SysUTF16ToNSString(autofillProfile.GetInfo(
       autofill::AutofillType(autofill::ADDRESS_HOME_LINE1),
       GetApplicationContext()->GetApplicationLocale()));
-  bool isServerProfile = autofillProfile.record_type() ==
-                         autofill::AutofillProfile::SERVER_PROFILE;
 
-  AutofillDataItem* item =
-      [[AutofillDataItem alloc] initWithType:ItemTypeAddress];
+  AutofillProfileItem* item =
+      [[AutofillProfileItem alloc] initWithType:ItemTypeAddress];
   item.text = title;
   item.leadingDetailText = subTitle;
   item.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   item.accessibilityIdentifier = title;
   item.GUID = guid;
-  item.deletable = !isServerProfile;
-  if (isServerProfile) {
-    item.trailingDetailText =
-        l10n_util::GetNSString(IDS_IOS_AUTOFILL_WALLET_SERVER_NAME);
-  }
   return item;
 }
 
@@ -325,14 +320,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (BOOL)tableView:(UITableView*)tableView
     canEditRowAtIndexPath:(NSIndexPath*)indexPath {
-  // Only autofill data cells are editable.
+  // Only profile data cells are editable.
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  if ([item isKindOfClass:[AutofillDataItem class]]) {
-    AutofillDataItem* autofillItem =
-        base::mac::ObjCCastStrict<AutofillDataItem>(item);
-    return [autofillItem isDeletable];
-  }
-  return NO;
+  return [item isKindOfClass:[AutofillProfileItem class]];
 }
 
 - (void)tableView:(UITableView*)tableView
@@ -449,7 +439,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Removes the item from the personal data manager model.
 - (void)willDeleteItemsAtIndexPaths:(NSArray*)indexPaths {
   for (NSIndexPath* indexPath in indexPaths) {
-    AutofillDataItem* item = base::mac::ObjCCastStrict<AutofillDataItem>(
+    AutofillProfileItem* item = base::mac::ObjCCastStrict<AutofillProfileItem>(
         [self.tableViewModel itemAtIndexPath:indexPath]);
     _personalDataManager->RemoveByGUID([item GUID]);
   }

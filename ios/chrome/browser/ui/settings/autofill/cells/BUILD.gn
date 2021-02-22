@@ -4,8 +4,10 @@
 
 source_set("cells") {
   sources = [
-    "autofill_data_item.h",
-    "autofill_data_item.mm",
+    "autofill_card_item.h",
+    "autofill_card_item.mm",
+    "autofill_profile_item.h",
+    "autofill_profile_item.mm",
   ]
 
   deps = [

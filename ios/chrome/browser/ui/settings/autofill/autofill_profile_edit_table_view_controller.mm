@@ -9,22 +9,18 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
 #import "ios/chrome/browser/ui/autofill/cells/autofill_edit_item.h"
-#include "ios/chrome/browser/ui/commands/application_commands.h"
-#import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -127,19 +123,6 @@ static const AutofillFieldDisplayInfo kFieldsToDisplay[] = {
 #pragma mark - SettingsRootTableViewController
 
 - (void)editButtonPressed {
-  // In the case of server profiles, open the Payments editing page instead.
-  if (_autofillProfile.record_type() ==
-      autofill::AutofillProfile::SERVER_PROFILE) {
-    GURL paymentsURL = autofill::payments::GetManageAddressesUrl();
-    OpenNewTabCommand* command =
-        [OpenNewTabCommand commandWithURLFromChrome:paymentsURL];
-    [self.dispatcher closeSettingsUIAndOpenURL:command];
-
-    // Don't call [super editButtonPressed] because edit mode is not actually
-    // entered in this case.
-    return;
-  }
-
   [super editButtonPressed];
 
   if (!self.tableView.editing) {
