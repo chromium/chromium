@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/accessibility/caption_util.h"
 #include "chrome/browser/accessibility/soda_installer.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -68,6 +69,15 @@ void CaptionController::Init() {
   // Hidden behind a feature flag.
   if (!base::FeatureList::IsEnabled(media::kLiveCaption))
     return;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Return early if current profile is a signin profile (as opposed to a user
+  // profile). See crbug.com/1180706
+  // TODO(crbug.com/1180706): Remove this check if bug can be resolved through
+  // other means.
+  if (ash::ProfileHelper::IsSigninProfile(profile_))
+    return;
+#endif
 
   base::UmaHistogramBoolean("Accessibility.LiveCaption.FeatureEnabled",
                             base::FeatureList::IsEnabled(media::kLiveCaption));
