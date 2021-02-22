@@ -7,6 +7,8 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -60,7 +62,13 @@ class FileSystemAccessClipboardBrowserTest : public ContentBrowserTest {
   base::test::ScopedFeatureList features_;
 };
 
-IN_PROC_BROWSER_TEST_F(FileSystemAccessClipboardBrowserTest, File) {
+// TODO(crbug.com/1175483): Lacros wayland clipboard does not work in tests.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_File DISABLED_File
+#else
+#define MAYBE_File File
+#endif
+IN_PROC_BROWSER_TEST_F(FileSystemAccessClipboardBrowserTest, MAYBE_File) {
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
 
@@ -112,7 +120,13 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessClipboardBrowserTest, File) {
   EXPECT_EQ(test_contents, EvalJs(shell(), "p"));
 }
 
-IN_PROC_BROWSER_TEST_F(FileSystemAccessClipboardBrowserTest, Directory) {
+// TODO(crbug.com/1175483): Lacros wayland clipboard does not work in tests.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_Directory DISABLED_Directory
+#else
+#define MAYBE_Directory Directory
+#endif
+IN_PROC_BROWSER_TEST_F(FileSystemAccessClipboardBrowserTest, MAYBE_Directory) {
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
 
@@ -187,7 +201,14 @@ class FileSystemAccessClipboardDisabledBrowserTest : public ContentBrowserTest {
   base::test::ScopedFeatureList features_;
 };
 
-IN_PROC_BROWSER_TEST_F(FileSystemAccessClipboardDisabledBrowserTest, Disabled) {
+// TODO(crbug.com/1175483): Lacros wayland clipboard does not work in tests.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_Disabled DISABLED_Disabled
+#else
+#define MAYBE_Disabled Disabled
+#endif
+IN_PROC_BROWSER_TEST_F(FileSystemAccessClipboardDisabledBrowserTest,
+                       MAYBE_Disabled) {
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
 
