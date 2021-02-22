@@ -36,7 +36,7 @@ namespace {
 UpdateService* update_service_override = nullptr;
 
 // This set contains all Omaha attributes that is associated with extensions.
-constexpr const char* kOmahaAttributes[] = {"_malware", "_esbAllowist"};
+constexpr const char* kOmahaAttributes[] = {"_malware", "_esbAllowlist"};
 
 void SendUninstallPingCompleteCallback(update_client::Error error) {}
 

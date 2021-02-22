@@ -55,7 +55,7 @@ class ExtensionAllowlistUnitTest : public ExtensionServiceTestBase {
     if (is_malware)
       attributes.SetBoolKey("_malware", true);
 
-    attributes.SetBoolKey("_esbAllowist", is_allowlisted);
+    attributes.SetBoolKey("_esbAllowlist", is_allowlisted);
 
     service()->PerformActionBasedOnOmahaAttributes(extension_id, attributes);
   }

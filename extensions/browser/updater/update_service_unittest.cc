@@ -99,9 +99,9 @@ class FakeUpdateClient : public update_client::UpdateClient {
     if (is_malware_update_item_)
       custom_attributes["_malware"] = "true";
     if (allowlist_state == extensions::ALLOWLIST_ALLOWLISTED)
-      custom_attributes["_esbAllowist"] = "true";
+      custom_attributes["_esbAllowlist"] = "true";
     else if (allowlist_state == extensions::ALLOWLIST_NOT_ALLOWLISTED)
-      custom_attributes["_esbAllowist"] = "true";
+      custom_attributes["_esbAllowlist"] = "true";
 
     if (!custom_attributes.empty())
       update_item->custom_updatecheck_data = custom_attributes;
@@ -289,7 +289,7 @@ class FakeExtensionSystem : public MockExtensionSystem {
     else
       registry->AddEnabled(extension1);
 
-    const base::Value* allowlist_value = attributes.FindKey("_esbAllowist");
+    const base::Value* allowlist_value = attributes.FindKey("_esbAllowlist");
     if (allowlist_value) {
       bool is_allowlisted = allowlist_value->GetBool();
       ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(browser_context());
