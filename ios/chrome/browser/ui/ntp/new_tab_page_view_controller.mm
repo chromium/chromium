@@ -31,6 +31,9 @@ namespace {
 // it look smooth). Otherwise, the omnibox hides beneath the feed before
 // changing ownership.
 const CGFloat kOffsetToPinOmnibox = 100;
+
+// Delay before the CollectionView scrolls to the saved position.
+const CGFloat kDelayBeforeScrollingToSavedOffset = 0.3;
 }
 
 @interface NewTabPageViewController () <NewTabPageOmniboxPositioning>
@@ -269,7 +272,15 @@ const CGFloat kOffsetToPinOmnibox = 100;
 }
 
 - (void)setContentOffset:(CGFloat)offset {
-  [self setContentOffset:offset fromSavedState:YES];
+  // Since the feed uses a diffable data source its not completely loaded at
+  // this time, in order to make this work add a short delay before scrolling.
+  dispatch_after(
+      dispatch_time(DISPATCH_TIME_NOW,
+                    static_cast<int64_t>(kDelayBeforeScrollingToSavedOffset *
+                                         NSEC_PER_SEC)),
+      dispatch_get_main_queue(), ^{
+        [self setContentOffset:offset fromSavedState:YES];
+      });
 }
 
 - (void)updateLayoutForContentSuggestions {
