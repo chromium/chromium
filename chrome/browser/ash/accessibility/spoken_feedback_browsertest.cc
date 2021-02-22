@@ -1293,8 +1293,13 @@ IN_PROC_BROWSER_TEST_F(OobeSpokenFeedbackTest, SpokenFeedbackInOobe) {
         nullptr, ui::VKEY_ESCAPE, false, false, false, false));
   });
 
-  // The Let's go button gets initial focus.
-  sm_.ExpectSpeech("Let's go");
+  if (ash::features::IsNewOobeLayoutEnabled()) {
+    // The Get started button gets initial focus.
+    sm_.ExpectSpeech("Get started");
+  } else {
+    // The Let's go button gets initial focus.
+    sm_.ExpectSpeech("Let's go");
+  }
 
   sm_.Call([]() {
     ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(

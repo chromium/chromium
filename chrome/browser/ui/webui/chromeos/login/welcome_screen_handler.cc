@@ -140,7 +140,7 @@ void WelcomeScreenHandler::DeclareLocalizedValues(
                 ui::GetChromeOSDeviceTypeResourceId());
   builder->Add("newWelcomeScreenGreetingSubtitle",
                IDS_WELCOME_SCREEN_GREETING_SUBTITLE);
-  builder->Add("welcomeScreenGetStarted", IDS_OOBE_WELCOME_NEXT_BUTTON_TEXT);
+  builder->Add("welcomeScreenGetStarted", IDS_LOGIN_GET_STARTED);
 
   // MD-OOBE (oobe-welcome-element)
   builder->Add("debuggingFeaturesLink", IDS_WELCOME_ENABLE_DEV_FEATURES_LINK);
