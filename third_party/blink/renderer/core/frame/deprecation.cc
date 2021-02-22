@@ -614,6 +614,23 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
               "because you have opted in to the Reverse Origin Trial, you have "
               "until M96 (Canary: November, 2021; Stable: January, 2022)."};
 
+    case WebFeature::kAddressSpaceUnknownNonSecureContextEmbeddedPrivate:
+    case WebFeature::kAddressSpaceUnknownNonSecureContextEmbeddedLocal:
+    case WebFeature::kAddressSpacePublicNonSecureContextEmbeddedPrivate:
+    case WebFeature::kAddressSpacePublicNonSecureContextEmbeddedLocal:
+    case WebFeature::kAddressSpacePrivateNonSecureContextEmbeddedLocal:
+      return {"InsecurePrivateNetworkSubresourceRequest", kM92,
+              "The website requested a subresource was requested from a "
+              "network that it could only access because of its users' "
+              "privileged network position. These requests expose non-public "
+              "devices and servers to the internet, increasing the risk of a "
+              "cross-site request forgery (CSRF) attack, and/or information "
+              "leakage. To mitigate these risks, Chrome deprecates requests to "
+              "non-public subresources when initiated from non-secure "
+              "contexts, and will start blocking them in Chrome 92 (July "
+              "2021). See https://chromestatus.com/feature/5436853517811712 "
+              "for more details."};
+
     // Features that aren't deprecated don't have a deprecation message.
     default:
       return {"NotDeprecated", kUnknown, ""};
