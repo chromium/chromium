@@ -2269,6 +2269,11 @@ const char kSpeculativeServiceWorkerStartOnQueryInputDescription[] =
     "a query, any service worker associated with the search engine the query "
     "will be sent to is started early.";
 
+const char kSplitCacheByNetworkIsolationKeyName[] = "HTTP Cache Partitioning";
+const char kSplitCacheByNetworkIsolationKeyDescription[] =
+    "Partitions the HTTP Cache by (top-level site, current-frame site) to "
+    "disallow cross-site tracking.";
+
 const char kStrictOriginIsolationName[] = "Strict-Origin-Isolation";
 const char kStrictOriginIsolationDescription[] =
     "Experimental security mode that strengthens the site isolation policy. "

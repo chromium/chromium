@@ -45312,6 +45312,7 @@ from previous Chrome versions.
   <int value="-37966026" label="PermissionPredictions:enabled"/>
   <int value="-36503306" label="HomepageLocationPolicy:enabled"/>
   <int value="-36234530" label="PluginVmShowMicrophonePermissions:enabled"/>
+  <int value="-36077995" label="SplitCacheByNetworkIsolationKey:disabled"/>
   <int value="-35745997" label="TabSearch:enabled"/>
   <int value="-35388407" label="AshNewSystemMenu:disabled"/>
   <int value="-35256214" label="InterestFeedNoticeCardAutoDismiss:enabled"/>
@@ -46662,6 +46663,7 @@ from previous Chrome versions.
   <int value="1222017136" label="WebRtcUseEchoCanceller3:disabled"/>
   <int value="1222032915"
       label="kAutofillRationalizeRepeatedServerPredictions:enabled"/>
+  <int value="1222309415" label="SplitCacheByNetworkIsolationKey:enabled"/>
   <int value="1222808563" label="DisableInitialMostVisitedFadeIn:disabled"/>
   <int value="1226624874" label="Mus:disabled"/>
   <int value="1227633129" label="NtpChromeCartModule:disabled"/>

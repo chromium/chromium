@@ -1321,6 +1321,9 @@ extern const char kWebOTPCrossDeviceDescription[];
 extern const char kSpeculativeServiceWorkerStartOnQueryInputName[];
 extern const char kSpeculativeServiceWorkerStartOnQueryInputDescription[];
 
+extern const char kSplitCacheByNetworkIsolationKeyName[];
+extern const char kSplitCacheByNetworkIsolationKeyDescription[];
+
 extern const char kStopInBackgroundName[];
 extern const char kStopInBackgroundDescription[];
 
