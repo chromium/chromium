@@ -5,8 +5,8 @@ FAIL WebSockets: new WebSocket(invalid url) 2 assert_throws_dom: function "funct
 PASS WebSockets: new WebSocket(invalid url) 3
 PASS WebSockets: new WebSocket(invalid url) 4
 PASS WebSockets: new WebSocket(invalid url) 5
-FAIL WebSockets: new WebSocket(invalid url) 6 assert_throws_dom: function "function(){new WebSocket(SCHEME_DOMAIN_PORT+"/#")}" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
-FAIL WebSockets: new WebSocket(invalid url) 7 assert_throws_dom: function "function(){new WebSocket(SCHEME_DOMAIN_PORT+"/#test")}" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+PASS WebSockets: new WebSocket(invalid url) 6
+PASS WebSockets: new WebSocket(invalid url) 7
 PASS WebSockets: new WebSocket(invalid url) 8
 PASS WebSockets: new WebSocket(invalid url) 9
 Harness: the test ran to completion.

@@ -33,7 +33,6 @@ class TestWPTServe(LoggingTestCase):
             server._config_file,
             '--doc_root',
             '/test.checkout/wtests/external/wpt',
-            '--no-h2',
         ])
 
     def test_init_start_cmd_with_ws_handlers(self):
@@ -49,7 +48,6 @@ class TestWPTServe(LoggingTestCase):
             server._config_file,
             '--doc_root',
             '/test.checkout/wtests/external/wpt',
-            '--no-h2',
             '--ws_doc_root',
             '/test.checkout/wtests/external/wpt/websockets/handlers',
         ])

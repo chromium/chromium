@@ -43,10 +43,25 @@ crbug.com/1048761 external/wpt/infrastructure/server/http2-context.sub.h2.any.ht
 crbug.com/1048761 external/wpt/infrastructure/server/http2-context.sub.h2.any.serviceworker.html [ Skip ]
 crbug.com/1048761 external/wpt/infrastructure/server/http2-context.sub.h2.any.sharedworker.html [ Skip ]
 crbug.com/1048761 external/wpt/infrastructure/server/http2-context.sub.h2.any.worker.html [ Skip ]
+crbug.com/1048761 external/wpt/infrastructure/server/http2-websocket.sub.h2.any.html [ Skip ]
+crbug.com/1048761 external/wpt/infrastructure/server/http2-websocket.sub.h2.any.worker.html [ Skip ]
 crbug.com/1048761 external/wpt/infrastructure/server/wpt-server-http.sub.html [ Skip ]
 crbug.com/1048761 external/wpt/infrastructure/server/wpt-server-wpt-flags.sub.html [ Skip ]
 crbug.com/1048761 external/wpt/infrastructure/server/wpt-server-wpt-flags.sub.html?wpt_flags=h2 [ Skip ]
 crbug.com/1048761 external/wpt/infrastructure/server/wpt-server-wpt-flags.sub.html?wpt_flags=https [ Skip ]
+
+# The following tests pass or fail depending on the underlying protocol (HTTP/1.1 vs HTTP/2).
+# The results of failures could be also different depending on the underlying protocol.
+crbug.com/1048761 external/wpt/websockets/constructor/002.html [ Pass Failure ]
+crbug.com/1048761 external/wpt/websockets/constructor/002.html?wss [ Pass Failure ]
+crbug.com/1048761 external/wpt/websockets/cookies/001.html [ Pass Failure ]
+crbug.com/1048761 external/wpt/websockets/cookies/004.html [ Pass Failure ]
+crbug.com/1048761 external/wpt/websockets/cookies/004.html?wss [ Pass Failure ]
+crbug.com/1048761 external/wpt/websockets/cookies/005.html [ Pass Failure ]
+crbug.com/1048761 external/wpt/websockets/interfaces/WebSocket/close/close-connecting.html?wss [ Pass Failure ]
+crbug.com/1048761 external/wpt/websockets/interfaces/WebSocket/close/close-nested.html?wss [ Pass Failure ]
+crbug.com/1048761 external/wpt/websockets/interfaces/WebSocket/readyState/003.html?wss [ Pass Failure ]
+crbug.com/1048761 external/wpt/websockets/unload-a-document/002.html?wss [ Pass Failure ]
 
 # WPT Test harness doesn't deal with finding an about:blank ref test
 crbug.com/1066130 external/wpt/infrastructure/assumptions/blank.html [ Failure ]
@@ -2645,11 +2660,7 @@ crbug.com/626703 [ Mac10.13 ] external/wpt/x-frame-options/multiple.html [ Timeo
 crbug.com/626703 [ Mac10.13 ] external/wpt/FileAPI/idlharness.worker.html [ Timeout ]
 crbug.com/626703 external/wpt/html/interaction/focus/document-level-focus-apis/document-has-system-focus.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-set-keyframes.https.html [ Failure ]
-crbug.com/626703 external/wpt/websockets/cookies/004.html [ Timeout ]
-crbug.com/626703 external/wpt/websockets/cookies/004.html?wss [ Timeout ]
-crbug.com/626703 external/wpt/infrastructure/server/http2-websocket.sub.h2.any.html [ Timeout ]
 crbug.com/626703 [ Win10 ] external/wpt/webcodecs/video-encoder.any.html [ Timeout ]
-crbug.com/626703 external/wpt/websockets/cookies/005.html [ Timeout ]
 crbug.com/626703 external/wpt/mediacapture-record/MediaRecorder-peerconnection-no-sink.https.html [ Timeout ]
 crbug.com/626703 external/wpt/mediacapture-record/MediaRecorder-peerconnection.https.html [ Timeout ]
 crbug.com/626703 [ Win7 ] virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/update-bytecheck.https.html [ Timeout ]

@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-FAIL onclose SCHEME_DOMAIN_PORT is not defined
-FAIL onopen SCHEME_DOMAIN_PORT is not defined
-FAIL onerror SCHEME_DOMAIN_PORT is not defined
-FAIL onmessage SCHEME_DOMAIN_PORT is not defined
-Harness: the test ran to completion.
-
