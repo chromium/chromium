@@ -611,6 +611,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, FriendlyAccessibleLabel) {
   ui::AXActionData set_selection_action_data;
   set_selection_action_data.action = ax::mojom::Action::kSetSelection;
   set_selection_action_data.anchor_node_id = node_data.id;
+  set_selection_action_data.focus_node_id = node_data.id;
   set_selection_action_data.focus_offset = kFriendlyPrefixLength + 1;
   set_selection_action_data.anchor_offset = kFriendlyPrefixLength + 3;
   omnibox_view_views->HandleAccessibleAction(set_selection_action_data);
