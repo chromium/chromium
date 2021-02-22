@@ -215,6 +215,13 @@ void DroppedFrameCounter::ReportFrames() {
       sliding_window_95pct_percent_dropped,
       static_cast<uint32_t>(std::round(sliding_window_max_percent_dropped_)));
 
+  // Emit trace event with most recent smoothness calculation. This matches
+  // the smoothness metrics displayed on HeadsUpDisplay.
+  TRACE_EVENT2("cc,benchmark", "SmoothnessDroppedFrame::MostRecentCalculation",
+               "worst_smoothness", sliding_window_max_percent_dropped_,
+               "95_percentile_smoothness",
+               sliding_window_95pct_percent_dropped);
+
   if (ukm_smoothness_data_ && total_frames > 0) {
     UkmSmoothnessData smoothness_data;
     smoothness_data.avg_smoothness =
