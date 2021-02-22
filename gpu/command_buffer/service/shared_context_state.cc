@@ -312,7 +312,19 @@ bool SharedContextState::InitializeGrContext(
           GrContextOptions::ShaderCacheStrategy::kBackendSource;
     }
     options.fPreferExternalImagesOverES3 = true;
-    owned_gr_context_ = GrDirectContext::MakeGL(std::move(interface), options);
+
+    if (gl::GetGLImplementation() == gl::kGLImplementationStubGL) {
+      // gl::kGLImplementationStubGL doesn't implement enough functions for
+      // successful GrContext::MakeGL initialization. Fallback to mock context
+      // instead.
+      GrMockOptions mock_options;
+      owned_gr_context_ = GrDirectContext::MakeMock(&mock_options, options);
+      DCHECK(owned_gr_context_);
+    } else {
+      owned_gr_context_ =
+          GrDirectContext::MakeGL(std::move(interface), options);
+    }
+
     gr_context_ = owned_gr_context_.get();
   } else if (gr_context_type_ == GrContextType::kVulkan) {
 #if BUILDFLAG(ENABLE_VULKAN)

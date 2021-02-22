@@ -16,10 +16,6 @@
 namespace base {
 class TestSimpleTaskRunner;
 
-namespace test {
-class ScopedFeatureList;
-}  // namespace test
-
 namespace trace_event {
 class MemoryDumpManager;
 }  // namespace trace_event
@@ -69,7 +65,6 @@ class GpuChannelTestCommon : public testing::Test {
   std::unique_ptr<SharedImageManager> shared_image_manager_;
   std::unique_ptr<Scheduler> scheduler_;
   std::unique_ptr<TestGpuChannelManagerDelegate> channel_manager_delegate_;
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
   std::unique_ptr<GpuChannelManager> channel_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(GpuChannelTestCommon);
