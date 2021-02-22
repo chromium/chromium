@@ -10198,6 +10198,115 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Nearby.Share.Contacts.DownloadPageCount.{Result}"
+    units="pages" expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Contacts are downloaded in pages, i.e., multiple ListContactPeople RPC
+    request/responses. Records the {Result}. Emitted every time contacts are
+    downloaded for use in Nearby Share. Because contacts are not stored locally,
+    contacts are downloaded for users with Nearby Share enabled at least once a
+    day, when a user enters Nearby Share settings, and during an active sharing
+    flow.
+  </summary>
+  <token key="Result">
+    <variant name="Failure" summary="page number of the first HTTP failure"/>
+    <variant name="Success"
+        summary="number of pages needed to download the user's full contact
+                 list"/>
+  </token>
+</histogram>
+
+<histogram name="Nearby.Share.Contacts.DownloadResult" enum="BooleanSuccess"
+    expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records whether or not the full, possibly paginated contact download from
+    the Nearby server was successful. Emitted every time contacts are downloaded
+    for use in Nearby Share. Because contacts are not stored locally, contacts
+    are downloaded for users with Nearby Share enabled at least once a day, when
+    a user enters Nearby Share settings, and during an active sharing flow.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Share.Contacts.HttpResult" enum="NearbyShareHttpResult"
+    expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the result of each ListContactPeople RPC call to the Nearby Share
+    server. Emitted every time contacts are downloaded for use in Nearby Share.
+    Due to pagination, this is emitted for every page of contacts downloaded.
+    Because contacts are not stored locally, contacts are downloaded for users
+    with Nearby Share enabled at least once a day, when a user enters Nearby
+    Share settings, and during an active sharing flow.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Share.Contacts.NumContacts.{Type}" units="contacts"
+    expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the number of {Type} contacts downloaded from the Nearby server.
+    Emitted every time contacts are downloaded for use in Nearby Share. Because
+    contacts are not stored locally, contacts are downloaded for users with
+    Nearby Share enabled at least once a day, when a user enters Nearby Share
+    settings, and during an active sharing flow.
+  </summary>
+  <token key="Type">
+    <variant name="DeviceContactType" summary="device-type"/>
+    <variant name="GoogleContactType" summary="Google-type"/>
+    <variant name="Reachable" summary="reachable"/>
+    <variant name="Selected"
+        summary="selected (selected-contacts visibility mode only)"/>
+    <variant name="Unfiltered" summary="unfiltered"/>
+    <variant name="UnknownContactType" summary="unknown-type"/>
+    <variant name="Unreachable" summary="unreachable"/>
+  </token>
+</histogram>
+
+<histogram name="Nearby.Share.Contacts.Percent{Type}" units="%"
+    expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the percentage of {Type} Emitted every time contacts are downloaded
+    for use in Nearby Share. Because contacts are not stored locally, contacts
+    are downloaded for users with Nearby Share enabled at least once a day, when
+    a user enters Nearby Share settings, and during an active sharing flow.
+  </summary>
+  <token key="Type">
+    <variant name="DeviceContactType"
+        summary="unfiltered contacts that are device-type contacts."/>
+    <variant name="Reachable"
+        summary="unfiltered contacts that are reachable."/>
+    <variant name="Selected"
+        summary="(filtered) contacts that are selected by the user in the
+                 setting/onboarding UI. Only emitted for users in
+                 selected-contacts visibility mode."/>
+  </token>
+</histogram>
+
+<histogram name="Nearby.Share.Contacts.TimeToDownload.{Result}" units="ms"
+    expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the time spent {Result}. Emitted every time contacts are downloaded
+    for use in Nearby Share. Because contacts are not stored locally, contacts
+    are downloaded for users with Nearby Share enabled at least once a day, when
+    a user enters Nearby Share settings, and during an active sharing flow.
+  </summary>
+  <token key="Result">
+    <variant name="Failure" summary="downloading contacts before failure"/>
+    <variant name="Success"
+        summary="to successfully download the user's full contact list"/>
+  </token>
+</histogram>
+
 <histogram name="Nearby.Share.Discovery.Delay.FromStartDiscoveryTo{EndState}"
     units="ms" expires_after="2021-08-19">
   <owner>nohle@chromium.org</owner>
