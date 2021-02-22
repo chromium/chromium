@@ -23,15 +23,11 @@ using DefaultBrowserStringUtilTest = PlatformTest;
 
 // Tests strings for "Switch" experiment.
 TEST_F(DefaultBrowserStringUtilTest, SwitchExperiment) {
-  base::FieldTrial* trial =
-      base::FieldTrialList::CreateFieldTrial("TrialName", "Switch");
-  std::unique_ptr<base::FeatureList> feature_list(
-      std::make_unique<base::FeatureList>());
-  feature_list->RegisterFieldTrialOverride(
-      kDefaultBrowserFullscreenPromoCTAExperiment.name,
-      base::FeatureList::OVERRIDE_ENABLE_FEATURE, trial);
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+  const std::map<std::string, std::string> feature_params = {
+      {"show_switch_title", "true"}};
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kDefaultBrowserFullscreenPromoCTAExperiment, feature_params);
 
   NSString* actualTitle = GetDefaultBrowserPromoTitle();
   NSString* expectedTitle = l10n_util::GetNSString(
@@ -46,15 +42,11 @@ TEST_F(DefaultBrowserStringUtilTest, SwitchExperiment) {
 
 // Tests strings for "Open Links" experiment.
 TEST_F(DefaultBrowserStringUtilTest, OpenLinksExperiment) {
-  base::FieldTrial* trial =
-      base::FieldTrialList::CreateFieldTrial("TrialName", "OpenLinks");
-  std::unique_ptr<base::FeatureList> feature_list(
-      std::make_unique<base::FeatureList>());
-  feature_list->RegisterFieldTrialOverride(
-      kDefaultBrowserFullscreenPromoCTAExperiment.name,
-      base::FeatureList::OVERRIDE_ENABLE_FEATURE, trial);
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+  const std::map<std::string, std::string> feature_params = {
+      {"show_open_links_title", "true"}};
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kDefaultBrowserFullscreenPromoCTAExperiment, feature_params);
 
   NSString* actualTitle = GetDefaultBrowserPromoTitle();
   NSString* expectedTitle = l10n_util::GetNSString(

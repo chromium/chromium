@@ -30,9 +30,10 @@ const char kDefaultBrowserFullscreenPromoExperimentRemindMeGroupParam[] =
 const char kDefaultBrowserFullscreenPromoExperimentChangeStringsGroupParam[] =
     "show_switch_description";
 
-const char kDefaultBrowserFullscreenPromoCTAExperimentOpenLinksArm[] =
-    "OpenLinks";
-const char kDefaultBrowserFullscreenPromoCTAExperimentSwitchArm[] = "Switch";
+const char kDefaultBrowserFullscreenPromoCTAExperimentOpenLinksParam[] =
+    "show_open_links_title";
+const char kDefaultBrowserFullscreenPromoCTAExperimentSwitchParam[] =
+    "show_switch_title";
 
 // Time threshold before activity timestamps should be removed. Currently set to
 // seven days.
@@ -113,21 +114,17 @@ bool IsInModifiedStringsGroup() {
 }
 
 bool IsInCTAOpenLinksGroup() {
-  return base::FeatureList::IsEnabled(
-             kDefaultBrowserFullscreenPromoCTAExperiment) &&
-         base::FeatureList::GetFieldTrial(
-             kDefaultBrowserFullscreenPromoCTAExperiment)
-                 ->group_name() ==
-             kDefaultBrowserFullscreenPromoCTAExperimentOpenLinksArm;
+  std::string field_trial_param = base::GetFieldTrialParamValueByFeature(
+      kDefaultBrowserFullscreenPromoCTAExperiment,
+      kDefaultBrowserFullscreenPromoCTAExperimentOpenLinksParam);
+  return field_trial_param == "true";
 }
 
 bool IsInCTASwitchGroup() {
-  return base::FeatureList::IsEnabled(
-             kDefaultBrowserFullscreenPromoCTAExperiment) &&
-         base::FeatureList::GetFieldTrial(
-             kDefaultBrowserFullscreenPromoCTAExperiment)
-                 ->group_name() ==
-             kDefaultBrowserFullscreenPromoCTAExperimentSwitchArm;
+  std::string field_trial_param = base::GetFieldTrialParamValueByFeature(
+      kDefaultBrowserFullscreenPromoCTAExperiment,
+      kDefaultBrowserFullscreenPromoCTAExperimentSwitchParam);
+  return field_trial_param == "true";
 }
 
 bool HasUserInteractedWithFullscreenPromoBefore() {
