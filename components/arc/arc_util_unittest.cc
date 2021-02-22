@@ -246,6 +246,14 @@ TEST_F(ArcUtilTest, IsArcVmEnabled) {
   EXPECT_TRUE(IsArcVmEnabled());
 }
 
+TEST_F(ArcUtilTest, IsArcVmRtVcpuEnabled) {
+  EXPECT_FALSE(IsArcVmRtVcpuEnabled());
+
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->InitFromArgv({"", "--enable-arcvm-rt-vcpu"});
+  EXPECT_TRUE(IsArcVmRtVcpuEnabled());
+}
+
 TEST_F(ArcUtilTest, IsArcVmDevConfIgnored) {
   EXPECT_FALSE(IsArcVmDevConfIgnored());
 

@@ -79,6 +79,9 @@ bool IsArcAvailable();
 // Returns true if ARC VM is enabled.
 bool IsArcVmEnabled();
 
+// Returns true if ARC VM realtime VCPU is enabled.
+bool IsArcVmRtVcpuEnabled();
+
 // Returns true if all development configuration directives in the
 // vm_tools/init/arcvm_dev.conf file are ignored during ARCVM start.
 bool IsArcVmDevConfIgnored();

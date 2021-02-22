@@ -253,6 +253,9 @@ const char kEnableArc[] = "enable-arc";
 // Enables ARC VM.
 const char kEnableArcVm[] = "enable-arcvm";
 
+// Enable ARC VM realtime VCPU feature.
+const char kEnableArcVmRtVcpu[] = "enable-arcvm-rt-vcpu";
+
 // Enables the Cast Receiver.
 const char kEnableCastReceiver[] = "enable-cast-receiver";
 

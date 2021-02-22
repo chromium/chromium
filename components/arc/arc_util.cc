@@ -171,6 +171,11 @@ bool IsArcVmEnabled() {
       chromeos::switches::kEnableArcVm);
 }
 
+bool IsArcVmRtVcpuEnabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      chromeos::switches::kEnableArcVmRtVcpu);
+}
+
 bool IsArcVmDevConfIgnored() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       chromeos::switches::kIgnoreArcVmDevConf);

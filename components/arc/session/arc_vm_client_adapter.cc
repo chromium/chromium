@@ -351,6 +351,8 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
   // Add ignore_dev_conf setting for dev mode.
   request.set_ignore_dev_conf(IsArcVmDevConfIgnored());
 
+  // Add enable_rt_vcpu.
+  request.set_enable_rt_vcpu(IsArcVmRtVcpuEnabled());
   return request;
 }
 
