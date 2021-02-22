@@ -88,7 +88,7 @@ void OmniboxTabSwitchButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
 void OmniboxTabSwitchButton::StateChanged(ButtonState old_state) {
   MdTextButton::StateChanged(old_state);
   if (GetState() == STATE_NORMAL && old_state == STATE_PRESSED) {
-    SetMouseHandler(parent());
+    SetMouseAndGestureHandler(parent());
     if (popup_contents_view_->model()->selected_line_state() ==
         OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH)
       popup_contents_view_->UnselectButton();

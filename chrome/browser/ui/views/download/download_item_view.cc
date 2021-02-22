@@ -1220,7 +1220,7 @@ void DownloadItemView::ShowContextMenuImpl(const gfx::Rect& rect,
   // TODO(pkasting): Use an actual MenuButtonController and get rid of the
   // one-off reimplementation of pressed-locking and similar.
   static_cast<views::internal::RootView*>(GetWidget()->GetRootView())
-      ->SetMouseHandler(nullptr);
+      ->SetMouseAndGestureHandler(nullptr);
 
   const auto release_dropdown = [](DownloadItemView* view) {
     view->SetDropdownPressed(false);

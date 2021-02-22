@@ -45,7 +45,7 @@ void MenuRunner::RunMenuAt(Widget* parent,
   // the parent widget will not be able to reset its state (it might have mouse
   // capture from the mouse down). So we clear its state here.
   if (parent && parent->GetRootView())
-    parent->GetRootView()->SetMouseHandler(nullptr);
+    parent->GetRootView()->SetMouseAndGestureHandler(nullptr);
 
   if (runner_handler_.get()) {
     runner_handler_->RunMenuAt(parent, button_controller, bounds, anchor,

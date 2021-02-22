@@ -1219,7 +1219,7 @@ TEST_F(DesktopWidgetTestInteractive, EventHandlersClearedOnWidgetMinimize) {
       static_cast<internal::RootView*>(widget->GetRootView());
   // This also sets the gesture_handler, and we'll verify that it
   // gets cleared when the widget is minimized.
-  root_view->SetMouseHandler(&mouse_handler_view);
+  root_view->SetMouseAndGestureHandler(&mouse_handler_view);
   EXPECT_TRUE(GetGestureHandler(root_view));
 
   widget->Minimize();

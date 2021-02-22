@@ -225,7 +225,7 @@ bool CandidateView::OnMouseDragged(const ui::MouseEvent& event) {
       gfx::Point location_in_sibling(location_in_widget);
       ConvertPointFromWidget(view, &location_in_sibling);
       if (view->HitTestPoint(location_in_sibling)) {
-        GetWidget()->GetRootView()->SetMouseHandler(view);
+        GetWidget()->GetRootView()->SetMouseAndGestureHandler(view);
         auto* sibling = static_cast<CandidateView*>(view);
         sibling->SetHighlighted(true);
         return view->OnMouseDragged(ui::MouseEvent(event, this, sibling));

@@ -442,7 +442,7 @@ void OmniboxPopupContentsView::OnMatchIconUpdated(size_t match_index) {
 }
 
 void OmniboxPopupContentsView::OnDragCanceled() {
-  SetMouseHandler(nullptr);
+  SetMouseAndGestureHandler(nullptr);
 }
 
 bool OmniboxPopupContentsView::OnMouseDragged(const ui::MouseEvent& event) {
@@ -454,7 +454,7 @@ bool OmniboxPopupContentsView::OnMouseDragged(const ui::MouseEvent& event) {
   // If the drag event is over the bounds of one of the result views, pass
   // control to that view.
   if (HasMatchAt(index)) {
-    SetMouseHandler(result_view_at(index));
+    SetMouseAndGestureHandler(result_view_at(index));
     return false;
   }
 

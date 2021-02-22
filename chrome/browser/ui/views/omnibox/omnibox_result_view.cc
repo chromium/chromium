@@ -493,7 +493,7 @@ bool OmniboxResultView::OnMouseDragged(const ui::MouseEvent& event) {
                                    &point_in_child_coords);
         if (suggestion_tab_switch_button_->HitTestPoint(
                 point_in_child_coords)) {
-          SetMouseHandler(suggestion_tab_switch_button_);
+          SetMouseAndGestureHandler(suggestion_tab_switch_button_);
           return false;
         }
       }
@@ -506,7 +506,7 @@ bool OmniboxResultView::OnMouseDragged(const ui::MouseEvent& event) {
   // When the drag leaves the bounds of this view, cancel the hover state and
   // pass control to the popup view.
   UpdateHoverState();
-  SetMouseHandler(popup_contents_view_);
+  SetMouseAndGestureHandler(popup_contents_view_);
   return false;
 }
 

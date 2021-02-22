@@ -470,7 +470,7 @@ void RootView::OnMouseReleased(const ui::MouseEvent& event) {
     // We allow the view to delete us from the event dispatch callback. As such,
     // configure state such that we're done first, then call View.
     View* mouse_pressed_handler = mouse_pressed_handler_;
-    SetMouseHandler(nullptr);
+    SetMouseAndGestureHandler(nullptr);
     ui::EventDispatchDetails dispatch_details =
         DispatchEvent(mouse_pressed_handler, &mouse_released);
     if (dispatch_details.dispatcher_destroyed)
@@ -492,7 +492,7 @@ void RootView::OnMouseCaptureLost() {
     // configure state such that we're done first, then call View.
     View* mouse_pressed_handler = mouse_pressed_handler_;
     View* gesture_handler = gesture_handler_;
-    SetMouseHandler(nullptr);
+    SetMouseAndGestureHandler(nullptr);
     if (mouse_pressed_handler)
       mouse_pressed_handler->OnMouseCaptureLost();
     else
@@ -632,11 +632,11 @@ bool RootView::OnMouseWheel(const ui::MouseWheelEvent& event) {
   return event.handled();
 }
 
-void RootView::SetMouseHandler(View* new_mh) {
+void RootView::SetMouseAndGestureHandler(View* new_handler) {
   // If we're clearing the mouse handler, clear explicit_mouse_handler_ as well.
-  explicit_mouse_handler_ = (new_mh != nullptr);
-  mouse_pressed_handler_ = new_mh;
-  gesture_handler_ = new_mh;
+  explicit_mouse_handler_ = (new_handler != nullptr);
+  mouse_pressed_handler_ = new_handler;
+  gesture_handler_ = new_handler;
   drag_info_.Reset();
 }
 
@@ -784,7 +784,7 @@ ui::EventDispatchDetails RootView::PostDispatchEvent(ui::EventTarget* target,
     // In case a drag was in progress, reset all the handlers. Otherwise, just
     // reset the gesture handler.
     if (gesture_handler_ && gesture_handler_ == mouse_pressed_handler_)
-      SetMouseHandler(nullptr);
+      SetMouseAndGestureHandler(nullptr);
     else
       gesture_handler_ = nullptr;
   }

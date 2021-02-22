@@ -223,7 +223,7 @@ bool MenuButtonController::Activate(const ui::Event* event) {
     // mouse target during the mouse press we explicitly set the mouse handler
     // to NULL.
     static_cast<internal::RootView*>(button()->GetWidget()->GetRootView())
-        ->SetMouseHandler(nullptr);
+        ->SetMouseAndGestureHandler(nullptr);
 
     DCHECK(increment_pressed_lock_called_ == nullptr);
     // Observe if IncrementPressedLocked() was called so we can trigger the

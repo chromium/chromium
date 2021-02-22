@@ -1345,10 +1345,10 @@ void View::OnMouseEntered(const ui::MouseEvent& event) {}
 
 void View::OnMouseExited(const ui::MouseEvent& event) {}
 
-void View::SetMouseHandler(View* new_mouse_handler) {
-  // |new_mouse_handler| may be nullptr.
+void View::SetMouseAndGestureHandler(View* new_handler) {
+  // |new_handler| may be nullptr.
   if (parent_)
-    parent_->SetMouseHandler(new_mouse_handler);
+    parent_->SetMouseAndGestureHandler(new_handler);
 }
 
 bool View::OnKeyPressed(const ui::KeyEvent& event) {

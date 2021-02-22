@@ -1009,7 +1009,7 @@ void Widget::SetCapture(View* view) {
 
   if (native_widget_->IsMouseButtonDown())
     is_mouse_button_pressed_ = true;
-  root_view_->SetMouseHandler(view);
+  root_view_->SetMouseAndGestureHandler(view);
 }
 
 void Widget::ReleaseCapture() {

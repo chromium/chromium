@@ -1047,7 +1047,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Default implementation does nothing. Override as needed.
   virtual void OnMouseExited(const ui::MouseEvent& event);
 
-  // Set the MouseHandler for a drag session.
+  // Set both the MouseHandler and the GestureHandler for a drag session.
   //
   // A drag session is a stream of mouse events starting
   // with a MousePressed event, followed by several MouseDragged
@@ -1064,9 +1064,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   //
   // Note: if the mouse handler is no longer connected to a
   // view hierarchy, events won't be sent.
-  //
-  // TODO(sky): rename this.
-  virtual void SetMouseHandler(View* new_mouse_handler);
+  virtual void SetMouseAndGestureHandler(View* new_handler);
 
   // Invoked when a key is pressed or released.
   // Subclasses should return true if the event has been processed and false
