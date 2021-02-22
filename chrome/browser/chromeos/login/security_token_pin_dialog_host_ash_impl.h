@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/certificate_provider/security_token_pin_dialog_host.h"
+#include "chrome/browser/ash/certificate_provider/security_token_pin_dialog_host.h"
 
 namespace chromeos {
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_CERTIFICATE_PROVIDER_THREAD_SAFE_CERTIFICATE_MAP_H_
-#define CHROME_BROWSER_CHROMEOS_CERTIFICATE_PROVIDER_THREAD_SAFE_CERTIFICATE_MAP_H_
+#ifndef CHROME_BROWSER_ASH_CERTIFICATE_PROVIDER_THREAD_SAFE_CERTIFICATE_MAP_H_
+#define CHROME_BROWSER_ASH_CERTIFICATE_PROVIDER_THREAD_SAFE_CERTIFICATE_MAP_H_
 
 #include <memory>
 #include <string>
@@ -11,7 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/synchronization/lock.h"
-#include "chrome/browser/chromeos/certificate_provider/certificate_info.h"
+#include "chrome/browser/ash/certificate_provider/certificate_info.h"
 
 namespace net {
 class X509Certificate;
@@ -85,4 +85,4 @@ class ThreadSafeCertificateMap {
 }  // namespace certificate_provider
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_CERTIFICATE_PROVIDER_THREAD_SAFE_CERTIFICATE_MAP_H_
+#endif  // CHROME_BROWSER_ASH_CERTIFICATE_PROVIDER_THREAD_SAFE_CERTIFICATE_MAP_H_
