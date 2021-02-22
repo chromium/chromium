@@ -558,7 +558,7 @@ void DeveloperPrivateEventRouter::BroadcastItemStateChanged(
       base::BindOnce(
           &DeveloperPrivateEventRouter::BroadcastItemStateChangedHelper,
           weak_factory_.GetWeakPtr(), event_type, extension_id,
-          base::Passed(std::move(info_generator))));
+          std::move(info_generator)));
 }
 
 void DeveloperPrivateEventRouter::BroadcastItemStateChangedHelper(

@@ -46,7 +46,7 @@ class BlobMediaDataSource : public chrome::mojom::MediaDataSource {
     BlobReader::Read(
         browser_context_, blob_uuid_,
         base::BindOnce(&BlobMediaDataSource::OnBlobReaderDone,
-                       weak_factory_.GetWeakPtr(), base::Passed(&callback)),
+                       weak_factory_.GetWeakPtr(), std::move(callback)),
         position, length);
   }
 

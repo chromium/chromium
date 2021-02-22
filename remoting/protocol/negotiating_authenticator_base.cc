@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <sstream>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -103,9 +104,9 @@ void NegotiatingAuthenticatorBase::ProcessMessageInternal(
     // give it to the underlying authenticator to process.
     // |current_authenticator_| is owned, so Unretained() is safe here.
     current_authenticator_->ProcessMessage(
-        message, base::BindOnce(&NegotiatingAuthenticatorBase::UpdateState,
-                                base::Unretained(this),
-                                base::Passed(std::move(resume_callback))));
+        message,
+        base::BindOnce(&NegotiatingAuthenticatorBase::UpdateState,
+                       base::Unretained(this), std::move(resume_callback)));
   } else {
     // Otherwise, just discard the message.
     UpdateState(std::move(resume_callback));

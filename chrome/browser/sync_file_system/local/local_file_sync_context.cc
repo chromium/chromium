@@ -813,8 +813,8 @@ void LocalFileSyncContext::TryPrepareForLocalSync(
   PrepareForSync(
       file_system_context, url, SYNC_SNAPSHOT,
       base::BindOnce(&LocalFileSyncContext::DidTryPrepareForLocalSync, this,
-                     base::RetainedRef(file_system_context),
-                     base::Passed(&urls), std::move(callback)));
+                     base::RetainedRef(file_system_context), std::move(urls),
+                     std::move(callback)));
 }
 
 void LocalFileSyncContext::DidTryPrepareForLocalSync(

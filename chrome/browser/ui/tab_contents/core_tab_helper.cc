@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
@@ -116,8 +117,8 @@ void CoreTabHelper::SearchByImageInNewTabImpl(
       thumbnail_min_size, gfx::Size(thumbnail_max_width, thumbnail_max_height),
       chrome::mojom::ImageFormat::JPEG,
       base::BindOnce(&CoreTabHelper::DoSearchByImageInNewTab,
-                     weak_factory_.GetWeakPtr(),
-                     base::Passed(&chrome_render_frame), src_url));
+                     weak_factory_.GetWeakPtr(), std::move(chrome_render_frame),
+                     src_url));
 }
 
 std::unique_ptr<content::WebContents> CoreTabHelper::SwapWebContents(

@@ -6,6 +6,7 @@
 
 #include <deque>
 #include <mutex>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/single_thread_task_runner.h"
@@ -85,7 +86,7 @@ void PlatformViewsRpcInstance::ReadComplete(bool ok) {
         FROM_HERE,
         base::BindOnce(
             &PlatformViewsRpcInstance::ProcessRequestOnControllerThread,
-            base::Unretained(this), base::Passed(std::move(request_))));
+            base::Unretained(this), std::move(request_)));
 
     request_ = std::make_unique<webview::WebviewRequest>();
     std::unique_lock<std::mutex> l(send_lock_);

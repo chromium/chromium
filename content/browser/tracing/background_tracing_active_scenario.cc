@@ -243,8 +243,7 @@ class BackgroundTracingActiveScenario::TracingSession {
                       FROM_HERE,
                       base::BindOnce(
                           &BackgroundTracingActiveScenario::OnProtoDataComplete,
-                          parent_scenario,
-                          base::Passed(std::move(raw_data->data))));
+                          parent_scenario, std::move(raw_data->data)));
                 }
               });
         });

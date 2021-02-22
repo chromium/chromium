@@ -181,7 +181,7 @@ void SyncEngineBackend::OnProtocolEvent(const ProtocolEvent& event) {
   if (forward_protocol_events_) {
     std::unique_ptr<ProtocolEvent> event_clone(event.Clone());
     host_.Call(FROM_HERE, &SyncEngineImpl::HandleProtocolEventOnFrontendLoop,
-               base::Passed(std::move(event_clone)));
+               std::move(event_clone));
   }
 }
 
@@ -356,11 +356,11 @@ void SyncEngineBackend::DoInitialProcessControlTypes() {
     return;
   }
 
-  host_.Call(
-      FROM_HERE, &SyncEngineImpl::HandleInitializationSuccessOnFrontendLoop,
-      sync_manager_->GetEnabledTypes(), js_backend_, debug_info_listener_,
-      base::Passed(sync_manager_->GetModelTypeConnectorProxy()),
-      sync_manager_->birthday(), sync_manager_->bag_of_chips());
+  host_.Call(FROM_HERE,
+             &SyncEngineImpl::HandleInitializationSuccessOnFrontendLoop,
+             sync_manager_->GetEnabledTypes(), js_backend_,
+             debug_info_listener_, sync_manager_->GetModelTypeConnectorProxy(),
+             sync_manager_->birthday(), sync_manager_->bag_of_chips());
 
   js_backend_.Reset();
   debug_info_listener_.Reset();
@@ -482,7 +482,7 @@ void SyncEngineBackend::SendBufferedProtocolEventsAndEnableForwarding() {
     // Send them all over the fence to the host.
     for (auto& event : buffered_events) {
       host_.Call(FROM_HERE, &SyncEngineImpl::HandleProtocolEventOnFrontendLoop,
-                 base::Passed(std::move(event)));
+                 std::move(event));
     }
   }
 }

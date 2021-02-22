@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -221,7 +223,7 @@ void NetworkingPrivateLinux::GetProperties(const std::string& guid,
                      base::Unretained(network_prop_ptr),
                      base::Unretained(error_ptr)),
       base::BindOnce(&GetCachedNetworkPropertiesResultCallback,
-                     base::Passed(&error), base::Passed(&network_properties),
+                     std::move(error), std::move(network_properties),
                      std::move(callback)));
 }
 
@@ -253,9 +255,9 @@ void NetworkingPrivateLinux::GetState(const std::string& guid,
                      base::Unretained(this), guid,
                      base::Unretained(network_prop_ptr),
                      base::Unretained(error_ptr)),
-      base::BindOnce(&GetCachedNetworkPropertiesCallback, base::Passed(&error),
-                     base::Passed(&network_properties),
-                     std::move(success_callback), std::move(failure_callback)));
+      base::BindOnce(&GetCachedNetworkPropertiesCallback, std::move(error),
+                     std::move(network_properties), std::move(success_callback),
+                     std::move(failure_callback)));
 }
 
 void NetworkingPrivateLinux::GetCachedNetworkProperties(
@@ -341,7 +343,7 @@ void NetworkingPrivateLinux::GetNetworks(const std::string& network_type,
                      base::Unretained(this), configured_only, visible_only,
                      limit, base::Unretained(network_map_ptr)),
       base::BindOnce(&NetworkingPrivateLinux::OnAccessPointsFound,
-                     base::Unretained(this), base::Passed(&network_map),
+                     base::Unretained(this), std::move(network_map),
                      std::move(success_callback), std::move(failure_callback)));
 }
 
@@ -363,7 +365,7 @@ bool NetworkingPrivateLinux::GetNetworksForScanRequest() {
                      false /* visible_only */, 0 /* limit */,
                      base::Unretained(network_map_ptr)),
       base::BindOnce(&NetworkingPrivateLinux::OnAccessPointsFoundViaScan,
-                     base::Unretained(this), base::Passed(&network_map)));
+                     base::Unretained(this), std::move(network_map)));
 
   return true;
 }
@@ -549,7 +551,7 @@ void NetworkingPrivateLinux::StartConnect(const std::string& guid,
       FROM_HERE,
       base::BindOnce(&NetworkingPrivateLinux::ConnectToNetwork,
                      base::Unretained(this), guid, base::Unretained(error_ptr)),
-      base::BindOnce(&OnNetworkConnectOperationCompleted, base::Passed(&error),
+      base::BindOnce(&OnNetworkConnectOperationCompleted, std::move(error),
                      std::move(success_callback), std::move(failure_callback)));
 }
 
@@ -569,7 +571,7 @@ void NetworkingPrivateLinux::StartDisconnect(const std::string& guid,
       FROM_HERE,
       base::BindOnce(&NetworkingPrivateLinux::DisconnectFromNetwork,
                      base::Unretained(this), guid, base::Unretained(error_ptr)),
-      base::BindOnce(&OnNetworkConnectOperationCompleted, base::Passed(&error),
+      base::BindOnce(&OnNetworkConnectOperationCompleted, std::move(error),
                      std::move(success_callback), std::move(failure_callback)));
 }
 

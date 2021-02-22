@@ -135,7 +135,7 @@ void MojoAudioDecoderService::OnReadDone(DecodeCallback callback,
 
   decoder_->Decode(buffer,
                    base::BindOnce(&MojoAudioDecoderService::OnDecodeStatus,
-                                  weak_this_, base::Passed(&callback)));
+                                  weak_this_, std::move(callback)));
 }
 
 void MojoAudioDecoderService::OnReaderFlushDone(ResetCallback callback) {

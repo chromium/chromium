@@ -128,10 +128,10 @@ void TrustTokenRequestHelperFactory::CreateTrustTokenHelperForRequest(
     return;
   }
 
-  store_->ExecuteOrEnqueue(base::BindOnce(
-      &TrustTokenRequestHelperFactory::ConstructHelperUsingStore,
-      weak_factory_.GetWeakPtr(), *maybe_top_frame_origin,
-      base::Passed(params.Clone()), request.net_log(), std::move(done)));
+  store_->ExecuteOrEnqueue(
+      base::BindOnce(&TrustTokenRequestHelperFactory::ConstructHelperUsingStore,
+                     weak_factory_.GetWeakPtr(), *maybe_top_frame_origin,
+                     params.Clone(), request.net_log(), std::move(done)));
 }
 
 void TrustTokenRequestHelperFactory::ConstructHelperUsingStore(

@@ -327,7 +327,7 @@ void DriveUploader::CallUploadServiceAPINewFile(
         title, options,
         base::BindOnce(&DriveUploader::OnUploadLocationReceived,
                        weak_ptr_factory_.GetWeakPtr(),
-                       base::Passed(&upload_file_info)));
+                       std::move(upload_file_info)));
   }
 }
 
@@ -362,7 +362,7 @@ void DriveUploader::CallUploadServiceAPIExistingFile(
         info_ptr->content_type, info_ptr->content_length, resource_id, options,
         base::BindOnce(&DriveUploader::OnUploadLocationReceived,
                        weak_ptr_factory_.GetWeakPtr(),
-                       base::Passed(&upload_file_info)));
+                       std::move(upload_file_info)));
   }
 }
 

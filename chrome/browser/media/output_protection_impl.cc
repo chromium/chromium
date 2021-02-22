@@ -5,6 +5,7 @@
 #include "chrome/browser/media/output_protection_impl.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/logging.h"
@@ -44,7 +45,7 @@ void OutputProtectionImpl::QueryStatus(QueryStatusCallback callback) {
 
   GetProxy()->QueryStatus(
       base::BindOnce(&OutputProtectionImpl::OnQueryStatusResult,
-                     weak_factory_.GetWeakPtr(), base::Passed(&callback)));
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void OutputProtectionImpl::EnableProtection(uint32_t desired_protection_mask,
@@ -55,7 +56,7 @@ void OutputProtectionImpl::EnableProtection(uint32_t desired_protection_mask,
   GetProxy()->EnableProtection(
       desired_protection_mask,
       base::BindOnce(&OutputProtectionImpl::OnEnableProtectionResult,
-                     weak_factory_.GetWeakPtr(), base::Passed(&callback)));
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void OutputProtectionImpl::OnQueryStatusResult(QueryStatusCallback callback,

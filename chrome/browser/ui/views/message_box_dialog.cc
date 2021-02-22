@@ -313,7 +313,7 @@ void ShowWarningMessageBoxWithCheckbox(
                                std::move(callback).Run(message_box_result ==
                                                        MESSAGE_BOX_RESULT_YES);
                              },
-                             base::Passed(std::move(callback))));
+                             std::move(callback)));
 }
 
 MessageBoxResult ShowQuestionMessageBoxSync(gfx::NativeWindow parent,

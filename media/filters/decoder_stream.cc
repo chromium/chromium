@@ -503,7 +503,7 @@ void DecoderStream<StreamType>::DecodeInternal(
       std::move(buffer),
       base::BindOnce(&DecoderStream<StreamType>::OnDecodeDone,
                      fallback_weak_factory_.GetWeakPtr(), buffer_size,
-                     decoding_eos_, base::Passed(&trace_event)));
+                     decoding_eos_, std::move(trace_event)));
 }
 
 template <DemuxerStream::Type StreamType>

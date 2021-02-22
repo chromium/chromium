@@ -364,7 +364,7 @@ void MessageService::OpenChannelToExtension(
     messaging_delegate_->QueryIncognitoConnectability(
         context, target_extension, source_contents, source_url,
         base::BindOnce(&MessageService::OnOpenChannelAllowed,
-                       weak_factory_.GetWeakPtr(), base::Passed(&params)));
+                       weak_factory_.GetWeakPtr(), std::move(params)));
     return;
   }
 

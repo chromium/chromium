@@ -636,7 +636,7 @@ void FileSelectHelper::CheckDownloadRequestWithSafeBrowsing(
       base::BindOnce(
           &InterpretSafeBrowsingVerdict,
           base::BindOnce(&FileSelectHelper::ProceedWithSafeBrowsingVerdict,
-                         this, default_file_path, base::Passed(&params))));
+                         this, default_file_path, std::move(params))));
 #endif
 }
 

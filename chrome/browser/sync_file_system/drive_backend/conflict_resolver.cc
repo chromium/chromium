@@ -286,7 +286,7 @@ void ConflictResolver::UpdateFileMetadata(
   drive_service()->GetFileResource(
       file_id, base::BindOnce(&ConflictResolver::DidGetRemoteMetadata,
                               weak_ptr_factory_.GetWeakPtr(), file_id,
-                              base::Passed(&token)));
+                              std::move(token)));
 }
 
 void ConflictResolver::DidGetRemoteMetadata(

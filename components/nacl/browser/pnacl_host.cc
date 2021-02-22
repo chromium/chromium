@@ -448,7 +448,7 @@ void PnaclHost::TranslationFinished(int render_process_id,
 
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(&PnaclHost::CopyFileToBuffer, Passed(&file)),
+        base::BindOnce(&PnaclHost::CopyFileToBuffer, std::move(file)),
         base::BindOnce(&PnaclHost::StoreTranslatedNexe, base::Unretained(this),
                        id));
   }

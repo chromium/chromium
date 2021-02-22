@@ -115,7 +115,7 @@ void SyncEngineInitializer::GetAboutResource(
   set_used_network(true);
   sync_context_->GetDriveService()->GetAboutResource(
       base::BindOnce(&SyncEngineInitializer::DidGetAboutResource,
-                     weak_ptr_factory_.GetWeakPtr(), base::Passed(&token)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(token)));
 }
 
 void SyncEngineInitializer::DidGetAboutResource(
@@ -233,7 +233,7 @@ void SyncEngineInitializer::CreateSyncRoot(
   cancel_callback_ = sync_context_->GetDriveService()->AddNewDirectory(
       root_folder_id_, kSyncRootFolderTitle, options,
       base::BindOnce(&SyncEngineInitializer::DidCreateSyncRoot,
-                     weak_ptr_factory_.GetWeakPtr(), base::Passed(&token)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(token)));
 }
 
 void SyncEngineInitializer::DidCreateSyncRoot(

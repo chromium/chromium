@@ -439,7 +439,7 @@ void OpenApplicationWithReenablePrompt(Profile* profile,
     (new EnableViaDialogFlow(
          service, registry, profile, extension->id(),
          base::BindOnce(base::IgnoreResult(OpenEnabledApplication), profile,
-                        base::Passed(std::move(params)))))
+                        std::move(params))))
         ->Run();
     return;
   }

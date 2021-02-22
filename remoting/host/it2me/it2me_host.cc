@@ -604,7 +604,7 @@ void It2MeHost::ValidateConnectionDetails(
     confirmation_dialog_proxy_->Show(
         client_username,
         base::BindOnce(&It2MeHost::OnConfirmationResult, base::Unretained(this),
-                       base::Passed(std::move(result_callback))));
+                       std::move(result_callback)));
   } else {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,

@@ -546,7 +546,7 @@ void PingNetworkService(base::OnceClosure closure) {
         if (closure)
           std::move(closure).Run();
       },
-      base::Passed(std::move(closure))));
+      std::move(closure)));
 }
 
 namespace {

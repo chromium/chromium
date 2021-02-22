@@ -5,6 +5,7 @@
 #include "components/exo/data_offer.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
@@ -193,7 +194,7 @@ void DataOffer::Receive(const std::string& mime_type, base::ScopedFD fd) {
     std::move(callbacks_it->second)
         .Run(base::BindOnce(&DataOffer::OnDataReady,
                             weak_ptr_factory_.GetWeakPtr(), mime_type,
-                            base::Passed(std::move(fd))));
+                            std::move(fd)));
     data_callbacks_.erase(callbacks_it);
     return;
   }

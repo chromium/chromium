@@ -383,7 +383,7 @@ void AndroidUsbDevice::ReadBody(std::unique_ptr<AdbMessage> message,
   device_->GenericTransferIn(
       android_device_info_.inbound_address, data_length, kUsbTimeout,
       base::BindOnce(&AndroidUsbDevice::ParseBody, weak_factory_.GetWeakPtr(),
-                     base::Passed(&message), data_length, data_check));
+                     std::move(message), data_length, data_check));
 }
 
 void AndroidUsbDevice::ParseBody(std::unique_ptr<AdbMessage> message,

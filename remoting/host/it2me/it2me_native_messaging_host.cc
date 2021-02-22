@@ -215,7 +215,7 @@ void It2MeNativeMessagingHost::ProcessConnect(
     DCHECK(!pending_connect_);
     pending_connect_ =
         base::BindOnce(&It2MeNativeMessagingHost::ProcessConnect, weak_ptr_,
-                       base::Passed(&message), base::Passed(&response));
+                       std::move(message), std::move(response));
     return;
   }
 

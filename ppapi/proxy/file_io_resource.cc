@@ -304,10 +304,9 @@ int32_t FileIOResource::Write(int64_t offset,
       memcpy(copy.get(), buffer, bytes_to_write);
       int64_t result =
           file_system_resource_->AsPPB_FileSystem_API()->RequestQuota(
-              increase,
-              base::BindOnce(&FileIOResource::OnRequestWriteQuotaComplete, this,
-                             offset, base::Passed(&copy), bytes_to_write,
-                             callback));
+              increase, base::BindOnce(
+                            &FileIOResource::OnRequestWriteQuotaComplete, this,
+                            offset, std::move(copy), bytes_to_write, callback));
       if (result == PP_OK_COMPLETIONPENDING)
         return PP_OK_COMPLETIONPENDING;
       DCHECK(result == increase);

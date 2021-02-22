@@ -144,7 +144,7 @@ void MediaStreamDevicesController::RequestPermissions(
       request.user_gesture,
       base::BindOnce(
           &MediaStreamDevicesController::RequestAndroidPermissionsIfNeeded,
-          web_contents, base::Passed(&controller), will_prompt_for_audio,
+          web_contents, std::move(controller), will_prompt_for_audio,
           will_prompt_for_video));
 }
 
