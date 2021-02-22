@@ -381,6 +381,8 @@ class CORE_EXPORT LocalFrame final
   // navigation at a later time.
   bool CanNavigate(const Frame&, const KURL& destination_url = KURL());
 
+  // Return this frame's BrowserInterfaceBroker. Must not be called on detached
+  // frames (that is, frames where `Client()` returns nullptr).
   BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker();
 
   InterfaceRegistry* GetInterfaceRegistry() { return interface_registry_; }

@@ -115,9 +115,10 @@ void LocalVideoCapturerSource::OnStateUpdate(blink::VideoCaptureState state) {
     case VIDEO_CAPTURE_STATE_ENDED:
       std::move(release_device_cb_).Run();
       release_device_cb_ =
-          frame ? manager_->UseDevice(session_id_,
-                                      &frame->GetBrowserInterfaceBroker())
-                : base::OnceClosure();
+          frame && frame->Client()
+              ? manager_->UseDevice(session_id_,
+                                    &frame->GetBrowserInterfaceBroker())
+              : base::OnceClosure();
       OnLog(
           "LocalVideoCapturerSource::OnStateUpdate signaling to "
           "consumer that source is no longer running.");
