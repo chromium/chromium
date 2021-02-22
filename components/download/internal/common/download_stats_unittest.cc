@@ -21,8 +21,6 @@ void VerfiyParallelizableAverageStats(int64_t bytes_downloaded,
   RecordParallelizableDownloadAverageStats(bytes_downloaded, time_span);
   histogram_tester.ExpectBucketCount("Download.ParallelizableDownloadBandwidth",
                                      expected_bandwidth, 1);
-  histogram_tester.ExpectBucketCount("Download.Parallelizable.DownloadTime",
-                                     time_span.InMilliseconds(), 1);
   histogram_tester.ExpectBucketCount("Download.Parallelizable.FileSize",
                                      bytes_downloaded / 1024, 1);
 }

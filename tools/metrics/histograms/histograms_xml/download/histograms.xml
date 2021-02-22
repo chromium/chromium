@@ -557,6 +557,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Download.Parallelizable.DownloadTime" units="ms"
     expires_after="2020-12-28">
+  <obsolete>
+    Removed 2021/02
+  </obsolete>
   <owner>xingliu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>The download time for a parallelizable download.</summary>

@@ -7440,7 +7440,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram_suffixes name="HighDownloadBandwidth" separator=".">
   <suffix name="HighDownloadBandwidth" label="download with high bandwidth."/>
-  <affected-histogram name="Download.Parallelizable.DownloadTime"/>
   <affected-histogram name="Download.Parallelizable.FileSize"/>
 </histogram_suffixes>
 
