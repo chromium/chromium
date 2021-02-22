@@ -174,6 +174,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
   gfx::Rect current_frame_overlay_rect_union_;
   int previous_frame_processed_overlay_count_ = 0;
   int current_frame_processed_overlay_count_ = 0;
+  std::vector<size_t> damages_to_be_removed_;
 
   struct OverlayRect {
     gfx::Rect rect;

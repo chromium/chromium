@@ -449,7 +449,7 @@ void DCLayerOverlayProcessor::RemoveOverlayDamageRect(
       if (overlay_damage_index >= surface_damage_rect_list_.size())
         DCHECK(false);
       else
-        surface_damage_rect_list_[overlay_damage_index] = gfx::Rect();
+        damages_to_be_removed_.push_back(overlay_damage_index);
     }
   } else {
     // This is done by subtract the overlay rect fromt the root damage rect.
@@ -490,12 +490,33 @@ void DCLayerOverlayProcessor::UpdateRootDamageRect(
         // if no changes in overlays.
         previous_frame_overlay_rect_union_ = gfx::Rect();
 
-        // Overlay rects have been previously removed from
-        // |surface_damage_rect_list_|. The union is the result of non-overlay
-        // rects.
+        // The final root damage rect is computed by add up all surface damages
+        // except for the overlay surface damages and the damages right below
+        // the overlays.
         gfx::Rect root_damage_rect;
-        for (const auto& damage_rect : surface_damage_rect_list_)
-          root_damage_rect.Union(damage_rect);
+        size_t surface_index = 0;
+        for (auto surface_damage_rect : surface_damage_rect_list_) {
+          // We only support at most two overlays. The size of
+          // damages_to_be_removed_ will not be bigger than 2. We should
+          // revisit this damages_to_be_removed_ for-loop if we try to support
+          // many overlays.
+          // See capabilities.supports_two_yuv_hardware_overlays.
+          for (const auto index_to_be_removed : damages_to_be_removed_) {
+            // The overlay damages and the damages right below them will not be
+            // added to the root damage rect.
+            if (surface_index == index_to_be_removed) {
+              // This is the overlay surface.
+              surface_damage_rect = gfx::Rect();
+              break;
+            } else if (surface_index > index_to_be_removed) {
+              // This is the surface below the overlays.
+              surface_damage_rect.Subtract(
+                  surface_damage_rect_list_[index_to_be_removed]);
+            }
+          }
+          root_damage_rect.Union(surface_damage_rect);
+          ++surface_index;
+        }
 
         *damage_rect = root_damage_rect;
       }
@@ -751,6 +772,7 @@ void DCLayerOverlayProcessor::Process(
   // above and |previous_frame_overlay_rect_union_| becomes empty.
   UpdateRootDamageRect(display_rect, damage_rect);
 
+  damages_to_be_removed_.clear();
   previous_frame_overlay_rect_union_ = current_frame_overlay_rect_union_;
   current_frame_overlay_rect_union_ = gfx::Rect();
   previous_frame_processed_overlay_count_ =
