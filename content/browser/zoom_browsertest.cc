@@ -378,7 +378,9 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, SubframesDontZoomIndependently) {
       GetMainFrameZoomFactor(web_contents(), main_frame_window_border));
 }
 
-IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, AllFramesGetDefaultZoom) {
+// This test is flaky. https://crbug.com/1171748
+IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest,
+                       DISABLED_AllFramesGetDefaultZoom) {
   std::string top_level_host("a.com");
   GURL main_url(embedded_test_server()->GetURL(
       top_level_host, "/cross_site_iframe_factory.html?a(b(a))"));
