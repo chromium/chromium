@@ -1,5 +1,5 @@
 diff --git a/src/hunspell/affixmgr.cxx b/src/hunspell/affixmgr.cxx
-index 658a8aa..2ece1cd 100644
+index 658a8aa..78d10ac 100644
 --- a/src/hunspell/affixmgr.cxx
 +++ b/src/hunspell/affixmgr.cxx
 @@ -87,11 +87,19 @@
@@ -177,6 +177,15 @@ index 658a8aa..2ece1cd 100644
  
    return 0;
  }
+@@ -4391,7 +4469,7 @@ void AffixMgr::reverse_condition(std::string& piece) {
+       case '^': {
+         if (*(k - 1) == ']')
+           neg = 1;
+-        else
++        else if (neg)
+           *(k - 1) = *k;
+         break;
+       }
 @@ -4489,6 +4567,7 @@ bool AffixMgr::parse_affix(const std::string& line,
        case 1: {
          np++;

@@ -4469,7 +4469,7 @@ void AffixMgr::reverse_condition(std::string& piece) {
       case '^': {
         if (*(k - 1) == ']')
           neg = 1;
-        else
+        else if (neg)
           *(k - 1) = *k;
         break;
       }
