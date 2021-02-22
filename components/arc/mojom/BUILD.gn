@@ -391,6 +391,7 @@ if (is_chromeos_ash) {
       ":mojom",
       "//ui/base/ime:text_input_types",
       "//ui/events",
+      "//ui/events/ozone/layout",
     ]
   }
 

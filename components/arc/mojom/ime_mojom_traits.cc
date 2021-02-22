@@ -7,6 +7,8 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
+#include "ui/events/ozone/layout/keyboard_layout_engine.h"
+#include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 
 namespace mojo {
 using KeyEventUniquePtr = std::unique_ptr<ui::KeyEvent>;
@@ -33,8 +35,10 @@ bool StructTraits<arc::mojom::KeyEventDataDataView, KeyEventUniquePtr>::Read(
 
   ui::KeyboardCode key_code;
   ui::DomKey dom_key;
-  if (!DomCodeToUsLayoutDomKey(dom_code, flags, &dom_key, &key_code))
+  if (!ui::KeyboardLayoutEngineManager::GetKeyboardLayoutEngine()->Lookup(
+          dom_code, flags, &dom_key, &key_code)) {
     return false;
+  }
 
   *out = std::make_unique<ui::KeyEvent>(type, key_code, dom_code, flags,
                                         dom_key, base::TimeTicks::Now());
