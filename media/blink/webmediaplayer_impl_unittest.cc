@@ -54,6 +54,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/media/webmediaplayer_delegate.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
@@ -326,12 +327,12 @@ class WebMediaPlayerImplTest
                                          /*opener=*/nullptr,
                                          mojo::NullAssociatedReceiver(),
                                          *agent_group_scheduler)),
-        web_local_frame_(blink::WebLocalFrame::CreateMainFrame(
-            web_view_,
-            &web_frame_client_,
-            nullptr,
-            base::UnguessableToken::Create(),
-            nullptr)),
+        web_local_frame_(
+            blink::WebLocalFrame::CreateMainFrame(web_view_,
+                                                  &web_frame_client_,
+                                                  nullptr,
+                                                  blink::LocalFrameToken(),
+                                                  nullptr)),
         context_provider_(viz::TestContextProvider::Create()),
         audio_parameters_(TestAudioParameters::Normal()),
         memory_dump_manager_(
