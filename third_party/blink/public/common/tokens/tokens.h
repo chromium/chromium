@@ -51,7 +51,7 @@ class FrameToken : public MultiToken<LocalFrameToken, RemoteFrameToken> {
   operator const base::UnguessableToken&() const& { return this->value(); }
 
   // Allow direct comparison with base::UnguessableToken.
-  constexpr bool operator==(const base::UnguessableToken& rhs) const {
+  bool operator==(const base::UnguessableToken& rhs) const {
     return this->value() == rhs;
   }
 };
