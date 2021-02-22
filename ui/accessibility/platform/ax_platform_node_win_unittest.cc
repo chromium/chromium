@@ -517,6 +517,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleDetachedObject) {
 TEST_F(AXPlatformNodeWinTest, IAccessibleHitTest) {
   AXNodeData root;
   root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
   root.relative_bounds.bounds = gfx::RectF(0, 0, 40, 40);
 
   AXNodeData node1;
@@ -559,6 +560,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleHitTest) {
 TEST_F(AXPlatformNodeWinTest, IAccessibleHitTestDoesNotLoopForever) {
   AXNodeData root;
   root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
   root.relative_bounds.bounds = gfx::RectF(0, 0, 40, 40);
 
   AXNodeData node1;
@@ -605,6 +607,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleName) {
 TEST_F(AXPlatformNodeWinTest, IAccessibleDescription) {
   AXNodeData root;
   root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
   root.AddStringAttribute(ax::mojom::StringAttribute::kDescription,
                           "Description");
   Init(root);
@@ -641,6 +644,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleAccValue) {
 TEST_F(AXPlatformNodeWinTest, IAccessibleShortcut) {
   AXNodeData root;
   root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
   root.AddStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts,
                           "Shortcut");
   Init(root);
@@ -994,6 +998,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleSelectionTableCellMultipleSelected) {
 TEST_F(AXPlatformNodeWinTest, IAccessibleRole) {
   AXNodeData root;
   root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
   root.child_ids.push_back(2);
 
   AXNodeData child;
@@ -1029,6 +1034,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleRole) {
 TEST_F(AXPlatformNodeWinTest, IAccessibleLocation) {
   AXNodeData root;
   root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
   root.relative_bounds.bounds = gfx::RectF(10, 40, 800, 600);
   Init(root);
 
@@ -1061,6 +1067,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleLocation) {
 TEST_F(AXPlatformNodeWinTest, IAccessibleChildAndParent) {
   AXNodeData root;
   root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
   root.child_ids.push_back(2);
   root.child_ids.push_back(3);
 
@@ -1162,6 +1169,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessible2IndexInParent) {
   AXNodeData root;
   root.id = 1;
   root.child_ids.push_back(2);
+  root.role = ax::mojom::Role::kRootWebArea;
   root.child_ids.push_back(3);
 
   AXNodeData left;
@@ -4749,6 +4757,8 @@ TEST_F(AXPlatformNodeWinTest, GetPropertyValue_IsControlElement) {
 
 TEST_F(AXPlatformNodeWinTest, UIAGetProviderOptions) {
   AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
   Init(root_data);
 
   ComPtr<IRawElementProviderSimple> root_node =
@@ -4765,6 +4775,8 @@ TEST_F(AXPlatformNodeWinTest, UIAGetProviderOptions) {
 
 TEST_F(AXPlatformNodeWinTest, UIAGetHostRawElementProvider) {
   AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
   Init(root_data);
 
   ComPtr<IRawElementProviderSimple> root_node =
@@ -4779,6 +4791,7 @@ TEST_F(AXPlatformNodeWinTest, UIAGetHostRawElementProvider) {
 TEST_F(AXPlatformNodeWinTest, UIAGetBoundingRectangle) {
   AXNodeData root_data;
   root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
   root_data.relative_bounds.bounds = gfx::RectF(10, 20, 30, 50);
   Init(root_data);
 
@@ -4799,6 +4812,7 @@ TEST_F(AXPlatformNodeWinTest, UIAGetFragmentRoot) {
   // overrides the method.
   AXNodeData root_data;
   root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
 
   AXNodeData element1_data;
   element1_data.id = 2;
@@ -4837,6 +4851,7 @@ TEST_F(AXPlatformNodeWinTest, UIAGetFragmentRoot) {
 TEST_F(AXPlatformNodeWinTest, UIAGetEmbeddedFragmentRoots) {
   AXNodeData root_data;
   root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
   Init(root_data);
 
   ComPtr<IRawElementProviderFragment> root_provider =
@@ -4851,6 +4866,7 @@ TEST_F(AXPlatformNodeWinTest, UIAGetEmbeddedFragmentRoots) {
 TEST_F(AXPlatformNodeWinTest, UIAGetRuntimeId) {
   AXNodeData root_data;
   root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
   Init(root_data);
 
   ComPtr<IRawElementProviderFragment> root_provider =
@@ -4996,6 +5012,7 @@ TEST_F(AXPlatformNodeWinTest, UIAIWindowProviderNotSupported) {
 TEST_F(AXPlatformNodeWinTest, UIANavigate) {
   AXNodeData root_data;
   root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
 
   AXNodeData element1_data;
   element1_data.id = 2;
@@ -5359,6 +5376,7 @@ TEST_F(AXPlatformNodeWinTest, UIALocalizedLandmarkType) {
 TEST_F(AXPlatformNodeWinTest, IRawElementProviderSimple2ShowContextMenu) {
   AXNodeData root_data;
   root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
 
   AXNodeData element1_data;
   element1_data.id = 2;
@@ -5391,6 +5409,8 @@ TEST_F(AXPlatformNodeWinTest, IRawElementProviderSimple2ShowContextMenu) {
 
 TEST_F(AXPlatformNodeWinTest, UIAErrorHandling) {
   AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
   Init(root);
 
   ComPtr<IRawElementProviderSimple> simple_provider =
@@ -5778,6 +5798,7 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
 TEST_F(AXPlatformNodeWinTest, GetPatternProviderExpandCollapsePattern) {
   ui::AXNodeData root;
   root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
 
   ui::AXNodeData list_box;
   ui::AXNodeData list_item;
@@ -5896,6 +5917,7 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderExpandCollapsePattern) {
 TEST_F(AXPlatformNodeWinTest, GetPatternProviderInvokePattern) {
   ui::AXNodeData root;
   root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
 
   ui::AXNodeData link;
   ui::AXNodeData generic_container;
@@ -5962,6 +5984,7 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderInvokePattern) {
 TEST_F(AXPlatformNodeWinTest, IExpandCollapsePatternProviderAction) {
   ui::AXNodeData root;
   root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
 
   ui::AXNodeData combo_box_grouping_has_popup;
   ui::AXNodeData combo_box_grouping_expanded;
@@ -6131,6 +6154,7 @@ TEST_F(AXPlatformNodeWinTest, IExpandCollapsePatternProviderAction) {
 TEST_F(AXPlatformNodeWinTest, IInvokeProviderInvoke) {
   ui::AXNodeData root;
   root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
 
   ui::AXNodeData button;
   ui::AXNodeData button_disabled;
