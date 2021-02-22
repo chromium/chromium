@@ -5085,6 +5085,28 @@
             ]
         }
     ],
+    "OneTimeGeolocationPermission": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithOkButtonAsAllowOnce",
+                    "params": {
+                        "OkButtonBehavesAsAllowAlways": "false"
+                    },
+                    "enable_features": [
+                        "OneTimeGeolocationPermission"
+                    ]
+                }
+            ]
+        }
+    ],
     "OopRasterizationDDL": [
         {
             "platforms": [
