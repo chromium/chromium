@@ -117,11 +117,8 @@ if (include_js_tests) {
     ]
 
     if (is_chromeos_ash) {
-      gen_include_files += [
-        "settings/chromeos/a11y/os_settings_accessibility_v3_test.js",
-        # TODO(https://crbug.com/1045266): Migrate a11y tests to Polymer3.
-        # "settings/chromeos/a11y/crostini_accessibility_test.js",
-      ]
+      gen_include_files +=
+          [ "settings/chromeos/a11y/os_settings_accessibility_v3_test.js" ]
     }
 
     extra_js_files = [

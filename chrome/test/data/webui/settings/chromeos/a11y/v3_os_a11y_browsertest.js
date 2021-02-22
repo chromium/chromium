@@ -8,7 +8,12 @@ GEN_INCLUDE([
 ]);
 
 GEN('#include "build/branding_buildflags.h"');
+GEN('#include "chrome/browser/chromeos/crostini/crostini_pref_names.h"');
+GEN('#include "chrome/browser/chromeos/crostini/fake_crostini_features.h"');
+GEN('#include "chrome/browser/profiles/profile.h"');
+GEN('#include "chrome/browser/ui/browser.h"');
 GEN('#include "chrome/common/chrome_features.h"');
+GEN('#include "components/prefs/pref_service.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 // TODO(crbug.com/1002627): This block prevents generation of a
@@ -45,6 +50,23 @@ const multideviceFeatureViolationFilter =
       },
     });
 
+const crostiniFeatureList = {
+  enabled: ['features::kCrostini']
+};
+
+function crostiniTestGenPreamble() {
+  GEN('browser()->profile()->GetPrefs()->SetBoolean(');
+  GEN('    crostini::prefs::kCrostiniEnabled, true);');
+  GEN('crostini::FakeCrostiniFeatures fake_crostini_features;');
+  GEN('fake_crostini_features.SetAll(true);');
+}
+
+const crostiniConfig = {
+  featureList: crostiniFeatureList,
+  options: axeOptionsDocumentTitle,
+  testGenPreamble: crostiniTestGenPreamble
+};
+
 [[
   'Basic', 'basic_a11y_v3_test.js', {options: axeOptionsExcludeLinkInTextBlock}
 ],
@@ -59,6 +81,10 @@ const multideviceFeatureViolationFilter =
  [
    'Multidevice', 'multidevice_a11y_v3_test.js',
    {options: axeOptionsDocumentTitle}
+ ],
+ [
+   'CrostiniDetails', 'crostini_settings_details_a11y_v3_test.js',
+   crostiniConfig
  ],
  [
    'MultideviceFeatures', 'multidevice_features_a11y_v3_test.js',
@@ -87,6 +113,21 @@ function defineTest(testName, module, config) {
         return config.switches;
       }
       return [];
+    }
+
+    /** @override */
+    get featureList() {
+      if (config && config.featureList) {
+        return config.featureList;
+      }
+      return undefined;
+    }
+
+    /** @override */
+    testGenPreamble() {
+      if (config && config.testGenPreamble) {
+        return config.testGenPreamble();
+      }
     }
   };
 
