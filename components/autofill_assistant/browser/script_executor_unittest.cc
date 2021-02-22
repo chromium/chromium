@@ -63,7 +63,7 @@ class ScriptExecutorTest : public testing::Test,
             std::make_unique<ScriptParameters>(
                 std::map<std::string, std::string>{
                     {"additional_param", "additional_param_value"}}),
-            "additional_exp"),
+            TriggerContext::Options{.experiment_ids = "additional_exp"}),
         /* global_payload= */ "initial global payload",
         /* script_payload= */ "initial payload",
         /* listener= */ this, &scripts_state_, &ordered_interrupts_,
@@ -194,7 +194,7 @@ TEST_F(ScriptExecutorTest, ForwardParameters) {
   delegate_.SetTriggerContext(std::make_unique<TriggerContext>(
       std::make_unique<ScriptParameters>(
           std::map<std::string, std::string>{{"param", "value"}}),
-      "exp"));
+      TriggerContext::Options{.experiment_ids = "exp"}));
   EXPECT_CALL(mock_service_, OnGetActions(StrEq(kScriptPath), _, _, _, _, _))
       .WillOnce(Invoke([](const std::string& script_path, const GURL& url,
                           const TriggerContext& trigger_context,

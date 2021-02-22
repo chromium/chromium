@@ -13,9 +13,13 @@ TriggerContext::TriggerContext()
 
 TriggerContext::TriggerContext(
     std::unique_ptr<ScriptParameters> script_parameters,
-    const std::string& experiment_ids)
-    : script_parameters_(std::move(script_parameters)),
-      experiment_ids_(std::move(experiment_ids)) {}
+    const Options& options)
+    : TriggerContext(std::move(script_parameters),
+                     options.experiment_ids,
+                     options.is_cct,
+                     options.onboarding_shown,
+                     options.is_direct_action,
+                     options.caller_account_hash) {}
 
 TriggerContext::TriggerContext(
     std::unique_ptr<ScriptParameters> script_parameters,

@@ -42,6 +42,7 @@ class ScriptParameters {
   base::Optional<std::string> GetBase64TriggerScriptsResponseProto() const;
   base::Optional<bool> GetRequestsTriggerScript() const;
   base::Optional<bool> GetStartImmediately() const;
+  base::Optional<bool> GetEnabled() const;
 
   // Details parameters.
   base::Optional<bool> GetDetailsShowInitial() const;

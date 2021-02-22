@@ -2284,7 +2284,7 @@ TEST_F(ControllerTest, SetOverlayColors) {
                          /* parameters = */ std::make_unique<ScriptParameters>(
                              std::map<std::string, std::string>{
                                  {"OVERLAY_COLORS", "#FF000000:#FFFFFFFF"}}),
-                         /* experiment_ids = */ std::string()));
+                         TriggerContext::Options()));
 }
 
 TEST_F(ControllerTest, SetDateTimeRange) {
@@ -2657,7 +2657,7 @@ TEST_F(ControllerTest, StartPasswordChangeFlow) {
                       /* parameters = */ std::make_unique<ScriptParameters>(
                           std::map<std::string, std::string>{
                               {"PASSWORD_CHANGE_USERNAME", "test_username"}}),
-                      /* experiment_ids = */ std::string())));
+                      TriggerContext::Options())));
   // Initial navigation.
   SimulateNavigateToUrl(GURL("http://b.example.com"));
   EXPECT_EQ(GetUserData()->selected_login_->username, "test_username");

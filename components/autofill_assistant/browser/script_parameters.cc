@@ -61,6 +61,9 @@ const char kRequestTriggerScriptParameterName[] = "REQUEST_TRIGGER_SCRIPT";
 // set to false, REQUEST_TRIGGER_SCRIPT or TRIGGER_SCRIPTS_BASE_64 must be set.
 const char kStartImmediatelyParameterName[] = "START_IMMEDIATELY";
 
+// Mandatory parameter that MUST be present and set to true in all intents.
+const char kEnabledParameterName[] = "ENABLED";
+
 // The list of script parameters that trigger scripts are allowed to send to
 // the backend.
 constexpr std::array<const char*, 5> kAllowlistedTriggerScriptParameters = {
@@ -164,6 +167,10 @@ base::Optional<bool> ScriptParameters::GetRequestsTriggerScript() const {
 
 base::Optional<bool> ScriptParameters::GetStartImmediately() const {
   return GetTypedParameter<bool>(parameters_, kStartImmediatelyParameterName);
+}
+
+base::Optional<bool> ScriptParameters::GetEnabled() const {
+  return GetTypedParameter<bool>(parameters_, kEnabledParameterName);
 }
 
 base::Optional<bool> ScriptParameters::GetDetailsShowInitial() const {

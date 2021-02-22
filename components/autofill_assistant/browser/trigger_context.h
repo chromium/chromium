@@ -19,19 +19,28 @@ namespace autofill_assistant {
 // Contains trigger context information for the current script execution.
 class TriggerContext {
  public:
+  // Helper struct to facilitate instantiating this class.
+  struct Options {
+    std::string experiment_ids;
+    bool is_cct = false;
+    bool onboarding_shown = false;
+    bool is_direct_action = false;
+    std::string caller_account_hash;
+  };
+
   // Creates an empty trigger context.
   TriggerContext();
 
   // Creates a trigger context with the given values, and default values for
   // all unspecified arguments.
   //
-  // NOTE: only use this if you don't intend to send the context to the backend
-  // and don't care about the default values. In all other cases, use the full
-  // overload below!
+  // NOTE: always specify the full set of options for instances that you intend
+  // to send to the backend!
   TriggerContext(std::unique_ptr<ScriptParameters> script_parameters,
-                 const std::string& experiment_ids);
+                 const Options& options);
 
   // Creates a trigger context with the given values.
+  // TODO(arbesser): remove this overload.
   TriggerContext(std::unique_ptr<ScriptParameters> script_parameters,
                  const std::string& experiment_ids,
                  bool is_cct,

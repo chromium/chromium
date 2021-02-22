@@ -85,7 +85,8 @@ TEST(ScriptParametersTest, TriggerScriptAllowList) {
 
 TEST(ScriptParametersTest, SpecialScriptParameters) {
   ScriptParameters parameters = {
-      {{"START_IMMEDIATELY", "false"},
+      {{"ENABLED", "true"},
+       {"START_IMMEDIATELY", "false"},
        {"REQUEST_TRIGGER_SCRIPT", "true"},
        {"TRIGGER_SCRIPTS_BASE64", "abc123"},
        {"PASSWORD_CHANGE_USERNAME", "fake_username"},
@@ -101,6 +102,7 @@ TEST(ScriptParametersTest, SpecialScriptParameters) {
        {"DETAILS_TOTAL_PRICE_LABEL", "total"},
        {"DETAILS_TOTAL_PRICE", "12"}}};
 
+  EXPECT_THAT(parameters.GetEnabled(), Eq(true));
   EXPECT_THAT(parameters.GetStartImmediately(), Eq(false));
   EXPECT_THAT(parameters.GetRequestsTriggerScript(), Eq(true));
   EXPECT_THAT(parameters.GetBase64TriggerScriptsResponseProto(), Eq("abc123"));
