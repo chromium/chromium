@@ -39,6 +39,9 @@ void PasswordStoreSites::OnGetPasswordStoreResults(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   password_sites_ = std::set<std::string>();
   for (const auto& entry : form_entries) {
+    if (!entry->url.SchemeIsHTTPOrHTTPS()) {
+      continue;
+    }
     password_sites_->insert(GetSiteNameForURL(entry->url));
   }
 }
