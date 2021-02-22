@@ -1776,14 +1776,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>xingliu@chromium.org</owner>
   <summary>
     Logs the duration in milliseconds between bookmark creation time and
-    bookmark open time based on device local time. Recorded when the bookmark is
-    opened. Bookmark folder is not considered. Can be logged in multiple browser
-    sessions.
+    bookmark open time based on device local time. Recorded when {BookmarkType}
+    is opened. Bookmark folder is not considered. The creation and open can
+    happen on different runs of Chrome.
   </summary>
   <token key="BookmarkType">
-    <variant name="Normal" summary="A normal bookmark."/>
-    <variant name="Partner" summary="A partner bookmark."/>
-    <variant name="ReadingList" summary="A reading list article."/>
+    <variant name="Normal" summary="a normal bookmark."/>
+    <variant name="Partner" summary="a partner bookmark."/>
+    <variant name="ReadingList" summary="a reading list article."/>
   </token>
 </histogram>
 
