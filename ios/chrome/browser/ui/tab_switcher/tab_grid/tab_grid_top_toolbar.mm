@@ -13,6 +13,12 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+// The space after the new tab toolbar button item. Calculated to have
+// approximately 33 pts between the plus button and the done button.
+const int kNewTabButtonTrailingSpace = 20;
+}
+
 @interface TabGridTopToolbar () <UIToolbarDelegate>
 @end
 
@@ -20,6 +26,7 @@
   UIBarButtonItem* _centralItem;
   UIBarButtonItem* _spaceItem;
   UIBarButtonItem* _newTabButton;
+  UIBarButtonItem* _newTabButtonTrailingSpaceItem;
 }
 
 - (void)hide {
@@ -79,7 +86,7 @@
     if (ShowThumbStripInTraitCollection(traitCollection)) {
       [self setItems:@[
         _leadingButton, _spaceItem, _centralItem, _spaceItem, _newTabButton,
-        _trailingButton
+        _newTabButtonTrailingSpaceItem, _trailingButton
       ]];
     } else {
       [self setItems:@[
@@ -114,6 +121,12 @@
                            target:nil
                            action:nil];
   _newTabButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
+
+  _newTabButtonTrailingSpaceItem = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                           target:nil
+                           action:nil];
+  _newTabButtonTrailingSpaceItem.width = kNewTabButtonTrailingSpace;
 
   _spaceItem = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
