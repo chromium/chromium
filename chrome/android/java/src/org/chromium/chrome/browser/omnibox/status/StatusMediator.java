@@ -18,7 +18,6 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CallbackController;
 import org.chromium.base.MathUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.supplier.Supplier;
@@ -85,7 +84,6 @@ public class StatusMediator implements PermissionDialogController.Observer {
 
     private final PermissionDialogController mPermissionDialogController;
     private final Handler mPermissionTaskHandler = new Handler();
-    private final CallbackController mCallbackController = new CallbackController();
     @ContentSettingsType
     private int mLastPermission = ContentSettingsType.DEFAULT;
     private final PageInfoIPHController mPageInfoIPHController;
@@ -137,7 +135,6 @@ public class StatusMediator implements PermissionDialogController.Observer {
 
     public void destroy() {
         mPermissionTaskHandler.removeCallbacksAndMessages(null);
-        mCallbackController.destroy();
         mPermissionDialogController.removeObserver(this);
     }
 
@@ -674,8 +671,15 @@ public class StatusMediator implements PermissionDialogController.Observer {
         mPermissionTaskHandler.removeCallbacksAndMessages(null);
         mModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIcon);
         mPermissionTaskHandler.postDelayed(
-                mCallbackController.makeCancelable(this::resetPermissionIcon),
-                PERMISSION_ICON_DISPLAY_TIMEOUT_MS);
+                this::resetPermissionIcon, PERMISSION_ICON_DISPLAY_TIMEOUT_MS);
+    }
+
+    /** Triggers an update to the status icon to stop showing the permission icon. */
+    public void stopShowPermissionIcon() {
+        if (mLastPermission != ContentSettingsType.DEFAULT) {
+            mPermissionTaskHandler.removeCallbacksAndMessages(null);
+            resetPermissionIcon();
+        }
     }
 
     private void resetPermissionIcon() {
