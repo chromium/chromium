@@ -78,6 +78,10 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
   using GetExtraMetadataCallback =
       base::OnceCallback<void(base::File::Error error,
                               const ExtraFileMetadata& metadata)>;
+  using GetRootSizeCallback =
+      base::OnceCallback<void(const bool error,
+                              const uint64_t available_bytes,
+                              const uint64_t capacity_bytes)>;
 
   ArcDocumentsProviderRoot(ArcFileSystemOperationRunner* runner,
                            const std::string& authority,
@@ -210,6 +214,9 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
   // ArcFileSystemOperationRunner::Observer overrides:
   void OnWatchersCleared() override;
 
+  // Get DocumentsProvider root's available bytes.
+  void GetRootSize(GetRootSizeCallback callback);
+
  private:
   struct WatcherData;
   struct DirectoryCache;
@@ -230,6 +237,9 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
   using GetDocumentCallback =
       base::OnceCallback<void(base::File::Error error,
                               const mojom::DocumentPtr& document)>;
+
+  void OnGetRootSize(GetRootSizeCallback callback,
+                     mojom::RootSizePtr maybe_root_size);
 
   void GetFileInfoFromDocument(GetFileInfoCallback callback,
                                const base::FilePath& path,

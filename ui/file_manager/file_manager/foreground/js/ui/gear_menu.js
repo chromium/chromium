@@ -117,18 +117,20 @@
         return;
       }
       this.volumeSpaceInnerBar_.removeAttribute('pending');
+      this.volumeSpaceOuterBar_.hidden = true;
       if (spaceInfo) {
         const sizeStr = util.bytesToString(spaceInfo.remainingSize);
         this.volumeSpaceInfoLabel_.textContent =
             strf('SPACE_AVAILABLE', sizeStr);
 
-        const usedSpace = spaceInfo.totalSize - spaceInfo.remainingSize;
-        this.volumeSpaceInnerBar_.style.width =
-            (100 * usedSpace / spaceInfo.totalSize) + '%';
+        if (spaceInfo.totalSize > 0) {
+          const usedSpace = spaceInfo.totalSize - spaceInfo.remainingSize;
+          this.volumeSpaceInnerBar_.style.width =
+              (100 * usedSpace / spaceInfo.totalSize) + '%';
 
-        this.volumeSpaceOuterBar_.hidden = false;
+          this.volumeSpaceOuterBar_.hidden = false;
+        }
       } else {
-        this.volumeSpaceOuterBar_.hidden = true;
         this.volumeSpaceInfoLabel_.textContent = str('FAILED_SPACE_INFO');
       }
     });

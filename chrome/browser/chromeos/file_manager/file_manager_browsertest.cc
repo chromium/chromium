@@ -939,7 +939,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("enableDisableStorageSettingsLink"),
         TestCase("showAvailableStorageMyFiles"),
         TestCase("showAvailableStorageDrive"),
-        TestCase("showAvailableStorageSmbfs").EnableSmbfs()));
+        TestCase("showAvailableStorageSmbfs").EnableSmbfs(),
+        TestCase("showAvailableStorageDocProvider").EnableDocumentsProvider()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesTooltip, /* files_tooltip.js */

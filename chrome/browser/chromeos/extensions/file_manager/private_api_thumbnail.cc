@@ -297,6 +297,9 @@ FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::Run() {
 
   auto* root_map = arc::ArcDocumentsProviderRootMap::GetForBrowserContext(
       chrome_details_.GetProfile());
+  if (!root_map) {
+    return RespondNow(Error("File not found"));
+  }
   base::FilePath path;
   auto* root = root_map->ParseAndLookup(file_system_url, &path);
   if (!root) {

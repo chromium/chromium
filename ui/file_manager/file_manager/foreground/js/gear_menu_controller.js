@@ -136,14 +136,10 @@
 
     // TODO(mtomasz): Add support for remaining space indication for provided
     // file systems.
-    // TODO(fukino): Add support for remaining space indication for documents
-    // provider roots. crbug.com/953657.
     if (currentVolumeInfo.volumeType ==
             VolumeManagerCommon.VolumeType.PROVIDED ||
         currentVolumeInfo.volumeType ==
             VolumeManagerCommon.VolumeType.MEDIA_VIEW ||
-        currentVolumeInfo.volumeType ==
-            VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER ||
         currentVolumeInfo.volumeType ==
             VolumeManagerCommon.VolumeType.ARCHIVE) {
       this.gearMenu_.setSpaceInfo(null, false);

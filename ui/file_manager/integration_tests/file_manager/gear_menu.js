@@ -561,3 +561,47 @@ testcase.showAvailableStorageSmbfs = async () => {
           '[command=\'#volume-storage\']' +
           ':not([hidden])');
 };
+
+/**
+ * Tests that the "xGB available message appears in the gear menu for
+ * the DocumentsProvider volume.
+ */
+testcase.showAvailableStorageDocProvider = async () => {
+  const documentsProviderVolumeQuery =
+      '[has-children="true"] [volume-type-icon="documents_provider"]';
+
+  // Open Files app.
+  const appId = await openNewWindow(RootPath.DOWNLOADS);
+
+  // Add files to the DocumentsProvider volume.
+  await addEntries(
+      ['documents_provider'], COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET);
+
+  // Wait for the DocumentsProvider volume to mount.
+  await remoteCall.waitForElement(appId, documentsProviderVolumeQuery);
+
+  // Click to open the DocumentsProvider volume.
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil(
+          'fakeMouseClick', appId, [documentsProviderVolumeQuery]),
+      'fakeMouseClick failed');
+
+  // Check: the DocumentsProvider files should appear in the file list.
+  const files =
+      TestEntryInfo.getExpectedRows(COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET);
+  await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
+
+  // Wait for the gear menu button to appear and click it.
+  await remoteCall.waitAndClickElement(appId, '#gear-button');
+
+  // Wait for the gear menu to appear.
+  await remoteCall.waitForElement(appId, '#gear-menu:not([hidden])');
+
+  // Check #volume-storage is shown and disabled (can't manage DocumentsProvider
+  // storage).
+  await remoteCall.waitForElement(
+      appId,
+      '#gear-menu:not([hidden]) cr-menu-item' +
+          '[command=\'#volume-storage\']' +
+          ':not([hidden])');
+};

@@ -81,6 +81,7 @@ class ArcFileSystemOperationRunner
   using GetRecentDocumentsCallback =
       mojom::FileSystemInstance::GetRecentDocumentsCallback;
   using GetRootsCallback = mojom::FileSystemInstance::GetRootsCallback;
+  using GetRootSizeCallback = mojom::FileSystemInstance::GetRootSizeCallback;
   using DeleteDocumentCallback =
       mojom::FileSystemInstance::DeleteDocumentCallback;
   using RenameDocumentCallback =
@@ -148,6 +149,9 @@ class ArcFileSystemOperationRunner
                           const std::string& root_id,
                           GetRecentDocumentsCallback callback);
   void GetRoots(GetRootsCallback callback);
+  void GetRootSize(const std::string& authority,
+                   const std::string& root_id,
+                   GetRootSizeCallback callback);
   void DeleteDocument(const std::string& authority,
                       const std::string& document_id,
                       DeleteDocumentCallback callback);

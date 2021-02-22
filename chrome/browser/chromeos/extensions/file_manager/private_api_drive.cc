@@ -268,6 +268,9 @@ class SingleEntryPropertiesGetterForDocumentsProvider {
 
     auto* root_map =
         arc::ArcDocumentsProviderRootMap::GetForBrowserContext(profile_);
+    if (!root_map) {
+      CompleteGetEntryProperties(base::File::FILE_ERROR_NOT_FOUND);
+    }
     base::FilePath path;
     auto* root = root_map->ParseAndLookup(file_system_url_, &path);
     if (!root) {

@@ -50,9 +50,17 @@ base::FilePath GetDocumentsProviderMountPath(
     const std::string& authority,
     const std::string& root_document_id);
 
-// Parses a FileSystemURL pointing to ARC documents provider file system.
+// Parses an absolute file |path| from the ARC documents provider file system.
 // Appropriate unescaping is done to extract |authority| and |root_document_id|
-// from |url|.
+// from |path|.
+// On success, true is returned. All arguments must not be nullptr.
+bool ParseDocumentsProviderPath(const base::FilePath& path,
+                                std::string* authority,
+                                std::string* root_document_id);
+
+// Parses a FileSystem URL pointing to ARC documents provider file system.
+// Appropriate unescaping is done to extract |authority| and |root_document_id|
+// from |url|.  The absolute file |path| is returned with appropriate escaping.
 // On success, true is returned. All arguments must not be nullptr.
 bool ParseDocumentsProviderUrl(const storage::FileSystemURL& url,
                                std::string* authority,

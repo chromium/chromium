@@ -302,6 +302,27 @@ void ArcFileSystemOperationRunner::GetRoots(GetRootsCallback callback) {
   file_system_instance->GetRoots(std::move(callback));
 }
 
+void ArcFileSystemOperationRunner::GetRootSize(const std::string& authority,
+                                               const std::string& root_id,
+                                               GetRootSizeCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (should_defer_) {
+    deferred_operations_.emplace_back(
+        base::BindOnce(&ArcFileSystemOperationRunner::GetRootSize,
+                       weak_ptr_factory_.GetWeakPtr(), authority, root_id,
+                       std::move(callback)));
+    return;
+  }
+  auto* file_system_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->file_system(), GetRootSize);
+  if (!file_system_instance) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), mojom::RootSizePtr()));
+    return;
+  }
+  file_system_instance->GetRootSize(authority, root_id, std::move(callback));
+}
+
 void ArcFileSystemOperationRunner::DeleteDocument(
     const std::string& authority,
     const std::string& document_id,

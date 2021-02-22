@@ -135,6 +135,24 @@ base::FilePath GetDocumentsProviderMountPath(
       .Append(EscapePathComponent(root_document_id));
 }
 
+bool ParseDocumentsProviderPath(const base::FilePath& path,
+                                std::string* authority,
+                                std::string* root_document_id) {
+  if (!base::FilePath(kDocumentsProviderMountPointPath).IsParent(path))
+    return false;
+
+  // Filesystem path format for documents provider is:
+  // /special/arc-documents-provider/<authority>/<root_doc_id>/<relative_path>
+  std::vector<base::FilePath::StringType> components;
+  path.GetComponents(&components);
+  if (components.size() < 5)
+    return false;
+
+  *authority = UnescapePathComponent(components[3]);
+  *root_document_id = UnescapePathComponent(components[4]);
+  return true;
+}
+
 bool ParseDocumentsProviderUrl(const storage::FileSystemURL& url,
                                std::string* authority,
                                std::string* root_document_id,
@@ -143,20 +161,10 @@ bool ParseDocumentsProviderUrl(const storage::FileSystemURL& url,
     return false;
   base::FilePath url_path_stripped = url.path().StripTrailingSeparators();
 
-  if (!base::FilePath(kDocumentsProviderMountPointPath)
-           .IsParent(url_path_stripped)) {
+  if (!ParseDocumentsProviderPath(url_path_stripped, authority,
+                                  root_document_id)) {
     return false;
   }
-
-  // Filesystem URL format for documents provider is:
-  // /special/arc-documents-provider/<authority>/<root_doc_id>/<relative_path>
-  std::vector<base::FilePath::StringType> components;
-  url_path_stripped.GetComponents(&components);
-  if (components.size() < 5)
-    return false;
-
-  *authority = UnescapePathComponent(components[3]);
-  *root_document_id = UnescapePathComponent(components[4]);
 
   base::FilePath root_path =
       GetDocumentsProviderMountPath(*authority, *root_document_id);

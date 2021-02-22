@@ -26,6 +26,9 @@
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_root.h"
+#include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_root_map.h"
+#include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_util.h"
 #include "chrome/browser/chromeos/drive/file_system_util.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router_factory.h"
@@ -606,6 +609,27 @@ FileManagerPrivateGetSizeStatsFunction::Run() {
         base::BindOnce(
             &FileManagerPrivateGetSizeStatsFunction::OnGetMtpAvailableSpace,
             this));
+  } else if (volume->type() == file_manager::VOLUME_TYPE_DOCUMENTS_PROVIDER) {
+    std::string authority;
+    std::string root_document_id;
+    if (!arc::ParseDocumentsProviderPath(volume->mount_path(), &authority,
+                                         &root_document_id)) {
+      return RespondNow(Error("File path was invalid"));
+    }
+
+    // Get DocumentsProvider's root available and capacity sizes in bytes.
+    auto* root_map = arc::ArcDocumentsProviderRootMap::GetForBrowserContext(
+        chrome_details.GetProfile());
+    if (!root_map) {
+      return RespondNow(Error("File not found"));
+    }
+    auto* root = root_map->Lookup(authority, root_document_id);
+    if (!root) {
+      return RespondNow(Error("File not found"));
+    }
+    root->GetRootSize(base::BindOnce(&FileManagerPrivateGetSizeStatsFunction::
+                                         OnGetDocumentsProviderAvailableSpace,
+                                     this));
   } else {
     uint64_t* total_size = new uint64_t(0);
     uint64_t* remaining_size = new uint64_t(0);
@@ -633,6 +657,19 @@ void FileManagerPrivateGetSizeStatsFunction::OnGetMtpAvailableSpace(
   const uint64_t max_capacity = mtp_storage_info->max_capacity;
   const uint64_t free_space_in_bytes = mtp_storage_info->free_space_in_bytes;
   OnGetSizeStats(&max_capacity, &free_space_in_bytes);
+}
+
+void FileManagerPrivateGetSizeStatsFunction::
+    OnGetDocumentsProviderAvailableSpace(const bool error,
+                                         const uint64_t available_bytes,
+                                         const uint64_t capacity_bytes) {
+  if (error) {
+    // If stats was not successfully retrieved from DocumentsProvider volume,
+    // result should be left undefined same as we do for Drive.
+    Respond(NoArguments());
+    return;
+  }
+  OnGetSizeStats(&capacity_bytes, &available_bytes);
 }
 
 void FileManagerPrivateGetSizeStatsFunction::OnGetSizeStats(

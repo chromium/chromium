@@ -187,12 +187,12 @@ class FileManagerPrivateGetSizeStatsFunction : public LoggedExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void OnGetDriveAvailableSpace(drive::FileError error,
-                                int64_t bytes_total,
-                                int64_t bytes_used);
-
   void OnGetMtpAvailableSpace(device::mojom::MtpStorageInfoPtr mtp_storage_info,
                               const bool error);
+
+  void OnGetDocumentsProviderAvailableSpace(const bool error,
+                                            const uint64_t available_bytes,
+                                            const uint64_t capacity_bytes);
 
   void OnGetSizeStats(const uint64_t* total_size,
                       const uint64_t* remaining_size);

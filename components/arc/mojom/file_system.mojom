@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 18
+// Next MinVersion: 19
 
 module arc.mojom;
 
@@ -254,6 +254,17 @@ struct FileSelectorElements {
   string? search_query;
 };
 
+// Returned output for GetRootSize.
+struct RootSize {
+  // Available size of a root in bytes. Set to -1 if the available size is
+  // unknown or unbounded.
+  int64 available_bytes;
+
+  // Capacity of a root in bytes. Set to -1 if the capacity is unknown or
+  // unbounded.
+  int64 capacity_bytes;
+};
+
 // Next method ID: 11
 interface FileSystemHost {
   // Returns the name of the file specified by the URL.
@@ -304,7 +315,7 @@ interface FileSystemHost {
       (FileSelectorElements elements);
 };
 
-// Next method ID: 22
+// Next method ID: 23
 interface FileSystemInstance {
   // Notes about Android Documents Provider:
   //
@@ -371,11 +382,17 @@ interface FileSystemInstance {
   [MinVersion=5] GetRecentDocuments@9(string authority, string root_id) =>
       (array<Document>? documents);
 
-  // Queries available roots from all Documents Providers.
+  // Obtains cached roots from all Documents Providers.
   // If there is no root in ARC, an empty array is returned.
-  // If an error is found during GetRoots() methord processing in ARC, null
+  // If an error is found during GetRoots() method processing in ARC, null
   // value is returned.
   [MinVersion=10] GetRoots@12() => (array<Root>? roots);
+
+  // Queries available roots to find the one matching |root_id| and |authority|.
+  // Obtains the root's available bytes and capacity bytes for |root_size|.
+  // Returns null if there is no root that matches the input parameters.
+  [MinVersion=18] GetRootSize@22(string authority, string root_id) =>
+      (RootSize? root_size);
 
   // Deletes the given document.
   [MinVersion=12] DeleteDocument@13(string authority, string document_id) =>

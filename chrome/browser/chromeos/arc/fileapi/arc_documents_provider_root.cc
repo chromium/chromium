@@ -319,6 +319,39 @@ void ArcDocumentsProviderRoot::OnWatchersCleared() {
     entry.second = kInvalidWatcherData;
 }
 
+void ArcDocumentsProviderRoot::GetRootSize(GetRootSizeCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (root_id_.empty()) {
+    // Exit early if ID is missing for the given provider authority.
+    std::move(callback).Run(true /* error */, 0, 0);
+    return;
+  }
+
+  runner_->GetRootSize(
+      authority_, root_id_,
+      base::BindOnce(&ArcDocumentsProviderRoot::OnGetRootSize,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ArcDocumentsProviderRoot::OnGetRootSize(GetRootSizeCallback callback,
+                                             mojom::RootSizePtr root_size) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (root_size.is_null() || root_size->available_bytes < 0) {
+    // The root_size and its available bytes are required from the file system.
+    std::move(callback).Run(true /* error */, 0, 0);
+    return;
+  }
+  if (root_size->capacity_bytes < 0) {
+    // If available bytes is provided but not capacity bytes, it's still valid.
+    std::move(callback).Run(false, root_size->available_bytes, 0);
+    return;
+  }
+
+  std::move(callback).Run(false,
+                          static_cast<uint64_t>(root_size->available_bytes),
+                          static_cast<uint64_t>(root_size->capacity_bytes));
+}
+
 void ArcDocumentsProviderRoot::GetFileInfoFromDocument(
     GetFileInfoCallback callback,
     const base::FilePath& path,

@@ -2970,7 +2970,9 @@ CommandHandler.COMMANDS_['volume-storage'] = new class extends FilesCommand {
         currentVolumeInfo.volumeType ==
             VolumeManagerCommon.VolumeType.CROSTINI ||
         currentVolumeInfo.volumeType ==
-            VolumeManagerCommon.VolumeType.ANDROID_FILES) {
+            VolumeManagerCommon.VolumeType.ANDROID_FILES ||
+        currentVolumeInfo.volumeType ==
+            VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER) {
       event.canExecute = true;
     }
   }
