@@ -12,4 +12,7 @@ interface LocalFrame {
 
   // Enables or disables spatial navigation.
   SetSpatialNavigationEnabled(bool spatial_nav_enabled);
+
+  // Tells the render view what its tab ID is.
+  SetTabId(int32 tab_id);
 };

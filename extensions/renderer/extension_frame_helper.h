@@ -102,6 +102,7 @@ class ExtensionFrameHelper
   // mojom::LocalFrame:
   void SetFrameName(const std::string& name) override;
   void SetSpatialNavigationEnabled(bool enabled) override;
+  void SetTabId(int32_t id) override;
 
   // Called when the document element has been inserted in this frame. This
   // method may invoke untrusted JavaScript code that invalidate the frame and
@@ -159,7 +160,6 @@ class ExtensionFrameHelper
   void OnExtensionDispatchOnDisconnect(int worker_thread_id,
                                        const PortId& id,
                                        const std::string& error_message);
-  void OnExtensionSetTabId(int tab_id);
   void OnUpdateBrowserWindowId(int browser_window_id);
   void OnNotifyRendererViewType(ViewType view_type);
   void OnExtensionResponse(int request_id,
@@ -207,7 +207,6 @@ class ExtensionFrameHelper
   // navigation happens, it is either the initial one or a reload.
   bool has_started_first_navigation_ = false;
 
-  // Note that it's bound only when this frame is a main frame.
   mojo::AssociatedReceiverSet<mojom::LocalFrame> local_frame_receivers_;
 
   base::WeakPtrFactory<ExtensionFrameHelper> weak_ptr_factory_{this};

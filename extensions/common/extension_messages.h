@@ -598,10 +598,6 @@ IPC_MESSAGE_ROUTED4(ExtensionMsg_ExecuteDeclarativeScript,
 IPC_MESSAGE_ROUTED1(ExtensionMsg_UpdateBrowserWindowId,
                     int /* id of browser window */)
 
-// Tell the render view what its tab ID is.
-IPC_MESSAGE_ROUTED1(ExtensionMsg_SetTabId,
-                    int /* id of tab */)
-
 // Tell the renderer to update an extension's permission set.
 IPC_MESSAGE_CONTROL1(ExtensionMsg_UpdatePermissions,
                      ExtensionMsg_UpdatePermissions_Params)

@@ -25,7 +25,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/view_type.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
 #include "url/origin.h"
@@ -147,6 +146,7 @@ void ExtensionWebContentsObserver::RenderFrameCreated(
 void ExtensionWebContentsObserver::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
   DCHECK(initialized_);
+  local_frame_map_.erase(render_frame_host);
   ProcessManager::Get(browser_context_)
       ->UnregisterRenderFrameHost(render_frame_host);
   ExtensionApiFrameIdMap::Get()->OnRenderFrameDeleted(render_frame_host);
@@ -304,6 +304,17 @@ const Extension* ExtensionWebContentsObserver::GetExtensionFromFrame(
   }
 
   return extension;
+}
+
+mojom::LocalFrame* ExtensionWebContentsObserver::GetLocalFrame(
+    content::RenderFrameHost* render_frame_host) {
+  mojo::AssociatedRemote<mojom::LocalFrame>& remote =
+      local_frame_map_[render_frame_host];
+  if (!remote.is_bound()) {
+    render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
+        remote.BindNewEndpointAndPassReceiver());
+  }
+  return remote.get();
 }
 
 void ExtensionWebContentsObserver::OnRequest(

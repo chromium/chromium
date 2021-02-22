@@ -118,11 +118,11 @@ ExtensionFrameHelper::ExtensionFrameHelper(content::RenderFrame* render_frame,
   if (render_frame->IsMainFrame()) {
     // Manages its own lifetime.
     new AutomationApiHelper(render_frame);
-
-    render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
-        base::BindRepeating(&ExtensionFrameHelper::BindLocalFrame,
-                            weak_ptr_factory_.GetWeakPtr()));
   }
+
+  render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
+      base::BindRepeating(&ExtensionFrameHelper::BindLocalFrame,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 ExtensionFrameHelper::~ExtensionFrameHelper() {
@@ -383,7 +383,6 @@ bool ExtensionFrameHelper::OnMessageReceived(const IPC::Message& message) {
     IPC_MESSAGE_HANDLER(ExtensionMsg_DeliverMessage, OnExtensionDeliverMessage)
     IPC_MESSAGE_HANDLER(ExtensionMsg_DispatchOnDisconnect,
                         OnExtensionDispatchOnDisconnect)
-    IPC_MESSAGE_HANDLER(ExtensionMsg_SetTabId, OnExtensionSetTabId)
     IPC_MESSAGE_HANDLER(ExtensionMsg_UpdateBrowserWindowId,
                         OnUpdateBrowserWindowId)
     IPC_MESSAGE_HANDLER(ExtensionMsg_NotifyRenderViewType,
@@ -441,7 +440,7 @@ void ExtensionFrameHelper::OnExtensionDispatchOnDisconnect(
           error_message, render_frame());
 }
 
-void ExtensionFrameHelper::OnExtensionSetTabId(int tab_id) {
+void ExtensionFrameHelper::SetTabId(int32_t tab_id) {
   CHECK_EQ(tab_id_, -1);
   CHECK_GE(tab_id, 0);
   tab_id_ = tab_id;

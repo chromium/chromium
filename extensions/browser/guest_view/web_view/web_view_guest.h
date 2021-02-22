@@ -22,7 +22,6 @@
 #include "extensions/browser/guest_view/web_view/web_view_permission_types.h"
 #include "extensions/browser/script_executor.h"
 #include "extensions/common/mojom/frame.mojom.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom.h"
 
 namespace content {
@@ -391,9 +390,6 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
 
   // Store spatial navigation status.
   bool is_spatial_navigation_enabled_;
-
-  // Holder of Mojo connection with the LocalFrame.
-  mojo::AssociatedRemote<extensions::mojom::LocalFrame> local_frame_;
 
   // This is used to ensure pending tasks will not fire after this object is
   // destroyed.
