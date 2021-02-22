@@ -1056,6 +1056,12 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
       if (layout_result->PhysicalFragment().HasOutOfFlowPositionedDescendants())
         return false;
     }
+
+    // A box which doesn't establish a new formating context can pass a whole
+    // bunch of state (floats, margins) to an arbitrary sibling, causing that
+    // sibling to position/size differently.
+    if (!layout_box->CreatesNewFormattingContext())
+      return false;
   }
 
   if (object->ShouldApplyLayoutContainment() &&
