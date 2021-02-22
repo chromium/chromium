@@ -66,9 +66,9 @@ void RecordTimeFromFirstAvailabilityToFirstEntry(PrefService* prefs) {
 
 class HoldingSpaceTrayBubbleEventHandler : public ui::EventHandler {
  public:
-  explicit HoldingSpaceTrayBubbleEventHandler(
-      HoldingSpaceItemViewDelegate* delegate)
-      : delegate_(delegate) {
+  HoldingSpaceTrayBubbleEventHandler(HoldingSpaceTrayBubble* bubble,
+                                     HoldingSpaceItemViewDelegate* delegate)
+      : bubble_(bubble), delegate_(delegate) {
     aura::Env::GetInstance()->AddPreTargetHandler(
         this, ui::EventTarget::Priority::kSystem);
   }
@@ -85,12 +85,21 @@ class HoldingSpaceTrayBubbleEventHandler : public ui::EventHandler {
  private:
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override {
-    if (event->type() == ui::ET_KEY_PRESSED &&
-        delegate_->OnHoldingSpaceTrayBubbleKeyPressed(*event)) {
+    if (event->type() != ui::ET_KEY_PRESSED)
+      return;
+
+    // Only handle `event`s that would otherwise escape the `bubble_` window.
+    aura::Window* target = static_cast<aura::Window*>(event->target());
+    aura::Window* bubble_window = bubble_->GetBubbleWidget()->GetNativeView();
+    if (target && (bubble_window->Contains(target)))
+      return;
+
+    // If `delegate_` handles the `event`, prevent additional bubbling up.
+    if (delegate_->OnHoldingSpaceTrayBubbleKeyPressed(*event))
       event->StopPropagation();
-    }
   }
 
+  HoldingSpaceTrayBubble* const bubble_;
   HoldingSpaceItemViewDelegate* const delegate_;
 };
 
@@ -338,7 +347,7 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
       ->SetVisible(false);
 
   event_handler_ =
-      std::make_unique<HoldingSpaceTrayBubbleEventHandler>(&delegate_);
+      std::make_unique<HoldingSpaceTrayBubbleEventHandler>(this, &delegate_);
 
   PrefService* const prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();

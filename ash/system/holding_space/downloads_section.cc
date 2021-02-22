@@ -57,6 +57,7 @@ class Header : public views::Button {
         l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_DOWNLOADS_TITLE));
     SetCallback(
         base::BindRepeating(&Header::OnPressed, base::Unretained(this)));
+    SetID(kHoldingSpaceDownloadsSectionHeaderId);
 
     auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),

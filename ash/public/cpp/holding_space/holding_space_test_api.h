@@ -46,6 +46,9 @@ class ASH_EXPORT HoldingSpaceTestApi {
   // otherwise.
   bool IsShowingInShelf();
 
+  // Returns the header of the downloads section in holding space UI.
+  views::View* GetDownloadsSectionHeader();
+
   // Returns the collection of download chips in holding space UI.
   // If holding space UI is not visible, an empty collection is returned.
   std::vector<views::View*> GetDownloadChips();

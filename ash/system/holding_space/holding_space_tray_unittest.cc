@@ -84,6 +84,14 @@ void PressKey(const views::View* view,
   event_generator.PressKey(key_code, flags);
 }
 
+bool PressTabUntilFocused(const views::View* view, int max_count = 10) {
+  auto* root_window = view->GetWidget()->GetNativeWindow()->GetRootWindow();
+  ui::test::EventGenerator event_generator(root_window);
+  while (!view->HasFocus() && --max_count >= 0)
+    event_generator.PressKey(ui::VKEY_TAB, ui::EF_NONE);
+  return view->HasFocus();
+}
+
 std::unique_ptr<HoldingSpaceImage> CreateStubHoldingSpaceImage(
     HoldingSpaceItem::Type type,
     const base::FilePath& file_path) {
@@ -1863,54 +1871,102 @@ TEST_P(HoldingSpaceTrayTest, PlaceholderContainsFilesAppChip) {
       holding_space_metrics::FilesAppChipAction::kClick, 1);
 }
 
-// User should be able to launch selected holding space items by pressing the
-// enter key.
-TEST_P(HoldingSpaceTrayTest, EnterKeyOpensSelectedFiles) {
+// User should be able to open the Downloads folder in the Files app by pressing
+// the enter key on the Downloads section header.
+TEST_P(HoldingSpaceTrayTest, EnterKeyOpensDownloads) {
   StartSession();
 
-  // Add two download items.
+  // Add a download item.
   AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake1"));
-  AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake2"));
   EXPECT_TRUE(test_api()->IsShowingInShelf());
 
   // Show the bubble.
   test_api()->Show();
   std::vector<views::View*> download_chips = test_api()->GetDownloadChips();
-  HoldingSpaceItemView* holding_space_item =
-      HoldingSpaceItemView::Cast(download_chips[0]);
+  ASSERT_EQ(download_chips.size(), 1u);
 
-  // Click a download item chip. The view should be selected
+  // Select the download item. Previously there was a bug where if a holding
+  // space item view was selected, the enter key would *not* open Downloads.
   Click(download_chips[0]);
-  ASSERT_TRUE(holding_space_item->selected());
+  EXPECT_TRUE(HoldingSpaceItemView::Cast(download_chips[0])->selected());
 
-  // Press the enter key. We expect the client to open the selected item.
-  EXPECT_CALL(
-      *client(),
-      OpenItems(testing::ElementsAre(holding_space_item->item()), testing::_));
-  PressKey(download_chips[0], ui::KeyboardCode::VKEY_RETURN);
+  // Focus the downloads section header.
+  auto* downloads_section_header = test_api()->GetDownloadsSectionHeader();
+  ASSERT_TRUE(downloads_section_header);
+  EXPECT_TRUE(PressTabUntilFocused(downloads_section_header));
 
-  test_api()->Show();
-
-  download_chips = test_api()->GetDownloadChips();
-  holding_space_item = HoldingSpaceItemView::Cast(download_chips[0]);
-  HoldingSpaceItemView* holding_space_item_2 =
-      HoldingSpaceItemView::Cast(download_chips[1]);
-
-  // Click on both items to select them both.
-  Click(download_chips[0], ui::EF_SHIFT_DOWN);
-  Click(download_chips[1], ui::EF_SHIFT_DOWN);
-  ASSERT_TRUE(holding_space_item->selected());
-  ASSERT_TRUE(holding_space_item_2->selected());
-
-  // Press the enter key. We expect the client to open the selected items.
-  EXPECT_CALL(*client(),
-              OpenItems(testing::ElementsAre(holding_space_item_2->item(),
-                                             holding_space_item->item()),
-                        testing::_));
-  PressKey(download_chips[0], ui::KeyboardCode::VKEY_RETURN);
+  // Press ENTER and expect an attempt to open the Downloads folder in the Files
+  // app. There should be *no* attempts to open an holding space items.
+  EXPECT_CALL(*client(), OpenItems).Times(0);
+  EXPECT_CALL(*client(), OpenDownloads);
+  PressKey(downloads_section_header, ui::KeyboardCode::VKEY_RETURN);
 }
 
-// Clicking on tote buble background should deselect any selected items.
+// User should be able to launch selected holding space items by pressing the
+// enter key.
+TEST_P(HoldingSpaceTrayTest, EnterKeyOpensSelectedFiles) {
+  StartSession();
+
+  // Add three holding space items.
+  AddItem(HoldingSpaceItem::Type::kPinnedFile, base::FilePath("/tmp/fake1"));
+  AddItem(HoldingSpaceItem::Type::kPinnedFile, base::FilePath("/tmp/fake2"));
+  AddItem(HoldingSpaceItem::Type::kPinnedFile, base::FilePath("/tmp/fake3"));
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
+
+  // Show the bubble.
+  test_api()->Show();
+  const std::vector<views::View*> pinned_file_chips =
+      test_api()->GetPinnedFileChips();
+  ASSERT_EQ(pinned_file_chips.size(), 3u);
+  const std::array<HoldingSpaceItemView*, 3> item_views = {
+      HoldingSpaceItemView::Cast(pinned_file_chips[0]),
+      HoldingSpaceItemView::Cast(pinned_file_chips[1]),
+      HoldingSpaceItemView::Cast(pinned_file_chips[2]),
+  };
+
+  // Press the enter key. The client should *not* attempt to open any items.
+  EXPECT_CALL(*client(), OpenItems).Times(0);
+  PressKey(item_views[0], ui::KeyboardCode::VKEY_RETURN);
+  testing::Mock::VerifyAndClearExpectations(client());
+
+  // Click an item. The view should be selected.
+  Click(item_views[0]);
+  EXPECT_TRUE(item_views[0]->selected());
+  EXPECT_FALSE(item_views[1]->selected());
+  EXPECT_FALSE(item_views[2]->selected());
+
+  // Press the enter key. We expect the client to open the selected item.
+  EXPECT_CALL(*client(), OpenItems(testing::ElementsAre(item_views[0]->item()),
+                                   testing::_));
+  PressKey(item_views[0], ui::KeyboardCode::VKEY_RETURN);
+  testing::Mock::VerifyAndClearExpectations(client());
+
+  // Shift-click on the second item. Both views should be selected.
+  Click(item_views[1], ui::EF_SHIFT_DOWN);
+  EXPECT_TRUE(item_views[0]->selected());
+  EXPECT_TRUE(item_views[1]->selected());
+
+  // Press the enter key. We expect the client to open the selected items.
+  EXPECT_CALL(*client(), OpenItems(testing::ElementsAre(item_views[1]->item(),
+                                                        item_views[0]->item()),
+                                   testing::_));
+  PressKey(item_views[1], ui::KeyboardCode::VKEY_RETURN);
+  testing::Mock::VerifyAndClearExpectations(client());
+
+  // Tab traverse to the last item.
+  EXPECT_TRUE(PressTabUntilFocused(item_views[2]));
+
+  // Press the enter key. The client should open only the focused item since
+  // it was *not* selected prior to pressing the enter key.
+  EXPECT_CALL(*client(), OpenItems(testing::ElementsAre(item_views[2]->item()),
+                                   testing::_));
+  PressKey(item_views[2], ui::KeyboardCode::VKEY_RETURN);
+  EXPECT_FALSE(item_views[0]->selected());
+  EXPECT_FALSE(item_views[1]->selected());
+  EXPECT_TRUE(item_views[2]->selected());
+}
+
+// Clicking on tote bubble background should deselect any selected items.
 TEST_P(HoldingSpaceTrayTest, ClickBackgroundToDeselectItems) {
   StartSession();
 
