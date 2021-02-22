@@ -70,12 +70,13 @@
                   value="{{confirmationCode}}"
                   aria-describedby="description"
                   error-message="[[i18n('confirmationCodeError')]]"
-                  invalid="[[showError]]">
+                  invalid="[[showError]]"
+                  disabled="[[showBusy]]">
               </cr-input>
               <paper-spinner-lite active
-                  hidden$="[[!showLoadingIndicator]]">
+                  hidden$="[[!showBusy]]">
               </paper-spinner-lite>
-              <div id="loadingMessage" hidden$="[[!showLoadingIndicator]]">
+              <div id="loadingMessage" hidden$="[[!showBusy]]">
                 [[i18n('confirmationCodeLoading')]]
               </div>
             </div>

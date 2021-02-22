@@ -57,7 +57,10 @@ Polymer({
       observer: 'onShowErrorChanged_',
     },
 
-    showLoadingIndicator: {
+    /**
+     * Indicates the UI is busy with an operation and cannot be interacted with.
+     */
+    showBusy: {
       type: Boolean,
       value: false,
     },
@@ -394,9 +397,13 @@ Polymer({
   /**
    * @param {UiElement} uiElement
    * @param {PageState} state
+   * @param {boolean} showBusy
    * @private
    */
-  isUiElementDisabled_(uiElement, state) {
+  isUiElementDisabled_(uiElement, state, showBusy) {
+    if (showBusy) {
+      return true;
+    }
     switch (uiElement) {
       case UiElement.SWITCH_CAMERA:
         return state === PageState.SWITCHING_CAM_USER_TO_ENVIRONMENT ||

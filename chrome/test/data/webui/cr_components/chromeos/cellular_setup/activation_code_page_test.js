@@ -128,7 +128,7 @@ suite('CrComponentsActivationCodePageTest', function() {
     assertTrue(scanSuccessContainer.hidden);
     assertFalse(scanFailureContainer.hidden);
 
-    activationCodePage.showLoadingIndicator = true;
+    activationCodePage.showBusy = true;
     assertFalse(spinner.hidden);
 
     // Mock, no media devices present
@@ -209,6 +209,35 @@ suite('CrComponentsActivationCodePageTest', function() {
     Polymer.dom.flush();
 
     assertTrue(video.hidden);
+  });
+
+  test('UI is disabled when showBusy property is set', async function() {
+    await flushAsync();
+    const startScanningButton = activationCodePage.$$('#startScanningButton');
+    const switchCameraButton = activationCodePage.$$('#switchCameraButton');
+    const useCameraAgainButton = activationCodePage.$$('#useCameraAgainButton');
+    const tryAgainButton = activationCodePage.$$('#tryAgainButton');
+    const input = activationCodePage.$$('#activationCode');
+
+    assertTrue(!!startScanningButton);
+    assertTrue(!!switchCameraButton);
+    assertTrue(!!useCameraAgainButton);
+    assertTrue(!!tryAgainButton);
+    assertTrue(!!input);
+
+    assertFalse(startScanningButton.disabled);
+    assertFalse(switchCameraButton.disabled);
+    assertFalse(useCameraAgainButton.disabled);
+    assertFalse(tryAgainButton.disabled);
+    assertFalse(input.disabled);
+
+    activationCodePage.showBusy = true;
+
+    assertTrue(startScanningButton.disabled);
+    assertTrue(switchCameraButton.disabled);
+    assertTrue(useCameraAgainButton.disabled);
+    assertTrue(tryAgainButton.disabled);
+    assertTrue(input.disabled);
   });
 
   test(

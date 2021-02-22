@@ -30,8 +30,12 @@ Polymer({
       type: Boolean,
     },
 
-    showLoadingIndicator: {
+    /**
+     * Indicates the UI is busy with an operation and cannot be interacted with.
+     */
+    showBusy: {
       type: Boolean,
+      value: false,
     },
 
     /**

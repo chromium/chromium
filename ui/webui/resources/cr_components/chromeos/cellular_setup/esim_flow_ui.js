@@ -343,7 +343,6 @@ cr.define('cellular_setup', function() {
       // the activation code page before proceeding.
       if (this.state_ !== ESimUiState.ACTIVATION_CODE_ENTRY &&
           this.state_ !== ESimUiState.ACTIVATION_CODE_ENTRY_READY) {
-        // TODO(crbug.com/1093185): Disable input when installing.
         return;
       }
       this.state_ = event.detail.activationCode ?
@@ -357,7 +356,6 @@ cr.define('cellular_setup', function() {
       // buttonState when we're not on the profile selection page. Check we're
       // on the profile selection page before proceeding.
       if (this.state_ !== ESimUiState.PROFILE_SELECTION) {
-        // TODO(crbug.com/1093185): Disable selection when installing.
         return;
       }
       this.forwardButtonLabel = this.selectedProfile_ ?
@@ -372,7 +370,6 @@ cr.define('cellular_setup', function() {
       // on the confirmation code page before proceeding.
       if (this.state_ !== ESimUiState.CONFIRMATION_CODE_ENTRY &&
           this.state_ !== ESimUiState.CONFIRMATION_CODE_ENTRY_READY) {
-        // TODO(crbug.com/1093185): Disable input when installing.
         return;
       }
       this.state_ = this.confirmationCode_ ?
@@ -464,7 +461,7 @@ cr.define('cellular_setup', function() {
     },
 
     /** @private */
-    isInstallingProfile_() {
+    shouldShowSubpageBusy_() {
       return this.state_ === ESimUiState.ACTIVATION_CODE_ENTRY_INSTALLING ||
           this.state_ === ESimUiState.CONFIRMATION_CODE_ENTRY_INSTALLING ||
           this.state_ === ESimUiState.PROFILE_SELECTION_INSTALLING;

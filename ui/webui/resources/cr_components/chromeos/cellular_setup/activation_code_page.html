@@ -39,6 +39,10 @@
         background-color: transparent;
       }
 
+      cr-button[disabled] {
+        background-color: transparent;
+      }
+
       .center {
         left: 50%;
         position: absolute;
@@ -149,7 +153,7 @@
             <cr-button id="switchCameraButton"
                 on-click="onSwitchCameraButtonPressed_"
                 hidden$="[[isUiElementHidden_(UiElement.SWITCH_CAMERA, state_, cameraCount_)]]"
-                disabled="[[isUiElementDisabled_(UiElement.SWITCH_CAMERA, state_)]]">
+                disabled="[[isUiElementDisabled_(UiElement.SWITCH_CAMERA, state_, showBusy)]]">
               <iron-icon class="button-image" icon="cellular-setup:switch-camera"></iron-icon>
               [[i18n('switchCamera')]]
             </cr-button>
@@ -161,7 +165,8 @@
               <cr-button class="label"
                   id="startScanningButton"
                   on-click="startScanning_"
-                  aria-describedby="scanQrCodeDescription">
+                  aria-describedby="scanQrCodeDescription"
+                  disabled="[[isUiElementDisabled_(UiElement.START_SCANNING, state_, showBusy)]]">
                 <iron-icon class="button-image" icon="cellular-setup:camera"></iron-icon>
                 [[i18n('useCamera')]]
               </cr-button>
@@ -178,7 +183,8 @@
                     </span>
                   </div>
                   <cr-button id="useCameraAgainButton" class="blue-icon"
-                      on-click="startScanning_">
+                      on-click="startScanning_"
+                      disabled="[[isUiElementDisabled_(UiElement.SCAN_SUCCESS, state_, showBusy)]]">
                     <iron-icon class="button-image" icon="cellular-setup:camera"></iron-icon>
                     [[i18n('qrCodeUseCameraAgain')]]
                   </cr-button>
@@ -192,7 +198,8 @@
                     </span>
                   </div>
                   <cr-button id="tryAgainButton" class="blue-icon"
-                      on-click="startScanning_">
+                      on-click="startScanning_"
+                      disabled="[[isUiElementDisabled_(UiElement.SCAN_FAILURE, state_, showBusy)]]">
                     <iron-icon class="button-image" icon="cellular-setup:try-again"></iron-icon>
                     [[i18n('qrCodeRetry')]]
                   </cr-button>
@@ -204,12 +211,13 @@
         <div id="activationCodeContainer" class$="[[computeActivationCodeClass_(cameraCount_)]]">
           <cr-input id="activationCode"
             label="[[i18n('activationCode')]]"
-            value="{{activationCode}}">
+            value="{{activationCode}}"
+            disabled="[[showBusy]]">
           </cr-input>
           <paper-spinner-lite active
-              hidden$="[[!showLoadingIndicator]]">
+              hidden$="[[!showBusy]]">
           </paper-spinner-lite>
-          <div id="loadingMessage" hidden$="[[!showLoadingIndicator]]">
+          <div id="loadingMessage" hidden$="[[!showBusy]]">
               [[i18n('scanQrCodeLoading')]]
           </div>
         </div>
