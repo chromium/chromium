@@ -1690,10 +1690,6 @@ class PushMessagingBrowserTestWithAbusiveOriginPermissionRevocation
 IN_PROC_BROWSER_TEST_F(
     PushMessagingBrowserTestWithAbusiveOriginPermissionRevocation,
     PushEventPermissionRevoked) {
-  AddToPreloadDataBlocklist(https_server()->GetURL("/").GetOrigin(),
-                            SiteReputation::ABUSIVE_CONTENT);
-  AddToSafeBrowsingBlocklist(https_server()->GetURL("/").GetOrigin());
-
   ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
   PushMessagingAppIdentifier app_identifier =
       GetAppIdentifierForServiceWorkerRegistration(0LL);
@@ -1702,6 +1698,11 @@ IN_PROC_BROWSER_TEST_F(
   std::string script_result;
   ASSERT_TRUE(RunScript("isControlled()", &script_result));
   ASSERT_EQ("true - is controlled", script_result);
+
+  // Add an origin to blocking lists after service worker is registered.
+  AddToPreloadDataBlocklist(https_server()->GetURL("/").GetOrigin(),
+                            SiteReputation::ABUSIVE_CONTENT);
+  AddToSafeBrowsingBlocklist(https_server()->GetURL("/").GetOrigin());
 
   gcm::IncomingMessage message;
   message.sender_id = GetTestApplicationServerKey();

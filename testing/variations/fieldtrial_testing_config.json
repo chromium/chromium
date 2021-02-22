@@ -5819,10 +5819,14 @@
             ],
             "experiments": [
                 {
-                    "name": "EnableWithAdaptiveActivation",
+                    "name": "EnabledWithAdaptiveActivationAndPerSiteInterventions",
                     "params": {
                         "availability": "any",
                         "crowd_deny_hold_back_chance": "0.3",
+                        "enable_abusive_content_triggering": "true",
+                        "enable_abusive_content_warning": "true",
+                        "enable_abusive_request_triggering": "true",
+                        "enable_abusive_request_warning": "true",
                         "enable_adaptive_activation": "true",
                         "enable_crowd_deny_triggering": "true",
                         "event_trigger": "name:tabgroups_dummy;comparator:any;window:1;storage:1",
