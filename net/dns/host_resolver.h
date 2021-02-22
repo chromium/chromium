@@ -256,6 +256,12 @@ class NET_EXPORT HostResolver {
     // will always be |base::nullopt|.
     bool is_speculative = false;
 
+    // If `true`, resolver may (but is not guaranteed to) take steps to avoid
+    // the name being resolved via LLMNR or mDNS. Useful for requests where it
+    // is not desired to wait for longer timeouts on potential negative results,
+    // as is typically the case for LLMNR or mDNS queries without any results.
+    bool avoid_multicast_resolution = false;
+
     // Set to override the resolver's default secure dns mode for this request.
     base::Optional<SecureDnsMode> secure_dns_mode_override = base::nullopt;
   };

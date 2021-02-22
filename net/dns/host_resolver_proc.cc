@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "net/base/address_family.h"
 #include "net/base/address_list.h"
 #include "net/base/net_errors.h"
 #include "net/base/sys_addrinfo.h"
@@ -149,6 +150,14 @@ int SystemHostResolverCall(const std::string& host,
 
   if (host_resolver_flags & HOST_RESOLVER_CANONNAME)
     hints.ai_flags |= AI_CANONNAME;
+
+#if defined(OS_WIN)
+  // See crbug.com/1176970. Flag not documented (other than the declaration
+  // comment in ws2def.h) but confirmed by Microsoft to work for this purpose
+  // and be safe.
+  if (host_resolver_flags & HOST_RESOLVER_AVOID_MULTICAST)
+    hints.ai_flags |= AI_DNS_ONLY;
+#endif  // defined(OS_WIN)
 
   // Restrict result set to only this socket type to avoid duplicates.
   hints.ai_socktype = SOCK_STREAM;

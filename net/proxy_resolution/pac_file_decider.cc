@@ -276,6 +276,15 @@ int PacFileDecider::DoQuickCheck() {
   // paths rather than WPAD-standard DNS devolution.
   parameters.source = HostResolverSource::SYSTEM;
 
+  // For most users, the WPAD DNS query will have no results. Allowing the query
+  // to go out via LLMNR or mDNS (which usually have no quick negative response)
+  // would therefore typically result in waiting the full timeout before
+  // `quick_check_timer_` fires. Given that a lot of Chrome requests could be
+  // blocked on completing these checks, it is better to avoid multicast
+  // resolution for WPAD.
+  // See crbug.com/1176970.
+  parameters.avoid_multicast_resolution = true;
+
   HostResolver* host_resolver =
       pac_file_fetcher_->GetRequestContext()->host_resolver();
   // It's safe to use an empty NetworkIsolationKey() here, since this is only

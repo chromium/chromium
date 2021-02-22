@@ -923,12 +923,10 @@ int RuleBasedHostResolverProc::Resolve(const std::string& host,
     bool matches_address_family =
         r->address_family == ADDRESS_FAMILY_UNSPECIFIED ||
         r->address_family == address_family;
-    // Ignore HOST_RESOLVER_SYSTEM_ONLY, since it should have no impact on
-    // whether a rule matches.
+    // Ignore HOST_RESOLVER_DEFAULT_FAMILY_SET_DUE_TO_NO_IPV6, since it should
+    // have no impact on whether a rule matches.
     HostResolverFlags flags =
-        host_resolver_flags &
-        (~HOST_RESOLVER_SYSTEM_ONLY &
-         ~HOST_RESOLVER_DEFAULT_FAMILY_SET_DUE_TO_NO_IPV6);
+        host_resolver_flags & ~HOST_RESOLVER_DEFAULT_FAMILY_SET_DUE_TO_NO_IPV6;
     // Flags match if all of the bitflags in host_resolver_flags are enabled
     // in the rule's host_resolver_flags. However, the rule may have additional
     // flags specified, in which case the flags should still be considered a

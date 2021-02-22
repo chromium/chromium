@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
+#include <winsock2.h>
 #include <ws2tcpip.h>
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
 #include <netdb.h>
