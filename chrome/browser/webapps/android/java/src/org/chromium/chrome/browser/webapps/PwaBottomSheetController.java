@@ -257,10 +257,12 @@ public class PwaBottomSheetController
      * UI is not visible, it will be shown.
      * @param webContents The WebContents the UI is associated with.
      * @param trigger The install trigger for the WebContents.
+     * @return True if the bottom sheet is visible now, false otherwise.
      */
-    public void requestOrExpandBottomSheetInstaller(
+    public boolean requestOrExpandBottomSheetInstaller(
             WebContents webContents, @InstallTrigger int trigger) {
-        PwaBottomSheetControllerJni.get().requestOrExpandBottomSheetInstaller(webContents, trigger);
+        return PwaBottomSheetControllerJni.get().requestOrExpandBottomSheetInstaller(
+                webContents, trigger);
     }
 
     /**
@@ -300,7 +302,7 @@ public class PwaBottomSheetController
 
     @NativeMethods
     interface Natives {
-        void requestOrExpandBottomSheetInstaller(
+        boolean requestOrExpandBottomSheetInstaller(
                 WebContents webContents, @InstallTrigger int trigger);
         void onSheetExpanded(long nativePwaBottomSheetController);
         void updateInstallSource(

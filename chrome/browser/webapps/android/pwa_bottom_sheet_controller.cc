@@ -45,7 +45,7 @@ namespace webapps {
 PwaBottomSheetController::~PwaBottomSheetController() = default;
 
 // static
-void JNI_PwaBottomSheetController_RequestOrExpandBottomSheetInstaller(
+jboolean JNI_PwaBottomSheetController_RequestOrExpandBottomSheetInstaller(
     JNIEnv* env,
     const JavaParamRef<jobject>& jweb_contents,
     int install_trigger) {
@@ -56,7 +56,7 @@ void JNI_PwaBottomSheetController_RequestOrExpandBottomSheetInstaller(
 
   WebappInstallSource install_source = InstallableMetrics::GetInstallSource(
       web_contents, static_cast<InstallTrigger>(install_trigger));
-  app_banner_manager->MaybeShowPwaBottomSheetController(
+  return app_banner_manager->MaybeShowPwaBottomSheetController(
       /* expand_sheet= */ true, install_source);
 }
 
