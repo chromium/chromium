@@ -340,6 +340,13 @@ void WontCompile() {
   BindOnce([] (const UncopyableUnmovable&) {}, u);
 }
 
+#elif defined(NCTEST_BIND_ONCE_WITH_PASSED)  // [r"static_assert failed.+?Use std::move\(\) instead of base::Passed\(\) with base::BindOnce\(\)"]
+
+void WontCompile() {
+  std::unique_ptr<int> x;
+  BindOnce([] (std::unique_ptr<int>) {}, Passed(&x));
+}
+
 #endif
 
 }  // namespace base
