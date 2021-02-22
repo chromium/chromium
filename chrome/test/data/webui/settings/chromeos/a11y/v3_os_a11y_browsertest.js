@@ -46,6 +46,10 @@ const axeOptionsDocumentTitle =
    'ManageAccessibility', 'manage_accessibility_a11y_v3_test.js',
    {options: axeOptionsDocumentTitle}
  ],
+ [
+   'Multidevice', 'multidevice_a11y_v3_test.js',
+   {options: axeOptionsDocumentTitle}
+ ],
 ].forEach(test => defineTest(...test));
 
 function defineTest(testName, module, config) {
