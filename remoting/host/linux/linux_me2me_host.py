@@ -24,11 +24,11 @@ import hashlib
 import json
 import logging
 import os
-import pipes
 import platform
 import psutil
 import pwd
 import re
+import shlex
 import signal
 import socket
 import subprocess
@@ -141,7 +141,8 @@ USER_SESSION_MESSAGE_FD = 202
 
 # This is the exit code used to signal to wrapper that it should restart instead
 # of exiting. It must be kept in sync with kRelaunchExitCode in
-# remoting_user_session.cc.
+# remoting_user_session.cc and RestartForceExitStatus in
+# chrome-remote-desktop@.service.
 RELAUNCH_EXIT_CODE = 41
 
 # This exit code is returned when a needed binary such as user-session or sg
@@ -967,7 +968,7 @@ def bash_invocation_for_script(script):
       # "/bin/sh -c" is smart about how to execute the session script and
       # works in cases where plain exec() fails (for example, if the file is
       # marked executable, but is a plain script with no shebang line).
-      return ["/bin/sh", "-c", pipes.quote(script)]
+      return ["/bin/sh", "-c", shlex.quote(script)]
     else:
       # If this is a system-wide session script, it should be run using the
       # system shell, ignoring any login shell that might be set for the
@@ -1153,7 +1154,7 @@ def run_command_with_group(command, group):
            "0<&7 1>&8 2>&9 "
            # Close no-longer-needed file descriptors
            "6>&- 7<&- 8>&- 9>&-"
-           .format(command=" ".join(map(pipes.quote, command)))],
+           .format(command=" ".join(map(shlex.quote, command)))],
         # It'd be nice to use pass_fds instead close_fds=False. Unfortunately,
         # pass_fds doesn't seem usable with remapping. It runs after preexec_fn,
         # which does the remapping, but complains if the specified fds don't
@@ -1190,6 +1191,51 @@ def run_command_with_group(command, group):
     result = COMMAND_NOT_EXECUTABLE_EXIT_CODE
 
   return result
+
+
+def exec_self_via_login_shell():
+  """Attempt to run the user's login shell and run this script under it. This
+  will allow the user's ~/.profile or similar to be processed, which may set
+  environment variables to configure Chrome Remote Desktop."""
+  args = [sys.argv[0], "--child-process"] + [arg for arg in sys.argv[1:]
+                                             if arg != "--new-session"]
+  try:
+    shell = os.getenv("SHELL")
+
+    if shell is not None:
+      # Shells consider themselves a login shell if arg0 starts with a '-'.
+      shell_arg0 = "-" + os.path.basename(shell)
+
+      # First, ensure we can execute commands via the user's login shell. Some
+      # users have an incorrect .profile or similar that breaks this.
+      output = subprocess.check_output(
+          [shell_arg0], executable=shell,
+          input=b"exec echo CRD_SHELL_TEST_OUTPUT",
+          timeout=15)
+
+      if b"CRD_SHELL_TEST_OUTPUT" in output:
+        # subprocess doesn't support calling exec without fork, so we need to
+        # set up our pipe manually.
+        read_fd, write_fd = os.pipe()
+        # The command line should easily fit in the 16KiB pipe buffer.
+        os.write(
+            write_fd,
+            b"exec " + os.fsencode(" ".join(map(shlex.quote, args))))
+        os.close(write_fd)
+        os.dup2(read_fd, 0)
+        os.close(read_fd)
+        os.execv(shell, [shell_arg0])
+      else:
+        logging.warning("Login shell doesn't execute standard input.")
+    else:
+      logging.warning("SHELL envirionment variable not set.")
+  except Exception as e:
+    logging.warning(str(e))
+
+  logging.warning(
+      "Failed to run via login shell; continuing without. Environment "
+      "variables set via ~/.profile or similar won't be processed.")
+  os.execv(args[0], args)
 
 
 def start_via_user_session(foreground):
@@ -1457,10 +1503,10 @@ Web Store: https://chrome.google.com/remotedesktop"""
                       action="store_true",
                       help="Signal currently running host to reload the "
                       "config.")
-  parser.add_argument("--add-user", dest="add_user", default=False,
-                      action="store_true",
-                      help="Add current user to the chrome-remote-desktop "
-                      "group.")
+  parser.add_argument("--enable-and-start", dest="enable_and_start",
+                      default=False, action="store_true",
+                      help="Enable and start chrome-remote-desktop for the "
+                      "current user.")
   parser.add_argument("--add-user-as-root", dest="add_user_as_root",
                       action="store", metavar="USER",
                       help="Adds the specified user to the "
@@ -1468,6 +1514,12 @@ Web Store: https://chrome.google.com/remotedesktop"""
   # The script is being run as a child process under the user-session binary.
   # Don't daemonize and use the inherited environment.
   parser.add_argument("--child-process", dest="child_process", default=False,
+                      action="store_true",
+                      help=argparse.SUPPRESS)
+  # The script is being run in a new PAM session. Don't daemonize so the parent
+  # knows when to clean up the PAM session, and attempt to exec a login shell to
+  # allow the user's ~/.profile or similar to run.
+  parser.add_argument("--new-session", dest="new_session", default=False,
                       action="store_true",
                       help=argparse.SUPPRESS)
   parser.add_argument("--watch-resolution", dest="watch_resolution",
@@ -1521,30 +1573,40 @@ Web Store: https://chrome.google.com/remotedesktop"""
     proc.send_signal(signal.SIGHUP)
     return 0
 
-  if options.add_user:
+  if options.enable_and_start:
     user = getpass.getuser()
 
-    try:
-      if user in grp.getgrnam(CHROME_REMOTING_GROUP_NAME).gr_mem:
-        logging.info("User '%s' is already a member of '%s'." %
-                     (user, CHROME_REMOTING_GROUP_NAME))
-        return 0
-    except KeyError:
-      logging.info("Group '%s' not found." % CHROME_REMOTING_GROUP_NAME)
-
-    command = [SCRIPT_PATH, '--add-user-as-root', user]
-    if os.getenv("DISPLAY"):
-      # TODO(rickyz): Add a Polkit policy that includes a more friendly message
-      # about what this command does.
-      command = ["/usr/bin/pkexec"] + command
+    if os.path.isdir("/run/systemd/system"):
+      # systemctl integrates with policy kit, and will automatically request an
+      # admin password if necessary.
+      return subprocess.call(["systemctl", "enable", "--now",
+                              "chrome-remote-desktop@" + user])
     else:
-      command = ["/usr/bin/sudo", "-k", "--"] + command
+      try:
+        if user in grp.getgrnam(CHROME_REMOTING_GROUP_NAME).gr_mem:
+          logging.info("User '%s' is already a member of '%s'." %
+                       (user, CHROME_REMOTING_GROUP_NAME))
+          return 0
+      except KeyError:
+        logging.info("Group '%s' not found." % CHROME_REMOTING_GROUP_NAME)
 
-    # Run with an empty environment out of paranoia, though if an attacker
-    # controls the environment this script is run under, we're already screwed
-    # anyway.
-    os.execve(command[0], command, {})
-    return 1
+      command = [SCRIPT_PATH, '--add-user-as-root', user]
+      if os.getenv("DISPLAY"):
+        # TODO(rickyz): Add a Polkit policy that includes a more friendly
+        # message about what this command does.
+        command = ["/usr/bin/pkexec"] + command
+      else:
+        command = ["/usr/bin/sudo", "-k", "--"] + command
+
+      if subprocess.call(command) != 0:
+        logging.error("Failed to add user to group")
+        return 1
+
+      # Replace --enable-and-start with --start in the command-line arguments,
+      # which are used later to reinvoke the script as a child of user-session.
+      sys.argv = [arg if arg != "--enable-and-start" else "--start"
+                  for arg in sys.argv]
+      options.start = True
 
   if options.add_user_as_root is not None:
     if os.getuid() != 0:
@@ -1598,8 +1660,17 @@ Web Store: https://chrome.google.com/remotedesktop"""
     if options.child_process:
       os.execvp(sys.argv[0], sys.argv)
 
+  if options.new_session:
+    exec_self_via_login_shell()
+
   if not options.child_process:
-    return start_via_user_session(options.foreground)
+    if os.path.isdir("/run/systemd/system"):
+      # systemctl integrates with policy kit, and will automatically request an
+      # admin password if necessary.
+      return subprocess.call(["systemctl", "start",
+                              "chrome-remote-desktop@" + getpass.getuser()])
+    else:
+      return start_via_user_session(options.foreground)
 
   # Start logging to user-session messaging pipe if it exists.
   ParentProcessLogger.try_start_logging(USER_SESSION_MESSAGE_FD)
