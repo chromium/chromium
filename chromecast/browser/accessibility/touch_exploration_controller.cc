@@ -611,11 +611,8 @@ ui::EventDispatchDetails TouchExplorationController::InWaitForNoFingers(
 void TouchExplorationController::SendSimulatedClick(
     const Continuation continuation) {
   const gfx::Point location;
-  // For Chromecast, always send a simulated tap. NOTE: This differs
-  // from chromeos's touch exploration controller which always send an
-  // accessibility gesture.
   delegate_->HandleTap(location);
-  SendSimulatedTap(continuation);
+  delegate_->HandleAccessibilityGesture(ax::mojom::Gesture::kClick);
 }
 
 void TouchExplorationController::SendSimulatedTap(
