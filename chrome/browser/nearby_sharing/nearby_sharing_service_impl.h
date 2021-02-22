@@ -312,6 +312,10 @@ class NearbySharingServiceImpl
       chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason
           shutdown_reason);
   void CleanupAfterNearbyProcessStopped();
+  void RestartNearbyProcessIfAppropriate(
+      chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason
+          shutdown_reason);
+  void BindToNearbyProcess();
   sharing::mojom::NearbySharingDecoder* GetNearbySharingDecoder();
 
   base::Optional<ShareTarget> CreateShareTarget(

@@ -72,6 +72,9 @@ using NetConnectionType = net::NetworkChangeNotifier::ConnectionType;
 
 using SendSurfaceState = NearbySharingService::SendSurfaceState;
 
+using NearbyProcessShutdownReason =
+    chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason;
+
 class FakeFastInitiationManager : public FastInitiationManager {
  public:
   explicit FakeFastInitiationManager(
@@ -461,6 +464,11 @@ class NearbySharingServiceImplTest : public testing::Test {
   void SetVisibility(nearby_share::mojom::Visibility visibility) {
     NearbyShareSettings settings(&prefs_, local_device_data_manager());
     settings.SetVisibility(visibility);
+  }
+
+  void SetIsEnabled(bool is_enabled) {
+    NearbyShareSettings settings(&prefs_, local_device_data_manager());
+    settings.SetEnabled(is_enabled);
   }
 
   void SetFakeFastInitiationManagerFactory(bool should_succeed_on_start) {
@@ -3721,5 +3729,47 @@ TEST_F(NearbySharingServiceImplTest, OrderedEndpointDiscoveryEvents) {
     run_loop.Run();
   }
 }
+
+using ServiceRestartTestParams = std::tuple<bool, NearbyProcessShutdownReason>;
+
+class NearbySharingServiceRestartTest
+    : public NearbySharingServiceImplTest,
+      public testing::WithParamInterface<ServiceRestartTestParams> {};
+
+TEST_P(NearbySharingServiceRestartTest, RestartsServiceWhenAppropriate) {
+  bool is_enabled = std::get<0>(GetParam());
+  NearbyProcessShutdownReason shutdown_reason = std::get<1>(GetParam());
+
+  SetIsEnabled(is_enabled);
+
+  bool expected_to_restart;
+
+  // Important:  Remember to update testing::Values used in
+  // INSTANTIATE_TEST_SUITE_P when adding cases to this switch statement.
+  switch (shutdown_reason) {
+    case NearbyProcessShutdownReason::kNormal:
+      expected_to_restart = false;
+      break;
+
+    case NearbyProcessShutdownReason::kCrash:
+    case NearbyProcessShutdownReason::kMojoPipeDisconnection:
+      expected_to_restart = is_enabled;
+      break;
+  }
+
+  EXPECT_CALL(mock_nearby_process_manager(), GetNearbyProcessReference)
+      .Times(expected_to_restart ? 1 : 0);
+
+  std::move(process_stopped_callback_).Run(shutdown_reason);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    NearbySharingServiceImplTest,
+    NearbySharingServiceRestartTest,
+    testing::Combine(
+        testing::Bool(),
+        testing::Values(NearbyProcessShutdownReason::kNormal,
+                        NearbyProcessShutdownReason::kCrash,
+                        NearbyProcessShutdownReason::kMojoPipeDisconnection)));
 
 }  // namespace NearbySharingServiceUnitTests

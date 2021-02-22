@@ -54,6 +54,9 @@
 
 namespace {
 
+using NearbyProcessShutdownReason =
+    chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason;
+
 constexpr base::TimeDelta kBackgroundAdvertisementRotationDelayMin =
     base::TimeDelta::FromMinutes(12);
 // 870 seconds represents 14:30 minutes
@@ -849,14 +852,14 @@ NearbySharingServiceImpl::GetCertificateManager() {
 }
 
 void NearbySharingServiceImpl::OnNearbyProcessStopped(
-    chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason
-        shutdown_reason) {
+    NearbyProcessShutdownReason shutdown_reason) {
   DCHECK(process_reference_);
-  CleanupAfterNearbyProcessStopped();
-  ClearForegroundReceiveSurfaces();
-  InvalidateSurfaceState();
   NS_LOG(INFO) << __func__
                << ": Shutdown reason:" << static_cast<int>(shutdown_reason);
+  CleanupAfterNearbyProcessStopped();
+  ClearForegroundReceiveSurfaces();
+  RestartNearbyProcessIfAppropriate(shutdown_reason);
+  InvalidateSurfaceState();
   for (auto& observer : observers_) {
     observer.OnNearbyProcessStopped();
   }
@@ -897,26 +900,51 @@ void NearbySharingServiceImpl::CleanupAfterNearbyProcessStopped() {
   rotate_background_advertisement_timer_.Stop();
 }
 
+void NearbySharingServiceImpl::RestartNearbyProcessIfAppropriate(
+    NearbyProcessShutdownReason shutdown_reason) {
+  if (!settings_.GetEnabled())
+    return;
+
+  switch (shutdown_reason) {
+    case NearbyProcessShutdownReason::kCrash:
+    case NearbyProcessShutdownReason::kMojoPipeDisconnection:
+      NS_LOG(INFO) << __func__
+                   << ": Attempting to restart nearby process after shutdown: "
+                   << static_cast<int>(shutdown_reason);
+      BindToNearbyProcess();
+      break;
+    case NearbyProcessShutdownReason::kNormal:
+      break;
+  }
+}
+
+void NearbySharingServiceImpl::BindToNearbyProcess() {
+  if (process_reference_)
+    return;
+
+  process_reference_ = process_manager_->GetNearbyProcessReference(
+      base::BindOnce(&NearbySharingServiceImpl::OnNearbyProcessStopped,
+                     base::Unretained(this)));
+
+  if (!process_reference_) {
+    NS_LOG(WARNING) << __func__
+                    << ": Failed to get a reference to the nearby process.";
+  }
+}
+
 sharing::mojom::NearbySharingDecoder*
 NearbySharingServiceImpl::GetNearbySharingDecoder() {
-  if (!process_reference_) {
-    process_reference_ = process_manager_->GetNearbyProcessReference(
-        base::BindOnce(&NearbySharingServiceImpl::OnNearbyProcessStopped,
-                       base::Unretained(this)));
+  BindToNearbyProcess();
 
-    if (!process_reference_) {
-      NS_LOG(WARNING) << __func__
-                      << "Failed to get a reference to the nearby process.";
-      return nullptr;
-    }
-  }
+  if (!process_reference_)
+    return nullptr;
 
   sharing::mojom::NearbySharingDecoder* decoder =
       process_reference_->GetNearbySharingDecoder().get();
 
   if (!decoder)
     NS_LOG(WARNING) << __func__
-                    << "Failed to get decoder from process reference.";
+                    << ": Failed to get decoder from process reference.";
 
   return decoder;
 }
