@@ -68,7 +68,7 @@ class IdentifiabilityStudyState {
 
   // Should be called from unit-tests if multiple IdentifiabilityStudyState
   // instances are to be constructed.
-  static void ResetStateForTesting();
+  static void ResetGlobalStudySettingsForTesting();
 
   // Returns true if tracking metrics should be recorded for this
   // source_id/surface combination.

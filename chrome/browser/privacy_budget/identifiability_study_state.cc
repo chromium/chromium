@@ -117,7 +117,7 @@ bool IdentifiabilityStudyState::ShouldRecordSurface(
 }
 
 // static
-void IdentifiabilityStudyState::ResetStateForTesting() {
+void IdentifiabilityStudyState::ResetGlobalStudySettingsForTesting() {
   blink::IdentifiabilityStudySettings::ResetStateForTesting();
 }
 
