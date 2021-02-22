@@ -11,49 +11,40 @@ GEN_INCLUDE([
 ]);
 
 /**
- * Test fixture for Accessibility of Chrome Settings.
+ * Test fixture for Accessibility of Chrome OS Settings.
  * @constructor
- * @extends {Polymer2DeprecatedTest}
+ * @extends {PolymerTest}
  */
-function OSSettingsAccessibilityTest() {}
+function OSSettingsAccessibilityV3Test() {}
 
 // Default accessibility audit options. Specify in test definition to use.
-OSSettingsAccessibilityTest.axeOptions = {
+OSSettingsAccessibilityV3Test.axeOptions = {
   'rules': {
     // Disable 'skip-link' check since there are few tab stops before the main
     // content.
     'skip-link': {enabled: false},
     // TODO(crbug.com/761461): enable after addressing flaky tests.
     'color-contrast': {enabled: false},
+    // The HTML language attribute isn't set by the test_loader.html dummy file.
+    'html-has-lang': {enabled: false},
   }
 };
 
-// TODO(crbug.com/1002627): This block prevents generation of a
-// link-in-text-block browser-test. This can be removed once the bug is
-// addressed, and usage should be replaced with
-// OSSettingsAccessibilityTest.axeOptions
-OSSettingsAccessibilityTest.axeOptionsExcludeLinkInTextBlock =
-    Object.assign({}, OSSettingsAccessibilityTest.axeOptions, {
-      'rules': Object.assign({}, OSSettingsAccessibilityTest.axeOptions.rules, {
-        'link-in-text-block': {enabled: false},
-      })
-    });
-
 // Default accessibility audit options. Specify in test definition to use.
-OSSettingsAccessibilityTest.violationFilter = {
+OSSettingsAccessibilityV3Test.violationFilter = {
   'aria-valid-attr': function(nodeResult) {
-    const attributeAllowlist = [
+    const attributeWhitelist = [
       'aria-active-attribute',  // Polymer components use aria-active-attribute.
       'aria-roledescription',   // This attribute is now widely supported.
     ];
 
-    return attributeAllowlist.some(a => nodeResult.element.hasAttribute(a));
+    return attributeWhitelist.some(a => nodeResult.element.hasAttribute(a));
   },
   'aria-allowed-attr': function(nodeResult) {
-    const attributeAllowlist = [
+    const attributeWhitelist = [
       'aria-roledescription',  // This attribute is now widely supported.
     ];
-    return attributeAllowlist.some(a => nodeResult.element.hasAttribute(a));
+    return attributeWhitelist.some(a => nodeResult.element.hasAttribute(a));
   },
   'button-name': function(nodeResult) {
     if (nodeResult.element.classList.contains('icon-expand-more')) {
@@ -69,9 +60,23 @@ OSSettingsAccessibilityTest.violationFilter = {
   },
 };
 
-OSSettingsAccessibilityTest.prototype = {
-  __proto__: Polymer2DeprecatedTest.prototype,
+OSSettingsAccessibilityV3Test.prototype = {
+  __proto__: PolymerTest.prototype,
 
   /** @override */
-  browsePreload: 'chrome://os-settings/',
+  browsePreload:
+      'chrome://os-settings/test_loader.html?module=settings/a11y/basic_a11y_v3_test.js',
+
+  // Include files that define the mocha tests.
+  extraLibraries: [
+    '//third_party/axe-core/axe.js',
+  ],
+
+  setUp: function() {
+    PolymerTest.prototype.setUp.call(this);
+
+    return new Promise(resolve => {
+      document.addEventListener('a11y-setup-complete', resolve);
+    });
+  },
 };

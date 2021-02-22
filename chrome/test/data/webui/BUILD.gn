@@ -124,8 +124,8 @@ if (include_js_tests) {
 
     if (is_chromeos_ash) {
       gen_include_files += [
+        "settings/chromeos/a11y/os_settings_accessibility_v3_test.js",
         # TODO(https://crbug.com/1045266): Migrate a11y tests to Polymer3.
-        # "settings/chromeos/a11y/os_settings_accessibility_test.js",
         # "settings/chromeos/a11y/crostini_accessibility_test.js",
       ]
     }
@@ -157,18 +157,7 @@ if (include_js_tests) {
         "cr_components/chromeos/cr_components_chromeos_browsertest.js",
         "cr_components/chromeos/cr_components_chromeos_v3_browsertest.js",
         "set_time_dialog_browsertest.js",
-
-        # TODO(https://crbug.com/1045266): Migrate a11y tests to Polymer3.
-        # "settings/chromeos/a11y/crostini_settings_details_a11y_test.js",
-        # "settings/chromeos/a11y/crostini_settings_export_import_a11y_test.js",
-        # "settings/chromeos/a11y/crostini_settings_shared_paths_a11y_test.js",
-        # "settings/chromeos/a11y/crostini_settings_shared_usb_devices_a11y_test.js",
-        # "settings/chromeos/a11y/crostini_settings_subpage_a11y_test.js",
-        # "settings/chromeos/a11y/google_assistant_a11y_test.js",
-        # "settings/chromeos/a11y/manage_accessibility_a11y_test.js",
-        # "settings/chromeos/a11y/multidevice_a11y_test.js",
-        # "settings/chromeos/a11y/multidevice_features_a11y_test.js",
-        # "settings/chromeos/a11y/tts_subpage_a11y_test.js",
+        "settings/chromeos/a11y/v3_os_a11y_browsertest.js",
         "settings/chromeos/os_settings_v3_browsertest.js",
         "sys_internals/sys_internals_browsertest.js",
       ]
