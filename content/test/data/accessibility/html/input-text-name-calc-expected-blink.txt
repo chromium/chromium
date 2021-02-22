@@ -22,6 +22,6 @@ rootWebArea
 ++++++++genericContainer
 ++++++textField description='DescribedBy6' inputType='text' name='LabelledBy6' descriptionFrom=relatedElement
 ++++++++genericContainer
-++++++textField description='DescribedBy7' inputType='text' name='AriaLabel7' descriptionFrom=relatedElement
+++++++textField description='DescribedBy7' inputType='text' name='AriaLabel7' placeholder='Placeholder7' descriptionFrom=relatedElement
 ++++++++genericContainer ignored
 ++++++++genericContainer

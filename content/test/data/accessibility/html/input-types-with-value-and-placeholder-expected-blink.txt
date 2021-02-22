@@ -1,0 +1,65 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++labelText
+++++++++staticText name='Email: '
+++++++++++inlineTextBox name='Email: '
+++++++++textField editable name='Email:' placeholder='placeholder' value='email@example.com' editableRoot=true
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer editable
+++++++++++++staticText editable name='email@example.com'
+++++++++++++++inlineTextBox name='email@example.com'
+++++++labelText
+++++++++staticText name='Number: '
+++++++++++inlineTextBox name='Number: '
+++++++++spinButton editable name='Number:' placeholder='placeholder' value='3' editableRoot=true valueForRange=3.00
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer editable
+++++++++++++++++staticText editable name='3'
+++++++++++++++++++inlineTextBox name='3'
+++++++++++++genericContainer ignored
+++++++labelText
+++++++++staticText name='Password: '
+++++++++++inlineTextBox name='Password: '
+++++++++textField editable protected name='Password:' placeholder='placeholder' value='•••' editableRoot=true
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer editable
+++++++++++++staticText editable name='•••'
+++++++++++++++inlineTextBox name='•••'
+++++++labelText
+++++++++staticText name='Search: '
+++++++++++inlineTextBox name='Search: '
+++++++++searchBox editable name='Search:' placeholder='placeholder' value='search' editableRoot=true
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer editable
+++++++++++++++++staticText editable name='search'
+++++++++++++++++++inlineTextBox name='search'
+++++++++++++genericContainer ignored
+++++++labelText
+++++++++staticText name='Tel: '
+++++++++++inlineTextBox name='Tel: '
+++++++++textField editable name='Tel:' placeholder='placeholder' value='555-1212' editableRoot=true
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer editable
+++++++++++++staticText editable name='555-1212'
+++++++++++++++inlineTextBox name='555-1212'
+++++++labelText
+++++++++staticText name='Text: '
+++++++++++inlineTextBox name='Text: '
+++++++++textField editable name='Text:' placeholder='placeholder' value='just text' editableRoot=true
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer editable
+++++++++++++staticText editable name='just text'
+++++++++++++++inlineTextBox name='just text'
+++++++labelText
+++++++++staticText name='Url: '
+++++++++++inlineTextBox name='Url: '
+++++++++textField editable name='Url:' placeholder='placeholder' editableRoot=true
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer editable
+++++++++++++staticText editable name='https://www.example.com'
+++++++++++++++inlineTextBox name='https://www.example.com'

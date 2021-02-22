@@ -248,6 +248,7 @@ std::vector<ui::AXPropertyFilter> DumpAccessibilityTreeTest::DefaultFilters()
   property_filters.emplace_back("check*", AXPropertyFilter::ALLOW);
   property_filters.emplace_back("horizontal", AXPropertyFilter::ALLOW);
   property_filters.emplace_back("multiselectable", AXPropertyFilter::ALLOW);
+  property_filters.emplace_back("placeholder=*", AXPropertyFilter::ALLOW);
 
   // Deny most empty values
   property_filters.emplace_back("*=''", AXPropertyFilter::DENY);
@@ -2241,6 +2242,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputTypes) {
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityInputTypesWithValue) {
   RunHtmlTest(FILE_PATH_LITERAL("input-types-with-value.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityInputTypesWithPlaceholder) {
+  RunHtmlTest(FILE_PATH_LITERAL("input-types-with-placeholder.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityInputTypesWithValueAndPlaceholder) {
+  RunHtmlTest(FILE_PATH_LITERAL("input-types-with-value-and-placeholder.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputUrl) {
