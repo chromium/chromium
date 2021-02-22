@@ -14,6 +14,7 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/debug/alias.h"
+#include "base/immediate_crash.h"
 #include "base/logging.h"
 #include "base/partition_alloc_buildflags.h"
 #if BUILDFLAG(USE_PARTITION_ALLOC)
@@ -51,8 +52,12 @@ NOINLINE void OnNoMemoryInternal(size_t size) {
   //
   // Additionally, this is unlikely to work, since allocating from an OOM
   // handler is likely to fail.
-  abort();  // SIGABRT cannot really be caught, this will always _exit().
-
+  //
+  // Use IMMEDIATE_CRASH() so that the top frame in the crash is our code,
+  // rather than using abort() or similar; this avoids the crash server needing
+  // to be able to successfully unwind through libc to get to the correct
+  // address, which is particularly an issue on Android.
+  IMMEDIATE_CRASH();
 #endif  // defined(OS_WIN)
 }
 
