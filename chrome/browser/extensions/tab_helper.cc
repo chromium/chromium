@@ -238,6 +238,12 @@ void TabHelper::DidCloneToNewWebContents(WebContents* old_web_contents,
   new_helper->extension_app_icon_ = extension_app_icon_;
 }
 
+void TabHelper::WebContentsDestroyed() {
+  InvokeForContentRulesRegistries([this](ContentRulesRegistry* registry) {
+    registry->WebContentsDestroyed(web_contents());
+  });
+}
+
 void TabHelper::OnGetAppInstallState(content::RenderFrameHost* host,
                                      const GURL& requestor_url,
                                      int return_route_id,

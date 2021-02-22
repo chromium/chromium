@@ -941,12 +941,6 @@ WebContentsImpl::~WebContentsImpl() {
   color_chooser_.reset();
   find_request_manager_.reset();
 
-  // Notify any observer that have a reference on this WebContents.
-  NotificationService::current()->Notify(
-      NOTIFICATION_WEB_CONTENTS_DESTROYED,
-      Source<WebContents>(this),
-      NotificationService::NoDetails());
-
   // Destroy all subframes now. This notifies observers.
   GetMainFrame()->ResetChildren();
   GetRenderManager()->ResetProxyHosts();

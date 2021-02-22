@@ -5,11 +5,14 @@
 #include "extensions/test/extension_test_notification_observer.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/common/extension.h"
@@ -29,6 +32,27 @@ const Extension* GetNonTerminatedExtensions(const std::string& id,
 }
 
 }  // namespace
+
+////////////////////////////////////////////////////////////////////////////////
+// NotificationSet::ForwardingWebContentsObserver
+
+class ExtensionTestNotificationObserver::NotificationSet::
+    ForwardingWebContentsObserver : public content::WebContentsObserver {
+ public:
+  ForwardingWebContentsObserver(
+      content::WebContents* contents,
+      ExtensionTestNotificationObserver::NotificationSet* owner)
+      : WebContentsObserver(contents), owner_(owner) {}
+
+ private:
+  // content::WebContentsObserver
+  void WebContentsDestroyed() override {
+    // Do not add code after this line, deletes `this`.
+    owner_->WebContentsDestroyed(web_contents());
+  }
+
+  ExtensionTestNotificationObserver::NotificationSet* owner_;
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 // ExtensionTestNotificationObserver::NotificationSet
@@ -60,8 +84,26 @@ void ExtensionTestNotificationObserver::NotificationSet::Observe(
 }
 
 void ExtensionTestNotificationObserver::NotificationSet::
+    AddWebContentsDestroyed(extensions::ProcessManager* manager) {
+  for (content::RenderFrameHost* render_frame_host : manager->GetAllFrames()) {
+    content::WebContents* contents =
+        content::WebContents::FromRenderFrameHost(render_frame_host);
+    if (!base::Contains(web_contents_observers_, contents)) {
+      web_contents_observers_[contents] =
+          std::make_unique<ForwardingWebContentsObserver>(contents, this);
+    }
+  }
+}
+
+void ExtensionTestNotificationObserver::NotificationSet::
     OnExtensionFrameUnregistered(const std::string& extension_id,
                                  content::RenderFrameHost* render_frame_host) {
+  callback_list_.Notify();
+}
+
+void ExtensionTestNotificationObserver::NotificationSet::WebContentsDestroyed(
+    content::WebContents* web_contents) {
+  web_contents_observers_.erase(web_contents);
   callback_list_.Notify();
 }
 

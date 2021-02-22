@@ -77,14 +77,6 @@ enum NotificationType {
 
   // WebContents ---------------------------------------------------------------
 
-  // This notification is sent when a WebContents is being destroyed. Any
-  // object holding a reference to a WebContents can listen to that
-  // notification to properly reset the reference. The source is a
-  // Source<WebContents>.
-  // DEPRECATED: Use WebContentsObserver::WebContentsDestroyed()
-  // TODO(https://crbug.com/1174767): Remove.
-  NOTIFICATION_WEB_CONTENTS_DESTROYED,
-
   // Indicates that a RenderProcessHost was created and its handle is now
   // available. The source will be the RenderProcessHost that corresponds to
   // the process.

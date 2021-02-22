@@ -23,8 +23,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/child_process_launcher_utils.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -516,10 +514,8 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest,
   EXPECT_EQ(tab_count, browser()->tab_strip_model()->count());
   EXPECT_EQ(host_count, RenderProcessHostCount());
 
-  // close docked devtools
-  content::WindowedNotificationObserver close_observer(
-      content::NOTIFICATION_WEB_CONTENTS_DESTROYED,
-      content::Source<WebContents>(devtools));
+  // Close docked devtools.
+  content::WebContentsDestroyedWatcher close_observer(devtools);
 
   chrome::ToggleDevToolsWindow(browser(), DevToolsToggleAction::Toggle(),
                                DevToolsOpenedByAction::kUnknown);
@@ -558,10 +554,8 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest,
   EXPECT_EQ(tab_count, browser()->tab_strip_model()->count());
   EXPECT_EQ(host_count, RenderProcessHostCount());
 
-  // close docked devtools
-  content::WindowedNotificationObserver close_observer(
-      content::NOTIFICATION_WEB_CONTENTS_DESTROYED,
-      content::Source<content::WebContents>(devtools));
+  // Close docked devtools.
+  content::WebContentsDestroyedWatcher close_observer(devtools);
   chrome::ToggleDevToolsWindow(browser(), DevToolsToggleAction::Toggle(),
                                DevToolsOpenedByAction::kUnknown);
   close_observer.Wait();

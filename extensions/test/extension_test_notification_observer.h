@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_TEST_EXTENSION_TEST_NOTIFICATION_OBSERVER_H_
 #define EXTENSIONS_TEST_EXTENSION_TEST_NOTIFICATION_OBSERVER_H_
 
+#include <map>
 #include <memory>
 #include <string>
 
@@ -22,6 +23,7 @@
 namespace content {
 class BrowserContext;
 class NotificationDetails;
+class WebContents;
 class WindowedNotificationObserver;
 }
 
@@ -83,12 +85,15 @@ class ExtensionTestNotificationObserver : public content::NotificationObserver,
     void Add(int type, const content::NotificationSource& source);
     void Add(int type);
     void AddExtensionFrameUnregistration(extensions::ProcessManager* manager);
+    void AddWebContentsDestroyed(extensions::ProcessManager* manager);
 
     // Notified any time an Add()ed notification is received.
     // The details of the notification are dropped.
     base::CallbackList<void()>& callback_list() { return callback_list_; }
 
    private:
+    class ForwardingWebContentsObserver;
+
     // content::NotificationObserver:
     void Observe(int type,
                  const content::NotificationSource& source,
@@ -99,11 +104,18 @@ class ExtensionTestNotificationObserver : public content::NotificationObserver,
         const std::string& extension_id,
         content::RenderFrameHost* render_frame_host) override;
 
+    void WebContentsDestroyed(content::WebContents* web_contents);
+
     content::NotificationRegistrar notification_registrar_;
     base::CallbackList<void()> callback_list_;
     ScopedObserver<extensions::ProcessManager,
                    extensions::ProcessManagerObserver>
         process_manager_observer_{this};
+
+    std::map<content::WebContents*,
+             std::unique_ptr<ForwardingWebContentsObserver>>
+        web_contents_observers_;
+
     DISALLOW_COPY_AND_ASSIGN(NotificationSet);
   };
 

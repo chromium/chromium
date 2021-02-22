@@ -56,6 +56,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/public/test/test_navigation_throttle_inserter.h"
+#include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_monitor.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_content_browser_client.h"
@@ -607,9 +608,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 // Ensure that closing a page by running its beforeunload handler doesn't hang
 // if there's an ongoing navigation.
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, UnloadDuringNavigation) {
-  content::WindowedNotificationObserver close_observer(
-      content::NOTIFICATION_WEB_CONTENTS_DESTROYED,
-      content::Source<content::WebContents>(web_contents()));
+  WebContentsDestroyedWatcher close_observer(web_contents());
   GURL url("chrome://resources/css/tabs.css");
   NavigationHandleObserver handle_observer(web_contents(), url);
   shell()->LoadURL(url);

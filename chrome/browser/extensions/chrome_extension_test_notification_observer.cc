@@ -85,7 +85,7 @@ bool ChromeExtensionTestNotificationObserver::WaitForExtensionViewsToLoad() {
 
   ProcessManager* manager = ProcessManager::Get(GetBrowserContext());
   NotificationSet notification_set;
-  notification_set.Add(content::NOTIFICATION_WEB_CONTENTS_DESTROYED);
+  notification_set.AddWebContentsDestroyed(manager);
   notification_set.Add(content::NOTIFICATION_LOAD_STOP);
   notification_set.AddExtensionFrameUnregistration(manager);
   WaitForCondition(

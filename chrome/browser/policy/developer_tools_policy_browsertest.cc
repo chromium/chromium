@@ -5,7 +5,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -75,10 +74,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, DeveloperToolsDisabledByLegacyPolicy) {
   policies.Set(key::kDeveloperToolsDisabled, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(true),
                nullptr);
-  content::WindowedNotificationObserver close_observer(
-      content::NOTIFICATION_WEB_CONTENTS_DESTROYED,
-      content::Source<content::WebContents>(
-          DevToolsWindowTesting::Get(devtools_window)->main_web_contents()));
+  content::WebContentsDestroyedWatcher close_observer(
+      DevToolsWindowTesting::Get(devtools_window)->main_web_contents());
   UpdateProviderPolicy(policies);
   // wait for devtools close
   close_observer.Wait();
@@ -107,10 +104,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest,
   policies.Set(key::kDeveloperToolsAvailability, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                base::Value(2 /* DeveloperToolsDisallowed */), nullptr);
-  content::WindowedNotificationObserver close_observer(
-      content::NOTIFICATION_WEB_CONTENTS_DESTROYED,
-      content::Source<content::WebContents>(
-          DevToolsWindowTesting::Get(devtools_window)->main_web_contents()));
+  content::WebContentsDestroyedWatcher close_observer(
+      DevToolsWindowTesting::Get(devtools_window)->main_web_contents());
   UpdateProviderPolicy(policies);
   // wait for devtools close
   close_observer.Wait();

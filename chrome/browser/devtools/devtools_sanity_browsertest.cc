@@ -92,6 +92,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -829,7 +830,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest,
   LoadTestPage(kDebuggerTestPage);
 
   std::vector<DevToolsWindow*> windows;
-  std::vector<std::unique_ptr<content::WindowedNotificationObserver>>
+  std::vector<std::unique_ptr<content::WebContentsDestroyedWatcher>>
       close_observers;
   content::WebContents* inspected_web_contents = GetInspectedTab();
   for (int i = 0; i < 3; ++i) {
@@ -837,11 +838,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest,
       inspected_web_contents, i == 0);
     windows.push_back(devtools_window);
     close_observers.push_back(
-        std::make_unique<content::WindowedNotificationObserver>(
-            content::NOTIFICATION_WEB_CONTENTS_DESTROYED,
-            content::Source<content::WebContents>(
-                DevToolsWindowTesting::Get(devtools_window)
-                    ->main_web_contents())));
+        std::make_unique<content::WebContentsDestroyedWatcher>(
+            DevToolsWindowTesting::Get(devtools_window)->main_web_contents()));
     inspected_web_contents =
         DevToolsWindowTesting::Get(devtools_window)->main_web_contents();
   }
