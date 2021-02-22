@@ -25,10 +25,13 @@
     <div id="parental-controls-item" class="settings-box two-line">
       <template is="dom-if" if="[[isChild_]]">
         <cr-link-row on-click="handleFamilyLinkButtonClick_"
+            start-icon="[[getStartIcon_(isAccountManagementFlowsV2Enabled_)]]"
             label="$i18n{parentalControlsPageTitle}"
             sub-label="$i18n{parentalControlsPageViewSettingsLabel}"
             external>
-          <iron-icon icon="cr20:kite" aria-hidden="true"></iron-icon>
+          <template is="dom-if" if="[[!isAccountManagementFlowsV2Enabled_]]">
+            <iron-icon icon="cr20:kite" aria-hidden="true"></iron-icon>
+          </template>
         </cr-link-row>
       </template>
       <template is="dom-if" if="[[!isChild_]]">
