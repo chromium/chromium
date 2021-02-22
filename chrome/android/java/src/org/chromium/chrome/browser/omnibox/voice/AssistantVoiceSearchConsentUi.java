@@ -38,7 +38,8 @@ import java.lang.annotation.RetentionPolicy;
  */
 class AssistantVoiceSearchConsentUi
         implements BottomSheetContent, WindowAndroid.ActivityStateObserver {
-    private static final String CONSENT_OUTCOME_HISTOGRAM = "Assistant.VoiceSearch.ConsentOutcome";
+    @VisibleForTesting
+    static final String CONSENT_OUTCOME_HISTOGRAM = "Assistant.VoiceSearch.ConsentOutcome";
 
     /**
      * Show the consent ui to the user.
@@ -71,6 +72,8 @@ class AssistantVoiceSearchConsentUi
         consentUi.show(completionCallback);
     }
 
+    // AssistantConsentOutcome defined in tools/metrics/histograms/enums.xml. Do not reorder or
+    // remove items, only add new items before HISTOGRAM_BOUNDARY.
     @IntDef({ConsentOutcome.ACCEPTED_VIA_BUTTON, ConsentOutcome.ACCEPTED_VIA_SETTINGS,
             ConsentOutcome.REJECTED_VIA_BUTTON, ConsentOutcome.REJECTED_VIA_SETTINGS,
             ConsentOutcome.REJECTED_VIA_DISMISS, ConsentOutcome.MAX_VALUE})
@@ -117,9 +120,7 @@ class AssistantVoiceSearchConsentUi
                 if (reason == BottomSheetController.StateChangeReason.TAP_SCRIM
                         || reason == BottomSheetController.StateChangeReason.BACK_PRESS) {
                     // The user dismissed the dialog without pressing a button.
-                    onConsentRejected();
-                    RecordHistogram.recordEnumeratedHistogram(CONSENT_OUTCOME_HISTOGRAM,
-                            ConsentOutcome.REJECTED_VIA_DISMISS, ConsentOutcome.MAX_VALUE);
+                    onConsentRejected(ConsentOutcome.REJECTED_VIA_DISMISS);
                 }
                 mCompletionCallback.onResult(mSharedPreferencesManager.readBoolean(
                         ASSISTANT_VOICE_SEARCH_ENABLED, /* default= */ false));
@@ -128,14 +129,14 @@ class AssistantVoiceSearchConsentUi
 
         View acceptButton = mContentView.findViewById(R.id.button_primary);
         acceptButton.setOnClickListener((v) -> {
-            onConsentAccepted();
+            onConsentAccepted(ConsentOutcome.ACCEPTED_VIA_BUTTON);
             mBottomSheetController.hideContent(this, /* animate= */ true,
                     BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
         });
 
         View cancelButton = mContentView.findViewById(R.id.button_secondary);
         cancelButton.setOnClickListener((v) -> {
-            onConsentRejected();
+            onConsentRejected(ConsentOutcome.REJECTED_VIA_BUTTON);
             mBottomSheetController.hideContent(this, /* animate= */ true,
                     BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
         });
@@ -166,16 +167,16 @@ class AssistantVoiceSearchConsentUi
         }
     }
 
-    private void onConsentAccepted() {
+    private void onConsentAccepted(@ConsentOutcome int consentOutcome) {
         mSharedPreferencesManager.writeBoolean(ASSISTANT_VOICE_SEARCH_ENABLED, true);
-        RecordHistogram.recordEnumeratedHistogram(CONSENT_OUTCOME_HISTOGRAM,
-                ConsentOutcome.ACCEPTED_VIA_BUTTON, ConsentOutcome.MAX_VALUE);
+        RecordHistogram.recordEnumeratedHistogram(
+                CONSENT_OUTCOME_HISTOGRAM, consentOutcome, ConsentOutcome.MAX_VALUE);
     }
 
-    private void onConsentRejected() {
+    private void onConsentRejected(@ConsentOutcome int consentOutcome) {
         mSharedPreferencesManager.writeBoolean(ASSISTANT_VOICE_SEARCH_ENABLED, false);
-        RecordHistogram.recordEnumeratedHistogram(CONSENT_OUTCOME_HISTOGRAM,
-                ConsentOutcome.REJECTED_VIA_BUTTON, ConsentOutcome.MAX_VALUE);
+        RecordHistogram.recordEnumeratedHistogram(
+                CONSENT_OUTCOME_HISTOGRAM, consentOutcome, ConsentOutcome.MAX_VALUE);
     }
 
     /** Open a page to learn more about the consent dialog. */
@@ -190,12 +191,12 @@ class AssistantVoiceSearchConsentUi
     public void onActivityResumed() {
         // It's possible the user clicked through "learn more" and enabled/disabled it via settings.
         if (!mSharedPreferencesManager.contains(ASSISTANT_VOICE_SEARCH_ENABLED)) return;
-        RecordHistogram.recordEnumeratedHistogram(CONSENT_OUTCOME_HISTOGRAM,
-                mSharedPreferencesManager.readBoolean(
-                        ASSISTANT_VOICE_SEARCH_ENABLED, /* default= */ false)
-                        ? ConsentOutcome.ACCEPTED_VIA_SETTINGS
-                        : ConsentOutcome.REJECTED_VIA_SETTINGS,
-                ConsentOutcome.MAX_VALUE);
+        if (mSharedPreferencesManager.readBoolean(
+                    ASSISTANT_VOICE_SEARCH_ENABLED, /* default= */ false)) {
+            onConsentAccepted(ConsentOutcome.ACCEPTED_VIA_SETTINGS);
+        } else {
+            onConsentRejected(ConsentOutcome.REJECTED_VIA_SETTINGS);
+        }
         mBottomSheetController.hideContent(this, /* animate= */ true,
                 BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
     }

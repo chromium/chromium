@@ -3885,6 +3885,14 @@ others/histograms.xml -->
   <int value="7" label="kBackInLauncherDeprecated"/>
 </enum>
 
+<enum name="AssistantConsentOutcome">
+  <int value="0" label="ACCEPTED-VIA-BUTTON"/>
+  <int value="1" label="ACCEPTED-VIA-SETTINGS"/>
+  <int value="2" label="REJECTED-VIA-BUTTON"/>
+  <int value="3" label="REJECTED-VIA-SETTINGS"/>
+  <int value="4" label="REJECTED-VIA-DISMISS"/>
+</enum>
+
 <enum name="AssistantEntryPoint">
   <int value="0" label="kUnspecified"/>
   <int value="1" label="kDeepLink"/>
