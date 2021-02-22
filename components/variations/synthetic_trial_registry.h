@@ -85,14 +85,20 @@ class SyntheticTrialRegistry {
   FRIEND_TEST_ALL_PREFIXES(VariationsCrashKeysTest, BasicFunctionality);
 
   // Registers a field trial name and group to be used to annotate a UMA report
-  // with a particular Chrome configuration state. A UMA report will be
-  // annotated with this trial group if and only if all events in the report
-  // were created after the trial is registered. Only one group name may be
-  // registered at a time for a given trial_name. Only the last group name that
-  // is registered for a given trial name will be recorded. The values passed
-  // in must not correspond to any real field trial in the code.
-  // Note: Should not be used to replace trials that were registered with
-  // RegisterExternalExperiments().
+  // with a particular Chrome configuration state.
+  //
+  // A UMA report will be annotated with this trial group if and only if all
+  // events in the report were created after the trial is registered. Only one
+  // group name may be registered at a time for a given trial_name. Only the
+  // last group name that is registered for a given trial name will be recorded.
+  // The values passed in must not correspond to any real field trial in the
+  // code.
+  //
+  // The registered trials are not persisted to disk and will not be applied
+  // after a restart.
+  //
+  // Note: Should not be used to replace trials that were
+  // registered with RegisterExternalExperiments().
   void RegisterSyntheticFieldTrial(const SyntheticTrialGroup& trial_group);
 
   // Returns the study name corresponding to |experiment_id| from the allowlist
