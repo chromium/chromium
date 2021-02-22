@@ -97,13 +97,21 @@ def main():
   parser.add_argument('--code-coverage',
                       default=False,
                       action='store_true',
-                      help='Gather code coverage information and place it in '
-                      'the output directory.')
+                      help='Gather code coverage information.')
+  parser.add_argument('--code-coverage-dir',
+                      default=os.getcwd(),
+                      help='Directory to place code coverage information. '
+                      'Only relevant when --code-coverage set to true. '
+                      'Defaults to current directory.')
   args = parser.parse_args()
 
   # Flag out_dir is required for tests launched with this script.
   if not args.out_dir:
     raise ValueError("out-dir must be specified.")
+
+  # Code coverage uses runtests, which calls run_test_component.
+  if args.code_coverage:
+    args.use_run_test_component = True
 
   ConfigureLogging(args)
 
@@ -199,7 +207,9 @@ def main():
         test_server.Stop()
 
       if args.code_coverage:
-        target.GetFile(TEST_LLVM_PROFILE_PATH, args.out_dir, recursive=True)
+        target.GetFile(TEST_LLVM_PROFILE_PATH,
+                       args.code_coverage_dir,
+                       recursive=True)
 
       if args.test_launcher_summary_output:
         target.GetFile(TEST_RESULT_PATH,
