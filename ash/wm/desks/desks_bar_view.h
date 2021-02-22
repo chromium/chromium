@@ -188,7 +188,7 @@ class ASH_EXPORT DesksBarView : public views::View,
   views::View* background_view_;
 
   // Used only in classic desks. Will be removed once Bento is fully launched.
-  NewDeskButton* new_desk_button_;
+  NewDeskButton* new_desk_button_ = nullptr;
 
   // The views representing desks mini_views. They're owned by views hierarchy.
   std::vector<DeskMiniView*> mini_views_;
