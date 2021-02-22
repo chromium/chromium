@@ -311,6 +311,7 @@ class NearbySharingServiceImpl
   void OnNearbyProcessStopped(
       chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason
           shutdown_reason);
+  void CleanupAfterNearbyProcessStopped();
   sharing::mojom::NearbySharingDecoder* GetNearbySharingDecoder();
 
   base::Optional<ShareTarget> CreateShareTarget(
@@ -476,6 +477,8 @@ class NearbySharingServiceImpl
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<NearbySharingServiceImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<NearbySharingServiceImpl>
+      endpoint_discovery_weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARING_SERVICE_IMPL_H_
