@@ -146,8 +146,7 @@ public class ChromeTabCreator extends TabCreator {
                     getTransitionType(type, intent, loadUrlParams.getTransitionType()));
 
             // Check if the tab is being created asynchronously.
-            int assignedTabId = intent == null ? Tab.INVALID_TAB_ID : IntentUtils.safeGetIntExtra(
-                    intent, IntentHandler.EXTRA_TAB_ID, Tab.INVALID_TAB_ID);
+            int assignedTabId = IntentHandler.getTabId(intent);
             AsyncTabParams asyncParams = mAsyncTabParamsManager.remove(assignedTabId);
 
             boolean openInForeground = mOrderController.willOpenInForeground(type, mIncognito);

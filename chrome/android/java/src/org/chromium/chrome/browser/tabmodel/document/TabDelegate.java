@@ -160,7 +160,7 @@ public class TabDelegate extends AsyncTabCreator {
         IntentHandler.setIntentExtraHeaders(
                 asyncParams.getLoadUrlParams().getExtraHeaders(), intent);
 
-        intent.putExtra(IntentHandler.EXTRA_TAB_ID, assignedTabId);
+        IntentHandler.setTabId(intent, assignedTabId);
         intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, mIsIncognito);
         intent.putExtra(IntentHandler.EXTRA_PARENT_TAB_ID, parentId);
 

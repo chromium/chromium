@@ -221,7 +221,8 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         WebContents webContents = mock(WebContents.class);
         realAsyncTabParamsManager.add(
                 tabId, new AsyncTabCreationParams(mock(LoadUrlParams.class), webContents));
-        intent.putExtra(IntentHandler.EXTRA_TAB_ID, tabId);
+        IntentHandler.setTabId(intent, tabId);
+        IntentHandler.setForceIntentSenderChromeToTrue(true);
         return webContents;
     }
 

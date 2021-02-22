@@ -82,7 +82,7 @@ public class IntentHandler {
     /**
      * Tab ID to use when creating a new Tab.
      */
-    public static final String EXTRA_TAB_ID = "com.android.chrome.tab_id";
+    private static final String EXTRA_TAB_ID = "com.android.chrome.tab_id";
 
     /**
      * The tab id of the parent tab, if any.
@@ -1034,7 +1034,7 @@ public class IntentHandler {
      * @param intent An Intent to be checked.
      * @return Whether an intent originates from Chrome.
      */
-    public static boolean wasIntentSenderChrome(Intent intent) {
+    public static boolean wasIntentSenderChrome(@Nullable Intent intent) {
         if (sTestForceIntentSenderChromeToTrue) return true;
 
         if (intent == null) return false;
@@ -1469,6 +1469,22 @@ public class IntentHandler {
     public static int getBringTabToFrontId(Intent intent) {
         if (!wasIntentSenderChrome(intent)) return Tab.INVALID_TAB_ID;
         return IntentUtils.safeGetIntExtra(intent, BRING_TAB_TO_FRONT_EXTRA, Tab.INVALID_TAB_ID);
+    }
+
+    /**
+     * Sets the Tab Id extra for a given intent. Will only be usable by trusted Chrome intents.
+     */
+    public static void setTabId(Intent intent, int tabId) {
+        intent.putExtra(IntentHandler.EXTRA_TAB_ID, tabId);
+    }
+
+    /**
+     * @return the Tab Id extra from an intent, or INVALID_TAB_ID if Tab Id isn't present, or the
+     * intent isn't trusted.
+     */
+    public static int getTabId(@Nullable Intent intent) {
+        if (!wasIntentSenderChrome(intent)) return Tab.INVALID_TAB_ID;
+        return IntentUtils.safeGetIntExtra(intent, EXTRA_TAB_ID, Tab.INVALID_TAB_ID);
     }
 
     /**
