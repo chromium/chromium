@@ -327,6 +327,7 @@ source_set("unit_tests_local_db") {
     ":v4_test_util",
     ":v4_update_protocol_manager",
     "//base",
+    "//build:branding_buildflags",
     "//components/prefs:test_support",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core:features",

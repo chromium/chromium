@@ -209,6 +209,7 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   FRIEND_TEST_ALL_PREFIXES(V4LocalDatabaseManagerTest,
                            TestGetSeverestThreatTypeAndMetadata);
   FRIEND_TEST_ALL_PREFIXES(V4LocalDatabaseManagerTest, NotificationOnUpdate);
+  FRIEND_TEST_ALL_PREFIXES(V4LocalDatabaseManagerTest, SyncedLists);
 
   // The checks awaiting a full hash response from SafeBrowsing service.
   typedef std::unordered_set<const PendingCheck*> PendingChecks;

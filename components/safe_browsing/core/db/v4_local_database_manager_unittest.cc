@@ -19,6 +19,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "components/safe_browsing/core/common/test_task_environment.h"
 #include "components/safe_browsing/core/db/v4_database.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
@@ -1468,6 +1470,45 @@ TEST_F(V4LocalDatabaseManagerTest, FlagMultipleUrls) {
       url_good, usual_threat_types_, nullptr));
 
   StopLocalDatabaseManager();
+}
+
+// Verify that the correct set of lists is synced on each platform: iOS,
+// Chrome-branded desktop, and non-Chrome-branded desktop.
+TEST_F(V4LocalDatabaseManagerTest, SyncedLists) {
+  WaitForTasksOnTaskRunner();
+
+#if defined(OS_IOS)
+  std::vector<ListIdentifier> expected_lists{
+      GetUrlSocEngId(), GetUrlMalwareId(), GetUrlBillingId(),
+      GetUrlCsdAllowlistId(), GetUrlHighConfidenceAllowlistId()};
+#elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  std::vector<ListIdentifier> expected_lists{GetIpMalwareId(),
+                                             GetUrlSocEngId(),
+                                             GetUrlMalwareId(),
+                                             GetUrlUwsId(),
+                                             GetUrlMalBinId(),
+                                             GetChromeExtMalwareId(),
+                                             GetCertCsdDownloadAllowlistId(),
+                                             GetChromeUrlClientIncidentId(),
+                                             GetUrlBillingId(),
+                                             GetUrlCsdDownloadAllowlistId(),
+                                             GetUrlCsdAllowlistId(),
+                                             GetUrlSubresourceFilterId(),
+                                             GetUrlSuspiciousSiteId(),
+                                             GetUrlHighConfidenceAllowlistId()};
+#else
+  std::vector<ListIdentifier> expected_lists{
+      GetIpMalwareId(), GetUrlSocEngId(), GetUrlMalwareId(),
+      GetUrlUwsId(),    GetUrlMalBinId(), GetChromeExtMalwareId(),
+      GetUrlBillingId()};
+#endif
+
+  std::vector<ListIdentifier> synced_lists;
+  for (const auto& info : v4_local_database_manager_->list_infos_) {
+    if (info.fetch_updates())
+      synced_lists.push_back(info.list_id());
+  }
+  EXPECT_EQ(expected_lists, synced_lists);
 }
 
 }  // namespace safe_browsing
