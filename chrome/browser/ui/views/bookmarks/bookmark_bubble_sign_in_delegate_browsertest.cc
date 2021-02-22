@@ -58,7 +58,7 @@ void BookmarkBubbleSignInDelegateTest::ReplaceBlank(Browser* browser) {
   NavigateParams params(
       GetSingletonTabNavigateParams(browser, GURL("chrome:version")));
   params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
-  ShowSingletonTabOverwritingNTP(browser, std::move(params));
+  ShowSingletonTabOverwritingNTP(browser, &params);
 }
 
 void BookmarkBubbleSignInDelegateTest::SignInBrowser(Browser* browser) {

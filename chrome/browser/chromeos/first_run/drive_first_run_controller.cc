@@ -425,9 +425,9 @@ void DriveFirstRunController::ShowNotification() {
                 const GURL url = GURL(kDriveOfflineSupportUrl);
 
                 chrome::ScopedTabbedBrowserDisplayer displayer(profile);
-                ShowSingletonTabOverwritingNTP(
-                    displayer.browser(),
+                NavigateParams params(
                     GetSingletonTabNavigateParams(displayer.browser(), url));
+                ShowSingletonTabOverwritingNTP(displayer.browser(), &params);
               },
               profile_));
 

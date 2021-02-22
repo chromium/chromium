@@ -97,7 +97,7 @@ void FocusWebContents(Browser* browser) {
 void ShowSingletonTabIgnorePathOverwriteNTP(Browser* browser, const GURL& url) {
   NavigateParams params(GetSingletonTabNavigateParams(browser, url));
   params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
-  ShowSingletonTabOverwritingNTP(browser, std::move(params));
+  ShowSingletonTabOverwritingNTP(browser, &params);
 }
 
 void OpenBookmarkManagerForNode(Browser* browser, int64_t node_id) {
@@ -253,9 +253,9 @@ void ShowDownloads(Browser* browser) {
   if (browser->window() && browser->window()->IsDownloadShelfVisible())
     browser->window()->GetDownloadShelf()->Close();
 
-  ShowSingletonTabOverwritingNTP(
-      browser,
+  NavigateParams params(
       GetSingletonTabNavigateParams(browser, GURL(kChromeUIDownloadsURL)));
+  ShowSingletonTabOverwritingNTP(browser, &params);
 }
 
 void ShowExtensions(Browser* browser,

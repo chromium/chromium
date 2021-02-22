@@ -947,7 +947,7 @@ bool ExtensionTabUtil::OpenOptionsPage(const Extension* extension,
   params.path_behavior = open_in_tab ? NavigateParams::RESPECT
                                      : NavigateParams::IGNORE_AND_NAVIGATE;
   params.url = url_to_navigate;
-  ShowSingletonTabOverwritingNTP(browser, std::move(params));
+  ShowSingletonTabOverwritingNTP(browser, &params);
   return true;
 }
 

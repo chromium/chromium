@@ -164,7 +164,7 @@ void OpenOnSelectProfileTargetUrl(Browser* browser) {
     NavigateParams params(
         GetSingletonTabNavigateParams(browser, target_page_url));
     params.path_behavior = NavigateParams::RESPECT;
-    ShowSingletonTabOverwritingNTP(browser, std::move(params));
+    ShowSingletonTabOverwritingNTP(browser, &params);
   }
 }
 
