@@ -30,6 +30,9 @@ struct NGCaretPosition {
   STACK_ALLOCATED();
 
  public:
+  explicit operator bool() const { return IsNotNull(); }
+
+  bool IsNotNull() const { return cursor.IsNotNull(); }
   bool IsNull() const { return cursor.IsNull(); }
 
   Position ToPositionInDOMTree() const;

@@ -149,6 +149,8 @@ PhysicalRect ComputeLocalCaretRectAtTextOffset(const NGInlineCursor& cursor,
   return PhysicalRect(caret_location, caret_size);
 }
 
+}  // namespace
+
 LocalCaretRect ComputeLocalCaretRect(const NGCaretPosition& caret_position) {
   if (caret_position.IsNull())
     return LocalCaretRect();
@@ -197,17 +199,6 @@ LocalCaretRect ComputeLocalSelectionRect(
     rect.SetHeight(line_box.Current().Size().width);
   }
   return {caret_rect.layout_object, rect};
-}
-
-}  // namespace
-
-LocalCaretRect ComputeNGLocalCaretRect(const PositionWithAffinity& position) {
-  return ComputeLocalCaretRect(ComputeNGCaretPosition(position));
-}
-
-LocalCaretRect ComputeNGLocalSelectionRect(
-    const PositionWithAffinity& position) {
-  return ComputeLocalSelectionRect(ComputeNGCaretPosition(position));
 }
 
 }  // namespace blink
