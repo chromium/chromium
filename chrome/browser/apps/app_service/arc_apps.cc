@@ -165,6 +165,9 @@ base::Optional<arc::UserInteractionType> GetUserInterationType(
     // kUnknown is not set anywhere, this case is not valid.
     case apps::mojom::LaunchSource::kUnknown:
       return base::nullopt;
+    case apps::mojom::LaunchSource::kFromChromeInternal:
+      user_interaction_type = arc::UserInteractionType::NOT_USER_INITIATED;
+      break;
     case apps::mojom::LaunchSource::kFromAppListGrid:
       user_interaction_type =
           arc::UserInteractionType::APP_STARTED_FROM_LAUNCHER;
