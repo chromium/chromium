@@ -571,6 +571,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Cookie.SameSiteCookieInclusionChangedByBugfix1166211"
+    enum="BooleanChanged" expires_after="2021-08-18">
+  <owner>chlily@chromium.org</owner>
+  <owner>miketaylr@chromium.org</owner>
+  <summary>
+    Whether a cookie was excluded solely due to the fix for crbug.com/1166211,
+    i.e. whether it would have been included before the fix but is excluded
+    after the fix. Logged for each cookie accessed by an HTTP(S)
+    request/response whose SameSite context was affected by the bugfix, i.e.
+    requests that are not main frame navigations, whose site-for-cookies is
+    same-site with the request URL, but whose initiator is cross-site to the
+    request URL. This is logged regardless of whether the bugfix's base::Feature
+    is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.SameSiteNoneIsSecure" enum="Boolean"
     expires_after="2021-06-20">
   <owner>chlily@chromium.org</owner>

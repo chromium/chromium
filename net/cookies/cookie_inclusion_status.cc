@@ -267,6 +267,10 @@ std::string CookieInclusionStatus::GetDebugString() const {
     base::StrAppend(&out, {"WARN_SAMEPARTY_EXCLUSION_OVERRULED_SAMESITE, "});
   if (HasWarningReason(WARN_SAMEPARTY_INCLUSION_OVERRULED_SAMESITE))
     base::StrAppend(&out, {"WARN_SAMEPARTY_INCLUSION_OVERRULED_SAMESITE, "});
+  if (HasWarningReason(WARN_SAMESITE_LAX_EXCLUDED_AFTER_BUGFIX_1166211)) {
+    base::StrAppend(&out,
+                    {"WARN_SAMESITE_LAX_EXCLUDED_AFTER_BUGFIX_1166211, "});
+  }
 
   // Strip trailing comma and space.
   out.erase(out.end() - 2, out.end());

@@ -169,6 +169,13 @@ class NET_EXPORT CookieInclusionStatus {
     // contexts, for cookies that are 'SameParty; SameSite=Lax'.)
     WARN_SAMEPARTY_INCLUSION_OVERRULED_SAMESITE = 11,
 
+    // The cookie was SameSite=Lax (or unspecified-treated-as-lax) and was
+    // excluded due to the fix for crbug.com/1166211, i.e. it was accessed by an
+    // HTTP request which was not a main frame navigation, whose initiator was
+    // cross-site and whose site-for-cookies was same-site with the request URL.
+    // TODO(crbug.com/1166211): Remove when no longer needed.
+    WARN_SAMESITE_LAX_EXCLUDED_AFTER_BUGFIX_1166211 = 12,
+
     // This should be kept last.
     NUM_WARNING_REASONS
   };

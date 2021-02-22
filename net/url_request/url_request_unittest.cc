@@ -2370,6 +2370,22 @@ TEST_F(URLRequestTest, SameSiteCookies) {
     EXPECT_EQ(std::string::npos, d.data_received().find("LaxSameSiteCookie=1"));
     EXPECT_EQ(0, network_delegate.blocked_get_cookies_count());
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
+
+    // Check that the appropriate cookie inclusion status is set.
+    ASSERT_EQ(2u, req->maybe_sent_cookies().size());
+    CookieInclusionStatus expected_strict_status =
+        CookieInclusionStatus::MakeFromReasonsForTesting(
+            {CookieInclusionStatus::EXCLUDE_SAMESITE_STRICT},
+            {} /* warning_reasons */);
+    CookieInclusionStatus expected_lax_status =
+        CookieInclusionStatus::MakeFromReasonsForTesting(
+            {CookieInclusionStatus::EXCLUDE_SAMESITE_LAX},
+            {CookieInclusionStatus::
+                 WARN_SAMESITE_LAX_EXCLUDED_AFTER_BUGFIX_1166211});
+    EXPECT_EQ(expected_strict_status,
+              req->maybe_sent_cookies()[0].access_result.status);
+    EXPECT_EQ(expected_lax_status,
+              req->maybe_sent_cookies()[1].access_result.status);
   }
 }
 
@@ -2548,6 +2564,22 @@ TEST_F(URLRequestTest, SettingSameSiteCookies) {
               static_cast<int>(GetAllCookies(&default_context()).size()));
     EXPECT_EQ(expected_network_delegate_set_cookie_count,
               network_delegate.set_cookie_count());
+
+    // Check that the appropriate cookie inclusion status is set.
+    ASSERT_EQ(2u, req->maybe_stored_cookies().size());
+    CookieInclusionStatus expected_strict_status =
+        CookieInclusionStatus::MakeFromReasonsForTesting(
+            {CookieInclusionStatus::EXCLUDE_SAMESITE_STRICT},
+            {} /* warning_reasons */);
+    CookieInclusionStatus expected_lax_status =
+        CookieInclusionStatus::MakeFromReasonsForTesting(
+            {CookieInclusionStatus::EXCLUDE_SAMESITE_LAX},
+            {CookieInclusionStatus::
+                 WARN_SAMESITE_LAX_EXCLUDED_AFTER_BUGFIX_1166211});
+    EXPECT_EQ(expected_strict_status,
+              req->maybe_stored_cookies()[0].access_result.status);
+    EXPECT_EQ(expected_lax_status,
+              req->maybe_stored_cookies()[1].access_result.status);
   }
 }
 

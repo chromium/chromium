@@ -6,6 +6,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -95,12 +96,13 @@ bool SaturatedTimeFromUTCExploded(const base::Time::Exploded& exploded,
 //
 // See documentation of `ComputeSameSiteContextForRequest` for explanations of
 // other parameters.
-ContextType ComputeSameSiteContext(const GURL& url,
-                                   const SiteForCookies& site_for_cookies,
-                                   const base::Optional<url::Origin>& initiator,
-                                   bool is_http,
-                                   bool is_main_frame_navigation,
-                                   bool compute_schemefully) {
+std::pair<ContextType, bool> ComputeSameSiteContext(
+    const GURL& url,
+    const SiteForCookies& site_for_cookies,
+    const base::Optional<url::Origin>& initiator,
+    bool is_http,
+    bool is_main_frame_navigation,
+    bool compute_schemefully) {
   bool site_for_cookies_is_same_site =
       site_for_cookies.IsFirstPartyWithSchemefulMode(url, compute_schemefully);
 
@@ -112,13 +114,14 @@ ContextType ComputeSameSiteContext(const GURL& url,
          site_for_cookies.IsNull());
   DCHECK(!is_main_frame_navigation || !url.SchemeIsWSOrWSS());
 
+  bool affected_by_bugfix_1166211 = false;
   if (site_for_cookies_is_same_site) {
     // Create a SiteForCookies object from the initiator so that we can reuse
     // IsFirstPartyWithSchemefulMode().
     if (!initiator ||
         SiteForCookies::FromOrigin(initiator.value())
             .IsFirstPartyWithSchemefulMode(url, compute_schemefully)) {
-      return ContextType::SAME_SITE_STRICT;
+      return {ContextType::SAME_SITE_STRICT, false};
     }
 
     if (is_http) {
@@ -128,12 +131,15 @@ ContextType ComputeSameSiteContext(const GURL& url,
 
     // Preserve old behavior if the bugfix is disabled.
     if (!base::FeatureList::IsEnabled(features::kSameSiteCookiesBugfix1166211))
-      return ContextType::SAME_SITE_LAX;
+      return {ContextType::SAME_SITE_LAX, false};
 
-    if (!is_http || is_main_frame_navigation)
-      return ContextType::SAME_SITE_LAX;
+    if (!is_http || is_main_frame_navigation) {
+      return {ContextType::SAME_SITE_LAX, false};
+    } else if (is_http) {
+      affected_by_bugfix_1166211 = true;
+    }
   }
-  return ContextType::CROSS_SITE;
+  return {ContextType::CROSS_SITE, affected_by_bugfix_1166211};
 }
 
 CookieOptions::SameSiteCookieContext ComputeSameSiteContextForSet(
