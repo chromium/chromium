@@ -65,7 +65,8 @@ class PLATFORM_EXPORT P2PSocketDispatcher
   void RemoveNetworkListObserver(
       blink::NetworkListObserver* network_list_observer) override;
 
-  network::mojom::blink::P2PSocketManager* GetP2PSocketManager();
+  mojo::SharedRemote<network::mojom::blink::P2PSocketManager>
+  GetP2PSocketManager();
 
  private:
   friend class base::RefCountedThreadSafe<P2PSocketDispatcher>;
@@ -94,7 +95,7 @@ class PLATFORM_EXPORT P2PSocketDispatcher
   mojo::PendingReceiver<network::mojom::blink::P2PSocketManager>
       p2p_socket_manager_receiver_;
   mojo::SharedRemote<network::mojom::blink::P2PSocketManager>
-      p2p_socket_manager_;
+      p2p_socket_manager_ GUARDED_BY(p2p_socket_manager_lock_);
   base::Lock p2p_socket_manager_lock_;
 
   // Cached from last |NetworkListChanged| call.

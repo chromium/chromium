@@ -36,7 +36,7 @@ void P2PSocketDispatcher::RemoveNetworkListObserver(
   network_list_observers_->RemoveObserver(network_list_observer);
 }
 
-network::mojom::blink::P2PSocketManager*
+mojo::SharedRemote<network::mojom::blink::P2PSocketManager>
 P2PSocketDispatcher::GetP2PSocketManager() {
   base::AutoLock lock(p2p_socket_manager_lock_);
   if (!p2p_socket_manager_) {
@@ -56,7 +56,7 @@ P2PSocketDispatcher::GetP2PSocketManager() {
       *main_task_runner_.get(), FROM_HERE,
       CrossThreadBindOnce(&P2PSocketDispatcher::RequestInterfaceIfNecessary,
                           scoped_refptr<P2PSocketDispatcher>(this)));
-  return p2p_socket_manager_.get();
+  return p2p_socket_manager_;
 }
 
 void P2PSocketDispatcher::NetworkListChanged(
