@@ -98,6 +98,21 @@
             ]
         }
     ],
+    "AndroidBottomSheetPwaInstall": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PwaInstallUseBottomSheet"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidDarkSearch": [
         {
             "platforms": [
