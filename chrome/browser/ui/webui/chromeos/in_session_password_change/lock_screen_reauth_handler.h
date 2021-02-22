@@ -23,7 +23,6 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
   // WebUI message handlers.
   void HandleInitialize(const base::ListValue*);
   void HandleCompleteAuthentication(const base::ListValue*);
-
   void HandleAuthenticatorLoaded(const base::ListValue*);
 
  private:

@@ -3,6 +3,7 @@
 
 <head>
   <include src="../login/components/oobe_icons.html">
+  <include src="../login/components/oobe_buttons.html">
   <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
 
   <script src="chrome://resources/js/cr.js"></script>
@@ -44,8 +45,22 @@
         }
 
         #saml-container {
+          /* #F1F3F4 */
+          background: rgb(241, 243, 244);
+           /* #000000 */
+          box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.17);
+          height: 44px;
           display: flex;
           justify-content: flex-end;
+          text-align: center;
+        }
+
+        #samlNoticeMessage {
+           /* #6a6a6a */
+          color: rgb(106, 106, 106);
+          font-size: 13px;
+          padding-top: 15px;
+          flex: 1;
         }
 
         #saml-close-button {
@@ -87,11 +102,11 @@
           color: var(--cr-secondary-text-color);
           font-size: 13px;
           font-weight: 400;
-          padding-top: 8px;
+          padding-top: 15px;
           margin: 0;
         }
 
-        #button-container {
+        .button-container {
           display: flex;
           justify-content: flex-end;
           flex-shrink: 0;
@@ -99,7 +114,19 @@
         }
 
         [hidden] {
-          display: none;
+          display: none !important;
+        }
+
+        .input-container {
+          width: 75%;
+          border: 0;
+          flex: 2;
+          justify-content: flex-start;
+          padding-inline-start: 64px;
+        }
+
+        :host-context([dir=rtl]) #arrowForward {
+          transform: rotate(180deg);
         }
       </style>
       <div class="content-wrapper" hidden="[[!isVerifyUser_]]" role="dialog"
@@ -114,7 +141,7 @@
             $i18n{lockScreenReauthSubtitile}
           </div>
         </div>
-        <div id="button-container" class="flex layout horizontal">
+        <div class="flex layout horizontal button-container">
           <cr-button id="cancelButton" class="cancel-button" on-click="onCloseTap_">
             $i18n{lockScreenCancelButton}
           </cr-button>
@@ -136,7 +163,7 @@
             $i18n{lockScreenReauthSubtitileWithError}
           </div>
         </div>
-        <div id="button-container" class="flex layout horizontal">
+        <div class="flex layout horizontal button-container">
           <cr-button id="cancelButton" class="cancel-button" on-click="onCloseTap_">
             $i18n{lockScreenCancelButton}
           </cr-button>
@@ -146,14 +173,50 @@
         </div>
       </div>
 
-      <div id="body" hidden="[[isButtonsEnabled_]]">
+      <div id="body" hidden="[[!isSamlPage_]]">
         <div id="saml-container">
-          <cr-icon-button id="saml-close-button" iron-icon="cr:close" on-click="onCloseTap_"
-              aria-label="$i18n{lockScreenCloseButton}">
+          <span id="samlNoticeMessage"></span>
+          <cr-icon-button id="saml-close-button" iron-icon="cr:close"
+              on-click="onCloseTap_" aria-label="$i18n{lockScreenCloseButton}">
           </cr-icon-button>
         </div>
         <webview id="signin-frame" name="signin-frame" class="flex">
         </webview>
+      </div>
+
+      <div class="content-wrapper" hidden="[[!isConfirmPassword_]]">
+        <div class="header">
+          <iron-icon class="title-icon" icon="oobe-64:lock"></iron-icon>
+          <div class="title">
+            [[email_]]
+          </div>
+          <div class="subtitle" hidden="[[isManualInput_]]">
+            $i18n{confirmPasswordSubtitle}
+          </div>
+          <div class="subtitle" hidden="[[!isManualInput_]]">
+            $i18n{manualPasswordSubtitle}
+          </div>
+        </div>
+        <div class="input-container">
+          <cr-input type="password" id="passwordInput" required
+              placeholder="[[passwordPlaceholder_(locale, isManualInput_)]]"
+              error-message="[[passwordErrorText_(locale, isManualInput_)]]">
+          </cr-input>
+          <cr-input type="password" id="confirmPasswordInput" required
+              placeholder="$i18n{confirmPasswordLabel}"
+              error-message="$i18n{manualPasswordMismatch}"
+              hidden="[[!isManualInput_]]">
+          </cr-input>
+        </div>
+        <div class="flex layout horizontal button-container">
+          <cr-button id="cancelButton" class="cancel-button" on-click="onCloseTap_">
+            $i18n{lockScreenCancelButton}
+          </cr-button>
+          <cr-button id="nextButton" class="action-button" on-click="onConfirm_">
+            $i18n{lockScreenNextButton}
+            <iron-icon id="arrowForward" icon="oobe-buttons-40:arrow-forward"></iron-icon>
+          </cr-button>
+        </div>
       </div>
     </template>
   </dom-module>
