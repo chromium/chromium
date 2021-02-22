@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/threading/platform_thread.h"
+#include "chrome/browser/speech/tts_chromeos.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
@@ -132,6 +133,51 @@ TEST_F(ArcTtsServiceTest, TestOnTtsEvent) {
   EXPECT_EQ(content::TTS_EVENT_ERROR, tts_controller()->last_event_type_);
   EXPECT_EQ(-1, tts_controller()->last_length_);
   EXPECT_EQ("", tts_controller()->last_error_message_);
+}
+
+TEST_F(ArcTtsServiceTest, GetVoices) {
+  std::vector<mojom::TtsVoicePtr> android_voices;
+
+  // These voices are sorted so that those where
+  // |is_network_connection_required| when false, come before those with that
+  // field set to true.
+  auto voice1 = mojom::TtsVoice::New();
+  voice1->name = "voice1";
+  voice1->locale = "en_US";
+  voice1->is_network_connection_required = true;
+  android_voices.push_back(std::move(voice1));
+
+  auto voice0 = mojom::TtsVoice::New();
+  voice0->name = "voice0";
+  voice0->locale = "eng-usa";
+  voice0->is_network_connection_required = false;
+  android_voices.push_back(std::move(voice0));
+
+  auto voice2 = mojom::TtsVoice::New();
+  voice2->name = "voice2";
+  voice2->locale = "FOO_bar";
+  voice2->is_network_connection_required = true;
+  android_voices.push_back(std::move(voice2));
+
+  tts_service()->OnVoicesChanged(std::move(android_voices));
+
+  TtsPlatformImplChromeOs* tts_chromeos =
+      TtsPlatformImplChromeOs::GetInstance();
+  std::vector<content::VoiceData> chrome_voices;
+  tts_chromeos->GetVoices(&chrome_voices);
+
+  EXPECT_EQ(3U, chrome_voices.size());
+  EXPECT_EQ("voice0", chrome_voices[0].name);
+  EXPECT_EQ("en-US", chrome_voices[0].lang);
+  EXPECT_FALSE(chrome_voices[0].remote);
+
+  EXPECT_EQ("voice1", chrome_voices[1].name);
+  EXPECT_EQ("en-US", chrome_voices[1].lang);
+  EXPECT_TRUE(chrome_voices[1].remote);
+
+  EXPECT_EQ("voice2", chrome_voices[2].name);
+  EXPECT_EQ("foo-BAR", chrome_voices[2].lang);
+  EXPECT_TRUE(chrome_voices[2].remote);
 }
 
 }  // namespace
