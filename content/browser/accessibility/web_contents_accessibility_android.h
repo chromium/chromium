@@ -21,6 +21,14 @@ namespace {
 // The maximum number of TYPE_WINDOW_CONTENT_CHANGED events to fire in one
 // atomic update before we give up and fire it on the root node instead.
 constexpr int kMaxContentChangedEventsToFire = 5;
+
+// The number of 'ticks' on a slider when no step value is defined. The value
+// of 20 implies 20 steps, or a 5% move with each increment/decrement action.
+constexpr int kDefaultNumberOfTicksForSliders = 20;
+
+// The minimum amount a slider can move per increment/decement action as a
+// percentage of the total range, regardless of step value set on the element.
+constexpr float kMinimumPercentageMoveForSliders = 0.01f;
 }  // namespace
 
 class BrowserAccessibilityAndroid;

@@ -63,6 +63,9 @@ public class AccessibilityContentShellTestUtils {
         return node.getText().toString().equals(text) && node.isVisibleToUser();
     };
 
+    static AccessibilityNodeInfoMatcher<String> sRangeInfoMatcher =
+            (node, element) -> node.getRangeInfo() != null;
+
     // Helper methods for common AccessibilityEvent tracking conditions.
 
     public static View.AccessibilityDelegate textIndicesDelegate(
@@ -111,6 +114,22 @@ public class AccessibilityContentShellTestUtils {
                     ViewGroup host, View child, AccessibilityEvent event) {
                 if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
                     data.incrementWindowContentChangedCount();
+                }
+
+                // Return false so that an accessibility event is not actually sent.
+                return false;
+            }
+        };
+    }
+
+    public static View.AccessibilityDelegate inputRangeScrollDelegate(
+            AccessibilityContentShellTestData data) {
+        return new View.AccessibilityDelegate() {
+            @Override
+            public boolean onRequestSendAccessibilityEvent(
+                    ViewGroup host, View child, AccessibilityEvent event) {
+                if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
+                    data.setReceivedEvent(true);
                 }
 
                 // Return false so that an accessibility event is not actually sent.

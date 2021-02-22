@@ -19,8 +19,10 @@ import static android.view.accessibility.AccessibilityNodeInfo.EXTRA_DATA_TEXT_C
 
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.announcementDelegate;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.contentChangeDelegate;
+import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.inputRangeScrollDelegate;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sClassNameMatcher;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sInputTypeMatcher;
+import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sRangeInfoMatcher;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sTextMatcher;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sTextOrContentDescriptionMatcher;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sTextVisibleToUserMatcher;
@@ -68,6 +70,7 @@ import java.util.concurrent.ExecutionException;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP)
+@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 @SuppressLint("VisibleForTests")
 public class WebContentsAccessibilityTest {
     // Test output error messages
@@ -93,6 +96,10 @@ public class WebContentsAccessibilityTest {
             "contenteditable node is not being identified and/or received incorrect class name";
     private static final String SPELLING_ERROR =
             "node should have a Spannable with spelling correction for given text.";
+    private static final String INPUT_RANGE_VALUE_MISMATCH =
+            "Value for <input type='range'> is incorrect, did you honor 'step' value?";
+    private static final String INPUT_RANGE_EVENT_ERROR =
+            "TYPE_VIEW_SCROLLED event not received before timeout.";
 
     // Constant values for unit tests
     private static final int UNSUPPRESSED_EXPECTED_COUNT = 25;
@@ -283,6 +290,185 @@ public class WebContentsAccessibilityTest {
     private void setAccessibilityDelegate(View.AccessibilityDelegate delegate) {
         ((ViewGroup) mActivityTestRule.getContainerView().getParent())
                 .setAccessibilityDelegate(delegate);
+    }
+
+    /**
+     * Test <input type="range"> nodes and events for incrementing/decrementing value with actions.
+     */
+    @Test
+    @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    public void testAccessibilityNodeInfo_inputTypeRange() throws Throwable {
+        // Create a basic input range, and find the associated |AccessibilityNodeInfo| object.
+        setupTestWithHTML("<input type='range' min='0' max='40'>");
+
+        // Find the input range and assert we have the correct node.
+        int inputNodeVirtualViewId = waitForNodeMatching(sRangeInfoMatcher, "");
+        mNodeInfo = mNodeProvider.createAccessibilityNodeInfo(inputNodeVirtualViewId);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
+        Assert.assertEquals(NODE_TIMEOUT_ERROR, 0, mNodeInfo.getRangeInfo().getMin(), 0.001);
+        Assert.assertEquals(NODE_TIMEOUT_ERROR, 40, mNodeInfo.getRangeInfo().getMax(), 0.001);
+
+        // Set a custom delegate to track events.
+        setAccessibilityDelegate(inputRangeScrollDelegate(mTestData));
+
+        // Perform a series of slider increments and check results.
+        for (int i = 1; i <= 10; i++) {
+            // Increment our slider using action, and poll until we receive the scroll event.
+            performActionOnUiThread(inputNodeVirtualViewId,
+                    AccessibilityNodeInfo.ACTION_SCROLL_FORWARD, new Bundle());
+            CriteriaHelper.pollUiThread(
+                    () -> mTestData.hasReceivedEvent(), INPUT_RANGE_EVENT_ERROR);
+
+            // Refresh our node info to get the latest RangeInfo child object.
+            mNodeInfo = mNodeProvider.createAccessibilityNodeInfo(inputNodeVirtualViewId);
+
+            // Confirm slider values.
+            Assert.assertEquals(INPUT_RANGE_VALUE_MISMATCH, 20 + (2 * i),
+                    mNodeInfo.getRangeInfo().getCurrent(), 0.001);
+
+            // Reset polling value for next test
+            mTestData.setReceivedEvent(false);
+        }
+
+        // Perform a series of slider decrements and check results.
+        for (int i = 1; i <= 20; i++) {
+            // Decrement our slider using action, and poll until we receive the scroll event.
+            performActionOnUiThread(inputNodeVirtualViewId,
+                    AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD, new Bundle());
+            CriteriaHelper.pollUiThread(
+                    () -> mTestData.hasReceivedEvent(), INPUT_RANGE_EVENT_ERROR);
+
+            // Refresh our node info to get the latest RangeInfo child object.
+            mNodeInfo = mNodeProvider.createAccessibilityNodeInfo(inputNodeVirtualViewId);
+
+            // Confirm slider values.
+            Assert.assertEquals(INPUT_RANGE_VALUE_MISMATCH, 40 - (2 * i),
+                    mNodeInfo.getRangeInfo().getCurrent(), 0.001);
+
+            // Reset polling value for next test
+            mTestData.setReceivedEvent(false);
+        }
+    }
+
+    /**
+     * Ensure we are honoring min/max/step values for <input type="range"> nodes.
+     */
+    @Test
+    @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    public void testAccessibilityNodeInfo_inputTypeRange_withStepValue() throws Throwable {
+        // Create a basic input range, and find the associated |AccessibilityNodeInfo| object.
+        setupTestWithHTML("<input type='range' min='0' max='144' step='12'>");
+
+        // Find the input range and assert we have the correct node.
+        int inputNodeVirtualViewId = waitForNodeMatching(sRangeInfoMatcher, "");
+        mNodeInfo = mNodeProvider.createAccessibilityNodeInfo(inputNodeVirtualViewId);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
+        Assert.assertEquals(NODE_TIMEOUT_ERROR, 0, mNodeInfo.getRangeInfo().getMin(), 0.001);
+        Assert.assertEquals(NODE_TIMEOUT_ERROR, 144, mNodeInfo.getRangeInfo().getMax(), 0.001);
+
+        // Set a custom delegate to track events.
+        setAccessibilityDelegate(inputRangeScrollDelegate(mTestData));
+
+        // Perform a series of slider increments and check results.
+        int[] expectedVals = new int[] {84, 96, 108, 120, 132, 144};
+        for (int expectedVal : expectedVals) {
+            // Increment our slider using action, and poll until we receive the scroll event.
+            performActionOnUiThread(inputNodeVirtualViewId,
+                    AccessibilityNodeInfo.ACTION_SCROLL_FORWARD, new Bundle());
+            CriteriaHelper.pollUiThread(
+                    () -> mTestData.hasReceivedEvent(), INPUT_RANGE_EVENT_ERROR);
+
+            // Refresh our node info to get the latest RangeInfo child object.
+            mNodeInfo = mNodeProvider.createAccessibilityNodeInfo(inputNodeVirtualViewId);
+
+            // Confirm slider values.
+            Assert.assertEquals(INPUT_RANGE_VALUE_MISMATCH, expectedVal,
+                    mNodeInfo.getRangeInfo().getCurrent(), 0.001);
+
+            // Reset polling value for next test
+            mTestData.setReceivedEvent(false);
+        }
+
+        // Perform a series of slider decrements and check results.
+        expectedVals = new int[] {132, 120, 108, 96, 84, 72, 60, 48, 36, 24, 12, 0};
+        for (int expectedVal : expectedVals) {
+            // Decrement our slider using action, and poll until we receive the scroll event.
+            performActionOnUiThread(inputNodeVirtualViewId,
+                    AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD, new Bundle());
+            CriteriaHelper.pollUiThread(
+                    () -> mTestData.hasReceivedEvent(), INPUT_RANGE_EVENT_ERROR);
+
+            // Refresh our node info to get the latest RangeInfo child object.
+            mNodeInfo = mNodeProvider.createAccessibilityNodeInfo(inputNodeVirtualViewId);
+
+            // Confirm slider values.
+            Assert.assertEquals(INPUT_RANGE_VALUE_MISMATCH, expectedVal,
+                    mNodeInfo.getRangeInfo().getCurrent(), 0.001);
+
+            // Reset polling value for next test
+            mTestData.setReceivedEvent(false);
+        }
+    }
+
+    /**
+     * Test <input type="range"> nodes move by a minimum value with increment/decrement actions.
+     */
+    @Test
+    @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    public void testAccessibilityNodeInfo_inputTypeRange_withRequiredMin() throws Throwable {
+        // Create a basic input range, and find the associated |AccessibilityNodeInfo| object.
+        setupTestWithHTML("<input type='range' min='0' max='1000' step='1'>");
+
+        // Find the input range and assert we have the correct node.
+        int inputNodeVirtualViewId = waitForNodeMatching(sRangeInfoMatcher, "");
+        mNodeInfo = mNodeProvider.createAccessibilityNodeInfo(inputNodeVirtualViewId);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
+        Assert.assertEquals(NODE_TIMEOUT_ERROR, 0, mNodeInfo.getRangeInfo().getMin(), 0.001);
+        Assert.assertEquals(NODE_TIMEOUT_ERROR, 1000, mNodeInfo.getRangeInfo().getMax(), 0.001);
+
+        // Set a custom delegate to track events.
+        setAccessibilityDelegate(inputRangeScrollDelegate(mTestData));
+
+        // Perform a series of slider increments and check results.
+        for (int i = 1; i <= 10; i++) {
+            // Increment our slider using action, and poll until we receive the scroll event.
+            performActionOnUiThread(inputNodeVirtualViewId,
+                    AccessibilityNodeInfo.ACTION_SCROLL_FORWARD, new Bundle());
+            CriteriaHelper.pollUiThread(
+                    () -> mTestData.hasReceivedEvent(), INPUT_RANGE_EVENT_ERROR);
+
+            // Refresh our node info to get the latest RangeInfo child object.
+            mNodeInfo = mNodeProvider.createAccessibilityNodeInfo(inputNodeVirtualViewId);
+
+            // Confirm slider values.
+            Assert.assertEquals(INPUT_RANGE_VALUE_MISMATCH, 500 + (10 * i),
+                    mNodeInfo.getRangeInfo().getCurrent(), 0.001);
+
+            // Reset polling value for next test
+            mTestData.setReceivedEvent(false);
+        }
+
+        // Perform a series of slider decrements and check results.
+        for (int i = 1; i <= 20; i++) {
+            // Decrement our slider using action, and poll until we receive the scroll event.
+            performActionOnUiThread(inputNodeVirtualViewId,
+                    AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD, new Bundle());
+            CriteriaHelper.pollUiThread(
+                    () -> mTestData.hasReceivedEvent(), INPUT_RANGE_EVENT_ERROR);
+
+            // Refresh our node info to get the latest RangeInfo child object.
+            mNodeInfo = mNodeProvider.createAccessibilityNodeInfo(inputNodeVirtualViewId);
+
+            // Confirm slider values.
+            Assert.assertEquals(INPUT_RANGE_VALUE_MISMATCH, 600 - (10 * i),
+                    mNodeInfo.getRangeInfo().getCurrent(), 0.001);
+
+            // Reset polling value for next test
+            mTestData.setReceivedEvent(false);
+        }
     }
 
     /**

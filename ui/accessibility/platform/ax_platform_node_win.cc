@@ -218,6 +218,14 @@ base::LazyInstance<
 // greater than small changes.
 constexpr int kLargeChangeScaleFactor = 10;
 
+// Sets the default small change amount for a RangeValueProvider when no
+// step was set on the element. Note: This should be in-sync with the native
+// default value, defined by the default constructor of:
+//
+//   third_party/blink/renderer/core/html/forms/step_range.cc
+//
+constexpr float kDefaultSmallChangeValue = 1.0f;
+
 // The amount to scroll when UI Automation asks to scroll by a small increment.
 // Value is in device independent pixels and is the same used by Blink when
 // cursor keys are used to scroll a webpage.
@@ -2450,6 +2458,16 @@ IFACEMETHODIMP AXPlatformNodeWin::get_LargeChange(double* result) {
                         &attribute)) {
     *result = attribute * kLargeChangeScaleFactor;
     return S_OK;
+  } else {
+    // For native sliders and spin buttons, when no explicit step value was
+    // set, use the default value instead.
+    std::string html_input_type =
+        GetStringAttribute(ax::mojom::StringAttribute::kInputType);
+    if (html_input_type == "range" || html_input_type == "number") {
+      *result = kDefaultSmallChangeValue * kLargeChangeScaleFactor;
+      return S_OK;
+    }
+    return E_FAIL;
   }
   return E_FAIL;
 }
@@ -2486,6 +2504,16 @@ IFACEMETHODIMP AXPlatformNodeWin::get_SmallChange(double* result) {
                         &attribute)) {
     *result = attribute;
     return S_OK;
+  } else {
+    // For native sliders and spin buttons, when no explicit step value was
+    // set, use the default value instead.
+    std::string html_input_type =
+        GetStringAttribute(ax::mojom::StringAttribute::kInputType);
+    if (html_input_type == "range" || html_input_type == "number") {
+      *result = kDefaultSmallChangeValue;
+      return S_OK;
+    }
+    return E_FAIL;
   }
   return E_FAIL;
 }

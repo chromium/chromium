@@ -1031,12 +1031,22 @@ jboolean WebContentsAccessibilityAndroid::AdjustSlider(
   if (max <= min)
     return false;
 
-  // To behave similarly to an Android SeekBar, move by an increment of
-  // approximately 5%.
+  // If this node has defined a step value, move by that amount. Otherwise, to
+  // behave similarly to an Android SeekBar, move by an increment of ~5%.
+  float delta;
+  if (node->HasFloatAttribute(ax::mojom::FloatAttribute::kStepValueForRange)) {
+    delta =
+        node->GetFloatAttribute(ax::mojom::FloatAttribute::kStepValueForRange);
+
+    // If delta from step value is too small, increase to our minimum amount.
+    float minimum_move = (max - min) * kMinimumPercentageMoveForSliders;
+    delta = std::max(delta, minimum_move);
+  } else {
+    delta = (max - min) / kDefaultNumberOfTicksForSliders;
+  }
+
+  // Add/Subtract based on |increment| boolean, then clamp to range.
   float original_value = value;
-  float delta = (max - min) / 20.0f;
-  // Slider does not move if the delta value is less than 1.
-  delta = ((delta < 1) ? 1 : delta);
   value += (increment ? delta : -delta);
   value = base::ClampToRange(value, min, max);
   if (value != original_value) {

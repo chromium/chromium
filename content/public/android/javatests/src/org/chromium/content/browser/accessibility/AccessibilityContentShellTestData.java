@@ -14,6 +14,7 @@ public class AccessibilityContentShellTestData {
     public int selectionToIndex;
     public String announcementText;
     public int typeWindowContentChangedCount;
+    public boolean receivedEvent;
 
     public AccessibilityContentShellTestData() {
         traverseFromIndex = -1;
@@ -22,6 +23,7 @@ public class AccessibilityContentShellTestData {
         selectionToIndex = -1;
         announcementText = "";
         typeWindowContentChangedCount = 0;
+        receivedEvent = false;
     }
 
     public int getTraverseFromIndex() {
@@ -74,5 +76,13 @@ public class AccessibilityContentShellTestData {
 
     public void incrementWindowContentChangedCount() {
         this.typeWindowContentChangedCount++;
+    }
+
+    public boolean hasReceivedEvent() {
+        return receivedEvent;
+    }
+
+    public void setReceivedEvent(boolean receivedEvent) {
+        this.receivedEvent = receivedEvent;
     }
 }

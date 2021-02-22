@@ -229,9 +229,15 @@ void AXNodeObject::AlterSliderOrSpinButtonValue(bool increase) {
   if (!ValueForRange(&value))
     return;
 
+  // If no step was provided on the element, use a default value.
   float step;
-  if (!StepValueForRange(&step))
-    return;
+  if (!StepValueForRange(&step)) {
+    if (IsNativeSlider() || IsNativeSpinButton()) {
+      step = StepRange().Step().ToString().ToFloat();
+    } else {
+      return;
+    }
+  }
 
   value += increase ? step : -step;
 
@@ -2484,6 +2490,14 @@ bool AXNodeObject::MinValueForRange(float* out_value) const {
 
 bool AXNodeObject::StepValueForRange(float* out_value) const {
   if (IsNativeSlider() || IsNativeSpinButton()) {
+    // AT may want to know whether a step value was explicitly provided or not,
+    // so return false if there was not one set.
+    if (!To<HTMLInputElement>(*GetNode())
+             .FastGetAttribute(html_names::kStepAttr)) {
+      *out_value = 0.0f;
+      return false;
+    }
+
     auto step =
         To<HTMLInputElement>(*GetNode()).CreateStepRange(kRejectAny).Step();
     *out_value = step.ToString().ToFloat();
