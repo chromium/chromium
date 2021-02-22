@@ -12,6 +12,8 @@
 #include "base/threading/thread_checker.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_timing_details_map.h"
+#include "components/viz/common/surfaces/local_surface_id.h"
+#include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 
 namespace viz {
@@ -46,10 +48,14 @@ class RootFrameSink : public base::RefCounted<RootFrameSink>,
   using SetNeedsBeginFrameCallback = base::RepeatingCallback<void(bool)>;
   RootFrameSink(RootFrameSinkClient* client);
 
-  viz::CompositorFrameSinkSupport* support() const { return support_.get(); }
   const viz::FrameSinkId& root_frame_sink_id() const {
     return root_frame_sink_id_;
   }
+
+  const viz::LocalSurfaceId& SubmitRootCompositorFrame(
+      viz::CompositorFrame frame);
+  void EvictRootSurface(const viz::LocalSurfaceId& local_surface_id);
+
   void AddChildFrameSinkId(const viz::FrameSinkId& frame_sink_id);
   void RemoveChildFrameSinkId(const viz::FrameSinkId& frame_sink_id);
   bool BeginFrame(const viz::BeginFrameArgs& args, bool had_input_event);
@@ -57,6 +63,7 @@ class RootFrameSink : public base::RefCounted<RootFrameSink>,
   void SetNeedsDraw(bool needs_draw);
   bool IsChildSurface(const viz::FrameSinkId& frame_sink_id);
   void DettachClient();
+  void EvictChildSurface(const viz::SurfaceId& surface_id);
 
   void SubmitChildCompositorFrame(ChildFrame* child_frame);
   viz::FrameTimingDetailsMap TakeChildFrameTimingDetailsMap();
@@ -87,6 +94,11 @@ class RootFrameSink : public base::RefCounted<RootFrameSink>,
   const viz::FrameSinkId root_frame_sink_id_;
   base::flat_set<viz::FrameSinkId> child_frame_sink_ids_;
   std::unique_ptr<viz::CompositorFrameSinkSupport> support_;
+  viz::ParentLocalSurfaceIdAllocator root_local_surface_id_allocator_;
+  gfx::Size root_surface_size_;
+  float root_device_scale_factor_ = 0.0f;
+  viz::FrameTokenGenerator next_root_frame_token_;
+
   std::unique_ptr<viz::ExternalBeginFrameSource> begin_frame_source_;
 
   std::unique_ptr<ChildCompositorFrameSink> child_sink_support_;

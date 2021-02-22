@@ -101,14 +101,11 @@ class HardwareRendererViz::OnViz : public viz::DisplayClient {
 
   const viz::FrameSinkId frame_sink_id_;
   viz::LocalSurfaceId root_local_surface_id_;
-  viz::ParentLocalSurfaceIdAllocator parent_local_surface_id_allocator_;
   std::unique_ptr<viz::BeginFrameSource> stub_begin_frame_source_;
   std::unique_ptr<viz::Display> display_;
 
   std::unique_ptr<viz::HitTestAggregator> hit_test_aggregator_;
   viz::SurfaceId child_surface_id_;
-  viz::FrameTokenGenerator next_frame_token_;
-  gfx::Size surface_size_;
   const bool viz_frame_submission_;
 
   THREAD_CHECKER(viz_thread_checker_);
@@ -154,6 +151,12 @@ HardwareRendererViz::OnViz::OnViz(
 
 HardwareRendererViz::OnViz::~OnViz() {
   DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
+  if (child_surface_id_.is_valid())
+    without_gpu_->EvictChildSurface(child_surface_id_);
+
+  if (root_local_surface_id_.is_valid())
+    without_gpu_->EvictRootSurface(root_local_surface_id_);
+
   GetFrameSinkManager()->surface_manager()->GarbageCollectSurfaces();
 }
 
@@ -220,25 +223,15 @@ void HardwareRendererViz::OnViz::DrawAndSwapOnViz(
       viz::BeginFrameAck::CreateManualAckWithDamage();
   frame.render_pass_list.push_back(std::move(render_pass));
   frame.metadata.device_scale_factor = device_scale_factor;
-  frame.metadata.frame_token = ++next_frame_token_;
 
-  if (!root_local_surface_id_.is_valid() || viewport != surface_size_ ||
-      child_surface_id_ != child_id) {
-    parent_local_surface_id_allocator_.GenerateId();
-    root_local_surface_id_ =
-        parent_local_surface_id_allocator_.GetCurrentLocalSurfaceId();
-    surface_size_ = viewport;
-    display_->SetLocalSurfaceId(root_local_surface_id_, device_scale_factor);
-
-    if (child_surface_id_ != child_id) {
-      if (child_surface_id_.frame_sink_id() != child_id.frame_sink_id()) {
-        hit_test_aggregator_ = std::make_unique<viz::HitTestAggregator>(
-            GetFrameSinkManager()->hit_test_manager(), GetFrameSinkManager(),
-            display_.get(), child_id.frame_sink_id());
-      }
-      child_surface_id_ = child_id;
-      GetFrameSinkManager()->surface_manager()->GarbageCollectSurfaces();
+  if (child_surface_id_ != child_id) {
+    if (child_surface_id_.frame_sink_id() != child_id.frame_sink_id()) {
+      hit_test_aggregator_ = std::make_unique<viz::HitTestAggregator>(
+          GetFrameSinkManager()->hit_test_manager(), GetFrameSinkManager(),
+          display_.get(), child_id.frame_sink_id());
     }
+    child_surface_id_ = child_id;
+    GetFrameSinkManager()->surface_manager()->GarbageCollectSurfaces();
   }
 
   {
@@ -247,8 +240,14 @@ void HardwareRendererViz::OnViz::DrawAndSwapOnViz(
     frame.metadata.referenced_surfaces = std::move(child_ranges);
   }
 
-  without_gpu_->support()->SubmitCompositorFrame(root_local_surface_id_,
-                                                 std::move(frame));
+  const auto& local_surface_id =
+      without_gpu_->SubmitRootCompositorFrame(std::move(frame));
+
+  if (root_local_surface_id_ != local_surface_id) {
+    root_local_surface_id_ = local_surface_id;
+    display_->SetLocalSurfaceId(local_surface_id, device_scale_factor);
+  }
+
   display_->Resize(viewport);
   display_->DrawAndSwap(base::TimeTicks::Now());
 }
