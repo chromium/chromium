@@ -1706,10 +1706,17 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
     // Create a normal SharedImage if GpuMemoryBuffer is not needed or the
     // allocation above failed.
     if (!gpu_memory_buffer) {
+      // We want to set the correct SkAlphaType on the new shared image but in
+      // the case of ShouldUseChromiumImage() we instead keep this buffer
+      // premultiplied, draw to |premultiplied_alpha_false_mailbox_|, and
+      // convert during copy.
+      SkAlphaType alpha_type = kPremul_SkAlphaType;
+      if (!ShouldUseChromiumImage() && !premultiplied_alpha_)
+        alpha_type = kUnpremul_SkAlphaType;
+
       back_buffer_mailbox = sii->CreateSharedImage(
           format, static_cast<gfx::Size>(size), storage_color_space_,
-          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-          gpu::kNullSurfaceHandle);
+          kTopLeft_GrSurfaceOrigin, alpha_type, usage, gpu::kNullSurfaceHandle);
     }
   }
 
