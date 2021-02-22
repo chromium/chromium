@@ -8,7 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/speech/speech_recognizer.h"
+#include "chrome/browser/speech/network_speech_recognizer.h"
 #include "chrome/common/pref_names.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -74,17 +74,20 @@ bool Dictation::OnToggleDictation() {
     return false;
   }
 
-  speech_recognizer_ = std::make_unique<SpeechRecognizer>(
+  speech_recognizer_ = std::make_unique<NetworkSpeechRecognizer>(
       weak_ptr_factory_.GetWeakPtr(),
       content::BrowserContext::GetDefaultStoragePartition(profile_)
           ->GetURLLoaderFactoryForBrowserProcessIOThread(),
       profile_->GetPrefs()->GetString(language::prefs::kAcceptLanguages),
       GetUserLanguage(profile_));
-  speech_recognizer_->Start(nullptr /* preamble */);
+  speech_recognizer_->Start();
   return true;
 }
 
-void Dictation::OnSpeechResult(const base::string16& query, bool is_final) {
+void Dictation::OnSpeechResult(
+    const base::string16& query,
+    bool is_final,
+    base::Optional<std::vector<base::TimeDelta>> word_offsets) {
   composition_->text = query;
 
   if (!is_final) {
@@ -111,9 +114,6 @@ void Dictation::OnSpeechRecognitionStateChanged(
     // In this case, the expected behavior is for dictation to terminate.
     DictationOff();
 }
-
-void Dictation::GetSpeechAuthParameters(std::string* auth_scope,
-                                        std::string* auth_token) {}
 
 void Dictation::OnTextInputStateChanged(const ui::TextInputClient* client) {
   if (!client)

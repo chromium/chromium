@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/accessibility/dictation.h"
 
+#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -42,7 +43,7 @@ class DictationTest : public InProcessBrowserTest {
 
   void SendSpeechResult(const char* result, bool is_final) {
     GetManager()->dictation_->OnSpeechResult(base::ASCIIToUTF16(result),
-                                             is_final);
+                                             is_final, base::nullopt);
   }
 
   void NotifyTextInputStateChanged(ui::TextInputClient* client) {

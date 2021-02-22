@@ -1636,8 +1636,8 @@ if (!is_android) {
     # files will probably not be applicable.
     sources += [
       "../browser/speech/extension_api/tts_extension_apitest.cc",
+      "../browser/speech/network_speech_recognizer_browsertest.cc",
       "../browser/speech/speech_recognition_browsertest.cc",
-      "../browser/speech/speech_recognizer_browsertest.cc",
     ]
 
     if (is_mac) {

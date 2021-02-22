@@ -37,12 +37,13 @@ class Dictation : public SpeechRecognizerDelegate,
   friend class DictationTest;
 
   // SpeechRecognizerDelegate:
-  void OnSpeechResult(const base::string16& query, bool is_final) override;
+  void OnSpeechResult(
+      const base::string16& query,
+      bool is_final,
+      base::Optional<std::vector<base::TimeDelta>> word_offsets) override;
   void OnSpeechSoundLevelChanged(int16_t level) override;
   void OnSpeechRecognitionStateChanged(
       SpeechRecognizerStatus new_state) override;
-  void GetSpeechAuthParameters(std::string* auth_scope,
-                               std::string* auth_token) override;
 
   // ui::InputMethodObserver:
   void OnTextInputStateChanged(const ui::TextInputClient* client) override;

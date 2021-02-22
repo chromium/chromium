@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,48 +6,31 @@
 #define CHROME_BROWSER_SPEECH_SPEECH_RECOGNIZER_H_
 
 #include <memory>
-#include <string>
 
-#include "base/macros.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-
-namespace content {
-struct SpeechRecognitionSessionPreamble;
-}
-
-namespace network {
-class PendingSharedURLLoaderFactory;
-}
 
 class SpeechRecognizerDelegate;
 
-// SpeechRecognizer is a wrapper around the speech recognition engine that
-// simplifies its use from the UI thread. This class handles all setup/shutdown,
-// collection of results, error cases, and threading.
+// SpeechRecognizer is an interface for microphone-based speech recognition from
+// the browser process.
 class SpeechRecognizer {
  public:
-  SpeechRecognizer(const base::WeakPtr<SpeechRecognizerDelegate>& delegate,
-                   std::unique_ptr<network::PendingSharedURLLoaderFactory>
-                       pending_shared_url_loader_factory,
-                   const std::string& accept_language,
-                   const std::string& locale);
-  ~SpeechRecognizer();
+  explicit SpeechRecognizer(
+      const base::WeakPtr<SpeechRecognizerDelegate>& delegate);
+  virtual ~SpeechRecognizer();
 
-  // Start/stop the speech recognizer. |preamble| contains the preamble audio to
-  // log if auth parameters are available.
-  // Must be called on the UI thread.
-  void Start(
-      const scoped_refptr<content::SpeechRecognitionSessionPreamble>& preamble);
-  void Stop();
+  // Starts speech recognition using the microphone. Results (or errors) will be
+  // returned via the SpeechRecognizerDelegate.
+  virtual void Start() = 0;
+
+  // Stops speech recognition.
+  virtual void Stop() = 0;
+
+ protected:
+  base::WeakPtr<SpeechRecognizerDelegate> delegate() { return delegate_; }
 
  private:
-  class EventListener;
-
   base::WeakPtr<SpeechRecognizerDelegate> delegate_;
-  scoped_refptr<EventListener> speech_event_listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpeechRecognizer);
 };
 
 #endif  // CHROME_BROWSER_SPEECH_SPEECH_RECOGNIZER_H_
