@@ -4,6 +4,7 @@
 
 #include "chrome/browser/cart/cart_handler.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/cart/cart_service_factory.h"
@@ -173,7 +174,13 @@ TEST_F(CartHandlerTest, TestEnableFakeData) {
 }
 
 // Verifies GetMerchantCarts loads real data without fake data parameter.
-TEST_F(CartHandlerTest, TestDisableFakeData) {
+// TODO(crbug.com/1180772): Test is flaky on Linux.
+#if defined(OS_LINUX)
+#define MAYBE_TestDisableFakeData DISABLED_TestDisableFakeData
+#else
+#define MAYBE_TestDisableFakeData TestDisableFakeData
+#endif
+TEST_F(CartHandlerTest, MAYBE_TestDisableFakeData) {
   base::RunLoop run_loop;
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(ntp_features::kNtpChromeCartModule);
