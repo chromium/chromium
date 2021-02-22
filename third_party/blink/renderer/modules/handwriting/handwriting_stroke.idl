@@ -9,7 +9,7 @@
   Exposed=Window,
   RuntimeEnabled=HandwritingRecognition
 ] interface HandwritingStroke {
-  [CallWith=ExecutionContext] constructor();
+  constructor();
   void addPoint(HandwritingPoint point);
   // Get a copy of the points added to the stroke.
   // TODO(crbug.com/1166910): Clarify to users that they can't modify the

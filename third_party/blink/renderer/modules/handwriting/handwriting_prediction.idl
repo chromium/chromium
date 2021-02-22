@@ -6,5 +6,5 @@
 
 dictionary HandwritingPrediction {
   required DOMString text;
-  HandwritingSegmentationResult segmentationResult;
+  sequence<HandwritingSegment> segmentationResult;
 };

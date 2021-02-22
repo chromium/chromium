@@ -8,22 +8,22 @@
 #include "base/macros.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 
-class ExecutionContext;
 class HandwritingPoint;
 
-class HandwritingStroke final : public ScriptWrappable {
+class MODULES_EXPORT HandwritingStroke final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit HandwritingStroke(ExecutionContext* context);
+  HandwritingStroke();
   ~HandwritingStroke() override;
 
-  static HandwritingStroke* Create(ExecutionContext* context);
+  static HandwritingStroke* Create();
 
   // IDL Interface:
   void addPoint(const HandwritingPoint* point);

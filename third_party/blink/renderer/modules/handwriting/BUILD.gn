@@ -14,5 +14,7 @@ blink_modules_sources("handwriting") {
     "handwriting_recognizer.h",
     "handwriting_stroke.cc",
     "handwriting_stroke.h",
+    "handwriting_type_converters.cc",
+    "handwriting_type_converters.h",
   ]
 }

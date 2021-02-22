@@ -10,13 +10,13 @@
 
 namespace blink {
 
-HandwritingStroke::HandwritingStroke(ExecutionContext* context) {}
+HandwritingStroke::HandwritingStroke() = default;
 
 HandwritingStroke::~HandwritingStroke() = default;
 
 // static
-HandwritingStroke* HandwritingStroke::Create(ExecutionContext* context) {
-  return MakeGarbageCollected<HandwritingStroke>(context);
+HandwritingStroke* HandwritingStroke::Create() {
+  return MakeGarbageCollected<HandwritingStroke>();
 }
 
 void HandwritingStroke::addPoint(const HandwritingPoint* point) {

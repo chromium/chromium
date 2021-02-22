@@ -330,6 +330,7 @@ source_set("unit_tests") {
     "eventsource/event_source_parser_test.cc",
     "filesystem/dom_file_system_base_test.cc",
     "filesystem/file_writer_test.cc",
+    "handwriting/handwriting_type_converters_unittest.cc",
     "installedapp/installed_app_controller_test.cc",
     "manifest/image_resource_type_converters_test.cc",
     "manifest/manifest_manager_unittest.cc",

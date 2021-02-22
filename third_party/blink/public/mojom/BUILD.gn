@@ -672,6 +672,7 @@ mojom("android_mojo_bindings") {
     "digital_goods/digital_goods.mojom",
     "document_metadata/document_metadata.mojom",
     "font_unique_name_lookup/font_unique_name_lookup.mojom",
+    "handwriting/handwriting.mojom",
     "input/input_host.mojom",
     "input/input_messages.mojom",
     "installation/installation.mojom",

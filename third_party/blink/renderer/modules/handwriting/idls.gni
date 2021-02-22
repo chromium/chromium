@@ -15,8 +15,8 @@ modules_dictionary_idl_files = [
   "handwriting_model_constraint.idl",
   "handwriting_point.idl",
   "handwriting_prediction.idl",
+  "handwriting_drawing_segment.idl",
   "handwriting_segment.idl",
-  "handwriting_segmentation_result.idl",
 ]
 
 modules_dependency_idl_files =
