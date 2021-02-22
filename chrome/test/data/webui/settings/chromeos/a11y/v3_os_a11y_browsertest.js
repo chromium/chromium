@@ -42,6 +42,10 @@ const axeOptionsDocumentTitle =
    'GoogleAssistant', 'google_assistant_a11y_v3_test.js',
    {options: axeOptionsDocumentTitle}
  ],
+ [
+   'ManageAccessibility', 'manage_accessibility_a11y_v3_test.js',
+   {options: axeOptionsDocumentTitle}
+ ],
 ].forEach(test => defineTest(...test));
 
 function defineTest(testName, module, config) {
