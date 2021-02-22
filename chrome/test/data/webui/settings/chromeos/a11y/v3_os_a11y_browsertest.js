@@ -35,6 +35,16 @@ const axeOptionsDocumentTitle =
           })
     });
 
+const multideviceFeatureViolationFilter =
+    Object.assign({}, OSSettingsAccessibilityV3Test.violationsFilter, {
+      // Excuse link without an underline.
+      // TODO(https://crbug.com/894602): Remove this exception when settled
+      // with UX.
+      'link-in-text-block': function(nodeResult) {
+        return nodeResult.element.parentElement.id === 'multideviceSubLabel';
+      },
+    });
+
 [[
   'Basic', 'basic_a11y_v3_test.js', {options: axeOptionsExcludeLinkInTextBlock}
 ],
@@ -49,6 +59,10 @@ const axeOptionsDocumentTitle =
  [
    'Multidevice', 'multidevice_a11y_v3_test.js',
    {options: axeOptionsDocumentTitle}
+ ],
+ [
+   'MultideviceFeatures', 'multidevice_features_a11y_v3_test.js',
+   {filter: multideviceFeatureViolationFilter, options: axeOptionsDocumentTitle}
  ],
 ].forEach(test => defineTest(...test));
 
