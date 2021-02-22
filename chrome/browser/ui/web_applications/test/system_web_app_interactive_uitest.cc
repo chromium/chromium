@@ -26,6 +26,7 @@
 #include "chrome/browser/web_applications/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
@@ -77,14 +78,8 @@ class SystemWebAppLinkCaptureBrowserTest
   const SystemAppType kInitiatingAppType = SystemAppType::SETTINGS;
 };
 
-// This test is flaky on linux. https://crbug.com/1172891
-#if defined(OS_LINUX)
-#define MAYBE_OmniboxTypeURLAndNavigate DISABLED_OmniboxTypeURLAndNavigate
-#else
-#define MAYBE_OmniboxTypeURLAndNavigate OmniboxTypeURLAndNavigate
-#endif
 IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
-                       MAYBE_OmniboxTypeURLAndNavigate) {
+                       OmniboxTypeURLAndNavigate) {
   WaitForTestSystemAppInstall();
 
   content::TestNavigationObserver observer(maybe_installation_->GetAppUrl());
@@ -96,15 +91,13 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
   Browser* app_browser = FindSystemWebAppBrowser(
       browser()->profile(), maybe_installation_->GetType());
   EXPECT_TRUE(app_browser);
-  EXPECT_EQ(app_browser, chrome::FindLastActive());
+  ui_test_utils::BrowserActivationWaiter(app_browser).WaitForActivation();
   EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
   EXPECT_EQ(Browser::TYPE_APP, app_browser->type());
   EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
 }
 
-// Flaky test https://crbug.com/1172891
-IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
-                       DISABLED_OmniboxPasteAndGo) {
+IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, OmniboxPasteAndGo) {
   WaitForTestSystemAppInstall();
   OmniboxEditModel* model =
       browser()->window()->GetLocationBar()->GetOmniboxView()->model();
@@ -117,7 +110,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
   Browser* app_browser = FindSystemWebAppBrowser(
       browser()->profile(), maybe_installation_->GetType());
   EXPECT_TRUE(app_browser);
-  EXPECT_EQ(app_browser, chrome::FindLastActive());
+  ui_test_utils::BrowserActivationWaiter(app_browser).WaitForActivation();
   EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
   EXPECT_EQ(Browser::TYPE_APP, app_browser->type());
   EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
@@ -169,12 +162,12 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, AnchorLinkClick) {
       Browser* app_browser = FindSystemWebAppBrowser(
           browser()->profile(), maybe_installation_->GetType());
       EXPECT_TRUE(app_browser);
-      EXPECT_EQ(app_browser, chrome::FindLastActive());
+      ui_test_utils::BrowserActivationWaiter(app_browser).WaitForActivation();
       EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
       EXPECT_EQ(Browser::TYPE_APP, app_browser->type());
       EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
       app_browser->window()->Close();
-      base::RunLoop().RunUntilIdle();
+      ui_test_utils::WaitForBrowserToClose(app_browser);
 
       // Check the initiating browser window is intact.
       EXPECT_EQ(kInitiatingChromeUrl, browser()
@@ -214,12 +207,12 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
   Browser* app_browser = FindSystemWebAppBrowser(
       browser()->profile(), maybe_installation_->GetType());
   EXPECT_TRUE(app_browser);
-  EXPECT_EQ(app_browser, chrome::FindLastActive());
+  ui_test_utils::BrowserActivationWaiter(app_browser).WaitForActivation();
   EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
   EXPECT_EQ(Browser::TYPE_APP, app_browser->type());
   EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
   app_browser->window()->Close();
-  base::RunLoop().RunUntilIdle();
+  ui_test_utils::WaitForBrowserToClose(app_browser);
 
   // Check the initiating browser window is intact.
   EXPECT_EQ(kInitiatingChromeUrl, browser()
@@ -257,12 +250,12 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
   Browser* app_browser = FindSystemWebAppBrowser(
       browser()->profile(), maybe_installation_->GetType());
   EXPECT_TRUE(app_browser);
-  EXPECT_EQ(app_browser, chrome::FindLastActive());
+  ui_test_utils::BrowserActivationWaiter(app_browser).WaitForActivation();
   EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
   EXPECT_EQ(Browser::TYPE_APP, app_browser->type());
   EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
   app_browser->window()->Close();
-  base::RunLoop().RunUntilIdle();
+  ui_test_utils::WaitForBrowserToClose(app_browser);
 
   // Check the initiating browser window is intact.
   EXPECT_EQ(kInitiatingChromeUrl, browser()
@@ -292,7 +285,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, ChangeLocationHref) {
   Browser* app_browser = FindSystemWebAppBrowser(
       browser()->profile(), maybe_installation_->GetType());
   EXPECT_TRUE(app_browser);
-  EXPECT_EQ(app_browser, chrome::FindLastActive());
+  ui_test_utils::BrowserActivationWaiter(app_browser).WaitForActivation();
   EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
   EXPECT_EQ(Browser::TYPE_APP, app_browser->type());
   EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
@@ -335,12 +328,12 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, WindowOpen) {
       Browser* app_browser = FindSystemWebAppBrowser(
           browser()->profile(), maybe_installation_->GetType());
       EXPECT_TRUE(app_browser);
-      EXPECT_EQ(app_browser, chrome::FindLastActive());
+      ui_test_utils::BrowserActivationWaiter(app_browser).WaitForActivation();
       EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
       EXPECT_EQ(Browser::TYPE_APP, app_browser->type());
       EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
       app_browser->window()->Close();
-      base::RunLoop().RunUntilIdle();
+      ui_test_utils::WaitForBrowserToClose(app_browser);
 
       // Check the initiating browser window is intact.
       EXPECT_EQ(kInitiatingChromeUrl, browser()
@@ -378,7 +371,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
       Browser* app_browser = FindSystemWebAppBrowser(
           browser()->profile(), maybe_installation_->GetType());
       EXPECT_TRUE(app_browser);
-      EXPECT_EQ(app_browser, chrome::FindLastActive());
+      ui_test_utils::BrowserActivationWaiter(app_browser).WaitForActivation();
 
       // There should be three browsers: the default one (new tab page), the
       // initiating system app, the link capturing system app.
@@ -386,7 +379,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
       EXPECT_EQ(Browser::TYPE_APP, app_browser->type());
       EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
       app_browser->window()->Close();
-      base::RunLoop().RunUntilIdle();
+      ui_test_utils::WaitForBrowserToClose(app_browser);
 
       // Check the initiating browser window is intact.
       EXPECT_EQ(kInitiatingAppUrl,
@@ -444,7 +437,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
 
   Browser* incognito_browser = CreateIncognitoBrowser();
   browser()->window()->Close();
-  base::RunLoop().RunUntilIdle();
+  ui_test_utils::WaitForBrowserToClose(browser());
 
   content::TestNavigationObserver observer(maybe_installation_->GetAppUrl());
   observer.StartWatchingNewWebContents();
@@ -458,7 +451,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
       incognito_browser->profile()->GetOriginalProfile(),
       maybe_installation_->GetType());
   EXPECT_TRUE(app_browser);
-  EXPECT_EQ(app_browser, chrome::FindLastActive());
+  ui_test_utils::BrowserActivationWaiter(app_browser).WaitForActivation();
   EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
   EXPECT_EQ(Browser::TYPE_APP, app_browser->type());
   EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
@@ -567,7 +560,7 @@ class SystemWebAppManagerMultiDesktopLaunchBrowserTest
     Browser* swa_browser =
         FindSystemWebAppBrowser(profile, installation_->GetType());
     EXPECT_TRUE(swa_browser);
-    EXPECT_EQ(swa_browser, chrome::FindLastActive());
+    ui_test_utils::BrowserActivationWaiter(swa_browser).WaitForActivation();
 
     return swa_browser;
   }
