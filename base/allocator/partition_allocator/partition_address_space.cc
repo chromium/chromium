@@ -9,7 +9,6 @@
 #include "base/allocator/partition_allocator/page_allocator_internal.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
-#include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/bits.h"
 
 namespace base {
@@ -61,20 +60,6 @@ void PartitionAddressSpace::Init() {
   current += kNormalBucketPoolSize;
   PA_DCHECK(IsInNormalBucketPool(reinterpret_cast<void*>(current - 1)));
   PA_DCHECK(!IsInNormalBucketPool(reinterpret_cast<void*>(current)));
-
-#if PA_ALLOW_PCSCAN
-  // Reserve memory for PCScan quarantine card table.
-  void* requested_address =
-      reinterpret_cast<void*>(normal_bucket_pool_base_address_);
-  char* actual_address = internal::AddressPoolManager::GetInstance()->Reserve(
-      normal_bucket_pool_, requested_address, kSuperPageSize);
-  PA_CHECK(requested_address == actual_address)
-      << "QuarantineCardTable is required to be allocated in the beginning of "
-         "the NormalBucketPool";
-  SetSystemPagesAccess(actual_address, kSuperPageSize, PageReadWrite);
-  // Don't take physical memory since PCScan may be switched off.
-  DiscardSystemPages(actual_address, kSuperPageSize);
-#endif
 
   PA_DCHECK(reserved_base_address_ + kDesiredAddressSpaceSize == current);
 }
