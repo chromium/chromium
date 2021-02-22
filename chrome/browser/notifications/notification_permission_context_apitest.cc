@@ -61,8 +61,8 @@ IN_PROC_BROWSER_TEST_F(NotificationPermissionContextApiTest, Granted) {
   // report permission status when permission has been granted.
   ExtensionPermissionUpdater updater(profile(), /* enabled= */ true);
 
-  ASSERT_TRUE(
-      RunExtensionTestWithArg("notifications/permissions_test", "granted"))
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "notifications/permissions_test", .custom_arg = "granted"}))
       << message_;
 }
 
@@ -71,8 +71,8 @@ IN_PROC_BROWSER_TEST_F(NotificationPermissionContextApiTest, Denied) {
   // report permission status when permission has been denied.
   ExtensionPermissionUpdater updater(profile(), /* enabled= */ false);
 
-  ASSERT_TRUE(
-      RunExtensionTestWithArg("notifications/permissions_test", "denied"))
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "notifications/permissions_test", .custom_arg = "denied"}))
       << message_;
 }
 

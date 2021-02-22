@@ -66,26 +66,26 @@ IN_PROC_BROWSER_TEST_F(ExperimentalAppWindowApiTest, SetIcon) {
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, MAYBE_OnMinimizedEvent) {
-  EXPECT_TRUE(RunExtensionTestWithArg("platform_apps/windows_api_properties",
-                                      "minimized"))
+  EXPECT_TRUE(RunExtensionTest({.name = "platform_apps/windows_api_properties",
+                                .custom_arg = "minimized"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, MAYBE_OnMaximizedEvent) {
-  EXPECT_TRUE(RunExtensionTestWithArg("platform_apps/windows_api_properties",
-                                      "maximized"))
+  EXPECT_TRUE(RunExtensionTest({.name = "platform_apps/windows_api_properties",
+                                .custom_arg = "maximized"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, MAYBE_OnRestoredEvent) {
-  EXPECT_TRUE(RunExtensionTestWithArg("platform_apps/windows_api_properties",
-                                      "restored"))
+  EXPECT_TRUE(RunExtensionTest({.name = "platform_apps/windows_api_properties",
+                                .custom_arg = "restored"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, OnBoundsChangedEvent) {
-  EXPECT_TRUE(RunExtensionTestWithArg("platform_apps/windows_api_properties",
-                                      "boundsChanged"))
+  EXPECT_TRUE(RunExtensionTest({.name = "platform_apps/windows_api_properties",
+                                .custom_arg = "boundsChanged"}))
       << message_;
 }
 

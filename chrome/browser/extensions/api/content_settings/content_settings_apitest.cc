@@ -228,13 +228,10 @@ class ExtensionContentSettingsApiLazyTest
     : public ExtensionContentSettingsApiTest,
       public testing::WithParamInterface<ContextType> {
  protected:
-  bool RunLazyTest(const std::string& extension_name) {
-    int browser_test_flags = kFlagNone;
-    if (GetParam() == ContextType::kServiceWorker)
-      browser_test_flags |= kFlagRunAsServiceWorkerBasedExtension;
-
-    return RunExtensionTestWithFlagsAndArg(extension_name, nullptr,
-                                           browser_test_flags, kFlagNone);
+  bool RunLazyTest(const char* extension_name) {
+    return RunExtensionTest(
+        {.name = extension_name},
+        {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
   }
 };
 

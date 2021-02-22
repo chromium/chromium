@@ -224,9 +224,10 @@ IN_PROC_BROWSER_TEST_F(PermissionsApiTest, FileLoad) {
     EXPECT_TRUE(base::PathExists(original_empty_file));
     EXPECT_TRUE(base::CopyFile(original_empty_file, empty_file));
   }
-  EXPECT_TRUE(RunExtensionTestWithFlagsAndArg(
-      "permissions/file_load", temp_dir.GetPath().MaybeAsASCII().c_str(),
-      kFlagEnableFileAccess, kFlagNone))
+  EXPECT_TRUE(RunExtensionTest(
+      {.name = "permissions/file_load",
+       .custom_arg = temp_dir.GetPath().MaybeAsASCII().c_str()},
+      {.allow_file_access = true}))
       << message_;
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
