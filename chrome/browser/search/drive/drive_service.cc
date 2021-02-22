@@ -5,6 +5,7 @@
 #include "chrome/browser/search/drive/drive_service.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -24,7 +25,7 @@ constexpr char kRequestBody[] = R"({
         'request_type': 'LIVE_REQUEST'
       },
       'max_suggestions': 3,
-      'type_detail_fields': 'drive_item.title,justification.display_text'
+      'type_detail_fields': 'drive_item.title,drive_item.mimeType'
     })";
 // Maximum accepted size of an ItemSuggest response. 1MB.
 constexpr int kMaxResponseSize = 1024 * 1024;
@@ -76,7 +77,7 @@ DriveService::DriveService(
     : url_loader_factory_(std::move(url_loader_factory)),
       identity_manager_(identity_manager) {}
 
-void DriveService::GetDriveSuggestions(GetDocumentsCallback callback) {
+void DriveService::GetDriveFiles(GetFilesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(crbug/1168763) May need to handle multiple requests after
@@ -89,14 +90,14 @@ void DriveService::GetDriveSuggestions(GetDocumentsCallback callback) {
       signin::ConsentLevel::kSync);
 }
 
-void DriveService::OnTokenReceived(GetDocumentsCallback callback,
+void DriveService::OnTokenReceived(GetFilesCallback callback,
                                    GoogleServiceAuthError error,
                                    signin::AccessTokenInfo token_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   token_fetcher_.reset();
   if (error.state() != GoogleServiceAuthError::NONE) {
-    std::move(callback).Run(std::vector<drive::mojom::DocumentPtr>());
+    std::move(callback).Run(std::vector<drive::mojom::FilePtr>());
     return;
   }
 
@@ -130,7 +131,7 @@ void DriveService::OnTokenReceived(GetDocumentsCallback callback,
 }
 
 void DriveService::OnJsonReceived(
-    GetDocumentsCallback callback,
+    GetFilesCallback callback,
     const std::unique_ptr<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -138,7 +139,7 @@ void DriveService::OnJsonReceived(
   url_loader_.reset();
 
   if (net_error != net::OK || !response_body) {
-    std::move(callback).Run(std::vector<drive::mojom::DocumentPtr>());
+    std::move(callback).Run(std::vector<drive::mojom::FilePtr>());
     return;
   }
   data_decoder::DataDecoder::ParseJsonIsolated(
@@ -148,25 +149,47 @@ void DriveService::OnJsonReceived(
 }
 
 void DriveService::OnJsonParsed(
-    GetDocumentsCallback callback,
+    GetFilesCallback callback,
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.value) {
-    std::move(callback).Run(std::vector<drive::mojom::DocumentPtr>());
+    std::move(callback).Run(std::vector<drive::mojom::FilePtr>());
     return;
   }
-  auto* documents = result.value->FindListPath("item");
-  if (!documents) {
-    std::move(callback).Run(std::vector<drive::mojom::DocumentPtr>());
+  auto* items = result.value->FindListPath("item");
+  if (!items) {
+    std::move(callback).Run(std::vector<drive::mojom::FilePtr>());
     return;
   }
-  std::vector<drive::mojom::DocumentPtr> document_list;
-  for (const auto& document : documents->GetList()) {
-    auto* title = document.FindStringPath("driveItem.title");
-    if (!title) {
+  std::vector<drive::mojom::FilePtr> document_list;
+  for (const auto& item : items->GetList()) {
+    auto* title = item.FindStringPath("driveItem.title");
+    auto* mime_type = item.FindStringPath("driveItem.mimeType");
+    auto* justification_text_segments =
+        item.FindListPath("justification.displayText.textSegment");
+    if (!justification_text_segments ||
+        justification_text_segments->GetList().size() == 0) {
       continue;
     }
-    auto mojo_drive_doc = drive::mojom::Document::New();
+    // TODO(crbug/1179370): Verify what textSegments will be from ItemSuggest.
+    auto* justification_text =
+        justification_text_segments->GetList()[0].FindStringPath("text");
+    auto* id = item.FindStringKey("itemId");
+    if (!title || !mime_type || !justification_text || !id) {
+      continue;
+    }
+    auto mojo_drive_doc = drive::mojom::File::New();
     mojo_drive_doc->title = *title;
+    if (*mime_type == "application/vnd.google-apps.document") {
+      mojo_drive_doc->type = drive::mojom::FileType::kDoc;
+    } else if (*mime_type == "application/vnd.google-apps.spreadsheet") {
+      mojo_drive_doc->type = drive::mojom::FileType::kSheet;
+    } else if (*mime_type == "application/vnd.google-apps.presentation") {
+      mojo_drive_doc->type = drive::mojom::FileType::kSlide;
+    } else {
+      mojo_drive_doc->type = drive::mojom::FileType::kOther;
+    }
+    mojo_drive_doc->justification_text = *justification_text;
+    mojo_drive_doc->id = *id;
     document_list.push_back(std::move(mojo_drive_doc));
   }
   std::move(callback).Run(std::move(document_list));

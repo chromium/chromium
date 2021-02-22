@@ -25,9 +25,55 @@ class DriveModuleElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {Array<!drive.mojom.Document>} */
-      documents: Array
+      /** @type {Array<!drive.mojom.File>} */
+      files: Array,
     };
+  }
+
+  /**
+   * @param {drive.mojom.File} file
+   * @return {string}
+   * @private
+   */
+  getImageSrc_(file) {
+    switch (file.type) {
+      case (drive.mojom.FileType.kDoc):
+        return 'modules/drive/icons/google_docs_logo.svg';
+      case (drive.mojom.FileType.kSheet):
+        return 'modules/drive/icons/google_sheets_logo.svg';
+      case (drive.mojom.FileType.kSlide):
+        return 'modules/drive/icons/google_slides_logo.svg';
+      default:
+        // TODO(crbug/1176982): Need to return an image
+        // in the case we don't know the type of
+        // drive item.
+        return '';
+    }
+  }
+
+  /**
+   * @param {drive.mojom.File} file
+   * @return {string}
+   * @private
+   */
+  getTargetUrl_(file) {
+    const id = file.id;
+    // TODO(crbug/1177439): Use URL from ItemSuggest to generate URL.
+    switch (file.type) {
+      case (drive.mojom.FileType.kDoc):
+        return `https://docs.google.com/document/d/${id}/edit?usp=drive_web`;
+      case (drive.mojom.FileType.kSlide):
+        return `https://docs.google.com/presentation/d/${
+            id}/edit?usp=drive_web`;
+      case (drive.mojom.FileType.kSheet):
+        return `https://docs.google.com/spreadsheets/d/${
+            id}/edit?usp=drive_web`;
+      default:
+        // TODO(crbug/1177426): Generic drive link leads to preview of page,
+        // will need to decide if this is appropriate or we want to navigate
+        // directly to the page we want.
+        return `https://drive.google.com/file/d/${id}/view?usp=drive_web`;
+    }
   }
 }
 
@@ -37,16 +83,16 @@ customElements.define(DriveModuleElement.is, DriveModuleElement);
  * @return {!Promise<DriveModuleElement>}
  */
 async function createDriveElement() {
-  const {documents} = await DriveProxy.getInstance().handler.getDocuments();
-  if (documents.length === 0) {
+  const {files} = await DriveProxy.getInstance().handler.getFiles();
+  if (files.length === 0) {
     return null;
   }
   const element = new DriveModuleElement();
-  element.documents = documents;
+  element.files = files;
   return element;
 }
 
 /** @type {!ModuleDescriptor} */
 export const driveDescriptor = new ModuleDescriptor(
     /*id=*/ 'drive',
-    /*heightPx=*/ 314, createDriveElement);
+    /*heightPx=*/ 260, createDriveElement);

@@ -1,28 +1,55 @@
 <style>
   :host {
+    height: 100%;
     width: 100%;
   }
 
-  #documents {
-    align-items: center;
+  #files {
     display: flex;
-    height: 100%;
-    justify-content: center;
   }
 
-  .document {
+  .file {
     color: var(--cr-primary-text-color);
-    height: 120px;
-    width: 170px;
+    display: block;
+    margin-inline-start: 16px;
+    text-decoration: none;
+    width: 165px;
+  }
+
+  .file-icon-container {
+    align-items: center;
+    background: var(--google-grey-refresh-100);
+    border-radius: 4px;
+    display: flex;
+    height: 136px;
+    justify-content: center;
+    margin-bottom: 8px;
+  }
+
+  .file-icon {
+    max-height: 80px;
+    width: 80px;
+  }
+
+  .file-description {
+    color: var(--cr-secondary-text-color);
   }
 </style>
 <ntp-module-header>
   $i18n{modulesDriveTitle}
 </ntp-module-header>
-<div id="documents">
-  <template id="documentRepeat" is="dom-repeat" items="[[documents]]">
-    <div class="document">
-      [[item.title]]
-    </div>
+<div id="files">
+  <template id="fileRepeat" is="dom-repeat" items="[[files]]">
+    <a class="file" href="[[getTargetUrl_(item)]]">
+      <div class="file-icon-container">
+        <img
+            class="file-icon"
+            draggable="false"
+            src="[[getImageSrc_(item)]]">
+        </img>
+      </div>
+      <div class="file-title">[[item.title]]</div>
+      <div class="file-description">[[item.justificationText]]</div>
+    </a>
   </template>
 </div>

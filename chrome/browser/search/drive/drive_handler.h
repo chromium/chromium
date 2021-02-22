@@ -19,7 +19,7 @@ class DriveHandler : public drive::mojom::DriveHandler {
   ~DriveHandler() override;
 
   // drive::mojom::DriveHandler:
-  void GetDocuments(GetDocumentsCallback callback) override;
+  void GetFiles(GetFilesCallback callback) override;
 
  private:
   mojo::Receiver<drive::mojom::DriveHandler> handler_;

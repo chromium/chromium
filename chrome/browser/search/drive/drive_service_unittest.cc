@@ -41,17 +41,17 @@ class DriveServiceTest : public testing::Test {
 };
 
 TEST_F(DriveServiceTest, PassesDataOnSuccess) {
-  std::vector<drive::mojom::DocumentPtr> actual_documents;
-  base::MockCallback<DriveService::GetDocumentsCallback> callback;
+  std::vector<drive::mojom::FilePtr> actual_documents;
+  base::MockCallback<DriveService::GetFilesCallback> callback;
 
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&](std::vector<drive::mojom::DocumentPtr> documents) {
+      .WillOnce(
+          testing::Invoke([&](std::vector<drive::mojom::FilePtr> documents) {
             actual_documents = std::move(documents);
           }));
 
-  service_->GetDriveSuggestions(callback.Get());
+  service_->GetDriveFiles(callback.Get());
 
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "foo", base::Time());
@@ -62,20 +62,41 @@ TEST_F(DriveServiceTest, PassesDataOnSuccess) {
         {
           "item": [
             {
+              "itemId":"234",
               "driveItem": {
-                "title": "Foo"
+                "title": "Foo foo",
+                "mimeType": "Foo foo foo"
+              },
+              "justification": {
+                "displayText": {
+                  "textSegment": [
+                    {
+                      "text": "Foo foo"
+                    }
+                  ]
                 }
+              }
             },
             {
+              "itemId":"123",
               "driveItem": {
-                "title": "Bar"
+                "title": "Bar",
+                "mimeType": "application/vnd.google-apps.document"
+              },
+              "justification": {
+                "displayText": {
+                  "textSegment": [
+                    {
+                      "text": "Foo"
+                    }
+                  ]
+                }
               }
             },
             {
               "driveItem": {
               }
             }
-
           ]
         }
       )",
@@ -83,24 +104,28 @@ TEST_F(DriveServiceTest, PassesDataOnSuccess) {
       network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
 
   EXPECT_EQ(2u, actual_documents.size());
-  EXPECT_EQ("Foo", actual_documents.at(0)->title);
+  EXPECT_EQ("Foo foo", actual_documents.at(0)->title);
+  EXPECT_EQ(drive::mojom::FileType::kOther, actual_documents.at(0)->type);
+  EXPECT_EQ("Foo foo", actual_documents.at(0)->justification_text);
   EXPECT_EQ("Bar", actual_documents.at(1)->title);
+  EXPECT_EQ("123", actual_documents.at(1)->id);
+  EXPECT_EQ(drive::mojom::FileType::kDoc, actual_documents.at(1)->type);
+  EXPECT_EQ("Foo", actual_documents.at(1)->justification_text);
 }
 
 TEST_F(DriveServiceTest, PassesNoDataOnAuthError) {
   bool token_is_valid = true;
 
-  base::MockCallback<DriveService::GetDocumentsCallback> callback;
+  base::MockCallback<DriveService::GetFilesCallback> callback;
 
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
       .WillOnce(testing::Invoke(
-          [&token_is_valid](
-              std::vector<drive::mojom::DocumentPtr> suggestions) {
+          [&token_is_valid](std::vector<drive::mojom::FilePtr> suggestions) {
             token_is_valid = !suggestions.empty();
           }));
 
-  service_->GetDriveSuggestions(callback.Get());
+  service_->GetDriveFiles(callback.Get());
 
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError(GoogleServiceAuthError::State::CONNECTION_FAILED));
@@ -110,17 +135,16 @@ TEST_F(DriveServiceTest, PassesNoDataOnAuthError) {
 
 TEST_F(DriveServiceTest, PassesNoDataOnNetError) {
   bool empty_response = false;
-  base::MockCallback<DriveService::GetDocumentsCallback> callback;
+  base::MockCallback<DriveService::GetFilesCallback> callback;
 
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
       .WillOnce(testing::Invoke(
-          [&empty_response](
-              std::vector<drive::mojom::DocumentPtr> suggestions) {
+          [&empty_response](std::vector<drive::mojom::FilePtr> suggestions) {
             empty_response = suggestions.empty();
           }));
 
-  service_->GetDriveSuggestions(callback.Get());
+  service_->GetDriveFiles(callback.Get());
 
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "foo", base::Time());
@@ -143,17 +167,16 @@ TEST_F(DriveServiceTest, PassesNoDataOnNetError) {
 TEST_F(DriveServiceTest, PassesNoDataOnEmptyResponse) {
   bool empty_response = false;
 
-  base::MockCallback<DriveService::GetDocumentsCallback> callback;
+  base::MockCallback<DriveService::GetFilesCallback> callback;
 
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
       .WillOnce(testing::Invoke(
-          [&empty_response](
-              std::vector<drive::mojom::DocumentPtr> suggestions) {
+          [&empty_response](std::vector<drive::mojom::FilePtr> suggestions) {
             empty_response = suggestions.empty();
           }));
 
-  service_->GetDriveSuggestions(callback.Get());
+  service_->GetDriveFiles(callback.Get());
 
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "foo", base::Time());
@@ -166,17 +189,17 @@ TEST_F(DriveServiceTest, PassesNoDataOnEmptyResponse) {
 }
 
 TEST_F(DriveServiceTest, PassesNoDataOnMissingItemKey) {
-  std::vector<drive::mojom::DocumentPtr> actual_documents;
-  base::MockCallback<DriveService::GetDocumentsCallback> callback;
+  std::vector<drive::mojom::FilePtr> actual_documents;
+  base::MockCallback<DriveService::GetFilesCallback> callback;
 
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&](std::vector<drive::mojom::DocumentPtr> documents) {
+      .WillOnce(
+          testing::Invoke([&](std::vector<drive::mojom::FilePtr> documents) {
             actual_documents = std::move(documents);
           }));
 
-  service_->GetDriveSuggestions(callback.Get());
+  service_->GetDriveFiles(callback.Get());
 
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "foo", base::Time());
