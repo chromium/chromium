@@ -995,8 +995,8 @@ Try tapping the mic to ask me anything.
       <message name="IDS_ONC_VPN_USERNAME" desc="ONC Property label for VPN.OpenVPN.Username or VPN.L2TP.Username">
         Username
       </message>
-      <message name="IDS_ONC_VPN_TYPE_OPENVPN" desc="ONC Property label for VPN.Type.OpenVPN">
-        Open VPN
+      <message name="IDS_ONC_VPN_TYPE_OPENVPN" desc="Label for OpenVPN entry of provider type dropdown in Join VPN Network dialog in OS Settings. Note: OpenVPN is a brand name.">
+        OpenVPN
       </message>
       <message name="IDS_ONC_VPN_TYPE_ARCVPN" desc="ONC Property label for VPN.Type.ARCVPN">
         Android VPN
