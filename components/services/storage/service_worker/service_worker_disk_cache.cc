@@ -109,12 +109,11 @@ ServiceWorkerDiskCache::~ServiceWorkerDiskCache() {
 
 net::Error ServiceWorkerDiskCache::InitWithDiskBackend(
     const base::FilePath& disk_cache_directory,
-    bool force,
     base::OnceClosure post_cleanup_callback,
     net::CompletionOnceCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return Init(net::APP_CACHE, disk_cache_directory,
-              std::numeric_limits<int64_t>::max(), force,
+              std::numeric_limits<int64_t>::max(),
               std::move(post_cleanup_callback), std::move(callback));
 }
 
@@ -122,7 +121,7 @@ net::Error ServiceWorkerDiskCache::InitWithMemBackend(
     int64_t mem_cache_size,
     net::CompletionOnceCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return Init(net::MEMORY_CACHE, base::FilePath(), mem_cache_size, false,
+  return Init(net::MEMORY_CACHE, base::FilePath(), mem_cache_size,
               base::OnceClosure(), std::move(callback));
 }
 
@@ -263,7 +262,6 @@ base::WeakPtr<ServiceWorkerDiskCache> ServiceWorkerDiskCache::GetWeakPtr() {
 net::Error ServiceWorkerDiskCache::Init(net::CacheType cache_type,
                                         const base::FilePath& cache_directory,
                                         int64_t cache_size,
-                                        bool force,
                                         base::OnceClosure post_cleanup_callback,
                                         net::CompletionOnceCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -271,13 +269,11 @@ net::Error ServiceWorkerDiskCache::Init(net::CacheType cache_type,
   is_disabled_ = false;
   create_backend_callback_ =
       base::MakeRefCounted<CreateBackendCallbackShim>(this);
-  disk_cache::ResetHandling reset_handling =
-      force ? disk_cache::ResetHandling::kResetOnError
-            : disk_cache::ResetHandling::kNeverReset;
 
   net::Error return_value = disk_cache::CreateCacheBackend(
       cache_type, net::CACHE_BACKEND_SIMPLE, cache_directory, cache_size,
-      reset_handling, nullptr, &(create_backend_callback_->backend_ptr_),
+      disk_cache::ResetHandling::kNeverReset, nullptr,
+      &(create_backend_callback_->backend_ptr_),
       std::move(post_cleanup_callback),
       base::BindOnce(&CreateBackendCallbackShim::Callback,
                      create_backend_callback_));

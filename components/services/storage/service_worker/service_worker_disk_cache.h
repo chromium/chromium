@@ -70,7 +70,6 @@ class ServiceWorkerDiskCache {
 
   // Initializes the object to use disk backed storage.
   net::Error InitWithDiskBackend(const base::FilePath& disk_cache_directory,
-                                 bool force,
                                  base::OnceClosure post_cleanup_callback,
                                  net::CompletionOnceCallback callback);
 
@@ -111,7 +110,6 @@ class ServiceWorkerDiskCache {
   net::Error Init(net::CacheType cache_type,
                   const base::FilePath& directory,
                   int64_t cache_size,
-                  bool force,
                   base::OnceClosure post_cleanup_callback,
                   net::CompletionOnceCallback callback);
   void OnCreateBackendComplete(int return_value);
