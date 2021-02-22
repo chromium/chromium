@@ -598,10 +598,11 @@ void Scheduler::FinishImplFrame() {
   // ack for any pending begin frame if we are going idle after this. This
   // ensures that the acks are sent in order.
   if (!state_machine_.did_submit_in_last_frame()) {
+    bool has_pending_tree = state_machine_.has_pending_tree();
     bool is_waiting_on_main = state_machine_.begin_main_frame_state() !=
                               SchedulerStateMachine::BeginMainFrameState::IDLE;
     SendDidNotProduceFrame(begin_impl_frame_tracker_.Current(),
-                           is_waiting_on_main
+                           is_waiting_on_main || has_pending_tree
                                ? FrameSkippedReason::kWaitingOnMain
                                : FrameSkippedReason::kNoDamage);
   }
