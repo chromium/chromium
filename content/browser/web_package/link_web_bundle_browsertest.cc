@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
+#include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/content_client.h"
@@ -99,11 +100,17 @@ class LinkWebBundleBrowserTest : public ContentBrowserTest {
   }
   ~LinkWebBundleBrowserTest() override = default;
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+  }
+
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
     original_client_ = SetBrowserClientForTesting(&browser_client_);
     host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(embedded_test_server()->Start());
+    https_server_.ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    ASSERT_TRUE(https_server_.Start());
   }
 
   void TearDownOnMainThread() override {
@@ -130,15 +137,19 @@ class LinkWebBundleBrowserTest : public ContentBrowserTest {
 
   GURL GetObservedUnknownSchemeUrl() { return browser_client_.observed_url(); }
 
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
  private:
   ContentBrowserClient* original_client_ = nullptr;
   TestBrowserClient browser_client_;
   base::test::ScopedFeatureList feature_list_;
+  net::EmbeddedTestServer https_server_{
+      net::EmbeddedTestServer::Type::TYPE_HTTPS};
 };
 
 IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, SubframeLoad) {
   base::HistogramTester histogram_tester;
-  GURL url(embedded_test_server()->GetURL("/web_bundle/link_web_bundle.html"));
+  GURL url(https_server()->GetURL("/web_bundle/link_web_bundle.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   // Create an iframe with a urn:uuid resource in a bundle.
@@ -164,8 +175,7 @@ IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, SubframeLoad) {
 }
 
 IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, SubframeLoadError) {
-  GURL url(
-      embedded_test_server()->GetURL("/web_bundle/invalid_web_bundle.html"));
+  GURL url(https_server()->GetURL("/web_bundle/invalid_web_bundle.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   // Attempt to create an iframe with a resource in a broken WebBundle.
@@ -183,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, SubframeLoadError) {
 }
 
 IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, FollowLink) {
-  GURL url(embedded_test_server()->GetURL("/web_bundle/link_web_bundle.html"));
+  GURL url(https_server()->GetURL("/web_bundle/link_web_bundle.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   // Clicking a link to a urn:uuid resource in a bundle should not be loaded
@@ -199,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, FollowLink) {
 }
 
 IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, IframeChangeSource) {
-  GURL main_url(embedded_test_server()->GetURL("/simple_page.html"));
+  GURL main_url(https_server()->GetURL("/simple_page.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // Create an iframe whose document has <link rel="webbundle">.
@@ -217,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, IframeChangeSource) {
 }
 
 IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, IframeFollowLink) {
-  GURL main_url(embedded_test_server()->GetURL("/simple_page.html"));
+  GURL main_url(https_server()->GetURL("/simple_page.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // Create an iframe whose document has <link rel="webbundle">.
@@ -236,8 +246,7 @@ IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, IframeFollowLink) {
 }
 
 IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, NavigationFromSiblingFrame) {
-  GURL main_url(
-      embedded_test_server()->GetURL("/web_bundle/link_web_bundle.html"));
+  GURL main_url(https_server()->GetURL("/web_bundle/link_web_bundle.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // Create an iframe and wait for the initial load.
@@ -285,8 +294,7 @@ IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, NavigationFromSiblingFrame) {
 
 IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest,
                        GrandChildShouldNotBeLoadedFromBundle) {
-  GURL main_url(
-      embedded_test_server()->GetURL("/web_bundle/link_web_bundle.html"));
+  GURL main_url(https_server()->GetURL("/web_bundle/link_web_bundle.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // Create an iframe with a urn:uuid resource, which has a nested iframe with
@@ -307,9 +315,9 @@ IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, NetworkIsolationKey) {
   GURL bundle_url(
-      embedded_test_server()->GetURL("bundle.com", "/web_bundle/urn-uuid.wbn"));
-  GURL page_url(embedded_test_server()->GetURL(
-      "page.com", "/web_bundle/frame_parent.html?wbn=" + bundle_url.spec()));
+      https_server()->GetURL("bundle.test", "/web_bundle/urn-uuid.wbn"));
+  GURL page_url(https_server()->GetURL(
+      "page.test", "/web_bundle/frame_parent.html?wbn=" + bundle_url.spec()));
   EXPECT_TRUE(NavigateToURL(shell(), page_url));
   base::string16 expected_title(base::UTF8ToUTF16("OK"));
   TitleWatcher title_watcher(shell()->web_contents(), expected_title);
@@ -317,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, NetworkIsolationKey) {
 
   RenderFrameHost* main_frame = shell()->web_contents()->GetMainFrame();
   RenderFrameHost* urn_frame = ChildFrameAt(main_frame, 0);
-  EXPECT_EQ("http://page.com http://bundle.com",
+  EXPECT_EQ("https://page.test https://bundle.test",
             urn_frame->GetNetworkIsolationKey().ToString());
 }
 

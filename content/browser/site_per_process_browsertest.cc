@@ -941,9 +941,21 @@ class SitePerProcessWebBundleBrowserTest : public SitePerProcessBrowserTest {
   SitePerProcessWebBundleBrowserTest() {
     feature_list_.InitAndEnableFeature(features::kSubresourceWebBundles);
   }
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SitePerProcessBrowserTestBase::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+  }
+  void SetUpOnMainThread() override {
+    SitePerProcessBrowserTestBase::SetUpOnMainThread();
+    https_server_.ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    ASSERT_TRUE(https_server_.Start());
+  }
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  net::EmbeddedTestServer https_server_{
+      net::EmbeddedTestServer::Type::TYPE_HTTPS};
 };
 
 IN_PROC_BROWSER_TEST_P(SitePerProcessHighDPIBrowserTest,
@@ -16720,9 +16732,9 @@ IN_PROC_BROWSER_TEST_P(
 // reuses its parent's process.
 IN_PROC_BROWSER_TEST_P(SitePerProcessWebBundleBrowserTest, SameSiteBundle) {
   GURL bundle_url(
-      embedded_test_server()->GetURL("a.com", "/web_bundle/urn-uuid.wbn"));
-  GURL main_url(embedded_test_server()->GetURL(
-      "a.com", "/web_bundle/frame_parent.html?wbn=" + bundle_url.spec()));
+      https_server()->GetURL("foo.test", "/web_bundle/urn-uuid.wbn"));
+  GURL main_url(https_server()->GetURL(
+      "foo.test", "/web_bundle/frame_parent.html?wbn=" + bundle_url.spec()));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   base::string16 expected_title(base::UTF8ToUTF16("OK"));
   TitleWatcher title_watcher(shell()->web_contents(), expected_title);
@@ -16741,9 +16753,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebBundleBrowserTest, SameSiteBundle) {
 // for the Bundle's origin.
 IN_PROC_BROWSER_TEST_P(SitePerProcessWebBundleBrowserTest, CrossSiteBundle) {
   GURL bundle_url(
-      embedded_test_server()->GetURL("foo.com", "/web_bundle/urn-uuid.wbn"));
-  GURL main_url(embedded_test_server()->GetURL(
-      "a.com", "/web_bundle/frame_parent.html?wbn=" + bundle_url.spec()));
+      https_server()->GetURL("bar.test", "/web_bundle/urn-uuid.wbn"));
+  GURL main_url(https_server()->GetURL(
+      "foo.test", "/web_bundle/frame_parent.html?wbn=" + bundle_url.spec()));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   base::string16 expected_title(base::UTF8ToUTF16("OK"));
   TitleWatcher title_watcher(shell()->web_contents(), expected_title);
@@ -16757,8 +16769,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebBundleBrowserTest, CrossSiteBundle) {
   EXPECT_EQ(
       " Site A ------------ proxies for B\n"
       "   +--Site B ------- proxies for A\n"
-      "Where A = http://a.com/\n"
-      "      B = http://foo.com/",
+      "Where A = https://foo.test/\n"
+      "      B = https://bar.test/",
       DepictFrameTree(root));
 }
 

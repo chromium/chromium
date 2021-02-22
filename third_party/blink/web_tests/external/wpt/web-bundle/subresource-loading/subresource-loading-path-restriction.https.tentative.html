@@ -10,18 +10,18 @@
   <link
     rel="webbundle"
     href="../resources/wbn/path-restriction.wbn"
-    resources="http://web-platform.test:8001/web-bundle/resources/wbn/resource.js
-                   http://web-platform.test:8001/web-bundle/resources/wbn/sub/resource.js
-                   http://web-platform.test:8001/web-bundle/resources/wbn-resource.js
-                   http://web-platform.test:8001/web-bundle/resources/wbn1/resource.js
-                   http://web-platform.test:8001/web-bundle/resources/other/resource.js
-                   http://web-platform.test:8001/web-bundle/resources/resource.js"
+    resources="https://web-platform.test:8444/web-bundle/resources/wbn/resource.js
+                   https://web-platform.test:8444/web-bundle/resources/wbn/sub/resource.js
+                   https://web-platform.test:8444/web-bundle/resources/wbn-resource.js
+                   https://web-platform.test:8444/web-bundle/resources/wbn1/resource.js
+                   https://web-platform.test:8444/web-bundle/resources/other/resource.js
+                   https://web-platform.test:8444/web-bundle/resources/resource.js"
   />
   <script>
     promise_test(async () => {
       const resources = [
-        "http://web-platform.test:8001/web-bundle/resources/wbn/resource.js",
-        "http://web-platform.test:8001/web-bundle/resources/wbn/sub/resource.js",
+        "https://web-platform.test:8444/web-bundle/resources/wbn/resource.js",
+        "https://web-platform.test:8444/web-bundle/resources/wbn/sub/resource.js",
       ];
       for (const resource of resources) {
         const response = await fetch(resource);
@@ -31,10 +31,10 @@
 
     promise_test(async () => {
       const resources = [
-        "http://web-platform.test:8001/web-bundle/resources/wbn-resource.js",
-        "http://web-platform.test:8001/web-bundle/resources/wbn1/resource.js",
-        "http://web-platform.test:8001/web-bundle/resources/other/resource.js",
-        "http://web-platform.test:8001/web-bundle/resources/resource.js",
+        "https://web-platform.test:8444/web-bundle/resources/wbn-resource.js",
+        "https://web-platform.test:8444/web-bundle/resources/wbn1/resource.js",
+        "https://web-platform.test:8444/web-bundle/resources/other/resource.js",
+        "https://web-platform.test:8444/web-bundle/resources/resource.js",
       ];
       for (const resource of resources) {
         const response = await fetch(resource);

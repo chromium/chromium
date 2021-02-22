@@ -13,11 +13,11 @@
 <script src="../resources/test-helpers.js"></script>
 <body>
   <!--
-       This wpt should run on an origin different from https://web-platform.test:8444/,
+       This wpt should run on an origin different from https://www1.web-platform.test:8444/,
        from where cross-orign WebBundles are served.
 
        This test uses a cross-origin WebBundle,
-       https://web-platform.test:8444/web-bundle/resources/wbn/no-cors/cross-origin.wbn,
+       https://www1.web-platform.test:8444/web-bundle/resources/wbn/no-cors/cross-origin.wbn,
        which is served *without* an Access-Control-Allow-Origin response header.
 
        `cross-origin.wbn` includes two subresources:
@@ -27,7 +27,7 @@
   <script>
     promise_test(async () => {
       const prefix =
-        "https://web-platform.test:8444/web-bundle/resources/wbn/no-cors/";
+        "https://www1.web-platform.test:8444/web-bundle/resources/wbn/no-cors/";
       const resources = [
         prefix + "resource.cors.js",
         prefix + "resource.no-cors.js",

@@ -161,14 +161,12 @@ void HTMLLinkElement::ParseAttribute(
     UseCounter::Count(GetDocument(), WebFeature::kPriorityHints);
     importance_ = value;
   } else if (name == html_names::kResourcesAttr &&
-             RuntimeEnabledFeatures::SubresourceWebBundlesEnabled(
-                 GetExecutionContext())) {
+             LinkWebBundle::IsFeatureEnabled(GetExecutionContext())) {
     resources_->DidUpdateAttributeValue(params.old_value, value);
     ParseUrlsListValue(value, valid_resource_urls_);
     Process();
   } else if (name == html_names::kScopesAttr &&
-             RuntimeEnabledFeatures::SubresourceWebBundlesEnabled(
-                 GetExecutionContext())) {
+             LinkWebBundle::IsFeatureEnabled(GetExecutionContext())) {
     scopes_->DidUpdateAttributeValue(params.old_value, value);
     ParseUrlsListValue(value, valid_scope_urls_);
     Process();
@@ -258,8 +256,7 @@ LinkResource* HTMLLinkElement::LinkResourceToProcess() {
       link_ = MakeGarbageCollected<LinkImport>(this);
     } else if (rel_attribute_.IsWebBundle()) {
       // Only create a webbundle link when SubresourceWebBundles are enabled.
-      if (!RuntimeEnabledFeatures::SubresourceWebBundlesEnabled(
-              GetExecutionContext())) {
+      if (!LinkWebBundle::IsFeatureEnabled(GetExecutionContext())) {
         return nullptr;
       }
       link_ = MakeGarbageCollected<LinkWebBundle>(this);

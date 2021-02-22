@@ -26,6 +26,8 @@ class WebBundleLoader;
 class CORE_EXPORT LinkWebBundle final : public LinkResource,
                                         public SubresourceWebBundle {
  public:
+  static bool IsFeatureEnabled(const ExecutionContext*);
+
   explicit LinkWebBundle(HTMLLinkElement* owner);
   ~LinkWebBundle() override;
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>A link element with rel="webbundle"</title>
+<title>A link element with rel="webbundle" in no secure context</title>
 <link
   rel="help"
   href="https://github.com/WICG/webpackage/blob/master/explainers/subresource-loading.md"
@@ -17,27 +17,27 @@
         "resources" in Element.prototype,
         "resources must not be defined on Element prototype"
       );
-      assert_true(
+      assert_false(
         "resources" in HTMLLinkElement.prototype,
-        "resources must be defined on HTMLLinkElement prototype"
+        "resources must not be defined on HTMLLinkElement prototype"
       );
-    }, "resources must be defined on HTMLLinkElement prototype");
+    }, "resources must not be defined on HTMLLinkElement prototype in no secure context");
 
     test(() => {
       assert_false(
         "scopes" in Element.prototype,
         "scopes must not be defined on Element prototype"
       );
-      assert_true(
+      assert_false(
         "scopes" in HTMLLinkElement.prototype,
-        "scopes must be defined on HTMLLinkElement prototype"
+        "scopes must not be defined on HTMLLinkElement prototype"
       );
-    }, "scopes must be defined on HTMLLinkElement prototype");
+    }, "scopes must not be defined on HTMLLinkElement prototype in no secure context");
 
     test(() => {
       const link = document.createElement("link");
-      assert_true(link.relList.supports("webbundle"));
-    }, "webbundle must be a supported token of a link element's relList");
+      assert_false(link.relList.supports("webbundle"));
+    }, "webbundle must not be a supported token of a link element's relList");
 
     test(() => {
       const link_web_bundle = document.querySelector("#link_web_bundle_1");
@@ -77,43 +77,16 @@
         "bar",
         "scopes attribute must return the specified value"
       );
-      // TODO: Test more variant of resoruces attribute values.
-    }, "resoruces attribute must return null or specified value");
+    }, "resoruces and scopes attribute must return null or specified value");
 
     test(() => {
       const link = document.createElement("link");
-      assert_class_string(link.resources, "DOMTokenList");
-      assert_equals(
-        String(link.resources.value),
-        "",
-        "resources.value should return the empty list for an undefined resources attribute"
-      );
-      link.setAttribute(
-        "resources",
-        "https://test1.example.com https://test2.example.com "
-      );
-      assert_array_equals(link.resources, [
-        "https://test1.example.com",
-        "https://test2.example.com"
-      ]);
-    }, "resources must be DOMTokenList");
+      assert_equals(link.resources, undefined);
+    }, "resources must be undefined");
 
     test(() => {
       const link = document.createElement("link");
-      assert_class_string(link.scopes, "DOMTokenList");
-      assert_equals(
-        String(link.scopes.value),
-        "",
-        "scopes.value should return the empty list for an undefined scopes attribute"
-      );
-      link.setAttribute(
-        "scopes",
-        "https://test1.example.com https://test2.example.com "
-      );
-      assert_array_equals(link.scopes, [
-        "https://test1.example.com",
-        "https://test2.example.com"
-      ]);
-    }, "scopes must be DOMTokenList");
+      assert_equals(link.scopes, undefined);
+    }, "scopes must be undefined");
   </script>
 </body>

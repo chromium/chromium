@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
@@ -137,6 +138,12 @@ class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
   // ResourceRequest is copied.
   mojo::ReceiverSet<network::mojom::WebBundleHandle> web_bundle_handles_;
 };
+
+// static
+bool LinkWebBundle::IsFeatureEnabled(const ExecutionContext* context) {
+  return context->IsSecureContext() &&
+         RuntimeEnabledFeatures::SubresourceWebBundlesEnabled(context);
+}
 
 LinkWebBundle::LinkWebBundle(HTMLLinkElement* owner) : LinkResource(owner) {
   UseCounter::Count(owner_->GetDocument().GetExecutionContext(),

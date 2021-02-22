@@ -1,32 +1,27 @@
 <!DOCTYPE html>
 <title>A nested bundle is not supported</title>
-<link
-  rel="help"
-  href="https://github.com/WICG/webpackage/blob/master/explainers/subresource-loading.md"
-/>
+<link rel="help" href="https://github.com/WICG/webpackage/blob/master/explainers/subresource-loading.md" />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+
 <body>
-  <link
-    rel="webbundle"
-    href="http://web-platform.test:8001/web-bundle/resources/wbn/nested-main.wbn"
-    resources="http://web-platform.test:8001/web-bundle/resources/wbn/nested-sub.wbn"
-  />
+  <link rel="webbundle" href="https://web-platform.test:8444/web-bundle/resources/wbn/nested-main.wbn"
+    resources="https://web-platform.test:8444/web-bundle/resources/wbn/nested-sub.wbn" />
   <script>
     promise_test(async () => {
       const response = await fetch(
-        "http://web-platform.test:8001/web-bundle/resources/wbn/nested-sub.wbn"
+        "https://web-platform.test:8444/web-bundle/resources/wbn/nested-sub.wbn"
       );
       assert_true(response.ok);
     }, "A nested bundle can be fetched");
 
     promise_test(async () => {
       await addLinkAndWaitForError(
-        "http://web-platform.test:8001/web-bundle/resources/wbn/nested-sub.wbn",
-        "http://web-platform.test:8001/web-bundle/resources/wbn/root.js"
+        "https://web-platform.test:8444/web-bundle/resources/wbn/nested-sub.wbn",
+        "https://web-platform.test:8444/web-bundle/resources/wbn/root.js"
       );
       const response = await fetch(
-        "http://web-platform.test:8001/web-bundle/resources/wbn/root.js"
+        "https://web-platform.test:8444/web-bundle/resources/wbn/root.js"
       );
       assert_false(response.ok);
     }, "Subresources in a nested bundle should not be loaded");

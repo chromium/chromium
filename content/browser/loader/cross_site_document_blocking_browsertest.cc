@@ -22,6 +22,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -47,6 +48,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/cross_origin_read_blocking.h"
@@ -1678,8 +1680,7 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, CorpVsBrowserInitiatedRequest) {
 
 // This test class sets up a link element for webbundle subresource loading.
 // e.g. <link rel=webbundle href=".../foo.wbn" resources="...">.
-class CrossSiteDocumentBlockingWebBundleTest
-    : public CrossSiteDocumentBlockingTestBase {
+class CrossSiteDocumentBlockingWebBundleTest : public ContentBrowserTest {
  public:
   CrossSiteDocumentBlockingWebBundleTest() {
     scoped_feature_list_.InitAndEnableFeature(features::kSubresourceWebBundles);
@@ -1691,11 +1692,24 @@ class CrossSiteDocumentBlockingWebBundleTest
   CrossSiteDocumentBlockingWebBundleTest& operator=(
       const CrossSiteDocumentBlockingWebBundleTest&) = delete;
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+    https_server_.ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    ASSERT_TRUE(https_server_.InitializeAndListen());
+    command_line->AppendSwitchASCII(
+        network::switches::kHostResolverRules,
+        "MAP * " + https_server_.host_port_pair().ToString() +
+            ",EXCLUDE localhost");
+  }
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
  protected:
   void SetupLinkWebBundleElementAndImgElement(const GURL& bundle_url,
                                               const GURL subresource_url) {
     // Navigate to the test page.
-    ASSERT_TRUE(NavigateToURL(shell(), GURL("http://foo.com/title1.html")));
+    ASSERT_TRUE(
+        NavigateToURL(shell(), GURL("https://same-origin.test/title1.html")));
 
     const char kScriptTemplate[] = R"(
       const link = document.createElement('link');
@@ -1716,6 +1730,8 @@ class CrossSiteDocumentBlockingWebBundleTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  net::EmbeddedTestServer https_server_{
+      net::EmbeddedTestServer::Type::TYPE_HTTPS};
 };
 
 // CrossSiteDocumentBlockingWebBundleTest has 4 tests; a cartesian product of
@@ -1724,10 +1740,9 @@ class CrossSiteDocumentBlockingWebBundleTest
 // A). CORB-protected MIME type (e.g. text/json), B) other type (e.g. image/png)
 IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingWebBundleTest,
                        CrossOriginWebBundleSubresoruceJson) {
-  embedded_test_server()->StartAcceptingConnections();
-
-  GURL bundle_url("http://cross-origin.com/web_bundle/cross_origin.wbn");
-  GURL subresource_url("http://cross-origin.com/web_bundle/resource.json");
+  https_server()->StartAcceptingConnections();
+  GURL bundle_url("https://cross-origin.test/web_bundle/cross_origin.wbn");
+  GURL subresource_url("https://cross-origin.test/web_bundle/resource.json");
   RequestInterceptor interceptor(subresource_url);
   SetupLinkWebBundleElementAndImgElement(bundle_url, subresource_url);
   interceptor.WaitForRequestCompletion();
@@ -1739,10 +1754,9 @@ IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingWebBundleTest,
 
 IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingWebBundleTest,
                        CrossOriginWebBundleSubresorucePng) {
-  embedded_test_server()->StartAcceptingConnections();
-
-  GURL bundle_url("http://cross-origin.com/web_bundle/cross_origin.wbn");
-  GURL subresource_url("http://cross-origin.com/web_bundle/resource.png");
+  https_server()->StartAcceptingConnections();
+  GURL bundle_url("https://cross-origin.test/web_bundle/cross_origin.wbn");
+  GURL subresource_url("https://cross-origin.test/web_bundle/resource.png");
   RequestInterceptor interceptor(subresource_url);
   SetupLinkWebBundleElementAndImgElement(bundle_url, subresource_url);
   interceptor.WaitForRequestCompletion();
@@ -1754,10 +1768,9 @@ IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingWebBundleTest,
 
 IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingWebBundleTest,
                        SameOriginWebBundleSubresoruceJson) {
-  embedded_test_server()->StartAcceptingConnections();
-
-  GURL bundle_url("http://foo.com/web_bundle/same_origin.wbn");
-  GURL subresource_url("http://foo.com/web_bundle/resource.json");
+  https_server()->StartAcceptingConnections();
+  GURL bundle_url("https://same-origin.test/web_bundle/same_origin.wbn");
+  GURL subresource_url("https://same-origin.test/web_bundle/resource.json");
   RequestInterceptor interceptor(subresource_url);
   SetupLinkWebBundleElementAndImgElement(bundle_url, subresource_url);
   interceptor.WaitForRequestCompletion();
@@ -1769,10 +1782,9 @@ IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingWebBundleTest,
 
 IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingWebBundleTest,
                        SameOriginWebBundleSubresorucePng) {
-  embedded_test_server()->StartAcceptingConnections();
-
-  GURL bundle_url("http://foo.com/web_bundle/same_origin.wbn");
-  GURL subresource_url("http://foo.com/web_bundle/resource.png");
+  https_server()->StartAcceptingConnections();
+  GURL bundle_url("https://same-origin.test/web_bundle/same_origin.wbn");
+  GURL subresource_url("https://same-origin.test/web_bundle/resource.png");
   RequestInterceptor interceptor(subresource_url);
   SetupLinkWebBundleElementAndImgElement(bundle_url, subresource_url);
   interceptor.WaitForRequestCompletion();
