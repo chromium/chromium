@@ -42,9 +42,10 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
  protected:
   // These types and methods are protected for testing.
 
-  using ClipboardPasteAllowed = RenderFrameHostImpl::ClipboardPasteAllowed;
-  using IsClipboardPasteAllowedCallback =
-      RenderFrameHostImpl::IsClipboardPasteAllowedCallback;
+  using ClipboardPasteContentAllowed =
+      RenderFrameHostImpl::ClipboardPasteContentAllowed;
+  using IsClipboardPasteContentAllowedCallback =
+      RenderFrameHostImpl::IsClipboardPasteContentAllowedCallback;
 
   // Keeps track of a request to see if some clipboard content, identified by
   // its sequence number, is allowed to be pasted into the render frame host
@@ -53,19 +54,19 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
   // A request starts in the state incomplete until Complete() is called with
   // a value.  Callbacks can be added to the request before or after it has
   // completed.
-  class CONTENT_EXPORT IsPasteAllowedRequest {
+  class CONTENT_EXPORT IsPasteContentAllowedRequest {
    public:
-    IsPasteAllowedRequest();
-    ~IsPasteAllowedRequest();
+    IsPasteContentAllowedRequest();
+    ~IsPasteContentAllowedRequest();
 
     // Adds |callback| to be notified when the request completes.  If the
     // request is already completed |callback| is invoked immediately.  Returns
     // true if a request should be started after adding this callback.
-    bool AddCallback(IsClipboardPasteAllowedCallback callback);
+    bool AddCallback(IsClipboardPasteContentAllowedCallback callback);
 
     // Mark this request as completed with the specified result.
     // Invoke all callbacks now.
-    void Complete(ClipboardPasteAllowed allowed);
+    void Complete(ClipboardPasteContentAllowed allowed);
 
     // Returns true if this request is obsolete.  An obsolete request
     // is one that is completed, all registered callbacks have been
@@ -83,12 +84,12 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
     void InvokeCallbacks();
 
     base::Time time_{base::Time::Now()};
-    base::Optional<ClipboardPasteAllowed> allowed_;
-    std::vector<IsClipboardPasteAllowedCallback> callbacks_;
+    base::Optional<ClipboardPasteContentAllowed> allowed_;
+    std::vector<IsClipboardPasteContentAllowedCallback> callbacks_;
   };
 
   // A paste allowed request is obsolete if it is older than this time.
-  static const base::TimeDelta kIsPasteAllowedRequestTooOld;
+  static const base::TimeDelta kIsPasteContentAllowedRequestTooOld;
 
   ClipboardHostImpl(
       RenderFrameHost* render_frame_host,
@@ -98,10 +99,11 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
   // upon completion. |callback| maybe be invoked immediately if the data has
   // already been checked.  |data| and |seqno| should corresponds to the same
   // clipboard data.
-  void PerformPasteIfAllowed(uint64_t seqno,
-                             const ui::ClipboardFormatType& data_type,
-                             std::string data,
-                             IsClipboardPasteAllowedCallback callback);
+  void PerformPasteIfContentAllowed(
+      uint64_t seqno,
+      const ui::ClipboardFormatType& data_type,
+      std::string data,
+      IsClipboardPasteContentAllowedCallback callback);
 
   // Remove obsolete entries from the outstanding requests map.
   // A request is obsolete if:
@@ -110,11 +112,12 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
   //  - it is too old
   void CleanupObsoleteRequests();
 
-  // Completion callback of PerformPasteIfAllowed().  Sets the allowed
+  // Completion callback of PerformPasteIfContentAllowed().  Sets the allowed
   // status for the clipboard data corresponding to sequence number |seqno|.
-  void FinishPasteIfAllowed(uint64_t seqno, ClipboardPasteAllowed allowed);
+  void FinishPasteIfContentAllowed(uint64_t seqno,
+                                   ClipboardPasteContentAllowed allowed);
 
-  const std::map<uint64_t, IsPasteAllowedRequest>&
+  const std::map<uint64_t, IsPasteContentAllowedRequest>&
   is_paste_allowed_requests_for_testing() {
     return is_allowed_requests_;
   }
@@ -123,14 +126,15 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
   friend class ClipboardHostImplTest;
   friend class ClipboardHostImplScanTest;
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplTest,
-                           IsPasteAllowedRequest_AddCallback);
+                           IsPasteContentAllowedRequest_AddCallback);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplTest,
-                           IsPasteAllowedRequest_Complete);
+                           IsPasteContentAllowedRequest_Complete);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplTest,
-                           IsPasteAllowedRequest_IsObsolete);
+                           IsPasteContentAllowedRequest_IsObsolete);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplScanTest,
-                           PerformPasteIfAllowed_EmptyData);
-  FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplScanTest, PerformPasteIfAllowed);
+                           PerformPasteIfContentAllowed_EmptyData);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplScanTest,
+                           PerformPasteIfContentAllowed);
 
   // mojom::ClipboardHost
   void GetSequenceNumber(ui::ClipboardBuffer clipboard_buffer,
@@ -167,9 +171,9 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
   void WriteStringToFindPboard(const base::string16& text) override;
 #endif
 
-  // Called by PerformPasteIfAllowed() when an is allowed request is needed.
-  // Virtual to be overridden in tests.
-  virtual void StartIsPasteAllowedRequest(
+  // Called by PerformPasteIfContentAllowed() when an is allowed request is
+  // needed. Virtual to be overridden in tests.
+  virtual void StartIsPasteContentAllowedRequest(
       uint64_t seqno,
       const ui::ClipboardFormatType& data_type,
       std::string data);
@@ -187,7 +191,7 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
 
   // Outstanding is allowed requests per clipboard contents.  Maps a clipboard
   // sequence number to an outstanding request.
-  std::map<uint64_t, IsPasteAllowedRequest> is_allowed_requests_;
+  std::map<uint64_t, IsPasteContentAllowedRequest> is_allowed_requests_;
 
   base::WeakPtrFactory<ClipboardHostImpl> weak_ptr_factory_{this};
 };

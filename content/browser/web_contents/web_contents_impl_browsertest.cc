@@ -4484,12 +4484,13 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
       static_cast<WebContentsImpl*>(shell()->web_contents());
 
   EXPECT_FALSE(web_contents->ShouldIgnoreUnresponsiveRenderer());
-  web_contents->IsClipboardPasteAllowed(
+  web_contents->IsClipboardPasteContentAllowed(
       GURL("https://google.com"), ui::ClipboardFormatType::GetPlainTextType(),
       "random pasted text",
       base::BindLambdaForTesting(
           [&web_contents](
-              content::ContentBrowserClient::ClipboardPasteAllowed allowed) {
+              content::ContentBrowserClient::ClipboardPasteContentAllowed
+                  allowed) {
             EXPECT_TRUE(allowed);
             EXPECT_TRUE(web_contents->ShouldIgnoreUnresponsiveRenderer());
           }));

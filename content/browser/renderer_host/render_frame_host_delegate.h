@@ -106,9 +106,10 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // Callback used with HandleClipboardPaste() method.  If the clipboard paste
   // is allowed to proceed, the callback is called with true.  Otherwise the
   // callback is called with false.
-  using ClipboardPasteAllowed = RenderFrameHostImpl::ClipboardPasteAllowed;
-  using IsClipboardPasteAllowedCallback =
-      RenderFrameHostImpl::IsClipboardPasteAllowedCallback;
+  using ClipboardPasteContentAllowed =
+      RenderFrameHostImpl::ClipboardPasteContentAllowed;
+  using IsClipboardPasteContentAllowedCallback =
+      RenderFrameHostImpl::IsClipboardPasteContentAllowedCallback;
 
   using JavaScriptDialogCallback =
       content::JavaScriptDialogManager::DialogClosedCallback;
@@ -564,11 +565,11 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   //
   // The callback is called, possibly asynchronously, with a status indicating
   // whether the operation is allowed or not.
-  virtual void IsClipboardPasteAllowed(
+  virtual void IsClipboardPasteContentAllowed(
       const GURL& url,
       const ui::ClipboardFormatType& data_type,
       const std::string& data,
-      IsClipboardPasteAllowedCallback callback);
+      IsClipboardPasteContentAllowedCallback callback);
 
   // Notified when the main frame adjusts the page scale.
   virtual void OnPageScaleFactorChanged(RenderFrameHostImpl* source,

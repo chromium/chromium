@@ -160,12 +160,12 @@ bool RenderFrameHostDelegate::IsFrameLowPriority(
   return false;
 }
 
-void RenderFrameHostDelegate::IsClipboardPasteAllowed(
+void RenderFrameHostDelegate::IsClipboardPasteContentAllowed(
     const GURL& url,
     const ui::ClipboardFormatType& data_type,
     const std::string& data,
-    IsClipboardPasteAllowedCallback callback) {
-  std::move(callback).Run(ClipboardPasteAllowed(true));
+    IsClipboardPasteContentAllowedCallback callback) {
+  std::move(callback).Run(ClipboardPasteContentAllowed(true));
 }
 
 bool RenderFrameHostDelegate::HasSeenRecentScreenOrientationChange() {

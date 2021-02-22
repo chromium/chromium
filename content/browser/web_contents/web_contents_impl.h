@@ -721,14 +721,14 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void OnGoToEntryAtOffset(RenderFrameHostImpl* source,
                            int32_t offset,
                            bool has_user_gesture) override;
-  void IsClipboardPasteAllowed(
+  void IsClipboardPasteContentAllowed(
       const GURL& url,
       const ui::ClipboardFormatType& data_type,
       const std::string& data,
-      IsClipboardPasteAllowedCallback callback) override;
-  void IsClipboardPasteAllowedWrapperCallback(
-      IsClipboardPasteAllowedCallback callback,
-      ClipboardPasteAllowed allowed);
+      IsClipboardPasteContentAllowedCallback callback) override;
+  void IsClipboardPasteContentAllowedWrapperCallback(
+      IsClipboardPasteContentAllowedCallback callback,
+      ClipboardPasteContentAllowed allowed);
   void OnPageScaleFactorChanged(RenderFrameHostImpl* source,
                                 float page_scale_factor) override;
   void OnTextAutosizerPageInfoChanged(
