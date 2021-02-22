@@ -9,7 +9,7 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
 
-<link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_content_dialog.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
 <link rel="import" href="/components/oobe_dialog_host_behavior.html">
 
@@ -159,8 +159,8 @@
         }
       }
 
-      oobe-dialog[selected='emailSection'] #email-section,
-      oobe-dialog[selected='passwordSection'] #password-section {
+      oobe-content-dialog[selected='emailSection'] #email-section,
+      oobe-content-dialog[selected='passwordSection'] #password-section {
         display: block;
       }
 
@@ -169,34 +169,34 @@
        * Dialog always starts with e-mail section visible, so only "show"
        * animation depends on |animation-in-progress| attribute.
        */
-      oobe-dialog[animation-in-progress] .section {
+      oobe-content-dialog[animation-in-progress] .section {
         animation-name: show-from-left;
       }
 
-      oobe-dialog[selected='passwordSection'] .section {
+      oobe-content-dialog[selected='passwordSection'] .section {
         animation-name: hide-to-left;
       }
 
-      :host([rtl]) oobe-dialog[animation-in-progress] .section {
+      :host([rtl]) oobe-content-dialog[animation-in-progress] .section {
         animation-name: show-from-right;
       }
 
-      :host([rtl]) oobe-dialog[selected='passwordSection'] .section {
+      :host([rtl]) oobe-content-dialog[selected='passwordSection'] .section {
         animation-name: hide-to-right;
       }
 
       /** During animation all sections should be visible. */
-      oobe-dialog[animation-in-progress] .section {
+      oobe-content-dialog[animation-in-progress] .section {
         display: block;
       }
     </style>
-    <oobe-dialog role="dialog" has-buttons selected$="[[activeSection]]"
-        id="dialog" no-header no-footer-padding
+    <oobe-content-dialog role="dialog" selected$="[[activeSection]]"
+        id="dialog" no-footer-padding
         animation-in-progress$="[[animationInProgress]]">
-      <div slot="footer">
+      <div slot="content">
         <img id="icon" src="chrome://theme/IDR_LOGO_GOOGLE_COLOR_90" alt="">
       </div>
-      <div id="animation-outer-container" slot="footer">
+      <div id="animation-outer-container" slot="content">
         <div id="animation-inner-container" class="flex layout horizontal">
           <div id="email-section" class="section"
               on-animationend="onSlideAnimationEnd_">
@@ -250,7 +250,7 @@
         <oobe-next-button id="nextButton"
             on-click="onNextButtonClicked_"></oobe-next-button>
       </div>
-    </oobe-dialog>
+    </oobe-content-dialog>
     <cr-dialog id="forgotPasswordDlg"
         on-close="onDialogOverlayClosed_">
       <div slot="body">
