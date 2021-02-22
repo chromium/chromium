@@ -963,13 +963,14 @@ class DiskCacheSizeTest : public NetworkContextTest {
 TEST_F(DiskCacheSizeTest, DiskCacheSize) {
   int64_t max_file_size = VerifyDiskCacheSize();
 
-  // Scale to 200%. The size should be twice of |max_file_size| but
-  // since max size is capped on 20% of available size, checking for the size to
-  // be between max_file_size and max_file_size*2.
   int64_t max_file_size_scaled = VerifyDiskCacheSize(200);
 
+  // After scaling to 200%, the size will in most cases be twice of
+  // |max_file_size| but it is dependent on the available size, and since we
+  // cannot guarantee available size to be the same between the 2 runs to
+  // VerifyDiskCacheSize(), only checking for the scaled size to be >=
+  // max_file_size.
   EXPECT_GE(max_file_size_scaled, max_file_size);
-  EXPECT_LE(max_file_size_scaled, 2 * max_file_size);
 }
 
 // This makes sure that network_session_configurator::ChooseCacheType is
