@@ -60,6 +60,10 @@ OobeScreenId BaseWebUIHandler::GetCurrentScreen() const {
   return oobe_ui->current_screen();
 }
 
+void BaseWebUIHandler::OnJavascriptDisallowed() {
+  javascript_disallowed_ = true;
+}
+
 void BaseWebUIHandler::InsertIntoList(std::vector<base::Value>*) {}
 
 void BaseWebUIHandler::MaybeRecordIncomingEvent(
