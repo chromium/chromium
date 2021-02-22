@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/soda.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -54,6 +55,8 @@ class CrosSodaClient : public chromeos::machine_learning::mojom::SodaClient {
   mojo::Remote<chromeos::machine_learning::mojom::SodaRecognizer>
       soda_recognizer_;
   mojo::Receiver<chromeos::machine_learning::mojom::SodaClient> soda_client_;
+  mojo::Remote<chromeos::machine_learning::mojom::MachineLearningService>
+      ml_service_;
 };
 }  // namespace soda
 #endif  // CHROME_SERVICES_SPEECH_SODA_CROS_SODA_CLIENT_H_

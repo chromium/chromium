@@ -5,6 +5,7 @@
 #include "chrome/services/speech/soda/cros_soda_client.h"
 #include "base/run_loop.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
+#include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace soda {
@@ -37,23 +38,23 @@ void CrosSodaClient::Reset(
   }
   soda_recognizer_.reset();
   soda_client_.reset();
+  ml_service_.reset();
   is_initialized_ = true;
   auto mojom_config = chromeos::machine_learning::mojom::SodaConfig::New();
   mojom_config->channel_count = channel_count_;
   mojom_config->sample_rate = sample_rate_;
-
   chromeos::machine_learning::ServiceConnection::GetInstance()
-      ->GetMachineLearningService()
-      .LoadSpeechRecognizer(
-          std::move(mojom_config), soda_client_.BindNewPipeAndPassRemote(),
-          soda_recognizer_.BindNewPipeAndPassReceiver(),
-          base::BindOnce(
-              [](chromeos::machine_learning::mojom::LoadModelResult result) {
-                if (result !=
-                    chromeos::machine_learning::mojom::LoadModelResult::OK) {
-                  LOG(DFATAL) << "Could not load recognizer, error: " << result;
-                }
-              }));
+      ->BindMachineLearningService(ml_service_.BindNewPipeAndPassReceiver());
+  ml_service_->LoadSpeechRecognizer(
+      std::move(mojom_config), soda_client_.BindNewPipeAndPassRemote(),
+      soda_recognizer_.BindNewPipeAndPassReceiver(),
+      base::BindOnce(
+          [](chromeos::machine_learning::mojom::LoadModelResult result) {
+            if (result !=
+                chromeos::machine_learning::mojom::LoadModelResult::OK) {
+              LOG(DFATAL) << "Could not load recognizer, error: " << result;
+            }
+          }));
 
   callback_ = callback;
   // Ensure this one is started.
