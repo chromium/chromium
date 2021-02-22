@@ -1408,15 +1408,9 @@ void UserSessionManager::InitProfilePreferences(
                      << "GAIA ID: " << gaia_id << ", Account info missing";
         }
       }
-      if (identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-              .gaia != gaia_id) {
-        LOG(FATAL) << "IdentityManager GAIA ID is mismatched. "
-                   << "Primary account GAIA ID: "
-                   << identity_manager
-                          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-                          .gaia
-                   << ", Expected: " << gaia_id;
-      }
+      CHECK_EQ(
+          identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSync).gaia,
+          gaia_id);
     }
 
     CoreAccountId account_id =
