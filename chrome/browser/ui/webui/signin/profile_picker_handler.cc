@@ -259,6 +259,7 @@ void ProfilePickerHandler::OnJavascriptDisallowed() {
   g_browser_process->profile_manager()
       ->GetProfileAttributesStorage()
       .RemoveObserver(this);
+  weak_factory_.InvalidateWeakPtrs();
 }
 
 void ProfilePickerHandler::HandleMainViewInitialize(
@@ -449,8 +450,7 @@ void ProfilePickerHandler::OnProfileCreated(
     }
   }
 
-  if (IsJavascriptAllowed())
-    FireWebUIListener("create-profile-finished", base::Value());
+  FireWebUIListener("create-profile-finished", base::Value());
 }
 
 void ProfilePickerHandler::OnProfileCreationSuccess(
@@ -574,9 +574,6 @@ void ProfilePickerHandler::GatherProfileStatistics(Profile* profile) {
 void ProfilePickerHandler::OnProfileStatisticsReceived(
     base::FilePath profile_path,
     profiles::ProfileCategoryStats result) {
-  if (!IsJavascriptAllowed())
-    return;
-
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetKey("profilePath", util::FilePathToValue(profile_path));
   base::Value stats(base::Value::Type::DICTIONARY);
@@ -607,8 +604,7 @@ void ProfilePickerHandler::HandleLoadSignInProfileCreationFlow(
 }
 
 void ProfilePickerHandler::OnLoadSigninFinished(bool success) {
-  if (IsJavascriptAllowed())
-    FireWebUIListener("load-signin-finished", base::Value(success));
+  FireWebUIListener("load-signin-finished", base::Value(success));
 }
 
 void ProfilePickerHandler::OnSwitchToProfileComplete(
