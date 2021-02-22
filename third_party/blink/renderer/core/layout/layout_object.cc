@@ -3832,8 +3832,10 @@ void LayoutObject::DeleteThis() {
 PositionWithAffinity LayoutObject::PositionForPoint(
     const PhysicalOffset&) const {
   NOT_DESTROYED();
-  DCHECK_GE(GetDocument().Lifecycle().GetState(),
-            DocumentLifecycle::kPrePaintClean);
+  // NG codepath requires |kPrePaintClean|.
+  // |SelectionModifier| calls this only in legacy codepath.
+  DCHECK(!IsLayoutNGObject() || GetDocument().Lifecycle().GetState() >=
+                                    DocumentLifecycle::kPrePaintClean);
   return CreatePositionWithAffinity(0);
 }
 

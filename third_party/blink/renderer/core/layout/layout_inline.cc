@@ -1159,8 +1159,6 @@ bool LayoutInline::HitTestCulledInline(HitTestResult& result,
 PositionWithAffinity LayoutInline::PositionForPoint(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();
-  DCHECK_GE(GetDocument().Lifecycle().GetState(),
-            DocumentLifecycle::kPrePaintClean);
   // FIXME: Does not deal with relative positioned inlines (should it?)
 
   // If there are continuations, test them first because our containing block

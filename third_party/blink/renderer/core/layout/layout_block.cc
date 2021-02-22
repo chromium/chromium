@@ -1443,8 +1443,10 @@ static inline bool IsChildHitTestCandidate(LayoutBox* box) {
 PositionWithAffinity LayoutBlock::PositionForPoint(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();
-  DCHECK_GE(GetDocument().Lifecycle().GetState(),
-            DocumentLifecycle::kPrePaintClean);
+  // NG codepath requires |kPrePaintClean|.
+  // |SelectionModifier| calls this only in legacy codepath.
+  DCHECK(!IsLayoutNGObject() || GetDocument().Lifecycle().GetState() >=
+                                    DocumentLifecycle::kPrePaintClean);
 
   if (IsAtomicInlineLevel()) {
     PositionWithAffinity position =

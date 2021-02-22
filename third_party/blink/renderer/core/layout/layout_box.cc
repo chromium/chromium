@@ -6620,8 +6620,10 @@ LayoutRect LayoutBox::LocalCaretRect(
 PositionWithAffinity LayoutBox::PositionForPoint(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();
-  DCHECK_GE(GetDocument().Lifecycle().GetState(),
-            DocumentLifecycle::kPrePaintClean);
+  // NG codepath requires |kPrePaintClean|.
+  // |SelectionModifier| calls this only in legacy codepath.
+  DCHECK(!IsLayoutNGObject() || GetDocument().Lifecycle().GetState() >=
+                                    DocumentLifecycle::kPrePaintClean);
 
   // no children...return this layout object's element, if there is one, and
   // offset 0
