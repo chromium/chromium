@@ -117,6 +117,11 @@ class IdentifiabilityStudyState {
   // Write active and retired lists to `pref_service_`.
   void WriteToPrefs();
 
+  // Checks whether `previous_value` is a valid PRNG seed. If not generates
+  // a new PRNG seed and stores it in prefs. In either case the caller can
+  // assume that `prng_seed_` is a valid seed upon return.
+  void CheckAndResetPrngSeed(uint64_t previous_value = 0);
+
   // Invoked at the start of the session after loading persisted active and
   // retired lists. It verifies the following:
   //

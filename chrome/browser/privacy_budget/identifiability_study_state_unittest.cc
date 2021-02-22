@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <initializer_list>
+#include <limits>
 #include <memory>
 
 #include "base/strings/string_number_conversions.h"
@@ -50,6 +51,7 @@ namespace {
 constexpr int kTestingGeneration = 58;
 constexpr auto kBlockedSurface1 = blink::IdentifiableSurface::FromMetricHash(1);
 constexpr auto kFakeSeed = UINT64_C(9);
+constexpr auto kReallyBigSeed = std::numeric_limits<uint64_t>::max() - 100u;
 constexpr auto kBlockedType1 =
     blink::IdentifiableSurface::Type::kCanvasReadback;
 
@@ -126,6 +128,36 @@ TEST_F(IdentifiabilityStudyStateTest, ReInitializeWhenGenerationChanges) {
   EXPECT_NE(kFakeSeed, pref_service()->GetUint64(prefs::kPrivacyBudgetSeed));
 }
 
+TEST_F(IdentifiabilityStudyStateTest, ReallyBigSeed) {
+  // The thing being tested is whether we can store and restore a 64-bit int
+  // that's larger than the largest signed integer. This ensures that the
+  // correct unsigned 64-bit type is used in code to store and restore the seed.
+  static_assert(
+      kReallyBigSeed > std::numeric_limits<int64_t>::max(),
+      "kReallyBigSeed must be larger than the largest signed 64-bit int");
+  pref_service()->SetInteger(prefs::kPrivacyBudgetGeneration,
+                             kTestingGeneration);
+  pref_service()->SetUint64(prefs::kPrivacyBudgetSeed, kReallyBigSeed);
+
+  auto settings =
+      std::make_unique<test_utils::InspectableIdentifiabilityStudyState>(
+          pref_service());
+
+  EXPECT_EQ(kReallyBigSeed, settings->prng_seed());
+}
+
+TEST_F(IdentifiabilityStudyStateTest, BadSeed) {
+  pref_service()->SetInteger(prefs::kPrivacyBudgetGeneration,
+                             kTestingGeneration);
+  pref_service()->SetString(prefs::kPrivacyBudgetSeed, "-1");
+
+  auto settings =
+      std::make_unique<test_utils::InspectableIdentifiabilityStudyState>(
+          pref_service());
+
+  EXPECT_NE(0u, settings->prng_seed());
+}
+
 TEST_F(IdentifiabilityStudyStateTest, LoadsFromPrefs) {
   pref_service()->SetInteger(prefs::kPrivacyBudgetGeneration,
                              kTestingGeneration);
@@ -142,6 +174,8 @@ TEST_F(IdentifiabilityStudyStateTest, LoadsFromPrefs) {
             settings->active_surfaces());
   EXPECT_EQ((IdentifiableSurfaceSet{kBlockedTypeSurface1}),
             settings->retired_surfaces());
+  EXPECT_EQ(kFakeSeed, settings->prng_seed());
+  EXPECT_EQ(kTestingGeneration, settings->generation());
 }
 
 TEST_F(IdentifiabilityStudyStateTest, ReconcileBlockedSurfaces) {

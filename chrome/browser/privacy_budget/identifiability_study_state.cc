@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -172,6 +173,7 @@ void IdentifiabilityStudyState::CheckInvariants() const {
         return blink::IdentifiabilityStudySettings::Get()->IsSurfaceAllowed(
             value);
       }));
+  DCHECK_NE(0u, prng_seed_);
 }
 #else   // DCHECK_IS_ON()
 void IdentifiabilityStudyState::CheckInvariants() const {}
@@ -201,7 +203,7 @@ void IdentifiabilityStudyState::InitFromPrefs() {
   retired_surfaces_ =
       DecodeIdentifiabilityFieldTrialParam<IdentifiableSurfaceSet>(
           pref_service_->GetString(prefs::kPrivacyBudgetRetiredSurfaces));
-  prng_seed_ = pref_service_->GetUint64(prefs::kPrivacyBudgetSeed);
+  CheckAndResetPrngSeed(pref_service_->GetUint64(prefs::kPrivacyBudgetSeed));
   ReconcileLoadedPrefs();
 }
 
@@ -212,9 +214,7 @@ void IdentifiabilityStudyState::ResetClientState() {
 
   pref_service_->ClearPref(prefs::kPrivacyBudgetActiveSurfaces);
   pref_service_->ClearPref(prefs::kPrivacyBudgetRetiredSurfaces);
-
-  prng_seed_ = base::RandUint64();
-  pref_service_->SetUint64(prefs::kPrivacyBudgetSeed, prng_seed_);
+  CheckAndResetPrngSeed(0u);
   pref_service_->SetInteger(prefs::kPrivacyBudgetGeneration, generation_);
 }
 
@@ -229,6 +229,20 @@ void IdentifiabilityStudyState::WriteToPrefs() {
   pref_service_->SetString(
       prefs::kPrivacyBudgetRetiredSurfaces,
       EncodeIdentifiabilityFieldTrialParam(retired_surfaces_));
+}
+
+void IdentifiabilityStudyState::CheckAndResetPrngSeed(uint64_t previous_value) {
+  if (previous_value != 0u) {
+    prng_seed_ = previous_value;
+    return;
+  }
+
+  uint64_t new_seed;
+  do {
+    new_seed = base::RandUint64();
+  } while (new_seed == 0u);
+  prng_seed_ = new_seed;
+  pref_service_->SetUint64(prefs::kPrivacyBudgetSeed, new_seed);
 }
 
 void IdentifiabilityStudyState::ReconcileLoadedPrefs() {
