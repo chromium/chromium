@@ -321,6 +321,7 @@
     { "name": "history.google.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
     { "name": "hostedtalkgadget.google.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
     { "name": "inbox.google.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
+    { "name": "lens.google.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
     { "name": "login.corp.google.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
     { "name": "mail-settings.google.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
     { "name": "meet.google.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
