@@ -83,7 +83,6 @@ public class TabbedPaintPreview implements UserData {
                 // Intentionally do nothing to prevent automatic observer removal on detachment.
             }
         };
-        mTab.addObserver(mTabObserver);
     }
 
     public void setBrowserVisibilityDelegate(
@@ -115,6 +114,7 @@ public class TabbedPaintPreview implements UserData {
         boolean hasCapture = getService().hasCaptureForTab(mTab.getId());
         if (!hasCapture) return false;
 
+        mTab.addObserver(mTabObserver);
         PaintPreviewCompositorUtils.warmupCompositor();
         mPlayerManager = new PlayerManager(mTab.getUrl(), mTab.getContext(), getService(),
                 String.valueOf(mTab.getId()), listener,
@@ -140,6 +140,7 @@ public class TabbedPaintPreview implements UserData {
 
         mFadingOut = true;
         mPlayerManager.setAcceptUserInput(false);
+        mTab.removeObserver(mTabObserver);
         Point scrollPosition = mPlayerManager.getScrollPosition();
         // Destroy early to free up resource, but don't null until faded out so view sticks around.
         mPlayerManager.destroy();
