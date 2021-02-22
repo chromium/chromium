@@ -183,6 +183,7 @@ js_library("routine_list_executor") {
 
 js_library("routine_result_entry") {
   deps = [
+    "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:load_time_data.m",
   ]

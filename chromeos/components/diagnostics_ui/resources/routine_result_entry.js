@@ -8,6 +8,7 @@ import './text_badge.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {RoutineResult, RoutineType, StandardRoutineResult} from './diagnostics_types.js';
@@ -102,6 +103,11 @@ Polymer({
 
   observers: ['entryStatusChanged_(item.progress, item.result)'],
 
+  /** @override */
+  attached() {
+    IronA11yAnnouncer.requestAvailability();
+  },
+
   /**
    * Get the localized string name for the routine.
    * @param {!RoutineType} routine
@@ -123,10 +129,12 @@ Polymer({
       case ExecutionProgress.kRunning:
         this.setBadgeTypeAndText_(
             BadgeType.RUNNING, loadTimeData.getString('testRunningBadgeText'));
+        this.announceRoutineStatus_();
         break;
       case ExecutionProgress.kCancelled:
         this.setBadgeTypeAndText_(
             BadgeType.STOPPED, loadTimeData.getString('testStoppedBadgeText'));
+        this.announceRoutineStatus_();
         break;
       case ExecutionProgress.kCompleted:
         const testPassed = this.item.result &&
@@ -136,6 +144,7 @@ Polymer({
         const badgeText = loadTimeData.getString(
             testPassed ? 'testSucceededBadgeText' : 'testFailedBadgeText');
         this.setBadgeTypeAndText_(badgeType, badgeText);
+        this.announceRoutineStatus_();
         break;
       default:
         assertNotReached();
@@ -153,4 +162,10 @@ Polymer({
 
   /** @override */
   created() {},
+
+  /** @private */
+  announceRoutineStatus_() {
+    this.fire(
+        'iron-announce', {text: this.routineType_ + ' - ' + this.badgeText_});
+  },
 });
