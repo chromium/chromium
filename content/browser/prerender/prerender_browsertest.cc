@@ -837,8 +837,6 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
   EXPECT_TRUE(base::Contains(client_urls, kPrerenderingUrl));
 }
 
-// - End: Tests for feature-specific code methodology restrictions =============
-
 // - Tests for Mojo capability control methodology restrictions ================
 
 // Tests that prerendering pages can access cookies.
@@ -1073,49 +1071,6 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LocalStorageAccess) {
             EvalJs(shell()->web_contents(),
                    JsReplace("window.localStorage.getItem($1)", key)));
 }
-
-// Tests that prerendering pages can access Indexed Database.
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, IndexedDBAccess) {
-  const GURL kInitialUrl = GetUrl("/prerender/restriction_indexeddb.html");
-  const GURL kPrerenderingUrl =
-      GetUrl("/prerender/restriction_indexeddb.html?prerendering");
-
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-
-  const std::string initial_key = "initial";
-  const std::string prerender_key = "prerender";
-
-  // Write an object to Indexed Database.
-  EXPECT_EQ(true, ExecJs(shell()->web_contents(),
-                         JsReplace("addData($1);", initial_key)));
-
-  // Make a prerendered page.
-  AddPrerender(kPrerenderingUrl);
-  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
-  PrerenderHost* prerender_host =
-      registry.FindHostByUrlForTesting(kPrerenderingUrl);
-  ASSERT_TRUE(prerender_host);
-  WebContents* prerender_contents = WebContents::FromRenderFrameHost(
-      prerender_host->GetPrerenderedMainFrameHostForTesting());
-
-  // Verify the prerendered page can read the object that the initial page
-  // wrote.
-  EXPECT_EQ(true, ExecJs(prerender_contents,
-                         JsReplace("readData($1);", initial_key)));
-
-  // The prerendered page writes another object to Indexed Database.
-  EXPECT_EQ(true, ExecJs(prerender_contents,
-                         JsReplace("addData($1);", prerender_key)));
-
-  // Read the added object from the initial page.
-  EXPECT_EQ(true, EvalJs(shell()->web_contents(),
-                         JsReplace("readData($1);", prerender_key)));
-}
-
-// - End: Tests for Mojo capability control methodology restrictions ===========
-
-// End: Tests for feature restrictions in prerendered pages ====================
 
 // Tests that prerendering doesn't run for low-end devices.
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LowEndDevice) {
