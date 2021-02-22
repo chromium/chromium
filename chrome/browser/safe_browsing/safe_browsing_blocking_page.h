@@ -128,6 +128,9 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
   // interstitial.
   bool threat_details_in_progress_;
 
+  // The threat source that triggers the blocking page.
+  ThreatSource threat_source_;
+
   // The factory used to instantiate SafeBrowsingBlockingPage objects.
   // Useful for tests, so they can provide their own implementation of
   // SafeBrowsingBlockingPage.

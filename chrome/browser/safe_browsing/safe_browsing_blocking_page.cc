@@ -18,6 +18,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_preferences_util.h"
 #include "chrome/browser/safe_browsing/chrome_controller_client.h"
+#include "chrome/browser/safe_browsing/safe_browsing_metrics_collector.h"
+#include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -46,6 +48,29 @@ namespace safe_browsing {
 
 namespace {
 const char kHelpCenterLink[] = "cpn_safe_browsing";
+
+SafeBrowsingMetricsCollector::EventType GetEventTypeFromThreatSource(
+    ThreatSource threat_source) {
+  switch (threat_source) {
+    case ThreatSource::LOCAL_PVER4:
+    case ThreatSource::REMOTE:
+      return SafeBrowsingMetricsCollector::EventType::
+          DATABASE_INTERSTITIAL_BYPASS;
+      break;
+    case ThreatSource::CLIENT_SIDE_DETECTION:
+      return SafeBrowsingMetricsCollector::EventType::CSD_INTERSITITAL_BYPASS;
+      break;
+    case ThreatSource::REAL_TIME_CHECK:
+      return SafeBrowsingMetricsCollector::EventType::
+          REAL_TIME_INTERSTITIAL_BYPASS;
+      break;
+    default:
+      NOTREACHED() << "Unexpected threat source.";
+      return SafeBrowsingMetricsCollector::EventType::
+          DATABASE_INTERSTITIAL_BYPASS;
+  }
+}
+
 }  // namespace
 
 // static
@@ -125,7 +150,8 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
           unsafe_resources,
           CreateControllerClient(web_contents, unsafe_resources, ui_manager),
           display_options),
-      threat_details_in_progress_(false) {
+      threat_details_in_progress_(false),
+      threat_source_(unsafe_resources[0].threat_source) {
   // Make sure the safe browsing service is available - it may not be when
   // shutting down.
   if (!g_browser_process->safe_browsing_service())
@@ -176,6 +202,12 @@ void SafeBrowsingBlockingPage::OnInterstitialClosing() {
                       proceeded(), controller()->metrics_helper()->NumVisits());
   if (!proceeded()) {
     OnDontProceedDone();
+  } else {
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+    SafeBrowsingMetricsCollectorFactory::GetForProfile(profile)
+        ->AddSafeBrowsingEventToPref(
+            GetEventTypeFromThreatSource(threat_source_));
   }
   BaseBlockingPage::OnInterstitialClosing();
 }

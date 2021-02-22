@@ -13,6 +13,8 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#include "chrome/browser/safe_browsing/safe_browsing_metrics_collector.h"
+#include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
@@ -161,6 +163,7 @@ void DownloadReporter::OnDownloadUpdated(download::DownloadItem* download) {
 
   if (DangerTypeIsDangerous(old_danger_type) &&
       current_danger_type == download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED) {
+    AddBypassEventToPref(download);
     ReportDangerousDownloadWarningBypassed(download, old_danger_type);
   }
 
@@ -171,6 +174,17 @@ void DownloadReporter::OnDownloadUpdated(download::DownloadItem* download) {
   }
 
   danger_types_[download] = current_danger_type;
+}
+
+void DownloadReporter::AddBypassEventToPref(download::DownloadItem* download) {
+  content::BrowserContext* browser_context =
+      content::DownloadItemUtils::GetBrowserContext(download);
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  if (profile) {
+    SafeBrowsingMetricsCollectorFactory::GetForProfile(profile)
+        ->AddSafeBrowsingEventToPref(
+            SafeBrowsingMetricsCollector::EventType::DANGEROUS_DOWNLOAD_BYPASS);
+  }
 }
 
 }  // namespace safe_browsing

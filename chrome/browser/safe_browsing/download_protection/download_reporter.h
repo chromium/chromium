@@ -52,6 +52,8 @@ class DownloadReporter
   ScopedObserver<download::DownloadItem, download::DownloadItem::Observer>
       observed_downloads_{this};
 
+  void AddBypassEventToPref(download::DownloadItem* download);
+
   DISALLOW_COPY_AND_ASSIGN(DownloadReporter);
 };
 

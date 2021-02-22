@@ -28,6 +28,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
+#include "chrome/browser/safe_browsing/safe_browsing_metrics_collector.h"
+#include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
@@ -925,6 +927,10 @@ void ChromePasswordProtectionService::HandleUserActionOnModalWarning(
   int64_t navigation_id =
       GetNavigationIDFromPrefsByOrigin(profile_->GetPrefs(), origin);
 
+  if (action == WarningAction::IGNORE_WARNING) {
+    AddModelWarningBypasstoPref();
+  }
+
   if (action == WarningAction::CHANGE_PASSWORD) {
     RecordAction(UserMetricsAction(
         "PasswordProtection.ModalWarning.ChangePasswordButtonClicked"));
@@ -973,6 +979,12 @@ void ChromePasswordProtectionService::LogDialogMetricsOnChangePassword(
             : PasswordReuseLookup::CACHE_HIT,
         GetVerdictToLogFromResponse(verdict_type), verdict_token);
   }
+}
+
+void ChromePasswordProtectionService::AddModelWarningBypasstoPref() {
+  SafeBrowsingMetricsCollectorFactory::GetForProfile(profile_)
+      ->AddSafeBrowsingEventToPref(
+          SafeBrowsingMetricsCollector::EventType::PASSWORD_REUSE_MODAL_BYPASS);
 }
 
 void ChromePasswordProtectionService::OpenChangePasswordUrl(

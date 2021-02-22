@@ -549,6 +549,9 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
       LoginReputationClientResponse::VerdictType verdict_type,
       const std::string& verdict_token);
 
+  // Add the bypass event to pref when the user ignore the modal warning.
+  void AddModelWarningBypasstoPref();
+
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   // Get the content area size of current browsing window.
   gfx::Size GetCurrentContentAreaSize() const override;

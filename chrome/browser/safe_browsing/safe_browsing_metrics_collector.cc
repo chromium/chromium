@@ -149,9 +149,11 @@ void SafeBrowsingMetricsCollector::RemoveOldEventsFromPref() {
 void SafeBrowsingMetricsCollector::AddSafeBrowsingEventToPref(
     EventType event_type) {
   SafeBrowsingState sb_state = GetSafeBrowsingState(*pref_service_);
-  // Safe Browsing events should not be triggered when Safe Browsing is
-  // disabled.
-  DCHECK(sb_state != SafeBrowsingState::NO_SAFE_BROWSING);
+  // Skip the event if Safe Browsing is disabled.
+  if (sb_state == SafeBrowsingState::NO_SAFE_BROWSING) {
+    return;
+  }
+
   AddSafeBrowsingEventAndUserStateToPref(GetUserState(), event_type);
 }
 
@@ -290,6 +292,8 @@ bool SafeBrowsingMetricsCollector::IsBypassEventType(const EventType& type) {
     case EventType::DATABASE_INTERSTITIAL_BYPASS:
     case EventType::CSD_INTERSITITAL_BYPASS:
     case EventType::REAL_TIME_INTERSTITIAL_BYPASS:
+    case EventType::DANGEROUS_DOWNLOAD_BYPASS:
+    case EventType::PASSWORD_REUSE_MODAL_BYPASS:
       return true;
   }
 }

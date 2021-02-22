@@ -39,8 +39,13 @@ class SafeBrowsingMetricsCollector : public KeyedService {
     // The user bypasses the interstitial that is triggered by real time URL
     // check.
     REAL_TIME_INTERSTITIAL_BYPASS = 4,
+    // The user bypasses the dangerous download warning based on server
+    // verdicts.
+    DANGEROUS_DOWNLOAD_BYPASS = 5,
+    // The user bypasses the password reuse modal warning.
+    PASSWORD_REUSE_MODAL_BYPASS = 6,
 
-    kMaxValue = REAL_TIME_INTERSTITIAL_BYPASS
+    kMaxValue = PASSWORD_REUSE_MODAL_BYPASS
   };
 
   // Enum representing the current user state. They are used as keys of the
