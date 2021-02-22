@@ -52,7 +52,6 @@ class AttestationFlowIntegratedTest : public testing::Test {
       AttestationFlowIntegrated::CertificateCallback callback,
       AttestationStatus status,
       const std::string& cert) {
-    LOG(WARNING) << "Quitting run loop.";
     run_loop_->Quit();
     if (callback)
       std::move(callback).Run(status, cert);
