@@ -23,9 +23,25 @@ const axeOptionsExcludeLinkInTextBlock =
           })
     });
 
+// TODO(crbug.com/1180696): This block prevents generation of a
+// document-title browser-test. This can be removed once the bug is
+// addressed, and usage should be replaced with
+// OSSettingsAccessibilityV3Test.axeOptions
+const axeOptionsDocumentTitle =
+    Object.assign({}, OSSettingsAccessibilityV3Test.axeOptions, {
+      'rules':
+          Object.assign({}, OSSettingsAccessibilityV3Test.axeOptions.rules, {
+            'document-title': {enabled: false},
+          })
+    });
+
 [[
   'Basic', 'basic_a11y_v3_test.js', {options: axeOptionsExcludeLinkInTextBlock}
 ],
+ [
+   'GoogleAssistant', 'google_assistant_a11y_v3_test.js',
+   {options: axeOptionsDocumentTitle}
+ ],
 ].forEach(test => defineTest(...test));
 
 function defineTest(testName, module, config) {
