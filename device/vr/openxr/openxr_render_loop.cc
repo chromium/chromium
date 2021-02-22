@@ -6,14 +6,21 @@
 
 #include "device/vr/openxr/openxr_render_loop.h"
 
+#include <d3d11_4.h>
+
 #include "components/viz/common/gpu/context_provider.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_input_helper.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/util/stage_utils.h"
 #include "device/vr/util/transform_utils.h"
+#include "gpu/command_buffer/client/context_support.h"
+#include "gpu/command_buffer/client/gles2_interface.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "ui/gfx/geometry/angle_conversions.h"
+#include "ui/gfx/gpu_fence.h"
+#include "ui/gfx/transform.h"
+#include "ui/gfx/transform_util.h"
 
 namespace device {
 
@@ -54,11 +61,15 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
       enabled_features_, device::mojom::XRSessionFeature::HAND_INPUT);
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture;
-  if (XR_FAILED(openxr_->BeginFrame(&texture))) {
+  gpu::MailboxHolder mailbox_holder;
+  if (XR_FAILED(openxr_->BeginFrame(&texture, &mailbox_holder))) {
     return frame_data;
   }
 
-  texture_helper_.SetBackbuffer(texture.Get());
+  texture_helper_.SetBackbuffer(std::move(texture));
+  if (!mailbox_holder.mailbox.IsZero()) {
+    frame_data->buffer_holder = mailbox_holder;
+  }
 
   frame_data->time_delta =
       base::TimeDelta::FromNanoseconds(openxr_->GetPredictedDisplayTime());
@@ -239,6 +250,76 @@ void OpenXrRenderLoop::ClearPendingFrameInternal() {
     StopRuntime();
     return;
   }
+}
+
+bool OpenXrRenderLoop::IsUsingSharedImages() const {
+  return openxr_->IsUsingSharedImages();
+}
+
+void OpenXrRenderLoop::SubmitFrameDrawnIntoTexture(
+    int16_t frame_index,
+    const gpu::SyncToken& sync_token,
+    base::TimeDelta time_waited) {
+  gpu::gles2::GLES2Interface* gl = context_provider_->ContextGL();
+  gl->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+  const GLuint id = gl->CreateGpuFenceCHROMIUM();
+  context_provider_->ContextSupport()->GetGpuFence(
+      id, base::BindOnce(&OpenXrRenderLoop::OnWebXrTokenSignaled,
+                         weak_ptr_factory_.GetWeakPtr(), frame_index, id));
+}
+
+void OpenXrRenderLoop::OnWebXrTokenSignaled(
+    int16_t frame_index,
+    GLuint id,
+    std::unique_ptr<gfx::GpuFence> gpu_fence) {
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+      texture_helper_.GetDevice();
+  Microsoft::WRL::ComPtr<ID3D11Device5> d3d11_device5;
+  HRESULT hr = d3d11_device.As(&d3d11_device5);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Unable to retrieve ID3D11Device5 interface " << std::hex
+                << hr;
+    return;
+  }
+
+  Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence;
+  hr = d3d11_device5->OpenSharedFence(
+      gpu_fence->GetGpuFenceHandle().owned_handle.Get(),
+      IID_PPV_ARGS(&d3d11_fence));
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Unable to open a shared fence " << std::hex << hr;
+    return;
+  }
+
+  Microsoft::WRL::ComPtr<ID3D11DeviceContext> d3d11_device_context;
+  d3d11_device5->GetImmediateContext(&d3d11_device_context);
+
+  Microsoft::WRL::ComPtr<ID3D11DeviceContext4> d3d11_device_context4;
+  hr = d3d11_device_context.As(&d3d11_device_context4);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Unable to retrieve ID3D11DeviceContext4 interface "
+                << std::hex << hr;
+    return;
+  }
+
+  hr = d3d11_device_context4->Wait(d3d11_fence.Get(), 1);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Unable to Wait on D3D11 fence " << std::hex << hr;
+    return;
+  }
+
+  SubmitFrameWithTextureHandle(frame_index, mojo::PlatformHandle());
+
+  if (openxr_) {
+    // In order for the fence to be respected by the system, it needs to stick
+    // around until the next time the texture comes up for use. To avoid needing
+    // to remember the swap chain index, use frame_index %
+    // color_swapchain_images_.size() to keep them separated from one another.
+    openxr_->StoreFence(std::move(d3d11_fence), frame_index);
+  }
+
+  gpu::gles2::GLES2Interface* gl = context_provider_->ContextGL();
+  gl->DestroyGpuFenceCHROMIUM(id);
 }
 
 // Return true if display info has changed.
@@ -548,6 +629,10 @@ void OpenXrRenderLoop::OnContextProviderCreated(
   if (context_result != gpu::ContextResult::kSuccess) {
     std::move(start_runtime_callback).Run(false);
     return;
+  }
+
+  if (openxr_) {
+    openxr_->CreateSharedMailboxes(context_provider.get());
   }
 
   context_provider->AddObserver(this);

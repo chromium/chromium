@@ -16,6 +16,7 @@
 #include "device/vr/openxr/openxr_anchor_request.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/windows/compositor_base.h"
+#include "gpu/command_buffer/client/gles2_interface.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -26,7 +27,9 @@
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
-struct XrView;
+namespace gfx {
+class GpuFence;
+}  // namespace gfx
 
 namespace device {
 
@@ -47,6 +50,10 @@ class OpenXrRenderLoop : public XRCompositorCommon,
  private:
   // XRCompositorCommon:
   void ClearPendingFrameInternal() override;
+  bool IsUsingSharedImages() const override;
+  void SubmitFrameDrawnIntoTexture(int16_t frame_index,
+                                   const gpu::SyncToken&,
+                                   base::TimeDelta time_waited) override;
 
   // XRDeviceAbstraction:
   mojom::XRFrameDataPtr GetNextFrameData() override;
@@ -132,6 +139,10 @@ class OpenXrRenderLoop : public XRCompositorCommon,
       scoped_refptr<viz::ContextProvider> context_provider);
   void OnContextLostCallback(
       scoped_refptr<viz::ContextProvider> context_provider);
+
+  void OnWebXrTokenSignaled(int16_t frame_index,
+                            GLuint id,
+                            std::unique_ptr<gfx::GpuFence> gpu_fence);
 
   // Owned by OpenXrStatics
   XrInstance instance_;

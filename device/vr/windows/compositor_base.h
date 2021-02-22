@@ -107,6 +107,13 @@ class XRCompositorCommon : public base::Thread,
 
   std::unordered_set<device::mojom::XRSessionFeature> enabled_features_;
 
+  // Override the default of false if you wish to use shared buffers across
+  // processes
+  virtual bool IsUsingSharedImages() const;
+
+  void SubmitFrameWithTextureHandle(int16_t frame_index,
+                                    mojo::PlatformHandle texture_handle) final;
+
  private:
   // base::Thread overrides:
   void Init() final;
@@ -139,9 +146,7 @@ class XRCompositorCommon : public base::Thread,
                    base::TimeDelta time_waited) final;
   void SubmitFrameDrawnIntoTexture(int16_t frame_index,
                                    const gpu::SyncToken&,
-                                   base::TimeDelta time_waited) final;
-  void SubmitFrameWithTextureHandle(int16_t frame_index,
-                                    mojo::PlatformHandle texture_handle) final;
+                                   base::TimeDelta time_waited) override;
   void UpdateLayerBounds(int16_t frame_id,
                          const gfx::RectF& left_bounds,
                          const gfx::RectF& right_bounds,

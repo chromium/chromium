@@ -30,7 +30,7 @@ class D3D11TextureHelper {
   void SetSourceAndOverlayVisible(bool source_visible, bool overlay_visible);
 
   bool CompositeToBackBuffer();
-  bool SetSourceTexture(base::win::ScopedHandle texture_handle,
+  void SetSourceTexture(base::win::ScopedHandle texture_handle,
                         gfx::RectF left,
                         gfx::RectF right);
   bool SetOverlayTexture(base::win::ScopedHandle texture_handle,

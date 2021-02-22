@@ -86,6 +86,10 @@ void XRCompositorCommon::ClearPendingFrame() {
   }
 }
 
+bool XRCompositorCommon::IsUsingSharedImages() const {
+  return false;
+}
+
 void XRCompositorCommon::SubmitFrameMissing(int16_t frame_index,
                                             const gpu::SyncToken& sync_token) {
   TRACE_EVENT_INSTANT0("xr", "SubmitFrameMissing", TRACE_EVENT_SCOPE_THREAD);
@@ -107,7 +111,6 @@ void XRCompositorCommon::SubmitFrameDrawnIntoTexture(
     int16_t frame_index,
     const gpu::SyncToken& sync_token,
     base::TimeDelta time_waited) {
-  // Not currently implemented for Windows.
   NOTREACHED();
 }
 
@@ -136,8 +139,11 @@ void XRCompositorCommon::SubmitFrameWithTextureHandle(
   pending_frame_->submit_frame_time_ = base::TimeTicks::Now();
 
 #if defined(OS_WIN)
-  texture_helper_.SetSourceTexture(texture_handle.TakeHandle(),
-                                   left_webxr_bounds_, right_webxr_bounds_);
+  base::win::ScopedHandle scoped_handle = texture_handle.is_valid()
+                                              ? texture_handle.TakeHandle()
+                                              : base::win::ScopedHandle();
+  texture_helper_.SetSourceTexture(std::move(scoped_handle), left_webxr_bounds_,
+                                   right_webxr_bounds_);
   pending_frame_->webxr_submitted_ = true;
 
   // Regardless of success - try to composite what we have.
@@ -250,8 +256,15 @@ void XRCompositorCommon::StartRuntimeFinish(
 
   device::mojom::XRPresentationTransportOptionsPtr transport_options =
       device::mojom::XRPresentationTransportOptions::New();
-  transport_options->transport_method =
-      device::mojom::XRPresentationTransportMethod::SUBMIT_AS_TEXTURE_HANDLE;
+
+  if (IsUsingSharedImages()) {
+    transport_options->transport_method =
+        device::mojom::XRPresentationTransportMethod::DRAW_INTO_TEXTURE_MAILBOX;
+  } else {
+    transport_options->transport_method =
+        device::mojom::XRPresentationTransportMethod::SUBMIT_AS_TEXTURE_HANDLE;
+  }
+
   // Only set boolean options that we need. Default is false, and we should be
   // able to safely ignore ones that our implementation doesn't care about.
   transport_options->wait_for_transfer_notification = true;

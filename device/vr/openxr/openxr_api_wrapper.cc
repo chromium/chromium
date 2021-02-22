@@ -4,15 +4,22 @@
 
 #include "device/vr/openxr/openxr_api_wrapper.h"
 
+#include <dxgi1_2.h>
 #include <stdint.h>
 #include <algorithm>
 #include <array>
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "components/viz/common/gpu/context_provider.h"
+#include "device/base/features.h"
 #include "device/vr/openxr/openxr_input_helper.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/test/test_hook.h"
+#include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/ipc/common/gpu_memory_buffer_impl_dxgi.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/quaternion.h"
 #include "ui/gfx/geometry/size.h"
@@ -50,6 +57,11 @@ std::unique_ptr<OpenXrApiWrapper> OpenXrApiWrapper::Create(
 
   return openxr;
 }
+
+OpenXrApiWrapper::SwapChainInfo::SwapChainInfo(ID3D11Texture2D* d3d11_texture)
+    : d3d11_texture(d3d11_texture) {}
+OpenXrApiWrapper::SwapChainInfo::~SwapChainInfo() = default;
+OpenXrApiWrapper::SwapChainInfo::SwapChainInfo(SwapChainInfo&&) = default;
 
 OpenXrApiWrapper::OpenXrApiWrapper() = default;
 
@@ -389,7 +401,13 @@ XrResult OpenXrApiWrapper::CreateSwapchain() {
           color_swapchain_images.data())));
 
   color_swapchain_ = color_swapchain;
-  color_swapchain_images_ = std::move(color_swapchain_images);
+
+  color_swapchain_images_.reserve(color_swapchain_images.size());
+  for (unsigned i = 0; i < color_swapchain_images.size(); i++) {
+    color_swapchain_images_.emplace_back(
+        SwapChainInfo{color_swapchain_images[i].texture});
+  }
+
   return XR_SUCCESS;
 }
 
@@ -407,6 +425,124 @@ XrSpace OpenXrApiWrapper::GetReferenceSpace(
       // Ignore local-floor as that has no direct space
     case device::mojom::XRReferenceSpaceType::kLocalFloor:
       return XR_NULL_HANDLE;
+  }
+}
+
+// Based on the capabilities of the system and runtime, determine whether
+// to use shared images to draw into OpenXR swap chain buffers.
+bool OpenXrApiWrapper::ShouldCreateSharedImages() const {
+  // ANGLE's render_to_texture extension on Windows fails to render correctly
+  // for EGL images. Until that is fixed, we need to disable shared images if
+  // CanEnableAntiAliasing is true.
+  if (CanEnableAntiAliasing()) {
+    return false;
+  }
+
+  // Since WebGL renders upside down, sharing images means the XR runtime
+  // needs to be able to consume upside down images and flip them internally.
+  // If it is unable to (fovMutable == XR_FALSE), we must gracefully fallback
+  // to copying textures.
+  XrViewConfigurationProperties view_configuration_props = {
+      XR_TYPE_VIEW_CONFIGURATION_PROPERTIES};
+  if (XR_FAILED(xrGetViewConfigurationProperties(instance_, system_,
+                                                 kSupportedViewConfiguration,
+                                                 &view_configuration_props)) ||
+      (view_configuration_props.fovMutable == XR_FALSE)) {
+    return false;
+  }
+
+  // Put shared image feature behind a flag until remaining issues with overlays
+  // are resolved.
+  if (!base::FeatureList::IsEnabled(device::features::kOpenXRSharedImages)) {
+    return false;
+  }
+
+  return true;
+}
+
+void OpenXrApiWrapper::CreateSharedMailboxes(
+    viz::ContextProvider* context_provider) {
+  if (!ShouldCreateSharedImages()) {
+    return;
+  }
+
+  gpu::SharedImageInterface* shared_image_interface =
+      context_provider->SharedImageInterface();
+
+  // Create the MailboxHolders for each texture in the swap chain
+  for (size_t i = 0; i < color_swapchain_images_.size(); i++) {
+    Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
+    SwapChainInfo& swap_chain_info = color_swapchain_images_[i];
+    HRESULT hr = swap_chain_info.d3d11_texture->QueryInterface(
+        IID_PPV_ARGS(&dxgi_resource));
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "QueryInterface for IDXGIResource failed with error "
+                  << std::hex << hr;
+      return;
+    }
+
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
+    hr = dxgi_resource.As(&d3d11_texture);
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "QueryInterface for ID3D11Texture2D failed with error "
+                  << std::hex << hr;
+      return;
+    }
+
+    D3D11_TEXTURE2D_DESC texture2d_desc;
+    d3d11_texture->GetDesc(&texture2d_desc);
+
+    // Shared handle creation can fail on platforms where the texture, for
+    // whatever reason, cannot be shared. We need to fallback gracefully to
+    // texture copies.
+    HANDLE shared_handle;
+    hr = dxgi_resource->CreateSharedHandle(
+        nullptr, DXGI_SHARED_RESOURCE_READ | DXGI_SHARED_RESOURCE_WRITE,
+        nullptr, &shared_handle);
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "Unable to create shared handle for DXGIResource "
+                  << std::hex << hr;
+      return;
+    }
+
+    gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle;
+    gpu_memory_buffer_handle.dxgi_handle.Set(shared_handle);
+    gpu_memory_buffer_handle.type = gfx::DXGI_SHARED_HANDLE;
+
+    std::unique_ptr<gpu::GpuMemoryBufferImplDXGI> gpu_memory_buffer =
+        gpu::GpuMemoryBufferImplDXGI::CreateFromHandle(
+            std::move(gpu_memory_buffer_handle),
+            gfx::Size(texture2d_desc.Width, texture2d_desc.Height),
+            gfx::BufferFormat::RGBA_8888, gfx::BufferUsage::GPU_READ,
+            base::DoNothing());
+
+    const uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
+                                        gpu::SHARED_IMAGE_USAGE_DISPLAY |
+                                        gpu::SHARED_IMAGE_USAGE_GLES2;
+
+    gpu::MailboxHolder& mailbox_holder = swap_chain_info.mailbox_holder;
+    mailbox_holder.mailbox = shared_image_interface->CreateSharedImage(
+        gpu_memory_buffer.get(), nullptr,
+        gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
+                        gfx::ColorSpace::TransferID::LINEAR),
+        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, shared_image_usage);
+    mailbox_holder.sync_token = shared_image_interface->GenVerifiedSyncToken();
+    mailbox_holder.texture_target = GL_TEXTURE_2D;
+  }
+}
+
+bool OpenXrApiWrapper::IsUsingSharedImages() const {
+  return ((color_swapchain_images_.size() > 1) &&
+          !color_swapchain_images_[0].mailbox_holder.mailbox.IsZero());
+}
+
+void OpenXrApiWrapper::StoreFence(
+    Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence,
+    int16_t frame_index) {
+  const size_t swapchain_images_size = color_swapchain_images_.size();
+  if (swapchain_images_size > 0) {
+    color_swapchain_images_[frame_index % swapchain_images_size].d3d11_fence =
+        std::move(d3d11_fence);
   }
 }
 
@@ -437,7 +573,8 @@ XrResult OpenXrApiWrapper::BeginSession() {
 }
 
 XrResult OpenXrApiWrapper::BeginFrame(
-    Microsoft::WRL::ComPtr<ID3D11Texture2D>* texture) {
+    Microsoft::WRL::ComPtr<ID3D11Texture2D>* texture,
+    gpu::MailboxHolder* mailbox_holder) {
   DCHECK(HasSession());
   DCHECK(HasColorSwapChain());
 
@@ -465,7 +602,10 @@ XrResult OpenXrApiWrapper::BeginFrame(
   RETURN_IF_XR_FAILED(xrWaitSwapchainImage(color_swapchain_, &wait_info));
   RETURN_IF_XR_FAILED(UpdateProjectionLayers());
 
-  *texture = color_swapchain_images_[color_swapchain_image_index].texture;
+  const SwapChainInfo& swap_chain_info =
+      color_swapchain_images_[color_swapchain_image_index];
+  *texture = swap_chain_info.d3d11_texture;
+  *mailbox_holder = swap_chain_info.mailbox_holder;
 
   return XR_SUCCESS;
 }
@@ -524,7 +664,8 @@ XrResult OpenXrApiWrapper::UpdateProjectionLayers() {
 
     layer_projection_view.type = XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW;
     layer_projection_view.pose = view.pose;
-    layer_projection_view.fov = view.fov;
+    layer_projection_view.fov.angleLeft = view.fov.angleLeft;
+    layer_projection_view.fov.angleRight = view.fov.angleRight;
     layer_projection_view.subImage.swapchain = color_swapchain_;
     // Since we're in double wide mode, the texture
     // array only has one texture and is always index 0.
@@ -535,6 +676,18 @@ XrResult OpenXrApiWrapper::UpdateProjectionLayers() {
     layer_projection_view.subImage.imageRect.offset.x =
         view_size.width() * view_index;
     layer_projection_view.subImage.imageRect.offset.y = 0;
+
+    if (IsUsingSharedImages()) {
+      // WebGL layers always give us flipped content. We need to instruct OpenXR
+      // to flip the content before showing it to the user. Some XR runtimes
+      // are able to efficiently do this as part of existing post processing
+      // steps.
+      layer_projection_view.fov.angleUp = view.fov.angleDown;
+      layer_projection_view.fov.angleDown = view.fov.angleUp;
+    } else {
+      layer_projection_view.fov.angleUp = view.fov.angleUp;
+      layer_projection_view.fov.angleDown = view.fov.angleDown;
+    }
   }
 
   return XR_SUCCESS;
