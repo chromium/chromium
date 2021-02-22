@@ -5735,7 +5735,7 @@ crbug.com/1179969 [ Mac ] virtual/plz-dedicated-worker/external/wpt/service-work
 crbug.com/1134103 http/tests/devtools/coverage/decorations-after-script-formatter.js [ Skip ]
 
 # Sheriff 2021-02-19
-crbug.com/1180227 [ Mac ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStream-default-feature-policy.https.html [ Pass Failure ]
+crbug.com/1180227 [ Mac ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStream-default-feature-policy.https.html [ Pass Failure Crash ]
 crbug.com/1180227 [ Linux ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStream-default-feature-policy.https.html [ Pass Failure ]
 crbug.com/1180274 [ Mac ] http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Failure Pass ]
 crbug.com/1180479 [ Mac ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/scrollIntoView-smooth.html [ Failure Timeout Pass ]
