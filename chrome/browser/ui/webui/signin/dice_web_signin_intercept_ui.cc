@@ -16,6 +16,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/webui/resource_path.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 #include "ui/resources/grit/webui_resources.h"
@@ -25,25 +26,29 @@ DiceWebSigninInterceptUI::DiceWebSigninInterceptUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::Create(
       chrome::kChromeUIDiceWebSigninInterceptHost);
   source->SetDefaultResource(IDR_SIGNIN_DICE_WEB_INTERCEPT_HTML);
-  source->AddResourcePath("dice_web_signin_intercept_app.js",
-                          IDR_SIGNIN_DICE_WEB_INTERCEPT_APP_JS);
-  source->AddResourcePath("dice_web_signin_intercept_browser_proxy.js",
-                          IDR_SIGNIN_DICE_WEB_INTERCEPT_BROWSER_PROXY_JS);
-  source->AddResourcePath("signin_shared_css.js", IDR_SIGNIN_SHARED_CSS_JS);
-  source->AddResourcePath("signin_vars_css.js", IDR_SIGNIN_VARS_CSS_JS);
+
+  static constexpr webui::ResourcePath kResources[] = {
+      {"dice_web_signin_intercept_app.js",
+       IDR_SIGNIN_DICE_WEB_INTERCEPT_APP_JS},
+      {"dice_web_signin_intercept_browser_proxy.js",
+       IDR_SIGNIN_DICE_WEB_INTERCEPT_BROWSER_PROXY_JS},
+      {"signin_shared_css.js", IDR_SIGNIN_SHARED_CSS_JS},
+      {"signin_vars_css.js", IDR_SIGNIN_VARS_CSS_JS},
+      // Resources for testing.
+      {"test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS},
+      {"test_loader_util.js", IDR_WEBUI_JS_TEST_LOADER_UTIL_JS},
+      {"test_loader.html", IDR_WEBUI_HTML_TEST_LOADER_HTML},
+  };
+  source->AddResourcePaths(kResources);
+
   source->AddLocalizedString("guestLink",
                              IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_GUEST_LINK);
   source->UseStringsJs();
 
-  // Resources for testing.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://test 'self';");
   source->DisableTrustedTypesCSP();
-  source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
-  source->AddResourcePath("test_loader_util.js",
-                          IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
-  source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER_HTML);
 
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 }

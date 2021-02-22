@@ -25,6 +25,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/webui/resource_path.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/resources/grit/webui_generated_resources.h"
@@ -60,11 +61,14 @@ void SyncConfirmationUI::Initialize(
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();
 
-  source->AddResourcePath("signin_shared_css.js", IDR_SIGNIN_SHARED_CSS_JS);
-  source->AddResourcePath("signin_vars_css.js", IDR_SIGNIN_VARS_CSS_JS);
-  source->AddResourcePath("sync_confirmation_browser_proxy.js",
-                          IDR_SYNC_CONFIRMATION_BROWSER_PROXY_JS);
-  source->AddResourcePath("sync_confirmation.js", IDR_SYNC_CONFIRMATION_JS);
+  static constexpr webui::ResourcePath kResources[] = {
+      {"signin_shared_css.js", IDR_SIGNIN_SHARED_CSS_JS},
+      {"signin_vars_css.js", IDR_SIGNIN_VARS_CSS_JS},
+      {"sync_confirmation_browser_proxy.js",
+       IDR_SYNC_CONFIRMATION_BROWSER_PROXY_JS},
+      {"sync_confirmation.js", IDR_SYNC_CONFIRMATION_JS},
+  };
+  source->AddResourcePaths(kResources);
 
   if (is_sync_allowed) {
     InitializeForSyncConfirmation(source, profile_creation_flow_color);
@@ -95,6 +99,7 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
   source->AddResourcePath("test_loader_util.js",
                           IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
   source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER_HTML);
+
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://test 'self';");

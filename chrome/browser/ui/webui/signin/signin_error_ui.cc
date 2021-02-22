@@ -28,6 +28,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/webui/resource_path.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/text_elider.h"
 
@@ -70,10 +71,13 @@ void SigninErrorUI::Initialize(Browser* browser, bool is_system_profile) {
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();
   source->SetDefaultResource(IDR_SIGNIN_ERROR_HTML);
-  source->AddResourcePath("signin_error_app.js", IDR_SIGNIN_ERROR_APP_JS);
-  source->AddResourcePath("signin_error.js", IDR_SIGNIN_ERROR_JS);
-  source->AddResourcePath("signin_shared_css.js", IDR_SIGNIN_SHARED_CSS_JS);
-  source->AddResourcePath("signin_vars_css.js", IDR_SIGNIN_VARS_CSS_JS);
+  static constexpr webui::ResourcePath kResources[] = {
+      {"signin_error_app.js", IDR_SIGNIN_ERROR_APP_JS},
+      {"signin_error.js", IDR_SIGNIN_ERROR_JS},
+      {"signin_shared_css.js", IDR_SIGNIN_SHARED_CSS_JS},
+      {"signin_vars_css.js", IDR_SIGNIN_VARS_CSS_JS},
+  };
+  source->AddResourcePaths(kResources);
   source->AddBoolean("isSystemProfile", is_system_profile);
 
   // Retrieve the last signin error message and email used.

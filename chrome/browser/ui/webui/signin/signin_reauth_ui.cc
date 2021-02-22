@@ -29,6 +29,7 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/webui/resource_path.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/image/image.h"
 #include "ui/resources/grit/webui_generated_resources.h"
@@ -65,20 +66,22 @@ SigninReauthUI::SigninReauthUI(content::WebUI* web_ui)
       content::WebUIDataSource::Create(chrome::kChromeUISigninReauthHost);
   webui::SetJSModuleDefaults(source);
   source->SetDefaultResource(IDR_SIGNIN_REAUTH_HTML);
-  source->AddResourcePath("signin_reauth_app.js", IDR_SIGNIN_REAUTH_APP_JS);
-  source->AddResourcePath("signin_reauth_browser_proxy.js",
-                          IDR_SIGNIN_REAUTH_BROWSER_PROXY_JS);
-  source->AddResourcePath("signin_shared_css.js", IDR_SIGNIN_SHARED_CSS_JS);
-  source->AddResourcePath("signin_vars_css.js", IDR_SIGNIN_VARS_CSS_JS);
+
+  static constexpr webui::ResourcePath kResources[] = {
+      {"signin_reauth_app.js", IDR_SIGNIN_REAUTH_APP_JS},
+      {"signin_reauth_browser_proxy.js", IDR_SIGNIN_REAUTH_BROWSER_PROXY_JS},
+      {"signin_shared_css.js", IDR_SIGNIN_SHARED_CSS_JS},
+      {"signin_vars_css.js", IDR_SIGNIN_VARS_CSS_JS},
+      // Resources for the account passwords reauth.
+      {"images/signin_reauth_illustration.svg",
+       IDR_SIGNIN_REAUTH_IMAGES_ACCOUNT_PASSWORDS_REAUTH_ILLUSTRATION_SVG},
+      {"images/signin_reauth_illustration_dark.svg",
+       IDR_SIGNIN_REAUTH_IMAGES_ACCOUNT_PASSWORDS_REAUTH_ILLUSTRATION_DARK_SVG},
+  };
+  source->AddResourcePaths(kResources);
+
   source->AddString("accountImageUrl", GetAccountImageURL(profile));
 
-  // Resources for the account passwords reauth.
-  source->AddResourcePath(
-      "images/signin_reauth_illustration.svg",
-      IDR_SIGNIN_REAUTH_IMAGES_ACCOUNT_PASSWORDS_REAUTH_ILLUSTRATION_SVG);
-  source->AddResourcePath(
-      "images/signin_reauth_illustration_dark.svg",
-      IDR_SIGNIN_REAUTH_IMAGES_ACCOUNT_PASSWORDS_REAUTH_ILLUSTRATION_DARK_SVG);
   AddStringResource(source, "signinReauthTitle",
                     IDS_ACCOUNT_PASSWORDS_REAUTH_TITLE);
   AddStringResource(source, "signinReauthDesc",
