@@ -96,6 +96,8 @@ class ArcMetricsService : public KeyedService,
   void ReportArcCorePriAbiMigFailedTries(uint32_t failed_attempts) override;
   void ReportArcCorePriAbiMigDowngradeDelay(base::TimeDelta delay) override;
   void ReportArcCorePriAbiMigBootTime(base::TimeDelta duration) override;
+  void ReportClipboardDragDropEvent(
+      mojom::ArcClipboardDragDropEvent event_type) override;
 
   // wm::ActivationChangeObserver overrides.
   // Records to UMA when a user has interacted with an ARC app window.

@@ -1,7 +1,7 @@
 // Copyright 2016 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Next MinVersion: 8
+// Next MinVersion: 9
 
 module arc.mojom;
 
@@ -137,7 +137,22 @@ enum ArcCorePriAbiMigEvent {
   kWebviewDowngradeFailure = 7,
 };
 
-// Next method ID: 8
+// Enumerates the types of a clipboard / drag-and-drop event, including its
+// direction (ARC to Chrome or Chrome to ARC) and its content type (text or
+// an image).
+[Extensible]
+enum ArcClipboardDragDropEvent {
+  kTextClipboardFromChrome = 0,
+  kImageClipboardFromChrome = 1,
+  kTextClipboardFromArc = 2,
+  kImageClipboardFromArc = 3,
+  kTextDragDropFromChrome = 4,
+  kImageDragDropFromChrome = 5,
+  kTextDragDropFromArc = 6,
+  kImageDragDropFromArc = 7,
+};
+
+// Next method ID: 9
 interface MetricsHost {
   // Reports boot progress events from ARC instance.
   ReportBootProgress@0(array<BootProgressEvent> events,
@@ -163,6 +178,10 @@ interface MetricsHost {
 
   // Reports boot time during ABI Migration by ARC Metrics Service.
   [MinVersion=7] ReportArcCorePriAbiMigBootTime@7(mojo_base.mojom.TimeDelta duration);
+
+  // Reports a clipboard / drag-and-drop event.
+  [MinVersion=8] ReportClipboardDragDropEvent@8(
+      ArcClipboardDragDropEvent event_type);
 };
 
 // Next method ID: 3

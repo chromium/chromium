@@ -358,6 +358,12 @@ void ArcMetricsService::ReportArcCorePriAbiMigBootTime(
                      weak_ptr_factory_.GetWeakPtr(), durationTicks));
 }
 
+void ArcMetricsService::ReportClipboardDragDropEvent(
+    mojom::ArcClipboardDragDropEvent event_type) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  base::UmaHistogramEnumeration("Arc.ClipboardDragDrop", event_type);
+}
+
 void ArcMetricsService::OnWindowActivated(
     wm::ActivationChangeObserver::ActivationReason reason,
     aura::Window* gained_active,

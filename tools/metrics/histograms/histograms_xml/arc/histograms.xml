@@ -278,6 +278,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Code installation result for ARC boot continue.</summary>
 </histogram>
 
+<histogram name="Arc.ClipboardDragDrop" enum="ArcClipboardDragDropEvent"
+    expires_after="M95">
+  <owner>tetsui@google.com</owner>
+  <owner>arc-framework@google.com</owner>
+  <summary>The number of clipboard and drag-and-drop events.</summary>
+</histogram>
+
 <histogram name="Arc.CodeIntegrityCheckingTotalTime" units="ms"
     expires_after="M81">
   <owner>elijahtaylor@google.com</owner>
