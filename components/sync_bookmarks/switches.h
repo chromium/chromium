@@ -14,6 +14,11 @@ namespace switches {
 extern const base::Feature kSyncReuploadBookmarkFullTitles;
 extern const base::Feature kSyncUseClientTagForBookmarkCommits;
 
+// TODO(crbug.com/1177798): remove this code when most of bookmarks are
+// reuploaded. This feature toggle will work only when
+// SyncReuploadBookmarkFullTitles is enabled.
+extern const base::Feature kSyncReuploadBookmarksUponMatchingData;
+
 }  // namespace switches
 
 #endif  // COMPONENTS_SYNC_BOOKMARKS_SWITCHES_H_

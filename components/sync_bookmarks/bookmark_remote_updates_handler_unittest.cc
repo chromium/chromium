@@ -1600,6 +1600,46 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
 }
 
 TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
+       ShouldReuploadOnEmptyGuidOnUpdateWithSameSpecifics) {
+  const std::string kServerId = "server_id";
+
+  base::test::ScopedFeatureList override_features;
+  override_features.InitAndEnableFeature(
+      switches::kSyncReuploadBookmarksUponMatchingData);
+
+  syncer::UpdateResponseDataList updates;
+  updates.push_back(
+      CreateUpdateResponseData(kServerId,
+                               /*parent_id=*/kBookmarkBarId,
+                               /*guid=*/base::GUID::GenerateRandomV4(), "Title",
+                               /*is_deletion=*/false,
+                               /*version=*/0,
+                               /*unique_position=*/
+                               syncer::UniquePosition::InitialPosition(
+                                   syncer::UniquePosition::RandomSuffix())));
+  ASSERT_TRUE(updates.back().entity.specifics.bookmark().has_full_title());
+
+  BookmarkRemoteUpdatesHandler(bookmark_model(), favicon_service(), tracker())
+      .Process(updates,
+               /*got_new_encryption_requirements=*/false);
+
+  const SyncedBookmarkTracker::Entity* entity =
+      tracker()->GetEntityForSyncId(kServerId);
+  ASSERT_THAT(entity, NotNull());
+  ASSERT_FALSE(entity->IsUnsynced());
+
+  // Mimic the case when there is another update but without GUID in the
+  // original specifics.
+  updates.back().entity.is_bookmark_guid_in_specifics_preprocessed = true;
+  updates.back().response_version++;
+  BookmarkRemoteUpdatesHandler(bookmark_model(), favicon_service(), tracker())
+      .Process(updates,
+               /*got_new_encryption_requirements=*/false);
+
+  EXPECT_TRUE(entity->IsUnsynced());
+}
+
+TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
        ShouldIncrementSequenceNumberOnConflict) {
   base::test::ScopedFeatureList override_features;
   override_features.InitAndEnableFeature(
