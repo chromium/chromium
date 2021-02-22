@@ -235,10 +235,12 @@ int UnifiedSystemTrayBubble::GetCurrentTrayHeight() const {
 }
 
 int UnifiedSystemTrayBubble::CalculateMaxHeight() const {
-  gfx::Rect anchor_bounds =
-      tray_->shelf()->GetSystemTrayAnchorView()->GetBoundsInScreen();
-  int bottom = tray_->shelf()->IsHorizontalAlignment() ? anchor_bounds.y()
-                                                       : anchor_bounds.bottom();
+  // We use the system tray anchor rect's bottom position to calculate the free
+  // space height. Here 'GetSystemTrayAnchorRect' gets the rect that those
+  // bubble views will be anchored. The calculation of this rect has considered
+  // the position of the tray (bottom, left, right), the status of the tray
+  // (tray_->is_active()), etc.
+  int bottom = tray_->shelf()->GetSystemTrayAnchorRect().bottom();
   WorkAreaInsets* work_area =
       WorkAreaInsets::ForWindow(tray_->shelf()->GetWindow()->GetRootWindow());
   int free_space_height_above_anchor =
