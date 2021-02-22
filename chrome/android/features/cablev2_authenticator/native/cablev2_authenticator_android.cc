@@ -19,6 +19,7 @@
 #include "device/fido/cable/v2_authenticator.h"
 #include "device/fido/cable/v2_handshake.h"
 #include "device/fido/cable/v2_registration.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_parsing_utils.h"
 
 // These "headers" actually contain several function definitions and thus can
@@ -609,11 +610,16 @@ static ScopedJavaLocalRef<jbyteArray> JNI_CableAuthenticator_Setup(
   global_data.activity_class_name =
       ConvertJavaStringToUTF8(activity_class_name);
 
-  static_assert(sizeof(jlong) >= sizeof(void*), "");
-  global_data.registration =
-      reinterpret_cast<device::cablev2::authenticator::Registration*>(
-          registration_long);
-  global_data.registration->PrepareContactID();
+  if (base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport)) {
+    // If kWebAuthPhoneSupport isn't enabled then QR scanning isn't enabled and
+    // thus no linking messages will be sent. Thus there's no point in burdening
+    // FCM with registrations.
+    static_assert(sizeof(jlong) >= sizeof(void*), "");
+    global_data.registration =
+        reinterpret_cast<device::cablev2::authenticator::Registration*>(
+            registration_long);
+    global_data.registration->PrepareContactID();
+  }
 
   global_data.network_context =
       reinterpret_cast<network::mojom::NetworkContext*>(network_context_long);
