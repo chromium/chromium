@@ -61,6 +61,12 @@ const {{field.type_name}}&
 {%- endfor -%}
 {% endmacro %}
 
+{% macro group_setter_expression(group) %}
+{% for group in group.path_without_root() -%}
+{{group.member_name}}{{print_if(not loop.last, ".Access()->")}}
+{%- endfor -%}
+{% endmacro %}
+
 {% macro declare_storage(field) %}
 {% if field.is_bit_field %}
 {{print_if(field.mutable, "mutable ")}}unsigned {{field.name}} : {{field.size}}; // {{field.type_name}}
@@ -87,12 +93,15 @@ const {{field.type_name}}&
 {% for subgroup in group.subgroups %}
   {# If every field in this subgroup is to be compared, we can compare the
      group pointer instead. #}
+  {% set group_expression = group_getter_expression(subgroup) %}
   {% if subgroup.all_fields|rejectattr("custom_compare")|reject("in", fields_to_compare)|list|length == 0 -%}
-    {{boolean_and()}}{{subgroup.member_name}} == o.{{subgroup.member_name}}
+    {{boolean_and()}}{{group_expression}} == o.{{group_expression}}
   {# Otherwise, we would have to recursively generate comparison operations
-     on fields in the subgroup. #}
+     on fields in the subgroup. If the objects are the same, we can skip the
+     per-field comparisons. #}
   {% elif subgroup.all_fields|rejectattr("custom_compare")|select("in", fields_to_compare)|list|length > 0 -%}
-    {{fieldwise_compare(subgroup, fields_to_compare, boolean_and)}}
+    {{boolean_and()}}({{group_expression}}.Get() == o.{{group_expression}}.Get()
+|| ({{fieldwise_compare(subgroup, fields_to_compare)}}))
   {% endif %}
 {% endfor %}
 {% for field in group.fields|rejectattr("custom_compare")|select("in", fields_to_compare) -%}
@@ -102,10 +111,13 @@ const {{field.type_name}}&
 
 {% macro fieldwise_copy(group, fields_to_copy) %}
 {% for subgroup in group.subgroups %}
+  {% set group_expression = group_getter_expression(subgroup) %}
   {% if subgroup.all_fields|rejectattr("custom_copy")|reject("in", fields_to_copy)|list|length == 0 -%}
-    {{subgroup.member_name}} = other.{{subgroup.member_name}};
+    {{group_setter_expression(subgroup)}} = other.{{group_expression}};
   {% elif subgroup.all_fields|rejectattr("custom_copy")|select("in", fields_to_copy)|list|length > 0 -%}
-    {{fieldwise_copy(subgroup, fields_to_copy)}}
+if ({{group_expression}}.Get() != other.{{group_expression}}.Get()) {
+{{fieldwise_copy(subgroup, fields_to_copy)|indent(2, true)}}
+}
   {% endif %}
 {% endfor %}
 {% for field in group.fields|rejectattr("custom_copy")|select("in", fields_to_copy) -%}
@@ -118,12 +130,14 @@ const {{field.type_name}}&
 {% for subgroup in group.subgroups %}
   {# If every field in this subgroup is inherited, we directly compare the
      group pointer instead. #}
+  {% set group_expression = group_getter_expression(subgroup) %}
   {% if subgroup.all_fields|rejectattr("is_inherited")|list|length == 0 -%}
-    {{boolean_and()}}{{subgroup.member_name}}.Get() == o.{{subgroup.member_name}}.Get()
+    {{boolean_and()}}{{group_expression}}.Get() == o.{{group_expression}}.Get()
   {# Otherwise, we would have to recursively generate comparison operations
      on fields in the subgroup. #}
   {% elif subgroup.all_fields|selectattr("is_inherited")|list|length > 0 -%}
-    {{fieldwise_pointer_compare_inherited(subgroup, boolean_and)}}
+    {{boolean_and()}}({{group_expression}}.Get() == o.{{group_expression}}.Get()
+|| ({{fieldwise_pointer_compare_inherited(subgroup)}}))
   {% endif %}
 {% endfor %}
 {% for field in group.fields if field.is_inherited -%}

@@ -1045,7 +1045,8 @@
     },
     {
       name: "BaselineShiftType",
-      field_group: "*",
+      field_group: "svg->misc",
+      // Use a keyword?
       field_template: "primitive",
       field_size: 2,
       type_name: "EBaselineShiftType",
