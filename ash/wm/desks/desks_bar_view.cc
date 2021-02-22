@@ -334,7 +334,6 @@ class BentoDesksBarLayout : public views::LayoutManager {
 
 DesksBarView::DesksBarView(OverviewGrid* overview_grid)
     : background_view_(new views::View),
-      new_desk_button_(new NewDeskButton()),
       overview_grid_(overview_grid) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -364,7 +363,7 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
     scroll_view_contents_->SetLayoutManager(
         std::make_unique<BentoDesksBarLayout>(this));
   } else {
-    AddChildView(new_desk_button_);
+    new_desk_button_ = AddChildView(std::make_unique<NewDeskButton>());
     SetLayoutManager(
         std::make_unique<DesksBarLayout>(background_view_, new_desk_button_));
   }
@@ -810,6 +809,9 @@ int DesksBarView::GetFirstMiniViewXOffset() const {
 }
 
 void DesksBarView::UpdateMinimumWidthToFitContents() {
+  if (features::IsBentoEnabled())
+    return;
+
   int button_width = new_desk_button_->GetMinSize(/*compact=*/false).width();
   button_width += 2 * kIconAndTextHorizontalPadding;
   button_width += kButtonRightMargin;
