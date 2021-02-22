@@ -26,7 +26,8 @@ const ACTIVE_SCAN_RATIO = 1.0;
 export class BarcodeScanner {
   /**
    * @param {!HTMLVideoElement} video The video to be scanned for barcode.
-   * @param {function(string)} callback The callback for the detected barcodes.
+   * @param {function(string): void} callback The callback for the detected
+   *     barcodes.
    */
   constructor(video, callback) {
     /**
@@ -36,7 +37,7 @@ export class BarcodeScanner {
     this.video_ = video;
 
     /**
-     * @type {function(string)}
+     * @type {function(string): void}
      * @private
      */
     this.callback_ = callback;

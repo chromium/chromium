@@ -227,12 +227,6 @@ export const ErrorLevel = {
 };
 
 /**
- * Callback for reporting error in testing run.
- * @typedef {function(!ErrorInfo)}
- */
-export let TestingErrorCallback;
-
-/**
  * Throws when a method is not implemented.
  */
 export class NotImplementedError extends Error {

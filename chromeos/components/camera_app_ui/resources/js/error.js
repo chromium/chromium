@@ -10,7 +10,6 @@ import {
   ErrorInfo,  // eslint-disable-line no-unused-vars
   ErrorLevel,
   ErrorType,
-  TestingErrorCallback,  // eslint-disable-line no-unused-vars
 } from './type.js';
 
 /**

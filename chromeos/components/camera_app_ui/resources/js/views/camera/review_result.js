@@ -51,7 +51,7 @@ export class ReviewResult {
     /**
      * Function resolving open result call called with whether user confirms
      * after reviewing intent result.
-     * @type {?function(boolean)}
+     * @type {?function(boolean): void}
      * @private
      */
     this.resolveOpen_ = null;

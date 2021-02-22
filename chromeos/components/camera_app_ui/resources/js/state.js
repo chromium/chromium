@@ -83,7 +83,7 @@ export function assertState(s) {
 }
 
 /**
- * @typedef {function(boolean, !PerfInformation=)}
+ * @typedef {function(boolean, !PerfInformation=): void}
  */
 let StateObserver;  // eslint-disable-line no-unused-vars
 

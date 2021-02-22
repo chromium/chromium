@@ -192,7 +192,7 @@ export class DeviceInfoUpdater {
 
   /**
    * Registers listener to be called when state of available devices changes.
-   * @param {function(!DeviceInfoUpdater)} listener
+   * @param {function(!DeviceInfoUpdater): !Promise} listener
    */
   addDeviceChangeListener(listener) {
     this.deviceChangeListeners_.push(listener);

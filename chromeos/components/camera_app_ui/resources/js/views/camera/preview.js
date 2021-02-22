@@ -18,11 +18,12 @@ import * as util from '../../util.js';
  */
 export class Preview {
   /**
-   * @param {function()} onNewStreamNeeded Callback to request new stream.
+   * @param {function(): !Promise} onNewStreamNeeded Callback to request new
+   *     stream.
    */
   constructor(onNewStreamNeeded) {
     /**
-     * @type {function()}
+     * @type {function(): !Promise}
      * @private
      */
     this.onNewStreamNeeded_ = onNewStreamNeeded;

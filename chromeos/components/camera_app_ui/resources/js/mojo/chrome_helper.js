@@ -28,9 +28,9 @@ export class ChromeHelper {
 
   /**
    * Starts tablet mode monitor monitoring tablet mode state of device.
-   * @param {function(boolean)} onChange Callback called each time when tablet
-   *     mode state of device changes with boolean parameter indecating whether
-   *     device is entering tablet mode.
+   * @param {function(boolean): void} onChange Callback called each time when
+   *     tablet mode state of device changes with boolean parameter indecating
+   *     whether device is entering tablet mode.
    * @return {!Promise<boolean>} Resolved to initial state of whether device is
    *     is in tablet mode.
    */
@@ -46,9 +46,9 @@ export class ChromeHelper {
 
   /**
    * Starts monitor monitoring system screen state of device.
-   * @param {function(!chromeosCamera.mojom.ScreenState)} onChange Callback
-   *     called each time when device screen state changes with parameter of
-   *     newly changed value.
+   * @param {function(!chromeosCamera.mojom.ScreenState): void} onChange
+   *     Callback called each time when device screen state changes with
+   *     parameter of newly changed value.
    * @return {!Promise<!chromeosCamera.mojom.ScreenState>} Resolved to initial
    *     system screen state.
    */
@@ -64,8 +64,8 @@ export class ChromeHelper {
 
   /**
    * Starts monitor monitoring the existence of external screens.
-   * @param {function(boolean)} onChange Callback called when the existence of
-   *     external screens changes.
+   * @param {function(boolean): void} onChange Callback called when the
+   *     existence of external screens changes.
    * @return {!Promise<boolean>} Resolved to the initial state.
    */
   async initExternalScreenMonitor(onChange) {
@@ -89,8 +89,8 @@ export class ChromeHelper {
 
   /**
    * Starts camera usage monitor.
-   * @param {function()} exploitUsage
-   * @param {function()} releaseUsage
+   * @param {function(): !Promise} exploitUsage
+   * @param {function(): !Promise} releaseUsage
    * @return {!Promise}
    */
   async initCameraUsageMonitor(exploitUsage, releaseUsage) {
@@ -228,7 +228,7 @@ export class ChromeHelper {
 
   /**
    * Adds listener for screen locked event.
-   * @param {function(boolean)} callback Callback for screen locked status
+   * @param {function(boolean): void} callback Callback for screen locked status
    *     changed. Called with the latest status of whether screen is locked.
    */
   async addOnLockListener(callback) {

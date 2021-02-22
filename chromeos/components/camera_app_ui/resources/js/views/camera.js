@@ -200,7 +200,7 @@ export class Camera extends View {
     this.banner_ = dom.get('#banner', HTMLElement);
 
     /**
-     * @const {!Set<function()>}
+     * @const {!Set<function(): void>}
      * @private
      */
     this.configureCompleteListener_ = new Set();
@@ -342,7 +342,7 @@ export class Camera extends View {
   }
 
   /**
-   * @param {function()} listener
+   * @param {function(): void} listener
    * @private
    */
   addConfigureCompleteListener_(listener) {

@@ -24,12 +24,12 @@ const preconditions = [
  */
 export class VideoEncoderOptions {
   /**
-   * @param {function(?h264.EncoderParameters)} onChange Called when video
+   * @param {function(?h264.EncoderParameters): void} onChange Called when video
    * encoder option changed.
    */
   constructor(onChange) {
     /**
-     * @const {function(?h264.EncoderParameters)}
+     * @const {function(?h264.EncoderParameters): void}
      * @private
      */
     this.onChange_ = onChange;

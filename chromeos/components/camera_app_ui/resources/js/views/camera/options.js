@@ -21,7 +21,8 @@ import * as util from '../../util.js';
 export class Options {
   /**
    * @param {!DeviceInfoUpdater} infoUpdater
-   * @param {function()} doSwitchDevice Callback to trigger device switching.
+   * @param {function(): !Promise} doSwitchDevice Callback to trigger device
+   *     switching.
    */
   constructor(infoUpdater, doSwitchDevice) {
     /**
@@ -32,7 +33,7 @@ export class Options {
     this.infoUpdater_ = infoUpdater;
 
     /**
-     * @type {function()}
+     * @type {function(): !Promise}
      * @private
      * @const
      */

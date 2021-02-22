@@ -232,7 +232,9 @@ export class Modes {
 
     [state.State.EXPERT, state.State.SAVE_METADATA].forEach(
         (/** !state.State */ s) => {
-          state.addObserver(s, this.updateSaveMetadata_.bind(this));
+          state.addObserver(s, () => {
+            this.updateSaveMetadata_();
+          });
         });
 
     // Set default mode when app started.

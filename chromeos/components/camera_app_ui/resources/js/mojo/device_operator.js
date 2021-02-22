@@ -414,7 +414,7 @@ export class DeviceOperator {
   /**
    * Adds a metadata observer to Camera App Device through Mojo IPC.
    * @param {string} deviceId The id for target camera device.
-   * @param {function(!cros.mojom.CameraMetadata)} callback Callback that
+   * @param {function(!cros.mojom.CameraMetadata): void} callback Callback that
    *     handles the metadata.
    * @param {!cros.mojom.StreamType} streamType Stream type which the observer
    *     gets the metadata from.
@@ -456,7 +456,7 @@ export class DeviceOperator {
    * underlying camera HAL after sensor finishes frame capturing.
    *
    * @param {string} deviceId The id for target camera device.
-   * @param {function()} callback Callback to trigger on shutter done.
+   * @param {function(): void} callback Callback to trigger on shutter done.
    * @return {!Promise<number>} Id for the added observer.
    * @throws {!Error} if fails to construct device connection.
    */

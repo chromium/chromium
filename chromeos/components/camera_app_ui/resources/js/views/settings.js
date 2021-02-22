@@ -61,9 +61,8 @@ export class BaseSettings extends View {
     dom.getFrom(this.root, '.menu-header button', HTMLButtonElement)
         .addEventListener('click', () => this.leave());
     dom.getAllFrom(this.root, '.menu-item', HTMLElement).forEach((element) => {
-      /** @type {function(!Event=)|undefined} */
       const handler = itemHandlers[element.id];
-      if (handler) {
+      if (handler !== undefined) {
         element.addEventListener('click', handler);
       }
     });
@@ -625,7 +624,7 @@ export class ResolutionSettings extends BaseSettings {
    * @param {function(!Resolution, !ResolutionList): string} optTextTempl
    *     Template generating text content for each resolution option from its
    *     width and height.
-   * @param {function(!Resolution)} onChange Called when selected option
+   * @param {function(!Resolution): void} onChange Called when selected option
    *     changed with resolution of newly selected option.
    * @param {!ResolutionList} resolutions Resolutions of its width and height to
    *     be updated with.
