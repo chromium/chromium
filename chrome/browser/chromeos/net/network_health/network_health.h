@@ -11,8 +11,10 @@
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace chromeos {
 namespace network_health {
@@ -32,6 +34,8 @@ class NetworkHealth : public mojom::NetworkHealthService,
   const mojom::NetworkHealthStatePtr GetNetworkHealthState();
 
   // NetworkHealthService
+  void AddObserver(
+      mojo::PendingRemote<mojom::NetworkEventsObserver> observer) override;
   void GetNetworkList(GetNetworkListCallback) override;
   void GetHealthSnapshot(GetHealthSnapshotCallback) override;
 
@@ -39,11 +43,17 @@ class NetworkHealth : public mojom::NetworkHealthService,
   void OnNetworkStateListChanged() override;
   void OnDeviceStateListChanged() override;
   void OnActiveNetworksChanged(
-      std::vector<network_config::mojom::NetworkStatePropertiesPtr>) override;
+      std::vector<network_config::mojom::NetworkStatePropertiesPtr>
+          active_networks) override;
   void OnNetworkStateChanged(
-      network_config::mojom::NetworkStatePropertiesPtr) override;
+      network_config::mojom::NetworkStatePropertiesPtr network_state) override;
   void OnVpnProvidersChanged() override;
   void OnNetworkCertificatesChanged() override;
+
+  // Signal strength changes larger than
+  // |kMaxSignalStrengthFluctuationTolerance| trigger a signal strength change
+  // event.
+  static constexpr int kMaxSignalStrengthFluctuationTolerance = 10;
 
  private:
   // Handler for receiving the network state list.
@@ -62,6 +72,40 @@ class NetworkHealth : public mojom::NetworkHealthService,
   void RequestNetworkStateList();
   void RequestDeviceStateList();
 
+  // Finds the matching network using |guid|.
+  const mojom::NetworkPtr* FindMatchingNetwork(const std::string& guid) const;
+
+  // Handles the case when an active network changes. Also handles the case
+  // when a network that was not active becomes active.
+  void HandleNetworkEventsForActiveNetworks(
+      std::vector<network_config::mojom::NetworkStatePropertiesPtr>
+          active_networks);
+
+  // Handles the case when an active network becomes no longer active.
+  void HandleNetworkEventsForInactiveNetworks(
+      network_config::mojom::NetworkStatePropertiesPtr network);
+
+  // Notifies observers of connection state changes.
+  void NotifyObserversConnectionStateChanged(const std::string& guid,
+                                             mojom::NetworkState state);
+
+  // Notifies observers of signal strength changes.
+  void NotifyObserversSignalStrengthChanged(const std::string& guid,
+                                            int signal_strength);
+
+  // Checks if a connection state changed has occurred.
+  bool ConnectionStateChanged(
+      const mojom::NetworkPtr& network,
+      const network_config::mojom::NetworkStatePropertiesPtr& network_state);
+
+  // Checks if a signal strength change event has occurred.
+  bool SignalStrengthChanged(
+      const mojom::NetworkPtr& network,
+      const network_config::mojom::NetworkStatePropertiesPtr& network_state);
+
+  // Remotes for tracking observers that will be notified of network events in
+  // the mojom::NetworkEventsObserver interface.
+  mojo::RemoteSet<mojom::NetworkEventsObserver> observers_;
   // Remote for sending requests to the CrosNetworkConfig service.
   mojo::Remote<network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;

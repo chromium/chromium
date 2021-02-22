@@ -4,7 +4,10 @@
 
 #include "chrome/browser/chromeos/net/network_health/network_health.h"
 
+#include <cstdint>
+#include <cstdlib>
 #include <map>
+#include <utility>
 #include <vector>
 
 #include "chromeos/network/network_event_log.h"
@@ -109,6 +112,11 @@ const mojom::NetworkHealthStatePtr NetworkHealth::GetNetworkHealthState() {
   return network_health_state_.Clone();
 }
 
+void NetworkHealth::AddObserver(
+    mojo::PendingRemote<mojom::NetworkEventsObserver> observer) {
+  observers_.Add(std::move(observer));
+}
+
 void NetworkHealth::GetNetworkList(GetNetworkListCallback callback) {
   std::move(callback).Run(mojo::Clone(network_health_state_.networks));
 }
@@ -126,10 +134,18 @@ void NetworkHealth::OnDeviceStateListChanged() {
 }
 
 void NetworkHealth::OnActiveNetworksChanged(
-    std::vector<network_config::mojom::NetworkStatePropertiesPtr>) {}
+    std::vector<network_config::mojom::NetworkStatePropertiesPtr>
+        active_networks) {
+  HandleNetworkEventsForActiveNetworks(std::move(active_networks));
+}
 
 void NetworkHealth::OnNetworkStateChanged(
-    network_config::mojom::NetworkStatePropertiesPtr) {}
+    network_config::mojom::NetworkStatePropertiesPtr network_state) {
+  if (!network_state) {
+    return;
+  }
+  HandleNetworkEventsForInactiveNetworks(std::move(network_state));
+}
 
 void NetworkHealth::OnVpnProvidersChanged() {}
 
@@ -212,6 +228,113 @@ void NetworkHealth::RequestNetworkStateList() {
 void NetworkHealth::RequestDeviceStateList() {
   remote_cros_network_config_->GetDeviceStateList(base::BindOnce(
       &NetworkHealth::OnDeviceStateListReceived, base::Unretained(this)));
+}
+
+const mojom::NetworkPtr* NetworkHealth::FindMatchingNetwork(
+    const std::string& guid) const {
+  for (const mojom::NetworkPtr& network : network_health_state_.networks) {
+    if (!network->guid) {
+      continue;
+    }
+    if (network->guid.value() == guid) {
+      return &network;
+    }
+  }
+  return nullptr;
+}
+
+void NetworkHealth::HandleNetworkEventsForActiveNetworks(
+    std::vector<network_config::mojom::NetworkStatePropertiesPtr>
+        active_networks) {
+  bool refresh_network_health_state = false;
+  for (const auto& network_state : active_networks) {
+    const mojom::NetworkPtr* const network =
+        FindMatchingNetwork(network_state->guid);
+    // Fire an event if the network is new or a connection state change
+    // occurred.
+    if (!network || ConnectionStateChanged(*network, network_state)) {
+      refresh_network_health_state = true;
+      NotifyObserversConnectionStateChanged(
+          network_state->guid,
+          ConnectionStateToNetworkState(network_state->connection_state));
+    }
+    // Fire an event if the network is new or a signal strength change occurred.
+    if (!network || SignalStrengthChanged(*network, network_state)) {
+      refresh_network_health_state = true;
+      NotifyObserversSignalStrengthChanged(
+          network_state->guid,
+          network_config::GetWirelessSignalStrength(network_state.get()));
+    }
+  }
+  if (refresh_network_health_state) {
+    RefreshNetworkHealthState();
+  }
+}
+
+void NetworkHealth::HandleNetworkEventsForInactiveNetworks(
+    network_config::mojom::NetworkStatePropertiesPtr network_state) {
+  // Ensure that the connection state is no longer active.
+  if (ConnectionStateToNetworkState(network_state->connection_state) !=
+      mojom::NetworkState::kNotConnected) {
+    return;
+  }
+  const mojom::NetworkPtr* const network =
+      FindMatchingNetwork(network_state->guid);
+  if (!network) {
+    return;
+  }
+  // Fire an event if the network was previously active.
+  if (ConnectionStateChanged(*network, network_state)) {
+    NotifyObserversConnectionStateChanged(
+        network_state->guid,
+        ConnectionStateToNetworkState(network_state->connection_state));
+    RefreshNetworkHealthState();
+  }
+}
+
+void NetworkHealth::NotifyObserversConnectionStateChanged(
+    const std::string& guid,
+    mojom::NetworkState state) {
+  for (auto& observer : observers_) {
+    observer->OnConnectionStateChanged(guid, state);
+  }
+}
+
+void NetworkHealth::NotifyObserversSignalStrengthChanged(
+    const std::string& guid,
+    int signal_strength) {
+  for (auto& observer : observers_) {
+    observer->OnSignalStrengthChanged(guid,
+                                      mojom::UInt32Value::New(signal_strength));
+  }
+}
+
+bool NetworkHealth::ConnectionStateChanged(
+    const mojom::NetworkPtr& network,
+    const network_config::mojom::NetworkStatePropertiesPtr& network_state) {
+  auto state = ConnectionStateToNetworkState(network_state->connection_state);
+  if (state == network->state) {
+    return false;
+  }
+  return true;
+}
+
+bool NetworkHealth::SignalStrengthChanged(
+    const mojom::NetworkPtr& network,
+    const network_config::mojom::NetworkStatePropertiesPtr& network_state) {
+  if (!network_config::NetworkStateMatchesType(
+          network_state.get(), network_config::mojom::NetworkType::kWireless)) {
+    return false;
+  }
+  DCHECK(network->signal_strength);
+
+  auto current = network_config::GetWirelessSignalStrength(network_state.get());
+  uint32_t previous = network->signal_strength->value;
+  if (std::abs(1.0 * (current - (int)previous)) <=
+      kMaxSignalStrengthFluctuationTolerance) {
+    return false;
+  }
+  return true;
 }
 
 }  // namespace network_health

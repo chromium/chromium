@@ -10,6 +10,7 @@
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-shared.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "content/public/test/browser_task_environment.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -28,6 +29,49 @@ constexpr char kWifiServiceName[] = "wifi_service_name";
 constexpr char kWifiGuid[] = "wifi_guid";
 constexpr char kWifiDevicePath[] = "/device/wifi1";
 constexpr char kWifiName[] = "wifi_device1";
+
+class FakeNetworkEventsObserver
+    : public chromeos::network_health::mojom::NetworkEventsObserver {
+ public:
+  // chromeos::network_health::mojom::NetworkEventsObserver:
+  void OnConnectionStateChanged(
+      const std::string& guid,
+      chromeos::network_health::mojom::NetworkState state) override {
+    connection_state_changed_event_received_ = true;
+  }
+  void OnSignalStrengthChanged(const std::string& guid,
+                               chromeos::network_health::mojom::UInt32ValuePtr
+                                   signal_strength) override {
+    signal_strength_changed_event_received_ = true;
+  }
+
+  mojo::PendingRemote<chromeos::network_health::mojom::NetworkEventsObserver>
+  pending_remote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  bool connection_state_changed_event_received() {
+    return connection_state_changed_event_received_;
+  }
+
+  bool signal_strength_changed_event_received() {
+    return signal_strength_changed_event_received_;
+  }
+
+  void reset_connection_state_changed_event_received() {
+    connection_state_changed_event_received_ = false;
+  }
+
+  void reset_signal_strength_changed_event_received() {
+    signal_strength_changed_event_received_ = false;
+  }
+
+ private:
+  mojo::Receiver<chromeos::network_health::mojom::NetworkEventsObserver>
+      receiver_{this};
+  bool connection_state_changed_event_received_ = false;
+  bool signal_strength_changed_event_received_ = false;
+};
 
 }  // namespace
 
@@ -265,6 +309,160 @@ TEST_F(NetworkHealthTest, CreateActiveEthernet) {
                       kEthServiceName);
   ValidateNetworkState(network_config::mojom::NetworkType::kWiFi,
                        network_health::mojom::NetworkState::kNotConnected);
+}
+
+TEST_F(NetworkHealthTest, ConnectionStateChangeEvent) {
+  FakeNetworkEventsObserver fake_network_events_observer;
+  network_health_.AddObserver(fake_network_events_observer.pending_remote());
+
+  CreateDefaultWifiDevice();
+  // Create one wifi service that is online.
+  cros_network_config_test_helper_.network_state_helper()
+      .service_test()
+      ->AddService(kWifiServicePath, kWifiGuid, kWifiServiceName,
+                   shill::kTypeWifi, shill::kStateOnline, true);
+  // Wait until the network and service have been created and configured.
+  task_environment_.RunUntilIdle();
+
+  // A new network is online so a connection state event should have fired.
+  EXPECT_EQ(
+      fake_network_events_observer.connection_state_changed_event_received(),
+      true);
+
+  fake_network_events_observer.reset_connection_state_changed_event_received();
+  EXPECT_EQ(
+      fake_network_events_observer.connection_state_changed_event_received(),
+      false);
+
+  // Change the connection state of the service.
+  cros_network_config_test_helper_.network_state_helper().SetServiceProperty(
+      kWifiServicePath, shill::kStateProperty,
+      base::Value(shill::kStateOffline));
+  // Wait until the connection state change event has been fired.
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(
+      fake_network_events_observer.connection_state_changed_event_received(),
+      true);
+}
+
+TEST_F(NetworkHealthTest, SignalStrengthChangeEvent) {
+  FakeNetworkEventsObserver fake_network_events_observer;
+  network_health_.AddObserver(fake_network_events_observer.pending_remote());
+
+  CreateDefaultWifiDevice();
+  // Create one wifi service that is online.
+  cros_network_config_test_helper_.network_state_helper()
+      .service_test()
+      ->AddService(kWifiServicePath, kWifiGuid, kWifiServiceName,
+                   shill::kTypeWifi, shill::kStateOnline, true);
+  // Wait until the network and service have been created and configured.
+  task_environment_.RunUntilIdle();
+
+  // Since there is a new network, a signal strength event should have been
+  // fired.
+  EXPECT_EQ(
+      fake_network_events_observer.signal_strength_changed_event_received(),
+      true);
+
+  // Test for signal strength changes both below and above the allowed
+  // threshold.
+
+  // Set the signal strength to some known value.
+  int signal_strength = 40;
+  cros_network_config_test_helper_.network_state_helper().SetServiceProperty(
+      kWifiServicePath, shill::kSignalStrengthProperty,
+      base::Value(signal_strength));
+
+  // Ensure that FakeNetworkEventsObserver instance is set correctly.
+  fake_network_events_observer.reset_signal_strength_changed_event_received();
+  EXPECT_EQ(
+      fake_network_events_observer.signal_strength_changed_event_received(),
+      false);
+
+  signal_strength = signal_strength +
+                    NetworkHealth::kMaxSignalStrengthFluctuationTolerance + 1;
+  cros_network_config_test_helper_.network_state_helper().SetServiceProperty(
+      kWifiServicePath, shill::kSignalStrengthProperty,
+      base::Value(signal_strength));
+
+  // Wait until the signal strength value has been set in the network state
+  // helper.
+  task_environment_.RunUntilIdle();
+
+  // Signal strength change fires a new event.
+  EXPECT_EQ(
+      fake_network_events_observer.signal_strength_changed_event_received(),
+      true);
+
+  // Reset the FakeNetworkEventsObserver instance.
+  fake_network_events_observer.reset_signal_strength_changed_event_received();
+  EXPECT_EQ(
+      fake_network_events_observer.signal_strength_changed_event_received(),
+      false);
+
+  cros_network_config_test_helper_.network_state_helper().SetServiceProperty(
+      kWifiServicePath, shill::kSignalStrengthProperty,
+      base::Value(signal_strength +
+                  NetworkHealth::kMaxSignalStrengthFluctuationTolerance));
+
+  // Wait until the signal strength property has been set in the network state
+  // helper.
+  task_environment_.RunUntilIdle();
+
+  // No event expected since the change is less than the allowed threshold.
+  EXPECT_EQ(
+      fake_network_events_observer.signal_strength_changed_event_received(),
+      false);
+}
+
+TEST_F(NetworkHealthTest, NoSignalStrengthChangeEventAfterInitialSetup) {
+  FakeNetworkEventsObserver fake_network_events_observer;
+  network_health_.AddObserver(fake_network_events_observer.pending_remote());
+
+  CreateDefaultWifiDevice();
+  // Create one wifi service that is online.
+  cros_network_config_test_helper_.network_state_helper()
+      .service_test()
+      ->AddService(kWifiServicePath, kWifiGuid, kWifiServiceName,
+                   shill::kTypeWifi, shill::kStateOnline, true);
+  // Wait until the network and service have been created and configured.
+  task_environment_.RunUntilIdle();
+
+  // Since there is a new network, a signal strength event should have been
+  // fired.
+  EXPECT_EQ(
+      fake_network_events_observer.signal_strength_changed_event_received(),
+      true);
+
+  // Test for signal strength changes both below and above the allowed
+  // threshold.
+
+  // Set the signal strength to some known value.
+  int signal_strength = 40;
+  cros_network_config_test_helper_.network_state_helper().SetServiceProperty(
+      kWifiServicePath, shill::kSignalStrengthProperty,
+      base::Value(signal_strength));
+
+  // Ensure that FakeNetworkEventsObserver instance is set correctly.
+  fake_network_events_observer.reset_signal_strength_changed_event_received();
+  EXPECT_EQ(
+      fake_network_events_observer.signal_strength_changed_event_received(),
+      false);
+
+  cros_network_config_test_helper_.network_state_helper().SetServiceProperty(
+      kWifiServicePath, shill::kSignalStrengthProperty,
+      base::Value(signal_strength +
+                  NetworkHealth::kMaxSignalStrengthFluctuationTolerance));
+
+  // Wait until the signal strength property has been set in the network state
+  // helper.
+  task_environment_.RunUntilIdle();
+
+  // No event expected since the change is less than the allowed threshold.
+  EXPECT_EQ(
+      fake_network_events_observer.signal_strength_changed_event_received(),
+      false);
 }
 
 }  // namespace network_health

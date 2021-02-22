@@ -25,6 +25,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::chromeos::network_health::mojom::NetworkEventsObserver;
 using ::chromeos::network_health::mojom::NetworkHealthService;
 using ::testing::_;
 using ::testing::Invoke;
@@ -149,6 +150,10 @@ class MockNetworkHealthService : public NetworkHealthService {
   MockNetworkHealthService(const MockNetworkHealthService&) = delete;
   MockNetworkHealthService& operator=(const MockNetworkHealthService&) = delete;
 
+  MOCK_METHOD(void,
+              AddObserver,
+              (mojo::PendingRemote<NetworkEventsObserver>),
+              (override));
   MOCK_METHOD(void,
               GetNetworkList,
               (NetworkHealthService::GetNetworkListCallback),
