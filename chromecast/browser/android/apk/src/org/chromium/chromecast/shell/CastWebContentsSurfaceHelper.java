@@ -12,7 +12,6 @@ import android.os.Handler;
 
 import org.chromium.base.Consumer;
 import org.chromium.base.Log;
-import org.chromium.base.annotations.RemovableInRelease;
 import org.chromium.chromecast.base.Both;
 import org.chromium.chromecast.base.Controller;
 import org.chromium.chromecast.base.Observable;
@@ -214,7 +213,6 @@ class CastWebContentsSurfaceHelper {
         return mTouchInputEnabled;
     }
 
-    @RemovableInRelease
     void setMediaSessionGetterForTesting(MediaSessionGetter mediaSessionGetter) {
         mMediaSessionGetter = mediaSessionGetter;
     }

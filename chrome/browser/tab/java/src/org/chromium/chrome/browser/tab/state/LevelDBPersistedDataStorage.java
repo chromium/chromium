@@ -10,7 +10,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.annotations.RemovableInRelease;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 
@@ -46,7 +45,6 @@ public class LevelDBPersistedDataStorage implements PersistedDataStorage {
         return String.format("%s_%s", mNamespace, key);
     }
 
-    @RemovableInRelease
     @MainThread
     public void saveForTesting(String key, byte[] data, Runnable onComplete) {
         makeNativeAssertion();
@@ -68,7 +66,6 @@ public class LevelDBPersistedDataStorage implements PersistedDataStorage {
                 mNativePersistedStateDB, getMasterKey(key), null);
     }
 
-    @RemovableInRelease
     @MainThread
     public void deleteForTesting(String key, Runnable onComplete) {
         makeNativeAssertion();
