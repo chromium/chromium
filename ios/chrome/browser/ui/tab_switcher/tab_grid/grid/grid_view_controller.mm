@@ -766,9 +766,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       nextLayout = self.gridLayout;
       break;
   }
+  __weak __typeof(self) weakSelf = self;
   auto completionBlock = ^(BOOL completed, BOOL finished) {
-    self.collectionView.scrollEnabled = YES;
-    self.currentLayout = nextLayout;
+    weakSelf.collectionView.scrollEnabled = YES;
+    weakSelf.currentLayout = nextLayout;
     if (completion) {
       completion(completed, finished);
     }
@@ -831,6 +832,14 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     // No-op because behaviour of the tab grid's bottom toolbar when the plus
     // sign cell is visible hasn't been decided yet. TODO(crbug.com/1146130)
   }
+}
+
+- (void)setCurrentLayout:(FlowLayout*)currentLayout {
+  _currentLayout = currentLayout;
+  // The collection view should only always bounce horizonal when in horizontal
+  // layout.
+  self.collectionView.alwaysBounceHorizontal =
+      self.currentLayout == self.horizontalLayout;
 }
 
 #pragma mark - Private
@@ -1023,7 +1032,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   DCHECK(!self.thumbStripEnabled);
 
   UICollectionView* collectionView = self.collectionView;
-  collectionView.alwaysBounceHorizontal = YES;
 
   if (panHandler.currentState == ViewRevealState::Revealed) {
     collectionView.collectionViewLayout = self.gridLayout;
@@ -1046,7 +1054,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   collectionView.collectionViewLayout = gridLayout;
   self.currentLayout = gridLayout;
-  collectionView.alwaysBounceHorizontal = NO;
 
   [collectionView.collectionViewLayout invalidateLayout];
   [collectionView reloadData];
