@@ -49,7 +49,8 @@ ContentToFrameMap ConvertContentInfoMap(
     auto proxy_token = entry.second;
     // Find the RenderFrameHost that the proxy id corresponds to.
     content::RenderFrameHost* rfh =
-        content::RenderFrameHost::FromPlaceholderToken(process_id, proxy_token);
+        content::RenderFrameHost::FromPlaceholderToken(
+            process_id, blink::RemoteFrameToken(proxy_token));
     if (!rfh) {
       // If the corresponding RenderFrameHost cannot be found, just skip it.
       continue;
