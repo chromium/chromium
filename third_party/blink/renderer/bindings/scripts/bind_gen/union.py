@@ -8,6 +8,7 @@ from . import name_style
 from .blink_v8_bridge import blink_class_name
 from .blink_v8_bridge import blink_type_info
 from .blink_v8_bridge import make_v8_to_blink_value
+from .blink_v8_bridge import native_value_tag
 from .blink_v8_bridge import v8_bridge_class_name
 from .code_node import EmptyNode
 from .code_node import ListNode
@@ -548,6 +549,43 @@ def make_clear_function(cg_context):
     return func_decl, func_def
 
 
+def make_tov8value_function(cg_context):
+    assert isinstance(cg_context, CodeGenContext)
+
+    func_decl = CxxFuncDeclNode(name="ToV8Value",
+                                arg_decls=["ScriptState* script_state"],
+                                return_type="v8::MaybeLocal<v8::Value>",
+                                override=True)
+
+    func_def = CxxFuncDefNode(name="ToV8Value",
+                              arg_decls=["ScriptState* script_state"],
+                              return_type="v8::MaybeLocal<v8::Value>",
+                              class_name=cg_context.class_name)
+    func_def.set_base_template_vars(cg_context.template_bindings())
+    body = func_def.body
+    body.add_template_vars({"script_state": "script_state"})
+
+    branches = CxxSwitchNode(cond="content_type_")
+    for member in cg_context.union_members:
+        if member.is_null:
+            text = "return v8::Null(${script_state}->GetIsolate());"
+        else:
+            text = _format("return ToV8Traits<{}>::ToV8(${script_state}, {});",
+                           native_value_tag(member.idl_type), member.var_name)
+        branches.append(case=member.content_type(),
+                        body=TextNode(text),
+                        should_add_break=False)
+
+    body.extend([
+        branches,
+        EmptyNode(),
+        TextNode("NOTREACHED();"),
+        TextNode("return v8::MaybeLocal<v8::Value>();"),
+    ])
+
+    return func_decl, func_def
+
+
 def make_trace_function(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
@@ -669,6 +707,8 @@ def generate_union(union_identifier):
     ctor_decls, ctor_defs = make_constructors(cg_context)
     accessor_decls, accessor_defs = make_accessor_functions(cg_context)
     clear_func_decls, clear_func_defs = make_clear_function(cg_context)
+    tov8value_func_decls, tov8value_func_defs = make_tov8value_function(
+        cg_context)
     trace_func_decls, trace_func_defs = make_trace_function(cg_context)
     name_func_decls, name_func_defs = make_name_function(cg_context)
     member_vars_def = make_member_vars_def(cg_context)
@@ -713,6 +753,7 @@ def generate_union(union_identifier):
     source_node.accumulator.add_include_headers([
         "third_party/blink/renderer/bindings/core/v8/generated_code_helper.h",
         "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h",
+        "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h",
         "third_party/blink/renderer/platform/bindings/exception_state.h",
     ])
     header_node.accumulator.add_class_decls(
@@ -756,6 +797,11 @@ def generate_union(union_identifier):
     class_def.public_section.append(clear_func_decls)
     class_def.public_section.append(EmptyNode())
     source_blink_ns.body.append(clear_func_defs)
+    source_blink_ns.body.append(EmptyNode())
+
+    class_def.public_section.append(tov8value_func_decls)
+    class_def.public_section.append(EmptyNode())
+    source_blink_ns.body.append(tov8value_func_defs)
     source_blink_ns.body.append(EmptyNode())
 
     class_def.public_section.append(trace_func_decls)
