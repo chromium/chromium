@@ -10,7 +10,7 @@ import android.text.Selection;
 import android.text.TextUtils;
 import android.view.ActionMode;
 
-import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
@@ -83,7 +83,6 @@ class UrlBarViewBinder {
     }
 
     private static void updateTextColors(UrlBar view, boolean useDarkTextColors) {
-        @ColorInt
         int originalHighlightColor;
         Object highlightColorObj = view.getTag(R.id.highlight_color);
         if (highlightColorObj == null || !(highlightColorObj instanceof Integer)) {
@@ -94,11 +93,8 @@ class UrlBarViewBinder {
         }
 
         Resources resources = view.getResources();
-        @ColorInt
         int textColor;
-        @ColorInt
         int hintColor;
-        @ColorInt
         int highlightColor;
         if (useDarkTextColors) {
             textColor = ApiCompatibilityUtils.getColor(resources, R.color.default_text_color_dark);
@@ -118,31 +114,30 @@ class UrlBarViewBinder {
         view.setHighlightColor(highlightColor);
     }
 
-    private static void setHintTextColor(UrlBar view, @ColorInt int textColor) {
-        // Note: Setting the hint text color only takes effect if there is no text in the URL bar.
+    private static void setHintTextColor(UrlBar view, @ColorRes int textColor) {
+        // Note: Setting the hint text color only takes effect if there is not text in the URL bar.
         //       To get around this, set the URL to empty before setting the hint color and revert
         //       back to the previous text after.
+        boolean hasNonEmptyText = false;
+        int selectionStart = 0;
+        int selectionEnd = 0;
         Editable text = view.getText();
-        if (TextUtils.isEmpty(text)) {
-            view.setHintTextColor(textColor);
-            return;
+        if (!TextUtils.isEmpty(text)) {
+            selectionStart = view.getSelectionStart();
+            selectionEnd = view.getSelectionEnd();
+            // Make sure the setText in this block does not affect the suggestions.
+            view.setIgnoreTextChangesForAutocomplete(true);
+            view.setText("");
+            hasNonEmptyText = true;
         }
-
-        int selectionStart = view.getSelectionStart();
-        int selectionEnd = view.getSelectionEnd();
-
-        // Make sure the setText in this block does not affect the suggestions.
-        view.setIgnoreTextChangesForAutocomplete(true);
-        view.setText("");
         view.setHintTextColor(textColor);
-        view.setText(text);
-
-        // Restore the previous selection, if there was one.
-        if (selectionStart >= 0 && selectionEnd >= 0 && view.hasFocus()) {
-            Selection.setSelection(view.getText(), selectionStart, selectionEnd);
+        if (hasNonEmptyText) {
+            view.setText(text);
+            if (view.hasFocus()) {
+                Selection.setSelection(view.getText(), selectionStart, selectionEnd);
+            }
+            view.setIgnoreTextChangesForAutocomplete(false);
         }
-
-        view.setIgnoreTextChangesForAutocomplete(false);
     }
 
     private UrlBarViewBinder() {}
