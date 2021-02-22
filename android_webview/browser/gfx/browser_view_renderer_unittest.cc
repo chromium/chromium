@@ -50,8 +50,8 @@ class ActiveCompositorSwitchBeforeConstructionTest : public RenderingTest {
       case 1:
         EXPECT_TRUE(success);
         // Change compositor here. And do another ondraw.
-        // The previous active compositor id is 0, 0, now change it to 0, 1.
-        browser_view_renderer_->SetActiveFrameSinkId(viz::FrameSinkId(0, 1));
+        // The previous active compositor id is 1, 0, now change it to 1, 1.
+        browser_view_renderer_->SetActiveFrameSinkId(viz::FrameSinkId(1, 1));
         browser_view_renderer_->PostInvalidate(ActiveCompositor());
         break;
       case 2:
@@ -59,7 +59,7 @@ class ActiveCompositorSwitchBeforeConstructionTest : public RenderingTest {
         // the moment.
         EXPECT_FALSE(success);
         new_compositor_.reset(
-            new content::TestSynchronousCompositor(viz::FrameSinkId(0, 1)));
+            new content::TestSynchronousCompositor(viz::FrameSinkId(1, 1)));
         new_compositor_->SetClient(browser_view_renderer_.get());
         EXPECT_EQ(ActiveCompositor(), new_compositor_.get());
         browser_view_renderer_->PostInvalidate(ActiveCompositor());
@@ -102,9 +102,9 @@ class ActiveCompositorSwitchAfterConstructionTest : public RenderingTest {
         // Create a new compositor here. And switch it to be active.  And then
         // do another ondraw.
         new_compositor_.reset(
-            new content::TestSynchronousCompositor(viz::FrameSinkId(0, 1)));
+            new content::TestSynchronousCompositor(viz::FrameSinkId(1, 1)));
         new_compositor_->SetClient(browser_view_renderer_.get());
-        browser_view_renderer_->SetActiveFrameSinkId(viz::FrameSinkId(0, 1));
+        browser_view_renderer_->SetActiveFrameSinkId(viz::FrameSinkId(1, 1));
 
         EXPECT_EQ(ActiveCompositor(), new_compositor_.get());
         browser_view_renderer_->PostInvalidate(ActiveCompositor());
