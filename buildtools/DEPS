@@ -26,7 +26,7 @@ vars = {
   # TODO(crbug.com/1166332) rename to clang_format_revision.
   'clang_fmt_revision':    '99803d74e35962f63a775f29477882afd4d57d94',
   'libcxx_revision':       '8fa87946779682841e21e2da977eccfb6cb3bded',
-  'libcxxabi_revision':    '5fb4080bfe3daeb36e10abe50202d6579bf95072',
+  'libcxxabi_revision':    '196ba1aaa8ac285d94f4ea8d9836390a45360533',
   'libunwind_revision':    'a2cc4f8c554dedcb0c64cac5511b19c43f1f3d32',
 }
 
