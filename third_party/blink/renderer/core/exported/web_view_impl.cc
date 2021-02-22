@@ -1946,6 +1946,9 @@ void WebViewImpl::DidAttachRemoteMainFrame() {
               ->GetPageScheduler()
               ->GetAgentGroupScheduler()
               .DefaultTaskRunner()));
+
+  auto& viewport = GetPage()->GetVisualViewport();
+  viewport.Reset();
 }
 
 void WebViewImpl::DidDetachLocalMainFrame() {

@@ -2405,6 +2405,48 @@ TEST_P(VisualViewportTest, AutoResizeNoHeightUsesMinimumHeight) {
                                      base_url);
 }
 
+// When a provisional frame is committed, it will get swapped in. At that
+// point, the VisualViewport will be reset but the Document is in a detached
+// state with no domWindow(). Ensure we correctly reset the viewport properties
+// but don't crash trying to enqueue resize and scroll events in the document.
+// https://crbug.com/1175916.
+TEST_P(VisualViewportTest, SwapMainFrame) {
+  InitializeWithDesktopSettings();
+
+  WebView()->SetPageScaleFactor(2.0f);
+  WebView()->SetVisualViewportOffset(gfx::PointF(10, 20));
+
+  WebLocalFrame* local_frame =
+      helper_.CreateProvisional(*helper_.LocalMainFrame());
+
+  // Commit the provisional frame so it gets swapped in.
+  RegisterMockedHttpURLLoad("200-by-300.html");
+  frame_test_helpers::LoadFrame(local_frame, base_url_ + "200-by-300.html");
+
+  EXPECT_EQ(WebView()->PageScaleFactor(), 1.0f);
+  EXPECT_EQ(WebView()->VisualViewportOffset().x(), 0.0f);
+  EXPECT_EQ(WebView()->VisualViewportOffset().y(), 0.0f);
+}
+
+// Similar to above but checks the case where a page is loaded such that it
+// will zoom out as a result of loading and layout (i.e. loading a desktop page
+// on Android).
+TEST_P(VisualViewportTest, SwapMainFrameLoadZoomedOut) {
+  InitializeWithAndroidSettings();
+  WebView()->MainFrameViewWidget()->Resize(gfx::Size(100, 150));
+
+  WebLocalFrame* local_frame =
+      helper_.CreateProvisional(*helper_.LocalMainFrame());
+
+  // Commit the provisional frame so it gets swapped in.
+  RegisterMockedHttpURLLoad("200-by-300.html");
+  frame_test_helpers::LoadFrame(local_frame, base_url_ + "200-by-300.html");
+
+  EXPECT_EQ(WebView()->PageScaleFactor(), 0.5f);
+  EXPECT_EQ(WebView()->VisualViewportOffset().x(), 0.0f);
+  EXPECT_EQ(WebView()->VisualViewportOffset().y(), 0.0f);
+}
+
 class VisualViewportSimTest : public SimTest {
  public:
   VisualViewportSimTest() {}

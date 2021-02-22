@@ -8971,10 +8971,8 @@ TEST_F(WebFrameSwapTest, SwapMainFrameWithPageScaleReset) {
 
   WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote();
   MainFrame()->Swap(remote_frame);
+  WebView()->DidAttachRemoteMainFrame();
   EXPECT_EQ(1.0, WebView()->PageScaleFactor());
-  // Note: if we were to extend this test to call frame_test_helpers::LoadFrame
-  // as in WebFrameSwapTest.SwapMainFrame, then an appropriate binding must be
-  // provided for the AssociatedRemote.
 }
 
 TEST_F(WebFrameSwapTest, ValidateSizeOnRemoteToLocalMainFrameSwap) {
