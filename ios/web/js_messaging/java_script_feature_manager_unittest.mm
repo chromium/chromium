@@ -117,3 +117,36 @@ TEST_F(JavaScriptFeatureManagerTest, MainFrameEndFeature) {
   EXPECT_EQ(WKUserScriptInjectionTimeAtDocumentEnd, user_script.injectionTime);
   EXPECT_EQ(YES, user_script.forMainFrameOnly);
 }
+
+// Tests that JavaScriptFeatureManager adds a JavaScriptFeature for all frames
+// at document end time for an isolated world.
+TEST_F(JavaScriptFeatureManagerTest, MainFrameEndFeatureIsolatedWorld) {
+  // Using ContentWorld::kIsolatedWorldOnly on older versions of iOS will
+  // trigger a DCHECK, so return early before that happens.
+  if (!base::ios::IsRunningOnIOS14OrLater()) {
+    return;
+  }
+
+  ASSERT_TRUE(GetJavaScriptFeatureManager());
+
+  std::vector<const web::JavaScriptFeature::FeatureScript> feature_scripts = {
+      web::JavaScriptFeature::FeatureScript::CreateWithFilename(
+          "java_script_feature_test_inject_once_js",
+          web::JavaScriptFeature::FeatureScript::InjectionTime::kDocumentEnd,
+          web::JavaScriptFeature::FeatureScript::TargetFrames::kMainFrame)};
+
+  std::unique_ptr<web::JavaScriptFeature> feature =
+      std::make_unique<web::JavaScriptFeature>(
+          web::JavaScriptFeature::ContentWorld::kIsolatedWorldOnly,
+          feature_scripts);
+
+  GetJavaScriptFeatureManager()->ConfigureFeatures({feature.get()});
+
+  EXPECT_EQ(7ul, [GetUserContentController().userScripts count]);
+  WKUserScript* user_script =
+      [GetUserContentController().userScripts lastObject];
+  EXPECT_TRUE(
+      [user_script.source containsString:@"__gCrWeb.javaScriptFeatureTest"]);
+  EXPECT_EQ(WKUserScriptInjectionTimeAtDocumentEnd, user_script.injectionTime);
+  EXPECT_EQ(YES, user_script.forMainFrameOnly);
+}

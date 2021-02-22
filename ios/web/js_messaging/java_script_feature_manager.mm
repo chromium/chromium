@@ -74,10 +74,12 @@ void JavaScriptFeatureManager::ConfigureFeatures(
 
   for (JavaScriptFeature* feature : features) {
     if (isolated_world_ &&
-        feature->GetSupportedContentWorld() ==
-            JavaScriptFeature::ContentWorld::kAnyContentWorld) {
+        feature->GetSupportedContentWorld() !=
+            JavaScriptFeature::ContentWorld::kPageContentWorld) {
       isolated_world_->AddFeature(feature);
     } else {
+      DCHECK_NE(feature->GetSupportedContentWorld(),
+                JavaScriptFeature::ContentWorld::kIsolatedWorldOnly);
       page_content_world_->AddFeature(feature);
     }
   }

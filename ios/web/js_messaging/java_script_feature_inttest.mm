@@ -5,6 +5,7 @@
 #include "base/test/ios/wait_util.h"
 
 #include "base/bind.h"
+#import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
@@ -86,6 +87,32 @@ TEST_F(JavaScriptFeatureTest,
        JavaScriptFeatureExecuteJavaScriptInIsolatedWorld) {
   FakeJavaScriptFeature feature(
       web::JavaScriptFeature::ContentWorld::kAnyContentWorld);
+
+  web::JavaScriptFeatureManager::FromBrowserState(GetBrowserState())
+      ->ConfigureFeatures({&feature});
+
+  LoadHtml(kPageHTML);
+  ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents1"));
+  ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents2"));
+
+  feature.ReplaceDivContents(GetMainFrame(web_state()));
+
+  EXPECT_TRUE(test::WaitForWebViewContainingText(web_state(), "updated"));
+  EXPECT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents2"));
+}
+
+// Tests that a JavaScriptFeature correctly calls JavaScript functions when
+// configured in an isolated world only.
+TEST_F(JavaScriptFeatureTest,
+       JavaScriptFeatureExecuteJavaScriptInIsolatedWorldOnly) {
+  // Using ContentWorld::kIsolatedWorldOnly on older versions of iOS will
+  // trigger a DCHECK, so return early.
+  if (!base::ios::IsRunningOnIOS14OrLater()) {
+    return;
+  }
+
+  FakeJavaScriptFeature feature(
+      web::JavaScriptFeature::ContentWorld::kIsolatedWorldOnly);
 
   web::JavaScriptFeatureManager::FromBrowserState(GetBrowserState())
       ->ConfigureFeatures({&feature});

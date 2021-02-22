@@ -78,9 +78,20 @@ void JavaScriptContentWorld::AddFeature(const JavaScriptFeature* feature) {
 #if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
   if (@available(iOS 14, *)) {
     // Ensure |feature| supports this content world.
-    if (content_world_ && content_world_ != WKContentWorld.pageWorld) {
-      DCHECK_EQ(feature->GetSupportedContentWorld(),
-                JavaScriptFeature::ContentWorld::kAnyContentWorld);
+    if (content_world_) {
+      JavaScriptFeature::ContentWorld incompatible_world_value;
+      if (content_world_ == WKContentWorld.pageWorld) {
+        // A feature specifying kIsolatedWorldOnly must not be added to the page
+        // content world.
+        incompatible_world_value =
+            JavaScriptFeature::ContentWorld::kIsolatedWorldOnly;
+      } else {
+        // A feature specifying kPageContentWorld must not be added to an
+        // isolated world.
+        incompatible_world_value =
+            JavaScriptFeature::ContentWorld::kPageContentWorld;
+      }
+      DCHECK_NE(feature->GetSupportedContentWorld(), incompatible_world_value);
     }
   }
 #endif  // defined(__IPHONE14_0)

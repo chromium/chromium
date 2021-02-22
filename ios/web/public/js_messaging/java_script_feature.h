@@ -45,6 +45,12 @@ class JavaScriptFeature {
     // JavaScript which needs to be accessible to the client JavaScript. For
     // example, JavaScript polyfills.
     kPageContentWorld,
+    // Represents an isolated world that is not accessible to the JavaScript of
+    // the webpage. This value should be used when it is important from a
+    // security standpoint to make a feature's JavaScript inaccessible to
+    // client JavaScript. Isolated worlds are supported only on iOS 14+, so
+    // using the value on earlier iOS versions will trigger a DCHECK.
+    kIsolatedWorldOnly,
   };
 
   // A script to be injected into webpage frames which support this feature.
