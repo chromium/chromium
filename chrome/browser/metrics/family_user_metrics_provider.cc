@@ -4,7 +4,7 @@
 
 #include "chrome/browser/metrics/family_user_metrics_provider.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -21,7 +21,7 @@
 
 namespace {
 
-constexpr char kHistogramName[] = "ChromeOS.FamilyUser.LogSegment";
+constexpr char kHistogramName[] = "ChromeOS.FamilyUser.LogSegment2";
 
 // Returns user's segment for metrics logging.
 enterprise_management::PolicyData::MetricsLogSegment GetMetricsLogSegment(
@@ -108,6 +108,11 @@ void FamilyUserMetricsProvider::OnUserSessionStarted(bool is_primary_user) {
     DCHECK(profile->GetProfilePolicyConnector()->IsManaged());
     // This is a K-12 EDU user on an unmanaged ChromeOS device.
     log_segment_ = LogSegment::kStudentAtHome;
+  } else if (!IsEnterpriseManaged() &&
+             !profile->GetProfilePolicyConnector()->IsManaged()) {
+    DCHECK(!profile->IsChild());
+    // This is a regular unmanaged user on an unmanaged device.
+    log_segment_ = LogSegment::kRegularUser;
   } else {
     log_segment_ = LogSegment::kOther;
   }

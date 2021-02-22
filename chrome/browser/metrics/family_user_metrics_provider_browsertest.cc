@@ -40,6 +40,7 @@ chromeos::LoggedInUserMixin::LogInType GetPrimaryLogInType(
     case FamilyUserMetricsProvider::LogSegment::kSupervisedStudent:
       return chromeos::LoggedInUserMixin::LogInType::kChild;
     case FamilyUserMetricsProvider::LogSegment::kStudentAtHome:
+    case FamilyUserMetricsProvider::LogSegment::kRegularUser:
     case FamilyUserMetricsProvider::LogSegment::kOther:
       return chromeos::LoggedInUserMixin::LogInType::kRegular;
   }
@@ -93,8 +94,8 @@ class FamilyUserMetricsProviderTest
   void SetUpInProcessBrowserTestFixture() override {
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
 
-    const FamilyUserMetricsProvider::LogSegment log_segment = GetParam();
-    if (log_segment == FamilyUserMetricsProvider::LogSegment::kStudentAtHome) {
+    if (GetLogSegment() ==
+        FamilyUserMetricsProvider::LogSegment::kStudentAtHome) {
       logged_in_user_mixin_.GetUserPolicyMixin()
           ->RequestPolicyUpdate()
           ->policy_data()
@@ -103,10 +104,12 @@ class FamilyUserMetricsProviderTest
   }
 
  protected:
+  FamilyUserMetricsProvider::LogSegment GetLogSegment() { return GetParam(); }
+
   chromeos::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, GetPrimaryLogInType(GetParam()), embedded_test_server(),
-      this,
-      /*should_launch_browser=*/true, GetPrimaryAccountId(GetParam()),
+      &mixin_host_, GetPrimaryLogInType(GetLogSegment()),
+      embedded_test_server(), this,
+      /*should_launch_browser=*/true, GetPrimaryAccountId(GetLogSegment()),
       /*include_initial_user=*/true,
       // Don't use LocalPolicyTestServer because it does not support customizing
       // PolicyData.
@@ -129,8 +132,7 @@ IN_PROC_BROWSER_TEST_P(FamilyUserMetricsProviderTest, UserCategory) {
 
   logged_in_user_mixin_.LogInUser();
 
-  const FamilyUserMetricsProvider::LogSegment log_segment = GetParam();
-  if (log_segment ==
+  if (GetLogSegment() ==
       FamilyUserMetricsProvider::LogSegment::kSupervisedStudent) {
     // Add a secondary EDU account.
     Profile* profile = browser()->profile();
@@ -147,16 +149,17 @@ IN_PROC_BROWSER_TEST_P(FamilyUserMetricsProviderTest, UserCategory) {
   ProvideCurrentSessionData();
 
   histogram_tester.ExpectUniqueSample(
-      FamilyUserMetricsProvider::GetHistogramNameForTesting(), log_segment, 1);
+      FamilyUserMetricsProvider::GetHistogramNameForTesting(), GetLogSegment(),
+      1);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     ,
     FamilyUserMetricsProviderTest,
-    testing::Values(FamilyUserMetricsProvider::LogSegment::kOther,
-                    FamilyUserMetricsProvider::LogSegment::kSupervisedUser,
+    testing::Values(FamilyUserMetricsProvider::LogSegment::kSupervisedUser,
                     FamilyUserMetricsProvider::LogSegment::kSupervisedStudent,
-                    FamilyUserMetricsProvider::LogSegment::kStudentAtHome));
+                    FamilyUserMetricsProvider::LogSegment::kStudentAtHome,
+                    FamilyUserMetricsProvider::LogSegment::kRegularUser));
 
 class FamilyUserMetricsProviderGuestModeTest
     : public MixinBasedInProcessBrowserTest {

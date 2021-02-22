@@ -27350,6 +27350,7 @@ Called by update_extension_permission.py.-->
   <int value="1" label="Supervised User"/>
   <int value="2" label="Supervised Student"/>
   <int value="3" label="Student at Home"/>
+  <int value="4" label="Regular User"/>
 </enum>
 
 <enum name="FaultTolerantHeap">

@@ -400,6 +400,26 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.FamilyUser.LogSegment" enum="FamilyUserLogSegment"
+    expires_after="2021-07-23">
+  <obsolete>
+    Replaced with ChromeOS.FamilyUser.LogSegment2 in M90
+  </obsolete>
+  <owner>tobyhuang@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    Categorizes the current user for the Family Experiences team's metrics.
+    Other is for all other users that do not fall into any of the below
+    categories. A Supervised User has a supervised primary account and no
+    secondary accounts. A Supervised Student has a supervised primary account
+    and one or more EDU secondary accounts, which is the only available option
+    for a secondary account in that scenario. A Student at Home has a K-12 EDU
+    primary account on an unmanaged ChromeOS device, regardless of the secondary
+    account.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.FamilyUser.LogSegment2" enum="FamilyUserLogSegment"
     expires_after="never">
 <!-- expires-never: used internally for filtering -->
 
@@ -414,7 +434,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     and one or more EDU secondary accounts, which is the only available option
     for a secondary account in that scenario. A Student at Home has a K-12 EDU
     primary account on an unmanaged ChromeOS device, regardless of the secondary
-    account.
+    account. A Regular User is an unmanaged regular user on an unmanaged device.
   </summary>
 </histogram>
 
