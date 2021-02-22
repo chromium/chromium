@@ -6,6 +6,7 @@
 
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
@@ -34,7 +35,11 @@ void SceneUrlLoadingService::LoadUrlInNewTab(const UrlLoadParams& params) {
 
     if (params.from_chrome) {
       auto dismiss_completion = ^{
-        [delegate_ openSelectedTabInMode:ApplicationModeForTabOpening::NORMAL
+        ApplicationModeForTabOpening mode =
+            IsIncognitoModeForced(browser->GetBrowserState()->GetPrefs())
+                ? ApplicationModeForTabOpening::INCOGNITO
+                : ApplicationModeForTabOpening::NORMAL;
+        [delegate_ openSelectedTabInMode:mode
                        withUrlLoadParams:saved_params
                               completion:nil];
       };

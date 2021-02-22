@@ -251,6 +251,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 @property(nonatomic, weak)
     WelcomeToChromeViewController* welcomeToChromeController;
 
+// Properties related to the incognito policy.
+@property(nonatomic, readonly) BOOL forceIncognitoByPolicy;
+
 @end
 
 @implementation SceneController {
@@ -956,6 +959,12 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   UMA_HISTOGRAM_ENUMERATION("IOS.LocationPermissionsUI", experimentGroup);
 }
 
+- (BOOL)forceIncognitoByPolicy {
+  PrefService* prefService =
+      self.mainInterface.browser->GetBrowserState()->GetPrefs();
+  return IsIncognitoModeForced(prefService);
+}
+
 #pragma mark - First Run
 
 // Initializes the first run UI and presents it to the user.
@@ -1111,8 +1120,10 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   UrlLoadParams params = UrlLoadParams::InNewTab([command URL]);
   params.web_params.transition_type = ui::PAGE_TRANSITION_TYPED;
   ProceduralBlock completion = ^{
-    [self dismissModalsAndOpenSelectedTabInMode:ApplicationModeForTabOpening::
-                                                    NORMAL
+    ApplicationModeForTabOpening mode =
+        self.forceIncognitoByPolicy ? ApplicationModeForTabOpening::INCOGNITO
+                                    : ApplicationModeForTabOpening::NORMAL;
+    [self dismissModalsAndOpenSelectedTabInMode:mode
                               withUrlLoadParams:params
                                  dismissOmnibox:YES
                                      completion:nil];
