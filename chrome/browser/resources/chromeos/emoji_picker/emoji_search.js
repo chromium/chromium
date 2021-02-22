@@ -129,12 +129,13 @@ export class EmojiSearch extends PolymerElement {
    * 1) Remove duplicates.
    * 2) Remove groupings.
    * @param {!EmojiGroupData} emojiData
+   * @return {!Array<!EmojiVariants>}
    */
   computeEmojiList(emojiData) {
-    return new Map(emojiData.map(group => group.emoji)
-                       .flat(1)
-                       .map(emoji => [emoji.base.string, emoji]))
-        .values();
+    return Array.from(new Map(emojiData.map(group => group.emoji)
+                                  .flat(1)
+                                  .map(emoji => [emoji.base.string, emoji]))
+                          .values());
   }
 
   /**
