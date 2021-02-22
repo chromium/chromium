@@ -3531,6 +3531,7 @@ ci.fyi_coverage_builder(
         short_name = "lcr",
     ),
     use_clang_coverage = True,
+    coverage_test_types = ["overall", "unit"],
     schedule = "triggered",
     triggered_by = [],
 )
