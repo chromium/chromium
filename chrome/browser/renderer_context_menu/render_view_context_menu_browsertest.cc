@@ -917,7 +917,13 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenIncognitoNoneReferrer) {
 }
 
 // Verify that "Open link in [App Name]" opens a new App window.
-IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenLinkInWebApp) {
+// TODO(crbug.com/1180790): Test is flaky on Linux and Windows.
+#if defined(OS_LINUX) || defined(OS_WIN)
+#define MAYBE_OpenLinkInWebApp DISABLED_OpenLinkInWebApp
+#else
+#define MAYBE_OpenLinkInWebApp OpenLinkInWebApp
+#endif
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, MAYBE_OpenLinkInWebApp) {
   InstallTestWebApp(GURL(kAppUrl1));
 
   ASSERT_TRUE(embedded_test_server()->Start());
