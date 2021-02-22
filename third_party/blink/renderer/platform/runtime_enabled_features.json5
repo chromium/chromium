@@ -2341,9 +2341,8 @@
     },
     {
       name: "WebXRLightEstimation",
-      origin_trial_feature_name: "WebXRLightEstimation",
       depends_on: ["WebXRARModule"],
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "WebXRPlaneDetection",

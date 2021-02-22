@@ -9276,6 +9276,7 @@ interface XRFrame
     method createAnchor
     method getHitTestResults
     method getHitTestResultsForTransientInput
+    method getLightEstimate
     method getPose
     method getViewerPose
 interface XRHitTestResult
@@ -9319,6 +9320,18 @@ interface XRInputSourcesChangeEvent : Event
 interface XRLayer : EventTarget
     attribute @@toStringTag
     method constructor
+interface XRLightEstimate
+    attribute @@toStringTag
+    getter primaryLightDirection
+    getter primaryLightIntensity
+    getter sphericalHarmonicsCoefficients
+    method constructor
+interface XRLightProbe : EventTarget
+    attribute @@toStringTag
+    getter onreflectionchange
+    getter probeSpace
+    method constructor
+    setter onreflectionchange
 interface XRPose
     attribute @@toStringTag
     getter emulatedPosition
@@ -9370,6 +9383,7 @@ interface XRSession : EventTarget
     getter onsqueezeend
     getter onsqueezestart
     getter onvisibilitychange
+    getter preferredReflectionFormat
     getter renderState
     getter visibilityState
     method cancelAnimationFrame
@@ -9378,6 +9392,7 @@ interface XRSession : EventTarget
     method requestAnimationFrame
     method requestHitTestSource
     method requestHitTestSourceForTransientInput
+    method requestLightProbe
     method requestReferenceSpace
     method updateRenderState
     setter onend
@@ -9436,6 +9451,7 @@ interface XRViewport
 interface XRWebGLBinding
     attribute @@toStringTag
     method constructor
+    method getReflectionCubeMap
 interface XRWebGLLayer : XRLayer
     static method getNativeFramebufferScaleFactor
     attribute @@toStringTag
