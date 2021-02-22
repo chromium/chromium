@@ -202,7 +202,8 @@ class MirrorRootWindowTransformer : public RootWindowTransformer {
       const display::ManagedDisplayInfo& mirror_display_info) {
     root_bounds_ =
         gfx::Rect(source_display_info.GetSizeInPixelWithPanelOrientation());
-    active_root_rotation_ = source_display_info.GetActiveRotation();
+    display::Display::Rotation active_root_rotation =
+        source_display_info.GetActiveRotation();
 
     // The rotation of the source display (internal display) should be undone in
     // the destination display (external display) if mirror mode is enabled in
@@ -222,11 +223,25 @@ class MirrorRootWindowTransformer : public RootWindowTransformer {
       gfx::RectF rotated_bounds(root_bounds_);
       rotation_transform.TransformRect(&rotated_bounds);
       root_bounds_ = gfx::ToNearestRect(rotated_bounds);
-      active_root_rotation_ = display::Display::ROTATE_0;
+      active_root_rotation = display::Display::ROTATE_0;
     }
 
     gfx::Rect mirror_display_rect =
         gfx::Rect(mirror_display_info.bounds_in_native().size());
+
+    // When logical rotation is 90 or 270 degree, transpose is needed to apply
+    // reverse rotation to `root_bounds_` and `mirror_display_rect` to exclude
+    // the rotation. This is because the rotation happens at viz output and
+    // `transform_` needs to be calculated without the rotation.
+    // E.g. host native size 1600x1200. Rotation 90 degree. `transform_` needs
+    // to fit 1200x1600 rather than 1600x1200.
+    const bool need_transpose =
+        active_root_rotation == display::Display::ROTATE_90 ||
+        active_root_rotation == display::Display::ROTATE_270;
+    if (need_transpose) {
+      root_bounds_.Transpose();
+      mirror_display_rect.Transpose();
+    }
 
     bool letterbox = root_bounds_.width() * mirror_display_rect.height() >
                      root_bounds_.height() * mirror_display_rect.width();
@@ -265,12 +280,7 @@ class MirrorRootWindowTransformer : public RootWindowTransformer {
     return invert;
   }
   gfx::Rect GetRootWindowBounds(const gfx::Size& host_size) const override {
-    gfx::Rect adjusted_root = root_bounds_;
-    if (active_root_rotation_ == display::Display::ROTATE_90 ||
-        active_root_rotation_ == display::Display::ROTATE_270) {
-      adjusted_root.Transpose();
-    }
-    return adjusted_root;
+    return root_bounds_;
   }
   gfx::Insets GetHostInsets() const override { return insets_; }
   gfx::Transform GetInsetsAndScaleTransform() const override {
@@ -283,12 +293,6 @@ class MirrorRootWindowTransformer : public RootWindowTransformer {
   gfx::Transform transform_;
   gfx::Rect root_bounds_;
   gfx::Insets insets_;
-
-  // |root_bounds_| contains physical bounds with panel orientation but not
-  // active rotation of the source. |active_root_rotation_| contains the active
-  // rotation to be combined with |root_bounds_| to calculate a root window
-  // bounds.
-  display::Display::Rotation active_root_rotation_;
 
   DISALLOW_COPY_AND_ASSIGN(MirrorRootWindowTransformer);
 };
