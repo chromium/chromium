@@ -41,13 +41,13 @@ class UkmEntryFilter {
   // UkmEntryFilters.
   //
   // Returning false drops the entire entry.
-  virtual bool FilterEntry(
-      mojom::UkmEntry* entry,
-      base::flat_set<uint64_t>* removed_metric_hashes) const = 0;
+  virtual bool FilterEntry(mojom::UkmEntry* entry,
+                           base::flat_set<uint64_t>* removed_metric_hashes) = 0;
 
-  // UkmService invokes this method every time a report is generated.
-  //
-  virtual void OnStoreRecordingsInReport() const {}
+  // Invoked each time UkmService constructs a client report and stores all
+  // accumulated recordings in it. Effectively signals the start of a new
+  // report.
+  virtual void OnStoreRecordingsInReport() {}
 };
 
 }  // namespace ukm

@@ -25,8 +25,8 @@ class PrivacyBudgetUkmEntryFilter : public ukm::UkmEntryFilter {
 
   // ukm::UkmEntryFilter
   bool FilterEntry(ukm::mojom::UkmEntry* entry,
-                   base::flat_set<uint64_t>* removed_metric_hashes) const final;
-  void OnStoreRecordingsInReport() const final;
+                   base::flat_set<uint64_t>* removed_metric_hashes) final;
+  void OnStoreRecordingsInReport() final;
 
  private:
   IdentifiabilityStudyState* const identifiability_study_state_;
@@ -35,13 +35,10 @@ class PrivacyBudgetUkmEntryFilter : public ukm::UkmEntryFilter {
   // reset each time the UKM service constructs a new UKM report. The goal being
   // that each report includes a metadata tag.
   //
-  // Mutable because this needs to be updated during `FilterEntry` which is
-  // const.
-  //
   // This flag is meant as an optimization. Ideally every `UkmEntry` should
   // include the metadata, but that leads to a fairly large overhead much of
   // which is redundant.
-  mutable bool metadata_reported_ = false;
+  bool metadata_reported_ = false;
 };
 
 #endif  // CHROME_BROWSER_PRIVACY_BUDGET_PRIVACY_BUDGET_UKM_ENTRY_FILTER_H_
