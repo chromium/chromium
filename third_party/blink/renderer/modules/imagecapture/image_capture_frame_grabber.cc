@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
@@ -58,13 +59,16 @@ void OnError(std::unique_ptr<ImageCaptureGrabFrameCallbacks> callbacks) {
 class ImageCaptureFrameGrabber::SingleShotFrameHandler
     : public WTF::ThreadSafeRefCounted<SingleShotFrameHandler> {
  public:
-  SingleShotFrameHandler() : first_frame_received_(false) {}
+  using SkImageDeliverCB = WTF::CrossThreadOnceFunction<void(sk_sp<SkImage>)>;
+
+  explicit SingleShotFrameHandler(SkImageDeliverCB deliver_cb)
+      : deliver_cb_(std::move(deliver_cb)) {
+    DCHECK(deliver_cb_);
+  }
 
   // Receives a |frame| and converts its pixels into a SkImage via an internal
   // PaintSurface and SkPixmap. Alpha channel, if any, is copied.
-  using SkImageDeliverCB = WTF::CrossThreadFunction<void(sk_sp<SkImage>)>;
   void OnVideoFrameOnIOThread(
-      SkImageDeliverCB callback,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       scoped_refptr<media::VideoFrame> frame,
       std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
@@ -77,28 +81,26 @@ class ImageCaptureFrameGrabber::SingleShotFrameHandler
   void ConvertAndDeliverFrame(SkImageDeliverCB callback,
                               scoped_refptr<media::VideoFrame> frame);
 
-  // Flag to indicate that the first frames has been processed, and subsequent
-  // ones can be safely discarded.
-  bool first_frame_received_;
+  // Null once the initial frame has been queued for delivery.
+  SkImageDeliverCB deliver_cb_;
 
   DISALLOW_COPY_AND_ASSIGN(SingleShotFrameHandler);
 };
 
 void ImageCaptureFrameGrabber::SingleShotFrameHandler::OnVideoFrameOnIOThread(
-    SkImageDeliverCB callback,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     scoped_refptr<media::VideoFrame> frame,
     std::vector<scoped_refptr<media::VideoFrame>> /*scaled_frames*/,
     base::TimeTicks /*current_time*/) {
-  if (first_frame_received_)
+  if (!deliver_cb_)
     return;
-  first_frame_received_ = true;
+
   // Scaled video frames are not used by ImageCaptureFrameGrabber.
-  task_runner->PostTask(FROM_HERE,
-                        ConvertToBaseOnceCallback(CrossThreadBindOnce(
-                            &SingleShotFrameHandler::ConvertAndDeliverFrame,
-                            scoped_refptr<SingleShotFrameHandler>(this),
-                            std::move(callback), std::move(frame))));
+  PostCrossThreadTask(
+      *task_runner, FROM_HERE,
+      CrossThreadBindOnce(&SingleShotFrameHandler::ConvertAndDeliverFrame,
+                          base::WrapRefCounted(this), std::move(deliver_cb_),
+                          std::move(frame)));
 }
 
 void ImageCaptureFrameGrabber::SingleShotFrameHandler::ConvertAndDeliverFrame(
@@ -253,11 +255,10 @@ void ImageCaptureFrameGrabber::GrabFrame(
       WebMediaStreamTrack(component),
       ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
           &SingleShotFrameHandler::OnVideoFrameOnIOThread,
-          base::MakeRefCounted<SingleShotFrameHandler>(),
-          WTF::Passed(CrossThreadBindRepeating(
+          base::MakeRefCounted<SingleShotFrameHandler>(CrossThreadBindOnce(
               &ImageCaptureFrameGrabber::OnSkImage, weak_factory_.GetWeakPtr(),
-              WTF::Passed(std::move(scoped_callbacks)))),
-          WTF::Passed(std::move(task_runner)))),
+              std::move(scoped_callbacks))),
+          std::move(task_runner))),
       false);
 }
 

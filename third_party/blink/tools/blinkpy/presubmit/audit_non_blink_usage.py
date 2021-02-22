@@ -76,6 +76,7 @@ _CONFIG = [
             'base::UnsafeSharedMemoryRegion',
             'base::WeakPtr',
             'base::WeakPtrFactory',
+            'base::WrapRefCounted',
             'base::WritableSharedMemoryMapping',
             'base::as_bytes',
             'base::in_place',
