@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/accessibility/accessibility_tree_formatter_utils_win.h"
+#include "ui/accessibility/platform/inspect/ax_inspect_utils_win.h"
 
 #include <oleacc.h>
 #include <uiautomation.h>
@@ -17,7 +17,7 @@
 #include "third_party/iaccessible2/ia2_api_all.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 
-namespace content {
+namespace ui {
 namespace {
 
 const wchar_t kChromeTitle[] = L"Google Chrome";
@@ -64,7 +64,7 @@ BOOL CALLBACK EnumWindowsProcPid(HWND hwnd, LPARAM lParam) {
 #define QUOTE(X) \
   { X, #X }
 
-CONTENT_EXPORT base::string16 IAccessibleRoleToString(int32_t ia_role) {
+AX_EXPORT base::string16 IAccessibleRoleToString(int32_t ia_role) {
   // MSAA / IAccessible roles. Each one of these is also a valid
   // IAccessible2 role.
   static const PlatformConstantToNameEntry ia_table[] = {
@@ -105,7 +105,7 @@ CONTENT_EXPORT base::string16 IAccessibleRoleToString(int32_t ia_role) {
   return GetNameForPlatformConstant(ia_table, base::size(ia_table), ia_role);
 }
 
-CONTENT_EXPORT base::string16 IAccessible2RoleToString(int32_t ia2_role) {
+AX_EXPORT base::string16 IAccessible2RoleToString(int32_t ia2_role) {
   base::string16 result = IAccessibleRoleToString(ia2_role);
   if (!result.empty())
     return result;
@@ -169,7 +169,7 @@ CONTENT_EXPORT base::string16 IAccessible2RoleToString(int32_t ia2_role) {
   return GetNameForPlatformConstant(ia2_table, base::size(ia2_table), ia2_role);
 }
 
-CONTENT_EXPORT base::string16 AccessibilityEventToString(int32_t event) {
+AX_EXPORT base::string16 AccessibilityEventToString(int32_t event) {
   static const PlatformConstantToNameEntry event_table[] = {
       QUOTE(EVENT_OBJECT_CREATE),
       QUOTE(EVENT_OBJECT_DESTROY),
@@ -327,7 +327,7 @@ base::string16 IAccessible2StateToString(int32_t ia2_state) {
   return base::JoinString(strings, base::ASCIIToUTF16(","));
 }
 
-CONTENT_EXPORT base::string16 UiaIdentifierToString(int32_t identifier) {
+AX_EXPORT base::string16 UiaIdentifierToString(int32_t identifier) {
   static const PlatformConstantToNameEntry id_table[] = {
       // Patterns
       QUOTE(UIA_InvokePatternId),
@@ -669,30 +669,30 @@ CONTENT_EXPORT base::string16 UiaIdentifierToString(int32_t identifier) {
   return GetNameForPlatformConstant(id_table, base::size(id_table), identifier);
 }
 
-CONTENT_EXPORT base::string16 UiaOrientationToString(int32_t identifier) {
+AX_EXPORT base::string16 UiaOrientationToString(int32_t identifier) {
   static const PlatformConstantToNameEntry id_table[] = {
       QUOTE(OrientationType_None), QUOTE(OrientationType_Horizontal),
       QUOTE(OrientationType_Vertical)};
   return GetNameForPlatformConstant(id_table, base::size(id_table), identifier);
 }
 
-CONTENT_EXPORT base::string16 UiaLiveSettingToString(int32_t identifier) {
+AX_EXPORT base::string16 UiaLiveSettingToString(int32_t identifier) {
   static const PlatformConstantToNameEntry id_table[] = {
       QUOTE(LiveSetting::Off), QUOTE(LiveSetting::Polite),
       QUOTE(LiveSetting::Assertive)};
   return GetNameForPlatformConstant(id_table, base::size(id_table), identifier);
 }
 
-CONTENT_EXPORT std::string BstrToUTF8(BSTR bstr) {
+AX_EXPORT std::string BstrToUTF8(BSTR bstr) {
   std::wstring str(bstr, SysStringLen(bstr));
   return base::WideToUTF8(str);
 }
 
-CONTENT_EXPORT std::string UiaIdentifierToStringUTF8(int32_t id) {
+AX_EXPORT std::string UiaIdentifierToStringUTF8(int32_t id) {
   return base::UTF16ToUTF8(UiaIdentifierToString(id));
 }
 
-CONTENT_EXPORT HWND GetHwndForProcess(base::ProcessId pid) {
+AX_EXPORT HWND GetHwndForProcess(base::ProcessId pid) {
   HwndWithProcId hwnd_with_proc_id(pid);
   EnumWindows(&EnumWindowsProcPid, (LPARAM)&hwnd_with_proc_id);
   return hwnd_with_proc_id.hwnd;
@@ -722,15 +722,15 @@ BOOL CALLBACK MatchWindow(HWND hwnd, LPARAM lParam) {
   return TRUE;
 }
 
-CONTENT_EXPORT HWND GetHWNDBySelector(const ui::AXTreeSelector& selector) {
+AX_EXPORT HWND GetHWNDBySelector(const AXTreeSelector& selector) {
   HWNDSearchInfo info;
-  if (selector.types & ui::AXTreeSelector::Chrome) {
+  if (selector.types & AXTreeSelector::Chrome) {
     info.title = kChromeTitle;
-  } else if (selector.types & ui::AXTreeSelector::Chromium) {
+  } else if (selector.types & AXTreeSelector::Chromium) {
     info.title = kChromiumTitle;
-  } else if (selector.types & ui::AXTreeSelector::Edge) {
+  } else if (selector.types & AXTreeSelector::Edge) {
     info.title = kEdgeTitle;
-  } else if (selector.types & ui::AXTreeSelector::Firefox) {
+  } else if (selector.types & AXTreeSelector::Firefox) {
     info.title = kFirefoxTitle;
   } else {
     return NULL;
@@ -743,4 +743,4 @@ CONTENT_EXPORT HWND GetHWNDBySelector(const ui::AXTreeSelector& selector) {
   return info.hwnd;
 }
 
-}  // namespace content
+}  // namespace ui

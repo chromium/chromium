@@ -22,15 +22,19 @@
 #include "base/win/scoped_variant.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_uia_win.h"
-#include "content/browser/accessibility/accessibility_tree_formatter_utils_win.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/browser_accessibility_win.h"
 #include "content/public/browser/ax_inspect_factory.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
+#include "ui/accessibility/platform/inspect/ax_inspect_utils_win.h"
 #include "ui/base/win/atl_module.h"
 #include "ui/gfx/win/hwnd_util.h"
 
 namespace content {
+
+using ui::IAccessible2RoleToString;
+using ui::IAccessible2StateToStringVector;
+using ui::IAccessibleStateToStringVector;
 
 void AccessibilityTreeFormatterWin::AddDefaultFilters(
     std::vector<AXPropertyFilter>* property_filters) {

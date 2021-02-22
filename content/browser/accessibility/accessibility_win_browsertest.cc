@@ -24,7 +24,6 @@
 #include "base/win/scoped_variant.h"
 #include "build/build_config.h"
 #include "content/browser/accessibility/accessibility_browsertest.h"
-#include "content/browser/accessibility/accessibility_tree_formatter_utils_win.h"
 #include "content/browser/accessibility/browser_accessibility_manager_win.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/accessibility/browser_accessibility_win.h"
@@ -52,11 +51,16 @@
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
+#include "ui/accessibility/platform/inspect/ax_inspect_utils_win.h"
 #include "ui/accessibility/platform/uia_registrar_win.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 
 namespace content {
+
+using ui::IAccessible2RoleToString;
+using ui::IAccessibleRoleToString;
+using ui::IAccessibleStateToString;
 
 namespace {
 

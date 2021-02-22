@@ -2064,8 +2064,6 @@ source_set("browser") {
       "accessibility/accessibility_event_recorder_win.h",
       "accessibility/accessibility_tree_formatter_uia_win.cc",
       "accessibility/accessibility_tree_formatter_uia_win.h",
-      "accessibility/accessibility_tree_formatter_utils_win.cc",
-      "accessibility/accessibility_tree_formatter_utils_win.h",
       "accessibility/accessibility_tree_formatter_win.cc",
       "accessibility/accessibility_tree_formatter_win.h",
       "accessibility/browser_accessibility_com_win.cc",

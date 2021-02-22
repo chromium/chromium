@@ -27,16 +27,21 @@
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_safearray.h"
 #include "base/win/scoped_variant.h"
-#include "content/browser/accessibility/accessibility_tree_formatter_utils_win.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "ui/accessibility/platform/inspect/ax_inspect_utils_win.h"
 #include "ui/accessibility/platform/uia_registrar_win.h"
 #include "ui/gfx/win/hwnd_util.h"
+
+using ui::BstrToUTF8;
+using ui::UiaIdentifierToStringUTF8;
+using ui::UiaLiveSettingToString;
+using ui::UiaOrientationToString;
 
 namespace {
 
 std::string UiaIdentifierToCondensedString(int32_t id) {
-  std::string identifier = content::UiaIdentifierToStringUTF8(id);
+  std::string identifier = UiaIdentifierToStringUTF8(id);
   if (id >= UIA_RuntimeIdPropertyId && id <= UIA_HeadingLevelPropertyId) {
     // remove leading 'UIA_' and trailing 'PropertyId'
     return identifier.substr(4, identifier.size() - 14);

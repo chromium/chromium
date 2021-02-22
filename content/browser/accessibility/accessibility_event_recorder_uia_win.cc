@@ -16,14 +16,17 @@
 #include "base/win/scoped_safearray.h"
 #include "base/win/scoped_variant.h"
 #include "base/win/windows_version.h"
-#include "content/browser/accessibility/accessibility_tree_formatter_utils_win.h"
 #include "content/browser/accessibility/browser_accessibility_com_win.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/browser_accessibility_manager_win.h"
+#include "ui/accessibility/platform/inspect/ax_inspect_utils_win.h"
 #include "ui/accessibility/platform/uia_registrar_win.h"
 #include "ui/base/win/atl_module.h"
 
 namespace content {
+
+using ui::BstrToUTF8;
+using ui::UiaIdentifierToString;
 
 namespace {
 
