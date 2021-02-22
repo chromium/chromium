@@ -15,6 +15,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -1515,8 +1516,52 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    SystemWebAppManagerWebAppInfoBrowserTest);
+class SystemWebAppManagerBackgroundTaskTest
+    : public SystemWebAppManagerBrowserTest {
+ public:
+  SystemWebAppManagerBackgroundTaskTest()
+      : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
+    maybe_installation_ =
+        TestSystemWebAppInstallation::SetUpAppWithBackgroundTask();
+  }
+
+  void WaitForSystemAppsSynchronized() {
+    base::RunLoop run_loop;
+    WebAppProvider::Get(browser()->profile())
+        ->system_web_app_manager()
+        .on_apps_synchronized()
+        .Post(FROM_HERE, run_loop.QuitClosure());
+
+    run_loop.Run();
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBackgroundTaskTest, TimerFires) {
+  // The SystemWebAppManager gets created in the Setup(), in the test
+  // constructor, and the background tasks get created during synchronize.
+  // Ideally, we'd make a TestNavigationObserver in the constructor, but they
+  // have to be single threaded, and throw a check fail. There's a race
+  // condition here because the background tasks are fired as callbacks in
+  // response to the install finishing. So, we wait for the apps to be
+  // installed, then wait on the navigation. A cleaner solution would be to have
+  // a hook in the background pages to detect the navigation as an event. That's
+  // a little too much work for one test though, and since this is mostly tested
+  // in unittests, this is probably enough.
+
+  content::TestNavigationObserver navigation_observer(
+      GURL("chrome://test-system-app/page2.html"));
+
+  WaitForSystemAppsSynchronized();
+
+  navigation_observer.WatchExistingWebContents();
+  navigation_observer.Wait();
+
+  auto& tasks = GetManager().GetBackgroundTasksForTesting();
+  EXPECT_EQ(1u, tasks.size());
+  EXPECT_TRUE(tasks[0]->open_immediately_for_testing());
+  EXPECT_EQ(base::TimeDelta::FromDays(1), tasks[0]->period_for_testing());
+  EXPECT_EQ(1u, tasks[0]->timer_activated_count_for_testing());
+}
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerLaunchFilesBrowserTest);
@@ -1554,5 +1599,8 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerUpgradeBrowserTest);
 #endif
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    SystemWebAppManagerBackgroundTaskTest);
 
 }  // namespace web_app
