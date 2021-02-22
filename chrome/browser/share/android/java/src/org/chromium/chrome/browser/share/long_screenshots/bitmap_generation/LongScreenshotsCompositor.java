@@ -26,9 +26,7 @@ import org.chromium.url.GURL;
  */
 public class LongScreenshotsCompositor {
     private PlayerCompositorDelegate mDelegate;
-    private Callback<Bitmap> mBitmapCallback;
-    private Rect mRect;
-    private Callback<Integer> mErrorCallback;
+    private Callback<Integer> mCompositorCallback;
 
     private static PlayerCompositorDelegate.Factory sCompositorDelegateFactory =
             new CompositorDelegateFactory();
@@ -39,33 +37,22 @@ public class LongScreenshotsCompositor {
      * @param url The URL for which the content should be composited for.
      * @param nativePaintPreviewServiceProvider The native paint preview service.
      * @param directoryKey The key for the directory storing the data.
-     * @param rect The area of the captured webpage that should be composited.
      * @param response The proto with the address of the captured bitmap.
-     * @param bitmapCallback Callback to process the composited bitmap.
-     * @param errorCallback Callback to process any errors.
      */
     public LongScreenshotsCompositor(GURL url,
             NativePaintPreviewServiceProvider nativePaintPreviewServiceProvider,
-            String directoryKey, PaintPreviewProto response, Rect rect,
-            Callback<Bitmap> bitmapCallback, Callback<Integer> errorCallback) {
-        mBitmapCallback = bitmapCallback;
-
-        // Set the top and left coordinates to 0 because it is relative to the capture and we want
-        // to composite the entire capture.
-        // TODO(tgupta): Change the logic to capture large parts of the webpage and composite
-        // parts of it as needed.
-        mRect = new Rect(0, 0, rect.right, rect.bottom);
-        mErrorCallback = errorCallback;
+            String directoryKey, PaintPreviewProto response, Callback<Integer> compositorCallback) {
+        mCompositorCallback = compositorCallback;
 
         mDelegate = new PlayerCompositorDelegateImpl(nativePaintPreviewServiceProvider, response,
-                url, directoryKey, true, this::onCompositorReady, errorCallback);
+                url, directoryKey, true, this::onCompositorReady, this::onCompositorError);
     }
 
     /**
      * Called when the compositor cannot be successfully initialized.
      */
     private void onCompositorError(@CompositorStatus int status) {
-        mErrorCallback.onResult(status);
+        mCompositorCallback.onResult(status);
     }
 
     /**
@@ -77,15 +64,20 @@ public class LongScreenshotsCompositor {
     protected void onCompositorReady(UnguessableToken rootFrameGuid, UnguessableToken[] frameGuids,
             int[] frameContentSize, int[] scrollOffsets, int[] subFramesCount,
             UnguessableToken[] subFrameGuids, int[] subFrameClipRects) {
-        // TODO(tgupta): Pass the request id back to the Entry for tracking.
-        mDelegate.requestBitmap(mRect, 1, mBitmapCallback, this::onError);
+        mCompositorCallback.onResult(CompositorStatus.OK);
     }
 
     /**
-     * Called when there was an error compositing the bitmap.
+     * Requests the bitmap.
+     *
+     * @param rect The bounds of the capture to convert to a bitmap.
+     * @param errorCallback Called when an error is encountered.
+     * @param bitmapCallback Called when a bitmap was successfully generated.
+     * @return id for the request.
      */
-    public void onError() {
-        mErrorCallback.onResult(CompositorStatus.REQUEST_BITMAP_FAILURE);
+    public int requestBitmap(Rect rect, Runnable errorCallback, Callback<Bitmap> bitmapCallback) {
+        // Check that the rect is within the bounds.
+        return mDelegate.requestBitmap(rect, 1, bitmapCallback, errorCallback);
     }
 
     public void destroy() {

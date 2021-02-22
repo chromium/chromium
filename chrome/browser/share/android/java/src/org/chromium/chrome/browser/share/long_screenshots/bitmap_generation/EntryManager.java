@@ -5,8 +5,13 @@
 package org.chromium.chrome.browser.share.long_screenshots.bitmap_generation;
 
 import android.content.Context;
+import android.graphics.Rect;
 
+import androidx.annotation.VisibleForTesting;
+
+import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.LongScreenshotsEntry.EntryStatus;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.paintpreview.player.CompositorStatus;
 import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.ui.display.DisplayAndroid;
 
@@ -19,11 +24,20 @@ import java.util.List;
  * {@link generateInitialEntry}.
  */
 public class EntryManager {
+    private static final int NUM_VIEWPORTS_CAPTURE_ABOVE = 4;
+    private static final int NUM_VIEWPORTS_CAPTURE_BELOW = 6;
+
     private Context mContext;
     private Tab mTab;
 
+    // List of all entries in correspondence of the webpage.
     private List<LongScreenshotsEntry> mEntries;
+    // List of entries that are queued to generate the bitmap. Entries should only be queued
+    // while the capture is in progress.
+    private List<LongScreenshotsEntry> mQueuedEntries;
     private int mDisplayHeightPx;
+    private BitmapGenerator mGenerator;
+    private @EntryStatus int mGeneratorStatus;
 
     /**
      * @param context An instance of current Android {@link Context}.
@@ -33,7 +47,14 @@ public class EntryManager {
         mContext = context;
         mTab = tab;
         mEntries = new ArrayList<LongScreenshotsEntry>();
-        calculateClipHeight();
+        mQueuedEntries = new ArrayList<LongScreenshotsEntry>();
+
+        calculateDisplayHeight();
+
+        mGenerator = new BitmapGenerator(
+                context, tab, calculateCaptureSize(), createBitmapGeneratorCallback());
+        mGenerator.captureTab();
+        updateGeneratorStatus(EntryStatus.CAPTURE_IN_PROGRESS);
     }
 
     /**
@@ -45,17 +66,16 @@ public class EntryManager {
         RenderCoordinates coords = RenderCoordinates.fromWebContents(mTab.getWebContents());
         int startY = coords.getScrollYPixInt() / coords.getPageScaleFactorInt();
 
-        LongScreenshotsEntry entry =
-                new LongScreenshotsEntry(mContext, mTab, startY, mDisplayHeightPx, false);
-        entry.generateBitmap();
-        mEntries.add(entry);
+        LongScreenshotsEntry entry = new LongScreenshotsEntry(
+                mContext, mTab, startY, mDisplayHeightPx, mGenerator, false);
+        processEntry(entry, false);
         return entry;
     }
 
     /**
      * Calculates the height of the phone used to determine the height of the bitmaps.
      */
-    private void calculateClipHeight() {
+    private void calculateDisplayHeight() {
         DisplayAndroid displayAndroid = DisplayAndroid.getNonMultiDisplay(mContext);
         mDisplayHeightPx = displayAndroid.getDisplayHeight();
     }
@@ -84,9 +104,8 @@ public class EntryManager {
 
         // found = 0
         LongScreenshotsEntry newEntry = new LongScreenshotsEntry(
-                mContext, mTab, mEntries.get(0).getId(), mDisplayHeightPx, true);
-        newEntry.generateBitmap();
-        mEntries.add(0, newEntry);
+                mContext, mTab, mEntries.get(0).getId(), mDisplayHeightPx, mGenerator, true);
+        processEntry(newEntry, true);
         return newEntry;
     }
 
@@ -115,10 +134,99 @@ public class EntryManager {
         // found = last entry in the arraylist
         int newStartY = mEntries.get(mEntries.size() - 1).getEndYAxis() + 1;
 
-        LongScreenshotsEntry newEntry =
-                new LongScreenshotsEntry(mContext, mTab, newStartY, mDisplayHeightPx, false);
-        newEntry.generateBitmap();
-        mEntries.add(newEntry);
+        LongScreenshotsEntry newEntry = new LongScreenshotsEntry(
+                mContext, mTab, newStartY, mDisplayHeightPx, mGenerator, false);
+        processEntry(newEntry, false);
         return newEntry;
+    }
+
+    private void processEntry(LongScreenshotsEntry entry, boolean addToBeginningOfList) {
+        if (mGeneratorStatus == EntryStatus.CAPTURE_COMPLETE) {
+            entry.generateBitmap();
+        } else if (mGeneratorStatus == EntryStatus.CAPTURE_IN_PROGRESS) {
+            mQueuedEntries.add(entry);
+        } else {
+            entry.updateStatus(mGeneratorStatus);
+        }
+
+        // Add to the list of all entries
+        if (addToBeginningOfList) {
+            mEntries.add(0, entry);
+        } else {
+            mEntries.add(entry);
+        }
+    }
+
+    /**
+     * Defines the bounds of the capture.
+     */
+    private Rect calculateCaptureSize() {
+        RenderCoordinates coords = RenderCoordinates.fromWebContents(mTab.getWebContents());
+
+        // The current position the user has scrolled to.
+        int currYAxisPosition = coords.getScrollYPixInt() / coords.getPageScaleFactorInt();
+
+        int startYAxis = (int) Math.floor(currYAxisPosition
+                - (NUM_VIEWPORTS_CAPTURE_ABOVE * mDisplayHeightPx * coords.getPageScaleFactor()));
+        startYAxis = startYAxis < 0 ? 0 : startYAxis;
+
+        int endYAxis = (int) Math.floor(currYAxisPosition
+                + (NUM_VIEWPORTS_CAPTURE_BELOW * mDisplayHeightPx * coords.getPageScaleFactor()));
+        int maxY = coords.getContentHeightPixInt() / coords.getPageScaleFactorInt();
+        endYAxis = endYAxis > maxY ? maxY : endYAxis;
+
+        return new Rect(0, startYAxis, 0, endYAxis);
+    }
+
+    /**
+     * Updates based on the generator status. If the capture is complete, generates the bitmap for
+     * all the queued entries.
+     *
+     * @param status New status from the generator.
+     */
+    private void updateGeneratorStatus(@EntryStatus int status) {
+        mGeneratorStatus = status;
+        if (status == EntryStatus.CAPTURE_COMPLETE) {
+            for (LongScreenshotsEntry entry : mQueuedEntries) {
+                entry.generateBitmap();
+            }
+            mQueuedEntries.clear();
+        } else {
+            for (LongScreenshotsEntry entry : mQueuedEntries) {
+                entry.updateStatus(status);
+            }
+        }
+    }
+
+    /**
+     * Creates the default BitmapGenerator to be used to retrieve the state of the generation. This
+     * is the default implementation and should only be overridden for tests.
+     */
+    @VisibleForTesting
+    public BitmapGenerator.GeneratorCallBack createBitmapGeneratorCallback() {
+        return new BitmapGenerator.GeneratorCallBack() {
+            @Override
+            public void onCompositorResult(@CompositorStatus int status) {
+                // TODO(tgupta): Add metrics logging here.
+                if (status == CompositorStatus.STOPPED_DUE_TO_MEMORY_PRESSURE
+                        || status == CompositorStatus.SKIPPED_DUE_TO_MEMORY_PRESSURE) {
+                    updateGeneratorStatus(EntryStatus.INSUFFICIENT_MEMORY);
+                } else if (status == CompositorStatus.OK) {
+                    updateGeneratorStatus(EntryStatus.CAPTURE_COMPLETE);
+                } else {
+                    updateGeneratorStatus(EntryStatus.GENERATION_ERROR);
+                }
+            }
+
+            @Override
+            public void onCaptureResult(@Status int status) {
+                // TODO(tgupta): Add metrics logging here.
+                if (status == Status.LOW_MEMORY_DETECTED) {
+                    updateGeneratorStatus(EntryStatus.INSUFFICIENT_MEMORY);
+                } else if (status != Status.OK) {
+                    updateGeneratorStatus(EntryStatus.GENERATION_ERROR);
+                }
+            }
+        };
     }
 }
