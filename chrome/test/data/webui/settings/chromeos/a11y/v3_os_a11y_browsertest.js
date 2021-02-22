@@ -95,6 +95,10 @@ const crostiniConfig = {
    crostiniConfig
  ],
  [
+   'CrostiniSharedUsbDevices',
+   'crostini_settings_shared_usb_devices_a11y_v3_test.js', crostiniConfig
+ ],
+ [
    'MultideviceFeatures', 'multidevice_features_a11y_v3_test.js',
    {filter: multideviceFeatureViolationFilter, options: axeOptionsDocumentTitle}
  ],
