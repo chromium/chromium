@@ -64,7 +64,7 @@ enum class CableV2MobileEvent {
 };
 
 void RecordEvent(CableV2MobileEvent event) {
-  base::UmaHistogramEnumeration("WebAuthentication.CableV2MobileEvent", event);
+  base::UmaHistogramEnumeration("WebAuthentication.CableV2.MobileEvent", event);
 }
 
 // CableV2MobileResult enumerates the outcome of a caBLEv2 transction. Do not
@@ -87,7 +87,7 @@ enum class CableV2MobileResult {
 };
 
 void RecordResult(CableV2MobileResult result) {
-  base::UmaHistogramEnumeration("WebAuthentication.CableV2MobileResult",
+  base::UmaHistogramEnumeration("WebAuthentication.CableV2.MobileResult",
                                 result);
 }
 
@@ -341,7 +341,7 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
       case Status::HANDSHAKE_COMPLETE:
         if (tunnel_server_connect_time_) {
           base::UmaHistogramMediumTimes(
-              "WebAuthentication.CableV2RendezvousTime",
+              "WebAuthentication.CableV2.RendezvousTime",
               tunnel_server_connect_time_->Elapsed());
           tunnel_server_connect_time_.reset();
         }
