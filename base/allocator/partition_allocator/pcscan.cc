@@ -51,41 +51,71 @@ namespace internal {
 
 namespace {
 
-// Similar to std::bitset, but doesn't perform out-of-bounds checks.
-template <size_t Size>
-class SimpleBitset final {
+#if defined(PA_HAS_64_BITS_POINTERS)
+// Bytemap that represent regions (cards) that contain quarantined objects.
+// A single PCScan cycle consists of the following steps:
+// 1) clearing (memset quarantine + marking cards that contain quarantine);
+// 2) scanning;
+// 3) sweeping (freeing + unmarking cards that contain freed objects).
+// Marking cards on step 1) ensures that the card table stays in the consistent
+// state while scanning. Unmarking on the step 3) ensures that unmarking
+// actually happens (and we don't hit too many false positives).
+class QuarantineCardTable final {
  public:
-  SimpleBitset() { memset(bitset_.data(), 0, bitset_.size()); }
-
-  ALWAYS_INLINE void Set(size_t position) {
-    const auto ib = GetIndexAndBit(position);
-    PA_DCHECK(!Test(position));
-    bitset_[ib.index] |= (1 << ib.bit);
+  // Avoid the load of the base of the normal bucket pool.
+  ALWAYS_INLINE static QuarantineCardTable& GetFrom(uintptr_t ptr) {
+    constexpr uintptr_t kNormalBucketPoolMask =
+        PartitionAddressSpace::NormalBucketPoolBaseMask();
+    return *reinterpret_cast<QuarantineCardTable*>(ptr & kNormalBucketPoolMask);
   }
 
-  ALWAYS_INLINE bool Test(size_t position) const {
-    const auto ib = GetIndexAndBit(position);
-    return bitset_[ib.index] & (1 << ib.bit);
+  ALWAYS_INLINE void Quarantine(uintptr_t begin, size_t size) {
+    return SetImpl(begin, size, true);
+  }
+
+  ALWAYS_INLINE void Unquarantine(uintptr_t begin, size_t size) {
+    return SetImpl(begin, size, false);
+  }
+
+  // Returns whether the card to which |ptr| points to contains quarantined
+  // objects. May return false positives for but should never return false
+  // negatives, as otherwise this breaks security.
+  ALWAYS_INLINE bool IsQuarantined(uintptr_t ptr) const {
+    const size_t byte = Byte(ptr);
+    PA_DCHECK(byte < bytes_.size());
+    return bytes_[byte];
   }
 
  private:
-  struct IndexAndBit {
-    size_t index;
-    size_t bit;
-  };
+  static constexpr size_t kCardSize =
+      AddressPoolManager::kNormalBucketMaxSize / kSuperPageSize;
+  static constexpr size_t kBytes =
+      AddressPoolManager::kNormalBucketMaxSize / kCardSize;
 
-  ALWAYS_INLINE static constexpr IndexAndBit GetIndexAndBit(size_t position) {
-    PA_DCHECK(kBitmapSize > (position / kCellSize));
-    static_assert(
-        base::bits::IsPowerOfTwo(kCellSize),
-        "Cell size must be power of two for the compiler to optimize division");
-    return {position / kCellSize, position % kCellSize};
+  QuarantineCardTable() = default;
+
+  ALWAYS_INLINE static constexpr size_t Byte(uintptr_t address) {
+    constexpr uintptr_t kNormalBucketPoolMask =
+        PartitionAddressSpace::NormalBucketPoolBaseMask();
+    return (address & ~kNormalBucketPoolMask) / kCardSize;
   }
 
-  static constexpr size_t kCellSize = sizeof(uint8_t) * CHAR_BIT;
-  static constexpr size_t kBitmapSize = Size / kCellSize;
-  std::array<uint8_t, kBitmapSize> bitset_;
+  ALWAYS_INLINE void SetImpl(uintptr_t begin, size_t size, bool value) {
+    const size_t byte = Byte(begin);
+    const size_t need_bytes = (size + (kCardSize - 1)) / kCardSize;
+    PA_DCHECK(bytes_.size() >= byte + need_bytes);
+    PA_DCHECK(PartitionAddressSpace::IsInNormalBucketPool(
+        reinterpret_cast<void*>(begin)));
+    for (size_t i = byte; i < byte + need_bytes; ++i)
+      bytes_[i] = value;
+  }
+
+  std::array<bool, kBytes> bytes_;
 };
+static_assert(kSuperPageSize >= sizeof(QuarantineCardTable),
+              "Card table size must be less than kSuperPageSize, since this is "
+              "what is committed");
+#endif
 
 ThreadSafePartitionRoot& PCScanMetadataAllocator() {
   static base::NoDestructor<ThreadSafePartitionRoot> allocator{
@@ -219,58 +249,23 @@ class PCScan<thread_safe>::PCScanTask final {
   using SuperPages =
       std::set<uintptr_t, std::less<>, MetadataAllocator<uintptr_t>>;
 
-  class SuperPagesBitmap final {
-   public:
-    void Populate(const SuperPages& super_pages) {
-      for (uintptr_t super_page_base : super_pages) {
-#if DCHECK_IS_ON()
-        PA_DCHECK(!(super_page_base % kSuperPageAlignment));
-        PA_DCHECK(IsManagedByPartitionAllocNormalBuckets(
-            reinterpret_cast<char*>(super_page_base)));
-#endif
-        bitset_.Set(NormalBucketPoolOffset(super_page_base));
-      }
-    }
-
-    ALWAYS_INLINE bool Test(uintptr_t maybe_ptr) const {
-#if DCHECK_IS_ON()
-      PA_DCHECK(IsManagedByPartitionAllocNormalBuckets(
-          reinterpret_cast<char*>(maybe_ptr)));
-#endif
-      return bitset_.Test(NormalBucketPoolOffset(maybe_ptr));
-    }
-
-   private:
-    static constexpr size_t kBitmapSize =
-        AddressPoolManager::kNormalBucketMaxSize >> kSuperPageShift;
-
-    ALWAYS_INLINE static constexpr size_t NormalBucketPoolOffset(
-        uintptr_t ptr) {
-      constexpr uintptr_t kNormalBucketPoolMask =
-#if defined(PA_HAS_64_BITS_POINTERS)
-          PartitionAddressSpace::NormalBucketPoolBaseMask();
-#else
-          0;
-#endif
-      return static_cast<size_t>((ptr & ~kNormalBucketPoolMask) >>
-                                 kSuperPageShift);
-    }
-
-    SimpleBitset<kBitmapSize> bitset_;
-  };
-
-  struct BitmapLookupPolicy {
+  struct GigaCageLookupPolicy {
     ALWAYS_INLINE bool TestOnHeapPointer(uintptr_t maybe_ptr) const {
+#if defined(PA_HAS_64_BITS_POINTERS)
 #if DCHECK_IS_ON()
       PA_DCHECK(IsManagedByPartitionAllocNormalBuckets(
           reinterpret_cast<void*>(maybe_ptr)));
 #endif
-      return task_.super_pages_bitmap_.Test(maybe_ptr);
+      return QuarantineCardTable::GetFrom(maybe_ptr).IsQuarantined(maybe_ptr);
+#else
+      return IsManagedByPartitionAllocNormalBuckets(
+          reinterpret_cast<void*>(maybe_ptr));
+#endif  // PA_HAS_64_BITS_POINTERS
     }
-    const PCScanTask& task_;
+    [[maybe_unused]] const PCScanTask& task_;
   };
 
-  struct BinaryLookupPolicy {
+  struct NoGigaCageLookupPolicy {
     ALWAYS_INLINE bool TestOnHeapPointer(uintptr_t maybe_ptr) const {
       const auto super_page_base = maybe_ptr & kSuperPageBaseMask;
       auto it = task_.super_pages_.lower_bound(super_page_base);
@@ -309,7 +304,6 @@ class PCScan<thread_safe>::PCScanTask final {
   ScanAreas scan_areas_;
   LargeScanAreas large_scan_areas_;
   SuperPages super_pages_;
-  SuperPagesBitmap super_pages_bitmap_;
 };
 
 template <bool thread_safe>
@@ -317,9 +311,10 @@ template <typename LookupPolicy>
 ALWAYS_INLINE QuarantineBitmap*
 PCScan<thread_safe>::PCScanTask::TryFindScannerBitmapForPointer(
     uintptr_t maybe_ptr) const {
-  // First, check if |maybe_ptr| points to a valid super page.
+  // First, check if |maybe_ptr| points to a valid super page or a quarantined
+  // card.
   LookupPolicy lookup{*this};
-  if (!lookup.TestOnHeapPointer(maybe_ptr))
+  if (LIKELY(!lookup.TestOnHeapPointer(maybe_ptr)))
     return nullptr;
   // Check if we are not pointing to metadata/guard pages.
   if (!IsWithinSuperPagePayload(reinterpret_cast<char*>(maybe_ptr),
@@ -404,7 +399,12 @@ void PCScan<
           auto* slot_span = SlotSpan::FromSlotInnerPtr(object);
           // Use zero as a zapping value to speed up the fast bailout check in
           // ScanPartitions.
-          memset(object, 0, slot_span->GetUsableSize(root));
+          const size_t size = slot_span->GetUsableSize(root);
+          memset(object, 0, size);
+#if defined(PA_HAS_64_BITS_POINTERS)
+          // Set card(s) for this quarantined object.
+          QuarantineCardTable::GetFrom(ptr).Quarantine(ptr, size);
+#endif
           visited = true;
         });
     if (visited) {
@@ -504,7 +504,7 @@ class PCScan<thread_safe>::PCScanTask::ScanLoop final {
       // avoid racing with the mutator.
       if (mask & 0b01) {
         quarantine_size +=
-            pcscan_task_.TryMarkObjectInNormalBucketPool<BitmapLookupPolicy>(
+            pcscan_task_.TryMarkObjectInNormalBucketPool<GigaCageLookupPolicy>(
                 _mm_cvtsi128_si64(_mm_castpd_si128(maybe_ptrs)));
       }
       if (mask & 0b10) {
@@ -515,7 +515,7 @@ class PCScan<thread_safe>::PCScanTask::ScanLoop final {
         const __m128i shuffled =
             _mm_shuffle_epi32(_mm_castpd_si128(maybe_ptrs), kSecondWordMask);
         quarantine_size +=
-            pcscan_task_.TryMarkObjectInNormalBucketPool<BitmapLookupPolicy>(
+            pcscan_task_.TryMarkObjectInNormalBucketPool<GigaCageLookupPolicy>(
                 _mm_cvtsi128_si64(shuffled));
       }
     }
@@ -549,19 +549,19 @@ class PCScan<thread_safe>::PCScanTask::ScanLoop final {
       // avoid racing with the mutator.
       if (mask & 0b0001)
         quarantine_size +=
-            pcscan_task_.TryMarkObjectInNormalBucketPool<BitmapLookupPolicy>(
+            pcscan_task_.TryMarkObjectInNormalBucketPool<GigaCageLookupPolicy>(
                 _mm256_extract_epi64(maybe_ptrs, 0));
       if (mask & 0b0010)
         quarantine_size +=
-            pcscan_task_.TryMarkObjectInNormalBucketPool<BitmapLookupPolicy>(
+            pcscan_task_.TryMarkObjectInNormalBucketPool<GigaCageLookupPolicy>(
                 _mm256_extract_epi64(maybe_ptrs, 1));
       if (mask & 0b0100)
         quarantine_size +=
-            pcscan_task_.TryMarkObjectInNormalBucketPool<BitmapLookupPolicy>(
+            pcscan_task_.TryMarkObjectInNormalBucketPool<GigaCageLookupPolicy>(
                 _mm256_extract_epi64(maybe_ptrs, 2));
       if (mask & 0b1000)
         quarantine_size +=
-            pcscan_task_.TryMarkObjectInNormalBucketPool<BitmapLookupPolicy>(
+            pcscan_task_.TryMarkObjectInNormalBucketPool<GigaCageLookupPolicy>(
                 _mm256_extract_epi64(maybe_ptrs, 3));
     }
 
@@ -578,16 +578,13 @@ class PCScan<thread_safe>::PCScanTask::ScanLoop final {
       uintptr_t maybe_ptr = *begin;
 #if defined(PA_HAS_64_BITS_POINTERS)
       // On 64bit architectures, call IsInNormalBucketPool instead of
-      // IsManagedByPartitionAllocNormalBuckets to avoid redundant load of
+      // IsManagedByPartitionAllocNormalBuckets to avoid redundant loads of
       // PartitionAddressSpace::normal_bucket_pool_base_address_.
       if (LIKELY(!IsInNormalBucketPool(maybe_ptr)))
-#else
-      if (LIKELY(!IsManagedByPartitionAllocNormalBuckets(
-              reinterpret_cast<void*>(maybe_ptr))))
-#endif
         continue;
+#endif
       quarantine_size +=
-          pcscan_task_.TryMarkObjectInNormalBucketPool<BitmapLookupPolicy>(
+          pcscan_task_.TryMarkObjectInNormalBucketPool<GigaCageLookupPolicy>(
               maybe_ptr);
     }
     return quarantine_size;
@@ -602,7 +599,7 @@ class PCScan<thread_safe>::PCScanTask::ScanLoop final {
       if (!maybe_ptr)
         continue;
       quarantine_size +=
-          pcscan_task_.TryMarkObjectInNormalBucketPool<BinaryLookupPolicy>(
+          pcscan_task_.TryMarkObjectInNormalBucketPool<NoGigaCageLookupPolicy>(
               maybe_ptr);
     }
     return quarantine_size;
@@ -673,6 +670,14 @@ size_t PCScan<thread_safe>::PCScanTask::SweepQuarantine() {
           auto* slot_span = SlotSpan::FromSlotInnerPtr(object);
           swept_bytes += slot_span->bucket->slot_size;
           root->FreeNoHooksImmediate(object, slot_span);
+#if defined(PA_HAS_64_BITS_POINTERS)
+          // Reset card(s) for this quarantined object. Please note that the
+          // cards may still contain quarantined objects (which were promoted in
+          // this scan cycle), but ClearQuarantinedObjectsAndFilterSuperPages()
+          // will set them again in the next PCScan cycle.
+          QuarantineCardTable::GetFrom(ptr).Unquarantine(
+              ptr, slot_span->GetUsableSize(root));
+#endif
         });
   }
 
@@ -753,11 +758,6 @@ void PCScan<thread_safe>::PCScanTask::RunOnce() && {
   // First, clear all quarantined objects and filter out super pages that don't
   // contain quarantined objects.
   ClearQuarantinedObjectsAndFilterSuperPages();
-
-  // Then, prepare the super page bitmap for fast scanning.
-  if (features::IsPartitionAllocGigaCageEnabled()) {
-    super_pages_bitmap_.Populate(super_pages_);
-  }
 
   // Mark and sweep the quarantine list.
   const size_t new_quarantine_size = ScanPartitions();
