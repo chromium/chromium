@@ -730,10 +730,9 @@ void OnMakePublicKeyCredentialForPaymentComplete(
     auto credential_id = credential->info->raw_id;
     payment_credential_remote->StorePaymentCredential(
         std::move(payment_instrument), credential_id, options->rp()->id(),
-        WTF::Bind(
-            &OnPaymentCredentialCreationComplete,
-            WTF::Passed(std::make_unique<ScopedPromiseResolver>(resolver)),
-            std::move(credential)));
+        WTF::Bind(&OnPaymentCredentialCreationComplete,
+                  std::make_unique<ScopedPromiseResolver>(resolver),
+                  std::move(credential)));
   } else {
     DCHECK(!credential);
     resolver->Reject(CredentialManagerErrorToDOMException(
@@ -761,7 +760,7 @@ void DidDownloadPaymentCredentialIcon(
   authenticator->MakeCredential(
       std::move(mojo_options),
       WTF::Bind(&OnMakePublicKeyCredentialForPaymentComplete,
-                WTF::Passed(std::make_unique<ScopedPromiseResolver>(resolver)),
+                std::make_unique<ScopedPromiseResolver>(resolver),
                 WrapPersistent(options)));
 }
 
@@ -893,8 +892,8 @@ void CreatePublicKeyCredentialForPaymentCredential(
   payment_credential_remote->DownloadFavicon(
       KURL(options->instrument()->icon()),
       WTF::Bind(&DidDownloadPaymentCredentialIcon,
-                WTF::Passed(std::make_unique<ScopedPromiseResolver>(resolver)),
-                WTF::Passed(std::move(mojo_options)), WrapPersistent(options)));
+                std::make_unique<ScopedPromiseResolver>(resolver),
+                std::move(mojo_options), WrapPersistent(options)));
 }
 
 }  // namespace
@@ -1056,9 +1055,8 @@ ScriptPromise CredentialsContainer::get(
           CredentialManagerProxy::From(script_state)->Authenticator();
       authenticator->GetAssertion(
           std::move(mojo_options),
-          WTF::Bind(
-              &OnGetAssertionComplete,
-              WTF::Passed(std::make_unique<ScopedPromiseResolver>(resolver))));
+          WTF::Bind(&OnGetAssertionComplete,
+                    std::make_unique<ScopedPromiseResolver>(resolver)));
     } else {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError,
@@ -1123,7 +1121,7 @@ ScriptPromise CredentialsContainer::get(
   credential_manager->Get(
       requirement, options->password(), std::move(providers),
       WTF::Bind(&OnGetComplete,
-                WTF::Passed(std::make_unique<ScopedPromiseResolver>(resolver)),
+                std::make_unique<ScopedPromiseResolver>(resolver),
                 required_origin_type));
 
   return promise;
@@ -1161,9 +1159,8 @@ ScriptPromise CredentialsContainer::store(ScriptState* script_state,
       CredentialManagerProxy::From(script_state)->CredentialManager();
   credential_manager->Store(
       CredentialInfo::From(credential),
-      WTF::Bind(
-          &OnStoreComplete,
-          WTF::Passed(std::make_unique<ScopedPromiseResolver>(resolver))));
+      WTF::Bind(&OnStoreComplete,
+                std::make_unique<ScopedPromiseResolver>(resolver)));
 
   return promise;
 }
@@ -1378,9 +1375,8 @@ ScriptPromise CredentialsContainer::create(
           CredentialManagerProxy::From(script_state)->Authenticator();
       authenticator->MakeCredential(
           std::move(mojo_options),
-          WTF::Bind(
-              &OnMakePublicKeyCredentialComplete,
-              WTF::Passed(std::make_unique<ScopedPromiseResolver>(resolver))));
+          WTF::Bind(&OnMakePublicKeyCredentialComplete,
+                    std::make_unique<ScopedPromiseResolver>(resolver)));
     }
   }
 
@@ -1398,9 +1394,9 @@ ScriptPromise CredentialsContainer::preventSilentAccess(
 
   auto* credential_manager =
       CredentialManagerProxy::From(script_state)->CredentialManager();
-  credential_manager->PreventSilentAccess(WTF::Bind(
-      &OnPreventSilentAccessComplete,
-      WTF::Passed(std::make_unique<ScopedPromiseResolver>(resolver))));
+  credential_manager->PreventSilentAccess(
+      WTF::Bind(&OnPreventSilentAccessComplete,
+                std::make_unique<ScopedPromiseResolver>(resolver)));
 
   return promise;
 }

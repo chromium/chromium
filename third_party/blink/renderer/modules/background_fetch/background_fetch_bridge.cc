@@ -59,11 +59,11 @@ void BackgroundFetchBridge::Fetch(
     const SkBitmap& icon,
     mojom::blink::BackgroundFetchUkmDataPtr ukm_data,
     RegistrationCallback callback) {
-  GetService()->Fetch(
-      GetSupplementable()->RegistrationId(), developer_id, std::move(requests),
-      std::move(options), icon, std::move(ukm_data),
-      WTF::Bind(&BackgroundFetchBridge::DidGetRegistration,
-                WrapPersistent(this), WTF::Passed(std::move(callback))));
+  GetService()->Fetch(GetSupplementable()->RegistrationId(), developer_id,
+                      std::move(requests), std::move(options), icon,
+                      std::move(ukm_data),
+                      WTF::Bind(&BackgroundFetchBridge::DidGetRegistration,
+                                WrapPersistent(this), std::move(callback)));
 }
 
 void BackgroundFetchBridge::GetRegistration(const String& developer_id,
@@ -71,7 +71,7 @@ void BackgroundFetchBridge::GetRegistration(const String& developer_id,
   GetService()->GetRegistration(
       GetSupplementable()->RegistrationId(), developer_id,
       WTF::Bind(&BackgroundFetchBridge::DidGetRegistration,
-                WrapPersistent(this), WTF::Passed(std::move(callback))));
+                WrapPersistent(this), std::move(callback)));
 }
 
 void BackgroundFetchBridge::DidGetRegistration(

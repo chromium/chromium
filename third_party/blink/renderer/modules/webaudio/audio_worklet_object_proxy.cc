@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_object_proxy.h"
 
+#include <utility>
+
 #include "third_party/blink/renderer/core/workers/threaded_worklet_messaging_proxy.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_global_scope.h"
@@ -51,7 +53,7 @@ void AudioWorkletObjectProxy::DidEvaluateTopLevelScript(bool success) {
       CrossThreadBindOnce(
           &AudioWorkletMessagingProxy::SynchronizeWorkletProcessorInfoList,
           GetAudioWorkletMessagingProxyWeakPtr(),
-          WTF::Passed(std::move(processor_info_list))));
+          std::move(processor_info_list)));
 }
 
 void AudioWorkletObjectProxy::WillDestroyWorkerGlobalScope() {

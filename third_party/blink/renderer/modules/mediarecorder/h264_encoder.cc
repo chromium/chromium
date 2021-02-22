@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/modules/mediarecorder/h264_encoder.h"
 #include "build/chromeos_buildflags.h"
 
+#include <utility>
+
 #include "media/base/video_frame.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -112,11 +114,10 @@ void H264Encoder::EncodeOnEncodingTaskRunner(
   const bool is_key_frame = info.eFrameType == videoFrameTypeIDR;
   PostCrossThreadTask(
       *origin_task_runner_.get(), FROM_HERE,
-      CrossThreadBindOnce(
-          OnFrameEncodeCompleted,
-          WTF::Passed(CrossThreadBindRepeating(on_encoded_video_cb_)),
-          video_params, std::move(data), std::string(), capture_timestamp,
-          is_key_frame));
+      CrossThreadBindOnce(OnFrameEncodeCompleted,
+                          CrossThreadBindRepeating(on_encoded_video_cb_),
+                          video_params, std::move(data), std::string(),
+                          capture_timestamp, is_key_frame));
 }
 
 void H264Encoder::ConfigureEncoderOnEncodingTaskRunner(const gfx::Size& size) {

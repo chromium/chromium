@@ -67,10 +67,10 @@ ScriptPromise Permissions::query(ScriptState* script_state,
   // likely be "prompt".
   PermissionDescriptorPtr descriptor_copy = descriptor->Clone();
   GetService(ExecutionContext::From(script_state))
-      ->HasPermission(std::move(descriptor),
-                      WTF::Bind(&Permissions::TaskComplete,
-                                WrapPersistent(this), WrapPersistent(resolver),
-                                WTF::Passed(std::move(descriptor_copy))));
+      ->HasPermission(
+          std::move(descriptor),
+          WTF::Bind(&Permissions::TaskComplete, WrapPersistent(this),
+                    WrapPersistent(resolver), std::move(descriptor_copy)));
   return promise;
 }
 
@@ -93,8 +93,7 @@ ScriptPromise Permissions::request(ScriptState* script_state,
   GetService(context)->RequestPermission(
       std::move(descriptor), LocalFrame::HasTransientUserActivation(frame),
       WTF::Bind(&Permissions::TaskComplete, WrapPersistent(this),
-                WrapPersistent(resolver),
-                WTF::Passed(std::move(descriptor_copy))));
+                WrapPersistent(resolver), std::move(descriptor_copy)));
   return promise;
 }
 
@@ -114,8 +113,7 @@ ScriptPromise Permissions::revoke(ScriptState* script_state,
       ->RevokePermission(
           std::move(descriptor),
           WTF::Bind(&Permissions::TaskComplete, WrapPersistent(this),
-                    WrapPersistent(resolver),
-                    WTF::Passed(std::move(descriptor_copy))));
+                    WrapPersistent(resolver), std::move(descriptor_copy)));
   return promise;
 }
 
@@ -166,9 +164,8 @@ ScriptPromise Permissions::requestAll(
       std::move(internal_permissions),
       LocalFrame::HasTransientUserActivation(frame),
       WTF::Bind(&Permissions::BatchTaskComplete, WrapPersistent(this),
-                WrapPersistent(resolver),
-                WTF::Passed(std::move(internal_permissions_copy)),
-                WTF::Passed(std::move(caller_index_to_internal_index))));
+                WrapPersistent(resolver), std::move(internal_permissions_copy),
+                std::move(caller_index_to_internal_index)));
   return promise;
 }
 

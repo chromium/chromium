@@ -561,12 +561,10 @@ void VideoTrackAdapter::AddTrack(const MediaStreamVideoTrack* track,
       CrossThreadBindOnce(
           &VideoTrackAdapter::AddTrackOnIO, WTF::CrossThreadUnretained(this),
           WTF::CrossThreadUnretained(track),
-          WTF::Passed(CrossThreadBindRepeating(std::move(frame_callback))),
-          WTF::Passed(
-              CrossThreadBindRepeating(std::move(encoded_frame_callback))),
-          WTF::Passed(CrossThreadBindRepeating(std::move(settings_callback))),
-          WTF::Passed(CrossThreadBindRepeating(std::move(format_callback))),
-          settings));
+          CrossThreadBindRepeating(std::move(frame_callback)),
+          CrossThreadBindRepeating(std::move(encoded_frame_callback)),
+          CrossThreadBindRepeating(std::move(settings_callback)),
+          CrossThreadBindRepeating(std::move(format_callback)), settings));
 }
 
 void VideoTrackAdapter::AddTrackOnIO(
@@ -627,8 +625,7 @@ void VideoTrackAdapter::StartFrameMonitoring(
       *io_task_runner_, FROM_HERE,
       CrossThreadBindOnce(
           &VideoTrackAdapter::StartFrameMonitoringOnIO, WrapRefCounted(this),
-          WTF::Passed(
-              CrossThreadBindRepeating(std::move(bound_on_muted_callback))),
+          CrossThreadBindRepeating(std::move(bound_on_muted_callback)),
           source_frame_rate));
 }
 
@@ -725,9 +722,9 @@ void VideoTrackAdapter::StartFrameMonitoringOnIO(
            << (kFirstFrameTimeoutInFrameIntervals / source_frame_rate_) << "s";
   PostDelayedCrossThreadTask(
       *io_task_runner_, FROM_HERE,
-      CrossThreadBindOnce(
-          &VideoTrackAdapter::CheckFramesReceivedOnIO, WrapRefCounted(this),
-          WTF::Passed(std::move(on_muted_callback)), frame_counter_),
+      CrossThreadBindOnce(&VideoTrackAdapter::CheckFramesReceivedOnIO,
+                          WrapRefCounted(this), std::move(on_muted_callback),
+                          frame_counter_),
       base::TimeDelta::FromSecondsD(kFirstFrameTimeoutInFrameIntervals /
                                     source_frame_rate_));
 }
@@ -845,9 +842,9 @@ void VideoTrackAdapter::CheckFramesReceivedOnIO(
 
   PostDelayedCrossThreadTask(
       *io_task_runner_, FROM_HERE,
-      CrossThreadBindOnce(
-          &VideoTrackAdapter::CheckFramesReceivedOnIO, WrapRefCounted(this),
-          WTF::Passed(std::move(set_muted_state_callback)), frame_counter_),
+      CrossThreadBindOnce(&VideoTrackAdapter::CheckFramesReceivedOnIO,
+                          WrapRefCounted(this),
+                          std::move(set_muted_state_callback), frame_counter_),
       base::TimeDelta::FromSecondsD(kNormalFrameTimeoutInFrameIntervals /
                                     source_frame_rate_));
 }

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/mediarecorder/vpx_encoder.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "base/system/sys_info.h"
 #include "media/base/video_frame.h"
@@ -174,11 +175,10 @@ void VpxEncoder::EncodeOnEncodingTaskRunner(scoped_refptr<VideoFrame> frame,
 
   PostCrossThreadTask(
       *origin_task_runner_.get(), FROM_HERE,
-      CrossThreadBindOnce(
-          OnFrameEncodeCompleted,
-          WTF::Passed(CrossThreadBindRepeating(on_encoded_video_cb_)),
-          video_params, std::move(data), std::move(alpha_data),
-          capture_timestamp, keyframe));
+      CrossThreadBindOnce(OnFrameEncodeCompleted,
+                          CrossThreadBindRepeating(on_encoded_video_cb_),
+                          video_params, std::move(data), std::move(alpha_data),
+                          capture_timestamp, keyframe));
 }
 
 void VpxEncoder::DoEncode(vpx_codec_ctx_t* const encoder,

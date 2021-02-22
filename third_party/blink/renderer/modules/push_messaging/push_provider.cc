@@ -71,7 +71,7 @@ void PushProvider::Subscribe(
       GetSupplementable()->RegistrationId(), std::move(content_options_ptr),
       user_gesture,
       WTF::Bind(&PushProvider::DidSubscribe, WrapPersistent(this),
-                WTF::Passed(std::move(callbacks))));
+                std::move(callbacks)));
 }
 
 void PushProvider::DidSubscribe(
@@ -103,7 +103,7 @@ void PushProvider::Unsubscribe(
   GetPushMessagingRemote()->Unsubscribe(
       GetSupplementable()->RegistrationId(),
       WTF::Bind(&PushProvider::DidUnsubscribe, WrapPersistent(this),
-                WTF::Passed(std::move(callbacks))));
+                std::move(callbacks)));
 }
 
 void PushProvider::DidUnsubscribe(
@@ -128,7 +128,7 @@ void PushProvider::GetSubscription(
   GetPushMessagingRemote()->GetSubscription(
       GetSupplementable()->RegistrationId(),
       WTF::Bind(&PushProvider::DidGetSubscription, WrapPersistent(this),
-                WTF::Passed(std::move(callbacks))));
+                std::move(callbacks)));
 }
 
 void PushProvider::Trace(Visitor* visitor) const {

@@ -130,18 +130,18 @@ void LocalFileSystem::FileSystemNotAllowedInternal(
     std::unique_ptr<FileSystemCallbacks> callbacks) {
   GetSupplementable()
       ->GetTaskRunner(TaskType::kFileReading)
-      ->PostTask(FROM_HERE, WTF::Bind(&FileSystemCallbacks::DidFail,
-                                      WTF::Passed(std::move(callbacks)),
-                                      base::File::FILE_ERROR_ABORT));
+      ->PostTask(FROM_HERE,
+                 WTF::Bind(&FileSystemCallbacks::DidFail, std::move(callbacks),
+                           base::File::FILE_ERROR_ABORT));
 }
 
 void LocalFileSystem::FileSystemNotAllowedInternal(
     std::unique_ptr<ResolveURICallbacks> callbacks) {
   GetSupplementable()
       ->GetTaskRunner(TaskType::kFileReading)
-      ->PostTask(FROM_HERE, WTF::Bind(&ResolveURICallbacks::DidFail,
-                                      WTF::Passed(std::move(callbacks)),
-                                      base::File::FILE_ERROR_ABORT));
+      ->PostTask(FROM_HERE,
+                 WTF::Bind(&ResolveURICallbacks::DidFail, std::move(callbacks),
+                           base::File::FILE_ERROR_ABORT));
 }
 
 void LocalFileSystem::FileSystemAllowedInternal(

@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/modules/webdatabase/database.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/synchronization/waitable_event.h"
 #include "base/thread_annotations.h"
@@ -849,7 +850,7 @@ void Database::RunTransaction(
       GetDatabaseTaskRunner()->PostTask(
           FROM_HERE, WTF::Bind(&CallTransactionErrorCallback,
                                WrapPersistent(transaction_error_callback),
-                               WTF::Passed(std::move(error))));
+                               std::move(error)));
     }
   }
 }

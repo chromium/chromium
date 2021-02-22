@@ -207,7 +207,7 @@ ScriptPromise ImageCapture::getPhotoCapabilities(ScriptState* script_state) {
   service_->GetPhotoState(
       stream_track_->Component()->Source()->Id(),
       WTF::Bind(&ImageCapture::OnMojoGetPhotoState, WrapPersistent(this),
-                WrapPersistent(resolver), WTF::Passed(std::move(resolver_cb)),
+                WrapPersistent(resolver), std::move(resolver_cb),
                 false /* trigger_take_photo */));
   return promise;
 }
@@ -239,7 +239,7 @@ ScriptPromise ImageCapture::getPhotoSettings(ScriptState* script_state) {
   service_->GetPhotoState(
       stream_track_->Component()->Source()->Id(),
       WTF::Bind(&ImageCapture::OnMojoGetPhotoState, WrapPersistent(this),
-                WrapPersistent(resolver), WTF::Passed(std::move(resolver_cb)),
+                WrapPersistent(resolver), std::move(resolver_cb),
                 false /* trigger_take_photo */));
   return promise;
 }
@@ -1038,7 +1038,7 @@ void ImageCapture::OnMojoSetOptions(ScriptPromiseResolver* resolver,
   service_->GetPhotoState(
       stream_track_->Component()->Source()->Id(),
       WTF::Bind(&ImageCapture::OnMojoGetPhotoState, WrapPersistent(this),
-                WrapPersistent(resolver), WTF::Passed(std::move(resolver_cb)),
+                WrapPersistent(resolver), std::move(resolver_cb),
                 trigger_take_photo));
 }
 

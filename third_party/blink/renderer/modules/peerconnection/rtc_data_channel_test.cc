@@ -45,8 +45,7 @@ void RunSynchronous(base::TestSimpleTaskRunner* thread,
             std::move(closure).Run();
             event->Signal();
           },
-          WTF::Passed(std::move(closure)),
-          CrossThreadUnretained(&waitable_event)));
+          std::move(closure), CrossThreadUnretained(&waitable_event)));
   waitable_event.Wait();
 }
 

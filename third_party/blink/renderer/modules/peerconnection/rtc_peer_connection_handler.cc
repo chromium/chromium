@@ -1455,8 +1455,7 @@ void RTCPeerConnectionHandler::SetLocalDescription(
                   rtc::scoped_refptr<
                       webrtc::SetLocalDescriptionObserverInterface>)>(
                   &webrtc::PeerConnectionInterface::SetLocalDescription),
-              native_peer_connection_, WTF::Passed(parsed_sdp.release()),
-              webrtc_observer),
+              native_peer_connection_, parsed_sdp.release(), webrtc_observer),
           CrossThreadUnretained("SetLocalDescription")));
 }
 
@@ -1535,8 +1534,7 @@ void RTCPeerConnectionHandler::SetRemoteDescription(
                   rtc::scoped_refptr<
                       webrtc::SetRemoteDescriptionObserverInterface>)>(
                   &webrtc::PeerConnectionInterface::SetRemoteDescription),
-              native_peer_connection_, WTF::Passed(parsed_sdp.release()),
-              webrtc_observer),
+              native_peer_connection_, parsed_sdp.release(), webrtc_observer),
           CrossThreadUnretained("SetRemoteDescription")));
 }
 

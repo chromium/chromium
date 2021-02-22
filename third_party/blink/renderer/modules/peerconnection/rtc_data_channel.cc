@@ -205,7 +205,7 @@ void RTCDataChannel::Observer::OnMessage(const webrtc::DataBuffer& buffer) {
       *main_thread_, FROM_HERE,
       CrossThreadBindOnce(&RTCDataChannel::Observer::OnMessageImpl,
                           scoped_refptr<Observer>(this),
-                          WTF::Passed(std::move(new_buffer))));
+                          std::move(new_buffer)));
 }
 
 void RTCDataChannel::Observer::OnStateChangeImpl(

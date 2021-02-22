@@ -199,10 +199,9 @@ void MediaStreamVideoTrack::FrameDeliverer::AddCallback(
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
   PostCrossThreadTask(
       *io_task_runner_, FROM_HERE,
-      CrossThreadBindOnce(
-          &FrameDeliverer::AddCallbackOnIO, WrapRefCounted(this),
-          WTF::CrossThreadUnretained(id),
-          WTF::Passed(CrossThreadBindRepeating(std::move(callback)))));
+      CrossThreadBindOnce(&FrameDeliverer::AddCallbackOnIO,
+                          WrapRefCounted(this), WTF::CrossThreadUnretained(id),
+                          CrossThreadBindRepeating(std::move(callback))));
 }
 
 void MediaStreamVideoTrack::FrameDeliverer::AddCallbackOnIO(
@@ -218,10 +217,9 @@ void MediaStreamVideoTrack::FrameDeliverer::AddEncodedCallback(
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
   PostCrossThreadTask(
       *io_task_runner_, FROM_HERE,
-      CrossThreadBindOnce(
-          &FrameDeliverer::AddEncodedCallbackOnIO, WrapRefCounted(this),
-          WTF::CrossThreadUnretained(id),
-          WTF::Passed(CrossThreadBindRepeating(std::move(callback)))));
+      CrossThreadBindOnce(&FrameDeliverer::AddEncodedCallbackOnIO,
+                          WrapRefCounted(this), WTF::CrossThreadUnretained(id),
+                          CrossThreadBindRepeating(std::move(callback))));
 }
 
 void MediaStreamVideoTrack::FrameDeliverer::AddEncodedCallbackOnIO(

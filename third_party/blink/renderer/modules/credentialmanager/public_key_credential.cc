@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/credentialmanager/public_key_credential.h"
 
+#include <utility>
+
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -59,9 +61,9 @@ PublicKeyCredential::isUserVerifyingPlatformAuthenticatorAvailable(
 
   auto* authenticator =
       CredentialManagerProxy::From(script_state)->Authenticator();
-  authenticator->IsUserVerifyingPlatformAuthenticatorAvailable(WTF::Bind(
-      &OnIsUserVerifyingComplete,
-      WTF::Passed(std::make_unique<ScopedPromiseResolver>(resolver))));
+  authenticator->IsUserVerifyingPlatformAuthenticatorAvailable(
+      WTF::Bind(&OnIsUserVerifyingComplete,
+                std::make_unique<ScopedPromiseResolver>(resolver)));
   return promise;
 }
 

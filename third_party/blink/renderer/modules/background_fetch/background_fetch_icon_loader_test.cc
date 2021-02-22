@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_icon_loader.h"
 
+#include <utility>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -112,7 +114,7 @@ class BackgroundFetchIconLoaderTest : public PageTestBase {
     loader_->DidGetIconDisplaySizeIfSoLoadIcon(
         GetContext(),
         WTF::Bind(&BackgroundFetchIconLoaderTest::IconLoaded,
-                  WTF::Unretained(this), WTF::Passed(std::move(quit_closure))),
+                  WTF::Unretained(this), std::move(quit_closure)),
         maximum_size);
   }
 
