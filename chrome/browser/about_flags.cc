@@ -5419,6 +5419,9 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // defined(OS_ANDROID)
 
 #if defined(OS_ANDROID)
+    {"deprecate-menagerie-api", flag_descriptions::kDeprecateMenagerieAPIName,
+     flag_descriptions::kDeprecateMenagerieAPIDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(switches::kDeprecateMenagerieAPI)},
     {"mobile-identity-consistency",
      flag_descriptions::kMobileIdentityConsistencyName,
      flag_descriptions::kMobileIdentityConsistencyDescription, kOsAndroid,

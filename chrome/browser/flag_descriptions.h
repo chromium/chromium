@@ -92,6 +92,9 @@ extern const char kConversionMeasurementDebugModeDescription[];
 extern const char kDefaultChromeAppUninstallSyncName[];
 extern const char kDefaultChromeAppUninstallSyncDescription[];
 
+extern const char kDeprecateMenagerieAPIName[];
+extern const char kDeprecateMenagerieAPIDescription[];
+
 extern const char kDetectedSourceLanguageOptionName[];
 extern const char kDetectedSourceLanguageOptionDescription[];
 

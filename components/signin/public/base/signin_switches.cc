@@ -4,6 +4,7 @@
 
 #include "components/signin/public/base/signin_switches.h"
 
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
 namespace switches {
@@ -21,6 +22,13 @@ const base::Feature kAccountIdMigration{"AccountIdMigration",
 #else
 const base::Feature kForceAccountIdMigration{"ForceAccountIdMigration",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
+#if defined(OS_ANDROID)
+// This feature flag is for deprecating of the Android profile data
+// Menagerie API.
+const base::Feature kDeprecateMenagerieAPI{"DeprecateMenagerieAPI",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 }  // namespace switches

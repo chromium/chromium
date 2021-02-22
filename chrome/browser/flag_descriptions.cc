@@ -94,6 +94,11 @@ const char kDefaultChromeAppUninstallSyncDescription[] =
     "Synchronizes uninstallation of default Chrome apps across Chrome OS "
     "devices.";
 
+const char kDeprecateMenagerieAPIName[] = "Deprecate Menagerie API on Android";
+const char kDeprecateMenagerieAPIDescription[] =
+    "If enabled, the legacy Menagerie API for profile data will be replaced by "
+    "the new profile data source";
+
 const char kDetectedSourceLanguageOptionName[] =
     "Use Detected Language string on Desktop and Android";
 const char kDetectedSourceLanguageOptionDescription[] =

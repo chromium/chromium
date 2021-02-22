@@ -45,6 +45,7 @@
 #include "components/safe_browsing/core/features.h"
 #include "components/security_state/core/features.h"
 #include "components/signin/public/base/account_consistency_method.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/webapps/browser/android/features.h"
@@ -298,6 +299,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &safe_browsing::kSafeBrowsingSectionUIAndroid,
     &signin::kMobileIdentityConsistency,
     &signin::kMobileIdentityConsistencyVar,
+    &switches::kDeprecateMenagerieAPI,
     &switches::kDecoupleSyncFromAndroidMasterSync,
     &switches::kSyncUseSessionsUnregisterDelay,
     &subresource_filter::kSafeBrowsingSubresourceFilter,
