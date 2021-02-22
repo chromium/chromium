@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
 <translation id="1018656279737460067">Nakansela</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> (na) thread, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1059913517121127803">Hindi masimulan ang pag-scan</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">May na-detect na firewall</translation>
@@ -91,6 +92,7 @@
 <translation id="3226405216343213872">Naghahanap ng mga scanner</translation>
 <translation id="3246869037381808805">Aalisin ang mga pag-print na lampas 1 araw na</translation>
 <translation id="3268178239013324452">Hindi na-print - Nakabukas ang takip</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3310640316857623290">Napakataas kumpara sa pinapayagang limitasyon ang latency ng DNS</translation>
 <translation id="3328783797891415197">Tumatakbo ang pagsusuri</translation>
 <translation id="3368922792935385530">Nakakonekta</translation>
@@ -125,6 +127,7 @@
 <translation id="4155551848414053977">Tiyaking naka-on ang scanner at available ito sa pamamagitan ng iyong network o ng isang direktang koneksyon</translation>
 <translation id="4170700058716978431">NABIGO</translation>
 <translation id="4176463684765177261">Hindi pinapaganana</translation>
+<translation id="4222698289790462549">Kasalukuyang Bilis</translation>
 <translation id="4227825898293920515">Mag-e-expire ang password sa loob ng <ph name="TIME" /></translation>
 <translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" /> GB sa <ph name="TOTAL_MEMORY" /> GB ang available.</translation>
 <translation id="4238516577297848345">Walang kasalukuyang pag-print</translation>

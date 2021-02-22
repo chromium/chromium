@@ -19,7 +19,6 @@
 <translation id="1125564390852150847">புதிய தாவலை உருவாக்கு</translation>
 <translation id="1145536944570833626">ஏற்கனவே உள்ள தரவை நீக்கு.</translation>
 <translation id="1147031633655575115"><ph name="USER" /> ஆக உள்நுழைந்துள்ளீர்கள்</translation>
-<translation id="1154690515305205900">ஹைலைட் செய்யப்பட்ட உரைக்கான இணைப்பை உருவாக்க முடியவில்லை.</translation>
 <translation id="1154984953698510061">பிற தாவல்களைக் காட்டு</translation>
 <translation id="1157749421655780457">இருப்பிடத்தை அணுக அனுமதி...</translation>
 <translation id="1165039591588034296">பிழை</translation>
@@ -134,7 +133,7 @@
 <translation id="2320166752086256636">கீபோர்டை மறை</translation>
 <translation id="2339560363438331454">ஒத்திசைவு &amp; Google சேவைகள்</translation>
 <translation id="2351097562818989364">உங்களின் மொழியாக்க அமைப்புகள் மீட்டமைக்கப்பட்டன.</translation>
-<translation id="2359043044084662842">மொழிபெயர்</translation>
+<translation id="2359043044084662842">Translate</translation>
 <translation id="2359808026110333948">தொடர்க</translation>
 <translation id="2360196772093551345">மொபைல் தளத்தைக் கோரு</translation>
 <translation id="236977714248711277">உங்கள் உலாவல் அனுபவத்தை மேம்படுத்துவதற்காக (எ.கா, உங்களை உள்நுழைந்தபடியே வைத்திருப்பது, உங்கள் ஷாப்பிங் கார்ட்டில் உள்ளவற்றை நினைவில் கொள்வது போன்றவை) குக்கீகளைத் தளங்கள் பயன்படுத்த முடியாது
@@ -566,8 +565,7 @@
 <translation id="6797885426782475225">குரல் தேடல்</translation>
 <translation id="6807889908376551050">எல்லாவற்றையும் காட்டு...</translation>
 <translation id="681368974849482173">புத்தகக்குறி உருவாக்கப்பட்டது</translation>
-<translation id="6831043979455480757">மொழிபெயர்</translation>
-<translation id="6841409746189899007">உரையுடன் இணை</translation>
+<translation id="6831043979455480757">Translate</translation>
 <translation id="6851516051005285358">டெஸ்க்டாப் தளத்தைக் கோரு</translation>
 <translation id="6858855187367714033">ஸ்கேன் செய்யப்பட்டது</translation>
 <translation id="6859944681507688231">QR குறியீட்டையோ கிரெடிட் கார்டையோ ஸ்கேன் செய்ய அமைப்புகளில் கேமராவை இயக்கவும்.</translation>
@@ -645,7 +643,6 @@
 <translation id="7658239707568436148">ரத்து செய்</translation>
 <translation id="766891008101699113">புதிய தாவலைச் சேர்த்து, தனிப்பட்ட முறையில் இணையத்தை உலாவலாம்.</translation>
 <translation id="7671141431838911305">நிறுவு</translation>
-<translation id="7690812411882623730">உரைக்கான இணைப்பை உருவாக்க முடியவில்லை</translation>
 <translation id="7701040980221191251">எதுவுமில்லை</translation>
 <translation id="7765158879357617694">நகர்த்து</translation>
 <translation id="7771470029643830783">வெளியேறினால் உங்கள் புக்மார்க்குகள், வரலாறு, கடவுச்சொற்கள், பிற Chrome தரவு ஆகியவை இனி உங்கள் Google கணக்குடன் ஒத்திசைக்கப்படாது.

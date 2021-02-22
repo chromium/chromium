@@ -19,7 +19,6 @@
 <translation id="1125564390852150847">Стварыць новую ўкладку.</translation>
 <translation id="1145536944570833626">Выдаліць існуючыя даныя.</translation>
 <translation id="1147031633655575115">Вы ўвайшлі як <ph name="USER" /></translation>
-<translation id="1154690515305205900">Не ўдалося стварыць спасылку на вылучаны тэкст.</translation>
 <translation id="1154984953698510061">Паглядзець іншыя ўкладкі</translation>
 <translation id="1157749421655780457">Дазволіць выкарыстанне месцазнаходжання...</translation>
 <translation id="1165039591588034296">Памылка</translation>
@@ -567,7 +566,6 @@
 <translation id="6807889908376551050">Паказаць усе...</translation>
 <translation id="681368974849482173">Элемент створаны</translation>
 <translation id="6831043979455480757">Перакласці</translation>
-<translation id="6841409746189899007">Стварыць спасылку на тэкст</translation>
 <translation id="6851516051005285358">Запытаць версію для настольнага камп'ютара</translation>
 <translation id="6858855187367714033">Сканіраваны</translation>
 <translation id="6859944681507688231">Каб сканіраваць QR-код ці крэдытную картку, уключыце ў наладах камеру.</translation>
@@ -645,7 +643,6 @@
 <translation id="7658239707568436148">Скасаваць</translation>
 <translation id="766891008101699113">Для прагляду інтэрнэт-змесціва ў прыватным рэжыме дадайце новую ўкладку.</translation>
 <translation id="7671141431838911305">УСТАЛЯВАЦЬ</translation>
-<translation id="7690812411882623730">Не ўдалося стварыць спасылку на тэкст</translation>
 <translation id="7701040980221191251">Няма</translation>
 <translation id="7765158879357617694">Перамясціць</translation>
 <translation id="7771470029643830783">Пасля выхаду закладкі, гісторыя, паролі і іншыя даныя Chrome больш не будуць сінхранізавацца з Уліковым запісам Google.

@@ -405,6 +405,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4421231901400348175">Ekranınızın kontrolü, Uzaktan Yardım kullanılarak <ph name="HELPER_NAME" /> ile paylaşılıyor.</translation>
 <translation id="4424159417645388645">Masa 5</translation>
 <translation id="4430019312045809116">Ses</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 önemli bildirim}other{# önemli bildirim}}</translation>
 <translation id="4450893287417543264">Bir daha gösterme</translation>
 <translation id="445864333228800152">İyi akşamlar,</translation>
 <translation id="4458688154122353284">Ekran kaydını durdur</translation>
@@ -476,6 +477,10 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4961318399572185831">Ekranı yayınla</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> sa. <ph name="MINUTES" /> dk. <ph name="SECONDS" /> sn.</translation>
 <translation id="4975771730019223894">Uygulama rozeti ekleme</translation>
+<translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
+        <ph name="NOTIFICATION_1" />,
+        <ph name="NOTIFICATION_2" />,
+        <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Sonraki cümle</translation>
 <translation id="5030687792513154421">Süre doldu</translation>
 <translation id="5033299697334913360">Tam ekran görüntüsünü yakalamak için herhangi bir yeri tıklayın</translation>
@@ -489,6 +494,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="5168181903108465623">Yayın cihazları kullanılabilir</translation>
 <translation id="5170568018924773124">Klasörde göster</translation>
 <translation id="5176318573511391780">Kısmi ekranı kaydet</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 diğer bildirim}other{# diğer bildirim}}</translation>
 <translation id="5207949376430453814">Metin imlecini vurgula</translation>
 <translation id="5208059991603368177">Açık</translation>
 <translation id="5222676887888702881">Çıkış</translation>

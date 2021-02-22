@@ -405,7 +405,6 @@
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> డౌన్‌లోడ్‌లు తొలగించబడ్డాయి</translation>
 <translation id="3856096718352044181">దయచేసి ఇది చెల్లుబాటు అయ్యే ప్రొవైడర్ అని వెరిఫై చేయండి లేదా తర్వాత మళ్లీ ట్రై చేయండి</translation>
 <translation id="3861633093716975811">జనాదరణ పొందిన వీడియోలు</translation>
-<translation id="386944881686624613">హైలైట్ చేయబడిన టెక్స్ట్‌కు లింక్‌ను క్రియేట్ చేయడం సాధ్యపడదు. పేజీకి లింక్‌ను షేర్ చేయండి.</translation>
 <translation id="3892148308691398805">టెక్స్ట్‌ను కాపీ చేయి</translation>
 <translation id="3894427358181296146">ఫోల్డర్‌ను జోడించండి</translation>
 <translation id="3895926599014793903">జూమ్ చేయడాన్ని నిర్బంధంగా ప్రారంభించు</translation>
@@ -737,7 +736,6 @@
 <translation id="6138832295072039549">ఇక్కడ మీ సైట్ సెట్టింగ్‌లు మార్చండి</translation>
 <translation id="6140709049082532940">మెరుగైన రక్షణ:</translation>
 <translation id="6140912465461743537">దేశం/ప్రాంతం</translation>
-<translation id="6142002709876620371">గోప్యత శాండ్‌బాక్స్‌ను ఎనేబుల్ చేయి</translation>
 <translation id="614940544461990577">ఇలా చేసి ప్రయత్నించండి:</translation>
 <translation id="6154478581116148741">ఈ పరికరం నుండి మీ పాస్‌వర్డ్‌లను ఎగుమతి చేయడానికి సెట్టింగ్‌లలో స్క్రీన్ లాక్‌ను ఆన్ చేయండి</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> డేటా పొదుపులు</translation>
@@ -827,7 +825,6 @@
 <translation id="6656545060687952787">పరికరాల కోసం స్కాన్ చేయడానికి Chromeకు స్థాన యాక్సెస్ అవసరం. <ph name="BEGIN_LINK" />అనుమతులను అప్‌డేట్ చేయండి<ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">పాస్‌వర్డ్</translation>
 <translation id="6659594942844771486">ట్యాబ్</translation>
-<translation id="6663079968236414793">టెక్స్ట్‌కు లింక్</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />లో తెరువు</translation>
 <translation id="666981079809192359">Chrome గోప్యతా నోటీసు</translation>
 <translation id="6671495933530132209">చిత్రాన్ని కాపీ చేయి</translation>
@@ -897,7 +894,6 @@
 <translation id="718926126787620637">పూర్తి ఎత్తులో తెరవబడిన బుక్‌మార్క్ ఫోల్డర్‌ల లిస్ట్</translation>
 <translation id="7189372733857464326">Google Play సేవల నవీకరణ పూర్తి కావడానికి వేచి ఉంది</translation>
 <translation id="7191430249889272776">బ్యాక్‌గ్రౌండ్‌లో ట్యాబ్ తెరవబడింది.</translation>
-<translation id="72180057821664864">హైలైట్ చేయబడిన టెక్స్ట్‌కు లింక్‌ను క్రియేట్ చేయడం సాధ్యపడదు</translation>
 <translation id="7233236755231902816">మీ భాషలో వెబ్‌ను చూడడానికి, Chrome యొక్క తాజా వెర్షన్‌ను డౌన్‌లోడ్ చేసుకోండి</translation>
 <translation id="7248069434667874558">Chromeలో <ph name="TARGET_DEVICE_NAME" />కు సింక్ ఆన్ చేయబడి ఉందని నిర్ధారించుకోండి</translation>
 <translation id="7274013316676448362">బ్లాక్ చేసిన సైట్</translation>
@@ -1135,7 +1131,6 @@
 <translation id="8812260976093120287">కొన్ని వెబ్‌సైట్‌ల‌లో, మీరు మీ పరికరంలో ఎగువ పేర్కొన్న మద్దతు గల చెల్లింపు యాప్‌లతోచెల్లించవచ్చు.</translation>
 <translation id="881688628773363275">ప్రివ్యూ ట్యాబ్‌లో ఉన్న కంటెంట్‌ను చూడటం సాధ్యం కాదు.</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
-<translation id="8827407626219585697">టెక్స్ట్‌లో లింక్‌ను చేర్చండి</translation>
 <translation id="883806473910249246">కంటెంట్‌ను డౌన్‌లోడ్ చేస్తున్నప్పుడు ఎర్రర్ ఏర్పడింది.</translation>
 <translation id="8840953339110955557">ఈ పేజీ మరియు ఆన్‌లైన్ వెర్షన్ వేరుగా ఉండవచ్చు.</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, ట్యాబ్</translation>

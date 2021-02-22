@@ -1380,10 +1380,6 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2906874737073861391">Liste der AppPack-Erweiterungen</translation>
 <translation id="2908277604670530363">Maximale Anzahl gleichzeitiger Verbindungen zum Proxyserver</translation>
 <translation id="291853569864365550">Keine Inhaltsvorschläge auf der Seite „Neuer Tab“ anzeigen</translation>
-<translation id="2919544577647246857">Die Richtlinie definiert eine Liste mit Nutzern, die sich auf dem Gerät anmelden dürfen. Die Einträge haben das Format <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, zum Beispiel <ph name="USER_WHITELIST_ENTRY_EXAMPLE" />. Wenn allen Nutzern in einer Domain die Anmeldung erlaubt werden soll, verwenden Sie Einträge im Format <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
-
-      Wenn diese Richtlinie nicht konfiguriert ist, gibt es keine Einschränkungen im Hinblick auf die Nutzer, die sich anmelden dürfen. Zum Erstellen neuer Nutzer muss aber weiterhin die Richtlinie <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> entsprechend konfiguriert werden.
-      Wenn <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" /> aktiviert ist, dürfen sich neben den in der Richtlinie festgelegten Konten auch Nutzer von Family Link anmelden.</translation>
 <translation id="2920795918401557243">Mit dieser Einstellung können Nutzer über den Dienst für die Ablaufverfolgung eine systemweite Leistungs-Trace erfassen.
 
       Wenn die Richtlinie deaktiviert ist, können Nutzer keine systemweite Trace mithilfe des Dienstes für die Ablaufverfolgung erfassen.
@@ -1757,19 +1753,6 @@ Wird die Richtlinie auf "False" gesetzt , verwendet <ph name="PRODUCT_NAME" /> k
       Unter https://support.google.com/chrome/a?p=Supported_directory_variables finden Sie eine Liste mit Variablen, aus denen Sie wählen können.
 
       Sollte diese Richtlinie nicht konfiguriert sein, kommt der Standardprofilpfad zum Einsatz, wobei der Nutzer dies mit dem Befehlszeilenparameter "--user-data-dir" ändern kann.</translation>
-<translation id="3378482432905539452">Diese Richtlinie ist veraltet. Sie können mit <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> die Verfügbarkeit des Flash-Plug-ins definieren und über <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> festlegen, ob der integrierte PDF-Viewer zum Öffnen von PDF-Dateien verwendet werden soll.
-
-      Mit dieser Richtlinie wird eine Liste von Plug-ins angegeben, die der Nutzer in <ph name="PRODUCT_NAME" /> aktivieren oder deaktivieren kann.
-
-      Die Platzhalterzeichen "*" und "?" können für beliebige Zeichenfolgen stehen. "*" entspricht einer beliebigen Anzahl von Zeichen, während "?" ein optionales einzelnes Zeichen darstellt, d. h. kein oder ein Zeichen. Als Escape-Zeichen wird "\" verwendet. Dieses können Sie vor "*", "?" oder "\" setzen, wenn diese Zeichen – also Sternchen, Fragezeichen oder umgekehrter Schrägstrich – gemeint sind.
-
-      Wenn Sie diese Einstellung aktivieren, kann die angegebene Liste von Plug-ins in <ph name="PRODUCT_NAME" /> verwendet werden. Nutzer können diese in "about:plugins" aktivieren oder deaktivieren, selbst wenn das Plug-in mit einem Muster in DisabledPlugins übereinstimmt. Außerdem können Nutzer Plug-ins aktivieren oder deaktivieren, die mit keinem der Muster in DisabledPlugins, DisabledPluginsExceptions und EnabledPlugins übereinstimmen.
-
-      Diese Richtlinie soll einen konsequenten Ausschluss von Plug-ins ermöglichen, wenn die Liste DisabledPlugins Platzhaltereinträge wie "*" zur Deaktivierung aller Plug-ins oder "*Java*" zur Deaktivierung aller Java-Plug-ins enthält, der Administrator jedoch bestimmte Versionen wie "IcedTea Java 2.3" aktivieren möchte. Solche spezifischen Versionen können in dieser Richtlinie angegeben werden.
-
-      Beachten Sie, dass sowohl der Plug-in-Name als auch der Plug-in-Gruppenname ausgenommen werden müssen. Jede Plug-in-Gruppe wird in einem separaten Abschnitt unter "about:plugins" angezeigt, wobei jeder Abschnitt ein oder mehrere Plug-ins enthalten kann. So gehört beispielsweise das Plug-in "Shockwave Flash" der Gruppe "Adobe Flash Player" an. Wenn dieses Plug-in von der Sperrliste ausgenommen werden soll, muss in der Ausnahmeliste für beide Namen eine Übereinstimmung vorhanden sein.
-
-      Ist diese Richtlinie nicht konfiguriert, werden alle Plug-ins, die mit den Mustern in DisabledPlugins übereinstimmen, deaktiviert. Sie können dann nicht vom Nutzer aktiviert werden.</translation>
 <translation id="3381968327636295719">Standardmäßig Host-Browser verwenden</translation>
 <translation id="3387211681524224831">Wenn die Richtlinie aktiviert ist, wird der Browserverlauf nicht gespeichert, die Tab-Synchronisierung ist deaktiviert und Nutzer können diese Einstellung nicht ändern.
 
@@ -2148,16 +2131,6 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
 
       Ist die Richtlinie nicht konfiguriert, steht SPDY zur Verfügung.</translation>
 <translation id="3891357445869647828">JavaScript aktivieren</translation>
-<translation id="3892015543543011887">Mit dieser Richtlinie wird festgelegt, ob Nutzer Anfragen zur Installation von Erweiterungen für <ph name="PRODUCT_NAME" /> zur Bestätigung an die Google Admin-Konsole senden dürfen.
-
-      Wenn die Richtlinie <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> deaktiviert oder nicht konfiguriert ist, wird diese Richtlinie ignoriert. Anfragen zur Installation von Erweiterungen können dann weder erstellt noch hochgeladen werden.
-      Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, können Anfragen zur Installation von Erweiterungen weder erstellt noch hochgeladen werden.
-      Wenn diese Richtlinie aktiviert ist, können Anfragen zur Installation von Erweiterungen erstellt und in der Google Admin-Konsole hochgeladen werden.
-
-      Anfragen zur Installation von Erweiterungen werden erstellt, wenn Nutzer versuchen, eine Erweiterung zu installieren, die weder von <ph name="EXTENSION_INSTALL_WHITELIST" /> noch von <ph name="EXTENSION_SETTINGS" /> auf die Zulassungsliste gesetzt wurde.
-
-      Diese Richtlinie wird nur angewendet, wenn das Gerät für <ph name="PRODUCT_NAME" /> mit <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> registriert ist.
-      Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</translation>
 <translation id="3898345958122666461">NTLMv2 deaktivieren</translation>
 <translation id="3898795800259311780">Bildschirmaufnahme gestatten oder ablehnen</translation>
 <translation id="3907683835264956726">Ermöglicht Nutzern, sich online über einen Sperrbildschirm anzumelden. Wenn diese Richtlinie auf "True" gesetzt ist, wird die erneute Online-Authentifizierung auf dem Sperrbildschirm beispielsweise durch <ph name="POLICY" /> ausgelöst.
@@ -3743,7 +3716,6 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 
       Hinweis: Wenn der Client über einen längeren Zeitraum offline war, werden Passwörter nicht innerhalb der angegebenen Frist geändert.</translation>
 <translation id="6280973140313576289">Profil-Picker beim Start erzwungen</translation>
-<translation id="6281043242780654992">Konfiguriert Richtlinien für das native Messaging. Hosts für natives Messaging auf der Sperrliste können nur geladen werden, wenn sie auch auf der Zulassungsliste stehen.</translation>
 <translation id="6282524907402492171"><ph name="CLOUD_PRINT_NAME" />-Warnungen zu veralteten Funktionen anzeigen</translation>
 <translation id="6282799760374509080">Audioaufzeichnung gestatten oder ablehnen</translation>
 <translation id="6284362063448764300">TLS 1.1</translation>
@@ -5688,32 +5660,6 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
       Wird sie auf "False" gesetzt oder nicht konfiguriert, werden die Formularsteuerelemente bei ihrer Einführung in M81, M82 und M83 aktiviert.
 
       Diese Richtlinie wird nach Chrome 84 entfernt.</translation>
-<translation id="8938932171964587769">Eingestellt in M69. Verwenden Sie stattdessen
-      "OverrideSecurityRestrictionsOnInsecureOrigin".
-
-      Mit dieser Richtlinie wird eine Liste von Quellen (URLs) oder Hostnamenmustern
-      wie "*.example.com" festgelegt, für die keine Sicherheitsbeschränkungen
-      für unsichere Quellen gelten.
-
-      Auf diese Weise können Organisationen Quellen für ältere Anwendungen,
-      die kein TLS bereitstellen können, auf die Zulassungsliste setzen oder einen
-      Testserver für die interne Webentwicklung einrichten, damit die Entwickler
-      Funktionen testen können, die einen sicheren Kontext erfordern, ohne TLS
-      auf dem Testserver bereitstellen zu müssen. Außerdem wird mit dieser Richtlinie
-      verhindert, dass die Quelle in der Omnibox als "Nicht sicher" gekennzeichnet wird.
-
-      Das Festlegen einer Liste von URLs in dieser Richtlinie hat den gleichen Effekt
-      wie das Festlegen des Befehlszeilen-Flags "--unsafely-treat-insecure-origin-as-secure"
-      für eine durch Kommas getrennte Liste mit denselben URLs. Wenn die Richtlinie konfiguriert
-      ist, wird das Befehlszeilen-Flag überschrieben.
-
-      Diese Richtlinie wurde in M69 zugunsten von
-      "OverrideSecurityRestrictionsOnInsecureOrigin" eingestellt. Wenn beide Richtlinien
-      vorhanden sind, wird diese Richtlinie durch "OverrideSecurityRestrictionsOnInsecureOrigin"
-      überschrieben.
-
-      Weitere Informationen zu sicheren Kontexten finden Sie unter
-      https://www.w3.org/TR/secure-contexts/.</translation>
 <translation id="8942616385591203339">Mit dieser Richtlinie wird festgelegt, ob die Einwilligung zur Synchronisierung dem Nutzer bei der ersten Anmeldung angezeigt werden kann. Sie sollte auf "false" gesetzt werden, wenn vom Nutzer keine Einwilligung zur Synchronisierung eingeholt werden muss.
       Wenn diese Richtlinie auf "false" gesetzt ist, wird die Einwilligung zur Synchronisierung nicht angezeigt.
       Falls die Richtlinie auf "true" festgelegt oder nicht konfiguriert ist, kann die Einwilligung zur Synchronisierung angezeigt werden.</translation>
@@ -5771,19 +5717,6 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
       Diese Richtlinie betrifft nur Nutzer, die sich über SAML authentifizieren.
 
       Der Wert sollte in Sekunden angegeben werden.</translation>
-<translation id="9015295904649380186">Mit dieser Richtlinie können Sie das Auslösen der Passwortschutzwarnung steuern. Durch diese Meldung werden Nutzer gewarnt, wenn sie ihr geschütztes Passwort auf potenziell verdächtigen Websites wiederverwenden.
-
-      Anhand der Richtlinien "<ph name="PASSWORD_PROTECTION_LOGIN_URLS_POLICY_NAME" />" und "<ph name="PASSWORD_PROTECTION_CHANGE_PASSWORD_URL_POLICY_NAME" />" können Sie konfigurieren, welche Passwörter geschützt werden sollen.
-
-      Wenn die Richtlinie auf
-
-* "PasswordProtectionWarningOff" festgelegt ist, wird keine Passwortschutzwarnung angezeigt.
-
-      * "PasswordProtectionWarningOnPasswordReuse" festgelegt ist, wird die Passwortschutzwarnung angezeigt, wenn der Nutzer sein geschütztes Passwort auf einer Website wiederverwendet, die nicht auf der Zulassungsliste steht.
-
-      * "PasswordProtectionWarningOnPhishingReuse" festgelegt ist, wird die Passwortschutzwarnung angezeigt, wenn der Nutzer sein geschütztes Passwort auf einer Phishing-Website wiederverwendet.
-
-      Wenn die Richtlinie nicht konfiguriert ist, werden ausschließlich Google-Passwörter geschützt. Der Nutzer kann diese Einstellung jedoch ändern.</translation>
 <translation id="9035086760683255833">Mit dieser Richtlinie wird die Bedienungshilfe "Objekt mit Tastaturfokus hervorheben" aktiviert.
 
           Dabei wird das Objekt hervorgehoben, das mit der Tastatur ausgewählt wurde.
@@ -5905,7 +5838,6 @@ Auf <ph name="PRODUCT_OS_NAME" />-Version 75 und höher unterstützt. Bei älte
       Nach dem Neustart wird die Sitzung des Nutzers wiederhergestellt.</translation>
 <translation id="9160028464653564229">Websites nicht erlauben, den Nutzer über die Serial API um Zugriff auf serielle Ports zu bitten</translation>
 <translation id="9167719789236691545">Synchronisierung zwischen Drive und der App "Dateien" von <ph name="PRODUCT_OS_NAME" /> deaktivieren</translation>
-<translation id="9185107612228451403">Hiermit werden erweiterungsbezogene Richtlinien konfiguriert. Auf die Sperrliste gesetzte Erweiterungen können vom Nutzer nur installiert werden, wenn diese in der Zulassungsliste enthalten sind. Wenn Sie die automatische Installation von bestimmten Erweiterungen durch <ph name="PRODUCT_NAME" /> erzwingen möchten, können Sie die Erweiterungen in "<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />" angeben. Erweiterungen mit erzwungener Installation werden immer installiert, unabhängig davon, ob sie sich auf der Sperrliste befinden.</translation>
 <translation id="9187743794267626640">Bereitstellen von externem Speicher deaktivieren</translation>
 <translation id="9190456586252617675">Mit dieser Richtlinie kann der Modus für die Einrichtung von Assistant konfiguriert werden.
 

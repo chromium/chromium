@@ -19,7 +19,6 @@
 <translation id="1125564390852150847">יצירת כרטיסייה חדשה.</translation>
 <translation id="1145536944570833626">מחיקת נתונים קיימים.</translation>
 <translation id="1147031633655575115">נכנסת כ-<ph name="USER" /></translation>
-<translation id="1154690515305205900">לא ניתן ליצור קישור לטקסט המודגש.</translation>
 <translation id="1154984953698510061">הצגת כרטיסיות אחרות</translation>
 <translation id="1157749421655780457">מתן גישה למיקום...</translation>
 <translation id="1165039591588034296">שגיאה</translation>
@@ -567,7 +566,6 @@
 <translation id="6807889908376551050">הצגת הכול...</translation>
 <translation id="681368974849482173">הפריט נוצר</translation>
 <translation id="6831043979455480757">תרגום</translation>
-<translation id="6841409746189899007">קישור לטקסט</translation>
 <translation id="6851516051005285358">בקשת אתר למחשב</translation>
 <translation id="6858855187367714033">נסרק</translation>
 <translation id="6859944681507688231">‏כדי לסרוק קוד QR או כרטיס אשראי, יש להפעיל את המצלמה דרך ההגדרות.</translation>
@@ -645,7 +643,6 @@
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="766891008101699113">כדי לגלוש באינטרנט בפרטיות צריך להוסיף כרטיסייה חדשה.</translation>
 <translation id="7671141431838911305">התקנה</translation>
-<translation id="7690812411882623730">לא ניתן לקשר לטקסט</translation>
 <translation id="7701040980221191251">אין</translation>
 <translation id="7765158879357617694">העברה</translation>
 <translation id="7771470029643830783">‏יציאה תפסיק את הסנכרון של הסימניות, ההיסטוריה, הסיסמאות ונתונים אחרים ב-Chrome עם חשבון Google.

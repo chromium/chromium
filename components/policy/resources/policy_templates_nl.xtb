@@ -1390,10 +1390,6 @@ Als je het beleid niet instelt, is stroom voor piekuren aanvankelijk uitgeschake
 <translation id="2906874737073861391">Lijst met app-pakketextensies</translation>
 <translation id="2908277604670530363">Maximaal aantal gelijktijdige verbindingen met de proxyserver</translation>
 <translation id="291853569864365550">Geen contentsuggesties weergeven op de pagina Nieuw tabblad</translation>
-<translation id="2919544577647246857">Definieert de lijst met gebruikers die toestemming hebben om op het apparaat in te loggen. De invoer heeft de vorm <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, zoals <ph name="USER_WHITELIST_ENTRY_EXAMPLE" />. Als je willekeurige gebruikers toegang wilt geven tot een domein, gebruik je invoer in de vorm <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
-
-      Als dit beleid niet is geconfigureerd, zijn er geen beperkingen voor welke gebruikers mogen inloggen. Als je nieuwe gebruikers wilt maken, moet het beleid <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> correct zijn ingesteld.
-      Als <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" /> niet is ingesteld, zijn extra Family Link-gebruikers toegestaan voor de accounts die in dit beleid zijn gedefinieerd.</translation>
 <translation id="2920795918401557243">Deze instelling staat toe dat een prestatietracering voor het hele systeem wordt verzameld via de service voor systeemtracering.
 
       Als dit beleid niet wordt toegepast, kan de gebruiker geen tracering voor het hele systeem verzamelen via de service voor systeemtracering.
@@ -1752,19 +1748,6 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen n
       Ga naar https://support.google.com/chrome/a?p=Supported_directory_variables voor een lijst met variabelen die je kunt gebruiken.
 
       Als dit beleid niet wordt ingesteld, wordt het standaard profielpad gebruikt. De gebruiker kan dit overschrijven met de opdrachtregelmarkering '--user-data-dir'.</translation>
-<translation id="3378482432905539452">Dit beleid is beëindigd. Gebruik het beleid <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> om de beschikbaarheid van de Flash-plug-in te beheren en het beleid <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> om aan te geven of de geïntegreerde pdf-viewer moet worden gebruikt om pdf-bestanden te openen.
-
-      Specificeert een lijst met plug-ins die de gebruiker kan in- of uitschakelen in <ph name="PRODUCT_NAME" />.
-
-      De jokertekens '*' en '?' kunnen worden gebruikt om overeenkomsten te zoeken in reeksen met willekeurige tekens. '*' komt overeen met een willekeurig aantal tekens, terwijl met '?' een optioneel enkel teken wordt gespecificeerd dat overeenkomt met nul tekens of één teken. Het escape-teken is '\'. Als je dus naar overeenkomsten zoekt met de feitelijke tekens '*', '?' of '\', kun je er een '\' voor zetten.
-
-      Als je deze instelling inschakelt, kan de gespecificeerde lijst met plug-ins in <ph name="PRODUCT_NAME" /> worden gebruikt. Gebruikers kunnen plug-ins in- of uitschakelen in 'about:plugins', zelfs als de plug-in ook overeenkomt met een patroon in DisabledPlugins. Gebruikers kunnen ook plug-ins in- en uitschakelen die niet overeenkomen met een patroon in DisabledPlugins, DisabledPluginsExceptions of EnabledPlugins.
-
-      Dit beleid is bedoeld om een streng beleid voor een blacklist met plug-ins mogelijk te maken, waarbij de lijst 'DisabledPlugins' items met jokertekens bevat. Bijvoorbeeld, 'schakel alle plug-ins met '*' uit' of 'schakel alle Java-plug-ins met '*Java*' uit', terwijl de beheerder een bepaalde versie wil inschakelen, zoals 'IcedTea Java 2.3'. Deze specifieke versies kunnen worden aangeduid in dit beleid.
-
-      Zowel de naam van de plug-in als de groepsnaam van de plug-in moeten worden uitgesloten. Elke groep plug-ins wordt in een afzonderlijk gedeelte in 'about:plugins' weergegeven. Elk gedeelte kan een of meer plug-ins bevatten. De plug-in 'Shockwave Flash' hoort bijvoorbeeld bij de groep 'Adobe Flash Player' en beide namen moeten een overeenkomst hebben in de lijst met uitzonderingen als die plug-in moet worden uitgesloten van de blacklist.
-
-      Als dit beleid niet is ingesteld, wordt elke plug-in uitgeschakeld die overeenkomt met de patronen in 'DisabledPlugins', en kan de gebruiker deze niet inschakelen.</translation>
 <translation id="3381968327636295719"> gebruiken</translation>
 <translation id="3387211681524224831">Als je het beleid inschakelt, wordt browsegeschiedenis niet opgeslagen en tabbladsynchronisatie uitgeschakeld. Gebruikers kunnen deze instelling niet wijzigen.
 
@@ -2144,16 +2127,6 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
 
       Als dit beleid niet wordt ingesteld, is het SPDY-protocol beschikbaar.</translation>
 <translation id="3891357445869647828">JavaScript inschakelen</translation>
-<translation id="3892015543543011887">Met dit beleid worden installatieverzoeken voor <ph name="PRODUCT_NAME" />-extensies beheerd waarmee gebruikers de verzoeken ter goedkeuring naar de Google Beheerdersconsole kunnen sturen.
-
-      Als het beleid <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> niet is ingesteld of is uitgeschakeld, wordt dit beleid genegeerd. Er worden in dit geval geen installatieverzoeken voor extensies gemaakt of geüpload.
-      Als dit beleid niet is ingesteld of is uitgeschakeld, worden er geen installatieverzoeken voor extensies gemaakt of geüpload.
-      Als dit beleid is ingeschakeld, worden installatieverzoeken voor extensies gemaakt en geüpload naar de Google Beheerdersconsole.
-
-      Er worden installatieverzoeken voor extensies gemaakt als gebruikers proberen een extensie te installeren die niet op de witte lijst van <ph name="EXTENSION_INSTALL_WHITELIST" /> of <ph name="EXTENSION_SETTINGS" /> staat.
-
-      Dit beleid is alleen van kracht als de machine is ingeschreven met <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> voor <ph name="PRODUCT_NAME" />.
-      Dit beleid is altijd van kracht voor <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3898345958122666461">NTLMv2 uitschakelen</translation>
 <translation id="3898795800259311780">Screenshots toestaan of weigeren</translation>
 <translation id="3907683835264956726">Schakelt online inloggen van gebruikers op een vergrendelscherm in. Als het beleid wordt ingesteld op True, wordt online opnieuw verifiëren op een vergrendelscherm geactiveerd door <ph name="POLICY" />.
@@ -3735,7 +3708,6 @@ Gebruikers kunnen deze instelling niet wijzigen.</translation>
 
       Opmerking: Wachtwoorden kunnen ouder zijn dan de ingestelde periode als de client langere tijd offline is.</translation>
 <translation id="6280973140313576289">Profielkiezer afgedwongen bij opstarten</translation>
-<translation id="6281043242780654992">Configureert beleid voor systeemeigen berichten. Hosts voor systeemeigen berichten op de zwarte lijst worden niet toegestaan, tenzij ze op de witte lijst worden gezet.</translation>
 <translation id="6282524907402492171">Waarschuwingen over beëindiging van <ph name="CLOUD_PRINT_NAME" /> tonen</translation>
 <translation id="6282799760374509080">Het opnemen van audio toestaan of weigeren</translation>
 <translation id="6284362063448764300">TLS 1.1</translation>
@@ -5686,35 +5658,6 @@ Dit beleid wordt verwijderd in M75.</translation>
       Als dit beleid is ingesteld op False of niet is ingesteld, worden de formulierbesturingselementen ingeschakeld als ze worden gelanceerd in M81, M82 en M83.
 
       Dit beleid wordt na Chrome 84 verwijderd.</translation>
-<translation id="8938932171964587769">Beëindigd in M69. Gebruik in plaats hiervan
-      OverrideSecurityRestrictionsOnInsecureOrigin.
-
-      Dit beleid definieert een lijst met beginpunten (URL's) of hostnaampatronen
-      (zoals '*.example.com') waarop beveiligingsbeperkingen voor onveilige
-      beginpunten niet van toepassing zijn.
-
-      De bedoeling is organisaties toe te staan beginpunten voor
-      verouderde apps die geen TLS kunnen implementeren, op
-      de witte lijst te zetten, of een staging server voor interne
-      webontwikkelingen in te stellen, zodat de ontwikkelaars functies die een
-      veilige context vereisen, kunnen testen zonder TLS te hoeven implementeren
-      op de staging server. Dit beleid verhindert ook dat het beginpunt wordt
-      aangeduid als onveilig in de omnibox.
-
-      Wanneer er een lijst met URL's wordt ingesteld
-      in dit beleid, heeft dit hetzelfde effect als wanneer de
-      opdrachtregelmarkering '--unsafely-treat-insecure-origin-as-secure' wordt
-      ingesteld op een door komma's gescheiden lijst met dezelfde URL's. Als het
-      beleid is ingesteld, wordt de opdrachtregelmarkering overschreven.
-
-      Dit beleid is beëindigd in M69 en is vervangen door
-      OverrideSecurityRestrictionsOnInsecureOrigin. Als beide beleidsvormen
-      aanwezig zijn, overschrijft OverrideSecurityRestrictionsOnInsecureOrigin
-      dit beleid.
-
-      Voor meer informatie over een veilige context ga je naar
-      https://www.w3.org/TR/secure-contexts/
-      </translation>
 <translation id="8942616385591203339">Dit beleid bepaalt of er informatie over toestemming voor synchronisatie mag worden getoond aan de gebruiker wanneer deze voor het eerst inlogt. De waarde moet op 'False' worden ingesteld als er nooit toestemming voor synchronisatie is vereist voor de gebruiker.
       Als dit is ingesteld op 'False', wordt er geen informatie over toestemming voor synchronisatie weergegeven.
       Als dit is ingesteld op 'True' of als dit niet is ingesteld, kan er informatie over toestemming voor synchronisatie worden weergegeven.</translation>
@@ -5772,19 +5715,6 @@ Dit beleid wordt verwijderd in M75.</translation>
       Dit beleid is alleen van toepassing op gebruikers die zijn geverifieerd met SAML.
 
       De beleidswaarde moet worden gespecificeerd in seconden.</translation>
-<translation id="9015295904649380186">Als je dit beleid instelt, kun je de activering van de waarschuwing voor wachtwoordbeveiliging beheren. Wachtwoordbeveiliging waarschuwt gebruikers als ze hun beschermde wachtwoord opnieuw gebruiken op mogelijk verdachte sites.
-
-      Gebruik <ph name="PASSWORD_PROTECTION_LOGIN_URLS_POLICY_NAME" /> en <ph name="PASSWORD_PROTECTION_CHANGE_PASSWORD_URL_POLICY_NAME" /> om in te stellen welk wachtwoord moet worden beschermd.
-
-      Als dit beleid is ingesteld op:
-
-      * PasswordProtectionWarningOff, wordt er geen waarschuwing voor wachtwoordbeveiliging weergegeven.
-
-      * PasswordProtectionWarningOnPasswordReuse, wordt de waarschuwing voor wachtwoordbeveiliging weergegeven als de gebruiker het beschermde wachtwoord opnieuw gebruikt op een site die niet op de witte lijst is gezet.
-
-      * PasswordProtectionWarningOnPhishingReuse, wordt de waarschuwing voor wachtwoordbeveiliging weergegeven als de gebruiker het beschermde wachtwoord opnieuw gebruikt op een phishingsite.
-
-      Als dit beleid niet is ingesteld, beschermt de service voor wachtwoordbeveiliging alleen Google-wachtwoorden, maar de gebruiker kan deze instelling wijzigen.</translation>
 <translation id="9035086760683255833">De toegankelijkheidsfunctie voor markeren via toetsenbordfocus inschakelen.
 
           Met deze functie wordt het object gemarkeerd waarop het toetsenbord is gefocust.
@@ -5913,7 +5843,6 @@ Dit beleid wordt verwijderd in M75.</translation>
       De sessie van de gebruiker wordt hersteld zodra opnieuw is opgestart.</translation>
 <translation id="9160028464653564229">Geen sites toestemming geven om toegang tot seriële poorten te vragen via de Serial API</translation>
 <translation id="9167719789236691545">Drive uitschakelen in de app Bestanden van <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="9185107612228451403">Hiermee wordt aan extensies gerelateerd beleid geconfigureerd. De gebruiker mag geen extensies installeren die op de blacklist zijn gezet, tenzij ze op de witte lijst zijn gezet. Je kunt ook <ph name="PRODUCT_NAME" /> dwingen extensies automatisch te installeren door ze in <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> op te geven. Afgedwongen geïnstalleerde extensies worden geïnstalleerd, ongeacht of ze op de blacklist zijn gezet.</translation>
 <translation id="9187743794267626640">Koppelen van externe opslag uitschakelen</translation>
 <translation id="9190456586252617675">Met dit beleid wordt de modus voor introductie van de Assistent beheerd.
 

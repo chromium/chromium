@@ -4,6 +4,7 @@
 <translation id="102360288709523007">Kullanıcı istatistiklerini ve kilitlenme raporlarını Google'a göndererek Chromium'u iyileştirmemize yardımcı olun.</translation>
 <translation id="1185134272377778587">Chromium hakkında</translation>
 <translation id="1257458525759135959">Resimleri kaydetmek için Ayarlar'a dokunup Chromium'un resimlerinize eklemesine izin verin</translation>
+<translation id="1289216811211435351">Chromium'a geçin</translation>
 <translation id="1361748954329991663">Chromium sürümü eski. <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />'da güncelleme yoksa cihazınız artık Chromium'un yeni sürümlerini desteklemiyor olabilir.</translation>
 <translation id="1431818719585918472">Chromium'un Gizli sekmelerinizi kapatmasına izin verin.</translation>
 <translation id="1472013873724362412">Hesabınız Chromium'da kullanılamıyor. Lütfen alan adı yöneticinizle iletişim kurun veya oturum açmak için normal bir Google Hesabı kullanın.</translation>
@@ -34,6 +35,7 @@
 <translation id="4099085513035183040">Chromium Beta'da desteklenmiyor</translation>
 <translation id="4166206055865952171">Chromium'u Varsayılan Tarayıcınız Yapın</translation>
 <translation id="4555020257205549924">Bu özellik açık durumdayken Chromium, diğer dillerde yazılmış sayfaları Google Çeviri'yi kullanarak çevirmeyi teklif eder. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
+<translation id="4585809515399340748">Artık mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantıları tıkladığınızda Chromium'u kullanabilirsiniz.</translation>
 <translation id="4681781466797808448">Chromium tarayıcıyı açın</translation>
 <translation id="4787850887676698916">Diğer cihazlarınızda Chromium'da açtığınız sekmeler burada görünür.</translation>
 <translation id="4828317641996116749">Chromium, şifrelerin tümünü kontrol edemedi. Daha sonra tekrar deneyin.</translation>
@@ -45,6 +47,7 @@
 <translation id="5544795779875591523">Chromium verilerinizi bu cihazdan temizlemeyi veya saklamayı seçin.</translation>
 <translation id="5573014823074921752">Chromium için ipucu. Sekmelerle ilgili daha fazla seçenek görmek için ekranınızın altında veya üstünde görünen araç çubuğunda Sekmeleri Göster düğmesine dokunup basılı tutun.</translation>
 <translation id="5700709190537129682">Chromium, şifrelerinizi kontrol edemiyor</translation>
+<translation id="5742135483959137648">Bağlantıları Açmak İçin Chromium'u Kullanın</translation>
 <translation id="5777187867430702742">Chromium Sayfası</translation>
 <translation id="5862307444128926510">Chromium'a Hoş Geldiniz</translation>
 <translation id="5945387852661427312"><ph name="DOMAIN" /> tarafından yönetilen bir hesapla oturum açıyor ve yöneticiye tüm Chromium verileriniz üzerinde denetim olanağı veriyorsunuz. Verileriniz kalıcı olarak bu hesaba bağlanacaktır. Chromium'da oturumu kapattığınızda verileriniz bu cihazdan silinir ancak Google Hesabınızda kalmaya devam eder.</translation>

@@ -296,7 +296,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="204357726431741734">Iniciar sesión para utilizar contrasinais gardados na túa Conta de Google</translation>
 <translation id="2053111141626950936">Non se traducirán as páxinas en <ph name="LANGUAGE" />.</translation>
 <translation id="2053553514270667976">Código postal</translation>
-<translation id="2054665754582400095">A túa presenza</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 suxestión}other{# suxestións}}</translation>
 <translation id="2079545284768500474">Desfacer</translation>
 <translation id="20817612488360358">Estableceuse a configuración do proxy do sistema que debe utilizarse, pero tamén se especificou unha configuración de proxy explícita.</translation>
@@ -566,7 +565,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
       asegurarte de que o servidor proxy funciona. Se non cres que deberías
       estar utilizando un servidor proxy:
       <ph name="PLATFORM_TEXT" /></translation>
-<translation id="3184534047932533456"><ph name="URL" /> quere saber se estás activo</translation>
 <translation id="3188393374551744535">Saldo da conta</translation>
 <translation id="3194737229810486521">O URL <ph name="URL" /> quere almacenar datos de forma permanente no teu dispositivo</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> en <ph name="SERVER_NAME" /></translation>
@@ -1093,7 +1091,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Equipo</translation>
 <translation id="5179510805599951267">Non está en <ph name="ORIGINAL_LANGUAGE" />? Informar deste erro</translation>
-<translation id="5179740473595559246">Saber cando estás activo</translation>
 <translation id="5190835502935405962">Barra de marcadores</translation>
 <translation id="519422657042045905">O modo de anotación non está dispoñible</translation>
 <translation id="5201306358585911203">Unha páxina inserida nesta páxina di</translation>
@@ -1324,7 +1321,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6051221802930200923">Non podes acceder a <ph name="SITE" /> agora momento porque o sitio web usa a fixación de certificados. Normalmente, os erros de rede e os ataques son temporais, polo que é posible que esta páxina funcione máis tarde.</translation>
 <translation id="6051898664905071243">Número de páxinas:</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053328359599022071">Queres compartir o teu estado de actividade?</translation>
 <translation id="6058977677006700226">Queres utilizar as túas tarxetas en todos os teus dispositivos?</translation>
 <translation id="6059925163896151826">Dispositivos USB</translation>
 <translation id="6060009363608157444">Modo DnsOverHttps non válido.</translation>

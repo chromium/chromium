@@ -293,7 +293,6 @@
 <translation id="204357726431741734">Google 계정에 저장된 비밀번호를 사용하여 로그인</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" />로 된 페이지를 번역하지 않습니다.</translation>
 <translation id="2053553514270667976">우편번호</translation>
-<translation id="2054665754582400095">활동</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{제안 1개}other{제안 #개}}</translation>
 <translation id="2079545284768500474">실행취소</translation>
 <translation id="20817612488360358">시스템 프록시 설정이 사용하도록 설정되었지만 명시적 프록시 설정도 지정되어 있습니다.</translation>
@@ -563,7 +562,6 @@
       프록시 서버가 작동하는지 확인하세요. 프록시 서버를 사용하지 않으려면
       다음 단계를 따르세요.
       <ph name="PLATFORM_TEXT" /></translation>
-<translation id="3184534047932533456"><ph name="URL" />에서 사용자 접속 상태를 알고 싶어 합니다.</translation>
 <translation id="3188393374551744535">계정 잔액</translation>
 <translation id="3194737229810486521"><ph name="URL" />에서 내 기기에 데이터를 영구 저장하려고 합니다</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" />의 <ph name="PRINTER_NAME" /></translation>
@@ -1085,7 +1083,6 @@
 <translation id="5171689220826475070">Fanfold-유럽</translation>
 <translation id="5172758083709347301">컴퓨터</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" />가 아닙니까? 오류 신고</translation>
-<translation id="5179740473595559246">사용자 접속 상태 확인</translation>
 <translation id="5190835502935405962">북마크바</translation>
 <translation id="519422657042045905">주석을 사용할 수 없음</translation>
 <translation id="5201306358585911203">이 페이지에 삽입된 페이지 내용:</translation>
@@ -1316,7 +1313,6 @@
 <translation id="6051221802930200923">현재 <ph name="SITE" />에서 인증서 고정을 사용하기 때문에 방문할 수 없습니다. 네트워크 오류와 공격은 대부분 일시적이므로 나중에 이 페이지가 정상적으로 작동할 수 있습니다.</translation>
 <translation id="6051898664905071243">페이지 수:</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053328359599022071">사용자 접속 상태를 공유할까요?</translation>
 <translation id="6058977677006700226">모든 기기에서 카드를 사용하고 싶으신가요?</translation>
 <translation id="6059925163896151826">USB 기기</translation>
 <translation id="6060009363608157444">잘못된 DnsOverHttps 모드입니다.</translation>

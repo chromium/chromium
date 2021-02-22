@@ -19,7 +19,6 @@
 <translation id="1125564390852150847">Nieuw tabblad maken.</translation>
 <translation id="1145536944570833626">Bestaande gegevens verwijderen.</translation>
 <translation id="1147031633655575115">Ingelogd als <ph name="USER" /></translation>
-<translation id="1154690515305205900">Er kan geen link naar de gemarkeerde tekst worden gemaakt.</translation>
 <translation id="1154984953698510061">Andere tabbladen bekijken</translation>
 <translation id="1157749421655780457">Locatie toestaan...</translation>
 <translation id="1165039591588034296">Fout</translation>
@@ -567,7 +566,6 @@ Probeer een uniek wachtwoord te gebruiken voor elke site.</translation>
 <translation id="6807889908376551050">Alles weergeven...</translation>
 <translation id="681368974849482173">Item gemaakt</translation>
 <translation id="6831043979455480757">Vertalen</translation>
-<translation id="6841409746189899007">Link naar tekst</translation>
 <translation id="6851516051005285358">Desktopsite opvragen</translation>
 <translation id="6858855187367714033">Gescand</translation>
 <translation id="6859944681507688231">Als je een QR-code of creditcard wilt scannen, schakel je de camera in via Instellingen.</translation>
@@ -645,7 +643,6 @@ Probeer een uniek wachtwoord te gebruiken voor elke site.</translation>
 <translation id="7658239707568436148">Annuleren</translation>
 <translation id="766891008101699113">Voeg een nieuw tabblad toe als je privé wilt browsen.</translation>
 <translation id="7671141431838911305">INSTALLEER</translation>
-<translation id="7690812411882623730">Kan geen link naar tekst maken</translation>
 <translation id="7701040980221191251">Geen</translation>
 <translation id="7765158879357617694">Verplaatsen</translation>
 <translation id="7771470029643830783">Als je uitlogt, worden je bookmarks, geschiedenis, wachtwoorden en andere Chrome-gegevens niet meer gesynchroniseerd met je Google-account.

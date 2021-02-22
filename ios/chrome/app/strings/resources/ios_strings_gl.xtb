@@ -19,7 +19,6 @@
 <translation id="1125564390852150847">Crear pestana nova</translation>
 <translation id="1145536944570833626">Elimina os datos existentes.</translation>
 <translation id="1147031633655575115">Tes a sesión iniciada como <ph name="USER" /></translation>
-<translation id="1154690515305205900">Non se puido crear unha ligazón ao texto destacado.</translation>
 <translation id="1154984953698510061">Ver outras pestanas</translation>
 <translation id="1157749421655780457">Permitir uso da localización...</translation>
 <translation id="1165039591588034296">Erro</translation>
@@ -567,7 +566,6 @@ Tenta usar un contrasinal distinto para cada sitio.</translation>
 <translation id="6807889908376551050">Mostrar todas...</translation>
 <translation id="681368974849482173">Creouse o elemento</translation>
 <translation id="6831043979455480757">Traducir</translation>
-<translation id="6841409746189899007">Xerar ligazón ao texto</translation>
 <translation id="6851516051005285358">Solicitar sitio para ordenadores</translation>
 <translation id="6858855187367714033">Escaneado</translation>
 <translation id="6859944681507688231">Para escanear un código QR ou unha tarxeta de crédito, activa a cámara na configuración.</translation>
@@ -645,7 +643,6 @@ Tenta usar un contrasinal distinto para cada sitio.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="766891008101699113">Para navegar pola web de forma privada, engade unha nova pestana.</translation>
 <translation id="7671141431838911305">INSTALAR</translation>
-<translation id="7690812411882623730">Non se puido ligar o texto</translation>
 <translation id="7701040980221191251">Ningunha</translation>
 <translation id="7765158879357617694">Mover</translation>
 <translation id="7771470029643830783">Ao pechar sesión, os marcadores, o historial, os contrasinais e outros datos de Chrome deixarán de sincronizarse coa túa Conta de Google.

@@ -19,7 +19,6 @@
 <translation id="1125564390852150847">新しいタブを作成。</translation>
 <translation id="1145536944570833626">既存のデータを削除します。</translation>
 <translation id="1147031633655575115"><ph name="USER" /> としてログイン</translation>
-<translation id="1154690515305205900">選択したテキストへのリンクを作成できません。</translation>
 <translation id="1154984953698510061">他のタブを表示</translation>
 <translation id="1157749421655780457">位置情報へのアクセスを許可...</translation>
 <translation id="1165039591588034296">エラー</translation>
@@ -567,7 +566,6 @@
 <translation id="6807889908376551050">すべて表示...</translation>
 <translation id="681368974849482173">作成済みのアイテム</translation>
 <translation id="6831043979455480757">翻訳</translation>
-<translation id="6841409746189899007">リンクを作成</translation>
 <translation id="6851516051005285358">PC 版サイトを見る</translation>
 <translation id="6858855187367714033">スキャンされました</translation>
 <translation id="6859944681507688231">QR コードまたはクレジット カードをスキャンするには、設定でカメラを有効にしてください。</translation>
@@ -645,8 +643,8 @@
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="766891008101699113">ウェブをプライベートに閲覧するには新しいタブを追加してください。</translation>
 <translation id="7671141431838911305">インストール</translation>
-<translation id="7690812411882623730">テキストリンクを作成できません</translation>
 <translation id="7701040980221191251">なし</translation>
+<translation id="7741325291586284254">新しいシークレット タブ ページ</translation>
 <translation id="7765158879357617694">移動</translation>
 <translation id="7771470029643830783">ログアウトすると、ブックマーク、履歴、パスワード、その他の Chrome データは、Google アカウントに同期されなくなります。
 

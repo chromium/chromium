@@ -297,7 +297,6 @@
 <translation id="204357726431741734">Մուտք գործեք՝ Google հաշվում պահված գաղտնաբառերն օգտագործելու համար</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" /> լեզվով էջերը չեն թարգմանվի:</translation>
 <translation id="2053553514270667976">Փոստային դասիչ</translation>
-<translation id="2054665754582400095">Տվյալներ ձեր ներկայության մասին</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 առաջարկ}one{# suggestions}other{# առաջարկ}}</translation>
 <translation id="2079545284768500474">Հետարկել</translation>
 <translation id="20817612488360358">Համակարգի պրոքսի-սերվերի կարգավորումները կայված են, բայց նաև նշված է նրա ուղղակի կազմաձևում:</translation>
@@ -569,7 +568,6 @@
       ցանցի ադմինիստրատորի հետ, որպեսզի համոզվեք, որ 
       միջնորդ սերվերն աշխատում է: Եթե չեք օգտագործում միջնորդ սերվեր`
       <ph name="PLATFORM_TEXT" /></translation>
-<translation id="3184534047932533456"><ph name="URL" /> կայքն ուզում է տեղեկություններ ստանալ ձեր ներկայության մասին</translation>
 <translation id="3188393374551744535">Հաշվի մնացորդը</translation>
 <translation id="3194737229810486521"><ph name="URL" /> կայքն ուզում է ձեր սարքում մեծ ծավալով տվյալներ մշտապես պահել</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> տպիչ <ph name="SERVER_NAME" />֊ում</translation>
@@ -1096,7 +1094,6 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Համակարգիչ</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> չէ՞: Հաղորդեք սխալի մասին</translation>
-<translation id="5179740473595559246">Տեղեկություններ ստանալ ձեր ներկայության մասին</translation>
 <translation id="5190835502935405962">Էջանիշների գոտի</translation>
 <translation id="519422657042045905">Ծանոթագրությունը հասանելի չէ</translation>
 <translation id="5201306358585911203">Հաղորդագրություն այս կայքում ներկառուցված էջից</translation>
@@ -1327,7 +1324,6 @@
 <translation id="6051221802930200923">Այս պահին չեք կարող այցելել <ph name="SITE" /> կայք, քանի որ այն օգտագործում է հավաստագրի ամրացում։ Ցանցային սխալներն ու հարձակումները սովորաբար ժամանակավոր բնույթ են կրում, և հավանաբար այս էջը հասանելի կլինի ավելի ուշ:</translation>
 <translation id="6051898664905071243">Էջերի քանակը՝</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053328359599022071">Փոխանցե՞լ տեղեկություններ ձեր ներկայության մասին</translation>
 <translation id="6058977677006700226">Օգտագործե՞լ քարտերը ձեր բոլոր սարքերում</translation>
 <translation id="6059925163896151826">USB սարքեր</translation>
 <translation id="6060009363608157444">DnsOverHttps ռեժիմն անվավեր է:</translation>

@@ -297,7 +297,6 @@
 <translation id="204357726431741734">Google Hesabınızda saxlanılan parollardan istifadə etmək üçün daxil olun</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" /> dilindəki səhifələr tərcümə edilməyəcək.</translation>
 <translation id="2053553514270667976">Poçt indeksi</translation>
-<translation id="2054665754582400095">Mövcudluğunuz</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 təklif}other{# təklif}}</translation>
 <translation id="2079545284768500474">Geri qaytarın</translation>
 <translation id="20817612488360358">Sistem proksi ayarları işlənməyə ayarlanıb, lakin açıq proksi sazlanması da bəlirlənib.</translation>
@@ -567,7 +566,6 @@
 <translation id="3174168572213147020">Ada</translation>
 <translation id="3176929007561373547">Proksi serverin işləməsinə əmin olmaq üçün proksi ayarlarınızı yoxlayın və ya şəbəkə administratorunuzla əlaqə saxlayın. Proksi server işlətməli olduğunuza inanmırsınızsa: 
       <ph name="PLATFORM_TEXT" /></translation>
-<translation id="3184534047932533456"><ph name="URL" /> nə zaman evdə olduğunuzu bilmək istəyir</translation>
 <translation id="3188393374551744535">Hesab balansı</translation>
 <translation id="3194737229810486521"><ph name="URL" /> datanı həmişəlik cihazınızda saxlamaq istəyir</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> <ph name="SERVER_NAME" /> serverində</translation>
@@ -1091,7 +1089,6 @@
 <translation id="5171689220826475070">Fanfold-Avropa</translation>
 <translation id="5172758083709347301">Maşın</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> deyil? Bu xətanı xəbər verin</translation>
-<translation id="5179740473595559246">Nə zaman evdə olduğunuzu bilmək</translation>
 <translation id="5190835502935405962">Əlfəcinlər Paneli</translation>
 <translation id="519422657042045905">Annotasiya əlçatan deyil</translation>
 <translation id="5201306358585911203">Bu səhifə daxilində yerləşdirilmiş səhifə deyir:</translation>
@@ -1322,7 +1319,6 @@
 <translation id="6051221802930200923">Hazırda <ph name="SITE" /> saytına daxil olmaq mümkün deyil, çünki veb səhifə sertifikat bağlantısı istifadə edir. Şəbəkə xətaları və hücumları adətən müvəqqəti olur, beləliklə, səhifə yəqin ki daha sonra işləyəcək.</translation>
 <translation id="6051898664905071243">Səhifə sayı:</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053328359599022071">Evdə olduğunuz paylaşılsın?</translation>
 <translation id="6058977677006700226">Kartlardan bütün cihazlarda istifadə edilsin?</translation>
 <translation id="6059925163896151826">USB cihazları</translation>
 <translation id="6060009363608157444">Yanlış DnsOverHttps rejimi.</translation>

@@ -19,7 +19,6 @@
 <translation id="1125564390852150847">Buat tab baru.</translation>
 <translation id="1145536944570833626">Hapus data yang sudah ada.</translation>
 <translation id="1147031633655575115">Login sebagai <ph name="USER" /></translation>
-<translation id="1154690515305205900">Link ke teks yang ditandai tidak dapat dibuat.</translation>
 <translation id="1154984953698510061">Lihat Tab Lainnya</translation>
 <translation id="1157749421655780457">Izinkan Lokasi...</translation>
 <translation id="1165039591588034296">Kesalahan</translation>
@@ -567,7 +566,6 @@ Coba gunakan sandi yang unik untuk setiap situs.</translation>
 <translation id="6807889908376551050">Tampilkan Semua...</translation>
 <translation id="681368974849482173">Item dibuat</translation>
 <translation id="6831043979455480757">Terjemahkan</translation>
-<translation id="6841409746189899007">Tautkan ke Teks</translation>
 <translation id="6851516051005285358">Minta Situs Desktop</translation>
 <translation id="6858855187367714033">Dipindai</translation>
 <translation id="6859944681507688231">Untuk memindai kode QR code atau kartu kredit, aktifkan kamera dari setelan.</translation>
@@ -645,7 +643,6 @@ Coba gunakan sandi yang unik untuk setiap situs.</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="766891008101699113">Untuk browsing web secara rahasia, tambahkan tab baru.</translation>
 <translation id="7671141431838911305">INSTAL</translation>
-<translation id="7690812411882623730">Tidak Dapat Membuat Link ke Text</translation>
 <translation id="7701040980221191251">Tidak ada</translation>
 <translation id="7765158879357617694">Pindahkan</translation>
 <translation id="7771470029643830783">Jika Anda logout, bookmark, histori, sandi, dan data Chrome lainnya tidak akan lagi disinkronkan dengan Akun Google Anda.

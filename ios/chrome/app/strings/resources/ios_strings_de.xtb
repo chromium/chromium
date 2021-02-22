@@ -19,7 +19,6 @@
 <translation id="1125564390852150847">Neuen Tab erstellen.</translation>
 <translation id="1145536944570833626">Vorhandene Daten löschen</translation>
 <translation id="1147031633655575115">Angemeldet als <ph name="USER" /></translation>
-<translation id="1154690515305205900">Zum markierten Text kann kein entsprechender Link erstellt werden.</translation>
 <translation id="1154984953698510061">Andere Tabs anzeigen</translation>
 <translation id="1157749421655780457">Zugriff auf Standort zulassen…</translation>
 <translation id="1165039591588034296">Fehler</translation>
@@ -567,7 +566,6 @@ Es empfiehlt sich aber, für jede Website ein eigenes Passwort zu verwenden.</tr
 <translation id="6807889908376551050">Alle anzeigen...</translation>
 <translation id="681368974849482173">Element erstellt</translation>
 <translation id="6831043979455480757">Übersetzen</translation>
-<translation id="6841409746189899007">Link zum Text</translation>
 <translation id="6851516051005285358">Desktop-Version</translation>
 <translation id="6858855187367714033">Gescannt</translation>
 <translation id="6859944681507688231">Wenn Sie einen QR-Code oder eine Kreditkarte scannen möchten, aktivieren Sie zuerst in den Einstellungen die Kamera.</translation>
@@ -645,7 +643,6 @@ Es empfiehlt sich aber, für jede Website ein eigenes Passwort zu verwenden.</tr
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="766891008101699113">Fügen Sie einen neuen Tab hinzu, um privat im Web zu surfen.</translation>
 <translation id="7671141431838911305">Installieren</translation>
-<translation id="7690812411882623730">Link zum Text kann nicht generiert werden</translation>
 <translation id="7701040980221191251">Keine</translation>
 <translation id="7765158879357617694">Verschieben</translation>
 <translation id="7771470029643830783">Wenn Sie sich abmelden, werden Ihre Lesezeichen, Ihr Verlauf, Ihre Passwörter und andere Chrome-Daten nicht mehr mit Ihrem Google-Konto synchronisiert.

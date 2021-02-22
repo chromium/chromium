@@ -1407,10 +1407,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="2906874737073861391">Daftar ekstensi AppPack</translation>
 <translation id="2908277604670530363">Jumlah maksimal sambungan serentak ke server proxy</translation>
 <translation id="291853569864365550">Jangan tampilkan saran konten di halaman Tab Baru</translation>
-<translation id="2919544577647246857">Menentukan daftar pengguna yang diizinkan untuk login ke perangkat. Entri memiliki format <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, misalnya <ph name="USER_WHITELIST_ENTRY_EXAMPLE" />. Untuk mengizinkan sembarang pengguna di suatu domain, gunakan entri berformat <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
-
-      Jika kebijakan ini tidak dikonfigurasi, semua pengguna akan diizinkan untuk login. Perlu diperhatikan bahwa pembuatan pengguna baru tetap mengharuskan kebijakan <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> dikonfigurasi dengan tepat.
-      Jika <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" /> diaktifkan, selain akun yang ditetapkan dalam kebijakan ini, pengguna Family Link juga akan diizinkan.</translation>
 <translation id="2920795918401557243">Setelan ini memungkinkan pengumpulan jejak performa di seluruh sistem menggunakan layanan pelacakan sistem.
 
       Jika kebijakan ini dinonaktifkan, pengguna tidak dapat mengumpulkan jejak di seluruh sistem menggunakan layanan pelacakan sistem.
@@ -1784,19 +1780,6 @@ Jika ditetapkan ke False, <ph name="PRODUCT_NAME" /> tidak akan menggunakan noti
       Lihat https://support.google.com/chrome/a?p=Supported_directory_variables untuk mengetahui daftar variabel yang dapat digunakan.
 
       Jika kebijakan ini tidak disetel, jalur profil default akan digunakan dan pengguna akan dapat menggantinya dengan tanda command line '--user-data-dir'.</translation>
-<translation id="3378482432905539452">Kebijakan ini tidak digunakan lagi. Gunakan kebijakan <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> untuk mengontrol ketersediaan plugin Flash dan <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> untuk mengontrol apakah penampil PDF yang terintegrasi akan digunakan untuk membuka file PDF atau tidak.
-
-      Menentukan daftar plugin yang dapat diaktifkan dan dinonaktifkan di <ph name="PRODUCT_NAME" /> oleh pengguna.
-
-      Karakter pengganti '*' dan '?' dapat digunakan untuk mencocokkan urutan karakter arbitrer. Karakter '*' mencocokkan sembarang jumlah karakter, sedangkan '?' menentukan karakter tunggal opsional, yaitu mencocokkan karakter nol atau satu. Karakter escape adalah '\', jadi untuk mencocokkan karakter '*', '?', atau '\' yang sebenarnya, Anda dapat menempatkan '\' di depannya.
-
-      Jika Anda mengaktifkan setelan ini, daftar plugin yang ditentukan dapat digunakan di <ph name="PRODUCT_NAME" />. Pengguna dapat mengaktifkan atau menonaktifkannya pada 'about:plugins', meskipun plugin tersebut juga cocok dengan pola pada DisabledPlugins. Pengguna juga dapat mengaktifkan dan menonaktifkan plugin yang tidak cocok dengan pola apa pun pada DisabledPlugins, DisabledPluginsExceptions, dan EnabledPlugins.
-
-      Kebijakan ini dimaksudkan untuk memungkinkan penyusunan daftar plugin tidak diizinkan yang ketat, jika daftar 'DisabledPlugins' berisi entri berkarakter pengganti seperti nonaktifkan semua plugin '*' atau nonaktifkan semua plugin Java '*Java*', tetapi administrator ingin mengaktifkan beberapa versi tertentu seperti 'IcedTea Java 2.3'. Versi tertentu ini dapat ditetapkan dalam kebijakan ini.
-
-      Perlu diketahui bahwa nama plugin maupun nama grup plugin harus dikecualikan. Setiap grup plugin ditampilkan di bagian terpisah pada about:plugins; setiap bagian dapat memiliki satu atau beberapa plugin. Misalnya, plugin "Shockwave Flash" termasuk dalam grup "Adobe Flash Player", dan kedua nama tersebut perlu memiliki kecocokan dalam daftar pengecualian agar plugin tersebut dapat dikecualikan dari daftar tidak diizinkan.
-
-      Jika kebijakan ini tidak ditetapkan, semua plugin yang cocok dengan pola pada 'DisabledPlugins' akan dikunci sebagai nonaktif dan pengguna tidak akan dapat mengaktifkannya.</translation>
 <translation id="3381968327636295719">Gunakan browser host jika tidak diubah</translation>
 <translation id="3387211681524224831">Jika kebijakan disetel ke Aktif, histori penjelajahan tidak akan disimpan, sinkronisasi tab akan dinonaktifkan, dan pengguna tidak dapat mengubah setelan ini.
 
@@ -2176,16 +2159,6 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 
       Jika kebijakan ini tidak disetel, SPDY akan tersedia.</translation>
 <translation id="3891357445869647828">Mengaktifkan JavaScript</translation>
-<translation id="3892015543543011887">Kebijakan ini mengontrol permintaan penginstalan ekstensi <ph name="PRODUCT_NAME" /> yang memungkinkan pengguna mengirim permintaan persetujuan ke konsol Google Admin.
-
-      Jika kebijakan <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> tidak disetel atau disetel ke nonaktif, kebijakan ini akan diabaikan, permintaan penginstalan ekstensi tidak akan dibuat atau diupload.
-      Jika kebijakan ini tidak disetel atau disetel ke nonaktif, permintaan penginstalan ekstensi tidak akan dibuat atau diupload.
-      Jika kebijakan ini disetel ke aktif, permintaan penginstalan ekstensi akan dibuat dan diupload ke konsol Google Admin.
-
-      Permintaan penginstalan ekstensi akan dibuat saat pengguna mencoba menginstal ekstensi yang tidak diizinkan oleh <ph name="EXTENSION_INSTALL_WHITELIST" /> atau <ph name="EXTENSION_SETTINGS" />.
-
-      Kebijakan ini hanya berlaku saat perangkat didaftarkan dengan <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> untuk <ph name="PRODUCT_NAME" />.
-      Kebijakan ini selalu berlaku untuk <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3898345958122666461">Nonaktifkan NTLMv2</translation>
 <translation id="3898795800259311780">Mengizinkan atau menolak tangkapan layar</translation>
 <translation id="3907683835264956726">Memungkinkan login pengguna online di layar kunci. Jika kebijakan disetel ke benar (true), autentikasi ulang online di layar kunci akan dipicu, misalnya oleh <ph name="POLICY" />.
@@ -3782,7 +3755,6 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
       Catatan: Sandi mungkin menjadi lebih lama dari jumlah hari yang ditentukan jika klien offline selama jangka waktu yang lebih lama.</translation>
 <translation id="6280973140313576289">Alat pilih profil dipaksa saat browser dimulai</translation>
-<translation id="6281043242780654992">Mengonfigurasikan kebijakan untuk Perpesanan Asli. Hosting perpesanan asli yang dimasukkan dalam daftar hitam tidak akan diizinkan kecuali telah dimasukkan dalam daftar putih.</translation>
 <translation id="6282524907402492171">Tampilkan peringatan <ph name="CLOUD_PRINT_NAME" /> tidak digunakan lagi</translation>
 <translation id="6282799760374509080">Izinkan atau tolak penangkapan audio</translation>
 <translation id="6284362063448764300">TLS 1.1</translation>
@@ -5728,18 +5700,6 @@ Kebijakan akan dihapus pada M75.</translation>
       Jika kebijakan ini ditetapkan ke False atau tidak ditetapkan, elemen kontrol formulir akan diaktifkan saat diluncurkan di M81, M82, dan M83.
 
       Kebijakan ini akan dihapus setelah Chrome 84.</translation>
-<translation id="8938932171964587769">Tidak digunakan lagi di M69. Sebagai gantinya, gunakan OverrideSecurityRestrictionsOnInsecureOrigin.
-
-      Kebijakan ini menentukan daftar asal (URL) atau pola hostname (seperti "*.example.com") yang tidak dikenai pembatasan keamanan untuk asal yang tidak aman.
-
-      Tujuannya adalah mengizinkan organisasi memberikan akses ke asal untuk aplikasi lama yang tidak dapat menerapkan TLS, atau menyiapkan server persiapan untuk pengembangan web internal agar developer mereka dapat menguji fitur yang memerlukan konteks aman tanpa harus menerapkan TLS di server persiapan. Dengan kebijakan ini, asal tidak akan dilabeli "Not Secure" di omnibox.
-
-     Menetapkan daftar URL dalam kebijakan ini memiliki efek yang sama dengan menetapkan tanda baris perintah '--unsafely-treat-insecure-origin-as-secure' ke daftar yang dipisahkan koma yang berisi URL yang sama. Jika ditetapkan, kebijakan ini akan mengganti tanda baris perintah.
-
-      Kebijakan ini tidak lagi digunakan di M69 dan diganti OverrideSecurityRestrictionsOnInsecureOrigin. Jika kedua kebijakan ini ada, OverrideSecurityRestrictionsOnInsecureOrigin akan mengganti kebijakan ini.
-
-      Untuk informasi selengkapnya tentang konteks aman, lihat https://www.w3.org/TR/secure-contexts/
-      </translation>
 <translation id="8942616385591203339">Kebijakan ini mengontrol apakah Izin Sinkronisasi dapat ditampilkan ke pengguna saat login pertama kali. Kebijakan ini harus disetel ke false jika Izin Sinkronisasi tidak diperlukan bagi pengguna.
       Jika disetel ke false, Izin Sinkronisasi tidak akan ditampilkan.
       Jika disetel ke true atau tidak disetel, Izin Sinkronisasi dapat ditampilkan.</translation>
@@ -5797,19 +5757,6 @@ Kebijakan akan dihapus pada M75.</translation>
       Kebijakan ini hanya memengaruhi pengguna yang menjalankan autentikasi menggunakan SAML.
 
       Nilai kebijakan harus ditentukan dalam detik.</translation>
-<translation id="9015295904649380186">Jika menyetel kebijakan, Anda dapat mengontrol pemicu peringatan perlindungan sandi. Perlindungan sandi memberi tahu pengguna saat mereka menggunakan kembali sandi yang dilindungi di situs yang berpotensi mencurigakan.
-
-      Gunakan <ph name="PASSWORD_PROTECTION_LOGIN_URLS_POLICY_NAME" /> dan <ph name="PASSWORD_PROTECTION_CHANGE_PASSWORD_URL_POLICY_NAME" /> untuk menetapkan sandi mana yang akan dilindungi.
-
-      Jika kebijakan ini disetel ke:
-
-      * PasswordProtectionWarningOff, peringatan perlindungan sandi tidak akan ditampilkan.
-
-      * PasswordProtectionWarningOnPasswordReuse, peringatan perlindungan sandi akan ditampilkan saat pengguna menggunakan kembali sandi yang dilindungi di situs yang tidak diizinkan.
-
-      * PasswordProtectionWarningOnPhishingReuse, peringatan perlindungan sandi akan ditampilkan saat pengguna menggunakan kembali sandi yang dilindungi di situs phishing.
-
-      Jika kebijakan ini tidak disetel, layanan perlindungan sandi hanya akan melindungi sandi Google, tetapi pengguna dapat mengubah setelan ini.</translation>
 <translation id="9035086760683255833">Mengaktifkan fitur aksesibilitas penyorotan fokus keyboard.
 
           Fitur ini berfungsi untuk menyoroti objek yang memiliki fokus dari keyboard.
@@ -5931,7 +5878,6 @@ Kebijakan akan dihapus pada M75.</translation>
       Sesi pengguna dipulihkan setelah peluncuran ulang/mulai ulang.</translation>
 <translation id="9160028464653564229">Jangan izinkan situs apa pun meminta akses ke port serial lewat Serial API</translation>
 <translation id="9167719789236691545">Nonaktifkan Drive di aplikasi File <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="9185107612228451403">Mengonfigurasi kebijakan terkait ekstensi. Pengguna tidak diizinkan menginstal ekstensi yang tercantum dalam daftar tidak diizinkan kecuali jika ekstensi tersebut dipindahkan ke daftar diizinkan. Anda juga dapat memaksa <ph name="PRODUCT_NAME" /> agar otomatis menginstal ekstensi dengan menentukannya di <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />. Ekstensi instal otomatis akan diinstal meskipun ekstensi tersebut tercantum dalam daftar tidak diizinkan.</translation>
 <translation id="9187743794267626640">Menonaktifkan pemasangan penyimpanan eksternal</translation>
 <translation id="9190456586252617675">Kebijakan ini mengontrol mode pengalaman aktivasi Asisten.
 

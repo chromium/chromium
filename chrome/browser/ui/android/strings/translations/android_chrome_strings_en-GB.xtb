@@ -405,7 +405,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> downloads deleted</translation>
 <translation id="3856096718352044181">Please verify that this is a valid provider or try again later</translation>
 <translation id="3861633093716975811">Popular videos</translation>
-<translation id="386944881686624613">Can’t create link to text. Share link to page.</translation>
 <translation id="3892148308691398805">Copy text</translation>
 <translation id="3894427358181296146">Add folder</translation>
 <translation id="3895926599014793903">Force enable zoom</translation>
@@ -737,7 +736,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="6138832295072039549">Change your site settings here</translation>
 <translation id="6140709049082532940">Enhanced protection:</translation>
 <translation id="6140912465461743537">Country/Region</translation>
-<translation id="6142002709876620371">Enable Privacy Sandbox</translation>
 <translation id="614940544461990577">Try:</translation>
 <translation id="6154478581116148741">Turn on screen lock in Settings to export your passwords from this device</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> data savings</translation>
@@ -827,7 +825,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6656545060687952787">Chrome needs location access to scan for devices. <ph name="BEGIN_LINK" />Update permissions<ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6659594942844771486">Tab</translation>
-<translation id="6663079968236414793">Link to text</translation>
 <translation id="666731172850799929">Open in <ph name="APP_NAME" /></translation>
 <translation id="666981079809192359">Chrome Privacy Notice</translation>
 <translation id="6671495933530132209">Copy image</translation>
@@ -897,7 +894,6 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="718926126787620637">List of bookmark folders opened at full height</translation>
 <translation id="7189372733857464326">Waiting for Google Play Services to finish updating</translation>
 <translation id="7191430249889272776">Tab opened in background.</translation>
-<translation id="72180057821664864">Can’t create link to text</translation>
 <translation id="7233236755231902816">To see the web in your language, get the latest version of Chrome</translation>
 <translation id="7248069434667874558">Make sure that <ph name="TARGET_DEVICE_NAME" /> has sync turned on in Chrome</translation>
 <translation id="7274013316676448362">Blocked site</translation>
@@ -1135,7 +1131,6 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="8812260976093120287">On some websites, you can pay with above supported payment apps on your device.</translation>
 <translation id="881688628773363275">Preview tab content is not viewable.</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
-<translation id="8827407626219585697">Include link to text</translation>
 <translation id="883806473910249246">An error occurred while downloading the content.</translation>
 <translation id="8840953339110955557">This page may differ from the online version.</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, tab</translation>

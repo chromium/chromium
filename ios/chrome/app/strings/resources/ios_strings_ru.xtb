@@ -19,7 +19,6 @@
 <translation id="1125564390852150847">Создать вкладку</translation>
 <translation id="1145536944570833626">Удалить сохраненные данные</translation>
 <translation id="1147031633655575115">Вы вошли как <ph name="USER" /></translation>
-<translation id="1154690515305205900">Создать ссылку на выделенный текст нельзя.</translation>
 <translation id="1154984953698510061">Посмотреть другие вкладки</translation>
 <translation id="1157749421655780457">Разрешить передачу геоданных</translation>
 <translation id="1165039591588034296">Ошибка</translation>
@@ -209,7 +208,7 @@
 <translation id="3153862085237805241">Сохранить подсказку</translation>
 <translation id="3157684681743766797">Отметить все…</translation>
 <translation id="3161291298470460782">Вы выйдете из аккаунта, синхронизация будет отключена, а все данные Chrome – удалены с этого устройства. Синхронизированные данные останутся в вашем аккаунте Google.</translation>
-<translation id="3169472444629675720">Discover</translation>
+<translation id="3169472444629675720">Рекомендации</translation>
 <translation id="3175081911749765310">Веб-сервисы</translation>
 <translation id="3178650076442119961">Последние действия: сегодня</translation>
 <translation id="3181954750937456830">Безопасный просмотр (защищает вас и ваше устройство от опасных сайтов)</translation>
@@ -567,7 +566,6 @@
 <translation id="6807889908376551050">Показать все…</translation>
 <translation id="681368974849482173">Сохранено</translation>
 <translation id="6831043979455480757">Перевести</translation>
-<translation id="6841409746189899007">Ссылка на текст</translation>
 <translation id="6851516051005285358">Версия для ПК</translation>
 <translation id="6858855187367714033">Просканировано</translation>
 <translation id="6859944681507688231">Чтобы сканировать QR-код или банковскую карту, разрешите приложению доступ к камере.</translation>
@@ -645,7 +643,6 @@
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="766891008101699113">Чтобы просматривать веб-страницы анонимно, откройте новую вкладку.</translation>
 <translation id="7671141431838911305">УСТАНОВИТЬ</translation>
-<translation id="7690812411882623730">Действие недоступно</translation>
 <translation id="7701040980221191251">Нет</translation>
 <translation id="7765158879357617694">Переместить</translation>
 <translation id="7771470029643830783">После выхода из аккаунта ваши закладки, история, пароли и другие данные Chrome перестанут синхронизироваться с аккаунтом Google.

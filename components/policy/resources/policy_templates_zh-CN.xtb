@@ -1381,10 +1381,6 @@
 <translation id="2906874737073861391">AppPack 扩展程序列表</translation>
 <translation id="2908277604670530363">可同时连接到代理服务器的连接数上限</translation>
 <translation id="291853569864365550">不在“新标签页”页面上显示内容建议</translation>
-<translation id="2919544577647246857">以列表形式指定哪些用户能登录设备。条目应采用 <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> 格式，例如 <ph name="USER_WHITELIST_ENTRY_EXAMPLE" />。若要允许某个网域上的任意用户登录设备，请使用 <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" /> 格式的条目。
-
-      如果此政策未配置，任何用户都能登录设备。请注意，倘若涉及到创建新用户，您仍需适当配置 <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> 政策。
-      如果 <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" /> 已启用，除了此政策中指定的帐号之外，Family Link 用户也能登录设备。</translation>
 <translation id="2920795918401557243">此设置旨在允许使用系统跟踪服务来收集系统级性能跟踪记录。
 
       如果此政策已停用，用户将无法使用系统跟踪服务来收集系统级跟踪记录。
@@ -1746,19 +1742,6 @@
       如需查看可用变量的列表，请访问 https://support.google.com/chrome/a?p=Supported_directory_variables。
 
       如果您未设置此政策，系统将会使用默认的个人资料路径，而用户可以使用“--user-data-dir”命令行标记来替换此路径。</translation>
-<translation id="3378482432905539452">此政策已被弃用。请使用 <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> 控制 Flash 插件的可用性，并使用 <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> 控制是否应使用集成式 PDF 查看器打开 PDF 文件。
-
-      指定可由用户在 <ph name="PRODUCT_NAME" /> 中启用或停用的一系列插件。
-
-      可使用通配符“*”和“?”匹配任意字符序列。“*”可匹配任意数量的字符，而“?”可指定单个可选的字符，即匹配 0 个或 1 个字符。转义字符为“\”，因此要匹配实际的“*”、“?”或“\”字符，您可以在这些字符前面加上“\”。
-
-      如果您启用了此设置，则可在 <ph name="PRODUCT_NAME" /> 中使用指定列表内的插件。用户可在“about:plugins”页面中启用或停用该列表内的任何插件，即使相应插件亦匹配 DisabledPlugins 中的格式也无妨。用户还可启用和停用与 DisabledPlugins、DisabledPluginsExceptions 和 EnabledPlugins 中的任何格式均不匹配的插件。
-
-      此政策用于在以下情况下实现严格的插件黑名单设置：“DisabledPlugins”列表包含带通配符的条目，例如停用所有插件 (*) 或停用所有 Java 插件 (*Java*)，但管理员又想启用某个特定版本，例如“IcedTea Java 2.3”。这个特定版本可在此政策中指定。
-
-      请注意，必须排除相应插件的名称和组名称。在“about:plugins”页面中，每个插件组都会显示在一个单独的部分内；每个部分可包含一个或多个插件。例如，“Shockwave Flash”插件属于“Adobe Flash Player”组；如果要从黑名单中排除该插件，例外情况列表就必须含有与这两个名称分别对应的匹配项。
-
-      如果未设置此政策，那么与“DisabledPlugins”中的格式匹配的所有插件都会被锁定为停用状态，而且用户将无法启用这些插件。</translation>
 <translation id="3381968327636295719">默认情况下托管主机浏览器</translation>
 <translation id="3387211681524224831">如果此政策已启用，系统将不会保存浏览记录，并且会停用标签页同步功能，用户则无法更改相关设置。
 
@@ -2136,16 +2119,6 @@
 
       如果未设置此政策，将可以使用 SPDY 协议。</translation>
 <translation id="3891357445869647828">启用 JavaScript</translation>
-<translation id="3892015543543011887">此政策旨在控制 <ph name="PRODUCT_NAME" /> 扩展程序安装请求，可允许用户将请求发送到 Google 管理控制台以供审批。
-
-      如果 <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> 政策未设置或已停用，系统将忽略此政策，并且不会创建或上传扩展程序安装请求。
-      如果此政策未设置或已停用，系统将不会创建或上传扩展程序安装请求。
-      如果此政策已启用，系统将会创建扩展程序安装请求并将其上传到 Google 管理控制台。
-
-      当用户尝试安装未被 <ph name="EXTENSION_INSTALL_WHITELIST" /> 或 <ph name="EXTENSION_SETTINGS" /> 列入白名单的扩展程序时，系统将会创建扩展程序安装请求。
-
-      对于 <ph name="PRODUCT_NAME" />，仅当已使用 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> 注册相应设备后，此政策才有效。
-      对于 <ph name="PRODUCT_OS_NAME" />，此政策一直有效。</translation>
 <translation id="3898345958122666461">开启 NTLMv2</translation>
 <translation id="3898795800259311780">允许或拒绝屏幕截图</translation>
 <translation id="3907683835264956726">允许在线用户从锁定屏幕上登录。如果此政策设为 true，<ph name="POLICY" /> 等政策会触发在锁定屏幕上在线重新验证用户身份的机制。
@@ -3723,7 +3696,6 @@
 
       注意：如果客户端在较长时间内一直处于离线状态，那么即使指定的天数已过，密码可能也不会更改。</translation>
 <translation id="6280973140313576289">在浏览器启动时强制显示个人资料选择器</translation>
-<translation id="6281043242780654992">配置本地消息传递政策。不允许黑名单中列出的本地消息传递主机（除非相应主机已列入白名单）。</translation>
 <translation id="6282524907402492171">显示 <ph name="CLOUD_PRINT_NAME" />弃用警告</translation>
 <translation id="6282799760374509080">是否允许音频捕获</translation>
 <translation id="6284362063448764300">TLS 1.1</translation>
@@ -5666,18 +5638,6 @@
       如果此政策设为 False 或未设置，系统会在 M81、M82 和 M83 版本推出时启用其中的表单控件元素。
 
       在 Chrome 84 之后，此政策将被移除。</translation>
-<translation id="8938932171964587769">已在 M69 中弃用。请改用 OverrideSecurityRestrictionsOnInsecureOrigin。
-
-      此政策可指定针对不安全来源的安全性限制不适用于哪些来源（网址）或主机名模式（例如“*.example.com”）。
-
-      此政策意在允许相关组织为无法部署传输层安全协议 (TLS) 的旧版应用设置白名单来源，或允许其设置用于开发内部网络的临时服务器以便他们的开发者无需在临时服务器上部署 TLS 就能测试需要安全上下文的功能。此政策还可防止来源在多功能框中被标记为“不安全”。
-
-      在此政策中设置一系列网址的效果等同于为包含相同网址的英文逗号分隔列表设置“--unsafely-treat-insecure-origin-as-secure”命令行标记。如果此政策已设置，则会替换上述命令行标记。
-
-      我们在 M69 中弃用了此政策（改用 OverrideSecurityRestrictionsOnInsecureOrigin）。如果这两项政策都存在，则 OverrideSecurityRestrictionsOnInsecureOrigin 会覆盖此政策。
-
-      有关安全上下文的详情，请访问 https://www.w3.org/TR/secure-contexts/
-      </translation>
 <translation id="8942616385591203339">此政策控制是否可在用户首次登录时向其显示同步同意声明。如果用户从不需要查看同步同意声明，则应将此政策设为 false。
       如果此政策设为 false，系统将不会显示同步同意声明。
       如果此政策设为 true 或未设置，则可以显示同步同意声明。</translation>
@@ -5735,19 +5695,6 @@
       此政策仅影响使用 SAML 验证身份的用户。
 
       此政策的值应以秒为单位。</translation>
-<translation id="9015295904649380186">通过设置此政策，您可以控制密码保护服务警告的触发条件。当用户在潜在的可疑网站上重复使用受保护的密码时，密码保护服务会向用户发出提醒。
-
-      您可以使用 <ph name="PASSWORD_PROTECTION_LOGIN_URLS_POLICY_NAME" /> 和 <ph name="PASSWORD_PROTECTION_CHANGE_PASSWORD_URL_POLICY_NAME" /> 来设置要保护的密码。
-
-      如果此政策设为：
-
-      * PasswordProtectionWarningOff - 系统将一律不显示密码保护服务警告。
-
-      * PasswordProtectionWarningOnPasswordReuse - 当用户在未列入白名单的网站上重复使用受保护的密码时，系统将会显示密码保护服务警告。
-
-      * PasswordProtectionWarningOnPhishingReuse - 当用户在网上诱骗性质的网站上重复使用受保护的密码时，系统将会显示密码保护服务警告。
-
-      如果您不设置此政策，密码保护服务将只保护 Google 密码，但用户能够更改该设置。</translation>
 <translation id="9035086760683255833">启用“键盘焦点突出显示”无障碍功能。
 
           此功能负责突出显示通过键盘操作成为焦点的对象。
@@ -5869,7 +5816,6 @@
       浏览器重新启动/设备重启后，将会恢复用户会话。</translation>
 <translation id="9160028464653564229">不允许任何网站请求通过 Serial API 使用串行端口</translation>
 <translation id="9167719789236691545">在 <ph name="PRODUCT_OS_NAME" />的“文件”应用中停用 Google 云端硬盘</translation>
-<translation id="9185107612228451403">配置与扩展程序相关的政策。用户不能安装任何已被列入黑名单的扩展程序（除非它们已被加入白名单）。您也可以在 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 中指定某些扩展程序，从而强制 <ph name="PRODUCT_NAME" /> 自动安装这些扩展程序。强制安装的扩展程序均会被安装（无论它们是否包含在黑名单内）。</translation>
 <translation id="9187743794267626640">禁止装载外部存储设备</translation>
 <translation id="9190456586252617675">此政策旨在控制 Google 助理新手入门体验的模式。
 

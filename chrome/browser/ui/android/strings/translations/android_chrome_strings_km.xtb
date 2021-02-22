@@ -405,7 +405,6 @@
 <translation id="3819178904835489326">បានលុបការទាញយក <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="3856096718352044181">សូមផ្ទៀងផ្ទាត់ថា នេះគឺជាក្រុមហ៊ុនផ្ដល់សេវាត្រឹមត្រូវ ឬព្យាយាមម្ដងទៀតនៅពេលក្រោយ</translation>
 <translation id="3861633093716975811">វីដេអូ​ពេញ​និយម​</translation>
-<translation id="386944881686624613">មិនអាច​បង្កើត​តំណចូលទៅកាន់​អត្ថបទ​បានទេ​។ សូមចែករំលែកតំណចូលទៅកាន់ទំព័រ។</translation>
 <translation id="3892148308691398805">ចម្លង​អត្ថបទ</translation>
 <translation id="3894427358181296146">បន្ថែមថតឯកសារ</translation>
 <translation id="3895926599014793903">បង្ខំបើកដំណើរការពង្រីក</translation>
@@ -737,7 +736,6 @@
 <translation id="6138832295072039549">ផ្លាស់ប្ដូរ​ការកំណត់​គេហទំព័រ​របស់អ្នក​នៅទីនេះ</translation>
 <translation id="6140709049082532940">ការការពារ​ដែលប្រសើរជាងមុន៖</translation>
 <translation id="6140912465461743537">ប្រទេស/តំបន់៖</translation>
-<translation id="6142002709876620371">បើក Privacy Sandbox</translation>
 <translation id="614940544461990577">សាកល្បង៖</translation>
 <translation id="6154478581116148741">បើកការ​ចាក់សោ​អេក្រង់​នៅក្នុង​ការកំណត់ ដើម្បី​នាំពាក្យ​សម្ងាត់​របស់អ្នកចេញ​ពី​ឧបករណ៍​នេះ</translation>
 <translation id="6159335304067198720">សន្សំសំចៃទិន្នន័យបាន <ph name="PERCENT" /></translation>
@@ -827,7 +825,6 @@
 <translation id="6656545060687952787">Chrome ត្រូវការចូលប្រើទីតាំងដើម្បីស្កេនរកឧបករណ៍។ <ph name="BEGIN_LINK" />អាប់ដេតសិទ្ធិអនុញ្ញាត<ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">ពាក្យសម្ងាត់</translation>
 <translation id="6659594942844771486">ផ្ទាំង</translation>
-<translation id="6663079968236414793">តំណទៅ​អត្ថបទ</translation>
 <translation id="666731172850799929">បើកក្នុង <ph name="APP_NAME" /></translation>
 <translation id="666981079809192359">ការជូនដំណឹងឯកជនភាព Chrome</translation>
 <translation id="6671495933530132209">ចម្លងរូបភាព</translation>
@@ -897,7 +894,6 @@
 <translation id="718926126787620637">បញ្ជី​ថត​ចំណាំ​ដែលបានបើក​ពេញ​អេក្រង់</translation>
 <translation id="7189372733857464326">កំពុង​រង់ចាំ​សេវាកម្ម​ Google Play ដើម្បី​បញ្ចប់​ការ​ធ្វើបច្ចុប្បន្នភាព</translation>
 <translation id="7191430249889272776">ផ្ទាំងដែលបានបើកនៅផ្ទៃខាងក្រោយ។</translation>
-<translation id="72180057821664864">មិនអាច​បង្កើត​តំណចូលទៅកាន់​អត្ថបទ​បានទេ</translation>
 <translation id="7233236755231902816">ដើម្បីមើល​គេហទំព័រ​ជា​ភាសា​របស់អ្នក សូម​ទាញយក​កំណែចុងក្រោយ​បំផុត​របស់ Chrome</translation>
 <translation id="7248069434667874558">ត្រូវប្រាកដថា <ph name="TARGET_DEVICE_NAME" /> បានបើក​ការធ្វើសមកាលកម្ម​នៅក្នុង Chrome</translation>
 <translation id="7274013316676448362">ទំព័រ​ដែលបាន​រារាំង</translation>
@@ -1135,7 +1131,6 @@
 <translation id="8812260976093120287">នៅលើ​គេហទំព័រ​មួយចំនួន អ្នកអាច​បង់ប្រាក់​ដោយប្រើ​កម្មវិធី​បង់ប្រាក់​ដែល​ស្គាល់​ខាងលើ នៅលើ​ឧបករណ៍​របស់​អ្នក។</translation>
 <translation id="881688628773363275">មិនអាចមើលខ្លឹមសាររបស់ផ្ទាំងមើលសាកល្បងបានទេ។</translation>
 <translation id="8820817407110198400">ចំណាំ</translation>
-<translation id="8827407626219585697">រួមបញ្ចូល​តំណចូលទៅកាន់​អត្ថបទ</translation>
 <translation id="883806473910249246">មាន​បញ្ហាកើត​ឡើង ខណៈពេល​កំពុង​ទាញយក​ខ្លឹមសារ។</translation>
 <translation id="8840953339110955557">ទំព័រ​នេះ​អាច​នឹង​ខុស​​ពី​កំណែ​លើ​អ៊ីនធឺណិត។</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" /> ផ្ទាំង</translation>

@@ -18,7 +18,6 @@
 <translation id="1383876407941801731">ค้นหา</translation>
 <translation id="1384959399684842514">หยุดดาวน์โหลดไว้ชั่วคราว</translation>
 <translation id="1415402041810619267">ตัด URL ให้สั้นลงแล้ว</translation>
-<translation id="1431402976894535801">บล็อกเว็บไซต์ไม่ให้ทราบว่าคุณใช้งานอยู่</translation>
 <translation id="1446450296470737166">ควบคุมอุปกรณ์ MIDI ได้สมบูรณ์</translation>
 <translation id="1509960214886564027">ฟีเจอร์ในหลายเว็บไซต์อาจใช้งานไม่ได้</translation>
 <translation id="1620510694547887537">กล้องถ่ายรูป</translation>
@@ -39,7 +38,6 @@
 <translation id="1994173015038366702">URL ของเว็บไซต์</translation>
 <translation id="2025115093177348061">Augmented Reality</translation>
 <translation id="2030769033451695672">แตะเพื่อกลับไปที่ <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
-<translation id="2054665754582400095">การใช้งาน</translation>
 <translation id="2079545284768500474">เลิกทำ</translation>
 <translation id="2091887806945687916">เสียง</translation>
 <translation id="2107397443965016585">ถามก่อนอนุญาตให้เว็บไซต์เล่นเนื้อหาที่ได้รับความคุ้มครอง (แนะนำ)</translation>
@@ -82,7 +80,6 @@
 <translation id="3114012059975132928">โปรแกรมเล่นวิดีโอ</translation>
 <translation id="3115898365077584848">แสดงข้อมูล</translation>
 <translation id="3123473560110926937">บล็อกในบางเว็บไซต์</translation>
-<translation id="3165371858310906303">ถามเมื่อเว็บไซต์ต้องการทราบเมื่อคุณใช้งานอยู่</translation>
 <translation id="3198916472715691905">ข้อมูลที่จัดเก็บมี <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="321187648315454507">หากต้องการอนุญาตให้ <ph name="APP_NAME" /> ส่งการแจ้งเตือนให้คุณ ให้เปิดใช้การแจ้งเตือนใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /> ด้วย</translation>
 <translation id="3227137524299004712">ไมโครโฟน</translation>

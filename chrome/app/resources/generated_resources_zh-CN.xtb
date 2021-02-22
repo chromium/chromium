@@ -14,7 +14,6 @@
 <translation id="1011355516189274711">文字转语音的音量</translation>
 <translation id="1012794136286421601">正在同步您的文档、表格、幻灯片和绘图文件。打开Google云端硬盘应用可在线或离线访问这些文件。</translation>
 <translation id="1012876632442809908">USB-C 设备（前方端口）</translation>
-<translation id="1013707859758800957">某个未经过沙盒屏蔽的插件已获准在此页上运行。</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">修改文件夹名称</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{今天是 <ph name="DEVICE_TYPE" /> 更新期限的最后一天}other{请在 {NUM_DAYS} 天内更新 <ph name="DEVICE_TYPE" />}}</translation>
@@ -397,7 +396,6 @@
 <translation id="143027896309062157">读取和更改您在自己的计算机上以及访问的网站上的所有数据</translation>
 <translation id="1430915738399379752">打印</translation>
 <translation id="1431188203598586230">最后一次软件更新</translation>
-<translation id="1431402976894535801">禁止网站了解您何时处于活跃状态</translation>
 <translation id="1431432486300429272">Google 可能会使用您的浏览记录为您提供个性化的 Google 搜索和其他 Google 服务。您或您的家长可以随时前往 myaccount.google.com/activitycontrols/search 更改此设置</translation>
 <translation id="1432581352905426595">管理搜索引擎</translation>
 <translation id="1433811987160647649">使用前先询问</translation>
@@ -503,7 +501,6 @@
 <translation id="1549788673239553762">“<ph name="APP_NAME" />”想访问 <ph name="VOLUME_NAME" />。它可能会修改或删除您的文件。</translation>
 <translation id="1552301827267621511">扩展程序“<ph name="EXTENSION_NAME" />”将搜索服务提供商改成了 <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1553538517812678578">无限制</translation>
-<translation id="1554390798506296774">始终允许在 <ph name="HOST" /> 上使用未经过沙盒屏蔽的插件</translation>
 <translation id="1555130319947370107">蓝色</translation>
 <translation id="1556537182262721003">无法将扩展程序目录移动到个人资料中。</translation>
 <translation id="155865706765934889">触控板</translation>
@@ -603,7 +600,6 @@
 <translation id="1651008383952180276">您两次输入的密码必须相同</translation>
 <translation id="1652326691684645429">启用“附近分享”功能</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{请将该打印机添加到 Google 云打印，以便您可以随时随地进行打印。}other{请将 # 台打印机添加到 Google 云打印，以便您可以随时随地进行打印。}}</translation>
-<translation id="1653575510930452864">复制指向这段文本的链接</translation>
 <translation id="1656528038316521561">背景不透明度</translation>
 <translation id="1657406563541664238">将使用情况统计信息和崩溃报告自动发送给 Google，帮助我们完善 <ph name="PRODUCT_NAME" /></translation>
 <translation id="1657937299377480641">要重新登录并访问教育资源，请让您的家长向您授予权限</translation>
@@ -844,7 +840,6 @@
 <translation id="1916502483199172559">默认的红色头像</translation>
 <translation id="1918141783557917887">缩小(&amp;S)</translation>
 <translation id="1919345977826869612">广告</translation>
-<translation id="1919814239594435008">已允许使用未经过沙盒屏蔽的插件</translation>
 <translation id="1920390473494685033">通讯录</translation>
 <translation id="1921050530041573580">将手机与“信息”应用配对</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
@@ -957,7 +952,6 @@
 <translation id="204914487372604757">创建快捷方式</translation>
 <translation id="2050339315714019657">纵向</translation>
 <translation id="2053312383184521053">闲置状态数据</translation>
-<translation id="2054665754582400095">您的状态</translation>
 <translation id="2055585478631012616">您将会自动退出这些网站（包括打开的标签页）</translation>
 <translation id="205560151218727633">Google 助理徽标</translation>
 <translation id="2058456167109518507">检测到的设备</translation>
@@ -1071,7 +1065,6 @@
 <translation id="2175607476662778685">快速启动栏</translation>
 <translation id="217576141146192373">无法添加打印机。请检查您打印机的配置，然后重试。</translation>
 <translation id="2177950615300672361">无痕模式标签页：<ph name="TAB_NAME" /></translation>
-<translation id="2178098616815594724"><ph name="PEPPER_PLUGIN_DOMAIN" /> 上的“<ph name="PEPPER_PLUGIN_NAME" />”想访问您的计算机</translation>
 <translation id="2178614541317717477">CA 泄漏</translation>
 <translation id="2182058453334755893">已复制到您的剪贴板</translation>
 <translation id="2184515124301515068">让 Chrome 选择何时允许网站播放声音（推荐）</translation>
@@ -1708,7 +1701,6 @@
 <translation id="2885729872133513017">对服务器响应进行解码时出问题了。</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="2889064240420137087">链接打开方式...</translation>
-<translation id="2889925978073739256">继续拦截未经过沙盒屏蔽的插件</translation>
 <translation id="2891922230654533301">使用您的设备登录 <ph name="APP_NAME" />？</translation>
 <translation id="2893168226686371498">默认浏览器</translation>
 <translation id="2894757982205307093">在群组内添加新标签页</translation>
@@ -1957,7 +1949,6 @@
 <translation id="3163201441334626963">来自供应商 <ph name="VENDOR_ID" /> 的未知产品 <ph name="PRODUCT_ID" /></translation>
 <translation id="3163254451837720982">以下服务有助于确保您的数据安全稳妥。您可以随时关闭这些功能。</translation>
 <translation id="3164329792803560526">与 <ph name="APP_NAME" /> 分享此标签页</translation>
-<translation id="3165371858310906303">在网站想知道您何时处于活跃状态时询问您</translation>
 <translation id="3165390001037658081">有些运营商可能会屏蔽此功能。</translation>
 <translation id="316652501498554287">G Suite 教育版帐号</translation>
 <translation id="3170072451822350649">您也可以跳过登录步骤，<ph name="LINK_START" />以访客身份浏览<ph name="LINK_END" />。</translation>
@@ -2537,7 +2528,6 @@
 <translation id="3824621460022590830">设备注册令牌无效。请与设备所有者或管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
 <translation id="3826071569074535339">允许使用移动传感器</translation>
 <translation id="3826440694796503677">您的管理员已禁止添加更多 Google 帐号</translation>
-<translation id="3827306204503227641">继续允许使用未经过沙盒屏蔽的插件</translation>
 <translation id="3827774300009121996">全屏幕(&amp;F)</translation>
 <translation id="3828029223314399057">搜索书签</translation>
 <translation id="3829765597456725595">SMB 文件共享</translation>
@@ -2904,7 +2894,6 @@
 <translation id="425573743389990240">电池放电率（单位为瓦，负值表示电池正在充电）</translation>
 <translation id="4256316378292851214">视频存储为(&amp;V)...</translation>
 <translation id="4258348331913189841">文件系统</translation>
-<translation id="4259381619085088639">您的活跃状态</translation>
 <translation id="4259388776256904261">该过程可能需要一点时间</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> 可能含有危险内容。发送给 Google 高级保护进行扫描？按 Shift+F6 可切换到“下载内容栏”区域。</translation>
 <translation id="4263223596040212967">请检查键盘布局，然后重试。</translation>
@@ -3137,7 +3126,6 @@
 <translation id="4535767533210902251">指纹传感器就是键盘右上方的按键。请用任一手指轻触该按键。</translation>
 <translation id="4536140153723794651">始终能使用 Cookie 的网站</translation>
 <translation id="4538417792467843292">删除字词</translation>
-<translation id="4538684596480161368">一律禁止在 <ph name="HOST" /> 上使用未经过沙盒屏蔽的插件</translation>
 <translation id="4538792345715658285">按企业政策安装。</translation>
 <translation id="4541123282641193691">无法验证您的帐号。请重试，或重新启动您的 Chromebook。</translation>
 <translation id="4541662893742891060">无法关联到此个人资料。如需技术支持，请与您的运营商联系。</translation>
@@ -4165,7 +4153,6 @@
 <translation id="5740820643029013514">使用干扰性更低的提示方式（推荐）</translation>
 <translation id="574104302965107104">显示屏镜像</translation>
 <translation id="574209121243317957">音高</translation>
-<translation id="5742505912938664543">在此处添加辅助帐号后，您便可使用该帐号浏览网页、下载应用、查看 Gmail 及其他 Google 服务。</translation>
 <translation id="5746169159649715125">另存为 PDF</translation>
 <translation id="5746261205461426123">打开设置指南</translation>
 <translation id="5747552184818312860">到期时间</translation>
@@ -5323,7 +5310,6 @@
 <translation id="7077829361966535409">使用当前代理设置无法加载登录页面。请<ph name="GAIA_RELOAD_LINK_START" />尝试重新登录<ph name="GAIA_RELOAD_LINK_END" />，或者使用不同的<ph name="PROXY_SETTINGS_LINK_START" />代理设置<ph name="PROXY_SETTINGS_LINK_END" />。</translation>
 <translation id="7078120482318506217">所有网络</translation>
 <translation id="7078386829626602215">未检测到任何设备<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
-<translation id="7079716540084905538">为<ph name="USER_NAME" />添加辅助 Google 帐号</translation>
 <translation id="708060913198414444">复制音频地址(&amp;O)</translation>
 <translation id="7081952801286122383">您正在使用无痕模式</translation>
 <translation id="708278670402572152">要想启用扫描，请先断开连接</translation>
@@ -6104,7 +6090,6 @@
 <translation id="7966241909927244760">复制图片地址(&amp;O)</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{书签列表中现有 1 个条目}other{书签列表中现有 {COUNT} 个条目}}</translation>
 <translation id="7968072247663421402">提供商选项</translation>
-<translation id="7968198493605442410">复制指向这段文本的链接</translation>
 <translation id="7968742106503422125">读取和修改您复制和粘贴的数据</translation>
 <translation id="7968833647796919681">启用性能数据收集</translation>
 <translation id="7968982339740310781">查看详情</translation>
@@ -6602,7 +6587,6 @@
 <translation id="8553342806078037065">管理其他用户</translation>
 <translation id="8554899698005018844">无语言</translation>
 <translation id="8557022314818157177">连续轻触您的安全密钥，直到您的指纹被捕获</translation>
-<translation id="855773602626431402">某个未经过沙盒屏蔽的插件已被禁止在此页上运行。</translation>
 <translation id="8557930019681227453">由应用缓存指定的网址</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{在新窗口中打开全部书签(&amp;N)}=1{在新窗口中打开(&amp;N)}other{在新窗口中打开全部（{COUNT} 个）书签(&amp;N)}}</translation>
 <translation id="8561206103590473338">大象</translation>
@@ -6635,7 +6619,6 @@
 <translation id="8594908476761052472">拍摄视频</translation>
 <translation id="8596540852772265699">自定义文件</translation>
 <translation id="8597845839771543242">属性格式：</translation>
-<translation id="8598453409908276158">已拦截未经过沙盒屏蔽的插件</translation>
 <translation id="8601206103050338563">TLS WWW 客户端身份验证</translation>
 <translation id="8602851771975208551">您计算机上的其他程序添加了一个应用，该应用可能会改变 Chrome 的工作方式。</translation>
 <translation id="8605428685123651449">SQLite 使用的内存</translation>

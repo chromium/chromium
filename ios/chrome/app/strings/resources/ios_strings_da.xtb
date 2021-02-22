@@ -19,7 +19,6 @@
 <translation id="1125564390852150847">Opret ny fane.</translation>
 <translation id="1145536944570833626">Slet eksisterende data.</translation>
 <translation id="1147031633655575115">Logget ind som <ph name="USER" /></translation>
-<translation id="1154690515305205900">Der kunne ikke oprettes et link til den markerede tekst.</translation>
 <translation id="1154984953698510061">Se andre faner</translation>
 <translation id="1157749421655780457">Tillad adgang til placering...</translation>
 <translation id="1165039591588034296">Fejl</translation>
@@ -567,7 +566,6 @@ Du bør bruge en unik adgangskode for hvert website.</translation>
 <translation id="6807889908376551050">Vis alle...</translation>
 <translation id="681368974849482173">Elementet blev oprettet</translation>
 <translation id="6831043979455480757">Oversæt</translation>
-<translation id="6841409746189899007">Link til tekst</translation>
 <translation id="6851516051005285358">Vis computerversion</translation>
 <translation id="6858855187367714033">Scannet</translation>
 <translation id="6859944681507688231">Aktivér kameraet i Indstillinger for at scanne en QR-kode eller et betalingskort.</translation>
@@ -645,7 +643,6 @@ Du bør bruge en unik adgangskode for hvert website.</translation>
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="766891008101699113">Tilføj en ny fane for at surfe privat på nettet.</translation>
 <translation id="7671141431838911305">INSTALLER</translation>
-<translation id="7690812411882623730">Linket til teksten kunne ikke oprettes</translation>
 <translation id="7701040980221191251">Ingen</translation>
 <translation id="7765158879357617694">Flyt</translation>
 <translation id="7771470029643830783">Hvis du logger ud, vil historik, adgangskoder og andre Chrome-data ikke længere blive synkroniseret med din Google-konto.

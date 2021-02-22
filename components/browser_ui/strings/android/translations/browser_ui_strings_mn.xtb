@@ -18,7 +18,6 @@
 <translation id="1383876407941801731">Хайлт</translation>
 <translation id="1384959399684842514">Таталтыг түр зогсоосон</translation>
 <translation id="1415402041810619267">URL-г танасан</translation>
-<translation id="1431402976894535801">Сайтуудыг таныг байгаа үед мэдэхийг нь блоклоно</translation>
 <translation id="1446450296470737166">MIDI төхөөрөмжийг бүрэн хянахыг зөвшөөрөх</translation>
 <translation id="1509960214886564027">Олон сайтын онцлогууд ажиллахгүй байж болзошгүй</translation>
 <translation id="1620510694547887537">Камер</translation>
@@ -39,7 +38,6 @@
 <translation id="1994173015038366702">Сайтын URL</translation>
 <translation id="2025115093177348061">Өргөтгөсөн бодит орчин</translation>
 <translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" /> руу буцах бол товшино уу</translation>
-<translation id="2054665754582400095">Таны байгаа эсэх</translation>
 <translation id="2079545284768500474">Буцаах</translation>
 <translation id="2091887806945687916">Дуу</translation>
 <translation id="2107397443965016585">Сайтад хамгаалагдсан контент тоглуулахыг зөвшөөрөхөөс өмнө асуух (санал болгосон)</translation>
@@ -82,7 +80,6 @@
 <translation id="3114012059975132928">Видео тоглуулагч</translation>
 <translation id="3115898365077584848">Мэдээллийг харуулах</translation>
 <translation id="3123473560110926937">Зарим сайт дээр блоклосон</translation>
-<translation id="3165371858310906303">Сайт таныг байгаа үед мэдэхийг хүссэн тохиолдолд асууна</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> хадгалсан өгөгдөл</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" />-д танд мэдэгдэл илгээхийг зөвшөөрөхийн тулд мэдэгдлийг мөн <ph name="BEGIN_LINK" />Андройдын тохиргоо<ph name="END_LINK" />-нд асаана уу.</translation>
 <translation id="3227137524299004712">Микрофон</translation>

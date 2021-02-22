@@ -19,7 +19,6 @@
 <translation id="1125564390852150847">Ստեղծել նոր ներդիր:</translation>
 <translation id="1145536944570833626">Առկա տվյալների ջնջում։</translation>
 <translation id="1147031633655575115">Դուք մուտք եք գործել որպես <ph name="USER" /></translation>
-<translation id="1154690515305205900">Չհաջողվեց ստեղծել նշված տեքստի հղումը։</translation>
 <translation id="1154984953698510061">Տեսնել մյուս ներդիրները</translation>
 <translation id="1157749421655780457">Թույլատրել տեղորոշումը…</translation>
 <translation id="1165039591588034296">Սխալ</translation>
@@ -567,7 +566,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6807889908376551050">Ցույց տալ բոլորը…</translation>
 <translation id="681368974849482173">Տարրը ստեղծվեց</translation>
 <translation id="6831043979455480757">Թարգմանել</translation>
-<translation id="6841409746189899007">Հղում տեքստին</translation>
 <translation id="6851516051005285358">Համակարգչային տարբերակ</translation>
 <translation id="6858855187367714033">Սկանավորվեց</translation>
 <translation id="6859944681507688231">QR կոդ կամ վարկային քարտ սկանավորելու համար կարգավորումներում միացրեք ֆոտոխցիկը:</translation>
@@ -645,7 +643,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7658239707568436148">Չեղարկել</translation>
 <translation id="766891008101699113">Համացանցում անանուն կերպով կայքէջեր այցելելու համար ավելացրեք նոր ներդիր:</translation>
 <translation id="7671141431838911305">ՏԵՂԱԴՐԵԼ</translation>
-<translation id="7690812411882623730">Չհաջողվեց ստեղծել տեքստի հղում</translation>
 <translation id="7701040980221191251">Չկա</translation>
 <translation id="7765158879357617694">Տեղափոխել</translation>
 <translation id="7771470029643830783">Դուրս գրվելու դեպքում էջանիշները, պատմությունը, գաղտնաբառերը և Chrome-ի մյուս տվյալներն այլևս չեն համաժամացվի ձեր Google հաշվի հետ։

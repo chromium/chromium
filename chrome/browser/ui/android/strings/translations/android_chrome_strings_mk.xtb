@@ -405,7 +405,6 @@
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> преземања се избришани</translation>
 <translation id="3856096718352044181">Потврдете дека ова е вистински давател на услуги или обидете се повторно подоцна</translation>
 <translation id="3861633093716975811">Популарни видеа</translation>
-<translation id="386944881686624613">Не може да се создаде линк до текстот. Споделете линк до страницата.</translation>
 <translation id="3892148308691398805">Копирај текст</translation>
 <translation id="3894427358181296146">Додај папка</translation>
 <translation id="3895926599014793903">Присилно овозможи зумирање</translation>
@@ -737,7 +736,6 @@
 <translation id="6138832295072039549">Променете ги поставките за сајтот тука</translation>
 <translation id="6140709049082532940">Подобрена заштита:</translation>
 <translation id="6140912465461743537">Држава/регион</translation>
-<translation id="6142002709876620371">Овозможи „Sandbox за приватност“</translation>
 <translation id="614940544461990577">Обидете се:</translation>
 <translation id="6154478581116148741">Вклучете го заклучувањето на екранот во „Поставки“ за да ги извезете лозинките од уредов</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> заштеда на податоци</translation>
@@ -827,7 +825,6 @@
 <translation id="6656545060687952787">На Chrome му треба пристап до локацијата за да скенира уреди. <ph name="BEGIN_LINK" />Ажурирајте ги дозволите<ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">Лозинка</translation>
 <translation id="6659594942844771486">Картичка</translation>
-<translation id="6663079968236414793">Линк до текстот</translation>
 <translation id="666731172850799929">Отвори во <ph name="APP_NAME" /></translation>
 <translation id="666981079809192359">Известување за приватност на Chrome</translation>
 <translation id="6671495933530132209">Копирај слика</translation>
@@ -897,7 +894,6 @@
 <translation id="718926126787620637">Список со папки за обележувачи отворени на цел екран</translation>
 <translation id="7189372733857464326">Се чека да заврши ажурирањето на „Услугите на Google Play“</translation>
 <translation id="7191430249889272776">Отворена е картичка во заднина.</translation>
-<translation id="72180057821664864">Не може да се создаде линк до текстот</translation>
 <translation id="7233236755231902816">За да го гледате интернетот на вашиот јазик, преземете ја најновата верзија на Chrome</translation>
 <translation id="7248069434667874558">Проверете дали синхронизацијата во Chrome е вклучена за <ph name="TARGET_DEVICE_NAME" /></translation>
 <translation id="7274013316676448362">Блокиран сајт</translation>
@@ -1135,7 +1131,6 @@
 <translation id="8812260976093120287">На некои веб-сајтови, може да плаќате со горенаведените поддржани апликации за плаќање на вашиот уред.</translation>
 <translation id="881688628773363275">Содржините на картичката „Преглед“ не се видливи.</translation>
 <translation id="8820817407110198400">Обележувачи</translation>
-<translation id="8827407626219585697">Вклучете линк до текстот</translation>
 <translation id="883806473910249246">Грешка при преземањето на содржината.</translation>
 <translation id="8840953339110955557">Страницава може да се разликува од онлајн верзијата.</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, картичка</translation>

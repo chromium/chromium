@@ -14,7 +14,6 @@
 <translation id="1011355516189274711">ระดับเสียงของการอ่านออกเสียงข้อความ</translation>
 <translation id="1012794136286421601">ไฟล์เอกสาร แผ่นงาน สไลด์ และภาพวาดกำลังซิงค์ เปิดแอป Google ไดรฟ์เพื่อเข้าถึงไฟล์แบบออนไลน์หรือออฟไลน์</translation>
 <translation id="1012876632442809908">อุปกรณ์ USB-C (พอร์ตด้านหน้า)</translation>
-<translation id="1013707859758800957">ปลั๊กอินที่ไม่ได้อยู่ในแซนด์บ็อกซ์ได้รับอนุญาตให้ทำงานในหน้าเว็บนี้</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">แก้ไขชื่อโฟลเดอร์</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{วันสุดท้ายของการอัปเดต <ph name="DEVICE_TYPE" />}other{อัปเดต <ph name="DEVICE_TYPE" /> ภายใน {NUM_DAYS} วัน}}</translation>
@@ -397,7 +396,6 @@
 <translation id="143027896309062157">อ่านและเปลี่ยนข้อมูลทั้งหมดของคุณบนคอมพิวเตอร์และเว็บไซต์ที่คุณเข้าชม</translation>
 <translation id="1430915738399379752">พิมพ์</translation>
 <translation id="1431188203598586230">การอัปเดตซอฟต์แวร์ครั้งสุดท้าย</translation>
-<translation id="1431402976894535801">บล็อกเว็บไซต์ไม่ให้ทราบว่าคุณใช้งานอยู่</translation>
 <translation id="1431432486300429272">Google อาจใช้ประวัติการท่องเว็บของคุณเพื่อปรับเปลี่ยน Search และบริการอื่นๆ ของ Google ในแบบของคุณ คุณหรือผู้ปกครองจะเปลี่ยนการตั้งค่านี้ได้ทุกเมื่อที่ myaccount.google.com/activitycontrols/search</translation>
 <translation id="1432581352905426595">จัดการเครื่องมือค้นหา</translation>
 <translation id="1433811987160647649">ถามก่อนที่จะเข้าถึง</translation>
@@ -506,7 +504,6 @@
 <translation id="1549788673239553762"><ph name="APP_NAME" /> ต้องการเข้าถึง <ph name="VOLUME_NAME" /> แอปอาจแก้ไขหรือลบไฟล์ของคุณได้</translation>
 <translation id="1552301827267621511">ส่วนขยาย "<ph name="EXTENSION_NAME" />" เปลี่ยนไปใช้การค้นหาโดย <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1553538517812678578">ไม่จำกัด</translation>
-<translation id="1554390798506296774">อนุญาตปลั๊กอินที่ไม่ได้อยู่ในแซนด์บ็อกซ์บน <ph name="HOST" /> เสมอ</translation>
 <translation id="1555130319947370107">สีน้ำเงิน</translation>
 <translation id="1556537182262721003">ไม่สามารถย้ายไดเรกทอรีส่วนขยายเข้าไปในโปรไฟล์</translation>
 <translation id="155865706765934889">ทัชแพด</translation>
@@ -606,7 +603,6 @@
 <translation id="1651008383952180276">คุณต้องป้อนรหัสผ่านเดียวกัน 2 ครั้ง</translation>
 <translation id="1652326691684645429">เปิดใช้การแชร์ใกล้เคียง</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{เพิ่มเครื่องพิมพ์ลงใน Google Cloud Print เพื่อให้คุณสามารถพิมพ์ได้จากทุกที่}other{เพิ่มเครื่องพิมพ์ # เครื่องลงใน Google Cloud Print เพื่อให้คุณสามารถพิมพ์ได้จากทุกที่}}</translation>
-<translation id="1653575510930452864">คัดลอกลิงก์ไปยังข้อความ</translation>
 <translation id="1656528038316521561">ความทึบแสงของพื้นหลัง</translation>
 <translation id="1657406563541664238">ช่วยปรับปรุง <ph name="PRODUCT_NAME" /> ให้ดีขึ้นโดยการส่งสถิติการใช้งานและรายงานปัญหาไปยัง Google โดยอัตโนมัติ</translation>
 <translation id="1657937299377480641">หากต้องการลงชื่อเข้าใช้อีกครั้งเพื่อเข้าถึงทรัพยากรทางการศึกษา ให้ขออนุญาตจากผู้ปกครอง</translation>
@@ -847,7 +843,6 @@
 <translation id="1916502483199172559">รูปโปรไฟล์เริ่มต้นสีแดง</translation>
 <translation id="1918141783557917887">เ&amp;ล็กลง</translation>
 <translation id="1919345977826869612">โฆษณา</translation>
-<translation id="1919814239594435008">อนุญาตปลั๊กอินที่ไม่ได้อยู่ในแซนด์บ็อกซ์</translation>
 <translation id="1920390473494685033">รายชื่อติดต่อ</translation>
 <translation id="1921050530041573580">จับคู่โทรศัพท์กับ Messages</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
@@ -960,7 +955,6 @@
 <translation id="204914487372604757">สร้างทางลัด</translation>
 <translation id="2050339315714019657">แนวตั้ง</translation>
 <translation id="2053312383184521053">ข้อมูลของสถานะไม่มีการใช้งาน</translation>
-<translation id="2054665754582400095">การใช้งาน</translation>
 <translation id="2055585478631012616">คุณจะออกจากระบบของเว็บไซต์เหล่านี้ รวมถึงในแท็บที่เปิดอยู่</translation>
 <translation id="205560151218727633">โลโก้ Google Assistant</translation>
 <translation id="2058456167109518507">อุปกรณ์ที่ตรวจพบ</translation>
@@ -1074,7 +1068,6 @@
 <translation id="2175607476662778685">แถบเปิดใช้งานด่วน</translation>
 <translation id="217576141146192373">เพิ่มเครื่องพิมพ์ไม่ได้ โปรดตรวจสอบการกำหนดค่าของเครื่องพิมพ์แล้วลองอีกครั้ง</translation>
 <translation id="2177950615300672361">แท็บไม่ระบุตัวตน: <ph name="TAB_NAME" /></translation>
-<translation id="2178098616815594724"><ph name="PEPPER_PLUGIN_NAME" /> ใน <ph name="PEPPER_PLUGIN_DOMAIN" /> ต้องการเข้าถึงคอมพิวเตอร์ของคุณ</translation>
 <translation id="2178614541317717477">ผู้มีสิทธิ์ออกใบรับรองไม่สมบูรณ์</translation>
 <translation id="2182058453334755893">คัดลอกไปยังคลิปบอร์ดแล้ว</translation>
 <translation id="2184515124301515068">ให้ Chrome เลือกว่าเว็บไซต์จะเล่นเสียงได้เมื่อใด (แนะนำ)</translation>
@@ -1712,7 +1705,6 @@
 <translation id="2885729872133513017">เกิดปัญหาเมื่อถอดรหัสการตอบกลับของเซิร์ฟเวอร์</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="2889064240420137087">เปิดลิงก์ด้วย...</translation>
-<translation id="2889925978073739256">บล็อกปลั๊กอินที่ไม่ได้อยู่ในแซนด์บ็อกซ์ต่อไป</translation>
 <translation id="2891922230654533301">ใช้อุปกรณ์เพื่อลงชื่อเข้าใช้ <ph name="APP_NAME" /> ไหม</translation>
 <translation id="2893168226686371498">เบราว์เซอร์เริ่มต้น</translation>
 <translation id="2894757982205307093">แท็บใหม่ในกลุ่ม</translation>
@@ -1961,7 +1953,6 @@
 <translation id="3163201441334626963">ผลิตภัณฑ์ที่ไม่รู้จัก <ph name="PRODUCT_ID" /> จากผู้ขาย <ph name="VENDOR_ID" /></translation>
 <translation id="3163254451837720982">บริการต่อไปนี้ช่วยให้ข้อมูลของคุณปลอดภัยและมั่นใจได้ โดยคุณปิดฟีเจอร์เหล่านี้ได้ทุกเมื่อ</translation>
 <translation id="3164329792803560526">กำลังแชร์แท็บนี้กับ <ph name="APP_NAME" /></translation>
-<translation id="3165371858310906303">ถามเมื่อเว็บไซต์ต้องการทราบเมื่อคุณใช้งานอยู่</translation>
 <translation id="3165390001037658081">ผู้ให้บริการบางรายอาจบล็อกฟีเจอร์นี้</translation>
 <translation id="316652501498554287">บัญชี G Suite for Education</translation>
 <translation id="3170072451822350649">คุณสามารถข้ามการลงชื่อเข้าใช้และ<ph name="LINK_START" />เรียกดูในฐานะผู้เยี่ยมชม<ph name="LINK_END" />ได้ด้วย</translation>
@@ -2541,7 +2532,6 @@
 <translation id="3824621460022590830">โทเค็นการลงทะเบียนอุปกรณ์ไม่ถูกต้อง โปรดติดต่อเจ้าของอุปกรณ์หรือผู้ดูแลระบบ รหัสข้อผิดพลาด: <ph name="ERROR_CODE" /></translation>
 <translation id="3826071569074535339">ได้รับอนุญาตให้ใช้เซ็นเซอร์ตรวจจับการเคลื่อนไหว</translation>
 <translation id="3826440694796503677">ผู้ดูแลระบบของคุณปิดใช้การเพิ่มบัญชี Google อื่นไว้</translation>
-<translation id="3827306204503227641">อนุญาตการใช้ปลั๊กอินที่ไม่ได้อยู่ในแซนด์บ็อกซ์ต่อไป</translation>
 <translation id="3827774300009121996">เ&amp;ต็มหน้าจอ</translation>
 <translation id="3828029223314399057">ค้นหาบุ๊กมาร์ก</translation>
 <translation id="3829765597456725595">พื้นที่แชร์ไฟล์ SMB</translation>
@@ -2909,7 +2899,6 @@
 <translation id="425573743389990240">อัตราการใช้แบตเตอรี่เป็นวัตต์ (ค่าลบหมายถึงแบตเตอรี่กำลังชาร์จ)</translation>
 <translation id="4256316378292851214">บั&amp;นทึกวิดีโอเป็น...</translation>
 <translation id="4258348331913189841">ระบบไฟล์</translation>
-<translation id="4259381619085088639">การใช้งาน</translation>
 <translation id="4259388776256904261">อาจใช้เวลาสักครู่</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> อาจเป็นอันตราย ส่งไปให้การปกป้องขั้นสูงของ Google สแกนไหม กด Shift+F6 เพื่อวนไปยังบริเวณแถบดาวน์โหลด</translation>
 <translation id="4263223596040212967">โปรดตรวจสอบรูปแบบแป้นพิมพ์แล้วลองอีกครั้ง</translation>
@@ -3142,7 +3131,6 @@
 <translation id="4535767533210902251">เซ็นเซอร์ลายนิ้วมืออยู่ในแป้นด้านขวาบนของแป้นพิมพ์ โปรดแตะเบาๆ ด้วยนิ้วใดก็ได้</translation>
 <translation id="4536140153723794651">เว็บไซต์ที่ใช้คุกกี้ได้เสมอ</translation>
 <translation id="4538417792467843292">ลบคำ</translation>
-<translation id="4538684596480161368">บล็อกปลั๊กอินที่อยู่นอกแซนด์บ็อกซ์ใน <ph name="HOST" /> เสมอ</translation>
 <translation id="4538792345715658285">ติดตั้งโดยนโยบายขององค์กร</translation>
 <translation id="4541123282641193691">ยืนยันบัญชีไม่ได้ โปรดลองอีกครั้งหรือรีสตาร์ท Chromebook</translation>
 <translation id="4541662893742891060">เชื่อมต่อโปรไฟล์นี้ไม่ได้ โปรดติดต่อผู้ให้บริการเพื่อรับการสนับสนุนด้านเทคนิค</translation>
@@ -4170,7 +4158,6 @@
 <translation id="5740820643029013514">ใช้การแสดงข้อความที่ไม่มีการแจ้งเตือน (แนะนำ)</translation>
 <translation id="574104302965107104">การมิเรอร์จอแสดงผล</translation>
 <translation id="574209121243317957">ระดับเสียงสูงต่ำ</translation>
-<translation id="5742505912938664543">เมื่อเพิ่มบัญชีรองที่นี่ คุณจะท่องเว็บ ดาวน์โหลดแอป ตรวจสอบ Gmail และใช้บริการอื่นๆ ของ Google ด้วยบัญชีดังกล่าวได้</translation>
 <translation id="5746169159649715125">บันทึกเป็น PDF</translation>
 <translation id="5746261205461426123">เปิดคู่มือการตั้งค่า</translation>
 <translation id="5747552184818312860">หมดอายุ</translation>
@@ -5328,7 +5315,6 @@
 <translation id="7077829361966535409">หน้าลงชื่อเข้าใช้ไม่สามารถโหลดโดยใช้การตั้งค่าพร็อกซีในปัจจุบัน โปรด <ph name="GAIA_RELOAD_LINK_START" />ลองลงชื่อเข้าใช้อีกครั้ง<ph name="GAIA_RELOAD_LINK_END" /> หรือใช้<ph name="PROXY_SETTINGS_LINK_START" />การตั้งค่าพร็อกซี<ph name="PROXY_SETTINGS_LINK_END" />อื่นๆ</translation>
 <translation id="7078120482318506217">ทุกเครือข่าย</translation>
 <translation id="7078386829626602215">ตรวจไม่พบอุปกรณ์ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
-<translation id="7079716540084905538">เพิ่มบัญชี Google สำรองสำหรับ <ph name="USER_NAME" /></translation>
 <translation id="708060913198414444">คัด&amp;ลอกที่อยู่ของเสียง</translation>
 <translation id="7081952801286122383">คุณอยู่ในโหมดไม่ระบุตัวตน</translation>
 <translation id="708278670402572152">ยกเลิกการเชื่อมต่อเพื่อเปิดใช้การสแกน</translation>
@@ -6109,7 +6095,6 @@
 <translation id="7966241909927244760">คัด&amp;ลอกที่อยู่รูปภาพ</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{1 รายการในรายการบุ๊กมาร์ก}other{{COUNT} รายการในรายการบุ๊กมาร์ก}}</translation>
 <translation id="7968072247663421402">ตัวเลือกผู้ให้บริการ</translation>
-<translation id="7968198493605442410">คัดลอกลิงก์ไปยังข้อความ</translation>
 <translation id="7968742106503422125">อ่านและแก้ไขข้อมูลที่คุณคัดลอกและวาง</translation>
 <translation id="7968833647796919681">เปิดใช้งานการเก็บรวบรวมข้อมูลผลการปฏิบัติงาน</translation>
 <translation id="7968982339740310781">ดูรายละเอียด</translation>
@@ -6608,7 +6593,6 @@
 <translation id="8553342806078037065">จัดการบุคคลอื่นๆ</translation>
 <translation id="8554899698005018844">ไม่มีภาษา</translation>
 <translation id="8557022314818157177">แตะคีย์ความปลอดภัยซ้ำๆ จนกว่าระบบจะบันทึกลายนิ้วมือของคุณได้</translation>
-<translation id="855773602626431402">ปลั๊กอินที่ไม่ได้อยู่ในแซนด์บ็อกซ์ถูกป้องกันไม่ให้ทำงานในหน้าเว็บนี้</translation>
 <translation id="8557930019681227453">ไฟล์ Manifest</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{เปิดทั้งหมดใน&amp;หน้าต่างใหม่}=1{เปิดใน&amp;หน้าต่างใหม่}other{เปิดทั้งหมด ({COUNT}) ใน&amp;หน้าต่างใหม่}}</translation>
 <translation id="8561206103590473338">ช้าง</translation>
@@ -6641,7 +6625,6 @@
 <translation id="8594908476761052472">จับภาพวิดีโอ</translation>
 <translation id="8596540852772265699">ไฟล์ที่กำหนดเอง</translation>
 <translation id="8597845839771543242">รูปแบบของคุณสมบัติ:</translation>
-<translation id="8598453409908276158">บล็อกปลั๊กอินที่ไม่ได้อยู่ในแซนด์บ็อกซ์</translation>
 <translation id="8601206103050338563">การตรวจสอบสิทธิ์ไคลเอ็นต์ TLS WWW </translation>
 <translation id="8602851771975208551">โปรแกรมอื่นในคอมพิวเตอร์ของคุณเพิ่มแอปพลิเคชันที่อาจเปลี่ยนวิธีการทำงานของ Chrome</translation>
 <translation id="8605428685123651449">หน่วยความจำ SQLite</translation>

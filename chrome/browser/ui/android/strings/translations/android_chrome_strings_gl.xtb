@@ -405,7 +405,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> descargas eliminadas</translation>
 <translation id="3856096718352044181">Verifica que se trate dun fornecedor válido ou téntao de novo máis tarde.</translation>
 <translation id="3861633093716975811">Vídeos populares</translation>
-<translation id="386944881686624613">Non se puido crear unha ligazón ao texto. Comparte a da páxina.</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="3894427358181296146">Engadir cartafol</translation>
 <translation id="3895926599014793903">Forzar a activación do zoom</translation>
@@ -737,7 +736,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="6138832295072039549">Cambia aquí a configuración do teu sitio</translation>
 <translation id="6140709049082532940">Protección mellorada:</translation>
 <translation id="6140912465461743537">País/rexión</translation>
-<translation id="6142002709876620371">Activar illamento de procesos de privacidade</translation>
 <translation id="614940544461990577">Proba a facer o seguinte:</translation>
 <translation id="6154478581116148741">Activa o bloqueo de pantalla en Configuración para exportar os teus contrasinais deste dispositivo</translation>
 <translation id="6159335304067198720">Redución de datos do <ph name="PERCENT" /></translation>
@@ -827,7 +825,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6656545060687952787">Chrome precisa acceder á localización para analizar dispositivos. <ph name="BEGIN_LINK" />Actualizar permisos<ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">Contrasinal</translation>
 <translation id="6659594942844771486">Pestana</translation>
-<translation id="6663079968236414793">Obter ligazón ao texto</translation>
 <translation id="666731172850799929">Abrir en <ph name="APP_NAME" /></translation>
 <translation id="666981079809192359">Aviso de privacidade de Chrome</translation>
 <translation id="6671495933530132209">Copiar imaxe</translation>
@@ -897,7 +894,6 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="718926126787620637">A lista de cartafoles de marcadores está aberta completamente</translation>
 <translation id="7189372733857464326">Esperando a que os servizos de Google Play rematen de actualizarse</translation>
 <translation id="7191430249889272776">Abriuse a pestana en segundo plano.</translation>
-<translation id="72180057821664864">Non se puido crear unha ligazón ao texto</translation>
 <translation id="7233236755231902816">Para ver a Web no teu idioma, descarga a última versión de Chrome</translation>
 <translation id="7248069434667874558">Asegúrate de que a sincronización de Chrome do dispositivo <ph name="TARGET_DEVICE_NAME" /> estea activada</translation>
 <translation id="7274013316676448362">Bloqueouse o sitio</translation>
@@ -1135,7 +1131,6 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="8812260976093120287">Nalgúns sitios web, podes pagar no teu dispositivo coas aplicacións de pago compatibles mencionadas anteriormente.</translation>
 <translation id="881688628773363275">A vista previa do contido da pestana non está dispoñible.</translation>
 <translation id="8820817407110198400">Marcadores</translation>
-<translation id="8827407626219585697">Inclúe unha ligazón ao texto</translation>
 <translation id="883806473910249246">Produciuse un erro ao descargar o contido.</translation>
 <translation id="8840953339110955557">Esta páxina pode ser diferente da versión en liña.</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />: pestana</translation>

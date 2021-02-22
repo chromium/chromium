@@ -405,7 +405,6 @@
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोड हटाए गए</translation>
 <translation id="3856096718352044181">कृपया पुष्टि करें कि यह एक मान्य डीएनएस सेवा है या थोड़ी देर बाद कोशिश करें</translation>
 <translation id="3861633093716975811">लोकप्रिय वीडियो</translation>
-<translation id="386944881686624613">हाइलाइट किए गए टेक्स्ट का लिंक नहीं बनाया जा सकता. पेज का लिंक शेयर करें.</translation>
 <translation id="3892148308691398805">टेक्स्ट कॉपी करें</translation>
 <translation id="3894427358181296146">फ़ोल्डर जोड़ें</translation>
 <translation id="3895926599014793903">ज़बरदस्ती ज़ूम करना चालू करें</translation>
@@ -737,7 +736,6 @@
 <translation id="6138832295072039549">साइट की सेटिंग यहां बदलें</translation>
 <translation id="6140709049082532940">बेहतर सुरक्षा मोड:</translation>
 <translation id="6140912465461743537">देश/क्षेत्र</translation>
-<translation id="6142002709876620371">निजता सैंडबॉक्स चालू करें</translation>
 <translation id="614940544461990577">यह आज़माकर देखें:</translation>
 <translation id="6154478581116148741">इस डिवाइस से अपने पासवर्ड निर्यात करने के लिए सेटिंग में स्क्रीन लॉक चालू करें</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> डेटा बचत</translation>
@@ -827,7 +825,6 @@
 <translation id="6656545060687952787">डिवाइस स्‍कैन करने के लिए Chrome को जगह की जानकारी का एक्‍सेस की ज़रूरत है. <ph name="BEGIN_LINK" />अनुमतियां अपडेट करें<ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6659594942844771486">टैब</translation>
-<translation id="6663079968236414793">टेक्स्ट का लिंक</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> में खोलें</translation>
 <translation id="666981079809192359">Chrome निजता सूचना</translation>
 <translation id="6671495933530132209">चित्र की कॉपी बनाएं</translation>
@@ -897,7 +894,6 @@
 <translation id="718926126787620637">बुकमार्क फ़ोल्डर वाली सूची, पूरी स्क्रीन पर खोली गई</translation>
 <translation id="7189372733857464326">Google Play सेवाएं द्वारा अपडेट खत्म किए जाने की प्रतीक्षा की जा रही है</translation>
 <translation id="7191430249889272776">पृष्ठभूमि में टैब खोला गया.</translation>
-<translation id="72180057821664864">हाइलाइट किए गए टेक्स्ट का लिंक नहीं बनाया जा सकता</translation>
 <translation id="7233236755231902816">वेब को अपनी भाषा में देखने के लिए, Chrome का नया वर्शन पाएं</translation>
 <translation id="7248069434667874558">पक्का करें कि <ph name="TARGET_DEVICE_NAME" /> पर Chrome में सिंक करने की सुविधा चालू है</translation>
 <translation id="7274013316676448362">अवरोधित साइट</translation>
@@ -1135,7 +1131,6 @@
 <translation id="8812260976093120287">कुछ वेबसाइटों पर, आप ऊपर समर्थित भुगतान ऐप्लिकेशन के ज़रिए अपने डिवाइस पर भुगतान कर सकते हैं.</translation>
 <translation id="881688628773363275">टैब कॉन्टेंट की झलक देखी नहीं जा सकती.</translation>
 <translation id="8820817407110198400">बुकमार्क</translation>
-<translation id="8827407626219585697">टेक्स्ट का लिंक शामिल करें</translation>
 <translation id="883806473910249246">सामग्री डाउनलोड करते समय कोई गड़बड़ी हुई.</translation>
 <translation id="8840953339110955557">यह पेज ऑनलाइन वर्शन से अलग हो सकता है.</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, टैब</translation>

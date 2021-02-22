@@ -169,8 +169,6 @@
 <translation id="5430073640787465221">您的偏好设置文件已损坏或无效。Google Chrome 浏览器无法恢复您的设置。</translation>
 <translation id="556024056938947818">Google Chrome 正尝试显示密码。</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
-<translation id="5655746611259367388">您可在<ph name="LINK_BEGIN" />设置<ph name="LINK_END" />中集中管理此帐号以及您已为<ph name="USER_NAME" />添加的其他 Google 帐号。
-          您向 Chrome 浏览器中的网站和 Google Play 中的应用授予的权限可能会应用于所有帐号。</translation>
 <translation id="5657226924540934362">如果此页面中未显示某项设置，请在 <ph name="LINK_BEGIN" />
       Chrome 操作系统设置<ph name="LINK_END" />中查找</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> 可能存在危险，因此 Chrome 已将其拦截。</translation>

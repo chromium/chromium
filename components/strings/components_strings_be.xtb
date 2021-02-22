@@ -297,7 +297,6 @@
 <translation id="204357726431741734">Каб выкарыстоўваць захаваныя ва Уліковым запісе Google паролі, увайдзіце ў яго</translation>
 <translation id="2053111141626950936">Старонкі на мове <ph name="LANGUAGE" /> не будуць перакладацца.</translation>
 <translation id="2053553514270667976">Паштовы індэкс</translation>
-<translation id="2054665754582400095">Ваша прысутнасць</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 прапанова}one{# прапанова}few{# прапановы}many{# прапаноў}other{# прапановы}}</translation>
 <translation id="2079545284768500474">Адрабіць</translation>
 <translation id="20817612488360358">Сістэмныя налады проксі зададзены для выкарыстання, але яўная канфігурацыя проксі таксама вызначана.</translation>
@@ -569,7 +568,6 @@
       упэўніцца, што проксі-сервер працуе. Калі вы не згодны, што трэба
       выкарыстоўваць проксі-сервер:
       <ph name="PLATFORM_TEXT" /></translation>
-<translation id="3184534047932533456">Сайт <ph name="URL" /> запытвае дазвол атрымліваць звесткі аб вашай прысутнасці</translation>
 <translation id="3188393374551744535">Баланс уліковага запісу</translation>
 <translation id="3194737229810486521">Сайт <ph name="URL" /> запытвае дазволу захоўваць даныя на вашай прыладзе</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> на серверы <ph name="SERVER_NAME" /></translation>
@@ -1095,7 +1093,6 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Машына</translation>
 <translation id="5179510805599951267">Мова старонкі – не <ph name="ORIGINAL_LANGUAGE" />? Паведаміце пра памылку</translation>
-<translation id="5179740473595559246">Атрымліваць звесткі аб вашай прысутнасці.</translation>
 <translation id="5190835502935405962">Панэль закладак</translation>
 <translation id="519422657042045905">Анатацыя недаступная</translation>
 <translation id="5201306358585911203">Убудаваная старонка на гэтай старонцы паведамляе</translation>
@@ -1326,7 +1323,6 @@
 <translation id="6051221802930200923">Вы не можаце адкрыць вэб-сайт <ph name="SITE" />, бо ён выкарыстоўвае механізм замацоўвання сертыфікатаў. Сеткавыя памылкі і атакі звычайна маюць часовы характар. Хутчэй за ўсё, праз некаторы час вэб-сайт будзе працаваць зноў.</translation>
 <translation id="6051898664905071243">Колькасць старонак:</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053328359599022071">Абагульваць звесткі аб вашай прысутнасці?</translation>
 <translation id="6058977677006700226">Выкарыстоўваць вашы карткі на ўсіх прыладах?</translation>
 <translation id="6059925163896151826">Прылады USB</translation>
 <translation id="6060009363608157444">Няправільны рэжым DnsOverHttps.</translation>

@@ -1399,10 +1399,6 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 <translation id="2906874737073861391">Elenco di estensioni AppPack</translation>
 <translation id="2908277604670530363">Numero massimo di connessioni simultanee al server proxy</translation>
 <translation id="291853569864365550">Non mostrare suggerimenti di contenuti nella pagina Nuova scheda</translation>
-<translation id="2919544577647246857">Consente di definire l'elenco di utenti autorizzati ad accedere al dispositivo. Le voci sono nel formato <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, ad esempio <ph name="USER_WHITELIST_ENTRY_EXAMPLE" />. Per autorizzare utenti arbitrari su un dominio, le voci devono essere nel formato <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
-
-      Se questo criterio non viene configurato, non ci sono limitazioni in termini di utenti autorizzati ad accedere. Tieni presente che la creazione di nuovi utenti richiede comunque la corretta configurazione del criterio <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" />.
-      Se viene attivato il criterio <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" />, saranno consentiti anche gli utenti Family Link oltre agli account definiti in questo criterio.</translation>
 <translation id="2920795918401557243">Questa impostazione consente di raccogliere dati di rilevamento del rendimento a livello di sistema usando il servizio di tracciamento del sistema.
 
       Se questo criterio viene disattivato, l'utente non può raccogliere dati di rilevamento a livello di sistema usando il servizio di tracciamento del sistema.
@@ -1762,19 +1758,6 @@ Se questo criterio viene impostato su False, <ph name="PRODUCT_NAME" /> non util
       Per un elenco di varianti che possono essere utilizzate, vai all'indirizzo https://support.google.com/chrome/a?p=Supported_directory_variables.
 
       Se il criterio non viene configurato, viene utilizzato il percorso del profilo predefinito e l'utente può ignorarlo con il flag della riga di comando "--user-data-dir".</translation>
-<translation id="3378482432905539452">Questo criterio è obsoleto. Usa <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> per controllare la disponibilità del plug-in Flash e <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> per controllare se si deve utilizzare il visualizzatore PDF integrato per aprire i file PDF.
-
-      Specifica un elenco di plug-in che l'utente può attivare o disattivare in <ph name="PRODUCT_NAME" />.
-
-      È possibile utilizzare i caratteri jolly "*" e "?" in corrispondenza delle sequenze di caratteri arbitrari. "*" corrisponde a un numero arbitrario di caratteri, mentre "?" specifica un singolo carattere facoltativo, ossia corrisponde a zero caratteri o a uno solo. Il carattere di escape è "\", quindi per rappresentare gli effettivi caratteri "*", "?" o "\", puoi farli precedere da un "\".
-
-      Se attivi questa impostazione, l'elenco di plug-in specificato può essere usato in <ph name="PRODUCT_NAME" />. Gli utenti possono attivare o disattivare i plug-in in "about:plugins", anche se corrispondono a un pattern di DisabledPlugins. Gli utenti possono anche attivare e disattivare i plug-in che non corrispondono a nessun pattern in DisabledPlugins, DisabledPluginsExceptions ed EnabledPlugins.
-
-      Questo criterio è pensato per consentire un inserimento rigoroso dei plug-in nella lista nera, dove l'elenco "DisabledPlugins" contiene voci con caratteri jolly, ad esempio per disattivare tutti i plug-in "*" o per disattivare tutti i plug-in Java "*Java*", ma è pensata anche per consentire all'amministratore di attivare qualche versione particolare come "IcedTea Java 2.3". Queste versioni particolari possono essere specificate in questo criterio.
-
-      Tieni presente che devono essere esclusi sia il nome del plug-in sia il nome del gruppo del plug-in. Ciascun gruppo di plug-in viene mostrato in una sezione separata di about:plugins; ciascuna sezione può contenere uno o più plug-in. Ad esempio, il plug-in "Shockwave Flash" appartiene al gruppo "Adobe Flash Player" ed entrambi i nomi devono avere una corrispondenza nell'elenco di eccezioni se il plug-in in questione deve essere escluso dalla lista nera.
-
-      Se questo criterio non è impostato, tutti i plug-in che soddisfano i pattern in "DisabledPlugins" verranno disattivati e bloccati e l'utente non potrà attivarli.</translation>
 <translation id="3381968327636295719">Utilizza il browser host per impostazione predefinita</translation>
 <translation id="3387211681524224831">Se il criterio viene impostato su Attivato, la cronologia di navigazione non viene salvata, la sincronizzazione delle schede viene disattivata e gli utenti non possono modificare questa impostazione.
 
@@ -2154,16 +2137,6 @@ Se questo criterio viene impostato su False, <ph name="PRODUCT_NAME" /> non util
 
       Se la norma non viene impostata, il protocollo SPDY sarà disponibile.</translation>
 <translation id="3891357445869647828">Abilita JavaScript</translation>
-<translation id="3892015543543011887">Questo criterio controlla le richieste di installazione delle estensioni di <ph name="PRODUCT_NAME" />, consentendo agli utenti di inviare alla Console di amministrazione Google le richieste per l'approvazione.
-
-      Se il criterio <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> non viene configurato o viene disattivato, questo criterio viene ignorato e le richieste di installazione delle estensioni non vengono create né caricate.
-      Se il criterio non viene configurato o viene disattivato, le richieste di installazione delle estensioni non vengono create né caricate.
-      Se il criterio viene attivato, le richieste di installazione delle estensioni vengono create e caricate nella Console di amministrazione Google.
-
-      Le richieste di installazione delle estensioni vengono create quando gli utenti tentano di installare un'estensione non autorizzata da <ph name="EXTENSION_INSTALL_WHITELIST" /> o <ph name="EXTENSION_SETTINGS" />.
-
-      Questo criterio viene applicato soltanto se la macchina viene registrata con il criterio <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> per <ph name="PRODUCT_NAME" />.
-      Questo criterio viene sempre applicato per <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3898345958122666461">Disattiva NTLMv2</translation>
 <translation id="3898795800259311780">Consenti o nega acquisizione schermo</translation>
 <translation id="3907683835264956726">Consente l'accesso online degli utenti in una schermata di blocco. Se il criterio viene impostato su true, la riautenticazione online nella schermata di blocco viene attivata, ad esempio, tramite il criterio <ph name="POLICY" />.
@@ -3750,7 +3723,6 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 
       Nota: se il client è stato offline per un periodo di tempo maggiore del numero di giorni specificato, le password potrebbero durare più a lungo.</translation>
 <translation id="6280973140313576289">Selettore profilo forzato all'avvio</translation>
-<translation id="6281043242780654992">Consente di configurare le norme per i messaggi nativi. Gli host di messaggi nativi non autorizzati non saranno consentiti se non vengono aggiunti alla whitelist.</translation>
 <translation id="6282524907402492171">Mostra avvisi ritiro di <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="6282799760374509080">Consenti o nega acquisizione audio</translation>
 <translation id="6284362063448764300">TLS 1.1</translation>
@@ -5697,19 +5669,6 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
       Se questo criterio viene impostato su False o non viene impostato, gli elementi di controllo modulo verranno attivati come nel lancio delle versioni M81, M82 e M83.
 
       Questo criterio verrà rimosso nelle versioni successive alla versione 84 di Chrome.</translation>
-<translation id="8938932171964587769">Ritirata in M69. Utilizza la norma OverrideSecurityRestrictionsOnInsecureOrigin.
-
-Questa norma consente di specificare un elenco di origini (URL) o di schemi di nomi host (ad esempio "*.example.com") a cui non vengono applicate limitazioni di sicurezza previste per le origini non sicure.
-
-Lo scopo è consentire alle organizzazioni di autorizzare le origini per le applicazioni precedenti che non possono eseguire il deployment di TLS o di configurare un server di gestione temporanea per gli sviluppi web interni, di modo che gli sviluppatori possano testare le funzioni che richiedono contesti sicuri senza dover eseguire il deployment di TLS sul server di gestione temporanea. Questa norma impedisce inoltre che l'origine venga contrassegnata come "Non sicura" nella omnibox.
-
-L'impostazione di un elenco di URL in questa norma ha lo stesso effetto dell'impostazione del flag della riga di comando "--unsafely-treat-insecure-origin-as-secure" su un elenco separato da virgole degli stessi URL. Se viene impostata, questa norma sostituisce il flag della riga di comando.
-
-Questa norma è stata ritirata in M69 in favore di OverrideSecurityRestrictionsOnInsecureOrigin. Se sono presenti entrambe le norme, verrà utilizzata OverrideSecurityRestrictionsOnInsecureOrigin.
-
-Per ulteriori informazioni sui contesti sicuri, visita il sito
-https://www.w3.org/TR/secure-contexts/
-      </translation>
 <translation id="8942616385591203339">Questa norma consente di controllare se il consenso alla sincronizzazione può essere mostrato all'utente durante il primo accesso. Dovrebbe essere impostata su false se tale consenso non è mai necessario per l'utente.
       Se impostata su false, il consenso alla sincronizzazione non verrà visualizzato.
       Se impostata su true o non viene impostata, il consenso alla sincronizzazione può essere visualizzato.</translation>
@@ -5767,19 +5726,6 @@ https://www.w3.org/TR/secure-contexts/
       Questa norma viene applicata soltanto per gli utenti che si sono autenticati tramite SAML.
 
       Il valore della norma deve essere specificato in secondi.</translation>
-<translation id="9015295904649380186">La configurazione del criterio consente di controllare l'attivazione dell'avviso di protezione tramite password. La protezione tramite password avvisa gli utenti quando riutilizzano le proprie password protette su siti potenzialmente sospetti.
-
-      Utilizza i criteri <ph name="PASSWORD_PROTECTION_LOGIN_URLS_POLICY_NAME" /> e <ph name="PASSWORD_PROTECTION_CHANGE_PASSWORD_URL_POLICY_NAME" /> per impostare le password da proteggere.
-
-      Se il criterio viene impostato su:
-
-      * PasswordProtectionWarningOff, non viene mostrato alcun avviso di protezione tramite password.
-
-      * PasswordProtectionWarningOnPasswordReuse, viene mostrato l'avviso di protezione tramite password quando l'utente riutilizza la propria password protetta su un sito non autorizzato.
-
-      * PasswordProtectionWarningOnPhishingReuse, viene mostrato l'avviso di protezione tramite password quando l'utente riutilizza la propria password protetta su un sito di phishing.
-
-      Se il criterio non viene configurato, il servizio di protezione tramite password protegge solo le password Google, ma gli utenti possono modificare questa impostazione.</translation>
 <translation id="9035086760683255833">Consente di attivare la funzione di accessibilità di evidenziazione dell'elemento attivo tramite tastiera.
 
           Questa funzione consente di evidenziare l'elemento attivo impostato tramite tastiera.
@@ -5901,7 +5847,6 @@ https://www.w3.org/TR/secure-contexts/
       La sessione dell'utente viene ripristinata dopo il riavvio.</translation>
 <translation id="9160028464653564229">Non consentire a nessun sito di richiedere l'accesso a porte seriali tramite l'API Serial</translation>
 <translation id="9167719789236691545">Disattiva Drive nell'app File di <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="9185107612228451403">Configura le norme relative alle estensioni. L'utente non può installare estensioni presenti nella lista nera, a meno che non siano inserite nella lista bianca. È possibile anche forzare <ph name="PRODUCT_NAME" /> affinché installi automaticamente le estensioni specificandole in <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />. Le estensioni a installazione forzata sono installate indipendentemente dalla loro presenza nella lista nera.</translation>
 <translation id="9187743794267626640">Disabilita il montaggio di una memoria esterna</translation>
 <translation id="9190456586252617675">Questo criterio consente di stabilire la modalità dell'esperienza di onboarding dell'assistente.
 

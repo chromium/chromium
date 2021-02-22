@@ -405,7 +405,6 @@
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> ներբեռնում ջնջվեց</translation>
 <translation id="3856096718352044181">Հաստատեք, որ սա վավեր մատակարար է կամ նորից փորձեք</translation>
 <translation id="3861633093716975811">Հաճախ դիտվող տեսանյութեր</translation>
-<translation id="386944881686624613">Չհաջողվեց ստեղծել տեքստի հղում։ Կիսվեք հղումով էջում։</translation>
 <translation id="3892148308691398805">Պատճենել տեքստը</translation>
 <translation id="3894427358181296146">Պանակի ավելացում</translation>
 <translation id="3895926599014793903">Հարկադրաբար միացնել չափափոխումը</translation>
@@ -737,7 +736,6 @@
 <translation id="6138832295072039549">Այստեղ կարող եք փոխել կայքի կարգավորումները</translation>
 <translation id="6140709049082532940">Բարելավված պաշտպանություն՝</translation>
 <translation id="6140912465461743537">Երկիր/տարածաշրջան</translation>
-<translation id="6142002709876620371">Միացնել Գաղտնիության պաշտպանված միջավայրը</translation>
 <translation id="614940544461990577">Փորձեք՝</translation>
 <translation id="6154478581116148741">Այս սարքից ձեր գաղտնաբառերն արտահանելու համար կարգավորումներում միացրեք էկրանի կողպումը։</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> տվյալների խնայում</translation>
@@ -827,7 +825,6 @@
 <translation id="6656545060687952787">Սարքեր գտնելու համար Chrome-ին անհրաժեշտ է տեղադրության հասանելիություն: <ph name="BEGIN_LINK" />Թարմացնել թույլտվությունները<ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">Գաղտնաբառ</translation>
 <translation id="6659594942844771486">Ներդիր</translation>
-<translation id="6663079968236414793">Հղում տեքստին</translation>
 <translation id="666731172850799929">Բացել <ph name="APP_NAME" /> հավելվածում</translation>
 <translation id="666981079809192359">Chrome-ի Գաղտնիության ծանուցագիր</translation>
 <translation id="6671495933530132209">Պատճենել պատկերը</translation>
@@ -897,7 +894,6 @@
 <translation id="718926126787620637">Էջանիշներով պանակների ցանկը բացված է ամբողջությամբ</translation>
 <translation id="7189372733857464326">Սպասում է Google Play ծառայությունների թարմացման ավարտին</translation>
 <translation id="7191430249889272776">Հետնաշերտում ներդիր է բացված:</translation>
-<translation id="72180057821664864">Չհաջողվեց ստեղծել տեքստի հղում</translation>
 <translation id="7233236755231902816">Կայքերը ձեր լեզվով դիտելու համար տեղադրեք Chrome-ի վերջին տարբերակը</translation>
 <translation id="7248069434667874558">Համոզվեք, որ <ph name="TARGET_DEVICE_NAME" /> սարքի Chrome դիտարկիչում միացված է համաժամացումը:</translation>
 <translation id="7274013316676448362">Արգելափակված կայք</translation>
@@ -1135,7 +1131,6 @@
 <translation id="8812260976093120287">Որոշ կայքերում կարող եք վճարել ձեր սարքից՝ վերոնշյալ աջակցվող վճարային հավելվածների օգնությամբ:</translation>
 <translation id="881688628773363275">Նախադիտման ներդիրի բովանդակությունը չի ցուցադրվում։</translation>
 <translation id="8820817407110198400">Էջանիշներ</translation>
-<translation id="8827407626219585697">Ներառեք տեքստի հղումը</translation>
 <translation id="883806473910249246">Բովանդակությունը ներբեռնելիս սխալ առաջացավ:</translation>
 <translation id="8840953339110955557">Այս էջը կարող է տարբերվել առցանց տարբերակից։</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, ներդիր</translation>

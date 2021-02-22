@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
 <translation id="1018656279737460067">İptal Edildi</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> iş parçacığı, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1059913517121127803">Tarama işlemi başlatılamadı</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Güvenlik duvarı algılandı</translation>
@@ -91,6 +92,7 @@
 <translation id="3226405216343213872">Tarayıcılar aranıyor</translation>
 <translation id="3246869037381808805">1 günden daha eski yazdırma işleri kaldırılır</translation>
 <translation id="3268178239013324452">İşlem başarısız - Kapak açık</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">DNS gecikmesi, izin verilen eşiğin çok üzerinde</translation>
 <translation id="3328783797891415197">Test çalışıyor</translation>
 <translation id="3368922792935385530">Bağlı</translation>
@@ -125,6 +127,7 @@
 <translation id="4155551848414053977">Tarayıcının açık ve ağınız üzerinden veya doğrudan bağlantı ile kullanılabilir olduğundan emin olun</translation>
 <translation id="4170700058716978431">BAŞARISIZ</translation>
 <translation id="4176463684765177261">Devre dışı</translation>
+<translation id="4222698289790462549">Şu Anki Hız</translation>
 <translation id="4227825898293920515">Şifrenin süresi <ph name="TIME" /> içinde doluyor</translation>
 <translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" />/<ph name="TOTAL_MEMORY" /> GB mevcut.</translation>
 <translation id="4238516577297848345">Devam eden bir yazdırma işi yok</translation>

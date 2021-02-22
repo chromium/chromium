@@ -297,7 +297,6 @@
 <translation id="204357726431741734">Најавете се за да користите лозинки зачувани во вашата сметка на Google</translation>
 <translation id="2053111141626950936">Страниците на <ph name="LANGUAGE" /> нема да се преведуваат.</translation>
 <translation id="2053553514270667976">Поштенски број</translation>
-<translation id="2054665754582400095">Вашето присуство</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 предлог}one{# предлог}other{# предлози}}</translation>
 <translation id="2079545284768500474">Врати</translation>
 <translation id="20817612488360358">Поставките на прокси на системот се поставени да се користат, но назначена е и јасна конфигурација на прокси.</translation>
@@ -569,7 +568,6 @@
           на мрежата за да проверите дали работи прокси-серверот. Ако
           сметате дека не треба да користите прокси-сервер:
           <ph name="PLATFORM_TEXT" /></translation>
-<translation id="3184534047932533456"><ph name="URL" /> сака да знае кога сте присутни</translation>
 <translation id="3188393374551744535">Состојба на сметката</translation>
 <translation id="3194737229810486521"><ph name="URL" /> сака трајно да складира податоци на вашиот уред</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> на <ph name="SERVER_NAME" /></translation>
@@ -1096,7 +1094,6 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Машина</translation>
 <translation id="5179510805599951267">Не е на <ph name="ORIGINAL_LANGUAGE" />? Пријави ја грешката.</translation>
-<translation id="5179740473595559246">да знае кога сте присутни</translation>
 <translation id="5190835502935405962">Лента со обележувачи</translation>
 <translation id="519422657042045905">Прибелешката не е достапна</translation>
 <translation id="5201306358585911203">Вметнатата страница во страницава вели</translation>
@@ -1327,7 +1324,6 @@
 <translation id="6051221802930200923">Не може да го посетите <ph name="SITE" /> во моментов затоа што веб-сајтот користи закачување сертификати. Грешките на мрежата и нападите обично се привремени, така што страницава веројатно ќе работи подоцна.</translation>
 <translation id="6051898664905071243">Број на страници:</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053328359599022071">Да се сподели вашето присуство?</translation>
 <translation id="6058977677006700226">Дали сакате да ги користите картичките на сите ваши уреди?</translation>
 <translation id="6059925163896151826">USB-уреди</translation>
 <translation id="6060009363608157444">Погрешен режим на DnsOverHttps</translation>

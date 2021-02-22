@@ -18,7 +18,6 @@
 <translation id="1383876407941801731">Vyhledávání</translation>
 <translation id="1384959399684842514">Stahování pozastaveno</translation>
 <translation id="1415402041810619267">Zkrácená adresa URL</translation>
-<translation id="1431402976894535801">Nedovolit webům zjistit, kdy jste aktivní</translation>
 <translation id="1446450296470737166">Povolit úplné ovládání zařízení MIDI</translation>
 <translation id="1509960214886564027">Mnoho webů může přestat fungovat</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -39,7 +38,6 @@
 <translation id="1994173015038366702">Adresa URL webu</translation>
 <translation id="2025115093177348061">Rozšířená realita</translation>
 <translation id="2030769033451695672">Klepnutím se vrátíte na web <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
-<translation id="2054665754582400095">Vaše přítomnost</translation>
 <translation id="2079545284768500474">Vrátit zpět</translation>
 <translation id="2091887806945687916">Zvuk</translation>
 <translation id="2107397443965016585">Před povolením spuštění chráněného obsahu na webu se zeptat (doporučeno)</translation>
@@ -82,7 +80,6 @@
 <translation id="3114012059975132928">Přehrávač videa</translation>
 <translation id="3115898365077584848">Zobrazit informace</translation>
 <translation id="3123473560110926937">Na některých webech blokováno</translation>
-<translation id="3165371858310906303">Zeptat se, když chce web vědět, kdy jste aktivní</translation>
 <translation id="3198916472715691905">Uložená data: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="321187648315454507">Pokud aplikaci <ph name="APP_NAME" /> chcete povolit, aby vám zasílala oznámení, zapněte oznámení také v <ph name="BEGIN_LINK" />Natavení Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>

@@ -19,7 +19,6 @@
 <translation id="1125564390852150847">สร้างแท็บใหม่</translation>
 <translation id="1145536944570833626">ลบข้อมูลที่มีอยู่</translation>
 <translation id="1147031633655575115">ลงชื่อเข้าใช้ด้วย <ph name="USER" /></translation>
-<translation id="1154690515305205900">สร้างลิงก์ไปยังข้อความที่ไฮไลต์ไม่สำเร็จ</translation>
 <translation id="1154984953698510061">ดูแท็บอื่นๆ</translation>
 <translation id="1157749421655780457">อนุญาตให้ใช้ตำแหน่ง...</translation>
 <translation id="1165039591588034296">ข้อผิดพลาด</translation>
@@ -567,7 +566,6 @@
 <translation id="6807889908376551050">แสดงทั้งหมด...</translation>
 <translation id="681368974849482173">สร้างรายการแล้ว</translation>
 <translation id="6831043979455480757">แปลภาษา</translation>
-<translation id="6841409746189899007">ลิงก์มายังข้อความ</translation>
 <translation id="6851516051005285358">ขอเว็บไซต์สำหรับเดสก์ท็อป</translation>
 <translation id="6858855187367714033">สแกนแล้ว</translation>
 <translation id="6859944681507688231">หากต้องการสแกนคิวอาร์โค้ดหรือบัตรเครดิต ให้เปิดใช้กล้องถ่ายรูปจากการตั้งค่า</translation>
@@ -645,7 +643,6 @@
 <translation id="7658239707568436148">ยกเลิก</translation>
 <translation id="766891008101699113">หากต้องการท่องเว็บแบบเป็นส่วนตัว ให้เพิ่มแท็บใหม่</translation>
 <translation id="7671141431838911305">ติดตั้ง</translation>
-<translation id="7690812411882623730">สร้างลิงก์ไปยังข้อความไม่สำเร็จ</translation>
 <translation id="7701040980221191251">ไม่มี</translation>
 <translation id="7765158879357617694">ย้าย</translation>
 <translation id="7771470029643830783">การออกจากระบบจะทำให้บุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และข้อมูลอื่นๆ ใน Chrome ไม่ซิงค์กับบัญชี Google อีกต่อไป

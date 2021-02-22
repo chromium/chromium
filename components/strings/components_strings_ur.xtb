@@ -298,7 +298,6 @@
 <translation id="204357726431741734">‏اپنے Google اکاؤنٹ میں محفوظ کردہ پاس ورڈز کا استعمال کرنے کے لئے سائن ان کریں</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" /> کے صفحات کا ترجمہ نہیں کیا جائے گا۔</translation>
 <translation id="2053553514270667976">زپ کوڈ</translation>
-<translation id="2054665754582400095">آپ کی موجودگی</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 تجویز}other{# تجاویز}}</translation>
 <translation id="2079545284768500474">کالعدم کریں</translation>
 <translation id="20817612488360358">سسٹم پراکسی کی ترتیبات استعمال کیے جانے کیلئے سیٹ ہیں لیکن ایک واضح پراکسی کنفیگریشن بھی متعین کی گئی ہے۔</translation>
@@ -572,7 +571,6 @@
 سرور کام کر رہا ہے۔ اگر آپ کو یقین نہیں ہے تو
     آپ ایک پراکسی سرور استعمال کر رہے ہوں گے:
     <ph name="PLATFORM_TEXT" /></translation>
-<translation id="3184534047932533456"><ph name="URL" /> آپ کی موجودگی کے بارے میں جاننا چاہتا ہے</translation>
 <translation id="3188393374551744535">اکاؤنٹ بیلنس</translation>
 <translation id="3194737229810486521"><ph name="URL" /> آپ کے آلے پر مستقل طور پر ڈیٹا اسٹور کرنا چاہتا ہے</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> پر <ph name="PRINTER_NAME" /></translation>
@@ -1099,7 +1097,6 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">مشین</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> میں نہیں ہے؟ اس خرابی کی اطلاع دیں</translation>
-<translation id="5179740473595559246">اپنی موجودگی سے آگاہ رہیں</translation>
 <translation id="5190835502935405962">بُک مارکس بار</translation>
 <translation id="519422657042045905">تشریح دستیاب نہیں ہے</translation>
 <translation id="5201306358585911203">اس صفحے پر انضمام کردہ ایک صفحے کے مطابق</translation>
@@ -1330,7 +1327,6 @@
 <translation id="6051221802930200923">آپ ابھی <ph name="SITE" /> ملاحظہ نہیں کر سکتے ہیں کیونکہ ویب سائٹ سرٹیفکیٹ پننگ کا استعمال کرتی ہے۔ نیٹ ورک کی خرابیاں اور حملے عام طور پر عارضی ہوتے ہیں، لہذا یہ صفحہ شاید بعد میں کام کرے گا۔</translation>
 <translation id="6051898664905071243">صفحے کی تعداد:</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053328359599022071">آپ کی موجودگی کا اشتراک کریں؟</translation>
 <translation id="6058977677006700226">اپنے تمام آلات پر اپنے کارڈز استعمال کریں؟</translation>
 <translation id="6059925163896151826">‏USB آلات</translation>
 <translation id="6060009363608157444">‏DnsOverHttps وضع غلط ہے۔</translation>

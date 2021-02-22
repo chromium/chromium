@@ -27,8 +27,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1966382378801805537">Chromium no puede determinar ni establecer el navegador predeterminado</translation>
 <translation id="2008474315282236005">Se eliminará un elemento de este dispositivo. Para recuperar tus datos en otro momento, inicia sesión en Chromium como <ph name="USER_EMAIL" />.</translation>
 <translation id="2020032459870799438">Para comprobar si tus otras contraseñas han sufrido quiebras de seguridad de datos u otros problemas de seguridad, <ph name="BEGIN_LINK" />inicia sesión en Chromium<ph name="END_LINK" />.</translation>
-<translation id="2179192076895113433">Puedes gestionar esta y otras cuentas de Google que hayas añadido de <ph name="USER_NAME" /> desde un solo lugar en <ph name="LINK_BEGIN" />Configuración<ph name="LINK_END" />.
-          Es posible que los permisos que hayas dado a sitios web en el navegador Chromium y a aplicaciones de Google Play se apliquen a todas las cuentas.</translation>
 <translation id="2185166961232948079">Chromium, inicio de sesión en la red, <ph name="PAGE_TITLE" /></translation>
 <translation id="2225696941839557119">Chromium OS no ha podido sincronizar las contraseñas.</translation>
 <translation id="2241627712206172106">Si compartes un ordenador, tus amigos y familiares pueden navegar de forma independiente y configurar Chromium a su gusto.</translation>

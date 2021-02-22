@@ -405,7 +405,6 @@
 <translation id="3819178904835489326">다운로드 <ph name="NUMBER_OF_DOWNLOADS" />개 삭제됨</translation>
 <translation id="3856096718352044181">유효한 제공업체인지 확인하거나 나중에 다시 시도하세요.</translation>
 <translation id="3861633093716975811">인기 동영상</translation>
-<translation id="386944881686624613">텍스트 링크를 생성할 수 없습니다. 페이지 링크를 공유하세요.</translation>
 <translation id="3892148308691398805">텍스트 복사</translation>
 <translation id="3894427358181296146">폴더 추가</translation>
 <translation id="3895926599014793903">확대/축소 강제 사용</translation>
@@ -737,7 +736,6 @@
 <translation id="6138832295072039549">여기에서 사이트 설정을 변경하세요.</translation>
 <translation id="6140709049082532940">향상된 보호 모드:</translation>
 <translation id="6140912465461743537">국가/지역</translation>
-<translation id="6142002709876620371">개인정보 보호 샌드박스 사용 설정</translation>
 <translation id="614940544461990577">다음 방법을 시도해 보세요.</translation>
 <translation id="6154478581116148741">이 기기에서 비밀번호를 내보내려면 설정에서 화면 잠금을 사용 설정하세요</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> 데이터 절약</translation>
@@ -827,7 +825,6 @@
 <translation id="6656545060687952787">기기를 스캔하려면 Chrome에서 위치 정보에 액세스해야 합니다. <ph name="BEGIN_LINK" />권한 업데이트<ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">비밀번호</translation>
 <translation id="6659594942844771486">탭</translation>
-<translation id="6663079968236414793">텍스트 링크</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />에서 열기</translation>
 <translation id="666981079809192359">Chrome 개인정보처리방침</translation>
 <translation id="6671495933530132209">이미지 복사</translation>
@@ -897,7 +894,6 @@
 <translation id="718926126787620637">북마크 폴더 목록이 전체 높이로 열림</translation>
 <translation id="7189372733857464326">Google Play 서비스 업데이트 완료 대기 중</translation>
 <translation id="7191430249889272776">탭이 백그라운드에 열림</translation>
-<translation id="72180057821664864">텍스트 링크를 생성할 수 없습니다.</translation>
 <translation id="7233236755231902816">내가 사용하는 언어로 웹을 보려면 최신 버전의 Chrome을 사용하세요.</translation>
 <translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" />에서 Chrome 동기화가 사용 설정되어 있는지 확인하세요.</translation>
 <translation id="7274013316676448362">차단된 사이트</translation>
@@ -1135,7 +1131,6 @@
 <translation id="8812260976093120287">일부 웹사이트에서는 위의 결제 앱을 사용하여 내 기기에서 결제할 수 있습니다.</translation>
 <translation id="881688628773363275">미리보기 탭 콘텐츠를 볼 수 없습니다.</translation>
 <translation id="8820817407110198400">북마크</translation>
-<translation id="8827407626219585697">텍스트 링크를 포함하세요.</translation>
 <translation id="883806473910249246">콘텐츠를 다운로드하는 중에 오류가 발생했습니다.</translation>
 <translation id="8840953339110955557">이 페이지는 온라인 버전과 다를 수 있습니다.</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, 탭</translation>

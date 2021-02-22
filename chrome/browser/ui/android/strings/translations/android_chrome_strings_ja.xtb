@@ -350,10 +350,18 @@
 <translation id="3384347053049321195">画像を共有</translation>
 <translation id="3387650086002190359">ファイル システムでエラーが発生したため、<ph name="FILE_NAME" /> をダウンロードできませんでした。</translation>
 <translation id="3389286852084373014">テキストが大きすぎます</translation>
+<translation id="3391512812407811893">プライバシー サンドボックス（試用版）</translation>
 <translation id="3398320232533725830">ブックマーク マネージャを開く</translation>
 <translation id="3414952576877147120">サイズ:</translation>
 <translation id="3429160811076349561">試用版機能はオフになっています</translation>
 <translation id="3443221991560634068">現在のページを再読み込みする</translation>
+<translation id="3451542610083122179">プライバシー サンドボックスは、トラッキング メカニズムからユーザーを保護して、オープンウェブの理念を支える開発中の取り組みです。
+
+現在、ウェブサイトでは関連性の高い広告を表示し、サイトのパフォーマンスを測定するなど、重要なサービスを可能にするうえで多くの技術（サードパティ Cookie など）に依存しています。
+
+プライバシー サンドボックスは、サイトの機能を損なったり、ユーザーが同意なくウェブ上でトラッキングされたりすることがないよう、より優れた方法でこうしたサービスを実現して、オープンウェブの理念を支える取り組みです。
+
+プライバシー サンドボックスはまだ開発段階にあり、一部の地域でのみご利用可能です。このため、現時点では多くのサイトでサードパーティ Cookie など現行のウェブ技術を引き続き使用しつつ、プライバシー サンドボックスが試験的に導入されると考えられます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">検索エンジンを選択できます</translation>
 <translation id="3492207499832628349">新しいシークレット タブ</translation>
 <translation id="3493531032208478708">詳しくは、<ph name="BEGIN_LINK" />おすすめのコンテンツ<ph name="END_LINK" />についての説明をご覧ください</translation>
@@ -405,7 +413,6 @@
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> 件のダウンロードを削除しました</translation>
 <translation id="3856096718352044181">有効なプロバイダであることを確認するか、しばらくしてからもう一度お試しください</translation>
 <translation id="3861633093716975811">人気の動画</translation>
-<translation id="386944881686624613">テキストへのリンクを作成できません。ページへのリンクを共有してください。</translation>
 <translation id="3892148308691398805">テキストをコピー</translation>
 <translation id="3894427358181296146">フォルダの追加</translation>
 <translation id="3895926599014793903">強制的にズームを有効にする</translation>
@@ -592,6 +599,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 件のダウンロードが失敗しました。}other{# 件のダウンロードが失敗しました。}}</translation>
 <translation id="5170568018924773124">フォルダを開く</translation>
 <translation id="5184329579814168207">Chromeで開く</translation>
+<translation id="5191251636205085390">サードパーティの Cookie に代わる新しい技術の詳細と管理方法について</translation>
 <translation id="5193988420012215838">クリップボードにコピーされました</translation>
 <translation id="5199929503336119739">仕事用プロファイル</translation>
 <translation id="5210286577605176222">前のタブに移動する</translation>
@@ -737,7 +745,6 @@
 <translation id="6138832295072039549">サイトの設定をここで変更</translation>
 <translation id="6140709049082532940">保護強化機能:</translation>
 <translation id="6140912465461743537">国 / 地域</translation>
-<translation id="6142002709876620371">プライバシー サンドボックスを有効にする</translation>
 <translation id="614940544461990577">次をお試しください</translation>
 <translation id="6154478581116148741">このデバイスからパスワードをエクスポートするには、[設定] で画面ロックをオンにしてください。</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> のデータを削減</translation>
@@ -827,7 +834,6 @@
 <translation id="6656545060687952787">デバイスをスキャンするには、Chrome で位置情報にアクセスする必要があります。<ph name="BEGIN_LINK" />権限を更新<ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">パスワード</translation>
 <translation id="6659594942844771486">タブ</translation>
-<translation id="6663079968236414793">テキストにリンク</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />で開く</translation>
 <translation id="666981079809192359">Chrome のプライバシーに関するお知らせ</translation>
 <translation id="6671495933530132209">画像をコピー</translation>
@@ -897,7 +903,6 @@
 <translation id="718926126787620637">ブックマーク フォルダのリストが画面全体に表示されています</translation>
 <translation id="7189372733857464326">Google Play 開発者サービスの更新完了を待機しています</translation>
 <translation id="7191430249889272776">バックグラウンドでタブを開きました。</translation>
-<translation id="72180057821664864">テキストへのリンクを作成できません</translation>
 <translation id="7233236755231902816">お使いの言語でウェブを表示するには、Chrome の最新バージョンを入手してください</translation>
 <translation id="7248069434667874558">Chrome で <ph name="TARGET_DEVICE_NAME" /> の同期がオンになっていることを確認してください</translation>
 <translation id="7274013316676448362">ブロック中のサイト</translation>
@@ -1135,7 +1140,6 @@
 <translation id="8812260976093120287">一部のウェブサイトでは、デバイスでサポートされている上記のお支払いアプリを使って支払いができます。</translation>
 <translation id="881688628773363275">タブのコンテンツのプレビューを表示できません。</translation>
 <translation id="8820817407110198400">ブックマーク</translation>
-<translation id="8827407626219585697">テキストへのリンクを含める</translation>
 <translation id="883806473910249246">コンテンツのダウンロード中にエラーが発生しました。</translation>
 <translation id="8840953339110955557">このページはオンライン版とは異なる可能性があります。</translation>
 <translation id="8853345339104747198">「<ph name="TAB_TITLE" />」タブ</translation>

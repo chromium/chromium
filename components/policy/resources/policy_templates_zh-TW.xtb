@@ -1383,10 +1383,6 @@
 <translation id="2906874737073861391">AppPack 擴充功能清單</translation>
 <translation id="2908277604670530363">Proxy 伺服器的並行連線數量上限</translation>
 <translation id="291853569864365550">不在新分頁中顯示內容建議</translation>
-<translation id="2919544577647246857">定義可登入裝置的使用者清單。輸入項目格式為 <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> (例如 <ph name="USER_WHITELIST_ENTRY_EXAMPLE" />)。如要允許特定網域的任意使用者登入裝置，請使用 <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" /> 格式輸入項目。
-
-      如果不設定這項政策，所有使用者均可登入裝置。請注意，如要建立新使用者，則仍然需要適當地設定 <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> 政策。
-      如果已啟用 <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" />，除了這項政策中定義的帳戶以外，系統也會允許 Family Link 使用者登入裝置。</translation>
 <translation id="2920795918401557243">此設定可讓使用者透過系統追蹤服務收集整個系統的效能追蹤記錄。
 
       如果停用這項政策，使用者將無法透過系統追蹤服務收集整個系統的追蹤記錄。
@@ -1743,19 +1739,6 @@
       如需可使用的變數清單，請參閱 https://support.google.com/chrome/a?p=Supported_directory_variables。
 
       如果不設定這項政策，系統會使用預設的設定檔路徑，且使用者將可使用「--user-data-dir」指令列旗標覆寫這個路徑。</translation>
-<translation id="3378482432905539452">這項政策已遭到淘汰。請使用 <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> 控管是否要提供 Flash 外掛程式，並使用 <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> 指定是否要使用整合式 PDF 檢視器開啟 PDF 檔案。
-
-      指定使用者能否在 <ph name="PRODUCT_NAME" /> 中啟用或停用的外掛程式清單。
-
-      你可以使用萬用字元「*」和「?」來比對出任意字元序列。「*」可代表任意數量的字元，而「?」只能指定單一選用字元，也就是可代表零或一個字元。逸出字元為「\」，因此如果要比對出「*」、「?」或「\」字元本身，請在這些字元前面加上「\」。
-
-      如果啟用這項設定，<ph name="PRODUCT_NAME" /> 可以使用清單指定的外掛程式。即使外掛程式符合 DisabledPlugins 中的模式，使用者仍可在「about:plugins」中啟用或停用這些外掛程式。如果外掛程式與 DisabledPlugins、DisabledPluginsExceptions 和 EnabledPlugins 中的任何模式都不相符，使用者也可以啟用及停用這些外掛程式。
-
-      這項政策的用途是為嚴格的外掛程式黑名單設定例外；如果「DisabledPlugins」清單使用萬用字元設定黑名單 (例如以「*」停用所有外掛程式，或以「*Java*」停用所有 Java 外掛程式)，但管理員希望啟用某些特定版本的外掛程式 (例如「IcedTea Java 2.3」)，即可在這項政策中指定要允許的版本。
-
-      請注意，你必須將外掛程式的名稱與其群組名稱設為豁免項目。系統會在「about:plugins」中將每個外掛程式群組列為一個單獨區段；每個區段中可能會有一或多個外掛程式。例如，「Shockwave Flash」外掛程式屬於「Adobe Flash Player」群組，如要從黑名單中豁免該外掛程式，這兩個名稱都必須符合例外清單中的某個項目。
-
-      如果不設定這項政策，系統將鎖定並停用任何與「DisabledPlugins」中模式相符的外掛程式，且使用者無法加以啟用。</translation>
 <translation id="3381968327636295719">根據預設使用主機瀏覽器</translation>
 <translation id="3387211681524224831">如果將這項政策設為啟用，系統不會儲存瀏覽記錄，並會停用分頁同步功能，且使用者無法變更這項設定。
 
@@ -2133,16 +2116,6 @@
 
       如果未設定這項政策，則可使用 SPDY。</translation>
 <translation id="3891357445869647828">啟用 JavaScript</translation>
-<translation id="3892015543543011887">這項政策用於控管 <ph name="PRODUCT_NAME" /> 擴充功能安裝要求，使用者可傳送要求至 Google 管理控制台以取得核准。
-
-      如果不設定 <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> 政策或設為停用，系統會忽略這項政策，且不會建立或上傳擴充功能安裝要求。
-      如果不設定這項政策或設為停用，系統不會建立或上傳擴充功能安裝要求。
-      如果將這項政策設為啟用，系統會建立擴充功能安裝要求，並上傳至 Google 管理控制台。
-
-      當使用者嘗試安裝並未透過 <ph name="EXTENSION_INSTALL_WHITELIST" /> 或 <ph name="EXTENSION_SETTINGS" /> 加入許可清單的擴充功能時，系統會建立擴充功能安裝要求。
-
-      如果是 <ph name="PRODUCT_NAME" />，只有在已透過 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> 註冊裝置的情況下，這項政策才會生效。
-      如果是 <ph name="PRODUCT_OS_NAME" />，這項政策會一律生效。</translation>
 <translation id="3898345958122666461">停用 NTLMv2</translation>
 <translation id="3898795800259311780">允許或拒絕螢幕擷取</translation>
 <translation id="3907683835264956726">在螢幕鎖定畫面上啟用線上使用者登入功能。如果將這項政策設為 True，<ph name="POLICY" /> 等政策會觸發螢幕鎖定畫面上的線上重新驗證功能。
@@ -3706,7 +3679,6 @@
 
       注意：如果用戶端長時間處於離線狀態，即使已經過了指定天數，密碼也可能不會變更。</translation>
 <translation id="6280973140313576289">瀏覽器啟動時強制顯示設定檔選擇畫面</translation>
-<translation id="6281043242780654992">設定內建訊息傳遞政策。如要允許列入黑名單的內建訊息傳遞主機，必須將其加入許可清單。</translation>
 <translation id="6282524907402492171">顯示 <ph name="CLOUD_PRINT_NAME" />淘汰警告訊息</translation>
 <translation id="6282799760374509080">允許或拒絕擷取音訊</translation>
 <translation id="6284362063448764300">TLS 1.1</translation>
@@ -5646,19 +5618,6 @@
       如果將這項政策設為 False 或不去設定，系統可能啟用 M81、M82 和 M83 版的表單控制項元素，也可能使用舊版元素。
 
       這項政策將在 Chrome 第 84 版後移除。</translation>
-<translation id="8938932171964587769">這項政策自 M69 起已淘汰，請改用 OverrideSecurityRestrictionsOnInsecureOrigin。
-
-這項政策可指定要視為安全內容的來源 (網址) 或主機名稱模式 (例如「*.example.com」)，清單中的內容來源將不會套用針對不安全來源所設的安全性限制。
-
-這項政策的用途是讓機構為無法部署傳輸層安全標準 (TLS) 的舊版應用程式設定許可清單來源，或是方便機構設定內部網頁開發所需的暫存伺服器。這樣一來，機構的開發人員就能測試需要安全內容的功能，而不必在暫存伺服器上部署傳輸層安全標準 (TLS)。此外，這項政策也能避免系統在網址列中將指定來源加上「不安全」標籤。
-
-你可以在這項政策中設定網址清單，或是將「--unsafely-treat-insecure-origin-as-secure」命令列標記設定至相同的網址清單 (以逗號分隔)，兩者的效果相同。如果設定這項政策，就會覆寫命令列標記。
-
-      這項政策自 M69 起已淘汰，由 OverrideSecurityRestrictionsOnInsecureOrigin 取代。如果兩項政策同時存在，OverrideSecurityRestrictionsOnInsecureOrigin 
-將會覆寫這項政策。
-
-如要進一步瞭解安全內容，請參閱 https://www.w3.org/TR/secure-contexts/
-      </translation>
 <translation id="8942616385591203339">這項政策可控制是否可在使用者初次登入時，向使用者顯示同步處理同意聲明。如果使用者不需要查看同步處理同意聲明，則應設為 false。
       如果設為 false，就不會顯示同步處理同意聲明。
       如果設為 true 或不予設定，則可顯示同步處理同意聲明。</translation>
@@ -5716,19 +5675,6 @@
       這項政策只會影響採用 SAML 進行驗證的使用者。
 
       指定政策值時，請以秒為單位進行設定。</translation>
-<translation id="9015295904649380186">你可以透過設定這項政策來控制密碼保護警告的觸發條件。當使用者在潛在可疑網站上重複使用受保護的密碼時，便會收到密碼保護警告。
-
-      透過 <ph name="PASSWORD_PROTECTION_LOGIN_URLS_POLICY_NAME" /> 和 <ph name="PASSWORD_PROTECTION_CHANGE_PASSWORD_URL_POLICY_NAME" /> 可設定要保護的密碼。
-
-      這項政策可設為下列選項：
-
-      * PasswordProtectionWarningOff：系統不會顯示任何密碼保護警告訊息。
-
-      * PasswordProtectionWarningOnPasswordReuse：當使用者在非許可清單內的網站重複使用受保護的密碼時，系統會顯示密碼保護警告訊息。
-
-      * PasswordProtectionWarningOnPhishingReuse：當使用者在網路詐騙網站上重複使用受保護的密碼時，系統會顯示密碼保護警告訊息。
-
-      如果不設定這項政策，則密碼保護服務只會保護 Google 密碼，但使用者可以變更這項設定。</translation>
 <translation id="9035086760683255833">啟用鍵盤焦點醒目顯示無障礙功能。
 
           這項功能可以醒目顯示鍵盤聚焦的物件。
@@ -5850,7 +5796,6 @@
       使用者的工作階段會在重新啟動後恢復。</translation>
 <translation id="9160028464653564229">不允許任何網站透過 Serial API 要求存取序列埠</translation>
 <translation id="9167719789236691545">禁止在 <ph name="PRODUCT_OS_NAME" />的「檔案」應用程式中使用 Google 雲端硬碟</translation>
-<translation id="9185107612228451403">這會設定擴充功能相關政策。使用者不得安裝黑名單上的擴充功能，只有將相關擴充功能加到許可清單後才能安裝。你也可以強制 <ph name="PRODUCT_NAME" /> 自動安裝某些擴充功能，只要在 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 政策中指定這些擴充功能即可。如果強制安裝某些擴充功能，不論這些擴充功能是否列在黑名單上，系統一律會予以安裝。</translation>
 <translation id="9187743794267626640">停用外部儲存裝置掛載功能</translation>
 <translation id="9190456586252617675">這項政策可控管 Google 助理入門使用體驗的模式。
 

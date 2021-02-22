@@ -405,7 +405,6 @@
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> பதிவிறக்கங்கள் உள்ளன</translation>
 <translation id="3856096718352044181">இது சரியான வழங்குநர்தான் என்பதைச் சரிபார்க்கவும் அல்லது பிறகு முயலவும்</translation>
 <translation id="3861633093716975811">பிரபலமான வீடியோக்கள்</translation>
-<translation id="386944881686624613">உரைக்கான இணைப்பை உருவாக்க முடியவில்லை. பக்கத்தில் இணைப்பைப் பகிரவும்.</translation>
 <translation id="3892148308691398805">உரையை நகலெடு</translation>
 <translation id="3894427358181296146">கோப்புறையைச் சேர்</translation>
 <translation id="3895926599014793903">பெரிதாக்குவதைச் செயல்படுத்த வலியுறுத்து</translation>
@@ -737,7 +736,6 @@
 <translation id="6138832295072039549">தளத்தின் அமைப்புகளை இங்கே மாற்றலாம்</translation>
 <translation id="6140709049082532940">மேம்பட்ட பாதுகாப்பு:</translation>
 <translation id="6140912465461743537">நாடு/மண்டலம்</translation>
-<translation id="6142002709876620371">தனியுரிமை சாண்ட்பாக்ஸை இயக்கு</translation>
 <translation id="614940544461990577">இவற்றைச் செய்து பார்க்கவும்:</translation>
 <translation id="6154478581116148741">இந்தச் சாதனத்திலிருந்து உங்கள் கடவுச்சொற்களை ஏற்ற, அமைப்புகளில் திரைப் பூட்டை இயக்கவும்</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> தரவுச் சேமிப்புகள்</translation>
@@ -827,7 +825,6 @@
 <translation id="6656545060687952787">சாதனங்களைக் கண்டறிய Chromeமுக்கு இருப்பிட அணுகல் தேவை. <ph name="BEGIN_LINK" />அனுமதிகளைப் புதுப்பிக்கவும்<ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">கடவுச்சொல்</translation>
 <translation id="6659594942844771486">தாவல்</translation>
-<translation id="6663079968236414793">உரையுடன் இணை</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> இல் திற</translation>
 <translation id="666981079809192359">Chrome தனியுரிமை அறிக்கை</translation>
 <translation id="6671495933530132209">படத்தை நகலெடு</translation>
@@ -897,7 +894,6 @@
 <translation id="718926126787620637">புக்மார்க் கோப்புறைகளின் பட்டியல் முழுத் திரையில் காட்டப்படுகிறது</translation>
 <translation id="7189372733857464326">Google Play சேவைகள் புதுப்பிப்பதை முடிப்பதற்காக, காத்திருக்கிறது</translation>
 <translation id="7191430249889272776">தாவல் பின்புலத்தில் திறக்கப்பட்டது.</translation>
-<translation id="72180057821664864">உரைக்கான இணைப்பை உருவாக்க முடியவில்லை</translation>
 <translation id="7233236755231902816">உங்கள் மொழியில் இணையதளங்களைப் பார்க்க Chromeமின் சமீபத்திய பதிப்பைப் பெறுங்கள்</translation>
 <translation id="7248069434667874558">Chromeமில் <ph name="TARGET_DEVICE_NAME" /> சாதன ஒத்திசைவு ஆன் செய்யப்பட்டுள்ளதை உறுதி செய்யவும்</translation>
 <translation id="7274013316676448362">தடுக்கப்பட்ட தளம்</translation>
@@ -1135,7 +1131,6 @@
 <translation id="8812260976093120287">உங்கள் சாதனத்தில் ஆதரிக்கப்படும் கட்டணம் செலுத்துவதற்கான பயன்பாடுகளைப் (மேலே குறிப்பிட்டவை) பயன்படுத்தி, சில இணையதளங்களின் மூலம் பணம் செலுத்தலாம்.</translation>
 <translation id="881688628773363275">தாவல் உள்ளடக்கத்தின் மாதிரிக்காட்சியைப் பார்க்க முடியாது.</translation>
 <translation id="8820817407110198400">புக்மார்க்குகள்</translation>
-<translation id="8827407626219585697">உரைக்கான இணைப்பைச் சேர்க்கவும்</translation>
 <translation id="883806473910249246">உள்ளடக்கத்தைப் பதிவிறக்கும் போது பிழை ஏற்பட்டது.</translation>
 <translation id="8840953339110955557">ஆன்லைன் பதிப்பிலிருந்து இந்தப் பக்கம் வேறுபடலாம்.</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, தாவல்</translation>

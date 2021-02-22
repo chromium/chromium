@@ -19,7 +19,6 @@
 <translation id="1125564390852150847">Tạo thẻ mới.</translation>
 <translation id="1145536944570833626">Xóa dữ liệu hiện có.</translation>
 <translation id="1147031633655575115">Đã đăng nhập bằng tên <ph name="USER" /></translation>
-<translation id="1154690515305205900">Không thể tạo đường liên kết đến văn bản được đánh dấu.</translation>
 <translation id="1154984953698510061">Xem các thẻ khác</translation>
 <translation id="1157749421655780457">Cho phép sử dụng thông tin vị trí...</translation>
 <translation id="1165039591588034296">Lỗi</translation>
@@ -567,7 +566,6 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="6807889908376551050">Hiển thị tất cả...</translation>
 <translation id="681368974849482173">Đã tạo mục</translation>
 <translation id="6831043979455480757">Dịch</translation>
-<translation id="6841409746189899007">Đường liên kết tới văn bản</translation>
 <translation id="6851516051005285358">Yêu cầu trang web dành cho máy tính để bàn</translation>
 <translation id="6858855187367714033">Đã quét</translation>
 <translation id="6859944681507688231">Để quét mã QR hoặc thẻ tín dụng, hãy bật máy ảnh trong phần cài đặt.</translation>
@@ -645,7 +643,6 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="7658239707568436148">Hủy</translation>
 <translation id="766891008101699113">Để duyệt web ở chế độ riêng tư, hãy thêm thẻ mới.</translation>
 <translation id="7671141431838911305">CÀI ĐẶT</translation>
-<translation id="7690812411882623730">Không thể liên kết đến văn bản</translation>
 <translation id="7701040980221191251">Không có</translation>
 <translation id="7765158879357617694">Di chuyển</translation>
 <translation id="7771470029643830783">Khi bạn đăng xuất, dấu trang, lịch sử hoạt động, mật khẩu và các dữ liệu khác của bạn trên Chrome sẽ không được đồng bộ hóa với Tài khoản Google nữa.

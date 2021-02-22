@@ -18,7 +18,6 @@
 <translation id="1383876407941801731">البحث</translation>
 <translation id="1384959399684842514">تم إيقاف التنزيل مؤقتًا</translation>
 <translation id="1415402041810619267">‏تم اقتطاع عنوان URL</translation>
-<translation id="1431402976894535801">منع المواقع الإلكترونية من معرفة متى تستخدم الجهاز</translation>
 <translation id="1446450296470737166">‏السماح بالتحكم الكامل لأجهزة MIDI</translation>
 <translation id="1509960214886564027">قد تتوقف الميزات عن العمل في العديد من المواقع الإلكترونية.</translation>
 <translation id="1620510694547887537">الكاميرا</translation>
@@ -39,7 +38,6 @@
 <translation id="1994173015038366702">‏عنوان URL للموقع</translation>
 <translation id="2025115093177348061">الواقع المعزّز</translation>
 <translation id="2030769033451695672">يُرجى النقر للرجوع إلى <ph name="URL_OF_THE_CURRENT_TAB" />.</translation>
-<translation id="2054665754582400095">متى تستخدم جهازك</translation>
 <translation id="2079545284768500474">تراجع</translation>
 <translation id="2091887806945687916">الصوت</translation>
 <translation id="2107397443965016585">السؤال أولاً قبل السماح للمواقع الإلكترونية بتشغيل المحتوى المَحمي (موصى به)</translation>
@@ -82,7 +80,6 @@
 <translation id="3114012059975132928">مشغّل الفيديو</translation>
 <translation id="3115898365077584848">عرض المعلومات</translation>
 <translation id="3123473560110926937">حظر الإعلانات في بعض المواقع</translation>
-<translation id="3165371858310906303">طلب الإذن عند محاولة موقع إلكتروني معرفة متى تستخدم الجهاز</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> من البيانات المخزّنة</translation>
 <translation id="321187648315454507">‏للسماح لتطبيق <ph name="APP_NAME" /> بإرسال الإشعارات إليك، يُرجى أيضًا تفعيل الإشعارات في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">الميكروفون</translation>

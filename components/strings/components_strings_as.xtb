@@ -297,7 +297,6 @@
 <translation id="204357726431741734">আপোনাৰ Google একাউণ্টত ষ্ট’ৰ হৈ থকা পাছৱৰ্ডসমূহ ব্যৱহাৰ কৰিবলৈ ছাইন ইন কৰক</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" /> ভাষাৰ পৃষ্ঠাসমূহ অনুবাদ কৰা নহয়।</translation>
 <translation id="2053553514270667976">পিন ক’ড</translation>
-<translation id="2054665754582400095">আপোনাৰ উপস্থিতি</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{১টা পৰামৰ্শ}one{#টা পৰামৰ্শ}other{#টা পৰামৰ্শ}}</translation>
 <translation id="2079545284768500474">আনডু কৰক</translation>
 <translation id="20817612488360358">ছিষ্টেম প্ৰক্সি ছেটিংসমূহ ব্যৱহাৰ কৰিবলৈ ছেট কৰা হৈছে কিন্তু ক্ষতিকাৰক প্ৰক্সি কনফিগাৰেশ্বনো নির্দিষ্ট কৰা হৈছে।</translation>
@@ -567,7 +566,6 @@
 <translation id="3174168572213147020">দ্বীপ</translation>
 <translation id="3176929007561373547">আপোনাৰ প্ৰ’ক্সি ছেটিংসমূহ পৰীক্ষা কৰক বা প্ৰ’ক্সি ছার্ভাৰে কাম কৰি থকাটো নিশ্চিত কৰিবলৈ নিজৰ নেটৱর্ক প্ৰশাসকৰ সৈতে যোগাযোগ কৰক। যদি আপুনি বিশ্বাস কৰা নাই তেন্তে আপুনি কোনো প্ৰ’ক্সি ছার্ভাৰ ব্যৱহাৰ কৰি আছে:
       <ph name="PLATFORM_TEXT" /></translation>
-<translation id="3184534047932533456"><ph name="URL" />এ আপুনি সক্ৰিয় হ’লে জানিব বিচাৰে</translation>
 <translation id="3188393374551744535">একাউণ্টৰ বেলেঞ্চ</translation>
 <translation id="3194737229810486521">আপোনাৰ ডিভাইচত <ph name="URL" />এ স্থায়ীভাৱে ডেটা সঞ্চয় কৰিব খোজে</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" />ত <ph name="PRINTER_NAME" /></translation>
@@ -1091,7 +1089,6 @@
 <translation id="5171689220826475070">ফেনফ’ল্ড-ইউৰোপীয়</translation>
 <translation id="5172758083709347301">মেচিন</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" />ত নাই নেকি? এই আসোঁৱাহটোৰ অভিযোগ দিয়ক</translation>
-<translation id="5179740473595559246">আপুনি সক্ৰিয় হ’লে জানিব বিচাৰে</translation>
 <translation id="5190835502935405962">বুকমাৰ্কৰ বাৰ</translation>
 <translation id="519422657042045905">এন'টেশ্বন উপলব্ধ নহয়</translation>
 <translation id="5201306358585911203">এই পৃষ্ঠাটোত অন্তর্ভুক্ত অন্য এটা পৃষ্ঠায়ে এয়া জনায়</translation>
@@ -1321,7 +1318,6 @@
 <translation id="6051221802930200923">আপুনি এই মুহূৰ্তত <ph name="SITE" /> চাব নোৱাৰে কাৰণ এই ৱেবছাইটটোৱে প্ৰমাণ পত্ৰ পিন কৰা সুবিধাটো ব্যৱহাৰ কৰে। নেটৱর্ক সম্পর্কীয় আসোঁৱাহ আৰু আক্ৰমণসমূহ সাধাৰণতে অস্থায়ী হয় গতিকে এই পৃষ্ঠাটোৱে কিছুসময়ৰ পাছত কাম কৰিব পাৰে।</translation>
 <translation id="6051898664905071243">পৃষ্ঠাৰ সংখ্যা:</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053328359599022071">আপোনাৰ সক্ৰিয়তা শ্বেয়াৰ কৰিবনে?</translation>
 <translation id="6058977677006700226">আপোনাৰ কার্ড নিজৰ সকলো ডিভাইচত ব্যৱহাৰ কৰিবনে?</translation>
 <translation id="6059925163896151826">ইউএছবি ডিভাইচসমূহ</translation>
 <translation id="6060009363608157444">অমান্য DnsOverHttps ম’ড।</translation>

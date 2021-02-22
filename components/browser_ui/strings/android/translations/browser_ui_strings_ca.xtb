@@ -18,7 +18,6 @@
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="1384959399684842514">La baixada s'ha posat en pausa</translation>
 <translation id="1415402041810619267">L'URL s'ha truncat</translation>
-<translation id="1431402976894535801">Bloqueja els llocs web perquè no sàpiguen quan estàs present</translation>
 <translation id="1446450296470737166">Permet control total disp. MIDI</translation>
 <translation id="1509960214886564027">Pot ser que les funcions de molts llocs web no funcionin</translation>
 <translation id="1620510694547887537">Càmera</translation>
@@ -39,7 +38,6 @@
 <translation id="1994173015038366702">URL del lloc web</translation>
 <translation id="2025115093177348061">Realitat augmentada</translation>
 <translation id="2030769033451695672">Toca per tornar a <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
-<translation id="2054665754582400095">La teva presència</translation>
 <translation id="2079545284768500474">Desfés</translation>
 <translation id="2091887806945687916">So</translation>
 <translation id="2107397443965016585">Pregunta abans de permetre que els llocs web reprodueixin contingut protegit (opció recomanada)</translation>
@@ -82,7 +80,6 @@
 <translation id="3114012059975132928">Reproductor de vídeo</translation>
 <translation id="3115898365077584848">Mostra la informació</translation>
 <translation id="3123473560110926937">Bloquejat en alguns llocs web</translation>
-<translation id="3165371858310906303">Pregunta'm quan un lloc web vulgui saber quan estic present</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> de dades desades</translation>
 <translation id="321187648315454507">Perquè <ph name="APP_NAME" /> et pugui enviar notificacions, també has d'activar-les a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Micròfon</translation>

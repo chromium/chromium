@@ -296,7 +296,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="204357726431741734">Sign in to use passwords saved in your Google Account</translation>
 <translation id="2053111141626950936">Pages in <ph name="LANGUAGE" /> will not be translated.</translation>
 <translation id="2053553514270667976">ZIP code</translation>
-<translation id="2054665754582400095">Your presence</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 suggestion}other{# suggestions}}</translation>
 <translation id="2079545284768500474">Undo</translation>
 <translation id="20817612488360358">System proxy settings are set to be used but an explicit proxy configuration is also specified.</translation>
@@ -568,7 +567,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
       make sure that the proxy server is working. If you don't believe you should
       be using a proxy server:
       <ph name="PLATFORM_TEXT" /></translation>
-<translation id="3184534047932533456"><ph name="URL" /> wants to know when you're present</translation>
 <translation id="3188393374551744535">Account balance</translation>
 <translation id="3194737229810486521"><ph name="URL" /> wants to permanently store data on your device</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> on <ph name="SERVER_NAME" /></translation>
@@ -1095,7 +1093,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Machine</translation>
 <translation id="5179510805599951267">Not in <ph name="ORIGINAL_LANGUAGE" />? Report this error</translation>
-<translation id="5179740473595559246">Know when you're present</translation>
 <translation id="5190835502935405962">Bookmarks Bar</translation>
 <translation id="519422657042045905">Annotation not available</translation>
 <translation id="5201306358585911203">An embedded page on this page says</translation>
@@ -1326,7 +1323,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6051221802930200923">You cannot visit <ph name="SITE" /> right now because the website uses certificate pinning. Network errors and attacks are usually temporary, so this page will probably work later.</translation>
 <translation id="6051898664905071243">Page count:</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053328359599022071">Share your presence?</translation>
 <translation id="6058977677006700226">Use your cards on all your devices?</translation>
 <translation id="6059925163896151826">USB devices</translation>
 <translation id="6060009363608157444">Invalid DnsOverHttps mode.</translation>

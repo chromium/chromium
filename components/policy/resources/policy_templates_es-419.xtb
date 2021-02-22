@@ -1401,10 +1401,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="2906874737073861391">Lista de extensiones AppPack</translation>
 <translation id="2908277604670530363">Cantidad máxima de conexiones simultáneas con el servidor proxy</translation>
 <translation id="291853569864365550">No mostrar sugerencias de contenido en la página Nueva pestaña</translation>
-<translation id="2919544577647246857">Define la lista de usuarios con permiso para acceder al dispositivo. Las entradas que se ingresen deben tener el formato <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, p. ej., <ph name="USER_WHITELIST_ENTRY_EXAMPLE" />. Para permitir usuarios aleatorios en un dominio, usa el formato <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
-
-      Si no configuras esta política, no se establecerán restricciones respecto de qué usuarios pueden acceder. Ten en cuenta que, para crear nuevos usuarios, sigue siendo necesario configurar la política <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> de manera adecuada.
-      Si habilitas <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" />, los usuarios de Family Link también podrán acceder a las cuentas definidas en esta política.</translation>
 <translation id="2920795918401557243">Esta configuración permite registrar el rendimiento de todo el sistema mediante el servicio de registro del sistema.
 
       Si inhabilitas esta política, el usuario no podrá hacer un registro de todo el sistema mediante el servicio de registro del sistema.
@@ -1775,19 +1771,6 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
       Consulta https://support.google.com/chrome/a?p=Supported_directory_variables para ver una lista de las variables que se pueden usar.
 
       Si no estableces esta política, se utilizará la ruta del perfil predeterminada y el usuario podrá anularla con la marca de la línea de comandos "--user-data-dir".</translation>
-<translation id="3378482432905539452">Esta política es obsoleta. Usa <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> para controlar la disponibilidad del complemento de Flash y <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> para controlar si debe usarse el visor de PDF integrado para abrir este tipo de archivos.
-
-      Especifica una lista de complementos que el usuario puede habilitar o inhabilitar en <ph name="PRODUCT_NAME" />.
-
-      Se pueden usar los caracteres comodín "*" y "?" para buscar secuencias de caracteres arbitrarios. "*" busca una cantidad arbitraria de caracteres, mientras que "?" especifica un único carácter opcional, es decir, busca un carácter o ninguno. El carácter de escape es "\", de modo que, para que coincida con los caracteres "*", "?" o "\" reales, debes colocar una "\" delante de ellos.
-
-      Si habilitas esta configuración, la lista especificada de complementos se puede utilizar en <ph name="PRODUCT_NAME" />. Los usuarios pueden habilitarlos o inhabilitarlos en "about:plugins", incluso si el complemento también coincide con un patrón en DisabledPlugins. Los usuarios también pueden habilitar e inhabilitar los complementos que no coinciden con ningún patrón en DisabledPlugins, DisabledPluginsExceptions y EnabledPlugins.
-
-      Esta política permite elaborar listas negras de complementos estrictas, cuando la lista "DisabledPlugins" contiene entradas de comodines como inhabilitar todos los complementos "*" o inhabilitar todos los complementos de Java "*Java*", pero el administrador desea permitir alguna versión particular como "IcedTea Java 2.3". En esta política, se puede especificar cada una de estas versiones.
-
-      Ten en cuenta que tanto el nombre del complemento como el nombre del grupo de complementos deben exceptuarse. Cada grupo de complementos se muestra en una sección diferente en "about:plugins" y cada sección puede tener uno o más complementos. Por ejemplo, el complemento "Shockwave Flash" pertenece al grupo "Adobe Flash Player". Si deseas que ese complemento se exceptúe de la lista de complementos no permitidos, ambos nombres deberán coincidir en la lista de excepciones.
-
-      Si no se configura esta política, se inhabilitará cualquier complemento que coincida con los patrones en "DisabledPlugins" y el usuario no podrá habilitarlo.</translation>
 <translation id="3381968327636295719">Utilizar el navegador del host de manera predeterminada</translation>
 <translation id="3387211681524224831">Si habilitas la política, no se guardará el historial de navegación, estará desactivada la sincronización de pestañas, y los usuarios no podrán cambiar esta configuración.
 
@@ -2163,16 +2146,6 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 
       Si esta política se deja sin configurar, SPDY estará disponible.</translation>
 <translation id="3891357445869647828">Habilitar JavaScript</translation>
-<translation id="3892015543543011887">Esta política controla las solicitudes de instalación de extensiones de <ph name="PRODUCT_NAME" />, lo que permite que los usuarios envíen las solicitudes a la consola del Administrador de Google para obtener su aprobación.
-
-      Si no estableces la política <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> o la inhabilitas, se ignorará, y no se crearán ni cargarán las solicitudes de instalación de extensiones.
-      Si no la estableces o la inhabilitas, no se crearán ni cargarán las solicitudes de instalación de extensiones.
-      Si la habilitas, se crearán las solicitudes de instalación de extensiones y se cargarán a la consola del Administrador de Google.
-
-      Si los usuarios intentan instalar una extensión que <ph name="EXTENSION_INSTALL_WHITELIST" /> y <ph name="EXTENSION_SETTINGS" /> no incluyeron en sus listas blancas, se crearán las solicitudes de instalación de extensiones.
-
-      Esta política solo será válida si la máquina está inscrita en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> para <ph name="PRODUCT_NAME" />.
-      Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3898345958122666461">Desactivar NTLMv2</translation>
 <translation id="3898795800259311780">Permite o rechaza la captura de pantalla</translation>
 <translation id="3907683835264956726">Permite el acceso de usuarios en línea cuando están en una pantalla de bloqueo. Si estableces la política como verdadera, la reautenticación en línea en la pantalla de bloqueo se activará, por ejemplo, mediante la política <ph name="POLICY" />.
@@ -3766,7 +3739,6 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 
       Nota: Es posible que las contraseñas queden obsoletas antes de la cantidad especificada de días si el cliente no se conecta por un período prolongado.</translation>
 <translation id="6280973140313576289">Selector de perfiles forzado en el inicio</translation>
-<translation id="6281043242780654992">Permite configurar las políticas de mensajería nativa. A menos que se incluyan en la lista blanca, los hosts de mensajería nativa incluidos en la lista negra estarán bloqueados.</translation>
 <translation id="6282524907402492171">Muestra las advertencias de baja de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="6282799760374509080">Permitir o rechazar la captura de audio</translation>
 <translation id="6284362063448764300">TLS 1.1</translation>
@@ -5732,33 +5704,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si se establece esta política como falsa o no se establece, se inhabilitarán los elementos de los controles de formulario cuando se lancen en las versiones M81, M82 y M83.
 
       Después de Chrome 84, se quitará esta política.</translation>
-<translation id="8938932171964587769">Dejó de estar disponible en M69. En su lugar, utiliza
-      OverrideSecurityRestrictionsOnInsecureOrigin.
-
-      La política especifica una lista de orígenes (URL) o patrones de nombres de
-      host (como "*.ejemplo.com") para los cuales no se aplicarán restricciones de
-      seguridad en orígenes no seguros.
-
-      El objetivo es permitir que las organizaciones establezcan una lista blanca
-      de orígenes para apps heredadas que no pueden implementar TLS o
-      configuren un servidor de etapas para desarrollos web internos
-      con el objeto de que los desarrolladores prueben las funciones que
-      requieren contextos seguros sin tener que implementar TLS en el servidor
-      de etapas. Esta política también evitará que el origen se considere "No seguro" en el cuadro multifunción.
-
-      Configurar una lista de URL en esta política tiene el mismo efecto que
-      configurar la marca de línea de comandos
-      "--unsafely-treat-insecure-origin-as-secure" en una lista de elementos
-      separados por comas de las mismas URL. Si se establece la política, se anulará la marca de línea de comandos.
-
-      Esta política dejó de estar disponible en M69 y se reemplazó por
-      OverrideSecurityRestrictionsOnInsecureOrigin. Si están presentes ambas
-      políticas, OverrideSecurityRestrictionsOnInsecureOrigin anulará esta
-      política.
-
-      Para obtener más información sobre contextos seguros, consulta
-      https://www.w3.org/TR/secure-contexts/
-      </translation>
 <translation id="8942616385591203339">Esta política controla si se muestra el consentimiento de sincronización al usuario durante el primer acceso. Debe establecerse como falso si consideras que el usuario nunca necesitará este consentimiento.
       Si se establece como falso, no se mostrará el consentimiento.
       Si se establece como verdadero o no se establece, se puede mostrar el consentimiento.</translation>
@@ -5816,19 +5761,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Esta política solo afecta a los usuarios autenticados mediante SAML.
 
       El valor de la política debe especificarse en segundos.</translation>
-<translation id="9015295904649380186">Si estableces la política, podrás controlar cuándo se muestra la advertencia de protección de contraseñas. La protección de contraseñas alerta a los usuarios cuando reutilizan su contraseña protegida en sitios potencialmente sospechosos.
-
-      Usa <ph name="PASSWORD_PROTECTION_LOGIN_URLS_POLICY_NAME" /> y <ph name="PASSWORD_PROTECTION_CHANGE_PASSWORD_URL_POLICY_NAME" /> para determinar las contraseñas que quieras proteger.
-
-      Según el comportamiento buscado, establece alguno de los siguientes valores para esta política.
-
-* PasswordProtectionWarningOff: no se mostrará ninguna advertencia de protección de contraseñas.
-
-      * PasswordProtectionWarningOnPasswordReuse: se mostrará la advertencia de protección de contraseñas cuando el usuario reutilice su contraseña protegida en un sitio que no se encuentre en la lista de sitios permitidos.
-
-      * PasswordProtectionWarningOnPhishingReuse: se mostrará la advertencia de protección de contraseñas cuando el usuario reutilice su contraseña protegida en un sitio de suplantación de identidad (phishing).
-
-      Si no estableces la política, el servicio de protección de contraseñas solo protegerá las contraseñas de Google, pero los usuarios podrán cambiar esta configuración.</translation>
 <translation id="9035086760683255833">Habilita la función de accesibilidad para destacar el cursor del teclado.
 
           Esta función destaca el elemento donde está el cursor del teclado.
@@ -5950,7 +5882,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       La sesión del usuario se restablecerá después del reinicio.</translation>
 <translation id="9160028464653564229">No permite que ningún sitio solicite acceso a puertos en serie a través de la API de Serial</translation>
 <translation id="9167719789236691545">Inhabilitar Drive en la app de Archivos de <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="9185107612228451403">Configura las políticas relacionadas con la extensión. El usuario no está autorizado a instalar las extensiones de la lista negra a menos que se encuentren en la lista blanca. También puede forzar <ph name="PRODUCT_NAME" /> a instalar automáticamente las extensiones al especificarlas en <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />. Las extensiones con instalación automática se instalan aunque estén incluidas en la lista negra.</translation>
 <translation id="9187743794267626640">Inhabilitar la activación del almacenamiento externo</translation>
 <translation id="9190456586252617675">Esta política controla el modo de la experiencia de integración del Asistente.
 

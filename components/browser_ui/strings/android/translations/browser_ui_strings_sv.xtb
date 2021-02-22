@@ -18,7 +18,6 @@
 <translation id="1383876407941801731">Sök</translation>
 <translation id="1384959399684842514">Nedladdningen har pausats</translation>
 <translation id="1415402041810619267">Webbadressen har trunkerats</translation>
-<translation id="1431402976894535801">Blockera webbplatser från att registrera om du är närvarande</translation>
 <translation id="1446450296470737166">Tillåt fullst. kontroll av MIDI</translation>
 <translation id="1509960214886564027">Funktioner kan sluta att fungera på många webbplatser</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -39,7 +38,6 @@
 <translation id="1994173015038366702">Webbadress</translation>
 <translation id="2025115093177348061">Förstärkt verklighet</translation>
 <translation id="2030769033451695672">Återgå till <ph name="URL_OF_THE_CURRENT_TAB" /> genom att trycka här</translation>
-<translation id="2054665754582400095">Din närvaro</translation>
 <translation id="2079545284768500474">Ångra</translation>
 <translation id="2091887806945687916">Ljud</translation>
 <translation id="2107397443965016585">Fråga innan webbplatser tillåts att spela upp skyddat innehåll (rekommenderas)</translation>
@@ -82,7 +80,6 @@
 <translation id="3114012059975132928">Videospelare</translation>
 <translation id="3115898365077584848">Visa info</translation>
 <translation id="3123473560110926937">Blockeras på vissa webbplatser</translation>
-<translation id="3165371858310906303">Fråga när en webbplats vill registrera om du är närvarande</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> sparad data</translation>
 <translation id="321187648315454507">Om du vill få aviseringar från <ph name="APP_NAME" /> måste du även aktivera aviseringar i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>

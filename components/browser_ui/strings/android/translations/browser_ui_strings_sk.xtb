@@ -18,7 +18,6 @@
 <translation id="1383876407941801731">Vyhľadávanie</translation>
 <translation id="1384959399684842514">Sťahovanie bolo pozastavené</translation>
 <translation id="1415402041810619267">Skrátená webová adresa</translation>
-<translation id="1431402976894535801">Brániť webom overovať si vašu prítomnosť</translation>
 <translation id="1446450296470737166">Povoliť úplné ovlád. zar. MIDI</translation>
 <translation id="1509960214886564027">Funkcie na mnohých weboch môžu zlyhávať</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -39,7 +38,6 @@
 <translation id="1994173015038366702">Webová adresa</translation>
 <translation id="2025115093177348061">Rozšírená realita</translation>
 <translation id="2030769033451695672">Klepnutím sa vrátite na kartu <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
-<translation id="2054665754582400095">Vaša prítomnosť</translation>
 <translation id="2079545284768500474">Späť</translation>
 <translation id="2091887806945687916">Zvuk</translation>
 <translation id="2107397443965016585">Pýtať sa, či chcete povoliť webu prehrávať chránený obsah (odporúčané)</translation>
@@ -82,7 +80,6 @@
 <translation id="3114012059975132928">Prehrávač videa</translation>
 <translation id="3115898365077584848">Zobraziť informácie</translation>
 <translation id="3123473560110926937">Blokované na niektorých weboch</translation>
-<translation id="3165371858310906303">Opýtať sa, keď chce web vedieť, či ste prítomný/-á</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> uložených dát</translation>
 <translation id="321187648315454507">Ak chcete povoliť aplikácii <ph name="APP_NAME" /> odosielať vám upozornenia, zapnite ich aj v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofón</translation>

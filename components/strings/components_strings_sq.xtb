@@ -296,7 +296,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="204357726431741734">Identifikohu për të përdorur fjalëkalimet e ruajtura në "Llogarinë tënde të Google"</translation>
 <translation id="2053111141626950936">Faqet në <ph name="LANGUAGE" /> nuk do të përkthehen.</translation>
 <translation id="2053553514270667976">Kodi postar</translation>
-<translation id="2054665754582400095">Prania jote</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 sugjerim}other{# sugjerime}}</translation>
 <translation id="2079545284768500474">Zhbëj</translation>
 <translation id="20817612488360358">Cilësimet e përfaqësuesit të sistemit janë caktuar që të përdoren, por është specifikuar po ashtu një konfigurim i qartë i përfaqësuesit.</translation>
@@ -566,7 +565,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
           për t'u siguruar që serveri përfaqësues po punon. Nëse nuk beson
           se duhet të përdorësh një server përfaqësues:
           <ph name="PLATFORM_TEXT" /></translation>
-<translation id="3184534047932533456"><ph name="URL" /> dëshiron të dijë kur je i pranishëm</translation>
 <translation id="3188393374551744535">Balanca e llogarisë</translation>
 <translation id="3194737229810486521"><ph name="URL" /> kërkon të ruajë në mënyrë të përhershme të dhëna në pajisjen tënde</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> në <ph name="SERVER_NAME" /></translation>
@@ -1091,7 +1089,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Pajisja</translation>
 <translation id="5179510805599951267">Jo në <ph name="ORIGINAL_LANGUAGE" />? Raportoje këtë gabim</translation>
-<translation id="5179740473595559246">Të dijë se kur je i pranishëm</translation>
 <translation id="5190835502935405962">Shiriti i faqeshënuesve</translation>
 <translation id="519422657042045905">Shënimi nuk ofrohet</translation>
 <translation id="5201306358585911203">Një faqe e integruar në këtë faqe thotë</translation>
@@ -1322,7 +1319,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6051221802930200923">Nuk mund ta vizitosh <ph name="SITE" /> në këtë moment sepse sajti i uebit përdor gozhdimin e certifikatës. Gabimet dhe sulmet e rrjetit janë zakonisht të përkohshme, prandaj kjo faqe ndoshta do të funksionojë më vonë.</translation>
 <translation id="6051898664905071243">Numri i faqeve:</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053328359599022071">Të ndahet prania jote?</translation>
 <translation id="6058977677006700226">Dëshiron t'i përdorësh kartat në të gjitha pajisjet e tua?</translation>
 <translation id="6059925163896151826">Pajisjet USB</translation>
 <translation id="6060009363608157444">Modalitet i pavlefshëm DnsOverHttps.</translation>

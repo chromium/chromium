@@ -297,7 +297,6 @@
 <translation id="204357726431741734">Google Бүртгэлдээ хадгалсан нууц үгсийг ашиглахын тулд нэвтрэх</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" /> хэл дээрх хуудсыг орчуулахгүй.</translation>
 <translation id="2053553514270667976">Зип Код</translation>
-<translation id="2054665754582400095">Таны байгаа эсэх</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 зөвлөмж}other{# зөвлөмж}}</translation>
 <translation id="2079545284768500474">Буцаах</translation>
 <translation id="20817612488360358">Системийн прокси-гийн тохиргоонуудыг ашиглахаар суулгасан хэдий ч прокси-гийн нарийн тохиргоог зааж өгсөн байна.</translation>
@@ -569,7 +568,6 @@
           прокси сервер ажиллаж байгаа эсэхийг шалгана уу. 
           Хэрэв та прокси сервер ашиглаж байгаадаа итгэлгүй байвал:
           <ph name="PLATFORM_TEXT" /></translation>
-<translation id="3184534047932533456"><ph name="URL" /> таныг байгаа үед мэдэхийг хүсэж байна</translation>
 <translation id="3188393374551744535">Дансны үлдэгдэл</translation>
 <translation id="3194737229810486521"><ph name="URL" /> таны төхөөрөмжид өгөгдлийг бүрмөсөн хадгалах хүсэлтэй байна</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> дээрх <ph name="PRINTER_NAME" /></translation>
@@ -1097,7 +1095,6 @@
 <translation id="5171689220826475070">Фанфолд-Европ</translation>
 <translation id="5172758083709347301">Машин</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> хэлээр байхгүй байна уу? Энэ алдааг мэдэгдэнэ үү.</translation>
-<translation id="5179740473595559246">Таныг байгаа үед мэдэх</translation>
 <translation id="5190835502935405962">Хайлтын жагсаалтын цонх</translation>
 <translation id="519422657042045905">Тэмдэглэгээ боломжгүй байна</translation>
 <translation id="5201306358585911203">Энэ хуудсанд оруулсан хуудас хэлэхдээ</translation>
@@ -1328,7 +1325,6 @@
 <translation id="6051221802930200923"><ph name="SITE" /> нь сертификат баталгаажуулалтыг ашигладаг тул тус вебсайтад одоогоор зочлох боломжгүй байна. Сүлжээний алдаа, халдлага нь ихэвчлэн түр зуурынх байдаг тул энэ хуудас удахгүй хэвийн ажиллана.</translation>
 <translation id="6051898664905071243">Хуудасны тоо:</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053328359599022071">Байгаа эсэхээ хуваалцах уу?</translation>
 <translation id="6058977677006700226">Картаа бүх төхөөрөмж дээрээ ашиглах уу?</translation>
 <translation id="6059925163896151826">USB төхөөрөмж</translation>
 <translation id="6060009363608157444">DnsOverHttps горим буруу байна.</translation>

@@ -297,7 +297,6 @@
 <translation id="204357726431741734">Google аккаунтуңузда сакталган сырсөздөрдү колдонуу үчүн аккаунтуңузга кириңиз</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" /> тилиндеги барактар которулбайт.</translation>
 <translation id="2053553514270667976">Почта индекси</translation>
-<translation id="2054665754582400095">Сайтта же сайтта эместигиңиз</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 сунуш}other{# сунуш}}</translation>
 <translation id="2079545284768500474">Кайтаруу</translation>
 <translation id="20817612488360358">Тутумдун прокси жөндөөлөрү коюлду жана ошону менен катар, айкын прокси конфигурайиясы да белгиленди.</translation>
@@ -569,7 +568,6 @@
       текшерип же тармактык администраторуңузга кайрылыңыз. Прокси
       серверин колдонгум келбейт десеңиз
       <ph name="PLATFORM_TEXT" /></translation>
-<translation id="3184534047932533456"><ph name="URL" /> сайтка киргениңизди билип тургусу келет</translation>
 <translation id="3188393374551744535">Аккаунттун балансы</translation>
 <translation id="3194737229810486521"><ph name="URL" /> түзмөгүңүзгө дайындарды биротоло сактаганы жатат</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> сервериндеги <ph name="PRINTER_NAME" /></translation>
@@ -1095,7 +1093,6 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Шайман</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> тилинде эмеспи? Бул ката тууралуу кабарлаңыз</translation>
-<translation id="5179740473595559246">Сайтка кирип турганыңызды билүү</translation>
 <translation id="5190835502935405962">Кыстармалар тилкеси</translation>
 <translation id="519422657042045905">Аннотация жеткиликсиз</translation>
 <translation id="5201306358585911203">Бул веб баракчада кыстарылган барак мындай дейт:</translation>
@@ -1326,7 +1323,6 @@
 <translation id="6051221802930200923">Вебсайт тастыктама бекиткичин колдонуп жаткандыктан азыр <ph name="SITE" /> сайтына өтө албайсыз. Адатта тармактагы каталар жана чабуулдар убактылуу көрүнүш болгондуктан, бул баракча кийинчерээк иштеп калышы мүмкүн.</translation>
 <translation id="6051898664905071243">Барактардын саны:</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053328359599022071">Сайтта же сайтта эместигиңиз бөлүшүлсүнбү?</translation>
 <translation id="6058977677006700226">Карталарыңыз бардык түзмөктөрүңүздө колдонулсунбу?</translation>
 <translation id="6059925163896151826">USB түзмөктөрү</translation>
 <translation id="6060009363608157444">DnsOverHttps режими жараксыз.</translation>

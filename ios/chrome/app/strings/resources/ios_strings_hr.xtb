@@ -19,7 +19,6 @@
 <translation id="1125564390852150847">Otvori novu karticu.</translation>
 <translation id="1145536944570833626">Brisanje postojećih podataka.</translation>
 <translation id="1147031633655575115">Prijavljeni ste kao <ph name="USER" /></translation>
-<translation id="1154690515305205900">Ne može se izraditi veza na istaknuti tekst.</translation>
 <translation id="1154984953698510061">Pogledaj ostale kartice</translation>
 <translation id="1157749421655780457">Omogući lokaciju...</translation>
 <translation id="1165039591588034296">Pogreška</translation>
@@ -567,7 +566,6 @@ Pokušajte koristiti jedinstvenu zaporku za svaku web-lokaciju.</translation>
 <translation id="6807889908376551050">Prikaži sve...</translation>
 <translation id="681368974849482173">Stavka je stvorena</translation>
 <translation id="6831043979455480757">Prevedi</translation>
-<translation id="6841409746189899007">Izradi vezu na tekst</translation>
 <translation id="6851516051005285358">Zatraži web-lokaciju za računala</translation>
 <translation id="6858855187367714033">Skenirano</translation>
 <translation id="6859944681507688231">Da biste skenirali QR kôd ili kreditnu karticu, omogućite kameru u postavkama.</translation>
@@ -645,7 +643,6 @@ Pokušajte koristiti jedinstvenu zaporku za svaku web-lokaciju.</translation>
 <translation id="7658239707568436148">Odustani</translation>
 <translation id="766891008101699113">Da biste privatno pregledavali web, dodajte novu karticu.</translation>
 <translation id="7671141431838911305">INSTALIRANJE</translation>
-<translation id="7690812411882623730">Izrada veze na tekst nije uspjela</translation>
 <translation id="7701040980221191251">Nema ih</translation>
 <translation id="7765158879357617694">Pomakni</translation>
 <translation id="7771470029643830783">Ako se odjavite, vaše oznake, povijest, zaporke i drugi podaci iz Chromea više se neće sinkronizirati s vašim Google računom.

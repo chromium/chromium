@@ -19,7 +19,6 @@
 <translation id="1125564390852150847">ສ້າງ​ແຖບ​ໃໝ່.</translation>
 <translation id="1145536944570833626">ລຶບຂໍ້ມູນທີ່ມີຢູ່.</translation>
 <translation id="1147031633655575115">ເຂົ້າສູ່ລະບົບເປັນ <ph name="USER" /></translation>
-<translation id="1154690515305205900">ບໍ່ສາມາດສ້າງລິ້ງເຊື່ອມໂຍງໄປຍັງຂໍ້ຄວາມທີ່ໄຮໄລ້ໄວ້ໄດ້.</translation>
 <translation id="1154984953698510061">ເບິ່ງແຖບອື່ນ</translation>
 <translation id="1157749421655780457">ອະນຸຍາດສະຖານທີ່...</translation>
 <translation id="1165039591588034296">ຜິດພາດ</translation>
@@ -567,7 +566,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6807889908376551050">ສະ​ແດງ​ທັງ​ຫມົດ...</translation>
 <translation id="681368974849482173">ສ້າງ​ລາຍ​ການ​ຂຶ້ນ​ແລ້ວ</translation>
 <translation id="6831043979455480757">ແປພາສາ</translation>
-<translation id="6841409746189899007">ລິ້ງຫາຂໍ້ຄວາມ</translation>
 <translation id="6851516051005285358">ຮ້ອງຂໍເວັບໄຊເດັສທັອບ</translation>
 <translation id="6858855187367714033">ສະແກນແລ້ວ</translation>
 <translation id="6859944681507688231">ເພື່ອສະແກນລະຫັດ QR ຫຼື ບັດເຄຣດິດ, ກະລຸນາເປີດນຳໃຊ້ກ້ອງຖ່າຍຮູບຈາກການຕັ້ງຄ່າ.</translation>
@@ -645,7 +643,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>
 <translation id="766891008101699113">ເພື່ອທ່ອງເວັບແບບເປັນສ່ວນຕົວ, ກະລຸນາເພີ່ມແຖບໃໝ່.</translation>
 <translation id="7671141431838911305">​ຕິດ​ຕັ້ງ</translation>
-<translation id="7690812411882623730">ບໍ່ສາມາດເຊື່ອມໂຍງກັບຂໍ້ຄວາມໄດ້</translation>
 <translation id="7701040980221191251">ບໍ່​ມີ​</translation>
 <translation id="7765158879357617694">ຍ້າຍ</translation>
 <translation id="7771470029643830783">ໂດຍການນຳອອກຈາກລະບົບ, ບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ຂໍ້ມູນອື່ນໆໃນ Chrome ຂອງທ່ານຈະບໍ່ຊິ້ງຂໍ້ມູນກັບບັນຊີ Google ຂອງທ່ານອີກຕໍ່ໄປ.

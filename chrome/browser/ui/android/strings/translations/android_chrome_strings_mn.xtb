@@ -350,10 +350,18 @@
 <translation id="3384347053049321195">Зураг хуваалцах</translation>
 <translation id="3387650086002190359">Файлын системийн алдаанаас шалтгаалан <ph name="FILE_NAME" />-г татаж чадсангүй.</translation>
 <translation id="3389286852084373014">Текст хэт том байна</translation>
+<translation id="3391512812407811893">Privacy Sandbox-н туршилт</translation>
 <translation id="3398320232533725830">Хавчуургын менежерийг нээх</translation>
 <translation id="3414952576877147120">Хэмжээ:</translation>
 <translation id="3429160811076349561">Туршилтын онцлог унтраалттай байна</translation>
 <translation id="3443221991560634068">Одоогийн хуудсыг дахин ачаалах</translation>
+<translation id="3451542610083122179">Privacy Sandbox нь таныг хянах механизмаас хамгаалахад туслах нээлттэй вебийг хадгалахын тулд явагдаж буй санаачилга юм.
+
+Өнөөдөр вебсайтууд хамааралтай заруудыг харуулах, сайтын гүйцэтгэлийг хэмжих зэрэг чухал үйлчилгээнүүдэд гуравдагч талын күүки зэрэг олон технологийг ашигладаг.
+
+Privacy Sandbox нь сайтуудыг эвдэхгүйгээр, таныг веб дээр нууцаар хянуулахаас сэргийлэхийн хажуугаар эдгээр үйлчилгээг гүйцэтгэх илүү сайн аргыг бүтээх замаар нээлттэй вебийн эрч хүчийг хадгалдаг.
+
+Privacy Sandbox нь идэвхтэй хөгжүүлэлтэд байгаа бөгөөд сонгосон бүс нутгуудад боломжтой. Одоогоор сайтууд гуравдагч талын күүки зэрэг одоогийн веб технологийг үргэлжлүүлэн ашиглах үедээ Privacy Sandbox-г туршиж үзэж болно. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">Та хайлтын системээ сонгох боломжтой</translation>
 <translation id="3492207499832628349">Нууцлал бүхий шинэ таб</translation>
 <translation id="3493531032208478708">Санал болгосон агуулгын талаар <ph name="BEGIN_LINK" />дэлгэрэнгүй үзэх<ph name="END_LINK" /></translation>
@@ -405,7 +413,6 @@
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> таталтыг устгасан</translation>
 <translation id="3856096718352044181">Энэ нь хүчинтэй нийлүүлэгч болохыг бататгах эсвэл дараа дахин оролдоно уу</translation>
 <translation id="3861633093716975811">Түгээмэл видеонууд</translation>
-<translation id="386944881686624613">Текст рүү очих холбоосыг үүсгэх боломжгүй. Хуудас руу очих холбоосыг хуваалцана уу.</translation>
 <translation id="3892148308691398805">Текстийг хуулах</translation>
 <translation id="3894427358181296146">Хавтас нэмэх</translation>
 <translation id="3895926599014793903">Ямар ч тохиолдолд томруулан харуулах</translation>
@@ -591,6 +598,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 таталт амжилтгүй боллоо.}other{# таталт амжилтгүй боллоо.}}</translation>
 <translation id="5170568018924773124">Хавтсанд харуул</translation>
 <translation id="5184329579814168207">Chrome-д нээх</translation>
+<translation id="5191251636205085390">Гуравдагч талын күүкиг орлох зорилготой шинэ технологийн талаар мэдэж авч мөн хянаарай</translation>
 <translation id="5193988420012215838">Түр санах ой руу хуулсан</translation>
 <translation id="5199929503336119739">Ажлын профайл</translation>
 <translation id="5210286577605176222">Өмнөх табад очих</translation>
@@ -736,7 +744,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6138832295072039549">Сайтын тохиргоогоо энд өөрчлөөрэй</translation>
 <translation id="6140709049082532940">Сайжруулсан хамгаалалт:</translation>
 <translation id="6140912465461743537">Улс/бүс</translation>
-<translation id="6142002709876620371">Privacy Sandbox-г идэвхжүүлэх</translation>
 <translation id="614940544461990577">Оролдож үзэх:</translation>
 <translation id="6154478581116148741">Энэ төхөөрөмжөөс нууц үгээ экспортлох бол дэлгэцийн түгжээг Тохиргоо хэсэгт асаах</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> өгөгдөл хадгалалт</translation>
@@ -826,7 +833,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6656545060687952787">Төхөөрөмжийг хайхын тулд Chrome-д байршлын хандалт шаардлагатай. <ph name="BEGIN_LINK" />Шинэчлэлтийн зөвшөөрөл<ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">Нууц үг</translation>
 <translation id="6659594942844771486">Цонх</translation>
-<translation id="6663079968236414793">Текст рүү очих холбоос</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> дотор нээ</translation>
 <translation id="666981079809192359">Chrome-н нууцлалын мэдэгдэл</translation>
 <translation id="6671495933530132209">Зургийг хуулах</translation>
@@ -896,7 +902,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="718926126787620637">Бүтэн хэмжээтэйгээр нээсэн хавчуурганы фолдерын жагсаалт</translation>
 <translation id="7189372733857464326">Google Play үйлчилгээний шинэчлэлтийг хүлээж байна</translation>
 <translation id="7191430249889272776">Арын дэвсгэр дээр нээсэн цонх.</translation>
-<translation id="72180057821664864">Текст рүү очих холбоосыг үүсгэх боломжгүй</translation>
 <translation id="7233236755231902816">Вебийг өөрийн хэлээр үзэхийн тулд Chrome-н хамгийн сүүлийн үеийн хувилбарыг авна уу</translation>
 <translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" /> нь Chrome дээр синк хийхийг асаасан эсэхийг шалгана уу</translation>
 <translation id="7274013316676448362">Блоклосон сайт</translation>
@@ -1134,7 +1139,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8812260976093120287">Зарим веб хуудаст та төлбөр хийхдээ таны төхөөрөмжид дэмжсэн дээрх төлбөрийн аппыг ашиглах боломжтой.</translation>
 <translation id="881688628773363275">Урьдчилан үзэх табын контентыг үзэх боломжгүй.</translation>
 <translation id="8820817407110198400">Хавчуургууд</translation>
-<translation id="8827407626219585697">Текст рүү очих холбоосыг оруулна уу</translation>
 <translation id="883806473910249246">Агуулгыг татаж байх үед алдаа гарлаа.</translation>
 <translation id="8840953339110955557">Энэ хуудас онлайн хувилбараас өөр байж болзошгүй.</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, цонх</translation>

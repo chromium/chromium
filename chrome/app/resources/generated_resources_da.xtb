@@ -14,7 +14,6 @@
 <translation id="1011355516189274711">Lydstyrke ved oplæsning</translation>
 <translation id="1012794136286421601">Dine filer i Docs, Sheets, Slides og Tegninger synkroniseres. Åbn appen Google Drev for at få adgang til dem online eller offline.</translation>
 <translation id="1012876632442809908">USB-C-enhed (port foran)</translation>
-<translation id="1013707859758800957">Et plugin, der ikke er gemt i sandbox, kunne køre på denne side.</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">Rediger mappenavnet</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Sidste dag til at opdatere <ph name="DEVICE_TYPE" />}one{Opdater <ph name="DEVICE_TYPE" /> inden for {NUM_DAYS} dag}other{Opdater <ph name="DEVICE_TYPE" /> inden for {NUM_DAYS} dage}}</translation>
@@ -398,7 +397,6 @@
 <translation id="143027896309062157">Læse og redigere alle dine data på din computer og de websites, du besøger</translation>
 <translation id="1430915738399379752">Udskriv</translation>
 <translation id="1431188203598586230">Sidste softwareopdatering</translation>
-<translation id="1431402976894535801">Bloker websites fra at vide, hvornår du er til stede</translation>
 <translation id="1431432486300429272">Google kan bruge din browserhistorik til at tilpasse Søgning og andre Google-tjenester. Du og din forælder kan til enhver tid ændre dette på myaccount.google.com/activitycontrols/search</translation>
 <translation id="1432581352905426595">Administrer søgemaskiner</translation>
 <translation id="1433811987160647649">Spørg, før der gives adgang</translation>
@@ -507,7 +505,6 @@
 <translation id="1549788673239553762"><ph name="APP_NAME" /> ønsker at få adgang til <ph name="VOLUME_NAME" />. Dette kan ændre eller slette dine filer.</translation>
 <translation id="1552301827267621511">Udvidelsen "<ph name="EXTENSION_NAME" />" ændrede søgemaskinen til <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1553538517812678578">ubegrænset</translation>
-<translation id="1554390798506296774">Tillad altid plugins, der ikke er gemt i sandbox, på <ph name="HOST" /></translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="1556537182262721003">Udvidelsesmappen kunne ikke flyttes til profilen.</translation>
 <translation id="155865706765934889">Touchplade</translation>
@@ -607,7 +604,6 @@
 <translation id="1651008383952180276">Du skal angive den samme adgangssætning to gange</translation>
 <translation id="1652326691684645429">Slå Deling tæt på til</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Føj printeren til Google Cloudprinter, så du kan udskrive, uanset hvor du befinder dig.}one{Føj # printere til Google Cloudprinter, så du kan udskrive, uanset hvor du befinder dig.}other{Føj # printere til Google Cloudprinter, så du kan udskrive, uanset hvor du befinder dig.}}</translation>
-<translation id="1653575510930452864">Kopiér link til tekst</translation>
 <translation id="1656528038316521561">Baggrundens gennemsigtighed</translation>
 <translation id="1657406563541664238">Vær med til at gøre <ph name="PRODUCT_NAME" /> bedre ved automatisk at sende forbrugsstatistikker og rapportere om nedbrud til Google</translation>
 <translation id="1657937299377480641">Hvis du vil logge ind igen, så du kan få adgang til uddannelsesressourcer, skal du bede en forælder om tilladelse</translation>
@@ -848,7 +844,6 @@
 <translation id="1916502483199172559">Rød standardavatar</translation>
 <translation id="1918141783557917887">&amp;Mindre</translation>
 <translation id="1919345977826869612">Annoncer</translation>
-<translation id="1919814239594435008">Der blev givet adgang til et plugin, som ikke er gemt i sandbox</translation>
 <translation id="1920390473494685033">Kontakter</translation>
 <translation id="1921050530041573580">Par din telefon med Beskeder</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
@@ -961,7 +956,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="204914487372604757">Opret genvej</translation>
 <translation id="2050339315714019657">Stående</translation>
 <translation id="2053312383184521053">Data for inaktiv tilstand</translation>
-<translation id="2054665754582400095">Din tilstedeværelse</translation>
 <translation id="2055585478631012616">Du logges ud af disse websites, også i åbne faner</translation>
 <translation id="205560151218727633">Google Assistent-logo</translation>
 <translation id="2058456167109518507">Der blev registreret en enhed</translation>
@@ -1075,7 +1069,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2175607476662778685">Hurtig start</translation>
 <translation id="217576141146192373">Printeren kunne ikke tilføjes. Tjek din printers konfiguration, og prøv igen.</translation>
 <translation id="2177950615300672361">Inkognitofane: <ph name="TAB_NAME" /></translation>
-<translation id="2178098616815594724">Pluginnet <ph name="PEPPER_PLUGIN_NAME" /> på <ph name="PEPPER_PLUGIN_DOMAIN" /> anmoder om adgang til din computer</translation>
 <translation id="2178614541317717477">Sammensat nøglecenter</translation>
 <translation id="2182058453334755893">Kopieret til din udklipsholder</translation>
 <translation id="2184515124301515068">Lad Chrome bestemme, hvornår websites må afspille lyd (anbefales)</translation>
@@ -1713,7 +1706,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2885729872133513017">Der opstod et problem under afkodningen af serversvaret.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="2889064240420137087">Åbn link med...</translation>
-<translation id="2889925978073739256">Fortsæt blokering af plugins, der ikke er gemt i sandbox</translation>
 <translation id="2891922230654533301">Vil du logge ind på <ph name="APP_NAME" /> med din enhed?</translation>
 <translation id="2893168226686371498">Standardbrowser</translation>
 <translation id="2894757982205307093">Ny fane i gruppe</translation>
@@ -1962,7 +1954,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3163201441334626963">Ukendt produkt, <ph name="PRODUCT_ID" />, fra leverandøren <ph name="VENDOR_ID" /></translation>
 <translation id="3163254451837720982">Følgende tjenester hjælper med at beskytte dine data. Du kan til enhver tid deaktivere disse funktioner.</translation>
 <translation id="3164329792803560526">Denne fane deles med <ph name="APP_NAME" /></translation>
-<translation id="3165371858310906303">Spørg, når et website vil vide, hvornår du er til stede</translation>
 <translation id="3165390001037658081">Nogle mobilselskaber blokerer muligvis denne funktion.</translation>
 <translation id="316652501498554287">G Suite for Education-konti</translation>
 <translation id="3170072451822350649">Du kan også springe login over og <ph name="LINK_START" />anvende som gæst<ph name="LINK_END" />.</translation>
@@ -2542,7 +2533,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3824621460022590830">Tokenet for tilmelding af enhed er ugyldigt. Kontakt enhedens ejer eller administrator. Fejlkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3826071569074535339">Har tilladelse til at bruge bevægelsessensorer</translation>
 <translation id="3826440694796503677">Din administrator har deaktiveret muligheden for at tilføje flere Google-konti</translation>
-<translation id="3827306204503227641">Fortsæt med at tillade plugins, der ikke er gemt i sandbox</translation>
 <translation id="3827774300009121996">&amp;Fuld skærm</translation>
 <translation id="3828029223314399057">Søg i bogmærker</translation>
 <translation id="3829765597456725595">SMV-fildeling</translation>
@@ -2910,7 +2900,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="425573743389990240">Batteriets afladningshastighed i watt (en negativ værdi betyder, at batteriet oplader)</translation>
 <translation id="4256316378292851214">Ge&amp;m video som...</translation>
 <translation id="4258348331913189841">Filsystemer</translation>
-<translation id="4259381619085088639">din tilstedeværelse</translation>
 <translation id="4259388776256904261">Dette kan tage lidt tid</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> kan være skadelig. Skal Google-programmet Avanceret beskyttelse scanne den? Tryk på Shift+F6 for at skifte til downloadlinjen.</translation>
 <translation id="4263223596040212967">Tjek dit tastaturlayout, og prøv igen.</translation>
@@ -3143,7 +3132,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4535767533210902251">Fingeraftrykslæseren er tasten øverst til højre på dit tastatur. Tryk let på den med en finger.</translation>
 <translation id="4536140153723794651">Websites, der altid kan anvende cookies</translation>
 <translation id="4538417792467843292">Slet ord</translation>
-<translation id="4538684596480161368">Bloker altid plugins, der ikke er gemt i sandbox, på <ph name="HOST" /></translation>
 <translation id="4538792345715658285">Installeret af virksomhedspolitik.</translation>
 <translation id="4541123282641193691">Kontoen kunne ikke bekræftes. Prøv igen, eller genstart din Chromebook.</translation>
 <translation id="4541662893742891060">Der kunne ikke oprettes forbindelse til denne profil. Kontakt dit mobilselskab for at få teknisk support.</translation>
@@ -4171,7 +4159,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5740820643029013514">Få lydløse meddelelser (anbefales)</translation>
 <translation id="574104302965107104">Skærmspejling</translation>
 <translation id="574209121243317957">Toneleje</translation>
-<translation id="5742505912938664543">Når du tilføjer en sekundær konto her, kan du gå på nettet, downloade apps, tjekke Gmail og bruge andre Google-tjenester med den pågældende konto.</translation>
 <translation id="5746169159649715125">Gem som PDF</translation>
 <translation id="5746261205461426123">Åbn konfigurationsvejledning</translation>
 <translation id="5747552184818312860">Udløber</translation>
@@ -5329,7 +5316,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7077829361966535409">Loginsiden kunne ikke indlæses med de aktuelle proxyindstillinger. <ph name="GAIA_RELOAD_LINK_START" />Prøv at logge ind igen<ph name="GAIA_RELOAD_LINK_END" />, eller brug nogle andre <ph name="PROXY_SETTINGS_LINK_START" />proxyindstillinger<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Alle netværk</translation>
 <translation id="7078386829626602215">Der er ikke registreret en enhed <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
-<translation id="7079716540084905538">Tilføj en sekundær Google-konto for <ph name="USER_NAME" /></translation>
 <translation id="708060913198414444">K&amp;opiér webadressen til lyden</translation>
 <translation id="7081952801286122383">Inkognitotilstand er aktiveret</translation>
 <translation id="708278670402572152">Afbryd forbindelsen for at aktivere scanning</translation>
@@ -6109,7 +6095,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7966241909927244760">K&amp;opiér billedets webadresse</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{1 element på listen over bogmærker}one{{COUNT} element på listen over bogmærker}other{{COUNT} elementer på listen over bogmærker}}</translation>
 <translation id="7968072247663421402">Udbydermuligheder</translation>
-<translation id="7968198493605442410">Kopiér link til tekst</translation>
 <translation id="7968742106503422125">Læse og ændre data, du kopierer og indsætter</translation>
 <translation id="7968833647796919681">Aktivér registrering af data om ydeevne</translation>
 <translation id="7968982339740310781">Se info</translation>
@@ -6608,7 +6593,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8553342806078037065">Administrer andre personer</translation>
 <translation id="8554899698005018844">Intet sprog</translation>
 <translation id="8557022314818157177">Bliv ved med at røre din sikkerhedsnøgle, indtil dit fingeraftryk er registreret</translation>
-<translation id="855773602626431402">Et plugin, der ikke er gemt i sandbox, blev forhindret i at køre på denne side.</translation>
 <translation id="8557930019681227453">Manifest</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Åbn alle i &amp;nyt vindue}=1{Åbn i &amp;nyt vindue}one{Åbn ({COUNT}) i &amp;nyt vindue}other{Åbn alle ({COUNT}) i &amp;nyt vindue}}</translation>
 <translation id="8561206103590473338">Elefant</translation>
@@ -6641,7 +6625,6 @@ Tryk på en kontakt, der er tildelt en handling, for at fjerne tildelingen.</tra
 <translation id="8594908476761052472">Optag video</translation>
 <translation id="8596540852772265699">Tilpassede filer</translation>
 <translation id="8597845839771543242">Ejendomsformat:</translation>
-<translation id="8598453409908276158">Plugin, der ikke er gemt i sandbox, blev blokeret</translation>
 <translation id="8601206103050338563">TLS WWW-klientgodkendelse</translation>
 <translation id="8602851771975208551">Et andet program på din computer tilføjede en app, der kan ændre den måde, hvorpå Chrome fungerer.</translation>
 <translation id="8605428685123651449">SQLite-hukommelse</translation>

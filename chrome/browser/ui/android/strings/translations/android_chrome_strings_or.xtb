@@ -405,7 +405,6 @@
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" />ଟି ଡାଉନ୍‍‍ଲୋଡ୍ ଡିଲିଟ୍ କରାଯାଇଛି</translation>
 <translation id="3856096718352044181">ଏହା ଏକ ବୈଧ ପ୍ରଦାନକାରୀ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ କିମ୍ବା ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="3861633093716975811">ଲୋକପ୍ରିୟ ଭିଡିଓଗୁଡ଼ିକ</translation>
-<translation id="386944881686624613">ଟେକ୍ସଟର ଲିଙ୍କ୍ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ। ପୃଷ୍ଠାରେ ଲିଙ୍କକୁ ସେୟାର୍ କରନ୍ତୁ।</translation>
 <translation id="3892148308691398805">ଟେକ୍ସଟ୍ କପି କରନ୍ତୁ</translation>
 <translation id="3894427358181296146">ଫୋଲ୍ଡର୍‍‍ରେ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="3895926599014793903">ଜୁମ୍ ସକ୍ଷମ କରିବା ପାଇଁ ବାଧ୍ୟ କରନ୍ତୁ</translation>
@@ -737,7 +736,6 @@
 <translation id="6138832295072039549">ଏଠାରେ ଆପଣଙ୍କ ସାଇଟର ସେଟିଂସ୍ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="6140709049082532940">ଉନ୍ନତ ସୁରକ୍ଷା:</translation>
 <translation id="6140912465461743537">ଦେଶ/ଅଞ୍ଚଳ</translation>
-<translation id="6142002709876620371">Privacy Sandbox ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="614940544461990577">ଏହାକୁ ପରଖନ୍ତୁ:</translation>
 <translation id="6154478581116148741">ଏହି ଡିଭାଇସ୍‌ରୁ ଆପଣଙ୍କର ପାସ୍‌ୱର୍ଡ ଏକ୍ସପୋର୍ଟ କରିବାକୁ ସେଟିଂସ୍‌ରେ ସ୍କ୍ରିନ୍‌ ଲକ୍‌ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> ଡାଟା ସେଭ୍ ହେଉଛି</translation>
@@ -827,7 +825,6 @@
 <translation id="6656545060687952787">ଡିଭାଇସ୍ ପାଇଁ ସ୍କାନ୍ କରିବାକୁ Chrome ଲୋକେସନ୍ ଆକ୍ସେସ୍ ଆବଶ୍ୟକ କରେ। <ph name="BEGIN_LINK" />ଅପ୍‌ଡେଟ୍ ଅନୁମତି<ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">ପାସ୍‌ୱର୍ଡ</translation>
 <translation id="6659594942844771486">ଟାବ୍</translation>
-<translation id="6663079968236414793">ଟେକ୍ସଟର ଲିଙ୍କ୍</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />ରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="666981079809192359">Chrome ଗୋପନୀୟତା ବିଜ୍ଞପ୍ତି</translation>
 <translation id="6671495933530132209">ଛବି କପି କରନ୍ତୁ</translation>
@@ -897,7 +894,6 @@
 <translation id="718926126787620637">ସମ୍ପୂର୍ଣ୍ଣ ଖୋଲାଯାଇଥିବା ବୁକମାର୍କ ଫୋଲ୍ଡରଗୁଡ଼ିକର ତାଲିକା</translation>
 <translation id="7189372733857464326">ଅପ୍‍‍ଡେଟ୍ ସମାପ୍ତ କରିବାକୁ Google Play ସେବାଗୁଡ଼ିକ ପାଇଁ ଅପେକ୍ଷା କରାଯାଉଛି</translation>
 <translation id="7191430249889272776">ପୃଷ୍ଠପଟରେ ଟାବ୍‌ ଖୋଲାଅଛି।</translation>
-<translation id="72180057821664864">ଟେକ୍ସଟର ଲିଙ୍କ୍ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="7233236755231902816">ଆପଣଙ୍କର ଭାଷାରେ ୱେବ୍ ଦେଖିବା ପାଇଁ, Chromeର ନବୀନତମ ସଂସ୍କରଣ ପ୍ରାପ୍ତ କରନ୍ତୁ</translation>
 <translation id="7248069434667874558">Chromeରେ <ph name="TARGET_DEVICE_NAME" />ର ସିଙ୍କ୍ ଚାଲୁ ହୋଇଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="7274013316676448362">ବ୍ଲକ୍ କରାଯାଇଥିବା ସାଇଟ୍</translation>
@@ -1135,7 +1131,6 @@
 <translation id="8812260976093120287">ଆପଣଙ୍କ ଡିଭାଇସ୍‌ରେ ଥିବା ଉପରୋକ୍ତ ସମର୍ଥିତ ପେମେଣ୍ଟ୍ ଆପ୍ସ ସାହାଯ୍ୟରେ ଆପଣ କେତେକ ୱେବସାଇଟ୍‌ରେ ପେମେଣ୍ଟ କରିପାରିବେ।</translation>
 <translation id="881688628773363275">ପ୍ରିଭ୍ୟୁ ଟାବର ବିଷୟବସ୍ତୁକୁ ଦେଖି ହେବ ନାହିଁ।</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
-<translation id="8827407626219585697">ଲିଙ୍କକୁ ଟେକ୍ସଟରେ ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ</translation>
 <translation id="883806473910249246">ବିଷୟବସ୍ତୁ ଡାଉନ୍‌ଲୋଡ୍ କରିବା ସମୟରେ ଏକ ତ୍ରୁଟି ଦେଖାଗଲା।</translation>
 <translation id="8840953339110955557">ଏହି ପୃଷ୍ଠା ଅନ୍‌ଲାଇନ୍ ସଂସ୍କରଣ ଠାରୁ ଅଲଗା ହୋଇପାରେ।</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, ଟାବ୍‍</translation>

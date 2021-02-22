@@ -14,7 +14,6 @@
 <translation id="1011355516189274711">Volume de la synthèse vocale</translation>
 <translation id="1012794136286421601">Vos fichiers Documents, Feuilles de calcul, Présentations et Dessins sont en cours de synchronisation. Ouvrez l'application Google Disque pour y accéder en ligne ou hors ligne.</translation>
 <translation id="1012876632442809908">Appareil USB-C (port avant)</translation>
-<translation id="1013707859758800957">L'exécution hors carré de sable d'un plugiciel a été autorisée sur cette page.</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">Modifier le nom du dossier</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Dernière journée pour mettre à jour l'appareil <ph name="DEVICE_TYPE" />}one{Mettez à jour l'appareil <ph name="DEVICE_TYPE" /> d'ici {NUM_DAYS} jour}other{Mettez à jour l'appareil <ph name="DEVICE_TYPE" /> d'ici {NUM_DAYS} jours}}</translation>
@@ -398,7 +397,6 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="143027896309062157">Lire et modifier toutes vos données sur votre appareil et sur les sites Web que vous consultez</translation>
 <translation id="1430915738399379752">Imprimer</translation>
 <translation id="1431188203598586230">Dernière mise à jour logicielle</translation>
-<translation id="1431402976894535801">Empêcher les sites de savoir lorsque vous êtes présent</translation>
 <translation id="1431432486300429272">Google peut utiliser ton historique de navigation pour personnaliser la recherche et d'autres services Google. Toi ou ton parent pouvez modifier cela en tout temps sur la page myaccount.google.com/activitycontrols/search</translation>
 <translation id="1432581352905426595">Gérer les moteurs de recherche</translation>
 <translation id="1433811987160647649">Demander avant d'accéder</translation>
@@ -507,7 +505,6 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="1549788673239553762"><ph name="APP_NAME" /> souhaite accéder à <ph name="VOLUME_NAME" />. Cela peut modifier ou supprimer vos fichiers.</translation>
 <translation id="1552301827267621511">L'extension « <ph name="EXTENSION_NAME" /> » a activé un moteur de recherche différent : <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1553538517812678578">Sans limites</translation>
-<translation id="1554390798506296774">Toujours autoriser l'exécution hors carré de sable des plugiciels de <ph name="HOST" /></translation>
 <translation id="1555130319947370107">Bleu</translation>
 <translation id="1556537182262721003">Échec de déplacement du répertoire d'extensions dans le profil.</translation>
 <translation id="155865706765934889">Pavé tactile</translation>
@@ -607,7 +604,6 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="1651008383952180276">Vous devez entrer deux fois la même phrase de passe</translation>
 <translation id="1652326691684645429">Activer la fonctionnalité Partage à proximité</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Ajoutez l'imprimante à Google Cloud Print pour imprimer des documents où que vous soyez.}one{Ajoutez # imprimante à Google Cloud Print pour imprimer des documents où que vous soyez.}other{Ajoutez # imprimantes à Google Cloud Print pour imprimer des documents où que vous soyez.}}</translation>
-<translation id="1653575510930452864">Copier le lien en format texte</translation>
 <translation id="1656528038316521561">Opacité de l'arrière-plan</translation>
 <translation id="1657406563541664238">Aidez-nous à améliorer <ph name="PRODUCT_NAME" /> en envoyant automatiquement des statistiques d'utilisation et des rapports d'erreur à Google</translation>
 <translation id="1657937299377480641">Pour te connecter à nouveau afin d'accéder aux ressources éducatives, demande à un parent de te donner l'autorisation</translation>
@@ -848,7 +844,6 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="1916502483199172559">Avatar rouge par défaut</translation>
 <translation id="1918141783557917887">Plu&amp;s petit</translation>
 <translation id="1919345977826869612">Annonces</translation>
-<translation id="1919814239594435008">Plugiciels hors carré de sable autorisés</translation>
 <translation id="1920390473494685033">Contacts</translation>
 <translation id="1921050530041573580">Associer votre téléphone à Messages</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> ppp</translation>
@@ -961,7 +956,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="204914487372604757">Créer un raccourci</translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2053312383184521053">Données sur l'état de veille</translation>
-<translation id="2054665754582400095">Votre présence</translation>
 <translation id="2055585478631012616">Vous serez déconnecté de ces sites, y compris dans les onglets ouverts</translation>
 <translation id="205560151218727633">Logo de l'Assistant Google</translation>
 <translation id="2058456167109518507">Appareil détecté</translation>
@@ -1075,7 +1069,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2175607476662778685">Barre de lancement rapide</translation>
 <translation id="217576141146192373">Impossible d'ajouter l'imprimante. Veuillez vérifier la configuration de votre imprimante, puis réessayer.</translation>
 <translation id="2177950615300672361">Onglet de navigation privée : <ph name="TAB_NAME" /></translation>
-<translation id="2178098616815594724">Le plugiciel <ph name="PEPPER_PLUGIN_NAME" /> provenant du domaine <ph name="PEPPER_PLUGIN_DOMAIN" /> demande l'accès à votre ordinateur</translation>
 <translation id="2178614541317717477">Autorité de certification compromise</translation>
 <translation id="2182058453334755893">Copié dans votre presse-papiers</translation>
 <translation id="2184515124301515068">Autoriser Chrome à choisir lorsque des sites peuvent faire jouer du son (recommandé)</translation>
@@ -1714,7 +1707,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2885729872133513017">Un problème est survenu lors du décodage de la réponse du serveur.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="2889064240420137087">Ouvrir le lien avec...</translation>
-<translation id="2889925978073739256">Continuer à bloquer l'exécution des plugiciels en dehors du carré de sable</translation>
 <translation id="2891922230654533301">Utiliser cet appareil pour vous connecter à <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Navigateur par défaut</translation>
 <translation id="2894757982205307093">Nouvel onglet dans le groupe</translation>
@@ -1963,7 +1955,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3163201441334626963">Produit inconnu <ph name="PRODUCT_ID" /> du fournisseur <ph name="VENDOR_ID" /></translation>
 <translation id="3163254451837720982">Les services suivants permettent de protéger vos données. Vous pouvez les désactiver à tout moment.</translation>
 <translation id="3164329792803560526">Onglet partagé avec <ph name="APP_NAME" /></translation>
-<translation id="3165371858310906303">Demander une autorisation quand un site veut savoir lorsque vous êtes présent</translation>
 <translation id="3165390001037658081">Certains opérateurs peuvent bloquer cette fonctionnalité.</translation>
 <translation id="316652501498554287">Comptes G Suite for Education</translation>
 <translation id="3170072451822350649">Vous pouvez également sauter l'étape de connexion et <ph name="LINK_START" />naviguer en tant qu'invité<ph name="LINK_END" />.</translation>
@@ -2543,7 +2534,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3824621460022590830">Le jeton d'inscription d'appareil n'est pas valide. Veuillez communiquer avec l'administrateur ou le propriétaire de votre appareil. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="3826071569074535339">Autorisés à utiliser les capteurs de mouvement</translation>
 <translation id="3826440694796503677">Votre administrateur a désactivé l'ajout d'autres comptes Google</translation>
-<translation id="3827306204503227641">Continuer à autoriser l'exécution des plugiciels en dehors du carré de sable</translation>
 <translation id="3827774300009121996">&amp;Plein écran</translation>
 <translation id="3828029223314399057">Rechercher dans les favoris</translation>
 <translation id="3829765597456725595">Partage de fichiers SMB</translation>
@@ -2911,7 +2901,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="425573743389990240">Taux de décharge de la batterie en watts (une valeur négative signifie que la batterie se recharge)</translation>
 <translation id="4256316378292851214">Enregistrer la &amp;vidéo sous...</translation>
 <translation id="4258348331913189841">Systèmes de fichiers</translation>
-<translation id="4259381619085088639">Votre présence</translation>
 <translation id="4259388776256904261">Cela peut prendre un certain temps</translation>
 <translation id="4260182282978351200">Le fichier <ph name="FILE_NAME" /> pourrait être dangereux. Voulez-vous l'envoyer à la protection avancée de Google afin de le faire analyser? Appuyer sur Majuscule+F6 pour accéder à la barre des téléchargements.</translation>
 <translation id="4263223596040212967">Vérifiez la disposition de votre clavier et réessayez.</translation>
@@ -3144,7 +3133,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4535767533210902251">Le capteur d'empreintes digitales se trouve sur la touche dans le coin supérieur droit de votre clavier. Touchez-le doucement avec n'importe quel doigt.</translation>
 <translation id="4536140153723794651">Sites qui peuvent toujours utiliser les témoins</translation>
 <translation id="4538417792467843292">Supprimer un mot</translation>
-<translation id="4538684596480161368">Toujours bloquer l'exécution hors carré de sable des plugiciels de <ph name="HOST" /></translation>
 <translation id="4538792345715658285">Installée conformément à la politique d'entreprise.</translation>
 <translation id="4541123282641193691">Impossible de vérifier votre compte. Veuillez réessayer ou redémarrer votre Chromebook.</translation>
 <translation id="4541662893742891060">Impossible de se connecter à ce profil. Pour obtenir de l'assistance technique, veuillez communiquer avec votre fournisseur de services.</translation>
@@ -4172,7 +4160,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5740820643029013514">Utiliser la messagerie plus discrète (recommandé)</translation>
 <translation id="574104302965107104">Duplication d'écran</translation>
 <translation id="574209121243317957">Timbre de la voix</translation>
-<translation id="5742505912938664543">Lorsque vous ajoutez un compte secondaire ici, vous pouvez naviguer sur le Web, télécharger des applications, consulter vos courriels dans Gmail et utiliser d'autres services Google à l'aide de ce compte.</translation>
 <translation id="5746169159649715125">Enregistrer au format PDF</translation>
 <translation id="5746261205461426123">Ouvrir le guide de configuration</translation>
 <translation id="5747552184818312860">Date d'expiration</translation>
@@ -5330,7 +5317,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7077829361966535409">Échec du chargement de la page de connexion avec les paramètres de mandataire actuels. Veuillez <ph name="GAIA_RELOAD_LINK_START" />essayer de vous reconnecter<ph name="GAIA_RELOAD_LINK_END" /> ou utiliser d'autres <ph name="PROXY_SETTINGS_LINK_START" />paramètres de mandataire<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Tous les réseaux</translation>
 <translation id="7078386829626602215">Aucun appareil détecté. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
-<translation id="7079716540084905538">Ajouter un compte Google secondaire pour <ph name="USER_NAME" /></translation>
 <translation id="708060913198414444">C&amp;opier l'adresse de l'audio</translation>
 <translation id="7081952801286122383">Vous êtes en mode de navigation privée</translation>
 <translation id="708278670402572152">Déconnecter pour activer la numérisation</translation>
@@ -6111,7 +6097,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7966241909927244760">C&amp;opier l'adresse de l'image</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{1 élément dans la liste des favoris}one{{COUNT} élément dans la liste des favoris}other{{COUNT} éléments dans la liste des favoris}}</translation>
 <translation id="7968072247663421402">Options de fournisseur</translation>
-<translation id="7968198493605442410">Copier le lien en format texte</translation>
 <translation id="7968742106503422125">Accéder aux données que vous copiez et collez et les modifier</translation>
 <translation id="7968833647796919681">Activer la collecte de données de performances</translation>
 <translation id="7968982339740310781">Afficher les détails</translation>
@@ -6609,7 +6594,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8553342806078037065">Gérer d'autres personnes</translation>
 <translation id="8554899698005018844">Aucune langue</translation>
 <translation id="8557022314818157177">Continuez à toucher votre clé de sécurité jusqu'à ce que votre empreinte digitale soit capturée</translation>
-<translation id="855773602626431402">L'exécution hors carré de sable d'un plugiciel a été empêchée sur cette page.</translation>
 <translation id="8557930019681227453">Fichier de configuration</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Tout ouvrir dans une &amp;nouvelle fenêtre}=1{Ouvrir dans une &amp;nouvelle fenêtre}one{Tout ouvrir ({COUNT}) dans une &amp;nouvelle fenêtre}other{Tout ouvrir ({COUNT}) dans une &amp;nouvelle fenêtre}}</translation>
 <translation id="8561206103590473338">Éléphant</translation>
@@ -6642,7 +6626,6 @@ Appuyez sur un commutateur attribué pour retirer l'attribution.</translation>
 <translation id="8594908476761052472">Filmer une vidéo</translation>
 <translation id="8596540852772265699">Fichiers personnalisés</translation>
 <translation id="8597845839771543242">Format des propriétés :</translation>
-<translation id="8598453409908276158">Plugiciels hors carré de sable bloqués</translation>
 <translation id="8601206103050338563">Authentification du client WWW TLS</translation>
 <translation id="8602851771975208551">Un autre programme sur votre ordinateur a ajouté une application qui risque de modifier le fonctionnement de Google Chrome.</translation>
 <translation id="8605428685123651449">Mémoire utilisée par SQLite</translation>

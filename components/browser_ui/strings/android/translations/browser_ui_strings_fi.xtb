@@ -18,7 +18,6 @@
 <translation id="1383876407941801731">Haku</translation>
 <translation id="1384959399684842514">Lataus keskeytettiin.</translation>
 <translation id="1415402041810619267">URL näkyy lyhennettynä</translation>
-<translation id="1431402976894535801">Estä sivustoja tietämästä, kun olet paikalla</translation>
 <translation id="1446450296470737166">Salli MIDI-laitteiden täysi käyttöoik.</translation>
 <translation id="1509960214886564027">Useiden sivustojen ominaisuudet saattavat lakata toimimasta</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -39,7 +38,6 @@
 <translation id="1994173015038366702">Sivuston URL-osoite</translation>
 <translation id="2025115093177348061">Lisätty todellisuus</translation>
 <translation id="2030769033451695672">Napauta, niin palaat tänne: <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
-<translation id="2054665754582400095">Paikallaolosi</translation>
 <translation id="2079545284768500474">Kumoa</translation>
 <translation id="2091887806945687916">Ääni</translation>
 <translation id="2107397443965016585">Kysy, saavatko sivustot toistaa suojattua sisältöä (suositus)</translation>
@@ -82,7 +80,6 @@
 <translation id="3114012059975132928">Videosoitin</translation>
 <translation id="3115898365077584848">Näytä tiedot</translation>
 <translation id="3123473560110926937">Estetty tietyillä sivustoilla</translation>
-<translation id="3165371858310906303">Pyydä lupaa, kun sivusto haluaa tietää, oletko paikalla</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> tallennettua tietoa</translation>
 <translation id="321187648315454507">Ota ilmoitukset käyttöön myös <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />, jotta <ph name="APP_NAME" /> voi lähettää sinulle ilmoituksia.</translation>
 <translation id="3227137524299004712">Mikrofoni</translation>

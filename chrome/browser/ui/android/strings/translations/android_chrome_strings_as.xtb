@@ -405,7 +405,6 @@
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" />টা ডাউনল'ড মচা হ'ল</translation>
 <translation id="3856096718352044181">অনুগ্ৰহ কৰি এইটো কোনো মান্য প্ৰদানকাৰীৰ বুলি সত্যাপন কৰক অথবা পাছত আকৌ চেষ্টা কৰক</translation>
 <translation id="3861633093716975811">জনপ্ৰিয় ভিডিঅ’</translation>
-<translation id="386944881686624613">পাঠৰ লিংক সৃষ্টি কৰিব নোৱাৰি। পৃষ্ঠাৰ লিংকটো শ্বেয়াৰ কৰক।</translation>
 <translation id="3892148308691398805">পাঠৰ প্ৰতিলিপি কৰক</translation>
 <translation id="3894427358181296146">ফ’ল্ডাৰ যোগ কৰক</translation>
 <translation id="3895926599014793903">বলেৰে জুম সক্ষম কৰক</translation>
@@ -737,7 +736,6 @@
 <translation id="6138832295072039549">ইয়াত আপোনাৰ ছাইটৰ ছেটিং সলনি কৰক</translation>
 <translation id="6140709049082532940">বৰ্ধিত সুৰক্ষা:</translation>
 <translation id="6140912465461743537">দেশ/অঞ্চল</translation>
-<translation id="6142002709876620371">গোপনীয়তা বিষয়ক ছেণ্ডবক্স সক্ষম কৰক</translation>
 <translation id="614940544461990577">এইখিনি কৰি চাওক:</translation>
 <translation id="6154478581116148741">এই ডিভাইচটোৰ পৰা আপোনাৰ পাছৱৰ্ডসমূহ ৰপ্তানি কৰিবলৈ ছেটিংসমূহ-লৈ গৈ স্ক্রীণ লক অন কৰক</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> ডেটা ৰাহি</translation>
@@ -827,7 +825,6 @@
 <translation id="6656545060687952787">ডিভাইচ স্কেন কৰিবলৈ Chromeএ অৱস্থান এক্সেছ কৰাটো প্ৰয়োজনীয়। <ph name="BEGIN_LINK" />অনুমতি আপডে’ট কৰক<ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">পাছৱৰ্ড</translation>
 <translation id="6659594942844771486">টেব</translation>
-<translation id="6663079968236414793">পাঠৰ সৈতে লিংক কৰক</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />ত খোলক</translation>
 <translation id="666981079809192359">Chrome গোপনীয়তাৰ জাননী</translation>
 <translation id="6671495933530132209">প্ৰতিচ্ছবি প্ৰতিলিপি কৰক</translation>
@@ -896,7 +893,6 @@
 <translation id="718926126787620637">পূৰ্ণ উচ্চতাত খোলা বুকমাৰ্ক ফ'ল্ডাৰৰ সূচী</translation>
 <translation id="7189372733857464326">Google Play Services আপডে'ট সম্পূৰ্ণ হোৱালৈ অপেক্ষা কৰি থকা হৈছে</translation>
 <translation id="7191430249889272776">নেপথ্যত খোলা থকা টেব।</translation>
-<translation id="72180057821664864">পাঠৰ লিংক সৃষ্টি কৰিব নোৱাৰি</translation>
 <translation id="7233236755231902816">আপোনাৰ ভাষাত ৱেবটো চাবলৈ, Chromeৰ সকলোতকৈ শেহতীয়া সংস্কৰণটো ব্যৱহাৰ কৰক</translation>
 <translation id="7248069434667874558">নিশ্চিত হৈ লওক যে Chromeত <ph name="TARGET_DEVICE_NAME" />ৰ ছিংক অন কৰা আছে</translation>
 <translation id="7274013316676448362">অৱৰোধ কৰা ছাইট</translation>
@@ -1133,7 +1129,6 @@
 <translation id="8812260976093120287">কিছুমান ৱেবছাইটত আপোনাৰ ডিভাইচত থকা ওপৰত উল্লেখ কৰা সমৰ্থিত পৰিশোধ এপ্‌ ব্যৱহাৰ কৰি পৰিশোধ কৰিব পাৰিব।</translation>
 <translation id="881688628773363275">পূৰ্বদৰ্শন টেবত থকা সমল চাব নোৱাৰি।</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
-<translation id="8827407626219585697">পাঠৰ লিংক অন্তৰ্ভুক্ত কৰক</translation>
 <translation id="883806473910249246">সমল ডাউনল’ড কৰি থকাৰ সময়ত আসোঁৱাহৰ সৃষ্টি হ’ল৷</translation>
 <translation id="8840953339110955557">এই পৃষ্ঠাটো অনলাইন সংস্কৰণতকৈ বেলেগ হ’ব পাৰে।</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, টেব</translation>

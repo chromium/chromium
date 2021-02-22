@@ -19,7 +19,6 @@
 <translation id="1125564390852150847">Створити вкладку.</translation>
 <translation id="1145536944570833626">Видалити наявні дані.</translation>
 <translation id="1147031633655575115">Ви ввійшли як <ph name="USER" /></translation>
-<translation id="1154690515305205900">Помилка створення посилання на виділений текст.</translation>
 <translation id="1154984953698510061">Переглянути інші вкладки</translation>
 <translation id="1157749421655780457">Дозволити доступ до геоданих…</translation>
 <translation id="1165039591588034296">Помилка</translation>
@@ -567,7 +566,6 @@
 <translation id="6807889908376551050">Показати всі...</translation>
 <translation id="681368974849482173">Закладку творено</translation>
 <translation id="6831043979455480757">Перекласти</translation>
-<translation id="6841409746189899007">Посилання на текст</translation>
 <translation id="6851516051005285358">Повна версія сайту</translation>
 <translation id="6858855187367714033">Зіскановано</translation>
 <translation id="6859944681507688231">Щоб відсканувати QR-код або кредитну картку, увімкніть камеру в налаштуваннях.</translation>
@@ -645,7 +643,6 @@
 <translation id="7658239707568436148">Скасувати</translation>
 <translation id="766891008101699113">Щоб переглядати веб-сторінки конфіденційно, додайте нову вкладку.</translation>
 <translation id="7671141431838911305">INSTALL</translation>
-<translation id="7690812411882623730">Не вдалося створити посилання на текст</translation>
 <translation id="7701040980221191251">Немає</translation>
 <translation id="7765158879357617694">Перемістити</translation>
 <translation id="7771470029643830783">Якщо ви вийдете, дані Chrome (зокрема закладки, історія та паролі) більше не синхронізуватимуться з вашим обліковим записом Google.

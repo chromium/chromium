@@ -14,7 +14,6 @@
 <translation id="1011355516189274711">Âm lượng giọng nói của tính năng chuyển văn bản sang lời nói</translation>
 <translation id="1012794136286421601">Các tệp Google Tài liệu, Trang tính, Trang trình bày và Bản vẽ của bạn đang được đồng bộ hóa. Mở ứng dụng Google Drive để truy cập chúng trực tuyến hoặc ngoại tuyến.</translation>
 <translation id="1012876632442809908">Thiết bị USB-C (cổng phía trước)</translation>
-<translation id="1013707859758800957">Một plugin không có hộp cát được cho phép chạy trên trang này.</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">Chỉnh sửa tên thư mục</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Ngày cuối để cập nhật thiết bị <ph name="DEVICE_TYPE" />}other{Cập nhật thiết bị <ph name="DEVICE_TYPE" /> trong vòng {NUM_DAYS} ngày}}</translation>
@@ -397,7 +396,6 @@
 <translation id="143027896309062157">Đọc và thay đổi tất cả dữ liệu trên máy tính của bạn và các trang web bạn truy cập</translation>
 <translation id="1430915738399379752">In</translation>
 <translation id="1431188203598586230">Bản cập nhật phần mềm cuối cùng</translation>
-<translation id="1431402976894535801">Không cho các trang web biết trạng thái hoạt động của bạn</translation>
 <translation id="1431432486300429272">Google có thể sử dụng lịch sử duyệt web của bạn để điều chỉnh tính năng Tìm kiếm và các dịch vụ khác của Google cho phù hợp với bạn. Bạn hoặc cha mẹ của bạn có thể truy cập vào trang myaccount.google.com/activitycontrols/search để thay đổi tùy chọn này bất cứ lúc nào</translation>
 <translation id="1432581352905426595">Quản lý công cụ tìm kiếm</translation>
 <translation id="1433811987160647649">Hỏi trước khi truy cập</translation>
@@ -506,7 +504,6 @@
 <translation id="1549788673239553762"><ph name="APP_NAME" /> muốn truy cập <ph name="VOLUME_NAME" />. Ứng dụng này có thể sửa đổi hoặc xóa các tệp của bạn.</translation>
 <translation id="1552301827267621511">Tiện ích "<ph name="EXTENSION_NAME" />" đã thay đổi công cụ tìm kiếm thành <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1553538517812678578">không giới hạn</translation>
-<translation id="1554390798506296774">Luôn cho phép các plugin không có hộp cát trên <ph name="HOST" /></translation>
 <translation id="1555130319947370107">Xanh lam</translation>
 <translation id="1556537182262721003">Không thể di chuyển thư mục tiện ích vào hồ sơ.</translation>
 <translation id="155865706765934889">Ô di chuột</translation>
@@ -606,7 +603,6 @@
 <translation id="1651008383952180276">Bạn phải nhập cùng một cụm mật khẩu hai lần</translation>
 <translation id="1652326691684645429">Bật tính năng Chia sẻ lân cận</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Thêm máy in vào Google Cloud Print để bạn có thể in từ bất cứ đâu.}other{Thêm # máy in vào Google Cloud Print để bạn có thể in từ bất cứ đâu.}}</translation>
-<translation id="1653575510930452864">Sao chép đường liên kết vào văn bản</translation>
 <translation id="1656528038316521561">Độ mờ của nền</translation>
 <translation id="1657406563541664238">Trợ giúp cải thiện <ph name="PRODUCT_NAME" /> bằng cách tự động gửi cho Google thống kê sử dụng và báo cáo sự cố</translation>
 <translation id="1657937299377480641">Nếu bạn muốn đăng nhập lại để truy cập vào các tài nguyên giáo dục, hãy xin phép cha mẹ của bạn</translation>
@@ -847,7 +843,6 @@
 <translation id="1916502483199172559">Hình đại diện màu đỏ mặc định</translation>
 <translation id="1918141783557917887">&amp;Nhỏ hơn</translation>
 <translation id="1919345977826869612">Quảng cáo</translation>
-<translation id="1919814239594435008">Đã cho phép truy cập vào plugin không có hộp cát</translation>
 <translation id="1920390473494685033">Danh bạ</translation>
 <translation id="1921050530041573580">Ghép nối điện thoại của bạn với ứng dụng Messages</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
@@ -960,7 +955,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="204914487372604757">Tạo lối tắt</translation>
 <translation id="2050339315714019657">Khổ dọc</translation>
 <translation id="2053312383184521053">Dữ liệu ở trạng thái không hoạt động</translation>
-<translation id="2054665754582400095">Sự hiện diện của bạn</translation>
 <translation id="2055585478631012616">Bạn sẽ bị đăng xuất khỏi những trang web này, bao gồm cả các thẻ đang mở</translation>
 <translation id="205560151218727633">Biểu trưng Trợ lý Google</translation>
 <translation id="2058456167109518507">Đã phát hiện thiết bị</translation>
@@ -1074,7 +1068,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2175607476662778685">Thanh khởi động nhanh</translation>
 <translation id="217576141146192373">Không thể thêm máy in. Vui lòng kiểm tra cấu hình của máy in rồi thử lại.</translation>
 <translation id="2177950615300672361">Thẻ ẩn danh: <ph name="TAB_NAME" /></translation>
-<translation id="2178098616815594724"><ph name="PEPPER_PLUGIN_NAME" /> trên <ph name="PEPPER_PLUGIN_DOMAIN" /> muốn truy cập vào máy tính của bạn</translation>
 <translation id="2178614541317717477">Lộ CA</translation>
 <translation id="2182058453334755893">Đã sao chép vào khay nhớ tạm</translation>
 <translation id="2184515124301515068">Cho phép Chrome chọn thời điểm trang web có thể phát âm thanh (khuyên dùng)</translation>
@@ -1712,7 +1705,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2885729872133513017">Đã xảy ra lỗi khi giải mã phản hồi của máy chủ.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="2889064240420137087">Mở liên kết bằng...</translation>
-<translation id="2889925978073739256">Tiếp tục chặn plugin không có hộp cát</translation>
 <translation id="2891922230654533301">Dùng thiết bị của bạn để đăng nhập vào <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Trình duyệt mặc định</translation>
 <translation id="2894757982205307093">Thẻ mới trong nhóm</translation>
@@ -1961,7 +1953,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3163201441334626963">Sản phẩm không xác định <ph name="PRODUCT_ID" /> từ nhà cung cấp <ph name="VENDOR_ID" /></translation>
 <translation id="3163254451837720982">Các dịch vụ sau đây giúp đảm bảo cho dữ liệu của bạn được an toàn và bảo mật. Bạn có thể tắt các tính năng này bất kỳ lúc nào.</translation>
 <translation id="3164329792803560526">Đang chia sẻ thẻ này với <ph name="APP_NAME" /></translation>
-<translation id="3165371858310906303">Hỏi khi có một trang web muốn biết trạng thái hoạt động của bạn</translation>
 <translation id="3165390001037658081">Một số nhà cung cấp dịch vụ có thể chặn tính năng này.</translation>
 <translation id="316652501498554287">Tài khoản G Suite cho Giáo dục</translation>
 <translation id="3170072451822350649">Bạn cũng có thể bỏ qua việc đăng nhập và <ph name="LINK_START" />duyệt với tư cách khách<ph name="LINK_END" />.</translation>
@@ -2541,7 +2532,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3824621460022590830">Mã đăng ký thiết bị là không hợp lệ. Vui lòng liên hệ với quản trị viên hoặc chủ sở hữu thiết bị. Mã lỗi: <ph name="ERROR_CODE" />.</translation>
 <translation id="3826071569074535339">Được phép sử dụng cảm biến chuyển động</translation>
 <translation id="3826440694796503677">Quản trị viên đã tắt tính năng thêm Tài khoản Google khác</translation>
-<translation id="3827306204503227641">Tiếp tục cho phép plugin không có hộp cát</translation>
 <translation id="3827774300009121996">&amp;Toàn Màn hình</translation>
 <translation id="3828029223314399057">Tìm kiếm dấu trang</translation>
 <translation id="3829765597456725595">Chia sẻ tệp SMB</translation>
@@ -2909,7 +2899,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="425573743389990240">Tốc độ phóng điện của pin tính bằng Watt (giá trị âm có nghĩa là đang sạc pin)</translation>
 <translation id="4256316378292851214">Lưu &amp;Video Dưới dạng...</translation>
 <translation id="4258348331913189841">Hệ thống tệp</translation>
-<translation id="4259381619085088639">sự hiện diện của bạn</translation>
 <translation id="4259388776256904261">Quá trình này có thể mất một chút thời gian</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> có thể nguy hiểm. Bạn có muốn gửi tệp tới Chương trình Bảo vệ nâng cao của Google để quét không? Hãy nhấn tổ hợp phím Shift+F6 để chuyển tới khu vực thanh tệp tải xuống.</translation>
 <translation id="4263223596040212967">Kiểm tra bố cục bàn phím rồi thử lại.</translation>
@@ -3142,7 +3131,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4535767533210902251">Cảm biến vân tay là phím trên cùng bên phải của bàn phím. Hãy chạm nhẹ ngón tay bất kỳ vào đó.</translation>
 <translation id="4536140153723794651">Các trang web luôn có thể dùng cookie</translation>
 <translation id="4538417792467843292">Xóa từ</translation>
-<translation id="4538684596480161368">Luôn chặn các plugin không có hộp cát trên <ph name="HOST" /></translation>
 <translation id="4538792345715658285">Được cài đặt theo chính sách doanh nghiệp.</translation>
 <translation id="4541123282641193691">Không thể xác minh tài khoản của bạn. Vui lòng thử lại hoặc khởi động lại Chromebook.</translation>
 <translation id="4541662893742891060">Không thể kết nối với hồ sơ này. Nếu cần hỗ trợ kỹ thuật, hãy liên hệ với nhà mạng của bạn.</translation>
@@ -3564,7 +3552,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5038863510258510803">Đang bật...</translation>
 <translation id="5039696241953571917">Xem và quản lý các mật khẩu đã lưu trong Tài khoản Google của bạn</translation>
 <translation id="5039804452771397117">Cho phép</translation>
-<translation id="5040823038948176460">Các tùy chọn cài đặt nội dung khác</translation>
+<translation id="5040823038948176460">Các chế độ cài đặt nội dung khác</translation>
 <translation id="5043913660911154449">Hoặc chỉ định tệp PPD cho máy in của bạn <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Mật khẩu sai</translation>
 <translation id="504561833207953641">Mở trong phiên trình duyệt hiện tại.</translation>
@@ -4170,7 +4158,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5740820643029013514">Dùng thông báo yên tĩnh hơn (khuyên dùng)</translation>
 <translation id="574104302965107104">Phản chiếu màn hình</translation>
 <translation id="574209121243317957">Cao độ</translation>
-<translation id="5742505912938664543">Khi thêm một tài khoản phụ vào đây, bạn có thể dùng tài khoản đó để duyệt web, tải các ứng dụng xuống, kiểm tra Gmail và sử dụng các dịch vụ khác của Google.</translation>
 <translation id="5746169159649715125">Lưu dưới dạng PDF</translation>
 <translation id="5746261205461426123">Mở hướng dẫn thiết lập</translation>
 <translation id="5747552184818312860">Hết hạn</translation>
@@ -5328,7 +5315,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7077829361966535409">Không thể tải trang đăng nhập bằng cài đặt proxy hiện tại. Vui lòng <ph name="GAIA_RELOAD_LINK_START" />thử đăng nhập lại<ph name="GAIA_RELOAD_LINK_END" /> hoặc sử dụng <ph name="PROXY_SETTINGS_LINK_START" />cài đặt proxy<ph name="PROXY_SETTINGS_LINK_END" /> khác.</translation>
 <translation id="7078120482318506217">Tất cả các mạng</translation>
 <translation id="7078386829626602215">Không phát hiện thấy thiết bị nào <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
-<translation id="7079716540084905538">Thêm Tài khoản Google phụ cho <ph name="USER_NAME" /></translation>
 <translation id="708060913198414444">S&amp;ao chép địa chỉ âm thanh</translation>
 <translation id="7081952801286122383">Bạn đang ở chế độ ẩn danh</translation>
 <translation id="708278670402572152">Ngắt kết nối để bật tính năng quét</translation>
@@ -6109,7 +6095,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7966241909927244760">S&amp;ao chép địa chỉ hình ảnh</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{1 mục trong danh sách dấu trang}other{{COUNT} mục trong danh sách dấu trang}}</translation>
 <translation id="7968072247663421402">Các tùy chọn nhà cung cấp</translation>
-<translation id="7968198493605442410">Sao chép đường liên kết vào văn bản</translation>
 <translation id="7968742106503422125">Đọc và sửa đổi dữ liệu bạn sao chép và dán</translation>
 <translation id="7968833647796919681">Bật tính năng thu thập dữ liệu hoạt động</translation>
 <translation id="7968982339740310781">Xem chi tiết</translation>
@@ -6432,7 +6417,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8325413836429495820">Không được phép xem khay nhớ tạm của bạn</translation>
 <translation id="8326478304147373412">PKCS #7, chuỗi chứng chỉ</translation>
 <translation id="8327039559959785305">Lỗi khi đính kèm tệp Linux. Vui lòng thử lại.</translation>
-<translation id="8327676037044516220">Các tùy chọn cài đặt nội dung và quyền</translation>
+<translation id="8327676037044516220">Các chế độ cài đặt nội dung và quyền</translation>
 <translation id="833256022891467078">Thư mục do Crostini chia sẻ</translation>
 <translation id="8335587457941836791">Bỏ ghim khỏi giá</translation>
 <translation id="8336407002559723354">Bản cập nhật sẽ hết hạn vào <ph name="MONTH_AND_YEAR" /></translation>
@@ -6608,7 +6593,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8553342806078037065">Quản lý những người khác</translation>
 <translation id="8554899698005018844">Không có ngôn ngữ nào</translation>
 <translation id="8557022314818157177">Chạm liên tục vào khóa bảo mật cho đến khi thiết bị ghi lại vân tay của bạn</translation>
-<translation id="855773602626431402">Plugin không có hộp cát bị ngăn không cho chạy trên trang này.</translation>
 <translation id="8557930019681227453">Tệp kê khai</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Mở tất cả trong cửa sổ &amp;mới}=1{Mở trong cửa sổ &amp;mới}other{Mở tất cả ({COUNT}) trong cửa sổ &amp;mới}}</translation>
 <translation id="8561206103590473338">Voi</translation>
@@ -6641,7 +6625,6 @@ Nhấn một công tắc đã gán để xóa.</translation>
 <translation id="8594908476761052472">Quay video</translation>
 <translation id="8596540852772265699">Tệp tùy chỉnh</translation>
 <translation id="8597845839771543242">Định dạng thuộc tính:</translation>
-<translation id="8598453409908276158">Đã chặn truy cập vào plugin không có hộp cát</translation>
 <translation id="8601206103050338563">Xác thực Ứng dụng khách TLS WWW</translation>
 <translation id="8602851771975208551">Một chương trình khác trên máy tính của bạn đã thêm một ứng dụng có thể thay đổi cách Chrome hoạt động.</translation>
 <translation id="8605428685123651449">Bộ nhớ SQLite</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
 <translation id="1018656279737460067">已取消</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> 個執行緒；<ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1059913517121127803">無法開始掃瞄</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">偵測到防火牆</translation>
@@ -91,6 +92,7 @@
 <translation id="3226405216343213872">正在尋找掃瞄器</translation>
 <translation id="3246869037381808805">超過 1 天前的列印工作將被移除</translation>
 <translation id="3268178239013324452">失敗 - 機蓋未關</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">DNS 延遲時間大幅超過允許的門檻</translation>
 <translation id="3328783797891415197">測試執行中</translation>
 <translation id="3368922792935385530">已連線</translation>
@@ -125,6 +127,7 @@
 <translation id="4155551848414053977">請確認掃瞄器已開啟，並可供透過網絡或直接連線使用</translation>
 <translation id="4170700058716978431">失敗</translation>
 <translation id="4176463684765177261">已停用</translation>
+<translation id="4222698289790462549">目前速度</translation>
 <translation id="4227825898293920515">密碼在 <ph name="TIME" />後到期</translation>
 <translation id="4228041325992544252">可用空間：<ph name="AVAILABLE_MEMORY" /> GB (共 <ph name="TOTAL_MEMORY" /> GB)。</translation>
 <translation id="4238516577297848345">沒有進行中的列印工作</translation>

@@ -19,7 +19,6 @@
 <translation id="1125564390852150847">Skapa en ny flik.</translation>
 <translation id="1145536944570833626">Radera befintlig data.</translation>
 <translation id="1147031633655575115">Inloggad som <ph name="USER" /></translation>
-<translation id="1154690515305205900">Det gick inte att skapa en länk till den markerade texten.</translation>
 <translation id="1154984953698510061">Se andra flikar</translation>
 <translation id="1157749421655780457">Tillåt plats …</translation>
 <translation id="1165039591588034296">Fel</translation>
@@ -567,7 +566,6 @@ Sträva efter att använda ett unikt lösenord för varje webbplats.</translatio
 <translation id="6807889908376551050">Visa alla ...</translation>
 <translation id="681368974849482173">Bokmärket har skapats</translation>
 <translation id="6831043979455480757">Översätt</translation>
-<translation id="6841409746189899007">Länka till text</translation>
 <translation id="6851516051005285358">Använd skrivbordsversion</translation>
 <translation id="6858855187367714033">Skannat</translation>
 <translation id="6859944681507688231">Aktivera kameran i inställningarna om du vill skanna en QR-kod eller ett kreditkort.</translation>
@@ -645,7 +643,6 @@ Sträva efter att använda ett unikt lösenord för varje webbplats.</translatio
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="766891008101699113">Öppna en ny flik om du vill använda internet privat.</translation>
 <translation id="7671141431838911305">INSTALLERA</translation>
-<translation id="7690812411882623730">Det gick inte att länka till texten</translation>
 <translation id="7701040980221191251">Inga</translation>
 <translation id="7765158879357617694">Flytta</translation>
 <translation id="7771470029643830783">När du loggar ut synkroniseras inte längre bokmärken, lösenord och annan data i Chrome till Google-kontot.

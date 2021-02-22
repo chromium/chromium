@@ -19,7 +19,6 @@
 <translation id="1125564390852150847">নতুন টেব সৃষ্টি কৰক।</translation>
 <translation id="1145536944570833626">পূর্বে থকা ডেটা মচক।</translation>
 <translation id="1147031633655575115"><ph name="USER" /> হিচাপে ছাইন ইন কৰিছে</translation>
-<translation id="1154690515305205900">হাইলাইট কৰা পাঠলৈ এটা লিংক সৃষ্টি কৰিব নোৱাৰি।</translation>
 <translation id="1154984953698510061">অন্য টেবসমূহ চাওক</translation>
 <translation id="1157749421655780457">অৱস্থান ব্যৱহাৰৰ অনুমতি দিয়ক...</translation>
 <translation id="1165039591588034296">আসোঁৱাহ</translation>
@@ -134,7 +133,7 @@
 <translation id="2320166752086256636">কীব'ৰ্ড লুকুৱাওক</translation>
 <translation id="2339560363438331454">ছিংক আৰু Google সেৱাসমূহ</translation>
 <translation id="2351097562818989364">আপোনাৰ অনুবাদ ছেটিংসমূহ ৰিছেট কৰা হৈছে।</translation>
-<translation id="2359043044084662842">অনুবাদ কৰক</translation>
+<translation id="2359043044084662842">Translate</translation>
 <translation id="2359808026110333948">অব্যাহত ৰাখক</translation>
 <translation id="2360196772093551345">ম’বাইল ছাইটৰ বাবে অনুৰোধ কৰক</translation>
 <translation id="236977714248711277">ছাইটসমূহে আপোনাৰ ব্ৰাউজিঙৰ অভিজ্ঞতা উন্নত কৰিবলৈ কুকিসমূহ ব্যৱহাৰ কৰিব নোৱাৰে, উদাহৰণস্বৰূপে, আপোনাক ছাইন ইন কৰি ৰাখিবলৈ অথবা আপোনাৰ শ্বপিং কার্টত থকা বস্তুবোৰ মনত ৰাখিবলৈ।
@@ -567,7 +566,6 @@
 <translation id="6807889908376551050">সকলো দেখুৱাওক...</translation>
 <translation id="681368974849482173">বস্তু সৃষ্টি কৰা হ’ল</translation>
 <translation id="6831043979455480757">অনুবাদ কৰক</translation>
-<translation id="6841409746189899007">পাঠৰ সৈতে লিংক কৰক</translation>
 <translation id="6851516051005285358">ডেস্কটপ ছাইটৰ বাবে অনুৰোধ কৰক</translation>
 <translation id="6858855187367714033">স্কেন কৰা হ’ল</translation>
 <translation id="6859944681507688231">কোনো QR ক’ড অথবা ক্ৰেডিট কাৰ্ড স্কেন কৰিবলৈ ছেটিংসমূহৰ পৰা কেমেৰা সক্ষম কৰক।</translation>
@@ -642,7 +640,6 @@
 <translation id="7658239707568436148">বাতিল কৰক</translation>
 <translation id="766891008101699113">ব্যক্তিগতভাৱে ৱেব ব্ৰাউজ কৰিবলৈ এটা নতুন টেব যোগ কৰক।</translation>
 <translation id="7671141431838911305">ইনষ্টল কৰক</translation>
-<translation id="7690812411882623730">পাঠলৈ লিংক সৃষ্টি কৰিব পৰা নগ'ল</translation>
 <translation id="7701040980221191251">নাই</translation>
 <translation id="7765158879357617694">আঁতৰাওক</translation>
 <translation id="7771470029643830783">ছাইন আউট কৰাৰ ফলত আপোনাৰ বুকমাৰ্ক, ইতিহাস, পাছৱৰ্ড আৰু অন্য Chrome ডেটা আপোনাৰ Google একাউণ্টত আৰু ছিংক কৰা নহ’ব।

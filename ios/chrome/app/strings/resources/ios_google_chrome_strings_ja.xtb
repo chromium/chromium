@@ -18,6 +18,7 @@
 <translation id="257708665678654955">次回から Google Chrome でこのサイトの <ph name="LANGUAGE_NAME" /> ページの翻訳を表示しますか？</translation>
 <translation id="2695886661449553974">Chrome でアップデートを確認できませんでした。しばらくしてからもう一度お試しください。</translation>
 <translation id="2732745070297234559">Chrome ですべてのパスワードを確認できませんでした。明日もう一度お試しください。</translation>
+<translation id="2740105938841089077">Chrome でリンクを開く</translation>
 <translation id="2919738076569633423">Chrome を使用すると、<ph name="BEGIN_LINK_TOS" />利用規約<ph name="END_LINK_TOS" />に同意したことになります。</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> で管理されているアカウントからログアウトするにあたり、Chrome データはこのデバイスから削除されます（ただし Google アカウントには残ります）。</translation>
 <translation id="3148688391461398285">Chromeの機能がユーザーの所在地に応じて便利に変化します。</translation>
@@ -53,6 +54,7 @@
 <translation id="5854621639439811139">Chrome の使い方のヒント: 戻る、進む、検索など一部のボタンは画面の下部に表示されるようになりました。</translation>
 <translation id="6036420186814142909">Google Chromeには、インターネットのデータやウェブページの読み込み速度を管理できる機能があります。
 <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
+<translation id="6181930887571472871">Chrome に切り替え</translation>
 <translation id="6238746320622508509">Chrome でシークレット タブをロックできるようにします。</translation>
 <translation id="6573431926118603307">他のデバイスの Chrome で開いているタブがここに表示されます。</translation>
 <translation id="6600954340915313787">Chrome にコピー済み</translation>
@@ -60,6 +62,7 @@
 <translation id="6648150602980899529"><ph name="DOMAIN" /> で管理されているアカウントでログインし、管理者に Chrome データの管理を委託します。今後 Chrome データはこのアカウントに関連付けられます。Chrome からログアウトすると、データはこのデバイスから削除されますが、Google アカウントで保持されます。</translation>
 <translation id="6676840375528380067">Chrome データをこのデバイスから削除しますか？</translation>
 <translation id="6822673484890854830">Chrome ですべてのパスワードを確認できませんでした。しばらくしてからもう一度お試しください。</translation>
+<translation id="6964931465519938134">メッセージ、ドキュメント、他のアプリでタップしたリンクが常に Chrome で開かれるようになります。</translation>
 <translation id="7124339256045485976">Chrome を最新の状態に維持します</translation>
 <translation id="7161390184744336561">Google Chrome は古いバージョンです</translation>
 <translation id="7165736900384873061">Google Chrome の QR スキャナの使用を開始する</translation>

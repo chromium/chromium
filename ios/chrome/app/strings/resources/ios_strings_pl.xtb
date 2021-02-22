@@ -19,7 +19,6 @@
 <translation id="1125564390852150847">Utwórz nową kartę.</translation>
 <translation id="1145536944570833626">Usuń istniejące dane.</translation>
 <translation id="1147031633655575115">Używasz konta <ph name="USER" /></translation>
-<translation id="1154690515305205900">Nie można utworzyć linku do podświetlonego tekstu.</translation>
 <translation id="1154984953698510061">Zobacz inne karty</translation>
 <translation id="1157749421655780457">Zezwól na dostęp do lokalizacji...</translation>
 <translation id="1165039591588034296">Błąd</translation>
@@ -565,7 +564,6 @@ Postaraj się używać innego hasła w każdej witrynie.</translation>
 <translation id="6807889908376551050">Pokaż wszystkie...</translation>
 <translation id="681368974849482173">Utworzono element</translation>
 <translation id="6831043979455480757">Tłumacz</translation>
-<translation id="6841409746189899007">Udostępnij link do tekstu</translation>
 <translation id="6851516051005285358">Żądaj wersji na komputer</translation>
 <translation id="6858855187367714033">Zeskanowano</translation>
 <translation id="6859944681507688231">Aby zeskanować kod QR lub kartę kredytową, włącz aparat w ustawieniach.</translation>
@@ -643,7 +641,6 @@ Postaraj się używać innego hasła w każdej witrynie.</translation>
 <translation id="7658239707568436148">Anuluj</translation>
 <translation id="766891008101699113">Aby przeglądać strony internetowe prywatnie, dodaj nową kartę.</translation>
 <translation id="7671141431838911305">ZAINSTALUJ</translation>
-<translation id="7690812411882623730">Nie udało się utworzyć linku do tekstu</translation>
 <translation id="7701040980221191251">Brak</translation>
 <translation id="7765158879357617694">Przenieś</translation>
 <translation id="7771470029643830783">Po wylogowaniu Twoje zakładki, historia, hasła i inne dane Chrome nie będą już synchronizowane z Twoim kontem Google.

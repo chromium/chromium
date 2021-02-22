@@ -19,7 +19,6 @@
 <translation id="1125564390852150847">새 탭 만들기</translation>
 <translation id="1145536944570833626">기존 데이터 삭제</translation>
 <translation id="1147031633655575115"><ph name="USER" />님의 계정으로 로그인됨</translation>
-<translation id="1154690515305205900">강조표시된 텍스트로 연결되는 링크를 생성할 수 없습니다.</translation>
 <translation id="1154984953698510061">다른 탭 보기</translation>
 <translation id="1157749421655780457">위치 권한 허용...</translation>
 <translation id="1165039591588034296">오류</translation>
@@ -567,7 +566,6 @@
 <translation id="6807889908376551050">모두 표시...</translation>
 <translation id="681368974849482173">북마크가 생성되었습니다.</translation>
 <translation id="6831043979455480757">번역</translation>
-<translation id="6841409746189899007">텍스트 링크</translation>
 <translation id="6851516051005285358">데스크톱 버전으로 보기</translation>
 <translation id="6858855187367714033">스캔됨</translation>
 <translation id="6859944681507688231">QR 코드 또는 신용카드를 스캔하려면 설정에서 카메라를 사용 설정하세요.</translation>
@@ -645,7 +643,6 @@
 <translation id="7658239707568436148">취소</translation>
 <translation id="766891008101699113">비공개로 웹을 탐색하려면 새 탭을 추가하세요.</translation>
 <translation id="7671141431838911305">설치</translation>
-<translation id="7690812411882623730">텍스트 링크를 생성할 수 없음</translation>
 <translation id="7701040980221191251">없음</translation>
 <translation id="7765158879357617694">이동</translation>
 <translation id="7771470029643830783">로그아웃하면 북마크, 방문 기록, 비밀번호 및 기타 Chrome 데이터가 더 이상 Google 계정과 동기화되지 않습니다.

@@ -14,7 +14,6 @@
 <translation id="1011355516189274711">Volumul de redare vocală a textului</translation>
 <translation id="1012794136286421601">Se sincronizează fișierele din Documente Google, Foi de calcul, Prezentări și Desene. Deschideți aplicația Google Drive pentru a le accesa online sau offline.</translation>
 <translation id="1012876632442809908">Dispozitiv USB-C (portul din față)</translation>
-<translation id="1013707859758800957">Pe această pagină a fost permisă rularea unui plugin scos din mediul de testare.</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">Editează numele dosarului</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Ultima zi în care poți actualiza acest <ph name="DEVICE_TYPE" />}few{Actualizează acest <ph name="DEVICE_TYPE" /> în cel mult {NUM_DAYS} zile}other{Actualizează acest <ph name="DEVICE_TYPE" /> în cel mult {NUM_DAYS} de zile}}</translation>
@@ -398,7 +397,6 @@
 <translation id="143027896309062157">Citește și modifică toate datele de pe computer și de pe site-urile pe care le accesezi</translation>
 <translation id="1430915738399379752">Printează</translation>
 <translation id="1431188203598586230">Actualizare de software finală</translation>
-<translation id="1431402976894535801">Împiedică site-urile să-ți detecteze prezența</translation>
 <translation id="1431432486300429272">Google poate folosi istoricul de navigare pentru a personaliza Căutarea și alte servicii Google. Tu sau părintele tău puteți modifica oricând această opțiune la myaccount.google.com/activitycontrols/search</translation>
 <translation id="1432581352905426595">Gestionați motoarele de căutare</translation>
 <translation id="1433811987160647649">Solicită permisiunea înainte de accesare</translation>
@@ -507,7 +505,6 @@
 <translation id="1549788673239553762"><ph name="APP_NAME" /> dorește să acceseze <ph name="VOLUME_NAME" />. Poate modifica sau șterge fișierele.</translation>
 <translation id="1552301827267621511">Extensia „<ph name="EXTENSION_NAME" />” a modificat căutarea, astfel încât să folosească <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1553538517812678578">nelimitat</translation>
-<translation id="1554390798506296774">Permite întotdeauna pluginurile scoase din mediul de testare pe <ph name="HOST" /></translation>
 <translation id="1555130319947370107">Albastru</translation>
 <translation id="1556537182262721003">Directorul extensiei nu se poate muta în profil.</translation>
 <translation id="155865706765934889">Touchpad</translation>
@@ -607,7 +604,6 @@
 <translation id="1651008383952180276">Trebuie să introduci aceeași expresie de acces de două ori</translation>
 <translation id="1652326691684645429">Activează Nearby Share</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Pentru a putea printa de oriunde, adaugă imprimanta în Google Cloud Print.}few{Pentru a putea printa de oriunde, adaugă cele # imprimante în Google Cloud Print.}other{Pentru a putea printa de oriunde, adaugă cele # de imprimante în Google Cloud Print.}}</translation>
-<translation id="1653575510930452864">Copiază linkul ca text</translation>
 <translation id="1656528038316521561">Opacitatea fundalului</translation>
 <translation id="1657406563541664238">Trimite automat statistici de utilizare și rapoarte de blocare la Google pentru a contribui la îmbunătățirea <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1657937299377480641">Ca să te conectezi din nou pentru acces la resurse educaționale, solicită permisiunea unui părinte</translation>
@@ -848,7 +844,6 @@
 <translation id="1916502483199172559">Avatar roșu prestabilit</translation>
 <translation id="1918141783557917887">&amp;Mai mic</translation>
 <translation id="1919345977826869612">Anunțuri</translation>
-<translation id="1919814239594435008">Pluginul în afara mediului de testare este permis</translation>
 <translation id="1920390473494685033">Agendă</translation>
 <translation id="1921050530041573580">Asociază telefonul cu Messages</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
@@ -961,7 +956,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="204914487372604757">Creează o comandă rapidă</translation>
 <translation id="2050339315714019657">Portret</translation>
 <translation id="2053312383184521053">Date pentru starea inactivă</translation>
-<translation id="2054665754582400095">Prezența ta</translation>
 <translation id="2055585478631012616">Te vei deconecta de la site-uri, inclusiv din filele deschise</translation>
 <translation id="205560151218727633">Sigla Asistentului Google</translation>
 <translation id="2058456167109518507">S-a detectat un dispozitiv</translation>
@@ -1075,7 +1069,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2175607476662778685">Bara Lansare rapidă</translation>
 <translation id="217576141146192373">Nu se poate adăuga imprimanta. Verifică ce configurație are imprimanta și încearcă din nou.</translation>
 <translation id="2177950615300672361">Fila Incognito: <ph name="TAB_NAME" /></translation>
-<translation id="2178098616815594724">Pluginul <ph name="PEPPER_PLUGIN_NAME" /> de pe <ph name="PEPPER_PLUGIN_DOMAIN" /> dorește să acceseze computerul</translation>
 <translation id="2178614541317717477">Compromitere CA</translation>
 <translation id="2182058453334755893">Copiat în clipboard</translation>
 <translation id="2184515124301515068">Permite Chrome să aleagă când site-urile pot reda sunet (recomandat)</translation>
@@ -1713,7 +1706,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2885729872133513017">A apărut o problemă la decodarea răspunsului serverului.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="2889064240420137087">Deschide linkul cu...</translation>
-<translation id="2889925978073739256">Continuă blocarea pluginurilor scoase din mediul de testare</translation>
 <translation id="2891922230654533301">Folosești dispozitivul pentru a te conecta la <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Browserul prestabilit</translation>
 <translation id="2894757982205307093">Filă nouă în grup</translation>
@@ -1962,7 +1954,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3163201441334626963">Produs necunoscut <ph name="PRODUCT_ID" /> de la furnizorul <ph name="VENDOR_ID" /></translation>
 <translation id="3163254451837720982">Cu ajutorul următoarelor servicii, îți vei menține datele în siguranță. Poți dezactiva oricând aceste funcții.</translation>
 <translation id="3164329792803560526">Se distribuie această filă către <ph name="APP_NAME" /></translation>
-<translation id="3165371858310906303">Întreabă-mă atunci când un site vrea să-mi detecteze prezența</translation>
 <translation id="3165390001037658081">Este posibil ca unii operatori să blocheze funcția.</translation>
 <translation id="316652501498554287">Conturi G Suite for Education</translation>
 <translation id="3170072451822350649">De asemenea, puteți să omiteți conectarea și să <ph name="LINK_START" />navigați ca invitat<ph name="LINK_END" />.</translation>
@@ -2542,7 +2533,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3824621460022590830">Indicativul de înregistrare a dispozitivului nu este valid. Contactează proprietarul dispozitivului ori administratorul. Cod de eroare: <ph name="ERROR_CODE" />.</translation>
 <translation id="3826071569074535339">Au permisiunea de a folosi senzorii de mișcare</translation>
 <translation id="3826440694796503677">Administratorul a dezactivat adăugarea mai multor Conturi Google</translation>
-<translation id="3827306204503227641">Continuă permiterea pluginurilor scoase din mediul de testare</translation>
 <translation id="3827774300009121996">&amp;Ecran complet</translation>
 <translation id="3828029223314399057">Căutați în marcaje</translation>
 <translation id="3829765597456725595">Spații comune de stocare fișiere IMM</translation>
@@ -2910,7 +2900,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="425573743389990240">Rata de descărcare a bateriei în wați (valoarea negativă înseamnă că bateria se încarcă)</translation>
 <translation id="4256316378292851214">Sal&amp;vează videoclipul ca...</translation>
 <translation id="4258348331913189841">Sisteme de fișiere</translation>
-<translation id="4259381619085088639">Prezența ta</translation>
 <translation id="4259388776256904261">Poate dura un timp</translation>
 <translation id="4260182282978351200">Fișierul <ph name="FILE_NAME" /> poate fi periculos. Îl trimiți la Protecția avansată Google pentru scanare? Apasă Shift+F6 ca să revii la zona barei de descărcări.</translation>
 <translation id="4263223596040212967">Verifică structura tastaturii și încearcă din nou.</translation>
@@ -3143,7 +3132,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4535767533210902251">Senzorul de amprentă este tasta din dreapta sus de pe tastatură. Atinge-l ușor cu orice deget.</translation>
 <translation id="4536140153723794651">Site-uri care pot folosi oricând cookie-uri</translation>
 <translation id="4538417792467843292">Șterge cuvântul</translation>
-<translation id="4538684596480161368">Blochează întotdeauna pluginurile scoase din mediul de testare pe <ph name="HOST" /></translation>
 <translation id="4538792345715658285">Instalată pe baza politicii întreprinderii.</translation>
 <translation id="4541123282641193691">Contul nu a putut fi verificat. Încearcă din nou sau repornește Chromebookul.</translation>
 <translation id="4541662893742891060">Nu s-a putut conecta la acest profil. Contactează operatorul pentru asistență tehnică.</translation>
@@ -4171,7 +4159,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5740820643029013514">Folosește mesaje discrete (recomandat)</translation>
 <translation id="574104302965107104">Oglindirea ecranului</translation>
 <translation id="574209121243317957">Tonalitatea</translation>
-<translation id="5742505912938664543">Dacă adaugi un cont secundar aici, poți să navighezi pe web, să descarci aplicații, să verifici contul Gmail și să utilizezi alte servicii Google folosind contul respectiv.</translation>
 <translation id="5746169159649715125">Salvați ca PDF</translation>
 <translation id="5746261205461426123">Deschide ghidul de configurare</translation>
 <translation id="5747552184818312860">Expiră</translation>
@@ -5329,7 +5316,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7077829361966535409">Pagina de conectare nu s-a putut încărca utilizând setările de proxy actuale. <ph name="GAIA_RELOAD_LINK_START" />Încercați să vă conectați din nou<ph name="GAIA_RELOAD_LINK_END" /> sau utilizați alte <ph name="PROXY_SETTINGS_LINK_START" />setări de proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Toate rețelele</translation>
 <translation id="7078386829626602215">Nu s-a detectat niciun dispozitiv <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
-<translation id="7079716540084905538">Adaugă un Cont Google secundar pentru <ph name="USER_NAME" /></translation>
 <translation id="708060913198414444">C&amp;opiază adresa conținutului audio</translation>
 <translation id="7081952801286122383">Ești în modul incognito</translation>
 <translation id="708278670402572152">Deconectează-te pentru a permite scanarea</translation>
@@ -6110,7 +6096,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7966241909927244760">C&amp;opiază adresa imaginii</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{Un element în lista de marcaje}few{{COUNT} elemente în lista de marcaje}other{{COUNT} de elemente în lista de marcaje}}</translation>
 <translation id="7968072247663421402">Opțiuni de furnizori</translation>
-<translation id="7968198493605442410">Copiază linkul ca text</translation>
 <translation id="7968742106503422125">Citește și modifică datele pe care le copiezi și le inserezi</translation>
 <translation id="7968833647796919681">Activați culegerea datelor privind performanța</translation>
 <translation id="7968982339740310781">Afișați detaliile</translation>
@@ -6609,7 +6594,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8553342806078037065">Gestionează alte persoane</translation>
 <translation id="8554899698005018844">Nicio limbă</translation>
 <translation id="8557022314818157177">Atinge cheia de securitate până când ți se capturează amprenta</translation>
-<translation id="855773602626431402">Pe această pagină a fost împiedicată rularea unui plugin scos din mediul de testare.</translation>
 <translation id="8557930019681227453">Manifest</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Deschide-le pe toate într-o fereastră &amp;nouă}=1{Deschide într-o fereastră &amp;nouă}few{Deschide-le pe toate ({COUNT}) într-o fereastră &amp;nouă}other{Deschide-le pe toate ({COUNT}) într-o fereastră &amp;nouă}}</translation>
 <translation id="8561206103590473338">Elefant</translation>
@@ -6642,7 +6626,6 @@ Apasă o tastă de comutare atribuită pentru a elimina atribuirea.</translation
 <translation id="8594908476761052472">Înregistrează un videoclip</translation>
 <translation id="8596540852772265699">Fișiere personalizate</translation>
 <translation id="8597845839771543242">Formatul proprietății:</translation>
-<translation id="8598453409908276158">Pluginul în afara mediului de testare este blocat</translation>
 <translation id="8601206103050338563">Autentificare client TLS WWW</translation>
 <translation id="8602851771975208551">Un alt program de pe computerul dvs. a adăugat o aplicație care poate schimba modul în care funcționează Chrome.</translation>
 <translation id="8605428685123651449">Memorie SQLite</translation>

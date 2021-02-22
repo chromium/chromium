@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
 <translation id="1018656279737460067">Цуцлагдсан байна</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> уялдаат, <ph name="CPU_MAX_CLOCK_SPEED" />Гц)</translation>
 <translation id="1059913517121127803">Скан хийхийг эхлүүлж чадсангүй</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Галт хана илрүүлсэн</translation>
@@ -91,6 +92,7 @@
 <translation id="3226405216343213872">Сканнерыг хайж байна</translation>
 <translation id="3246869037381808805">1 хоногоос дээш хугацаагаар хадгалсан хэвлэлийн ажлуудыг хасах болно</translation>
 <translation id="3268178239013324452">Амжилтгүй болсон - Таг нээлттэй</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" />Гц</translation>
 <translation id="3310640316857623290">DNS-н хоцролт зөвшөөрөгдөх хязгаараас нэлээд өндөр байна</translation>
 <translation id="3328783797891415197">Туршилтыг ажиллуулж байна</translation>
 <translation id="3368922792935385530">Холбогдсон</translation>
@@ -125,6 +127,7 @@
 <translation id="4155551848414053977">Сканнер асаалттай бөгөөд таны сүлжээ эсвэл шууд холболтоор боломжтой эсэхийг шалгана уу</translation>
 <translation id="4170700058716978431">АМЖИЛТГҮЙ БОЛЛОО</translation>
 <translation id="4176463684765177261">Хаасан</translation>
+<translation id="4222698289790462549">Одоогийн хурд</translation>
 <translation id="4227825898293920515">Нууц үгний хугацаа <ph name="TIME" />-н дотор дуусна</translation>
 <translation id="4228041325992544252"><ph name="TOTAL_MEMORY" /> ГБ-аас <ph name="AVAILABLE_MEMORY" /> ГБ боломжтой.</translation>
 <translation id="4238516577297848345">Хэвлэж байгаа ажил алга</translation>

@@ -19,7 +19,6 @@
 <translation id="1125564390852150847">Új lap létrehozása.</translation>
 <translation id="1145536944570833626">Meglévő adatok törlése.</translation>
 <translation id="1147031633655575115">Bejelentkezve mint <ph name="USER" /></translation>
-<translation id="1154690515305205900">A kiemelt szöveghez nem lehet linket létrehozni.</translation>
 <translation id="1154984953698510061">További lapok megtekintése</translation>
 <translation id="1157749421655780457">Helyadatok engedélyezése</translation>
 <translation id="1165039591588034296">Hiba</translation>
@@ -567,7 +566,6 @@ Próbáljon minden webhelyen egyedi jelszót használni.</translation>
 <translation id="6807889908376551050">Összes megjelenítése...</translation>
 <translation id="681368974849482173">Elem létrehozva</translation>
 <translation id="6831043979455480757">Fordítás</translation>
-<translation id="6841409746189899007">Hivatkozás a szövegre</translation>
 <translation id="6851516051005285358">Asztali webhely kérése</translation>
 <translation id="6858855187367714033">Beolvasva</translation>
 <translation id="6859944681507688231">QR-kód vagy hitelkártya beolvasásához engedélyezze a kamerát a beállítások között</translation>
@@ -645,7 +643,6 @@ Próbáljon minden webhelyen egyedi jelszót használni.</translation>
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="766891008101699113">Ha privát módon szeretne böngészni az interneten, adjon hozzá egy új lapot.</translation>
 <translation id="7671141431838911305">TELEPÍTÉS</translation>
-<translation id="7690812411882623730">Nem lehet szövegre mutató linket létrehozni</translation>
 <translation id="7701040980221191251">Nincs</translation>
 <translation id="7765158879357617694">Áthelyezés</translation>
 <translation id="7771470029643830783">A kijelentkezés után könyvjelzői, előzményei, jelszavai és más Chrome-adatai többé nem szinkronizálódnak a Google-fiókjával.

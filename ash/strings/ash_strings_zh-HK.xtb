@@ -405,6 +405,7 @@
 <translation id="4421231901400348175">透過「遠端協助」與 <ph name="HELPER_NAME" /> 共用螢幕控制權。</translation>
 <translation id="4424159417645388645">桌面 5</translation>
 <translation id="4430019312045809116">音量</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 則重要通知}other{# 則重要通知}}</translation>
 <translation id="4450893287417543264">不要再顯示</translation>
 <translation id="445864333228800152">晚安，</translation>
 <translation id="4458688154122353284">停止螢幕錄影</translation>
@@ -476,6 +477,9 @@
 <translation id="4961318399572185831">投放螢幕</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />小時 <ph name="MINUTES" />分 <ph name="SECONDS" />秒</translation>
 <translation id="4975771730019223894">應用程式徽章</translation>
+<translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />：
+        <ph name="NOTIFICATION_1" />；
+        <ph name="NOTIFICATION_2" />；以及 <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">下一句</translation>
 <translation id="5030687792513154421">使用時間結束</translation>
 <translation id="5033299697334913360">點擊任何一處即可擷取全螢幕畫面</translation>
@@ -489,6 +493,7 @@
 <translation id="5168181903108465623">有可用投放裝置</translation>
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="5176318573511391780">錄影部分螢幕</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 則其他通知}other{# 則其他通知}}</translation>
 <translation id="5207949376430453814">突顯文字插入符號</translation>
 <translation id="5208059991603368177">開啟</translation>
 <translation id="5222676887888702881">登出</translation>

@@ -14,7 +14,6 @@
 <translation id="1011355516189274711">টেক্সট-টু-স্পিচ ভলিউম</translation>
 <translation id="1012794136286421601">আপনার দস্তাবেজ, পত্রক, স্লাইড এবং অঙ্কন ফাইলগুলি সিঙ্ক হচ্ছে৷ অনলাইন বা অফলাইনে সেগুলিকে অ্যাক্সেস করতে Google ড্রাইভ অ্যাপটি খুলুন৷</translation>
 <translation id="1012876632442809908">USB-C ডিভাইস (সামনের পোর্ট)</translation>
-<translation id="1013707859758800957">এই পৃষ্ঠায় একটি আনস্যান্ডবক্সড প্লাগ-ইন চালানোর জন্য অনুমতি দেওয়া হয়েছে৷</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">ফোল্ডারের নাম সম্পাদনা করুন</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{<ph name="DEVICE_TYPE" /> আপডেট করার সর্বশেষ দিন}one{{NUM_DAYS} দিনের মধ্যে <ph name="DEVICE_TYPE" /> আপডেট করুন}other{{NUM_DAYS} দিনের মধ্যে <ph name="DEVICE_TYPE" /> আপডেট করুন}}</translation>
@@ -398,7 +397,6 @@
 <translation id="143027896309062157">আপনার কম্পিউটারে সব ডেটা এবং আপনার দেখা ওয়েবসাইটগুলি পড়ুন এবং পরিবর্তন করুন</translation>
 <translation id="1430915738399379752">প্রিন্ট</translation>
 <translation id="1431188203598586230">সফ্টওয়্যার ফাইনাল আপডেট হয়ে গেছে</translation>
-<translation id="1431402976894535801">আপনি কখন ডিভাইস ব্যবহার করছেন তা জানাতে না চাইলে সাইটগুলি ব্লক করে দিন</translation>
 <translation id="1431432486300429272">Search এবং অন্যান্য Google পরিষেবাগুলি আপনার নিজস্ব ব্যবহারের উপযোগী করে সাজিয়ে তুলতে Google আপনার ব্রাউজিং ইতিহাস ব্যবহার করতে পারে। আপনি বা আপনার অভিভাবক এটি যেকোনও সময়ে myaccount.google.com/activitycontrols/search লিঙ্ক থেকে পরিবর্তন করতে পারেন</translation>
 <translation id="1432581352905426595">সার্চ ইঞ্জিনগুলি পরিচালনা করুন</translation>
 <translation id="1433811987160647649">অ্যাক্সেস করার আগে জিজ্ঞাসা করুন</translation>
@@ -507,7 +505,6 @@
 <translation id="1549788673239553762"><ph name="APP_NAME" /> <ph name="VOLUME_NAME" /> অ্যাক্সেস করতে চায়৷ এটি আপনার ফাইলগুলিকে মডিফাই করতে বা মুছে ফেলতে পারে৷</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" এক্সটেনশনের মাধ্যমে ডিফল্ট সার্চ ইঞ্জিনকে ওভাররাইড করা হয়েছে এবং এখন <ph name="SEARCH_PROVIDER_DOMAIN" />-এর মাধ্যমে কন্ট্রোল করা হচ্ছে</translation>
 <translation id="1553538517812678578">সীমাহীন</translation>
-<translation id="1554390798506296774"><ph name="HOST" />-এ সর্বদা আনস্যান্ডবক্সড প্লাগ ইনগুলির অনুমতি দিন</translation>
 <translation id="1555130319947370107">নীল</translation>
 <translation id="1556537182262721003">প্রোফাইলে এক্সটেনশন ডিরেক্টরি সরানো যায়নি৷</translation>
 <translation id="155865706765934889">টাচপ্যাড</translation>
@@ -607,7 +604,6 @@
 <translation id="1651008383952180276">আপনাকে একই পাসফ্রেজ অবশ্যই দু'বার লিখতে হবে</translation>
 <translation id="1652326691684645429">'নিয়ারবাই শেয়ার' ফিচারটি চালু করুন</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{আপনি যাতে যেকোনো জায়গা থেকে প্রিন্ট করতে পারেন সেই জন্য Google ক্লাউড প্রিন্টে প্রিন্টারটি যোগ করুন।}one{আপনি যাতে যেকোনো জায়গা থেকে প্রিন্ট করতে পারেন সেই জন্য Google ক্লাউড প্রিন্টে #টি প্রিন্টার যোগ করুন।}other{আপনি যাতে যেকোনো জায়গা থেকে প্রিন্ট করতে পারেন সেই জন্য Google ক্লাউড প্রিন্টে #টি প্রিন্টার যোগ করুন।}}</translation>
-<translation id="1653575510930452864">টেক্সট ফাইলে লিঙ্ক কপি করুন</translation>
 <translation id="1656528038316521561">ব্যাকগ্রাউন্ডের অস্বচ্ছতা</translation>
 <translation id="1657406563541664238">Google-এ ব্যবহারের পরিসংখ্যান এবং ক্র্যাশ রিপোর্ট অটোমেটিক পাঠিয়ে <ph name="PRODUCT_NAME" />কে আরও ভালো করে তুলতে সাহায্য করুন</translation>
 <translation id="1657937299377480641">শিক্ষাগত রিসোর্স অ্যাক্সেস করার জন্য আবার সাইন-ইন করতে, অভিভাবকের কাছ থেকে অনুমতি চান</translation>
@@ -848,7 +844,6 @@
 <translation id="1916502483199172559">ডিফল্ট লাল রঙের অবতার</translation>
 <translation id="1918141783557917887">&amp;ক্ষুদ্রতর</translation>
 <translation id="1919345977826869612">বিজ্ঞাপন</translation>
-<translation id="1919814239594435008">আনস্যান্ডবক্সড প্লাগ-ইন অনুমোদিত</translation>
 <translation id="1920390473494685033">পরিচিতি</translation>
 <translation id="1921050530041573580">আপনার ফোনকে মেসেজ-এর সাথে পেয়ার করুন</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
@@ -961,7 +956,6 @@
 <translation id="204914487372604757">শর্টকাট তৈরি করুন</translation>
 <translation id="2050339315714019657">প্রতিকৃতি</translation>
 <translation id="2053312383184521053">নিষ্ক্রিয় অবস্থার ডেটা</translation>
-<translation id="2054665754582400095">আপনার উপস্থিতি</translation>
 <translation id="2055585478631012616">যেকোনও খোলা ট্যাব ছাড়াও এই সব সাইটগুলি থেকে আপনি সাইন-আউট হয়ে যাবেন</translation>
 <translation id="205560151218727633">Google অ্যাসিস্ট্যান্ট লোগো</translation>
 <translation id="2058456167109518507">ডিভাইস শনাক্ত করা হয়েছে</translation>
@@ -1075,7 +1069,6 @@
 <translation id="2175607476662778685">দ্রুত প্রবর্তন দণ্ড</translation>
 <translation id="217576141146192373">প্রিন্টার যোগ করা যায়নি। প্রিন্টারের কনফিগারেশন চেক করে আবার চেষ্টা করুন।</translation>
 <translation id="2177950615300672361">ছদ্মবেশী ট্যাব: <ph name="TAB_NAME" /></translation>
-<translation id="2178098616815594724"><ph name="PEPPER_PLUGIN_DOMAIN" /> এ <ph name="PEPPER_PLUGIN_NAME" /> আপনার কম্পিউটার অ্যাক্সেস করতে চায়</translation>
 <translation id="2178614541317717477">CA আপোস</translation>
 <translation id="2182058453334755893">আপনার ক্লিপবোর্ডে কপি করা হয়েছে</translation>
 <translation id="2184515124301515068">সাইটটি কখন সাউন্ড চালাতে পারবে তা Chrome-কে বেছে নিতে দিন (প্রস্তাবিত)</translation>
@@ -1712,7 +1705,6 @@
 <translation id="2885729872133513017">সার্ভারের উত্তর ডিকোড করার সময় সমস্যা হয়েছে।</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="2889064240420137087">এর সাথে লিঙ্ক খুলুন...</translation>
-<translation id="2889925978073739256">আনস্যান্ডবক্সড প্লাগ ইনগুলি অবরুদ্ধ করা অবিরত রাখুন</translation>
 <translation id="2891922230654533301">আপনি কি <ph name="APP_NAME" />-এ সাইন-ইন করার জন্য আপনার ডিভাইস ব্যবহার করতে চান?</translation>
 <translation id="2893168226686371498">ডিফল্ট ব্রাউজার</translation>
 <translation id="2894757982205307093">গ্রুপে নতুন ট্যাব যোগ করুন</translation>
@@ -1961,7 +1953,6 @@
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> বিক্রেতার থেকে অজানা পণ্য <ph name="PRODUCT_ID" /></translation>
 <translation id="3163254451837720982">নিচে উল্লেখিত পরিষেবা আপনার ডেটা নিরাপদ ও সুরক্ষিত রাখতে সাহায্য করে। আপনি যেকোনও সময় এই ফিচারগুলি বন্ধ করে দিতে পারেন।</translation>
 <translation id="3164329792803560526"><ph name="APP_NAME" />-এর সাথে এই ট্যাব শেয়ার করা হচ্ছে</translation>
-<translation id="3165371858310906303">আপনি কখন ডিভাইস ব্যবহার করছেন সেটি কোনও সাইট জানতে চাইলে অনুমতি নিতে বলুন</translation>
 <translation id="3165390001037658081">কিছু পরিষেবা প্রদানকারী এই বৈশিষ্ট্যকে অবরুদ্ধ করতে পারে।</translation>
 <translation id="316652501498554287">G Suite for Education অ্যাকাউন্ট</translation>
 <translation id="3170072451822350649">এছাড়াও আপনি সাইন-ইন এড়িয়ে যেতে ও <ph name="LINK_START" />অতিথি হিসাবে ব্রাউজ<ph name="LINK_END" /> করতে পারেন৷</translation>
@@ -2541,7 +2532,6 @@
 <translation id="3824621460022590830">ডিভাইস এনরোলমেন্ট টোকেনটি সঠিক নয়। আপনার ডিভাইসের মালিক বা অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন। সমস্যার কোড: <ph name="ERROR_CODE" /></translation>
 <translation id="3826071569074535339">মোশন সেন্সর ব্যবহার করার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="3826440694796503677">আপনার অ্যাডমিনিস্ট্রেটর আরও Google অ্যাকাউন্ট যোগ করার বিকল্প বন্ধ করে দিয়েছে</translation>
-<translation id="3827306204503227641">আনস্যান্ডবক্সড প্লাগ ইনগুলিকে অনুমতি দেওয়া অবিরত রাখুন</translation>
 <translation id="3827774300009121996">&amp;পূর্ণ স্ক্রীণ</translation>
 <translation id="3828029223314399057">বুকমার্কগুলি খুঁজুন</translation>
 <translation id="3829765597456725595">SMB ফাইল শেয়ার</translation>
@@ -2908,7 +2898,6 @@
 <translation id="425573743389990240">ওয়াটে ব্যাটারি ডিসচার্জের হার (ঋণাত্মক মানের অর্থ হল ব্যাটারি চার্জ হচ্ছে)</translation>
 <translation id="4256316378292851214">এইরূপে ভিডিও সংর&amp;ক্ষণ করুন...</translation>
 <translation id="4258348331913189841">ফাইল সিস্টেম</translation>
-<translation id="4259381619085088639">আপনার উপস্থিতি</translation>
 <translation id="4259388776256904261">এর জন্য কিছু সময় লাগতে পারে</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> বিপজ্জনক হতে পারে। স্ক্যান করার জন্য Google-এর উন্নত সুরক্ষা প্রোগ্রামে পাঠাবেন? 'ডাউনলোড বার' ফিচারে যেতে 'Shift'+F6 বোতাম প্রেস করুন।</translation>
 <translation id="4263223596040212967">আপনার কীবোর্ড লে-আউট ভাল করে দেখে নিয়ে আবার চেষ্টা করুন।</translation>
@@ -3141,7 +3130,6 @@
 <translation id="4535767533210902251">আপনার কীবোর্ডের সবচেয়ে উপরে ডানদিকের বোতামটি হল আঙ্গুলের ছাপের সেন্সর। যেকোনও আঙ্গুল দিয়ে সেটি আলতো করে টাচ করুন।</translation>
 <translation id="4536140153723794651">এমন সাইট যা সবসময় কুকি ব্যবহার করে</translation>
 <translation id="4538417792467843292">শব্দ মুছুন </translation>
-<translation id="4538684596480161368"><ph name="HOST" /> এ সর্বদা আনস্যান্ডবক্সড প্লাগ ইন অবরুদ্ধ করুন</translation>
 <translation id="4538792345715658285">এন্টারপ্রাইজ নীতি দ্বারা ইনস্টল করা হয়েছে৷</translation>
 <translation id="4541123282641193691">আপনার অ্যাকাউন্ট যাচাই করা যায়নি। আবার চেষ্টা করুন অথবা Chromebook রিস্টার্ট করুন।</translation>
 <translation id="4541662893742891060">এই প্রোফাইলে কানেক্ট করা যায়নি। প্রযুক্তিগত সহায়তা পেতে, আপনার পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন।</translation>
@@ -4170,7 +4158,6 @@
 <translation id="5740820643029013514">অপেক্ষাকৃত কম শব্দযুক্ত মেসেজের বিকল্প বেছে নিন (সাজেস্ট করা হয়েছে)</translation>
 <translation id="574104302965107104">ডিসপ্লে মিররিং</translation>
 <translation id="574209121243317957">পিচ</translation>
-<translation id="5742505912938664543">আপনি এখানে সেকেন্ডারি অ্যাকাউন্ট যোগ করলে সেটির মাধ্যমে ওয়েব ব্রাউজ, অ্যাপ ডাউনলোড, Gmail চেক ও অন্যান্য Google পরিষেবা ব্যবহার করতে পারবেন।</translation>
 <translation id="5746169159649715125">পিডিএফ হিসেবে সেভ করুন</translation>
 <translation id="5746261205461426123">সেট আপ গাইড খুলুন</translation>
 <translation id="5747552184818312860">মেয়াদ শেষ হবে</translation>
@@ -5328,7 +5315,6 @@
 <translation id="7077829361966535409">সাইন-ইন পৃষ্ঠাটি বর্তমান প্রক্সি সেটিংস ব্যবহার করে লোড করা যায়নি৷ অনুগ্রহ করে <ph name="GAIA_RELOAD_LINK_START" />আবার সাইন-ইনের চেষ্টা করুন<ph name="GAIA_RELOAD_LINK_END" /> অথবা অন্য কোনও <ph name="PROXY_SETTINGS_LINK_START" />প্রক্সি সেটিংস<ph name="PROXY_SETTINGS_LINK_END" /> ব্যবহার করুন৷</translation>
 <translation id="7078120482318506217">সকল নেটওয়ার্কগুলি</translation>
 <translation id="7078386829626602215">কোনও ডিভাইস শনাক্ত করা হয়নি। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
-<translation id="7079716540084905538"><ph name="USER_NAME" />-এর জন্য একটি সেকেন্ডারি Google অ্যাকাউন্ট যোগ করুন</translation>
 <translation id="708060913198414444">অ&amp;ডিও ঠিকানা কপি করুন</translation>
 <translation id="7081952801286122383">আপনি ছদ্মবেশী মোডে আছেন</translation>
 <translation id="708278670402572152">স্ক্যানিং সক্রিয় করতে সংযোগ বিচ্ছিন্ন করুন</translation>
@@ -6108,7 +6094,6 @@
 <translation id="7966241909927244760">ছবি আইডি কপি করুন</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{বুকমার্ক তালিকাতে ১টি আইটেম আছে}one{বুকমার্ক তালিকাতে {COUNT}টি আইটেম আছে}other{বুকমার্ক তালিকাতে {COUNT}টি আইটেম আছে}}</translation>
 <translation id="7968072247663421402">পরিষেবা প্রদানকারীর কিছু বিকল্প</translation>
-<translation id="7968198493605442410">টেক্সট ফাইলে লিঙ্ক কপি করুন</translation>
 <translation id="7968742106503422125">আপনি যে ডেটা কপি করে পেস্ট করেন তা পড়ুন ও সংশোধন করুন</translation>
 <translation id="7968833647796919681">কার্য-সম্পাদনা ডেটা সংগ্রহ সক্ষম করুন</translation>
 <translation id="7968982339740310781">বিশদ বিবরণ দেখুন</translation>
@@ -6606,7 +6591,6 @@
 <translation id="8553342806078037065">অন্যান্য ব্যক্তিদের পরিচালনা করুন</translation>
 <translation id="8554899698005018844">কোনও ভাষা নেই</translation>
 <translation id="8557022314818157177">আপনার আঙ্গুলের ছাপ ক্যাপচার না করা পর্যন্ত 'নিরাপত্তা কী'-তে টাচ করতে থাকুন</translation>
-<translation id="855773602626431402">এই পৃষ্ঠায় একটি আনস্যান্ডবক্সড প্লাগ-ইন চালু করা থেকে আটকানো হয়েছে৷</translation>
 <translation id="8557930019681227453">ম্যানিফেস্ট</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{সবকটি &amp;নতুন উইন্ডোতে খুলুন}=1{&amp;নতুন উইন্ডোতে খুলুন}one{সবকটি ({COUNT}টি) &amp;নতুন উইন্ডোতে খুলুন}other{সবকটি ({COUNT}টি) &amp;নতুন উইন্ডোতে খুলুন}}</translation>
 <translation id="8561206103590473338">হাতি</translation>
@@ -6639,7 +6623,6 @@
 <translation id="8594908476761052472">ভিডিও ক্যাপচার করুন</translation>
 <translation id="8596540852772265699">কাস্টম ফাইলগুলি</translation>
 <translation id="8597845839771543242">প্রপার্টি ফর্ম্যাট:</translation>
-<translation id="8598453409908276158">আনস্যান্ডবক্সড প্লাগ-ইন ব্লক করা হয়েছে</translation>
 <translation id="8601206103050338563">TLS WWW ক্লায়েন্ট  যাচাইকরণ</translation>
 <translation id="8602851771975208551">আপনার কম্পিউটারের অন্য একটি প্রোগ্রাম একটি অ্যাপ্লিকেশন জুড়েছে যা Chrome এর কাজ করার পদ্ধতিকে পাল্টে দিতে পারে৷</translation>
 <translation id="8605428685123651449">SQLite মেমোরি</translation>

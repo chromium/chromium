@@ -18,6 +18,7 @@
 <translation id="257708665678654955">您希望 Google Chrome 將來翻譯此網站的<ph name="LANGUAGE_NAME" />頁面嗎？</translation>
 <translation id="2695886661449553974">Chrome 無法檢查更新，請稍後再試。</translation>
 <translation id="2732745070297234559">Chrome 無法檢查所有密碼。請明天再試。</translation>
+<translation id="2740105938841089077">使用 Chrome 開啟連結</translation>
 <translation id="2919738076569633423">使用 Chrome 即表示您同意《<ph name="BEGIN_LINK_TOS" />服務條款<ph name="END_LINK_TOS" />》。</translation>
 <translation id="3030414234702425231">由於您即將登出由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 管理的帳戶，系統將刪除您在此裝置上的 Chrome 資料，但這些資料仍會保留在您的 Google 帳戶中。</translation>
 <translation id="3148688391461398285">讓應用程式根據您的位置資訊在 Chrome 中為您提供更優質的服務。</translation>
@@ -53,6 +54,7 @@
 <translation id="5854621639439811139">Chrome 提示。而家，有啲掣會喺螢幕底部，例如 [上一頁]、[下一頁] 同埋 [搜尋]。</translation>
 <translation id="6036420186814142909">Google Chrome 的功能可讓您輕鬆管理網際網路數據傳輸以及網頁載入速度。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="6181930887571472871">切換至 Chrome</translation>
 <translation id="6238746320622508509">讓 Chrome 鎖定您的無痕式分頁。</translation>
 <translation id="6573431926118603307">您在其他裝置上開啟的 Chrome 分頁會在這裡顯示。</translation>
 <translation id="6600954340915313787">已複製至 Chrome</translation>
@@ -60,6 +62,7 @@
 <translation id="6648150602980899529">您即將登入由 <ph name="DOMAIN" /> 管理的帳戶，並讓帳戶管理員控制您的 Chrome 資料。您的資料將與這個帳戶建立永久連結。如果您登出 Chrome，系統將刪除此裝置上的資料，但這些資料仍會儲存在您的 Google 帳戶中。</translation>
 <translation id="6676840375528380067">要清除此裝置上的 Chrome 資料嗎？</translation>
 <translation id="6822673484890854830">Chrome 無法檢查所有密碼。請稍後再試。</translation>
+<translation id="6964931465519938134">您現在只要在訊息、文件或其他應用程式中輕按連結，即可使用 Chrome。</translation>
 <translation id="7124339256045485976">取得 Chrome 最新更新</translation>
 <translation id="7161390184744336561">Google Chrome 版本過舊</translation>
 <translation id="7165736900384873061">開始使用 Google Chrome 二維條碼掃描器</translation>

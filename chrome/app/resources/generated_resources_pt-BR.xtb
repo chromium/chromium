@@ -14,7 +14,6 @@
 <translation id="1011355516189274711">Volume da conversão de texto em voz</translation>
 <translation id="1012794136286421601">Seus arquivos do Google Docs, Planilhas, Apresentações e Desenhos estão sendo sincronizados. Abra o aplicativo Google Drive para acessá-los on-line ou off-line.</translation>
 <translation id="1012876632442809908">Dispositivo USB-C (porta frontal)</translation>
-<translation id="1013707859758800957">Foi permitida a execução de um plug-in sem sandbox nesta página.</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">Editar nome da pasta</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Último dia para atualizar o <ph name="DEVICE_TYPE" />}one{Atualize o <ph name="DEVICE_TYPE" /> em até {NUM_DAYS} dia}other{Atualize o <ph name="DEVICE_TYPE" /> em até {NUM_DAYS} dias}}</translation>
@@ -398,7 +397,6 @@
 <translation id="143027896309062157">Ler e modificar todos os dados no seu computador e nos sites que você visitar</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1431188203598586230">Atualização de software final</translation>
-<translation id="1431402976894535801">Impedir que sites saibam quando você está interagindo</translation>
 <translation id="1431432486300429272">O Google pode usar seu histórico de navegação para personalizar a Pesquisa e outros Serviços do Google Você ou seu pai/mãe pode mudar essa configuração a qualquer momento em myaccount.google.com/activitycontrols/search</translation>
 <translation id="1432581352905426595">Gerenciar mecanismos de pesquisa</translation>
 <translation id="1433811987160647649">Perguntar antes de acessar</translation>
@@ -507,7 +505,6 @@
 <translation id="1549788673239553762"><ph name="APP_NAME" /> deseja acessar <ph name="VOLUME_NAME" />. Ele pode modificar ou excluir seus arquivos.</translation>
 <translation id="1552301827267621511">A extensão <ph name="EXTENSION_NAME" /> mudou o mecanismo de pesquisa para <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1553538517812678578">ilimitado</translation>
-<translation id="1554390798506296774">Sempre permitir plug-ins sem sandbox em <ph name="HOST" /></translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1556537182262721003">Não foi possível mover o diretório de extensões para o perfil.</translation>
 <translation id="155865706765934889">Touchpad</translation>
@@ -607,7 +604,6 @@
 <translation id="1651008383952180276">Informe a mesma senha longa duas vezes</translation>
 <translation id="1652326691684645429">Ativar o "Compartilhar por proximidade"</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Adicionar a impressora ao Google Cloud Print para poder imprimir de qualquer lugar.}one{Adicionar # impressoras ao Google Cloud Print para poder imprimir de qualquer lugar.}other{Adicionar # impressoras ao Google Cloud Print para poder imprimir de qualquer lugar.}}</translation>
-<translation id="1653575510930452864">Copiar link para este texto</translation>
 <translation id="1656528038316521561">Opacidade do plano de fundo</translation>
 <translation id="1657406563541664238">Ajudar a tornar o <ph name="PRODUCT_NAME" /> melhor enviando automaticamente estatísticas de uso e relatórios de problemas ao Google.</translation>
 <translation id="1657937299377480641">Para fazer login novamente e ter acesso a recursos educacionais, peça permissão a um dos responsáveis</translation>
@@ -848,7 +844,6 @@
 <translation id="1916502483199172559">Avatar vermelho padrão</translation>
 <translation id="1918141783557917887">&amp;Menor</translation>
 <translation id="1919345977826869612">Anúncios</translation>
-<translation id="1919814239594435008">Plug-in sem sandbox permitido</translation>
 <translation id="1920390473494685033">Contatos</translation>
 <translation id="1921050530041573580">Parear o smartphone com o app Mensagens</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
@@ -961,7 +956,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="204914487372604757">Criar atalho</translation>
 <translation id="2050339315714019657">Retrato</translation>
 <translation id="2053312383184521053">Dados em estado de inatividade</translation>
-<translation id="2054665754582400095">Sua presença</translation>
 <translation id="2055585478631012616">Sua conta será desconectada desses sites, inclusive nas guias abertas.</translation>
 <translation id="205560151218727633">Logotipo do Google Assistente</translation>
 <translation id="2058456167109518507">Dispositivo detectado</translation>
@@ -1075,7 +1069,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2175607476662778685">Barra de inicialização rápida</translation>
 <translation id="217576141146192373">Não foi possível adicionar a impressora. Verifique a configuração da impressora e tente novamente.</translation>
 <translation id="2177950615300672361">Guia anônima: <ph name="TAB_NAME" /></translation>
-<translation id="2178098616815594724">O plug-in <ph name="PEPPER_PLUGIN_NAME" /> do domínio <ph name="PEPPER_PLUGIN_DOMAIN" /> quer acessar seu computador</translation>
 <translation id="2178614541317717477">Compromisso da autoridade de certificação</translation>
 <translation id="2182058453334755893">Copiado para a área de transferência</translation>
 <translation id="2184515124301515068">Permitir que Chrome defina quando os sites podem reproduzir sons (recomendado)</translation>
@@ -1713,7 +1706,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2885729872133513017">Ocorreu um problema ao decodificar a resposta do servidor.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="2889064240420137087">Abrir link com...</translation>
-<translation id="2889925978073739256">Continuar bloqueando plug-ins sem sandbox</translation>
 <translation id="2891922230654533301">Usar o dispositivo para fazer login em <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Navegador padrão</translation>
 <translation id="2894757982205307093">Nova guia no grupo</translation>
@@ -1962,7 +1954,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3163201441334626963">Produto <ph name="PRODUCT_ID" /> desconhecido do fornecedor <ph name="VENDOR_ID" /></translation>
 <translation id="3163254451837720982">Os serviços a seguir ajudam a proteger seus dados. Esses recursos podem ser desativados a qualquer momento.</translation>
 <translation id="3164329792803560526">Compartilhando esta guia com <ph name="APP_NAME" /></translation>
-<translation id="3165371858310906303">Perguntar sempre que um site quiser saber quando você está interagindo</translation>
 <translation id="3165390001037658081">Algumas operadoras podem bloquear esse recurso.</translation>
 <translation id="316652501498554287">Contas do G Suite for Education</translation>
 <translation id="3170072451822350649">Também é possível ignorar o login e <ph name="LINK_START" />navegar como visitante<ph name="LINK_END" />.</translation>
@@ -2543,7 +2534,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3824621460022590830">O token de registro do dispositivo é inválido. Entre em contato com o proprietário ou administrador do dispositivo. Código do erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="3826071569074535339">Permitir o uso de sensores de movimento</translation>
 <translation id="3826440694796503677">Seu administrador desativou a adição de mais Contas do Google</translation>
-<translation id="3827306204503227641">Continuar permitindo plug-ins sem sandbox</translation>
 <translation id="3827774300009121996">&amp;Tela cheia</translation>
 <translation id="3828029223314399057">Pesquisar favoritos</translation>
 <translation id="3829765597456725595">Compartilhamento de arquivos SMB</translation>
@@ -2911,7 +2901,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="425573743389990240">Taxa de descarga da bateria em Watts (um valor negativo significa que a bateria está sendo carregada)</translation>
 <translation id="4256316378292851214">Sal&amp;var vídeo como...</translation>
 <translation id="4258348331913189841">Sistemas de arquivos</translation>
-<translation id="4259381619085088639">sua presença</translation>
 <translation id="4259388776256904261">Isso pode demorar um pouco</translation>
 <translation id="4260182282978351200">O arquivo <ph name="FILE_NAME" /> pode ser perigoso. Enviar para verificação no Proteção Avançada do Google? Pressione Shift+F6 para voltar à área da barra de downloads.</translation>
 <translation id="4263223596040212967">Verifique o layout do seu teclado e tente novamente.</translation>
@@ -3144,7 +3133,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4535767533210902251">O sensor de impressão digital fica no canto superior direito do teclado. Toque nele de leve com qualquer dedo.</translation>
 <translation id="4536140153723794651">Sites que podem usar cookies sempre</translation>
 <translation id="4538417792467843292">Excluir palavra</translation>
-<translation id="4538684596480161368">Sempre bloquear plug-ins sem sandbox em <ph name="HOST" /></translation>
 <translation id="4538792345715658285">Instalada pela política empresarial.</translation>
 <translation id="4541123282641193691">Não foi possível verificar sua conta. Tente novamente ou reinicie o Chromebook.</translation>
 <translation id="4541662893742891060">Não é possível se conectar a esse perfil. Entre em contato com sua operadora para receber suporte técnico.</translation>
@@ -4173,7 +4161,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5740820643029013514">Usar mensagens mais discretas (recomendado)</translation>
 <translation id="574104302965107104">Espelhamento da tela</translation>
 <translation id="574209121243317957">Tom da fala</translation>
-<translation id="5742505912938664543">Ao adicionar uma conta secundária aqui, você poderá usá-la para navegar na Web, fazer o download de apps e acessar o Gmail e outros Serviços do Google.</translation>
 <translation id="5746169159649715125">Salvar como PDF</translation>
 <translation id="5746261205461426123">Abrir o guia de configuração</translation>
 <translation id="5747552184818312860">Expira em</translation>
@@ -5331,7 +5318,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7077829361966535409">Houve uma falha no carregamento da página de login usando as configurações de proxy atuais. <ph name="GAIA_RELOAD_LINK_START" />Tente fazer login novamente<ph name="GAIA_RELOAD_LINK_END" /> ou use <ph name="PROXY_SETTINGS_LINK_START" />configurações de proxy<ph name="PROXY_SETTINGS_LINK_END" /> diferentes.</translation>
 <translation id="7078120482318506217">Todas as redes</translation>
 <translation id="7078386829626602215">Nenhum dispositivo detectado. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
-<translation id="7079716540084905538">Adicionar uma Conta do Google secundária para <ph name="USER_NAME" /></translation>
 <translation id="708060913198414444">C&amp;opiar endereço do áudio</translation>
 <translation id="7081952801286122383">Você está no modo anônimo</translation>
 <translation id="708278670402572152">Desconectar para ativar a verificação</translation>
@@ -6112,7 +6098,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7966241909927244760">C&amp;opiar endereço da imagem</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{1 item na lista de favoritos}one{{COUNT} item na lista de favoritos}other{{COUNT} itens na lista de favoritos}}</translation>
 <translation id="7968072247663421402">Opções do provedor</translation>
-<translation id="7968198493605442410">Copiar link para este texto</translation>
 <translation id="7968742106503422125">Ler e modificar os dados que você copia e cola</translation>
 <translation id="7968833647796919681">Ativar coleta de dados de desempenho</translation>
 <translation id="7968982339740310781">Visualizar detalhes</translation>
@@ -6611,7 +6596,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8553342806078037065">Gerenciar outras pessoas</translation>
 <translation id="8554899698005018844">Sem idioma</translation>
 <translation id="8557022314818157177">Continue tocando na sua chave de segurança até capturar sua impressão digital</translation>
-<translation id="855773602626431402">Um plug-in sem sandbox teve a execução impedida nesta página.</translation>
 <translation id="8557930019681227453">Manifesto</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Abrir tudo em &amp;uma nova janela}=1{Abrir em &amp;uma nova janela}one{Abrir tudo ({COUNT}) em &amp;uma nova janela}other{Abrir tudo ({COUNT}) em &amp;uma nova janela}}</translation>
 <translation id="8561206103590473338">Elefante</translation>
@@ -6644,7 +6628,6 @@ Pressione um interruptor atribuído para remover a atribuição.</translation>
 <translation id="8594908476761052472">Capturar vídeo</translation>
 <translation id="8596540852772265699">Arquivos personalizados</translation>
 <translation id="8597845839771543242">Formato da propriedade:</translation>
-<translation id="8598453409908276158">Plug-in sem sandbox bloqueado</translation>
 <translation id="8601206103050338563">Autenticação do cliente TLS WWW</translation>
 <translation id="8602851771975208551">Outro programa em seu computador adicionou um aplicativo que pode mudar a forma como o Google Chrome funciona.</translation>
 <translation id="8605428685123651449">Memória SQLite</translation>

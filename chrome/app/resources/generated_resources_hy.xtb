@@ -14,7 +14,6 @@
 <translation id="1011355516189274711">Տեքստի հնչեցման ձայնի ուժգնությունը</translation>
 <translation id="1012794136286421601">Ձեր փաստաթղթերը, աղյուսակները, սլայդները և գծագրերը համաժամացվում են: Բացեք Google Drive հավելվածը՝ այդ ֆայլերից առցանց կամ անցանց ռեժիմներում օգտվելու համար:</translation>
 <translation id="1012876632442809908">USB-C սարք (առջևի միացք)</translation>
-<translation id="1013707859758800957">Այս էջում թույլատրվել է չպաշտպանված միջավայրից դուրս փլագինի գործարկում:</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">Պանակի անվան փոփոխում</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Այսօր <ph name="DEVICE_TYPE" /> սարքի թարմացման վերջին օրն է}one{Թարմացրեք <ph name="DEVICE_TYPE" /> սարքը {NUM_DAYS} օրվա ընթացքում}other{Թարմացրեք <ph name="DEVICE_TYPE" /> սարքը {NUM_DAYS} օրվա ընթացքում}}</translation>
@@ -399,7 +398,6 @@
 <translation id="143027896309062157">Դիտել և փոփոխել ձեր համակարգչի և այցելած վեբկայքերի բոլոր տվյալները</translation>
 <translation id="1430915738399379752">Տպում</translation>
 <translation id="1431188203598586230">Ծրագրային վերջին թարմացում</translation>
-<translation id="1431402976894535801">Արգելափակել ձեր ներկայության մասին տեղեկությունների հասանելիությունը կայքերի համար</translation>
 <translation id="1431432486300429272">Google-ը կարող է ձեր այցելությունների պատմությունն օգտագործել՝ Որոնումը և Google-ի մյուս ծառայություններն անհատականացնելու համար: Դուք կամ ձեր ծնողը կարող եք կարգավորել այս գործառույթը myaccount.google.com/activitycontrols/search էջում:</translation>
 <translation id="1432581352905426595">Կառավարել որոնման համակարգերը</translation>
 <translation id="1433811987160647649">Հարցնել՝ մինչ օգտագործելը</translation>
@@ -508,7 +506,6 @@
 <translation id="1549788673239553762"><ph name="APP_NAME" /> հավելվածը ցանկանում է օգտվել <ph name="VOLUME_NAME" />-ից: Այն կարող է փոփոխել կամ ջնջել ձեր ֆայլերը:</translation>
 <translation id="1552301827267621511">«<ph name="EXTENSION_NAME" />» ընդլայնումը փոխել է օգտագործվող որոնիչը։ Այժմ օգտագործվում է <ph name="SEARCH_PROVIDER_DOMAIN" />-ը։</translation>
 <translation id="1553538517812678578">անսահմանափակ</translation>
-<translation id="1554390798506296774">Միշտ թույլ տալ պաշտպանված միջավայրից դուրս փլագինները <ph name="HOST" />-ում</translation>
 <translation id="1555130319947370107">Կապույտ</translation>
 <translation id="1556537182262721003">Չհաջողվեց պրոֆիլ տեղափոխել ընդլայնման գրացուցակը:</translation>
 <translation id="155865706765934889">Հպահարթակ</translation>
@@ -608,7 +605,6 @@
 <translation id="1651008383952180276">Դուք պետք է երկու անգամ մուտքագրեք միևնույն անցաբառը</translation>
 <translation id="1652326691684645429">Միացնել փոխանակումը մոտակա սարքերի հետ</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Ավելացրեք տպիչ Google Cloud Print-ին, որպեսզի կարողանաք տպել ցանկացած վայրից:}one{Ավելացրեք # տպիչ Google Cloud Print-ին, որպեսզի կարողանաք տպել ցանկացած վայրից:}other{Ավելացրեք # տպիչ Google Cloud Print-ին, որպեսզի կարողանաք տպել ցանկացած վայրից:}}</translation>
-<translation id="1653575510930452864">Պատճենել հղումը որպես տեքստ</translation>
 <translation id="1656528038316521561">Ֆոնի թափանցիկությունը</translation>
 <translation id="1657406563541664238">Օգնեք բարելավել <ph name="PRODUCT_NAME" />-ը՝ ավտոմատ Google-in ուղարկելով օգտագործման վիճակագրությունը և խափանումների մասին հաշվետվությունները</translation>
 <translation id="1657937299377480641">Ուսումնական ռեսուրսներից օգտվելու համար խնդրեք ծնողին, որ թույլատրի ձեզ նորից հաշիվ մտնել</translation>
@@ -849,7 +845,6 @@
 <translation id="1916502483199172559">Կանխադրված կարմիր ավատար</translation>
 <translation id="1918141783557917887">&amp;Ավելի փոքր</translation>
 <translation id="1919345977826869612">Գովազդ</translation>
-<translation id="1919814239594435008">Պաշտպանված միջավայրից դուրս փլագինները թույլատրված են</translation>
 <translation id="1920390473494685033">Կոնտակտներ</translation>
 <translation id="1921050530041573580">Զուգակցեք հեռախոսը Messages հավելվածի հետ</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> կետ/դյույմ</translation>
@@ -962,7 +957,6 @@
 <translation id="204914487372604757">Ստեղծել դյուրանցում</translation>
 <translation id="2050339315714019657">Ուղղաձիգ</translation>
 <translation id="2053312383184521053">Անգործուն վիճակի տվյալներ</translation>
-<translation id="2054665754582400095">Տվյալներ ձեր ներկայության մասին</translation>
 <translation id="2055585478631012616">Դուք դուրս կգրվեք հաշվից այս կայքերում և բաց ներդիրներում</translation>
 <translation id="205560151218727633">Google Օգնականի լոգո</translation>
 <translation id="2058456167109518507">Հայտնաբերվել է սարք</translation>
@@ -1076,7 +1070,6 @@
 <translation id="2175607476662778685">Արագ գործարկման գոտի</translation>
 <translation id="217576141146192373">Չհաջողվեց ավելացնել տպիչը: Ստուգեք դրա կարգավորումները և նորից փորձեք:</translation>
 <translation id="2177950615300672361">Ինկոգնիտո ներդիր` <ph name="TAB_NAME" /></translation>
-<translation id="2178098616815594724"><ph name="PEPPER_PLUGIN_DOMAIN" /> տիրույթում գտնվող <ph name="PEPPER_PLUGIN_NAME" /> փլագինն ուզում է միանալ ձեր համակարգչին</translation>
 <translation id="2178614541317717477">Բացահայտված հավաստագրման կենտրոն</translation>
 <translation id="2182058453334755893">Պատճենվեց սեղմատախտակին</translation>
 <translation id="2184515124301515068">Թույլ տալ Chrome-ին ընտրել՝ որ կայքերում ձայն նվագարկվի (խորհուրդ է տրվում)</translation>
@@ -1714,7 +1707,6 @@
 <translation id="2885729872133513017">Չհաջողվեց ապակոդավորել սերվերի պատասխանը։</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="2889064240420137087">Բացել հղումը` օգտագործելով…</translation>
-<translation id="2889925978073739256">Շարունակել արգելափակել պաշտպանված միջավայրից դուրս փլագինները</translation>
 <translation id="2891922230654533301">Օգտագործե՞լ ձեր սարքը՝ <ph name="APP_NAME" /> հավելվածում հաշիվ մտնելու համար</translation>
 <translation id="2893168226686371498">Կանխադրված դիտարկիչ</translation>
 <translation id="2894757982205307093">Նոր ներդիր խմբում</translation>
@@ -1963,7 +1955,6 @@
 <translation id="3163201441334626963">Անհայտ <ph name="PRODUCT_ID" /> արտադրանք <ph name="VENDOR_ID" /> վաճառողի կողմից</translation>
 <translation id="3163254451837720982">Հետևյալ ծառայություններն օգնում են ապահով պահել ձեր տվյալները։ Դուք ցանկացած ժամանակ կարող եք այս գործառույթները։</translation>
 <translation id="3164329792803560526"><ph name="APP_NAME" />-ին հասանելի է այս ներդիրը</translation>
-<translation id="3165371858310906303">Հարցնել, երբ որևէ կայք ուզենա տեղեկություններ ստանալ ձեր ներկայության մասին</translation>
 <translation id="3165390001037658081">Որոշ մատակարարներ կարող են արգելափակել այս գործառույթը։</translation>
 <translation id="316652501498554287">G Suite for Education հաշիվներ</translation>
 <translation id="3170072451822350649">Դուք կարող եք նաև մուտք չգործել և <ph name="LINK_START" />սկսել հյուրի աշխատաշրջան<ph name="LINK_END" />:</translation>
@@ -2543,7 +2534,6 @@
 <translation id="3824621460022590830">Սարքերի գրանցման թոքենն անվավեր է։ Կապվեք սարքի սեփականատիրոջ կամ ադմինիստրատորի հետ։ Սխալի կոդը՝ <ph name="ERROR_CODE" />։</translation>
 <translation id="3826071569074535339">Թույլատրվում է օգտագործել շարժման տվիչները</translation>
 <translation id="3826440694796503677">Ադմինիստրատորն անջատել է այլ Google հաշիվներ ավելացնելու հնարավորությունը</translation>
-<translation id="3827306204503227641">Շարունակել թույլատրել չպաշտպանված միջավայրից դուրս փլագինները</translation>
 <translation id="3827774300009121996">&amp;Լիաէկրան</translation>
 <translation id="3828029223314399057">Որոնել էջանիշներ</translation>
 <translation id="3829765597456725595">SMB ցանցային պահեստ</translation>
@@ -2911,7 +2901,6 @@
 <translation id="425573743389990240">Մարտկոցի լիցքաթափման արագությունը վատտերով (բացասական արժեքը նշանակում է, որ մարտկոցը լիցքավորվում է)</translation>
 <translation id="4256316378292851214">Պա&amp;հել տեսանյութը որպես…</translation>
 <translation id="4258348331913189841">Ֆայլային համակարգեր</translation>
-<translation id="4259381619085088639">տվյալներ ձեր ներկայության մասին</translation>
 <translation id="4259388776256904261">Կարող է որոշ ժամանակ պահանջվել</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> ֆայլը կարող է վտանգավոր լինել։ Ստուգե՞լ այն Google-ի լրացուցիչ պաշտպանության միջոցով։ Սեղմեք Shift+F6՝ ներբեռնումների գոտու տարածք անցնելու համար։</translation>
 <translation id="4263223596040212967">Ստուգեք ստեղնաշարի դասավորությունը և նորից փորձեք։</translation>
@@ -3144,7 +3133,6 @@
 <translation id="4535767533210902251">Մատնահետքերի սկաները ստեղնաշարի աջ կողմի ստեղնն է: Որևէ մատով թեթևակի հպեք դրան։</translation>
 <translation id="4536140153723794651">Կայքեր, որոնք միշտ կարող են օգտագործել քուքիներ</translation>
 <translation id="4538417792467843292">Ջնջել բառը</translation>
-<translation id="4538684596480161368">Միշտ արգելափակել չմեկուսացված փլագինները <ph name="HOST" />-ում</translation>
 <translation id="4538792345715658285">Տեղադրված է ձեռնարկության կանոնի համաձայն:</translation>
 <translation id="4541123282641193691">Չհաջողվեց մուտք գործել։ Փորձեք նորից կամ վերաբեռնեք Chromebook-ը։</translation>
 <translation id="4541662893742891060">Չհաջողվեց միանալ այս պրոֆիլին։ Տեխնիկական աջակցության համար կապվեք օպերատորի հետ։</translation>
@@ -4175,7 +4163,6 @@
 <translation id="5740820643029013514">Օգտագործել անձայն հաղորդագրությունները (խորհուրդ է տրվում)</translation>
 <translation id="574104302965107104">Էկրանի հայելապատճենում</translation>
 <translation id="574209121243317957">Ձայնի մակարդակը</translation>
-<translation id="5742505912938664543">Եթե դուք երկրորդական հաշիվ ավելացնեք այստեղ, կկարողանաք այն օգտագործել կայքեր այցելելու, հավելվածներ ներբեռնելու, ինչպես նաև Gmail-ի և Google-ի այլ ծառայությունների հետ աշխատելու համար։</translation>
 <translation id="5746169159649715125">Պահել որպես PDF</translation>
 <translation id="5746261205461426123">Բացել կարգավորման ուղեցույցը</translation>
 <translation id="5747552184818312860">Սպառվում է</translation>
@@ -5333,7 +5320,6 @@
 <translation id="7077829361966535409">Պրոքսի-սերվերի ընթացիկ կարգավորումների միջոցով մուտքի էջի բեռնումը չհաջողվեց: <ph name="GAIA_RELOAD_LINK_START" />Փորձեք նորից մուտք գործել<ph name="GAIA_RELOAD_LINK_END" /> կամ օգտագործեք <ph name="PROXY_SETTINGS_LINK_START" />պրոքսի-սերվերի այլ կարգավորումներ<ph name="PROXY_SETTINGS_LINK_END" />:</translation>
 <translation id="7078120482318506217">Բոլոր ցանցերը</translation>
 <translation id="7078386829626602215">Սարքեր չեն հայտնաբերվել <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
-<translation id="7079716540084905538">Ավելացրեք <ph name="USER_NAME" />-ի երկրորդ Google հաշիվը</translation>
 <translation id="708060913198414444">Պատճենել ձայնանյութի հասցեն</translation>
 <translation id="7081952801286122383">Դուք ինկոգնիտո ռեժիմում եք</translation>
 <translation id="708278670402572152">Անջատվեք ցանցից՝ որոնումը միացնելու համար</translation>
@@ -6113,7 +6099,6 @@
 <translation id="7966241909927244760">Պատճենել պատկերի հասցեն</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{1 տարր էջանիշների ցանկում}one{{COUNT} տարր էջանիշների ցանկում}other{{COUNT} տարր էջանիշների ցանկում}}</translation>
 <translation id="7968072247663421402">Մատակարարի կարգավորումներ</translation>
-<translation id="7968198493605442410">Պատճենել հղումը որպես տեքստ</translation>
 <translation id="7968742106503422125">Դիտել և փոփոխել տվյալները, որոնք դուք պատճենում և տեղադրում եք</translation>
 <translation id="7968833647796919681">Միացնել կատարողականության տվյալների հավաքումը</translation>
 <translation id="7968982339740310781">Դիտել մանրամասները</translation>
@@ -6611,7 +6596,6 @@
 <translation id="8553342806078037065">Կառավարել այլ օգտատերերի</translation>
 <translation id="8554899698005018844">Լեզու նշված չէ</translation>
 <translation id="8557022314818157177">Հպեք անվտանգության բանալուն և պահեք, մինչև ձեր մատնահետքն ավելացվի:</translation>
-<translation id="855773602626431402">Կասեցվել է պաշտպանված միջավայրից դուրս փլագինի գործարկումն այս էջի վրա:</translation>
 <translation id="8557930019681227453">Մանիֆեստ</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Բացել բոլորը &amp;նոր պատուհանում}=1{Բացել &amp;նոր պատուհանում}one{Բացել բոլորը ({COUNT}) &amp;նոր պատուհանում}other{Բացել բոլորը ({COUNT}) &amp;նոր պատուհանում}}</translation>
 <translation id="8561206103590473338">Փիղ</translation>
@@ -6644,7 +6628,6 @@
 <translation id="8594908476761052472">Տեսագրել</translation>
 <translation id="8596540852772265699">Օգտատիրոջ ֆայլեր</translation>
 <translation id="8597845839771543242">Հատկության ձևաչափ՝</translation>
-<translation id="8598453409908276158">Պաշտպանված միջավայրից դուրս փլագիններն արգելափակված են</translation>
 <translation id="8601206103050338563">TLS WWW սպասառուի նույնականացում</translation>
 <translation id="8602851771975208551">Ձեր համակարգչում վրա մեկ այլ ծրագիր ավելացրել է հավելված, որը կարող է ազդել Chrome-ի աշխատանքի վրա:</translation>
 <translation id="8605428685123651449">SQLite հիշողություն</translation>

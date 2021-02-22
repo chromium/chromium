@@ -297,7 +297,6 @@
 <translation id="204357726431741734">Увійдіть, щоб користуватися паролями, збереженими в обліковому записі Google</translation>
 <translation id="2053111141626950936">Сторінки цією мовою (<ph name="LANGUAGE" />) не перекладатимуться.</translation>
 <translation id="2053553514270667976">Поштовий індекс</translation>
-<translation id="2054665754582400095">Дані про те, чи ви присутні</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 пропозиція}one{# пропозиція}few{# пропозиції}many{# пропозицій}other{# пропозиції}}</translation>
 <translation id="2079545284768500474">Відмінити</translation>
 <translation id="20817612488360358">Системні параметри проксі-сервера налаштовано для використання, але чітко вказано налаштування проксі-сервера.</translation>
@@ -567,7 +566,6 @@
       щоб переконатися, що проксі-сервер працює. Якщо ви вважаєте, що не потрібно
       використовувати проксі-сервер, виконайте вказані нижче дії.
       <ph name="PLATFORM_TEXT" /></translation>
-<translation id="3184534047932533456">Сайт <ph name="URL" /> хоче дізнаватися, чи ви присутні</translation>
 <translation id="3188393374551744535">Баланс рахунку</translation>
 <translation id="3194737229810486521">Сайт <ph name="URL" /> хоче постійно зберігати дані на вашому пристрої</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> на сервері <ph name="SERVER_NAME" /></translation>
@@ -1094,7 +1092,6 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Комп’ютер</translation>
 <translation id="5179510805599951267">Це не <ph name="ORIGINAL_LANGUAGE" />? Повідомте про помилку</translation>
-<translation id="5179740473595559246">Дізнаватися, чи ви присутні</translation>
 <translation id="5190835502935405962">Панель закладок</translation>
 <translation id="519422657042045905">Анотація недоступна</translation>
 <translation id="5201306358585911203">Повідомлення з вбудованої сторінки на цій сторінці</translation>
@@ -1325,7 +1322,6 @@
 <translation id="6051221802930200923">Зараз не можна перейти на сторінку <ph name="SITE" />, оскільки цей веб-сайт використовує закріплення сертифікатів. Помилки мережі й атаки зазвичай тимчасові, тому ця сторінка, скоріш за все, запрацює пізніше.</translation>
 <translation id="6051898664905071243">Кількість сторінок:</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053328359599022071">Інформувати, чи ви присутні?</translation>
 <translation id="6058977677006700226">Використовувати картки на всіх ваших пристроях?</translation>
 <translation id="6059925163896151826">Пристрої USB</translation>
 <translation id="6060009363608157444">Недійсний режим DnsOverHttps.</translation>

@@ -1400,10 +1400,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="2906874737073861391">Lista de extensões AppPack</translation>
 <translation id="2908277604670530363">Número máximo de conexões simultâneas ao servidor proxy</translation>
 <translation id="291853569864365550">Não mostrar sugestões de conteúdo na página "Nova guia"</translation>
-<translation id="2919544577647246857">Define a lista de usuários que têm permissão para fazer login no dispositivo. As entradas são feitas no formato <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, como <ph name="USER_WHITELIST_ENTRY_EXAMPLE" />. Para permitir usuários arbitrários em um domínio, use entradas no formato <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
-
-      Se esta política não for configurada, não haverá restrições quanto aos usuários autorizados a fazer login. Ainda assim, a criação de novos usuários exigirá que a política <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> seja configurada de forma adequada.
-      Se <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" /> estiver ativada, contas de usuários do Family Link também poderão ser adicionadas ao dispositivo, além das contas já definidas nesta política.</translation>
 <translation id="2920795918401557243">Esta configuração permite coletar o rastreamento de desempenho do sistema usando o serviço de rastreamento do sistema.
 
       Se a política for desativada, o usuário não poderá coletar o rastreamento do sistema usando esse serviço.
@@ -1772,19 +1768,6 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
       Acesse https://support.google.com/chrome/a?p=Supported_directory_variables para ver uma lista das variáveis que podem ser usadas.
 
       Se esta política for deixada sem definição, o caminho padrão do perfil será usado, e o usuário poderá substituí-lo pela sinalização de linha de comando "--user-data-dir".</translation>
-<translation id="3378482432905539452">Essa política está obsoleta. Use <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> para controlar a disponibilidade do plug-in Flash e <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> para controlar se o visualizador de PDF integrado será usado para abrir arquivos PDF.
-
-      Especifica uma lista de plug-ins que o usuário pode ativar ou desativar no <ph name="PRODUCT_NAME" />.
-
-      Os caracteres curinga "*" e "?" podem ser usados para fazer a correspondência de sequências de caracteres arbitrários. "*" corresponde a um número arbitrário de caracteres, enquanto "?" especifica um único caractere opcional, ou seja, corresponde a um ou nenhum caractere. O caractere de escape é "\". Então, para fazer a correspondência real aos caracteres "*", "?" ou "\", adicione um "\" antes deles.
-
-      Se você ativar essa configuração, a lista de plug-ins especificada poderá ser usada no <ph name="PRODUCT_NAME" />. Os usuários podem ativá-los ou desativá-los em "about:plugins", mesmo se o plug-in também corresponder a um padrão em DisabledPlugins. Os usuários também podem ativar e desativar plug-ins que não correspondem a nenhum padrão em DisabledPlugins, DisabledPluginsExceptions e EnabledPlugins.
-
-      Esta política possibilita a adição restrita de plug-ins à lista de proibições, em que a lista "DisabledPlugins" contém entradas com caracteres curinga, como para desativar todos os plug-ins (*) ou desativar todos os plug-ins Java (*Java*), mas o administrador quer ativar alguma versão específica, como "IcedTea Java 2.3". Essas versões específicas podem ser definidas na política.
-
-      Tanto o nome do plug-in como o nome do grupo de plug-ins precisam ser isentados. Cada grupo de plug-in é exibido em uma seção separada em about:plugins. Cada seção pode ter um ou mais plug-ins. Por exemplo, o plug-in "Shockwave Flash" pertence ao grupo "Adobe Flash Player", e os dois nomes precisam ter uma correspondência na lista de exceções caso o plug-in tenha que ser isentado da lista de proibições.
-
-      Se esta política não for definida, todo plug-in que corresponder aos padrões em "DisabledPlugins" será mantido desativado, e o usuário não poderá ativá-lo.</translation>
 <translation id="3381968327636295719">Usar o navegador de host por padrão</translation>
 <translation id="3387211681524224831">Se a política for definida como "Ativada" o histórico de navegação não será salvo, a sincronização de guias será desativada e os usuários não poderão mudar essa configuração.
 
@@ -2160,16 +2143,6 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
 
       Se essa política for deixada sem definição, o SPDY ficará disponível.</translation>
 <translation id="3891357445869647828">Ativar o JavaScript</translation>
-<translation id="3892015543543011887">Esta política controla as solicitações de instalação de extensões do <ph name="PRODUCT_NAME" /> que permitem que os usuários enviem as solicitações ao Google Admin Console para aprovação.
-
-      Quando a <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> não for definida ou for desativada, esta política será ignorada e as solicitações de instalação de extensões não serão criadas nem enviadas por upload.
-      Quando esta política não for definida ou for desativada, as solicitações de instalação de extensões não serão criadas nem enviadas por upload.
-      Quando esta política for ativada, as solicitações de instalação de extensões serão criadas e enviadas por upload ao Google Admin Console.
-
-      Essas solicitações são criadas quando os usuários tentam instalar uma extensão que não foi autorizada pela <ph name="EXTENSION_INSTALL_WHITELIST" /> nem pela <ph name="EXTENSION_SETTINGS" />.
-
-      Esta política só é eficaz quando a máquina está registrada na <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> do <ph name="PRODUCT_NAME" />.
-      Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
 <translation id="3898345958122666461">Desativar NTLMv2</translation>
 <translation id="3898795800259311780">Permitir ou negar captura de tela</translation>
 <translation id="3907683835264956726">Permite o login do usuário on-line em uma tela de bloqueio. Se a política for definida como verdadeira, a reautenticação on-line na tela de bloqueio será acionada, por exemplo, pela <ph name="POLICY" />.
@@ -3754,7 +3727,6 @@ Esta política afeta apenas os usuários que autenticam usando SAML.</translatio
 
       Observação: as senhas podem ser mais velhas do que o número especificado de dias caso o cliente tenha passado um período maior off-line.</translation>
 <translation id="6280973140313576289">Seletor de perfil forçado na inicialização</translation>
-<translation id="6281043242780654992">Configura políticas para as mensagens nativas. Os hosts de mensagens nativas presentes na lista de proibições não serão permitidos, a menos que estejam na lista de permissões.</translation>
 <translation id="6282524907402492171">Exibir avisos de suspensão de uso de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="6282799760374509080">Permitir ou negar captura de áudio</translation>
 <translation id="6284362063448764300">TLS 1.1</translation>
@@ -5700,32 +5672,6 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       Se ela for definida como falsa ou não for definida, os elementos de controle de formulário serão ativados conforme foram lançados nas versões M81, M82 e M83.
 
       Esta política será removida após o Chrome 84.</translation>
-<translation id="8938932171964587769">Uso suspenso no M69. Em vez dela,
-      use OverrideSecurityRestrictionsOnInsecureOrigin.
-
-      A política especifica uma lista de origens (URLs) ou padrões de nome de host (como
-      "*.example.com") aos quais as restrições de segurança sobre origens não seguras
-      não se aplicam.
-
-      O objetivo é permitir que organizações coloquem origens na lista de permissões para aplicativos
-      legados que não implantam TLS, ou que elas configurem um servidor de preparo para o
-      desenvolvimento interno da Web, de modo que os desenvolvedores delas possam testar recursos
-      que exigem contextos seguros sem precisar implantar TLS no servidor
-      de preparo. Esta política também impedirá que a origem seja rotulada
-      como "Não segura" na omnibox.
-
-      Definir uma lista de URLs nesta política tem o mesmo efeito que definir a
-      sinalização de linha de comando "--unsafely-treat-insecure-origin-as-secure" para uma
-      lista com os mesmos URLs separados por vírgula. Se a política for definida, ela
-      modificará a sinalização de linha de comando.
-
-      O uso desta política foi suspenso no M69 para implementar a
-      OverrideSecurityRestrictionsOnInsecureOrigin. Se as duas políticas estiverem
-      presentes, OverrideSecurityRestrictionsOnInsecureOrigin modificará esta
-      política.
-
-      Para ver mais informações sobre contextos seguros, acesse
-      https://www.w3.org/TR/secure-contexts/</translation>
 <translation id="8942616385591203339">Esta política controla se o consentimento de sincronização pode ser exibido para o usuário durante o primeiro login. É necessário defini-la como falsa se o consentimento de sincronização nunca for necessário para o usuário.
       Se definida como falsa, o consentimento de sincronização não será exibido.
       Se definida como verdadeira ou não definida, o consentimento de sincronização poderá ser exibido.</translation>
@@ -5783,19 +5729,6 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       Esta política só afeta usuários que fizeram a autenticação com SAML.
 
       O valor da política precisa ser especificado em segundos.</translation>
-<translation id="9015295904649380186">Se a política for definida, será possível controlar o acionamento do aviso de proteção de senha. A proteção de senha alerta os usuários quando eles reutilizam senhas em sites potencialmente suspeitos.
-
-      Use <ph name="PASSWORD_PROTECTION_LOGIN_URLS_POLICY_NAME" /> e <ph name="PASSWORD_PROTECTION_CHANGE_PASSWORD_URL_POLICY_NAME" /> para definir quais senhas serão protegidas.
-
-      Se esta política for definida como:
-
-      * PasswordProtectionWarningOff, nenhum aviso de proteção de senha será exibido;
-
-      * PasswordProtectionWarningOnPasswordReuse, o aviso de proteção de senha será exibido quando os usuários reutilizarem senhas protegidas em sites que não estejam na lista de permissões;
-
-      * PasswordProtectionWarningOnPhishingReuse, o aviso de proteção de senha será exibido quando os usuários reutilizarem senhas protegidas em sites de phishing.
-
-      Se a política não for definida, o serviço protegerá apenas as senhas do Google, mas os usuários poderão mudar essa configuração.</translation>
 <translation id="9035086760683255833">Ativar o recurso de acessibilidade que destaca o objeto em foco por meio do teclado.
 
           Este recurso é responsável por destacar o objeto que está em foco no teclado.
@@ -5917,7 +5850,6 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       A sessão do usuário é restaurada após a reinicialização.</translation>
 <translation id="9160028464653564229">Não permitir que nenhum site solicite acesso a portas seriais por meio da API Serial</translation>
 <translation id="9167719789236691545">Desativar o Drive no app Arquivos do <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="9185107612228451403">Configura as políticas relacionadas a extensões. O usuário não tem permissão para instalar extensões que estejam em uma lista de proibições, a menos que elas sejam colocadas na lista de permissões. Você também pode forçar o <ph name="PRODUCT_NAME" /> a instalar extensões automaticamente especificando-as na <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />. As extensões instaladas à força são instaladas independentemente de estarem presentes na lista de proibições.</translation>
 <translation id="9187743794267626640">Desativa a montagem de armazenamento externo</translation>
 <translation id="9190456586252617675">Esta política controla o modo da experiência de integração do Assistente.
 

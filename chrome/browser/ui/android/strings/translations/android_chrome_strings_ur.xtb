@@ -405,7 +405,6 @@
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> ڈاؤن لوڈز کو حذف کر دیا گیا</translation>
 <translation id="3856096718352044181">براہ کرم توثیق کریں کہ یہ درست فراہم کنندہ ہے یا بعد میں دوبارہ کوشش کریں</translation>
 <translation id="3861633093716975811">مقبول ویڈیوز</translation>
-<translation id="386944881686624613">ٹیکسٹ کا لنک تخلیق نہیں کیا جا سکتا۔ صفحہ کے لنک کا اشتراک کریں۔</translation>
 <translation id="3892148308691398805">ٹیکسٹ کاپی کریں</translation>
 <translation id="3894427358181296146">فولڈر کا اضافہ کریں</translation>
 <translation id="3895926599014793903">زوم کو زبردستی فعال کریں</translation>
@@ -737,7 +736,6 @@
 <translation id="6138832295072039549">اپنی سائٹ کی ترتیبات کو یہاں تبدیل کریں</translation>
 <translation id="6140709049082532940">بہتر کردہ حفاظت:</translation>
 <translation id="6140912465461743537">ملک/علاقہ</translation>
-<translation id="6142002709876620371">رازداری سینڈ باکس کو فعال کریں</translation>
 <translation id="614940544461990577">آزمائیں:</translation>
 <translation id="6154478581116148741">اس آلہ سے اپنے پاس ورڈز برآمد کرنے کے لئے ترتیبات میں اسکرین لاک آن کریں</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> ڈیٹا کی سیونگز</translation>
@@ -827,7 +825,6 @@
 <translation id="6656545060687952787">‏Chrome کو آلات اسکین کرنے کیلئے مقام تک رسائی کی ضرورت ہے۔ <ph name="BEGIN_LINK" />اجازتوں کو اپ ڈیٹ کریں<ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">پاس ورڈ</translation>
 <translation id="6659594942844771486">ٹیب</translation>
-<translation id="6663079968236414793">ٹیکسٹ کا لنک</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> میں کھولیں</translation>
 <translation id="666981079809192359">‏Chrome کی رازداری کا نوٹس</translation>
 <translation id="6671495933530132209">تصویر کاپی کریں</translation>
@@ -897,7 +894,6 @@
 <translation id="718926126787620637">ان بُک مارک فولڈرز کی فہرست جو مکمل اونچائی پر کھلی ہوئی ہے۔</translation>
 <translation id="7189372733857464326">‏Google Play سروسز کی جانب سے اپ ڈیٹ مکمل کرنے کا انتظار ہے</translation>
 <translation id="7191430249889272776">ٹیب پس منظر میں کھلا ہے۔</translation>
-<translation id="72180057821664864">ٹیکسٹ کا لنک تخلیق نہیں کیا جا سکتا</translation>
 <translation id="7233236755231902816">‏اپنی زبان میں ویب کو دیکھنے کے لیے، Chrome کا تازہ ترین ورژن حاصل کریں</translation>
 <translation id="7248069434667874558">‏یہ یقینی بنائیں کہ Chrome پر <ph name="TARGET_DEVICE_NAME" /> کی مطابقت پذیری آن ہے</translation>
 <translation id="7274013316676448362">مسدود سائٹ</translation>
@@ -1135,7 +1131,6 @@
 <translation id="8812260976093120287">کچھ ویب سائٹس پر، آپ اپنے آلہ پر اوپر موجود تعاون یافتہ ادائیگی ایپس کے ساتھ ادائیگی کر سکتے ہیں۔</translation>
 <translation id="881688628773363275">پیش منظر کے ٹیب کا مواد قابل ملاحظہ نہیں ہے۔</translation>
 <translation id="8820817407110198400">بُک مارکس</translation>
-<translation id="8827407626219585697">لنک کو ٹیکسٹ میں شامل کریں</translation>
 <translation id="883806473910249246">مواد ڈاؤن لوڈ کرتے وقت ایک خرابی پیش آ گئی۔</translation>
 <translation id="8840953339110955557">یہ صفحہ آن لائن ورژن سے مختلف ہو سکتا ہے۔</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />، ٹیب</translation>

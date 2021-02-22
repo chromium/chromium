@@ -14,7 +14,6 @@
 <translation id="1011355516189274711">Hlasitost převodu textu na řeč</translation>
 <translation id="1012794136286421601">Vaše Dokumenty, Tabulky, Prezentace a Nákresy se synchronizují. Můžete otevřít aplikaci Disk Google a přistupovat k nim online nebo offline.</translation>
 <translation id="1012876632442809908">Zařízení USB Type-C (přední port)</translation>
-<translation id="1013707859758800957">Na této stránce bylo povoleno spuštění pluginu mimo izolovaný prostor.</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">Upravit název složky</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Poslední den k aktualizaci zařízení <ph name="DEVICE_TYPE" />}few{Do {NUM_DAYS} dní zařízení <ph name="DEVICE_TYPE" /> aktualizujte}many{Do {NUM_DAYS} dne zařízení <ph name="DEVICE_TYPE" /> aktualizujte}other{Do {NUM_DAYS} dní zařízení <ph name="DEVICE_TYPE" /> aktualizujte}}</translation>
@@ -399,7 +398,6 @@
 <translation id="143027896309062157">Číst a upravovat všechna data v počítači a na navštívených webech</translation>
 <translation id="1430915738399379752">Tisk</translation>
 <translation id="1431188203598586230">Poslední aktualizace softwaru</translation>
-<translation id="1431402976894535801">Nedovolit webům zjistit, kdy jste aktivní</translation>
 <translation id="1431432486300429272">Google může tvoji historii procházení používat k personalizaci Vyhledávání a dalších služeb Google. Toto chování můžeš ty nebo tvoji rodiče kdykoliv změnit na stránce myaccount.google.com/activitycontrols/search</translation>
 <translation id="1432581352905426595">Spravovat vyhledávače</translation>
 <translation id="1433811987160647649">Před přístupem se zeptat</translation>
@@ -508,7 +506,6 @@
 <translation id="1549788673239553762">Aplikace <ph name="APP_NAME" /> chce získat přístup ke svazku <ph name="VOLUME_NAME" />. Bude moci upravit nebo smazat vaše soubory.</translation>
 <translation id="1552301827267621511">Rozšíření <ph name="EXTENSION_NAME" /> změnilo poskytovatele vyhledávání na <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1553538517812678578">neomezené</translation>
-<translation id="1554390798506296774">Vždy povolit pluginy mimo izolovaný prostor na webu <ph name="HOST" /></translation>
 <translation id="1555130319947370107">Modrá</translation>
 <translation id="1556537182262721003">Adresář rozšíření nelze přesunout do profilu.</translation>
 <translation id="155865706765934889">Touchpad</translation>
@@ -608,7 +605,6 @@
 <translation id="1651008383952180276">Musíte zadat dvakrát stejnou heslovou frázi</translation>
 <translation id="1652326691684645429">Aktivovat Sdílení nablízko</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Přidejte tiskárnu do služby Google Cloud Print a tiskněte odkudkoli.}few{Přidejte # tiskárny do služby Google Cloud Print a tiskněte odkudkoli.}many{Přidejte # tiskárny do služby Google Cloud Print a tiskněte odkudkoli.}other{Přidejte # tiskáren do služby Google Cloud Print a tiskněte odkudkoli.}}</translation>
-<translation id="1653575510930452864">Kopírovat odkaz na text</translation>
 <translation id="1656528038316521561">Neprůhlednost pozadí</translation>
 <translation id="1657406563541664238">Pomozte <ph name="PRODUCT_NAME" /> zlepšit tím, že budete Googlu automaticky zasílat statistiky o využívání a zprávy o selhání aplikace</translation>
 <translation id="1657937299377480641">Jestli se chceš znovu přihlásit kvůli přístupu ke vzdělávacím materiálům, požádej rodiče, aby ti udělili oprávnění</translation>
@@ -849,7 +845,6 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="1916502483199172559">Výchozí červený avatar</translation>
 <translation id="1918141783557917887">Menší</translation>
 <translation id="1919345977826869612">Reklamy</translation>
-<translation id="1919814239594435008">Pluginu byl udělen přístup mimo izolovaný prostor</translation>
 <translation id="1920390473494685033">Kontakty</translation>
 <translation id="1921050530041573580">Spárujte telefon s aplikací Zprávy</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
@@ -962,7 +957,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="204914487372604757">Vytvořit zástupce</translation>
 <translation id="2050339315714019657">Na výšku</translation>
 <translation id="2053312383184521053">Údaje o stavu nečinnosti</translation>
-<translation id="2054665754582400095">Vaše přítomnost</translation>
 <translation id="2055585478631012616">Z těchto webů budete odhlášeni (i na otevřených kartách)</translation>
 <translation id="205560151218727633">Logo Asistenta Google</translation>
 <translation id="2058456167109518507">Bylo zjištěno zařízení</translation>
@@ -1076,7 +1070,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2175607476662778685">panel Snadné spuštění</translation>
 <translation id="217576141146192373">Tiskárnu nelze přidat. Zkontrolujte konfiguraci tiskárny a zkuste to znovu.</translation>
 <translation id="2177950615300672361">Anonymní karta: <ph name="TAB_NAME" /></translation>
-<translation id="2178098616815594724">Plugin <ph name="PEPPER_PLUGIN_NAME" /> v doméně <ph name="PEPPER_PLUGIN_DOMAIN" /> chce získat přístup k vašemu počítači</translation>
 <translation id="2178614541317717477">Ohrožení bezpečnosti certifikační autority</translation>
 <translation id="2182058453334755893">Zkopírováno do schránky</translation>
 <translation id="2184515124301515068">Nechat Chrome zvolit, kdy weby mohou přehrávat zvuk (doporučeno)</translation>
@@ -1713,7 +1706,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2885729872133513017">Při dekódování odpovědi serveru došlo k chybě.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="2889064240420137087">Otevřít odkaz pomocí...</translation>
-<translation id="2889925978073739256">Pokračovat v blokování pluginů mimo izolovaný prostor</translation>
 <translation id="2891922230654533301">Přihlásit se pomocí zařízení do aplikace <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Výchozí prohlížeč</translation>
 <translation id="2894757982205307093">Nová karta ve skupině</translation>
@@ -1962,7 +1954,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3163201441334626963">Neznámý produkt <ph name="PRODUCT_ID" /> od dodavatele <ph name="VENDOR_ID" /></translation>
 <translation id="3163254451837720982">Následující služby vám pomáhají ochránit a zabezpečit data. Tyto funkce můžete kdykoli vypnout.</translation>
 <translation id="3164329792803560526">Tato karta je sdílena s aplikací <ph name="APP_NAME" /></translation>
-<translation id="3165371858310906303">Zeptat se, když chce web vědět, kdy jste aktivní</translation>
 <translation id="3165390001037658081">Někteří operátoři mohou tuto funkci blokovat.</translation>
 <translation id="316652501498554287">Účty G Suite pro vzdělávání</translation>
 <translation id="3170072451822350649">Také můžete přihlášení přeskočit a <ph name="LINK_START" />prohlížet v roli hosta<ph name="LINK_END" />.</translation>
@@ -2542,7 +2533,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3824621460022590830">Token registrace zařízení není platný. Kontaktujte vlastníka nebo administrátora zařízení. Kód chyby: <ph name="ERROR_CODE" />.</translation>
 <translation id="3826071569074535339">Povolení používat senzory pohybu</translation>
 <translation id="3826440694796503677">Váš administrátor přidávání dalších účtů Google zakázal</translation>
-<translation id="3827306204503227641">I nadále povolovat pluginy mimo izolovaný prostor</translation>
 <translation id="3827774300009121996">&amp;Celá obrazovka</translation>
 <translation id="3828029223314399057">Hledat v záložkách</translation>
 <translation id="3829765597456725595">Sdílené úložiště SMB</translation>
@@ -2909,7 +2899,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="425573743389990240">Rychlost vybíjení baterie ve wattech (záporná hodnota znamená nabíjení baterie)</translation>
 <translation id="4256316378292851214">Uložit &amp;video jako...</translation>
 <translation id="4258348331913189841">Systémy souborů</translation>
-<translation id="4259381619085088639">vaše přítomnost</translation>
 <translation id="4259388776256904261">Může to chvíli trvat</translation>
 <translation id="4260182282978351200">Soubor <ph name="FILE_NAME" /> může být nebezpečný. Chcete ho odeslat ke kontrole prostřednictvím pokročilé ochrany Google? Stisknutím kombinace kláves Shift+F6 přejdete na lištu se staženými soubory.</translation>
 <translation id="4263223596040212967">Zkontrolujte rozložení klávesnice a zkuste to znovu.</translation>
@@ -3142,7 +3131,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4535767533210902251">Snímač otisků prstů je klávesa v pravém horním rohu klávesnice. Zlehka se ho dotkněte jakýmkoli prstem.</translation>
 <translation id="4536140153723794651">Weby, které mohou vždy používat soubory cookie</translation>
 <translation id="4538417792467843292">Smazat slovo</translation>
-<translation id="4538684596480161368">Vždy blokovat rozbalené pluginy u hostitele <ph name="HOST" /></translation>
 <translation id="4538792345715658285">Nainstalováno podnikovými zásadami.</translation>
 <translation id="4541123282641193691">Účet se nepodařilo ověřit. Zkuste to znovu nebo Chromebook restartujte.</translation>
 <translation id="4541662893742891060">Propojení s tímto profilem se nezdařilo. Se žádostmi o technickou podporu se obracejte na svého operátora.</translation>
@@ -4170,7 +4158,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5740820643029013514">Použít tišší odesílání zpráv (doporučeno)</translation>
 <translation id="574104302965107104">Zrcadlení displeje</translation>
 <translation id="574209121243317957">Výška</translation>
-<translation id="5742505912938664543">Když sem přidáte sekundární účet, můžete pomocí něj procházet web, stahovat aplikace, kontrolovat svůj Gmail a další služby Google.</translation>
 <translation id="5746169159649715125">Uložit jako PDF</translation>
 <translation id="5746261205461426123">Otevřít průvodce nastavením</translation>
 <translation id="5747552184818312860">Konec platnosti</translation>
@@ -5328,7 +5315,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7077829361966535409">Přihlašovací stránku se pomocí aktuálního nastavení proxy serveru nepodařilo načíst. <ph name="GAIA_RELOAD_LINK_START" />Zkuste se prosím přihlásit znovu<ph name="GAIA_RELOAD_LINK_END" />, nebo použijte jiné <ph name="PROXY_SETTINGS_LINK_START" />nastavení proxy serveru<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Všechny sítě</translation>
 <translation id="7078386829626602215">Nebylo zjištěno žádné zařízení <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
-<translation id="7079716540084905538">Přidejte sekundární účet Google pro uživatele <ph name="USER_NAME" /></translation>
 <translation id="708060913198414444">K&amp;opírovat adresu zvukového souboru</translation>
 <translation id="7081952801286122383">Jste v anonymním režimu</translation>
 <translation id="708278670402572152">Chcete-li povolit vyhledávání, odpojte zařízení od sítě</translation>
@@ -6109,7 +6095,6 @@ V zařízení se systémem Chrome OS můžete aktivovat funkce ladění, abyste
 <translation id="7966241909927244760">K&amp;opírovat adresu obrázku</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{1 položka v seznamu záložek}few{{COUNT} položky v seznamu záložek}many{{COUNT} položky v seznamu záložek}other{{COUNT} položek v seznamu záložek}}</translation>
 <translation id="7968072247663421402">Možnosti poskytovatele</translation>
-<translation id="7968198493605442410">Kopírovat odkaz na text</translation>
 <translation id="7968742106503422125">Číst a upravovat data, která kopírujete a vkládáte</translation>
 <translation id="7968833647796919681">Aktivovat shromažďování údajů o výkonu</translation>
 <translation id="7968982339740310781">Zobrazit podrobnosti</translation>
@@ -6607,7 +6592,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8553342806078037065">Spravovat ostatní uživatele</translation>
 <translation id="8554899698005018844">Žádný jazyk</translation>
 <translation id="8557022314818157177">Dotýkejte se bezpečnostního klíče, dokud se nesejme otisk prstu.</translation>
-<translation id="855773602626431402">Na této stránce bylo zabráněno spuštění pluginu mimo izolovaný prostor.</translation>
 <translation id="8557930019681227453">Manifest</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Otevřít vše v &amp;novém okně}=1{Otevřít v &amp;novém okně}few{Otevřít vše ({COUNT}) v &amp;novém okně}many{Otevřít vše ({COUNT}) v &amp;novém okně}other{Otevřít vše ({COUNT}) v &amp;novém okně}}</translation>
 <translation id="8561206103590473338">Slon</translation>
@@ -6640,7 +6624,6 @@ Přiřazení odstraníte stisknutím přiřazeného přepínače.</translation>
 <translation id="8594908476761052472">Natočit video</translation>
 <translation id="8596540852772265699">Vlastní soubory</translation>
 <translation id="8597845839771543242">Formát vlastnosti:</translation>
-<translation id="8598453409908276158">Pluginu byl zablokován přístup mimo izolovaný prostor</translation>
 <translation id="8601206103050338563">Ověření TLS webového klienta</translation>
 <translation id="8602851771975208551">Jiný program ve vašem počítači nainstaloval aplikaci, která může měnit funkce Chromu.</translation>
 <translation id="8605428685123651449">Paměť SQLite</translation>

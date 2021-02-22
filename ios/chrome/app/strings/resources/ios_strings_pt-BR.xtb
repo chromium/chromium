@@ -19,7 +19,6 @@
 <translation id="1125564390852150847">Criar nova guia</translation>
 <translation id="1145536944570833626">Excluir os dados atuais.</translation>
 <translation id="1147031633655575115">Conta conectada: <ph name="USER" /></translation>
-<translation id="1154690515305205900">Não é possível criar um link para o texto destacado.</translation>
 <translation id="1154984953698510061">Ver outras guias</translation>
 <translation id="1157749421655780457">Permitir localização…</translation>
 <translation id="1165039591588034296">Erro</translation>
@@ -567,7 +566,6 @@ Tente usar uma senha exclusiva para cada site.</translation>
 <translation id="6807889908376551050">Mostrar todos...</translation>
 <translation id="681368974849482173">Item criado</translation>
 <translation id="6831043979455480757">Traduzir</translation>
-<translation id="6841409746189899007">Link p/ texto</translation>
 <translation id="6851516051005285358">Solicitar site para computador</translation>
 <translation id="6858855187367714033">Lido</translation>
 <translation id="6859944681507688231">Para ler um código QR ou cartão de crédito, ative a câmera nas configurações.</translation>
@@ -645,7 +643,6 @@ Tente usar uma senha exclusiva para cada site.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="766891008101699113">Para navegar na Web com privacidade, adicione uma nova guia.</translation>
 <translation id="7671141431838911305">INSTALAR</translation>
-<translation id="7690812411882623730">Falha ao criar link para o texto</translation>
 <translation id="7701040980221191251">Nenhuma</translation>
 <translation id="7765158879357617694">Mover</translation>
 <translation id="7771470029643830783">Se você sair, seus favoritos, seu histórico, suas senhas e outros dados do Chrome não serão mais sincronizados com sua Conta do Google.

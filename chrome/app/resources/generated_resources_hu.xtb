@@ -14,7 +14,6 @@
 <translation id="1011355516189274711">Szövegfelolvasó hangereje</translation>
 <translation id="1012794136286421601">A Dokumentumok, Táblázatok, Diák és Rajzok fájljainak szinkronizálása következik. A fájlok online vagy offline eléréséhez nyissa meg a Google Drive alkalmazást.</translation>
 <translation id="1012876632442809908">C típusú USB-vel kompatibilis eszköz (elülső port)</translation>
-<translation id="1013707859758800957">A rendszer engedélyezte egy nem sandbox-technológiát alkalmazó beépülő modul futását az oldalon.</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">Mappa nevének szerkesztése</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Az eszköz (<ph name="DEVICE_TYPE" />) frissítésére rendelkezésre álló utolsó nap}other{Az eszköz (<ph name="DEVICE_TYPE" />) frissítésére {NUM_DAYS} nap áll rendelkezésre}}</translation>
@@ -397,7 +396,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="143027896309062157">A számítógépén és az Ön által felkeresett webhelyeken lévő adatainak olvasása és módosítása</translation>
 <translation id="1430915738399379752">Nyomtatás</translation>
 <translation id="1431188203598586230">Utolsó szoftverfrissítés</translation>
-<translation id="1431402976894535801">A webhelyek nem kaphatnak információt arról, hogy Ön mikor van jelen</translation>
 <translation id="1431432486300429272">A Google felhasználhatja a böngészési előzményeket a Kereső és más Google-szolgáltatások személyre szabására. Ezt bármikor módosíthatod vagy a szülőd is módosíthatja a myaccount.google.com/activitycontrols/search címen.</translation>
 <translation id="1432581352905426595">Keresőmotorok beállítása</translation>
 <translation id="1433811987160647649">Kérdezzen rá hozzáférés előtt</translation>
@@ -506,7 +504,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1549788673239553762">A(z) <ph name="APP_NAME" /> meg akarja nyitni a következőt: <ph name="VOLUME_NAME" />. A művelet módosíthatja vagy törölheti a fájljait.</translation>
 <translation id="1552301827267621511">A(z) „<ph name="EXTENSION_NAME" />” bővítmény a következőre módosította a keresési szolgáltatót: <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1553538517812678578">korlátlan</translation>
-<translation id="1554390798506296774">Mindig engedélyezze a nem sandbox-technológiát alkalmazó beépülő modulokat itt:<ph name="HOST" /></translation>
 <translation id="1555130319947370107">Kék</translation>
 <translation id="1556537182262721003">Nem sikerült áthelyezni a bővítménykönyvtárat a profilba.</translation>
 <translation id="155865706765934889">Érintőpad</translation>
@@ -606,7 +603,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1651008383952180276">Mindkét alkalommal ugyanazt az összetett jelszót kell megadnia</translation>
 <translation id="1652326691684645429">Közeli megosztás bekapcsolása</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Adja hozzá a nyomtatót a Google Cloud Print szolgáltatáshoz, hogy bárhonnan nyomtathasson.}other{Adjon hozzá # nyomtatót a Google Cloud Print szolgáltatáshoz, hogy bárhonnan nyomtathasson.}}</translation>
-<translation id="1653575510930452864">Szövegre mutató link másolása</translation>
 <translation id="1656528038316521561">Háttér átlátszatlansága</translation>
 <translation id="1657406563541664238">Segítsen a <ph name="PRODUCT_NAME" /> fejlesztésében azáltal, hogy automatikusan elküldi a használati statisztikákat és hibajelentéseket a Google részére</translation>
 <translation id="1657937299377480641">Ha újra be szeretnél jelentkezni, hogy hozzáférj az oktatási forrásokhoz, kérd meg egyik szülődet, hogy adjon neked jogosultságot</translation>
@@ -847,7 +843,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1916502483199172559">Alapértelmezett piros avatar</translation>
 <translation id="1918141783557917887">&amp;Kisebb</translation>
 <translation id="1919345977826869612">Hirdetések</translation>
-<translation id="1919814239594435008">Sandbox-technológiát nem alkalmazó beépülő modul engedélyezve</translation>
 <translation id="1920390473494685033">Névjegyek</translation>
 <translation id="1921050530041573580">Telefon párosítása a Messages szolgáltatással</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
@@ -960,7 +955,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="204914487372604757">Parancsikon létrehozása</translation>
 <translation id="2050339315714019657">Álló</translation>
 <translation id="2053312383184521053">Tétlen állapot adatai</translation>
-<translation id="2054665754582400095">Felhasználói jelenlét</translation>
 <translation id="2055585478631012616">A rendszer kijelentkezteti ezekről a webhelyekről (a megnyitott lapok esetében is)</translation>
 <translation id="205560151218727633">A Google Segéd logója</translation>
 <translation id="2058456167109518507">Eszköz észlelve</translation>
@@ -1074,7 +1068,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2175607476662778685">Gyorsindító sáv</translation>
 <translation id="217576141146192373">Nem sikerült hozzáadni a nyomtatót. Ellenőrizze a nyomtató beállításait, majd próbálja újra.</translation>
 <translation id="2177950615300672361">Inkognitó lap: <ph name="TAB_NAME" /></translation>
-<translation id="2178098616815594724">A(z) <ph name="PEPPER_PLUGIN_DOMAIN" /> webhelyen található <ph name="PEPPER_PLUGIN_NAME" /> bővítmény hozzá szeretne férni a számítógéphez</translation>
 <translation id="2178614541317717477">A tanúsítványkibocsátó veszélyeztetve</translation>
 <translation id="2182058453334755893">Vágólapra másolva</translation>
 <translation id="2184515124301515068">A Chrome dönthet arról, hogy a webhelyek lejátszhatnak-e hangot (ajánlott)</translation>
@@ -1712,7 +1705,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2885729872133513017">Hiba történt a szerverválasz dekódolása során.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="2889064240420137087">Link megnyitása...</translation>
-<translation id="2889925978073739256">Sandbox-technológiát nem alkalmazó beépülő modulok tiltásának fenntartása</translation>
 <translation id="2891922230654533301">Szeretne az eszközével bejelentkezni a(z) <ph name="APP_NAME" /> alkalmazásba?</translation>
 <translation id="2893168226686371498">Alapértelmezett böngésző</translation>
 <translation id="2894757982205307093">Új lap a csoportban</translation>
@@ -1961,7 +1953,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3163201441334626963">Ismeretlen termék (<ph name="PRODUCT_ID" />) a következő forgalmazótól: <ph name="VENDOR_ID" /></translation>
 <translation id="3163254451837720982">A következő szolgáltatások segítenek adatai biztonságának megőrzésében. Az ilyen szolgáltatásokat bármikor ki lehet kapcsolni.</translation>
 <translation id="3164329792803560526">Lap megosztása a következővel: <ph name="APP_NAME" /></translation>
-<translation id="3165371858310906303">Kérdezzen rá, amikor egy webhely tudni szeretné, hogy Ön mikor van jelen</translation>
 <translation id="3165390001037658081">Egyes szolgáltatók letilthatják ezt a funkciót.</translation>
 <translation id="316652501498554287">G Suite for Education-fiókok</translation>
 <translation id="3170072451822350649">Ki is hagyhatja a bejelentkezést, és <ph name="LINK_START" />böngészhet vendégként<ph name="LINK_END" />.</translation>
@@ -2541,7 +2532,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3824621460022590830">Érvénytelen eszközregisztrációs token. Vegye fel a kapcsolatot az eszköz tulajdonosával vagy rendszergazdájával. Hibakód: <ph name="ERROR_CODE" />.</translation>
 <translation id="3826071569074535339">Használhatják a mozgásérzékelőket</translation>
 <translation id="3826440694796503677">A rendszergazda kikapcsolta a további Google-fiókok hozzáadásának lehetőségét</translation>
-<translation id="3827306204503227641">Nem sandbox-technológiát használó beépülő modulok engedélyezésének fenntartása</translation>
 <translation id="3827774300009121996">&amp;Teljes képernyő</translation>
 <translation id="3828029223314399057">Könyvjelzők keresése</translation>
 <translation id="3829765597456725595">SMB-fájlmegosztás</translation>
@@ -2908,7 +2898,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="425573743389990240">Akkumulátor kisütési teljesítménye wattban (a negatív érték azt jelenti, hogy az akkumulátor töltődik)</translation>
 <translation id="4256316378292851214">&amp;Videó mentése másként...</translation>
 <translation id="4258348331913189841">Fájlrendszerek</translation>
-<translation id="4259381619085088639">felhasználói jelenlét</translation>
 <translation id="4259388776256904261">Ez eltarthat egy ideig</translation>
 <translation id="4260182282978351200">A(z) <ph name="FILE_NAME" /> veszélyes lehet. Elküldi a Google Speciális védelem szolgáltatásának vizsgálatra? A Shift + F6 billentyűkombináció lenyomásával a letöltési sávhoz léphet.</translation>
 <translation id="4263223596040212967">Ellenőrizze a billentyűzetkiosztást, és próbálja újra.</translation>
@@ -3141,7 +3130,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4535767533210902251">Az ujjlenyomat-érzékelő a billentyűzet jobb felső sarkában található gomb. Érintse meg finoman valamelyik ujjával.</translation>
 <translation id="4536140153723794651">Webhelyek, amelyek mindig használhatnak cookie-kat</translation>
 <translation id="4538417792467843292">Szó törlése</translation>
-<translation id="4538684596480161368">Mindig tiltsa le a nem sandboxban lévő beépülő modulokat a következő webhelyen: <ph name="HOST" /></translation>
 <translation id="4538792345715658285">Vállalati házirend által telepítve.</translation>
 <translation id="4541123282641193691">Nem sikerült ellenőrizni a fiókot. Próbálja meg ismét, vagy indítsa újra a Chromebookot.</translation>
 <translation id="4541662893742891060">Nem lehet csatlakozni ehhez a profilhoz. Műszaki segítségért forduljon a szolgáltatóhoz.</translation>
@@ -4171,7 +4159,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5740820643029013514">Kevésbé zavaró üzenetek használata (ajánlott)</translation>
 <translation id="574104302965107104">Kijelző tükrözése</translation>
 <translation id="574209121243317957">Hangmagasság</translation>
-<translation id="5742505912938664543">Ha itt másodlagos fiókot is hozzáad, azzal a fiókkal is böngészhet az interneten, letölthet alkalmazásokat, használhatja Gmail-fiókját és egyéb Google-szolgáltatásait.</translation>
 <translation id="5746169159649715125">Mentés PDF-ként</translation>
 <translation id="5746261205461426123">Beállítási útmutató megnyitása</translation>
 <translation id="5747552184818312860">Lejár</translation>
@@ -5329,7 +5316,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7077829361966535409">A bejelentkezési oldalt a jelenlegi proxybeállítások mellett nem lehetett betölteni. Kérjük, <ph name="GAIA_RELOAD_LINK_START" />próbáljon újra bejelentkezni<ph name="GAIA_RELOAD_LINK_END" />, vagy használjon más <ph name="PROXY_SETTINGS_LINK_START" />proxybeállításokat<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Minden hálózat</translation>
 <translation id="7078386829626602215">Nem található eszköz. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
-<translation id="7079716540084905538">Másodlagos Google-fiók hozzáadása <ph name="USER_NAME" /> számára</translation>
 <translation id="708060913198414444">Audi&amp;ocím másolása</translation>
 <translation id="7081952801286122383">Inkognitó módban van</translation>
 <translation id="708278670402572152">A keresés engedélyezéséhez szakítsa meg a hálózati kapcsolatot</translation>
@@ -6110,7 +6096,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7966241909927244760">Képcím más&amp;olása</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{1 elem a könyvjelzőlistában}other{{COUNT} elem a könyvjelzőlistában}}</translation>
 <translation id="7968072247663421402">Lehetséges szolgáltatók</translation>
-<translation id="7968198493605442410">Szövegre mutató link másolása</translation>
 <translation id="7968742106503422125">Az Ön által másolt és beillesztett adatok olvasása és módosítása</translation>
 <translation id="7968833647796919681">Teljesítménybeli adatok gyűjtésének engedélyezése</translation>
 <translation id="7968982339740310781">Részletek megjelenítése</translation>
@@ -6609,7 +6594,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8553342806078037065">Más személyek kezelése</translation>
 <translation id="8554899698005018844">Nincs nyelv</translation>
 <translation id="8557022314818157177">Érintse meg többször a biztonsági kulcsot, amíg meg nem történik az ujjlenyomat rögzítése.</translation>
-<translation id="855773602626431402">A rendszer megakadályozta egy nem sandbox-technológiát használó beépülő modul futását az oldalon.</translation>
 <translation id="8557930019681227453">Jegyzék</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Összes megnyitása &amp;új ablakban}=1{Megnyitás &amp;új ablakban}other{Összes ({COUNT}) megnyitása &amp;új ablakban}}</translation>
 <translation id="8561206103590473338">Elefánt</translation>
@@ -6642,7 +6626,6 @@ Nyomja meg valamelyik hozzárendelt kapcsolót a hozzárendelés megszüntetés�
 <translation id="8594908476761052472">Videó rögzítése</translation>
 <translation id="8596540852772265699">Egyéni fájlok</translation>
 <translation id="8597845839771543242">Tulajdonság formátuma:</translation>
-<translation id="8598453409908276158">Sandbox-technológiát nem alkalmazó beépülő modul letiltva</translation>
 <translation id="8601206103050338563">TLS WWW ügyfél hitelesítése</translation>
 <translation id="8602851771975208551">A számítógépen lévő egyik program olyan alkalmazást adott hozzá, amely módosíthatja a Chrome működését.</translation>
 <translation id="8605428685123651449">SQLite-memória</translation>

@@ -19,7 +19,6 @@
 <translation id="1125564390852150847">Kreiranje nove kartice.</translation>
 <translation id="1145536944570833626">Brisanje postojećih podataka.</translation>
 <translation id="1147031633655575115">Prijavljeni ste kao <ph name="USER" /></translation>
-<translation id="1154690515305205900">Nije moguće kreirati link za istaknuti tekst.</translation>
 <translation id="1154984953698510061">Prikaži druge kartice</translation>
 <translation id="1157749421655780457">Dozvoli lokaciju...</translation>
 <translation id="1165039591588034296">Greška</translation>
@@ -567,7 +566,6 @@ Pokušajte koristiti jedinstvenu lozinku za svaku web lokaciju.</translation>
 <translation id="6807889908376551050">Prikaži sve…</translation>
 <translation id="681368974849482173">Stavka je kreirana</translation>
 <translation id="6831043979455480757">Prevedi</translation>
-<translation id="6841409746189899007">Link na tekst</translation>
 <translation id="6851516051005285358">Zatraži web lokaciju za radnu površinu</translation>
 <translation id="6858855187367714033">Skenirano</translation>
 <translation id="6859944681507688231">Omogućite kameru u postavkama da skenirate QR kôd ili kreditnu karticu.</translation>
@@ -645,7 +643,6 @@ Pokušajte koristiti jedinstvenu lozinku za svaku web lokaciju.</translation>
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="766891008101699113">Dodajte novu karticu da privatno pretražujete web.</translation>
 <translation id="7671141431838911305">INSTALIRAJ</translation>
-<translation id="7690812411882623730">Nije moguće kreirati link za tekst</translation>
 <translation id="7701040980221191251">Nema</translation>
 <translation id="7765158879357617694">Pomjeri</translation>
 <translation id="7771470029643830783">Ako se odjavite, vaše oznake, historija, lozinke i drugi Chrome podaci više se neće sinhronizirati s vašim Google računom.

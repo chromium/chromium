@@ -14,7 +14,6 @@
 <translation id="1011355516189274711">文字轉語音的音量</translation>
 <translation id="1012794136286421601">系統正在同步處理你的文件、試算表、簡報和繪圖檔案。開啟 Google 雲端硬碟應用程式即可上網或離線存取你的檔案。</translation>
 <translation id="1012876632442809908">USB-C 裝置 (前方連接埠)</translation>
-<translation id="1013707859758800957">已允許這個網頁執行無沙箱防護的外掛程。</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">編輯資料夾名稱</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{今天是「<ph name="DEVICE_TYPE" />」更新期限的最後一天}other{請在 {NUM_DAYS} 天內更新「<ph name="DEVICE_TYPE" />」}}</translation>
@@ -397,7 +396,6 @@
 <translation id="143027896309062157">讀取及變更你的電腦和造訪過的網站上的所有資料</translation>
 <translation id="1430915738399379752">列印</translation>
 <translation id="1431188203598586230">最後一次軟體更新</translation>
-<translation id="1431402976894535801">禁止網站取得你的使用狀態</translation>
 <translation id="1431432486300429272">Google 可能會使用你的瀏覽記錄，為你提供個人化的搜尋服務和其他各項 Google 服務。你或貴家長隨時可以前往 myaccount.google.com/activitycontrols/search 變更這項設定</translation>
 <translation id="1432581352905426595">管理搜尋引擎</translation>
 <translation id="1433811987160647649">使用前詢問我</translation>
@@ -506,7 +504,6 @@
 <translation id="1549788673239553762">「<ph name="APP_NAME" />」要求存取 <ph name="VOLUME_NAME" />。您的檔案可能會遭到修改或刪除。</translation>
 <translation id="1552301827267621511">「<ph name="EXTENSION_NAME" />」擴充功能已將搜尋引擎改為 <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1553538517812678578">無限制</translation>
-<translation id="1554390798506296774">一律允許在 <ph name="HOST" /> 執行無沙箱防護的外掛程式</translation>
 <translation id="1555130319947370107">藍色</translation>
 <translation id="1556537182262721003">無法將擴充功能目錄移至設定檔。</translation>
 <translation id="155865706765934889">觸控板</translation>
@@ -606,7 +603,6 @@
 <translation id="1651008383952180276">你必須輸入兩次相同的通關密語</translation>
 <translation id="1652326691684645429">啟用鄰近分享功能</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{將這台印表機新增至 Google 雲端列印，即可隨時隨地進行列印。}other{將 # 台印表機新增至 Google 雲端列印，即可隨時隨地進行列印。}}</translation>
-<translation id="1653575510930452864">複製文字連結</translation>
 <translation id="1656528038316521561">背景不透明度</translation>
 <translation id="1657406563541664238">只要自動傳送使用統計資料及當機報告給 Google，就能助我們一臂之力，讓「<ph name="PRODUCT_NAME" />」更臻完美</translation>
 <translation id="1657937299377480641">你必須要求家長授予權限，才能再次登入帳戶並存取教育資源</translation>
@@ -847,7 +843,6 @@
 <translation id="1916502483199172559">預設的紅色顯示圖片</translation>
 <translation id="1918141783557917887">縮小(&amp;S)</translation>
 <translation id="1919345977826869612">廣告</translation>
-<translation id="1919814239594435008">已允許無沙箱防護的外掛程式</translation>
 <translation id="1920390473494685033">聯絡人</translation>
 <translation id="1921050530041573580">為手機設定訊息配對</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
@@ -960,7 +955,6 @@
 <translation id="204914487372604757">建立捷徑</translation>
 <translation id="2050339315714019657">直向</translation>
 <translation id="2053312383184521053">閒置狀態資料</translation>
-<translation id="2054665754582400095">你的使用狀態</translation>
 <translation id="2055585478631012616">系統會將你登出這些網站 (這項操作會套用到所有已開啟的分頁)。</translation>
 <translation id="205560151218727633">Google 助理標誌</translation>
 <translation id="2058456167109518507">偵測到裝置</translation>
@@ -1074,7 +1068,6 @@
 <translation id="2175607476662778685">快速啟動列</translation>
 <translation id="217576141146192373">無法新增印表機。請檢查你的印表機設定，然後再試一次。</translation>
 <translation id="2177950615300672361">無痕式分頁：<ph name="TAB_NAME" /></translation>
-<translation id="2178098616815594724"><ph name="PEPPER_PLUGIN_DOMAIN" /> 的「<ph name="PEPPER_PLUGIN_NAME" />」要求存取你的電腦</translation>
 <translation id="2178614541317717477">CA 洩露</translation>
 <translation id="2182058453334755893">已複製到剪貼簿</translation>
 <translation id="2184515124301515068">讓 Chrome 自行判斷何時允許網站播放音訊 (建議使用)</translation>
@@ -1711,7 +1704,6 @@
 <translation id="2885729872133513017">解碼伺服器回應時發生問題。</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="2889064240420137087">使用其他程式開啟連結...</translation>
-<translation id="2889925978073739256">繼續封鎖無沙箱防護的外掛程式</translation>
 <translation id="2891922230654533301">要從這部裝置登入「<ph name="APP_NAME" />」嗎？</translation>
 <translation id="2893168226686371498">預設瀏覽器</translation>
 <translation id="2894757982205307093">在群組中新增分頁</translation>
@@ -1960,7 +1952,6 @@
 <translation id="3163201441334626963">供應商 <ph name="VENDOR_ID" /> 提供的不明產品 <ph name="PRODUCT_ID" /></translation>
 <translation id="3163254451837720982">下列服務可協助確保資料安全無虞，你隨時可以停用這些功能。</translation>
 <translation id="3164329792803560526">這個分頁正與 <ph name="APP_NAME" /> 共用</translation>
-<translation id="3165371858310906303">網站必須先詢問你，才能知道你是否正在使用裝置</translation>
 <translation id="3165390001037658081">部分電信業者可能會封鎖這項功能。</translation>
 <translation id="316652501498554287">G Suite 教育版帳戶</translation>
 <translation id="3170072451822350649">你也可以略過登入程序，<ph name="LINK_START" />以訪客身分瀏覽<ph name="LINK_END" />。</translation>
@@ -2540,7 +2531,6 @@
 <translation id="3824621460022590830">裝置註冊憑證無效。請與裝置擁有者或系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="3826071569074535339">可以使用動作感應器</translation>
 <translation id="3826440694796503677">你的系統管理員已停用新增 Google 帳戶的功能</translation>
-<translation id="3827306204503227641">繼續允許無沙箱防護的外掛程式</translation>
 <translation id="3827774300009121996">全螢幕(&amp;F)</translation>
 <translation id="3828029223314399057">搜尋書籤</translation>
 <translation id="3829765597456725595">SMB 檔案共用</translation>
@@ -2907,7 +2897,6 @@
 <translation id="425573743389990240">電池放電速率 (瓦特) (如為負值，表示電池正在充電)</translation>
 <translation id="4256316378292851214">另存影片(&amp;V)...</translation>
 <translation id="4258348331913189841">檔案系統</translation>
-<translation id="4259381619085088639">你的使用狀態</translation>
 <translation id="4259388776256904261">請稍待片刻</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> 可能含有危險內容。要傳送至 Google 進階保護進行掃描嗎？按下 Shift + F6 鍵即可返回下載內容列區域。</translation>
 <translation id="4263223596040212967">請檢查你的鍵盤配置，然後再試一次。</translation>
@@ -3140,7 +3129,6 @@
 <translation id="4535767533210902251">指紋感應器位於鍵盤右上方，請用任何一隻手指輕觸指紋感應器。</translation>
 <translation id="4536140153723794651">一律可以使用 Cookie 的網站</translation>
 <translation id="4538417792467843292">刪除文字</translation>
-<translation id="4538684596480161368">一律禁止在 <ph name="HOST" /> 執行無沙箱防護的外掛程式</translation>
 <translation id="4538792345715658285">由公司政策安裝</translation>
 <translation id="4541123282641193691">無法驗證帳戶。請再試一次，或重新啟動 Chromebook。</translation>
 <translation id="4541662893742891060">無法連線至這個設定檔。如需技術支援，請與你的電信業者聯絡。</translation>
@@ -4168,7 +4156,6 @@
 <translation id="5740820643029013514">使用低擾式通知 (建議)</translation>
 <translation id="574104302965107104">螢幕鏡像</translation>
 <translation id="574209121243317957">音調</translation>
-<translation id="5742505912938664543">在這裡新增次要帳戶後，你就能透過該帳戶瀏覽網路、下載應用程式，以及查看 Gmail 郵件與使用其他 Google 服務。</translation>
 <translation id="5746169159649715125">另存為 PDF</translation>
 <translation id="5746261205461426123">開啟設定導覽</translation>
 <translation id="5747552184818312860">有效期限</translation>
@@ -5326,7 +5313,6 @@
 <translation id="7077829361966535409">無法使用目前的 Proxy 設定載入登入頁面。請<ph name="GAIA_RELOAD_LINK_START" />重新登入<ph name="GAIA_RELOAD_LINK_END" />或使用其他 <ph name="PROXY_SETTINGS_LINK_START" />Proxy 設定<ph name="PROXY_SETTINGS_LINK_END" />。</translation>
 <translation id="7078120482318506217">所有網路</translation>
 <translation id="7078386829626602215">未偵測到任何裝置。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
-<translation id="7079716540084905538">為<ph name="USER_NAME" />新增次要 Google 帳戶</translation>
 <translation id="708060913198414444">複製音訊位址(&amp;O)</translation>
 <translation id="7081952801286122383">目前為無痕模式</translation>
 <translation id="708278670402572152">中斷連線即可啟用掃描功能</translation>
@@ -6107,7 +6093,6 @@
 <translation id="7966241909927244760">複製圖片位址(&amp;O)</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{書籤清單中有 1 個項目}other{書籤清單中有 {COUNT} 個項目}}</translation>
 <translation id="7968072247663421402">供應商選項</translation>
-<translation id="7968198493605442410">複製文字連結</translation>
 <translation id="7968742106503422125">讀取及修改你複製和貼上的資料</translation>
 <translation id="7968833647796919681">啟用效能資料收集</translation>
 <translation id="7968982339740310781">查看詳細資料</translation>
@@ -6605,7 +6590,6 @@
 <translation id="8553342806078037065">管理其他使用者</translation>
 <translation id="8554899698005018844">未指定語言</translation>
 <translation id="8557022314818157177">請持續輕觸安全金鑰，直到指紋擷取完成</translation>
-<translation id="855773602626431402">已禁止這個網頁執行無沙箱防護的外掛程。</translation>
 <translation id="8557930019681227453">資訊清單</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{在新視窗中開啟所有網址(&amp;N)}=1{在新視窗中開啟(&amp;N)}other{在新視窗中開啟所有 ({COUNT} 個) 網址(&amp;N)}}</translation>
 <translation id="8561206103590473338">大象</translation>
@@ -6638,7 +6622,6 @@
 <translation id="8594908476761052472">錄影</translation>
 <translation id="8596540852772265699">自訂檔</translation>
 <translation id="8597845839771543242">屬性格式：</translation>
-<translation id="8598453409908276158">已封鎖無沙箱防護的外掛程式</translation>
 <translation id="8601206103050338563">TLS WWW 用戶端驗證</translation>
 <translation id="8602851771975208551">電腦中其他程式所新增的應用程式可能會變更 Chrome 的運作方式。</translation>
 <translation id="8605428685123651449">SQLite 記憶體使用量</translation>

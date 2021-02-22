@@ -18,7 +18,6 @@
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1384959399684842514">已暫停下載</translation>
 <translation id="1415402041810619267">縮短咗網址</translation>
-<translation id="1431402976894535801">禁止網站知道您何時使用裝置</translation>
 <translation id="1446450296470737166">允許全權控制 MIDI 裝置。</translation>
 <translation id="1509960214886564027">很多網站的功能可能會無法正常運作</translation>
 <translation id="1620510694547887537">相機</translation>
@@ -39,7 +38,6 @@
 <translation id="1994173015038366702">網站網址</translation>
 <translation id="2025115093177348061">擴張實境</translation>
 <translation id="2030769033451695672">輕按即可返回 <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
-<translation id="2054665754582400095">您的狀態</translation>
 <translation id="2079545284768500474">復原</translation>
 <translation id="2091887806945687916">音效</translation>
 <translation id="2107397443965016585">網站播放受保護內容前先詢問您 (建議)</translation>
@@ -82,7 +80,6 @@
 <translation id="3114012059975132928">影片播放器</translation>
 <translation id="3115898365077584848">顯示資料</translation>
 <translation id="3123473560110926937">在部分網站上設定封鎖</translation>
-<translation id="3165371858310906303">在網站要求知道您何時使用裝置時詢問您</translation>
 <translation id="3198916472715691905">已使用 <ph name="STORAGE_AMOUNT" /> 儲存空間</translation>
 <translation id="321187648315454507">如要讓 <ph name="APP_NAME" /> 傳送通知，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟通知功能。</translation>
 <translation id="3227137524299004712">麥克風</translation>

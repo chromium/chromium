@@ -14,7 +14,6 @@
 <translation id="1011355516189274711">Volumen de síntesis de voz</translation>
 <translation id="1012794136286421601">Se están sincronizando tus archivos de Documentos, Hojas de cálculo, Presentaciones y Dibujos de Google. Abre la aplicación Google Drive para acceder a ellos con y sin conexión.</translation>
 <translation id="1012876632442809908">Dispositivo USB-C (puerto frontal)</translation>
-<translation id="1013707859758800957">Se ha permitido la ejecución de un complemento no incluido en la zona de pruebas en esta página.</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">Editar el nombre de la carpeta</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Último día para actualizar el <ph name="DEVICE_TYPE" />}other{Actualiza el <ph name="DEVICE_TYPE" /> en el plazo de {NUM_DAYS} días}}</translation>
@@ -397,7 +396,6 @@
 <translation id="143027896309062157">Leer y modificar todos tus datos en tu ordenador y en los sitios web que visites</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1431188203598586230">Última actualización de software</translation>
-<translation id="1431402976894535801">No permitir que los sitios sepan cuándo estás presente</translation>
 <translation id="1431432486300429272">Google puede utilizar tu historial de navegación para personalizar la Búsqueda y otros Servicios de Google. Tú o tus padres podéis cambiar esta opción en cualquier momento desde myaccount.google.com/activitycontrols/search</translation>
 <translation id="1432581352905426595">Gestionar buscadores</translation>
 <translation id="1433811987160647649">Preguntar antes de acceder</translation>
@@ -506,7 +504,6 @@
 <translation id="1549788673239553762"><ph name="APP_NAME" /> quiere acceder a <ph name="VOLUME_NAME" />. Puede modificar o eliminar tus archivos.</translation>
 <translation id="1552301827267621511">La extensión <ph name="EXTENSION_NAME" /> ha cambiado el proveedor de búsquedas a <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1553538517812678578">sin límite</translation>
-<translation id="1554390798506296774">Permitir siempre complementos no incluidos en la zona de pruebas en <ph name="HOST" /></translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1556537182262721003">No se ha podido mover el directorio de la extensión al perfil.</translation>
 <translation id="155865706765934889">Panel táctil</translation>
@@ -606,7 +603,6 @@
 <translation id="1651008383952180276">Debes introducir la misma frase de contraseña dos veces</translation>
 <translation id="1652326691684645429">Habilitar Compartir con Nearby</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Añade la impresora a Google Cloud Print para que puedas imprimir desde cualquier parte.}other{Añade # impresoras a Google Cloud Print para que puedas imprimir desde cualquier parte.}}</translation>
-<translation id="1653575510930452864">Copiar enlace al texto</translation>
 <translation id="1656528038316521561">Opacidad del fondo</translation>
 <translation id="1657406563541664238">Ayúdanos a mejorar <ph name="PRODUCT_NAME" /> enviando estadísticas de uso e informes sobre fallos.</translation>
 <translation id="1657937299377480641">Para iniciar sesión de nuevo para acceder a recursos educativos, pídele permiso a tu padre o madre</translation>
@@ -847,7 +843,6 @@
 <translation id="1916502483199172559">Avatar rojo predeterminado</translation>
 <translation id="1918141783557917887">Meno&amp;r</translation>
 <translation id="1919345977826869612">Anuncios</translation>
-<translation id="1919814239594435008">Complemento no incluido en la zona de pruebas permitido</translation>
 <translation id="1920390473494685033">Contactos</translation>
 <translation id="1921050530041573580">Vincula tu teléfono con Mensajes</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> PPP</translation>
@@ -960,7 +955,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="204914487372604757">Crear acceso directo</translation>
 <translation id="2050339315714019657">Vertical</translation>
 <translation id="2053312383184521053">Datos de estado de inactividad</translation>
-<translation id="2054665754582400095">Tu presencia</translation>
 <translation id="2055585478631012616">Se cerrarán tus sesiones en esos sitios (también en las pestañas abiertas)</translation>
 <translation id="205560151218727633">Logotipo del Asistente de Google</translation>
 <translation id="2058456167109518507">Dispositivo detectado</translation>
@@ -1074,7 +1068,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2175607476662778685">Barra de inicio rápido</translation>
 <translation id="217576141146192373">No se ha podido añadir la impresora. Revisa la configuración de tu impresora y vuelve a intentarlo.</translation>
 <translation id="2177950615300672361">Pestaña de incógnito: <ph name="TAB_NAME" /></translation>
-<translation id="2178098616815594724">El complemento <ph name="PEPPER_PLUGIN_NAME" /> de <ph name="PEPPER_PLUGIN_DOMAIN" /> quiere acceder a tu ordenador</translation>
 <translation id="2178614541317717477">Compromiso de entidad emisora de certificados</translation>
 <translation id="2182058453334755893">Se ha copiado en tu portapapeles</translation>
 <translation id="2184515124301515068">Permitir que Chrome elija cuándo los sitios pueden reproducir sonidos (recomendado)</translation>
@@ -1712,7 +1705,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2885729872133513017">No se ha podido decodificar la respuesta del servidor.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="2889064240420137087">Abrir enlace con...</translation>
-<translation id="2889925978073739256">Seguir bloqueando complementos no incluidos en la zona de pruebas</translation>
 <translation id="2891922230654533301">¿Usar tu dispositivo para iniciar sesión en <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Navegador predeterminado</translation>
 <translation id="2894757982205307093">Nueva pestaña en grupo</translation>
@@ -1961,7 +1953,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3163201441334626963">Producto <ph name="PRODUCT_ID" /> del proveedor <ph name="VENDOR_ID" /> desconocido</translation>
 <translation id="3163254451837720982">Los siguientes servicios te ayudan a mantener tus datos seguros y protegidos. Puedes inhabilitar estas funciones en cualquier momento.</translation>
 <translation id="3164329792803560526">Compartiendo esta pestaña con <ph name="APP_NAME" /></translation>
-<translation id="3165371858310906303">Preguntar cuando un sitio web quiera saber si estás presente</translation>
 <translation id="3165390001037658081">Es posible que algunos operadores bloqueen esta función.</translation>
 <translation id="316652501498554287">Cuentas de G Suite para Centros Educativos</translation>
 <translation id="3170072451822350649">También puedes <ph name="LINK_START" />navegar como invitado<ph name="LINK_END" /> sin iniciar sesión.</translation>
@@ -2541,7 +2532,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3824621460022590830">El token de registro de dispositivos no es válido. Ponte en contacto con el propietario o el administrador del dispositivo Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="3826071569074535339">Puede usar sensores de movimiento</translation>
 <translation id="3826440694796503677">Tu administrador ha inhabilitado la opción de añadir más cuentas de Google</translation>
-<translation id="3827306204503227641">Seguir permitiendo complementos no incluidos en la zona de pruebas</translation>
 <translation id="3827774300009121996">&amp;Pantalla completa</translation>
 <translation id="3828029223314399057">Buscar marcadores</translation>
 <translation id="3829765597456725595">Sistema de archivos compartidos SMB</translation>
@@ -2908,7 +2898,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="425573743389990240">Tasa de descarga de la batería en vatios (si el valor es negativo, significa que la batería se está cargando)</translation>
 <translation id="4256316378292851214">Gu&amp;ardar vídeo como...</translation>
 <translation id="4258348331913189841">Sistemas de archivos</translation>
-<translation id="4259381619085088639">tu presencia</translation>
 <translation id="4259388776256904261">Este proceso puede tardar un poco</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> podría ser peligroso. ¿Quieres enviarlo a Protección Avanzada de Google para que lo analice? Pulsa Mayús + F6 para desplazarte al área de la barra de descargas.</translation>
 <translation id="4263223596040212967">Revisa el diseño del teclado y vuelve a intentarlo.</translation>
@@ -3141,7 +3130,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4535767533210902251">El sensor de huellas digitales está en la tecla de arriba a la derecha de tu teclado. Tócalo ligeramente con un dedo.</translation>
 <translation id="4536140153723794651">Sitios web que pueden usar cookies siempre</translation>
 <translation id="4538417792467843292">Eliminar palabra</translation>
-<translation id="4538684596480161368">Bloquear siempre complementos no incluidos en zona de pruebas en <ph name="HOST" /></translation>
 <translation id="4538792345715658285">Instalada por una política empresarial</translation>
 <translation id="4541123282641193691">No se ha podido verificar tu cuenta. Vuelve a intentarlo o reinicia el Chromebook.</translation>
 <translation id="4541662893742891060">No se ha podido conectar a este perfil. Para obtener asistencia técnica, ponte en contacto con tu operador.</translation>
@@ -4169,7 +4157,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5740820643029013514">Usar mensajes menos intrusivos (recomendado)</translation>
 <translation id="574104302965107104">Proyección de pantalla</translation>
 <translation id="574209121243317957">Tono</translation>
-<translation id="5742505912938664543">Si añades una cuenta secundaria aquí, podrás navegar por la Web, descargar aplicaciones, consultar Gmail y usar otros servicios de Google con esa cuenta.</translation>
 <translation id="5746169159649715125">Guardar como PDF</translation>
 <translation id="5746261205461426123">Abrir guía de configuración</translation>
 <translation id="5747552184818312860">Caduca</translation>
@@ -5327,7 +5314,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7077829361966535409">No se ha podido cargar la página de inicio de sesión con la configuración de proxy actual. <ph name="GAIA_RELOAD_LINK_START" />Intenta iniciar sesión de nuevo<ph name="GAIA_RELOAD_LINK_END" /> o utiliza otra <ph name="PROXY_SETTINGS_LINK_START" />configuración de proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Todas las redes</translation>
 <translation id="7078386829626602215">Ningún dispositivo detectado. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
-<translation id="7079716540084905538">Añadir una cuenta de Google secundaria para <ph name="USER_NAME" /></translation>
 <translation id="708060913198414444">C&amp;opiar dirección de audio</translation>
 <translation id="7081952801286122383">Estás en modo de incógnito</translation>
 <translation id="708278670402572152">Desconectar para habilitar la búsqueda</translation>
@@ -6108,7 +6094,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7966241909927244760">C&amp;opiar dirección de imagen</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{1 elemento en la lista de marcadores}other{{COUNT} elementos en la lista de marcadores}}</translation>
 <translation id="7968072247663421402">Opciones de proveedor</translation>
-<translation id="7968198493605442410">Copiar enlace al texto</translation>
 <translation id="7968742106503422125">Leer y modificar los datos que se copian y se pegan</translation>
 <translation id="7968833647796919681">Habilitar recogida de datos de rendimiento</translation>
 <translation id="7968982339740310781">Ver detalles</translation>
@@ -6607,7 +6592,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8553342806078037065">Gestionar otros usuarios</translation>
 <translation id="8554899698005018844">Sin idioma</translation>
 <translation id="8557022314818157177">Sigue pulsando tu llave de seguridad hasta que tu huella dactilar quede registrada.</translation>
-<translation id="855773602626431402">Se ha evitado que un complemento no incluido en la zona de pruebas se ejecutara en esta página.</translation>
 <translation id="8557930019681227453">Archivo de manifiesto</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Abrir todas en una ventana &amp;nueva}=1{Abrir en una ventana &amp;nueva}other{Abrir todas ({COUNT}) en una ventana &amp;nueva}}</translation>
 <translation id="8561206103590473338">Elefante</translation>
@@ -6640,7 +6624,6 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="8594908476761052472">Grabar vídeo</translation>
 <translation id="8596540852772265699">Archivos personalizados</translation>
 <translation id="8597845839771543242">Formato de propiedad:</translation>
-<translation id="8598453409908276158">Complemento no incluido en la zona de pruebas bloqueado</translation>
 <translation id="8601206103050338563">Autenticación de cliente WWW TLS</translation>
 <translation id="8602851771975208551">Otro programa de tu ordenador ha añadido una aplicación que puede cambiar el funcionamiento de Chrome.</translation>
 <translation id="8605428685123651449">Memoria SQLite</translation>

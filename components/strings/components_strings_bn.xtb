@@ -298,7 +298,6 @@
 <translation id="204357726431741734">আপনার Google অ্যাকাউন্টে সেভ করা পাসওয়ার্ড ব্যবহার করতে সাইন-ইন করুন</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" /> ভাষার পৃষ্ঠা অনুবাদ করা হবে না।</translation>
 <translation id="2053553514270667976">পিন কোড</translation>
-<translation id="2054665754582400095">আপনার উপস্থিতি</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{১টি প্রস্তাব}one{#টি প্রস্তাব}other{#টি প্রস্তাব}}</translation>
 <translation id="2079545284768500474">আগের অবস্থায় ফিরুন</translation>
 <translation id="20817612488360358">সিস্টেম প্রক্সি সেটিংস ব্যবহার করার জন্য সেট আছে কিন্তু একটি সুনির্দিষ্ট প্রক্সি কনফিগারেশনও নির্দিষ্ট করা আছে৷</translation>
@@ -570,7 +569,6 @@
     বা আপনার নেটওয়ার্ক প্রশাসকের সাথে যোগাযোগ করুন৷ আপনি কোনো প্রক্সী সার্ভার
     ব্যবহার করবেন না বলে মনে করলে:
     <ph name="PLATFORM_TEXT" /></translation>
-<translation id="3184534047932533456">আপনি কখন ডিভাইস ব্যবহার করছেন তা <ph name="URL" /> জানতে চায়</translation>
 <translation id="3188393374551744535">অ্যাকাউন্টের ব্যালেন্স</translation>
 <translation id="3194737229810486521"><ph name="URL" /> স্থায়ীভাবে আপনার ডিভাইসে ডেটা স্টোর করতে চায়</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> এ <ph name="PRINTER_NAME" /></translation>
@@ -1097,7 +1095,6 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">যন্ত্র</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" />-এ নেই? এই ত্রুটি রিপোর্ট করুন</translation>
-<translation id="5179740473595559246">আপনি কখন ডিভাইস ব্যবহার করছেন তা জানতে দিন</translation>
 <translation id="5190835502935405962">বুকমার্ক বার</translation>
 <translation id="519422657042045905">ব্যাখ্যা নেই</translation>
 <translation id="5201306358585911203">এই পৃষ্ঠার এম্বেডেড করা একটি পৃষ্ঠায় এটি দেখানো হচ্ছে</translation>
@@ -1328,7 +1325,6 @@
 <translation id="6051221802930200923">ওয়েবসাইটটি পিন করা সার্টিফিকেট ব্যবহার করার কারণে আপনি এখন <ph name="SITE" /> এ যেতে পারবেন না। নেটওয়ার্ক সমস্যা এবং আক্রমণ সাধারণত সাময়িকভাবে হয়, তাই এই পৃষ্ঠাটি সম্ভবত পরে কাজ করবে।</translation>
 <translation id="6051898664905071243">পৃষ্ঠার সংখ্যা:</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053328359599022071">আপনার উপস্থিতি শেয়ার করবেন?</translation>
 <translation id="6058977677006700226">আপনার সমস্ত ডিভাইসে কার্ডগুলি ব্যবহার করবেন?</translation>
 <translation id="6059925163896151826">USB ডিভাইসগুলি</translation>
 <translation id="6060009363608157444">ভুল DnsOverHttps মোড।</translation>

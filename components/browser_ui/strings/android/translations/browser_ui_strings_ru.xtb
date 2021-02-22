@@ -18,7 +18,6 @@
 <translation id="1383876407941801731">Поиск</translation>
 <translation id="1384959399684842514">Скачивание приостановлено.</translation>
 <translation id="1415402041810619267">URL укорочен</translation>
-<translation id="1431402976894535801">Блокировать передачу на сайты информации о вашем присутствии</translation>
 <translation id="1446450296470737166">Полный доступ к управлению MIDI-устройствами</translation>
 <translation id="1509960214886564027">Многие функции на сайтах могут работать некорректно</translation>
 <translation id="1620510694547887537">Камера</translation>
@@ -39,7 +38,6 @@
 <translation id="1994173015038366702">Адрес сайта</translation>
 <translation id="2025115093177348061">Дополненная реальность</translation>
 <translation id="2030769033451695672">Нажмите, чтобы вернуться на страницу <ph name="URL_OF_THE_CURRENT_TAB" />.</translation>
-<translation id="2054665754582400095">Ваше присутствие</translation>
 <translation id="2079545284768500474">Отмена</translation>
 <translation id="2091887806945687916">Звук</translation>
 <translation id="2107397443965016585">Запрашивать разрешение на воспроизведение защищенного контента (рекомендуется)</translation>
@@ -82,7 +80,6 @@
 <translation id="3114012059975132928">Видеопроигрыватель</translation>
 <translation id="3115898365077584848">Показать информацию</translation>
 <translation id="3123473560110926937">Заблокировано на некоторых сайтах</translation>
-<translation id="3165371858310906303">Спрашивать перед передачей на сайт информации о вашем присутствии</translation>
 <translation id="3198916472715691905">В памяти занято: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="321187648315454507">Чтобы получать уведомления из приложения "<ph name="APP_NAME" />", включите их в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Микрофон</translation>

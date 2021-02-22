@@ -18,7 +18,6 @@
 <translation id="1383876407941801731">Pesquisar</translation>
 <translation id="1384959399684842514">Download pausado</translation>
 <translation id="1415402041810619267">URL truncado</translation>
-<translation id="1431402976894535801">Impedir que sites saibam quando você está interagindo</translation>
 <translation id="1446450296470737166">Permitir controle total de dispositivos MIDI</translation>
 <translation id="1509960214886564027">Os recursos de muitos sites podem apresentar falhas</translation>
 <translation id="1620510694547887537">Câmera</translation>
@@ -39,7 +38,6 @@
 <translation id="1994173015038366702">URL do site</translation>
 <translation id="2025115093177348061">Realidade aumentada</translation>
 <translation id="2030769033451695672">Toque para voltar para <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
-<translation id="2054665754582400095">Sua presença</translation>
 <translation id="2079545284768500474">Desfazer</translation>
 <translation id="2091887806945687916">Som</translation>
 <translation id="2107397443965016585">Perguntar antes de permitir que sites mostrem conteúdo protegido (recomendado)</translation>
@@ -82,7 +80,6 @@
 <translation id="3114012059975132928">Player de vídeo</translation>
 <translation id="3115898365077584848">Mostrar informações</translation>
 <translation id="3123473560110926937">Bloqueados em alguns sites</translation>
-<translation id="3165371858310906303">Perguntar sempre que um site quiser saber quando você está interagindo</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> de dados armazenados</translation>
 <translation id="321187648315454507">Para permitir que o app <ph name="APP_NAME" /> envie notificações, também é necessário ativá-las nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Microfone</translation>

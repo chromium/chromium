@@ -14,7 +14,6 @@
 <translation id="1011355516189274711">Lautstärke der Sprachausgabe</translation>
 <translation id="1012794136286421601">Ihre Dateien aus Google Docs, Google Tabellen, Google Präsentationen und Google Zeichnungen werden synchronisiert. Öffnen Sie die Google Drive App, um online oder offline auf die Dateien zuzugreifen.</translation>
 <translation id="1012876632442809908">USB-C-Gerät (Port vorne)</translation>
-<translation id="1013707859758800957">Ein Plug-in ohne Sandbox wird auf dieser Seite ausgeführt.</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">Ordnernamen bearbeiten</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Letzter Tag für die Aktualisierung von <ph name="DEVICE_TYPE" />}other{<ph name="DEVICE_TYPE" /> innerhalb von {NUM_DAYS} Tagen aktualisieren}}</translation>
@@ -397,7 +396,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="143027896309062157">Alle Ihre Daten auf Ihrem Computer und den von Ihnen besuchten Websites lesen und ändern</translation>
 <translation id="1430915738399379752">Drucken</translation>
 <translation id="1431188203598586230">Letztes Softwareupdate</translation>
-<translation id="1431402976894535801">Websites daran hindern, Informationen zu meiner Anwesenheit abzurufen</translation>
 <translation id="1431432486300429272">Google kann die Suche und andere Google-Dienste mithilfe deines Browserverlaufs für dich personalisieren. Das kann unter myaccount.google.com/activitycontrols/search geändert werden.</translation>
 <translation id="1432581352905426595">Suchmaschinen verwalten</translation>
 <translation id="1433811987160647649">Vor dem Zugriff nachfragen</translation>
@@ -503,7 +501,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1549788673239553762"><ph name="APP_NAME" /> möchte auf <ph name="VOLUME_NAME" /> zugreifen. Ihre Dateien können geändert oder gelöscht werden.</translation>
 <translation id="1552301827267621511">Die Erweiterung "<ph name="EXTENSION_NAME" />" hat <ph name="SEARCH_PROVIDER_DOMAIN" /> als neuen Suchanbieter festgelegt</translation>
 <translation id="1553538517812678578">unbegrenzt</translation>
-<translation id="1554390798506296774">Plug-ins ohne Sandbox auf <ph name="HOST" /> immer zulassen</translation>
 <translation id="1555130319947370107">Blau</translation>
 <translation id="1556537182262721003">Erweiterungsverzeichnis konnte nicht in Profil verschoben werden.</translation>
 <translation id="155865706765934889">Touchpad</translation>
@@ -603,7 +600,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1651008383952180276">Sie müssen zweimal dieselbe Passphrase eingeben</translation>
 <translation id="1652326691684645429">Nearby Share aktivieren</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Fügen Sie den Drucker zu Google Cloud Print hinzu, damit Sie von überall aus drucken können.}other{Fügen Sie # Drucker zu Google Cloud Print hinzu, damit Sie von überall aus drucken können.}}</translation>
-<translation id="1653575510930452864">Link zu Text kopieren</translation>
 <translation id="1656528038316521561">Deckkraft des Hintergrunds</translation>
 <translation id="1657406563541664238">Zur Verbesserung von <ph name="PRODUCT_NAME" /> Nutzungsstatistiken und Absturzberichte automatisch an Google senden</translation>
 <translation id="1657937299377480641">Wenn du dich noch einmal anmelden möchtest, um auf Bildungsressourcen zuzugreifen, brauchst du die Erlaubnis deiner Eltern</translation>
@@ -844,7 +840,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1916502483199172559">Roter Standardavatar</translation>
 <translation id="1918141783557917887">&amp;Kleiner</translation>
 <translation id="1919345977826869612">Werbung</translation>
-<translation id="1919814239594435008">Plug-in ohne Sandbox zugelassen</translation>
 <translation id="1920390473494685033">Kontakte</translation>
 <translation id="1921050530041573580">Smartphone mit Messages koppeln</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
@@ -957,7 +952,6 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="204914487372604757">Verknüpfung erstellen</translation>
 <translation id="2050339315714019657">Hochformat</translation>
 <translation id="2053312383184521053">Daten für inaktiven Zustand</translation>
-<translation id="2054665754582400095">Ihre Anwesenheit</translation>
 <translation id="2055585478631012616">Sie werden von diesen Websites abgemeldet, auch in offenen Tabs</translation>
 <translation id="205560151218727633">Google Assistant-Logo</translation>
 <translation id="2058456167109518507">Gerät erkannt</translation>
@@ -1071,7 +1065,6 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2175607476662778685">Schnellstartleiste</translation>
 <translation id="217576141146192373">Drucker kann nicht hinzugefügt werden. Prüfen Sie bitte die Konfiguration des Druckers und versuchen Sie es noch einmal.</translation>
 <translation id="2177950615300672361">Inkognitotab: <ph name="TAB_NAME" /></translation>
-<translation id="2178098616815594724">Das Plug-in <ph name="PEPPER_PLUGIN_NAME" /> auf <ph name="PEPPER_PLUGIN_DOMAIN" /> möchte auf Ihren Computer zugreifen</translation>
 <translation id="2178614541317717477">Kompromittierung der Zertifizierungsstelle</translation>
 <translation id="2182058453334755893">In die Zwischenablage kopiert</translation>
 <translation id="2184515124301515068">Chrome die Entscheidung überlassen, wann Audioinhalte auf Websites abgespielt werden (empfohlen)</translation>
@@ -1708,7 +1701,6 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2885729872133513017">Beim Decodieren der Serverantwort ist ein Problem aufgetreten.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="2889064240420137087">Link öffnen mit...</translation>
-<translation id="2889925978073739256">Plug-ins ohne Sandbox weiterhin blockieren</translation>
 <translation id="2891922230654533301">Möchten Sie sich mit Ihrem Gerät auf <ph name="APP_NAME" /> anmelden?</translation>
 <translation id="2893168226686371498">Standardbrowser</translation>
 <translation id="2894757982205307093">Neuer Tab in Gruppe</translation>
@@ -1957,7 +1949,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3163201441334626963">Unbekanntes Produkt <ph name="PRODUCT_ID" /> von Anbieter <ph name="VENDOR_ID" /></translation>
 <translation id="3163254451837720982">Diese Dienste tragen dazu bei, dass Ihre Daten sicher bleiben. Sie können diese Funktionen jederzeit deaktivieren.</translation>
 <translation id="3164329792803560526">Tab wird mit <ph name="APP_NAME" /> geteilt</translation>
-<translation id="3165371858310906303">Nachfragen, wenn eine Website wissen möchte, ob ich anwesend bin</translation>
 <translation id="3165390001037658081">Einige Mobilfunkanbieter blockieren diese Funktion möglicherweise.</translation>
 <translation id="316652501498554287">G Suite for Education-Konten</translation>
 <translation id="3170072451822350649">Sie können die Anmeldung auch überspringen und <ph name="LINK_START" />als Gast surfen<ph name="LINK_END" />.</translation>
@@ -2537,7 +2528,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3824621460022590830">Geräteregistrierungstoken ist ungültig. Bitte an den Eigentümer des Geräts oder an den Administrator wenden. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3826071569074535339">Dürfen Bewegungssensoren verwenden</translation>
 <translation id="3826440694796503677">Ihr Administrator hat die Option zum Hinzufügen weiterer Google-Konten deaktiviert</translation>
-<translation id="3827306204503227641">Plug-ins ohne Sandbox weiterhin zulassen</translation>
 <translation id="3827774300009121996">&amp;Vollbildmodus</translation>
 <translation id="3828029223314399057">In Lesezeichen suchen</translation>
 <translation id="3829765597456725595">SMB-Netzwerkfreigabe</translation>
@@ -2905,7 +2895,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="425573743389990240">Entladerate des Akkus in Watt. Ein negativer Wert bedeutet, dass der Akku gerade aufgeladen wird.</translation>
 <translation id="4256316378292851214">Video &amp;speichern unter...</translation>
 <translation id="4258348331913189841">Dateisysteme</translation>
-<translation id="4259381619085088639">Ihre Anwesenheit</translation>
 <translation id="4259388776256904261">Das kann etwas dauern</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> könnte schädlich sein. Soll sie zum Scannen an das erweiterte Sicherheitsprogramm von Google gesendet werden? Drücken Sie Umschalttaste + F6, um zum Bereich mit der Downloadleiste zu wechseln.</translation>
 <translation id="4263223596040212967">Prüfen Sie Ihr Tastaturlayout und versuchen Sie es noch einmal.</translation>
@@ -3138,7 +3127,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4535767533210902251">Der Fingerabdrucksensor ist die Taste rechts oben auf der Tastatur. Berühren Sie ihn leicht mit dem Finger.</translation>
 <translation id="4536140153723794651">Websites, die immer Cookies verwenden dürfen</translation>
 <translation id="4538417792467843292">Wort löschen</translation>
-<translation id="4538684596480161368">Plug-ins ohne Sandbox auf <ph name="HOST" /> immer blockieren</translation>
 <translation id="4538792345715658285">Durch Unternehmensrichtlinie installiert</translation>
 <translation id="4541123282641193691">Ihr Konto konnte nicht bestätigt werden. Bitte versuchen Sie es noch einmal oder starten Sie Ihr Chromebook neu.</translation>
 <translation id="4541662893742891060">Es kann keine Verbindung zu diesem Profil hergestellt werden. Wenden Sie sich für technischen Support an Ihren Mobilfunkanbieter.</translation>
@@ -4166,7 +4154,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5740820643029013514">Unaufdringlichere Benachrichtigungen verwenden (empfohlen)</translation>
 <translation id="574104302965107104">Displayspiegelung</translation>
 <translation id="574209121243317957">Tonhöhe</translation>
-<translation id="5742505912938664543">Wenn Sie hier ein sekundäres Konto hinzufügen, können Sie damit im Internet surfen, Apps herunterladen, E-Mails in Gmail lesen und andere Google-Dienste nutzen.</translation>
 <translation id="5746169159649715125">Als PDF speichern</translation>
 <translation id="5746261205461426123">Einrichtungsanleitung öffnen</translation>
 <translation id="5747552184818312860">Ablaufdatum</translation>
@@ -5324,7 +5311,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7077829361966535409">Die Anmeldeseite konnte mit den aktuellen Proxy-Einstellungen nicht geladen werden. <ph name="GAIA_RELOAD_LINK_START" />Versuchen Sie erneut, sich anzumelden<ph name="GAIA_RELOAD_LINK_END" />, oder verwenden Sie andere <ph name="PROXY_SETTINGS_LINK_START" />Proxy-Einstellungen<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Alle Netzwerke</translation>
 <translation id="7078386829626602215">Kein Gerät erkannt. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
-<translation id="7079716540084905538">Weiteres Google-Konto für <ph name="USER_NAME" /> hinzufügen</translation>
 <translation id="708060913198414444">Audioadresse k&amp;opieren</translation>
 <translation id="7081952801286122383">Inkognitomodus ist aktiviert</translation>
 <translation id="708278670402572152">Zum Scannen Verbindung trennen</translation>
@@ -6105,7 +6091,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7966241909927244760">Bildadresse k&amp;opieren</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{1 Element in der Lesezeichenliste}other{{COUNT} Elemente in der Lesezeichenliste}}</translation>
 <translation id="7968072247663421402">Anbieteroptionen</translation>
-<translation id="7968198493605442410">Link zu Text kopieren</translation>
 <translation id="7968742106503422125">Daten lesen und ändern, die Sie kopieren und einfügen</translation>
 <translation id="7968833647796919681">Erfassung von Leistungsdaten aktivieren</translation>
 <translation id="7968982339740310781">Details ansehen</translation>
@@ -6603,7 +6588,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8553342806078037065">Andere Personen verwalten</translation>
 <translation id="8554899698005018844">Keine Sprache</translation>
 <translation id="8557022314818157177">Berühren Sie mehrmals den Fingerabdrucksensor auf Ihrem Sicherheitsschlüssel, bis der Fingerabdruck gespeichert ist</translation>
-<translation id="855773602626431402">Ein Plug-in ohne Sandbox wurde auf dieser Seite blockiert.</translation>
 <translation id="8557930019681227453">Manifest</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Alle in &amp;neuem Fenster öffnen}=1{In &amp;neuem Fenster öffnen}other{Alle ({COUNT}) in &amp;neuem Fenster öffnen}}</translation>
 <translation id="8561206103590473338">Elefant</translation>
@@ -6636,7 +6620,6 @@ Drücken Sie zum Entfernen der Zuweisung eine bereits zugewiesene Schaltertaste.
 <translation id="8594908476761052472">Video aufnehmen</translation>
 <translation id="8596540852772265699">Benutzerdefinierte Dateien</translation>
 <translation id="8597845839771543242">Eigenschaftsformat:</translation>
-<translation id="8598453409908276158">Plug-in ohne Sandbox blockiert</translation>
 <translation id="8601206103050338563">TLS-WWW-Client-Authentifizierung</translation>
 <translation id="8602851771975208551">Ein anderes Programm auf Ihrem Computer hat eine App hinzugefügt, die sich möglicherweise auf die Funktionsweise von Chrome auswirkt.</translation>
 <translation id="8605428685123651449">SQLite-Speicher</translation>

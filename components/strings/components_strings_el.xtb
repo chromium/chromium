@@ -297,7 +297,6 @@
 <translation id="204357726431741734">Συνδεθείτε, για να χρησιμοποιήσετε κωδικούς πρόσβασης που είναι αποθηκευμένοι στον Λογαριασμό σας Google.</translation>
 <translation id="2053111141626950936">Οι σελίδες στα <ph name="LANGUAGE" /> δεν θα μεταφράζονται.</translation>
 <translation id="2053553514270667976">Ταχυδρομικός κώδικας</translation>
-<translation id="2054665754582400095">Η παρουσία σας</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 πρόταση}other{# προτάσεις}}</translation>
 <translation id="2079545284768500474">Αναίρεση</translation>
 <translation id="20817612488360358">Οι ρυθμίσεις διακομιστή μεσολάβησης του συστήματος έχουν οριστεί για να χρησιμοποιηθούν, αλλά καθορίζεται επίσης μια ρητή διαμόρφωση του διακομιστή μεσολάβησης.</translation>
@@ -569,7 +568,6 @@
       να βεβαιωθείτε ότι ο διακομιστής μεσολάβησης λειτουργεί. Εάν δεν πιστεύετε ότι
       απαιτείται η χρήση διακομιστή μεσολάβησης:
       <ph name="PLATFORM_TEXT" /></translation>
-<translation id="3184534047932533456">Το <ph name="URL" /> θέλει να γνωρίζει πότε είστε ενεργοί.</translation>
 <translation id="3188393374551744535">Υπόλοιπο λογαριασμού</translation>
 <translation id="3194737229810486521">Ο ιστότοπος <ph name="URL" /> θέλει να αποθηκεύσει μόνιμα δεδομένα στη συσκευή σας</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> στο <ph name="SERVER_NAME" /></translation>
@@ -1097,7 +1095,6 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Υπολογιστής</translation>
 <translation id="5179510805599951267">Δεν είναι στα <ph name="ORIGINAL_LANGUAGE" />; Αναφέρετε αυτό το σφάλμα</translation>
-<translation id="5179740473595559246">Να γνωρίζει πότε είστε ενεργοί</translation>
 <translation id="5190835502935405962">Γραμμή σελιδοδεικτών</translation>
 <translation id="519422657042045905">Ο σχολιασμός δεν διατίθεται</translation>
 <translation id="5201306358585911203">Μια ενσωματωμένη σελίδα σε αυτήν τη σελίδα λέει</translation>
@@ -1328,7 +1325,6 @@
 <translation id="6051221802930200923">Δεν μπορείτε να επισκεφτείτε το <ph name="SITE" /> αυτήν τη στιγμή επειδή ο ιστότοπος χρησιμοποιεί certificate pinning (κλείδωμα πιστοποιητικών). Τα σφάλματα δικτύου και οι επιθέσεις είναι συνήθως προσωρινά, συνεπώς αυτή η σελίδα πιθανότατα θα λειτουργήσει αργότερα.</translation>
 <translation id="6051898664905071243">Πλήθος σελίδων:</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053328359599022071">Κοινοποίηση της παρουσίας σας;</translation>
 <translation id="6058977677006700226">Χρήση των καρτών σας σε όλες τις συσκευές σας;</translation>
 <translation id="6059925163896151826">Συσκευές USB</translation>
 <translation id="6060009363608157444">Μη έγκυρη λειτουργία DnsOverHttps.</translation>

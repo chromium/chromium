@@ -310,7 +310,7 @@
 <translation id="314939179385989105">Главная страница Chrome</translation>
 <translation id="3157842584138209013">Чтобы узнать, сколько трафика вы сэкономили, нажмите кнопку "Ещё"</translation>
 <translation id="3166827708714933426">Работа с вкладками и окнами</translation>
-<translation id="3169472444629675720">Discover</translation>
+<translation id="3169472444629675720">Рекомендации</translation>
 <translation id="3181954750937456830">Безопасный просмотр (защищает вас и ваше устройство от опасных сайтов)</translation>
 <translation id="3205824638308738187">Почти готово!</translation>
 <translation id="3207960819495026254">Добавлено в закладки.</translation>
@@ -405,7 +405,6 @@
 <translation id="3819178904835489326">Удаленные скачивания: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="3856096718352044181">Убедитесь, что это действительный поставщик услуг, или повторите попытку позже.</translation>
 <translation id="3861633093716975811">Популярные видео</translation>
-<translation id="386944881686624613">Не удалось создать ссылку на текст. Поделитесь ссылкой на страницу.</translation>
 <translation id="3892148308691398805">Копировать текст</translation>
 <translation id="3894427358181296146">Добавление папки</translation>
 <translation id="3895926599014793903">Принудительно изменять масштаб</translation>
@@ -737,7 +736,6 @@
 <translation id="6138832295072039549">Изменить настройки сайта можно здесь</translation>
 <translation id="6140709049082532940">Улучшенная защита:</translation>
 <translation id="6140912465461743537">Страна/регион</translation>
-<translation id="6142002709876620371">Включить Privacy Sandbox</translation>
 <translation id="614940544461990577">Попробуйте сделать следующее:</translation>
 <translation id="6154478581116148741">Чтобы экспортировать пароли с этого устройства, включите блокировку экрана в настройках.</translation>
 <translation id="6159335304067198720">Сэкономлено: <ph name="PERCENT" /></translation>
@@ -827,7 +825,6 @@
 <translation id="6656545060687952787">Чтобы выполнить поиск устройств, браузеру Chrome нужен доступ к геоданным. <ph name="BEGIN_LINK" />Обновить разрешения<ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="6659594942844771486">Вкладка</translation>
-<translation id="6663079968236414793">Ссылка на текст</translation>
 <translation id="666731172850799929">Открыть в <ph name="APP_NAME" /></translation>
 <translation id="666981079809192359">Примечание о конфиденциальности Chrome</translation>
 <translation id="6671495933530132209">Копировать изображение</translation>
@@ -897,7 +894,6 @@
 <translation id="718926126787620637">Список папок с закладками открыт на весь экран</translation>
 <translation id="7189372733857464326">Обновление сервисов Google Play…</translation>
 <translation id="7191430249889272776">Вкладка открыта в фоновом режиме</translation>
-<translation id="72180057821664864">Не удалось создать ссылку на текст.</translation>
 <translation id="7233236755231902816">Чтобы просматривать веб-страницы на своем языке, обновите Chrome до последней версии.</translation>
 <translation id="7248069434667874558">Убедитесь, что в браузере Chrome на устройстве <ph name="TARGET_DEVICE_NAME" /> включена синхронизация.</translation>
 <translation id="7274013316676448362">Заблокированный сайт</translation>
@@ -1135,7 +1131,6 @@
 <translation id="8812260976093120287">На некоторых сайтах вы можете совершать платежи со своего устройства с помощью перечисленных выше приложений.</translation>
 <translation id="881688628773363275">Контент вкладки предпросмотра недоступен для показа.</translation>
 <translation id="8820817407110198400">Закладки</translation>
-<translation id="8827407626219585697">Добавьте ссылку на текст.</translation>
 <translation id="883806473910249246">При скачивании контента произошла ошибка.</translation>
 <translation id="8840953339110955557">Страница может отличаться от онлайн-версии.</translation>
 <translation id="8853345339104747198">Вкладка "<ph name="TAB_TITLE" />"</translation>

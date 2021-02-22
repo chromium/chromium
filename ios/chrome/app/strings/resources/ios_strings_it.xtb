@@ -19,7 +19,6 @@
 <translation id="1125564390852150847">Crea una nuova scheda.</translation>
 <translation id="1145536944570833626">Elimina i dati esistenti.</translation>
 <translation id="1147031633655575115">Accesso eseguito come <ph name="USER" /></translation>
-<translation id="1154690515305205900">Impossibile creare un link al testo evidenziato.</translation>
 <translation id="1154984953698510061">Vedi altre schede</translation>
 <translation id="1157749421655780457">Consenti accesso a posizione…</translation>
 <translation id="1165039591588034296">Errore</translation>
@@ -567,7 +566,6 @@ Cerca di usare una password univoca per ogni sito.</translation>
 <translation id="6807889908376551050">Mostra tutte...</translation>
 <translation id="681368974849482173">Elemento creato</translation>
 <translation id="6831043979455480757">Traduci</translation>
-<translation id="6841409746189899007">Crea link al testo</translation>
 <translation id="6851516051005285358">Richiedi sito desktop</translation>
 <translation id="6858855187367714033">Scansione eseguita</translation>
 <translation id="6859944681507688231">Per eseguire la scansione di un codice QR o di una carta di credito, attiva la fotocamera dalle impostazioni.</translation>
@@ -645,7 +643,6 @@ Cerca di usare una password univoca per ogni sito.</translation>
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="766891008101699113">Per navigare sul Web in privato, aggiungi una nuova scheda.</translation>
 <translation id="7671141431838911305">INSTALLA</translation>
-<translation id="7690812411882623730">Impossibile creare un link al testo</translation>
 <translation id="7701040980221191251">Nulla</translation>
 <translation id="7765158879357617694">Sposta</translation>
 <translation id="7771470029643830783">Se ti disconnetti, i preferiti, la cronologia, le password e altri dati di Chrome non verranno più sincronizzati con il tuo Account Google.

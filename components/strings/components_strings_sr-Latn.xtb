@@ -297,7 +297,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="204357726431741734">Prijavite se da biste koristili lozinke sačuvane na Google nalogu</translation>
 <translation id="2053111141626950936">Stranice na jeziku <ph name="LANGUAGE" /> neće biti prevedene.</translation>
 <translation id="2053553514270667976">Poštanski broj</translation>
-<translation id="2054665754582400095">Prisustvo</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 predlog}one{# predlog}few{# predloga}other{# predloga}}</translation>
 <translation id="2079545284768500474">Opozovi</translation>
 <translation id="20817612488360358">Podešeno je da se koriste sistemska podešavanja proksija, ali je navedena eksplicitna konfiguracija proksija.</translation>
@@ -569,7 +568,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
           biste se uverili da proksi server funkcioniše. Ako mislite da ne
           treba da koristite proksi server:
           <ph name="PLATFORM_TEXT" /></translation>
-<translation id="3184534047932533456"><ph name="URL" /> želi da zna kada ste prisutni</translation>
 <translation id="3188393374551744535">Stanje na računu</translation>
 <translation id="3194737229810486521"><ph name="URL" /> želi da trajno skladišti podatke na uređaju</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> na: <ph name="SERVER_NAME" /></translation>
@@ -1096,7 +1094,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Računar</translation>
 <translation id="5179510805599951267">Nije <ph name="ORIGINAL_LANGUAGE" />? Prijavite ovu grešku</translation>
-<translation id="5179740473595559246">da zna kada ste prisutni</translation>
 <translation id="5190835502935405962">Traka sa obeleživačima</translation>
 <translation id="519422657042045905">Napomena nije dostupna</translation>
 <translation id="5201306358585911203">Ugrađena stranica na ovoj veb-stranici navodi:</translation>
@@ -1327,7 +1324,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6051221802930200923">Trenutno ne možete da posetite <ph name="SITE" /> jer veb-sajt koristi proveru sertifikata. Greške i napadi na mreži su obično privremeni, pa će ova stranica verovatno funkcionisati kasnije.</translation>
 <translation id="6051898664905071243">Broj stranica:</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053328359599022071">Želite li da delite prisustvo?</translation>
 <translation id="6058977677006700226">Želite li da koristite kartice na svim uređajima?</translation>
 <translation id="6059925163896151826">USB uređaji</translation>
 <translation id="6060009363608157444">Režim DnsOverHttps je nevažeći.</translation>

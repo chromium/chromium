@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
 <translation id="1018656279737460067">キャンセルされました</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" />（スレッド数 <ph name="THREAD_COUNT" />、<ph name="CPU_MAX_CLOCK_SPEED" /> GHz）</translation>
 <translation id="1059913517121127803">スキャンを開始できませんでした</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ファイアウォールが検出されました</translation>
@@ -91,6 +92,7 @@
 <translation id="3226405216343213872">スキャナを検索しています</translation>
 <translation id="3246869037381808805">昨日より前の印刷ジョブは削除されます</translation>
 <translation id="3268178239013324452">失敗 - 扉が開いています</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">DNS の応答時間が許容値を大幅に超えています</translation>
 <translation id="3328783797891415197">テスト実行中</translation>
 <translation id="3368922792935385530">接続済み</translation>
@@ -125,6 +127,7 @@
 <translation id="4155551848414053977">スキャナの電源がオンになっていて、ネットワーク経由または直接接続して使用できることを確認してください</translation>
 <translation id="4170700058716978431">失敗</translation>
 <translation id="4176463684765177261">停止中</translation>
+<translation id="4222698289790462549">現在の速度</translation>
 <translation id="4227825898293920515">パスワードの有効期限はあと <ph name="TIME" />です</translation>
 <translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" /> GB / <ph name="TOTAL_MEMORY" /> GB 使用可能。</translation>
 <translation id="4238516577297848345">実行中の印刷ジョブはありません</translation>

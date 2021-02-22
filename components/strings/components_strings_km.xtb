@@ -299,7 +299,6 @@
 <translation id="204357726431741734">ចូលគណនី ដើម្បីប្រើ​ពាក្យសម្ងាត់​ដែលរក្សាទុក​នៅក្នុងគណនី Google របស់អ្នក</translation>
 <translation id="2053111141626950936">ទំព័រជា <ph name="LANGUAGE" /> នឹងមិនត្រូវ​បានបកប្រែទេ។</translation>
 <translation id="2053553514270667976">លេខកូដតំបន់</translation>
-<translation id="2054665754582400095">​វត្តមានរបស់អ្នក</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{ការផ្តល់យោបល់ 1}other{ការផ្តល់យោបល់ #}}</translation>
 <translation id="2079545284768500474">ត្រឡប់វិញ</translation>
 <translation id="20817612488360358">ការកំណត់ប្រូកស៊ីប្រព័ន្ធត្រូវបានកំណត់ដើម្បីប្រើ ប៉ុន្តែការកំណត់ប្រូកស៊ីជាក់លាក់ក៏ត្រូវបានបញ្ជាក់ផងដែរ។</translation>
@@ -572,7 +571,6 @@
       មេប្រូកស៊ីកំពុងដំណើរការ។ ប្រសិនបើអ្នកមិនជឿជាក់ថាអ្នកគួរ 
       ប្រើម៉ាស៊ីនមេប្រូកស៊ីឬអត់៖
       <ph name="PLATFORM_TEXT" /></translation>
-<translation id="3184534047932533456"><ph name="URL" /> ចង់ដឹងអំពី​ពេលវេលា​ដែលអ្នក​មានវត្តមាន</translation>
 <translation id="3188393374551744535">សមតុល្យ​គណនី</translation>
 <translation id="3194737229810486521"><ph name="URL" /> ចង់ផ្ទុក​ទិន្នន័យ​នៅលើ​ឧបករណ៍​របស់អ្នក​ជាអចិន្ត្រៃយ៍</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> នៅលើ <ph name="SERVER_NAME" /></translation>
@@ -1100,7 +1098,6 @@
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">ម៉ាស៊ីន</translation>
 <translation id="5179510805599951267">មិនមែនជា <ph name="ORIGINAL_LANGUAGE" /> ទេ? រាយការណ៍កំហុសឆ្គងនេះ</translation>
-<translation id="5179740473595559246">ដឹងអំពីពេលវេលា​ដែលអ្នកមាន​វត្តមាន</translation>
 <translation id="5190835502935405962">របាចំណាំ</translation>
 <translation id="519422657042045905">មិនមាន​ចំណារទេ</translation>
 <translation id="5201306358585911203">ទំព័របង្កប់​នៅលើ​ទំព័រ​នេះ​និយាយ​ថា</translation>
@@ -1331,7 +1328,6 @@
 <translation id="6051221802930200923">អ្នក​មិន​អាច​ចូលទៅកាន់ <ph name="SITE" /> ឥឡូវនេះ​បានទេ ដោយសារតែគេហទំព័រនេះ​ប្រើ​ការខ្ទាស់វិញ្ញាបនបត្រ។ ជាទូទៅបញ្ហា​បណ្តាញ ឬ​ការវាយប្រហារ​កើត​ឡើង​ជាបណ្តោះអាសន្ន ដូច្នេះ​ទំព័រ​នេះ​នឹងដំណើរការល្អឡើងវិញនៅពេលក្រោយ។</translation>
 <translation id="6051898664905071243">ចំនួន​ទំព័រ៖</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053328359599022071">ចែករំលែកវត្តមាន​របស់អ្នកឬ?</translation>
 <translation id="6058977677006700226">ប្រើបណ្ណរបស់អ្នក​នៅលើឧបករណ៍​ទាំងអស់របស់អ្នកឬ?</translation>
 <translation id="6059925163896151826">ឧបករណ៍ USB</translation>
 <translation id="6060009363608157444">មុខងារ DnsOverHttps គ្មានសុពលភាព។</translation>

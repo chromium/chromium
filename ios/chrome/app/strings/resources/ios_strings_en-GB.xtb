@@ -19,7 +19,6 @@
 <translation id="1125564390852150847">Create new tab.</translation>
 <translation id="1145536944570833626">Delete existing data.</translation>
 <translation id="1147031633655575115">Signed in as <ph name="USER" /></translation>
-<translation id="1154690515305205900">A link to the highlighted text cannot be created.</translation>
 <translation id="1154984953698510061">See other tabs</translation>
 <translation id="1157749421655780457">Allow location…</translation>
 <translation id="1165039591588034296">Error</translation>
@@ -567,7 +566,6 @@ Try to use a unique password for every site.</translation>
 <translation id="6807889908376551050">Show All...</translation>
 <translation id="681368974849482173">Item created</translation>
 <translation id="6831043979455480757">Translate</translation>
-<translation id="6841409746189899007">Link to text</translation>
 <translation id="6851516051005285358">Request Desktop Site</translation>
 <translation id="6858855187367714033">Scanned</translation>
 <translation id="6859944681507688231">To scan a QR code or credit card, enable the camera from settings.</translation>
@@ -645,7 +643,6 @@ Try to use a unique password for every site.</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="766891008101699113">To browse the web privately, add a new tab.</translation>
 <translation id="7671141431838911305">INSTALL</translation>
-<translation id="7690812411882623730">Unable to link to text</translation>
 <translation id="7701040980221191251">None</translation>
 <translation id="7765158879357617694">Move</translation>
 <translation id="7771470029643830783">By signing out, your bookmarks, history, passwords and other Chrome data will no longer be synced to your Google Account.

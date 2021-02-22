@@ -394,7 +394,6 @@
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोडहरूलाई मेटाइयो</translation>
 <translation id="3856096718352044181">कृपया यो एउटा मान्य प्रदायक हो भनी पुष्टि गर्नुहोस् वा पछि फेरि प्रयास गर्नुहोस्</translation>
 <translation id="3861633093716975811">लोकप्रिय भिडियोहरू</translation>
-<translation id="386944881686624613">हाइलाइट गरिएको पाठको लिंक बनाउन सकिँदैन। पेजको लिंक सेयर गर्नुहोस्।</translation>
 <translation id="3892148308691398805">पाठ कपी गर्नुहोस्</translation>
 <translation id="3894427358181296146">फोल्डर थप्नुहोस्</translation>
 <translation id="3895926599014793903">जूम सक्षम गर्न दबाब दिनु</translation>
@@ -812,7 +811,6 @@
 <translation id="6656545060687952787">Chrome यन्त्रहरूको लागि स्क्यान गर्न स्थान पहुँच आवश्यक छ। <ph name="BEGIN_LINK" /> अनुमतिहरू अपडेट गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6659594942844771486">ट्याब</translation>
-<translation id="6663079968236414793">पाठसँग लिंक गर्नुहोस्</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> मा खोल्नुहोस्</translation>
 <translation id="666981079809192359">Chrome गोपनीयता सूचना</translation>
 <translation id="6671495933530132209">छविको प्रतिलिपि गर्नुहोस्</translation>
@@ -881,7 +879,6 @@
 <translation id="718926126787620637">पुस्तक चिन्ह लगाइएका फोल्डरहरूको सूची स्क्रिनको पूरा भागमा खोलियो</translation>
 <translation id="7189372733857464326">Google Play Services ले अद्यावधिक गर्ने कार्य सम्पन्न गरोस् भनी कुर्दै</translation>
 <translation id="7191430249889272776">पृष्ठभूमिमा ट्याब खुला छ।</translation>
-<translation id="72180057821664864">हाइलाइट गरिएको पाठको लिंक बनाउन सकिँदैन</translation>
 <translation id="7233236755231902816">आफ्नो भाषामा वेब हेर्न Chrome को नवीनतम संस्करण प्राप्त गर्नुहोस्</translation>
 <translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" /> को Chrome मा सिंक सुविधा सक्रिय गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="7274013316676448362">रोक लगाइएका साइटहरू</translation>
@@ -1112,7 +1109,6 @@
 <translation id="8812260976093120287">केही वेबसाइटहरूमा तपाईंले माथि समर्थन गरिएका भुक्तानी सम्बन्धी अनुप्रयोगहरूमार्फत आफ्नो यन्त्रमा भुक्तानी गर्न सक्नुहुन्छ।</translation>
 <translation id="881688628773363275">ट्याबका सामग्री प्रिभ्यू गर्ने सुविधा उपलब्ध छैन।</translation>
 <translation id="8820817407110198400">बुकमार्कहरू</translation>
-<translation id="8827407626219585697">पाठको लिंक समावेश गर्नुहोस्</translation>
 <translation id="883806473910249246">उक्त सामग्री डाउलोड गर्ने क्रममा एउटा त्रुटि भयो।</translation>
 <translation id="8840953339110955557">यो पृष्ठ अनलाइन संस्करणभन्दा भिन्न हुन सक्छ।</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, ट्याब</translation>

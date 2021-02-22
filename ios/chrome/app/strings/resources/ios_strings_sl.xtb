@@ -19,7 +19,6 @@
 <translation id="1125564390852150847">Create new tab.</translation>
 <translation id="1145536944570833626">Izbris obstoječih podatkov.</translation>
 <translation id="1147031633655575115">Prijavljeni ste kot <ph name="USER" /></translation>
-<translation id="1154690515305205900">Povezave do označenega besedila ni mogoče ustvariti.</translation>
 <translation id="1154984953698510061">Ogled drugih zavihkov</translation>
 <translation id="1157749421655780457">Dovoli lokacijo …</translation>
 <translation id="1165039591588034296">Napaka</translation>
@@ -567,7 +566,6 @@ Poskusite uporabljati enolično geslo za vsako spletno mesto.</translation>
 <translation id="6807889908376551050">Pokaži vse ...</translation>
 <translation id="681368974849482173">Item created</translation>
 <translation id="6831043979455480757">Prevedi</translation>
-<translation id="6841409746189899007">Povezava do besedila</translation>
 <translation id="6851516051005285358">Zahtevaj spletno mesto za namizni računalnik</translation>
 <translation id="6858855187367714033">Optično prebrano</translation>
 <translation id="6859944681507688231">Če želite optično prebrati kodo QR ali kreditno kartico, v nastavitvah omogočite fotoaparat.</translation>
@@ -645,7 +643,6 @@ Poskusite uporabljati enolično geslo za vsako spletno mesto.</translation>
 <translation id="7658239707568436148">Prekliči</translation>
 <translation id="766891008101699113">Če želite zasebno brskati po spletu, dodajte nov zavihek.</translation>
 <translation id="7671141431838911305">NAMESTI</translation>
-<translation id="7690812411882623730">Ni mogoče ustvariti povezave do besedila</translation>
 <translation id="7701040980221191251">Nič</translation>
 <translation id="7765158879357617694">Premakni</translation>
 <translation id="7771470029643830783">Z odjavo vaši zaznamki, zgodovina, gesla in drugi podatki v Chromu ne bodo več sinhronizirani z računom Google.
