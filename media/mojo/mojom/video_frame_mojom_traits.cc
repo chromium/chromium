@@ -81,9 +81,10 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
 #endif
 
   std::vector<gpu::MailboxHolder> mailbox_holder(media::VideoFrame::kMaxPlanes);
-  size_t num_planes = media::VideoFrame::NumPlanes(input->format());
-  DCHECK_LE(num_planes, mailbox_holder.size());
-  for (size_t i = 0; i < num_planes; i++)
+  DCHECK_LE(input->NumTextures(), mailbox_holder.size());
+  // STORAGE_GPU_MEMORY_BUFFER may carry meaningful or dummy mailboxes,
+  // we should only access them when there are textures.
+  for (size_t i = 0; i < input->NumTextures(); i++)
     mailbox_holder[i] = input->mailbox_holder(i);
 
   if (input->storage_type() == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
