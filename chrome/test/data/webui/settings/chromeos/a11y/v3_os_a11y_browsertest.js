@@ -67,6 +67,17 @@ const crostiniConfig = {
   testGenPreamble: crostiniTestGenPreamble
 };
 
+const crostiniSubpageOptionsRules = Object.assign(
+    {}, axeOptionsDocumentTitle.rules, axeOptionsExcludeLinkInTextBlock.rules);
+
+const crostiniSubpageConfig = {
+  featureList: crostiniFeatureList,
+  options: Object.assign(
+      {}, OSSettingsAccessibilityV3Test.axeOptions,
+      {'rules': crostiniSubpageOptionsRules}),
+  testGenPreamble: crostiniTestGenPreamble
+};
+
 [[
   'Basic', 'basic_a11y_v3_test.js', {options: axeOptionsExcludeLinkInTextBlock}
 ],
@@ -97,6 +108,10 @@ const crostiniConfig = {
  [
    'CrostiniSharedUsbDevices',
    'crostini_settings_shared_usb_devices_a11y_v3_test.js', crostiniConfig
+ ],
+ [
+   'CrostiniSubpage', 'crostini_settings_subpage_a11y_v3_test.js',
+   crostiniSubpageConfig
  ],
  [
    'MultideviceFeatures', 'multidevice_features_a11y_v3_test.js',
