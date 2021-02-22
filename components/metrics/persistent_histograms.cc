@@ -83,8 +83,6 @@ constexpr base::TimeDelta kDeleteOldWindowsTempFilesDelay =
 
 const char kBrowserMetricsName[] = "BrowserMetrics";
 
-// Check for feature enabling the use of persistent histogram storage and
-// enable the global allocator if so.
 void InstantiatePersistentHistograms(const base::FilePath& metrics_dir,
                                      bool default_local_memory) {
   // Create a directory for storing completed metrics files. Files in this
@@ -93,16 +91,17 @@ void InstantiatePersistentHistograms(const base::FilePath& metrics_dir,
   base::FilePath upload_dir = metrics_dir.AppendASCII(kBrowserMetricsName);
   base::CreateDirectory(upload_dir);
 
-  // Metrics files are typically created as a |spare_file| in the profile
-  // directory (e.g. "BrowserMetrics-spare.pma") and are then rotated into
-  // a subdirectory as a stamped file for upload when no longer in use.
-  // (e.g. "BrowserMetrics/BrowserMetrics-1234ABCD-12345.pma")
-  base::FilePath upload_file;
-  base::FilePath active_file;
-  base::FilePath spare_file;
-  base::GlobalHistogramAllocator::ConstructFilePathsForUploadDir(
-      metrics_dir, upload_dir, kBrowserMetricsName, &upload_file, &active_file,
-      &spare_file);
+  // The spare file in the user data dir ("BrowserMetrics-spare.pma") would
+  // have been created in the previous session. We will move it to |upload_dir|
+  // and rename it with the current time and process id for use as |active_file|
+  // (e.g. "BrowserMetrics/BrowserMetrics-1234ABCD-12345.pma").
+  // Any unreported metrics in this file will be uploaded next session.
+  base::FilePath spare_file = base::GlobalHistogramAllocator::ConstructFilePath(
+      metrics_dir, kBrowserMetricsName + std::string("-spare"));
+  base::FilePath active_file =
+      base::GlobalHistogramAllocator::ConstructFilePathForUploadDir(
+          upload_dir, kBrowserMetricsName, base::Time::Now(),
+          base::GetCurrentProcId());
 
   // This is used to report results to an UMA histogram.
   enum InitResult {
@@ -156,17 +155,17 @@ void InstantiatePersistentHistograms(const base::FilePath& metrics_dir,
     if (!base::PathExists(upload_dir)) {
       // Handle failure to create the directory.
       result = kNoUploadDir;
-    } else if (base::PathExists(upload_file)) {
-      // "upload" filename is supposed to be unique so this shouldn't happen.
+    } else if (base::PathExists(active_file)) {
+      // "active" filename is supposed to be unique so this shouldn't happen.
       result = kMappedFileExists;
     } else {
-      // Move any sparse file into the upload position.
-      base::ReplaceFile(spare_file, upload_file, nullptr);
-      // Create global allocator using the "upload" file.
-      if (kSpareFileRequired && !base::PathExists(upload_file)) {
+      // Move any sparse file into the active position.
+      base::ReplaceFile(spare_file, active_file, nullptr);
+      // Create global allocator using the |active_file|.
+      if (kSpareFileRequired && !base::PathExists(active_file)) {
         result = kNoSpareFile;
       } else if (base::GlobalHistogramAllocator::CreateWithFile(
-                     upload_file, kAllocSize, kAllocId, kBrowserMetricsName)) {
+                     active_file, kAllocSize, kAllocId, kBrowserMetricsName)) {
         result = kMappedFileSuccess;
       } else {
         result = kMappedFileFailed;

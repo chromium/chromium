@@ -386,11 +386,19 @@ class BASE_EXPORT GlobalHistogramAllocator
   // Constructs a filename using a name.
   static FilePath ConstructFilePath(const FilePath& dir, StringPiece name);
 
+  // Constructs a filename using a name for an "active" file.
+  static FilePath ConstructFilePathForActiveFile(const FilePath& dir,
+                                                 StringPiece name);
+
   // Like above but with timestamp and pid for use in upload directories.
   static FilePath ConstructFilePathForUploadDir(const FilePath& dir,
                                                 StringPiece name,
                                                 base::Time stamp,
                                                 ProcessId pid);
+
+  // Override that uses the current time stamp and current process id.
+  static FilePath ConstructFilePathForUploadDir(const FilePath& dir,
+                                                StringPiece name);
 
   // Parses a filename to extract name, timestamp, and pid.
   static bool ParseFilePath(const FilePath& path,
@@ -398,37 +406,9 @@ class BASE_EXPORT GlobalHistogramAllocator
                             Time* out_stamp,
                             ProcessId* out_pid);
 
-  // Constructs a set of names in |dir| based on name that can be used for a
-  // base + active persistent memory mapped location for CreateWithActiveFile().
-  // The spare path is a file that can be pre-created and moved to be active
-  // without any startup penalty that comes from constructing the file. |name|
-  // will be used as the basename of the file inside |dir|. |out_base_path|,
-  // |out_active_path|, or |out_spare_path| may be null if not needed.
-  static void ConstructFilePaths(const FilePath& dir,
-                                 StringPiece name,
-                                 FilePath* out_base_path,
-                                 FilePath* out_active_path,
-                                 FilePath* out_spare_path);
-
-  // As above but puts the base files in a different "upload" directory. This
-  // is useful when moving all completed files into a single directory for easy
-  // upload management.
-  static void ConstructFilePathsForUploadDir(const FilePath& active_dir,
-                                             const FilePath& upload_dir,
-                                             const std::string& name,
-                                             FilePath* out_upload_path,
-                                             FilePath* out_active_path,
-                                             FilePath* out_spare_path);
-
   // Create a "spare" file that can later be made the "active" file. This
   // should be done on a background thread if possible.
   static bool CreateSpareFile(const FilePath& spare_path, size_t size);
-
-  // Same as above but uses standard names. |name| is the name of the allocator
-  // and is also used to create the correct filename.
-  static bool CreateSpareFileInDir(const FilePath& dir_path,
-                                   size_t size,
-                                   StringPiece name);
 #endif
 
   // Create a global allocator using a block of shared memory accessed

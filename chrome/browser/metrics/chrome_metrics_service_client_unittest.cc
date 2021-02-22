@@ -112,9 +112,9 @@ TEST_F(ChromeMetricsServiceClientTest, FilterFiles) {
   base::ProcessId my_pid = base::GetCurrentProcId();
   base::FilePath active_dir(FILE_PATH_LITERAL("foo"));
   base::FilePath upload_dir(FILE_PATH_LITERAL("bar"));
-  base::FilePath upload_path;
-  base::GlobalHistogramAllocator::ConstructFilePathsForUploadDir(
-      active_dir, upload_dir, "TestMetrics", &upload_path, nullptr, nullptr);
+  base::FilePath upload_path =
+      base::GlobalHistogramAllocator::ConstructFilePathForUploadDir(
+          upload_dir, "TestMetrics");
   EXPECT_EQ(metrics::FileMetricsProvider::FILTER_ACTIVE_THIS_PID,
             ChromeMetricsServiceClient::FilterBrowserMetricsFiles(upload_path));
 

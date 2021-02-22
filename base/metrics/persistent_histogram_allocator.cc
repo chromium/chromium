@@ -736,8 +736,9 @@ bool GlobalHistogramAllocator::CreateWithActiveFileInDir(const FilePath& dir,
                                                          size_t size,
                                                          uint64_t id,
                                                          StringPiece name) {
-  FilePath base_path, active_path, spare_path;
-  ConstructFilePaths(dir, name, &base_path, &active_path, &spare_path);
+  FilePath base_path = ConstructFilePath(dir, name);
+  FilePath active_path = ConstructFilePathForActiveFile(dir, name);
+  FilePath spare_path = ConstructFilePath(dir, std::string(name) + "-spare");
   return CreateWithActiveFile(base_path, active_path, spare_path, size, id,
                               name);
 }
@@ -750,6 +751,13 @@ FilePath GlobalHistogramAllocator::ConstructFilePath(const FilePath& dir,
 }
 
 // static
+FilePath GlobalHistogramAllocator::ConstructFilePathForActiveFile(
+    const FilePath& dir,
+    StringPiece name) {
+  return ConstructFilePath(dir, std::string(name) + "-active");
+}
+
+// static
 FilePath GlobalHistogramAllocator::ConstructFilePathForUploadDir(
     const FilePath& dir,
     StringPiece name,
@@ -759,6 +767,14 @@ FilePath GlobalHistogramAllocator::ConstructFilePathForUploadDir(
       dir,
       StringPrintf("%.*s-%lX-%lX", static_cast<int>(name.length()), name.data(),
                    static_cast<long>(stamp.ToTimeT()), static_cast<long>(pid)));
+}
+
+// static
+FilePath GlobalHistogramAllocator::ConstructFilePathForUploadDir(
+    const FilePath& dir,
+    StringPiece name) {
+  return ConstructFilePathForUploadDir(dir, name, Time::Now(),
+                                       GetCurrentProcId());
 }
 
 // static
@@ -792,47 +808,6 @@ bool GlobalHistogramAllocator::ParseFilePath(const FilePath& path,
   return true;
 }
 
-// static
-void GlobalHistogramAllocator::ConstructFilePaths(const FilePath& dir,
-                                                  StringPiece name,
-                                                  FilePath* out_base_path,
-                                                  FilePath* out_active_path,
-                                                  FilePath* out_spare_path) {
-  if (out_base_path)
-    *out_base_path = ConstructFilePath(dir, name);
-
-  if (out_active_path) {
-    *out_active_path = ConstructFilePath(dir, StrCat({name, "-active"}));
-  }
-
-  if (out_spare_path) {
-    *out_spare_path = ConstructFilePath(dir, StrCat({name, "-spare"}));
-  }
-}
-
-// static
-void GlobalHistogramAllocator::ConstructFilePathsForUploadDir(
-    const FilePath& active_dir,
-    const FilePath& upload_dir,
-    const std::string& name,
-    FilePath* out_upload_path,
-    FilePath* out_active_path,
-    FilePath* out_spare_path) {
-  if (out_upload_path) {
-    *out_upload_path = ConstructFilePathForUploadDir(
-        upload_dir, name, Time::Now(), GetCurrentProcId());
-  }
-
-  if (out_active_path) {
-    *out_active_path = ConstructFilePath(active_dir, StrCat({name, "-active"}));
-  }
-
-  if (out_spare_path) {
-    *out_spare_path = ConstructFilePath(active_dir, StrCat({name, "-spare"}));
-  }
-}
-
-// static
 bool GlobalHistogramAllocator::CreateSpareFile(const FilePath& spare_path,
                                                size_t size) {
   FilePath temp_spare_path = spare_path.AddExtension(FILE_PATH_LITERAL(".tmp"));
@@ -856,15 +831,6 @@ bool GlobalHistogramAllocator::CreateSpareFile(const FilePath& spare_path,
     DeleteFile(temp_spare_path);
 
   return success;
-}
-
-// static
-bool GlobalHistogramAllocator::CreateSpareFileInDir(const FilePath& dir,
-                                                    size_t size,
-                                                    StringPiece name) {
-  FilePath spare_path;
-  ConstructFilePaths(dir, name, nullptr, nullptr, &spare_path);
-  return CreateSpareFile(spare_path, size);
 }
 #endif  // !defined(OS_NACL)
 

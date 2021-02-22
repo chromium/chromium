@@ -118,9 +118,8 @@ void RegisterOrRemovePreviousRunMetricsFile(
     base::StringPiece metrics_name,
     metrics::FileMetricsProvider::SourceAssociation association,
     metrics::FileMetricsProvider* file_metrics_provider) {
-  base::FilePath metrics_file;
-  base::GlobalHistogramAllocator::ConstructFilePaths(
-      dir, metrics_name, &metrics_file, nullptr, nullptr);
+  base::FilePath metrics_file =
+      base::GlobalHistogramAllocator::ConstructFilePath(dir, metrics_name);
 
   if (metrics_reporting_enabled) {
     // Enable reading any existing saved metrics.
@@ -180,14 +179,13 @@ std::unique_ptr<metrics::FileMetricsProvider> CreateFileMetricsProvider(
         base::BindRepeating(FilterBrowserMetricsFiles);
     file_metrics_provider->RegisterSource(browser_metrics_params);
 
-    base::FilePath active_path;
-    base::GlobalHistogramAllocator::ConstructFilePaths(
-        user_data_dir, kCrashpadHistogramAllocatorName, nullptr, &active_path,
-        nullptr);
+    base::FilePath crashpad_active_path =
+        base::GlobalHistogramAllocator::ConstructFilePathForActiveFile(
+            user_data_dir, kCrashpadHistogramAllocatorName);
     // Register data that will be populated for the current run. "Active"
     // files need an empty "prefs_key" because they update the file itself.
     file_metrics_provider->RegisterSource(metrics::FileMetricsProvider::Params(
-        active_path,
+        crashpad_active_path,
         metrics::FileMetricsProvider::SOURCE_HISTOGRAMS_ACTIVE_FILE,
         metrics::FileMetricsProvider::ASSOCIATE_CURRENT_RUN));
   } else {
