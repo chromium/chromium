@@ -399,6 +399,102 @@ TEST_F(AppListSyncableServiceTest, OEMItemIgnoreSyncParent) {
   EXPECT_EQ(ash::kOemFolderId, oem_app_item->folder_id());
 }
 
+// Verifies that an OEM apps parent ID in sync data is not overridden to the OEM
+// folder.
+TEST_F(AppListSyncableServiceTest, OEMAppParentNotOverridenInSync) {
+  const std::string oem_app_id = CreateNextAppId(extensions::kWebStoreAppId);
+  scoped_refptr<extensions::Extension> oem_app = MakeApp(
+      kOemAppName, oem_app_id, extensions::Extension::WAS_INSTALLED_BY_OEM);
+  const std::string oem_app_parent_in_sync = "nonoemfolder";
+
+  // Send sync where the OEM app is parented by another folder.
+  syncer::SyncDataList sync_list;
+  sync_list.push_back(CreateAppRemoteData(
+      oem_app_parent_in_sync, "Non OEM folder", std::string() /* parent_id */,
+      syncer::StringOrdinal("nonoemfolderposition").ToInternalValue(),
+      std::string() /* item_pin_ordinal*/,
+      sync_pb::AppListSpecifics_AppListItemType_TYPE_FOLDER));
+  sync_list.push_back(CreateAppRemoteData(
+      oem_app_id, kOemAppName, oem_app_parent_in_sync,
+      syncer::StringOrdinal("appposition").ToInternalValue(),
+      std::string() /* item_pin_ordinal */));
+  // Add an extra app to the folder to avoid invalid single item folder.
+  sync_list.push_back(CreateAppRemoteData(
+      "non-oem-app", "Non OEM app", oem_app_parent_in_sync,
+      syncer::StringOrdinal("nonoemappposition").ToInternalValue(),
+      std::string() /* item_pin_ordinal */));
+  sync_list.push_back(CreateAppRemoteData(
+      ash::kOemFolderId, "OEM", std::string() /*parent_id*/,
+      syncer::StringOrdinal("oemposition").ToInternalValue(),
+      std::string() /* item_pin_ordinal*/,
+      sync_pb::AppListSpecifics_AppListItemType_TYPE_FOLDER));
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>(),
+      std::make_unique<syncer::SyncErrorFactoryMock>());
+  content::RunAllTasksUntilIdle();
+
+  InstallExtension(oem_app.get());
+
+  // The OEM app should be parented by the OEM folder locally.
+  ChromeAppListItem* oem_app_item = model_updater()->FindItem(oem_app_id);
+  ASSERT_TRUE(oem_app_item);
+  EXPECT_EQ(ash::kOemFolderId, oem_app_item->folder_id());
+
+  ChromeAppListItem* oem_folder_item =
+      model_updater()->FindItem(ash::kOemFolderId);
+  ASSERT_TRUE(oem_folder_item);
+  EXPECT_EQ(oem_folder_item->position(), syncer::StringOrdinal("oemposition"));
+
+  // Verify that the OEM parent has no changed in sync.
+  const app_list::AppListSyncableService::SyncItem* app_sync_item =
+      GetSyncItem(oem_app_id);
+  ASSERT_TRUE(app_sync_item);
+  EXPECT_EQ(oem_app_parent_in_sync, app_sync_item->parent_id);
+
+  // Verify that the non OEM folder is not removed from sync, even though it's
+  // not been created locally.
+  EXPECT_FALSE(model_updater()->FindItem(oem_app_parent_in_sync));
+  EXPECT_TRUE(GetSyncItem(oem_app_parent_in_sync));
+}
+
+// Verifies that OEM folder position respects the OEM folder position in sync.
+TEST_F(AppListSyncableServiceTest, OEMFolderPositionSync) {
+  const std::string oem_app_id = CreateNextAppId(extensions::kWebStoreAppId);
+  scoped_refptr<extensions::Extension> oem_app = MakeApp(
+      kOemAppName, oem_app_id, extensions::Extension::WAS_INSTALLED_BY_OEM);
+
+  // Send sync with an OEM folder item.
+  syncer::SyncDataList sync_list;
+  sync_list.push_back(CreateAppRemoteData(
+      oem_app_id, kOemAppName, std::string() /* parent_id */,
+      syncer::StringOrdinal("appposition").ToInternalValue(),
+      std::string() /* item_pin_ordinal */));
+  sync_list.push_back(CreateAppRemoteData(
+      ash::kOemFolderId, "OEM", std::string() /*parent_id*/,
+      syncer::StringOrdinal("oemposition").ToInternalValue(),
+      std::string() /* item_pin_ordinal*/,
+      sync_pb::AppListSpecifics_AppListItemType_TYPE_FOLDER));
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>(),
+      std::make_unique<syncer::SyncErrorFactoryMock>());
+  content::RunAllTasksUntilIdle();
+
+  InstallExtension(oem_app.get());
+
+  // OEM app should locally be parented by the OEM folder.
+  ChromeAppListItem* oem_app_item = model_updater()->FindItem(oem_app_id);
+  ASSERT_TRUE(oem_app_item);
+  EXPECT_EQ(ash::kOemFolderId, oem_app_item->folder_id());
+
+  ChromeAppListItem* oem_folder_item =
+      model_updater()->FindItem(ash::kOemFolderId);
+  ASSERT_TRUE(oem_folder_item);
+  // The OEM folder folder should be set to the value set by sync.
+  EXPECT_EQ(oem_folder_item->position(), syncer::StringOrdinal("oemposition"));
+}
+
 // Verifies that non-OEM item is not moved to OEM folder by sync.
 TEST_F(AppListSyncableServiceTest, NonOEMItemIgnoreSyncToOEMFolder) {
   const std::string app_id = CreateNextAppId(extensions::kWebStoreAppId);

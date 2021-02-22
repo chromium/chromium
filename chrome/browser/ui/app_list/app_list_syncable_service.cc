@@ -888,6 +888,15 @@ void AppListSyncableService::PruneEmptySyncFolders() {
     SyncItem* sync_item = (iter++)->second.get();
     if (sync_item->item_type != sync_pb::AppListSpecifics::TYPE_FOLDER)
       continue;
+
+    // Do not prune OEM folder - OEM app sync items will not have the parent ID
+    // set to OEM folder, so OEM folder will not be listed in `parent_ids`.
+    // Additionally, even if the folder is empty / not needed on this device, it
+    // may exist on another user's device. Deleting it from sync would
+    // invalidate the folder position on other devices.
+    if (sync_item->item_id == ash::kOemFolderId)
+      continue;
+
     if (!base::Contains(parent_ids, sync_item->item_id))
       DeleteSyncItem(sync_item->item_id);
   }
