@@ -6,6 +6,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -24,14 +25,47 @@
 
 namespace device {
 
+namespace {
+
+// AOADiscoveryEvent enumerates several steps that occur during AOA discovery.
+// Do not change the assigned values since they are used in histograms, only
+// append new values. Keep synced with enums.xml.
+enum class AOADiscoveryEvent {
+  kStarted = 0,
+  kAOADeviceObserved = 1,
+  kNonAOADeviceObserved = 2,
+  kBadInterface = 3,
+  kAOAOpenFailed = 4,
+  kAOAConfigurationFailed = 5,
+  kAOAInterfaceFailed = 6,
+  kAOAWriteFailed = 7,
+  kAOAReadFailed = 8,
+  kAOADeviceDiscovered = 9,
+  kOpenFailed = 10,
+  kVersionFailed = 11,
+  kBadVersion = 12,
+  kConfigurationFailed = 13,
+  kAOARequested = 14,
+  kPreviousDeviceFound = 15,
+
+  kMaxValue = 15,
+};
+
+void RecordEvent(AOADiscoveryEvent event) {
+  base::UmaHistogramEnumeration("WebAuthentication.CableV2.AOADiscoveryEvent",
+                                event);
+}
+
 // KnownAccessories returns a global that stores the GUIDs of USB devices that
 // we have previously put into accessory mode and, if still connected, can be
 // used immediately. (GUIDs are not a USB concept, the Chromium USB layer
 // generates them to identity a specific USB connection.)
-static base::flat_set<std::string>& KnownAccessories() {
+base::flat_set<std::string>& KnownAccessories() {
   static base::NoDestructor<base::flat_set<std::string>> set;
   return *set;
 }
+
+}  // namespace
 
 AndroidAccessoryDiscovery::AndroidAccessoryDiscovery(
     mojo::Remote<device::mojom::UsbDeviceManager> device_manager,
@@ -44,6 +78,8 @@ AndroidAccessoryDiscovery::~AndroidAccessoryDiscovery() = default;
 
 void AndroidAccessoryDiscovery::StartInternal() {
   FIDO_LOG(DEBUG) << "Android accessory discovery started";
+  RecordEvent(AOADiscoveryEvent::kStarted);
+
   device_manager_->EnumerateDevicesAndSetClient(
       receiver_.BindNewEndpointAndPassRemote(),
       base::BindOnce(&AndroidAccessoryDiscovery::OnGetDevices,
@@ -67,10 +103,12 @@ void AndroidAccessoryDiscovery::OnDeviceAdded(
   auto* device_ptr = device.get();
   if (device_info->vendor_id == 0x18d1 &&
       (device_info->product_id & ~1) == 0x2d00) {
+    RecordEvent(AOADiscoveryEvent::kAOADeviceObserved);
     HandleAccessoryDevice(std::move(device), std::move(device_info));
     return;
   }
 
+  RecordEvent(AOADiscoveryEvent::kNonAOADeviceObserved);
   // Attempt to reconfigure the device into accessory mode.
   device_ptr->Open(base::BindOnce(&AndroidAccessoryDiscovery::OnOpen,
                                   weak_factory_.GetWeakPtr(),
@@ -128,6 +166,7 @@ void AndroidAccessoryDiscovery::HandleAccessoryDevice(
     device::mojom::UsbDeviceInfoPtr device_info) {
   auto interface_info = FindAccessoryInterface(device_info);
   if (!interface_info) {
+    RecordEvent(AOADiscoveryEvent::kBadInterface);
     FIDO_LOG(ERROR) << "Failed to find accessory interface on device";
     return;
   }
@@ -171,6 +210,7 @@ void AndroidAccessoryDiscovery::OnOpenAccessory(
       break;
     default:
       FIDO_LOG(DEBUG) << "Failed to open accessory device. Ignoring.";
+      RecordEvent(AOADiscoveryEvent::kAOAOpenFailed);
       return;
   }
 
@@ -197,6 +237,7 @@ void AndroidAccessoryDiscovery::OnAccessoryConfigured(
     bool success) {
   if (!success) {
     FIDO_LOG(DEBUG) << "Failed to set configuration on an accessory device";
+    RecordEvent(AOADiscoveryEvent::kAOAConfigurationFailed);
     return;
   }
 
@@ -214,6 +255,7 @@ void AndroidAccessoryDiscovery::OnAccessoryInterfaceClaimed(
     bool success) {
   if (!success) {
     FIDO_LOG(DEBUG) << "Failed to claim interface on an accessory device";
+    RecordEvent(AOADiscoveryEvent::kAOAInterfaceFailed);
     return;
   }
 
@@ -241,6 +283,7 @@ void AndroidAccessoryDiscovery::OnSyncWritten(
   if (result != mojom::UsbTransferStatus::COMPLETED) {
     FIDO_LOG(ERROR) << "Failed to write to USB device ("
                     << static_cast<int>(result) << ").";
+    RecordEvent(AOADiscoveryEvent::kAOAWriteFailed);
     return;
   }
 
@@ -268,6 +311,7 @@ void AndroidAccessoryDiscovery::OnReadComplete(
       result != mojom::UsbTransferStatus::BABBLE) {
     FIDO_LOG(ERROR) << "Failed to read from USB device ("
                     << static_cast<int>(result) << ").";
+    RecordEvent(AOADiscoveryEvent::kAOAReadFailed);
     return;
   }
 
@@ -276,6 +320,7 @@ void AndroidAccessoryDiscovery::OnReadComplete(
       payload[0] == AndroidAccessoryDevice::kCoaoaSync &&
       memcmp(&payload[1], nonce.data(), kSyncNonceLength) == 0) {
     FIDO_LOG(DEBUG) << "Accessory device discovered";
+    RecordEvent(AOADiscoveryEvent::kAOADeviceDiscovered);
     KnownAccessories().insert(interface_info.guid);
     AddDevice(std::make_unique<AndroidAccessoryDevice>(
         std::move(device), interface_info.in_endpoint,
@@ -301,6 +346,7 @@ void AndroidAccessoryDiscovery::OnOpen(
       break;
     default:
       FIDO_LOG(DEBUG) << "Failed to open USB device. Ignoring.";
+      RecordEvent(AOADiscoveryEvent::kOpenFailed);
       return;
   }
 
@@ -317,6 +363,7 @@ void AndroidAccessoryDiscovery::OnVersionReply(
     device::mojom::UsbTransferStatus status,
     const std::vector<uint8_t>& payload) {
   if (status != mojom::UsbTransferStatus::COMPLETED || payload.size() != 2) {
+    RecordEvent(AOADiscoveryEvent::kVersionFailed);
     FIDO_LOG(DEBUG) << "Android AOA version request failed with status: "
                     << static_cast<unsigned>(status)
                     << " payload.size: " << payload.size()
@@ -328,6 +375,7 @@ void AndroidAccessoryDiscovery::OnVersionReply(
                            (static_cast<uint16_t>(payload[1]) << 8);
 
   if (version == 0) {
+    RecordEvent(AOADiscoveryEvent::kBadVersion);
     FIDO_LOG(DEBUG)
         << "Android AOA version one not supported. Ignoring device.";
     return;
@@ -348,6 +396,7 @@ void AndroidAccessoryDiscovery::OnConfigurationStepComplete(
     unsigned step,
     device::mojom::UsbTransferStatus status) {
   if (status != mojom::UsbTransferStatus::COMPLETED) {
+    RecordEvent(AOADiscoveryEvent::kConfigurationFailed);
     FIDO_LOG(DEBUG) << "Android AOA configuration failed at step " << step;
     return;
   }
@@ -388,6 +437,7 @@ void AndroidAccessoryDiscovery::OnConfigurationStepComplete(
       return;
 
     case 5:
+      RecordEvent(AOADiscoveryEvent::kAOARequested);
       FIDO_LOG(DEBUG) << "Device requested to switch to accessory mode";
       return;
 
@@ -409,6 +459,7 @@ void AndroidAccessoryDiscovery::OnGetDevices(
     std::vector<device::mojom::UsbDeviceInfoPtr> devices) {
   base::flat_set<std::string>& known_guids(KnownAccessories());
   base::flat_set<std::string> still_known_guids;
+  bool event_recorded = false;
 
   for (auto& device_info : devices) {
     const std::string& guid = device_info->guid;
@@ -418,6 +469,10 @@ void AndroidAccessoryDiscovery::OnGetDevices(
 
     still_known_guids.insert(guid);
     FIDO_LOG(DEBUG) << "Previously opened accessory device found.";
+    if (!event_recorded) {
+      RecordEvent(AOADiscoveryEvent::kPreviousDeviceFound);
+      event_recorded = true;
+    }
 
     mojo::Remote<device::mojom::UsbDevice> device;
     device_manager_->GetSecurityKeyDevice(guid,
