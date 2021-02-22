@@ -3611,7 +3611,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
         You can clear the data in Chrome Settings
       </message>
       <message name="IDS_TWA_CLEAR_DATA_DIALOG_KEEP_DATA" desc="Text on the negative button of the clear data dialog">
-        Keep data
+        Keep Data
       </message>
       <message name="IDS_TWA_CLEAR_DATA_SITE_SELECTION_TITLE" desc="Title of screen showing the sites linked to TWA, allowing the user to clean data in any of them.">
         Linked sites
