@@ -949,6 +949,118 @@ TEST(KURLTest, ThreadSafesStaticKurlGetters) {
 #endif
 }
 
+// Setting protocol to "file" should not work if the URL has credentials or a
+// port.
+TEST(KURLTest, FailToSetProtocolToFile) {
+  constexpr const char* kShouldNotChange[] = {
+      "http://foo@localhost/",
+      "http://:bar@localhost/",
+      "http://localhost:8000/",
+  };
+
+  for (const char* url_string : kShouldNotChange) {
+    KURL url(url_string);
+    auto port_before = url.Port();
+    auto user_before = url.User();
+    auto pass_before = url.Pass();
+    EXPECT_TRUE(url.SetProtocol("file")) << "with url " << url_string;
+    EXPECT_EQ(url.Protocol(), "http") << "with url " << url_string;
+
+    EXPECT_EQ(url.Port(), port_before) << "with url " << url_string;
+    EXPECT_EQ(url.User(), user_before) << "with url " << url_string;
+    EXPECT_EQ(url.Pass(), pass_before) << "with url " << url_string;
+  }
+}
+
+// If the source URL is invalid, then it behaves like it has an empty
+// protocol, so the conversion to a file URL can go ahead.
+TEST(KURL, SetProtocolToFileFromInvalidURL) {
+  enum ValidAfterwards {
+    kValid,
+    kInvalid,
+  };
+  struct URLAndExpectedValidity {
+    const char* const url;
+    const ValidAfterwards validity;
+  };
+
+  // The URLs are reparsed when the protocol is changed, and most of
+  // them are converted to a form which is valid. The second argument
+  // reflects the validity after the transformation. All the URLs are
+  // invalid before it.
+  constexpr URLAndExpectedValidity kInvalidURLs[] = {
+      {"http://@/", kValid},          {"http://@@/", kValid},
+      {"http://::/", kInvalid},       {"http://:/", kValid},
+      {"http://:@/", kValid},         {"http://@:/", kValid},
+      {"http://:@:/", kValid},        {"http://foo@/", kValid},
+      {"http://localhost:/", kValid},
+  };
+
+  for (const auto& invalid_url : kInvalidURLs) {
+    KURL url(invalid_url.url);
+
+    EXPECT_TRUE(url.SetProtocol("file")) << "with url " << invalid_url.url;
+
+    EXPECT_EQ(url.Protocol(), invalid_url.validity == kValid ? "file" : "")
+        << "with url " << invalid_url.url;
+
+    EXPECT_EQ(url.IsValid() ? kValid : kInvalid, invalid_url.validity)
+        << "with url " << invalid_url.url;
+  }
+}
+
+TEST(KURLTest, SetProtocolToFromFile) {
+  struct Case {
+    const char* const url;
+    const char* const new_protocol;
+  };
+  constexpr Case kCases[] = {
+      {"http://localhost/path", "file"},
+      {"file://example.com/path", "http"},
+  };
+
+  for (const auto& test_case : kCases) {
+    KURL url(test_case.url);
+    EXPECT_TRUE(url.SetProtocol(test_case.new_protocol));
+    EXPECT_EQ(url.Protocol(), test_case.new_protocol);
+
+    EXPECT_EQ(url.GetPath(), "/path");
+  }
+}
+
+TEST(KURLTest, FailToSetProtocolFromFile) {
+  KURL url("file:///path");
+  EXPECT_TRUE(url.SetProtocol("http"));
+  EXPECT_EQ(url.Protocol(), "file");
+
+  EXPECT_EQ(url.GetPath(), "/path");
+}
+
+// According to the URL standard https://url.spec.whatwg.org/#scheme-state
+// switching between special and non-special schemes shouldn't work, but for now
+// we are retaining it for backwards-compatibility.
+// TODO(ricea): Change these tests if we change the behaviour.
+TEST(KURLTest, SetFileProtocolFromNonSpecial) {
+  KURL url("non-special-scheme://foo:bar@example.com:8000/path");
+  EXPECT_TRUE(url.SetProtocol("file"));
+
+  // The URL is now invalid, so the protocol is empty. This is different from
+  // what happens in the case with special schemes.
+  EXPECT_EQ(url.Protocol(), "");
+  EXPECT_EQ(url.User(), "");
+  EXPECT_TRUE(url.Pass().IsNull());
+  EXPECT_EQ(url.Host(), "");
+  EXPECT_EQ(url.Port(), 0);
+  EXPECT_EQ(url.GetPath(), "");
+}
+
+TEST(KURLTest, SetFileProtocolToNonSpecial) {
+  KURL url("file:///path");
+  EXPECT_TRUE(url.SetProtocol("non-special-scheme"));
+  EXPECT_EQ(url.Protocol(), "non-special-scheme");
+  EXPECT_EQ(url.GetPath(), "///path");
+}
+
 enum class PortIsValid {
   // The constructor does strict checking. Ports which are considered valid by
   // the constructor are kAlways valid.

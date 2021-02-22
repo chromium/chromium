@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 619 tests; 315 PASS, 304 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 619 tests; 330 PASS, 289 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS URL: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged.
 PASS <a>: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged.
@@ -31,24 +31,24 @@ PASS <area>: Setting <a://example.net>.protocol = 'b,c' Only some punctuation is
 PASS URL: Setting <a://example.net>.protocol = 'bé' Non-ASCII is rejected
 PASS <a>: Setting <a://example.net>.protocol = 'bé' Non-ASCII is rejected
 PASS <area>: Setting <a://example.net>.protocol = 'bé' Non-ASCII is rejected
-FAIL URL: Setting <http://test@example.net>.protocol = 'file' Can’t switch from URL containing username/password/port to file assert_equals: expected "http://test@example.net/" but got "file://test%40example.net/"
-FAIL <a>: Setting <http://test@example.net>.protocol = 'file' Can’t switch from URL containing username/password/port to file assert_equals: expected "http://test@example.net/" but got "file://test%40example.net/"
-FAIL <area>: Setting <http://test@example.net>.protocol = 'file' Can’t switch from URL containing username/password/port to file assert_equals: expected "http://test@example.net/" but got "file://test%40example.net/"
-FAIL URL: Setting <https://example.net:1234>.protocol = 'file' assert_equals: expected "https://example.net:1234/" but got "file://example.net:1234/"
-FAIL <a>: Setting <https://example.net:1234>.protocol = 'file' assert_equals: expected "https://example.net:1234/" but got "file://example.net:1234/"
-FAIL <area>: Setting <https://example.net:1234>.protocol = 'file' assert_equals: expected "https://example.net:1234/" but got "file://example.net:1234/"
-FAIL URL: Setting <wss://x:x@example.net:1234>.protocol = 'file' assert_equals: expected "wss://x:x@example.net:1234/" but got "file://x:x%40example.net:1234/"
-FAIL <a>: Setting <wss://x:x@example.net:1234>.protocol = 'file' assert_equals: expected "wss://x:x@example.net:1234/" but got "file://x:x%40example.net:1234/"
-FAIL <area>: Setting <wss://x:x@example.net:1234>.protocol = 'file' assert_equals: expected "wss://x:x@example.net:1234/" but got "file://x:x%40example.net:1234/"
+PASS URL: Setting <http://test@example.net>.protocol = 'file' Can’t switch from URL containing username/password/port to file
+PASS <a>: Setting <http://test@example.net>.protocol = 'file' Can’t switch from URL containing username/password/port to file
+PASS <area>: Setting <http://test@example.net>.protocol = 'file' Can’t switch from URL containing username/password/port to file
+PASS URL: Setting <https://example.net:1234>.protocol = 'file'
+PASS <a>: Setting <https://example.net:1234>.protocol = 'file'
+PASS <area>: Setting <https://example.net:1234>.protocol = 'file'
+PASS URL: Setting <wss://x:x@example.net:1234>.protocol = 'file'
+PASS <a>: Setting <wss://x:x@example.net:1234>.protocol = 'file'
+PASS <area>: Setting <wss://x:x@example.net:1234>.protocol = 'file'
 FAIL URL: Setting <file://localhost/>.protocol = 'http' Can’t switch from file URL with no host assert_equals: expected "file:///" but got "http://localhost/"
 FAIL <a>: Setting <file://localhost/>.protocol = 'http' Can’t switch from file URL with no host assert_equals: expected "file:///" but got "http://localhost/"
 FAIL <area>: Setting <file://localhost/>.protocol = 'http' Can’t switch from file URL with no host assert_equals: expected "file:///" but got "http://localhost/"
-FAIL URL: Setting <file:///test>.protocol = 'https' assert_equals: expected "file:///test" but got "https://test/"
-FAIL <a>: Setting <file:///test>.protocol = 'https' assert_equals: expected "file:///test" but got "https://test/"
-FAIL <area>: Setting <file:///test>.protocol = 'https' assert_equals: expected "file:///test" but got "https://test/"
-FAIL URL: Setting <file:>.protocol = 'wss' assert_equals: expected "file:///" but got "wss:"
-FAIL <a>: Setting <file:>.protocol = 'wss' assert_equals: expected "file:///" but got "wss:"
-FAIL <area>: Setting <file:>.protocol = 'wss' assert_equals: expected "file:///" but got "wss:"
+PASS URL: Setting <file:///test>.protocol = 'https'
+PASS <a>: Setting <file:///test>.protocol = 'https'
+PASS <area>: Setting <file:///test>.protocol = 'https'
+PASS URL: Setting <file:>.protocol = 'wss'
+PASS <a>: Setting <file:>.protocol = 'wss'
+PASS <area>: Setting <file:>.protocol = 'wss'
 FAIL URL: Setting <http://example.net>.protocol = 'b' Can’t switch from special scheme to non-special assert_equals: expected "http://example.net/" but got "b://example.net/"
 FAIL <a>: Setting <http://example.net>.protocol = 'b' Can’t switch from special scheme to non-special assert_equals: expected "http://example.net/" but got "b://example.net/"
 FAIL <area>: Setting <http://example.net>.protocol = 'b' Can’t switch from special scheme to non-special assert_equals: expected "http://example.net/" but got "b://example.net/"

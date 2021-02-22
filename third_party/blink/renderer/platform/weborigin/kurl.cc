@@ -30,6 +30,7 @@
 #include <algorithm>
 
 #include "base/i18n/uchar.h"
+#include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/platform/weborigin/known_ports.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -462,6 +463,44 @@ bool KURL::SetProtocol(const String& protocol) {
                                &canon_protocol, &protocol_component) ||
       !protocol_component.is_nonempty())
     return false;
+
+  DCHECK_EQ(protocol_component.begin, 0);
+  const size_t protocol_length =
+      base::checked_cast<size_t>(protocol_component.len);
+  const String new_protocol_canon =
+      String(canon_protocol.data(), protocol_length);
+
+  // We don't currently perform the check from
+  // https://url.spec.whatwg.org/#scheme-state that special schemes are not
+  // converted to non-special schemes and vice-versa, but the following logic
+  // should only be applied to special schemes.
+  // TODO(ricea): Maybe disallow switching between special and non-special
+  // schemes, to match the standard, if we can develop confidence that it won't
+  // break pages.
+  if (SchemeRegistry::IsSpecialScheme(Protocol()) &&
+      SchemeRegistry::IsSpecialScheme(new_protocol_canon)) {
+    // The protocol is lower-cased during canonicalization.
+    const bool new_protocol_is_file = new_protocol_canon == "file";
+    const bool old_protocol_is_file = ProtocolIs("file");
+
+    // https://url.spec.whatwg.org/#scheme-state
+    // 3. If url includes credentials or has a non-null port, and buffer is
+    //    "file", then return.
+    if (new_protocol_is_file && !old_protocol_is_file &&
+        (HasPort() || parsed_.username.len > 0 || parsed_.password.len > 0)) {
+      // This fails silently, which is weird, but necessary to give the expected
+      // behaviour when setting location.protocol. See
+      // https://html.spec.whatwg.org/multipage/history.html#dom-location-protocol.
+      return true;
+    }
+
+    // 4. If url’s scheme is "file" and its host is an empty host, then return.
+    if (!new_protocol_is_file && old_protocol_is_file &&
+        parsed_.host.len <= 0) {
+      // This fails silently as above.
+      return true;
+    }
+  }
 
   url::Replacements<char> replacements;
   replacements.SetScheme(CharactersOrEmpty(new_protocol_utf8),
