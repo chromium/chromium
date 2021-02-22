@@ -59,6 +59,7 @@
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "chrome/browser/chromeos/web_applications/camera_system_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/connectivity_diagnostics_system_web_app_info.h"
+#include "chrome/browser/chromeos/web_applications/crosh_system_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/diagnostics_system_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/eche_app_info.h"
 #include "chrome/browser/chromeos/web_applications/help_app_web_app_info.h"
@@ -163,14 +164,20 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
   infos.at(SystemAppType::SETTINGS).minimum_window_size = {300, 100};
   infos.at(SystemAppType::SETTINGS).capture_navigations = true;
 
-  if (SystemWebAppManager::IsAppEnabled(SystemAppType::TERMINAL)) {
-    infos.emplace(
-        SystemAppType::TERMINAL,
-        SystemAppInfo(
-            "Terminal", GURL(chrome::kChromeUIUntrustedTerminalURL),
-            base::BindRepeating(&CreateWebAppInfoForTerminalSystemWebApp)));
-    infos.at(SystemAppType::TERMINAL).single_window = false;
-  }
+  infos.emplace(SystemAppType::CROSH,
+                SystemAppInfo("Crosh", GURL(chrome::kChromeUIUntrustedCroshURL),
+                              base::BindRepeating(
+                                  &CreateWebAppInfoForCroshSystemWebApp)));
+  infos.at(SystemAppType::CROSH).single_window = false;
+  infos.at(SystemAppType::CROSH).show_in_launcher = false;
+  infos.at(SystemAppType::CROSH).show_in_search = false;
+
+  infos.emplace(
+      SystemAppType::TERMINAL,
+      SystemAppInfo(
+          "Terminal", GURL(chrome::kChromeUIUntrustedTerminalURL),
+          base::BindRepeating(&CreateWebAppInfoForTerminalSystemWebApp)));
+  infos.at(SystemAppType::TERMINAL).single_window = false;
 
   if (SystemWebAppManager::IsAppEnabled(SystemAppType::HELP)) {
     infos.emplace(
@@ -348,6 +355,8 @@ bool SystemWebAppManager::IsAppEnabled(SystemAppType type) {
     case SystemAppType::SETTINGS:
       return true;
     case SystemAppType::CAMERA:
+      return true;
+    case SystemAppType::CROSH:
       return true;
     case SystemAppType::TERMINAL:
       return true;

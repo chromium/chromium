@@ -187,6 +187,7 @@ AppBrowserController::AppBrowserController(
       // capability.
       has_tab_strip_(
           system_app_type_ == SystemAppType::TERMINAL ||
+          system_app_type_ == SystemAppType::CROSH ||
           (base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip) &&
            HasAppId() &&
            WebAppProvider::Get(browser->profile())

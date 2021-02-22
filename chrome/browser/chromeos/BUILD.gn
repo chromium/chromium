@@ -2962,6 +2962,8 @@ source_set("chromeos") {
     "web_applications/crosh_loader.h",
     "web_applications/crosh_loader_factory.cc",
     "web_applications/crosh_loader_factory.h",
+    "web_applications/crosh_system_web_app_info.cc",
+    "web_applications/crosh_system_web_app_info.h",
     "web_applications/diagnostics_system_web_app_info.cc",
     "web_applications/diagnostics_system_web_app_info.h",
     "web_applications/eche_app_info.cc",

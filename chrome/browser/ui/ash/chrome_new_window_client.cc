@@ -48,6 +48,7 @@
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
@@ -416,15 +417,7 @@ void ChromeNewWindowClient::OpenDownloadsFolder() {
 
 void ChromeNewWindowClient::OpenCrosh() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  chrome::ScopedTabbedBrowserDisplayer displayer(profile);
-  Browser* browser = displayer.browser();
-  content::WebContents* page = browser->OpenURL(content::OpenURLParams(
-      GURL(chrome::kChromeUIUntrustedCroshURL), content::Referrer(),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_GENERATED,
-      false));
-  browser->window()->Show();
-  browser->window()->Activate();
-  page->Focus();
+  web_app::LaunchSystemWebAppAsync(profile, web_app::SystemAppType::CROSH);
 }
 
 void ChromeNewWindowClient::OpenGetHelp() {

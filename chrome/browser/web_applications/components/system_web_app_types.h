@@ -31,6 +31,7 @@ enum class SystemAppType {
   DIAGNOSTICS = 11,
   CONNECTIVITY_DIAGNOSTICS = 12,
   ECHE = 13,
+  CROSH = 14,
 
   // When adding a new System App, add a corresponding histogram suffix in
   // WebAppSystemAppInternalName (histograms.xml). The suffix name should match

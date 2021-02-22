@@ -49,6 +49,7 @@ void ReadFile(const std::string& relative_path,
   if (!result) {
     static const base::NoDestructor<base::flat_map<std::string, std::string>>
         kTestFiles({
+            {"html/crosh.html", ""},
             {"html/terminal.html", "<script src='/js/terminal.js'></script>"},
             {"js/terminal.js",
              "chrome.terminalPrivate.openVmshellProcess([], () => {})"},
