@@ -2046,6 +2046,8 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
     }
     RebuildLayoutTree();
   }
+
+  GetDocument().GetLayoutView()->UpdateMarkersAndCountersAfterStyleChange();
 }
 
 void StyleEngine::RecalcStyle(StyleRecalcChange change,
