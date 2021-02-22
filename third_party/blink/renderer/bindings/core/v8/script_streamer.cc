@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
@@ -102,9 +103,9 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
           memcpy(copy_for_resource.get(), buffer, num_bytes);
           PostCrossThreadTask(
               *loading_task_runner_, FROM_HERE,
-              CrossThreadBindOnce(
-                  NotifyClientDidReceiveData, response_body_loader_client_,
-                  WTF::Passed(std::move(copy_for_resource)), num_bytes));
+              CrossThreadBindOnce(NotifyClientDidReceiveData,
+                                  response_body_loader_client_,
+                                  std::move(copy_for_resource), num_bytes));
 
           result = data_pipe_->EndReadData(num_bytes);
           CHECK_EQ(result, MOJO_RESULT_OK);
@@ -628,7 +629,7 @@ bool ScriptStreamer::TryStartStreamingTask() {
   worker_pool::PostTask(
       FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
       CrossThreadBindOnce(RunScriptStreamingTask,
-                          WTF::Passed(std::move(script_streaming_task)),
+                          std::move(script_streaming_task),
                           WrapCrossThreadPersistent(this),
                           WTF::CrossThreadUnretained(stream_)));
 
