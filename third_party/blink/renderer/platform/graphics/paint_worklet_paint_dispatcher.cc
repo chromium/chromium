@@ -101,7 +101,7 @@ void PaintWorkletPaintDispatcher::DispatchWorklets(
             CrossThreadBindOnce(&PaintWorkletPaintDispatcher::AsyncPaintDone,
                                 dispatcher));
       },
-      weak_factory_.GetWeakPtr(), WTF::Passed(std::move(runner)));
+      weak_factory_.GetWeakPtr(), std::move(runner));
 
   // Use a base::RepeatingClosure to make sure that AsyncPaintDone is only
   // called once, once all the worklets are done. If there are no inputs
@@ -142,8 +142,8 @@ void PaintWorkletPaintDispatcher::DispatchWorklets(
               }
               on_done_runner->RunAndReset();
             },
-            WrapCrossThreadPersistent(painter), WTF::Passed(std::move(jobs)),
-            WTF::Passed(std::move(on_done_runner))));
+            WrapCrossThreadPersistent(painter), std::move(jobs),
+            std::move(on_done_runner)));
   }
 }
 

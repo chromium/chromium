@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/blob/blob_bytes_provider.h"
 
+#include <utility>
+
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
@@ -133,7 +135,7 @@ BlobBytesProvider* BlobBytesProvider::CreateAndBind(
             mojo::MakeSelfOwnedReceiver(std::move(provider),
                                         std::move(receiver));
           },
-          WTF::Passed(std::move(provider)), WTF::Passed(std::move(receiver))));
+          std::move(provider), std::move(receiver)));
   return result;
 }
 

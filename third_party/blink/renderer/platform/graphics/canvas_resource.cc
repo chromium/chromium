@@ -125,8 +125,8 @@ bool CanvasResource::PrepareTransferableResource(
   DCHECK(IsValid());
 
   DCHECK(out_callback);
-  auto func = WTF::Bind(&ReleaseFrameResources, provider_,
-                        WTF::Passed(base::WrapRefCounted(this)));
+  auto func =
+      WTF::Bind(&ReleaseFrameResources, provider_, base::WrapRefCounted(this));
   *out_callback = viz::SingleReleaseCallback::Create(std::move(func));
 
   if (!out_resource)

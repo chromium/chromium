@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/graphics/animation_worklet_mutator_dispatcher_impl.h"
 
+#include <utility>
+
 #include "base/barrier_closure.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
@@ -346,12 +348,11 @@ void AnimationWorkletMutatorDispatcherImpl::RequestMutations(
             // The mutator is created and destroyed on the worklet thread.
             WrapCrossThreadWeakPersistent(mutator),
             // The worklet input is not required after the Mutate call.
-            WTF::Passed(std::move(it->value)),
+            std::move(it->value),
             // The vector of outputs is wrapped in a scoped_refptr initialized
             // on the host thread. It can outlive the dispatcher during shutdown
             // of a process with a running animation.
-            outputs_, next_request_index++,
-            WTF::Passed(std::move(on_done_runner))));
+            outputs_, next_request_index++, std::move(on_done_runner)));
   }
 }
 

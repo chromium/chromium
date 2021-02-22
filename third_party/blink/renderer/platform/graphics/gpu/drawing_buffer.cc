@@ -420,8 +420,7 @@ bool DrawingBuffer::FinishPrepareTransferableResourceSoftware(
   // mailbox is released (and while the release callback is running). It also
   // owns the SharedBitmap.
   auto func = base::BindOnce(&DrawingBuffer::MailboxReleasedSoftware,
-                             weak_factory_.GetWeakPtr(),
-                             WTF::Passed(std::move(registered)));
+                             weak_factory_.GetWeakPtr(), std::move(registered));
   *out_release_callback = viz::SingleReleaseCallback::Create(std::move(func));
 
   contents_changed_ = false;

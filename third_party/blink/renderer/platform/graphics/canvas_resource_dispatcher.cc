@@ -462,7 +462,7 @@ void CanvasResourceDispatcher::SetPlaceholderCanvasDispatcher(
     PostCrossThreadTask(
         *agent_group_scheduler_compositor_task_runner_, FROM_HERE,
         CrossThreadBindOnce(UpdatePlaceholderDispatcher, this->GetWeakPtr(),
-                            WTF::Passed(std::move(dispatcher_task_runner)),
+                            std::move(dispatcher_task_runner),
                             placeholder_canvas_id));
   }
 }
