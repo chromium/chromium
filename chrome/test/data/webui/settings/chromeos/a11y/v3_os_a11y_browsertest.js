@@ -91,6 +91,10 @@ const crostiniConfig = {
    crostiniConfig
  ],
  [
+   'CrostiniSharedPaths', 'crostini_settings_shared_paths_a11y_v3_test.js',
+   crostiniConfig
+ ],
+ [
    'MultideviceFeatures', 'multidevice_features_a11y_v3_test.js',
    {filter: multideviceFeatureViolationFilter, options: axeOptionsDocumentTitle}
  ],
