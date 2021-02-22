@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.native_page;
 
+import static org.chromium.chrome.browser.ui.native_page.NativePageTest.INVALID_URLS;
+import static org.chromium.chrome.browser.ui.native_page.NativePageTest.VALID_URLS;
+import static org.chromium.chrome.browser.ui.native_page.NativePageTest.isValidInIncognito;
+
 import android.view.View;
 
 import org.junit.Assert;
@@ -16,6 +20,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage.NativePageType;
+import org.chromium.chrome.browser.ui.native_page.NativePageTest.UrlCombo;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
 /**
@@ -111,84 +116,10 @@ public class NativePageFactoryTest {
         }
     }
 
-    private static class UrlCombo {
-        public String url;
-        public @NativePageType int expectedType;
-
-        public UrlCombo(String url, @NativePageType int expectedType) {
-            this.url = url;
-            this.expectedType = expectedType;
-        }
-    }
-
-    private static final UrlCombo[] VALID_URLS = {
-            new UrlCombo("chrome-native://newtab", NativePageType.NTP),
-            new UrlCombo("chrome-native://newtab/", NativePageType.NTP),
-            new UrlCombo("chrome-native://bookmarks", NativePageType.BOOKMARKS),
-            new UrlCombo("chrome-native://bookmarks/", NativePageType.BOOKMARKS),
-            new UrlCombo("chrome-native://bookmarks/#245", NativePageType.BOOKMARKS),
-            new UrlCombo("chrome-native://recent-tabs", NativePageType.RECENT_TABS),
-            new UrlCombo("chrome-native://recent-tabs/", NativePageType.RECENT_TABS),
-            new UrlCombo("chrome://history/", NativePageType.HISTORY)};
-
-    private static final String[] INVALID_URLS = {
-        null,
-        "",
-        "newtab",
-        "newtab@google.com:80",
-        "/newtab",
-        "://newtab",
-        "chrome://",
-        "chrome://most_visited",
-        "chrome-native://",
-        "chrome-native://newtablet",
-        "chrome-native://bookmarks-inc",
-        "chrome-native://recent_tabs",
-        "chrome-native://recent-tabswitcher",
-        "chrome-native://most_visited",
-        "chrome-native://astronaut",
-        "chrome-internal://newtab",
-        "french-fries://newtab",
-        "http://bookmarks",
-        "https://recent-tabs",
-        "newtab://recent-tabs",
-        "recent-tabs bookmarks",
-    };
-
-    private boolean isValidInIncognito(UrlCombo urlCombo) {
-        return urlCombo.expectedType != NativePageType.RECENT_TABS;
-    }
-
     @Before
     public void setUp() {
         mNativePageFactory = new NativePageFactory(null, null);
         mNativePageFactory.setNativePageBuilderForTesting(new MockNativePageBuilder());
-    }
-
-    /**
-     * Ensures that NativePageFactory.isNativePageUrl() returns true for native page URLs.
-     */
-    @Test
-    public void testPositiveIsNativePageUrl() {
-        for (UrlCombo urlCombo : VALID_URLS) {
-            String url = urlCombo.url;
-            Assert.assertTrue(url, NativePageFactory.isNativePageUrl(url, false));
-            if (isValidInIncognito(urlCombo)) {
-                Assert.assertTrue(url, NativePageFactory.isNativePageUrl(url, true));
-            }
-        }
-    }
-
-    /**
-     * Ensures that NativePageFactory.isNativePageUrl() returns false for URLs that don't
-     * correspond to a native page.
-     */
-    @Test
-    public void testNegativeIsNativePageUrl() {
-        for (String invalidUrl : INVALID_URLS) {
-            Assert.assertFalse(invalidUrl, NativePageFactory.isNativePageUrl(invalidUrl, false));
-            Assert.assertFalse(invalidUrl, NativePageFactory.isNativePageUrl(invalidUrl, true));
-        }
     }
 
     /**

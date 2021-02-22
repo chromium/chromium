@@ -47,7 +47,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.native_page.NativePageFactory;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.omnibox.LocationBar;
@@ -65,6 +64,7 @@ import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -816,7 +816,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             // Don't show anything for Chrome URLs and "about:blank".
             // If we have taken a pre-initialized WebContents, then the starting URL
             // is "about:blank". We should not display it.
-            if (NativePageFactory.isNativePageUrl(url, getCurrentTab().isIncognito())
+            if (NativePage.isNativePageUrl(url, getCurrentTab().isIncognito())
                     || ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL.equals(url)) {
                 mUrlCoordinator.setUrlBarData(
                         UrlBarData.EMPTY, UrlBar.ScrollType.NO_SCROLL, SelectionState.SELECT_ALL);

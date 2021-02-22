@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.locale.LocaleManager;
-import org.chromium.chrome.browser.native_page.NativePageFactory;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
@@ -49,6 +48,7 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -355,8 +355,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     /*package */ void revertChanges() {
         if (mUrlHasFocus) {
             String currentUrl = mLocationBarDataProvider.getCurrentUrl();
-            if (NativePageFactory.isNativePageUrl(
-                        currentUrl, mLocationBarDataProvider.isIncognito())) {
+            if (NativePage.isNativePageUrl(currentUrl, mLocationBarDataProvider.isIncognito())) {
                 setUrlBarTextEmpty();
             } else {
                 setUrlBarText(mLocationBarDataProvider.getUrlBarData(), UrlBar.ScrollType.NO_SCROLL,

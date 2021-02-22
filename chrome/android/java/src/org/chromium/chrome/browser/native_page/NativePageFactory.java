@@ -176,18 +176,6 @@ public class NativePageFactory {
         return page;
     }
 
-    /**
-     * Returns whether the URL would navigate to a native page.
-     * TODO(crbug.com/1127732): Use NativePage.isNativePageUrl directly.
-     * @param url The URL to be checked.
-     * @param isIncognito Whether the page will be displayed in incognito mode.
-     * @return Whether the host and the scheme of the passed in URL matches one of the supported
-     *         native pages.
-     */
-    public static boolean isNativePageUrl(String url, boolean isIncognito) {
-        return NativePage.isNativePageUrl(url, isIncognito);
-    }
-
     @VisibleForTesting
     void setNativePageBuilderForTesting(NativePageBuilder builder) {
         mNativePageBuilder = builder;

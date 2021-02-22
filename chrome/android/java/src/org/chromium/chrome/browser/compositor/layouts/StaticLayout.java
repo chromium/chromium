@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
-import org.chromium.chrome.browser.native_page.NativePageFactory;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -35,6 +34,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabSwitchMetrics;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.resources.ResourceManager;
@@ -396,7 +396,7 @@ public class StaticLayout extends Layout {
     // Whether the tab is ready to display or it should be faded in as it loads.
     private boolean shouldStall(Tab tab) {
         return (tab.isFrozen() || tab.needsReload())
-                && !NativePageFactory.isNativePageUrl(tab.getUrlString(), tab.isIncognito());
+                && !NativePage.isNativePageUrl(tab.getUrlString(), tab.isIncognito());
     }
 
     @Override

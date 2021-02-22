@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
-import org.chromium.chrome.browser.native_page.NativePageFactory;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -64,6 +63,7 @@ import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.bottom.ScrollingBottomViewSceneLayer;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarOverlayCoordinator;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.LocalizationUtils;
@@ -812,7 +812,7 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
     // Whether the tab is ready to display or it should be faded in as it loads.
     private static boolean shouldStall(Tab tab) {
         return (tab.isFrozen() || tab.needsReload())
-                && !NativePageFactory.isNativePageUrl(tab.getUrlString(), tab.isIncognito());
+                && !NativePage.isNativePageUrl(tab.getUrlString(), tab.isIncognito());
     }
 
     @Override
