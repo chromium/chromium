@@ -410,6 +410,7 @@ component("headless_non_renderer") {
     "//build:chromeos_buildflags",
     "//components/cookie_config",
     "//components/security_state/core",
+    "//content/public/browser",
     "//content/public/common",
     "//services/cert_verifier/public/mojom",
     "//services/service_manager/public/cpp",
