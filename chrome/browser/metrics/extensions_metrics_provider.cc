@@ -256,10 +256,8 @@ std::vector<ExtensionInstallProto::DisableReason> GetDisableReasons(
        ExtensionInstallProto::DISABLE_REMOTELY_FOR_MALWARE},
       {extensions::disable_reason::DISABLE_REINSTALL,
        ExtensionInstallProto::REINSTALL},
-      // TODO(jeffcyr): Uncomment when ExtensionInstallProto is updated in third
-      // party.
-      // {extensions::disable_reason::DISABLE_NOT_ALLOWLISTED,
-      //  ExtensionInstallProto::NOT_ALLOWLISTED},
+      {extensions::disable_reason::DISABLE_NOT_ALLOWLISTED,
+       ExtensionInstallProto::NOT_ALLOWLISTED},
   };
 
   int disable_reasons = prefs->GetDisableReasons(id);
