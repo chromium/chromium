@@ -1823,7 +1823,11 @@ bool Textfield::SetAutocorrectRange(const gfx::Range& range) {
 #if defined(OS_WIN)
 void Textfield::GetActiveTextInputControlLayoutBounds(
     base::Optional<gfx::Rect>* control_bounds,
-    base::Optional<gfx::Rect>* selection_bounds) {}
+    base::Optional<gfx::Rect>* selection_bounds) {
+  gfx::Rect origin = GetContentsBounds();
+  ConvertRectToScreen(this, &origin);
+  *control_bounds = origin;
+}
 
 // TODO(https://crbug.com/952355): Implement this method once TSF supports
 // reconversion features on native text fields.
