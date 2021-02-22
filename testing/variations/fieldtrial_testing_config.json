@@ -4211,25 +4211,6 @@
             ]
         }
     ],
-    "LimitAImageReaderMaxSizeToOneWithParam": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "LimitAImageReaderMaxSizeToOneBlocklist": "MIBOX, MITV"
-                    },
-                    "enable_features": [
-                        "LimitAImageReaderMaxSizeToOne"
-                    ]
-                }
-            ]
-        }
-    ],
     "LiteVideo": [
         {
             "platforms": [
