@@ -15,7 +15,9 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/autofill/accessory_controller.h"
 #include "chrome/browser/autofill/mock_manual_filling_controller.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
 #include "chrome/browser/password_manager/android/password_generation_controller_impl.h"
@@ -70,6 +72,7 @@ using testing::Return;
 using testing::SaveArg;
 using testing::StrictMock;
 using FillingSource = ManualFillingController::FillingSource;
+using IsFillingSourceAvailable = AccessoryController::IsFillingSourceAvailable;
 using IsPslMatch = autofill::UserInfo::IsPslMatch;
 
 constexpr char kExampleSite[] = "https://example.com";
@@ -225,6 +228,7 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
     PasswordAccessoryControllerImpl::CreateForWebContentsForTesting(
         web_contents(), cache(), mock_manual_filling_controller_.AsWeakPtr(),
         mock_pwd_manager_client_.get());
+    controller()->RegisterFillingSourceObserver(filling_source_observer_.Get());
     controller()->SetSecurityLevelForTesting(security_level);
   }
 
@@ -246,6 +250,8 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
   }
 
   StrictMock<MockManualFillingController> mock_manual_filling_controller_;
+  base::MockCallback<AccessoryController::FillingSourceObserver>
+      filling_source_observer_;
   scoped_refptr<MockPasswordStore> mock_password_store_;
 
  private:
@@ -507,16 +513,14 @@ TEST_F(PasswordAccessoryControllerTest, SetsTitleForPSLMatchedOriginsInV2) {
       CredentialCache::IsOriginBlocklisted(false),
       url::Origin::Create(GURL(kExampleSite)));
 
-  AccessorySheetData result(AccessoryTabType::PASSWORDS, base::string16());
-  EXPECT_CALL(mock_manual_filling_controller_, RefreshSuggestions)
-      .WillOnce(SaveArg<0>(&result));
-
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableUsernameField,
       /*is_manual_generation_available=*/false);
 
   EXPECT_EQ(
-      result,
+      controller()->GetSheetData(),
       PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
           .AddUserInfo(kExampleSite, IsPslMatch(false))
           .AppendField(ASCIIToUTF16("Ben"), ASCIIToUTF16("Ben"),
@@ -679,11 +683,14 @@ TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleIfIsBlocklisted) {
           autofill::AccessoryAction::TOGGLE_SAVE_PASSWORDS)
       .AppendFooterCommand(manage_passwords_str(),
                            autofill::AccessoryAction::MANAGE_PASSWORDS);
-  EXPECT_CALL(mock_manual_filling_controller_,
-              RefreshSuggestions(std::move(data_builder).Build()));
+
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillablePasswordField,
       /*is_manual_generation_available=*/false);
+
+  EXPECT_EQ(controller()->GetSheetData(), std::move(data_builder).Build());
 }
 
 TEST_F(PasswordAccessoryControllerTest,
@@ -708,11 +715,13 @@ TEST_F(PasswordAccessoryControllerTest,
                                            passwords_empty_str(kExampleDomain));
   data_builder.AppendFooterCommand(manage_passwords_str(),
                                    autofill::AccessoryAction::MANAGE_PASSWORDS);
-  EXPECT_CALL(mock_manual_filling_controller_,
-              RefreshSuggestions(std::move(data_builder).Build()));
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillablePasswordField,
       /*is_manual_generation_available=*/false);
+
+  EXPECT_EQ(controller()->GetSheetData(), std::move(data_builder).Build());
 }
 
 TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleIfWasBlocklisted) {
@@ -739,11 +748,13 @@ TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleIfWasBlocklisted) {
           autofill::AccessoryAction::TOGGLE_SAVE_PASSWORDS)
       .AppendFooterCommand(manage_passwords_str(),
                            autofill::AccessoryAction::MANAGE_PASSWORDS);
-  EXPECT_CALL(mock_manual_filling_controller_,
-              RefreshSuggestions(std::move(data_builder).Build()));
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillablePasswordField,
       /*is_manual_generation_available=*/false);
+
+  EXPECT_EQ(controller()->GetSheetData(), std::move(data_builder).Build());
 }
 
 TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleOnAnyFieldIfBlocked) {
@@ -766,11 +777,13 @@ TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleOnAnyFieldIfBlocked) {
           autofill::AccessoryAction::TOGGLE_SAVE_PASSWORDS)
       .AppendFooterCommand(manage_passwords_str(),
                            autofill::AccessoryAction::MANAGE_PASSWORDS);
-  EXPECT_CALL(mock_manual_filling_controller_,
-              RefreshSuggestions(std::move(data_builder).Build()));
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableNonSearchField,
       /*is_manual_generation_available=*/false);
+
+  EXPECT_EQ(controller()->GetSheetData(), std::move(data_builder).Build());
 }
 
 TEST_F(PasswordAccessoryControllerTest,
@@ -790,7 +803,8 @@ TEST_F(PasswordAccessoryControllerTest,
   ON_CALL(*password_client(), IsSavingAndFillingEnabled(GURL(kExampleSite)))
       .WillByDefault(Return(true));
 
-  EXPECT_CALL(mock_manual_filling_controller_, RefreshSuggestions(_));
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillablePasswordField,
       /*is_manual_generation_available=*/false);
@@ -818,7 +832,8 @@ TEST_F(PasswordAccessoryControllerTest, NoAccessoryImpressionsIfUnblocklisted) {
 
   ON_CALL(*password_client(), IsSavingAndFillingEnabled(GURL(kExampleSite)))
       .WillByDefault(Return(true));
-  EXPECT_CALL(mock_manual_filling_controller_, RefreshSuggestions(_));
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillablePasswordField,
       /*is_manual_generation_available=*/false);

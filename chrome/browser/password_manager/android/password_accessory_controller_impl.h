@@ -85,7 +85,7 @@ class PasswordAccessoryControllerImpl
 
   // Returns true if the current site attached to `web_contents_` has a SECURE
   // security level.
-  bool IsSecureSite();
+  bool IsSecureSite() const;
 
 #if defined(UNIT_TEST)
   // Used for testing to set `security_level_for_testing_`.
@@ -97,6 +97,26 @@ class PasswordAccessoryControllerImpl
 
  private:
   friend class content::WebContentsUserData<PasswordAccessoryControllerImpl>;
+
+  // This struct is used to remember the meta information about the last focused
+  // field.
+  struct LastFocusedFieldInfo {
+    LastFocusedFieldInfo(url::Origin focused_origin,
+                         autofill::mojom::FocusedFieldType focused_field,
+                         bool manual_generation_available);
+
+    // Records the origin at the time of focusing the field to double-check that
+    // the frame origin hasn't changed.
+    url::Origin origin;
+
+    // Records the last focused field type to infer whether the accessory is
+    // available and whether passwords or usernames will be fillable.
+    autofill::mojom::FocusedFieldType focused_field_type =
+        autofill::mojom::FocusedFieldType::kUnknown;
+
+    // If true, manual generation will be available for the focused field.
+    bool is_manual_generation_available = false;
+  };
 
   // This constructor can also be used by |CreateForWebContentsForTesting|
   // to inject a fake |ManualFillingController| and a fake
@@ -133,10 +153,6 @@ class PasswordAccessoryControllerImpl
   // the Bottom Sheet view is destroyed.
   void AllPasswordsSheetDismissed();
 
-  // ------------------------------------------------------------------------
-  // Members - Make sure to NEVER store state related to a single frame here!
-  // ------------------------------------------------------------------------
-
   // The tab for which this class is scoped.
   content::WebContents* web_contents_ = nullptr;
 
@@ -149,6 +165,15 @@ class PasswordAccessoryControllerImpl
   // The password manager client is used to update the save passwords status
   // for the currently focused origin.
   password_manager::PasswordManagerClient* password_client_ = nullptr;
+
+  // Information about the currently focused field. This is the only place
+  // allowed to store frame-specific data. If a new field is focused or focus is
+  // lost, this data needs to be reset to base::nullopt to make sure that data
+  // related to a former frame isn't displayed incorrectly in a different one.
+  base::Optional<LastFocusedFieldInfo> last_focused_field_info_ = base::nullopt;
+
+  // The observer to notify if available suggestions change.
+  FillingSourceObserver source_observer_;
 
   // Controller for the all passwords bottom sheet. Created on demand during the
   // first call to |ShowAllPasswords()|.
