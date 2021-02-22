@@ -39,7 +39,6 @@
 #include "ui/gfx/transform_util.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/square_ink_drop_ripple.h"
-#include "ui/views/controls/dot_indicator.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/painter.h"
@@ -141,6 +140,53 @@ class ShelfAppButtonAnimation : public gfx::AnimationDelegate {
 }  // namespace
 
 namespace ash {
+
+////////////////////////////////////////////////////////////////////////////////
+// ShelfAppButton::AppNotificationIndicatorView
+
+// The indicator which is activated when the app corresponding with this
+// ShelfAppButton receives a notification.
+class ShelfAppButton::AppNotificationIndicatorView : public views::View {
+ public:
+  explicit AppNotificationIndicatorView(SkColor indicator_color)
+      : indicator_color_(indicator_color) {}
+
+  ~AppNotificationIndicatorView() override {}
+
+  void OnPaint(gfx::Canvas* canvas) override {
+    gfx::ScopedCanvas scoped(canvas);
+
+    canvas->SaveLayerAlpha(SK_AlphaOPAQUE);
+
+    DCHECK_EQ(width(), height());
+    float radius = width() / 2.0f;
+    const float dsf = canvas->UndoDeviceScaleFactor();
+    const int kStrokeWidthPx = 1;
+    gfx::PointF center = gfx::RectF(GetLocalBounds()).CenterPoint();
+    center.Scale(dsf);
+
+    // Fill the center.
+    cc::PaintFlags flags;
+    flags.setColor(indicator_color_);
+    flags.setAntiAlias(true);
+    canvas->DrawCircle(center, dsf * radius - kStrokeWidthPx, flags);
+
+    // Stroke the border.
+    flags.setColor(SkColorSetA(SK_ColorBLACK, 0x4D));
+    flags.setStyle(cc::PaintFlags::kStroke_Style);
+    canvas->DrawCircle(center, dsf * radius - kStrokeWidthPx / 2.0f, flags);
+  }
+
+  void SetColor(SkColor new_color) {
+    indicator_color_ = new_color;
+    SchedulePaint();
+  }
+
+ private:
+  SkColor indicator_color_;
+
+  DISALLOW_COPY_AND_ASSIGN(AppNotificationIndicatorView);
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 // ShelfAppButton::AppStatusIndicatorView
@@ -302,8 +348,12 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
   AddChildView(indicator_);
   AddChildView(icon_view_);
   if (is_notification_indicator_enabled_) {
-    notification_indicator_ = views::DotIndicator::Install(this);
-    SetNotificationBadgeColor(kDefaultIndicatorColor);
+    notification_indicator_ =
+        new AppNotificationIndicatorView(kDefaultIndicatorColor);
+    notification_indicator_->SetPaintToLayer();
+    notification_indicator_->layer()->SetFillsBoundsOpaquely(false);
+    notification_indicator_->SetVisible(false);
+    AddChildView(notification_indicator_);
   }
   GetInkDrop()->AddObserver(this);
 
@@ -375,7 +425,7 @@ void ShelfAppButton::AddState(State state) {
       indicator_->ShowActiveStatus(true);
 
     if (is_notification_indicator_enabled_ && (state & STATE_NOTIFICATION))
-      notification_indicator_->Show();
+      notification_indicator_->SetVisible(true);
 
     if (state & STATE_DRAGGING)
       ScaleAppIcon(true);
@@ -392,7 +442,7 @@ void ShelfAppButton::ClearState(State state) {
       indicator_->ShowActiveStatus(false);
 
     if (is_notification_indicator_enabled_ && (state & STATE_NOTIFICATION))
-      notification_indicator_->Hide();
+      notification_indicator_->SetVisible(false);
 
     if (state & STATE_DRAGGING)
       ScaleAppIcon(false);
@@ -920,8 +970,7 @@ void ShelfAppButton::SetInkDropAnimationStarted(bool started) {
 
 void ShelfAppButton::SetNotificationBadgeColor(SkColor color) {
   if (notification_indicator_)
-    notification_indicator_->SetColor(
-        /*dot_color=*/color, /*border_color=*/SkColorSetA(SK_ColorBLACK, 0x4D));
+    notification_indicator_->SetColor(color);
 }
 
 }  // namespace ash

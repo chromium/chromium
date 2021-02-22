@@ -1462,8 +1462,6 @@ if (!is_android) {
       "../browser/ui/popup_browsertest.cc",
       "../browser/ui/prefs/prefs_tab_helper_browsertest.cc",
       "../browser/ui/profile_error_browsertest.cc",
-      "../browser/ui/read_later/read_later_test_utils.cc",
-      "../browser/ui/read_later/read_later_test_utils.h",
       "../browser/ui/renderer_event_injection_browsertest.cc",
       "../browser/ui/search/instant_test_base.cc",
       "../browser/ui/search/instant_test_base.h",

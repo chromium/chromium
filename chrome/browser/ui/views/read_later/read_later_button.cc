@@ -40,7 +40,6 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/button_controller.h"
-#include "ui/views/controls/dot_indicator.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "url/gurl.h"
@@ -112,8 +111,6 @@ ReadLaterButton::ReadLaterButton(Browser* browser)
   if (reading_list_model_)
     reading_list_model_scoped_observation_.Observe(reading_list_model_);
 
-  dot_indicator_ = views::DotIndicator::Install(image());
-
   SetImageLabelSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
 
@@ -167,23 +164,7 @@ void ReadLaterButton::OnThemeChanged() {
       ui::ImageModel::FromVectorIcon(
           kReadLaterIcon, highlight_color_animation_->GetIconColor()));
 
-  dot_indicator_->SetColor(
-      /*dot_color=*/GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_AlertSeverityHigh),
-      /*border_color=*/theme_provider->GetColor(
-          ThemeProperties::COLOR_TOOLBAR));
-
   LabelButton::OnThemeChanged();
-}
-
-void ReadLaterButton::Layout() {
-  LabelButton::Layout();
-
-  // Set |dot_indicator_| bounds.
-  constexpr int kDotIndicatorSize = 8;
-  gfx::Rect bounds = gfx::Rect(0, 0, kDotIndicatorSize, kDotIndicatorSize);
-  bounds.Offset(-2, -2);
-  dot_indicator_->SetBoundsRect(bounds);
 }
 
 void ReadLaterButton::OnWidgetDestroying(views::Widget* widget) {
@@ -191,11 +172,6 @@ void ReadLaterButton::OnWidgetDestroying(views::Widget* widget) {
   DCHECK(bubble_widget_observation_.IsObservingSource(
       webui_bubble_manager_->GetBubbleWidget()));
   bubble_widget_observation_.Reset();
-}
-
-void ReadLaterButton::ReadingListModelLoaded(const ReadingListModel* model) {
-  if (model->unseen_size())
-    dot_indicator_->Show();
 }
 
 void ReadLaterButton::ReadingListModelBeingDeleted(
@@ -214,7 +190,6 @@ void ReadLaterButton::ReadingListDidAddEntry(const ReadingListModel* model,
       BrowserView::GetBrowserViewForBrowser(browser_)->IsActive()) {
     highlight_color_animation_->Show();
   }
-  dot_indicator_->Show();
 }
 
 void ReadLaterButton::ButtonPressed() {
@@ -249,8 +224,6 @@ void ReadLaterButton::ButtonPressed() {
           base::UserMetricsAction("DesktopReadingList.OpenReadingList"));
       RecordBookmarkBarState(browser_);
       webui_bubble_manager_->ShowBubble();
-      reading_list_model_->MarkAllSeen();
-      dot_indicator_->Hide();
       // There should only ever be a single bubble widget active for the
       // ReadLaterButton.
       DCHECK(!bubble_widget_observation_.IsObserving());
