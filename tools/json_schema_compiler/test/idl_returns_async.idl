@@ -1,0 +1,14 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Tests the supportsPromises extended attribute for IDL.
+
+namespace idl_returns_async {
+  callback MyCallback = void(long x);
+
+  interface Functions {
+    [supportsPromises] static void supportsPromises(MyCallback callback);
+    static void doesNotSupportPromises(MyCallback callback);
+  };
+};

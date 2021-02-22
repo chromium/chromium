@@ -44,6 +44,10 @@ class ModelTest(unittest.TestCase):
     self.model.AddNamespace(self.returns_async_json[0],
         'path/to/returns_async.json')
     self.returns_async = self.model.namespaces.get('returns_async')
+    self.idl_returns_async_idl = Load('test/idl_returns_async.idl')
+    self.model.AddNamespace(self.idl_returns_async_idl[0],
+        'path/to/idl_returns_async.idl')
+    self.idl_returns_async = self.model.namespaces.get('idl_returns_async')
     self.nodoc_json = CachedLoad('test/namespace_nodoc.json')
     self.model.AddNamespace(self.nodoc_json[0],
         'path/to/namespace_nodoc.json')
@@ -54,7 +58,7 @@ class ModelTest(unittest.TestCase):
     self.fakeapi = self.model.namespaces.get('fakeapi')
 
   def testNamespaces(self):
-    self.assertEquals(9, len(self.model.namespaces))
+    self.assertEquals(10, len(self.model.namespaces))
     self.assertTrue(self.permissions)
 
   def testHasFunctions(self):
@@ -111,10 +115,16 @@ class ModelTest(unittest.TestCase):
         permissions.functions['contains'].returns_async.params[0].description)
 
   def testAsyncPromise(self):
-    returnsFunction = self.returns_async.functions['returnsObject']
-    self.assertTrue(returnsFunction.returns_async.can_return_promise)
-    callbackFunction = self.returns_async.functions['callbackObject']
-    self.assertFalse(callbackFunction.returns_async.can_return_promise)
+    supportsPromises = self.returns_async.functions['supportsPromises']
+    self.assertTrue(supportsPromises.returns_async.can_return_promise)
+    doesNotSupportPromises = self.returns_async.functions[
+        'doesNotSupportPromises']
+    self.assertFalse(doesNotSupportPromises.returns_async.can_return_promise)
+    supportsPromisesIdl = self.idl_returns_async.functions['supportsPromises']
+    self.assertTrue(supportsPromisesIdl.returns_async.can_return_promise)
+    doesNotSupportPromisesIdl = self.idl_returns_async.functions[
+        'doesNotSupportPromises']
+    self.assertFalse(doesNotSupportPromisesIdl.returns_async.can_return_promise)
 
   def testPropertyUnixName(self):
     param = self.tabs.functions['move'].params[0]

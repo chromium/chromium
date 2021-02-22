@@ -106,7 +106,7 @@ class Callspec(object):
   '''
   Given a Callspec node representing an IDL function declaration, converts into
   a tuple:
-      (name, list of function parameters, return type)
+      (name, list of function parameters, return type, async return)
   '''
   def __init__(self, callspec_node, comment):
     self.node = callspec_node
@@ -115,6 +115,7 @@ class Callspec(object):
   def process(self, callbacks):
     parameters = []
     return_type = None
+    returns_async = None
     if self.node.GetProperty('TYPEREF') not in ('void', None):
       return_type = Typeref(self.node.GetProperty('TYPEREF'),
                             self.node.parent,
@@ -129,7 +130,21 @@ class Callspec(object):
       if parameter['name'] in self.comment:
         parameter['description'] = self.comment[parameter['name']]
       parameters.append(parameter)
-    return (self.node.GetName(), parameters, return_type)
+    # For promise supporting functions, pull off the callback from the final
+    # parameter and put it into the separate returns async field.
+    if self.node.GetProperty('supportsPromises'):
+      assert len(parameters) > 0, (
+          'Callspec "%s" is marked as supportsPromises '
+          'but has no existing callback defined.' % self.node.GetName())
+      returns_async = parameters.pop()
+      assert returns_async.get('type') == 'function', (
+          'Callspec "%s" is marked as supportsPromises '
+          'but the final parameter is not a function.' % self.node.GetName())
+      # The returns_async field is inherently a function, so doesn't need type
+      # specified on it.
+      returns_async.pop('type')
+
+    return (self.node.GetName(), parameters, return_type, returns_async)
 
 
 class Param(object):
@@ -216,8 +231,8 @@ class Member(object):
         properties['description'] = parent_comment
         properties['jsexterns'] = jsexterns
       elif node.cls == 'Callspec':
-        name, parameters, return_type = (Callspec(node, parameter_comments)
-                                         .process(callbacks))
+        name, parameters, return_type, returns_async = (
+            Callspec(node, parameter_comments).process(callbacks))
         if functions_are_properties:
           # If functions are treated as properties (which will happen if the
           # interface is named Properties) then this isn't a function, it's a
@@ -239,6 +254,12 @@ class Member(object):
           properties['parameters'] = parameters
           if return_type is not None:
             properties['returns'] = return_type
+          if returns_async is not None:
+            assert return_type is None, (
+                'Function "%s" cannot support promises and also have a '
+                'return value.' % name)
+            properties['returns_async'] = returns_async
+
     properties['name'] = name
     if type_override is not None:
       properties['type'] = type_override

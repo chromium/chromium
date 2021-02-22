@@ -11,7 +11,7 @@
     ],
     "functions": [
       {
-        "name": "returnsObject",
+        "name": "supportsPromises",
         "description": "Returns an object.",
         "type": "function",
         "returns_async": {
@@ -30,7 +30,7 @@
         }
       },
       {
-        "name": "callbackObject",
+        "name": "doesNotSupportPromises",
         "description": "Returns an object via callback.",
         "type": "function",
         "parameters": [
