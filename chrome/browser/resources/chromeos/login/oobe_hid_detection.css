@@ -11,12 +11,8 @@
 }
 
 .hid-selection-entry {
-  border-top: var(--oobe-hid-detection-item-border);
-  color: var(--google-grey-900);
-}
-
-.hid-selection-entry:last-of-type {
   border-bottom: var(--oobe-hid-detection-item-border);
+  color: var(--google-grey-900);
 }
 
 #touchscreen-icon,
@@ -58,4 +54,9 @@
   background: rgb(26, 115, 232); /*#1a73e8*/
   border-radius: 5px;
   color: #fff;
+}
+
+.icon-active {
+  height: 24px;
+  width: 24px;
 }

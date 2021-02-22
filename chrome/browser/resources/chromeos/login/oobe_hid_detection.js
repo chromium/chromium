@@ -146,6 +146,13 @@ Polymer({
     });
   },
 
+  getPrerequisitesText_(locale, touchscreenDetected) {
+    if (touchscreenDetected)
+      return this.i18n('hidDetectionPrerequisitesTouchscreen');
+    else
+      return this.i18n('hidDetectionPrerequisites');
+  },
+
   /**
    * Provides the label for the mouse row
    */
@@ -199,6 +206,15 @@ Polymer({
   tickIsVisible_(state) {
     return (state == CONNECTION.USB) || (state == CONNECTION.CONNECTED) ||
         (state == CONNECTION.PAIRED);
+  },
+
+  /**
+   * Helper function to calculate visibility of the spinner.
+   * @param {string} state Connection state (one of CONNECTION).
+   * @private
+   */
+  spinnerIsVisible_(state) {
+    return state == CONNECTION.SEARCHING;
   },
 
   /**

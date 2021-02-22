@@ -115,6 +115,8 @@ void HIDDetectionScreenHandler::DeclareLocalizedValues(
   builder->Add("hidDetectionInvitation", IDS_HID_DETECTION_INVITATION_TEXT);
   builder->Add("hidDetectionPrerequisites",
       IDS_HID_DETECTION_PRECONDITION_TEXT);
+  builder->Add("hidDetectionPrerequisitesTouchscreen",
+               IDS_HID_DETECTION_PRECONDITION_TOUCHSCREEN_TEXT);
   builder->Add("hidDetectionMouseSearching", IDS_HID_DETECTION_SEARCHING_MOUSE);
   builder->Add("hidDetectionKeyboardSearching",
       IDS_HID_DETECTION_SEARCHING_KEYBOARD);
