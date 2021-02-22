@@ -155,7 +155,10 @@ def _write_cipd_yaml(libs_dir, version, cipd_yaml_path):
     if not lib_dirs:
         raise Exception('No generated libraries in {}'.format(libs_dir))
 
-    data_files = ['BUILD.gn', 'VERSION.txt', 'additional_readme_paths.json']
+    data_files = [
+        'BUILD.gn', 'VERSION.txt', 'additional_readme_paths.json',
+        'build.gradle'
+    ]
     for lib_dir in lib_dirs:
         abs_lib_dir = os.path.join(libs_dir, lib_dir)
         androidx_rel_lib_dir = os.path.relpath(abs_lib_dir, _ANDROIDX_PATH)
@@ -171,7 +174,7 @@ def _write_cipd_yaml(libs_dir, version, cipd_yaml_path):
             data_files.append(os.path.join(androidx_rel_lib_dir, lib_file))
 
     contents = [
-        '# Copyright 2020 The Chromium Authors. All rights reserved.',
+        '# Copyright 2021 The Chromium Authors. All rights reserved.',
         '# Use of this source code is governed by a BSD-style license that can be',
         '# found in the LICENSE file.',
         '# version: ' + version,
@@ -197,7 +200,9 @@ def main():
     # re-generated.
     _delete_readonly_files([
         os.path.join(_ANDROIDX_PATH, 'BUILD.gn'),
+        os.path.join(_ANDROIDX_PATH, 'VERSION.txt'),
         os.path.join(_ANDROIDX_PATH, 'additional_readme_paths.json'),
+        os.path.join(_ANDROIDX_PATH, 'build.gradle'),
     ])
 
     dependency_version_map, version = _download_and_parse_build_info()
