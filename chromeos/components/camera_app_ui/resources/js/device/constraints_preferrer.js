@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {browserProxy} from '../browser_proxy/browser_proxy.js';
 import {assert} from '../chrome_util.js';
 import * as dom from '../dom.js';
+import * as localStorage from '../models/local_storage.js';
 import * as state from '../state.js';
 import {
   Facing,
@@ -86,7 +86,7 @@ export class ConstraintsPreferrer {
   restoreResolutionPreference_(key) {
     // TODO(inker): Return promise and await it to assure preferences are loaded
     // before any access.
-    browserProxy.localStorageGet({[key]: {}}).then((values) => {
+    localStorage.get({[key]: {}}).then((values) => {
       this.prefResolution_ = new Map();
       for (const [deviceId, {width, height}] of Object.entries(values[key])) {
         this.prefResolution_.set(deviceId, new Resolution(width, height));
@@ -100,8 +100,7 @@ export class ConstraintsPreferrer {
    * @protected
    */
   saveResolutionPreference_(key) {
-    browserProxy.localStorageSet(
-        {[key]: Object.fromEntries(this.prefResolution_)});
+    localStorage.set({[key]: Object.fromEntries(this.prefResolution_)});
   }
 
   /**
@@ -250,7 +249,7 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
    * @private
    */
   restoreFpsPreference_() {
-    browserProxy.localStorageGet({deviceVideoFps: {}})
+    localStorage.get({deviceVideoFps: {}})
         .then((values) => this.prefFpses_ = values['deviceVideoFps']);
   }
 
@@ -259,7 +258,7 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
    * @private
    */
   saveFpsPreference_() {
-    browserProxy.localStorageSet({deviceVideoFps: this.prefFpses_});
+    localStorage.set({deviceVideoFps: this.prefFpses_});
   }
 
   /**

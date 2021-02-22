@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import * as animate from './animation.js';
-import {browserProxy} from './browser_proxy/browser_proxy.js';
 import * as dom from './dom.js';
+import * as loadTimeData from './models/load_time_data.js';
 
 /**
  * Updates the toast message.
@@ -37,7 +37,7 @@ export function showDebugMessage(message) {
  *     label.
  */
 export function show(label, ...substitutions) {
-  update(browserProxy.getI18nMessage(label, ...substitutions), false);
+  update(loadTimeData.getI18nMessage(label, ...substitutions), false);
 }
 
 /**
@@ -47,5 +47,5 @@ export function show(label, ...substitutions) {
  *     label.
  */
 export function speak(label, ...substitutions) {
-  update(browserProxy.getI18nMessage(label, ...substitutions), true);
+  update(loadTimeData.getI18nMessage(label, ...substitutions), true);
 }

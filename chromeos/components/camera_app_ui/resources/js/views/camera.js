@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import * as animate from '../animation.js';
-import {browserProxy} from '../browser_proxy/browser_proxy.js';
 import {
   assert,
   assertInstanceof,
@@ -16,6 +15,7 @@ import {
 import {DeviceInfoUpdater} from '../device/device_info_updater.js';
 import * as dom from '../dom.js';
 import * as metrics from '../metrics.js';
+import * as localStorage from '../models/local_storage.js';
 // eslint-disable-next-line no-unused-vars
 import {ResultSaver} from '../models/result_saver.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
@@ -270,7 +270,7 @@ export class Camera extends View {
         });
 
     // Monitor the states to stop camera when locked/minimized.
-    browserProxy.addOnLockListener((isLocked) => {
+    ChromeHelper.getInstance().addOnLockListener((isLocked) => {
       this.locked_ = isLocked;
       if (this.locked_) {
         this.start();
@@ -392,11 +392,10 @@ export class Camera extends View {
           .forEach((btn) => btn.offsetParent && btn.focus());
     };
     (async () => {
-      const values =
-          await browserProxy.localStorageGet({isFolderChangeMsgShown: false});
+      const values = await localStorage.get({isFolderChangeMsgShown: false});
       await this.configuring_;
       if (!values['isFolderChangeMsgShown']) {
-        browserProxy.localStorageSet({isFolderChangeMsgShown: true});
+        localStorage.set({isFolderChangeMsgShown: true});
         await animate.play(this.banner_);
       }
       focusOnShutterButton();

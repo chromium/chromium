@@ -3,15 +3,14 @@
 // found in the LICENSE file.
 
 import * as animate from './animation.js';
-import {browserProxy} from './browser_proxy/browser_proxy.js';
 import {assertInstanceof} from './chrome_util.js';
 import * as dom from './dom.js';
 import * as Comlink from './lib/comlink.js';
+import * as loadTimeData from './models/load_time_data.js';
 import * as state from './state.js';
 import * as tooltip from './tooltip.js';
 import {
   Facing,
-  UntrustedOrigin,  // eslint-disable-line no-unused-vars
 } from './type.js';
 import {WaitableEvent} from './waitable_event.js';
 
@@ -92,7 +91,7 @@ export function setupI18nElements(rootElement) {
   const getElements = (attr) =>
       dom.getAllFrom(rootElement, '[' + attr + ']', HTMLElement);
   const getMessage = (element, attr) =>
-      browserProxy.getI18nMessage(element.getAttribute(attr));
+      loadTimeData.getI18nMessage(element.getAttribute(attr));
   const setAriaLabel = (element, attr) =>
       element.setAttribute('aria-label', getMessage(element, attr));
 
@@ -156,7 +155,7 @@ export function bindElementAriaLabelWithState(
   const update = (value) => {
     const label = value ? onLabel : offLabel;
     element.setAttribute('i18n-label', label);
-    element.setAttribute('aria-label', browserProxy.getI18nMessage(label));
+    element.setAttribute('aria-label', loadTimeData.getI18nMessage(label));
   };
   update(state.get(s));
   state.addObserver(s, update);
@@ -200,14 +199,15 @@ export function instantiateTemplate(selector) {
  * Creates JS module by given |scriptUrl| under untrusted context with given
  * origin and returns its proxy.
  * @param {string} scriptUrl The URL of the script to load.
- * @param {!UntrustedOrigin} origin The origin of the untrusted context.
  * @return {!Promise<!Object>}
  */
-export async function createUntrustedJSModule(scriptUrl, origin) {
+export async function createUntrustedJSModule(scriptUrl) {
   const untrustedPageReady = new WaitableEvent();
   const iFrame = dom.create('iframe', HTMLIFrameElement);
   iFrame.addEventListener('load', () => untrustedPageReady.signal());
-  iFrame.setAttribute('src', `${origin}/views/untrusted_script_loader.html`);
+  iFrame.setAttribute(
+      'src',
+      'chrome-untrusted://camera-app/views/untrusted_script_loader.html');
   iFrame.hidden = true;
   document.body.appendChild(iFrame);
   await untrustedPageReady.wait();

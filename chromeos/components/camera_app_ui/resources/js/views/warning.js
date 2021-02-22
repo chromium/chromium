@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {browserProxy} from '../browser_proxy/browser_proxy.js';
 import {assertString} from '../chrome_util.js';
 import * as dom from '../dom.js';
+import * as loadTimeData from '../models/load_time_data.js';
 import {ViewName} from '../type.js';
+
 import {View} from './view.js';
 
 /**
@@ -42,7 +43,7 @@ export class Warning extends View {
   updateMessage_() {
     const message = this.errorNames_[this.errorNames_.length - 1];
     dom.get('#error-msg', HTMLElement).textContent =
-        browserProxy.getI18nMessage(message);
+        loadTimeData.getI18nMessage(message);
   }
 
   /**

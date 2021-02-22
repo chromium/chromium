@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {browserProxy} from '../browser_proxy/browser_proxy.js';
 import {Intent} from '../intent.js';  // eslint-disable-line no-unused-vars
 import * as Comlink from '../lib/comlink.js';
 // eslint-disable-next-line no-unused-vars
@@ -20,8 +19,7 @@ const Mp4VideoProcessor = (async () => {
   const workerChannel = new MessageChannel();
   const videoProcessorHelper = /** @type {!VideoProcessorHelperInterface} */ (
       await util.createUntrustedJSModule(
-          '/js/untrusted_video_processor_helper.js',
-          browserProxy.getUntrustedOrigin()));
+          '/js/untrusted_video_processor_helper.js'));
   await videoProcessorHelper.connectToWorker(
       Comlink.transfer(workerChannel.port2, [workerChannel.port2]));
   return Comlink.wrap(workerChannel.port1);

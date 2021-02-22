@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import * as animate from './animation.js';
-import {browserProxy} from './browser_proxy/browser_proxy.js';
 import * as dom from './dom.js';
+import * as loadTimeData from './models/load_time_data.js';
 
 /**
  * Shows a snackbar message.
@@ -12,7 +12,7 @@ import * as dom from './dom.js';
  * @param {...string} substitutions The substitutions for the label.
  */
 export function show(label, ...substitutions) {
-  const message = browserProxy.getI18nMessage(label, ...substitutions);
+  const message = loadTimeData.getI18nMessage(label, ...substitutions);
   const el = dom.get('.snackbar', HTMLElement);
   el.textContent = '';  // Force reiterate the same message for a11y.
   el.textContent = message;

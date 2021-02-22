@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {browserProxy} from './browser_proxy/browser_proxy.js';
 import {assert} from './chrome_util.js';
 import * as dom from './dom.js';
 import * as filesystem from './models/file_system.js';
@@ -108,7 +107,8 @@ export class GalleryButton {
       // TODO(yuli): Remove this workaround for unable watching changed-files.
       await this.checkCover_();
       if (this.cover_ !== null) {
-        await browserProxy.openGallery(this.cover_.file);
+        await ChromeHelper.getInstance().openFileInGallery(
+            this.cover_.file.name);
       }
     });
   }

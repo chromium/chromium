@@ -4,8 +4,7 @@
 
 /**
  * @typedef {{
- *   initGA: function(string, string, boolean, function(string): void):
- *     !Promise,
+ *   initGA: function(string, string, function(string): void): !Promise,
  *   sendGAEvent: function(!ga.Fields): !Promise,
  *   setMetricsEnabled: function(string, boolean): !Promise,
  * }}

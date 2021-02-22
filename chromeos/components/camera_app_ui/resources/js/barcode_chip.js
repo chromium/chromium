@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {browserProxy} from './browser_proxy/browser_proxy.js';
 import {assert} from './chrome_util.js';
 import * as dom from './dom.js';
 import {BarcodeContentType, sendBarcodeDetectedEvent} from './metrics.js';
+import * as loadTimeData from './models/load_time_data.js';
 import * as snackbar from './snackbar.js';
 import * as state from './state.js';
 import {OneShotTimer} from './timer.js';
@@ -109,7 +109,7 @@ function showUrl(url) {
     textContent: url,
   });
   const hostname = new URL(url).hostname;
-  const label = browserProxy.getI18nMessage('barcode_link_detected', hostname);
+  const label = loadTimeData.getI18nMessage('barcode_link_detected', hostname);
   anchor.setAttribute('aria-label', label);
   anchor.setAttribute('aria-description', url);
   anchor.focus();

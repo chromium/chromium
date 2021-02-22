@@ -2,14 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {browserProxy} from '../browser_proxy/browser_proxy.js';
 import {assert} from '../chrome_util.js';
+import {WaitableEvent} from '../waitable_event.js';
+
 import {ChromeDirectoryEntry} from './chrome_file_system_entry.js';
 import {Filenamer, IMAGE_PREFIX, VIDEO_PREFIX} from './file_namer.js';
 import {
   AbstractDirectoryEntry,  // eslint-disable-line no-unused-vars
   AbstractFileEntry,       // eslint-disable-line no-unused-vars
 } from './file_system_entry.js';
+import * as idb from './idb.js';
+import {getMaybeLazyDirectory} from './lazy_directory_entry.js';
+import {NativeDirectoryEntry} from './native_file_system_entry.js';
 
 /**
  * Checks if the entry's name has the video prefix.
@@ -66,7 +70,33 @@ function initInternalTempDir() {
  * @return {!Promise<?AbstractDirectoryEntry>} Promise for the directory result.
  */
 async function initCameraDirectory() {
-  return browserProxy.getCameraDirectory();
+  const handle = new WaitableEvent();
+
+  // We use the sessionStorage to decide if we should use the handle in the
+  // database or the handle from the launch queue so that we can use the new
+  // handle if the handle changes in the future.
+  const isConsumedHandle = window.sessionStorage.getItem('IsConsumedHandle');
+  if (isConsumedHandle !== null) {
+    const storedHandle = await idb.get(idb.KEY_CAMERA_DIRECTORY_HANDLE);
+    handle.signal(storedHandle);
+  } else {
+    const launchQueue = window.launchQueue;
+    assert(launchQueue !== undefined);
+    launchQueue.setConsumer(async (launchParams) => {
+      assert(launchParams.files.length > 0);
+      const dir =
+          /** @type {!FileSystemDirectoryHandle} */ (launchParams.files[0]);
+      assert(dir.kind === 'directory');
+
+      await idb.set(idb.KEY_CAMERA_DIRECTORY_HANDLE, dir);
+      window.sessionStorage.setItem('IsConsumedHandle', 'true');
+
+      handle.signal(dir);
+    });
+  }
+  const dir = await handle.wait();
+  const myFilesDir = new NativeDirectoryEntry(dir);
+  return getMaybeLazyDirectory(myFilesDir, 'Camera');
 }
 
 /**

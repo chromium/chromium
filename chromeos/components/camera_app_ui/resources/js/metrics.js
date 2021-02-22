@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {browserProxy} from './browser_proxy/browser_proxy.js';
 import {assert} from './chrome_util.js';
 import * as Comlink from './lib/comlink.js';
+import * as loadTimeData from './models/load_time_data.js';
+import * as localStorage from './models/local_storage.js';
+import {ChromeHelper} from './mojo/chrome_helper.js';
 import * as state from './state.js';
 import {
   Facing,  // eslint-disable-line no-unused-vars
@@ -38,8 +40,8 @@ const ready = new WaitableEvent();
  * @type {!Promise<!GAHelperInterface>}
  */
 const gaHelper = (async () => {
-  return /** @type {!GAHelperInterface} */ (await util.createUntrustedJSModule(
-      '/js/untrusted_ga_helper.js', browserProxy.getUntrustedOrigin()));
+  return /** @type {!GAHelperInterface} */ (
+      await util.createUntrustedJSModule('/js/untrusted_ga_helper.js'));
 })();
 
 /**
@@ -62,7 +64,8 @@ async function sendEvent(event, dimen = null) {
   await ready.wait();
 
   // This value reflects the logging constent option in OS settings.
-  const canSendMetrics = await browserProxy.isMetricsAndCrashReportingEnabled();
+  const canSendMetrics =
+      await ChromeHelper.getInstance().isMetricsAndCrashReportingEnabled();
   if (canSendMetrics) {
     (await gaHelper).sendGAEvent(event);
   }
@@ -82,7 +85,7 @@ export async function setMetricsEnabled(enabled) {
  * Initializes metrics with parameters.
  */
 export async function initMetrics() {
-  const board = await browserProxy.getBoard();
+  const board = loadTimeData.getBoard();
   const boardName = /^(x86-)?(\w*)/.exec(board)[0];
   const match = navigator.appVersion.match(/CrOS\s+\S+\s+([\d.]+)/);
   const osVer = match ? match[1] : '';
@@ -92,18 +95,14 @@ export async function initMetrics() {
   ]);
 
   const GA_LOCAL_STORAGE_KEY = 'google-analytics.analytics.user-id';
-  const gaLocalStorage =
-      await browserProxy.localStorageGet({[GA_LOCAL_STORAGE_KEY]: null});
+  const gaLocalStorage = await localStorage.get({[GA_LOCAL_STORAGE_KEY]: null});
   const clientId = gaLocalStorage[GA_LOCAL_STORAGE_KEY];
 
   const setClientId = (id) => {
-    browserProxy.localStorageSet({[GA_LOCAL_STORAGE_KEY]: id});
+    localStorage.set({[GA_LOCAL_STORAGE_KEY]: id});
   };
 
-  await (await gaHelper)
-      .initGA(
-          GA_ID, clientId, browserProxy.shouldAddFakeHistory(),
-          Comlink.proxy(setClientId));
+  await (await gaHelper).initGA(GA_ID, clientId, Comlink.proxy(setClientId));
   ready.signal();
 }
 

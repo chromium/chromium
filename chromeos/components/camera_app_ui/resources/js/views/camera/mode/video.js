@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {AsyncJobQueue} from '../../../async_job_queue.js';
-import {browserProxy} from '../../../browser_proxy/browser_proxy.js';
 import {assert, assertString} from '../../../chrome_util.js';
 import * as dom from '../../../dom.js';
 // eslint-disable-next-line no-unused-vars
@@ -54,6 +53,16 @@ function getVideoMimeType() {
         level.toString(16).padStart(4, '0');
   }
   return `video/x-matroska;codecs=avc1${suffix},pcm`;
+}
+
+/**
+ * The 'beforeunload' listener which will show confirm dialog when trying to
+ * close window.
+ * @param {!Event} event The 'beforeunload' event.
+ */
+function beforeUnloadListener(event) {
+  event.preventDefault();
+  event.returnValue = '';
 }
 
 /**
@@ -329,7 +338,7 @@ export class Video extends ModeBase {
         (this.mediaRecorder_.state === 'recording' ||
          this.mediaRecorder_.state === 'paused')) {
       this.mediaRecorder_.stop();
-      browserProxy.setBeforeUnloadListenerEnabled(false);
+      window.removeEventListener('beforeunload', beforeUnloadListener);
     }
   }
 
@@ -375,7 +384,7 @@ export class Video extends ModeBase {
       this.mediaRecorder_.addEventListener('stop', onstop);
       this.mediaRecorder_.addEventListener('start', onstart);
 
-      browserProxy.setBeforeUnloadListenerEnabled(true);
+      window.addEventListener('beforeunload', beforeUnloadListener);
 
       this.mediaRecorder_.start(100);
       state.set(state.State.RECORDING_PAUSED, false);
