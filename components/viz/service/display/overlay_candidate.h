@@ -35,11 +35,13 @@ class VideoHoleDrawQuad;
 class VIZ_SERVICE_EXPORT OverlayCandidate {
  public:
   // Returns true and fills in |candidate| if |draw_quad| is of a known quad
-  // type and contains an overlayable resource.
+  // type and contains an overlayable resource. |primary_rect| can be empty in
+  // the case of a null primary plane.
   static bool FromDrawQuad(DisplayResourceProvider* resource_provider,
                            SurfaceDamageRectList* surface_damage_rect_list,
                            const SkMatrix44& output_color_matrix,
                            const DrawQuad* quad,
+                           const gfx::RectF& primary_rect,
                            OverlayCandidate* candidate);
   // Returns true if |quad| will not block quads underneath from becoming
   // an overlay.
@@ -153,6 +155,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   static bool FromTextureQuad(DisplayResourceProvider* resource_provider,
                               SurfaceDamageRectList* surface_damage_rect_list,
                               const TextureDrawQuad* quad,
+                              const gfx::RectF& primary_rect,
                               OverlayCandidate* candidate);
   static bool FromStreamVideoQuad(
       DisplayResourceProvider* resource_provider,
@@ -163,7 +166,8 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
                                 SurfaceDamageRectList* surface_damage_rect_list,
                                 const VideoHoleDrawQuad* quad,
                                 OverlayCandidate* candidate);
-  static void HandleClipAndSubsampling(OverlayCandidate* candidate);
+  static void HandleClipAndSubsampling(OverlayCandidate* candidate,
+                                       const gfx::RectF& primary_rect);
 };
 
 using OverlayCandidateList = std::vector<OverlayCandidate>;

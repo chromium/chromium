@@ -131,6 +131,7 @@ bool OverlayCandidate::FromDrawQuad(
     SurfaceDamageRectList* surface_damage_rect_list,
     const SkMatrix44& output_color_matrix,
     const DrawQuad* quad,
+    const gfx::RectF& primary_rect,
     OverlayCandidate* candidate) {
   // It is currently not possible to set a color conversion matrix on an HW
   // overlay plane.
@@ -161,7 +162,8 @@ bool OverlayCandidate::FromDrawQuad(
   switch (quad->material) {
     case DrawQuad::Material::kTextureContent:
       return FromTextureQuad(resource_provider, surface_damage_rect_list,
-                             TextureDrawQuad::MaterialCast(quad), candidate);
+                             TextureDrawQuad::MaterialCast(quad), primary_rect,
+                             candidate);
     case DrawQuad::Material::kVideoHole:
       return FromVideoHoleQuad(resource_provider, surface_damage_rect_list,
                                VideoHoleDrawQuad::MaterialCast(quad),
@@ -356,6 +358,7 @@ bool OverlayCandidate::FromTextureQuad(
     DisplayResourceProvider* resource_provider,
     SurfaceDamageRectList* surface_damage_rect_list,
     const TextureDrawQuad* quad,
+    const gfx::RectF& primary_rect,
     OverlayCandidate* candidate) {
   if (quad->nearest_neighbor)
     return false;
@@ -372,7 +375,7 @@ bool OverlayCandidate::FromTextureQuad(
   candidate->uv_rect = BoundingRect(quad->uv_top_left, quad->uv_bottom_right);
   // Only handle clip rect for required overlays
   if (candidate->requires_overlay) {
-    HandleClipAndSubsampling(candidate);
+    HandleClipAndSubsampling(candidate, primary_rect);
     candidate->hw_protected_validation_id = quad->hw_protected_validation_id;
   }
   return true;
@@ -400,7 +403,9 @@ bool OverlayCandidate::FromStreamVideoQuad(
 }
 
 // static
-void OverlayCandidate::HandleClipAndSubsampling(OverlayCandidate* candidate) {
+void OverlayCandidate::HandleClipAndSubsampling(
+    OverlayCandidate* candidate,
+    const gfx::RectF& primary_rect) {
   // The purpose of this is to enable overlays that are required (i.e. protected
   // content) to be able to be shown in all cases. This will allow them to pass
   // the clipping check and also the 2x alignment requirement for subsampling in
@@ -415,6 +420,11 @@ void OverlayCandidate::HandleClipAndSubsampling(OverlayCandidate* candidate) {
       candidate->format != gfx::BufferFormat::P010) {
     return;
   }
+  // Clip the clip rect to the primary plane. An overlay will only be shown on
+  // a single display, so we want to perform our calculations within the bounds
+  // of that display.
+  if (!primary_rect.IsEmpty())
+    candidate->clip_rect.Intersect(gfx::ToNearestRect(primary_rect));
 
   // Calculate |uv_rect| of |clip_rect| in |display_rect|
   gfx::RectF uv_rect = cc::MathUtil::ScaleRectProportional(
@@ -430,7 +440,7 @@ void OverlayCandidate::HandleClipAndSubsampling(OverlayCandidate* candidate) {
   candidate->is_clipped = false;
 
   // Now correct |uv_rect| if required so that the source rect aligns on a pixel
-  // boundary that is a multiple of the chrome subsampling.
+  // boundary that is a multiple of the chroma subsampling.
 
   // Get the rect for the source coordinates.
   gfx::RectF src_rect = gfx::ScaleRect(

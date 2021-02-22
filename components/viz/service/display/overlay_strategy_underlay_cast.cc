@@ -83,10 +83,11 @@ bool OverlayStrategyUnderlayCast::Attempt(
       // quad is supposed to be to replace it with a transparent quad to allow
       // the underlay to be visible.
       // VIDEO_HOLE implies it requires overlay.
-      is_underlay = quad->material == DrawQuad::Material::kVideoHole &&
-                    OverlayCandidate::FromDrawQuad(
-                        resource_provider, surface_damage_rect_list,
-                        output_color_matrix, quad, &candidate);
+      is_underlay =
+          quad->material == DrawQuad::Material::kVideoHole &&
+          OverlayCandidate::FromDrawQuad(
+              resource_provider, surface_damage_rect_list, output_color_matrix,
+              quad, GetPrimaryPlaneDisplayRect(primary_plane), &candidate);
       found_underlay = is_underlay;
     }
 
@@ -114,7 +115,7 @@ bool OverlayStrategyUnderlayCast::Attempt(
       if (it->material != DrawQuad::Material::kVideoHole ||
           !OverlayCandidate::FromDrawQuad(
               resource_provider, surface_damage_rect_list, output_color_matrix,
-              *it, &candidate)) {
+              *it, GetPrimaryPlaneDisplayRect(primary_plane), &candidate)) {
         continue;
       }
 
@@ -174,9 +175,9 @@ void OverlayStrategyUnderlayCast::ProposePrioritized(
     // the underlay to be visible.
     // VIDEO_HOLE implies it requires overlay.
     if (it->material == DrawQuad::Material::kVideoHole &&
-        OverlayCandidate::FromDrawQuad(resource_provider,
-                                       surface_damage_rect_list,
-                                       output_color_matrix, *it, &candidate)) {
+        OverlayCandidate::FromDrawQuad(
+            resource_provider, surface_damage_rect_list, output_color_matrix,
+            *it, GetPrimaryPlaneDisplayRect(primary_plane), &candidate)) {
       overlay_iter = it;
     }
   }
@@ -222,10 +223,11 @@ bool OverlayStrategyUnderlayCast::AttemptPrioritized(
       // quad is supposed to be to replace it with a transparent quad to allow
       // the underlay to be visible.
       // VIDEO_HOLE implies it requires overlay.
-      is_underlay = quad->material == DrawQuad::Material::kVideoHole &&
-                    OverlayCandidate::FromDrawQuad(
-                        resource_provider, surface_damage_rect_list,
-                        output_color_matrix, quad, &candidate);
+      is_underlay =
+          quad->material == DrawQuad::Material::kVideoHole &&
+          OverlayCandidate::FromDrawQuad(
+              resource_provider, surface_damage_rect_list, output_color_matrix,
+              quad, GetPrimaryPlaneDisplayRect(primary_plane), &candidate);
       found_underlay = is_underlay;
     }
 
@@ -253,7 +255,7 @@ bool OverlayStrategyUnderlayCast::AttemptPrioritized(
       if (it->material != DrawQuad::Material::kVideoHole ||
           !OverlayCandidate::FromDrawQuad(
               resource_provider, surface_damage_rect_list, output_color_matrix,
-              *it, &candidate)) {
+              *it, GetPrimaryPlaneDisplayRect(primary_plane), &candidate)) {
         continue;
       }
 

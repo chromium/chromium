@@ -101,6 +101,11 @@ OverlayStrategy OverlayProcessorUsingStrategy::Strategy::GetUMAEnum() const {
   return OverlayStrategy::kUnknown;
 }
 
+gfx::RectF OverlayProcessorUsingStrategy::Strategy::GetPrimaryPlaneDisplayRect(
+    const PrimaryPlane* primary_plane) {
+  return primary_plane ? primary_plane->display_rect : gfx::RectF();
+}
+
 OverlayProcessorUsingStrategy::OverlayProcessorUsingStrategy()
     : OverlayProcessorInterface() {}
 
