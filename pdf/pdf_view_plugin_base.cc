@@ -142,6 +142,17 @@ void PdfViewPluginBase::OnPaint(const std::vector<gfx::Rect>& paint_rects,
   DoPaint(paint_rects, ready, pending);
 }
 
+void PdfViewPluginBase::EnableAccessibility() {
+  if (accessibility_state_ == AccessibilityState::kLoaded)
+    return;
+
+  if (accessibility_state_ == AccessibilityState::kOff)
+    accessibility_state_ = AccessibilityState::kPending;
+
+  if (document_load_state_ == DocumentLoadState::kComplete)
+    LoadAccessibility();
+}
+
 void PdfViewPluginBase::HandleAccessibilityAction(
     const AccessibilityActionData& action_data) {
   engine_->HandleAccessibilityAction(action_data);

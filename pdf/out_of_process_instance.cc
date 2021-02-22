@@ -877,17 +877,6 @@ void OutOfProcessInstance::GetPrintPresetOptionsFromDocument(
       uniform_page_size.has_value() ? uniform_page_size.value() : gfx::Size());
 }
 
-void OutOfProcessInstance::EnableAccessibility() {
-  if (accessibility_state() == AccessibilityState::kLoaded)
-    return;
-
-  if (accessibility_state() == AccessibilityState::kOff)
-    set_accessibility_state(AccessibilityState::kPending);
-
-  if (document_load_state() == DocumentLoadState::kComplete)
-    LoadAccessibility();
-}
-
 void OutOfProcessInstance::SelectionChanged(const gfx::Rect& left,
                                             const gfx::Rect& right) {
   pp::Point l(left.x() + available_area().x(), left.y());

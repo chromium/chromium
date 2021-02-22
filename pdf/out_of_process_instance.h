@@ -82,7 +82,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   // pp::Private:
   pp::Var GetLinkAtPosition(const pp::Point& point);
   void GetPrintPresetOptionsFromDocument(PP_PdfPrintPresetOptions_Dev* options);
-  void EnableAccessibility();
   void SetCaretPosition(const pp::FloatPoint& position);
   void MoveRangeSelectionExtent(const pp::FloatPoint& extent);
   void SetSelectionBounds(const pp::FloatPoint& base,
