@@ -84,9 +84,8 @@ bool SecurityKeyIpcServerImpl::CreateChannel(
   if (!base::win::GetUserSidString(&user_sid)) {
     return false;
   }
-  std::string user_sid_utf8 = base::WideToUTF8(user_sid);
-  options.security_descriptor = base::UTF8ToUTF16(base::StringPrintf(
-      "O:%sG:%sD:(A;;GA;;;AU)", user_sid_utf8.c_str(), user_sid_utf8.c_str()));
+  options.security_descriptor = base::StringPrintf(
+      L"O:%lsG:%lsD:(A;;GA;;;AU)", user_sid.c_str(), user_sid.c_str());
 
 #endif  // defined(OS_WIN)
   mojo::NamedPlatformChannel channel(options);

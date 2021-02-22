@@ -290,7 +290,7 @@ void KeyboardLayoutMonitorWin::QueryLayoutOnInputThread(
         }
         // The key generated at least one character.
         key_actions[shift_level].set_character(
-            base::UTF16ToUTF8(base::StringPiece16(char_buffer, size)));
+            base::WideToUTF8(base::WStringPiece(char_buffer, size)));
         if (shift_level > 2) {
           has_altgr = true;
         }

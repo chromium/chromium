@@ -49,8 +49,7 @@ protocol::FileTransfer_Error LogFailedHrAndMakeError(base::Location from_here,
 }
 
 // Loads an embedded string resource from the specified module.
-protocol::FileTransferResult<base::string16> LoadStringResource(
-    int resource_id) {
+protocol::FileTransferResult<std::wstring> LoadStringResource(int resource_id) {
   // GetModuleHandle doesn't increment the ref count, so the handle doesn't need
   // to be freed.
   HMODULE resource_module = GetModuleHandle(L"remoting_core.dll");
@@ -76,7 +75,7 @@ protocol::FileTransferResult<base::string16> LoadStringResource(
         GetLastError());
   }
 
-  return base::string16(string_resource, string_length);
+  return std::wstring(string_resource, string_length);
 }
 
 FileChooser::Result ShowFileChooser() {
@@ -89,7 +88,7 @@ FileChooser::Result ShowFileChooser() {
     return LogFailedHrAndMakeError(FROM_HERE, "create", hr);
   }
 
-  protocol::FileTransferResult<base::string16> title =
+  protocol::FileTransferResult<std::wstring> title =
       LoadStringResource(IDS_DOWNLOAD_FILE_DIALOG_TITLE);
   if (!title) {
     return title.error();

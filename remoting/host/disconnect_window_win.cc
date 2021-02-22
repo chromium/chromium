@@ -135,7 +135,7 @@ class DisconnectWindowWin : public HostWindow {
 };
 
 // Returns the text for the given dialog control window.
-bool GetControlText(HWND control, base::string16* text) {
+bool GetControlText(HWND control, std::wstring* text) {
   // GetWindowText truncates the text if it is longer than can fit into
   // the buffer.
   WCHAR buffer[256];
@@ -148,9 +148,7 @@ bool GetControlText(HWND control, base::string16* text) {
 }
 
 // Returns width |text| rendered in |control| window.
-bool GetControlTextWidth(HWND control,
-                         const base::string16& text,
-                         LONG* width) {
+bool GetControlTextWidth(HWND control, const std::wstring& text, LONG* width) {
   RECT rect = {0, 0, 0, 0};
   base::win::ScopedGetDC dc(control);
   base::win::ScopedSelectObject font(
@@ -476,17 +474,16 @@ bool DisconnectWindowWin::SetStrings() {
   if (!hwnd_button || !hwnd_message)
     return false;
 
-  base::string16 button_text;
-  base::string16 message_text;
+  std::wstring button_text;
+  std::wstring message_text;
   if (!GetControlText(hwnd_button, &button_text) ||
       !GetControlText(hwnd_message, &message_text)) {
     return false;
   }
 
   // Format and truncate "Your desktop is shared with ..." message.
-  message_text = base::ReplaceStringPlaceholders(message_text,
-                                                 base::UTF8ToUTF16(username_),
-                                                 nullptr);
+  message_text = base::ReplaceStringPlaceholders(
+      message_text, base::UTF8ToWide(username_), nullptr);
   if (message_text.length() > kMaxSharingWithTextLength)
     message_text.erase(kMaxSharingWithTextLength);
 
