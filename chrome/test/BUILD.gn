@@ -2156,6 +2156,7 @@ if (!is_android) {
         "../browser/ui/views/extensions/extension_dialog_browsertest.cc",
         "../browser/ui/views/web_apps/pwa_confirmation_bubble_view_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_confirmation_view_browsertest.cc",
+        "../browser/ui/web_applications/test/system_web_app_ui_browsertest.cc",
         "../browser/ui/web_applications/test/web_app_navigation_browsertest.cc",
         "../browser/ui/web_applications/test/web_app_navigation_browsertest.h",
       ]
@@ -6537,8 +6538,6 @@ if (!is_android) {
       "../browser/renderer_context_menu/mock_render_view_context_menu.h",
       "../browser/renderer_context_menu/render_view_context_menu_browsertest_util.cc",
       "../browser/renderer_context_menu/render_view_context_menu_browsertest_util.h",
-      "../browser/renderer_context_menu/render_view_context_menu_test_util.cc",
-      "../browser/renderer_context_menu/render_view_context_menu_test_util.h",
       "../browser/resource_coordinator/tab_metrics_logger_interactive_uitest.cc",
       "../browser/sessions/session_restore_interactive_uitest.cc",
       "../browser/site_isolation/site_per_process_interactive_browsertest.cc",
@@ -6572,9 +6571,6 @@ if (!is_android) {
       "../browser/ui/views/content_test_utils.h",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_interactive_uitest.cc",
       "../browser/ui/views/web_dialog_view_browsertest.cc",
-      "../browser/ui/web_applications/test/system_web_app_interactive_uitest.cc",
-      "../browser/web_applications/system_web_app_manager_browsertest.cc",
-      "../browser/web_applications/system_web_app_manager_browsertest.h",
       "../browser/webauth_interactive_uitest.cc",
       "//ui/base/clipboard/clipboard_unittest.cc",
       "base/interactive_test_utils.cc",
@@ -6780,18 +6776,14 @@ if (!is_android) {
 
     if (is_chromeos_ash) {
       deps += [
-        "//chrome/browser/chromeos:test_support",
         "//chrome/browser/media/router:test_support",
         "//chromeos/dbus",
         "//chromeos/ui/frame:test_support",
       ]
       sources -=
           [ "../browser/ui/signin_view_controller_interactive_uitest.cc" ]
-      sources += [
-        "../browser/chromeos/login/login_manager_test.cc",
-        "../browser/chromeos/login/login_manager_test.h",
-        "../browser/ui/app_list/app_list_client_interactive_uitest.cc",
-      ]
+      sources +=
+          [ "../browser/ui/app_list/app_list_client_interactive_uitest.cc" ]
     } else {  # ! is_chromeos_ash
       # Non-ChromeOS notifications tests.
       sources += [
