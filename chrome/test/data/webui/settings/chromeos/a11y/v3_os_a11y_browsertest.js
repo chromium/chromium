@@ -87,6 +87,10 @@ const crostiniConfig = {
    crostiniConfig
  ],
  [
+   'CrostiniExportImport', 'crostini_settings_export_import_a11y_v3_test.js',
+   crostiniConfig
+ ],
+ [
    'MultideviceFeatures', 'multidevice_features_a11y_v3_test.js',
    {filter: multideviceFeatureViolationFilter, options: axeOptionsDocumentTitle}
  ],
