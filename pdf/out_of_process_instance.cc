@@ -884,7 +884,7 @@ void OutOfProcessInstance::EnableAccessibility() {
   if (accessibility_state() == AccessibilityState::kOff)
     set_accessibility_state(AccessibilityState::kPending);
 
-  if (document_load_state_ == LOAD_STATE_COMPLETE)
+  if (document_load_state() == DocumentLoadState::kComplete)
     LoadAccessibility();
 }
 
@@ -1042,7 +1042,7 @@ void OutOfProcessInstance::DidOpen(std::unique_ptr<UrlLoader> loader,
                                    int32_t result) {
   if (result == PP_OK) {
     if (!engine()->HandleDocumentLoad(std::move(loader))) {
-      document_load_state_ = LOAD_STATE_LOADING;
+      set_document_load_state(DocumentLoadState::kLoading);
       DocumentLoadFailed();
     }
   } else if (result != PP_ERROR_ABORTED) {  // Can happen in tests.
@@ -1430,8 +1430,8 @@ void OutOfProcessInstance::DocumentLoadComplete() {
   // Clear focus state for OSK.
   FormTextFieldFocusChange(false);
 
-  DCHECK_EQ(LOAD_STATE_LOADING, document_load_state_);
-  document_load_state_ = LOAD_STATE_COMPLETE;
+  DCHECK_EQ(DocumentLoadState::kLoading, document_load_state());
+  set_document_load_state(DocumentLoadState::kComplete);
   UserMetricsRecordAction("PDF.LoadSuccess");
   RecordDocumentMetrics();
 
@@ -1576,8 +1576,8 @@ void OutOfProcessInstance::HandleResetPrintPreviewModeMessage(
   print_preview_loaded_page_count_ = 0;
   url_ = url;
   preview_pages_info_ = base::queue<PreviewPageInfo>();
-  preview_document_load_state_ = LOAD_STATE_COMPLETE;
-  document_load_state_ = LOAD_STATE_LOADING;
+  preview_document_load_state_ = DocumentLoadState::kComplete;
+  set_document_load_state(DocumentLoadState::kLoading);
   LoadUrl(url_, /*is_print_preview=*/false);
   preview_engine_.reset();
   InitializeEngine(PDFiumFormFiller::ScriptOption::kNoJavaScript);
@@ -1670,12 +1670,12 @@ void OutOfProcessInstance::HandleUpdateScrollMessage(
 }
 
 void OutOfProcessInstance::PreviewDocumentLoadComplete() {
-  if (preview_document_load_state_ != LOAD_STATE_LOADING ||
+  if (preview_document_load_state_ != DocumentLoadState::kLoading ||
       preview_pages_info_.empty()) {
     return;
   }
 
-  preview_document_load_state_ = LOAD_STATE_COMPLETE;
+  preview_document_load_state_ = DocumentLoadState::kComplete;
 
   int dest_page_index = preview_pages_info_.front().second;
   DCHECK_GT(dest_page_index, 0);
@@ -1688,7 +1688,7 @@ void OutOfProcessInstance::PreviewDocumentLoadComplete() {
 }
 
 void OutOfProcessInstance::DocumentLoadFailed() {
-  DCHECK_EQ(LOAD_STATE_LOADING, document_load_state_);
+  DCHECK_EQ(DocumentLoadState::kLoading, document_load_state());
   UserMetricsRecordAction("PDF.LoadFailure");
 
   if (did_call_start_loading_) {
@@ -1696,7 +1696,7 @@ void OutOfProcessInstance::DocumentLoadFailed() {
     did_call_start_loading_ = false;
   }
 
-  document_load_state_ = LOAD_STATE_FAILED;
+  set_document_load_state(DocumentLoadState::kFailed);
   paint_manager().InvalidateRect(gfx::Rect(plugin_size()));
 
   // Send a progress value of -1 to indicate a failure.
@@ -1705,13 +1705,13 @@ void OutOfProcessInstance::DocumentLoadFailed() {
 
 void OutOfProcessInstance::PreviewDocumentLoadFailed() {
   UserMetricsRecordAction("PDF.PreviewDocumentLoadFailure");
-  if (preview_document_load_state_ != LOAD_STATE_LOADING ||
+  if (preview_document_load_state_ != DocumentLoadState::kLoading ||
       preview_pages_info_.empty()) {
     return;
   }
 
   // Even if a print preview page failed to load, keep going.
-  preview_document_load_state_ = LOAD_STATE_FAILED;
+  preview_document_load_state_ = DocumentLoadState::kFailed;
   preview_pages_info_.pop();
   ++print_preview_loaded_page_count_;
   LoadNextPreviewPage();
@@ -1935,12 +1935,12 @@ void OutOfProcessInstance::ProcessPreviewPageInfo(const std::string& url,
 
 void OutOfProcessInstance::LoadAvailablePreviewPage() {
   if (preview_pages_info_.empty() ||
-      document_load_state_ != LOAD_STATE_COMPLETE ||
-      preview_document_load_state_ == LOAD_STATE_LOADING) {
+      document_load_state() != DocumentLoadState::kComplete ||
+      preview_document_load_state_ == DocumentLoadState::kLoading) {
     return;
   }
 
-  preview_document_load_state_ = LOAD_STATE_LOADING;
+  preview_document_load_state_ = DocumentLoadState::kLoading;
   const std::string& url = preview_pages_info_.front().first;
   LoadUrl(url, /*is_print_preview=*/true);
 }
