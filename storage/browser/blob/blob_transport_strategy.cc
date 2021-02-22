@@ -239,7 +239,7 @@ class DataPipeTransportStrategy : public BlobTransportStrategy {
     }
   }
 
-  const BlobStorageLimits& limits_;
+  const BlobStorageLimits limits_;
   base::circular_deque<base::OnceClosure> requests_;
 
   mojo::ScopedDataPipeConsumerHandle consumer_handle_;
@@ -336,7 +336,7 @@ class FileTransportStrategy : public BlobTransportStrategy {
       std::move(result_callback_).Run(BlobStatus::DONE);
   }
 
-  const BlobStorageLimits& limits_;
+  const BlobStorageLimits limits_;
 
   // State used to assign bytes elements to individual files.
   // The index of the first file that still has available space.
