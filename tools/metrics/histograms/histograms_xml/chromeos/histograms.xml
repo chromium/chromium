@@ -620,21 +620,27 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.MachineIdRegen.AgeSeconds" units="seconds"
-    expires_after="M77">
-  <owner>zeuthen@chromium.org</owner>
+    expires_after="2022-02-02">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
   <summary>
     The number of seconds of uptime since the last time the Chrome OS machine-id
     was regenerated. This is reported every time the machine-id is regenerated
     except for the first time since reboot.
+
+    NB: Data before M90 is incomplete.
   </summary>
 </histogram>
 
 <histogram name="ChromeOS.MachineIdRegen.Reason" enum="ChromeOSMachineIdReason"
-    expires_after="M77">
-  <owner>zeuthen@chromium.org</owner>
+    expires_after="2022-02-02">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
   <summary>
     The reason why the Chrome OS machine-id was regenerated. This is reported
     when the machine-id is re-generated.
+
+    NB: Data before M90 is incomplete.
   </summary>
 </histogram>
 
