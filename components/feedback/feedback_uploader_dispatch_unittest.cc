@@ -12,7 +12,6 @@
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
-#include "components/feedback/feedback_uploader_factory.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_ids_provider.h"
@@ -44,10 +43,8 @@ void QueueReport(FeedbackUploader* uploader,
 // to the request.
 class MockFeedbackUploaderChrome : public FeedbackUploader {
  public:
-  MockFeedbackUploaderChrome(
-      content::BrowserContext* context,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-      : FeedbackUploader(context, task_runner) {}
+  explicit MockFeedbackUploaderChrome(content::BrowserContext* context)
+      : FeedbackUploader(context) {}
 
   void AppendExtraHeadersToUploadRequest(
       network::ResourceRequest* resource_request) override {
@@ -108,8 +105,7 @@ TEST_F(FeedbackUploaderDispatchTest, VariationHeaders) {
   variations::VariationsIdsProvider::GetInstance()->ResetForTesting();
   CreateFieldTrialWithId("Test", "Group1", 123);
 
-  FeedbackUploader uploader(
-      context(), FeedbackUploaderFactory::CreateUploaderTaskRunner());
+  FeedbackUploader uploader(context());
   uploader.set_url_loader_factory_for_test(shared_url_loader_factory());
 
   net::HttpRequestHeaders headers;
@@ -127,8 +123,7 @@ TEST_F(FeedbackUploaderDispatchTest, VariationHeaders) {
 // Test that the bearer token is present if there is an email address present in
 // the report.
 TEST_F(FeedbackUploaderDispatchTest, BearerTokenWithEmail) {
-  MockFeedbackUploaderChrome uploader(
-      context(), FeedbackUploaderFactory::CreateUploaderTaskRunner());
+  MockFeedbackUploaderChrome uploader(context());
   uploader.set_url_loader_factory_for_test(shared_url_loader_factory());
 
   test_url_loader_factory()->SetInterceptor(
@@ -141,8 +136,7 @@ TEST_F(FeedbackUploaderDispatchTest, BearerTokenWithEmail) {
 }
 
 TEST_F(FeedbackUploaderDispatchTest, BearerTokenNoEmail) {
-  MockFeedbackUploaderChrome uploader(
-      context(), FeedbackUploaderFactory::CreateUploaderTaskRunner());
+  MockFeedbackUploaderChrome uploader(context());
   uploader.set_url_loader_factory_for_test(shared_url_loader_factory());
 
   test_url_loader_factory()->SetInterceptor(
@@ -156,8 +150,7 @@ TEST_F(FeedbackUploaderDispatchTest, BearerTokenNoEmail) {
 
 TEST_F(FeedbackUploaderDispatchTest, 204Response) {
   FeedbackUploader::SetMinimumRetryDelayForTesting(kTestRetryDelay);
-  FeedbackUploader uploader(
-      context(), FeedbackUploaderFactory::CreateUploaderTaskRunner());
+  FeedbackUploader uploader(context());
   uploader.set_url_loader_factory_for_test(shared_url_loader_factory());
 
   EXPECT_EQ(kTestRetryDelay, uploader.retry_delay());
@@ -179,8 +172,7 @@ TEST_F(FeedbackUploaderDispatchTest, 204Response) {
 
 TEST_F(FeedbackUploaderDispatchTest, 400Response) {
   FeedbackUploader::SetMinimumRetryDelayForTesting(kTestRetryDelay);
-  FeedbackUploader uploader(
-      context(), FeedbackUploaderFactory::CreateUploaderTaskRunner());
+  FeedbackUploader uploader(context());
   uploader.set_url_loader_factory_for_test(shared_url_loader_factory());
 
   EXPECT_EQ(kTestRetryDelay, uploader.retry_delay());
@@ -202,8 +194,7 @@ TEST_F(FeedbackUploaderDispatchTest, 400Response) {
 
 TEST_F(FeedbackUploaderDispatchTest, 500Response) {
   FeedbackUploader::SetMinimumRetryDelayForTesting(kTestRetryDelay);
-  FeedbackUploader uploader(
-      context(), FeedbackUploaderFactory::CreateUploaderTaskRunner());
+  FeedbackUploader uploader(context());
   uploader.set_url_loader_factory_for_test(shared_url_loader_factory());
 
   EXPECT_EQ(kTestRetryDelay, uploader.retry_delay());

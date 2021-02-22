@@ -39,8 +39,7 @@ class FeedbackReport;
 class FeedbackUploader : public KeyedService,
                          public base::SupportsWeakPtr<FeedbackUploader> {
  public:
-  FeedbackUploader(content::BrowserContext* context,
-                   scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  explicit FeedbackUploader(content::BrowserContext* context);
   ~FeedbackUploader() override;
 
   static void SetMinimumRetryDelayForTesting(base::TimeDelta delay);

@@ -46,13 +46,11 @@ void QueueSingleReport(base::WeakPtr<feedback::FeedbackUploader> uploader,
 
 }  // namespace
 
-FeedbackUploaderChrome::FeedbackUploaderChrome(
-    content::BrowserContext* context,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : FeedbackUploader(context, task_runner) {
+FeedbackUploaderChrome::FeedbackUploaderChrome(content::BrowserContext* context)
+    : FeedbackUploader(context) {
   DCHECK(!context->IsOffTheRecord());
 
-  task_runner->PostTask(
+  task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&FeedbackReport::LoadReportsAndQueue,
                      feedback_reports_path(),

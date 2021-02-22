@@ -30,9 +30,7 @@ namespace feedback {
 
 class FeedbackUploaderChrome : public FeedbackUploader {
  public:
-  FeedbackUploaderChrome(
-      content::BrowserContext* context,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  explicit FeedbackUploaderChrome(content::BrowserContext* context);
   ~FeedbackUploaderChrome() override;
 
   class Delegate {

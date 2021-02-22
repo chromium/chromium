@@ -45,7 +45,7 @@ bool FeedbackUploaderFactoryChrome::ServiceIsNULLWhileTesting() const {
 
 KeyedService* FeedbackUploaderFactoryChrome::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new FeedbackUploaderChrome(context, task_runner_);
+  return new FeedbackUploaderChrome(context);
 }
 
 }  // namespace feedback

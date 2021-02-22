@@ -7,6 +7,9 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/task/post_task.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "components/feedback/feedback_report.h"
 #include "components/feedback/feedback_switches.h"
 #include "components/variations/net/variations_http_headers.h"
@@ -56,18 +59,25 @@ GURL GetFeedbackPostGURL() {
                   : kFeedbackPostUrl);
 }
 
+// Creates a new SingleThreadTaskRunner that is used to run feedback blocking
+// background work.
+scoped_refptr<base::SingleThreadTaskRunner> CreateUploaderTaskRunner() {
+  // Uses a BLOCK_SHUTDOWN file task runner to prevent losing reports or
+  // corrupting report's files.
+  return base::ThreadPool::CreateSingleThreadTaskRunner(
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+}
+
 }  // namespace
 
-FeedbackUploader::FeedbackUploader(
-    content::BrowserContext* context,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+FeedbackUploader::FeedbackUploader(content::BrowserContext* context)
     : context_(context),
       feedback_reports_path_(GetPathFromContext(context)),
-      task_runner_(task_runner),
+      task_runner_(CreateUploaderTaskRunner()),
       feedback_post_url_(GetFeedbackPostGURL()),
       retry_delay_(g_minimum_retry_delay),
       is_dispatching_(false) {
-  DCHECK(task_runner_);
   DCHECK(context_);
 }
 

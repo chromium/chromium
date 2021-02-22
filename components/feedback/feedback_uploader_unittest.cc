@@ -15,7 +15,6 @@
 #include "base/task/task_traits.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/feedback/feedback_report.h"
-#include "components/feedback/feedback_uploader_factory.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -41,8 +40,7 @@ class MockFeedbackUploader : public FeedbackUploader {
   MockFeedbackUploader(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       content::BrowserContext* context)
-      : FeedbackUploader(context,
-                         FeedbackUploaderFactory::CreateUploaderTaskRunner()) {
+      : FeedbackUploader(context) {
     set_url_loader_factory_for_test(url_loader_factory);
   }
   ~MockFeedbackUploader() override {}
