@@ -113,7 +113,7 @@ class VectorIconGallery : public View, public TextfieldController {
   void FileGoButtonPressed() {
     base::ScopedAllowBlockingForTesting allow_blocking;
 #if defined(OS_WIN)
-    base::FilePath path(file_chooser_->GetText());
+    base::FilePath path(base::UTF16ToWide(file_chooser_->GetText()));
 #else
     base::FilePath path(base::UTF16ToUTF8(file_chooser_->GetText()));
 #endif

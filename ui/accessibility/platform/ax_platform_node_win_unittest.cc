@@ -1907,7 +1907,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessible2GetNRelations) {
 
   EXPECT_HRESULT_SUCCEEDED(
       describedby_relation->get_relationType(relation_type.Receive()));
-  EXPECT_EQ(L"describedBy", base::string16(relation_type.Get()));
+  EXPECT_EQ(L"describedBy", std::wstring(relation_type.Get()));
 
   relation_type.Reset();
 
@@ -1930,7 +1930,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessible2GetNRelations) {
       ax_child1->get_relation(0, &description_for_relation));
   EXPECT_HRESULT_SUCCEEDED(
       description_for_relation->get_relationType(relation_type.Receive()));
-  EXPECT_EQ(L"descriptionFor", base::string16(relation_type.Get()));
+  EXPECT_EQ(L"descriptionFor", std::wstring(relation_type.Get()));
   relation_type.Reset();
 
   EXPECT_HRESULT_SUCCEEDED(description_for_relation->get_nTargets(&n_targets));
@@ -1947,7 +1947,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessible2GetNRelations) {
       ax_child2->get_relation(0, &description_for_relation));
   EXPECT_HRESULT_SUCCEEDED(
       description_for_relation->get_relationType(relation_type.Receive()));
-  EXPECT_EQ(L"descriptionFor", base::string16(relation_type.Get()));
+  EXPECT_EQ(L"descriptionFor", std::wstring(relation_type.Get()));
   relation_type.Reset();
 
   EXPECT_HRESULT_SUCCEEDED(description_for_relation->get_nTargets(&n_targets));
@@ -2007,7 +2007,7 @@ TEST_F(AXPlatformNodeWinTest,
 
   EXPECT_HRESULT_SUCCEEDED(
       controls_relation->get_relationType(relation_type.Receive()));
-  EXPECT_EQ(L"controllerFor", base::string16(relation_type.Get()));
+  EXPECT_EQ(L"controllerFor", std::wstring(relation_type.Get()));
 
   relation_type.Reset();
 
@@ -2032,7 +2032,7 @@ TEST_F(AXPlatformNodeWinTest,
   EXPECT_HRESULT_SUCCEEDED(ax_child2->get_relation(0, &controlled_by_relation));
   EXPECT_HRESULT_SUCCEEDED(
       controlled_by_relation->get_relationType(relation_type.Receive()));
-  EXPECT_EQ(L"controlledBy", base::string16(relation_type.Get()));
+  EXPECT_EQ(L"controlledBy", std::wstring(relation_type.Get()));
   relation_type.Reset();
 
   EXPECT_HRESULT_SUCCEEDED(controlled_by_relation->get_nTargets(&n_targets));
@@ -2046,7 +2046,7 @@ TEST_F(AXPlatformNodeWinTest,
   EXPECT_HRESULT_SUCCEEDED(ax_child2->get_relation(1, &controlled_by_relation));
   EXPECT_HRESULT_SUCCEEDED(
       controlled_by_relation->get_relationType(relation_type.Receive()));
-  EXPECT_EQ(L"controlledBy", base::string16(relation_type.Get()));
+  EXPECT_EQ(L"controlledBy", std::wstring(relation_type.Get()));
   relation_type.Reset();
 
   EXPECT_HRESULT_SUCCEEDED(controlled_by_relation->get_nTargets(&n_targets));
@@ -2877,9 +2877,9 @@ TEST_F(AXPlatformNodeWinTest, UnlabeledImageAttributes) {
 
     ScopedBstr attributes_bstr;
     ASSERT_EQ(S_OK, ia2_child->get_attributes(attributes_bstr.Receive()));
-    base::string16 attributes(attributes_bstr.Get());
+    std::wstring attributes(attributes_bstr.Get());
 
-    std::vector<base::string16> attribute_vector = base::SplitString(
+    std::vector<std::wstring> attribute_vector = base::SplitString(
         attributes, L";", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
     EXPECT_TRUE(
         base::Contains(attribute_vector, L"roledescription:Unlabeled image"));
@@ -3564,13 +3564,13 @@ TEST_F(AXPlatformNodeWinTest, ITableProviderGetColumnHeaders) {
   AXNodeData column_header;
   column_header.id = 3;
   column_header.role = ax::mojom::Role::kColumnHeader;
-  column_header.SetName(L"column_header");
+  column_header.SetName(STRING16_LITERAL("column_header"));
   row1.child_ids.push_back(column_header.id);
 
   AXNodeData row_header;
   row_header.id = 4;
   row_header.role = ax::mojom::Role::kRowHeader;
-  row_header.SetName(L"row_header");
+  row_header.SetName(STRING16_LITERAL("row_header"));
   row1.child_ids.push_back(row_header.id);
 
   Init(root, row1, column_header, row_header);
@@ -3647,19 +3647,19 @@ TEST_F(AXPlatformNodeWinTest, ITableProviderGetColumnHeadersMultipleHeaders) {
   AXNodeData header_r1c1;
   header_r1c1.id = 5;
   header_r1c1.role = ax::mojom::Role::kColumnHeader;
-  header_r1c1.SetName(L"header_r1c1");
+  header_r1c1.SetName(STRING16_LITERAL("header_r1c1"));
   row1.child_ids.push_back(header_r1c1.id);
 
   AXNodeData header_r1c2;
   header_r1c2.id = 6;
   header_r1c2.role = ax::mojom::Role::kColumnHeader;
-  header_r1c2.SetName(L"header_r1c2");
+  header_r1c2.SetName(STRING16_LITERAL("header_r1c2"));
   row1.child_ids.push_back(header_r1c2.id);
 
   AXNodeData header_r1c3;
   header_r1c3.id = 7;
   header_r1c3.role = ax::mojom::Role::kColumnHeader;
-  header_r1c3.SetName(L"header_r1c3");
+  header_r1c3.SetName(STRING16_LITERAL("header_r1c3"));
   row1.child_ids.push_back(header_r1c3.id);
 
   // <tr aria-label="row2">
@@ -3668,19 +3668,19 @@ TEST_F(AXPlatformNodeWinTest, ITableProviderGetColumnHeadersMultipleHeaders) {
   AXNodeData cell_r2c1;
   cell_r2c1.id = 8;
   cell_r2c1.role = ax::mojom::Role::kCell;
-  cell_r2c1.SetName(L"cell_r2c1");
+  cell_r2c1.SetName(STRING16_LITERAL("cell_r2c1"));
   row2.child_ids.push_back(cell_r2c1.id);
 
   AXNodeData cell_r2c2;
   cell_r2c2.id = 9;
   cell_r2c2.role = ax::mojom::Role::kCell;
-  cell_r2c2.SetName(L"cell_r2c2");
+  cell_r2c2.SetName(STRING16_LITERAL("cell_r2c2"));
   row2.child_ids.push_back(cell_r2c2.id);
 
   AXNodeData cell_r2c3;
   cell_r2c3.id = 10;
   cell_r2c3.role = ax::mojom::Role::kCell;
-  cell_r2c3.SetName(L"cell_r2c3");
+  cell_r2c3.SetName(STRING16_LITERAL("cell_r2c3"));
   row2.child_ids.push_back(cell_r2c3.id);
 
   // <tr aria-label="row3">
@@ -3689,13 +3689,13 @@ TEST_F(AXPlatformNodeWinTest, ITableProviderGetColumnHeadersMultipleHeaders) {
   AXNodeData cell_r3c1;
   cell_r3c1.id = 11;
   cell_r3c1.role = ax::mojom::Role::kCell;
-  cell_r3c1.SetName(L"cell_r3c1");
+  cell_r3c1.SetName(STRING16_LITERAL("cell_r3c1"));
   row3.child_ids.push_back(cell_r3c1.id);
 
   AXNodeData header_r3c2;
   header_r3c2.id = 12;
   header_r3c2.role = ax::mojom::Role::kColumnHeader;
-  header_r3c2.SetName(L"header_r3c2");
+  header_r3c2.SetName(STRING16_LITERAL("header_r3c2"));
   row3.child_ids.push_back(header_r3c2.id);
 
   Init(root, row1, row2, row3, header_r1c1, header_r1c2, header_r1c3, cell_r2c1,
@@ -3730,13 +3730,13 @@ TEST_F(AXPlatformNodeWinTest, ITableProviderGetRowHeaders) {
   AXNodeData column_header;
   column_header.id = 3;
   column_header.role = ax::mojom::Role::kColumnHeader;
-  column_header.SetName(L"column_header");
+  column_header.SetName(STRING16_LITERAL("column_header"));
   row1.child_ids.push_back(column_header.id);
 
   AXNodeData row_header;
   row_header.id = 4;
   row_header.role = ax::mojom::Role::kRowHeader;
-  row_header.SetName(L"row_header");
+  row_header.SetName(STRING16_LITERAL("row_header"));
   row1.child_ids.push_back(row_header.id);
 
   Init(root, row1, column_header, row_header);
@@ -3792,13 +3792,13 @@ TEST_F(AXPlatformNodeWinTest, ITableItemProviderGetColumnHeaderItems) {
   AXNodeData column_header_1;
   column_header_1.id = 3;
   column_header_1.role = ax::mojom::Role::kColumnHeader;
-  column_header_1.SetName(L"column_header_1");
+  column_header_1.SetName(STRING16_LITERAL("column_header_1"));
   row1.child_ids.push_back(column_header_1.id);
 
   AXNodeData column_header_2;
   column_header_2.id = 4;
   column_header_2.role = ax::mojom::Role::kColumnHeader;
-  column_header_2.SetName(L"column_header_2");
+  column_header_2.SetName(STRING16_LITERAL("column_header_2"));
   row1.child_ids.push_back(column_header_2.id);
 
   AXNodeData row2;
@@ -3855,7 +3855,7 @@ TEST_F(AXPlatformNodeWinTest, ITableItemProviderGetRowHeaderItems) {
   AXNodeData row_header_1;
   row_header_1.id = 3;
   row_header_1.role = ax::mojom::Role::kRowHeader;
-  row_header_1.SetName(L"row_header_1");
+  row_header_1.SetName(STRING16_LITERAL("row_header_1"));
   row1.child_ids.push_back(row_header_1.id);
 
   AXNodeData cell;
@@ -3871,7 +3871,7 @@ TEST_F(AXPlatformNodeWinTest, ITableItemProviderGetRowHeaderItems) {
   AXNodeData row_header_2;
   row_header_2.id = 6;
   row_header_2.role = ax::mojom::Role::kRowHeader;
-  row_header_2.SetName(L"row_header_2");
+  row_header_2.SetName(STRING16_LITERAL("row_header_2"));
   row2.child_ids.push_back(row_header_2.id);
 
   Init(root, row1, row_header_1, cell, row2, row_header_2);

@@ -452,7 +452,7 @@ class AXPlatformNodeTextRangeProviderTest : public ui::AXPlatformNodeWinTest {
     return update;
   }
 
-  const base::string16 tree_for_move_full_text =
+  const std::wstring tree_for_move_full_text =
       L"First line of text\nStandalone line\n"
       L"bold text\nParagraph 1\nParagraph 2";
 
@@ -2532,13 +2532,13 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
   // The Hindi string has two characters, the first one 32 bits and the second
   // 64 bits in length. It is formatted in UTF16.
-  const std::string hindi =
-      base::UTF16ToUTF8(L"\x0939\x093F\x0928\x094D\x0926\x0940");
+  const std::string hindi = base::UTF16ToUTF8(
+      STRING16_LITERAL("\x0939\x093F\x0928\x094D\x0926\x0940"));
 
   // The Thai string has three characters, the first one 48, the second 32 and
   // the last one 16 bits in length. It is formatted in UTF16.
-  const std::string thai =
-      base::UTF16ToUTF8(L"\x0E23\x0E39\x0E49\x0E2A\x0E36\x0E01");
+  const std::string thai = base::UTF16ToUTF8(
+      STRING16_LITERAL("\x0E23\x0E39\x0E49\x0E2A\x0E36\x0E01"));
 
   Init(BuildTextDocument({english, hindi, thai}));
 
@@ -4076,7 +4076,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
     EXPECT_EQ(SORT_DEFAULT, SORTIDFROMLCID(lcid));
   }
 
-  base::string16 font_name = base::UTF8ToUTF16("sans");
+  std::wstring font_name = L"sans";
   expected_variant.Set(SysAllocString(font_name.c_str()));
   EXPECT_UIA_TEXTATTRIBUTE_EQ(text_range_provider, UIA_FontNameAttributeId,
                               expected_variant);
@@ -4190,7 +4190,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
                               UIA_UnderlineStyleAttributeId, expected_variant);
   expected_variant.Reset();
 
-  base::string16 style_name = base::UTF8ToUTF16("");
+  std::wstring style_name;
   expected_variant.Set(SysAllocString(style_name.c_str()));
   EXPECT_UIA_TEXTATTRIBUTE_EQ(text_range_provider, UIA_StyleNameAttributeId,
                               expected_variant);
@@ -4201,7 +4201,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
                               UIA_StyleIdAttributeId, expected_variant);
   expected_variant.Reset();
 
-  style_name = base::UTF8ToUTF16("mark");
+  style_name = L"mark";
   expected_variant.Set(SysAllocString(style_name.c_str()));
   EXPECT_UIA_TEXTATTRIBUTE_EQ(mark_text_range_provider,
                               UIA_StyleNameAttributeId, expected_variant);
