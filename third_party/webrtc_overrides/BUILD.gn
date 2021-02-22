@@ -95,6 +95,9 @@ webrtc_public_deps = [
   "//third_party/webrtc/stats:rtc_stats_test_utils",
   "//third_party/webrtc/system_wrappers",
 ]
+if (defined(rtc_exclude_system_time) && rtc_exclude_system_time) {
+  webrtc_public_deps += [ ":system_time" ]
+}
 if (is_chromecast) {
   webrtc_public_deps += [
     "//third_party/webrtc/api:network_state_predictor_api",
@@ -231,4 +234,11 @@ source_set("task_queue_factory") {
     "//third_party/webrtc/api/task_queue",
     "//third_party/webrtc/rtc_base/system:rtc_export",
   ]
+}
+
+source_set("system_time") {
+  # TODO(mbonadei): Migrate WebRTC deps to webrtc_component and uncomment.
+  # visibility = [ ":*" ]
+  sources = [ "rtc_base/system_time.cc" ]
+  deps = [ "//base" ]
 }
