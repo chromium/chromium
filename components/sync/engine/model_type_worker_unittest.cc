@@ -175,13 +175,9 @@ class ModelTypeWorkerTest : public ::testing::Test {
     processor->SetDisconnectCallback(base::BindOnce(
         &ModelTypeWorkerTest::DisconnectProcessor, base::Unretained(this)));
 
-    std::unique_ptr<Cryptographer> cryptographer_copy;
-    if (cryptographer_) {
-      cryptographer_copy = cryptographer_->Clone();
-    }
-
     worker_ = std::make_unique<ModelTypeWorker>(
-        type, state, !state.initial_sync_done(), std::move(cryptographer_copy),
+        type, state, !state.initial_sync_done(),
+        cryptographer_ ? cryptographer_->Clone() : nullptr,
         PassphraseType::kImplicitPassphrase, &mock_nudge_handler_,
         std::move(processor), &cancelation_signal_);
   }
@@ -1294,6 +1290,38 @@ TEST_F(ModelTypeWorkerTest, ReceiveCorruptEncryption) {
   SetUpdateEncryptionFilter(1);
   TriggerUpdateFromServer(10, kTag1, kValue1);
   EXPECT_TRUE(processor()->HasUpdateResponse(kHash1));
+}
+
+TEST_F(ModelTypeWorkerTest, BlockedDueToUndecryptableDataMetrics) {
+  base::HistogramTester histogram_tester;
+  NormalInitialize();
+
+  // This isn't an encrypted type, so this worker has no cryptographer. Under
+  // the hood however, the overall client does have a cryptographer containing
+  // key 1. That one is injected with UpdateFallbackCryptographerForUma().
+  worker()->UpdateFallbackCryptographerForUma(
+      FakeCryptographer::FromSingleDefaultKey(GetNthKeyName(1)));
+
+  // Send an update encrypted with key 1 and another encrypted with an unknown
+  // key 2.
+  SyncEntity update1;
+  update1.set_id_string("update1");
+  EncryptUpdateWithNthKey(1, update1.mutable_specifics());
+  SyncEntity update2;
+  update1.set_id_string("update2");
+  EncryptUpdateWithNthKey(2, update2.mutable_specifics());
+  worker()->ProcessGetUpdatesResponse(
+      server()->GetProgress(), server()->GetContext(), {&update1, &update2},
+      status_controller());
+
+  // The fact that at least one of the updates is decryptable should've been
+  // recorded.
+  histogram_tester.ExpectUniqueSample(
+      "Sync.ModelTypeBlockedDueToUndecryptableUpdate.SomeKeysAvailable",
+      ModelTypeHistogramValue(worker()->GetModelType()), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.ModelTypeBlockedDueToUndecryptableUpdate",
+      ModelTypeHistogramValue(worker()->GetModelType()), 1);
 }
 
 TEST_F(ModelTypeWorkerTest, TimeUntilEncryptionKeyFoundMetric) {

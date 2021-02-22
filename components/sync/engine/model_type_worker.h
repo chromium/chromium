@@ -82,6 +82,11 @@ class ModelTypeWorker : public UpdateHandler,
   ModelType GetModelType() const;
 
   void UpdateCryptographer(std::unique_ptr<Cryptographer> cryptographer);
+  // Causes a worker without cryptographer to record whether
+  // |fallback_cryptographer_for_uma| would have been able to decrypt incoming
+  // encrypted updates. |fallback_cryptographer_for_uma| must be non-null.
+  void UpdateFallbackCryptographerForUma(
+      std::unique_ptr<Cryptographer> fallback_cryptographer_for_uma);
   void UpdatePassphraseType(PassphraseType type);
 
   // UpdateHandler implementation.
@@ -222,6 +227,8 @@ class ModelTypeWorker : public UpdateHandler,
   // the definition of an unknown key, and returns their info.
   std::vector<UnknownEncryptionKeyInfo> RemoveKeysNoLongerUnknown();
 
+  void RecordBlockedByUndecryptableUpdate();
+
   ModelType type_;
 
   // State that applies to the entire model type.
@@ -234,6 +241,13 @@ class ModelTypeWorker : public UpdateHandler,
   // Initialized at construction time and updated with UpdateCryptographer().
   // null if encryption is not enabled for this type.
   std::unique_ptr<Cryptographer> cryptographer_;
+
+  // Used to investigate an issue where the worker receives encrypted updates
+  // despite not having a |cryptographer_| (|type_| is not an encrypted type).
+  // In those cases, this will eventually hold the underlying cryptographer used
+  // by other types. The worker then records whether that cryptographer is able
+  // to decrypt the updates. See crbug.com/1178418.
+  std::unique_ptr<Cryptographer> fallback_cryptographer_for_uma_;
 
   // A private copy of the most recent passphrase type. Initialized at
   // construction time and updated with UpdatePassphraseType().

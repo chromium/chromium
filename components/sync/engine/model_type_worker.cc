@@ -44,8 +44,10 @@ const char kTimeUntilEncryptionKeyFoundHistogramPrefix[] =
     "Sync.ModelTypeTimeUntilEncryptionKeyFound.";
 const char kUndecryptablePendingUpdatesDroppedHistogramPrefix[] =
     "Sync.ModelTypeUndecryptablePendingUpdatesDropped.";
-const char kBlockedDueToUndecryptableUpdateHistogramName[] =
+const char kBlockedByUndecryptableUpdateHistogramName[] =
     "Sync.ModelTypeBlockedDueToUndecryptableUpdate";
+const char kBlockedByUndecryptableUpdateButSomeKeysAvailableHistogramName[] =
+    "Sync.ModelTypeBlockedDueToUndecryptableUpdate.SomeKeysAvailable";
 
 const int kMinGuResponsesToIgnoreKey = 50;
 
@@ -173,6 +175,12 @@ void ModelTypeWorker::UpdateCryptographer(
   NudgeIfReadyToCommit();
 }
 
+void ModelTypeWorker::UpdateFallbackCryptographerForUma(
+    std::unique_ptr<Cryptographer> fallback_cryptographer_for_uma) {
+  DCHECK(fallback_cryptographer_for_uma);
+  fallback_cryptographer_for_uma_ = std::move(fallback_cryptographer_for_uma);
+}
+
 void ModelTypeWorker::UpdatePassphraseType(PassphraseType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   passphrase_type_ = type;
@@ -271,9 +279,7 @@ SyncerError ModelTypeWorker::ProcessGetUpdatesResponse(
 
   if (!cryptographer_ || cryptographer_->CanEncrypt()) {
     if (!entries_pending_decryption_.empty()) {
-      base::UmaHistogramEnumeration(
-          kBlockedDueToUndecryptableUpdateHistogramName,
-          ModelTypeHistogramValue(type_));
+      RecordBlockedByUndecryptableUpdate();
     }
 
     // Encryption keys should've been known in this state.
@@ -765,6 +771,29 @@ ModelTypeWorker::RemoveKeysNoLongerUnknown() {
       });
 
   return removed_keys;
+}
+
+void ModelTypeWorker::RecordBlockedByUndecryptableUpdate() {
+  base::UmaHistogramEnumeration(kBlockedByUndecryptableUpdateHistogramName,
+                                ModelTypeHistogramValue(type_));
+
+  if (cryptographer_ || !fallback_cryptographer_for_uma_) {
+    return;
+  }
+
+  // There's no real |cryptographer_|, but maybe
+  // |fallback_cryptographer_for_uma_| can decrypt the data.
+  for (const auto& id_and_pending_update : entries_pending_decryption_) {
+    UpdateResponseData ignored;
+    if (PopulateUpdateResponseData(fallback_cryptographer_for_uma_.get(), type_,
+                                   id_and_pending_update.second,
+                                   &ignored) == SUCCESS) {
+      base::UmaHistogramEnumeration(
+          kBlockedByUndecryptableUpdateButSomeKeysAvailableHistogramName,
+          ModelTypeHistogramValue(type_));
+      break;
+    }
+  }
 }
 
 GetLocalChangesRequest::GetLocalChangesRequest(

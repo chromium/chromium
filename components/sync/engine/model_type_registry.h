@@ -86,12 +86,13 @@ class ModelTypeRegistry : public ModelTypeConnector,
   base::WeakPtr<ModelTypeConnector> AsWeakPtr();
 
  private:
-  void OnEncryptionStateChanged();
+  // Called when either |cryptographer_| or |encrypted_types_| change.
+  void UpdateCryptographerForConnectedEncryptedTypes();
 
   // Enabled proxy types, which don't have a worker.
   ModelTypeSet enabled_proxy_types_;
 
-  std::vector<std::unique_ptr<ModelTypeWorker>> model_type_workers_;
+  std::vector<std::unique_ptr<ModelTypeWorker>> connected_model_type_workers_;
 
   // Maps of UpdateHandlers and CommitContributors.
   // They do not own any of the objects they point to.
