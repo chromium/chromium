@@ -62157,6 +62157,11 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="PriorityChanged"/>
 </enum>
 
+<enum name="PrivacySandboxReferrer">
+  <int value="0" label="Privacy Settings"/>
+  <int value="1" label="Cookie Settings Snackbar"/>
+</enum>
+
 <enum name="PrivacyScreenToggleUISurface">
   <int value="0" label="KeyboardShortcut"/>
   <int value="1" label="FeaturePod"/>

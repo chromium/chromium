@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.content.Context;
+import android.os.Bundle;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -53,7 +54,11 @@ public class PrivacySandboxSnackbarController implements SnackbarManager.Snackba
     // Implement SnackbarController.
     @Override
     public void onAction(Object actionData) {
-        mSettingsLauncher.launchSettingsActivity(mContext, PrivacySandboxSettingsFragment.class);
+        Bundle fragmentArgs = new Bundle();
+        fragmentArgs.putInt(PrivacySandboxSettingsFragment.PRIVACY_SANDBOX_REFERRER,
+                PrivacySandboxReferrer.COOKIES_SNACKBAR);
+        mSettingsLauncher.launchSettingsActivity(
+                mContext, PrivacySandboxSettingsFragment.class, fragmentArgs);
     }
 
     @Override

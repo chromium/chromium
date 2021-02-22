@@ -12,6 +12,7 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -26,12 +27,18 @@ import org.chromium.ui.widget.ChromeBulletSpan;
  */
 public class PrivacySandboxSettingsFragment
         extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener {
+    public static final String PRIVACY_SANDBOX_URL =
+            "https://www.chromium.org/Home/chromium-privacy/privacy-sandbox";
+    // Key for the argument with which the PrivacySandbox fragment will be launched. The value for
+    // this argument should be part of the PrivacySandboxReferrer enum, which contains all points of
+    // entry to the Privacy Sandbox UI.
+    public static final String PRIVACY_SANDBOX_REFERRER = "privacy-sandbox-referrer";
+
     public static final String EXPERIMENT_DESCRIPTION_PREFERENCE = "privacy_sandbox_description";
     public static final String TOGGLE_DESCRIPTION_PREFERENCE = "privacy_sandbox_toggle_description";
     public static final String TOGGLE_PREFERENCE = "privacy_sandbox_toggle";
 
-    public static final String PRIVACY_SANDBOX_URL =
-            "https://www.chromium.org/Home/chromium-privacy/privacy-sandbox";
+    private @PrivacySandboxReferrer int mPrivacySandboxReferrer;
 
     public static CharSequence getStatusString(Context context) {
         return context.getString(PrivacySandboxBridge.isPrivacySandboxEnabled()
@@ -66,6 +73,8 @@ public class PrivacySandboxSettingsFragment
         privacySandboxToggle.setOnPreferenceChangeListener(this);
         privacySandboxToggle.setManagedPreferenceDelegate(createManagedPreferenceDelegate());
         privacySandboxToggle.setChecked(PrivacySandboxBridge.isPrivacySandboxEnabled());
+
+        parseAndRecordReferrer(bundle);
     }
 
     @Override
@@ -77,6 +86,12 @@ public class PrivacySandboxSettingsFragment
                                         : "Settings.PrivacySandbox.ApisDisabled");
         PrivacySandboxBridge.setPrivacySandboxEnabled(enabled);
         return true;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(PRIVACY_SANDBOX_REFERRER, mPrivacySandboxReferrer);
     }
 
     private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {
@@ -92,5 +107,27 @@ public class PrivacySandboxSettingsFragment
         // TODO(crbug.com/1152351): update to use LaunchIntentDispatcher and IntentHandler to launch
         // a Chrome Custom Tab as opposed to relying on the OS for browser picking.
         customTabIntent.launchUrl(getContext(), Uri.parse(url));
+    }
+
+    private void parseAndRecordReferrer(Bundle savedInstanceState) {
+        if (savedInstanceState != null
+                && savedInstanceState.containsKey(PRIVACY_SANDBOX_REFERRER)) {
+            mPrivacySandboxReferrer = savedInstanceState.getInt(PRIVACY_SANDBOX_REFERRER);
+        } else {
+            Bundle extras = getArguments();
+            assert (extras != null)
+                    && extras.containsKey(PRIVACY_SANDBOX_REFERRER)
+                : "PrivacySandboxSettingsFragment must be launched with a privacy-sandbox-referrer "
+                            + "fragment argument, but none was provided.";
+            mPrivacySandboxReferrer = extras.getInt(PRIVACY_SANDBOX_REFERRER);
+        }
+        // Record all the referrer metrics.
+        RecordHistogram.recordEnumeratedHistogram("Settings.PrivacySandbox.PrivacySandboxReferrer",
+                mPrivacySandboxReferrer, PrivacySandboxReferrer.COUNT);
+        if (mPrivacySandboxReferrer == PrivacySandboxReferrer.PRIVACY_SETTINGS) {
+            RecordUserAction.record("Settings.PrivacySandbox.OpenedFromSettingsParent");
+        } else if (mPrivacySandboxReferrer == PrivacySandboxReferrer.COOKIES_SNACKBAR) {
+            RecordUserAction.record("Settings.PrivacySandbox.OpenedFromCookiesPageToast");
+        }
     }
 }
