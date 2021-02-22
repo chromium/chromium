@@ -130,7 +130,7 @@ class RenderFrameImplTest : public RenderViewTest {
     RenderFrameImpl::FromWebFrame(
         view_->GetMainRenderFrame()->GetWebFrame()->FirstChild())
         ->Unload(kFrameProxyRouteId, false, frame_replication_state->Clone(),
-                 base::UnguessableToken::Create());
+                 blink::RemoteFrameToken());
     RenderFrameImpl::CreateFrame(
         *agent_scheduling_group_, blink::LocalFrameToken(), kSubframeRouteId,
         TestRenderFrame::CreateStubFrameReceiver(),

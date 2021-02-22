@@ -644,7 +644,7 @@ TEST_F(RenderViewImplTest, IsPinchGestureActivePropagatesToProxies) {
   static_cast<mojom::Frame*>(child_frame_1)
       ->Unload(kProxyRoutingId, true,
                ReconstructReplicationStateForTesting(child_frame_1),
-               base::UnguessableToken::Create());
+               blink::RemoteFrameToken());
   EXPECT_TRUE(root_web_frame->FirstChild()->IsWebRemoteFrame());
   EXPECT_FALSE(root_web_frame->FirstChild()
                    ->ToWebRemoteFrame()
@@ -672,7 +672,7 @@ TEST_F(RenderViewImplTest, IsPinchGestureActivePropagatesToProxies) {
   static_cast<mojom::Frame*>(child_frame_2)
       ->Unload(kProxyRoutingId + 1, true,
                ReconstructReplicationStateForTesting(child_frame_2),
-               base::UnguessableToken::Create());
+               blink::RemoteFrameToken());
   EXPECT_TRUE(root_web_frame->FirstChild()->NextSibling()->IsWebRemoteFrame());
   // Verify new child has the flag too.
   EXPECT_TRUE(root_web_frame->FirstChild()
@@ -1132,7 +1132,7 @@ TEST_F(RenderViewImplScaleFactorTest, DeviceEmulationWithOOPIF) {
   static_cast<mojom::Frame*>(child_frame)
       ->Unload(kProxyRoutingId + 1, true,
                ReconstructReplicationStateForTesting(child_frame),
-               base::UnguessableToken::Create());
+               blink::RemoteFrameToken());
   EXPECT_TRUE(web_frame->FirstChild()->IsWebRemoteFrame());
   RenderFrameProxy* child_proxy = RenderFrameProxy::FromWebFrame(
       web_frame->FirstChild()->ToWebRemoteFrame());
@@ -1175,7 +1175,7 @@ TEST_F(RenderViewImplTest, OriginReplicationForUnload) {
   replication_state->origin = url::Origin::Create(GURL("http://foo.com"));
   static_cast<mojom::Frame*>(child_frame)
       ->Unload(kProxyRoutingId, true, replication_state->Clone(),
-               base::UnguessableToken::Create());
+               blink::RemoteFrameToken());
 
   // The child frame should now be a WebRemoteFrame.
   EXPECT_TRUE(web_frame->FirstChild()->IsWebRemoteFrame());
@@ -1194,7 +1194,7 @@ TEST_F(RenderViewImplTest, OriginReplicationForUnload) {
           web_frame->FirstChild()->NextSibling()->ToWebLocalFrame()));
   static_cast<mojom::Frame*>(child_frame2)
       ->Unload(kProxyRoutingId + 1, true, std::move(replication_state),
-               base::UnguessableToken::Create());
+               blink::RemoteFrameToken());
   EXPECT_TRUE(web_frame->FirstChild()->NextSibling()->IsWebRemoteFrame());
   EXPECT_TRUE(
       web_frame->FirstChild()->NextSibling()->GetSecurityOrigin().IsOpaque());
@@ -1223,7 +1223,7 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
   // replication_state.origin = url::Origin(GURL("http://foo.com"));
   static_cast<mojom::Frame*>(frame())->Unload(kProxyRoutingId, true,
                                               replication_state->Clone(),
-                                              base::UnguessableToken::Create());
+                                              blink::RemoteFrameToken());
   EXPECT_TRUE(view()->GetWebView()->MainFrame()->IsWebRemoteFrame());
 
   // Do the remote-to-local transition for the proxy, which is to create a
@@ -1316,7 +1316,7 @@ TEST_F(RenderViewImplTest, DetachingProxyAlsoDestroysProvisionalFrame) {
       ReconstructReplicationStateForTesting(child_frame);
   static_cast<mojom::Frame*>(child_frame)
       ->Unload(kProxyRoutingId, true, replication_state.Clone(),
-               base::UnguessableToken::Create());
+               blink::RemoteFrameToken());
   EXPECT_TRUE(web_frame->FirstChild()->IsWebRemoteFrame());
 
   // Do the first step of a remote-to-local transition for the child proxy,

@@ -62,6 +62,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
@@ -222,8 +223,8 @@ void RenderFrameHostManager::InitRoot(SiteInstance* site_instance,
   SetRenderFrameHost(CreateRenderFrameHost(
       CreateFrameCase::kInitRoot, site_instance,
       /*frame_routing_id=*/MSG_ROUTING_NONE,
-      mojo::PendingAssociatedRemote<mojom::Frame>(),
-      base::UnguessableToken::Create(), renderer_initiated_creation));
+      mojo::PendingAssociatedRemote<mojom::Frame>(), blink::LocalFrameToken(),
+      renderer_initiated_creation));
 }
 
 void RenderFrameHostManager::InitChild(
@@ -2494,7 +2495,7 @@ RenderFrameHostManager::CreateSpeculativeRenderFrame(
       CreateRenderFrameHost(CreateFrameCase::kCreateSpeculative, instance,
                             /*frame_routing_id=*/MSG_ROUTING_NONE,
                             mojo::PendingAssociatedRemote<mojom::Frame>(),
-                            base::UnguessableToken::Create(),
+                            blink::LocalFrameToken(),
                             /*renderer_initiated_creation=*/false);
   DCHECK_EQ(new_render_frame_host->GetSiteInstance(), instance);
 

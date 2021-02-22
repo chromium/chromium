@@ -64,7 +64,7 @@ TestRenderFrameHost::TestRenderFrameHost(
     FrameTreeNode* frame_tree_node,
     int32_t routing_id,
     mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
-    const base::UnguessableToken& frame_token,
+    const blink::LocalFrameToken& frame_token,
     RenderFrameHostImpl::LifecycleState lifecyle_state)
     : RenderFrameHostImpl(site_instance,
                           std::move(render_view_host),
@@ -157,7 +157,7 @@ TestRenderFrameHost* TestRenderFrameHost::AppendChildWithPolicy(
       CreateStubBrowserInterfaceBrokerReceiver(),
       CreateStubPolicyContainerBindParams(),
       blink::mojom::TreeScopeType::kDocument, frame_name, frame_unique_name,
-      false, base::UnguessableToken::Create(), base::UnguessableToken::Create(),
+      false, blink::LocalFrameToken(), base::UnguessableToken::Create(),
       blink::FramePolicy(
           {network::mojom::WebSandboxFlags::kNone, allow, {}, false}),
       blink::mojom::FrameOwnerProperties(),
@@ -334,7 +334,7 @@ void TestRenderFrameHost::SendRendererInitiatedNavigationRequest(
 }
 
 void TestRenderFrameHost::SimulateDidChangeOpener(
-    const base::Optional<base::UnguessableToken>& opener_frame_token) {
+    const base::Optional<blink::LocalFrameToken>& opener_frame_token) {
   DidChangeOpener(opener_frame_token);
 }
 

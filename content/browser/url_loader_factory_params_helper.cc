@@ -20,6 +20,7 @@
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom-shared.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 namespace content {
@@ -38,7 +39,7 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
     const url::Origin& origin,
     const url::Origin& request_initiator_origin_lock,
     bool is_trusted,
-    const base::Optional<base::UnguessableToken>& top_frame_token,
+    const base::Optional<blink::LocalFrameToken>& top_frame_token,
     const net::IsolationInfo& isolation_info,
     network::mojom::ClientSecurityStatePtr client_security_state,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
@@ -63,7 +64,8 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
   params->request_initiator_origin_lock = request_initiator_origin_lock;
 
   params->is_trusted = is_trusted;
-  params->top_frame_id = top_frame_token;
+  if (top_frame_token)
+    params->top_frame_id = top_frame_token.value().value();
   params->isolation_info = isolation_info;
 
   params->disable_web_security =
@@ -229,7 +231,7 @@ URLLoaderFactoryParamsHelper::CreateForRendererProcess(
   // We may not be able to allow powerful APIs such as memory measurement APIs
   // (see https://crbug.com/887967) without removing this call.
   net::IsolationInfo isolation_info = net::IsolationInfo::CreateTransient();
-  base::Optional<base::UnguessableToken> top_frame_token = base::nullopt;
+  base::Optional<blink::LocalFrameToken> top_frame_token = base::nullopt;
 
   return CreateParams(
       process,

@@ -56,17 +56,16 @@ std::string ToString(network::mojom::CrossOriginOpenerPolicyValue coop_value) {
   }
 }
 
-// TODO(1096617): Simplify this to remove the unnecessary casts after migration.
 base::Optional<blink::FrameToken> GetFrameToken(FrameTreeNode* frame,
                                                 SiteInstance* site_instance) {
   RenderFrameHostImpl* rfh = frame->current_frame_host();
   if (rfh->GetSiteInstance() == site_instance)
-    return blink::LocalFrameToken(rfh->GetFrameToken());
+    return rfh->GetFrameToken();
 
   RenderFrameProxyHost* proxy =
       frame->render_manager()->GetRenderFrameProxyHost(site_instance);
   if (proxy)
-    return blink::RemoteFrameToken(proxy->GetFrameToken());
+    return proxy->GetFrameToken();
 
   return base::nullopt;
 }

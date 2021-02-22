@@ -25,6 +25,7 @@
 #include "content/test/test_render_widget_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-forward.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
@@ -59,7 +60,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
                       FrameTreeNode* frame_tree_node,
                       int32_t routing_id,
                       mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
-                      const base::UnguessableToken& frame_token,
+                      const blink::LocalFrameToken& frame_token,
                       LifecycleState lifecyle_state);
   ~TestRenderFrameHost() override;
 
@@ -120,7 +121,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
                                               bool has_user_gesture);
 
   void SimulateDidChangeOpener(
-      const base::Optional<base::UnguessableToken>& opener_frame_token);
+      const base::Optional<blink::LocalFrameToken>& opener_frame_token);
 
   void DidEnforceInsecureRequestPolicy(
       blink::mojom::InsecureRequestPolicy policy);
