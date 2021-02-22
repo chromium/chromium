@@ -25,6 +25,11 @@
 // operation failed.
 + (NSError*)clearBrowsingHistory;
 
+// Clears all web state browsing data and waits to finish clearing before
+// returning. Returns nil on success, otherwise an NSError indicating why
+// the operation failed.
++ (NSError*)clearAllWebStateBrowsingData;
+
 // Returns the number of entries in the history database. Returns -1 if there
 // was an error.
 + (NSInteger)browsingHistoryEntryCountWithError:

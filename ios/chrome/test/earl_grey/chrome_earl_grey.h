@@ -527,6 +527,10 @@ id ExecuteJavaScript(NSString* javascript, NSError** out_error);
 // Stops any pending navigations in all WebStates which are loading.
 - (void)stopAllWebStatesLoading;
 
+// Clears all web state browsing data. A GREYAssert is induced if the data
+// cannot be cleared.
+- (void)clearAllWebStateBrowsingData;
+
 #pragma mark - Bookmarks Utilities (EG2)
 
 // Waits for the bookmark internal state to be done loading.

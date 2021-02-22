@@ -449,11 +449,16 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
 
   NSMutableDictionary* cookies = [NSMutableDictionary dictionary];
   for (NSString* nameValuePair in result) {
-    NSArray* cookieNameValue = [nameValuePair componentsSeparatedByString:@"="];
-    EG_TEST_HELPER_ASSERT_TRUE((2 == cookieNameValue.count),
+    NSMutableArray* cookieNameValue =
+        [[nameValuePair componentsSeparatedByString:@"="] mutableCopy];
+    // For cookies with multiple parameters it may be valid to have multiple
+    // occurrences of the delimiter.
+    EG_TEST_HELPER_ASSERT_TRUE((2 <= cookieNameValue.count),
                                @"Cookie has invalid format.");
     NSString* cookieName = cookieNameValue[0];
-    NSString* cookieValue = cookieNameValue[1];
+    [cookieNameValue removeObjectAtIndex:0];
+
+    NSString* cookieValue = [cookieNameValue componentsJoinedByString:@"="];
     cookies[cookieName] = cookieValue;
   }
 
@@ -642,6 +647,11 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
   // Wait for any UI change.
   GREYWaitForAppToIdle(
       @"Failed to wait app to idle after stopping all WebStates");
+}
+
+- (void)clearAllWebStateBrowsingData {
+  EG_TEST_HELPER_ASSERT_NO_ERROR(
+      [ChromeEarlGreyAppInterface clearAllWebStateBrowsingData]);
 }
 
 #pragma mark - Settings Utilities (EG2)

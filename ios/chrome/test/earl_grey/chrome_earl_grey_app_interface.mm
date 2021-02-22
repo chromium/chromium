@@ -130,6 +130,15 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
       @"Clearing browser cache for main tabs timed out");
 }
 
++ (NSError*)clearAllWebStateBrowsingData {
+  if (chrome_test_util::ClearAllWebStateBrowsingData()) {
+    return nil;
+  }
+
+  return testing::NSErrorWithLocalizedDescription(
+      @"Clearing web state browsing data for main tabs timed out");
+}
+
 + (void)applicationOpenURL:(NSString*)spec {
   UIApplication* application = UIApplication.sharedApplication;
   [application.delegate application:application
