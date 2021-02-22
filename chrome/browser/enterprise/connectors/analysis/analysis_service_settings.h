@@ -32,6 +32,8 @@ class AnalysisServiceSettings {
   // Get the block_until_verdict setting if the settings are valid.
   bool ShouldBlockUntilVerdict() const;
 
+  std::string service_provider_name() const { return service_provider_name_; }
+
  private:
   // The setting to apply when a specific URL pattern is matched.
   struct URLPatternSettings {
@@ -100,6 +102,7 @@ class AnalysisServiceSettings {
   size_t minimum_data_size_ = 100;
   base::string16 custom_message_text_;
   GURL custom_message_learn_more_url_;
+  std::string service_provider_name_;
 };
 
 }  // namespace enterprise_connectors

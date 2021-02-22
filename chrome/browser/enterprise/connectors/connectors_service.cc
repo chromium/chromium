@@ -224,6 +224,19 @@ bool ConnectorsService::DelayUntilVerdict(AnalysisConnector connector) {
   return connectors_manager_->DelayUntilVerdict(connector);
 }
 
+std::vector<std::string> ConnectorsService::GetAnalysisServiceProviderNames(
+    AnalysisConnector connector) {
+  if (!ConnectorsEnabled())
+    return {};
+
+  if (!GetDmToken(ConnectorScopePref(connector)).has_value())
+    return {};
+
+  // There can only be one provider right now, but the system is designed to
+  // support multiples, so return a vector.
+  return {connectors_manager_->GetAnalysisServiceProviderNames(connector)};
+}
+
 base::Optional<std::string> ConnectorsService::GetDMTokenForRealTimeUrlCheck()
     const {
   if (!ConnectorsEnabled())

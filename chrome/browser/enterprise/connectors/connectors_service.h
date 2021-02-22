@@ -63,6 +63,9 @@ class ConnectorsService : public KeyedService {
 
   bool DelayUntilVerdict(AnalysisConnector connector);
 
+  std::vector<std::string> GetAnalysisServiceProviderNames(
+      AnalysisConnector connector);
+
   // DM token accessor function for real-time URL checks. Returns a profile or
   // browser DM token depending on the policy scope, and base::nullopt if there
   // is no token to use.

@@ -30,25 +30,76 @@ constexpr char kBrowserID2[] = "browser_id_2";
 constexpr char kProfileID1[] = "profile_id_1";
 constexpr char kProfileID2[] = "profile_id_2";
 
+constexpr char kGoogleServiceProvider[] = R"({
+      "service_provider": "google",
+      "enable": [
+        {
+          "url_list": ["*"],
+          "tags": ["dlp", "malware"]
+        }
+      ]
+    })";
+
+constexpr char kOtherServiceProvider[] = R"({
+      "service_provider": "other",
+      "enable": [
+        {
+          "url_list": ["*"],
+          "tags": ["dlp", "malware"]
+        }
+      ]
+    })";
+
+constexpr char kAnotherServiceProvider[] = R"({
+      "service_provider": "another",
+      "enable": [
+        {
+          "url_list": ["*"],
+          "tags": ["dlp", "malware"]
+        }
+      ]
+    })";
+
 }  // namespace
+
+// Base class for non-parametrized GetContextInfo test cases. This class enables
+// test cases that would otherwise require a ton of setup in order to be unit
+// tests.
+class EnterpriseReportingPrivateGetContextInfoBaseBrowserTest
+    : public InProcessBrowserTest {
+ public:
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
+    command_line->AppendSwitch(::switches::kEnableChromeBrowserCloudManagement);
+  }
+#endif
+
+  void SetupDMToken() {
+    browser_dm_token_storage_ =
+        std::make_unique<policy::FakeBrowserDMTokenStorage>();
+    browser_dm_token_storage_->SetEnrollmentToken("enrollment_token");
+    browser_dm_token_storage_->SetClientId("id");
+    browser_dm_token_storage_->SetDMToken("dm_token");
+    policy::BrowserDMTokenStorage::SetForTesting(
+        browser_dm_token_storage_.get());
+  }
+
+ private:
+  std::unique_ptr<policy::FakeBrowserDMTokenStorage> browser_dm_token_storage_;
+};
 
 // This browser test class is used to avoid mocking too much browser/profile
 // management objects in order to keep the test simple and useful. Please add
 // new tests for the getContextInfo API in enterprise_reporting_private_unittest
 // and only add tests in this file if they have similar constraints.
 class EnterpriseReportingPrivateGetContextInfoBrowserTest
-    : public InProcessBrowserTest,
+    : public EnterpriseReportingPrivateGetContextInfoBaseBrowserTest,
       public testing::WithParamInterface<testing::tuple<bool, bool>> {
  public:
   EnterpriseReportingPrivateGetContextInfoBrowserTest() {
     if (browser_managed()) {
-      browser_dm_token_storage_ =
-          std::make_unique<policy::FakeBrowserDMTokenStorage>();
-      browser_dm_token_storage_->SetEnrollmentToken("enrollment_token");
-      browser_dm_token_storage_->SetClientId("id");
-      browser_dm_token_storage_->SetDMToken("dm_token");
-      policy::BrowserDMTokenStorage::SetForTesting(
-          browser_dm_token_storage_.get());
+      SetupDMToken();
     }
   }
 
@@ -57,7 +108,8 @@ class EnterpriseReportingPrivateGetContextInfoBrowserTest
   bool profile_managed() const { return testing::get<1>(GetParam()); }
 
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    EnterpriseReportingPrivateGetContextInfoBaseBrowserTest::
+        SetUpOnMainThread();
 
     if (browser_managed()) {
       auto* browser_policy_manager =
@@ -83,16 +135,6 @@ class EnterpriseReportingPrivateGetContextInfoBrowserTest
           std::move(profile_policy_data));
     }
   }
-
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
-    command_line->AppendSwitch(::switches::kEnableChromeBrowserCloudManagement);
-  }
-#endif
-
- private:
-  std::unique_ptr<policy::FakeBrowserDMTokenStorage> browser_dm_token_storage_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,
@@ -136,6 +178,119 @@ IN_PROC_BROWSER_TEST_P(EnterpriseReportingPrivateGetContextInfoBrowserTest,
             info.realtime_url_check_mode);
   EXPECT_TRUE(info.on_security_event_providers.empty());
   EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
+}
+
+IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetContextInfoBaseBrowserTest,
+                       TestFileAttachedProviderName) {
+  SetupDMToken();
+  safe_browsing::SetAnalysisConnector(browser()->profile()->GetPrefs(),
+                                      enterprise_connectors::FILE_ATTACHED,
+                                      kGoogleServiceProvider);
+
+  auto function =
+      base::MakeRefCounted<EnterpriseReportingPrivateGetContextInfoFunction>();
+  auto context_info_value = std::unique_ptr<base::Value>(
+      extension_function_test_utils::RunFunctionAndReturnSingleResult(
+          function.get(),
+          /*args*/ "[]", browser()));
+  ASSERT_TRUE(context_info_value.get());
+
+  enterprise_reporting_private::ContextInfo info;
+  ASSERT_TRUE(enterprise_reporting_private::ContextInfo::Populate(
+      *context_info_value, &info));
+
+  EXPECT_EQ(0UL, info.on_file_downloaded_providers.size());
+  EXPECT_EQ(0UL, info.on_bulk_data_entry_providers.size());
+
+  EXPECT_EQ(1UL, info.on_file_attached_providers.size());
+  EXPECT_EQ("google", info.on_file_attached_providers[0]);
+}
+
+IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetContextInfoBaseBrowserTest,
+                       TestFileDownloadedProviderName) {
+  SetupDMToken();
+  safe_browsing::SetAnalysisConnector(browser()->profile()->GetPrefs(),
+                                      enterprise_connectors::FILE_DOWNLOADED,
+                                      kGoogleServiceProvider);
+
+  auto function =
+      base::MakeRefCounted<EnterpriseReportingPrivateGetContextInfoFunction>();
+  auto context_info_value = std::unique_ptr<base::Value>(
+      extension_function_test_utils::RunFunctionAndReturnSingleResult(
+          function.get(),
+          /*args*/ "[]", browser()));
+  ASSERT_TRUE(context_info_value.get());
+
+  enterprise_reporting_private::ContextInfo info;
+  ASSERT_TRUE(enterprise_reporting_private::ContextInfo::Populate(
+      *context_info_value, &info));
+
+  EXPECT_EQ(0UL, info.on_file_attached_providers.size());
+  EXPECT_EQ(0UL, info.on_bulk_data_entry_providers.size());
+
+  EXPECT_EQ(1UL, info.on_file_downloaded_providers.size());
+  EXPECT_EQ("google", info.on_file_downloaded_providers[0]);
+}
+
+IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetContextInfoBaseBrowserTest,
+                       TestBulkDataEntryProviderName) {
+  SetupDMToken();
+  safe_browsing::SetAnalysisConnector(browser()->profile()->GetPrefs(),
+                                      enterprise_connectors::BULK_DATA_ENTRY,
+                                      kGoogleServiceProvider);
+
+  auto function =
+      base::MakeRefCounted<EnterpriseReportingPrivateGetContextInfoFunction>();
+  auto context_info_value = std::unique_ptr<base::Value>(
+      extension_function_test_utils::RunFunctionAndReturnSingleResult(
+          function.get(),
+          /*args*/ "[]", browser()));
+  ASSERT_TRUE(context_info_value.get());
+
+  enterprise_reporting_private::ContextInfo info;
+  ASSERT_TRUE(enterprise_reporting_private::ContextInfo::Populate(
+      *context_info_value, &info));
+
+  EXPECT_EQ(0UL, info.on_file_downloaded_providers.size());
+  EXPECT_EQ(0UL, info.on_file_attached_providers.size());
+
+  EXPECT_EQ(1UL, info.on_bulk_data_entry_providers.size());
+  EXPECT_EQ("google", info.on_bulk_data_entry_providers[0]);
+}
+
+IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetContextInfoBaseBrowserTest,
+                       TestAllProviderNamesSet) {
+  SetupDMToken();
+  safe_browsing::SetAnalysisConnector(browser()->profile()->GetPrefs(),
+                                      enterprise_connectors::BULK_DATA_ENTRY,
+                                      kGoogleServiceProvider);
+  safe_browsing::SetAnalysisConnector(browser()->profile()->GetPrefs(),
+                                      enterprise_connectors::FILE_ATTACHED,
+                                      kOtherServiceProvider);
+  safe_browsing::SetAnalysisConnector(browser()->profile()->GetPrefs(),
+                                      enterprise_connectors::FILE_DOWNLOADED,
+                                      kAnotherServiceProvider);
+
+  auto function =
+      base::MakeRefCounted<EnterpriseReportingPrivateGetContextInfoFunction>();
+  auto context_info_value = std::unique_ptr<base::Value>(
+      extension_function_test_utils::RunFunctionAndReturnSingleResult(
+          function.get(),
+          /*args*/ "[]", browser()));
+  ASSERT_TRUE(context_info_value.get());
+
+  enterprise_reporting_private::ContextInfo info;
+  ASSERT_TRUE(enterprise_reporting_private::ContextInfo::Populate(
+      *context_info_value, &info));
+
+  EXPECT_EQ(1UL, info.on_bulk_data_entry_providers.size());
+  EXPECT_EQ("google", info.on_bulk_data_entry_providers[0]);
+
+  EXPECT_EQ(1UL, info.on_file_attached_providers.size());
+  EXPECT_EQ("other", info.on_file_attached_providers[0]);
+
+  EXPECT_EQ(1UL, info.on_file_downloaded_providers.size());
+  EXPECT_EQ("another", info.on_file_downloaded_providers[0]);
 }
 
 }  // namespace extensions

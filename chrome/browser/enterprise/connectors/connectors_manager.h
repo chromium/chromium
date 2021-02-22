@@ -63,6 +63,9 @@ class ConnectorsManager {
 
   bool DelayUntilVerdict(AnalysisConnector connector);
 
+  std::vector<std::string> GetAnalysisServiceProviderNames(
+      AnalysisConnector connector);
+
   // Public testing functions.
   const AnalysisConnectorsSettings& GetAnalysisConnectorsSettingsForTesting()
       const;

@@ -88,9 +88,7 @@ std::vector<std::string> ContextInfoFetcher::GetProfileAffiliationIDs() {
 
 std::vector<std::string> ContextInfoFetcher::GetAnalysisConnectorProviders(
     enterprise_connectors::AnalysisConnector connector) {
-  // TODO(crbug.com/1169213): Add code here and in ConnectorsService to get each
-  // Analysis Connector's providers.
-  return {};
+  return connectors_service_->GetAnalysisServiceProviderNames(connector);
 }
 
 api::enterprise_reporting_private::RealtimeUrlCheckMode
