@@ -243,7 +243,7 @@ void WidevineCdmComponentInstallerPolicy::ComponentReady(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&WidevineCdmComponentInstallerPolicy::UpdateCdmPath,
                      base::Unretained(this), version, path,
-                     base::Passed(&manifest)));
+                     std::move(manifest)));
 }
 
 bool WidevineCdmComponentInstallerPolicy::VerifyInstallation(
@@ -375,7 +375,7 @@ void WidevineCdmComponentInstallerPolicy::UpdateCdmPath(
 #if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
                      launch_x86_64,
 #endif  // OS_MAC && ARCH_CPU_ARM64
-                     base::Passed(&manifest)));
+                     std::move(manifest)));
 #endif
 }
 
