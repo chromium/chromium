@@ -23,6 +23,7 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_job_coordinator.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
+#include "content/browser/service_worker/service_worker_new_script_fetcher.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_registry.h"
 #include "content/browser/service_worker/service_worker_version.h"
@@ -35,6 +36,12 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 
 namespace content {
+namespace {
+
+constexpr base::Feature kPlzServiceWorker{"PlzServiceWorker",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
+}  // namespace
 
 typedef ServiceWorkerRegisterJobBase::RegistrationJobType RegistrationJobType;
 
@@ -355,7 +362,11 @@ void ServiceWorkerRegisterJob::OnUpdateCheckFinished(
     return;
   }
 
-  CreateNewVersionForUpdate();
+  context_->registry()->NotifyInstallingRegistration(registration());
+  context_->registry()->CreateNewVersion(
+      registration(), script_url_, worker_script_type_,
+      base::BindOnce(&ServiceWorkerRegisterJob::StartWorkerForUpdate,
+                     weak_factory_.GetWeakPtr()));
 }
 
 // Creates a new ServiceWorkerRegistration.
@@ -423,12 +434,31 @@ void ServiceWorkerRegisterJob::ContinueWithRegistrationForSameScriptUrl(
   UpdateAndContinue();
 }
 
-void ServiceWorkerRegisterJob::CreateNewVersionForUpdate() {
-  context_->registry()->NotifyInstallingRegistration(registration());
-  context_->registry()->CreateNewVersion(
-      registration(), script_url_, worker_script_type_,
-      base::BindOnce(&ServiceWorkerRegisterJob::StartWorkerForUpdate,
-                     weak_factory_.GetWeakPtr()));
+void ServiceWorkerRegisterJob::StartScriptFetchForNewWorker(
+    scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
+    scoped_refptr<ServiceWorkerVersion> version) {
+  DCHECK(base::FeatureList::IsEnabled(kPlzServiceWorker));
+  DCHECK(!new_script_fetcher_);
+  new_script_fetcher_ = std::make_unique<ServiceWorkerNewScriptFetcher>(
+      *context_, version, std::move(loader_factory),
+      outside_fetch_client_settings_object_.Clone());
+  new_script_fetcher_->Start(
+      base::BindOnce(&ServiceWorkerRegisterJob::OnScriptFetchCompleted,
+                     weak_factory_.GetWeakPtr(), std::move(version)));
+}
+
+void ServiceWorkerRegisterJob::OnScriptFetchCompleted(
+    scoped_refptr<ServiceWorkerVersion> version,
+    blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params) {
+  DCHECK(base::FeatureList::IsEnabled(kPlzServiceWorker));
+  if (!main_script_load_params) {
+    Complete(blink::ServiceWorkerStatusCode::kErrorAbort);
+    return;
+  }
+  DCHECK(version->cross_origin_embedder_policy().has_value());
+
+  version->set_main_script_load_params(std::move(main_script_load_params));
+  StartWorkerForUpdate(std::move(version));
 }
 
 void ServiceWorkerRegisterJob::StartWorkerForUpdate(
@@ -450,13 +480,13 @@ void ServiceWorkerRegisterJob::StartWorkerForUpdate(
         update_checker_->updated_script_url(),
         update_checker_->cross_origin_embedder_policy());
     update_checker_.reset();
-  } else {
+  } else if (!base::FeatureList::IsEnabled(kPlzServiceWorker)) {
     // When the update checker is not used, subresource loader factories needs
-    // to be updated after the main script is loaded because COEP header is not
-    // available until then. This flag lets the script evaluation wait until the
-    // browser sends a message with a new subresoruce loader factories.
-    // This happens when this is (1) a new registration, or (2) an old
-    // registration where the script URL is changed.
+    // to be updated after the main script is loaded because COEP header is
+    // not available until then. This flag lets the script evaluation wait
+    // until the browser sends a message with a new subresoruce loader
+    // factories. This happens when this is (1) a new registration, or (2) an
+    // old registration where the script URL is changed.
     new_version()->set_initialize_global_scope_after_main_script_loaded();
   }
 
@@ -473,11 +503,6 @@ void ServiceWorkerRegisterJob::StartWorkerForUpdate(
 void ServiceWorkerRegisterJob::UpdateAndContinue() {
   SetPhase(UPDATE);
 
-  if (!IsUpdateCheckNeeded()) {
-    CreateNewVersionForUpdate();
-    return;
-  }
-
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory =
       context_->wrapper()->GetLoaderFactoryForUpdateCheck(scope_);
   if (!loader_factory) {
@@ -487,6 +512,23 @@ void ServiceWorkerRegisterJob::UpdateAndContinue() {
     // This terminates the current job (|this|).
     Complete(blink::ServiceWorkerStatusCode::kErrorAbort,
              ServiceWorkerConsts::kShutdownErrorMessage);
+    return;
+  }
+
+  if (!IsUpdateCheckNeeded()) {
+    context_->registry()->NotifyInstallingRegistration(registration());
+    base::OnceCallback<void(scoped_refptr<ServiceWorkerVersion>)> next_task;
+    if (base::FeatureList::IsEnabled(kPlzServiceWorker)) {
+      next_task = base::BindOnce(
+          &ServiceWorkerRegisterJob::StartScriptFetchForNewWorker,
+          weak_factory_.GetWeakPtr(), std::move(loader_factory));
+    } else {
+      next_task =
+          base::BindOnce(&ServiceWorkerRegisterJob::StartWorkerForUpdate,
+                         weak_factory_.GetWeakPtr());
+    }
+    context_->registry()->CreateNewVersion(
+        registration(), script_url_, worker_script_type_, std::move(next_task));
     return;
   }
 

@@ -145,9 +145,6 @@ class CONTENT_EXPORT ServiceWorkerUpdateChecker {
   const blink::mojom::ServiceWorkerUpdateViaCache update_via_cache_;
   const base::TimeDelta time_since_last_check_;
 
-  // Headers that need to be added to network requests for update checking.
-  net::HttpRequestHeaders default_headers_;
-
   // True if any at least one of the scripts is fetched by network.
   bool network_accessed_ = false;
 

@@ -1631,9 +1631,18 @@ void ServiceWorkerContextWrapper::SetStorageControlBinderForTest(
   storage_control_binder_for_test_ = std::move(binder);
 }
 
+void ServiceWorkerContextWrapper::SetLoaderFactoryForUpdateCheckForTest(
+    scoped_refptr<network::SharedURLLoaderFactory> loader_factory) {
+  loader_factory_for_test_ = std::move(loader_factory);
+}
+
 scoped_refptr<network::SharedURLLoaderFactory>
 ServiceWorkerContextWrapper::GetLoaderFactoryForUpdateCheck(const GURL& scope) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // TODO(falken): Replace this with URLLoaderInterceptor.
+  if (loader_factory_for_test_)
+    return loader_factory_for_test_;
 
   if (!storage_partition()) {
     return nullptr;

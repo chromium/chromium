@@ -339,6 +339,8 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   // which are called in InitializeRegisteredOrigins().
   void WaitForRegistrationsInitializedForTest();
 
+  void SetLoaderFactoryForUpdateCheckForTest(
+      scoped_refptr<network::SharedURLLoaderFactory> loader_factory);
   // Returns nullptr on failure.
   scoped_refptr<network::SharedURLLoaderFactory> GetLoaderFactoryForUpdateCheck(
       const GURL& scope);
@@ -556,6 +558,9 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
 
   // A callback to bind ServiceWorkerStorageControl. Used for tests.
   StorageControlBinder storage_control_binder_for_test_;
+
+  // A loader factory used to register a service worker. Used for tests.
+  scoped_refptr<network::SharedURLLoaderFactory> loader_factory_for_test_;
 
   // Temporary for moving context core to the UI thread.
   scoped_refptr<base::TaskRunner> core_thread_task_runner_;

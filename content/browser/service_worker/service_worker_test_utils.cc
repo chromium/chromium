@@ -29,6 +29,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
@@ -43,63 +44,6 @@
 namespace content {
 
 namespace {
-
-// A mock SharedURLLoaderFactory that always fails to start.
-// TODO(bashi): Make this factory not to fail when unit tests actually need
-// this to be working.
-class MockSharedURLLoaderFactory final
-    : public network::SharedURLLoaderFactory {
- public:
-  MockSharedURLLoaderFactory() = default;
-
-  // network::mojom::URLLoaderFactory:
-  void CreateLoaderAndStart(
-      mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-      int32_t routing_id,
-      int32_t request_id,
-      uint32_t options,
-      const network::ResourceRequest& url_request,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
-      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
-      override {
-    mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
-        ->OnComplete(
-            network::URLLoaderCompletionStatus(net::ERR_NOT_IMPLEMENTED));
-  }
-  void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
-      override {
-    NOTREACHED();
-  }
-
-  // network::SharedURLLoaderFactory:
-  std::unique_ptr<network::PendingSharedURLLoaderFactory> Clone() override {
-    NOTREACHED();
-    return nullptr;
-  }
-
- private:
-  friend class base::RefCounted<MockSharedURLLoaderFactory>;
-
-  ~MockSharedURLLoaderFactory() override = default;
-
-  DISALLOW_COPY_AND_ASSIGN(MockSharedURLLoaderFactory);
-};
-
-// Returns MockSharedURLLoaderFactory.
-class MockPendingSharedURLLoaderFactory final
-    : public network::PendingSharedURLLoaderFactory {
- public:
-  MockPendingSharedURLLoaderFactory() = default;
-  ~MockPendingSharedURLLoaderFactory() override = default;
-
- protected:
-  scoped_refptr<network::SharedURLLoaderFactory> CreateFactory() override {
-    return base::MakeRefCounted<MockSharedURLLoaderFactory>();
-  }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPendingSharedURLLoaderFactory);
-};
 
 // The minimal DidCommitProvisionalLoadParams passing mojom validation.
 mojom::DidCommitProvisionalLoadParamsPtr

@@ -1878,6 +1878,7 @@ void ServiceWorkerVersion::StartWorkerInternal() {
   params->ua_metadata = GetContentClient()->browser()->GetUserAgentMetadata();
   params->is_installed = IsInstalled(status_);
   params->script_url_to_skip_throttling = updated_script_url_;
+  params->main_script_load_params = std::move(main_script_load_params_);
 
   if (IsInstalled(status())) {
     DCHECK(!installed_scripts_sender_);

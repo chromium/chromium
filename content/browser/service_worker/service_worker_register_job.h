@@ -19,9 +19,12 @@
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
+#include "third_party/blink/public/mojom/worker/worker_main_script_load_params.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
+
+class ServiceWorkerNewScriptFetcher;
 
 // Handles the initial registration of a Service Worker and the
 // subsequent update of existing registrations.
@@ -133,8 +136,17 @@ class ServiceWorkerRegisterJob : public ServiceWorkerRegisterJobBase {
       blink::ServiceWorkerStatusCode status);
   void UpdateAndContinue();
 
-  // Creates a new ServiceWorkerVersion for [[Update]].
-  void CreateNewVersionForUpdate();
+  // PlzServiceWorker:
+  // Starts script loading before starting the worker. This is called only when
+  // the job type is REGISTRATION_JOB and the worker doesn't need an
+  // byte-for-byte check.
+  void StartScriptFetchForNewWorker(
+      scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
+      scoped_refptr<ServiceWorkerVersion> version);
+  void OnScriptFetchCompleted(
+      scoped_refptr<ServiceWorkerVersion> version,
+      blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params);
+
   // Starts a service worker for [[Update]]. The script comparison has finished
   // at this point. It starts install phase.
   void StartWorkerForUpdate(scoped_refptr<ServiceWorkerVersion> version);
@@ -166,7 +178,10 @@ class ServiceWorkerRegisterJob : public ServiceWorkerRegisterJobBase {
   // The ServiceWorkerContextCore object must outlive this.
   ServiceWorkerContextCore* const context_;
 
+  // Valid when the worker is being updated.
   std::unique_ptr<ServiceWorkerUpdateChecker> update_checker_;
+  // Valid when the worker is new.
+  std::unique_ptr<ServiceWorkerNewScriptFetcher> new_script_fetcher_;
 
   RegistrationJobType job_type_;
   const GURL scope_;

@@ -61,20 +61,25 @@ constexpr net::NetworkTrafficAnnotationTag kUpdateCheckTrafficAnnotation =
         "site, serviceworkers are disabled for the site only. If they are "
         "totally disabled, all serviceworker requests will be stopped."
       chrome_policy {
-        URLBlacklist {
-          URLBlacklist: { entries: '*' }
+        CookiesBlockedForUrls {
+          CookiesBlockedForUrls: { entries: '*' }
         }
       }
       chrome_policy {
-        URLWhitelist {
-          URLWhitelist { }
+        CookiesAllowedForUrls {
+          CookiesAllowedForUrls { }
+        }
+      }
+      chrome_policy {
+        DefaultCookiesSetting {
+          DefaultCookiesSetting: 2
         }
       }
     }
     comments:
       "Chrome would be unable to update service workers without this type of "
-      "request. Using either URLBlacklist or URLWhitelist policies (or a "
-      "combination of both) limits the scope of these requests."
+      "request. Using either CookiesBlockedForUrls or CookiesAllowedForUrls "
+      "policies (or a combination of both) limits the scope of these requests."
     )");
 
 }  // namespace
@@ -103,7 +108,6 @@ ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(
     const blink::mojom::FetchClientSettingsObjectPtr&
         fetch_client_settings_object,
     base::TimeDelta time_since_last_check,
-    const net::HttpRequestHeaders& default_headers,
     BrowserContext* browser_context,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     mojo::Remote<storage::mojom::ServiceWorkerResourceReader> compare_reader,
@@ -130,74 +134,17 @@ ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(
                          script_url.spec(), "main_script_url",
                          main_script_url.spec());
 
+  network::ResourceRequest resource_request =
+      service_worker_loader_helpers::CreateRequestForServiceWorkerScript(
+          script_url, url::Origin::Create(main_script_url), is_main_script_,
+          *fetch_client_settings_object, *browser_context);
+
   uint32_t options = network::mojom::kURLLoadOptionNone;
-  network::ResourceRequest resource_request;
-  resource_request.url = script_url;
-  resource_request.site_for_cookies =
-      net::SiteForCookies::FromUrl(main_script_url);
-  resource_request.do_not_prompt_for_login = true;
-  resource_request.headers = default_headers;
-  resource_request.referrer_policy = Referrer::ReferrerPolicyForUrlRequest(
-      fetch_client_settings_object->referrer_policy);
-  // https://w3c.github.io/webappsec-referrer-policy/#determine-requests-referrer
-  resource_request.referrer =
-      Referrer::SanitizeForRequest(
-          script_url, Referrer(fetch_client_settings_object->outgoing_referrer,
-                               fetch_client_settings_object->referrer_policy))
-          .url;
-  resource_request.upgrade_if_insecure =
-      fetch_client_settings_object->insecure_requests_policy ==
-      blink::mojom::InsecureRequestsPolicy::kUpgrade;
-
-  // ResourceRequest::request_initiator is the request's origin in the spec.
-  // https://fetch.spec.whatwg.org/#concept-request-origin
-  // It's needed to be set to the origin of the main script url.
-  // https://github.com/w3c/ServiceWorker/issues/1447
-  const url::Origin origin = url::Origin::Create(main_script_url);
-  resource_request.request_initiator = origin;
-
-  // This key is used to isolate requests from different contexts in accessing
-  // shared network resources like the http cache.
-  resource_request.trusted_params = network::ResourceRequest::TrustedParams();
-  resource_request.trusted_params->isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RequestType::kOther, origin, origin,
-      net::SiteForCookies::FromOrigin(origin));
-
   if (is_main_script_) {
-    // Set the "Service-Worker" header for the main script request:
-    // https://w3c.github.io/ServiceWorker/#service-worker-script-request
-    resource_request.headers.SetHeader("Service-Worker", "script");
-
-    // The "Fetch a classic worker script" uses "same-origin" as mode and
-    // credentials mode.
-    // https://html.spec.whatwg.org/C/#fetch-a-classic-worker-script
-    resource_request.mode = network::mojom::RequestMode::kSameOrigin;
-    resource_request.credentials_mode =
-        network::mojom::CredentialsMode::kSameOrigin;
-
-    // The request's destination is "serviceworker" for the main script.
-    // https://w3c.github.io/ServiceWorker/#update-algorithm
-    resource_request.destination =
-        network::mojom::RequestDestination::kServiceWorker;
-    resource_request.resource_type =
-        static_cast<int>(blink::mojom::ResourceType::kServiceWorker);
-
     // Request SSLInfo. It will be persisted in service worker storage and
     // may be used by ServiceWorkerMainResourceLoader for navigations handled
     // by this service worker.
     options |= network::mojom::kURLLoadOptionSendSSLInfoWithResponse;
-  } else {
-    // The "fetch a classic worker-imported script" doesn't have any statement
-    // about mode and credentials mode. Use the default value, which is
-    // "no-cors".
-    // https://html.spec.whatwg.org/C/#fetch-a-classic-worker-imported-script
-    DCHECK_EQ(network::mojom::RequestMode::kNoCors, resource_request.mode);
-
-    // The request's destination is "script" for the imported script.
-    // https://w3c.github.io/ServiceWorker/#update-algorithm
-    resource_request.destination = network::mojom::RequestDestination::kScript;
-    resource_request.resource_type =
-        static_cast<int>(blink::mojom::ResourceType::kScript);
   }
 
   // Upgrade the request to an a priori authenticated URL, if appropriate.

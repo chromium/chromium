@@ -71,20 +71,6 @@ void ServiceWorkerUpdateChecker::Start(UpdateStatusCallback callback) {
     return;
   }
 
-  // Set the accept header to '*/*'.
-  // https://fetch.spec.whatwg.org/#concept-fetch
-  default_headers_.SetHeader(net::HttpRequestHeaders::kAccept,
-                             network::kDefaultAcceptHeaderValue);
-
-  BrowserContext* browser_context =
-      context_->process_manager()->browser_context();
-  blink::RendererPreferences renderer_preferences;
-  GetContentClient()->browser()->UpdateRendererPreferencesForWorker(
-      browser_context, &renderer_preferences);
-  UpdateAdditionalHeadersForBrowserInitiatedRequest(
-      &default_headers_, browser_context,
-      /*should_update_existing_headers=*/false, renderer_preferences);
-
   CheckOneScript(main_script_url_, main_script_resource_id_);
 }
 
@@ -238,10 +224,9 @@ void ServiceWorkerUpdateChecker::OnResourceIdAssignedForOneScriptCheck(
   running_checker_ = std::make_unique<ServiceWorkerSingleScriptUpdateChecker>(
       url, is_main_script, main_script_url_, version_to_update_->scope(),
       force_bypass_cache_, update_via_cache_, fetch_client_settings_object_,
-      time_since_last_check_, default_headers_,
-      context_->process_manager()->browser_context(), loader_factory_,
-      std::move(compare_reader), std::move(copy_reader), std::move(writer),
-      new_resource_id,
+      time_since_last_check_, context_->process_manager()->browser_context(),
+      loader_factory_, std::move(compare_reader), std::move(copy_reader),
+      std::move(writer), new_resource_id,
       base::BindOnce(&ServiceWorkerUpdateChecker::OnOneUpdateCheckFinished,
                      weak_factory_.GetWeakPtr(), resource_id));
 }

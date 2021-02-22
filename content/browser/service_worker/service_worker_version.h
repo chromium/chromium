@@ -465,6 +465,11 @@ class CONTENT_EXPORT ServiceWorkerVersion
     initialize_global_scope_after_main_script_loaded_ = true;
   }
 
+  void set_main_script_load_params(
+      blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params) {
+    main_script_load_params_ = std::move(main_script_load_params);
+  }
+
   void set_outside_fetch_client_settings_object(
       blink::mojom::FetchClientSettingsObjectPtr
           outside_fetch_client_settings_object) {
@@ -1107,6 +1112,11 @@ class CONTENT_EXPORT ServiceWorkerVersion
 
   blink::mojom::FetchClientSettingsObjectPtr
       outside_fetch_client_settings_object_;
+
+  // Parameter used for starting a new worker with the worker script loaded in
+  // the browser process beforehand. This is valid only when it's a new worker
+  // that is going to be registered from now on.
+  blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params_;
 
   // Callback to stop service worker small seconds after all controllees are
   // gone. This callback can be canceled when the service worker starts to

@@ -112,6 +112,7 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="pepper_udp_socket"/>
       <traffic_annotation unique_id="service_worker_navigation_preload"/>
       <traffic_annotation unique_id="service_worker_update_checker"/>
+      <traffic_annotation unique_id="service_worker_script_load"/>
       <traffic_annotation unique_id="download_web_contents_frame"/>
       <traffic_annotation unique_id="sigined_exchange_cert_fetcher"/>
       <traffic_annotation unique_id="sigined_exchange_validity_pinger"/>

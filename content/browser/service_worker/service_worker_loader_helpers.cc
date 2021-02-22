@@ -8,9 +8,18 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "content/browser/loader/browser_initiated_resource_request.h"
 #include "content/browser/service_worker/service_worker_consts.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/common/content_client.h"
+#include "content/public/common/referrer.h"
+#include "services/network/public/cpp/constants.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
+#include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
 namespace content {
@@ -109,6 +118,91 @@ void CheckVersionStatusBeforeWorkerScriptLoad(
   }
 }
 #endif  // DCHECK_IS_ON()
+
+network::ResourceRequest CreateRequestForServiceWorkerScript(
+    const GURL& script_url,
+    const url::Origin& origin,
+    bool is_main_script,
+    const blink::mojom::FetchClientSettingsObject& fetch_client_settings_object,
+    BrowserContext& browser_context) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  network::ResourceRequest request;
+  request.url = script_url;
+
+  request.site_for_cookies = net::SiteForCookies::FromOrigin(origin);
+  request.do_not_prompt_for_login = true;
+
+  blink::RendererPreferences renderer_preferences;
+  GetContentClient()->browser()->UpdateRendererPreferencesForWorker(
+      &browser_context, &renderer_preferences);
+  UpdateAdditionalHeadersForBrowserInitiatedRequest(
+      &request.headers, &browser_context,
+      /*should_update_existing_headers=*/false, renderer_preferences);
+
+  // Set the accept header to '*/*'.
+  // https://fetch.spec.whatwg.org/#concept-fetch
+  request.headers.SetHeader(net::HttpRequestHeaders::kAccept,
+                            network::kDefaultAcceptHeaderValue);
+
+  request.referrer_policy = Referrer::ReferrerPolicyForUrlRequest(
+      fetch_client_settings_object.referrer_policy);
+  request.referrer =
+      Referrer::SanitizeForRequest(
+          script_url, Referrer(fetch_client_settings_object.outgoing_referrer,
+                               fetch_client_settings_object.referrer_policy))
+          .url;
+  request.upgrade_if_insecure =
+      fetch_client_settings_object.insecure_requests_policy ==
+      blink::mojom::InsecureRequestsPolicy::kUpgrade;
+
+  // ResourceRequest::request_initiator is the request's origin in the spec.
+  // https://fetch.spec.whatwg.org/#concept-request-origin
+  // It's needed to be set to the origin where the service worker is registered.
+  // https://github.com/w3c/ServiceWorker/issues/1447
+  request.request_initiator = origin;
+
+  // This key is used to isolate requests from different contexts in accessing
+  // shared network resources like the http cache.
+  request.trusted_params = network::ResourceRequest::TrustedParams();
+  request.trusted_params->isolation_info =
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                 origin, origin, request.site_for_cookies);
+
+  if (is_main_script) {
+    // Set the "Service-Worker" header for the main script request:
+    // https://w3c.github.io/ServiceWorker/#service-worker-script-request
+    request.headers.SetHeader("Service-Worker", "script");
+
+    // The "Fetch a classic worker script" uses "same-origin" as mode and
+    // credentials mode.
+    // https://html.spec.whatwg.org/C/#fetch-a-classic-worker-script
+    request.mode = network::mojom::RequestMode::kSameOrigin;
+    request.credentials_mode = network::mojom::CredentialsMode::kSameOrigin;
+
+    // The request's destination is "serviceworker" for the main script.
+    // https://w3c.github.io/ServiceWorker/#update-algorithm
+    request.destination = network::mojom::RequestDestination::kServiceWorker;
+    request.resource_type =
+        static_cast<int>(blink::mojom::ResourceType::kServiceWorker);
+  } else {
+    // The "fetch a classic worker-imported script" doesn't have any statement
+    // about mode and credentials mode. Use the default value, which is
+    // "no-cors" and "include".
+    // https://html.spec.whatwg.org/C/#fetch-a-classic-worker-imported-script
+    DCHECK_EQ(network::mojom::RequestMode::kNoCors, request.mode);
+    DCHECK_EQ(network::mojom::CredentialsMode::kInclude,
+              request.credentials_mode);
+
+    // The request's destination is "script" for the imported script.
+    // https://w3c.github.io/ServiceWorker/#update-algorithm
+    request.destination = network::mojom::RequestDestination::kScript;
+    request.resource_type =
+        static_cast<int>(blink::mojom::ResourceType::kScript);
+  }
+
+  return request;
+}
 
 }  // namespace service_worker_loader_helpers
 

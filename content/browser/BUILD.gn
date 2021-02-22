@@ -1629,6 +1629,8 @@ source_set("browser") {
     "service_worker/service_worker_main_resource_loader_interceptor.h",
     "service_worker/service_worker_metrics.cc",
     "service_worker/service_worker_metrics.h",
+    "service_worker/service_worker_new_script_fetcher.cc",
+    "service_worker/service_worker_new_script_fetcher.h",
     "service_worker/service_worker_new_script_loader.cc",
     "service_worker/service_worker_new_script_loader.h",
     "service_worker/service_worker_object_host.cc",

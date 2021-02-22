@@ -129,7 +129,6 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
       const blink::mojom::FetchClientSettingsObjectPtr&
           fetch_client_settings_object,
       base::TimeDelta time_since_last_check,
-      const net::HttpRequestHeaders& default_headers,
       BrowserContext* browser_context,
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
       mojo::Remote<storage::mojom::ServiceWorkerResourceReader> compare_reader,

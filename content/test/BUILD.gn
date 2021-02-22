@@ -2027,6 +2027,7 @@ test("content_unittests") {
     "../browser/service_worker/service_worker_main_resource_loader_interceptor_unittest.cc",
     "../browser/service_worker/service_worker_main_resource_loader_unittest.cc",
     "../browser/service_worker/service_worker_metrics_unittest.cc",
+    "../browser/service_worker/service_worker_new_script_fetcher_unittest.cc",
     "../browser/service_worker/service_worker_new_script_loader_unittest.cc",
     "../browser/service_worker/service_worker_object_host_unittest.cc",
     "../browser/service_worker/service_worker_process_manager_unittest.cc",

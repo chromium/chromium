@@ -166,6 +166,9 @@ class ServiceWorkerRegistrationTest : public testing::Test {
 
   void SetUp() override {
     helper_ = std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath());
+    // Reset the mock loader because this test creates a storage partition and
+    // it makes GetLoaderFactoryForUpdateCheck() work correctly.
+    helper_->context_wrapper()->SetLoaderFactoryForUpdateCheckForTest(nullptr);
 
     // Create a StoragePartition with the testing browser context so that the
     // ServiceWorkerUpdateChecker can find the BrowserContext through it.
