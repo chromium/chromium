@@ -142,22 +142,6 @@ class SubresourceFilterBrowserTest : public WebLayerBrowserTest {
   }
 #endif
 
-  // Configures the database manager to activate on |url| in |web_contents|.
-  void ActivateSubresourceFilterInWebContentsForURL(
-      content::WebContents* web_contents,
-      const GURL& url) {
-    scoped_refptr<FakeSafeBrowsingDatabaseManager> database_manager =
-        base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>();
-    database_manager->AddBlocklistedUrl(
-        url, safe_browsing::SB_THREAT_TYPE_URL_PHISHING);
-
-    auto* client_impl = static_cast<SubresourceFilterClientImpl*>(
-        subresource_filter::ContentSubresourceFilterThrottleManager::
-            FromWebContents(web_contents)
-                ->client());
-    client_impl->set_database_manager_for_testing(std::move(database_manager));
-  }
-
  private:
   subresource_filter::testing::TestRulesetCreator test_ruleset_creator_;
   base::test::ScopedFeatureList feature_list_;

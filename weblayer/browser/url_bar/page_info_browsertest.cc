@@ -9,6 +9,8 @@
 #include "components/page_info/page_info_delegate.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/browser/url_bar/page_info_delegate_impl.h"
+#include "weblayer/public/navigation_controller.h"
+#include "weblayer/public/tab.h"
 #include "weblayer/shell/browser/shell.h"
 #include "weblayer/test/weblayer_browser_test.h"
 #include "weblayer/test/weblayer_browser_test_utils.h"
@@ -16,11 +18,22 @@
 namespace weblayer {
 
 class PageInfoBrowserTest : public WebLayerBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
  protected:
   content::WebContents* GetWebContents() {
     Tab* tab = shell()->tab();
     TabImpl* tab_impl = static_cast<TabImpl*>(tab);
     return tab_impl->web_contents();
+  }
+
+  GURL GetCurrentDisplayURL() {
+    auto* navigation_controller = shell()->tab()->GetNavigationController();
+    return navigation_controller->GetNavigationEntryDisplayURL(
+        navigation_controller->GetNavigationListCurrentIndex());
   }
 };
 
@@ -90,6 +103,23 @@ IN_PROC_BROWSER_TEST_F(PageInfoBrowserTest, EmbedderNameSet) {
       base::ASCIIToUTF16("WebLayerBrowserTests");
   EXPECT_EQ(expected_embedder_name,
             page_info_delegate->GetClientApplicationName().c_str());
+}
+
+IN_PROC_BROWSER_TEST_F(PageInfoBrowserTest, SubresourceFilterActivation) {
+  std::unique_ptr<PageInfoDelegate> page_info_delegate =
+      page_info::GetPageInfoClient()->CreatePageInfoDelegate(GetWebContents());
+  ASSERT_TRUE(page_info_delegate);
+
+  NavigateAndWaitForCompletion(GURL("about:blank"), shell());
+  EXPECT_FALSE(
+      page_info_delegate->IsSubresourceFilterActivated(GetCurrentDisplayURL()));
+
+  GURL test_url(embedded_test_server()->GetURL("/simple_page.html"));
+  ActivateSubresourceFilterInWebContentsForURL(GetWebContents(), test_url);
+
+  NavigateAndWaitForCompletion(test_url, shell());
+  EXPECT_TRUE(
+      page_info_delegate->IsSubresourceFilterActivated(GetCurrentDisplayURL()));
 }
 
 }  // namespace weblayer

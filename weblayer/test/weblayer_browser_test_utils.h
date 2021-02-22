@@ -19,6 +19,10 @@ namespace autofill {
 struct FormData;
 }
 
+namespace content {
+class WebContents;
+}
+
 namespace weblayer {
 class Shell;
 class Tab;
@@ -63,6 +67,11 @@ void InitializeAutofillWithEventForwarding(
     Shell* shell,
     const base::RepeatingCallback<void(const autofill::FormData&)>&
         on_received_form_data);
+
+// Configures the subresource filter to activate on |url| in |web_contents|.
+void ActivateSubresourceFilterInWebContentsForURL(
+    content::WebContents* web_contents,
+    const GURL& url);
 
 class OneShotNavigationObserver : public NavigationObserver {
  public:

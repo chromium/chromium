@@ -1,6 +1,7 @@
 include_rules = [
   "+components/autofill/core/browser",
   "+components/security_interstitials",
+  "+components/subresource_filter/content/browser",
   "+content/public/common",
   "+content/public/browser",
   "+content/public/test",
