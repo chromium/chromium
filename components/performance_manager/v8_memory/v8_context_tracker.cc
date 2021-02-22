@@ -268,7 +268,7 @@ void V8ContextTracker::OnRemoteIframeAttached(
     DCHECK(on_pm_seq);
     DCHECK(data);
     if (auto* rfh = content::RenderFrameHost::FromPlaceholderToken(
-            rph_id.value(), data->remote_frame_token.value())) {
+            rph_id.value(), data->remote_frame_token)) {
       data->frame_node =
           PerformanceManager::GetFrameNodeForRenderFrameHost(rfh);
       PerformanceManager::CallOnGraph(
