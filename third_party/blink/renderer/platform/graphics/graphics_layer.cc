@@ -370,6 +370,10 @@ void GraphicsLayer::Paint(Vector<PreCompositedLayerInfo>& pre_composited_layers,
     DCHECK(layer_state_) << "No layer state for GraphicsLayer: " << DebugName();
     paint_controller.UpdateCurrentPaintChunkProperties(
         nullptr, layer_state_->state.GetPropertyTreeState());
+    // If this uses pre-CAP compositing, contents_opaque will be calculated by
+    // CompositedLayerMapping; otherwise, it is calculated by PaintChunker.
+    paint_controller.SetShouldComputeContentsOpaque(
+        ShouldCreateLayersAfterPaint());
     previous_interest_rect_ = new_interest_rect;
     client_.PaintContents(this, context, painting_phase_, new_interest_rect);
     paint_controller.CommitNewDisplayItems();

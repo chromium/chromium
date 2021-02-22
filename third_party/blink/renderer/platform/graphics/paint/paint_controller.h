@@ -101,6 +101,10 @@ class PLATFORM_EXPORT PaintController {
 
   void EnsureChunk();
 
+  void SetShouldComputeContentsOpaque(bool should_compute) {
+    paint_chunker_.SetShouldComputeContentsOpaque(should_compute);
+  }
+
   void RecordHitTestData(const DisplayItemClient&,
                          const IntRect&,
                          TouchAction,

@@ -105,7 +105,7 @@ bool PaintChunker::IncrementDisplayItemIndex(const DisplayItem& item) {
   }
 
   constexpr wtf_size_t kMaxRegionComplexity = 10;
-  if (item.IsDrawing()) {
+  if (should_compute_contents_opaque_ && item.IsDrawing()) {
     const DrawingDisplayItem& drawing =
         static_cast<const DrawingDisplayItem&>(item);
     if (drawing.KnownToBeOpaque() &&
@@ -259,12 +259,14 @@ void PaintChunker::FinalizeLastChunkProperties() {
     return;
 
   auto& chunk = chunks_->back();
-  chunk.known_to_be_opaque =
-      last_chunk_known_to_be_opaque_region_.Contains(chunk.bounds);
-  chunk.text_known_to_be_on_opaque_background =
-      last_chunk_text_known_to_be_on_opaque_background_;
-  last_chunk_known_to_be_opaque_region_ = Region();
-  last_chunk_text_known_to_be_on_opaque_background_ = true;
+  if (should_compute_contents_opaque_) {
+    chunk.known_to_be_opaque =
+        last_chunk_known_to_be_opaque_region_.Contains(chunk.bounds);
+    chunk.text_known_to_be_on_opaque_background =
+        last_chunk_text_known_to_be_on_opaque_background_;
+    last_chunk_known_to_be_opaque_region_ = Region();
+    last_chunk_text_known_to_be_on_opaque_background_ = true;
+  }
 
   if (candidate_background_color_ != Color::kTransparent) {
     chunk.background_color = candidate_background_color_;

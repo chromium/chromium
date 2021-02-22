@@ -53,6 +53,10 @@ class PLATFORM_EXPORT PaintChunker final {
   }
   bool WillForceNewChunk() const { return will_force_new_chunk_; }
 
+  void SetShouldComputeContentsOpaque(bool should_compute_) {
+    should_compute_contents_opaque_ = should_compute_;
+  }
+
   void AppendByMoving(PaintChunk&&);
 
   // Returns true if a new chunk is created.
@@ -108,6 +112,8 @@ class PLATFORM_EXPORT PaintChunker final {
   // the item following a forced chunk. PaintController also forces new chunks
   // before and after subsequences by calling ForceNewChunk().
   bool will_force_new_chunk_ = true;
+
+  bool should_compute_contents_opaque_ = true;
 
   Color candidate_background_color_ = Color::kTransparent;
   float candidate_background_area_ = 0;
