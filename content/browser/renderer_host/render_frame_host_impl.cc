@@ -9255,9 +9255,10 @@ void RenderFrameHostImpl::DidCommitNavigation(
   DCHECK(!IsInBackForwardCache());
 
   std::unique_ptr<NavigationRequest> request;
-  // A `committing_navigation_request` is not present only in the case of
-  // committing an initial empty document in a frame. In all other cases it
-  // should be non-null and present in the map of NavigationRequests.
+  // TODO(https://crbug.com/778318): a `committing_navigation_request` is not
+  // present if and only if this is a synchronous re-navigation to about:blank
+  // initiated by Blink. In all other cases it should be non-null and present in
+  // the map of NavigationRequests.
   if (committing_navigation_request) {
     committing_navigation_request->IgnoreCommitInterfaceDisconnection();
     if (!MaybeInterceptCommitCallback(committing_navigation_request, &params,

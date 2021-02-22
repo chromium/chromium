@@ -5339,7 +5339,7 @@ void RenderFrameImpl::BeginNavigation(
         !is_history_navigation_in_new_child_frame) {
       for (auto& observer : observers_)
         observer.DidStartNavigation(url, info->navigation_type);
-      CommitInitialEmptyDocument(std::move(info));
+      SynchronouslyCommitAboutBlankForBug778318(std::move(info));
       return;
     }
 
@@ -5363,7 +5363,7 @@ void RenderFrameImpl::BeginNavigation(
   }
 }
 
-void RenderFrameImpl::CommitInitialEmptyDocument(
+void RenderFrameImpl::SynchronouslyCommitAboutBlankForBug778318(
     std::unique_ptr<blink::WebNavigationInfo> info) {
   CHECK_EQ(NavigationCommitState::kInitialEmptyDocument,
            navigation_commit_state_);

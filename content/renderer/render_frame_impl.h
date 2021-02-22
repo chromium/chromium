@@ -950,22 +950,30 @@ class CONTENT_EXPORT RenderFrameImpl
                                base::TimeTicks renderer_before_unload_start,
                                base::TimeTicks renderer_before_unload_end);
 
-  // Used to load the initial empty document. This one is special, since it
-  // isn't the result of a navigation.
+  // TODO(https://crbug.com/778318): When creating a new browsing context, Blink
+  // always populates it with an initial empty document synchronously, as
+  // required by the HTML spec. However, for both iframe and window creation,
+  // there is an additional special case that currently requires completing an
+  // about:blank navigation synchronously.
   //
-  // TODO(arthursonzogni): Consider removing this function. Blink already have a
-  // concept of an initial empty document. It has already committed, as part of
-  // constructing the blink::LocalFrame.
-  // This function in reality commits an empty document a second time! Moreover
-  // it isn't considered by blink to be an initial empty document
-  // (CommitReason::kRegular, not CommitReason::kInitialization).
-  // The purpose of this function is to trigger DidCommitNavigation, even if it
-  // isn't associated with a real NavigationRequest.
+  // 1. Inserting an <iframe> into the active document with no src and no
+  //    srcdoc or with src = "about:blank".
+  // 2. Opening a new window with no specified URL or with URL = "about:blank".
+  //
+  // In both cases, Blink will initialize the new browsing context, and then
+  // immediately re-navigate to "about:blank". This leads to a number of odd
+  // situations throughout the navigation stack, and it is spec-incompliant.
+  //
+  // For a new <iframe>, the re-navigation to "about:blank" should be a regular
+  // asynchronous navigation.
+  //
+  // For a new window, there should be no navigation at all: the standard states
+  // that a load event should be dispatched, and nothing else.
+  //
   // See also:
-  // - https://crbug.com/778318
   // - https://chromium-review.googlesource.com/c/chromium/src/+/804797
   // - https://github.com/whatwg/html/issues/3267
-  void CommitInitialEmptyDocument(
+  void SynchronouslyCommitAboutBlankForBug778318(
       std::unique_ptr<blink::WebNavigationInfo> info);
 
   // Commit navigation with |navigation_params| prepared.
