@@ -19,10 +19,7 @@ if (include_js_tests) {
 
     sources = [
       "bookmarks/bookmarks_focus_test.js",
-      "cr_elements/cr_elements_focus_test.js",
       "cr_elements/cr_elements_v3_focus_test.js",
-      "cr_focus_outline_manager_test.js",
-      "cr_focus_row_behavior_interactive_test.js",
       "cr_focus_row_behavior_v3_interactive_test.js",
       "extensions/cr_extensions_interactive_ui_tests.js",
       "history/history_focus_test.js",
@@ -79,9 +76,7 @@ if (include_js_tests) {
       "assertions.js",
       "async_gen.js",
       "bookmarks/bookmarks_browsertest.js",
-      "cr_components/cr_components_browsertest.js",
       "cr_components/cr_components_v3_browsertest.js",
-      "cr_elements/cr_elements_browsertest.js",
       "cr_elements/cr_elements_v3_browsertest.js",
       "histograms/histograms_internals_ui_browsertest.js",
       "history/history_browsertest.js",
@@ -92,7 +87,6 @@ if (include_js_tests) {
       "management/a11y/management_a11y_test.js",
       "net_internals/net_internals_browsertest.js",
       "ntp4.js",
-      "resources/webui_resources_browsertest.js",
       "resources/webui_resources_v3_browsertest.js",
       "sandboxstatus_browsertest.js",
       "settings/a11y/v3_a11y_browsertest.js",
@@ -164,7 +158,6 @@ if (include_js_tests) {
     } else {
       sources += [
         "signin/signin_browsertest.js",
-        "user_manager/user_manager_browsertest.js",
         "welcome/a11y_tests.js",
         "welcome/welcome_browsertest.js",
       ]
