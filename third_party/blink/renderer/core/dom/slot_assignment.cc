@@ -248,7 +248,10 @@ void SlotAssignment::RecalcAssignment() {
     NestingLevelIncrementer slot_assignment_recalc_depth(
         owner_->GetDocument().SlotAssignmentRecalcDepth());
 
-#if DCHECK_IS_ON()
+// TODO(crbug.com/1176575): Revert https://crrev.com/c/2686770 to re-enable this
+// DCHECK on CrOS. See go/chrome-dcheck-on-cros or http://crbug.com/1113456 for
+// more details.
+#if DCHECK_IS_ON() && !defined(OS_CHROMEOS)
     DCHECK(!owner_->GetDocument().IsSlotAssignmentRecalcForbidden());
 #endif
     // To detect recursive RecalcAssignment, which shouldn't happen.
