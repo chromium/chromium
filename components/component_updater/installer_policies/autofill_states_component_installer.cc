@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/component_updater/autofill_states_component_installer.h"
+#include "components/component_updater/installer_policies/autofill_states_component_installer.h"
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -13,10 +13,6 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
-
-using content::BrowserThread;
 
 namespace {
 

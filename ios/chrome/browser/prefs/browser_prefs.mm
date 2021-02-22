@@ -6,6 +6,7 @@
 
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/browsing_data/core/pref_names.h"
+#include "components/component_updater/installer_policies/autofill_states_component_installer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/dom_distiller/core/distilled_page_prefs.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
@@ -123,6 +124,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   update_client::RegisterPrefs(registry);
   variations::VariationsService::RegisterPrefs(registry);
   location_permissions_field_trial::RegisterLocalStatePrefs(registry);
+  component_updater::AutofillStatesComponentInstallerPolicy::RegisterPrefs(
+      registry);
 
   // Preferences related to the browser state manager.
   registry->RegisterStringPref(prefs::kBrowserStateLastUsed, std::string());

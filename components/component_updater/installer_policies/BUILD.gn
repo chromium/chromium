@@ -4,6 +4,8 @@
 
 static_library("installer_policies") {
   sources = [
+    "autofill_states_component_installer.cc",
+    "autofill_states_component_installer.h",
     "on_device_head_suggest_component_installer.cc",
     "on_device_head_suggest_component_installer.h",
     "optimization_hints_component_installer.cc",
@@ -18,10 +20,12 @@ static_library("installer_policies") {
 
   deps = [
     "//base",
+    "//components/autofill/core/browser",
     "//components/component_updater",
     "//components/omnibox/browser",
     "//components/omnibox/common",
     "//components/optimization_guide/core",
+    "//components/prefs:prefs",
     "//components/reputation/core",
     "//components/reputation/core:proto",
   ]
@@ -30,6 +34,7 @@ static_library("installer_policies") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "autofill_states_component_installer_unittest.cc",
     "optimization_hints_component_installer_unittest.cc",
     "trust_token_key_commitments_component_installer_policy_unittest.cc",
   ]
@@ -38,6 +43,7 @@ source_set("unit_tests") {
     ":installer_policies",
     "//base",
     "//base/test:test_support",
+    "//components/autofill/core/browser:test_support",
     "//components/component_updater:test_support",
     "//components/optimization_guide/core",
     "//services/network/public/cpp",
