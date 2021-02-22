@@ -138,6 +138,9 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
     // The controller for the cookies section of the page info.
     private PageInfoCookiesController mCookiesController;
 
+    // The controller for the history portions of page info.
+    private PageInfoSubpageController mHistoryController;
+
     // Bridge updating the CookieControlsView when cookie settings change.
     private CookieControlsBridge mCookieBridge;
 
@@ -293,6 +296,11 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
                             mDelegate, mFullUrl.getSpec(), highlightedPermission);
             mCookiesController = new PageInfoCookiesController(
                     this, view2.getCookiesRowView(), mDelegate, mFullUrl.getSpec());
+
+            if (PageInfoFeatureList.isEnabled(PageInfoFeatureList.PAGE_INFO_HISTORY)) {
+                mHistoryController = mDelegate.createHistoryController(this,
+                        view2.getHistoryRowView(), view2.getForgetSiteButton(), mFullUrl.getSpec());
+            }
         } else {
             mView.showPerformanceInfo(mDelegate.shouldShowPerformanceBadge(mFullUrl));
 

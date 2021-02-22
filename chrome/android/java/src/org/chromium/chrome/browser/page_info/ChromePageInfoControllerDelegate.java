@@ -11,6 +11,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
 import android.text.TextUtils;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -50,6 +51,9 @@ import org.chromium.components.embedder_support.browser_context.BrowserContextHa
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.page_info.PageInfoControllerDelegate;
+import org.chromium.components.page_info.PageInfoMainController;
+import org.chromium.components.page_info.PageInfoRowView;
+import org.chromium.components.page_info.PageInfoSubpageController;
 import org.chromium.components.page_info.PageInfoView.PageInfoViewParams;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
@@ -295,6 +299,12 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     @Override
     public void showCookieSettings() {
         SiteSettingsHelper.showCategorySettings(mContext, SiteSettingsCategory.Type.COOKIES);
+    }
+
+    @Override
+    public PageInfoSubpageController createHistoryController(PageInfoMainController mainController,
+            PageInfoRowView rowView, Button forgetSiteButton, String url) {
+        return new PageInfoHistoryController(mainController, rowView, forgetSiteButton, this, url);
     }
 
     /**

@@ -7,6 +7,7 @@ package org.chromium.components.page_info;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 
 import java.util.Collections;
@@ -21,6 +22,8 @@ public class PageInfoViewV2 extends PageInfoView {
     private PageInfoRowView mConnectionRow;
     private PageInfoRowView mPermissionsRow;
     private PageInfoRowView mCookiesRow;
+    private PageInfoRowView mHistoryRow;
+    private Button mForgetSiteButton;
 
     public PageInfoViewV2(Context context, PageInfoView.PageInfoViewParams params) {
         super(context);
@@ -33,6 +36,7 @@ public class PageInfoViewV2 extends PageInfoView {
         super.init(params);
         mRowWrapper = findViewById(R.id.page_info_row_wrapper);
         initializePageInfoViewChild(mRowWrapper, true, null);
+        initHistory(params);
     }
 
     @Override
@@ -59,6 +63,11 @@ public class PageInfoViewV2 extends PageInfoView {
         mOnUiClosingCallback = params.onUiClosingCallback;
     }
 
+    protected void initHistory(PageInfoView.PageInfoViewParams params) {
+        mHistoryRow = findViewById(R.id.page_info_history_row);
+        mForgetSiteButton = findViewById(R.id.page_info_forget_site_button);
+    }
+
     @Override
     protected void initSiteSettings(PageInfoViewParams params) {}
 
@@ -80,6 +89,14 @@ public class PageInfoViewV2 extends PageInfoView {
 
     public PageInfoRowView getCookiesRowView() {
         return mCookiesRow;
+    }
+
+    public PageInfoRowView getHistoryRowView() {
+        return mHistoryRow;
+    }
+
+    public Button getForgetSiteButton() {
+        return mForgetSiteButton;
     }
 
     @Override

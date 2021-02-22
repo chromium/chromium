@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.webkit.ValueCallback;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,6 +27,9 @@ import org.chromium.components.content_settings.CookieControlsObserver;
 import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.page_info.PageInfoControllerDelegate;
+import org.chromium.components.page_info.PageInfoMainController;
+import org.chromium.components.page_info.PageInfoRowView;
+import org.chromium.components.page_info.PageInfoSubpageController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
@@ -104,6 +108,16 @@ public class PageInfoControllerDelegateImpl extends PageInfoControllerDelegate {
     @NonNull
     public CookieControlsBridge createCookieControlsBridge(CookieControlsObserver observer) {
         return new CookieControlsBridge(observer, mWebContents, null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Nullable
+    public PageInfoSubpageController createHistoryController(PageInfoMainController mainController,
+            PageInfoRowView rowView, Button forgetSiteButton, String url) {
+        return null;
     }
 
     /**
