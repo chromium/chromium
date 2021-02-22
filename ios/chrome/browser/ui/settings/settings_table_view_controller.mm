@@ -512,6 +512,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
         toSectionWithIdentifier:SettingsSectionIdentifierSignIn];
   } else if (!authService->IsAuthenticated()) {
     [_signinPromoViewMediator signinPromoViewIsRemoved];
+    // Make sure we don't receive any notification.
+    _signinPromoViewMediator.consumer = nil;
     _signinPromoViewMediator = nil;
 
     if (!_hasRecordedSigninImpression) {
