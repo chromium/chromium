@@ -20,13 +20,15 @@ SyntheticTouchscreenPinchGesture::SyntheticTouchscreenPinchGesture(
       start_y_0_(0.0f),
       start_y_1_(0.0f),
       max_pointer_delta_0_(0.0f),
-      gesture_source_type_(SyntheticGestureParams::DEFAULT_INPUT),
+      gesture_source_type_(content::mojom::GestureSourceType::kDefaultInput),
       state_(SETUP) {
   DCHECK_GT(params_.scale_factor, 0.0f);
-  if (params_.gesture_source_type != SyntheticGestureParams::TOUCH_INPUT) {
+  if (params_.gesture_source_type !=
+      content::mojom::GestureSourceType::kTouchInput) {
     DCHECK_EQ(params_.gesture_source_type,
-              SyntheticGestureParams::DEFAULT_INPUT);
-    params_.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+              content::mojom::GestureSourceType::kDefaultInput);
+    params_.gesture_source_type =
+        content::mojom::GestureSourceType::kTouchInput;
   }
 }
 
@@ -37,20 +39,22 @@ SyntheticGesture::Result SyntheticTouchscreenPinchGesture::ForwardInputEvents(
     SyntheticGestureTarget* target) {
   if (state_ == SETUP) {
     gesture_source_type_ = params_.gesture_source_type;
-    if (gesture_source_type_ == SyntheticGestureParams::DEFAULT_INPUT)
+    if (gesture_source_type_ ==
+        content::mojom::GestureSourceType::kDefaultInput)
       gesture_source_type_ = target->GetDefaultSyntheticGestureSourceType();
 
     state_ = STARTED;
     start_time_ = timestamp;
   }
 
-  DCHECK_NE(gesture_source_type_, SyntheticGestureParams::DEFAULT_INPUT);
+  DCHECK_NE(gesture_source_type_,
+            content::mojom::GestureSourceType::kDefaultInput);
 
   if (!synthetic_pointer_driver_)
     synthetic_pointer_driver_ =
         SyntheticPointerDriver::Create(gesture_source_type_);
 
-  if (gesture_source_type_ == SyntheticGestureParams::TOUCH_INPUT) {
+  if (gesture_source_type_ == content::mojom::GestureSourceType::kTouchInput) {
     ForwardTouchInputEvents(timestamp, target);
   } else {
     return SyntheticGesture::GESTURE_SOURCE_TYPE_NOT_IMPLEMENTED;

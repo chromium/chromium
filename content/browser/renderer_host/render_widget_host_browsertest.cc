@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostTouchEmulatorBrowserTest,
 
   SyntheticSmoothDragGestureParams params;
   params.start_point = gfx::PointF(10.f, 110.f);
-  params.gesture_source_type = SyntheticGestureParams::MOUSE_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kMouseInput;
   params.distances.push_back(gfx::Vector2d(0, -10));
   params.distances.push_back(gfx::Vector2d(0, -10));
   params.distances.push_back(gfx::Vector2d(0, -10));

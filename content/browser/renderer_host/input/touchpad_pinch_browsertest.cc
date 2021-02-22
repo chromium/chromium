@@ -69,7 +69,8 @@ void PerformTouchpadPinch(WebContents* web_contents,
       web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
 
   SyntheticPinchGestureParams params;
-  params.gesture_source_type = SyntheticGestureParams::TOUCHPAD_INPUT;
+  params.gesture_source_type =
+      content::mojom::GestureSourceType::kTouchpadInput;
   params.scale_factor = scale_factor;
   params.anchor = position;
   auto pinch_gesture = std::make_unique<SyntheticTouchpadPinchGesture>(params);

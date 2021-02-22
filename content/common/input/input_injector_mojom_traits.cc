@@ -7,51 +7,6 @@
 namespace mojo {
 
 // static
-content::mojom::GestureSourceType
-EnumTraits<content::mojom::GestureSourceType,
-           content::SyntheticGestureParams::GestureSourceType>::
-    ToMojom(content::SyntheticGestureParams::GestureSourceType input) {
-  switch (input) {
-    case content::SyntheticGestureParams::GestureSourceType::DEFAULT_INPUT:
-      return content::mojom::GestureSourceType::kDefaultInput;
-    case content::SyntheticGestureParams::GestureSourceType::TOUCH_INPUT:
-      return content::mojom::GestureSourceType::kTouchInput;
-    case content::SyntheticGestureParams::GestureSourceType::MOUSE_INPUT:
-      return content::mojom::GestureSourceType::kMouseInput;
-    case content::SyntheticGestureParams::GestureSourceType::PEN_INPUT:
-      return content::mojom::GestureSourceType::kPenInput;
-  }
-
-  NOTREACHED();
-  return content::mojom::GestureSourceType::kGestureSourceTypeMax;
-}
-
-// static
-bool EnumTraits<content::mojom::GestureSourceType,
-                content::SyntheticGestureParams::GestureSourceType>::
-    FromMojom(content::mojom::GestureSourceType input,
-              content::SyntheticGestureParams::GestureSourceType* output) {
-  switch (input) {
-    case content::mojom::GestureSourceType::kDefaultInput:
-      *output =
-          content::SyntheticGestureParams::GestureSourceType::DEFAULT_INPUT;
-      return true;
-    case content::mojom::GestureSourceType::kTouchInput:
-      *output = content::SyntheticGestureParams::GestureSourceType::TOUCH_INPUT;
-      return true;
-    case content::mojom::GestureSourceType::kMouseInput:
-      *output = content::SyntheticGestureParams::GestureSourceType::MOUSE_INPUT;
-      return true;
-    case content::mojom::GestureSourceType::kPenInput:
-      *output = content::SyntheticGestureParams::GestureSourceType::PEN_INPUT;
-      return true;
-  }
-
-  NOTREACHED();
-  return false;
-}
-
-// static
 content::mojom::PointerActionType
 EnumTraits<content::mojom::PointerActionType,
            content::SyntheticPointerActionParams::PointerActionType>::
@@ -174,11 +129,11 @@ bool StructTraits<content::mojom::SyntheticSmoothDragDataView,
                   content::SyntheticSmoothDragGestureParams>::
     Read(content::mojom::SyntheticSmoothDragDataView data,
          content::SyntheticSmoothDragGestureParams* out) {
-  if (!data.ReadGestureSourceType(&out->gesture_source_type) ||
-      !data.ReadStartPoint(&out->start_point) ||
+  if (!data.ReadStartPoint(&out->start_point) ||
       !data.ReadDistances(&out->distances))
     return false;
 
+  out->gesture_source_type = data.gesture_source_type();
   out->speed_in_pixels_s = data.speed_in_pixels_s();
   return true;
 }
@@ -188,11 +143,11 @@ bool StructTraits<content::mojom::SyntheticSmoothScrollDataView,
                   content::SyntheticSmoothScrollGestureParams>::
     Read(content::mojom::SyntheticSmoothScrollDataView data,
          content::SyntheticSmoothScrollGestureParams* out) {
-  if (!data.ReadGestureSourceType(&out->gesture_source_type) ||
-      !data.ReadAnchor(&out->anchor) || !data.ReadDistances(&out->distances) ||
+  if (!data.ReadAnchor(&out->anchor) || !data.ReadDistances(&out->distances) ||
       !data.ReadGranularity(&out->granularity))
     return false;
 
+  out->gesture_source_type = data.gesture_source_type();
   out->prevent_fling = data.prevent_fling();
   out->speed_in_pixels_s = data.speed_in_pixels_s();
   out->fling_velocity_x = data.fling_velocity_x();
@@ -220,10 +175,10 @@ bool StructTraits<content::mojom::SyntheticTapDataView,
                   content::SyntheticTapGestureParams>::
     Read(content::mojom::SyntheticTapDataView data,
          content::SyntheticTapGestureParams* out) {
-  if (!data.ReadGestureSourceType(&out->gesture_source_type) ||
-      !data.ReadPosition(&out->position))
+  if (!data.ReadPosition(&out->position))
     return false;
 
+  out->gesture_source_type = data.gesture_source_type();
   out->duration_ms = data.duration_ms();
   return true;
 }
@@ -253,9 +208,10 @@ bool StructTraits<content::mojom::SyntheticPointerActionDataView,
                   content::SyntheticPointerActionListParams>::
     Read(content::mojom::SyntheticPointerActionDataView data,
          content::SyntheticPointerActionListParams* out) {
-  if (!data.ReadGestureSourceType(&out->gesture_source_type) ||
-      !data.ReadParams(&out->params))
+  if (!data.ReadParams(&out->params))
     return false;
+
+  out->gesture_source_type = data.gesture_source_type();
 
   return true;
 }

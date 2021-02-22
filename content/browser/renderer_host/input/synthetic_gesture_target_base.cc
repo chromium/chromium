@@ -145,7 +145,7 @@ int SyntheticGestureTargetBase::GetMouseWheelMinimumGranularity() const {
 
 void SyntheticGestureTargetBase::WaitForTargetAck(
     SyntheticGestureParams::GestureType type,
-    SyntheticGestureParams::GestureSourceType source,
+    content::mojom::GestureSourceType source,
     base::OnceClosure callback) const {
   host_->WaitForInputProcessed(type, source, std::move(callback));
 }

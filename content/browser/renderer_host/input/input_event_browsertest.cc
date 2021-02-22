@@ -132,7 +132,8 @@ class InputEventBrowserTest : public ContentBrowserTest {
     DCHECK(URLLoaded());
 
     std::unique_ptr<SyntheticPointerDriver> synthetic_pointer_driver =
-        SyntheticPointerDriver::Create(SyntheticGestureParams::MOUSE_INPUT);
+        SyntheticPointerDriver::Create(
+            content::mojom::GestureSourceType::kMouseInput);
     RenderWidgetHostImpl* render_widget_host = GetWidgetHost();
     auto* root_view = render_widget_host->GetView()->GetRootView();
     std::unique_ptr<SyntheticGestureTarget> synthetic_gesture_target;
@@ -171,7 +172,8 @@ class InputEventBrowserTest : public ContentBrowserTest {
     DCHECK(URLLoaded());
 
     std::unique_ptr<SyntheticPointerDriver> synthetic_pointer_driver =
-        SyntheticPointerDriver::Create(SyntheticGestureParams::TOUCH_INPUT);
+        SyntheticPointerDriver::Create(
+            content::mojom::GestureSourceType::kTouchInput);
     RenderWidgetHostImpl* render_widget_host = GetWidgetHost();
     auto* root_view = render_widget_host->GetView()->GetRootView();
     std::unique_ptr<SyntheticGestureTarget> synthetic_gesture_target;

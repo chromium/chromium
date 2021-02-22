@@ -241,14 +241,16 @@ class TouchActionBrowserTest : public ContentBrowserTest {
       bool wait_until_scrolled,
       const gfx::Vector2d& expected_scroll_position_after_scroll) {
     SyntheticSmoothScrollGestureParams params1;
-    params1.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+    params1.gesture_source_type =
+        content::mojom::GestureSourceType::kTouchInput;
     params1.anchor = gfx::PointF(25, 125);
     params1.distances.push_back(gfx::Vector2dF(-5, 0));
     params1.prevent_fling = true;
     params1.speed_in_pixels_s = 5;
 
     SyntheticSmoothScrollGestureParams params2;
-    params2.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+    params2.gesture_source_type =
+        content::mojom::GestureSourceType::kTouchInput;
     params2.anchor = gfx::PointF(25, 125);
     params2.distances.push_back(gfx::Vector2dF(-50, 0));
 
@@ -313,7 +315,7 @@ class TouchActionBrowserTest : public ContentBrowserTest {
       touch_point.set_y(touch_point.y() * page_scale_factor);
     }
     SyntheticSmoothScrollGestureParams params;
-    params.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+    params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
     params.anchor = touch_point;
     params.distances.push_back(-distance);
     // Set the speed to very high so that there is one GSU only.

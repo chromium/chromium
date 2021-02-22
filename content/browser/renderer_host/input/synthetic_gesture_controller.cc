@@ -47,7 +47,7 @@ void SyntheticGestureController::EnsureRendererInitialized(
   // have been updated in the browser. https://crbug.com/985374.
   gesture_target_->WaitForTargetAck(
       SyntheticGestureParams::WAIT_FOR_INPUT_PROCESSED,
-      SyntheticGestureParams::DEFAULT_INPUT, std::move(wrapper));
+      content::mojom::GestureSourceType::kDefaultInput, std::move(wrapper));
 }
 
 void SyntheticGestureController::UpdateSyntheticGestureTarget(

@@ -49,21 +49,21 @@ gfx::Vector2dF CssPixelsToVector2dF(double x,
 }
 
 bool StringToGestureSourceType(Maybe<std::string> in,
-                               SyntheticGestureParams::GestureSourceType& out) {
+                               content::mojom::GestureSourceType& out) {
   if (!in.isJust()) {
-    out = SyntheticGestureParams::GestureSourceType::DEFAULT_INPUT;
+    out = content::mojom::GestureSourceType::kDefaultInput;
     return true;
   }
   if (in.fromJust() == Input::GestureSourceTypeEnum::Default) {
-    out = SyntheticGestureParams::GestureSourceType::DEFAULT_INPUT;
+    out = content::mojom::GestureSourceType::kDefaultInput;
     return true;
   }
   if (in.fromJust() == Input::GestureSourceTypeEnum::Touch) {
-    out = SyntheticGestureParams::GestureSourceType::TOUCH_INPUT;
+    out = content::mojom::GestureSourceType::kTouchInput;
     return true;
   }
   if (in.fromJust() == Input::GestureSourceTypeEnum::Mouse) {
-    out = SyntheticGestureParams::GestureSourceType::MOUSE_INPUT;
+    out = content::mojom::GestureSourceType::kMouseInput;
     return true;
   }
   return false;
@@ -1060,8 +1060,8 @@ void InputHandler::DispatchSyntheticPointerActionTouch(
     return;
   }
 
-  SyntheticGestureParams::GestureSourceType gesture_source_type =
-      SyntheticGestureParams::GestureSourceType::TOUCH_INPUT;
+  content::mojom::GestureSourceType gesture_source_type =
+      content::mojom::GestureSourceType::kTouchInput;
   SyntheticPointerActionListParams action_list_params;
   SyntheticPointerActionListParams::ParamList param_list;
   action_list_params.gesture_source_type = gesture_source_type;

@@ -195,7 +195,7 @@ class CompositorEventAckBrowserTest : public ContentBrowserTest {
         GetWidgetHost()->render_frame_metadata_provider());
 
     SyntheticSmoothScrollGestureParams params;
-    params.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+    params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
     params.anchor = gfx::PointF(50, 50);
     params.distances.push_back(gfx::Vector2d(0, -45));
 

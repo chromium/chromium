@@ -175,9 +175,9 @@ void SyntheticGestureTargetMac::DispatchWebMouseEventToPlatform(
   GetView()->RouteOrProcessMouseEvent(web_mouse);
 }
 
-SyntheticGestureParams::GestureSourceType
+content::mojom::GestureSourceType
 SyntheticGestureTargetMac::GetDefaultSyntheticGestureSourceType() const {
-  return SyntheticGestureParams::MOUSE_INPUT;
+  return content::mojom::GestureSourceType::kMouseInput;
 }
 
 float SyntheticGestureTargetMac::GetTouchSlopInDips() const {

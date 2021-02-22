@@ -160,9 +160,9 @@ class MockSyntheticGestureTarget : public SyntheticGestureTarget {
   // SyntheticGestureTarget:
   void DispatchInputEventToPlatform(const WebInputEvent& event) override {}
 
-  SyntheticGestureParams::GestureSourceType
-  GetDefaultSyntheticGestureSourceType() const override {
-    return SyntheticGestureParams::TOUCH_INPUT;
+  content::mojom::GestureSourceType GetDefaultSyntheticGestureSourceType()
+      const override {
+    return content::mojom::GestureSourceType::kTouchInput;
   }
 
   base::TimeDelta PointerAssumedStoppedTime() const override {
@@ -188,7 +188,7 @@ class MockSyntheticGestureTarget : public SyntheticGestureTarget {
   void ClearFlushRequest() { flush_requested_ = false; }
 
   void WaitForTargetAck(SyntheticGestureParams::GestureType type,
-                        SyntheticGestureParams::GestureSourceType source,
+                        content::mojom::GestureSourceType source,
                         base::OnceClosure callback) const override {
     // Must resolve synchronously since FlushInputUntilComplete will try the
     // next gesture after this one.
@@ -386,9 +386,9 @@ class MockSyntheticTouchscreenPinchTouchTarget
     }
   }
 
-  SyntheticGestureParams::GestureSourceType
-  GetDefaultSyntheticGestureSourceType() const override {
-    return SyntheticGestureParams::TOUCH_INPUT;
+  content::mojom::GestureSourceType GetDefaultSyntheticGestureSourceType()
+      const override {
+    return content::mojom::GestureSourceType::kTouchInput;
   }
 
   ZoomDirection zoom_direction() const { return zoom_direction_; }
@@ -472,9 +472,9 @@ class MockSyntheticTouchpadPinchTouchTarget
     }
   }
 
-  SyntheticGestureParams::GestureSourceType
-  GetDefaultSyntheticGestureSourceType() const override {
-    return SyntheticGestureParams::MOUSE_INPUT;
+  content::mojom::GestureSourceType GetDefaultSyntheticGestureSourceType()
+      const override {
+    return content::mojom::GestureSourceType::kMouseInput;
   }
 
   ZoomDirection zoom_direction() const { return zoom_direction_; }
@@ -1468,7 +1468,7 @@ TEST_F(SyntheticGestureControllerTest,
   CreateControllerAndTarget<MockDragMouseTarget>();
 
   SyntheticSmoothDragGestureParams params;
-  params.gesture_source_type = SyntheticGestureParams::MOUSE_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kMouseInput;
   params.distances.push_back(gfx::Vector2d(234, 133));
   params.speed_in_pixels_s = 800;
 
@@ -1483,7 +1483,7 @@ TEST_F(SyntheticGestureControllerTest,
   CreateControllerAndTarget<MockMoveTouchTarget>();
 
   SyntheticSmoothDragGestureParams params;
-  params.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
   params.start_point.SetPoint(89, 32);
   params.distances.push_back(gfx::Vector2d(0, 123));
   params.speed_in_pixels_s = 800;
@@ -1499,7 +1499,7 @@ TEST_F(SyntheticGestureControllerTest,
   CreateControllerAndTarget<MockMoveTouchTarget>();
 
   SyntheticSmoothScrollGestureParams params;
-  params.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
 
   std::unique_ptr<SyntheticSmoothScrollGesture> gesture(
       new SyntheticSmoothScrollGesture(params));
@@ -1512,7 +1512,7 @@ TEST_F(SyntheticGestureControllerTest,
   CreateControllerAndTarget<MockScrollMouseTarget>();
 
   SyntheticSmoothScrollGestureParams params;
-  params.gesture_source_type = SyntheticGestureParams::MOUSE_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kMouseInput;
   params.anchor.SetPoint(432, 89);
   params.distances.push_back(gfx::Vector2d(0, -234));
   params.speed_in_pixels_s = 800;
@@ -1528,7 +1528,7 @@ TEST_F(SyntheticGestureControllerTest,
   CreateControllerAndTarget<MockSyntheticTouchscreenPinchTouchTarget>();
 
   SyntheticPinchGestureParams params;
-  params.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
   params.scale_factor = 2.3f;
   params.anchor.SetPoint(54, 89);
 
@@ -1551,7 +1551,7 @@ TEST_F(SyntheticGestureControllerTest,
   CreateControllerAndTarget<MockSyntheticTouchscreenPinchTouchTarget>();
 
   SyntheticPinchGestureParams params;
-  params.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
   params.scale_factor = 0.4f;
   params.anchor.SetPoint(-12, 93);
 
@@ -1574,7 +1574,7 @@ TEST_F(SyntheticGestureControllerTest,
   CreateControllerAndTarget<MockSyntheticTouchscreenPinchTouchTarget>();
 
   SyntheticPinchGestureParams params;
-  params.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
   params.scale_factor = 1.0f;
 
   std::unique_ptr<SyntheticTouchscreenPinchGesture> gesture(
@@ -1595,7 +1595,7 @@ TEST_F(SyntheticGestureControllerTest, TouchpadPinchGestureTouchZoomIn) {
   CreateControllerAndTarget<MockSyntheticTouchpadPinchTouchTarget>();
 
   SyntheticPinchGestureParams params;
-  params.gesture_source_type = SyntheticGestureParams::MOUSE_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kMouseInput;
   params.scale_factor = 2.3f;
   params.anchor.SetPoint(54, 89);
 
@@ -1617,7 +1617,7 @@ TEST_F(SyntheticGestureControllerTest, TouchpadPinchGestureTouchZoomOut) {
   CreateControllerAndTarget<MockSyntheticTouchpadPinchTouchTarget>();
 
   SyntheticPinchGestureParams params;
-  params.gesture_source_type = SyntheticGestureParams::MOUSE_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kMouseInput;
   params.scale_factor = 0.4f;
   params.anchor.SetPoint(-12, 93);
 
@@ -1639,7 +1639,7 @@ TEST_F(SyntheticGestureControllerTest, TouchpadPinchGestureTouchNoScaling) {
   CreateControllerAndTarget<MockSyntheticTouchpadPinchTouchTarget>();
 
   SyntheticPinchGestureParams params;
-  params.gesture_source_type = SyntheticGestureParams::MOUSE_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kMouseInput;
   params.scale_factor = 1.0f;
 
   std::unique_ptr<SyntheticTouchpadPinchGesture> gesture(
@@ -1662,7 +1662,7 @@ TEST_F(SyntheticGestureControllerTest, PinchGestureExplicitTouch) {
   CreateControllerAndTarget<MockSyntheticTouchscreenPinchTouchTarget>();
 
   SyntheticPinchGestureParams params;
-  params.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
   params.scale_factor = 2.3f;
   params.anchor.SetPoint(54, 89);
 
@@ -1681,7 +1681,7 @@ TEST_F(SyntheticGestureControllerTest, PinchGestureExplicitMouse) {
   CreateControllerAndTarget<MockSyntheticTouchpadPinchTouchTarget>();
 
   SyntheticPinchGestureParams params;
-  params.gesture_source_type = SyntheticGestureParams::MOUSE_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kMouseInput;
   params.scale_factor = 2.3f;
   params.anchor.SetPoint(54, 89);
 
@@ -1700,7 +1700,7 @@ TEST_F(SyntheticGestureControllerTest, PinchGestureDefaultTouch) {
   CreateControllerAndTarget<MockSyntheticTouchscreenPinchTouchTarget>();
 
   SyntheticPinchGestureParams params;
-  params.gesture_source_type = SyntheticGestureParams::DEFAULT_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kDefaultInput;
   params.scale_factor = 2.3f;
   params.anchor.SetPoint(54, 89);
 
@@ -1719,7 +1719,7 @@ TEST_F(SyntheticGestureControllerTest, PinchGestureDefaultMouse) {
   CreateControllerAndTarget<MockSyntheticTouchpadPinchTouchTarget>();
 
   SyntheticPinchGestureParams params;
-  params.gesture_source_type = SyntheticGestureParams::DEFAULT_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kDefaultInput;
   params.scale_factor = 2.3f;
   params.anchor.SetPoint(54, 89);
 
@@ -1736,7 +1736,7 @@ TEST_F(SyntheticGestureControllerTest, TapGestureTouch) {
   CreateControllerAndTarget<MockSyntheticTapTouchTarget>();
 
   SyntheticTapGestureParams params;
-  params.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
   params.duration_ms = 123;
   params.position.SetPoint(87, -124);
 
@@ -1759,7 +1759,7 @@ TEST_F(SyntheticGestureControllerTest, TapGestureMouse) {
   CreateControllerAndTarget<MockSyntheticTapMouseTarget>();
 
   SyntheticTapGestureParams params;
-  params.gesture_source_type = SyntheticGestureParams::MOUSE_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kMouseInput;
   params.duration_ms = 79;
   params.position.SetPoint(98, 123);
 
@@ -1794,7 +1794,7 @@ TEST_F(SyntheticGestureControllerTest, PointerTouchAction) {
   param_list.push_back(param0);
   param_list.push_back(param1);
   SyntheticPointerActionListParams params(param_list);
-  params.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
   std::unique_ptr<SyntheticPointerAction> gesture(
       new SyntheticPointerAction(params));
   QueueSyntheticGesture(std::move(gesture));
@@ -1860,7 +1860,7 @@ TEST_F(SyntheticGestureControllerTest, PointerMouseAction) {
   param.set_position(gfx::PointF(54, 89));
   SyntheticPointerActionListParams params;
   params.PushPointerActionParams(param);
-  params.gesture_source_type = SyntheticGestureParams::MOUSE_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kMouseInput;
   std::unique_ptr<SyntheticPointerAction> gesture(
       new SyntheticPointerAction(params));
   QueueSyntheticGesture(std::move(gesture));
@@ -1933,7 +1933,7 @@ TEST_F(SyntheticGestureControllerTest, PointerPenAction) {
   param.set_position(gfx::PointF(54, 89));
   SyntheticPointerActionListParams params;
   params.PushPointerActionParams(param);
-  params.gesture_source_type = SyntheticGestureParams::PEN_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kPenInput;
   std::unique_ptr<SyntheticPointerAction> gesture(
       new SyntheticPointerAction(params));
   QueueSyntheticGesture(std::move(gesture));
@@ -2013,7 +2013,7 @@ TEST_F(SyntheticGestureControllerTest, PointerPenAction) {
 class MockSyntheticGestureTargetManualAck : public MockSyntheticGestureTarget {
  public:
   void WaitForTargetAck(SyntheticGestureParams::GestureType type,
-                        SyntheticGestureParams::GestureSourceType source,
+                        content::mojom::GestureSourceType source,
                         base::OnceClosure callback) const override {
     if (manually_ack_)
       target_ack_ = std::move(callback);
@@ -2043,7 +2043,7 @@ TEST_F(SyntheticGestureControllerTest, WaitForRendererInitialization) {
   EXPECT_FALSE(target->HasOutstandingAck());
 
   SyntheticTapGestureParams params;
-  params.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
   params.duration_ms = 123;
   params.position.SetPoint(87, -124);
 

@@ -1407,7 +1407,7 @@ void RenderWidgetHostImpl::ForwardWheelEventWithLatencyInfo(
 
 void RenderWidgetHostImpl::WaitForInputProcessed(
     SyntheticGestureParams::GestureType type,
-    SyntheticGestureParams::GestureSourceType source,
+    content::mojom::GestureSourceType source,
     base::OnceClosure callback) {
   // TODO(bokan): Input can be queued and delayed in InputRouterImpl based on
   // the kind of events we're getting. To be truly robust, we should wait until

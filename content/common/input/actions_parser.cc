@@ -11,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "content/common/input/input_injector.mojom.h"
 #include "content/common/input/synthetic_smooth_scroll_gesture_params.h"
 #include "ui/events/types/scroll_types.h"
 
@@ -33,15 +34,15 @@ SyntheticPointerActionParams::PointerActionType ToSyntheticPointerActionType(
   return SyntheticPointerActionParams::PointerActionType::NOT_INITIALIZED;
 }
 
-SyntheticGestureParams::GestureSourceType ToSyntheticGestureSourceType(
+content::mojom::GestureSourceType ToSyntheticGestureSourceType(
     const std::string& pointer_type) {
   if (pointer_type == "touch")
-    return SyntheticGestureParams::TOUCH_INPUT;
+    return content::mojom::GestureSourceType::kTouchInput;
   else if (pointer_type == "mouse")
-    return SyntheticGestureParams::MOUSE_INPUT;
+    return content::mojom::GestureSourceType::kMouseInput;
   else if (pointer_type == "pen")
-    return SyntheticGestureParams::PEN_INPUT;
-  return SyntheticGestureParams::DEFAULT_INPUT;
+    return content::mojom::GestureSourceType::kPenInput;
+  return content::mojom::GestureSourceType::kDefaultInput;
 }
 
 SyntheticPointerActionParams::Button ToSyntheticMouseButton(int button) {
@@ -452,7 +453,7 @@ bool ActionsParser::ParseWheelAction(const base::Value& action,
   gesture_params_ = std::make_unique<SyntheticSmoothScrollGestureParams>();
   SyntheticSmoothScrollGestureParams* scroll =
       static_cast<SyntheticSmoothScrollGestureParams*>(gesture_params_.get());
-  scroll->gesture_source_type = SyntheticGestureParams::MOUSE_INPUT;
+  scroll->gesture_source_type = content::mojom::GestureSourceType::kMouseInput;
   scroll->speed_in_pixels_s = 8000;
   scroll->prevent_fling = true;
   scroll->granularity = ui::ScrollGranularity::kScrollByPrecisePixel;

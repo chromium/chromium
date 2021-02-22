@@ -126,6 +126,22 @@ using blink::WebView;
 namespace content {
 
 namespace {
+
+int GestureSourceTypeAsInt(content::mojom::GestureSourceType type) {
+  switch (type) {
+    case content::mojom::GestureSourceType::kDefaultInput:
+      return 0;
+    case content::mojom::GestureSourceType::kTouchInput:
+      return 1;
+    case content::mojom::GestureSourceType::kMouseInput:
+      return 2;
+    case content::mojom::GestureSourceType::kPenInput:
+      return 3;
+  }
+  NOTREACHED();
+  return 0;
+}
+
 class SkPictureSerializer {
  public:
   explicit SkPictureSerializer(const base::FilePath& dirpath)
@@ -366,7 +382,8 @@ bool BeginSmoothScroll(GpuBenchmarkingContext* context,
     return false;
   }
 
-  if (gesture_source_type == SyntheticGestureParams::MOUSE_INPUT) {
+  if (gesture_source_type ==
+      GestureSourceTypeAsInt(content::mojom::GestureSourceType::kMouseInput)) {
     // Ensure the mouse is visible and move to start position, in case it will
     // trigger any hover or mousemove effects.
     context->web_view()->SetIsActive(true);
@@ -387,12 +404,13 @@ bool BeginSmoothScroll(GpuBenchmarkingContext* context,
   SyntheticSmoothScrollGestureParams gesture_params;
 
   if (gesture_source_type < 0 ||
-      gesture_source_type > SyntheticGestureParams::GESTURE_SOURCE_TYPE_MAX) {
+      gesture_source_type >
+          GestureSourceTypeAsInt(
+              content::mojom::GestureSourceType::kGestureSourceTypeMax)) {
     return false;
   }
   gesture_params.gesture_source_type =
-      static_cast<SyntheticGestureParams::GestureSourceType>(
-          gesture_source_type);
+      static_cast<content::mojom::GestureSourceType>(gesture_source_type);
 
   gesture_params.speed_in_pixels_s = speed_in_pixels_s;
   gesture_params.prevent_fling = prevent_fling;
@@ -408,7 +426,9 @@ bool BeginSmoothScroll(GpuBenchmarkingContext* context,
 
   gesture_params.anchor.SetPoint(start_x, start_y);
 
-  DCHECK(gesture_source_type != SyntheticGestureParams::TOUCH_INPUT ||
+  DCHECK(gesture_source_type !=
+             GestureSourceTypeAsInt(
+                 content::mojom::GestureSourceType::kTouchInput) ||
          fling_velocity.IsZero());
   // Positive pixels_to_scroll_y means scroll down, positive pixels_to_scroll_x
   // means scroll right, but SyntheticSmoothScrollGestureParams requests
@@ -455,8 +475,7 @@ bool BeginSmoothDrag(GpuBenchmarkingContext* context,
   gesture_params.distances.push_back(distance);
   gesture_params.speed_in_pixels_s = speed_in_pixels_s;
   gesture_params.gesture_source_type =
-      static_cast<SyntheticGestureParams::GestureSourceType>(
-          gesture_source_type);
+      static_cast<content::mojom::GestureSourceType>(gesture_source_type);
 
   injector->QueueSyntheticSmoothDrag(
       gesture_params, base::BindOnce(&OnSyntheticGestureCompleted,
@@ -596,15 +615,19 @@ gin::ObjectTemplateBuilder GpuBenchmarking::GetObjectTemplateBuilder(
                  &GpuBenchmarking::PrintPagesToSkPictures)
       .SetMethod("printPagesToXPS", &GpuBenchmarking::PrintPagesToXPS)
       .SetValue("DEFAULT_INPUT",
-                static_cast<int>(SyntheticGestureParams::DEFAULT_INPUT))
+                GestureSourceTypeAsInt(
+                    content::mojom::GestureSourceType::kDefaultInput))
       .SetValue("TOUCH_INPUT",
-                static_cast<int>(SyntheticGestureParams::TOUCH_INPUT))
+                GestureSourceTypeAsInt(
+                    content::mojom::GestureSourceType::kTouchInput))
       .SetValue("MOUSE_INPUT",
-                static_cast<int>(SyntheticGestureParams::MOUSE_INPUT))
+                GestureSourceTypeAsInt(
+                    content::mojom::GestureSourceType::kMouseInput))
       .SetValue("TOUCHPAD_INPUT",
-                static_cast<int>(SyntheticGestureParams::TOUCHPAD_INPUT))
-      .SetValue("PEN_INPUT",
-                static_cast<int>(SyntheticGestureParams::PEN_INPUT))
+                GestureSourceTypeAsInt(
+                    content::mojom::GestureSourceType::kTouchpadInput))
+      .SetValue("PEN_INPUT", GestureSourceTypeAsInt(
+                                 content::mojom::GestureSourceType::kPenInput))
       .SetMethod("gestureSourceTypeSupported",
                  &GpuBenchmarking::GestureSourceTypeSupported)
       .SetMethod("smoothScrollBy", &GpuBenchmarking::SmoothScrollBy)
@@ -703,13 +726,14 @@ void GpuBenchmarking::PrintToSkPicture(v8::Isolate* isolate,
 
 bool GpuBenchmarking::GestureSourceTypeSupported(int gesture_source_type) {
   if (gesture_source_type < 0 ||
-      gesture_source_type > SyntheticGestureParams::GESTURE_SOURCE_TYPE_MAX) {
+      gesture_source_type >
+          GestureSourceTypeAsInt(
+              content::mojom::GestureSourceType::kGestureSourceTypeMax)) {
     return false;
   }
 
   return SyntheticGestureParams::IsGestureSourceTypeSupported(
-      static_cast<SyntheticGestureParams::GestureSourceType>(
-          gesture_source_type));
+      static_cast<content::mojom::GestureSourceType>(gesture_source_type));
 }
 
 // TODO(lanwei): this is will be removed after this is replaced by
@@ -722,7 +746,8 @@ bool GpuBenchmarking::SmoothScrollBy(gin::Arguments* args) {
   v8::Local<v8::Function> callback;
   float start_x = rect.width() / 2;
   float start_y = rect.height() / 2;
-  int gesture_source_type = SyntheticGestureParams::DEFAULT_INPUT;
+  int gesture_source_type =
+      GestureSourceTypeAsInt(content::mojom::GestureSourceType::kDefaultInput);
   std::string direction = "down";
   float speed_in_pixels_s = 800;
   bool precise_scrolling_deltas = true;
@@ -746,14 +771,20 @@ bool GpuBenchmarking::SmoothScrollBy(gin::Arguments* args) {
   }
 
   // For all touch inputs, always scroll by precise deltas.
-  DCHECK(gesture_source_type != SyntheticGestureParams::TOUCH_INPUT ||
+  DCHECK(gesture_source_type !=
+             GestureSourceTypeAsInt(
+                 content::mojom::GestureSourceType::kTouchInput) ||
          precise_scrolling_deltas);
   // Scroll by page only for mouse inputs.
   DCHECK(!scroll_by_page ||
-         gesture_source_type == SyntheticGestureParams::MOUSE_INPUT);
+         gesture_source_type ==
+             GestureSourceTypeAsInt(
+                 content::mojom::GestureSourceType::kMouseInput));
   // Scroll by percentage only for mouse inputs.
   DCHECK(!scroll_by_percentage ||
-         gesture_source_type == SyntheticGestureParams::MOUSE_INPUT);
+         gesture_source_type ==
+             GestureSourceTypeAsInt(
+                 content::mojom::GestureSourceType::kMouseInput));
   // Scroll by percentage does not require speed in pixels
   DCHECK(!scroll_by_percentage || (speed_in_pixels_s == 800));
 
@@ -795,7 +826,8 @@ bool GpuBenchmarking::SmoothScrollByXY(gin::Arguments* args) {
   v8::Local<v8::Function> callback;
   float start_x = rect.width() / 2;
   float start_y = rect.height() / 2;
-  int gesture_source_type = SyntheticGestureParams::DEFAULT_INPUT;
+  int gesture_source_type =
+      GestureSourceTypeAsInt(content::mojom::GestureSourceType::kDefaultInput);
   float speed_in_pixels_s = 800;
   bool precise_scrolling_deltas = true;
   bool scroll_by_page = false;
@@ -826,14 +858,20 @@ bool GpuBenchmarking::SmoothScrollByXY(gin::Arguments* args) {
   }
 
   // For all touch inputs, always scroll by precise deltas.
-  DCHECK(gesture_source_type != SyntheticGestureParams::TOUCH_INPUT ||
+  DCHECK(gesture_source_type !=
+             GestureSourceTypeAsInt(
+                 content::mojom::GestureSourceType::kTouchInput) ||
          precise_scrolling_deltas);
   // Scroll by page only for mouse inputs.
   DCHECK(!scroll_by_page ||
-         gesture_source_type == SyntheticGestureParams::MOUSE_INPUT);
+         gesture_source_type ==
+             GestureSourceTypeAsInt(
+                 content::mojom::GestureSourceType::kMouseInput));
   // Scroll by percentage only for mouse inputs.
   DCHECK(!scroll_by_percentage ||
-         gesture_source_type == SyntheticGestureParams::MOUSE_INPUT);
+         gesture_source_type ==
+             GestureSourceTypeAsInt(
+                 content::mojom::GestureSourceType::kMouseInput));
 
   gfx::Vector2dF distances(pixels_to_scroll_x, pixels_to_scroll_y);
   gfx::Vector2dF fling_velocity(0, 0);
@@ -873,7 +911,8 @@ bool GpuBenchmarking::SmoothDrag(gin::Arguments* args) {
   float end_x;
   float end_y;
   v8::Local<v8::Function> callback;
-  int gesture_source_type = SyntheticGestureParams::DEFAULT_INPUT;
+  int gesture_source_type =
+      GestureSourceTypeAsInt(content::mojom::GestureSourceType::kDefaultInput);
   float speed_in_pixels_s = 800;
 
   if (!GetArg(args, &start_x) || !GetArg(args, &start_y) ||
@@ -905,7 +944,8 @@ bool GpuBenchmarking::Swipe(gin::Arguments* args) {
   float start_y = rect.height() / 2;
   float speed_in_pixels_s = 800;
   float fling_velocity = 0;
-  int gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+  int gesture_source_type =
+      GestureSourceTypeAsInt(content::mojom::GestureSourceType::kTouchInput);
 
   if (!GetOptionalArg(args, &direction) ||
       !GetOptionalArg(args, &pixels_to_scroll) ||
@@ -920,7 +960,9 @@ bool GpuBenchmarking::Swipe(gin::Arguments* args) {
   // For touchpad swipe, we should be given a fling velocity, but it is not
   // needed for touchscreen swipe, because we will calculate the velocity in
   // our code.
-  if (gesture_source_type == SyntheticGestureParams::TOUCHPAD_INPUT &&
+  if (gesture_source_type ==
+          GestureSourceTypeAsInt(
+              content::mojom::GestureSourceType::kTouchpadInput) &&
       fling_velocity == 0) {
     fling_velocity = 1000;
   }
@@ -1020,7 +1062,8 @@ bool GpuBenchmarking::PinchBy(gin::Arguments* args) {
   float anchor_y;
   v8::Local<v8::Function> callback;
   float relative_pointer_speed_in_pixels_s = 800;
-  int gesture_source_type = SyntheticGestureParams::DEFAULT_INPUT;
+  int gesture_source_type =
+      GestureSourceTypeAsInt(content::mojom::GestureSourceType::kDefaultInput);
 
   if (!GetArg(args, &scale_factor) || !GetArg(args, &anchor_x) ||
       !GetArg(args, &anchor_y) || !GetOptionalArg(args, &callback) ||
@@ -1042,21 +1085,22 @@ bool GpuBenchmarking::PinchBy(gin::Arguments* args) {
       relative_pointer_speed_in_pixels_s;
 
   if (gesture_source_type < 0 ||
-      gesture_source_type > SyntheticGestureParams::GESTURE_SOURCE_TYPE_MAX) {
+      gesture_source_type >
+          GestureSourceTypeAsInt(
+              content::mojom::GestureSourceType::kGestureSourceTypeMax)) {
     args->ThrowTypeError("Unknown gesture source type");
     return false;
   }
 
   gesture_params.gesture_source_type =
-      static_cast<SyntheticGestureParams::GestureSourceType>(
-          gesture_source_type);
+      static_cast<content::mojom::GestureSourceType>(gesture_source_type);
 
   switch (gesture_params.gesture_source_type) {
-    case SyntheticGestureParams::DEFAULT_INPUT:
-    case SyntheticGestureParams::TOUCH_INPUT:
-    case SyntheticGestureParams::MOUSE_INPUT:
+    case content::mojom::GestureSourceType::kDefaultInput:
+    case content::mojom::GestureSourceType::kTouchInput:
+    case content::mojom::GestureSourceType::kMouseInput:
       break;
-    case SyntheticGestureParams::PEN_INPUT:
+    case content::mojom::GestureSourceType::kPenInput:
       args->ThrowTypeError(
           "Gesture is not implemented for the given source type");
       return false;
@@ -1131,7 +1175,8 @@ bool GpuBenchmarking::Tap(gin::Arguments* args) {
   float position_y;
   v8::Local<v8::Function> callback;
   int duration_ms = 50;
-  int gesture_source_type = SyntheticGestureParams::DEFAULT_INPUT;
+  int gesture_source_type =
+      GestureSourceTypeAsInt(content::mojom::GestureSourceType::kDefaultInput);
 
   if (!GetArg(args, &position_x) || !GetArg(args, &position_y) ||
       !GetOptionalArg(args, &callback) || !GetOptionalArg(args, &duration_ms) ||
@@ -1151,12 +1196,13 @@ bool GpuBenchmarking::Tap(gin::Arguments* args) {
   gesture_params.duration_ms = duration_ms;
 
   if (gesture_source_type < 0 ||
-      gesture_source_type > SyntheticGestureParams::GESTURE_SOURCE_TYPE_MAX) {
+      gesture_source_type >
+          GestureSourceTypeAsInt(
+              content::mojom::GestureSourceType::kGestureSourceTypeMax)) {
     return false;
   }
   gesture_params.gesture_source_type =
-      static_cast<SyntheticGestureParams::GestureSourceType>(
-          gesture_source_type);
+      static_cast<content::mojom::GestureSourceType>(gesture_source_type);
 
   scoped_refptr<CallbackAndContext> callback_and_context =
       new CallbackAndContext(args->isolate(), callback,

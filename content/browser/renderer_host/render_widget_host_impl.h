@@ -490,7 +490,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // Resolves the given callback once all effects of prior input have been
   // fully realized.
   void WaitForInputProcessed(SyntheticGestureParams::GestureType type,
-                             SyntheticGestureParams::GestureSourceType source,
+                             content::mojom::GestureSourceType source,
                              base::OnceClosure callback);
 
   // Resolves the given callback once all effects of previously forwarded input

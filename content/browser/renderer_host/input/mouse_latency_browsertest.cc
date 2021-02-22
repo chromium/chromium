@@ -160,7 +160,7 @@ class MouseLatencyBrowserTest : public ContentBrowserTest {
   // Generate mouse events for a synthetic click at |point|.
   void DoSyncClick(const gfx::PointF& position) {
     SyntheticTapGestureParams params;
-    params.gesture_source_type = SyntheticGestureParams::MOUSE_INPUT;
+    params.gesture_source_type = content::mojom::GestureSourceType::kMouseInput;
     params.position = position;
     params.duration_ms = 100;
     std::unique_ptr<SyntheticTapGesture> gesture(
@@ -203,7 +203,7 @@ class MouseLatencyBrowserTest : public ContentBrowserTest {
   void DoSyncCoalescedMouseWheel(const gfx::PointF position,
                                  const gfx::Vector2dF& delta) {
     SyntheticSmoothScrollGestureParams params;
-    params.gesture_source_type = SyntheticGestureParams::MOUSE_INPUT;
+    params.gesture_source_type = content::mojom::GestureSourceType::kMouseInput;
     params.anchor = position;
     params.distances.push_back(delta);
 

@@ -131,7 +131,7 @@ class CompositedScrollingBrowserTest : public ContentBrowserTest {
 
   // Generate touch events for a synthetic scroll from |point| for |distance|.
   // Returns the distance scrolled.
-  double DoScroll(SyntheticGestureParams::GestureSourceType type,
+  double DoScroll(content::mojom::GestureSourceType type,
                   const gfx::Point& point,
                   const gfx::Vector2d& distance) {
     SyntheticSmoothScrollGestureParams params;
@@ -157,11 +157,13 @@ class CompositedScrollingBrowserTest : public ContentBrowserTest {
   }
 
   double DoTouchScroll(const gfx::Point& point, const gfx::Vector2d& distance) {
-    return DoScroll(SyntheticGestureParams::TOUCH_INPUT, point, distance);
+    return DoScroll(content::mojom::GestureSourceType::kTouchInput, point,
+                    distance);
   }
 
   double DoWheelScroll(const gfx::Point& point, const gfx::Vector2d& distance) {
-    return DoScroll(SyntheticGestureParams::MOUSE_INPUT, point, distance);
+    return DoScroll(content::mojom::GestureSourceType::kMouseInput, point,
+                    distance);
   }
 
  private:

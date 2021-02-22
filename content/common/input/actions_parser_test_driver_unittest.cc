@@ -27,7 +27,7 @@ TEST(ActionsParserTestDriverTest, ParseMousePointerActionSequence) {
   SyntheticPointerActionListParams action_list_params =
       static_cast<const SyntheticPointerActionListParams&>(
           actions_parser.gesture_params());
-  EXPECT_EQ(SyntheticGestureParams::MOUSE_INPUT,
+  EXPECT_EQ(content::mojom::GestureSourceType::kMouseInput,
             action_list_params.gesture_source_type);
   EXPECT_EQ(2U, action_list_params.params.size());
   EXPECT_EQ(1U, action_list_params.params[0].size());
@@ -60,7 +60,7 @@ TEST(ActionsParserTestDriverTest, ParseTouchPointerActionSequence) {
   SyntheticPointerActionListParams action_list_params =
       static_cast<const SyntheticPointerActionListParams&>(
           actions_parser.gesture_params());
-  EXPECT_EQ(SyntheticGestureParams::TOUCH_INPUT,
+  EXPECT_EQ(content::mojom::GestureSourceType::kTouchInput,
             action_list_params.gesture_source_type);
   EXPECT_EQ(3U, action_list_params.params.size());
   EXPECT_EQ(2U, action_list_params.params[0].size());
@@ -93,7 +93,7 @@ TEST(ActionsParserTestDriverTest, ParseTouchPointerActionSequenceWithPause) {
   SyntheticPointerActionListParams action_list_params =
       static_cast<const SyntheticPointerActionListParams&>(
           actions_parser.gesture_params());
-  EXPECT_EQ(SyntheticGestureParams::TOUCH_INPUT,
+  EXPECT_EQ(content::mojom::GestureSourceType::kTouchInput,
             action_list_params.gesture_source_type);
   EXPECT_EQ(5U, action_list_params.params.size());
   EXPECT_EQ(2U, action_list_params.params[0].size());
@@ -179,7 +179,7 @@ TEST(ActionsParserTestDriverTest, ParseMousePointerActionSequenceNoParameters) {
   SyntheticPointerActionListParams action_list_params =
       static_cast<const SyntheticPointerActionListParams&>(
           actions_parser.gesture_params());
-  EXPECT_EQ(SyntheticGestureParams::MOUSE_INPUT,
+  EXPECT_EQ(content::mojom::GestureSourceType::kMouseInput,
             action_list_params.gesture_source_type);
   EXPECT_EQ(2U, action_list_params.params.size());
   EXPECT_EQ(1U, action_list_params.params[0].size());
@@ -307,7 +307,7 @@ TEST(ActionsParserTestDriverTest, ParseWheelScrollAction) {
   SyntheticSmoothScrollGestureParams scroll_gesture_params =
       static_cast<const SyntheticSmoothScrollGestureParams&>(
           actions_parser.gesture_params());
-  EXPECT_EQ(SyntheticGestureParams::MOUSE_INPUT,
+  EXPECT_EQ(content::mojom::GestureSourceType::kMouseInput,
             scroll_gesture_params.gesture_source_type);
   EXPECT_EQ(gfx::PointF(10, 10), scroll_gesture_params.anchor);
   EXPECT_EQ(1U, scroll_gesture_params.distances.size());

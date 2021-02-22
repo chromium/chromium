@@ -57,7 +57,7 @@ class SyntheticGestureTargetBase : public SyntheticGestureTarget {
   int GetMouseWheelMinimumGranularity() const override;
 
   void WaitForTargetAck(SyntheticGestureParams::GestureType type,
-                        SyntheticGestureParams::GestureSourceType source,
+                        content::mojom::GestureSourceType source,
                         base::OnceClosure callback) const override;
 
  protected:

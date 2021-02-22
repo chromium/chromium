@@ -29,8 +29,8 @@ class CONTENT_EXPORT SyntheticGestureTarget {
       const blink::WebInputEvent& event) = 0;
 
   // Returns the default gesture source type for the target.
-  virtual SyntheticGestureParams::GestureSourceType
-      GetDefaultSyntheticGestureSourceType() const = 0;
+  virtual content::mojom::GestureSourceType
+  GetDefaultSyntheticGestureSourceType() const = 0;
 
   // After how much time of inaction does the target assume that a pointer has
   // stopped moving.
@@ -57,10 +57,9 @@ class CONTENT_EXPORT SyntheticGestureTarget {
   // resolving the given callback. This is used to ensure that all effects of a
   // gesture have been fully propagated through the system before performing
   // further actions.
-  virtual void WaitForTargetAck(
-      SyntheticGestureParams::GestureType type,
-      SyntheticGestureParams::GestureSourceType source,
-      base::OnceClosure callback) const = 0;
+  virtual void WaitForTargetAck(SyntheticGestureParams::GestureType type,
+                                content::mojom::GestureSourceType source,
+                                base::OnceClosure callback) const = 0;
 };
 
 }  // namespace content

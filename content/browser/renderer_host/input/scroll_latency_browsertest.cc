@@ -232,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest,
   // Try to scroll upward, the GSU(s) will get ignored since the scroller is at
   // its extent.
   SyntheticSmoothScrollGestureParams params;
-  params.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
   params.anchor = gfx::PointF(10, 10);
   params.distances.push_back(gfx::Vector2d(0, 60));
 
@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(ScrollThroughputBrowserTest,
       GetWidgetHost(), blink::WebInputEvent::Type::kGestureScrollEnd);
 
   SyntheticSmoothScrollGestureParams params;
-  params.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
   params.anchor = gfx::PointF(10, 10);
   params.distances.push_back(gfx::Vector2d(0, -6000));
   params.fling_velocity_x = 0;

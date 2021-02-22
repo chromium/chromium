@@ -54,7 +54,7 @@ class CONTENT_EXPORT SyntheticTouchscreenPinchGesture
   float start_y_0_;
   float start_y_1_;
   float max_pointer_delta_0_;
-  SyntheticGestureParams::GestureSourceType gesture_source_type_;
+  content::mojom::GestureSourceType gesture_source_type_;
   GestureState state_;
   base::TimeTicks start_time_;
   base::TimeTicks stop_time_;

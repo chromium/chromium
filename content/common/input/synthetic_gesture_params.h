@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "content/common/content_export.h"
+#include "content/common/input/input_injector.mojom-shared.h"
 
 namespace content {
 
@@ -22,18 +23,7 @@ struct CONTENT_EXPORT SyntheticGestureParams {
   SyntheticGestureParams(const SyntheticGestureParams& other);
   virtual ~SyntheticGestureParams();
 
-  // Describes which type of input events synthetic gesture objects should
-  // generate. When specifying DEFAULT_INPUT the platform will be queried for
-  // the preferred input event type.
-  enum GestureSourceType {
-    DEFAULT_INPUT,
-    TOUCH_INPUT,
-    MOUSE_INPUT,
-    TOUCHPAD_INPUT = MOUSE_INPUT,
-    PEN_INPUT,
-    GESTURE_SOURCE_TYPE_MAX = PEN_INPUT
-  };
-  GestureSourceType gesture_source_type;
+  content::mojom::GestureSourceType gesture_source_type;
 
   enum GestureType {
     SMOOTH_SCROLL_GESTURE,
@@ -55,7 +45,7 @@ struct CONTENT_EXPORT SyntheticGestureParams {
   // Returns true if the specific gesture source type is supported on this
   // platform.
   static bool IsGestureSourceTypeSupported(
-      GestureSourceType gesture_source_type);
+      content::mojom::GestureSourceType gesture_source_type);
 };
 
 }  // namespace content

@@ -38,8 +38,8 @@ class SyntheticGestureTargetAura : public SyntheticGestureTargetBase {
       const ui::LatencyInfo& latency_info) override;
 
   // SyntheticGestureTarget:
-  SyntheticGestureParams::GestureSourceType
-  GetDefaultSyntheticGestureSourceType() const override;
+  content::mojom::GestureSourceType GetDefaultSyntheticGestureSourceType()
+      const override;
 
   float GetTouchSlopInDips() const override;
 

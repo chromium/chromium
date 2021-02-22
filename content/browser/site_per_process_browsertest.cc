@@ -11667,7 +11667,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, TouchEventAckQueueOrdering) {
   }
   SyntheticTapGestureParams child_tap_params;
   child_tap_params.position = child_tap_point;
-  child_tap_params.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+  child_tap_params.gesture_source_type =
+      content::mojom::GestureSourceType::kTouchInput;
   child_tap_params.duration_ms = 300.f;
   auto child_tap_gesture =
       std::make_unique<SyntheticTapGesture>(child_tap_params);
@@ -11676,7 +11677,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, TouchEventAckQueueOrdering) {
   SyntheticTapGestureParams root_tap_params;
   root_tap_params.position = gfx::PointF(5.f, 5.f);
   root_tap_params.duration_ms = 300.f;
-  root_tap_params.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+  root_tap_params.gesture_source_type =
+      content::mojom::GestureSourceType::kTouchInput;
   auto root_tap_gesture =
       std::make_unique<SyntheticTapGesture>(root_tap_params);
 
@@ -15615,7 +15617,7 @@ class ScrollingIntegrationTest : public SitePerProcessBrowserTest {
 
   void DoScroll(const gfx::Point& point,
                 const gfx::Vector2d& distance,
-                SyntheticGestureParams::GestureSourceType source) {
+                content::mojom::GestureSourceType source) {
     SyntheticSmoothScrollGestureParams params;
     params.gesture_source_type = source;
     params.anchor = gfx::PointF(point);
@@ -15691,14 +15693,14 @@ IN_PROC_BROWSER_TEST_P(ScrollingIntegrationTest,
     run_loop.Run();
   }
 
-  SyntheticGestureParams::GestureSourceType source;
+  content::mojom::GestureSourceType source;
 
 // TODO(bokan): Mac doesn't support touch events and for an unknown reason,
 // Android doesn't like mouse wheel here. https://crbug.com/897520.
 #if defined(OS_ANDROID)
-  source = SyntheticGestureParams::TOUCH_INPUT;
+  source = content::mojom::GestureSourceType::kTouchInput;
 #else
-  source = SyntheticGestureParams::TOUCHPAD_INPUT;
+  source = content::mojom::GestureSourceType::kTouchpadInput;
 #endif
 
   // Perform the scroll (below the iframe), ensure it's correctly processed.

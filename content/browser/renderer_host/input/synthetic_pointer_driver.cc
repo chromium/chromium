@@ -15,15 +15,15 @@ SyntheticPointerDriver::~SyntheticPointerDriver() {}
 
 // static
 std::unique_ptr<SyntheticPointerDriver> SyntheticPointerDriver::Create(
-    SyntheticGestureParams::GestureSourceType gesture_source_type) {
+    content::mojom::GestureSourceType gesture_source_type) {
   switch (gesture_source_type) {
-    case SyntheticGestureParams::TOUCH_INPUT:
+    case content::mojom::GestureSourceType::kTouchInput:
       return std::make_unique<SyntheticTouchDriver>();
-    case SyntheticGestureParams::MOUSE_INPUT:
+    case content::mojom::GestureSourceType::kMouseInput:
       return std::make_unique<SyntheticMouseDriver>();
-    case SyntheticGestureParams::PEN_INPUT:
+    case content::mojom::GestureSourceType::kPenInput:
       return std::make_unique<SyntheticPenDriver>();
-    case SyntheticGestureParams::DEFAULT_INPUT:
+    case content::mojom::GestureSourceType::kDefaultInput:
       return std::unique_ptr<SyntheticPointerDriver>();
   }
   NOTREACHED();

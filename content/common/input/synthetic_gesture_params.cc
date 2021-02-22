@@ -8,7 +8,7 @@
 namespace content {
 
 SyntheticGestureParams::SyntheticGestureParams()
-    : gesture_source_type(DEFAULT_INPUT) {}
+    : gesture_source_type(mojom::GestureSourceType::kDefaultInput) {}
 
 SyntheticGestureParams::SyntheticGestureParams(
     const SyntheticGestureParams& other)
@@ -17,22 +17,22 @@ SyntheticGestureParams::SyntheticGestureParams(
 SyntheticGestureParams::~SyntheticGestureParams() {}
 
 bool SyntheticGestureParams::IsGestureSourceTypeSupported(
-    GestureSourceType gesture_source_type) {
-  if (gesture_source_type == DEFAULT_INPUT)
+    mojom::GestureSourceType gesture_source_type) {
+  if (gesture_source_type == mojom::GestureSourceType::kDefaultInput)
     return true;
 
   // These values should change very rarely. We thus hard-code them here rather
   // than having to query the brower's SyntheticGestureTarget.
 #if defined(USE_AURA)
-  return gesture_source_type == TOUCH_INPUT ||
-         gesture_source_type == MOUSE_INPUT;
+  return gesture_source_type == mojom::GestureSourceType::kTouchInput ||
+         gesture_source_type == mojom::GestureSourceType::kMouseInput;
 #elif defined(OS_ANDROID)
   // Android supports mouse wheel events, but mouse drag is not yet
   // supported. See crbug.com/468806.
-  return gesture_source_type == TOUCH_INPUT ||
-         gesture_source_type == MOUSE_INPUT;
+  return gesture_source_type == mojom::GestureSourceType::kTouchInput ||
+         gesture_source_type == mojom::GestureSourceType::kMouseInput;
 #else
-  return gesture_source_type == MOUSE_INPUT;
+  return gesture_source_type == mojom::GestureSourceType::kMouseInput;
 #endif
 }
 

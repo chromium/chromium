@@ -24,7 +24,7 @@ TEST(ActionsParserTest, ParseMousePointerActionSequence) {
   SyntheticPointerActionListParams action_list_params =
       static_cast<const SyntheticPointerActionListParams&>(
           actions_parser.gesture_params());
-  EXPECT_EQ(SyntheticGestureParams::MOUSE_INPUT,
+  EXPECT_EQ(content::mojom::GestureSourceType::kMouseInput,
             action_list_params.gesture_source_type);
   EXPECT_EQ(2U, action_list_params.params.size());
   EXPECT_EQ(1U, action_list_params.params[0].size());
@@ -53,7 +53,7 @@ TEST(ActionsParserTest, ParseTouchPointerActionSequence1) {
   SyntheticPointerActionListParams action_list_params =
       static_cast<const SyntheticPointerActionListParams&>(
           actions_parser.gesture_params());
-  EXPECT_EQ(SyntheticGestureParams::TOUCH_INPUT,
+  EXPECT_EQ(content::mojom::GestureSourceType::kTouchInput,
             action_list_params.gesture_source_type);
   EXPECT_EQ(3U, action_list_params.params.size());
   EXPECT_EQ(2U, action_list_params.params[0].size());
@@ -83,7 +83,7 @@ TEST(ActionsParserTest, ParseTouchPointerActionSequenceWithoutId) {
   SyntheticPointerActionListParams action_list_params =
       static_cast<const SyntheticPointerActionListParams&>(
           actions_parser.gesture_params());
-  EXPECT_EQ(SyntheticGestureParams::TOUCH_INPUT,
+  EXPECT_EQ(content::mojom::GestureSourceType::kTouchInput,
             action_list_params.gesture_source_type);
   EXPECT_EQ(3U, action_list_params.params.size());
   EXPECT_EQ(2U, action_list_params.params[0].size());
