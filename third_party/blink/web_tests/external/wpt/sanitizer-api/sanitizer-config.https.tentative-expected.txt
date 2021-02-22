@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+PASS SanitizerAPI creator without config.
+PASS SanitizerAPI creator with empty config.
+PASS SanitizerAPI creator with config ignore unknown values.
+PASS SanitizerAPI creator with config {"dropElements":[]}.
+PASS SanitizerAPI creator with config {"blockElements":[]}.
+FAIL SanitizerAPI creator with config {"allowElements":[]}. assert_equals: expected "<div>balabala<i>test</i></div>" but got "balabalatest"
+PASS SanitizerAPI creator with config {"dropAttributes":[]}.
+PASS SanitizerAPI creator with config {"blockAttributes":[]}.
+PASS SanitizerAPI creator with config {"allowAttributes":[]}.
+Harness: the test ran to completion.
+

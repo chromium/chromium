@@ -19,5 +19,6 @@ FAIL e.style['scale'] = "100% 200%" should set the property value assert_not_equ
 FAIL e.style['scale'] = "100 200 1" should set the property value assert_equals: serialization should be canonical expected "100 200" but got "100 200 1"
 FAIL e.style['scale'] = "100% 200% 1" should set the property value assert_not_equals: property should be set got disallowed value ""
 PASS e.style['scale'] = "100 200 300" should set the property value
+PASS e.style['scale'] = "100 100 2" should set the property value
 Harness: the test ran to completion.
 
