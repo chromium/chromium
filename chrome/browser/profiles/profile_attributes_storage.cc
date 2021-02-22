@@ -248,7 +248,9 @@ std::vector<ProfileAttributesEntry*>
 ProfileAttributesStorage::GetAllProfilesAttributes(bool include_guest_profile) {
   std::vector<ProfileAttributesEntry*> ret;
   for (const auto& path_and_entry : profile_attributes_entries_) {
-    ProfileAttributesEntry* entry = path_and_entry.second.get();
+    // Initialize any entries that are not yet initialized.
+    ProfileAttributesEntry* entry =
+        GetProfileAttributesWithPath(base::FilePath(path_and_entry.first));
     DCHECK(entry);
     if (!entry->IsGuest() || include_guest_profile)
       ret.push_back(entry);

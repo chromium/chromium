@@ -1076,12 +1076,12 @@ IN_PROC_BROWSER_TEST_F(
       g_browser_process->profile_manager()->GetProfileAttributesStorage();
   const base::FilePath profile_path =
       browser()->profile()->GetPath().DirName().Append(chrome::kInitialProfile);
-  // Emulates a fake sign-in with `kFakeGaiaId`.
-  ProfileAttributesEntry* entry =
-      profile_attributes_storage.GetProfileAttributesWithPath(profile_path);
-  ASSERT_TRUE(entry);
-  entry->SetAuthInfo(kFakeGaiaId, base::UTF8ToUTF16(kFakePrimaryUsername),
-                     /*is_consented_primary_account=*/false);
+  // Creates a new Profile and (fake) signs in `kFakeGaiaId`.
+  profile_attributes_storage.AddProfile(
+      profile_path, base::UTF8ToUTF16(chrome::kInitialProfile), kFakeGaiaId,
+      base::UTF8ToUTF16(kFakePrimaryUsername),
+      /*is_consented_primary_account=*/false, /*icon_index=*/0,
+      /*supervised_user_id*/ std::string(), EmptyAccountId());
 
   crosapi::mojom::BrowserInitParamsPtr init_params =
       crosapi::mojom::BrowserInitParams::New();
@@ -1110,12 +1110,12 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
       g_browser_process->profile_manager()->GetProfileAttributesStorage();
   const base::FilePath profile_path =
       browser()->profile()->GetPath().DirName().Append(chrome::kInitialProfile);
-  // Emulates a fake sign-in with `kFakeGaiaId`.
-  ProfileAttributesEntry* entry =
-      profile_attributes_storage.GetProfileAttributesWithPath(profile_path);
-  ASSERT_TRUE(entry);
-  entry->SetAuthInfo(kFakeGaiaId, base::UTF8ToUTF16(kFakePrimaryUsername),
-                     /*is_consented_primary_account=*/false);
+  // Creates a new Profile and (fake) signs in `kFakeGaiaId`.
+  profile_attributes_storage.AddProfile(
+      profile_path, base::UTF8ToUTF16(chrome::kInitialProfile), kFakeGaiaId,
+      base::UTF8ToUTF16(kFakePrimaryUsername),
+      /*is_consented_primary_account=*/false, /*icon_index=*/0,
+      /*supervised_user_id*/ std::string(), EmptyAccountId());
 
   crosapi::mojom::BrowserInitParamsPtr init_params =
       crosapi::mojom::BrowserInitParams::New();
