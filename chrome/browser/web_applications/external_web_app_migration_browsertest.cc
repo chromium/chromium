@@ -64,7 +64,7 @@ class ExternalWebAppMigrationBrowserTest : public InProcessBrowserTest {
   ExternalWebAppMigrationBrowserTest() {
     ExternalWebAppManager::SkipStartupForTesting();
     ExternalWebAppManager::BypassOfflineManifestRequirementForTesting();
-    disable_scope_ =
+    disable_external_extensions_scope_ =
         extensions::ExtensionService::DisableExternalUpdatesForTesting();
   }
   ~ExternalWebAppMigrationBrowserTest() override = default;
@@ -150,9 +150,12 @@ class ExternalWebAppMigrationBrowserTest : public InProcessBrowserTest {
                 base::FilePath(FILE_PATH_LITERAL("//absolute/path"))),
             profile(), extensions::Manifest::EXTERNAL_PREF,
             extensions::Manifest::EXTERNAL_PREF_DOWNLOAD,
-            extensions::Extension::NO_FLAGS));
+            // Matches |bundled_extension_creation_flags| in
+            // ExternalProviderImpl::CreateExternalProviders().
+            extensions::Extension::WAS_INSTALLED_BY_DEFAULT |
+                extensions::Extension::FROM_WEBSTORE));
 
-    disable_scope_.reset();
+    disable_external_extensions_scope_.reset();
   }
 
   void SyncExternalExtensions() {
@@ -219,23 +222,50 @@ class ExternalWebAppMigrationBrowserTest : public InProcessBrowserTest {
         kExtensionId, extensions::ExtensionRegistry::EVERYTHING);
   }
 
+  void FlushAppService() {
+    apps::AppServiceProxyFactory::GetForProfile(profile())
+        ->FlushMojoCallsForTesting();
+  }
+
  private:
-  base::Optional<base::AutoReset<bool>> disable_scope_;
+  base::test::ScopedFeatureList features_;
+  base::Optional<base::AutoReset<bool>> disable_external_extensions_scope_;
   std::unique_ptr<extensions::ExtensionCacheFake> test_extension_cache_;
   ScopedOsHooksSuppress os_hooks_suppress_;
 };
 
 IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest,
                        MigrateRevertMigrate) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Grab handles to the app list to update shelf/list state for apps later on.
+  app_list::AppListSyncableService* app_list_syncable_service =
+      app_list::AppListSyncableServiceFactory::GetForProfile(profile());
+  AppListModelUpdater* app_list_model_updater =
+      app_list_syncable_service->GetModelUpdater();
+  app_list_model_updater->SetActive(true);
+#endif
+
   // Set up pre-migration state.
   {
     ASSERT_FALSE(IsExternalAppInstallFeatureEnabled(kMigrationFlag));
 
     SyncExternalExtensions();
     SyncExternalWebApps(/*expect_install=*/false, /*expect_uninstall=*/false);
+    FlushAppService();
 
     EXPECT_FALSE(IsWebAppInstalled());
     EXPECT_TRUE(IsExtensionAppInstalled());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    ChromeAppListItem* app_list_item =
+        app_list_model_updater->FindItem(kExtensionId);
+    app_list_item->SetPosition(syncer::StringOrdinal("testapplistposition"));
+    app_list_model_updater->OnItemUpdated(app_list_item->CloneMetadata());
+    app_list_syncable_service->SetPinPosition(
+        kExtensionId, syncer::StringOrdinal("testpinposition"));
+    EXPECT_EQ(app_list_syncable_service->GetSyncItem(kExtensionId)->ToString(),
+              "kbmnembi { Nothing } [testapplistposition] [testpinposition]");
+#endif
   }
 
   // Migrate extension app to web app.
@@ -254,17 +284,32 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest,
           extensions::ExtensionRegistry::Get(profile()));
 
       SyncExternalWebApps(/*expect_install=*/true, /*expect_uninstall=*/false);
-      EXPECT_TRUE(IsWebAppInstalled());
-
       scoped_refptr<const extensions::Extension> uninstalled_app =
           uninstall_observer.WaitForExtensionUninstalled();
       EXPECT_EQ(uninstalled_app->id(), kExtensionId);
+      FlushAppService();
+
+      EXPECT_TRUE(IsWebAppInstalled());
       EXPECT_FALSE(IsExtensionAppInstalled());
+
       histograms.ExpectUniqueSample(
           ExternalWebAppManager::kHistogramInstallResult,
           InstallResultCode::kSuccessNewInstall, 1);
       histograms.ExpectUniqueSample(
           ExternalWebAppManager::kHistogramUninstallAndReplaceCount, 1, 1);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      // Chrome OS shelf/list position should migrate.
+      EXPECT_EQ(
+          app_list_syncable_service->GetSyncItem(GetWebAppId())->ToString(),
+          base::StringPrintf(
+              "%s { Basic web app } [testapplistposition] [testpinposition]",
+              GetWebAppId().substr(0, 8).c_str()));
+      // Old Chrome app is unpinned.
+      EXPECT_EQ(
+          app_list_syncable_service->GetSyncItem(kExtensionId)->ToString(),
+          "kbmnembi { Nothing } [testapplistposition] [INVALID[]]");
+#endif
     }
   }
 
@@ -274,9 +319,18 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest,
 
     SyncExternalExtensions();
     SyncExternalWebApps(/*expect_install=*/false, /*expect_uninstall=*/true);
+    FlushAppService();
 
     EXPECT_TRUE(IsExtensionAppInstalled());
     EXPECT_FALSE(IsWebAppInstalled());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Re-pin the old Chrome app.
+    app_list_syncable_service->SetPinPosition(
+        kExtensionId, syncer::StringOrdinal("testpinposition"));
+    EXPECT_EQ(app_list_syncable_service->GetSyncItem(kExtensionId)->ToString(),
+              "kbmnembi { Nothing } [testapplistposition] [testpinposition]");
+#endif
   }
 
   // Re-run migration.
@@ -290,17 +344,31 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest,
         extensions::ExtensionRegistry::Get(profile()));
 
     SyncExternalWebApps(/*expect_install=*/true, /*expect_uninstall=*/false);
-    EXPECT_TRUE(IsWebAppInstalled());
-
     scoped_refptr<const extensions::Extension> uninstalled_app =
         uninstall_observer.WaitForExtensionUninstalled();
     EXPECT_EQ(uninstalled_app->id(), kExtensionId);
+    FlushAppService();
+
+    EXPECT_TRUE(IsWebAppInstalled());
     EXPECT_FALSE(IsExtensionAppInstalled());
+
     histograms.ExpectUniqueSample(
         ExternalWebAppManager::kHistogramInstallResult,
         InstallResultCode::kSuccessNewInstall, 1);
     histograms.ExpectUniqueSample(
         ExternalWebAppManager::kHistogramUninstallAndReplaceCount, 1, 1);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Chrome OS shelf/list position should re-migrate.
+    EXPECT_EQ(
+        app_list_syncable_service->GetSyncItem(GetWebAppId())->ToString(),
+        base::StringPrintf(
+            "%s { Basic web app } [testapplistposition] [testpinposition]",
+            GetWebAppId().substr(0, 8).c_str()));
+    // Old Chrome app should get unpinned again.
+    EXPECT_EQ(app_list_syncable_service->GetSyncItem(kExtensionId)->ToString(),
+              "kbmnembi { Nothing } [testapplistposition] [INVALID[]]");
+#endif
   }
 }
 
@@ -332,6 +400,8 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest, MigratePreferences) {
     app_list_model_updater->OnItemUpdated(app_list_item->CloneMetadata());
     app_list_syncable_service->SetPinPosition(
         kExtensionId, syncer::StringOrdinal("testpinposition"));
+    EXPECT_EQ(app_list_syncable_service->GetSyncItem(kExtensionId)->ToString(),
+              "kbmnembi { Nothing } [testapplistposition] [testpinposition]");
 #endif
 
     // Set chrome://apps position.
@@ -381,13 +451,14 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest, MigratePreferences) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Chrome OS shelf/list position should migrate.
-    EXPECT_EQ(app_list_model_updater->FindItem(web_app_id)
-                  ->position()
-                  .ToDebugString(),
-              "testapplistposition");
     EXPECT_EQ(
-        app_list_syncable_service->GetPinPosition(web_app_id).ToDebugString(),
-        "testpinposition");
+        app_list_syncable_service->GetSyncItem(GetWebAppId())->ToString(),
+        base::StringPrintf(
+            "%s { Basic web app } [testapplistposition] [testpinposition]",
+            GetWebAppId().substr(0, 8).c_str()));
+    // Chrome app shelf/list position should be retained.
+    EXPECT_EQ(app_list_syncable_service->GetSyncItem(kExtensionId)->ToString(),
+              "kbmnembi { Nothing } [testapplistposition] [testpinposition]");
 #endif
 
     // chrome://apps position should migrate.

@@ -32,6 +32,8 @@ extern const base::Feature kMv3ExtensionsSupported;
 
 extern const base::Feature kReportKeepaliveUkm;
 
+extern const base::Feature kDefaultChromeAppUninstallSync;
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_

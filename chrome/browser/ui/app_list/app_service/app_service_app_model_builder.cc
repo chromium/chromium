@@ -9,8 +9,10 @@
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/ui/app_list/app_service/app_service_app_item.h"
+#include "chrome/browser/web_applications/components/external_app_install_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/sync/protocol/sync.pb.h"
+#include "extensions/common/extension_features.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -113,6 +115,20 @@ void AppServiceAppModelBuilder::OnAppUpdate(const apps::AppUpdate& update) {
         // Don't sync app removal in case it was caused by disabling Google
         // Play Store.
         unsynced_change = !arc::IsArcPlayStoreEnabledForProfile(profile());
+      }
+      bool default_chrome_apps_migrating =
+          base::FeatureList::IsEnabled(
+              web_app::kMigrateDefaultChromeAppToWebAppsGSuite) ||
+          base::FeatureList::IsEnabled(
+              web_app::kMigrateDefaultChromeAppToWebAppsNonGSuite);
+      if (!base::FeatureList::IsEnabled(
+              extensions_features::kDefaultChromeAppUninstallSync) ||
+          default_chrome_apps_migrating) {
+        if (update.InstalledInternally() == apps::mojom::OptionalBool::kTrue) {
+          // Don't sync default app removal as default installed apps are not
+          // synced.
+          unsynced_change = true;
+        }
       }
       RemoveApp(update.AppId(), unsynced_change);
     }

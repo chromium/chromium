@@ -900,6 +900,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "default-chrome-app-uninstall-sync",
+    "owners": [ "alancutter", "desktop-pwas-team@google.com" ],
+    "expiry_milestone": 92
+  },
+  {
     "name": "delay-competing-low-priority-requests",
     "owners": [ "dom", "chrome-loading@google.com" ],
     "expiry_milestone": 90

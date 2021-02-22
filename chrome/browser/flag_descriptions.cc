@@ -88,6 +88,12 @@ const char kConversionMeasurementDebugModeDescription[] =
     "reporting delays and noise. Only works if the Conversion Measurement API "
     "is already enabled.";
 
+const char kDefaultChromeAppUninstallSyncName[] =
+    "Default Chrome app uninstall sync";
+const char kDefaultChromeAppUninstallSyncDescription[] =
+    "Synchronizes uninstallation of default Chrome apps across Chrome OS "
+    "devices.";
+
 const char kDetectedSourceLanguageOptionName[] =
     "Use Detected Language string on Desktop and Android";
 const char kDetectedSourceLanguageOptionDescription[] =

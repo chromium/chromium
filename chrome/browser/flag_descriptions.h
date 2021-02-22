@@ -89,6 +89,9 @@ extern const char kConversionMeasurementApiDescription[];
 extern const char kConversionMeasurementDebugModeName[];
 extern const char kConversionMeasurementDebugModeDescription[];
 
+extern const char kDefaultChromeAppUninstallSyncName[];
+extern const char kDefaultChromeAppUninstallSyncDescription[];
+
 extern const char kDetectedSourceLanguageOptionName[];
 extern const char kDetectedSourceLanguageOptionDescription[];
 
