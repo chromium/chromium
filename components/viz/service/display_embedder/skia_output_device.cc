@@ -15,6 +15,7 @@
 #include "components/viz/service/display/dc_layer_overlay.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/skia_utils.h"
+#include "services/tracing/public/cpp/perfetto/flow_event_utils.h"
 #include "third_party/skia/include/core/SkDeferredDisplayList.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
@@ -24,6 +25,8 @@
 
 namespace viz {
 namespace {
+
+using ::perfetto::protos::pbzero::ChromeLatencyInfo;
 
 scoped_refptr<base::SequencedTaskRunner> CreateLatencyTracerRunner() {
   if (!base::ThreadPoolInstance::Get())
@@ -201,7 +204,10 @@ void SkiaOutputDevice::FinishSwapBuffers(
   pending_swaps_.front().CallFeedback();
 
   if (latency_tracker_runner_) {
-    // Report latency off GPU main thread.
+    // Report latency off GPU main thread, but we still want this to be counted
+    // as part of the critical flow so emit a flow step.
+    ui::LatencyInfo::TraceIntermediateFlowEvents(
+        latency_info, ChromeLatencyInfo::STEP_FINISHED_SWAP_BUFFERS);
     latency_tracker_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&ReportLatency, params.swap_response.timings,

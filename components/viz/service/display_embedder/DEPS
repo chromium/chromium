@@ -36,6 +36,7 @@ include_rules = [
   "+third_party/khronos/GLES2/gl2ext.h",
   "+third_party/libyuv",
   "+third_party/skia",
+  "+services/tracing/public/cpp/perfetto/flow_event_utils.h",
   "+ui/accelerated_widget_mac",
   "+ui/events/platform/x11/x11_event_source.h",
   "+ui/display",
