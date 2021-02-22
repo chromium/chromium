@@ -103,6 +103,7 @@ class ExtensionFrameHelper
   void SetFrameName(const std::string& name) override;
   void SetSpatialNavigationEnabled(bool enabled) override;
   void SetTabId(int32_t id) override;
+  void AppWindowClosed(bool send_onclosed) override;
 
   // Called when the document element has been inserted in this frame. This
   // method may invoke untrusted JavaScript code that invalidate the frame and
@@ -170,7 +171,6 @@ class ExtensionFrameHelper
                                 const std::string& module_name,
                                 const std::string& function_name,
                                 const base::ListValue& args);
-  void OnAppWindowClosed(bool send_onclosed);
 
   // Type of view associated with the RenderFrame.
   ViewType view_type_ = VIEW_TYPE_INVALID;

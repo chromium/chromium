@@ -679,9 +679,6 @@ IPC_MESSAGE_ROUTED3(ExtensionMsg_DispatchOnDisconnect,
                     extensions::PortId /* port_id */,
                     std::string /* error_message */)
 
-// Notify the renderer that its window has closed.
-IPC_MESSAGE_ROUTED1(ExtensionMsg_AppWindowClosed, bool /* send_onclosed */)
-
 // Notify the renderer that an extension wants notifications when certain
 // searches match the active page.  This message replaces the old set of
 // searches, and triggers ExtensionHostMsg_OnWatchedPageChange messages from

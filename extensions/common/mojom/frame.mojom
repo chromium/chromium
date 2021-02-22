@@ -15,4 +15,7 @@ interface LocalFrame {
 
   // Tells the render view what its tab ID is.
   SetTabId(int32 tab_id);
+
+  // Notifies the renderer that its window has closed.
+  AppWindowClosed(bool send_onclosed);
 };

@@ -16,6 +16,7 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/app_window/native_app_window.h"
+#include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/common/extension_messages.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 
@@ -71,9 +72,9 @@ void AppWindowContentsImpl::NativeWindowChanged(
 }
 
 void AppWindowContentsImpl::NativeWindowClosed(bool send_onclosed) {
-  content::RenderFrameHost* rfh = web_contents_->GetMainFrame();
-  rfh->Send(
-      new ExtensionMsg_AppWindowClosed(rfh->GetRoutingID(), send_onclosed));
+  ExtensionWebContentsObserver::GetForWebContents(web_contents())
+      ->GetLocalFrame(web_contents_->GetMainFrame())
+      ->AppWindowClosed(send_onclosed);
 }
 
 content::WebContents* AppWindowContentsImpl::GetWebContents() const {
