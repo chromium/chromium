@@ -305,7 +305,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="QuickAnswers.ContextMenu.Close.Duration{InteractionType}"
-    units="ms" expires_after="2021-02-14">
+    units="ms" expires_after="2021-06-27">
   <owner>updowndota@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
