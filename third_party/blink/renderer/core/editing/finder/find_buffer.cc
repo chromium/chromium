@@ -150,15 +150,29 @@ bool FindBuffer::IsInvalidMatch(MatchResultICU match) const {
 EphemeralRangeInFlatTree FindBuffer::FindMatchInRange(
     const EphemeralRangeInFlatTree& range,
     String search_text,
-    FindOptions options) {
+    FindOptions options,
+    base::Optional<base::TimeDelta> timeout_ms) {
   if (!range.StartPosition().IsConnected())
     return EphemeralRangeInFlatTree();
+
+  base::TimeTicks start_time;
 
   EphemeralRangeInFlatTree last_match_range;
   Node* first_node = range.StartPosition().NodeAsRangeFirstNode();
   Node* past_last_node = range.EndPosition().NodeAsRangePastLastNode();
   Node* node = first_node;
   while (node && node != past_last_node) {
+    if (start_time.is_null()) {
+      start_time = base::TimeTicks::Now();
+    } else {
+      auto time_elapsed = base::TimeTicks::Now() - start_time;
+      if (timeout_ms.has_value() && time_elapsed > timeout_ms.value()) {
+        return EphemeralRangeInFlatTree(
+            PositionInFlatTree::FirstPositionInNode(*node),
+            PositionInFlatTree::FirstPositionInNode(*node));
+      }
+    }
+
     if (GetNonSearchableAncestor(*node)) {
       node = FlatTreeTraversal::NextSkippingChildren(*node);
       continue;

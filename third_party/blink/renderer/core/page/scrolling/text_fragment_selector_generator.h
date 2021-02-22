@@ -147,6 +147,8 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
   int iteration_ = 0;
   base::TimeTicks generation_start_time_;
 
+  Member<TextFragmentFinder> finder_;
+
   DISALLOW_COPY_AND_ASSIGN(TextFragmentSelectorGenerator);
 };
 

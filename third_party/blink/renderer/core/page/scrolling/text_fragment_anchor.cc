@@ -192,8 +192,10 @@ TextFragmentAnchor::TextFragmentAnchor(
       frame.GetDocument()->GetFragmentDirective().length());
 
   text_fragment_finders_.ReserveCapacity(text_fragment_selectors.size());
-  for (TextFragmentSelector selector : text_fragment_selectors)
-    text_fragment_finders_.emplace_back(*this, selector);
+  for (TextFragmentSelector selector : text_fragment_selectors) {
+    text_fragment_finders_.push_back(MakeGarbageCollected<TextFragmentFinder>(
+        *this, selector, frame_->GetDocument()));
+  }
 }
 
 bool TextFragmentAnchor::Invoke() {
@@ -259,7 +261,7 @@ bool TextFragmentAnchor::Invoke() {
 
     metrics_->ResetMatchCount();
     for (auto& finder : text_fragment_finders_)
-      finder.FindMatch(*frame_->GetDocument());
+      finder->FindMatch();
   }
 
   if (beforematch_state_ != kEventQueued)
@@ -308,6 +310,7 @@ void TextFragmentAnchor::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(element_fragment_anchor_);
   visitor->Trace(metrics_);
+  visitor->Trace(text_fragment_finders_);
   FragmentAnchor::Trace(visitor);
 }
 

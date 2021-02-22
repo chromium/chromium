@@ -128,6 +128,8 @@ blink_core_sources_editing = [
   "element_inner_text.cc",
   "ephemeral_range.cc",
   "ephemeral_range.h",
+  "finder/async_find_buffer.cc",
+  "finder/async_find_buffer.h",
   "finder/find_buffer.cc",
   "finder/find_buffer.h",
   "finder/find_in_page_coordinates.cc",

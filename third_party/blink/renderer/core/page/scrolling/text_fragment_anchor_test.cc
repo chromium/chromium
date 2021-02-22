@@ -2042,6 +2042,36 @@ TEST_F(TextFragmentAnchorTest, MatchAcrossCommentNode) {
   EXPECT_EQ(2u, GetDocument().Markers().Markers().size());
 }
 
+// Test that selection is successful for same prefix and text start.
+TEST_F(TextFragmentAnchorTest, SamePrefixAndText) {
+  SimRequest request("https://example.com/test.html#:~:text=foo-,foo,-bar",
+                     "text/html");
+  LoadURL("https://example.com/test.html#:~:text=foo-,foo,-bar");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body {
+        height: 1200px;
+      }
+      div {
+        position: absolute;
+        top: 1000px;
+      }
+    </style>
+    <div id="text">foo foo foo bar bar bar</div>
+  )HTML");
+  RunAsyncMatchingTasks();
+
+  // Render two frames to handle the async step added by the beforematch event.
+  Compositor().BeginFrame();
+  Compositor().BeginFrame();
+
+  Element& div = *GetDocument().getElementById("text");
+
+  EXPECT_EQ(div, *GetDocument().CssTarget());
+  EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(div)));
+  EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
+}
 // Checks that selection in the same text node is considerered uninterrupted.
 TEST_F(TextFragmentAnchorTest, IsInSameUninterruptedBlock_OneTextNode) {
   SimRequest request("https://example.com/test.html", "text/html");

@@ -351,8 +351,9 @@ void TextFragmentSelectorGenerator::RunTextFinder() {
   DCHECK(selector_);
   iteration_++;
   // |FindMatch| will call |DidFindMatch| indicating if the match was unique.
-  TextFragmentFinder finder(*this, *selector_);
-  finder.FindMatch(*selection_frame_->GetDocument());
+  finder_ = MakeGarbageCollected<TextFragmentFinder>(
+      *this, *selector_, selection_frame_->GetDocument());
+  finder_->FindMatch();
 }
 
 void TextFragmentSelectorGenerator::DidFindMatch(
@@ -437,6 +438,7 @@ void TextFragmentSelectorGenerator::Trace(Visitor* visitor) const {
   visitor->Trace(selection_frame_);
   visitor->Trace(selection_range_);
   visitor->Trace(selector_producer_);
+  visitor->Trace(finder_);
 }
 
 void TextFragmentSelectorGenerator::GenerateExactSelector() {

@@ -29,7 +29,8 @@ class CORE_EXPORT FindBuffer {
   static EphemeralRangeInFlatTree FindMatchInRange(
       const EphemeralRangeInFlatTree& range,
       String search_text,
-      const FindOptions);
+      const FindOptions,
+      base::Optional<base::TimeDelta> timeout_ms = base::nullopt);
 
   // Returns the closest ancestor of |start_node| (including the node itself)
   // that is block level.
