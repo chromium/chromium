@@ -753,7 +753,7 @@ void RenderWidgetHostViewEventHandler::FinishImeCompositionSession() {
   // otherwise the following call to cancel composition will lead to an extra
   // IPC for finishing the ongoing composition (see https://crbug.com/723024).
   host_view_->GetTextInputClient()->ConfirmCompositionText(
-      /* keep_selection */ false);
+      /* keep_selection */ true);
   host_view_->ImeCancelComposition();
 }
 

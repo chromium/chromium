@@ -1364,10 +1364,14 @@ TEST_F(RenderWidgetHostViewAuraTest, FinishCompositionByMouse) {
   view_->OnMouseEvent(&mouse_event);
   base::RunLoop().RunUntilIdle();
 
+  auto events = GetAndResetDispatchedMessages();
   EXPECT_FALSE(view_->has_composition_text_);
+  EXPECT_EQ("FinishComposingText MouseDown", GetMessageNames(events));
 
-  EXPECT_EQ("FinishComposingText MouseDown",
-            GetMessageNames(GetAndResetDispatchedMessages()));
+  MockWidgetInputHandler::DispatchedFinishComposingMessage* ime_message =
+      events[0]->ToFinishComposing();
+  EXPECT_TRUE(ime_message);
+  EXPECT_TRUE(ime_message->keep_selection());
 }
 
 // Checks that WasOcculded/WasUnOccluded notifies RenderWidgetHostImpl.

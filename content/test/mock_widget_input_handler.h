@@ -30,6 +30,7 @@ class MockWidgetInputHandler : public blink::mojom::WidgetInputHandler {
   class DispatchedFocusMessage;
   class DispatchedIMEMessage;
   class DispatchedRequestCompositionUpdatesMessage;
+  class DispatchedFinishComposingMessage;
 
   // Abstract storage of a received call on the MockWidgetInputHandler
   // interface.
@@ -55,6 +56,10 @@ class MockWidgetInputHandler : public blink::mojom::WidgetInputHandler {
     // null otherwise.
     virtual DispatchedRequestCompositionUpdatesMessage*
     ToRequestCompositionUpdates();
+
+    // Cast this to a DispatchedFinishComposingMessage if it is one,
+    // null otherwise.
+    virtual DispatchedFinishComposingMessage* ToFinishComposing();
 
     // Return the name associated with this message. It will either match
     // the message call name (eg. MouseCaptureLost) or the name of an
@@ -191,6 +196,26 @@ class MockWidgetInputHandler : public blink::mojom::WidgetInputHandler {
     const bool monitor_request_;
 
     DISALLOW_COPY_AND_ASSIGN(DispatchedRequestCompositionUpdatesMessage);
+  };
+
+  // A DispatchedMessage that stores the FinishComposingText parameters
+  // that were invoked with.
+  class DispatchedFinishComposingMessage : public DispatchedMessage {
+   public:
+    explicit DispatchedFinishComposingMessage(bool keep_selection);
+    DispatchedFinishComposingMessage(const DispatchedFinishComposingMessage&) =
+        delete;
+    DispatchedFinishComposingMessage& operator=(
+        const DispatchedFinishComposingMessage&) = delete;
+    ~DispatchedFinishComposingMessage() override;
+
+    // Override and return |this|.
+    DispatchedFinishComposingMessage* ToFinishComposing() override;
+
+    bool keep_selection() const { return keep_selection_; }
+
+   private:
+    const bool keep_selection_;
   };
 
   // blink::mojom::WidgetInputHandler override.

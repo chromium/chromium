@@ -81,7 +81,7 @@ void MockWidgetInputHandler::ImeCommitText(
 
 void MockWidgetInputHandler::ImeFinishComposingText(bool keep_selection) {
   dispatched_messages_.emplace_back(
-      std::make_unique<DispatchedMessage>("FinishComposingText"));
+      std::make_unique<DispatchedFinishComposingMessage>(keep_selection));
 }
 
 void MockWidgetInputHandler::RequestTextInputStateUpdate() {
@@ -157,6 +157,11 @@ MockWidgetInputHandler::DispatchedMessage::ToIME() {
 
 MockWidgetInputHandler::DispatchedRequestCompositionUpdatesMessage*
 MockWidgetInputHandler::DispatchedMessage::ToRequestCompositionUpdates() {
+  return nullptr;
+}
+
+MockWidgetInputHandler::DispatchedFinishComposingMessage*
+MockWidgetInputHandler::DispatchedMessage::ToFinishComposing() {
   return nullptr;
 }
 
@@ -285,6 +290,19 @@ MockWidgetInputHandler::DispatchedFocusMessage::~DispatchedFocusMessage() {}
 
 MockWidgetInputHandler::DispatchedFocusMessage*
 MockWidgetInputHandler::DispatchedFocusMessage::ToFocus() {
+  return this;
+}
+
+MockWidgetInputHandler::DispatchedFinishComposingMessage::
+    DispatchedFinishComposingMessage(bool keep_selection)
+    : DispatchedMessage("FinishComposingText"),
+      keep_selection_(keep_selection) {}
+
+MockWidgetInputHandler::DispatchedFinishComposingMessage::
+    ~DispatchedFinishComposingMessage() = default;
+
+MockWidgetInputHandler::DispatchedFinishComposingMessage*
+MockWidgetInputHandler::DispatchedFinishComposingMessage::ToFinishComposing() {
   return this;
 }
 
