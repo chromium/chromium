@@ -215,6 +215,7 @@ if (include_js_tests) {
       "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_view_manager_test.m.js",
       "$root_gen_dir/chrome/test/data/webui/cr_elements/find_shortcut_behavior_test.m.js",
       "$root_gen_dir/chrome/test/data/webui/fake_chrome_event.m.js",
+      "$root_gen_dir/chrome/test/data/webui/js/load_time_data_test.m.js",
       "$root_gen_dir/chrome/test/data/webui/mock_controller.m.js",
       "$root_gen_dir/chrome/test/data/webui/mock_timer.m.js",
       "$root_gen_dir/chrome/test/data/webui/resources/list_property_update_behavior_tests.m.js",
@@ -531,7 +532,7 @@ group("modulize") {
     "./cr_components:modulize",
     "./cr_components/chromeos:modulize",
     "./cr_elements:modulize",
-    "./js/cr:modulize",
+    "./js:modulize",
     "./resources:modulize",
     "./settings:modulize",
   ]

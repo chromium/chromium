@@ -1,0 +1,16 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/js_modulizer.gni")
+
+group("modulize") {
+  deps = [
+    ":modulize_local",
+    "./cr:modulize",
+  ]
+}
+
+js_modulizer("modulize_local") {
+  input_files = [ "load_time_data_test.js" ]
+}
