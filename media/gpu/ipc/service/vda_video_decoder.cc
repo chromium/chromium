@@ -551,7 +551,6 @@ void VdaVideoDecoder::ProvidePictureBuffersAsync(uint32_t count,
   std::vector<PictureBuffer> picture_buffers =
       picture_buffer_manager_->CreatePictureBuffers(
           count, pixel_format, planes, texture_size, texture_target,
-          vda_->SupportsSharedImagePictureBuffers(),
           vda_->GetSharedImageTextureAllocationMode());
   if (picture_buffers.empty()) {
     parent_task_runner_->PostTask(

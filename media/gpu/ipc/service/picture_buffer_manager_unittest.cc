@@ -42,20 +42,17 @@ class PictureBufferManagerImplTest : public testing::Test {
 
   std::vector<PictureBuffer> CreateARGBPictureBuffers(
       uint32_t count,
-      bool use_shared_image = false,
       VideoDecodeAccelerator::TextureAllocationMode mode =
           VideoDecodeAccelerator::TextureAllocationMode::kAllocateGLTextures) {
     return pbm_->CreatePictureBuffers(count, PIXEL_FORMAT_ARGB, 1,
-                                      gfx::Size(320, 240), GL_TEXTURE_2D,
-                                      use_shared_image, mode);
+                                      gfx::Size(320, 240), GL_TEXTURE_2D, mode);
   }
 
   PictureBuffer CreateARGBPictureBuffer(
-      bool use_shared_image = false,
       VideoDecodeAccelerator::TextureAllocationMode mode =
           VideoDecodeAccelerator::TextureAllocationMode::kAllocateGLTextures) {
     std::vector<PictureBuffer> picture_buffers =
-        CreateARGBPictureBuffers(1, use_shared_image, mode);
+        CreateARGBPictureBuffers(1, mode);
     DCHECK_EQ(picture_buffers.size(), 1U);
     return picture_buffers[0];
   }
@@ -108,12 +105,10 @@ TEST_F(PictureBufferManagerImplTest, CreatePictureBuffer) {
 TEST_F(PictureBufferManagerImplTest, CreatePictureBuffer_SharedImage) {
   Initialize();
   PictureBuffer pb1 = CreateARGBPictureBuffer(
-      true /* use_shared_image */,
       VideoDecodeAccelerator::TextureAllocationMode::kDoNotAllocateGLTextures);
   EXPECT_EQ(pb1.client_texture_ids().size(), 0u);
 
   PictureBuffer pb2 = CreateARGBPictureBuffer(
-      true /* use_shared_image */,
       VideoDecodeAccelerator::TextureAllocationMode::kAllocateGLTextures);
   EXPECT_TRUE(cbh_->HasTexture(pb2.client_texture_ids()[0]));
 }

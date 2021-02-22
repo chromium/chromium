@@ -63,7 +63,6 @@ class PictureBufferManager
   // |planes|: Number of image planes (textures) in the picture.
   // |texture_size|: Size of textures to create.
   // |texture_target|: Type of textures to create.
-  // |use_shared_image|: True if the created buffers should use shared images.
   //
   // Must be called on the GPU thread.
   //
@@ -80,7 +79,6 @@ class PictureBufferManager
       uint32_t planes,
       gfx::Size texture_size,
       uint32_t texture_target,
-      bool use_shared_image,
       VideoDecodeAccelerator::TextureAllocationMode mode) = 0;
 
   // Dismisses a picture buffer from the pool.

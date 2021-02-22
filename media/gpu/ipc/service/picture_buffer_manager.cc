@@ -76,7 +76,6 @@ class PictureBufferManagerImpl : public PictureBufferManager {
       uint32_t planes,
       gfx::Size texture_size,
       uint32_t texture_target,
-      bool use_shared_image,
       VideoDecodeAccelerator::TextureAllocationMode mode) override {
     DVLOG(2) << __func__;
     DCHECK(gpu_task_runner_);
@@ -84,10 +83,6 @@ class PictureBufferManagerImpl : public PictureBufferManager {
     DCHECK(count);
     DCHECK(planes);
     DCHECK_LE(planes, static_cast<uint32_t>(VideoFrame::kMaxPlanes));
-    DCHECK(
-        use_shared_image ||
-        mode ==
-            VideoDecodeAccelerator::TextureAllocationMode::kAllocateGLTextures);
 
     // TODO(sandersd): Consider requiring that CreatePictureBuffers() is
     // called with the context current.
@@ -101,8 +96,7 @@ class PictureBufferManagerImpl : public PictureBufferManager {
 
     std::vector<PictureBuffer> picture_buffers;
     for (uint32_t i = 0; i < count; i++) {
-      PictureBufferData picture_data = {pixel_format, texture_size,
-                                        use_shared_image};
+      PictureBufferData picture_data = {pixel_format, texture_size};
       if (mode ==
           VideoDecodeAccelerator::TextureAllocationMode::kAllocateGLTextures) {
         for (uint32_t j = 0; j < planes; j++) {
@@ -236,12 +230,11 @@ class PictureBufferManagerImpl : public PictureBufferManager {
 
     // If this |picture| has a SharedImage, then keep a reference to the
     // SharedImage in |picture_buffer_data| and update the gpu::MailboxHolder.
-    for (uint32_t i = 0; i < VideoFrame::kMaxPlanes; i++) {
-      if (auto scoped_shared_image = picture.scoped_shared_image(i)) {
-        picture_buffer_data.scoped_shared_images.push_back(scoped_shared_image);
-        picture_buffer_data.mailbox_holders[i] =
-            scoped_shared_image->GetMailboxHolder();
-      }
+    for (int i = 0; i < VideoFrame::kMaxPlanes; i++) {
+      auto image = picture.scoped_shared_image(i);
+      if (image)
+        picture_buffer_data.mailbox_holders[i] = image->GetMailboxHolder();
+      picture_buffer_data.scoped_shared_images[i] = std::move(image);
     }
 
     // Create and return a VideoFrame for the picture buffer.
@@ -333,6 +326,9 @@ class PictureBufferManagerImpl : public PictureBufferManager {
     DCHECK(gpu_task_runner_->BelongsToCurrentThread());
 
     std::vector<GLuint> service_ids;
+    std::array<scoped_refptr<Picture::ScopedSharedImage>,
+               VideoFrame::kMaxPlanes>
+        scoped_shared_images;
     {
       base::AutoLock lock(picture_buffers_lock_);
       const auto& it = picture_buffers_.find(picture_buffer_id);
@@ -340,8 +336,12 @@ class PictureBufferManagerImpl : public PictureBufferManager {
       DCHECK(it->second.dismissed);
       DCHECK(!it->second.IsInUse());
       service_ids = std::move(it->second.service_ids);
+      scoped_shared_images = std::move(it->second.scoped_shared_images);
       picture_buffers_.erase(it);
     }
+
+    if (service_ids.empty())
+      return;
 
     if (!command_buffer_helper_->MakeContextCurrent())
       return;
@@ -360,11 +360,12 @@ class PictureBufferManagerImpl : public PictureBufferManager {
   struct PictureBufferData {
     VideoPixelFormat pixel_format;
     gfx::Size texture_size;
-    bool use_shared_image = false;
     std::vector<GLuint> service_ids;
     gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes];
     std::vector<gfx::Size> texture_sizes;
-    std::vector<scoped_refptr<Picture::ScopedSharedImage>> scoped_shared_images;
+    std::array<scoped_refptr<Picture::ScopedSharedImage>,
+               VideoFrame::kMaxPlanes>
+        scoped_shared_images;
     bool dismissed = false;
 
     // The same picture buffer can be output from the VDA multiple times
