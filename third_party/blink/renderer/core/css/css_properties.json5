@@ -287,13 +287,7 @@
     // - font
     // The default property handlers call into the FontBuilder instead of
     // setting values directly onto the ComputedStyle
-    // - svg
-    // The default property handlers access the SVGComputedStyle
     font: {
-      default: false,
-      valid_type: "bool",
-    },
-    svg: {
       default: false,
       valid_type: "bool",
     },
@@ -303,8 +297,8 @@
     // For example, setting this to BlendMode will make us use a setter of
     // setBlendMode
     // - initial
-    // The static function to invoke on ComputedStyleInitialValues,
-    // SVGComputedStyle, or FontBuilder to retrieve the initial value.
+    // The static function to invoke on ComputedStyleInitialValues
+    // or FontBuilder to retrieve the initial value.
     // Defaults to e.g. InitialBorderBottomLeft.
     // - getter
     // The ComputedStyle getter, defaults to e.g. BorderBottomLeft
@@ -2623,7 +2617,11 @@
       name: "marker-end",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       inherited: true,
-      svg: true,
+      field_group: "inherited->inherited_svg->resources",
+      field_template: "pointer",
+      type_name: "StyleSVGResource",
+      wrapper_pointer_name: "scoped_refptr",
+      default_value: "nullptr",
       name_for_methods: "MarkerEndResource",
       converter: "ConvertElementReference",
       keywords: ["none"],
@@ -2633,7 +2631,11 @@
       name: "marker-mid",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       inherited: true,
-      svg: true,
+      field_group: "inherited->inherited_svg->resources",
+      field_template: "pointer",
+      type_name: "StyleSVGResource",
+      wrapper_pointer_name: "scoped_refptr",
+      default_value: "nullptr",
       name_for_methods: "MarkerMidResource",
       converter: "ConvertElementReference",
       keywords: ["none"],
@@ -2643,7 +2645,11 @@
       name: "marker-start",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       inherited: true,
-      svg: true,
+      field_group: "inherited->inherited_svg->resources",
+      field_template: "pointer",
+      type_name: "StyleSVGResource",
+      wrapper_pointer_name: "scoped_refptr",
+      default_value: "nullptr",
       name_for_methods: "MarkerStartResource",
       converter: "ConvertElementReference",
       keywords: ["none"],
@@ -5923,7 +5929,6 @@
       name: "marker",
       longhands: ["marker-start", "marker-mid", "marker-end"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      svg: true,
     },
     {
       name: "offset",

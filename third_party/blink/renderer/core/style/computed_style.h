@@ -43,7 +43,6 @@
 #include "third_party/blink/renderer/core/style/computed_style_initial_values.h"
 #include "third_party/blink/renderer/core/style/cursor_list.h"
 #include "third_party/blink/renderer/core/style/data_ref.h"
-#include "third_party/blink/renderer/core/style/svg_computed_style.h"
 #include "third_party/blink/renderer/core/style/transform_origin.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect_outsets.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
@@ -292,8 +291,6 @@ class ComputedStyle : public ComputedStyleBase,
   //    </script>
   mutable std::unique_ptr<PseudoElementStyleCache>
       cached_pseudo_element_styles_;
-
-  DataRef<SVGComputedStyle> svg_style_;
 
  private:
   // TODO(sashab): Move these private members to the bottom of ComputedStyle.
@@ -1096,10 +1093,6 @@ class ComputedStyle : public ComputedStyleBase,
   // widows
   void SetWidows(int16_t w) { SetWidowsInternal(clampTo<int16_t>(w, 1)); }
 
-  // SVG properties.
-  const SVGComputedStyle& SvgStyle() const { return *svg_style_.Get(); }
-  SVGComputedStyle& AccessSVGStyle() { return *svg_style_.Access(); }
-
   // fill helpers
   bool HasFill() const { return !FillPaint().IsNone(); }
   bool IsFillColorCurrentColor() const {
@@ -1108,15 +1101,6 @@ class ComputedStyle : public ComputedStyleBase,
   }
 
   // marker-* helpers
-  StyleSVGResource* MarkerStartResource() const {
-    return SvgStyle().MarkerStartResource();
-  }
-  StyleSVGResource* MarkerMidResource() const {
-    return SvgStyle().MarkerMidResource();
-  }
-  StyleSVGResource* MarkerEndResource() const {
-    return SvgStyle().MarkerEndResource();
-  }
   bool HasMarkers() const {
     return MarkerStartResource() || MarkerMidResource() || MarkerEndResource();
   }

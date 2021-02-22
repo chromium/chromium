@@ -33,9 +33,7 @@ void {{class_name}}::ApplyValue(StyleResolverState& state, const CSSValue& value
 {% endmacro %}
 
 {% macro set_value(property) %}
-  {% if property.svg %}
-state.Style()->AccessSVGStyle().{{property.setter}}
-  {%- elif property.font %}
+  {%- if property.font %}
 state.GetFontBuilder().{{property.setter}}
   {%- else %}
 state.Style()->{{property.setter}}
@@ -63,9 +61,7 @@ To<Longhand>(resolved_property).{{apply_call}};
 {% macro style_builder_functions(property) %}
   {% if not property.style_builder_template %}
     {% call(property) apply_initial(property) %}
-      {% if property.svg %}
-  {{set_value(property)}}(SVGComputedStyle::{{property.initial}}());
-      {% elif property.font %}
+      {% if property.font %}
   {{set_value(property)}}(FontBuilder::{{property.initial}}());
       {% else %}
   {{set_value(property)}}(ComputedStyleInitialValues::{{property.initial}}());
@@ -75,9 +71,7 @@ To<Longhand>(resolved_property).{{apply_call}};
       {% endif %}
     {% endcall %}
     {% call(property) apply_inherit(property) %}
-      {% if property.svg %}
-  {{set_value(property)}}(state.ParentStyle()->SvgStyle().{{property.getter}}());
-      {% elif property.font %}
+      {% if property.font %}
   {{set_value(property)}}(state.ParentFontDescription().{{property.getter}}());
       {% else %}
   {{set_value(property)}}(state.ParentStyle()->{{property.getter}}());

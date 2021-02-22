@@ -111,12 +111,10 @@ struct SameSizeAsComputedStyle : public SameSizeAsComputedStyleBase,
                                  public RefCounted<SameSizeAsComputedStyle> {
   SameSizeAsComputedStyle() {
     base::debug::Alias(&own_ptrs);
-    base::debug::Alias(&data_ref_svg_style);
   }
 
  private:
   void* own_ptrs[1];
-  void* data_ref_svg_style;
 };
 
 // If this assert fails, it means that size of ComputedStyle has changed. Please
@@ -171,13 +169,10 @@ scoped_refptr<ComputedStyle> ComputedStyle::Clone(const ComputedStyle& other) {
 
 ALWAYS_INLINE ComputedStyle::ComputedStyle()
     : ComputedStyleBase(), RefCounted<ComputedStyle>() {
-  svg_style_.Init();
 }
 
 ALWAYS_INLINE ComputedStyle::ComputedStyle(const ComputedStyle& o)
-    : ComputedStyleBase(o),
-      RefCounted<ComputedStyle>(),
-      svg_style_(o.svg_style_) {}
+    : ComputedStyleBase(o), RefCounted<ComputedStyle>() {}
 
 ALWAYS_INLINE ComputedStyle::ComputedStyle(PassKey key) : ComputedStyle() {}
 
@@ -449,8 +444,6 @@ void ComputedStyle::InheritFrom(const ComputedStyle& inherit_parent,
   EUserModify current_user_modify = UserModify();
 
   ComputedStyleBase::InheritFrom(inherit_parent, is_at_shadow_boundary);
-  if (svg_style_ != inherit_parent.svg_style_)
-    svg_style_.Access()->InheritFrom(*inherit_parent.svg_style_);
 
   if (is_at_shadow_boundary == kAtShadowBoundary) {
     // Even if surrounding content is user-editable, shadow DOM should act as a
@@ -557,8 +550,7 @@ bool ComputedStyle::IndependentInheritedEqual(
 
 bool ComputedStyle::NonIndependentInheritedEqual(
     const ComputedStyle& other) const {
-  return ComputedStyleBase::NonIndependentInheritedEqual(other) &&
-         svg_style_->InheritedEqual(*other.svg_style_);
+  return ComputedStyleBase::NonIndependentInheritedEqual(other);
 }
 
 bool ComputedStyle::NonInheritedEqual(const ComputedStyle& other) const {
@@ -568,8 +560,7 @@ bool ComputedStyle::NonInheritedEqual(const ComputedStyle& other) const {
 
 bool ComputedStyle::InheritedDataShared(const ComputedStyle& other) const {
   // This is a fast check that only looks if the data structures are shared.
-  return ComputedStyleBase::InheritedDataShared(other) &&
-         svg_style_.Get() == other.svg_style_.Get();
+  return ComputedStyleBase::InheritedDataShared(other);
 }
 
 static bool DependenceOnContentHeightHasChanged(const ComputedStyle& a,
@@ -590,9 +581,6 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
   // property inside this function anyway.
 
   StyleDifference diff;
-  if (svg_style_.Get() != other.svg_style_.Get())
-    diff = svg_style_->Diff(*other.svg_style_);
-
   if ((!diff.NeedsReshape() || !diff.NeedsFullLayout() ||
        !diff.NeedsPaintInvalidation()) &&
       DiffNeedsReshapeAndFullLayoutAndPaintInvalidation(*this, other)) {

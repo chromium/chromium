@@ -105,7 +105,8 @@
                 "column-count", "HasAutoColumnCount", "HasAutoColumnWidth", "column-fill", "column-span",
                 "cx", "cy", "d", "rx", "ry", "x", "y", "r", "alignment-baseline", "vector-effect",
                 "BaselineShiftType", "baseline-shift", "dominant-baseline", "text-anchor",
-                "stroke-width", "stroke-miterlimit", "stroke-linecap", "stroke-linejoin",],
+                "stroke-width", "stroke-miterlimit", "stroke-linecap", "stroke-linejoin",
+                "marker-end", "marker-mid", "marker-start",],
         methods_to_diff: [
           {
             method: "BorderLeftWidth()",
