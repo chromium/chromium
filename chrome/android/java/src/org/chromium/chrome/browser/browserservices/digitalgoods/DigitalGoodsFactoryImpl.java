@@ -75,6 +75,10 @@ public class DigitalGoodsFactoryImpl implements DigitalGoodsFactory {
             return;
         }
 
+        // If the user is making Digital Goods payments, this is a good hint that we should enable
+        // site isolation for the site.
+        SiteIsolator.startIsolatingSite(mDigitalGoodsDelegate.getUrl());
+
         int code = getResponseCode(paymentMethod);
         CreateDigitalGoodsResponseCode.validate(code);
         if (code == CreateDigitalGoodsResponseCode.OK) {

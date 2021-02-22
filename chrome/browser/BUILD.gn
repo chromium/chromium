@@ -2559,6 +2559,7 @@ static_library("browser") {
       "android/bookmarks/partner_bookmarks_shim.h",
       "android/bottombar/overlay_panel_content.cc",
       "android/bottombar/overlay_panel_content.h",
+      "android/browserservices/site_isolator.cc",
       "android/browsing_data/browsing_data_bridge.cc",
       "android/browsing_data/browsing_data_counter_bridge.cc",
       "android/browsing_data/browsing_data_counter_bridge.h",
