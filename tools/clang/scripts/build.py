@@ -38,7 +38,6 @@ LLVM_BOOTSTRAP_INSTALL_DIR = os.path.join(THIRD_PARTY_DIR,
 LLVM_INSTRUMENTED_DIR = os.path.join(THIRD_PARTY_DIR, 'llvm-instrumented')
 LLVM_PROFDATA_FILE = os.path.join(LLVM_INSTRUMENTED_DIR, 'profdata.prof')
 CHROME_TOOLS_SHIM_DIR = os.path.join(LLVM_DIR, 'llvm', 'tools', 'chrometools')
-COMPILER_RT_BUILD_DIR = os.path.join(LLVM_BUILD_DIR, 'compiler-rt')
 LLVM_BUILD_TOOLS_DIR = os.path.abspath(
     os.path.join(LLVM_DIR, '..', 'llvm-build-tools'))
 ANDROID_NDK_DIR = os.path.join(
@@ -430,6 +429,8 @@ def main():
                       help='do not build anything')
   parser.add_argument('--skip-checkout', action='store_true',
                       help='do not create or update any checkouts')
+  parser.add_argument('--build-dir',
+                      help='Override build directory')
   parser.add_argument('--extra-tools', nargs='*', default=[],
                       help='select additional chrome tools to build')
   parser.add_argument('--use-system-cmake', action='store_true',
@@ -500,7 +501,11 @@ def main():
   if sys.platform == 'darwin':
     isysroot = subprocess.check_output(['xcrun', '--show-sdk-path']).rstrip()
 
-  global CLANG_REVISION, PACKAGE_VERSION
+  global CLANG_REVISION, PACKAGE_VERSION, LLVM_BUILD_DIR
+
+  if args.build_dir:
+    LLVM_BUILD_DIR = args.build_dir
+
   if args.llvm_force_head_revision:
     checkout_revision = GetLatestLLVMCommit()
   else:
@@ -934,10 +939,11 @@ def main():
 
   # Do an out-of-tree build of compiler-rt for 32-bit Win clang_rt.profile.lib.
   if sys.platform == 'win32':
-    if os.path.isdir(COMPILER_RT_BUILD_DIR):
-      RmTree(COMPILER_RT_BUILD_DIR)
-    os.makedirs(COMPILER_RT_BUILD_DIR)
-    os.chdir(COMPILER_RT_BUILD_DIR)
+    compiler_rt_build_dir = os.path.join(LLVM_BUILD_DIR, 'compiler-rt')
+    if os.path.isdir(compiler_rt_build_dir):
+      RmTree(compiler_rt_build_dir)
+    os.makedirs(compiler_rt_build_dir)
+    os.chdir(compiler_rt_build_dir)
     if args.bootstrap:
       # The bootstrap compiler produces 64-bit binaries by default.
       cflags += ['-m32']
@@ -963,7 +969,7 @@ def main():
     RunCommand(['ninja', 'compiler-rt'], msvc_arch='x86')
 
     # Copy select output to the main tree.
-    rt_lib_src_dir = os.path.join(COMPILER_RT_BUILD_DIR, 'lib', 'clang',
+    rt_lib_src_dir = os.path.join(compiler_rt_build_dir, 'lib', 'clang',
                                   RELEASE_VERSION, 'lib', platform)
     # Static and dynamic libraries:
     CopyDirectoryContents(rt_lib_src_dir, rt_lib_dst_dir)
