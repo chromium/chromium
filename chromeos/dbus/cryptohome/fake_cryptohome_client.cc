@@ -326,6 +326,23 @@ void FakeCryptohomeClient::CheckKeyEx(
   ReturnProtobufMethodCallback(reply, std::move(callback));
 }
 
+void FakeCryptohomeClient::ListKeysEx(
+    const cryptohome::AccountIdentifier& cryptohome_id,
+    const cryptohome::AuthorizationRequest& auth,
+    const cryptohome::ListKeysRequest& request,
+    DBusMethodCallback<cryptohome::BaseReply> callback) {
+  cryptohome::CryptohomeErrorCode error = cryptohome_error_;
+
+  cryptohome::BaseReply reply;
+  cryptohome::ListKeysReply* list_keys =
+      reply.MutableExtension(cryptohome::ListKeysReply::reply);
+  // See kCryptohomeGaiaKeyLabel
+  list_keys->add_labels("gaia");
+  list_keys->add_labels("pin");
+  reply.set_error(error);
+  ReturnProtobufMethodCallback(reply, std::move(callback));
+}
+
 void FakeCryptohomeClient::MountEx(
     const cryptohome::AccountIdentifier& cryptohome_id,
     const cryptohome::AuthorizationRequest& auth,

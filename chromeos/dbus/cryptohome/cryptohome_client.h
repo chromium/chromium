@@ -29,6 +29,7 @@ class EndFingerprintAuthSessionRequest;
 class GetKeyDataRequest;
 class GetLoginStatusRequest;
 class GetSupportedKeyPoliciesRequest;
+class ListKeysRequest;
 class LockToSingleUserMountUntilRebootRequest;
 class MassRemoveKeysRequest;
 class MigrateKeyRequest;
@@ -260,6 +261,16 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) CryptohomeClient {
       const cryptohome::AccountIdentifier& id,
       const cryptohome::AuthorizationRequest& auth,
       const cryptohome::CheckKeyRequest& request,
+      DBusMethodCallback<cryptohome::BaseReply> callback) = 0;
+
+  // Asynchronously calls ListKeysEx method. |callback| is called after method
+  // call, and with reply protobuf.
+  // ListKeysEx can be used to check if user mount exists and which
+  // key labels are associated with it. |auth| is not required and can be empty.
+  virtual void ListKeysEx(
+      const cryptohome::AccountIdentifier& id,
+      const cryptohome::AuthorizationRequest& auth,
+      const cryptohome::ListKeysRequest& request,
       DBusMethodCallback<cryptohome::BaseReply> callback) = 0;
 
   // Asynchronously calls MountEx method. Afterward, |callback| is called with
