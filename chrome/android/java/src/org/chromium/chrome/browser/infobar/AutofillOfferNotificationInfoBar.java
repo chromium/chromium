@@ -4,11 +4,12 @@
 
 package org.chromium.chrome.browser.infobar;
 
+import android.graphics.Typeface;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.text.style.ImageSpan;
+import android.text.style.StyleSpan;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -62,24 +63,22 @@ public class AutofillOfferNotificationInfoBar extends ConfirmInfoBar {
     @Override
     public void createContent(InfoBarLayout layout) {
         super.createContent(layout);
-        if (TextUtils.isEmpty(mCreditCardIdentifierString) || mHeaderIconDrawableId == 0
-                || mNetworkIconDrawableId == 0) {
+        if (TextUtils.isEmpty(mCreditCardIdentifierString) || mHeaderIconDrawableId == 0) {
             return;
         }
         UiUtils.removeViewFromParent(layout.getMessageTextView());
         layout.getMessageLayout().addIconTitle(mHeaderIconDrawableId, mTitleText);
         InfoBarControlLayout control = layout.addControlLayout();
 
-        String prefix = getContext().getString(R.string.autofill_offers_reminder_description_text);
-        SpannableStringBuilder text =
-                new SpannableStringBuilder(prefix + "  " + mCreditCardIdentifierString);
+        String offerDetails = getContext().getString(
+                R.string.autofill_offers_reminder_description_text, mCreditCardIdentifierString);
+        SpannableStringBuilder text = new SpannableStringBuilder(offerDetails);
+        // Highlight the cardIdentifierString as bold.
+        int indexForCardIdentifierString = offerDetails.indexOf(mCreditCardIdentifierString);
+        text.setSpan(new StyleSpan(Typeface.BOLD), indexForCardIdentifierString,
+                indexForCardIdentifierString + mCreditCardIdentifierString.length(),
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        // Set the network icon.
-        ImageSpan span =
-                new ImageSpan(getContext(), mNetworkIconDrawableId, ImageSpan.ALIGN_CENTER);
-        text.setSpan(span, prefix.length(), prefix.length() + 1, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-
-        // Set the offer deep link.
         if (!TextUtils.isEmpty(mOfferDeepLinkUrl)) {
             String linkText =
                     getContext().getString(R.string.autofill_offers_reminder_deep_link_text);
@@ -89,8 +88,8 @@ public class AutofillOfferNotificationInfoBar extends ConfirmInfoBar {
                             -> AutofillOfferNotificationInfoBarJni.get().onOfferDeepLinkClicked(
                                     mNativeAutofillOfferNotificationInfoBar,
                                     AutofillOfferNotificationInfoBar.this, mOfferDeepLinkUrl));
-            SpannableString linkSpan = new SpannableString("  " + linkText);
-            linkSpan.setSpan(noUnderlineClickableSpan, 2, linkText.length() + 2,
+            SpannableString linkSpan = new SpannableString(" " + linkText);
+            linkSpan.setSpan(noUnderlineClickableSpan, 1, linkText.length() + 1,
                     Spanned.SPAN_INCLUSIVE_INCLUSIVE);
             text.append(linkSpan);
         }
