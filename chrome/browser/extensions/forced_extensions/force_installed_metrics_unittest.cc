@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/forced_extensions/force_installed_metrics.h"
 
+#include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/optional.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -11,10 +12,13 @@
 #include "base/timer/mock_timer.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_test_base.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
+#include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
@@ -125,6 +129,8 @@ constexpr char kCrxHeaderInvalidFailureIsCWS[] =
     "Extensions.ForceInstalledFailureWithCrxHeaderInvalidIsCWS";
 constexpr char kCrxHeaderInvalidFailureFromCache[] =
     "Extensions.ForceInstalledFailureWithCrxHeaderInvalidIsFromCache";
+constexpr char kStuckInCreatedStageAreExtensionsEnabled[] =
+    "Extensions.ForceInstalledFailureStuckInCreatedStageAreExtensionsEnabled";
 
 }  // namespace
 
@@ -161,6 +167,16 @@ class ForceInstalledMetricsTest : public ForceInstalledTestBase {
                             DictionaryBuilder()
                                 .Set(kExtensionId1, std::move(extension_entry))
                                 .Build());
+  }
+
+  void CreateExtensionService(bool extensions_enabled) {
+    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+    command_line.AppendSwitch(::switches::kDisableExtensions);
+    extensions::TestExtensionSystem* test_ext_system =
+        static_cast<extensions::TestExtensionSystem*>(
+            extensions::ExtensionSystem::Get(profile()));
+    test_ext_system->CreateExtensionService(&command_line, base::FilePath(),
+                                            false);
   }
 
   // Report downloading manifest stage for both the extensions.
@@ -451,6 +467,39 @@ TEST_F(ForceInstalledMetricsTest,
   fake_timer_->Fire();
   histogram_tester_.ExpectUniqueSample(
       kDisableReason, disable_reason::DisableReason::DISABLE_NONE, 1);
+}
+
+// Verifies if the metrics related to whether the extensions are enabled or not
+// are recorded correctly for extensions stuck in
+// NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_FORCED stage.
+TEST_F(ForceInstalledMetricsTest,
+       ExtensionsStuckInCreatedStageAreExtensionsEnabled) {
+  SetupForceList(/*is_from_store=*/true);
+  CreateExtensionService(/*extensions_enabled=*/false);
+
+  scoped_refptr<const Extension> ext1 = CreateNewExtension(
+      kExtensionName1, kExtensionId1, ExtensionStatus::kLoaded);
+  registry()->AddEnabled(ext1.get());
+  force_installed_tracker()->OnExtensionLoaded(profile(), ext1.get());
+  install_stage_tracker()->ReportInstallationStage(
+      kExtensionId2, InstallStageTracker::Stage::CREATED);
+  install_stage_tracker()->ReportInstallCreationStage(
+      kExtensionId2, InstallStageTracker::InstallCreationStage::
+                         NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_FORCED);
+
+  EXPECT_TRUE(fake_timer_->IsRunning());
+  fake_timer_->Fire();
+  histogram_tester_.ExpectUniqueSample(
+      kFailureReasonsCWS, InstallStageTracker::FailureReason::IN_PROGRESS, 1);
+  histogram_tester_.ExpectBucketCount(kInstallationStages,
+                                      InstallStageTracker::Stage::CREATED, 1);
+  histogram_tester_.ExpectBucketCount(
+      kInstallCreationStages,
+      InstallStageTracker::InstallCreationStage::
+          NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_FORCED,
+      1);
+  histogram_tester_.ExpectUniqueSample(kStuckInCreatedStageAreExtensionsEnabled,
+                                       false, 1);
 }
 
 TEST_F(ForceInstalledMetricsTest, ExtensionForceInstalledAndBlocklisted) {
@@ -822,7 +871,7 @@ TEST_F(ForceInstalledMetricsTest, ExtensionStuckInCreatedStage) {
       kExtensionId2, InstallStageTracker::Stage::CREATED);
   install_stage_tracker()->ReportInstallCreationStage(
       kExtensionId2, InstallStageTracker::InstallCreationStage::
-                         NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_FORCED);
+                         NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_NOT_FORCED);
   EXPECT_TRUE(fake_timer_->IsRunning());
   fake_timer_->Fire();
   histogram_tester_.ExpectUniqueSample(
@@ -832,7 +881,7 @@ TEST_F(ForceInstalledMetricsTest, ExtensionStuckInCreatedStage) {
   histogram_tester_.ExpectUniqueSample(
       kInstallCreationStages,
       InstallStageTracker::InstallCreationStage::
-          NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_FORCED,
+          NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_NOT_FORCED,
       1);
 }
 
