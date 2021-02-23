@@ -1118,8 +1118,12 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   // - subframes in a different SiteInstance from their parent.
   //
   // Local roots require a RenderWidget for input/layout/painting.
-  if (!parent_ || IsCrossProcessSubframe()) {
-    if (!parent_) {
+  // Note: We cannot use is_local_root() here because this block sets up the
+  // fields that are used by that method.
+  const bool setup_local_render_widget_host =
+      is_main_frame() || IsCrossProcessSubframe();
+  if (setup_local_render_widget_host) {
+    if (is_main_frame()) {
       // For main frames, the RenderWidgetHost is owned by the RenderViewHost.
       // TODO(https://crbug.com/545684): Once RenderViewHostImpl has-a
       // RenderWidgetHostImpl, the main render frame should probably start
@@ -1147,6 +1151,9 @@ RenderFrameHostImpl::RenderFrameHostImpl(
     GetLocalRenderWidgetHost()->input_router()->SetFrameTreeNodeId(
         frame_tree_node_->frame_tree_node_id());
   }
+  // Verify is_local_root() now indicates whether this frame is a local root or
+  // not. It is safe to use this method anywhere beyond this point.
+  DCHECK_EQ(setup_local_render_widget_host, is_local_root());
   ResetFeaturePolicy();
 
   // New RenderFrameHostImpl are put in their own virtual browsing context
@@ -9145,7 +9152,7 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
     return;
 
   // Only generate reports for local root frames.
-  if (!frame_tree_node_->IsMainFrame() && !IsCrossProcessSubframe())
+  if (!is_local_root())
     return;
 
   // Check the termination status to see if a crash occurred (and potentially
@@ -9501,7 +9508,7 @@ RenderFrameHostImpl::MaybeCreateWebBundleHandleTracker() {
 }
 
 RenderWidgetHostImpl* RenderFrameHostImpl::GetLocalRenderWidgetHost() const {
-  if (!parent_)
+  if (is_main_frame())
     return render_view_host_->GetWidget();
   else
     return owned_render_widget_host_.get();
