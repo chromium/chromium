@@ -392,6 +392,30 @@ INSTANTIATE_TEST_SUITE_P(All,
                          StyleResolverFontRelativeUnitTest,
                          testing::Values("em", "rem", "ex", "ch"));
 
+// TODO(crbug.com/1180159): Remove this test when @container and transitions
+// work properly.
+TEST_F(StyleResolverTest, BaseNotReusableWithContainerQueries) {
+  ScopedCSSContainerQueriesForTest scoped_feature(true);
+
+  GetDocument().documentElement()->setInnerHTML("<div id=div>Test</div>");
+  UpdateAllLifecyclePhasesForTest();
+  Element* div = GetDocument().getElementById("div");
+
+  auto* effect = CreateSimpleKeyframeEffectForTest(div, CSSPropertyID::kWidth,
+                                                   "50px", "100px");
+  GetDocument().Timeline().Play(effect);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ("50px", ComputedValue("width", *StyleForId("div")));
+
+  div->SetNeedsAnimationStyleRecalc();
+  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
+  StyleForId("div");
+
+  StyleResolverState state(GetDocument(), *div);
+  EXPECT_FALSE(StyleResolver::CanReuseBaseComputedStyle(state));
+}
+
 namespace {
 
 const CSSImageValue& GetBackgroundImageValue(const ComputedStyle& style) {
