@@ -46,7 +46,7 @@ def DoMain(argv):
   path_template = "org/chromium/content/app/SandboxedProcessService{0}.java"
   with build_utils.AtomicOutput(output) as f:
     with zipfile.ZipFile(f, 'w', zipfile.ZIP_STORED) as srcjar:
-      for i in xrange(number):
+      for i in range(number):
         build_utils.AddToZipHermetic(srcjar,
                                      path_template.format(i),
                                      data=GenerateService(i))
