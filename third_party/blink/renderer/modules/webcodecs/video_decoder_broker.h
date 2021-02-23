@@ -20,6 +20,7 @@
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/modules/webcodecs/hardware_preference.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace base {
@@ -104,6 +105,8 @@ class MODULES_EXPORT VideoDecoderBroker : public media::VideoDecoder,
   bool NeedsBitstreamConversion() const override;
   bool CanReadWithoutStalling() const override;
   int GetMaxDecodeRequests() const override;
+
+  void SetHardwarePreference(HardwarePreference hardware_preference);
 
  private:
   // Creates a new (incremented) callback ID from |last_callback_id_| for

@@ -14,6 +14,7 @@
 #include "media/base/video_frame_pool.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_output_callback.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoder_base.h"
+#include "third_party/blink/renderer/modules/webcodecs/hardware_preference.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 
 namespace media {
@@ -30,14 +31,13 @@ class VideoEncoderEncodeOptions;
 
 class MODULES_EXPORT VideoEncoderTraits {
  public:
-  enum class AccelerationPreference { kAllow, kDeny, kRequire };
   struct ParsedConfig final : public GarbageCollected<ParsedConfig> {
     media::VideoCodec codec;
     media::VideoCodecProfile profile;
     uint8_t level;
     media::VideoColorSpace color_space;
 
-    AccelerationPreference acc_pref;
+    HardwarePreference hw_pref;
 
     media::VideoEncoder::Options options;
     String codec_string;
@@ -71,7 +71,6 @@ class MODULES_EXPORT VideoEncoder final
 
  private:
   using Base = EncoderBase<VideoEncoderTraits>;
-  using AccelerationPreference = VideoEncoderTraits::AccelerationPreference;
   using ParsedConfig = VideoEncoderTraits::ParsedConfig;
 
   void CallOutputCallback(
