@@ -183,6 +183,10 @@ interface XRHitTestResult
 interface XRTransientInputHitTestSource
 interface XRAnchor
 interface XRAnchorSet
+interface XRLightEstimate
+interface XRLightProbe : EventTarget
+interface XRWebGLBinding
+    method getReflectionCubeMap
 
 # Web Serial API is not implemented on Android. If Bluetooth Classic support
 # were added this could change. https://crbug.com/1164036
