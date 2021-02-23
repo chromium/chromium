@@ -106,6 +106,7 @@ class AddToMenuItemViewBinder extends ArrayAdapter<MenuItem>
         // once the experiment is done.
         assert item.hasSubMenu();
         mHighlightedItemId = null;
+        mAddToMenuItems.clear();
         for (int i = 0; i < item.getSubMenu().size(); ++i) {
             if (item.getSubMenu().getItem(i).isVisible()) {
                 mAddToMenuItems.add(item.getSubMenu().getItem(i));
