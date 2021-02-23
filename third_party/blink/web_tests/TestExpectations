@@ -720,6 +720,7 @@ crbug.com/1081802 external/wpt/css/css-flexbox/overflow-area-001.html [ Failure 
 crbug.com/1081802 external/wpt/css/css-flexbox/overflow-area-002.html [ Failure ]
 crbug.com/807497 external/wpt/css/css-flexbox/anonymous-flex-item-005.html [ Failure ]
 crbug.com/1155036 external/wpt/css/css-flexbox/contain-size-layout-abspos-flex-container-crash.html [ Crash Pass ]
+crbug.com/1181403 external/wpt/css/css-flexbox/table-as-item-specified-height.html [ Failure ]
 
 # These require css-align-3 positional keywords that Blink doesn't yet support for flexbox.
 crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-justify-content-horiz-001a.xhtml [ Failure ]
@@ -2484,12 +2485,6 @@ crbug.com/626703 external/wpt/css/css-tables/col-definite-min-size-001.html [ Fa
 crbug.com/626703 external/wpt/css/css-tables/col-definite-size-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-transforms/translate/translate-and-transform-attribute-in-svg.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-transforms/translate/translate-and-transform-css-property-in-svg.html [ Failure ]
-crbug.com/626703 [ Linux ] external/wpt/css/css-flexbox/table-as-item-specified-height.html [ Failure ]
-crbug.com/626703 [ Mac10.12 ] external/wpt/css/css-flexbox/table-as-item-specified-height.html [ Failure ]
-crbug.com/626703 [ Mac10.13 ] external/wpt/css/css-flexbox/table-as-item-specified-height.html [ Failure ]
-crbug.com/626703 [ Mac10.14 ] external/wpt/css/css-flexbox/table-as-item-specified-height.html [ Failure ]
-crbug.com/626703 [ Mac10.15 ] external/wpt/css/css-flexbox/table-as-item-specified-height.html [ Failure ]
-crbug.com/626703 [ Win ] external/wpt/css/css-flexbox/table-as-item-specified-height.html [ Failure ]
 crbug.com/626703 external/wpt/css/selectors/focus-visible-007.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/webcodecs/videoFrame-drawImage.any.worker.html [ Crash ]
 crbug.com/626703 [ Mac10.12 ] external/wpt/webcodecs/videoFrame-drawImage.any.worker.html [ Crash ]
