@@ -69,7 +69,6 @@
 
         <ImageView
             android:id="@+id/screenshot_image"
-            android:alpha="1"
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
             android:layout_marginEnd="30dp"
@@ -79,6 +78,19 @@
             android:background="@color/modern_white"
             android:contentDescription="@string/sharing_long_screenshot"
             android:padding="1dp"/>
+
+        <ImageView
+            android:id="@+id/next_screenshot_image"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginEnd="30dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:background="@color/modern_white"
+            android:contentDescription="@string/sharing_long_screenshot"
+            android:padding="1dp"
+            android:visibility="gone"/>
 
         <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/down_button"
