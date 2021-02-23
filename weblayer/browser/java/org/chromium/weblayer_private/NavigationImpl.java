@@ -200,6 +200,20 @@ public final class NavigationImpl extends INavigation.Stub {
         }
     }
 
+    @Override
+    public boolean isFormSubmission() {
+        StrictModeWorkaround.apply();
+        throwIfNativeDestroyed();
+        return NavigationImplJni.get().isFormSubmission(mNativeNavigationImpl);
+    }
+
+    @Override
+    public String getReferrer() {
+        StrictModeWorkaround.apply();
+        throwIfNativeDestroyed();
+        return NavigationImplJni.get().getReferrer(mNativeNavigationImpl);
+    }
+
     public void setIntentLaunched() {
         mIntentLaunched = true;
     }
@@ -268,5 +282,7 @@ public final class NavigationImpl extends INavigation.Stub {
         boolean isServedFromBackForwardCache(long nativeNavigationImpl);
         boolean disableNetworkErrorAutoReload(long nativeNavigationImpl);
         boolean areIntentLaunchesAllowedInBackground(long nativeNavigationImpl);
+        boolean isFormSubmission(long nativeNavigationImpl);
+        String getReferrer(long nativeNavigationImpl);
     }
 }

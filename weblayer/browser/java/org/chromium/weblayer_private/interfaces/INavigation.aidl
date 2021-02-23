@@ -41,4 +41,8 @@ interface INavigation {
 
   // @since 88
   void disableNetworkErrorAutoReload() = 17;
+
+  // @since 90
+  boolean isFormSubmission() = 19;
+  String getReferrer() = 20;
 }

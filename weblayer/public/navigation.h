@@ -148,6 +148,12 @@ class Navigation {
   //   * if an embedder injects code using Tab::ExecuteScript there is no need
   //     to reinject scripts
   virtual bool IsServedFromBackForwardCache() = 0;
+
+  // Returns true if this navigation was initiated by a form submission.
+  virtual bool IsFormSubmission() = 0;
+
+  // Returns the referrer for this request.
+  virtual GURL GetReferrer() = 0;
 };
 
 }  // namespace weblayer

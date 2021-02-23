@@ -112,6 +112,12 @@ jboolean NavigationImpl::AreIntentLaunchesAllowedInBackground(JNIEnv* env) {
   return navigation_ui_data->are_intent_launches_allowed_in_background();
 }
 
+base::android::ScopedJavaLocalRef<jstring> NavigationImpl::GetReferrer(
+    JNIEnv* env) {
+  return ScopedJavaLocalRef<jstring>(
+      base::android::ConvertUTF8ToJavaString(env, GetReferrer().spec()));
+}
+
 void NavigationImpl::SetResponse(
     std::unique_ptr<embedder_support::WebResourceResponse> response) {
   response_ = std::move(response);
@@ -239,6 +245,14 @@ void NavigationImpl::SetUserAgentString(const std::string& value) {
 void NavigationImpl::DisableNetworkErrorAutoReload() {
   DCHECK(safe_to_disable_network_error_auto_reload_);
   disable_network_error_auto_reload_ = true;
+}
+
+bool NavigationImpl::IsFormSubmission() {
+  return navigation_handle_->IsFormSubmission();
+}
+
+GURL NavigationImpl::GetReferrer() {
+  return navigation_handle_->GetReferrer().url;
 }
 
 #if defined(OS_ANDROID)
