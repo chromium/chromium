@@ -699,5 +699,43 @@ TEST(TrustTokenStore, RemovesDataForNullFilter) {
   EXPECT_FALSE(store->RetrieveNonstaleRedemptionRecord(issuer, toplevel));
 }
 
+TEST(TrustTokenStore, RemovesTrustTokensByIssuer) {
+  auto store = TrustTokenStore::CreateForTesting();
+  auto issuer =
+      *SuitableTrustTokenOrigin::Create(GURL("https://www.issuer.com"));
+
+  // Add token for issuer.
+  store->AddTokens(issuer, std::vector<std::string>{"token"}, "key");
+
+  EXPECT_TRUE(store->CountTokens(issuer));
+  EXPECT_TRUE(store->DeleteStoredTrustTokens(issuer));
+  EXPECT_FALSE(store->CountTokens(issuer));
+}
+
+TEST(TrustTokenStore, RemoveReturnsFalseWhenNoTrustTokensAreDeleted) {
+  auto store = TrustTokenStore::CreateForTesting();
+  auto issuer =
+      *SuitableTrustTokenOrigin::Create(GURL("https://www.issuer.com"));
+
+  EXPECT_FALSE(store->CountTokens(issuer));
+  EXPECT_FALSE(store->DeleteStoredTrustTokens(issuer));
+}
+
+TEST(TrustTokenStore, RemovesTrustTokensByIssuerAndKeepsOthers) {
+  auto store = TrustTokenStore::CreateForTesting();
+  auto issuer_foo =
+      *SuitableTrustTokenOrigin::Create(GURL("https://www.issuer-foo.com"));
+  auto issuer_bar =
+      *SuitableTrustTokenOrigin::Create(GURL("https://www.issuer-bar.com"));
+
+  // Add tokens for both issuers.
+  store->AddTokens(issuer_foo, std::vector<std::string>{"token"}, "key");
+  store->AddTokens(issuer_bar, std::vector<std::string>{"token"}, "key");
+
+  EXPECT_TRUE(store->DeleteStoredTrustTokens(issuer_foo));
+  EXPECT_FALSE(store->CountTokens(issuer_foo));
+  EXPECT_TRUE(store->CountTokens(issuer_bar));
+}
+
 }  // namespace trust_tokens
 }  // namespace network
