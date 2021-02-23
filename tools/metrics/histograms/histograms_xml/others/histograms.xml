@@ -5583,8 +5583,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <token key="AppType">
     <variant name="Arc"/>
     <variant name="Borealis"/>
+    <variant name="BuiltIn"/>
     <variant name="Crostini"/>
     <variant name="Extension"/>
+    <variant name="Lacros"/>
+    <variant name="MacOs"/>
+    <variant name="PluginVm"/>
+    <variant name="Remote"/>
+    <variant name="Unknown"/>
     <variant name="Web"/>
   </token>
 </histogram>

@@ -22,23 +22,20 @@ namespace chromeos {
 class FamilyUserAppMetrics : public FamilyUserMetricsService::Observer,
                              public apps::AppRegistryCache::Observer {
  public:
-  // UMA metrics for a snapshot count of installed and enabled extensions for a
-  // given family user.
-  static const char kInstalledExtensionsCountHistogramName[];
-  static const char kEnabledExtensionsCountHistogramName[];
-
-  // UMA metrics for a snapshot count of recently used apps for a given family
-  // user.
-  static const char kArcAppsCountHistogramName[];
-  static const char kBorealisAppsCountHistogramName[];
-  static const char kCrostiniAppsCountHistogramName[];
-  static const char kExtensionAppsCountHistogramName[];
-  static const char kWebAppsCountHistogramName[];
-
   explicit FamilyUserAppMetrics(Profile* profile);
   FamilyUserAppMetrics(const FamilyUserAppMetrics&) = delete;
   FamilyUserAppMetrics& operator=(const FamilyUserAppMetrics&) = delete;
   ~FamilyUserAppMetrics() override;
+
+  // UMA metrics for a snapshot count of installed and enabled extensions for a
+  // given family user.
+  static const char* GetInstalledExtensionsCountHistogramNameForTest();
+  static const char* GetEnabledExtensionsCountHistogramNameForTest();
+
+  // UMA metrics for a snapshot count of recently used apps for a given family
+  // user.
+  static const char* GetAppsCountHistogramNameForTest(
+      apps::mojom::AppType app_type);
 
  protected:
   // These methods are marked protected for visibility to derived test class.

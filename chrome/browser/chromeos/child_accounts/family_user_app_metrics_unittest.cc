@@ -31,6 +31,9 @@ namespace {
 
 constexpr base::TimeDelta kOneDay = base::TimeDelta::FromDays(1);
 constexpr char kStartTime[] = "1 Jan 2020 21:15";
+constexpr int kStart = static_cast<int>(apps::mojom::AppType::kUnknown);  // 0
+constexpr int kEnd =
+    static_cast<int>(apps::mojom::AppType::kBorealis);  // max_value
 
 apps::mojom::AppPtr MakeApp(const char* app_id,
                             const char* name,
@@ -44,23 +47,6 @@ apps::mojom::AppPtr MakeApp(const char* app_id,
   return app;
 }
 
-std::string AppTypeToHistogramName(apps::mojom::AppType app_type) {
-  switch (app_type) {
-    case apps::mojom::AppType::kArc:
-      return FamilyUserAppMetrics::kArcAppsCountHistogramName;
-    case apps::mojom::AppType::kBorealis:
-      return FamilyUserAppMetrics::kBorealisAppsCountHistogramName;
-    case apps::mojom::AppType::kCrostini:
-      return FamilyUserAppMetrics::kCrostiniAppsCountHistogramName;
-    case apps::mojom::AppType::kExtension:
-      return FamilyUserAppMetrics::kExtensionAppsCountHistogramName;
-    case apps::mojom::AppType::kWeb:
-      return FamilyUserAppMetrics::kWebAppsCountHistogramName;
-    default:
-      return "";
-  }
-}
-
 }  // namespace
 
 class FamilyUserAppMetricsDerivedForTest : public FamilyUserAppMetrics {
@@ -72,9 +58,7 @@ class FamilyUserAppMetricsDerivedForTest : public FamilyUserAppMetrics {
   void OnNewDay() override { FamilyUserAppMetrics::OnNewDay(); }
 
   void InitializeAppTypes() {
-    int start = static_cast<int>(apps::mojom::AppType::kUnknown);  // 0
-    int end = static_cast<int>(apps::mojom::AppType::kBorealis);   // max_value
-    for (int app_type = start; app_type <= end; app_type++)
+    for (int app_type = kStart; app_type <= kEnd; app_type++)
       InitializeAppType(static_cast<apps::mojom::AppType>(app_type));
   }
 
@@ -158,37 +142,43 @@ class FamilyUserAppMetricsTest
     apps::AppRegistryCache& cache =
         apps::AppServiceProxyFactory::GetForProfile(profile())
             ->AppRegistryCache();
-    deltas.push_back(MakeApp(/*app_id=*/"a", /*app_name=*/"apple",
+    deltas.push_back(MakeApp(/*app_id=*/"u", /*app_name=*/"unknown",
+                             /*last_launch_time=*/base::Time::Now(),
+                             apps::mojom::AppType::kUnknown));
+    deltas.push_back(MakeApp(/*app_id=*/"a", /*app_name=*/"arc",
                              /*last_launch_time=*/base::Time::Now(),
                              apps::mojom::AppType::kArc));
-    deltas.push_back(MakeApp(/*app_id=*/"b", /*app_name=*/"banana",
-                             /*last_launch_time=*/base::Time::Now() - kOneDay,
+    deltas.push_back(MakeApp(/*app_id=*/"bu", /*app_name=*/"builtin",
+                             /*last_launch_time=*/base::Time::Now(),
+                             apps::mojom::AppType::kBuiltIn));
+    deltas.push_back(MakeApp(/*app_id=*/"c", /*app_name=*/"crostini",
+                             /*last_launch_time=*/base::Time::Now(),
                              apps::mojom::AppType::kCrostini));
+    deltas.push_back(MakeApp(/*app_id=*/"e", /*app_name=*/"extension",
+                             /*last_launch_time=*/base::Time::Now(),
+                             apps::mojom::AppType::kExtension));
+    deltas.push_back(MakeApp(/*app_id=*/"w", /*app_name=*/"web",
+                             /*last_launch_time=*/base::Time::Now(),
+                             apps::mojom::AppType::kWeb));
     deltas.push_back(MakeApp(
-        /*app_id=*/"c", /*app_name=*/"cherry",
-        /*last_launch_time=*/base::Time::Now() - 7 * kOneDay,
-        apps::mojom::AppType::kExtension));
-    deltas.push_back(MakeApp(
-        /*app_id=*/"d", /*app_name=*/"dragon",
-        /*last_launch_time=*/base::Time::Now() - 14 * kOneDay,
-        apps::mojom::AppType::kWeb));
-    deltas.push_back(MakeApp(
-        /*app_id=*/"e", /*app_name=*/"elderberry",
+        /*app_id=*/"m", /*app_name=*/"macos",
         /*last_launch_time=*/base::Time::Now() - 28 * kOneDay,
-        apps::mojom::AppType::kBorealis));
+        apps::mojom::AppType::kMacOs));
     deltas.push_back(MakeApp(
-        /*app_id=*/"f", /*app_name=*/"fig",
-        /*last_launch_time=*/base::Time::Now() - 27 * kOneDay,
-        apps::mojom::AppType::kUnknown));
+        /*app_id=*/"p", /*app_name=*/"pluginvm",
+        /*last_launch_time=*/base::Time::Now() - 28 * kOneDay,
+        apps::mojom::AppType::kPluginVm));
     deltas.push_back(MakeApp(
-        /*app_id=*/"g", /*app_name=*/"grape",
-        /*last_launch_time=*/base::Time::Now(),
-        apps::mojom::AppType::kBuiltIn));
-    // Not recorded. This app was launched one day too long ago.
-    deltas.push_back(MakeApp(
-        /*app_id=*/"h", /*app_name=*/"huckleberry",
+        /*app_id=*/"l", /*app_name=*/"lacros",
         /*last_launch_time=*/base::Time::Now() - 28 * kOneDay,
         apps::mojom::AppType::kLacros));
+    deltas.push_back(MakeApp(
+        /*app_id=*/"r", /*app_name=*/"remote",
+        /*last_launch_time=*/base::Time::Now() - 28 * kOneDay,
+        apps::mojom::AppType::kRemote));
+    deltas.push_back(MakeApp(/*app_id=*/"bo", /*app_name=*/"borealis",
+                             /*last_launch_time=*/base::Time::Now(),
+                             apps::mojom::AppType::kBorealis));
     cache.OnApps(std::move(deltas), apps::mojom::AppType::kUnknown,
                  false /* should_notify_initialized */);
   }
@@ -212,20 +202,20 @@ TEST_P(FamilyUserAppMetricsTest, CountInstalledAndEnabledExtensions) {
 
   // There should be 2 installed extensions and one theme.
   histogram_tester.ExpectUniqueSample(
-      FamilyUserAppMetrics::kInstalledExtensionsCountHistogramName,
+      FamilyUserAppMetrics::GetInstalledExtensionsCountHistogramNameForTest(),
       /*sample=*/3, /*expected_count=*/1);
 
   if (IsFamilyLink()) {
     // There should be 1 enabled extension and a theme. The other extension
     // lacks parent approval.
     histogram_tester.ExpectUniqueSample(
-        FamilyUserAppMetrics::kEnabledExtensionsCountHistogramName,
+        FamilyUserAppMetrics::GetEnabledExtensionsCountHistogramNameForTest(),
         /*sample=*/2, /*expected_count=*/1);
   } else {
     // Regular user case.
     // There should be 2 enabled extensions and a theme.
     histogram_tester.ExpectUniqueSample(
-        FamilyUserAppMetrics::kEnabledExtensionsCountHistogramName,
+        FamilyUserAppMetrics::GetEnabledExtensionsCountHistogramNameForTest(),
         /*sample=*/3, /*expected_count=*/1);
   }
 }
@@ -239,21 +229,13 @@ TEST_P(FamilyUserAppMetricsTest, CountRecentlyUsedApps) {
   family_user_app_metrics_->OnNewDay();
   family_user_app_metrics_->InitializeAppTypes();
 
-  histogram_tester.ExpectUniqueSample(
-      FamilyUserAppMetrics::kArcAppsCountHistogramName, /*sample=*/1,
-      /*expected_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      FamilyUserAppMetrics::kBorealisAppsCountHistogramName, /*sample=*/1,
-      /*expected_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      FamilyUserAppMetrics::kCrostiniAppsCountHistogramName,
-      /*sample=*/1, /*expected_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      FamilyUserAppMetrics::kExtensionAppsCountHistogramName,
-      /*sample=*/1, /*expected_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      FamilyUserAppMetrics::kWebAppsCountHistogramName, /*sample=*/1,
-      /*expected_count=*/1);
+  for (int i = kStart; i <= kEnd; i++) {
+    apps::mojom::AppType app_type = static_cast<apps::mojom::AppType>(i);
+    const std::string histogram_name =
+        FamilyUserAppMetrics::GetAppsCountHistogramNameForTest(app_type);
+    histogram_tester.ExpectUniqueSample(histogram_name, /*sample=*/1,
+                                        /*expected_count=*/1);
+  }
 }
 
 // Tests that uninitialized app types are not reported on new day.
@@ -263,21 +245,12 @@ TEST_P(FamilyUserAppMetricsTest, UninitializedAppTypeNotReportedOnNewDay) {
   InstallApps();
   family_user_app_metrics_->OnNewDay();
 
-  histogram_tester.ExpectTotalCount(
-      FamilyUserAppMetrics::kArcAppsCountHistogramName,
-      /*expected_count=*/0);
-  histogram_tester.ExpectTotalCount(
-      FamilyUserAppMetrics::kBorealisAppsCountHistogramName,
-      /*expected_count=*/0);
-  histogram_tester.ExpectTotalCount(
-      FamilyUserAppMetrics::kCrostiniAppsCountHistogramName,
-      /*expected_count=*/0);
-  histogram_tester.ExpectTotalCount(
-      FamilyUserAppMetrics::kExtensionAppsCountHistogramName,
-      /*expected_count=*/0);
-  histogram_tester.ExpectTotalCount(
-      FamilyUserAppMetrics::kWebAppsCountHistogramName,
-      /*expected_count=*/0);
+  for (int i = kStart; i <= kEnd; i++) {
+    apps::mojom::AppType app_type = static_cast<apps::mojom::AppType>(i);
+    const std::string histogram_name =
+        FamilyUserAppMetrics::GetAppsCountHistogramNameForTest(app_type);
+    histogram_tester.ExpectTotalCount(histogram_name, /*expected_count=*/0);
+  }
 }
 
 // Tests that apps with stale launch dates too far in the past are not counted.
@@ -294,37 +267,46 @@ TEST_P(FamilyUserAppMetricsTest, FastForwardOneDay) {
 
   // One snapshot recorded.
   histogram_tester.ExpectUniqueSample(
-      FamilyUserAppMetrics::kInstalledExtensionsCountHistogramName,
+      FamilyUserAppMetrics::GetInstalledExtensionsCountHistogramNameForTest(),
       /*sample=*/3, /*expected_count=*/1);
   if (IsFamilyLink()) {
     // There should be 1 enabled extension and a theme.
     histogram_tester.ExpectUniqueSample(
-        FamilyUserAppMetrics::kEnabledExtensionsCountHistogramName,
+        FamilyUserAppMetrics::GetEnabledExtensionsCountHistogramNameForTest(),
         /*sample=*/2, /*expected_count=*/1);
   } else {
     // Regular user case.
     // There should be 2 enabled extensions and a theme.
     histogram_tester.ExpectUniqueSample(
-        FamilyUserAppMetrics::kEnabledExtensionsCountHistogramName,
+        FamilyUserAppMetrics::GetEnabledExtensionsCountHistogramNameForTest(),
         /*sample=*/3, /*expected_count=*/1);
   }
 
-  histogram_tester.ExpectUniqueSample(
-      FamilyUserAppMetrics::kArcAppsCountHistogramName, /*sample=*/1,
-      /*expected_count=*/1);
+  const apps::mojom::AppType fresh_app_types[7] = {
+      apps::mojom::AppType::kUnknown,   apps::mojom::AppType::kArc,
+      apps::mojom::AppType::kBuiltIn,   apps::mojom::AppType::kCrostini,
+      apps::mojom::AppType::kExtension, apps::mojom::AppType::kWeb,
+      apps::mojom::AppType::kBorealis,
+  };
   // Launched over 28 days ago and dropped from the count.
-  histogram_tester.ExpectUniqueSample(
-      FamilyUserAppMetrics::kBorealisAppsCountHistogramName, /*sample=*/0,
-      /*expected_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      FamilyUserAppMetrics::kCrostiniAppsCountHistogramName,
-      /*sample=*/1, /*expected_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      FamilyUserAppMetrics::kExtensionAppsCountHistogramName,
-      /*sample=*/1, /*expected_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      FamilyUserAppMetrics::kWebAppsCountHistogramName, /*sample=*/1,
-      /*expected_count=*/1);
+  const apps::mojom::AppType stale_app_types[4] = {
+      apps::mojom::AppType::kMacOs,
+      apps::mojom::AppType::kPluginVm,
+      apps::mojom::AppType::kLacros,
+      apps::mojom::AppType::kRemote,
+  };
+  for (apps::mojom::AppType app_type : fresh_app_types) {
+    histogram_tester.ExpectUniqueSample(
+        FamilyUserAppMetrics::GetAppsCountHistogramNameForTest(app_type),
+        /*sample=*/1,
+        /*expected_count=*/1);
+  }
+  for (apps::mojom::AppType app_type : stale_app_types) {
+    histogram_tester.ExpectUniqueSample(
+        FamilyUserAppMetrics::GetAppsCountHistogramNameForTest(app_type),
+        /*sample=*/0,
+        /*expected_count=*/1);
+  }
 }
 
 // Tests that initializing a single app type only reports metrics for that app
@@ -333,26 +315,24 @@ TEST_P(FamilyUserAppMetricsTest, OnlyReportSingleInitilizedAppTypeOnNewDay) {
   InstallApps();
   family_user_app_metrics_->OnNewDay();
 
-  int start = static_cast<int>(apps::mojom::AppType::kUnknown);  // 0
-  int end = static_cast<int>(apps::mojom::AppType::kBorealis);   // max_value
-  for (int curr_app_type = start; curr_app_type <= end; curr_app_type++) {
+  for (int curr_app_type = kStart; curr_app_type <= kEnd; curr_app_type++) {
     base::HistogramTester histogram_tester;
     // Only report one app type.
     apps::mojom::AppType app_type =
         static_cast<apps::mojom::AppType>(curr_app_type);
     family_user_app_metrics_->InitializeAppType(app_type);
-    std::string reported_app_type = AppTypeToHistogramName(app_type);
-    if (reported_app_type.empty())
-      continue;
+    std::string reported_app_type =
+        FamilyUserAppMetrics::GetAppsCountHistogramNameForTest(app_type);
+    ASSERT_FALSE(reported_app_type.empty());
     histogram_tester.ExpectUniqueSample(reported_app_type, /*sample=*/1,
                                         /*expected_count=*/1);
-    for (int other_app_type = start;
-         other_app_type <= end && other_app_type != curr_app_type;
+    for (int other_app_type = kStart;
+         other_app_type <= kEnd && other_app_type != curr_app_type;
          other_app_type++) {
       app_type = static_cast<apps::mojom::AppType>(other_app_type);
-      reported_app_type = AppTypeToHistogramName(app_type);
-      if (reported_app_type.empty())
-        continue;
+      reported_app_type =
+          FamilyUserAppMetrics::GetAppsCountHistogramNameForTest(app_type);
+      ASSERT_FALSE(reported_app_type.empty());
       histogram_tester.ExpectTotalCount(reported_app_type,
                                         /*expected_count=*/0);
     }
