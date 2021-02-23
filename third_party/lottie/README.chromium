@@ -15,5 +15,5 @@ Local Modifications:
 The library has been modified to be able to run on javascript worker thread which provides performance benefits and some level of security sandboxing. The library has its document and window references removed. All XMLHttpRequest have also been removed. This means the animation will not load external assests like images and fonts. A wrapper function has been added to handle messages sent to the worker thread from the main thread.
 
 Generating Minified Version:
-To generate the minified version use node's uglify-js-
-$ node uglifyjs --compress --mangle reserved=['onmessage', 'postMessage'] lottie_worker.js -o lottie_worker.min.js -b beautify=false,ascii_only=true
+To generate the minified version use node's terser module-
+$ ../node/node_modules/terser/bin/./terser lottie_worker.js --compress -b beautify=false,ascii_only=true -m reserved=['$','onmessage','postMessage'] -o lottie_worker.min.js
