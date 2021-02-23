@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "ash/public/cpp/tablet_mode.h"
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "cc/input/browser_controls_state.h"
@@ -16,6 +15,7 @@
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/common/url_constants.h"
+#include "chromeos/ui/base/tablet_state.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/navigation_controller.h"
@@ -37,7 +37,8 @@ namespace {
 using ::ash::AccessibilityManager;
 
 bool IsTabletModeEnabled() {
-  return ash::TabletMode::Get() && ash::TabletMode::Get()->InTabletMode();
+  return chromeos::TabletState::Get() &&
+         chromeos::TabletState::Get()->InTabletMode();
 }
 
 bool IsSpokenFeedbackEnabled() {
@@ -278,9 +279,6 @@ TopControlsSlideControllerChromeOS::TopControlsSlideControllerChromeOS(
   observed_omni_box_ = browser_view->GetLocationBarView()->omnibox_view();
   observed_omni_box_->AddObserver(this);
 
-  if (ash::TabletMode::Get())
-    ash::TabletMode::Get()->AddObserver(this);
-
   browser_view_->browser()->tab_strip_model()->AddObserver(this);
   display::Screen::GetScreen()->AddObserver(this);
 
@@ -300,9 +298,6 @@ TopControlsSlideControllerChromeOS::~TopControlsSlideControllerChromeOS() {
 
   display::Screen::GetScreen()->RemoveObserver(this);
   browser_view_->browser()->tab_strip_model()->RemoveObserver(this);
-
-  if (ash::TabletMode::Get())
-    ash::TabletMode::Get()->RemoveObserver(this);
 
   if (observed_omni_box_)
     observed_omni_box_->RemoveObserver(this);
@@ -452,12 +447,17 @@ bool TopControlsSlideControllerChromeOS::IsTopControlsSlidingInProgress()
   return is_sliding_in_progress_;
 }
 
-void TopControlsSlideControllerChromeOS::OnTabletModeStarted() {
-  OnEnabledStateChanged(CanEnable(base::nullopt));
-}
-
-void TopControlsSlideControllerChromeOS::OnTabletModeEnded() {
-  OnEnabledStateChanged(CanEnable(base::nullopt));
+void TopControlsSlideControllerChromeOS::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  switch (state) {
+    case display::TabletState::kInTabletMode:
+    case display::TabletState::kInClamshellMode:
+      OnEnabledStateChanged(CanEnable(base::nullopt));
+      return;
+    case display::TabletState::kEnteringTabletMode:
+    case display::TabletState::kExitingTabletMode:
+      break;
+  }
 }
 
 void TopControlsSlideControllerChromeOS::OnTabStripModelChanged(

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/optional.h"
@@ -37,7 +36,6 @@ class TopControlsSlideTabObserver;
 // - Entering immersive fullscreen mode.
 // - Page security level changes.
 class TopControlsSlideControllerChromeOS : public TopControlsSlideController,
-                                           public ash::TabletModeObserver,
                                            public TabStripModelObserver,
                                            public display::DisplayObserver,
                                            public views::ViewObserver {
@@ -56,10 +54,6 @@ class TopControlsSlideControllerChromeOS : public TopControlsSlideController,
   bool IsTopControlsGestureScrollInProgress() const override;
   bool IsTopControlsSlidingInProgress() const override;
 
-  // ash::TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
-
   // TabStripModelObserver:
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
@@ -70,6 +64,7 @@ class TopControlsSlideControllerChromeOS : public TopControlsSlideController,
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // views::ViewObserver:
   void OnViewIsDeleting(views::View* observed_view) override;
