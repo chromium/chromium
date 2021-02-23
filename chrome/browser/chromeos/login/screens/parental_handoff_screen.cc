@@ -91,12 +91,7 @@ void ParentalHandoffScreen::ShowImpl() {
   if (!view_)
     return;
 
-  base::string16 user_name = GetActiveUserName();
-
-  view_->Show(l10n_util::GetStringFUTF16(
-                  IDS_LOGIN_PARENTAL_HANDOFF_SCREEN_TITLE, user_name),
-              l10n_util::GetStringFUTF16(
-                  IDS_LOGIN_PARENTAL_HANDOFF_SCREEN_SUBTITLE, user_name));
+  view_->Show(GetActiveUserName());
 }
 void ParentalHandoffScreen::HideImpl() {}
 

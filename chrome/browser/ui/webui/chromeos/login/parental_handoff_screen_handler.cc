@@ -15,8 +15,7 @@ namespace chromeos {
 
 namespace {
 
-constexpr char kTitle[] = "title";
-constexpr char kSubTitle[] = "subtitle";
+constexpr char kUsername[] = "username";
 
 }  // namespace
 
@@ -38,15 +37,17 @@ void ParentalHandoffScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("parentalHandoffDialogNextButton",
                IDS_LOGIN_PARENTAL_HANDOFF_SCREEN_NEXT_BUTTON);
+  builder->Add("parentalHandoffDialogTitle",
+               IDS_LOGIN_PARENTAL_HANDOFF_SCREEN_TITLE);
+  builder->Add("parentalHandoffDialogSubtitle",
+               IDS_LOGIN_PARENTAL_HANDOFF_SCREEN_SUBTITLE);
 }
 
 void ParentalHandoffScreenHandler::Initialize() {}
 
-void ParentalHandoffScreenHandler::Show(const base::string16& title,
-                                        const base::string16& subtitle) {
+void ParentalHandoffScreenHandler::Show(const base::string16& username) {
   base::DictionaryValue data;
-  data.SetString(kTitle, title);
-  data.SetString(kSubTitle, subtitle);
+  data.SetString(kUsername, username);
 
   ShowScreenWithData(kScreenId, &data);
 }
