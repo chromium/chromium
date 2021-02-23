@@ -241,12 +241,13 @@ void RelaunchNotificationController::HandleRelaunchRequiredState(
     UpgradeDetector::UpgradeNotificationAnnoyanceLevel level,
     base::Time high_deadline) {
   DCHECK_EQ(last_notification_style_, NotificationStyle::kRequired);
-
-  // Make no changes if the new deadline is not in the future and the browser is
-  // within the grace period of the previous deadline. The user has already seen
-  // the one-hour countdown so just let it go.
   const base::Time now = clock_->Now();
-  if (timer_.IsRunning()) {
+
+  // Make no changes if the level has not changed, the new deadline is not in
+  // the future, and the browser is within the grace period of the previous
+  // deadline. The user has already seen the one-hour countdown so just let it
+  // go.
+  if (level == last_level_ && timer_.IsRunning()) {
     const base::Time& desired_run_time = timer_.desired_run_time();
     DCHECK(!desired_run_time.is_null());
     if (high_deadline <= now && desired_run_time - now <= kRelaunchGracePeriod)
