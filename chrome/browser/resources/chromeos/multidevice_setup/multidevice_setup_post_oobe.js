@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import './strings.m.js';
 
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {PageName} from 'chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup.m.js';
 import {MultiDeviceSetupDelegate} from 'chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup_delegate.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
@@ -73,6 +74,34 @@ Polymer({
   },
 
   behaviors: [I18nBehavior],
+
+  /** @override */
+  ready() {
+    var url = new URL(document.URL);
+    var dialogHeight = url.searchParams.get('dialog-height');
+    var dialogWidth = url.searchParams.get('dialog-width');
+    if (dialogHeight && dialogWidth) {
+      // Below code is also used to set the dialog size for display manager and
+      // in-session assistant onboarding flow. Please make sure code changes are
+      // applied to all places.
+      document.documentElement.style.setProperty(
+          '--oobe-oobe-dialog-height-base', dialogHeight + 'px');
+      document.documentElement.style.setProperty(
+          '--oobe-oobe-dialog-width-base', dialogWidth + 'px');
+      if (parseInt(dialogWidth, 10) > parseInt(dialogHeight, 10)) {
+        document.documentElement.setAttribute('orientation', 'horizontal');
+      } else {
+        document.documentElement.setAttribute('orientation', 'vertical');
+      }
+    }
+
+    if (loadTimeData.valueExists('newLayoutEnabled') &&
+        loadTimeData.getBoolean('newLayoutEnabled')) {
+      document.documentElement.setAttribute('new-layout', '');
+    } else {
+      document.documentElement.removeAttribute('new-layout');
+    }
+  },
 
   /** @override */
   attached() {

@@ -180,7 +180,7 @@
     All set!
   </message>
   <message name="IDS_MULTIDEVICE_SETUP_SETUP_SUCCEEDED_PAGE_MESSAGE" desc="Message for successful setup page.">
-    Go to <ph name="LINK_BEGIN">&lt;a id="settings-link"&gt;</ph>Settings<ph name="LINK_END">&lt;/a&gt;</ph> to see options for your connected phone
+    Go to <ph name="LINK_BEGIN">&lt;a id="settings-link"&gt;</ph>Settings<ph name="LINK_END">&lt;/a&gt;</ph> to see your options for Better Together.
   </message>
   <message name="IDS_MULTIDEVICE_SETUP_DIALOG_ACCESSIBILITY_TITLE" desc="Accessibility title for the multidevice setup dialog with a '- Dialog' appended to inform screen reader users they are in a dialog. This is a work around to deal with the fact that we cannot annotate the window's role as a dialog another way.">
     Connect to your phone - Dialog
@@ -189,7 +189,7 @@
     Connect to your phone
   </message>
   <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_MESSAGE" desc="Summary to tell user that they can share their Android's capabilities with their Chrome OS device; includes details on specific features that can be used and a link to an information page">
-    Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> and Android phone work better together. Connect them so you can text from your computer, share your internet connection, and unlock your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> with your phone.<ph name="FOOTNOTE_POINTER">$2<ex>*</ex></ph> <ph name="LINK_BEGIN">&lt;a href="$3<ex>https://support.google.com/chromebook/?p=multidevice</ex>" target="_blank"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+    You can text from your computer, share your internet connection, reply to conversation notification and unlock your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> with your phone.<ph name="FOOTNOTE_POINTER">$2<ex>*</ex></ph> <ph name="LINK_BEGIN">&lt;a href="$3<ex>https://support.google.com/chromebook/?p=multidevice</ex>" target="_blank"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_FOOTNOTE" desc="Footnote for multi-device feature setup page, which indicates that the exact set of features available to users differs according to the device model used.">
     <ph name="FOOTNOTE_POINTER">$1<ex>*</ex></ph>Features vary by device

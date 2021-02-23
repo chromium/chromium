@@ -48,6 +48,8 @@
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/display/display.h"
+#include "ui/display/test/test_screen.h"
 #include "ui/views/test/test_views_delegate.h"
 
 using device::MockBluetoothAdapter;
@@ -109,6 +111,10 @@ class EasyUnlockServiceRegularTest : public testing::Test {
   ~EasyUnlockServiceRegularTest() override = default;
 
   void SetUp() override {
+    display::Screen::SetScreenInstance(&test_screen_);
+    display::Display::SetInternalDisplayId(
+        test_screen_.GetPrimaryDisplay().id());
+
     PowerManagerClient::InitializeFake();
 
     // Note: this is necessary because objects owned by EasyUnlockService
@@ -226,6 +232,14 @@ class EasyUnlockServiceRegularTest : public testing::Test {
       EXPECT_FALSE(remote_devices);
   }
 
+  void SetDisplaySize(const gfx::Size& size) {
+    display::Display display = test_screen_.GetPrimaryDisplay();
+    display.SetSize(size);
+    test_screen_.display_list().RemoveDisplay(display.id());
+    test_screen_.display_list().AddDisplay(display,
+                                           display::DisplayList::Type::PRIMARY);
+  }
+
   // Must outlive TestingProfiles.
   content::BrowserTaskEnvironment task_environment_;
 
@@ -259,6 +273,8 @@ class EasyUnlockServiceRegularTest : public testing::Test {
 
   views::TestViewsDelegate view_delegate_;
   base::HistogramTester histogram_tester_;
+
+  display::test::TestScreen test_screen_;
 
  private:
   void SetPrimaryUserLoggedIn() {
@@ -346,6 +362,8 @@ TEST_F(EasyUnlockServiceRegularTest,
 TEST_F(
     EasyUnlockServiceRegularTest,
     GetRemoteDevices_InitiallyNoSyncedDevices_MultiDeviceSetupDialogVisible) {
+  SetDisplaySize(gfx::Size(1920, 1200));
+
   ChromeSessionManager manager;
 
   auto dialog = std::make_unique<FakeMultiDeviceSetupDialog>();

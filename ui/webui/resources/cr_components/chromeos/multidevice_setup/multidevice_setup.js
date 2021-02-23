@@ -176,6 +176,7 @@ cr.define('multidevice_setup', function() {
     },
 
     initializeSetupFlow() {
+      this.$$('start-setup-page').setPlayAnimation(true);
       this.mojoInterfaceProvider_.getMojoServiceRemote()
           .getEligibleActiveHostDevices()
           .then((responseParams) => {
@@ -364,6 +365,7 @@ cr.define('multidevice_setup', function() {
      * @private
      */
     exitSetupFlow_(didUserCompleteSetup) {
+      this.$$('start-setup-page').setPlayAnimation(false);
       this.fire('setup-exited', {didUserCompleteSetup: didUserCompleteSetup});
     },
   });

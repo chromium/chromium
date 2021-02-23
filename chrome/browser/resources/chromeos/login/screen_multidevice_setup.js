@@ -23,4 +23,13 @@ Polymer({
   updateLocalizedContent() {
     this.$.impl.updateLocalizedContent();
   },
+
+  onBeforeShow() {
+    if (loadTimeData.valueExists('newLayoutEnabled') &&
+        loadTimeData.getBoolean('newLayoutEnabled')) {
+      document.documentElement.setAttribute('new-layout', '');
+    } else {
+      document.documentElement.removeAttribute('new-layout');
+    }
+  },
 });

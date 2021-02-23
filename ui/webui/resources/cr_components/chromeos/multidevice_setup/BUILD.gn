@@ -86,6 +86,7 @@ js_library("setup_succeeded_page") {
 js_library("start_setup_page") {
   deps = [
     ":ui_page_container_behavior",
+    "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie",
     "//ui/webui/resources/js:web_ui_listener_behavior",
   ]
 }
@@ -201,6 +202,7 @@ js_library("start_setup_page.m") {
     ":multidevice_setup_delegate.m",
     ":multidevice_setup_shared_css.m",
     ":ui_page_container_behavior.m",
+    "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   extra_deps = [ ":start_setup_page_module" ]

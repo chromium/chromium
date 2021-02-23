@@ -53,21 +53,25 @@ Polymer({
     delegate: Object,
 
     /** @private */
-    phoneHubEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.valueExists('phoneHubEnabled') &&
-            loadTimeData.getBoolean('phoneHubEnabled');
-      },
-    },
-
-    /** @private */
     wifiSyncEnabled_: {
       type: Boolean,
       value() {
         return loadTimeData.valueExists('wifiSyncEnabled') &&
             loadTimeData.getBoolean('wifiSyncEnabled');
       },
+    },
+
+    /**
+     * Whether new OOBE layout is enabled.
+     *
+     * @type {boolean}
+     */
+    newLayoutEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('newLayoutEnabled') &&
+            loadTimeData.getBoolean('newLayoutEnabled');
+      }
     },
   },
 
@@ -83,6 +87,15 @@ Polymer({
         this.initializeSetupFlow_.bind(this));
   },
 
+  /**
+   * This will play or stop the screen's lottie animation.
+   * @param {boolean} enabled Whether the animation should play or not.
+   */
+  setPlayAnimation(enabled) {
+    /** @type {!CrLottieElement} */ (this.$.multideviceSetupAnimation)
+        .setPlay(enabled);
+  },
+
   /** @private */
   initializeSetupFlow_() {
     // The "Learn More" links are inside a grdp string, so we cannot actually
@@ -90,7 +103,6 @@ Polymer({
     // manaully add onclick handlers.
     const helpArticleLinks = [
       this.$$('#multidevice-summary-message a'),
-      this.$$('#awm-summary-message a')
     ];
     for (let i = 0; i < helpArticleLinks.length; i++) {
       helpArticleLinks[i].onclick = this.fire.bind(

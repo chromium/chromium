@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/multidevice_setup_screen_handler.h"
 
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/chromeos/login/screens/multidevice_setup_screen.h"
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_localized_strings_provider.h"
 #include "chrome/grit/generated_resources.h"
@@ -34,6 +35,12 @@ void MultiDeviceSetupScreenHandler::Show() {
   AllowJavascript();
   ShowScreen(kScreenId);
   FireWebUIListener("multidevice_setup.initializeSetupFlow");
+}
+
+void MultiDeviceSetupScreenHandler::GetAdditionalParameters(
+    base::DictionaryValue* dict) {
+  dict->SetKey("wifiSyncEnabled",
+               base::Value(ash::features::IsWifiSyncAndroidEnabled()));
 }
 
 void MultiDeviceSetupScreenHandler::Hide() {}

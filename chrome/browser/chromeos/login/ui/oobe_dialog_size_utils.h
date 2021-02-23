@@ -38,6 +38,10 @@ gfx::Size CalculateOobeDialogSize(const gfx::Size& host_size,
                                   int shelf_height,
                                   bool is_horizontal);
 
+// Calculated the size of OOBE dialog for primary display by passing primary
+// display screen size and shelf height to `CalculateOobeDialogSize`.
+gfx::Size CalculateOobeDialogSizeForPrimrayDisplay();
+
 // Position OOBE dialog according to specs inside `host_bounds` excluding shelf.
 // `host_bounds` is in coordinates of oobe dialog widget. `result` is
 // in the same coordinates of `host_bounds`.

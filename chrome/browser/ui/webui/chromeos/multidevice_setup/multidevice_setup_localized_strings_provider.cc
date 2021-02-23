@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/multidevice_setup_resources.h"
 #include "chrome/grit/multidevice_setup_resources_map.h"
@@ -23,6 +24,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -136,8 +138,16 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
       "wifiSyncEnabled",
       base::FeatureList::IsEnabled(chromeos::features::kWifiSyncAndroid));
 
+  html_source->AddBoolean("newLayoutEnabled",
+                          chromeos::features::IsNewOobeLayoutEnabled());
+
   for (const auto& entry : GetLocalizedStringsWithPlaceholders())
     html_source->AddString(entry.name, entry.localized_string);
+
+  html_source->AddResourcePath("multidevice_setup.json",
+                               IDR_MULTIDEVICE_SETUP_ANIMATION);
+  html_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
 }
 
 void AddLocalizedValuesToBuilder(::login::LocalizedValuesBuilder* builder) {

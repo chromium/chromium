@@ -93,6 +93,9 @@
         <!-- Marketing Opt In animations. -->
         <structure name="IDR_MARKETING_OPT_IN_ALL_SET_ANIMATION" file="resources\chromeos\login\images\all_set.json" compress="gzip" type="chrome_html" />
         <structure name="IDR_MARKETING_OPT_IN_ALL_SET_ANIMATION_NEW_NOLOOP" file="resources\chromeos\login\images\all_set_new_noloop.json" compress="gzip" type="chrome_html" />
+
+        <!-- Multi-device Setup animation. -->
+        <structure name="IDR_MULTIDEVICE_SETUP_ANIMATION" file="resources\chromeos\login\images\multidevice_setup.json" compress="gzip" type="chrome_html" />
       </if>
     </structures>
     <includes>

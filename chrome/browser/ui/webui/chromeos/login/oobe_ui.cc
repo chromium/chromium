@@ -302,6 +302,13 @@ void AddFingerprintResources(content::WebUIDataSource* source) {
   source->AddBoolean("useLottieAnimationForFingerprint", is_lottie_animation);
 }
 
+void AddMultiDeviceSetupResources(content::WebUIDataSource* source) {
+  source->AddResourcePath("multidevice_setup.json",
+                          IDR_MULTIDEVICE_SETUP_ANIMATION);
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
+}
+
 void AddDebuggerResources(content::WebUIDataSource* source) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   bool enable_debugger =
@@ -381,6 +388,7 @@ content::WebUIDataSource* CreateOobeUIDataSource(
   AddAssistantScreensResources(source);
   AddGestureNavigationResources(source);
   AddMarketingOptInResources(source);
+  AddMultiDeviceSetupResources(source);
 
   AddDebuggerResources(source);
   AddTestAPIResources(source);

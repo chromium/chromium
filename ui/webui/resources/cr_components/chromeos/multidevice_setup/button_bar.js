@@ -32,7 +32,6 @@ Polymer({
     shouldShowShadow: {
       type: Boolean,
       value: false,
-      observer: 'onShouldShowShadowChange_',
     }
   },
 
@@ -49,10 +48,5 @@ Polymer({
   /** @private */
   onBackwardButtonClicked_() {
     this.fire('backward-navigation-requested');
-  },
-
-  /** @private */
-  onShouldShowShadowChange_() {
-    this.$.shadow.hidden = !!this.shouldShowShadow;
   },
 });

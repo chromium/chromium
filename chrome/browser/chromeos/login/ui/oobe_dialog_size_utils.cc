@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/login/ui/oobe_dialog_size_utils.h"
+
+#include "ash/public/cpp/shelf_config.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
 
 namespace chromeos {
@@ -67,6 +71,17 @@ gfx::Size CalculateOobeDialogSize(const gfx::Size& host_size,
     result.SetToMax(kMinPortraitDialogSize);
   }
   return result;
+}
+
+gfx::Size CalculateOobeDialogSizeForPrimrayDisplay() {
+  const gfx::Size display_size =
+      display::Screen::GetScreen()->GetPrimaryDisplay().size();
+  const bool is_horizontal = display_size.width() > display_size.height();
+  // ShellConfig is only non-existent in test scenarios.
+  const int shelf_height = ash::ShelfConfig::Get()
+                               ? ash::ShelfConfig::Get()->shelf_size()
+                               : 48 /* default shelf height */;
+  return CalculateOobeDialogSize(display_size, shelf_height, is_horizontal);
 }
 
 void CalculateOobeDialogBounds(const gfx::Rect& host_bounds,

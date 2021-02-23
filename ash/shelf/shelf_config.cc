@@ -141,7 +141,7 @@ ShelfConfig::~ShelfConfig() = default;
 
 // static
 ShelfConfig* ShelfConfig::Get() {
-  return Shell::Get()->shelf_config();
+  return Shell::HasInstance() ? Shell::Get()->shelf_config() : nullptr;
 }
 
 void ShelfConfig::AddObserver(Observer* observer) {
