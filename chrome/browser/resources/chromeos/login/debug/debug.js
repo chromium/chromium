@@ -802,12 +802,6 @@ cr.define('cr.ui.login.debug', function() {
       kind: ScreenKind.NORMAL,
       states: [
         {
-          id: 'loading',
-          trigger: (screen) => {
-            screen.showLoadingScreenForTesting();
-          },
-        },
-        {
           id: 'us-terms-loaded',
           trigger: (screen) => {
             screen.clearDemoMode();

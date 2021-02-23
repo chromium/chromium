@@ -3900,12 +3900,12 @@
     Loading...
   </message>
   <message name="IDS_ARC_OOBE_TERMS_LOAD_ERROR" desc="Load error message of the Arc Terms OOBE dialog.">
-    Google Play Terms of Service cannot be loaded. Please retry.
+    Google Play Terms of Service cannot be loaded. Please check your network connection and retry.
   </message>
   <message name="IDS_ARC_OOBE_TERMS_BUTTON_ACCEPT_AND_CONTINUE" desc="Accept and continue button of the Arc Terms OOBE dialog.">
     Accept and continue
   </message>
-    <message name="IDS_ARC_OOBE_TERMS_BUTTON_ACCEPT" desc="Accept button of the Arc Terms OOBE dialog.">
+  <message name="IDS_ARC_OOBE_TERMS_BUTTON_ACCEPT" desc="Accept button of the Arc Terms OOBE dialog.">
     Accept
   </message>
   <message name="IDS_ARC_OOBE_TERMS_BUTTON_RETRY" desc="Retry button of the Arc Terms OOBE dialog that reloads Play Store terms.">

@@ -672,14 +672,6 @@ Polymer({
     return this.demoMode;
   },
 
-  /**
-   * Shows loading screen for debugging purpose
-   */
-  showLoadingScreenForTesting() {
-    this.setUIStep(UIState.LOADING);
-    this.enableButtons_(false);
-  },
-
   onPolicyLinkClick_() {
     this.userActed('policy-link');
 
