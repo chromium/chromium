@@ -52,6 +52,10 @@ UsageScenarioDataStoreImpl::ResetIntervalData() {
     has_opened_webrtc_connection_since_ = now;
   }
 
+  if (!capturing_video_since_.is_null()) {
+    capturing_video_since_ = now;
+  }
+
   if (!playing_video_in_active_tab_since_.is_null()) {
     playing_video_in_active_tab_since_ = now;
   }
@@ -140,6 +144,32 @@ void UsageScenarioDataStoreImpl::OnWebRTCConnectionClosed() {
   }
 }
 
+void UsageScenarioDataStoreImpl::OnIsCapturingVideoStarted() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (tabs_capturing_video_ == 0) {
+    DCHECK(capturing_video_since_.is_null());
+    capturing_video_since_ = base::TimeTicks::Now();
+  }
+  ++tabs_capturing_video_;
+  DCHECK_GE(current_tab_count_, tabs_capturing_video_);
+}
+
+void UsageScenarioDataStoreImpl::OnIsCapturingVideoEnded() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_GT(tabs_capturing_video_, 0U);
+  --tabs_capturing_video_;
+  DCHECK_GE(current_tab_count_, tabs_capturing_video_);
+
+  // If this was the last tab capturing video then the interval data should be
+  // updated.
+  if (tabs_capturing_video_ == 0) {
+    DCHECK(!capturing_video_since_.is_null());
+    interval_data_.time_capturing_video +=
+        base::TimeTicks::Now() - capturing_video_since_;
+    capturing_video_since_ = base::TimeTicks();
+  }
+}
+
 void UsageScenarioDataStoreImpl::OnVideoStartsInVisibleTab() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ++visible_tabs_playing_video_;
@@ -192,6 +222,10 @@ void UsageScenarioDataStoreImpl::FinalizeIntervalData(base::TimeTicks now) {
   if (!has_opened_webrtc_connection_since_.is_null()) {
     interval_data_.time_with_open_webrtc_connection +=
         now - has_opened_webrtc_connection_since_;
+  }
+
+  if (!capturing_video_since_.is_null()) {
+    interval_data_.time_capturing_video += now - capturing_video_since_;
   }
 
   if (!playing_video_in_active_tab_since_.is_null()) {

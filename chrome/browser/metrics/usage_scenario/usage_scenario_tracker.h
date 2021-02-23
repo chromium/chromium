@@ -7,6 +7,7 @@
 
 #include "base/sequence_checker.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
+#include "chrome/browser/metrics/usage_scenario/video_capture_event_provider.h"
 
 // Registers as an observer to various components to maintain a
 // UsageScenarioDataStore.
@@ -24,6 +25,9 @@ class UsageScenarioTracker {
   UsageScenarioDataStoreImpl data_store_;
 
   // TODO(crbug.com/1153193): Add the events providers for the data store.
+
+  // Tracks tabs capturing video.
+  VideoCaptureEventProvider video_capture_event_provider_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -846,6 +846,8 @@ static_library("browser") {
     "metrics/usage_scenario/usage_scenario_data_store.h",
     "metrics/usage_scenario/usage_scenario_tracker.cc",
     "metrics/usage_scenario/usage_scenario_tracker.h",
+    "metrics/usage_scenario/video_capture_event_provider.cc",
+    "metrics/usage_scenario/video_capture_event_provider.h",
     "metrics/variations/chrome_variations_service_client.cc",
     "metrics/variations/chrome_variations_service_client.h",
     "native_window_notification_source.h",

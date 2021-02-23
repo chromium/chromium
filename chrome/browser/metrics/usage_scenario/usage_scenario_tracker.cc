@@ -4,5 +4,7 @@
 
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_tracker.h"
 
-UsageScenarioTracker::UsageScenarioTracker() = default;
+UsageScenarioTracker::UsageScenarioTracker()
+    : video_capture_event_provider_(&data_store_) {}
+
 UsageScenarioTracker::~UsageScenarioTracker() = default;

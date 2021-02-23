@@ -53,6 +53,8 @@ class UsageScenarioDataStore {
     base::TimeDelta time_playing_video_full_screen_single_monitor;
     // The time spent with at least one opened WebRTC connection.
     base::TimeDelta time_with_open_webrtc_connection;
+    // The time spent with at least one tab capturing video.
+    base::TimeDelta time_capturing_video;
     // The time spent playing video in at least one visible tab.
     base::TimeDelta time_playing_video_in_visible_tab;
 
@@ -113,6 +115,8 @@ class UsageScenarioDataStoreImpl : public UsageScenarioDataStore {
   void OnFullScreenVideoEndsOnSingleMonitor();
   void OnWebRTCConnectionOpened();
   void OnWebRTCConnectionClosed();
+  void OnIsCapturingVideoStarted();
+  void OnIsCapturingVideoEnded();
 
   // Should be called when a video starts in a visible tab or when a non visible
   // tab playing video becomes visible.
@@ -173,6 +177,14 @@ class UsageScenarioDataStoreImpl : public UsageScenarioDataStore {
   // |webrtc_connection_count| to increase to 1. Reset to |now| when an interval
   // ends (when ResetIntervalData is called).
   base::TimeTicks has_opened_webrtc_connection_since_;
+
+  // The number of tabs capturing video (e.g. webcam).
+  uint16_t tabs_capturing_video_ = 0;
+
+  // The timestamp of the beginning of a video capture session that has caused
+  // |tabs_capturing_video_| to increase to 1. Reset to |now| when an internal
+  // ends (when ResetIntervalData is called).
+  base::TimeTicks capturing_video_since_;
 
   // The number of visible tabs playing at least one video.
   uint16_t visible_tabs_playing_video_ = 0;
