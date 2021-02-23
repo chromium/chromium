@@ -529,7 +529,7 @@ TEST_F(AXTableInfoTest, ExtraMacNodes) {
   EXPECT_EQ(2U, table_info->extra_mac_nodes[0]->GetUnignoredIndexInParent());
   EXPECT_EQ(0, extra_node_0.GetIntAttribute(
                    ax::mojom::IntAttribute::kTableColumnIndex));
-  std::vector<int32_t> indirect_child_ids;
+  std::vector<AXNodeID> indirect_child_ids;
   EXPECT_EQ(true, extra_node_0.GetIntListAttribute(
                       ax::mojom::IntListAttribute::kIndirectChildIds,
                       &indirect_child_ids));
@@ -982,7 +982,7 @@ TEST_F(AXTableInfoTest, ExtraMacNodesChanges) {
     EXPECT_EQ(3U, table_info->extra_mac_nodes[0]->GetUnignoredIndexInParent());
     EXPECT_EQ(0, extra_node_0.GetIntAttribute(
                      ax::mojom::IntAttribute::kTableColumnIndex));
-    std::vector<int32_t> indirect_child_ids;
+    std::vector<AXNodeID> indirect_child_ids;
     EXPECT_EQ(true, extra_node_0.GetIntListAttribute(
                         ax::mojom::IntListAttribute::kIndirectChildIds,
                         &indirect_child_ids));
@@ -1040,7 +1040,7 @@ TEST_F(AXTableInfoTest, ExtraMacNodesChanges) {
     EXPECT_EQ(1U, table_info->extra_mac_nodes[0]->GetUnignoredIndexInParent());
     EXPECT_EQ(0, extra_node_0.GetIntAttribute(
                      ax::mojom::IntAttribute::kTableColumnIndex));
-    std::vector<int32_t> indirect_child_ids;
+    std::vector<AXNodeID> indirect_child_ids;
     EXPECT_EQ(true, extra_node_0.GetIntListAttribute(
                         ax::mojom::IntListAttribute::kIndirectChildIds,
                         &indirect_child_ids));

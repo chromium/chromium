@@ -30,7 +30,7 @@ constexpr int AXNode::kEmbeddedCharacterLength;
 
 AXNode::AXNode(AXNode::OwnerTree* tree,
                AXNode* parent,
-               int32_t id,
+               AXNodeID id,
                size_t index_in_parent,
                size_t unignored_index_in_parent)
     : tree_(tree),
@@ -386,7 +386,7 @@ void AXNode::SetData(const AXNodeData& src) {
   data_ = src;
 }
 
-void AXNode::SetLocation(int32_t offset_container_id,
+void AXNode::SetLocation(AXNodeID offset_container_id,
                          const gfx::RectF& location,
                          gfx::Transform* transform) {
   data_.relative_bounds.offset_container_id = offset_container_id;
@@ -987,7 +987,7 @@ std::vector<AXNodeID> AXNode::GetTableCellColHeaderNodeIds() const {
 void AXNode::GetTableCellColHeaders(std::vector<AXNode*>* col_headers) const {
   DCHECK(col_headers);
 
-  std::vector<int32_t> col_header_ids = GetTableCellColHeaderNodeIds();
+  std::vector<AXNodeID> col_header_ids = GetTableCellColHeaderNodeIds();
   IdVectorToNodeVector(col_header_ids, col_headers);
 }
 
@@ -1005,7 +1005,7 @@ std::vector<AXNodeID> AXNode::GetTableCellRowHeaderNodeIds() const {
 void AXNode::GetTableCellRowHeaders(std::vector<AXNode*>* row_headers) const {
   DCHECK(row_headers);
 
-  std::vector<int32_t> row_header_ids = GetTableCellRowHeaderNodeIds();
+  std::vector<AXNodeID> row_header_ids = GetTableCellRowHeaderNodeIds();
   IdVectorToNodeVector(row_header_ids, row_headers);
 }
 
@@ -1045,9 +1045,9 @@ AXTableInfo* AXNode::GetAncestorTableInfo() const {
   return nullptr;
 }
 
-void AXNode::IdVectorToNodeVector(const std::vector<int32_t>& ids,
+void AXNode::IdVectorToNodeVector(const std::vector<AXNodeID>& ids,
                                   std::vector<AXNode*>* nodes) const {
-  for (int32_t id : ids) {
+  for (AXNodeID id : ids) {
     AXNode* node = tree_->GetFromId(id);
     if (node)
       nodes->push_back(node);

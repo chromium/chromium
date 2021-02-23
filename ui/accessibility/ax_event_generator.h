@@ -9,6 +9,7 @@
 #include <map>
 #include <ostream>
 #include <set>
+#include <string>
 #include <vector>
 
 #include "base/scoped_observation.h"

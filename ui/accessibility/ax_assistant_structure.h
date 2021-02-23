@@ -5,7 +5,10 @@
 #ifndef UI_ACCESSIBILITY_AX_ASSISTANT_STRUCTURE_H_
 #define UI_ACCESSIBILITY_AX_ASSISTANT_STRUCTURE_H_
 
-#include <cstdint>
+#include <stdint.h>
+
+#include <memory>
+#include <string>
 #include <vector>
 
 #include "base/macros.h"

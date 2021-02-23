@@ -311,4 +311,5 @@ TEST(AXTextUtils, GetSentenceEndOffsetsMalformedInputTest) {
   const base::string16 text = base::UTF8ToUTF16("is the first ... second.");
   EXPECT_THAT(GetSentenceEndOffsets(text), testing::ElementsAre(24));
 }
+
 }  // namespace ui

@@ -63,13 +63,13 @@ struct AX_BASE_EXPORT AXTreeUpdate {
   // all of its children and their descendants, but leaving that node in
   // the tree. It's an error to clear a node but not subsequently update it
   // as part of the tree update.
-  int node_id_to_clear = 0;
+  AXNodeID node_id_to_clear = kInvalidAXNodeID;
 
   // The id of the root of the tree, if the root is changing. This is
   // required to be set if the root of the tree is changing or Unserialize
   // will fail. If the root of the tree is not changing this is optional
   // and it is allowed to pass 0.
-  int root_id = 0;
+  AXNodeID root_id = kInvalidAXNodeID;
 
   // A vector of nodes to update, according to the rules above.
   std::vector<AXNodeData> nodes;

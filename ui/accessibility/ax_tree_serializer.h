@@ -173,7 +173,7 @@ class AXTreeSerializer {
   bool AnyDescendantWasReparented(AXSourceNode node,
                                   AXSourceNode* out_lca);
 
-  ClientTreeNode* ClientTreeNodeById(int32_t id);
+  ClientTreeNode* ClientTreeNodeById(AXNodeID id);
 
   // Invalidate the subtree rooted at this node.
   void InvalidateClientSubtree(ClientTreeNode* client_node);
@@ -203,7 +203,7 @@ class AXTreeSerializer {
   ClientTreeNode* client_root_ = nullptr;
 
   // A map from IDs to nodes in the client tree.
-  std::unordered_map<int32_t, ClientTreeNode*> client_id_map_;
+  std::map<AXNodeID, ClientTreeNode*> client_id_map_;
 
   // The maximum number of nodes to serialize in a given call to
   // SerializeChanges, or 0 if there's no maximum.
@@ -226,7 +226,7 @@ class AXTreeSerializer {
 struct AX_EXPORT ClientTreeNode {
   ClientTreeNode();
   virtual ~ClientTreeNode();
-  int32_t id;
+  AXNodeID id;
   ClientTreeNode* parent;
   std::vector<ClientTreeNode*> children;
   bool ignored;
@@ -387,9 +387,9 @@ bool AXTreeSerializer<AXSourceNode>::AnyDescendantWasReparented(
 }
 
 template <typename AXSourceNode>
-ClientTreeNode* AXTreeSerializer<AXSourceNode>::ClientTreeNodeById(int32_t id) {
-  std::unordered_map<int32_t, ClientTreeNode*>::iterator iter =
-      client_id_map_.find(id);
+ClientTreeNode* AXTreeSerializer<AXSourceNode>::ClientTreeNodeById(
+    AXNodeID id) {
+  std::map<AXNodeID, ClientTreeNode*>::iterator iter = client_id_map_.find(id);
   if (iter != client_id_map_.end())
     return iter->second;
   return nullptr;
@@ -582,8 +582,8 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
   // If we've hit the maximum number of serialized nodes, pretend
   // this node has no children but keep going so that we get
   // consistent results.
-  std::unordered_set<int32_t> new_ignored_ids;
-  std::unordered_set<int32_t> new_child_ids;
+  std::set<AXNodeID> new_ignored_ids;
+  std::set<AXNodeID> new_child_ids;
   std::vector<AXSourceNode> children;
   if (!should_terminate_early) {
     tree_->GetChildren(node, &children);
@@ -651,7 +651,7 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
   // first in a separate pass so that nodes that are reparented
   // don't end up children of two different parents in the middle
   // of an update, which can lead to a double-free.
-  std::unordered_map<int32_t, ClientTreeNode*> client_child_id_map;
+  std::map<AXNodeID, ClientTreeNode*> client_child_id_map;
   std::vector<ClientTreeNode*> old_children;
   old_children.swap(client_node->children);
   for (size_t i = 0; i < old_children.size(); ++i) {
@@ -681,7 +681,7 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
 
   // Iterate over the children, serialize them, and update the ClientTreeNode
   // data structure to reflect the new tree.
-  std::vector<int32_t> actual_serialized_node_child_ids;
+  std::vector<AXNodeID> actual_serialized_node_child_ids;
   client_node->children.reserve(children.size());
   for (size_t i = 0; i < children.size(); ++i) {
     AXSourceNode& child = children[i];

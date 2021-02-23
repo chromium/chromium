@@ -3931,10 +3931,10 @@ class AXPosition {
   }
 
   // Returns the accessibility role of this position's anchor node. If this is a
-  // "null position", returns `ax::mojom::Role::kNone`.
+  // "null position", returns `ax::mojom::Role::kUnknown`.
   ax::mojom::Role GetRole() const {
     if (IsNullPosition())
-      return ax::mojom::Role::kNone;
+      return ax::mojom::Role::kUnknown;
     return GetAnchor()->data().role;
   }
 
@@ -4012,7 +4012,7 @@ class AXPosition {
 
   void Initialize(AXPositionKind kind,
                   AXTreeID tree_id,
-                  int32_t anchor_id,
+                  AXNodeID anchor_id,
                   int child_index,
                   int text_offset,
                   ax::mojom::TextAffinity affinity) {
@@ -4037,7 +4037,7 @@ class AXPosition {
   // Abstract methods.
   void AnchorChild(int child_index,
                    AXTreeID* tree_id,
-                   int32_t* child_id) const {
+                   AXNodeID* child_id) const {
     DCHECK(tree_id);
     DCHECK(child_id);
     if (!GetAnchor() || child_index < 0 || child_index >= AnchorChildCount()) {
@@ -4075,7 +4075,7 @@ class AXPosition {
   // When a child is ignored, it looks for unignored nodes of that child's
   // children until there are no more descendants.
   //
-  // E.g.
+  // For example:
   // ++TextField
   // ++++GenericContainer ignored
   // ++++++StaticText "Hello"
@@ -4130,7 +4130,7 @@ class AXPosition {
     return GetAnchor()->GetLowestPlatformAncestor();
   }
 
-  void AnchorParent(AXTreeID* tree_id, int32_t* parent_id) const {
+  void AnchorParent(AXTreeID* tree_id, AXNodeID* parent_id) const {
     DCHECK(tree_id);
     DCHECK(parent_id);
     *tree_id = AXTreeIDUnknown();
@@ -4233,7 +4233,7 @@ class AXPosition {
 
   ax::mojom::Role GetAnchorRole() const {
     if (IsNullPosition())
-      return ax::mojom::Role::kNone;
+      return ax::mojom::Role::kUnknown;
     return GetRole(GetAnchor());
   }
 

@@ -35,10 +35,10 @@ class AXTreeSource {
 
   // Get a node by its id. If no node by that id exists in the tree, return a
   // null node, i.e. one that will return false if you call IsValid on it.
-  virtual AXNodeSource GetFromId(int32_t id) const = 0;
+  virtual AXNodeSource GetFromId(AXNodeID id) const = 0;
 
   // Return the id of a node. All ids must be positive integers.
-  virtual int32_t GetId(AXNodeSource node) const = 0;
+  virtual AXNodeID GetId(AXNodeSource node) const = 0;
 
   // Append all children of |node| to |out_children|.
   virtual void GetChildren(AXNodeSource node,
@@ -75,7 +75,7 @@ class AXTreeSource {
   // discovers that a node previously in the tree is no longer part of
   // the tree. It can be used to allow an AXTreeSource to keep a cache
   // indexed by node ID and delete nodes when they're no longer needed.
-  virtual void SerializerClearedNode(int32_t node_id) {}
+  virtual void SerializerClearedNode(AXNodeID node_id) {}
 
  protected:
   AXTreeSource() {}

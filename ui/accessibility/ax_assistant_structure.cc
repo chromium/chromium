@@ -4,7 +4,7 @@
 
 #include "ui/accessibility/ax_assistant_structure.h"
 
-#include <string>
+#include <utility>
 
 #include "base/logging.h"
 #include "base/optional.h"

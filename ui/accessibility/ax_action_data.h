@@ -5,8 +5,11 @@
 #ifndef UI_ACCESSIBILITY_AX_ACTION_DATA_H_
 #define UI_ACCESSIBILITY_AX_ACTION_DATA_H_
 
+#include <string>
+
 #include "ui/accessibility/ax_base_export.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -58,7 +61,7 @@ struct AX_BASE_EXPORT AXActionData {
   int32_t end_index = -1;
 
   // For custom action.
-  int custom_action_id = -1;
+  AXNodeID custom_action_id = kInvalidAXNodeID;
 
   // The target rect for the action.
   gfx::Rect target_rect;

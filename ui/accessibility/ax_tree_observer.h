@@ -8,12 +8,12 @@
 #include "base/observer_list_types.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_id.h"
 
 namespace ui {
 
 class AXNode;
-struct AXNodeData;
 class AXTree;
 struct AXTreeData;
 
@@ -116,7 +116,7 @@ class AX_EXPORT AXTreeObserver : public base::CheckedObserver {
 
   // Called after all tree mutations have occurred or during tree teardown,
   // notifying that a single node has been deleted from the tree.
-  virtual void OnNodeDeleted(AXTree* tree, int32_t node_id) {}
+  virtual void OnNodeDeleted(AXTree* tree, AXNodeID node_id) {}
 
   // Same as |OnNodeCreated|, but called for nodes that have been reparented.
   virtual void OnNodeReparented(AXTree* tree, AXNode* node) {}

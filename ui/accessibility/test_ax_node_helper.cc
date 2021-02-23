@@ -27,7 +27,7 @@ std::map<AXNodeID, TestAXNodeHelper*> g_node_id_to_helper_map;
 // deleted so we can delete their helpers.
 class TestAXTreeObserver : public AXTreeObserver {
  private:
-  void OnNodeDeleted(AXTree* tree, int32_t node_id) override {
+  void OnNodeDeleted(AXTree* tree, AXNodeID node_id) override {
     const auto iter = g_node_id_to_helper_map.find(node_id);
     if (iter != g_node_id_to_helper_map.end()) {
       TestAXNodeHelper* helper = iter->second;

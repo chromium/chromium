@@ -66,10 +66,10 @@ enum class AXTreeUnserializeError {
 class AX_EXPORT AXTree : public AXNode::OwnerTree {
  public:
   using IntReverseRelationMap =
-      std::map<ax::mojom::IntAttribute, std::map<int32_t, std::set<int32_t>>>;
+      std::map<ax::mojom::IntAttribute, std::map<AXNodeID, std::set<AXNodeID>>>;
   using IntListReverseRelationMap =
       std::map<ax::mojom::IntListAttribute,
-               std::map<int32_t, std::set<int32_t>>>;
+               std::map<AXNodeID, std::set<AXNodeID>>>;
 
   AXTree();
   explicit AXTree(const AXTreeUpdate& initial_state);
@@ -98,7 +98,7 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
 
   // AXNode::OwnerTree override.
   // Returns the AXNode with the given |id| if it is part of this AXTree.
-  AXNode* GetFromId(int32_t id) const override;
+  AXNode* GetFromId(AXNodeID id) const override;
 
   // Returns true on success. If it returns false, it's a fatal error
   // and this tree should be destroyed, and the source of the tree update
@@ -132,19 +132,19 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
   // Given a node ID attribute (one where IsNodeIdIntAttribute is true),
   // and a destination node ID, return a set of all source node IDs that
   // have that relationship attribute between them and the destination.
-  std::set<int32_t> GetReverseRelations(ax::mojom::IntAttribute attr,
-                                        int32_t dst_id) const;
+  std::set<AXNodeID> GetReverseRelations(ax::mojom::IntAttribute attr,
+                                         AXNodeID dst_id) const;
 
   // Given a node ID list attribute (one where
   // IsNodeIdIntListAttribute is true), and a destination node ID,
   // return a set of all source node IDs that have that relationship
   // attribute between them and the destination.
-  std::set<int32_t> GetReverseRelations(ax::mojom::IntListAttribute attr,
-                                        int32_t dst_id) const;
+  std::set<AXNodeID> GetReverseRelations(ax::mojom::IntListAttribute attr,
+                                         AXNodeID dst_id) const;
 
   // Given a child tree ID, return the node IDs of all nodes in the tree who
   // have a kChildTreeId int attribute with that value.
-  std::set<int32_t> GetNodeIdsForChildTreeId(AXTreeID child_tree_id) const;
+  std::set<AXNodeID> GetNodeIdsForChildTreeId(AXTreeID child_tree_id) const;
 
   // Get all of the child tree IDs referenced by any node in this tree.
   const std::set<AXTreeID> GetAllChildTreeIds() const;
@@ -174,7 +174,7 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
   // Return a negative number that's suitable to use for a node ID for
   // internal nodes created automatically by an AXTree, so as not to
   // conflict with positive-numbered node IDs from tree sources.
-  int32_t GetNextNegativeInternalNodeId();
+  AXNodeID GetNextNegativeInternalNodeId();
 
   // Returns the PosInSet of |node|. Looks in node_set_size_pos_in_set_info_map_
   // for cached value. Calls |ComputeSetSizePosInSetAndCache|if no value is
@@ -318,7 +318,7 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
   // Iterate over the children of |node| and for each child, destroy the
   // child and its subtree if its id is not in |new_child_ids|.
   void DeleteOldChildren(AXNode* node,
-                         const std::vector<int32_t>& new_child_ids,
+                         const std::vector<AXNodeID>& new_child_ids,
                          AXTreeUpdateState* update_state);
 
   // Iterate over |new_child_ids| and populate |new_children| with
@@ -327,7 +327,7 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
   // if the id already exists as the child of another node, that's an
   // error. Returns true on success, false on fatal error.
   bool CreateNewChildVector(AXNode* node,
-                            const std::vector<int32_t>& new_child_ids,
+                            const std::vector<AXNodeID>& new_child_ids,
                             std::vector<AXNode*>* new_children,
                             AXTreeUpdateState* update_state);
 
@@ -341,7 +341,7 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
 
   base::ObserverList<AXTreeObserver> observers_;
   AXNode* root_ = nullptr;
-  std::unordered_map<int32_t, AXNode*> id_map_;
+  std::unordered_map<AXNodeID, AXNode*> id_map_;
   std::string error_;
   AXTreeData data_;
 
@@ -352,15 +352,15 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
   // a reverse mapping from target nodes to source nodes.
   IntListReverseRelationMap intlist_reverse_relations_;
   // Map from child tree ID to the set of node IDs that contain that attribute.
-  std::map<AXTreeID, std::set<int32_t>> child_tree_id_reverse_map_;
+  std::map<AXTreeID, std::set<AXNodeID>> child_tree_id_reverse_map_;
 
   // Map from node ID to cached table info, if the given node is a table.
   // Invalidated every time the tree is updated.
-  mutable std::unordered_map<int32_t, std::unique_ptr<AXTableInfo>>
+  mutable std::unordered_map<AXNodeID, std::unique_ptr<AXTableInfo>>
       table_info_map_;
 
   // The next negative node ID to use for internal nodes.
-  int32_t next_negative_internal_node_id_ = -1;
+  AXNodeID next_negative_internal_node_id_ = -1;
 
   // Whether we should create extra nodes that
   // are only useful on macOS. Implemented using this flag to allow
@@ -421,7 +421,7 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
   // objects.
   // All other objects will map to default-constructed OrderedSetInfo objects.
   // Invalidated every time the tree is updated.
-  mutable std::unordered_map<int32_t, NodeSetSizePosInSetInfo>
+  mutable std::unordered_map<AXNodeID, NodeSetSizePosInSetInfo>
       node_set_size_pos_in_set_info_map_;
 
   // Indicates if the tree is updating.

@@ -67,7 +67,7 @@ class AX_EXPORT AXNode final {
     // See AXTree::GetTableInfo.
     virtual AXTableInfo* GetTableInfo(const AXNode* table_node) const = 0;
     // See AXTree::GetFromId.
-    virtual AXNode* GetFromId(int32_t id) const = 0;
+    virtual AXNode* GetFromId(AXNodeID id) const = 0;
     // See AXTree::data.
     virtual const AXTreeData& data() const = 0;
 
@@ -108,7 +108,7 @@ class AX_EXPORT AXNode final {
   // guaranteed to never change.
   AXNode(OwnerTree* tree,
          AXNode* parent,
-         int32_t id,
+         AXNodeID id,
          size_t index_in_parent,
          size_t unignored_index_in_parent = 0);
   virtual ~AXNode();
@@ -175,7 +175,7 @@ class AX_EXPORT AXNode final {
   // The node's location is stored as a relative bounding box, the ID of
   // the element it's relative to, and an optional transformation matrix.
   // See ax_node_data.h for details.
-  void SetLocation(int32_t offset_container_id,
+  void SetLocation(AXNodeID offset_container_id,
                    const gfx::RectF& location,
                    gfx::Transform* transform);
 
@@ -541,7 +541,7 @@ class AX_EXPORT AXNode final {
   void ComputeLineStartOffsets(std::vector<int>* line_offsets,
                                int* start_offset) const;
   AXTableInfo* GetAncestorTableInfo() const;
-  void IdVectorToNodeVector(const std::vector<int32_t>& ids,
+  void IdVectorToNodeVector(const std::vector<AXNodeID>& ids,
                             std::vector<AXNode*>* nodes) const;
 
   int UpdateUnignoredCachedValuesRecursive(int startIndex);

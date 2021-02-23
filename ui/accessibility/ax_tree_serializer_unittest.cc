@@ -251,8 +251,8 @@ class AXTreeSourceWithInvalidId : public AXTreeSource<const AXNode*> {
     return true;
   }
   AXNode* GetRoot() const override { return tree_->root(); }
-  AXNode* GetFromId(int32_t id) const override { return tree_->GetFromId(id); }
-  int32_t GetId(const AXNode* node) const override { return node->id(); }
+  AXNode* GetFromId(AXNodeID id) const override { return tree_->GetFromId(id); }
+  AXNodeID GetId(const AXNode* node) const override { return node->id(); }
   void GetChildren(const AXNode* node,
                    std::vector<const AXNode*>* out_children) const override {
     *out_children = std::vector<const AXNode*>(node->children().cbegin(),
@@ -474,12 +474,12 @@ class AXTreeSourceTestWrapper : public AXTreeSource<const AXNode*> {
   ~AXTreeSourceTestWrapper() override = default;
 
   // Override SerializerClearedNode and provide a way to access it.
-  void SerializerClearedNode(int32_t node_id) override {
+  void SerializerClearedNode(AXNodeID node_id) override {
     cleared_node_ids_.insert(node_id);
   }
 
   void ClearClearedNodeIds() { cleared_node_ids_.clear(); }
-  std::set<int32_t>& cleared_node_ids() { return cleared_node_ids_; }
+  std::set<AXNodeID>& cleared_node_ids() { return cleared_node_ids_; }
 
   // The rest of the AXTreeSource implementation just calls through to
   // tree_source_.
@@ -487,10 +487,10 @@ class AXTreeSourceTestWrapper : public AXTreeSource<const AXNode*> {
     return tree_source_->GetTreeData(data);
   }
   const AXNode* GetRoot() const override { return tree_source_->GetRoot(); }
-  const AXNode* GetFromId(int32_t id) const override {
+  const AXNode* GetFromId(AXNodeID id) const override {
     return tree_source_->GetFromId(id);
   }
-  int32_t GetId(const AXNode* node) const override {
+  AXNodeID GetId(const AXNode* node) const override {
     return tree_source_->GetId(node);
   }
   void GetChildren(const AXNode* node,
@@ -516,7 +516,7 @@ class AXTreeSourceTestWrapper : public AXTreeSource<const AXNode*> {
 
  private:
   AXTreeSource<const AXNode*>* tree_source_;
-  std::set<int32_t> cleared_node_ids_;
+  std::set<AXNodeID> cleared_node_ids_;
 };
 
 TEST_F(AXTreeSerializerTest, TestClearedNodesWhenUpdatingRoot) {

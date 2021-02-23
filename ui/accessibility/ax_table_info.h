@@ -7,11 +7,11 @@
 
 #include <map>
 #include <set>
-#include <unordered_map>
 #include <vector>
 
 #include "base/optional.h"
 #include "ui/accessibility/ax_export.h"
+#include "ui/accessibility/ax_node_data.h"
 
 namespace ui {
 
@@ -23,7 +23,7 @@ class AX_EXPORT AXTableInfo {
  public:
   struct CellData {
     AXNode* cell;
-    int32_t cell_id;
+    AXNodeID cell_id;
     size_t col_index;
     size_t row_index;
     size_t col_span;
@@ -56,28 +56,28 @@ class AX_EXPORT AXTableInfo {
   size_t col_count = 0;
 
   // List of column header nodes IDs for each column index.
-  std::vector<std::vector<int32_t>> col_headers;
+  std::vector<std::vector<AXNodeID>> col_headers;
 
   // List of row header node IDs for each row index.
-  std::vector<std::vector<int32_t>> row_headers;
+  std::vector<std::vector<AXNodeID>> row_headers;
 
   // All header cells.
-  std::vector<int32_t> all_headers;
+  std::vector<AXNodeID> all_headers;
 
   // The id of the element with the caption tag or ARIA role.
-  int32_t caption_id;
+  AXNodeID caption_id;
 
   // 2-D array of [row][column] -> cell node ID.
   // This may contain duplicates if there is a rowspan or
   // colspan. The entry is empty (zero) only if the cell
   // really is missing from the table.
-  std::vector<std::vector<int32_t>> cell_ids;
+  std::vector<std::vector<AXNodeID>> cell_ids;
 
   // Array of cell data for every unique cell in the table.
   std::vector<CellData> cell_data_vector;
 
   // Set of all unique cell node IDs in the table.
-  std::vector<int32_t> unique_cell_ids;
+  std::vector<AXNodeID> unique_cell_ids;
 
   // Extra computed nodes for the accessibility tree for macOS:
   // one column node for each table column, followed by one
@@ -85,10 +85,10 @@ class AX_EXPORT AXTableInfo {
   std::vector<AXNode*> extra_mac_nodes;
 
   // Map from each cell's node ID to its index in unique_cell_ids.
-  std::unordered_map<int32_t, size_t> cell_id_to_index;
+  std::map<AXNodeID, size_t> cell_id_to_index;
 
   // Map from each row's node ID to its row index.
-  std::unordered_map<int32_t, size_t> row_id_to_index;
+  std::map<AXNodeID, size_t> row_id_to_index;
 
   // List of ax nodes that represent the rows of the table.
   std::vector<AXNode*> row_nodes;
@@ -122,4 +122,4 @@ class AX_EXPORT AXTableInfo {
 
 }  // namespace ui
 
-#endif  // UI_ACCESSIBILITY_AX_TABLE_INFO
+#endif  // UI_ACCESSIBILITY_AX_TABLE_INFO_H_

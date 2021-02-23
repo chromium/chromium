@@ -48,7 +48,7 @@ void FindCellsInRow(AXNode* node, std::vector<AXNode*>* cell_nodes) {
 void FindRowsAndThenCells(AXNode* node,
                           std::vector<AXNode*>* row_node_list,
                           std::vector<std::vector<AXNode*>>* cell_nodes_per_row,
-                          int32_t& caption_node_id) {
+                          AXNodeID& caption_node_id) {
   for (AXNode* child : node->children()) {
     if (child->IsIgnored() ||
         child->data().role == ax::mojom::Role::kGenericContainer ||
@@ -60,8 +60,9 @@ void FindRowsAndThenCells(AXNode* node,
       row_node_list->push_back(child);
       cell_nodes_per_row->push_back(std::vector<AXNode*>());
       FindCellsInRow(child, &cell_nodes_per_row->back());
-    } else if (child->data().role == ax::mojom::Role::kCaption)
+    } else if (child->data().role == ax::mojom::Role::kCaption) {
       caption_node_id = child->id();
+    }
   }
 }
 
@@ -441,7 +442,7 @@ void AXTableInfo::UpdateExtraMacNodes() {
 }
 
 AXNode* AXTableInfo::CreateExtraMacColumnNode(size_t col_index) {
-  int32_t id = tree_->GetNextNegativeInternalNodeId();
+  AXNodeID id = tree_->GetNextNegativeInternalNodeId();
   size_t index_in_parent = col_index + table_node_->children().size();
   int32_t unignored_index_in_parent =
       col_index + table_node_->GetUnignoredChildCount();
@@ -457,7 +458,7 @@ AXNode* AXTableInfo::CreateExtraMacColumnNode(size_t col_index) {
 }
 
 AXNode* AXTableInfo::CreateExtraMacTableHeaderNode() {
-  int32_t id = tree_->GetNextNegativeInternalNodeId();
+  AXNodeID id = tree_->GetNextNegativeInternalNodeId();
   size_t index_in_parent = col_count + table_node_->children().size();
   int32_t unignored_index_in_parent =
       col_count + table_node_->GetUnignoredChildCount();
@@ -489,10 +490,10 @@ void AXTableInfo::UpdateExtraMacColumnNodeAttributes(size_t col_index) {
 
   // Update the list of cells in the column.
   data.intlist_attributes.clear();
-  std::vector<int32_t> col_nodes;
-  int32_t last = 0;
+  std::vector<AXNodeID> col_nodes;
+  AXNodeID last = 0;
   for (size_t row_index = 0; row_index < row_count; row_index++) {
-    int32_t cell_id = cell_ids[row_index][col_index];
+    AXNodeID cell_id = cell_ids[row_index][col_index];
     if (cell_id != 0 && cell_id != last)
       col_nodes.push_back(cell_id);
     last = cell_id;

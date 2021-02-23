@@ -209,8 +209,7 @@ bool IsNodeIdIntListAttribute(ax::mojom::IntListAttribute attr) {
   return false;
 }
 
-AXNodeData::AXNodeData()
-    : role(ax::mojom::Role::kUnknown), state(0U), actions(0ULL) {}
+AXNodeData::AXNodeData() : role(ax::mojom::Role::kUnknown) {}
 
 AXNodeData::~AXNodeData() = default;
 

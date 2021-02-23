@@ -34,15 +34,15 @@ class AX_EXPORT AXTreeCombiner {
   const AXTreeUpdate& combined() { return combined_; }
 
  private:
-  int32_t MapId(AXTreeID tree_id, int32_t node_id);
+  AXNodeID MapId(AXTreeID tree_id, AXNodeID node_id);
 
   void ProcessTree(const AXTreeUpdate* tree);
 
   std::vector<ui::AXTreeUpdate> trees_;
   AXTreeID root_tree_id_;
-  int32_t next_id_ = 1;
+  AXNodeID next_id_ = 1;
   std::map<AXTreeID, const AXTreeUpdate*> tree_id_map_;
-  std::map<std::pair<AXTreeID, int32_t>, int32_t> tree_id_node_id_map_;
+  std::map<std::pair<AXTreeID, AXNodeID>, AXNodeID> tree_id_node_id_map_;
   AXTreeUpdate combined_;
 };
 

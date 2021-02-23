@@ -686,7 +686,7 @@ const AXTreeData& AXTree::data() const {
   return data_;
 }
 
-AXNode* AXTree::GetFromId(int32_t id) const {
+AXNode* AXTree::GetFromId(AXNodeID id) const {
   auto iter = id_map_.find(id);
   return iter != id_map_.end() ? iter->second : nullptr;
 }
@@ -880,8 +880,8 @@ gfx::RectF AXTree::GetTreeBounds(const AXNode* node,
   return RelativeToTreeBounds(node, gfx::RectF(), offscreen, clip_bounds);
 }
 
-std::set<int32_t> AXTree::GetReverseRelations(ax::mojom::IntAttribute attr,
-                                              int32_t dst_id) const {
+std::set<AXNodeID> AXTree::GetReverseRelations(ax::mojom::IntAttribute attr,
+                                               AXNodeID dst_id) const {
   DCHECK(IsNodeIdIntAttribute(attr));
 
   // Conceptually, this is the "const" version of:
@@ -892,11 +892,11 @@ std::set<int32_t> AXTree::GetReverseRelations(ax::mojom::IntAttribute attr,
     if (result != attr_relations->second.end())
       return result->second;
   }
-  return std::set<int32_t>();
+  return std::set<AXNodeID>();
 }
 
-std::set<int32_t> AXTree::GetReverseRelations(ax::mojom::IntListAttribute attr,
-                                              int32_t dst_id) const {
+std::set<AXNodeID> AXTree::GetReverseRelations(ax::mojom::IntListAttribute attr,
+                                               AXNodeID dst_id) const {
   DCHECK(IsNodeIdIntListAttribute(attr));
 
   // Conceptually, this is the "const" version of:
@@ -907,17 +907,17 @@ std::set<int32_t> AXTree::GetReverseRelations(ax::mojom::IntListAttribute attr,
     if (result != attr_relations->second.end())
       return result->second;
   }
-  return std::set<int32_t>();
+  return std::set<AXNodeID>();
 }
 
-std::set<int32_t> AXTree::GetNodeIdsForChildTreeId(
+std::set<AXNodeID> AXTree::GetNodeIdsForChildTreeId(
     AXTreeID child_tree_id) const {
   // Conceptually, this is the "const" version of:
   //   return child_tree_id_reverse_map_[child_tree_id];
   const auto& result = child_tree_id_reverse_map_.find(child_tree_id);
   if (result != child_tree_id_reverse_map_.end())
     return result->second;
-  return std::set<int32_t>();
+  return std::set<AXNodeID>();
 }
 
 const std::set<AXTreeID> AXTree::GetAllChildTreeIds() const {
@@ -962,7 +962,7 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
   // This is iterating in reverse order so that we only notify once per node id,
   // and that we only notify the initial node data against the final node data,
   // unless the node is a new root.
-  std::set<int32_t> notified_node_data_will_change;
+  std::set<AXNodeID> notified_node_data_will_change;
   for (size_t i = update.nodes.size(); i-- > 0;) {
     const AXNodeData& new_data = update.nodes[i];
     const bool is_new_root =
@@ -1058,9 +1058,9 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
   // and invalidate their table info if so.  We have to walk up the
   // ancestry of every node that was updated potentially, so keep track of
   // ids that were checked to eliminate duplicate work.
-  std::set<int32_t> table_ids_checked;
-  for (size_t i = 0; i < update.nodes.size(); ++i) {
-    AXNode* node = GetFromId(update.nodes[i].id);
+  std::set<AXNodeID> table_ids_checked;
+  for (const AXNodeData& node_data : update.nodes) {
+    AXNode* node = GetFromId(node_data.id);
     while (node) {
       if (table_ids_checked.find(node->id()) != table_ids_checked.end())
         break;
@@ -1719,19 +1719,19 @@ void AXTree::UpdateReverseRelations(AXNode* node, const AXNodeData& new_data) {
       return;
 
     auto& map = intlist_reverse_relations_[attr];
-    for (int32_t old_id : old_idlist) {
+    for (AXNodeID old_id : old_idlist) {
       if (map.find(old_id) != map.end()) {
         map[old_id].erase(id);
         if (map[old_id].empty())
           map.erase(old_id);
       }
     }
-    for (int32_t new_id : new_idlist)
+    for (AXNodeID new_id : new_idlist)
       intlist_reverse_relations_[attr][new_id].insert(id);
   };
   CallIfAttributeValuesChanged(old_data.intlist_attributes,
                                new_data.intlist_attributes,
-                               std::vector<int32_t>(), intlist_callback);
+                               std::vector<AXNodeID>(), intlist_callback);
 
   auto string_callback = [this, id](ax::mojom::StringAttribute attr,
                                     const std::string& old_string,
@@ -1872,15 +1872,15 @@ void AXTree::DestroyNodeAndSubtree(AXNode* node,
 }
 
 void AXTree::DeleteOldChildren(AXNode* node,
-                               const std::vector<int32_t>& new_child_ids,
+                               const std::vector<AXNodeID>& new_child_ids,
                                AXTreeUpdateState* update_state) {
   DCHECK(GetTreeUpdateInProgressState());
   // Create a set of child ids in |src| for fast lookup, we know the set does
   // not contain duplicate entries already, because that was handled when
   // populating |update_state| with information about all of the expected
   // changes to be applied.
-  std::set<int32_t> new_child_id_set(new_child_ids.begin(),
-                                     new_child_ids.end());
+  std::set<AXNodeID> new_child_id_set(new_child_ids.begin(),
+                                      new_child_ids.end());
 
   // Delete the old children.
   for (AXNode* child : node->children()) {
@@ -1890,13 +1890,13 @@ void AXTree::DeleteOldChildren(AXNode* node,
 }
 
 bool AXTree::CreateNewChildVector(AXNode* node,
-                                  const std::vector<int32_t>& new_child_ids,
+                                  const std::vector<AXNodeID>& new_child_ids,
                                   std::vector<AXNode*>* new_children,
                                   AXTreeUpdateState* update_state) {
   DCHECK(GetTreeUpdateInProgressState());
   bool success = true;
   for (size_t i = 0; i < new_child_ids.size(); ++i) {
-    int32_t child_id = new_child_ids[i];
+    AXNodeID child_id = new_child_ids[i];
     AXNode* child = GetFromId(child_id);
     if (child) {
       if (child->parent() != node) {
@@ -1933,8 +1933,8 @@ void AXTree::SetEnableExtraMacNodes(bool enabled) {
   enable_extra_mac_nodes_ = enabled;
 }
 
-int32_t AXTree::GetNextNegativeInternalNodeId() {
-  int32_t return_value = next_negative_internal_node_id_;
+AXNodeID AXTree::GetNextNegativeInternalNodeId() {
+  AXNodeID return_value = next_negative_internal_node_id_;
   next_negative_internal_node_id_--;
   if (next_negative_internal_node_id_ > 0)
     next_negative_internal_node_id_ = -1;
