@@ -6,10 +6,8 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "chrome/browser/chromeos/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -18,12 +16,10 @@
 #include "url/gurl.h"
 
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForTerminalSystemWebApp() {
-  std::unique_ptr<WebApplicationInfo> info =
-      std::make_unique<WebApplicationInfo>();
+  auto info = std::make_unique<WebApplicationInfo>();
   // URL used for crostini::kCrostiniTerminalSystemAppId.
   info->start_url = GURL("chrome-untrusted://terminal/html/terminal.html");
-  if (base::FeatureList::IsEnabled(features::kDesktopPWAsWithoutExtensions))
-    info->scope = GURL(chrome::kChromeUIUntrustedTerminalURL);
+  info->scope = GURL(chrome::kChromeUIUntrustedTerminalURL);
   info->title = l10n_util::GetStringUTF16(IDS_CROSTINI_TERMINAL_APP_NAME);
   web_app::CreateIconInfoForSystemWebApp(
       info->start_url, {{"app_icon_256.png", 256, IDR_LOGO_CROSTINI_TERMINAL}},
