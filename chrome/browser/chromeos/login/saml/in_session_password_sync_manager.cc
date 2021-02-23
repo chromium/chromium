@@ -6,8 +6,10 @@
 
 #include "base/time/default_clock.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/chromeos/login/auth/chrome_cryptohome_authenticator.h"
 #include "chrome/browser/chromeos/login/lock/screen_locker.h"
 #include "chrome/browser/chromeos/login/login_pref_names.h"
+#include "chrome/browser/chromeos/login/saml/in_session_password_change_manager.h"
 #include "chrome/browser/chromeos/login/saml/password_sync_token_fetcher.h"
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
 #include "chromeos/login/auth/extended_authenticator.h"
@@ -78,28 +80,6 @@ void InSessionPasswordSyncManager::MaybeForceReauthOnLockScreen(
         proximity_auth::mojom::AuthType::ONLINE_SIGN_IN, base::string16());
   }
   lock_screen_reauth_reason_ = reauth_reason;
-}
-
-void InSessionPasswordSyncManager::OnAuthSucceeded(
-    const UserContext& user_context) {
-  if (user_context.GetAccountId() != primary_user_->GetAccountId()) {
-    // Tried to re-authenicate with non-primary user: the authentication was
-    // successful but we are allowed to unlock only with valid credentials of
-    // the user who locked the screen. In this case show customized version
-    // of first re-auth flow dialog with an error message.
-    // TODO(crbug.com/1090341)
-    return;
-  }
-
-  UpdateOnlineAuth();
-  if (lock_screen_reauth_reason_ == ReauthenticationReason::kInvalidToken) {
-    FetchTokenAsync();
-  } else {
-    lock_screen_reauth_reason_ = ReauthenticationReason::kNone;
-  }
-  if (screenlock_bridge_->IsLocked()) {
-    screenlock_bridge_->lock_handler()->Unlock(user_context.GetAccountId());
-  }
 }
 
 void InSessionPasswordSyncManager::SetClockForTesting(
@@ -185,30 +165,67 @@ void InSessionPasswordSyncManager::OnApiCallFailed(
 }
 
 void InSessionPasswordSyncManager::CheckCredentials(
-    const UserContext& user_context) {
-  extended_authenticator_ = ExtendedAuthenticator::Create(this);
-  extended_authenticator_.get()->AuthenticateToCheck(
-      user_context,
-      base::BindOnce(&InSessionPasswordSyncManager::OnPasswordAuthSuccess,
-                     weak_factory_.GetWeakPtr(), user_context));
+    const UserContext& user_context,
+    PasswordChangedCallback callback) {
+  user_context_ = user_context;
+  password_changed_callback_ = std::move(callback);
+  if (!extended_authenticator_) {
+    extended_authenticator_ = ExtendedAuthenticator::Create(this);
+  }
+  extended_authenticator_.get()->AuthenticateToCheck(user_context,
+                                                     base::Closure());
 }
 
-void InSessionPasswordSyncManager::OnPasswordAuthSuccess(
-    const UserContext& user_context) {
-  OnAuthSucceeded(user_context);
-  lock_screen_start_reauth_dialog->Dismiss();
+void InSessionPasswordSyncManager::UpdateUserPassword(
+    const std::string& old_password) {
+  if (!authenticator_) {
+    authenticator_ = new ChromeCryptohomeAuthenticator(this);
+  }
+  authenticator_->MigrateKey(user_context_, old_password);
 }
 
 // TODO(crbug.com/1163777): Add UMA histograms for lockscreen online
 // re-authentication.
 void InSessionPasswordSyncManager::OnAuthFailure(
     const chromeos::AuthFailure& error) {
-  NOTIMPLEMENTED();
+  password_changed_callback_.Run();
 }
 
 void InSessionPasswordSyncManager::OnAuthSuccess(
     const UserContext& user_context) {
-  NOTIMPLEMENTED();
+  if (user_context.GetAccountId() != primary_user_->GetAccountId()) {
+    // Tried to re-authenicate with non-primary user: the authentication was
+    // successful but we are allowed to unlock only with valid credentials of
+    // the user who locked the screen. In this case show customized version
+    // of first re-auth flow dialog with an error message.
+    // TODO(crbug.com/1090341)
+    return;
+  }
+
+  UpdateOnlineAuth();
+  if (lock_screen_reauth_reason_ == ReauthenticationReason::kInvalidToken) {
+    FetchTokenAsync();
+  } else {
+    lock_screen_reauth_reason_ = ReauthenticationReason::kNone;
+  }
+  if (screenlock_bridge_->IsLocked()) {
+    screenlock_bridge_->lock_handler()->Unlock(user_context.GetAccountId());
+  }
+  DismissDialog();
+}
+
+void InSessionPasswordSyncManager::CreateAndShowDialog() {
+  if (!lock_screen_start_reauth_dialog_) {
+    lock_screen_start_reauth_dialog_ =
+        std::make_unique<LockScreenStartReauthDialog>();
+  }
+  lock_screen_start_reauth_dialog_->Show();
+}
+
+void InSessionPasswordSyncManager::DismissDialog() {
+  if (lock_screen_start_reauth_dialog_) {
+    lock_screen_start_reauth_dialog_->Dismiss();
+  }
 }
 
 }  // namespace chromeos

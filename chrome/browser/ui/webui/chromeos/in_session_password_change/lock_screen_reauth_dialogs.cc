@@ -72,7 +72,7 @@ void LockScreenStartReauthDialog::Show() {
     g_dialog->Focus();
     return;
   }
-  g_dialog = new LockScreenStartReauthDialog();
+  g_dialog = this;
   g_browser_process->profile_manager()->CreateProfileAsync(
       ProfileHelper::GetLockScreenProfileDir(),
       base::BindRepeating(&LockScreenStartReauthDialog::OnProfileCreated,

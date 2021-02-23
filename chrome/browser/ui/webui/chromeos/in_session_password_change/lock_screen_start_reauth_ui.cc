@@ -36,7 +36,6 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
   // TODO(crbug.com/1098690): Trusted Type Polymer
   source->DisableTrustedTypesCSP();
 
-  source->UseStringsJs();
   source->EnableReplaceI18nInJS();
 
   source->AddString("lockScreenReauthSubtitile",
@@ -82,7 +81,16 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
                     l10n_util::GetStringFUTF16(IDS_LOGIN_CONFIRM_PASSWORD_TITLE,
                                                ui::GetChromeOSDeviceName()));
   source->AddString("samlNotice",
-                    l10n_util::GetStringUTF16(IDS_LOGIN_SAML_NOTICE));
+                    l10n_util::GetStringUTF16(IDS_LOCK_SAML_NOTICE));
+  source->AddString("passwordChangedTitle",
+                    l10n_util::GetStringUTF16(IDS_LOCK_PASSWORD_CHANGED_TITLE));
+  source->AddString(
+      "passwordChangedSubtitle",
+      l10n_util::GetStringFUTF16(IDS_LOCK_PASSWORD_CHANGED_SUBTITLE,
+                                 ui::GetChromeOSDeviceName()));
+  source->AddString(
+      "passwordChangedOldPasswordHint",
+      l10n_util::GetStringUTF16(IDS_LOCK_PASSWORD_CHANGED_OLD_PASSWORD_HINT));
 
   source->SetDefaultResource(IDR_LOCK_SCREEN_REAUTH_HTML);
 

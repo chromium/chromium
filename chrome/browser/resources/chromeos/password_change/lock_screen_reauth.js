@@ -17,7 +17,6 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import 'chrome://lock-reauth/strings.js';
 
 const clearDataType = {
   appcache: true,
@@ -73,7 +72,20 @@ Polymer({
       value: false,
     },
 
+    /**
+     * Whether the user's password has changed.
+     */
+    isPasswordChanged_: {
+      type: Boolean,
+      value: false,
+    },
+
     passwordConfirmAttempt_: {
+      type: Number,
+      value: 0,
+    },
+
+    passwordChangeAttempt_: {
       type: Number,
       value: 0,
     },
@@ -99,9 +111,9 @@ Polymer({
     this.authenticator_.addEventListener(
         'authDomainChange', this.onAuthDomainChange_.bind(this));
     this.authenticator_.addEventListener(
-        'authCompleted', this.onAuthCompletedMessage_.bind(this));
+      'authCompleted', this.onAuthCompletedMessage_.bind(this));
     this.authenticator_.confirmPasswordCallback =
-        this.onAuthConfirmPassword_.bind(this);
+      this.onAuthConfirmPassword_.bind(this);
     this.authenticator_.noPasswordCallback = this.onAuthNoPassword_.bind(this);
     chrome.send('initialize');
   },
@@ -113,6 +125,7 @@ Polymer({
     this.isSamlPage_ = false;
     this.isConfirmPassword_ = false;
     this.isManualInput_ = false;
+    this.isPasswordChanged_ = false;
   },
 
     /**
@@ -237,6 +250,19 @@ Polymer({
     this.authenticator_.verifyConfirmedPassword(password);
   },
 
+  /**
+   * Invoked when the user's password doesn't match his old password.
+   * @private
+   */
+  passwordChanged() {
+    this.resetState_();
+    this.isPasswordChanged_ = true;
+    this.passwordChangeAttempt_++;
+    if (this.passwordChangeAttempt_ > 1) {
+      this.$.oldPasswordInput.invalid = true;
+    }
+  },
+
   /** @private */
   onVerify_() {
     this.authenticator_.load(
@@ -274,6 +300,22 @@ Polymer({
   /** @private */
   onCloseTap_() {
     chrome.send('dialogClose');
+  },
+
+  onResetAndClose_() {
+    this.signinFrame_.clearData({since: 0}, clearDataType, () => {
+      onCloseTap_();
+    });
+  },
+
+  /** @private */
+  onNext_() {
+    if (!this.$.oldPasswordInput.validate()) {
+      this.$.oldPasswordInput.focusInput();
+      return;
+    }
+    chrome.send('updateUserPassword', [this.$.oldPasswordInput.value]);
+    this.$.oldPasswordInput.value = '';
   },
 
   /** @private */

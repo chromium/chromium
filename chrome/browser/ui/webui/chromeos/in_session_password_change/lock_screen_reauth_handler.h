@@ -12,6 +12,7 @@
 #include "net/cookies/cookie_access_result.h"
 
 namespace chromeos {
+class InSessionPasswordSyncManager;
 
 class LockScreenReauthHandler : public content::WebUIMessageHandler {
  public:
@@ -20,10 +21,13 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
 
   void RegisterMessages() override;
 
+  void ShowPasswordChangedScreen();
+
   // WebUI message handlers.
   void HandleInitialize(const base::ListValue*);
   void HandleCompleteAuthentication(const base::ListValue*);
   void HandleAuthenticatorLoaded(const base::ListValue*);
+  void HandleUpdateUserPassword(const base::ListValue*);
 
  private:
   void LoadAuthenticatorParam();
@@ -51,6 +55,8 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
   std::string email_;
 
   std::string signin_partition_name_;
+
+  InSessionPasswordSyncManager* password_sync_manager_ = nullptr;
 
   std::unique_ptr<UserContext> pending_user_context_;
 

@@ -214,7 +214,7 @@ TEST_F(InSessionPasswordSyncManagerTest, AuthenticateWithIncorrectUser) {
             InSessionPasswordSyncManager::ReauthenticationReason::kPolicy);
   UserContext user_context(user_manager::USER_TYPE_REGULAR,
                            saml_login_account_id2_);
-  manager_->OnAuthSucceeded(user_context);
+  manager_->OnAuthSuccess(user_context);
   EXPECT_EQ(InSessionReauthReason(),
             InSessionPasswordSyncManager::ReauthenticationReason::kPolicy);
   EXPECT_TRUE(proximity_auth::ScreenlockBridge::Get()->IsLocked());
@@ -245,7 +245,7 @@ TEST_F(InSessionPasswordSyncManagerTest, AuthenticateWithCorrectUser) {
             InSessionPasswordSyncManager::ReauthenticationReason::kPolicy);
   UserContext user_context(user_manager::USER_TYPE_REGULAR,
                            saml_login_account_id1_);
-  manager_->OnAuthSucceeded(user_context);
+  manager_->OnAuthSuccess(user_context);
   EXPECT_EQ(InSessionReauthReason(),
             InSessionPasswordSyncManager::ReauthenticationReason::kNone);
   now = user_manager::known_user::GetLastOnlineSignin(saml_login_account_id1_);

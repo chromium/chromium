@@ -218,6 +218,32 @@
           </cr-button>
         </div>
       </div>
+
+      <div class="content-wrapper" hidden="[[!isPasswordChanged_]]">
+        <div class="header">
+          <iron-icon class="title-icon" icon="oobe-64:lock"></iron-icon>
+          <div class="title">
+            $i18n{passwordChangedTitle}
+          </div>
+          <div class="subtitle">
+            $i18n{passwordChangedSubtitle}
+          </div>
+        </div>
+        <div class="input-container">
+          <cr-input type="password" id="oldPasswordInput" required
+                placeholder="$i18n{passwordChangedOldPasswordHint}"
+                error-message="$i18n{passwordChangedIncorrectOldPassword}">
+        </div>
+        <div class="flex layout horizontal button-container">
+          <cr-button id="cancelButton" class="cancel-button" on-click="onCloseTap_">
+            $i18n{lockScreenCancelButton}
+          </cr-button>
+          <cr-button id="nextButton" class="action-button" on-click="onNext_">
+            $i18n{lockScreenNextButton}
+            <iron-icon icon="oobe-buttons-40:arrow-forward"></iron-icon>
+          </cr-button>
+        </div>
+      </div>
     </template>
   </dom-module>
 </head>

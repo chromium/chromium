@@ -2458,6 +2458,18 @@
   <message name="IDS_LOCK_MANUAL_PASSWORD_SUBTITLE" desc="Subtitle for the manual password setting dialog.">
     Enter your password again to verify your account.
   </message>
+  <message name="IDS_LOCK_SAML_NOTICE" desc="Text message displayed above SAML portal to early indicate that the user is being redirected to another sign-in provider. This is the version of the string used in the GAIA flow.">
+    This sign-in service is hosted by <ph name="SAML_DOMAIN">$1<ex>saml.com</ex></ph>
+  </message>
+  <message name="IDS_LOCK_PASSWORD_CHANGED_TITLE" desc="Subtitle for the password changed dialog.">
+    Restore local data
+  </message>
+  <message name="IDS_LOCK_PASSWORD_CHANGED_SUBTITLE" desc="Subtitle for the password changed dialog.">
+    Your verification was successful. To unlock and restore your local data, please enter your old <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> password.
+  </message>
+  <message name="IDS_LOCK_PASSWORD_CHANGED_OLD_PASSWORD_HINT" desc="Old password field hint on the password changed dialog.">
+    Enter old password
+  </message>
   <message name="IDS_LOGIN_ERROR_GOOGLE_ACCOUNT_NOT_ALLOWED" desc="Couldn't sign into Google account on the Active Directory managed device.">
     Sorry, Google accounts are not allowed on this device.
   </message>

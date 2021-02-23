@@ -54,7 +54,7 @@ void LockScreenReauthHandler::HandleInitialize(const base::ListValue* value) {
 }
 
 void LockScreenReauthHandler::HandleAuthenticatorLoaded(
-    const base::ListValue*) {
+    const base::ListValue* value) {
   VLOG(1) << "Authenticator finished loading";
   authenticator_being_loaded_ = false;
   // Recreate the client cert usage observer, in order to track only the certs
@@ -225,19 +225,35 @@ void LockScreenReauthHandler::OnCookieWaitTimeout() {
   Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
   chromeos::InSessionPasswordSyncManager* password_sync_manager =
       chromeos::InSessionPasswordSyncManagerFactory::GetForProfile(profile);
-  password_sync_manager->lock_screen_start_reauth_dialog->Dismiss();
+  password_sync_manager->DismissDialog();
 }
 
-void LockScreenReauthHandler::CheckCredentials(const UserContext& user_context) {
+void LockScreenReauthHandler::CheckCredentials(
+    const UserContext& user_context) {
   Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByAccountId(
       user_context.GetAccountId());
   if (!profile) {
     LOG(ERROR) << "Invalid account id";
     return;
   }
-  chromeos::InSessionPasswordSyncManager* password_sync_manager =
+  auto password_changed_callback =
+      base::BindRepeating(&LockScreenReauthHandler::ShowPasswordChangedScreen,
+                          weak_factory_.GetWeakPtr());
+  password_sync_manager_ =
       chromeos::InSessionPasswordSyncManagerFactory::GetForProfile(profile);
-  password_sync_manager->CheckCredentials(user_context);
+  password_sync_manager_->CheckCredentials(user_context,
+                                           password_changed_callback);
+}
+
+void LockScreenReauthHandler::HandleUpdateUserPassword(
+    const base::ListValue* value) {
+  std::string old_password;
+  value->GetString(0, &old_password);
+  password_sync_manager_->UpdateUserPassword(old_password);
+}
+
+void LockScreenReauthHandler::ShowPasswordChangedScreen() {
+  CallJavascriptFunction("$(\'main-element\').passwordChanged");
 }
 
 void LockScreenReauthHandler::RegisterMessages() {
@@ -255,6 +271,10 @@ void LockScreenReauthHandler::RegisterMessages() {
       base::BindRepeating(
           &LockScreenReauthHandler::HandleCompleteAuthentication,
           weak_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      "updateUserPassword",
+      base::BindRepeating(&LockScreenReauthHandler::HandleUpdateUserPassword,
+                          weak_factory_.GetWeakPtr()));
 }
 
 }  // namespace chromeos

@@ -347,12 +347,7 @@ void LoginScreenClient::ShowGaiaSigninInternal(
       DCHECK(session_manager::SessionManager::Get()->IsScreenLocked());
       chromeos::InSessionPasswordSyncManager* password_sync_manager =
           chromeos::InSessionPasswordSyncManagerFactory::GetForProfile(profile);
-      if (!password_sync_manager->lock_screen_start_reauth_dialog) {
-        password_sync_manager->lock_screen_start_reauth_dialog =
-            std::unique_ptr<chromeos::LockScreenStartReauthDialog>(
-                new chromeos::LockScreenStartReauthDialog());
-      }
-      password_sync_manager->lock_screen_start_reauth_dialog->Show();
+      password_sync_manager->CreateAndShowDialog();
     }
   }
 }

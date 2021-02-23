@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_reauth_dialogs.h"
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
 #include "chromeos/login/auth/auth_status_consumer.h"
+#include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -26,8 +27,10 @@ class User;
 }
 
 namespace chromeos {
-class UserContext;
+class CryptohomeAuthenticator;
 class ExtendedAuthenticator;
+
+using PasswordChangedCallback = base::RepeatingClosure;
 
 // Manages SAML password sync for multiple customer devices. Handles online
 // re-auth requests triggered by online signin policy or by checking validity
@@ -62,10 +65,6 @@ class InSessionPasswordSyncManager
   // Note that it can be changed in session.
   bool IsLockReauthEnabled();
 
-  // Unlocks the screen if active user successfully verified the password
-  // with an IdP.
-  void OnAuthSucceeded(const UserContext& user_context);
-
   // Sets online re-auth on lock flag and changes the UI to online
   // re-auth when called on the lock screen.
   void MaybeForceReauthOnLockScreen(ReauthenticationReason reauth_reason);
@@ -85,17 +84,31 @@ class InSessionPasswordSyncManager
   void OnTokenVerified(bool is_valid) override;
   void OnApiCallFailed(PasswordSyncTokenFetcher::ErrorType error_type) override;
 
-  // Used when the user's credentials is correct.
-  void OnPasswordAuthSuccess(const UserContext& user_context);
-
   // Checks user's credentials.
-  void CheckCredentials(const UserContext& user_context);
+  // In case of success, OnAuthSuccess will be triggered.
+  // |user_context| has the user's credentials that needs to be checked.
+  // |callback| is used in case the user's password does not match the
+  // password that is used in encrypting his data by cryptohome
+  void CheckCredentials(const UserContext& user_context,
+                        PasswordChangedCallback callback);
+
+  // Change the user's old password with the new one which is used to 
+  // verify the user on an IdP.
+  void UpdateUserPassword(const std::string& old_password);
 
   // AuthStatusConsumer:
+  // Shows password changed dialog.
   void OnAuthFailure(const chromeos::AuthFailure& error) override;
+
+  // Unlocks the screen if active user successfully verified the password
+  // with an IdP.
   void OnAuthSuccess(const UserContext& user_context) override;
 
-  std::unique_ptr<LockScreenStartReauthDialog> lock_screen_start_reauth_dialog;
+  // Create and show lockscreen re-authentication dialog.
+  void CreateAndShowDialog();
+
+  // Dismiss lockscreen re-authentication dialog
+  void DismissDialog();
 
  private:
   void UpdateOnlineAuth();
@@ -104,6 +117,7 @@ class InSessionPasswordSyncManager
   void FetchTokenAsync();
 
   Profile* const primary_profile_;
+  UserContext user_context_;
   const base::Clock* clock_;
   const user_manager::User* const primary_user_;
   ReauthenticationReason lock_screen_reauth_reason_ =
@@ -113,6 +127,12 @@ class InSessionPasswordSyncManager
 
   // Used to authenticate the user.
   scoped_refptr<ExtendedAuthenticator> extended_authenticator_;
+  scoped_refptr<CryptohomeAuthenticator> authenticator_;
+
+  // Used to create dialog to authenticate the user on lockscreen.
+  std::unique_ptr<LockScreenStartReauthDialog> lock_screen_start_reauth_dialog_;
+
+  PasswordChangedCallback password_changed_callback_;
 
   friend class InSessionPasswordSyncManagerTest;
   friend class InSessionPasswordSyncManagerFactory;
