@@ -29,3 +29,11 @@ interface InputDeviceCapabilities {
   readonly firesTouchEvents: boolean;
   readonly pointerMovementScrolls: boolean;
 }
+
+// Chrome WebUI specific helper.
+// https://source.chromium.org/chromium/chromium/src/+/master:ui/webui/resources/js/load_time_data.js
+
+declare var loadTimeData: {
+  getString(id: string): string;
+  getStringF(id: string, ...args: (number|string)[]): string;
+}
