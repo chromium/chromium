@@ -635,6 +635,11 @@ void NGColspanCellTabulator::EndRow() {
     else
       ++i;
   }
+  std::sort(colspanned_cells_.begin(), colspanned_cells_.end(),
+            [](const NGColspanCellTabulator::Cell& a,
+               const NGColspanCellTabulator::Cell& b) {
+              return a.column_start < b.column_start;
+            });
 }
 
 // Advance current column to position not occupied by colspanned cells.
