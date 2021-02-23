@@ -204,4 +204,45 @@ TEST_F(ContainerQueryEvaluatorTest, DependentQueries) {
   EXPECT_TRUE(evaluator->ContainerChanged(size_400, horizontal));
 }
 
+TEST_F(ContainerQueryEvaluatorTest, EvaluatorOnDetachLayoutTree) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      main {
+        display: block;
+        contain: size layout;
+        width: 500px;
+        height: 500px;
+      }
+      @container (min-width: 500px) {
+        div { --x:test; }
+      }
+    </style>
+    <main id=container1>
+      <div></div>
+    </main>
+    <main id=container2>
+      <div></div>
+    </main>
+  )HTML");
+
+  Element* container1 = GetDocument().getElementById("container1");
+  ASSERT_TRUE(container1);
+  ASSERT_TRUE(container1->GetContainerQueryEvaluator());
+
+  // DetachLayoutTree with performing_reattach=false:
+  container1->remove();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(container1->GetContainerQueryEvaluator())
+      << "ContainerQueryEvaluator should be removed";
+
+  // DetachLayoutTree with performing_reattach=true:
+  Element* container2 = GetDocument().getElementById("container2");
+  ASSERT_TRUE(container2);
+  ASSERT_TRUE(container2->GetContainerQueryEvaluator());
+  container2->SetInlineStyleProperty(CSSPropertyID::kDisplay, "none");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(container2->GetContainerQueryEvaluator())
+      << "ContainerQueryEvaluator should persist";
+}
+
 }  // namespace blink

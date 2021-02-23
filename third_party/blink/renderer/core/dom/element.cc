@@ -2735,8 +2735,10 @@ void Element::DetachLayoutTree(bool performing_reattach) {
   HTMLFrameOwnerElement::PluginDisposeSuspendScope suspend_plugin_dispose;
   if (HasRareData()) {
     ElementRareData* data = GetElementRareData();
-    if (!performing_reattach)
+    if (!performing_reattach) {
       data->ClearPseudoElements();
+      data->SetContainerQueryEvaluator(nullptr);
+    }
 
     if (ElementAnimations* element_animations = data->GetElementAnimations()) {
       if (performing_reattach) {
