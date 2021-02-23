@@ -21,6 +21,8 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wallpaper/wallpaper_widget_controller.h"
+#include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_wallpaper_controller.h"
@@ -616,6 +618,57 @@ TEST_F(OverviewControllerTest, OverviewExitWhileStillEntering) {
 
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_TRUE(WindowState::Get(window.get())->IsMinimized());
+}
+
+// A subclass of DeskSwitchAnimationWaiter that additionally attempts to start
+// overview after the desk animation screenshots have been taken. Using the
+// regular DeskSwitchAnimatorWaiter and attempting to start overview before
+// calling Wait() would be similar to performing a desk switch when overview is
+// already open. This waiter mocks the behavior of trying to enter overview
+// while the desk switch is already in motion.
+class DeskSwitchStartOverviewAnimationWaiter
+    : public DeskSwitchAnimationWaiter {
+ public:
+  DeskSwitchStartOverviewAnimationWaiter() = default;
+  DeskSwitchStartOverviewAnimationWaiter(
+      const DeskSwitchStartOverviewAnimationWaiter&) = delete;
+  DeskSwitchStartOverviewAnimationWaiter& operator=(
+      const DeskSwitchStartOverviewAnimationWaiter&) = delete;
+  ~DeskSwitchStartOverviewAnimationWaiter() override = default;
+
+  // DeskSwitchAnimationWaiter:
+  void OnDeskActivationChanged(const Desk* activated,
+                               const Desk* deactivated) override {
+    Shell::Get()->overview_controller()->StartOverview();
+  }
+};
+
+// Tests that entering overview while performing a desk animation is disallowed,
+// but exiting is still done.
+TEST_F(OverviewControllerTest, OverviewEnterExitWhileDeskAnimation) {
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk1 = desks_controller->desks()[0].get();
+  const Desk* desk2 = desks_controller->desks()[1].get();
+
+  ui::ScopedAnimationDurationScaleMode non_zero(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Animate to desk 2. Try to enter overview while animating. On desk animation
+  // finished, we shouldn't be in overview.
+  DeskSwitchStartOverviewAnimationWaiter waiter;
+  desks_controller->ActivateDesk(desk2, DesksSwitchSource::kDeskSwitchShortcut);
+  waiter.Wait();
+  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  Shell::Get()->overview_controller()->StartOverview();
+  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  // Tests that exiting overview works as it is part of the desk switch
+  // animation.
+  ActivateDesk(desk1);
+  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
 }
 
 class OverviewVirtualKeyboardTest : public OverviewControllerTest {
