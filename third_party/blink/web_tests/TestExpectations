@@ -5754,3 +5754,7 @@ crbug.com/1180491 [ Linux ] external/wpt/storage-access-api/storageAccess.testdr
 crbug.com/1180491 [ Linux ] virtual/storage-access-api/external/wpt/storage-access-api/storageAccess.testdriver.sub.html [ Pass Failure ]
 crbug.com/1180627 [ Linux ] external/wpt/css/cssom-view/MediaQueryList-addListener-removeListener.html [ Pass Failure ]
 crbug.com/1180627 [ Linux ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/MediaQueryList-addListener-removeListener.html [ Pass Failure ]
+
+# Sheriff 2021-02-23
+crbug.com/1181466 [ Mac ] external/wpt/css/css-scroll-snap/snap-after-relayout/resnap-to-focused.html [ Pass Failure ]
+crbug.com/1181466 [ Mac ] virtual/threaded/external/wpt/css/css-scroll-snap/snap-after-relayout/resnap-to-focused.html [ Pass Failure ]
