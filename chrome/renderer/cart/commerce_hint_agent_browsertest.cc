@@ -36,11 +36,11 @@ cart_db::ChromeCartContentProto BuildProto(const char* domain,
 }
 
 const char kMockExample[] = "walmart.com";
-const char kMockExampleURL[] = "https://walmart.com/cart";
+const char kMockExampleURL[] = "https://www.walmart.com/cart";
 const cart_db::ChromeCartContentProto kMockExampleProto =
     BuildProto(kMockExample, kMockExampleURL);
 const char kMockAmazon[] = "amazon.com";
-const char kMockAmazonURL[] = "https://www.amazon.com/cart";
+const char kMockAmazonURL[] = "https://www.amazon.com/gp/cart/view.html";
 const cart_db::ChromeCartContentProto kMockAmazonProto =
     BuildProto(kMockAmazon, kMockAmazonURL);
 
