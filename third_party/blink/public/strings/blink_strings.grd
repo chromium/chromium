@@ -602,6 +602,9 @@ below:
       <message name="IDS_AX_ROLE_METER" desc="Accessibility role description for a meter, for example a temperature indicator or progress bar">
           meter
       </message>
+      <message name="IDS_AX_ROLE_MONTH" desc="Accessibility role description for a month input">
+        month picker
+      </message>
       <message name="IDS_AX_ROLE_NAVIGATIONAL_LINK" desc="Accessibility role description for group of navigational links.">
         navigation
       </message>

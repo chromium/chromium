@@ -2039,6 +2039,8 @@ base::string16 BrowserAccessibility::GetLocalizedStringForRoleDescription()
               IDS_AX_ROLE_DATE_TIME_LOCAL);
         } else if (input_type == "week") {
           return content_client->GetLocalizedString(IDS_AX_ROLE_WEEK);
+        } else if (input_type == "month") {
+          return content_client->GetLocalizedString(IDS_AX_ROLE_MONTH);
         }
       }
       return {};

@@ -1056,9 +1056,29 @@ base::string16 BrowserAccessibilityAndroid::GetRoleDescription() const {
     case ax::mojom::Role::kDate:
       message_id = IDS_AX_ROLE_DATE;
       break;
-    case ax::mojom::Role::kDateTime:
-      message_id = IDS_AX_ROLE_DATE_TIME;
+    case ax::mojom::Role::kDateTime: {
+      const ui::AXNodeData& data = GetData();
+      std::string type;
+      if (data.GetStringAttribute(ax::mojom::StringAttribute::kInputType,
+                                  &type)) {
+        // Returns a specific role to better aid users on the control type
+        // they are interacting with. This differs from Android text input type
+        // which has a more granular mapping that determines type of keyboard
+        // to display.
+        if (type == "datetime-local") {
+          message_id = IDS_AX_ROLE_DATE_TIME_LOCAL;
+        } else if (type == "month") {
+          message_id = IDS_AX_ROLE_MONTH;
+        } else if (type == "week") {
+          message_id = IDS_AX_ROLE_WEEK;
+        } else {
+          message_id = IDS_AX_ROLE_DATE_TIME;
+        }
+      } else {
+        message_id = IDS_AX_ROLE_DATE_TIME;
+      }
       break;
+    }
     case ax::mojom::Role::kDefinition:
       message_id = IDS_AX_ROLE_DEFINITION;
       break;
@@ -1876,8 +1896,9 @@ int BrowserAccessibilityAndroid::AndroidInputType() const {
   if (html_tag != "input")
     return ANDROID_TEXT_INPUTTYPE_TYPE_NULL;
 
+  const ui::AXNodeData& data = GetData();
   std::string type;
-  if (!GetHtmlAttribute("type", &type))
+  if (!data.GetStringAttribute(ax::mojom::StringAttribute::kInputType, &type))
     return ANDROID_TEXT_INPUTTYPE_TYPE_TEXT;
 
   if (type.empty() || type == "text" || type == "search")
