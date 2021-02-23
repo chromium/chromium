@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_unicode_range_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
+#include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
@@ -211,7 +212,21 @@ CSSValue* ConsumeAdvanceOverride(CSSParserTokenRange& range,
                                  const CSSParserContext& context) {
   if (!RuntimeEnabledFeatures::CSSFontFaceAdvanceOverrideEnabled())
     return nullptr;
-  return ConsumeFontMetricOverride(range, context);
+  if (CSSIdentifierValue* normal =
+          css_parsing_utils::ConsumeIdent<CSSValueID::kNormal>(range)) {
+    return normal;
+  }
+  CSSValue* override_horizontal =
+      css_parsing_utils::ConsumePercent(range, context, kValueRangeNonNegative);
+  if (!override_horizontal)
+    return nullptr;
+  CSSValue* override_vertical_upright =
+      css_parsing_utils::ConsumePercent(range, context, kValueRangeNonNegative);
+  if (!override_vertical_upright)
+    override_vertical_upright = override_horizontal;
+  return MakeGarbageCollected<CSSValuePair>(override_horizontal,
+                                            override_vertical_upright,
+                                            CSSValuePair::kDropIdenticalValues);
 }
 
 }  // namespace

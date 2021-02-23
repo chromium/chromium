@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_unicode_range_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
+#include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/local_font_face_source.h"
 #include "third_party/blink/renderer/core/css/offscreen_font_selector.h"
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptor_parser.h"
@@ -908,8 +909,11 @@ FontMetricsOverride FontFace::GetFontMetricsOverride() const {
         To<CSSPrimitiveValue>(*line_gap_override_).GetFloatValue() / 100;
   }
   if (advance_override_) {
+    const CSSValuePair& pair = To<CSSValuePair>(*advance_override_);
     result.advance_override =
-        To<CSSPrimitiveValue>(*advance_override_).GetFloatValue() / 100;
+        To<CSSPrimitiveValue>(pair.First()).GetFloatValue() / 100;
+    result.advance_override_vertical_upright =
+        To<CSSPrimitiveValue>(pair.Second()).GetFloatValue() / 100;
   }
   return result;
 }

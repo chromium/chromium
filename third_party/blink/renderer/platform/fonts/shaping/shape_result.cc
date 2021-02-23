@@ -892,9 +892,13 @@ void ShapeResult::ApplySpacingImpl(
       }
 
       typename ShapeResultSpacing<TextContainerType>::ComputeSpacingParameters
-          parameters{.index = run_start_index + glyph_data.character_index,
-                     .original_advance = glyph_data.advance,
-                     .advance_override = run->font_data_->GetAdvanceOverride()};
+          parameters{
+              .index = run_start_index + glyph_data.character_index,
+              .original_advance = glyph_data.advance,
+              .advance_override =
+                  IsCanvasRotationInVerticalUpright(run->canvas_rotation_)
+                      ? run->font_data_->GetAdvanceOverrideVerticalUpright()
+                      : run->font_data_->GetAdvanceOverride()};
       space = spacing.ComputeSpacing(parameters, offset);
       glyph_data.advance += space;
       total_space_for_run += space;

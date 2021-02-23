@@ -180,6 +180,8 @@ void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,
     font_metrics_.SetUnitsPerEm(units_per_em);
 
   advance_override_ = metrics_override.advance_override;
+  advance_override_vertical_upright_ =
+      metrics_override.advance_override_vertical_upright;
 }
 
 void SimpleFontData::PlatformGlyphInit() {
