@@ -282,7 +282,7 @@ void SigninManagerAndroid::
     LogOutAllAccountsForMobileIdentityConsistencyRollback(JNIEnv* env) {
   identity_manager_->GetAccountsCookieMutator()->LogOutAllAccounts(
       gaia::GaiaSource::kAccountReconcilorMirror,
-      signin::AccountsCookieMutator::LogOutFromCookieCompletedCallback());
+      base::DoNothing::Once<const GoogleServiceAuthError&>());
 }
 
 void SigninManagerAndroid::WipeProfileData(

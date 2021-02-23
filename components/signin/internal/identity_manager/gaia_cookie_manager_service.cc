@@ -613,6 +613,7 @@ void GaiaCookieManagerService::LogOutAllAccounts(
     gaia::GaiaSource source,
     LogOutFromCookieCompletedCallback completion_callback) {
   VLOG(1) << "GaiaCookieManagerService::LogOutAllAccounts";
+  DCHECK(completion_callback);
 
   bool log_out_queued = false;
   if (!requests_.empty()) {

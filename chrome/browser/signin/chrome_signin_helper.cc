@@ -259,7 +259,7 @@ void ProcessMirrorHeader(
                             manage_accounts_params.email)) {
       identity_manager->GetAccountsCookieMutator()->LogOutAllAccounts(
           gaia::GaiaSource::kChromeOS,
-          signin::AccountsCookieMutator::LogOutFromCookieCompletedCallback());
+          base::DoNothing::Once<const GoogleServiceAuthError&>());
       return;
     }
 

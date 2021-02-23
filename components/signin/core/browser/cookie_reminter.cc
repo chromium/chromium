@@ -51,6 +51,6 @@ void CookieReminter::OnRefreshTokenUpdatedForAccount(
     accounts_requiring_cookie_remint_.clear();
     identity_manager_->GetAccountsCookieMutator()->LogOutAllAccounts(
         gaia::GaiaSource::kChromeOS,
-        signin::AccountsCookieMutator::LogOutFromCookieCompletedCallback());
+        base::DoNothing::Once<const GoogleServiceAuthError&>());
   }
 }
