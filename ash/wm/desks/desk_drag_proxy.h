@@ -33,7 +33,7 @@ class DeskDragProxy : public ui::ImplicitAnimationObserver {
                 const gfx::Vector2dF& init_offset);
   DeskDragProxy(const DeskDragProxy&) = delete;
   DeskDragProxy& operator=(const DeskDragProxy&) = delete;
-  ~DeskDragProxy() override = default;
+  ~DeskDragProxy() override;
 
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;

@@ -4631,6 +4631,8 @@ TEST_F(DesksBentoTest, ReorderDesksByKeyboard) {
   EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_2));
 }
 
+// TODO(zxdan): Add a regression test for crbug/1171880
+
 // TODO(afakhry): Add more tests:
 // - Always on top windows are not tracked by any desk.
 // - Reusing containers when desks are removed and created.
