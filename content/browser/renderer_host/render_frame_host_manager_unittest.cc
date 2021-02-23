@@ -359,7 +359,8 @@ class RenderFrameHostManagerTest
     // being destroyed when ntp_rfh goes away.
     ntp_rfh->GetSiteInstance()->IncrementActiveFrameCount();
 
-    TestRenderFrameHost* dest_rfh = contents()->GetPendingMainFrame();
+    TestRenderFrameHost* dest_rfh =
+        contents()->GetSpeculativePrimaryMainFrame();
     CHECK(dest_rfh);
     EXPECT_NE(ntp_rfh, dest_rfh);
 
@@ -464,7 +465,7 @@ TEST_P(RenderFrameHostManagerTest, ChromeSchemeProcesses) {
   EXPECT_TRUE(main_rfh()->GetEnabledBindings() & BINDINGS_POLICY_WEB_UI);
   NavigationSimulator::NavigateAndCommitFromBrowser(contents(), kDestUrl);
 
-  EXPECT_FALSE(contents()->GetPendingMainFrame());
+  EXPECT_FALSE(contents()->GetSpeculativePrimaryMainFrame());
 
   // Make a second tab.
   std::unique_ptr<TestWebContents> contents2(
@@ -484,7 +485,7 @@ TEST_P(RenderFrameHostManagerTest, ChromeSchemeProcesses) {
       NavigationSimulator::CreateBrowserInitiated(kDestUrl, contents2.get());
   navigation2->Start();
   EXPECT_TRUE(contents2->CrossProcessNavigationPending());
-  TestRenderFrameHost* dest_rfh2 = contents2->GetPendingMainFrame();
+  TestRenderFrameHost* dest_rfh2 = contents2->GetSpeculativePrimaryMainFrame();
   ASSERT_TRUE(dest_rfh2);
 
   navigation2->Commit();
@@ -499,7 +500,7 @@ TEST_P(RenderFrameHostManagerTest, ChromeSchemeProcesses) {
   // Navigate both to a chrome://... URL, and verify that they have a separate
   // RenderProcessHost and a separate SiteInstance.
   NavigationSimulator::NavigateAndCommitFromBrowser(contents(), kChromeUrl);
-  EXPECT_FALSE(contents()->GetPendingMainFrame());
+  EXPECT_FALSE(contents()->GetSpeculativePrimaryMainFrame());
 
   NavigationSimulator::NavigateAndCommitFromBrowser(contents2.get(),
                                                     kChromeUrl);
@@ -813,9 +814,9 @@ TEST_P(RenderFrameHostManagerTest, AlwaysSendEnableViewSourceMode) {
   NavigationRequest* request =
       main_test_rfh()->frame_tree_node()->navigation_request();
   CHECK(request);
-  ASSERT_TRUE(contents()->GetPendingMainFrame())
+  ASSERT_TRUE(contents()->GetSpeculativePrimaryMainFrame())
       << "Expected new pending RenderFrameHost to be created.";
-  RenderFrameHost* last_rfh = contents()->GetPendingMainFrame();
+  RenderFrameHost* last_rfh = contents()->GetSpeculativePrimaryMainFrame();
 
   navigation->Commit();
   EXPECT_EQ(1, controller().GetLastCommittedEntryIndex());
@@ -841,7 +842,7 @@ TEST_P(RenderFrameHostManagerTest, AlwaysSendEnableViewSourceMode) {
 
   // The same RenderViewHost should be reused.
   navigation->ReadyToCommit();
-  EXPECT_FALSE(contents()->GetPendingMainFrame());
+  EXPECT_FALSE(contents()->GetSpeculativePrimaryMainFrame());
   EXPECT_EQ(last_rfh, contents()->GetMainFrame());
 
   navigation->Commit();
@@ -1308,7 +1309,7 @@ TEST_P(RenderFrameHostManagerTest, DisownOpenerDuringNavigation) {
 
   // The back navigation commits.
   NavigationEntry* entry1 = contents()->GetController().GetPendingEntry();
-  contents()->GetPendingMainFrame()->SendNavigateWithTransition(
+  contents()->GetSpeculativePrimaryMainFrame()->SendNavigateWithTransition(
       entry1->GetUniqueID(), false, entry1->GetURL(),
       entry1->GetTransitionType());
 
@@ -1345,7 +1346,7 @@ TEST_P(RenderFrameHostManagerTest, DisownOpenerAfterNavigation) {
   contents()->GetController().GoBack();
   contents()->GetMainFrame()->PrepareForCommit();
   NavigationEntry* entry1 = contents()->GetController().GetPendingEntry();
-  contents()->GetPendingMainFrame()->SendNavigateWithTransition(
+  contents()->GetSpeculativePrimaryMainFrame()->SendNavigateWithTransition(
       entry1->GetUniqueID(), false, entry1->GetURL(),
       entry1->GetTransitionType());
 
@@ -1612,7 +1613,7 @@ TEST_P(RenderFrameHostManagerTest, DeleteFrameAfterUnloadACK) {
   navigation->ReadyToCommit();
   EXPECT_TRUE(contents()->CrossProcessNavigationPending());
   EXPECT_TRUE(rfh1->IsCurrent());
-  TestRenderFrameHost* rfh2 = contents()->GetPendingMainFrame();
+  TestRenderFrameHost* rfh2 = contents()->GetSpeculativePrimaryMainFrame();
 
   // Simulate the unload ack, unexpectedly early (before commit).  It should
   // have no effect.
@@ -1625,7 +1626,7 @@ TEST_P(RenderFrameHostManagerTest, DeleteFrameAfterUnloadACK) {
   navigation->Commit();
   EXPECT_FALSE(contents()->CrossProcessNavigationPending());
   EXPECT_EQ(rfh2, contents()->GetMainFrame());
-  EXPECT_TRUE(contents()->GetPendingMainFrame() == nullptr);
+  EXPECT_TRUE(contents()->GetSpeculativePrimaryMainFrame() == nullptr);
   EXPECT_TRUE(rfh2->IsCurrent());
   EXPECT_TRUE(rfh1->IsPendingDeletion());
 
@@ -1667,14 +1668,14 @@ TEST_P(RenderFrameHostManagerTest, UnloadFrameAfterUnloadACK) {
   navigation->ReadyToCommit();
   EXPECT_TRUE(contents()->CrossProcessNavigationPending());
   EXPECT_TRUE(rfh1->IsCurrent());
-  TestRenderFrameHost* rfh2 = contents()->GetPendingMainFrame();
+  TestRenderFrameHost* rfh2 = contents()->GetSpeculativePrimaryMainFrame();
 
   // The new page commits.
   navigation->set_drop_unload_ack(true);
   navigation->Commit();
   EXPECT_FALSE(contents()->CrossProcessNavigationPending());
   EXPECT_EQ(rfh2, contents()->GetMainFrame());
-  EXPECT_TRUE(contents()->GetPendingMainFrame() == nullptr);
+  EXPECT_TRUE(contents()->GetSpeculativePrimaryMainFrame() == nullptr);
   EXPECT_TRUE(rfh1->IsPendingDeletion());
   EXPECT_TRUE(rfh2->IsCurrent());
 
@@ -1716,14 +1717,14 @@ TEST_P(RenderFrameHostManagerTest, CommitNewNavigationBeforeSendingUnload) {
   navigation->ReadyToCommit();
   EXPECT_TRUE(contents()->CrossProcessNavigationPending());
   EXPECT_TRUE(rfh1->IsCurrent());
-  TestRenderFrameHost* rfh2 = contents()->GetPendingMainFrame();
+  TestRenderFrameHost* rfh2 = contents()->GetSpeculativePrimaryMainFrame();
 
   // The new page commits.
   navigation->set_drop_unload_ack(true);
   navigation->Commit();
   EXPECT_FALSE(contents()->CrossProcessNavigationPending());
   EXPECT_EQ(rfh2, contents()->GetMainFrame());
-  EXPECT_TRUE(contents()->GetPendingMainFrame() == nullptr);
+  EXPECT_TRUE(contents()->GetSpeculativePrimaryMainFrame() == nullptr);
   EXPECT_TRUE(rfh1->IsPendingDeletion());
   EXPECT_TRUE(rfh2->IsCurrent());
 
@@ -1755,7 +1756,7 @@ TEST_P(RenderFrameHostManagerTest, CancelPendingProperlyDeletesOrSwaps) {
   controller().LoadURL(kUrl2, Referrer(), ui::PAGE_TRANSITION_LINK,
                        std::string());
   {
-    pending_rfh = contents()->GetPendingMainFrame();
+    pending_rfh = contents()->GetSpeculativePrimaryMainFrame();
     RenderFrameDeletedObserver rfh_deleted_observer(pending_rfh);
 
     // Cancel the navigation by simulating a declined beforeunload dialog.
@@ -1771,7 +1772,7 @@ TEST_P(RenderFrameHostManagerTest, CancelPendingProperlyDeletesOrSwaps) {
   controller().LoadURL(kUrl2, Referrer(), ui::PAGE_TRANSITION_LINK,
                        std::string());
   {
-    pending_rfh = contents()->GetPendingMainFrame();
+    pending_rfh = contents()->GetSpeculativePrimaryMainFrame();
     RenderFrameDeletedObserver rfh_deleted_observer(pending_rfh);
 
     // Increment the number of active frames in the new SiteInstance, which will

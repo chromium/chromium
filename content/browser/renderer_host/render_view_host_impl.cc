@@ -699,10 +699,10 @@ int RenderViewHostImpl::GetRoutingID() {
 RenderFrameHost* RenderViewHostImpl::GetMainFrame() {
   // If the RenderViewHost is active, it should always have a main frame
   // RenderFrameHost.  If it is inactive, it could've been created for a
-  // pending main frame navigation, in which case it will transition to active
-  // once that navigation commits. In this case, return the pending main frame
-  // RenderFrameHost, as that's expected by certain code paths,
-  // such as RenderViewHostImpl::SetUIProperty().  If there's no pending main
+  // speculative main frame navigation, in which case it will transition to
+  // active once that navigation commits. In this case, return the speculative
+  // main frame RenderFrameHost, as that's expected by certain code paths, such
+  // as RenderViewHostImpl::SetUIProperty().  If there's no speculative main
   // frame navigation, return nullptr.
   //
   // TODO(alexmos, creis): Migrate these code paths to use RenderFrameHost APIs
@@ -711,7 +711,7 @@ RenderFrameHost* RenderViewHostImpl::GetMainFrame() {
     return RenderFrameHostImpl::FromID(GetProcess()->GetID(),
                                        main_frame_routing_id_);
   }
-  return delegate_->GetPendingMainFrame();
+  return frame_tree_->root()->render_manager()->speculative_frame_host();
 }
 
 void RenderViewHostImpl::RenderWidgetGotFocus() {

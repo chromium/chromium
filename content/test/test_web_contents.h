@@ -66,7 +66,6 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
 
   // WebContentsTester implementation.
   void CommitPendingNavigation() override;
-  TestRenderFrameHost* GetPendingMainFrame() override;
 
   void NavigateAndCommit(
       const GURL& url,
@@ -140,6 +139,8 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   }
 
   bool IsPageFrozen() override;
+
+  TestRenderFrameHost* GetSpeculativePrimaryMainFrame();
 
  protected:
   // The deprecated WebContentsTester still needs to subclass this.

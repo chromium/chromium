@@ -12,6 +12,7 @@
 #include "content/browser/bad_message.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -581,7 +582,10 @@ void Portal::ActivateImpl(blink::TransferableMessage data,
 
   auto* outer_contents_main_frame_view = static_cast<RenderWidgetHostViewBase*>(
       outer_contents->GetMainFrame()->GetView());
-  DCHECK(!outer_contents->GetPendingMainFrame());
+  DCHECK(!outer_contents->GetFrameTree()
+              ->root()
+              ->render_manager()
+              ->speculative_frame_host());
   auto* portal_contents_main_frame_view =
       static_cast<RenderWidgetHostViewBase*>(
           successor_contents_raw->GetMainFrame()->GetView());

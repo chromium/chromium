@@ -198,7 +198,8 @@ RenderFrameHost* RenderViewHostTestHarness::main_rfh() {
 }
 
 RenderFrameHost* RenderViewHostTestHarness::pending_main_rfh() {
-  return static_cast<TestWebContents*>(web_contents())->GetPendingMainFrame();
+  return static_cast<TestWebContents*>(web_contents())
+      ->GetSpeculativePrimaryMainFrame();
 }
 
 BrowserContext* RenderViewHostTestHarness::browser_context() {

@@ -6602,10 +6602,6 @@ bool WebContentsImpl::IsSpatialNavigationDisabled() const {
   return is_spatial_navigation_disabled_;
 }
 
-RenderFrameHostImpl* WebContentsImpl::GetPendingMainFrame() {
-  return GetRenderManager()->speculative_frame_host();
-}
-
 bool WebContentsImpl::IsPictureInPictureAllowedForFullscreenVideo() const {
   return media_web_contents_observer_
       ->IsPictureInPictureAllowedForFullscreenVideo();

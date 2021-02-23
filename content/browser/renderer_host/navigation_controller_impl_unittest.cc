@@ -255,8 +255,9 @@ class NavigationControllerTest : public RenderViewHostImplTestHarness,
   }
 
   TestRenderFrameHost* GetNavigatingRenderFrameHost() {
-    return AreAllSitesIsolatedForTesting() ? contents()->GetPendingMainFrame()
-                                           : contents()->GetMainFrame();
+    return AreAllSitesIsolatedForTesting()
+               ? contents()->GetSpeculativePrimaryMainFrame()
+               : contents()->GetMainFrame();
   }
 
   FrameTreeNode* root_ftn() { return contents()->GetFrameTree()->root(); }

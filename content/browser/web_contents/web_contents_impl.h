@@ -835,7 +835,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool HideDownloadUI() const override;
   bool HasPersistentVideo() const override;
   bool IsSpatialNavigationDisabled() const override;
-  RenderFrameHostImpl* GetPendingMainFrame() override;
   void DidFirstVisuallyNonEmptyPaint(RenderViewHostImpl* source) override;
   void OnThemeColorChanged(RenderViewHostImpl* source) override;
   void OnBackgroundColorChanged(RenderViewHostImpl* source) override;

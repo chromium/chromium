@@ -95,9 +95,9 @@ TestRenderViewHost* TestWebContents::GetRenderViewHost() {
   return static_cast<TestRenderViewHost*>(instance);
 }
 
-TestRenderFrameHost* TestWebContents::GetPendingMainFrame() {
+TestRenderFrameHost* TestWebContents::GetSpeculativePrimaryMainFrame() {
   return static_cast<TestRenderFrameHost*>(
-      WebContentsImpl::GetPendingMainFrame());
+      GetFrameTree()->root()->render_manager()->speculative_frame_host());
 }
 
 int TestWebContents::DownloadImage(const GURL& url,

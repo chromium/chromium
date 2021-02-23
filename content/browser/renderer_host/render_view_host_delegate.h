@@ -35,7 +35,6 @@ class Size;
 
 namespace content {
 
-class RenderFrameHostImpl;
 class RenderViewHost;
 class RenderViewHostImpl;
 class RenderViewHostDelegateView;
@@ -161,10 +160,6 @@ class CONTENT_EXPORT RenderViewHostDelegate {
 
   // Whether spatial navigation is permitted.
   virtual bool IsSpatialNavigationDisabled() const;
-
-  // Returns the RenderFrameHost for a pending or speculative main frame
-  // navigation for the page.  Returns nullptr if there is no such navigation.
-  virtual RenderFrameHostImpl* GetPendingMainFrame();
 
   // The RenderView finished the first visually non-empty paint.
   virtual void DidFirstVisuallyNonEmptyPaint(RenderViewHostImpl* source) {}
