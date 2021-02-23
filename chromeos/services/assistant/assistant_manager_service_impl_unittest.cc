@@ -1031,6 +1031,8 @@ TEST_F(AssistantManagerServiceImplTest, ShouldSyncSpeakerIdEnrollmentStatus) {
 
 TEST_F(AssistantManagerServiceImplTest,
        ShouldSyncSpeakerIdEnrollmentStatusWhenRunning) {
+  AssistantManagerServiceImpl::ResetIsFirstInitFlagForTesting();
+
   StrictMock<SpeakerIdEnrollmentClientMock> client_mock;
   StrictMock<SpeakerIdEnrollmentControllerMock> mojom_mock;
   mojom_mock.Bind(mojom_libassistant_service());

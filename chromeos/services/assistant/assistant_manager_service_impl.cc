@@ -197,6 +197,11 @@ class SpeechRecognitionObserverWrapper
       receiver_{this};
 };
 
+// static
+void AssistantManagerServiceImpl::ResetIsFirstInitFlagForTesting() {
+  is_first_init = true;
+}
+
 AssistantManagerServiceImpl::AssistantManagerServiceImpl(
     ServiceContext* context,
     std::unique_ptr<AssistantManagerServiceDelegate> delegate,
@@ -716,7 +721,6 @@ void AssistantManagerServiceImpl::OnVerifyAndroidApp(
       interaction_proto, /*description=*/"verify_provider_response", options,
       [](auto) {});
 }
-
 
 void AssistantManagerServiceImpl::OnModifyDeviceSetting(
     const api::client_op::ModifySettingArgs& modify_setting_args) {
