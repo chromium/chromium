@@ -3679,6 +3679,18 @@
           "disable_accelerated_h264_encode",
           "disable_accelerated_vp8_encode"
         ]
+    },
+    {
+      "id": 367,
+      "cr_bugs": [1180962],
+      "description": "ANGLE cannot recover from context lost",
+      "os": {
+        "type": "android"
+      },
+      "gl_renderer": "ANGLE.*",
+      "features": [
+        "exit_on_context_lost"
+      ]
     }
   ]
 }
