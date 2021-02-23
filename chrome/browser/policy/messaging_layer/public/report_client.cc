@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/containers/queue.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -40,7 +39,6 @@
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
-#include "components/reporting/util/task_runner_context.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -302,22 +300,19 @@ ReportingClient::InitializingContext::InitializingContext(
     UpdateConfigurationCallback update_config_cb,
     InitCompleteCallback init_complete_cb,
     scoped_refptr<ReportingClient::InitializationStateTracker>
-        init_state_tracker,
-    scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner)
-    : TaskRunnerContext<Status>(std::move(init_complete_cb),
-                                sequenced_task_runner),
-      get_client_cb_(std::move(get_client_cb)),
+        init_state_tracker)
+    : get_client_cb_(std::move(get_client_cb)),
       start_upload_cb_(std::move(start_upload_cb)),
       update_config_cb_(std::move(update_config_cb)),
       init_state_tracker_(init_state_tracker),
-      client_config_(std::make_unique<Configuration>()) {}
+      client_config_(std::make_unique<Configuration>()),
+      init_complete_cb_(std::move(init_complete_cb)) {}
 
 ReportingClient::InitializingContext::~InitializingContext() = default;
 
-void ReportingClient::InitializingContext::OnStart() {
+void ReportingClient::InitializingContext::Start() {
   init_state_tracker_->RequestLeaderPromotion(base::BindOnce(
-      &ReportingClient::InitializingContext::OnLeaderPromotionResult,
-      base::Unretained(this)));
+      &InitializingContext::OnLeaderPromotionResult, base::Unretained(this)));
 }
 
 void ReportingClient::InitializingContext::OnLeaderPromotionResult(
@@ -336,11 +331,7 @@ void ReportingClient::InitializingContext::OnLeaderPromotionResult(
   }
 
   release_leader_cb_ = std::move(promo_result.ValueOrDie());
-  Schedule(&ReportingClient::InitializingContext::ConfigureCloudPolicyClient,
-           base::Unretained(this));
-}
 
-void ReportingClient::InitializingContext::ConfigureCloudPolicyClient() {
   // CloudPolicyClient requires posting to the main UI thread.
   base::PostTask(
       FROM_HERE, {content::BrowserThread::UI},
@@ -351,8 +342,7 @@ void ReportingClient::InitializingContext::ConfigureCloudPolicyClient() {
             std::move(get_client_cb).Run(std::move(on_client_configured));
           },
           std::move(get_client_cb_),
-          base::BindOnce(&ReportingClient::InitializingContext::
-                             OnCloudPolicyClientConfigured,
+          base::BindOnce(&InitializingContext::OnCloudPolicyClientConfigured,
                          base::Unretained(this))));
 }
 
@@ -365,8 +355,9 @@ void ReportingClient::InitializingContext::OnCloudPolicyClientConfigured(
     return;
   }
   client_config_->cloud_policy_client = std::move(client_result.ValueOrDie());
-  Schedule(&ReportingClient::InitializingContext::ConfigureStorageModule,
-           base::Unretained(this));
+  base::ThreadPool::PostTask(
+      FROM_HERE, base::BindOnce(&InitializingContext::ConfigureStorageModule,
+                                base::Unretained(this)));
 }
 
 void ReportingClient::InitializingContext::ConfigureStorageModule() {
@@ -384,9 +375,8 @@ void ReportingClient::InitializingContext::ConfigureStorageModule() {
           .set_signature_verification_public_key(
               SignatureVerifier::VerificationKey()),
       std::move(start_upload_cb_), base::MakeRefCounted<EncryptionModule>(),
-      base::BindOnce(
-          &ReportingClient::InitializingContext::OnStorageModuleConfigured,
-          base::Unretained(this)));
+      base::BindOnce(&InitializingContext::OnStorageModuleConfigured,
+                     base::Unretained(this)));
 }
 
 void ReportingClient::InitializingContext::OnStorageModuleConfigured(
@@ -399,12 +389,7 @@ void ReportingClient::InitializingContext::OnStorageModuleConfigured(
   }
 
   client_config_->storage = storage_result.ValueOrDie();
-  Schedule(
-      base::BindOnce(&ReportingClient::InitializingContext::CreateUploadClient,
-                     base::Unretained(this)));
-}
 
-void ReportingClient::InitializingContext::CreateUploadClient() {
   ReportingClient* const instance = GetInstance();
   DCHECK(!instance->upload_client_);
   UploadClient::Create(
@@ -425,9 +410,10 @@ void ReportingClient::InitializingContext::OnUploadClientCreated(
                                   upload_client_result.status().message()})));
     return;
   }
-  Schedule(&ReportingClient::InitializingContext::UpdateConfiguration,
-           base::Unretained(this),
-           std::move(upload_client_result.ValueOrDie()));
+  base::ThreadPool::PostTask(
+      FROM_HERE, base::BindOnce(&InitializingContext::UpdateConfiguration,
+                                base::Unretained(this),
+                                std::move(upload_client_result.ValueOrDie())));
 }
 
 void ReportingClient::InitializingContext::UpdateConfiguration(
@@ -438,14 +424,14 @@ void ReportingClient::InitializingContext::UpdateConfiguration(
 
   std::move(update_config_cb_)
       .Run(std::move(client_config_),
-           base::BindOnce(&ReportingClient::InitializingContext::Complete,
+           base::BindOnce(&InitializingContext::Complete,
                           base::Unretained(this)));
 }
 
 void ReportingClient::InitializingContext::Complete(Status status) {
   std::move(release_leader_cb_).Run(/*initialization_successful=*/status.ok());
-  Schedule(&ReportingClient::InitializingContext::Response,
-           base::Unretained(this), status);
+  std::move(init_complete_cb_).Run(status);
+  delete this;
 }
 
 ReportingClient::ReportingClient()
@@ -496,14 +482,17 @@ void ReportingClient::OnPushComplete() {
 void ReportingClient::OnInitState(bool reporting_client_configured) {
   if (!reporting_client_configured) {
     // Schedule an InitializingContext to take care of initialization.
-    Start<ReportingClient::InitializingContext>(
+    InitializingContext* context = new InitializingContext(
         std::move(build_cloud_policy_client_cb_),
         base::BindRepeating(&ReportingClient::BuildUploader),
         base::BindOnce(&ReportingClient::OnConfigResult,
                        base::Unretained(this)),
         base::BindOnce(&ReportingClient::OnInitializationComplete,
                        base::Unretained(this)),
-        init_state_tracker_, base::ThreadPool::CreateSequencedTaskRunner({}));
+        init_state_tracker_);
+    base::ThreadPool::PostTask(
+        FROM_HERE,
+        base::BindOnce(&InitializingContext::Start, base::Unretained(context)));
     return;
   }
 

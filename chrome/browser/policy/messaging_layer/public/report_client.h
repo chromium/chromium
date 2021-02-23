@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/queue.h"
 #include "base/feature_list.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue.h"
@@ -19,7 +18,6 @@
 #include "components/reporting/storage/storage_uploader_interface.h"
 #include "components/reporting/util/shared_queue.h"
 #include "components/reporting/util/statusor.h"
-#include "components/reporting/util/task_runner_context.h"
 
 namespace reporting {
 
@@ -142,26 +140,29 @@ class ReportingClient {
     SEQUENCE_CHECKER(sequence_checker_);
   };
 
-  class InitializingContext : public TaskRunnerContext<Status> {
+  class InitializingContext {
    public:
     InitializingContext(
         GetCloudPolicyClientCallback get_client_cb,
         UploaderInterface::StartCb start_upload_cb,
         UpdateConfigurationCallback update_config_cb,
         InitCompleteCallback init_complete_cb,
-        scoped_refptr<InitializationStateTracker> init_state_tracker,
-        scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner);
+        scoped_refptr<InitializationStateTracker> init_state_tracker);
+
+    void Start();
 
    private:
-    ~InitializingContext() override;
+    // Destructor only called from Complete().
+    // The class runs a series of callbacks each of which may invoke
+    // either the next callback or Complete(). Thus eventually Complete()
+    // is always called and InitializingContext instance is self-destruct.
+    ~InitializingContext();
 
     // OnStart will begin the process of configuring the ReportClient.
-    void OnStart() override;
     void OnLeaderPromotionResult(
         StatusOr<InitializationStateTracker::ReleaseLeaderCallback>
             promo_result);
 
-    void ConfigureCloudPolicyClient();
     void OnCloudPolicyClientConfigured(
         StatusOr<policy::CloudPolicyClient*> client_result);
 
@@ -171,13 +172,12 @@ class ReportingClient {
     void OnStorageModuleConfigured(
         StatusOr<scoped_refptr<StorageModuleInterface>> storage_result);
 
-    void CreateUploadClient();
     void OnUploadClientCreated(
         StatusOr<std::unique_ptr<UploadClient>> upload_client_result);
 
     void UpdateConfiguration(std::unique_ptr<UploadClient> upload_client);
 
-    // Complete calls response with |client_config_|
+    // Complete calls response with |client_config_| and self-destructs.
     void Complete(Status status);
 
     GetCloudPolicyClientCallback get_client_cb_;
@@ -187,6 +187,8 @@ class ReportingClient {
 
     InitializationStateTracker::ReleaseLeaderCallback release_leader_cb_;
     std::unique_ptr<Configuration> client_config_;
+
+    InitCompleteCallback init_complete_cb_;
   };
 
   // RAII class for testing ReportingClient - substitutes a cloud policy client
