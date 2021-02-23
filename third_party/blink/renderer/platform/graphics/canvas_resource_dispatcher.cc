@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/offscreen_canvas_placeholder.h"
+#include "third_party/blink/renderer/platform/graphics/resource_id_traits.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -211,12 +212,12 @@ bool CanvasResourceDispatcher::PrepareFrame(
     return false;
   }
 
-  next_resource_id_++;
+  auto next_resource_id = id_generator_.GenerateNextId();
 
   // For frameless canvas, we don't get a valid frame_sink_id and should drop.
   if (!frame_sink_id_.is_valid()) {
     PostImageToPlaceholderIfNotBlocked(std::move(canvas_resource),
-                                       next_resource_id_);
+                                       next_resource_id);
     return false;
   }
 
@@ -256,7 +257,7 @@ bool CanvasResourceDispatcher::PrepareFrame(
 
   canvas_resource->PrepareTransferableResource(
       &resource, &frame_resource->release_callback, kVerifiedSyncToken);
-  const unsigned resource_id = next_resource_id_;
+  const viz::ResourceId resource_id = next_resource_id;
   resource.id = resource_id;
 
   resources_.insert(resource_id, std::move(frame_resource));
@@ -414,7 +415,7 @@ void CanvasResourceDispatcher::ReclaimResource(viz::ResourceId resource_id) {
            kMaxUnreclaimedPlaceholderFrames - 1);
     PostImageToPlaceholderIfNotBlocked(std::move(latest_unposted_image_),
                                        latest_unposted_resource_id_);
-    latest_unposted_resource_id_ = 0;
+    latest_unposted_resource_id_ = viz::kInvalidResourceId;
   }
 }
 

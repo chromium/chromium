@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "components/viz/common/resources/resource_id.h"
 #include "components/viz/service/display/program_binding.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/mask_filter_info.h"
@@ -35,7 +36,7 @@ struct TexturedQuadDrawCache {
 
   // Values tracked to determine if textured quads may be coalesced.
   ProgramKey program_key;
-  int resource_id = -1;
+  ResourceId resource_id = kInvalidResourceId;
   bool needs_blending = false;
   bool nearest_neighbor = false;
   SkColor background_color = 0;

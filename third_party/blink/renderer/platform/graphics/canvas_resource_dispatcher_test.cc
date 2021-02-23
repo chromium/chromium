@@ -38,6 +38,11 @@ struct TestParams {
   bool context_alpha;
   bool vertical_flip;
 };
+
+viz::ResourceId NextId(viz::ResourceId id) {
+  return viz::ResourceId(id.GetUnsafeValue() + 1);
+}
+
 }  // namespace
 
 class MockCanvasResourceDispatcher : public CanvasResourceDispatcher {
@@ -51,7 +56,8 @@ class MockCanvasResourceDispatcher : public CanvasResourceDispatcher {
                                  {kWidth, kHeight} /* canvas_size */) {}
 
   MOCK_METHOD2(PostImageToPlaceholder,
-               void(scoped_refptr<CanvasResource>, unsigned resource_id));
+               void(scoped_refptr<CanvasResource>,
+                    viz::ResourceId resource_id));
 };
 
 class CanvasResourceDispatcherTest
@@ -77,8 +83,8 @@ class CanvasResourceDispatcherTest
     return dispatcher_->latest_unposted_resource_id_;
   }
 
-  viz::ResourceId GetCurrentResourceId() {
-    return dispatcher_->next_resource_id_;
+  viz::ResourceId PeekNextResourceId() {
+    return dispatcher_->id_generator_.PeekNextValueForTesting();
   }
 
   const IntSize& GetSize() const { return dispatcher_->size_; }
@@ -107,44 +113,44 @@ TEST_F(CanvasResourceDispatcherTest, PlaceholderRunsNormally) {
   /* We allow OffscreenCanvas to post up to 3 frames without hearing a response
    * from placeholder. */
   // Post first frame
-  unsigned post_resource_id = 1u;
+  viz::ResourceId post_resource_id(1u);
   EXPECT_CALL(*(Dispatcher()), PostImageToPlaceholder(_, post_resource_id));
   DispatchOneFrame();
   EXPECT_EQ(1u, GetNumUnreclaimedFramesPosted());
-  EXPECT_EQ(1u, GetCurrentResourceId());
+  EXPECT_EQ(NextId(post_resource_id), PeekNextResourceId());
   Mock::VerifyAndClearExpectations(Dispatcher());
 
   // Post second frame
-  post_resource_id++;
+  post_resource_id = NextId(post_resource_id);
   EXPECT_CALL(*(Dispatcher()), PostImageToPlaceholder(_, post_resource_id));
   DispatchOneFrame();
   EXPECT_EQ(2u, GetNumUnreclaimedFramesPosted());
-  EXPECT_EQ(2u, GetCurrentResourceId());
+  EXPECT_EQ(NextId(post_resource_id), PeekNextResourceId());
   Mock::VerifyAndClearExpectations(Dispatcher());
 
   // Post third frame
-  post_resource_id++;
+  post_resource_id = NextId(post_resource_id);
   EXPECT_CALL(*(Dispatcher()), PostImageToPlaceholder(_, post_resource_id));
   DispatchOneFrame();
   EXPECT_EQ(3u, GetNumUnreclaimedFramesPosted());
-  EXPECT_EQ(3u, GetCurrentResourceId());
+  EXPECT_EQ(NextId(post_resource_id), PeekNextResourceId());
   EXPECT_EQ(nullptr, GetLatestUnpostedImage());
   Mock::VerifyAndClearExpectations(Dispatcher());
 
   /* We mock the behavior of placeholder on main thread here, by reclaiming
    * the resources in order. */
   // Reclaim first frame
-  unsigned reclaim_resource_id = 1u;
+  viz::ResourceId reclaim_resource_id(1u);
   Dispatcher()->ReclaimResource(reclaim_resource_id);
   EXPECT_EQ(2u, GetNumUnreclaimedFramesPosted());
 
   // Reclaim second frame
-  reclaim_resource_id++;
+  reclaim_resource_id = NextId(reclaim_resource_id);
   Dispatcher()->ReclaimResource(reclaim_resource_id);
   EXPECT_EQ(1u, GetNumUnreclaimedFramesPosted());
 
   // Reclaim third frame
-  reclaim_resource_id++;
+  reclaim_resource_id = NextId(reclaim_resource_id);
   Dispatcher()->ReclaimResource(reclaim_resource_id);
   EXPECT_EQ(0u, GetNumUnreclaimedFramesPosted());
 }
@@ -161,17 +167,17 @@ TEST_F(CanvasResourceDispatcherTest, PlaceholderBeingBlocked) {
   DispatchOneFrame();
   DispatchOneFrame();
   DispatchOneFrame();
-  unsigned post_resource_id = 4u;
+  viz::ResourceId post_resource_id(4u);
   EXPECT_EQ(3u, GetNumUnreclaimedFramesPosted());
-  EXPECT_EQ(post_resource_id, GetCurrentResourceId());
+  EXPECT_EQ(NextId(post_resource_id), PeekNextResourceId());
   EXPECT_TRUE(GetLatestUnpostedImage());
   EXPECT_EQ(post_resource_id, GetLatestUnpostedResourceId());
 
   // Attempt to post the 5th time. The latest unposted image will be replaced.
-  post_resource_id++;
+  post_resource_id = NextId(post_resource_id);
   DispatchOneFrame();
   EXPECT_EQ(3u, GetNumUnreclaimedFramesPosted());
-  EXPECT_EQ(post_resource_id, GetCurrentResourceId());
+  EXPECT_EQ(NextId(post_resource_id), PeekNextResourceId());
   EXPECT_TRUE(GetLatestUnpostedImage());
   EXPECT_EQ(post_resource_id, GetLatestUnpostedResourceId());
 
@@ -180,18 +186,18 @@ TEST_F(CanvasResourceDispatcherTest, PlaceholderBeingBlocked) {
   /* When main thread becomes unblocked, the first reclaim called by placeholder
    * will trigger CanvasResourceDispatcher to post the last saved image.
    * Resource reclaim happens in the same order as frame posting. */
-  unsigned reclaim_resource_id = 1u;
+  viz::ResourceId reclaim_resource_id(1u);
   EXPECT_CALL(*(Dispatcher()), PostImageToPlaceholder(_, post_resource_id));
   Dispatcher()->ReclaimResource(reclaim_resource_id);
   // Reclaim 1 frame and post 1 frame, so numPostImagesUnresponded remains as 3
   EXPECT_EQ(3u, GetNumUnreclaimedFramesPosted());
   // Not generating new resource Id
-  EXPECT_EQ(post_resource_id, GetCurrentResourceId());
+  EXPECT_EQ(NextId(post_resource_id), PeekNextResourceId());
   EXPECT_FALSE(GetLatestUnpostedImage());
-  EXPECT_EQ(0u, GetLatestUnpostedResourceId());
+  EXPECT_EQ(viz::kInvalidResourceId, GetLatestUnpostedResourceId());
   Mock::VerifyAndClearExpectations(Dispatcher());
 
-  reclaim_resource_id++;
+  reclaim_resource_id = NextId(reclaim_resource_id);
   Dispatcher()->ReclaimResource(reclaim_resource_id);
   EXPECT_EQ(2u, GetNumUnreclaimedFramesPosted());
 }

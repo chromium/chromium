@@ -90,7 +90,7 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
         const gfx::Size size(1, 2);
         TransferableResource resource = TransferableResource::MakeSoftware(
             SharedBitmap::GenerateId(), size, ResourceFormat::RGBA_8888);
-        resource.id = j;
+        resource.id = ResourceId(j);
         frame_builder.AddTransferableResource(resource);
 
         auto* quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
@@ -106,9 +106,9 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
         const float vertex_opacity[4] = {0.f, 0.f, 1.f, 1.f};
         bool flipped = false;
         bool nearest_neighbor = false;
-        quad->SetAll(sqs, rect, visible_rect, needs_blending, j, gfx::Size(),
-                     premultiplied_alpha, uv_top_left, uv_bottom_right,
-                     background_color, vertex_opacity, flipped,
+        quad->SetAll(sqs, rect, visible_rect, needs_blending, ResourceId(j),
+                     gfx::Size(), premultiplied_alpha, uv_top_left,
+                     uv_bottom_right, background_color, vertex_opacity, flipped,
                      nearest_neighbor, /*secure_output_only=*/false,
                      gfx::ProtectedVideoType::kClear);
       }

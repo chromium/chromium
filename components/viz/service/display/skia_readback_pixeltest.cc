@@ -130,7 +130,7 @@ class SkiaReadbackPixelTest : public cc::PixelTest,
     ResourceId resource_id =
         CreateGpuResource(kSourceSize, format, MakePixelSpan(source_bitmap_));
 
-    std::unordered_map<ResourceId, ResourceId> resource_map =
+    std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
         cc::SendResourceAndGetChildToParentMap(
             {resource_id}, this->resource_provider_.get(),
             this->child_resource_provider_.get(),

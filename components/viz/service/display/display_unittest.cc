@@ -1006,9 +1006,9 @@ TEST_F(DisplayTest, DrawOcclusionWithIntersectingBackdropFilter) {
           root_render_pass->quad_list
               .AllocateAndConstruct<AggregatedRenderPassDrawQuad>();
       new_quad->SetNew(shared_quad_states[i], rects[i], rects[i],
-                       bd_render_pass->id, 2, gfx::RectF(), gfx::Size(),
-                       gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(), false,
-                       1.f);
+                       bd_render_pass->id, ResourceId(2), gfx::RectF(),
+                       gfx::Size(), gfx::Vector2dF(1, 1), gfx::PointF(),
+                       gfx::RectF(), false, 1.f);
       quads[i] = new_quad;
     } else {
       auto* new_quad = root_render_pass->quad_list
@@ -2766,7 +2766,7 @@ TEST_F(DisplayTest, CompositorFrameWithCoveredRenderPass) {
   bool opaque_content = true;
   float opacity = 1.f;
   AggregatedRenderPassId render_pass_id{1};
-  ResourceId mask_resource_id = 2;
+  ResourceId mask_resource_id(2);
 
   SharedQuadState* shared_quad_state =
       frame.render_pass_list.at(1)->CreateAndAppendSharedQuadState();
@@ -2996,7 +2996,7 @@ TEST_F(DisplayTest, CompositorFrameWithRenderPass) {
   bool is_clipped = false;
   bool opaque_content = true;
   AggregatedRenderPassId render_pass_id{1};
-  ResourceId mask_resource_id = 2;
+  ResourceId mask_resource_id(2);
   float opacity = 1.f;
   SharedQuadState* shared_quad_state =
       frame.render_pass_list.front()->CreateAndAppendSharedQuadState();

@@ -11,7 +11,7 @@ script can be run in standalone mode to check for existing violations.
 Example command:
 
 $ git ls-files third_party/blink \
-    | python third_party/blink/tools/audit_non_blink_usage.py
+    | python third_party/blink/tools/blinkpy/presubmit/audit_non_blink_usage.py
 """
 
 import os
@@ -1311,6 +1311,13 @@ _CONFIG = [
             'third_party/blink/renderer/modules/webaudio/',
         ],
         'allowed': ['fdlibm::.+'],
+    },
+    {
+        'paths': [
+            'third_party/blink/renderer/core/html/canvas/html_canvas_element.cc',
+            'third_party/blink/renderer/core/html/canvas/html_canvas_element.h',
+        ],
+        'allowed': ['viz::ResourceId'],
     },
 ]
 

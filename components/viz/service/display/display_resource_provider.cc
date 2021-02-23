@@ -74,8 +74,8 @@ bool DisplayResourceProvider::OnMemoryDump(
     // ResourceIds are not process-unique, so log with the ResourceProvider's
     // unique id.
     std::string dump_name =
-        base::StringPrintf("cc/resource_memory/provider_%d/resource_%d",
-                           tracing_id_, resource_entry.first);
+        base::StringPrintf("cc/resource_memory/provider_%d/resource_%u",
+                           tracing_id_, resource_entry.first.GetUnsafeValue());
     base::trace_event::MemoryAllocatorDump* dump =
         pmd->CreateAllocatorDump(dump_name);
 
@@ -229,7 +229,7 @@ void DisplayResourceProvider::ReceiveFromChild(
       continue;
     }
 
-    ResourceId local_id = next_id_++;
+    ResourceId local_id = resource_id_generator_.GenerateNextId();
     DCHECK(!resource.is_software || IsBitmapFormatSupported(resource.format));
     resources_.emplace(local_id, ChildResource(child_id, resource));
     child_info.child_to_parent_map[resource.id] = local_id;
@@ -261,14 +261,14 @@ void DisplayResourceProvider::DeclareUsedResourcesFromChild(
   DeleteAndReturnUnusedResourcesToChild(child_it, NORMAL, unused);
 }
 
-gpu::Mailbox DisplayResourceProvider::GetMailbox(int resource_id) {
+gpu::Mailbox DisplayResourceProvider::GetMailbox(ResourceId resource_id) {
   ChildResource* resource = TryGetResource(resource_id);
   if (!resource)
     return gpu::Mailbox();
   return resource->transferable.mailbox_holder.mailbox;
 }
 
-const std::unordered_map<ResourceId, ResourceId>&
+const std::unordered_map<ResourceId, ResourceId, ResourceIdHasher>&
 DisplayResourceProvider::GetChildToParentMap(int child) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto it = children_.find(child);

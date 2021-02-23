@@ -383,7 +383,7 @@ ResourceId CreateResource(DisplayResourceProvider* parent_resource_provider,
   child_resource_provider->RemoveImportedResource(resource_id);
 
   // In DisplayResourceProvider's namespace, use the mapped resource id.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       parent_resource_provider->GetChildToParentMap(child_id);
   return resource_map[list[0].id];
 }
@@ -667,7 +667,7 @@ TEST_F(FullscreenOverlayTest, SuccessfulOverlay) {
   TextureDrawQuad* original_quad = CreateFullscreenCandidateQuad(
       resource_provider_.get(), child_resource_provider_.get(),
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-  unsigned original_resource_id = original_quad->resource_id();
+  ResourceId original_resource_id = original_quad->resource_id();
 
   // Add something behind it.
   CreateFullscreenOpaqueQuad(resource_provider_.get(),
@@ -891,7 +891,7 @@ TEST_F(SingleOverlayOnTopTest, SuccessfulOverlay) {
   TextureDrawQuad* original_quad = CreateFullscreenCandidateQuad(
       resource_provider_.get(), child_resource_provider_.get(),
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-  unsigned original_resource_id = original_quad->resource_id();
+  ResourceId original_resource_id = original_quad->resource_id();
 
   // Add something behind it.
   CreateFullscreenOpaqueQuad(resource_provider_.get(),
@@ -945,7 +945,7 @@ TEST_F(SingleOverlayOnTopTest, PrioritizeBiggerOne) {
       kBigCandidateRect);
   AddExpectedRectToOverlayProcessor(gfx::RectF(kBigCandidateRect));
 
-  unsigned resource_big = quad_big->resource_id();
+  ResourceId resource_big = quad_big->resource_id();
 
   // Add something behind it.
   CreateFullscreenOpaqueQuad(resource_provider_.get(),
@@ -1599,7 +1599,7 @@ TEST_F(UnderlayTest, DisallowFilteredQuadOnTop) {
   AggregatedRenderPassDrawQuad* quad =
       pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   quad->SetNew(pass->shared_quad_state_list.back(), kOverlayRect, kOverlayRect,
-               render_pass_id, 0, gfx::RectF(), gfx::Size(),
+               render_pass_id, kInvalidResourceId, gfx::RectF(), gfx::Size(),
                gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(), false, 1.0f);
 
   CreateFullscreenCandidateQuad(
@@ -1640,7 +1640,7 @@ TEST_F(UnderlayTest, AllowFilteredQuadOnTopForProtectedVideo) {
   AggregatedRenderPassDrawQuad* quad =
       pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   quad->SetNew(pass->shared_quad_state_list.back(), kOverlayRect, kOverlayRect,
-               render_pass_id, 0, gfx::RectF(), gfx::Size(),
+               render_pass_id, kInvalidResourceId, gfx::RectF(), gfx::Size(),
                gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(), false, 1.0f);
 
   CreateCandidateQuadAt(
@@ -2511,10 +2511,8 @@ TEST_F(UnderlayTest, UpdateDamageWhenChangingUnderlays) {
 }
 
 TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
-  unsigned id_counter = 0;
+  ResourceIdGenerator id_generator;
   uint64_t frame_counter = 0;
-  // Function to fake unique resource ids so the system sees them as changing.
-  auto get_id = [&] { return ++id_counter; };
 
   // Test the default configuration.
   OverlayCandidateTemporalTracker::Config config;
@@ -2536,7 +2534,8 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
     // First setup a 60fps high damage candidate.
     for (int i = 0; i < OverlayCandidateTemporalTracker::kNumRecords; i++) {
       wait_1_frame();
-      tracker.AddRecord(frame_counter, kFullDamage, get_id(), config);
+      tracker.AddRecord(frame_counter, kFullDamage,
+                        id_generator.GenerateNextId(), config);
     }
 
     EXPECT_TRUE(tracker.IsActivelyChanging(frame_counter, config));
@@ -2550,7 +2549,8 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
     // drop does not change the end power categorization.
     wait_1_frame();
     wait_1_frame();
-    tracker.AddRecord(frame_counter, kFullDamage, get_id(), config);
+    tracker.AddRecord(frame_counter, kFullDamage, id_generator.GenerateNextId(),
+                      config);
 
     auto opaque_power_gain_60_stutter =
         tracker.GetModeledPowerGain(frame_counter, config, fake_display_area);
@@ -2561,7 +2561,8 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
 
     wait_inactive_frames();
     EXPECT_FALSE(tracker.IsActivelyChanging(frame_counter, config));
-    tracker.AddRecord(frame_counter, kFullDamage, get_id(), config);
+    tracker.AddRecord(frame_counter, kFullDamage, id_generator.GenerateNextId(),
+                      config);
 
     auto opaque_power_gain_60_inactive =
         tracker.GetModeledPowerGain(frame_counter, config, fake_display_area);
@@ -2573,7 +2574,8 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
     for (int i = 0; i < OverlayCandidateTemporalTracker::kNumRecords; i++) {
       wait_1_frame();
       wait_1_frame();
-      tracker.AddRecord(frame_counter, kFullDamage, get_id(), config);
+      tracker.AddRecord(frame_counter, kFullDamage,
+                        id_generator.GenerateNextId(), config);
     }
 
     auto opaque_power_gain_30_full =
@@ -2588,7 +2590,8 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
     wait_1_frame();
     wait_1_frame();
     wait_1_frame();
-    tracker.AddRecord(frame_counter, kFullDamage, get_id(), config);
+    tracker.AddRecord(frame_counter, kFullDamage, id_generator.GenerateNextId(),
+                      config);
 
     EXPECT_TRUE(tracker.IsActivelyChanging(frame_counter, config));
     auto opaque_power_gain_30_stutter =
@@ -2598,7 +2601,8 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
 
     wait_inactive_frames();
     EXPECT_FALSE(tracker.IsActivelyChanging(frame_counter, config));
-    tracker.AddRecord(frame_counter, kFullDamage, get_id(), config);
+    tracker.AddRecord(frame_counter, kFullDamage, id_generator.GenerateNextId(),
+                      config);
 
     auto opaque_power_gain_30_inactive =
         tracker.GetModeledPowerGain(frame_counter, config, fake_display_area);
@@ -2609,7 +2613,8 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
     // Test low and high damage thresholds.
     for (int i = 0; i < OverlayCandidateTemporalTracker::kNumRecords; i++) {
       wait_1_frame();
-      tracker.AddRecord(frame_counter, kAboveHighDamage, get_id(), config);
+      tracker.AddRecord(frame_counter, kAboveHighDamage,
+                        id_generator.GenerateNextId(), config);
     }
 
     auto opaque_power_gain_high_damage =
@@ -2620,7 +2625,8 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
 
     for (int i = 0; i < OverlayCandidateTemporalTracker::kNumRecords; i++) {
       wait_1_frame();
-      tracker.AddRecord(frame_counter, kBelowLowDamage, get_id(), config);
+      tracker.AddRecord(frame_counter, kBelowLowDamage,
+                        id_generator.GenerateNextId(), config);
     }
 
     auto opaque_power_gain_low_damage =
@@ -2636,7 +2642,8 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
       // timing intervals only gives 5 values.
       float dynamic_damage_ratio = static_cast<float>(i);
       expected_mean += dynamic_damage_ratio;
-      tracker.AddRecord(frame_counter, dynamic_damage_ratio, get_id(), config);
+      tracker.AddRecord(frame_counter, dynamic_damage_ratio,
+                        id_generator.GenerateNextId(), config);
     }
 
     expected_mean =
@@ -2651,7 +2658,7 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
   EXPECT_TRUE(tracker.IsAbsent());
 
   wait_1_frame();
-  tracker.AddRecord(frame_counter, 0.0f, get_id(), config);
+  tracker.AddRecord(frame_counter, 0.0f, id_generator.GenerateNextId(), config);
   EXPECT_FALSE(tracker.IsAbsent());
 
   // Tracker forced updates were added to support quads that change content but
@@ -2659,7 +2666,7 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
   // this small feature by keeping the resource id constant but passing in true
   // to the force update param.
   static const float kDamageRatio = 0.7f;
-  static const int kFakeConstantResourceId = 13;
+  static const ResourceId kFakeConstantResourceId(13);
   for (int i = 0; i < OverlayCandidateTemporalTracker::kNumRecords; i++) {
     wait_1_frame();
     tracker.AddRecord(frame_counter, kDamageRatio, kFakeConstantResourceId,
@@ -3082,7 +3089,8 @@ class OverlayInfoRendererGL : public GLRenderer {
 
     ASSERT_TRUE(current_frame()->output_surface_plane.has_value());
     ASSERT_EQ(1U, current_frame()->overlay_list.size());
-    EXPECT_GE(current_frame()->overlay_list.back().resource_id, 0U);
+    EXPECT_GE(current_frame()->overlay_list.back().resource_id,
+              kInvalidResourceId);
   }
 
   void AddExpectedRectToOverlayProcessor(const gfx::RectF& rect) {
@@ -3425,7 +3433,7 @@ TEST_F(GLRendererWithOverlaysTest, ResourcesExportedAndReturnedWithDelay) {
       child_resource_provider_.get(), gfx::Size(32, 32), true);
 
   // Return the resource map.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       cc::SendResourceAndGetChildToParentMap(
           {resource1, resource2, resource3}, resource_provider_.get(),
           child_resource_provider_.get(), child_provider_.get());
@@ -3617,7 +3625,7 @@ TEST_F(GLRendererWithOverlaysTest, ResourcesExportedAndReturnedAfterGpuQuery) {
       child_resource_provider_.get(), gfx::Size(32, 32), true);
 
   // Return the resource map.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       cc::SendResourceAndGetChildToParentMap(
           {resource1, resource2, resource3}, resource_provider_.get(),
           child_resource_provider_.get(), child_provider_.get());
@@ -3753,8 +3761,9 @@ class CALayerOverlayRPDQTest : public CALayerOverlayTest {
 
 TEST_F(CALayerOverlayRPDQTest, AggregatedRenderPassDrawQuadNoFilters) {
   quad_->SetNew(pass_->shared_quad_state_list.back(), kOverlayRect,
-                kOverlayRect, render_pass_id_, 0, gfx::RectF(), gfx::Size(),
-                gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(), false, 1.0f);
+                kOverlayRect, render_pass_id_, kInvalidResourceId, gfx::RectF(),
+                gfx::Size(), gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(),
+                false, 1.0f);
   ProcessForOverlays();
 
   EXPECT_EQ(1U, ca_layer_list_.size());
@@ -3774,8 +3783,9 @@ TEST_F(CALayerOverlayRPDQTest, AggregatedRenderPassDrawQuadAllValidFilters) {
       gfx::Point(10, 20), 1.0f, SK_ColorGREEN));
   render_pass_filters_[render_pass_id_] = &filters_;
   quad_->SetNew(pass_->shared_quad_state_list.back(), kOverlayRect,
-                kOverlayRect, render_pass_id_, 0, gfx::RectF(), gfx::Size(),
-                gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(), false, 1.0f);
+                kOverlayRect, render_pass_id_, kInvalidResourceId, gfx::RectF(),
+                gfx::Size(), gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(),
+                false, 1.0f);
   ProcessForOverlays();
 
   EXPECT_EQ(1U, ca_layer_list_.size());
@@ -3785,8 +3795,9 @@ TEST_F(CALayerOverlayRPDQTest, AggregatedRenderPassDrawQuadOpacityFilterScale) {
   filters_.Append(cc::FilterOperation::CreateOpacityFilter(0.8f));
   render_pass_filters_[render_pass_id_] = &filters_;
   quad_->SetNew(pass_->shared_quad_state_list.back(), kOverlayRect,
-                kOverlayRect, render_pass_id_, 0, gfx::RectF(), gfx::Size(),
-                gfx::Vector2dF(1, 2), gfx::PointF(), gfx::RectF(), false, 1.0f);
+                kOverlayRect, render_pass_id_, kInvalidResourceId, gfx::RectF(),
+                gfx::Size(), gfx::Vector2dF(1, 2), gfx::PointF(), gfx::RectF(),
+                false, 1.0f);
   ProcessForOverlays();
   EXPECT_EQ(1U, ca_layer_list_.size());
 }
@@ -3795,8 +3806,9 @@ TEST_F(CALayerOverlayRPDQTest, AggregatedRenderPassDrawQuadBlurFilterScale) {
   filters_.Append(cc::FilterOperation::CreateBlurFilter(0.8f));
   render_pass_filters_[render_pass_id_] = &filters_;
   quad_->SetNew(pass_->shared_quad_state_list.back(), kOverlayRect,
-                kOverlayRect, render_pass_id_, 0, gfx::RectF(), gfx::Size(),
-                gfx::Vector2dF(1, 2), gfx::PointF(), gfx::RectF(), false, 1.0f);
+                kOverlayRect, render_pass_id_, kInvalidResourceId, gfx::RectF(),
+                gfx::Size(), gfx::Vector2dF(1, 2), gfx::PointF(), gfx::RectF(),
+                false, 1.0f);
   ProcessForOverlays();
   EXPECT_EQ(1U, ca_layer_list_.size());
 }
@@ -3807,8 +3819,9 @@ TEST_F(CALayerOverlayRPDQTest,
       gfx::Point(10, 20), 1.0f, SK_ColorGREEN));
   render_pass_filters_[render_pass_id_] = &filters_;
   quad_->SetNew(pass_->shared_quad_state_list.back(), kOverlayRect,
-                kOverlayRect, render_pass_id_, 0, gfx::RectF(), gfx::Size(),
-                gfx::Vector2dF(1, 2), gfx::PointF(), gfx::RectF(), false, 1.0f);
+                kOverlayRect, render_pass_id_, kInvalidResourceId, gfx::RectF(),
+                gfx::Size(), gfx::Vector2dF(1, 2), gfx::PointF(), gfx::RectF(),
+                false, 1.0f);
   ProcessForOverlays();
   EXPECT_EQ(1U, ca_layer_list_.size());
 }
@@ -3817,16 +3830,18 @@ TEST_F(CALayerOverlayRPDQTest, AggregatedRenderPassDrawQuadBackgroundFilter) {
   backdrop_filters_.Append(cc::FilterOperation::CreateGrayscaleFilter(0.1f));
   render_pass_backdrop_filters_[render_pass_id_] = &backdrop_filters_;
   quad_->SetNew(pass_->shared_quad_state_list.back(), kOverlayRect,
-                kOverlayRect, render_pass_id_, 0, gfx::RectF(), gfx::Size(),
-                gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(), false, 1.0f);
+                kOverlayRect, render_pass_id_, kInvalidResourceId, gfx::RectF(),
+                gfx::Size(), gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(),
+                false, 1.0f);
   ProcessForOverlays();
   EXPECT_EQ(0U, ca_layer_list_.size());
 }
 
 TEST_F(CALayerOverlayRPDQTest, AggregatedRenderPassDrawQuadMask) {
   quad_->SetNew(pass_->shared_quad_state_list.back(), kOverlayRect,
-                kOverlayRect, render_pass_id_, 2, gfx::RectF(), gfx::Size(),
-                gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(), false, 1.0f);
+                kOverlayRect, render_pass_id_, ResourceId(2), gfx::RectF(),
+                gfx::Size(), gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(),
+                false, 1.0f);
   ProcessForOverlays();
   EXPECT_EQ(1U, ca_layer_list_.size());
 }
@@ -3835,8 +3850,9 @@ TEST_F(CALayerOverlayRPDQTest, AggregatedRenderPassDrawQuadUnsupportedFilter) {
   filters_.Append(cc::FilterOperation::CreateZoomFilter(0.9f, 1));
   render_pass_filters_[render_pass_id_] = &filters_;
   quad_->SetNew(pass_->shared_quad_state_list.back(), kOverlayRect,
-                kOverlayRect, render_pass_id_, 0, gfx::RectF(), gfx::Size(),
-                gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(), false, 1.0f);
+                kOverlayRect, render_pass_id_, kInvalidResourceId, gfx::RectF(),
+                gfx::Size(), gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(),
+                false, 1.0f);
   ProcessForOverlays();
   EXPECT_EQ(0U, ca_layer_list_.size());
 }
@@ -3848,9 +3864,9 @@ TEST_F(CALayerOverlayRPDQTest, TooManyRenderPassDrawQuads) {
   for (int i = 0; i < count; ++i) {
     auto* quad = pass_->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
     quad->SetNew(pass_->shared_quad_state_list.back(), kOverlayRect,
-                 kOverlayRect, render_pass_id_, 2, gfx::RectF(), gfx::Size(),
-                 gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(), false,
-                 1.0f);
+                 kOverlayRect, render_pass_id_, ResourceId(2), gfx::RectF(),
+                 gfx::Size(), gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(),
+                 false, 1.0f);
   }
 
   ProcessForOverlays();
@@ -4218,9 +4234,9 @@ TEST_F(UnderlayTest, ProtectedVideoOverlayScaling) {
     AggregatedRenderPassDrawQuad* quad =
         pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
     quad->SetNew(pass->shared_quad_state_list.back(), kOverlayRect,
-                 kOverlayRect, render_pass_id, 0, gfx::RectF(), gfx::Size(),
-                 gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(), false,
-                 1.0f);
+                 kOverlayRect, render_pass_id, kInvalidResourceId, gfx::RectF(),
+                 gfx::Size(), gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(),
+                 false, 1.0f);
 
     // First, we want the overlay to be scaled by 0.5 and have it rejected.
     float res_scale = 1.0f / (initial_scaling * (1.0f - kUVTopLeft.x()));

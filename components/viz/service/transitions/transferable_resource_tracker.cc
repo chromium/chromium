@@ -20,8 +20,9 @@
 
 namespace viz {
 
-TransferableResourceTracker::TransferableResourceTracker(ResourceId starting_id)
-    : starting_id_(starting_id), next_id_(starting_id) {}
+TransferableResourceTracker::TransferableResourceTracker()
+    : starting_id_(kVizReservedRangeStartId.GetUnsafeValue()),
+      next_id_(kVizReservedRangeStartId.GetUnsafeValue()) {}
 
 TransferableResourceTracker::~TransferableResourceTracker() = default;
 
@@ -63,7 +64,7 @@ void TransferableResourceTracker::UnrefResource(ResourceId id) {
 }
 
 ResourceId TransferableResourceTracker::GetNextAvailableResourceId() {
-  ResourceId result = next_id_;
+  uint32_t result = next_id_;
 
   // Since we're working with a limit range of resources, it is a lot more
   // likely that we will loop back to the starting id after running out of
@@ -72,8 +73,9 @@ ResourceId TransferableResourceTracker::GetNextAvailableResourceId() {
   // `managed_resources_`. Note that if we end up looping twice, we fail with a
   // CHECK since we don't have any available resources for this request.
   bool looped = false;
-  while (next_id_ == result || base::Contains(managed_resources_, next_id_)) {
-    if (next_id_ == std::numeric_limits<ResourceId>::max()) {
+  while (next_id_ == result ||
+         base::Contains(managed_resources_, ResourceId(next_id_))) {
+    if (next_id_ == std::numeric_limits<uint32_t>::max()) {
       CHECK(!looped);
       next_id_ = starting_id_;
       looped = true;
@@ -81,7 +83,7 @@ ResourceId TransferableResourceTracker::GetNextAvailableResourceId() {
       ++next_id_;
     }
   }
-  return result;
+  return ResourceId(result);
 }
 
 TransferableResourceTracker::TransferableResourceHolder::

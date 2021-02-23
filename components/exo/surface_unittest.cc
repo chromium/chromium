@@ -1017,7 +1017,7 @@ TEST_P(SurfaceTest, SetAlpha) {
     ASSERT_EQ(1u, frame.render_pass_list.size());
     ASSERT_EQ(1u, frame.render_pass_list.back()->quad_list.size());
     ASSERT_EQ(1u, frame.resource_list.size());
-    ASSERT_EQ(1u, frame.resource_list.back().id);
+    ASSERT_EQ(viz::ResourceId(1u), frame.resource_list.back().id);
     EXPECT_EQ(gfx::Rect(buffer_size),
               ToTargetSpaceDamage(frame.render_pass_list.back()->damage_rect));
   }
@@ -1048,7 +1048,7 @@ TEST_P(SurfaceTest, SetAlpha) {
     ASSERT_EQ(1u, frame.render_pass_list.back()->quad_list.size());
     ASSERT_EQ(1u, frame.resource_list.size());
     // The resource should be updated again, the id should be changed.
-    ASSERT_EQ(2u, frame.resource_list.back().id);
+    ASSERT_EQ(viz::ResourceId(2u), frame.resource_list.back().id);
     EXPECT_EQ(gfx::Rect(buffer_size),
               ToTargetSpaceDamage(frame.render_pass_list.back()->damage_rect));
   }
@@ -1081,7 +1081,7 @@ TEST_P(SurfaceTest, SurfaceQuad) {
     EXPECT_EQ(1u, frame.render_pass_list.back()->quad_list.size());
     EXPECT_EQ(1u, frame.resource_list.size());
     // Ensure that the quad is correct and the resource is included.
-    EXPECT_EQ(1u, frame.resource_list.back().id);
+    EXPECT_EQ(viz::ResourceId(1u), frame.resource_list.back().id);
     EXPECT_EQ(viz::DrawQuad::Material::kSurfaceContent,
               frame.render_pass_list.back()->quad_list.back()->material);
   }
@@ -1115,7 +1115,7 @@ TEST_P(SurfaceTest, EmptySurfaceQuad) {
     EXPECT_EQ(0u, frame.render_pass_list.back()->quad_list.size());
     // No quad but still has a resource though.
     EXPECT_EQ(1u, frame.resource_list.size());
-    EXPECT_EQ(1u, frame.resource_list.back().id);
+    EXPECT_EQ(viz::ResourceId(1u), frame.resource_list.back().id);
   }
 }
 
@@ -1153,7 +1153,7 @@ TEST_P(SurfaceTest, ScaledSurfaceQuad) {
     EXPECT_EQ(1u, frame.render_pass_list.back()->quad_list.size());
     EXPECT_EQ(1u, frame.resource_list.size());
     // Ensure that the quad is correct and the resource is included.
-    EXPECT_EQ(1u, frame.resource_list.back().id);
+    EXPECT_EQ(viz::ResourceId(1u), frame.resource_list.back().id);
     EXPECT_EQ(viz::DrawQuad::Material::kSurfaceContent,
               frame.render_pass_list.back()->quad_list.back()->material);
     // We are outputting to 0,0 -> 128,64.

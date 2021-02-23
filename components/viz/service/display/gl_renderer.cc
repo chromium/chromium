@@ -283,7 +283,7 @@ struct GLRenderer::DrawRenderPassDrawQuadParams {
   // bypass_quad_texture will be valid instead.
   ScopedRenderPassTexture* contents_texture = nullptr;
   struct {
-    ResourceId resource_id = 0;
+    ResourceId resource_id = kInvalidResourceId;
     gfx::Size size;
   } bypass_quad_texture;
 
@@ -2896,7 +2896,7 @@ void GLRenderer::FlushTextureQuadCache(BoundGeometry flush_binding) {
 
   // Clear the cache.
   draw_cache_.is_empty = true;
-  draw_cache_.resource_id = -1;
+  draw_cache_.resource_id = kInvalidResourceId;
   draw_cache_.uv_xform_data.resize(0);
   draw_cache_.vertex_opacity_data.resize(0);
   draw_cache_.matrix_data.resize(0);
@@ -2941,7 +2941,7 @@ void GLRenderer::EnqueueTextureQuad(const TextureDrawQuad* quad,
       quad->premultiplied_alpha ? PREMULTIPLIED_ALPHA : NON_PREMULTIPLIED_ALPHA,
       quad->background_color != SK_ColorTRANSPARENT, need_tex_clamp_rect,
       tint_gl_composited_content_, ShouldApplyRoundedCorner(quad));
-  int resource_id = quad->resource_id();
+  ResourceId resource_id = quad->resource_id();
 
   size_t max_quads = StaticGeometryBinding::NUM_QUADS;
   if (draw_cache_.is_empty || draw_cache_.program_key != program_key ||

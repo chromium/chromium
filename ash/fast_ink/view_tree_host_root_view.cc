@@ -437,7 +437,7 @@ void ViewTreeHostRootView::SubmitCompositorFrame() {
   }
 
   viz::TransferableResource transferable_resource;
-  transferable_resource.id = next_resource_id_++;
+  transferable_resource.id = id_generator_.GenerateNextId();
   transferable_resource.format = viz::RGBA_8888;
   transferable_resource.filter = GL_LINEAR;
   transferable_resource.size = buffer_size_;

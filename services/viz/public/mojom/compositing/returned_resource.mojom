@@ -5,10 +5,11 @@
 module viz.mojom;
 
 import "gpu/ipc/common/sync_token.mojom";
+import "services/viz/public/mojom/compositing/resource_id.mojom";
 
 // See components/viz/common/resources/returned_resource.h.
 struct ReturnedResource {
-  uint32 id;
+  ResourceId id;
   gpu.mojom.SyncToken sync_token;
   int32 count;
   bool lost;

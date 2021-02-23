@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "components/viz/common/quads/draw_quad.h"
+#include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/viz_common_export.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -44,10 +45,10 @@ class VIZ_COMMON_EXPORT YUVVideoDrawQuad : public DrawQuad {
               const gfx::RectF& uv_tex_coord_rect,
               const gfx::Size& ya_tex_size,
               const gfx::Size& uv_tex_size,
-              unsigned y_plane_resource_id,
-              unsigned u_plane_resource_id,
-              unsigned v_plane_resource_id,
-              unsigned a_plane_resource_id,
+              ResourceId y_plane_resource_id,
+              ResourceId u_plane_resource_id,
+              ResourceId v_plane_resource_id,
+              ResourceId a_plane_resource_id,
               const gfx::ColorSpace& video_color_space,
               float offset,
               float multiplier,
@@ -64,10 +65,10 @@ class VIZ_COMMON_EXPORT YUVVideoDrawQuad : public DrawQuad {
               const gfx::RectF& uv_tex_coord_rect,
               const gfx::Size& ya_tex_size,
               const gfx::Size& uv_tex_size,
-              unsigned y_plane_resource_id,
-              unsigned u_plane_resource_id,
-              unsigned v_plane_resource_id,
-              unsigned a_plane_resource_id,
+              ResourceId y_plane_resource_id,
+              ResourceId u_plane_resource_id,
+              ResourceId v_plane_resource_id,
+              ResourceId a_plane_resource_id,
               const gfx::ColorSpace& video_color_space,
               float offset,
               float multiplier,

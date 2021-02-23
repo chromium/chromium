@@ -19,6 +19,7 @@
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/quads/video_hole_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
+#include "components/viz/common/resources/resource_id.h"
 #include "services/viz/public/cpp/compositing/filter_operation_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/filter_operations_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/shared_quad_state_mojom_traits.h"
@@ -211,7 +212,7 @@ struct StructTraits<viz::mojom::CompositorRenderPassQuadStateDataView,
     return quad->render_pass_id;
   }
 
-  static uint32_t mask_resource_id(const viz::DrawQuad& input) {
+  static viz::ResourceId mask_resource_id(const viz::DrawQuad& input) {
     const viz::CompositorRenderPassDrawQuad* quad =
         viz::CompositorRenderPassDrawQuad::MaterialCast(&input);
     return quad->mask_resource_id();
@@ -289,7 +290,7 @@ struct StructTraits<viz::mojom::SolidColorQuadStateDataView, viz::DrawQuad> {
 
 template <>
 struct StructTraits<viz::mojom::StreamVideoQuadStateDataView, viz::DrawQuad> {
-  static uint32_t resource_id(const viz::DrawQuad& input) {
+  static viz::ResourceId resource_id(const viz::DrawQuad& input) {
     const viz::StreamVideoDrawQuad* quad =
         viz::StreamVideoDrawQuad::MaterialCast(&input);
     return quad->resources.ids[viz::StreamVideoDrawQuad::kResourceIdIndex];
@@ -355,7 +356,7 @@ struct StructTraits<viz::mojom::SurfaceQuadStateDataView, viz::DrawQuad> {
 
 template <>
 struct StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad> {
-  static uint32_t resource_id(const viz::DrawQuad& input) {
+  static viz::ResourceId resource_id(const viz::DrawQuad& input) {
     const viz::TextureDrawQuad* quad =
         viz::TextureDrawQuad::MaterialCast(&input);
     return quad->resource_id();
@@ -460,7 +461,7 @@ struct StructTraits<viz::mojom::TileQuadStateDataView, viz::DrawQuad> {
     return quad->nearest_neighbor;
   }
 
-  static uint32_t resource_id(const viz::DrawQuad& input) {
+  static viz::ResourceId resource_id(const viz::DrawQuad& input) {
     const viz::TileDrawQuad* quad = viz::TileDrawQuad::MaterialCast(&input);
     return quad->resource_id();
   }
@@ -499,25 +500,25 @@ struct StructTraits<viz::mojom::YUVVideoQuadStateDataView, viz::DrawQuad> {
     return quad->uv_tex_size;
   }
 
-  static uint32_t y_plane_resource_id(const viz::DrawQuad& input) {
+  static viz::ResourceId y_plane_resource_id(const viz::DrawQuad& input) {
     const viz::YUVVideoDrawQuad* quad =
         viz::YUVVideoDrawQuad::MaterialCast(&input);
     return quad->y_plane_resource_id();
   }
 
-  static uint32_t u_plane_resource_id(const viz::DrawQuad& input) {
+  static viz::ResourceId u_plane_resource_id(const viz::DrawQuad& input) {
     const viz::YUVVideoDrawQuad* quad =
         viz::YUVVideoDrawQuad::MaterialCast(&input);
     return quad->u_plane_resource_id();
   }
 
-  static uint32_t v_plane_resource_id(const viz::DrawQuad& input) {
+  static viz::ResourceId v_plane_resource_id(const viz::DrawQuad& input) {
     const viz::YUVVideoDrawQuad* quad =
         viz::YUVVideoDrawQuad::MaterialCast(&input);
     return quad->v_plane_resource_id();
   }
 
-  static uint32_t a_plane_resource_id(const viz::DrawQuad& input) {
+  static viz::ResourceId a_plane_resource_id(const viz::DrawQuad& input) {
     const viz::YUVVideoDrawQuad* quad =
         viz::YUVVideoDrawQuad::MaterialCast(&input);
     return quad->a_plane_resource_id();

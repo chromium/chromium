@@ -99,7 +99,7 @@ TEST_F(DisplayResourceProviderSoftwareTest, LostMailboxInParent) {
   gpu::SyncToken sync_token(gpu::CommandBufferNamespace::GPU_IO,
                             gpu::CommandBufferId::FromUnsafeValue(0x12), 0x34);
   auto tran = CreateResource(RGBA_8888);
-  tran.id = 11;
+  tran.id = ResourceId(11u);
 
   std::vector<ReturnedResource> returned_to_child;
   int child_id = resource_provider_->CreateChild(
@@ -132,7 +132,7 @@ TEST_F(DisplayResourceProviderSoftwareTest, ReadSoftwareResources) {
       resource,
       SingleReleaseCallback::Create(base::BindOnce(
           &MockReleaseCallback::Released, base::Unretained(&release))));
-  EXPECT_NE(0u, resource_id);
+  EXPECT_NE(kInvalidResourceId, resource_id);
 
   // Transfer resources to the parent.
   std::vector<TransferableResource> send_to_parent;
@@ -145,7 +145,7 @@ TEST_F(DisplayResourceProviderSoftwareTest, ReadSoftwareResources) {
   resource_provider_->ReceiveFromChild(child_id, send_to_parent);
 
   // In DisplayResourceProvider's namespace, use the mapped resource id.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       resource_provider_->GetChildToParentMap(child_id);
   ResourceId mapped_resource_id = resource_map[resource_id];
 

@@ -711,7 +711,7 @@ TEST_F(SurfaceSynchronizationTest, ResourcesOnlyReturnedOnce) {
   // the child submits a CompositorFrame. The CompositorFrame also has
   // resources in its resource list.
   TransferableResource resource;
-  resource.id = 1337;
+  resource.id = ResourceId(1337);
   resource.format = ALPHA_8;
   resource.filter = 1234;
   resource.size = gfx::Size(1234, 5678);
@@ -1275,7 +1275,7 @@ TEST_F(SurfaceSynchronizationTest, LatencyInfoNotCarriedOver) {
 TEST_F(SurfaceSynchronizationTest, ReturnResourcesWithAck) {
   const SurfaceId parent_id = MakeSurfaceId(kParentFrameSink, 1);
   TransferableResource resource;
-  resource.id = 1234;
+  resource.id = ResourceId(1234);
   parent_support().SubmitCompositorFrame(
       parent_id.local_surface_id(),
       MakeCompositorFrame(empty_surface_ids(), empty_surface_ranges(),
@@ -1298,7 +1298,7 @@ TEST_F(SurfaceSynchronizationTest, SubmitToDestroyedSurface) {
   // Create the child surface by submitting a frame to it.
   EXPECT_EQ(nullptr, GetSurfaceForId(child_id));
   TransferableResource resource;
-  resource.id = 1234;
+  resource.id = ResourceId(1234);
   child_support1().SubmitCompositorFrame(
       child_id.local_surface_id(),
       MakeCompositorFrame(empty_surface_ids(), empty_surface_ranges(),

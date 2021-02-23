@@ -28,9 +28,15 @@ std::unique_ptr<SurfaceSavedFrame> CreateFrameWithResult(
 
 }  // namespace
 
-TEST(TransferableResourceTrackerTest, IdInRange) {
-  ResourceId starting_id = 12345u;
-  TransferableResourceTracker tracker(starting_id);
+class TransferableResourceTrackerTest : public testing::Test {
+ public:
+  void SetNextId(TransferableResourceTracker* tracker, uint32_t id) {
+    tracker->next_id_ = id;
+  }
+};
+
+TEST_F(TransferableResourceTrackerTest, IdInRange) {
+  TransferableResourceTracker tracker;
 
   bool resource1_released = false;
   auto resource1 =
@@ -40,7 +46,7 @@ TEST(TransferableResourceTrackerTest, IdInRange) {
             resource1_released = true;
           })));
 
-  EXPECT_GE(resource1.id, starting_id);
+  EXPECT_GE(resource1.id, kVizReservedRangeStartId);
 
   bool resource2_released = false;
   auto resource2 =
@@ -62,11 +68,15 @@ TEST(TransferableResourceTrackerTest, IdInRange) {
   EXPECT_TRUE(resource2_released);
 }
 
-TEST(TransferableResourceTrackerTest, ExhaustedIdLoops) {
-  ResourceId starting_id = std::numeric_limits<ResourceId>::max() - 3u;
-  TransferableResourceTracker tracker(starting_id);
+TEST_F(TransferableResourceTrackerTest, ExhaustedIdLoops) {
+  static_assert(std::is_same<decltype(kInvalidResourceId.GetUnsafeValue()),
+                             uint32_t>::value,
+                "The test only makes sense if ResourceId is uint32_t");
+  uint32_t next_id = std::numeric_limits<uint32_t>::max() - 3u;
+  TransferableResourceTracker tracker;
+  SetNextId(&tracker, next_id);
 
-  ResourceId last_id = 0;
+  ResourceId last_id = kInvalidResourceId;
   for (int i = 0; i < 10; ++i) {
     bool resource_released = false;
     auto resource =
@@ -76,7 +86,7 @@ TEST(TransferableResourceTrackerTest, ExhaustedIdLoops) {
               resource_released = true;
             })));
 
-    EXPECT_GE(resource.id, starting_id);
+    EXPECT_GE(resource.id, kVizReservedRangeStartId);
     EXPECT_NE(resource.id, last_id);
     last_id = resource.id;
     tracker.UnrefResource(resource.id);
@@ -84,15 +94,21 @@ TEST(TransferableResourceTrackerTest, ExhaustedIdLoops) {
   }
 }
 
-TEST(TransferableResourceTrackerTest, ExhaustedIdLoopsButSkipsUnavailableIds) {
-  ResourceId starting_id = std::numeric_limits<ResourceId>::max() - 3u;
-  TransferableResourceTracker tracker(starting_id);
+TEST_F(TransferableResourceTrackerTest,
+       ExhaustedIdLoopsButSkipsUnavailableIds) {
+  static_assert(std::is_same<decltype(kInvalidResourceId.GetUnsafeValue()),
+                             uint32_t>::value,
+                "The test only makes sense if ResourceId is uint32_t");
+  TransferableResourceTracker tracker;
 
   auto reserved_resource = tracker.ImportResource(CreateFrameWithResult(
       base::BindOnce([](const gpu::SyncToken&, bool) {})));
-  EXPECT_GE(reserved_resource.id, starting_id);
+  EXPECT_GE(reserved_resource.id, kVizReservedRangeStartId);
 
-  ResourceId last_id = 0;
+  uint32_t next_id = std::numeric_limits<uint32_t>::max() - 3u;
+  SetNextId(&tracker, next_id);
+
+  ResourceId last_id = kInvalidResourceId;
   for (int i = 0; i < 10; ++i) {
     bool resource_released = false;
     auto resource =
@@ -102,7 +118,7 @@ TEST(TransferableResourceTrackerTest, ExhaustedIdLoopsButSkipsUnavailableIds) {
               resource_released = true;
             })));
 
-    EXPECT_GE(resource.id, starting_id);
+    EXPECT_GE(resource.id, kVizReservedRangeStartId);
     EXPECT_NE(resource.id, last_id);
     EXPECT_NE(resource.id, reserved_resource.id);
     last_id = resource.id;

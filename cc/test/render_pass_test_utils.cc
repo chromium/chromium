@@ -143,9 +143,9 @@ QuadType* AddRenderPassQuadInternal(RenderPassType* to_pass,
                        gfx::MaskFilterInfo(), output_rect, false, false, 1,
                        SkBlendMode::kSrcOver, 0);
   auto* quad = to_pass->template CreateAndAppendDrawQuad<QuadType>();
-  quad->SetNew(shared_state, output_rect, output_rect, contributing_pass->id, 0,
-               gfx::RectF(), gfx::Size(), gfx::Vector2dF(), gfx::PointF(),
-               gfx::RectF(), false, 1.0f);
+  quad->SetNew(shared_state, output_rect, output_rect, contributing_pass->id,
+               viz::kInvalidResourceId, gfx::RectF(), gfx::Size(),
+               gfx::Vector2dF(), gfx::PointF(), gfx::RectF(), false, 1.0f);
   return quad;
 }
 
@@ -379,8 +379,8 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
 
   // Before create DrawQuad in viz::DisplayResourceProvider's namespace, get the
   // mapped resource id first.
-  std::unordered_map<viz::ResourceId, viz::ResourceId> resource_map =
-      resource_provider->GetChildToParentMap(child_id);
+  std::unordered_map<viz::ResourceId, viz::ResourceId, viz::ResourceIdHasher>
+      resource_map = resource_provider->GetChildToParentMap(child_id);
   viz::ResourceId mapped_resource1 = resource_map[resource1];
   viz::ResourceId mapped_resource2 = resource_map[resource2];
   viz::ResourceId mapped_resource3 = resource_map[resource3];

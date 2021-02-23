@@ -6,6 +6,7 @@
 #define SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_TRANSFERABLE_RESOURCE_MOJOM_TRAITS_H_
 
 #include "build/build_config.h"
+#include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info_mojom_traits.h"
@@ -25,7 +26,7 @@ struct EnumTraits<viz::mojom::ResourceFormat, viz::ResourceFormat> {
 template <>
 struct StructTraits<viz::mojom::TransferableResourceDataView,
                     viz::TransferableResource> {
-  static uint32_t id(const viz::TransferableResource& resource) {
+  static const viz::ResourceId& id(const viz::TransferableResource& resource) {
     return resource.id;
   }
 

@@ -65,7 +65,7 @@ class VIZ_SERVICE_EXPORT CALayerOverlay {
 
   // Texture that corresponds to an IOSurface to set as the content of the
   // CALayer. If this is 0 then the CALayer is a solid color.
-  unsigned contents_resource_id = 0;
+  ResourceId contents_resource_id = kInvalidResourceId;
   // Mailbox from contents_resource_id. It is used by SkiaRenderer.
   gpu::Mailbox mailbox;
   // The contents rect property for the CALayer.

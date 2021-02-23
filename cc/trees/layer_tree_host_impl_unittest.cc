@@ -11449,14 +11449,14 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, UIResourceManagement) {
   host_impl_->CreateUIResource(ui_resource_id, bitmap);
   EXPECT_EQ(1u, sii->shared_image_count());
   viz::ResourceId id1 = host_impl_->ResourceIdForUIResource(ui_resource_id);
-  EXPECT_NE(0u, id1);
+  EXPECT_NE(viz::kInvalidResourceId, id1);
 
   // Multiple requests with the same id is allowed.  The previous texture is
   // deleted.
   host_impl_->CreateUIResource(ui_resource_id, bitmap);
   EXPECT_EQ(1u, sii->shared_image_count());
   viz::ResourceId id2 = host_impl_->ResourceIdForUIResource(ui_resource_id);
-  EXPECT_NE(0u, id2);
+  EXPECT_NE(viz::kInvalidResourceId, id2);
   EXPECT_NE(id1, id2);
 
   // Deleting invalid UIResourceId is allowed and does not change state.
@@ -11465,11 +11465,12 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, UIResourceManagement) {
 
   // Should return zero for invalid UIResourceId.  Number of textures should
   // not change.
-  EXPECT_EQ(0u, host_impl_->ResourceIdForUIResource(-1));
+  EXPECT_EQ(viz::kInvalidResourceId, host_impl_->ResourceIdForUIResource(-1));
   EXPECT_EQ(1u, sii->shared_image_count());
 
   host_impl_->DeleteUIResource(ui_resource_id);
-  EXPECT_EQ(0u, host_impl_->ResourceIdForUIResource(ui_resource_id));
+  EXPECT_EQ(viz::kInvalidResourceId,
+            host_impl_->ResourceIdForUIResource(ui_resource_id));
   EXPECT_EQ(0u, sii->shared_image_count());
 
   // Should not change state for multiple deletion on one UIResourceId
@@ -11499,7 +11500,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, CreateETC1UIResource) {
   host_impl_->CreateUIResource(ui_resource_id, bitmap);
   EXPECT_EQ(1u, sii->shared_image_count());
   viz::ResourceId id1 = host_impl_->ResourceIdForUIResource(ui_resource_id);
-  EXPECT_NE(0u, id1);
+  EXPECT_NE(viz::kInvalidResourceId, id1);
 }
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, ObeyMSAACaps) {

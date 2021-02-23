@@ -411,8 +411,9 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
                          SkBlendMode::kSrcOver, 0);
     auto* quad = pass->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
     quad->SetAll(shared_state, output_rect, output_rect,
-                 /*needs_blending=*/true, render_pass_id, 0, gfx::RectF(),
-                 gfx::Size(), gfx::Vector2dF(), gfx::PointF(), gfx::RectF(),
+                 /*needs_blending=*/true, render_pass_id, kInvalidResourceId,
+                 gfx::RectF(), gfx::Size(), gfx::Vector2dF(), gfx::PointF(),
+                 gfx::RectF(),
                  /*force_anti_aliasing_off=*/false,
                  /*backdrop_filter_quality=*/1.0f, intersects_damage_under);
   }
@@ -426,8 +427,9 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
     auto* quad = pass->CreateAndAppendDrawQuad<YUVVideoDrawQuad>();
     quad->SetNew(shared_state, output_rect, output_rect, false,
                  gfx::RectF(output_rect), gfx::RectF(), output_rect.size(),
-                 gfx::Size(), 0, 0, 0, 0, gfx::ColorSpace::CreateREC709(), 0,
-                 1.0, 8);
+                 gfx::Size(), kInvalidResourceId, kInvalidResourceId,
+                 kInvalidResourceId, kInvalidResourceId,
+                 gfx::ColorSpace::CreateREC709(), 0, 1.0, 8);
   }
 
  protected:
@@ -5662,7 +5664,8 @@ TEST_F(SurfaceAggregatorWithResourcesTest, TakeResourcesOneSurface) {
   LocalSurfaceId local_surface_id(7u, base::UnguessableToken::Create());
   SurfaceId surface_id(support->frame_sink_id(), local_surface_id);
 
-  std::vector<ResourceId> ids = {11, 12, 13};
+  std::vector<ResourceId> ids = {ResourceId(11), ResourceId(12),
+                                 ResourceId(13)};
   SubmitCompositorFrameWithResources(ids, true, SurfaceId(), support.get(),
                                      surface_id);
 
@@ -5697,7 +5700,8 @@ TEST_F(SurfaceAggregatorWithResourcesTest, ReturnResourcesAsSurfacesChange) {
   SurfaceId surface_id1(support->frame_sink_id(), local_surface_id1);
   SurfaceId surface_id2(support->frame_sink_id(), local_surface_id2);
 
-  std::vector<ResourceId> ids = {11, 12, 13};
+  std::vector<ResourceId> ids = {ResourceId(11), ResourceId(12),
+                                 ResourceId(13)};
   SubmitCompositorFrameWithResources(ids, true, SurfaceId(), support.get(),
                                      surface_id1);
 
@@ -5731,7 +5735,7 @@ TEST_F(SurfaceAggregatorWithResourcesTest, TakeInvalidResources) {
   SurfaceId surface_id(support->frame_sink_id(), local_surface_id);
 
   TransferableResource resource;
-  resource.id = 11;
+  resource.id = ResourceId(11);
   // ResourceProvider is software but resource is not, so it should be
   // ignored.
   resource.is_software = false;
@@ -5750,7 +5754,7 @@ TEST_F(SurfaceAggregatorWithResourcesTest, TakeInvalidResources) {
   SubmitCompositorFrameWithResources({}, true, SurfaceId(), support.get(),
                                      surface_id);
   ASSERT_EQ(1u, client.returned_resources().size());
-  EXPECT_EQ(11u, client.returned_resources()[0].id);
+  EXPECT_EQ(ResourceId(11u), client.returned_resources()[0].id);
 }
 
 TEST_F(SurfaceAggregatorWithResourcesTest, TwoSurfaces) {
@@ -5765,10 +5769,12 @@ TEST_F(SurfaceAggregatorWithResourcesTest, TwoSurfaces) {
   LocalSurfaceId local_frame2_id(8u, base::UnguessableToken::Create());
   SurfaceId surface2_id(support2->frame_sink_id(), local_frame2_id);
 
-  std::vector<ResourceId> ids = {11, 12, 13};
+  std::vector<ResourceId> ids = {ResourceId(11), ResourceId(12),
+                                 ResourceId(13)};
   SubmitCompositorFrameWithResources(ids, true, SurfaceId(), support1.get(),
                                      surface1_id);
-  std::vector<ResourceId> ids2 = {14, 15, 16};
+  std::vector<ResourceId> ids2 = {ResourceId(14), ResourceId(15),
+                                  ResourceId(16)};
   SubmitCompositorFrameWithResources(ids2, true, SurfaceId(), support2.get(),
                                      surface2_id);
 
@@ -5812,15 +5818,18 @@ TEST_F(SurfaceAggregatorWithResourcesTest, InvalidChildSurface) {
   SurfaceId child_surface_id(child_support->frame_sink_id(),
                              child_local_surface_id);
 
-  std::vector<ResourceId> ids = {14, 15, 16};
+  std::vector<ResourceId> ids = {ResourceId(14), ResourceId(15),
+                                 ResourceId(16)};
   SubmitCompositorFrameWithResources(ids, true, SurfaceId(),
                                      child_support.get(), child_surface_id);
 
-  std::vector<ResourceId> ids2 = {17, 18, 19};
+  std::vector<ResourceId> ids2 = {ResourceId(17), ResourceId(18),
+                                  ResourceId(19)};
   SubmitCompositorFrameWithResources(ids2, false, child_surface_id,
                                      middle_support.get(), middle_surface_id);
 
-  std::vector<ResourceId> ids3 = {20, 21, 22};
+  std::vector<ResourceId> ids3 = {ResourceId(20), ResourceId(21),
+                                  ResourceId(22)};
   SubmitCompositorFrameWithResources(ids3, true, middle_surface_id,
                                      root_support.get(), root_surface_id);
 
@@ -5853,7 +5862,8 @@ TEST_F(SurfaceAggregatorWithResourcesTest, SecureOutputTexture) {
   LocalSurfaceId local_frame2_id(8u, base::UnguessableToken::Create());
   SurfaceId surface2_id(support2->frame_sink_id(), local_frame2_id);
 
-  std::vector<ResourceId> ids = {11, 12, 13};
+  std::vector<ResourceId> ids = {ResourceId(11), ResourceId(12),
+                                 ResourceId(13)};
   SubmitCompositorFrameWithResources(ids, true, SurfaceId(), support1.get(),
                                      surface1_id);
 

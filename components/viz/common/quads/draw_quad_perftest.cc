@@ -24,6 +24,10 @@ static const int kTimeCheckInterval = 10;
 constexpr char kMetricPrefixDrawQuad[] = "DrawQuad.";
 constexpr char kMetricIterateResourcesRunsPerS[] = "iterate_resources";
 
+ResourceId NextId(ResourceId id) {
+  return ResourceId(id.GetUnsafeValue() + 1);
+}
+
 perf_test::PerfResultReporter SetUpDrawQuadReporter(const std::string& story) {
   perf_test::PerfResultReporter reporter(kMetricPrefixDrawQuad, story);
   reporter.RegisterImportantMetric(kMetricIterateResourcesRunsPerS, "runs/s");
@@ -73,7 +77,7 @@ class DrawQuadPerfTest : public testing::Test {
       auto* quad = render_pass_->CreateAndAppendDrawQuad<TextureDrawQuad>();
       gfx::Rect rect(0, 0, 100, 100);
       bool needs_blending = false;
-      ResourceId resource_id = 1;
+      ResourceId resource_id{1};
       bool premultiplied_alpha = true;
       gfx::PointF uv_top_left(0, 0);
       gfx::PointF uv_bottom_right(1, 1);
@@ -100,7 +104,7 @@ class DrawQuadPerfTest : public testing::Test {
     do {
       for (auto* quad : quads) {
         for (ResourceId& resource_id : quad->resources)
-          ++resource_id;
+          resource_id = NextId(resource_id);
       }
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());

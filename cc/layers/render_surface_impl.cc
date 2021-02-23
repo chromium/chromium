@@ -423,7 +423,7 @@ void RenderSurfaceImpl::AppendQuads(DrawMode draw_mode,
   }
 
   LayerImpl* mask_layer = BackdropMaskLayer();
-  viz::ResourceId mask_resource_id = 0;
+  viz::ResourceId mask_resource_id = viz::kInvalidResourceId;
   gfx::Size mask_texture_size;
   gfx::RectF mask_uv_rect;
   gfx::Vector2dF surface_contents_scale =

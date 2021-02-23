@@ -1435,7 +1435,7 @@ ScriptPromise HTMLCanvasElement::CreateImageBitmap(
 
 void HTMLCanvasElement::SetOffscreenCanvasResource(
     scoped_refptr<CanvasResource> image,
-    unsigned resource_id) {
+    viz::ResourceId resource_id) {
   OffscreenCanvasPlaceholder::SetOffscreenCanvasResource(std::move(image),
                                                          resource_id);
   SetSize(OffscreenCanvasFrame()->Size());

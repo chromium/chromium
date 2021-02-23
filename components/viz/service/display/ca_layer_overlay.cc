@@ -117,7 +117,7 @@ CALayerResult FromRenderPassQuad(
 CALayerResult FromStreamVideoQuad(DisplayResourceProvider* resource_provider,
                                   const StreamVideoDrawQuad* quad,
                                   CALayerOverlay* ca_layer_overlay) {
-  unsigned resource_id = quad->resource_id();
+  ResourceId resource_id = quad->resource_id();
   if (!resource_provider->IsOverlayCandidate(resource_id))
     return CA_LAYER_FAILED_STREAM_VIDEO_NOT_CANDIDATE;
   ca_layer_overlay->contents_resource_id = resource_id;
@@ -141,7 +141,7 @@ CALayerResult FromSolidColorDrawQuad(const SolidColorDrawQuad* quad,
 CALayerResult FromTextureQuad(DisplayResourceProvider* resource_provider,
                               const TextureDrawQuad* quad,
                               CALayerOverlay* ca_layer_overlay) {
-  unsigned resource_id = quad->resource_id();
+  ResourceId resource_id = quad->resource_id();
   if (!resource_provider->IsOverlayCandidate(resource_id))
     return CA_LAYER_FAILED_TEXTURE_NOT_CANDIDATE;
   if (quad->y_flipped) {
@@ -169,7 +169,7 @@ CALayerResult FromTextureQuad(DisplayResourceProvider* resource_provider,
 CALayerResult FromTileQuad(DisplayResourceProvider* resource_provider,
                            const TileDrawQuad* quad,
                            CALayerOverlay* ca_layer_overlay) {
-  unsigned resource_id = quad->resource_id();
+  ResourceId resource_id = quad->resource_id();
   if (!resource_provider->IsOverlayCandidate(resource_id))
     return CA_LAYER_FAILED_TILE_NOT_CANDIDATE;
   ca_layer_overlay->contents_resource_id = resource_id;

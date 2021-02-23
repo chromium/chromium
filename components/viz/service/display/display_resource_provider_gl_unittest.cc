@@ -143,7 +143,7 @@ class DisplayResourceProviderGLTest : public testing::Test {
     auto resource =
         TransferableResource::MakeGL(gpu_mailbox, GL_LINEAR, target, sync_token,
                                      size, false /* is_overlay_candidate */);
-    resource.id = 11;
+    resource.id = ResourceId(11);
     resource_provider->ReceiveFromChild(child, {resource});
     auto& map = resource_provider->GetChildToParentMap(child);
     return map.find(resource.id)->second;
@@ -188,7 +188,7 @@ TEST_F(DisplayResourceProviderGLTest, ReadLockCountStopsReturnToChildOrDelete) {
     resource_provider_->ReceiveFromChild(child_id, list);
 
     // In DisplayResourceProvider's namespace, use the mapped resource id.
-    std::unordered_map<ResourceId, ResourceId> resource_map =
+    std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
         resource_provider_->GetChildToParentMap(child_id);
     ResourceId mapped_resource_id = resource_map[list[0].id];
     resource_provider_->WaitSyncToken(mapped_resource_id);
@@ -251,13 +251,13 @@ TEST_F(DisplayResourceProviderGLTest, ReadLockFenceStopsReturnToChildOrDelete) {
   resource_provider_->ReceiveFromChild(child_id, list);
 
   // In DisplayResourceProvider's namespace, use the mapped resource id.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       resource_provider_->GetChildToParentMap(child_id);
 
   scoped_refptr<TestFence> fence(new TestFence);
   resource_provider_->SetReadLockFence(fence.get());
   {
-    unsigned parent_id = resource_map[list.front().id];
+    ResourceId parent_id = resource_map[list.front().id];
     resource_provider_->WaitSyncToken(parent_id);
     DisplayResourceProviderGL::ScopedReadLockGL lock(resource_provider_.get(),
                                                      parent_id);
@@ -308,14 +308,14 @@ TEST_F(DisplayResourceProviderGLTest, ReadLockFenceDestroyChild) {
   resource_provider_->ReceiveFromChild(child_id, list);
 
   // In DisplayResourceProvider's namespace, use the mapped resource id.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       resource_provider_->GetChildToParentMap(child_id);
 
   scoped_refptr<TestFence> fence(new TestFence);
   resource_provider_->SetReadLockFence(fence.get());
   {
     for (auto& resource : list) {
-      unsigned parent_id = resource_map[resource.id];
+      ResourceId parent_id = resource_map[resource.id];
       resource_provider_->WaitSyncToken(parent_id);
       DisplayResourceProviderGL::ScopedReadLockGL lock(resource_provider_.get(),
                                                        parent_id);
@@ -367,14 +367,14 @@ TEST_F(DisplayResourceProviderGLTest, ReadLockFenceContextLost) {
   resource_provider_->ReceiveFromChild(child_id, list);
 
   // In DisplayResourceProvider's namespace, use the mapped resource id.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       resource_provider_->GetChildToParentMap(child_id);
 
   scoped_refptr<TestFence> fence(new TestFence);
   resource_provider_->SetReadLockFence(fence.get());
   {
     for (auto& resource : list) {
-      unsigned parent_id = resource_map[resource.id];
+      ResourceId parent_id = resource_map[resource.id];
       resource_provider_->WaitSyncToken(parent_id);
       DisplayResourceProviderGL::ScopedReadLockGL lock(resource_provider_.get(),
                                                        parent_id);
@@ -429,12 +429,12 @@ TEST_F(DisplayResourceProviderGLTest,
   resource_provider_->ReceiveFromChild(child_id, list);
 
   // In DisplayResourceProvider's namespace, use the mapped resource id.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       resource_provider_->GetChildToParentMap(child_id);
   std::vector<std::unique_ptr<DisplayResourceProviderGL::ScopedReadLockGL>>
       read_locks;
   for (size_t i = 0; i < kLockedResources; i++) {
-    unsigned int mapped_resource_id = resource_map[ids[i]];
+    ResourceId mapped_resource_id = resource_map[ids[i]];
     resource_provider_->WaitSyncToken(mapped_resource_id);
     read_locks.push_back(
         std::make_unique<DisplayResourceProviderGL::ScopedReadLockGL>(
@@ -496,7 +496,7 @@ TEST_F(DisplayResourceProviderGLTest, LostMailboxInParent) {
   gpu::SyncToken sync_token(gpu::CommandBufferNamespace::GPU_IO,
                             gpu::CommandBufferId::FromUnsafeValue(0x12), 0x34);
   auto tran = CreateResource(RGBA_8888);
-  tran.id = 11;
+  tran.id = ResourceId(11);
 
   std::vector<ReturnedResource> returned_to_child;
   int child_id = resource_provider_->CreateChild(
@@ -570,7 +570,7 @@ class ResourceProviderTestImportedResourceGLFilters {
         resource,
         SingleReleaseCallback::Create(base::BindOnce(
             &MockReleaseCallback::Released, base::Unretained(&release))));
-    EXPECT_NE(0u, resource_id);
+    EXPECT_NE(kInvalidResourceId, resource_id);
 
     testing::Mock::VerifyAndClearExpectations(child_gl);
 
@@ -585,7 +585,7 @@ class ResourceProviderTestImportedResourceGLFilters {
     resource_provider->ReceiveFromChild(child_id, send_to_parent);
 
     // In DisplayResourceProvider's namespace, use the mapped resource id.
-    std::unordered_map<ResourceId, ResourceId> resource_map =
+    std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
         resource_provider->GetChildToParentMap(child_id);
     ResourceId mapped_resource_id = resource_map[resource_id];
     {
@@ -690,7 +690,7 @@ TEST_F(DisplayResourceProviderGLTest, ReceiveGLTextureExternalOES) {
 
   ResourceId resource_id =
       child_resource_provider->ImportResource(resource, std::move(callback));
-  EXPECT_NE(0u, resource_id);
+  EXPECT_NE(kInvalidResourceId, resource_id);
 
   testing::Mock::VerifyAndClearExpectations(child_gl);
 
@@ -706,7 +706,7 @@ TEST_F(DisplayResourceProviderGLTest, ReceiveGLTextureExternalOES) {
 
   // Before create DrawQuad in DisplayResourceProvider's namespace, get the
   // mapped resource id first.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       resource_provider->GetChildToParentMap(child_id);
   ResourceId mapped_resource_id = resource_map[resource_id];
   {
@@ -816,7 +816,7 @@ TEST_F(DisplayResourceProviderGLTest, OverlayPromotionHint) {
       static_cast<RasterContextProvider*>(child_context_provider_.get()));
   ASSERT_EQ(2u, list.size());
   resource_provider_->ReceiveFromChild(child_id, list);
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       resource_provider_->GetChildToParentMap(child_id);
   ResourceId mapped_id1 = resource_map[list[0].id];
   ResourceId mapped_id2 = resource_map[list[1].id];
@@ -845,8 +845,8 @@ TEST_F(DisplayResourceProviderGLTest, OverlayPromotionHint) {
 
   EXPECT_EQ(2u, resource_provider_->num_resources());
 
-  EXPECT_NE(0u, mapped_id1);
-  EXPECT_NE(0u, mapped_id2);
+  EXPECT_NE(kInvalidResourceId, mapped_id1);
+  EXPECT_NE(kInvalidResourceId, mapped_id2);
 
   // Make sure that the request for a promotion hint was noticed.
   EXPECT_TRUE(resource_provider_->IsOverlayCandidate(mapped_id1));

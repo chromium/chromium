@@ -102,7 +102,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // If the quad doesn't require blending.
   bool is_opaque = false;
   // Texture resource to present in an overlay.
-  unsigned resource_id = 0;
+  ResourceId resource_id = kInvalidResourceId;
   // Mailbox from resource_id. It is used by SkiaRenderer.
   gpu::Mailbox mailbox;
 

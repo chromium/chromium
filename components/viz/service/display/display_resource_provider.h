@@ -164,8 +164,8 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   void DestroyChild(int child);
 
   // Gets the child->parent resource ID map.
-  const std::unordered_map<ResourceId, ResourceId>& GetChildToParentMap(
-      int child) const;
+  const std::unordered_map<ResourceId, ResourceId, ResourceIdHasher>&
+  GetChildToParentMap(int child) const;
 
   // Receives resources from a child, moving them from mailboxes. ResourceIds
   // passed are in the child namespace, and will be translated to the parent
@@ -187,7 +187,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
                                      const ResourceIdSet& resources_from_child);
 
   // Returns the mailbox corresponding to a resource id.
-  gpu::Mailbox GetMailbox(int resource_id);
+  gpu::Mailbox GetMailbox(ResourceId resource_id);
 
   // Sets if the GPU thread is available (it always is for Chrome, but for
   // WebView it happens only when Android calls us on RenderThread.
@@ -238,7 +238,8 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
     Child& operator=(Child&& other);
     ~Child();
 
-    std::unordered_map<ResourceId, ResourceId> child_to_parent_map;
+    std::unordered_map<ResourceId, ResourceId, ResourceIdHasher>
+        child_to_parent_map;
     ReturnCallback return_callback;
     bool marked_for_deletion = false;
   };
@@ -338,7 +339,8 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   };
 
   using ChildMap = std::unordered_map<int, Child>;
-  using ResourceMap = std::unordered_map<ResourceId, ChildResource>;
+  using ResourceMap =
+      std::unordered_map<ResourceId, ChildResource, ResourceIdHasher>;
 
   explicit DisplayResourceProvider(Mode mode);
 
@@ -395,7 +397,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   bool lost_context_provider_ = false;
   // The ResourceIds in DisplayResourceProvider start from 2 to avoid
   // conflicts with id from ClientResourceProvider.
-  ResourceId next_id_ = 2;
+  ResourceIdGenerator resource_id_generator_{2u};
   // Used as child id when creating a child.
   int next_child_ = 1;
   // A process-unique ID used for disambiguating memory dumps from different

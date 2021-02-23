@@ -18,7 +18,7 @@ void TileDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
                           const gfx::Rect& rect,
                           const gfx::Rect& visible_rect,
                           bool needs_blending,
-                          unsigned resource_id,
+                          ResourceId resource_id,
                           const gfx::RectF& tex_coord_rect,
                           const gfx::Size& texture_size,
                           bool is_premultiplied,
@@ -36,7 +36,7 @@ void TileDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                           const gfx::Rect& rect,
                           const gfx::Rect& visible_rect,
                           bool needs_blending,
-                          unsigned resource_id,
+                          ResourceId resource_id,
                           const gfx::RectF& tex_coord_rect,
                           const gfx::Size& texture_size,
                           bool is_premultiplied,
@@ -57,7 +57,8 @@ const TileDrawQuad* TileDrawQuad::MaterialCast(const DrawQuad* quad) {
 
 void TileDrawQuad::ExtendValue(base::trace_event::TracedValue* value) const {
   ContentDrawQuadBase::ExtendValue(value);
-  value->SetInteger("resource_id", resources.ids[kResourceIdIndex]);
+  value->SetInteger("resource_id",
+                    resources.ids[kResourceIdIndex].GetUnsafeValue());
 }
 
 }  // namespace viz

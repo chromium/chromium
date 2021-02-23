@@ -146,10 +146,10 @@ TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUse) {
   resource_provider_->ReceiveFromChild(child_id, list);
 
   // In DisplayResourceProvider's namespace, use the mapped resource id.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       resource_provider_->GetChildToParentMap(child_id);
 
-  unsigned parent_id = resource_map[list.front().id];
+  ResourceId parent_id = resource_map[list.front().id];
 
   auto owned_image_context = std::make_unique<ExternalUseClient::ImageContext>(
       gpu::MailboxHolder(mailbox, sync_token1, GL_TEXTURE_2D), size, RGBA_8888,
@@ -225,10 +225,10 @@ TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUseWebView) {
   resource_provider_->ReceiveFromChild(child_id, list);
 
   // In DisplayResourceProvider's namespace, use the mapped resource id.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       resource_provider_->GetChildToParentMap(child_id);
 
-  unsigned parent_id = resource_map[list.front().id];
+  ResourceId parent_id = resource_map[list.front().id];
 
   auto owned_image_context = std::make_unique<ExternalUseClient::ImageContext>(
       gpu::MailboxHolder(mailbox, sync_token1, GL_TEXTURE_2D), size, RGBA_8888,
@@ -330,13 +330,13 @@ TEST_F(DisplayResourceProviderSkiaTest,
   resource_provider_->ReceiveFromChild(child_id, list);
 
   // In DisplayResourceProvider's namespace, use the mapped resource id.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       resource_provider_->GetChildToParentMap(child_id);
 
   scoped_refptr<TestFence> fence(new TestFence);
   resource_provider_->SetReadLockFence(fence.get());
   {
-    unsigned parent_id = resource_map[list.front().id];
+    ResourceId parent_id = resource_map[list.front().id];
     lock_set_->LockResource(parent_id, /*maybe_concurrent_reads=*/true,
                             /*is_video_plane=*/false);
     lock_set_->UnlockResources(GenSyncToken());
@@ -387,14 +387,14 @@ TEST_F(DisplayResourceProviderSkiaTest, ReadLockFenceDestroyChild) {
   resource_provider_->ReceiveFromChild(child_id, list);
 
   // In DisplayResourceProvider's namespace, use the mapped resource id.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       resource_provider_->GetChildToParentMap(child_id);
 
   scoped_refptr<TestFence> fence(new TestFence);
   resource_provider_->SetReadLockFence(fence.get());
   {
     for (auto& resource : list) {
-      unsigned parent_id = resource_map[resource.id];
+      ResourceId parent_id = resource_map[resource.id];
       lock_set_->LockResource(parent_id, /*maybe_concurrent_reads=*/true,
                               /*is_video_plane=*/false);
     }
@@ -446,14 +446,14 @@ TEST_F(DisplayResourceProviderSkiaTest, ReadLockFenceContextLost) {
   resource_provider_->ReceiveFromChild(child_id, list);
 
   // In DisplayResourceProvider's namespace, use the mapped resource id.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       resource_provider_->GetChildToParentMap(child_id);
 
   scoped_refptr<TestFence> fence(new TestFence);
   resource_provider_->SetReadLockFence(fence.get());
   {
     for (auto& resource : list) {
-      unsigned parent_id = resource_map[resource.id];
+      ResourceId parent_id = resource_map[resource.id];
       DisplayResourceProvider::ScopedReadLockSharedImage lock(
           resource_provider_.get(), parent_id);
     }
@@ -507,13 +507,13 @@ TEST_F(DisplayResourceProviderSkiaTest,
   resource_provider_->ReceiveFromChild(child_id, list);
 
   // In DisplayResourceProvider's namespace, use the mapped resource id.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       resource_provider_->GetChildToParentMap(child_id);
   std::vector<
       std::unique_ptr<DisplayResourceProvider::ScopedReadLockSharedImage>>
       read_locks;
   for (size_t i = 0; i < kLockedResources; i++) {
-    unsigned int mapped_resource_id = resource_map[ids[i]];
+    ResourceId mapped_resource_id = resource_map[ids[i]];
     lock_set_->LockResource(mapped_resource_id, /*maybe_concurrent_reads=*/true,
                             /*is_video_plane=*/false);
   }
@@ -573,7 +573,7 @@ TEST_F(DisplayResourceProviderSkiaTest, LostMailboxInParent) {
   gpu::SyncToken sync_token(gpu::CommandBufferNamespace::GPU_IO,
                             gpu::CommandBufferId::FromUnsafeValue(0x12), 0x34);
   auto tran = CreateResource(RGBA_8888);
-  tran.id = 11;
+  tran.id = ResourceId(11);
 
   std::vector<ReturnedResource> returned_to_child;
   int child_id = resource_provider_->CreateChild(
@@ -624,7 +624,7 @@ TEST_F(DisplayResourceProviderSkiaTest, OverlayPromotionHint) {
       static_cast<RasterContextProvider*>(child_context_provider_.get()));
   ASSERT_EQ(2u, list.size());
   resource_provider_->ReceiveFromChild(child_id, list);
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       resource_provider_->GetChildToParentMap(child_id);
   ResourceId mapped_id1 = resource_map[list[0].id];
   ResourceId mapped_id2 = resource_map[list[1].id];
@@ -652,8 +652,8 @@ TEST_F(DisplayResourceProviderSkiaTest, OverlayPromotionHint) {
 
   EXPECT_EQ(2u, resource_provider_->num_resources());
 
-  EXPECT_NE(0u, mapped_id1);
-  EXPECT_NE(0u, mapped_id2);
+  EXPECT_NE(kInvalidResourceId, mapped_id1);
+  EXPECT_NE(kInvalidResourceId, mapped_id2);
 
   // Make sure that the request for a promotion hint was noticed.
   EXPECT_TRUE(resource_provider_->IsOverlayCandidate(mapped_id1));

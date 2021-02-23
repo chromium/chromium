@@ -40,6 +40,10 @@ namespace {
 
 static constexpr FrameSinkId kArbitraryFrameSinkId(1, 1);
 
+ResourceId NextId(ResourceId id) {
+  return ResourceId(id.GetUnsafeValue() + 1);
+}
+
 TEST(DrawQuadTest, CopySharedQuadState) {
   gfx::Transform quad_transform = gfx::Transform(1.0, 0.0, 0.5, 1.0, 0.5, 0.0);
   gfx::Rect layer_rect(26, 28);
@@ -194,7 +198,7 @@ TEST(DrawQuadTest, CopyDebugBorderDrawQuad) {
 TEST(DrawQuadTest, CopyRenderPassDrawQuad) {
   gfx::Rect visible_rect(40, 50, 30, 20);
   CompositorRenderPassId render_pass_id{61};
-  ResourceId mask_resource_id = 78;
+  ResourceId mask_resource_id(78);
   gfx::RectF mask_uv_rect(0, 0, 33.f, 19.f);
   gfx::Size mask_texture_size(128, 134);
   gfx::Vector2dF filters_scale;
@@ -249,7 +253,7 @@ TEST(DrawQuadTest, CopySolidColorDrawQuad) {
 TEST(DrawQuadTest, CopyStreamVideoDrawQuad) {
   gfx::Rect visible_rect(40, 50, 30, 20);
   bool needs_blending = true;
-  ResourceId resource_id = 64;
+  ResourceId resource_id(64);
   gfx::Size resource_size_in_pixels = gfx::Size(40, 41);
   gfx::PointF uv_top_left(0.25f, 0.3f);
   gfx::PointF uv_bottom_right(0.75f, 0.7f);
@@ -308,7 +312,7 @@ TEST(DrawQuadTest, CopySurfaceDrawQuad) {
 TEST(DrawQuadTest, CopyTextureDrawQuad) {
   gfx::Rect visible_rect(40, 50, 30, 20);
   bool needs_blending = true;
-  unsigned resource_id = 82;
+  ResourceId resource_id(82);
   gfx::Size resource_size_in_pixels = gfx::Size(40, 41);
   bool premultiplied_alpha = true;
   gfx::PointF uv_top_left(0.5f, 224.f);
@@ -358,7 +362,7 @@ TEST(DrawQuadTest, CopyTextureDrawQuad) {
 TEST(DrawQuadTest, CopyTileDrawQuad) {
   gfx::Rect visible_rect(40, 50, 30, 20);
   bool needs_blending = true;
-  unsigned resource_id = 104;
+  ResourceId resource_id(104);
   gfx::RectF tex_coord_rect(31.f, 12.f, 54.f, 20.f);
   gfx::Size texture_size(85, 32);
   bool contents_premultiplied = true;
@@ -409,10 +413,10 @@ TEST(DrawQuadTest, CopyYUVVideoDrawQuad) {
   gfx::RectF uv_tex_coord_rect(20, 25, 15, 10);
   gfx::Size ya_tex_size(32, 68);
   gfx::Size uv_tex_size(41, 51);
-  ResourceId y_plane_resource_id = 45;
-  ResourceId u_plane_resource_id = 532;
-  ResourceId v_plane_resource_id = 4;
-  ResourceId a_plane_resource_id = 63;
+  ResourceId y_plane_resource_id(45);
+  ResourceId u_plane_resource_id(532);
+  ResourceId v_plane_resource_id(4);
+  ResourceId a_plane_resource_id(63);
   float resource_offset = 0.5f;
   float resource_multiplier = 2.001f;
   uint32_t bits_per_channel = 5;
@@ -515,7 +519,7 @@ class DrawQuadIteratorTest : public testing::Test {
     num_resources_ = 0;
     for (ResourceId& resource_id : quad->resources) {
       ++num_resources_;
-      ++resource_id;
+      resource_id = NextId(resource_id);
     }
     return num_resources_;
   }
@@ -537,7 +541,7 @@ TEST_F(DrawQuadIteratorTest, DebugBorderDrawQuad) {
 TEST_F(DrawQuadIteratorTest, CompositorRenderPassDrawQuad) {
   gfx::Rect visible_rect(40, 50, 30, 20);
   CompositorRenderPassId render_pass_id{61};
-  ResourceId mask_resource_id = 78;
+  ResourceId mask_resource_id(78);
   gfx::RectF mask_uv_rect(0.f, 0.f, 33.f, 19.f);
   gfx::Size mask_texture_size(128, 134);
   gfx::Vector2dF filters_scale(2.f, 3.f);
@@ -555,16 +559,16 @@ TEST_F(DrawQuadIteratorTest, CompositorRenderPassDrawQuad) {
                      copied_render_pass_id);
   EXPECT_EQ(mask_resource_id, quad_new->mask_resource_id());
   EXPECT_EQ(1, IterateAndCount(quad_new));
-  EXPECT_EQ(mask_resource_id + 1, quad_new->mask_resource_id());
+  EXPECT_EQ(NextId(mask_resource_id), quad_new->mask_resource_id());
 
-  ResourceId new_mask_resource_id = 0;
+  ResourceId new_mask_resource_id = kInvalidResourceId;
   gfx::Rect quad_rect(30, 40, 50, 60);
   quad_new->SetNew(shared_state, quad_rect, visible_rect, render_pass_id,
                    new_mask_resource_id, mask_uv_rect, mask_texture_size,
                    filters_scale, filters_origin, tex_coord_rect,
                    force_anti_aliasing_off, backdrop_filter_quality);
   EXPECT_EQ(0, IterateAndCount(quad_new));
-  EXPECT_EQ(0u, quad_new->mask_resource_id());
+  EXPECT_EQ(kInvalidResourceId, quad_new->mask_resource_id());
 }
 
 TEST_F(DrawQuadIteratorTest, SolidColorDrawQuad) {
@@ -580,7 +584,7 @@ TEST_F(DrawQuadIteratorTest, SolidColorDrawQuad) {
 
 TEST_F(DrawQuadIteratorTest, StreamVideoDrawQuad) {
   gfx::Rect visible_rect(40, 50, 30, 20);
-  ResourceId resource_id = 64;
+  ResourceId resource_id(64);
   gfx::Size resource_size_in_pixels = gfx::Size(40, 41);
   gfx::PointF uv_top_left(0.25f, 0.3f);
   gfx::PointF uv_bottom_right(0.75f, 0.7f);
@@ -592,7 +596,7 @@ TEST_F(DrawQuadIteratorTest, StreamVideoDrawQuad) {
   EXPECT_EQ(resource_id, quad_new->resource_id());
   EXPECT_EQ(resource_size_in_pixels, quad_new->resource_size_in_pixels());
   EXPECT_EQ(1, IterateAndCount(quad_new));
-  EXPECT_EQ(resource_id + 1, quad_new->resource_id());
+  EXPECT_EQ(NextId(resource_id), quad_new->resource_id());
 }
 
 TEST_F(DrawQuadIteratorTest, SurfaceDrawQuad) {
@@ -609,7 +613,7 @@ TEST_F(DrawQuadIteratorTest, SurfaceDrawQuad) {
 
 TEST_F(DrawQuadIteratorTest, TextureDrawQuad) {
   gfx::Rect visible_rect(40, 50, 30, 20);
-  unsigned resource_id = 82;
+  ResourceId resource_id(82);
   bool premultiplied_alpha = true;
   gfx::PointF uv_top_left(0.5f, 224.f);
   gfx::PointF uv_bottom_right(51.5f, 260.f);
@@ -627,12 +631,12 @@ TEST_F(DrawQuadIteratorTest, TextureDrawQuad) {
                   nearest_neighbor, secure_output_only, protected_video_type);
   EXPECT_EQ(resource_id, quad_new->resource_id());
   EXPECT_EQ(1, IterateAndCount(quad_new));
-  EXPECT_EQ(resource_id + 1, quad_new->resource_id());
+  EXPECT_EQ(NextId(resource_id), quad_new->resource_id());
 }
 
 TEST_F(DrawQuadIteratorTest, TileDrawQuad) {
   gfx::Rect visible_rect(40, 50, 30, 20);
-  unsigned resource_id = 104;
+  ResourceId resource_id(104);
   gfx::RectF tex_coord_rect(31.f, 12.f, 54.f, 20.f);
   gfx::Size texture_size(85, 32);
   bool contents_premultiplied = true;
@@ -645,7 +649,7 @@ TEST_F(DrawQuadIteratorTest, TileDrawQuad) {
                   nearest_neighbor, force_anti_aliasing_off);
   EXPECT_EQ(resource_id, quad_new->resource_id());
   EXPECT_EQ(1, IterateAndCount(quad_new));
-  EXPECT_EQ(resource_id + 1, quad_new->resource_id());
+  EXPECT_EQ(NextId(resource_id), quad_new->resource_id());
 }
 
 TEST_F(DrawQuadIteratorTest, VideoHoleDrawQuad) {
@@ -663,10 +667,10 @@ TEST_F(DrawQuadIteratorTest, YUVVideoDrawQuad) {
   gfx::RectF uv_tex_coord_rect(0.0f, 0.0f, 0.375f, 0.25f);
   gfx::Size ya_tex_size(32, 68);
   gfx::Size uv_tex_size(41, 51);
-  ResourceId y_plane_resource_id = 45;
-  ResourceId u_plane_resource_id = 532;
-  ResourceId v_plane_resource_id = 4;
-  ResourceId a_plane_resource_id = 63;
+  ResourceId y_plane_resource_id(45);
+  ResourceId u_plane_resource_id(532);
+  ResourceId v_plane_resource_id(4);
+  ResourceId a_plane_resource_id(63);
   gfx::ColorSpace video_color_space = gfx::ColorSpace::CreateJpeg();
 
   CREATE_SHARED_STATE();
@@ -681,10 +685,10 @@ TEST_F(DrawQuadIteratorTest, YUVVideoDrawQuad) {
   EXPECT_EQ(v_plane_resource_id, quad_new->v_plane_resource_id());
   EXPECT_EQ(a_plane_resource_id, quad_new->a_plane_resource_id());
   EXPECT_EQ(4, IterateAndCount(quad_new));
-  EXPECT_EQ(y_plane_resource_id + 1, quad_new->y_plane_resource_id());
-  EXPECT_EQ(u_plane_resource_id + 1, quad_new->u_plane_resource_id());
-  EXPECT_EQ(v_plane_resource_id + 1, quad_new->v_plane_resource_id());
-  EXPECT_EQ(a_plane_resource_id + 1, quad_new->a_plane_resource_id());
+  EXPECT_EQ(NextId(y_plane_resource_id), quad_new->y_plane_resource_id());
+  EXPECT_EQ(NextId(u_plane_resource_id), quad_new->u_plane_resource_id());
+  EXPECT_EQ(NextId(v_plane_resource_id), quad_new->v_plane_resource_id());
+  EXPECT_EQ(NextId(a_plane_resource_id), quad_new->a_plane_resource_id());
 }
 
 TEST(DrawQuadTest, LargestQuadType) {

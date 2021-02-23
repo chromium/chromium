@@ -20,9 +20,10 @@
 namespace viz {
 
 // This class is a simple transferable resource generator and lifetime tracker.
+// Note that TransferableResourceTracker uses reserved range ResourceIds.
 class VIZ_SERVICE_EXPORT TransferableResourceTracker {
  public:
-  explicit TransferableResourceTracker(ResourceId starting_id);
+  TransferableResourceTracker();
   TransferableResourceTracker(const TransferableResourceTracker&) = delete;
   ~TransferableResourceTracker();
 
@@ -36,13 +37,19 @@ class VIZ_SERVICE_EXPORT TransferableResourceTracker {
   void UnrefResource(ResourceId id);
 
  private:
+  friend class TransferableResourceTrackerTest;
+
   ResourceId GetNextAvailableResourceId();
 
   TransferableResource ImportTextureResult(
       SurfaceSavedFrame::TextureResult result);
 
-  const ResourceId starting_id_;
-  ResourceId next_id_;
+  static_assert(std::is_same<decltype(kInvalidResourceId.GetUnsafeValue()),
+                             uint32_t>::value,
+                "ResourceId underlying type should be uint32_t");
+
+  const uint32_t starting_id_;
+  uint32_t next_id_;
 
   struct TransferableResourceHolder {
     TransferableResourceHolder();

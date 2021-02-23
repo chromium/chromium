@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
+#include "components/viz/common/resources/resource_id.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "ui/views/widget/root_view.h"
 
@@ -81,7 +82,7 @@ class ViewTreeHostRootView : public views::internal::RootView {
   std::unique_ptr<Resource> pending_resource_;
 
   int resource_group_id_ = 1;
-  int next_resource_id_ = 1;
+  viz::ResourceIdGenerator id_generator_;
   // Total damaged rect in surface.
   gfx::Rect damage_rect_;
   bool pending_compositor_frame_ack_ = false;

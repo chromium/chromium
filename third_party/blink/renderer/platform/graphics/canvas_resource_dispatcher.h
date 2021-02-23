@@ -17,6 +17,7 @@
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
+#include "third_party/blink/renderer/platform/graphics/resource_id_traits.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
@@ -93,7 +94,9 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
  private:
   friend class CanvasResourceDispatcherTest;
   struct FrameResource;
-  using ResourceMap = HashMap<unsigned, std::unique_ptr<FrameResource>>;
+
+  using ResourceMap =
+      HashMap<viz::ResourceId, std::unique_ptr<FrameResource>, ResourceIdHash>;
 
   bool PrepareFrame(scoped_refptr<CanvasResource>,
                     base::TimeTicks commit_start_time,
@@ -130,7 +133,7 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
 
   int placeholder_canvas_id_;
 
-  unsigned next_resource_id_ = 0;
+  viz::ResourceIdGenerator id_generator_;
   ResourceMap resources_;
 
   viz::FrameTokenGenerator next_frame_token_;

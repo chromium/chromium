@@ -189,14 +189,14 @@ void CreateTestRenderPassDrawQuad(const SharedQuadState* shared_state,
   auto* quad =
       render_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   quad->SetNew(shared_state, rect, rect, pass_id,
-               0,                 // mask_resource_id
-               gfx::RectF(),      // mask_uv_rect
-               gfx::Size(),       // mask_texture_size
-               gfx::Vector2dF(),  // filters scale
-               gfx::PointF(),     // filter origin
-               gfx::RectF(rect),  // tex_coord_rect
-               false,             // force_anti_aliasing_off
-               1.0f);             // backdrop_filter_quality
+               kInvalidResourceId,  // mask_resource_id
+               gfx::RectF(),        // mask_uv_rect
+               gfx::Size(),         // mask_texture_size
+               gfx::Vector2dF(),    // filters scale
+               gfx::PointF(),       // filter origin
+               gfx::RectF(rect),    // tex_coord_rect
+               false,               // force_anti_aliasing_off
+               1.0f);               // backdrop_filter_quality
 }
 
 // Create a TextureDrawDrawQuad with two given colors.
@@ -271,7 +271,7 @@ void CreateTestTwoColoredTextureDrawQuad(
   }
 
   // Return the mapped resource id.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       cc::SendResourceAndGetChildToParentMap({resource}, resource_provider,
                                              child_resource_provider,
                                              child_context_provider.get());
@@ -332,7 +332,7 @@ void CreateTestTextureDrawQuad(
   }
 
   // Return the mapped resource id.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       cc::SendResourceAndGetChildToParentMap({resource}, resource_provider,
                                              child_resource_provider,
                                              child_context_provider.get());
@@ -417,7 +417,7 @@ void CreateTestYUVVideoDrawQuad_FromVideoFrame(
       resources.resources[media::VideoFrame::kVPlane],
       SingleReleaseCallback::Create(
           std::move(resources.release_callbacks[media::VideoFrame::kVPlane])));
-  ResourceId resource_a = 0;
+  ResourceId resource_a = kInvalidResourceId;
   if (with_alpha) {
     resource_a = child_resource_provider->ImportResource(
         resources.resources[media::VideoFrame::kAPlane],
@@ -432,7 +432,7 @@ void CreateTestYUVVideoDrawQuad_FromVideoFrame(
   if (with_alpha)
     resource_ids_to_transfer.push_back(resource_a);
   // Transfer resources to the parent, and get the resource map.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       cc::SendResourceAndGetChildToParentMap(
           resource_ids_to_transfer, resource_provider, child_resource_provider,
           child_context_provider);
@@ -440,7 +440,7 @@ void CreateTestYUVVideoDrawQuad_FromVideoFrame(
   ResourceId mapped_resource_y = resource_map[resource_y];
   ResourceId mapped_resource_u = resource_map[resource_u];
   ResourceId mapped_resource_v = resource_map[resource_v];
-  ResourceId mapped_resource_a = 0;
+  ResourceId mapped_resource_a = kInvalidResourceId;
   if (with_alpha)
     mapped_resource_a = resource_map[resource_a];
   const gfx::Size ya_tex_size = video_frame->coded_size();
@@ -521,7 +521,7 @@ void CreateTestY16TextureDrawQuad_FromVideoFrame(
       SingleReleaseCallback::Create(std::move(resources.release_callbacks[0])));
 
   // Transfer resources to the parent, and get the resource map.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       cc::SendResourceAndGetChildToParentMap({resource_y}, resource_provider,
                                              child_resource_provider,
                                              child_context_provider);
@@ -772,10 +772,10 @@ void CreateTestYUVVideoDrawQuad_NV12(
       child_context_provider, child_resource_provider, uv_tex_size, RGBA_8888,
       color_space, MakePixelSpan(uv_pixels));
   ResourceId resource_v = resource_u;
-  ResourceId resource_a = 0;
+  ResourceId resource_a = kInvalidResourceId;
 
   // Transfer resources to the parent, and get the resource map.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       cc::SendResourceAndGetChildToParentMap(
           {resource_y, resource_u, resource_v}, resource_provider,
           child_resource_provider, child_context_provider.get());
@@ -2155,8 +2155,8 @@ TEST_P(RendererPixelTest, DISABLED_FastPassColorFilterAlpha) {
   auto* render_pass_quad =
       root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   render_pass_quad->SetNew(pass_shared_state, pass_rect, pass_rect,
-                           child_pass_id, 0, gfx::RectF(), gfx::Size(),
-                           gfx::Vector2dF(), gfx::PointF(),
+                           child_pass_id, kInvalidResourceId, gfx::RectF(),
+                           gfx::Size(), gfx::Vector2dF(), gfx::PointF(),
                            gfx::RectF(pass_rect), false, 1.0f);
 
   AggregatedRenderPassList pass_list;
@@ -2215,8 +2215,8 @@ TEST_P(RendererPixelTest, DISABLED_FastPassSaturateFilter) {
   auto* render_pass_quad =
       root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   render_pass_quad->SetNew(pass_shared_state, pass_rect, pass_rect,
-                           child_pass_id, 0, gfx::RectF(), gfx::Size(),
-                           gfx::Vector2dF(), gfx::PointF(),
+                           child_pass_id, kInvalidResourceId, gfx::RectF(),
+                           gfx::Size(), gfx::Vector2dF(), gfx::PointF(),
                            gfx::RectF(pass_rect), false, 1.0f);
 
   AggregatedRenderPassList pass_list;
@@ -2275,8 +2275,8 @@ TEST_P(RendererPixelTest, FastPassFilterChain) {
   auto* render_pass_quad =
       root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   render_pass_quad->SetNew(pass_shared_state, pass_rect, pass_rect,
-                           child_pass_id, 0, gfx::RectF(), gfx::Size(),
-                           gfx::Vector2dF(), gfx::PointF(),
+                           child_pass_id, kInvalidResourceId, gfx::RectF(),
+                           gfx::Size(), gfx::Vector2dF(), gfx::PointF(),
                            gfx::RectF(pass_rect), false, 1.0f);
 
   AggregatedRenderPassList pass_list;
@@ -2357,8 +2357,8 @@ TEST_P(RendererPixelTest, DISABLED_FastPassColorFilterAlphaTranslation) {
   auto* render_pass_quad =
       root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   render_pass_quad->SetNew(pass_shared_state, pass_rect, pass_rect,
-                           child_pass_id, 0, gfx::RectF(), gfx::Size(),
-                           gfx::Vector2dF(), gfx::PointF(),
+                           child_pass_id, kInvalidResourceId, gfx::RectF(),
+                           gfx::Size(), gfx::Vector2dF(), gfx::PointF(),
                            gfx::RectF(pass_rect), false, 1.0f);
 
   AggregatedRenderPassList pass_list;
@@ -2523,7 +2523,7 @@ TEST_P(RendererPixelTest, RenderPassAndMaskWithPartialQuad) {
   }
 
   // Return the mapped resource id.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       cc::SendResourceAndGetChildToParentMap(
           {mask_resource_id}, this->resource_provider_.get(),
           this->child_resource_provider_.get(),
@@ -2620,7 +2620,7 @@ TEST_P(RendererPixelTest, RenderPassAndMaskWithPartialQuad2) {
   }
 
   // Return the mapped resource id.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       cc::SendResourceAndGetChildToParentMap(
           {mask_resource_id}, this->resource_provider_.get(),
           this->child_resource_provider_.get(),
@@ -2713,7 +2713,7 @@ TEST_P(RendererPixelTest, RenderPassAndMaskForRoundedCorner) {
   }
 
   // Return the mapped resource id.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       cc::SendResourceAndGetChildToParentMap(
           {mask_resource_id}, this->resource_provider_.get(),
           this->child_resource_provider_.get(),
@@ -2817,7 +2817,7 @@ TEST_P(RendererPixelTest, RenderPassAndMaskForRoundedCornerMultiRadii) {
   }
 
   // Return the mapped resource id.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       cc::SendResourceAndGetChildToParentMap(
           {mask_resource_id}, this->resource_provider_.get(),
           this->child_resource_provider_.get(),
@@ -2882,7 +2882,7 @@ class RendererPixelTestWithBackdropFilter : public VizPixelTestWithParam {
                          filter_pass_layer_rect_, SK_ColorTRANSPARENT, false);
     }
 
-    ResourceId mapped_mask_resource_id = 0;
+    ResourceId mapped_mask_resource_id(0);
     gfx::RectF mask_uv_rect;
     gfx::Size mask_texture_size;
     if (include_backdrop_mask_) {
@@ -2924,8 +2924,8 @@ class RendererPixelTestWithBackdropFilter : public VizPixelTestWithParam {
       }
 
       // Return the mapped resource id.
-      std::unordered_map<ResourceId, ResourceId> resource_map =
-          cc::SendResourceAndGetChildToParentMap(
+      std::unordered_map<ResourceId, ResourceId, ResourceIdHasher>
+          resource_map = cc::SendResourceAndGetChildToParentMap(
               {mask_resource_id}, this->resource_provider_.get(),
               this->child_resource_provider_.get(),
               this->child_context_provider_.get());
@@ -3090,7 +3090,8 @@ class GLRendererPixelTestWithBackdropFilter : public VizPixelTest {
           root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
       filter_pass_quad->SetAll(
           shared_state, filter_pass_layer_rect_, filter_pass_layer_rect_,
-          /*needs_blending=*/true, filter_pass_id, 0, gfx::RectF(), gfx::Size(),
+          /*needs_blending=*/true, filter_pass_id, kInvalidResourceId,
+          gfx::RectF(), gfx::Size(),
           gfx::Vector2dF(1.0f, 1.0f),  // filters_scale
           gfx::PointF(),               // filters_origin
           gfx::RectF(),                // tex_coord_rect
@@ -3512,10 +3513,10 @@ TEST_P(GPURendererPixelTest, RenderPassDrawQuadForceAntiAliasingOff) {
   AggregatedRenderPassDrawQuad* pass_quad =
       root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   pass_quad->SetAll(pass_shared_state, rect, rect, needs_blending,
-                    child_pass_id, 0, gfx::RectF(), gfx::Size(),
-                    gfx::Vector2dF(), gfx::PointF(), gfx::RectF(rect),
-                    force_anti_aliasing_off, backdrop_filter_quality,
-                    intersects_damage_under);
+                    child_pass_id, kInvalidResourceId, gfx::RectF(),
+                    gfx::Size(), gfx::Vector2dF(), gfx::PointF(),
+                    gfx::RectF(rect), force_anti_aliasing_off,
+                    backdrop_filter_quality, intersects_damage_under);
 
   gfx::Transform green_quad_to_target_transform;
   SharedQuadState* green_shared_state = CreateTestSharedQuadState(
@@ -3557,7 +3558,7 @@ TEST_P(GPURendererPixelTest, TileDrawQuadForceAntiAliasingOff) {
   }
 
   // Return the mapped resource id.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       cc::SendResourceAndGetChildToParentMap(
           {resource}, this->resource_provider_.get(),
           this->child_resource_provider_.get(),
@@ -3672,10 +3673,10 @@ TEST_P(GPURendererPixelTest, TrilinearFiltering) {
       child_to_root_transform, child_pass_rect, root_pass.get(), gfx::RRectF());
   auto* child_pass_quad =
       root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
-  child_pass_quad->SetNew(child_pass_shared_state, child_pass_rect,
-                          child_pass_rect, child_pass_id, 0, gfx::RectF(),
-                          gfx::Size(), gfx::Vector2dF(), gfx::PointF(),
-                          gfx::RectF(child_pass_rect), false, 1.0f);
+  child_pass_quad->SetNew(
+      child_pass_shared_state, child_pass_rect, child_pass_rect, child_pass_id,
+      kInvalidResourceId, gfx::RectF(), gfx::Size(), gfx::Vector2dF(),
+      gfx::PointF(), gfx::RectF(child_pass_rect), false, 1.0f);
 
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(child_pass));
@@ -4021,7 +4022,7 @@ TEST_P(RendererPixelTest, TileDrawQuadNearestNeighbor) {
     resource = this->AllocateAndFillSoftwareResource(tile_size, bitmap);
   }
   // Return the mapped resource id.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       cc::SendResourceAndGetChildToParentMap(
           {resource}, this->resource_provider_.get(),
           this->child_resource_provider_.get(),
@@ -4071,7 +4072,7 @@ TEST_F(SoftwareRendererPixelTest, TextureDrawQuadNearestNeighbor) {
       this->AllocateAndFillSoftwareResource(tile_size, bitmap);
 
   // Return the mapped resource id.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       cc::SendResourceAndGetChildToParentMap(
           {resource}, this->resource_provider_.get(),
           this->child_resource_provider_.get(),
@@ -4124,7 +4125,7 @@ TEST_F(SoftwareRendererPixelTest, TextureDrawQuadLinear) {
       this->AllocateAndFillSoftwareResource(tile_size, bitmap);
 
   // Return the mapped resource id.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       cc::SendResourceAndGetChildToParentMap(
           {resource}, this->resource_provider_.get(),
           this->child_resource_provider_.get(),
@@ -4478,7 +4479,7 @@ TEST_P(GPURendererPixelTest, TextureQuadBatching) {
       mask_rect.size(), RGBA_8888, gfx::ColorSpace(), MakePixelSpan(bitmap));
 
   // Return the mapped resource id.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       cc::SendResourceAndGetChildToParentMap(
           {resource}, this->resource_provider_.get(),
           this->child_resource_provider_.get(),
@@ -4558,7 +4559,7 @@ TEST_P(GPURendererPixelTest, TileQuadClamping) {
     resource = this->AllocateAndFillSoftwareResource(tile_size, bitmap);
   }
   // Return the mapped resource id.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       cc::SendResourceAndGetChildToParentMap(
           {resource}, this->resource_provider_.get(),
           this->child_resource_provider_.get(),
@@ -4668,7 +4669,7 @@ TEST_P(GPURendererPixelTest, RoundedCornerSimpleTextureDrawQuad) {
       this->child_context_provider_, this->child_resource_provider_.get(),
       gfx::Size(2, 2), RGBA_8888, gfx::ColorSpace(), colors);
 
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       cc::SendResourceAndGetChildToParentMap(
           {resource}, this->resource_provider_.get(),
           this->child_resource_provider_.get(),
@@ -5069,8 +5070,8 @@ class ColorTransformPixelTest
           rect.size(), RGBA_8888, this->src_color_space_, input_colors);
 
       // Return the mapped resource id.
-      std::unordered_map<ResourceId, ResourceId> resource_map =
-          cc::SendResourceAndGetChildToParentMap(
+      std::unordered_map<ResourceId, ResourceId, ResourceIdHasher>
+          resource_map = cc::SendResourceAndGetChildToParentMap(
               {resource}, this->resource_provider_.get(),
               this->child_resource_provider_.get(),
               this->child_context_provider_.get());

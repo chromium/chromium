@@ -4,16 +4,20 @@
 
 #include "cc/test/resource_provider_test_utils.h"
 
+#include <unordered_map>
+#include <vector>
+
 #include "base/callback_helpers.h"
 
 namespace cc {
 
-const std::unordered_map<viz::ResourceId, viz::ResourceId>&
-SendResourceAndGetChildToParentMap(
-    const std::vector<viz::ResourceId>& resource_ids,
-    viz::DisplayResourceProvider* resource_provider,
-    viz::ClientResourceProvider* child_resource_provider,
-    viz::ContextProvider* child_context_provider) {
+const std::
+    unordered_map<viz::ResourceId, viz::ResourceId, viz::ResourceIdHasher>&
+    SendResourceAndGetChildToParentMap(
+        const std::vector<viz::ResourceId>& resource_ids,
+        viz::DisplayResourceProvider* resource_provider,
+        viz::ClientResourceProvider* child_resource_provider,
+        viz::ContextProvider* child_context_provider) {
   DCHECK(resource_provider);
   DCHECK(child_resource_provider);
   // Transfer resources to the parent.

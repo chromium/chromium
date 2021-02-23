@@ -213,9 +213,9 @@ TEST(CompositorRenderPassTest, CopyAllShouldBeIdentical) {
   // And a CompositorRenderPassDrawQuad for the contributing pass.
   auto pass_quad = std::make_unique<CompositorRenderPassDrawQuad>();
   pass_quad->SetNew(pass->shared_quad_state_list.back(), contrib_output_rect,
-                    contrib_output_rect, contrib_id, 0, gfx::RectF(),
-                    gfx::Size(), gfx::Vector2dF(), gfx::PointF(), gfx::RectF(),
-                    false, 1.0f);
+                    contrib_output_rect, contrib_id, ResourceId(1u),
+                    gfx::RectF(), gfx::Size(), gfx::Vector2dF(), gfx::PointF(),
+                    gfx::RectF(), false, 1.0f);
 
   pass_list.push_back(std::move(pass));
   pass_list.push_back(std::move(contrib));

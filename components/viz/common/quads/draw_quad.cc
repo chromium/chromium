@@ -78,7 +78,7 @@ void DrawQuad::AsValueInto(base::trace_event::TracedValue* value) const {
 
 DrawQuad::Resources::Resources() : count(0) {
   for (size_t i = 0; i < kMaxResourceIdCount; ++i)
-    ids[i] = 0;
+    ids[i] = kInvalidResourceId;
 }
 
 }  // namespace viz

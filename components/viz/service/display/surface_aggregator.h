@@ -166,7 +166,8 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
       const CompositorRenderPass& source_pass,
       AggregatedRenderPass* dest_pass,
       float parent_device_scale_factor,
-      const std::unordered_map<ResourceId, ResourceId>& resource_to_child_map,
+      const std::unordered_map<ResourceId, ResourceId, ResourceIdHasher>&
+          resource_to_child_map,
       const gfx::Transform& target_transform,
       const ClipData& clip_rect,
       const SurfaceId& surface_id,

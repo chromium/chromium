@@ -490,7 +490,7 @@ TEST_F(StructTraitsTest, CompositorFrame) {
   solid_quad->SetNew(sqs, rect2, rect2, color2, force_anti_aliasing_off);
 
   // TransferableResource constants.
-  const uint32_t tr_id = 1337;
+  const ResourceId tr_id(1337);
   const ResourceFormat tr_format = ALPHA_8;
   const uint32_t tr_filter = 1234;
   const gfx::Size tr_size(1234, 5678);
@@ -587,7 +587,7 @@ TEST_F(StructTraitsTest, SurfaceInfo) {
 }
 
 TEST_F(StructTraitsTest, ReturnedResource) {
-  const unsigned id = 1337u;
+  const ResourceId id(1337u);
   const gpu::CommandBufferNamespace command_buffer_namespace = gpu::IN_PROCESS;
   const gpu::CommandBufferId command_buffer_id(
       gpu::CommandBufferId::FromUnsafeValue(0xdeadbeef));
@@ -1067,7 +1067,7 @@ TEST_F(StructTraitsTest, SurfaceId) {
 }
 
 TEST_F(StructTraitsTest, TransferableResource) {
-  const uint32_t id = 1337;
+  const ResourceId id(1337);
   const ResourceFormat format = ALPHA_8;
   const uint32_t filter = 1234;
   const gfx::Size size(1234, 5678);
@@ -1128,10 +1128,10 @@ TEST_F(StructTraitsTest, YUVDrawQuad) {
   const gfx::RectF uv_tex_coord_rect(1234.1f, 4321.2f, 1357.3f, 7531.4f);
   const gfx::Size ya_tex_size(1234, 5678);
   const gfx::Size uv_tex_size(4321, 8765);
-  const uint32_t y_plane_resource_id = 1337;
-  const uint32_t u_plane_resource_id = 1234;
-  const uint32_t v_plane_resource_id = 2468;
-  const uint32_t a_plane_resource_id = 7890;
+  const ResourceId y_plane_resource_id(1337);
+  const ResourceId u_plane_resource_id(1234);
+  const ResourceId v_plane_resource_id(2468);
+  const ResourceId a_plane_resource_id(7890);
   const gfx::ColorSpace video_color_space = gfx::ColorSpace::CreateJpeg();
   const float resource_offset = 1337.5f;
   const float resource_multiplier = 1234.6f;

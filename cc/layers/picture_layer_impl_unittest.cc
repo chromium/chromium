@@ -1218,7 +1218,7 @@ TEST_F(LegacySWPictureLayerImplTest, HugeBackdropFilterMasksGetScaledDown) {
   gfx::SizeF mask_uv_size;
   active_mask->GetContentsResourceId(&mask_resource_id, &mask_texture_size,
                                      &mask_uv_size);
-  EXPECT_NE(0u, mask_resource_id);
+  EXPECT_NE(viz::kInvalidResourceId, mask_resource_id);
   EXPECT_EQ(active_mask->bounds(), mask_texture_size);
   EXPECT_EQ(gfx::SizeF(1.0f, 1.0f), mask_uv_size);
 
@@ -1258,7 +1258,7 @@ TEST_F(LegacySWPictureLayerImplTest, HugeBackdropFilterMasksGetScaledDown) {
   // The mask resource exists.
   active_mask->GetContentsResourceId(&mask_resource_id, &mask_texture_size,
                                      &mask_uv_size);
-  EXPECT_NE(0u, mask_resource_id);
+  EXPECT_NE(viz::kInvalidResourceId, mask_resource_id);
   gfx::Size expected_size = active_mask->bounds();
   expected_size.SetToMin(gfx::Size(max_texture_size, max_texture_size));
   EXPECT_EQ(expected_size, mask_texture_size);
@@ -1272,7 +1272,7 @@ TEST_F(LegacySWPictureLayerImplTest, HugeBackdropFilterMasksGetScaledDown) {
   SetupDrawPropertiesAndUpdateTiles(active_mask, 1.f, 1.f, 1.f);
   active_mask->HighResTiling()->CreateAllTilesForTesting();
   EXPECT_EQ(1u, active_mask->HighResTiling()->AllTilesForTesting().size());
-  EXPECT_NE(0u, mask_resource_id);
+  EXPECT_NE(viz::kInvalidResourceId, mask_resource_id);
   EXPECT_EQ(expected_size, mask_texture_size);
 
   // Do another activate, the same holds.
@@ -1282,7 +1282,7 @@ TEST_F(LegacySWPictureLayerImplTest, HugeBackdropFilterMasksGetScaledDown) {
   active_layer()->GetContentsResourceId(&mask_resource_id, &mask_texture_size,
                                         &mask_uv_size);
   EXPECT_EQ(expected_size, mask_texture_size);
-  EXPECT_EQ(0u, mask_resource_id);
+  EXPECT_EQ(viz::kInvalidResourceId, mask_resource_id);
   EXPECT_EQ(gfx::SizeF(1.0f, 1.0f), mask_uv_size);
 
   // Resize even larger, so that the scale would be smaller than the minimum
@@ -1344,7 +1344,7 @@ TEST_F(LegacySWPictureLayerImplTest, ScaledBackdropFilterMaskLayer) {
   gfx::SizeF mask_uv_size;
   active_mask->GetContentsResourceId(&mask_resource_id, &mask_texture_size,
                                      &mask_uv_size);
-  EXPECT_NE(0u, mask_resource_id);
+  EXPECT_NE(viz::kInvalidResourceId, mask_resource_id);
   gfx::Size expected_mask_texture_size =
       gfx::ScaleToCeiledSize(active_mask->bounds(), 1.3f);
   EXPECT_EQ(mask_texture_size, expected_mask_texture_size);
@@ -1391,7 +1391,7 @@ TEST_F(LegacySWPictureLayerImplTest, ScaledMaskLayer) {
   gfx::SizeF mask_uv_size;
   active_mask->GetContentsResourceId(&mask_resource_id, &mask_texture_size,
                                      &mask_uv_size);
-  EXPECT_EQ(0u, mask_resource_id);
+  EXPECT_EQ(viz::kInvalidResourceId, mask_resource_id);
   EXPECT_EQ(gfx::Size(), mask_texture_size);
   EXPECT_EQ(gfx::SizeF(), mask_uv_size);
 }

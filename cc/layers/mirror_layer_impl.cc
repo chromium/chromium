@@ -47,7 +47,7 @@ void MirrorLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   AppendDebugBorderQuad(render_pass, content_rect, shared_quad_state,
                         append_quads_data);
 
-  viz::ResourceId mask_resource_id = 0;
+  viz::ResourceId mask_resource_id = viz::kInvalidResourceId;
   gfx::RectF mask_uv_rect;
   gfx::Size mask_texture_size;
 

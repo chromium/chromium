@@ -5,6 +5,7 @@
 #include "services/viz/public/cpp/compositing/quads_mojom_traits.h"
 
 #include "services/viz/public/cpp/compositing/compositor_render_pass_id_mojom_traits.h"
+#include "services/viz/public/cpp/compositing/resource_id_mojom_traits.h"
 #include "services/viz/public/cpp/crash_keys.h"
 #include "ui/gfx/mojom/color_space_mojom_traits.h"
 #include "ui/gfx/mojom/transform_mojom_traits.h"
@@ -72,17 +73,20 @@ bool StructTraits<
     viz::DrawQuad>::Read(viz::mojom::CompositorRenderPassQuadStateDataView data,
                          viz::DrawQuad* out) {
   auto* quad = static_cast<viz::CompositorRenderPassDrawQuad*>(out);
-  quad->resources.ids[viz::CompositorRenderPassDrawQuad::kMaskResourceIdIndex] =
-      data.mask_resource_id();
-  quad->resources.count = data.mask_resource_id() ? 1 : 0;
+  viz::ResourceId& mask_resource_id =
+      quad->resources
+          .ids[viz::CompositorRenderPassDrawQuad::kMaskResourceIdIndex];
   if (!data.ReadMaskUvRect(&quad->mask_uv_rect) ||
       !data.ReadMaskTextureSize(&quad->mask_texture_size) ||
       !data.ReadFiltersScale(&quad->filters_scale) ||
       !data.ReadFiltersOrigin(&quad->filters_origin) ||
       !data.ReadTexCoordRect(&quad->tex_coord_rect) ||
-      !data.ReadRenderPassId(&quad->render_pass_id)) {
+      !data.ReadRenderPassId(&quad->render_pass_id) ||
+      !data.ReadMaskResourceId(&mask_resource_id)) {
     return false;
   }
+  quad->resources.count = mask_resource_id ? 1 : 0;
+
   // CompositorRenderPass ids are never zero.
   if (!quad->render_pass_id) {
     viz::SetDeserializationCrashKeyString("Draw quad invalid render pass ID");
@@ -108,13 +112,13 @@ bool StructTraits<viz::mojom::SolidColorQuadStateDataView, viz::DrawQuad>::Read(
 bool StructTraits<viz::mojom::StreamVideoQuadStateDataView, viz::DrawQuad>::
     Read(viz::mojom::StreamVideoQuadStateDataView data, viz::DrawQuad* out) {
   auto* quad = static_cast<viz::StreamVideoDrawQuad*>(out);
-  quad->resources.ids[viz::StreamVideoDrawQuad::kResourceIdIndex] =
-      data.resource_id();
   quad->resources.count = 1;
   return data.ReadResourceSizeInPixels(
              &quad->overlay_resources.size_in_pixels) &&
          data.ReadUvTopLeft(&quad->uv_top_left) &&
-         data.ReadUvBottomRight(&quad->uv_bottom_right);
+         data.ReadUvBottomRight(&quad->uv_bottom_right) &&
+         data.ReadResourceId(
+             &quad->resources.ids[viz::StreamVideoDrawQuad::kResourceIdIndex]);
 }
 
 // static
@@ -135,9 +139,9 @@ bool StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad>::Read(
     viz::DrawQuad* out) {
   auto* quad = static_cast<viz::TextureDrawQuad*>(out);
 
-  quad->resources.ids[viz::TextureDrawQuad::kResourceIdIndex] =
-      data.resource_id();
-  if (!data.ReadResourceSizeInPixels(&quad->overlay_resources.size_in_pixels)) {
+  if (!data.ReadResourceId(
+          &quad->resources.ids[viz::TextureDrawQuad::kResourceIdIndex]) ||
+      !data.ReadResourceSizeInPixels(&quad->overlay_resources.size_in_pixels)) {
     return false;
   }
 
@@ -170,14 +174,15 @@ bool StructTraits<viz::mojom::TileQuadStateDataView, viz::DrawQuad>::Read(
     viz::DrawQuad* out) {
   viz::TileDrawQuad* quad = static_cast<viz::TileDrawQuad*>(out);
   if (!data.ReadTexCoordRect(&quad->tex_coord_rect) ||
-      !data.ReadTextureSize(&quad->texture_size)) {
+      !data.ReadTextureSize(&quad->texture_size) ||
+      !data.ReadResourceId(
+          &quad->resources.ids[viz::TileDrawQuad::kResourceIdIndex])) {
     return false;
   }
 
   quad->is_premultiplied = data.is_premultiplied();
   quad->nearest_neighbor = data.nearest_neighbor();
   quad->force_anti_aliasing_off = data.force_anti_aliasing_off();
-  quad->resources.ids[viz::TileDrawQuad::kResourceIdIndex] = data.resource_id();
   quad->resources.count = 1;
   return true;
 }
@@ -202,21 +207,27 @@ bool StructTraits<viz::mojom::YUVVideoQuadStateDataView, viz::DrawQuad>::Read(
       !data.ReadUvTexSize(&quad->uv_tex_size) ||
       !data.ReadVideoColorSpace(&quad->video_color_space) ||
       !data.ReadProtectedVideoType(&quad->protected_video_type) ||
-      !data.ReadHdrMetadata(&quad->hdr_metadata)) {
+      !data.ReadHdrMetadata(&quad->hdr_metadata) ||
+      !data.ReadYPlaneResourceId(
+          &quad->resources
+               .ids[viz::YUVVideoDrawQuad::kYPlaneResourceIdIndex]) ||
+      !data.ReadUPlaneResourceId(
+          &quad->resources
+               .ids[viz::YUVVideoDrawQuad::kUPlaneResourceIdIndex]) ||
+      !data.ReadVPlaneResourceId(
+          &quad->resources
+               .ids[viz::YUVVideoDrawQuad::kVPlaneResourceIdIndex]) ||
+      !data.ReadAPlaneResourceId(
+          &quad->resources
+               .ids[viz::YUVVideoDrawQuad::kAPlaneResourceIdIndex])) {
     return false;
   }
-  quad->resources.ids[viz::YUVVideoDrawQuad::kYPlaneResourceIdIndex] =
-      data.y_plane_resource_id();
-  quad->resources.ids[viz::YUVVideoDrawQuad::kUPlaneResourceIdIndex] =
-      data.u_plane_resource_id();
-  quad->resources.ids[viz::YUVVideoDrawQuad::kVPlaneResourceIdIndex] =
-      data.v_plane_resource_id();
-  quad->resources.ids[viz::YUVVideoDrawQuad::kAPlaneResourceIdIndex] =
-      data.a_plane_resource_id();
   static_assert(viz::YUVVideoDrawQuad::kAPlaneResourceIdIndex ==
                     viz::DrawQuad::Resources::kMaxResourceIdCount - 1,
                 "The A plane resource should be the last resource ID.");
-  quad->resources.count = data.a_plane_resource_id() ? 4 : 3;
+  quad->resources.count =
+      quad->resources.ids[viz::YUVVideoDrawQuad::kAPlaneResourceIdIndex] ? 4
+                                                                         : 3;
 
   quad->resource_offset = data.resource_offset();
   quad->resource_multiplier = data.resource_multiplier();

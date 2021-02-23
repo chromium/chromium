@@ -10,6 +10,7 @@
 
 #include <map>
 #include <memory>
+#include <utility>
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/memory_pressure_listener.h"
@@ -336,7 +337,7 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
     bool avoid_reuse_ = false;
 
     // An id used to name the backing for transfer to the display compositor.
-    viz::ResourceId resource_id_ = 0;
+    viz::ResourceId resource_id_ = viz::kInvalidResourceId;
 
     // The backing for gpu resources. Initially null for resources given
     // out by ResourcePool, to be filled in by the client. Is destroyed on the

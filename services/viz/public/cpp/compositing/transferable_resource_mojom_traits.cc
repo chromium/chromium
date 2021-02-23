@@ -7,6 +7,7 @@
 #include "gpu/ipc/common/mailbox_holder_mojom_traits.h"
 #include "gpu/ipc/common/mailbox_mojom_traits.h"
 #include "gpu/ipc/common/sync_token_mojom_traits.h"
+#include "services/viz/public/cpp/compositing/resource_id_mojom_traits.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "ui/gfx/mojom/color_space_mojom_traits.h"
 
@@ -142,13 +143,14 @@ bool StructTraits<viz::mojom::TransferableResourceDataView,
                   viz::TransferableResource>::
     Read(viz::mojom::TransferableResourceDataView data,
          viz::TransferableResource* out) {
+  viz::ResourceId id;
   if (!data.ReadSize(&out->size) || !data.ReadFormat(&out->format) ||
       !data.ReadMailboxHolder(&out->mailbox_holder) ||
       !data.ReadColorSpace(&out->color_space) ||
-      !data.ReadYcbcrInfo(&out->ycbcr_info)) {
+      !data.ReadYcbcrInfo(&out->ycbcr_info) || !data.ReadId(&id)) {
     return false;
   }
-  out->id = data.id();
+  out->id = id;
   out->filter = data.filter();
   out->read_lock_fences_enabled = data.read_lock_fences_enabled();
   out->is_software = data.is_software();

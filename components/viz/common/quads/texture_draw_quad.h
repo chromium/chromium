@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "components/viz/common/quads/draw_quad.h"
+#include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/viz_common_export.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -28,7 +29,7 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
               const gfx::Rect& rect,
               const gfx::Rect& visible_rect,
               bool needs_blending,
-              unsigned resource_id,
+              ResourceId resource_id,
               bool premultiplied_alpha,
               const gfx::PointF& uv_top_left,
               const gfx::PointF& uv_bottom_right,
@@ -43,7 +44,7 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
               const gfx::Rect& rect,
               const gfx::Rect& visible_rect,
               bool needs_blending,
-              unsigned resource_id,
+              ResourceId resource_id,
               gfx::Size resource_size_in_pixels,
               bool premultiplied_alpha,
               const gfx::PointF& uv_top_left,

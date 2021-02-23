@@ -524,8 +524,8 @@ void VideoResourceUpdater::ObtainFrameResources(
         external_resources.resources[i],
         viz::SingleReleaseCallback::Create(
             std::move(external_resources.release_callbacks[i])));
-    frame_resources_.push_back(
-        {resource_id, external_resources.resources[i].size});
+    frame_resources_.emplace_back(resource_id,
+                                  external_resources.resources[i].size);
   }
   TRACE_EVENT_INSTANT1("media", "VideoResourceUpdater::ObtainFrameResources",
                        TRACE_EVENT_SCOPE_THREAD, "Timestamp",
@@ -618,7 +618,8 @@ void VideoResourceUpdater::AppendQuads(
           frame_resources_[0].id, frame_resources_[1].id,
           frame_resources_.size() > 2 ? frame_resources_[2].id
                                       : frame_resources_[1].id,
-          frame_resources_.size() > 3 ? frame_resources_[3].id : 0,
+          frame_resources_.size() > 3 ? frame_resources_[3].id
+                                      : viz::kInvalidResourceId,
           frame->ColorSpace(), frame_resource_offset_,
           frame_resource_multiplier_, frame_bits_per_channel_);
       if (frame->hdr_metadata().has_value())
@@ -1411,5 +1412,11 @@ gpu::SharedImageInterface* VideoResourceUpdater::SharedImageInterface() const {
   DCHECK(sii);
   return sii;
 }
+
+VideoResourceUpdater::FrameResource::FrameResource() = default;
+
+VideoResourceUpdater::FrameResource::FrameResource(viz::ResourceId id,
+                                                   const gfx::Size& size)
+    : id(id), size_in_pixels(size) {}
 
 }  // namespace media

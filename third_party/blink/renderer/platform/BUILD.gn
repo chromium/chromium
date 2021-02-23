@@ -1125,6 +1125,7 @@ component("platform") {
     "graphics/raster_dark_mode_filter_impl.h",
     "graphics/replaying_canvas.cc",
     "graphics/replaying_canvas.h",
+    "graphics/resource_id_traits.h",
     "graphics/rw_buffer.cc",
     "graphics/rw_buffer.h",
     "graphics/scoped_interpolation_quality.h",

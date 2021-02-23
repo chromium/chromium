@@ -577,7 +577,7 @@ void SurfaceAggregator::EmitSurfaceContent(
   referenced_surfaces_.insert(surface_id);
   // TODO(vmpstr): provider check is a hack for unittests that don't set up a
   // resource provider.
-  std::unordered_map<ResourceId, ResourceId> empty_map;
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> empty_map;
   const auto& child_to_parent_map =
       provider_ ? provider_->GetChildToParentMap(ChildIdForSurface(surface))
                 : empty_map;
@@ -761,8 +761,8 @@ void SurfaceAggregator::EmitSurfaceContent(
       auto* quad =
           dest_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
       quad->SetNew(shared_quad_state, quad_rect, quad_visible_rect,
-                   remapped_pass_id, 0, gfx::RectF(), gfx::Size(),
-                   gfx::Vector2dF(), gfx::PointF(), tex_coord_rect,
+                   remapped_pass_id, kInvalidResourceId, gfx::RectF(),
+                   gfx::Size(), gfx::Vector2dF(), gfx::PointF(), tex_coord_rect,
                    /*force_anti_aliasing_off=*/false,
                    /* backdrop_filter_quality*/ 1.0f);
     }
@@ -894,8 +894,9 @@ void SurfaceAggregator::AddColorConversionPass() {
   auto* quad = color_conversion_pass
                    ->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   quad->SetNew(shared_quad_state, output_rect, output_rect,
-               root_render_pass->id, 0, gfx::RectF(), gfx::Size(),
-               gfx::Vector2dF(), gfx::PointF(), gfx::RectF(output_rect),
+               root_render_pass->id, kInvalidResourceId, gfx::RectF(),
+               gfx::Size(), gfx::Vector2dF(), gfx::PointF(),
+               gfx::RectF(output_rect),
                /*force_anti_aliasing_off=*/false,
                /*backdrop_filter_quality*/ 1.0f);
   dest_pass_list_->push_back(std::move(color_conversion_pass));
@@ -951,8 +952,9 @@ void SurfaceAggregator::AddDisplayTransformPass() {
   auto* quad = display_transform_pass
                    ->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   quad->SetNew(shared_quad_state, output_rect, output_rect,
-               root_render_pass->id, 0, gfx::RectF(), gfx::Size(),
-               gfx::Vector2dF(), gfx::PointF(), gfx::RectF(output_rect),
+               root_render_pass->id, kInvalidResourceId, gfx::RectF(),
+               gfx::Size(), gfx::Vector2dF(), gfx::PointF(),
+               gfx::RectF(output_rect),
                /*force_anti_aliasing_off=*/false,
                /*backdrop_filter_quality*/ 1.0f);
   dest_pass_list_->push_back(std::move(display_transform_pass));
@@ -1010,7 +1012,8 @@ void SurfaceAggregator::CopyQuadsToPass(
     const CompositorRenderPass& source_pass,
     AggregatedRenderPass* dest_pass,
     float parent_device_scale_factor,
-    const std::unordered_map<ResourceId, ResourceId>& child_to_parent_map,
+    const std::unordered_map<ResourceId, ResourceId, ResourceIdHasher>&
+        child_to_parent_map,
     const gfx::Transform& target_transform,
     const ClipData& clip_rect,
     const SurfaceId& surface_id,
@@ -1184,7 +1187,7 @@ void SurfaceAggregator::CopyPasses(const CompositorFrame& frame,
 
   // TODO(vmpstr): provider check is a hack for unittests that don't set up a
   // resource provider.
-  std::unordered_map<ResourceId, ResourceId> empty_map;
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> empty_map;
   const auto& child_to_parent_map =
       provider_ ? provider_->GetChildToParentMap(ChildIdForSurface(surface))
                 : empty_map;
@@ -2272,8 +2275,8 @@ void SurfaceAggregator::AppendDeJellyRenderPass(
   auto* quad =
       root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   quad->SetNew(new_state, render_pass->output_rect, render_pass->output_rect,
-               render_pass->id, 0, gfx::RectF(), gfx::Size(), gfx::Vector2dF(),
-               gfx::PointF(),
+               render_pass->id, kInvalidResourceId, gfx::RectF(), gfx::Size(),
+               gfx::Vector2dF(), gfx::PointF(),
                gfx::RectF(gfx::SizeF(render_pass->output_rect.size())), false,
                1.0f);
   gfx::Transform skew_transform;

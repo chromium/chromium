@@ -854,11 +854,11 @@ TEST_F(GLRendererWithDefaultHarnessTest, TextureDrawQuadShaderPrecisionHigh) {
   ResourceId client_resource_id = child_resource_provider->ImportResource(
       transfer_resource, SingleReleaseCallback::Create(base::DoNothing()));
 
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       cc::SendResourceAndGetChildToParentMap(
           {client_resource_id}, resource_provider_.get(),
           child_resource_provider.get(), child_context_provider.get());
-  unsigned resource_id = resource_map[client_resource_id];
+  ResourceId resource_id = resource_map[client_resource_id];
 
   // The values defined here should not alter the size of the already created
   // texture.
@@ -917,11 +917,11 @@ TEST_F(GLRendererWithDefaultHarnessTest, TextureDrawQuadShaderPrecisionMedium) {
   ResourceId client_resource_id = child_resource_provider->ImportResource(
       transfer_resource, SingleReleaseCallback::Create(base::DoNothing()));
 
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       cc::SendResourceAndGetChildToParentMap(
           {client_resource_id}, resource_provider_.get(),
           child_resource_provider.get(), child_context_provider.get());
-  unsigned resource_id = resource_map[client_resource_id];
+  ResourceId resource_id = resource_map[client_resource_id];
 
   // The values defined here should not alter the size of the already created
   // texture.
@@ -977,11 +977,11 @@ class GLRendererTextureDrawQuadHDRTest
     ResourceId client_resource_id = child_resource_provider->ImportResource(
         transfer_resource, SingleReleaseCallback::Create(base::DoNothing()));
 
-    std::unordered_map<ResourceId, ResourceId> resource_map =
+    std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
         cc::SendResourceAndGetChildToParentMap(
             {client_resource_id}, resource_provider_.get(),
             child_resource_provider.get(), child_context_provider.get());
-    unsigned resource_id = resource_map[client_resource_id];
+    ResourceId resource_id = resource_map[client_resource_id];
 
     TextureDrawQuad* overlay_quad =
         root_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
@@ -1503,8 +1503,9 @@ TEST_F(GLRendererTest, DrawYUVVideoDrawQuadWithVisibleRect) {
   YUVVideoDrawQuad* quad =
       root_pass->CreateAndAppendDrawQuad<YUVVideoDrawQuad>();
   quad->SetNew(shared_state, rect, visible_rect, /*needs_blending=*/false,
-               tex_coord_rect, tex_coord_rect, rect.size(), rect.size(), 1, 1,
-               1, 1, gfx::ColorSpace(), 0, 1.0, 8);
+               tex_coord_rect, tex_coord_rect, rect.size(), rect.size(),
+               ResourceId(1), ResourceId(1), ResourceId(1), ResourceId(1),
+               gfx::ColorSpace(), 0, 1.0, 8);
 
   DrawFrame(&renderer, viewport_size);
 
@@ -2152,7 +2153,7 @@ TEST_F(GLRendererShaderTest, DrawRenderPassQuadShaderPermutations) {
       transfer_resource, SingleReleaseCallback::Create(base::DoNothing()));
 
   // Return the mapped resource id.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       cc::SendResourceAndGetChildToParentMap({mask}, resource_provider_.get(),
                                              child_resource_provider_.get(),
                                              child_context_provider_.get());
@@ -2196,8 +2197,8 @@ TEST_F(GLRendererShaderTest, DrawRenderPassQuadShaderPermutations) {
                                   gfx::Rect(viewport_size), gfx::Transform(),
                                   cc::FilterOperations());
 
-    cc::AddRenderPassQuad(root_pass, child_pass, 0, gfx::Transform(),
-                          xfer_mode);
+    cc::AddRenderPassQuad(root_pass, child_pass, kInvalidResourceId,
+                          gfx::Transform(), xfer_mode);
 
     renderer_->DecideRenderPassAllocationsForFrame(
         render_passes_in_draw_order_);
@@ -2214,8 +2215,8 @@ TEST_F(GLRendererShaderTest, DrawRenderPassQuadShaderPermutations) {
                                   gfx::Rect(viewport_size), gfx::Transform(),
                                   cc::FilterOperations());
 
-    cc::AddRenderPassQuad(root_pass, child_pass, 0, gfx::Transform(),
-                          xfer_mode);
+    cc::AddRenderPassQuad(root_pass, child_pass, kInvalidResourceId,
+                          gfx::Transform(), xfer_mode);
 
     renderer_->DecideRenderPassAllocationsForFrame(
         render_passes_in_draw_order_);
@@ -2272,8 +2273,8 @@ TEST_F(GLRendererShaderTest, DrawRenderPassQuadShaderPermutations) {
                                   gfx::Rect(viewport_size), gfx::Transform(),
                                   cc::FilterOperations());
 
-    cc::AddRenderPassQuad(root_pass, child_pass, 0, transform_causing_aa,
-                          xfer_mode);
+    cc::AddRenderPassQuad(root_pass, child_pass, kInvalidResourceId,
+                          transform_causing_aa, xfer_mode);
 
     renderer_->DecideRenderPassAllocationsForFrame(
         render_passes_in_draw_order_);
@@ -2290,8 +2291,8 @@ TEST_F(GLRendererShaderTest, DrawRenderPassQuadShaderPermutations) {
                                   gfx::Rect(viewport_size), gfx::Transform(),
                                   cc::FilterOperations());
 
-    cc::AddRenderPassQuad(root_pass, child_pass, 0, transform_causing_aa,
-                          xfer_mode);
+    cc::AddRenderPassQuad(root_pass, child_pass, kInvalidResourceId,
+                          transform_causing_aa, xfer_mode);
 
     renderer_->DecideRenderPassAllocationsForFrame(
         render_passes_in_draw_order_);
@@ -2370,8 +2371,8 @@ TEST_F(GLRendererShaderTest, DrawRenderPassQuadSkipsAAForClippingTransform) {
                                 gfx::Rect(viewport_size), gfx::Transform(),
                                 cc::FilterOperations());
 
-  cc::AddRenderPassQuad(root_pass, child_pass, 0, transform_preventing_aa,
-                        SkBlendMode::kSrcOver);
+  cc::AddRenderPassQuad(root_pass, child_pass, kInvalidResourceId,
+                        transform_preventing_aa, SkBlendMode::kSrcOver);
 
   renderer_->DecideRenderPassAllocationsForFrame(render_passes_in_draw_order_);
   DrawFrame(renderer_.get(), viewport_size);
@@ -2731,7 +2732,7 @@ TEST_F(GLRendererTest, DontOverlayWithCopyRequests) {
   parent_resource_provider->ReceiveFromChild(child_id, list);
 
   // In DisplayResourceProvider's namespace, use the mapped resource id.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       parent_resource_provider->GetChildToParentMap(child_id);
   ResourceId parent_resource_id = resource_map[list[0].id];
 
@@ -2940,7 +2941,7 @@ TEST_F(GLRendererTest, OverlaySyncTokensAreProcessed) {
   parent_resource_provider->ReceiveFromChild(child_id, list);
 
   // In DisplayResourceProvider's namespace, use the mapped resource id.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       parent_resource_provider->GetChildToParentMap(child_id);
   ResourceId parent_resource_id = resource_map[list[0].id];
 
@@ -3718,7 +3719,7 @@ TEST_F(GLRendererTest, DCLayerOverlaySwitch) {
       static_cast<RasterContextProvider*>(child_context_provider.get()));
   parent_resource_provider->ReceiveFromChild(child_id, list);
   // In DisplayResourceProvider's namespace, use the mapped resource id.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       parent_resource_provider->GetChildToParentMap(child_id);
   ResourceId parent_resource_id = resource_map[list[0].id];
 
@@ -4105,8 +4106,8 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysWithAllQuadsPromoted) {
     AggregatedRenderPass* root_pass = cc::AddRenderPass(
         &render_passes_in_draw_order_, root_pass_id, gfx::Rect(viewport_size),
         gfx::Transform(), cc::FilterOperations());
-    cc::AddRenderPassQuad(root_pass, child_pass, 0, gfx::Transform(),
-                          SkBlendMode::kSrcOver);
+    cc::AddRenderPassQuad(root_pass, child_pass, kInvalidResourceId,
+                          gfx::Transform(), SkBlendMode::kSrcOver);
   }
 
   renderer().DecideRenderPassAllocationsForFrame(render_passes_in_draw_order_);
@@ -4144,8 +4145,8 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysWithAllQuadsPromoted) {
     AggregatedRenderPass* root_pass = cc::AddRenderPass(
         &render_passes_in_draw_order_, root_pass_id, gfx::Rect(viewport_size),
         gfx::Transform(), cc::FilterOperations());
-    cc::AddRenderPassQuad(root_pass, child_pass, 0, gfx::Transform(),
-                          SkBlendMode::kSrcOver);
+    cc::AddRenderPassQuad(root_pass, child_pass, kInvalidResourceId,
+                          gfx::Transform(), SkBlendMode::kSrcOver);
 
     // Use a cached RenderPass for the child.
     child_pass->cache_render_pass = true;
@@ -4253,8 +4254,8 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysReusesTextureWithDifferentSizes) {
     AggregatedRenderPass* root_pass = cc::AddRenderPass(
         &render_passes_in_draw_order_, root_pass_id, gfx::Rect(viewport_size),
         gfx::Transform(), cc::FilterOperations());
-    cc::AddRenderPassQuad(root_pass, child_pass, 0, gfx::Transform(),
-                          SkBlendMode::kSrcOver);
+    cc::AddRenderPassQuad(root_pass, child_pass, kInvalidResourceId,
+                          gfx::Transform(), SkBlendMode::kSrcOver);
   }
 
   renderer().DecideRenderPassAllocationsForFrame(render_passes_in_draw_order_);
@@ -4308,8 +4309,8 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysReusesTextureWithDifferentSizes) {
     AggregatedRenderPass* root_pass = cc::AddRenderPass(
         &render_passes_in_draw_order_, root_pass_id, gfx::Rect(viewport_size),
         gfx::Transform(), cc::FilterOperations());
-    cc::AddRenderPassQuad(root_pass, child_pass, 0, gfx::Transform(),
-                          SkBlendMode::kSrcOver);
+    cc::AddRenderPassQuad(root_pass, child_pass, kInvalidResourceId,
+                          gfx::Transform(), SkBlendMode::kSrcOver);
   }
 
   renderer().DecideRenderPassAllocationsForFrame(render_passes_in_draw_order_);
@@ -4356,8 +4357,8 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysReusesTextureWithDifferentSizes) {
     AggregatedRenderPass* root_pass = cc::AddRenderPass(
         &render_passes_in_draw_order_, root_pass_id, gfx::Rect(viewport_size),
         gfx::Transform(), cc::FilterOperations());
-    cc::AddRenderPassQuad(root_pass, child_pass, 0, gfx::Transform(),
-                          SkBlendMode::kSrcOver);
+    cc::AddRenderPassQuad(root_pass, child_pass, kInvalidResourceId,
+                          gfx::Transform(), SkBlendMode::kSrcOver);
   }
 
   renderer().DecideRenderPassAllocationsForFrame(render_passes_in_draw_order_);
@@ -4408,8 +4409,8 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysDontReuseTooBigTexture) {
     AggregatedRenderPass* root_pass = cc::AddRenderPass(
         &render_passes_in_draw_order_, root_pass_id, gfx::Rect(viewport_size),
         gfx::Transform(), cc::FilterOperations());
-    cc::AddRenderPassQuad(root_pass, child_pass, 0, gfx::Transform(),
-                          SkBlendMode::kSrcOver);
+    cc::AddRenderPassQuad(root_pass, child_pass, kInvalidResourceId,
+                          gfx::Transform(), SkBlendMode::kSrcOver);
   }
 
   renderer().DecideRenderPassAllocationsForFrame(render_passes_in_draw_order_);
@@ -4461,8 +4462,8 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysDontReuseTooBigTexture) {
     AggregatedRenderPass* root_pass = cc::AddRenderPass(
         &render_passes_in_draw_order_, root_pass_id, gfx::Rect(viewport_size),
         gfx::Transform(), cc::FilterOperations());
-    cc::AddRenderPassQuad(root_pass, child_pass, 0, gfx::Transform(),
-                          SkBlendMode::kSrcOver);
+    cc::AddRenderPassQuad(root_pass, child_pass, kInvalidResourceId,
+                          gfx::Transform(), SkBlendMode::kSrcOver);
   }
 
   renderer().DecideRenderPassAllocationsForFrame(render_passes_in_draw_order_);
@@ -4508,8 +4509,8 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysDontReuseTooBigTexture) {
     AggregatedRenderPass* root_pass = cc::AddRenderPass(
         &render_passes_in_draw_order_, root_pass_id, gfx::Rect(viewport_size),
         gfx::Transform(), cc::FilterOperations());
-    cc::AddRenderPassQuad(root_pass, child_pass, 0, gfx::Transform(),
-                          SkBlendMode::kSrcOver);
+    cc::AddRenderPassQuad(root_pass, child_pass, kInvalidResourceId,
+                          gfx::Transform(), SkBlendMode::kSrcOver);
   }
 
   renderer().DecideRenderPassAllocationsForFrame(render_passes_in_draw_order_);
@@ -4554,8 +4555,8 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysReuseAfterNoSwapBuffers) {
     AggregatedRenderPass* root_pass = cc::AddRenderPass(
         &render_passes_in_draw_order_, root_pass_id, gfx::Rect(viewport_size),
         gfx::Transform(), cc::FilterOperations());
-    cc::AddRenderPassQuad(root_pass, child_pass, 0, gfx::Transform(),
-                          SkBlendMode::kSrcOver);
+    cc::AddRenderPassQuad(root_pass, child_pass, kInvalidResourceId,
+                          gfx::Transform(), SkBlendMode::kSrcOver);
   }
 
   renderer().DecideRenderPassAllocationsForFrame(render_passes_in_draw_order_);
@@ -4596,8 +4597,8 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysReuseAfterNoSwapBuffers) {
     AggregatedRenderPass* root_pass = cc::AddRenderPass(
         &render_passes_in_draw_order_, root_pass_id, gfx::Rect(viewport_size),
         gfx::Transform(), cc::FilterOperations());
-    cc::AddRenderPassQuad(root_pass, child_pass, 0, gfx::Transform(),
-                          SkBlendMode::kSrcOver);
+    cc::AddRenderPassQuad(root_pass, child_pass, kInvalidResourceId,
+                          gfx::Transform(), SkBlendMode::kSrcOver);
   }
 
   renderer().DecideRenderPassAllocationsForFrame(render_passes_in_draw_order_);
@@ -4642,8 +4643,8 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysReuseAfterNoSwapBuffers) {
     AggregatedRenderPass* root_pass = cc::AddRenderPass(
         &render_passes_in_draw_order_, root_pass_id, gfx::Rect(viewport_size),
         gfx::Transform(), cc::FilterOperations());
-    cc::AddRenderPassQuad(root_pass, child_pass, 0, gfx::Transform(),
-                          SkBlendMode::kSrcOver);
+    cc::AddRenderPassQuad(root_pass, child_pass, kInvalidResourceId,
+                          gfx::Transform(), SkBlendMode::kSrcOver);
   }
 
   renderer().DecideRenderPassAllocationsForFrame(render_passes_in_draw_order_);
@@ -4695,8 +4696,8 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysReuseManyIfReturnedSlowly) {
     AggregatedRenderPass* root_pass = cc::AddRenderPass(
         &render_passes_in_draw_order_, root_pass_id, gfx::Rect(viewport_size),
         gfx::Transform(), cc::FilterOperations());
-    cc::AddRenderPassQuad(root_pass, child_pass, 0, gfx::Transform(),
-                          SkBlendMode::kSrcOver);
+    cc::AddRenderPassQuad(root_pass, child_pass, kInvalidResourceId,
+                          gfx::Transform(), SkBlendMode::kSrcOver);
 
     renderer().DecideRenderPassAllocationsForFrame(
         render_passes_in_draw_order_);
@@ -4756,8 +4757,8 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysReuseManyIfReturnedSlowly) {
     AggregatedRenderPass* root_pass = cc::AddRenderPass(
         &render_passes_in_draw_order_, root_pass_id, gfx::Rect(viewport_size),
         gfx::Transform(), cc::FilterOperations());
-    cc::AddRenderPassQuad(root_pass, child_pass, 0, gfx::Transform(),
-                          SkBlendMode::kSrcOver);
+    cc::AddRenderPassQuad(root_pass, child_pass, kInvalidResourceId,
+                          gfx::Transform(), SkBlendMode::kSrcOver);
 
     renderer().DecideRenderPassAllocationsForFrame(
         render_passes_in_draw_order_);
@@ -4824,8 +4825,8 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysCachedTexturesAreFreed) {
     AggregatedRenderPass* root_pass = cc::AddRenderPass(
         &render_passes_in_draw_order_, root_pass_id, gfx::Rect(viewport_size),
         gfx::Transform(), cc::FilterOperations());
-    cc::AddRenderPassQuad(root_pass, child_pass, 0, gfx::Transform(),
-                          SkBlendMode::kSrcOver);
+    cc::AddRenderPassQuad(root_pass, child_pass, kInvalidResourceId,
+                          gfx::Transform(), SkBlendMode::kSrcOver);
 
     renderer().DecideRenderPassAllocationsForFrame(
         render_passes_in_draw_order_);
@@ -4904,8 +4905,8 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysCachedTexturesAreFreed) {
     AggregatedRenderPass* root_pass = cc::AddRenderPass(
         &render_passes_in_draw_order_, root_pass_id, gfx::Rect(viewport_size),
         gfx::Transform(), cc::FilterOperations());
-    cc::AddRenderPassQuad(root_pass, child_pass, 0, gfx::Transform(),
-                          SkBlendMode::kSrcOver);
+    cc::AddRenderPassQuad(root_pass, child_pass, kInvalidResourceId,
+                          gfx::Transform(), SkBlendMode::kSrcOver);
   }
 
   renderer().DecideRenderPassAllocationsForFrame(render_passes_in_draw_order_);
@@ -5011,8 +5012,8 @@ TEST_F(GLRendererTest, UndamagedRenderPassStillDrawnWhenNoPartialSwap) {
         &render_passes_in_draw_order_, AggregatedRenderPassId{1},
         gfx::Rect(viewport_size), gfx::Transform(), cc::FilterOperations());
     cc::AddQuad(root_pass, gfx::Rect(viewport_size), SK_ColorRED);
-    cc::AddRenderPassQuad(root_pass, child_pass, 0, gfx::Transform(),
-                          SkBlendMode::kSrcOver);
+    cc::AddRenderPassQuad(root_pass, child_pass, kInvalidResourceId,
+                          gfx::Transform(), SkBlendMode::kSrcOver);
     root_pass->damage_rect = gfx::Rect(viewport_size);
 
     EXPECT_EQ(0, renderer.bind_root_framebuffer_calls());
@@ -5042,8 +5043,8 @@ TEST_F(GLRendererTest, UndamagedRenderPassStillDrawnWhenNoPartialSwap) {
         &render_passes_in_draw_order_, AggregatedRenderPassId{1},
         gfx::Rect(viewport_size), gfx::Transform(), cc::FilterOperations());
     cc::AddQuad(root_pass, gfx::Rect(viewport_size), SK_ColorRED);
-    cc::AddRenderPassQuad(root_pass, child_pass, 0, gfx::Transform(),
-                          SkBlendMode::kSrcOver);
+    cc::AddRenderPassQuad(root_pass, child_pass, kInvalidResourceId,
+                          gfx::Transform(), SkBlendMode::kSrcOver);
     root_pass->damage_rect = gfx::Rect(child_rect.right(), 0, 10, 10);
 
     EXPECT_EQ(0, renderer.bind_root_framebuffer_calls());
@@ -5113,7 +5114,7 @@ class GLRendererWithGpuFenceTest : public GLRendererTest {
     ResourceId client_resource_id = child_resource_provider_->ImportResource(
         transfer_resource, SingleReleaseCallback::Create(base::DoNothing()));
 
-    std::unordered_map<ResourceId, ResourceId> resource_map =
+    std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
         cc::SendResourceAndGetChildToParentMap(
             {client_resource_id}, resource_provider_.get(),
             child_resource_provider_.get(), child_context_provider_.get());

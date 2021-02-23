@@ -154,7 +154,7 @@ ResourceId CreateResource(DisplayResourceProvider* parent_resource_provider,
   child_resource_provider->RemoveImportedResource(resource_id);
 
   // In DisplayResourceProvider's namespace, use the mapped resource id.
-  std::unordered_map<ResourceId, ResourceId> resource_map =
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       parent_resource_provider->GetChildToParentMap(child_id);
   return resource_map[list[0].id];
 }
@@ -212,9 +212,9 @@ AggregatedRenderPassDrawQuad* CreateRenderPassDrawQuadAt(
     AggregatedRenderPassId render_pass_id) {
   AggregatedRenderPassDrawQuad* quad =
       render_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
-  quad->SetNew(shared_quad_state, rect, rect, render_pass_id, 2, gfx::RectF(),
-               gfx::Size(), gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(),
-               false, 1.f);
+  quad->SetNew(shared_quad_state, rect, rect, render_pass_id, ResourceId(2),
+               gfx::RectF(), gfx::Size(), gfx::Vector2dF(1, 1), gfx::PointF(),
+               gfx::RectF(), false, 1.f);
   return quad;
 }
 

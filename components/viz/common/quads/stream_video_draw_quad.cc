@@ -20,7 +20,7 @@ void StreamVideoDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
                                  const gfx::Rect& rect,
                                  const gfx::Rect& visible_rect,
                                  bool needs_blending,
-                                 unsigned resource_id,
+                                 ResourceId resource_id,
                                  gfx::Size resource_size_in_pixels,
                                  const gfx::PointF& uv_top_left,
                                  const gfx::PointF& uv_bottom_right) {
@@ -37,7 +37,7 @@ void StreamVideoDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                                  const gfx::Rect& rect,
                                  const gfx::Rect& visible_rect,
                                  bool needs_blending,
-                                 unsigned resource_id,
+                                 ResourceId resource_id,
                                  gfx::Size resource_size_in_pixels,
                                  const gfx::PointF& uv_top_left,
                                  const gfx::PointF& uv_bottom_right) {
@@ -58,7 +58,8 @@ const StreamVideoDrawQuad* StreamVideoDrawQuad::MaterialCast(
 
 void StreamVideoDrawQuad::ExtendValue(
     base::trace_event::TracedValue* value) const {
-  value->SetInteger("resource_id", resources.ids[kResourceIdIndex]);
+  value->SetInteger("resource_id",
+                    resources.ids[kResourceIdIndex].GetUnsafeValue());
   cc::MathUtil::AddToTracedValue("uv_top_left", uv_top_left, value);
   cc::MathUtil::AddToTracedValue("uv_bottom_right", uv_bottom_right, value);
 }

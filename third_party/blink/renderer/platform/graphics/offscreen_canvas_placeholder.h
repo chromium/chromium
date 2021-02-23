@@ -59,7 +59,7 @@ class PLATFORM_EXPORT OffscreenCanvasPlaceholder {
   scoped_refptr<CanvasResource> placeholder_frame_;
   base::WeakPtr<CanvasResourceDispatcher> frame_dispatcher_;
   scoped_refptr<base::SingleThreadTaskRunner> frame_dispatcher_task_runner_;
-  viz::ResourceId placeholder_frame_resource_id_ = 0;
+  viz::ResourceId placeholder_frame_resource_id_ = viz::kInvalidResourceId;
 
   enum {
     kNoPlaceholderId = -1,

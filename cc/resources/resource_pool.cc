@@ -8,7 +8,9 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <limits>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
@@ -301,7 +303,7 @@ void ResourcePool::OnResourceReleased(size_t unique_id,
     return;
   }
 
-  resource->set_resource_id(0);
+  resource->set_resource_id(viz::kInvalidResourceId);
   if (context_provider_)
     resource->gpu_backing()->returned_sync_token = sync_token;
   DidFinishUsingResource(std::move(*busy_it));
@@ -320,7 +322,7 @@ bool ResourcePool::PrepareForExport(const InUsePoolResource& in_use_resource) {
       // This can happen if we failed to allocate a GpuMemoryBuffer. Avoid
       // sending an invalid resource to the parent in that case, and avoid
       // caching/reusing the resource.
-      resource->set_resource_id(0);
+      resource->set_resource_id(viz::kInvalidResourceId);
       resource->mark_avoid_reuse();
       return false;
     }
