@@ -13,7 +13,7 @@ namespace eche_app {
 
 EcheAppManager::EcheAppManager(
     phonehub::PhoneHubManager* phone_hub_manager,
-    const EcheNotificationClickHandler::LaunchEcheAppFunction&
+    EcheNotificationClickHandler::LaunchEcheAppFunction
         launch_eche_app_function)
     : eche_notification_click_handler_(
           std::make_unique<EcheNotificationClickHandler>(

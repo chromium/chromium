@@ -11,8 +11,8 @@ namespace eche_app {
 
 EcheNotificationClickHandler::EcheNotificationClickHandler(
     phonehub::PhoneHubManager* phone_hub_manager,
-    const LaunchEcheAppFunction& launch_eche_app_function)
-    : launch_eche_app_function_(launch_eche_app_function) {
+    LaunchEcheAppFunction launch_eche_app_function)
+    : launch_eche_app_function_(std::move(launch_eche_app_function)) {
   handler_ = phone_hub_manager->GetNotificationInteractionHandler();
   handler_->AddNotificationClickHandler(this);
 }

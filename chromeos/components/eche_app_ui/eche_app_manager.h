@@ -20,7 +20,7 @@ namespace eche_app {
 class EcheAppManager : public KeyedService {
  public:
   EcheAppManager(phonehub::PhoneHubManager*,
-                 const EcheNotificationClickHandler::LaunchEcheAppFunction&);
+                 EcheNotificationClickHandler::LaunchEcheAppFunction);
   ~EcheAppManager() override;
 
   EcheAppManager(const EcheAppManager&) = delete;

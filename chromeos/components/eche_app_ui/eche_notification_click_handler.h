@@ -23,7 +23,7 @@ class EcheNotificationClickHandler : public phonehub::NotificationClickHandler {
   using LaunchEcheAppFunction = base::RepeatingCallback<void(int64_t)>;
 
   EcheNotificationClickHandler(phonehub::PhoneHubManager*,
-                               const LaunchEcheAppFunction&);
+                               LaunchEcheAppFunction);
   ~EcheNotificationClickHandler() override;
 
   EcheNotificationClickHandler(const EcheNotificationClickHandler&) = delete;
@@ -35,7 +35,7 @@ class EcheNotificationClickHandler : public phonehub::NotificationClickHandler {
 
  private:
   phonehub::NotificationInteractionHandler* handler_;
-  const LaunchEcheAppFunction& launch_eche_app_function_;
+  LaunchEcheAppFunction launch_eche_app_function_;
 };
 
 }  // namespace eche_app
