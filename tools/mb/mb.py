@@ -520,9 +520,7 @@ class MetaBuildWrapper(object):
     else:
       cmd = self.GNCmd('gen', '_path_')
       self.Print('\nWriting """\\\n%s""" to _path_/args.gn.\n' % gn_args)
-      env = None
-
-      self.PrintCmd(cmd, env)
+      self.PrintCmd(cmd)
     return 0
 
   def CmdTry(self):
@@ -671,7 +669,7 @@ class MetaBuildWrapper(object):
     # Talking to the isolateserver may fail because we're not logged in.
     # We trap the command explicitly and rewrite the error output so that
     # the error message is actually correct for a Chromium check out.
-    self.PrintCmd(cmd, env=None)
+    self.PrintCmd(cmd)
     ret, out, err = self.Run(cmd, force_verbose=False)
     if ret:
       self.Print('  -> returned %d' % ret)
@@ -1878,21 +1876,11 @@ class MetaBuildWrapper(object):
                  (e, path))
 
 
-  def PrintCmd(self, cmd, env):
+  def PrintCmd(self, cmd):
     if self.platform == 'win32':
-      env_prefix = 'set '
-      env_quoter = QuoteForSet
       shell_quoter = QuoteForCmd
     else:
-      env_prefix = ''
-      env_quoter = pipes.quote
       shell_quoter = pipes.quote
-
-    def print_env(var):
-      if env and var in env:
-        self.Print('%s%s=%s' % (env_prefix, var, env_quoter(env[var])))
-
-    print_env('LLVM_FORCE_HEAD_REVISION')
 
     if cmd[0] == self.executable:
       cmd = ['python'] + cmd[1:]
@@ -1917,7 +1905,7 @@ class MetaBuildWrapper(object):
   def Run(self, cmd, env=None, force_verbose=True, buffer_output=True):
     # This function largely exists so it can be overridden for testing.
     if self.args.dryrun or self.args.verbose or force_verbose:
-      self.PrintCmd(cmd, env)
+      self.PrintCmd(cmd)
     if self.args.dryrun:
       return 0, '', ''
 

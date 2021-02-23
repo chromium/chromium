@@ -9,12 +9,11 @@ import("//build/config/chrome_build.gni")
 import("//build_overrides/build.gni")
 
 declare_args() {
-  # If this is set to true, or if LLVM_FORCE_HEAD_REVISION is set to 1
-  # in the environment, we use the revision in the llvm repo to determine
+  # If this is set to true, we use the revision in the llvm repo to determine
   # the CLANG_REVISION to use, instead of the version hard-coded into
   # //tools/clang/scripts/update.py. This should only be used in
-  # conjunction with setting LLVM_FORCE_HEAD_REVISION in the
-  # environment when `gclient runhooks` is run as well.
+  # conjunction with setting the llvm_force_head_revision DEPS variable when
+  # `gclient runhooks` is run as well.
   llvm_force_head_revision = false
 
   # Compile with Xcode version of clang instead of hermetic version shipped
