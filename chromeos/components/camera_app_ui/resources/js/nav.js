@@ -73,7 +73,10 @@ function inactivate(index) {
     element.dataset['tabindex'] = element.getAttribute('tabindex');
     element.setAttribute('tabindex', '-1');
   });
-  document.activeElement.blur();
+  const activeElement = document.activeElement;
+  if (activeElement instanceof HTMLElement) {
+    activeElement.blur();
+  }
 }
 
 /**
