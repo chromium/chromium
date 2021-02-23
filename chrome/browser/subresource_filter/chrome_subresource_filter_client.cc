@@ -47,19 +47,6 @@ void ChromeSubresourceFilterClient::
           dealer);
 }
 
-// static
-ChromeSubresourceFilterClient* ChromeSubresourceFilterClient::FromWebContents(
-    content::WebContents* web_contents) {
-  auto* throttle_manager = subresource_filter::
-      ContentSubresourceFilterThrottleManager::FromWebContents(web_contents);
-
-  if (!throttle_manager)
-    return nullptr;
-
-  return static_cast<ChromeSubresourceFilterClient*>(
-      throttle_manager->client());
-}
-
 void ChromeSubresourceFilterClient::ShowNotification() {
 #if defined(OS_ANDROID)
     InfoBarService* infobar_service =

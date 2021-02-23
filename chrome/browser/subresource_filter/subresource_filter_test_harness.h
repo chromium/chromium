@@ -13,7 +13,6 @@
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features_test_support.h"
 
-class ChromeSubresourceFilterClient;
 class GURL;
 
 namespace content {
@@ -54,8 +53,6 @@ class SubresourceFilterTestHarness : public ChromeRenderViewHostTestHarness {
       content::RenderFrameHost* parent);
 
   void ConfigureAsSubresourceFilterOnlyURL(const GURL& url);
-
-  ChromeSubresourceFilterClient* GetClient();
 
   void RemoveURLFromBlocklist(const GURL& url);
 

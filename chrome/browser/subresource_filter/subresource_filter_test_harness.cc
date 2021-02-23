@@ -160,10 +160,6 @@ void SubresourceFilterTestHarness::ConfigureAsSubresourceFilterOnlyURL(
       url, safe_browsing::SB_THREAT_TYPE_SUBRESOURCE_FILTER);
 }
 
-ChromeSubresourceFilterClient* SubresourceFilterTestHarness::GetClient() {
-  return ChromeSubresourceFilterClient::FromWebContents(web_contents());
-}
-
 void SubresourceFilterTestHarness::RemoveURLFromBlocklist(const GURL& url) {
   fake_safe_browsing_database_->RemoveBlocklistedUrl(url);
 }

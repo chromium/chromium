@@ -6,9 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/subresource_filter/chrome_subresource_filter_client.h"
 #include "chrome/browser/subresource_filter/subresource_filter_test_harness.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "components/safe_browsing/core/db/util.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/subresource_filter/content/browser/content_activation_list_utils.h"

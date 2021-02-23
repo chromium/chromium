@@ -14,7 +14,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_database_helper.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
-#include "chrome/browser/subresource_filter/chrome_subresource_filter_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/safe_browsing/core/db/v4_test_util.h"

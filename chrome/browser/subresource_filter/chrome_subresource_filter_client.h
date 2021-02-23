@@ -32,12 +32,6 @@ class ChromeSubresourceFilterClient
   static void CreateThrottleManagerWithClientForWebContents(
       content::WebContents* web_contents);
 
-  // Returns the ChromeSubresourceFilterClient instance that is owned by the
-  // ThrottleManager owned by |web_contents|, or nullptr if there is no such
-  // ThrottleManager.
-  static ChromeSubresourceFilterClient* FromWebContents(
-      content::WebContents* web_contents);
-
   // SubresourceFilterClient:
   void ShowNotification() override;
   const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
