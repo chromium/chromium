@@ -3,6 +3,7 @@
     :host {
       --diagnostics-default-font-family: "Google Sans", Roboto, sans-serif;
       --diagnostics-header-font-family: Roboto, sans-serif;
+      --diagnostics-card-title-font-family: Roboto, sans-serif;
       --diagnostics-data-point-font-family: Roboto, sans-serif;
       --diagnostics-overview-font-family: Roboto, sans-serif;
       --diagnostics-text-badge-font-family: Roboto, sans-serif;
@@ -11,6 +12,7 @@
 
       --diagnostics-default-font-size: 14px;
       --diagnostics-header-font-size: 16px;
+      --diagnostics-card-title-font-size: 14px;
       --diagnostics-data-point-title-font-size: 13px;
       --diagnostics-data-point-subtitle-font-size: 13px;
       --diagnostics-overview-font-size: 13px;
@@ -23,6 +25,7 @@
 
       --diagnostics-default-font-weight: 500;
       --diagnostics-header-font-weight: 500;
+      --diagnostics-card-title-font-weight: 500;
       --diagnostics-data-point-title-font-weight: 400;
       --diagnostics-data-point-subtitle-font-weight: 450;
       --diagnostics-overview-font-weight: 400;
@@ -30,6 +33,7 @@
 
       --diagnostics-default-text-color: var(--google-grey-900);
       --diagnostics-header-text-color: var(--google-grey-900);
+      --diagnostics-card-title-text-color: var(--google-grey-700);
       --diagnostics-overview-text-color: var(--google-grey-900);
       --diagnostics-data-point-title-color: var(--google-grey-900);
       --diagnostics-data-point-subtitle-color: var(--google-grey-700);
@@ -43,10 +47,19 @@
       };
 
       --diagnostics-header-font: {
+          color: var(--diagnostics-header-text-color);
           font-family: var(--diagnostics-header-font-family);
           font-size: var(--diagnostics-header-font-size);
           font-weight: var(--diagnostics-header-font-weight);
-      }
+      };
+
+      --diagnostics-card-title-font: {
+          color: var(--diagnostics-card-title-text-color);
+          font-family: var(--diagnostics-card-title-font-family);
+          font-size: var(--diagnostics-card-title-font-size);
+          font-weight: var(--diagnostics-card-title-font-weight);
+      };
+
       --diagnostics-data-point-title-font: {
           font-family: --diagnostics-data-point-font-family
           font-size: var(--diagnostics-data-point-title-font-size);

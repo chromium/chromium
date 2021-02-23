@@ -17,6 +17,10 @@
     position: relative;
   }
 
+  ::slotted([slot=title]) {
+    @apply --diagnostics-card-title-font;
+  }
+
   ::slotted([slot=left-panel]) {
     flex: 1;
     margin-bottom: 16px;
