@@ -6,7 +6,6 @@
 
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/device/public/mojom/screen_orientation.mojom-blink.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/widget/screen_orientation.mojom-blink.h"
 #include "third_party/blink/public/platform/web_size.h"
@@ -22,6 +21,7 @@
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_controller.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_data.h"
@@ -33,20 +33,22 @@
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
-using testing::_;
-using testing::AtLeast;
-using testing::Return;
-
 namespace blink {
 
 namespace {
 
 class MockVideoWebMediaPlayer : public EmptyWebMediaPlayer {
  public:
+  ~MockVideoWebMediaPlayer() override = default;
+
   // EmptyWebMediaPlayer overrides:
   bool HasVideo() const override { return true; }
+  gfx::Size NaturalSize() const override { return mock_natural_size_; }
 
-  MOCK_CONST_METHOD0(NaturalSize, gfx::Size());
+  gfx::Size& MockNaturalSize() { return mock_natural_size_; }
+
+ private:
+  gfx::Size mock_natural_size_ = {};
 };
 
 class MockChromeClient : public EmptyChromeClient {
@@ -71,7 +73,14 @@ class MockChromeClient : public EmptyChromeClient {
     Fullscreen::DidExitFullscreen(*frame.GetDocument());
   }
 
-  MOCK_CONST_METHOD1(GetScreenInfo, ScreenInfo(LocalFrame&));
+  ScreenInfo GetScreenInfo(LocalFrame&) const override {
+    return mock_screen_info_;
+  }
+
+  ScreenInfo& MockScreenInfo() { return mock_screen_info_; }
+
+ private:
+  ScreenInfo mock_screen_info_ = {};
 };
 
 class StubLocalFrameClient : public EmptyLocalFrameClient {
@@ -189,11 +198,8 @@ void MediaControlsRotateToFullscreenDelegateTest::InitScreenAndVideo(
     gfx::Size video_size,
     bool with_device_orientation /* = true */) {
   // Set initial screen orientation (called by `Attach` during `AppendChild`).
-  ScreenInfo screen_info;
-  screen_info.orientation_type = initial_screen_orientation;
-  EXPECT_CALL(GetChromeClient(), GetScreenInfo(_))
-      .Times(AtLeast(1))
-      .WillRepeatedly(Return(screen_info));
+  GetChromeClient().MockScreenInfo().orientation_type =
+      initial_screen_orientation;
 
   // Set up the WebMediaPlayer instance.
   GetDocument().body()->AppendChild(&GetVideo());
@@ -202,8 +208,7 @@ void MediaControlsRotateToFullscreenDelegateTest::InitScreenAndVideo(
   SimulateVideoReadyState(HTMLMediaElement::kHaveMetadata);
 
   // Set video size.
-  EXPECT_CALL(GetWebMediaPlayer(), NaturalSize())
-      .WillRepeatedly(Return(video_size));
+  GetWebMediaPlayer().MockNaturalSize() = video_size;
 
   if (with_device_orientation) {
     // Dispatch an arbitrary Device Orientation event to satisfy
@@ -227,12 +232,7 @@ void MediaControlsRotateToFullscreenDelegateTest::PlayVideo() {
 
 void MediaControlsRotateToFullscreenDelegateTest::RotateTo(
     mojom::blink::ScreenOrientation new_screen_orientation) {
-  ScreenInfo screen_info;
-  screen_info.orientation_type = new_screen_orientation;
-  testing::Mock::VerifyAndClearExpectations(&GetChromeClient());
-  EXPECT_CALL(GetChromeClient(), GetScreenInfo(_))
-      .Times(AtLeast(1))
-      .WillRepeatedly(Return(screen_info));
+  GetChromeClient().MockScreenInfo().orientation_type = new_screen_orientation;
   DispatchEvent(GetWindow(), event_type_names::kOrientationchange);
   test::RunPendingTasks();
 }
@@ -261,39 +261,28 @@ TEST_F(MediaControlsRotateToFullscreenDelegateTest, ComputeVideoOrientation) {
   GetVideo().SetSrc("https://example.com");
   test::RunPendingTasks();
 
-  // Each `ComputeVideoOrientation` calls `NaturalSize` twice, except the first
-  // one where the video is not yet ready.
-  EXPECT_CALL(GetWebMediaPlayer(), NaturalSize())
-      .Times(12)
-      .WillOnce(Return(gfx::Size(400, 400)))
-      .WillOnce(Return(gfx::Size(400, 400)))
-      .WillOnce(Return(gfx::Size(300, 200)))
-      .WillOnce(Return(gfx::Size(300, 200)))
-      .WillOnce(Return(gfx::Size(200, 300)))
-      .WillOnce(Return(gfx::Size(200, 300)))
-      .WillOnce(Return(gfx::Size(300, 199)))
-      .WillOnce(Return(gfx::Size(300, 199)))
-      .WillOnce(Return(gfx::Size(199, 300)))
-      .WillOnce(Return(gfx::Size(199, 300)))
-      .WillOnce(Return(gfx::Size(0, 0)))
-      .WillOnce(Return(gfx::Size(0, 0)));
-
   // Video is not yet ready.
   EXPECT_EQ(SimpleOrientation::kUnknown, ComputeVideoOrientation());
 
   SimulateVideoReadyState(HTMLMediaElement::kHaveMetadata);
 
   // 400x400 is square, which is currently treated as landscape.
+  GetWebMediaPlayer().MockNaturalSize() = gfx::Size(400, 400);
   EXPECT_EQ(SimpleOrientation::kLandscape, ComputeVideoOrientation());
   // 300x200 is landscape.
+  GetWebMediaPlayer().MockNaturalSize() = gfx::Size(300, 200);
   EXPECT_EQ(SimpleOrientation::kLandscape, ComputeVideoOrientation());
   // 200x300 is portrait.
+  GetWebMediaPlayer().MockNaturalSize() = gfx::Size(200, 300);
   EXPECT_EQ(SimpleOrientation::kPortrait, ComputeVideoOrientation());
   // 300x199 is too small.
+  GetWebMediaPlayer().MockNaturalSize() = gfx::Size(300, 199);
   EXPECT_EQ(SimpleOrientation::kUnknown, ComputeVideoOrientation());
   // 199x300 is too small.
+  GetWebMediaPlayer().MockNaturalSize() = gfx::Size(199, 300);
   EXPECT_EQ(SimpleOrientation::kUnknown, ComputeVideoOrientation());
   // 0x0 is empty.
+  GetWebMediaPlayer().MockNaturalSize() = gfx::Size(0, 0);
   EXPECT_EQ(SimpleOrientation::kUnknown, ComputeVideoOrientation());
 }
 
