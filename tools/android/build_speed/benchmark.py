@@ -63,6 +63,21 @@ _SUITES = {
         'chrome_java_nosig',
         'chrome_java_sig',
         'chrome_java_res',
+        'module_java_public_sig',
+        'module_java_internal_nosig',
+        'base_java_nosig',
+        'base_java_sig',
+    ],
+    'all_chrome_java': [
+        'chrome_java_nosig',
+        'chrome_java_sig',
+        'chrome_java_res',
+    ],
+    'all_module_java': [
+        'module_java_public_sig',
+        'module_java_internal_nosig',
+    ],
+    'all_base_java': [
         'base_java_nosig',
         'base_java_sig',
     ],
@@ -99,6 +114,20 @@ _BENCHMARKS = [
         'from_string': '14181C',
         'to_string': '14181D',
         'change_file': 'chrome/android/java/res/values/colors.xml',
+    }),
+    Benchmark('module_java_public_sig', {
+        'kind': 'incremental',
+        'from_string': 'INVALID_WINDOW_INDEX = -1',
+        'to_string': 'INVALID_WINDOW_INDEX = -2',
+        # pylint: disable=line-too-long
+        'change_file': 'chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManager.java',
+    }),
+    Benchmark('module_java_internal_nosig', {
+        'kind': 'incremental',
+        'from_string': '"TabModelSelector',
+        'to_string': '"DifferentUniqueString',
+        # pylint: disable=line-too-long
+        'change_file': 'chrome/browser/tabmodel/internal/android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManagerImpl.java',
     }),
     Benchmark('base_java_nosig', {
         'kind': 'incremental',
