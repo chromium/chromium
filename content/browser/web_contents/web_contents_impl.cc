@@ -3921,7 +3921,7 @@ RenderWidgetHostView* WebContentsImpl::GetCreatedWidget(int process_id,
 
 void WebContentsImpl::CreateMediaPlayerHostForRenderFrameHost(
     RenderFrameHost* frame_host,
-    mojo::PendingReceiver<media::mojom::MediaPlayerHost> receiver) {
+    mojo::PendingAssociatedReceiver<media::mojom::MediaPlayerHost> receiver) {
   media_web_contents_observer()->BindMediaPlayerHost(frame_host,
                                                      std::move(receiver));
 }

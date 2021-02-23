@@ -52,6 +52,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_receiver_set.h"
 #include "content/public/common/three_d_api_types.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -818,7 +819,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                          const gfx::Rect& initial_rect) override;
   void CreateMediaPlayerHostForRenderFrameHost(
       RenderFrameHost* frame_host,
-      mojo::PendingReceiver<media::mojom::MediaPlayerHost> receiver) override;
+      mojo::PendingAssociatedReceiver<media::mojom::MediaPlayerHost> receiver)
+      override;
   void RequestMediaAccessPermission(const MediaStreamRequest& request,
                                     MediaResponseCallback callback) override;
   bool CheckMediaAccessPermission(RenderFrameHost* render_frame_host,

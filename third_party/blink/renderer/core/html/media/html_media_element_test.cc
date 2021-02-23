@@ -105,7 +105,7 @@ class MockMediaPlayerObserverReceiverForTesting
     // Bind the remote to the receiver, so that we can intercept incoming
     // messages sent via the different methods that use the remote.
     html_media_element->AddMediaPlayerObserverForTesting(
-        receiver_.BindNewPipeAndPassRemote());
+        receiver_.BindNewEndpointAndPassDedicatedRemote());
   }
 
   // Needs to be called from tests after invoking a method from the MediaPlayer
@@ -188,7 +188,8 @@ class MockMediaPlayerObserverReceiverForTesting
 
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
-  mojo::Receiver<media::mojom::blink::MediaPlayerObserver> receiver_{this};
+  mojo::AssociatedReceiver<media::mojom::blink::MediaPlayerObserver> receiver_{
+      this};
   bool received_media_playing_{false};
   base::Optional<bool> received_media_paused_stream_ended_;
   base::Optional<bool> received_muted_status_type_;

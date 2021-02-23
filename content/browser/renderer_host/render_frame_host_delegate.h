@@ -26,6 +26,7 @@
 #include "content/public/common/javascript_dialog_type.h"
 #include "media/mojo/mojom/media_player.mojom.h"
 #include "media/mojo/services/media_metrics_provider.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -240,7 +241,8 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // associated MediaWebContentsObserver, and binds |receiver| to it.
   virtual void CreateMediaPlayerHostForRenderFrameHost(
       RenderFrameHost* frame_host,
-      mojo::PendingReceiver<media::mojom::MediaPlayerHost> receiver) {}
+      mojo::PendingAssociatedReceiver<media::mojom::MediaPlayerHost> receiver) {
+  }
 
   // The render frame has requested access to media devices listed in
   // |request|, and the client should grant or deny that permission by

@@ -15,7 +15,8 @@
 #include "content/test/test_web_contents.h"
 #include "media/audio/audio_device_description.h"
 #include "media/mojo/mojom/media_player.mojom.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -70,7 +71,7 @@ class MockMediaPlayerReceiverForTesting : public media::mojom::MediaPlayer {
     // Bind the remote to the receiver, so that we can intercept incoming
     // messages sent via the different methods that use the remote.
     media_web_contents_observer->OnMediaPlayerAdded(
-        receiver_.BindNewPipeAndPassRemote(), player_id);
+        receiver_.BindNewEndpointAndPassDedicatedRemote(), player_id);
   }
 
   // Needs to be called from tests after invoking a method from the MediaPlayer
@@ -83,7 +84,8 @@ class MockMediaPlayerReceiverForTesting : public media::mojom::MediaPlayer {
 
   // media::mojom::MediaPlayer implementation.
   void AddMediaPlayerObserver(
-      mojo::PendingRemote<media::mojom::MediaPlayerObserver>) override {}
+      mojo::PendingAssociatedRemote<media::mojom::MediaPlayerObserver>)
+      override {}
 
   void RequestPlay() override {
     received_play_ = true;
@@ -128,7 +130,7 @@ class MockMediaPlayerReceiverForTesting : public media::mojom::MediaPlayer {
 
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
-  mojo::Receiver<media::mojom::MediaPlayer> receiver_{this};
+  mojo::AssociatedReceiver<media::mojom::MediaPlayer> receiver_{this};
 
   bool received_play_{false};
   PauseRequestType received_pause_type_{PauseRequestType::kNone};

@@ -178,9 +178,10 @@ void PictureInPictureControllerImpl::EnterPictureInPicture(
   session_observer_receiver_.Bind(
       session_observer.InitWithNewPipeAndPassReceiver(), task_runner);
 
-  mojo::PendingRemote<media::mojom::blink::MediaPlayer> media_player_remote;
+  mojo::PendingAssociatedRemote<media::mojom::blink::MediaPlayer>
+      media_player_remote;
   video_element->BindMediaPlayerReceiver(
-      media_player_remote.InitWithNewPipeAndPassReceiver());
+      media_player_remote.InitWithNewEndpointAndPassReceiver());
 
   picture_in_picture_service_->StartSession(
       video_element->GetWebMediaPlayer()->GetDelegateId(),

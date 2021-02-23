@@ -6974,6 +6974,15 @@ void RenderFrameHostImpl::SetUpMojoIfNeeded() {
       base::Unretained(this)));
 #endif
 
+  associated_registry_->AddInterface(base::BindRepeating(
+      [](RenderFrameHostImpl* impl,
+         mojo::PendingAssociatedReceiver<media::mojom::MediaPlayerHost>
+             receiver) {
+        impl->delegate()->CreateMediaPlayerHostForRenderFrameHost(
+            impl, std::move(receiver));
+      },
+      base::Unretained(this)));
+
   mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
       remote_interfaces;
   GetMojomFrameInRenderer()->GetInterfaceProvider(
@@ -7895,11 +7904,6 @@ void RenderFrameHostImpl::BindMediaMetricsProviderReceiver(
           &RenderFrameHostImpl::GetRecordAggregateWatchTimeCallback,
           base::Unretained(this)),
       std::move(receiver));
-}
-
-void RenderFrameHostImpl::CreateMediaPlayerHost(
-    mojo::PendingReceiver<media::mojom::MediaPlayerHost> receiver) {
-  delegate_->CreateMediaPlayerHostForRenderFrameHost(this, std::move(receiver));
 }
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)

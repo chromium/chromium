@@ -1477,9 +1477,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void BindMediaMetricsProviderReceiver(
       mojo::PendingReceiver<media::mojom::MediaMetricsProvider> receiver);
 
-  void CreateMediaPlayerHost(
-      mojo::PendingReceiver<media::mojom::MediaPlayerHost> receiver);
-
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)
   void BindMediaRemoterFactoryReceiver(
       mojo::PendingReceiver<media::mojom::RemoterFactory> receiver);

@@ -23,10 +23,10 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "media/base/use_after_free_checker.h"
 #include "media/mojo/mojom/media_player.mojom.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 
@@ -120,13 +120,14 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
   // communication channel.
   void BindMediaPlayerHost(
       RenderFrameHost* host,
-      mojo::PendingReceiver<media::mojom::MediaPlayerHost> player_receiver);
+      mojo::PendingAssociatedReceiver<media::mojom::MediaPlayerHost>
+          player_receiver);
 
   // Communicates with the MediaSessionControllerManager to find or create (if
   // needed) a MediaSessionController identified by |player_id|, in order to
   // bind its mojo remote for media::mojom::MediaPlayer.
   void OnMediaPlayerAdded(
-      mojo::PendingRemote<media::mojom::MediaPlayer> player_remote,
+      mojo::PendingAssociatedRemote<media::mojom::MediaPlayer> player_remote,
       MediaPlayerId player_id);
 
 #if defined(OS_ANDROID)
@@ -160,17 +161,18 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
 
     // Used to bind receivers via the BrowserInterfaceBroker.
     void BindMediaPlayerHostReceiver(
-        mojo::PendingReceiver<media::mojom::MediaPlayerHost> receiver);
+        mojo::PendingAssociatedReceiver<media::mojom::MediaPlayerHost>
+            receiver);
 
     // media::mojom::MediaPlayerHost implementation.
     void OnMediaPlayerAdded(
-        mojo::PendingRemote<media::mojom::MediaPlayer> media_player,
+        mojo::PendingAssociatedRemote<media::mojom::MediaPlayer> media_player,
         int32_t player_id) override;
 
    private:
     RenderFrameHost* render_frame_host_;
     MediaWebContentsObserver* media_web_contents_observer_;
-    mojo::ReceiverSet<media::mojom::MediaPlayerHost> receivers_;
+    mojo::AssociatedReceiverSet<media::mojom::MediaPlayerHost> receivers_;
   };
 
   // Helper class providing a per-MediaPlayerId object implementing the
@@ -183,7 +185,7 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
     ~MediaPlayerObserverHostImpl() override;
 
     // Used to bind the receiver via the BrowserInterfaceBroker.
-    mojo::PendingRemote<media::mojom::MediaPlayerObserver>
+    mojo::PendingAssociatedRemote<media::mojom::MediaPlayerObserver>
     BindMediaPlayerObserverReceiverAndPassRemote();
 
     // media::mojom::MediaPlayerObserver implementation.
@@ -208,7 +210,7 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
    private:
     MediaPlayerId media_player_id_;
     MediaWebContentsObserver* media_web_contents_observer_;
-    mojo::Receiver<media::mojom::MediaPlayerObserver>
+    mojo::AssociatedReceiver<media::mojom::MediaPlayerObserver>
         media_player_observer_receiver_{this};
   };
 
@@ -218,7 +220,8 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
       base::flat_map<MediaPlayerId,
                      std::unique_ptr<MediaPlayerObserverHostImpl>>;
   using MediaPlayerRemotesMap =
-      base::flat_map<MediaPlayerId, mojo::Remote<media::mojom::MediaPlayer>>;
+      base::flat_map<MediaPlayerId,
+                     mojo::AssociatedRemote<media::mojom::MediaPlayer>>;
 
   // Returns the PlayerInfo associated with |id|, or nullptr if no such
   // PlayerInfo exists.

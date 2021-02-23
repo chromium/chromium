@@ -19,6 +19,8 @@
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "media/mojo/mojom/media_player.mojom.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -105,18 +107,21 @@ class PictureInPictureTestBrowserClient : public TestContentBrowserClient {
 // inside the PictureInPictureServiceImplTest unit tests.
 class PictureInPictureMediaPlayerReceiver : public media::mojom::MediaPlayer {
  public:
-  mojo::PendingRemote<media::mojom::MediaPlayer>
+  mojo::PendingAssociatedRemote<media::mojom::MediaPlayer>
   BindMediaPlayerReceiverAndPassRemote() {
     // A tests could potentially call StartSession() multiple times.
     receiver_.reset();
-    return receiver_.BindNewPipeAndPassRemote();
+    return receiver_.BindNewEndpointAndPassDedicatedRemote();
   }
 
-  mojo::Receiver<media::mojom::MediaPlayer>& receiver() { return receiver_; }
+  mojo::AssociatedReceiver<media::mojom::MediaPlayer>& receiver() {
+    return receiver_;
+  }
 
   // media::mojom::MediaPlayer implementation.
   void AddMediaPlayerObserver(
-      mojo::PendingRemote<media::mojom::MediaPlayerObserver>) override {}
+      mojo::PendingAssociatedRemote<media::mojom::MediaPlayerObserver>)
+      override {}
   void RequestPlay() override {}
   void RequestPause(bool triggered_by_user) override {}
   void RequestSeekForward(base::TimeDelta seek_time) override {}
@@ -126,7 +131,7 @@ class PictureInPictureMediaPlayerReceiver : public media::mojom::MediaPlayer {
   void SetAudioSinkId(const std::string& sink_id) override {}
 
  private:
-  mojo::Receiver<media::mojom::MediaPlayer> receiver_{this};
+  mojo::AssociatedReceiver<media::mojom::MediaPlayer> receiver_{this};
 };
 
 class PictureInPictureServiceImplTest : public RenderViewHostImplTestHarness {
@@ -154,7 +159,7 @@ class PictureInPictureServiceImplTest : public RenderViewHostImplTestHarness {
 
   PictureInPictureDelegate& delegate() { return delegate_; }
 
-  mojo::PendingRemote<media::mojom::MediaPlayer>
+  mojo::PendingAssociatedRemote<media::mojom::MediaPlayer>
   BindMediaPlayerReceiverAndPassRemote() {
     return media_player_receiver_.BindMediaPlayerReceiverAndPassRemote();
   }

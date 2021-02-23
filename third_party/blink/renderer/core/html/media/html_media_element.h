@@ -46,9 +46,9 @@
 #include "third_party/blink/renderer/platform/audio/audio_source_provider.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/media/web_audio_source_provider_client.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote_set.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver_set.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote_set.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -127,7 +127,8 @@ class CORE_EXPORT HTMLMediaElement
   // Binds |pending_receiver| and adds it to |media_player_receiver_set_|. Also
   // called from other Blink classes (e.g. PictureInPictureControllerImpl).
   void BindMediaPlayerReceiver(
-      mojo::PendingReceiver<media::mojom::blink::MediaPlayer> pending_receiver);
+      mojo::PendingAssociatedReceiver<media::mojom::blink::MediaPlayer>
+          pending_receiver);
 
   void Trace(Visitor*) const override;
 
@@ -358,7 +359,8 @@ class CORE_EXPORT HTMLMediaElement
 
   // Required by tests set mock receivers to check that messages are delivered.
   void AddMediaPlayerObserverForTesting(
-      mojo::PendingRemote<media::mojom::blink::MediaPlayerObserver> observer);
+      mojo::PendingAssociatedRemote<media::mojom::blink::MediaPlayerObserver>
+          observer);
 
   bool IsShowPosterFlagSet() const { return show_poster_flag_; }
 
@@ -370,10 +372,11 @@ class CORE_EXPORT HTMLMediaElement
   ~HTMLMediaElement() override;
   void Dispose();
 
-  // Returns a constant reference to the HeapMojoRemoteSet holding all the bound
-  // remotes for the media::mojom::blink::MediaPlayerObserver interface. Needed
-  // to allow sending messages directly from HTMLMediaElement's subclasses.
-  const HeapMojoRemoteSet<media::mojom::blink::MediaPlayerObserver>&
+  // Returns a constant reference to the HeapMojoAssociatedRemoteSet holding all
+  // the bound remotes for the media::mojom::blink::MediaPlayerObserver
+  // interface. Needed to allow sending messages directly from
+  // HTMLMediaElement's subclasses.
+  const HeapMojoAssociatedRemoteSet<media::mojom::blink::MediaPlayerObserver>&
   GetMediaPlayerObserverRemoteSet() {
     return media_player_observer_remote_set_;
   }
@@ -505,8 +508,8 @@ class CORE_EXPORT HTMLMediaElement
 
   // media::mojom::MediaPlayer  implementation.
   void AddMediaPlayerObserver(
-      mojo::PendingRemote<media::mojom::blink::MediaPlayerObserver> observer)
-      override;
+      mojo::PendingAssociatedRemote<media::mojom::blink::MediaPlayerObserver>
+          observer) override;
   void RequestPlay() override;
   void RequestPause(bool triggered_by_user) override;
   void RequestSeekForward(base::TimeDelta seek_time) override;
@@ -834,19 +837,20 @@ class CORE_EXPORT HTMLMediaElement
 
   Member<IntersectionObserver> lazy_load_intersection_observer_;
 
-  HeapMojoRemote<media::mojom::blink::MediaPlayerHost>
+  HeapMojoAssociatedRemote<media::mojom::blink::MediaPlayerHost>
       media_player_host_remote_;
 
   // Multiple objects outside of the renderer process can register as observers,
   // so we need to store the remotes in a set here.
-  HeapMojoRemoteSet<media::mojom::blink::MediaPlayerObserver>
+  HeapMojoAssociatedRemoteSet<media::mojom::blink::MediaPlayerObserver>
       media_player_observer_remote_set_;
 
   // A receiver set is needed here as there will be different objects in the
   // browser communicating with this object. This is done this way to avoid
   // routing everything through a single class (e.g. RFHI) and to keep this
   // logic contained inside MediaPlayer-related classes.
-  HeapMojoReceiverSet<media::mojom::blink::MediaPlayer, HTMLMediaElement>
+  HeapMojoAssociatedReceiverSet<media::mojom::blink::MediaPlayer,
+                                HTMLMediaElement>
       media_player_receiver_set_;
 };
 

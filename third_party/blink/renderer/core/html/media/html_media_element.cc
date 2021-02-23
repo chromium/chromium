@@ -38,7 +38,7 @@
 #include "media/base/logging_override_if_enabled.h"
 #include "media/base/media_content_type.h"
 #include "media/base/media_switches.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
@@ -1331,8 +1331,10 @@ void HTMLMediaElement::StartPlayerLoad() {
   // Setup the communication channels between the renderer and browser processes
   // via the MediaPlayer and MediaPlayerObserver mojo interfaces.
   DCHECK(media_player_receiver_set_.empty());
-  mojo::PendingRemote<media::mojom::blink::MediaPlayer> media_player_remote;
-  BindMediaPlayerReceiver(media_player_remote.InitWithNewPipeAndPassReceiver());
+  mojo::PendingAssociatedRemote<media::mojom::blink::MediaPlayer>
+      media_player_remote;
+  BindMediaPlayerReceiver(
+      media_player_remote.InitWithNewEndpointAndPassReceiver());
 
   GetMediaPlayerHostRemote().OnMediaPlayerAdded(
       std::move(media_player_remote), web_media_player_->GetDelegateId());
@@ -1472,7 +1474,8 @@ void HTMLMediaElement::DidAudioOutputSinkChanged(
 }
 
 void HTMLMediaElement::AddMediaPlayerObserverForTesting(
-    mojo::PendingRemote<media::mojom::blink::MediaPlayerObserver> observer) {
+    mojo::PendingAssociatedRemote<media::mojom::blink::MediaPlayerObserver>
+        observer) {
   AddMediaPlayerObserver(std::move(observer));
 }
 
@@ -4119,7 +4122,8 @@ bool HTMLMediaElement::IsInteractiveContent() const {
 }
 
 void HTMLMediaElement::BindMediaPlayerReceiver(
-    mojo::PendingReceiver<media::mojom::blink::MediaPlayer> receiver) {
+    mojo::PendingAssociatedReceiver<media::mojom::blink::MediaPlayer>
+        receiver) {
   mojo::ReceiverId receiver_id = media_player_receiver_set_.Add(
       std::move(receiver),
       GetDocument().GetTaskRunner(TaskType::kInternalMedia));
@@ -4470,15 +4474,18 @@ HTMLMediaElement::GetMediaPlayerHostRemote() {
   // It is an error to call this before having access to the document's frame.
   DCHECK(GetDocument().GetFrame());
   if (!media_player_host_remote_.is_bound()) {
-    GetDocument().GetFrame()->GetBrowserInterfaceBroker().GetInterface(
-        media_player_host_remote_.BindNewPipeAndPassReceiver(
+    GetDocument()
+        .GetFrame()
+        ->GetRemoteNavigationAssociatedInterfaces()
+        ->GetInterface(media_player_host_remote_.BindNewEndpointAndPassReceiver(
             GetDocument().GetTaskRunner(TaskType::kInternalMedia)));
   }
   return *media_player_host_remote_.get();
 }
 
 void HTMLMediaElement::AddMediaPlayerObserver(
-    mojo::PendingRemote<media::mojom::blink::MediaPlayerObserver> observer) {
+    mojo::PendingAssociatedRemote<media::mojom::blink::MediaPlayerObserver>
+        observer) {
   media_player_observer_remote_set_.Add(
       std::move(observer),
       GetDocument().GetTaskRunner(TaskType::kInternalMedia));

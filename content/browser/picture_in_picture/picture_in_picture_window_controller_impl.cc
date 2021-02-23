@@ -186,7 +186,7 @@ bool PictureInPictureWindowControllerImpl::TogglePlayPause() {
 PictureInPictureResult PictureInPictureWindowControllerImpl::StartSession(
     PictureInPictureServiceImpl* service,
     const MediaPlayerId& player_id,
-    mojo::PendingRemote<media::mojom::MediaPlayer> player_remote,
+    mojo::PendingAssociatedRemote<media::mojom::MediaPlayer> player_remote,
     const viz::SurfaceId& surface_id,
     const gfx::Size& natural_size,
     bool show_play_pause_button,

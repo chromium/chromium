@@ -290,12 +290,12 @@ MediaWebContentsObserver::MediaPlayerHostImpl::MediaPlayerHostImpl(
 MediaWebContentsObserver::MediaPlayerHostImpl::~MediaPlayerHostImpl() = default;
 
 void MediaWebContentsObserver::MediaPlayerHostImpl::BindMediaPlayerHostReceiver(
-    mojo::PendingReceiver<media::mojom::MediaPlayerHost> receiver) {
+    mojo::PendingAssociatedReceiver<media::mojom::MediaPlayerHost> receiver) {
   receivers_.Add(this, std::move(receiver));
 }
 
 void MediaWebContentsObserver::MediaPlayerHostImpl::OnMediaPlayerAdded(
-    mojo::PendingRemote<media::mojom::MediaPlayer> media_player,
+    mojo::PendingAssociatedRemote<media::mojom::MediaPlayer> media_player,
     int32_t player_id) {
   media_web_contents_observer_->OnMediaPlayerAdded(
       std::move(media_player), MediaPlayerId(render_frame_host_, player_id));
@@ -311,12 +311,13 @@ MediaWebContentsObserver::MediaPlayerObserverHostImpl::
 MediaWebContentsObserver::MediaPlayerObserverHostImpl::
     ~MediaPlayerObserverHostImpl() = default;
 
-mojo::PendingRemote<media::mojom::MediaPlayerObserver>
+mojo::PendingAssociatedRemote<media::mojom::MediaPlayerObserver>
 MediaWebContentsObserver::MediaPlayerObserverHostImpl::
     BindMediaPlayerObserverReceiverAndPassRemote() {
   media_player_observer_receiver_.reset();
-  mojo::PendingRemote<media::mojom::MediaPlayerObserver> pending_remote =
-      media_player_observer_receiver_.BindNewPipeAndPassRemote();
+  mojo::PendingAssociatedRemote<media::mojom::MediaPlayerObserver>
+      pending_remote =
+          media_player_observer_receiver_.BindNewEndpointAndPassRemote();
 
   // |media_web_contents_observer_| outlives MediaPlayerHostImpl, so it's safe
   // to use base::Unretained().
@@ -557,7 +558,8 @@ WebContentsImpl* MediaWebContentsObserver::web_contents_impl() const {
 
 void MediaWebContentsObserver::BindMediaPlayerHost(
     RenderFrameHost* host,
-    mojo::PendingReceiver<media::mojom::MediaPlayerHost> player_receiver) {
+    mojo::PendingAssociatedReceiver<media::mojom::MediaPlayerHost>
+        player_receiver) {
   if (!media_player_hosts_.contains(host)) {
     media_player_hosts_[host] =
         std::make_unique<MediaPlayerHostImpl>(host, this);
@@ -568,7 +570,7 @@ void MediaWebContentsObserver::BindMediaPlayerHost(
 }
 
 void MediaWebContentsObserver::OnMediaPlayerAdded(
-    mojo::PendingRemote<media::mojom::MediaPlayer> player_remote,
+    mojo::PendingAssociatedRemote<media::mojom::MediaPlayer> player_remote,
     MediaPlayerId player_id) {
   if (media_player_remotes_.contains(player_id)) {
     mojo::ReportBadMessage("Unexpected player_id reuse");
