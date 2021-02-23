@@ -16,9 +16,9 @@ group("all") {
   testonly = true
   if (is_cronet_build) {
     deps = [ "//components/cronet/ios:cronet_package_ios" ]
+  } else if (is_webkit_only_build) {
+    deps = [ "//ios/third_party/webkit" ]
   } else {
-    assert(xcode_version_int >= 1000, "Xcode 10 is required.")
-
     deps = [
       # List all the targets that need to be built on iOS by default.
       "//ios/chrome/app:chrome",
