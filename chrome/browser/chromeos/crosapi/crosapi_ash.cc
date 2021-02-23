@@ -46,7 +46,10 @@ namespace crosapi {
 
 CrosapiAsh::CrosapiAsh()
     : browser_service_host_ash_(std::make_unique<BrowserServiceHostAsh>()),
+      cert_database_ash_(std::make_unique<CertDatabaseAsh>()),
+      clipboard_ash_(std::make_unique<ClipboardAsh>()),
       device_attributes_ash_(std::make_unique<DeviceAttributesAsh>()),
+      feedback_ash_(std::make_unique<FeedbackAsh>()),
       file_manager_ash_(std::make_unique<FileManagerAsh>()),
       keystore_service_ash_(std::make_unique<KeystoreServiceAsh>()),
       message_center_ash_(std::make_unique<MessageCenterAsh>()),
@@ -57,10 +60,7 @@ CrosapiAsh::CrosapiAsh()
                                      g_browser_process->local_state())),
       screen_manager_ash_(std::make_unique<ScreenManagerAsh>()),
       select_file_ash_(std::make_unique<SelectFileAsh>()),
-      feedback_ash_(std::make_unique<FeedbackAsh>()),
-      cert_database_ash_(std::make_unique<CertDatabaseAsh>()),
       test_controller_ash_(std::make_unique<TestControllerAsh>()),
-      clipboard_ash_(std::make_unique<ClipboardAsh>()),
       url_handler_ash_(std::make_unique<UrlHandlerAsh>()) {
   receiver_set_.set_disconnect_handler(base::BindRepeating(
       &CrosapiAsh::OnDisconnected, weak_factory_.GetWeakPtr()));
