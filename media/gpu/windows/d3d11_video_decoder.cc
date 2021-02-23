@@ -987,7 +987,8 @@ D3D11VideoDecoder::GetSupportedVideoDecoderConfigs(
 
   const auto supported_resolutions = GetSupportedD3D11VideoDecoderResolutions(
       d3d11_device, gpu_workarounds,
-      base::FeatureList::IsEnabled(kD3D11VideoDecoderAV1));
+      base::FeatureList::IsEnabled(kD3D11VideoDecoderAV1) &&
+          !gpu_workarounds.disable_accelerated_av1_decode_d3d11);
 
   std::vector<SupportedVideoDecoderConfig> configs;
   for (const auto& kv : supported_resolutions) {
