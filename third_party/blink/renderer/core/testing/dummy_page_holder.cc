@@ -33,6 +33,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
@@ -94,7 +95,7 @@ DummyPageHolder::DummyPageHolder(
       local_frame_client_.Get(), *page_,
       /* FrameOwner* */ nullptr, /* Frame* parent */ nullptr,
       /* Frame* previous_sibling */ nullptr,
-      FrameInsertType::kInsertInConstructor, base::UnguessableToken::Create(),
+      FrameInsertType::kInsertInConstructor, LocalFrameToken(),
       /* WindowAgentFactory* */ nullptr,
       /* InterfaceRegistry* */ nullptr, /* policy_container */ nullptr, clock);
   frame_->SetView(

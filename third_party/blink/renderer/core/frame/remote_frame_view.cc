@@ -380,7 +380,7 @@ uint32_t RemoteFrameView::Print(const IntRect& rect,
   // represents the state of the remote frame. See also comments on
   // https://crrev.com/c/2245430/.
   uint32_t content_id = metafile->CreateContentForRemoteFrame(
-      rect, remote_frame_->GetFrameToken());
+      rect, remote_frame_->GetFrameToken().value());
 
   // Inform browser to print the remote subframe.
   remote_frame_->GetRemoteFrameHostRemote().PrintCrossProcessSubframe(

@@ -29,6 +29,7 @@
 
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
@@ -788,7 +789,7 @@ static Document* CreateStagingDocumentForMarkupSanitization(
       nullptr,  // FrameOwner*
       nullptr,  // Frame* parent
       nullptr,  // Frame* previous_sibling
-      FrameInsertType::kInsertInConstructor, base::UnguessableToken::Create(),
+      FrameInsertType::kInsertInConstructor, blink::LocalFrameToken(),
       nullptr,  // WindowAgentFactory*
       nullptr,  // InterfaceRegistry*
       nullptr   // policy_container

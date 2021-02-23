@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/resources/grit/blink_resources.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -161,8 +162,8 @@ void ValidationMessageOverlayDelegate::CreatePage(const FrameOverlay& overlay) {
 
   auto* frame = MakeGarbageCollected<LocalFrame>(
       MakeGarbageCollected<EmptyLocalFrameClient>(), *page_, nullptr, nullptr,
-      nullptr, FrameInsertType::kInsertInConstructor,
-      base::UnguessableToken::Create(), nullptr, nullptr,
+      nullptr, FrameInsertType::kInsertInConstructor, LocalFrameToken(),
+      nullptr, nullptr,
       /* policy_container */ nullptr);
   frame->SetView(MakeGarbageCollected<LocalFrameView>(*frame, view_size));
   frame->Init(nullptr);

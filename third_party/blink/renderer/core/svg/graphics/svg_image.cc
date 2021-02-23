@@ -29,6 +29,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -837,8 +838,8 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
     frame_client_ = MakeGarbageCollected<SVGImageLocalFrameClient>(this);
     frame = MakeGarbageCollected<LocalFrame>(
         frame_client_, *page, nullptr, nullptr, nullptr,
-        FrameInsertType::kInsertInConstructor, base::UnguessableToken::Create(),
-        nullptr, nullptr, /* policy_container */ nullptr);
+        FrameInsertType::kInsertInConstructor, LocalFrameToken(), nullptr,
+        nullptr, /* policy_container */ nullptr);
     frame->SetView(MakeGarbageCollected<LocalFrameView>(*frame));
     frame->Init(nullptr);
   }

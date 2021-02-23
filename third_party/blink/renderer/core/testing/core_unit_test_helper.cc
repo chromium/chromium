@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
@@ -25,9 +26,9 @@ LocalFrame* SingleChildLocalFrameClient::CreateFrame(
       MakeGarbageCollected<LocalFrameClientWithParent>(parent_frame);
   LocalFrame* child = MakeGarbageCollected<LocalFrame>(
       child_client, *parent_frame->GetPage(), owner_element, parent_frame,
-      nullptr, FrameInsertType::kInsertInConstructor,
-      base::UnguessableToken::Create(), &parent_frame->window_agent_factory(),
-      nullptr, /* policy_container */ nullptr);
+      nullptr, FrameInsertType::kInsertInConstructor, LocalFrameToken(),
+      &parent_frame->window_agent_factory(), nullptr,
+      /* policy_container */ nullptr);
   child->CreateView(IntSize(500, 500), Color::kTransparent);
   child->Init(nullptr);
 

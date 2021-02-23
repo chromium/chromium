@@ -7,6 +7,7 @@
 
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/cross_origin_opener_policy.mojom-blink.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/transferables.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
@@ -171,7 +172,7 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
   // Removed the CoopAccessMonitor with the given |accessing_main_frame| from
   // the |coop_access_monitor| list. This is called when the COOP reporter is
   // gone or a more recent CoopAccessMonitor is being added.
-  void DisconnectCoopAccessMonitor(base::UnguessableToken accessing_main_frame);
+  void DisconnectCoopAccessMonitor(const LocalFrameToken& accessing_main_frame);
 
   Member<Frame> frame_;
   // Unlike |frame_|, |window_proxy_manager_| is available even after the

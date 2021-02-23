@@ -462,7 +462,7 @@ void DOMWindow::InstallCoopAccessMonitor(
 
   DCHECK(accessing_frame->IsMainFrame());
   monitor.report_type = report_type;
-  monitor.accessing_main_frame = accessing_frame->GetFrameToken();
+  monitor.accessing_main_frame = accessing_frame->GetLocalFrameToken();
   monitor.endpoint_defined = endpoint_defined;
   monitor.reported_window_url = std::move(reported_window_url);
 
@@ -521,8 +521,8 @@ void DOMWindow::ReportCoopAccess(const char* property_name) {
 
   LocalFrame& accessing_main_frame =
       To<LocalFrame>(accessing_frame->Tree().Top());
-  const base::UnguessableToken& accessing_main_frame_token =
-      accessing_main_frame.GetFrameToken();
+  const LocalFrameToken accessing_main_frame_token =
+      accessing_main_frame.GetLocalFrameToken();
 
   auto* it = coop_access_monitor_.begin();
   while (it != coop_access_monitor_.end()) {
@@ -702,13 +702,14 @@ void DOMWindow::Trace(Visitor* visitor) const {
 }
 
 void DOMWindow::DisconnectCoopAccessMonitor(
-    base::UnguessableToken accessing_main_frame) {
+    const LocalFrameToken& accessing_main_frame) {
   auto* it = coop_access_monitor_.begin();
   while (it != coop_access_monitor_.end()) {
-    if (it->accessing_main_frame == accessing_main_frame)
+    if (it->accessing_main_frame == accessing_main_frame) {
       it = coop_access_monitor_.erase(it);
-    else
+    } else {
       ++it;
+    }
   }
 }
 

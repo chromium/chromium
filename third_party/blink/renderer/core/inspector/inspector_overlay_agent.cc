@@ -35,6 +35,7 @@
 #include "base/auto_reset.h"
 #include "build/build_config.h"
 #include "cc/layers/picture_layer.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_data.h"
@@ -1121,8 +1122,8 @@ void InspectorOverlayAgent::LoadOverlayPageResource() {
                       (MakeGarbageCollected<EmptyLocalFrameClient>()));
   auto* frame = MakeGarbageCollected<LocalFrame>(
       dummy_local_frame_client, *overlay_page_, nullptr, nullptr, nullptr,
-      FrameInsertType::kInsertInConstructor, base::UnguessableToken::Create(),
-      nullptr, nullptr, /* policy_container */ nullptr);
+      FrameInsertType::kInsertInConstructor, LocalFrameToken(), nullptr,
+      nullptr, /* policy_container */ nullptr);
   frame->SetView(MakeGarbageCollected<LocalFrameView>(*frame));
   frame->Init(nullptr);
   frame->View()->SetCanHaveScrollbars(false);

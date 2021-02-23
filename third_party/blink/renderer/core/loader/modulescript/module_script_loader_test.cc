@@ -229,8 +229,7 @@ void ModuleScriptLoaderTest::InitializeForWorklet() {
       mojo::NullRemote() /* browser_interface_broker */,
       BeginFrameProviderParams(), nullptr /* parent_feature_policy */,
       base::UnguessableToken::Create() /* agent_cluster_id */);
-  creation_params->parent_context_token =
-      LocalFrameToken(GetFrame().GetFrameToken());
+  creation_params->parent_context_token = GetFrame().GetLocalFrameToken();
   global_scope_ = MakeGarbageCollected<FakeWorkletGlobalScope>(
       std::move(creation_params), *reporting_proxy_, &GetFrame(),
       false /* create_microtask_queue */);
