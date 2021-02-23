@@ -100,6 +100,7 @@ class PaintPreviewClient
     // artifacts to. Ignored if |RecordingPersistence::kMemoryBuffer|.
     base::FilePath root_dir;
 
+    // This corresponds to RenderFrameHost::EmbeddingToken.
     base::UnguessableToken root_frame_token;
 
     // Got from the first recording params. Whether to capture links and the

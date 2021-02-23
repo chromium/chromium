@@ -21,6 +21,7 @@
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
 #include "content/public/browser/context_menu_params.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -185,7 +186,7 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
   const int render_frame_id_;
 
   // Renderer's frame token.
-  const base::UnguessableToken render_frame_token_;
+  const blink::LocalFrameToken render_frame_token_;
 
   // The RenderFrameHost's IDs.
   const int render_process_id_;

@@ -186,7 +186,7 @@ class MAYBE_DomSerializerTests : public ContentBrowserTest,
  private:
   // Written only on the browser main UI thread. Read only from the in-process
   // renderer thread via posted tasks:
-  base::UnguessableToken main_frame_token_;
+  blink::LocalFrameToken main_frame_token_;
   std::string serialized_contents_;
   bool serialization_reported_end_of_data_ = false;
 };
