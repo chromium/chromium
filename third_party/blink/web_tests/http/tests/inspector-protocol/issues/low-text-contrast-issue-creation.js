@@ -1,5 +1,6 @@
 (async function(testRunner) {
-  const {dp} = await testRunner.startURL(testRunner.url('../resources/contrast-issue.html'), 'Tests that low text contrast issues are reported.');
+  const {dp} = await testRunner.startHTML(`<div class="issue" style="color: grey; background-color: white;">text</div>`,
+    'Tests that low text contrast issues are reported.');
 
   await dp.Audits.enable();
 

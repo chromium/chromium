@@ -38,7 +38,8 @@ class CORE_EXPORT InspectorContrast {
  public:
   explicit InspectorContrast(Document*);
   ContrastInfo GetContrast(Element*);
-  std::vector<ContrastInfo> GetElementsWithContrastIssues(size_t max_elements);
+  std::vector<ContrastInfo> GetElementsWithContrastIssues(bool report_aaa,
+                                                          size_t max_elements);
   Vector<Color> GetBackgroundColors(Element*, float* text_opacity);
   TextInfo GetTextInfo(Element*);
 

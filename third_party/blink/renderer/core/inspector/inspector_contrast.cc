@@ -160,6 +160,7 @@ void InspectorContrast::CollectNodesAndBuildRTreeIfNeeded() {
 }
 
 std::vector<ContrastInfo> InspectorContrast::GetElementsWithContrastIssues(
+    bool report_aaa,
     size_t max_elements = 0) {
   TRACE_EVENT0("devtools.contrast",
                "InspectorContrast::GetElementsWithContrastIssues");
@@ -168,8 +169,8 @@ std::vector<ContrastInfo> InspectorContrast::GetElementsWithContrastIssues(
   for (Node* node : elements_) {
     auto info = GetContrast(To<Element>(node));
     if (info.able_to_compute_contrast &&
-        (info.contrast_ratio < info.threshold_aa ||
-         info.contrast_ratio < info.threshold_aaa)) {
+        ((info.contrast_ratio < info.threshold_aa) ||
+         (info.contrast_ratio < info.threshold_aaa && report_aaa))) {
       result.push_back(std::move(info));
       if (max_elements && result.size() >= max_elements)
         return result;

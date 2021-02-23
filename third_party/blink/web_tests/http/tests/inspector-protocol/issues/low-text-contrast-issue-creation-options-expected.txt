@@ -1,0 +1,4 @@
+Tests that low text contrast issues are reported when reportAAA option is on and off.
+Number of issues created with !reportAAA: 1
+Number of issues created with reportAAA: 2
+

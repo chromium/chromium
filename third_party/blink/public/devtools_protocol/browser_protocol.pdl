@@ -783,6 +783,9 @@ experimental domain Audits
   # Runs the contrast check for the target page. Found issues are reported
   # using Audits.issueAdded event.
   command checkContrast
+    parameters
+      # Whether to report WCAG AAA level issues. Default is false.
+      optional boolean reportAAA
 
   event issueAdded
     parameters

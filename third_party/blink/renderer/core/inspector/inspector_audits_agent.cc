@@ -160,18 +160,19 @@ protocol::Response InspectorAuditsAgent::getEncodedResponse(
   return Response::Success();
 }
 
-void InspectorAuditsAgent::CheckContrastForDocument(Document* document) {
+void InspectorAuditsAgent::CheckContrastForDocument(Document* document,
+                                                    bool report_aaa) {
   InspectorContrast contrast(document);
   Vector<std::pair<Element*, mojom::blink::InspectorIssueInfoPtr>> issues;
   unsigned max_elements = 100;
   for (ContrastInfo info :
-       contrast.GetElementsWithContrastIssues(max_elements)) {
+       contrast.GetElementsWithContrastIssues(report_aaa, max_elements)) {
     InspectorIssueAdded(
         InspectorIssue::Create(CreateLowTextContrastIssue(info)));
   }
 }
 
-Response InspectorAuditsAgent::checkContrast() {
+Response InspectorAuditsAgent::checkContrast(protocol::Maybe<bool> report_aaa) {
   if (!inspected_frames_)
     return Response::ServerError("Inspected frames are not available");
 
@@ -179,7 +180,8 @@ Response InspectorAuditsAgent::checkContrast() {
   if (!main_window)
     return Response::ServerError("Document is not available");
 
-  CheckContrastForDocument(main_window->document());
+  CheckContrastForDocument(main_window->document(),
+                           report_aaa.fromMaybe(false));
 
   return Response::Success();
 }

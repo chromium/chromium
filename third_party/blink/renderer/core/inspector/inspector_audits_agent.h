@@ -33,7 +33,7 @@ class CORE_EXPORT InspectorAuditsAgent final
   // Protocol methods.
   protocol::Response enable() override;
   protocol::Response disable() override;
-  protocol::Response checkContrast() override;
+  protocol::Response checkContrast(protocol::Maybe<bool> report_aaa) override;
 
   void Restore() override;
 
@@ -48,7 +48,7 @@ class CORE_EXPORT InspectorAuditsAgent final
 
  private:
   void InnerEnable();
-  void CheckContrastForDocument(Document* document);
+  void CheckContrastForDocument(Document* document, bool report_aaa);
 
   Member<InspectorIssueStorage> inspector_issue_storage_;
   InspectorAgentState::Boolean enabled_;
