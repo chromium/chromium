@@ -1989,7 +1989,7 @@ template("ios_xcuitest_test_runner_bundle") {
       # NOTE: The XCTRunnerAddition+Info.plist must come after the Info.plist
       # because it overrides the values under "CFBundleIdentifier" and
       # "CFBundleName".
-      "//ios/chrome/app/resources/XCTRunnerAddition+Info.plist",
+      "//build/config/ios/resources/XCTRunnerAddition+Info.plist",
     ]
 
     _output_name = "$target_gen_dir/${_target_name}_merged.plist"
