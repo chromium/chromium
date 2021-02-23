@@ -242,10 +242,17 @@ bool CrostiniFeatures::IsAllowedNow(Profile* profile, std::string* reason) {
     return false;
   }
 
-  if (!profile->GetPrefs()->GetBoolean(
-          crostini::prefs::kUserCrostiniAllowedByPolicy)) {
+  const PrefService::Preference* crostini_allowed_by_policy =
+      profile->GetPrefs()->FindPreference(
+          crostini::prefs::kUserCrostiniAllowedByPolicy);
+  if (!crostini_allowed_by_policy->GetValue()->GetBool()) {
     VLOG(1) << "kUserCrostiniAllowedByPolicy preference is false.";
     *reason = "Crostini is disabled by policy";
+    return false;
+  }
+  if (!crostini_allowed_by_policy->IsManaged() && user->IsAffiliated()) {
+    VLOG(1) << "Affiliated user is not allowed to run Crostini by default.";
+    *reason = "Affiliated user is not allowed to run Crostini by default.";
     return false;
   }
 

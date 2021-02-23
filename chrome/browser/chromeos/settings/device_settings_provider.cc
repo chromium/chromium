@@ -875,12 +875,6 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     new_values_cache->SetBoolean(
         kVirtualMachinesAllowed,
         policy.virtual_machines_allowed().virtual_machines_allowed());
-  } else {
-    // If the policy is missing, default to false on enterprise-enrolled
-    // devices.
-    if (InstallAttributes::Get()->IsEnterpriseManaged()) {
-      new_values_cache->SetBoolean(kVirtualMachinesAllowed, false);
-    }
   }
 
   if (policy.has_device_unaffiliated_crostini_allowed()) {

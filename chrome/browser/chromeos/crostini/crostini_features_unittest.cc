@@ -88,6 +88,65 @@ TEST(CrostiniFeaturesTest, TestRootAccessAllowed) {
   }
 }
 
+class CrostiniFeaturesAllowedTest : public testing::Test {
+ protected:
+  CrostiniFeaturesAllowedTest()
+      : user_manager_(new chromeos::FakeChromeUserManager()),
+        scoped_user_manager_(base::WrapUnique(user_manager_)) {}
+
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures({features::kCrostini}, {});
+  }
+
+  void AddUserWithAffiliation(bool is_affiliated) {
+    AccountId account_id =
+        AccountId::FromUserEmail(profile_.GetProfileUserName());
+    user_manager_->AddUserWithAffiliation(account_id, is_affiliated);
+    user_manager_->LoginUser(account_id);
+  }
+
+  content::BrowserTaskEnvironment task_environment_;
+
+  TestingProfile profile_;
+  FakeCrostiniFeatures crostini_features_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  chromeos::FakeChromeUserManager* user_manager_;
+  user_manager::ScopedUserManager scoped_user_manager_;
+};
+
+TEST_F(CrostiniFeaturesAllowedTest, TestDefaultUnmanagedBehaviour) {
+  AddUserWithAffiliation(false);
+
+  std::string reason;
+  bool crostini_is_allowed_now =
+      crostini_features_.IsAllowedNow(&profile_, &reason);
+  EXPECT_TRUE(crostini_is_allowed_now);
+}
+
+TEST_F(CrostiniFeaturesAllowedTest, TestDefaultAffiliatedUserBehaviour) {
+  AddUserWithAffiliation(true);
+
+  std::string reason;
+  bool crostini_is_allowed_now =
+      crostini_features_.IsAllowedNow(&profile_, &reason);
+  EXPECT_FALSE(crostini_is_allowed_now);
+  EXPECT_EQ(reason,
+            "Affiliated user is not allowed to run Crostini by default.");
+}
+
+TEST_F(CrostiniFeaturesAllowedTest, TestPolicyAffiliatedUserBehaviour) {
+  AddUserWithAffiliation(true);
+  profile_.GetTestingPrefService()->SetManagedPref(
+      crostini::prefs::kUserCrostiniAllowedByPolicy,
+      std::make_unique<base::Value>(true));
+
+  std::string reason;
+  bool crostini_is_allowed_now =
+      crostini_features_.IsAllowedNow(&profile_, &reason);
+  EXPECT_TRUE(crostini_is_allowed_now);
+}
+
 class CrostiniFeaturesAdbSideloadingTest : public testing::Test {
  protected:
   CrostiniFeaturesAdbSideloadingTest()
