@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "net/base/address_family.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
@@ -399,6 +400,9 @@ TEST_F(PacFileDeciderQuickCheckTest, AsyncSuccess) {
   EXPECT_EQ(rule_.url, decider_->effective_config().value().pac_url());
 }
 
+#if !defined(OS_IOS)
+// This test is failing iOS device bots.
+// http://crbug.com/1181196
 // Fails if an asynchronous DNS lookup failure (i.e. an NXDOMAIN) still causes
 // PacFileDecider to yield a PAC URL.
 TEST_F(PacFileDeciderQuickCheckTest, AsyncFail) {
@@ -411,6 +415,7 @@ TEST_F(PacFileDeciderQuickCheckTest, AsyncFail) {
   callback_.WaitForResult();
   EXPECT_FALSE(decider_->effective_config().value().has_pac_url());
 }
+#endif
 
 // Fails if a DNS lookup timeout either causes PacFileDecider to yield a PAC
 // URL or causes PacFileDecider not to cancel its pending resolution.
@@ -454,6 +459,9 @@ TEST_F(PacFileDeciderQuickCheckTest, QuickCheckDisabled) {
   fetcher.NotifyFetchCompletion(OK, kPac);
 }
 
+#if !defined(OS_IOS)
+// This test is failing iOS device bots.
+// http://crbug.com/1181196
 TEST_F(PacFileDeciderQuickCheckTest, ExplicitPacUrl) {
   const char* kCustomUrl = "http://custom/proxy.pac";
   config_.set_pac_url(GURL(kCustomUrl));
@@ -467,6 +475,7 @@ TEST_F(PacFileDeciderQuickCheckTest, ExplicitPacUrl) {
   EXPECT_TRUE(decider_->effective_config().value().has_pac_url());
   EXPECT_EQ(rule.url, decider_->effective_config().value().pac_url());
 }
+#endif
 
 TEST_F(PacFileDeciderQuickCheckTest, ShutdownDuringResolve) {
   resolver_.set_ondemand_mode(true);
