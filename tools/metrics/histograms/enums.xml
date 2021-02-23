@@ -4232,6 +4232,25 @@ others/histograms.xml -->
   <int value="35" label="Success w/ default flow being skipped w/ proxy"/>
 </enum>
 
+<enum name="AttestationStatus">
+<!--
+  The alias of `enum AttestationStatus` defined in
+  `system_api/dbus/attestation/interface.proto` in
+  `chromiumos/platform2` repository.
+-->
+
+  <int value="0" label="STATUS_SUCCESS"/>
+  <int value="1" label="STATUS_UNEXPECTED_DEVICE_ERROR"/>
+  <int value="2" label="STATUS_NOT_AVAILABLE"/>
+  <int value="3" label="STATUS_NOT_READY"/>
+  <int value="4" label="STATUS_NOT_ALLOWED"/>
+  <int value="5" label="STATUS_INVALID_PARAMETER"/>
+  <int value="6" label="STATUS_REQUEST_DENIED_BY_CA"/>
+  <int value="7" label="STATUS_CA_NOT_AVAILABLE"/>
+  <int value="8" label="STATUS_NOT_SUPPORTED"/>
+  <int value="9" label="STATUS_DBUS_ERROR"/>
+</enum>
+
 <enum name="AudioCaptureDeviceError">
   <int value="0" label="No error"/>
   <int value="1" label="Error during stream creation"/>

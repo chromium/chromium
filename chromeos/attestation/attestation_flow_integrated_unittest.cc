@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/timer/timer.h"
@@ -80,6 +81,7 @@ class AttestationFlowIntegratedTest : public testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::RunLoop* run_loop_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(AttestationFlowIntegratedTest, GetCertificate) {
@@ -127,6 +129,9 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificate) {
   EXPECT_FALSE(certificate2.empty());
   EXPECT_NE(certificate1, certificate2);
   EXPECT_EQ(certificate2, certificate3);
+  histogram_tester_.ExpectUniqueSample(
+      "ChromeOS.Attestation.GetCertificateStatus",
+      ::attestation::STATUS_SUCCESS, 3);
 }
 
 // This is pretty much identical to `GetCertificate` while the flow under test
@@ -182,6 +187,9 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateCreatedByFactory) {
   EXPECT_FALSE(certificate2.empty());
   EXPECT_NE(certificate1, certificate2);
   EXPECT_EQ(certificate2, certificate3);
+  histogram_tester_.ExpectUniqueSample(
+      "ChromeOS.Attestation.GetCertificateStatus",
+      ::attestation::STATUS_SUCCESS, 3);
 }
 
 TEST_F(AttestationFlowIntegratedTest, GetCertificateFailed) {
@@ -210,6 +218,11 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateFailed) {
           base::Unretained(this), callback.Get()));
   Run();
   EXPECT_NE(status, AttestationStatus::ATTESTATION_SUCCESS);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Attestation.GetCertificateStatus",
+      ::attestation::STATUS_SUCCESS, 0);
+  histogram_tester_.ExpectTotalCount(
+      "ChromeOS.Attestation.GetCertificateStatus", 1);
 }
 
 TEST_F(AttestationFlowIntegratedTest, GetCertificateFailedInvalidProfile) {
@@ -238,6 +251,8 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateFailedInvalidProfile) {
           base::Unretained(this), callback.Get()));
   Run();
   EXPECT_NE(status, AttestationStatus::ATTESTATION_SUCCESS);
+  histogram_tester_.ExpectTotalCount(
+      "ChromeOS.Attestation.GetCertificateStatus", 0);
 }
 
 TEST_F(AttestationFlowIntegratedTest, GetCertificateAttestationNotPrepared) {
@@ -270,6 +285,9 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateAttestationNotPrepared) {
           base::Unretained(this), callback.Get()));
   Run();
   EXPECT_FALSE(certificate.empty());
+  histogram_tester_.ExpectUniqueSample(
+      "ChromeOS.Attestation.GetCertificateStatus",
+      ::attestation::STATUS_SUCCESS, 1);
 }
 
 TEST_F(AttestationFlowIntegratedTest, GetCertificateAttestationNeverPrepared) {
@@ -302,6 +320,8 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateAttestationNeverPrepared) {
           base::Unretained(this), callback.Get()));
   Run();
   EXPECT_NE(status, AttestationStatus::ATTESTATION_SUCCESS);
+  histogram_tester_.ExpectTotalCount(
+      "ChromeOS.Attestation.GetCertificateStatus", 0);
 }
 
 TEST_F(AttestationFlowIntegratedTest, GetCertificateAttestationTestAca) {
@@ -333,6 +353,9 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateAttestationTestAca) {
           base::Unretained(this), callback.Get()));
   Run();
   EXPECT_FALSE(certificate.empty());
+  histogram_tester_.ExpectUniqueSample(
+      "ChromeOS.Attestation.GetCertificateStatus",
+      ::attestation::STATUS_SUCCESS, 1);
 }
 
 TEST_F(AttestationFlowIntegratedTest, GetCertificateAcaTypeFromCommandline) {
@@ -367,6 +390,9 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateAcaTypeFromCommandline) {
           base::Unretained(this), callback.Get()));
   Run();
   EXPECT_FALSE(certificate.empty());
+  histogram_tester_.ExpectUniqueSample(
+      "ChromeOS.Attestation.GetCertificateStatus",
+      ::attestation::STATUS_SUCCESS, 1);
 }
 
 TEST_F(AttestationFlowIntegratedTest, GetMachineCertificate) {
@@ -397,6 +423,9 @@ TEST_F(AttestationFlowIntegratedTest, GetMachineCertificate) {
           base::Unretained(this), callback.Get()));
   Run();
   EXPECT_FALSE(certificate.empty());
+  histogram_tester_.ExpectUniqueSample(
+      "ChromeOS.Attestation.GetCertificateStatus",
+      ::attestation::STATUS_SUCCESS, 1);
 }
 
 // There used to be an incidence that a non-empty username are sent when
@@ -432,6 +461,9 @@ TEST_F(AttestationFlowIntegratedTest, GetMachineCertificateWithAccountId) {
           base::Unretained(this), callback.Get()));
   Run();
   EXPECT_FALSE(certificate.empty());
+  histogram_tester_.ExpectUniqueSample(
+      "ChromeOS.Attestation.GetCertificateStatus",
+      ::attestation::STATUS_SUCCESS, 1);
 }
 
 TEST_F(AttestationFlowIntegratedTest,
@@ -463,6 +495,9 @@ TEST_F(AttestationFlowIntegratedTest,
           base::Unretained(this), callback.Get()));
   Run();
   EXPECT_FALSE(certificate.empty());
+  histogram_tester_.ExpectUniqueSample(
+      "ChromeOS.Attestation.GetCertificateStatus",
+      ::attestation::STATUS_SUCCESS, 1);
 }
 
 }  // namespace attestation
