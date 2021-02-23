@@ -317,11 +317,12 @@ TEST_F(AssistantServiceControllerTest, ShouldAllowStartAfterStop) {
   Start();
   Stop();
 
-  // The second Initialize() call should create the AssistantManager.
+  // The second Initialize() call should create the AssistantManager and
+  // LibassistantV1Api.
 
   Initialize();
   EXPECT_NE(nullptr, service_controller().assistant_manager());
-  EXPECT_EQ(nullptr, v1_api());
+  EXPECT_NE(nullptr, v1_api());
 
   // The second Start() call should send out a state update and publish the
   // v1_api
@@ -371,7 +372,7 @@ TEST_F(AssistantServiceControllerTest,
   Initialize();
 
   EXPECT_NE(nullptr, service_controller().assistant_manager_internal());
-  EXPECT_EQ(nullptr, v1_api());
+  EXPECT_NE(nullptr, v1_api());
 }
 
 TEST_F(AssistantServiceControllerTest,

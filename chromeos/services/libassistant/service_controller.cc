@@ -160,6 +160,9 @@ void ServiceController::Initialize(
 
   SetServerExperiments(assistant_manager_internal());
 
+  libassistant_v1_api_ = std::make_unique<assistant::LibassistantV1Api>(
+      assistant_manager_.get(), assistant_manager_internal_);
+
   for (auto& observer : assistant_manager_observers_) {
     observer.OnAssistantManagerCreated(assistant_manager(),
                                        assistant_manager_internal());
@@ -179,9 +182,6 @@ void ServiceController::Start() {
   }
 
   assistant_manager()->Start();
-
-  libassistant_v1_api_ = std::make_unique<assistant::LibassistantV1Api>(
-      assistant_manager_.get(), assistant_manager_internal_);
 
   SetStateAndInformObservers(ServiceState::kStarted);
 

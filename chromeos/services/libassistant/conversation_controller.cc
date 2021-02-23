@@ -42,11 +42,7 @@ void ConversationController::OnAssistantManagerCreated(
   // Registers ActionModule when AssistantManagerInternal has been created
   // but not yet started.
   assistant_manager_internal->RegisterActionModule(action_module_.get());
-}
 
-void ConversationController::OnAssistantManagerStarted(
-    assistant_client::AssistantManager* assistant_manager,
-    assistant_client::AssistantManagerInternal* assistant_manager_internal) {
   auto* v1_api = assistant::LibassistantV1Api::Get();
   // LibassistantV1Api should be ready to use by this time.
   DCHECK(v1_api);
