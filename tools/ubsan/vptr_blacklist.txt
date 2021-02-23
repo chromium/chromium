@@ -124,9 +124,3 @@ type:*StartPageService*
 # Remove once function attribute level blacklisting is implemented.
 # See crbug.com/476063.
 fun:*forbidGCDuringConstruction*
-
-#############################################################################
-# UBsan goes into an infinite recursion when __dynamic_cast instrumented with
-# "vptr". See crbug.com/609786.
-
-src:*/third_party/libc\+\+abi/trunk/src/private_typeinfo.cpp
