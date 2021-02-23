@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
@@ -95,6 +96,28 @@ TEST_F(LayoutShiftTrackerTest, IgnoreSVG) {
   )HTML");
   GetDocument().QuerySelector("circle")->setAttribute(svg_names::kCxAttr,
                                                       AtomicString("100"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
+}
+
+TEST_F(LayoutShiftTrackerTest, IgnoreAfterChangeEvent) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #j { position: relative; width: 300px; height: 100px; }
+    </style>
+    <div id='j'></div>
+    <select id="sel" onchange="shift()">
+      <option value="0">0</option>
+      <option value="1">1</option>
+    </select>
+  )HTML");
+  auto* select = To<HTMLSelectElement>(GetDocument().getElementById("sel"));
+  DCHECK(select);
+  select->focus();
+  select->SelectOptionByPopup(1);
+  GetDocument().getElementById("j")->setAttribute(html_names::kStyleAttr,
+                                                  AtomicString("top: 60px"));
+
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
 }

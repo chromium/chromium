@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
+#include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation_controller.h"
 #include "third_party/blink/renderer/core/timing/event_timing.h"
@@ -159,6 +160,10 @@ DispatchEventResult EventDispatcher::Dispatch() {
   LocalFrame* frame = node_->GetDocument().GetFrame();
   if (frame && frame->DomWindow())
     eventTiming = EventTiming::Create(frame->DomWindow(), *event_);
+  if (event_->type() == event_type_names::kChange && event_->isTrusted() &&
+      view_) {
+    view_->GetLayoutShiftTracker().NotifyChangeEvent();
+  }
   event_->GetEventPath().EnsureWindowEventContext();
 
   const bool is_click =

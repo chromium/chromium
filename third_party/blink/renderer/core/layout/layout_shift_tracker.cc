@@ -627,12 +627,18 @@ void LayoutShiftTracker::NotifyScroll(mojom::blink::ScrollType scroll_type,
 }
 
 void LayoutShiftTracker::NotifyViewportSizeChanged() {
-  // This cancels any previously scheduled task from the same timer.
-  timer_.StartOneShot(kTimerDelay, FROM_HERE);
-  UpdateInputTimestamp(base::TimeTicks::Now());
+  UpdateTimerAndInputTimestamp();
 }
 
 void LayoutShiftTracker::NotifyFindInPageInput() {
+  UpdateTimerAndInputTimestamp();
+}
+
+void LayoutShiftTracker::NotifyChangeEvent() {
+  UpdateTimerAndInputTimestamp();
+}
+
+void LayoutShiftTracker::UpdateTimerAndInputTimestamp() {
   // This cancels any previously scheduled task from the same timer.
   timer_.StartOneShot(kTimerDelay, FROM_HERE);
   UpdateInputTimestamp(base::TimeTicks::Now());
