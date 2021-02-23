@@ -717,7 +717,7 @@ Try tapping the mic to ask me anything.
         Battery capacity declines with usage
       </message>
       <message name="IDS_DIAGNOSTICS_CYCLE_COUNT_TOOLTIP_TEXT" desc="The tooltip that explains that cycle count is the number of times the battery has gone through a full charging cycle.">
-        This is the number of times your battery has gone through a full charging cycle
+        The number of times your battery has gone through a full charging cycle
       </message>
       <message name="IDS_DIAGNOSTICS_CURRENT_NOW_TOOLTIP_TEXT" desc="The tooltip that states the current rate at which a user's device is charging or discharging.">
         The rate at which the device is currently charging or discharging
