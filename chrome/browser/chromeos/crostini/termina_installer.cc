@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -23,6 +24,20 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace crostini {
+
+namespace {
+
+const char kHistogram[] = "Crostini.InstallSource";
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class InstallSource {
+  Component = 0,
+  DLC = 1,
+  kMaxValue = DLC,
+};
+
+}  // namespace
 
 TerminaInstaller::TerminaInstaller() {}
 TerminaInstaller::~TerminaInstaller() {}
@@ -93,6 +108,7 @@ void TerminaInstaller::OnInstallDlc(
     response = InstallResult::Success;
     dlc_id_ = kCrostiniDlcName;
     termina_location_ = base::FilePath(result.root_path);
+    UMA_HISTOGRAM_ENUMERATION(kHistogram, InstallSource::DLC);
   } else {
     if (content::GetNetworkConnectionTracker()->IsOffline()) {
       LOG(ERROR) << "Failed to install termina-dlc while offline, assuming "
@@ -158,6 +174,7 @@ void TerminaInstaller::OnInstallComponent(
   if (is_successful) {
     dlc_id_ = base::nullopt;
     termina_location_ = path;
+    UMA_HISTOGRAM_ENUMERATION(kHistogram, InstallSource::Component);
   } else {
     LOG(ERROR)
         << "Failed to install the cros-termina component with error code: "

@@ -283,6 +283,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Crostini.InstallSource" enum="CrostiniInstallSource"
+    expires_after="2022-01-06">
+  <owner>clumptini@google.com</owner>
+  <owner>sidereal@google.com</owner>
+  <summary>
+    The source (component vs DLC) that was used to install termina. This is
+    recorded every time a CrostiniRestart succeeds at the termina install step
+    to measure the progress of the component-&gt;DLC migration.
+  </summary>
+</histogram>
+
 <histogram name="Crostini.InvalidStateTransition" enum="CrostiniInstallerState"
     expires_after="2022-01-06">
   <owner>clumptini@google.com</owner>

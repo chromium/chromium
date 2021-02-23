@@ -15195,6 +15195,11 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="10" label="ConfigureContainer"/>
 </enum>
 
+<enum name="CrostiniInstallSource">
+  <int value="0" label="Component"/>
+  <int value="1" label="DLC"/>
+</enum>
+
 <enum name="CrostiniResult">
   <int value="0" label="SUCCESS"/>
   <int value="4" label="CREATE_DISK_IMAGE_FAILED"/>
