@@ -1095,4 +1095,94 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
   return [UIPasteboard generalPasteboard].URL.absoluteString;
 }
 
+#pragma mark - Watcher utilities
+
+// Delay between two watch cycles.
+const NSTimeInterval kWatcherCycleDelay = 0.2;
+
+// Set of buttons being watched for.
+NSMutableSet* watchingButtons;
+// Set of buttons that were actually watched.
+NSMutableSet* watchedButtons;
+
+// Current watch number, to allow terminating older scheduled runs.
+int watchRunNumber = 0;
+
++ (void)watchForButtonsWithLabels:(NSArray<NSString*>*)labels
+                          timeout:(NSTimeInterval)timeout {
+  watchRunNumber++;
+  watchedButtons = [NSMutableSet set];
+  watchingButtons = [NSMutableSet set];
+  for (NSString* label in labels) {
+    [watchingButtons addObject:label];
+  }
+  [self scheduleNextWatchForButtonsWithTimeout:timeout
+                                     runNumber:watchRunNumber];
+}
+
++ (BOOL)watcherDetectedButtonWithLabel:(NSString*)label {
+  return [watchedButtons containsObject:label];
+}
+
++ (void)stopWatcher {
+  [watchingButtons removeAllObjects];
+  [watchedButtons removeAllObjects];
+}
+
+// Schedule the next watch cycles from a background thread, that will dispatch
+// the actual check, async, on the main thread, since UI objects can only
+// be accessed from there. Scheduling directly on the main
+// thread would let EG to try to drain the main thread queue without
+// success.
++ (void)scheduleNextWatchForButtonsWithTimeout:(NSTimeInterval)timeout
+                                     runNumber:(int)runNumber {
+  dispatch_queue_t background_queue =
+      dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+  dispatch_after(
+      dispatch_time(DISPATCH_TIME_NOW,
+                    (int64_t)(kWatcherCycleDelay * NSEC_PER_SEC)),
+      background_queue, ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+          if (!watchingButtons.count || runNumber != watchRunNumber)
+            return;
+
+          [self findButtonsWithLabelsInViews:[UIApplication sharedApplication]
+                                                 .windows];
+
+          if (watchingButtons.count && timeout > 0.0) {
+            [self scheduleNextWatchForButtonsWithTimeout:timeout -
+                                                         kWatcherCycleDelay
+                                               runNumber:runNumber];
+          } else {
+            [watchingButtons removeAllObjects];
+          }
+        });
+      });
+}
+
+// Looks for a button (based on traits) with the given |label|,
+// recursively in the given |views|.
++ (void)findButtonsWithLabelsInViews:(NSArray<UIView*>*)views {
+  if (!watchingButtons.count)
+    return;
+
+  for (UIView* view in views) {
+    [self buttonsWithLabelsMatchView:view];
+    [self findButtonsWithLabelsInViews:view.subviews];
+  }
+}
+
+// Checks if the given |view| is a button (based on traits) with the
+// given accessibility label.
++ (void)buttonsWithLabelsMatchView:(UIView*)view {
+  if (![view respondsToSelector:@selector(accessibilityLabel)])
+    return;
+  if (([view accessibilityTraits] & UIAccessibilityTraitButton) == 0)
+    return;
+  if ([watchingButtons containsObject:view.accessibilityLabel]) {
+    [watchedButtons addObject:view.accessibilityLabel];
+    [watchingButtons removeObject:view.accessibilityLabel];
+  }
+}
+
 @end

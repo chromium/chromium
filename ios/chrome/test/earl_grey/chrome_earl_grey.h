@@ -700,6 +700,23 @@ id ExecuteJavaScript(NSString* javascript, NSError** out_error);
 // Enables or disables URL-keyed anonymized data collection.
 - (void)setURLKeyedAnonymizedDataCollectionEnabled:(BOOL)enabled;
 
+#pragma mark - Watcher utilities
+
+// Starts monitoring for buttons (based on traits) with the given
+// (accessibility) |labels|. Monitoring will stop once all are found, or if
+// timeout expires. If a previous set is currently being watched for it gets
+// replaced with this set. Note that timeout is best effort and can be a bit
+// longer than specified. This method returns immediately.
+- (void)watchForButtonsWithLabels:(NSArray<NSString*>*)labels
+                          timeout:(NSTimeInterval)timeout;
+
+// Returns YES is the button with given (accessibility) |label| was observed at
+// some point since |watchForButtonsWithLabels:timeout:| was called.
+- (BOOL)watcherDetectedButtonWithLabel:(NSString*)label;
+
+// Clear the watcher list, stopping monitoring.
+- (void)stopWatcher;
+
 @end
 
 // Helpers that only compile under EarlGrey 1 are included in this "EG1"

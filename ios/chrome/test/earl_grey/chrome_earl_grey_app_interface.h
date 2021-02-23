@@ -572,6 +572,23 @@
 // perspective.
 + (NSString*)pasteboardURLSpec;
 
+#pragma mark - Watcher utilities
+
+// Starts monitoring for buttons (based on traits) with the given
+// (accessibility) |labels|. Monitoring will stop once all are found, or if
+// timeout expires. If a previous set is currently being watched for it gets
+// replaced with this set. Note that timeout is best effort and can be a bit
+// longer than specified. This method returns immediately.
++ (void)watchForButtonsWithLabels:(NSArray<NSString*>*)labels
+                          timeout:(NSTimeInterval)timeout;
+
+// Returns YES is the button with given (accessibility) |label| was observed at
+// some point since |watchForButtonsWithLabels:timeout:| was called.
++ (BOOL)watcherDetectedButtonWithLabel:(NSString*)label;
+
+// Clear the watcher list, stopping monitoring.
++ (void)stopWatcher;
+
 @end
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_EARL_GREY_APP_INTERFACE_H_

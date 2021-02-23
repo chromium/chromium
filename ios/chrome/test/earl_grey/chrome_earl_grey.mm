@@ -1317,4 +1317,19 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
       setURLKeyedAnonymizedDataCollectionEnabled:enabled];
 }
 
+#pragma mark - Watcher utilities
+
+- (void)watchForButtonsWithLabels:(NSArray<NSString*>*)labels
+                          timeout:(NSTimeInterval)timeout {
+  [ChromeEarlGreyAppInterface watchForButtonsWithLabels:labels timeout:timeout];
+}
+
+- (BOOL)watcherDetectedButtonWithLabel:(NSString*)label {
+  return [ChromeEarlGreyAppInterface watcherDetectedButtonWithLabel:label];
+}
+
+- (void)stopWatcher {
+  [ChromeEarlGreyAppInterface stopWatcher];
+}
+
 @end
