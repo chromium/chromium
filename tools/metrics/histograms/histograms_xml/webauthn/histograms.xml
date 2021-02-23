@@ -1,0 +1,264 @@
+<!--
+Copyright 2021 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of WebAuthn histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="WebAuthentication.AttestationPromptResult"
+    enum="WebAuthenticationAttestationPromptResult" expires_after="2020-11-29">
+  <obsolete>
+    Removed 12/2020.
+  </obsolete>
+  <owner>agl@chromium.org</owner>
+  <summary>
+    Tracks events related to prompting users for permission to pass WebAuthn
+    attestation information back to origins. &quot;Queried&quot; means that the
+    embedder was queried for a decision. (Since such decisions can be resolved
+    by enterprise policy, that doesn't imply that a user saw a permissions
+    prompt in every case.) Then one of four things can happen: a timeout, a
+    positive or negative resolution, or the request is abandoned. The latter
+    case occurs when, for example, the tab is closed or the user navigates away.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.CableV1DiscoveryEvent"
+    enum="WebAuthenticationCableV1DiscoveryEvent" expires_after="2021-08-09">
+  <owner>agl@chromium.org</owner>
+  <owner>martinkr@google.com</owner>
+  <summary>
+    Records events that occur during caBLE v1 authenticator discovery so that
+    potential discovery failures can be identified.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.CableV2.AOADiscoveryEvent"
+    enum="WebAuthenticationAOADiscoveryEvent" expires_after="2021-11-19">
+  <owner>agl@chromium.org</owner>
+  <owner>martinkr@google.com</owner>
+  <summary>
+    Records events that happen during the discovery of USB-connected phones.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.CableV2.DiscoveryEvent"
+    enum="WebAuthenticationCableV2DiscoveryEvent" expires_after="2021-11-19">
+  <owner>agl@chromium.org</owner>
+  <owner>martinkr@google.com</owner>
+  <summary>
+    Records events that happen when listening for a caBLEv2 device.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.CableV2.MobileEvent"
+    enum="WebAuthenticationCableV2MobileEvent" expires_after="2021-11-19">
+  <owner>agl@chromium.org</owner>
+  <owner>martinkr@google.com</owner>
+  <summary>
+    Records events that occur during a caBLE v2 transaction from the mobile
+    side.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.CableV2.MobileResult"
+    enum="WebAuthenticationCableV2MobileResult" expires_after="2021-11-19">
+  <owner>agl@chromium.org</owner>
+  <owner>martinkr@google.com</owner>
+  <summary>Records the outcome of caBLEv2 transactions.</summary>
+</histogram>
+
+<histogram name="WebAuthentication.CableV2.RendezvousTime" units="ms"
+    expires_after="2021-11-19">
+  <owner>agl@chromium.org</owner>
+  <owner>martinkr@google.com</owner>
+  <summary>
+    The time between the phone connecting to the tunnel server (and thus
+    starting its BLE broadcast) to the point where it receives the handshake
+    message from the desktop.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.CableV2.TunnelEvent"
+    enum="WebAuthenticationCableV2TunnelEvent" expires_after="2021-11-19">
+  <owner>agl@chromium.org</owner>
+  <owner>martinkr@google.com</owner>
+  <summary>
+    Records events that occur during the creation of a caBLEv2 tunnel.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.ChromeOS.GetAssertionStatus"
+    enum="WebAuthenticationChromeOSGetAssertionResult"
+    expires_after="2021-11-19">
+  <owner>yichengli@chromium.org</owner>
+  <owner>martinkr@google.com</owner>
+  <summary>Records the outcome of GetAssertion on Chrome OS.</summary>
+</histogram>
+
+<histogram name="WebAuthentication.ChromeOS.MakeCredentialStatus"
+    enum="WebAuthenticationChromeOSMakeCredentialResult"
+    expires_after="2021-11-19">
+  <owner>yichengli@chromium.org</owner>
+  <owner>martinkr@google.com</owner>
+  <summary>Records the outcome of MakeCredential on Chrome OS.</summary>
+</histogram>
+
+<histogram name="WebAuthentication.ChromeOS.StartupRecordCount" units="records"
+    expires_after="2021-11-19">
+  <owner>yichengli@chromium.org</owner>
+  <owner>martinkr@google.com</owner>
+  <summary>
+    Records the number of records of the user's WebAuthn credentials created on
+    Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.ChromeOS.UserVerificationRequired"
+    enum="Boolean" expires_after="2021-11-19">
+  <owner>yichengli@chromium.org</owner>
+  <owner>martinkr@google.com</owner>
+  <summary>
+    Records whether the Chrome OS platform authenticator should try to verify
+    the user (instead of requiring power button press). Note that a
+    presence-only request may get upgraded to user-verification. Also note that
+    &quot;true&quot; does not mean the user is actually verified.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.CredentialRequestAllowCredentialsCount"
+    units="credentials" expires_after="2021-05-16">
+  <obsolete>
+    Removed 12/2020.
+  </obsolete>
+  <owner>kenrb@chromium.org</owner>
+  <owner>martinkr@google.com</owner>
+  <summary>
+    When a relying party is attempting to authenticate a user using the
+    WebAuthentication API, this metric reports the number of valid credentials
+    that the RP has registered for the user.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.GetAssertionRequestTransport"
+    enum="WebAuthenticationFidoTransport" expires_after="2021-12-01">
+  <owner>kenrb@chromium.org</owner>
+  <owner>martinkr@google.com</owner>
+  <summary>
+    Records the transport used for all WebAuthentication GetAssertion requests
+    sent to authenticators. This does not necessarily mean that there was a
+    success response from any given authenticator.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.GetAssertionResponseTransport"
+    enum="WebAuthenticationFidoTransport" expires_after="2021-12-01">
+  <owner>kenrb@chromium.org</owner>
+  <owner>martinkr@google.com</owner>
+  <summary>
+    Records the transport used when an authenticator responds with success to a
+    WebAuthentication GetAssertion request.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.IsUVPlatformAuthenticatorAvailable"
+    enum="Boolean" expires_after="2021-12-01">
+  <owner>kenrb@chromium.org</owner>
+  <owner>martinkr@google.com</owner>
+  <summary>
+    Record at startup whether the current system has a platform authenticator
+    available; i.e. whether IsUVPAA JS call would return true or false. This
+    metric is downsampled by factor 10,000 on macOS.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.MakeCredentialExcludeCredentialsCount"
+    units="credentials" expires_after="2021-05-16">
+  <obsolete>
+    Removed 12/2020.
+  </obsolete>
+  <owner>kenrb@chromium.org</owner>
+  <owner>martinkr@google.com</owner>
+  <summary>
+    When a relying party is attempting to register a credential for a new user
+    using the WebAuthentication API, this metric reports the number of existing
+    credentials already registered in order to prevent re-registration.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.MakeCredentialRequestTransport"
+    enum="WebAuthenticationFidoTransport" expires_after="2021-12-01">
+  <owner>kenrb@chromium.org</owner>
+  <owner>martinkr@google.com</owner>
+  <summary>
+    Records the transport used for all WebAuthentication MakeCredential requests
+    sent to authenticators. This does not necessarily mean that there was a
+    success response from any given authenticator.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.MakeCredentialResponseTransport"
+    enum="WebAuthenticationFidoTransport" expires_after="2021-12-01">
+  <owner>kenrb@chromium.org</owner>
+  <owner>martinkr@google.com</owner>
+  <summary>
+    Records the transport used when an authenticator responds with success to a
+    WebAuthentication MakeCredential request.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.RelyingPartySecurityCheckFailure"
+    enum="WebAuthenticationRelyingPartySecurityCheckFailure"
+    expires_after="2020-12-31">
+  <obsolete>
+    Removed 12/2020.
+  </obsolete>
+  <owner>kenrb@chromium.org</owner>
+  <owner>martinkr@google.com</owner>
+  <summary>
+    Records failures associated with verifying the relying party origin when
+    that relying party is attempting to make a credential or get an assertion
+    using the WebAuthentication API. Failures include when the relying party's
+    origin is opaque or non-secure, or when the caller-provided relying party ID
+    or app ID is not valid for this origin.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.U2FAttestationPromptResult"
+    enum="WebAuthenticationU2FAttestationPromptResult"
+    expires_after="2021-06-06">
+  <obsolete>
+    Removed 12/2020.
+  </obsolete>
+  <owner>agl@chromium.org</owner>
+  <summary>
+    Tracks events related to prompting users for permission to pass U2F
+    attestation information back to origins. &quot;Queried&quot; means that the
+    embedder was queried for a decision. (Since such decisions can be resolved
+    by enterprise policy, that doesn't imply that a user saw a permissions
+    prompt in every case.) Then either a positive or negative result can happen.
+    However, note some complications: a negative will be recorded when the tab
+    is closed or the user navigates away, and a positive result will be recorded
+    when the user accepts the permission prompt but the request has already
+    timed out.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>
