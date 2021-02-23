@@ -261,6 +261,41 @@ void EncoderBase<Traits>::ProcessRequests() {
 }
 
 template <typename Traits>
+void EncoderBase<Traits>::ProcessFlush(Request* request) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(state_, V8CodecState::Enum::kConfigured);
+  DCHECK(media_encoder_);
+  DCHECK_EQ(request->type, Request::Type::kFlush);
+
+  auto done_callback = [](EncoderBase<Traits>* self, Request* req,
+                          media::Status status) {
+    if (!self)
+      return;
+    DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
+    DCHECK(req);
+    DCHECK(req->resolver);
+    if (self->reset_count_ != req->reset_count) {
+      req->resolver.Release()->Reject();
+      return;
+    }
+    if (status.is_ok()) {
+      req->resolver.Release()->Resolve();
+    } else {
+      self->HandleError(
+          self->logger_->MakeException("Flushing error.", status));
+      req->resolver.Release()->Reject();
+    }
+    self->stall_request_processing_ = false;
+    self->ProcessRequests();
+  };
+
+  stall_request_processing_ = true;
+  media_encoder_->Flush(ConvertToBaseOnceCallback(
+      CrossThreadBindOnce(done_callback, WrapCrossThreadWeakPersistent(this),
+                          WrapCrossThreadPersistent(request))));
+}
+
+template <typename Traits>
 void EncoderBase<Traits>::ContextDestroyed() {
   state_ = V8CodecState(V8CodecState::Enum::kClosed);
   logger_->Neuter();

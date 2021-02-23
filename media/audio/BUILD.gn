@@ -105,8 +105,6 @@ source_set("audio") {
     "audio_output_resampler.h",
     "audio_output_stream_sink.cc",
     "audio_output_stream_sink.h",
-    "audio_pcm_encoder.cc",
-    "audio_pcm_encoder.h",
     "audio_sink_parameters.cc",
     "audio_sink_parameters.h",
     "audio_source_diverter.h",

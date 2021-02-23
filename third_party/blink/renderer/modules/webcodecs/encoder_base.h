@@ -95,7 +95,7 @@ class MODULES_EXPORT EncoderBase
   virtual void ProcessEncode(Request* request) = 0;
   virtual void ProcessConfigure(Request* request) = 0;
   virtual void ProcessReconfigure(Request* request) = 0;
-  virtual void ProcessFlush(Request* request) = 0;
+  virtual void ProcessFlush(Request* request);
   virtual void ResetInternal();
 
   virtual bool CanReconfigure(InternalConfigType& original_config,

@@ -103,6 +103,15 @@ class RecordingEncoderMuxer {
   void FlushAndFinalize(base::OnceClosure on_done);
 
  private:
+  struct AudioFrame {
+    AudioFrame(std::unique_ptr<media::AudioBus>, base::TimeTicks);
+    AudioFrame(AudioFrame&&);
+    ~AudioFrame();
+
+    std::unique_ptr<media::AudioBus> bus;
+    base::TimeTicks capture_time;
+  };
+
   friend class base::SequenceBound<RecordingEncoderMuxer>;
 
   RecordingEncoderMuxer(
@@ -112,11 +121,24 @@ class RecordingEncoderMuxer {
       FailureCallback on_failure_callback);
   ~RecordingEncoderMuxer();
 
+  // Creates and initializes the audio encoder.
+  void InitializeAudioEncoder(const media::AudioEncoder::Options& options);
+
+  // Called when the audio encoder is initialized to provide the |status| of
+  // the initialization.
+  void OnAudioEncoderInitialized(media::Status status);
+
   // Called when the video |encoder| is initialized to provide the |status| of
   // the initialization. If initialization failed, |on_failure_callback_| will
   // be triggered.
   void OnVideoEncoderInitialized(media::VpxVideoEncoder* encoder,
                                  media::Status status);
+
+  // Performs the actual encoding of the given audio |frame|. It should never be
+  // called before the audio encoder is initialized. Audio frames received
+  // before initialization should be added to |pending_audio_frames_| and
+  // handled once initialization is complete.
+  void EncodeAudioImpl(AudioFrame frame);
 
   // Performs the actual encoding of the given video |frame|. It should never be
   // called before the video encoder is initialized. Video frames received
@@ -131,7 +153,14 @@ class RecordingEncoderMuxer {
       base::Optional<media::VideoEncoder::CodecDescription> codec_description);
 
   // Called by the audio encoder to provide the |encoded_audio|.
-  void OnAudioEncoded(media::EncodedAudioBuffer encoded_audio);
+  void OnAudioEncoded(
+      media::EncodedAudioBuffer encoded_audio,
+      base::Optional<media::AudioEncoder::CodecDescription> codec_description);
+
+  // Called when the audio encoder flushes all its buffered frames, at which
+  // point we can flush the video encoder. |on_done| will be passed to
+  // OnVideoEncoderFlushed()
+  void OnAudioEncoderFlushed(base::OnceClosure on_done, media::Status status);
 
   // Called when the video encoder flushes all its buffered frames, at which
   // point we can flush the muxer. |on_done| will be called to signal that
@@ -160,6 +189,11 @@ class RecordingEncoderMuxer {
   base::circular_deque<scoped_refptr<media::VideoFrame>> pending_video_frames_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
+  // Holds audio frames that were received before the audio encoder is
+  // initialized, so that they can be processed once initialization is complete.
+  base::circular_deque<AudioFrame> pending_audio_frames_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
   // The total number of frames that we dropped to keep the size of
   // |pending_video_frames_| limited to |kMaxPendingFrames| to avoid consuming
   // too much memory, or stalling the capturer since it has a maximum number of
@@ -180,6 +214,10 @@ class RecordingEncoderMuxer {
 
   // True once video encoder is initialized successfully.
   bool is_video_encoder_initialized_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
+
+  // True once audio encoder is initialized successfully.
+  bool is_audio_encoder_initialized_ GUARDED_BY_CONTEXT(sequence_checker_) =
       false;
 
   SEQUENCE_CHECKER(sequence_checker_);

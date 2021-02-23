@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_audio_chunk.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_audio_metadata.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
@@ -47,14 +48,16 @@ void AudioEncoder::ProcessConfigure(Request* request) {
   DCHECK_EQ(active_config_->codec, media::kCodecOpus);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto output_cb = WTF::BindRepeating(
+  media_encoder_ = std::make_unique<media::AudioOpusEncoder>();
+
+  auto output_cb = ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
       &AudioEncoder::CallOutputCallback, WrapCrossThreadWeakPersistent(this),
       // We can't use |active_config_| from |this| because it can change by
       // the time the callback is executed.
-      WrapCrossThreadPersistent(active_config_.Get()), reset_count_);
+      WrapCrossThreadPersistent(active_config_.Get()), reset_count_));
 
-  auto status_callback = [](AudioEncoder* self, uint32_t reset_count,
-                            media::Status status) {
+  auto done_callback = [](AudioEncoder* self, uint32_t reset_count,
+                          media::Status status) {
     if (!self || self->reset_count_ != reset_count)
       return;
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
@@ -62,18 +65,16 @@ void AudioEncoder::ProcessConfigure(Request* request) {
       self->HandleError(
           self->logger_->MakeException("Encoding error.", status));
     }
+    self->stall_request_processing_ = false;
+    self->ProcessRequests();
   };
 
-  media::AudioParameters input_params(media::AudioParameters::AUDIO_PCM_LINEAR,
-                                      media::CHANNEL_LAYOUT_DISCRETE,
-                                      active_config_->sample_rate, 0);
-  input_params.set_channels_for_discrete(active_config_->channels);
-  media_encoder_ = std::make_unique<media::AudioOpusEncoder>(
-      input_params, output_cb,
-      WTF::BindRepeating(status_callback, WrapCrossThreadWeakPersistent(this),
-                         reset_count_),
-      active_config_->bitrate);
+  stall_request_processing_ = true;
   produced_first_output_ = false;
+  media_encoder_->Initialize(
+      active_config_->options, std::move(output_cb),
+      ConvertToBaseOnceCallback(CrossThreadBindOnce(
+          done_callback, WrapCrossThreadWeakPersistent(this), reset_count_)));
 }
 
 void AudioEncoder::ProcessEncode(Request* request) {
@@ -86,40 +87,56 @@ void AudioEncoder::ProcessEncode(Request* request) {
   auto* frame = request->frame.Release();
   auto* buffer = frame->buffer();
 
+  auto done_callback = [](AudioEncoder* self, uint32_t reset_count,
+                          media::Status status) {
+    if (!self || self->reset_count_ != reset_count)
+      return;
+    DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
+    if (!status.is_ok()) {
+      self->HandleError(
+          self->logger_->MakeException("Encoding error.", status));
+    }
+    self->ProcessRequests();
+  };
+
   // Converting time at the beginning of the frame (aka timestamp) into
   // time at the end of the frame (aka capture time) that is expected by
   // media::AudioEncoder.
   base::TimeTicks capture_time =
       base::TimeTicks() +
       base::TimeDelta::FromMicroseconds(frame->timestamp()) +
-      media::AudioTimestampHelper::FramesToTime(buffer->length(),
-                                                active_config_->sample_rate);
+      media::AudioTimestampHelper::FramesToTime(
+          buffer->length(), active_config_->options.sample_rate);
   DCHECK(buffer);
-  {
-    auto audio_bus = media::AudioBus::CreateWrapper(buffer->numberOfChannels());
-    for (int channel = 0; channel < audio_bus->channels(); channel++) {
-      float* data = buffer->getChannelData(channel)->Data();
-      DCHECK(data);
-      audio_bus->SetChannelData(channel, data);
-    }
-    audio_bus->set_frames(buffer->length());
-    media_encoder_->EncodeAudio(*audio_bus, capture_time);
+
+  // TODO(crbug.com/1168418): There are two reasons we need to copy |buffer|
+  // data here:
+  // 1. AudioBus data needs to be 16 bytes aligned and |buffer| data might not
+  // be aligned like that.
+  // 2. The encoder might need to access this data on a different thread, which
+  // is not allowed from blink point of view.
+  //
+  // If we could transfer AudioBuffer's data to another thread, we wouldn't need
+  // to copy it, if alignment happens to be right.
+  auto audio_bus =
+      media::AudioBus::Create(buffer->numberOfChannels(), buffer->length());
+  for (int channel = 0; channel < audio_bus->channels(); channel++) {
+    auto array = buffer->getChannelData(channel);
+    size_t byte_length = array->byteLength();
+    DCHECK_EQ(byte_length, audio_bus->frames() * sizeof(float));
+    memcpy(audio_bus->channel(channel), array->Data(), byte_length);
   }
+
+  media_encoder_->Encode(
+      std::move(audio_bus), capture_time,
+      ConvertToBaseOnceCallback(CrossThreadBindOnce(
+          done_callback, WrapCrossThreadWeakPersistent(this), reset_count_)));
 
   frame->close();
 }
 
 void AudioEncoder::ProcessReconfigure(Request* request) {
   // Audio decoders don't currently support any meaningful reconfiguring
-}
-void AudioEncoder::ProcessFlush(Request* request) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(state_, V8CodecState::Enum::kConfigured);
-  DCHECK(media_encoder_);
-  DCHECK_EQ(request->type, Request::Type::kFlush);
-
-  media_encoder_->Flush();
-  request->resolver->Resolve();
 }
 
 AudioEncoder::ParsedConfig* AudioEncoder::ParseConfig(
@@ -128,22 +145,19 @@ AudioEncoder::ParsedConfig* AudioEncoder::ParseConfig(
   auto* result = MakeGarbageCollected<ParsedConfig>();
   result->codec = opts->codec().Utf8() == "opus" ? media::kCodecOpus
                                                  : media::kUnknownAudioCodec;
-  result->channels = opts->numberOfChannels();
-  result->bitrate = opts->bitrate();
-  result->sample_rate = opts->sampleRate();
-  result->codec_string = opts->codec();
+  result->options.channels = opts->numberOfChannels();
 
-  if (result->channels == 0) {
+  result->options.sample_rate = opts->sampleRate();
+  result->codec_string = opts->codec();
+  if (opts->hasBitrate())
+    result->options.bitrate = opts->bitrate();
+
+  if (result->options.channels == 0) {
     exception_state.ThrowTypeError("Invalid channel number.");
     return nullptr;
   }
 
-  if (result->bitrate == 0) {
-    exception_state.ThrowTypeError("Invalid bitrate.");
-    return nullptr;
-  }
-
-  if (result->sample_rate == 0) {
+  if (result->options.sample_rate == 0) {
     exception_state.ThrowTypeError("Invalid sample rate.");
     return nullptr;
   }
@@ -153,9 +167,9 @@ AudioEncoder::ParsedConfig* AudioEncoder::ParseConfig(
 bool AudioEncoder::CanReconfigure(ParsedConfig& original_config,
                                   ParsedConfig& new_config) {
   return original_config.codec == new_config.codec &&
-         original_config.channels == new_config.channels &&
-         original_config.bitrate == new_config.bitrate &&
-         original_config.sample_rate == new_config.sample_rate;
+         original_config.options.channels == new_config.options.channels &&
+         original_config.options.bitrate == new_config.options.bitrate &&
+         original_config.options.sample_rate == new_config.options.sample_rate;
 }
 
 AudioFrame* AudioEncoder::CloneFrame(AudioFrame* frame,
@@ -194,7 +208,8 @@ bool AudioEncoder::VerifyCodecSupport(ParsedConfig* config,
 void AudioEncoder::CallOutputCallback(
     ParsedConfig* active_config,
     uint32_t reset_count,
-    media::EncodedAudioBuffer encoded_buffer) {
+    media::EncodedAudioBuffer encoded_buffer,
+    base::Optional<media::AudioEncoder::CodecDescription> codec_desc) {
   if (!script_state_->ContextIsValid() || !output_callback_ ||
       state_.AsEnum() != V8CodecState::Enum::kConfigured ||
       reset_count != reset_count_)
@@ -212,15 +227,14 @@ void AudioEncoder::CallOutputCallback(
   auto* chunk = MakeGarbageCollected<EncodedAudioChunk>(metadata, dom_array);
 
   AudioDecoderConfig* decoder_config = nullptr;
-  if (!produced_first_output_) {
+  if (!produced_first_output_ || codec_desc.has_value()) {
     decoder_config = MakeGarbageCollected<AudioDecoderConfig>();
     decoder_config->setCodec(active_config->codec_string);
-    decoder_config->setSampleRate(active_config->sample_rate);
-    decoder_config->setNumberOfChannels(active_config->channels);
-    auto extra_data = media_encoder_->GetExtraData();
-    if (!extra_data.empty()) {
-      auto* desc_array_buf =
-          DOMArrayBuffer::Create(extra_data.data(), extra_data.size());
+    decoder_config->setSampleRate(active_config->options.sample_rate);
+    decoder_config->setNumberOfChannels(active_config->options.channels);
+    if (codec_desc.has_value()) {
+      auto* desc_array_buf = DOMArrayBuffer::Create(codec_desc.value().data(),
+                                                    codec_desc.value().size());
       decoder_config->setDescription(
           ArrayBufferOrArrayBufferView::FromArrayBuffer(desc_array_buf));
     }

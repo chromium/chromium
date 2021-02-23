@@ -16,8 +16,9 @@ namespace recording {
 
 namespace {
 
-// The video encoder is initialized asynchronously, and until that happens, all
-// received video frames are added to |pending_video_frames_|. However, in order
+// The audio and video encoders are initialized asynchronously, and until that
+// happens, all received audio and video frames are added to
+// |pending_video_frames_| and |pending_audio_frames_|. However, in order
 // to avoid an OOM situation if the encoder takes too long to initialize or it
 // never does, we impose an upper-bound to the number of pending frames. The
 // below value is equal to the maximum number of in-flight frames that the
@@ -26,11 +27,19 @@ namespace {
 // |pending_video_frames_|, we will start dropping frames to let the capturer
 // proceed, with an upper limit of how many frames we can drop that is
 // equivalent to 4 seconds, after which we'll declare an encoder initialization
-// failure.
+// failure. For convenience the same limit is used for as a cap on number of
+// audio frames stored in |pending_audio_frames_|.
 constexpr size_t kMaxPendingFrames = 10;
 constexpr size_t kMaxDroppedFrames = 4 * kMaxFrameRate;
 
 }  // namespace
+
+RecordingEncoderMuxer::AudioFrame::AudioFrame(
+    std::unique_ptr<media::AudioBus> audio_bus,
+    base::TimeTicks time)
+    : bus(std::move(audio_bus)), capture_time(time) {}
+RecordingEncoderMuxer::AudioFrame::AudioFrame(AudioFrame&&) = default;
+RecordingEncoderMuxer::AudioFrame::~AudioFrame() = default;
 
 // static
 base::SequenceBound<RecordingEncoderMuxer> RecordingEncoderMuxer::Create(
@@ -101,22 +110,29 @@ void RecordingEncoderMuxer::EncodeAudio(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(audio_encoder_);
 
-  if (!did_failure_occur())
-    audio_encoder_->EncodeAudio(*audio_bus, capture_time);
+  AudioFrame frame(std::move(audio_bus), capture_time);
+  if (is_audio_encoder_initialized_) {
+    EncodeAudioImpl(std::move(frame));
+    return;
+  }
+
+  pending_audio_frames_.push_back(std::move(frame));
+  if (pending_audio_frames_.size() == kMaxPendingFrames) {
+    pending_audio_frames_.pop_front();
+    DCHECK_LT(pending_audio_frames_.size(), kMaxPendingFrames);
+  }
 }
 
 void RecordingEncoderMuxer::FlushAndFinalize(base::OnceClosure on_done) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Note that flushing the audio encoder is synchronous, so calling Flush() on
-  // it will result in OnAudioEncoded() being called directly (if any audio
-  // frames were still buffered and not processed). The video encoder responds
-  // asynchronously.
-  if (audio_encoder_)
-    audio_encoder_->Flush();
-  video_encoder_->Flush(
-      base::BindOnce(&RecordingEncoderMuxer::OnVideoEncoderFlushed,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(on_done)));
+  if (audio_encoder_) {
+    audio_encoder_->Flush(
+        base::BindOnce(&RecordingEncoderMuxer::OnAudioEncoderFlushed,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(on_done)));
+  } else {
+    OnAudioEncoderFlushed(std::move(on_done), media::OkStatus());
+  }
 }
 
 RecordingEncoderMuxer::RecordingEncoderMuxer(
@@ -132,15 +148,10 @@ RecordingEncoderMuxer::RecordingEncoderMuxer(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (audio_input_params) {
-    audio_encoder_ = std::make_unique<media::AudioOpusEncoder>(
-        *audio_input_params,
-        base::BindRepeating(&RecordingEncoderMuxer::OnAudioEncoded,
-                            weak_ptr_factory_.GetWeakPtr()),
-        base::BindRepeating(&RecordingEncoderMuxer::OnEncoderStatus,
-                            weak_ptr_factory_.GetWeakPtr(),
-                            /*for_video=*/false),
-        // 0 means the encoder picks bitrate automatically.
-        /*bits_per_second=*/0);
+    media::AudioEncoder::Options audio_encoder_options;
+    audio_encoder_options.channels = audio_input_params->channels();
+    audio_encoder_options.sample_rate = audio_input_params->sample_rate();
+    InitializeAudioEncoder(audio_encoder_options);
   }
 
   InitializeVideoEncoder(video_encoder_options);
@@ -148,6 +159,37 @@ RecordingEncoderMuxer::RecordingEncoderMuxer(
 
 RecordingEncoderMuxer::~RecordingEncoderMuxer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void RecordingEncoderMuxer::InitializeAudioEncoder(
+    const media::AudioEncoder::Options& options) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  is_audio_encoder_initialized_ = false;
+  audio_encoder_ = std::make_unique<media::AudioOpusEncoder>();
+  audio_encoder_->Initialize(
+      options,
+      base::BindRepeating(&RecordingEncoderMuxer::OnAudioEncoded,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&RecordingEncoderMuxer::OnAudioEncoderInitialized,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void RecordingEncoderMuxer::OnAudioEncoderInitialized(media::Status status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!status.is_ok()) {
+    LOG(ERROR) << "Could not initialize the audio encoder: "
+               << status.message();
+    NotifyFailure(FailureType::kEncoderInitialization,
+                  /*for_video=*/false);
+    return;
+  }
+
+  is_audio_encoder_initialized_ = true;
+  for (auto& frame : pending_audio_frames_)
+    EncodeAudioImpl(std::move(frame));
+  pending_audio_frames_.clear();
 }
 
 void RecordingEncoderMuxer::OnVideoEncoderInitialized(
@@ -172,6 +214,19 @@ void RecordingEncoderMuxer::OnVideoEncoderInitialized(
   for (auto& frame : pending_video_frames_)
     EncodeVideoImpl(frame);
   pending_video_frames_.clear();
+}
+
+void RecordingEncoderMuxer::EncodeAudioImpl(AudioFrame frame) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(is_audio_encoder_initialized_);
+
+  if (did_failure_occur())
+    return;
+
+  audio_encoder_->Encode(
+      std::move(frame.bus), frame.capture_time,
+      base::BindOnce(&RecordingEncoderMuxer::OnEncoderStatus,
+                     weak_ptr_factory_.GetWeakPtr(), /*for_video=*/false));
 }
 
 void RecordingEncoderMuxer::EncodeVideoImpl(
@@ -209,7 +264,8 @@ void RecordingEncoderMuxer::OnVideoEncoderOutput(
 }
 
 void RecordingEncoderMuxer::OnAudioEncoded(
-    media::EncodedAudioBuffer encoded_audio) {
+    media::EncodedAudioBuffer encoded_audio,
+    base::Optional<media::AudioEncoder::CodecDescription> codec_description) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(audio_encoder_);
 
@@ -220,6 +276,19 @@ void RecordingEncoderMuxer::OnAudioEncoded(
       encoded_audio.encoded_data_size};
   webm_muxer_.OnEncodedAudio(encoded_audio.params, std::move(encoded_data),
                              encoded_audio.timestamp);
+}
+
+void RecordingEncoderMuxer::OnAudioEncoderFlushed(base::OnceClosure on_done,
+                                                  media::Status status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!status.is_ok())
+    LOG(ERROR) << "Could not flush audio encoder: " << status.message();
+
+  DCHECK(video_encoder_);
+  video_encoder_->Flush(
+      base::BindOnce(&RecordingEncoderMuxer::OnVideoEncoderFlushed,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(on_done)));
 }
 
 void RecordingEncoderMuxer::OnVideoEncoderFlushed(base::OnceClosure on_done,
