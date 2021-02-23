@@ -11,6 +11,7 @@
  * Namespace for DPSL APIs.
  */
 var dpsl = {};
+dpsl.telemetry = null;
 dpsl.diagnostics = null;
 dpsl.internal = {};
 dpsl.internal.messagePipe =

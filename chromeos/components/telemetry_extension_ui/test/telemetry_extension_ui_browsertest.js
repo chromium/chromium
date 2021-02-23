@@ -592,9 +592,10 @@ class TestProbeService {
     this.receiver_ = null;
 
     /**
-     * @type {Array<!chromeos.health.mojom.ProbeCategoryEnum>}
+     * History of the passed argument (categories) of probeTelemetryInfo method.
+     * @type {Array<Array<!chromeos.health.mojom.ProbeCategoryEnum>>}
      */
-    this.probeTelemetryInfoCategories = null;
+    this.probeTelemetryInfoArgsHistory = [];
   }
 
   /**
@@ -612,76 +613,93 @@ class TestProbeService {
    *     !chromeos.health.mojom.TelemetryInfo}>}
    */
   probeTelemetryInfo(categories) {
-    this.probeTelemetryInfoCategories = categories;
+    this.probeTelemetryInfoArgsHistory.push(categories);
 
     const telemetryInfo =
         /** @type {!chromeos.health.mojom.TelemetryInfo} */ ({
-          backlightResult: null,
-          batteryResult: null,
-          blockDeviceResult: null,
-          bluetoothResult: null,
-          cpuResult: null,
-          fanResult: null,
-          memoryResult: null,
-          statefulPartitionResult: null,
-          timezoneResult: null,
-          vpdResult: null,
-        });
-    return Promise.resolve({telemetryInfo});
+        backlightResult: null,
+        batteryResult: null,
+        blockDeviceResult: null,
+        bluetoothResult: null,
+        cpuResult: null,
+        fanResult: null,
+        memoryResult: null,
+        statefulPartitionResult: null,
+        timezoneResult: null,
+        vpdResult: null,
+      });
+
+    return Promise.resolve({ telemetryInfo });
   }
 };
 
 // Tests with a testing Mojo probe service, so we can test for example strings
 // conversion to Mojo enum values.
 var TelemetryExtensionUIWithInterceptorBrowserTest =
-    class extends TelemetryExtensionUIBrowserTest {
-  constructor() {
-    super();
+  class extends TelemetryExtensionUIBrowserTest {
+    constructor() {
+      super();
 
-    /**
-     * @type {TestProbeService}
-     */
-    this.probeService = null;
+      /**
+       * @type {TestProbeService}
+       */
+      this.probeService = null;
 
-    this.probeServiceInterceptor = null;
-  }
+      this.probeServiceInterceptor = null;
+    }
 
-  /** @override */
-  setUp() {
-    this.probeService = new TestProbeService();
+    /** @override */
+    setUp() {
+      this.probeService = new TestProbeService();
 
-    /** @suppress {undefinedVars} */
-    this.probeServiceInterceptor = new MojoInterfaceInterceptor(
+      /** @suppress {undefinedVars} */
+      this.probeServiceInterceptor = new MojoInterfaceInterceptor(
         chromeos.health.mojom.ProbeService.$interfaceName);
-    this.probeServiceInterceptor.oninterfacerequest = (e) => {
-      this.probeService.bind(e.handle);
-    };
-    this.probeServiceInterceptor.start();
-  }
-};
+      this.probeServiceInterceptor.oninterfacerequest = (e) => {
+        this.probeService.bind(e.handle);
+      };
+      this.probeServiceInterceptor.start();
+    }
+  };
 
 // Test cases injected into the untrusted context.
 // See implementations in untrusted_browsertest.js.
 
+// Tests that telemetry methods send the correct categories.
 TEST_F(
-    'TelemetryExtensionUIWithInterceptorBrowserTest',
-    'UntrustedRequestTelemetryInfoWithInterceptor', async function() {
-      await runTestInUntrusted('UntrustedRequestTelemetryInfoWithInterceptor');
+  'TelemetryExtensionUIWithInterceptorBrowserTest',
+  'UntrustedRequestTelemetryInfoWithInterceptor', async function () {
+    await runTestInUntrusted('UntrustedRequestTelemetryInfoWithInterceptor');
 
-      assertDeepEquals(
-          [
-            chromeos.health.mojom.ProbeCategoryEnum.kBattery,
-            chromeos.health.mojom.ProbeCategoryEnum.kNonRemovableBlockDevices,
-            chromeos.health.mojom.ProbeCategoryEnum.kCachedVpdData,
-            chromeos.health.mojom.ProbeCategoryEnum.kCpu,
-            chromeos.health.mojom.ProbeCategoryEnum.kTimezone,
-            chromeos.health.mojom.ProbeCategoryEnum.kMemory,
-            chromeos.health.mojom.ProbeCategoryEnum.kBacklight,
-            chromeos.health.mojom.ProbeCategoryEnum.kFan,
-            chromeos.health.mojom.ProbeCategoryEnum.kStatefulPartition,
-            chromeos.health.mojom.ProbeCategoryEnum.kBluetooth
-          ],
-          this.probeService.probeTelemetryInfoCategories);
+    const allCategories = [
+      chromeos.health.mojom.ProbeCategoryEnum.kBattery,
+      chromeos.health.mojom.ProbeCategoryEnum.kNonRemovableBlockDevices,
+      chromeos.health.mojom.ProbeCategoryEnum.kCachedVpdData,
+      chromeos.health.mojom.ProbeCategoryEnum.kCpu,
+      chromeos.health.mojom.ProbeCategoryEnum.kTimezone,
+      chromeos.health.mojom.ProbeCategoryEnum.kMemory,
+      chromeos.health.mojom.ProbeCategoryEnum.kBacklight,
+      chromeos.health.mojom.ProbeCategoryEnum.kFan,
+      chromeos.health.mojom.ProbeCategoryEnum.kStatefulPartition,
+      chromeos.health.mojom.ProbeCategoryEnum.kBluetooth
+    ];
 
-      testDone();
-    });
+    // This comparison respects the method calls order in
+    // UntrustedRequestTelemetryInfoWithInterceptor test in
+    // untrusted_browsertest.js
+    assertDeepEquals(this.probeService.probeTelemetryInfoArgsHistory, [
+      allCategories,
+      [chromeos.health.mojom.ProbeCategoryEnum.kBacklight],
+      [chromeos.health.mojom.ProbeCategoryEnum.kBattery],
+      [chromeos.health.mojom.ProbeCategoryEnum.kNonRemovableBlockDevices],
+      [chromeos.health.mojom.ProbeCategoryEnum.kCachedVpdData],
+      [chromeos.health.mojom.ProbeCategoryEnum.kCpu],
+      [chromeos.health.mojom.ProbeCategoryEnum.kTimezone],
+      [chromeos.health.mojom.ProbeCategoryEnum.kMemory],
+      [chromeos.health.mojom.ProbeCategoryEnum.kFan],
+      [chromeos.health.mojom.ProbeCategoryEnum.kStatefulPartition],
+      [chromeos.health.mojom.ProbeCategoryEnum.kBluetooth],
+    ]);
+
+    testDone();
+  });

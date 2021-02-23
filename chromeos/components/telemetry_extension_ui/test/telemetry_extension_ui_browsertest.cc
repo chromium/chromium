@@ -38,6 +38,11 @@ constexpr base::FilePath::CharType kUntrustedTestHandlers[] = FILE_PATH_LITERAL(
     "chromeos/components/telemetry_extension_ui/test/"
     "untrusted_test_handlers.js");
 
+// File containing utils functions for JS unit tests.
+constexpr base::FilePath::CharType kUntrustedTestUtils[] = FILE_PATH_LITERAL(
+    "chromeos/components/telemetry_extension_ui/test/"
+    "untrusted_test_utils.js");
+
 // Test cases that run in the untrusted context.
 constexpr base::FilePath::CharType kUntrustedTestCases[] = FILE_PATH_LITERAL(
     "chromeos/components/telemetry_extension_ui/test/untrusted_browsertest.js");
@@ -50,6 +55,7 @@ TelemetryExtensionUiBrowserTest::TelemetryExtensionUiBrowserTest()
           chromeos::kChromeUIUntrustedTelemetryExtensionURL,
           {base::FilePath(kCr), base::FilePath(kWebUiTestUtil),
            base::FilePath(kUntrustedTestHandlers),
+           base::FilePath(kUntrustedTestUtils),
            base::FilePath(kUntrustedTestCases)}) {}
 
 TelemetryExtensionUiBrowserTest::~TelemetryExtensionUiBrowserTest() = default;

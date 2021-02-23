@@ -547,137 +547,162 @@ UNTRUSTED_TEST('UntrustedRequestTelemetryInfoUnknownCategory', async () => {
 // Tests that TelemetryInfo can be successfully requested from
 // from chrome-untrusted://.
 UNTRUSTED_TEST('UntrustedRequestTelemetryInfo', async () => {
-  const response = await chromeos.telemetry.probeTelemetryInfo([
-    'battery', 'non-removable-block-devices', 'cached-vpd-data', 'cpu',
-    'timezone', 'memory', 'backlight', 'fan', 'stateful-partition', 'bluetooth'
-  ]);
-
   // Rounded down to the nearest 100MiB due to privacy requirement.
   const availableSpace = BigInt(
       Math.floor(1125899906842624 / (100 * 1024 * 1024)) * (100 * 1024 * 1024));
 
-  assertDeepEquals(
-      {
-        batteryResult: {
-          batteryInfo: {
-            cycleCount: BigInt(100000000000000),
-            voltageNow: 1234567890.123456,
-            vendor: 'Google',
-            serialNumber: 'abcdef',
-            chargeFullDesign: 3000000000000000,
-            chargeFull: 9000000000000000,
-            voltageMinDesign: 1000000000.1001,
-            modelName: 'Google Battery',
-            chargeNow: 7777777777.777,
-            currentNow: 0.9999999999999,
-            technology: 'Li-ion',
-            status: 'Charging',
-            manufactureDate: '2020-07-30',
-            temperature: BigInt(7777777777777777),
-          }
-        },
-        blockDeviceResult: {
-          blockDeviceInfo: [{
-            path: '/dev/device1',
-            size: BigInt(5555555555555555),
-            type: 'NVMe',
-            manufacturerId: 200,
-            name: 'goog',
-            serial: '4287654321',
-            bytesReadSinceLastBoot: BigInt(9000000000000000),
-            bytesWrittenSinceLastBoot: BigInt(8000000000000000),
-            readTimeSecondsSinceLastBoot: BigInt(7000000000000000),
-            writeTimeSecondsSinceLastBoot: BigInt(6666666666666666),
-            ioTimeSecondsSinceLastBoot: BigInt(1111111111111),
-            discardTimeSecondsSinceLastBoot: BigInt(77777777777777)
-          }]
-        },
-        vpdResult: {
-          vpdInfo: {
-            skuNumber: 'sku-18',
-            serialNumber: '5CD9132880',
-            modelName: 'XX ModelName 007 XY'
-          }
-        },
-        cpuResult: {
-          cpuInfo: {
-            numTotalThreads: 2147483759,
-            architecture: 'Armv7l',
-            physicalCpus: [
+  const expectedResult = {
+    batteryResult: {
+      batteryInfo: {
+        cycleCount: BigInt(100000000000000),
+        voltageNow: 1234567890.123456,
+        vendor: 'Google',
+        serialNumber: 'abcdef',
+        chargeFullDesign: 3000000000000000,
+        chargeFull: 9000000000000000,
+        voltageMinDesign: 1000000000.1001,
+        modelName: 'Google Battery',
+        chargeNow: 7777777777.777,
+        currentNow: 0.9999999999999,
+        technology: 'Li-ion',
+        status: 'Charging',
+        manufactureDate: '2020-07-30',
+        temperature: BigInt(7777777777777777),
+      }
+    },
+    blockDeviceResult: {
+      blockDeviceInfo: [{
+        path: '/dev/device1',
+        size: BigInt(5555555555555555),
+        type: 'NVMe',
+        manufacturerId: 200,
+        name: 'goog',
+        serial: '4287654321',
+        bytesReadSinceLastBoot: BigInt(9000000000000000),
+        bytesWrittenSinceLastBoot: BigInt(8000000000000000),
+        readTimeSecondsSinceLastBoot: BigInt(7000000000000000),
+        writeTimeSecondsSinceLastBoot: BigInt(6666666666666666),
+        ioTimeSecondsSinceLastBoot: BigInt(1111111111111),
+        discardTimeSecondsSinceLastBoot: BigInt(77777777777777)
+      }]
+    },
+    vpdResult: {
+      vpdInfo: {
+        skuNumber: 'sku-18',
+        serialNumber: '5CD9132880',
+        modelName: 'XX ModelName 007 XY'
+      }
+    },
+    cpuResult: {
+      cpuInfo: {
+        numTotalThreads: 2147483759,
+        architecture: 'Armv7l',
+        physicalCpus: [
+          {
+            modelName: 'i9',
+            logicalCpus: [
               {
-                modelName: 'i9',
-                logicalCpus: [
+                maxClockSpeedKhz: 2147494759,
+                scalingMaxFrequencyKhz: 1073764046,
+                scalingCurrentFrequencyKhz: 536904245,
+                idleTimeMs: BigInt(0),
+                cStates: [
                   {
-                    maxClockSpeedKhz: 2147494759,
-                    scalingMaxFrequencyKhz: 1073764046,
-                    scalingCurrentFrequencyKhz: 536904245,
-                    idleTimeMs: BigInt(0),
-                    cStates: [
-                      {
-                        name: 'C1',
-                        timeInStateSinceLastBootUs: BigInt(1125899906875957)
-                      },
-                      {
-                        name: 'C2',
-                        timeInStateSinceLastBootUs: BigInt(1125899906877777)
-                      }
-                    ]
+                    name: 'C1',
+                    timeInStateSinceLastBootUs: BigInt(1125899906875957)
                   },
                   {
-                    maxClockSpeedKhz: 1147494759,
-                    scalingMaxFrequencyKhz: 1063764046,
-                    scalingCurrentFrequencyKhz: 936904246,
-                    idleTimeMs: BigInt(0),
-                    cStates: []
+                    name: 'C2',
+                    timeInStateSinceLastBootUs: BigInt(1125899906877777)
                   }
                 ]
               },
-              {modelName: 'i9-low-powered', logicalCpus: []}
+              {
+                maxClockSpeedKhz: 1147494759,
+                scalingMaxFrequencyKhz: 1063764046,
+                scalingCurrentFrequencyKhz: 936904246,
+                idleTimeMs: BigInt(0),
+                cStates: []
+              }
             ]
-          }
-        },
-        timezoneResult: {
-          timezoneInfo: {
-            posix: 'MST7MDT,M3.2.0,M11.1.0',
-            region: 'America/Denver',
-          }
-        },
-        memoryResult: {
-          memoryInfo: {
-            totalMemoryKib: 2147483648,
-            freeMemoryKib: 2147573648,
-            availableMemoryKib: 2147571148,
-            pageFaultsSinceLastBoot: BigInt(2199971148),
-          }
-        },
-        backlightResult: {
-          backlightInfo: [{
-            path: '/sys/backlight',
-            maxBrightness: 536880912,
-            brightness: 436880912,
-          }]
-        },
-        fanResult: {
-          fanInfo: [{
-            speedRpm: 999880912,
-          }]
-        },
-        statefulPartitionResult: {
-          partitionInfo: {
-            availableSpace: availableSpace,
-            totalSpace: BigInt(1125900006842624),
-          }
-        },
-        bluetoothResult: {
-          bluetoothAdapterInfo: [{
-            name: 'hci0',
-            address: 'ab:cd:ef:12:34:56',
-            powered: true,
-            numConnectedDevices: 4294967295
-          }]
-        }
-      },
-      response);
+          },
+          {modelName: 'i9-low-powered', logicalCpus: []}
+        ]
+      }
+    },
+    timezoneResult: {
+      timezoneInfo: {
+        posix: 'MST7MDT,M3.2.0,M11.1.0',
+        region: 'America/Denver',
+      }
+    },
+    memoryResult: {
+      memoryInfo: {
+        totalMemoryKib: 2147483648,
+        freeMemoryKib: 2147573648,
+        availableMemoryKib: 2147571148,
+        pageFaultsSinceLastBoot: BigInt(2199971148),
+      }
+    },
+    backlightResult: {
+      backlightInfo: [{
+        path: '/sys/backlight',
+        maxBrightness: 536880912,
+        brightness: 436880912,
+      }]
+    },
+    fanResult: {
+      fanInfo: [{
+        speedRpm: 999880912,
+      }]
+    },
+    statefulPartitionResult: {
+      partitionInfo: {
+        availableSpace: availableSpace,
+        totalSpace: BigInt(1125900006842624),
+      }
+    },
+    bluetoothResult: {
+      bluetoothAdapterInfo: [{
+        name: 'hci0',
+        address: 'ab:cd:ef:12:34:56',
+        powered: true,
+        numConnectedDevices: 4294967295
+      }]
+    }
+  };
+
+  await Promise
+      .all([
+        chromeos.telemetry.probeTelemetryInfo([
+          'battery', 'non-removable-block-devices', 'cached-vpd-data', 'cpu',
+          'timezone', 'memory', 'backlight', 'fan', 'stateful-partition',
+          'bluetooth'
+        ]),
+        dpsl.telemetry.getBatteryInfo(),
+        dpsl.telemetry.getNonRemovableBlockDevicesInfo(),
+        dpsl.telemetry.getCachedVpdInfo(), dpsl.telemetry.getCpuInfo(),
+        dpsl.telemetry.getTimezoneInfo(), dpsl.telemetry.getMemoryInfo(),
+        dpsl.telemetry.getBacklightInfo(), dpsl.telemetry.getFanInfo(),
+        dpsl.telemetry.getStatefulPartitionInfo(),
+        dpsl.telemetry.getBluetoothInfo()
+      ])
+      .then((values) => {
+        assertDeepEquals(
+            [
+              expectedResult, expectedResult.batteryResult.batteryInfo,
+              expectedResult.blockDeviceResult.blockDeviceInfo,
+              expectedResult.vpdResult.vpdInfo,
+              expectedResult.cpuResult.cpuInfo,
+              expectedResult.timezoneResult.timezoneInfo,
+              expectedResult.memoryResult.memoryInfo,
+              expectedResult.backlightResult.backlightInfo,
+              expectedResult.fanResult.fanInfo,
+              expectedResult.statefulPartitionResult.partitionInfo,
+              expectedResult.bluetoothResult.bluetoothAdapterInfo
+            ],
+            values);
+      });
 });
 
 // Tests that sendCommandToRoutine returns the correct Object
@@ -717,83 +742,137 @@ UNTRUSTED_TEST(
 // Tests that TelemetryInfo can be successfully requested from
 // from chrome-untrusted://.
 UNTRUSTED_TEST('UntrustedRequestTelemetryInfoWithInterceptor', async () => {
-  const response = await chromeos.telemetry.probeTelemetryInfo([
+  const probeTelemetryResponse = await chromeos.telemetry.probeTelemetryInfo([
     'battery', 'non-removable-block-devices', 'cached-vpd-data', 'cpu',
     'timezone', 'memory', 'backlight', 'fan', 'stateful-partition', 'bluetooth'
   ]);
-  assertDeepEquals({}, response);
+  assertDeepEquals({}, probeTelemetryResponse);
+
+  const expectedResult = JSON.stringify(
+      {type: 'no-result-error', msg: 'Backend returned no result'});
+
+  // The order must be kept.
+  // See UntrustedRequestTelemetryInfoWithInterceptor test in
+  // telemetry_extension_ui_browsertests.js.
+  await Promise.all([
+    verifyErrorMessage(dpsl.telemetry.getBacklightInfo(), expectedResult),
+    verifyErrorMessage(dpsl.telemetry.getBatteryInfo(), expectedResult),
+    verifyErrorMessage(
+        dpsl.telemetry.getNonRemovableBlockDevicesInfo(), expectedResult),
+    verifyErrorMessage(dpsl.telemetry.getCachedVpdInfo(), expectedResult),
+    verifyErrorMessage(dpsl.telemetry.getCpuInfo(), expectedResult),
+    verifyErrorMessage(dpsl.telemetry.getTimezoneInfo(), expectedResult),
+    verifyErrorMessage(dpsl.telemetry.getMemoryInfo(), expectedResult),
+    verifyErrorMessage(dpsl.telemetry.getFanInfo(), expectedResult),
+    verifyErrorMessage(
+        dpsl.telemetry.getStatefulPartitionInfo(), expectedResult),
+    verifyErrorMessage(dpsl.telemetry.getBluetoothInfo(), expectedResult)
+  ]);
 });
 
 // Tests that TelemetryInfo with errors can be successfully requested from
 // from chrome-untrusted://.
 UNTRUSTED_TEST('UntrustedRequestTelemetryInfoWithErrors', async () => {
-  const response = await chromeos.telemetry.probeTelemetryInfo([
+  const expectedResult = {
+    batteryResult: {
+      error: {
+        type: 'file-read-error',
+        msg: 'battery error',
+      }
+    },
+    blockDeviceResult: {
+      error: {
+        type: 'parse-error',
+        msg: 'block device error',
+      }
+    },
+    vpdResult: {
+      error: {
+        type: 'system-utility-error',
+        msg: 'vpd error',
+      }
+    },
+    cpuResult: {
+      error: {
+        type: 'service-unavailable',
+        msg: 'cpu error',
+      }
+    },
+    timezoneResult: {
+      error: {
+        type: 'file-read-error',
+        msg: 'timezone error',
+      }
+    },
+    memoryResult: {
+      error: {
+        type: 'parse-error',
+        msg: 'memory error',
+      }
+    },
+    backlightResult: {
+      error: {
+        type: 'system-utility-error',
+        msg: 'backlight error',
+      }
+    },
+    fanResult: {
+      error: {
+        type: 'service-unavailable',
+        msg: 'fan error',
+      }
+    },
+    statefulPartitionResult: {
+      error: {
+        type: 'file-read-error',
+        msg: 'partition error',
+      }
+    },
+    bluetoothResult: {
+      error: {
+        type: 'parse-error',
+        msg: 'bluetooth error',
+      }
+    }
+  };
+
+  const probeTelemetryResponse = await chromeos.telemetry.probeTelemetryInfo([
     'battery', 'non-removable-block-devices', 'cached-vpd-data', 'cpu',
     'timezone', 'memory', 'backlight', 'fan', 'stateful-partition', 'bluetooth'
   ]);
+  assertDeepEquals(expectedResult, probeTelemetryResponse);
 
-  assertDeepEquals(
-      {
-        batteryResult: {
-          error: {
-            type: 'file-read-error',
-            msg: 'battery error',
-          }
-        },
-        blockDeviceResult: {
-          error: {
-            type: 'parse-error',
-            msg: 'block device error',
-          }
-        },
-        vpdResult: {
-          error: {
-            type: 'system-utility-error',
-            msg: 'vpd error',
-          }
-        },
-        cpuResult: {
-          error: {
-            type: 'service-unavailable',
-            msg: 'cpu error',
-          }
-        },
-        timezoneResult: {
-          error: {
-            type: 'file-read-error',
-            msg: 'timezone error',
-          }
-        },
-        memoryResult: {
-          error: {
-            type: 'parse-error',
-            msg: 'memory error',
-          }
-        },
-        backlightResult: {
-          error: {
-            type: 'system-utility-error',
-            msg: 'backlight error',
-          }
-        },
-        fanResult: {
-          error: {
-            type: 'service-unavailable',
-            msg: 'fan error',
-          }
-        },
-        statefulPartitionResult: {
-          error: {
-            type: 'file-read-error',
-            msg: 'partition error',
-          }
-        },
-        bluetoothResult: {
-          error: {
-            type: 'parse-error',
-            msg: 'bluetooth error',
-          }
-        }
-      },
-      response);
+  // Tests for dpsl.telemetry.*:
+  await Promise.all([
+    verifyErrorMessage(
+        dpsl.telemetry.getBacklightInfo(),
+        JSON.stringify(expectedResult.backlightResult.error)),
+    verifyErrorMessage(
+        dpsl.telemetry.getBatteryInfo(),
+        JSON.stringify(expectedResult.batteryResult.error)),
+    verifyErrorMessage(
+        dpsl.telemetry.getNonRemovableBlockDevicesInfo(),
+        JSON.stringify(expectedResult.blockDeviceResult.error)),
+    verifyErrorMessage(
+        dpsl.telemetry.getCachedVpdInfo(),
+        JSON.stringify(expectedResult.vpdResult.error)),
+    verifyErrorMessage(
+        dpsl.telemetry.getCpuInfo(),
+        JSON.stringify(expectedResult.cpuResult.error)),
+    verifyErrorMessage(
+        dpsl.telemetry.getTimezoneInfo(),
+        JSON.stringify(expectedResult.timezoneResult.error)),
+    verifyErrorMessage(
+        dpsl.telemetry.getMemoryInfo(),
+        JSON.stringify(expectedResult.memoryResult.error)),
+    verifyErrorMessage(
+        dpsl.telemetry.getFanInfo(),
+        JSON.stringify(expectedResult.fanResult.error)),
+    verifyErrorMessage(
+        dpsl.telemetry.getStatefulPartitionInfo(),
+        JSON.stringify(expectedResult.statefulPartitionResult.error)),
+    verifyErrorMessage(
+        dpsl.telemetry.getBluetoothInfo(),
+        JSON.stringify(expectedResult.bluetoothResult.error))
+  ]);
 });

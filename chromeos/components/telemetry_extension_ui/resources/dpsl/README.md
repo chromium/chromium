@@ -7,6 +7,10 @@ diagnostics interfaces exposed to third-parties:
     | Telemetry (a.k.a. Probe) interface for getting device telemetry
     | information.
 
+# Important Note
+The namespace for DPSL APIs is changed from chromeos.telemetry.* to
+dpsl.telemetry.*. New third-party code should use the new namespace, instead.
+
 # Usage Examples
 ```
 // Fetch Telemetry Info: CPU, VPD Info.

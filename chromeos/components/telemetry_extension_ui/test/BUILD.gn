@@ -43,6 +43,7 @@ source_set("browser_test_support") {
     "untrusted_app_resources/",
     "untrusted_browsertest.js",
     "untrusted_test_handlers.js",
+    "untrusted_test_utils.js",
   ]
 }
 
@@ -83,6 +84,7 @@ js_library("untrusted_browsertest") {
   sources = [
     "untrusted_browsertest.js",
     "untrusted_test_handlers.js",
+    "untrusted_test_utils.js",
   ]
   deps = [ "//chromeos/components/telemetry_extension_ui/resources/dpsl" ]
   externs_list = [
