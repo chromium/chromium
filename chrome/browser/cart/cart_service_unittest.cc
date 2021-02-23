@@ -21,6 +21,7 @@ cart_db::ChromeCartContentProto BuildProto(const char* domain,
   cart_db::ChromeCartContentProto proto;
   proto.set_key(domain);
   proto.set_merchant_cart_url(merchant_url);
+  proto.set_timestamp(base::Time::Now().ToDoubleT());
   return proto;
 }
 
@@ -150,6 +151,10 @@ class CartServiceTest : public testing::Test {
   void TearDown() override {}
 
  protected:
+  // This needs to be destroyed after task_environment, so that any tasks on
+  // other threads that might check if features are enabled complete first.
+  base::test::ScopedFeatureList features_;
+
   // Required to run tests from UI thread.
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
@@ -443,29 +448,6 @@ TEST_F(CartServiceTest, TestOnHistoryDeletion) {
   run_loop[2].Run();
 }
 
-TEST_F(CartServiceTest, TestFakeData) {
-  base::RunLoop run_loop[2];
-  TestingProfile fake_profile;
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpChromeCartModule,
-      {{"NtpChromeCartModuleDataParam", "fake"}});
-  CartService* fake_service = CartServiceFactory::GetForProfile(&fake_profile);
-  CartDB* fake_db = fake_service->GetDB();
-
-  fake_service->LoadCartsWithFakeData(
-      base::BindOnce(&CartServiceTest::GetEvaluationFakeDataDB,
-                     base::Unretained(this), run_loop[0].QuitClosure()));
-  run_loop[0].Run();
-
-  fake_service->Shutdown();
-
-  fake_db->LoadAllCarts(
-      base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
-                     run_loop[1].QuitClosure(), kEmptyExpected));
-  run_loop[1].Run();
-}
-
 // Tests hiding a single cart and undoing the hide.
 TEST_F(CartServiceTest, TestHideCart) {
   CartDB* cart_db_ = service_->GetDB();
@@ -616,15 +598,16 @@ TEST_F(CartServiceTest, TestControlShowWelcomeSurface) {
 // Tests cart data is loaded in the order of timestamp.
 TEST_F(CartServiceTest, TestOrderInTimestamp) {
   base::RunLoop run_loop[3];
+  double time_now = base::Time::Now().ToDoubleT();
   cart_db::ChromeCartContentProto merchant_A_proto =
       BuildProto(kMockMerchantA, kMockMerchantURLA);
-  merchant_A_proto.set_timestamp(0);
+  merchant_A_proto.set_timestamp(time_now);
   cart_db::ChromeCartContentProto merchant_B_proto =
       BuildProto(kMockMerchantB, kMockMerchantURLB);
-  merchant_B_proto.set_timestamp(1);
+  merchant_B_proto.set_timestamp(time_now + 1);
   cart_db::ChromeCartContentProto merchant_C_proto =
       BuildProto(kMockMerchantC, kMockMerchantURLC);
-  merchant_C_proto.set_timestamp(2);
+  merchant_C_proto.set_timestamp(time_now + 2);
   service_->AddCart(kMockMerchantA, merchant_A_proto);
   service_->AddCart(kMockMerchantB, merchant_B_proto);
   service_->AddCart(kMockMerchantC, merchant_C_proto);
@@ -640,7 +623,7 @@ TEST_F(CartServiceTest, TestOrderInTimestamp) {
                      run_loop[0].QuitClosure(), result1));
   run_loop[0].Run();
 
-  merchant_A_proto.set_timestamp(3);
+  merchant_A_proto.set_timestamp(time_now + 3);
   service_->AddCart(kMockMerchantA, merchant_A_proto);
   task_environment_.RunUntilIdle();
   const std::vector<
@@ -653,7 +636,7 @@ TEST_F(CartServiceTest, TestOrderInTimestamp) {
                      run_loop[1].QuitClosure(), result2));
   run_loop[1].Run();
 
-  merchant_C_proto.set_timestamp(4);
+  merchant_C_proto.set_timestamp(time_now + 4);
   service_->AddCart(kMockMerchantC, merchant_C_proto);
   task_environment_.RunUntilIdle();
   const std::vector<
@@ -684,4 +667,72 @@ TEST_F(CartServiceTest, TestDomainToCartURLMapping) {
   EXPECT_EQ("https://cart.ebay.com", getDomainCartURL("ebay.com"));
 
   EXPECT_EQ("", getDomainCartURL("example.com"));
+}
+
+class CartServiceTestWithFeature : public CartServiceTest {
+ public:
+  // Features need to be initialized before CartServiceTest::SetUp runs, in
+  // order to avoid tsan data race error on FeatureList.
+  CartServiceTestWithFeature() {
+    features_.InitAndEnableFeatureWithParameters(
+        ntp_features::kNtpChromeCartModule,
+        {{"NtpChromeCartModuleDataParam", "fake"}});
+  }
+};
+
+TEST_F(CartServiceTestWithFeature, TestFakeData) {
+  base::RunLoop run_loop[2];
+  TestingProfile fake_profile;
+  CartService* fake_service = CartServiceFactory::GetForProfile(&fake_profile);
+  CartDB* fake_db = fake_service->GetDB();
+
+  fake_service->LoadCartsWithFakeData(
+      base::BindOnce(&CartServiceTest::GetEvaluationFakeDataDB,
+                     base::Unretained(this), run_loop[0].QuitClosure()));
+  run_loop[0].Run();
+
+  fake_service->Shutdown();
+
+  fake_db->LoadAllCarts(
+      base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
+                     run_loop[1].QuitClosure(), kEmptyExpected));
+  run_loop[1].Run();
+}
+
+// Tests expired entries are deleted when data is loaded.
+TEST_F(CartServiceTest, TestExpiredDataDeleted) {
+  base::RunLoop run_loop[3];
+  cart_db::ChromeCartContentProto merchant_proto =
+      BuildProto(kMockMerchantA, kMockMerchantURLA);
+
+  merchant_proto.set_timestamp(
+      (base::Time::Now() - base::TimeDelta::FromDays(16)).ToDoubleT());
+  service_->AddCart(kMockMerchantA, merchant_proto);
+  task_environment_.RunUntilIdle();
+
+  // The expired entry is deleted in load results.
+  service_->LoadAllActiveCarts(
+      base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
+                     run_loop[0].QuitClosure(), kEmptyExpected));
+  run_loop[0].Run();
+
+  // The expired entry is deleted in database.
+  service_->LoadCart(
+      kMockMerchantA,
+      base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
+                     run_loop[1].QuitClosure(), kEmptyExpected));
+  run_loop[1].Run();
+
+  merchant_proto.set_timestamp(
+      (base::Time::Now() - base::TimeDelta::FromDays(13)).ToDoubleT());
+  service_->AddCart(kMockMerchantA, merchant_proto);
+  task_environment_.RunUntilIdle();
+
+  const std::vector<
+      ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
+      result = {{kMockMerchantA, merchant_proto}};
+  service_->LoadAllActiveCarts(
+      base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
+                     run_loop[2].QuitClosure(), result));
+  run_loop[2].Run();
 }
