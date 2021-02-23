@@ -30,7 +30,7 @@ class GtkEventLoopX11 {
   ~GtkEventLoopX11();
 
   static void DispatchGdkEvent(GdkEvent* gdk_event, gpointer);
-  static void ProcessGdkEventKey(const GdkEventKey& gdk_event_key);
+  static void ProcessGdkEventKey(GdkEvent* gdk_event);
 };
 
 }  // namespace ui

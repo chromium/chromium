@@ -11,9 +11,15 @@
 #include "ui/base/glib/glib_signal.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gtk/gtk_buildflags.h"
 
-typedef struct _GdkWindow GdkWindow;
 typedef struct _GtkIMContext GtkIMContext;
+
+#if BUILDFLAG(GTK_VERSION) == 3
+using GdkWindow = struct _GdkWindow;
+#else
+using GdkWindow = struct _GdkSurface;
+#endif
 
 namespace gtk {
 

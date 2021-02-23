@@ -215,6 +215,7 @@ void InputMethodContextImplGtk::SetContextClientWindow(GdkWindow* window) {
   if (window == gdk_last_set_client_window_)
     return;
 #if GTK_CHECK_VERSION(3, 90, 0)
+  asdf;
   gtk_im_context_set_client_widget(gtk_context_, GTK_WIDGET(window));
 #else
   gtk_im_context_set_client_window(gtk_context_, window);
