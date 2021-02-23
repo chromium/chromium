@@ -18,5 +18,8 @@ source_set("native_messaging") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//extensions/browser/api/messaging:native_messaging",
+  ]
 }
