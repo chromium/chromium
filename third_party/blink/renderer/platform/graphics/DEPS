@@ -34,7 +34,9 @@ include_rules = [
     "+media/base/media_switches.h",
     "+media/base/video_frame.h",
     "+media/base/video_types.h",
+    "+media/base/video_util.h",
     "+media/media_buildflags.h",
+    "+media/renderers/paint_canvas_video_renderer.h",
     "+media/renderers/video_resource_updater.h",
     "+services/viz/public/mojom",
     "+services/viz/public/cpp/gpu/context_provider_command_buffer.h",
@@ -85,5 +87,8 @@ specific_include_rules = {
   ],
   "rw_buffer_test.cc": [
     "+base/threading/platform_thread.h",
+  ],
+  "video_frame_image_util_test.cc": [
+    "+media/renderers/shared_image_video_frame_test_utils.h",
   ],
 }

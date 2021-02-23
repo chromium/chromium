@@ -21,11 +21,14 @@ namespace blink {
 
 class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
  public:
-  FakeWebGraphicsContext3DProvider(gpu::gles2::GLES2Interface* gl,
-                                   cc::ImageDecodeCache* cache = nullptr,
-                                   GrDirectContext* gr_context = nullptr)
+  explicit FakeWebGraphicsContext3DProvider(
+      gpu::gles2::GLES2Interface* gl,
+      cc::ImageDecodeCache* cache = nullptr,
+      GrDirectContext* gr_context = nullptr,
+      viz::RasterContextProvider* raster_context_provider = nullptr)
       : gl_(gl),
-        image_decode_cache_(cache ? cache : &stub_image_decode_cache_) {
+        image_decode_cache_(cache ? cache : &stub_image_decode_cache_),
+        raster_context_provider_(raster_context_provider) {
     if (gr_context) {
       gr_context_ = sk_ref_sp<GrDirectContext>(gr_context);
     } else {
@@ -91,7 +94,7 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
                       media::VideoFrame* video_frame,
                       cc::PaintCanvas* canvas) override {}
   viz::RasterContextProvider* RasterContextProvider() const override {
-    return nullptr;
+    return raster_context_provider_;
   }
 
  private:
@@ -104,6 +107,7 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
   gpu::GpuFeatureInfo gpu_feature_info_;
   WebglPreferences webgl_preferences_;
   cc::ImageDecodeCache* image_decode_cache_;
+  viz::RasterContextProvider* raster_context_provider_;
 };
 
 }  // namespace blink

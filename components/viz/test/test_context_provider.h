@@ -179,6 +179,8 @@ class TestContextProvider
 
   TestContextSupport* support() { return support_.get(); }
 
+  gpu::GpuFeatureInfo& GetWritableGpuFeatureInfo() { return gpu_feature_info_; }
+
  protected:
   friend class base::RefCountedThreadSafe<TestContextProvider>;
   ~TestContextProvider() override;

@@ -7,34 +7,24 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
-#include "build/build_config.h"
-#include "components/viz/common/gpu/raster_context_provider.h"
-#include "components/viz/common/resources/single_release_callback.h"
-#include "gpu/command_buffer/client/shared_image_interface.h"
-#include "gpu/config/gpu_feature_info.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_metadata.h"
 #include "media/base/video_frame_pool.h"
 #include "media/base/video_util.h"
-#include "media/base/wait_and_replace_sync_token_client.h"
-#include "media/renderers/paint_canvas_video_renderer.h"
-#include "media/renderers/video_frame_yuv_converter.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_plane_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_pixel_format.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
-#include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
-#include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
-#include "third_party/libyuv/include/libyuv.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 
 // TODO(crbug.com/1175907): Remove this include once we remove
@@ -176,123 +166,6 @@ const char CachedVideoFramePool::kSupplementName[] = "CachedVideoFramePool";
 const base::TimeDelta CachedVideoFramePool::kIdleTimeout =
     base::TimeDelta::FromSeconds(10);
 
-scoped_refptr<viz::RasterContextProvider> GetRasterContextProvider() {
-  auto wrapper = SharedGpuContext::ContextProviderWrapper();
-  if (!wrapper)
-    return nullptr;
-
-  if (auto* provider = wrapper->ContextProvider())
-    return base::WrapRefCounted(provider->RasterContextProvider());
-
-  return nullptr;
-}
-
-bool CanUseZeroCopyImages(const media::VideoFrame& frame) {
-  // SharedImage optimization: create AcceleratedStaticBitmapImage directly.
-  // Disabled on Android because the hardware decode implementation may neuter
-  // frames, which would violate ImageBitmap requirements.
-  // TODO(sandersd): Handle YUV pixel formats.
-  // TODO(sandersd): Handle high bit depth formats.
-#if defined(OS_ANDROID)
-  return false;
-#else
-  return frame.NumTextures() == 1 &&
-         frame.mailbox_holder(0).mailbox.IsSharedImage() &&
-         (frame.format() == media::PIXEL_FORMAT_ARGB ||
-          frame.format() == media::PIXEL_FORMAT_XRGB ||
-          frame.format() == media::PIXEL_FORMAT_ABGR ||
-          frame.format() == media::PIXEL_FORMAT_XBGR ||
-          frame.format() == media::PIXEL_FORMAT_BGRA);
-#endif
-}
-
-scoped_refptr<StaticBitmapImage> CreateImage(
-    scoped_refptr<media::VideoFrame> frame) {
-  if (CanUseZeroCopyImages(*frame)) {
-    // TODO(sandersd): Do we need to be able to handle limited-range RGB? It
-    // may never happen, and SkColorSpace doesn't know about it.
-    auto sk_color_space =
-        frame->ColorSpace().GetAsFullRangeRGB().ToSkColorSpace();
-    if (!sk_color_space)
-      sk_color_space = SkColorSpace::MakeSRGB();
-
-    const SkImageInfo sk_image_info = SkImageInfo::Make(
-        frame->coded_size().width(), frame->coded_size().height(),
-        kN32_SkColorType, kUnpremul_SkAlphaType, std::move(sk_color_space));
-
-    // Hold a ref by storing it in the release callback.
-    auto release_callback = viz::SingleReleaseCallback::Create(
-        WTF::Bind([](scoped_refptr<media::VideoFrame> frame,
-                     const gpu::SyncToken& sync_token, bool is_lost) {},
-                  frame));
-
-    return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
-        frame->mailbox_holder(0).mailbox, frame->mailbox_holder(0).sync_token,
-        0u, sk_image_info, frame->mailbox_holder(0).texture_target, true,
-        // Pass nullptr for |context_provider_wrapper|, because we don't
-        // know which context the mailbox came from. It is used only to
-        // detect when the mailbox is invalid due to context loss, and is
-        // ignored when |is_cross_thread|.
-        base::WeakPtr<WebGraphicsContext3DProviderWrapper>(),
-        // Pass null |context_thread_ref|, again because we don't know
-        // which context the mailbox came from. This should always trigger
-        // |is_cross_thread|.
-        base::PlatformThreadRef(),
-        // The task runner is only used for |release_callback|.
-        Thread::Current()->GetTaskRunner(), std::move(release_callback));
-  }
-
-  // TODO(crbug.com/1175907): Share the code below with
-  // ImageBitmap::ImageBitmap(VideoElement). If the zero copy path above works
-  // in that case we should look into it as well.
-  auto raster_context_provider = GetRasterContextProvider();
-
-  std::unique_ptr<CanvasResourceProvider> resource_provider;
-  if (frame->HasTextures()) {
-    if (!raster_context_provider) {
-      DLOG(ERROR) << "Unable to process a texture backed VideoFrame w/o a "
-                     "RasterContextProvider.";
-      return nullptr;  // Unable to get/create a shared main thread context.
-    }
-    if (!raster_context_provider->GrContext() &&
-        !raster_context_provider->ContextCapabilities().supports_oop_raster) {
-      DLOG(ERROR) << "Unable to process a texture backed VideoFrame w/o a "
-                     "GrContext or OOP raster support.";
-      return nullptr;  // The context has been lost.
-    }
-  }
-
-  if (!raster_context_provider ||
-      raster_context_provider->GetGpuFeatureInfo().IsWorkaroundEnabled(
-          DISABLE_IMAGEBITMAP_FROM_VIDEO_USING_GPU) ||
-      !SharedGpuContext::IsGpuCompositingEnabled()) {
-    resource_provider = CanvasResourceProvider::CreateBitmapProvider(
-        IntSize(frame->visible_rect().size()), kLow_SkFilterQuality,
-        CanvasResourceParams(),
-        CanvasResourceProvider::ShouldInitialize::kCallClear);
-  } else {
-    resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
-        IntSize(frame->visible_rect().size()), kLow_SkFilterQuality,
-        CanvasResourceParams(CanvasColorSpace::kSRGB, kN32_SkColorType,
-                             kPremul_SkAlphaType),  // Default canvas settings,
-        CanvasResourceProvider::ShouldInitialize::kCallClear,
-        SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-        false,  // Origin of GL texture is bottom left on screen
-        gpu::SHARED_IMAGE_USAGE_DISPLAY);
-  }
-
-  cc::PaintFlags media_flags;
-  media_flags.setAlpha(0xFF);
-  media_flags.setFilterQuality(kLow_SkFilterQuality);
-  media_flags.setBlendMode(SkBlendMode::kSrc);
-
-  media::PaintCanvasVideoRenderer().Paint(
-      frame.get(), resource_provider->Canvas(),
-      gfx::RectF(frame->visible_rect()), media_flags, media::kNoTransformation,
-      raster_context_provider.get());
-  return resource_provider->Snapshot();
-}
-
 bool IsSupportedPlanarFormat(const media::VideoFrame& frame) {
   if (!frame.IsMappable() && !frame.HasGpuMemoryBuffer())
     return false;
@@ -375,10 +248,6 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   const gfx::Size natural_size = coded_size;
 
   scoped_refptr<media::VideoFrame> frame;
-
-  // Now only SkImage_Gpu implemented the readbackYUV420 method, so for
-  // non-texture image, still use libyuv do the csc until SkImage_Base
-  // implement asyncRescaleAndReadPixelsYUV420.
   if (sk_image->isTextureBacked()) {
     YUVReadbackContext result;
     result.coded_size = coded_size;
@@ -768,7 +637,7 @@ scoped_refptr<Image> VideoFrame::GetSourceImageForCanvas(
     return UnacceleratedStaticBitmapImage::Create(std::move(sk_img));
   }
 
-  const auto image = CreateImage(local_handle->frame());
+  const auto image = CreateImageFromVideoFrame(local_handle->frame());
   if (!image) {
     *status = kInvalidSourceImageStatus;
     return nullptr;
@@ -803,8 +672,11 @@ bool VideoFrame::IsOpaque() const {
 }
 
 bool VideoFrame::IsAccelerated() const {
-  if (const auto& frame = handle_->frame())
-    return CanUseZeroCopyImages(*frame);
+  if (auto local_handle = handle_->CloneForInternalUse()) {
+    return handle_->sk_image() ? false
+                               : WillCreateAcceleratedImagesFromVideoFrame(
+                                     local_handle->frame().get());
+  }
   return false;
 }
 
@@ -835,7 +707,7 @@ ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
                                                  exception_state);
   }
 
-  const auto image = CreateImage(local_handle->frame());
+  const auto image = CreateImageFromVideoFrame(local_handle->frame());
   if (!image) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,

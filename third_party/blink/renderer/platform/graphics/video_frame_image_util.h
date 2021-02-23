@@ -1,0 +1,60 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_VIDEO_FRAME_IMAGE_UTIL_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_VIDEO_FRAME_IMAGE_UTIL_H_
+
+#include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/platform/geometry/int_size.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
+
+// Note: Don't include "media/base/video_frame.h" here without good reason,
+// since it includes a lot of non-blink types which can pollute the namespace.
+
+namespace media {
+class PaintCanvasVideoRenderer;
+class VideoFrame;
+}  // namespace media
+
+namespace viz {
+class RasterContextProvider;
+}
+
+namespace blink {
+class CanvasResourceProvider;
+class StaticBitmapImage;
+
+// Returns true if CreateImageFromVideoFrame() expects to create an
+// AcceleratedStaticBitmapImage. Note: This may be overridden if a software
+// |resource_provider| is given to CreateImageFromVideoFrame().
+PLATFORM_EXPORT bool WillCreateAcceleratedImagesFromVideoFrame(
+    const media::VideoFrame* frame);
+
+// Returns a StaticBitmapImage for the given frame. Accelerated images will be
+// preferred if possible. A zero copy mechanism will be preferred if possible
+// unless |allow_zero_copy_images| is false.
+//
+// |video_renderer| may optionally be provided in cases where the same frame may
+// end up repeatedly converted.
+//
+// Likewise |resource_provider| may be provided to prevent thrashing when this
+// method is called with high frequency.
+PLATFORM_EXPORT scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
+    scoped_refptr<media::VideoFrame> frame,
+    bool allow_zero_copy_images = true,
+    CanvasResourceProvider* resource_provider = nullptr,
+    media::PaintCanvasVideoRenderer* video_renderer = nullptr);
+
+// Creates a CanvasResourceProvider which is appropriate for drawing VideoFrame
+// objects into. Some callers to CreateImageFromVideoFrame() may choose to cache
+// their resource providers. If |raster_context_provider| is null a software
+// resource provider will be returned.
+PLATFORM_EXPORT std::unique_ptr<CanvasResourceProvider>
+CreateResourceProviderForVideoFrame(
+    IntSize size,
+    viz::RasterContextProvider* raster_context_provider);
+
+}  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_VIDEO_FRAME_IMAGE_UTIL_H_

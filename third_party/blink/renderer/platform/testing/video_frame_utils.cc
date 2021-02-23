@@ -29,9 +29,9 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
     media::VideoPixelFormat pixel_format) {
   switch (storage_type) {
     case media::VideoFrame::STORAGE_OWNED_MEMORY:
-      return media::VideoFrame::CreateFrame(pixel_format, coded_size,
-                                            visible_rect, natural_size,
-                                            base::TimeDelta());
+      return media::VideoFrame::CreateZeroInitializedFrame(
+          pixel_format, coded_size, visible_rect, natural_size,
+          base::TimeDelta());
     case media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER: {
       base::Optional<gfx::BufferFormat> buffer_format =
           media::VideoPixelFormatToGfxBufferFormat(pixel_format);
@@ -55,10 +55,11 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
           coded_size, buffer_format.value());
       gpu::MailboxHolder mailboxes[media::VideoFrame::kMaxPlanes];
       // Set mailbox names so this registers as a texture.
+      mailboxes[0].mailbox = gpu::Mailbox::GenerateForSharedImage();
       for (size_t i = 0; i < media::VideoFrame::NumPlanes(pixel_format); ++i) {
         mailboxes[i].mailbox.name[0] = 1;
       }
-      mailboxes[0].mailbox.GenerateForSharedImage();
+
       return media::VideoFrame::WrapNativeTextures(
           pixel_format, mailboxes, base::NullCallback(), coded_size,
           visible_rect, natural_size, base::TimeDelta());
