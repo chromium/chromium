@@ -39,11 +39,11 @@
       <div slot="bottom-buttons">
         <oobe-text-button id="skip-button" on-click="onSkipTap_"
             disabled="[[buttonsDisabled]]"
-            text-key="assistantOptinNoThanksButton">
+            text-key="assistantOptinSkipButton">
         </oobe-text-button>
-        <oobe-text-button id="agree-button" inverse on-click="onAgreeTap_"
-            disabled="[[buttonsDisabled]]" text-key="assistantOptinAgreeButton">
-        </oobe-text-button>
+        <oobe-next-button id="agree-button" on-click="onAgreeTap_"
+            disabled="[[buttonsDisabled]]" text-key="next">
+        </oobe-next-button>
       </div>
     </oobe-adaptive-dialog>
 
@@ -63,7 +63,7 @@
       <div slot="subtitle">
         [[i18nDynamic(locale, 'assistantVoiceMatchFooter')]]
       </div>
-      <div slot="content" class="container">
+      <div slot="content" class="horizontal-mode-horizontal-centering">
         <div id="voice-match-entries">
           <voice-match-entry id="voice-entry-0">
             <div slot="entry-content">
@@ -93,7 +93,7 @@
       </div>
       <div slot="bottom-buttons">
         <oobe-text-button id="later-button" on-click="onSkipTap_"
-            disabled="[[buttonsDisabled]]" text-key="assistantOptinLaterButton">
+            disabled="[[buttonsDisabled]]" text-key="assistantOptinSkipButton">
         </oobe-text-button>
       </div>
     </oobe-adaptive-dialog>

@@ -408,6 +408,9 @@ class AssistantOptInFlowTest : public OobeBaseTest {
     test::OobeJS().Evaluate(test::GetOobeElementPath(kAssistantValueProp) +
                             ".setUrlTemplateForTesting('" + url_template +
                             "')");
+    test::OobeJS().Evaluate(test::GetOobeElementPath(kAssistantRelatedInfo) +
+                            ".setUrlTemplateForTesting('" + url_template +
+                            "')");
     test::OobeJS().Evaluate(test::GetOobeElementPath(kAssistantVoiceMatch) +
                             ".setDoneActionDelayForTesting(0)");
   }

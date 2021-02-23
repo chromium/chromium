@@ -33,9 +33,25 @@ Polymer({
     /**
      * Title key of the screen.
      */
-    titleKey: {
+    titleKey_: {
       type: String,
       value: 'assistantRelatedInfoTitle',
+    },
+
+    /**
+     * Text key of the next button.
+     */
+    nextButtonKey_: {
+      type: String,
+      value: 'next',
+    },
+
+    /**
+     * Text key of the skip button.
+     */
+    skipButtonKey_: {
+      type: String,
+      value: 'assistantOptinSkipButton',
     },
 
     /**
@@ -44,8 +60,62 @@ Polymer({
     skipActivityControl_: {
       type: Boolean,
       value: false,
-    }
+    },
   },
+
+  setUrlTemplateForTesting(url) {
+    this.urlTemplate_ = url;
+  },
+
+  /**
+   * The animation URL template - loaded from loadTimeData.
+   * The template is expected to have '$' instead of the locale.
+   * @private {string}
+   */
+  urlTemplate_:
+      'https://www.gstatic.com/opa-android/oobe/a02187e41eed9e42/v3_omni_$.html',
+
+  /**
+   * Whether try to reload with the default url when a 404 error occurred.
+   * @type {boolean}
+   * @private
+   */
+  reloadWithDefaultUrl_: false,
+
+  /**
+   * Whether an error occurs while the webview is loading.
+   * @type {boolean}
+   * @private
+   */
+  loadingError_: false,
+
+  /**
+   * The animation webview object.
+   * @type {Object}
+   * @private
+   */
+  webview_: null,
+
+  /**
+   * Whether the screen has been initialized.
+   * @type {boolean}
+   * @private
+   */
+  initialized_: false,
+
+  /**
+   * Whether the response header has been received for the animation webview.
+   * @type {boolean}
+   * @private
+   */
+  headerReceived_: false,
+
+  /**
+   * Whether the webview has been successfully loaded.
+   * @type {boolean}
+   * @private
+   */
+  webViewLoaded_: false,
 
   /**
    * Whether all the consent text strings has been successfully loaded.
@@ -101,15 +171,76 @@ Polymer({
   reloadPage() {
     this.fire('loading');
     this.loading = true;
+    this.loadingError_ = false;
+    this.headerReceived_ = false;
+    let locale = this.locale.replace('-', '_').toLowerCase();
+    this.webview_.src = this.urlTemplate_.replace('$', locale);
+  },
+
+  /**
+   * Handles event when animation webview cannot be loaded.
+   */
+  onWebViewErrorOccurred(details) {
+    this.fire('error');
+    this.loadingError_ = true;
+  },
+
+  /**
+   * Handles event when animation webview is loaded.
+   */
+  onWebViewContentLoad(details) {
+    if (details == null) {
+      return;
+    }
+    if (this.loadingError_ || !this.headerReceived_) {
+      return;
+    }
+    if (this.reloadWithDefaultUrl_) {
+      this.webview_.src = this.getDefaultAnimationUrl_();
+      this.headerReceived_ = false;
+      this.reloadWithDefaultUrl_ = false;
+      return;
+    }
+
+    this.webViewLoaded_ = true;
+    if (this.consentStringLoaded_) {
+      this.onPageLoaded();
+    }
+  },
+
+  /**
+   * Handles event when webview request headers received.
+   */
+  onWebViewHeadersReceived(details) {
+    if (details == null) {
+      return;
+    }
+    this.headerReceived_ = true;
+    if (details.statusCode == '404') {
+      if (details.url != this.getDefaultAnimationUrl_()) {
+        this.reloadWithDefaultUrl_ = true;
+        return;
+      } else {
+        this.onWebViewErrorOccurred();
+      }
+    } else if (details.statusCode != '200') {
+      this.onWebViewErrorOccurred();
+    }
   },
 
   /**
    * Reload the page with the given consent string text data.
    */
   reloadContent(data) {
-    this.titleKey = data['activityControlNeeded'] ?
-        'assistantRelatedInfoTitle' :
-        'assistantRelatedInfoReturnedUserTitle';
+    if (data['activityControlNeeded']) {
+      this.titleKey_ = 'assistantRelatedInfoTitle';
+      this.nextButtonKey_ = 'next';
+      this.skipButtonKey_ = 'assistantOptinSkipButton';
+    } else {
+      this.titleKey_ = 'assistantRelatedInfoReturnedUserTitle';
+      this.nextButtonKey_ = 'assistantOptinAgreeButton';
+      this.skipButtonKey_ = 'assistantOptinNoThanksButton';
+    }
     this.skipActivityControl_ = !data['activityControlNeeded'];
     this.$.zippy.setAttribute(
         'icon-src',
@@ -119,7 +250,9 @@ Polymer({
                     'info_outline_grey600_24dp.png',
                 this.i18n('assistantScreenContextTitle'))));
     this.consentStringLoaded_ = true;
-    this.onPageLoaded();
+    if (this.webViewLoaded_) {
+      this.onPageLoaded();
+    }
   },
 
   /**
@@ -139,13 +272,34 @@ Polymer({
    * Signal from host to show the screen.
    */
   onShow() {
-    if (!this.consentStringLoaded_) {
+    if (!this.initialized_) {
+      this.webview_ = this.$['assistant-animation-webview'];
+      this.initializeWebview_(this.webview_);
       this.reloadPage();
+      this.initialized_ = true;
     } else {
       Polymer.RenderStatus.afterNextRender(
           this, () => this.$['next-button'].focus());
       this.browserProxy_.screenShown(RELATED_INFO_SCREEN_ID);
       this.screenShown_ = true;
     }
+  },
+
+  initializeWebview_(webview) {
+    const requestFilter = {urls: ['<all_urls>'], types: ['main_frame']};
+    webview.request.onErrorOccurred.addListener(
+        this.onWebViewErrorOccurred.bind(this), requestFilter);
+    webview.request.onHeadersReceived.addListener(
+        this.onWebViewHeadersReceived.bind(this), requestFilter);
+    webview.addEventListener(
+        'contentload', this.onWebViewContentLoad.bind(this));
+    webview.addContentScripts([webviewStripLinksContentScript]);
+  },
+
+  /**
+   * Get default animation url for locale en.
+   */
+  getDefaultAnimationUrl_() {
+    return this.urlTemplate_.replace('$', 'en_us');
   },
 });

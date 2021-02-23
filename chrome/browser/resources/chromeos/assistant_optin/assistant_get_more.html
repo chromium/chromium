@@ -24,7 +24,7 @@
       <div slot="subtitle">
         [[i18nDynamic(locale, 'assistantReadyMessage')]]
       </div>
-      <div slot="content" class="container">
+      <div slot="content" class="horizontal-mode-horizontal-centering">
         <div class="flex layout horizontal center">
           <div id="ready-image-container">
             <img id="ready-img" class="oobe-illustration" aria-hidden="true"
@@ -35,10 +35,10 @@
         </div>
       </div>
       <div slot="bottom-buttons">
-        <oobe-text-button id="next-button" inverse on-click="onNextTap_"
+        <oobe-next-button id="next-button" on-click="onNextTap_"
             disabled="[[buttonsDisabled]]" hidden="[[moreContents]]"
             text-key="assistantReadyButton">
-        </oobe-text-button>
+        </oobe-next-button>
       </div>
     </oobe-adaptive-dialog>
   </template>

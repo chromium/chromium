@@ -21,29 +21,35 @@
           aria-label$="[[i18nDynamic(locale, 'assistantLogo')]]">
       </hd-iron-icon>
       <h1 slot="title" id="title-text"></h1>
-      <div slot="subtitle">
-        <div id="animation-container-horizontal-mode">
+      <div slot="subtitle" class="animation-outer-container">
+        <div id="animation-container-horizontal-mode"
+            class="animation-container">
           <webview id="value-prop-view-horizontal-mode" tabindex="-1"></webview>
         </div>
       </div>
-      <div slot="content" class="flex">
-        <div id="animation-container-vertical-mode">
+      <div slot="content" class="animation-outer-container">
+        <div id="animation-container-vertical-mode" class="animation-container">
           <webview id="value-prop-view-vertical-mode" tabindex="-1"></webview>
         </div>
-        <div class="content" id="intro-text"></div>
-        <div class="line"></div>
-        <div id="consents-container"></div>
-        <div class="content" id="footer-text"></div>
+      </div>
+      <div slot="content" class="flex layout vertical">
+        <div id="content-container">
+          <div id="intro-title-text"></div>
+          <div class="content" id="intro-text"></div>
+          <div class="line"></div>
+          <div id="consents-container"></div>
+          <div class="content" id="footer-text"></div>
+        </div>
       </div>
       <div slot="bottom-buttons">
         <oobe-text-button id="skip-button" on-click="onSkipTap_"
             disabled="[[buttonsDisabled]]">
           <div id="skip-button-text" slot="text"></div>
         </oobe-text-button>
-        <oobe-text-button id="next-button" inverse on-click="onNextTap_"
+        <oobe-next-button id="next-button" on-click="onNextTap_"
             disabled="[[buttonsDisabled]]">
           <div id="next-button-text" slot="text"></div>
-        </oobe-text-button>
+        </oobe-next-button>
       </div>
     </oobe-adaptive-dialog>
 

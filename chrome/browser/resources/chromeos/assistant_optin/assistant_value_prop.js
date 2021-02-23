@@ -52,7 +52,7 @@ Polymer({
    * @private {string}
    */
   urlTemplate_:
-      'https://www.gstatic.com/opa-android/oobe/a02187e41eed9e42/v2_omni_$.html',
+      'https://www.gstatic.com/opa-android/oobe/a02187e41eed9e42/v3_omni_$.html',
 
   /**
    * Whether try to reload with the default url when a 404 error occurred.
@@ -273,6 +273,7 @@ Polymer({
     this.$['value-prop-dialog'].setAttribute(
         'aria-label', data['valuePropTitle']);
     this.$['title-text'].textContent = data['valuePropTitle'];
+    this.$['intro-title-text'].textContent = data['valuePropIntroTitle'];
     this.$['intro-text'].textContent = data['valuePropIntro'];
     this.$['next-button'].labelForAria = data['valuePropNextButton'];
     this.$['next-button-text'].textContent = data['valuePropNextButton'];
@@ -387,14 +388,6 @@ Polymer({
         this.onWebViewHeadersReceived.bind(this), requestFilter);
     webview.addEventListener(
         'contentload', this.onWebViewContentLoad.bind(this));
-    webview.addContentScripts([{
-      name: 'stripLinks',
-      matches: ['<all_urls>'],
-      js: {
-        code: 'document.querySelectorAll(\'a\').forEach(' +
-            'function(anchor){anchor.href=\'javascript:void(0)\';})'
-      },
-      run_at: 'document_end'
-    }]);
+    webview.addContentScripts([webviewStripLinksContentScript]);
   },
 });

@@ -50,8 +50,24 @@ webview {
   margin-inline-end: 0;
 }
 
-@media screen and (orientation: landscape) {
-  :host-context(html[new-layout]) .container {
-    padding-top: 72px;
-  }
+/**
+ * TODO(crbug.com/1101320): remove below when style of gstatic animation is
+ * fixed.
+ */
+h1,
+#content-container {
+  z-index: 1;
+}
+
+.animation-outer-container {
+  max-height: 240px;
+}
+
+:host-context(html:not([new-layout])) .animation-container {
+  display: none;
+}
+
+:host-context([new-layout]) .animation-container {
+  height: 350px;
+  transform: translateY(-15%);
 }

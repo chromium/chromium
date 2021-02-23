@@ -4,7 +4,6 @@
 
 #voice-match-animation {
   height: 170px;
-  width: 255px;
 }
 
 :host-context(html:not([new-layout])) #ready-img {

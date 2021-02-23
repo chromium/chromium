@@ -2,10 +2,7 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-#animation-container-horizontal-mode {
-  display: none;
-}
-
+#animation-container-horizontal-mode,
 #animation-container-vertical-mode {
   display: none;
 }
@@ -24,6 +21,26 @@
   :host-context(html[new-layout]) #animation-container-horizontal-mode {
     display: block;
   }
+
+  :host-context(html[new-layout]) #content-container {
+    margin: auto;
+  }
+}
+
+/**
+  * TODO(crbug.com/1101320): remove this when style of gstatic animation is
+  * fixed
+  */
+#content-container {
+  z-index: 1;
+}
+
+#intro-title-text {
+  color: var(--oobe-header-text-color);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 22px;
+  padding-bottom: 8px;
 }
 
 #intro-text {
