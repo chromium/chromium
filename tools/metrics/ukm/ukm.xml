@@ -12208,8 +12208,8 @@ be describing additional metrics about the same event.
 
       There's a few special values: -1 if the device is on AC power during the
       entirety of the interval, -2 if the device gets plugged or unplugged
-      during the interval, -3 if the battery metrics can't be retrieved or -4 if
-      the system has no battery.
+      during the interval, -3 if the battery metrics can't be retrieved, -4 if
+      the system has no battery, -5 if the discharge rate is invalid.
     </summary>
   </metric>
   <metric name="CPUTimeMs">

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -18,14 +19,30 @@
 
 namespace {
 
+constexpr const char* kBatteryDischargeRateHistogramName =
+    "Power.BatteryDischargeRate2";
+constexpr const char* kBatteryDischargeModeHistogramName =
+    "Power.BatteryDischargeMode";
+constexpr base::TimeDelta kExpectedMetricsCollectionInterval =
+    base::TimeDelta::FromSeconds(120);
+constexpr double kTolerableTimeElapsedRatio = 0.10;
+constexpr double kTolerablePositiveDrift = 1 + kTolerableTimeElapsedRatio;
+constexpr double kTolerableNegativeDrift = 1 - kTolerableTimeElapsedRatio;
+
 using UkmEntry = ukm::builders::PowerUsageScenariosIntervalData;
 
 class PowerMetricsReporterAccess : public PowerMetricsReporter {
  public:
-  using PowerMetricsReporter::kBatteryStateChangedValue;
-  using PowerMetricsReporter::kInvalidDischargeRateValue;
-  using PowerMetricsReporter::kNoBatteryValue;
-  using PowerMetricsReporter::kPluggedInDischargeRateValue;
+  using PowerMetricsReporter::BatteryDischargeMode;
+  static void ReportHistograms(
+      base::TimeDelta sampling_interval,
+      base::TimeDelta interval_duration,
+      BatteryDischargeMode discharge_mode,
+      base::Optional<int64_t> discharge_rate_during_interval) {
+    PowerMetricsReporter::ReportHistograms(
+        sampling_interval, interval_duration, discharge_mode,
+        std::move(discharge_rate_during_interval));
+  }
 };
 
 // TODO(sebmarchand|etiennep): Move this to a test util file.
@@ -62,6 +79,10 @@ class TestProcessMonitor : public performance_monitor::ProcessMonitor {
   void NotifyObserversForOnAggregatedMetricsSampled(const Metrics& metrics) {
     for (auto& obs : GetObserversForTesting())
       obs.OnAggregatedMetricsSampled(metrics);
+  }
+
+  base::TimeDelta GetScheduledSamplingInterval() const override {
+    return kExpectedMetricsCollectionInterval;
   }
 };
 
@@ -113,6 +134,7 @@ class PowerMetricsReporterUnitTest : public testing::Test {
   std::queue<BatteryLevelProvider::BatteryState> battery_states_;
   std::unique_ptr<PowerMetricsReporter> power_metrics_reporter_;
   BatteryLevelProvider* battery_provider_;
+  base::HistogramTester histogram_tester_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
 };
 
@@ -139,9 +161,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
   fake_interval_data.time_playing_video_in_visible_tab =
       base::TimeDelta::FromSeconds(++fake_value);
 
-  const int kExpectedIntervalLengthSeconds = 120;
-  task_environment_.FastForwardBy(
-      base::TimeDelta::FromSeconds(kExpectedIntervalLengthSeconds));
+  task_environment_.FastForwardBy(kExpectedMetricsCollectionInterval);
   // Pretend that the battery has dropped by 50% in 2 minutes, for a rate of
   // 25% per minute.
   battery_states_.push(BatteryLevelProvider::BatteryState{
@@ -171,7 +191,8 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
       entries[0], UkmEntry::kBatteryDischargeRateName, 2500);
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kCPUTimeMsName,
-      kExpectedIntervalLengthSeconds * 1000 * fake_metrics.cpu_usage);
+      kExpectedMetricsCollectionInterval.InSeconds() * 1000 *
+          fake_metrics.cpu_usage);
 #if defined(OS_MAC)
   test_ukm_recorder_.ExpectEntryMetric(entries[0], UkmEntry::kIdleWakeUpsName,
                                        fake_metrics.idle_wakeups);
@@ -213,9 +234,15 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
       entries[0], UkmEntry::kTimePlayingVideoInVisibleTabName,
       ukm::GetExponentialBucketMinForUserTiming(
           fake_interval_data.time_playing_video_in_visible_tab.InSeconds()));
-  test_ukm_recorder_.ExpectEntryMetric(entries[0],
-                                       UkmEntry::kIntervalDurationSecondsName,
-                                       kExpectedIntervalLengthSeconds);
+  test_ukm_recorder_.ExpectEntryMetric(
+      entries[0], UkmEntry::kIntervalDurationSecondsName,
+      kExpectedMetricsCollectionInterval.InSeconds());
+
+  histogram_tester_.ExpectUniqueSample(kBatteryDischargeRateHistogramName, 2500,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(
+      kBatteryDischargeModeHistogramName,
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
 }
 
 TEST_F(PowerMetricsReporterUnitTest, UKMsPluggedIn) {
@@ -223,9 +250,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsPluggedIn) {
   // running on battery.
   power_metrics_reporter_->battery_state_for_testing().on_battery = false;
 
-  const int kExpectedIntervalLengthSeconds = 120;
-  task_environment_.FastForwardBy(
-      base::TimeDelta::FromSeconds(kExpectedIntervalLengthSeconds));
+  task_environment_.FastForwardBy(kExpectedMetricsCollectionInterval);
   // Push a battery state that indicates that the system is still not running
   // on battery.
   battery_states_.push(BatteryLevelProvider::BatteryState{
@@ -241,13 +266,17 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsPluggedIn) {
   EXPECT_EQ(1u, entries.size());
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kBatteryDischargeRateName,
-      PowerMetricsReporterAccess::kPluggedInDischargeRateValue);
+      -static_cast<int64_t>(
+          PowerMetricsReporterAccess::BatteryDischargeMode::kPluggedIn));
+
+  histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
+  histogram_tester_.ExpectUniqueSample(
+      kBatteryDischargeModeHistogramName,
+      PowerMetricsReporterAccess::BatteryDischargeMode::kPluggedIn, 1);
 }
 
 TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateChanges) {
-  const int kExpectedIntervalLengthSeconds = 120;
-  task_environment_.FastForwardBy(
-      base::TimeDelta::FromSeconds(kExpectedIntervalLengthSeconds));
+  task_environment_.FastForwardBy(kExpectedMetricsCollectionInterval);
   // The initial battery state indicates that the system is running on battery,
   // pretends that this has changed.
   battery_states_.push(BatteryLevelProvider::BatteryState{
@@ -263,13 +292,17 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateChanges) {
   EXPECT_EQ(1u, entries.size());
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kBatteryDischargeRateName,
-      PowerMetricsReporterAccess::kBatteryStateChangedValue);
+      -static_cast<int64_t>(
+          PowerMetricsReporterAccess::BatteryDischargeMode::kStateChanged));
+
+  histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
+  histogram_tester_.ExpectUniqueSample(
+      kBatteryDischargeModeHistogramName,
+      PowerMetricsReporterAccess::BatteryDischargeMode::kStateChanged, 1);
 }
 
 TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateUnavailable) {
-  const int kExpectedIntervalLengthSeconds = 120;
-  task_environment_.FastForwardBy(
-      base::TimeDelta::FromSeconds(kExpectedIntervalLengthSeconds));
+  task_environment_.FastForwardBy(kExpectedMetricsCollectionInterval);
   // A nullopt battery value indicates that the battery level is unavailable.
   battery_states_.push(BatteryLevelProvider::BatteryState{
       1, 1, base::nullopt, true, base::TimeTicks::Now()});
@@ -284,13 +317,18 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateUnavailable) {
   EXPECT_EQ(1u, entries.size());
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kBatteryDischargeRateName,
-      PowerMetricsReporterAccess::kInvalidDischargeRateValue);
+      -static_cast<int64_t>(PowerMetricsReporterAccess::BatteryDischargeMode::
+                                kChargeLevelUnavailable));
+
+  histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
+  histogram_tester_.ExpectUniqueSample(
+      kBatteryDischargeModeHistogramName,
+      PowerMetricsReporterAccess::BatteryDischargeMode::kChargeLevelUnavailable,
+      1);
 }
 
 TEST_F(PowerMetricsReporterUnitTest, UKMsNoBattery) {
-  const int kExpectedIntervalLengthSeconds = 120;
-  task_environment_.FastForwardBy(
-      base::TimeDelta::FromSeconds(kExpectedIntervalLengthSeconds));
+  task_environment_.FastForwardBy(kExpectedMetricsCollectionInterval);
   // Indicates that the system has no battery interface.
   battery_states_.push(BatteryLevelProvider::BatteryState{
       0, 0, 1.0, false, base::TimeTicks::Now()});
@@ -305,16 +343,20 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsNoBattery) {
   EXPECT_EQ(1u, entries.size());
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kBatteryDischargeRateName,
-      PowerMetricsReporterAccess::kNoBatteryValue);
+      -static_cast<int64_t>(
+          PowerMetricsReporterAccess::BatteryDischargeMode::kNoBattery));
+
+  histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
+  histogram_tester_.ExpectUniqueSample(
+      kBatteryDischargeModeHistogramName,
+      PowerMetricsReporterAccess::BatteryDischargeMode::kNoBattery, 1);
 }
 
 TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateIncrease) {
   // Set the initial battery level at 50%.
   power_metrics_reporter_->battery_state_for_testing().charge_level = 0.5;
 
-  const int kExpectedIntervalLengthSeconds = 120;
-  task_environment_.FastForwardBy(
-      base::TimeDelta::FromSeconds(kExpectedIntervalLengthSeconds));
+  task_environment_.FastForwardBy(kExpectedMetricsCollectionInterval);
   // Set the new battery state at 100%.
   battery_states_.push(BatteryLevelProvider::BatteryState{
       1, 1, 1.0, true, base::TimeTicks::Now()});
@@ -330,5 +372,66 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateIncrease) {
   // An increase in charge level is reported as an invalid discharge rate.
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kBatteryDischargeRateName,
-      PowerMetricsReporterAccess::kInvalidDischargeRateValue);
+      -static_cast<int64_t>(PowerMetricsReporterAccess::BatteryDischargeMode::
+                                kInvalidDischargeRate));
+
+  histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
+  histogram_tester_.ExpectUniqueSample(
+      kBatteryDischargeModeHistogramName,
+      PowerMetricsReporterAccess::BatteryDischargeMode::kInvalidDischargeRate,
+      1);
+}
+
+TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsTooEarly) {
+  PowerMetricsReporterAccess::ReportHistograms(
+      kExpectedMetricsCollectionInterval,
+      (kExpectedMetricsCollectionInterval * kTolerableNegativeDrift) -
+          base::TimeDelta::FromSeconds(1),
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500);
+
+  histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
+  histogram_tester_.ExpectUniqueSample(
+      kBatteryDischargeModeHistogramName,
+      PowerMetricsReporterAccess::BatteryDischargeMode::kInvalidInterval, 1);
+}
+
+TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsEarly) {
+  PowerMetricsReporterAccess::ReportHistograms(
+      kExpectedMetricsCollectionInterval,
+      (kExpectedMetricsCollectionInterval * kTolerableNegativeDrift) +
+          base::TimeDelta::FromSeconds(1),
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500);
+
+  histogram_tester_.ExpectUniqueSample(kBatteryDischargeRateHistogramName, 2500,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(
+      kBatteryDischargeModeHistogramName,
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+}
+
+TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsTooLate) {
+  PowerMetricsReporterAccess::ReportHistograms(
+      kExpectedMetricsCollectionInterval,
+      (kExpectedMetricsCollectionInterval * kTolerablePositiveDrift) +
+          base::TimeDelta::FromSeconds(1),
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500);
+
+  histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
+  histogram_tester_.ExpectUniqueSample(
+      kBatteryDischargeModeHistogramName,
+      PowerMetricsReporterAccess::BatteryDischargeMode::kInvalidInterval, 1);
+}
+
+TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsLate) {
+  PowerMetricsReporterAccess::ReportHistograms(
+      kExpectedMetricsCollectionInterval,
+      (kExpectedMetricsCollectionInterval * kTolerablePositiveDrift) -
+          base::TimeDelta::FromSeconds(1),
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500);
+
+  histogram_tester_.ExpectUniqueSample(kBatteryDischargeRateHistogramName, 2500,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(
+      kBatteryDischargeModeHistogramName,
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
 }

@@ -7112,6 +7112,16 @@ Called by update_bad_message_reasons.py.-->
   <int value="10" label="IMAGE_REL_BASED_DIR64"/>
 </enum>
 
+<enum name="BatteryDischargeMode">
+  <int value="0" label="Battery discharging"/>
+  <int value="1" label="Battery plugged-in"/>
+  <int value="2" label="Power state changed"/>
+  <int value="3" label="Charge level unavailable"/>
+  <int value="4" label="No battery"/>
+  <int value="5" label="Invalid discharge rate"/>
+  <int value="6" label="Invalid interval"/>
+</enum>
+
 <enum name="BatteryInfoSampleResult">
   <int value="0" label="Read"/>
   <int value="1" label="Good"/>

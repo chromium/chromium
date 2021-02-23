@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <utility>
+
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
@@ -36,10 +38,27 @@ class PowerMetricsReporter
   }
 
  protected:
-  static const int64_t kPluggedInDischargeRateValue = -1;
-  static const int64_t kBatteryStateChangedValue = -2;
-  static const int64_t kInvalidDischargeRateValue = -3;
-  static const int64_t kNoBatteryValue = -4;
+  // Any change to this enum should be reflected in the corresponding enums.xml
+  // and ukm.xml
+  enum class BatteryDischargeMode {
+    kDischarging = 0,
+    kPluggedIn = 1,
+    kStateChanged = 2,
+    kChargeLevelUnavailable = 3,
+    kNoBattery = 4,
+    kInvalidDischargeRate = 5,
+    kInvalidInterval = 6,
+    kMaxValue = kInvalidInterval
+  };
+
+  // Report the histograms for the past interval, with |sampling_interval| the
+  // expected sampling interval, and |interval_duration| the actual duration
+  // since the beginning of the interval.
+  static void ReportHistograms(
+      base::TimeDelta sampling_interval,
+      base::TimeDelta interval_duration,
+      BatteryDischargeMode discharge_mode,
+      base::Optional<int64_t> discharge_rate_during_interval);
 
  private:
   // performance_monitor::ProcessMonitor::Observer:
@@ -49,18 +68,24 @@ class PowerMetricsReporter
   // Report the UKMs for the past interval.
   void ReportUKMs(const performance_monitor::ProcessMonitor::Metrics& metrics,
                   base::TimeDelta interval_duration,
-                  int64_t discharge_rate_during_interval) const;
+                  BatteryDischargeMode discharge_mode,
+                  base::Optional<int64_t> discharge_rate_during_interval) const;
 
-  // Computes the battery discharge rate during the interval and reset
-  // |battery_state_| to the current state.
-  int64_t GetBatteryDischargeRataDuringInterval(
-      base::TimeDelta interval_duration);
+  // Computes and returns the battery discharge mode and rate during the
+  // interval, and reset |battery_state_| to the current state. If the discharge
+  // rate isn't valid, the returned value is nullopt and the reason is indicated
+  // per BatteryDischargeMode.
+  std::pair<BatteryDischargeMode, base::Optional<int64_t>>
+  GetBatteryDischargeRateDuringInterval(base::TimeDelta interval_duration);
 
   // The data store used to get the usage scenario data, it needs to outlive
   // this class.
   base::WeakPtr<UsageScenarioDataStore> data_store_;
 
   std::unique_ptr<BatteryLevelProvider> battery_level_provider_;
+
+  // Time that should elapse between calls to OnAggregatedMetricsSampled.
+  base::TimeDelta desired_reporting_interval_;
 
   BatteryLevelProvider::BatteryState battery_state_{0, 0, base::nullopt, false,
                                                     base::TimeTicks::Now()};

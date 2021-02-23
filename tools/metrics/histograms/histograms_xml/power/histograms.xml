@@ -72,12 +72,39 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Power.BatteryDischargeMode" enum="BatteryDischargeMode"
+    expires_after="2021-07-18">
+  <owner>etiennep@chromium.org</owner>
+  <owner>olivierli@chromium.org</owner>
+  <summary>
+    Battery discharge mode describing whether BatteryDischargeRate2 could be
+    reported or not, and why, reported everytime the battery charge level is
+    sampled. This is reported on Mac and Windows. See
+    go/chrome_power_use_per_scenario for more details.
+  </summary>
+</histogram>
+
 <histogram name="Power.BatteryDischargeRate" units="mW"
     expires_after="2021-07-18">
   <owner>tbroch@chromium.org</owner>
   <summary>
     Chrome OS battery discharge rate in mW sampled every 30 seconds while the
     device runs on battery.
+  </summary>
+</histogram>
+
+<histogram name="Power.BatteryDischargeRate2" units="hundredth of percent"
+    expires_after="2021-07-18">
+  <owner>etiennep@chromium.org</owner>
+  <owner>olivierli@chromium.org</owner>
+  <owner>lgrey@chromium.org</owner>
+  <summary>
+    Battery discharge rate per minute, with 1/10000 of full charge resolution,
+    example: - Battery capacity = 4000 mAh; - Battery charge at the beginning of
+    the interval: 3900 mAh; - Battery charge at the end of the interval: 3700
+    mAh; - Discharge proportion: (3900-3700) / 4000 = 0.05 - Reported value:
+    500. This metric is only recorded when on battery power. This is reported on
+    Mac and Windows. See go/chrome_power_use_per_scenario for more details.
   </summary>
 </histogram>
 

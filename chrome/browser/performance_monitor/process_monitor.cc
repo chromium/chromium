@@ -119,6 +119,10 @@ void ProcessMonitor::StartGatherCycle() {
                          &ProcessMonitor::GatherProcesses);
 }
 
+base::TimeDelta ProcessMonitor::GetScheduledSamplingInterval() const {
+  return kGatherInterval;
+}
+
 void ProcessMonitor::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
 }

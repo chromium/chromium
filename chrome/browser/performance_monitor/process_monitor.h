@@ -98,6 +98,10 @@ class ProcessMonitor {
   // Start the cycle of metrics gathering.
   void StartGatherCycle();
 
+  // Returns the expected sampling interval according to how it's scheduled.
+  // This might vary from the actual interval. Virtual for testing.
+  virtual base::TimeDelta GetScheduledSamplingInterval() const;
+
   // Adds/removes an observer.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
