@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
@@ -16,7 +17,6 @@
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_ids_provider.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_browser_context.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -43,8 +43,11 @@ void QueueReport(FeedbackUploader* uploader,
 // to the request.
 class MockFeedbackUploaderChrome : public FeedbackUploader {
  public:
-  explicit MockFeedbackUploaderChrome(content::BrowserContext* context)
-      : FeedbackUploader(context) {}
+  MockFeedbackUploaderChrome(
+      bool is_off_the_record,
+      const base::FilePath& state_path,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+      : FeedbackUploader(is_off_the_record, state_path, url_loader_factory) {}
 
   void AppendExtraHeadersToUploadRequest(
       network::ResourceRequest* resource_request) override {
@@ -61,7 +64,9 @@ class FeedbackUploaderDispatchTest : public ::testing::Test {
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         shared_url_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_)) {}
+                &test_url_loader_factory_)) {
+    EXPECT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
+  }
 
   ~FeedbackUploaderDispatchTest() override {
     // Clean up registered ids.
@@ -87,11 +92,11 @@ class FeedbackUploaderDispatchTest : public ::testing::Test {
     return &test_url_loader_factory_;
   }
 
-  content::BrowserContext* context() { return &context_; }
+  const base::FilePath& state_path() { return scoped_temp_dir_.GetPath(); }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  content::TestBrowserContext context_;
+  base::ScopedTempDir scoped_temp_dir_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 
@@ -105,8 +110,8 @@ TEST_F(FeedbackUploaderDispatchTest, VariationHeaders) {
   variations::VariationsIdsProvider::GetInstance()->ResetForTesting();
   CreateFieldTrialWithId("Test", "Group1", 123);
 
-  FeedbackUploader uploader(context());
-  uploader.set_url_loader_factory_for_test(shared_url_loader_factory());
+  FeedbackUploader uploader(/*is_off_the_record=*/false, state_path(),
+                            shared_url_loader_factory());
 
   net::HttpRequestHeaders headers;
   test_url_loader_factory()->SetInterceptor(
@@ -123,8 +128,8 @@ TEST_F(FeedbackUploaderDispatchTest, VariationHeaders) {
 // Test that the bearer token is present if there is an email address present in
 // the report.
 TEST_F(FeedbackUploaderDispatchTest, BearerTokenWithEmail) {
-  MockFeedbackUploaderChrome uploader(context());
-  uploader.set_url_loader_factory_for_test(shared_url_loader_factory());
+  MockFeedbackUploaderChrome uploader(/*is_off_the_record=*/false, state_path(),
+                                      shared_url_loader_factory());
 
   test_url_loader_factory()->SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
@@ -136,8 +141,8 @@ TEST_F(FeedbackUploaderDispatchTest, BearerTokenWithEmail) {
 }
 
 TEST_F(FeedbackUploaderDispatchTest, BearerTokenNoEmail) {
-  MockFeedbackUploaderChrome uploader(context());
-  uploader.set_url_loader_factory_for_test(shared_url_loader_factory());
+  MockFeedbackUploaderChrome uploader(/*is_off_the_record=*/false, state_path(),
+                                      shared_url_loader_factory());
 
   test_url_loader_factory()->SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
@@ -150,8 +155,8 @@ TEST_F(FeedbackUploaderDispatchTest, BearerTokenNoEmail) {
 
 TEST_F(FeedbackUploaderDispatchTest, 204Response) {
   FeedbackUploader::SetMinimumRetryDelayForTesting(kTestRetryDelay);
-  FeedbackUploader uploader(context());
-  uploader.set_url_loader_factory_for_test(shared_url_loader_factory());
+  FeedbackUploader uploader(/*is_off_the_record=*/false, state_path(),
+                            shared_url_loader_factory());
 
   EXPECT_EQ(kTestRetryDelay, uploader.retry_delay());
   // Successful reports should not introduce any retries, and should not
@@ -172,8 +177,8 @@ TEST_F(FeedbackUploaderDispatchTest, 204Response) {
 
 TEST_F(FeedbackUploaderDispatchTest, 400Response) {
   FeedbackUploader::SetMinimumRetryDelayForTesting(kTestRetryDelay);
-  FeedbackUploader uploader(context());
-  uploader.set_url_loader_factory_for_test(shared_url_loader_factory());
+  FeedbackUploader uploader(/*is_off_the_record=*/false, state_path(),
+                            shared_url_loader_factory());
 
   EXPECT_EQ(kTestRetryDelay, uploader.retry_delay());
   // Failed reports due to client errors are not retried. No backoff delay
@@ -194,8 +199,8 @@ TEST_F(FeedbackUploaderDispatchTest, 400Response) {
 
 TEST_F(FeedbackUploaderDispatchTest, 500Response) {
   FeedbackUploader::SetMinimumRetryDelayForTesting(kTestRetryDelay);
-  FeedbackUploader uploader(context());
-  uploader.set_url_loader_factory_for_test(shared_url_loader_factory());
+  FeedbackUploader uploader(/*is_off_the_record=*/false, state_path(),
+                            shared_url_loader_factory());
 
   EXPECT_EQ(kTestRetryDelay, uploader.retry_delay());
   // Failed reports due to server errors are retried.

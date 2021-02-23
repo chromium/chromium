@@ -20,6 +20,10 @@
 #endif  // BUILDFLAG(PLATFORM_CFM)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 namespace signin {
 class PrimaryAccountAccessTokenFetcher;
 }  // namespace signin
@@ -74,6 +78,8 @@ class FeedbackUploaderChrome : public FeedbackUploader {
   std::string access_token_;
 
   Delegate* delegate_ = nullptr;  // Not owned.
+
+  content::BrowserContext* context_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(FeedbackUploaderChrome);
 };

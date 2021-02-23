@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/post_task.h"
@@ -16,7 +17,6 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/feedback/feedback_report.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_browser_context.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -38,12 +38,10 @@ constexpr base::TimeDelta kRetryDelayForTest =
 class MockFeedbackUploader : public FeedbackUploader {
  public:
   MockFeedbackUploader(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      content::BrowserContext* context)
-      : FeedbackUploader(context) {
-    set_url_loader_factory_for_test(url_loader_factory);
-  }
-  ~MockFeedbackUploader() override {}
+      bool is_off_the_record,
+      const base::FilePath& state_path,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+      : FeedbackUploader(is_off_the_record, state_path, url_loader_factory) {}
 
   void RunMessageLoop() {
     if (ProcessingComplete())
@@ -120,6 +118,7 @@ class FeedbackUploaderTest : public testing::Test {
     test_shared_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
+    EXPECT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
     RecreateUploader();
   }
 
@@ -127,7 +126,8 @@ class FeedbackUploaderTest : public testing::Test {
 
   void RecreateUploader() {
     uploader_ = std::make_unique<MockFeedbackUploader>(
-        test_shared_loader_factory_, &context_);
+        /*is_off_the_record=*/false, scoped_temp_dir_.GetPath(),
+        test_shared_loader_factory_);
   }
 
   void QueueReport(const std::string& data, bool has_email = true) {
@@ -140,7 +140,7 @@ class FeedbackUploaderTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   content::BrowserTaskEnvironment task_environment_;
-  content::TestBrowserContext context_;
+  base::ScopedTempDir scoped_temp_dir_;
   std::unique_ptr<MockFeedbackUploader> uploader_;
 
   DISALLOW_COPY_AND_ASSIGN(FeedbackUploaderTest);
