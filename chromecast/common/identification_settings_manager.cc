@@ -92,6 +92,22 @@ std::string ReplacementMapToString(
   return replacement_str;
 }
 
+void PossiblyUpdateIsolationInfoAndSiteForCookies(
+    network::ResourceRequest* request,
+    const GURL& new_url) {
+  DCHECK(request);
+  DCHECK(new_url.is_valid());
+  if (new_url.GetOrigin() == request->url.GetOrigin() ||
+      !request->trusted_params.has_value()) {
+    return;
+  }
+  auto new_origin = url::Origin::Create(new_url);
+  request->trusted_params->isolation_info =
+      net::IsolationInfo::CreateForInternalRequest(new_origin);
+  request->site_for_cookies =
+      request->trusted_params->isolation_info.site_for_cookies();
+}
+
 }  // namespace
 
 IdentificationSettingsManager::SubstitutableParameter
@@ -152,8 +168,10 @@ int IdentificationSettingsManager::WillStartResourceRequest(
     GURL new_url;
     err = ApplyURLReplacementSettings(request->url, replacement_url, new_url);
     DCHECK_EQ(err, net::OK);
-    if (!new_url.is_empty())
+    if (!new_url.is_empty()) {
+      PossiblyUpdateIsolationInfoAndSiteForCookies(request, new_url);
       request->url = std::move(new_url);
+    }
   }
 
   if (background_mode_) {
