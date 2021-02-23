@@ -2,6 +2,7 @@ include_rules = [
     "+media/base/logging_override_if_enabled.h",
     "+media/base/media_content_type.h",
     "+media/base/media_switches.h",
+    "+media/base/video_frame.h",
     "+media/mojo/mojom/media_player.mojom-blink.h",
 ]
 

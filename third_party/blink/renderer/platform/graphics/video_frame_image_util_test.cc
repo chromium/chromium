@@ -234,4 +234,51 @@ TEST(VideoFrameImageUtilTest, WorkaroundCreateResourceProviderForVideoFrame) {
   }
 }
 
+TEST(VideoFrameImageUtilTest, DestRectWithoutCanvasResourceProvider) {
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  auto cpu_frame = CreateTestFrame(kTestSize, gfx::Rect(kTestSize), kTestSize,
+                                   media::VideoFrame::STORAGE_OWNED_MEMORY,
+                                   media::PIXEL_FORMAT_XRGB);
+
+  // A CanvasResourceProvider must be provided with a custom destination rect.
+  auto image = CreateImageFromVideoFrame(cpu_frame, true, nullptr, nullptr,
+                                         gfx::Rect(0, 0, 10, 10));
+  ASSERT_FALSE(image);
+  task_environment_.RunUntilIdle();
+}
+
+TEST(VideoFrameImageUtilTest, CanvasResourceProviderTooSmallForDestRect) {
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  auto cpu_frame = CreateTestFrame(kTestSize, gfx::Rect(kTestSize), kTestSize,
+                                   media::VideoFrame::STORAGE_OWNED_MEMORY,
+                                   media::PIXEL_FORMAT_XRGB);
+
+  auto provider =
+      CreateResourceProviderForVideoFrame(IntSize(gfx::Size(16, 16)), nullptr);
+  ASSERT_TRUE(provider);
+  EXPECT_FALSE(provider->IsAccelerated());
+
+  auto image = CreateImageFromVideoFrame(cpu_frame, true, provider.get(),
+                                         nullptr, gfx::Rect(kTestSize));
+  ASSERT_FALSE(image);
+  task_environment_.RunUntilIdle();
+}
+
+TEST(VideoFrameImageUtilTest, CanvasResourceProviderDestRect) {
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  auto cpu_frame = CreateTestFrame(kTestSize, gfx::Rect(kTestSize), kTestSize,
+                                   media::VideoFrame::STORAGE_OWNED_MEMORY,
+                                   media::PIXEL_FORMAT_XRGB);
+
+  auto provider = CreateResourceProviderForVideoFrame(
+      IntSize(gfx::Size(128, 128)), nullptr);
+  ASSERT_TRUE(provider);
+  EXPECT_FALSE(provider->IsAccelerated());
+
+  auto image = CreateImageFromVideoFrame(cpu_frame, true, provider.get(),
+                                         nullptr, gfx::Rect(16, 16, 64, 64));
+  ASSERT_TRUE(image);
+  task_environment_.RunUntilIdle();
+}
+
 }  // namespace blink

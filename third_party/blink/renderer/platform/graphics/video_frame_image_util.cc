@@ -82,9 +82,11 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame,
     bool allow_zero_copy_images,
     CanvasResourceProvider* resource_provider,
-    media::PaintCanvasVideoRenderer* video_renderer) {
+    media::PaintCanvasVideoRenderer* video_renderer,
+    const gfx::Rect& dest_rect) {
   DCHECK(frame);
-  if (allow_zero_copy_images && CanUseZeroCopyImages(*frame)) {
+  if (allow_zero_copy_images && dest_rect.IsEmpty() &&
+      CanUseZeroCopyImages(*frame)) {
     // TODO(sandersd): Do we need to be able to handle limited-range RGB? It
     // may never happen, and SkColorSpace doesn't know about it.
     auto sk_color_space =
@@ -133,10 +135,35 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     }
   }
 
+  gfx::Rect final_dest_rect = dest_rect;
+  if (final_dest_rect.IsEmpty()) {
+    // Since we're copying, the destination is always aligned with the origin.
+    const auto& visible_rect = frame->visible_rect();
+    final_dest_rect =
+        gfx::Rect(0, 0, visible_rect.width(), visible_rect.height());
+  } else if (!resource_provider) {
+    DLOG(ERROR) << "An external CanvasResourceProvider must be provided when "
+                   "providing a custom destination rect.";
+    return nullptr;
+  } else if (!gfx::Rect(gfx::Size(resource_provider->Size()))
+                  .Contains(final_dest_rect)) {
+    DLOG(ERROR)
+        << "Provided CanvasResourceProvider is too small. Expected at least "
+        << final_dest_rect.ToString() << " got "
+        << resource_provider->Size().ToString();
+    return nullptr;
+  }
+
+  const auto resource_provider_size = IntSize(final_dest_rect.size());
   std::unique_ptr<CanvasResourceProvider> local_resource_provider;
   if (!resource_provider) {
     local_resource_provider = CreateResourceProviderForVideoFrame(
-        IntSize(frame->visible_rect().size()), raster_context_provider.get());
+        resource_provider_size, raster_context_provider.get());
+    if (!local_resource_provider) {
+      DLOG(ERROR) << "Failed to create CanvasResourceProvider.";
+      return nullptr;
+    }
+
     resource_provider = local_resource_provider.get();
   }
 
@@ -155,13 +182,9 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     video_renderer = local_video_renderer.get();
   }
 
-  // Since we're copying, the destination is always aligned with the origin.
-  const auto& visible_rect = frame->visible_rect();
-  const auto dest_rect =
-      gfx::RectF(0, 0, visible_rect.width(), visible_rect.height());
-
   video_renderer->Paint(
-      frame.get(), resource_provider->Canvas(), dest_rect, media_flags,
+      frame.get(), resource_provider->Canvas(), gfx::RectF(final_dest_rect),
+      media_flags,
       frame->metadata().transformation.value_or(media::kNoTransformation),
       raster_context_provider.get());
   return resource_provider->Snapshot();

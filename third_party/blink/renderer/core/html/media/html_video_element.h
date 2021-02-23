@@ -36,11 +36,13 @@
 #include "third_party/khronos/GLES2/gl2.h"
 
 namespace blink {
+class CanvasResourceProvider;
 class ImageBitmapOptions;
 class IntersectionObserverEntry;
 class MediaCustomControlsFullscreenDetector;
 class MediaRemotingInterstitial;
 class PictureInPictureInterstitial;
+class StaticBitmapImage;
 class VideoWakeLock;
 
 class CORE_EXPORT HTMLVideoElement final
@@ -94,6 +96,13 @@ class CORE_EXPORT HTMLVideoElement final
   bool HasAvailableVideoFrame() const;
 
   KURL PosterImageURL() const override;
+
+  // Helper for GetSourceImageForCanvas() and other external callers who want a
+  // StaticBitmapImage of the current VideoFrame. If |allow_accelerated_images|
+  // is set to false a software backed CanvasResourceProvider will be used to
+  // produce the StaticBitmapImage.
+  scoped_refptr<StaticBitmapImage> CreateStaticBitmapImage(
+      bool allow_accelerated_images = true);
 
   // CanvasImageSource implementation
   scoped_refptr<Image> GetSourceImageForCanvas(SourceImageStatus*,
@@ -221,6 +230,10 @@ class CORE_EXPORT HTMLVideoElement final
 
   // True, if the video element occupies most of the viewport.
   bool mostly_filling_viewport_ : 1;
+
+  // Used to fulfill blink::Image requests (CreateImage(),
+  // GetSourceImageForCanvas(), etc). Created on demand.
+  std::unique_ptr<CanvasResourceProvider> resource_provider_;
 };
 
 }  // namespace blink

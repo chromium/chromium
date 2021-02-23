@@ -30,6 +30,7 @@
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "cc/paint/paint_canvas.h"
+#include "media/base/video_frame.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_fullscreen_options.h"
@@ -59,7 +60,9 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/extensions_3d_util.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
+#include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
@@ -506,28 +509,49 @@ KURL HTMLVideoElement::PosterImageURL() const {
   return GetDocument().CompleteURL(url);
 }
 
+scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
+    bool allow_accelerated_images) {
+  media::PaintCanvasVideoRenderer* video_renderer = nullptr;
+  scoped_refptr<media::VideoFrame> media_video_frame;
+  if (auto* wmp = GetWebMediaPlayer()) {
+    media_video_frame = wmp->GetCurrentFrame();
+    video_renderer = wmp->GetPaintCanvasVideoRenderer();
+  }
+
+  if (!media_video_frame || !video_renderer)
+    return nullptr;
+
+  const auto intrinsic_size = IntSize(media_video_frame->natural_size());
+  if (!resource_provider_ ||
+      allow_accelerated_images != resource_provider_->IsAccelerated() ||
+      intrinsic_size != resource_provider_->Size()) {
+    viz::RasterContextProvider* raster_context_provider = nullptr;
+    if (allow_accelerated_images) {
+      if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
+        if (auto* context_provider = wrapper->ContextProvider())
+          raster_context_provider = context_provider->RasterContextProvider();
+      }
+    }
+    // Providing a null |raster_context_provider| creates a software provider.
+    resource_provider_ = CreateResourceProviderForVideoFrame(
+        intrinsic_size, raster_context_provider);
+    if (!resource_provider_)
+      return nullptr;
+  }
+
+  const auto dest_rect = gfx::Rect(media_video_frame->natural_size());
+  auto image = CreateImageFromVideoFrame(std::move(media_video_frame),
+                                         /*allow_zero_copy_images=*/true,
+                                         resource_provider_.get(),
+                                         video_renderer, dest_rect);
+  image->SetOriginClean(!WouldTaintOrigin());
+  return image;
+}
+
 scoped_refptr<Image> HTMLVideoElement::GetSourceImageForCanvas(
     SourceImageStatus* status,
     const FloatSize&) {
-  if (!HasAvailableVideoFrame()) {
-    *status = kInvalidSourceImageStatus;
-    return nullptr;
-  }
-
-  IntSize intrinsic_size(videoWidth(), videoHeight());
-  // TODO(fserb): this should not be default software.
-  std::unique_ptr<CanvasResourceProvider> resource_provider =
-      CanvasResourceProvider::CreateBitmapProvider(
-          intrinsic_size, kLow_SkFilterQuality, CanvasResourceParams(),
-          CanvasResourceProvider::ShouldInitialize::kNo);
-  if (!resource_provider) {
-    *status = kInvalidSourceImageStatus;
-    return nullptr;
-  }
-
-  PaintCurrentFrame(resource_provider->Canvas(),
-                    IntRect(IntPoint(0, 0), intrinsic_size), nullptr);
-  scoped_refptr<Image> snapshot = resource_provider->Snapshot();
+  scoped_refptr<Image> snapshot = CreateStaticBitmapImage();
   if (!snapshot) {
     *status = kInvalidSourceImageStatus;
     return nullptr;

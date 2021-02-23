@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "ui/gfx/geometry/rect.h"
 
 // Note: Don't include "media/base/video_frame.h" here without good reason,
 // since it includes a lot of non-blink types which can pollute the namespace.
@@ -40,11 +41,21 @@ PLATFORM_EXPORT bool WillCreateAcceleratedImagesFromVideoFrame(
 //
 // Likewise |resource_provider| may be provided to prevent thrashing when this
 // method is called with high frequency.
+//
+// The default resource provider size is the frame's visible size. The default
+// |dest_rect| is the visible size aligned to the origin. Callers may choose to
+// provide their own |resource_provider| and |dest_rect| for rendering to the
+// frame's natural size.
+//
+// When an external |resource_provider| is provided a |dest_rect| may also be
+// provided to control where in the canvas the VideoFrame will be drawn. A
+// non-empty |dest_rect| will disable zero copy image support.
 PLATFORM_EXPORT scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame,
     bool allow_zero_copy_images = true,
     CanvasResourceProvider* resource_provider = nullptr,
-    media::PaintCanvasVideoRenderer* video_renderer = nullptr);
+    media::PaintCanvasVideoRenderer* video_renderer = nullptr,
+    const gfx::Rect& dest_rect = gfx::Rect());
 
 // Creates a CanvasResourceProvider which is appropriate for drawing VideoFrame
 // objects into. Some callers to CreateImageFromVideoFrame() may choose to cache
