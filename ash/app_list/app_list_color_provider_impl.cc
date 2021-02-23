@@ -170,13 +170,7 @@ SkColor AppListColorProviderImpl::GetSeparatorColor() const {
 
 SkColor AppListColorProviderImpl::GetFocusRingColor() const {
   return DeprecatedGetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorActive,
-      gfx::kGoogleBlue300);
-}
-
-SkColor AppListColorProviderImpl::GetFolderItemFocusRingColor() const {
-  return DeprecatedGetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorActive,
+      AshColorProvider::ControlsLayerType::kFocusRingColor,
       gfx::kGoogleBlue600);
 }
 

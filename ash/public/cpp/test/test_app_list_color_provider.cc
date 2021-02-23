@@ -102,10 +102,6 @@ SkColor TestAppListColorProvider::GetSeparatorColor() const {
 }
 
 SkColor TestAppListColorProvider::GetFocusRingColor() const {
-  return gfx::kGoogleBlue300;
-}
-
-SkColor TestAppListColorProvider::GetFolderItemFocusRingColor() const {
   return gfx::kGoogleBlue600;
 }
 

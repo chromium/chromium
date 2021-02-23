@@ -644,10 +644,7 @@ void AppListItemView::PaintButtonContents(gfx::Canvas* canvas) {
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     if (delegate_->KeyboardTraversalEngaged()) {
-      flags.setColor(
-          apps_grid_view_->is_in_folder()
-              ? AppListColorProvider::Get()->GetFolderItemFocusRingColor()
-              : AppListColorProvider::Get()->GetFocusRingColor());
+      flags.setColor(AppListColorProvider::Get()->GetFocusRingColor());
       flags.setStyle(cc::PaintFlags::kStroke_Style);
       flags.setStrokeWidth(kFocusRingWidth);
     } else {
