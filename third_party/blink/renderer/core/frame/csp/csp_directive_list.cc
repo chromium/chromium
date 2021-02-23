@@ -625,10 +625,8 @@ bool CheckEval(const network::mojom::blink::CSPSourceList* directive) {
   return !directive || directive->allow_eval;
 }
 
-bool CheckWasmEval(const network::mojom::blink::CSPSourceList* directive,
-                   const ContentSecurityPolicy* policy) {
-  return !directive || directive->allow_eval ||
-         (policy->SupportsWasmEval() && directive->allow_wasm_eval);
+bool CheckWasmEval(const network::mojom::blink::CSPSourceList* directive) {
+  return !directive || directive->allow_wasm_eval;
 }
 
 bool CheckHash(const network::mojom::blink::CSPSourceList* directive,
@@ -734,7 +732,7 @@ bool CheckWasmEvalAndReportViolation(
     const String& content) {
   CSPOperativeDirective directive =
       OperativeDirective(csp, CSPDirectiveName::ScriptSrc);
-  if (CheckWasmEval(directive.source_list, policy))
+  if (CheckWasmEval(directive.source_list))
     return true;
 
   String suffix = String();
@@ -1060,28 +1058,23 @@ bool CSPDirectiveListAllowEval(
              OperativeDirective(csp, CSPDirectiveName::ScriptSrc).source_list);
 }
 
-bool CSPDirectiveListAllowWasmCodeGeneration(
+bool CSPDirectiveListAllowWasmEval(
     const network::mojom::blink::ContentSecurityPolicy& csp,
     ContentSecurityPolicy* policy,
     ReportingDisposition reporting_disposition,
     ContentSecurityPolicy::ExceptionStatus exception_status,
     const String& content) {
   if (reporting_disposition == ReportingDisposition::kReport) {
-    String infix = policy->SupportsWasmEval()
-                       ? "neither 'wasm-eval' nor 'unsafe-eval' is"
-                       : "'unsafe-eval' is not";
     return CheckWasmEvalAndReportViolation(
         csp, policy,
-        "Refused to compile or instantiate WebAssembly module because " +
-            infix +
-            " an allowed source of script in the following "
-            "Content Security Policy directive: ",
+        "Refused to compile or instantiate WebAssembly module because "
+        "'wasm-eval' is not an allowed source of script in the following "
+        "Content Security Policy directive: ",
         exception_status, content);
   }
   return CSPDirectiveListIsReportOnly(csp) ||
          CheckWasmEval(
-             OperativeDirective(csp, CSPDirectiveName::ScriptSrc).source_list,
-             policy);
+             OperativeDirective(csp, CSPDirectiveName::ScriptSrc).source_list);
 }
 
 bool CSPDirectiveListShouldDisableEval(

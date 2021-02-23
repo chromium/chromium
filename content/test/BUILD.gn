@@ -1005,7 +1005,6 @@ test("content_browsertests") {
     "../browser/child_process_launcher_browsertest.cc",
     "../browser/child_process_security_policy_browsertest.cc",
     "../browser/content_index/content_index_browsertest.cc",
-    "../browser/content_security_policy_browsertest.cc",
     "../browser/conversions/conversion_internals_browsertest.cc",
     "../browser/conversions/conversion_registration_browsertest.cc",
     "../browser/conversions/conversions_browsertest.cc",

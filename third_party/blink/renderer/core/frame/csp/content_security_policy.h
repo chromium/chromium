@@ -221,9 +221,9 @@ class CORE_EXPORT ContentSecurityPolicy final
   bool AllowEval(ReportingDisposition,
                  ExceptionStatus,
                  const String& script_content);
-  bool AllowWasmCodeGeneration(ReportingDisposition,
-                               ExceptionStatus,
-                               const String& script_content);
+  bool AllowWasmEval(ReportingDisposition,
+                     ExceptionStatus,
+                     const String& script_content);
 
   // AllowFromSource() wrappers.
   bool AllowBaseURI(const KURL&);

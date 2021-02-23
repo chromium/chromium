@@ -591,13 +591,13 @@ bool ContentSecurityPolicy::AllowEval(
   return is_allowed;
 }
 
-bool ContentSecurityPolicy::AllowWasmCodeGeneration(
+bool ContentSecurityPolicy::AllowWasmEval(
     ReportingDisposition reporting_disposition,
     ContentSecurityPolicy::ExceptionStatus exception_status,
     const String& script_content) {
   bool is_allowed = true;
   for (const auto& policy : policies_) {
-    is_allowed &= CSPDirectiveListAllowWasmCodeGeneration(
+    is_allowed &= CSPDirectiveListAllowWasmEval(
         *policy, this, reporting_disposition, exception_status, script_content);
   }
   return is_allowed;
