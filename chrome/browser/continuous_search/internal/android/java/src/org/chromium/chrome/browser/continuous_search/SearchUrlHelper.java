@@ -37,20 +37,36 @@ public class SearchUrlHelper {
     }
 
     /**
-     * Returns the appropriate histogram suffix (".Organic", ".News") based on the given URL.
-     * @param url the url to determine the histogram suffix with
+     * Gets the result category from the given URL
+     * @param url the url to get the category from
+     * @return the appropriate category
+     */
+    public static @SearchResultCategory int getResultCategoryFromUrl(GURL url) {
+        return SearchUrlHelperJni.get().getResultCategoryFromUrl(url);
+    }
+
+    /**
+     * Returns the appropriate histogram suffix (".Organic", ".News") based on the given result
+     * category.
+     * @param category the result category to determine the histogram suffix with
      * @return the suffix string
      */
-    public static String getHistogramSuffixForUrl(GURL url) {
-        String suffix = SearchUrlHelperJni.get().getHistogramSuffixForUrl(url);
-        assert suffix != null;
-        return suffix;
+    public static String getHistogramSuffixForResultCategory(@SearchResultCategory int category) {
+        switch (category) {
+            case SearchResultCategory.ORGANIC:
+                return ".Organic";
+            case SearchResultCategory.NEWS:
+                return ".News";
+            default:
+                assert false : "No histogram suffix for type " + category;
+                return null;
+        }
     }
 
     @NativeMethods
     interface Natives {
         boolean isGoogleDomainUrl(GURL url);
         String getQueryIfValidSrpUrl(GURL url);
-        String getHistogramSuffixForUrl(GURL url);
+        int getResultCategoryFromUrl(GURL url);
     }
 }

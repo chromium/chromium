@@ -21,14 +21,16 @@ import org.chromium.url.GURL;
 public class BackNavigationTabObserver extends EmptyTabObserver {
     private GURL mLastVisitedUrl;
     private String mLastSrpUrlQuery;
-    private String mHistogramSuffix;
+    private @SearchResultCategory int mResultCategory;
     private int mBackNavigationCount;
+    private boolean mClickedOnResultLink;
 
     public BackNavigationTabObserver(Tab tab) {
         tab.addObserver(this);
         mLastVisitedUrl = null;
         mLastSrpUrlQuery = null;
         mBackNavigationCount = 0;
+        mClickedOnResultLink = false;
     }
 
     @Override
@@ -36,31 +38,24 @@ public class BackNavigationTabObserver extends EmptyTabObserver {
         // Ignore page reloads
         if (url.equals(mLastVisitedUrl)) return;
 
-        if (tab.getWebContents() == null) return;
-        NavigationHistory history =
-                tab.getWebContents().getNavigationController().getNavigationHistory();
-        // Some tests don't mock Tab completely and leave NavigationHistory with no entries.
-        // This check here is to prevent crashing in that scenario.
-        if (history.getEntryCount() == 0) return;
+        mLastVisitedUrl = url;
 
-        NavigationEntry entry = history.getEntryAtIndex(history.getCurrentEntryIndex());
-        String query = SearchUrlHelper.getQueryIfValidSrpUrl(entry.getUrl());
+        String query = SearchUrlHelper.getQueryIfValidSrpUrl(url);
         if (query != null) {
-            if (query.equals(mLastSrpUrlQuery)) {
+            @SearchResultCategory
+            int resultCategory = SearchUrlHelper.getResultCategoryFromUrl(url);
+            if (query.equals(mLastSrpUrlQuery) && resultCategory == mResultCategory) {
                 // Treat re-navigation to the last seen SRP as a back navigation.
                 mBackNavigationCount++;
             } else {
                 // Encountered a new SRP session. Record the previous session and start a new one.
                 recordMetricAndClearCache();
                 mLastSrpUrlQuery = query;
-                mHistogramSuffix = SearchUrlHelper.getHistogramSuffixForUrl(entry.getUrl());
+                mResultCategory = resultCategory;
             }
-            // A page opened through SRP has google.com as its referrer URL. Treat other cases as
-            // navigating away from the SRP session.
-        } else if (!SearchUrlHelper.isGoogleDomainUrl(entry.getReferrerUrl())) {
-            recordMetricAndClearCache();
+        } else {
+            checkIfSrpResultClicked(tab);
         }
-        mLastVisitedUrl = entry.getUrl();
     }
 
     @Override
@@ -88,13 +83,30 @@ public class BackNavigationTabObserver extends EmptyTabObserver {
         // Intentionally do nothing to prevent automatic observer removal on detachment.
     }
 
+    public void checkIfSrpResultClicked(Tab tab) {
+        if (tab.getWebContents() == null) return;
+        NavigationHistory history =
+                tab.getWebContents().getNavigationController().getNavigationHistory();
+        // Some tests don't mock Tab completely and leave NavigationHistory with no entries.
+        // This check here is to prevent crashing in that scenario.
+        if (history.getEntryCount() == 0) return;
+
+        NavigationEntry entry = history.getEntryAtIndex(history.getCurrentEntryIndex());
+        // A page opened through SRP has google.com as its referrer URL.
+        if (SearchUrlHelper.isGoogleDomainUrl(entry.getReferrerUrl())) {
+            mClickedOnResultLink = true;
+        }
+    }
+
     private void recordMetricAndClearCache() {
-        if (mLastSrpUrlQuery != null) {
-            RecordHistogram.recordCount100Histogram(
-                    "Browser.ContinuousSearch.BackNavigationToSrp" + mHistogramSuffix,
+        // Record if seen a SRP or it was not abandoned (clicked on at least one result)
+        if (mLastSrpUrlQuery != null && mClickedOnResultLink) {
+            RecordHistogram.recordCount100Histogram("Browser.ContinuousSearch.BackNavigationToSrp"
+                            + SearchUrlHelper.getHistogramSuffixForResultCategory(mResultCategory),
                     mBackNavigationCount);
         }
         mLastSrpUrlQuery = null;
         mBackNavigationCount = 0;
+        mClickedOnResultLink = false;
     }
 }

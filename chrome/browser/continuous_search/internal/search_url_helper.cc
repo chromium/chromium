@@ -10,6 +10,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/continuous_search/internal/jni_headers/SearchUrlHelper_jni.h"
+#include "chrome/browser/continuous_search/internal/search_result_category.h"
 #include "components/google/core/common/google_util.h"
 #include "net/base/url_util.h"
 #include "url/android/gurl_android.h"
@@ -45,23 +46,14 @@ JNI_SearchUrlHelper_GetQueryIfValidSrpUrl(
              : base::android::ScopedJavaLocalRef<jstring>();
 }
 
-base::android::ScopedJavaLocalRef<jstring>
-JNI_SearchUrlHelper_GetHistogramSuffixForUrl(
+jint JNI_SearchUrlHelper_GetResultCategoryFromUrl(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_gurl) {
   std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_gurl);
   if (!url->is_valid())
-    return base::android::ScopedJavaLocalRef<jstring>();
+    return static_cast<jint>(SearchResultCategory::kNone);
 
-  SearchResultCategory category = GetResultCategoryForUrl(*url);
-  switch (category) {
-    case SearchResultCategory::kOrganic:
-      return base::android::ConvertUTF8ToJavaString(env, ".Organic");
-    case SearchResultCategory::kNews:
-      return base::android::ConvertUTF8ToJavaString(env, ".News");
-    case SearchResultCategory::kNone:
-      return base::android::ScopedJavaLocalRef<jstring>();
-  }
+  return static_cast<jint>(GetResultCategoryForUrl(*url));
 }
 
 base::Optional<std::string> ExtractSearchQueryIfValidUrl(const GURL& url) {
