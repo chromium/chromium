@@ -327,6 +327,8 @@ void PaintLayerCompositor::UpdateAssignmentsIfNeeded(
 
     CompositingLayerAssigner layer_assigner(this);
     layer_assigner.Assign(update_root, layers_needing_paint_invalidation);
+    // TODO(szager): Remove this after diagnosing crash.
+    CHECK_EQ(compositing_, (bool)RootGraphicsLayer());
 
     if (layer_assigner.LayersChanged())
       update_type = std::max(update_type, kCompositingUpdateRebuildTree);
