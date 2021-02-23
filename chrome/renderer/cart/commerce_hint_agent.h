@@ -39,6 +39,7 @@ class CommerceHintAgent
   static std::string ExtractButtonText(const blink::WebFormElement& form);
 
  private:
+  GURL starting_url_;
   base::WeakPtrFactory<CommerceHintAgent> weak_factory_{this};
 
   // content::RenderFrameObserver overrides
@@ -47,6 +48,7 @@ class CommerceHintAgent
   void DidStartNavigation(
       const GURL& url,
       base::Optional<blink::WebNavigationType> navigation_type) override;
+  void DidCommitProvisionalLoad(ui::PageTransition transition) override;
   void DidFinishLoad() override;
   void WillSubmitForm(const blink::WebFormElement& form) override;
   void DidObserveLayoutShift(double score, bool after_input_or_scroll) override;
