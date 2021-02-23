@@ -78,6 +78,7 @@ template("pnacl_toolchain") {
                            [
                              "executable_extension",
                              "is_clang_analysis_supported",
+                             "extra_cppflags",
                            ])
 
     # Note this is not the usual "ld = cxx" because "ld" uses are
@@ -108,6 +109,10 @@ pnacl_toolchain("newlib_pnacl") {
 pnacl_toolchain("newlib_pnacl_nonsfi") {
   executable_extension = ""
   strip = "strip"
+
+  # This macro is embedded on nonsfi toolchains but reclient can't figure
+  # that out itself, so we make it explicit.
+  extra_cppflags = "-D__native_client_nonsfi__"
 }
 
 template("nacl_glibc_toolchain") {

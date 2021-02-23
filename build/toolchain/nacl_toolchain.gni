@@ -37,6 +37,7 @@ template("nacl_toolchain") {
                              "nm",
                              "readelf",
                              "strip",
+                             "extra_cppflags",
                            ])
 
     toolchain_args = {
