@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/rand_util.h"
+#include "base/time/time.h"
 #include "components/viz/demo/client/demo_client.h"
 #include "components/viz/host/renderer_settings_creation.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -167,6 +168,7 @@ void DemoHost::Initialize(
 
 void DemoHost::OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) {}
 
-void DemoHost::OnFrameTokenChanged(uint32_t frame_token) {}
+void DemoHost::OnFrameTokenChanged(uint32_t frame_token,
+                                   base::TimeTicks activation_time) {}
 
 }  // namespace demo

@@ -203,8 +203,10 @@ void TestRenderWidgetHostView::OnFirstSurfaceActivation(
   // surface should be set here.
 }
 
-void TestRenderWidgetHostView::OnFrameTokenChanged(uint32_t frame_token) {
-  OnFrameTokenChangedForView(frame_token);
+void TestRenderWidgetHostView::OnFrameTokenChanged(
+    uint32_t frame_token,
+    base::TimeTicks activation_time) {
+  OnFrameTokenChangedForView(frame_token, activation_time);
 }
 
 std::unique_ptr<SyntheticGestureTarget>

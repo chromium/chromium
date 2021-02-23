@@ -3292,8 +3292,9 @@ bool RenderWidgetHostImpl::HasGestureStopped() {
   return true;
 }
 
-void RenderWidgetHostImpl::DidProcessFrame(uint32_t frame_token) {
-  frame_token_message_queue_->DidProcessFrame(frame_token);
+void RenderWidgetHostImpl::DidProcessFrame(uint32_t frame_token,
+                                           base::TimeTicks activation_time) {
+  frame_token_message_queue_->DidProcessFrame(frame_token, activation_time);
 }
 
 #if defined(OS_MAC)
@@ -3383,7 +3384,8 @@ void RenderWidgetHostImpl::UnlockKeyboard() {
 void RenderWidgetHostImpl::OnRenderFrameMetadataChangedBeforeActivation(
     const cc::RenderFrameMetadata& metadata) {}
 
-void RenderWidgetHostImpl::OnRenderFrameMetadataChangedAfterActivation() {
+void RenderWidgetHostImpl::OnRenderFrameMetadataChangedAfterActivation(
+    base::TimeTicks activation_time) {
   const auto& metadata =
       render_frame_metadata_provider_.LastRenderFrameMetadata();
 

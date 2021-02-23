@@ -293,8 +293,9 @@ void DelegatedFrameHost::OnFirstSurfaceActivation(
   NOTREACHED();
 }
 
-void DelegatedFrameHost::OnFrameTokenChanged(uint32_t frame_token) {
-  client_->OnFrameTokenChanged(frame_token);
+void DelegatedFrameHost::OnFrameTokenChanged(uint32_t frame_token,
+                                             base::TimeTicks activation_time) {
+  client_->OnFrameTokenChanged(frame_token, activation_time);
 }
 
 void DelegatedFrameHost::ResetFallbackToFirstNavigationSurface() {

@@ -31,7 +31,8 @@ namespace content {
 class BrowserCompositorMacClient {
  public:
   virtual SkColor BrowserCompositorMacGetGutterColor() const = 0;
-  virtual void OnFrameTokenChanged(uint32_t frame_token) = 0;
+  virtual void OnFrameTokenChanged(uint32_t frame_token,
+                                   base::TimeTicks activation_time) = 0;
   virtual void DestroyCompositorForShutdown() = 0;
   virtual bool OnBrowserCompositorSurfaceIdChanged() = 0;
   virtual std::vector<viz::SurfaceId> CollectSurfaceIdsForEviction() = 0;
@@ -123,7 +124,8 @@ class CONTENT_EXPORT BrowserCompositorMac : public DelegatedFrameHostClient,
   ui::Layer* DelegatedFrameHostGetLayer() const override;
   bool DelegatedFrameHostIsVisible() const override;
   SkColor DelegatedFrameHostGetGutterColor() const override;
-  void OnFrameTokenChanged(uint32_t frame_token) override;
+  void OnFrameTokenChanged(uint32_t frame_token,
+                           base::TimeTicks activation_time) override;
   float GetDeviceScaleFactor() const override;
   void InvalidateLocalSurfaceIdOnEviction() override;
   std::vector<viz::SurfaceId> CollectSurfaceIdsForEviction() override;

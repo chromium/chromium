@@ -12,6 +12,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
+#include "base/time/time.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/host/renderer_settings_creation.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
@@ -167,8 +168,10 @@ void HostFrameSinkManager::CreateCompositorFrameSink(
       frame_sink_id, std::move(receiver), std::move(client));
 }
 
-void HostFrameSinkManager::OnFrameTokenChanged(const FrameSinkId& frame_sink_id,
-                                               uint32_t frame_token) {
+void HostFrameSinkManager::OnFrameTokenChanged(
+    const FrameSinkId& frame_sink_id,
+    uint32_t frame_token,
+    base::TimeTicks activation_time) {
   DCHECK(frame_sink_id.is_valid());
   auto iter = frame_sink_data_map_.find(frame_sink_id);
   if (iter == frame_sink_data_map_.end())
@@ -176,7 +179,7 @@ void HostFrameSinkManager::OnFrameTokenChanged(const FrameSinkId& frame_sink_id,
 
   const FrameSinkData& data = iter->second;
   if (data.client)
-    data.client->OnFrameTokenChanged(frame_token);
+    data.client->OnFrameTokenChanged(frame_token, activation_time);
 }
 
 void HostFrameSinkManager::SetHitTestAsyncQueriedDebugRegions(

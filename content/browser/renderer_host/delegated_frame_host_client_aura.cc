@@ -40,8 +40,11 @@ SkColor DelegatedFrameHostClientAura::DelegatedFrameHostGetGutterColor() const {
   return SK_ColorWHITE;
 }
 
-void DelegatedFrameHostClientAura::OnFrameTokenChanged(uint32_t frame_token) {
-  render_widget_host_view_->OnFrameTokenChangedForView(frame_token);
+void DelegatedFrameHostClientAura::OnFrameTokenChanged(
+    uint32_t frame_token,
+    base::TimeTicks activation_time) {
+  render_widget_host_view_->OnFrameTokenChangedForView(frame_token,
+                                                       activation_time);
 }
 
 float DelegatedFrameHostClientAura::GetDeviceScaleFactor() const {

@@ -703,7 +703,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   // Signals that a frame with token |frame_token| was finished processing. If
   // there are any queued messages belonging to it, they will be processed.
-  void DidProcessFrame(uint32_t frame_token);
+  void DidProcessFrame(uint32_t frame_token, base::TimeTicks activation_time);
 
   mojo::Remote<viz::mojom::InputTargetClient>& input_target_client() {
     return input_target_client_;
@@ -1057,7 +1057,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // RenderFrameMetadataProvider::Observer implementation.
   void OnRenderFrameMetadataChangedBeforeActivation(
       const cc::RenderFrameMetadata& metadata) override;
-  void OnRenderFrameMetadataChangedAfterActivation() override;
+  void OnRenderFrameMetadataChangedAfterActivation(
+      base::TimeTicks activation_time) override;
   void OnRenderFrameSubmission() override {}
   void OnLocalSurfaceIdChanged(
       const cc::RenderFrameMetadata& metadata) override;

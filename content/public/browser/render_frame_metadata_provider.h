@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_RENDER_FRAME_METADATA_PROVIDER_H_
 
 #include "base/macros.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "content/common/content_export.h"
@@ -32,7 +33,8 @@ class CONTENT_EXPORT RenderFrameMetadataProvider {
 
     virtual void OnRenderFrameMetadataChangedBeforeActivation(
         const cc::RenderFrameMetadata& metadata) = 0;
-    virtual void OnRenderFrameMetadataChangedAfterActivation() = 0;
+    virtual void OnRenderFrameMetadataChangedAfterActivation(
+        base::TimeTicks activation_time) = 0;
     virtual void OnRenderFrameSubmission() = 0;
 
     // Called to indicate that the viz::LocalSurfaceId within the

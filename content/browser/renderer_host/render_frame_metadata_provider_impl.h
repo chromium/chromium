@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/mojom/render_frame_metadata.mojom.h"
 #include "content/public/browser/render_frame_metadata_provider.h"
@@ -65,8 +66,9 @@ class CONTENT_EXPORT RenderFrameMetadataProviderImpl
   // the browser process receives their associated frame tokens. These then
   // notify any |observers_|.
   void OnRenderFrameMetadataChangedAfterActivation(
-      cc::RenderFrameMetadata metadata);
-  void OnFrameTokenFrameSubmissionForTesting();
+      cc::RenderFrameMetadata metadata,
+      base::TimeTicks activation_time);
+  void OnFrameTokenFrameSubmissionForTesting(base::TimeTicks activation_time);
 
   // Set |last_render_frame_metadata_| to the given |metadata| for testing
   // purpose.

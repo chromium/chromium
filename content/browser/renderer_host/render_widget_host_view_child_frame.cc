@@ -806,8 +806,10 @@ void RenderWidgetHostViewChildFrame::CopyFromSurface(
 void RenderWidgetHostViewChildFrame::OnFirstSurfaceActivation(
     const viz::SurfaceInfo& surface_info) {}
 
-void RenderWidgetHostViewChildFrame::OnFrameTokenChanged(uint32_t frame_token) {
-  OnFrameTokenChangedForView(frame_token);
+void RenderWidgetHostViewChildFrame::OnFrameTokenChanged(
+    uint32_t frame_token,
+    base::TimeTicks activation_time) {
+  OnFrameTokenChangedForView(frame_token, activation_time);
 }
 
 TouchSelectionControllerClientManager*
@@ -823,7 +825,8 @@ RenderWidgetHostViewChildFrame::GetTouchSelectionControllerClientManager() {
 }
 
 void RenderWidgetHostViewChildFrame::
-    OnRenderFrameMetadataChangedAfterActivation() {
+    OnRenderFrameMetadataChangedAfterActivation(
+        base::TimeTicks activation_time) {
   if (selection_controller_client_) {
     const cc::RenderFrameMetadata& metadata =
         host()->render_frame_metadata_provider()->LastRenderFrameMetadata();

@@ -644,7 +644,8 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
 
   // viz::HostFrameSinkClient:
   void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override;
-  void OnFrameTokenChanged(uint32_t frame_token) override;
+  void OnFrameTokenChanged(uint32_t frame_token,
+                           base::TimeTicks activation_time) override;
 
   // Updates the layer name based on the window's name and id.
   void UpdateLayerName();

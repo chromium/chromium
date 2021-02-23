@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/service/display/shared_bitmap_manager.h"
@@ -504,9 +505,10 @@ void FrameSinkManagerImpl::SubmitHitTestRegionList(
 
 void FrameSinkManagerImpl::OnFrameTokenChangedDirect(
     const FrameSinkId& frame_sink_id,
-    uint32_t frame_token) {
+    uint32_t frame_token,
+    base::TimeTicks activation_time) {
   if (client_)
-    client_->OnFrameTokenChanged(frame_sink_id, frame_token);
+    client_->OnFrameTokenChanged(frame_sink_id, frame_token, activation_time);
 }
 
 void FrameSinkManagerImpl::OnFrameTokenChanged(const FrameSinkId& frame_sink_id,
@@ -514,13 +516,15 @@ void FrameSinkManagerImpl::OnFrameTokenChanged(const FrameSinkId& frame_sink_id,
   if (client_remote_ || !ui_task_runner_) {
     // This is a Mojo client or a locally-connected client *without* a task
     // runner. In this case, call directly.
-    OnFrameTokenChangedDirect(frame_sink_id, frame_token);
+    OnFrameTokenChangedDirect(frame_sink_id, frame_token,
+                              /* activation_time =*/base::TimeTicks::Now());
   } else {
     // This is a locally-connected client *with* a task runner - post task.
     ui_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&FrameSinkManagerImpl::OnFrameTokenChangedDirect,
-                       base::Unretained(this), frame_sink_id, frame_token));
+                       base::Unretained(this), frame_sink_id, frame_token,
+                       /* activation_time =*/base::TimeTicks::Now()));
   }
 }
 

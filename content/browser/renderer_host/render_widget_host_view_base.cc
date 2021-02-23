@@ -458,8 +458,10 @@ void RenderWidgetHostViewBase::UpdateScreenInfo(gfx::NativeView view) {
     host()->delegate()->SendScreenRects();
 
   // TODO(crbug.com/1169312): Unify display info caching and change detection.
+  bool old_display_rotation = current_display_.rotation();
   if (HasDisplayPropertyChanged(view) && host()) {
-    OnSynchronizedDisplayPropertiesChanged();
+    OnSynchronizedDisplayPropertiesChanged(old_display_rotation !=
+                                           current_display_.rotation());
     host()->NotifyScreenInfoChanged();
   }
 }
@@ -557,9 +559,10 @@ void RenderWidgetHostViewBase::OnDidNavigateMainFrameToNewPage() {
 }
 
 void RenderWidgetHostViewBase::OnFrameTokenChangedForView(
-    uint32_t frame_token) {
+    uint32_t frame_token,
+    base::TimeTicks activation_time) {
   if (host())
-    host()->DidProcessFrame(frame_token);
+    host()->DidProcessFrame(frame_token, activation_time);
 }
 
 bool RenderWidgetHostViewBase::ScreenRectIsUnstableFor(

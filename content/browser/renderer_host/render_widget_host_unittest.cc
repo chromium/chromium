@@ -1192,7 +1192,7 @@ TEST_F(RenderWidgetHostTest, RootWindowSegments) {
 
 TEST_F(RenderWidgetHostTest, ReceiveFrameTokenFromCrashedRenderer) {
   // The Renderer sends a monotonically increasing frame token.
-  host_->DidProcessFrame(2);
+  host_->DidProcessFrame(2, base::TimeTicks::Now());
 
   // Simulate a renderer crash.
   host_->SetView(nullptr);
@@ -1200,7 +1200,7 @@ TEST_F(RenderWidgetHostTest, ReceiveFrameTokenFromCrashedRenderer) {
 
   // Receive an in-flight frame token (it needs to monotonically increase)
   // while the RenderWidget is gone.
-  host_->DidProcessFrame(3);
+  host_->DidProcessFrame(3, base::TimeTicks::Now());
 
   // The renderer is recreated.
   host_->SetView(view_.get());
@@ -1213,12 +1213,12 @@ TEST_F(RenderWidgetHostTest, ReceiveFrameTokenFromCrashedRenderer) {
   // The new RenderWidget sends a frame token, which is lower than what the
   // previous RenderWidget sent. This should be okay, as the expected token has
   // been reset.
-  host_->DidProcessFrame(1);
+  host_->DidProcessFrame(1, base::TimeTicks::Now());
 }
 
 TEST_F(RenderWidgetHostTest, ReceiveFrameTokenFromDeletedRenderWidget) {
   // The RenderWidget sends a monotonically increasing frame token.
-  host_->DidProcessFrame(2);
+  host_->DidProcessFrame(2, base::TimeTicks::Now());
 
   // The RenderWidget is destroyed in the renderer process as the main frame
   // is removed from this RenderWidgetHost's RenderWidgetView, but the
@@ -1228,7 +1228,7 @@ TEST_F(RenderWidgetHostTest, ReceiveFrameTokenFromDeletedRenderWidget) {
 
   // Receive an in-flight frame token (it needs to monotonically increase)
   // while the RenderWidget is gone.
-  host_->DidProcessFrame(3);
+  host_->DidProcessFrame(3, base::TimeTicks::Now());
 
   // Make a new RenderWidget when the renderer is recreated and inform that a
   // RenderWidget is being created.
@@ -1240,7 +1240,7 @@ TEST_F(RenderWidgetHostTest, ReceiveFrameTokenFromDeletedRenderWidget) {
   // The new RenderWidget sends a frame token, which is lower than what the
   // previous RenderWidget sent. This should be okay, as the expected token has
   // been reset.
-  host_->DidProcessFrame(1);
+  host_->DidProcessFrame(1, base::TimeTicks::Now());
 }
 
 // Unable to include render_widget_host_view_mac.h and compile.
@@ -2251,7 +2251,8 @@ TEST_F(RenderWidgetHostTest, OnVerticalScrollDirectionChanged) {
   const auto NotifyVerticalScrollDirectionChanged =
       [this](viz::VerticalScrollDirection scroll_direction) {
         static uint32_t frame_token = 1u;
-        host_->frame_token_message_queue_->DidProcessFrame(frame_token);
+        host_->frame_token_message_queue_->DidProcessFrame(
+            frame_token, base::TimeTicks::Now());
 
         cc::RenderFrameMetadata metadata;
         metadata.new_vertical_scroll_direction = scroll_direction;

@@ -174,7 +174,8 @@ interface FrameSinkManagerClient {
   OnAggregatedHitTestRegionListUpdated(
       FrameSinkId frame_sink_id, array<AggregatedHitTestRegion> hit_test_data);
 
-  // Sends |frame_sink_id| and |frame_token| to the client when a surface
-  // of the provided |frame_sink_id| activates.
-  OnFrameTokenChanged(FrameSinkId frame_sink_id, uint32 frame_token);
+  // Sends |frame_sink_id|, |frame_token|, and |activation_time| to the client
+  // when a surface of the provided |frame_sink_id| activates.
+  OnFrameTokenChanged(FrameSinkId frame_sink_id, uint32 frame_token,
+                      mojo_base.mojom.TimeTicks activation_time);
 };

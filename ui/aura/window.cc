@@ -1494,7 +1494,8 @@ void Window::OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) {
                           false /* stretch_content_to_fill_bounds */);
 }
 
-void Window::OnFrameTokenChanged(uint32_t frame_token) {}
+void Window::OnFrameTokenChanged(uint32_t frame_token,
+                                 base::TimeTicks activation_time) {}
 
 void Window::UpdateLayerName() {
 #if DCHECK_IS_ON()

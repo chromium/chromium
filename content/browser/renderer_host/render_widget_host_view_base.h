@@ -466,7 +466,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   RenderWidgetHostImpl* host() const { return host_; }
 
   // Process swap messages sent before |frame_token| in RenderWidgetHostImpl.
-  void OnFrameTokenChangedForView(uint32_t frame_token);
+  void OnFrameTokenChangedForView(uint32_t frame_token,
+                                  base::TimeTicks activation_time);
 
   // Add and remove observers for lifetime event notifications. The order in
   // which notifications are sent to observers is undefined. Clients must be
@@ -601,7 +602,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   // renderer process changes. This method is called before notifying
   // RenderWidgetHostImpl in order to allow the view to allocate a new
   // LocalSurfaceId.
-  virtual void OnSynchronizedDisplayPropertiesChanged() {}
+  virtual void OnSynchronizedDisplayPropertiesChanged(bool rotation = false) {}
 
   // Transforms |point| from |original_view| coord space to |target_view| coord
   // space. Result is stored in |transformed_point|. Returns true if the

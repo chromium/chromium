@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/stl_util.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -85,7 +86,8 @@ class MockFrameSinkManagerClient : public mojom::FrameSinkManagerClient {
 
   // mojom::FrameSinkManagerClient:
   MOCK_METHOD1(OnFirstSurfaceActivation, void(const SurfaceInfo&));
-  MOCK_METHOD2(OnFrameTokenChanged, void(const FrameSinkId&, uint32_t));
+  MOCK_METHOD3(OnFrameTokenChanged,
+               void(const FrameSinkId&, uint32_t, base::TimeTicks));
   void OnAggregatedHitTestRegionListUpdated(
       const FrameSinkId& frame_sink_id,
       const std::vector<AggregatedHitTestRegion>& hit_test_data) override {}
@@ -1249,7 +1251,8 @@ TEST_F(CompositorFrameSinkSupportTest,
 
   testing::InSequence sequence;
   EXPECT_CALL(frame_sink_manager_client_, OnFirstSurfaceActivation(_));
-  EXPECT_CALL(frame_sink_manager_client_, OnFrameTokenChanged(_, frame_token));
+  EXPECT_CALL(frame_sink_manager_client_,
+              OnFrameTokenChanged(_, frame_token, _));
   support_->SubmitCompositorFrame(local_surface_id, std::move(frame));
 }
 
@@ -1276,11 +1279,13 @@ TEST_F(CompositorFrameSinkSupportTest, OnFrameTokenUpdate) {
   EXPECT_TRUE(surface->HasPendingFrame());
 
   // Since the frame is not activated, |frame_token| is not sent to the client.
-  EXPECT_CALL(frame_sink_manager_client_, OnFrameTokenChanged(_, _)).Times(0);
+  EXPECT_CALL(frame_sink_manager_client_, OnFrameTokenChanged(_, _, _))
+      .Times(0);
   testing::Mock::VerifyAndClearExpectations(&frame_sink_manager_client_);
 
   // Since the frame is now activated, |frame_token| is sent to the client.
-  EXPECT_CALL(frame_sink_manager_client_, OnFrameTokenChanged(_, frame_token));
+  EXPECT_CALL(frame_sink_manager_client_,
+              OnFrameTokenChanged(_, frame_token, _));
   surface->ActivatePendingFrameForDeadline();
 }
 

@@ -21,6 +21,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "components/viz/common/constants.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_impl.h"
@@ -194,7 +195,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   void OnFrameTokenChangedDirect(const FrameSinkId& frame_sink_id,
-                                 uint32_t frame_token);
+                                 uint32_t frame_token,
+                                 base::TimeTicks activation_time);
 
   // Called when |frame_token| is changed on a submitted CompositorFrame.
   void OnFrameTokenChanged(const FrameSinkId& frame_sink_id,
