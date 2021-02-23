@@ -98,6 +98,8 @@ class AccessibilityFeaturesApiTest : public ExtensionApiTest,
       return ash::prefs::kAccessibilityCursorColorEnabled;
     if (feature == "dockedMagnifier")
       return ash::prefs::kDockedMagnifierEnabled;
+    if (feature == "dictation")
+      return ash::prefs::kAccessibilityDictationEnabled;
     return NULL;
   }
 
