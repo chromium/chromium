@@ -6102,6 +6102,7 @@ IN_PROC_BROWSER_TEST_P(
 
   GURL url_2(embedded_test_server()->GetURL("b.com", "/title2.html"));
   {
+    auto* old_rfh = shell()->web_contents()->GetMainFrame();
     // Renderer-initiated cross-site navigation.
     EXPECT_TRUE(NavigateToURLFromRenderer(shell(), url_2));
 
@@ -6114,8 +6115,8 @@ IN_PROC_BROWSER_TEST_P(
     // navigations are always classified as client redirects. So, they start
     // with the previous page's URL in the redirect chain.
     EXPECT_EQ(entry->GetRedirectChain().size(), 2u);
-    if (AreAllSitesIsolatedForTesting() ||
-        CanCrossSiteNavigationsProactivelySwapBrowsingInstances()) {
+    auto* new_rfh = shell()->web_contents()->GetMainFrame();
+    if (old_rfh != new_rfh) {
       // If we change RenderFrameHosts, the previous page's URL can't be
       // obtained from the new renderer's DocumentLoader - we will incorrectly
       // get an empty URL in its place, which will be rewritten by the URL
@@ -6123,7 +6124,6 @@ IN_PROC_BROWSER_TEST_P(
       // TODO(https://crbug.com/1171210): Fix this.
       EXPECT_EQ(entry->GetRedirectChain()[0], GURL(kBlockedURL));
     } else {
-      EXPECT_EQ(entry->GetRedirectChain().size(), 2u);
       EXPECT_EQ(entry->GetRedirectChain()[0], start_url);
     }
     EXPECT_EQ(entry->GetRedirectChain()[1], url_2);

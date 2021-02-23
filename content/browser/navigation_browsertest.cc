@@ -4656,10 +4656,10 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
       main_frame->child_at(0)->current_frame_host();
   RenderFrameHostImpl* grandchild_frame =
       child_frame->child_at(0)->current_frame_host();
-  if (AreAllSitesIsolatedForTesting()) {
-    EXPECT_NE(main_frame->GetSiteInstance(), child_frame->GetSiteInstance());
-  } else {
+  if (AreDefaultSiteInstancesEnabled()) {
     EXPECT_EQ(main_frame->GetSiteInstance(), child_frame->GetSiteInstance());
+  } else {
+    EXPECT_NE(main_frame->GetSiteInstance(), child_frame->GetSiteInstance());
   }
   EXPECT_EQ(main_frame->GetSiteInstance(), grandchild_frame->GetSiteInstance());
   EXPECT_EQ(main_frame->GetLastCommittedOrigin(),
@@ -4706,10 +4706,10 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
       main_frame->child_at(0)->current_frame_host();
   RenderFrameHostImpl* grandchild_frame =
       child_frame->child_at(0)->current_frame_host();
-  if (AreAllSitesIsolatedForTesting()) {
-    EXPECT_NE(main_frame->GetSiteInstance(), child_frame->GetSiteInstance());
-  } else {
+  if (AreDefaultSiteInstancesEnabled()) {
     EXPECT_EQ(main_frame->GetSiteInstance(), child_frame->GetSiteInstance());
+  } else {
+    EXPECT_NE(main_frame->GetSiteInstance(), child_frame->GetSiteInstance());
   }
   EXPECT_EQ(child_frame->GetSiteInstance(),
             grandchild_frame->GetSiteInstance());
@@ -4750,10 +4750,10 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, TopToAboutBlank_CrossSite) {
       shell()->web_contents()->GetMainFrame());
   RenderFrameHostImpl* child_frame =
       main_frame->child_at(0)->current_frame_host();
-  if (AreAllSitesIsolatedForTesting()) {
-    EXPECT_NE(main_frame->GetSiteInstance(), child_frame->GetSiteInstance());
-  } else {
+  if (AreDefaultSiteInstancesEnabled()) {
     EXPECT_EQ(main_frame->GetSiteInstance(), child_frame->GetSiteInstance());
+  } else {
+    EXPECT_NE(main_frame->GetSiteInstance(), child_frame->GetSiteInstance());
   }
   url::Origin a_origin =
       url::Origin::Create(embedded_test_server()->GetURL("a.com", "/"));
