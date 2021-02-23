@@ -526,11 +526,7 @@ void LayoutShiftTracker::SubmitPerformanceEntry(double score_delta,
   WindowPerformance* performance = DOMWindowPerformance::performance(*window);
   DCHECK(performance);
 
-  double input_timestamp =
-      most_recent_input_timestamp_initialized_
-          ? performance->MonotonicTimeToDOMHighResTimeStamp(
-                most_recent_input_timestamp_)
-          : 0.0;
+  double input_timestamp = LastInputTimestamp();
   LayoutShift* entry =
       LayoutShift::Create(performance->now(), score_delta, had_recent_input,
                           input_timestamp, CreateAttributionList());
@@ -642,6 +638,19 @@ void LayoutShiftTracker::NotifyFindInPageInput() {
   UpdateInputTimestamp(base::TimeTicks::Now());
 }
 
+double LayoutShiftTracker::LastInputTimestamp() const {
+  LocalDOMWindow* window = frame_view_->GetFrame().DomWindow();
+  if (!window)
+    return 0.0;
+  WindowPerformance* performance = DOMWindowPerformance::performance(*window);
+  DCHECK(performance);
+
+  return most_recent_input_timestamp_initialized_
+             ? performance->MonotonicTimeToDOMHighResTimeStamp(
+                   most_recent_input_timestamp_)
+             : 0.0;
+}
+
 std::unique_ptr<TracedValue> LayoutShiftTracker::PerFrameTraceData(
     double score_delta,
     double weighted_score_delta,
@@ -655,6 +664,7 @@ std::unique_ptr<TracedValue> LayoutShiftTracker::PerFrameTraceData(
   RegionToTracedValue(region_, *value);
   value->SetBoolean("is_main_frame", frame_view_->GetFrame().IsMainFrame());
   value->SetBoolean("had_recent_input", input_detected);
+  value->SetDouble("last_input_timestamp", LastInputTimestamp());
   AttributionsToTracedValue(*value);
   return value;
 }
