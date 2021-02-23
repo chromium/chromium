@@ -17,6 +17,10 @@ class FilePath;
 class Version;
 }  // namespace base
 
+namespace component_updater {
+class ComponentUpdateService;
+}  // namespace component_updater
+
 namespace android_webview {
 
 class AwComponentInstallerPolicyDelegate;
@@ -49,6 +53,11 @@ class AwTrustTokenKeyCommitmentsComponentInstallerPolicy
  private:
   std::unique_ptr<AwComponentInstallerPolicyDelegate> delegate_;
 };
+
+// Call once during startup to make the component update service aware of
+// the trust tokens update component.
+void RegisterTrustTokensComponent(
+    component_updater::ComponentUpdateService* update_service);
 
 }  // namespace android_webview
 

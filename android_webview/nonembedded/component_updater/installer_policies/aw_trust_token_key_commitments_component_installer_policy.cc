@@ -50,4 +50,12 @@ void AwTrustTokenKeyCommitmentsComponentInstallerPolicy::ComponentReady(
   delegate_->ComponentReady(version, install_dir, std::move(manifest));
 }
 
+void RegisterTrustTokensComponent(
+    component_updater::ComponentUpdateService* update_service) {
+  base::MakeRefCounted<component_updater::ComponentInstaller>(
+      std::make_unique<AwTrustTokenKeyCommitmentsComponentInstallerPolicy>(
+          std::make_unique<AwComponentInstallerPolicyDelegate>()))
+      ->Register(update_service, base::OnceClosure());
+}
+
 }  // namespace android_webview

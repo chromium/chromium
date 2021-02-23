@@ -28,6 +28,9 @@ class OriginTrialsComponentInstallerPolicy : public ComponentInstallerPolicy {
   OriginTrialsComponentInstallerPolicy& operator=(
       const OriginTrialsComponentInstallerPolicy&) = delete;
 
+ protected:
+  void GetHash(std::vector<uint8_t>* hash) const override;
+
  private:
   bool VerifyInstallation(const base::DictionaryValue& manifest,
                           const base::FilePath& install_dir) const override;
@@ -41,7 +44,6 @@ class OriginTrialsComponentInstallerPolicy : public ComponentInstallerPolicy {
                       const base::FilePath& install_dir,
                       std::unique_ptr<base::DictionaryValue> manifest) override;
   base::FilePath GetRelativeInstallDir() const override;
-  void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
 };
