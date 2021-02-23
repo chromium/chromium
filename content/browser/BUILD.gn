@@ -255,6 +255,13 @@ source_set("browser") {
     "//v8:v8_version",
   ]
 
+  if (is_chromeos_ash) {
+    deps += [
+      "//chromeos/services/machine_learning/public/cpp",
+      "//chromeos/services/machine_learning/public/mojom",
+    ]
+  }
+
   public_deps = [
     "//base/util/memory_pressure",
     "//base/util/type_safety",
@@ -886,6 +893,12 @@ source_set("browser") {
     "gpu/peak_gpu_memory_tracker_impl.h",
     "gpu/shader_cache_factory.cc",
     "gpu/shader_cache_factory.h",
+    "handwriting/handwriting_recognition_service_factory.cc",
+    "handwriting/handwriting_recognition_service_factory.h",
+    "handwriting/handwriting_recognition_service_impl.cc",
+    "handwriting/handwriting_recognition_service_impl.h",
+    "handwriting/handwriting_recognizer_impl.cc",
+    "handwriting/handwriting_recognizer_impl.h",
     "hid/hid_service.cc",
     "hid/hid_service.h",
     "histogram_controller.cc",
@@ -2147,8 +2160,13 @@ source_set("browser") {
   }
 
   if (is_chromeos_ash) {
-    sources +=
-        [ "screenlock_monitor/screenlock_monitor_device_source_chromeos.cc" ]
+    sources += [
+      "handwriting/handwriting_recognition_service_impl_cros.cc",
+      "handwriting/handwriting_recognition_service_impl_cros.h",
+      "handwriting/handwriting_recognizer_impl_cros.cc",
+      "handwriting/handwriting_recognizer_impl_cros.h",
+      "screenlock_monitor/screenlock_monitor_device_source_chromeos.cc",
+    ]
   }
 
   if (is_linux || is_chromeos_lacros) {

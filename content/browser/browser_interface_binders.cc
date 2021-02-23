@@ -23,6 +23,7 @@
 #include "content/browser/feature_observer.h"
 #include "content/browser/federated_learning/floc_service_impl.h"
 #include "content/browser/gpu/gpu_process_host.h"
+#include "content/browser/handwriting/handwriting_recognition_service_factory.h"
 #include "content/browser/image_capture/image_capture_impl.h"
 #include "content/browser/keyboard_lock/keyboard_lock_service_impl.h"
 #include "content/browser/loader/content_security_notifier.h"
@@ -708,6 +709,9 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
 
   map->Add<payments::mojom::PaymentManager>(base::BindRepeating(
       &RenderFrameHostImpl::CreatePaymentManager, base::Unretained(host)));
+
+  map->Add<handwriting::mojom::HandwritingRecognitionService>(
+      base::BindRepeating(&CreateHandwritingRecognitionService));
 
   map->Add<blink::mojom::WebBluetoothService>(base::BindRepeating(
       &RenderFrameHostImpl::CreateWebBluetoothService, base::Unretained(host)));
