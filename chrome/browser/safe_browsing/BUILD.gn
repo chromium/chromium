@@ -131,6 +131,8 @@ static_library("safe_browsing") {
       "url_lookup_service_factory.h",
       "user_interaction_observer.cc",
       "user_interaction_observer.h",
+      "user_population.cc",
+      "user_population.h",
     ]
     deps += [
       ":advanced_protection",

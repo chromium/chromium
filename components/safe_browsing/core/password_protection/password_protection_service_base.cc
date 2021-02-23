@@ -231,26 +231,6 @@ int PasswordProtectionServiceBase::GetRequestTimeoutInMS() {
   return kRequestTimeoutMs;
 }
 
-void PasswordProtectionServiceBase::FillUserPopulation(
-    LoginReputationClientRequest::TriggerType trigger_type,
-    LoginReputationClientRequest* request_proto) {
-  ChromeUserPopulation* user_population = request_proto->mutable_population();
-  user_population->set_user_population(
-      IsEnhancedProtection()
-          ? ChromeUserPopulation::ENHANCED_PROTECTION
-          : IsExtendedReporting() ? ChromeUserPopulation::EXTENDED_REPORTING
-                                  : ChromeUserPopulation::SAFE_BROWSING);
-  user_population->set_profile_management_status(
-      GetProfileManagementStatus(GetBrowserPolicyConnector()));
-  user_population->set_is_history_sync_enabled(IsHistorySyncEnabled());
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-  user_population->set_is_under_advanced_protection(
-      IsUnderAdvancedProtection());
-#endif
-  user_population->set_is_incognito(IsIncognito());
-  user_population->set_is_mbb_enabled(IsUserMBBOptedIn());
-}
-
 void PasswordProtectionServiceBase::OnURLsDeleted(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {

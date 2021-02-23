@@ -204,8 +204,7 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
     request_proto_->set_report_type(LoginReputationClientRequest::FULL_REPORT);
   }
 
-  password_protection_service_->FillUserPopulation(trigger_type_,
-                                                   request_proto_.get());
+  password_protection_service_->FillUserPopulation(request_proto_.get());
   request_proto_->set_stored_verdict_cnt(
       password_protection_service_->GetStoredVerdictCount(trigger_type_));
 

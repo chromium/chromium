@@ -100,9 +100,6 @@ class ChromePasswordProtectionService
   safe_browsing::LoginReputationClientRequest::UrlDisplayExperiment
   GetUrlDisplayExperiment() const override;
 
-  const policy::BrowserPolicyConnector* GetBrowserPolicyConnector()
-      const override;
-
   AccountInfo GetAccountInfo() const override;
 
   AccountInfo GetSignedInNonSyncAccount(
@@ -130,12 +127,6 @@ class ChromePasswordProtectionService
   bool IsIncognito() override;
 
   bool IsExtendedReporting() override;
-
-  bool IsEnhancedProtection() override;
-
-  bool IsUserMBBOptedIn() override;
-
-  bool IsHistorySyncEnabled() override;
 
   bool IsPrimaryAccountSyncing() const override;
 
@@ -223,6 +214,9 @@ class ChromePasswordProtectionService
  protected:
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
                            VerifySendsPingForAboutBlank);
+
+  void FillUserPopulation(
+      safe_browsing::LoginReputationClientRequest* request_proto) override;
 
  private:
   // Returns true if the |web_state| is already showing a warning dialog.

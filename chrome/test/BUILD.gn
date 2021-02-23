@@ -5689,6 +5689,7 @@ test("unit_tests") {
       "../browser/safe_browsing/safe_browsing_metrics_collector_unittest.cc",
       "../browser/safe_browsing/threat_details_unittest.cc",
       "../browser/safe_browsing/ui_manager_unittest.cc",
+      "../browser/safe_browsing/user_population_unittest.cc",
     ]
 
     # TODO(crbug/1056278): Enable this on Fuchsia

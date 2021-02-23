@@ -33,6 +33,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
+#include "chrome/browser/safe_browsing/user_population.h"
 #include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
@@ -1397,11 +1398,6 @@ void ChromePasswordProtectionService::UpdateSecurityState(
                                     /*is_pending=*/true, threat_type);
 }
 
-const policy::BrowserPolicyConnector*
-ChromePasswordProtectionService::GetBrowserPolicyConnector() const {
-  return g_browser_process->browser_policy_connector();
-}
-
 void ChromePasswordProtectionService::FillReferrerChain(
     const GURL& event_url,
     SessionID event_tab_id,
@@ -1453,17 +1449,8 @@ bool ChromePasswordProtectionService::IsExtendedReporting() {
   return IsExtendedReportingEnabled(*GetPrefs());
 }
 
-bool ChromePasswordProtectionService::IsEnhancedProtection() {
-  return IsEnhancedProtectionEnabled(*GetPrefs());
-}
-
 bool ChromePasswordProtectionService::IsIncognito() {
   return profile_->IsOffTheRecord();
-}
-
-bool ChromePasswordProtectionService::IsUserMBBOptedIn() {
-  return GetPrefs()->GetBoolean(
-      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled);
 }
 
 bool ChromePasswordProtectionService::IsInPasswordAlertMode(
@@ -1545,11 +1532,9 @@ RequestOutcome ChromePasswordProtectionService::GetPingNotSentReason(
   return RequestOutcome::DISABLED_DUE_TO_USER_POPULATION;
 }
 
-bool ChromePasswordProtectionService::IsHistorySyncEnabled() {
-  syncer::SyncService* sync =
-      ProfileSyncServiceFactory::GetForProfile(profile_);
-  return sync && sync->IsSyncFeatureActive() && !sync->IsLocalSyncEnabled() &&
-         sync->GetActiveDataTypes().Has(syncer::HISTORY_DELETE_DIRECTIVES);
+void ChromePasswordProtectionService::FillUserPopulation(
+    LoginReputationClientRequest* request_proto) {
+  *request_proto->mutable_population() = GetUserPopulation(profile_);
 }
 
 bool ChromePasswordProtectionService::IsPrimaryAccountSyncing() const {
@@ -1844,11 +1829,6 @@ int ChromePasswordProtectionService::GetStoredVerdictCount(
 }
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-bool ChromePasswordProtectionService::IsUnderAdvancedProtection() {
-  return AdvancedProtectionStatusManagerFactory::GetForProfile(profile_)
-      ->IsUnderAdvancedProtection();
-}
-
 gfx::Size ChromePasswordProtectionService::GetCurrentContentAreaSize() const {
   return BrowserView::GetBrowserViewForBrowser(
              BrowserList::GetInstance()->GetLastActive())

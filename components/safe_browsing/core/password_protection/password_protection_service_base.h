@@ -34,10 +34,6 @@
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace policy {
-class BrowserPolicyConnector;
-}
-
 class GURL;
 
 namespace safe_browsing {
@@ -265,10 +261,6 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
   virtual int GetStoredVerdictCount(
       LoginReputationClientRequest::TriggerType trigger_type);
 
-  // Gets an unowned |BrowserPolicyConnector| for the current platform.
-  virtual const policy::BrowserPolicyConnector* GetBrowserPolicyConnector()
-      const = 0;
-
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory() {
     return url_loader_factory_;
   }
@@ -284,17 +276,12 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
           event_tab_id,  // SessionID::InvalidValue() if tab not available.
       LoginReputationClientRequest::Frame* frame) = 0;
 
-  void FillUserPopulation(
-      LoginReputationClientRequest::TriggerType trigger_type,
-      LoginReputationClientRequest* request_proto);
+  virtual void FillUserPopulation(
+      LoginReputationClientRequest* request_proto) = 0;
 
   virtual bool IsExtendedReporting() = 0;
 
-  virtual bool IsEnhancedProtection() = 0;
-
   virtual bool IsIncognito() = 0;
-
-  virtual bool IsUserMBBOptedIn() = 0;
 
   virtual bool IsInPasswordAlertMode(
       ReusedPasswordAccountType password_type) = 0;
@@ -302,8 +289,6 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
   virtual bool IsPingingEnabled(
       LoginReputationClientRequest::TriggerType trigger_type,
       ReusedPasswordAccountType password_type) = 0;
-
-  virtual bool IsHistorySyncEnabled() = 0;
 
   // If primary account is syncing.
   virtual bool IsPrimaryAccountSyncing() const = 0;
@@ -323,10 +308,6 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
   // accounts.
   virtual AccountInfo GetSignedInNonSyncAccount(
       const std::string& username) const = 0;
-
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-  virtual bool IsUnderAdvancedProtection() = 0;
-#endif
 
   // If Safe browsing endpoint is not enabled in the country.
   virtual bool IsInExcludedCountry() = 0;

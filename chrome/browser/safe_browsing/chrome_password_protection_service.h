@@ -40,10 +40,6 @@ namespace content {
 class WebContents;
 }
 
-namespace policy {
-class BrowserPolicyConnector;
-}
-
 namespace safe_browsing {
 
 class SafeBrowsingService;
@@ -298,8 +294,7 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
 
  protected:
   // PasswordProtectionService overrides.
-  const policy::BrowserPolicyConnector* GetBrowserPolicyConnector()
-      const override;
+
   // Obtains referrer chain of |event_url| and |event_tab_id| and add this
   // info into |frame|.
   void FillReferrerChain(const GURL& event_url,
@@ -308,11 +303,7 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
 
   bool IsExtendedReporting() override;
 
-  bool IsEnhancedProtection() override;
-
   bool IsIncognito() override;
-
-  bool IsUserMBBOptedIn() override;
 
   bool IsInPasswordAlertMode(ReusedPasswordAccountType password_type) override;
 
@@ -321,8 +312,8 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   bool IsPingingEnabled(LoginReputationClientRequest::TriggerType trigger_type,
                         ReusedPasswordAccountType password_type) override;
 
-  // If current profile has enabled history syncing.
-  bool IsHistorySyncEnabled() override;
+  // Populates the ChromeUserPopulation in |request_proto|.
+  void FillUserPopulation(LoginReputationClientRequest* request_proto) override;
 
   // If primary account is syncing.
   bool IsPrimaryAccountSyncing() const override;
@@ -342,11 +333,6 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   // If the domain for the non-syncing account is equal to
   // |kNoHostedDomainFound|, this means that the account is a Gmail account.
   bool IsOtherGaiaAccountGmail(const std::string& username) const override;
-
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-  // If user is under advanced protection.
-  bool IsUnderAdvancedProtection() override;
-#endif
 
   // If Safe browsing endpoint is not enabled in the country.
   bool IsInExcludedCountry() override;
