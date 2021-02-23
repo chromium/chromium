@@ -38,7 +38,15 @@ public class TranslateBridge {
      * Logging should only be performed when this method is called to show the translate menu item.
      */
     public static boolean canManuallyTranslate(Tab tab, boolean menuLogging) {
-        return TranslateBridgeJni.get().canManuallyTranslate(tab.getWebContents(), menuLogging);
+        return canManuallyTranslate(tab.getWebContents(), menuLogging);
+    }
+
+    /**
+     * Returns true iff the contents can be manually translated.
+     * Logging should only be performed when this method is called to show the translate menu item.
+     */
+    public static boolean canManuallyTranslate(WebContents webContents, boolean menuLogging) {
+        return TranslateBridgeJni.get().canManuallyTranslate(webContents, menuLogging);
     }
 
     /**
@@ -63,7 +71,16 @@ public class TranslateBridge {
      * @return String The original language code. Empty string if no language has been detected.
      */
     public static String getOriginalLanguage(Tab tab) {
-        return TranslateBridgeJni.get().getOriginalLanguage(tab.getWebContents());
+        return getOriginalLanguage(tab.getWebContents());
+    }
+
+    /**
+     * Get the original page language of the given contents.
+     * @param webContents The web contents to get original language code for.
+     * @return String The original language code. Empty string if no language has been detected.
+     */
+    public static String getOriginalLanguage(WebContents webContents) {
+        return TranslateBridgeJni.get().getOriginalLanguage(webContents);
     }
 
     /**
@@ -72,7 +89,16 @@ public class TranslateBridge {
      * @return String The current language code. Empty string if no language has been detected.
      */
     public static String getCurrentLanguage(Tab tab) {
-        return TranslateBridgeJni.get().getCurrentLanguage(tab.getWebContents());
+        return getCurrentLanguage(tab.getWebContents());
+    }
+
+    /**
+     * Get the current page language of the given contents.
+     * @param webContents The web contents to get current language code for.
+     * @return String The current language code. Empty string if no language has been detected.
+     */
+    public static String getCurrentLanguage(WebContents webContents) {
+        return TranslateBridgeJni.get().getCurrentLanguage(webContents);
     }
 
     /**
