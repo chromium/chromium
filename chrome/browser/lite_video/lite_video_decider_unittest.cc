@@ -147,14 +147,14 @@ class TestOptimizationGuideDecider
 class LiteVideoDeciderTest : public ChromeRenderViewHostTestHarness {
  public:
   explicit LiteVideoDeciderTest(bool allow_on_forward_back = false)
-      : allow_on_forward_back_(allow_on_forward_back) {}
-
-  void SetUp() override {
-    content::RenderViewHostTestHarness::SetUp();
+      : allow_on_forward_back_(allow_on_forward_back) {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         ::features::kLiteVideo,
         {{"allow_on_forward_back", allow_on_forward_back_ ? "true" : "false"}});
+  }
 
+  void SetUp() override {
+    content::RenderViewHostTestHarness::SetUp();
     optimization_guide_decider_ =
         std::make_unique<TestOptimizationGuideDecider>();
 
