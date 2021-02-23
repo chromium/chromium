@@ -9680,7 +9680,7 @@ class RemoteNavigationClient
       bool initiator_frame_is_ad,
       CrossVariantMojoRemote<mojom::blink::BlobURLTokenInterfaceBase>,
       const base::Optional<WebImpression>& impression,
-      const base::UnguessableToken* initiator_frame_token,
+      const blink::LocalFrameToken* initiator_frame_token,
       blink::CrossVariantMojoRemote<
           blink::mojom::PolicyContainerHostKeepAliveHandleInterfaceBase>
           initiator_policy_container_keep_alive_handle) override {

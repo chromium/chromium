@@ -43,6 +43,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -2315,7 +2316,7 @@ void NavigationControllerImpl::GoToOffsetInSandboxedFrame(
 void NavigationControllerImpl::NavigateFromFrameProxy(
     RenderFrameHostImpl* render_frame_host,
     const GURL& url,
-    const base::UnguessableToken* initiator_frame_token,
+    const blink::LocalFrameToken* initiator_frame_token,
     int initiator_process_id,
     const base::Optional<url::Origin>& initiator_origin,
     bool is_renderer_initiated,
@@ -2415,9 +2416,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
   }
 
   LoadURLParams params(url);
-  params.initiator_frame_token =
-      initiator_frame_token ? base::make_optional(*initiator_frame_token)
-                            : base::nullopt;
+  params.initiator_frame_token = base::OptionalFromPtr(initiator_frame_token);
   params.initiator_process_id = initiator_process_id;
   params.initiator_origin = initiator_origin;
   params.source_site_instance = source_site_instance;

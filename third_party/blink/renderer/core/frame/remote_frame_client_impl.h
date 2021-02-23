@@ -31,7 +31,7 @@ class RemoteFrameClientImpl final : public RemoteFrameClient {
       bool initiator_frame_is_ad,
       mojo::PendingRemote<mojom::blink::BlobURLToken>,
       const base::Optional<WebImpression>& impression,
-      const base::UnguessableToken* initiator_frame_token,
+      const LocalFrameToken* initiator_frame_token,
       mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
           initiator_policy_container_keep_alive_handle) override;
   unsigned BackForwardLength() override;

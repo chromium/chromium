@@ -225,11 +225,7 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
   bool initiator_frame_has_download_sandbox_flag = false;
   bool initiator_frame_is_ad = false;
 
-  // TODO(1096617): Migrate the navigation stack to use
-  // base::Optional<FrameToken> instead of "base::UnguessableToken*". Using
-  // pointers is no longer possible when the input data can be backed by
-  // multiple distinct types requiring a cast.
-  base::Optional<base::UnguessableToken> initiator_frame_token =
+  base::Optional<LocalFrameToken> initiator_frame_token =
       base::OptionalFromPtr(frame_request.GetInitiatorFrameToken());
   mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
       initiator_policy_container_keep_alive_handle =
@@ -254,7 +250,7 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
       }
 
       if (!initiator_frame_token) {
-        initiator_frame_token = window->GetFrame()->GetFrameToken();
+        initiator_frame_token = window->GetFrame()->GetLocalFrameToken();
         initiator_policy_container_keep_alive_handle =
             window->GetFrame()->GetPolicyContainer()->IssueKeepAliveHandle();
       }

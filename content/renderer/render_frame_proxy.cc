@@ -386,7 +386,7 @@ void RenderFrameProxy::Navigate(
     blink::CrossVariantMojoRemote<blink::mojom::BlobURLTokenInterfaceBase>
         blob_url_token,
     const base::Optional<blink::WebImpression>& impression,
-    const base::UnguessableToken* initiator_frame_token,
+    const blink::LocalFrameToken* initiator_frame_token,
     blink::CrossVariantMojoRemote<
         blink::mojom::PolicyContainerHostKeepAliveHandleInterfaceBase>
         initiator_policy_container_keep_alive_handle) {

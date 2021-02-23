@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_FRAME_LOAD_REQUEST_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "base/stl_util.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink.h"
@@ -168,11 +169,11 @@ struct CORE_EXPORT FrameLoadRequest {
 
   bool CanDisplay(const KURL&) const;
 
-  void SetInitiatorFrameToken(const base::UnguessableToken& token) {
+  void SetInitiatorFrameToken(const LocalFrameToken& token) {
     initiator_frame_token_ = token;
   }
-  const base::UnguessableToken* GetInitiatorFrameToken() const {
-    return initiator_frame_token_ ? &(initiator_frame_token_.value()) : nullptr;
+  const LocalFrameToken* GetInitiatorFrameToken() const {
+    return base::OptionalOrNullptr(initiator_frame_token_);
   }
 
  private:
@@ -194,7 +195,7 @@ struct CORE_EXPORT FrameLoadRequest {
       mojom::RequestContextFrameType::kNone;
   WebWindowFeatures window_features_;
   base::Optional<WebImpression> impression_;
-  base::Optional<base::UnguessableToken> initiator_frame_token_;
+  base::Optional<LocalFrameToken> initiator_frame_token_;
   mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
       initiator_policy_container_keep_alive_handle_;
 };

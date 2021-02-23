@@ -24,6 +24,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "third_party/blink/public/common/navigation/impression.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 #include "ui/base/page_transition_types.h"
@@ -374,7 +375,7 @@ class CONTENT_EXPORT NavigationHandle {
   // frame, or may return a valid frame token to a frame that no longer exists
   // because it was deleted before the navigation began. This parameter is
   // defined if and only if GetInitiatorProcessID below is.
-  virtual const base::Optional<base::UnguessableToken>&
+  virtual const base::Optional<blink::LocalFrameToken>&
   GetInitiatorFrameToken() = 0;
 
   // Return the ID of the renderer process of the frame host that initiated the

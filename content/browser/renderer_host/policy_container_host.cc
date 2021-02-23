@@ -25,9 +25,10 @@ class KeepAliveHandle
   scoped_refptr<PolicyContainerHost> wrapped_pointer;
 };
 
-using TokenPolicyContainerMap = std::unordered_map<base::UnguessableToken,
-                                                   PolicyContainerHost*,
-                                                   base::UnguessableTokenHash>;
+using TokenPolicyContainerMap =
+    std::unordered_map<blink::LocalFrameToken,
+                       PolicyContainerHost*,
+                       blink::LocalFrameToken::Hasher>;
 base::LazyInstance<TokenPolicyContainerMap>::Leaky
     g_token_policy_container_map = LAZY_INSTANCE_INITIALIZER;
 
@@ -54,21 +55,22 @@ PolicyContainerHost::PolicyContainerHost(
 PolicyContainerHost::~PolicyContainerHost() {
   // The PolicyContainerHost associated with |frame_token_| might have
   // changed. In that case, we must not remove the map entry.
-  if (frame_token_ && FromFrameToken(frame_token_) == this)
-    g_token_policy_container_map.Get().erase(frame_token_);
+  if (frame_token_ && FromFrameToken(frame_token_.value()) == this)
+    g_token_policy_container_map.Get().erase(frame_token_.value());
 }
 
 void PolicyContainerHost::AssociateWithFrameToken(
-    const base::UnguessableToken& frame_token) {
+    const blink::LocalFrameToken& frame_token) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!frame_token_);
   frame_token_ = frame_token;
-  g_token_policy_container_map.Get().erase(frame_token);
-  g_token_policy_container_map.Get().insert(std::make_pair(frame_token, this));
+  g_token_policy_container_map.Get().erase(frame_token.value());
+  g_token_policy_container_map.Get().insert(
+      std::make_pair(frame_token.value(), this));
 }
 
 PolicyContainerHost* PolicyContainerHost::FromFrameToken(
-    const base::UnguessableToken& frame_token) {
+    const blink::LocalFrameToken& frame_token) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto it = g_token_policy_container_map.Get().find(frame_token);
   if (it == g_token_policy_container_map.Get().end())

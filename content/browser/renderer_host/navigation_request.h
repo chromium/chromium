@@ -56,6 +56,7 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/navigation/impression.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom-forward.h"
 
 #if defined(OS_ANDROID)
@@ -175,7 +176,7 @@ class CONTENT_EXPORT NavigationRequest
       mojom::CommitNavigationParamsPtr commit_params,
       bool browser_initiated,
       bool was_opener_suppressed,
-      const base::UnguessableToken* initiator_frame_token,
+      const blink::LocalFrameToken* initiator_frame_token,
       int initiator_process_id,
       const std::string& extra_headers,
       FrameNavigationEntry* frame_entry,
@@ -325,7 +326,7 @@ class CONTENT_EXPORT NavigationRequest
   const net::ProxyServer& GetProxyServer() override;
   const std::string& GetHrefTranslate() override;
   const base::Optional<blink::Impression>& GetImpression() override;
-  const base::Optional<base::UnguessableToken>& GetInitiatorFrameToken()
+  const base::Optional<blink::LocalFrameToken>& GetInitiatorFrameToken()
       override;
   int GetInitiatorProcessID() override;
   const base::Optional<url::Origin>& GetInitiatorOrigin() override;
@@ -1503,7 +1504,7 @@ class CONTENT_EXPORT NavigationRequest
   // The frame with the corresponding frame token may have been deleted before
   // the navigation begins. This parameter is defined if and only if
   // |initiator_process_id_| below is.
-  const base::Optional<base::UnguessableToken> initiator_frame_token_;
+  const base::Optional<blink::LocalFrameToken> initiator_frame_token_;
 
   // ID of the renderer process of the frame host that initiated the navigation.
   // This is defined if and only if |initiator_frame_token_| above is, and it is

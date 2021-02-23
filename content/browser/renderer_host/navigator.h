@@ -124,7 +124,7 @@ class CONTENT_EXPORT Navigator {
   void RequestOpenURL(
       RenderFrameHostImpl* render_frame_host,
       const GURL& url,
-      const base::UnguessableToken* initiator_frame_token,
+      const blink::LocalFrameToken* initiator_frame_token,
       int initiator_process_id,
       const base::Optional<url::Origin>& initiator_origin,
       const scoped_refptr<network::ResourceRequestBody>& post_body,
@@ -144,7 +144,7 @@ class CONTENT_EXPORT Navigator {
   void NavigateFromFrameProxy(
       RenderFrameHostImpl* render_frame_host,
       const GURL& url,
-      const base::UnguessableToken* initiator_frame_token,
+      const blink::LocalFrameToken* initiator_frame_token,
       int initiator_process_id,
       const url::Origin& initiator_origin,
       SiteInstance* source_site_instance,

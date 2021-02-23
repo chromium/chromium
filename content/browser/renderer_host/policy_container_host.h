@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom.h"
 
 namespace content {
@@ -83,13 +84,13 @@ class CONTENT_EXPORT PolicyContainerHost
   // Retrieve the PolicyContainerHost associated with the frame token |token|
   // (cf. AsssociateWithFrameToken).
   static PolicyContainerHost* FromFrameToken(
-      const base::UnguessableToken& token);
+      const blink::LocalFrameToken& token);
 
   // AssociateWithFrameToken must be called as soon as this PolicyContainerHost
   // becomes owned by a RenderFrameHost. After this function is called, it
   // becomes possible to retrieve this PolicyContainerHost via
   // PolicyContainerHost::FromFrameToken. This function can be called only once.
-  void AssociateWithFrameToken(const base::UnguessableToken& token);
+  void AssociateWithFrameToken(const blink::LocalFrameToken& token);
 
   const PolicyContainerPolicies& policies() const { return policies_; }
 
@@ -140,7 +141,7 @@ class CONTENT_EXPORT PolicyContainerHost
   mojo::UniqueReceiverSet<blink::mojom::PolicyContainerHostKeepAliveHandle>
       keep_alive_handles_receiver_set_;
 
-  base::UnguessableToken frame_token_;
+  base::Optional<blink::LocalFrameToken> frame_token_ = base::nullopt;
 };
 
 }  // namespace content

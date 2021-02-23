@@ -7,6 +7,7 @@
 
 #include "base/optional.h"
 #include "cc/paint/paint_canvas.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-blink-forward.h"
@@ -36,7 +37,7 @@ class RemoteFrameClient : public FrameClient {
       bool initiator_frame_is_ad,
       mojo::PendingRemote<mojom::blink::BlobURLToken>,
       const base::Optional<WebImpression>& impression,
-      const base::UnguessableToken* initiator_frame_token,
+      const LocalFrameToken* initiator_frame_token,
       mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
           initiator_policy_container_keep_alive_handle) = 0;
   unsigned BackForwardLength() override = 0;

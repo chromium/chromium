@@ -12,6 +12,7 @@
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom.h"
 #include "url/gurl.h"
 
@@ -48,7 +49,7 @@ class CONTENT_EXPORT PolicyContainerNavigationBundle {
   // This must only be called on the browser's UI thread.
   PolicyContainerNavigationBundle(
       RenderFrameHostImpl* parent,
-      const base::UnguessableToken* initiator_frame_token,
+      const blink::LocalFrameToken* initiator_frame_token,
       const FrameNavigationEntry* history_entry);
 
   ~PolicyContainerNavigationBundle();

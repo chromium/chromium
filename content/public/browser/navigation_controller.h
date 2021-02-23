@@ -30,6 +30,7 @@
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/common/navigation/impression.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -136,7 +137,7 @@ class NavigationController {
     // was not associated with a frame, or if the initiating frame did not exist
     // by the time navigation started. This parameter is defined if and only if
     // |initiator_process_id| below is.
-    base::Optional<base::UnguessableToken> initiator_frame_token;
+    base::Optional<blink::LocalFrameToken> initiator_frame_token;
 
     // ID of the renderer process of the frame host that initiated the
     // navigation. This is defined if and only if |initiator_frame_token| above

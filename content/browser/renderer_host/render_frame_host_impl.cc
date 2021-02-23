@@ -5148,9 +5148,7 @@ void RenderFrameHostImpl::OpenURL(mojom::OpenURLParamsPtr params) {
 
   frame_tree_node_->navigator().RequestOpenURL(
       this, validated_url,
-      params->initiator_frame_token.has_value()
-          ? &(params->initiator_frame_token.value())
-          : nullptr,
+      base::OptionalOrNullptr(params->initiator_frame_token),
       GetProcess()->GetID(), params->initiator_origin, params->post_body,
       params->extra_headers, params->referrer.To<content::Referrer>(),
       params->disposition, params->should_replace_current_entry,

@@ -169,7 +169,7 @@ TEST_F(PolicyContainerNavigationBundleTest, InitiatorPoliciesWithInitiator) {
   initiator->SetPolicyContainerHost(NewHost(initiator_policies));
 
   // Force implicit conversion from LocalFrameToken to UnguessableToken.
-  const base::UnguessableToken& token = initiator->GetFrameToken();
+  const blink::LocalFrameToken& token = initiator->GetFrameToken();
   PolicyContainerNavigationBundle bundle(nullptr, &token, nullptr);
 
   EXPECT_THAT(bundle.InitiatorPolicies(), Pointee(Eq(initiator_policies)));
@@ -185,7 +185,7 @@ TEST_F(PolicyContainerNavigationBundleTest,
   initiator->SetPolicyContainerHost(NewHost(initiator_policies));
 
   // Force implicit conversion from LocalFrameToken to UnguessableToken.
-  const base::UnguessableToken& token = initiator->GetFrameToken();
+  const blink::LocalFrameToken& token = initiator->GetFrameToken();
   PolicyContainerNavigationBundle bundle(nullptr, &token, nullptr);
   bundle.FinalizePolicies(AboutBlankUrl());
 

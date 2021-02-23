@@ -16,6 +16,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom-shared.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-shared.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-shared.h"
@@ -167,7 +168,7 @@ struct BLINK_EXPORT WebNavigationInfo {
   FramePolicy frame_policy;
 
   // The frame token of the initiator Frame.
-  base::Optional<base::UnguessableToken> initiator_frame_token;
+  base::Optional<LocalFrameToken> initiator_frame_token;
 
   // A handle for keeping the initiator RenderFrameHost's PolicyContainerHost
   // alive until we create the NavigationRequest.

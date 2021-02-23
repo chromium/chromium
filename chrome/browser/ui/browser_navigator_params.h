@@ -22,6 +22,7 @@
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/common/navigation/impression.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
@@ -94,7 +95,7 @@ struct NavigateParams {
   // drop), and the frame with the corresponding frame token may have been
   // deleted before the navigation begins. It is defined if and only if
   // |initiator_process_id| below is.
-  base::Optional<base::UnguessableToken> initiator_frame_token;
+  base::Optional<blink::LocalFrameToken> initiator_frame_token;
 
   // ID of the renderer process of the frame host that initiated the navigation.
   // This is defined if and only if |initiator_frame_token| above is, and it is

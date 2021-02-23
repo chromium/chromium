@@ -169,7 +169,7 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
           initiator_csp,
       network::mojom::IPAddressSpace,
       mojo::PendingRemote<mojom::blink::NavigationInitiator>,
-      const base::UnguessableToken* initiator_frame_token,
+      const LocalFrameToken* initiator_frame_token,
       mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
           initiator_policy_container_handle) = 0;
 

@@ -37,7 +37,7 @@ std::unique_ptr<PolicyContainerPolicies> GetParentPolicies(
 //
 // Must only be called on the browser's UI thread.
 std::unique_ptr<PolicyContainerPolicies> GetInitiatorPolicies(
-    const base::UnguessableToken* frame_token) {
+    const blink::LocalFrameToken* frame_token) {
   if (!frame_token) {
     return nullptr;
   }
@@ -76,7 +76,7 @@ std::unique_ptr<PolicyContainerPolicies> GetHistoryPolicies(
 
 PolicyContainerNavigationBundle::PolicyContainerNavigationBundle(
     RenderFrameHostImpl* parent,
-    const base::UnguessableToken* initiator_frame_token,
+    const blink::LocalFrameToken* initiator_frame_token,
     const FrameNavigationEntry* history_entry)
     : parent_policies_(GetParentPolicies(parent)),
       initiator_policies_(GetInitiatorPolicies(initiator_frame_token)),

@@ -30,6 +30,7 @@
 #include "content/public/browser/navigation_type.h"
 #include "content/public/browser/reload_type.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace content {
 class FrameTree;
@@ -157,7 +158,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   void NavigateFromFrameProxy(
       RenderFrameHostImpl* render_frame_host,
       const GURL& url,
-      const base::UnguessableToken* initiator_frame_token,
+      const blink::LocalFrameToken* initiator_frame_token,
       int initiator_process_id,
       const base::Optional<url::Origin>& initiator_origin,
       bool is_renderer_initiated,

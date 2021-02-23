@@ -415,7 +415,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 
   RenderFrameHost* initial_rfh = current_frame_host();
 
-  base::UnguessableToken initial_rfh_frame_token = initial_rfh->GetFrameToken();
+  blink::LocalFrameToken initial_rfh_frame_token = initial_rfh->GetFrameToken();
   int initial_rfh_process_id = initial_rfh->GetProcess()->GetID();
 
   // Simulate clicking on a same-site link.
@@ -477,7 +477,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 
   RenderFrameHost* initial_rfh = current_frame_host();
   url::Origin initial_origin = initial_rfh->GetLastCommittedOrigin();
-  base::UnguessableToken initiator_frame_token = initial_rfh->GetFrameToken();
+  blink::LocalFrameToken initiator_frame_token = initial_rfh->GetFrameToken();
   int initiator_process_id = initial_rfh->GetProcess()->GetID();
 
   // Simulate clicking on a cross-site link.
@@ -1035,7 +1035,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   GURL url(embedded_test_server()->GetURL("/simple_links.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  base::UnguessableToken initiator_frame_token =
+  blink::LocalFrameToken initiator_frame_token =
       current_frame_host()->GetFrameToken();
   int initiator_process_id = current_frame_host()->GetProcess()->GetID();
 
@@ -1078,7 +1078,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 
   RenderFrameHost* initial_rfh = current_frame_host();
   url::Origin initial_origin = initial_rfh->GetLastCommittedOrigin();
-  base::UnguessableToken initiator_frame_token = initial_rfh->GetFrameToken();
+  blink::LocalFrameToken initiator_frame_token = initial_rfh->GetFrameToken();
 
   // Simulate clicking on a cross-site link which has rel="noopener".
   {
@@ -1125,7 +1125,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 
   RenderFrameHostImpl* subframe_rfh =
       current_frame_host()->child_at(0)->current_frame_host();
-  base::UnguessableToken initiator_frame_token = subframe_rfh->GetFrameToken();
+  blink::LocalFrameToken initiator_frame_token = subframe_rfh->GetFrameToken();
   int initiator_process_id = subframe_rfh->GetProcess()->GetID();
 
   // Simulate clicking on a cross-site link.
@@ -1206,7 +1206,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   GURL url(embedded_test_server()->GetURL("/simple_links.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  base::UnguessableToken initiator_frame_token =
+  blink::LocalFrameToken initiator_frame_token =
       current_frame_host()->GetFrameToken();
   int initiator_process_id = current_frame_host()->GetProcess()->GetID();
 
@@ -3689,14 +3689,14 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   RenderFrameHost* openee_rfh =
       static_cast<WebContentsImpl*>(openee_shell->web_contents())
           ->GetMainFrame();
-  base::UnguessableToken initiator_frame_token = openee_rfh->GetFrameToken();
+  blink::LocalFrameToken initiator_frame_token = openee_rfh->GetFrameToken();
   int initiator_process_id = openee_rfh->GetProcess()->GetID();
   base::RunLoop loop;
   DidStartNavigationCallback callback(
       web_contents(), base::BindLambdaForTesting([&](NavigationHandle* handle) {
         auto* request = NavigationRequest::From(handle);
 
-        const base::Optional<base::UnguessableToken>& frame_token =
+        const base::Optional<blink::LocalFrameToken>& frame_token =
             request->GetInitiatorFrameToken();
         EXPECT_TRUE(frame_token.has_value());
         EXPECT_EQ(initiator_frame_token, frame_token.value());
@@ -3778,7 +3778,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, FormSubmissionThenDeleteFrame) {
           ->GetMainFrame()
           ->child_at(0)
           ->current_frame_host();
-  base::UnguessableToken initiator_frame_token = initiator_rfh->GetFrameToken();
+  blink::LocalFrameToken initiator_frame_token = initiator_rfh->GetFrameToken();
   int initiator_process_id = initiator_rfh->GetProcess()->GetID();
   base::RunLoop loop;
   DidStartNavigationCallback callback(
@@ -3786,7 +3786,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, FormSubmissionThenDeleteFrame) {
         auto* request = NavigationRequest::From(handle);
         ASSERT_TRUE(request->IsPost());
 
-        const base::Optional<base::UnguessableToken>& frame_token =
+        const base::Optional<blink::LocalFrameToken>& frame_token =
             request->GetInitiatorFrameToken();
         EXPECT_TRUE(frame_token.has_value());
         EXPECT_EQ(initiator_frame_token, frame_token.value());
@@ -3882,7 +3882,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 
   RenderFrameHost* initiator_rfh =
       middle_rfh->child_at(0)->current_frame_host();
-  base::UnguessableToken initiator_frame_token = initiator_rfh->GetFrameToken();
+  blink::LocalFrameToken initiator_frame_token = initiator_rfh->GetFrameToken();
   int initiator_process_id = initiator_rfh->GetProcess()->GetID();
 
   base::RunLoop loop;
@@ -3892,7 +3892,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
         auto* request = NavigationRequest::From(handle);
         ASSERT_TRUE(request->IsPost());
 
-        const base::Optional<base::UnguessableToken>& frame_token =
+        const base::Optional<blink::LocalFrameToken>& frame_token =
             request->GetInitiatorFrameToken();
         EXPECT_TRUE(frame_token.has_value());
         EXPECT_EQ(initiator_frame_token, frame_token.value());

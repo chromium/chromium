@@ -799,7 +799,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
     mojom::CommitNavigationParamsPtr commit_params,
     bool browser_initiated,
     bool was_opener_suppressed,
-    const base::UnguessableToken* initiator_frame_token,
+    const blink::LocalFrameToken* initiator_frame_token,
     int initiator_process_id,
     const std::string& extra_headers,
     FrameNavigationEntry* frame_entry,
@@ -816,9 +816,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
       GetDestinationFromFrameTreeNode(frame_tree_node);
 
   auto navigation_params = mojom::BeginNavigationParams::New(
-      initiator_frame_token ? base::make_optional(*initiator_frame_token)
-                            : base::nullopt,
-      extra_headers, net::LOAD_NORMAL, false /* skip_service_worker */,
+      base::OptionalFromPtr(initiator_frame_token), extra_headers,
+      net::LOAD_NORMAL, false /* skip_service_worker */,
       blink::mojom::RequestContextType::LOCATION, destination,
       blink::mojom::MixedContentContextType::kBlockable, is_form_submission,
       false /* was_initiated_by_link_click */, GURL() /* searchable_form_url */,
@@ -5301,7 +5300,7 @@ const base::Optional<blink::Impression>& NavigationRequest::GetImpression() {
   return begin_params()->impression;
 }
 
-const base::Optional<base::UnguessableToken>&
+const base::Optional<blink::LocalFrameToken>&
 NavigationRequest::GetInitiatorFrameToken() {
   return initiator_frame_token_;
 }

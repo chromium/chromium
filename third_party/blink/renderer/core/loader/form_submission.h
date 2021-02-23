@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_FORM_SUBMISSION_H_
 
 #include "base/macros.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
@@ -115,7 +116,7 @@ class FormSubmission final : public GarbageCollected<FormSubmission> {
       Frame* target_frame,
       WebFrameLoadType load_type,
       LocalDOMWindow* origin_window,
-      const base::UnguessableToken& initiator_frame_token,
+      const LocalFrameToken& initiator_frame_token,
       mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
           initiator_policy_container_keep_alive_handle);
   // FormSubmission for DialogMethod
@@ -152,7 +153,7 @@ class FormSubmission final : public GarbageCollected<FormSubmission> {
   Member<Frame> target_frame_;
   WebFrameLoadType load_type_;
   Member<LocalDOMWindow> origin_window_;
-  base::UnguessableToken initiator_frame_token_;
+  LocalFrameToken initiator_frame_token_;
 
   // Since form submissions are scheduled asynchronously, we need to keep a
   // handle to the initiator PolicyContainerHost. This ensures that it remains

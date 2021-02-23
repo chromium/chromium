@@ -247,8 +247,8 @@ void Portal::Navigate(const GURL& url,
   // TODO(https://crbug.com/1074422): It is possible for a portal to be
   // navigated by a frame other than the owning frame. Find a way to route the
   // correct initiator of the portal navigation to this call.
-  const base::UnguessableToken frame_token =
-      owner_render_frame_host_->GetFrameToken().value();
+  const blink::LocalFrameToken frame_token =
+      owner_render_frame_host_->GetFrameToken();
   portal_root->navigator().NavigateFromFrameProxy(
       portal_frame, url, &frame_token,
       owner_render_frame_host_->GetProcess()->GetID(),

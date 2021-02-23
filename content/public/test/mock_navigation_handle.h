@@ -10,6 +10,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
+#include "base/stl_util.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
@@ -128,7 +129,7 @@ class MockNavigationHandle : public NavigationHandle {
   const base::Optional<blink::Impression>& GetImpression() override {
     return impression_;
   }
-  const base::Optional<base::UnguessableToken>& GetInitiatorFrameToken()
+  const base::Optional<blink::LocalFrameToken>& GetInitiatorFrameToken()
       override {
     return initiator_frame_token_;
   }
@@ -215,10 +216,8 @@ class MockNavigationHandle : public NavigationHandle {
     impression_ = impression;
   }
   void set_initiator_frame_token(
-      const base::UnguessableToken* initiator_frame_token) {
-    initiator_frame_token_ = initiator_frame_token
-                                 ? base::make_optional(*initiator_frame_token)
-                                 : base::nullopt;
+      const blink::LocalFrameToken* initiator_frame_token) {
+    initiator_frame_token_ = base::OptionalFromPtr(initiator_frame_token);
   }
   void set_initiator_process_id(int process_id) {
     initiator_process_id_ = process_id;
@@ -258,7 +257,7 @@ class MockNavigationHandle : public NavigationHandle {
   ReloadType reload_type_ = content::ReloadType::NONE;
   std::string href_translate_;
   base::Optional<blink::Impression> impression_;
-  base::Optional<base::UnguessableToken> initiator_frame_token_;
+  base::Optional<blink::LocalFrameToken> initiator_frame_token_;
   int initiator_process_id_ = ChildProcessHost::kInvalidUniqueID;
 };
 

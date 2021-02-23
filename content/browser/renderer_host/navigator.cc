@@ -10,6 +10,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -568,7 +569,7 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
 void Navigator::RequestOpenURL(
     RenderFrameHostImpl* render_frame_host,
     const GURL& url,
-    const base::UnguessableToken* initiator_frame_token,
+    const blink::LocalFrameToken* initiator_frame_token,
     int initiator_process_id,
     const base::Optional<url::Origin>& initiator_origin,
     const scoped_refptr<network::ResourceRequestBody>& post_body,
@@ -620,9 +621,7 @@ void Navigator::RequestOpenURL(
   params.user_gesture = user_gesture;
   params.triggering_event_info = triggering_event_info;
   params.initiator_origin = initiator_origin;
-  params.initiator_frame_token =
-      initiator_frame_token ? base::make_optional(*initiator_frame_token)
-                            : base::nullopt;
+  params.initiator_frame_token = base::OptionalFromPtr(initiator_frame_token);
   params.initiator_process_id = initiator_process_id;
 
   // RequestOpenURL is used only for local frames, so we can get here only if
@@ -656,7 +655,7 @@ void Navigator::RequestOpenURL(
 void Navigator::NavigateFromFrameProxy(
     RenderFrameHostImpl* render_frame_host,
     const GURL& url,
-    const base::UnguessableToken* initiator_frame_token,
+    const blink::LocalFrameToken* initiator_frame_token,
     int initiator_process_id,
     const url::Origin& initiator_origin,
     SiteInstance* source_site_instance,

@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
   PolicyContainerPolicies initiator_policies;
   initiator_policies.ip_address_space = network::mojom::IPAddressSpace::kLocal;
 
-  auto token = base::UnguessableToken::Create();
+  blink::LocalFrameToken token;
   auto initiator_host =
       base::MakeRefCounted<PolicyContainerHost>(initiator_policies);
   initiator_host->AssociateWithFrameToken(token);

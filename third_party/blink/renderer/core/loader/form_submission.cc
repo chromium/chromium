@@ -158,7 +158,7 @@ inline FormSubmission::FormSubmission(
     Frame* target_frame,
     WebFrameLoadType load_type,
     LocalDOMWindow* origin_window,
-    const base::UnguessableToken& initiator_frame_token,
+    const LocalFrameToken& initiator_frame_token,
     mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
         initiator_policy_container_keep_alive_handle)
     : method_(method),
@@ -335,7 +335,7 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
       frame_request.GetNavigationPolicy(), triggering_event_info, reason,
       std::move(resource_request), target_frame, load_type,
       form->GetDocument().domWindow(),
-      form->GetDocument().GetFrame()->GetFrameToken(),
+      form->GetDocument().GetFrame()->GetLocalFrameToken(),
       form->GetDocument()
           .GetFrame()
           ->GetPolicyContainer()

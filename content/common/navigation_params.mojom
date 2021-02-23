@@ -20,6 +20,7 @@ import "third_party/blink/public/mojom/feature_policy/feature_policy.mojom";
 import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
 import "third_party/blink/public/mojom/frame/frame_policy.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 import "third_party/blink/public/mojom/loader/mixed_content.mojom";
@@ -94,7 +95,7 @@ struct BeginNavigationParams {
   // The token of the RenderFrameHost that initiated the navigation. It might
   // refer to a RenderFrameHost that doesn't exist anymore when the IPC reaches
   // the browser process.
-  mojo_base.mojom.UnguessableToken? initiator_frame_token;
+  blink.mojom.LocalFrameToken? initiator_frame_token;
 
   // Additional HTTP request headers.
   string headers;
