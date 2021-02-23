@@ -5639,8 +5639,8 @@ TEST_F(DrawPropertiesTest, MaximumAnimationScaleFactor) {
   SetTransform(child, perspective_matrix);
   UpdateActiveTreeDrawProperties();
 
-  // |child| has a transform that's neither a translation nor a scale.
-  // Use |parent|'s maximum animation scale.
+  // |child| has a transform with perspective. Use |parent|'s maximum animation
+  // scale.
   EXPECT_EQ(10.f, MaximumAnimationToScreenScale(grand_child));
   EXPECT_EQ(10.f, MaximumAnimationToScreenScale(child));
   EXPECT_EQ(10.f, MaximumAnimationToScreenScale(parent));
@@ -5654,8 +5654,8 @@ TEST_F(DrawPropertiesTest, MaximumAnimationScaleFactor) {
   SetTransform(parent, perspective_matrix);
   UpdateActiveTreeDrawProperties();
 
-  // |parent| and |child| have transforms that are neither translations nor
-  // scales. Use |grand_parent|'s maximum animation scale.
+  // |parent| and |child| have transforms with perspective. Use |grand_parent|'s
+  // maximum animation scale.
   EXPECT_EQ(2.f, MaximumAnimationToScreenScale(grand_child));
   EXPECT_EQ(2.f, MaximumAnimationToScreenScale(child));
   EXPECT_EQ(2.f, MaximumAnimationToScreenScale(parent));
@@ -5671,7 +5671,7 @@ TEST_F(DrawPropertiesTest, MaximumAnimationScaleFactor) {
   SetTransform(grand_parent, perspective_matrix);
   UpdateActiveTreeDrawProperties();
 
-  // |grand_parent| has a transform that's neither a translation nor a scale.
+  // |grand_parent| has a transform with perspective.
   EXPECT_EQ(1.f, MaximumAnimationToScreenScale(grand_child));
   EXPECT_EQ(1.f, MaximumAnimationToScreenScale(child));
   EXPECT_EQ(1.f, MaximumAnimationToScreenScale(parent));
@@ -5681,6 +5681,23 @@ TEST_F(DrawPropertiesTest, MaximumAnimationScaleFactor) {
   EXPECT_TRUE(AnimationAffectedByInvalidScale(child));
   EXPECT_TRUE(AnimationAffectedByInvalidScale(parent));
   EXPECT_TRUE(AnimationAffectedByInvalidScale(grand_parent));
+
+  gfx::Transform rotation_skew_scale;
+  rotation_skew_scale.Rotate(45.f);
+  rotation_skew_scale.Skew(45.f, 0.f);
+  rotation_skew_scale.Scale(2.f, 1.f);
+  SetTransform(grand_parent, rotation_skew_scale);
+  UpdateActiveTreeDrawProperties();
+
+  EXPECT_EQ(10.f, MaximumAnimationToScreenScale(grand_child));
+  EXPECT_EQ(10.f, MaximumAnimationToScreenScale(child));
+  EXPECT_EQ(10.f, MaximumAnimationToScreenScale(parent));
+  EXPECT_EQ(2.f, MaximumAnimationToScreenScale(grand_parent));
+
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(grand_child));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(child));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(parent));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(grand_parent));
 }
 
 static void GatherDrawnLayers(LayerTreeImpl* tree_impl,

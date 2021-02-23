@@ -2085,9 +2085,9 @@ const AnimationScaleData& PropertyTrees::GetAnimationScaleData(
       node_affected_by_animation_scale || ancestor_affected_by_animation_scale;
   animation_scale.affected_by_invalid_scale =
       (parent_node && parent_animation_scale->affected_by_invalid_scale) ||
-      // Computing maximum animated scale in the presence of
-      // non-scale/translation transforms isn't supported.
-      !node->to_parent.IsScaleOrTranslation() ||
+      // Computing maximum animated scale in the presence of perspective isn't
+      // supported.
+      node->to_parent.HasPerspective() ||
       (node->has_potential_animation &&
        node->maximum_animation_scale == kInvalidScale);
 
