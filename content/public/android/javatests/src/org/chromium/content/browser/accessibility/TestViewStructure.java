@@ -25,6 +25,7 @@ public class TestViewStructure extends ViewStructure implements TestViewStructur
     private int mChildCount;
     private ArrayList<TestViewStructure> mChildren = new ArrayList<TestViewStructure>();
     private boolean mDone = true;
+    private boolean mDumpHtmlTags;
 
     public TestViewStructure() {}
 
@@ -42,11 +43,11 @@ public class TestViewStructure extends ViewStructure implements TestViewStructur
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        recursiveDumpToString(builder, 0);
+        recursiveDumpToString(builder, 0, mDumpHtmlTags);
         return builder.toString();
     }
 
-    private void recursiveDumpToString(StringBuilder builder, int indent) {
+    private void recursiveDumpToString(StringBuilder builder, int indent, boolean dumpHtmlTags) {
         for (int i = 0; i < indent; i++) {
             builder.append("  ");
         }
@@ -61,10 +62,19 @@ public class TestViewStructure extends ViewStructure implements TestViewStructur
             builder.append("'");
         }
 
+        if (mBundle != null) {
+            String htmlTag = mBundle.getCharSequence("htmlTag").toString();
+            if (dumpHtmlTags && !TextUtils.isEmpty(htmlTag)) {
+                builder.append(" htmlTag='");
+                builder.append(htmlTag);
+                builder.append("'");
+            }
+        }
+
         builder.append("\n");
 
         for (TestViewStructure child : mChildren) {
-            child.recursiveDumpToString(builder, indent + 1);
+            child.recursiveDumpToString(builder, indent + 1, dumpHtmlTags);
         }
     }
 
@@ -128,6 +138,11 @@ public class TestViewStructure extends ViewStructure implements TestViewStructur
     @Override
     public int getChildCount() {
         return mChildren.size();
+    }
+
+    @Override
+    public void dumpHtmlTags() {
+        mDumpHtmlTags = true;
     }
 
     @Override

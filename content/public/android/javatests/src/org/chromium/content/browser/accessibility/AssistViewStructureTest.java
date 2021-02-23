@@ -160,4 +160,29 @@ public class AssistViewStructureTest {
                         + "      android.widget.Button text='AriaLabel'\n"
                         + "        android.widget.TextView text='Button'\n");
     }
+
+    /**
+     * Test that the snapshot contains HTML tag names.
+     */
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @TargetApi(Build.VERSION_CODES.M)
+    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.M)
+    public void testHtmlTagNames() throws Throwable {
+        TestViewStructureInterface testViewStructure = getViewStructureFromHtml("<h1>Heading</h1>"
+                + "  <p>Paragraph</p>"
+                + "  <div><input></div>");
+        testViewStructure.dumpHtmlTags();
+        Assert.assertEquals(testViewStructure.toString(),
+                "\n"
+                        + "  android.webkit.WebView htmlTag='#document'\n"
+                        + "    android.view.View htmlTag='h1'\n"
+                        + "      android.widget.TextView text='Heading'\n"
+                        + "    android.view.View htmlTag='p'\n"
+                        + "      android.widget.TextView text='Paragraph'\n"
+                        + "    android.view.View htmlTag='div'\n"
+                        + "      android.widget.EditText htmlTag='input'\n"
+                        + "        android.view.View htmlTag='div'\n");
+    }
 }

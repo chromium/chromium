@@ -98,12 +98,14 @@ ScopedJavaLocalRef<jobject> JNI_WebContentsImpl_CreateJavaAXSnapshot(
       ConvertUTF16ToJavaString(env, node->text);
   ScopedJavaLocalRef<jstring> j_class =
       ConvertUTF8ToJavaString(env, node->class_name);
+  ScopedJavaLocalRef<jstring> j_html_tag =
+      ConvertUTF8ToJavaString(env, node->html_tag);
   ScopedJavaLocalRef<jobject> j_node =
       Java_WebContentsImpl_createAccessibilitySnapshotNode(
           env, node->rect.x(), node->rect.y(), node->rect.width(),
           node->rect.height(), is_root, j_text, node->color, node->bgcolor,
           node->text_size, node->bold, node->italic, node->underline,
-          node->line_through, j_class);
+          node->line_through, j_class, j_html_tag);
 
   if (node->selection.has_value()) {
     Java_WebContentsImpl_setAccessibilitySnapshotSelection(

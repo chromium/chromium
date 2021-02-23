@@ -37,4 +37,9 @@ interface TestViewStructureInterface {
      * Get a child by index.
      */
     public TestViewStructureInterface getChild(int childIndex);
+
+    /**
+     * Dump HTML tag names in toString.
+     */
+    public void dumpHtmlTags();
 }

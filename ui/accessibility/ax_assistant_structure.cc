@@ -325,6 +325,9 @@ void WalkAXTreeDepthFirst(const AXNode* node,
           base::make_optional<gfx::Range>(start_selection, end_selection);
   }
 
+  result->html_tag =
+      node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
+
   for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i) {
     AXNode* child = node->GetUnignoredChildAtIndex(i);
     auto* n = AddChild(assistant_tree);

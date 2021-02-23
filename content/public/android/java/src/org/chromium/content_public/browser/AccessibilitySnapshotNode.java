@@ -35,6 +35,8 @@ public class AccessibilitySnapshotNode {
     public int startSelection;
     public int endSelection;
 
+    public String htmlTag;
+
     public ArrayList<AccessibilitySnapshotNode> children =
             new ArrayList<AccessibilitySnapshotNode>();
 
@@ -67,6 +69,10 @@ public class AccessibilitySnapshotNode {
         this.width = width;
         this.height = height;
         this.isRootNode = isRootNode;
+    }
+
+    public void setHtmlInfo(String htmlTag) {
+        this.htmlTag = htmlTag;
     }
 
     public void addChild(AccessibilitySnapshotNode node) {

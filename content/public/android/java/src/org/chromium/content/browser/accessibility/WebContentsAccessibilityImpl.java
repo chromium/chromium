@@ -580,7 +580,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
 
     // When creating the View structure, the left and top are relative to the parent node.
     @TargetApi(Build.VERSION_CODES.M)
-    private void createVirtualStructure(ViewStructure viewNode, AccessibilitySnapshotNode node,
+    protected void createVirtualStructure(ViewStructure viewNode, AccessibilitySnapshotNode node,
             final boolean ignoreScrollOffset) {
         viewNode.setClassName(node.className);
         if (node.hasSelection) {
@@ -616,6 +616,13 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
                     | (node.lineThrough ? ViewNode.TEXT_STYLE_STRIKE_THRU : 0);
             viewNode.setTextStyle(textSize, node.color, node.bgcolor, style);
         }
+
+        // Note: OWebContentsAccessibility.createVirtualStructure also stores this in
+        // HtmlInfo, but putting it in the extras bundle is useful for earlier API
+        // versions, and for scenarios where HtmlInfo is stripped.
+        Bundle extras = viewNode.getExtras();
+        extras.putCharSequence("htmlTag", node.htmlTag);
+
         for (int i = 0; i < node.children.size(); i++) {
             createVirtualStructure(viewNode.asyncNewChild(i), node.children.get(i), true);
         }

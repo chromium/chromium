@@ -52,6 +52,9 @@ struct AssistantNode {
   // a closest approximation of Android's views to keep the server happy.
   std::string class_name;
 
+  // HTML tag name
+  std::string html_tag;
+
   // Accessibility functionality of the node inferred from DOM or based on HTML
   // role attribute.
   base::Optional<std::string> role;
