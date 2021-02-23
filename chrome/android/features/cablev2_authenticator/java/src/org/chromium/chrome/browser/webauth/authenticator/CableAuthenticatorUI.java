@@ -33,8 +33,6 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.task.PostTask;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.base.ActivityAndroidPermissionDelegate;
 import org.chromium.ui.base.AndroidPermissionDelegate;
 import org.chromium.ui.widget.Toast;
@@ -79,7 +77,6 @@ public class CableAuthenticatorUI
     private LinearLayout mUnlinkButton;
     private ImageView mHeader;
     private TextView mStatusText;
-    private View mUSBPrompt;
 
     // The following two members store a pending QR-scan result while Bluetooth
     // is enabled.
@@ -152,10 +149,6 @@ public class CableAuthenticatorUI
                 });
                 spinner.setImageDrawable(anim);
                 anim.start();
-
-                mUSBPrompt = inflater.inflate(R.layout.cablev2_usb_prompt, container, false);
-                PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT,
-                        () -> { maybeShowUSBPrompt(); }, USB_PROMPT_TIMEOUT_SECS * 1000);
                 break;
 
             case QR:
@@ -181,19 +174,6 @@ public class CableAuthenticatorUI
 
         top.addView(v);
         return top;
-    }
-
-    private void maybeShowUSBPrompt() {
-        ThreadUtils.assertOnUiThread();
-
-        if (mUSBPrompt == null) {
-            return;
-        }
-
-        ViewGroup top = (ViewGroup) getView();
-        top.removeAllViews();
-        top.addView(mUSBPrompt);
-        mUSBPrompt = null;
     }
 
     /**
@@ -379,17 +359,8 @@ public class CableAuthenticatorUI
     void onComplete(boolean ok) {
         ThreadUtils.assertOnUiThread();
 
-        if (!ok && mUSBPrompt != null) {
-            // A protocol failure occured. Suggest that the user connect a USB
-            // cable.
-            maybeShowUSBPrompt();
-            return;
-        }
-
-        // |postDelayedTask| does not support cancelation of timers, thus
-        // |mUSBPrompt| is set to null to ensure that, if a timer fires to show
-        // the USB screen, it does nothing after this activity has completed.
-        mUSBPrompt = null;
+        // TODO: if !ok then show an error screen rather than ending the
+        // activity.
         getActivity().finish();
     }
 

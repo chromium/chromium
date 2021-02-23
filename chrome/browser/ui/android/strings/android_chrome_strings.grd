@@ -4131,14 +4131,6 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
          Sign-in failed
       </message>
 
-      <message name="IDS_CABLEV2_USB_PROMPT_TITLE" desc="The title of a screen that advises the user to try connecting their phone with a USB cable. This appears when the user is trying to sign in to a desktop/laptop by using their phone. If the connection isn't working (for example because they have no internet service on their phone) then we suggest that they can use a physical cable to connect the phone with the desktop/laptop. This title is rather generic and a different message is shown below to give precise instructions.">
-         Connection seems to be taking quite long…
-      </message>
-
-      <message name="IDS_CABLEV2_USB_PROMPT_BODY" desc="The body of a screen that advises the user to try connecting their phone with a USB cable. This appears when the user is trying to sign in to a desktop/laptop by using their phone. If the connection isn't working (for example because they have no internet service on their phone) then we suggest that they can use a physical cable to connect the phone with the desktop/laptop.">
-         Try connecting your phone with a USB cable
-      </message>
-
       <message name="IDS_CABLEV2_USB_DISCON_TITLE" desc="The title of a screen that advises the user to disconnect their phone. This shows when the user has connected their phone to their computer using a USB cable and needs to disconnect it once they have finished their current actions.">
          Connected with USB cable
       </message>
