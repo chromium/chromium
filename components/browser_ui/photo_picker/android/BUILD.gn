@@ -80,6 +80,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_play_circle_filled_white_24dp.xml",
     "java/res/drawable/ic_volume_off_white_24dp.xml",
     "java/res/drawable/ic_volume_on_white_24dp.xml",
+    "java/res/drawable/photo_picker_large_button_shadow.xml",
     "java/res/drawable/photo_picker_seekbar_thumb.xml",
     "java/res/drawable/photo_picker_seekbar_track.xml",
     "java/res/drawable/video_player_gradient.xml",

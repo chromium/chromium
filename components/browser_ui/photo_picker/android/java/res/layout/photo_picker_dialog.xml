@@ -19,13 +19,16 @@
 
     <ImageView
         android:id="@+id/zoom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/photo_picker_zoom_button_size"
+        android:layout_height="@dimen/photo_picker_zoom_button_size"
         android:layout_gravity="bottom|end"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:layout_centerHorizontal="true"
-        android:background="@drawable/navigation_bubble_shadow"
+        android:background="@drawable/photo_picker_large_button_shadow"
+        android:adjustViewBounds="false"
+        android:scaleType="centerInside"
+        android:elevation="6dp"
         app:srcCompat="@drawable/zoom_in"
         android:visibility="gone"
         tools:ignore="ContentDescription"/>
