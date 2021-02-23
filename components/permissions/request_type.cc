@@ -80,7 +80,7 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
     case RequestType::kGeolocation:
       return vector_icons::kLocationOnIcon;
     case RequestType::kIdleDetection:
-      return vector_icons::kPersonIcon;
+      return vector_icons::kDevicesIcon;
     case RequestType::kMicStream:
       return vector_icons::kMicIcon;
     case RequestType::kMidiSysex:
