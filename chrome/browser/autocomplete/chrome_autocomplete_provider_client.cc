@@ -8,8 +8,6 @@
 
 #include <algorithm>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -61,9 +59,11 @@
 #endif
 
 #if defined(OS_ANDROID)
+#include "chrome/android/chrome_jni_headers/ChromeAutocompleteProviderClient_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_android_user_data.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_jni_bridge.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #else
 #include "chrome/browser/ui/browser.h"
@@ -532,35 +532,63 @@ TabAndroid* ChromeAutocompleteProviderClient::GetTabOpenWithURL(
   const GURL stripped_url = AutocompleteMatch::GURLToStrippedGURL(
       url, *input, GetTemplateURLService(), base::string16());
 
+  std::vector<TabModel*> tab_models;
   for (auto it = TabModelList::begin(); it != TabModelList::end(); ++it) {
     TabModel* model = *it;
     if (profile_ != model->GetProfile())
       continue;
 
-    for (int i = 0; i < model->GetTabCount(); ++i) {
-      TabAndroid* tab = model->GetTabAt(i);
-      if (!tab->IsHidden() || tab->IsCustomTab())
-        continue;
-      content::WebContents* web_contents = tab->web_contents();
-      if (web_contents != nullptr) {
-        if (IsStrippedURLEqualToWebContentsURL(stripped_url, web_contents))
-          return tab;
-      } else {
-        // Browser did not load the tab yet after Chrome started. To avoid
-        // reloading WebContents, we just compare URLs.
-        AutocompleteClientTabAndroidUserData::CreateForTabAndroid(tab);
-        AutocompleteClientTabAndroidUserData* user_data =
-            AutocompleteClientTabAndroidUserData::FromTabAndroid(tab);
-        DCHECK(user_data);
-        if (!user_data->IsInitialized())
-          user_data->UpdateStrippedURL(tab->GetURL(), GetTemplateURLService());
+    tab_models.push_back(model);
+  }
 
-        const GURL tab_stripped_url = user_data->GetStrippedURL();
-        if (tab_stripped_url == stripped_url)
-          return tab;
-      }
+  std::vector<TabAndroid*> all_tabs = GetAllHiddenAndNonCCTTabs(tab_models);
+
+  for (TabAndroid* tab : all_tabs) {
+    content::WebContents* web_contents = tab->web_contents();
+    if (web_contents != nullptr) {
+      if (IsStrippedURLEqualToWebContentsURL(stripped_url, web_contents))
+        return tab;
+    } else {
+      // Browser did not load the tab yet after Chrome started. To avoid
+      // reloading WebContents, we just compare URLs.
+      AutocompleteClientTabAndroidUserData::CreateForTabAndroid(tab);
+      AutocompleteClientTabAndroidUserData* user_data =
+          AutocompleteClientTabAndroidUserData::FromTabAndroid(tab);
+      DCHECK(user_data);
+      if (!user_data->IsInitialized())
+        user_data->UpdateStrippedURL(tab->GetURL(), GetTemplateURLService());
+
+      const GURL tab_stripped_url = user_data->GetStrippedURL();
+      if (tab_stripped_url == stripped_url)
+        return tab;
     }
   }
+
   return nullptr;
+}
+
+std::vector<TabAndroid*>
+ChromeAutocompleteProviderClient::GetAllHiddenAndNonCCTTabs(
+    const std::vector<TabModel*>& tab_models) {
+  if (tab_models.size() == 0)
+    return std::vector<TabAndroid*>();
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  jclass tab_model_clazz = TabModelJniBridge::GetClazz(env);
+  base::android::ScopedJavaLocalRef<jobjectArray> j_tab_model_array(
+      env, env->NewObjectArray(tab_models.size(), tab_model_clazz, nullptr));
+  for (size_t i = 0; i < tab_models.size(); ++i) {
+    env->SetObjectArrayElement(j_tab_model_array.obj(), i,
+                               tab_models[i]->GetJavaObject().obj());
+  }
+
+  // Get all the hidden and non CCT tabs.
+  base::android::ScopedJavaLocalRef<jobjectArray> j_tabs =
+      Java_ChromeAutocompleteProviderClient_getAllHiddenAndNonCCTTabs(
+          env, j_tab_model_array);
+  if (j_tabs.is_null())
+    return std::vector<TabAndroid*>();
+
+  return TabAndroid::GetAllNativeTabs(env, j_tabs);
 }
 #endif  // defined(OS_ANDROID)

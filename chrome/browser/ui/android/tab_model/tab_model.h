@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
 #include "chrome/browser/ui/android/tab_model/android_live_tab_context.h"
 #include "components/omnibox/browser/location_bar_model.h"
@@ -120,6 +121,7 @@ class TabModel {
   virtual content::WebContents* GetWebContentsAt(int index) const = 0;
   // This will return NULL if the tab has not yet been initialized.
   virtual TabAndroid* GetTabAt(int index) const = 0;
+  virtual base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const = 0;
 
   virtual void SetActiveIndex(int index) = 0;
   virtual void CloseTabAt(int index) = 0;

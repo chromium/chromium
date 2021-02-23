@@ -121,6 +121,9 @@ class TestTabModel : public TabModel {
   // TabModel:
   int GetTabCount() const override { return 0; }
   int GetActiveIndex() const override { return 0; }
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const override {
+    return nullptr;
+  }
   content::WebContents* GetActiveWebContents() const override {
     return web_contents_.get();
   }

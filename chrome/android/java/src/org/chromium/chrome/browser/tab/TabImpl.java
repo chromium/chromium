@@ -1308,6 +1308,17 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         mNativeTabAndroid = nativePtr;
     }
 
+    @CalledByNative
+    private static long[] getAllNativePtrs(TabImpl[] tabsArray) {
+        if (tabsArray == null) return null;
+
+        long[] tabsPtrArray = new long[tabsArray.length];
+        for (int i = 0; i < tabsArray.length; i++) {
+            tabsPtrArray[i] = tabsArray[i].getNativePtr();
+        }
+        return tabsPtrArray;
+    }
+
     /**
      * Initializes the {@link WebContents}. Completes the browser content components initialization
      * around a native WebContents pointer.
@@ -1526,7 +1537,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     }
 
     @CalledByNative
-    private boolean isCustomTab() {
+    public boolean isCustomTab() {
         ChromeActivity activity = getActivity();
         return activity != null && activity.isCustomTab();
     }

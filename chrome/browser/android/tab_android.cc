@@ -116,6 +116,25 @@ TabAndroid* TabAndroid::GetNativeTab(JNIEnv* env, const JavaRef<jobject>& obj) {
   return reinterpret_cast<TabAndroid*>(Java_TabImpl_getNativePtr(env, obj));
 }
 
+std::vector<TabAndroid*> TabAndroid::GetAllNativeTabs(
+    JNIEnv* env,
+    const ScopedJavaLocalRef<jobjectArray>& obj_array) {
+  std::vector<TabAndroid*> tab_native_ptrs;
+  ScopedJavaLocalRef<jlongArray> j_tabs_ptr =
+      Java_TabImpl_getAllNativePtrs(env, obj_array);
+  if (j_tabs_ptr.is_null())
+    return tab_native_ptrs;
+
+  std::vector<jlong> tab_ptr;
+  base::android::JavaLongArrayToLongVector(env, j_tabs_ptr, &tab_ptr);
+
+  for (size_t i = 0; i < tab_ptr.size(); ++i) {
+    tab_native_ptrs.push_back(reinterpret_cast<TabAndroid*>(tab_ptr[i]));
+  }
+
+  return tab_native_ptrs;
+}
+
 void TabAndroid::AttachTabHelpers(content::WebContents* web_contents) {
   DCHECK(web_contents);
 

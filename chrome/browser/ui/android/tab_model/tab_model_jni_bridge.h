@@ -46,6 +46,7 @@ class TabModelJniBridge : public TabModel {
   int GetActiveIndex() const override;
   content::WebContents* GetWebContentsAt(int index) const override;
   TabAndroid* GetTabAt(int index) const override;
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const override;
 
   void SetActiveIndex(int index) override;
   void CloseTabAt(int index) override;
@@ -72,6 +73,9 @@ class TabModelJniBridge : public TabModel {
   void BroadcastSessionRestoreComplete(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
+
+  // Returns a corresponding Java Class object.
+  static jclass GetClazz(JNIEnv* env);
 
  protected:
   JavaObjectWeakGlobalRef java_object_;

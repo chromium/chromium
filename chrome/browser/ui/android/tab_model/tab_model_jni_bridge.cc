@@ -137,6 +137,11 @@ TabAndroid* TabModelJniBridge::GetTabAt(int index) const {
   return jtab.is_null() ? NULL : TabAndroid::GetNativeTab(env, jtab);
 }
 
+ScopedJavaLocalRef<jobject> TabModelJniBridge::GetJavaObject() const {
+  JNIEnv* env = AttachCurrentThread();
+  return java_object_.get(env);
+}
+
 void TabModelJniBridge::SetActiveIndex(int index) {
   JNIEnv* env = AttachCurrentThread();
   Java_TabModelJniBridge_setIndex(env, java_object_.get(env), index);
@@ -201,6 +206,11 @@ void TabModelJniBridge::BroadcastSessionRestoreComplete(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
   TabModel::BroadcastSessionRestoreComplete();
+}
+
+// static
+jclass TabModelJniBridge::GetClazz(JNIEnv* env) {
+  return org_chromium_chrome_browser_tabmodel_TabModelJniBridge_clazz(env);
 }
 
 TabModelJniBridge::~TabModelJniBridge() {
