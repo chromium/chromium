@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/hover_button.h"
 #include "chrome/browser/ui/views/hover_button_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_actions_bar_bubble_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -39,7 +40,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
-#include "ui/views/controls/button/image_button.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/test/widget_test.h"
@@ -712,7 +712,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
   ExtensionsMenuItemView* item_view = menu_items[0];
   EXPECT_FALSE(item_view->IsContextMenuRunning());
 
-  views::ImageButton* context_menu_button =
+  HoverButton* context_menu_button =
       menu_items[0]->context_menu_button_for_testing();
   ui::MouseEvent press_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                              base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, 0);

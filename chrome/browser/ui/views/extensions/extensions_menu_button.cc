@@ -24,19 +24,14 @@ ExtensionsMenuButton::ExtensionsMenuButton(
     ExtensionsMenuItemView* parent,
     ToolbarActionViewController* controller,
     bool allow_pinning)
-    : views::LabelButton(
-          base::BindRepeating(&ExtensionsMenuButton::ButtonPressed,
-                              base::Unretained(this))),
+    : HoverButton(base::BindRepeating(&ExtensionsMenuButton::ButtonPressed,
+                                      base::Unretained(this)),
+                  base::string16()),
       browser_(browser),
       parent_(parent),
       controller_(controller),
       allow_pinning_(allow_pinning) {
   ConfigureBubbleMenuItem(this, 0);
-  SetButtonController(std::make_unique<HoverButtonController>(
-      this,
-      base::BindRepeating(&ExtensionsMenuButton::ButtonPressed,
-                          base::Unretained(this)),
-      std::make_unique<views::Button::DefaultButtonControllerDelegate>(this)));
   controller_->SetDelegate(this);
   UpdateState();
 }

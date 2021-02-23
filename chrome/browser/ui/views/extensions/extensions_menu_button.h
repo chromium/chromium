@@ -10,9 +10,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extension_context_menu_controller.h"
+#include "chrome/browser/ui/views/hover_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view_delegate_views.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/controls/button/label_button.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 
 class ExtensionsMenuItemView;
@@ -24,7 +24,7 @@ class Button;
 // ExtensionsMenuButton is the single extension action button within a row in
 // the extensions menu. This includes the extension icon and name and triggers
 // the extension action.
-class ExtensionsMenuButton : public views::LabelButton,
+class ExtensionsMenuButton : public HoverButton,
                              public ToolbarActionViewDelegateViews {
  public:
   METADATA_HEADER(ExtensionsMenuButton);
