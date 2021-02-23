@@ -31,7 +31,7 @@ fuchsia::web::UrlRequestRewrite CreateRewriteRemoveHeader(
     base::StringPiece header_name) {
   fuchsia::web::UrlRequestRewriteRemoveHeader remove_header;
   if (query_pattern)
-    remove_header.set_query_pattern(query_pattern.value().as_string());
+    remove_header.set_query_pattern(std::string(query_pattern.value()));
   remove_header.set_header_name(cr_fuchsia::StringToBytes(header_name));
   fuchsia::web::UrlRequestRewrite rewrite;
   rewrite.set_remove_header(std::move(remove_header));
@@ -44,8 +44,8 @@ fuchsia::web::UrlRequestRewrite CreateRewriteSubstituteQueryPattern(
     base::StringPiece substitution) {
   fuchsia::web::UrlRequestRewriteSubstituteQueryPattern
       substitute_query_pattern;
-  substitute_query_pattern.set_pattern(pattern.as_string());
-  substitute_query_pattern.set_substitution(substitution.as_string());
+  substitute_query_pattern.set_pattern(std::string(pattern));
+  substitute_query_pattern.set_substitution(std::string(substitution));
   fuchsia::web::UrlRequestRewrite rewrite;
   rewrite.set_substitute_query_pattern(std::move(substitute_query_pattern));
 
@@ -56,8 +56,8 @@ fuchsia::web::UrlRequestRewrite CreateRewriteReplaceUrl(
     base::StringPiece url_ends_with,
     base::StringPiece new_url) {
   fuchsia::web::UrlRequestRewriteReplaceUrl replace_url;
-  replace_url.set_url_ends_with(url_ends_with.as_string());
-  replace_url.set_new_url(new_url.as_string());
+  replace_url.set_url_ends_with(std::string(url_ends_with));
+  replace_url.set_new_url(std::string(new_url));
   fuchsia::web::UrlRequestRewrite rewrite;
   rewrite.set_replace_url(std::move(replace_url));
 
@@ -67,7 +67,7 @@ fuchsia::web::UrlRequestRewrite CreateRewriteReplaceUrl(
 fuchsia::web::UrlRequestRewrite CreateRewriteAppendToQuery(
     base::StringPiece query) {
   fuchsia::web::UrlRequestRewriteAppendToQuery append_to_query;
-  append_to_query.set_query(query.as_string());
+  append_to_query.set_query(std::string(query));
   fuchsia::web::UrlRequestRewrite rewrite;
   rewrite.set_append_to_query(std::move(append_to_query));
 

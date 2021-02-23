@@ -444,7 +444,7 @@ void ContentDirectoryLoaderFactory::CreateLoaderAndStart(
   fidl::InterfaceHandle<fuchsia::io::Node> metadata_handle;
   open_result = OpenFileFromDirectory(
       request.url.GetOrigin().host(),
-      base::FilePath(requested_path.as_string() + "._metadata"),
+      base::FilePath(base::StrCat({requested_path, "._metadata"})),
       metadata_handle.NewRequest());
   if (open_result != net::OK) {
     mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))

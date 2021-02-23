@@ -22,7 +22,7 @@ bool LoadUrlAndExpectResponse(
   ResultReceiver<fuchsia::web::NavigationController_LoadUrl_Result> result(
       run_loop.QuitClosure());
   navigation_controller->LoadUrl(
-      url.as_string(), std::move(load_url_params),
+      std::string(url), std::move(load_url_params),
       CallbackToFitFunction(result.GetReceiveCallback()));
   run_loop.Run();
   return result->is_response();

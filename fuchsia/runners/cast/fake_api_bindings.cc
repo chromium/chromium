@@ -16,13 +16,13 @@ fidl::InterfaceHandle<::fuchsia::web::MessagePort>
 FakeApiBindingsImpl::RunAndReturnConnectedPort(base::StringPiece name) {
   base::AutoReset<base::StringPiece> store_name(&expected_port_name_, name);
 
-  auto it = ports_.find(expected_port_name_.as_string());
+  auto it = ports_.find(expected_port_name_);
   if (it == ports_.end()) {
     base::RunLoop run_loop;
     base::AutoReset<base::OnceClosure> store_closure(
         &on_expected_port_received_, run_loop.QuitClosure());
     run_loop.Run();
-    it = ports_.find(expected_port_name_.as_string());
+    it = ports_.find(expected_port_name_);
   }
 
   if (it == ports_.end())

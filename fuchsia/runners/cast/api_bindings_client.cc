@@ -102,7 +102,7 @@ bool ApiBindingsClient::OnPortConnected(
     return false;
 
   bindings_service_->Connect(
-      port_name.as_string(),
+      std::string(port_name),
       cast_api_bindings::MessagePortFuchsia::FromMessagePort(port.get())
           ->TakeClientHandle());
   return true;

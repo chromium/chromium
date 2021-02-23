@@ -16,6 +16,7 @@
 #include "base/bind.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
+#include "base/strings/string_piece.h"
 #include "fuchsia/runners/common/web_content_runner.h"
 
 WebComponent::WebComponent(
@@ -24,7 +25,7 @@ WebComponent::WebComponent(
     std::unique_ptr<base::StartupContext> context,
     fidl::InterfaceRequest<fuchsia::sys::ComponentController>
         controller_request)
-    : debug_name_(debug_name.as_string()),
+    : debug_name_(debug_name),
       runner_(runner),
       startup_context_(std::move(context)),
       controller_binding_(this),

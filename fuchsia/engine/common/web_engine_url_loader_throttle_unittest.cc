@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 #include "fuchsia/engine/common/cors_exempt_headers.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -211,7 +212,7 @@ class TestThrottleDelegate : public blink::URLLoaderThrottle::Delegate {
   void CancelWithError(int error_code,
                        base::StringPiece custom_reason) override {
     canceled_ = true;
-    cancel_reason_ = custom_reason.as_string();
+    cancel_reason_ = std::string(custom_reason);
   }
   void Resume() override {}
 

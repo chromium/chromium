@@ -24,6 +24,7 @@
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_run_loop_timeout.h"
@@ -419,7 +420,7 @@ class CastRunnerIntegrationTest : public testing::Test {
     // Configure the Runner, including a service directory channel to publish
     // services to.
     fuchsia::sys::StartupInfo startup_info;
-    startup_info.launch_info.url = component_url.as_string();
+    startup_info.launch_info.url = std::string(component_url);
 
     fidl::InterfaceHandle<fuchsia::io::Directory> outgoing_directory;
     startup_info.launch_info.directory_request =
@@ -449,7 +450,7 @@ class CastRunnerIntegrationTest : public testing::Test {
         directory.TakeChannel());
 
     fuchsia::sys::Package package;
-    package.resolved_url = component_url.as_string();
+    package.resolved_url = std::string(component_url);
 
     cast_runner_->StartComponent(std::move(package), std::move(startup_info),
                                  component_controller_.NewRequest());

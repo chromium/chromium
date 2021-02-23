@@ -133,16 +133,15 @@ void AppendFeature(base::StringPiece features_flag,
                    base::StringPiece feature_string,
                    base::CommandLine* command_line) {
   if (!command_line->HasSwitch(features_flag)) {
-    command_line->AppendSwitchNative(features_flag.as_string(),
-                                     feature_string.as_string());
+    command_line->AppendSwitchNative(std::string(features_flag),
+                                     feature_string);
     return;
   }
 
-  std::string new_feature_string =
-      command_line->GetSwitchValueASCII(features_flag);
-  new_feature_string.append(",").append(feature_string.as_string());
+  std::string new_feature_string = base::StrCat(
+      {command_line->GetSwitchValueASCII(features_flag), ",", feature_string});
   command_line->RemoveSwitch(features_flag);
-  command_line->AppendSwitchNative(features_flag.as_string(),
+  command_line->AppendSwitchNative(std::string(features_flag),
                                    new_feature_string);
 }
 

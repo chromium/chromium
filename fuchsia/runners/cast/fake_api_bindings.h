@@ -45,8 +45,11 @@ class FakeApiBindingsImpl : public chromium::cast::ApiBindings {
   std::vector<chromium::cast::ApiBinding> bindings_;
 
   // Holds ports received via Connect(), for tests to take by calling
-  // RunAndReturnConnectedPort().
-  std::map<std::string, fidl::InterfaceHandle<fuchsia::web::MessagePort>>
+  // RunAndReturnConnectedPort(). Uses std::less<> as the comparator so that
+  // StringPieces can be used for lookup without requiring a conversion.
+  std::map<std::string,
+           fidl::InterfaceHandle<fuchsia::web::MessagePort>,
+           std::less<>>
       ports_;
 
   // Used to wait for a specific port to be Connect()ed.

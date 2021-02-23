@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "fuchsia/base/fit_adapter.h"
@@ -38,7 +39,8 @@ const char kCookieValue3[] = "Nyom nyom nyom";
 std::unique_ptr<net::CanonicalCookie> CreateCookie(base::StringPiece name,
                                                    base::StringPiece value) {
   return net::CanonicalCookie::CreateSanitizedCookie(
-      GURL(kTestCookieUrl), name.as_string(), value.as_string(), /*domain=*/"",
+      GURL(kTestCookieUrl), std::string(name), std::string(value),
+      /*domain=*/"",
       /*path=*/"", /*creation_time=*/base::Time(),
       /*expiration_time=*/base::Time(), /*last_access_time=*/base::Time(),
       /*secure=*/true,

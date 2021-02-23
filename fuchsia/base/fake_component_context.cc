@@ -20,7 +20,7 @@ FakeComponentContext::FakeComponentContext(
     sys::OutgoingDirectory* outgoing_directory,
     base::StringPiece component_url)
     : binding_(outgoing_directory, this),
-      component_url_(component_url.as_string()),
+      component_url_(component_url),
       outgoing_directory_(outgoing_directory) {}
 
 void FakeComponentContext::RegisterCreateComponentStateCallback(
