@@ -15,6 +15,7 @@ public class AccessibilityContentShellTestData {
     public String announcementText;
     public int typeWindowContentChangedCount;
     public boolean receivedEvent;
+    public boolean receivedAccessibilityFocusEvent;
 
     public AccessibilityContentShellTestData() {
         traverseFromIndex = -1;
@@ -24,6 +25,7 @@ public class AccessibilityContentShellTestData {
         announcementText = "";
         typeWindowContentChangedCount = 0;
         receivedEvent = false;
+        receivedAccessibilityFocusEvent = false;
     }
 
     public int getTraverseFromIndex() {
@@ -84,5 +86,13 @@ public class AccessibilityContentShellTestData {
 
     public void setReceivedEvent(boolean receivedEvent) {
         this.receivedEvent = receivedEvent;
+    }
+
+    public boolean hasReceivedAccessibilityFocusEvent() {
+        return receivedAccessibilityFocusEvent;
+    }
+
+    public void setReceivedAccessibilityFocusEvent(boolean receivedAccessibilityFocusEvent) {
+        this.receivedAccessibilityFocusEvent = receivedAccessibilityFocusEvent;
     }
 }

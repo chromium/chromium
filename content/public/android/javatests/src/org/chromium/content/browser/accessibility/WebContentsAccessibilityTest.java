@@ -4,6 +4,7 @@
 
 package org.chromium.content.browser.accessibility;
 
+import static android.view.accessibility.AccessibilityNodeInfo.ACTION_CLICK;
 import static android.view.accessibility.AccessibilityNodeInfo.ACTION_NEXT_HTML_ELEMENT;
 import static android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction.ACTION_LONG_CLICK;
 import static android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_BACKWARD;
@@ -17,6 +18,7 @@ import static android.view.accessibility.AccessibilityNodeInfo.EXTRA_DATA_TEXT_C
 import static android.view.accessibility.AccessibilityNodeInfo.EXTRA_DATA_TEXT_CHARACTER_LOCATION_ARG_START_INDEX;
 import static android.view.accessibility.AccessibilityNodeInfo.EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY;
 
+import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.accessibilityFocusDelegate;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.announcementDelegate;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.contentChangeDelegate;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.inputRangeScrollDelegate;
@@ -81,6 +83,8 @@ public class WebContentsAccessibilityTest {
     private static final String ANNOUNCEMENT_EVENT_TIMEOUT_ERROR =
             "TYPE_ANNOUNCEMENT event not received before timeout.";
     private static final String COMBOBOX_ERROR = "expanded combobox announcement was incorrect.";
+    private static final String DISABLED_COMBOBOX_ERROR =
+            "disabled combobox child elements should not be clickable";
     private static final String LONG_CLICK_ERROR =
             "node should not have the ACTION_LONG_CLICK action as an available action";
     private static final String ACTION_SET_ERROR =
@@ -277,7 +281,7 @@ public class WebContentsAccessibilityTest {
         CriteriaHelper.pollUiThread(() -> {
             mNodeInfo.recycle();
             mNodeInfo = mNodeProvider.createAccessibilityNodeInfo(virtualViewId);
-            return mNodeInfo.isFocused() && mNodeInfo.isAccessibilityFocused();
+            return mNodeInfo.isAccessibilityFocused();
         }, NODE_TIMEOUT_ERROR);
     }
 
@@ -620,6 +624,34 @@ public class WebContentsAccessibilityTest {
         // Check announcement text.
         Assert.assertEquals(COMBOBOX_ERROR, "expanded, 3 autocomplete options available.",
                 mTestData.getAnnouncementText());
+    }
+
+    /**
+     * Ensure that disabled comboboxes and children are not shadow clickable.
+     */
+    @Test
+    @SmallTest
+    public void testEvent_Combobox_disabled() throws Throwable {
+        // Build a simple web page with a disabled combobox.
+        setupTestWithHTML("<select disabled>\n"
+                + "  <option>Volvo</option>\n"
+                + "  <option>Saab</option>\n"
+                + "  <option>Mercedes</option>\n"
+                + "</select>");
+
+        // Find the disabled option node and set a delegate to track focus.
+        int disabledNodeId = waitForNodeMatching(sTextMatcher, "Volvo");
+        mNodeInfo = mNodeProvider.createAccessibilityNodeInfo(disabledNodeId);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
+
+        setDelegateAndFocusNode(accessibilityFocusDelegate(mTestData), disabledNodeId);
+        mTestData.setReceivedAccessibilityFocusEvent(false);
+
+        // Perform a click on the node.
+        performActionOnUiThread(disabledNodeId, ACTION_CLICK, null);
+
+        // Check we did not receive any events.
+        Assert.assertFalse(DISABLED_COMBOBOX_ERROR, mTestData.hasReceivedAccessibilityFocusEvent());
     }
 
     /**

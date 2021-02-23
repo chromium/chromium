@@ -38,6 +38,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   bool IsCombobox() const;
   bool IsComboboxControl() const;
   bool IsContentInvalid() const;
+  bool IsDisabledDescendant() const;
   bool IsDismissable() const;
   bool IsEnabled() const;
   bool IsExpanded() const;

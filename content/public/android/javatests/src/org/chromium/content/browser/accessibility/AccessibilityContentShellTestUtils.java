@@ -137,4 +137,20 @@ public class AccessibilityContentShellTestUtils {
             }
         };
     }
+
+    public static View.AccessibilityDelegate accessibilityFocusDelegate(
+            AccessibilityContentShellTestData data) {
+        return new View.AccessibilityDelegate() {
+            @Override
+            public boolean onRequestSendAccessibilityEvent(
+                    ViewGroup host, View child, AccessibilityEvent event) {
+                if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED) {
+                    data.setReceivedAccessibilityFocusEvent(true);
+                }
+
+                // Return false so that an accessibility event is not actually sent.
+                return false;
+            }
+        };
+    }
 }

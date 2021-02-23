@@ -952,7 +952,9 @@ void WebContentsAccessibilityAndroid::Click(JNIEnv* env,
   // ACTION_CLICK action on the node is not sufficient, since TalkBack won't
   // announce a control as disabled unless it's also marked as clickable, so
   // disabled nodes are secretly clickable if we do not check here.
-  if (node->IsEnabled())
+  // Children of disabled controls/widgets will also have the click action, so
+  // ensure that parents/ancestry chain is enabled as well.
+  if (node->IsEnabled() && !node->IsDisabledDescendant())
     node->manager()->DoDefaultAction(*node);
 }
 
