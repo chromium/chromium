@@ -6140,10 +6140,13 @@ TEST_F(WebFrameTest, MoveCaretStaysHorizontallyAlignedWhenMoved) {
 
 class CompositedSelectionBoundsTest
     : public WebFrameTest,
-      private ScopedCompositedSelectionUpdateForTest {
+      public testing::WithParamInterface<bool>,
+      private ScopedCompositedSelectionUpdateForTest,
+      private ScopedCompositeAfterPaintForTest {
  protected:
   CompositedSelectionBoundsTest()
-      : ScopedCompositedSelectionUpdateForTest(true) {
+      : ScopedCompositedSelectionUpdateForTest(true),
+        ScopedCompositeAfterPaintForTest(GetParam()) {
     RegisterMockedHttpURLLoad("Ahem.ttf");
 
     web_view_helper_.Initialize(nullptr, nullptr);
@@ -6172,6 +6175,20 @@ class CompositedSelectionBoundsTest
     web_view_helper_.GetWebView()->MainFrameWidget()->SetFocus(true);
     frame_test_helpers::LoadFrame(
         web_view_helper_.GetWebView()->MainFrameImpl(), base_url_ + test_file);
+
+    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+      // TODO(crbug.com/1065049) Ensure tapping on selection causes repainting
+      // of selection bounds if handle visible state changed. For now, just
+      // force this during the next paint.
+      WebLocalFrameImpl* frame = web_view_helper_.LocalMainFrame();
+      frame->GetFrame()->Selection().SetHandleVisibleForTesting();
+      for (Frame* child = frame->GetFrame()->FirstChild(); child;
+           child = child->NextSibling()) {
+        if (child->IsLocalFrame())
+          To<LocalFrame>(child)->Selection().SetHandleVisibleForTesting();
+      }
+    }
+
     UpdateAllLifecyclePhases(web_view_helper_.GetWebView());
 
     v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
@@ -6269,10 +6286,9 @@ class CompositedSelectionBoundsTest
         v8::Isolate::GetCurrent(),
         expected_result.Get(context, 0).ToLocalChecked());
     ASSERT_TRUE(layer_owner_node_for_start);
-    EXPECT_EQ(GetExpectedLayerForSelection(layer_owner_node_for_start)
-                  ->CcLayer()
-                  .id(),
-              selection.start.layer_id);
+    int id = LayerIdFromNode(layer_tree_host->root_layer(),
+                             layer_owner_node_for_start);
+    EXPECT_EQ(selection.start.layer_id, id);
 
     EXPECT_EQ(start_edge_start_in_layer_x, selection.start.edge_start.x());
     EXPECT_EQ(start_edge_start_in_layer_y, selection.start.edge_start.y());
@@ -6281,12 +6297,10 @@ class CompositedSelectionBoundsTest
     blink::Node* layer_owner_node_for_end = V8Node::ToImplWithTypeCheck(
         v8::Isolate::GetCurrent(),
         expected_result.Get(context, 5).ToLocalChecked());
-
     ASSERT_TRUE(layer_owner_node_for_end);
-    EXPECT_EQ(
-        GetExpectedLayerForSelection(layer_owner_node_for_end)->CcLayer().id(),
-        selection.end.layer_id);
-
+    id = LayerIdFromNode(layer_tree_host->root_layer(),
+                         layer_owner_node_for_end);
+    EXPECT_EQ(selection.end.layer_id, id);
     EXPECT_EQ(end_edge_start_in_layer_x, selection.end.edge_start.x());
     EXPECT_EQ(end_edge_start_in_layer_y, selection.end.edge_start.y());
     EXPECT_EQ(end_edge_end_in_layer_x, selection.end.edge_end.x());
@@ -6334,7 +6348,7 @@ class CompositedSelectionBoundsTest
     RunTest(test_file);
   }
 
-  GraphicsLayer* GetExpectedLayerForSelection(blink::Node* node) const {
+  static GraphicsLayer* GetExpectedLayerForSelection(blink::Node* node) {
     CompositedLayerMapping* clm = node->GetLayoutObject()
                                       ->EnclosingLayer()
                                       ->EnclosingLayerForPaintInvalidation()
@@ -6346,55 +6360,102 @@ class CompositedSelectionBoundsTest
                                          : clm->MainGraphicsLayer();
   }
 
+  static int LayerIdFromNode(cc::Layer* root_layer, blink::Node* node) {
+    if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+      return GetExpectedLayerForSelection(node)->CcLayer().id();
+    } else {
+      Vector<const cc::Layer*> layers;
+      if (node->IsDocumentNode()) {
+        layers = CcLayersByName(root_layer,
+                                "Scrolling background of LayoutView #document");
+      } else {
+        DCHECK(node->IsElementNode());
+        layers = CcLayersByDOMElementId(root_layer,
+                                        To<Element>(node)->GetIdAttribute());
+      }
+
+      EXPECT_EQ(layers.size(), 1u);
+      return layers[0]->id();
+    }
+  }
+
   frame_test_helpers::WebViewHelper web_view_helper_;
 };
 
-TEST_F(CompositedSelectionBoundsTest, None) {
+TEST_P(CompositedSelectionBoundsTest, None) {
   RunTestWithNoSelection("composited_selection_bounds_none.html");
 }
-TEST_F(CompositedSelectionBoundsTest, NoneReadonlyCaret) {
+TEST_P(CompositedSelectionBoundsTest, NoneReadonlyCaret) {
   RunTestWithNoSelection(
       "composited_selection_bounds_none_readonly_caret.html");
 }
-TEST_F(CompositedSelectionBoundsTest, DetachedFrame) {
+TEST_P(CompositedSelectionBoundsTest, DetachedFrame) {
   RunTestWithNoSelection("composited_selection_bounds_detached_frame.html");
 }
 
-TEST_F(CompositedSelectionBoundsTest, Basic) {
+TEST_P(CompositedSelectionBoundsTest, Basic) {
   RunTest("composited_selection_bounds_basic.html");
 }
-TEST_F(CompositedSelectionBoundsTest, Transformed) {
+TEST_P(CompositedSelectionBoundsTest, Transformed) {
   RunTest("composited_selection_bounds_transformed.html");
 }
-TEST_F(CompositedSelectionBoundsTest, VerticalRightToLeft) {
+TEST_P(CompositedSelectionBoundsTest, VerticalRightToLeft) {
   RunTest("composited_selection_bounds_vertical_rl.html");
 }
-TEST_F(CompositedSelectionBoundsTest, VerticalLeftToRight) {
+TEST_P(CompositedSelectionBoundsTest, VerticalLeftToRight) {
   RunTest("composited_selection_bounds_vertical_lr.html");
 }
-TEST_F(CompositedSelectionBoundsTest, SplitLayer) {
+TEST_P(CompositedSelectionBoundsTest, BasicRTL) {
+  RunTest("composited_selection_bounds_basic_rtl.html");
+}
+TEST_P(CompositedSelectionBoundsTest, VerticalRightToLeftRTL) {
+  RunTest("composited_selection_bounds_vertical_rl_rtl.html");
+}
+TEST_P(CompositedSelectionBoundsTest, VerticalLeftToRightRTL) {
+  RunTest("composited_selection_bounds_vertical_lr_rtl.html");
+}
+TEST_P(CompositedSelectionBoundsTest, SplitLayer) {
   RunTest("composited_selection_bounds_split_layer.html");
 }
-TEST_F(CompositedSelectionBoundsTest, Iframe) {
+TEST_P(CompositedSelectionBoundsTest, Iframe) {
   RunTestWithMultipleFiles("composited_selection_bounds_iframe.html",
                            {"composited_selection_bounds_basic.html"});
 }
-TEST_F(CompositedSelectionBoundsTest, Editable) {
+TEST_P(CompositedSelectionBoundsTest, Editable) {
   RunTest("composited_selection_bounds_editable.html");
 }
-TEST_F(CompositedSelectionBoundsTest, EditableDiv) {
+TEST_P(CompositedSelectionBoundsTest, EditableDiv) {
   RunTest("composited_selection_bounds_editable_div.html");
 }
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #if !defined(OS_ANDROID)
-TEST_F(CompositedSelectionBoundsTest, Input) {
+TEST_P(CompositedSelectionBoundsTest, Input) {
+  // This test does not yet pass in CAP due to handling of
+  // LayerSelectionBound::hidden
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return;
   RunTest("composited_selection_bounds_input.html");
 }
-TEST_F(CompositedSelectionBoundsTest, InputScrolled) {
+TEST_P(CompositedSelectionBoundsTest, InputScrolled) {
+  // This test does not yet pass in CAP due to handling of
+  // LayerSelectionBound::hidden
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return;
   RunTest("composited_selection_bounds_input_scrolled.html");
 }
 #endif
 #endif
+
+struct CompositedSelectionBoundsTestPassToString {
+  std::string operator()(const testing::TestParamInfo<bool> b) const {
+    return b.param ? "CAP" : "NonCAP";
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CompositedSelectionBoundsTest,
+                         testing::Bool(),
+                         CompositedSelectionBoundsTestPassToString());
 
 class TestWillInsertBodyWebFrameClient
     : public frame_test_helpers::TestWebFrameClient {

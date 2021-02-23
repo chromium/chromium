@@ -184,8 +184,22 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
       PhysicalRect selection_rect =
           GetSelectionRect<InlineTextBoxPainter::PaintOptions::kNormal>(
               context, box_rect, style_to_use, style_to_use.GetFont());
+
+      TextDirection direction = inline_text_box_.IsLeftToRightDirection()
+                                    ? TextDirection::kLtr
+                                    : TextDirection::kRtl;
+      // We need to account for vertical writing mode rotation - for the
+      // actual painting of the selection_rect, this is done below by
+      // concatenating a rotation matrix on the context.
+      if (!style_to_use.IsHorizontalWritingMode()) {
+        FloatRect rotated_selection =
+            TextPainterBase::Rotation(box_rect, TextPainterBase::kClockwise)
+                .MapRect(static_cast<FloatRect>(selection_rect));
+        selection_rect = PhysicalRect::EnclosingRect(rotated_selection);
+      }
       selection_recorder.emplace(selection_state, selection_rect,
-                                 context.GetPaintController());
+                                 context.GetPaintController(), direction,
+                                 style_to_use.GetWritingMode());
     }
   }
 

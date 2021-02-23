@@ -7,6 +7,8 @@
 
 #include "third_party/blink/renderer/core/layout/api/selection_state.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/platform/text/text_direction.h"
+#include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -25,9 +27,11 @@ class SelectionBoundsRecorder {
   STACK_ALLOCATED();
 
  public:
-  SelectionBoundsRecorder(SelectionState state,
-                          PhysicalRect selection_rect,
-                          PaintController& paint_controller);
+  SelectionBoundsRecorder(SelectionState,
+                          PhysicalRect,
+                          PaintController&,
+                          TextDirection,
+                          WritingMode);
 
   ~SelectionBoundsRecorder();
 
@@ -37,6 +41,8 @@ class SelectionBoundsRecorder {
   const SelectionState state_;
   PhysicalRect selection_rect_;
   PaintController& paint_controller_;
+  TextDirection text_direction_;
+  WritingMode writing_mode_;
 };
 
 }  // namespace blink

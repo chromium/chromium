@@ -183,7 +183,9 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
       PhysicalRect selection_rect =
           selection->ComputeSelectionRect(box_rect.offset);
       selection_recorder.emplace(selection->State(), selection_rect,
-                                 paint_info.context.GetPaintController());
+                                 paint_info.context.GetPaintController(),
+                                 cursor_.Current().ResolvedDirection(),
+                                 style.GetWritingMode());
     }
   }
 
