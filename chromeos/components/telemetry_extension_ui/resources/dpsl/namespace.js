@@ -11,6 +11,7 @@
  * Namespace for DPSL APIs.
  */
 var dpsl = {};
+dpsl.diagnostics = null;
 dpsl.internal = {};
 dpsl.internal.messagePipe =
   new MessagePipe('chrome://telemetry-extension', window.parent);

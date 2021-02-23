@@ -6,3 +6,11 @@
  * @fileoverview
  * dpsl.* types definitions.
  */
+
+ ///////////////////// dpsl.diagnostics.* type definitions /////////////////////
+
+ /**
+  * Static list of available diagnostics routines (tests).
+  * @typedef {!Array<!string>}
+  */
+dpsl.AvailableRoutinesList;

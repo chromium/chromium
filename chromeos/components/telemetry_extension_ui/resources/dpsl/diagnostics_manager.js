@@ -13,22 +13,50 @@
   const messagePipe = dpsl.internal.messagePipe;
 
   /**
-   * DPSL Diagnostics Manager.
+   * DPSL Diagnostics Manager for dpsl.diagnostics.* APIs.
    */
-  class DiagnosticsManager {
+  class DPSLDiagnosticsManager {
     constructor() {}
 
     /**
-     * Requests a list of available routines.
-     * @return { !Promise<!Array<!string>> }
+     * Requests a list of available diagnostics routines.
+     * @return { !Promise<!dpsl.AvailableRoutinesList> }
      * @public
      */
     async getAvailableRoutines() {
       const response =
-          /** @type {!dpsl_internal.DiagnosticsGetAvailableRoutinesResponse} */
+          /** @type {!dpsl.AvailableRoutinesList} */
           (await messagePipe.sendMessage(
               dpsl_internal.Message.DIAGNOSTICS_AVAILABLE_ROUTINES));
       return response;
+    }
+  }
+
+  globalThis.dpsl.diagnostics = new DPSLDiagnosticsManager();
+
+  /**
+   * DPSL Diagnostics Manager.
+   */
+  class DiagnosticsManager {
+    constructor() {
+      /**
+       * @type {!DPSLDiagnosticsManager}
+       */
+      this.dpslDiagnosticsManager = /** @type {!DPSLDiagnosticsManager} */
+        (globalThis.dpsl.diagnostics);
+    }
+
+    /**
+     * Requests a list of available routines.
+     * @return { !Promise<!dpsl.AvailableRoutinesList> }
+     * @public
+     */
+    async getAvailableRoutines() {
+      console.warn(
+        'chromeos.diagnostics.getAvailableRoutines API function is deprecated',
+        'and will be removed. Use dpsl.diagnostics.getAvailableRoutines,',
+        'instead');
+      return this.dpslDiagnosticsManager.getAvailableRoutines();
     }
 
     /**

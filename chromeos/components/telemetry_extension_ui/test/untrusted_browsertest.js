@@ -53,24 +53,27 @@ UNTRUSTED_TEST('UntrustedCanSpawnWorkers', async () => {
 // Tests that array of available routines can be successfully
 // requested from chrome-untrusted://.
 UNTRUSTED_TEST('UntrustedDiagnosticsRequestAvailableRoutines', async () => {
-  const response = await chromeos.diagnostics.getAvailableRoutines();
-  assertDeepEquals(
-      [
-        'battery-capacity',
-        'battery-health',
-        'smartctl-check',
-        'ac-power',
-        'cpu-cache',
-        'cpu-stress',
-        'floating-point-accuracy',
-        'nvme-wear-level',
-        'nvme-self-test',
-        'disk-read',
-        'prime-search',
-        'battery-discharge',
-        'battery-charge',
-      ],
-      response);
+  const expectedResult = [
+    'battery-capacity',
+    'battery-health',
+    'smartctl-check',
+    'ac-power',
+    'cpu-cache',
+    'cpu-stress',
+    'floating-point-accuracy',
+    'nvme-wear-level',
+    'nvme-self-test',
+    'disk-read',
+    'prime-search',
+    'battery-discharge',
+    'battery-charge',
+  ];
+
+  const chromeosResponse = await chromeos.diagnostics.getAvailableRoutines();
+  assertDeepEquals(expectedResult, chromeosResponse);
+
+  const dpslResponse = await dpsl.diagnostics.getAvailableRoutines();
+  assertDeepEquals(expectedResult, dpslResponse);
 });
 
 // Tests that sendCommandToRoutine throws the correct errors
