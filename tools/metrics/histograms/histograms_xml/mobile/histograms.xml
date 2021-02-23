@@ -491,7 +491,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Mobile.SystemNotification.NotifyFailure"
-    enum="SystemNotificationType" expires_after="2021-06-01">
+    enum="SystemNotificationType" expires_after="2021-08-22">
   <owner>knollr@chromium.org</owner>
   <owner>xingliu@chromium.org</owner>
   <summary>
@@ -1065,7 +1065,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MobileSignInPromo.SettingsManager.ImpressionsTilSigninButtons"
-    units="impressions" expires_after="2021-06-20">
+    units="impressions" expires_after="2021-08-22">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
