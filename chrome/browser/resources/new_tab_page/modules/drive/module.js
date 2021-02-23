@@ -4,6 +4,7 @@
 
 import '../module_header.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ModuleDescriptor} from '../module_descriptor.js';
@@ -95,4 +96,5 @@ async function createDriveElement() {
 /** @type {!ModuleDescriptor} */
 export const driveDescriptor = new ModuleDescriptor(
     /*id=*/ 'drive',
+    /*name=*/ loadTimeData.getString('modulesDriveTitle'),
     /*heightPx=*/ 260, createDriveElement);

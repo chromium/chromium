@@ -5647,13 +5647,22 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_DISMISS_TOAST_MESSAGE" desc="Text shown in the toast confirming a module has been dismissed.">
         Removed <ph name="MODULE_TITLE">$1<ex>Office and Desk Chairs</ex></ph>
       </message>
-      <message name="IDS_NTP_MODULES_DUMMY_TITLE" translateable="false" desc="Title shown in the header of the dummy module.">
+      <message name="IDS_NTP_MODULES_DISABLE_TOAST_MESSAGE" desc="Text shown in the toast confirming a module has been disabled.">
+        You won't see "<ph name="MODULE_NAME">$1<ex>shopping suggestions</ex></ph>" again on this page
+      </message>
+      <message name="IDS_NTP_MODULES_SHOPPING_TASKS_NAME" translateable="false" desc="Name of the shopping tasks module shown in various UIs.">
+        Shopping suggestions
+      </message>
+      <message name="IDS_NTP_MODULES_RECIPE_TASKS_NAME" translateable="false" desc="Name of the recipe tasks module shown in various UIs.">
+        Recipe ideas
+      </message>
+      <message name="IDS_NTP_MODULES_DUMMY_TITLE" translateable="false" desc="Title shown in the header of the dummy module and various other UIs.">
         Super Duper Module
       </message>
-      <message name="IDS_NTP_MODULES_DUMMY2_TITLE" translateable="false" desc="Title shown in the header of the dummy 2 module.">
+      <message name="IDS_NTP_MODULES_DUMMY2_TITLE" translateable="false" desc="Title shown in the header of the dummy 2 module and various other UIs.">
         Even Better Module
       </message>
-      <message name="IDS_NTP_MODULES_DRIVE_TITLE" desc="Title shown in the header of the drive module.">
+      <message name="IDS_NTP_MODULES_DRIVE_TITLE" desc="Title shown in the header of the drive module and various other UIs.">
         Recently from Google Drive
       </message>
       <message name="IDS_NTP_MODULES_KALEIDOSCOPE_TITLE" desc="Title shown in the header of the Kaleidoscope module.">
@@ -5674,7 +5683,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_CART_HEADER_CHIP_NEW" desc="Text shown on the header chip of chrome cart module.">
         New
       </message>
-      <message name="IDS_NTP_MODULES_CART_TITLE" desc="Title shown in the header of the chrome cart module.">
+      <message name="IDS_NTP_MODULES_CART_TITLE" desc="Title shown in the header of the chrome cart module and various other UIs.">
         Your carts
       </message>
       <message name="IDS_NTP_MODULES_CART_WARM_WELCOME" desc="Text shown in the module header when module shows for the first couple of times. This is served as welcome message and user education.">

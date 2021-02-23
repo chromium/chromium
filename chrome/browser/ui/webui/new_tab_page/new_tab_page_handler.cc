@@ -37,6 +37,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/search/ntp_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_provider_logos/logo_service.h"
@@ -371,6 +372,7 @@ NewTabPageHandler::~NewTabPageHandler() {
 // static
 void NewTabPageHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kNtpModulesVisible, true);
+  registry->RegisterListPref(prefs::kNtpDisabledModules, true);
 }
 
 void NewTabPageHandler::AddMostVisitedTile(
@@ -635,6 +637,27 @@ void NewTabPageHandler::SetModulesVisible(bool visible) {
 void NewTabPageHandler::UpdateModulesVisible() {
   page_->SetModulesVisible(
       profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesVisible));
+}
+
+void NewTabPageHandler::SetModuleDisabled(const std::string& module_id,
+                                          bool disabled) {
+  ListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpDisabledModules);
+  if (disabled) {
+    update->AppendIfNotPresent(std::make_unique<base::Value>(module_id));
+  } else {
+    update->EraseListValue(base::Value(module_id));
+  }
+}
+
+void NewTabPageHandler::GetDisabledModules(
+    GetDisabledModulesCallback callback) {
+  const auto* module_ids_value =
+      profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules);
+  std::vector<std::string> module_ids;
+  for (const auto& id : *module_ids_value) {
+    module_ids.push_back(id.GetString());
+  }
+  std::move(callback).Run(std::move(module_ids));
 }
 
 void NewTabPageHandler::OnPromoDataUpdated() {

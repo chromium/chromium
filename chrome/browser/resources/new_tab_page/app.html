@@ -286,7 +286,8 @@
       <template is="dom-repeat" items="[[moduleDescriptors_]]" id="modules"
           on-dom-change="onModulesLoaded_">
         <ntp-module-wrapper descriptor="[[item]]"
-            on-dismiss-module="onDismissModule_">
+            on-dismiss-module="onDismissModule_"
+            on-disable-module="onDisableModule_">
         </ntp-module-wrapper>
       </template>
       <a id="backgroundImageAttribution"
@@ -340,11 +341,11 @@
 </dom-if>
 <dom-if if="[[lazyRender_]]" restamp>
   <template>
-    <cr-toast id="dismissModuleToast" duration="10000">
-      <div id="dismissModuleToastMessage">[[dismissedModuleData_.message]]</div>
-      <cr-button id="undoDismissModuleButton"
+    <cr-toast id="removeModuleToast" duration="10000">
+      <div id="removeModuleToastMessage">[[removedModuleData_.message]]</div>
+      <cr-button id="undoRemoveModuleButton"
           aria-label="$i18n{undoDescription}"
-          on-click="onUndoDismissModuleButtonClick_">
+          on-click="onUndoRemoveModuleButtonClick_">
         $i18n{undo}
       </cr-button>
     </cr-toast>

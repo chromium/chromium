@@ -6,6 +6,7 @@ import {$$, BackgroundManager, BackgroundSelectionType, BrowserProxy, ModuleRegi
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {FakeMetricsPrivate} from 'chrome://test/new_tab_page/metrics_test_support.js';
 import {assertNotStyle, assertStyle, createTestProxy, createTheme} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
 import {eventToPromise, flushTasks} from 'chrome://test/test_util.m.js';
@@ -19,6 +20,9 @@ suite('NewTabPageAppTest', () => {
    * @extends {TestBrowserProxy}
    */
   let testProxy;
+
+  /** @type {FakeMetricsPrivate} */
+  let fakeMetricsPrivate;
 
   /**
    * @implements {BackgroundManager}
@@ -63,6 +67,8 @@ suite('NewTabPageAppTest', () => {
     moduleResolver = new PromiseResolver();
     moduleRegistry.setResultFor('initializeModules', moduleResolver.promise);
     ModuleRegistry.instance_ = moduleRegistry;
+    fakeMetricsPrivate = new FakeMetricsPrivate();
+    chrome.metricsPrivate = fakeMetricsPrivate;
 
     app = document.createElement('ntp-app');
     document.body.appendChild(app);
@@ -489,7 +495,7 @@ suite('NewTabPageAppTest', () => {
       // Assert.
       const modules = app.shadowRoot.querySelectorAll('ntp-module-wrapper');
       assertEquals(1, modules.length);
-      assertFalse($$(app, '#dismissModuleToast').open);
+      assertFalse($$(app, '#removeModuleToast').open);
 
       // Act.
       moduleElement.dispatchEvent(new CustomEvent('dismiss-module', {
@@ -505,23 +511,76 @@ suite('NewTabPageAppTest', () => {
       await flushTasks();
 
       // Assert.
-      assertTrue($$(app, '#dismissModuleToast').open);
+      assertTrue($$(app, '#removeModuleToast').open);
       assertEquals(
-          'Foo', $$(app, '#dismissModuleToastMessage').textContent.trim());
-      assertNotStyle($$(app, '#undoDismissModuleButton'), 'display', 'none');
+          'Foo', $$(app, '#removeModuleToastMessage').textContent.trim());
+      assertNotStyle($$(app, '#undoRemoveModuleButton'), 'display', 'none');
       assertEquals(
           'foo', await testProxy.handler.whenCalled('onDismissModule'));
       assertFalse(restoreCalled);
 
       // Act.
-      $$(app, '#undoDismissModuleButton').click();
+      $$(app, '#undoRemoveModuleButton').click();
       await flushTasks();
 
       // Assert.
-      assertFalse($$(app, '#dismissModuleToast').open);
+      assertFalse($$(app, '#removeModuleToast').open);
       assertTrue(restoreCalled);
       assertEquals(
           'foo', await testProxy.handler.whenCalled('onRestoreModule'));
+    });
+
+    test('modules can be disabled and restored', async () => {
+      // Arrange.
+      const moduleElement = document.createElement('div');
+      loadTimeData.overrideValues({
+        disableModuleToastMessage: 'hello "$1"',
+      });
+
+      // Act.
+      moduleResolver.resolve([{
+        id: 'foo',
+        name: 'bar',
+        element: moduleElement,
+      }]);
+      await flushTasks();  // Wait for module descriptor resolution.
+
+      // Assert.
+      const modules = app.shadowRoot.querySelectorAll('ntp-module-wrapper');
+      assertEquals(1, modules.length);
+      assertFalse($$(app, '#removeModuleToast').open);
+
+      // Act.
+      moduleElement.dispatchEvent(new Event('disable-module', {
+        bubbles: true,
+        composed: true,
+      }));
+      await flushTasks();
+
+      // Assert.
+      assertTrue($$(app, '#removeModuleToast').open);
+      assertEquals(
+          'hello "bar"',
+          $$(app, '#removeModuleToastMessage').textContent.trim());
+      assertNotStyle($$(app, '#undoRemoveModuleButton'), 'display', 'none');
+      assertEquals(
+          1, fakeMetricsPrivate.count('NewTabPage.Modules.Disabled', 'foo'));
+      assertEquals(
+          1,
+          fakeMetricsPrivate.count(
+              'NewTabPage.Modules.Disabled.ModuleRequest', 'foo'));
+
+      // Act.
+      $$(app, '#undoRemoveModuleButton').click();
+      await flushTasks();
+
+      // Assert.
+      assertFalse($$(app, '#removeModuleToast').open);
+      assertEquals(
+          1, fakeMetricsPrivate.count('NewTabPage.Modules.Enabled', 'foo'));
+      assertEquals(
+          1,
+          fakeMetricsPrivate.count('NewTabPage.Modules.Enabled.Toast', 'foo'));
     });
   });
 });

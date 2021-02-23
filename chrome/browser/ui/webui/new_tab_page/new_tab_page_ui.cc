@@ -200,8 +200,11 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
 
       // Modules.
       {"dismissModuleToastMessage", IDS_NTP_MODULES_DISMISS_TOAST_MESSAGE},
+      {"disableModuleToastMessage", IDS_NTP_MODULES_DISABLE_TOAST_MESSAGE},
       {"moduleInfoButtonTitle", IDS_NTP_MODULES_INFO_BUTTON_TITLE},
       {"moduleDismissButtonTitle", IDS_NTP_MODULES_DISMISS_BUTTON_TITLE},
+      {"modulesShoppingTasksName", IDS_NTP_MODULES_SHOPPING_TASKS_NAME},
+      {"modulesRecipeTasksName", IDS_NTP_MODULES_RECIPE_TASKS_NAME},
       {"modulesDriveTitle", IDS_NTP_MODULES_DRIVE_TITLE},
       {"modulesDummyTitle", IDS_NTP_MODULES_DUMMY_TITLE},
       {"modulesDummy2Title", IDS_NTP_MODULES_DUMMY2_TITLE},

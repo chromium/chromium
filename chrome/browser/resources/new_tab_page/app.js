@@ -253,12 +253,11 @@ class AppElement extends PolymerElement {
       moduleDescriptors_: Object,
 
       /**
-       * Data about the most recently dismissed module.
-       * @type {?{id: string, element: !Element, message: string,
-       *     restoreCallback: function()}}
+       * Data about the most recently removed module.
+       * @type {?{element: !Element, message: string, undo: function()}}
        * @private
        */
-      dismissedModuleData_: {
+      removedModuleData_: {
         type: Object,
         value: null,
       },
@@ -585,7 +584,7 @@ class AppElement extends PolymerElement {
           newTabPage.mojom.VoiceSearchAction.kActivateKeyboard);
     }
     if (ctrlKeyPressed && e.key === 'z') {
-      this.onUndoDismissModuleButtonClick_();
+      this.onUndoRemoveModuleButtonClick_();
     }
   }
 
@@ -869,34 +868,65 @@ class AppElement extends PolymerElement {
    * @private
    */
   onDismissModule_(e) {
-    this.dismissedModuleData_ = {
-      id: $$(this, '#modules').itemForElement(e.target).id,
+    const id = $$(this, '#modules').itemForElement(e.target).id;
+    const restoreCallback = e.detail.restoreCallback;
+    this.removedModuleData_ = {
       element: /** @type {!Element} */ (e.target),
       message: e.detail.message,
-      restoreCallback: e.detail.restoreCallback,
+      undo: () => {
+        restoreCallback();
+        this.pageHandler_.onRestoreModule(id);
+      },
     };
-    this.dismissedModuleData_.element.hidden = true;
+    this.removedModuleData_.element.hidden = true;
 
     // Notify the user.
-    $$(this, '#dismissModuleToast').show();
+    $$(this, '#removeModuleToast').show();
     // Notify the backend.
-    this.pageHandler_.onDismissModule(this.dismissedModuleData_.id);
+    this.pageHandler_.onDismissModule(id);
+  }
+
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onDisableModule_(e) {
+    const descriptor = /** @type {!ModuleDescriptor} */ (
+        $$(this, '#modules').itemForElement(e.target));
+    this.removedModuleData_ = {
+      element: /** @type {!Element} */ (e.target),
+      message:
+          loadTimeData.getStringF('disableModuleToastMessage', descriptor.name),
+      undo: () => {
+        this.pageHandler_.setModuleDisabled(descriptor.id, false);
+        chrome.metricsPrivate.recordSparseHashable(
+            'NewTabPage.Modules.Enabled', descriptor.id);
+        chrome.metricsPrivate.recordSparseHashable(
+            'NewTabPage.Modules.Enabled.Toast', descriptor.id);
+      },
+    };
+
+    this.removedModuleData_.element.hidden = true;
+    this.pageHandler_.setModuleDisabled(descriptor.id, true);
+    $$(this, '#removeModuleToast').show();
+    chrome.metricsPrivate.recordSparseHashable(
+        'NewTabPage.Modules.Disabled', descriptor.id);
+    chrome.metricsPrivate.recordSparseHashable(
+        'NewTabPage.Modules.Disabled.ModuleRequest', descriptor.id);
   }
 
   /**
    * @private
    */
-  onUndoDismissModuleButtonClick_() {
+  onUndoRemoveModuleButtonClick_() {
     // Restore the module.
-    this.dismissedModuleData_.restoreCallback();
-    this.dismissedModuleData_.element.hidden = false;
+    this.removedModuleData_.undo();
+    this.removedModuleData_.element.hidden = false;
 
     // Notify the user.
-    $$(this, '#dismissModuleToast').hide();
-    // Notify the backend.
-    this.pageHandler_.onRestoreModule(this.dismissedModuleData_.id);
+    $$(this, '#removeModuleToast').hide();
 
-    this.dismissedModuleData_ = null;
+    this.removedModuleData_ = null;
   }
 
   /**

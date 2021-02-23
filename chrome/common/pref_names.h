@@ -618,6 +618,7 @@ extern const char kNtpCollapsedSyncPromo[];
 extern const char kNtpCustomBackgroundDict[];
 extern const char kNtpCustomBackgroundLocalToDevice[];
 extern const char kNtpModulesVisible[];
+extern const char kNtpDisabledModules[];
 extern const char kNtpPromoBlocklist[];
 extern const char kNtpSearchSuggestionsBlocklist[];
 extern const char kNtpSearchSuggestionsImpressions[];

@@ -4,6 +4,7 @@
 
 import {$$, chromeCartDescriptor, ChromeCartProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {FakeMetricsPrivate} from 'chrome://test/new_tab_page/metrics_test_support.js';
 import {assertNotStyle, assertStyle} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
 import {eventToPromise, flushTasks, isVisible} from 'chrome://test/test_util.m.js';
@@ -15,24 +16,8 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
    */
   let testProxy;
 
-  /**
-   * A mock to intercept User Action logging calls and verify how many times
-   * they were called.
-   */
-  class MetricsPrivateMock {
-    constructor() {
-      this.userActionMap = new Map();
-    }
-
-    getUserActionCount(metricName) {
-      return this.userActionMap.get(metricName) || 0;
-    }
-
-    recordUserAction(metricName) {
-      this.userActionMap.set(
-          metricName, this.getUserActionCount(metricName) + 1);
-    }
-  }
+  /** @type {FakeMetricsPrivate} */
+  let fakeMetricsPrivate;
 
   setup(() => {
     PolymerTest.clearBody();
@@ -41,7 +26,8 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     testProxy.handler =
         TestBrowserProxy.fromClass(chromeCart.mojom.CartHandlerRemote);
     ChromeCartProxy.instance_ = testProxy;
-    chrome.metricsPrivate = new MetricsPrivateMock();
+    fakeMetricsPrivate = new FakeMetricsPrivate();
+    chrome.metricsPrivate = fakeMetricsPrivate;
     // Not show welcome surface by default.
     testProxy.handler.setResultFor(
         'getWarmWelcomeVisible', Promise.resolve({visible: false}));
@@ -218,9 +204,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
         loadTimeData.getString('modulesCartModuleMenuHideToastMessage'),
         hideToastMessage);
     assertEquals(1, testProxy.handler.getCallCount('hideCartModule'));
-    assertEquals(
-        chrome.metricsPrivate.getUserActionCount('NewTabPage.Carts.HideModule'),
-        1);
+    assertEquals(1, fakeMetricsPrivate.count('NewTabPage.Carts.HideModule'));
 
     // Act.
     hideRestoreCallback();
@@ -228,9 +212,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     // Assert.
     assertEquals(1, testProxy.handler.getCallCount('restoreHiddenCartModule'));
     assertEquals(
-        chrome.metricsPrivate.getUserActionCount(
-            'NewTabPage.Carts.UndoHideModule'),
-        1);
+        1, fakeMetricsPrivate.count('NewTabPage.Carts.UndoHideModule'));
 
     // Act.
     waitForDismissEvent = eventToPromise('dismiss-module', moduleElement);
@@ -244,10 +226,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
         loadTimeData.getString('modulesCartModuleMenuRemoveToastMessage'),
         removeToastMessage);
     assertEquals(1, testProxy.handler.getCallCount('removeCartModule'));
-    assertEquals(
-        chrome.metricsPrivate.getUserActionCount(
-            'NewTabPage.Carts.RemoveModule'),
-        1);
+    assertEquals(1, fakeMetricsPrivate.count('NewTabPage.Carts.RemoveModule'));
 
     // Act.
     removeRestoreCallback();
@@ -255,9 +234,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     // Assert.
     assertEquals(1, testProxy.handler.getCallCount('restoreRemovedCartModule'));
     assertEquals(
-        chrome.metricsPrivate.getUserActionCount(
-            'NewTabPage.Carts.UndoRemoveModule'),
-        1);
+        1, fakeMetricsPrivate.count('NewTabPage.Carts.UndoRemoveModule'));
   });
 
   test('dismiss and undo single cart item in module', async () => {
@@ -409,9 +386,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     checkScrollButtonVisibility(moduleElement, true, true);
     checkVisibleRange(moduleElement, 4, 7);
     assertEquals(
-        chrome.metricsPrivate.getUserActionCount(
-            'NewTabPage.Carts.RightScrollClick'),
-        1);
+        1, fakeMetricsPrivate.count('NewTabPage.Carts.RightScrollClick'));
 
     // Act.
     waitForRightScrollVisibilityChange =
@@ -425,9 +400,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     checkScrollButtonVisibility(moduleElement, true, false);
     checkVisibleRange(moduleElement, 6, 9);
     assertEquals(
-        chrome.metricsPrivate.getUserActionCount(
-            'NewTabPage.Carts.RightScrollClick'),
-        2);
+        2, fakeMetricsPrivate.count('NewTabPage.Carts.RightScrollClick'));
 
     // Act.
     waitForRightScrollVisibilityChange =
@@ -441,9 +414,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     checkScrollButtonVisibility(moduleElement, true, true);
     checkVisibleRange(moduleElement, 2, 5);
     assertEquals(
-        chrome.metricsPrivate.getUserActionCount(
-            'NewTabPage.Carts.LeftScrollClick'),
-        1);
+        1, fakeMetricsPrivate.count('NewTabPage.Carts.LeftScrollClick'));
 
     // Act.
     waitForLeftScrollVisibilityChange =
@@ -457,9 +428,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     checkScrollButtonVisibility(moduleElement, false, true);
     checkVisibleRange(moduleElement, 0, 3);
     assertEquals(
-        chrome.metricsPrivate.getUserActionCount(
-            'NewTabPage.Carts.LeftScrollClick'),
-        2);
+        2, fakeMetricsPrivate.count('NewTabPage.Carts.LeftScrollClick'));
 
     // Remove the observer.
     cartCarousel.removeEventListener('scroll', onScroll);

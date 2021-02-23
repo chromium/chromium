@@ -791,6 +791,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Modules.Disabled{Interaction}" enum="NtpModules"
+    expires_after="2022-01-01">
+  <owner>danielms@google.com</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logged when a module was disabled by {Interaction}. Only logged on the 1P
+    NTP. Note that even if the user has Google as their default search engine,
+    Incognito and Guest mode NTPs are not considered 1P and don't log this
+    histogram.
+  </summary>
+  <token key="Interaction">
+    <variant name="" summary="any interaction"/>
+    <variant name=".ModuleRequest"
+        summary="a module request (e.g. action menu in header)"/>
+  </token>
+</histogram>
+
 <histogram name="NewTabPage.Modules.Dismissed" units="count"
     expires_after="2021-10-01">
   <owner>mahmadi@chromium.org</owner>
@@ -802,6 +820,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     dismissal emits a 1 which has no inherent meaning aside from a dismissal
     occurred.
   </summary>
+</histogram>
+
+<histogram name="NewTabPage.Modules.Enabled{Interaction}" enum="NtpModules"
+    expires_after="2022-01-01">
+  <owner>danielms@google.com</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logged when a module was enabled by {Interaction}. Only logged on the 1P
+    NTP. Note that even if the user has Google as their default search engine,
+    Incognito and Guest mode NTPs are not considered 1P and don't log this
+    histogram.
+  </summary>
+  <token key="Interaction">
+    <variant name="" summary="any interaction"/>
+    <variant name=".Toast" summary="clicking undo on the module disable toast"/>
+  </token>
 </histogram>
 
 <histogram name="NewTabPage.Modules.Hover" enum="NtpModules"

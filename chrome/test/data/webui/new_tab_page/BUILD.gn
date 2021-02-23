@@ -17,3 +17,6 @@ js_library("img_test") {
   deps = [ "//chrome/browser/resources/new_tab_page" ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
+
+js_library("metrics_test_support") {
+}
