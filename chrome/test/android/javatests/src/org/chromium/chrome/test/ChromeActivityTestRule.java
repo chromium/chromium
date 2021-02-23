@@ -22,6 +22,7 @@ import org.junit.runners.model.Statement;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
@@ -94,6 +95,9 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
                 mDefaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
                 Thread.setDefaultUncaughtExceptionHandler(new ChromeUncaughtExceptionHandler());
                 ChromeApplicationTestUtils.setUp(InstrumentationRegistry.getTargetContext());
+                // Instrumentation infrastructure and tests often access variables from the
+                // instrumentation thread for asserts. See crbug.com/1173814 for more details.
+                ObservableSupplierImpl.setIgnoreThreadChecksForTesting(true);
 
                 // Preload Calendar so that it does not trigger ReadFromDisk Strict mode violations
                 // if called on the UI Thread. See https://crbug.com/705477 and
@@ -115,6 +119,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
                     base.evaluate();
                 } finally {
                     Thread.setDefaultUncaughtExceptionHandler(mDefaultUncaughtExceptionHandler);
+                    ObservableSupplierImpl.setIgnoreThreadChecksForTesting(false);
                 }
             }
         };
