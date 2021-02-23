@@ -99,7 +99,7 @@ class TabSearchStory(MultiTabStory):
     tabs = action_runner.tab.browser.tabs
     i = 0
     for url in self.URL_LIST2:
-      tabs[i].Navigate('https://' + url)
+      tabs[i].Navigate(url)
       i = i + 1
     action_runner.tab.browser.ExecuteBrowserCommand('openTabSearch')
     action_runner.Wait(5)
@@ -126,49 +126,49 @@ class TabSearchStory(MultiTabStory):
 class TabSearchStoryTop10(TabSearchStory):
   NAME = 'tab_search:top10:2020'
   URL_LIST = TOP_URL[:10]
-  URL = 'https://' + URL_LIST[0]
+  URL = URL_LIST[0]
   WAIT_FOR_NETWORK_QUIESCENCE = True
 
 
 class TabSearchStoryTop50(TabSearchStory):
   NAME = 'tab_search:top50:2020'
   URL_LIST = TOP_URL[:50]
-  URL = 'https://' + URL_LIST[0]
+  URL = URL_LIST[0]
   WAIT_FOR_NETWORK_QUIESCENCE = True
 
 
 class TabSearchStoryTop100(TabSearchStory):
   NAME = 'tab_search:top100:2020'
   URL_LIST = TOP_URL[:50] * 2
-  URL = 'https://' + URL_LIST[0]
+  URL = URL_LIST[0]
   WAIT_FOR_NETWORK_QUIESCENCE = True
 
 
 class TabSearchStoryTop10Loading(TabSearchStory):
   NAME = 'tab_search:top10:loading:2020'
   URL_LIST = TOP_URL[:10]
-  URL = 'https://' + URL_LIST[0]
+  URL = URL_LIST[0]
   WAIT_FOR_NETWORK_QUIESCENCE = False
 
 
 class TabSearchStoryTop50Loading(TabSearchStory):
   NAME = 'tab_search:top50:loading:2020'
   URL_LIST = TOP_URL[:50]
-  URL = 'https://' + URL_LIST[0]
+  URL = URL_LIST[0]
   WAIT_FOR_NETWORK_QUIESCENCE = False
 
 
 class TabSearchStoryTop100Loading(TabSearchStory):
   NAME = 'tab_search:top100:loading:2020'
   URL_LIST = TOP_URL[:50] * 2
-  URL = 'https://' + URL_LIST[0]
+  URL = URL_LIST[0]
   WAIT_FOR_NETWORK_QUIESCENCE = False
 
 
 class TabSearchStoryCloseAndOpen(TabSearchStory):
   NAME = 'tab_search:close_and_open:2020'
   URL_LIST = TOP_URL[:10]
-  URL = 'https://' + URL_LIST[0]
+  URL = URL_LIST[0]
   WAIT_FOR_NETWORK_QUIESCENCE = True
 
   def InteractWithPage(self, action_runner):
@@ -179,7 +179,7 @@ class TabSearchStoryCloseAndOpenLoading(TabSearchStory):
   NAME = 'tab_search:close_and_open:loading:2020'
   URL_LIST = TOP_URL[:10]
   URL_LIST2 = TOP_URL[10:20]
-  URL = 'https://' + URL_LIST[0]
+  URL = URL_LIST[0]
   WAIT_FOR_NETWORK_QUIESCENCE = False
 
   def InteractWithPage(self, action_runner):
@@ -189,7 +189,7 @@ class TabSearchStoryCloseAndOpenLoading(TabSearchStory):
 class TabSearchStoryScrollUpAndDown(TabSearchStory):
   NAME = 'tab_search:scroll_up_and_down:2020'
   URL_LIST = TOP_URL[:50] * 2
-  URL = 'https://' + URL_LIST[0]
+  URL = URL_LIST[0]
   WAIT_FOR_NETWORK_QUIESCENCE = False
 
   def InteractWithPage(self, action_runner):

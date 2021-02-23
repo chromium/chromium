@@ -22,10 +22,10 @@ class MultiTabStory(page.Page):
     url_list = self.URL_LIST
     tabs = action_runner.tab.browser.tabs
     if len(url_list) > 0:
-      tabs[0].Navigate('https://' + url_list[0])
+      tabs[0].Navigate(url_list[0])
     for url in url_list[1:]:
       new_tab = tabs.New()
-      new_tab.Navigate('https://' + url)
+      new_tab.Navigate(url)
     if self.WAIT_FOR_NETWORK_QUIESCENCE:
       for i, url in enumerate(url_list):
         try:
