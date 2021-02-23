@@ -20,6 +20,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -258,7 +259,7 @@ class ObserverList {
       live_iterators_.head()->value()->Invalidate();
     if (check_empty) {
       Compact();
-      DCHECK(observers_.empty());
+      DCHECK(observers_.empty()) << GetObserversCreationStackString();
     }
   }
 
@@ -335,6 +336,15 @@ class ObserverList {
     DETACH_FROM_SEQUENCE(iteration_sequence_checker_);
 
     EraseIf(observers_, [](const auto& o) { return o.IsMarkedForRemoval(); });
+  }
+
+  std::string GetObserversCreationStackString() const {
+    std::string result;
+#if DCHECK_IS_ON()
+    for (const auto& observer : observers_)
+      StrAppend(&result, {observer.GetCreationStackString(), "\n"});
+#endif
+    return result;
   }
 
   std::vector<ObserverStorageType> observers_;
