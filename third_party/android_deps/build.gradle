@@ -104,12 +104,10 @@ dependencies {
     compile "javax.inject:javax.inject:1"
 
     // Used by R8 to desugar library functions.
-    compile "com.android.tools:desugar_jdk_libs:1.0.10"
-    // When updating this line, please run the following to update the
-    // desugar.json file:
-    //  $ unzip -p third_party/android_deps/libs/desugar_jdk_libs_configuration/desugar_jdk_libs_configuration_$VERSION.jar \
-    //      META-INF/desugar/d8/desugar.json > third_party/r8/desugar_jdk_libs.json
-    compile "com.android.tools:desugar_jdk_libs_configuration:1.0.10"
+    // See instructions in //third_party/r8/README.chromium for how to
+    // update desugar_jdk_libs.json (needed when changing this version).
+    compile "com.android.tools:desugar_jdk_libs:1.1.1"
+    compile "com.android.tools:desugar_jdk_libs_configuration:1.1.1"
 
     // Upstream guava introduced versions with -android suffix starting with version
     // 22 to remove incompatible code with android. Thus we keep two jars, one for

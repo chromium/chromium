@@ -1,7 +1,7 @@
 Name: R8
 URL: https://r8.googlesource.com/r8
-Revision: 120900065d05300341e1dbd89feee4354f525468
-Version: 3.0.12-dev
+Revision: 4c912119af8e3d21f70af8362d41cfff1db2bcc9
+Version: latest
 License: BSD 3-Clause
 License File: NOT_SHIPPED
 Security Critical: no
@@ -20,7 +20,6 @@ R8 is a proguard-like optimizer that also has the ability to dex.
 
 Local Modifications:
 * Refer to commit descriptions within "patches" directory.
-  * Plus: https://r8-review.googlesource.com/c/r8/+/56708
 * Added "playground" directory for quick "how does this optimize" tests.
 * Removed references to ConcurrentHashMap and TimeZone#getTimeZone in desugar_jdk_libs.json.
 * Added "java/src/org/chromium/build/CustomD8.java", custom_d8.jar, and BUILD.gn.
@@ -64,12 +63,15 @@ cd $CHROMIUM_SRC
 java -cp third_party/r8/lib/r8.jar com.android.tools.r8.BackportedMethodList --min-api 16 > third_party/r8/backported_methods.txt
 
 # Manually update:
-* README.chromium (version number via "java -cp lib/r8.jar com.android.tools.r8.R8 --version")
+* README.chromium (revision is the R8 commit (before patches applied)
 * //DEPS (instance ID output by cipd create)
 
 Update instructions for desugar_jdk_libs.json:
-* Find desugar.json as described above and copy to desugar_jdk_libs.json.
+* unzip -p third_party/android_deps/libs/com_android_tools_desugar_jdk_libs_configuration/*.jar META-INF/desugar/d8/desugar.json > third_party/r8/desugar_jdk_libs.json
 * Remove all mentions of ConcurrentHashMap and TimeZone#getTimeZone and remove trailing commas.
+* Update //build/config/android/internal_rules.gni to point at the new .jar files:
+  1) desugar_jdk_libs-1.1.1.jar
+  2) desugar_jdk_libs_configuration-1.1.1.jar
 
 How to file bugs against R8:
 * Copy & paste the failing ninja command (starts with proguard.py), and add --dump-inputs.

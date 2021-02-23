@@ -84,8 +84,8 @@ java_target_patterns = _java_library_patterns + _java_resource_patterns
 _r8_path = "//third_party/r8/lib/r8.jar"
 _custom_d8_path = "//third_party/r8/custom_d8.jar"
 _desugar_jdk_libs_json = "//third_party/r8/desugar_jdk_libs.json"
-_desugar_jdk_libs_jar = "//third_party/android_deps/libs/com_android_tools_desugar_jdk_libs/desugar_jdk_libs-1.0.10.jar"
-_desugar_jdk_libs_configuration_jar = "//third_party/android_deps/libs/com_android_tools_desugar_jdk_libs_configuration/desugar_jdk_libs_configuration-1.0.10.jar"
+_desugar_jdk_libs_jar = "//third_party/android_deps/libs/com_android_tools_desugar_jdk_libs/desugar_jdk_libs-1.1.1.jar"
+_desugar_jdk_libs_configuration_jar = "//third_party/android_deps/libs/com_android_tools_desugar_jdk_libs_configuration/desugar_jdk_libs_configuration-1.1.1.jar"
 _desugar_runtime_jar = "$root_build_dir/obj/third_party/bazel/desugar/Desugar_runtime.processed.jar"
 
 # Where to write failed expectations for bots to read.

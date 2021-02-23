@@ -1424,7 +1424,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/r8',
-              'version': 'F8cKQoSai0fZxFRJVRZnoWeS-oVyp53L7bpuVq9t44AC',
+              'version': 'gVW_Nf7L-ymUgvp6LWs-mMtm0UcvSjsWz-rVCmRCEr4C',
           },
       ],
       'condition': 'checkout_android',
@@ -2106,7 +2106,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/com_android_tools_desugar_jdk_libs',
-              'version': 'version:1.0.10-cr0',
+              'version': 'version:1.1.1-cr0',
           },
       ],
       'condition': 'checkout_android',
@@ -2117,7 +2117,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/com_android_tools_desugar_jdk_libs_configuration',
-              'version': 'version:1.0.10-cr0',
+              'version': 'version:1.1.1-cr0',
           },
       ],
       'condition': 'checkout_android',
