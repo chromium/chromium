@@ -8868,12 +8868,12 @@ TEST_F(AXPositionTest, AsValidPositionInDescendantOfEmptyObject) {
   update.nodes = {static_text_3, inline_box_4};
   ASSERT_TRUE(GetTree()->Unserialize(update));
 
-  EXPECT_FALSE(text_position->IsValid());
+  EXPECT_TRUE(text_position->IsValid());
   text_position = text_position->AsValidPosition();
   EXPECT_TRUE(text_position->IsValid());
   EXPECT_EQ(1, text_position->text_offset());
 
-  EXPECT_FALSE(tree_position->IsValid());
+  EXPECT_TRUE(tree_position->IsValid());
   tree_position = tree_position->AsValidPosition();
   EXPECT_TRUE(tree_position->IsValid());
   EXPECT_EQ(0, tree_position->child_index());
@@ -11013,12 +11013,13 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, result_position->affinity());
   EXPECT_EQ(base::WideToUTF16(L"Hello "), result_position->GetText());
 
-  // Positions on descendants of nodes that we classify as empty for the
-  // purposes of text navigation, are invalid.
+  // Positions on descendants of empty objects that have been replaced by the
+  // "embedded object replacement character" are valid, to allow for navigating
+  // inside of text controls.
   position = AXNodePosition::CreateTextPosition(
       GetTreeID(), generic_container_5.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
-  EXPECT_TRUE(position->IsNullPosition());
+  EXPECT_FALSE(position->IsNullPosition());
   EXPECT_TRUE(position->GetText().empty());
 
   // `AXPosition::GetText()` on a node that is the parent of a set of text nodes

@@ -629,7 +629,43 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   EXPECT_FALSE(test_position->AtStartOfAXTree());
   EXPECT_TRUE(test_position->AtEndOfAXTree());
 }
-#endif
+#endif  // !defined(OS_ANDROID)
+
+// Android's text representation is different, so disable the test there.
+#if !defined(OS_ANDROID)
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       NavigationSkipsCompositeItems) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+      <html>
+      <body>
+        <input type="search" placeholder="Sample text">
+      </body>
+      </html>)HTML");
+
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                "Sample text");
+
+  const BrowserAccessibility* root = GetManager()->GetRoot();
+  ASSERT_NE(root, nullptr);
+  const BrowserAccessibility* body = root->PlatformGetChild(0);
+  ASSERT_NE(body, nullptr);
+  const BrowserAccessibility* input_text = FindNode("Sample text");
+
+  // Create a position rooted at the start of the search input, then perform
+  // some AXPosition operations. This will crash if AsTreePosition() is
+  // erroneously turned into a null position.
+  ui::AXNodePosition::AXPositionInstance position =
+      input_text->CreateTextPositionAt(0);
+  EXPECT_TRUE(position->IsValid());
+  ui::AXNodePosition::AXPositionInstance test_position =
+      position->AsTreePosition();
+  EXPECT_TRUE(test_position->IsValid());
+  EXPECT_EQ(*test_position, *position);
+  test_position = position->CreatePositionAtEndOfAnchor();
+  EXPECT_TRUE(position->IsValid());
+}
+#endif  // !defined(OS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
                        PlatformIterator) {

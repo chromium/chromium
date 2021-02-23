@@ -507,10 +507,9 @@ class AXPosition {
       case AXPositionKind::TREE_POSITION:
         return GetAnchor() &&
                (child_index_ == BEFORE_TEXT ||
-                (child_index_ >= 0 && child_index_ <= AnchorChildCount())) &&
-               !IsInDescendantOfEmptyObject();
+                (child_index_ >= 0 && child_index_ <= AnchorChildCount()));
       case AXPositionKind::TEXT_POSITION:
-        if (!GetAnchor() || IsInDescendantOfEmptyObject())
+        if (!GetAnchor())
           return false;
 
         // For performance reasons we skip any validation of the text offset
@@ -3775,23 +3774,6 @@ class AXPosition {
     return !GetAnchor()->IsIgnored() &&
            !IsPlatformDocument(GetAnchorRole()) && !IsInTextObject() &&
            !IsIframe(GetAnchorRole());
-  }
-
-  bool IsInDescendantOfEmptyObject() const {
-    if (g_ax_embedded_object_behavior ==
-            AXEmbeddedObjectBehavior::kSuppressCharacter ||
-        IsNullPosition()) {
-      return false;
-    }
-
-    // Empty objects are only possible on:
-    // 1. A collapsed popup button that is parent of a menu list popup,
-    // 2. The generic container that is sometimes found inside empty text
-    // fields,
-    // 3. A node that only has ignored descendants.
-    // If our anchor node doesn't have an empty object ancestor, it can't be
-    // inside of an empty object.
-    return GetEmptyObjectAncestorNode();
   }
 
   AXNodeType* GetEmptyObjectAncestorNode() const {
