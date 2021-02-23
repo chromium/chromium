@@ -67,13 +67,6 @@ const CGFloat kOffsetToPinOmnibox = 100;
 @property(nonatomic, strong)
     NSArray<NSLayoutConstraint*>* fakeOmniboxConstraints;
 
-// Whether or not the content suggestions have been laid out. Used to avoid
-// laying out the content suggestions unnecessarily.
-@property(nonatomic, assign) BOOL didLayoutContentSuggestions;
-
-// Whether or not this ViewController's view has appeared.
-@property(nonatomic, assign) BOOL viewDidAppear;
-
 @end
 
 @implementation NewTabPageViewController
@@ -117,35 +110,16 @@ const CGFloat kOffsetToPinOmnibox = 100;
   discoverFeedView.translatesAutoresizingMaskIntoConstraints = NO;
   AddSameConstraints(discoverFeedView, self.view);
 
-  UIView* containerView =
-      self.discoverFeedWrapperViewController.discoverFeed.view;
-  UIView* contentSuggestionsView = self.contentSuggestionsViewController.view;
-  contentSuggestionsView.translatesAutoresizingMaskIntoConstraints = NO;
-
   [self.contentSuggestionsViewController
       willMoveToParentViewController:self.discoverFeedWrapperViewController
                                          .discoverFeed];
   [self.discoverFeedWrapperViewController.discoverFeed
       addChildViewController:self.contentSuggestionsViewController];
   [self.discoverFeedWrapperViewController.feedCollectionView
-      addSubview:contentSuggestionsView];
+      addSubview:self.contentSuggestionsViewController.view];
   [self.contentSuggestionsViewController
       didMoveToParentViewController:self.discoverFeedWrapperViewController
                                         .discoverFeed];
-
-  self.contentSuggestionsHeightConstraint = [contentSuggestionsView.heightAnchor
-      constraintEqualToConstant:self.contentSuggestionsViewController
-                                    .collectionView.contentSize.height];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [self.discoverFeedWrapperViewController.feedCollectionView.topAnchor
-        constraintEqualToAnchor:contentSuggestionsView.bottomAnchor],
-    [containerView.safeAreaLayoutGuide.leadingAnchor
-        constraintEqualToAnchor:contentSuggestionsView.leadingAnchor],
-    [containerView.safeAreaLayoutGuide.trailingAnchor
-        constraintEqualToAnchor:contentSuggestionsView.trailingAnchor],
-    self.contentSuggestionsHeightConstraint,
-  ]];
 
   // Ensures that there is never any nested scrolling, since we are nesting the
   // content suggestions collection view in the feed collection view.
@@ -176,6 +150,14 @@ const CGFloat kOffsetToPinOmnibox = 100;
   _contentSuggestionsLayout.omniboxPositioner = self;
 }
 
+- (void)viewWillLayoutSubviews {
+  [super viewWillLayoutSubviews];
+
+  [self updateContentSuggestionForCurrentLayout];
+  [self updateHeaderSynchronizerOffset];
+  [self.headerSynchronizer updateConstraints];
+}
+
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
 
@@ -191,13 +173,37 @@ const CGFloat kOffsetToPinOmnibox = 100;
             fromSavedState:NO];
   }
 
-  [self updateContentSuggestionForCurrentLayout];
-  [self updateHeaderSynchronizerOffset];
-  [self.headerSynchronizer updateConstraints];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
+
+  // Set these constraints in viewWillAppear so ContentSuggestions View uses its
+  // intrinsic height in the initial layout instead of
+  // contentSuggestionsHeightConstraint. If this is not done the
+  // ContentSuggestions View will look broken for a second before its properly
+  // laid out.
+  if (!self.contentSuggestionsHeightConstraint) {
+    UIView* containerView =
+        self.discoverFeedWrapperViewController.discoverFeed.view;
+    UIView* contentSuggestionsView = self.contentSuggestionsViewController.view;
+    contentSuggestionsView.translatesAutoresizingMaskIntoConstraints = NO;
+
+    self.contentSuggestionsHeightConstraint =
+        [contentSuggestionsView.heightAnchor
+            constraintEqualToConstant:self.contentSuggestionsViewController
+                                          .collectionView.contentSize.height];
+
+    [NSLayoutConstraint activateConstraints:@[
+      [self.discoverFeedWrapperViewController.feedCollectionView.topAnchor
+          constraintEqualToAnchor:contentSuggestionsView.bottomAnchor],
+      [containerView.safeAreaLayoutGuide.leadingAnchor
+          constraintEqualToAnchor:contentSuggestionsView.leadingAnchor],
+      [containerView.safeAreaLayoutGuide.trailingAnchor
+          constraintEqualToAnchor:contentSuggestionsView.trailingAnchor],
+      self.contentSuggestionsHeightConstraint,
+    ]];
+  }
 
   [self updateContentSuggestionForCurrentLayout];
 }
@@ -208,7 +214,6 @@ const CGFloat kOffsetToPinOmnibox = 100;
   // Updates omnibox to ensure that the dimensions are correct when navigating
   // back to the NTP.
   [self.headerSynchronizer updateFakeOmniboxForScrollPosition];
-  self.viewDidAppear = YES;
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -219,6 +224,7 @@ const CGFloat kOffsetToPinOmnibox = 100;
 - (void)viewSafeAreaInsetsDidChange {
   [super viewSafeAreaInsetsDidChange];
 
+  [self updateFeedInsetsForContentSuggestions];
   [self updateHeaderSynchronizerOffset];
   [self.headerSynchronizer updateConstraints];
 }
@@ -397,20 +403,6 @@ const CGFloat kOffsetToPinOmnibox = 100;
 // Lets this view own the fake omnibox and sticks it to the top of the NTP.
 - (void)stickFakeOmniboxToTop {
   [self setIsScrolledIntoFeed:YES];
-
-  // Ensures that content suggestions have been laid out before sticking omnibox
-  // to top of NTP. This ensures that the fake omnibox is visible when opening
-  // the NTP when the scroll offset is below the content suggestions, such as
-  // when navigating back from a feed article.
-  // |didLayoutContentSuggestions| checks if it has already been forced laid out
-  // in the block below. |viewDidAppear| checks if the view has appeared, in
-  // which case the content suggestions would have been laid out through the
-  // natural view's lifecycle.
-  if (!self.didLayoutContentSuggestions && !self.viewDidAppear) {
-    [self.contentSuggestionsViewController.view setNeedsLayout];
-    [self.contentSuggestionsViewController.view layoutIfNeeded];
-    self.didLayoutContentSuggestions = YES;
-  }
 
   [self.headerController removeFromParentViewController];
   [self.headerController.view removeFromSuperview];
