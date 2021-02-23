@@ -44,7 +44,8 @@ const int kRenderFrameID = 1;
 class SubresourceRedirectRobotsRulesParserTest : public testing::Test {
  public:
   SubresourceRedirectRobotsRulesParserTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        robots_rules_parser_(base::TimeDelta::FromSeconds(1)) {}
   void SetUp() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kSubresourceRedirect, {{}}}}, {});
@@ -197,7 +198,8 @@ TEST_F(SubresourceRedirectRobotsRulesParserTest,
 // Verify if the callback is called before the decider gets destroyed.
 TEST_F(SubresourceRedirectRobotsRulesParserTest,
        VerifyCallbackCalledBeforeDeciderDestroy) {
-  auto robots_rules_parser = std::make_unique<RobotsRulesParser>();
+  auto robots_rules_parser =
+      std::make_unique<RobotsRulesParser>(base::TimeDelta::FromSeconds(1));
   auto receiver1 = std::make_unique<CheckResultReceiver>();
   auto receiver2 = std::make_unique<CheckResultReceiver>();
 

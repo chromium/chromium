@@ -32,10 +32,11 @@ class RobotsRulesParserCache {
   // rules parser for the url origin. When the determination can be made
   // immediately, the decision should be returned. Otherwise base::nullopt
   // should be returned and the |callback| will be invoked when the decision was
-  // made.
+  // made. |rules_receive_timeout| is the timeout value for receiving rules.
   base::Optional<RobotsRulesParser::CheckResult> CheckRobotsRules(
       int routing_id,
       const GURL& url,
+      const base::TimeDelta& rules_receive_timeout,
       RobotsRulesParser::CheckResultCallback callback);
 
   // Invalidate and cancel the pending requests for the robots rules parser.
@@ -43,8 +44,11 @@ class RobotsRulesParserCache {
 
  private:
   // Returns a reference to the robots rules parser for the |origin| from the
-  // cache. An entry is created if it does not exist.
-  RobotsRulesParser& GetRobotsRulesParserForOrigin(const url::Origin& origin);
+  // cache. An entry is created if it does not exist. |rules_receive_timeout| is
+  // the timeout value for receiving rules.
+  RobotsRulesParser& GetRobotsRulesParserForOrigin(
+      const url::Origin& origin,
+      const base::TimeDelta& rules_receive_timeout);
 
   // The underlying cache of robots rules parsers.
   base::MRUCache<url::Origin, std::unique_ptr<RobotsRulesParser>>

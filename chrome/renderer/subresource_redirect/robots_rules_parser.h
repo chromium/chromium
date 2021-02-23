@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "url/gurl.h"
 
@@ -59,7 +60,10 @@ class RobotsRulesParser {
   // Callback to notify the check robot rules result.
   using CheckResultCallback = base::OnceCallback<void(CheckResult)>;
 
-  RobotsRulesParser();
+  // |rules_receive_timeout| is the timeout that should be used for receiving
+  // the rules.
+  explicit RobotsRulesParser(const base::TimeDelta& rules_receive_timeout);
+
   ~RobotsRulesParser();
 
   RobotsRulesParser(const RobotsRulesParser&) = delete;

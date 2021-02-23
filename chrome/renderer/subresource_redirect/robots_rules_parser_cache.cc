@@ -20,15 +20,18 @@ bool RobotsRulesParserCache::DoRobotsRulesExist(const url::Origin& origin) {
 void RobotsRulesParserCache::UpdateRobotsRules(
     const url::Origin& origin,
     const base::Optional<std::string>& rules) {
-  GetRobotsRulesParserForOrigin(origin).UpdateRobotsRules(rules);
+  GetRobotsRulesParserForOrigin(origin, GetRobotsRulesReceiveTimeout())
+      .UpdateRobotsRules(rules);
 }
 
 base::Optional<RobotsRulesParser::CheckResult>
 RobotsRulesParserCache::CheckRobotsRules(
     int routing_id,
     const GURL& url,
+    const base::TimeDelta& rules_receive_timeout,
     RobotsRulesParser::CheckResultCallback callback) {
-  return GetRobotsRulesParserForOrigin(url::Origin::Create(url))
+  return GetRobotsRulesParserForOrigin(url::Origin::Create(url),
+                                       rules_receive_timeout)
       .CheckRobotsRules(routing_id, url, std::move(callback));
 }
 
@@ -38,10 +41,13 @@ void RobotsRulesParserCache::InvalidatePendingRequests(int routing_id) {
 }
 
 RobotsRulesParser& RobotsRulesParserCache::GetRobotsRulesParserForOrigin(
-    const url::Origin& origin) {
+    const url::Origin& origin,
+    const base::TimeDelta& rules_receive_timeout) {
   auto it = parsers_cache_.Get(origin);
-  if (it == parsers_cache_.end())
-    it = parsers_cache_.Put(origin, std::make_unique<RobotsRulesParser>());
+  if (it == parsers_cache_.end()) {
+    it = parsers_cache_.Put(
+        origin, std::make_unique<RobotsRulesParser>(rules_receive_timeout));
+  }
   return *it->second;
 }
 
