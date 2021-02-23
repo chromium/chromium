@@ -919,6 +919,11 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
         use_default_scale_cancellation_);
   }
 
+  std::unique_ptr<ClientControlledShellSurface::Delegate>
+  CreateShellSurfaceDelegate(wl_resource* resource) {
+    return std::make_unique<WaylandRemoteSurfaceDelegate>(this, resource);
+  }
+
   std::unique_ptr<NotificationSurface> CreateNotificationSurface(
       Surface* surface,
       const std::string& notification_key) {
@@ -944,34 +949,12 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
     WMHelper::GetInstance()->SetDefaultScaleCancellation(use_default_scale);
   }
 
-  // TODO(mukai, oshima): rewrite this through delegate-style instead of
-  // creating callbacks.
-  ClientControlledShellSurface::BoundsChangedCallback
-  CreateBoundsChangedCallback(wl_resource* resource) {
-    return base::BindRepeating(
-        &WaylandRemoteShell::HandleRemoteSurfaceBoundsChangedCallback,
-        weak_ptr_factory_.GetWeakPtr(), base::Unretained(resource));
-  }
-
-  ClientControlledShellSurface::ChangeZoomLevelCallback
-  CreateChangeZoomLevelCallback(wl_resource* resource) {
-    return base::BindRepeating(
-        &WaylandRemoteShell::HandleRemoteSurfaceChangeZoomLevelCallback,
-        weak_ptr_factory_.GetWeakPtr(), base::Unretained(resource));
-  }
-
-  ClientControlledShellSurface::StateChangedCallback CreateStateChangedCallback(
-      wl_resource* resource) {
-    return base::BindRepeating(
-        &WaylandRemoteShell::HandleRemoteSurfaceStateChangedCallback,
-        weak_ptr_factory_.GetWeakPtr(), base::Unretained(resource));
-  }
-
-  ClientControlledShellSurface::GeometryChangedCallback
-  CreateGeometryChangedCallback(wl_resource* resource) {
-    return base::BindRepeating(
-        &WaylandRemoteShell::HandleRemoteSurfaceGeometryChangedCallback,
-        weak_ptr_factory_.GetWeakPtr(), base::Unretained(resource));
+  void OnRemoteSurfaceDestroyed(wl_resource* resource) {
+    // Sometimes resource might be destroyed after bounds change is scheduled to
+    // |pending_bounds_change_| but before that bounds change is emitted. Erase
+    // it from |pending_bounds_changes_| to prevent crashes. See also
+    // https://crbug.com/1163271.
+    pending_bounds_changes_.erase(resource);
   }
 
   // Overridden from display::DisplayObserver:
@@ -1021,6 +1004,58 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
   }
 
  private:
+  class WaylandRemoteSurfaceDelegate
+      : public ClientControlledShellSurface::Delegate {
+   public:
+    WaylandRemoteSurfaceDelegate(WaylandRemoteShell* shell,
+                                 wl_resource* resource)
+        : shell_(shell), resource_(resource) {}
+    ~WaylandRemoteSurfaceDelegate() override {
+      shell_->OnRemoteSurfaceDestroyed(resource_);
+    }
+    WaylandRemoteSurfaceDelegate(const WaylandRemoteSurfaceDelegate&) = delete;
+    WaylandRemoteSurfaceDelegate& operator=(
+        const WaylandRemoteSurfaceDelegate&) = delete;
+
+   private:
+    // ClientControlledShellSurfaceDelegate:
+    void OnGeometryChanged(const gfx::Rect& geometry) override {
+      shell_->OnRemoteSurfaceGeometryChanged(resource_, geometry);
+    }
+    void OnStateChanged(chromeos::WindowStateType old_state_type,
+                        chromeos::WindowStateType new_state_type) override {
+      shell_->OnRemoteSurfaceStateChanged(resource_, old_state_type,
+                                          new_state_type);
+    }
+    void OnBoundsChanged(chromeos::WindowStateType current_state,
+                         chromeos::WindowStateType requested_state,
+                         int64_t display_id,
+                         const gfx::Rect& bounds_in_display,
+                         bool is_resize,
+                         int bounds_change) override {
+      shell_->OnRemoteSurfaceBoundsChanged(
+          resource_, current_state, requested_state, display_id,
+          bounds_in_display, is_resize, bounds_change);
+    }
+    void OnDragStarted(int component) override {
+      zcr_remote_surface_v1_send_drag_started(resource_,
+                                              ResizeDirection(component));
+      wl_client_flush(wl_resource_get_client(resource_));
+    }
+    void OnDragFinished(int x, int y, bool canceled) override {
+      zcr_remote_surface_v1_send_drag_finished(resource_, x, y,
+                                               canceled ? 1 : 0);
+      wl_client_flush(wl_resource_get_client(resource_));
+    }
+    void OnZoomLevelChanged(ZoomChange zoom_change) override {
+      if (wl_resource_get_version(resource_) >= 23)
+        shell_->OnRemoteSurfaceChangeZoomLevel(resource_, zoom_change);
+    }
+
+    WaylandRemoteShell* shell_;
+    wl_resource* resource_;
+  };
+
   void ScheduleSendDisplayMetrics(int delay_ms) {
     needs_send_display_metrics_ = true;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
@@ -1186,14 +1221,13 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
     wl_client_flush(client);
   }
 
-  void HandleRemoteSurfaceBoundsChangedCallback(
-      wl_resource* resource,
-      WindowStateType current_state,
-      WindowStateType requested_state,
-      int64_t display_id,
-      const gfx::Rect& bounds_in_display,
-      bool resize,
-      int bounds_change) {
+  void OnRemoteSurfaceBoundsChanged(wl_resource* resource,
+                                    WindowStateType current_state,
+                                    WindowStateType requested_state,
+                                    int64_t display_id,
+                                    const gfx::Rect& bounds_in_display,
+                                    bool resize,
+                                    int bounds_change) {
     zcr_remote_surface_v1_bounds_change_reason reason =
         ZCR_REMOTE_SURFACE_V1_BOUNDS_CHANGE_REASON_RESIZE;
     if (!resize)
@@ -1255,9 +1289,9 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
         bounds_in_display.height(), reason);
   }
 
-  void HandleRemoteSurfaceStateChangedCallback(wl_resource* resource,
-                                               WindowStateType old_state_type,
-                                               WindowStateType new_state_type) {
+  void OnRemoteSurfaceStateChanged(wl_resource* resource,
+                                   WindowStateType old_state_type,
+                                   WindowStateType new_state_type) {
     DCHECK_NE(old_state_type, new_state_type);
     LOG_IF(ERROR, pending_bounds_changes_.count(resource) > 0)
         << "Sending window state while there is a pending bounds change. This "
@@ -1297,8 +1331,8 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
     wl_client_flush(wl_resource_get_client(resource));
   }
 
-  void HandleRemoteSurfaceChangeZoomLevelCallback(wl_resource* resource,
-                                                  ZoomChange change) {
+  void OnRemoteSurfaceChangeZoomLevel(wl_resource* resource,
+                                      ZoomChange change) {
     int32_t value = 0;
     switch (change) {
       case ZoomChange::IN:
@@ -1314,8 +1348,8 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
     zcr_remote_surface_v1_send_change_zoom_level(resource, value);
   }
 
-  void HandleRemoteSurfaceGeometryChangedCallback(wl_resource* resource,
-                                                  const gfx::Rect& geometry) {
+  void OnRemoteSurfaceGeometryChanged(wl_resource* resource,
+                                      const gfx::Rect& geometry) {
     LOG_IF(ERROR, pending_bounds_changes_.count(resource) > 0)
         << "Sending the new window geometry while there is a pending bounds "
            "change. This should not happen.";
@@ -1378,20 +1412,6 @@ void HandleRemoteSurfaceCloseCallback(wl_resource* resource) {
   wl_client_flush(wl_resource_get_client(resource));
 }
 
-void HandleRemoteSurfaceDragStartedCallback(wl_resource* resource,
-                                            int component) {
-  zcr_remote_surface_v1_send_drag_started(resource, ResizeDirection(component));
-  wl_client_flush(wl_resource_get_client(resource));
-}
-
-void HandleRemoteSurfaceDragFinishedCallback(wl_resource* resource,
-                                             int x,
-                                             int y,
-                                             bool canceled) {
-  zcr_remote_surface_v1_send_drag_finished(resource, x, y, canceled ? 1 : 0);
-  wl_client_flush(wl_resource_get_client(resource));
-}
-
 void remote_shell_get_remote_surface(wl_client* client,
                                      wl_resource* resource,
                                      uint32_t id,
@@ -1419,30 +1439,15 @@ void remote_shell_get_remote_surface(wl_client* client,
   if (wl_resource_get_version(remote_surface_resource) < 18)
     shell_surface->set_server_reparent_window(true);
 
+  shell_surface->set_delegate(
+      shell->CreateShellSurfaceDelegate(remote_surface_resource));
   shell_surface->set_close_callback(
       base::BindRepeating(&HandleRemoteSurfaceCloseCallback,
                           base::Unretained(remote_surface_resource)));
-  shell_surface->set_state_changed_callback(
-      shell->CreateStateChangedCallback(remote_surface_resource));
-  shell_surface->set_geometry_changed_callback(
-      shell->CreateGeometryChangedCallback(remote_surface_resource));
   shell_surface->set_surface_destroyed_callback(base::BindOnce(
       &wl_resource_destroy, base::Unretained(remote_surface_resource)));
 
   DCHECK(wl_resource_get_version(remote_surface_resource) >= 10);
-  shell_surface->set_bounds_changed_callback(
-      shell->CreateBoundsChangedCallback(remote_surface_resource));
-  shell_surface->set_drag_started_callback(
-      base::BindRepeating(&HandleRemoteSurfaceDragStartedCallback,
-                          base::Unretained(remote_surface_resource)));
-  shell_surface->set_drag_finished_callback(
-      base::BindRepeating(&HandleRemoteSurfaceDragFinishedCallback,
-                          base::Unretained(remote_surface_resource)));
-
-  if (wl_resource_get_version(remote_surface_resource) >= 23) {
-    shell_surface->set_change_zoom_level_callback(
-        shell->CreateChangeZoomLevelCallback(remote_surface_resource));
-  }
 
   SetImplementation(remote_surface_resource, &remote_surface_implementation,
                     std::move(shell_surface));

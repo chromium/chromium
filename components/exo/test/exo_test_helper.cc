@@ -29,45 +29,50 @@
 namespace exo {
 namespace test {
 
-namespace {
+ClientControlledShellSurfaceDelegate::ClientControlledShellSurfaceDelegate(
+    ClientControlledShellSurface* shell_surface)
+    : shell_surface_(shell_surface) {}
+ClientControlledShellSurfaceDelegate::~ClientControlledShellSurfaceDelegate() =
+    default;
 
-void HandleWindowStateRequest(ClientControlledShellSurface* shell_surface,
-                              chromeos::WindowStateType old_state,
-                              chromeos::WindowStateType new_state) {
+void ClientControlledShellSurfaceDelegate::OnGeometryChanged(
+    const gfx::Rect& geometry) {}
+void ClientControlledShellSurfaceDelegate::OnStateChanged(
+    chromeos::WindowStateType old_state,
+    chromeos::WindowStateType new_state) {
   switch (new_state) {
     case chromeos::WindowStateType::kNormal:
     case chromeos::WindowStateType::kDefault:
-      shell_surface->SetRestored();
+      shell_surface_->SetRestored();
       break;
     case chromeos::WindowStateType::kMinimized:
-      shell_surface->SetMinimized();
+      shell_surface_->SetMinimized();
       break;
     case chromeos::WindowStateType::kMaximized:
-      shell_surface->SetMaximized();
+      shell_surface_->SetMaximized();
       break;
     case chromeos::WindowStateType::kFullscreen:
-      shell_surface->SetFullscreen(true);
+      shell_surface_->SetFullscreen(true);
       break;
     default:
       NOTIMPLEMENTED();
       break;
   }
-  shell_surface->OnSurfaceCommit();
+  shell_surface_->OnSurfaceCommit();
 }
-
-void HandleBoundsChangedRequest(ClientControlledShellSurface* shell_surface,
-                                chromeos::WindowStateType current_state,
-                                chromeos::WindowStateType requested_state,
-                                int64_t display_id,
-                                const gfx::Rect& bounds_in_screen,
-                                bool is_resize,
-                                int bounds_change) {
+void ClientControlledShellSurfaceDelegate::OnBoundsChanged(
+    chromeos::WindowStateType current_state,
+    chromeos::WindowStateType requested_state,
+    int64_t display_id,
+    const gfx::Rect& bounds_in_screen,
+    bool is_resize,
+    int bounds_change) {
   ASSERT_TRUE(display_id != display::kInvalidDisplayId);
 
   auto* window_state =
-      ash::WindowState::Get(shell_surface->GetWidget()->GetNativeWindow());
+      ash::WindowState::Get(shell_surface_->GetWidget()->GetNativeWindow());
 
-  if (!shell_surface->host_window()->GetRootWindow())
+  if (!shell_surface_->host_window()->GetRootWindow())
     return;
 
   display::Display target_display;
@@ -85,22 +90,26 @@ void HandleBoundsChangedRequest(ClientControlledShellSurface* shell_surface,
 
   gfx::Rect bounds_in_display(bounds_in_screen);
   bounds_in_display.Offset(-target_display.bounds().OffsetFromOrigin());
-  shell_surface->SetBounds(display_id, bounds_in_display);
+  shell_surface_->SetBounds(display_id, bounds_in_display);
 
   if (requested_state != window_state->GetStateType()) {
     DCHECK(requested_state == chromeos::WindowStateType::kLeftSnapped ||
            requested_state == chromeos::WindowStateType::kRightSnapped);
 
     if (requested_state == chromeos::WindowStateType::kLeftSnapped)
-      shell_surface->SetSnappedToLeft();
+      shell_surface_->SetSnappedToLeft();
     else
-      shell_surface->SetSnappedToRight();
+      shell_surface_->SetSnappedToRight();
   }
 
-  shell_surface->OnSurfaceCommit();
+  shell_surface_->OnSurfaceCommit();
 }
-
-}  // namespace
+void ClientControlledShellSurfaceDelegate::OnDragStarted(int component) {}
+void ClientControlledShellSurfaceDelegate::OnDragFinished(int x,
+                                                          int y,
+                                                          bool canceled) {}
+void ClientControlledShellSurfaceDelegate::OnZoomLevelChanged(
+    ZoomChange zoom_change) {}
 
 ////////////////////////////////////////////////////////////////////////////////
 // ExoTestHelper, public:
@@ -171,11 +180,9 @@ ExoTestHelper::CreateClientControlledShellSurface(
       WMHelper::GetInstance()->GetDefaultDeviceScaleFactor(),
       default_scale_cancellation);
   shell_surface->SetApplicationId("arc");
-  shell_surface->set_state_changed_callback(base::BindRepeating(
-      &HandleWindowStateRequest, base::Unretained(shell_surface.get())));
-
-  shell_surface->set_bounds_changed_callback(
-      base::BindRepeating(&HandleBoundsChangedRequest, shell_surface.get()));
+  shell_surface->set_delegate(
+      std::make_unique<ClientControlledShellSurfaceDelegate>(
+          shell_surface.get()));
 
   return shell_surface;
 }
@@ -187,11 +194,9 @@ std::unique_ptr<InputMethodSurface> ExoTestHelper::CreateInputMethodSurface(
   auto shell_surface = std::make_unique<InputMethodSurface>(
       surface_manager, surface, default_scale_cancellation);
 
-  shell_surface->set_state_changed_callback(base::BindRepeating(
-      &HandleWindowStateRequest, base::Unretained(shell_surface.get())));
-
-  shell_surface->set_bounds_changed_callback(
-      base::BindRepeating(&HandleBoundsChangedRequest, shell_surface.get()));
+  shell_surface->set_delegate(
+      std::make_unique<ClientControlledShellSurfaceDelegate>(
+          shell_surface.get()));
 
   return shell_surface;
 }
@@ -203,11 +208,9 @@ std::unique_ptr<ToastSurface> ExoTestHelper::CreateToastSurface(
   auto shell_surface = std::make_unique<ToastSurface>(
       surface_manager, surface, default_scale_cancellation);
 
-  shell_surface->set_state_changed_callback(base::BindRepeating(
-      &HandleWindowStateRequest, base::Unretained(shell_surface.get())));
-
-  shell_surface->set_bounds_changed_callback(
-      base::BindRepeating(&HandleBoundsChangedRequest, shell_surface.get()));
+  shell_surface->set_delegate(
+      std::make_unique<ClientControlledShellSurfaceDelegate>(
+          shell_surface.get()));
 
   return shell_surface;
 }

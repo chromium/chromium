@@ -513,8 +513,8 @@ void ClientControlledShellSurface::OnWindowStateChangeEvent(
     chromeos::WindowStateType next_state) {
   // Android already knows this state change. Don't send state change to Android
   // that it is about to do anyway.
-  if (state_changed_callback_ && pending_window_state_ != next_state)
-    state_changed_callback_.Run(current_state, next_state);
+  if (delegate_ && pending_window_state_ != next_state)
+    delegate_->OnStateChanged(current_state, next_state);
 }
 
 void ClientControlledShellSurface::StartDrag(int component,
@@ -659,7 +659,7 @@ void ClientControlledShellSurface::OnBoundsChangeEvent(
   if (geometry().IsEmpty() || window_bounds.IsEmpty() ||
       (widget_->IsMinimized() &&
        requested_state == chromeos::WindowStateType::kMinimized) ||
-      !bounds_changed_callback_) {
+      !delegate_) {
     return;
   }
 
@@ -675,8 +675,8 @@ void ClientControlledShellSurface::OnBoundsChangeEvent(
   const float scale = 1.f / GetClientToDpScale();
   const gfx::Rect scaled_client_bounds =
       gfx::ScaleToRoundedRect(client_bounds, scale);
-  bounds_changed_callback_.Run(current_state, requested_state, display_id,
-                               scaled_client_bounds, is_resize, bounds_change);
+  delegate_->OnBoundsChanged(current_state, requested_state, display_id,
+                             scaled_client_bounds, is_resize, bounds_change);
 
   auto* window_state = GetWindowState();
   if (server_reparent_window_ &&
@@ -691,25 +691,25 @@ void ClientControlledShellSurface::OnBoundsChangeEvent(
 }
 
 void ClientControlledShellSurface::ChangeZoomLevel(ZoomChange change) {
-  if (change_zoom_level_callback_)
-    change_zoom_level_callback_.Run(change);
+  if (delegate_)
+    delegate_->OnZoomLevelChanged(change);
 }
 
 void ClientControlledShellSurface::OnDragStarted(int component) {
   in_drag_ = true;
-  if (drag_started_callback_)
-    drag_started_callback_.Run(component);
+  if (delegate_)
+    delegate_->OnDragStarted(component);
 }
 
 void ClientControlledShellSurface::OnDragFinished(bool canceled,
                                                   const gfx::PointF& location) {
   in_drag_ = false;
-  if (!drag_finished_callback_)
+  if (!delegate_)
     return;
 
   const float scale = 1.f / GetClientToDpScale();
   const gfx::PointF scaled = gfx::ScalePoint(location, scale);
-  drag_finished_callback_.Run(scaled.x(), scaled.y(), canceled);
+  delegate_->OnDragFinished(scaled.x(), scaled.y(), canceled);
 }
 
 float ClientControlledShellSurface::GetClientToDpScale() const {
@@ -1181,13 +1181,13 @@ void ClientControlledShellSurface::OnPostWidgetCommit() {
   UpdateFrame();
   UpdateBackdrop();
 
-  if (geometry_changed_callback_) {
+  if (delegate_) {
     // Since the visible bounds are in screen coordinates, do not scale these
     // bounds with the display's scale before sending them.
     // TODO(b/167286795): Instead of sending bounds in screen coordinates, send
     // the bounds in the display along with the display information, similar to
     // the bounds_changed_callback_.
-    geometry_changed_callback_.Run(GetVisibleBounds());
+    delegate_->OnGeometryChanged(GetVisibleBounds());
   }
 
   // Apply new top inset height.

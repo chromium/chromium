@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "components/exo/client_controlled_shell_surface.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
@@ -29,6 +30,35 @@ class ToastSurface;
 class ToastSurfaceManager;
 
 namespace test {
+
+class ClientControlledShellSurfaceDelegate
+    : public ClientControlledShellSurface::Delegate {
+ public:
+  explicit ClientControlledShellSurfaceDelegate(
+      ClientControlledShellSurface* shell_surface);
+  ~ClientControlledShellSurfaceDelegate() override;
+  ClientControlledShellSurfaceDelegate(
+      const ClientControlledShellSurfaceDelegate&) = delete;
+  ClientControlledShellSurfaceDelegate& operator=(
+      const ClientControlledShellSurfaceDelegate&) = delete;
+
+ private:
+  // ClientControlledShellSurface::Delegate:
+  void OnGeometryChanged(const gfx::Rect& geometry) override;
+  void OnStateChanged(chromeos::WindowStateType old_state_type,
+                      chromeos::WindowStateType new_state_type) override;
+  void OnBoundsChanged(chromeos::WindowStateType current_state,
+                       chromeos::WindowStateType requested_state,
+                       int64_t display_id,
+                       const gfx::Rect& bounds_in_display,
+                       bool is_resize,
+                       int bounds_change) override;
+  void OnDragStarted(int component) override;
+  void OnDragFinished(int x, int y, bool canceled) override;
+  void OnZoomLevelChanged(ZoomChange zoom_change) override;
+
+  ClientControlledShellSurface* shell_surface_;
+};
 
 class ExoTestWindow {
  public:
