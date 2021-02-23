@@ -154,6 +154,13 @@ public class OfflineContentAggregatorNotificationBridgeUi
         // notification UI.
         if (item.isSuggested || item.schedule != null) return;
 
+        // If the download is cancelled, no need to DownloadInfo object and it is enough to notify
+        // that the download is canceled.
+        if (item.state == OfflineItemState.CANCELLED) {
+            mUi.notifyDownloadCanceled(item.id);
+            return;
+        }
+
         DownloadInfo info = DownloadInfo.fromOfflineItem(item, visuals);
         switch (item.state) {
             case OfflineItemState.IN_PROGRESS:
@@ -161,9 +168,6 @@ public class OfflineContentAggregatorNotificationBridgeUi
                 break;
             case OfflineItemState.COMPLETE:
                 mUi.notifyDownloadSuccessful(info, -1L, false, item.isOpenable);
-                break;
-            case OfflineItemState.CANCELLED:
-                mUi.notifyDownloadCanceled(item.id);
                 break;
             case OfflineItemState.INTERRUPTED:
                 mUi.notifyDownloadInterrupted(info,
