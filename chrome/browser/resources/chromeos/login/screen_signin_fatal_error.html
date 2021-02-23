@@ -4,7 +4,7 @@
 
 <link rel="import" href="/components/common_styles.html">
 <link rel="import" href="/components/hd_iron_icon.html">
-<link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
 <link rel="import" href="/components/oobe_dialog_host_behavior.html">
 
@@ -12,17 +12,21 @@
   <template>
     <style include="oobe-dialog-host">
     </style>
-    <oobe-dialog id="signinFatalErrorDialog" role="dialog" has-buttons
-        title-key="errorGenericFatalErrorTitle">
-      <hd-iron-icon slot="oobe-icon"
+    <oobe-adaptive-dialog id="signinFatalErrorDialog" role="dialog">
+      <hd-iron-icon slot="icon"
           icon1x="oobe-32:alert" icon2x="oobe-64:alert">
       </hd-iron-icon>
-      <div id="subtitle" slot="subtitle">[[errorSubtitle_]]</div>
-      <div slot="bottom-buttons" class="layout horizontal end-justified">
-        <oobe-text-button id="actionButton" inverse
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'errorGenericFatalErrorTitle')]]
+      </h1>
+      <p id="subtitle" slot="subtitle">
+        [[errorSubtitle_]]
+      </p>
+      <div slot="bottom-buttons">
+        <oobe-text-button id="actionButton" inverse class="focus-on-show"
             text-key="[[computeButtonKey_(errorState_)]]" on-tap="onClick_">
         </oobe-text-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
   </template>
 </dom-module>
