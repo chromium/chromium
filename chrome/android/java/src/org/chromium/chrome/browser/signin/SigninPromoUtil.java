@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.text.TextUtils;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArraySet;
 
@@ -23,6 +24,7 @@ import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.signin.ui.SigninPromoController;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
+import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -119,15 +121,9 @@ public class SigninPromoUtil {
     public static void setupSigninPromoViewFromCache(SigninPromoController signinPromoController,
             ProfileDataCache profileDataCache, PersonalizedSigninPromoView view,
             SigninPromoController.OnDismissListener listener) {
-        DisplayableProfileData profileData = null;
-        List<Account> accounts = AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts();
-        if (accounts.size() > 0) {
-            String defaultAccountName = accounts.get(0).name;
-            profileDataCache.update(Collections.singletonList(defaultAccountName));
-            profileData = profileDataCache.getProfileDataOrDefault(defaultAccountName);
-        }
         signinPromoController.detach();
-        signinPromoController.setupPromoView(view.getContext(), view, profileData, listener);
+        signinPromoController.setupPromoView(
+            view.getContext(), view, getDefaultProfileData(profileDataCache), listener);
     }
 
     /**
@@ -166,5 +162,23 @@ public class SigninPromoUtil {
         if (activity != null) {
             SigninActivityLauncherImpl.get().launchActivityIfAllowed(activity, accessPoint);
         }
+    }
+
+    /**
+     * @return The default profile data if the account list is available, otherwise returns null.
+     */
+    private static @Nullable DisplayableProfileData getDefaultProfileData(
+        ProfileDataCache profileDataCache) {
+        final AccountManagerFacade accountManagerFacade =
+            AccountManagerFacadeProvider.getInstance();
+        if (accountManagerFacade.isCachePopulated()) {
+            final List<Account> accounts = accountManagerFacade.tryGetGoogleAccounts();
+            if (accounts.size() > 0) {
+                String defaultAccountName = accounts.get(0).name;
+                profileDataCache.update(Collections.singletonList(defaultAccountName));
+                return profileDataCache.getProfileDataOrDefault(defaultAccountName);
+            }
+        }
+        return null;
     }
 }
