@@ -86,6 +86,7 @@ class CONTENT_EXPORT ServiceWorkerUpdateChecker {
       scoped_refptr<ServiceWorkerVersion> version_to_update,
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
       bool force_bypass_cache,
+      blink::mojom::ScriptType worker_script_type,
       blink::mojom::ServiceWorkerUpdateViaCache update_via_cache,
       base::TimeDelta time_since_last_check,
       ServiceWorkerContextCore* context,
@@ -142,6 +143,7 @@ class CONTENT_EXPORT ServiceWorkerUpdateChecker {
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
 
   const bool force_bypass_cache_;
+  const blink::mojom::ScriptType worker_script_type_;
   const blink::mojom::ServiceWorkerUpdateViaCache update_via_cache_;
   const base::TimeDelta time_since_last_check_;
 

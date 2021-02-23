@@ -125,6 +125,7 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
       const GURL& main_script_url,
       const GURL& scope,
       bool force_bypass_cache,
+      blink::mojom::ScriptType worker_script_type,
       blink::mojom::ServiceWorkerUpdateViaCache update_via_cache,
       const blink::mojom::FetchClientSettingsObjectPtr&
           fetch_client_settings_object,

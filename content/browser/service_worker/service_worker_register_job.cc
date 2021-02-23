@@ -543,7 +543,7 @@ void ServiceWorkerRegisterJob::UpdateAndContinue() {
 
   update_checker_ = std::make_unique<ServiceWorkerUpdateChecker>(
       std::move(resources), script_url_, script_resource_id, version_to_update,
-      std::move(loader_factory), force_bypass_cache_,
+      std::move(loader_factory), force_bypass_cache_, worker_script_type_,
       registration()->update_via_cache(), time_since_last_check, context_,
       outside_fetch_client_settings_object_.Clone());
   update_checker_->Start(

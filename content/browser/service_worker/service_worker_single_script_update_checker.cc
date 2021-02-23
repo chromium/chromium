@@ -104,6 +104,7 @@ ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(
     const GURL& main_script_url,
     const GURL& scope,
     bool force_bypass_cache,
+    blink::mojom::ScriptType worker_script_type,
     blink::mojom::ServiceWorkerUpdateViaCache update_via_cache,
     const blink::mojom::FetchClientSettingsObjectPtr&
         fetch_client_settings_object,
@@ -137,7 +138,7 @@ ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(
   network::ResourceRequest resource_request =
       service_worker_loader_helpers::CreateRequestForServiceWorkerScript(
           script_url, url::Origin::Create(main_script_url), is_main_script_,
-          *fetch_client_settings_object, *browser_context);
+          worker_script_type, *fetch_client_settings_object, *browser_context);
 
   uint32_t options = network::mojom::kURLLoadOptionNone;
   if (is_main_script_) {
@@ -151,10 +152,6 @@ ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(
   // https://w3c.github.io/webappsec-upgrade-insecure-requests/#upgrade-request
   // TODO(https://crbug.com/987491): Set |ResourceRequest::upgrade_if_insecure_|
   // appropriately.
-
-  // TODO(https://crbug.com/824647): Support ES modules. Use "cors" as a mode
-  // for service worker served as modules, and "omit" as a credentials mode:
-  // https://html.spec.whatwg.org/C/#fetch-a-single-module-script
 
   if (service_worker_loader_helpers::ShouldValidateBrowserCacheForScript(
           is_main_script_, force_bypass_cache_, update_via_cache_,

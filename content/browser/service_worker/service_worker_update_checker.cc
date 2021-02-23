@@ -36,6 +36,7 @@ ServiceWorkerUpdateChecker::ServiceWorkerUpdateChecker(
     scoped_refptr<ServiceWorkerVersion> version_to_update,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     bool force_bypass_cache,
+    blink::mojom::ScriptType worker_script_type,
     blink::mojom::ServiceWorkerUpdateViaCache update_via_cache,
     base::TimeDelta time_since_last_check,
     ServiceWorkerContextCore* context,
@@ -46,6 +47,7 @@ ServiceWorkerUpdateChecker::ServiceWorkerUpdateChecker(
       version_to_update_(std::move(version_to_update)),
       loader_factory_(std::move(loader_factory)),
       force_bypass_cache_(force_bypass_cache),
+      worker_script_type_(worker_script_type),
       update_via_cache_(update_via_cache),
       time_since_last_check_(time_since_last_check),
       context_(context),
@@ -223,10 +225,11 @@ void ServiceWorkerUpdateChecker::OnResourceIdAssignedForOneScriptCheck(
 
   running_checker_ = std::make_unique<ServiceWorkerSingleScriptUpdateChecker>(
       url, is_main_script, main_script_url_, version_to_update_->scope(),
-      force_bypass_cache_, update_via_cache_, fetch_client_settings_object_,
-      time_since_last_check_, context_->process_manager()->browser_context(),
-      loader_factory_, std::move(compare_reader), std::move(copy_reader),
-      std::move(writer), new_resource_id,
+      force_bypass_cache_, worker_script_type_, update_via_cache_,
+      fetch_client_settings_object_, time_since_last_check_,
+      context_->process_manager()->browser_context(), loader_factory_,
+      std::move(compare_reader), std::move(copy_reader), std::move(writer),
+      new_resource_id,
       base::BindOnce(&ServiceWorkerUpdateChecker::OnOneUpdateCheckFinished,
                      weak_factory_.GetWeakPtr(), resource_id));
 }

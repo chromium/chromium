@@ -123,6 +123,7 @@ network::ResourceRequest CreateRequestForServiceWorkerScript(
     const GURL& script_url,
     const url::Origin& origin,
     bool is_main_script,
+    blink::mojom::ScriptType worker_script_type,
     const blink::mojom::FetchClientSettingsObject& fetch_client_settings_object,
     BrowserContext& browser_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -169,36 +170,54 @@ network::ResourceRequest CreateRequestForServiceWorkerScript(
       net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
                                  origin, origin, request.site_for_cookies);
 
-  if (is_main_script) {
-    // Set the "Service-Worker" header for the main script request:
+  if (worker_script_type == blink::mojom::ScriptType::kClassic) {
+    if (is_main_script) {
+      // Set the "Service-Worker" header for the service worker script request:
+      // https://w3c.github.io/ServiceWorker/#service-worker-script-request
+      request.headers.SetHeader("Service-Worker", "script");
+
+      // The "Fetch a classic worker script" uses "same-origin" as mode and
+      // credentials mode.
+      // https://html.spec.whatwg.org/C/#fetch-a-classic-worker-script
+      request.mode = network::mojom::RequestMode::kSameOrigin;
+      request.credentials_mode = network::mojom::CredentialsMode::kSameOrigin;
+
+      // The request's destination is "serviceworker" for the main script.
+      // https://w3c.github.io/ServiceWorker/#update-algorithm
+      request.destination = network::mojom::RequestDestination::kServiceWorker;
+      request.resource_type =
+          static_cast<int>(blink::mojom::ResourceType::kServiceWorker);
+    } else {
+      // The "fetch a classic worker-imported script" doesn't have any statement
+      // about mode and credentials mode. Use the default value, which is
+      // "no-cors".
+      // https://html.spec.whatwg.org/C/#fetch-a-classic-worker-imported-script
+      DCHECK_EQ(network::mojom::RequestMode::kNoCors, request.mode);
+
+      // The request's destination is "script" for the imported script.
+      // https://w3c.github.io/ServiceWorker/#update-algorithm
+      request.destination = network::mojom::RequestDestination::kScript;
+      request.resource_type =
+          static_cast<int>(blink::mojom::ResourceType::kScript);
+    }
+  } else {
+    // https://html.spec.whatwg.org/multipage/webappapis.html#fetch-a-module-worker-script-tree
+    // Set the "Service-Worker" header for the service worker script request:
     // https://w3c.github.io/ServiceWorker/#service-worker-script-request
     request.headers.SetHeader("Service-Worker", "script");
 
-    // The "Fetch a classic worker script" uses "same-origin" as mode and
-    // credentials mode.
-    // https://html.spec.whatwg.org/C/#fetch-a-classic-worker-script
-    request.mode = network::mojom::RequestMode::kSameOrigin;
-    request.credentials_mode = network::mojom::CredentialsMode::kSameOrigin;
+    // The "Fetch a module worker script graph" uses "cors" as mode and "omit"
+    // as credentials mode.
+    // https://w3c.github.io/ServiceWorker/#update-algorithm
+    request.mode = network::mojom::RequestMode::kCors;
+    request.credentials_mode = network::mojom::CredentialsMode::kOmit;
 
-    // The request's destination is "serviceworker" for the main script.
+    // The request's destination is "serviceworker" for the main and
+    // static-imported module script.
     // https://w3c.github.io/ServiceWorker/#update-algorithm
     request.destination = network::mojom::RequestDestination::kServiceWorker;
     request.resource_type =
         static_cast<int>(blink::mojom::ResourceType::kServiceWorker);
-  } else {
-    // The "fetch a classic worker-imported script" doesn't have any statement
-    // about mode and credentials mode. Use the default value, which is
-    // "no-cors" and "include".
-    // https://html.spec.whatwg.org/C/#fetch-a-classic-worker-imported-script
-    DCHECK_EQ(network::mojom::RequestMode::kNoCors, request.mode);
-    DCHECK_EQ(network::mojom::CredentialsMode::kInclude,
-              request.credentials_mode);
-
-    // The request's destination is "script" for the imported script.
-    // https://w3c.github.io/ServiceWorker/#update-algorithm
-    request.destination = network::mojom::RequestDestination::kScript;
-    request.resource_type =
-        static_cast<int>(blink::mojom::ResourceType::kScript);
   }
 
   return request;

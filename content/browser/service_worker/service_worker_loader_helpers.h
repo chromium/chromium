@@ -67,6 +67,7 @@ network::ResourceRequest CreateRequestForServiceWorkerScript(
     const GURL& script_url,
     const url::Origin& origin,
     bool is_main_script,
+    blink::mojom::ScriptType worker_script_type,
     const blink::mojom::FetchClientSettingsObject& fetch_client_settings_object,
     BrowserContext& browser_context);
 
