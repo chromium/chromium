@@ -271,6 +271,11 @@ VideoTrackRecorderImpl::Encoder::~Encoder() {
     origin_task_runner_->DeleteSoon(FROM_HERE,
                                     std::move(num_frames_in_encode_));
   }
+  if (encoder_thread_context_ &&
+      !encoding_task_runner_->RunsTasksInCurrentSequence()) {
+    encoding_task_runner_->DeleteSoon(FROM_HERE,
+                                      std::move(encoder_thread_context_));
+  }
 }
 
 void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
