@@ -105,7 +105,6 @@ class PrerenderHost::MPArchPageHolder
                        bool to_different_document) override {}
 
   void DidStopLoading() override {
-    load_completed_ = true;
     if (on_stopped_loading_for_tests_) {
       std::move(on_stopped_loading_for_tests_).Run();
     }
@@ -148,7 +147,7 @@ class PrerenderHost::MPArchPageHolder
   // TODO(https://crbug.com/1164280): Once we dispatch load events for prerender
   // pages this method will no longer be needed and should go away.
   void WaitForLoadCompletionForTesting() override {
-    if (load_completed_)
+    if (!frame_tree_.IsLoading())
       return;
 
     base::RunLoop loop;
@@ -161,7 +160,6 @@ class PrerenderHost::MPArchPageHolder
   WebContentsImpl& web_contents_;
   FrameTree frame_tree_;
   base::OnceClosure on_stopped_loading_for_tests_;
-  bool load_completed_ = false;
 };
 
 class PrerenderHost::WebContentsPageHolder
