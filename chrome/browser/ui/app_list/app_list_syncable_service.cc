@@ -242,9 +242,14 @@ class AppListSyncableService::ModelUpdaterObserver
     DVLOG(2) << owner_ << ": ModelUpdaterObserver Removed";
   }
 
+  void set_active(bool active) { active_ = active; }
+
  private:
   // ChromeAppListModelUpdaterObserver
   void OnAppListItemAdded(ChromeAppListItem* item) override {
+    if (!active_)
+      return;
+
     // Only sync folders and page breaks which are added from Ash.
     if (!item->is_folder() && !item->is_page_break())
       return;
@@ -262,6 +267,9 @@ class AppListSyncableService::ModelUpdaterObserver
   }
 
   void OnAppListItemWillBeDeleted(ChromeAppListItem* item) override {
+    if (!active_)
+      return;
+
     DCHECK(adding_item_id_.empty());
     VLOG(2) << owner_ << " OnAppListItemDeleted: " << item->ToDebugString();
     // Don't sync folder removal in case the folder still exists on another
@@ -274,6 +282,9 @@ class AppListSyncableService::ModelUpdaterObserver
   }
 
   void OnAppListItemUpdated(ChromeAppListItem* item) override {
+    if (!active_)
+      return;
+
     if (!adding_item_id_.empty()) {
       // Adding an item may trigger update notifications which should be
       // ignored.
@@ -284,8 +295,13 @@ class AppListSyncableService::ModelUpdaterObserver
     owner_->UpdateSyncItem(item);
   }
 
-  AppListSyncableService* owner_;
+  AppListSyncableService* const owner_;
   std::string adding_item_id_;
+
+  // Whether the observer should handle model updated updates. The value is
+  // managed by the owning `AppListSyncableService`, which will make sure the
+  // observer is inactive while the model is being updated from the service.
+  bool active_ = false;
 };
 
 // AppListSyncableService
@@ -316,6 +332,8 @@ AppListSyncableService::AppListSyncableService(Profile* profile)
     model_updater_ = g_model_updater_factory_callback_for_test_->Run();
   else
     model_updater_ = std::make_unique<ChromeAppListModelUpdater>(profile);
+
+  model_updater_observer_ = std::make_unique<ModelUpdaterObserver>(this);
 
   if (!extension_system_) {
     LOG(ERROR) << "AppListSyncableService created with no ExtensionSystem";
@@ -522,7 +540,7 @@ AppListModelUpdater* AppListSyncableService::GetModelUpdater() {
 
 void AppListSyncableService::HandleUpdateStarted() {
   // Don't observe the model while processing update changes.
-  model_updater_observer_.reset();
+  model_updater_observer_->set_active(false);
 }
 
 void AppListSyncableService::HandleUpdateFinished(
@@ -537,7 +555,7 @@ void AppListSyncableService::HandleUpdateFinished(
   }
 
   // Resume or start observing app list model changes.
-  model_updater_observer_ = std::make_unique<ModelUpdaterObserver>(this);
+  model_updater_observer_->set_active(true);
 
   NotifyObserversSyncUpdated();
 }
