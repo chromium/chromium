@@ -64,6 +64,7 @@ run_jsbundler("switch_access_copied_files") {
     "menu_manager.js",
     "metrics.js",
     "navigator.js",
+    "navigator_interface.js",
     "nodes/back_button_node.js",
     "nodes/basic_node.js",
     "nodes/combo_box_node.js",
@@ -153,6 +154,7 @@ js_type_check("closure_compile") {
     ":metrics",
     ":modal_dialog_node",
     ":navigator",
+    ":navigator_interface",
     ":preference_manager",
     ":slider_node",
     ":switch_access",
@@ -246,7 +248,7 @@ js_library("commands") {
   deps = [
     ":action_manager",
     ":auto_scan_manager",
-    ":item_scan_manager",
+    ":navigator",
   ]
   externs_list = [ "$externs_path/accessibility_private.js" ]
 }
@@ -316,6 +318,7 @@ js_library("item_scan_manager") {
     ":menu_manager",
     ":metrics",
     ":modal_dialog_node",
+    ":navigator_interface",
     ":switch_access_constants",
     ":switch_access_node",
     ":switch_access_predicate",
@@ -378,6 +381,10 @@ js_library("modal_dialog_node") {
 }
 
 js_library("navigator") {
+  deps = [ ":navigator_interface" ]
+}
+
+js_library("navigator_interface") {
   deps = [ ":basic_node" ]
   externs_list = [
     "$externs_path/accessibility_private.js",
@@ -405,8 +412,8 @@ js_library("switch_access") {
   deps = [
     ":auto_scan_manager",
     ":commands",
-    ":item_scan_manager",
     ":menu_manager",
+    ":navigator",
     ":preference_manager",
     ":switch_access_constants",
     "../common:constants",
