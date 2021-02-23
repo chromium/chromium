@@ -40,7 +40,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
@@ -3551,10 +3550,6 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
       /*new_url=*/dest_url, reload_type, entry, *frame_entry,
       has_pending_cross_document_commit, is_currently_error_page,
       is_same_document_history_load);
-  if (navigation_type == mojom::NavigationType::HISTORY_SAME_DOCUMENT &&
-      frame_tree_node->current_frame_host()->GetLastCommittedURL() == GURL()) {
-    base::debug::DumpWithoutCrashing();
-  }
 
   // A form submission may happen here if the navigation is a
   // back/forward/reload navigation that does a form resubmission.
