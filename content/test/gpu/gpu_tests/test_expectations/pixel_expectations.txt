@@ -252,6 +252,8 @@ crbug.com/1019462 [ android android-shield-android-tv skia-renderer-disabled ] P
 # Times out on Pixel 4s in webview.
 crbug.com/1176918 [ android android-pixel-4 android-webview-instrumentation skia-renderer-gl ] Pixel_Video_BackdropFilter [ Failure ]
 crbug.com/1176918 [ android android-pixel-4 android-webview-instrumentation skia-renderer-gl ] Pixel_Video_Context_Loss_VP9 [ Failure ]
+# MP4 tests only flakily timeout.
+crbug.com/1176918 [ android android-pixel-4 android-webview-instrumentation skia-renderer-gl ] Pixel_Video_MP4* [ RetryOnFailure ]
 
 # Skip dual gpu switching tests on Mac Nvidia because this
 # configuration has been forced to use only the low-power GPU due to
