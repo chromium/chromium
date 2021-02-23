@@ -7,10 +7,11 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
-#include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom-shared.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_url.h"
+#include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
@@ -74,7 +75,7 @@ void WorkerMainScriptLoader::Start(
 
   WebURLResponse response;
   auto response_head = std::move(worker_main_script_load_params->response_head);
-  Platform::Current()->PopulateURLResponse(
+  WebURLLoader::PopulateURLResponse(
       WebURL(last_request_url_), *response_head, &response,
       response_head->ssl_info.has_value(), /*request_id=*/-1);
   resource_response_ = response.ToResourceResponse();
@@ -321,7 +322,7 @@ void WorkerMainScriptLoader::HandleRedirections(
                 redirect_info.new_referrer_policy),
             /*skip_service_worker=*/false);
     WebURLResponse response;
-    Platform::Current()->PopulateURLResponse(
+    WebURLLoader::PopulateURLResponse(
         WebURL(last_request_url_), *redirect_response, &response,
         redirect_response->ssl_info.has_value(), /*request_id=*/-1);
     resource_load_observer_->WillSendRequest(

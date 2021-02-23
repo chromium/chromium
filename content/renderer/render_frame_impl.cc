@@ -91,7 +91,6 @@
 #include "content/renderer/gpu_benchmarking_extension.h"
 #include "content/renderer/internal_document_state_data.h"
 #include "content/renderer/loader/navigation_body_loader.h"
-#include "content/renderer/loader/web_url_loader_impl.h"
 #include "content/renderer/loader/web_worker_fetch_context_impl.h"
 #include "content/renderer/media/media_permission_dispatcher.h"
 #include "content/renderer/mhtml_handle_writer.h"
@@ -178,6 +177,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
+#include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/public/platform/web_url_request_util.h"
 #include "third_party/blink/public/platform/web_url_response.h"
@@ -467,7 +467,7 @@ void FillNavigationParamsRequest(
 
     for (const auto& exchange : commit_params.prefetched_signed_exchanges) {
       blink::WebURLResponse web_response;
-      WebURLLoaderImpl::PopulateURLResponse(
+      blink::WebURLLoader::PopulateURLResponse(
           exchange->inner_url, *exchange->inner_response, &web_response,
           false /* report_security_info*/, -1 /* request_id */);
       navigation_params->prefetched_signed_exchanges.emplace_back(
@@ -1282,8 +1282,17 @@ class RenderFrameImpl::FrameURLLoaderFactory
     // This should not be called if the frame is detached.
     DCHECK(frame_);
 
-    return std::make_unique<WebURLLoaderImpl>(
-        RenderThreadImpl::current()->cors_exempt_header_list(),
+    std::vector<std::string> cors_exempt_header_list =
+        RenderThreadImpl::current()->cors_exempt_header_list();
+    blink::WebVector<blink::WebString> web_cors_exempt_header_list(
+        cors_exempt_header_list.size());
+    std::transform(
+        cors_exempt_header_list.begin(), cors_exempt_header_list.end(),
+        web_cors_exempt_header_list.begin(),
+        [](const std::string& h) { return blink::WebString::FromLatin1(h); });
+
+    return std::make_unique<blink::WebURLLoader>(
+        web_cors_exempt_header_list,
         /*terminate_sync_load_event=*/nullptr,
         std::move(freezable_task_runner_handle),
         std::move(unfreezable_task_runner_handle),
@@ -6206,6 +6215,10 @@ void RenderFrameImpl::SetWebURLLoaderFactoryOverrideForTest(
 blink::scheduler::WebAgentGroupScheduler&
 RenderFrameImpl::GetAgentGroupScheduler() {
   return agent_scheduling_group_.agent_group_scheduler();
+}
+
+url::Origin RenderFrameImpl::GetSecurityOriginOfTopFrame() {
+  return frame_->Top()->GetSecurityOrigin();
 }
 
 gfx::RectF RenderFrameImpl::ElementBoundsInWindow(

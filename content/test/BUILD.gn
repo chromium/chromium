@@ -2124,7 +2124,6 @@ test("content_unittests") {
     "../renderer/child_frame_compositing_helper_unittest.cc",
     "../renderer/content_security_policy_util_unittest.cc",
     "../renderer/loader/navigation_body_loader_unittest.cc",
-    "../renderer/loader/web_url_loader_impl_unittest.cc",
     "../renderer/media/batching_media_log_unittest.cc",
     "../renderer/media/inspector_media_event_handler_unittest.cc",
     "../renderer/media/power_status_helper_impl_unittest.cc",

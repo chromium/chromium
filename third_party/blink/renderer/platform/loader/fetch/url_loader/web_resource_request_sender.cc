@@ -49,6 +49,43 @@
 #include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/mojo_url_loader_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_context.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+
+namespace WTF {
+
+template <>
+struct CrossThreadCopier<
+    blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>>> {
+  STATIC_ONLY(CrossThreadCopier);
+  using Type = blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>>;
+  static Type Copy(Type&& value) { return std::move(value); }
+};
+
+template <>
+struct CrossThreadCopier<net::NetworkTrafficAnnotationTag>
+    : public CrossThreadCopierPassThrough<net::NetworkTrafficAnnotationTag> {
+  STATIC_ONLY(CrossThreadCopier);
+  using Type = net::NetworkTrafficAnnotationTag;
+  static const Type& Copy(const Type& traffic_annotation) {
+    return traffic_annotation;
+  }
+};
+
+template <>
+struct CrossThreadCopier<blink::WebVector<blink::WebString>> {
+  STATIC_ONLY(CrossThreadCopier);
+  using Type = blink::WebVector<blink::WebString>;
+  static Type Copy(const Type& value) {
+    Type result;
+    result.reserve(value.size());
+    for (const auto& element : value)
+      result.emplace_back(element.IsolatedCopy());
+    return result;
+  }
+};
+
+}  // namespace WTF
 
 namespace blink {
 
@@ -128,9 +165,9 @@ void WebResourceRequestSender::SendSync(
     uint32_t loader_options,
     SyncLoadResponse* response,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
+    WebVector<std::unique_ptr<URLLoaderThrottle>> throttles,
     base::TimeDelta timeout,
-    const std::vector<std::string>& cors_exempt_header_list,
+    const WebVector<WebString>& cors_exempt_header_list,
     base::WaitableEvent* terminate_sync_load_event,
     mojo::PendingRemote<mojom::BlobRegistry> download_to_blob_registry,
     scoped_refptr<WebRequestPeer> peer,
@@ -145,7 +182,7 @@ void WebResourceRequestSender::SendSync(
         back_forward_cache_loader_helper.GetBackForwardCacheLoaderHelper();
     if (helper) {
       helper->EvictFromBackForwardCache(
-          blink::mojom::RendererEvictionReason::kJavaScriptExecution);
+          mojom::RendererEvictionReason::kJavaScriptExecution);
     }
   }
 
@@ -171,15 +208,16 @@ void WebResourceRequestSender::SendSync(
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       base::ThreadPool::CreateSingleThreadTaskRunner({});
   SyncLoadContext* context_for_redirect = nullptr;
-  task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(
+  PostCrossThreadTask(
+      *task_runner, FROM_HERE,
+      WTF::CrossThreadBindOnce(
           &SyncLoadContext::StartAsyncWithWaitableEvent, std::move(request),
           routing_id, task_runner, traffic_annotation, loader_options,
           std::move(pending_factory), std::move(throttles),
-          base::Unretained(response), base::Unretained(&context_for_redirect),
-          base::Unretained(&redirect_or_response_event),
-          base::Unretained(terminate_sync_load_event), timeout,
+          CrossThreadUnretained(response),
+          CrossThreadUnretained(&context_for_redirect),
+          CrossThreadUnretained(&redirect_or_response_event),
+          CrossThreadUnretained(terminate_sync_load_event), timeout,
           std::move(download_to_blob_registry), cors_exempt_header_list,
           std::move(resource_load_info_notifier_wrapper)));
 
@@ -212,10 +250,10 @@ int WebResourceRequestSender::SendAsync(
     scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     uint32_t loader_options,
-    const std::vector<std::string>& cors_exempt_header_list,
+    const WebVector<WebString>& cors_exempt_header_list,
     scoped_refptr<WebRequestPeer> peer,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
+    WebVector<std::unique_ptr<URLLoaderThrottle>> throttles,
     std::unique_ptr<ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper,
     WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper) {
@@ -247,12 +285,17 @@ int WebResourceRequestSender::SendAsync(
       this, loading_task_runner, url_loader_factory->BypassRedirectChecks(),
       request->url, back_forward_cache_loader_helper);
 
+  std::vector<std::string> std_cors_exempt_header_list(
+      cors_exempt_header_list.size());
+  std::transform(cors_exempt_header_list.begin(), cors_exempt_header_list.end(),
+                 std_cors_exempt_header_list.begin(),
+                 [](const WebString& h) { return h.Latin1(); });
   std::unique_ptr<ThrottlingURLLoader> url_loader =
       ThrottlingURLLoader::CreateLoaderAndStart(
-          std::move(url_loader_factory), std::move(throttles), routing_id,
+          std::move(url_loader_factory), throttles.ReleaseVector(), routing_id,
           request_id, loader_options, request.get(), client.get(),
           traffic_annotation, std::move(loading_task_runner),
-          base::make_optional(cors_exempt_header_list));
+          base::make_optional(std_cors_exempt_header_list));
   request_info_->url_loader = std::move(url_loader);
   request_info_->url_loader_client = std::move(client);
 

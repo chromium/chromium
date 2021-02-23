@@ -41,7 +41,6 @@
 #include "content/public/common/webplugininfo.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/render_frame.h"
-#include "content/renderer/loader/web_url_loader_impl.h"
 #include "content/renderer/media/audio_decoder.h"
 #include "content/renderer/media/batching_media_log.h"
 #include "content/renderer/media/inspector_media_event_handler.h"
@@ -50,6 +49,7 @@
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/storage_util.h"
+#include "content/renderer/variations_render_thread_observer.h"
 #include "content/renderer/webgraphicscontext3d_provider_impl.h"
 #include "content/renderer/worker/dedicated_worker_host_factory_client.h"
 #include "content/renderer/worker/worker_thread_registry.h"
@@ -218,20 +218,35 @@ std::unique_ptr<blink::WebURLLoaderFactory>
 RendererBlinkPlatformImpl::WrapURLLoaderFactory(
     blink::CrossVariantMojoRemote<network::mojom::URLLoaderFactoryInterfaceBase>
         url_loader_factory) {
-  return std::make_unique<WebURLLoaderFactoryImpl>(
+  std::vector<std::string> cors_exempt_header_list =
+      RenderThreadImpl::current()->cors_exempt_header_list();
+  blink::WebVector<blink::WebString> web_cors_exempt_header_list(
+      cors_exempt_header_list.size());
+  std::transform(cors_exempt_header_list.begin(), cors_exempt_header_list.end(),
+                 web_cors_exempt_header_list.begin(), [](const std::string& h) {
+                   return blink::WebString::FromLatin1(h);
+                 });
+  return std::make_unique<blink::WebURLLoaderFactory>(
       base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
           mojo::PendingRemote<network::mojom::URLLoaderFactory>(
               std::move(url_loader_factory))),
-      RenderThreadImpl::current()->cors_exempt_header_list(),
+      web_cors_exempt_header_list,
       /*terminate_sync_load_event=*/nullptr);
 }
 
 std::unique_ptr<blink::WebURLLoaderFactory>
 RendererBlinkPlatformImpl::WrapSharedURLLoaderFactory(
     scoped_refptr<network::SharedURLLoaderFactory> factory) {
-  return std::make_unique<WebURLLoaderFactoryImpl>(
-      std::move(factory),
-      RenderThreadImpl::current()->cors_exempt_header_list(),
+  std::vector<std::string> cors_exempt_header_list =
+      RenderThreadImpl::current()->cors_exempt_header_list();
+  blink::WebVector<blink::WebString> web_cors_exempt_header_list(
+      cors_exempt_header_list.size());
+  std::transform(cors_exempt_header_list.begin(), cors_exempt_header_list.end(),
+                 web_cors_exempt_header_list.begin(), [](const std::string& h) {
+                   return blink::WebString::FromLatin1(h);
+                 });
+  return std::make_unique<blink::WebURLLoaderFactory>(
+      std::move(factory), web_cors_exempt_header_list,
       /*terminate_sync_load_event=*/nullptr);
 }
 
@@ -337,16 +352,6 @@ void RendererBlinkPlatformImpl::ClearCodeCacheEntry(
   GetCodeCacheHost().ClearCodeCacheEntry(cache_type, url);
 }
 
-void RendererBlinkPlatformImpl::PopulateURLResponse(
-    const WebURL& url,
-    const network::mojom::URLResponseHead& head,
-    blink::WebURLResponse* response,
-    bool report_security_info,
-    int request_id) {
-  WebURLLoaderImpl::PopulateURLResponse(url, head, response,
-                                        report_security_info, request_id);
-}
-
 bool RendererBlinkPlatformImpl::IsRedirectSafe(const GURL& from_url,
                                                const GURL& to_url) {
   return IsSafeRedirectTarget(from_url, to_url) &&
@@ -362,6 +367,19 @@ RendererBlinkPlatformImpl::GetResourceRequestSenderDelegate() {
   if (!render_thread)
     return nullptr;
   return render_thread->GetResourceRequestSenderDelegate();
+}
+
+void RendererBlinkPlatformImpl::AppendVariationsThrottles(
+    int routing_id,
+    std::vector<std::unique_ptr<blink::URLLoaderThrottle>>* throttles) {
+  url::Origin origin;
+  if (RenderThread::IsMainThread()) {
+    RenderFrameImpl* frame = RenderFrameImpl::FromRoutingID(routing_id);
+    if (frame)
+      origin = frame->GetSecurityOriginOfTopFrame();
+  }
+
+  VariationsRenderThreadObserver::AppendThrottleIfNeeded(origin, throttles);
 }
 
 void RendererBlinkPlatformImpl::CacheMetadataInCacheStorage(

@@ -98,14 +98,14 @@ void SyncLoadContext::StartAsyncWithWaitableEvent(
     uint32_t loader_options,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_url_loader_factory,
-    std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
+    WebVector<std::unique_ptr<URLLoaderThrottle>> throttles,
     SyncLoadResponse* response,
     SyncLoadContext** context_for_redirect,
     base::WaitableEvent* redirect_or_response_event,
     base::WaitableEvent* abort_event,
     base::TimeDelta timeout,
     mojo::PendingRemote<mojom::BlobRegistry> download_to_blob_registry,
-    const std::vector<std::string>& cors_exempt_header_list,
+    const WebVector<WebString>& cors_exempt_header_list,
     std::unique_ptr<ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper) {
   auto* context = new SyncLoadContext(

@@ -246,6 +246,8 @@ class CONTENT_EXPORT WebWorkerFetchContextImpl
 
   void ResetWeakWrapperResourceLoadInfoNotifier();
 
+  blink::WebVector<blink::WebString> cors_exempt_header_list();
+
   // |receiver_| and |service_worker_worker_client_registry_| may be null if
   // this context can't use service workers. See comments for Create().
   mojo::Receiver<blink::mojom::ServiceWorkerWorkerClient> receiver_{this};

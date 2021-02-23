@@ -95,12 +95,6 @@ class MediaPermission;
 class GpuVideoAcceleratorFactories;
 }  // namespace media
 
-namespace network {
-namespace mojom {
-class URLResponseHead;
-}  // namespace mojom
-}  // namespace network
-
 namespace v8 {
 class Context;
 template <class T>
@@ -118,6 +112,7 @@ class MediaInspectorContext;
 class ThreadSafeBrowserInterfaceBrokerProxy;
 class Thread;
 struct ThreadCreationParams;
+class URLLoaderThrottle;
 class WebAudioBus;
 class WebAudioLatencyHint;
 class WebCrypto;
@@ -130,8 +125,6 @@ class WebResourceRequestSenderDelegate;
 class WebSandboxSupport;
 class WebSecurityOrigin;
 class WebThemeEngine;
-class WebURLResponse;
-class WebURLResponse;
 class WebVideoCaptureImplManager;
 
 namespace scheduler {
@@ -335,14 +328,6 @@ class BLINK_PLATFORM_EXPORT Platform {
       const blink::WebSecurityOrigin& cache_storage_origin,
       const WebString& cache_storage_cache_name) {}
 
-  // Converts network::mojom::URLResponseHead to WebURLResponse.
-  // TODO(crbug.com/860403): Remove this once it's moved into Blink.
-  virtual void PopulateURLResponse(const WebURL& url,
-                                   const network::mojom::URLResponseHead& head,
-                                   WebURLResponse* response,
-                                   bool report_security_info,
-                                   int request_id) {}
-
   // Determines whether it is safe to redirect from |from_url| to |to_url|.
   virtual bool IsRedirectSafe(const GURL& from_url, const GURL& to_url) {
     return false;
@@ -352,6 +337,12 @@ class BLINK_PLATFORM_EXPORT Platform {
   virtual WebResourceRequestSenderDelegate* GetResourceRequestSenderDelegate() {
     return nullptr;
   }
+
+  // Appends throttles if the browser has sent a variations header to the
+  // renderer.
+  virtual void AppendVariationsThrottles(
+      int routing_id,
+      std::vector<std::unique_ptr<blink::URLLoaderThrottle>>* throttles) {}
 
   // Public Suffix List --------------------------------------------------
 

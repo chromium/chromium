@@ -6,11 +6,20 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_URL_LOADER_FACTORY_H_
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/scheduler/web_resource_loading_task_runner_handle.h"
+#include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/platform/web_vector.h"
+
+namespace network {
+class SharedURLLoaderFactory;
+}
 
 namespace blink {
 
@@ -20,9 +29,16 @@ class WebURLRequest;
 
 // An abstract interface to create a URLLoader. It is expected that each
 // loading context holds its own per-context WebURLLoaderFactory.
-class WebURLLoaderFactory {
+class BLINK_PLATFORM_EXPORT WebURLLoaderFactory {
  public:
-  virtual ~WebURLLoaderFactory() = default;
+  WebURLLoaderFactory(
+      scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
+      const WebVector<WebString>& cors_exempt_header_list,
+      base::WaitableEvent* terminate_sync_load_event);
+  WebURLLoaderFactory();
+  WebURLLoaderFactory(const WebURLLoaderFactory&) = delete;
+  WebURLLoaderFactory& operator=(const WebURLLoaderFactory&) = delete;
+  virtual ~WebURLLoaderFactory();
 
   // Returns a new WebURLLoader instance. This should internally choose
   // the most appropriate URLLoaderFactory implementation.
@@ -35,9 +51,14 @@ class WebURLLoaderFactory {
           freezable_task_runner,
       std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
           unfreezable_task_runner,
-      CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>
+      CrossVariantMojoRemote<mojom::KeepAliveHandleInterfaceBase>
           keep_alive_handle,
-      WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper) = 0;
+      WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper);
+
+ protected:
+  scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
+  WebVector<WebString> cors_exempt_header_list_;
+  base::WaitableEvent* terminate_sync_load_event_ = nullptr;
 };
 
 // A test version of the above factory interface, which supports cloning the

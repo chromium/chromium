@@ -135,6 +135,12 @@ WebString WebString::FromASCII(const std::string& s) {
   return FromLatin1(s);
 }
 
+WebString WebString::IsolatedCopy() const {
+  if (!impl_)
+    return WebString();
+  return String(impl_).IsolatedCopy();
+}
+
 bool WebString::Equals(const WebString& s) const {
   return Equal(impl_.get(), s.impl_.get());
 }

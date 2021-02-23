@@ -256,7 +256,7 @@ class WebResourceRequestSenderTest : public testing::Test,
                   scoped_refptr<WebRequestPeer> peer) {
     sender()->SendAsync(
         std::move(request), 0, scheduler::GetSingleThreadTaskRunnerForTesting(),
-        TRAFFIC_ANNOTATION_FOR_TESTS, false, std::vector<std::string>(),
+        TRAFFIC_ANNOTATION_FOR_TESTS, false, WebVector<WebString>(),
         std::move(peer),
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(this),
         std::vector<std::unique_ptr<URLLoaderThrottle>>(),

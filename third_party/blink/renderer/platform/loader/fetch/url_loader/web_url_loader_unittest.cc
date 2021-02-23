@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/loader/web_url_loader_impl.h"
+#include "third_party/blink/public/platform/web_url_loader.h"
 
 #include <stdint.h>
 #include <string.h>
@@ -19,7 +19,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
-#include "content/public/common/content_switches.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/host_port_pair.h"
@@ -52,17 +51,18 @@
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/platform/web_vector.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace content {
+namespace blink {
 namespace {
 
 const char kTestURL[] = "http://foo";
 const char kTestHTTPSURL[] = "https://foo";
 const char kTestData[] = "blah!";
 
-class MockResourceRequestSender : public blink::WebResourceRequestSender {
+class MockResourceRequestSender : public WebResourceRequestSender {
  public:
   MockResourceRequestSender() = default;
   ~MockResourceRequestSender() override = default;
@@ -73,17 +73,17 @@ class MockResourceRequestSender : public blink::WebResourceRequestSender {
       int routing_id,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       uint32_t loader_options,
-      blink::SyncLoadResponse* response,
+      SyncLoadResponse* response,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
+      WebVector<std::unique_ptr<URLLoaderThrottle>> throttles,
       base::TimeDelta timeout,
-      const std::vector<std::string>& cors_exempt_header_list,
+      const WebVector<WebString>& cors_exempt_header_list,
       base::WaitableEvent* terminate_sync_load_event,
-      mojo::PendingRemote<blink::mojom::BlobRegistry> download_to_blob_registry,
-      scoped_refptr<blink::WebRequestPeer> peer,
-      std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+      mojo::PendingRemote<mojom::BlobRegistry> download_to_blob_registry,
+      scoped_refptr<WebRequestPeer> peer,
+      std::unique_ptr<ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
-      blink::WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
+      WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
       override {
     *response = std::move(sync_load_response_);
   }
@@ -94,19 +94,18 @@ class MockResourceRequestSender : public blink::WebResourceRequestSender {
       scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       uint32_t loader_options,
-      const std::vector<std::string>& cors_exempt_header_list,
-      scoped_refptr<blink::WebRequestPeer> peer,
+      const WebVector<WebString>& cors_exempt_header_list,
+      scoped_refptr<WebRequestPeer> peer,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
-      std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+      WebVector<std::unique_ptr<URLLoaderThrottle>> throttles,
+      std::unique_ptr<ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
-      blink::WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
+      WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
       override {
     EXPECT_FALSE(peer_);
     if (sync_load_response_.head->encoded_body_length != -1)
       EXPECT_TRUE(loader_options & network::mojom::kURLLoadOptionSynchronous);
     peer_ = std::move(peer);
-    url_ = request->url;
     return 1;
   }
 
@@ -118,29 +117,24 @@ class MockResourceRequestSender : public blink::WebResourceRequestSender {
     task_runner->ReleaseSoon(FROM_HERE, std::move(peer_));
   }
 
-  blink::WebRequestPeer* peer() { return peer_.get(); }
+  WebRequestPeer* peer() { return peer_.get(); }
 
   bool canceled() { return canceled_; }
 
-  const GURL& url() { return url_; }
-  const GURL& stream_url() { return stream_url_; }
-
-  void SetDefersLoading(blink::WebURLLoader::DeferType value) override {
-    defers_loading_ = (value != blink::WebURLLoader::DeferType::kNotDeferred);
+  void SetDefersLoading(WebURLLoader::DeferType value) override {
+    defers_loading_ = (value != WebURLLoader::DeferType::kNotDeferred);
   }
   bool defers_loading() const { return defers_loading_; }
 
-  void set_sync_load_response(blink::SyncLoadResponse&& sync_load_response) {
+  void set_sync_load_response(SyncLoadResponse&& sync_load_response) {
     sync_load_response_ = std::move(sync_load_response);
   }
 
  private:
-  scoped_refptr<blink::WebRequestPeer> peer_;
+  scoped_refptr<WebRequestPeer> peer_;
   bool canceled_ = false;
   bool defers_loading_ = false;
-  GURL url_;
-  GURL stream_url_;
-  blink::SyncLoadResponse sync_load_response_;
+  SyncLoadResponse sync_load_response_;
 
   DISALLOW_COPY_AND_ASSIGN(MockResourceRequestSender);
 };
@@ -170,22 +164,20 @@ class FakeURLLoaderFactory final : public network::mojom::URLLoaderFactory {
   DISALLOW_COPY_AND_ASSIGN(FakeURLLoaderFactory);
 };
 
-class TestWebURLLoaderClient : public blink::WebURLLoaderClient {
+class TestWebURLLoaderClient : public WebURLLoaderClient {
  public:
   TestWebURLLoaderClient()
-      : loader_(new WebURLLoaderImpl(
-            /*cors_exempt_header_list=*/std::vector<std::string>(),
+      : loader_(new WebURLLoader(
+            /*cors_exempt_header_list=*/WebVector<WebString>(),
             /*terminate_sync_load_event=*/nullptr,
-            blink::scheduler::WebResourceLoadingTaskRunnerHandle::
-                CreateUnprioritized(
-                    blink::scheduler::GetSingleThreadTaskRunnerForTesting()),
-            blink::scheduler::WebResourceLoadingTaskRunnerHandle::
-                CreateUnprioritized(
-                    blink::scheduler::GetSingleThreadTaskRunnerForTesting()),
+            scheduler::WebResourceLoadingTaskRunnerHandle::CreateUnprioritized(
+                scheduler::GetSingleThreadTaskRunnerForTesting()),
+            scheduler::WebResourceLoadingTaskRunnerHandle::CreateUnprioritized(
+                scheduler::GetSingleThreadTaskRunnerForTesting()),
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &fake_url_loader_factory_),
             /*keep_alive_handle=*/mojo::NullRemote(),
-            blink::WebBackForwardCacheLoaderHelper())),
+            WebBackForwardCacheLoaderHelper())),
         delete_on_receive_redirect_(false),
         delete_on_receive_response_(false),
         delete_on_receive_data_(false),
@@ -207,13 +199,13 @@ class TestWebURLLoaderClient : public blink::WebURLLoaderClient {
     base::RunLoop().RunUntilIdle();
   }
 
-  // blink::WebURLLoaderClient implementation:
-  bool WillFollowRedirect(const blink::WebURL& new_url,
+  // WebURLLoaderClient implementation:
+  bool WillFollowRedirect(const WebURL& new_url,
                           const net::SiteForCookies& new_site_for_cookies,
-                          const blink::WebString& new_referrer,
+                          const WebString& new_referrer,
                           network::mojom::ReferrerPolicy new_referrer_policy,
-                          const blink::WebString& new_method,
-                          const blink::WebURLResponse& passed_redirect_response,
+                          const WebString& new_method,
+                          const WebURLResponse& passed_redirect_response,
                           bool& report_raw_headers,
                           std::vector<std::string>*) override {
     EXPECT_TRUE(loader_);
@@ -232,7 +224,7 @@ class TestWebURLLoaderClient : public blink::WebURLLoaderClient {
     EXPECT_TRUE(loader_);
   }
 
-  void DidReceiveResponse(const blink::WebURLResponse& response) override {
+  void DidReceiveResponse(const WebURLResponse& response) override {
     EXPECT_TRUE(loader_);
     EXPECT_FALSE(did_receive_response_);
 
@@ -267,7 +259,7 @@ class TestWebURLLoaderClient : public blink::WebURLLoaderClient {
       loader_.reset();
   }
 
-  void DidFail(const blink::WebURLError& error,
+  void DidFail(const WebURLError& error,
                base::TimeTicks finishTime,
                int64_t totalEncodedDataLength,
                int64_t totalEncodedBodyLength,
@@ -280,10 +272,8 @@ class TestWebURLLoaderClient : public blink::WebURLLoaderClient {
       loader_.reset();
   }
 
-  WebURLLoaderImpl* loader() { return loader_.get(); }
-  void DeleteLoader() {
-    loader_.reset();
-  }
+  WebURLLoader* loader() { return loader_.get(); }
+  void DeleteLoader() { loader_.reset(); }
 
   void set_delete_on_receive_redirect() { delete_on_receive_redirect_ = true; }
   void set_delete_on_receive_response() { delete_on_receive_response_ = true; }
@@ -295,12 +285,12 @@ class TestWebURLLoaderClient : public blink::WebURLLoaderClient {
   bool did_receive_response() const { return did_receive_response_; }
   bool did_receive_response_body() const { return !!response_body_; }
   bool did_finish() const { return did_finish_; }
-  const base::Optional<blink::WebURLError>& error() const { return error_; }
-  const blink::WebURLResponse& response() const { return response_; }
+  const base::Optional<WebURLError>& error() const { return error_; }
+  const WebURLResponse& response() const { return response_; }
 
  private:
   FakeURLLoaderFactory fake_url_loader_factory_;
-  std::unique_ptr<WebURLLoaderImpl> loader_;
+  std::unique_ptr<WebURLLoader> loader_;
 
   bool delete_on_receive_redirect_;
   bool delete_on_receive_response_;
@@ -312,21 +302,21 @@ class TestWebURLLoaderClient : public blink::WebURLLoaderClient {
   bool did_receive_response_;
   mojo::ScopedDataPipeConsumerHandle response_body_;
   bool did_finish_;
-  base::Optional<blink::WebURLError> error_;
-  blink::WebURLResponse response_;
+  base::Optional<WebURLError> error_;
+  WebURLResponse response_;
 
   DISALLOW_COPY_AND_ASSIGN(TestWebURLLoaderClient);
 };
 
-class WebURLLoaderImplTest : public testing::Test {
+class WebURLLoaderTest : public testing::Test {
  public:
-  WebURLLoaderImplTest() : client_(std::make_unique<TestWebURLLoaderClient>()) {
+  WebURLLoaderTest() : client_(std::make_unique<TestWebURLLoaderClient>()) {
     auto sender = std::make_unique<MockResourceRequestSender>();
     sender_ = sender.get();
     client_->loader()->SetResourceRequestSenderForTesting(std::move(sender));
   }
 
-  ~WebURLLoaderImplTest() override = default;
+  ~WebURLLoaderTest() override = default;
 
   void DoStartAsyncRequest() {
     auto request = std::make_unique<network::ResourceRequest>();
@@ -337,7 +327,7 @@ class WebURLLoaderImplTest : public testing::Test {
         std::move(request), /*url_request_extra_data=*/nullptr,
         /*requestor_id=*/0,
         /*no_mime_sniffing=*/false,
-        std::make_unique<blink::ResourceLoadInfoNotifierWrapper>(
+        std::make_unique<ResourceLoadInfoNotifierWrapper>(
             /*resource_load_info_notifier=*/nullptr),
         client());
     ASSERT_TRUE(peer());
@@ -416,7 +406,7 @@ class WebURLLoaderImplTest : public testing::Test {
 
   TestWebURLLoaderClient* client() { return client_.get(); }
   MockResourceRequestSender* sender() { return sender_; }
-  blink::WebRequestPeer* peer() { return sender_->peer(); }
+  WebRequestPeer* peer() { return sender_->peer(); }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -425,7 +415,7 @@ class WebURLLoaderImplTest : public testing::Test {
   MockResourceRequestSender* sender_ = nullptr;
 };
 
-TEST_F(WebURLLoaderImplTest, Success) {
+TEST_F(WebURLLoaderTest, Success) {
   DoStartAsyncRequest();
   DoReceiveResponse();
   DoStartLoadingResponseBody();
@@ -434,7 +424,7 @@ TEST_F(WebURLLoaderImplTest, Success) {
   EXPECT_TRUE(client()->did_receive_response_body());
 }
 
-TEST_F(WebURLLoaderImplTest, Redirect) {
+TEST_F(WebURLLoaderTest, Redirect) {
   DoStartAsyncRequest();
   DoReceiveRedirect();
   DoReceiveResponse();
@@ -444,7 +434,7 @@ TEST_F(WebURLLoaderImplTest, Redirect) {
   EXPECT_TRUE(client()->did_receive_response_body());
 }
 
-TEST_F(WebURLLoaderImplTest, Failure) {
+TEST_F(WebURLLoaderTest, Failure) {
   DoStartAsyncRequest();
   DoReceiveResponse();
   DoStartLoadingResponseBody();
@@ -454,19 +444,19 @@ TEST_F(WebURLLoaderImplTest, Failure) {
 
 // The client may delete the WebURLLoader during any callback from the loader.
 // These tests make sure that doesn't result in a crash.
-TEST_F(WebURLLoaderImplTest, DeleteOnReceiveRedirect) {
+TEST_F(WebURLLoaderTest, DeleteOnReceiveRedirect) {
   client()->set_delete_on_receive_redirect();
   DoStartAsyncRequest();
   DoReceiveRedirect();
 }
 
-TEST_F(WebURLLoaderImplTest, DeleteOnReceiveResponse) {
+TEST_F(WebURLLoaderTest, DeleteOnReceiveResponse) {
   client()->set_delete_on_receive_response();
   DoStartAsyncRequest();
   DoReceiveResponse();
 }
 
-TEST_F(WebURLLoaderImplTest, DeleteOnFinish) {
+TEST_F(WebURLLoaderTest, DeleteOnFinish) {
   client()->set_delete_on_finish();
   DoStartAsyncRequest();
   DoReceiveResponse();
@@ -474,7 +464,7 @@ TEST_F(WebURLLoaderImplTest, DeleteOnFinish) {
   DoCompleteRequest();
 }
 
-TEST_F(WebURLLoaderImplTest, DeleteOnFail) {
+TEST_F(WebURLLoaderTest, DeleteOnFail) {
   client()->set_delete_on_fail();
   DoStartAsyncRequest();
   DoReceiveResponse();
@@ -482,16 +472,15 @@ TEST_F(WebURLLoaderImplTest, DeleteOnFail) {
   DoFailRequest();
 }
 
-TEST_F(WebURLLoaderImplTest, DefersLoadingBeforeStart) {
-  client()->loader()->SetDefersLoading(
-      blink::WebURLLoader::DeferType::kDeferred);
+TEST_F(WebURLLoaderTest, DefersLoadingBeforeStart) {
+  client()->loader()->SetDefersLoading(WebURLLoader::DeferType::kDeferred);
   EXPECT_FALSE(sender()->defers_loading());
   DoStartAsyncRequest();
   EXPECT_TRUE(sender()->defers_loading());
 }
 
-TEST_F(WebURLLoaderImplTest, ResponseIPEndpoint) {
-  GURL url("http://example.test/");
+TEST_F(WebURLLoaderTest, ResponseIPEndpoint) {
+  KURL url("http://example.test/");
 
   struct TestCase {
     const char* ip;
@@ -515,13 +504,13 @@ TEST_F(WebURLLoaderImplTest, ResponseIPEndpoint) {
     network::mojom::URLResponseHead head;
     head.remote_endpoint = net::IPEndPoint(address, test.port);
 
-    blink::WebURLResponse response;
-    WebURLLoaderImpl::PopulateURLResponse(url, head, &response, true, -1);
+    WebURLResponse response;
+    WebURLLoader::PopulateURLResponse(url, head, &response, true, -1);
     EXPECT_EQ(head.remote_endpoint, response.RemoteIPEndpoint());
   };
 }
 
-TEST_F(WebURLLoaderImplTest, ResponseAddressSpace) {
+TEST_F(WebURLLoaderTest, ResponseAddressSpace) {
   using AddressSpace = network::mojom::IPAddressSpace;
 
   struct TestCase {
@@ -543,7 +532,7 @@ TEST_F(WebURLLoaderImplTest, ResponseAddressSpace) {
   for (const auto& test : cases) {
     SCOPED_TRACE(test.url + ", " + test.ip);
 
-    GURL url(test.url);
+    KURL url(test.url.c_str());
 
     // We are forced to use the result of AssignFromIPLiteral(), and we cannot
     // just assign it to an unused variable. Check that all non-empty literals
@@ -554,8 +543,8 @@ TEST_F(WebURLLoaderImplTest, ResponseAddressSpace) {
     network::mojom::URLResponseHead head;
     head.remote_endpoint = net::IPEndPoint(address, 443);
 
-    blink::WebURLResponse response;
-    WebURLLoaderImpl::PopulateURLResponse(url, head, &response, true, -1);
+    WebURLResponse response;
+    WebURLLoader::PopulateURLResponse(url, head, &response, true, -1);
 
     EXPECT_EQ(test.expected, response.AddressSpace());
   }
@@ -564,8 +553,8 @@ TEST_F(WebURLLoaderImplTest, ResponseAddressSpace) {
 // This test verifies that the IPAddressSpace set on WebURLResponse takes into
 // account WebURLResponse::ResponseUrl() instead of
 // WebURLResponse::CurrentRequestUrl().
-TEST_F(WebURLLoaderImplTest, ResponseAddressSpaceConsidersResponseUrl) {
-  GURL request_url("http://request.test");
+TEST_F(WebURLLoaderTest, ResponseAddressSpaceConsidersResponseUrl) {
+  KURL request_url("http://request.test");
 
   // The remote endpoint contains a public IP address, but the response was
   // ultimately fetched by a service worker from a file URL.
@@ -577,18 +566,18 @@ TEST_F(WebURLLoaderImplTest, ResponseAddressSpaceConsidersResponseUrl) {
       GURL("file:///a/path"),
   };
 
-  blink::WebURLResponse response;
-  WebURLLoaderImpl::PopulateURLResponse(request_url, head, &response, true, -1);
+  WebURLResponse response;
+  WebURLLoader::PopulateURLResponse(request_url, head, &response, true, -1);
 
   // The address space of the response reflects the fact the it was fetched
   // from a file, even though the request was initially to a public website.
-  EXPECT_EQ(GURL("http://request.test"), GURL(response.CurrentRequestUrl()));
-  EXPECT_EQ(GURL("file:///a/path"), GURL(response.ResponseUrl()));
+  EXPECT_EQ(KURL("http://request.test"), KURL(response.CurrentRequestUrl()));
+  EXPECT_EQ(KURL("file:///a/path"), KURL(response.ResponseUrl()));
   EXPECT_EQ(network::mojom::IPAddressSpace::kLocal, response.AddressSpace());
 }
 
-TEST_F(WebURLLoaderImplTest, ResponseCert) {
-  GURL url("https://test.example/");
+TEST_F(WebURLLoaderTest, ResponseCert) {
+  KURL url("https://test.example/");
 
   net::CertificateList certs;
   ASSERT_TRUE(net::LoadCertificateFiles(
@@ -608,10 +597,10 @@ TEST_F(WebURLLoaderImplTest, ResponseCert) {
 
   network::mojom::URLResponseHead head;
   head.ssl_info = ssl_info;
-  blink::WebURLResponse web_url_response;
-  WebURLLoaderImpl::PopulateURLResponse(url, head, &web_url_response, true, -1);
+  WebURLResponse web_url_response;
+  WebURLLoader::PopulateURLResponse(url, head, &web_url_response, true, -1);
 
-  base::Optional<blink::WebURLResponse::WebSecurityDetails> security_details =
+  base::Optional<WebURLResponse::WebSecurityDetails> security_details =
       web_url_response.SecurityDetailsForTesting();
   ASSERT_TRUE(security_details.has_value());
   EXPECT_EQ("TLS 1.2", security_details->protocol);
@@ -624,14 +613,14 @@ TEST_F(WebURLLoaderImplTest, ResponseCert) {
   EXPECT_EQ(certs[0]->valid_start().ToTimeT(), security_details->valid_from);
   EXPECT_EQ(certs[0]->valid_expiry().ToTimeT(), security_details->valid_to);
   ASSERT_EQ(2U, security_details->certificate.size());
-  EXPECT_EQ(blink::WebString::FromLatin1(std::string(cert0_der)),
+  EXPECT_EQ(WebString::FromLatin1(std::string(cert0_der)),
             security_details->certificate[0]);
-  EXPECT_EQ(blink::WebString::FromLatin1(std::string(cert1_der)),
+  EXPECT_EQ(WebString::FromLatin1(std::string(cert1_der)),
             security_details->certificate[1]);
 }
 
-TEST_F(WebURLLoaderImplTest, ResponseCertWithNoSANs) {
-  GURL url("https://test.example/");
+TEST_F(WebURLLoaderTest, ResponseCertWithNoSANs) {
+  KURL url("https://test.example/");
 
   net::CertificateList certs;
   ASSERT_TRUE(net::LoadCertificateFiles({"multi-root-B-by-C.pem"}, &certs));
@@ -646,10 +635,10 @@ TEST_F(WebURLLoaderImplTest, ResponseCertWithNoSANs) {
   ssl_info.cert = certs[0];
   network::mojom::URLResponseHead head;
   head.ssl_info = ssl_info;
-  blink::WebURLResponse web_url_response;
-  WebURLLoaderImpl::PopulateURLResponse(url, head, &web_url_response, true, -1);
+  WebURLResponse web_url_response;
+  WebURLLoader::PopulateURLResponse(url, head, &web_url_response, true, -1);
 
-  base::Optional<blink::WebURLResponse::WebSecurityDetails> security_details =
+  base::Optional<WebURLResponse::WebSecurityDetails> security_details =
       web_url_response.SecurityDetailsForTesting();
   ASSERT_TRUE(security_details.has_value());
   EXPECT_EQ("TLS 1.2", security_details->protocol);
@@ -659,17 +648,17 @@ TEST_F(WebURLLoaderImplTest, ResponseCertWithNoSANs) {
   EXPECT_EQ(certs[0]->valid_start().ToTimeT(), security_details->valid_from);
   EXPECT_EQ(certs[0]->valid_expiry().ToTimeT(), security_details->valid_to);
   ASSERT_EQ(1U, security_details->certificate.size());
-  EXPECT_EQ(blink::WebString::FromLatin1(std::string(cert0_der)),
+  EXPECT_EQ(WebString::FromLatin1(std::string(cert0_der)),
             security_details->certificate[0]);
 }
 
 // Verifies that the lengths used by the PerformanceResourceTiming API are
 // correctly assigned for sync XHR.
-TEST_F(WebURLLoaderImplTest, SyncLengths) {
-  static const char kBodyData[] =  "Today is Thursday";
+TEST_F(WebURLLoaderTest, SyncLengths) {
+  static const char kBodyData[] = "Today is Thursday";
   const int kEncodedBodyLength = 30;
   const int kEncodedDataLength = 130;
-  const GURL url(kTestURL);
+  const KURL url(kTestURL);
 
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = url;
@@ -677,21 +666,21 @@ TEST_F(WebURLLoaderImplTest, SyncLengths) {
   request->priority = net::HIGHEST;
 
   // Prepare a mock response
-  blink::SyncLoadResponse sync_load_response;
+  SyncLoadResponse sync_load_response;
   sync_load_response.error_code = net::OK;
   sync_load_response.url = url;
-  sync_load_response.data.Assign(blink::WebData(kBodyData));
+  sync_load_response.data.Assign(WebData(kBodyData));
   ASSERT_EQ(17u, sync_load_response.data.size());
   sync_load_response.head->encoded_body_length = kEncodedBodyLength;
   sync_load_response.head->encoded_data_length = kEncodedDataLength;
   sender()->set_sync_load_response(std::move(sync_load_response));
 
-  blink::WebURLResponse response;
-  base::Optional<blink::WebURLError> error;
-  blink::WebData data;
+  WebURLResponse response;
+  base::Optional<WebURLError> error;
+  WebData data;
   int64_t encoded_data_length = 0;
   int64_t encoded_body_length = 0;
-  blink::WebBlobInfo downloaded_blob;
+  WebBlobInfo downloaded_blob;
 
   client()->loader()->LoadSynchronously(
       std::move(request), /*url_request_extra_data=*/nullptr,
@@ -699,7 +688,7 @@ TEST_F(WebURLLoaderImplTest, SyncLengths) {
       /*pass_response_pipe_to_client=*/false, /*no_mime_sniffing=*/false,
       base::TimeDelta(), nullptr, response, error, data, encoded_data_length,
       encoded_body_length, downloaded_blob,
-      std::make_unique<blink::ResourceLoadInfoNotifierWrapper>(
+      std::make_unique<ResourceLoadInfoNotifierWrapper>(
           /*resource_load_info_notifier=*/nullptr));
 
   EXPECT_EQ(kEncodedBodyLength, encoded_body_length);
@@ -708,7 +697,7 @@ TEST_F(WebURLLoaderImplTest, SyncLengths) {
 }
 
 // Verifies that PopulateURLResponse() copies AuthChallengeInfo to the response.
-TEST_F(WebURLLoaderImplTest, AuthChallengeInfo) {
+TEST_F(WebURLLoaderTest, AuthChallengeInfo) {
   network::mojom::URLResponseHead head;
   net::AuthChallengeInfo auth_challenge_info;
   auth_challenge_info.is_proxy = true;
@@ -716,11 +705,11 @@ TEST_F(WebURLLoaderImplTest, AuthChallengeInfo) {
   head.auth_challenge_info = auth_challenge_info;
 
   blink::WebURLResponse response;
-  WebURLLoaderImpl::PopulateURLResponse(GURL(), head, &response, true, -1);
+  WebURLLoader::PopulateURLResponse(KURL(), head, &response, true, -1);
   ASSERT_TRUE(response.AuthChallengeInfo().has_value());
   EXPECT_TRUE(response.AuthChallengeInfo()->is_proxy);
   EXPECT_EQ("foobar", response.AuthChallengeInfo()->challenge);
 }
 
 }  // namespace
-}  // namespace content
+}  // namespace blink

@@ -49,20 +49,6 @@ class WorkerMainScriptLoaderTest : public testing::Test {
   }
 
  protected:
-  class TestPlatform final : public TestingPlatformSupport {
-   public:
-    void PopulateURLResponse(const WebURL& url,
-                             const network::mojom::URLResponseHead& head,
-                             WebURLResponse* response,
-                             bool report_security_info,
-                             int request_id) override {
-      response->SetCurrentRequestUrl(url);
-      response->SetHttpStatusCode(head.headers.get()->response_code());
-      response->SetMimeType(WebString::FromUTF8(head.mime_type));
-      response->SetTextEncodingName(WebString::FromUTF8(head.charset));
-    }
-  };
-
   class TestClient final : public GarbageCollected<TestClient>,
                            public WorkerMainScriptLoaderClient {
 
@@ -262,7 +248,6 @@ class WorkerMainScriptLoaderTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  ScopedTestingPlatformSupport<TestPlatform> platform_;
 
   mojo::PendingRemote<network::mojom::URLLoader> pending_remote_loader_;
   mojo::Remote<network::mojom::URLLoaderClient> loader_client_;

@@ -724,6 +724,8 @@ class CONTENT_EXPORT RenderFrameImpl
 
   blink::scheduler::WebAgentGroupScheduler& GetAgentGroupScheduler() override;
 
+  url::Origin GetSecurityOriginOfTopFrame();
+
  protected:
   explicit RenderFrameImpl(CreateParams params);
 

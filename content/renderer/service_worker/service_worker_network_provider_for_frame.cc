@@ -10,12 +10,12 @@
 #include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/common/origin_util.h"
 #include "content/public/renderer/render_frame_observer.h"
-#include "content/renderer/loader/web_url_loader_impl.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/service_worker/service_worker_provider_context.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
+#include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
 namespace content {
@@ -144,10 +144,19 @@ ServiceWorkerNetworkProviderForFrame::CreateURLLoader(
             kServiceWorkerInterceptedRequestFromOriginDirtyStyleSheet);
   }
 
+  std::vector<std::string> cors_exempt_header_list =
+      RenderThreadImpl::current()->cors_exempt_header_list();
+  blink::WebVector<blink::WebString> web_cors_exempt_header_list(
+      cors_exempt_header_list.size());
+  std::transform(cors_exempt_header_list.begin(), cors_exempt_header_list.end(),
+                 web_cors_exempt_header_list.begin(), [](const std::string& h) {
+                   return blink::WebString::FromLatin1(h);
+                 });
+
   // Create our own SubresourceLoader to route the request to the controller
   // ServiceWorker.
-  return std::make_unique<WebURLLoaderImpl>(
-      RenderThreadImpl::current()->cors_exempt_header_list(),
+  return std::make_unique<blink::WebURLLoader>(
+      web_cors_exempt_header_list,
       /*terminate_sync_load_event=*/nullptr,
       std::move(freezable_task_runner_handle),
       std::move(unfreezable_task_runner_handle),
