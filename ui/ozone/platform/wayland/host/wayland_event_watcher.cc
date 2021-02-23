@@ -134,8 +134,13 @@ bool WaylandEventWatcher::CheckForErrors() {
       uint32_t ec, id;
       const struct wl_interface* intf;
       ec = wl_display_get_protocol_error(display_, &intf, &id);
-      LOG(ERROR) << "Fatal Wayland protocol error " << ec << " on interface "
-                 << intf->name << " (object " << id << "). Shutting down..";
+      if (intf) {
+        LOG(ERROR) << "Fatal Wayland protocol error " << ec << " on interface "
+                   << intf->name << " (object " << id << "). Shutting down..";
+      } else {
+        LOG(ERROR) << "Fatal Wayland protocol error " << ec
+                   << ". Shutting down..";
+      }
     } else {
       LOG(ERROR) << "Fatal Wayland communication error: " << std::strerror(err);
     }
