@@ -1729,8 +1729,17 @@ class LayerTreeHostScrollTestImplScrollUnderMainThreadScrollingParent
   scoped_refptr<Layer> scroller_;
 };
 
+// This test is flaky in the single threaded configuration, only on the
+// chromeos-amd64-generic-rel bot. https://crbug.com/1093078.
+#if defined(OS_CHROMEOS)
+// SINGLE_THREAD_TEST_F(
+//    LayerTreeHostScrollTestImplScrollUnderMainThreadScrollingParent);
+MULTI_THREAD_TEST_F(
+    LayerTreeHostScrollTestImplScrollUnderMainThreadScrollingParent);
+#else
 SINGLE_AND_MULTI_THREAD_TEST_F(
     LayerTreeHostScrollTestImplScrollUnderMainThreadScrollingParent);
+#endif
 
 class ThreadCheckingInputHandlerClient : public InputHandlerClient {
  public:
