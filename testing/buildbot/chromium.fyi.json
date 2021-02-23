@@ -2144,6 +2144,16 @@
       }
     ]
   },
+  "TSAN Debug (reclient)": {
+    "additional_compile_targets": [
+      "chromium_builder_asan"
+    ]
+  },
+  "TSAN Release (reclient)": {
+    "additional_compile_targets": [
+      "chromium_builder_asan"
+    ]
+  },
   "VR Linux": {
     "additional_compile_targets": [
       "vr_common_perftests"

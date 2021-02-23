@@ -2570,6 +2570,16 @@
           'enable_resultdb'
         ],
       },
+      'TSAN Debug (reclient)': {
+        'additional_compile_targets': [
+          'chromium_builder_asan',
+        ],
+      },
+      'TSAN Release (reclient)': {
+        'additional_compile_targets': [
+          'chromium_builder_asan',
+        ],
+      },
       'VR Linux': {
         'mixins': [
           'enable_resultdb',
