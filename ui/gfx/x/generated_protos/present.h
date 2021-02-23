@@ -55,6 +55,7 @@
 #include "randr.h"
 #include "sync.h"
 #include "ui/gfx/x/error.h"
+#include "ui/gfx/x/ref_counted_fd.h"
 #include "xfixes.h"
 #include "xproto.h"
 
@@ -236,7 +237,10 @@ class COMPONENT_EXPORT(X11) Present {
 
   Future<QueryVersionReply> QueryVersion(const QueryVersionRequest& request);
 
-  struct PixmapRequest {
+  Future<QueryVersionReply> QueryVersion(const uint32_t& major_version = {},
+                                         const uint32_t& minor_version = {});
+
+  struct PresentPixmapRequest {
     Window window{};
     Pixmap pixmap{};
     uint32_t serial{};
@@ -254,9 +258,25 @@ class COMPONENT_EXPORT(X11) Present {
     std::vector<Notify> notifies{};
   };
 
-  using PixmapResponse = Response<void>;
+  using PresentPixmapResponse = Response<void>;
 
-  Future<void> Pixmap(const PixmapRequest& request);
+  Future<void> PresentPixmap(const PresentPixmapRequest& request);
+
+  Future<void> PresentPixmap(const Window& window = {},
+                             const Pixmap& pixmap = {},
+                             const uint32_t& serial = {},
+                             const XFixes::Region& valid = {},
+                             const XFixes::Region& update = {},
+                             const int16_t& x_off = {},
+                             const int16_t& y_off = {},
+                             const RandR::Crtc& target_crtc = {},
+                             const Sync::Fence& wait_fence = {},
+                             const Sync::Fence& idle_fence = {},
+                             const uint32_t& options = {},
+                             const uint64_t& target_msc = {},
+                             const uint64_t& divisor = {},
+                             const uint64_t& remainder = {},
+                             const std::vector<Notify>& notifies = {});
 
   struct NotifyMSCRequest {
     Window window{};
@@ -270,6 +290,12 @@ class COMPONENT_EXPORT(X11) Present {
 
   Future<void> NotifyMSC(const NotifyMSCRequest& request);
 
+  Future<void> NotifyMSC(const Window& window = {},
+                         const uint32_t& serial = {},
+                         const uint64_t& target_msc = {},
+                         const uint64_t& divisor = {},
+                         const uint64_t& remainder = {});
+
   struct SelectInputRequest {
     Event eid{};
     Window window{};
@@ -279,6 +305,10 @@ class COMPONENT_EXPORT(X11) Present {
   using SelectInputResponse = Response<void>;
 
   Future<void> SelectInput(const SelectInputRequest& request);
+
+  Future<void> SelectInput(const Event& eid = {},
+                           const Window& window = {},
+                           const EventMask& event_mask = {});
 
   struct QueryCapabilitiesRequest {
     uint32_t target{};
@@ -293,6 +323,8 @@ class COMPONENT_EXPORT(X11) Present {
 
   Future<QueryCapabilitiesReply> QueryCapabilities(
       const QueryCapabilitiesRequest& request);
+
+  Future<QueryCapabilitiesReply> QueryCapabilities(const uint32_t& target = {});
 
  private:
   Connection* const connection_;

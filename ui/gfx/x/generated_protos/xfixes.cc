@@ -205,6 +205,13 @@ Future<XFixes::QueryVersionReply> XFixes::QueryVersion(
       &buf, "XFixes::QueryVersion", false);
 }
 
+Future<XFixes::QueryVersionReply> XFixes::QueryVersion(
+    const uint32_t& client_major_version,
+    const uint32_t& client_minor_version) {
+  return XFixes::QueryVersion(
+      XFixes::QueryVersionRequest{client_major_version, client_minor_version});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<XFixes::QueryVersionReply> detail::ReadReply<
@@ -295,6 +302,14 @@ Future<void> XFixes::ChangeSaveSet(
   return connection_->SendRequest<void>(&buf, "XFixes::ChangeSaveSet", false);
 }
 
+Future<void> XFixes::ChangeSaveSet(const SaveSetMode& mode,
+                                   const SaveSetTarget& target,
+                                   const SaveSetMapping& map,
+                                   const Window& window) {
+  return XFixes::ChangeSaveSet(
+      XFixes::ChangeSaveSetRequest{mode, target, map, window});
+}
+
 Future<void> XFixes::SelectSelectionInput(
     const XFixes::SelectSelectionInputRequest& request) {
   if (!connection_->Ready() || !present())
@@ -335,6 +350,14 @@ Future<void> XFixes::SelectSelectionInput(
                                         false);
 }
 
+Future<void> XFixes::SelectSelectionInput(
+    const Window& window,
+    const Atom& selection,
+    const SelectionEventMask& event_mask) {
+  return XFixes::SelectSelectionInput(
+      XFixes::SelectSelectionInputRequest{window, selection, event_mask});
+}
+
 Future<void> XFixes::SelectCursorInput(
     const XFixes::SelectCursorInputRequest& request) {
   if (!connection_->Ready() || !present())
@@ -371,6 +394,12 @@ Future<void> XFixes::SelectCursorInput(
                                         false);
 }
 
+Future<void> XFixes::SelectCursorInput(const Window& window,
+                                       const CursorNotifyMask& event_mask) {
+  return XFixes::SelectCursorInput(
+      XFixes::SelectCursorInputRequest{window, event_mask});
+}
+
 Future<XFixes::GetCursorImageReply> XFixes::GetCursorImage(
     const XFixes::GetCursorImageRequest& request) {
   if (!connection_->Ready() || !present())
@@ -394,6 +423,10 @@ Future<XFixes::GetCursorImageReply> XFixes::GetCursorImage(
 
   return connection_->SendRequest<XFixes::GetCursorImageReply>(
       &buf, "XFixes::GetCursorImage", false);
+}
+
+Future<XFixes::GetCursorImageReply> XFixes::GetCursorImage() {
+  return XFixes::GetCursorImage(XFixes::GetCursorImageRequest{});
 }
 
 template <>
@@ -519,6 +552,11 @@ Future<void> XFixes::CreateRegion(const XFixes::CreateRegionRequest& request) {
   return connection_->SendRequest<void>(&buf, "XFixes::CreateRegion", false);
 }
 
+Future<void> XFixes::CreateRegion(const Region& region,
+                                  const std::vector<Rectangle>& rectangles) {
+  return XFixes::CreateRegion(XFixes::CreateRegionRequest{region, rectangles});
+}
+
 Future<void> XFixes::CreateRegionFromBitmap(
     const XFixes::CreateRegionFromBitmapRequest& request) {
   if (!connection_->Ready() || !present())
@@ -551,6 +589,12 @@ Future<void> XFixes::CreateRegionFromBitmap(
 
   return connection_->SendRequest<void>(&buf, "XFixes::CreateRegionFromBitmap",
                                         false);
+}
+
+Future<void> XFixes::CreateRegionFromBitmap(const Region& region,
+                                            const Pixmap& bitmap) {
+  return XFixes::CreateRegionFromBitmap(
+      XFixes::CreateRegionFromBitmapRequest{region, bitmap});
 }
 
 Future<void> XFixes::CreateRegionFromWindow(
@@ -596,6 +640,13 @@ Future<void> XFixes::CreateRegionFromWindow(
                                         false);
 }
 
+Future<void> XFixes::CreateRegionFromWindow(const Region& region,
+                                            const Window& window,
+                                            const Shape::Sk& kind) {
+  return XFixes::CreateRegionFromWindow(
+      XFixes::CreateRegionFromWindowRequest{region, window, kind});
+}
+
 Future<void> XFixes::CreateRegionFromGC(
     const XFixes::CreateRegionFromGCRequest& request) {
   if (!connection_->Ready() || !present())
@@ -628,6 +679,12 @@ Future<void> XFixes::CreateRegionFromGC(
 
   return connection_->SendRequest<void>(&buf, "XFixes::CreateRegionFromGC",
                                         false);
+}
+
+Future<void> XFixes::CreateRegionFromGC(const Region& region,
+                                        const GraphicsContext& gc) {
+  return XFixes::CreateRegionFromGC(
+      XFixes::CreateRegionFromGCRequest{region, gc});
 }
 
 Future<void> XFixes::CreateRegionFromPicture(
@@ -664,6 +721,12 @@ Future<void> XFixes::CreateRegionFromPicture(
                                         false);
 }
 
+Future<void> XFixes::CreateRegionFromPicture(const Region& region,
+                                             const Render::Picture& picture) {
+  return XFixes::CreateRegionFromPicture(
+      XFixes::CreateRegionFromPictureRequest{region, picture});
+}
+
 Future<void> XFixes::DestroyRegion(
     const XFixes::DestroyRegionRequest& request) {
   if (!connection_->Ready() || !present())
@@ -691,6 +754,10 @@ Future<void> XFixes::DestroyRegion(
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "XFixes::DestroyRegion", false);
+}
+
+Future<void> XFixes::DestroyRegion(const Region& region) {
+  return XFixes::DestroyRegion(XFixes::DestroyRegionRequest{region});
 }
 
 Future<void> XFixes::SetRegion(const XFixes::SetRegionRequest& request) {
@@ -747,6 +814,11 @@ Future<void> XFixes::SetRegion(const XFixes::SetRegionRequest& request) {
   return connection_->SendRequest<void>(&buf, "XFixes::SetRegion", false);
 }
 
+Future<void> XFixes::SetRegion(const Region& region,
+                               const std::vector<Rectangle>& rectangles) {
+  return XFixes::SetRegion(XFixes::SetRegionRequest{region, rectangles});
+}
+
 Future<void> XFixes::CopyRegion(const XFixes::CopyRegionRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -777,6 +849,11 @@ Future<void> XFixes::CopyRegion(const XFixes::CopyRegionRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "XFixes::CopyRegion", false);
+}
+
+Future<void> XFixes::CopyRegion(const Region& source,
+                                const Region& destination) {
+  return XFixes::CopyRegion(XFixes::CopyRegionRequest{source, destination});
 }
 
 Future<void> XFixes::UnionRegion(const XFixes::UnionRegionRequest& request) {
@@ -813,6 +890,13 @@ Future<void> XFixes::UnionRegion(const XFixes::UnionRegionRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "XFixes::UnionRegion", false);
+}
+
+Future<void> XFixes::UnionRegion(const Region& source1,
+                                 const Region& source2,
+                                 const Region& destination) {
+  return XFixes::UnionRegion(
+      XFixes::UnionRegionRequest{source1, source2, destination});
 }
 
 Future<void> XFixes::IntersectRegion(
@@ -852,6 +936,13 @@ Future<void> XFixes::IntersectRegion(
   return connection_->SendRequest<void>(&buf, "XFixes::IntersectRegion", false);
 }
 
+Future<void> XFixes::IntersectRegion(const Region& source1,
+                                     const Region& source2,
+                                     const Region& destination) {
+  return XFixes::IntersectRegion(
+      XFixes::IntersectRegionRequest{source1, source2, destination});
+}
+
 Future<void> XFixes::SubtractRegion(
     const XFixes::SubtractRegionRequest& request) {
   if (!connection_->Ready() || !present())
@@ -887,6 +978,13 @@ Future<void> XFixes::SubtractRegion(
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "XFixes::SubtractRegion", false);
+}
+
+Future<void> XFixes::SubtractRegion(const Region& source1,
+                                    const Region& source2,
+                                    const Region& destination) {
+  return XFixes::SubtractRegion(
+      XFixes::SubtractRegionRequest{source1, source2, destination});
 }
 
 Future<void> XFixes::InvertRegion(const XFixes::InvertRegionRequest& request) {
@@ -942,6 +1040,13 @@ Future<void> XFixes::InvertRegion(const XFixes::InvertRegionRequest& request) {
   return connection_->SendRequest<void>(&buf, "XFixes::InvertRegion", false);
 }
 
+Future<void> XFixes::InvertRegion(const Region& source,
+                                  const Rectangle& bounds,
+                                  const Region& destination) {
+  return XFixes::InvertRegion(
+      XFixes::InvertRegionRequest{source, bounds, destination});
+}
+
 Future<void> XFixes::TranslateRegion(
     const XFixes::TranslateRegionRequest& request) {
   if (!connection_->Ready() || !present())
@@ -979,6 +1084,13 @@ Future<void> XFixes::TranslateRegion(
   return connection_->SendRequest<void>(&buf, "XFixes::TranslateRegion", false);
 }
 
+Future<void> XFixes::TranslateRegion(const Region& region,
+                                     const int16_t& dx,
+                                     const int16_t& dy) {
+  return XFixes::TranslateRegion(
+      XFixes::TranslateRegionRequest{region, dx, dy});
+}
+
 Future<void> XFixes::RegionExtents(
     const XFixes::RegionExtentsRequest& request) {
   if (!connection_->Ready() || !present())
@@ -1012,6 +1124,12 @@ Future<void> XFixes::RegionExtents(
   return connection_->SendRequest<void>(&buf, "XFixes::RegionExtents", false);
 }
 
+Future<void> XFixes::RegionExtents(const Region& source,
+                                   const Region& destination) {
+  return XFixes::RegionExtents(
+      XFixes::RegionExtentsRequest{source, destination});
+}
+
 Future<XFixes::FetchRegionReply> XFixes::FetchRegion(
     const XFixes::FetchRegionRequest& request) {
   if (!connection_->Ready() || !present())
@@ -1040,6 +1158,10 @@ Future<XFixes::FetchRegionReply> XFixes::FetchRegion(
 
   return connection_->SendRequest<XFixes::FetchRegionReply>(
       &buf, "XFixes::FetchRegion", false);
+}
+
+Future<XFixes::FetchRegionReply> XFixes::FetchRegion(const Region& region) {
+  return XFixes::FetchRegion(XFixes::FetchRegionRequest{region});
 }
 
 template <>
@@ -1162,6 +1284,14 @@ Future<void> XFixes::SetGCClipRegion(
   return connection_->SendRequest<void>(&buf, "XFixes::SetGCClipRegion", false);
 }
 
+Future<void> XFixes::SetGCClipRegion(const GraphicsContext& gc,
+                                     const Region& region,
+                                     const int16_t& x_origin,
+                                     const int16_t& y_origin) {
+  return XFixes::SetGCClipRegion(
+      XFixes::SetGCClipRegionRequest{gc, region, x_origin, y_origin});
+}
+
 Future<void> XFixes::SetWindowShapeRegion(
     const XFixes::SetWindowShapeRegionRequest& request) {
   if (!connection_->Ready() || !present())
@@ -1213,6 +1343,15 @@ Future<void> XFixes::SetWindowShapeRegion(
                                         false);
 }
 
+Future<void> XFixes::SetWindowShapeRegion(const Window& dest,
+                                          const Shape::Sk& dest_kind,
+                                          const int16_t& x_offset,
+                                          const int16_t& y_offset,
+                                          const Region& region) {
+  return XFixes::SetWindowShapeRegion(XFixes::SetWindowShapeRegionRequest{
+      dest, dest_kind, x_offset, y_offset, region});
+}
+
 Future<void> XFixes::SetPictureClipRegion(
     const XFixes::SetPictureClipRegionRequest& request) {
   if (!connection_->Ready() || !present())
@@ -1253,6 +1392,14 @@ Future<void> XFixes::SetPictureClipRegion(
 
   return connection_->SendRequest<void>(&buf, "XFixes::SetPictureClipRegion",
                                         false);
+}
+
+Future<void> XFixes::SetPictureClipRegion(const Render::Picture& picture,
+                                          const Region& region,
+                                          const int16_t& x_origin,
+                                          const int16_t& y_origin) {
+  return XFixes::SetPictureClipRegion(
+      XFixes::SetPictureClipRegionRequest{picture, region, x_origin, y_origin});
 }
 
 Future<void> XFixes::SetCursorName(
@@ -1301,6 +1448,11 @@ Future<void> XFixes::SetCursorName(
   return connection_->SendRequest<void>(&buf, "XFixes::SetCursorName", false);
 }
 
+Future<void> XFixes::SetCursorName(const Cursor& cursor,
+                                   const std::string& name) {
+  return XFixes::SetCursorName(XFixes::SetCursorNameRequest{cursor, name});
+}
+
 Future<XFixes::GetCursorNameReply> XFixes::GetCursorName(
     const XFixes::GetCursorNameRequest& request) {
   if (!connection_->Ready() || !present())
@@ -1329,6 +1481,10 @@ Future<XFixes::GetCursorNameReply> XFixes::GetCursorName(
 
   return connection_->SendRequest<XFixes::GetCursorNameReply>(
       &buf, "XFixes::GetCursorName", false);
+}
+
+Future<XFixes::GetCursorNameReply> XFixes::GetCursorName(const Cursor& cursor) {
+  return XFixes::GetCursorName(XFixes::GetCursorNameRequest{cursor});
 }
 
 template <>
@@ -1403,6 +1559,10 @@ Future<XFixes::GetCursorImageAndNameReply> XFixes::GetCursorImageAndName(
 
   return connection_->SendRequest<XFixes::GetCursorImageAndNameReply>(
       &buf, "XFixes::GetCursorImageAndName", false);
+}
+
+Future<XFixes::GetCursorImageAndNameReply> XFixes::GetCursorImageAndName() {
+  return XFixes::GetCursorImageAndName(XFixes::GetCursorImageAndNameRequest{});
 }
 
 template <>
@@ -1523,6 +1683,11 @@ Future<void> XFixes::ChangeCursor(const XFixes::ChangeCursorRequest& request) {
   return connection_->SendRequest<void>(&buf, "XFixes::ChangeCursor", false);
 }
 
+Future<void> XFixes::ChangeCursor(const Cursor& source,
+                                  const Cursor& destination) {
+  return XFixes::ChangeCursor(XFixes::ChangeCursorRequest{source, destination});
+}
+
 Future<void> XFixes::ChangeCursorByName(
     const XFixes::ChangeCursorByNameRequest& request) {
   if (!connection_->Ready() || !present())
@@ -1568,6 +1733,12 @@ Future<void> XFixes::ChangeCursorByName(
 
   return connection_->SendRequest<void>(&buf, "XFixes::ChangeCursorByName",
                                         false);
+}
+
+Future<void> XFixes::ChangeCursorByName(const Cursor& src,
+                                        const std::string& name) {
+  return XFixes::ChangeCursorByName(
+      XFixes::ChangeCursorByNameRequest{src, name});
 }
 
 Future<void> XFixes::ExpandRegion(const XFixes::ExpandRegionRequest& request) {
@@ -1618,6 +1789,16 @@ Future<void> XFixes::ExpandRegion(const XFixes::ExpandRegionRequest& request) {
   return connection_->SendRequest<void>(&buf, "XFixes::ExpandRegion", false);
 }
 
+Future<void> XFixes::ExpandRegion(const Region& source,
+                                  const Region& destination,
+                                  const uint16_t& left,
+                                  const uint16_t& right,
+                                  const uint16_t& top,
+                                  const uint16_t& bottom) {
+  return XFixes::ExpandRegion(XFixes::ExpandRegionRequest{
+      source, destination, left, right, top, bottom});
+}
+
 Future<void> XFixes::HideCursor(const XFixes::HideCursorRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -1646,6 +1827,10 @@ Future<void> XFixes::HideCursor(const XFixes::HideCursorRequest& request) {
   return connection_->SendRequest<void>(&buf, "XFixes::HideCursor", false);
 }
 
+Future<void> XFixes::HideCursor(const Window& window) {
+  return XFixes::HideCursor(XFixes::HideCursorRequest{window});
+}
+
 Future<void> XFixes::ShowCursor(const XFixes::ShowCursorRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -1672,6 +1857,10 @@ Future<void> XFixes::ShowCursor(const XFixes::ShowCursorRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "XFixes::ShowCursor", false);
+}
+
+Future<void> XFixes::ShowCursor(const Window& window) {
+  return XFixes::ShowCursor(XFixes::ShowCursorRequest{window});
 }
 
 Future<void> XFixes::CreatePointerBarrier(
@@ -1747,6 +1936,19 @@ Future<void> XFixes::CreatePointerBarrier(
                                         false);
 }
 
+Future<void> XFixes::CreatePointerBarrier(
+    const Barrier& barrier,
+    const Window& window,
+    const uint16_t& x1,
+    const uint16_t& y1,
+    const uint16_t& x2,
+    const uint16_t& y2,
+    const BarrierDirections& directions,
+    const std::vector<uint16_t>& devices) {
+  return XFixes::CreatePointerBarrier(XFixes::CreatePointerBarrierRequest{
+      barrier, window, x1, y1, x2, y2, directions, devices});
+}
+
 Future<void> XFixes::DeletePointerBarrier(
     const XFixes::DeletePointerBarrierRequest& request) {
   if (!connection_->Ready() || !present())
@@ -1775,6 +1977,11 @@ Future<void> XFixes::DeletePointerBarrier(
 
   return connection_->SendRequest<void>(&buf, "XFixes::DeletePointerBarrier",
                                         false);
+}
+
+Future<void> XFixes::DeletePointerBarrier(const Barrier& barrier) {
+  return XFixes::DeletePointerBarrier(
+      XFixes::DeletePointerBarrierRequest{barrier});
 }
 
 }  // namespace x11

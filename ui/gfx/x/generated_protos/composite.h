@@ -53,6 +53,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "ui/gfx/x/error.h"
+#include "ui/gfx/x/ref_counted_fd.h"
 #include "xfixes.h"
 #include "xproto.h"
 
@@ -100,6 +101,10 @@ class COMPONENT_EXPORT(X11) Composite {
 
   Future<QueryVersionReply> QueryVersion(const QueryVersionRequest& request);
 
+  Future<QueryVersionReply> QueryVersion(
+      const uint32_t& client_major_version = {},
+      const uint32_t& client_minor_version = {});
+
   struct RedirectWindowRequest {
     Window window{};
     Redirect update{};
@@ -108,6 +113,9 @@ class COMPONENT_EXPORT(X11) Composite {
   using RedirectWindowResponse = Response<void>;
 
   Future<void> RedirectWindow(const RedirectWindowRequest& request);
+
+  Future<void> RedirectWindow(const Window& window = {},
+                              const Redirect& update = {});
 
   struct RedirectSubwindowsRequest {
     Window window{};
@@ -118,6 +126,9 @@ class COMPONENT_EXPORT(X11) Composite {
 
   Future<void> RedirectSubwindows(const RedirectSubwindowsRequest& request);
 
+  Future<void> RedirectSubwindows(const Window& window = {},
+                                  const Redirect& update = {});
+
   struct UnredirectWindowRequest {
     Window window{};
     Redirect update{};
@@ -127,6 +138,9 @@ class COMPONENT_EXPORT(X11) Composite {
 
   Future<void> UnredirectWindow(const UnredirectWindowRequest& request);
 
+  Future<void> UnredirectWindow(const Window& window = {},
+                                const Redirect& update = {});
+
   struct UnredirectSubwindowsRequest {
     Window window{};
     Redirect update{};
@@ -135,6 +149,9 @@ class COMPONENT_EXPORT(X11) Composite {
   using UnredirectSubwindowsResponse = Response<void>;
 
   Future<void> UnredirectSubwindows(const UnredirectSubwindowsRequest& request);
+
+  Future<void> UnredirectSubwindows(const Window& window = {},
+                                    const Redirect& update = {});
 
   struct CreateRegionFromBorderClipRequest {
     XFixes::Region region{};
@@ -146,6 +163,9 @@ class COMPONENT_EXPORT(X11) Composite {
   Future<void> CreateRegionFromBorderClip(
       const CreateRegionFromBorderClipRequest& request);
 
+  Future<void> CreateRegionFromBorderClip(const XFixes::Region& region = {},
+                                          const Window& window = {});
+
   struct NameWindowPixmapRequest {
     Window window{};
     Pixmap pixmap{};
@@ -154,6 +174,9 @@ class COMPONENT_EXPORT(X11) Composite {
   using NameWindowPixmapResponse = Response<void>;
 
   Future<void> NameWindowPixmap(const NameWindowPixmapRequest& request);
+
+  Future<void> NameWindowPixmap(const Window& window = {},
+                                const Pixmap& pixmap = {});
 
   struct GetOverlayWindowRequest {
     Window window{};
@@ -169,6 +192,8 @@ class COMPONENT_EXPORT(X11) Composite {
   Future<GetOverlayWindowReply> GetOverlayWindow(
       const GetOverlayWindowRequest& request);
 
+  Future<GetOverlayWindowReply> GetOverlayWindow(const Window& window = {});
+
   struct ReleaseOverlayWindowRequest {
     Window window{};
   };
@@ -176,6 +201,8 @@ class COMPONENT_EXPORT(X11) Composite {
   using ReleaseOverlayWindowResponse = Response<void>;
 
   Future<void> ReleaseOverlayWindow(const ReleaseOverlayWindowRequest& request);
+
+  Future<void> ReleaseOverlayWindow(const Window& window = {});
 
  private:
   Connection* const connection_;

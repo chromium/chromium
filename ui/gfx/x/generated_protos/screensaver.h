@@ -53,6 +53,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "ui/gfx/x/error.h"
+#include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
 
 namespace x11 {
@@ -127,6 +128,10 @@ class COMPONENT_EXPORT(X11) ScreenSaver {
 
   Future<QueryVersionReply> QueryVersion(const QueryVersionRequest& request);
 
+  Future<QueryVersionReply> QueryVersion(
+      const uint8_t& client_major_version = {},
+      const uint8_t& client_minor_version = {});
+
   struct QueryInfoRequest {
     Drawable drawable{};
   };
@@ -145,6 +150,8 @@ class COMPONENT_EXPORT(X11) ScreenSaver {
 
   Future<QueryInfoReply> QueryInfo(const QueryInfoRequest& request);
 
+  Future<QueryInfoReply> QueryInfo(const Drawable& drawable = {});
+
   struct SelectInputRequest {
     Drawable drawable{};
     Event event_mask{};
@@ -153,6 +160,9 @@ class COMPONENT_EXPORT(X11) ScreenSaver {
   using SelectInputResponse = Response<void>;
 
   Future<void> SelectInput(const SelectInputRequest& request);
+
+  Future<void> SelectInput(const Drawable& drawable = {},
+                           const Event& event_mask = {});
 
   struct SetAttributesRequest {
     Drawable drawable{};
@@ -185,6 +195,32 @@ class COMPONENT_EXPORT(X11) ScreenSaver {
 
   Future<void> SetAttributes(const SetAttributesRequest& request);
 
+  Future<void> SetAttributes(
+      const Drawable& drawable = {},
+      const int16_t& x = {},
+      const int16_t& y = {},
+      const uint16_t& width = {},
+      const uint16_t& height = {},
+      const uint16_t& border_width = {},
+      const WindowClass& c_class = {},
+      const uint8_t& depth = {},
+      const VisualId& visual = {},
+      const base::Optional<Pixmap>& background_pixmap = base::nullopt,
+      const base::Optional<uint32_t>& background_pixel = base::nullopt,
+      const base::Optional<Pixmap>& border_pixmap = base::nullopt,
+      const base::Optional<uint32_t>& border_pixel = base::nullopt,
+      const base::Optional<Gravity>& bit_gravity = base::nullopt,
+      const base::Optional<Gravity>& win_gravity = base::nullopt,
+      const base::Optional<BackingStore>& backing_store = base::nullopt,
+      const base::Optional<uint32_t>& backing_planes = base::nullopt,
+      const base::Optional<uint32_t>& backing_pixel = base::nullopt,
+      const base::Optional<Bool32>& override_redirect = base::nullopt,
+      const base::Optional<Bool32>& save_under = base::nullopt,
+      const base::Optional<EventMask>& event_mask = base::nullopt,
+      const base::Optional<EventMask>& do_not_propogate_mask = base::nullopt,
+      const base::Optional<ColorMap>& colormap = base::nullopt,
+      const base::Optional<Cursor>& cursor = base::nullopt);
+
   struct UnsetAttributesRequest {
     Drawable drawable{};
   };
@@ -193,6 +229,8 @@ class COMPONENT_EXPORT(X11) ScreenSaver {
 
   Future<void> UnsetAttributes(const UnsetAttributesRequest& request);
 
+  Future<void> UnsetAttributes(const Drawable& drawable = {});
+
   struct SuspendRequest {
     uint32_t suspend{};
   };
@@ -200,6 +238,8 @@ class COMPONENT_EXPORT(X11) ScreenSaver {
   using SuspendResponse = Response<void>;
 
   Future<void> Suspend(const SuspendRequest& request);
+
+  Future<void> Suspend(const uint32_t& suspend = {});
 
  private:
   Connection* const connection_;

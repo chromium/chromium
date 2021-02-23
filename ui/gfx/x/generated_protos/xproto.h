@@ -53,6 +53,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "ui/gfx/x/error.h"
+#include "ui/gfx/x/ref_counted_fd.h"
 
 namespace x11 {
 
@@ -2780,268 +2781,853 @@ class COMPONENT_EXPORT(X11) XProto {
 
   Future<void> CreateWindow(const CreateWindowRequest& request);
 
+  Future<void> CreateWindow(
+      const uint8_t& depth = {},
+      const Window& wid = {},
+      const Window& parent = {},
+      const int16_t& x = {},
+      const int16_t& y = {},
+      const uint16_t& width = {},
+      const uint16_t& height = {},
+      const uint16_t& border_width = {},
+      const WindowClass& c_class = {},
+      const VisualId& visual = {},
+      const base::Optional<Pixmap>& background_pixmap = base::nullopt,
+      const base::Optional<uint32_t>& background_pixel = base::nullopt,
+      const base::Optional<Pixmap>& border_pixmap = base::nullopt,
+      const base::Optional<uint32_t>& border_pixel = base::nullopt,
+      const base::Optional<Gravity>& bit_gravity = base::nullopt,
+      const base::Optional<Gravity>& win_gravity = base::nullopt,
+      const base::Optional<BackingStore>& backing_store = base::nullopt,
+      const base::Optional<uint32_t>& backing_planes = base::nullopt,
+      const base::Optional<uint32_t>& backing_pixel = base::nullopt,
+      const base::Optional<Bool32>& override_redirect = base::nullopt,
+      const base::Optional<Bool32>& save_under = base::nullopt,
+      const base::Optional<EventMask>& event_mask = base::nullopt,
+      const base::Optional<EventMask>& do_not_propogate_mask = base::nullopt,
+      const base::Optional<ColorMap>& colormap = base::nullopt,
+      const base::Optional<Cursor>& cursor = base::nullopt);
+
   Future<void> ChangeWindowAttributes(
       const ChangeWindowAttributesRequest& request);
+
+  Future<void> ChangeWindowAttributes(
+      const Window& window = {},
+      const base::Optional<Pixmap>& background_pixmap = base::nullopt,
+      const base::Optional<uint32_t>& background_pixel = base::nullopt,
+      const base::Optional<Pixmap>& border_pixmap = base::nullopt,
+      const base::Optional<uint32_t>& border_pixel = base::nullopt,
+      const base::Optional<Gravity>& bit_gravity = base::nullopt,
+      const base::Optional<Gravity>& win_gravity = base::nullopt,
+      const base::Optional<BackingStore>& backing_store = base::nullopt,
+      const base::Optional<uint32_t>& backing_planes = base::nullopt,
+      const base::Optional<uint32_t>& backing_pixel = base::nullopt,
+      const base::Optional<Bool32>& override_redirect = base::nullopt,
+      const base::Optional<Bool32>& save_under = base::nullopt,
+      const base::Optional<EventMask>& event_mask = base::nullopt,
+      const base::Optional<EventMask>& do_not_propogate_mask = base::nullopt,
+      const base::Optional<ColorMap>& colormap = base::nullopt,
+      const base::Optional<Cursor>& cursor = base::nullopt);
 
   Future<GetWindowAttributesReply> GetWindowAttributes(
       const GetWindowAttributesRequest& request);
 
+  Future<GetWindowAttributesReply> GetWindowAttributes(
+      const Window& window = {});
+
   Future<void> DestroyWindow(const DestroyWindowRequest& request);
+
+  Future<void> DestroyWindow(const Window& window = {});
 
   Future<void> DestroySubwindows(const DestroySubwindowsRequest& request);
 
+  Future<void> DestroySubwindows(const Window& window = {});
+
   Future<void> ChangeSaveSet(const ChangeSaveSetRequest& request);
+
+  Future<void> ChangeSaveSet(const SetMode& mode = {},
+                             const Window& window = {});
 
   Future<void> ReparentWindow(const ReparentWindowRequest& request);
 
+  Future<void> ReparentWindow(const Window& window = {},
+                              const Window& parent = {},
+                              const int16_t& x = {},
+                              const int16_t& y = {});
+
   Future<void> MapWindow(const MapWindowRequest& request);
+
+  Future<void> MapWindow(const Window& window = {});
 
   Future<void> MapSubwindows(const MapSubwindowsRequest& request);
 
+  Future<void> MapSubwindows(const Window& window = {});
+
   Future<void> UnmapWindow(const UnmapWindowRequest& request);
+
+  Future<void> UnmapWindow(const Window& window = {});
 
   Future<void> UnmapSubwindows(const UnmapSubwindowsRequest& request);
 
+  Future<void> UnmapSubwindows(const Window& window = {});
+
   Future<void> ConfigureWindow(const ConfigureWindowRequest& request);
+
+  Future<void> ConfigureWindow(
+      const Window& window = {},
+      const base::Optional<int32_t>& x = base::nullopt,
+      const base::Optional<int32_t>& y = base::nullopt,
+      const base::Optional<uint32_t>& width = base::nullopt,
+      const base::Optional<uint32_t>& height = base::nullopt,
+      const base::Optional<uint32_t>& border_width = base::nullopt,
+      const base::Optional<Window>& sibling = base::nullopt,
+      const base::Optional<StackMode>& stack_mode = base::nullopt);
 
   Future<void> CirculateWindow(const CirculateWindowRequest& request);
 
+  Future<void> CirculateWindow(const Circulate& direction = {},
+                               const Window& window = {});
+
   Future<GetGeometryReply> GetGeometry(const GetGeometryRequest& request);
+
+  Future<GetGeometryReply> GetGeometry(const Drawable& drawable = {});
 
   Future<QueryTreeReply> QueryTree(const QueryTreeRequest& request);
 
+  Future<QueryTreeReply> QueryTree(const Window& window = {});
+
   Future<InternAtomReply> InternAtom(const InternAtomRequest& request);
+
+  Future<InternAtomReply> InternAtom(const uint8_t& only_if_exists = {},
+                                     const std::string& name = {});
 
   Future<GetAtomNameReply> GetAtomName(const GetAtomNameRequest& request);
 
+  Future<GetAtomNameReply> GetAtomName(const Atom& atom = {});
+
   Future<void> ChangeProperty(const ChangePropertyRequest& request);
+
+  Future<void> ChangeProperty(
+      const PropMode& mode = {},
+      const Window& window = {},
+      const Atom& property = {},
+      const Atom& type = {},
+      const uint8_t& format = {},
+      const uint32_t& data_len = {},
+      const scoped_refptr<base::RefCountedMemory>& data = {});
 
   Future<void> DeleteProperty(const DeletePropertyRequest& request);
 
+  Future<void> DeleteProperty(const Window& window = {},
+                              const Atom& property = {});
+
   Future<GetPropertyReply> GetProperty(const GetPropertyRequest& request);
+
+  Future<GetPropertyReply> GetProperty(const uint8_t& c_delete = {},
+                                       const Window& window = {},
+                                       const Atom& property = {},
+                                       const Atom& type = {},
+                                       const uint32_t& long_offset = {},
+                                       const uint32_t& long_length = {});
 
   Future<ListPropertiesReply> ListProperties(
       const ListPropertiesRequest& request);
 
+  Future<ListPropertiesReply> ListProperties(const Window& window = {});
+
   Future<void> SetSelectionOwner(const SetSelectionOwnerRequest& request);
+
+  Future<void> SetSelectionOwner(const Window& owner = {},
+                                 const Atom& selection = {},
+                                 const Time& time = {});
 
   Future<GetSelectionOwnerReply> GetSelectionOwner(
       const GetSelectionOwnerRequest& request);
 
+  Future<GetSelectionOwnerReply> GetSelectionOwner(const Atom& selection = {});
+
   Future<void> ConvertSelection(const ConvertSelectionRequest& request);
+
+  Future<void> ConvertSelection(const Window& requestor = {},
+                                const Atom& selection = {},
+                                const Atom& target = {},
+                                const Atom& property = {},
+                                const Time& time = {});
 
   Future<void> SendEvent(const SendEventRequest& request);
 
+  Future<void> SendEvent(const uint8_t& propagate = {},
+                         const Window& destination = {},
+                         const EventMask& event_mask = {},
+                         const std::array<char, 32>& event = {});
+
   Future<GrabPointerReply> GrabPointer(const GrabPointerRequest& request);
+
+  Future<GrabPointerReply> GrabPointer(const uint8_t& owner_events = {},
+                                       const Window& grab_window = {},
+                                       const EventMask& event_mask = {},
+                                       const GrabMode& pointer_mode = {},
+                                       const GrabMode& keyboard_mode = {},
+                                       const Window& confine_to = {},
+                                       const Cursor& cursor = {},
+                                       const Time& time = {});
 
   Future<void> UngrabPointer(const UngrabPointerRequest& request);
 
+  Future<void> UngrabPointer(const Time& time = {});
+
   Future<void> GrabButton(const GrabButtonRequest& request);
 
+  Future<void> GrabButton(const uint8_t& owner_events = {},
+                          const Window& grab_window = {},
+                          const EventMask& event_mask = {},
+                          const GrabMode& pointer_mode = {},
+                          const GrabMode& keyboard_mode = {},
+                          const Window& confine_to = {},
+                          const Cursor& cursor = {},
+                          const ButtonIndex& button = {},
+                          const ModMask& modifiers = {});
+
   Future<void> UngrabButton(const UngrabButtonRequest& request);
+
+  Future<void> UngrabButton(const ButtonIndex& button = {},
+                            const Window& grab_window = {},
+                            const ModMask& modifiers = {});
 
   Future<void> ChangeActivePointerGrab(
       const ChangeActivePointerGrabRequest& request);
 
+  Future<void> ChangeActivePointerGrab(const Cursor& cursor = {},
+                                       const Time& time = {},
+                                       const EventMask& event_mask = {});
+
   Future<GrabKeyboardReply> GrabKeyboard(const GrabKeyboardRequest& request);
+
+  Future<GrabKeyboardReply> GrabKeyboard(const uint8_t& owner_events = {},
+                                         const Window& grab_window = {},
+                                         const Time& time = {},
+                                         const GrabMode& pointer_mode = {},
+                                         const GrabMode& keyboard_mode = {});
 
   Future<void> UngrabKeyboard(const UngrabKeyboardRequest& request);
 
+  Future<void> UngrabKeyboard(const Time& time = {});
+
   Future<void> GrabKey(const GrabKeyRequest& request);
+
+  Future<void> GrabKey(const uint8_t& owner_events = {},
+                       const Window& grab_window = {},
+                       const ModMask& modifiers = {},
+                       const KeyCode& key = {},
+                       const GrabMode& pointer_mode = {},
+                       const GrabMode& keyboard_mode = {});
 
   Future<void> UngrabKey(const UngrabKeyRequest& request);
 
+  Future<void> UngrabKey(const KeyCode& key = {},
+                         const Window& grab_window = {},
+                         const ModMask& modifiers = {});
+
   Future<void> AllowEvents(const AllowEventsRequest& request);
+
+  Future<void> AllowEvents(const Allow& mode = {}, const Time& time = {});
 
   Future<void> GrabServer(const GrabServerRequest& request);
 
+  Future<void> GrabServer();
+
   Future<void> UngrabServer(const UngrabServerRequest& request);
 
+  Future<void> UngrabServer();
+
   Future<QueryPointerReply> QueryPointer(const QueryPointerRequest& request);
+
+  Future<QueryPointerReply> QueryPointer(const Window& window = {});
 
   Future<GetMotionEventsReply> GetMotionEvents(
       const GetMotionEventsRequest& request);
 
+  Future<GetMotionEventsReply> GetMotionEvents(const Window& window = {},
+                                               const Time& start = {},
+                                               const Time& stop = {});
+
   Future<TranslateCoordinatesReply> TranslateCoordinates(
       const TranslateCoordinatesRequest& request);
 
+  Future<TranslateCoordinatesReply> TranslateCoordinates(
+      const Window& src_window = {},
+      const Window& dst_window = {},
+      const int16_t& src_x = {},
+      const int16_t& src_y = {});
+
   Future<void> WarpPointer(const WarpPointerRequest& request);
+
+  Future<void> WarpPointer(const Window& src_window = {},
+                           const Window& dst_window = {},
+                           const int16_t& src_x = {},
+                           const int16_t& src_y = {},
+                           const uint16_t& src_width = {},
+                           const uint16_t& src_height = {},
+                           const int16_t& dst_x = {},
+                           const int16_t& dst_y = {});
 
   Future<void> SetInputFocus(const SetInputFocusRequest& request);
 
+  Future<void> SetInputFocus(const InputFocus& revert_to = {},
+                             const Window& focus = {},
+                             const Time& time = {});
+
   Future<GetInputFocusReply> GetInputFocus(const GetInputFocusRequest& request);
+
+  Future<GetInputFocusReply> GetInputFocus();
 
   Future<QueryKeymapReply> QueryKeymap(const QueryKeymapRequest& request);
 
+  Future<QueryKeymapReply> QueryKeymap();
+
   Future<void> OpenFont(const OpenFontRequest& request);
+
+  Future<void> OpenFont(const Font& fid = {}, const std::string& name = {});
 
   Future<void> CloseFont(const CloseFontRequest& request);
 
+  Future<void> CloseFont(const Font& font = {});
+
   Future<QueryFontReply> QueryFont(const QueryFontRequest& request);
+
+  Future<QueryFontReply> QueryFont(const Fontable& font = {});
 
   Future<QueryTextExtentsReply> QueryTextExtents(
       const QueryTextExtentsRequest& request);
 
+  Future<QueryTextExtentsReply> QueryTextExtents(
+      const Fontable& font = {},
+      const std::vector<Char16>& string = {});
+
   Future<ListFontsReply> ListFonts(const ListFontsRequest& request);
+
+  Future<ListFontsReply> ListFonts(const uint16_t& max_names = {},
+                                   const std::string& pattern = {});
 
   Future<ListFontsWithInfoReply> ListFontsWithInfo(
       const ListFontsWithInfoRequest& request);
 
+  Future<ListFontsWithInfoReply> ListFontsWithInfo(
+      const uint16_t& max_names = {},
+      const std::string& pattern = {});
+
   Future<void> SetFontPath(const SetFontPathRequest& request);
+
+  Future<void> SetFontPath(const std::vector<Str>& font = {});
 
   Future<GetFontPathReply> GetFontPath(const GetFontPathRequest& request);
 
+  Future<GetFontPathReply> GetFontPath();
+
   Future<void> CreatePixmap(const CreatePixmapRequest& request);
+
+  Future<void> CreatePixmap(const uint8_t& depth = {},
+                            const Pixmap& pid = {},
+                            const Drawable& drawable = {},
+                            const uint16_t& width = {},
+                            const uint16_t& height = {});
 
   Future<void> FreePixmap(const FreePixmapRequest& request);
 
+  Future<void> FreePixmap(const Pixmap& pixmap = {});
+
   Future<void> CreateGC(const CreateGCRequest& request);
+
+  Future<void> CreateGC(
+      const GraphicsContext& cid = {},
+      const Drawable& drawable = {},
+      const base::Optional<Gx>& function = base::nullopt,
+      const base::Optional<uint32_t>& plane_mask = base::nullopt,
+      const base::Optional<uint32_t>& foreground = base::nullopt,
+      const base::Optional<uint32_t>& background = base::nullopt,
+      const base::Optional<uint32_t>& line_width = base::nullopt,
+      const base::Optional<LineStyle>& line_style = base::nullopt,
+      const base::Optional<CapStyle>& cap_style = base::nullopt,
+      const base::Optional<JoinStyle>& join_style = base::nullopt,
+      const base::Optional<FillStyle>& fill_style = base::nullopt,
+      const base::Optional<FillRule>& fill_rule = base::nullopt,
+      const base::Optional<Pixmap>& tile = base::nullopt,
+      const base::Optional<Pixmap>& stipple = base::nullopt,
+      const base::Optional<int32_t>& tile_stipple_x_origin = base::nullopt,
+      const base::Optional<int32_t>& tile_stipple_y_origin = base::nullopt,
+      const base::Optional<Font>& font = base::nullopt,
+      const base::Optional<SubwindowMode>& subwindow_mode = base::nullopt,
+      const base::Optional<Bool32>& graphics_exposures = base::nullopt,
+      const base::Optional<int32_t>& clip_x_origin = base::nullopt,
+      const base::Optional<int32_t>& clip_y_origin = base::nullopt,
+      const base::Optional<Pixmap>& clip_mask = base::nullopt,
+      const base::Optional<uint32_t>& dash_offset = base::nullopt,
+      const base::Optional<uint32_t>& dashes = base::nullopt,
+      const base::Optional<ArcMode>& arc_mode = base::nullopt);
 
   Future<void> ChangeGC(const ChangeGCRequest& request);
 
+  Future<void> ChangeGC(
+      const GraphicsContext& gc = {},
+      const base::Optional<Gx>& function = base::nullopt,
+      const base::Optional<uint32_t>& plane_mask = base::nullopt,
+      const base::Optional<uint32_t>& foreground = base::nullopt,
+      const base::Optional<uint32_t>& background = base::nullopt,
+      const base::Optional<uint32_t>& line_width = base::nullopt,
+      const base::Optional<LineStyle>& line_style = base::nullopt,
+      const base::Optional<CapStyle>& cap_style = base::nullopt,
+      const base::Optional<JoinStyle>& join_style = base::nullopt,
+      const base::Optional<FillStyle>& fill_style = base::nullopt,
+      const base::Optional<FillRule>& fill_rule = base::nullopt,
+      const base::Optional<Pixmap>& tile = base::nullopt,
+      const base::Optional<Pixmap>& stipple = base::nullopt,
+      const base::Optional<int32_t>& tile_stipple_x_origin = base::nullopt,
+      const base::Optional<int32_t>& tile_stipple_y_origin = base::nullopt,
+      const base::Optional<Font>& font = base::nullopt,
+      const base::Optional<SubwindowMode>& subwindow_mode = base::nullopt,
+      const base::Optional<Bool32>& graphics_exposures = base::nullopt,
+      const base::Optional<int32_t>& clip_x_origin = base::nullopt,
+      const base::Optional<int32_t>& clip_y_origin = base::nullopt,
+      const base::Optional<Pixmap>& clip_mask = base::nullopt,
+      const base::Optional<uint32_t>& dash_offset = base::nullopt,
+      const base::Optional<uint32_t>& dashes = base::nullopt,
+      const base::Optional<ArcMode>& arc_mode = base::nullopt);
+
   Future<void> CopyGC(const CopyGCRequest& request);
+
+  Future<void> CopyGC(const GraphicsContext& src_gc = {},
+                      const GraphicsContext& dst_gc = {},
+                      const GraphicsContextAttribute& value_mask = {});
 
   Future<void> SetDashes(const SetDashesRequest& request);
 
+  Future<void> SetDashes(const GraphicsContext& gc = {},
+                         const uint16_t& dash_offset = {},
+                         const std::vector<uint8_t>& dashes = {});
+
   Future<void> SetClipRectangles(const SetClipRectanglesRequest& request);
+
+  Future<void> SetClipRectangles(const ClipOrdering& ordering = {},
+                                 const GraphicsContext& gc = {},
+                                 const int16_t& clip_x_origin = {},
+                                 const int16_t& clip_y_origin = {},
+                                 const std::vector<Rectangle>& rectangles = {});
 
   Future<void> FreeGC(const FreeGCRequest& request);
 
+  Future<void> FreeGC(const GraphicsContext& gc = {});
+
   Future<void> ClearArea(const ClearAreaRequest& request);
+
+  Future<void> ClearArea(const uint8_t& exposures = {},
+                         const Window& window = {},
+                         const int16_t& x = {},
+                         const int16_t& y = {},
+                         const uint16_t& width = {},
+                         const uint16_t& height = {});
 
   Future<void> CopyArea(const CopyAreaRequest& request);
 
+  Future<void> CopyArea(const Drawable& src_drawable = {},
+                        const Drawable& dst_drawable = {},
+                        const GraphicsContext& gc = {},
+                        const int16_t& src_x = {},
+                        const int16_t& src_y = {},
+                        const int16_t& dst_x = {},
+                        const int16_t& dst_y = {},
+                        const uint16_t& width = {},
+                        const uint16_t& height = {});
+
   Future<void> CopyPlane(const CopyPlaneRequest& request);
+
+  Future<void> CopyPlane(const Drawable& src_drawable = {},
+                         const Drawable& dst_drawable = {},
+                         const GraphicsContext& gc = {},
+                         const int16_t& src_x = {},
+                         const int16_t& src_y = {},
+                         const int16_t& dst_x = {},
+                         const int16_t& dst_y = {},
+                         const uint16_t& width = {},
+                         const uint16_t& height = {},
+                         const uint32_t& bit_plane = {});
 
   Future<void> PolyPoint(const PolyPointRequest& request);
 
+  Future<void> PolyPoint(const CoordMode& coordinate_mode = {},
+                         const Drawable& drawable = {},
+                         const GraphicsContext& gc = {},
+                         const std::vector<Point>& points = {});
+
   Future<void> PolyLine(const PolyLineRequest& request);
+
+  Future<void> PolyLine(const CoordMode& coordinate_mode = {},
+                        const Drawable& drawable = {},
+                        const GraphicsContext& gc = {},
+                        const std::vector<Point>& points = {});
 
   Future<void> PolySegment(const PolySegmentRequest& request);
 
+  Future<void> PolySegment(const Drawable& drawable = {},
+                           const GraphicsContext& gc = {},
+                           const std::vector<Segment>& segments = {});
+
   Future<void> PolyRectangle(const PolyRectangleRequest& request);
+
+  Future<void> PolyRectangle(const Drawable& drawable = {},
+                             const GraphicsContext& gc = {},
+                             const std::vector<Rectangle>& rectangles = {});
 
   Future<void> PolyArc(const PolyArcRequest& request);
 
+  Future<void> PolyArc(const Drawable& drawable = {},
+                       const GraphicsContext& gc = {},
+                       const std::vector<Arc>& arcs = {});
+
   Future<void> FillPoly(const FillPolyRequest& request);
+
+  Future<void> FillPoly(const Drawable& drawable = {},
+                        const GraphicsContext& gc = {},
+                        const PolyShape& shape = {},
+                        const CoordMode& coordinate_mode = {},
+                        const std::vector<Point>& points = {});
 
   Future<void> PolyFillRectangle(const PolyFillRectangleRequest& request);
 
+  Future<void> PolyFillRectangle(const Drawable& drawable = {},
+                                 const GraphicsContext& gc = {},
+                                 const std::vector<Rectangle>& rectangles = {});
+
   Future<void> PolyFillArc(const PolyFillArcRequest& request);
+
+  Future<void> PolyFillArc(const Drawable& drawable = {},
+                           const GraphicsContext& gc = {},
+                           const std::vector<Arc>& arcs = {});
 
   Future<void> PutImage(const PutImageRequest& request);
 
+  Future<void> PutImage(const ImageFormat& format = {},
+                        const Drawable& drawable = {},
+                        const GraphicsContext& gc = {},
+                        const uint16_t& width = {},
+                        const uint16_t& height = {},
+                        const int16_t& dst_x = {},
+                        const int16_t& dst_y = {},
+                        const uint8_t& left_pad = {},
+                        const uint8_t& depth = {},
+                        const scoped_refptr<base::RefCountedMemory>& data = {});
+
   Future<GetImageReply> GetImage(const GetImageRequest& request);
+
+  Future<GetImageReply> GetImage(const ImageFormat& format = {},
+                                 const Drawable& drawable = {},
+                                 const int16_t& x = {},
+                                 const int16_t& y = {},
+                                 const uint16_t& width = {},
+                                 const uint16_t& height = {},
+                                 const uint32_t& plane_mask = {});
 
   Future<void> PolyText8(const PolyText8Request& request);
 
+  Future<void> PolyText8(const Drawable& drawable = {},
+                         const GraphicsContext& gc = {},
+                         const int16_t& x = {},
+                         const int16_t& y = {},
+                         const std::vector<uint8_t>& items = {});
+
   Future<void> PolyText16(const PolyText16Request& request);
+
+  Future<void> PolyText16(const Drawable& drawable = {},
+                          const GraphicsContext& gc = {},
+                          const int16_t& x = {},
+                          const int16_t& y = {},
+                          const std::vector<uint8_t>& items = {});
 
   Future<void> ImageText8(const ImageText8Request& request);
 
+  Future<void> ImageText8(const Drawable& drawable = {},
+                          const GraphicsContext& gc = {},
+                          const int16_t& x = {},
+                          const int16_t& y = {},
+                          const std::string& string = {});
+
   Future<void> ImageText16(const ImageText16Request& request);
+
+  Future<void> ImageText16(const Drawable& drawable = {},
+                           const GraphicsContext& gc = {},
+                           const int16_t& x = {},
+                           const int16_t& y = {},
+                           const std::vector<Char16>& string = {});
 
   Future<void> CreateColormap(const CreateColormapRequest& request);
 
+  Future<void> CreateColormap(const ColormapAlloc& alloc = {},
+                              const ColorMap& mid = {},
+                              const Window& window = {},
+                              const VisualId& visual = {});
+
   Future<void> FreeColormap(const FreeColormapRequest& request);
+
+  Future<void> FreeColormap(const ColorMap& cmap = {});
 
   Future<void> CopyColormapAndFree(const CopyColormapAndFreeRequest& request);
 
+  Future<void> CopyColormapAndFree(const ColorMap& mid = {},
+                                   const ColorMap& src_cmap = {});
+
   Future<void> InstallColormap(const InstallColormapRequest& request);
 
+  Future<void> InstallColormap(const ColorMap& cmap = {});
+
   Future<void> UninstallColormap(const UninstallColormapRequest& request);
+
+  Future<void> UninstallColormap(const ColorMap& cmap = {});
 
   Future<ListInstalledColormapsReply> ListInstalledColormaps(
       const ListInstalledColormapsRequest& request);
 
+  Future<ListInstalledColormapsReply> ListInstalledColormaps(
+      const Window& window = {});
+
   Future<AllocColorReply> AllocColor(const AllocColorRequest& request);
+
+  Future<AllocColorReply> AllocColor(const ColorMap& cmap = {},
+                                     const uint16_t& red = {},
+                                     const uint16_t& green = {},
+                                     const uint16_t& blue = {});
 
   Future<AllocNamedColorReply> AllocNamedColor(
       const AllocNamedColorRequest& request);
 
+  Future<AllocNamedColorReply> AllocNamedColor(const ColorMap& cmap = {},
+                                               const std::string& name = {});
+
   Future<AllocColorCellsReply> AllocColorCells(
       const AllocColorCellsRequest& request);
+
+  Future<AllocColorCellsReply> AllocColorCells(const uint8_t& contiguous = {},
+                                               const ColorMap& cmap = {},
+                                               const uint16_t& colors = {},
+                                               const uint16_t& planes = {});
 
   Future<AllocColorPlanesReply> AllocColorPlanes(
       const AllocColorPlanesRequest& request);
 
+  Future<AllocColorPlanesReply> AllocColorPlanes(const uint8_t& contiguous = {},
+                                                 const ColorMap& cmap = {},
+                                                 const uint16_t& colors = {},
+                                                 const uint16_t& reds = {},
+                                                 const uint16_t& greens = {},
+                                                 const uint16_t& blues = {});
+
   Future<void> FreeColors(const FreeColorsRequest& request);
+
+  Future<void> FreeColors(const ColorMap& cmap = {},
+                          const uint32_t& plane_mask = {},
+                          const std::vector<uint32_t>& pixels = {});
 
   Future<void> StoreColors(const StoreColorsRequest& request);
 
+  Future<void> StoreColors(const ColorMap& cmap = {},
+                           const std::vector<ColorItem>& items = {});
+
   Future<void> StoreNamedColor(const StoreNamedColorRequest& request);
+
+  Future<void> StoreNamedColor(const ColorFlag& flags = {},
+                               const ColorMap& cmap = {},
+                               const uint32_t& pixel = {},
+                               const std::string& name = {});
 
   Future<QueryColorsReply> QueryColors(const QueryColorsRequest& request);
 
+  Future<QueryColorsReply> QueryColors(
+      const ColorMap& cmap = {},
+      const std::vector<uint32_t>& pixels = {});
+
   Future<LookupColorReply> LookupColor(const LookupColorRequest& request);
+
+  Future<LookupColorReply> LookupColor(const ColorMap& cmap = {},
+                                       const std::string& name = {});
 
   Future<void> CreateCursor(const CreateCursorRequest& request);
 
+  Future<void> CreateCursor(const Cursor& cid = {},
+                            const Pixmap& source = {},
+                            const Pixmap& mask = {},
+                            const uint16_t& fore_red = {},
+                            const uint16_t& fore_green = {},
+                            const uint16_t& fore_blue = {},
+                            const uint16_t& back_red = {},
+                            const uint16_t& back_green = {},
+                            const uint16_t& back_blue = {},
+                            const uint16_t& x = {},
+                            const uint16_t& y = {});
+
   Future<void> CreateGlyphCursor(const CreateGlyphCursorRequest& request);
+
+  Future<void> CreateGlyphCursor(const Cursor& cid = {},
+                                 const Font& source_font = {},
+                                 const Font& mask_font = {},
+                                 const uint16_t& source_char = {},
+                                 const uint16_t& mask_char = {},
+                                 const uint16_t& fore_red = {},
+                                 const uint16_t& fore_green = {},
+                                 const uint16_t& fore_blue = {},
+                                 const uint16_t& back_red = {},
+                                 const uint16_t& back_green = {},
+                                 const uint16_t& back_blue = {});
 
   Future<void> FreeCursor(const FreeCursorRequest& request);
 
+  Future<void> FreeCursor(const Cursor& cursor = {});
+
   Future<void> RecolorCursor(const RecolorCursorRequest& request);
 
+  Future<void> RecolorCursor(const Cursor& cursor = {},
+                             const uint16_t& fore_red = {},
+                             const uint16_t& fore_green = {},
+                             const uint16_t& fore_blue = {},
+                             const uint16_t& back_red = {},
+                             const uint16_t& back_green = {},
+                             const uint16_t& back_blue = {});
+
   Future<QueryBestSizeReply> QueryBestSize(const QueryBestSizeRequest& request);
+
+  Future<QueryBestSizeReply> QueryBestSize(const QueryShapeOf& c_class = {},
+                                           const Drawable& drawable = {},
+                                           const uint16_t& width = {},
+                                           const uint16_t& height = {});
 
   Future<QueryExtensionReply> QueryExtension(
       const QueryExtensionRequest& request);
 
+  Future<QueryExtensionReply> QueryExtension(const std::string& name = {});
+
   Future<ListExtensionsReply> ListExtensions(
       const ListExtensionsRequest& request);
+
+  Future<ListExtensionsReply> ListExtensions();
 
   Future<void> ChangeKeyboardMapping(
       const ChangeKeyboardMappingRequest& request);
 
+  Future<void> ChangeKeyboardMapping(const uint8_t& keycode_count = {},
+                                     const KeyCode& first_keycode = {},
+                                     const uint8_t& keysyms_per_keycode = {},
+                                     const std::vector<KeySym>& keysyms = {});
+
   Future<GetKeyboardMappingReply> GetKeyboardMapping(
       const GetKeyboardMappingRequest& request);
+
+  Future<GetKeyboardMappingReply> GetKeyboardMapping(
+      const KeyCode& first_keycode = {},
+      const uint8_t& count = {});
 
   Future<void> ChangeKeyboardControl(
       const ChangeKeyboardControlRequest& request);
 
+  Future<void> ChangeKeyboardControl(
+      const base::Optional<int32_t>& key_click_percent = base::nullopt,
+      const base::Optional<int32_t>& bell_percent = base::nullopt,
+      const base::Optional<int32_t>& bell_pitch = base::nullopt,
+      const base::Optional<int32_t>& bell_duration = base::nullopt,
+      const base::Optional<uint32_t>& led = base::nullopt,
+      const base::Optional<LedMode>& led_mode = base::nullopt,
+      const base::Optional<KeyCode32>& key = base::nullopt,
+      const base::Optional<AutoRepeatMode>& auto_repeat_mode = base::nullopt);
+
   Future<GetKeyboardControlReply> GetKeyboardControl(
       const GetKeyboardControlRequest& request);
 
+  Future<GetKeyboardControlReply> GetKeyboardControl();
+
   Future<void> Bell(const BellRequest& request);
 
+  Future<void> Bell(const int8_t& percent = {});
+
   Future<void> ChangePointerControl(const ChangePointerControlRequest& request);
+
+  Future<void> ChangePointerControl(
+      const int16_t& acceleration_numerator = {},
+      const int16_t& acceleration_denominator = {},
+      const int16_t& threshold = {},
+      const uint8_t& do_acceleration = {},
+      const uint8_t& do_threshold = {});
 
   Future<GetPointerControlReply> GetPointerControl(
       const GetPointerControlRequest& request);
 
+  Future<GetPointerControlReply> GetPointerControl();
+
   Future<void> SetScreenSaver(const SetScreenSaverRequest& request);
+
+  Future<void> SetScreenSaver(const int16_t& timeout = {},
+                              const int16_t& interval = {},
+                              const Blanking& prefer_blanking = {},
+                              const Exposures& allow_exposures = {});
 
   Future<GetScreenSaverReply> GetScreenSaver(
       const GetScreenSaverRequest& request);
 
+  Future<GetScreenSaverReply> GetScreenSaver();
+
   Future<void> ChangeHosts(const ChangeHostsRequest& request);
+
+  Future<void> ChangeHosts(const HostMode& mode = {},
+                           const Family& family = {},
+                           const std::vector<uint8_t>& address = {});
 
   Future<ListHostsReply> ListHosts(const ListHostsRequest& request);
 
+  Future<ListHostsReply> ListHosts();
+
   Future<void> SetAccessControl(const SetAccessControlRequest& request);
+
+  Future<void> SetAccessControl(const AccessControl& mode = {});
 
   Future<void> SetCloseDownMode(const SetCloseDownModeRequest& request);
 
+  Future<void> SetCloseDownMode(const CloseDown& mode = {});
+
   Future<void> KillClient(const KillClientRequest& request);
+
+  Future<void> KillClient(const uint32_t& resource = {});
 
   Future<void> RotateProperties(const RotatePropertiesRequest& request);
 
+  Future<void> RotateProperties(const Window& window = {},
+                                const int16_t& delta = {},
+                                const std::vector<Atom>& atoms = {});
+
   Future<void> ForceScreenSaver(const ForceScreenSaverRequest& request);
+
+  Future<void> ForceScreenSaver(const ScreenSaverMode& mode = {});
 
   Future<SetPointerMappingReply> SetPointerMapping(
       const SetPointerMappingRequest& request);
 
+  Future<SetPointerMappingReply> SetPointerMapping(
+      const std::vector<uint8_t>& map = {});
+
   Future<GetPointerMappingReply> GetPointerMapping(
       const GetPointerMappingRequest& request);
+
+  Future<GetPointerMappingReply> GetPointerMapping();
 
   Future<SetModifierMappingReply> SetModifierMapping(
       const SetModifierMappingRequest& request);
 
+  Future<SetModifierMappingReply> SetModifierMapping(
+      const uint8_t& keycodes_per_modifier = {},
+      const std::vector<KeyCode>& keycodes = {});
+
   Future<GetModifierMappingReply> GetModifierMapping(
       const GetModifierMappingRequest& request);
 
+  Future<GetModifierMappingReply> GetModifierMapping();
+
   Future<void> NoOperation(const NoOperationRequest& request);
+
+  Future<void> NoOperation();
 
  private:
   Connection* const connection_;

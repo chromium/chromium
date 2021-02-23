@@ -55,6 +55,7 @@
 #include "render.h"
 #include "shape.h"
 #include "ui/gfx/x/error.h"
+#include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
 
 namespace x11 {
@@ -179,6 +180,10 @@ class COMPONENT_EXPORT(X11) XFixes {
 
   Future<QueryVersionReply> QueryVersion(const QueryVersionRequest& request);
 
+  Future<QueryVersionReply> QueryVersion(
+      const uint32_t& client_major_version = {},
+      const uint32_t& client_minor_version = {});
+
   struct ChangeSaveSetRequest {
     SaveSetMode mode{};
     SaveSetTarget target{};
@@ -190,6 +195,11 @@ class COMPONENT_EXPORT(X11) XFixes {
 
   Future<void> ChangeSaveSet(const ChangeSaveSetRequest& request);
 
+  Future<void> ChangeSaveSet(const SaveSetMode& mode = {},
+                             const SaveSetTarget& target = {},
+                             const SaveSetMapping& map = {},
+                             const Window& window = {});
+
   struct SelectSelectionInputRequest {
     Window window{};
     Atom selection{};
@@ -200,6 +210,10 @@ class COMPONENT_EXPORT(X11) XFixes {
 
   Future<void> SelectSelectionInput(const SelectSelectionInputRequest& request);
 
+  Future<void> SelectSelectionInput(const Window& window = {},
+                                    const Atom& selection = {},
+                                    const SelectionEventMask& event_mask = {});
+
   struct SelectCursorInputRequest {
     Window window{};
     CursorNotifyMask event_mask{};
@@ -208,6 +222,9 @@ class COMPONENT_EXPORT(X11) XFixes {
   using SelectCursorInputResponse = Response<void>;
 
   Future<void> SelectCursorInput(const SelectCursorInputRequest& request);
+
+  Future<void> SelectCursorInput(const Window& window = {},
+                                 const CursorNotifyMask& event_mask = {});
 
   struct GetCursorImageRequest {};
 
@@ -228,6 +245,8 @@ class COMPONENT_EXPORT(X11) XFixes {
   Future<GetCursorImageReply> GetCursorImage(
       const GetCursorImageRequest& request);
 
+  Future<GetCursorImageReply> GetCursorImage();
+
   struct CreateRegionRequest {
     Region region{};
     std::vector<Rectangle> rectangles{};
@@ -236,6 +255,9 @@ class COMPONENT_EXPORT(X11) XFixes {
   using CreateRegionResponse = Response<void>;
 
   Future<void> CreateRegion(const CreateRegionRequest& request);
+
+  Future<void> CreateRegion(const Region& region = {},
+                            const std::vector<Rectangle>& rectangles = {});
 
   struct CreateRegionFromBitmapRequest {
     Region region{};
@@ -246,6 +268,9 @@ class COMPONENT_EXPORT(X11) XFixes {
 
   Future<void> CreateRegionFromBitmap(
       const CreateRegionFromBitmapRequest& request);
+
+  Future<void> CreateRegionFromBitmap(const Region& region = {},
+                                      const Pixmap& bitmap = {});
 
   struct CreateRegionFromWindowRequest {
     Region region{};
@@ -258,6 +283,10 @@ class COMPONENT_EXPORT(X11) XFixes {
   Future<void> CreateRegionFromWindow(
       const CreateRegionFromWindowRequest& request);
 
+  Future<void> CreateRegionFromWindow(const Region& region = {},
+                                      const Window& window = {},
+                                      const Shape::Sk& kind = {});
+
   struct CreateRegionFromGCRequest {
     Region region{};
     GraphicsContext gc{};
@@ -266,6 +295,9 @@ class COMPONENT_EXPORT(X11) XFixes {
   using CreateRegionFromGCResponse = Response<void>;
 
   Future<void> CreateRegionFromGC(const CreateRegionFromGCRequest& request);
+
+  Future<void> CreateRegionFromGC(const Region& region = {},
+                                  const GraphicsContext& gc = {});
 
   struct CreateRegionFromPictureRequest {
     Region region{};
@@ -277,6 +309,9 @@ class COMPONENT_EXPORT(X11) XFixes {
   Future<void> CreateRegionFromPicture(
       const CreateRegionFromPictureRequest& request);
 
+  Future<void> CreateRegionFromPicture(const Region& region = {},
+                                       const Render::Picture& picture = {});
+
   struct DestroyRegionRequest {
     Region region{};
   };
@@ -284,6 +319,8 @@ class COMPONENT_EXPORT(X11) XFixes {
   using DestroyRegionResponse = Response<void>;
 
   Future<void> DestroyRegion(const DestroyRegionRequest& request);
+
+  Future<void> DestroyRegion(const Region& region = {});
 
   struct SetRegionRequest {
     Region region{};
@@ -294,6 +331,9 @@ class COMPONENT_EXPORT(X11) XFixes {
 
   Future<void> SetRegion(const SetRegionRequest& request);
 
+  Future<void> SetRegion(const Region& region = {},
+                         const std::vector<Rectangle>& rectangles = {});
+
   struct CopyRegionRequest {
     Region source{};
     Region destination{};
@@ -302,6 +342,9 @@ class COMPONENT_EXPORT(X11) XFixes {
   using CopyRegionResponse = Response<void>;
 
   Future<void> CopyRegion(const CopyRegionRequest& request);
+
+  Future<void> CopyRegion(const Region& source = {},
+                          const Region& destination = {});
 
   struct UnionRegionRequest {
     Region source1{};
@@ -313,6 +356,10 @@ class COMPONENT_EXPORT(X11) XFixes {
 
   Future<void> UnionRegion(const UnionRegionRequest& request);
 
+  Future<void> UnionRegion(const Region& source1 = {},
+                           const Region& source2 = {},
+                           const Region& destination = {});
+
   struct IntersectRegionRequest {
     Region source1{};
     Region source2{};
@@ -322,6 +369,10 @@ class COMPONENT_EXPORT(X11) XFixes {
   using IntersectRegionResponse = Response<void>;
 
   Future<void> IntersectRegion(const IntersectRegionRequest& request);
+
+  Future<void> IntersectRegion(const Region& source1 = {},
+                               const Region& source2 = {},
+                               const Region& destination = {});
 
   struct SubtractRegionRequest {
     Region source1{};
@@ -333,6 +384,10 @@ class COMPONENT_EXPORT(X11) XFixes {
 
   Future<void> SubtractRegion(const SubtractRegionRequest& request);
 
+  Future<void> SubtractRegion(const Region& source1 = {},
+                              const Region& source2 = {},
+                              const Region& destination = {});
+
   struct InvertRegionRequest {
     Region source{};
     Rectangle bounds{};
@@ -342,6 +397,10 @@ class COMPONENT_EXPORT(X11) XFixes {
   using InvertRegionResponse = Response<void>;
 
   Future<void> InvertRegion(const InvertRegionRequest& request);
+
+  Future<void> InvertRegion(const Region& source = {},
+                            const Rectangle& bounds = {{}, {}, {}, {}},
+                            const Region& destination = {});
 
   struct TranslateRegionRequest {
     Region region{};
@@ -353,6 +412,10 @@ class COMPONENT_EXPORT(X11) XFixes {
 
   Future<void> TranslateRegion(const TranslateRegionRequest& request);
 
+  Future<void> TranslateRegion(const Region& region = {},
+                               const int16_t& dx = {},
+                               const int16_t& dy = {});
+
   struct RegionExtentsRequest {
     Region source{};
     Region destination{};
@@ -361,6 +424,9 @@ class COMPONENT_EXPORT(X11) XFixes {
   using RegionExtentsResponse = Response<void>;
 
   Future<void> RegionExtents(const RegionExtentsRequest& request);
+
+  Future<void> RegionExtents(const Region& source = {},
+                             const Region& destination = {});
 
   struct FetchRegionRequest {
     Region region{};
@@ -376,6 +442,8 @@ class COMPONENT_EXPORT(X11) XFixes {
 
   Future<FetchRegionReply> FetchRegion(const FetchRegionRequest& request);
 
+  Future<FetchRegionReply> FetchRegion(const Region& region = {});
+
   struct SetGCClipRegionRequest {
     GraphicsContext gc{};
     Region region{};
@@ -386,6 +454,11 @@ class COMPONENT_EXPORT(X11) XFixes {
   using SetGCClipRegionResponse = Response<void>;
 
   Future<void> SetGCClipRegion(const SetGCClipRegionRequest& request);
+
+  Future<void> SetGCClipRegion(const GraphicsContext& gc = {},
+                               const Region& region = {},
+                               const int16_t& x_origin = {},
+                               const int16_t& y_origin = {});
 
   struct SetWindowShapeRegionRequest {
     Window dest{};
@@ -399,6 +472,12 @@ class COMPONENT_EXPORT(X11) XFixes {
 
   Future<void> SetWindowShapeRegion(const SetWindowShapeRegionRequest& request);
 
+  Future<void> SetWindowShapeRegion(const Window& dest = {},
+                                    const Shape::Sk& dest_kind = {},
+                                    const int16_t& x_offset = {},
+                                    const int16_t& y_offset = {},
+                                    const Region& region = {});
+
   struct SetPictureClipRegionRequest {
     Render::Picture picture{};
     Region region{};
@@ -410,6 +489,11 @@ class COMPONENT_EXPORT(X11) XFixes {
 
   Future<void> SetPictureClipRegion(const SetPictureClipRegionRequest& request);
 
+  Future<void> SetPictureClipRegion(const Render::Picture& picture = {},
+                                    const Region& region = {},
+                                    const int16_t& x_origin = {},
+                                    const int16_t& y_origin = {});
+
   struct SetCursorNameRequest {
     Cursor cursor{};
     std::string name{};
@@ -418,6 +502,9 @@ class COMPONENT_EXPORT(X11) XFixes {
   using SetCursorNameResponse = Response<void>;
 
   Future<void> SetCursorName(const SetCursorNameRequest& request);
+
+  Future<void> SetCursorName(const Cursor& cursor = {},
+                             const std::string& name = {});
 
   struct GetCursorNameRequest {
     Cursor cursor{};
@@ -432,6 +519,8 @@ class COMPONENT_EXPORT(X11) XFixes {
   using GetCursorNameResponse = Response<GetCursorNameReply>;
 
   Future<GetCursorNameReply> GetCursorName(const GetCursorNameRequest& request);
+
+  Future<GetCursorNameReply> GetCursorName(const Cursor& cursor = {});
 
   struct GetCursorImageAndNameRequest {};
 
@@ -454,6 +543,8 @@ class COMPONENT_EXPORT(X11) XFixes {
   Future<GetCursorImageAndNameReply> GetCursorImageAndName(
       const GetCursorImageAndNameRequest& request);
 
+  Future<GetCursorImageAndNameReply> GetCursorImageAndName();
+
   struct ChangeCursorRequest {
     Cursor source{};
     Cursor destination{};
@@ -463,6 +554,9 @@ class COMPONENT_EXPORT(X11) XFixes {
 
   Future<void> ChangeCursor(const ChangeCursorRequest& request);
 
+  Future<void> ChangeCursor(const Cursor& source = {},
+                            const Cursor& destination = {});
+
   struct ChangeCursorByNameRequest {
     Cursor src{};
     std::string name{};
@@ -471,6 +565,9 @@ class COMPONENT_EXPORT(X11) XFixes {
   using ChangeCursorByNameResponse = Response<void>;
 
   Future<void> ChangeCursorByName(const ChangeCursorByNameRequest& request);
+
+  Future<void> ChangeCursorByName(const Cursor& src = {},
+                                  const std::string& name = {});
 
   struct ExpandRegionRequest {
     Region source{};
@@ -485,6 +582,13 @@ class COMPONENT_EXPORT(X11) XFixes {
 
   Future<void> ExpandRegion(const ExpandRegionRequest& request);
 
+  Future<void> ExpandRegion(const Region& source = {},
+                            const Region& destination = {},
+                            const uint16_t& left = {},
+                            const uint16_t& right = {},
+                            const uint16_t& top = {},
+                            const uint16_t& bottom = {});
+
   struct HideCursorRequest {
     Window window{};
   };
@@ -493,6 +597,8 @@ class COMPONENT_EXPORT(X11) XFixes {
 
   Future<void> HideCursor(const HideCursorRequest& request);
 
+  Future<void> HideCursor(const Window& window = {});
+
   struct ShowCursorRequest {
     Window window{};
   };
@@ -500,6 +606,8 @@ class COMPONENT_EXPORT(X11) XFixes {
   using ShowCursorResponse = Response<void>;
 
   Future<void> ShowCursor(const ShowCursorRequest& request);
+
+  Future<void> ShowCursor(const Window& window = {});
 
   struct CreatePointerBarrierRequest {
     Barrier barrier{};
@@ -516,6 +624,15 @@ class COMPONENT_EXPORT(X11) XFixes {
 
   Future<void> CreatePointerBarrier(const CreatePointerBarrierRequest& request);
 
+  Future<void> CreatePointerBarrier(const Barrier& barrier = {},
+                                    const Window& window = {},
+                                    const uint16_t& x1 = {},
+                                    const uint16_t& y1 = {},
+                                    const uint16_t& x2 = {},
+                                    const uint16_t& y2 = {},
+                                    const BarrierDirections& directions = {},
+                                    const std::vector<uint16_t>& devices = {});
+
   struct DeletePointerBarrierRequest {
     Barrier barrier{};
   };
@@ -523,6 +640,8 @@ class COMPONENT_EXPORT(X11) XFixes {
   using DeletePointerBarrierResponse = Response<void>;
 
   Future<void> DeletePointerBarrier(const DeletePointerBarrierRequest& request);
+
+  Future<void> DeletePointerBarrier(const Barrier& barrier = {});
 
  private:
   Connection* const connection_;

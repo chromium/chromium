@@ -233,6 +233,10 @@ Future<Xv::QueryExtensionReply> Xv::QueryExtension(
       &buf, "Xv::QueryExtension", false);
 }
 
+Future<Xv::QueryExtensionReply> Xv::QueryExtension() {
+  return Xv::QueryExtension(Xv::QueryExtensionRequest{});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Xv::QueryExtensionReply> detail::ReadReply<
@@ -298,6 +302,10 @@ Future<Xv::QueryAdaptorsReply> Xv::QueryAdaptors(
 
   return connection_->SendRequest<Xv::QueryAdaptorsReply>(
       &buf, "Xv::QueryAdaptors", false);
+}
+
+Future<Xv::QueryAdaptorsReply> Xv::QueryAdaptors(const Window& window) {
+  return Xv::QueryAdaptors(Xv::QueryAdaptorsRequest{window});
 }
 
 template <>
@@ -434,6 +442,10 @@ Future<Xv::QueryEncodingsReply> Xv::QueryEncodings(
       &buf, "Xv::QueryEncodings", false);
 }
 
+Future<Xv::QueryEncodingsReply> Xv::QueryEncodings(const Port& port) {
+  return Xv::QueryEncodings(Xv::QueryEncodingsRequest{port});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Xv::QueryEncodingsReply> detail::ReadReply<
@@ -557,6 +569,10 @@ Future<Xv::GrabPortReply> Xv::GrabPort(const Xv::GrabPortRequest& request) {
                                                      false);
 }
 
+Future<Xv::GrabPortReply> Xv::GrabPort(const Port& port, const Time& time) {
+  return Xv::GrabPort(Xv::GrabPortRequest{port, time});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Xv::GrabPortReply> detail::ReadReply<Xv::GrabPortReply>(
@@ -619,6 +635,10 @@ Future<void> Xv::UngrabPort(const Xv::UngrabPortRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Xv::UngrabPort", false);
+}
+
+Future<void> Xv::UngrabPort(const Port& port, const Time& time) {
+  return Xv::UngrabPort(Xv::UngrabPortRequest{port, time});
 }
 
 Future<void> Xv::PutVideo(const Xv::PutVideoRequest& request) {
@@ -689,6 +709,22 @@ Future<void> Xv::PutVideo(const Xv::PutVideoRequest& request) {
   return connection_->SendRequest<void>(&buf, "Xv::PutVideo", false);
 }
 
+Future<void> Xv::PutVideo(const Port& port,
+                          const Drawable& drawable,
+                          const GraphicsContext& gc,
+                          const int16_t& vid_x,
+                          const int16_t& vid_y,
+                          const uint16_t& vid_w,
+                          const uint16_t& vid_h,
+                          const int16_t& drw_x,
+                          const int16_t& drw_y,
+                          const uint16_t& drw_w,
+                          const uint16_t& drw_h) {
+  return Xv::PutVideo(Xv::PutVideoRequest{port, drawable, gc, vid_x, vid_y,
+                                          vid_w, vid_h, drw_x, drw_y, drw_w,
+                                          drw_h});
+}
+
 Future<void> Xv::PutStill(const Xv::PutStillRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -755,6 +791,22 @@ Future<void> Xv::PutStill(const Xv::PutStillRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Xv::PutStill", false);
+}
+
+Future<void> Xv::PutStill(const Port& port,
+                          const Drawable& drawable,
+                          const GraphicsContext& gc,
+                          const int16_t& vid_x,
+                          const int16_t& vid_y,
+                          const uint16_t& vid_w,
+                          const uint16_t& vid_h,
+                          const int16_t& drw_x,
+                          const int16_t& drw_y,
+                          const uint16_t& drw_w,
+                          const uint16_t& drw_h) {
+  return Xv::PutStill(Xv::PutStillRequest{port, drawable, gc, vid_x, vid_y,
+                                          vid_w, vid_h, drw_x, drw_y, drw_w,
+                                          drw_h});
 }
 
 Future<void> Xv::GetVideo(const Xv::GetVideoRequest& request) {
@@ -825,6 +877,22 @@ Future<void> Xv::GetVideo(const Xv::GetVideoRequest& request) {
   return connection_->SendRequest<void>(&buf, "Xv::GetVideo", false);
 }
 
+Future<void> Xv::GetVideo(const Port& port,
+                          const Drawable& drawable,
+                          const GraphicsContext& gc,
+                          const int16_t& vid_x,
+                          const int16_t& vid_y,
+                          const uint16_t& vid_w,
+                          const uint16_t& vid_h,
+                          const int16_t& drw_x,
+                          const int16_t& drw_y,
+                          const uint16_t& drw_w,
+                          const uint16_t& drw_h) {
+  return Xv::GetVideo(Xv::GetVideoRequest{port, drawable, gc, vid_x, vid_y,
+                                          vid_w, vid_h, drw_x, drw_y, drw_w,
+                                          drw_h});
+}
+
 Future<void> Xv::GetStill(const Xv::GetStillRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -893,6 +961,22 @@ Future<void> Xv::GetStill(const Xv::GetStillRequest& request) {
   return connection_->SendRequest<void>(&buf, "Xv::GetStill", false);
 }
 
+Future<void> Xv::GetStill(const Port& port,
+                          const Drawable& drawable,
+                          const GraphicsContext& gc,
+                          const int16_t& vid_x,
+                          const int16_t& vid_y,
+                          const uint16_t& vid_w,
+                          const uint16_t& vid_h,
+                          const int16_t& drw_x,
+                          const int16_t& drw_y,
+                          const uint16_t& drw_w,
+                          const uint16_t& drw_h) {
+  return Xv::GetStill(Xv::GetStillRequest{port, drawable, gc, vid_x, vid_y,
+                                          vid_w, vid_h, drw_x, drw_y, drw_w,
+                                          drw_h});
+}
+
 Future<void> Xv::StopVideo(const Xv::StopVideoRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -923,6 +1007,10 @@ Future<void> Xv::StopVideo(const Xv::StopVideoRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Xv::StopVideo", false);
+}
+
+Future<void> Xv::StopVideo(const Port& port, const Drawable& drawable) {
+  return Xv::StopVideo(Xv::StopVideoRequest{port, drawable});
 }
 
 Future<void> Xv::SelectVideoNotify(
@@ -961,6 +1049,11 @@ Future<void> Xv::SelectVideoNotify(
   return connection_->SendRequest<void>(&buf, "Xv::SelectVideoNotify", false);
 }
 
+Future<void> Xv::SelectVideoNotify(const Drawable& drawable,
+                                   const uint8_t& onoff) {
+  return Xv::SelectVideoNotify(Xv::SelectVideoNotifyRequest{drawable, onoff});
+}
+
 Future<void> Xv::SelectPortNotify(const Xv::SelectPortNotifyRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -994,6 +1087,10 @@ Future<void> Xv::SelectPortNotify(const Xv::SelectPortNotifyRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Xv::SelectPortNotify", false);
+}
+
+Future<void> Xv::SelectPortNotify(const Port& port, const uint8_t& onoff) {
+  return Xv::SelectPortNotify(Xv::SelectPortNotifyRequest{port, onoff});
 }
 
 Future<Xv::QueryBestSizeReply> Xv::QueryBestSize(
@@ -1047,6 +1144,16 @@ Future<Xv::QueryBestSizeReply> Xv::QueryBestSize(
 
   return connection_->SendRequest<Xv::QueryBestSizeReply>(
       &buf, "Xv::QueryBestSize", false);
+}
+
+Future<Xv::QueryBestSizeReply> Xv::QueryBestSize(const Port& port,
+                                                 const uint16_t& vid_w,
+                                                 const uint16_t& vid_h,
+                                                 const uint16_t& drw_w,
+                                                 const uint16_t& drw_h,
+                                                 const uint8_t& motion) {
+  return Xv::QueryBestSize(
+      Xv::QueryBestSizeRequest{port, vid_w, vid_h, drw_w, drw_h, motion});
 }
 
 template <>
@@ -1122,6 +1229,13 @@ Future<void> Xv::SetPortAttribute(const Xv::SetPortAttributeRequest& request) {
   return connection_->SendRequest<void>(&buf, "Xv::SetPortAttribute", false);
 }
 
+Future<void> Xv::SetPortAttribute(const Port& port,
+                                  const Atom& attribute,
+                                  const int32_t& value) {
+  return Xv::SetPortAttribute(
+      Xv::SetPortAttributeRequest{port, attribute, value});
+}
+
 Future<Xv::GetPortAttributeReply> Xv::GetPortAttribute(
     const Xv::GetPortAttributeRequest& request) {
   if (!connection_->Ready() || !present())
@@ -1154,6 +1268,11 @@ Future<Xv::GetPortAttributeReply> Xv::GetPortAttribute(
 
   return connection_->SendRequest<Xv::GetPortAttributeReply>(
       &buf, "Xv::GetPortAttribute", false);
+}
+
+Future<Xv::GetPortAttributeReply> Xv::GetPortAttribute(const Port& port,
+                                                       const Atom& attribute) {
+  return Xv::GetPortAttribute(Xv::GetPortAttributeRequest{port, attribute});
 }
 
 template <>
@@ -1217,6 +1336,10 @@ Future<Xv::QueryPortAttributesReply> Xv::QueryPortAttributes(
 
   return connection_->SendRequest<Xv::QueryPortAttributesReply>(
       &buf, "Xv::QueryPortAttributes", false);
+}
+
+Future<Xv::QueryPortAttributesReply> Xv::QueryPortAttributes(const Port& port) {
+  return Xv::QueryPortAttributes(Xv::QueryPortAttributesRequest{port});
 }
 
 template <>
@@ -1327,6 +1450,10 @@ Future<Xv::ListImageFormatsReply> Xv::ListImageFormats(
 
   return connection_->SendRequest<Xv::ListImageFormatsReply>(
       &buf, "Xv::ListImageFormats", false);
+}
+
+Future<Xv::ListImageFormatsReply> Xv::ListImageFormats(const Port& port) {
+  return Xv::ListImageFormats(Xv::ListImageFormatsRequest{port});
 }
 
 template <>
@@ -1536,6 +1663,15 @@ Future<Xv::QueryImageAttributesReply> Xv::QueryImageAttributes(
       &buf, "Xv::QueryImageAttributes", false);
 }
 
+Future<Xv::QueryImageAttributesReply> Xv::QueryImageAttributes(
+    const Port& port,
+    const uint32_t& id,
+    const uint16_t& width,
+    const uint16_t& height) {
+  return Xv::QueryImageAttributes(
+      Xv::QueryImageAttributesRequest{port, id, width, height});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Xv::QueryImageAttributesReply> detail::ReadReply<
@@ -1691,6 +1827,26 @@ Future<void> Xv::PutImage(const Xv::PutImageRequest& request) {
   return connection_->SendRequest<void>(&buf, "Xv::PutImage", false);
 }
 
+Future<void> Xv::PutImage(const Port& port,
+                          const Drawable& drawable,
+                          const GraphicsContext& gc,
+                          const uint32_t& id,
+                          const int16_t& src_x,
+                          const int16_t& src_y,
+                          const uint16_t& src_w,
+                          const uint16_t& src_h,
+                          const int16_t& drw_x,
+                          const int16_t& drw_y,
+                          const uint16_t& drw_w,
+                          const uint16_t& drw_h,
+                          const uint16_t& width,
+                          const uint16_t& height,
+                          const std::vector<uint8_t>& data) {
+  return Xv::PutImage(Xv::PutImageRequest{port, drawable, gc, id, src_x, src_y,
+                                          src_w, src_h, drw_x, drw_y, drw_w,
+                                          drw_h, width, height, data});
+}
+
 Future<void> Xv::ShmPutImage(const Xv::ShmPutImageRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -1784,6 +1940,28 @@ Future<void> Xv::ShmPutImage(const Xv::ShmPutImageRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Xv::ShmPutImage", false);
+}
+
+Future<void> Xv::ShmPutImage(const Port& port,
+                             const Drawable& drawable,
+                             const GraphicsContext& gc,
+                             const Shm::Seg& shmseg,
+                             const uint32_t& id,
+                             const uint32_t& offset,
+                             const int16_t& src_x,
+                             const int16_t& src_y,
+                             const uint16_t& src_w,
+                             const uint16_t& src_h,
+                             const int16_t& drw_x,
+                             const int16_t& drw_y,
+                             const uint16_t& drw_w,
+                             const uint16_t& drw_h,
+                             const uint16_t& width,
+                             const uint16_t& height,
+                             const uint8_t& send_event) {
+  return Xv::ShmPutImage(Xv::ShmPutImageRequest{
+      port, drawable, gc, shmseg, id, offset, src_x, src_y, src_w, src_h, drw_x,
+      drw_y, drw_w, drw_h, width, height, send_event});
 }
 
 }  // namespace x11

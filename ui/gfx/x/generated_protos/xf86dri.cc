@@ -77,6 +77,10 @@ Future<XF86Dri::QueryVersionReply> XF86Dri::QueryVersion(
       &buf, "XF86Dri::QueryVersion", false);
 }
 
+Future<XF86Dri::QueryVersionReply> XF86Dri::QueryVersion() {
+  return XF86Dri::QueryVersion(XF86Dri::QueryVersionRequest{});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<XF86Dri::QueryVersionReply> detail::ReadReply<
@@ -149,6 +153,12 @@ XF86Dri::QueryDirectRenderingCapable(
       &buf, "XF86Dri::QueryDirectRenderingCapable", false);
 }
 
+Future<XF86Dri::QueryDirectRenderingCapableReply>
+XF86Dri::QueryDirectRenderingCapable(const uint32_t& screen) {
+  return XF86Dri::QueryDirectRenderingCapable(
+      XF86Dri::QueryDirectRenderingCapableRequest{screen});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<XF86Dri::QueryDirectRenderingCapableReply> detail::ReadReply<
@@ -210,6 +220,11 @@ Future<XF86Dri::OpenConnectionReply> XF86Dri::OpenConnection(
 
   return connection_->SendRequest<XF86Dri::OpenConnectionReply>(
       &buf, "XF86Dri::OpenConnection", false);
+}
+
+Future<XF86Dri::OpenConnectionReply> XF86Dri::OpenConnection(
+    const uint32_t& screen) {
+  return XF86Dri::OpenConnection(XF86Dri::OpenConnectionRequest{screen});
 }
 
 template <>
@@ -294,6 +309,10 @@ Future<void> XF86Dri::CloseConnection(
                                         false);
 }
 
+Future<void> XF86Dri::CloseConnection(const uint32_t& screen) {
+  return XF86Dri::CloseConnection(XF86Dri::CloseConnectionRequest{screen});
+}
+
 Future<XF86Dri::GetClientDriverNameReply> XF86Dri::GetClientDriverName(
     const XF86Dri::GetClientDriverNameRequest& request) {
   if (!connection_->Ready() || !present())
@@ -322,6 +341,12 @@ Future<XF86Dri::GetClientDriverNameReply> XF86Dri::GetClientDriverName(
 
   return connection_->SendRequest<XF86Dri::GetClientDriverNameReply>(
       &buf, "XF86Dri::GetClientDriverName", false);
+}
+
+Future<XF86Dri::GetClientDriverNameReply> XF86Dri::GetClientDriverName(
+    const uint32_t& screen) {
+  return XF86Dri::GetClientDriverName(
+      XF86Dri::GetClientDriverNameRequest{screen});
 }
 
 template <>
@@ -418,6 +443,14 @@ Future<XF86Dri::CreateContextReply> XF86Dri::CreateContext(
       &buf, "XF86Dri::CreateContext", false);
 }
 
+Future<XF86Dri::CreateContextReply> XF86Dri::CreateContext(
+    const uint32_t& screen,
+    const uint32_t& visual,
+    const uint32_t& context) {
+  return XF86Dri::CreateContext(
+      XF86Dri::CreateContextRequest{screen, visual, context});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<XF86Dri::CreateContextReply> detail::ReadReply<
@@ -484,6 +517,12 @@ Future<void> XF86Dri::DestroyContext(
   return connection_->SendRequest<void>(&buf, "XF86Dri::DestroyContext", false);
 }
 
+Future<void> XF86Dri::DestroyContext(const uint32_t& screen,
+                                     const uint32_t& context) {
+  return XF86Dri::DestroyContext(
+      XF86Dri::DestroyContextRequest{screen, context});
+}
+
 Future<XF86Dri::CreateDrawableReply> XF86Dri::CreateDrawable(
     const XF86Dri::CreateDrawableRequest& request) {
   if (!connection_->Ready() || !present())
@@ -516,6 +555,13 @@ Future<XF86Dri::CreateDrawableReply> XF86Dri::CreateDrawable(
 
   return connection_->SendRequest<XF86Dri::CreateDrawableReply>(
       &buf, "XF86Dri::CreateDrawable", false);
+}
+
+Future<XF86Dri::CreateDrawableReply> XF86Dri::CreateDrawable(
+    const uint32_t& screen,
+    const uint32_t& drawable) {
+  return XF86Dri::CreateDrawable(
+      XF86Dri::CreateDrawableRequest{screen, drawable});
 }
 
 template <>
@@ -585,6 +631,12 @@ Future<void> XF86Dri::DestroyDrawable(
                                         false);
 }
 
+Future<void> XF86Dri::DestroyDrawable(const uint32_t& screen,
+                                      const uint32_t& drawable) {
+  return XF86Dri::DestroyDrawable(
+      XF86Dri::DestroyDrawableRequest{screen, drawable});
+}
+
 Future<XF86Dri::GetDrawableInfoReply> XF86Dri::GetDrawableInfo(
     const XF86Dri::GetDrawableInfoRequest& request) {
   if (!connection_->Ready() || !present())
@@ -617,6 +669,13 @@ Future<XF86Dri::GetDrawableInfoReply> XF86Dri::GetDrawableInfo(
 
   return connection_->SendRequest<XF86Dri::GetDrawableInfoReply>(
       &buf, "XF86Dri::GetDrawableInfo", false);
+}
+
+Future<XF86Dri::GetDrawableInfoReply> XF86Dri::GetDrawableInfo(
+    const uint32_t& screen,
+    const uint32_t& drawable) {
+  return XF86Dri::GetDrawableInfo(
+      XF86Dri::GetDrawableInfoRequest{screen, drawable});
 }
 
 template <>
@@ -770,6 +829,11 @@ Future<XF86Dri::GetDeviceInfoReply> XF86Dri::GetDeviceInfo(
       &buf, "XF86Dri::GetDeviceInfo", false);
 }
 
+Future<XF86Dri::GetDeviceInfoReply> XF86Dri::GetDeviceInfo(
+    const uint32_t& screen) {
+  return XF86Dri::GetDeviceInfo(XF86Dri::GetDeviceInfoRequest{screen});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<XF86Dri::GetDeviceInfoReply> detail::ReadReply<
@@ -864,6 +928,12 @@ Future<XF86Dri::AuthConnectionReply> XF86Dri::AuthConnection(
 
   return connection_->SendRequest<XF86Dri::AuthConnectionReply>(
       &buf, "XF86Dri::AuthConnection", false);
+}
+
+Future<XF86Dri::AuthConnectionReply> XF86Dri::AuthConnection(
+    const uint32_t& screen,
+    const uint32_t& magic) {
+  return XF86Dri::AuthConnection(XF86Dri::AuthConnectionRequest{screen, magic});
 }
 
 template <>

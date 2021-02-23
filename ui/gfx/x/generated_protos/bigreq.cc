@@ -78,6 +78,10 @@ Future<BigRequests::EnableReply> BigRequests::Enable(
       &buf, "BigRequests::Enable", false);
 }
 
+Future<BigRequests::EnableReply> BigRequests::Enable() {
+  return BigRequests::Enable(BigRequests::EnableRequest{});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<BigRequests::EnableReply> detail::ReadReply<

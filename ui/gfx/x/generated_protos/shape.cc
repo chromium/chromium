@@ -132,6 +132,10 @@ Future<Shape::QueryVersionReply> Shape::QueryVersion(
       &buf, "Shape::QueryVersion", false);
 }
 
+Future<Shape::QueryVersionReply> Shape::QueryVersion() {
+  return Shape::QueryVersion(Shape::QueryVersionRequest{});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Shape::QueryVersionReply> detail::ReadReply<
@@ -252,6 +256,18 @@ Future<void> Shape::Rectangles(const Shape::RectanglesRequest& request) {
   return connection_->SendRequest<void>(&buf, "Shape::Rectangles", false);
 }
 
+Future<void> Shape::Rectangles(const So& operation,
+                               const Sk& destination_kind,
+                               const ClipOrdering& ordering,
+                               const Window& destination_window,
+                               const int16_t& x_offset,
+                               const int16_t& y_offset,
+                               const std::vector<Rectangle>& rectangles) {
+  return Shape::Rectangles(Shape::RectanglesRequest{
+      operation, destination_kind, ordering, destination_window, x_offset,
+      y_offset, rectangles});
+}
+
 Future<void> Shape::Mask(const Shape::MaskRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -305,6 +321,17 @@ Future<void> Shape::Mask(const Shape::MaskRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Shape::Mask", false);
+}
+
+Future<void> Shape::Mask(const So& operation,
+                         const Sk& destination_kind,
+                         const Window& destination_window,
+                         const int16_t& x_offset,
+                         const int16_t& y_offset,
+                         const Pixmap& source_bitmap) {
+  return Shape::Mask(Shape::MaskRequest{operation, destination_kind,
+                                        destination_window, x_offset, y_offset,
+                                        source_bitmap});
 }
 
 Future<void> Shape::Combine(const Shape::CombineRequest& request) {
@@ -368,6 +395,18 @@ Future<void> Shape::Combine(const Shape::CombineRequest& request) {
   return connection_->SendRequest<void>(&buf, "Shape::Combine", false);
 }
 
+Future<void> Shape::Combine(const So& operation,
+                            const Sk& destination_kind,
+                            const Sk& source_kind,
+                            const Window& destination_window,
+                            const int16_t& x_offset,
+                            const int16_t& y_offset,
+                            const Window& source_window) {
+  return Shape::Combine(Shape::CombineRequest{
+      operation, destination_kind, source_kind, destination_window, x_offset,
+      y_offset, source_window});
+}
+
 Future<void> Shape::Offset(const Shape::OffsetRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -413,6 +452,14 @@ Future<void> Shape::Offset(const Shape::OffsetRequest& request) {
   return connection_->SendRequest<void>(&buf, "Shape::Offset", false);
 }
 
+Future<void> Shape::Offset(const Sk& destination_kind,
+                           const Window& destination_window,
+                           const int16_t& x_offset,
+                           const int16_t& y_offset) {
+  return Shape::Offset(Shape::OffsetRequest{
+      destination_kind, destination_window, x_offset, y_offset});
+}
+
 Future<Shape::QueryExtentsReply> Shape::QueryExtents(
     const Shape::QueryExtentsRequest& request) {
   if (!connection_->Ready() || !present())
@@ -441,6 +488,11 @@ Future<Shape::QueryExtentsReply> Shape::QueryExtents(
 
   return connection_->SendRequest<Shape::QueryExtentsReply>(
       &buf, "Shape::QueryExtents", false);
+}
+
+Future<Shape::QueryExtentsReply> Shape::QueryExtents(
+    const Window& destination_window) {
+  return Shape::QueryExtents(Shape::QueryExtentsRequest{destination_window});
 }
 
 template <>
@@ -550,6 +602,12 @@ Future<void> Shape::SelectInput(const Shape::SelectInputRequest& request) {
   return connection_->SendRequest<void>(&buf, "Shape::SelectInput", false);
 }
 
+Future<void> Shape::SelectInput(const Window& destination_window,
+                                const uint8_t& enable) {
+  return Shape::SelectInput(
+      Shape::SelectInputRequest{destination_window, enable});
+}
+
 Future<Shape::InputSelectedReply> Shape::InputSelected(
     const Shape::InputSelectedRequest& request) {
   if (!connection_->Ready() || !present())
@@ -578,6 +636,11 @@ Future<Shape::InputSelectedReply> Shape::InputSelected(
 
   return connection_->SendRequest<Shape::InputSelectedReply>(
       &buf, "Shape::InputSelected", false);
+}
+
+Future<Shape::InputSelectedReply> Shape::InputSelected(
+    const Window& destination_window) {
+  return Shape::InputSelected(Shape::InputSelectedRequest{destination_window});
 }
 
 template <>
@@ -647,6 +710,11 @@ Future<Shape::GetRectanglesReply> Shape::GetRectangles(
 
   return connection_->SendRequest<Shape::GetRectanglesReply>(
       &buf, "Shape::GetRectangles", false);
+}
+
+Future<Shape::GetRectanglesReply> Shape::GetRectangles(const Window& window,
+                                                       const Sk& source_kind) {
+  return Shape::GetRectangles(Shape::GetRectanglesRequest{window, source_kind});
 }
 
 template <>

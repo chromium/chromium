@@ -119,6 +119,13 @@ Future<Record::QueryVersionReply> Record::QueryVersion(
       &buf, "Record::QueryVersion", false);
 }
 
+Future<Record::QueryVersionReply> Record::QueryVersion(
+    const uint16_t& major_version,
+    const uint16_t& minor_version) {
+  return Record::QueryVersion(
+      Record::QueryVersionRequest{major_version, minor_version});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Record::QueryVersionReply> detail::ReadReply<
@@ -356,6 +363,14 @@ Future<void> Record::CreateContext(
   return connection_->SendRequest<void>(&buf, "Record::CreateContext", false);
 }
 
+Future<void> Record::CreateContext(const Context& context,
+                                   const ElementHeader& element_header,
+                                   const std::vector<ClientSpec>& client_specs,
+                                   const std::vector<Range>& ranges) {
+  return Record::CreateContext(Record::CreateContextRequest{
+      context, element_header, client_specs, ranges});
+}
+
 Future<void> Record::RegisterClients(
     const Record::RegisterClientsRequest& request) {
   if (!connection_->Ready() || !present())
@@ -556,6 +571,15 @@ Future<void> Record::RegisterClients(
   return connection_->SendRequest<void>(&buf, "Record::RegisterClients", false);
 }
 
+Future<void> Record::RegisterClients(
+    const Context& context,
+    const ElementHeader& element_header,
+    const std::vector<ClientSpec>& client_specs,
+    const std::vector<Range>& ranges) {
+  return Record::RegisterClients(Record::RegisterClientsRequest{
+      context, element_header, client_specs, ranges});
+}
+
 Future<void> Record::UnregisterClients(
     const Record::UnregisterClientsRequest& request) {
   if (!connection_->Ready() || !present())
@@ -600,6 +624,13 @@ Future<void> Record::UnregisterClients(
                                         false);
 }
 
+Future<void> Record::UnregisterClients(
+    const Context& context,
+    const std::vector<ClientSpec>& client_specs) {
+  return Record::UnregisterClients(
+      Record::UnregisterClientsRequest{context, client_specs});
+}
+
 Future<Record::GetContextReply> Record::GetContext(
     const Record::GetContextRequest& request) {
   if (!connection_->Ready() || !present())
@@ -628,6 +659,10 @@ Future<Record::GetContextReply> Record::GetContext(
 
   return connection_->SendRequest<Record::GetContextReply>(
       &buf, "Record::GetContext", false);
+}
+
+Future<Record::GetContextReply> Record::GetContext(const Context& context) {
+  return Record::GetContext(Record::GetContextRequest{context});
 }
 
 template <>
@@ -867,6 +902,11 @@ Future<Record::EnableContextReply> Record::EnableContext(
       &buf, "Record::EnableContext", false);
 }
 
+Future<Record::EnableContextReply> Record::EnableContext(
+    const Context& context) {
+  return Record::EnableContext(Record::EnableContextRequest{context});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Record::EnableContextReply> detail::ReadReply<
@@ -961,6 +1001,10 @@ Future<void> Record::DisableContext(
   return connection_->SendRequest<void>(&buf, "Record::DisableContext", false);
 }
 
+Future<void> Record::DisableContext(const Context& context) {
+  return Record::DisableContext(Record::DisableContextRequest{context});
+}
+
 Future<void> Record::FreeContext(const Record::FreeContextRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -987,6 +1031,10 @@ Future<void> Record::FreeContext(const Record::FreeContextRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Record::FreeContext", false);
+}
+
+Future<void> Record::FreeContext(const Context& context) {
+  return Record::FreeContext(Record::FreeContextRequest{context});
 }
 
 }  // namespace x11

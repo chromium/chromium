@@ -1665,6 +1665,11 @@ Future<Input::GetExtensionVersionReply> Input::GetExtensionVersion(
       &buf, "Input::GetExtensionVersion", false);
 }
 
+Future<Input::GetExtensionVersionReply> Input::GetExtensionVersion(
+    const std::string& name) {
+  return Input::GetExtensionVersion(Input::GetExtensionVersionRequest{name});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Input::GetExtensionVersionReply> detail::ReadReply<
@@ -1733,6 +1738,10 @@ Future<Input::ListInputDevicesReply> Input::ListInputDevices(
 
   return connection_->SendRequest<Input::ListInputDevicesReply>(
       &buf, "Input::ListInputDevices", false);
+}
+
+Future<Input::ListInputDevicesReply> Input::ListInputDevices() {
+  return Input::ListInputDevices(Input::ListInputDevicesRequest{});
 }
 
 template <>
@@ -1957,6 +1966,10 @@ Future<Input::OpenDeviceReply> Input::OpenDevice(
       &buf, "Input::OpenDevice", false);
 }
 
+Future<Input::OpenDeviceReply> Input::OpenDevice(const uint8_t& device_id) {
+  return Input::OpenDevice(Input::OpenDeviceRequest{device_id});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Input::OpenDeviceReply> detail::ReadReply<
@@ -2048,6 +2061,10 @@ Future<void> Input::CloseDevice(const Input::CloseDeviceRequest& request) {
   return connection_->SendRequest<void>(&buf, "Input::CloseDevice", false);
 }
 
+Future<void> Input::CloseDevice(const uint8_t& device_id) {
+  return Input::CloseDevice(Input::CloseDeviceRequest{device_id});
+}
+
 Future<Input::SetDeviceModeReply> Input::SetDeviceMode(
     const Input::SetDeviceModeRequest& request) {
   if (!connection_->Ready() || !present())
@@ -2085,6 +2102,12 @@ Future<Input::SetDeviceModeReply> Input::SetDeviceMode(
 
   return connection_->SendRequest<Input::SetDeviceModeReply>(
       &buf, "Input::SetDeviceMode", false);
+}
+
+Future<Input::SetDeviceModeReply> Input::SetDeviceMode(
+    const uint8_t& device_id,
+    const ValuatorMode& mode) {
+  return Input::SetDeviceMode(Input::SetDeviceModeRequest{device_id, mode});
 }
 
 template <>
@@ -2173,6 +2196,13 @@ Future<void> Input::SelectExtensionEvent(
                                         false);
 }
 
+Future<void> Input::SelectExtensionEvent(
+    const Window& window,
+    const std::vector<EventClass>& classes) {
+  return Input::SelectExtensionEvent(
+      Input::SelectExtensionEventRequest{window, classes});
+}
+
 Future<Input::GetSelectedExtensionEventsReply>
 Input::GetSelectedExtensionEvents(
     const Input::GetSelectedExtensionEventsRequest& request) {
@@ -2202,6 +2232,12 @@ Input::GetSelectedExtensionEvents(
 
   return connection_->SendRequest<Input::GetSelectedExtensionEventsReply>(
       &buf, "Input::GetSelectedExtensionEvents", false);
+}
+
+Future<Input::GetSelectedExtensionEventsReply>
+Input::GetSelectedExtensionEvents(const Window& window) {
+  return Input::GetSelectedExtensionEvents(
+      Input::GetSelectedExtensionEventsRequest{window});
 }
 
 template <>
@@ -2316,6 +2352,14 @@ Future<void> Input::ChangeDeviceDontPropagateList(
       &buf, "Input::ChangeDeviceDontPropagateList", false);
 }
 
+Future<void> Input::ChangeDeviceDontPropagateList(
+    const Window& window,
+    const PropagateMode& mode,
+    const std::vector<EventClass>& classes) {
+  return Input::ChangeDeviceDontPropagateList(
+      Input::ChangeDeviceDontPropagateListRequest{window, mode, classes});
+}
+
 Future<Input::GetDeviceDontPropagateListReply>
 Input::GetDeviceDontPropagateList(
     const Input::GetDeviceDontPropagateListRequest& request) {
@@ -2345,6 +2389,12 @@ Input::GetDeviceDontPropagateList(
 
   return connection_->SendRequest<Input::GetDeviceDontPropagateListReply>(
       &buf, "Input::GetDeviceDontPropagateList", false);
+}
+
+Future<Input::GetDeviceDontPropagateListReply>
+Input::GetDeviceDontPropagateList(const Window& window) {
+  return Input::GetDeviceDontPropagateList(
+      Input::GetDeviceDontPropagateListRequest{window});
 }
 
 template <>
@@ -2432,6 +2482,14 @@ Future<Input::GetDeviceMotionEventsReply> Input::GetDeviceMotionEvents(
 
   return connection_->SendRequest<Input::GetDeviceMotionEventsReply>(
       &buf, "Input::GetDeviceMotionEvents", false);
+}
+
+Future<Input::GetDeviceMotionEventsReply> Input::GetDeviceMotionEvents(
+    const Time& start,
+    const Time& stop,
+    const uint8_t& device_id) {
+  return Input::GetDeviceMotionEvents(
+      Input::GetDeviceMotionEventsRequest{start, stop, device_id});
 }
 
 template <>
@@ -2537,6 +2595,12 @@ Future<Input::ChangeKeyboardDeviceReply> Input::ChangeKeyboardDevice(
       &buf, "Input::ChangeKeyboardDevice", false);
 }
 
+Future<Input::ChangeKeyboardDeviceReply> Input::ChangeKeyboardDevice(
+    const uint8_t& device_id) {
+  return Input::ChangeKeyboardDevice(
+      Input::ChangeKeyboardDeviceRequest{device_id});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Input::ChangeKeyboardDeviceReply> detail::ReadReply<
@@ -2615,6 +2679,14 @@ Future<Input::ChangePointerDeviceReply> Input::ChangePointerDevice(
 
   return connection_->SendRequest<Input::ChangePointerDeviceReply>(
       &buf, "Input::ChangePointerDevice", false);
+}
+
+Future<Input::ChangePointerDeviceReply> Input::ChangePointerDevice(
+    const uint8_t& x_axis,
+    const uint8_t& y_axis,
+    const uint8_t& device_id) {
+  return Input::ChangePointerDevice(
+      Input::ChangePointerDeviceRequest{x_axis, y_axis, device_id});
 }
 
 template <>
@@ -2727,6 +2799,19 @@ Future<Input::GrabDeviceReply> Input::GrabDevice(
       &buf, "Input::GrabDevice", false);
 }
 
+Future<Input::GrabDeviceReply> Input::GrabDevice(
+    const Window& grab_window,
+    const Time& time,
+    const GrabMode& this_device_mode,
+    const GrabMode& other_device_mode,
+    const uint8_t& owner_events,
+    const uint8_t& device_id,
+    const std::vector<EventClass>& classes) {
+  return Input::GrabDevice(Input::GrabDeviceRequest{
+      grab_window, time, this_device_mode, other_device_mode, owner_events,
+      device_id, classes});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Input::GrabDeviceReply> detail::ReadReply<
@@ -2799,6 +2884,10 @@ Future<void> Input::UngrabDevice(const Input::UngrabDeviceRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Input::UngrabDevice", false);
+}
+
+Future<void> Input::UngrabDevice(const Time& time, const uint8_t& device_id) {
+  return Input::UngrabDevice(Input::UngrabDeviceRequest{time, device_id});
 }
 
 Future<void> Input::GrabDeviceKey(const Input::GrabDeviceKeyRequest& request) {
@@ -2880,6 +2969,20 @@ Future<void> Input::GrabDeviceKey(const Input::GrabDeviceKeyRequest& request) {
   return connection_->SendRequest<void>(&buf, "Input::GrabDeviceKey", false);
 }
 
+Future<void> Input::GrabDeviceKey(const Window& grab_window,
+                                  const ModMask& modifiers,
+                                  const uint8_t& modifier_device,
+                                  const uint8_t& grabbed_device,
+                                  const uint8_t& key,
+                                  const GrabMode& this_device_mode,
+                                  const GrabMode& other_device_mode,
+                                  const uint8_t& owner_events,
+                                  const std::vector<EventClass>& classes) {
+  return Input::GrabDeviceKey(Input::GrabDeviceKeyRequest{
+      grab_window, modifiers, modifier_device, grabbed_device, key,
+      this_device_mode, other_device_mode, owner_events, classes});
+}
+
 Future<void> Input::UngrabDeviceKey(
     const Input::UngrabDeviceKeyRequest& request) {
   if (!connection_->Ready() || !present())
@@ -2925,6 +3028,15 @@ Future<void> Input::UngrabDeviceKey(
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Input::UngrabDeviceKey", false);
+}
+
+Future<void> Input::UngrabDeviceKey(const Window& grabWindow,
+                                    const ModMask& modifiers,
+                                    const uint8_t& modifier_device,
+                                    const uint8_t& key,
+                                    const uint8_t& grabbed_device) {
+  return Input::UngrabDeviceKey(Input::UngrabDeviceKeyRequest{
+      grabWindow, modifiers, modifier_device, key, grabbed_device});
 }
 
 Future<void> Input::GrabDeviceButton(
@@ -3007,6 +3119,20 @@ Future<void> Input::GrabDeviceButton(
   return connection_->SendRequest<void>(&buf, "Input::GrabDeviceButton", false);
 }
 
+Future<void> Input::GrabDeviceButton(const Window& grab_window,
+                                     const uint8_t& grabbed_device,
+                                     const uint8_t& modifier_device,
+                                     const ModMask& modifiers,
+                                     const GrabMode& this_device_mode,
+                                     const GrabMode& other_device_mode,
+                                     const uint8_t& button,
+                                     const uint8_t& owner_events,
+                                     const std::vector<EventClass>& classes) {
+  return Input::GrabDeviceButton(Input::GrabDeviceButtonRequest{
+      grab_window, grabbed_device, modifier_device, modifiers, this_device_mode,
+      other_device_mode, button, owner_events, classes});
+}
+
 Future<void> Input::UngrabDeviceButton(
     const Input::UngrabDeviceButtonRequest& request) {
   if (!connection_->Ready() || !present())
@@ -3058,6 +3184,15 @@ Future<void> Input::UngrabDeviceButton(
                                         false);
 }
 
+Future<void> Input::UngrabDeviceButton(const Window& grab_window,
+                                       const ModMask& modifiers,
+                                       const uint8_t& modifier_device,
+                                       const uint8_t& button,
+                                       const uint8_t& grabbed_device) {
+  return Input::UngrabDeviceButton(Input::UngrabDeviceButtonRequest{
+      grab_window, modifiers, modifier_device, button, grabbed_device});
+}
+
 Future<void> Input::AllowDeviceEvents(
     const Input::AllowDeviceEventsRequest& request) {
   if (!connection_->Ready() || !present())
@@ -3101,6 +3236,13 @@ Future<void> Input::AllowDeviceEvents(
                                         false);
 }
 
+Future<void> Input::AllowDeviceEvents(const Time& time,
+                                      const DeviceInputMode& mode,
+                                      const uint8_t& device_id) {
+  return Input::AllowDeviceEvents(
+      Input::AllowDeviceEventsRequest{time, mode, device_id});
+}
+
 Future<Input::GetDeviceFocusReply> Input::GetDeviceFocus(
     const Input::GetDeviceFocusRequest& request) {
   if (!connection_->Ready() || !present())
@@ -3132,6 +3274,11 @@ Future<Input::GetDeviceFocusReply> Input::GetDeviceFocus(
 
   return connection_->SendRequest<Input::GetDeviceFocusReply>(
       &buf, "Input::GetDeviceFocus", false);
+}
+
+Future<Input::GetDeviceFocusReply> Input::GetDeviceFocus(
+    const uint8_t& device_id) {
+  return Input::GetDeviceFocus(Input::GetDeviceFocusRequest{device_id});
 }
 
 template <>
@@ -3227,6 +3374,14 @@ Future<void> Input::SetDeviceFocus(
   return connection_->SendRequest<void>(&buf, "Input::SetDeviceFocus", false);
 }
 
+Future<void> Input::SetDeviceFocus(const Window& focus,
+                                   const Time& time,
+                                   const InputFocus& revert_to,
+                                   const uint8_t& device_id) {
+  return Input::SetDeviceFocus(
+      Input::SetDeviceFocusRequest{focus, time, revert_to, device_id});
+}
+
 Future<Input::GetFeedbackControlReply> Input::GetFeedbackControl(
     const Input::GetFeedbackControlRequest& request) {
   if (!connection_->Ready() || !present())
@@ -3258,6 +3413,11 @@ Future<Input::GetFeedbackControlReply> Input::GetFeedbackControl(
 
   return connection_->SendRequest<Input::GetFeedbackControlReply>(
       &buf, "Input::GetFeedbackControl", false);
+}
+
+Future<Input::GetFeedbackControlReply> Input::GetFeedbackControl(
+    const uint8_t& device_id) {
+  return Input::GetFeedbackControl(Input::GetFeedbackControlRequest{device_id});
 }
 
 template <>
@@ -3627,6 +3787,14 @@ Future<void> Input::ChangeFeedbackControl(
                                         false);
 }
 
+Future<void> Input::ChangeFeedbackControl(const ChangeFeedbackControlMask& mask,
+                                          const uint8_t& device_id,
+                                          const uint8_t& feedback_id,
+                                          const FeedbackCtl& feedback) {
+  return Input::ChangeFeedbackControl(Input::ChangeFeedbackControlRequest{
+      mask, device_id, feedback_id, feedback});
+}
+
 Future<Input::GetDeviceKeyMappingReply> Input::GetDeviceKeyMapping(
     const Input::GetDeviceKeyMappingRequest& request) {
   if (!connection_->Ready() || !present())
@@ -3666,6 +3834,14 @@ Future<Input::GetDeviceKeyMappingReply> Input::GetDeviceKeyMapping(
 
   return connection_->SendRequest<Input::GetDeviceKeyMappingReply>(
       &buf, "Input::GetDeviceKeyMapping", false);
+}
+
+Future<Input::GetDeviceKeyMappingReply> Input::GetDeviceKeyMapping(
+    const uint8_t& device_id,
+    const KeyCode& first_keycode,
+    const uint8_t& count) {
+  return Input::GetDeviceKeyMapping(
+      Input::GetDeviceKeyMappingRequest{device_id, first_keycode, count});
 }
 
 template <>
@@ -3766,6 +3942,15 @@ Future<void> Input::ChangeDeviceKeyMapping(
                                         false);
 }
 
+Future<void> Input::ChangeDeviceKeyMapping(const uint8_t& device_id,
+                                           const KeyCode& first_keycode,
+                                           const uint8_t& keysyms_per_keycode,
+                                           const uint8_t& keycode_count,
+                                           const std::vector<KeySym>& keysyms) {
+  return Input::ChangeDeviceKeyMapping(Input::ChangeDeviceKeyMappingRequest{
+      device_id, first_keycode, keysyms_per_keycode, keycode_count, keysyms});
+}
+
 Future<Input::GetDeviceModifierMappingReply> Input::GetDeviceModifierMapping(
     const Input::GetDeviceModifierMappingRequest& request) {
   if (!connection_->Ready() || !present())
@@ -3797,6 +3982,12 @@ Future<Input::GetDeviceModifierMappingReply> Input::GetDeviceModifierMapping(
 
   return connection_->SendRequest<Input::GetDeviceModifierMappingReply>(
       &buf, "Input::GetDeviceModifierMapping", false);
+}
+
+Future<Input::GetDeviceModifierMappingReply> Input::GetDeviceModifierMapping(
+    const uint8_t& device_id) {
+  return Input::GetDeviceModifierMapping(
+      Input::GetDeviceModifierMappingRequest{device_id});
 }
 
 template <>
@@ -3891,6 +4082,14 @@ Future<Input::SetDeviceModifierMappingReply> Input::SetDeviceModifierMapping(
       &buf, "Input::SetDeviceModifierMapping", false);
 }
 
+Future<Input::SetDeviceModifierMappingReply> Input::SetDeviceModifierMapping(
+    const uint8_t& device_id,
+    const uint8_t& keycodes_per_modifier,
+    const std::vector<uint8_t>& keymaps) {
+  return Input::SetDeviceModifierMapping(Input::SetDeviceModifierMappingRequest{
+      device_id, keycodes_per_modifier, keymaps});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Input::SetDeviceModifierMappingReply> detail::ReadReply<
@@ -3961,6 +4160,12 @@ Future<Input::GetDeviceButtonMappingReply> Input::GetDeviceButtonMapping(
 
   return connection_->SendRequest<Input::GetDeviceButtonMappingReply>(
       &buf, "Input::GetDeviceButtonMapping", false);
+}
+
+Future<Input::GetDeviceButtonMappingReply> Input::GetDeviceButtonMapping(
+    const uint8_t& device_id) {
+  return Input::GetDeviceButtonMapping(
+      Input::GetDeviceButtonMappingRequest{device_id});
 }
 
 template <>
@@ -4059,6 +4264,13 @@ Future<Input::SetDeviceButtonMappingReply> Input::SetDeviceButtonMapping(
       &buf, "Input::SetDeviceButtonMapping", false);
 }
 
+Future<Input::SetDeviceButtonMappingReply> Input::SetDeviceButtonMapping(
+    const uint8_t& device_id,
+    const std::vector<uint8_t>& map) {
+  return Input::SetDeviceButtonMapping(
+      Input::SetDeviceButtonMappingRequest{device_id, map});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Input::SetDeviceButtonMappingReply> detail::ReadReply<
@@ -4129,6 +4341,11 @@ Future<Input::QueryDeviceStateReply> Input::QueryDeviceState(
 
   return connection_->SendRequest<Input::QueryDeviceStateReply>(
       &buf, "Input::QueryDeviceState", false);
+}
+
+Future<Input::QueryDeviceStateReply> Input::QueryDeviceState(
+    const uint8_t& device_id) {
+  return Input::QueryDeviceState(Input::QueryDeviceStateRequest{device_id});
 }
 
 template <>
@@ -4290,6 +4507,14 @@ Future<void> Input::DeviceBell(const Input::DeviceBellRequest& request) {
   return connection_->SendRequest<void>(&buf, "Input::DeviceBell", false);
 }
 
+Future<void> Input::DeviceBell(const uint8_t& device_id,
+                               const uint8_t& feedback_id,
+                               const uint8_t& feedback_class,
+                               const int8_t& percent) {
+  return Input::DeviceBell(Input::DeviceBellRequest{device_id, feedback_id,
+                                                    feedback_class, percent});
+}
+
 Future<Input::SetDeviceValuatorsReply> Input::SetDeviceValuators(
     const Input::SetDeviceValuatorsRequest& request) {
   if (!connection_->Ready() || !present())
@@ -4339,6 +4564,14 @@ Future<Input::SetDeviceValuatorsReply> Input::SetDeviceValuators(
 
   return connection_->SendRequest<Input::SetDeviceValuatorsReply>(
       &buf, "Input::SetDeviceValuators", false);
+}
+
+Future<Input::SetDeviceValuatorsReply> Input::SetDeviceValuators(
+    const uint8_t& device_id,
+    const uint8_t& first_valuator,
+    const std::vector<int32_t>& valuators) {
+  return Input::SetDeviceValuators(
+      Input::SetDeviceValuatorsRequest{device_id, first_valuator, valuators});
 }
 
 template <>
@@ -4417,6 +4650,13 @@ Future<Input::GetDeviceControlReply> Input::GetDeviceControl(
 
   return connection_->SendRequest<Input::GetDeviceControlReply>(
       &buf, "Input::GetDeviceControl", false);
+}
+
+Future<Input::GetDeviceControlReply> Input::GetDeviceControl(
+    const DeviceControl& control_id,
+    const uint8_t& device_id) {
+  return Input::GetDeviceControl(
+      Input::GetDeviceControlRequest{control_id, device_id});
 }
 
 template <>
@@ -4763,6 +5003,14 @@ Future<Input::ChangeDeviceControlReply> Input::ChangeDeviceControl(
       &buf, "Input::ChangeDeviceControl", false);
 }
 
+Future<Input::ChangeDeviceControlReply> Input::ChangeDeviceControl(
+    const DeviceControl& control_id,
+    const uint8_t& device_id,
+    const DeviceCtl& control) {
+  return Input::ChangeDeviceControl(
+      Input::ChangeDeviceControlRequest{control_id, device_id, control});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Input::ChangeDeviceControlReply> detail::ReadReply<
@@ -4831,6 +5079,12 @@ Future<Input::ListDevicePropertiesReply> Input::ListDeviceProperties(
 
   return connection_->SendRequest<Input::ListDevicePropertiesReply>(
       &buf, "Input::ListDeviceProperties", false);
+}
+
+Future<Input::ListDevicePropertiesReply> Input::ListDeviceProperties(
+    const uint8_t& device_id) {
+  return Input::ListDeviceProperties(
+      Input::ListDevicePropertiesRequest{device_id});
 }
 
 template <>
@@ -4982,6 +5236,19 @@ Future<void> Input::ChangeDeviceProperty(
                                         false);
 }
 
+Future<void> Input::ChangeDeviceProperty(
+    const Atom& property,
+    const Atom& type,
+    const uint8_t& device_id,
+    const PropMode& mode,
+    const uint32_t& num_items,
+    const base::Optional<std::vector<uint8_t>>& data8,
+    const base::Optional<std::vector<uint16_t>>& data16,
+    const base::Optional<std::vector<uint32_t>>& data32) {
+  return Input::ChangeDeviceProperty(Input::ChangeDevicePropertyRequest{
+      property, type, device_id, mode, num_items, data8, data16, data32});
+}
+
 Future<void> Input::DeleteDeviceProperty(
     const Input::DeleteDevicePropertyRequest& request) {
   if (!connection_->Ready() || !present())
@@ -5017,6 +5284,12 @@ Future<void> Input::DeleteDeviceProperty(
 
   return connection_->SendRequest<void>(&buf, "Input::DeleteDeviceProperty",
                                         false);
+}
+
+Future<void> Input::DeleteDeviceProperty(const Atom& property,
+                                         const uint8_t& device_id) {
+  return Input::DeleteDeviceProperty(
+      Input::DeleteDevicePropertyRequest{property, device_id});
 }
 
 Future<Input::GetDevicePropertyReply> Input::GetDeviceProperty(
@@ -5070,6 +5343,17 @@ Future<Input::GetDevicePropertyReply> Input::GetDeviceProperty(
 
   return connection_->SendRequest<Input::GetDevicePropertyReply>(
       &buf, "Input::GetDeviceProperty", false);
+}
+
+Future<Input::GetDevicePropertyReply> Input::GetDeviceProperty(
+    const Atom& property,
+    const Atom& type,
+    const uint32_t& offset,
+    const uint32_t& len,
+    const uint8_t& device_id,
+    const uint8_t& c_delete) {
+  return Input::GetDeviceProperty(Input::GetDevicePropertyRequest{
+      property, type, offset, len, device_id, c_delete});
 }
 
 template <>
@@ -5208,6 +5492,12 @@ Future<Input::XIQueryPointerReply> Input::XIQueryPointer(
 
   return connection_->SendRequest<Input::XIQueryPointerReply>(
       &buf, "Input::XIQueryPointer", false);
+}
+
+Future<Input::XIQueryPointerReply> Input::XIQueryPointer(
+    const Window& window,
+    const DeviceId& deviceid) {
+  return Input::XIQueryPointer(Input::XIQueryPointerRequest{window, deviceid});
 }
 
 template <>
@@ -5387,6 +5677,20 @@ Future<void> Input::XIWarpPointer(const Input::XIWarpPointerRequest& request) {
   return connection_->SendRequest<void>(&buf, "Input::XIWarpPointer", false);
 }
 
+Future<void> Input::XIWarpPointer(const Window& src_win,
+                                  const Window& dst_win,
+                                  const Fp1616& src_x,
+                                  const Fp1616& src_y,
+                                  const uint16_t& src_width,
+                                  const uint16_t& src_height,
+                                  const Fp1616& dst_x,
+                                  const Fp1616& dst_y,
+                                  const DeviceId& deviceid) {
+  return Input::XIWarpPointer(
+      Input::XIWarpPointerRequest{src_win, dst_win, src_x, src_y, src_width,
+                                  src_height, dst_x, dst_y, deviceid});
+}
+
 Future<void> Input::XIChangeCursor(
     const Input::XIChangeCursorRequest& request) {
   if (!connection_->Ready() || !present())
@@ -5425,6 +5729,13 @@ Future<void> Input::XIChangeCursor(
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Input::XIChangeCursor", false);
+}
+
+Future<void> Input::XIChangeCursor(const Window& window,
+                                   const Cursor& cursor,
+                                   const DeviceId& deviceid) {
+  return Input::XIChangeCursor(
+      Input::XIChangeCursorRequest{window, cursor, deviceid});
 }
 
 Future<void> Input::XIChangeHierarchy(
@@ -5561,6 +5872,11 @@ Future<void> Input::XIChangeHierarchy(
                                         false);
 }
 
+Future<void> Input::XIChangeHierarchy(
+    const std::vector<HierarchyChange>& changes) {
+  return Input::XIChangeHierarchy(Input::XIChangeHierarchyRequest{changes});
+}
+
 Future<void> Input::XISetClientPointer(
     const Input::XISetClientPointerRequest& request) {
   if (!connection_->Ready() || !present())
@@ -5598,6 +5914,12 @@ Future<void> Input::XISetClientPointer(
                                         false);
 }
 
+Future<void> Input::XISetClientPointer(const Window& window,
+                                       const DeviceId& deviceid) {
+  return Input::XISetClientPointer(
+      Input::XISetClientPointerRequest{window, deviceid});
+}
+
 Future<Input::XIGetClientPointerReply> Input::XIGetClientPointer(
     const Input::XIGetClientPointerRequest& request) {
   if (!connection_->Ready() || !present())
@@ -5626,6 +5948,11 @@ Future<Input::XIGetClientPointerReply> Input::XIGetClientPointer(
 
   return connection_->SendRequest<Input::XIGetClientPointerReply>(
       &buf, "Input::XIGetClientPointer", false);
+}
+
+Future<Input::XIGetClientPointerReply> Input::XIGetClientPointer(
+    const Window& window) {
+  return Input::XIGetClientPointer(Input::XIGetClientPointerRequest{window});
 }
 
 template <>
@@ -5737,6 +6064,11 @@ Future<void> Input::XISelectEvents(
   return connection_->SendRequest<void>(&buf, "Input::XISelectEvents", false);
 }
 
+Future<void> Input::XISelectEvents(const Window& window,
+                                   const std::vector<EventMask>& masks) {
+  return Input::XISelectEvents(Input::XISelectEventsRequest{window, masks});
+}
+
 Future<Input::XIQueryVersionReply> Input::XIQueryVersion(
     const Input::XIQueryVersionRequest& request) {
   if (!connection_->Ready() || !present())
@@ -5769,6 +6101,13 @@ Future<Input::XIQueryVersionReply> Input::XIQueryVersion(
 
   return connection_->SendRequest<Input::XIQueryVersionReply>(
       &buf, "Input::XIQueryVersion", false);
+}
+
+Future<Input::XIQueryVersionReply> Input::XIQueryVersion(
+    const uint16_t& major_version,
+    const uint16_t& minor_version) {
+  return Input::XIQueryVersion(
+      Input::XIQueryVersionRequest{major_version, minor_version});
 }
 
 template <>
@@ -5842,6 +6181,11 @@ Future<Input::XIQueryDeviceReply> Input::XIQueryDevice(
 
   return connection_->SendRequest<Input::XIQueryDeviceReply>(
       &buf, "Input::XIQueryDevice", false);
+}
+
+Future<Input::XIQueryDeviceReply> Input::XIQueryDevice(
+    const DeviceId& deviceid) {
+  return Input::XIQueryDevice(Input::XIQueryDeviceRequest{deviceid});
 }
 
 template <>
@@ -6149,6 +6493,12 @@ Future<void> Input::XISetFocus(const Input::XISetFocusRequest& request) {
   return connection_->SendRequest<void>(&buf, "Input::XISetFocus", false);
 }
 
+Future<void> Input::XISetFocus(const Window& window,
+                               const Time& time,
+                               const DeviceId& deviceid) {
+  return Input::XISetFocus(Input::XISetFocusRequest{window, time, deviceid});
+}
+
 Future<Input::XIGetFocusReply> Input::XIGetFocus(
     const Input::XIGetFocusRequest& request) {
   if (!connection_->Ready() || !present())
@@ -6180,6 +6530,10 @@ Future<Input::XIGetFocusReply> Input::XIGetFocus(
 
   return connection_->SendRequest<Input::XIGetFocusReply>(
       &buf, "Input::XIGetFocus", false);
+}
+
+Future<Input::XIGetFocusReply> Input::XIGetFocus(const DeviceId& deviceid) {
+  return Input::XIGetFocus(Input::XIGetFocusRequest{deviceid});
 }
 
 template <>
@@ -6294,6 +6648,20 @@ Future<Input::XIGrabDeviceReply> Input::XIGrabDevice(
       &buf, "Input::XIGrabDevice", false);
 }
 
+Future<Input::XIGrabDeviceReply> Input::XIGrabDevice(
+    const Window& window,
+    const Time& time,
+    const Cursor& cursor,
+    const DeviceId& deviceid,
+    const GrabMode& mode,
+    const GrabMode& paired_device_mode,
+    const GrabOwner& owner_events,
+    const std::vector<uint32_t>& mask) {
+  return Input::XIGrabDevice(
+      Input::XIGrabDeviceRequest{window, time, cursor, deviceid, mode,
+                                 paired_device_mode, owner_events, mask});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Input::XIGrabDeviceReply> detail::ReadReply<
@@ -6368,6 +6736,10 @@ Future<void> Input::XIUngrabDevice(
   return connection_->SendRequest<void>(&buf, "Input::XIUngrabDevice", false);
 }
 
+Future<void> Input::XIUngrabDevice(const Time& time, const DeviceId& deviceid) {
+  return Input::XIUngrabDevice(Input::XIUngrabDeviceRequest{time, deviceid});
+}
+
 Future<void> Input::XIAllowEvents(const Input::XIAllowEventsRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -6415,6 +6787,15 @@ Future<void> Input::XIAllowEvents(const Input::XIAllowEventsRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Input::XIAllowEvents", false);
+}
+
+Future<void> Input::XIAllowEvents(const Time& time,
+                                  const DeviceId& deviceid,
+                                  const EventMode& event_mode,
+                                  const uint32_t& touchid,
+                                  const Window& grab_window) {
+  return Input::XIAllowEvents(Input::XIAllowEventsRequest{
+      time, deviceid, event_mode, touchid, grab_window});
 }
 
 Future<Input::XIPassiveGrabDeviceReply> Input::XIPassiveGrabDevice(
@@ -6515,6 +6896,23 @@ Future<Input::XIPassiveGrabDeviceReply> Input::XIPassiveGrabDevice(
 
   return connection_->SendRequest<Input::XIPassiveGrabDeviceReply>(
       &buf, "Input::XIPassiveGrabDevice", false);
+}
+
+Future<Input::XIPassiveGrabDeviceReply> Input::XIPassiveGrabDevice(
+    const Time& time,
+    const Window& grab_window,
+    const Cursor& cursor,
+    const uint32_t& detail,
+    const DeviceId& deviceid,
+    const GrabType& grab_type,
+    const GrabMode22& grab_mode,
+    const GrabMode& paired_device_mode,
+    const GrabOwner& owner_events,
+    const std::vector<uint32_t>& mask,
+    const std::vector<uint32_t>& modifiers) {
+  return Input::XIPassiveGrabDevice(Input::XIPassiveGrabDeviceRequest{
+      time, grab_window, cursor, detail, deviceid, grab_type, grab_mode,
+      paired_device_mode, owner_events, mask, modifiers});
 }
 
 template <>
@@ -6637,6 +7035,16 @@ Future<void> Input::XIPassiveUngrabDevice(
                                         false);
 }
 
+Future<void> Input::XIPassiveUngrabDevice(
+    const Window& grab_window,
+    const uint32_t& detail,
+    const DeviceId& deviceid,
+    const GrabType& grab_type,
+    const std::vector<uint32_t>& modifiers) {
+  return Input::XIPassiveUngrabDevice(Input::XIPassiveUngrabDeviceRequest{
+      grab_window, detail, deviceid, grab_type, modifiers});
+}
+
 Future<Input::XIListPropertiesReply> Input::XIListProperties(
     const Input::XIListPropertiesRequest& request) {
   if (!connection_->Ready() || !present())
@@ -6668,6 +7076,11 @@ Future<Input::XIListPropertiesReply> Input::XIListProperties(
 
   return connection_->SendRequest<Input::XIListPropertiesReply>(
       &buf, "Input::XIListProperties", false);
+}
+
+Future<Input::XIListPropertiesReply> Input::XIListProperties(
+    const DeviceId& deviceid) {
+  return Input::XIListProperties(Input::XIListPropertiesRequest{deviceid});
 }
 
 template <>
@@ -6814,6 +7227,19 @@ Future<void> Input::XIChangeProperty(
   return connection_->SendRequest<void>(&buf, "Input::XIChangeProperty", false);
 }
 
+Future<void> Input::XIChangeProperty(
+    const DeviceId& deviceid,
+    const PropMode& mode,
+    const Atom& property,
+    const Atom& type,
+    const uint32_t& num_items,
+    const base::Optional<std::vector<uint8_t>>& data8,
+    const base::Optional<std::vector<uint16_t>>& data16,
+    const base::Optional<std::vector<uint32_t>>& data32) {
+  return Input::XIChangeProperty(Input::XIChangePropertyRequest{
+      deviceid, mode, property, type, num_items, data8, data16, data32});
+}
+
 Future<void> Input::XIDeleteProperty(
     const Input::XIDeletePropertyRequest& request) {
   if (!connection_->Ready() || !present())
@@ -6848,6 +7274,12 @@ Future<void> Input::XIDeleteProperty(
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Input::XIDeleteProperty", false);
+}
+
+Future<void> Input::XIDeleteProperty(const DeviceId& deviceid,
+                                     const Atom& property) {
+  return Input::XIDeleteProperty(
+      Input::XIDeletePropertyRequest{deviceid, property});
 }
 
 Future<Input::XIGetPropertyReply> Input::XIGetProperty(
@@ -6901,6 +7333,16 @@ Future<Input::XIGetPropertyReply> Input::XIGetProperty(
 
   return connection_->SendRequest<Input::XIGetPropertyReply>(
       &buf, "Input::XIGetProperty", false);
+}
+
+Future<Input::XIGetPropertyReply> Input::XIGetProperty(const DeviceId& deviceid,
+                                                       const uint8_t& c_delete,
+                                                       const Atom& property,
+                                                       const Atom& type,
+                                                       const uint32_t& offset,
+                                                       const uint32_t& len) {
+  return Input::XIGetProperty(Input::XIGetPropertyRequest{
+      deviceid, c_delete, property, type, offset, len});
 }
 
 template <>
@@ -7029,6 +7471,11 @@ Future<Input::XIGetSelectedEventsReply> Input::XIGetSelectedEvents(
       &buf, "Input::XIGetSelectedEvents", false);
 }
 
+Future<Input::XIGetSelectedEventsReply> Input::XIGetSelectedEvents(
+    const Window& window) {
+  return Input::XIGetSelectedEvents(Input::XIGetSelectedEventsRequest{window});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Input::XIGetSelectedEventsReply> detail::ReadReply<
@@ -7149,6 +7596,12 @@ Future<void> Input::XIBarrierReleasePointer(
                                         false);
 }
 
+Future<void> Input::XIBarrierReleasePointer(
+    const std::vector<BarrierReleasePointerInfo>& barriers) {
+  return Input::XIBarrierReleasePointer(
+      Input::XIBarrierReleasePointerRequest{barriers});
+}
+
 Future<void> Input::SendExtensionEvent(
     const Input::SendExtensionEventRequest& request) {
   if (!connection_->Ready() || !present())
@@ -7216,6 +7669,15 @@ Future<void> Input::SendExtensionEvent(
 
   return connection_->SendRequest<void>(&buf, "Input::SendExtensionEvent",
                                         false);
+}
+
+Future<void> Input::SendExtensionEvent(const Window& destination,
+                                       const uint8_t& device_id,
+                                       const uint8_t& propagate,
+                                       const std::vector<EventForSend>& events,
+                                       const std::vector<EventClass>& classes) {
+  return Input::SendExtensionEvent(Input::SendExtensionEventRequest{
+      destination, device_id, propagate, events, classes});
 }
 
 }  // namespace x11

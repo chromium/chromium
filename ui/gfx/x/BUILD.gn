@@ -159,6 +159,8 @@ source_set("xproto") {
     "future.h",
     "keyboard_state.cc",
     "keyboard_state.h",
+    "ref_counted_fd.cc",
+    "ref_counted_fd.h",
     "scoped_ignore_errors.cc",
     "scoped_ignore_errors.h",
     "x11_switches.cc",

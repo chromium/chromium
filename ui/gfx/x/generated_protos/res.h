@@ -53,6 +53,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "ui/gfx/x/error.h"
+#include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
 
 namespace x11 {
@@ -137,6 +138,9 @@ class COMPONENT_EXPORT(X11) Res {
 
   Future<QueryVersionReply> QueryVersion(const QueryVersionRequest& request);
 
+  Future<QueryVersionReply> QueryVersion(const uint8_t& client_major = {},
+                                         const uint8_t& client_minor = {});
+
   struct QueryClientsRequest {};
 
   struct QueryClientsReply {
@@ -147,6 +151,8 @@ class COMPONENT_EXPORT(X11) Res {
   using QueryClientsResponse = Response<QueryClientsReply>;
 
   Future<QueryClientsReply> QueryClients(const QueryClientsRequest& request);
+
+  Future<QueryClientsReply> QueryClients();
 
   struct QueryClientResourcesRequest {
     uint32_t xid{};
@@ -161,6 +167,9 @@ class COMPONENT_EXPORT(X11) Res {
 
   Future<QueryClientResourcesReply> QueryClientResources(
       const QueryClientResourcesRequest& request);
+
+  Future<QueryClientResourcesReply> QueryClientResources(
+      const uint32_t& xid = {});
 
   struct QueryClientPixmapBytesRequest {
     uint32_t xid{};
@@ -177,6 +186,9 @@ class COMPONENT_EXPORT(X11) Res {
   Future<QueryClientPixmapBytesReply> QueryClientPixmapBytes(
       const QueryClientPixmapBytesRequest& request);
 
+  Future<QueryClientPixmapBytesReply> QueryClientPixmapBytes(
+      const uint32_t& xid = {});
+
   struct QueryClientIdsRequest {
     std::vector<ClientIdSpec> specs{};
   };
@@ -190,6 +202,9 @@ class COMPONENT_EXPORT(X11) Res {
 
   Future<QueryClientIdsReply> QueryClientIds(
       const QueryClientIdsRequest& request);
+
+  Future<QueryClientIdsReply> QueryClientIds(
+      const std::vector<ClientIdSpec>& specs = {});
 
   struct QueryResourceBytesRequest {
     uint32_t client{};
@@ -205,6 +220,10 @@ class COMPONENT_EXPORT(X11) Res {
 
   Future<QueryResourceBytesReply> QueryResourceBytes(
       const QueryResourceBytesRequest& request);
+
+  Future<QueryResourceBytesReply> QueryResourceBytes(
+      const uint32_t& client = {},
+      const std::vector<ResourceIdSpec>& specs = {});
 
  private:
   Connection* const connection_;

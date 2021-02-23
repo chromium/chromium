@@ -167,6 +167,13 @@ Future<Dri2::QueryVersionReply> Dri2::QueryVersion(
       &buf, "Dri2::QueryVersion", false);
 }
 
+Future<Dri2::QueryVersionReply> Dri2::QueryVersion(
+    const uint32_t& major_version,
+    const uint32_t& minor_version) {
+  return Dri2::QueryVersion(
+      Dri2::QueryVersionRequest{major_version, minor_version});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Dri2::QueryVersionReply> detail::ReadReply<
@@ -237,6 +244,11 @@ Future<Dri2::ConnectReply> Dri2::Connect(const Dri2::ConnectRequest& request) {
 
   return connection_->SendRequest<Dri2::ConnectReply>(&buf, "Dri2::Connect",
                                                       false);
+}
+
+Future<Dri2::ConnectReply> Dri2::Connect(const Window& window,
+                                         const DriverType& driver_type) {
+  return Dri2::Connect(Dri2::ConnectRequest{window, driver_type});
 }
 
 template <>
@@ -337,6 +349,11 @@ Future<Dri2::AuthenticateReply> Dri2::Authenticate(
       &buf, "Dri2::Authenticate", false);
 }
 
+Future<Dri2::AuthenticateReply> Dri2::Authenticate(const Window& window,
+                                                   const uint32_t& magic) {
+  return Dri2::Authenticate(Dri2::AuthenticateRequest{window, magic});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Dri2::AuthenticateReply> detail::ReadReply<
@@ -398,6 +415,10 @@ Future<void> Dri2::CreateDrawable(const Dri2::CreateDrawableRequest& request) {
   return connection_->SendRequest<void>(&buf, "Dri2::CreateDrawable", false);
 }
 
+Future<void> Dri2::CreateDrawable(const Drawable& drawable) {
+  return Dri2::CreateDrawable(Dri2::CreateDrawableRequest{drawable});
+}
+
 Future<void> Dri2::DestroyDrawable(
     const Dri2::DestroyDrawableRequest& request) {
   if (!connection_->Ready() || !present())
@@ -425,6 +446,10 @@ Future<void> Dri2::DestroyDrawable(
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Dri2::DestroyDrawable", false);
+}
+
+Future<void> Dri2::DestroyDrawable(const Drawable& drawable) {
+  return Dri2::DestroyDrawable(Dri2::DestroyDrawableRequest{drawable});
 }
 
 Future<Dri2::GetBuffersReply> Dri2::GetBuffers(
@@ -468,6 +493,14 @@ Future<Dri2::GetBuffersReply> Dri2::GetBuffers(
 
   return connection_->SendRequest<Dri2::GetBuffersReply>(
       &buf, "Dri2::GetBuffers", false);
+}
+
+Future<Dri2::GetBuffersReply> Dri2::GetBuffers(
+    const Drawable& drawable,
+    const uint32_t& count,
+    const std::vector<uint32_t>& attachments) {
+  return Dri2::GetBuffers(
+      Dri2::GetBuffersRequest{drawable, count, attachments});
 }
 
 template <>
@@ -588,6 +621,13 @@ Future<Dri2::CopyRegionReply> Dri2::CopyRegion(
       &buf, "Dri2::CopyRegion", false);
 }
 
+Future<Dri2::CopyRegionReply> Dri2::CopyRegion(const Drawable& drawable,
+                                               const uint32_t& region,
+                                               const uint32_t& dest,
+                                               const uint32_t& src) {
+  return Dri2::CopyRegion(Dri2::CopyRegionRequest{drawable, region, dest, src});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Dri2::CopyRegionReply> detail::ReadReply<Dri2::CopyRegionReply>(
@@ -669,6 +709,14 @@ Future<Dri2::GetBuffersWithFormatReply> Dri2::GetBuffersWithFormat(
 
   return connection_->SendRequest<Dri2::GetBuffersWithFormatReply>(
       &buf, "Dri2::GetBuffersWithFormat", false);
+}
+
+Future<Dri2::GetBuffersWithFormatReply> Dri2::GetBuffersWithFormat(
+    const Drawable& drawable,
+    const uint32_t& count,
+    const std::vector<AttachFormat>& attachments) {
+  return Dri2::GetBuffersWithFormat(
+      Dri2::GetBuffersWithFormatRequest{drawable, count, attachments});
 }
 
 template <>
@@ -801,6 +849,18 @@ Future<Dri2::SwapBuffersReply> Dri2::SwapBuffers(
       &buf, "Dri2::SwapBuffers", false);
 }
 
+Future<Dri2::SwapBuffersReply> Dri2::SwapBuffers(const Drawable& drawable,
+                                                 const uint32_t& target_msc_hi,
+                                                 const uint32_t& target_msc_lo,
+                                                 const uint32_t& divisor_hi,
+                                                 const uint32_t& divisor_lo,
+                                                 const uint32_t& remainder_hi,
+                                                 const uint32_t& remainder_lo) {
+  return Dri2::SwapBuffers(Dri2::SwapBuffersRequest{
+      drawable, target_msc_hi, target_msc_lo, divisor_hi, divisor_lo,
+      remainder_hi, remainder_lo});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Dri2::SwapBuffersReply> detail::ReadReply<
@@ -865,6 +925,10 @@ Future<Dri2::GetMSCReply> Dri2::GetMSC(const Dri2::GetMSCRequest& request) {
 
   return connection_->SendRequest<Dri2::GetMSCReply>(&buf, "Dri2::GetMSC",
                                                      false);
+}
+
+Future<Dri2::GetMSCReply> Dri2::GetMSC(const Drawable& drawable) {
+  return Dri2::GetMSC(Dri2::GetMSCRequest{drawable});
 }
 
 template <>
@@ -973,6 +1037,18 @@ Future<Dri2::WaitMSCReply> Dri2::WaitMSC(const Dri2::WaitMSCRequest& request) {
                                                       false);
 }
 
+Future<Dri2::WaitMSCReply> Dri2::WaitMSC(const Drawable& drawable,
+                                         const uint32_t& target_msc_hi,
+                                         const uint32_t& target_msc_lo,
+                                         const uint32_t& divisor_hi,
+                                         const uint32_t& divisor_lo,
+                                         const uint32_t& remainder_hi,
+                                         const uint32_t& remainder_lo) {
+  return Dri2::WaitMSC(
+      Dri2::WaitMSCRequest{drawable, target_msc_hi, target_msc_lo, divisor_hi,
+                           divisor_lo, remainder_hi, remainder_lo});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Dri2::WaitMSCReply> detail::ReadReply<Dri2::WaitMSCReply>(
@@ -1063,6 +1139,13 @@ Future<Dri2::WaitSBCReply> Dri2::WaitSBC(const Dri2::WaitSBCRequest& request) {
                                                       false);
 }
 
+Future<Dri2::WaitSBCReply> Dri2::WaitSBC(const Drawable& drawable,
+                                         const uint32_t& target_sbc_hi,
+                                         const uint32_t& target_sbc_lo) {
+  return Dri2::WaitSBC(
+      Dri2::WaitSBCRequest{drawable, target_sbc_hi, target_sbc_lo});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Dri2::WaitSBCReply> detail::ReadReply<Dri2::WaitSBCReply>(
@@ -1148,6 +1231,11 @@ Future<void> Dri2::SwapInterval(const Dri2::SwapIntervalRequest& request) {
   return connection_->SendRequest<void>(&buf, "Dri2::SwapInterval", false);
 }
 
+Future<void> Dri2::SwapInterval(const Drawable& drawable,
+                                const uint32_t& interval) {
+  return Dri2::SwapInterval(Dri2::SwapIntervalRequest{drawable, interval});
+}
+
 Future<Dri2::GetParamReply> Dri2::GetParam(
     const Dri2::GetParamRequest& request) {
   if (!connection_->Ready() || !present())
@@ -1180,6 +1268,11 @@ Future<Dri2::GetParamReply> Dri2::GetParam(
 
   return connection_->SendRequest<Dri2::GetParamReply>(&buf, "Dri2::GetParam",
                                                        false);
+}
+
+Future<Dri2::GetParamReply> Dri2::GetParam(const Drawable& drawable,
+                                           const uint32_t& param) {
+  return Dri2::GetParam(Dri2::GetParamRequest{drawable, param});
 }
 
 template <>

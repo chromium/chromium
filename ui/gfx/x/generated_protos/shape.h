@@ -53,6 +53,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "ui/gfx/x/error.h"
+#include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
 
 namespace x11 {
@@ -128,6 +129,8 @@ class COMPONENT_EXPORT(X11) Shape {
 
   Future<QueryVersionReply> QueryVersion(const QueryVersionRequest& request);
 
+  Future<QueryVersionReply> QueryVersion();
+
   struct RectanglesRequest {
     So operation{};
     Sk destination_kind{};
@@ -142,6 +145,14 @@ class COMPONENT_EXPORT(X11) Shape {
 
   Future<void> Rectangles(const RectanglesRequest& request);
 
+  Future<void> Rectangles(const So& operation = {},
+                          const Sk& destination_kind = {},
+                          const ClipOrdering& ordering = {},
+                          const Window& destination_window = {},
+                          const int16_t& x_offset = {},
+                          const int16_t& y_offset = {},
+                          const std::vector<Rectangle>& rectangles = {});
+
   struct MaskRequest {
     So operation{};
     Sk destination_kind{};
@@ -154,6 +165,13 @@ class COMPONENT_EXPORT(X11) Shape {
   using MaskResponse = Response<void>;
 
   Future<void> Mask(const MaskRequest& request);
+
+  Future<void> Mask(const So& operation = {},
+                    const Sk& destination_kind = {},
+                    const Window& destination_window = {},
+                    const int16_t& x_offset = {},
+                    const int16_t& y_offset = {},
+                    const Pixmap& source_bitmap = {});
 
   struct CombineRequest {
     So operation{};
@@ -169,6 +187,14 @@ class COMPONENT_EXPORT(X11) Shape {
 
   Future<void> Combine(const CombineRequest& request);
 
+  Future<void> Combine(const So& operation = {},
+                       const Sk& destination_kind = {},
+                       const Sk& source_kind = {},
+                       const Window& destination_window = {},
+                       const int16_t& x_offset = {},
+                       const int16_t& y_offset = {},
+                       const Window& source_window = {});
+
   struct OffsetRequest {
     Sk destination_kind{};
     Window destination_window{};
@@ -179,6 +205,11 @@ class COMPONENT_EXPORT(X11) Shape {
   using OffsetResponse = Response<void>;
 
   Future<void> Offset(const OffsetRequest& request);
+
+  Future<void> Offset(const Sk& destination_kind = {},
+                      const Window& destination_window = {},
+                      const int16_t& x_offset = {},
+                      const int16_t& y_offset = {});
 
   struct QueryExtentsRequest {
     Window destination_window{};
@@ -202,6 +233,8 @@ class COMPONENT_EXPORT(X11) Shape {
 
   Future<QueryExtentsReply> QueryExtents(const QueryExtentsRequest& request);
 
+  Future<QueryExtentsReply> QueryExtents(const Window& destination_window = {});
+
   struct SelectInputRequest {
     Window destination_window{};
     uint8_t enable{};
@@ -210,6 +243,9 @@ class COMPONENT_EXPORT(X11) Shape {
   using SelectInputResponse = Response<void>;
 
   Future<void> SelectInput(const SelectInputRequest& request);
+
+  Future<void> SelectInput(const Window& destination_window = {},
+                           const uint8_t& enable = {});
 
   struct InputSelectedRequest {
     Window destination_window{};
@@ -223,6 +259,9 @@ class COMPONENT_EXPORT(X11) Shape {
   using InputSelectedResponse = Response<InputSelectedReply>;
 
   Future<InputSelectedReply> InputSelected(const InputSelectedRequest& request);
+
+  Future<InputSelectedReply> InputSelected(
+      const Window& destination_window = {});
 
   struct GetRectanglesRequest {
     Window window{};
@@ -238,6 +277,9 @@ class COMPONENT_EXPORT(X11) Shape {
   using GetRectanglesResponse = Response<GetRectanglesReply>;
 
   Future<GetRectanglesReply> GetRectangles(const GetRectanglesRequest& request);
+
+  Future<GetRectanglesReply> GetRectangles(const Window& window = {},
+                                           const Sk& source_kind = {});
 
  private:
   Connection* const connection_;

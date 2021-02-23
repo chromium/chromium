@@ -898,6 +898,11 @@ Future<void> Glx::Render(const Glx::RenderRequest& request) {
   return connection_->SendRequest<void>(&buf, "Glx::Render", false);
 }
 
+Future<void> Glx::Render(const ContextTag& context_tag,
+                         const std::vector<uint8_t>& data) {
+  return Glx::Render(Glx::RenderRequest{context_tag, data});
+}
+
 Future<void> Glx::RenderLarge(const Glx::RenderLargeRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -947,6 +952,14 @@ Future<void> Glx::RenderLarge(const Glx::RenderLargeRequest& request) {
   return connection_->SendRequest<void>(&buf, "Glx::RenderLarge", false);
 }
 
+Future<void> Glx::RenderLarge(const ContextTag& context_tag,
+                              const uint16_t& request_num,
+                              const uint16_t& request_total,
+                              const std::vector<uint8_t>& data) {
+  return Glx::RenderLarge(
+      Glx::RenderLargeRequest{context_tag, request_num, request_total, data});
+}
+
 Future<void> Glx::CreateContext(const Glx::CreateContextRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -994,6 +1007,15 @@ Future<void> Glx::CreateContext(const Glx::CreateContextRequest& request) {
   return connection_->SendRequest<void>(&buf, "Glx::CreateContext", false);
 }
 
+Future<void> Glx::CreateContext(const Context& context,
+                                const VisualId& visual,
+                                const uint32_t& screen,
+                                const Context& share_list,
+                                const uint8_t& is_direct) {
+  return Glx::CreateContext(Glx::CreateContextRequest{context, visual, screen,
+                                                      share_list, is_direct});
+}
+
 Future<void> Glx::DestroyContext(const Glx::DestroyContextRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -1020,6 +1042,10 @@ Future<void> Glx::DestroyContext(const Glx::DestroyContextRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Glx::DestroyContext", false);
+}
+
+Future<void> Glx::DestroyContext(const Context& context) {
+  return Glx::DestroyContext(Glx::DestroyContextRequest{context});
 }
 
 Future<Glx::MakeCurrentReply> Glx::MakeCurrent(
@@ -1058,6 +1084,14 @@ Future<Glx::MakeCurrentReply> Glx::MakeCurrent(
 
   return connection_->SendRequest<Glx::MakeCurrentReply>(
       &buf, "Glx::MakeCurrent", false);
+}
+
+Future<Glx::MakeCurrentReply> Glx::MakeCurrent(
+    const Drawable& drawable,
+    const Context& context,
+    const ContextTag& old_context_tag) {
+  return Glx::MakeCurrent(
+      Glx::MakeCurrentRequest{drawable, context, old_context_tag});
 }
 
 template <>
@@ -1123,6 +1157,10 @@ Future<Glx::IsDirectReply> Glx::IsDirect(const Glx::IsDirectRequest& request) {
 
   return connection_->SendRequest<Glx::IsDirectReply>(&buf, "Glx::IsDirect",
                                                       false);
+}
+
+Future<Glx::IsDirectReply> Glx::IsDirect(const Context& context) {
+  return Glx::IsDirect(Glx::IsDirectRequest{context});
 }
 
 template <>
@@ -1195,6 +1233,13 @@ Future<Glx::QueryVersionReply> Glx::QueryVersion(
       &buf, "Glx::QueryVersion", false);
 }
 
+Future<Glx::QueryVersionReply> Glx::QueryVersion(
+    const uint32_t& major_version,
+    const uint32_t& minor_version) {
+  return Glx::QueryVersion(
+      Glx::QueryVersionRequest{major_version, minor_version});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Glx::QueryVersionReply> detail::ReadReply<
@@ -1263,6 +1308,10 @@ Future<void> Glx::WaitGL(const Glx::WaitGLRequest& request) {
   return connection_->SendRequest<void>(&buf, "Glx::WaitGL", false);
 }
 
+Future<void> Glx::WaitGL(const ContextTag& context_tag) {
+  return Glx::WaitGL(Glx::WaitGLRequest{context_tag});
+}
+
 Future<void> Glx::WaitX(const Glx::WaitXRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -1289,6 +1338,10 @@ Future<void> Glx::WaitX(const Glx::WaitXRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Glx::WaitX", false);
+}
+
+Future<void> Glx::WaitX(const ContextTag& context_tag) {
+  return Glx::WaitX(Glx::WaitXRequest{context_tag});
 }
 
 Future<void> Glx::CopyContext(const Glx::CopyContextRequest& request) {
@@ -1331,6 +1384,14 @@ Future<void> Glx::CopyContext(const Glx::CopyContextRequest& request) {
   return connection_->SendRequest<void>(&buf, "Glx::CopyContext", false);
 }
 
+Future<void> Glx::CopyContext(const Context& src,
+                              const Context& dest,
+                              const uint32_t& mask,
+                              const ContextTag& src_context_tag) {
+  return Glx::CopyContext(
+      Glx::CopyContextRequest{src, dest, mask, src_context_tag});
+}
+
 Future<void> Glx::SwapBuffers(const Glx::SwapBuffersRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -1361,6 +1422,11 @@ Future<void> Glx::SwapBuffers(const Glx::SwapBuffersRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Glx::SwapBuffers", false);
+}
+
+Future<void> Glx::SwapBuffers(const ContextTag& context_tag,
+                              const Drawable& drawable) {
+  return Glx::SwapBuffers(Glx::SwapBuffersRequest{context_tag, drawable});
 }
 
 Future<void> Glx::UseXFont(const Glx::UseXFontRequest& request) {
@@ -1407,6 +1473,15 @@ Future<void> Glx::UseXFont(const Glx::UseXFontRequest& request) {
   return connection_->SendRequest<void>(&buf, "Glx::UseXFont", false);
 }
 
+Future<void> Glx::UseXFont(const ContextTag& context_tag,
+                           const Font& font,
+                           const uint32_t& first,
+                           const uint32_t& count,
+                           const uint32_t& list_base) {
+  return Glx::UseXFont(
+      Glx::UseXFontRequest{context_tag, font, first, count, list_base});
+}
+
 Future<void> Glx::CreateGLXPixmap(const Glx::CreateGLXPixmapRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -1447,6 +1522,14 @@ Future<void> Glx::CreateGLXPixmap(const Glx::CreateGLXPixmapRequest& request) {
   return connection_->SendRequest<void>(&buf, "Glx::CreateGLXPixmap", false);
 }
 
+Future<void> Glx::CreateGLXPixmap(const uint32_t& screen,
+                                  const VisualId& visual,
+                                  const x11::Pixmap& pixmap,
+                                  const Pixmap& glx_pixmap) {
+  return Glx::CreateGLXPixmap(
+      Glx::CreateGLXPixmapRequest{screen, visual, pixmap, glx_pixmap});
+}
+
 Future<Glx::GetVisualConfigsReply> Glx::GetVisualConfigs(
     const Glx::GetVisualConfigsRequest& request) {
   if (!connection_->Ready() || !present())
@@ -1475,6 +1558,11 @@ Future<Glx::GetVisualConfigsReply> Glx::GetVisualConfigs(
 
   return connection_->SendRequest<Glx::GetVisualConfigsReply>(
       &buf, "Glx::GetVisualConfigs", false);
+}
+
+Future<Glx::GetVisualConfigsReply> Glx::GetVisualConfigs(
+    const uint32_t& screen) {
+  return Glx::GetVisualConfigs(Glx::GetVisualConfigsRequest{screen});
 }
 
 template <>
@@ -1555,6 +1643,10 @@ Future<void> Glx::DestroyGLXPixmap(
   return connection_->SendRequest<void>(&buf, "Glx::DestroyGLXPixmap", false);
 }
 
+Future<void> Glx::DestroyGLXPixmap(const Pixmap& glx_pixmap) {
+  return Glx::DestroyGLXPixmap(Glx::DestroyGLXPixmapRequest{glx_pixmap});
+}
+
 Future<void> Glx::VendorPrivate(const Glx::VendorPrivateRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -1594,6 +1686,13 @@ Future<void> Glx::VendorPrivate(const Glx::VendorPrivateRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Glx::VendorPrivate", false);
+}
+
+Future<void> Glx::VendorPrivate(const uint32_t& vendor_code,
+                                const ContextTag& context_tag,
+                                const std::vector<uint8_t>& data) {
+  return Glx::VendorPrivate(
+      Glx::VendorPrivateRequest{vendor_code, context_tag, data});
 }
 
 Future<Glx::VendorPrivateWithReplyReply> Glx::VendorPrivateWithReply(
@@ -1637,6 +1736,14 @@ Future<Glx::VendorPrivateWithReplyReply> Glx::VendorPrivateWithReply(
 
   return connection_->SendRequest<Glx::VendorPrivateWithReplyReply>(
       &buf, "Glx::VendorPrivateWithReply", false);
+}
+
+Future<Glx::VendorPrivateWithReplyReply> Glx::VendorPrivateWithReply(
+    const uint32_t& vendor_code,
+    const ContextTag& context_tag,
+    const std::vector<uint8_t>& data) {
+  return Glx::VendorPrivateWithReply(
+      Glx::VendorPrivateWithReplyRequest{vendor_code, context_tag, data});
 }
 
 template <>
@@ -1719,6 +1826,11 @@ Future<Glx::QueryExtensionsStringReply> Glx::QueryExtensionsString(
       &buf, "Glx::QueryExtensionsString", false);
 }
 
+Future<Glx::QueryExtensionsStringReply> Glx::QueryExtensionsString(
+    const uint32_t& screen) {
+  return Glx::QueryExtensionsString(Glx::QueryExtensionsStringRequest{screen});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Glx::QueryExtensionsStringReply> detail::ReadReply<
@@ -1790,6 +1902,12 @@ Future<Glx::QueryServerStringReply> Glx::QueryServerString(
 
   return connection_->SendRequest<Glx::QueryServerStringReply>(
       &buf, "Glx::QueryServerString", false);
+}
+
+Future<Glx::QueryServerStringReply> Glx::QueryServerString(
+    const uint32_t& screen,
+    const uint32_t& name) {
+  return Glx::QueryServerString(Glx::QueryServerStringRequest{screen, name});
 }
 
 template <>
@@ -1886,6 +2004,13 @@ Future<void> Glx::ClientInfo(const Glx::ClientInfoRequest& request) {
   return connection_->SendRequest<void>(&buf, "Glx::ClientInfo", false);
 }
 
+Future<void> Glx::ClientInfo(const uint32_t& major_version,
+                             const uint32_t& minor_version,
+                             const std::string& string) {
+  return Glx::ClientInfo(
+      Glx::ClientInfoRequest{major_version, minor_version, string});
+}
+
 Future<Glx::GetFBConfigsReply> Glx::GetFBConfigs(
     const Glx::GetFBConfigsRequest& request) {
   if (!connection_->Ready() || !present())
@@ -1914,6 +2039,10 @@ Future<Glx::GetFBConfigsReply> Glx::GetFBConfigs(
 
   return connection_->SendRequest<Glx::GetFBConfigsReply>(
       &buf, "Glx::GetFBConfigs", false);
+}
+
+Future<Glx::GetFBConfigsReply> Glx::GetFBConfigs(const uint32_t& screen) {
+  return Glx::GetFBConfigs(Glx::GetFBConfigsRequest{screen});
 }
 
 template <>
@@ -2018,6 +2147,16 @@ Future<void> Glx::CreatePixmap(const Glx::CreatePixmapRequest& request) {
   return connection_->SendRequest<void>(&buf, "Glx::CreatePixmap", false);
 }
 
+Future<void> Glx::CreatePixmap(const uint32_t& screen,
+                               const FbConfig& fbconfig,
+                               const x11::Pixmap& pixmap,
+                               const Pixmap& glx_pixmap,
+                               const uint32_t& num_attribs,
+                               const std::vector<uint32_t>& attribs) {
+  return Glx::CreatePixmap(Glx::CreatePixmapRequest{
+      screen, fbconfig, pixmap, glx_pixmap, num_attribs, attribs});
+}
+
 Future<void> Glx::DestroyPixmap(const Glx::DestroyPixmapRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -2044,6 +2183,10 @@ Future<void> Glx::DestroyPixmap(const Glx::DestroyPixmapRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Glx::DestroyPixmap", false);
+}
+
+Future<void> Glx::DestroyPixmap(const Pixmap& glx_pixmap) {
+  return Glx::DestroyPixmap(Glx::DestroyPixmapRequest{glx_pixmap});
 }
 
 Future<void> Glx::CreateNewContext(
@@ -2098,6 +2241,16 @@ Future<void> Glx::CreateNewContext(
   return connection_->SendRequest<void>(&buf, "Glx::CreateNewContext", false);
 }
 
+Future<void> Glx::CreateNewContext(const Context& context,
+                                   const FbConfig& fbconfig,
+                                   const uint32_t& screen,
+                                   const uint32_t& render_type,
+                                   const Context& share_list,
+                                   const uint8_t& is_direct) {
+  return Glx::CreateNewContext(Glx::CreateNewContextRequest{
+      context, fbconfig, screen, render_type, share_list, is_direct});
+}
+
 Future<Glx::QueryContextReply> Glx::QueryContext(
     const Glx::QueryContextRequest& request) {
   if (!connection_->Ready() || !present())
@@ -2126,6 +2279,10 @@ Future<Glx::QueryContextReply> Glx::QueryContext(
 
   return connection_->SendRequest<Glx::QueryContextReply>(
       &buf, "Glx::QueryContext", false);
+}
+
+Future<Glx::QueryContextReply> Glx::QueryContext(const Context& context) {
+  return Glx::QueryContext(Glx::QueryContextRequest{context});
 }
 
 template <>
@@ -2215,6 +2372,15 @@ Future<Glx::MakeContextCurrentReply> Glx::MakeContextCurrent(
       &buf, "Glx::MakeContextCurrent", false);
 }
 
+Future<Glx::MakeContextCurrentReply> Glx::MakeContextCurrent(
+    const ContextTag& old_context_tag,
+    const Drawable& drawable,
+    const Drawable& read_drawable,
+    const Context& context) {
+  return Glx::MakeContextCurrent(Glx::MakeContextCurrentRequest{
+      old_context_tag, drawable, read_drawable, context});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Glx::MakeContextCurrentReply> detail::ReadReply<
@@ -2300,6 +2466,15 @@ Future<void> Glx::CreatePbuffer(const Glx::CreatePbufferRequest& request) {
   return connection_->SendRequest<void>(&buf, "Glx::CreatePbuffer", false);
 }
 
+Future<void> Glx::CreatePbuffer(const uint32_t& screen,
+                                const FbConfig& fbconfig,
+                                const PBuffer& pbuffer,
+                                const uint32_t& num_attribs,
+                                const std::vector<uint32_t>& attribs) {
+  return Glx::CreatePbuffer(Glx::CreatePbufferRequest{screen, fbconfig, pbuffer,
+                                                      num_attribs, attribs});
+}
+
 Future<void> Glx::DestroyPbuffer(const Glx::DestroyPbufferRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -2326,6 +2501,10 @@ Future<void> Glx::DestroyPbuffer(const Glx::DestroyPbufferRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Glx::DestroyPbuffer", false);
+}
+
+Future<void> Glx::DestroyPbuffer(const PBuffer& pbuffer) {
+  return Glx::DestroyPbuffer(Glx::DestroyPbufferRequest{pbuffer});
 }
 
 Future<Glx::GetDrawableAttributesReply> Glx::GetDrawableAttributes(
@@ -2356,6 +2535,12 @@ Future<Glx::GetDrawableAttributesReply> Glx::GetDrawableAttributes(
 
   return connection_->SendRequest<Glx::GetDrawableAttributesReply>(
       &buf, "Glx::GetDrawableAttributes", false);
+}
+
+Future<Glx::GetDrawableAttributesReply> Glx::GetDrawableAttributes(
+    const Drawable& drawable) {
+  return Glx::GetDrawableAttributes(
+      Glx::GetDrawableAttributesRequest{drawable});
 }
 
 template <>
@@ -2446,6 +2631,14 @@ Future<void> Glx::ChangeDrawableAttributes(
                                         false);
 }
 
+Future<void> Glx::ChangeDrawableAttributes(
+    const Drawable& drawable,
+    const uint32_t& num_attribs,
+    const std::vector<uint32_t>& attribs) {
+  return Glx::ChangeDrawableAttributes(
+      Glx::ChangeDrawableAttributesRequest{drawable, num_attribs, attribs});
+}
+
 Future<void> Glx::CreateWindow(const Glx::CreateWindowRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -2499,6 +2692,16 @@ Future<void> Glx::CreateWindow(const Glx::CreateWindowRequest& request) {
   return connection_->SendRequest<void>(&buf, "Glx::CreateWindow", false);
 }
 
+Future<void> Glx::CreateWindow(const uint32_t& screen,
+                               const FbConfig& fbconfig,
+                               const x11::Window& window,
+                               const Window& glx_window,
+                               const uint32_t& num_attribs,
+                               const std::vector<uint32_t>& attribs) {
+  return Glx::CreateWindow(Glx::CreateWindowRequest{
+      screen, fbconfig, window, glx_window, num_attribs, attribs});
+}
+
 Future<void> Glx::DeleteWindow(const Glx::DeleteWindowRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -2525,6 +2728,10 @@ Future<void> Glx::DeleteWindow(const Glx::DeleteWindowRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Glx::DeleteWindow", false);
+}
+
+Future<void> Glx::DeleteWindow(const Window& glxwindow) {
+  return Glx::DeleteWindow(Glx::DeleteWindowRequest{glxwindow});
 }
 
 Future<void> Glx::SetClientInfoARB(
@@ -2601,6 +2808,17 @@ Future<void> Glx::SetClientInfoARB(
   return connection_->SendRequest<void>(&buf, "Glx::SetClientInfoARB", false);
 }
 
+Future<void> Glx::SetClientInfoARB(const uint32_t& major_version,
+                                   const uint32_t& minor_version,
+                                   const uint32_t& num_versions,
+                                   const std::vector<uint32_t>& gl_versions,
+                                   const std::string& gl_extension_string,
+                                   const std::string& glx_extension_string) {
+  return Glx::SetClientInfoARB(Glx::SetClientInfoARBRequest{
+      major_version, minor_version, num_versions, gl_versions,
+      gl_extension_string, glx_extension_string});
+}
+
 Future<void> Glx::CreateContextAttribsARB(
     const Glx::CreateContextAttribsARBRequest& request) {
   if (!connection_->Ready() || !present())
@@ -2661,6 +2879,18 @@ Future<void> Glx::CreateContextAttribsARB(
 
   return connection_->SendRequest<void>(&buf, "Glx::CreateContextAttribsARB",
                                         false);
+}
+
+Future<void> Glx::CreateContextAttribsARB(
+    const Context& context,
+    const FbConfig& fbconfig,
+    const uint32_t& screen,
+    const Context& share_list,
+    const uint8_t& is_direct,
+    const uint32_t& num_attribs,
+    const std::vector<uint32_t>& attribs) {
+  return Glx::CreateContextAttribsARB(Glx::CreateContextAttribsARBRequest{
+      context, fbconfig, screen, share_list, is_direct, num_attribs, attribs});
 }
 
 Future<void> Glx::SetClientInfo2ARB(
@@ -2737,6 +2967,17 @@ Future<void> Glx::SetClientInfo2ARB(
   return connection_->SendRequest<void>(&buf, "Glx::SetClientInfo2ARB", false);
 }
 
+Future<void> Glx::SetClientInfo2ARB(const uint32_t& major_version,
+                                    const uint32_t& minor_version,
+                                    const uint32_t& num_versions,
+                                    const std::vector<uint32_t>& gl_versions,
+                                    const std::string& gl_extension_string,
+                                    const std::string& glx_extension_string) {
+  return Glx::SetClientInfo2ARB(Glx::SetClientInfo2ARBRequest{
+      major_version, minor_version, num_versions, gl_versions,
+      gl_extension_string, glx_extension_string});
+}
+
 Future<void> Glx::NewList(const Glx::NewListRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -2773,6 +3014,12 @@ Future<void> Glx::NewList(const Glx::NewListRequest& request) {
   return connection_->SendRequest<void>(&buf, "Glx::NewList", false);
 }
 
+Future<void> Glx::NewList(const ContextTag& context_tag,
+                          const uint32_t& list,
+                          const uint32_t& mode) {
+  return Glx::NewList(Glx::NewListRequest{context_tag, list, mode});
+}
+
 Future<void> Glx::EndList(const Glx::EndListRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -2799,6 +3046,10 @@ Future<void> Glx::EndList(const Glx::EndListRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Glx::EndList", false);
+}
+
+Future<void> Glx::EndList(const ContextTag& context_tag) {
+  return Glx::EndList(Glx::EndListRequest{context_tag});
 }
 
 Future<void> Glx::DeleteLists(const Glx::DeleteListsRequest& request) {
@@ -2837,6 +3088,12 @@ Future<void> Glx::DeleteLists(const Glx::DeleteListsRequest& request) {
   return connection_->SendRequest<void>(&buf, "Glx::DeleteLists", false);
 }
 
+Future<void> Glx::DeleteLists(const ContextTag& context_tag,
+                              const uint32_t& list,
+                              const int32_t& range) {
+  return Glx::DeleteLists(Glx::DeleteListsRequest{context_tag, list, range});
+}
+
 Future<Glx::GenListsReply> Glx::GenLists(const Glx::GenListsRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -2868,6 +3125,11 @@ Future<Glx::GenListsReply> Glx::GenLists(const Glx::GenListsRequest& request) {
 
   return connection_->SendRequest<Glx::GenListsReply>(&buf, "Glx::GenLists",
                                                       false);
+}
+
+Future<Glx::GenListsReply> Glx::GenLists(const ContextTag& context_tag,
+                                         const int32_t& range) {
+  return Glx::GenLists(Glx::GenListsRequest{context_tag, range});
 }
 
 template <>
@@ -2939,6 +3201,13 @@ Future<void> Glx::FeedbackBuffer(const Glx::FeedbackBufferRequest& request) {
   return connection_->SendRequest<void>(&buf, "Glx::FeedbackBuffer", false);
 }
 
+Future<void> Glx::FeedbackBuffer(const ContextTag& context_tag,
+                                 const int32_t& size,
+                                 const int32_t& type) {
+  return Glx::FeedbackBuffer(
+      Glx::FeedbackBufferRequest{context_tag, size, type});
+}
+
 Future<void> Glx::SelectBuffer(const Glx::SelectBufferRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -2969,6 +3238,11 @@ Future<void> Glx::SelectBuffer(const Glx::SelectBufferRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Glx::SelectBuffer", false);
+}
+
+Future<void> Glx::SelectBuffer(const ContextTag& context_tag,
+                               const int32_t& size) {
+  return Glx::SelectBuffer(Glx::SelectBufferRequest{context_tag, size});
 }
 
 Future<Glx::RenderModeReply> Glx::RenderMode(
@@ -3003,6 +3277,11 @@ Future<Glx::RenderModeReply> Glx::RenderMode(
 
   return connection_->SendRequest<Glx::RenderModeReply>(&buf, "Glx::RenderMode",
                                                         false);
+}
+
+Future<Glx::RenderModeReply> Glx::RenderMode(const ContextTag& context_tag,
+                                             const uint32_t& mode) {
+  return Glx::RenderMode(Glx::RenderModeRequest{context_tag, mode});
 }
 
 template <>
@@ -3086,6 +3365,10 @@ Future<Glx::FinishReply> Glx::Finish(const Glx::FinishRequest& request) {
   return connection_->SendRequest<Glx::FinishReply>(&buf, "Glx::Finish", false);
 }
 
+Future<Glx::FinishReply> Glx::Finish(const ContextTag& context_tag) {
+  return Glx::Finish(Glx::FinishRequest{context_tag});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Glx::FinishReply> detail::ReadReply<Glx::FinishReply>(
@@ -3151,6 +3434,12 @@ Future<void> Glx::PixelStoref(const Glx::PixelStorefRequest& request) {
   return connection_->SendRequest<void>(&buf, "Glx::PixelStoref", false);
 }
 
+Future<void> Glx::PixelStoref(const ContextTag& context_tag,
+                              const uint32_t& pname,
+                              const float& datum) {
+  return Glx::PixelStoref(Glx::PixelStorefRequest{context_tag, pname, datum});
+}
+
 Future<void> Glx::PixelStorei(const Glx::PixelStoreiRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -3185,6 +3474,12 @@ Future<void> Glx::PixelStorei(const Glx::PixelStoreiRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Glx::PixelStorei", false);
+}
+
+Future<void> Glx::PixelStorei(const ContextTag& context_tag,
+                              const uint32_t& pname,
+                              const int32_t& datum) {
+  return Glx::PixelStorei(Glx::PixelStoreiRequest{context_tag, pname, datum});
 }
 
 Future<Glx::ReadPixelsReply> Glx::ReadPixels(
@@ -3247,6 +3542,19 @@ Future<Glx::ReadPixelsReply> Glx::ReadPixels(
 
   return connection_->SendRequest<Glx::ReadPixelsReply>(&buf, "Glx::ReadPixels",
                                                         false);
+}
+
+Future<Glx::ReadPixelsReply> Glx::ReadPixels(const ContextTag& context_tag,
+                                             const int32_t& x,
+                                             const int32_t& y,
+                                             const int32_t& width,
+                                             const int32_t& height,
+                                             const uint32_t& format,
+                                             const uint32_t& type,
+                                             const uint8_t& swap_bytes,
+                                             const uint8_t& lsb_first) {
+  return Glx::ReadPixels(Glx::ReadPixelsRequest{
+      context_tag, x, y, width, height, format, type, swap_bytes, lsb_first});
 }
 
 template <>
@@ -3322,6 +3630,11 @@ Future<Glx::GetBooleanvReply> Glx::GetBooleanv(
 
   return connection_->SendRequest<Glx::GetBooleanvReply>(
       &buf, "Glx::GetBooleanv", false);
+}
+
+Future<Glx::GetBooleanvReply> Glx::GetBooleanv(const ContextTag& context_tag,
+                                               const int32_t& pname) {
+  return Glx::GetBooleanv(Glx::GetBooleanvRequest{context_tag, pname});
 }
 
 template <>
@@ -3410,6 +3723,11 @@ Future<Glx::GetClipPlaneReply> Glx::GetClipPlane(
       &buf, "Glx::GetClipPlane", false);
 }
 
+Future<Glx::GetClipPlaneReply> Glx::GetClipPlane(const ContextTag& context_tag,
+                                                 const int32_t& plane) {
+  return Glx::GetClipPlane(Glx::GetClipPlaneRequest{context_tag, plane});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Glx::GetClipPlaneReply> detail::ReadReply<
@@ -3483,6 +3801,11 @@ Future<Glx::GetDoublevReply> Glx::GetDoublev(
 
   return connection_->SendRequest<Glx::GetDoublevReply>(&buf, "Glx::GetDoublev",
                                                         false);
+}
+
+Future<Glx::GetDoublevReply> Glx::GetDoublev(const ContextTag& context_tag,
+                                             const uint32_t& pname) {
+  return Glx::GetDoublev(Glx::GetDoublevRequest{context_tag, pname});
 }
 
 template <>
@@ -3566,6 +3889,10 @@ Future<Glx::GetErrorReply> Glx::GetError(const Glx::GetErrorRequest& request) {
                                                       false);
 }
 
+Future<Glx::GetErrorReply> Glx::GetError(const ContextTag& context_tag) {
+  return Glx::GetError(Glx::GetErrorRequest{context_tag});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Glx::GetErrorReply> detail::ReadReply<Glx::GetErrorReply>(
@@ -3631,6 +3958,11 @@ Future<Glx::GetFloatvReply> Glx::GetFloatv(
 
   return connection_->SendRequest<Glx::GetFloatvReply>(&buf, "Glx::GetFloatv",
                                                        false);
+}
+
+Future<Glx::GetFloatvReply> Glx::GetFloatv(const ContextTag& context_tag,
+                                           const uint32_t& pname) {
+  return Glx::GetFloatv(Glx::GetFloatvRequest{context_tag, pname});
 }
 
 template <>
@@ -3717,6 +4049,11 @@ Future<Glx::GetIntegervReply> Glx::GetIntegerv(
 
   return connection_->SendRequest<Glx::GetIntegervReply>(
       &buf, "Glx::GetIntegerv", false);
+}
+
+Future<Glx::GetIntegervReply> Glx::GetIntegerv(const ContextTag& context_tag,
+                                               const uint32_t& pname) {
+  return Glx::GetIntegerv(Glx::GetIntegervRequest{context_tag, pname});
 }
 
 template <>
@@ -3809,6 +4146,12 @@ Future<Glx::GetLightfvReply> Glx::GetLightfv(
                                                         false);
 }
 
+Future<Glx::GetLightfvReply> Glx::GetLightfv(const ContextTag& context_tag,
+                                             const uint32_t& light,
+                                             const uint32_t& pname) {
+  return Glx::GetLightfv(Glx::GetLightfvRequest{context_tag, light, pname});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Glx::GetLightfvReply> detail::ReadReply<Glx::GetLightfvReply>(
@@ -3897,6 +4240,12 @@ Future<Glx::GetLightivReply> Glx::GetLightiv(
 
   return connection_->SendRequest<Glx::GetLightivReply>(&buf, "Glx::GetLightiv",
                                                         false);
+}
+
+Future<Glx::GetLightivReply> Glx::GetLightiv(const ContextTag& context_tag,
+                                             const uint32_t& light,
+                                             const uint32_t& pname) {
+  return Glx::GetLightiv(Glx::GetLightivRequest{context_tag, light, pname});
 }
 
 template <>
@@ -3988,6 +4337,12 @@ Future<Glx::GetMapdvReply> Glx::GetMapdv(const Glx::GetMapdvRequest& request) {
                                                       false);
 }
 
+Future<Glx::GetMapdvReply> Glx::GetMapdv(const ContextTag& context_tag,
+                                         const uint32_t& target,
+                                         const uint32_t& query) {
+  return Glx::GetMapdv(Glx::GetMapdvRequest{context_tag, target, query});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Glx::GetMapdvReply> detail::ReadReply<Glx::GetMapdvReply>(
@@ -4077,6 +4432,12 @@ Future<Glx::GetMapfvReply> Glx::GetMapfv(const Glx::GetMapfvRequest& request) {
                                                       false);
 }
 
+Future<Glx::GetMapfvReply> Glx::GetMapfv(const ContextTag& context_tag,
+                                         const uint32_t& target,
+                                         const uint32_t& query) {
+  return Glx::GetMapfv(Glx::GetMapfvRequest{context_tag, target, query});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Glx::GetMapfvReply> detail::ReadReply<Glx::GetMapfvReply>(
@@ -4164,6 +4525,12 @@ Future<Glx::GetMapivReply> Glx::GetMapiv(const Glx::GetMapivRequest& request) {
 
   return connection_->SendRequest<Glx::GetMapivReply>(&buf, "Glx::GetMapiv",
                                                       false);
+}
+
+Future<Glx::GetMapivReply> Glx::GetMapiv(const ContextTag& context_tag,
+                                         const uint32_t& target,
+                                         const uint32_t& query) {
+  return Glx::GetMapiv(Glx::GetMapivRequest{context_tag, target, query});
 }
 
 template <>
@@ -4256,6 +4623,14 @@ Future<Glx::GetMaterialfvReply> Glx::GetMaterialfv(
       &buf, "Glx::GetMaterialfv", false);
 }
 
+Future<Glx::GetMaterialfvReply> Glx::GetMaterialfv(
+    const ContextTag& context_tag,
+    const uint32_t& face,
+    const uint32_t& pname) {
+  return Glx::GetMaterialfv(
+      Glx::GetMaterialfvRequest{context_tag, face, pname});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Glx::GetMaterialfvReply> detail::ReadReply<
@@ -4346,6 +4721,14 @@ Future<Glx::GetMaterialivReply> Glx::GetMaterialiv(
       &buf, "Glx::GetMaterialiv", false);
 }
 
+Future<Glx::GetMaterialivReply> Glx::GetMaterialiv(
+    const ContextTag& context_tag,
+    const uint32_t& face,
+    const uint32_t& pname) {
+  return Glx::GetMaterialiv(
+      Glx::GetMaterialivRequest{context_tag, face, pname});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Glx::GetMaterialivReply> detail::ReadReply<
@@ -4430,6 +4813,12 @@ Future<Glx::GetPixelMapfvReply> Glx::GetPixelMapfv(
 
   return connection_->SendRequest<Glx::GetPixelMapfvReply>(
       &buf, "Glx::GetPixelMapfv", false);
+}
+
+Future<Glx::GetPixelMapfvReply> Glx::GetPixelMapfv(
+    const ContextTag& context_tag,
+    const uint32_t& map) {
+  return Glx::GetPixelMapfv(Glx::GetPixelMapfvRequest{context_tag, map});
 }
 
 template <>
@@ -4518,6 +4907,12 @@ Future<Glx::GetPixelMapuivReply> Glx::GetPixelMapuiv(
       &buf, "Glx::GetPixelMapuiv", false);
 }
 
+Future<Glx::GetPixelMapuivReply> Glx::GetPixelMapuiv(
+    const ContextTag& context_tag,
+    const uint32_t& map) {
+  return Glx::GetPixelMapuiv(Glx::GetPixelMapuivRequest{context_tag, map});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Glx::GetPixelMapuivReply> detail::ReadReply<
@@ -4602,6 +4997,12 @@ Future<Glx::GetPixelMapusvReply> Glx::GetPixelMapusv(
 
   return connection_->SendRequest<Glx::GetPixelMapusvReply>(
       &buf, "Glx::GetPixelMapusv", false);
+}
+
+Future<Glx::GetPixelMapusvReply> Glx::GetPixelMapusv(
+    const ContextTag& context_tag,
+    const uint32_t& map) {
+  return Glx::GetPixelMapusv(Glx::GetPixelMapusvRequest{context_tag, map});
 }
 
 template <>
@@ -4690,6 +5091,13 @@ Future<Glx::GetPolygonStippleReply> Glx::GetPolygonStipple(
       &buf, "Glx::GetPolygonStipple", false);
 }
 
+Future<Glx::GetPolygonStippleReply> Glx::GetPolygonStipple(
+    const ContextTag& context_tag,
+    const uint8_t& lsb_first) {
+  return Glx::GetPolygonStipple(
+      Glx::GetPolygonStippleRequest{context_tag, lsb_first});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Glx::GetPolygonStippleReply> detail::ReadReply<
@@ -4763,6 +5171,11 @@ Future<Glx::GetStringReply> Glx::GetString(
 
   return connection_->SendRequest<Glx::GetStringReply>(&buf, "Glx::GetString",
                                                        false);
+}
+
+Future<Glx::GetStringReply> Glx::GetString(const ContextTag& context_tag,
+                                           const uint32_t& name) {
+  return Glx::GetString(Glx::GetStringRequest{context_tag, name});
 }
 
 template <>
@@ -4849,6 +5262,12 @@ Future<Glx::GetTexEnvfvReply> Glx::GetTexEnvfv(
 
   return connection_->SendRequest<Glx::GetTexEnvfvReply>(
       &buf, "Glx::GetTexEnvfv", false);
+}
+
+Future<Glx::GetTexEnvfvReply> Glx::GetTexEnvfv(const ContextTag& context_tag,
+                                               const uint32_t& target,
+                                               const uint32_t& pname) {
+  return Glx::GetTexEnvfv(Glx::GetTexEnvfvRequest{context_tag, target, pname});
 }
 
 template <>
@@ -4941,6 +5360,12 @@ Future<Glx::GetTexEnvivReply> Glx::GetTexEnviv(
       &buf, "Glx::GetTexEnviv", false);
 }
 
+Future<Glx::GetTexEnvivReply> Glx::GetTexEnviv(const ContextTag& context_tag,
+                                               const uint32_t& target,
+                                               const uint32_t& pname) {
+  return Glx::GetTexEnviv(Glx::GetTexEnvivRequest{context_tag, target, pname});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Glx::GetTexEnvivReply> detail::ReadReply<Glx::GetTexEnvivReply>(
@@ -5029,6 +5454,12 @@ Future<Glx::GetTexGendvReply> Glx::GetTexGendv(
 
   return connection_->SendRequest<Glx::GetTexGendvReply>(
       &buf, "Glx::GetTexGendv", false);
+}
+
+Future<Glx::GetTexGendvReply> Glx::GetTexGendv(const ContextTag& context_tag,
+                                               const uint32_t& coord,
+                                               const uint32_t& pname) {
+  return Glx::GetTexGendv(Glx::GetTexGendvRequest{context_tag, coord, pname});
 }
 
 template <>
@@ -5121,6 +5552,12 @@ Future<Glx::GetTexGenfvReply> Glx::GetTexGenfv(
       &buf, "Glx::GetTexGenfv", false);
 }
 
+Future<Glx::GetTexGenfvReply> Glx::GetTexGenfv(const ContextTag& context_tag,
+                                               const uint32_t& coord,
+                                               const uint32_t& pname) {
+  return Glx::GetTexGenfv(Glx::GetTexGenfvRequest{context_tag, coord, pname});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Glx::GetTexGenfvReply> detail::ReadReply<Glx::GetTexGenfvReply>(
@@ -5209,6 +5646,12 @@ Future<Glx::GetTexGenivReply> Glx::GetTexGeniv(
 
   return connection_->SendRequest<Glx::GetTexGenivReply>(
       &buf, "Glx::GetTexGeniv", false);
+}
+
+Future<Glx::GetTexGenivReply> Glx::GetTexGeniv(const ContextTag& context_tag,
+                                               const uint32_t& coord,
+                                               const uint32_t& pname) {
+  return Glx::GetTexGeniv(Glx::GetTexGenivRequest{context_tag, coord, pname});
 }
 
 template <>
@@ -5313,6 +5756,16 @@ Future<Glx::GetTexImageReply> Glx::GetTexImage(
       &buf, "Glx::GetTexImage", false);
 }
 
+Future<Glx::GetTexImageReply> Glx::GetTexImage(const ContextTag& context_tag,
+                                               const uint32_t& target,
+                                               const int32_t& level,
+                                               const uint32_t& format,
+                                               const uint32_t& type,
+                                               const uint8_t& swap_bytes) {
+  return Glx::GetTexImage(Glx::GetTexImageRequest{context_tag, target, level,
+                                                  format, type, swap_bytes});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Glx::GetTexImageReply> detail::ReadReply<Glx::GetTexImageReply>(
@@ -5407,6 +5860,14 @@ Future<Glx::GetTexParameterfvReply> Glx::GetTexParameterfv(
       &buf, "Glx::GetTexParameterfv", false);
 }
 
+Future<Glx::GetTexParameterfvReply> Glx::GetTexParameterfv(
+    const ContextTag& context_tag,
+    const uint32_t& target,
+    const uint32_t& pname) {
+  return Glx::GetTexParameterfv(
+      Glx::GetTexParameterfvRequest{context_tag, target, pname});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Glx::GetTexParameterfvReply> detail::ReadReply<
@@ -5495,6 +5956,14 @@ Future<Glx::GetTexParameterivReply> Glx::GetTexParameteriv(
 
   return connection_->SendRequest<Glx::GetTexParameterivReply>(
       &buf, "Glx::GetTexParameteriv", false);
+}
+
+Future<Glx::GetTexParameterivReply> Glx::GetTexParameteriv(
+    const ContextTag& context_tag,
+    const uint32_t& target,
+    const uint32_t& pname) {
+  return Glx::GetTexParameteriv(
+      Glx::GetTexParameterivRequest{context_tag, target, pname});
 }
 
 template <>
@@ -5591,6 +6060,15 @@ Future<Glx::GetTexLevelParameterfvReply> Glx::GetTexLevelParameterfv(
       &buf, "Glx::GetTexLevelParameterfv", false);
 }
 
+Future<Glx::GetTexLevelParameterfvReply> Glx::GetTexLevelParameterfv(
+    const ContextTag& context_tag,
+    const uint32_t& target,
+    const int32_t& level,
+    const uint32_t& pname) {
+  return Glx::GetTexLevelParameterfv(
+      Glx::GetTexLevelParameterfvRequest{context_tag, target, level, pname});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Glx::GetTexLevelParameterfvReply> detail::ReadReply<
@@ -5685,6 +6163,15 @@ Future<Glx::GetTexLevelParameterivReply> Glx::GetTexLevelParameteriv(
       &buf, "Glx::GetTexLevelParameteriv", false);
 }
 
+Future<Glx::GetTexLevelParameterivReply> Glx::GetTexLevelParameteriv(
+    const ContextTag& context_tag,
+    const uint32_t& target,
+    const int32_t& level,
+    const uint32_t& pname) {
+  return Glx::GetTexLevelParameteriv(
+      Glx::GetTexLevelParameterivRequest{context_tag, target, level, pname});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Glx::GetTexLevelParameterivReply> detail::ReadReply<
@@ -5771,6 +6258,11 @@ Future<Glx::IsEnabledReply> Glx::IsEnabled(
                                                        false);
 }
 
+Future<Glx::IsEnabledReply> Glx::IsEnabled(const ContextTag& context_tag,
+                                           const uint32_t& capability) {
+  return Glx::IsEnabled(Glx::IsEnabledRequest{context_tag, capability});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Glx::IsEnabledReply> detail::ReadReply<Glx::IsEnabledReply>(
@@ -5836,6 +6328,11 @@ Future<Glx::IsListReply> Glx::IsList(const Glx::IsListRequest& request) {
   return connection_->SendRequest<Glx::IsListReply>(&buf, "Glx::IsList", false);
 }
 
+Future<Glx::IsListReply> Glx::IsList(const ContextTag& context_tag,
+                                     const uint32_t& list) {
+  return Glx::IsList(Glx::IsListRequest{context_tag, list});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Glx::IsListReply> detail::ReadReply<Glx::IsListReply>(
@@ -5897,6 +6394,10 @@ Future<void> Glx::Flush(const Glx::FlushRequest& request) {
   return connection_->SendRequest<void>(&buf, "Glx::Flush", false);
 }
 
+Future<void> Glx::Flush(const ContextTag& context_tag) {
+  return Glx::Flush(Glx::FlushRequest{context_tag});
+}
+
 Future<Glx::AreTexturesResidentReply> Glx::AreTexturesResident(
     const Glx::AreTexturesResidentRequest& request) {
   if (!connection_->Ready() || !present())
@@ -5939,6 +6440,13 @@ Future<Glx::AreTexturesResidentReply> Glx::AreTexturesResident(
 
   return connection_->SendRequest<Glx::AreTexturesResidentReply>(
       &buf, "Glx::AreTexturesResident", false);
+}
+
+Future<Glx::AreTexturesResidentReply> Glx::AreTexturesResident(
+    const ContextTag& context_tag,
+    const std::vector<uint32_t>& textures) {
+  return Glx::AreTexturesResident(
+      Glx::AreTexturesResidentRequest{context_tag, textures});
 }
 
 template <>
@@ -6028,6 +6536,11 @@ Future<void> Glx::DeleteTextures(const Glx::DeleteTexturesRequest& request) {
   return connection_->SendRequest<void>(&buf, "Glx::DeleteTextures", false);
 }
 
+Future<void> Glx::DeleteTextures(const ContextTag& context_tag,
+                                 const std::vector<uint32_t>& textures) {
+  return Glx::DeleteTextures(Glx::DeleteTexturesRequest{context_tag, textures});
+}
+
 Future<Glx::GenTexturesReply> Glx::GenTextures(
     const Glx::GenTexturesRequest& request) {
   if (!connection_->Ready() || !present())
@@ -6060,6 +6573,11 @@ Future<Glx::GenTexturesReply> Glx::GenTextures(
 
   return connection_->SendRequest<Glx::GenTexturesReply>(
       &buf, "Glx::GenTextures", false);
+}
+
+Future<Glx::GenTexturesReply> Glx::GenTextures(const ContextTag& context_tag,
+                                               const int32_t& n) {
+  return Glx::GenTextures(Glx::GenTexturesRequest{context_tag, n});
 }
 
 template <>
@@ -6135,6 +6653,11 @@ Future<Glx::IsTextureReply> Glx::IsTexture(
 
   return connection_->SendRequest<Glx::IsTextureReply>(&buf, "Glx::IsTexture",
                                                        false);
+}
+
+Future<Glx::IsTextureReply> Glx::IsTexture(const ContextTag& context_tag,
+                                           const uint32_t& texture) {
+  return Glx::IsTexture(Glx::IsTextureRequest{context_tag, texture});
 }
 
 template <>
@@ -6214,6 +6737,16 @@ Future<Glx::GetColorTableReply> Glx::GetColorTable(
 
   return connection_->SendRequest<Glx::GetColorTableReply>(
       &buf, "Glx::GetColorTable", false);
+}
+
+Future<Glx::GetColorTableReply> Glx::GetColorTable(
+    const ContextTag& context_tag,
+    const uint32_t& target,
+    const uint32_t& format,
+    const uint32_t& type,
+    const uint8_t& swap_bytes) {
+  return Glx::GetColorTable(
+      Glx::GetColorTableRequest{context_tag, target, format, type, swap_bytes});
 }
 
 template <>
@@ -6300,6 +6833,14 @@ Future<Glx::GetColorTableParameterfvReply> Glx::GetColorTableParameterfv(
 
   return connection_->SendRequest<Glx::GetColorTableParameterfvReply>(
       &buf, "Glx::GetColorTableParameterfv", false);
+}
+
+Future<Glx::GetColorTableParameterfvReply> Glx::GetColorTableParameterfv(
+    const ContextTag& context_tag,
+    const uint32_t& target,
+    const uint32_t& pname) {
+  return Glx::GetColorTableParameterfv(
+      Glx::GetColorTableParameterfvRequest{context_tag, target, pname});
 }
 
 template <>
@@ -6390,6 +6931,14 @@ Future<Glx::GetColorTableParameterivReply> Glx::GetColorTableParameteriv(
 
   return connection_->SendRequest<Glx::GetColorTableParameterivReply>(
       &buf, "Glx::GetColorTableParameteriv", false);
+}
+
+Future<Glx::GetColorTableParameterivReply> Glx::GetColorTableParameteriv(
+    const ContextTag& context_tag,
+    const uint32_t& target,
+    const uint32_t& pname) {
+  return Glx::GetColorTableParameteriv(
+      Glx::GetColorTableParameterivRequest{context_tag, target, pname});
 }
 
 template <>
@@ -6490,6 +7039,16 @@ Future<Glx::GetConvolutionFilterReply> Glx::GetConvolutionFilter(
       &buf, "Glx::GetConvolutionFilter", false);
 }
 
+Future<Glx::GetConvolutionFilterReply> Glx::GetConvolutionFilter(
+    const ContextTag& context_tag,
+    const uint32_t& target,
+    const uint32_t& format,
+    const uint32_t& type,
+    const uint8_t& swap_bytes) {
+  return Glx::GetConvolutionFilter(Glx::GetConvolutionFilterRequest{
+      context_tag, target, format, type, swap_bytes});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Glx::GetConvolutionFilterReply> detail::ReadReply<
@@ -6580,6 +7139,14 @@ Future<Glx::GetConvolutionParameterfvReply> Glx::GetConvolutionParameterfv(
       &buf, "Glx::GetConvolutionParameterfv", false);
 }
 
+Future<Glx::GetConvolutionParameterfvReply> Glx::GetConvolutionParameterfv(
+    const ContextTag& context_tag,
+    const uint32_t& target,
+    const uint32_t& pname) {
+  return Glx::GetConvolutionParameterfv(
+      Glx::GetConvolutionParameterfvRequest{context_tag, target, pname});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Glx::GetConvolutionParameterfvReply> detail::ReadReply<
@@ -6668,6 +7235,14 @@ Future<Glx::GetConvolutionParameterivReply> Glx::GetConvolutionParameteriv(
 
   return connection_->SendRequest<Glx::GetConvolutionParameterivReply>(
       &buf, "Glx::GetConvolutionParameteriv", false);
+}
+
+Future<Glx::GetConvolutionParameterivReply> Glx::GetConvolutionParameteriv(
+    const ContextTag& context_tag,
+    const uint32_t& target,
+    const uint32_t& pname) {
+  return Glx::GetConvolutionParameteriv(
+      Glx::GetConvolutionParameterivRequest{context_tag, target, pname});
 }
 
 template <>
@@ -6766,6 +7341,16 @@ Future<Glx::GetSeparableFilterReply> Glx::GetSeparableFilter(
 
   return connection_->SendRequest<Glx::GetSeparableFilterReply>(
       &buf, "Glx::GetSeparableFilter", false);
+}
+
+Future<Glx::GetSeparableFilterReply> Glx::GetSeparableFilter(
+    const ContextTag& context_tag,
+    const uint32_t& target,
+    const uint32_t& format,
+    const uint32_t& type,
+    const uint8_t& swap_bytes) {
+  return Glx::GetSeparableFilter(Glx::GetSeparableFilterRequest{
+      context_tag, target, format, type, swap_bytes});
 }
 
 template <>
@@ -6870,6 +7455,16 @@ Future<Glx::GetHistogramReply> Glx::GetHistogram(
       &buf, "Glx::GetHistogram", false);
 }
 
+Future<Glx::GetHistogramReply> Glx::GetHistogram(const ContextTag& context_tag,
+                                                 const uint32_t& target,
+                                                 const uint32_t& format,
+                                                 const uint32_t& type,
+                                                 const uint8_t& swap_bytes,
+                                                 const uint8_t& reset) {
+  return Glx::GetHistogram(Glx::GetHistogramRequest{context_tag, target, format,
+                                                    type, swap_bytes, reset});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Glx::GetHistogramReply> detail::ReadReply<
@@ -6954,6 +7549,14 @@ Future<Glx::GetHistogramParameterfvReply> Glx::GetHistogramParameterfv(
 
   return connection_->SendRequest<Glx::GetHistogramParameterfvReply>(
       &buf, "Glx::GetHistogramParameterfv", false);
+}
+
+Future<Glx::GetHistogramParameterfvReply> Glx::GetHistogramParameterfv(
+    const ContextTag& context_tag,
+    const uint32_t& target,
+    const uint32_t& pname) {
+  return Glx::GetHistogramParameterfv(
+      Glx::GetHistogramParameterfvRequest{context_tag, target, pname});
 }
 
 template <>
@@ -7044,6 +7647,14 @@ Future<Glx::GetHistogramParameterivReply> Glx::GetHistogramParameteriv(
 
   return connection_->SendRequest<Glx::GetHistogramParameterivReply>(
       &buf, "Glx::GetHistogramParameteriv", false);
+}
+
+Future<Glx::GetHistogramParameterivReply> Glx::GetHistogramParameteriv(
+    const ContextTag& context_tag,
+    const uint32_t& target,
+    const uint32_t& pname) {
+  return Glx::GetHistogramParameteriv(
+      Glx::GetHistogramParameterivRequest{context_tag, target, pname});
 }
 
 template <>
@@ -7148,6 +7759,16 @@ Future<Glx::GetMinmaxReply> Glx::GetMinmax(
                                                        false);
 }
 
+Future<Glx::GetMinmaxReply> Glx::GetMinmax(const ContextTag& context_tag,
+                                           const uint32_t& target,
+                                           const uint32_t& format,
+                                           const uint32_t& type,
+                                           const uint8_t& swap_bytes,
+                                           const uint8_t& reset) {
+  return Glx::GetMinmax(Glx::GetMinmaxRequest{context_tag, target, format, type,
+                                              swap_bytes, reset});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Glx::GetMinmaxReply> detail::ReadReply<Glx::GetMinmaxReply>(
@@ -7225,6 +7846,14 @@ Future<Glx::GetMinmaxParameterfvReply> Glx::GetMinmaxParameterfv(
 
   return connection_->SendRequest<Glx::GetMinmaxParameterfvReply>(
       &buf, "Glx::GetMinmaxParameterfv", false);
+}
+
+Future<Glx::GetMinmaxParameterfvReply> Glx::GetMinmaxParameterfv(
+    const ContextTag& context_tag,
+    const uint32_t& target,
+    const uint32_t& pname) {
+  return Glx::GetMinmaxParameterfv(
+      Glx::GetMinmaxParameterfvRequest{context_tag, target, pname});
 }
 
 template <>
@@ -7317,6 +7946,14 @@ Future<Glx::GetMinmaxParameterivReply> Glx::GetMinmaxParameteriv(
       &buf, "Glx::GetMinmaxParameteriv", false);
 }
 
+Future<Glx::GetMinmaxParameterivReply> Glx::GetMinmaxParameteriv(
+    const ContextTag& context_tag,
+    const uint32_t& target,
+    const uint32_t& pname) {
+  return Glx::GetMinmaxParameteriv(
+      Glx::GetMinmaxParameterivRequest{context_tag, target, pname});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Glx::GetMinmaxParameterivReply> detail::ReadReply<
@@ -7405,6 +8042,14 @@ Future<Glx::GetCompressedTexImageARBReply> Glx::GetCompressedTexImageARB(
 
   return connection_->SendRequest<Glx::GetCompressedTexImageARBReply>(
       &buf, "Glx::GetCompressedTexImageARB", false);
+}
+
+Future<Glx::GetCompressedTexImageARBReply> Glx::GetCompressedTexImageARB(
+    const ContextTag& context_tag,
+    const uint32_t& target,
+    const int32_t& level) {
+  return Glx::GetCompressedTexImageARB(
+      Glx::GetCompressedTexImageARBRequest{context_tag, target, level});
 }
 
 template <>
@@ -7498,6 +8143,11 @@ Future<void> Glx::DeleteQueriesARB(
   return connection_->SendRequest<void>(&buf, "Glx::DeleteQueriesARB", false);
 }
 
+Future<void> Glx::DeleteQueriesARB(const ContextTag& context_tag,
+                                   const std::vector<uint32_t>& ids) {
+  return Glx::DeleteQueriesARB(Glx::DeleteQueriesARBRequest{context_tag, ids});
+}
+
 Future<Glx::GenQueriesARBReply> Glx::GenQueriesARB(
     const Glx::GenQueriesARBRequest& request) {
   if (!connection_->Ready() || !present())
@@ -7530,6 +8180,12 @@ Future<Glx::GenQueriesARBReply> Glx::GenQueriesARB(
 
   return connection_->SendRequest<Glx::GenQueriesARBReply>(
       &buf, "Glx::GenQueriesARB", false);
+}
+
+Future<Glx::GenQueriesARBReply> Glx::GenQueriesARB(
+    const ContextTag& context_tag,
+    const int32_t& n) {
+  return Glx::GenQueriesARB(Glx::GenQueriesARBRequest{context_tag, n});
 }
 
 template <>
@@ -7607,6 +8263,11 @@ Future<Glx::IsQueryARBReply> Glx::IsQueryARB(
                                                         false);
 }
 
+Future<Glx::IsQueryARBReply> Glx::IsQueryARB(const ContextTag& context_tag,
+                                             const uint32_t& id) {
+  return Glx::IsQueryARB(Glx::IsQueryARBRequest{context_tag, id});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Glx::IsQueryARBReply> detail::ReadReply<Glx::IsQueryARBReply>(
@@ -7676,6 +8337,14 @@ Future<Glx::GetQueryivARBReply> Glx::GetQueryivARB(
 
   return connection_->SendRequest<Glx::GetQueryivARBReply>(
       &buf, "Glx::GetQueryivARB", false);
+}
+
+Future<Glx::GetQueryivARBReply> Glx::GetQueryivARB(
+    const ContextTag& context_tag,
+    const uint32_t& target,
+    const uint32_t& pname) {
+  return Glx::GetQueryivARB(
+      Glx::GetQueryivARBRequest{context_tag, target, pname});
 }
 
 template <>
@@ -7768,6 +8437,14 @@ Future<Glx::GetQueryObjectivARBReply> Glx::GetQueryObjectivARB(
       &buf, "Glx::GetQueryObjectivARB", false);
 }
 
+Future<Glx::GetQueryObjectivARBReply> Glx::GetQueryObjectivARB(
+    const ContextTag& context_tag,
+    const uint32_t& id,
+    const uint32_t& pname) {
+  return Glx::GetQueryObjectivARB(
+      Glx::GetQueryObjectivARBRequest{context_tag, id, pname});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Glx::GetQueryObjectivARBReply> detail::ReadReply<
@@ -7856,6 +8533,14 @@ Future<Glx::GetQueryObjectuivARBReply> Glx::GetQueryObjectuivARB(
 
   return connection_->SendRequest<Glx::GetQueryObjectuivARBReply>(
       &buf, "Glx::GetQueryObjectuivARB", false);
+}
+
+Future<Glx::GetQueryObjectuivARBReply> Glx::GetQueryObjectuivARB(
+    const ContextTag& context_tag,
+    const uint32_t& id,
+    const uint32_t& pname) {
+  return Glx::GetQueryObjectuivARB(
+      Glx::GetQueryObjectuivARBRequest{context_tag, id, pname});
 }
 
 template <>

@@ -53,6 +53,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "ui/gfx/x/error.h"
+#include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
 
 namespace x11 {
@@ -122,6 +123,8 @@ class COMPONENT_EXPORT(X11) Shm {
 
   Future<QueryVersionReply> QueryVersion(const QueryVersionRequest& request);
 
+  Future<QueryVersionReply> QueryVersion();
+
   struct AttachRequest {
     Seg shmseg{};
     uint32_t shmid{};
@@ -132,6 +135,10 @@ class COMPONENT_EXPORT(X11) Shm {
 
   Future<void> Attach(const AttachRequest& request);
 
+  Future<void> Attach(const Seg& shmseg = {},
+                      const uint32_t& shmid = {},
+                      const uint8_t& read_only = {});
+
   struct DetachRequest {
     Seg shmseg{};
   };
@@ -139,6 +146,8 @@ class COMPONENT_EXPORT(X11) Shm {
   using DetachResponse = Response<void>;
 
   Future<void> Detach(const DetachRequest& request);
+
+  Future<void> Detach(const Seg& shmseg = {});
 
   struct PutImageRequest {
     Drawable drawable{};
@@ -161,6 +170,22 @@ class COMPONENT_EXPORT(X11) Shm {
   using PutImageResponse = Response<void>;
 
   Future<void> PutImage(const PutImageRequest& request);
+
+  Future<void> PutImage(const Drawable& drawable = {},
+                        const GraphicsContext& gc = {},
+                        const uint16_t& total_width = {},
+                        const uint16_t& total_height = {},
+                        const uint16_t& src_x = {},
+                        const uint16_t& src_y = {},
+                        const uint16_t& src_width = {},
+                        const uint16_t& src_height = {},
+                        const int16_t& dst_x = {},
+                        const int16_t& dst_y = {},
+                        const uint8_t& depth = {},
+                        const ImageFormat& format = {},
+                        const uint8_t& send_event = {},
+                        const Seg& shmseg = {},
+                        const uint32_t& offset = {});
 
   struct GetImageRequest {
     Drawable drawable{};
@@ -185,6 +210,16 @@ class COMPONENT_EXPORT(X11) Shm {
 
   Future<GetImageReply> GetImage(const GetImageRequest& request);
 
+  Future<GetImageReply> GetImage(const Drawable& drawable = {},
+                                 const int16_t& x = {},
+                                 const int16_t& y = {},
+                                 const uint16_t& width = {},
+                                 const uint16_t& height = {},
+                                 const uint32_t& plane_mask = {},
+                                 const uint8_t& format = {},
+                                 const Seg& shmseg = {},
+                                 const uint32_t& offset = {});
+
   struct CreatePixmapRequest {
     Pixmap pid{};
     Drawable drawable{};
@@ -199,15 +234,27 @@ class COMPONENT_EXPORT(X11) Shm {
 
   Future<void> CreatePixmap(const CreatePixmapRequest& request);
 
+  Future<void> CreatePixmap(const Pixmap& pid = {},
+                            const Drawable& drawable = {},
+                            const uint16_t& width = {},
+                            const uint16_t& height = {},
+                            const uint8_t& depth = {},
+                            const Seg& shmseg = {},
+                            const uint32_t& offset = {});
+
   struct AttachFdRequest {
     Seg shmseg{};
-    base::ScopedFD shm_fd{};
+    RefCountedFD shm_fd{};
     uint8_t read_only{};
   };
 
   using AttachFdResponse = Response<void>;
 
   Future<void> AttachFd(const AttachFdRequest& request);
+
+  Future<void> AttachFd(const Seg& shmseg = {},
+                        const RefCountedFD& shm_fd = {},
+                        const uint8_t& read_only = {});
 
   struct CreateSegmentRequest {
     Seg shmseg{};
@@ -218,12 +265,16 @@ class COMPONENT_EXPORT(X11) Shm {
   struct CreateSegmentReply {
     uint8_t nfd{};
     uint16_t sequence{};
-    base::ScopedFD shm_fd{};
+    RefCountedFD shm_fd{};
   };
 
   using CreateSegmentResponse = Response<CreateSegmentReply>;
 
   Future<CreateSegmentReply> CreateSegment(const CreateSegmentRequest& request);
+
+  Future<CreateSegmentReply> CreateSegment(const Seg& shmseg = {},
+                                           const uint32_t& size = {},
+                                           const uint8_t& read_only = {});
 
  private:
   Connection* const connection_;

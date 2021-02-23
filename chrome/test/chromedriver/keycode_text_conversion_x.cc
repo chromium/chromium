@@ -104,7 +104,7 @@ int KeyboardCodeToXKeyCode(ui::KeyboardCode key_code) {
 bool GetXModifierMask(x11::Connection* connection,
                       int modifier,
                       x11::KeyButMask* x_modifier) {
-  auto mod_map = connection->GetModifierMapping({}).Sync();
+  auto mod_map = connection->GetModifierMapping().Sync();
   if (!mod_map)
     return false;
   bool found = false;

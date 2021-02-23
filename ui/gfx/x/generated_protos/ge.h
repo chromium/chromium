@@ -53,6 +53,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "ui/gfx/x/error.h"
+#include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
 
 namespace x11 {
@@ -93,6 +94,10 @@ class COMPONENT_EXPORT(X11) GenericEvent {
   using QueryVersionResponse = Response<QueryVersionReply>;
 
   Future<QueryVersionReply> QueryVersion(const QueryVersionRequest& request);
+
+  Future<QueryVersionReply> QueryVersion(
+      const uint16_t& client_major_version = {},
+      const uint16_t& client_minor_version = {});
 
  private:
   Connection* const connection_;

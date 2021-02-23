@@ -2957,6 +2957,59 @@ Future<void> XProto::CreateWindow(const CreateWindowRequest& request) {
   return connection_->SendRequest<void>(&buf, "CreateWindow", false);
 }
 
+Future<void> XProto::CreateWindow(
+    const uint8_t& depth,
+    const Window& wid,
+    const Window& parent,
+    const int16_t& x,
+    const int16_t& y,
+    const uint16_t& width,
+    const uint16_t& height,
+    const uint16_t& border_width,
+    const WindowClass& c_class,
+    const VisualId& visual,
+    const base::Optional<Pixmap>& background_pixmap,
+    const base::Optional<uint32_t>& background_pixel,
+    const base::Optional<Pixmap>& border_pixmap,
+    const base::Optional<uint32_t>& border_pixel,
+    const base::Optional<Gravity>& bit_gravity,
+    const base::Optional<Gravity>& win_gravity,
+    const base::Optional<BackingStore>& backing_store,
+    const base::Optional<uint32_t>& backing_planes,
+    const base::Optional<uint32_t>& backing_pixel,
+    const base::Optional<Bool32>& override_redirect,
+    const base::Optional<Bool32>& save_under,
+    const base::Optional<EventMask>& event_mask,
+    const base::Optional<EventMask>& do_not_propogate_mask,
+    const base::Optional<ColorMap>& colormap,
+    const base::Optional<Cursor>& cursor) {
+  return XProto::CreateWindow(CreateWindowRequest{depth,
+                                                  wid,
+                                                  parent,
+                                                  x,
+                                                  y,
+                                                  width,
+                                                  height,
+                                                  border_width,
+                                                  c_class,
+                                                  visual,
+                                                  background_pixmap,
+                                                  background_pixel,
+                                                  border_pixmap,
+                                                  border_pixel,
+                                                  bit_gravity,
+                                                  win_gravity,
+                                                  backing_store,
+                                                  backing_planes,
+                                                  backing_pixel,
+                                                  override_redirect,
+                                                  save_under,
+                                                  event_mask,
+                                                  do_not_propogate_mask,
+                                                  colormap,
+                                                  cursor});
+}
+
 Future<void> XProto::ChangeWindowAttributes(
     const ChangeWindowAttributesRequest& request) {
   if (!connection_->Ready())
@@ -3125,6 +3178,30 @@ Future<void> XProto::ChangeWindowAttributes(
   return connection_->SendRequest<void>(&buf, "ChangeWindowAttributes", false);
 }
 
+Future<void> XProto::ChangeWindowAttributes(
+    const Window& window,
+    const base::Optional<Pixmap>& background_pixmap,
+    const base::Optional<uint32_t>& background_pixel,
+    const base::Optional<Pixmap>& border_pixmap,
+    const base::Optional<uint32_t>& border_pixel,
+    const base::Optional<Gravity>& bit_gravity,
+    const base::Optional<Gravity>& win_gravity,
+    const base::Optional<BackingStore>& backing_store,
+    const base::Optional<uint32_t>& backing_planes,
+    const base::Optional<uint32_t>& backing_pixel,
+    const base::Optional<Bool32>& override_redirect,
+    const base::Optional<Bool32>& save_under,
+    const base::Optional<EventMask>& event_mask,
+    const base::Optional<EventMask>& do_not_propogate_mask,
+    const base::Optional<ColorMap>& colormap,
+    const base::Optional<Cursor>& cursor) {
+  return XProto::ChangeWindowAttributes(ChangeWindowAttributesRequest{
+      window, background_pixmap, background_pixel, border_pixmap, border_pixel,
+      bit_gravity, win_gravity, backing_store, backing_planes, backing_pixel,
+      override_redirect, save_under, event_mask, do_not_propogate_mask,
+      colormap, cursor});
+}
+
 Future<GetWindowAttributesReply> XProto::GetWindowAttributes(
     const GetWindowAttributesRequest& request) {
   if (!connection_->Ready())
@@ -3152,6 +3229,11 @@ Future<GetWindowAttributesReply> XProto::GetWindowAttributes(
 
   return connection_->SendRequest<GetWindowAttributesReply>(
       &buf, "GetWindowAttributes", false);
+}
+
+Future<GetWindowAttributesReply> XProto::GetWindowAttributes(
+    const Window& window) {
+  return XProto::GetWindowAttributes(GetWindowAttributesRequest{window});
 }
 
 template <>
@@ -3286,6 +3368,10 @@ Future<void> XProto::DestroyWindow(const DestroyWindowRequest& request) {
   return connection_->SendRequest<void>(&buf, "DestroyWindow", false);
 }
 
+Future<void> XProto::DestroyWindow(const Window& window) {
+  return XProto::DestroyWindow(DestroyWindowRequest{window});
+}
+
 Future<void> XProto::DestroySubwindows(
     const DestroySubwindowsRequest& request) {
   if (!connection_->Ready())
@@ -3312,6 +3398,10 @@ Future<void> XProto::DestroySubwindows(
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "DestroySubwindows", false);
+}
+
+Future<void> XProto::DestroySubwindows(const Window& window) {
+  return XProto::DestroySubwindows(DestroySubwindowsRequest{window});
 }
 
 Future<void> XProto::ChangeSaveSet(const ChangeSaveSetRequest& request) {
@@ -3342,6 +3432,10 @@ Future<void> XProto::ChangeSaveSet(const ChangeSaveSetRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "ChangeSaveSet", false);
+}
+
+Future<void> XProto::ChangeSaveSet(const SetMode& mode, const Window& window) {
+  return XProto::ChangeSaveSet(ChangeSaveSetRequest{mode, window});
 }
 
 Future<void> XProto::ReparentWindow(const ReparentWindowRequest& request) {
@@ -3383,6 +3477,13 @@ Future<void> XProto::ReparentWindow(const ReparentWindowRequest& request) {
   return connection_->SendRequest<void>(&buf, "ReparentWindow", false);
 }
 
+Future<void> XProto::ReparentWindow(const Window& window,
+                                    const Window& parent,
+                                    const int16_t& x,
+                                    const int16_t& y) {
+  return XProto::ReparentWindow(ReparentWindowRequest{window, parent, x, y});
+}
+
 Future<void> XProto::MapWindow(const MapWindowRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -3408,6 +3509,10 @@ Future<void> XProto::MapWindow(const MapWindowRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "MapWindow", false);
+}
+
+Future<void> XProto::MapWindow(const Window& window) {
+  return XProto::MapWindow(MapWindowRequest{window});
 }
 
 Future<void> XProto::MapSubwindows(const MapSubwindowsRequest& request) {
@@ -3437,6 +3542,10 @@ Future<void> XProto::MapSubwindows(const MapSubwindowsRequest& request) {
   return connection_->SendRequest<void>(&buf, "MapSubwindows", false);
 }
 
+Future<void> XProto::MapSubwindows(const Window& window) {
+  return XProto::MapSubwindows(MapSubwindowsRequest{window});
+}
+
 Future<void> XProto::UnmapWindow(const UnmapWindowRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -3464,6 +3573,10 @@ Future<void> XProto::UnmapWindow(const UnmapWindowRequest& request) {
   return connection_->SendRequest<void>(&buf, "UnmapWindow", false);
 }
 
+Future<void> XProto::UnmapWindow(const Window& window) {
+  return XProto::UnmapWindow(UnmapWindowRequest{window});
+}
+
 Future<void> XProto::UnmapSubwindows(const UnmapSubwindowsRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -3489,6 +3602,10 @@ Future<void> XProto::UnmapSubwindows(const UnmapSubwindowsRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "UnmapSubwindows", false);
+}
+
+Future<void> XProto::UnmapSubwindows(const Window& window) {
+  return XProto::UnmapSubwindows(UnmapSubwindowsRequest{window});
 }
 
 Future<void> XProto::ConfigureWindow(const ConfigureWindowRequest& request) {
@@ -3587,6 +3704,19 @@ Future<void> XProto::ConfigureWindow(const ConfigureWindowRequest& request) {
   return connection_->SendRequest<void>(&buf, "ConfigureWindow", false);
 }
 
+Future<void> XProto::ConfigureWindow(
+    const Window& window,
+    const base::Optional<int32_t>& x,
+    const base::Optional<int32_t>& y,
+    const base::Optional<uint32_t>& width,
+    const base::Optional<uint32_t>& height,
+    const base::Optional<uint32_t>& border_width,
+    const base::Optional<Window>& sibling,
+    const base::Optional<StackMode>& stack_mode) {
+  return XProto::ConfigureWindow(ConfigureWindowRequest{
+      window, x, y, width, height, border_width, sibling, stack_mode});
+}
+
 Future<void> XProto::CirculateWindow(const CirculateWindowRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -3617,6 +3747,11 @@ Future<void> XProto::CirculateWindow(const CirculateWindowRequest& request) {
   return connection_->SendRequest<void>(&buf, "CirculateWindow", false);
 }
 
+Future<void> XProto::CirculateWindow(const Circulate& direction,
+                                     const Window& window) {
+  return XProto::CirculateWindow(CirculateWindowRequest{direction, window});
+}
+
 Future<GetGeometryReply> XProto::GetGeometry(
     const GetGeometryRequest& request) {
   if (!connection_->Ready())
@@ -3643,6 +3778,10 @@ Future<GetGeometryReply> XProto::GetGeometry(
   Align(&buf, 4);
 
   return connection_->SendRequest<GetGeometryReply>(&buf, "GetGeometry", false);
+}
+
+Future<GetGeometryReply> XProto::GetGeometry(const Drawable& drawable) {
+  return XProto::GetGeometry(GetGeometryRequest{drawable});
 }
 
 template <>
@@ -3727,6 +3866,10 @@ Future<QueryTreeReply> XProto::QueryTree(const QueryTreeRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<QueryTreeReply>(&buf, "QueryTree", false);
+}
+
+Future<QueryTreeReply> XProto::QueryTree(const Window& window) {
+  return XProto::QueryTree(QueryTreeRequest{window});
 }
 
 template <>
@@ -3821,6 +3964,11 @@ Future<InternAtomReply> XProto::InternAtom(const InternAtomRequest& request) {
   return connection_->SendRequest<InternAtomReply>(&buf, "InternAtom", false);
 }
 
+Future<InternAtomReply> XProto::InternAtom(const uint8_t& only_if_exists,
+                                           const std::string& name) {
+  return XProto::InternAtom(InternAtomRequest{only_if_exists, name});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<InternAtomReply> detail::ReadReply<InternAtomReply>(
@@ -3880,6 +4028,10 @@ Future<GetAtomNameReply> XProto::GetAtomName(
   Align(&buf, 4);
 
   return connection_->SendRequest<GetAtomNameReply>(&buf, "GetAtomName", false);
+}
+
+Future<GetAtomNameReply> XProto::GetAtomName(const Atom& atom) {
+  return XProto::GetAtomName(GetAtomNameRequest{atom});
 }
 
 template <>
@@ -3979,6 +4131,18 @@ Future<void> XProto::ChangeProperty(const ChangePropertyRequest& request) {
   return connection_->SendRequest<void>(&buf, "ChangeProperty", false);
 }
 
+Future<void> XProto::ChangeProperty(
+    const PropMode& mode,
+    const Window& window,
+    const Atom& property,
+    const Atom& type,
+    const uint8_t& format,
+    const uint32_t& data_len,
+    const scoped_refptr<base::RefCountedMemory>& data) {
+  return XProto::ChangeProperty(ChangePropertyRequest{
+      mode, window, property, type, format, data_len, data});
+}
+
 Future<void> XProto::DeleteProperty(const DeletePropertyRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -4008,6 +4172,11 @@ Future<void> XProto::DeleteProperty(const DeletePropertyRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "DeleteProperty", false);
+}
+
+Future<void> XProto::DeleteProperty(const Window& window,
+                                    const Atom& property) {
+  return XProto::DeleteProperty(DeletePropertyRequest{window, property});
 }
 
 Future<GetPropertyReply> XProto::GetProperty(
@@ -4053,6 +4222,16 @@ Future<GetPropertyReply> XProto::GetProperty(
   Align(&buf, 4);
 
   return connection_->SendRequest<GetPropertyReply>(&buf, "GetProperty", false);
+}
+
+Future<GetPropertyReply> XProto::GetProperty(const uint8_t& c_delete,
+                                             const Window& window,
+                                             const Atom& property,
+                                             const Atom& type,
+                                             const uint32_t& long_offset,
+                                             const uint32_t& long_length) {
+  return XProto::GetProperty(GetPropertyRequest{
+      c_delete, window, property, type, long_offset, long_length});
 }
 
 template <>
@@ -4131,6 +4310,10 @@ Future<ListPropertiesReply> XProto::ListProperties(
 
   return connection_->SendRequest<ListPropertiesReply>(&buf, "ListProperties",
                                                        false);
+}
+
+Future<ListPropertiesReply> XProto::ListProperties(const Window& window) {
+  return XProto::ListProperties(ListPropertiesRequest{window});
 }
 
 template <>
@@ -4213,6 +4396,13 @@ Future<void> XProto::SetSelectionOwner(
   return connection_->SendRequest<void>(&buf, "SetSelectionOwner", false);
 }
 
+Future<void> XProto::SetSelectionOwner(const Window& owner,
+                                       const Atom& selection,
+                                       const Time& time) {
+  return XProto::SetSelectionOwner(
+      SetSelectionOwnerRequest{owner, selection, time});
+}
+
 Future<GetSelectionOwnerReply> XProto::GetSelectionOwner(
     const GetSelectionOwnerRequest& request) {
   if (!connection_->Ready())
@@ -4240,6 +4430,11 @@ Future<GetSelectionOwnerReply> XProto::GetSelectionOwner(
 
   return connection_->SendRequest<GetSelectionOwnerReply>(
       &buf, "GetSelectionOwner", false);
+}
+
+Future<GetSelectionOwnerReply> XProto::GetSelectionOwner(
+    const Atom& selection) {
+  return XProto::GetSelectionOwner(GetSelectionOwnerRequest{selection});
 }
 
 template <>
@@ -4318,6 +4513,15 @@ Future<void> XProto::ConvertSelection(const ConvertSelectionRequest& request) {
   return connection_->SendRequest<void>(&buf, "ConvertSelection", false);
 }
 
+Future<void> XProto::ConvertSelection(const Window& requestor,
+                                      const Atom& selection,
+                                      const Atom& target,
+                                      const Atom& property,
+                                      const Time& time) {
+  return XProto::ConvertSelection(
+      ConvertSelectionRequest{requestor, selection, target, property, time});
+}
+
 Future<void> XProto::SendEvent(const SendEventRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -4358,6 +4562,14 @@ Future<void> XProto::SendEvent(const SendEventRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "SendEvent", false);
+}
+
+Future<void> XProto::SendEvent(const uint8_t& propagate,
+                               const Window& destination,
+                               const EventMask& event_mask,
+                               const std::array<char, 32>& event) {
+  return XProto::SendEvent(
+      SendEventRequest{propagate, destination, event_mask, event});
 }
 
 Future<GrabPointerReply> XProto::GrabPointer(
@@ -4419,6 +4631,19 @@ Future<GrabPointerReply> XProto::GrabPointer(
   return connection_->SendRequest<GrabPointerReply>(&buf, "GrabPointer", false);
 }
 
+Future<GrabPointerReply> XProto::GrabPointer(const uint8_t& owner_events,
+                                             const Window& grab_window,
+                                             const EventMask& event_mask,
+                                             const GrabMode& pointer_mode,
+                                             const GrabMode& keyboard_mode,
+                                             const Window& confine_to,
+                                             const Cursor& cursor,
+                                             const Time& time) {
+  return XProto::GrabPointer(
+      GrabPointerRequest{owner_events, grab_window, event_mask, pointer_mode,
+                         keyboard_mode, confine_to, cursor, time});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<GrabPointerReply> detail::ReadReply<GrabPointerReply>(
@@ -4476,6 +4701,10 @@ Future<void> XProto::UngrabPointer(const UngrabPointerRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "UngrabPointer", false);
+}
+
+Future<void> XProto::UngrabPointer(const Time& time) {
+  return XProto::UngrabPointer(UngrabPointerRequest{time});
 }
 
 Future<void> XProto::GrabButton(const GrabButtonRequest& request) {
@@ -4547,6 +4776,20 @@ Future<void> XProto::GrabButton(const GrabButtonRequest& request) {
   return connection_->SendRequest<void>(&buf, "GrabButton", false);
 }
 
+Future<void> XProto::GrabButton(const uint8_t& owner_events,
+                                const Window& grab_window,
+                                const EventMask& event_mask,
+                                const GrabMode& pointer_mode,
+                                const GrabMode& keyboard_mode,
+                                const Window& confine_to,
+                                const Cursor& cursor,
+                                const ButtonIndex& button,
+                                const ModMask& modifiers) {
+  return XProto::GrabButton(
+      GrabButtonRequest{owner_events, grab_window, event_mask, pointer_mode,
+                        keyboard_mode, confine_to, cursor, button, modifiers});
+}
+
 Future<void> XProto::UngrabButton(const UngrabButtonRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -4584,6 +4827,13 @@ Future<void> XProto::UngrabButton(const UngrabButtonRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "UngrabButton", false);
+}
+
+Future<void> XProto::UngrabButton(const ButtonIndex& button,
+                                  const Window& grab_window,
+                                  const ModMask& modifiers) {
+  return XProto::UngrabButton(
+      UngrabButtonRequest{button, grab_window, modifiers});
 }
 
 Future<void> XProto::ChangeActivePointerGrab(
@@ -4625,6 +4875,13 @@ Future<void> XProto::ChangeActivePointerGrab(
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "ChangeActivePointerGrab", false);
+}
+
+Future<void> XProto::ChangeActivePointerGrab(const Cursor& cursor,
+                                             const Time& time,
+                                             const EventMask& event_mask) {
+  return XProto::ChangeActivePointerGrab(
+      ChangeActivePointerGrabRequest{cursor, time, event_mask});
 }
 
 Future<GrabKeyboardReply> XProto::GrabKeyboard(
@@ -4674,6 +4931,15 @@ Future<GrabKeyboardReply> XProto::GrabKeyboard(
 
   return connection_->SendRequest<GrabKeyboardReply>(&buf, "GrabKeyboard",
                                                      false);
+}
+
+Future<GrabKeyboardReply> XProto::GrabKeyboard(const uint8_t& owner_events,
+                                               const Window& grab_window,
+                                               const Time& time,
+                                               const GrabMode& pointer_mode,
+                                               const GrabMode& keyboard_mode) {
+  return XProto::GrabKeyboard(GrabKeyboardRequest{
+      owner_events, grab_window, time, pointer_mode, keyboard_mode});
 }
 
 template <>
@@ -4735,6 +5001,10 @@ Future<void> XProto::UngrabKeyboard(const UngrabKeyboardRequest& request) {
   return connection_->SendRequest<void>(&buf, "UngrabKeyboard", false);
 }
 
+Future<void> XProto::UngrabKeyboard(const Time& time) {
+  return XProto::UngrabKeyboard(UngrabKeyboardRequest{time});
+}
+
 Future<void> XProto::GrabKey(const GrabKeyRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -4788,6 +5058,16 @@ Future<void> XProto::GrabKey(const GrabKeyRequest& request) {
   return connection_->SendRequest<void>(&buf, "GrabKey", false);
 }
 
+Future<void> XProto::GrabKey(const uint8_t& owner_events,
+                             const Window& grab_window,
+                             const ModMask& modifiers,
+                             const KeyCode& key,
+                             const GrabMode& pointer_mode,
+                             const GrabMode& keyboard_mode) {
+  return XProto::GrabKey(GrabKeyRequest{owner_events, grab_window, modifiers,
+                                        key, pointer_mode, keyboard_mode});
+}
+
 Future<void> XProto::UngrabKey(const UngrabKeyRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -4825,6 +5105,12 @@ Future<void> XProto::UngrabKey(const UngrabKeyRequest& request) {
   return connection_->SendRequest<void>(&buf, "UngrabKey", false);
 }
 
+Future<void> XProto::UngrabKey(const KeyCode& key,
+                               const Window& grab_window,
+                               const ModMask& modifiers) {
+  return XProto::UngrabKey(UngrabKeyRequest{key, grab_window, modifiers});
+}
+
 Future<void> XProto::AllowEvents(const AllowEventsRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -4855,6 +5141,10 @@ Future<void> XProto::AllowEvents(const AllowEventsRequest& request) {
   return connection_->SendRequest<void>(&buf, "AllowEvents", false);
 }
 
+Future<void> XProto::AllowEvents(const Allow& mode, const Time& time) {
+  return XProto::AllowEvents(AllowEventsRequest{mode, time});
+}
+
 Future<void> XProto::GrabServer(const GrabServerRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -4877,6 +5167,10 @@ Future<void> XProto::GrabServer(const GrabServerRequest& request) {
   return connection_->SendRequest<void>(&buf, "GrabServer", false);
 }
 
+Future<void> XProto::GrabServer() {
+  return XProto::GrabServer(GrabServerRequest{});
+}
+
 Future<void> XProto::UngrabServer(const UngrabServerRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -4897,6 +5191,10 @@ Future<void> XProto::UngrabServer(const UngrabServerRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "UngrabServer", false);
+}
+
+Future<void> XProto::UngrabServer() {
+  return XProto::UngrabServer(UngrabServerRequest{});
 }
 
 Future<QueryPointerReply> XProto::QueryPointer(
@@ -4926,6 +5224,10 @@ Future<QueryPointerReply> XProto::QueryPointer(
 
   return connection_->SendRequest<QueryPointerReply>(&buf, "QueryPointer",
                                                      false);
+}
+
+Future<QueryPointerReply> XProto::QueryPointer(const Window& window) {
+  return XProto::QueryPointer(QueryPointerRequest{window});
 }
 
 template <>
@@ -5028,6 +5330,12 @@ Future<GetMotionEventsReply> XProto::GetMotionEvents(
                                                         false);
 }
 
+Future<GetMotionEventsReply> XProto::GetMotionEvents(const Window& window,
+                                                     const Time& start,
+                                                     const Time& stop) {
+  return XProto::GetMotionEvents(GetMotionEventsRequest{window, start, stop});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<GetMotionEventsReply> detail::ReadReply<GetMotionEventsReply>(
@@ -5124,6 +5432,15 @@ Future<TranslateCoordinatesReply> XProto::TranslateCoordinates(
 
   return connection_->SendRequest<TranslateCoordinatesReply>(
       &buf, "TranslateCoordinates", false);
+}
+
+Future<TranslateCoordinatesReply> XProto::TranslateCoordinates(
+    const Window& src_window,
+    const Window& dst_window,
+    const int16_t& src_x,
+    const int16_t& src_y) {
+  return XProto::TranslateCoordinates(
+      TranslateCoordinatesRequest{src_window, dst_window, src_x, src_y});
 }
 
 template <>
@@ -5223,6 +5540,19 @@ Future<void> XProto::WarpPointer(const WarpPointerRequest& request) {
   return connection_->SendRequest<void>(&buf, "WarpPointer", false);
 }
 
+Future<void> XProto::WarpPointer(const Window& src_window,
+                                 const Window& dst_window,
+                                 const int16_t& src_x,
+                                 const int16_t& src_y,
+                                 const uint16_t& src_width,
+                                 const uint16_t& src_height,
+                                 const int16_t& dst_x,
+                                 const int16_t& dst_y) {
+  return XProto::WarpPointer(WarpPointerRequest{src_window, dst_window, src_x,
+                                                src_y, src_width, src_height,
+                                                dst_x, dst_y});
+}
+
 Future<void> XProto::SetInputFocus(const SetInputFocusRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -5257,6 +5587,12 @@ Future<void> XProto::SetInputFocus(const SetInputFocusRequest& request) {
   return connection_->SendRequest<void>(&buf, "SetInputFocus", false);
 }
 
+Future<void> XProto::SetInputFocus(const InputFocus& revert_to,
+                                   const Window& focus,
+                                   const Time& time) {
+  return XProto::SetInputFocus(SetInputFocusRequest{revert_to, focus, time});
+}
+
 Future<GetInputFocusReply> XProto::GetInputFocus(
     const GetInputFocusRequest& request) {
   if (!connection_->Ready())
@@ -5279,6 +5615,10 @@ Future<GetInputFocusReply> XProto::GetInputFocus(
 
   return connection_->SendRequest<GetInputFocusReply>(&buf, "GetInputFocus",
                                                       false);
+}
+
+Future<GetInputFocusReply> XProto::GetInputFocus() {
+  return XProto::GetInputFocus(GetInputFocusRequest{});
 }
 
 template <>
@@ -5338,6 +5678,10 @@ Future<QueryKeymapReply> XProto::QueryKeymap(
   Align(&buf, 4);
 
   return connection_->SendRequest<QueryKeymapReply>(&buf, "QueryKeymap", false);
+}
+
+Future<QueryKeymapReply> XProto::QueryKeymap() {
+  return XProto::QueryKeymap(QueryKeymapRequest{});
 }
 
 template <>
@@ -5420,6 +5764,10 @@ Future<void> XProto::OpenFont(const OpenFontRequest& request) {
   return connection_->SendRequest<void>(&buf, "OpenFont", false);
 }
 
+Future<void> XProto::OpenFont(const Font& fid, const std::string& name) {
+  return XProto::OpenFont(OpenFontRequest{fid, name});
+}
+
 Future<void> XProto::CloseFont(const CloseFontRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -5447,6 +5795,10 @@ Future<void> XProto::CloseFont(const CloseFontRequest& request) {
   return connection_->SendRequest<void>(&buf, "CloseFont", false);
 }
 
+Future<void> XProto::CloseFont(const Font& font) {
+  return XProto::CloseFont(CloseFontRequest{font});
+}
+
 Future<QueryFontReply> XProto::QueryFont(const QueryFontRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -5472,6 +5824,10 @@ Future<QueryFontReply> XProto::QueryFont(const QueryFontRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<QueryFontReply>(&buf, "QueryFont", false);
+}
+
+Future<QueryFontReply> XProto::QueryFont(const Fontable& font) {
+  return XProto::QueryFont(QueryFontRequest{font});
 }
 
 template <>
@@ -5711,6 +6067,12 @@ Future<QueryTextExtentsReply> XProto::QueryTextExtents(
       &buf, "QueryTextExtents", false);
 }
 
+Future<QueryTextExtentsReply> XProto::QueryTextExtents(
+    const Fontable& font,
+    const std::vector<Char16>& string) {
+  return XProto::QueryTextExtents(QueryTextExtentsRequest{font, string});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<QueryTextExtentsReply> detail::ReadReply<QueryTextExtentsReply>(
@@ -5811,6 +6173,11 @@ Future<ListFontsReply> XProto::ListFonts(const ListFontsRequest& request) {
   return connection_->SendRequest<ListFontsReply>(&buf, "ListFonts", false);
 }
 
+Future<ListFontsReply> XProto::ListFonts(const uint16_t& max_names,
+                                         const std::string& pattern) {
+  return XProto::ListFonts(ListFontsRequest{max_names, pattern});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<ListFontsReply> detail::ReadReply<ListFontsReply>(
@@ -5908,6 +6275,13 @@ Future<ListFontsWithInfoReply> XProto::ListFontsWithInfo(
 
   return connection_->SendRequest<ListFontsWithInfoReply>(
       &buf, "ListFontsWithInfo", false);
+}
+
+Future<ListFontsWithInfoReply> XProto::ListFontsWithInfo(
+    const uint16_t& max_names,
+    const std::string& pattern) {
+  return XProto::ListFontsWithInfo(
+      ListFontsWithInfoRequest{max_names, pattern});
 }
 
 template <>
@@ -6129,6 +6503,10 @@ Future<void> XProto::SetFontPath(const SetFontPathRequest& request) {
   return connection_->SendRequest<void>(&buf, "SetFontPath", false);
 }
 
+Future<void> XProto::SetFontPath(const std::vector<Str>& font) {
+  return XProto::SetFontPath(SetFontPathRequest{font});
+}
+
 Future<GetFontPathReply> XProto::GetFontPath(
     const GetFontPathRequest& request) {
   if (!connection_->Ready())
@@ -6150,6 +6528,10 @@ Future<GetFontPathReply> XProto::GetFontPath(
   Align(&buf, 4);
 
   return connection_->SendRequest<GetFontPathReply>(&buf, "GetFontPath", false);
+}
+
+Future<GetFontPathReply> XProto::GetFontPath() {
+  return XProto::GetFontPath(GetFontPathRequest{});
 }
 
 template <>
@@ -6249,6 +6631,15 @@ Future<void> XProto::CreatePixmap(const CreatePixmapRequest& request) {
   return connection_->SendRequest<void>(&buf, "CreatePixmap", false);
 }
 
+Future<void> XProto::CreatePixmap(const uint8_t& depth,
+                                  const Pixmap& pid,
+                                  const Drawable& drawable,
+                                  const uint16_t& width,
+                                  const uint16_t& height) {
+  return XProto::CreatePixmap(
+      CreatePixmapRequest{depth, pid, drawable, width, height});
+}
+
 Future<void> XProto::FreePixmap(const FreePixmapRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -6274,6 +6665,10 @@ Future<void> XProto::FreePixmap(const FreePixmapRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "FreePixmap", false);
+}
+
+Future<void> XProto::FreePixmap(const Pixmap& pixmap) {
+  return XProto::FreePixmap(FreePixmapRequest{pixmap});
 }
 
 Future<void> XProto::CreateGC(const CreateGCRequest& request) {
@@ -6517,6 +6912,59 @@ Future<void> XProto::CreateGC(const CreateGCRequest& request) {
   return connection_->SendRequest<void>(&buf, "CreateGC", false);
 }
 
+Future<void> XProto::CreateGC(
+    const GraphicsContext& cid,
+    const Drawable& drawable,
+    const base::Optional<Gx>& function,
+    const base::Optional<uint32_t>& plane_mask,
+    const base::Optional<uint32_t>& foreground,
+    const base::Optional<uint32_t>& background,
+    const base::Optional<uint32_t>& line_width,
+    const base::Optional<LineStyle>& line_style,
+    const base::Optional<CapStyle>& cap_style,
+    const base::Optional<JoinStyle>& join_style,
+    const base::Optional<FillStyle>& fill_style,
+    const base::Optional<FillRule>& fill_rule,
+    const base::Optional<Pixmap>& tile,
+    const base::Optional<Pixmap>& stipple,
+    const base::Optional<int32_t>& tile_stipple_x_origin,
+    const base::Optional<int32_t>& tile_stipple_y_origin,
+    const base::Optional<Font>& font,
+    const base::Optional<SubwindowMode>& subwindow_mode,
+    const base::Optional<Bool32>& graphics_exposures,
+    const base::Optional<int32_t>& clip_x_origin,
+    const base::Optional<int32_t>& clip_y_origin,
+    const base::Optional<Pixmap>& clip_mask,
+    const base::Optional<uint32_t>& dash_offset,
+    const base::Optional<uint32_t>& dashes,
+    const base::Optional<ArcMode>& arc_mode) {
+  return XProto::CreateGC(CreateGCRequest{cid,
+                                          drawable,
+                                          function,
+                                          plane_mask,
+                                          foreground,
+                                          background,
+                                          line_width,
+                                          line_style,
+                                          cap_style,
+                                          join_style,
+                                          fill_style,
+                                          fill_rule,
+                                          tile,
+                                          stipple,
+                                          tile_stipple_x_origin,
+                                          tile_stipple_y_origin,
+                                          font,
+                                          subwindow_mode,
+                                          graphics_exposures,
+                                          clip_x_origin,
+                                          clip_y_origin,
+                                          clip_mask,
+                                          dash_offset,
+                                          dashes,
+                                          arc_mode});
+}
+
 Future<void> XProto::ChangeGC(const ChangeGCRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -6754,6 +7202,57 @@ Future<void> XProto::ChangeGC(const ChangeGCRequest& request) {
   return connection_->SendRequest<void>(&buf, "ChangeGC", false);
 }
 
+Future<void> XProto::ChangeGC(
+    const GraphicsContext& gc,
+    const base::Optional<Gx>& function,
+    const base::Optional<uint32_t>& plane_mask,
+    const base::Optional<uint32_t>& foreground,
+    const base::Optional<uint32_t>& background,
+    const base::Optional<uint32_t>& line_width,
+    const base::Optional<LineStyle>& line_style,
+    const base::Optional<CapStyle>& cap_style,
+    const base::Optional<JoinStyle>& join_style,
+    const base::Optional<FillStyle>& fill_style,
+    const base::Optional<FillRule>& fill_rule,
+    const base::Optional<Pixmap>& tile,
+    const base::Optional<Pixmap>& stipple,
+    const base::Optional<int32_t>& tile_stipple_x_origin,
+    const base::Optional<int32_t>& tile_stipple_y_origin,
+    const base::Optional<Font>& font,
+    const base::Optional<SubwindowMode>& subwindow_mode,
+    const base::Optional<Bool32>& graphics_exposures,
+    const base::Optional<int32_t>& clip_x_origin,
+    const base::Optional<int32_t>& clip_y_origin,
+    const base::Optional<Pixmap>& clip_mask,
+    const base::Optional<uint32_t>& dash_offset,
+    const base::Optional<uint32_t>& dashes,
+    const base::Optional<ArcMode>& arc_mode) {
+  return XProto::ChangeGC(ChangeGCRequest{gc,
+                                          function,
+                                          plane_mask,
+                                          foreground,
+                                          background,
+                                          line_width,
+                                          line_style,
+                                          cap_style,
+                                          join_style,
+                                          fill_style,
+                                          fill_rule,
+                                          tile,
+                                          stipple,
+                                          tile_stipple_x_origin,
+                                          tile_stipple_y_origin,
+                                          font,
+                                          subwindow_mode,
+                                          graphics_exposures,
+                                          clip_x_origin,
+                                          clip_y_origin,
+                                          clip_mask,
+                                          dash_offset,
+                                          dashes,
+                                          arc_mode});
+}
+
 Future<void> XProto::CopyGC(const CopyGCRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -6789,6 +7288,12 @@ Future<void> XProto::CopyGC(const CopyGCRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "CopyGC", false);
+}
+
+Future<void> XProto::CopyGC(const GraphicsContext& src_gc,
+                            const GraphicsContext& dst_gc,
+                            const GraphicsContextAttribute& value_mask) {
+  return XProto::CopyGC(CopyGCRequest{src_gc, dst_gc, value_mask});
 }
 
 Future<void> XProto::SetDashes(const SetDashesRequest& request) {
@@ -6833,6 +7338,12 @@ Future<void> XProto::SetDashes(const SetDashesRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "SetDashes", false);
+}
+
+Future<void> XProto::SetDashes(const GraphicsContext& gc,
+                               const uint16_t& dash_offset,
+                               const std::vector<uint8_t>& dashes) {
+  return XProto::SetDashes(SetDashesRequest{gc, dash_offset, dashes});
 }
 
 Future<void> XProto::SetClipRectangles(
@@ -6900,6 +7411,16 @@ Future<void> XProto::SetClipRectangles(
   return connection_->SendRequest<void>(&buf, "SetClipRectangles", false);
 }
 
+Future<void> XProto::SetClipRectangles(
+    const ClipOrdering& ordering,
+    const GraphicsContext& gc,
+    const int16_t& clip_x_origin,
+    const int16_t& clip_y_origin,
+    const std::vector<Rectangle>& rectangles) {
+  return XProto::SetClipRectangles(SetClipRectanglesRequest{
+      ordering, gc, clip_x_origin, clip_y_origin, rectangles});
+}
+
 Future<void> XProto::FreeGC(const FreeGCRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -6925,6 +7446,10 @@ Future<void> XProto::FreeGC(const FreeGCRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "FreeGC", false);
+}
+
+Future<void> XProto::FreeGC(const GraphicsContext& gc) {
+  return XProto::FreeGC(FreeGCRequest{gc});
 }
 
 Future<void> XProto::ClearArea(const ClearAreaRequest& request) {
@@ -6969,6 +7494,16 @@ Future<void> XProto::ClearArea(const ClearAreaRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "ClearArea", false);
+}
+
+Future<void> XProto::ClearArea(const uint8_t& exposures,
+                               const Window& window,
+                               const int16_t& x,
+                               const int16_t& y,
+                               const uint16_t& width,
+                               const uint16_t& height) {
+  return XProto::ClearArea(
+      ClearAreaRequest{exposures, window, x, y, width, height});
 }
 
 Future<void> XProto::CopyArea(const CopyAreaRequest& request) {
@@ -7028,6 +7563,19 @@ Future<void> XProto::CopyArea(const CopyAreaRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "CopyArea", false);
+}
+
+Future<void> XProto::CopyArea(const Drawable& src_drawable,
+                              const Drawable& dst_drawable,
+                              const GraphicsContext& gc,
+                              const int16_t& src_x,
+                              const int16_t& src_y,
+                              const int16_t& dst_x,
+                              const int16_t& dst_y,
+                              const uint16_t& width,
+                              const uint16_t& height) {
+  return XProto::CopyArea(CopyAreaRequest{src_drawable, dst_drawable, gc, src_x,
+                                          src_y, dst_x, dst_y, width, height});
 }
 
 Future<void> XProto::CopyPlane(const CopyPlaneRequest& request) {
@@ -7093,6 +7641,21 @@ Future<void> XProto::CopyPlane(const CopyPlaneRequest& request) {
   return connection_->SendRequest<void>(&buf, "CopyPlane", false);
 }
 
+Future<void> XProto::CopyPlane(const Drawable& src_drawable,
+                               const Drawable& dst_drawable,
+                               const GraphicsContext& gc,
+                               const int16_t& src_x,
+                               const int16_t& src_y,
+                               const int16_t& dst_x,
+                               const int16_t& dst_y,
+                               const uint16_t& width,
+                               const uint16_t& height,
+                               const uint32_t& bit_plane) {
+  return XProto::CopyPlane(CopyPlaneRequest{src_drawable, dst_drawable, gc,
+                                            src_x, src_y, dst_x, dst_y, width,
+                                            height, bit_plane});
+}
+
 Future<void> XProto::PolyPoint(const PolyPointRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -7145,6 +7708,14 @@ Future<void> XProto::PolyPoint(const PolyPointRequest& request) {
   return connection_->SendRequest<void>(&buf, "PolyPoint", false);
 }
 
+Future<void> XProto::PolyPoint(const CoordMode& coordinate_mode,
+                               const Drawable& drawable,
+                               const GraphicsContext& gc,
+                               const std::vector<Point>& points) {
+  return XProto::PolyPoint(
+      PolyPointRequest{coordinate_mode, drawable, gc, points});
+}
+
 Future<void> XProto::PolyLine(const PolyLineRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -7195,6 +7766,14 @@ Future<void> XProto::PolyLine(const PolyLineRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "PolyLine", false);
+}
+
+Future<void> XProto::PolyLine(const CoordMode& coordinate_mode,
+                              const Drawable& drawable,
+                              const GraphicsContext& gc,
+                              const std::vector<Point>& points) {
+  return XProto::PolyLine(
+      PolyLineRequest{coordinate_mode, drawable, gc, points});
 }
 
 Future<void> XProto::PolySegment(const PolySegmentRequest& request) {
@@ -7254,6 +7833,12 @@ Future<void> XProto::PolySegment(const PolySegmentRequest& request) {
   return connection_->SendRequest<void>(&buf, "PolySegment", false);
 }
 
+Future<void> XProto::PolySegment(const Drawable& drawable,
+                                 const GraphicsContext& gc,
+                                 const std::vector<Segment>& segments) {
+  return XProto::PolySegment(PolySegmentRequest{drawable, gc, segments});
+}
+
 Future<void> XProto::PolyRectangle(const PolyRectangleRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -7309,6 +7894,12 @@ Future<void> XProto::PolyRectangle(const PolyRectangleRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "PolyRectangle", false);
+}
+
+Future<void> XProto::PolyRectangle(const Drawable& drawable,
+                                   const GraphicsContext& gc,
+                                   const std::vector<Rectangle>& rectangles) {
+  return XProto::PolyRectangle(PolyRectangleRequest{drawable, gc, rectangles});
 }
 
 Future<void> XProto::PolyArc(const PolyArcRequest& request) {
@@ -7376,6 +7967,12 @@ Future<void> XProto::PolyArc(const PolyArcRequest& request) {
   return connection_->SendRequest<void>(&buf, "PolyArc", false);
 }
 
+Future<void> XProto::PolyArc(const Drawable& drawable,
+                             const GraphicsContext& gc,
+                             const std::vector<Arc>& arcs) {
+  return XProto::PolyArc(PolyArcRequest{drawable, gc, arcs});
+}
+
 Future<void> XProto::FillPoly(const FillPolyRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -7440,6 +8037,15 @@ Future<void> XProto::FillPoly(const FillPolyRequest& request) {
   return connection_->SendRequest<void>(&buf, "FillPoly", false);
 }
 
+Future<void> XProto::FillPoly(const Drawable& drawable,
+                              const GraphicsContext& gc,
+                              const PolyShape& shape,
+                              const CoordMode& coordinate_mode,
+                              const std::vector<Point>& points) {
+  return XProto::FillPoly(
+      FillPolyRequest{drawable, gc, shape, coordinate_mode, points});
+}
+
 Future<void> XProto::PolyFillRectangle(
     const PolyFillRectangleRequest& request) {
   if (!connection_->Ready())
@@ -7496,6 +8102,14 @@ Future<void> XProto::PolyFillRectangle(
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "PolyFillRectangle", false);
+}
+
+Future<void> XProto::PolyFillRectangle(
+    const Drawable& drawable,
+    const GraphicsContext& gc,
+    const std::vector<Rectangle>& rectangles) {
+  return XProto::PolyFillRectangle(
+      PolyFillRectangleRequest{drawable, gc, rectangles});
 }
 
 Future<void> XProto::PolyFillArc(const PolyFillArcRequest& request) {
@@ -7561,6 +8175,12 @@ Future<void> XProto::PolyFillArc(const PolyFillArcRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "PolyFillArc", false);
+}
+
+Future<void> XProto::PolyFillArc(const Drawable& drawable,
+                                 const GraphicsContext& gc,
+                                 const std::vector<Arc>& arcs) {
+  return XProto::PolyFillArc(PolyFillArcRequest{drawable, gc, arcs});
 }
 
 Future<void> XProto::PutImage(const PutImageRequest& request) {
@@ -7629,6 +8249,21 @@ Future<void> XProto::PutImage(const PutImageRequest& request) {
   return connection_->SendRequest<void>(&buf, "PutImage", false);
 }
 
+Future<void> XProto::PutImage(
+    const ImageFormat& format,
+    const Drawable& drawable,
+    const GraphicsContext& gc,
+    const uint16_t& width,
+    const uint16_t& height,
+    const int16_t& dst_x,
+    const int16_t& dst_y,
+    const uint8_t& left_pad,
+    const uint8_t& depth,
+    const scoped_refptr<base::RefCountedMemory>& data) {
+  return XProto::PutImage(PutImageRequest{format, drawable, gc, width, height,
+                                          dst_x, dst_y, left_pad, depth, data});
+}
+
 Future<GetImageReply> XProto::GetImage(const GetImageRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -7677,6 +8312,17 @@ Future<GetImageReply> XProto::GetImage(const GetImageRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<GetImageReply>(&buf, "GetImage", false);
+}
+
+Future<GetImageReply> XProto::GetImage(const ImageFormat& format,
+                                       const Drawable& drawable,
+                                       const int16_t& x,
+                                       const int16_t& y,
+                                       const uint16_t& width,
+                                       const uint16_t& height,
+                                       const uint32_t& plane_mask) {
+  return XProto::GetImage(
+      GetImageRequest{format, drawable, x, y, width, height, plane_mask});
 }
 
 template <>
@@ -7769,6 +8415,14 @@ Future<void> XProto::PolyText8(const PolyText8Request& request) {
   return connection_->SendRequest<void>(&buf, "PolyText8", false);
 }
 
+Future<void> XProto::PolyText8(const Drawable& drawable,
+                               const GraphicsContext& gc,
+                               const int16_t& x,
+                               const int16_t& y,
+                               const std::vector<uint8_t>& items) {
+  return XProto::PolyText8(PolyText8Request{drawable, gc, x, y, items});
+}
+
 Future<void> XProto::PolyText16(const PolyText16Request& request) {
   if (!connection_->Ready())
     return {};
@@ -7815,6 +8469,14 @@ Future<void> XProto::PolyText16(const PolyText16Request& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "PolyText16", false);
+}
+
+Future<void> XProto::PolyText16(const Drawable& drawable,
+                                const GraphicsContext& gc,
+                                const int16_t& x,
+                                const int16_t& y,
+                                const std::vector<uint8_t>& items) {
+  return XProto::PolyText16(PolyText16Request{drawable, gc, x, y, items});
 }
 
 Future<void> XProto::ImageText8(const ImageText8Request& request) {
@@ -7864,6 +8526,14 @@ Future<void> XProto::ImageText8(const ImageText8Request& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "ImageText8", false);
+}
+
+Future<void> XProto::ImageText8(const Drawable& drawable,
+                                const GraphicsContext& gc,
+                                const int16_t& x,
+                                const int16_t& y,
+                                const std::string& string) {
+  return XProto::ImageText8(ImageText8Request{drawable, gc, x, y, string});
 }
 
 Future<void> XProto::ImageText16(const ImageText16Request& request) {
@@ -7924,6 +8594,14 @@ Future<void> XProto::ImageText16(const ImageText16Request& request) {
   return connection_->SendRequest<void>(&buf, "ImageText16", false);
 }
 
+Future<void> XProto::ImageText16(const Drawable& drawable,
+                                 const GraphicsContext& gc,
+                                 const int16_t& x,
+                                 const int16_t& y,
+                                 const std::vector<Char16>& string) {
+  return XProto::ImageText16(ImageText16Request{drawable, gc, x, y, string});
+}
+
 Future<void> XProto::CreateColormap(const CreateColormapRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -7962,6 +8640,14 @@ Future<void> XProto::CreateColormap(const CreateColormapRequest& request) {
   return connection_->SendRequest<void>(&buf, "CreateColormap", false);
 }
 
+Future<void> XProto::CreateColormap(const ColormapAlloc& alloc,
+                                    const ColorMap& mid,
+                                    const Window& window,
+                                    const VisualId& visual) {
+  return XProto::CreateColormap(
+      CreateColormapRequest{alloc, mid, window, visual});
+}
+
 Future<void> XProto::FreeColormap(const FreeColormapRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -7987,6 +8673,10 @@ Future<void> XProto::FreeColormap(const FreeColormapRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "FreeColormap", false);
+}
+
+Future<void> XProto::FreeColormap(const ColorMap& cmap) {
+  return XProto::FreeColormap(FreeColormapRequest{cmap});
 }
 
 Future<void> XProto::CopyColormapAndFree(
@@ -8021,6 +8711,11 @@ Future<void> XProto::CopyColormapAndFree(
   return connection_->SendRequest<void>(&buf, "CopyColormapAndFree", false);
 }
 
+Future<void> XProto::CopyColormapAndFree(const ColorMap& mid,
+                                         const ColorMap& src_cmap) {
+  return XProto::CopyColormapAndFree(CopyColormapAndFreeRequest{mid, src_cmap});
+}
+
 Future<void> XProto::InstallColormap(const InstallColormapRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -8046,6 +8741,10 @@ Future<void> XProto::InstallColormap(const InstallColormapRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "InstallColormap", false);
+}
+
+Future<void> XProto::InstallColormap(const ColorMap& cmap) {
+  return XProto::InstallColormap(InstallColormapRequest{cmap});
 }
 
 Future<void> XProto::UninstallColormap(
@@ -8076,6 +8775,10 @@ Future<void> XProto::UninstallColormap(
   return connection_->SendRequest<void>(&buf, "UninstallColormap", false);
 }
 
+Future<void> XProto::UninstallColormap(const ColorMap& cmap) {
+  return XProto::UninstallColormap(UninstallColormapRequest{cmap});
+}
+
 Future<ListInstalledColormapsReply> XProto::ListInstalledColormaps(
     const ListInstalledColormapsRequest& request) {
   if (!connection_->Ready())
@@ -8103,6 +8806,11 @@ Future<ListInstalledColormapsReply> XProto::ListInstalledColormaps(
 
   return connection_->SendRequest<ListInstalledColormapsReply>(
       &buf, "ListInstalledColormaps", false);
+}
+
+Future<ListInstalledColormapsReply> XProto::ListInstalledColormaps(
+    const Window& window) {
+  return XProto::ListInstalledColormaps(ListInstalledColormapsRequest{window});
 }
 
 template <>
@@ -8189,6 +8897,13 @@ Future<AllocColorReply> XProto::AllocColor(const AllocColorRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<AllocColorReply>(&buf, "AllocColor", false);
+}
+
+Future<AllocColorReply> XProto::AllocColor(const ColorMap& cmap,
+                                           const uint16_t& red,
+                                           const uint16_t& green,
+                                           const uint16_t& blue) {
+  return XProto::AllocColor(AllocColorRequest{cmap, red, green, blue});
 }
 
 template <>
@@ -8284,6 +8999,11 @@ Future<AllocNamedColorReply> XProto::AllocNamedColor(
                                                         false);
 }
 
+Future<AllocNamedColorReply> XProto::AllocNamedColor(const ColorMap& cmap,
+                                                     const std::string& name) {
+  return XProto::AllocNamedColor(AllocNamedColorRequest{cmap, name});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<AllocNamedColorReply> detail::ReadReply<AllocNamedColorReply>(
@@ -8377,6 +9097,14 @@ Future<AllocColorCellsReply> XProto::AllocColorCells(
 
   return connection_->SendRequest<AllocColorCellsReply>(&buf, "AllocColorCells",
                                                         false);
+}
+
+Future<AllocColorCellsReply> XProto::AllocColorCells(const uint8_t& contiguous,
+                                                     const ColorMap& cmap,
+                                                     const uint16_t& colors,
+                                                     const uint16_t& planes) {
+  return XProto::AllocColorCells(
+      AllocColorCellsRequest{contiguous, cmap, colors, planes});
 }
 
 template <>
@@ -8481,6 +9209,17 @@ Future<AllocColorPlanesReply> XProto::AllocColorPlanes(
       &buf, "AllocColorPlanes", false);
 }
 
+Future<AllocColorPlanesReply> XProto::AllocColorPlanes(
+    const uint8_t& contiguous,
+    const ColorMap& cmap,
+    const uint16_t& colors,
+    const uint16_t& reds,
+    const uint16_t& greens,
+    const uint16_t& blues) {
+  return XProto::AllocColorPlanes(
+      AllocColorPlanesRequest{contiguous, cmap, colors, reds, greens, blues});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<AllocColorPlanesReply> detail::ReadReply<AllocColorPlanesReply>(
@@ -8580,6 +9319,12 @@ Future<void> XProto::FreeColors(const FreeColorsRequest& request) {
   return connection_->SendRequest<void>(&buf, "FreeColors", false);
 }
 
+Future<void> XProto::FreeColors(const ColorMap& cmap,
+                                const uint32_t& plane_mask,
+                                const std::vector<uint32_t>& pixels) {
+  return XProto::FreeColors(FreeColorsRequest{cmap, plane_mask, pixels});
+}
+
 Future<void> XProto::StoreColors(const StoreColorsRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -8642,6 +9387,11 @@ Future<void> XProto::StoreColors(const StoreColorsRequest& request) {
   return connection_->SendRequest<void>(&buf, "StoreColors", false);
 }
 
+Future<void> XProto::StoreColors(const ColorMap& cmap,
+                                 const std::vector<ColorItem>& items) {
+  return XProto::StoreColors(StoreColorsRequest{cmap, items});
+}
+
 Future<void> XProto::StoreNamedColor(const StoreNamedColorRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -8692,6 +9442,14 @@ Future<void> XProto::StoreNamedColor(const StoreNamedColorRequest& request) {
   return connection_->SendRequest<void>(&buf, "StoreNamedColor", false);
 }
 
+Future<void> XProto::StoreNamedColor(const ColorFlag& flags,
+                                     const ColorMap& cmap,
+                                     const uint32_t& pixel,
+                                     const std::string& name) {
+  return XProto::StoreNamedColor(
+      StoreNamedColorRequest{flags, cmap, pixel, name});
+}
+
 Future<QueryColorsReply> XProto::QueryColors(
     const QueryColorsRequest& request) {
   if (!connection_->Ready())
@@ -8727,6 +9485,12 @@ Future<QueryColorsReply> XProto::QueryColors(
   Align(&buf, 4);
 
   return connection_->SendRequest<QueryColorsReply>(&buf, "QueryColors", false);
+}
+
+Future<QueryColorsReply> XProto::QueryColors(
+    const ColorMap& cmap,
+    const std::vector<uint32_t>& pixels) {
+  return XProto::QueryColors(QueryColorsRequest{cmap, pixels});
 }
 
 template <>
@@ -8831,6 +9595,11 @@ Future<LookupColorReply> XProto::LookupColor(
   Align(&buf, 4);
 
   return connection_->SendRequest<LookupColorReply>(&buf, "LookupColor", false);
+}
+
+Future<LookupColorReply> XProto::LookupColor(const ColorMap& cmap,
+                                             const std::string& name) {
+  return XProto::LookupColor(LookupColorRequest{cmap, name});
 }
 
 template <>
@@ -8953,6 +9722,22 @@ Future<void> XProto::CreateCursor(const CreateCursorRequest& request) {
   return connection_->SendRequest<void>(&buf, "CreateCursor", false);
 }
 
+Future<void> XProto::CreateCursor(const Cursor& cid,
+                                  const Pixmap& source,
+                                  const Pixmap& mask,
+                                  const uint16_t& fore_red,
+                                  const uint16_t& fore_green,
+                                  const uint16_t& fore_blue,
+                                  const uint16_t& back_red,
+                                  const uint16_t& back_green,
+                                  const uint16_t& back_blue,
+                                  const uint16_t& x,
+                                  const uint16_t& y) {
+  return XProto::CreateCursor(
+      CreateCursorRequest{cid, source, mask, fore_red, fore_green, fore_blue,
+                          back_red, back_green, back_blue, x, y});
+}
+
 Future<void> XProto::CreateGlyphCursor(
     const CreateGlyphCursorRequest& request) {
   if (!connection_->Ready())
@@ -9021,6 +9806,22 @@ Future<void> XProto::CreateGlyphCursor(
   return connection_->SendRequest<void>(&buf, "CreateGlyphCursor", false);
 }
 
+Future<void> XProto::CreateGlyphCursor(const Cursor& cid,
+                                       const Font& source_font,
+                                       const Font& mask_font,
+                                       const uint16_t& source_char,
+                                       const uint16_t& mask_char,
+                                       const uint16_t& fore_red,
+                                       const uint16_t& fore_green,
+                                       const uint16_t& fore_blue,
+                                       const uint16_t& back_red,
+                                       const uint16_t& back_green,
+                                       const uint16_t& back_blue) {
+  return XProto::CreateGlyphCursor(CreateGlyphCursorRequest{
+      cid, source_font, mask_font, source_char, mask_char, fore_red, fore_green,
+      fore_blue, back_red, back_green, back_blue});
+}
+
 Future<void> XProto::FreeCursor(const FreeCursorRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -9046,6 +9847,10 @@ Future<void> XProto::FreeCursor(const FreeCursorRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "FreeCursor", false);
+}
+
+Future<void> XProto::FreeCursor(const Cursor& cursor) {
+  return XProto::FreeCursor(FreeCursorRequest{cursor});
 }
 
 Future<void> XProto::RecolorCursor(const RecolorCursorRequest& request) {
@@ -9099,6 +9904,18 @@ Future<void> XProto::RecolorCursor(const RecolorCursorRequest& request) {
   return connection_->SendRequest<void>(&buf, "RecolorCursor", false);
 }
 
+Future<void> XProto::RecolorCursor(const Cursor& cursor,
+                                   const uint16_t& fore_red,
+                                   const uint16_t& fore_green,
+                                   const uint16_t& fore_blue,
+                                   const uint16_t& back_red,
+                                   const uint16_t& back_green,
+                                   const uint16_t& back_blue) {
+  return XProto::RecolorCursor(
+      RecolorCursorRequest{cursor, fore_red, fore_green, fore_blue, back_red,
+                           back_green, back_blue});
+}
+
 Future<QueryBestSizeReply> XProto::QueryBestSize(
     const QueryBestSizeRequest& request) {
   if (!connection_->Ready())
@@ -9137,6 +9954,14 @@ Future<QueryBestSizeReply> XProto::QueryBestSize(
 
   return connection_->SendRequest<QueryBestSizeReply>(&buf, "QueryBestSize",
                                                       false);
+}
+
+Future<QueryBestSizeReply> XProto::QueryBestSize(const QueryShapeOf& c_class,
+                                                 const Drawable& drawable,
+                                                 const uint16_t& width,
+                                                 const uint16_t& height) {
+  return XProto::QueryBestSize(
+      QueryBestSizeRequest{c_class, drawable, width, height});
 }
 
 template <>
@@ -9217,6 +10042,10 @@ Future<QueryExtensionReply> XProto::QueryExtension(
                                                        false);
 }
 
+Future<QueryExtensionReply> XProto::QueryExtension(const std::string& name) {
+  return XProto::QueryExtension(QueryExtensionRequest{name});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<QueryExtensionReply> detail::ReadReply<QueryExtensionReply>(
@@ -9284,6 +10113,10 @@ Future<ListExtensionsReply> XProto::ListExtensions(
 
   return connection_->SendRequest<ListExtensionsReply>(&buf, "ListExtensions",
                                                        false);
+}
+
+Future<ListExtensionsReply> XProto::ListExtensions() {
+  return XProto::ListExtensions(ListExtensionsRequest{});
 }
 
 template <>
@@ -9386,6 +10219,14 @@ Future<void> XProto::ChangeKeyboardMapping(
   return connection_->SendRequest<void>(&buf, "ChangeKeyboardMapping", false);
 }
 
+Future<void> XProto::ChangeKeyboardMapping(const uint8_t& keycode_count,
+                                           const KeyCode& first_keycode,
+                                           const uint8_t& keysyms_per_keycode,
+                                           const std::vector<KeySym>& keysyms) {
+  return XProto::ChangeKeyboardMapping(ChangeKeyboardMappingRequest{
+      keycode_count, first_keycode, keysyms_per_keycode, keysyms});
+}
+
 Future<GetKeyboardMappingReply> XProto::GetKeyboardMapping(
     const GetKeyboardMappingRequest& request) {
   if (!connection_->Ready())
@@ -9417,6 +10258,13 @@ Future<GetKeyboardMappingReply> XProto::GetKeyboardMapping(
 
   return connection_->SendRequest<GetKeyboardMappingReply>(
       &buf, "GetKeyboardMapping", false);
+}
+
+Future<GetKeyboardMappingReply> XProto::GetKeyboardMapping(
+    const KeyCode& first_keycode,
+    const uint8_t& count) {
+  return XProto::GetKeyboardMapping(
+      GetKeyboardMappingRequest{first_keycode, count});
 }
 
 template <>
@@ -9561,6 +10409,20 @@ Future<void> XProto::ChangeKeyboardControl(
   return connection_->SendRequest<void>(&buf, "ChangeKeyboardControl", false);
 }
 
+Future<void> XProto::ChangeKeyboardControl(
+    const base::Optional<int32_t>& key_click_percent,
+    const base::Optional<int32_t>& bell_percent,
+    const base::Optional<int32_t>& bell_pitch,
+    const base::Optional<int32_t>& bell_duration,
+    const base::Optional<uint32_t>& led,
+    const base::Optional<LedMode>& led_mode,
+    const base::Optional<KeyCode32>& key,
+    const base::Optional<AutoRepeatMode>& auto_repeat_mode) {
+  return XProto::ChangeKeyboardControl(ChangeKeyboardControlRequest{
+      key_click_percent, bell_percent, bell_pitch, bell_duration, led, led_mode,
+      key, auto_repeat_mode});
+}
+
 Future<GetKeyboardControlReply> XProto::GetKeyboardControl(
     const GetKeyboardControlRequest& request) {
   if (!connection_->Ready())
@@ -9583,6 +10445,10 @@ Future<GetKeyboardControlReply> XProto::GetKeyboardControl(
 
   return connection_->SendRequest<GetKeyboardControlReply>(
       &buf, "GetKeyboardControl", false);
+}
+
+Future<GetKeyboardControlReply> XProto::GetKeyboardControl() {
+  return XProto::GetKeyboardControl(GetKeyboardControlRequest{});
 }
 
 template <>
@@ -9672,6 +10538,10 @@ Future<void> XProto::Bell(const BellRequest& request) {
   return connection_->SendRequest<void>(&buf, "Bell", false);
 }
 
+Future<void> XProto::Bell(const int8_t& percent) {
+  return XProto::Bell(BellRequest{percent});
+}
+
 Future<void> XProto::ChangePointerControl(
     const ChangePointerControlRequest& request) {
   if (!connection_->Ready())
@@ -9716,6 +10586,17 @@ Future<void> XProto::ChangePointerControl(
   return connection_->SendRequest<void>(&buf, "ChangePointerControl", false);
 }
 
+Future<void> XProto::ChangePointerControl(
+    const int16_t& acceleration_numerator,
+    const int16_t& acceleration_denominator,
+    const int16_t& threshold,
+    const uint8_t& do_acceleration,
+    const uint8_t& do_threshold) {
+  return XProto::ChangePointerControl(ChangePointerControlRequest{
+      acceleration_numerator, acceleration_denominator, threshold,
+      do_acceleration, do_threshold});
+}
+
 Future<GetPointerControlReply> XProto::GetPointerControl(
     const GetPointerControlRequest& request) {
   if (!connection_->Ready())
@@ -9738,6 +10619,10 @@ Future<GetPointerControlReply> XProto::GetPointerControl(
 
   return connection_->SendRequest<GetPointerControlReply>(
       &buf, "GetPointerControl", false);
+}
+
+Future<GetPointerControlReply> XProto::GetPointerControl() {
+  return XProto::GetPointerControl(GetPointerControlRequest{});
 }
 
 template <>
@@ -9827,6 +10712,14 @@ Future<void> XProto::SetScreenSaver(const SetScreenSaverRequest& request) {
   return connection_->SendRequest<void>(&buf, "SetScreenSaver", false);
 }
 
+Future<void> XProto::SetScreenSaver(const int16_t& timeout,
+                                    const int16_t& interval,
+                                    const Blanking& prefer_blanking,
+                                    const Exposures& allow_exposures) {
+  return XProto::SetScreenSaver(SetScreenSaverRequest{
+      timeout, interval, prefer_blanking, allow_exposures});
+}
+
 Future<GetScreenSaverReply> XProto::GetScreenSaver(
     const GetScreenSaverRequest& request) {
   if (!connection_->Ready())
@@ -9849,6 +10742,10 @@ Future<GetScreenSaverReply> XProto::GetScreenSaver(
 
   return connection_->SendRequest<GetScreenSaverReply>(&buf, "GetScreenSaver",
                                                        false);
+}
+
+Future<GetScreenSaverReply> XProto::GetScreenSaver() {
+  return XProto::GetScreenSaver(GetScreenSaverRequest{});
 }
 
 template <>
@@ -9951,6 +10848,12 @@ Future<void> XProto::ChangeHosts(const ChangeHostsRequest& request) {
   return connection_->SendRequest<void>(&buf, "ChangeHosts", false);
 }
 
+Future<void> XProto::ChangeHosts(const HostMode& mode,
+                                 const Family& family,
+                                 const std::vector<uint8_t>& address) {
+  return XProto::ChangeHosts(ChangeHostsRequest{mode, family, address});
+}
+
 Future<ListHostsReply> XProto::ListHosts(const ListHostsRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -9971,6 +10874,10 @@ Future<ListHostsReply> XProto::ListHosts(const ListHostsRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<ListHostsReply>(&buf, "ListHosts", false);
+}
+
+Future<ListHostsReply> XProto::ListHosts() {
+  return XProto::ListHosts(ListHostsRequest{});
 }
 
 template <>
@@ -10071,6 +10978,10 @@ Future<void> XProto::SetAccessControl(const SetAccessControlRequest& request) {
   return connection_->SendRequest<void>(&buf, "SetAccessControl", false);
 }
 
+Future<void> XProto::SetAccessControl(const AccessControl& mode) {
+  return XProto::SetAccessControl(SetAccessControlRequest{mode});
+}
+
 Future<void> XProto::SetCloseDownMode(const SetCloseDownModeRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -10095,6 +11006,10 @@ Future<void> XProto::SetCloseDownMode(const SetCloseDownModeRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "SetCloseDownMode", false);
+}
+
+Future<void> XProto::SetCloseDownMode(const CloseDown& mode) {
+  return XProto::SetCloseDownMode(SetCloseDownModeRequest{mode});
 }
 
 Future<void> XProto::KillClient(const KillClientRequest& request) {
@@ -10122,6 +11037,10 @@ Future<void> XProto::KillClient(const KillClientRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "KillClient", false);
+}
+
+Future<void> XProto::KillClient(const uint32_t& resource) {
+  return XProto::KillClient(KillClientRequest{resource});
 }
 
 Future<void> XProto::RotateProperties(const RotatePropertiesRequest& request) {
@@ -10168,6 +11087,13 @@ Future<void> XProto::RotateProperties(const RotatePropertiesRequest& request) {
   return connection_->SendRequest<void>(&buf, "RotateProperties", false);
 }
 
+Future<void> XProto::RotateProperties(const Window& window,
+                                      const int16_t& delta,
+                                      const std::vector<Atom>& atoms) {
+  return XProto::RotateProperties(
+      RotatePropertiesRequest{window, delta, atoms});
+}
+
 Future<void> XProto::ForceScreenSaver(const ForceScreenSaverRequest& request) {
   if (!connection_->Ready())
     return {};
@@ -10192,6 +11118,10 @@ Future<void> XProto::ForceScreenSaver(const ForceScreenSaverRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "ForceScreenSaver", false);
+}
+
+Future<void> XProto::ForceScreenSaver(const ScreenSaverMode& mode) {
+  return XProto::ForceScreenSaver(ForceScreenSaverRequest{mode});
 }
 
 Future<SetPointerMappingReply> XProto::SetPointerMapping(
@@ -10227,6 +11157,11 @@ Future<SetPointerMappingReply> XProto::SetPointerMapping(
 
   return connection_->SendRequest<SetPointerMappingReply>(
       &buf, "SetPointerMapping", false);
+}
+
+Future<SetPointerMappingReply> XProto::SetPointerMapping(
+    const std::vector<uint8_t>& map) {
+  return XProto::SetPointerMapping(SetPointerMappingRequest{map});
 }
 
 template <>
@@ -10283,6 +11218,10 @@ Future<GetPointerMappingReply> XProto::GetPointerMapping(
 
   return connection_->SendRequest<GetPointerMappingReply>(
       &buf, "GetPointerMapping", false);
+}
+
+Future<GetPointerMappingReply> XProto::GetPointerMapping() {
+  return XProto::GetPointerMapping(GetPointerMappingRequest{});
 }
 
 template <>
@@ -10362,6 +11301,13 @@ Future<SetModifierMappingReply> XProto::SetModifierMapping(
       &buf, "SetModifierMapping", false);
 }
 
+Future<SetModifierMappingReply> XProto::SetModifierMapping(
+    const uint8_t& keycodes_per_modifier,
+    const std::vector<KeyCode>& keycodes) {
+  return XProto::SetModifierMapping(
+      SetModifierMappingRequest{keycodes_per_modifier, keycodes});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<SetModifierMappingReply> detail::ReadReply<
@@ -10416,6 +11362,10 @@ Future<GetModifierMappingReply> XProto::GetModifierMapping(
 
   return connection_->SendRequest<GetModifierMappingReply>(
       &buf, "GetModifierMapping", false);
+}
+
+Future<GetModifierMappingReply> XProto::GetModifierMapping() {
+  return XProto::GetModifierMapping(GetModifierMappingRequest{});
 }
 
 template <>
@@ -10480,6 +11430,10 @@ Future<void> XProto::NoOperation(const NoOperationRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "NoOperation", false);
+}
+
+Future<void> XProto::NoOperation() {
+  return XProto::NoOperation(NoOperationRequest{});
 }
 
 }  // namespace x11

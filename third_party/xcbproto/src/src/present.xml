@@ -89,7 +89,7 @@ OF THIS SOFTWARE.
     </reply>
   </request>
 
-  <request name="Pixmap" opcode="1">
+  <request name="PresentPixmap" opcode="1">
     <required_start_align align="8" />
     <field type="WINDOW" name="window" />
     <field type="PIXMAP" name="pixmap" />

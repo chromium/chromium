@@ -53,6 +53,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "ui/gfx/x/error.h"
+#include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
 
 namespace x11 {
@@ -334,6 +335,9 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<void> Render(const RenderRequest& request);
 
+  Future<void> Render(const ContextTag& context_tag = {},
+                      const std::vector<uint8_t>& data = {});
+
   struct RenderLargeRequest {
     ContextTag context_tag{};
     uint16_t request_num{};
@@ -344,6 +348,11 @@ class COMPONENT_EXPORT(X11) Glx {
   using RenderLargeResponse = Response<void>;
 
   Future<void> RenderLarge(const RenderLargeRequest& request);
+
+  Future<void> RenderLarge(const ContextTag& context_tag = {},
+                           const uint16_t& request_num = {},
+                           const uint16_t& request_total = {},
+                           const std::vector<uint8_t>& data = {});
 
   struct CreateContextRequest {
     Context context{};
@@ -357,6 +366,12 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<void> CreateContext(const CreateContextRequest& request);
 
+  Future<void> CreateContext(const Context& context = {},
+                             const VisualId& visual = {},
+                             const uint32_t& screen = {},
+                             const Context& share_list = {},
+                             const uint8_t& is_direct = {});
+
   struct DestroyContextRequest {
     Context context{};
   };
@@ -364,6 +379,8 @@ class COMPONENT_EXPORT(X11) Glx {
   using DestroyContextResponse = Response<void>;
 
   Future<void> DestroyContext(const DestroyContextRequest& request);
+
+  Future<void> DestroyContext(const Context& context = {});
 
   struct MakeCurrentRequest {
     Drawable drawable{};
@@ -380,6 +397,10 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<MakeCurrentReply> MakeCurrent(const MakeCurrentRequest& request);
 
+  Future<MakeCurrentReply> MakeCurrent(const Drawable& drawable = {},
+                                       const Context& context = {},
+                                       const ContextTag& old_context_tag = {});
+
   struct IsDirectRequest {
     Context context{};
   };
@@ -392,6 +413,8 @@ class COMPONENT_EXPORT(X11) Glx {
   using IsDirectResponse = Response<IsDirectReply>;
 
   Future<IsDirectReply> IsDirect(const IsDirectRequest& request);
+
+  Future<IsDirectReply> IsDirect(const Context& context = {});
 
   struct QueryVersionRequest {
     uint32_t major_version{};
@@ -408,6 +431,9 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<QueryVersionReply> QueryVersion(const QueryVersionRequest& request);
 
+  Future<QueryVersionReply> QueryVersion(const uint32_t& major_version = {},
+                                         const uint32_t& minor_version = {});
+
   struct WaitGLRequest {
     ContextTag context_tag{};
   };
@@ -416,6 +442,8 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<void> WaitGL(const WaitGLRequest& request);
 
+  Future<void> WaitGL(const ContextTag& context_tag = {});
+
   struct WaitXRequest {
     ContextTag context_tag{};
   };
@@ -423,6 +451,8 @@ class COMPONENT_EXPORT(X11) Glx {
   using WaitXResponse = Response<void>;
 
   Future<void> WaitX(const WaitXRequest& request);
+
+  Future<void> WaitX(const ContextTag& context_tag = {});
 
   struct CopyContextRequest {
     Context src{};
@@ -435,6 +465,11 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<void> CopyContext(const CopyContextRequest& request);
 
+  Future<void> CopyContext(const Context& src = {},
+                           const Context& dest = {},
+                           const uint32_t& mask = {},
+                           const ContextTag& src_context_tag = {});
+
   struct SwapBuffersRequest {
     ContextTag context_tag{};
     Drawable drawable{};
@@ -443,6 +478,9 @@ class COMPONENT_EXPORT(X11) Glx {
   using SwapBuffersResponse = Response<void>;
 
   Future<void> SwapBuffers(const SwapBuffersRequest& request);
+
+  Future<void> SwapBuffers(const ContextTag& context_tag = {},
+                           const Drawable& drawable = {});
 
   struct UseXFontRequest {
     ContextTag context_tag{};
@@ -456,6 +494,12 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<void> UseXFont(const UseXFontRequest& request);
 
+  Future<void> UseXFont(const ContextTag& context_tag = {},
+                        const Font& font = {},
+                        const uint32_t& first = {},
+                        const uint32_t& count = {},
+                        const uint32_t& list_base = {});
+
   struct CreateGLXPixmapRequest {
     uint32_t screen{};
     VisualId visual{};
@@ -466,6 +510,11 @@ class COMPONENT_EXPORT(X11) Glx {
   using CreateGLXPixmapResponse = Response<void>;
 
   Future<void> CreateGLXPixmap(const CreateGLXPixmapRequest& request);
+
+  Future<void> CreateGLXPixmap(const uint32_t& screen = {},
+                               const VisualId& visual = {},
+                               const x11::Pixmap& pixmap = {},
+                               const Pixmap& glx_pixmap = {});
 
   struct GetVisualConfigsRequest {
     uint32_t screen{};
@@ -483,6 +532,8 @@ class COMPONENT_EXPORT(X11) Glx {
   Future<GetVisualConfigsReply> GetVisualConfigs(
       const GetVisualConfigsRequest& request);
 
+  Future<GetVisualConfigsReply> GetVisualConfigs(const uint32_t& screen = {});
+
   struct DestroyGLXPixmapRequest {
     Pixmap glx_pixmap{};
   };
@@ -490,6 +541,8 @@ class COMPONENT_EXPORT(X11) Glx {
   using DestroyGLXPixmapResponse = Response<void>;
 
   Future<void> DestroyGLXPixmap(const DestroyGLXPixmapRequest& request);
+
+  Future<void> DestroyGLXPixmap(const Pixmap& glx_pixmap = {});
 
   struct VendorPrivateRequest {
     uint32_t vendor_code{};
@@ -500,6 +553,10 @@ class COMPONENT_EXPORT(X11) Glx {
   using VendorPrivateResponse = Response<void>;
 
   Future<void> VendorPrivate(const VendorPrivateRequest& request);
+
+  Future<void> VendorPrivate(const uint32_t& vendor_code = {},
+                             const ContextTag& context_tag = {},
+                             const std::vector<uint8_t>& data = {});
 
   struct VendorPrivateWithReplyRequest {
     uint32_t vendor_code{};
@@ -519,6 +576,11 @@ class COMPONENT_EXPORT(X11) Glx {
   Future<VendorPrivateWithReplyReply> VendorPrivateWithReply(
       const VendorPrivateWithReplyRequest& request);
 
+  Future<VendorPrivateWithReplyReply> VendorPrivateWithReply(
+      const uint32_t& vendor_code = {},
+      const ContextTag& context_tag = {},
+      const std::vector<uint8_t>& data = {});
+
   struct QueryExtensionsStringRequest {
     uint32_t screen{};
   };
@@ -532,6 +594,9 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<QueryExtensionsStringReply> QueryExtensionsString(
       const QueryExtensionsStringRequest& request);
+
+  Future<QueryExtensionsStringReply> QueryExtensionsString(
+      const uint32_t& screen = {});
 
   struct QueryServerStringRequest {
     uint32_t screen{};
@@ -548,6 +613,9 @@ class COMPONENT_EXPORT(X11) Glx {
   Future<QueryServerStringReply> QueryServerString(
       const QueryServerStringRequest& request);
 
+  Future<QueryServerStringReply> QueryServerString(const uint32_t& screen = {},
+                                                   const uint32_t& name = {});
+
   struct ClientInfoRequest {
     uint32_t major_version{};
     uint32_t minor_version{};
@@ -557,6 +625,10 @@ class COMPONENT_EXPORT(X11) Glx {
   using ClientInfoResponse = Response<void>;
 
   Future<void> ClientInfo(const ClientInfoRequest& request);
+
+  Future<void> ClientInfo(const uint32_t& major_version = {},
+                          const uint32_t& minor_version = {},
+                          const std::string& string = {});
 
   struct GetFBConfigsRequest {
     uint32_t screen{};
@@ -573,6 +645,8 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<GetFBConfigsReply> GetFBConfigs(const GetFBConfigsRequest& request);
 
+  Future<GetFBConfigsReply> GetFBConfigs(const uint32_t& screen = {});
+
   struct CreatePixmapRequest {
     uint32_t screen{};
     FbConfig fbconfig{};
@@ -586,6 +660,13 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<void> CreatePixmap(const CreatePixmapRequest& request);
 
+  Future<void> CreatePixmap(const uint32_t& screen = {},
+                            const FbConfig& fbconfig = {},
+                            const x11::Pixmap& pixmap = {},
+                            const Pixmap& glx_pixmap = {},
+                            const uint32_t& num_attribs = {},
+                            const std::vector<uint32_t>& attribs = {});
+
   struct DestroyPixmapRequest {
     Pixmap glx_pixmap{};
   };
@@ -593,6 +674,8 @@ class COMPONENT_EXPORT(X11) Glx {
   using DestroyPixmapResponse = Response<void>;
 
   Future<void> DestroyPixmap(const DestroyPixmapRequest& request);
+
+  Future<void> DestroyPixmap(const Pixmap& glx_pixmap = {});
 
   struct CreateNewContextRequest {
     Context context{};
@@ -607,6 +690,13 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<void> CreateNewContext(const CreateNewContextRequest& request);
 
+  Future<void> CreateNewContext(const Context& context = {},
+                                const FbConfig& fbconfig = {},
+                                const uint32_t& screen = {},
+                                const uint32_t& render_type = {},
+                                const Context& share_list = {},
+                                const uint8_t& is_direct = {});
+
   struct QueryContextRequest {
     Context context{};
   };
@@ -620,6 +710,8 @@ class COMPONENT_EXPORT(X11) Glx {
   using QueryContextResponse = Response<QueryContextReply>;
 
   Future<QueryContextReply> QueryContext(const QueryContextRequest& request);
+
+  Future<QueryContextReply> QueryContext(const Context& context = {});
 
   struct MakeContextCurrentRequest {
     ContextTag old_context_tag{};
@@ -638,6 +730,12 @@ class COMPONENT_EXPORT(X11) Glx {
   Future<MakeContextCurrentReply> MakeContextCurrent(
       const MakeContextCurrentRequest& request);
 
+  Future<MakeContextCurrentReply> MakeContextCurrent(
+      const ContextTag& old_context_tag = {},
+      const Drawable& drawable = {},
+      const Drawable& read_drawable = {},
+      const Context& context = {});
+
   struct CreatePbufferRequest {
     uint32_t screen{};
     FbConfig fbconfig{};
@@ -650,6 +748,12 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<void> CreatePbuffer(const CreatePbufferRequest& request);
 
+  Future<void> CreatePbuffer(const uint32_t& screen = {},
+                             const FbConfig& fbconfig = {},
+                             const PBuffer& pbuffer = {},
+                             const uint32_t& num_attribs = {},
+                             const std::vector<uint32_t>& attribs = {});
+
   struct DestroyPbufferRequest {
     PBuffer pbuffer{};
   };
@@ -657,6 +761,8 @@ class COMPONENT_EXPORT(X11) Glx {
   using DestroyPbufferResponse = Response<void>;
 
   Future<void> DestroyPbuffer(const DestroyPbufferRequest& request);
+
+  Future<void> DestroyPbuffer(const PBuffer& pbuffer = {});
 
   struct GetDrawableAttributesRequest {
     Drawable drawable{};
@@ -673,6 +779,9 @@ class COMPONENT_EXPORT(X11) Glx {
   Future<GetDrawableAttributesReply> GetDrawableAttributes(
       const GetDrawableAttributesRequest& request);
 
+  Future<GetDrawableAttributesReply> GetDrawableAttributes(
+      const Drawable& drawable = {});
+
   struct ChangeDrawableAttributesRequest {
     Drawable drawable{};
     uint32_t num_attribs{};
@@ -683,6 +792,11 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<void> ChangeDrawableAttributes(
       const ChangeDrawableAttributesRequest& request);
+
+  Future<void> ChangeDrawableAttributes(
+      const Drawable& drawable = {},
+      const uint32_t& num_attribs = {},
+      const std::vector<uint32_t>& attribs = {});
 
   struct CreateWindowRequest {
     uint32_t screen{};
@@ -697,6 +811,13 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<void> CreateWindow(const CreateWindowRequest& request);
 
+  Future<void> CreateWindow(const uint32_t& screen = {},
+                            const FbConfig& fbconfig = {},
+                            const x11::Window& window = {},
+                            const Window& glx_window = {},
+                            const uint32_t& num_attribs = {},
+                            const std::vector<uint32_t>& attribs = {});
+
   struct DeleteWindowRequest {
     Window glxwindow{};
   };
@@ -704,6 +825,8 @@ class COMPONENT_EXPORT(X11) Glx {
   using DeleteWindowResponse = Response<void>;
 
   Future<void> DeleteWindow(const DeleteWindowRequest& request);
+
+  Future<void> DeleteWindow(const Window& glxwindow = {});
 
   struct SetClientInfoARBRequest {
     uint32_t major_version{};
@@ -717,6 +840,13 @@ class COMPONENT_EXPORT(X11) Glx {
   using SetClientInfoARBResponse = Response<void>;
 
   Future<void> SetClientInfoARB(const SetClientInfoARBRequest& request);
+
+  Future<void> SetClientInfoARB(const uint32_t& major_version = {},
+                                const uint32_t& minor_version = {},
+                                const uint32_t& num_versions = {},
+                                const std::vector<uint32_t>& gl_versions = {},
+                                const std::string& gl_extension_string = {},
+                                const std::string& glx_extension_string = {});
 
   struct CreateContextAttribsARBRequest {
     Context context{};
@@ -733,6 +863,15 @@ class COMPONENT_EXPORT(X11) Glx {
   Future<void> CreateContextAttribsARB(
       const CreateContextAttribsARBRequest& request);
 
+  Future<void> CreateContextAttribsARB(
+      const Context& context = {},
+      const FbConfig& fbconfig = {},
+      const uint32_t& screen = {},
+      const Context& share_list = {},
+      const uint8_t& is_direct = {},
+      const uint32_t& num_attribs = {},
+      const std::vector<uint32_t>& attribs = {});
+
   struct SetClientInfo2ARBRequest {
     uint32_t major_version{};
     uint32_t minor_version{};
@@ -746,6 +885,13 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<void> SetClientInfo2ARB(const SetClientInfo2ARBRequest& request);
 
+  Future<void> SetClientInfo2ARB(const uint32_t& major_version = {},
+                                 const uint32_t& minor_version = {},
+                                 const uint32_t& num_versions = {},
+                                 const std::vector<uint32_t>& gl_versions = {},
+                                 const std::string& gl_extension_string = {},
+                                 const std::string& glx_extension_string = {});
+
   struct NewListRequest {
     ContextTag context_tag{};
     uint32_t list{};
@@ -756,6 +902,10 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<void> NewList(const NewListRequest& request);
 
+  Future<void> NewList(const ContextTag& context_tag = {},
+                       const uint32_t& list = {},
+                       const uint32_t& mode = {});
+
   struct EndListRequest {
     ContextTag context_tag{};
   };
@@ -763,6 +913,8 @@ class COMPONENT_EXPORT(X11) Glx {
   using EndListResponse = Response<void>;
 
   Future<void> EndList(const EndListRequest& request);
+
+  Future<void> EndList(const ContextTag& context_tag = {});
 
   struct DeleteListsRequest {
     ContextTag context_tag{};
@@ -773,6 +925,10 @@ class COMPONENT_EXPORT(X11) Glx {
   using DeleteListsResponse = Response<void>;
 
   Future<void> DeleteLists(const DeleteListsRequest& request);
+
+  Future<void> DeleteLists(const ContextTag& context_tag = {},
+                           const uint32_t& list = {},
+                           const int32_t& range = {});
 
   struct GenListsRequest {
     ContextTag context_tag{};
@@ -788,6 +944,9 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<GenListsReply> GenLists(const GenListsRequest& request);
 
+  Future<GenListsReply> GenLists(const ContextTag& context_tag = {},
+                                 const int32_t& range = {});
+
   struct FeedbackBufferRequest {
     ContextTag context_tag{};
     int32_t size{};
@@ -798,6 +957,10 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<void> FeedbackBuffer(const FeedbackBufferRequest& request);
 
+  Future<void> FeedbackBuffer(const ContextTag& context_tag = {},
+                              const int32_t& size = {},
+                              const int32_t& type = {});
+
   struct SelectBufferRequest {
     ContextTag context_tag{};
     int32_t size{};
@@ -806,6 +969,9 @@ class COMPONENT_EXPORT(X11) Glx {
   using SelectBufferResponse = Response<void>;
 
   Future<void> SelectBuffer(const SelectBufferRequest& request);
+
+  Future<void> SelectBuffer(const ContextTag& context_tag = {},
+                            const int32_t& size = {});
 
   struct RenderModeRequest {
     ContextTag context_tag{};
@@ -823,6 +989,9 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<RenderModeReply> RenderMode(const RenderModeRequest& request);
 
+  Future<RenderModeReply> RenderMode(const ContextTag& context_tag = {},
+                                     const uint32_t& mode = {});
+
   struct FinishRequest {
     ContextTag context_tag{};
   };
@@ -835,6 +1004,8 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<FinishReply> Finish(const FinishRequest& request);
 
+  Future<FinishReply> Finish(const ContextTag& context_tag = {});
+
   struct PixelStorefRequest {
     ContextTag context_tag{};
     uint32_t pname{};
@@ -845,6 +1016,10 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<void> PixelStoref(const PixelStorefRequest& request);
 
+  Future<void> PixelStoref(const ContextTag& context_tag = {},
+                           const uint32_t& pname = {},
+                           const float& datum = {});
+
   struct PixelStoreiRequest {
     ContextTag context_tag{};
     uint32_t pname{};
@@ -854,6 +1029,10 @@ class COMPONENT_EXPORT(X11) Glx {
   using PixelStoreiResponse = Response<void>;
 
   Future<void> PixelStorei(const PixelStoreiRequest& request);
+
+  Future<void> PixelStorei(const ContextTag& context_tag = {},
+                           const uint32_t& pname = {},
+                           const int32_t& datum = {});
 
   struct ReadPixelsRequest {
     ContextTag context_tag{};
@@ -876,6 +1055,16 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<ReadPixelsReply> ReadPixels(const ReadPixelsRequest& request);
 
+  Future<ReadPixelsReply> ReadPixels(const ContextTag& context_tag = {},
+                                     const int32_t& x = {},
+                                     const int32_t& y = {},
+                                     const int32_t& width = {},
+                                     const int32_t& height = {},
+                                     const uint32_t& format = {},
+                                     const uint32_t& type = {},
+                                     const uint8_t& swap_bytes = {},
+                                     const uint8_t& lsb_first = {});
+
   struct GetBooleanvRequest {
     ContextTag context_tag{};
     int32_t pname{};
@@ -891,6 +1080,9 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<GetBooleanvReply> GetBooleanv(const GetBooleanvRequest& request);
 
+  Future<GetBooleanvReply> GetBooleanv(const ContextTag& context_tag = {},
+                                       const int32_t& pname = {});
+
   struct GetClipPlaneRequest {
     ContextTag context_tag{};
     int32_t plane{};
@@ -904,6 +1096,9 @@ class COMPONENT_EXPORT(X11) Glx {
   using GetClipPlaneResponse = Response<GetClipPlaneReply>;
 
   Future<GetClipPlaneReply> GetClipPlane(const GetClipPlaneRequest& request);
+
+  Future<GetClipPlaneReply> GetClipPlane(const ContextTag& context_tag = {},
+                                         const int32_t& plane = {});
 
   struct GetDoublevRequest {
     ContextTag context_tag{};
@@ -920,6 +1115,9 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<GetDoublevReply> GetDoublev(const GetDoublevRequest& request);
 
+  Future<GetDoublevReply> GetDoublev(const ContextTag& context_tag = {},
+                                     const uint32_t& pname = {});
+
   struct GetErrorRequest {
     ContextTag context_tag{};
   };
@@ -932,6 +1130,8 @@ class COMPONENT_EXPORT(X11) Glx {
   using GetErrorResponse = Response<GetErrorReply>;
 
   Future<GetErrorReply> GetError(const GetErrorRequest& request);
+
+  Future<GetErrorReply> GetError(const ContextTag& context_tag = {});
 
   struct GetFloatvRequest {
     ContextTag context_tag{};
@@ -948,6 +1148,9 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<GetFloatvReply> GetFloatv(const GetFloatvRequest& request);
 
+  Future<GetFloatvReply> GetFloatv(const ContextTag& context_tag = {},
+                                   const uint32_t& pname = {});
+
   struct GetIntegervRequest {
     ContextTag context_tag{};
     uint32_t pname{};
@@ -962,6 +1165,9 @@ class COMPONENT_EXPORT(X11) Glx {
   using GetIntegervResponse = Response<GetIntegervReply>;
 
   Future<GetIntegervReply> GetIntegerv(const GetIntegervRequest& request);
+
+  Future<GetIntegervReply> GetIntegerv(const ContextTag& context_tag = {},
+                                       const uint32_t& pname = {});
 
   struct GetLightfvRequest {
     ContextTag context_tag{};
@@ -979,6 +1185,10 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<GetLightfvReply> GetLightfv(const GetLightfvRequest& request);
 
+  Future<GetLightfvReply> GetLightfv(const ContextTag& context_tag = {},
+                                     const uint32_t& light = {},
+                                     const uint32_t& pname = {});
+
   struct GetLightivRequest {
     ContextTag context_tag{};
     uint32_t light{};
@@ -994,6 +1204,10 @@ class COMPONENT_EXPORT(X11) Glx {
   using GetLightivResponse = Response<GetLightivReply>;
 
   Future<GetLightivReply> GetLightiv(const GetLightivRequest& request);
+
+  Future<GetLightivReply> GetLightiv(const ContextTag& context_tag = {},
+                                     const uint32_t& light = {},
+                                     const uint32_t& pname = {});
 
   struct GetMapdvRequest {
     ContextTag context_tag{};
@@ -1011,6 +1225,10 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<GetMapdvReply> GetMapdv(const GetMapdvRequest& request);
 
+  Future<GetMapdvReply> GetMapdv(const ContextTag& context_tag = {},
+                                 const uint32_t& target = {},
+                                 const uint32_t& query = {});
+
   struct GetMapfvRequest {
     ContextTag context_tag{};
     uint32_t target{};
@@ -1026,6 +1244,10 @@ class COMPONENT_EXPORT(X11) Glx {
   using GetMapfvResponse = Response<GetMapfvReply>;
 
   Future<GetMapfvReply> GetMapfv(const GetMapfvRequest& request);
+
+  Future<GetMapfvReply> GetMapfv(const ContextTag& context_tag = {},
+                                 const uint32_t& target = {},
+                                 const uint32_t& query = {});
 
   struct GetMapivRequest {
     ContextTag context_tag{};
@@ -1043,6 +1265,10 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<GetMapivReply> GetMapiv(const GetMapivRequest& request);
 
+  Future<GetMapivReply> GetMapiv(const ContextTag& context_tag = {},
+                                 const uint32_t& target = {},
+                                 const uint32_t& query = {});
+
   struct GetMaterialfvRequest {
     ContextTag context_tag{};
     uint32_t face{};
@@ -1058,6 +1284,10 @@ class COMPONENT_EXPORT(X11) Glx {
   using GetMaterialfvResponse = Response<GetMaterialfvReply>;
 
   Future<GetMaterialfvReply> GetMaterialfv(const GetMaterialfvRequest& request);
+
+  Future<GetMaterialfvReply> GetMaterialfv(const ContextTag& context_tag = {},
+                                           const uint32_t& face = {},
+                                           const uint32_t& pname = {});
 
   struct GetMaterialivRequest {
     ContextTag context_tag{};
@@ -1075,6 +1305,10 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<GetMaterialivReply> GetMaterialiv(const GetMaterialivRequest& request);
 
+  Future<GetMaterialivReply> GetMaterialiv(const ContextTag& context_tag = {},
+                                           const uint32_t& face = {},
+                                           const uint32_t& pname = {});
+
   struct GetPixelMapfvRequest {
     ContextTag context_tag{};
     uint32_t map{};
@@ -1089,6 +1323,9 @@ class COMPONENT_EXPORT(X11) Glx {
   using GetPixelMapfvResponse = Response<GetPixelMapfvReply>;
 
   Future<GetPixelMapfvReply> GetPixelMapfv(const GetPixelMapfvRequest& request);
+
+  Future<GetPixelMapfvReply> GetPixelMapfv(const ContextTag& context_tag = {},
+                                           const uint32_t& map = {});
 
   struct GetPixelMapuivRequest {
     ContextTag context_tag{};
@@ -1106,6 +1343,9 @@ class COMPONENT_EXPORT(X11) Glx {
   Future<GetPixelMapuivReply> GetPixelMapuiv(
       const GetPixelMapuivRequest& request);
 
+  Future<GetPixelMapuivReply> GetPixelMapuiv(const ContextTag& context_tag = {},
+                                             const uint32_t& map = {});
+
   struct GetPixelMapusvRequest {
     ContextTag context_tag{};
     uint32_t map{};
@@ -1122,6 +1362,9 @@ class COMPONENT_EXPORT(X11) Glx {
   Future<GetPixelMapusvReply> GetPixelMapusv(
       const GetPixelMapusvRequest& request);
 
+  Future<GetPixelMapusvReply> GetPixelMapusv(const ContextTag& context_tag = {},
+                                             const uint32_t& map = {});
+
   struct GetPolygonStippleRequest {
     ContextTag context_tag{};
     uint8_t lsb_first{};
@@ -1137,6 +1380,10 @@ class COMPONENT_EXPORT(X11) Glx {
   Future<GetPolygonStippleReply> GetPolygonStipple(
       const GetPolygonStippleRequest& request);
 
+  Future<GetPolygonStippleReply> GetPolygonStipple(
+      const ContextTag& context_tag = {},
+      const uint8_t& lsb_first = {});
+
   struct GetStringRequest {
     ContextTag context_tag{};
     uint32_t name{};
@@ -1150,6 +1397,9 @@ class COMPONENT_EXPORT(X11) Glx {
   using GetStringResponse = Response<GetStringReply>;
 
   Future<GetStringReply> GetString(const GetStringRequest& request);
+
+  Future<GetStringReply> GetString(const ContextTag& context_tag = {},
+                                   const uint32_t& name = {});
 
   struct GetTexEnvfvRequest {
     ContextTag context_tag{};
@@ -1167,6 +1417,10 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<GetTexEnvfvReply> GetTexEnvfv(const GetTexEnvfvRequest& request);
 
+  Future<GetTexEnvfvReply> GetTexEnvfv(const ContextTag& context_tag = {},
+                                       const uint32_t& target = {},
+                                       const uint32_t& pname = {});
+
   struct GetTexEnvivRequest {
     ContextTag context_tag{};
     uint32_t target{};
@@ -1182,6 +1436,10 @@ class COMPONENT_EXPORT(X11) Glx {
   using GetTexEnvivResponse = Response<GetTexEnvivReply>;
 
   Future<GetTexEnvivReply> GetTexEnviv(const GetTexEnvivRequest& request);
+
+  Future<GetTexEnvivReply> GetTexEnviv(const ContextTag& context_tag = {},
+                                       const uint32_t& target = {},
+                                       const uint32_t& pname = {});
 
   struct GetTexGendvRequest {
     ContextTag context_tag{};
@@ -1199,6 +1457,10 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<GetTexGendvReply> GetTexGendv(const GetTexGendvRequest& request);
 
+  Future<GetTexGendvReply> GetTexGendv(const ContextTag& context_tag = {},
+                                       const uint32_t& coord = {},
+                                       const uint32_t& pname = {});
+
   struct GetTexGenfvRequest {
     ContextTag context_tag{};
     uint32_t coord{};
@@ -1215,6 +1477,10 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<GetTexGenfvReply> GetTexGenfv(const GetTexGenfvRequest& request);
 
+  Future<GetTexGenfvReply> GetTexGenfv(const ContextTag& context_tag = {},
+                                       const uint32_t& coord = {},
+                                       const uint32_t& pname = {});
+
   struct GetTexGenivRequest {
     ContextTag context_tag{};
     uint32_t coord{};
@@ -1230,6 +1496,10 @@ class COMPONENT_EXPORT(X11) Glx {
   using GetTexGenivResponse = Response<GetTexGenivReply>;
 
   Future<GetTexGenivReply> GetTexGeniv(const GetTexGenivRequest& request);
+
+  Future<GetTexGenivReply> GetTexGeniv(const ContextTag& context_tag = {},
+                                       const uint32_t& coord = {},
+                                       const uint32_t& pname = {});
 
   struct GetTexImageRequest {
     ContextTag context_tag{};
@@ -1252,6 +1522,13 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<GetTexImageReply> GetTexImage(const GetTexImageRequest& request);
 
+  Future<GetTexImageReply> GetTexImage(const ContextTag& context_tag = {},
+                                       const uint32_t& target = {},
+                                       const int32_t& level = {},
+                                       const uint32_t& format = {},
+                                       const uint32_t& type = {},
+                                       const uint8_t& swap_bytes = {});
+
   struct GetTexParameterfvRequest {
     ContextTag context_tag{};
     uint32_t target{};
@@ -1269,6 +1546,11 @@ class COMPONENT_EXPORT(X11) Glx {
   Future<GetTexParameterfvReply> GetTexParameterfv(
       const GetTexParameterfvRequest& request);
 
+  Future<GetTexParameterfvReply> GetTexParameterfv(
+      const ContextTag& context_tag = {},
+      const uint32_t& target = {},
+      const uint32_t& pname = {});
+
   struct GetTexParameterivRequest {
     ContextTag context_tag{};
     uint32_t target{};
@@ -1285,6 +1567,11 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<GetTexParameterivReply> GetTexParameteriv(
       const GetTexParameterivRequest& request);
+
+  Future<GetTexParameterivReply> GetTexParameteriv(
+      const ContextTag& context_tag = {},
+      const uint32_t& target = {},
+      const uint32_t& pname = {});
 
   struct GetTexLevelParameterfvRequest {
     ContextTag context_tag{};
@@ -1304,6 +1591,12 @@ class COMPONENT_EXPORT(X11) Glx {
   Future<GetTexLevelParameterfvReply> GetTexLevelParameterfv(
       const GetTexLevelParameterfvRequest& request);
 
+  Future<GetTexLevelParameterfvReply> GetTexLevelParameterfv(
+      const ContextTag& context_tag = {},
+      const uint32_t& target = {},
+      const int32_t& level = {},
+      const uint32_t& pname = {});
+
   struct GetTexLevelParameterivRequest {
     ContextTag context_tag{};
     uint32_t target{};
@@ -1322,6 +1615,12 @@ class COMPONENT_EXPORT(X11) Glx {
   Future<GetTexLevelParameterivReply> GetTexLevelParameteriv(
       const GetTexLevelParameterivRequest& request);
 
+  Future<GetTexLevelParameterivReply> GetTexLevelParameteriv(
+      const ContextTag& context_tag = {},
+      const uint32_t& target = {},
+      const int32_t& level = {},
+      const uint32_t& pname = {});
+
   struct IsEnabledRequest {
     ContextTag context_tag{};
     uint32_t capability{};
@@ -1335,6 +1634,9 @@ class COMPONENT_EXPORT(X11) Glx {
   using IsEnabledResponse = Response<IsEnabledReply>;
 
   Future<IsEnabledReply> IsEnabled(const IsEnabledRequest& request);
+
+  Future<IsEnabledReply> IsEnabled(const ContextTag& context_tag = {},
+                                   const uint32_t& capability = {});
 
   struct IsListRequest {
     ContextTag context_tag{};
@@ -1350,6 +1652,9 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<IsListReply> IsList(const IsListRequest& request);
 
+  Future<IsListReply> IsList(const ContextTag& context_tag = {},
+                             const uint32_t& list = {});
+
   struct FlushRequest {
     ContextTag context_tag{};
   };
@@ -1357,6 +1662,8 @@ class COMPONENT_EXPORT(X11) Glx {
   using FlushResponse = Response<void>;
 
   Future<void> Flush(const FlushRequest& request);
+
+  Future<void> Flush(const ContextTag& context_tag = {});
 
   struct AreTexturesResidentRequest {
     ContextTag context_tag{};
@@ -1374,6 +1681,10 @@ class COMPONENT_EXPORT(X11) Glx {
   Future<AreTexturesResidentReply> AreTexturesResident(
       const AreTexturesResidentRequest& request);
 
+  Future<AreTexturesResidentReply> AreTexturesResident(
+      const ContextTag& context_tag = {},
+      const std::vector<uint32_t>& textures = {});
+
   struct DeleteTexturesRequest {
     ContextTag context_tag{};
     std::vector<uint32_t> textures{};
@@ -1382,6 +1693,9 @@ class COMPONENT_EXPORT(X11) Glx {
   using DeleteTexturesResponse = Response<void>;
 
   Future<void> DeleteTextures(const DeleteTexturesRequest& request);
+
+  Future<void> DeleteTextures(const ContextTag& context_tag = {},
+                              const std::vector<uint32_t>& textures = {});
 
   struct GenTexturesRequest {
     ContextTag context_tag{};
@@ -1397,6 +1711,9 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<GenTexturesReply> GenTextures(const GenTexturesRequest& request);
 
+  Future<GenTexturesReply> GenTextures(const ContextTag& context_tag = {},
+                                       const int32_t& n = {});
+
   struct IsTextureRequest {
     ContextTag context_tag{};
     uint32_t texture{};
@@ -1410,6 +1727,9 @@ class COMPONENT_EXPORT(X11) Glx {
   using IsTextureResponse = Response<IsTextureReply>;
 
   Future<IsTextureReply> IsTexture(const IsTextureRequest& request);
+
+  Future<IsTextureReply> IsTexture(const ContextTag& context_tag = {},
+                                   const uint32_t& texture = {});
 
   struct GetColorTableRequest {
     ContextTag context_tag{};
@@ -1429,6 +1749,12 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<GetColorTableReply> GetColorTable(const GetColorTableRequest& request);
 
+  Future<GetColorTableReply> GetColorTable(const ContextTag& context_tag = {},
+                                           const uint32_t& target = {},
+                                           const uint32_t& format = {},
+                                           const uint32_t& type = {},
+                                           const uint8_t& swap_bytes = {});
+
   struct GetColorTableParameterfvRequest {
     ContextTag context_tag{};
     uint32_t target{};
@@ -1447,6 +1773,11 @@ class COMPONENT_EXPORT(X11) Glx {
   Future<GetColorTableParameterfvReply> GetColorTableParameterfv(
       const GetColorTableParameterfvRequest& request);
 
+  Future<GetColorTableParameterfvReply> GetColorTableParameterfv(
+      const ContextTag& context_tag = {},
+      const uint32_t& target = {},
+      const uint32_t& pname = {});
+
   struct GetColorTableParameterivRequest {
     ContextTag context_tag{};
     uint32_t target{};
@@ -1464,6 +1795,11 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<GetColorTableParameterivReply> GetColorTableParameteriv(
       const GetColorTableParameterivRequest& request);
+
+  Future<GetColorTableParameterivReply> GetColorTableParameteriv(
+      const ContextTag& context_tag = {},
+      const uint32_t& target = {},
+      const uint32_t& pname = {});
 
   struct GetConvolutionFilterRequest {
     ContextTag context_tag{};
@@ -1485,6 +1821,13 @@ class COMPONENT_EXPORT(X11) Glx {
   Future<GetConvolutionFilterReply> GetConvolutionFilter(
       const GetConvolutionFilterRequest& request);
 
+  Future<GetConvolutionFilterReply> GetConvolutionFilter(
+      const ContextTag& context_tag = {},
+      const uint32_t& target = {},
+      const uint32_t& format = {},
+      const uint32_t& type = {},
+      const uint8_t& swap_bytes = {});
+
   struct GetConvolutionParameterfvRequest {
     ContextTag context_tag{};
     uint32_t target{};
@@ -1503,6 +1846,11 @@ class COMPONENT_EXPORT(X11) Glx {
   Future<GetConvolutionParameterfvReply> GetConvolutionParameterfv(
       const GetConvolutionParameterfvRequest& request);
 
+  Future<GetConvolutionParameterfvReply> GetConvolutionParameterfv(
+      const ContextTag& context_tag = {},
+      const uint32_t& target = {},
+      const uint32_t& pname = {});
+
   struct GetConvolutionParameterivRequest {
     ContextTag context_tag{};
     uint32_t target{};
@@ -1520,6 +1868,11 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<GetConvolutionParameterivReply> GetConvolutionParameteriv(
       const GetConvolutionParameterivRequest& request);
+
+  Future<GetConvolutionParameterivReply> GetConvolutionParameteriv(
+      const ContextTag& context_tag = {},
+      const uint32_t& target = {},
+      const uint32_t& pname = {});
 
   struct GetSeparableFilterRequest {
     ContextTag context_tag{};
@@ -1541,6 +1894,13 @@ class COMPONENT_EXPORT(X11) Glx {
   Future<GetSeparableFilterReply> GetSeparableFilter(
       const GetSeparableFilterRequest& request);
 
+  Future<GetSeparableFilterReply> GetSeparableFilter(
+      const ContextTag& context_tag = {},
+      const uint32_t& target = {},
+      const uint32_t& format = {},
+      const uint32_t& type = {},
+      const uint8_t& swap_bytes = {});
+
   struct GetHistogramRequest {
     ContextTag context_tag{};
     uint32_t target{};
@@ -1560,6 +1920,13 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<GetHistogramReply> GetHistogram(const GetHistogramRequest& request);
 
+  Future<GetHistogramReply> GetHistogram(const ContextTag& context_tag = {},
+                                         const uint32_t& target = {},
+                                         const uint32_t& format = {},
+                                         const uint32_t& type = {},
+                                         const uint8_t& swap_bytes = {},
+                                         const uint8_t& reset = {});
+
   struct GetHistogramParameterfvRequest {
     ContextTag context_tag{};
     uint32_t target{};
@@ -1577,6 +1944,11 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<GetHistogramParameterfvReply> GetHistogramParameterfv(
       const GetHistogramParameterfvRequest& request);
+
+  Future<GetHistogramParameterfvReply> GetHistogramParameterfv(
+      const ContextTag& context_tag = {},
+      const uint32_t& target = {},
+      const uint32_t& pname = {});
 
   struct GetHistogramParameterivRequest {
     ContextTag context_tag{};
@@ -1596,6 +1968,11 @@ class COMPONENT_EXPORT(X11) Glx {
   Future<GetHistogramParameterivReply> GetHistogramParameteriv(
       const GetHistogramParameterivRequest& request);
 
+  Future<GetHistogramParameterivReply> GetHistogramParameteriv(
+      const ContextTag& context_tag = {},
+      const uint32_t& target = {},
+      const uint32_t& pname = {});
+
   struct GetMinmaxRequest {
     ContextTag context_tag{};
     uint32_t target{};
@@ -1614,6 +1991,13 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<GetMinmaxReply> GetMinmax(const GetMinmaxRequest& request);
 
+  Future<GetMinmaxReply> GetMinmax(const ContextTag& context_tag = {},
+                                   const uint32_t& target = {},
+                                   const uint32_t& format = {},
+                                   const uint32_t& type = {},
+                                   const uint8_t& swap_bytes = {},
+                                   const uint8_t& reset = {});
+
   struct GetMinmaxParameterfvRequest {
     ContextTag context_tag{};
     uint32_t target{};
@@ -1631,6 +2015,11 @@ class COMPONENT_EXPORT(X11) Glx {
   Future<GetMinmaxParameterfvReply> GetMinmaxParameterfv(
       const GetMinmaxParameterfvRequest& request);
 
+  Future<GetMinmaxParameterfvReply> GetMinmaxParameterfv(
+      const ContextTag& context_tag = {},
+      const uint32_t& target = {},
+      const uint32_t& pname = {});
+
   struct GetMinmaxParameterivRequest {
     ContextTag context_tag{};
     uint32_t target{};
@@ -1647,6 +2036,11 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<GetMinmaxParameterivReply> GetMinmaxParameteriv(
       const GetMinmaxParameterivRequest& request);
+
+  Future<GetMinmaxParameterivReply> GetMinmaxParameteriv(
+      const ContextTag& context_tag = {},
+      const uint32_t& target = {},
+      const uint32_t& pname = {});
 
   struct GetCompressedTexImageARBRequest {
     ContextTag context_tag{};
@@ -1666,6 +2060,11 @@ class COMPONENT_EXPORT(X11) Glx {
   Future<GetCompressedTexImageARBReply> GetCompressedTexImageARB(
       const GetCompressedTexImageARBRequest& request);
 
+  Future<GetCompressedTexImageARBReply> GetCompressedTexImageARB(
+      const ContextTag& context_tag = {},
+      const uint32_t& target = {},
+      const int32_t& level = {});
+
   struct DeleteQueriesARBRequest {
     ContextTag context_tag{};
     std::vector<uint32_t> ids{};
@@ -1674,6 +2073,9 @@ class COMPONENT_EXPORT(X11) Glx {
   using DeleteQueriesARBResponse = Response<void>;
 
   Future<void> DeleteQueriesARB(const DeleteQueriesARBRequest& request);
+
+  Future<void> DeleteQueriesARB(const ContextTag& context_tag = {},
+                                const std::vector<uint32_t>& ids = {});
 
   struct GenQueriesARBRequest {
     ContextTag context_tag{};
@@ -1689,6 +2091,9 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<GenQueriesARBReply> GenQueriesARB(const GenQueriesARBRequest& request);
 
+  Future<GenQueriesARBReply> GenQueriesARB(const ContextTag& context_tag = {},
+                                           const int32_t& n = {});
+
   struct IsQueryARBRequest {
     ContextTag context_tag{};
     uint32_t id{};
@@ -1702,6 +2107,9 @@ class COMPONENT_EXPORT(X11) Glx {
   using IsQueryARBResponse = Response<IsQueryARBReply>;
 
   Future<IsQueryARBReply> IsQueryARB(const IsQueryARBRequest& request);
+
+  Future<IsQueryARBReply> IsQueryARB(const ContextTag& context_tag = {},
+                                     const uint32_t& id = {});
 
   struct GetQueryivARBRequest {
     ContextTag context_tag{};
@@ -1718,6 +2126,10 @@ class COMPONENT_EXPORT(X11) Glx {
   using GetQueryivARBResponse = Response<GetQueryivARBReply>;
 
   Future<GetQueryivARBReply> GetQueryivARB(const GetQueryivARBRequest& request);
+
+  Future<GetQueryivARBReply> GetQueryivARB(const ContextTag& context_tag = {},
+                                           const uint32_t& target = {},
+                                           const uint32_t& pname = {});
 
   struct GetQueryObjectivARBRequest {
     ContextTag context_tag{};
@@ -1736,6 +2148,11 @@ class COMPONENT_EXPORT(X11) Glx {
   Future<GetQueryObjectivARBReply> GetQueryObjectivARB(
       const GetQueryObjectivARBRequest& request);
 
+  Future<GetQueryObjectivARBReply> GetQueryObjectivARB(
+      const ContextTag& context_tag = {},
+      const uint32_t& id = {},
+      const uint32_t& pname = {});
+
   struct GetQueryObjectuivARBRequest {
     ContextTag context_tag{};
     uint32_t id{};
@@ -1752,6 +2169,11 @@ class COMPONENT_EXPORT(X11) Glx {
 
   Future<GetQueryObjectuivARBReply> GetQueryObjectuivARB(
       const GetQueryObjectuivARBRequest& request);
+
+  Future<GetQueryObjectuivARBReply> GetQueryObjectuivARB(
+      const ContextTag& context_tag = {},
+      const uint32_t& id = {},
+      const uint32_t& pname = {});
 
  private:
   Connection* const connection_;

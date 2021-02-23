@@ -86,6 +86,13 @@ Future<XCMisc::GetVersionReply> XCMisc::GetVersion(
       &buf, "XCMisc::GetVersion", false);
 }
 
+Future<XCMisc::GetVersionReply> XCMisc::GetVersion(
+    const uint16_t& client_major_version,
+    const uint16_t& client_minor_version) {
+  return XCMisc::GetVersion(
+      XCMisc::GetVersionRequest{client_major_version, client_minor_version});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<XCMisc::GetVersionReply> detail::ReadReply<
@@ -146,6 +153,10 @@ Future<XCMisc::GetXIDRangeReply> XCMisc::GetXIDRange(
 
   return connection_->SendRequest<XCMisc::GetXIDRangeReply>(
       &buf, "XCMisc::GetXIDRange", false);
+}
+
+Future<XCMisc::GetXIDRangeReply> XCMisc::GetXIDRange() {
+  return XCMisc::GetXIDRange(XCMisc::GetXIDRangeRequest{});
 }
 
 template <>
@@ -213,6 +224,10 @@ Future<XCMisc::GetXIDListReply> XCMisc::GetXIDList(
 
   return connection_->SendRequest<XCMisc::GetXIDListReply>(
       &buf, "XCMisc::GetXIDList", false);
+}
+
+Future<XCMisc::GetXIDListReply> XCMisc::GetXIDList(const uint32_t& count) {
+  return XCMisc::GetXIDList(XCMisc::GetXIDListRequest{count});
 }
 
 template <>

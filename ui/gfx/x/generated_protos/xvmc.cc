@@ -77,6 +77,10 @@ Future<XvMC::QueryVersionReply> XvMC::QueryVersion(
       &buf, "XvMC::QueryVersion", false);
 }
 
+Future<XvMC::QueryVersionReply> XvMC::QueryVersion() {
+  return XvMC::QueryVersion(XvMC::QueryVersionRequest{});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<XvMC::QueryVersionReply> detail::ReadReply<
@@ -142,6 +146,11 @@ Future<XvMC::ListSurfaceTypesReply> XvMC::ListSurfaceTypes(
 
   return connection_->SendRequest<XvMC::ListSurfaceTypesReply>(
       &buf, "XvMC::ListSurfaceTypes", false);
+}
+
+Future<XvMC::ListSurfaceTypesReply> XvMC::ListSurfaceTypes(
+    const Xv::Port& port_id) {
+  return XvMC::ListSurfaceTypes(XvMC::ListSurfaceTypesRequest{port_id});
 }
 
 template <>
@@ -276,6 +285,16 @@ Future<XvMC::CreateContextReply> XvMC::CreateContext(
       &buf, "XvMC::CreateContext", false);
 }
 
+Future<XvMC::CreateContextReply> XvMC::CreateContext(const Context& context_id,
+                                                     const Xv::Port& port_id,
+                                                     const Surface& surface_id,
+                                                     const uint16_t& width,
+                                                     const uint16_t& height,
+                                                     const uint32_t& flags) {
+  return XvMC::CreateContext(XvMC::CreateContextRequest{
+      context_id, port_id, surface_id, width, height, flags});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<XvMC::CreateContextReply> detail::ReadReply<
@@ -357,6 +376,10 @@ Future<void> XvMC::DestroyContext(const XvMC::DestroyContextRequest& request) {
   return connection_->SendRequest<void>(&buf, "XvMC::DestroyContext", false);
 }
 
+Future<void> XvMC::DestroyContext(const Context& context_id) {
+  return XvMC::DestroyContext(XvMC::DestroyContextRequest{context_id});
+}
+
 Future<XvMC::CreateSurfaceReply> XvMC::CreateSurface(
     const XvMC::CreateSurfaceRequest& request) {
   if (!connection_->Ready() || !present())
@@ -389,6 +412,13 @@ Future<XvMC::CreateSurfaceReply> XvMC::CreateSurface(
 
   return connection_->SendRequest<XvMC::CreateSurfaceReply>(
       &buf, "XvMC::CreateSurface", false);
+}
+
+Future<XvMC::CreateSurfaceReply> XvMC::CreateSurface(
+    const Surface& surface_id,
+    const Context& context_id) {
+  return XvMC::CreateSurface(
+      XvMC::CreateSurfaceRequest{surface_id, context_id});
 }
 
 template <>
@@ -460,6 +490,10 @@ Future<void> XvMC::DestroySurface(const XvMC::DestroySurfaceRequest& request) {
   return connection_->SendRequest<void>(&buf, "XvMC::DestroySurface", false);
 }
 
+Future<void> XvMC::DestroySurface(const Surface& surface_id) {
+  return XvMC::DestroySurface(XvMC::DestroySurfaceRequest{surface_id});
+}
+
 Future<XvMC::CreateSubpictureReply> XvMC::CreateSubpicture(
     const XvMC::CreateSubpictureRequest& request) {
   if (!connection_->Ready() || !present())
@@ -504,6 +538,16 @@ Future<XvMC::CreateSubpictureReply> XvMC::CreateSubpicture(
 
   return connection_->SendRequest<XvMC::CreateSubpictureReply>(
       &buf, "XvMC::CreateSubpicture", false);
+}
+
+Future<XvMC::CreateSubpictureReply> XvMC::CreateSubpicture(
+    const SubPicture& subpicture_id,
+    const Context& context,
+    const uint32_t& xvimage_id,
+    const uint16_t& width,
+    const uint16_t& height) {
+  return XvMC::CreateSubpicture(XvMC::CreateSubpictureRequest{
+      subpicture_id, context, xvimage_id, width, height});
 }
 
 template <>
@@ -600,6 +644,10 @@ Future<void> XvMC::DestroySubpicture(
   return connection_->SendRequest<void>(&buf, "XvMC::DestroySubpicture", false);
 }
 
+Future<void> XvMC::DestroySubpicture(const SubPicture& subpicture_id) {
+  return XvMC::DestroySubpicture(XvMC::DestroySubpictureRequest{subpicture_id});
+}
+
 Future<XvMC::ListSubpictureTypesReply> XvMC::ListSubpictureTypes(
     const XvMC::ListSubpictureTypesRequest& request) {
   if (!connection_->Ready() || !present())
@@ -632,6 +680,13 @@ Future<XvMC::ListSubpictureTypesReply> XvMC::ListSubpictureTypes(
 
   return connection_->SendRequest<XvMC::ListSubpictureTypesReply>(
       &buf, "XvMC::ListSubpictureTypes", false);
+}
+
+Future<XvMC::ListSubpictureTypesReply> XvMC::ListSubpictureTypes(
+    const Xv::Port& port_id,
+    const Surface& surface_id) {
+  return XvMC::ListSubpictureTypes(
+      XvMC::ListSubpictureTypesRequest{port_id, surface_id});
 }
 
 template <>

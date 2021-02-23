@@ -53,6 +53,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "ui/gfx/x/error.h"
+#include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
 
 namespace x11 {
@@ -101,6 +102,9 @@ class COMPONENT_EXPORT(X11) Xinerama {
 
   Future<QueryVersionReply> QueryVersion(const QueryVersionRequest& request);
 
+  Future<QueryVersionReply> QueryVersion(const uint8_t& major = {},
+                                         const uint8_t& minor = {});
+
   struct GetStateRequest {
     Window window{};
   };
@@ -114,6 +118,8 @@ class COMPONENT_EXPORT(X11) Xinerama {
   using GetStateResponse = Response<GetStateReply>;
 
   Future<GetStateReply> GetState(const GetStateRequest& request);
+
+  Future<GetStateReply> GetState(const Window& window = {});
 
   struct GetScreenCountRequest {
     Window window{};
@@ -129,6 +135,8 @@ class COMPONENT_EXPORT(X11) Xinerama {
 
   Future<GetScreenCountReply> GetScreenCount(
       const GetScreenCountRequest& request);
+
+  Future<GetScreenCountReply> GetScreenCount(const Window& window = {});
 
   struct GetScreenSizeRequest {
     Window window{};
@@ -147,6 +155,9 @@ class COMPONENT_EXPORT(X11) Xinerama {
 
   Future<GetScreenSizeReply> GetScreenSize(const GetScreenSizeRequest& request);
 
+  Future<GetScreenSizeReply> GetScreenSize(const Window& window = {},
+                                           const uint32_t& screen = {});
+
   struct IsActiveRequest {};
 
   struct IsActiveReply {
@@ -158,6 +169,8 @@ class COMPONENT_EXPORT(X11) Xinerama {
 
   Future<IsActiveReply> IsActive(const IsActiveRequest& request);
 
+  Future<IsActiveReply> IsActive();
+
   struct QueryScreensRequest {};
 
   struct QueryScreensReply {
@@ -168,6 +181,8 @@ class COMPONENT_EXPORT(X11) Xinerama {
   using QueryScreensResponse = Response<QueryScreensReply>;
 
   Future<QueryScreensReply> QueryScreens(const QueryScreensRequest& request);
+
+  Future<QueryScreensReply> QueryScreens();
 
  private:
   Connection* const connection_;

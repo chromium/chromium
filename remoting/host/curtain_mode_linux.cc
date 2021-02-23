@@ -57,7 +57,7 @@ bool CurtainModeLinux::IsVirtualSession() {
     return false;
   }
 
-  auto devices = connection.xinput().ListInputDevices({}).Sync();
+  auto devices = connection.xinput().ListInputDevices().Sync();
   if (!devices) {
     LOG(ERROR) << "ListInputDevices failed";
     return false;

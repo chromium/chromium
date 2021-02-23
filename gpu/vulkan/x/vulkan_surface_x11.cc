@@ -20,7 +20,7 @@ std::unique_ptr<VulkanSurfaceX11> VulkanSurfaceX11::Create(
     VkInstance vk_instance,
     x11::Window parent_window) {
   auto* connection = x11::Connection::Get();
-  auto geometry = connection->GetGeometry({parent_window}).Sync();
+  auto geometry = connection->GetGeometry(parent_window).Sync();
   if (!geometry) {
     LOG(ERROR) << "GetGeometry failed for window "
                << static_cast<uint32_t>(parent_window) << ".";

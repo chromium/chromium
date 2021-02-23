@@ -53,6 +53,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "ui/gfx/x/error.h"
+#include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
 
 namespace x11 {
@@ -177,6 +178,8 @@ class COMPONENT_EXPORT(X11) XF86VidMode {
 
   Future<QueryVersionReply> QueryVersion(const QueryVersionRequest& request);
 
+  Future<QueryVersionReply> QueryVersion();
+
   struct GetModeLineRequest {
     uint16_t screen{};
   };
@@ -201,6 +204,8 @@ class COMPONENT_EXPORT(X11) XF86VidMode {
 
   Future<GetModeLineReply> GetModeLine(const GetModeLineRequest& request);
 
+  Future<GetModeLineReply> GetModeLine(const uint16_t& screen = {});
+
   struct ModModeLineRequest {
     uint32_t screen{};
     uint16_t hdisplay{};
@@ -220,6 +225,19 @@ class COMPONENT_EXPORT(X11) XF86VidMode {
 
   Future<void> ModModeLine(const ModModeLineRequest& request);
 
+  Future<void> ModModeLine(const uint32_t& screen = {},
+                           const uint16_t& hdisplay = {},
+                           const uint16_t& hsyncstart = {},
+                           const uint16_t& hsyncend = {},
+                           const uint16_t& htotal = {},
+                           const uint16_t& hskew = {},
+                           const uint16_t& vdisplay = {},
+                           const uint16_t& vsyncstart = {},
+                           const uint16_t& vsyncend = {},
+                           const uint16_t& vtotal = {},
+                           const ModeFlag& flags = {},
+                           const std::vector<uint8_t>& c_private = {});
+
   struct SwitchModeRequest {
     uint16_t screen{};
     uint16_t zoom{};
@@ -228,6 +246,9 @@ class COMPONENT_EXPORT(X11) XF86VidMode {
   using SwitchModeResponse = Response<void>;
 
   Future<void> SwitchMode(const SwitchModeRequest& request);
+
+  Future<void> SwitchMode(const uint16_t& screen = {},
+                          const uint16_t& zoom = {});
 
   struct GetMonitorRequest {
     uint16_t screen{};
@@ -246,6 +267,8 @@ class COMPONENT_EXPORT(X11) XF86VidMode {
 
   Future<GetMonitorReply> GetMonitor(const GetMonitorRequest& request);
 
+  Future<GetMonitorReply> GetMonitor(const uint16_t& screen = {});
+
   struct LockModeSwitchRequest {
     uint16_t screen{};
     uint16_t lock{};
@@ -254,6 +277,9 @@ class COMPONENT_EXPORT(X11) XF86VidMode {
   using LockModeSwitchResponse = Response<void>;
 
   Future<void> LockModeSwitch(const LockModeSwitchRequest& request);
+
+  Future<void> LockModeSwitch(const uint16_t& screen = {},
+                              const uint16_t& lock = {});
 
   struct GetAllModeLinesRequest {
     uint16_t screen{};
@@ -268,6 +294,8 @@ class COMPONENT_EXPORT(X11) XF86VidMode {
 
   Future<GetAllModeLinesReply> GetAllModeLines(
       const GetAllModeLinesRequest& request);
+
+  Future<GetAllModeLinesReply> GetAllModeLines(const uint16_t& screen = {});
 
   struct AddModeLineRequest {
     uint32_t screen{};
@@ -300,6 +328,31 @@ class COMPONENT_EXPORT(X11) XF86VidMode {
 
   Future<void> AddModeLine(const AddModeLineRequest& request);
 
+  Future<void> AddModeLine(const uint32_t& screen = {},
+                           const DotClock& dotclock = {},
+                           const uint16_t& hdisplay = {},
+                           const uint16_t& hsyncstart = {},
+                           const uint16_t& hsyncend = {},
+                           const uint16_t& htotal = {},
+                           const uint16_t& hskew = {},
+                           const uint16_t& vdisplay = {},
+                           const uint16_t& vsyncstart = {},
+                           const uint16_t& vsyncend = {},
+                           const uint16_t& vtotal = {},
+                           const ModeFlag& flags = {},
+                           const DotClock& after_dotclock = {},
+                           const uint16_t& after_hdisplay = {},
+                           const uint16_t& after_hsyncstart = {},
+                           const uint16_t& after_hsyncend = {},
+                           const uint16_t& after_htotal = {},
+                           const uint16_t& after_hskew = {},
+                           const uint16_t& after_vdisplay = {},
+                           const uint16_t& after_vsyncstart = {},
+                           const uint16_t& after_vsyncend = {},
+                           const uint16_t& after_vtotal = {},
+                           const ModeFlag& after_flags = {},
+                           const std::vector<uint8_t>& c_private = {});
+
   struct DeleteModeLineRequest {
     uint32_t screen{};
     DotClock dotclock{};
@@ -319,6 +372,20 @@ class COMPONENT_EXPORT(X11) XF86VidMode {
   using DeleteModeLineResponse = Response<void>;
 
   Future<void> DeleteModeLine(const DeleteModeLineRequest& request);
+
+  Future<void> DeleteModeLine(const uint32_t& screen = {},
+                              const DotClock& dotclock = {},
+                              const uint16_t& hdisplay = {},
+                              const uint16_t& hsyncstart = {},
+                              const uint16_t& hsyncend = {},
+                              const uint16_t& htotal = {},
+                              const uint16_t& hskew = {},
+                              const uint16_t& vdisplay = {},
+                              const uint16_t& vsyncstart = {},
+                              const uint16_t& vsyncend = {},
+                              const uint16_t& vtotal = {},
+                              const ModeFlag& flags = {},
+                              const std::vector<uint8_t>& c_private = {});
 
   struct ValidateModeLineRequest {
     uint32_t screen{};
@@ -346,6 +413,21 @@ class COMPONENT_EXPORT(X11) XF86VidMode {
   Future<ValidateModeLineReply> ValidateModeLine(
       const ValidateModeLineRequest& request);
 
+  Future<ValidateModeLineReply> ValidateModeLine(
+      const uint32_t& screen = {},
+      const DotClock& dotclock = {},
+      const uint16_t& hdisplay = {},
+      const uint16_t& hsyncstart = {},
+      const uint16_t& hsyncend = {},
+      const uint16_t& htotal = {},
+      const uint16_t& hskew = {},
+      const uint16_t& vdisplay = {},
+      const uint16_t& vsyncstart = {},
+      const uint16_t& vsyncend = {},
+      const uint16_t& vtotal = {},
+      const ModeFlag& flags = {},
+      const std::vector<uint8_t>& c_private = {});
+
   struct SwitchToModeRequest {
     uint32_t screen{};
     DotClock dotclock{};
@@ -366,6 +448,20 @@ class COMPONENT_EXPORT(X11) XF86VidMode {
 
   Future<void> SwitchToMode(const SwitchToModeRequest& request);
 
+  Future<void> SwitchToMode(const uint32_t& screen = {},
+                            const DotClock& dotclock = {},
+                            const uint16_t& hdisplay = {},
+                            const uint16_t& hsyncstart = {},
+                            const uint16_t& hsyncend = {},
+                            const uint16_t& htotal = {},
+                            const uint16_t& hskew = {},
+                            const uint16_t& vdisplay = {},
+                            const uint16_t& vsyncstart = {},
+                            const uint16_t& vsyncend = {},
+                            const uint16_t& vtotal = {},
+                            const ModeFlag& flags = {},
+                            const std::vector<uint8_t>& c_private = {});
+
   struct GetViewPortRequest {
     uint16_t screen{};
   };
@@ -380,6 +476,8 @@ class COMPONENT_EXPORT(X11) XF86VidMode {
 
   Future<GetViewPortReply> GetViewPort(const GetViewPortRequest& request);
 
+  Future<GetViewPortReply> GetViewPort(const uint16_t& screen = {});
+
   struct SetViewPortRequest {
     uint16_t screen{};
     uint32_t x{};
@@ -389,6 +487,10 @@ class COMPONENT_EXPORT(X11) XF86VidMode {
   using SetViewPortResponse = Response<void>;
 
   Future<void> SetViewPort(const SetViewPortRequest& request);
+
+  Future<void> SetViewPort(const uint16_t& screen = {},
+                           const uint32_t& x = {},
+                           const uint32_t& y = {});
 
   struct GetDotClocksRequest {
     uint16_t screen{};
@@ -406,6 +508,8 @@ class COMPONENT_EXPORT(X11) XF86VidMode {
 
   Future<GetDotClocksReply> GetDotClocks(const GetDotClocksRequest& request);
 
+  Future<GetDotClocksReply> GetDotClocks(const uint16_t& screen = {});
+
   struct SetClientVersionRequest {
     uint16_t major{};
     uint16_t minor{};
@@ -414,6 +518,9 @@ class COMPONENT_EXPORT(X11) XF86VidMode {
   using SetClientVersionResponse = Response<void>;
 
   Future<void> SetClientVersion(const SetClientVersionRequest& request);
+
+  Future<void> SetClientVersion(const uint16_t& major = {},
+                                const uint16_t& minor = {});
 
   struct SetGammaRequest {
     uint16_t screen{};
@@ -425,6 +532,11 @@ class COMPONENT_EXPORT(X11) XF86VidMode {
   using SetGammaResponse = Response<void>;
 
   Future<void> SetGamma(const SetGammaRequest& request);
+
+  Future<void> SetGamma(const uint16_t& screen = {},
+                        const uint32_t& red = {},
+                        const uint32_t& green = {},
+                        const uint32_t& blue = {});
 
   struct GetGammaRequest {
     uint16_t screen{};
@@ -440,6 +552,8 @@ class COMPONENT_EXPORT(X11) XF86VidMode {
   using GetGammaResponse = Response<GetGammaReply>;
 
   Future<GetGammaReply> GetGamma(const GetGammaRequest& request);
+
+  Future<GetGammaReply> GetGamma(const uint16_t& screen = {});
 
   struct GetGammaRampRequest {
     uint16_t screen{};
@@ -458,6 +572,9 @@ class COMPONENT_EXPORT(X11) XF86VidMode {
 
   Future<GetGammaRampReply> GetGammaRamp(const GetGammaRampRequest& request);
 
+  Future<GetGammaRampReply> GetGammaRamp(const uint16_t& screen = {},
+                                         const uint16_t& size = {});
+
   struct SetGammaRampRequest {
     uint16_t screen{};
     uint16_t size{};
@@ -469,6 +586,12 @@ class COMPONENT_EXPORT(X11) XF86VidMode {
   using SetGammaRampResponse = Response<void>;
 
   Future<void> SetGammaRamp(const SetGammaRampRequest& request);
+
+  Future<void> SetGammaRamp(const uint16_t& screen = {},
+                            const uint16_t& size = {},
+                            const std::vector<uint16_t>& red = {},
+                            const std::vector<uint16_t>& green = {},
+                            const std::vector<uint16_t>& blue = {});
 
   struct GetGammaRampSizeRequest {
     uint16_t screen{};
@@ -484,6 +607,8 @@ class COMPONENT_EXPORT(X11) XF86VidMode {
   Future<GetGammaRampSizeReply> GetGammaRampSize(
       const GetGammaRampSizeRequest& request);
 
+  Future<GetGammaRampSizeReply> GetGammaRampSize(const uint16_t& screen = {});
+
   struct GetPermissionsRequest {
     uint16_t screen{};
   };
@@ -497,6 +622,8 @@ class COMPONENT_EXPORT(X11) XF86VidMode {
 
   Future<GetPermissionsReply> GetPermissions(
       const GetPermissionsRequest& request);
+
+  Future<GetPermissionsReply> GetPermissions(const uint16_t& screen = {});
 
  private:
   Connection* const connection_;

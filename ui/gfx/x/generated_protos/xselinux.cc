@@ -86,6 +86,13 @@ Future<SELinux::QueryVersionReply> SELinux::QueryVersion(
       &buf, "SELinux::QueryVersion", false);
 }
 
+Future<SELinux::QueryVersionReply> SELinux::QueryVersion(
+    const uint8_t& client_major,
+    const uint8_t& client_minor) {
+  return SELinux::QueryVersion(
+      SELinux::QueryVersionRequest{client_major, client_minor});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<SELinux::QueryVersionReply> detail::ReadReply<
@@ -162,6 +169,11 @@ Future<void> SELinux::SetDeviceCreateContext(
                                         false);
 }
 
+Future<void> SELinux::SetDeviceCreateContext(const std::string& context) {
+  return SELinux::SetDeviceCreateContext(
+      SELinux::SetDeviceCreateContextRequest{context});
+}
+
 Future<SELinux::GetDeviceCreateContextReply> SELinux::GetDeviceCreateContext(
     const SELinux::GetDeviceCreateContextRequest& request) {
   if (!connection_->Ready() || !present())
@@ -185,6 +197,11 @@ Future<SELinux::GetDeviceCreateContextReply> SELinux::GetDeviceCreateContext(
 
   return connection_->SendRequest<SELinux::GetDeviceCreateContextReply>(
       &buf, "SELinux::GetDeviceCreateContext", false);
+}
+
+Future<SELinux::GetDeviceCreateContextReply> SELinux::GetDeviceCreateContext() {
+  return SELinux::GetDeviceCreateContext(
+      SELinux::GetDeviceCreateContextRequest{});
 }
 
 template <>
@@ -274,6 +291,12 @@ Future<void> SELinux::SetDeviceContext(
                                         false);
 }
 
+Future<void> SELinux::SetDeviceContext(const uint32_t& device,
+                                       const std::string& context) {
+  return SELinux::SetDeviceContext(
+      SELinux::SetDeviceContextRequest{device, context});
+}
+
 Future<SELinux::GetDeviceContextReply> SELinux::GetDeviceContext(
     const SELinux::GetDeviceContextRequest& request) {
   if (!connection_->Ready() || !present())
@@ -302,6 +325,11 @@ Future<SELinux::GetDeviceContextReply> SELinux::GetDeviceContext(
 
   return connection_->SendRequest<SELinux::GetDeviceContextReply>(
       &buf, "SELinux::GetDeviceContext", false);
+}
+
+Future<SELinux::GetDeviceContextReply> SELinux::GetDeviceContext(
+    const uint32_t& device) {
+  return SELinux::GetDeviceContext(SELinux::GetDeviceContextRequest{device});
 }
 
 template <>
@@ -387,6 +415,11 @@ Future<void> SELinux::SetWindowCreateContext(
                                         false);
 }
 
+Future<void> SELinux::SetWindowCreateContext(const std::string& context) {
+  return SELinux::SetWindowCreateContext(
+      SELinux::SetWindowCreateContextRequest{context});
+}
+
 Future<SELinux::GetWindowCreateContextReply> SELinux::GetWindowCreateContext(
     const SELinux::GetWindowCreateContextRequest& request) {
   if (!connection_->Ready() || !present())
@@ -410,6 +443,11 @@ Future<SELinux::GetWindowCreateContextReply> SELinux::GetWindowCreateContext(
 
   return connection_->SendRequest<SELinux::GetWindowCreateContextReply>(
       &buf, "SELinux::GetWindowCreateContext", false);
+}
+
+Future<SELinux::GetWindowCreateContextReply> SELinux::GetWindowCreateContext() {
+  return SELinux::GetWindowCreateContext(
+      SELinux::GetWindowCreateContextRequest{});
 }
 
 template <>
@@ -484,6 +522,11 @@ Future<SELinux::GetWindowContextReply> SELinux::GetWindowContext(
 
   return connection_->SendRequest<SELinux::GetWindowContextReply>(
       &buf, "SELinux::GetWindowContext", false);
+}
+
+Future<SELinux::GetWindowContextReply> SELinux::GetWindowContext(
+    const Window& window) {
+  return SELinux::GetWindowContext(SELinux::GetWindowContextRequest{window});
 }
 
 template <>
@@ -569,6 +612,11 @@ Future<void> SELinux::SetPropertyCreateContext(
       &buf, "SELinux::SetPropertyCreateContext", false);
 }
 
+Future<void> SELinux::SetPropertyCreateContext(const std::string& context) {
+  return SELinux::SetPropertyCreateContext(
+      SELinux::SetPropertyCreateContextRequest{context});
+}
+
 Future<SELinux::GetPropertyCreateContextReply>
 SELinux::GetPropertyCreateContext(
     const SELinux::GetPropertyCreateContextRequest& request) {
@@ -593,6 +641,12 @@ SELinux::GetPropertyCreateContext(
 
   return connection_->SendRequest<SELinux::GetPropertyCreateContextReply>(
       &buf, "SELinux::GetPropertyCreateContext", false);
+}
+
+Future<SELinux::GetPropertyCreateContextReply>
+SELinux::GetPropertyCreateContext() {
+  return SELinux::GetPropertyCreateContext(
+      SELinux::GetPropertyCreateContextRequest{});
 }
 
 template <>
@@ -678,6 +732,11 @@ Future<void> SELinux::SetPropertyUseContext(
                                         false);
 }
 
+Future<void> SELinux::SetPropertyUseContext(const std::string& context) {
+  return SELinux::SetPropertyUseContext(
+      SELinux::SetPropertyUseContextRequest{context});
+}
+
 Future<SELinux::GetPropertyUseContextReply> SELinux::GetPropertyUseContext(
     const SELinux::GetPropertyUseContextRequest& request) {
   if (!connection_->Ready() || !present())
@@ -701,6 +760,11 @@ Future<SELinux::GetPropertyUseContextReply> SELinux::GetPropertyUseContext(
 
   return connection_->SendRequest<SELinux::GetPropertyUseContextReply>(
       &buf, "SELinux::GetPropertyUseContext", false);
+}
+
+Future<SELinux::GetPropertyUseContextReply> SELinux::GetPropertyUseContext() {
+  return SELinux::GetPropertyUseContext(
+      SELinux::GetPropertyUseContextRequest{});
 }
 
 template <>
@@ -781,6 +845,13 @@ Future<SELinux::GetPropertyContextReply> SELinux::GetPropertyContext(
       &buf, "SELinux::GetPropertyContext", false);
 }
 
+Future<SELinux::GetPropertyContextReply> SELinux::GetPropertyContext(
+    const Window& window,
+    const Atom& property) {
+  return SELinux::GetPropertyContext(
+      SELinux::GetPropertyContextRequest{window, property});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<SELinux::GetPropertyContextReply> detail::ReadReply<
@@ -859,6 +930,13 @@ Future<SELinux::GetPropertyDataContextReply> SELinux::GetPropertyDataContext(
       &buf, "SELinux::GetPropertyDataContext", false);
 }
 
+Future<SELinux::GetPropertyDataContextReply> SELinux::GetPropertyDataContext(
+    const Window& window,
+    const Atom& property) {
+  return SELinux::GetPropertyDataContext(
+      SELinux::GetPropertyDataContextRequest{window, property});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<SELinux::GetPropertyDataContextReply> detail::ReadReply<
@@ -931,6 +1009,11 @@ Future<SELinux::ListPropertiesReply> SELinux::ListProperties(
 
   return connection_->SendRequest<SELinux::ListPropertiesReply>(
       &buf, "SELinux::ListProperties", false);
+}
+
+Future<SELinux::ListPropertiesReply> SELinux::ListProperties(
+    const Window& window) {
+  return SELinux::ListProperties(SELinux::ListPropertiesRequest{window});
 }
 
 template <>
@@ -1051,6 +1134,11 @@ Future<void> SELinux::SetSelectionCreateContext(
       &buf, "SELinux::SetSelectionCreateContext", false);
 }
 
+Future<void> SELinux::SetSelectionCreateContext(const std::string& context) {
+  return SELinux::SetSelectionCreateContext(
+      SELinux::SetSelectionCreateContextRequest{context});
+}
+
 Future<SELinux::GetSelectionCreateContextReply>
 SELinux::GetSelectionCreateContext(
     const SELinux::GetSelectionCreateContextRequest& request) {
@@ -1075,6 +1163,12 @@ SELinux::GetSelectionCreateContext(
 
   return connection_->SendRequest<SELinux::GetSelectionCreateContextReply>(
       &buf, "SELinux::GetSelectionCreateContext", false);
+}
+
+Future<SELinux::GetSelectionCreateContextReply>
+SELinux::GetSelectionCreateContext() {
+  return SELinux::GetSelectionCreateContext(
+      SELinux::GetSelectionCreateContextRequest{});
 }
 
 template <>
@@ -1160,6 +1254,11 @@ Future<void> SELinux::SetSelectionUseContext(
                                         false);
 }
 
+Future<void> SELinux::SetSelectionUseContext(const std::string& context) {
+  return SELinux::SetSelectionUseContext(
+      SELinux::SetSelectionUseContextRequest{context});
+}
+
 Future<SELinux::GetSelectionUseContextReply> SELinux::GetSelectionUseContext(
     const SELinux::GetSelectionUseContextRequest& request) {
   if (!connection_->Ready() || !present())
@@ -1183,6 +1282,11 @@ Future<SELinux::GetSelectionUseContextReply> SELinux::GetSelectionUseContext(
 
   return connection_->SendRequest<SELinux::GetSelectionUseContextReply>(
       &buf, "SELinux::GetSelectionUseContext", false);
+}
+
+Future<SELinux::GetSelectionUseContextReply> SELinux::GetSelectionUseContext() {
+  return SELinux::GetSelectionUseContext(
+      SELinux::GetSelectionUseContextRequest{});
 }
 
 template <>
@@ -1259,6 +1363,12 @@ Future<SELinux::GetSelectionContextReply> SELinux::GetSelectionContext(
       &buf, "SELinux::GetSelectionContext", false);
 }
 
+Future<SELinux::GetSelectionContextReply> SELinux::GetSelectionContext(
+    const Atom& selection) {
+  return SELinux::GetSelectionContext(
+      SELinux::GetSelectionContextRequest{selection});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<SELinux::GetSelectionContextReply> detail::ReadReply<
@@ -1333,6 +1443,12 @@ Future<SELinux::GetSelectionDataContextReply> SELinux::GetSelectionDataContext(
       &buf, "SELinux::GetSelectionDataContext", false);
 }
 
+Future<SELinux::GetSelectionDataContextReply> SELinux::GetSelectionDataContext(
+    const Atom& selection) {
+  return SELinux::GetSelectionDataContext(
+      SELinux::GetSelectionDataContextRequest{selection});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<SELinux::GetSelectionDataContextReply> detail::ReadReply<
@@ -1400,6 +1516,10 @@ Future<SELinux::ListSelectionsReply> SELinux::ListSelections(
 
   return connection_->SendRequest<SELinux::ListSelectionsReply>(
       &buf, "SELinux::ListSelections", false);
+}
+
+Future<SELinux::ListSelectionsReply> SELinux::ListSelections() {
+  return SELinux::ListSelections(SELinux::ListSelectionsRequest{});
 }
 
 template <>
@@ -1509,6 +1629,11 @@ Future<SELinux::GetClientContextReply> SELinux::GetClientContext(
 
   return connection_->SendRequest<SELinux::GetClientContextReply>(
       &buf, "SELinux::GetClientContext", false);
+}
+
+Future<SELinux::GetClientContextReply> SELinux::GetClientContext(
+    const uint32_t& resource) {
+  return SELinux::GetClientContext(SELinux::GetClientContextRequest{resource});
 }
 
 template <>

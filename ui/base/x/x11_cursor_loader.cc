@@ -293,7 +293,7 @@ XCursorLoader::XCursorLoader(x11::Connection* connection)
     : connection_(connection) {
   auto ver_cookie = connection_->render().QueryVersion(
       {x11::Render::major_version, x11::Render::minor_version});
-  auto pf_cookie = connection_->render().QueryPictFormats({});
+  auto pf_cookie = connection_->render().QueryPictFormats();
   cursor_font_ = connection_->GenerateId<x11::Font>();
   connection_->OpenFont({cursor_font_, "cursor"});
 

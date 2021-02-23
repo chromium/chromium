@@ -303,6 +303,13 @@ Future<Sync::InitializeReply> Sync::Initialize(
       &buf, "Sync::Initialize", false);
 }
 
+Future<Sync::InitializeReply> Sync::Initialize(
+    const uint8_t& desired_major_version,
+    const uint8_t& desired_minor_version) {
+  return Sync::Initialize(
+      Sync::InitializeRequest{desired_major_version, desired_minor_version});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Sync::InitializeReply> detail::ReadReply<Sync::InitializeReply>(
@@ -366,6 +373,10 @@ Future<Sync::ListSystemCountersReply> Sync::ListSystemCounters(
 
   return connection_->SendRequest<Sync::ListSystemCountersReply>(
       &buf, "Sync::ListSystemCounters", false);
+}
+
+Future<Sync::ListSystemCountersReply> Sync::ListSystemCounters() {
+  return Sync::ListSystemCounters(Sync::ListSystemCountersRequest{});
 }
 
 template <>
@@ -486,6 +497,11 @@ Future<void> Sync::CreateCounter(const Sync::CreateCounterRequest& request) {
   return connection_->SendRequest<void>(&buf, "Sync::CreateCounter", false);
 }
 
+Future<void> Sync::CreateCounter(const Counter& id,
+                                 const Int64& initial_value) {
+  return Sync::CreateCounter(Sync::CreateCounterRequest{id, initial_value});
+}
+
 Future<void> Sync::DestroyCounter(const Sync::DestroyCounterRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -512,6 +528,10 @@ Future<void> Sync::DestroyCounter(const Sync::DestroyCounterRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Sync::DestroyCounter", false);
+}
+
+Future<void> Sync::DestroyCounter(const Counter& counter) {
+  return Sync::DestroyCounter(Sync::DestroyCounterRequest{counter});
 }
 
 Future<Sync::QueryCounterReply> Sync::QueryCounter(
@@ -542,6 +562,10 @@ Future<Sync::QueryCounterReply> Sync::QueryCounter(
 
   return connection_->SendRequest<Sync::QueryCounterReply>(
       &buf, "Sync::QueryCounter", false);
+}
+
+Future<Sync::QueryCounterReply> Sync::QueryCounter(const Counter& counter) {
+  return Sync::QueryCounter(Sync::QueryCounterRequest{counter});
 }
 
 template <>
@@ -667,6 +691,10 @@ Future<void> Sync::Await(const Sync::AwaitRequest& request) {
   return connection_->SendRequest<void>(&buf, "Sync::Await", false);
 }
 
+Future<void> Sync::Await(const std::vector<WaitCondition>& wait_list) {
+  return Sync::Await(Sync::AwaitRequest{wait_list});
+}
+
 Future<void> Sync::ChangeCounter(const Sync::ChangeCounterRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -708,6 +736,10 @@ Future<void> Sync::ChangeCounter(const Sync::ChangeCounterRequest& request) {
   return connection_->SendRequest<void>(&buf, "Sync::ChangeCounter", false);
 }
 
+Future<void> Sync::ChangeCounter(const Counter& counter, const Int64& amount) {
+  return Sync::ChangeCounter(Sync::ChangeCounterRequest{counter, amount});
+}
+
 Future<void> Sync::SetCounter(const Sync::SetCounterRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -747,6 +779,10 @@ Future<void> Sync::SetCounter(const Sync::SetCounterRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Sync::SetCounter", false);
+}
+
+Future<void> Sync::SetCounter(const Counter& counter, const Int64& value) {
+  return Sync::SetCounter(Sync::SetCounterRequest{counter, value});
 }
 
 Future<void> Sync::CreateAlarm(const Sync::CreateAlarmRequest& request) {
@@ -857,6 +893,17 @@ Future<void> Sync::CreateAlarm(const Sync::CreateAlarmRequest& request) {
   return connection_->SendRequest<void>(&buf, "Sync::CreateAlarm", false);
 }
 
+Future<void> Sync::CreateAlarm(const Alarm& id,
+                               const base::Optional<Counter>& counter,
+                               const base::Optional<Valuetype>& valueType,
+                               const base::Optional<Int64>& value,
+                               const base::Optional<Testtype>& testType,
+                               const base::Optional<Int64>& delta,
+                               const base::Optional<uint32_t>& events) {
+  return Sync::CreateAlarm(Sync::CreateAlarmRequest{
+      id, counter, valueType, value, testType, delta, events});
+}
+
 Future<void> Sync::ChangeAlarm(const Sync::ChangeAlarmRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -965,6 +1012,17 @@ Future<void> Sync::ChangeAlarm(const Sync::ChangeAlarmRequest& request) {
   return connection_->SendRequest<void>(&buf, "Sync::ChangeAlarm", false);
 }
 
+Future<void> Sync::ChangeAlarm(const Alarm& id,
+                               const base::Optional<Counter>& counter,
+                               const base::Optional<Valuetype>& valueType,
+                               const base::Optional<Int64>& value,
+                               const base::Optional<Testtype>& testType,
+                               const base::Optional<Int64>& delta,
+                               const base::Optional<uint32_t>& events) {
+  return Sync::ChangeAlarm(Sync::ChangeAlarmRequest{
+      id, counter, valueType, value, testType, delta, events});
+}
+
 Future<void> Sync::DestroyAlarm(const Sync::DestroyAlarmRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -991,6 +1049,10 @@ Future<void> Sync::DestroyAlarm(const Sync::DestroyAlarmRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Sync::DestroyAlarm", false);
+}
+
+Future<void> Sync::DestroyAlarm(const Alarm& alarm) {
+  return Sync::DestroyAlarm(Sync::DestroyAlarmRequest{alarm});
 }
 
 Future<Sync::QueryAlarmReply> Sync::QueryAlarm(
@@ -1021,6 +1083,10 @@ Future<Sync::QueryAlarmReply> Sync::QueryAlarm(
 
   return connection_->SendRequest<Sync::QueryAlarmReply>(
       &buf, "Sync::QueryAlarm", false);
+}
+
+Future<Sync::QueryAlarmReply> Sync::QueryAlarm(const Alarm& alarm) {
+  return Sync::QueryAlarm(Sync::QueryAlarmRequest{alarm});
 }
 
 template <>
@@ -1144,6 +1210,10 @@ Future<void> Sync::SetPriority(const Sync::SetPriorityRequest& request) {
   return connection_->SendRequest<void>(&buf, "Sync::SetPriority", false);
 }
 
+Future<void> Sync::SetPriority(const uint32_t& id, const int32_t& priority) {
+  return Sync::SetPriority(Sync::SetPriorityRequest{id, priority});
+}
+
 Future<Sync::GetPriorityReply> Sync::GetPriority(
     const Sync::GetPriorityRequest& request) {
   if (!connection_->Ready() || !present())
@@ -1172,6 +1242,10 @@ Future<Sync::GetPriorityReply> Sync::GetPriority(
 
   return connection_->SendRequest<Sync::GetPriorityReply>(
       &buf, "Sync::GetPriority", false);
+}
+
+Future<Sync::GetPriorityReply> Sync::GetPriority(const uint32_t& id) {
+  return Sync::GetPriority(Sync::GetPriorityRequest{id});
 }
 
 template <>
@@ -1243,6 +1317,13 @@ Future<void> Sync::CreateFence(const Sync::CreateFenceRequest& request) {
   return connection_->SendRequest<void>(&buf, "Sync::CreateFence", false);
 }
 
+Future<void> Sync::CreateFence(const Drawable& drawable,
+                               const Fence& fence,
+                               const uint8_t& initially_triggered) {
+  return Sync::CreateFence(
+      Sync::CreateFenceRequest{drawable, fence, initially_triggered});
+}
+
 Future<void> Sync::TriggerFence(const Sync::TriggerFenceRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -1269,6 +1350,10 @@ Future<void> Sync::TriggerFence(const Sync::TriggerFenceRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Sync::TriggerFence", false);
+}
+
+Future<void> Sync::TriggerFence(const Fence& fence) {
+  return Sync::TriggerFence(Sync::TriggerFenceRequest{fence});
 }
 
 Future<void> Sync::ResetFence(const Sync::ResetFenceRequest& request) {
@@ -1299,6 +1384,10 @@ Future<void> Sync::ResetFence(const Sync::ResetFenceRequest& request) {
   return connection_->SendRequest<void>(&buf, "Sync::ResetFence", false);
 }
 
+Future<void> Sync::ResetFence(const Fence& fence) {
+  return Sync::ResetFence(Sync::ResetFenceRequest{fence});
+}
+
 Future<void> Sync::DestroyFence(const Sync::DestroyFenceRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -1325,6 +1414,10 @@ Future<void> Sync::DestroyFence(const Sync::DestroyFenceRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Sync::DestroyFence", false);
+}
+
+Future<void> Sync::DestroyFence(const Fence& fence) {
+  return Sync::DestroyFence(Sync::DestroyFenceRequest{fence});
 }
 
 Future<Sync::QueryFenceReply> Sync::QueryFence(
@@ -1355,6 +1448,10 @@ Future<Sync::QueryFenceReply> Sync::QueryFence(
 
   return connection_->SendRequest<Sync::QueryFenceReply>(
       &buf, "Sync::QueryFence", false);
+}
+
+Future<Sync::QueryFenceReply> Sync::QueryFence(const Fence& fence) {
+  return Sync::QueryFence(Sync::QueryFenceRequest{fence});
 }
 
 template <>
@@ -1424,6 +1521,10 @@ Future<void> Sync::AwaitFence(const Sync::AwaitFenceRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Sync::AwaitFence", false);
+}
+
+Future<void> Sync::AwaitFence(const std::vector<Fence>& fence_list) {
+  return Sync::AwaitFence(Sync::AwaitFenceRequest{fence_list});
 }
 
 }  // namespace x11

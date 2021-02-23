@@ -86,6 +86,13 @@ Future<Dri3::QueryVersionReply> Dri3::QueryVersion(
       &buf, "Dri3::QueryVersion", false);
 }
 
+Future<Dri3::QueryVersionReply> Dri3::QueryVersion(
+    const uint32_t& major_version,
+    const uint32_t& minor_version) {
+  return Dri3::QueryVersion(
+      Dri3::QueryVersionRequest{major_version, minor_version});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Dri3::QueryVersionReply> detail::ReadReply<
@@ -155,6 +162,11 @@ Future<Dri3::OpenReply> Dri3::Open(const Dri3::OpenRequest& request) {
   return connection_->SendRequest<Dri3::OpenReply>(&buf, "Dri3::Open", true);
 }
 
+Future<Dri3::OpenReply> Dri3::Open(const Drawable& drawable,
+                                   const uint32_t& provider) {
+  return Dri3::Open(Dri3::OpenRequest{drawable, provider});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Dri3::OpenReply> detail::ReadReply<Dri3::OpenReply>(
@@ -181,7 +193,7 @@ std::unique_ptr<Dri3::OpenReply> detail::ReadReply<Dri3::OpenReply>(
   Read(&length, &buf);
 
   // device_fd
-  device_fd = base::ScopedFD(buf.TakeFd());
+  device_fd = RefCountedFD(buf.TakeFd());
 
   // pad0
   Pad(&buf, 24);
@@ -253,6 +265,19 @@ Future<void> Dri3::PixmapFromBuffer(
   return connection_->SendRequest<void>(&buf, "Dri3::PixmapFromBuffer", false);
 }
 
+Future<void> Dri3::PixmapFromBuffer(const Pixmap& pixmap,
+                                    const Drawable& drawable,
+                                    const uint32_t& size,
+                                    const uint16_t& width,
+                                    const uint16_t& height,
+                                    const uint16_t& stride,
+                                    const uint8_t& depth,
+                                    const uint8_t& bpp,
+                                    const RefCountedFD& pixmap_fd) {
+  return Dri3::PixmapFromBuffer(Dri3::PixmapFromBufferRequest{
+      pixmap, drawable, size, width, height, stride, depth, bpp, pixmap_fd});
+}
+
 Future<Dri3::BufferFromPixmapReply> Dri3::BufferFromPixmap(
     const Dri3::BufferFromPixmapRequest& request) {
   if (!connection_->Ready() || !present())
@@ -281,6 +306,11 @@ Future<Dri3::BufferFromPixmapReply> Dri3::BufferFromPixmap(
 
   return connection_->SendRequest<Dri3::BufferFromPixmapReply>(
       &buf, "Dri3::BufferFromPixmap", true);
+}
+
+Future<Dri3::BufferFromPixmapReply> Dri3::BufferFromPixmap(
+    const Pixmap& pixmap) {
+  return Dri3::BufferFromPixmap(Dri3::BufferFromPixmapRequest{pixmap});
 }
 
 template <>
@@ -333,7 +363,7 @@ std::unique_ptr<Dri3::BufferFromPixmapReply> detail::ReadReply<
   Read(&bpp, &buf);
 
   // pixmap_fd
-  pixmap_fd = base::ScopedFD(buf.TakeFd());
+  pixmap_fd = RefCountedFD(buf.TakeFd());
 
   // pad0
   Pad(&buf, 12);
@@ -387,6 +417,14 @@ Future<void> Dri3::FenceFromFD(const Dri3::FenceFromFDRequest& request) {
   return connection_->SendRequest<void>(&buf, "Dri3::FenceFromFD", false);
 }
 
+Future<void> Dri3::FenceFromFD(const Drawable& drawable,
+                               const uint32_t& fence,
+                               const uint8_t& initially_triggered,
+                               const RefCountedFD& fence_fd) {
+  return Dri3::FenceFromFD(
+      Dri3::FenceFromFDRequest{drawable, fence, initially_triggered, fence_fd});
+}
+
 Future<Dri3::FDFromFenceReply> Dri3::FDFromFence(
     const Dri3::FDFromFenceRequest& request) {
   if (!connection_->Ready() || !present())
@@ -421,6 +459,11 @@ Future<Dri3::FDFromFenceReply> Dri3::FDFromFence(
       &buf, "Dri3::FDFromFence", true);
 }
 
+Future<Dri3::FDFromFenceReply> Dri3::FDFromFence(const Drawable& drawable,
+                                                 const uint32_t& fence) {
+  return Dri3::FDFromFence(Dri3::FDFromFenceRequest{drawable, fence});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Dri3::FDFromFenceReply> detail::ReadReply<
@@ -447,7 +490,7 @@ std::unique_ptr<Dri3::FDFromFenceReply> detail::ReadReply<
   Read(&length, &buf);
 
   // fence_fd
-  fence_fd = base::ScopedFD(buf.TakeFd());
+  fence_fd = RefCountedFD(buf.TakeFd());
 
   // pad0
   Pad(&buf, 24);
@@ -497,6 +540,14 @@ Future<Dri3::GetSupportedModifiersReply> Dri3::GetSupportedModifiers(
 
   return connection_->SendRequest<Dri3::GetSupportedModifiersReply>(
       &buf, "Dri3::GetSupportedModifiers", false);
+}
+
+Future<Dri3::GetSupportedModifiersReply> Dri3::GetSupportedModifiers(
+    const uint32_t& window,
+    const uint8_t& depth,
+    const uint8_t& bpp) {
+  return Dri3::GetSupportedModifiers(
+      Dri3::GetSupportedModifiersRequest{window, depth, bpp});
 }
 
 template <>
@@ -662,6 +713,27 @@ Future<void> Dri3::PixmapFromBuffers(
   return connection_->SendRequest<void>(&buf, "Dri3::PixmapFromBuffers", false);
 }
 
+Future<void> Dri3::PixmapFromBuffers(const Pixmap& pixmap,
+                                     const Window& window,
+                                     const uint16_t& width,
+                                     const uint16_t& height,
+                                     const uint32_t& stride0,
+                                     const uint32_t& offset0,
+                                     const uint32_t& stride1,
+                                     const uint32_t& offset1,
+                                     const uint32_t& stride2,
+                                     const uint32_t& offset2,
+                                     const uint32_t& stride3,
+                                     const uint32_t& offset3,
+                                     const uint8_t& depth,
+                                     const uint8_t& bpp,
+                                     const uint64_t& modifier,
+                                     const std::vector<RefCountedFD>& buffers) {
+  return Dri3::PixmapFromBuffers(Dri3::PixmapFromBuffersRequest{
+      pixmap, window, width, height, stride0, offset0, stride1, offset1,
+      stride2, offset2, stride3, offset3, depth, bpp, modifier, buffers});
+}
+
 Future<Dri3::BuffersFromPixmapReply> Dri3::BuffersFromPixmap(
     const Dri3::BuffersFromPixmapRequest& request) {
   if (!connection_->Ready() || !present())
@@ -690,6 +762,11 @@ Future<Dri3::BuffersFromPixmapReply> Dri3::BuffersFromPixmap(
 
   return connection_->SendRequest<Dri3::BuffersFromPixmapReply>(
       &buf, "Dri3::BuffersFromPixmap", true);
+}
+
+Future<Dri3::BuffersFromPixmapReply> Dri3::BuffersFromPixmap(
+    const Pixmap& pixmap) {
+  return Dri3::BuffersFromPixmap(Dri3::BuffersFromPixmapRequest{pixmap});
 }
 
 template <>
@@ -766,7 +843,7 @@ std::unique_ptr<Dri3::BuffersFromPixmapReply> detail::ReadReply<
   buffers.resize(nfd);
   for (auto& buffers_elem : buffers) {
     // buffers_elem
-    buffers_elem = base::ScopedFD(buf.TakeFd());
+    buffers_elem = RefCountedFD(buf.TakeFd());
   }
 
   Align(&buf, 4);

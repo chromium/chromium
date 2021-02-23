@@ -54,6 +54,7 @@
 #include "base/optional.h"
 #include "shm.h"
 #include "ui/gfx/x/error.h"
+#include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
 
 namespace x11 {
@@ -255,6 +256,8 @@ class COMPONENT_EXPORT(X11) Xv {
   Future<QueryExtensionReply> QueryExtension(
       const QueryExtensionRequest& request);
 
+  Future<QueryExtensionReply> QueryExtension();
+
   struct QueryAdaptorsRequest {
     Window window{};
   };
@@ -267,6 +270,8 @@ class COMPONENT_EXPORT(X11) Xv {
   using QueryAdaptorsResponse = Response<QueryAdaptorsReply>;
 
   Future<QueryAdaptorsReply> QueryAdaptors(const QueryAdaptorsRequest& request);
+
+  Future<QueryAdaptorsReply> QueryAdaptors(const Window& window = {});
 
   struct QueryEncodingsRequest {
     Port port{};
@@ -282,6 +287,8 @@ class COMPONENT_EXPORT(X11) Xv {
   Future<QueryEncodingsReply> QueryEncodings(
       const QueryEncodingsRequest& request);
 
+  Future<QueryEncodingsReply> QueryEncodings(const Port& port = {});
+
   struct GrabPortRequest {
     Port port{};
     Time time{};
@@ -296,6 +303,8 @@ class COMPONENT_EXPORT(X11) Xv {
 
   Future<GrabPortReply> GrabPort(const GrabPortRequest& request);
 
+  Future<GrabPortReply> GrabPort(const Port& port = {}, const Time& time = {});
+
   struct UngrabPortRequest {
     Port port{};
     Time time{};
@@ -304,6 +313,8 @@ class COMPONENT_EXPORT(X11) Xv {
   using UngrabPortResponse = Response<void>;
 
   Future<void> UngrabPort(const UngrabPortRequest& request);
+
+  Future<void> UngrabPort(const Port& port = {}, const Time& time = {});
 
   struct PutVideoRequest {
     Port port{};
@@ -323,6 +334,18 @@ class COMPONENT_EXPORT(X11) Xv {
 
   Future<void> PutVideo(const PutVideoRequest& request);
 
+  Future<void> PutVideo(const Port& port = {},
+                        const Drawable& drawable = {},
+                        const GraphicsContext& gc = {},
+                        const int16_t& vid_x = {},
+                        const int16_t& vid_y = {},
+                        const uint16_t& vid_w = {},
+                        const uint16_t& vid_h = {},
+                        const int16_t& drw_x = {},
+                        const int16_t& drw_y = {},
+                        const uint16_t& drw_w = {},
+                        const uint16_t& drw_h = {});
+
   struct PutStillRequest {
     Port port{};
     Drawable drawable{};
@@ -340,6 +363,18 @@ class COMPONENT_EXPORT(X11) Xv {
   using PutStillResponse = Response<void>;
 
   Future<void> PutStill(const PutStillRequest& request);
+
+  Future<void> PutStill(const Port& port = {},
+                        const Drawable& drawable = {},
+                        const GraphicsContext& gc = {},
+                        const int16_t& vid_x = {},
+                        const int16_t& vid_y = {},
+                        const uint16_t& vid_w = {},
+                        const uint16_t& vid_h = {},
+                        const int16_t& drw_x = {},
+                        const int16_t& drw_y = {},
+                        const uint16_t& drw_w = {},
+                        const uint16_t& drw_h = {});
 
   struct GetVideoRequest {
     Port port{};
@@ -359,6 +394,18 @@ class COMPONENT_EXPORT(X11) Xv {
 
   Future<void> GetVideo(const GetVideoRequest& request);
 
+  Future<void> GetVideo(const Port& port = {},
+                        const Drawable& drawable = {},
+                        const GraphicsContext& gc = {},
+                        const int16_t& vid_x = {},
+                        const int16_t& vid_y = {},
+                        const uint16_t& vid_w = {},
+                        const uint16_t& vid_h = {},
+                        const int16_t& drw_x = {},
+                        const int16_t& drw_y = {},
+                        const uint16_t& drw_w = {},
+                        const uint16_t& drw_h = {});
+
   struct GetStillRequest {
     Port port{};
     Drawable drawable{};
@@ -377,6 +424,18 @@ class COMPONENT_EXPORT(X11) Xv {
 
   Future<void> GetStill(const GetStillRequest& request);
 
+  Future<void> GetStill(const Port& port = {},
+                        const Drawable& drawable = {},
+                        const GraphicsContext& gc = {},
+                        const int16_t& vid_x = {},
+                        const int16_t& vid_y = {},
+                        const uint16_t& vid_w = {},
+                        const uint16_t& vid_h = {},
+                        const int16_t& drw_x = {},
+                        const int16_t& drw_y = {},
+                        const uint16_t& drw_w = {},
+                        const uint16_t& drw_h = {});
+
   struct StopVideoRequest {
     Port port{};
     Drawable drawable{};
@@ -385,6 +444,8 @@ class COMPONENT_EXPORT(X11) Xv {
   using StopVideoResponse = Response<void>;
 
   Future<void> StopVideo(const StopVideoRequest& request);
+
+  Future<void> StopVideo(const Port& port = {}, const Drawable& drawable = {});
 
   struct SelectVideoNotifyRequest {
     Drawable drawable{};
@@ -395,6 +456,9 @@ class COMPONENT_EXPORT(X11) Xv {
 
   Future<void> SelectVideoNotify(const SelectVideoNotifyRequest& request);
 
+  Future<void> SelectVideoNotify(const Drawable& drawable = {},
+                                 const uint8_t& onoff = {});
+
   struct SelectPortNotifyRequest {
     Port port{};
     uint8_t onoff{};
@@ -403,6 +467,9 @@ class COMPONENT_EXPORT(X11) Xv {
   using SelectPortNotifyResponse = Response<void>;
 
   Future<void> SelectPortNotify(const SelectPortNotifyRequest& request);
+
+  Future<void> SelectPortNotify(const Port& port = {},
+                                const uint8_t& onoff = {});
 
   struct QueryBestSizeRequest {
     Port port{};
@@ -423,6 +490,13 @@ class COMPONENT_EXPORT(X11) Xv {
 
   Future<QueryBestSizeReply> QueryBestSize(const QueryBestSizeRequest& request);
 
+  Future<QueryBestSizeReply> QueryBestSize(const Port& port = {},
+                                           const uint16_t& vid_w = {},
+                                           const uint16_t& vid_h = {},
+                                           const uint16_t& drw_w = {},
+                                           const uint16_t& drw_h = {},
+                                           const uint8_t& motion = {});
+
   struct SetPortAttributeRequest {
     Port port{};
     Atom attribute{};
@@ -432,6 +506,10 @@ class COMPONENT_EXPORT(X11) Xv {
   using SetPortAttributeResponse = Response<void>;
 
   Future<void> SetPortAttribute(const SetPortAttributeRequest& request);
+
+  Future<void> SetPortAttribute(const Port& port = {},
+                                const Atom& attribute = {},
+                                const int32_t& value = {});
 
   struct GetPortAttributeRequest {
     Port port{};
@@ -448,6 +526,9 @@ class COMPONENT_EXPORT(X11) Xv {
   Future<GetPortAttributeReply> GetPortAttribute(
       const GetPortAttributeRequest& request);
 
+  Future<GetPortAttributeReply> GetPortAttribute(const Port& port = {},
+                                                 const Atom& attribute = {});
+
   struct QueryPortAttributesRequest {
     Port port{};
   };
@@ -463,6 +544,8 @@ class COMPONENT_EXPORT(X11) Xv {
   Future<QueryPortAttributesReply> QueryPortAttributes(
       const QueryPortAttributesRequest& request);
 
+  Future<QueryPortAttributesReply> QueryPortAttributes(const Port& port = {});
+
   struct ListImageFormatsRequest {
     Port port{};
   };
@@ -476,6 +559,8 @@ class COMPONENT_EXPORT(X11) Xv {
 
   Future<ListImageFormatsReply> ListImageFormats(
       const ListImageFormatsRequest& request);
+
+  Future<ListImageFormatsReply> ListImageFormats(const Port& port = {});
 
   struct QueryImageAttributesRequest {
     Port port{};
@@ -498,6 +583,12 @@ class COMPONENT_EXPORT(X11) Xv {
   Future<QueryImageAttributesReply> QueryImageAttributes(
       const QueryImageAttributesRequest& request);
 
+  Future<QueryImageAttributesReply> QueryImageAttributes(
+      const Port& port = {},
+      const uint32_t& id = {},
+      const uint16_t& width = {},
+      const uint16_t& height = {});
+
   struct PutImageRequest {
     Port port{};
     Drawable drawable{};
@@ -519,6 +610,22 @@ class COMPONENT_EXPORT(X11) Xv {
   using PutImageResponse = Response<void>;
 
   Future<void> PutImage(const PutImageRequest& request);
+
+  Future<void> PutImage(const Port& port = {},
+                        const Drawable& drawable = {},
+                        const GraphicsContext& gc = {},
+                        const uint32_t& id = {},
+                        const int16_t& src_x = {},
+                        const int16_t& src_y = {},
+                        const uint16_t& src_w = {},
+                        const uint16_t& src_h = {},
+                        const int16_t& drw_x = {},
+                        const int16_t& drw_y = {},
+                        const uint16_t& drw_w = {},
+                        const uint16_t& drw_h = {},
+                        const uint16_t& width = {},
+                        const uint16_t& height = {},
+                        const std::vector<uint8_t>& data = {});
 
   struct ShmPutImageRequest {
     Port port{};
@@ -543,6 +650,24 @@ class COMPONENT_EXPORT(X11) Xv {
   using ShmPutImageResponse = Response<void>;
 
   Future<void> ShmPutImage(const ShmPutImageRequest& request);
+
+  Future<void> ShmPutImage(const Port& port = {},
+                           const Drawable& drawable = {},
+                           const GraphicsContext& gc = {},
+                           const Shm::Seg& shmseg = {},
+                           const uint32_t& id = {},
+                           const uint32_t& offset = {},
+                           const int16_t& src_x = {},
+                           const int16_t& src_y = {},
+                           const uint16_t& src_w = {},
+                           const uint16_t& src_h = {},
+                           const int16_t& drw_x = {},
+                           const int16_t& drw_y = {},
+                           const uint16_t& drw_w = {},
+                           const uint16_t& drw_h = {},
+                           const uint16_t& width = {},
+                           const uint16_t& height = {},
+                           const uint8_t& send_event = {});
 
  private:
   Connection* const connection_;

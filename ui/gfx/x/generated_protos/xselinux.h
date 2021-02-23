@@ -53,6 +53,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "ui/gfx/x/error.h"
+#include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
 
 namespace x11 {
@@ -100,6 +101,9 @@ class COMPONENT_EXPORT(X11) SELinux {
 
   Future<QueryVersionReply> QueryVersion(const QueryVersionRequest& request);
 
+  Future<QueryVersionReply> QueryVersion(const uint8_t& client_major = {},
+                                         const uint8_t& client_minor = {});
+
   struct SetDeviceCreateContextRequest {
     std::string context{};
   };
@@ -108,6 +112,8 @@ class COMPONENT_EXPORT(X11) SELinux {
 
   Future<void> SetDeviceCreateContext(
       const SetDeviceCreateContextRequest& request);
+
+  Future<void> SetDeviceCreateContext(const std::string& context = {});
 
   struct GetDeviceCreateContextRequest {};
 
@@ -121,6 +127,8 @@ class COMPONENT_EXPORT(X11) SELinux {
   Future<GetDeviceCreateContextReply> GetDeviceCreateContext(
       const GetDeviceCreateContextRequest& request);
 
+  Future<GetDeviceCreateContextReply> GetDeviceCreateContext();
+
   struct SetDeviceContextRequest {
     uint32_t device{};
     std::string context{};
@@ -129,6 +137,9 @@ class COMPONENT_EXPORT(X11) SELinux {
   using SetDeviceContextResponse = Response<void>;
 
   Future<void> SetDeviceContext(const SetDeviceContextRequest& request);
+
+  Future<void> SetDeviceContext(const uint32_t& device = {},
+                                const std::string& context = {});
 
   struct GetDeviceContextRequest {
     uint32_t device{};
@@ -144,6 +155,8 @@ class COMPONENT_EXPORT(X11) SELinux {
   Future<GetDeviceContextReply> GetDeviceContext(
       const GetDeviceContextRequest& request);
 
+  Future<GetDeviceContextReply> GetDeviceContext(const uint32_t& device = {});
+
   struct SetWindowCreateContextRequest {
     std::string context{};
   };
@@ -152,6 +165,8 @@ class COMPONENT_EXPORT(X11) SELinux {
 
   Future<void> SetWindowCreateContext(
       const SetWindowCreateContextRequest& request);
+
+  Future<void> SetWindowCreateContext(const std::string& context = {});
 
   struct GetWindowCreateContextRequest {};
 
@@ -164,6 +179,8 @@ class COMPONENT_EXPORT(X11) SELinux {
 
   Future<GetWindowCreateContextReply> GetWindowCreateContext(
       const GetWindowCreateContextRequest& request);
+
+  Future<GetWindowCreateContextReply> GetWindowCreateContext();
 
   struct GetWindowContextRequest {
     Window window{};
@@ -179,6 +196,8 @@ class COMPONENT_EXPORT(X11) SELinux {
   Future<GetWindowContextReply> GetWindowContext(
       const GetWindowContextRequest& request);
 
+  Future<GetWindowContextReply> GetWindowContext(const Window& window = {});
+
   struct SetPropertyCreateContextRequest {
     std::string context{};
   };
@@ -187,6 +206,8 @@ class COMPONENT_EXPORT(X11) SELinux {
 
   Future<void> SetPropertyCreateContext(
       const SetPropertyCreateContextRequest& request);
+
+  Future<void> SetPropertyCreateContext(const std::string& context = {});
 
   struct GetPropertyCreateContextRequest {};
 
@@ -201,6 +222,8 @@ class COMPONENT_EXPORT(X11) SELinux {
   Future<GetPropertyCreateContextReply> GetPropertyCreateContext(
       const GetPropertyCreateContextRequest& request);
 
+  Future<GetPropertyCreateContextReply> GetPropertyCreateContext();
+
   struct SetPropertyUseContextRequest {
     std::string context{};
   };
@@ -209,6 +232,8 @@ class COMPONENT_EXPORT(X11) SELinux {
 
   Future<void> SetPropertyUseContext(
       const SetPropertyUseContextRequest& request);
+
+  Future<void> SetPropertyUseContext(const std::string& context = {});
 
   struct GetPropertyUseContextRequest {};
 
@@ -221,6 +246,8 @@ class COMPONENT_EXPORT(X11) SELinux {
 
   Future<GetPropertyUseContextReply> GetPropertyUseContext(
       const GetPropertyUseContextRequest& request);
+
+  Future<GetPropertyUseContextReply> GetPropertyUseContext();
 
   struct GetPropertyContextRequest {
     Window window{};
@@ -237,6 +264,9 @@ class COMPONENT_EXPORT(X11) SELinux {
   Future<GetPropertyContextReply> GetPropertyContext(
       const GetPropertyContextRequest& request);
 
+  Future<GetPropertyContextReply> GetPropertyContext(const Window& window = {},
+                                                     const Atom& property = {});
+
   struct GetPropertyDataContextRequest {
     Window window{};
     Atom property{};
@@ -252,6 +282,10 @@ class COMPONENT_EXPORT(X11) SELinux {
   Future<GetPropertyDataContextReply> GetPropertyDataContext(
       const GetPropertyDataContextRequest& request);
 
+  Future<GetPropertyDataContextReply> GetPropertyDataContext(
+      const Window& window = {},
+      const Atom& property = {});
+
   struct ListPropertiesRequest {
     Window window{};
   };
@@ -266,6 +300,8 @@ class COMPONENT_EXPORT(X11) SELinux {
   Future<ListPropertiesReply> ListProperties(
       const ListPropertiesRequest& request);
 
+  Future<ListPropertiesReply> ListProperties(const Window& window = {});
+
   struct SetSelectionCreateContextRequest {
     std::string context{};
   };
@@ -274,6 +310,8 @@ class COMPONENT_EXPORT(X11) SELinux {
 
   Future<void> SetSelectionCreateContext(
       const SetSelectionCreateContextRequest& request);
+
+  Future<void> SetSelectionCreateContext(const std::string& context = {});
 
   struct GetSelectionCreateContextRequest {};
 
@@ -288,6 +326,8 @@ class COMPONENT_EXPORT(X11) SELinux {
   Future<GetSelectionCreateContextReply> GetSelectionCreateContext(
       const GetSelectionCreateContextRequest& request);
 
+  Future<GetSelectionCreateContextReply> GetSelectionCreateContext();
+
   struct SetSelectionUseContextRequest {
     std::string context{};
   };
@@ -296,6 +336,8 @@ class COMPONENT_EXPORT(X11) SELinux {
 
   Future<void> SetSelectionUseContext(
       const SetSelectionUseContextRequest& request);
+
+  Future<void> SetSelectionUseContext(const std::string& context = {});
 
   struct GetSelectionUseContextRequest {};
 
@@ -308,6 +350,8 @@ class COMPONENT_EXPORT(X11) SELinux {
 
   Future<GetSelectionUseContextReply> GetSelectionUseContext(
       const GetSelectionUseContextRequest& request);
+
+  Future<GetSelectionUseContextReply> GetSelectionUseContext();
 
   struct GetSelectionContextRequest {
     Atom selection{};
@@ -322,6 +366,9 @@ class COMPONENT_EXPORT(X11) SELinux {
 
   Future<GetSelectionContextReply> GetSelectionContext(
       const GetSelectionContextRequest& request);
+
+  Future<GetSelectionContextReply> GetSelectionContext(
+      const Atom& selection = {});
 
   struct GetSelectionDataContextRequest {
     Atom selection{};
@@ -338,6 +385,9 @@ class COMPONENT_EXPORT(X11) SELinux {
   Future<GetSelectionDataContextReply> GetSelectionDataContext(
       const GetSelectionDataContextRequest& request);
 
+  Future<GetSelectionDataContextReply> GetSelectionDataContext(
+      const Atom& selection = {});
+
   struct ListSelectionsRequest {};
 
   struct ListSelectionsReply {
@@ -349,6 +399,8 @@ class COMPONENT_EXPORT(X11) SELinux {
 
   Future<ListSelectionsReply> ListSelections(
       const ListSelectionsRequest& request);
+
+  Future<ListSelectionsReply> ListSelections();
 
   struct GetClientContextRequest {
     uint32_t resource{};
@@ -363,6 +415,8 @@ class COMPONENT_EXPORT(X11) SELinux {
 
   Future<GetClientContextReply> GetClientContext(
       const GetClientContextRequest& request);
+
+  Future<GetClientContextReply> GetClientContext(const uint32_t& resource = {});
 
  private:
   Connection* const connection_;

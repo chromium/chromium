@@ -87,6 +87,13 @@ Future<Composite::QueryVersionReply> Composite::QueryVersion(
       &buf, "Composite::QueryVersion", false);
 }
 
+Future<Composite::QueryVersionReply> Composite::QueryVersion(
+    const uint32_t& client_major_version,
+    const uint32_t& client_minor_version) {
+  return Composite::QueryVersion(Composite::QueryVersionRequest{
+      client_major_version, client_minor_version});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Composite::QueryVersionReply> detail::ReadReply<
@@ -166,6 +173,12 @@ Future<void> Composite::RedirectWindow(
                                         false);
 }
 
+Future<void> Composite::RedirectWindow(const Window& window,
+                                       const Redirect& update) {
+  return Composite::RedirectWindow(
+      Composite::RedirectWindowRequest{window, update});
+}
+
 Future<void> Composite::RedirectSubwindows(
     const Composite::RedirectSubwindowsRequest& request) {
   if (!connection_->Ready() || !present())
@@ -203,6 +216,12 @@ Future<void> Composite::RedirectSubwindows(
 
   return connection_->SendRequest<void>(&buf, "Composite::RedirectSubwindows",
                                         false);
+}
+
+Future<void> Composite::RedirectSubwindows(const Window& window,
+                                           const Redirect& update) {
+  return Composite::RedirectSubwindows(
+      Composite::RedirectSubwindowsRequest{window, update});
 }
 
 Future<void> Composite::UnredirectWindow(
@@ -244,6 +263,12 @@ Future<void> Composite::UnredirectWindow(
                                         false);
 }
 
+Future<void> Composite::UnredirectWindow(const Window& window,
+                                         const Redirect& update) {
+  return Composite::UnredirectWindow(
+      Composite::UnredirectWindowRequest{window, update});
+}
+
 Future<void> Composite::UnredirectSubwindows(
     const Composite::UnredirectSubwindowsRequest& request) {
   if (!connection_->Ready() || !present())
@@ -283,6 +308,12 @@ Future<void> Composite::UnredirectSubwindows(
                                         false);
 }
 
+Future<void> Composite::UnredirectSubwindows(const Window& window,
+                                             const Redirect& update) {
+  return Composite::UnredirectSubwindows(
+      Composite::UnredirectSubwindowsRequest{window, update});
+}
+
 Future<void> Composite::CreateRegionFromBorderClip(
     const Composite::CreateRegionFromBorderClipRequest& request) {
   if (!connection_->Ready() || !present())
@@ -315,6 +346,12 @@ Future<void> Composite::CreateRegionFromBorderClip(
 
   return connection_->SendRequest<void>(
       &buf, "Composite::CreateRegionFromBorderClip", false);
+}
+
+Future<void> Composite::CreateRegionFromBorderClip(const XFixes::Region& region,
+                                                   const Window& window) {
+  return Composite::CreateRegionFromBorderClip(
+      Composite::CreateRegionFromBorderClipRequest{region, window});
 }
 
 Future<void> Composite::NameWindowPixmap(
@@ -351,6 +388,12 @@ Future<void> Composite::NameWindowPixmap(
                                         false);
 }
 
+Future<void> Composite::NameWindowPixmap(const Window& window,
+                                         const Pixmap& pixmap) {
+  return Composite::NameWindowPixmap(
+      Composite::NameWindowPixmapRequest{window, pixmap});
+}
+
 Future<Composite::GetOverlayWindowReply> Composite::GetOverlayWindow(
     const Composite::GetOverlayWindowRequest& request) {
   if (!connection_->Ready() || !present())
@@ -379,6 +422,12 @@ Future<Composite::GetOverlayWindowReply> Composite::GetOverlayWindow(
 
   return connection_->SendRequest<Composite::GetOverlayWindowReply>(
       &buf, "Composite::GetOverlayWindow", false);
+}
+
+Future<Composite::GetOverlayWindowReply> Composite::GetOverlayWindow(
+    const Window& window) {
+  return Composite::GetOverlayWindow(
+      Composite::GetOverlayWindowRequest{window});
 }
 
 template <>
@@ -445,6 +494,11 @@ Future<void> Composite::ReleaseOverlayWindow(
 
   return connection_->SendRequest<void>(&buf, "Composite::ReleaseOverlayWindow",
                                         false);
+}
+
+Future<void> Composite::ReleaseOverlayWindow(const Window& window) {
+  return Composite::ReleaseOverlayWindow(
+      Composite::ReleaseOverlayWindowRequest{window});
 }
 
 }  // namespace x11

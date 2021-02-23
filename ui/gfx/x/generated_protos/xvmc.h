@@ -53,6 +53,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "ui/gfx/x/error.h"
+#include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
 #include "xv.h"
 
@@ -110,6 +111,8 @@ class COMPONENT_EXPORT(X11) XvMC {
 
   Future<QueryVersionReply> QueryVersion(const QueryVersionRequest& request);
 
+  Future<QueryVersionReply> QueryVersion();
+
   struct ListSurfaceTypesRequest {
     Xv::Port port_id{};
   };
@@ -123,6 +126,8 @@ class COMPONENT_EXPORT(X11) XvMC {
 
   Future<ListSurfaceTypesReply> ListSurfaceTypes(
       const ListSurfaceTypesRequest& request);
+
+  Future<ListSurfaceTypesReply> ListSurfaceTypes(const Xv::Port& port_id = {});
 
   struct CreateContextRequest {
     Context context_id{};
@@ -145,6 +150,13 @@ class COMPONENT_EXPORT(X11) XvMC {
 
   Future<CreateContextReply> CreateContext(const CreateContextRequest& request);
 
+  Future<CreateContextReply> CreateContext(const Context& context_id = {},
+                                           const Xv::Port& port_id = {},
+                                           const Surface& surface_id = {},
+                                           const uint16_t& width = {},
+                                           const uint16_t& height = {},
+                                           const uint32_t& flags = {});
+
   struct DestroyContextRequest {
     Context context_id{};
   };
@@ -152,6 +164,8 @@ class COMPONENT_EXPORT(X11) XvMC {
   using DestroyContextResponse = Response<void>;
 
   Future<void> DestroyContext(const DestroyContextRequest& request);
+
+  Future<void> DestroyContext(const Context& context_id = {});
 
   struct CreateSurfaceRequest {
     Surface surface_id{};
@@ -167,6 +181,9 @@ class COMPONENT_EXPORT(X11) XvMC {
 
   Future<CreateSurfaceReply> CreateSurface(const CreateSurfaceRequest& request);
 
+  Future<CreateSurfaceReply> CreateSurface(const Surface& surface_id = {},
+                                           const Context& context_id = {});
+
   struct DestroySurfaceRequest {
     Surface surface_id{};
   };
@@ -174,6 +191,8 @@ class COMPONENT_EXPORT(X11) XvMC {
   using DestroySurfaceResponse = Response<void>;
 
   Future<void> DestroySurface(const DestroySurfaceRequest& request);
+
+  Future<void> DestroySurface(const Surface& surface_id = {});
 
   struct CreateSubpictureRequest {
     SubPicture subpicture_id{};
@@ -198,6 +217,13 @@ class COMPONENT_EXPORT(X11) XvMC {
   Future<CreateSubpictureReply> CreateSubpicture(
       const CreateSubpictureRequest& request);
 
+  Future<CreateSubpictureReply> CreateSubpicture(
+      const SubPicture& subpicture_id = {},
+      const Context& context = {},
+      const uint32_t& xvimage_id = {},
+      const uint16_t& width = {},
+      const uint16_t& height = {});
+
   struct DestroySubpictureRequest {
     SubPicture subpicture_id{};
   };
@@ -205,6 +231,8 @@ class COMPONENT_EXPORT(X11) XvMC {
   using DestroySubpictureResponse = Response<void>;
 
   Future<void> DestroySubpicture(const DestroySubpictureRequest& request);
+
+  Future<void> DestroySubpicture(const SubPicture& subpicture_id = {});
 
   struct ListSubpictureTypesRequest {
     Xv::Port port_id{};
@@ -220,6 +248,10 @@ class COMPONENT_EXPORT(X11) XvMC {
 
   Future<ListSubpictureTypesReply> ListSubpictureTypes(
       const ListSubpictureTypesRequest& request);
+
+  Future<ListSubpictureTypesReply> ListSubpictureTypes(
+      const Xv::Port& port_id = {},
+      const Surface& surface_id = {});
 
  private:
   Connection* const connection_;

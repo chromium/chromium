@@ -143,7 +143,7 @@ Connection::Connection(const std::string& address)
   }
 
   ExtensionManager::Init(this);
-  auto enable_bigreq = bigreq().Enable({});
+  auto enable_bigreq = bigreq().Enable();
   // Xlib enables XKB on display creation, so we do that here to maintain
   // compatibility.
   xkb()
@@ -348,7 +348,7 @@ void Connection::Sync() {
     return;
   {
     base::AutoReset<bool> auto_reset(&syncing_, true);
-    GetInputFocus({}).Sync();
+    GetInputFocus().Sync();
   }
 }
 
@@ -663,7 +663,7 @@ void Connection::WaitForResponse(FutureImpl* future) {
       needs_extra_request_for_check = sequence_offset > last_non_void_offset;
     }
     if (needs_extra_request_for_check) {
-      GetInputFocus({}).IgnoreError();
+      GetInputFocus().IgnoreError();
       // The circular_deque may have swapped buffers, so we need to get a fresh
       // pointer to the request.
       request = GetRequestForFuture(future);

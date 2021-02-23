@@ -53,6 +53,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "ui/gfx/x/error.h"
+#include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
 
 namespace x11 {
@@ -101,6 +102,9 @@ class COMPONENT_EXPORT(X11) Dpms {
 
   Future<GetVersionReply> GetVersion(const GetVersionRequest& request);
 
+  Future<GetVersionReply> GetVersion(const uint16_t& client_major_version = {},
+                                     const uint16_t& client_minor_version = {});
+
   struct CapableRequest {};
 
   struct CapableReply {
@@ -111,6 +115,8 @@ class COMPONENT_EXPORT(X11) Dpms {
   using CapableResponse = Response<CapableReply>;
 
   Future<CapableReply> Capable(const CapableRequest& request);
+
+  Future<CapableReply> Capable();
 
   struct GetTimeoutsRequest {};
 
@@ -125,6 +131,8 @@ class COMPONENT_EXPORT(X11) Dpms {
 
   Future<GetTimeoutsReply> GetTimeouts(const GetTimeoutsRequest& request);
 
+  Future<GetTimeoutsReply> GetTimeouts();
+
   struct SetTimeoutsRequest {
     uint16_t standby_timeout{};
     uint16_t suspend_timeout{};
@@ -135,17 +143,25 @@ class COMPONENT_EXPORT(X11) Dpms {
 
   Future<void> SetTimeouts(const SetTimeoutsRequest& request);
 
+  Future<void> SetTimeouts(const uint16_t& standby_timeout = {},
+                           const uint16_t& suspend_timeout = {},
+                           const uint16_t& off_timeout = {});
+
   struct EnableRequest {};
 
   using EnableResponse = Response<void>;
 
   Future<void> Enable(const EnableRequest& request);
 
+  Future<void> Enable();
+
   struct DisableRequest {};
 
   using DisableResponse = Response<void>;
 
   Future<void> Disable(const DisableRequest& request);
+
+  Future<void> Disable();
 
   struct ForceLevelRequest {
     DPMSMode power_level{};
@@ -154,6 +170,8 @@ class COMPONENT_EXPORT(X11) Dpms {
   using ForceLevelResponse = Response<void>;
 
   Future<void> ForceLevel(const ForceLevelRequest& request);
+
+  Future<void> ForceLevel(const DPMSMode& power_level = {});
 
   struct InfoRequest {};
 
@@ -166,6 +184,8 @@ class COMPONENT_EXPORT(X11) Dpms {
   using InfoResponse = Response<InfoReply>;
 
   Future<InfoReply> Info(const InfoRequest& request);
+
+  Future<InfoReply> Info();
 
  private:
   Connection* const connection_;

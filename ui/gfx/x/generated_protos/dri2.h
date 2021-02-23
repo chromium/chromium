@@ -53,6 +53,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "ui/gfx/x/error.h"
+#include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
 
 namespace x11 {
@@ -162,6 +163,9 @@ class COMPONENT_EXPORT(X11) Dri2 {
 
   Future<QueryVersionReply> QueryVersion(const QueryVersionRequest& request);
 
+  Future<QueryVersionReply> QueryVersion(const uint32_t& major_version = {},
+                                         const uint32_t& minor_version = {});
+
   struct ConnectRequest {
     Window window{};
     DriverType driver_type{};
@@ -178,6 +182,9 @@ class COMPONENT_EXPORT(X11) Dri2 {
 
   Future<ConnectReply> Connect(const ConnectRequest& request);
 
+  Future<ConnectReply> Connect(const Window& window = {},
+                               const DriverType& driver_type = {});
+
   struct AuthenticateRequest {
     Window window{};
     uint32_t magic{};
@@ -192,6 +199,9 @@ class COMPONENT_EXPORT(X11) Dri2 {
 
   Future<AuthenticateReply> Authenticate(const AuthenticateRequest& request);
 
+  Future<AuthenticateReply> Authenticate(const Window& window = {},
+                                         const uint32_t& magic = {});
+
   struct CreateDrawableRequest {
     Drawable drawable{};
   };
@@ -200,6 +210,8 @@ class COMPONENT_EXPORT(X11) Dri2 {
 
   Future<void> CreateDrawable(const CreateDrawableRequest& request);
 
+  Future<void> CreateDrawable(const Drawable& drawable = {});
+
   struct DestroyDrawableRequest {
     Drawable drawable{};
   };
@@ -207,6 +219,8 @@ class COMPONENT_EXPORT(X11) Dri2 {
   using DestroyDrawableResponse = Response<void>;
 
   Future<void> DestroyDrawable(const DestroyDrawableRequest& request);
+
+  Future<void> DestroyDrawable(const Drawable& drawable = {});
 
   struct GetBuffersRequest {
     Drawable drawable{};
@@ -225,6 +239,11 @@ class COMPONENT_EXPORT(X11) Dri2 {
 
   Future<GetBuffersReply> GetBuffers(const GetBuffersRequest& request);
 
+  Future<GetBuffersReply> GetBuffers(
+      const Drawable& drawable = {},
+      const uint32_t& count = {},
+      const std::vector<uint32_t>& attachments = {});
+
   struct CopyRegionRequest {
     Drawable drawable{};
     uint32_t region{};
@@ -239,6 +258,11 @@ class COMPONENT_EXPORT(X11) Dri2 {
   using CopyRegionResponse = Response<CopyRegionReply>;
 
   Future<CopyRegionReply> CopyRegion(const CopyRegionRequest& request);
+
+  Future<CopyRegionReply> CopyRegion(const Drawable& drawable = {},
+                                     const uint32_t& region = {},
+                                     const uint32_t& dest = {},
+                                     const uint32_t& src = {});
 
   struct GetBuffersWithFormatRequest {
     Drawable drawable{};
@@ -257,6 +281,11 @@ class COMPONENT_EXPORT(X11) Dri2 {
 
   Future<GetBuffersWithFormatReply> GetBuffersWithFormat(
       const GetBuffersWithFormatRequest& request);
+
+  Future<GetBuffersWithFormatReply> GetBuffersWithFormat(
+      const Drawable& drawable = {},
+      const uint32_t& count = {},
+      const std::vector<AttachFormat>& attachments = {});
 
   struct SwapBuffersRequest {
     Drawable drawable{};
@@ -278,6 +307,14 @@ class COMPONENT_EXPORT(X11) Dri2 {
 
   Future<SwapBuffersReply> SwapBuffers(const SwapBuffersRequest& request);
 
+  Future<SwapBuffersReply> SwapBuffers(const Drawable& drawable = {},
+                                       const uint32_t& target_msc_hi = {},
+                                       const uint32_t& target_msc_lo = {},
+                                       const uint32_t& divisor_hi = {},
+                                       const uint32_t& divisor_lo = {},
+                                       const uint32_t& remainder_hi = {},
+                                       const uint32_t& remainder_lo = {});
+
   struct GetMSCRequest {
     Drawable drawable{};
   };
@@ -295,6 +332,8 @@ class COMPONENT_EXPORT(X11) Dri2 {
   using GetMSCResponse = Response<GetMSCReply>;
 
   Future<GetMSCReply> GetMSC(const GetMSCRequest& request);
+
+  Future<GetMSCReply> GetMSC(const Drawable& drawable = {});
 
   struct WaitMSCRequest {
     Drawable drawable{};
@@ -320,6 +359,14 @@ class COMPONENT_EXPORT(X11) Dri2 {
 
   Future<WaitMSCReply> WaitMSC(const WaitMSCRequest& request);
 
+  Future<WaitMSCReply> WaitMSC(const Drawable& drawable = {},
+                               const uint32_t& target_msc_hi = {},
+                               const uint32_t& target_msc_lo = {},
+                               const uint32_t& divisor_hi = {},
+                               const uint32_t& divisor_lo = {},
+                               const uint32_t& remainder_hi = {},
+                               const uint32_t& remainder_lo = {});
+
   struct WaitSBCRequest {
     Drawable drawable{};
     uint32_t target_sbc_hi{};
@@ -340,6 +387,10 @@ class COMPONENT_EXPORT(X11) Dri2 {
 
   Future<WaitSBCReply> WaitSBC(const WaitSBCRequest& request);
 
+  Future<WaitSBCReply> WaitSBC(const Drawable& drawable = {},
+                               const uint32_t& target_sbc_hi = {},
+                               const uint32_t& target_sbc_lo = {});
+
   struct SwapIntervalRequest {
     Drawable drawable{};
     uint32_t interval{};
@@ -348,6 +399,9 @@ class COMPONENT_EXPORT(X11) Dri2 {
   using SwapIntervalResponse = Response<void>;
 
   Future<void> SwapInterval(const SwapIntervalRequest& request);
+
+  Future<void> SwapInterval(const Drawable& drawable = {},
+                            const uint32_t& interval = {});
 
   struct GetParamRequest {
     Drawable drawable{};
@@ -364,6 +418,9 @@ class COMPONENT_EXPORT(X11) Dri2 {
   using GetParamResponse = Response<GetParamReply>;
 
   Future<GetParamReply> GetParam(const GetParamRequest& request);
+
+  Future<GetParamReply> GetParam(const Drawable& drawable = {},
+                                 const uint32_t& param = {});
 
  private:
   Connection* const connection_;

@@ -189,6 +189,10 @@ Future<XPrint::PrintQueryVersionReply> XPrint::PrintQueryVersion(
       &buf, "XPrint::PrintQueryVersion", false);
 }
 
+Future<XPrint::PrintQueryVersionReply> XPrint::PrintQueryVersion() {
+  return XPrint::PrintQueryVersion(XPrint::PrintQueryVersionRequest{});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<XPrint::PrintQueryVersionReply> detail::ReadReply<
@@ -278,6 +282,13 @@ Future<XPrint::PrintGetPrinterListReply> XPrint::PrintGetPrinterList(
 
   return connection_->SendRequest<XPrint::PrintGetPrinterListReply>(
       &buf, "XPrint::PrintGetPrinterList", false);
+}
+
+Future<XPrint::PrintGetPrinterListReply> XPrint::PrintGetPrinterList(
+    const std::vector<String8>& printer_name,
+    const std::vector<String8>& locale) {
+  return XPrint::PrintGetPrinterList(
+      XPrint::PrintGetPrinterListRequest{printer_name, locale});
 }
 
 template <>
@@ -383,6 +394,11 @@ Future<void> XPrint::PrintRehashPrinterList(
                                         false);
 }
 
+Future<void> XPrint::PrintRehashPrinterList() {
+  return XPrint::PrintRehashPrinterList(
+      XPrint::PrintRehashPrinterListRequest{});
+}
+
 Future<void> XPrint::CreateContext(
     const XPrint::CreateContextRequest& request) {
   if (!connection_->Ready() || !present())
@@ -440,6 +456,13 @@ Future<void> XPrint::CreateContext(
   return connection_->SendRequest<void>(&buf, "XPrint::CreateContext", false);
 }
 
+Future<void> XPrint::CreateContext(const uint32_t& context_id,
+                                   const std::vector<String8>& printerName,
+                                   const std::vector<String8>& locale) {
+  return XPrint::CreateContext(
+      XPrint::CreateContextRequest{context_id, printerName, locale});
+}
+
 Future<void> XPrint::PrintSetContext(
     const XPrint::PrintSetContextRequest& request) {
   if (!connection_->Ready() || !present())
@@ -469,6 +492,10 @@ Future<void> XPrint::PrintSetContext(
   return connection_->SendRequest<void>(&buf, "XPrint::PrintSetContext", false);
 }
 
+Future<void> XPrint::PrintSetContext(const uint32_t& context) {
+  return XPrint::PrintSetContext(XPrint::PrintSetContextRequest{context});
+}
+
 Future<XPrint::PrintGetContextReply> XPrint::PrintGetContext(
     const XPrint::PrintGetContextRequest& request) {
   if (!connection_->Ready() || !present())
@@ -492,6 +519,10 @@ Future<XPrint::PrintGetContextReply> XPrint::PrintGetContext(
 
   return connection_->SendRequest<XPrint::PrintGetContextReply>(
       &buf, "XPrint::PrintGetContext", false);
+}
+
+Future<XPrint::PrintGetContextReply> XPrint::PrintGetContext() {
+  return XPrint::PrintGetContext(XPrint::PrintGetContextRequest{});
 }
 
 template <>
@@ -557,6 +588,11 @@ Future<void> XPrint::PrintDestroyContext(
                                         false);
 }
 
+Future<void> XPrint::PrintDestroyContext(const uint32_t& context) {
+  return XPrint::PrintDestroyContext(
+      XPrint::PrintDestroyContextRequest{context});
+}
+
 Future<XPrint::PrintGetScreenOfContextReply> XPrint::PrintGetScreenOfContext(
     const XPrint::PrintGetScreenOfContextRequest& request) {
   if (!connection_->Ready() || !present())
@@ -580,6 +616,11 @@ Future<XPrint::PrintGetScreenOfContextReply> XPrint::PrintGetScreenOfContext(
 
   return connection_->SendRequest<XPrint::PrintGetScreenOfContextReply>(
       &buf, "XPrint::PrintGetScreenOfContext", false);
+}
+
+Future<XPrint::PrintGetScreenOfContextReply> XPrint::PrintGetScreenOfContext() {
+  return XPrint::PrintGetScreenOfContext(
+      XPrint::PrintGetScreenOfContextRequest{});
 }
 
 template <>
@@ -644,6 +685,10 @@ Future<void> XPrint::PrintStartJob(
   return connection_->SendRequest<void>(&buf, "XPrint::PrintStartJob", false);
 }
 
+Future<void> XPrint::PrintStartJob(const uint8_t& output_mode) {
+  return XPrint::PrintStartJob(XPrint::PrintStartJobRequest{output_mode});
+}
+
 Future<void> XPrint::PrintEndJob(const XPrint::PrintEndJobRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -670,6 +715,10 @@ Future<void> XPrint::PrintEndJob(const XPrint::PrintEndJobRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "XPrint::PrintEndJob", false);
+}
+
+Future<void> XPrint::PrintEndJob(const uint8_t& cancel) {
+  return XPrint::PrintEndJob(XPrint::PrintEndJobRequest{cancel});
 }
 
 Future<void> XPrint::PrintStartDoc(
@@ -701,6 +750,10 @@ Future<void> XPrint::PrintStartDoc(
   return connection_->SendRequest<void>(&buf, "XPrint::PrintStartDoc", false);
 }
 
+Future<void> XPrint::PrintStartDoc(const uint8_t& driver_mode) {
+  return XPrint::PrintStartDoc(XPrint::PrintStartDocRequest{driver_mode});
+}
+
 Future<void> XPrint::PrintEndDoc(const XPrint::PrintEndDocRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -727,6 +780,10 @@ Future<void> XPrint::PrintEndDoc(const XPrint::PrintEndDocRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "XPrint::PrintEndDoc", false);
+}
+
+Future<void> XPrint::PrintEndDoc(const uint8_t& cancel) {
+  return XPrint::PrintEndDoc(XPrint::PrintEndDocRequest{cancel});
 }
 
 Future<void> XPrint::PrintPutDocumentData(
@@ -801,6 +858,15 @@ Future<void> XPrint::PrintPutDocumentData(
                                         false);
 }
 
+Future<void> XPrint::PrintPutDocumentData(
+    const Drawable& drawable,
+    const std::vector<uint8_t>& data,
+    const std::vector<String8>& doc_format,
+    const std::vector<String8>& options) {
+  return XPrint::PrintPutDocumentData(
+      XPrint::PrintPutDocumentDataRequest{drawable, data, doc_format, options});
+}
+
 Future<XPrint::PrintGetDocumentDataReply> XPrint::PrintGetDocumentData(
     const XPrint::PrintGetDocumentDataRequest& request) {
   if (!connection_->Ready() || !present())
@@ -833,6 +899,13 @@ Future<XPrint::PrintGetDocumentDataReply> XPrint::PrintGetDocumentData(
 
   return connection_->SendRequest<XPrint::PrintGetDocumentDataReply>(
       &buf, "XPrint::PrintGetDocumentData", false);
+}
+
+Future<XPrint::PrintGetDocumentDataReply> XPrint::PrintGetDocumentData(
+    const PContext& context,
+    const uint32_t& max_bytes) {
+  return XPrint::PrintGetDocumentData(
+      XPrint::PrintGetDocumentDataRequest{context, max_bytes});
 }
 
 template <>
@@ -917,6 +990,10 @@ Future<void> XPrint::PrintStartPage(
   return connection_->SendRequest<void>(&buf, "XPrint::PrintStartPage", false);
 }
 
+Future<void> XPrint::PrintStartPage(const Window& window) {
+  return XPrint::PrintStartPage(XPrint::PrintStartPageRequest{window});
+}
+
 Future<void> XPrint::PrintEndPage(const XPrint::PrintEndPageRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -946,6 +1023,10 @@ Future<void> XPrint::PrintEndPage(const XPrint::PrintEndPageRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "XPrint::PrintEndPage", false);
+}
+
+Future<void> XPrint::PrintEndPage(const uint8_t& cancel) {
+  return XPrint::PrintEndPage(XPrint::PrintEndPageRequest{cancel});
 }
 
 Future<void> XPrint::PrintSelectInput(
@@ -982,6 +1063,12 @@ Future<void> XPrint::PrintSelectInput(
                                         false);
 }
 
+Future<void> XPrint::PrintSelectInput(const PContext& context,
+                                      const uint32_t& event_mask) {
+  return XPrint::PrintSelectInput(
+      XPrint::PrintSelectInputRequest{context, event_mask});
+}
+
 Future<XPrint::PrintInputSelectedReply> XPrint::PrintInputSelected(
     const XPrint::PrintInputSelectedRequest& request) {
   if (!connection_->Ready() || !present())
@@ -1010,6 +1097,11 @@ Future<XPrint::PrintInputSelectedReply> XPrint::PrintInputSelected(
 
   return connection_->SendRequest<XPrint::PrintInputSelectedReply>(
       &buf, "XPrint::PrintInputSelected", false);
+}
+
+Future<XPrint::PrintInputSelectedReply> XPrint::PrintInputSelected(
+    const PContext& context) {
+  return XPrint::PrintInputSelected(XPrint::PrintInputSelectedRequest{context});
 }
 
 template <>
@@ -1084,6 +1176,13 @@ Future<XPrint::PrintGetAttributesReply> XPrint::PrintGetAttributes(
 
   return connection_->SendRequest<XPrint::PrintGetAttributesReply>(
       &buf, "XPrint::PrintGetAttributes", false);
+}
+
+Future<XPrint::PrintGetAttributesReply> XPrint::PrintGetAttributes(
+    const PContext& context,
+    const uint8_t& pool) {
+  return XPrint::PrintGetAttributes(
+      XPrint::PrintGetAttributesRequest{context, pool});
 }
 
 template <>
@@ -1180,6 +1279,14 @@ Future<XPrint::PrintGetOneAttributesReply> XPrint::PrintGetOneAttributes(
 
   return connection_->SendRequest<XPrint::PrintGetOneAttributesReply>(
       &buf, "XPrint::PrintGetOneAttributes", false);
+}
+
+Future<XPrint::PrintGetOneAttributesReply> XPrint::PrintGetOneAttributes(
+    const PContext& context,
+    const uint8_t& pool,
+    const std::vector<String8>& name) {
+  return XPrint::PrintGetOneAttributes(
+      XPrint::PrintGetOneAttributesRequest{context, pool, name});
 }
 
 template <>
@@ -1281,6 +1388,16 @@ Future<void> XPrint::PrintSetAttributes(
                                         false);
 }
 
+Future<void> XPrint::PrintSetAttributes(
+    const PContext& context,
+    const uint32_t& stringLen,
+    const uint8_t& pool,
+    const uint8_t& rule,
+    const std::vector<String8>& attributes) {
+  return XPrint::PrintSetAttributes(XPrint::PrintSetAttributesRequest{
+      context, stringLen, pool, rule, attributes});
+}
+
 Future<XPrint::PrintGetPageDimensionsReply> XPrint::PrintGetPageDimensions(
     const XPrint::PrintGetPageDimensionsRequest& request) {
   if (!connection_->Ready() || !present())
@@ -1309,6 +1426,12 @@ Future<XPrint::PrintGetPageDimensionsReply> XPrint::PrintGetPageDimensions(
 
   return connection_->SendRequest<XPrint::PrintGetPageDimensionsReply>(
       &buf, "XPrint::PrintGetPageDimensions", false);
+}
+
+Future<XPrint::PrintGetPageDimensionsReply> XPrint::PrintGetPageDimensions(
+    const PContext& context) {
+  return XPrint::PrintGetPageDimensions(
+      XPrint::PrintGetPageDimensionsRequest{context});
 }
 
 template <>
@@ -1387,6 +1510,10 @@ Future<XPrint::PrintQueryScreensReply> XPrint::PrintQueryScreens(
 
   return connection_->SendRequest<XPrint::PrintQueryScreensReply>(
       &buf, "XPrint::PrintQueryScreens", false);
+}
+
+Future<XPrint::PrintQueryScreensReply> XPrint::PrintQueryScreens() {
+  return XPrint::PrintQueryScreens(XPrint::PrintQueryScreensRequest{});
 }
 
 template <>
@@ -1468,6 +1595,13 @@ Future<XPrint::PrintSetImageResolutionReply> XPrint::PrintSetImageResolution(
       &buf, "XPrint::PrintSetImageResolution", false);
 }
 
+Future<XPrint::PrintSetImageResolutionReply> XPrint::PrintSetImageResolution(
+    const PContext& context,
+    const uint16_t& image_resolution) {
+  return XPrint::PrintSetImageResolution(
+      XPrint::PrintSetImageResolutionRequest{context, image_resolution});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<XPrint::PrintSetImageResolutionReply> detail::ReadReply<
@@ -1530,6 +1664,12 @@ Future<XPrint::PrintGetImageResolutionReply> XPrint::PrintGetImageResolution(
 
   return connection_->SendRequest<XPrint::PrintGetImageResolutionReply>(
       &buf, "XPrint::PrintGetImageResolution", false);
+}
+
+Future<XPrint::PrintGetImageResolutionReply> XPrint::PrintGetImageResolution(
+    const PContext& context) {
+  return XPrint::PrintGetImageResolution(
+      XPrint::PrintGetImageResolutionRequest{context});
 }
 
 template <>

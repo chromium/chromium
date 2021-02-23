@@ -86,6 +86,12 @@ Future<Xinerama::QueryVersionReply> Xinerama::QueryVersion(
       &buf, "Xinerama::QueryVersion", false);
 }
 
+Future<Xinerama::QueryVersionReply> Xinerama::QueryVersion(
+    const uint8_t& major,
+    const uint8_t& minor) {
+  return Xinerama::QueryVersion(Xinerama::QueryVersionRequest{major, minor});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Xinerama::QueryVersionReply> detail::ReadReply<
@@ -153,6 +159,10 @@ Future<Xinerama::GetStateReply> Xinerama::GetState(
       &buf, "Xinerama::GetState", false);
 }
 
+Future<Xinerama::GetStateReply> Xinerama::GetState(const Window& window) {
+  return Xinerama::GetState(Xinerama::GetStateRequest{window});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Xinerama::GetStateReply> detail::ReadReply<
@@ -215,6 +225,11 @@ Future<Xinerama::GetScreenCountReply> Xinerama::GetScreenCount(
 
   return connection_->SendRequest<Xinerama::GetScreenCountReply>(
       &buf, "Xinerama::GetScreenCount", false);
+}
+
+Future<Xinerama::GetScreenCountReply> Xinerama::GetScreenCount(
+    const Window& window) {
+  return Xinerama::GetScreenCount(Xinerama::GetScreenCountRequest{window});
 }
 
 template <>
@@ -283,6 +298,13 @@ Future<Xinerama::GetScreenSizeReply> Xinerama::GetScreenSize(
 
   return connection_->SendRequest<Xinerama::GetScreenSizeReply>(
       &buf, "Xinerama::GetScreenSize", false);
+}
+
+Future<Xinerama::GetScreenSizeReply> Xinerama::GetScreenSize(
+    const Window& window,
+    const uint32_t& screen) {
+  return Xinerama::GetScreenSize(
+      Xinerama::GetScreenSizeRequest{window, screen});
 }
 
 template <>
@@ -355,6 +377,10 @@ Future<Xinerama::IsActiveReply> Xinerama::IsActive(
       &buf, "Xinerama::IsActive", false);
 }
 
+Future<Xinerama::IsActiveReply> Xinerama::IsActive() {
+  return Xinerama::IsActive(Xinerama::IsActiveRequest{});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Xinerama::IsActiveReply> detail::ReadReply<
@@ -411,6 +437,10 @@ Future<Xinerama::QueryScreensReply> Xinerama::QueryScreens(
 
   return connection_->SendRequest<Xinerama::QueryScreensReply>(
       &buf, "Xinerama::QueryScreens", false);
+}
+
+Future<Xinerama::QueryScreensReply> Xinerama::QueryScreens() {
+  return Xinerama::QueryScreens(Xinerama::QueryScreensRequest{});
 }
 
 template <>

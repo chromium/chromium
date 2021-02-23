@@ -53,6 +53,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "ui/gfx/x/error.h"
+#include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
 
 namespace x11 {
@@ -199,6 +200,9 @@ class COMPONENT_EXPORT(X11) Sync {
 
   Future<InitializeReply> Initialize(const InitializeRequest& request);
 
+  Future<InitializeReply> Initialize(const uint8_t& desired_major_version = {},
+                                     const uint8_t& desired_minor_version = {});
+
   struct ListSystemCountersRequest {};
 
   struct ListSystemCountersReply {
@@ -211,6 +215,8 @@ class COMPONENT_EXPORT(X11) Sync {
   Future<ListSystemCountersReply> ListSystemCounters(
       const ListSystemCountersRequest& request);
 
+  Future<ListSystemCountersReply> ListSystemCounters();
+
   struct CreateCounterRequest {
     Counter id{};
     Int64 initial_value{};
@@ -220,6 +226,9 @@ class COMPONENT_EXPORT(X11) Sync {
 
   Future<void> CreateCounter(const CreateCounterRequest& request);
 
+  Future<void> CreateCounter(const Counter& id = {},
+                             const Int64& initial_value = {{}, {}});
+
   struct DestroyCounterRequest {
     Counter counter{};
   };
@@ -227,6 +236,8 @@ class COMPONENT_EXPORT(X11) Sync {
   using DestroyCounterResponse = Response<void>;
 
   Future<void> DestroyCounter(const DestroyCounterRequest& request);
+
+  Future<void> DestroyCounter(const Counter& counter = {});
 
   struct QueryCounterRequest {
     Counter counter{};
@@ -241,6 +252,8 @@ class COMPONENT_EXPORT(X11) Sync {
 
   Future<QueryCounterReply> QueryCounter(const QueryCounterRequest& request);
 
+  Future<QueryCounterReply> QueryCounter(const Counter& counter = {});
+
   struct AwaitRequest {
     std::vector<WaitCondition> wait_list{};
   };
@@ -248,6 +261,8 @@ class COMPONENT_EXPORT(X11) Sync {
   using AwaitResponse = Response<void>;
 
   Future<void> Await(const AwaitRequest& request);
+
+  Future<void> Await(const std::vector<WaitCondition>& wait_list = {});
 
   struct ChangeCounterRequest {
     Counter counter{};
@@ -258,6 +273,9 @@ class COMPONENT_EXPORT(X11) Sync {
 
   Future<void> ChangeCounter(const ChangeCounterRequest& request);
 
+  Future<void> ChangeCounter(const Counter& counter = {},
+                             const Int64& amount = {{}, {}});
+
   struct SetCounterRequest {
     Counter counter{};
     Int64 value{};
@@ -266,6 +284,9 @@ class COMPONENT_EXPORT(X11) Sync {
   using SetCounterResponse = Response<void>;
 
   Future<void> SetCounter(const SetCounterRequest& request);
+
+  Future<void> SetCounter(const Counter& counter = {},
+                          const Int64& value = {{}, {}});
 
   struct CreateAlarmRequest {
     Alarm id{};
@@ -281,6 +302,15 @@ class COMPONENT_EXPORT(X11) Sync {
 
   Future<void> CreateAlarm(const CreateAlarmRequest& request);
 
+  Future<void> CreateAlarm(
+      const Alarm& id = {},
+      const base::Optional<Counter>& counter = base::nullopt,
+      const base::Optional<Valuetype>& valueType = base::nullopt,
+      const base::Optional<Int64>& value = base::nullopt,
+      const base::Optional<Testtype>& testType = base::nullopt,
+      const base::Optional<Int64>& delta = base::nullopt,
+      const base::Optional<uint32_t>& events = base::nullopt);
+
   struct ChangeAlarmRequest {
     Alarm id{};
     base::Optional<Counter> counter{};
@@ -295,6 +325,15 @@ class COMPONENT_EXPORT(X11) Sync {
 
   Future<void> ChangeAlarm(const ChangeAlarmRequest& request);
 
+  Future<void> ChangeAlarm(
+      const Alarm& id = {},
+      const base::Optional<Counter>& counter = base::nullopt,
+      const base::Optional<Valuetype>& valueType = base::nullopt,
+      const base::Optional<Int64>& value = base::nullopt,
+      const base::Optional<Testtype>& testType = base::nullopt,
+      const base::Optional<Int64>& delta = base::nullopt,
+      const base::Optional<uint32_t>& events = base::nullopt);
+
   struct DestroyAlarmRequest {
     Alarm alarm{};
   };
@@ -302,6 +341,8 @@ class COMPONENT_EXPORT(X11) Sync {
   using DestroyAlarmResponse = Response<void>;
 
   Future<void> DestroyAlarm(const DestroyAlarmRequest& request);
+
+  Future<void> DestroyAlarm(const Alarm& alarm = {});
 
   struct QueryAlarmRequest {
     Alarm alarm{};
@@ -319,6 +360,8 @@ class COMPONENT_EXPORT(X11) Sync {
 
   Future<QueryAlarmReply> QueryAlarm(const QueryAlarmRequest& request);
 
+  Future<QueryAlarmReply> QueryAlarm(const Alarm& alarm = {});
+
   struct SetPriorityRequest {
     uint32_t id{};
     int32_t priority{};
@@ -327,6 +370,9 @@ class COMPONENT_EXPORT(X11) Sync {
   using SetPriorityResponse = Response<void>;
 
   Future<void> SetPriority(const SetPriorityRequest& request);
+
+  Future<void> SetPriority(const uint32_t& id = {},
+                           const int32_t& priority = {});
 
   struct GetPriorityRequest {
     uint32_t id{};
@@ -341,6 +387,8 @@ class COMPONENT_EXPORT(X11) Sync {
 
   Future<GetPriorityReply> GetPriority(const GetPriorityRequest& request);
 
+  Future<GetPriorityReply> GetPriority(const uint32_t& id = {});
+
   struct CreateFenceRequest {
     Drawable drawable{};
     Fence fence{};
@@ -351,6 +399,10 @@ class COMPONENT_EXPORT(X11) Sync {
 
   Future<void> CreateFence(const CreateFenceRequest& request);
 
+  Future<void> CreateFence(const Drawable& drawable = {},
+                           const Fence& fence = {},
+                           const uint8_t& initially_triggered = {});
+
   struct TriggerFenceRequest {
     Fence fence{};
   };
@@ -358,6 +410,8 @@ class COMPONENT_EXPORT(X11) Sync {
   using TriggerFenceResponse = Response<void>;
 
   Future<void> TriggerFence(const TriggerFenceRequest& request);
+
+  Future<void> TriggerFence(const Fence& fence = {});
 
   struct ResetFenceRequest {
     Fence fence{};
@@ -367,6 +421,8 @@ class COMPONENT_EXPORT(X11) Sync {
 
   Future<void> ResetFence(const ResetFenceRequest& request);
 
+  Future<void> ResetFence(const Fence& fence = {});
+
   struct DestroyFenceRequest {
     Fence fence{};
   };
@@ -374,6 +430,8 @@ class COMPONENT_EXPORT(X11) Sync {
   using DestroyFenceResponse = Response<void>;
 
   Future<void> DestroyFence(const DestroyFenceRequest& request);
+
+  Future<void> DestroyFence(const Fence& fence = {});
 
   struct QueryFenceRequest {
     Fence fence{};
@@ -388,6 +446,8 @@ class COMPONENT_EXPORT(X11) Sync {
 
   Future<QueryFenceReply> QueryFence(const QueryFenceRequest& request);
 
+  Future<QueryFenceReply> QueryFence(const Fence& fence = {});
+
   struct AwaitFenceRequest {
     std::vector<Fence> fence_list{};
   };
@@ -395,6 +455,8 @@ class COMPONENT_EXPORT(X11) Sync {
   using AwaitFenceResponse = Response<void>;
 
   Future<void> AwaitFence(const AwaitFenceRequest& request);
+
+  Future<void> AwaitFence(const std::vector<Fence>& fence_list = {});
 
  private:
   Connection* const connection_;

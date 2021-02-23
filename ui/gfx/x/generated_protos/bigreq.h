@@ -53,6 +53,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "ui/gfx/x/error.h"
+#include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
 
 namespace x11 {
@@ -89,6 +90,8 @@ class COMPONENT_EXPORT(X11) BigRequests {
   using EnableResponse = Response<EnableReply>;
 
   Future<EnableReply> Enable(const EnableRequest& request);
+
+  Future<EnableReply> Enable();
 
  private:
   Connection* const connection_;

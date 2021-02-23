@@ -53,6 +53,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "ui/gfx/x/error.h"
+#include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
 
 namespace x11 {
@@ -348,6 +349,10 @@ class COMPONENT_EXPORT(X11) Render {
 
   Future<QueryVersionReply> QueryVersion(const QueryVersionRequest& request);
 
+  Future<QueryVersionReply> QueryVersion(
+      const uint32_t& client_major_version = {},
+      const uint32_t& client_minor_version = {});
+
   struct QueryPictFormatsRequest {};
 
   struct QueryPictFormatsReply {
@@ -364,6 +369,8 @@ class COMPONENT_EXPORT(X11) Render {
   Future<QueryPictFormatsReply> QueryPictFormats(
       const QueryPictFormatsRequest& request);
 
+  Future<QueryPictFormatsReply> QueryPictFormats();
+
   struct QueryPictIndexValuesRequest {
     PictFormat format{};
   };
@@ -377,6 +384,9 @@ class COMPONENT_EXPORT(X11) Render {
 
   Future<QueryPictIndexValuesReply> QueryPictIndexValues(
       const QueryPictIndexValuesRequest& request);
+
+  Future<QueryPictIndexValuesReply> QueryPictIndexValues(
+      const PictFormat& format = {});
 
   struct CreatePictureRequest {
     Picture pid{};
@@ -401,6 +411,24 @@ class COMPONENT_EXPORT(X11) Render {
 
   Future<void> CreatePicture(const CreatePictureRequest& request);
 
+  Future<void> CreatePicture(
+      const Picture& pid = {},
+      const Drawable& drawable = {},
+      const PictFormat& format = {},
+      const base::Optional<Repeat>& repeat = base::nullopt,
+      const base::Optional<Picture>& alphamap = base::nullopt,
+      const base::Optional<int32_t>& alphaxorigin = base::nullopt,
+      const base::Optional<int32_t>& alphayorigin = base::nullopt,
+      const base::Optional<int32_t>& clipxorigin = base::nullopt,
+      const base::Optional<int32_t>& clipyorigin = base::nullopt,
+      const base::Optional<Pixmap>& clipmask = base::nullopt,
+      const base::Optional<uint32_t>& graphicsexposure = base::nullopt,
+      const base::Optional<SubwindowMode>& subwindowmode = base::nullopt,
+      const base::Optional<PolyEdge>& polyedge = base::nullopt,
+      const base::Optional<PolyMode>& polymode = base::nullopt,
+      const base::Optional<Atom>& dither = base::nullopt,
+      const base::Optional<uint32_t>& componentalpha = base::nullopt);
+
   struct ChangePictureRequest {
     Picture picture{};
     base::Optional<Repeat> repeat{};
@@ -422,6 +450,22 @@ class COMPONENT_EXPORT(X11) Render {
 
   Future<void> ChangePicture(const ChangePictureRequest& request);
 
+  Future<void> ChangePicture(
+      const Picture& picture = {},
+      const base::Optional<Repeat>& repeat = base::nullopt,
+      const base::Optional<Picture>& alphamap = base::nullopt,
+      const base::Optional<int32_t>& alphaxorigin = base::nullopt,
+      const base::Optional<int32_t>& alphayorigin = base::nullopt,
+      const base::Optional<int32_t>& clipxorigin = base::nullopt,
+      const base::Optional<int32_t>& clipyorigin = base::nullopt,
+      const base::Optional<Pixmap>& clipmask = base::nullopt,
+      const base::Optional<uint32_t>& graphicsexposure = base::nullopt,
+      const base::Optional<SubwindowMode>& subwindowmode = base::nullopt,
+      const base::Optional<PolyEdge>& polyedge = base::nullopt,
+      const base::Optional<PolyMode>& polymode = base::nullopt,
+      const base::Optional<Atom>& dither = base::nullopt,
+      const base::Optional<uint32_t>& componentalpha = base::nullopt);
+
   struct SetPictureClipRectanglesRequest {
     Picture picture{};
     int16_t clip_x_origin{};
@@ -434,6 +478,12 @@ class COMPONENT_EXPORT(X11) Render {
   Future<void> SetPictureClipRectangles(
       const SetPictureClipRectanglesRequest& request);
 
+  Future<void> SetPictureClipRectangles(
+      const Picture& picture = {},
+      const int16_t& clip_x_origin = {},
+      const int16_t& clip_y_origin = {},
+      const std::vector<Rectangle>& rectangles = {});
+
   struct FreePictureRequest {
     Picture picture{};
   };
@@ -441,6 +491,8 @@ class COMPONENT_EXPORT(X11) Render {
   using FreePictureResponse = Response<void>;
 
   Future<void> FreePicture(const FreePictureRequest& request);
+
+  Future<void> FreePicture(const Picture& picture = {});
 
   struct CompositeRequest {
     PictOp op{};
@@ -461,6 +513,19 @@ class COMPONENT_EXPORT(X11) Render {
 
   Future<void> Composite(const CompositeRequest& request);
 
+  Future<void> Composite(const PictOp& op = {},
+                         const Picture& src = {},
+                         const Picture& mask = {},
+                         const Picture& dst = {},
+                         const int16_t& src_x = {},
+                         const int16_t& src_y = {},
+                         const int16_t& mask_x = {},
+                         const int16_t& mask_y = {},
+                         const int16_t& dst_x = {},
+                         const int16_t& dst_y = {},
+                         const uint16_t& width = {},
+                         const uint16_t& height = {});
+
   struct TrapezoidsRequest {
     PictOp op{};
     Picture src{};
@@ -474,6 +539,14 @@ class COMPONENT_EXPORT(X11) Render {
   using TrapezoidsResponse = Response<void>;
 
   Future<void> Trapezoids(const TrapezoidsRequest& request);
+
+  Future<void> Trapezoids(const PictOp& op = {},
+                          const Picture& src = {},
+                          const Picture& dst = {},
+                          const PictFormat& mask_format = {},
+                          const int16_t& src_x = {},
+                          const int16_t& src_y = {},
+                          const std::vector<Trapezoid>& traps = {});
 
   struct TrianglesRequest {
     PictOp op{};
@@ -489,6 +562,14 @@ class COMPONENT_EXPORT(X11) Render {
 
   Future<void> Triangles(const TrianglesRequest& request);
 
+  Future<void> Triangles(const PictOp& op = {},
+                         const Picture& src = {},
+                         const Picture& dst = {},
+                         const PictFormat& mask_format = {},
+                         const int16_t& src_x = {},
+                         const int16_t& src_y = {},
+                         const std::vector<Triangle>& triangles = {});
+
   struct TriStripRequest {
     PictOp op{};
     Picture src{};
@@ -502,6 +583,14 @@ class COMPONENT_EXPORT(X11) Render {
   using TriStripResponse = Response<void>;
 
   Future<void> TriStrip(const TriStripRequest& request);
+
+  Future<void> TriStrip(const PictOp& op = {},
+                        const Picture& src = {},
+                        const Picture& dst = {},
+                        const PictFormat& mask_format = {},
+                        const int16_t& src_x = {},
+                        const int16_t& src_y = {},
+                        const std::vector<PointFix>& points = {});
 
   struct TriFanRequest {
     PictOp op{};
@@ -517,6 +606,14 @@ class COMPONENT_EXPORT(X11) Render {
 
   Future<void> TriFan(const TriFanRequest& request);
 
+  Future<void> TriFan(const PictOp& op = {},
+                      const Picture& src = {},
+                      const Picture& dst = {},
+                      const PictFormat& mask_format = {},
+                      const int16_t& src_x = {},
+                      const int16_t& src_y = {},
+                      const std::vector<PointFix>& points = {});
+
   struct CreateGlyphSetRequest {
     GlyphSet gsid{};
     PictFormat format{};
@@ -525,6 +622,9 @@ class COMPONENT_EXPORT(X11) Render {
   using CreateGlyphSetResponse = Response<void>;
 
   Future<void> CreateGlyphSet(const CreateGlyphSetRequest& request);
+
+  Future<void> CreateGlyphSet(const GlyphSet& gsid = {},
+                              const PictFormat& format = {});
 
   struct ReferenceGlyphSetRequest {
     GlyphSet gsid{};
@@ -535,6 +635,9 @@ class COMPONENT_EXPORT(X11) Render {
 
   Future<void> ReferenceGlyphSet(const ReferenceGlyphSetRequest& request);
 
+  Future<void> ReferenceGlyphSet(const GlyphSet& gsid = {},
+                                 const GlyphSet& existing = {});
+
   struct FreeGlyphSetRequest {
     GlyphSet glyphset{};
   };
@@ -542,6 +645,8 @@ class COMPONENT_EXPORT(X11) Render {
   using FreeGlyphSetResponse = Response<void>;
 
   Future<void> FreeGlyphSet(const FreeGlyphSetRequest& request);
+
+  Future<void> FreeGlyphSet(const GlyphSet& glyphset = {});
 
   struct AddGlyphsRequest {
     GlyphSet glyphset{};
@@ -554,6 +659,11 @@ class COMPONENT_EXPORT(X11) Render {
 
   Future<void> AddGlyphs(const AddGlyphsRequest& request);
 
+  Future<void> AddGlyphs(const GlyphSet& glyphset = {},
+                         const std::vector<uint32_t>& glyphids = {},
+                         const std::vector<GlyphInfo>& glyphs = {},
+                         const std::vector<uint8_t>& data = {});
+
   struct FreeGlyphsRequest {
     GlyphSet glyphset{};
     std::vector<Glyph> glyphs{};
@@ -562,6 +672,9 @@ class COMPONENT_EXPORT(X11) Render {
   using FreeGlyphsResponse = Response<void>;
 
   Future<void> FreeGlyphs(const FreeGlyphsRequest& request);
+
+  Future<void> FreeGlyphs(const GlyphSet& glyphset = {},
+                          const std::vector<Glyph>& glyphs = {});
 
   struct CompositeGlyphs8Request {
     PictOp op{};
@@ -578,6 +691,15 @@ class COMPONENT_EXPORT(X11) Render {
 
   Future<void> CompositeGlyphs8(const CompositeGlyphs8Request& request);
 
+  Future<void> CompositeGlyphs8(const PictOp& op = {},
+                                const Picture& src = {},
+                                const Picture& dst = {},
+                                const PictFormat& mask_format = {},
+                                const GlyphSet& glyphset = {},
+                                const int16_t& src_x = {},
+                                const int16_t& src_y = {},
+                                const std::vector<uint8_t>& glyphcmds = {});
+
   struct CompositeGlyphs16Request {
     PictOp op{};
     Picture src{};
@@ -592,6 +714,15 @@ class COMPONENT_EXPORT(X11) Render {
   using CompositeGlyphs16Response = Response<void>;
 
   Future<void> CompositeGlyphs16(const CompositeGlyphs16Request& request);
+
+  Future<void> CompositeGlyphs16(const PictOp& op = {},
+                                 const Picture& src = {},
+                                 const Picture& dst = {},
+                                 const PictFormat& mask_format = {},
+                                 const GlyphSet& glyphset = {},
+                                 const int16_t& src_x = {},
+                                 const int16_t& src_y = {},
+                                 const std::vector<uint8_t>& glyphcmds = {});
 
   struct CompositeGlyphs32Request {
     PictOp op{};
@@ -608,6 +739,15 @@ class COMPONENT_EXPORT(X11) Render {
 
   Future<void> CompositeGlyphs32(const CompositeGlyphs32Request& request);
 
+  Future<void> CompositeGlyphs32(const PictOp& op = {},
+                                 const Picture& src = {},
+                                 const Picture& dst = {},
+                                 const PictFormat& mask_format = {},
+                                 const GlyphSet& glyphset = {},
+                                 const int16_t& src_x = {},
+                                 const int16_t& src_y = {},
+                                 const std::vector<uint8_t>& glyphcmds = {});
+
   struct FillRectanglesRequest {
     PictOp op{};
     Picture dst{};
@@ -618,6 +758,11 @@ class COMPONENT_EXPORT(X11) Render {
   using FillRectanglesResponse = Response<void>;
 
   Future<void> FillRectangles(const FillRectanglesRequest& request);
+
+  Future<void> FillRectangles(const PictOp& op = {},
+                              const Picture& dst = {},
+                              const Color& color = {{}, {}, {}, {}},
+                              const std::vector<Rectangle>& rects = {});
 
   struct CreateCursorRequest {
     Cursor cid{};
@@ -630,6 +775,11 @@ class COMPONENT_EXPORT(X11) Render {
 
   Future<void> CreateCursor(const CreateCursorRequest& request);
 
+  Future<void> CreateCursor(const Cursor& cid = {},
+                            const Picture& source = {},
+                            const uint16_t& x = {},
+                            const uint16_t& y = {});
+
   struct SetPictureTransformRequest {
     Picture picture{};
     Transform transform{};
@@ -638,6 +788,10 @@ class COMPONENT_EXPORT(X11) Render {
   using SetPictureTransformResponse = Response<void>;
 
   Future<void> SetPictureTransform(const SetPictureTransformRequest& request);
+
+  Future<void> SetPictureTransform(
+      const Picture& picture = {},
+      const Transform& transform = {{}, {}, {}, {}, {}, {}, {}, {}, {}});
 
   struct QueryFiltersRequest {
     Drawable drawable{};
@@ -653,6 +807,8 @@ class COMPONENT_EXPORT(X11) Render {
 
   Future<QueryFiltersReply> QueryFilters(const QueryFiltersRequest& request);
 
+  Future<QueryFiltersReply> QueryFilters(const Drawable& drawable = {});
+
   struct SetPictureFilterRequest {
     Picture picture{};
     std::string filter{};
@@ -663,6 +819,10 @@ class COMPONENT_EXPORT(X11) Render {
 
   Future<void> SetPictureFilter(const SetPictureFilterRequest& request);
 
+  Future<void> SetPictureFilter(const Picture& picture = {},
+                                const std::string& filter = {},
+                                const std::vector<Fixed>& values = {});
+
   struct CreateAnimCursorRequest {
     Cursor cid{};
     std::vector<AnimationCursorElement> cursors{};
@@ -671,6 +831,10 @@ class COMPONENT_EXPORT(X11) Render {
   using CreateAnimCursorResponse = Response<void>;
 
   Future<void> CreateAnimCursor(const CreateAnimCursorRequest& request);
+
+  Future<void> CreateAnimCursor(
+      const Cursor& cid = {},
+      const std::vector<AnimationCursorElement>& cursors = {});
 
   struct AddTrapsRequest {
     Picture picture{};
@@ -683,6 +847,11 @@ class COMPONENT_EXPORT(X11) Render {
 
   Future<void> AddTraps(const AddTrapsRequest& request);
 
+  Future<void> AddTraps(const Picture& picture = {},
+                        const int16_t& x_off = {},
+                        const int16_t& y_off = {},
+                        const std::vector<Trap>& traps = {});
+
   struct CreateSolidFillRequest {
     Picture picture{};
     Color color{};
@@ -691,6 +860,9 @@ class COMPONENT_EXPORT(X11) Render {
   using CreateSolidFillResponse = Response<void>;
 
   Future<void> CreateSolidFill(const CreateSolidFillRequest& request);
+
+  Future<void> CreateSolidFill(const Picture& picture = {},
+                               const Color& color = {{}, {}, {}, {}});
 
   struct CreateLinearGradientRequest {
     Picture picture{};
@@ -703,6 +875,12 @@ class COMPONENT_EXPORT(X11) Render {
   using CreateLinearGradientResponse = Response<void>;
 
   Future<void> CreateLinearGradient(const CreateLinearGradientRequest& request);
+
+  Future<void> CreateLinearGradient(const Picture& picture = {},
+                                    const PointFix& p1 = {{}, {}},
+                                    const PointFix& p2 = {{}, {}},
+                                    const std::vector<Fixed>& stops = {},
+                                    const std::vector<Color>& colors = {});
 
   struct CreateRadialGradientRequest {
     Picture picture{};
@@ -718,6 +896,14 @@ class COMPONENT_EXPORT(X11) Render {
 
   Future<void> CreateRadialGradient(const CreateRadialGradientRequest& request);
 
+  Future<void> CreateRadialGradient(const Picture& picture = {},
+                                    const PointFix& inner = {{}, {}},
+                                    const PointFix& outer = {{}, {}},
+                                    const Fixed& inner_radius = {},
+                                    const Fixed& outer_radius = {},
+                                    const std::vector<Fixed>& stops = {},
+                                    const std::vector<Color>& colors = {});
+
   struct CreateConicalGradientRequest {
     Picture picture{};
     PointFix center{};
@@ -730,6 +916,12 @@ class COMPONENT_EXPORT(X11) Render {
 
   Future<void> CreateConicalGradient(
       const CreateConicalGradientRequest& request);
+
+  Future<void> CreateConicalGradient(const Picture& picture = {},
+                                     const PointFix& center = {{}, {}},
+                                     const Fixed& angle = {},
+                                     const std::vector<Fixed>& stops = {},
+                                     const std::vector<Color>& colors = {});
 
  private:
   Connection* const connection_;

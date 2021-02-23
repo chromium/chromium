@@ -86,6 +86,13 @@ Future<Xevie::QueryVersionReply> Xevie::QueryVersion(
       &buf, "Xevie::QueryVersion", false);
 }
 
+Future<Xevie::QueryVersionReply> Xevie::QueryVersion(
+    const uint16_t& client_major_version,
+    const uint16_t& client_minor_version) {
+  return Xevie::QueryVersion(
+      Xevie::QueryVersionRequest{client_major_version, client_minor_version});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Xevie::QueryVersionReply> detail::ReadReply<
@@ -155,6 +162,10 @@ Future<Xevie::StartReply> Xevie::Start(const Xevie::StartRequest& request) {
                                                      false);
 }
 
+Future<Xevie::StartReply> Xevie::Start(const uint32_t& screen) {
+  return Xevie::Start(Xevie::StartRequest{screen});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Xevie::StartReply> detail::ReadReply<Xevie::StartReply>(
@@ -213,6 +224,10 @@ Future<Xevie::EndReply> Xevie::End(const Xevie::EndRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<Xevie::EndReply>(&buf, "Xevie::End", false);
+}
+
+Future<Xevie::EndReply> Xevie::End(const uint32_t& cmap) {
+  return Xevie::End(Xevie::EndRequest{cmap});
 }
 
 template <>
@@ -285,6 +300,11 @@ Future<Xevie::SendReply> Xevie::Send(const Xevie::SendRequest& request) {
   return connection_->SendRequest<Xevie::SendReply>(&buf, "Xevie::Send", false);
 }
 
+Future<Xevie::SendReply> Xevie::Send(const Event& event,
+                                     const uint32_t& data_type) {
+  return Xevie::Send(Xevie::SendRequest{event, data_type});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Xevie::SendReply> detail::ReadReply<Xevie::SendReply>(
@@ -345,6 +365,10 @@ Future<Xevie::SelectInputReply> Xevie::SelectInput(
 
   return connection_->SendRequest<Xevie::SelectInputReply>(
       &buf, "Xevie::SelectInput", false);
+}
+
+Future<Xevie::SelectInputReply> Xevie::SelectInput(const uint32_t& event_mask) {
+  return Xevie::SelectInput(Xevie::SelectInputRequest{event_mask});
 }
 
 template <>

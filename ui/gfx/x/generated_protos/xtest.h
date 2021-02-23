@@ -53,6 +53,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "ui/gfx/x/error.h"
+#include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
 
 namespace x11 {
@@ -99,6 +100,9 @@ class COMPONENT_EXPORT(X11) Test {
 
   Future<GetVersionReply> GetVersion(const GetVersionRequest& request);
 
+  Future<GetVersionReply> GetVersion(const uint8_t& major_version = {},
+                                     const uint16_t& minor_version = {});
+
   struct CompareCursorRequest {
     Window window{};
     x11::Cursor cursor{};
@@ -112,6 +116,9 @@ class COMPONENT_EXPORT(X11) Test {
   using CompareCursorResponse = Response<CompareCursorReply>;
 
   Future<CompareCursorReply> CompareCursor(const CompareCursorRequest& request);
+
+  Future<CompareCursorReply> CompareCursor(const Window& window = {},
+                                           const x11::Cursor& cursor = {});
 
   struct FakeInputRequest {
     uint8_t type{};
@@ -127,6 +134,14 @@ class COMPONENT_EXPORT(X11) Test {
 
   Future<void> FakeInput(const FakeInputRequest& request);
 
+  Future<void> FakeInput(const uint8_t& type = {},
+                         const uint8_t& detail = {},
+                         const uint32_t& time = {},
+                         const Window& root = {},
+                         const int16_t& rootX = {},
+                         const int16_t& rootY = {},
+                         const uint8_t& deviceid = {});
+
   struct GrabControlRequest {
     uint8_t impervious{};
   };
@@ -134,6 +149,8 @@ class COMPONENT_EXPORT(X11) Test {
   using GrabControlResponse = Response<void>;
 
   Future<void> GrabControl(const GrabControlRequest& request);
+
+  Future<void> GrabControl(const uint8_t& impervious = {});
 
  private:
   Connection* const connection_;

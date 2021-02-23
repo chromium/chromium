@@ -53,6 +53,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "ui/gfx/x/error.h"
+#include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
 
 namespace x11 {
@@ -1192,6 +1193,9 @@ class COMPONENT_EXPORT(X11) Xkb {
 
   Future<UseExtensionReply> UseExtension(const UseExtensionRequest& request);
 
+  Future<UseExtensionReply> UseExtension(const uint16_t& wantedMajor = {},
+                                         const uint16_t& wantedMinor = {});
+
   struct SelectEventsRequest {
     DeviceSpec deviceSpec{};
     EventType affectWhich{};
@@ -1227,6 +1231,36 @@ class COMPONENT_EXPORT(X11) Xkb {
 
   Future<void> SelectEvents(const SelectEventsRequest& request);
 
+  Future<void> SelectEvents(
+      const DeviceSpec& deviceSpec = {},
+      const EventType& affectWhich = {},
+      const EventType& clear = {},
+      const EventType& selectAll = {},
+      const MapPart& affectMap = {},
+      const MapPart& map = {},
+      const base::Optional<NKNDetail>& affectNewKeyboard = base::nullopt,
+      const base::Optional<NKNDetail>& newKeyboardDetails = base::nullopt,
+      const base::Optional<StatePart>& affectState = base::nullopt,
+      const base::Optional<StatePart>& stateDetails = base::nullopt,
+      const base::Optional<Control>& affectCtrls = base::nullopt,
+      const base::Optional<Control>& ctrlDetails = base::nullopt,
+      const base::Optional<uint32_t>& affectIndicatorState = base::nullopt,
+      const base::Optional<uint32_t>& indicatorStateDetails = base::nullopt,
+      const base::Optional<uint32_t>& affectIndicatorMap = base::nullopt,
+      const base::Optional<uint32_t>& indicatorMapDetails = base::nullopt,
+      const base::Optional<NameDetail>& affectNames = base::nullopt,
+      const base::Optional<NameDetail>& namesDetails = base::nullopt,
+      const base::Optional<CMDetail>& affectCompat = base::nullopt,
+      const base::Optional<CMDetail>& compatDetails = base::nullopt,
+      const base::Optional<uint8_t>& affectBell = base::nullopt,
+      const base::Optional<uint8_t>& bellDetails = base::nullopt,
+      const base::Optional<uint8_t>& affectMsgDetails = base::nullopt,
+      const base::Optional<uint8_t>& msgDetails = base::nullopt,
+      const base::Optional<AXNDetail>& affectAccessX = base::nullopt,
+      const base::Optional<AXNDetail>& accessXDetails = base::nullopt,
+      const base::Optional<XIFeature>& affectExtDev = base::nullopt,
+      const base::Optional<XIFeature>& extdevDetails = base::nullopt);
+
   struct BellRequest {
     DeviceSpec deviceSpec{};
     BellClassSpec bellClass{};
@@ -1243,6 +1277,17 @@ class COMPONENT_EXPORT(X11) Xkb {
   using BellResponse = Response<void>;
 
   Future<void> Bell(const BellRequest& request);
+
+  Future<void> Bell(const DeviceSpec& deviceSpec = {},
+                    const BellClassSpec& bellClass = {},
+                    const IDSpec& bellID = {},
+                    const int8_t& percent = {},
+                    const uint8_t& forceSound = {},
+                    const uint8_t& eventOnly = {},
+                    const int16_t& pitch = {},
+                    const int16_t& duration = {},
+                    const Atom& name = {},
+                    const Window& window = {});
 
   struct GetStateRequest {
     DeviceSpec deviceSpec{};
@@ -1271,6 +1316,8 @@ class COMPONENT_EXPORT(X11) Xkb {
 
   Future<GetStateReply> GetState(const GetStateRequest& request);
 
+  Future<GetStateReply> GetState(const DeviceSpec& deviceSpec = {});
+
   struct LatchLockStateRequest {
     DeviceSpec deviceSpec{};
     ModMask affectModLocks{};
@@ -1285,6 +1332,15 @@ class COMPONENT_EXPORT(X11) Xkb {
   using LatchLockStateResponse = Response<void>;
 
   Future<void> LatchLockState(const LatchLockStateRequest& request);
+
+  Future<void> LatchLockState(const DeviceSpec& deviceSpec = {},
+                              const ModMask& affectModLocks = {},
+                              const ModMask& modLocks = {},
+                              const uint8_t& lockGroup = {},
+                              const Group& groupLock = {},
+                              const ModMask& affectModLatches = {},
+                              const uint8_t& latchGroup = {},
+                              const uint16_t& groupLatch = {});
 
   struct GetControlsRequest {
     DeviceSpec deviceSpec{};
@@ -1325,6 +1381,8 @@ class COMPONENT_EXPORT(X11) Xkb {
 
   Future<GetControlsReply> GetControls(const GetControlsRequest& request);
 
+  Future<GetControlsReply> GetControls(const DeviceSpec& deviceSpec = {});
+
   struct SetControlsRequest {
     DeviceSpec deviceSpec{};
     ModMask affectInternalRealMods{};
@@ -1361,6 +1419,37 @@ class COMPONENT_EXPORT(X11) Xkb {
   using SetControlsResponse = Response<void>;
 
   Future<void> SetControls(const SetControlsRequest& request);
+
+  Future<void> SetControls(const DeviceSpec& deviceSpec = {},
+                           const ModMask& affectInternalRealMods = {},
+                           const ModMask& internalRealMods = {},
+                           const ModMask& affectIgnoreLockRealMods = {},
+                           const ModMask& ignoreLockRealMods = {},
+                           const VMod& affectInternalVirtualMods = {},
+                           const VMod& internalVirtualMods = {},
+                           const VMod& affectIgnoreLockVirtualMods = {},
+                           const VMod& ignoreLockVirtualMods = {},
+                           const uint8_t& mouseKeysDfltBtn = {},
+                           const uint8_t& groupsWrap = {},
+                           const AXOption& accessXOptions = {},
+                           const BoolCtrl& affectEnabledControls = {},
+                           const BoolCtrl& enabledControls = {},
+                           const Control& changeControls = {},
+                           const uint16_t& repeatDelay = {},
+                           const uint16_t& repeatInterval = {},
+                           const uint16_t& slowKeysDelay = {},
+                           const uint16_t& debounceDelay = {},
+                           const uint16_t& mouseKeysDelay = {},
+                           const uint16_t& mouseKeysInterval = {},
+                           const uint16_t& mouseKeysTimeToMax = {},
+                           const uint16_t& mouseKeysMaxSpeed = {},
+                           const int16_t& mouseKeysCurve = {},
+                           const uint16_t& accessXTimeout = {},
+                           const BoolCtrl& accessXTimeoutMask = {},
+                           const BoolCtrl& accessXTimeoutValues = {},
+                           const AXOption& accessXTimeoutOptionsMask = {},
+                           const AXOption& accessXTimeoutOptionsValues = {},
+                           const std::array<uint8_t, 32>& perKeyRepeat = {});
 
   struct GetMapRequest {
     DeviceSpec deviceSpec{};
@@ -1425,6 +1514,25 @@ class COMPONENT_EXPORT(X11) Xkb {
 
   Future<GetMapReply> GetMap(const GetMapRequest& request);
 
+  Future<GetMapReply> GetMap(const DeviceSpec& deviceSpec = {},
+                             const MapPart& full = {},
+                             const MapPart& partial = {},
+                             const uint8_t& firstType = {},
+                             const uint8_t& nTypes = {},
+                             const KeyCode& firstKeySym = {},
+                             const uint8_t& nKeySyms = {},
+                             const KeyCode& firstKeyAction = {},
+                             const uint8_t& nKeyActions = {},
+                             const KeyCode& firstKeyBehavior = {},
+                             const uint8_t& nKeyBehaviors = {},
+                             const VMod& virtualMods = {},
+                             const KeyCode& firstKeyExplicit = {},
+                             const uint8_t& nKeyExplicit = {},
+                             const KeyCode& firstModMapKey = {},
+                             const uint8_t& nModMapKeys = {},
+                             const KeyCode& firstVModMapKey = {},
+                             const uint8_t& nVModMapKeys = {});
+
   struct SetMapRequest {
     DeviceSpec deviceSpec{};
     SetMapFlags flags{};
@@ -1466,6 +1574,43 @@ class COMPONENT_EXPORT(X11) Xkb {
 
   Future<void> SetMap(const SetMapRequest& request);
 
+  Future<void> SetMap(
+      const DeviceSpec& deviceSpec = {},
+      const SetMapFlags& flags = {},
+      const KeyCode& minKeyCode = {},
+      const KeyCode& maxKeyCode = {},
+      const uint8_t& firstType = {},
+      const uint8_t& nTypes = {},
+      const KeyCode& firstKeySym = {},
+      const uint8_t& nKeySyms = {},
+      const uint16_t& totalSyms = {},
+      const KeyCode& firstKeyAction = {},
+      const uint8_t& nKeyActions = {},
+      const uint16_t& totalActions = {},
+      const KeyCode& firstKeyBehavior = {},
+      const uint8_t& nKeyBehaviors = {},
+      const uint8_t& totalKeyBehaviors = {},
+      const KeyCode& firstKeyExplicit = {},
+      const uint8_t& nKeyExplicit = {},
+      const uint8_t& totalKeyExplicit = {},
+      const KeyCode& firstModMapKey = {},
+      const uint8_t& nModMapKeys = {},
+      const uint8_t& totalModMapKeys = {},
+      const KeyCode& firstVModMapKey = {},
+      const uint8_t& nVModMapKeys = {},
+      const uint8_t& totalVModMapKeys = {},
+      const VMod& virtualMods = {},
+      const base::Optional<std::vector<SetKeyType>>& types = base::nullopt,
+      const base::Optional<std::vector<KeySymMap>>& syms = base::nullopt,
+      const base::Optional<std::vector<uint8_t>>& actionsCount = base::nullopt,
+      const base::Optional<std::vector<Action>>& actions = base::nullopt,
+      const base::Optional<std::vector<SetBehavior>>& behaviors = base::nullopt,
+      const base::Optional<std::vector<uint8_t>>& vmods = base::nullopt,
+      const base::Optional<std::vector<SetExplicit>>& c_explicit =
+          base::nullopt,
+      const base::Optional<std::vector<KeyModMap>>& modmap = base::nullopt,
+      const base::Optional<std::vector<KeyVModMap>>& vmodmap = base::nullopt);
+
   struct GetCompatMapRequest {
     DeviceSpec deviceSpec{};
     SetOfGroup groups{};
@@ -1488,6 +1633,12 @@ class COMPONENT_EXPORT(X11) Xkb {
 
   Future<GetCompatMapReply> GetCompatMap(const GetCompatMapRequest& request);
 
+  Future<GetCompatMapReply> GetCompatMap(const DeviceSpec& deviceSpec = {},
+                                         const SetOfGroup& groups = {},
+                                         const uint8_t& getAllSI = {},
+                                         const uint16_t& firstSI = {},
+                                         const uint16_t& nSI = {});
+
   struct SetCompatMapRequest {
     DeviceSpec deviceSpec{};
     uint8_t recomputeActions{};
@@ -1501,6 +1652,14 @@ class COMPONENT_EXPORT(X11) Xkb {
   using SetCompatMapResponse = Response<void>;
 
   Future<void> SetCompatMap(const SetCompatMapRequest& request);
+
+  Future<void> SetCompatMap(const DeviceSpec& deviceSpec = {},
+                            const uint8_t& recomputeActions = {},
+                            const uint8_t& truncateSI = {},
+                            const SetOfGroup& groups = {},
+                            const uint16_t& firstSI = {},
+                            const std::vector<SymInterpret>& si = {},
+                            const std::vector<ModDef>& groupMaps = {});
 
   struct GetIndicatorStateRequest {
     DeviceSpec deviceSpec{};
@@ -1516,6 +1675,9 @@ class COMPONENT_EXPORT(X11) Xkb {
 
   Future<GetIndicatorStateReply> GetIndicatorState(
       const GetIndicatorStateRequest& request);
+
+  Future<GetIndicatorStateReply> GetIndicatorState(
+      const DeviceSpec& deviceSpec = {});
 
   struct GetIndicatorMapRequest {
     DeviceSpec deviceSpec{};
@@ -1536,6 +1698,10 @@ class COMPONENT_EXPORT(X11) Xkb {
   Future<GetIndicatorMapReply> GetIndicatorMap(
       const GetIndicatorMapRequest& request);
 
+  Future<GetIndicatorMapReply> GetIndicatorMap(
+      const DeviceSpec& deviceSpec = {},
+      const uint32_t& which = {});
+
   struct SetIndicatorMapRequest {
     DeviceSpec deviceSpec{};
     uint32_t which{};
@@ -1545,6 +1711,10 @@ class COMPONENT_EXPORT(X11) Xkb {
   using SetIndicatorMapResponse = Response<void>;
 
   Future<void> SetIndicatorMap(const SetIndicatorMapRequest& request);
+
+  Future<void> SetIndicatorMap(const DeviceSpec& deviceSpec = {},
+                               const uint32_t& which = {},
+                               const std::vector<IndicatorMap>& maps = {});
 
   struct GetNamedIndicatorRequest {
     DeviceSpec deviceSpec{};
@@ -1577,6 +1747,12 @@ class COMPONENT_EXPORT(X11) Xkb {
   Future<GetNamedIndicatorReply> GetNamedIndicator(
       const GetNamedIndicatorRequest& request);
 
+  Future<GetNamedIndicatorReply> GetNamedIndicator(
+      const DeviceSpec& deviceSpec = {},
+      const LedClass& ledClass = {},
+      const IDSpec& ledID = {},
+      const Atom& indicator = {});
+
   struct SetNamedIndicatorRequest {
     DeviceSpec deviceSpec{};
     LedClass ledClass{};
@@ -1598,6 +1774,22 @@ class COMPONENT_EXPORT(X11) Xkb {
   using SetNamedIndicatorResponse = Response<void>;
 
   Future<void> SetNamedIndicator(const SetNamedIndicatorRequest& request);
+
+  Future<void> SetNamedIndicator(const DeviceSpec& deviceSpec = {},
+                                 const LedClass& ledClass = {},
+                                 const IDSpec& ledID = {},
+                                 const Atom& indicator = {},
+                                 const uint8_t& setState = {},
+                                 const uint8_t& on = {},
+                                 const uint8_t& setMap = {},
+                                 const uint8_t& createMap = {},
+                                 const IMFlag& map_flags = {},
+                                 const IMGroupsWhich& map_whichGroups = {},
+                                 const SetOfGroups& map_groups = {},
+                                 const IMModsWhich& map_whichMods = {},
+                                 const ModMask& map_realMods = {},
+                                 const VMod& map_vmods = {},
+                                 const BoolCtrl& map_ctrls = {});
 
   struct GetNamesRequest {
     DeviceSpec deviceSpec{};
@@ -1639,6 +1831,9 @@ class COMPONENT_EXPORT(X11) Xkb {
 
   Future<GetNamesReply> GetNames(const GetNamesRequest& request);
 
+  Future<GetNamesReply> GetNames(const DeviceSpec& deviceSpec = {},
+                                 const NameDetail& which = {});
+
   struct SetNamesRequest {
     DeviceSpec deviceSpec{};
     VMod virtualMods{};
@@ -1674,6 +1869,37 @@ class COMPONENT_EXPORT(X11) Xkb {
 
   Future<void> SetNames(const SetNamesRequest& request);
 
+  Future<void> SetNames(
+      const DeviceSpec& deviceSpec = {},
+      const VMod& virtualMods = {},
+      const uint8_t& firstType = {},
+      const uint8_t& nTypes = {},
+      const uint8_t& firstKTLevelt = {},
+      const uint8_t& nKTLevels = {},
+      const uint32_t& indicators = {},
+      const SetOfGroup& groupNames = {},
+      const uint8_t& nRadioGroups = {},
+      const KeyCode& firstKey = {},
+      const uint8_t& nKeys = {},
+      const uint8_t& nKeyAliases = {},
+      const uint16_t& totalKTLevelNames = {},
+      const base::Optional<Atom>& keycodesName = base::nullopt,
+      const base::Optional<Atom>& geometryName = base::nullopt,
+      const base::Optional<Atom>& symbolsName = base::nullopt,
+      const base::Optional<Atom>& physSymbolsName = base::nullopt,
+      const base::Optional<Atom>& typesName = base::nullopt,
+      const base::Optional<Atom>& compatName = base::nullopt,
+      const base::Optional<std::vector<Atom>>& typeNames = base::nullopt,
+      const base::Optional<std::vector<uint8_t>>& nLevelsPerType =
+          base::nullopt,
+      const base::Optional<std::vector<Atom>>& ktLevelNames = base::nullopt,
+      const base::Optional<std::vector<Atom>>& indicatorNames = base::nullopt,
+      const base::Optional<std::vector<Atom>>& virtualModNames = base::nullopt,
+      const base::Optional<std::vector<Atom>>& groups = base::nullopt,
+      const base::Optional<std::vector<KeyName>>& keyNames = base::nullopt,
+      const base::Optional<std::vector<KeyAlias>>& keyAliases = base::nullopt,
+      const base::Optional<std::vector<Atom>>& radioGroupNames = base::nullopt);
+
   struct PerClientFlagsRequest {
     DeviceSpec deviceSpec{};
     PerClientFlag change{};
@@ -1697,6 +1923,14 @@ class COMPONENT_EXPORT(X11) Xkb {
   Future<PerClientFlagsReply> PerClientFlags(
       const PerClientFlagsRequest& request);
 
+  Future<PerClientFlagsReply> PerClientFlags(
+      const DeviceSpec& deviceSpec = {},
+      const PerClientFlag& change = {},
+      const PerClientFlag& value = {},
+      const BoolCtrl& ctrlsToChange = {},
+      const BoolCtrl& autoCtrls = {},
+      const BoolCtrl& autoCtrlsValues = {});
+
   struct ListComponentsRequest {
     DeviceSpec deviceSpec{};
     uint16_t maxNames{};
@@ -1718,6 +1952,9 @@ class COMPONENT_EXPORT(X11) Xkb {
 
   Future<ListComponentsReply> ListComponents(
       const ListComponentsRequest& request);
+
+  Future<ListComponentsReply> ListComponents(const DeviceSpec& deviceSpec = {},
+                                             const uint16_t& maxNames = {});
 
   struct GetKbdByNameRequest {
     DeviceSpec deviceSpec{};
@@ -1855,6 +2092,11 @@ class COMPONENT_EXPORT(X11) Xkb {
 
   Future<GetKbdByNameReply> GetKbdByName(const GetKbdByNameRequest& request);
 
+  Future<GetKbdByNameReply> GetKbdByName(const DeviceSpec& deviceSpec = {},
+                                         const GBNDetail& need = {},
+                                         const GBNDetail& want = {},
+                                         const uint8_t& load = {});
+
   struct GetDeviceInfoRequest {
     DeviceSpec deviceSpec{};
     XIFeature wanted{};
@@ -1888,6 +2130,14 @@ class COMPONENT_EXPORT(X11) Xkb {
 
   Future<GetDeviceInfoReply> GetDeviceInfo(const GetDeviceInfoRequest& request);
 
+  Future<GetDeviceInfoReply> GetDeviceInfo(const DeviceSpec& deviceSpec = {},
+                                           const XIFeature& wanted = {},
+                                           const uint8_t& allButtons = {},
+                                           const uint8_t& firstButton = {},
+                                           const uint8_t& nButtons = {},
+                                           const LedClass& ledClass = {},
+                                           const IDSpec& ledID = {});
+
   struct SetDeviceInfoRequest {
     DeviceSpec deviceSpec{};
     uint8_t firstBtn{};
@@ -1899,6 +2149,12 @@ class COMPONENT_EXPORT(X11) Xkb {
   using SetDeviceInfoResponse = Response<void>;
 
   Future<void> SetDeviceInfo(const SetDeviceInfoRequest& request);
+
+  Future<void> SetDeviceInfo(const DeviceSpec& deviceSpec = {},
+                             const uint8_t& firstBtn = {},
+                             const XIFeature& change = {},
+                             const std::vector<Action>& btnActions = {},
+                             const std::vector<DeviceLedInfo>& leds = {});
 
   struct SetDebuggingFlagsRequest {
     uint32_t affectFlags{};
@@ -1920,6 +2176,13 @@ class COMPONENT_EXPORT(X11) Xkb {
 
   Future<SetDebuggingFlagsReply> SetDebuggingFlags(
       const SetDebuggingFlagsRequest& request);
+
+  Future<SetDebuggingFlagsReply> SetDebuggingFlags(
+      const uint32_t& affectFlags = {},
+      const uint32_t& flags = {},
+      const uint32_t& affectCtrls = {},
+      const uint32_t& ctrls = {},
+      const std::vector<String8>& message = {});
 
  private:
   Connection* const connection_;

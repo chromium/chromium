@@ -601,7 +601,7 @@ bool NativeViewGLSurfaceGLX::Initialize(GLSurfaceFormat format) {
 
   auto parent = static_cast<x11::Window>(parent_window_);
   auto attributes_req = conn->GetWindowAttributes({parent});
-  auto geometry_req = conn->GetGeometry({parent});
+  auto geometry_req = conn->GetGeometry(parent);
   conn->Flush();
   auto attributes = attributes_req.Sync();
   auto geometry = geometry_req.Sync();

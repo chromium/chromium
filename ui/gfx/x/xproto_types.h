@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/files/scoped_file.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"

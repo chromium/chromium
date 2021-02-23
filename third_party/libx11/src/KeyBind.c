@@ -43,7 +43,7 @@ void UpdateMappingImpl(Connection* connection,
   int count = max_keycode - min_keycode + 1;
   auto keyboard_future =
       connection->GetKeyboardMapping({connection->setup().min_keycode, count});
-  auto modifier_future = connection->GetModifierMapping({});
+  auto modifier_future = connection->GetModifierMapping();
   GetModifierMappingReply modifier_mapping;
   connection->Flush();
   if (auto reply = keyboard_future.Sync())

@@ -192,6 +192,13 @@ Future<Damage::QueryVersionReply> Damage::QueryVersion(
       &buf, "Damage::QueryVersion", false);
 }
 
+Future<Damage::QueryVersionReply> Damage::QueryVersion(
+    const uint32_t& client_major_version,
+    const uint32_t& client_minor_version) {
+  return Damage::QueryVersion(
+      Damage::QueryVersionRequest{client_major_version, client_minor_version});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Damage::QueryVersionReply> detail::ReadReply<
@@ -273,6 +280,12 @@ Future<void> Damage::Create(const Damage::CreateRequest& request) {
   return connection_->SendRequest<void>(&buf, "Damage::Create", false);
 }
 
+Future<void> Damage::Create(const DamageId& damage,
+                            const Drawable& drawable,
+                            const ReportLevel& level) {
+  return Damage::Create(Damage::CreateRequest{damage, drawable, level});
+}
+
 Future<void> Damage::Destroy(const Damage::DestroyRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -299,6 +312,10 @@ Future<void> Damage::Destroy(const Damage::DestroyRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Damage::Destroy", false);
+}
+
+Future<void> Damage::Destroy(const DamageId& damage) {
+  return Damage::Destroy(Damage::DestroyRequest{damage});
 }
 
 Future<void> Damage::Subtract(const Damage::SubtractRequest& request) {
@@ -337,6 +354,12 @@ Future<void> Damage::Subtract(const Damage::SubtractRequest& request) {
   return connection_->SendRequest<void>(&buf, "Damage::Subtract", false);
 }
 
+Future<void> Damage::Subtract(const DamageId& damage,
+                              const XFixes::Region& repair,
+                              const XFixes::Region& parts) {
+  return Damage::Subtract(Damage::SubtractRequest{damage, repair, parts});
+}
+
 Future<void> Damage::Add(const Damage::AddRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -367,6 +390,11 @@ Future<void> Damage::Add(const Damage::AddRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Damage::Add", false);
+}
+
+Future<void> Damage::Add(const Drawable& drawable,
+                         const XFixes::Region& region) {
+  return Damage::Add(Damage::AddRequest{drawable, region});
 }
 
 }  // namespace x11

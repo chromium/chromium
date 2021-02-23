@@ -132,7 +132,7 @@ void UngrabPointer() {
     }
   }
   // Try core pointer ungrab in case the XInput2 pointer ungrab failed.
-  connection->UngrabPointer({}).IgnoreError();
+  connection->UngrabPointer().IgnoreError();
 }
 
 }  // namespace ui

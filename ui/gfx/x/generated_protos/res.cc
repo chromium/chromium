@@ -86,6 +86,12 @@ Future<Res::QueryVersionReply> Res::QueryVersion(
       &buf, "Res::QueryVersion", false);
 }
 
+Future<Res::QueryVersionReply> Res::QueryVersion(const uint8_t& client_major,
+                                                 const uint8_t& client_minor) {
+  return Res::QueryVersion(
+      Res::QueryVersionRequest{client_major, client_minor});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Res::QueryVersionReply> detail::ReadReply<
@@ -146,6 +152,10 @@ Future<Res::QueryClientsReply> Res::QueryClients(
 
   return connection_->SendRequest<Res::QueryClientsReply>(
       &buf, "Res::QueryClients", false);
+}
+
+Future<Res::QueryClientsReply> Res::QueryClients() {
+  return Res::QueryClients(Res::QueryClientsRequest{});
 }
 
 template <>
@@ -232,6 +242,11 @@ Future<Res::QueryClientResourcesReply> Res::QueryClientResources(
       &buf, "Res::QueryClientResources", false);
 }
 
+Future<Res::QueryClientResourcesReply> Res::QueryClientResources(
+    const uint32_t& xid) {
+  return Res::QueryClientResources(Res::QueryClientResourcesRequest{xid});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Res::QueryClientResourcesReply> detail::ReadReply<
@@ -314,6 +329,11 @@ Future<Res::QueryClientPixmapBytesReply> Res::QueryClientPixmapBytes(
 
   return connection_->SendRequest<Res::QueryClientPixmapBytesReply>(
       &buf, "Res::QueryClientPixmapBytes", false);
+}
+
+Future<Res::QueryClientPixmapBytesReply> Res::QueryClientPixmapBytes(
+    const uint32_t& xid) {
+  return Res::QueryClientPixmapBytes(Res::QueryClientPixmapBytesRequest{xid});
 }
 
 template <>
@@ -402,6 +422,11 @@ Future<Res::QueryClientIdsReply> Res::QueryClientIds(
 
   return connection_->SendRequest<Res::QueryClientIdsReply>(
       &buf, "Res::QueryClientIds", false);
+}
+
+Future<Res::QueryClientIdsReply> Res::QueryClientIds(
+    const std::vector<ClientIdSpec>& specs) {
+  return Res::QueryClientIds(Res::QueryClientIdsRequest{specs});
 }
 
 template <>
@@ -529,6 +554,12 @@ Future<Res::QueryResourceBytesReply> Res::QueryResourceBytes(
 
   return connection_->SendRequest<Res::QueryResourceBytesReply>(
       &buf, "Res::QueryResourceBytes", false);
+}
+
+Future<Res::QueryResourceBytesReply> Res::QueryResourceBytes(
+    const uint32_t& client,
+    const std::vector<ResourceIdSpec>& specs) {
+  return Res::QueryResourceBytes(Res::QueryResourceBytesRequest{client, specs});
 }
 
 template <>

@@ -53,6 +53,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "ui/gfx/x/error.h"
+#include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
 
 namespace x11 {
@@ -94,6 +95,9 @@ class COMPONENT_EXPORT(X11) Dri3 {
 
   Future<QueryVersionReply> QueryVersion(const QueryVersionRequest& request);
 
+  Future<QueryVersionReply> QueryVersion(const uint32_t& major_version = {},
+                                         const uint32_t& minor_version = {});
+
   struct OpenRequest {
     Drawable drawable{};
     uint32_t provider{};
@@ -102,12 +106,15 @@ class COMPONENT_EXPORT(X11) Dri3 {
   struct OpenReply {
     uint8_t nfd{};
     uint16_t sequence{};
-    base::ScopedFD device_fd{};
+    RefCountedFD device_fd{};
   };
 
   using OpenResponse = Response<OpenReply>;
 
   Future<OpenReply> Open(const OpenRequest& request);
+
+  Future<OpenReply> Open(const Drawable& drawable = {},
+                         const uint32_t& provider = {});
 
   struct PixmapFromBufferRequest {
     Pixmap pixmap{};
@@ -118,12 +125,22 @@ class COMPONENT_EXPORT(X11) Dri3 {
     uint16_t stride{};
     uint8_t depth{};
     uint8_t bpp{};
-    base::ScopedFD pixmap_fd{};
+    RefCountedFD pixmap_fd{};
   };
 
   using PixmapFromBufferResponse = Response<void>;
 
   Future<void> PixmapFromBuffer(const PixmapFromBufferRequest& request);
+
+  Future<void> PixmapFromBuffer(const Pixmap& pixmap = {},
+                                const Drawable& drawable = {},
+                                const uint32_t& size = {},
+                                const uint16_t& width = {},
+                                const uint16_t& height = {},
+                                const uint16_t& stride = {},
+                                const uint8_t& depth = {},
+                                const uint8_t& bpp = {},
+                                const RefCountedFD& pixmap_fd = {});
 
   struct BufferFromPixmapRequest {
     Pixmap pixmap{};
@@ -138,7 +155,7 @@ class COMPONENT_EXPORT(X11) Dri3 {
     uint16_t stride{};
     uint8_t depth{};
     uint8_t bpp{};
-    base::ScopedFD pixmap_fd{};
+    RefCountedFD pixmap_fd{};
   };
 
   using BufferFromPixmapResponse = Response<BufferFromPixmapReply>;
@@ -146,16 +163,23 @@ class COMPONENT_EXPORT(X11) Dri3 {
   Future<BufferFromPixmapReply> BufferFromPixmap(
       const BufferFromPixmapRequest& request);
 
+  Future<BufferFromPixmapReply> BufferFromPixmap(const Pixmap& pixmap = {});
+
   struct FenceFromFDRequest {
     Drawable drawable{};
     uint32_t fence{};
     uint8_t initially_triggered{};
-    base::ScopedFD fence_fd{};
+    RefCountedFD fence_fd{};
   };
 
   using FenceFromFDResponse = Response<void>;
 
   Future<void> FenceFromFD(const FenceFromFDRequest& request);
+
+  Future<void> FenceFromFD(const Drawable& drawable = {},
+                           const uint32_t& fence = {},
+                           const uint8_t& initially_triggered = {},
+                           const RefCountedFD& fence_fd = {});
 
   struct FDFromFenceRequest {
     Drawable drawable{};
@@ -165,12 +189,15 @@ class COMPONENT_EXPORT(X11) Dri3 {
   struct FDFromFenceReply {
     uint8_t nfd{};
     uint16_t sequence{};
-    base::ScopedFD fence_fd{};
+    RefCountedFD fence_fd{};
   };
 
   using FDFromFenceResponse = Response<FDFromFenceReply>;
 
   Future<FDFromFenceReply> FDFromFence(const FDFromFenceRequest& request);
+
+  Future<FDFromFenceReply> FDFromFence(const Drawable& drawable = {},
+                                       const uint32_t& fence = {});
 
   struct GetSupportedModifiersRequest {
     uint32_t window{};
@@ -189,6 +216,11 @@ class COMPONENT_EXPORT(X11) Dri3 {
   Future<GetSupportedModifiersReply> GetSupportedModifiers(
       const GetSupportedModifiersRequest& request);
 
+  Future<GetSupportedModifiersReply> GetSupportedModifiers(
+      const uint32_t& window = {},
+      const uint8_t& depth = {},
+      const uint8_t& bpp = {});
+
   struct PixmapFromBuffersRequest {
     Pixmap pixmap{};
     Window window{};
@@ -205,12 +237,29 @@ class COMPONENT_EXPORT(X11) Dri3 {
     uint8_t depth{};
     uint8_t bpp{};
     uint64_t modifier{};
-    std::vector<base::ScopedFD> buffers{};
+    std::vector<RefCountedFD> buffers{};
   };
 
   using PixmapFromBuffersResponse = Response<void>;
 
   Future<void> PixmapFromBuffers(const PixmapFromBuffersRequest& request);
+
+  Future<void> PixmapFromBuffers(const Pixmap& pixmap = {},
+                                 const Window& window = {},
+                                 const uint16_t& width = {},
+                                 const uint16_t& height = {},
+                                 const uint32_t& stride0 = {},
+                                 const uint32_t& offset0 = {},
+                                 const uint32_t& stride1 = {},
+                                 const uint32_t& offset1 = {},
+                                 const uint32_t& stride2 = {},
+                                 const uint32_t& offset2 = {},
+                                 const uint32_t& stride3 = {},
+                                 const uint32_t& offset3 = {},
+                                 const uint8_t& depth = {},
+                                 const uint8_t& bpp = {},
+                                 const uint64_t& modifier = {},
+                                 const std::vector<RefCountedFD>& buffers = {});
 
   struct BuffersFromPixmapRequest {
     Pixmap pixmap{};
@@ -225,13 +274,15 @@ class COMPONENT_EXPORT(X11) Dri3 {
     uint8_t bpp{};
     std::vector<uint32_t> strides{};
     std::vector<uint32_t> offsets{};
-    std::vector<base::ScopedFD> buffers{};
+    std::vector<RefCountedFD> buffers{};
   };
 
   using BuffersFromPixmapResponse = Response<BuffersFromPixmapReply>;
 
   Future<BuffersFromPixmapReply> BuffersFromPixmap(
       const BuffersFromPixmapRequest& request);
+
+  Future<BuffersFromPixmapReply> BuffersFromPixmap(const Pixmap& pixmap = {});
 
  private:
   Connection* const connection_;

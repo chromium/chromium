@@ -139,6 +139,13 @@ Future<ScreenSaver::QueryVersionReply> ScreenSaver::QueryVersion(
       &buf, "ScreenSaver::QueryVersion", false);
 }
 
+Future<ScreenSaver::QueryVersionReply> ScreenSaver::QueryVersion(
+    const uint8_t& client_major_version,
+    const uint8_t& client_minor_version) {
+  return ScreenSaver::QueryVersion(ScreenSaver::QueryVersionRequest{
+      client_major_version, client_minor_version});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<ScreenSaver::QueryVersionReply> detail::ReadReply<
@@ -207,6 +214,11 @@ Future<ScreenSaver::QueryInfoReply> ScreenSaver::QueryInfo(
 
   return connection_->SendRequest<ScreenSaver::QueryInfoReply>(
       &buf, "ScreenSaver::QueryInfo", false);
+}
+
+Future<ScreenSaver::QueryInfoReply> ScreenSaver::QueryInfo(
+    const Drawable& drawable) {
+  return ScreenSaver::QueryInfo(ScreenSaver::QueryInfoRequest{drawable});
 }
 
 template <>
@@ -298,6 +310,12 @@ Future<void> ScreenSaver::SelectInput(
 
   return connection_->SendRequest<void>(&buf, "ScreenSaver::SelectInput",
                                         false);
+}
+
+Future<void> ScreenSaver::SelectInput(const Drawable& drawable,
+                                      const Event& event_mask) {
+  return ScreenSaver::SelectInput(
+      ScreenSaver::SelectInputRequest{drawable, event_mask});
 }
 
 Future<void> ScreenSaver::SetAttributes(
@@ -504,6 +522,58 @@ Future<void> ScreenSaver::SetAttributes(
                                         false);
 }
 
+Future<void> ScreenSaver::SetAttributes(
+    const Drawable& drawable,
+    const int16_t& x,
+    const int16_t& y,
+    const uint16_t& width,
+    const uint16_t& height,
+    const uint16_t& border_width,
+    const WindowClass& c_class,
+    const uint8_t& depth,
+    const VisualId& visual,
+    const base::Optional<Pixmap>& background_pixmap,
+    const base::Optional<uint32_t>& background_pixel,
+    const base::Optional<Pixmap>& border_pixmap,
+    const base::Optional<uint32_t>& border_pixel,
+    const base::Optional<Gravity>& bit_gravity,
+    const base::Optional<Gravity>& win_gravity,
+    const base::Optional<BackingStore>& backing_store,
+    const base::Optional<uint32_t>& backing_planes,
+    const base::Optional<uint32_t>& backing_pixel,
+    const base::Optional<Bool32>& override_redirect,
+    const base::Optional<Bool32>& save_under,
+    const base::Optional<EventMask>& event_mask,
+    const base::Optional<EventMask>& do_not_propogate_mask,
+    const base::Optional<ColorMap>& colormap,
+    const base::Optional<Cursor>& cursor) {
+  return ScreenSaver::SetAttributes(
+      ScreenSaver::SetAttributesRequest{drawable,
+                                        x,
+                                        y,
+                                        width,
+                                        height,
+                                        border_width,
+                                        c_class,
+                                        depth,
+                                        visual,
+                                        background_pixmap,
+                                        background_pixel,
+                                        border_pixmap,
+                                        border_pixel,
+                                        bit_gravity,
+                                        win_gravity,
+                                        backing_store,
+                                        backing_planes,
+                                        backing_pixel,
+                                        override_redirect,
+                                        save_under,
+                                        event_mask,
+                                        do_not_propogate_mask,
+                                        colormap,
+                                        cursor});
+}
+
 Future<void> ScreenSaver::UnsetAttributes(
     const ScreenSaver::UnsetAttributesRequest& request) {
   if (!connection_->Ready() || !present())
@@ -534,6 +604,11 @@ Future<void> ScreenSaver::UnsetAttributes(
                                         false);
 }
 
+Future<void> ScreenSaver::UnsetAttributes(const Drawable& drawable) {
+  return ScreenSaver::UnsetAttributes(
+      ScreenSaver::UnsetAttributesRequest{drawable});
+}
+
 Future<void> ScreenSaver::Suspend(const ScreenSaver::SuspendRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -560,6 +635,10 @@ Future<void> ScreenSaver::Suspend(const ScreenSaver::SuspendRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "ScreenSaver::Suspend", false);
+}
+
+Future<void> ScreenSaver::Suspend(const uint32_t& suspend) {
+  return ScreenSaver::Suspend(ScreenSaver::SuspendRequest{suspend});
 }
 
 }  // namespace x11

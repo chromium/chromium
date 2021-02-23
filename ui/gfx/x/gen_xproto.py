@@ -314,7 +314,7 @@ class GenXproto(FileWriter):
 
     def fieldtype(self, field):
         if field.isfd:
-            return 'base::ScopedFD'
+            return 'RefCountedFD'
         return self.qualtype(field.type,
                              field.enum if field.enum else field.field_type)
 
@@ -447,7 +447,7 @@ class GenXproto(FileWriter):
 
     def copy_fd(self, field, name):
         if self.is_read:
-            self.write('%s = base::ScopedFD(buf.TakeFd());' % name)
+            self.write('%s = RefCountedFD(buf.TakeFd());' % name)
         else:
             # We take the request struct as const&, so dup() the fd to preserve
             # const-correctness because XCB close()s it after writing it.
@@ -605,11 +605,15 @@ class GenXproto(FileWriter):
                         safe_name(case_field.field_name),
                         'true' if case.type.is_bitcase else 'false', name))
 
+    def is_field_hidden_from_api(self, field):
+        return not field.visible or getattr(
+            field, 'for_list', False) or getattr(field, 'for_switch', False)
+
     def declare_field(self, field):
         t = field.type
         name = safe_name(field.field_name)
 
-        if not field.visible or field.for_list or field.for_switch:
+        if self.is_field_hidden_from_api(field):
             return []
 
         if t.is_switch:
@@ -831,6 +835,29 @@ class GenXproto(FileWriter):
             'static_assert(std::is_trivially_copyable<%s>::value, "");' % name)
         self.write()
 
+    # Returns a list of strings suitable for use as a default-initializer for
+    # |field|.  There may be 0 strings (if the field is hidden from the public
+    # API), 1 string (for normal cases), or many strings (for switch fields).
+    def get_initializer(self, field):
+        if self.is_field_hidden_from_api(field):
+            return []
+
+        if field.type.is_switch:
+            return ['base::nullopt'] * len(self.declare_switch(field))
+        if field.type.is_list or not field.type.is_container:
+            return ['{}']
+
+        # While using {} as an initializer for structs is fine when nested
+        # in other structs, it causes compiler errors when used as a default
+        # argument initializer, so explicitly initialize each field.
+        return [
+            '{%s}' % ', '.join([
+                init for subfield in field.type.fields
+                if not self.is_field_hidden_from_api(subfield)
+                for init in self.get_initializer(subfield)
+            ])
+        ]
+
     def declare_request(self, request):
         method_name = request.name[-1]
         request_name = method_name + 'Request'
@@ -848,8 +875,28 @@ class GenXproto(FileWriter):
             self.write()
 
         if in_class:
+            # Generate a request method that takes a Request object.
             self.write('Future<%s> %s(' % (reply_name, method_name))
             self.write('    const %s& request);' % request_name)
+            self.write()
+
+            # Generate a request method that takes fields as arguments and
+            # forwards them as a Request object to the above implementation.
+            field_type_names = [
+                field_type_name for field in request.fields
+                for field_type_name in self.declare_field(field)
+            ]
+            inits = [
+                init for field in request.fields
+                for init in self.get_initializer(field)
+            ]
+            assert len(field_type_names) == len(inits)
+            args = [
+                'const %s& %s = %s' % (field_type_name + (init, ))
+                for (field_type_name, init) in zip(field_type_names, inits)
+            ]
+            self.write('Future<%s> %s(%s);' %
+                       (reply_name, method_name, ', '.join(args)))
             self.write()
 
     def define_request(self, request):
@@ -863,6 +910,7 @@ class GenXproto(FileWriter):
         if not reply:
             reply_name = 'void'
 
+        # Generate a request method that takes a Request object.
         self.write('Future<%s>' % reply_name)
         self.write('%s(' % method_name)
         with Indent(self, '    const %s& request) {' % request_name, '}'):
@@ -883,6 +931,22 @@ class GenXproto(FileWriter):
             self.write(
                 'return connection_->SendRequest<%s>(&buf, "%s", %s);' %
                 (reply_name, prefix, 'true' if reply_has_fds else 'false'))
+        self.write()
+
+        # Generate a request method that takes fields as arguments and
+        # forwards them as a Request object to the above implementation.
+        self.write('Future<%s>' % reply_name)
+        self.write('%s(' % method_name)
+        args = [
+            'const %s& %s' % field_type_name for field in request.fields
+            for field_type_name in self.declare_field(field)
+        ]
+        with Indent(self, '%s) {' % ', '.join(args), '}'):
+            self.write('return %s(%s{%s});' %
+                       (method_name, request_name, ', '.join([
+                           field_name for field in request.fields
+                           for (_, field_name) in self.declare_field(field)
+                       ])))
         self.write()
 
         if not reply:
@@ -1160,6 +1224,7 @@ class GenXproto(FileWriter):
         self.write('#include "base/memory/scoped_refptr.h"')
         self.write('#include "base/optional.h"')
         self.write('#include "base/files/scoped_file.h"')
+        self.write('#include "ui/gfx/x/ref_counted_fd.h"')
         self.write('#include "ui/gfx/x/error.h"')
         imports = set(self.module.direct_imports)
         if self.module.namespace.is_ext:
@@ -1346,7 +1411,7 @@ class GenExtensionManager(FileWriter):
         with Indent(self, init + '(Connection* conn) {', '}'):
             for extension in self.extensions:
                 self.write(
-                    'auto %s_future = conn->QueryExtension({"%s"});' %
+                    'auto %s_future = conn->QueryExtension("%s");' %
                     (extension.proto, extension.module.namespace.ext_xname))
             # Flush so all requests are sent before waiting on any replies.
             self.write('conn->Flush();')

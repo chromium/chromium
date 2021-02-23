@@ -367,7 +367,7 @@ void InputInjectorX11::Core::InitClipboard() {
 }
 
 bool InputInjectorX11::Core::IsAutoRepeatEnabled() {
-  if (auto reply = connection_.GetKeyboardControl({}).Sync())
+  if (auto reply = connection_.GetKeyboardControl().Sync())
     return reply->global_auto_repeat == x11::AutoRepeatMode::On;
   LOG(ERROR) << "Failed to get keyboard auto-repeat status, assuming ON.";
   return true;
@@ -381,7 +381,7 @@ void InputInjectorX11::Core::SetAutoRepeatEnabled(bool mode) {
 }
 
 bool InputInjectorX11::Core::IsLockKey(x11::KeyCode keycode) {
-  auto state = connection_.xkb().GetState({}).Sync();
+  auto state = connection_.xkb().GetState().Sync();
   if (!state)
     return false;
   auto mods = state->baseMods | state->latchedMods | state->lockedMods;
@@ -580,7 +580,7 @@ void InputInjectorX11::Core::InitMouseButtonMap() {
   // Note that if a user has a global mapping that completely disables a button
   // (by assigning 0 to it), we won't be able to inject it.
   std::vector<uint8_t> pointer_mapping;
-  if (auto reply = connection_.GetPointerMapping({}).Sync())
+  if (auto reply = connection_.GetPointerMapping().Sync())
     pointer_mapping = std::move(reply->map);
   for (int& i : pointer_button_map_)
     i = -1;
@@ -594,7 +594,7 @@ void InputInjectorX11::Core::InitMouseButtonMap() {
       LOG(ERROR) << "Global pointer mapping does not support button " << i + 1;
   }
 
-  if (!connection_.QueryExtension({"XInputExtension"}).Sync()) {
+  if (!connection_.QueryExtension("XInputExtension").Sync()) {
     // If XInput is not available, we're done. But it would be very unusual to
     // have a server that supports XTest but not XInput, so log it as an error.
     LOG(ERROR) << "X Input extension not available";
@@ -607,7 +607,7 @@ void InputInjectorX11::Core::InitMouseButtonMap() {
   // may have mistakenly applied left-handed preferences to the XTEST device.
   uint8_t device_id = 0;
   bool device_found = false;
-  if (auto devices = connection_.xinput().ListInputDevices({}).Sync()) {
+  if (auto devices = connection_.xinput().ListInputDevices().Sync()) {
     for (size_t i = 0; i < devices->devices.size(); i++) {
       const auto& device_info = devices->devices[i];
       const std::string& name = devices->names[i].name;

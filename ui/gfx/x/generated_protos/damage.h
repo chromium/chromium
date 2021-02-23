@@ -53,6 +53,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "ui/gfx/x/error.h"
+#include "ui/gfx/x/ref_counted_fd.h"
 #include "xfixes.h"
 #include "xproto.h"
 
@@ -127,6 +128,10 @@ class COMPONENT_EXPORT(X11) Damage {
 
   Future<QueryVersionReply> QueryVersion(const QueryVersionRequest& request);
 
+  Future<QueryVersionReply> QueryVersion(
+      const uint32_t& client_major_version = {},
+      const uint32_t& client_minor_version = {});
+
   struct CreateRequest {
     DamageId damage{};
     Drawable drawable{};
@@ -137,6 +142,10 @@ class COMPONENT_EXPORT(X11) Damage {
 
   Future<void> Create(const CreateRequest& request);
 
+  Future<void> Create(const DamageId& damage = {},
+                      const Drawable& drawable = {},
+                      const ReportLevel& level = {});
+
   struct DestroyRequest {
     DamageId damage{};
   };
@@ -144,6 +153,8 @@ class COMPONENT_EXPORT(X11) Damage {
   using DestroyResponse = Response<void>;
 
   Future<void> Destroy(const DestroyRequest& request);
+
+  Future<void> Destroy(const DamageId& damage = {});
 
   struct SubtractRequest {
     DamageId damage{};
@@ -155,6 +166,10 @@ class COMPONENT_EXPORT(X11) Damage {
 
   Future<void> Subtract(const SubtractRequest& request);
 
+  Future<void> Subtract(const DamageId& damage = {},
+                        const XFixes::Region& repair = {},
+                        const XFixes::Region& parts = {});
+
   struct AddRequest {
     Drawable drawable{};
     XFixes::Region region{};
@@ -163,6 +178,9 @@ class COMPONENT_EXPORT(X11) Damage {
   using AddResponse = Response<void>;
 
   Future<void> Add(const AddRequest& request);
+
+  Future<void> Add(const Drawable& drawable = {},
+                   const XFixes::Region& region = {});
 
  private:
   Connection* const connection_;

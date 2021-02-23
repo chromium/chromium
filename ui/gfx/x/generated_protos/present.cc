@@ -486,6 +486,13 @@ Future<Present::QueryVersionReply> Present::QueryVersion(
       &buf, "Present::QueryVersion", false);
 }
 
+Future<Present::QueryVersionReply> Present::QueryVersion(
+    const uint32_t& major_version,
+    const uint32_t& minor_version) {
+  return Present::QueryVersion(
+      Present::QueryVersionRequest{major_version, minor_version});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Present::QueryVersionReply> detail::ReadReply<
@@ -523,7 +530,8 @@ std::unique_ptr<Present::QueryVersionReply> detail::ReadReply<
   return reply;
 }
 
-Future<void> Present::Pixmap(const Present::PixmapRequest& request) {
+Future<void> Present::PresentPixmap(
+    const Present::PresentPixmapRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
 
@@ -621,7 +629,28 @@ Future<void> Present::Pixmap(const Present::PixmapRequest& request) {
 
   Align(&buf, 4);
 
-  return connection_->SendRequest<void>(&buf, "Present::Pixmap", false);
+  return connection_->SendRequest<void>(&buf, "Present::PresentPixmap", false);
+}
+
+Future<void> Present::PresentPixmap(const Window& window,
+                                    const Pixmap& pixmap,
+                                    const uint32_t& serial,
+                                    const XFixes::Region& valid,
+                                    const XFixes::Region& update,
+                                    const int16_t& x_off,
+                                    const int16_t& y_off,
+                                    const RandR::Crtc& target_crtc,
+                                    const Sync::Fence& wait_fence,
+                                    const Sync::Fence& idle_fence,
+                                    const uint32_t& options,
+                                    const uint64_t& target_msc,
+                                    const uint64_t& divisor,
+                                    const uint64_t& remainder,
+                                    const std::vector<Notify>& notifies) {
+  return Present::PresentPixmap(Present::PresentPixmapRequest{
+      window, pixmap, serial, valid, update, x_off, y_off, target_crtc,
+      wait_fence, idle_fence, options, target_msc, divisor, remainder,
+      notifies});
 }
 
 Future<void> Present::NotifyMSC(const Present::NotifyMSCRequest& request) {
@@ -671,6 +700,15 @@ Future<void> Present::NotifyMSC(const Present::NotifyMSCRequest& request) {
   return connection_->SendRequest<void>(&buf, "Present::NotifyMSC", false);
 }
 
+Future<void> Present::NotifyMSC(const Window& window,
+                                const uint32_t& serial,
+                                const uint64_t& target_msc,
+                                const uint64_t& divisor,
+                                const uint64_t& remainder) {
+  return Present::NotifyMSC(Present::NotifyMSCRequest{
+      window, serial, target_msc, divisor, remainder});
+}
+
 Future<void> Present::SelectInput(const Present::SelectInputRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -709,6 +747,13 @@ Future<void> Present::SelectInput(const Present::SelectInputRequest& request) {
   return connection_->SendRequest<void>(&buf, "Present::SelectInput", false);
 }
 
+Future<void> Present::SelectInput(const Event& eid,
+                                  const Window& window,
+                                  const EventMask& event_mask) {
+  return Present::SelectInput(
+      Present::SelectInputRequest{eid, window, event_mask});
+}
+
 Future<Present::QueryCapabilitiesReply> Present::QueryCapabilities(
     const Present::QueryCapabilitiesRequest& request) {
   if (!connection_->Ready() || !present())
@@ -737,6 +782,11 @@ Future<Present::QueryCapabilitiesReply> Present::QueryCapabilities(
 
   return connection_->SendRequest<Present::QueryCapabilitiesReply>(
       &buf, "Present::QueryCapabilities", false);
+}
+
+Future<Present::QueryCapabilitiesReply> Present::QueryCapabilities(
+    const uint32_t& target) {
+  return Present::QueryCapabilities(Present::QueryCapabilitiesRequest{target});
 }
 
 template <>

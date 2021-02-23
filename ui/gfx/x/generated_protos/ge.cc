@@ -87,6 +87,13 @@ Future<GenericEvent::QueryVersionReply> GenericEvent::QueryVersion(
       &buf, "GenericEvent::QueryVersion", false);
 }
 
+Future<GenericEvent::QueryVersionReply> GenericEvent::QueryVersion(
+    const uint16_t& client_major_version,
+    const uint16_t& client_minor_version) {
+  return GenericEvent::QueryVersion(GenericEvent::QueryVersionRequest{
+      client_major_version, client_minor_version});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<GenericEvent::QueryVersionReply> detail::ReadReply<

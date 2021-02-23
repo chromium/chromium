@@ -53,6 +53,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "ui/gfx/x/error.h"
+#include "ui/gfx/x/ref_counted_fd.h"
 #include "xfixes.h"
 #include "xproto.h"
 
@@ -1407,6 +1408,9 @@ class COMPONENT_EXPORT(X11) Input {
   Future<GetExtensionVersionReply> GetExtensionVersion(
       const GetExtensionVersionRequest& request);
 
+  Future<GetExtensionVersionReply> GetExtensionVersion(
+      const std::string& name = {});
+
   struct ListInputDevicesRequest {};
 
   struct ListInputDevicesReply {
@@ -1422,6 +1426,8 @@ class COMPONENT_EXPORT(X11) Input {
   Future<ListInputDevicesReply> ListInputDevices(
       const ListInputDevicesRequest& request);
 
+  Future<ListInputDevicesReply> ListInputDevices();
+
   struct OpenDeviceRequest {
     uint8_t device_id{};
   };
@@ -1436,6 +1442,8 @@ class COMPONENT_EXPORT(X11) Input {
 
   Future<OpenDeviceReply> OpenDevice(const OpenDeviceRequest& request);
 
+  Future<OpenDeviceReply> OpenDevice(const uint8_t& device_id = {});
+
   struct CloseDeviceRequest {
     uint8_t device_id{};
   };
@@ -1443,6 +1451,8 @@ class COMPONENT_EXPORT(X11) Input {
   using CloseDeviceResponse = Response<void>;
 
   Future<void> CloseDevice(const CloseDeviceRequest& request);
+
+  Future<void> CloseDevice(const uint8_t& device_id = {});
 
   struct SetDeviceModeRequest {
     uint8_t device_id{};
@@ -1459,6 +1469,9 @@ class COMPONENT_EXPORT(X11) Input {
 
   Future<SetDeviceModeReply> SetDeviceMode(const SetDeviceModeRequest& request);
 
+  Future<SetDeviceModeReply> SetDeviceMode(const uint8_t& device_id = {},
+                                           const ValuatorMode& mode = {});
+
   struct SelectExtensionEventRequest {
     Window window{};
     std::vector<EventClass> classes{};
@@ -1467,6 +1480,10 @@ class COMPONENT_EXPORT(X11) Input {
   using SelectExtensionEventResponse = Response<void>;
 
   Future<void> SelectExtensionEvent(const SelectExtensionEventRequest& request);
+
+  Future<void> SelectExtensionEvent(
+      const Window& window = {},
+      const std::vector<EventClass>& classes = {});
 
   struct GetSelectedExtensionEventsRequest {
     Window window{};
@@ -1485,6 +1502,9 @@ class COMPONENT_EXPORT(X11) Input {
   Future<GetSelectedExtensionEventsReply> GetSelectedExtensionEvents(
       const GetSelectedExtensionEventsRequest& request);
 
+  Future<GetSelectedExtensionEventsReply> GetSelectedExtensionEvents(
+      const Window& window = {});
+
   struct ChangeDeviceDontPropagateListRequest {
     Window window{};
     PropagateMode mode{};
@@ -1495,6 +1515,11 @@ class COMPONENT_EXPORT(X11) Input {
 
   Future<void> ChangeDeviceDontPropagateList(
       const ChangeDeviceDontPropagateListRequest& request);
+
+  Future<void> ChangeDeviceDontPropagateList(
+      const Window& window = {},
+      const PropagateMode& mode = {},
+      const std::vector<EventClass>& classes = {});
 
   struct GetDeviceDontPropagateListRequest {
     Window window{};
@@ -1511,6 +1536,9 @@ class COMPONENT_EXPORT(X11) Input {
 
   Future<GetDeviceDontPropagateListReply> GetDeviceDontPropagateList(
       const GetDeviceDontPropagateListRequest& request);
+
+  Future<GetDeviceDontPropagateListReply> GetDeviceDontPropagateList(
+      const Window& window = {});
 
   struct GetDeviceMotionEventsRequest {
     Time start{};
@@ -1531,6 +1559,11 @@ class COMPONENT_EXPORT(X11) Input {
   Future<GetDeviceMotionEventsReply> GetDeviceMotionEvents(
       const GetDeviceMotionEventsRequest& request);
 
+  Future<GetDeviceMotionEventsReply> GetDeviceMotionEvents(
+      const Time& start = {},
+      const Time& stop = {},
+      const uint8_t& device_id = {});
+
   struct ChangeKeyboardDeviceRequest {
     uint8_t device_id{};
   };
@@ -1545,6 +1578,9 @@ class COMPONENT_EXPORT(X11) Input {
 
   Future<ChangeKeyboardDeviceReply> ChangeKeyboardDevice(
       const ChangeKeyboardDeviceRequest& request);
+
+  Future<ChangeKeyboardDeviceReply> ChangeKeyboardDevice(
+      const uint8_t& device_id = {});
 
   struct ChangePointerDeviceRequest {
     uint8_t x_axis{};
@@ -1562,6 +1598,11 @@ class COMPONENT_EXPORT(X11) Input {
 
   Future<ChangePointerDeviceReply> ChangePointerDevice(
       const ChangePointerDeviceRequest& request);
+
+  Future<ChangePointerDeviceReply> ChangePointerDevice(
+      const uint8_t& x_axis = {},
+      const uint8_t& y_axis = {},
+      const uint8_t& device_id = {});
 
   struct GrabDeviceRequest {
     Window grab_window{};
@@ -1583,6 +1624,15 @@ class COMPONENT_EXPORT(X11) Input {
 
   Future<GrabDeviceReply> GrabDevice(const GrabDeviceRequest& request);
 
+  Future<GrabDeviceReply> GrabDevice(
+      const Window& grab_window = {},
+      const Time& time = {},
+      const GrabMode& this_device_mode = {},
+      const GrabMode& other_device_mode = {},
+      const uint8_t& owner_events = {},
+      const uint8_t& device_id = {},
+      const std::vector<EventClass>& classes = {});
+
   struct UngrabDeviceRequest {
     Time time{};
     uint8_t device_id{};
@@ -1591,6 +1641,9 @@ class COMPONENT_EXPORT(X11) Input {
   using UngrabDeviceResponse = Response<void>;
 
   Future<void> UngrabDevice(const UngrabDeviceRequest& request);
+
+  Future<void> UngrabDevice(const Time& time = {},
+                            const uint8_t& device_id = {});
 
   struct GrabDeviceKeyRequest {
     Window grab_window{};
@@ -1608,6 +1661,16 @@ class COMPONENT_EXPORT(X11) Input {
 
   Future<void> GrabDeviceKey(const GrabDeviceKeyRequest& request);
 
+  Future<void> GrabDeviceKey(const Window& grab_window = {},
+                             const ModMask& modifiers = {},
+                             const uint8_t& modifier_device = {},
+                             const uint8_t& grabbed_device = {},
+                             const uint8_t& key = {},
+                             const GrabMode& this_device_mode = {},
+                             const GrabMode& other_device_mode = {},
+                             const uint8_t& owner_events = {},
+                             const std::vector<EventClass>& classes = {});
+
   struct UngrabDeviceKeyRequest {
     Window grabWindow{};
     ModMask modifiers{};
@@ -1619,6 +1682,12 @@ class COMPONENT_EXPORT(X11) Input {
   using UngrabDeviceKeyResponse = Response<void>;
 
   Future<void> UngrabDeviceKey(const UngrabDeviceKeyRequest& request);
+
+  Future<void> UngrabDeviceKey(const Window& grabWindow = {},
+                               const ModMask& modifiers = {},
+                               const uint8_t& modifier_device = {},
+                               const uint8_t& key = {},
+                               const uint8_t& grabbed_device = {});
 
   struct GrabDeviceButtonRequest {
     Window grab_window{};
@@ -1636,6 +1705,16 @@ class COMPONENT_EXPORT(X11) Input {
 
   Future<void> GrabDeviceButton(const GrabDeviceButtonRequest& request);
 
+  Future<void> GrabDeviceButton(const Window& grab_window = {},
+                                const uint8_t& grabbed_device = {},
+                                const uint8_t& modifier_device = {},
+                                const ModMask& modifiers = {},
+                                const GrabMode& this_device_mode = {},
+                                const GrabMode& other_device_mode = {},
+                                const uint8_t& button = {},
+                                const uint8_t& owner_events = {},
+                                const std::vector<EventClass>& classes = {});
+
   struct UngrabDeviceButtonRequest {
     Window grab_window{};
     ModMask modifiers{};
@@ -1648,6 +1727,12 @@ class COMPONENT_EXPORT(X11) Input {
 
   Future<void> UngrabDeviceButton(const UngrabDeviceButtonRequest& request);
 
+  Future<void> UngrabDeviceButton(const Window& grab_window = {},
+                                  const ModMask& modifiers = {},
+                                  const uint8_t& modifier_device = {},
+                                  const uint8_t& button = {},
+                                  const uint8_t& grabbed_device = {});
+
   struct AllowDeviceEventsRequest {
     Time time{};
     DeviceInputMode mode{};
@@ -1657,6 +1742,10 @@ class COMPONENT_EXPORT(X11) Input {
   using AllowDeviceEventsResponse = Response<void>;
 
   Future<void> AllowDeviceEvents(const AllowDeviceEventsRequest& request);
+
+  Future<void> AllowDeviceEvents(const Time& time = {},
+                                 const DeviceInputMode& mode = {},
+                                 const uint8_t& device_id = {});
 
   struct GetDeviceFocusRequest {
     uint8_t device_id{};
@@ -1675,6 +1764,8 @@ class COMPONENT_EXPORT(X11) Input {
   Future<GetDeviceFocusReply> GetDeviceFocus(
       const GetDeviceFocusRequest& request);
 
+  Future<GetDeviceFocusReply> GetDeviceFocus(const uint8_t& device_id = {});
+
   struct SetDeviceFocusRequest {
     Window focus{};
     Time time{};
@@ -1685,6 +1776,11 @@ class COMPONENT_EXPORT(X11) Input {
   using SetDeviceFocusResponse = Response<void>;
 
   Future<void> SetDeviceFocus(const SetDeviceFocusRequest& request);
+
+  Future<void> SetDeviceFocus(const Window& focus = {},
+                              const Time& time = {},
+                              const InputFocus& revert_to = {},
+                              const uint8_t& device_id = {});
 
   struct GetFeedbackControlRequest {
     uint8_t device_id{};
@@ -1701,6 +1797,9 @@ class COMPONENT_EXPORT(X11) Input {
   Future<GetFeedbackControlReply> GetFeedbackControl(
       const GetFeedbackControlRequest& request);
 
+  Future<GetFeedbackControlReply> GetFeedbackControl(
+      const uint8_t& device_id = {});
+
   struct ChangeFeedbackControlRequest {
     ChangeFeedbackControlMask mask{};
     uint8_t device_id{};
@@ -1712,6 +1811,49 @@ class COMPONENT_EXPORT(X11) Input {
 
   Future<void> ChangeFeedbackControl(
       const ChangeFeedbackControlRequest& request);
+
+  struct Keyboard {
+    KeyCode key{};
+    uint8_t auto_repeat_mode{};
+    int8_t key_click_percent{};
+    int8_t bell_percent{};
+    int16_t bell_pitch{};
+    int16_t bell_duration{};
+    uint32_t led_mask{};
+    uint32_t led_values{};
+  };
+  struct Pointer {
+    int16_t num{};
+    int16_t denom{};
+    int16_t threshold{};
+  };
+  struct String {
+    std::vector<KeySym> keysyms{};
+  };
+  struct Integer {
+    int32_t int_to_display{};
+  };
+  struct Led {
+    uint32_t led_mask{};
+    uint32_t led_values{};
+  };
+  struct Bell {
+    int8_t percent{};
+    int16_t pitch{};
+    int16_t duration{};
+  };
+  Future<void> ChangeFeedbackControl(const ChangeFeedbackControlMask& mask = {},
+                                     const uint8_t& device_id = {},
+                                     const uint8_t& feedback_id = {},
+                                     const FeedbackCtl& feedback = {
+                                         {},
+                                         {},
+                                         base::nullopt,
+                                         base::nullopt,
+                                         base::nullopt,
+                                         base::nullopt,
+                                         base::nullopt,
+                                         base::nullopt});
 
   struct GetDeviceKeyMappingRequest {
     uint8_t device_id{};
@@ -1731,6 +1873,11 @@ class COMPONENT_EXPORT(X11) Input {
   Future<GetDeviceKeyMappingReply> GetDeviceKeyMapping(
       const GetDeviceKeyMappingRequest& request);
 
+  Future<GetDeviceKeyMappingReply> GetDeviceKeyMapping(
+      const uint8_t& device_id = {},
+      const KeyCode& first_keycode = {},
+      const uint8_t& count = {});
+
   struct ChangeDeviceKeyMappingRequest {
     uint8_t device_id{};
     KeyCode first_keycode{};
@@ -1743,6 +1890,12 @@ class COMPONENT_EXPORT(X11) Input {
 
   Future<void> ChangeDeviceKeyMapping(
       const ChangeDeviceKeyMappingRequest& request);
+
+  Future<void> ChangeDeviceKeyMapping(const uint8_t& device_id = {},
+                                      const KeyCode& first_keycode = {},
+                                      const uint8_t& keysyms_per_keycode = {},
+                                      const uint8_t& keycode_count = {},
+                                      const std::vector<KeySym>& keysyms = {});
 
   struct GetDeviceModifierMappingRequest {
     uint8_t device_id{};
@@ -1760,6 +1913,9 @@ class COMPONENT_EXPORT(X11) Input {
 
   Future<GetDeviceModifierMappingReply> GetDeviceModifierMapping(
       const GetDeviceModifierMappingRequest& request);
+
+  Future<GetDeviceModifierMappingReply> GetDeviceModifierMapping(
+      const uint8_t& device_id = {});
 
   struct SetDeviceModifierMappingRequest {
     uint8_t device_id{};
@@ -1779,6 +1935,11 @@ class COMPONENT_EXPORT(X11) Input {
   Future<SetDeviceModifierMappingReply> SetDeviceModifierMapping(
       const SetDeviceModifierMappingRequest& request);
 
+  Future<SetDeviceModifierMappingReply> SetDeviceModifierMapping(
+      const uint8_t& device_id = {},
+      const uint8_t& keycodes_per_modifier = {},
+      const std::vector<uint8_t>& keymaps = {});
+
   struct GetDeviceButtonMappingRequest {
     uint8_t device_id{};
   };
@@ -1793,6 +1954,9 @@ class COMPONENT_EXPORT(X11) Input {
 
   Future<GetDeviceButtonMappingReply> GetDeviceButtonMapping(
       const GetDeviceButtonMappingRequest& request);
+
+  Future<GetDeviceButtonMappingReply> GetDeviceButtonMapping(
+      const uint8_t& device_id = {});
 
   struct SetDeviceButtonMappingRequest {
     uint8_t device_id{};
@@ -1810,6 +1974,10 @@ class COMPONENT_EXPORT(X11) Input {
   Future<SetDeviceButtonMappingReply> SetDeviceButtonMapping(
       const SetDeviceButtonMappingRequest& request);
 
+  Future<SetDeviceButtonMappingReply> SetDeviceButtonMapping(
+      const uint8_t& device_id = {},
+      const std::vector<uint8_t>& map = {});
+
   struct QueryDeviceStateRequest {
     uint8_t device_id{};
   };
@@ -1825,6 +1993,8 @@ class COMPONENT_EXPORT(X11) Input {
   Future<QueryDeviceStateReply> QueryDeviceState(
       const QueryDeviceStateRequest& request);
 
+  Future<QueryDeviceStateReply> QueryDeviceState(const uint8_t& device_id = {});
+
   struct DeviceBellRequest {
     uint8_t device_id{};
     uint8_t feedback_id{};
@@ -1835,6 +2005,11 @@ class COMPONENT_EXPORT(X11) Input {
   using DeviceBellResponse = Response<void>;
 
   Future<void> DeviceBell(const DeviceBellRequest& request);
+
+  Future<void> DeviceBell(const uint8_t& device_id = {},
+                          const uint8_t& feedback_id = {},
+                          const uint8_t& feedback_class = {},
+                          const int8_t& percent = {});
 
   struct SetDeviceValuatorsRequest {
     uint8_t device_id{};
@@ -1853,6 +2028,11 @@ class COMPONENT_EXPORT(X11) Input {
   Future<SetDeviceValuatorsReply> SetDeviceValuators(
       const SetDeviceValuatorsRequest& request);
 
+  Future<SetDeviceValuatorsReply> SetDeviceValuators(
+      const uint8_t& device_id = {},
+      const uint8_t& first_valuator = {},
+      const std::vector<int32_t>& valuators = {});
+
   struct GetDeviceControlRequest {
     DeviceControl control_id{};
     uint8_t device_id{};
@@ -1869,6 +2049,10 @@ class COMPONENT_EXPORT(X11) Input {
 
   Future<GetDeviceControlReply> GetDeviceControl(
       const GetDeviceControlRequest& request);
+
+  Future<GetDeviceControlReply> GetDeviceControl(
+      const DeviceControl& control_id = {},
+      const uint8_t& device_id = {});
 
   struct ChangeDeviceControlRequest {
     DeviceControl control_id{};
@@ -1887,6 +2071,44 @@ class COMPONENT_EXPORT(X11) Input {
   Future<ChangeDeviceControlReply> ChangeDeviceControl(
       const ChangeDeviceControlRequest& request);
 
+  struct Resolution {
+    uint8_t first_valuator{};
+    std::vector<uint32_t> resolution_values{};
+  };
+  struct AbsCalib {
+    int32_t min_x{};
+    int32_t max_x{};
+    int32_t min_y{};
+    int32_t max_y{};
+    uint32_t flip_x{};
+    uint32_t flip_y{};
+    uint32_t rotation{};
+    uint32_t button_threshold{};
+  };
+  struct Core {
+    uint8_t status{};
+  };
+  struct Enable {
+    uint8_t enable{};
+  };
+  struct AbsArea {
+    uint32_t offset_x{};
+    uint32_t offset_y{};
+    int32_t width{};
+    int32_t height{};
+    int32_t screen{};
+    uint32_t following{};
+  };
+  Future<ChangeDeviceControlReply> ChangeDeviceControl(
+      const DeviceControl& control_id = {},
+      const uint8_t& device_id = {},
+      const DeviceCtl& control = {{},
+                                  base::nullopt,
+                                  base::nullopt,
+                                  base::nullopt,
+                                  base::nullopt,
+                                  base::nullopt});
+
   struct ListDevicePropertiesRequest {
     uint8_t device_id{};
   };
@@ -1901,6 +2123,9 @@ class COMPONENT_EXPORT(X11) Input {
 
   Future<ListDevicePropertiesReply> ListDeviceProperties(
       const ListDevicePropertiesRequest& request);
+
+  Future<ListDevicePropertiesReply> ListDeviceProperties(
+      const uint8_t& device_id = {});
 
   struct ChangeDevicePropertyRequest {
     Atom property{};
@@ -1917,6 +2142,16 @@ class COMPONENT_EXPORT(X11) Input {
 
   Future<void> ChangeDeviceProperty(const ChangeDevicePropertyRequest& request);
 
+  Future<void> ChangeDeviceProperty(
+      const Atom& property = {},
+      const Atom& type = {},
+      const uint8_t& device_id = {},
+      const PropMode& mode = {},
+      const uint32_t& num_items = {},
+      const base::Optional<std::vector<uint8_t>>& data8 = base::nullopt,
+      const base::Optional<std::vector<uint16_t>>& data16 = base::nullopt,
+      const base::Optional<std::vector<uint32_t>>& data32 = base::nullopt);
+
   struct DeleteDevicePropertyRequest {
     Atom property{};
     uint8_t device_id{};
@@ -1925,6 +2160,9 @@ class COMPONENT_EXPORT(X11) Input {
   using DeleteDevicePropertyResponse = Response<void>;
 
   Future<void> DeleteDeviceProperty(const DeleteDevicePropertyRequest& request);
+
+  Future<void> DeleteDeviceProperty(const Atom& property = {},
+                                    const uint8_t& device_id = {});
 
   struct GetDevicePropertyRequest {
     Atom property{};
@@ -1952,6 +2190,14 @@ class COMPONENT_EXPORT(X11) Input {
   Future<GetDevicePropertyReply> GetDeviceProperty(
       const GetDevicePropertyRequest& request);
 
+  Future<GetDevicePropertyReply> GetDeviceProperty(
+      const Atom& property = {},
+      const Atom& type = {},
+      const uint32_t& offset = {},
+      const uint32_t& len = {},
+      const uint8_t& device_id = {},
+      const uint8_t& c_delete = {});
+
   struct XIQueryPointerRequest {
     Window window{};
     DeviceId deviceid{};
@@ -1976,6 +2222,9 @@ class COMPONENT_EXPORT(X11) Input {
   Future<XIQueryPointerReply> XIQueryPointer(
       const XIQueryPointerRequest& request);
 
+  Future<XIQueryPointerReply> XIQueryPointer(const Window& window = {},
+                                             const DeviceId& deviceid = {});
+
   struct XIWarpPointerRequest {
     Window src_win{};
     Window dst_win{};
@@ -1992,6 +2241,16 @@ class COMPONENT_EXPORT(X11) Input {
 
   Future<void> XIWarpPointer(const XIWarpPointerRequest& request);
 
+  Future<void> XIWarpPointer(const Window& src_win = {},
+                             const Window& dst_win = {},
+                             const Fp1616& src_x = {},
+                             const Fp1616& src_y = {},
+                             const uint16_t& src_width = {},
+                             const uint16_t& src_height = {},
+                             const Fp1616& dst_x = {},
+                             const Fp1616& dst_y = {},
+                             const DeviceId& deviceid = {});
+
   struct XIChangeCursorRequest {
     Window window{};
     Cursor cursor{};
@@ -2002,6 +2261,10 @@ class COMPONENT_EXPORT(X11) Input {
 
   Future<void> XIChangeCursor(const XIChangeCursorRequest& request);
 
+  Future<void> XIChangeCursor(const Window& window = {},
+                              const Cursor& cursor = {},
+                              const DeviceId& deviceid = {});
+
   struct XIChangeHierarchyRequest {
     std::vector<HierarchyChange> changes{};
   };
@@ -2009,6 +2272,9 @@ class COMPONENT_EXPORT(X11) Input {
   using XIChangeHierarchyResponse = Response<void>;
 
   Future<void> XIChangeHierarchy(const XIChangeHierarchyRequest& request);
+
+  Future<void> XIChangeHierarchy(
+      const std::vector<HierarchyChange>& changes = {});
 
   struct XISetClientPointerRequest {
     Window window{};
@@ -2018,6 +2284,9 @@ class COMPONENT_EXPORT(X11) Input {
   using XISetClientPointerResponse = Response<void>;
 
   Future<void> XISetClientPointer(const XISetClientPointerRequest& request);
+
+  Future<void> XISetClientPointer(const Window& window = {},
+                                  const DeviceId& deviceid = {});
 
   struct XIGetClientPointerRequest {
     Window window{};
@@ -2034,6 +2303,8 @@ class COMPONENT_EXPORT(X11) Input {
   Future<XIGetClientPointerReply> XIGetClientPointer(
       const XIGetClientPointerRequest& request);
 
+  Future<XIGetClientPointerReply> XIGetClientPointer(const Window& window = {});
+
   struct XISelectEventsRequest {
     Window window{};
     std::vector<EventMask> masks{};
@@ -2042,6 +2313,9 @@ class COMPONENT_EXPORT(X11) Input {
   using XISelectEventsResponse = Response<void>;
 
   Future<void> XISelectEvents(const XISelectEventsRequest& request);
+
+  Future<void> XISelectEvents(const Window& window = {},
+                              const std::vector<EventMask>& masks = {});
 
   struct XIQueryVersionRequest {
     uint16_t major_version{};
@@ -2059,6 +2333,10 @@ class COMPONENT_EXPORT(X11) Input {
   Future<XIQueryVersionReply> XIQueryVersion(
       const XIQueryVersionRequest& request);
 
+  Future<XIQueryVersionReply> XIQueryVersion(
+      const uint16_t& major_version = {},
+      const uint16_t& minor_version = {});
+
   struct XIQueryDeviceRequest {
     DeviceId deviceid{};
   };
@@ -2072,6 +2350,8 @@ class COMPONENT_EXPORT(X11) Input {
 
   Future<XIQueryDeviceReply> XIQueryDevice(const XIQueryDeviceRequest& request);
 
+  Future<XIQueryDeviceReply> XIQueryDevice(const DeviceId& deviceid = {});
+
   struct XISetFocusRequest {
     Window window{};
     Time time{};
@@ -2081,6 +2361,10 @@ class COMPONENT_EXPORT(X11) Input {
   using XISetFocusResponse = Response<void>;
 
   Future<void> XISetFocus(const XISetFocusRequest& request);
+
+  Future<void> XISetFocus(const Window& window = {},
+                          const Time& time = {},
+                          const DeviceId& deviceid = {});
 
   struct XIGetFocusRequest {
     DeviceId deviceid{};
@@ -2094,6 +2378,8 @@ class COMPONENT_EXPORT(X11) Input {
   using XIGetFocusResponse = Response<XIGetFocusReply>;
 
   Future<XIGetFocusReply> XIGetFocus(const XIGetFocusRequest& request);
+
+  Future<XIGetFocusReply> XIGetFocus(const DeviceId& deviceid = {});
 
   struct XIGrabDeviceRequest {
     Window window{};
@@ -2115,6 +2401,16 @@ class COMPONENT_EXPORT(X11) Input {
 
   Future<XIGrabDeviceReply> XIGrabDevice(const XIGrabDeviceRequest& request);
 
+  Future<XIGrabDeviceReply> XIGrabDevice(
+      const Window& window = {},
+      const Time& time = {},
+      const Cursor& cursor = {},
+      const DeviceId& deviceid = {},
+      const GrabMode& mode = {},
+      const GrabMode& paired_device_mode = {},
+      const GrabOwner& owner_events = {},
+      const std::vector<uint32_t>& mask = {});
+
   struct XIUngrabDeviceRequest {
     Time time{};
     DeviceId deviceid{};
@@ -2123,6 +2419,9 @@ class COMPONENT_EXPORT(X11) Input {
   using XIUngrabDeviceResponse = Response<void>;
 
   Future<void> XIUngrabDevice(const XIUngrabDeviceRequest& request);
+
+  Future<void> XIUngrabDevice(const Time& time = {},
+                              const DeviceId& deviceid = {});
 
   struct XIAllowEventsRequest {
     Time time{};
@@ -2135,6 +2434,12 @@ class COMPONENT_EXPORT(X11) Input {
   using XIAllowEventsResponse = Response<void>;
 
   Future<void> XIAllowEvents(const XIAllowEventsRequest& request);
+
+  Future<void> XIAllowEvents(const Time& time = {},
+                             const DeviceId& deviceid = {},
+                             const EventMode& event_mode = {},
+                             const uint32_t& touchid = {},
+                             const Window& grab_window = {});
 
   struct XIPassiveGrabDeviceRequest {
     Time time{};
@@ -2160,6 +2465,19 @@ class COMPONENT_EXPORT(X11) Input {
   Future<XIPassiveGrabDeviceReply> XIPassiveGrabDevice(
       const XIPassiveGrabDeviceRequest& request);
 
+  Future<XIPassiveGrabDeviceReply> XIPassiveGrabDevice(
+      const Time& time = {},
+      const Window& grab_window = {},
+      const Cursor& cursor = {},
+      const uint32_t& detail = {},
+      const DeviceId& deviceid = {},
+      const GrabType& grab_type = {},
+      const GrabMode22& grab_mode = {},
+      const GrabMode& paired_device_mode = {},
+      const GrabOwner& owner_events = {},
+      const std::vector<uint32_t>& mask = {},
+      const std::vector<uint32_t>& modifiers = {});
+
   struct XIPassiveUngrabDeviceRequest {
     Window grab_window{};
     uint32_t detail{};
@@ -2172,6 +2490,13 @@ class COMPONENT_EXPORT(X11) Input {
 
   Future<void> XIPassiveUngrabDevice(
       const XIPassiveUngrabDeviceRequest& request);
+
+  Future<void> XIPassiveUngrabDevice(
+      const Window& grab_window = {},
+      const uint32_t& detail = {},
+      const DeviceId& deviceid = {},
+      const GrabType& grab_type = {},
+      const std::vector<uint32_t>& modifiers = {});
 
   struct XIListPropertiesRequest {
     DeviceId deviceid{};
@@ -2186,6 +2511,8 @@ class COMPONENT_EXPORT(X11) Input {
 
   Future<XIListPropertiesReply> XIListProperties(
       const XIListPropertiesRequest& request);
+
+  Future<XIListPropertiesReply> XIListProperties(const DeviceId& deviceid = {});
 
   struct XIChangePropertyRequest {
     DeviceId deviceid{};
@@ -2202,6 +2529,16 @@ class COMPONENT_EXPORT(X11) Input {
 
   Future<void> XIChangeProperty(const XIChangePropertyRequest& request);
 
+  Future<void> XIChangeProperty(
+      const DeviceId& deviceid = {},
+      const PropMode& mode = {},
+      const Atom& property = {},
+      const Atom& type = {},
+      const uint32_t& num_items = {},
+      const base::Optional<std::vector<uint8_t>>& data8 = base::nullopt,
+      const base::Optional<std::vector<uint16_t>>& data16 = base::nullopt,
+      const base::Optional<std::vector<uint32_t>>& data32 = base::nullopt);
+
   struct XIDeletePropertyRequest {
     DeviceId deviceid{};
     Atom property{};
@@ -2210,6 +2547,9 @@ class COMPONENT_EXPORT(X11) Input {
   using XIDeletePropertyResponse = Response<void>;
 
   Future<void> XIDeleteProperty(const XIDeletePropertyRequest& request);
+
+  Future<void> XIDeleteProperty(const DeviceId& deviceid = {},
+                                const Atom& property = {});
 
   struct XIGetPropertyRequest {
     DeviceId deviceid{};
@@ -2234,6 +2574,13 @@ class COMPONENT_EXPORT(X11) Input {
 
   Future<XIGetPropertyReply> XIGetProperty(const XIGetPropertyRequest& request);
 
+  Future<XIGetPropertyReply> XIGetProperty(const DeviceId& deviceid = {},
+                                           const uint8_t& c_delete = {},
+                                           const Atom& property = {},
+                                           const Atom& type = {},
+                                           const uint32_t& offset = {},
+                                           const uint32_t& len = {});
+
   struct XIGetSelectedEventsRequest {
     Window window{};
   };
@@ -2248,6 +2595,9 @@ class COMPONENT_EXPORT(X11) Input {
   Future<XIGetSelectedEventsReply> XIGetSelectedEvents(
       const XIGetSelectedEventsRequest& request);
 
+  Future<XIGetSelectedEventsReply> XIGetSelectedEvents(
+      const Window& window = {});
+
   struct XIBarrierReleasePointerRequest {
     std::vector<BarrierReleasePointerInfo> barriers{};
   };
@@ -2256,6 +2606,9 @@ class COMPONENT_EXPORT(X11) Input {
 
   Future<void> XIBarrierReleasePointer(
       const XIBarrierReleasePointerRequest& request);
+
+  Future<void> XIBarrierReleasePointer(
+      const std::vector<BarrierReleasePointerInfo>& barriers = {});
 
   struct SendExtensionEventRequest {
     Window destination{};
@@ -2268,6 +2621,12 @@ class COMPONENT_EXPORT(X11) Input {
   using SendExtensionEventResponse = Response<void>;
 
   Future<void> SendExtensionEvent(const SendExtensionEventRequest& request);
+
+  Future<void> SendExtensionEvent(const Window& destination = {},
+                                  const uint8_t& device_id = {},
+                                  const uint8_t& propagate = {},
+                                  const std::vector<EventForSend>& events = {},
+                                  const std::vector<EventClass>& classes = {});
 
  private:
   Connection* const connection_;

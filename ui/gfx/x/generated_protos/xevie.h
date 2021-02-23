@@ -53,6 +53,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "ui/gfx/x/error.h"
+#include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
 
 namespace x11 {
@@ -101,6 +102,10 @@ class COMPONENT_EXPORT(X11) Xevie {
 
   Future<QueryVersionReply> QueryVersion(const QueryVersionRequest& request);
 
+  Future<QueryVersionReply> QueryVersion(
+      const uint16_t& client_major_version = {},
+      const uint16_t& client_minor_version = {});
+
   struct StartRequest {
     uint32_t screen{};
   };
@@ -113,6 +118,8 @@ class COMPONENT_EXPORT(X11) Xevie {
 
   Future<StartReply> Start(const StartRequest& request);
 
+  Future<StartReply> Start(const uint32_t& screen = {});
+
   struct EndRequest {
     uint32_t cmap{};
   };
@@ -124,6 +131,8 @@ class COMPONENT_EXPORT(X11) Xevie {
   using EndResponse = Response<EndReply>;
 
   Future<EndReply> End(const EndRequest& request);
+
+  Future<EndReply> End(const uint32_t& cmap = {});
 
   struct SendRequest {
     Event event{};
@@ -138,6 +147,9 @@ class COMPONENT_EXPORT(X11) Xevie {
 
   Future<SendReply> Send(const SendRequest& request);
 
+  Future<SendReply> Send(const Event& event = {},
+                         const uint32_t& data_type = {});
+
   struct SelectInputRequest {
     uint32_t event_mask{};
   };
@@ -149,6 +161,8 @@ class COMPONENT_EXPORT(X11) Xevie {
   using SelectInputResponse = Response<SelectInputReply>;
 
   Future<SelectInputReply> SelectInput(const SelectInputRequest& request);
+
+  Future<SelectInputReply> SelectInput(const uint32_t& event_mask = {});
 
  private:
   Connection* const connection_;

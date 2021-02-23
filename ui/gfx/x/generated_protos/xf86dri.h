@@ -53,6 +53,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "ui/gfx/x/error.h"
+#include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
 
 namespace x11 {
@@ -99,6 +100,8 @@ class COMPONENT_EXPORT(X11) XF86Dri {
 
   Future<QueryVersionReply> QueryVersion(const QueryVersionRequest& request);
 
+  Future<QueryVersionReply> QueryVersion();
+
   struct QueryDirectRenderingCapableRequest {
     uint32_t screen{};
   };
@@ -113,6 +116,9 @@ class COMPONENT_EXPORT(X11) XF86Dri {
 
   Future<QueryDirectRenderingCapableReply> QueryDirectRenderingCapable(
       const QueryDirectRenderingCapableRequest& request);
+
+  Future<QueryDirectRenderingCapableReply> QueryDirectRenderingCapable(
+      const uint32_t& screen = {});
 
   struct OpenConnectionRequest {
     uint32_t screen{};
@@ -130,6 +136,8 @@ class COMPONENT_EXPORT(X11) XF86Dri {
   Future<OpenConnectionReply> OpenConnection(
       const OpenConnectionRequest& request);
 
+  Future<OpenConnectionReply> OpenConnection(const uint32_t& screen = {});
+
   struct CloseConnectionRequest {
     uint32_t screen{};
   };
@@ -137,6 +145,8 @@ class COMPONENT_EXPORT(X11) XF86Dri {
   using CloseConnectionResponse = Response<void>;
 
   Future<void> CloseConnection(const CloseConnectionRequest& request);
+
+  Future<void> CloseConnection(const uint32_t& screen = {});
 
   struct GetClientDriverNameRequest {
     uint32_t screen{};
@@ -155,6 +165,9 @@ class COMPONENT_EXPORT(X11) XF86Dri {
   Future<GetClientDriverNameReply> GetClientDriverName(
       const GetClientDriverNameRequest& request);
 
+  Future<GetClientDriverNameReply> GetClientDriverName(
+      const uint32_t& screen = {});
+
   struct CreateContextRequest {
     uint32_t screen{};
     uint32_t visual{};
@@ -170,6 +183,10 @@ class COMPONENT_EXPORT(X11) XF86Dri {
 
   Future<CreateContextReply> CreateContext(const CreateContextRequest& request);
 
+  Future<CreateContextReply> CreateContext(const uint32_t& screen = {},
+                                           const uint32_t& visual = {},
+                                           const uint32_t& context = {});
+
   struct DestroyContextRequest {
     uint32_t screen{};
     uint32_t context{};
@@ -178,6 +195,9 @@ class COMPONENT_EXPORT(X11) XF86Dri {
   using DestroyContextResponse = Response<void>;
 
   Future<void> DestroyContext(const DestroyContextRequest& request);
+
+  Future<void> DestroyContext(const uint32_t& screen = {},
+                              const uint32_t& context = {});
 
   struct CreateDrawableRequest {
     uint32_t screen{};
@@ -194,6 +214,9 @@ class COMPONENT_EXPORT(X11) XF86Dri {
   Future<CreateDrawableReply> CreateDrawable(
       const CreateDrawableRequest& request);
 
+  Future<CreateDrawableReply> CreateDrawable(const uint32_t& screen = {},
+                                             const uint32_t& drawable = {});
+
   struct DestroyDrawableRequest {
     uint32_t screen{};
     uint32_t drawable{};
@@ -202,6 +225,9 @@ class COMPONENT_EXPORT(X11) XF86Dri {
   using DestroyDrawableResponse = Response<void>;
 
   Future<void> DestroyDrawable(const DestroyDrawableRequest& request);
+
+  Future<void> DestroyDrawable(const uint32_t& screen = {},
+                               const uint32_t& drawable = {});
 
   struct GetDrawableInfoRequest {
     uint32_t screen{};
@@ -227,6 +253,9 @@ class COMPONENT_EXPORT(X11) XF86Dri {
   Future<GetDrawableInfoReply> GetDrawableInfo(
       const GetDrawableInfoRequest& request);
 
+  Future<GetDrawableInfoReply> GetDrawableInfo(const uint32_t& screen = {},
+                                               const uint32_t& drawable = {});
+
   struct GetDeviceInfoRequest {
     uint32_t screen{};
   };
@@ -245,6 +274,8 @@ class COMPONENT_EXPORT(X11) XF86Dri {
 
   Future<GetDeviceInfoReply> GetDeviceInfo(const GetDeviceInfoRequest& request);
 
+  Future<GetDeviceInfoReply> GetDeviceInfo(const uint32_t& screen = {});
+
   struct AuthConnectionRequest {
     uint32_t screen{};
     uint32_t magic{};
@@ -259,6 +290,9 @@ class COMPONENT_EXPORT(X11) XF86Dri {
 
   Future<AuthConnectionReply> AuthConnection(
       const AuthConnectionRequest& request);
+
+  Future<AuthConnectionReply> AuthConnection(const uint32_t& screen = {},
+                                             const uint32_t& magic = {});
 
  private:
   Connection* const connection_;

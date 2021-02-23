@@ -226,6 +226,13 @@ Future<Render::QueryVersionReply> Render::QueryVersion(
       &buf, "Render::QueryVersion", false);
 }
 
+Future<Render::QueryVersionReply> Render::QueryVersion(
+    const uint32_t& client_major_version,
+    const uint32_t& client_minor_version) {
+  return Render::QueryVersion(
+      Render::QueryVersionRequest{client_major_version, client_minor_version});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Render::QueryVersionReply> detail::ReadReply<
@@ -289,6 +296,10 @@ Future<Render::QueryPictFormatsReply> Render::QueryPictFormats(
 
   return connection_->SendRequest<Render::QueryPictFormatsReply>(
       &buf, "Render::QueryPictFormats", false);
+}
+
+Future<Render::QueryPictFormatsReply> Render::QueryPictFormats() {
+  return Render::QueryPictFormats(Render::QueryPictFormatsRequest{});
 }
 
 template <>
@@ -510,6 +521,12 @@ Future<Render::QueryPictIndexValuesReply> Render::QueryPictIndexValues(
 
   return connection_->SendRequest<Render::QueryPictIndexValuesReply>(
       &buf, "Render::QueryPictIndexValues", false);
+}
+
+Future<Render::QueryPictIndexValuesReply> Render::QueryPictIndexValues(
+    const PictFormat& format) {
+  return Render::QueryPictIndexValues(
+      Render::QueryPictIndexValuesRequest{format});
 }
 
 template <>
@@ -737,6 +754,29 @@ Future<void> Render::CreatePicture(
   return connection_->SendRequest<void>(&buf, "Render::CreatePicture", false);
 }
 
+Future<void> Render::CreatePicture(
+    const Picture& pid,
+    const Drawable& drawable,
+    const PictFormat& format,
+    const base::Optional<Repeat>& repeat,
+    const base::Optional<Picture>& alphamap,
+    const base::Optional<int32_t>& alphaxorigin,
+    const base::Optional<int32_t>& alphayorigin,
+    const base::Optional<int32_t>& clipxorigin,
+    const base::Optional<int32_t>& clipyorigin,
+    const base::Optional<Pixmap>& clipmask,
+    const base::Optional<uint32_t>& graphicsexposure,
+    const base::Optional<SubwindowMode>& subwindowmode,
+    const base::Optional<PolyEdge>& polyedge,
+    const base::Optional<PolyMode>& polymode,
+    const base::Optional<Atom>& dither,
+    const base::Optional<uint32_t>& componentalpha) {
+  return Render::CreatePicture(Render::CreatePictureRequest{
+      pid, drawable, format, repeat, alphamap, alphaxorigin, alphayorigin,
+      clipxorigin, clipyorigin, clipmask, graphicsexposure, subwindowmode,
+      polyedge, polymode, dither, componentalpha});
+}
+
 Future<void> Render::ChangePicture(
     const Render::ChangePictureRequest& request) {
   if (!connection_->Ready() || !present())
@@ -888,6 +928,27 @@ Future<void> Render::ChangePicture(
   return connection_->SendRequest<void>(&buf, "Render::ChangePicture", false);
 }
 
+Future<void> Render::ChangePicture(
+    const Picture& picture,
+    const base::Optional<Repeat>& repeat,
+    const base::Optional<Picture>& alphamap,
+    const base::Optional<int32_t>& alphaxorigin,
+    const base::Optional<int32_t>& alphayorigin,
+    const base::Optional<int32_t>& clipxorigin,
+    const base::Optional<int32_t>& clipyorigin,
+    const base::Optional<Pixmap>& clipmask,
+    const base::Optional<uint32_t>& graphicsexposure,
+    const base::Optional<SubwindowMode>& subwindowmode,
+    const base::Optional<PolyEdge>& polyedge,
+    const base::Optional<PolyMode>& polymode,
+    const base::Optional<Atom>& dither,
+    const base::Optional<uint32_t>& componentalpha) {
+  return Render::ChangePicture(Render::ChangePictureRequest{
+      picture, repeat, alphamap, alphaxorigin, alphayorigin, clipxorigin,
+      clipyorigin, clipmask, graphicsexposure, subwindowmode, polyedge,
+      polymode, dither, componentalpha});
+}
+
 Future<void> Render::SetPictureClipRectangles(
     const Render::SetPictureClipRectanglesRequest& request) {
   if (!connection_->Ready() || !present())
@@ -952,6 +1013,16 @@ Future<void> Render::SetPictureClipRectangles(
       &buf, "Render::SetPictureClipRectangles", false);
 }
 
+Future<void> Render::SetPictureClipRectangles(
+    const Picture& picture,
+    const int16_t& clip_x_origin,
+    const int16_t& clip_y_origin,
+    const std::vector<Rectangle>& rectangles) {
+  return Render::SetPictureClipRectangles(
+      Render::SetPictureClipRectanglesRequest{picture, clip_x_origin,
+                                              clip_y_origin, rectangles});
+}
+
 Future<void> Render::FreePicture(const Render::FreePictureRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -978,6 +1049,10 @@ Future<void> Render::FreePicture(const Render::FreePictureRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Render::FreePicture", false);
+}
+
+Future<void> Render::FreePicture(const Picture& picture) {
+  return Render::FreePicture(Render::FreePictureRequest{picture});
 }
 
 Future<void> Render::Composite(const Render::CompositeRequest& request) {
@@ -1055,6 +1130,23 @@ Future<void> Render::Composite(const Render::CompositeRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Render::Composite", false);
+}
+
+Future<void> Render::Composite(const PictOp& op,
+                               const Picture& src,
+                               const Picture& mask,
+                               const Picture& dst,
+                               const int16_t& src_x,
+                               const int16_t& src_y,
+                               const int16_t& mask_x,
+                               const int16_t& mask_y,
+                               const int16_t& dst_x,
+                               const int16_t& dst_y,
+                               const uint16_t& width,
+                               const uint16_t& height) {
+  return Render::Composite(
+      Render::CompositeRequest{op, src, mask, dst, src_x, src_y, mask_x, mask_y,
+                               dst_x, dst_y, width, height});
 }
 
 Future<void> Render::Trapezoids(const Render::TrapezoidsRequest& request) {
@@ -1190,6 +1282,17 @@ Future<void> Render::Trapezoids(const Render::TrapezoidsRequest& request) {
   return connection_->SendRequest<void>(&buf, "Render::Trapezoids", false);
 }
 
+Future<void> Render::Trapezoids(const PictOp& op,
+                                const Picture& src,
+                                const Picture& dst,
+                                const PictFormat& mask_format,
+                                const int16_t& src_x,
+                                const int16_t& src_y,
+                                const std::vector<Trapezoid>& traps) {
+  return Render::Trapezoids(Render::TrapezoidsRequest{op, src, dst, mask_format,
+                                                      src_x, src_y, traps});
+}
+
 Future<void> Render::Triangles(const Render::TrianglesRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -1292,6 +1395,17 @@ Future<void> Render::Triangles(const Render::TrianglesRequest& request) {
   return connection_->SendRequest<void>(&buf, "Render::Triangles", false);
 }
 
+Future<void> Render::Triangles(const PictOp& op,
+                               const Picture& src,
+                               const Picture& dst,
+                               const PictFormat& mask_format,
+                               const int16_t& src_x,
+                               const int16_t& src_y,
+                               const std::vector<Triangle>& triangles) {
+  return Render::Triangles(Render::TrianglesRequest{op, src, dst, mask_format,
+                                                    src_x, src_y, triangles});
+}
+
 Future<void> Render::TriStrip(const Render::TriStripRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -1361,6 +1475,17 @@ Future<void> Render::TriStrip(const Render::TriStripRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Render::TriStrip", false);
+}
+
+Future<void> Render::TriStrip(const PictOp& op,
+                              const Picture& src,
+                              const Picture& dst,
+                              const PictFormat& mask_format,
+                              const int16_t& src_x,
+                              const int16_t& src_y,
+                              const std::vector<PointFix>& points) {
+  return Render::TriStrip(
+      Render::TriStripRequest{op, src, dst, mask_format, src_x, src_y, points});
 }
 
 Future<void> Render::TriFan(const Render::TriFanRequest& request) {
@@ -1434,6 +1559,17 @@ Future<void> Render::TriFan(const Render::TriFanRequest& request) {
   return connection_->SendRequest<void>(&buf, "Render::TriFan", false);
 }
 
+Future<void> Render::TriFan(const PictOp& op,
+                            const Picture& src,
+                            const Picture& dst,
+                            const PictFormat& mask_format,
+                            const int16_t& src_x,
+                            const int16_t& src_y,
+                            const std::vector<PointFix>& points) {
+  return Render::TriFan(
+      Render::TriFanRequest{op, src, dst, mask_format, src_x, src_y, points});
+}
+
 Future<void> Render::CreateGlyphSet(
     const Render::CreateGlyphSetRequest& request) {
   if (!connection_->Ready() || !present())
@@ -1465,6 +1601,11 @@ Future<void> Render::CreateGlyphSet(
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Render::CreateGlyphSet", false);
+}
+
+Future<void> Render::CreateGlyphSet(const GlyphSet& gsid,
+                                    const PictFormat& format) {
+  return Render::CreateGlyphSet(Render::CreateGlyphSetRequest{gsid, format});
 }
 
 Future<void> Render::ReferenceGlyphSet(
@@ -1501,6 +1642,12 @@ Future<void> Render::ReferenceGlyphSet(
                                         false);
 }
 
+Future<void> Render::ReferenceGlyphSet(const GlyphSet& gsid,
+                                       const GlyphSet& existing) {
+  return Render::ReferenceGlyphSet(
+      Render::ReferenceGlyphSetRequest{gsid, existing});
+}
+
 Future<void> Render::FreeGlyphSet(const Render::FreeGlyphSetRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -1527,6 +1674,10 @@ Future<void> Render::FreeGlyphSet(const Render::FreeGlyphSetRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Render::FreeGlyphSet", false);
+}
+
+Future<void> Render::FreeGlyphSet(const GlyphSet& glyphset) {
+  return Render::FreeGlyphSet(Render::FreeGlyphSetRequest{glyphset});
 }
 
 Future<void> Render::AddGlyphs(const Render::AddGlyphsRequest& request) {
@@ -1613,6 +1764,14 @@ Future<void> Render::AddGlyphs(const Render::AddGlyphsRequest& request) {
   return connection_->SendRequest<void>(&buf, "Render::AddGlyphs", false);
 }
 
+Future<void> Render::AddGlyphs(const GlyphSet& glyphset,
+                               const std::vector<uint32_t>& glyphids,
+                               const std::vector<GlyphInfo>& glyphs,
+                               const std::vector<uint8_t>& data) {
+  return Render::AddGlyphs(
+      Render::AddGlyphsRequest{glyphset, glyphids, glyphs, data});
+}
+
 Future<void> Render::FreeGlyphs(const Render::FreeGlyphsRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -1648,6 +1807,11 @@ Future<void> Render::FreeGlyphs(const Render::FreeGlyphsRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Render::FreeGlyphs", false);
+}
+
+Future<void> Render::FreeGlyphs(const GlyphSet& glyphset,
+                                const std::vector<Glyph>& glyphs) {
+  return Render::FreeGlyphs(Render::FreeGlyphsRequest{glyphset, glyphs});
 }
 
 Future<void> Render::CompositeGlyphs8(
@@ -1718,6 +1882,18 @@ Future<void> Render::CompositeGlyphs8(
                                         false);
 }
 
+Future<void> Render::CompositeGlyphs8(const PictOp& op,
+                                      const Picture& src,
+                                      const Picture& dst,
+                                      const PictFormat& mask_format,
+                                      const GlyphSet& glyphset,
+                                      const int16_t& src_x,
+                                      const int16_t& src_y,
+                                      const std::vector<uint8_t>& glyphcmds) {
+  return Render::CompositeGlyphs8(Render::CompositeGlyphs8Request{
+      op, src, dst, mask_format, glyphset, src_x, src_y, glyphcmds});
+}
+
 Future<void> Render::CompositeGlyphs16(
     const Render::CompositeGlyphs16Request& request) {
   if (!connection_->Ready() || !present())
@@ -1786,6 +1962,18 @@ Future<void> Render::CompositeGlyphs16(
                                         false);
 }
 
+Future<void> Render::CompositeGlyphs16(const PictOp& op,
+                                       const Picture& src,
+                                       const Picture& dst,
+                                       const PictFormat& mask_format,
+                                       const GlyphSet& glyphset,
+                                       const int16_t& src_x,
+                                       const int16_t& src_y,
+                                       const std::vector<uint8_t>& glyphcmds) {
+  return Render::CompositeGlyphs16(Render::CompositeGlyphs16Request{
+      op, src, dst, mask_format, glyphset, src_x, src_y, glyphcmds});
+}
+
 Future<void> Render::CompositeGlyphs32(
     const Render::CompositeGlyphs32Request& request) {
   if (!connection_->Ready() || !present())
@@ -1852,6 +2040,18 @@ Future<void> Render::CompositeGlyphs32(
 
   return connection_->SendRequest<void>(&buf, "Render::CompositeGlyphs32",
                                         false);
+}
+
+Future<void> Render::CompositeGlyphs32(const PictOp& op,
+                                       const Picture& src,
+                                       const Picture& dst,
+                                       const PictFormat& mask_format,
+                                       const GlyphSet& glyphset,
+                                       const int16_t& src_x,
+                                       const int16_t& src_y,
+                                       const std::vector<uint8_t>& glyphcmds) {
+  return Render::CompositeGlyphs32(Render::CompositeGlyphs32Request{
+      op, src, dst, mask_format, glyphset, src_x, src_y, glyphcmds});
 }
 
 Future<void> Render::FillRectangles(
@@ -1939,6 +2139,14 @@ Future<void> Render::FillRectangles(
   return connection_->SendRequest<void>(&buf, "Render::FillRectangles", false);
 }
 
+Future<void> Render::FillRectangles(const PictOp& op,
+                                    const Picture& dst,
+                                    const Color& color,
+                                    const std::vector<Rectangle>& rects) {
+  return Render::FillRectangles(
+      Render::FillRectanglesRequest{op, dst, color, rects});
+}
+
 Future<void> Render::CreateCursor(const Render::CreateCursorRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -1977,6 +2185,13 @@ Future<void> Render::CreateCursor(const Render::CreateCursorRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Render::CreateCursor", false);
+}
+
+Future<void> Render::CreateCursor(const Cursor& cid,
+                                  const Picture& source,
+                                  const uint16_t& x,
+                                  const uint16_t& y) {
+  return Render::CreateCursor(Render::CreateCursorRequest{cid, source, x, y});
 }
 
 Future<void> Render::SetPictureTransform(
@@ -2050,6 +2265,12 @@ Future<void> Render::SetPictureTransform(
                                         false);
 }
 
+Future<void> Render::SetPictureTransform(const Picture& picture,
+                                         const Transform& transform) {
+  return Render::SetPictureTransform(
+      Render::SetPictureTransformRequest{picture, transform});
+}
+
 Future<Render::QueryFiltersReply> Render::QueryFilters(
     const Render::QueryFiltersRequest& request) {
   if (!connection_->Ready() || !present())
@@ -2078,6 +2299,11 @@ Future<Render::QueryFiltersReply> Render::QueryFilters(
 
   return connection_->SendRequest<Render::QueryFiltersReply>(
       &buf, "Render::QueryFilters", false);
+}
+
+Future<Render::QueryFiltersReply> Render::QueryFilters(
+    const Drawable& drawable) {
+  return Render::QueryFilters(Render::QueryFiltersRequest{drawable});
 }
 
 template <>
@@ -2209,6 +2435,13 @@ Future<void> Render::SetPictureFilter(
                                         false);
 }
 
+Future<void> Render::SetPictureFilter(const Picture& picture,
+                                      const std::string& filter,
+                                      const std::vector<Fixed>& values) {
+  return Render::SetPictureFilter(
+      Render::SetPictureFilterRequest{picture, filter, values});
+}
+
 Future<void> Render::CreateAnimCursor(
     const Render::CreateAnimCursorRequest& request) {
   if (!connection_->Ready() || !present())
@@ -2255,6 +2488,13 @@ Future<void> Render::CreateAnimCursor(
 
   return connection_->SendRequest<void>(&buf, "Render::CreateAnimCursor",
                                         false);
+}
+
+Future<void> Render::CreateAnimCursor(
+    const Cursor& cid,
+    const std::vector<AnimationCursorElement>& cursors) {
+  return Render::CreateAnimCursor(
+      Render::CreateAnimCursorRequest{cid, cursors});
 }
 
 Future<void> Render::AddTraps(const Render::AddTrapsRequest& request) {
@@ -2337,6 +2577,14 @@ Future<void> Render::AddTraps(const Render::AddTrapsRequest& request) {
   return connection_->SendRequest<void>(&buf, "Render::AddTraps", false);
 }
 
+Future<void> Render::AddTraps(const Picture& picture,
+                              const int16_t& x_off,
+                              const int16_t& y_off,
+                              const std::vector<Trap>& traps) {
+  return Render::AddTraps(
+      Render::AddTrapsRequest{picture, x_off, y_off, traps});
+}
+
 Future<void> Render::CreateSolidFill(
     const Render::CreateSolidFillRequest& request) {
   if (!connection_->Ready() || !present())
@@ -2385,6 +2633,12 @@ Future<void> Render::CreateSolidFill(
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Render::CreateSolidFill", false);
+}
+
+Future<void> Render::CreateSolidFill(const Picture& picture,
+                                     const Color& color) {
+  return Render::CreateSolidFill(
+      Render::CreateSolidFillRequest{picture, color});
 }
 
 Future<void> Render::CreateLinearGradient(
@@ -2481,6 +2735,15 @@ Future<void> Render::CreateLinearGradient(
 
   return connection_->SendRequest<void>(&buf, "Render::CreateLinearGradient",
                                         false);
+}
+
+Future<void> Render::CreateLinearGradient(const Picture& picture,
+                                          const PointFix& p1,
+                                          const PointFix& p2,
+                                          const std::vector<Fixed>& stops,
+                                          const std::vector<Color>& colors) {
+  return Render::CreateLinearGradient(
+      Render::CreateLinearGradientRequest{picture, p1, p2, stops, colors});
 }
 
 Future<void> Render::CreateRadialGradient(
@@ -2587,6 +2850,17 @@ Future<void> Render::CreateRadialGradient(
                                         false);
 }
 
+Future<void> Render::CreateRadialGradient(const Picture& picture,
+                                          const PointFix& inner,
+                                          const PointFix& outer,
+                                          const Fixed& inner_radius,
+                                          const Fixed& outer_radius,
+                                          const std::vector<Fixed>& stops,
+                                          const std::vector<Color>& colors) {
+  return Render::CreateRadialGradient(Render::CreateRadialGradientRequest{
+      picture, inner, outer, inner_radius, outer_radius, stops, colors});
+}
+
 Future<void> Render::CreateConicalGradient(
     const Render::CreateConicalGradientRequest& request) {
   if (!connection_->Ready() || !present())
@@ -2672,6 +2946,15 @@ Future<void> Render::CreateConicalGradient(
 
   return connection_->SendRequest<void>(&buf, "Render::CreateConicalGradient",
                                         false);
+}
+
+Future<void> Render::CreateConicalGradient(const Picture& picture,
+                                           const PointFix& center,
+                                           const Fixed& angle,
+                                           const std::vector<Fixed>& stops,
+                                           const std::vector<Color>& colors) {
+  return Render::CreateConicalGradient(Render::CreateConicalGradientRequest{
+      picture, center, angle, stops, colors});
 }
 
 }  // namespace x11

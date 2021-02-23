@@ -54,8 +54,8 @@ std::vector<VkSemaphore> ToVkSemaphores(
 class Fence {
  public:
   static std::unique_ptr<Fence> Create(x11::Pixmap pixmap) {
-    base::ScopedFD fence_fd(xshmfence_alloc_shm());
-    if (!fence_fd.is_valid()) {
+    x11::RefCountedFD fence_fd(xshmfence_alloc_shm());
+    if (fence_fd.get() < 0) {
       DLOG(ERROR) << "xshmfence_alloc_shm() failed!";
       return {};
     }
@@ -69,8 +69,7 @@ class Fence {
     auto* connection = x11::Connection::Get();
     auto* dri3 = &connection->dri3();
     auto fence = connection->GenerateId<x11::Sync::Fence>();
-    dri3->FenceFromFD(
-        {pixmap, static_cast<uint32_t>(fence), 1, std::move(fence_fd)});
+    dri3->FenceFromFD(pixmap, static_cast<uint32_t>(fence), 1, fence_fd);
     return std::make_unique<Fence>(base::PassKey<Fence>(), shm_fence, fence);
   }
 
@@ -298,9 +297,9 @@ bool PresenterImageX11::Initialize(
   // The ownership of |vk_fence| is passed to OnX11 which will destroy it.
   on_x11_ = base::MakeRefCounted<OnX11>(device_queue_, vk_fence);
 
-  std::vector<base::ScopedFD> fds(vulkan_image->plane_count());
+  std::vector<x11::RefCountedFD> fds(vulkan_image->plane_count());
   for (size_t i = 0; i < vulkan_image->plane_count(); ++i)
-    fds[i] = vulkan_image->GetMemoryFd();
+    fds[i] = x11::RefCountedFD(vulkan_image->GetMemoryFd());
   x11::Dri3::PixmapFromBuffersRequest request = {
       .window = window,
       .width = size.width(),
@@ -446,7 +445,7 @@ void OutputPresenterX11::OnX11::PostSubBuffer(
   image->WaitForVkFence();
 
   last_target_msc_ = std::max(last_present_msc_, last_target_msc_) + 1;
-  x11::Connection::Get()->present().Pixmap({
+  x11::Connection::Get()->present().PresentPixmap({
       .window = window_,
       .pixmap = image->pixmap(),
       .idle_fence = image->idle_fence()->fence(),
@@ -568,7 +567,7 @@ bool OutputPresenterX11::Initialize() {
 
   auto window = static_cast<x11::Window>(dependency_->GetSurfaceHandle());
 
-  auto geometry = connection->GetGeometry({window}).Sync();
+  auto geometry = connection->GetGeometry(window).Sync();
   depth_ = geometry->depth;
 
   if (auto modifiers = dri3->GetSupportedModifiers(

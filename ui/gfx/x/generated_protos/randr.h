@@ -54,6 +54,7 @@
 #include "base/optional.h"
 #include "render.h"
 #include "ui/gfx/x/error.h"
+#include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
 
 namespace x11 {
@@ -332,6 +333,9 @@ class COMPONENT_EXPORT(X11) RandR {
 
   Future<QueryVersionReply> QueryVersion(const QueryVersionRequest& request);
 
+  Future<QueryVersionReply> QueryVersion(const uint32_t& major_version = {},
+                                         const uint32_t& minor_version = {});
+
   struct SetScreenConfigRequest {
     Window window{};
     Time timestamp{};
@@ -355,6 +359,14 @@ class COMPONENT_EXPORT(X11) RandR {
   Future<SetScreenConfigReply> SetScreenConfig(
       const SetScreenConfigRequest& request);
 
+  Future<SetScreenConfigReply> SetScreenConfig(
+      const Window& window = {},
+      const Time& timestamp = {},
+      const Time& config_timestamp = {},
+      const uint16_t& sizeID = {},
+      const Rotation& rotation = {},
+      const uint16_t& rate = {});
+
   struct SelectInputRequest {
     Window window{};
     NotifyMask enable{};
@@ -363,6 +375,9 @@ class COMPONENT_EXPORT(X11) RandR {
   using SelectInputResponse = Response<void>;
 
   Future<void> SelectInput(const SelectInputRequest& request);
+
+  Future<void> SelectInput(const Window& window = {},
+                           const NotifyMask& enable = {});
 
   struct GetScreenInfoRequest {
     Window window{};
@@ -386,6 +401,8 @@ class COMPONENT_EXPORT(X11) RandR {
 
   Future<GetScreenInfoReply> GetScreenInfo(const GetScreenInfoRequest& request);
 
+  Future<GetScreenInfoReply> GetScreenInfo(const Window& window = {});
+
   struct GetScreenSizeRangeRequest {
     Window window{};
   };
@@ -403,6 +420,8 @@ class COMPONENT_EXPORT(X11) RandR {
   Future<GetScreenSizeRangeReply> GetScreenSizeRange(
       const GetScreenSizeRangeRequest& request);
 
+  Future<GetScreenSizeRangeReply> GetScreenSizeRange(const Window& window = {});
+
   struct SetScreenSizeRequest {
     Window window{};
     uint16_t width{};
@@ -414,6 +433,12 @@ class COMPONENT_EXPORT(X11) RandR {
   using SetScreenSizeResponse = Response<void>;
 
   Future<void> SetScreenSize(const SetScreenSizeRequest& request);
+
+  Future<void> SetScreenSize(const Window& window = {},
+                             const uint16_t& width = {},
+                             const uint16_t& height = {},
+                             const uint32_t& mm_width = {},
+                             const uint32_t& mm_height = {});
 
   struct GetScreenResourcesRequest {
     Window window{};
@@ -433,6 +458,8 @@ class COMPONENT_EXPORT(X11) RandR {
 
   Future<GetScreenResourcesReply> GetScreenResources(
       const GetScreenResourcesRequest& request);
+
+  Future<GetScreenResourcesReply> GetScreenResources(const Window& window = {});
 
   struct GetOutputInfoRequest {
     Output output{};
@@ -459,6 +486,9 @@ class COMPONENT_EXPORT(X11) RandR {
 
   Future<GetOutputInfoReply> GetOutputInfo(const GetOutputInfoRequest& request);
 
+  Future<GetOutputInfoReply> GetOutputInfo(const Output& output = {},
+                                           const Time& config_timestamp = {});
+
   struct ListOutputPropertiesRequest {
     Output output{};
   };
@@ -472,6 +502,9 @@ class COMPONENT_EXPORT(X11) RandR {
 
   Future<ListOutputPropertiesReply> ListOutputProperties(
       const ListOutputPropertiesRequest& request);
+
+  Future<ListOutputPropertiesReply> ListOutputProperties(
+      const Output& output = {});
 
   struct QueryOutputPropertyRequest {
     Output output{};
@@ -491,6 +524,10 @@ class COMPONENT_EXPORT(X11) RandR {
   Future<QueryOutputPropertyReply> QueryOutputProperty(
       const QueryOutputPropertyRequest& request);
 
+  Future<QueryOutputPropertyReply> QueryOutputProperty(
+      const Output& output = {},
+      const Atom& property = {});
+
   struct ConfigureOutputPropertyRequest {
     Output output{};
     Atom property{};
@@ -503,6 +540,12 @@ class COMPONENT_EXPORT(X11) RandR {
 
   Future<void> ConfigureOutputProperty(
       const ConfigureOutputPropertyRequest& request);
+
+  Future<void> ConfigureOutputProperty(const Output& output = {},
+                                       const Atom& property = {},
+                                       const uint8_t& pending = {},
+                                       const uint8_t& range = {},
+                                       const std::vector<int32_t>& values = {});
 
   struct ChangeOutputPropertyRequest {
     Output output{};
@@ -518,6 +561,15 @@ class COMPONENT_EXPORT(X11) RandR {
 
   Future<void> ChangeOutputProperty(const ChangeOutputPropertyRequest& request);
 
+  Future<void> ChangeOutputProperty(
+      const Output& output = {},
+      const Atom& property = {},
+      const Atom& type = {},
+      const uint8_t& format = {},
+      const PropMode& mode = {},
+      const uint32_t& num_units = {},
+      const scoped_refptr<base::RefCountedMemory>& data = {});
+
   struct DeleteOutputPropertyRequest {
     Output output{};
     Atom property{};
@@ -526,6 +578,9 @@ class COMPONENT_EXPORT(X11) RandR {
   using DeleteOutputPropertyResponse = Response<void>;
 
   Future<void> DeleteOutputProperty(const DeleteOutputPropertyRequest& request);
+
+  Future<void> DeleteOutputProperty(const Output& output = {},
+                                    const Atom& property = {});
 
   struct GetOutputPropertyRequest {
     Output output{};
@@ -551,6 +606,15 @@ class COMPONENT_EXPORT(X11) RandR {
   Future<GetOutputPropertyReply> GetOutputProperty(
       const GetOutputPropertyRequest& request);
 
+  Future<GetOutputPropertyReply> GetOutputProperty(
+      const Output& output = {},
+      const Atom& property = {},
+      const Atom& type = {},
+      const uint32_t& long_offset = {},
+      const uint32_t& long_length = {},
+      const uint8_t& c_delete = {},
+      const uint8_t& pending = {});
+
   struct CreateModeRequest {
     Window window{};
     ModeInfo mode_info{};
@@ -566,6 +630,12 @@ class COMPONENT_EXPORT(X11) RandR {
 
   Future<CreateModeReply> CreateMode(const CreateModeRequest& request);
 
+  Future<CreateModeReply> CreateMode(
+      const Window& window = {},
+      const ModeInfo& mode_info =
+          {{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}},
+      const std::string& name = {});
+
   struct DestroyModeRequest {
     Mode mode{};
   };
@@ -573,6 +643,8 @@ class COMPONENT_EXPORT(X11) RandR {
   using DestroyModeResponse = Response<void>;
 
   Future<void> DestroyMode(const DestroyModeRequest& request);
+
+  Future<void> DestroyMode(const Mode& mode = {});
 
   struct AddOutputModeRequest {
     Output output{};
@@ -583,6 +655,8 @@ class COMPONENT_EXPORT(X11) RandR {
 
   Future<void> AddOutputMode(const AddOutputModeRequest& request);
 
+  Future<void> AddOutputMode(const Output& output = {}, const Mode& mode = {});
+
   struct DeleteOutputModeRequest {
     Output output{};
     Mode mode{};
@@ -591,6 +665,9 @@ class COMPONENT_EXPORT(X11) RandR {
   using DeleteOutputModeResponse = Response<void>;
 
   Future<void> DeleteOutputMode(const DeleteOutputModeRequest& request);
+
+  Future<void> DeleteOutputMode(const Output& output = {},
+                                const Mode& mode = {});
 
   struct GetCrtcInfoRequest {
     Crtc crtc{};
@@ -616,6 +693,9 @@ class COMPONENT_EXPORT(X11) RandR {
 
   Future<GetCrtcInfoReply> GetCrtcInfo(const GetCrtcInfoRequest& request);
 
+  Future<GetCrtcInfoReply> GetCrtcInfo(const Crtc& crtc = {},
+                                       const Time& config_timestamp = {});
+
   struct SetCrtcConfigRequest {
     Crtc crtc{};
     Time timestamp{};
@@ -637,6 +717,16 @@ class COMPONENT_EXPORT(X11) RandR {
 
   Future<SetCrtcConfigReply> SetCrtcConfig(const SetCrtcConfigRequest& request);
 
+  Future<SetCrtcConfigReply> SetCrtcConfig(
+      const Crtc& crtc = {},
+      const Time& timestamp = {},
+      const Time& config_timestamp = {},
+      const int16_t& x = {},
+      const int16_t& y = {},
+      const Mode& mode = {},
+      const Rotation& rotation = {},
+      const std::vector<Output>& outputs = {});
+
   struct GetCrtcGammaSizeRequest {
     Crtc crtc{};
   };
@@ -650,6 +740,8 @@ class COMPONENT_EXPORT(X11) RandR {
 
   Future<GetCrtcGammaSizeReply> GetCrtcGammaSize(
       const GetCrtcGammaSizeRequest& request);
+
+  Future<GetCrtcGammaSizeReply> GetCrtcGammaSize(const Crtc& crtc = {});
 
   struct GetCrtcGammaRequest {
     Crtc crtc{};
@@ -666,6 +758,8 @@ class COMPONENT_EXPORT(X11) RandR {
 
   Future<GetCrtcGammaReply> GetCrtcGamma(const GetCrtcGammaRequest& request);
 
+  Future<GetCrtcGammaReply> GetCrtcGamma(const Crtc& crtc = {});
+
   struct SetCrtcGammaRequest {
     Crtc crtc{};
     std::vector<uint16_t> red{};
@@ -676,6 +770,11 @@ class COMPONENT_EXPORT(X11) RandR {
   using SetCrtcGammaResponse = Response<void>;
 
   Future<void> SetCrtcGamma(const SetCrtcGammaRequest& request);
+
+  Future<void> SetCrtcGamma(const Crtc& crtc = {},
+                            const std::vector<uint16_t>& red = {},
+                            const std::vector<uint16_t>& green = {},
+                            const std::vector<uint16_t>& blue = {});
 
   struct GetScreenResourcesCurrentRequest {
     Window window{};
@@ -697,6 +796,9 @@ class COMPONENT_EXPORT(X11) RandR {
   Future<GetScreenResourcesCurrentReply> GetScreenResourcesCurrent(
       const GetScreenResourcesCurrentRequest& request);
 
+  Future<GetScreenResourcesCurrentReply> GetScreenResourcesCurrent(
+      const Window& window = {});
+
   struct SetCrtcTransformRequest {
     Crtc crtc{};
     Render::Transform transform{};
@@ -707,6 +809,12 @@ class COMPONENT_EXPORT(X11) RandR {
   using SetCrtcTransformResponse = Response<void>;
 
   Future<void> SetCrtcTransform(const SetCrtcTransformRequest& request);
+
+  Future<void> SetCrtcTransform(
+      const Crtc& crtc = {},
+      const Render::Transform& transform = {{}, {}, {}, {}, {}, {}, {}, {}, {}},
+      const std::string& filter_name = {},
+      const std::vector<Render::Fixed>& filter_params = {});
 
   struct GetCrtcTransformRequest {
     Crtc crtc{};
@@ -727,6 +835,8 @@ class COMPONENT_EXPORT(X11) RandR {
 
   Future<GetCrtcTransformReply> GetCrtcTransform(
       const GetCrtcTransformRequest& request);
+
+  Future<GetCrtcTransformReply> GetCrtcTransform(const Crtc& crtc = {});
 
   struct GetPanningRequest {
     Crtc crtc{};
@@ -753,6 +863,8 @@ class COMPONENT_EXPORT(X11) RandR {
   using GetPanningResponse = Response<GetPanningReply>;
 
   Future<GetPanningReply> GetPanning(const GetPanningRequest& request);
+
+  Future<GetPanningReply> GetPanning(const Crtc& crtc = {});
 
   struct SetPanningRequest {
     Crtc crtc{};
@@ -781,6 +893,21 @@ class COMPONENT_EXPORT(X11) RandR {
 
   Future<SetPanningReply> SetPanning(const SetPanningRequest& request);
 
+  Future<SetPanningReply> SetPanning(const Crtc& crtc = {},
+                                     const Time& timestamp = {},
+                                     const uint16_t& left = {},
+                                     const uint16_t& top = {},
+                                     const uint16_t& width = {},
+                                     const uint16_t& height = {},
+                                     const uint16_t& track_left = {},
+                                     const uint16_t& track_top = {},
+                                     const uint16_t& track_width = {},
+                                     const uint16_t& track_height = {},
+                                     const int16_t& border_left = {},
+                                     const int16_t& border_top = {},
+                                     const int16_t& border_right = {},
+                                     const int16_t& border_bottom = {});
+
   struct SetOutputPrimaryRequest {
     Window window{};
     Output output{};
@@ -789,6 +916,9 @@ class COMPONENT_EXPORT(X11) RandR {
   using SetOutputPrimaryResponse = Response<void>;
 
   Future<void> SetOutputPrimary(const SetOutputPrimaryRequest& request);
+
+  Future<void> SetOutputPrimary(const Window& window = {},
+                                const Output& output = {});
 
   struct GetOutputPrimaryRequest {
     Window window{};
@@ -804,6 +934,8 @@ class COMPONENT_EXPORT(X11) RandR {
   Future<GetOutputPrimaryReply> GetOutputPrimary(
       const GetOutputPrimaryRequest& request);
 
+  Future<GetOutputPrimaryReply> GetOutputPrimary(const Window& window = {});
+
   struct GetProvidersRequest {
     Window window{};
   };
@@ -817,6 +949,8 @@ class COMPONENT_EXPORT(X11) RandR {
   using GetProvidersResponse = Response<GetProvidersReply>;
 
   Future<GetProvidersReply> GetProviders(const GetProvidersRequest& request);
+
+  Future<GetProvidersReply> GetProviders(const Window& window = {});
 
   struct GetProviderInfoRequest {
     Provider provider{};
@@ -840,6 +974,10 @@ class COMPONENT_EXPORT(X11) RandR {
   Future<GetProviderInfoReply> GetProviderInfo(
       const GetProviderInfoRequest& request);
 
+  Future<GetProviderInfoReply> GetProviderInfo(
+      const Provider& provider = {},
+      const Time& config_timestamp = {});
+
   struct SetProviderOffloadSinkRequest {
     Provider provider{};
     Provider sink_provider{};
@@ -851,6 +989,10 @@ class COMPONENT_EXPORT(X11) RandR {
   Future<void> SetProviderOffloadSink(
       const SetProviderOffloadSinkRequest& request);
 
+  Future<void> SetProviderOffloadSink(const Provider& provider = {},
+                                      const Provider& sink_provider = {},
+                                      const Time& config_timestamp = {});
+
   struct SetProviderOutputSourceRequest {
     Provider provider{};
     Provider source_provider{};
@@ -861,6 +1003,10 @@ class COMPONENT_EXPORT(X11) RandR {
 
   Future<void> SetProviderOutputSource(
       const SetProviderOutputSourceRequest& request);
+
+  Future<void> SetProviderOutputSource(const Provider& provider = {},
+                                       const Provider& source_provider = {},
+                                       const Time& config_timestamp = {});
 
   struct ListProviderPropertiesRequest {
     Provider provider{};
@@ -875,6 +1021,9 @@ class COMPONENT_EXPORT(X11) RandR {
 
   Future<ListProviderPropertiesReply> ListProviderProperties(
       const ListProviderPropertiesRequest& request);
+
+  Future<ListProviderPropertiesReply> ListProviderProperties(
+      const Provider& provider = {});
 
   struct QueryProviderPropertyRequest {
     Provider provider{};
@@ -894,6 +1043,10 @@ class COMPONENT_EXPORT(X11) RandR {
   Future<QueryProviderPropertyReply> QueryProviderProperty(
       const QueryProviderPropertyRequest& request);
 
+  Future<QueryProviderPropertyReply> QueryProviderProperty(
+      const Provider& provider = {},
+      const Atom& property = {});
+
   struct ConfigureProviderPropertyRequest {
     Provider provider{};
     Atom property{};
@@ -906,6 +1059,13 @@ class COMPONENT_EXPORT(X11) RandR {
 
   Future<void> ConfigureProviderProperty(
       const ConfigureProviderPropertyRequest& request);
+
+  Future<void> ConfigureProviderProperty(
+      const Provider& provider = {},
+      const Atom& property = {},
+      const uint8_t& pending = {},
+      const uint8_t& range = {},
+      const std::vector<int32_t>& values = {});
 
   struct ChangeProviderPropertyRequest {
     Provider provider{};
@@ -922,6 +1082,15 @@ class COMPONENT_EXPORT(X11) RandR {
   Future<void> ChangeProviderProperty(
       const ChangeProviderPropertyRequest& request);
 
+  Future<void> ChangeProviderProperty(
+      const Provider& provider = {},
+      const Atom& property = {},
+      const Atom& type = {},
+      const uint8_t& format = {},
+      const uint8_t& mode = {},
+      const uint32_t& num_items = {},
+      const scoped_refptr<base::RefCountedMemory>& data = {});
+
   struct DeleteProviderPropertyRequest {
     Provider provider{};
     Atom property{};
@@ -931,6 +1100,9 @@ class COMPONENT_EXPORT(X11) RandR {
 
   Future<void> DeleteProviderProperty(
       const DeleteProviderPropertyRequest& request);
+
+  Future<void> DeleteProviderProperty(const Provider& provider = {},
+                                      const Atom& property = {});
 
   struct GetProviderPropertyRequest {
     Provider provider{};
@@ -956,6 +1128,15 @@ class COMPONENT_EXPORT(X11) RandR {
   Future<GetProviderPropertyReply> GetProviderProperty(
       const GetProviderPropertyRequest& request);
 
+  Future<GetProviderPropertyReply> GetProviderProperty(
+      const Provider& provider = {},
+      const Atom& property = {},
+      const Atom& type = {},
+      const uint32_t& long_offset = {},
+      const uint32_t& long_length = {},
+      const uint8_t& c_delete = {},
+      const uint8_t& pending = {});
+
   struct GetMonitorsRequest {
     Window window{};
     uint8_t get_active{};
@@ -972,6 +1153,9 @@ class COMPONENT_EXPORT(X11) RandR {
 
   Future<GetMonitorsReply> GetMonitors(const GetMonitorsRequest& request);
 
+  Future<GetMonitorsReply> GetMonitors(const Window& window = {},
+                                       const uint8_t& get_active = {});
+
   struct SetMonitorRequest {
     Window window{};
     MonitorInfo monitorinfo{};
@@ -981,6 +1165,10 @@ class COMPONENT_EXPORT(X11) RandR {
 
   Future<void> SetMonitor(const SetMonitorRequest& request);
 
+  Future<void> SetMonitor(const Window& window = {},
+                          const MonitorInfo& monitorinfo =
+                              {{}, {}, {}, {}, {}, {}, {}, {}, {}, {}});
+
   struct DeleteMonitorRequest {
     Window window{};
     Atom name{};
@@ -989,6 +1177,8 @@ class COMPONENT_EXPORT(X11) RandR {
   using DeleteMonitorResponse = Response<void>;
 
   Future<void> DeleteMonitor(const DeleteMonitorRequest& request);
+
+  Future<void> DeleteMonitor(const Window& window = {}, const Atom& name = {});
 
   struct CreateLeaseRequest {
     Window window{};
@@ -1000,12 +1190,17 @@ class COMPONENT_EXPORT(X11) RandR {
   struct CreateLeaseReply {
     uint8_t nfd{};
     uint16_t sequence{};
-    base::ScopedFD master_fd{};
+    RefCountedFD master_fd{};
   };
 
   using CreateLeaseResponse = Response<CreateLeaseReply>;
 
   Future<CreateLeaseReply> CreateLease(const CreateLeaseRequest& request);
+
+  Future<CreateLeaseReply> CreateLease(const Window& window = {},
+                                       const Lease& lid = {},
+                                       const std::vector<Crtc>& crtcs = {},
+                                       const std::vector<Output>& outputs = {});
 
   struct FreeLeaseRequest {
     Lease lid{};
@@ -1015,6 +1210,8 @@ class COMPONENT_EXPORT(X11) RandR {
   using FreeLeaseResponse = Response<void>;
 
   Future<void> FreeLease(const FreeLeaseRequest& request);
+
+  Future<void> FreeLease(const Lease& lid = {}, const uint8_t& terminate = {});
 
  private:
   Connection* const connection_;

@@ -1016,6 +1016,11 @@ Future<Xkb::UseExtensionReply> Xkb::UseExtension(
       &buf, "Xkb::UseExtension", false);
 }
 
+Future<Xkb::UseExtensionReply> Xkb::UseExtension(const uint16_t& wantedMajor,
+                                                 const uint16_t& wantedMinor) {
+  return Xkb::UseExtension(Xkb::UseExtensionRequest{wantedMajor, wantedMinor});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Xkb::UseExtensionReply> detail::ReadReply<
@@ -1258,6 +1263,65 @@ Future<void> Xkb::SelectEvents(const Xkb::SelectEventsRequest& request) {
   return connection_->SendRequest<void>(&buf, "Xkb::SelectEvents", false);
 }
 
+Future<void> Xkb::SelectEvents(
+    const DeviceSpec& deviceSpec,
+    const EventType& affectWhich,
+    const EventType& clear,
+    const EventType& selectAll,
+    const MapPart& affectMap,
+    const MapPart& map,
+    const base::Optional<NKNDetail>& affectNewKeyboard,
+    const base::Optional<NKNDetail>& newKeyboardDetails,
+    const base::Optional<StatePart>& affectState,
+    const base::Optional<StatePart>& stateDetails,
+    const base::Optional<Control>& affectCtrls,
+    const base::Optional<Control>& ctrlDetails,
+    const base::Optional<uint32_t>& affectIndicatorState,
+    const base::Optional<uint32_t>& indicatorStateDetails,
+    const base::Optional<uint32_t>& affectIndicatorMap,
+    const base::Optional<uint32_t>& indicatorMapDetails,
+    const base::Optional<NameDetail>& affectNames,
+    const base::Optional<NameDetail>& namesDetails,
+    const base::Optional<CMDetail>& affectCompat,
+    const base::Optional<CMDetail>& compatDetails,
+    const base::Optional<uint8_t>& affectBell,
+    const base::Optional<uint8_t>& bellDetails,
+    const base::Optional<uint8_t>& affectMsgDetails,
+    const base::Optional<uint8_t>& msgDetails,
+    const base::Optional<AXNDetail>& affectAccessX,
+    const base::Optional<AXNDetail>& accessXDetails,
+    const base::Optional<XIFeature>& affectExtDev,
+    const base::Optional<XIFeature>& extdevDetails) {
+  return Xkb::SelectEvents(Xkb::SelectEventsRequest{deviceSpec,
+                                                    affectWhich,
+                                                    clear,
+                                                    selectAll,
+                                                    affectMap,
+                                                    map,
+                                                    affectNewKeyboard,
+                                                    newKeyboardDetails,
+                                                    affectState,
+                                                    stateDetails,
+                                                    affectCtrls,
+                                                    ctrlDetails,
+                                                    affectIndicatorState,
+                                                    indicatorStateDetails,
+                                                    affectIndicatorMap,
+                                                    indicatorMapDetails,
+                                                    affectNames,
+                                                    namesDetails,
+                                                    affectCompat,
+                                                    compatDetails,
+                                                    affectBell,
+                                                    bellDetails,
+                                                    affectMsgDetails,
+                                                    msgDetails,
+                                                    affectAccessX,
+                                                    accessXDetails,
+                                                    affectExtDev,
+                                                    extdevDetails});
+}
+
 Future<void> Xkb::Bell(const Xkb::BellRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -1328,6 +1392,21 @@ Future<void> Xkb::Bell(const Xkb::BellRequest& request) {
   return connection_->SendRequest<void>(&buf, "Xkb::Bell", false);
 }
 
+Future<void> Xkb::Bell(const DeviceSpec& deviceSpec,
+                       const BellClassSpec& bellClass,
+                       const IDSpec& bellID,
+                       const int8_t& percent,
+                       const uint8_t& forceSound,
+                       const uint8_t& eventOnly,
+                       const int16_t& pitch,
+                       const int16_t& duration,
+                       const Atom& name,
+                       const Window& window) {
+  return Xkb::Bell(Xkb::BellRequest{deviceSpec, bellClass, bellID, percent,
+                                    forceSound, eventOnly, pitch, duration,
+                                    name, window});
+}
+
 Future<Xkb::GetStateReply> Xkb::GetState(const Xkb::GetStateRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -1358,6 +1437,10 @@ Future<Xkb::GetStateReply> Xkb::GetState(const Xkb::GetStateRequest& request) {
 
   return connection_->SendRequest<Xkb::GetStateReply>(&buf, "Xkb::GetState",
                                                       false);
+}
+
+Future<Xkb::GetStateReply> Xkb::GetState(const DeviceSpec& deviceSpec) {
+  return Xkb::GetState(Xkb::GetStateRequest{deviceSpec});
 }
 
 template <>
@@ -1546,6 +1629,19 @@ Future<void> Xkb::LatchLockState(const Xkb::LatchLockStateRequest& request) {
   return connection_->SendRequest<void>(&buf, "Xkb::LatchLockState", false);
 }
 
+Future<void> Xkb::LatchLockState(const DeviceSpec& deviceSpec,
+                                 const ModMask& affectModLocks,
+                                 const ModMask& modLocks,
+                                 const uint8_t& lockGroup,
+                                 const Group& groupLock,
+                                 const ModMask& affectModLatches,
+                                 const uint8_t& latchGroup,
+                                 const uint16_t& groupLatch) {
+  return Xkb::LatchLockState(Xkb::LatchLockStateRequest{
+      deviceSpec, affectModLocks, modLocks, lockGroup, groupLock,
+      affectModLatches, latchGroup, groupLatch});
+}
+
 Future<Xkb::GetControlsReply> Xkb::GetControls(
     const Xkb::GetControlsRequest& request) {
   if (!connection_->Ready() || !present())
@@ -1577,6 +1673,10 @@ Future<Xkb::GetControlsReply> Xkb::GetControls(
 
   return connection_->SendRequest<Xkb::GetControlsReply>(
       &buf, "Xkb::GetControls", false);
+}
+
+Future<Xkb::GetControlsReply> Xkb::GetControls(const DeviceSpec& deviceSpec) {
+  return Xkb::GetControls(Xkb::GetControlsRequest{deviceSpec});
 }
 
 template <>
@@ -1930,6 +2030,68 @@ Future<void> Xkb::SetControls(const Xkb::SetControlsRequest& request) {
   return connection_->SendRequest<void>(&buf, "Xkb::SetControls", false);
 }
 
+Future<void> Xkb::SetControls(const DeviceSpec& deviceSpec,
+                              const ModMask& affectInternalRealMods,
+                              const ModMask& internalRealMods,
+                              const ModMask& affectIgnoreLockRealMods,
+                              const ModMask& ignoreLockRealMods,
+                              const VMod& affectInternalVirtualMods,
+                              const VMod& internalVirtualMods,
+                              const VMod& affectIgnoreLockVirtualMods,
+                              const VMod& ignoreLockVirtualMods,
+                              const uint8_t& mouseKeysDfltBtn,
+                              const uint8_t& groupsWrap,
+                              const AXOption& accessXOptions,
+                              const BoolCtrl& affectEnabledControls,
+                              const BoolCtrl& enabledControls,
+                              const Control& changeControls,
+                              const uint16_t& repeatDelay,
+                              const uint16_t& repeatInterval,
+                              const uint16_t& slowKeysDelay,
+                              const uint16_t& debounceDelay,
+                              const uint16_t& mouseKeysDelay,
+                              const uint16_t& mouseKeysInterval,
+                              const uint16_t& mouseKeysTimeToMax,
+                              const uint16_t& mouseKeysMaxSpeed,
+                              const int16_t& mouseKeysCurve,
+                              const uint16_t& accessXTimeout,
+                              const BoolCtrl& accessXTimeoutMask,
+                              const BoolCtrl& accessXTimeoutValues,
+                              const AXOption& accessXTimeoutOptionsMask,
+                              const AXOption& accessXTimeoutOptionsValues,
+                              const std::array<uint8_t, 32>& perKeyRepeat) {
+  return Xkb::SetControls(Xkb::SetControlsRequest{deviceSpec,
+                                                  affectInternalRealMods,
+                                                  internalRealMods,
+                                                  affectIgnoreLockRealMods,
+                                                  ignoreLockRealMods,
+                                                  affectInternalVirtualMods,
+                                                  internalVirtualMods,
+                                                  affectIgnoreLockVirtualMods,
+                                                  ignoreLockVirtualMods,
+                                                  mouseKeysDfltBtn,
+                                                  groupsWrap,
+                                                  accessXOptions,
+                                                  affectEnabledControls,
+                                                  enabledControls,
+                                                  changeControls,
+                                                  repeatDelay,
+                                                  repeatInterval,
+                                                  slowKeysDelay,
+                                                  debounceDelay,
+                                                  mouseKeysDelay,
+                                                  mouseKeysInterval,
+                                                  mouseKeysTimeToMax,
+                                                  mouseKeysMaxSpeed,
+                                                  mouseKeysCurve,
+                                                  accessXTimeout,
+                                                  accessXTimeoutMask,
+                                                  accessXTimeoutValues,
+                                                  accessXTimeoutOptionsMask,
+                                                  accessXTimeoutOptionsValues,
+                                                  perKeyRepeat});
+}
+
 Future<Xkb::GetMapReply> Xkb::GetMap(const Xkb::GetMapRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -2033,6 +2195,31 @@ Future<Xkb::GetMapReply> Xkb::GetMap(const Xkb::GetMapRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<Xkb::GetMapReply>(&buf, "Xkb::GetMap", false);
+}
+
+Future<Xkb::GetMapReply> Xkb::GetMap(const DeviceSpec& deviceSpec,
+                                     const MapPart& full,
+                                     const MapPart& partial,
+                                     const uint8_t& firstType,
+                                     const uint8_t& nTypes,
+                                     const KeyCode& firstKeySym,
+                                     const uint8_t& nKeySyms,
+                                     const KeyCode& firstKeyAction,
+                                     const uint8_t& nKeyActions,
+                                     const KeyCode& firstKeyBehavior,
+                                     const uint8_t& nKeyBehaviors,
+                                     const VMod& virtualMods,
+                                     const KeyCode& firstKeyExplicit,
+                                     const uint8_t& nKeyExplicit,
+                                     const KeyCode& firstModMapKey,
+                                     const uint8_t& nModMapKeys,
+                                     const KeyCode& firstVModMapKey,
+                                     const uint8_t& nVModMapKeys) {
+  return Xkb::GetMap(Xkb::GetMapRequest{
+      deviceSpec, full, partial, firstType, nTypes, firstKeySym, nKeySyms,
+      firstKeyAction, nKeyActions, firstKeyBehavior, nKeyBehaviors, virtualMods,
+      firstKeyExplicit, nKeyExplicit, firstModMapKey, nModMapKeys,
+      firstVModMapKey, nVModMapKeys});
 }
 
 template <>
@@ -2897,6 +3084,77 @@ Future<void> Xkb::SetMap(const Xkb::SetMapRequest& request) {
   return connection_->SendRequest<void>(&buf, "Xkb::SetMap", false);
 }
 
+Future<void> Xkb::SetMap(
+    const DeviceSpec& deviceSpec,
+    const SetMapFlags& flags,
+    const KeyCode& minKeyCode,
+    const KeyCode& maxKeyCode,
+    const uint8_t& firstType,
+    const uint8_t& nTypes,
+    const KeyCode& firstKeySym,
+    const uint8_t& nKeySyms,
+    const uint16_t& totalSyms,
+    const KeyCode& firstKeyAction,
+    const uint8_t& nKeyActions,
+    const uint16_t& totalActions,
+    const KeyCode& firstKeyBehavior,
+    const uint8_t& nKeyBehaviors,
+    const uint8_t& totalKeyBehaviors,
+    const KeyCode& firstKeyExplicit,
+    const uint8_t& nKeyExplicit,
+    const uint8_t& totalKeyExplicit,
+    const KeyCode& firstModMapKey,
+    const uint8_t& nModMapKeys,
+    const uint8_t& totalModMapKeys,
+    const KeyCode& firstVModMapKey,
+    const uint8_t& nVModMapKeys,
+    const uint8_t& totalVModMapKeys,
+    const VMod& virtualMods,
+    const base::Optional<std::vector<SetKeyType>>& types,
+    const base::Optional<std::vector<KeySymMap>>& syms,
+    const base::Optional<std::vector<uint8_t>>& actionsCount,
+    const base::Optional<std::vector<Action>>& actions,
+    const base::Optional<std::vector<SetBehavior>>& behaviors,
+    const base::Optional<std::vector<uint8_t>>& vmods,
+    const base::Optional<std::vector<SetExplicit>>& c_explicit,
+    const base::Optional<std::vector<KeyModMap>>& modmap,
+    const base::Optional<std::vector<KeyVModMap>>& vmodmap) {
+  return Xkb::SetMap(Xkb::SetMapRequest{deviceSpec,
+                                        flags,
+                                        minKeyCode,
+                                        maxKeyCode,
+                                        firstType,
+                                        nTypes,
+                                        firstKeySym,
+                                        nKeySyms,
+                                        totalSyms,
+                                        firstKeyAction,
+                                        nKeyActions,
+                                        totalActions,
+                                        firstKeyBehavior,
+                                        nKeyBehaviors,
+                                        totalKeyBehaviors,
+                                        firstKeyExplicit,
+                                        nKeyExplicit,
+                                        totalKeyExplicit,
+                                        firstModMapKey,
+                                        nModMapKeys,
+                                        totalModMapKeys,
+                                        firstVModMapKey,
+                                        nVModMapKeys,
+                                        totalVModMapKeys,
+                                        virtualMods,
+                                        types,
+                                        syms,
+                                        actionsCount,
+                                        actions,
+                                        behaviors,
+                                        vmods,
+                                        c_explicit,
+                                        modmap,
+                                        vmodmap});
+}
+
 Future<Xkb::GetCompatMapReply> Xkb::GetCompatMap(
     const Xkb::GetCompatMapRequest& request) {
   if (!connection_->Ready() || !present())
@@ -2943,6 +3201,15 @@ Future<Xkb::GetCompatMapReply> Xkb::GetCompatMap(
 
   return connection_->SendRequest<Xkb::GetCompatMapReply>(
       &buf, "Xkb::GetCompatMap", false);
+}
+
+Future<Xkb::GetCompatMapReply> Xkb::GetCompatMap(const DeviceSpec& deviceSpec,
+                                                 const SetOfGroup& groups,
+                                                 const uint8_t& getAllSI,
+                                                 const uint16_t& firstSI,
+                                                 const uint16_t& nSI) {
+  return Xkb::GetCompatMap(
+      Xkb::GetCompatMapRequest{deviceSpec, groups, getAllSI, firstSI, nSI});
 }
 
 template <>
@@ -3218,6 +3485,18 @@ Future<void> Xkb::SetCompatMap(const Xkb::SetCompatMapRequest& request) {
   return connection_->SendRequest<void>(&buf, "Xkb::SetCompatMap", false);
 }
 
+Future<void> Xkb::SetCompatMap(const DeviceSpec& deviceSpec,
+                               const uint8_t& recomputeActions,
+                               const uint8_t& truncateSI,
+                               const SetOfGroup& groups,
+                               const uint16_t& firstSI,
+                               const std::vector<SymInterpret>& si,
+                               const std::vector<ModDef>& groupMaps) {
+  return Xkb::SetCompatMap(
+      Xkb::SetCompatMapRequest{deviceSpec, recomputeActions, truncateSI, groups,
+                               firstSI, si, groupMaps});
+}
+
 Future<Xkb::GetIndicatorStateReply> Xkb::GetIndicatorState(
     const Xkb::GetIndicatorStateRequest& request) {
   if (!connection_->Ready() || !present())
@@ -3249,6 +3528,11 @@ Future<Xkb::GetIndicatorStateReply> Xkb::GetIndicatorState(
 
   return connection_->SendRequest<Xkb::GetIndicatorStateReply>(
       &buf, "Xkb::GetIndicatorState", false);
+}
+
+Future<Xkb::GetIndicatorStateReply> Xkb::GetIndicatorState(
+    const DeviceSpec& deviceSpec) {
+  return Xkb::GetIndicatorState(Xkb::GetIndicatorStateRequest{deviceSpec});
 }
 
 template <>
@@ -3323,6 +3607,12 @@ Future<Xkb::GetIndicatorMapReply> Xkb::GetIndicatorMap(
 
   return connection_->SendRequest<Xkb::GetIndicatorMapReply>(
       &buf, "Xkb::GetIndicatorMap", false);
+}
+
+Future<Xkb::GetIndicatorMapReply> Xkb::GetIndicatorMap(
+    const DeviceSpec& deviceSpec,
+    const uint32_t& which) {
+  return Xkb::GetIndicatorMap(Xkb::GetIndicatorMapRequest{deviceSpec, which});
 }
 
 template <>
@@ -3521,6 +3811,13 @@ Future<void> Xkb::SetIndicatorMap(const Xkb::SetIndicatorMapRequest& request) {
   return connection_->SendRequest<void>(&buf, "Xkb::SetIndicatorMap", false);
 }
 
+Future<void> Xkb::SetIndicatorMap(const DeviceSpec& deviceSpec,
+                                  const uint32_t& which,
+                                  const std::vector<IndicatorMap>& maps) {
+  return Xkb::SetIndicatorMap(
+      Xkb::SetIndicatorMapRequest{deviceSpec, which, maps});
+}
+
 Future<Xkb::GetNamedIndicatorReply> Xkb::GetNamedIndicator(
     const Xkb::GetNamedIndicatorRequest& request) {
   if (!connection_->Ready() || !present())
@@ -3566,6 +3863,15 @@ Future<Xkb::GetNamedIndicatorReply> Xkb::GetNamedIndicator(
 
   return connection_->SendRequest<Xkb::GetNamedIndicatorReply>(
       &buf, "Xkb::GetNamedIndicator", false);
+}
+
+Future<Xkb::GetNamedIndicatorReply> Xkb::GetNamedIndicator(
+    const DeviceSpec& deviceSpec,
+    const LedClass& ledClass,
+    const IDSpec& ledID,
+    const Atom& indicator) {
+  return Xkb::GetNamedIndicator(
+      Xkb::GetNamedIndicatorRequest{deviceSpec, ledClass, ledID, indicator});
 }
 
 template <>
@@ -3780,6 +4086,27 @@ Future<void> Xkb::SetNamedIndicator(
   return connection_->SendRequest<void>(&buf, "Xkb::SetNamedIndicator", false);
 }
 
+Future<void> Xkb::SetNamedIndicator(const DeviceSpec& deviceSpec,
+                                    const LedClass& ledClass,
+                                    const IDSpec& ledID,
+                                    const Atom& indicator,
+                                    const uint8_t& setState,
+                                    const uint8_t& on,
+                                    const uint8_t& setMap,
+                                    const uint8_t& createMap,
+                                    const IMFlag& map_flags,
+                                    const IMGroupsWhich& map_whichGroups,
+                                    const SetOfGroups& map_groups,
+                                    const IMModsWhich& map_whichMods,
+                                    const ModMask& map_realMods,
+                                    const VMod& map_vmods,
+                                    const BoolCtrl& map_ctrls) {
+  return Xkb::SetNamedIndicator(Xkb::SetNamedIndicatorRequest{
+      deviceSpec, ledClass, ledID, indicator, setState, on, setMap, createMap,
+      map_flags, map_whichGroups, map_groups, map_whichMods, map_realMods,
+      map_vmods, map_ctrls});
+}
+
 Future<Xkb::GetNamesReply> Xkb::GetNames(const Xkb::GetNamesRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -3816,6 +4143,11 @@ Future<Xkb::GetNamesReply> Xkb::GetNames(const Xkb::GetNamesRequest& request) {
 
   return connection_->SendRequest<Xkb::GetNamesReply>(&buf, "Xkb::GetNames",
                                                       false);
+}
+
+Future<Xkb::GetNamesReply> Xkb::GetNames(const DeviceSpec& deviceSpec,
+                                         const NameDetail& which) {
+  return Xkb::GetNames(Xkb::GetNamesRequest{deviceSpec, which});
 }
 
 template <>
@@ -4369,6 +4701,65 @@ Future<void> Xkb::SetNames(const Xkb::SetNamesRequest& request) {
   return connection_->SendRequest<void>(&buf, "Xkb::SetNames", false);
 }
 
+Future<void> Xkb::SetNames(
+    const DeviceSpec& deviceSpec,
+    const VMod& virtualMods,
+    const uint8_t& firstType,
+    const uint8_t& nTypes,
+    const uint8_t& firstKTLevelt,
+    const uint8_t& nKTLevels,
+    const uint32_t& indicators,
+    const SetOfGroup& groupNames,
+    const uint8_t& nRadioGroups,
+    const KeyCode& firstKey,
+    const uint8_t& nKeys,
+    const uint8_t& nKeyAliases,
+    const uint16_t& totalKTLevelNames,
+    const base::Optional<Atom>& keycodesName,
+    const base::Optional<Atom>& geometryName,
+    const base::Optional<Atom>& symbolsName,
+    const base::Optional<Atom>& physSymbolsName,
+    const base::Optional<Atom>& typesName,
+    const base::Optional<Atom>& compatName,
+    const base::Optional<std::vector<Atom>>& typeNames,
+    const base::Optional<std::vector<uint8_t>>& nLevelsPerType,
+    const base::Optional<std::vector<Atom>>& ktLevelNames,
+    const base::Optional<std::vector<Atom>>& indicatorNames,
+    const base::Optional<std::vector<Atom>>& virtualModNames,
+    const base::Optional<std::vector<Atom>>& groups,
+    const base::Optional<std::vector<KeyName>>& keyNames,
+    const base::Optional<std::vector<KeyAlias>>& keyAliases,
+    const base::Optional<std::vector<Atom>>& radioGroupNames) {
+  return Xkb::SetNames(Xkb::SetNamesRequest{deviceSpec,
+                                            virtualMods,
+                                            firstType,
+                                            nTypes,
+                                            firstKTLevelt,
+                                            nKTLevels,
+                                            indicators,
+                                            groupNames,
+                                            nRadioGroups,
+                                            firstKey,
+                                            nKeys,
+                                            nKeyAliases,
+                                            totalKTLevelNames,
+                                            keycodesName,
+                                            geometryName,
+                                            symbolsName,
+                                            physSymbolsName,
+                                            typesName,
+                                            compatName,
+                                            typeNames,
+                                            nLevelsPerType,
+                                            ktLevelNames,
+                                            indicatorNames,
+                                            virtualModNames,
+                                            groups,
+                                            keyNames,
+                                            keyAliases,
+                                            radioGroupNames});
+}
+
 Future<Xkb::PerClientFlagsReply> Xkb::PerClientFlags(
     const Xkb::PerClientFlagsRequest& request) {
   if (!connection_->Ready() || !present())
@@ -4430,6 +4821,17 @@ Future<Xkb::PerClientFlagsReply> Xkb::PerClientFlags(
 
   return connection_->SendRequest<Xkb::PerClientFlagsReply>(
       &buf, "Xkb::PerClientFlags", false);
+}
+
+Future<Xkb::PerClientFlagsReply> Xkb::PerClientFlags(
+    const DeviceSpec& deviceSpec,
+    const PerClientFlag& change,
+    const PerClientFlag& value,
+    const BoolCtrl& ctrlsToChange,
+    const BoolCtrl& autoCtrls,
+    const BoolCtrl& autoCtrlsValues) {
+  return Xkb::PerClientFlags(Xkb::PerClientFlagsRequest{
+      deviceSpec, change, value, ctrlsToChange, autoCtrls, autoCtrlsValues});
 }
 
 template <>
@@ -4521,6 +4923,12 @@ Future<Xkb::ListComponentsReply> Xkb::ListComponents(
 
   return connection_->SendRequest<Xkb::ListComponentsReply>(
       &buf, "Xkb::ListComponents", false);
+}
+
+Future<Xkb::ListComponentsReply> Xkb::ListComponents(
+    const DeviceSpec& deviceSpec,
+    const uint16_t& maxNames) {
+  return Xkb::ListComponents(Xkb::ListComponentsRequest{deviceSpec, maxNames});
 }
 
 template <>
@@ -4811,6 +5219,14 @@ Future<Xkb::GetKbdByNameReply> Xkb::GetKbdByName(
 
   return connection_->SendRequest<Xkb::GetKbdByNameReply>(
       &buf, "Xkb::GetKbdByName", false);
+}
+
+Future<Xkb::GetKbdByNameReply> Xkb::GetKbdByName(const DeviceSpec& deviceSpec,
+                                                 const GBNDetail& need,
+                                                 const GBNDetail& want,
+                                                 const uint8_t& load) {
+  return Xkb::GetKbdByName(
+      Xkb::GetKbdByNameRequest{deviceSpec, need, want, load});
 }
 
 template <>
@@ -5944,6 +6360,17 @@ Future<Xkb::GetDeviceInfoReply> Xkb::GetDeviceInfo(
       &buf, "Xkb::GetDeviceInfo", false);
 }
 
+Future<Xkb::GetDeviceInfoReply> Xkb::GetDeviceInfo(const DeviceSpec& deviceSpec,
+                                                   const XIFeature& wanted,
+                                                   const uint8_t& allButtons,
+                                                   const uint8_t& firstButton,
+                                                   const uint8_t& nButtons,
+                                                   const LedClass& ledClass,
+                                                   const IDSpec& ledID) {
+  return Xkb::GetDeviceInfo(Xkb::GetDeviceInfoRequest{
+      deviceSpec, wanted, allButtons, firstButton, nButtons, ledClass, ledID});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Xkb::GetDeviceInfoReply> detail::ReadReply<
@@ -6323,6 +6750,15 @@ Future<void> Xkb::SetDeviceInfo(const Xkb::SetDeviceInfoRequest& request) {
   return connection_->SendRequest<void>(&buf, "Xkb::SetDeviceInfo", false);
 }
 
+Future<void> Xkb::SetDeviceInfo(const DeviceSpec& deviceSpec,
+                                const uint8_t& firstBtn,
+                                const XIFeature& change,
+                                const std::vector<Action>& btnActions,
+                                const std::vector<DeviceLedInfo>& leds) {
+  return Xkb::SetDeviceInfo(Xkb::SetDeviceInfoRequest{
+      deviceSpec, firstBtn, change, btnActions, leds});
+}
+
 Future<Xkb::SetDebuggingFlagsReply> Xkb::SetDebuggingFlags(
     const Xkb::SetDebuggingFlagsRequest& request) {
   if (!connection_->Ready() || !present())
@@ -6380,6 +6816,16 @@ Future<Xkb::SetDebuggingFlagsReply> Xkb::SetDebuggingFlags(
 
   return connection_->SendRequest<Xkb::SetDebuggingFlagsReply>(
       &buf, "Xkb::SetDebuggingFlags", false);
+}
+
+Future<Xkb::SetDebuggingFlagsReply> Xkb::SetDebuggingFlags(
+    const uint32_t& affectFlags,
+    const uint32_t& flags,
+    const uint32_t& affectCtrls,
+    const uint32_t& ctrls,
+    const std::vector<String8>& message) {
+  return Xkb::SetDebuggingFlags(Xkb::SetDebuggingFlagsRequest{
+      affectFlags, flags, affectCtrls, ctrls, message});
 }
 
 template <>

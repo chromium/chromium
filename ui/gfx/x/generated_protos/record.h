@@ -53,6 +53,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "ui/gfx/x/error.h"
+#include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
 
 namespace x11 {
@@ -149,6 +150,9 @@ class COMPONENT_EXPORT(X11) Record {
 
   Future<QueryVersionReply> QueryVersion(const QueryVersionRequest& request);
 
+  Future<QueryVersionReply> QueryVersion(const uint16_t& major_version = {},
+                                         const uint16_t& minor_version = {});
+
   struct CreateContextRequest {
     Context context{};
     ElementHeader element_header{};
@@ -159,6 +163,11 @@ class COMPONENT_EXPORT(X11) Record {
   using CreateContextResponse = Response<void>;
 
   Future<void> CreateContext(const CreateContextRequest& request);
+
+  Future<void> CreateContext(const Context& context = {},
+                             const ElementHeader& element_header = {},
+                             const std::vector<ClientSpec>& client_specs = {},
+                             const std::vector<Range>& ranges = {});
 
   struct RegisterClientsRequest {
     Context context{};
@@ -171,6 +180,11 @@ class COMPONENT_EXPORT(X11) Record {
 
   Future<void> RegisterClients(const RegisterClientsRequest& request);
 
+  Future<void> RegisterClients(const Context& context = {},
+                               const ElementHeader& element_header = {},
+                               const std::vector<ClientSpec>& client_specs = {},
+                               const std::vector<Range>& ranges = {});
+
   struct UnregisterClientsRequest {
     Context context{};
     std::vector<ClientSpec> client_specs{};
@@ -179,6 +193,10 @@ class COMPONENT_EXPORT(X11) Record {
   using UnregisterClientsResponse = Response<void>;
 
   Future<void> UnregisterClients(const UnregisterClientsRequest& request);
+
+  Future<void> UnregisterClients(
+      const Context& context = {},
+      const std::vector<ClientSpec>& client_specs = {});
 
   struct GetContextRequest {
     Context context{};
@@ -194,6 +212,8 @@ class COMPONENT_EXPORT(X11) Record {
   using GetContextResponse = Response<GetContextReply>;
 
   Future<GetContextReply> GetContext(const GetContextRequest& request);
+
+  Future<GetContextReply> GetContext(const Context& context = {});
 
   struct EnableContextRequest {
     Context context{};
@@ -214,6 +234,8 @@ class COMPONENT_EXPORT(X11) Record {
 
   Future<EnableContextReply> EnableContext(const EnableContextRequest& request);
 
+  Future<EnableContextReply> EnableContext(const Context& context = {});
+
   struct DisableContextRequest {
     Context context{};
   };
@@ -222,6 +244,8 @@ class COMPONENT_EXPORT(X11) Record {
 
   Future<void> DisableContext(const DisableContextRequest& request);
 
+  Future<void> DisableContext(const Context& context = {});
+
   struct FreeContextRequest {
     Context context{};
   };
@@ -229,6 +253,8 @@ class COMPONENT_EXPORT(X11) Record {
   using FreeContextResponse = Response<void>;
 
   Future<void> FreeContext(const FreeContextRequest& request);
+
+  Future<void> FreeContext(const Context& context = {});
 
  private:
   Connection* const connection_;

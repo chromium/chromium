@@ -86,6 +86,13 @@ Future<Dpms::GetVersionReply> Dpms::GetVersion(
       &buf, "Dpms::GetVersion", false);
 }
 
+Future<Dpms::GetVersionReply> Dpms::GetVersion(
+    const uint16_t& client_major_version,
+    const uint16_t& client_minor_version) {
+  return Dpms::GetVersion(
+      Dpms::GetVersionRequest{client_major_version, client_minor_version});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Dpms::GetVersionReply> detail::ReadReply<Dpms::GetVersionReply>(
@@ -147,6 +154,10 @@ Future<Dpms::CapableReply> Dpms::Capable(const Dpms::CapableRequest& request) {
                                                       false);
 }
 
+Future<Dpms::CapableReply> Dpms::Capable() {
+  return Dpms::Capable(Dpms::CapableRequest{});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Dpms::CapableReply> detail::ReadReply<Dpms::CapableReply>(
@@ -206,6 +217,10 @@ Future<Dpms::GetTimeoutsReply> Dpms::GetTimeouts(
 
   return connection_->SendRequest<Dpms::GetTimeoutsReply>(
       &buf, "Dpms::GetTimeouts", false);
+}
+
+Future<Dpms::GetTimeoutsReply> Dpms::GetTimeouts() {
+  return Dpms::GetTimeouts(Dpms::GetTimeoutsRequest{});
 }
 
 template <>
@@ -288,6 +303,13 @@ Future<void> Dpms::SetTimeouts(const Dpms::SetTimeoutsRequest& request) {
   return connection_->SendRequest<void>(&buf, "Dpms::SetTimeouts", false);
 }
 
+Future<void> Dpms::SetTimeouts(const uint16_t& standby_timeout,
+                               const uint16_t& suspend_timeout,
+                               const uint16_t& off_timeout) {
+  return Dpms::SetTimeouts(
+      Dpms::SetTimeoutsRequest{standby_timeout, suspend_timeout, off_timeout});
+}
+
 Future<void> Dpms::Enable(const Dpms::EnableRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -311,6 +333,10 @@ Future<void> Dpms::Enable(const Dpms::EnableRequest& request) {
   return connection_->SendRequest<void>(&buf, "Dpms::Enable", false);
 }
 
+Future<void> Dpms::Enable() {
+  return Dpms::Enable(Dpms::EnableRequest{});
+}
+
 Future<void> Dpms::Disable(const Dpms::DisableRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -332,6 +358,10 @@ Future<void> Dpms::Disable(const Dpms::DisableRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Dpms::Disable", false);
+}
+
+Future<void> Dpms::Disable() {
+  return Dpms::Disable(Dpms::DisableRequest{});
 }
 
 Future<void> Dpms::ForceLevel(const Dpms::ForceLevelRequest& request) {
@@ -364,6 +394,10 @@ Future<void> Dpms::ForceLevel(const Dpms::ForceLevelRequest& request) {
   return connection_->SendRequest<void>(&buf, "Dpms::ForceLevel", false);
 }
 
+Future<void> Dpms::ForceLevel(const DPMSMode& power_level) {
+  return Dpms::ForceLevel(Dpms::ForceLevelRequest{power_level});
+}
+
 Future<Dpms::InfoReply> Dpms::Info(const Dpms::InfoRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -385,6 +419,10 @@ Future<Dpms::InfoReply> Dpms::Info(const Dpms::InfoRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<Dpms::InfoReply>(&buf, "Dpms::Info", false);
+}
+
+Future<Dpms::InfoReply> Dpms::Info() {
+  return Dpms::Info(Dpms::InfoRequest{});
 }
 
 template <>

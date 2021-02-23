@@ -280,6 +280,10 @@ Future<XF86VidMode::QueryVersionReply> XF86VidMode::QueryVersion(
       &buf, "XF86VidMode::QueryVersion", false);
 }
 
+Future<XF86VidMode::QueryVersionReply> XF86VidMode::QueryVersion() {
+  return XF86VidMode::QueryVersion(XF86VidMode::QueryVersionRequest{});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<XF86VidMode::QueryVersionReply> detail::ReadReply<
@@ -348,6 +352,11 @@ Future<XF86VidMode::GetModeLineReply> XF86VidMode::GetModeLine(
 
   return connection_->SendRequest<XF86VidMode::GetModeLineReply>(
       &buf, "XF86VidMode::GetModeLine", false);
+}
+
+Future<XF86VidMode::GetModeLineReply> XF86VidMode::GetModeLine(
+    const uint16_t& screen) {
+  return XF86VidMode::GetModeLine(XF86VidMode::GetModeLineRequest{screen});
 }
 
 template <>
@@ -536,6 +545,23 @@ Future<void> XF86VidMode::ModModeLine(
                                         false);
 }
 
+Future<void> XF86VidMode::ModModeLine(const uint32_t& screen,
+                                      const uint16_t& hdisplay,
+                                      const uint16_t& hsyncstart,
+                                      const uint16_t& hsyncend,
+                                      const uint16_t& htotal,
+                                      const uint16_t& hskew,
+                                      const uint16_t& vdisplay,
+                                      const uint16_t& vsyncstart,
+                                      const uint16_t& vsyncend,
+                                      const uint16_t& vtotal,
+                                      const ModeFlag& flags,
+                                      const std::vector<uint8_t>& c_private) {
+  return XF86VidMode::ModModeLine(XF86VidMode::ModModeLineRequest{
+      screen, hdisplay, hsyncstart, hsyncend, htotal, hskew, vdisplay,
+      vsyncstart, vsyncend, vtotal, flags, c_private});
+}
+
 Future<void> XF86VidMode::SwitchMode(
     const XF86VidMode::SwitchModeRequest& request) {
   if (!connection_->Ready() || !present())
@@ -569,6 +595,11 @@ Future<void> XF86VidMode::SwitchMode(
   return connection_->SendRequest<void>(&buf, "XF86VidMode::SwitchMode", false);
 }
 
+Future<void> XF86VidMode::SwitchMode(const uint16_t& screen,
+                                     const uint16_t& zoom) {
+  return XF86VidMode::SwitchMode(XF86VidMode::SwitchModeRequest{screen, zoom});
+}
+
 Future<XF86VidMode::GetMonitorReply> XF86VidMode::GetMonitor(
     const XF86VidMode::GetMonitorRequest& request) {
   if (!connection_->Ready() || !present())
@@ -600,6 +631,11 @@ Future<XF86VidMode::GetMonitorReply> XF86VidMode::GetMonitor(
 
   return connection_->SendRequest<XF86VidMode::GetMonitorReply>(
       &buf, "XF86VidMode::GetMonitor", false);
+}
+
+Future<XF86VidMode::GetMonitorReply> XF86VidMode::GetMonitor(
+    const uint16_t& screen) {
+  return XF86VidMode::GetMonitor(XF86VidMode::GetMonitorRequest{screen});
 }
 
 template <>
@@ -726,6 +762,12 @@ Future<void> XF86VidMode::LockModeSwitch(
                                         false);
 }
 
+Future<void> XF86VidMode::LockModeSwitch(const uint16_t& screen,
+                                         const uint16_t& lock) {
+  return XF86VidMode::LockModeSwitch(
+      XF86VidMode::LockModeSwitchRequest{screen, lock});
+}
+
 Future<XF86VidMode::GetAllModeLinesReply> XF86VidMode::GetAllModeLines(
     const XF86VidMode::GetAllModeLinesRequest& request) {
   if (!connection_->Ready() || !present())
@@ -757,6 +799,12 @@ Future<XF86VidMode::GetAllModeLinesReply> XF86VidMode::GetAllModeLines(
 
   return connection_->SendRequest<XF86VidMode::GetAllModeLinesReply>(
       &buf, "XF86VidMode::GetAllModeLines", false);
+}
+
+Future<XF86VidMode::GetAllModeLinesReply> XF86VidMode::GetAllModeLines(
+    const uint16_t& screen) {
+  return XF86VidMode::GetAllModeLines(
+      XF86VidMode::GetAllModeLinesRequest{screen});
 }
 
 template <>
@@ -1009,6 +1057,41 @@ Future<void> XF86VidMode::AddModeLine(
                                         false);
 }
 
+Future<void> XF86VidMode::AddModeLine(const uint32_t& screen,
+                                      const DotClock& dotclock,
+                                      const uint16_t& hdisplay,
+                                      const uint16_t& hsyncstart,
+                                      const uint16_t& hsyncend,
+                                      const uint16_t& htotal,
+                                      const uint16_t& hskew,
+                                      const uint16_t& vdisplay,
+                                      const uint16_t& vsyncstart,
+                                      const uint16_t& vsyncend,
+                                      const uint16_t& vtotal,
+                                      const ModeFlag& flags,
+                                      const DotClock& after_dotclock,
+                                      const uint16_t& after_hdisplay,
+                                      const uint16_t& after_hsyncstart,
+                                      const uint16_t& after_hsyncend,
+                                      const uint16_t& after_htotal,
+                                      const uint16_t& after_hskew,
+                                      const uint16_t& after_vdisplay,
+                                      const uint16_t& after_vsyncstart,
+                                      const uint16_t& after_vsyncend,
+                                      const uint16_t& after_vtotal,
+                                      const ModeFlag& after_flags,
+                                      const std::vector<uint8_t>& c_private) {
+  return XF86VidMode::AddModeLine(XF86VidMode::AddModeLineRequest{
+      screen,         dotclock,         hdisplay,
+      hsyncstart,     hsyncend,         htotal,
+      hskew,          vdisplay,         vsyncstart,
+      vsyncend,       vtotal,           flags,
+      after_dotclock, after_hdisplay,   after_hsyncstart,
+      after_hsyncend, after_htotal,     after_hskew,
+      after_vdisplay, after_vsyncstart, after_vsyncend,
+      after_vtotal,   after_flags,      c_private});
+}
+
 Future<void> XF86VidMode::DeleteModeLine(
     const XF86VidMode::DeleteModeLineRequest& request) {
   if (!connection_->Ready() || !present())
@@ -1105,6 +1188,25 @@ Future<void> XF86VidMode::DeleteModeLine(
                                         false);
 }
 
+Future<void> XF86VidMode::DeleteModeLine(
+    const uint32_t& screen,
+    const DotClock& dotclock,
+    const uint16_t& hdisplay,
+    const uint16_t& hsyncstart,
+    const uint16_t& hsyncend,
+    const uint16_t& htotal,
+    const uint16_t& hskew,
+    const uint16_t& vdisplay,
+    const uint16_t& vsyncstart,
+    const uint16_t& vsyncend,
+    const uint16_t& vtotal,
+    const ModeFlag& flags,
+    const std::vector<uint8_t>& c_private) {
+  return XF86VidMode::DeleteModeLine(XF86VidMode::DeleteModeLineRequest{
+      screen, dotclock, hdisplay, hsyncstart, hsyncend, htotal, hskew, vdisplay,
+      vsyncstart, vsyncend, vtotal, flags, c_private});
+}
+
 Future<XF86VidMode::ValidateModeLineReply> XF86VidMode::ValidateModeLine(
     const XF86VidMode::ValidateModeLineRequest& request) {
   if (!connection_->Ready() || !present())
@@ -1199,6 +1301,25 @@ Future<XF86VidMode::ValidateModeLineReply> XF86VidMode::ValidateModeLine(
 
   return connection_->SendRequest<XF86VidMode::ValidateModeLineReply>(
       &buf, "XF86VidMode::ValidateModeLine", false);
+}
+
+Future<XF86VidMode::ValidateModeLineReply> XF86VidMode::ValidateModeLine(
+    const uint32_t& screen,
+    const DotClock& dotclock,
+    const uint16_t& hdisplay,
+    const uint16_t& hsyncstart,
+    const uint16_t& hsyncend,
+    const uint16_t& htotal,
+    const uint16_t& hskew,
+    const uint16_t& vdisplay,
+    const uint16_t& vsyncstart,
+    const uint16_t& vsyncend,
+    const uint16_t& vtotal,
+    const ModeFlag& flags,
+    const std::vector<uint8_t>& c_private) {
+  return XF86VidMode::ValidateModeLine(XF86VidMode::ValidateModeLineRequest{
+      screen, dotclock, hdisplay, hsyncstart, hsyncend, htotal, hskew, vdisplay,
+      vsyncstart, vsyncend, vtotal, flags, c_private});
 }
 
 template <>
@@ -1333,6 +1454,24 @@ Future<void> XF86VidMode::SwitchToMode(
                                         false);
 }
 
+Future<void> XF86VidMode::SwitchToMode(const uint32_t& screen,
+                                       const DotClock& dotclock,
+                                       const uint16_t& hdisplay,
+                                       const uint16_t& hsyncstart,
+                                       const uint16_t& hsyncend,
+                                       const uint16_t& htotal,
+                                       const uint16_t& hskew,
+                                       const uint16_t& vdisplay,
+                                       const uint16_t& vsyncstart,
+                                       const uint16_t& vsyncend,
+                                       const uint16_t& vtotal,
+                                       const ModeFlag& flags,
+                                       const std::vector<uint8_t>& c_private) {
+  return XF86VidMode::SwitchToMode(XF86VidMode::SwitchToModeRequest{
+      screen, dotclock, hdisplay, hsyncstart, hsyncend, htotal, hskew, vdisplay,
+      vsyncstart, vsyncend, vtotal, flags, c_private});
+}
+
 Future<XF86VidMode::GetViewPortReply> XF86VidMode::GetViewPort(
     const XF86VidMode::GetViewPortRequest& request) {
   if (!connection_->Ready() || !present())
@@ -1364,6 +1503,11 @@ Future<XF86VidMode::GetViewPortReply> XF86VidMode::GetViewPort(
 
   return connection_->SendRequest<XF86VidMode::GetViewPortReply>(
       &buf, "XF86VidMode::GetViewPort", false);
+}
+
+Future<XF86VidMode::GetViewPortReply> XF86VidMode::GetViewPort(
+    const uint16_t& screen) {
+  return XF86VidMode::GetViewPort(XF86VidMode::GetViewPortRequest{screen});
 }
 
 template <>
@@ -1447,6 +1591,13 @@ Future<void> XF86VidMode::SetViewPort(
                                         false);
 }
 
+Future<void> XF86VidMode::SetViewPort(const uint16_t& screen,
+                                      const uint32_t& x,
+                                      const uint32_t& y) {
+  return XF86VidMode::SetViewPort(
+      XF86VidMode::SetViewPortRequest{screen, x, y});
+}
+
 Future<XF86VidMode::GetDotClocksReply> XF86VidMode::GetDotClocks(
     const XF86VidMode::GetDotClocksRequest& request) {
   if (!connection_->Ready() || !present())
@@ -1478,6 +1629,11 @@ Future<XF86VidMode::GetDotClocksReply> XF86VidMode::GetDotClocks(
 
   return connection_->SendRequest<XF86VidMode::GetDotClocksReply>(
       &buf, "XF86VidMode::GetDotClocks", false);
+}
+
+Future<XF86VidMode::GetDotClocksReply> XF86VidMode::GetDotClocks(
+    const uint16_t& screen) {
+  return XF86VidMode::GetDotClocks(XF86VidMode::GetDotClocksRequest{screen});
 }
 
 template <>
@@ -1569,6 +1725,12 @@ Future<void> XF86VidMode::SetClientVersion(
                                         false);
 }
 
+Future<void> XF86VidMode::SetClientVersion(const uint16_t& major,
+                                           const uint16_t& minor) {
+  return XF86VidMode::SetClientVersion(
+      XF86VidMode::SetClientVersionRequest{major, minor});
+}
+
 Future<void> XF86VidMode::SetGamma(
     const XF86VidMode::SetGammaRequest& request) {
   if (!connection_->Ready() || !present())
@@ -1616,6 +1778,14 @@ Future<void> XF86VidMode::SetGamma(
   return connection_->SendRequest<void>(&buf, "XF86VidMode::SetGamma", false);
 }
 
+Future<void> XF86VidMode::SetGamma(const uint16_t& screen,
+                                   const uint32_t& red,
+                                   const uint32_t& green,
+                                   const uint32_t& blue) {
+  return XF86VidMode::SetGamma(
+      XF86VidMode::SetGammaRequest{screen, red, green, blue});
+}
+
 Future<XF86VidMode::GetGammaReply> XF86VidMode::GetGamma(
     const XF86VidMode::GetGammaRequest& request) {
   if (!connection_->Ready() || !present())
@@ -1647,6 +1817,11 @@ Future<XF86VidMode::GetGammaReply> XF86VidMode::GetGamma(
 
   return connection_->SendRequest<XF86VidMode::GetGammaReply>(
       &buf, "XF86VidMode::GetGamma", false);
+}
+
+Future<XF86VidMode::GetGammaReply> XF86VidMode::GetGamma(
+    const uint16_t& screen) {
+  return XF86VidMode::GetGamma(XF86VidMode::GetGammaRequest{screen});
 }
 
 template <>
@@ -1725,6 +1900,13 @@ Future<XF86VidMode::GetGammaRampReply> XF86VidMode::GetGammaRamp(
 
   return connection_->SendRequest<XF86VidMode::GetGammaRampReply>(
       &buf, "XF86VidMode::GetGammaRamp", false);
+}
+
+Future<XF86VidMode::GetGammaRampReply> XF86VidMode::GetGammaRamp(
+    const uint16_t& screen,
+    const uint16_t& size) {
+  return XF86VidMode::GetGammaRamp(
+      XF86VidMode::GetGammaRampRequest{screen, size});
 }
 
 template <>
@@ -1851,6 +2033,15 @@ Future<void> XF86VidMode::SetGammaRamp(
                                         false);
 }
 
+Future<void> XF86VidMode::SetGammaRamp(const uint16_t& screen,
+                                       const uint16_t& size,
+                                       const std::vector<uint16_t>& red,
+                                       const std::vector<uint16_t>& green,
+                                       const std::vector<uint16_t>& blue) {
+  return XF86VidMode::SetGammaRamp(
+      XF86VidMode::SetGammaRampRequest{screen, size, red, green, blue});
+}
+
 Future<XF86VidMode::GetGammaRampSizeReply> XF86VidMode::GetGammaRampSize(
     const XF86VidMode::GetGammaRampSizeRequest& request) {
   if (!connection_->Ready() || !present())
@@ -1882,6 +2073,12 @@ Future<XF86VidMode::GetGammaRampSizeReply> XF86VidMode::GetGammaRampSize(
 
   return connection_->SendRequest<XF86VidMode::GetGammaRampSizeReply>(
       &buf, "XF86VidMode::GetGammaRampSize", false);
+}
+
+Future<XF86VidMode::GetGammaRampSizeReply> XF86VidMode::GetGammaRampSize(
+    const uint16_t& screen) {
+  return XF86VidMode::GetGammaRampSize(
+      XF86VidMode::GetGammaRampSizeRequest{screen});
 }
 
 template <>
@@ -1951,6 +2148,12 @@ Future<XF86VidMode::GetPermissionsReply> XF86VidMode::GetPermissions(
 
   return connection_->SendRequest<XF86VidMode::GetPermissionsReply>(
       &buf, "XF86VidMode::GetPermissions", false);
+}
+
+Future<XF86VidMode::GetPermissionsReply> XF86VidMode::GetPermissions(
+    const uint16_t& screen) {
+  return XF86VidMode::GetPermissions(
+      XF86VidMode::GetPermissionsRequest{screen});
 }
 
 template <>

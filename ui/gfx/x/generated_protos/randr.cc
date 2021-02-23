@@ -490,6 +490,13 @@ Future<RandR::QueryVersionReply> RandR::QueryVersion(
       &buf, "RandR::QueryVersion", false);
 }
 
+Future<RandR::QueryVersionReply> RandR::QueryVersion(
+    const uint32_t& major_version,
+    const uint32_t& minor_version) {
+  return RandR::QueryVersion(
+      RandR::QueryVersionRequest{major_version, minor_version});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<RandR::QueryVersionReply> detail::ReadReply<
@@ -585,6 +592,17 @@ Future<RandR::SetScreenConfigReply> RandR::SetScreenConfig(
       &buf, "RandR::SetScreenConfig", false);
 }
 
+Future<RandR::SetScreenConfigReply> RandR::SetScreenConfig(
+    const Window& window,
+    const Time& timestamp,
+    const Time& config_timestamp,
+    const uint16_t& sizeID,
+    const Rotation& rotation,
+    const uint16_t& rate) {
+  return RandR::SetScreenConfig(RandR::SetScreenConfigRequest{
+      window, timestamp, config_timestamp, sizeID, rotation, rate});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<RandR::SetScreenConfigReply> detail::ReadReply<
@@ -675,6 +693,11 @@ Future<void> RandR::SelectInput(const RandR::SelectInputRequest& request) {
   return connection_->SendRequest<void>(&buf, "RandR::SelectInput", false);
 }
 
+Future<void> RandR::SelectInput(const Window& window,
+                                const NotifyMask& enable) {
+  return RandR::SelectInput(RandR::SelectInputRequest{window, enable});
+}
+
 Future<RandR::GetScreenInfoReply> RandR::GetScreenInfo(
     const RandR::GetScreenInfoRequest& request) {
   if (!connection_->Ready() || !present())
@@ -703,6 +726,10 @@ Future<RandR::GetScreenInfoReply> RandR::GetScreenInfo(
 
   return connection_->SendRequest<RandR::GetScreenInfoReply>(
       &buf, "RandR::GetScreenInfo", false);
+}
+
+Future<RandR::GetScreenInfoReply> RandR::GetScreenInfo(const Window& window) {
+  return RandR::GetScreenInfo(RandR::GetScreenInfoRequest{window});
 }
 
 template <>
@@ -853,6 +880,11 @@ Future<RandR::GetScreenSizeRangeReply> RandR::GetScreenSizeRange(
       &buf, "RandR::GetScreenSizeRange", false);
 }
 
+Future<RandR::GetScreenSizeRangeReply> RandR::GetScreenSizeRange(
+    const Window& window) {
+  return RandR::GetScreenSizeRange(RandR::GetScreenSizeRangeRequest{window});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<RandR::GetScreenSizeRangeReply> detail::ReadReply<
@@ -945,6 +977,15 @@ Future<void> RandR::SetScreenSize(const RandR::SetScreenSizeRequest& request) {
   return connection_->SendRequest<void>(&buf, "RandR::SetScreenSize", false);
 }
 
+Future<void> RandR::SetScreenSize(const Window& window,
+                                  const uint16_t& width,
+                                  const uint16_t& height,
+                                  const uint32_t& mm_width,
+                                  const uint32_t& mm_height) {
+  return RandR::SetScreenSize(
+      RandR::SetScreenSizeRequest{window, width, height, mm_width, mm_height});
+}
+
 Future<RandR::GetScreenResourcesReply> RandR::GetScreenResources(
     const RandR::GetScreenResourcesRequest& request) {
   if (!connection_->Ready() || !present())
@@ -973,6 +1014,11 @@ Future<RandR::GetScreenResourcesReply> RandR::GetScreenResources(
 
   return connection_->SendRequest<RandR::GetScreenResourcesReply>(
       &buf, "RandR::GetScreenResources", false);
+}
+
+Future<RandR::GetScreenResourcesReply> RandR::GetScreenResources(
+    const Window& window) {
+  return RandR::GetScreenResources(RandR::GetScreenResourcesRequest{window});
 }
 
 template <>
@@ -1155,6 +1201,13 @@ Future<RandR::GetOutputInfoReply> RandR::GetOutputInfo(
       &buf, "RandR::GetOutputInfo", false);
 }
 
+Future<RandR::GetOutputInfoReply> RandR::GetOutputInfo(
+    const Output& output,
+    const Time& config_timestamp) {
+  return RandR::GetOutputInfo(
+      RandR::GetOutputInfoRequest{output, config_timestamp});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<RandR::GetOutputInfoReply> detail::ReadReply<
@@ -1300,6 +1353,12 @@ Future<RandR::ListOutputPropertiesReply> RandR::ListOutputProperties(
       &buf, "RandR::ListOutputProperties", false);
 }
 
+Future<RandR::ListOutputPropertiesReply> RandR::ListOutputProperties(
+    const Output& output) {
+  return RandR::ListOutputProperties(
+      RandR::ListOutputPropertiesRequest{output});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<RandR::ListOutputPropertiesReply> detail::ReadReply<
@@ -1377,6 +1436,13 @@ Future<RandR::QueryOutputPropertyReply> RandR::QueryOutputProperty(
 
   return connection_->SendRequest<RandR::QueryOutputPropertyReply>(
       &buf, "RandR::QueryOutputProperty", false);
+}
+
+Future<RandR::QueryOutputPropertyReply> RandR::QueryOutputProperty(
+    const Output& output,
+    const Atom& property) {
+  return RandR::QueryOutputProperty(
+      RandR::QueryOutputPropertyRequest{output, property});
 }
 
 template <>
@@ -1486,6 +1552,16 @@ Future<void> RandR::ConfigureOutputProperty(
                                         false);
 }
 
+Future<void> RandR::ConfigureOutputProperty(
+    const Output& output,
+    const Atom& property,
+    const uint8_t& pending,
+    const uint8_t& range,
+    const std::vector<int32_t>& values) {
+  return RandR::ConfigureOutputProperty(RandR::ConfigureOutputPropertyRequest{
+      output, property, pending, range, values});
+}
+
 Future<void> RandR::ChangeOutputProperty(
     const RandR::ChangeOutputPropertyRequest& request) {
   if (!connection_->Ready() || !present())
@@ -1546,6 +1622,18 @@ Future<void> RandR::ChangeOutputProperty(
                                         false);
 }
 
+Future<void> RandR::ChangeOutputProperty(
+    const Output& output,
+    const Atom& property,
+    const Atom& type,
+    const uint8_t& format,
+    const PropMode& mode,
+    const uint32_t& num_units,
+    const scoped_refptr<base::RefCountedMemory>& data) {
+  return RandR::ChangeOutputProperty(RandR::ChangeOutputPropertyRequest{
+      output, property, type, format, mode, num_units, data});
+}
+
 Future<void> RandR::DeleteOutputProperty(
     const RandR::DeleteOutputPropertyRequest& request) {
   if (!connection_->Ready() || !present())
@@ -1578,6 +1666,12 @@ Future<void> RandR::DeleteOutputProperty(
 
   return connection_->SendRequest<void>(&buf, "RandR::DeleteOutputProperty",
                                         false);
+}
+
+Future<void> RandR::DeleteOutputProperty(const Output& output,
+                                         const Atom& property) {
+  return RandR::DeleteOutputProperty(
+      RandR::DeleteOutputPropertyRequest{output, property});
 }
 
 Future<RandR::GetOutputPropertyReply> RandR::GetOutputProperty(
@@ -1635,6 +1729,18 @@ Future<RandR::GetOutputPropertyReply> RandR::GetOutputProperty(
 
   return connection_->SendRequest<RandR::GetOutputPropertyReply>(
       &buf, "RandR::GetOutputProperty", false);
+}
+
+Future<RandR::GetOutputPropertyReply> RandR::GetOutputProperty(
+    const Output& output,
+    const Atom& property,
+    const Atom& type,
+    const uint32_t& long_offset,
+    const uint32_t& long_length,
+    const uint8_t& c_delete,
+    const uint8_t& pending) {
+  return RandR::GetOutputProperty(RandR::GetOutputPropertyRequest{
+      output, property, type, long_offset, long_length, c_delete, pending});
 }
 
 template <>
@@ -1789,6 +1895,12 @@ Future<RandR::CreateModeReply> RandR::CreateMode(
       &buf, "RandR::CreateMode", false);
 }
 
+Future<RandR::CreateModeReply> RandR::CreateMode(const Window& window,
+                                                 const ModeInfo& mode_info,
+                                                 const std::string& name) {
+  return RandR::CreateMode(RandR::CreateModeRequest{window, mode_info, name});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<RandR::CreateModeReply> detail::ReadReply<
@@ -1853,6 +1965,10 @@ Future<void> RandR::DestroyMode(const RandR::DestroyModeRequest& request) {
   return connection_->SendRequest<void>(&buf, "RandR::DestroyMode", false);
 }
 
+Future<void> RandR::DestroyMode(const Mode& mode) {
+  return RandR::DestroyMode(RandR::DestroyModeRequest{mode});
+}
+
 Future<void> RandR::AddOutputMode(const RandR::AddOutputModeRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -1883,6 +1999,10 @@ Future<void> RandR::AddOutputMode(const RandR::AddOutputModeRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "RandR::AddOutputMode", false);
+}
+
+Future<void> RandR::AddOutputMode(const Output& output, const Mode& mode) {
+  return RandR::AddOutputMode(RandR::AddOutputModeRequest{output, mode});
 }
 
 Future<void> RandR::DeleteOutputMode(
@@ -1918,6 +2038,10 @@ Future<void> RandR::DeleteOutputMode(
   return connection_->SendRequest<void>(&buf, "RandR::DeleteOutputMode", false);
 }
 
+Future<void> RandR::DeleteOutputMode(const Output& output, const Mode& mode) {
+  return RandR::DeleteOutputMode(RandR::DeleteOutputModeRequest{output, mode});
+}
+
 Future<RandR::GetCrtcInfoReply> RandR::GetCrtcInfo(
     const RandR::GetCrtcInfoRequest& request) {
   if (!connection_->Ready() || !present())
@@ -1950,6 +2074,12 @@ Future<RandR::GetCrtcInfoReply> RandR::GetCrtcInfo(
 
   return connection_->SendRequest<RandR::GetCrtcInfoReply>(
       &buf, "RandR::GetCrtcInfo", false);
+}
+
+Future<RandR::GetCrtcInfoReply> RandR::GetCrtcInfo(
+    const Crtc& crtc,
+    const Time& config_timestamp) {
+  return RandR::GetCrtcInfo(RandR::GetCrtcInfoRequest{crtc, config_timestamp});
 }
 
 template <>
@@ -2114,6 +2244,19 @@ Future<RandR::SetCrtcConfigReply> RandR::SetCrtcConfig(
       &buf, "RandR::SetCrtcConfig", false);
 }
 
+Future<RandR::SetCrtcConfigReply> RandR::SetCrtcConfig(
+    const Crtc& crtc,
+    const Time& timestamp,
+    const Time& config_timestamp,
+    const int16_t& x,
+    const int16_t& y,
+    const Mode& mode,
+    const Rotation& rotation,
+    const std::vector<Output>& outputs) {
+  return RandR::SetCrtcConfig(RandR::SetCrtcConfigRequest{
+      crtc, timestamp, config_timestamp, x, y, mode, rotation, outputs});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<RandR::SetCrtcConfigReply> detail::ReadReply<
@@ -2183,6 +2326,10 @@ Future<RandR::GetCrtcGammaSizeReply> RandR::GetCrtcGammaSize(
       &buf, "RandR::GetCrtcGammaSize", false);
 }
 
+Future<RandR::GetCrtcGammaSizeReply> RandR::GetCrtcGammaSize(const Crtc& crtc) {
+  return RandR::GetCrtcGammaSize(RandR::GetCrtcGammaSizeRequest{crtc});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<RandR::GetCrtcGammaSizeReply> detail::ReadReply<
@@ -2247,6 +2394,10 @@ Future<RandR::GetCrtcGammaReply> RandR::GetCrtcGamma(
 
   return connection_->SendRequest<RandR::GetCrtcGammaReply>(
       &buf, "RandR::GetCrtcGamma", false);
+}
+
+Future<RandR::GetCrtcGammaReply> RandR::GetCrtcGamma(const Crtc& crtc) {
+  return RandR::GetCrtcGamma(RandR::GetCrtcGammaRequest{crtc});
 }
 
 template <>
@@ -2375,6 +2526,14 @@ Future<void> RandR::SetCrtcGamma(const RandR::SetCrtcGammaRequest& request) {
   return connection_->SendRequest<void>(&buf, "RandR::SetCrtcGamma", false);
 }
 
+Future<void> RandR::SetCrtcGamma(const Crtc& crtc,
+                                 const std::vector<uint16_t>& red,
+                                 const std::vector<uint16_t>& green,
+                                 const std::vector<uint16_t>& blue) {
+  return RandR::SetCrtcGamma(
+      RandR::SetCrtcGammaRequest{crtc, red, green, blue});
+}
+
 Future<RandR::GetScreenResourcesCurrentReply> RandR::GetScreenResourcesCurrent(
     const RandR::GetScreenResourcesCurrentRequest& request) {
   if (!connection_->Ready() || !present())
@@ -2403,6 +2562,12 @@ Future<RandR::GetScreenResourcesCurrentReply> RandR::GetScreenResourcesCurrent(
 
   return connection_->SendRequest<RandR::GetScreenResourcesCurrentReply>(
       &buf, "RandR::GetScreenResourcesCurrent", false);
+}
+
+Future<RandR::GetScreenResourcesCurrentReply> RandR::GetScreenResourcesCurrent(
+    const Window& window) {
+  return RandR::GetScreenResourcesCurrent(
+      RandR::GetScreenResourcesCurrentRequest{window});
 }
 
 template <>
@@ -2650,6 +2815,15 @@ Future<void> RandR::SetCrtcTransform(
   return connection_->SendRequest<void>(&buf, "RandR::SetCrtcTransform", false);
 }
 
+Future<void> RandR::SetCrtcTransform(
+    const Crtc& crtc,
+    const Render::Transform& transform,
+    const std::string& filter_name,
+    const std::vector<Render::Fixed>& filter_params) {
+  return RandR::SetCrtcTransform(RandR::SetCrtcTransformRequest{
+      crtc, transform, filter_name, filter_params});
+}
+
 Future<RandR::GetCrtcTransformReply> RandR::GetCrtcTransform(
     const RandR::GetCrtcTransformRequest& request) {
   if (!connection_->Ready() || !present())
@@ -2678,6 +2852,10 @@ Future<RandR::GetCrtcTransformReply> RandR::GetCrtcTransform(
 
   return connection_->SendRequest<RandR::GetCrtcTransformReply>(
       &buf, "RandR::GetCrtcTransform", false);
+}
+
+Future<RandR::GetCrtcTransformReply> RandR::GetCrtcTransform(const Crtc& crtc) {
+  return RandR::GetCrtcTransform(RandR::GetCrtcTransformRequest{crtc});
 }
 
 template <>
@@ -2889,6 +3067,10 @@ Future<RandR::GetPanningReply> RandR::GetPanning(
       &buf, "RandR::GetPanning", false);
 }
 
+Future<RandR::GetPanningReply> RandR::GetPanning(const Crtc& crtc) {
+  return RandR::GetPanning(RandR::GetPanningRequest{crtc});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<RandR::GetPanningReply> detail::ReadReply<
@@ -3055,6 +3237,26 @@ Future<RandR::SetPanningReply> RandR::SetPanning(
       &buf, "RandR::SetPanning", false);
 }
 
+Future<RandR::SetPanningReply> RandR::SetPanning(const Crtc& crtc,
+                                                 const Time& timestamp,
+                                                 const uint16_t& left,
+                                                 const uint16_t& top,
+                                                 const uint16_t& width,
+                                                 const uint16_t& height,
+                                                 const uint16_t& track_left,
+                                                 const uint16_t& track_top,
+                                                 const uint16_t& track_width,
+                                                 const uint16_t& track_height,
+                                                 const int16_t& border_left,
+                                                 const int16_t& border_top,
+                                                 const int16_t& border_right,
+                                                 const int16_t& border_bottom) {
+  return RandR::SetPanning(RandR::SetPanningRequest{
+      crtc, timestamp, left, top, width, height, track_left, track_top,
+      track_width, track_height, border_left, border_top, border_right,
+      border_bottom});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<RandR::SetPanningReply> detail::ReadReply<
@@ -3124,6 +3326,12 @@ Future<void> RandR::SetOutputPrimary(
   return connection_->SendRequest<void>(&buf, "RandR::SetOutputPrimary", false);
 }
 
+Future<void> RandR::SetOutputPrimary(const Window& window,
+                                     const Output& output) {
+  return RandR::SetOutputPrimary(
+      RandR::SetOutputPrimaryRequest{window, output});
+}
+
 Future<RandR::GetOutputPrimaryReply> RandR::GetOutputPrimary(
     const RandR::GetOutputPrimaryRequest& request) {
   if (!connection_->Ready() || !present())
@@ -3152,6 +3360,11 @@ Future<RandR::GetOutputPrimaryReply> RandR::GetOutputPrimary(
 
   return connection_->SendRequest<RandR::GetOutputPrimaryReply>(
       &buf, "RandR::GetOutputPrimary", false);
+}
+
+Future<RandR::GetOutputPrimaryReply> RandR::GetOutputPrimary(
+    const Window& window) {
+  return RandR::GetOutputPrimary(RandR::GetOutputPrimaryRequest{window});
 }
 
 template <>
@@ -3215,6 +3428,10 @@ Future<RandR::GetProvidersReply> RandR::GetProviders(
 
   return connection_->SendRequest<RandR::GetProvidersReply>(
       &buf, "RandR::GetProviders", false);
+}
+
+Future<RandR::GetProvidersReply> RandR::GetProviders(const Window& window) {
+  return RandR::GetProviders(RandR::GetProvidersRequest{window});
 }
 
 template <>
@@ -3298,6 +3515,13 @@ Future<RandR::GetProviderInfoReply> RandR::GetProviderInfo(
 
   return connection_->SendRequest<RandR::GetProviderInfoReply>(
       &buf, "RandR::GetProviderInfo", false);
+}
+
+Future<RandR::GetProviderInfoReply> RandR::GetProviderInfo(
+    const Provider& provider,
+    const Time& config_timestamp) {
+  return RandR::GetProviderInfo(
+      RandR::GetProviderInfoRequest{provider, config_timestamp});
 }
 
 template <>
@@ -3441,6 +3665,13 @@ Future<void> RandR::SetProviderOffloadSink(
                                         false);
 }
 
+Future<void> RandR::SetProviderOffloadSink(const Provider& provider,
+                                           const Provider& sink_provider,
+                                           const Time& config_timestamp) {
+  return RandR::SetProviderOffloadSink(RandR::SetProviderOffloadSinkRequest{
+      provider, sink_provider, config_timestamp});
+}
+
 Future<void> RandR::SetProviderOutputSource(
     const RandR::SetProviderOutputSourceRequest& request) {
   if (!connection_->Ready() || !present())
@@ -3479,6 +3710,13 @@ Future<void> RandR::SetProviderOutputSource(
                                         false);
 }
 
+Future<void> RandR::SetProviderOutputSource(const Provider& provider,
+                                            const Provider& source_provider,
+                                            const Time& config_timestamp) {
+  return RandR::SetProviderOutputSource(RandR::SetProviderOutputSourceRequest{
+      provider, source_provider, config_timestamp});
+}
+
 Future<RandR::ListProviderPropertiesReply> RandR::ListProviderProperties(
     const RandR::ListProviderPropertiesRequest& request) {
   if (!connection_->Ready() || !present())
@@ -3507,6 +3745,12 @@ Future<RandR::ListProviderPropertiesReply> RandR::ListProviderProperties(
 
   return connection_->SendRequest<RandR::ListProviderPropertiesReply>(
       &buf, "RandR::ListProviderProperties", false);
+}
+
+Future<RandR::ListProviderPropertiesReply> RandR::ListProviderProperties(
+    const Provider& provider) {
+  return RandR::ListProviderProperties(
+      RandR::ListProviderPropertiesRequest{provider});
 }
 
 template <>
@@ -3586,6 +3830,13 @@ Future<RandR::QueryProviderPropertyReply> RandR::QueryProviderProperty(
 
   return connection_->SendRequest<RandR::QueryProviderPropertyReply>(
       &buf, "RandR::QueryProviderProperty", false);
+}
+
+Future<RandR::QueryProviderPropertyReply> RandR::QueryProviderProperty(
+    const Provider& provider,
+    const Atom& property) {
+  return RandR::QueryProviderProperty(
+      RandR::QueryProviderPropertyRequest{provider, property});
 }
 
 template <>
@@ -3695,6 +3946,17 @@ Future<void> RandR::ConfigureProviderProperty(
       &buf, "RandR::ConfigureProviderProperty", false);
 }
 
+Future<void> RandR::ConfigureProviderProperty(
+    const Provider& provider,
+    const Atom& property,
+    const uint8_t& pending,
+    const uint8_t& range,
+    const std::vector<int32_t>& values) {
+  return RandR::ConfigureProviderProperty(
+      RandR::ConfigureProviderPropertyRequest{provider, property, pending,
+                                              range, values});
+}
+
 Future<void> RandR::ChangeProviderProperty(
     const RandR::ChangeProviderPropertyRequest& request) {
   if (!connection_->Ready() || !present())
@@ -3753,6 +4015,18 @@ Future<void> RandR::ChangeProviderProperty(
                                         false);
 }
 
+Future<void> RandR::ChangeProviderProperty(
+    const Provider& provider,
+    const Atom& property,
+    const Atom& type,
+    const uint8_t& format,
+    const uint8_t& mode,
+    const uint32_t& num_items,
+    const scoped_refptr<base::RefCountedMemory>& data) {
+  return RandR::ChangeProviderProperty(RandR::ChangeProviderPropertyRequest{
+      provider, property, type, format, mode, num_items, data});
+}
+
 Future<void> RandR::DeleteProviderProperty(
     const RandR::DeleteProviderPropertyRequest& request) {
   if (!connection_->Ready() || !present())
@@ -3785,6 +4059,12 @@ Future<void> RandR::DeleteProviderProperty(
 
   return connection_->SendRequest<void>(&buf, "RandR::DeleteProviderProperty",
                                         false);
+}
+
+Future<void> RandR::DeleteProviderProperty(const Provider& provider,
+                                           const Atom& property) {
+  return RandR::DeleteProviderProperty(
+      RandR::DeleteProviderPropertyRequest{provider, property});
 }
 
 Future<RandR::GetProviderPropertyReply> RandR::GetProviderProperty(
@@ -3842,6 +4122,18 @@ Future<RandR::GetProviderPropertyReply> RandR::GetProviderProperty(
 
   return connection_->SendRequest<RandR::GetProviderPropertyReply>(
       &buf, "RandR::GetProviderProperty", false);
+}
+
+Future<RandR::GetProviderPropertyReply> RandR::GetProviderProperty(
+    const Provider& provider,
+    const Atom& property,
+    const Atom& type,
+    const uint32_t& long_offset,
+    const uint32_t& long_length,
+    const uint8_t& c_delete,
+    const uint8_t& pending) {
+  return RandR::GetProviderProperty(RandR::GetProviderPropertyRequest{
+      provider, property, type, long_offset, long_length, c_delete, pending});
 }
 
 template <>
@@ -3926,6 +4218,11 @@ Future<RandR::GetMonitorsReply> RandR::GetMonitors(
 
   return connection_->SendRequest<RandR::GetMonitorsReply>(
       &buf, "RandR::GetMonitors", false);
+}
+
+Future<RandR::GetMonitorsReply> RandR::GetMonitors(const Window& window,
+                                                   const uint8_t& get_active) {
+  return RandR::GetMonitors(RandR::GetMonitorsRequest{window, get_active});
 }
 
 template <>
@@ -4114,6 +4411,11 @@ Future<void> RandR::SetMonitor(const RandR::SetMonitorRequest& request) {
   return connection_->SendRequest<void>(&buf, "RandR::SetMonitor", false);
 }
 
+Future<void> RandR::SetMonitor(const Window& window,
+                               const MonitorInfo& monitorinfo) {
+  return RandR::SetMonitor(RandR::SetMonitorRequest{window, monitorinfo});
+}
+
 Future<void> RandR::DeleteMonitor(const RandR::DeleteMonitorRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -4144,6 +4446,10 @@ Future<void> RandR::DeleteMonitor(const RandR::DeleteMonitorRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "RandR::DeleteMonitor", false);
+}
+
+Future<void> RandR::DeleteMonitor(const Window& window, const Atom& name) {
+  return RandR::DeleteMonitor(RandR::DeleteMonitorRequest{window, name});
 }
 
 Future<RandR::CreateLeaseReply> RandR::CreateLease(
@@ -4208,6 +4514,15 @@ Future<RandR::CreateLeaseReply> RandR::CreateLease(
       &buf, "RandR::CreateLease", true);
 }
 
+Future<RandR::CreateLeaseReply> RandR::CreateLease(
+    const Window& window,
+    const Lease& lid,
+    const std::vector<Crtc>& crtcs,
+    const std::vector<Output>& outputs) {
+  return RandR::CreateLease(
+      RandR::CreateLeaseRequest{window, lid, crtcs, outputs});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<RandR::CreateLeaseReply> detail::ReadReply<
@@ -4234,7 +4549,7 @@ std::unique_ptr<RandR::CreateLeaseReply> detail::ReadReply<
   Read(&length, &buf);
 
   // master_fd
-  master_fd = base::ScopedFD(buf.TakeFd());
+  master_fd = RefCountedFD(buf.TakeFd());
 
   // pad0
   Pad(&buf, 24);
@@ -4275,6 +4590,10 @@ Future<void> RandR::FreeLease(const RandR::FreeLeaseRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "RandR::FreeLease", false);
+}
+
+Future<void> RandR::FreeLease(const Lease& lid, const uint8_t& terminate) {
+  return RandR::FreeLease(RandR::FreeLeaseRequest{lid, terminate});
 }
 
 }  // namespace x11

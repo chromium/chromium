@@ -53,6 +53,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "ui/gfx/x/error.h"
+#include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
 
 namespace x11 {
@@ -166,6 +167,8 @@ class COMPONENT_EXPORT(X11) XPrint {
   Future<PrintQueryVersionReply> PrintQueryVersion(
       const PrintQueryVersionRequest& request);
 
+  Future<PrintQueryVersionReply> PrintQueryVersion();
+
   struct PrintGetPrinterListRequest {
     std::vector<String8> printer_name{};
     std::vector<String8> locale{};
@@ -181,12 +184,18 @@ class COMPONENT_EXPORT(X11) XPrint {
   Future<PrintGetPrinterListReply> PrintGetPrinterList(
       const PrintGetPrinterListRequest& request);
 
+  Future<PrintGetPrinterListReply> PrintGetPrinterList(
+      const std::vector<String8>& printer_name = {},
+      const std::vector<String8>& locale = {});
+
   struct PrintRehashPrinterListRequest {};
 
   using PrintRehashPrinterListResponse = Response<void>;
 
   Future<void> PrintRehashPrinterList(
       const PrintRehashPrinterListRequest& request);
+
+  Future<void> PrintRehashPrinterList();
 
   struct CreateContextRequest {
     uint32_t context_id{};
@@ -198,6 +207,10 @@ class COMPONENT_EXPORT(X11) XPrint {
 
   Future<void> CreateContext(const CreateContextRequest& request);
 
+  Future<void> CreateContext(const uint32_t& context_id = {},
+                             const std::vector<String8>& printerName = {},
+                             const std::vector<String8>& locale = {});
+
   struct PrintSetContextRequest {
     uint32_t context{};
   };
@@ -205,6 +218,8 @@ class COMPONENT_EXPORT(X11) XPrint {
   using PrintSetContextResponse = Response<void>;
 
   Future<void> PrintSetContext(const PrintSetContextRequest& request);
+
+  Future<void> PrintSetContext(const uint32_t& context = {});
 
   struct PrintGetContextRequest {};
 
@@ -218,6 +233,8 @@ class COMPONENT_EXPORT(X11) XPrint {
   Future<PrintGetContextReply> PrintGetContext(
       const PrintGetContextRequest& request);
 
+  Future<PrintGetContextReply> PrintGetContext();
+
   struct PrintDestroyContextRequest {
     uint32_t context{};
   };
@@ -225,6 +242,8 @@ class COMPONENT_EXPORT(X11) XPrint {
   using PrintDestroyContextResponse = Response<void>;
 
   Future<void> PrintDestroyContext(const PrintDestroyContextRequest& request);
+
+  Future<void> PrintDestroyContext(const uint32_t& context = {});
 
   struct PrintGetScreenOfContextRequest {};
 
@@ -239,6 +258,8 @@ class COMPONENT_EXPORT(X11) XPrint {
   Future<PrintGetScreenOfContextReply> PrintGetScreenOfContext(
       const PrintGetScreenOfContextRequest& request);
 
+  Future<PrintGetScreenOfContextReply> PrintGetScreenOfContext();
+
   struct PrintStartJobRequest {
     uint8_t output_mode{};
   };
@@ -246,6 +267,8 @@ class COMPONENT_EXPORT(X11) XPrint {
   using PrintStartJobResponse = Response<void>;
 
   Future<void> PrintStartJob(const PrintStartJobRequest& request);
+
+  Future<void> PrintStartJob(const uint8_t& output_mode = {});
 
   struct PrintEndJobRequest {
     uint8_t cancel{};
@@ -255,6 +278,8 @@ class COMPONENT_EXPORT(X11) XPrint {
 
   Future<void> PrintEndJob(const PrintEndJobRequest& request);
 
+  Future<void> PrintEndJob(const uint8_t& cancel = {});
+
   struct PrintStartDocRequest {
     uint8_t driver_mode{};
   };
@@ -263,6 +288,8 @@ class COMPONENT_EXPORT(X11) XPrint {
 
   Future<void> PrintStartDoc(const PrintStartDocRequest& request);
 
+  Future<void> PrintStartDoc(const uint8_t& driver_mode = {});
+
   struct PrintEndDocRequest {
     uint8_t cancel{};
   };
@@ -270,6 +297,8 @@ class COMPONENT_EXPORT(X11) XPrint {
   using PrintEndDocResponse = Response<void>;
 
   Future<void> PrintEndDoc(const PrintEndDocRequest& request);
+
+  Future<void> PrintEndDoc(const uint8_t& cancel = {});
 
   struct PrintPutDocumentDataRequest {
     Drawable drawable{};
@@ -281,6 +310,11 @@ class COMPONENT_EXPORT(X11) XPrint {
   using PrintPutDocumentDataResponse = Response<void>;
 
   Future<void> PrintPutDocumentData(const PrintPutDocumentDataRequest& request);
+
+  Future<void> PrintPutDocumentData(const Drawable& drawable = {},
+                                    const std::vector<uint8_t>& data = {},
+                                    const std::vector<String8>& doc_format = {},
+                                    const std::vector<String8>& options = {});
 
   struct PrintGetDocumentDataRequest {
     PContext context{};
@@ -299,6 +333,10 @@ class COMPONENT_EXPORT(X11) XPrint {
   Future<PrintGetDocumentDataReply> PrintGetDocumentData(
       const PrintGetDocumentDataRequest& request);
 
+  Future<PrintGetDocumentDataReply> PrintGetDocumentData(
+      const PContext& context = {},
+      const uint32_t& max_bytes = {});
+
   struct PrintStartPageRequest {
     Window window{};
   };
@@ -306,6 +344,8 @@ class COMPONENT_EXPORT(X11) XPrint {
   using PrintStartPageResponse = Response<void>;
 
   Future<void> PrintStartPage(const PrintStartPageRequest& request);
+
+  Future<void> PrintStartPage(const Window& window = {});
 
   struct PrintEndPageRequest {
     uint8_t cancel{};
@@ -315,6 +355,8 @@ class COMPONENT_EXPORT(X11) XPrint {
 
   Future<void> PrintEndPage(const PrintEndPageRequest& request);
 
+  Future<void> PrintEndPage(const uint8_t& cancel = {});
+
   struct PrintSelectInputRequest {
     PContext context{};
     uint32_t event_mask{};
@@ -323,6 +365,9 @@ class COMPONENT_EXPORT(X11) XPrint {
   using PrintSelectInputResponse = Response<void>;
 
   Future<void> PrintSelectInput(const PrintSelectInputRequest& request);
+
+  Future<void> PrintSelectInput(const PContext& context = {},
+                                const uint32_t& event_mask = {});
 
   struct PrintInputSelectedRequest {
     PContext context{};
@@ -339,6 +384,9 @@ class COMPONENT_EXPORT(X11) XPrint {
   Future<PrintInputSelectedReply> PrintInputSelected(
       const PrintInputSelectedRequest& request);
 
+  Future<PrintInputSelectedReply> PrintInputSelected(
+      const PContext& context = {});
+
   struct PrintGetAttributesRequest {
     PContext context{};
     uint8_t pool{};
@@ -353,6 +401,10 @@ class COMPONENT_EXPORT(X11) XPrint {
 
   Future<PrintGetAttributesReply> PrintGetAttributes(
       const PrintGetAttributesRequest& request);
+
+  Future<PrintGetAttributesReply> PrintGetAttributes(
+      const PContext& context = {},
+      const uint8_t& pool = {});
 
   struct PrintGetOneAttributesRequest {
     PContext context{};
@@ -370,6 +422,11 @@ class COMPONENT_EXPORT(X11) XPrint {
   Future<PrintGetOneAttributesReply> PrintGetOneAttributes(
       const PrintGetOneAttributesRequest& request);
 
+  Future<PrintGetOneAttributesReply> PrintGetOneAttributes(
+      const PContext& context = {},
+      const uint8_t& pool = {},
+      const std::vector<String8>& name = {});
+
   struct PrintSetAttributesRequest {
     PContext context{};
     uint32_t stringLen{};
@@ -381,6 +438,12 @@ class COMPONENT_EXPORT(X11) XPrint {
   using PrintSetAttributesResponse = Response<void>;
 
   Future<void> PrintSetAttributes(const PrintSetAttributesRequest& request);
+
+  Future<void> PrintSetAttributes(const PContext& context = {},
+                                  const uint32_t& stringLen = {},
+                                  const uint8_t& pool = {},
+                                  const uint8_t& rule = {},
+                                  const std::vector<String8>& attributes = {});
 
   struct PrintGetPageDimensionsRequest {
     PContext context{};
@@ -401,6 +464,9 @@ class COMPONENT_EXPORT(X11) XPrint {
   Future<PrintGetPageDimensionsReply> PrintGetPageDimensions(
       const PrintGetPageDimensionsRequest& request);
 
+  Future<PrintGetPageDimensionsReply> PrintGetPageDimensions(
+      const PContext& context = {});
+
   struct PrintQueryScreensRequest {};
 
   struct PrintQueryScreensReply {
@@ -412,6 +478,8 @@ class COMPONENT_EXPORT(X11) XPrint {
 
   Future<PrintQueryScreensReply> PrintQueryScreens(
       const PrintQueryScreensRequest& request);
+
+  Future<PrintQueryScreensReply> PrintQueryScreens();
 
   struct PrintSetImageResolutionRequest {
     PContext context{};
@@ -430,6 +498,10 @@ class COMPONENT_EXPORT(X11) XPrint {
   Future<PrintSetImageResolutionReply> PrintSetImageResolution(
       const PrintSetImageResolutionRequest& request);
 
+  Future<PrintSetImageResolutionReply> PrintSetImageResolution(
+      const PContext& context = {},
+      const uint16_t& image_resolution = {});
+
   struct PrintGetImageResolutionRequest {
     PContext context{};
   };
@@ -444,6 +516,9 @@ class COMPONENT_EXPORT(X11) XPrint {
 
   Future<PrintGetImageResolutionReply> PrintGetImageResolution(
       const PrintGetImageResolutionRequest& request);
+
+  Future<PrintGetImageResolutionReply> PrintGetImageResolution(
+      const PContext& context = {});
 
  private:
   Connection* const connection_;

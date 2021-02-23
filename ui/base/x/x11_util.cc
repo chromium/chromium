@@ -312,7 +312,7 @@ bool IsXInput2Available() {
 }
 
 bool QueryShmSupport() {
-  static bool supported = x11::Connection::Get()->shm().QueryVersion({}).Sync();
+  static bool supported = x11::Connection::Get()->shm().QueryVersion().Sync();
   return supported;
 }
 
@@ -460,7 +460,7 @@ bool GetInnerWindowBounds(x11::Window window, gfx::Rect* rect) {
   auto root = static_cast<x11::Window>(GetX11RootWindow());
 
   x11::Connection* connection = x11::Connection::Get();
-  auto get_geometry = connection->GetGeometry({x11_window});
+  auto get_geometry = connection->GetGeometry(x11_window);
   auto translate_coords = connection->TranslateCoordinates({x11_window, root});
 
   // Sync after making both requests so only one round-trip is made.
@@ -1086,7 +1086,7 @@ bool IsVulkanSurfaceSupported() {
   };
   auto* connection = x11::Connection::Get();
   for (const auto* extension : extensions) {
-    if (connection->QueryExtension({extension}).Sync())
+    if (connection->QueryExtension(extension).Sync())
       return true;
   }
   return false;

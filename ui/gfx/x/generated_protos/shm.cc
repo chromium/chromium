@@ -166,6 +166,10 @@ Future<Shm::QueryVersionReply> Shm::QueryVersion(
       &buf, "Shm::QueryVersion", false);
 }
 
+Future<Shm::QueryVersionReply> Shm::QueryVersion() {
+  return Shm::QueryVersion(Shm::QueryVersionRequest{});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Shm::QueryVersionReply> detail::ReadReply<
@@ -258,6 +262,12 @@ Future<void> Shm::Attach(const Shm::AttachRequest& request) {
   return connection_->SendRequest<void>(&buf, "Shm::Attach", false);
 }
 
+Future<void> Shm::Attach(const Seg& shmseg,
+                         const uint32_t& shmid,
+                         const uint8_t& read_only) {
+  return Shm::Attach(Shm::AttachRequest{shmseg, shmid, read_only});
+}
+
 Future<void> Shm::Detach(const Shm::DetachRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -284,6 +294,10 @@ Future<void> Shm::Detach(const Shm::DetachRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Shm::Detach", false);
+}
+
+Future<void> Shm::Detach(const Seg& shmseg) {
+  return Shm::Detach(Shm::DetachRequest{shmseg});
 }
 
 Future<void> Shm::PutImage(const Shm::PutImageRequest& request) {
@@ -375,6 +389,26 @@ Future<void> Shm::PutImage(const Shm::PutImageRequest& request) {
   return connection_->SendRequest<void>(&buf, "Shm::PutImage", false);
 }
 
+Future<void> Shm::PutImage(const Drawable& drawable,
+                           const GraphicsContext& gc,
+                           const uint16_t& total_width,
+                           const uint16_t& total_height,
+                           const uint16_t& src_x,
+                           const uint16_t& src_y,
+                           const uint16_t& src_width,
+                           const uint16_t& src_height,
+                           const int16_t& dst_x,
+                           const int16_t& dst_y,
+                           const uint8_t& depth,
+                           const ImageFormat& format,
+                           const uint8_t& send_event,
+                           const Seg& shmseg,
+                           const uint32_t& offset) {
+  return Shm::PutImage(Shm::PutImageRequest{
+      drawable, gc, total_width, total_height, src_x, src_y, src_width,
+      src_height, dst_x, dst_y, depth, format, send_event, shmseg, offset});
+}
+
 Future<Shm::GetImageReply> Shm::GetImage(const Shm::GetImageRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -437,6 +471,19 @@ Future<Shm::GetImageReply> Shm::GetImage(const Shm::GetImageRequest& request) {
 
   return connection_->SendRequest<Shm::GetImageReply>(&buf, "Shm::GetImage",
                                                       false);
+}
+
+Future<Shm::GetImageReply> Shm::GetImage(const Drawable& drawable,
+                                         const int16_t& x,
+                                         const int16_t& y,
+                                         const uint16_t& width,
+                                         const uint16_t& height,
+                                         const uint32_t& plane_mask,
+                                         const uint8_t& format,
+                                         const Seg& shmseg,
+                                         const uint32_t& offset) {
+  return Shm::GetImage(Shm::GetImageRequest{
+      drawable, x, y, width, height, plane_mask, format, shmseg, offset});
 }
 
 template <>
@@ -532,6 +579,17 @@ Future<void> Shm::CreatePixmap(const Shm::CreatePixmapRequest& request) {
   return connection_->SendRequest<void>(&buf, "Shm::CreatePixmap", false);
 }
 
+Future<void> Shm::CreatePixmap(const Pixmap& pid,
+                               const Drawable& drawable,
+                               const uint16_t& width,
+                               const uint16_t& height,
+                               const uint8_t& depth,
+                               const Seg& shmseg,
+                               const uint32_t& offset) {
+  return Shm::CreatePixmap(Shm::CreatePixmapRequest{
+      pid, drawable, width, height, depth, shmseg, offset});
+}
+
 Future<void> Shm::AttachFd(const Shm::AttachFdRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -569,6 +627,12 @@ Future<void> Shm::AttachFd(const Shm::AttachFdRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Shm::AttachFd", false);
+}
+
+Future<void> Shm::AttachFd(const Seg& shmseg,
+                           const RefCountedFD& shm_fd,
+                           const uint8_t& read_only) {
+  return Shm::AttachFd(Shm::AttachFdRequest{shmseg, shm_fd, read_only});
 }
 
 Future<Shm::CreateSegmentReply> Shm::CreateSegment(
@@ -612,6 +676,12 @@ Future<Shm::CreateSegmentReply> Shm::CreateSegment(
       &buf, "Shm::CreateSegment", true);
 }
 
+Future<Shm::CreateSegmentReply> Shm::CreateSegment(const Seg& shmseg,
+                                                   const uint32_t& size,
+                                                   const uint8_t& read_only) {
+  return Shm::CreateSegment(Shm::CreateSegmentRequest{shmseg, size, read_only});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Shm::CreateSegmentReply> detail::ReadReply<
@@ -638,7 +708,7 @@ std::unique_ptr<Shm::CreateSegmentReply> detail::ReadReply<
   Read(&length, &buf);
 
   // shm_fd
-  shm_fd = base::ScopedFD(buf.TakeFd());
+  shm_fd = RefCountedFD(buf.TakeFd());
 
   // pad0
   Pad(&buf, 24);

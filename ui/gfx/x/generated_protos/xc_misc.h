@@ -53,6 +53,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "ui/gfx/x/error.h"
+#include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
 
 namespace x11 {
@@ -94,6 +95,9 @@ class COMPONENT_EXPORT(X11) XCMisc {
 
   Future<GetVersionReply> GetVersion(const GetVersionRequest& request);
 
+  Future<GetVersionReply> GetVersion(const uint16_t& client_major_version = {},
+                                     const uint16_t& client_minor_version = {});
+
   struct GetXIDRangeRequest {};
 
   struct GetXIDRangeReply {
@@ -105,6 +109,8 @@ class COMPONENT_EXPORT(X11) XCMisc {
   using GetXIDRangeResponse = Response<GetXIDRangeReply>;
 
   Future<GetXIDRangeReply> GetXIDRange(const GetXIDRangeRequest& request);
+
+  Future<GetXIDRangeReply> GetXIDRange();
 
   struct GetXIDListRequest {
     uint32_t count{};
@@ -118,6 +124,8 @@ class COMPONENT_EXPORT(X11) XCMisc {
   using GetXIDListResponse = Response<GetXIDListReply>;
 
   Future<GetXIDListReply> GetXIDList(const GetXIDListRequest& request);
+
+  Future<GetXIDListReply> GetXIDList(const uint32_t& count = {});
 
  private:
   Connection* const connection_;

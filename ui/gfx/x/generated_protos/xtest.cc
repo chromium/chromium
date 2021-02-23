@@ -89,6 +89,12 @@ Future<Test::GetVersionReply> Test::GetVersion(
       &buf, "Test::GetVersion", false);
 }
 
+Future<Test::GetVersionReply> Test::GetVersion(const uint8_t& major_version,
+                                               const uint16_t& minor_version) {
+  return Test::GetVersion(
+      Test::GetVersionRequest{major_version, minor_version});
+}
+
 template <>
 COMPONENT_EXPORT(X11)
 std::unique_ptr<Test::GetVersionReply> detail::ReadReply<Test::GetVersionReply>(
@@ -155,6 +161,12 @@ Future<Test::CompareCursorReply> Test::CompareCursor(
 
   return connection_->SendRequest<Test::CompareCursorReply>(
       &buf, "Test::CompareCursor", false);
+}
+
+Future<Test::CompareCursorReply> Test::CompareCursor(
+    const Window& window,
+    const x11::Cursor& cursor) {
+  return Test::CompareCursor(Test::CompareCursorRequest{window, cursor});
 }
 
 template <>
@@ -248,6 +260,17 @@ Future<void> Test::FakeInput(const Test::FakeInputRequest& request) {
   return connection_->SendRequest<void>(&buf, "Test::FakeInput", false);
 }
 
+Future<void> Test::FakeInput(const uint8_t& type,
+                             const uint8_t& detail,
+                             const uint32_t& time,
+                             const Window& root,
+                             const int16_t& rootX,
+                             const int16_t& rootY,
+                             const uint8_t& deviceid) {
+  return Test::FakeInput(
+      Test::FakeInputRequest{type, detail, time, root, rootX, rootY, deviceid});
+}
+
 Future<void> Test::GrabControl(const Test::GrabControlRequest& request) {
   if (!connection_->Ready() || !present())
     return {};
@@ -277,6 +300,10 @@ Future<void> Test::GrabControl(const Test::GrabControlRequest& request) {
   Align(&buf, 4);
 
   return connection_->SendRequest<void>(&buf, "Test::GrabControl", false);
+}
+
+Future<void> Test::GrabControl(const uint8_t& impervious) {
+  return Test::GrabControl(Test::GrabControlRequest{impervious});
 }
 
 }  // namespace x11
