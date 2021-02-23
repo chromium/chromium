@@ -654,8 +654,8 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   test_ukm_recorder_->ExpectEntryMetric(entry, kUkmRedirectCount, 2);
 }
 
-// TODO(crbug.com/1179859): Test is flaky on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/1179859): Test is flaky on Windows, Linux and Lacros.
+#if defined(OS_LINUX) || defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_PopupJavascriptRenavigation_RedirectCountZero \
   DISABLED_PopupJavascriptRenavigation_RedirectCountZero
 #else
