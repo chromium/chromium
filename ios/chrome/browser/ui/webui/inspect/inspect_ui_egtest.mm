@@ -300,28 +300,4 @@ ElementSelector* StartLoggingButton() {
   [ChromeEarlGrey waitForWebStateNotContainingText:kDebugMessageText];
 }
 
-// Tests that messages are cleared for a tab which is closed.
-- (void)testMessagesClearedOnTabClosure {
-  [ChromeEarlGrey loadURL:GURL(kChromeUIInspectURL)];
-
-  // Start logging.
-  [ChromeEarlGrey waitForWebStateContainingElement:StartLoggingButton()];
-  [ChromeEarlGrey tapWebStateElementWithID:kStartLoggingButtonId];
-
-  // Open console test page.
-  [ChromeEarlGrey openNewTab];
-  const GURL consoleTestsURL = self.testServer->GetURL(kConsolePage);
-  [ChromeEarlGrey loadURL:consoleTestsURL];
-  std::string debugButtonID = base::SysNSStringToUTF8(kDebugMessageButtonId);
-  [ChromeEarlGrey waitForWebStateContainingElement:
-                      [ElementSelector selectorWithElementID:debugButtonID]];
-
-  [ChromeEarlGrey tapWebStateElementWithID:kDebugMessageButtonId];
-  [ChromeEarlGrey closeCurrentTab];
-
-  // Validate message and label are not displayed.
-  [ChromeEarlGrey waitForWebStateNotContainingText:kDebugMessageLabel];
-  [ChromeEarlGrey waitForWebStateNotContainingText:kDebugMessageText];
-}
-
 @end

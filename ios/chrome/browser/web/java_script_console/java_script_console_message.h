@@ -5,29 +5,26 @@
 #ifndef IOS_CHROME_BROWSER_WEB_JAVA_SCRIPT_CONSOLE_JAVA_SCRIPT_CONSOLE_MESSAGE_H_
 #define IOS_CHROME_BROWSER_WEB_JAVA_SCRIPT_CONSOLE_JAVA_SCRIPT_CONSOLE_MESSAGE_H_
 
-#include "base/macros.h"
-#include "base/values.h"
 #include "url/gurl.h"
+
+@class NSString;
 
 // Wraps information from a received console message.
 struct JavaScriptConsoleMessage {
  public:
   JavaScriptConsoleMessage();
-  JavaScriptConsoleMessage(const JavaScriptConsoleMessage& other);
-  JavaScriptConsoleMessage& operator=(JavaScriptConsoleMessage other);
   ~JavaScriptConsoleMessage();
 
-  // The url of the frame which sent the message.
+  // The url of the frame which sent the message. May be set to an invalid URL
+  // if the URL was not available to the JavaScript error listener.
   GURL url;
 
   // The log level associated with the message. (From console.js, i.e. "log",
   // "debug", "info", "warn", "error")
-  std::string level;
+  NSString* level;
 
   // The message contents.
-  std::unique_ptr<base::Value> message;
-
-  DISALLOW_ASSIGN(JavaScriptConsoleMessage);
+  NSString* message;
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_JAVA_SCRIPT_CONSOLE_JAVA_SCRIPT_CONSOLE_MESSAGE_H_

@@ -185,7 +185,6 @@ js_compile_bundle("chrome_bundle_all_frames") {
     "//components/autofill/ios/form_util/resources/form_handlers.js",
     "resources/accessibility.js",
     "resources/chrome_bundle_all_frames.js",
-    "resources/console.js",
     "resources/print.js",
   ]
 }
@@ -218,23 +217,6 @@ js_compile_checked("image_fetch") {
     "//ios/web/web_state/js/resources/common.js",
     "//ios/web/js_messaging/resources/message.js",
   ]
-}
-
-source_set("java_script_console") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "java_script_console/java_script_console_message.cc",
-    "java_script_console/java_script_console_message.h",
-    "java_script_console/java_script_console_tab_helper.h",
-    "java_script_console/java_script_console_tab_helper.mm",
-    "java_script_console/java_script_console_tab_helper_delegate.h",
-  ]
-  deps = [
-    "//base",
-    "//ios/web/public",
-    "//ios/web/public/js_messaging",
-  ]
-  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("web_internal") {
@@ -280,6 +262,7 @@ source_set("web_internal") {
     "//ios/chrome/browser/ui/infobars/coordinators",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/web:feature_flags",
+    "//ios/chrome/browser/web/java_script_console",
     "//ios/components/security_interstitials",
     "//ios/components/security_interstitials/legacy_tls",
     "//ios/components/security_interstitials/lookalikes",
@@ -298,7 +281,6 @@ source_set("web_internal") {
     "//ui/gfx",
     "//url",
   ]
-  public_deps = [ ":java_script_console" ]
   frameworks = [
     "UIKit.framework",
     "Foundation.framework",
@@ -328,7 +310,6 @@ source_set("unit_tests_internal") {
   sources = [
     "blocked_popup_tab_helper_unittest.mm",
     "chrome_web_client_unittest.mm",
-    "java_script_console/java_script_console_tab_helper_unittest.mm",
   ]
   deps = [
     ":feature_flags",

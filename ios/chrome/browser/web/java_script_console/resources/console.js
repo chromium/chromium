@@ -7,7 +7,7 @@
 
 goog.provide('__crWeb.console');
 
-// Requires __crWeb.message provided by __crWeb.allFramesWebBundle.
+// Requires __crWeb.common and __crWeb.message.
 
 /**
  * Namespace for this module.
@@ -16,16 +16,16 @@ __gCrWeb.console = {};
 
 /* Beginning of anonymous object. */
 (function() {
-function sendConsoleMessage(method, originalArgs) {
+function sendConsoleMessage(log_level, originalArgs) {
   var message, slicedArgs = Array.prototype.slice.call(originalArgs);
   try {
     message = slicedArgs.join(' ');
   } catch (err) {
   }
-  __gCrWeb.message.invokeOnHost({
-    'command': 'console.msg',
-    'method': method,
-    'message': message,
+  __gCrWeb.common.sendWebKitMessage('ConsoleMessageHandler', {
+    'sender_frame' : __gCrWeb.message.getFrameId(),
+    'log_level' : log_level,
+    'message' : message,
     'url': document.location.href
   });
 }

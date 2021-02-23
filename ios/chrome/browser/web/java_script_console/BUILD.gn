@@ -1,0 +1,51 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/web/js_compile.gni")
+
+source_set("java_script_console") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "java_script_console_feature.h",
+    "java_script_console_feature.mm",
+    "java_script_console_feature_delegate.h",
+    "java_script_console_feature_factory.h",
+    "java_script_console_feature_factory.mm",
+    "java_script_console_message.h",
+    "java_script_console_message.mm",
+  ]
+  deps = [
+    ":console_js",
+    "//base",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//ios/chrome/browser/browser_state",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+js_compile_bundle("console_js") {
+  visibility = [ ":java_script_console" ]
+  closure_entry_point = "__crWeb.console"
+
+  sources = [ "resources/console.js" ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "java_script_console_feature_unittest.mm" ]
+  deps = [
+    ":java_script_console",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/web:test_support",
+    "//ios/chrome/test/fakes",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}

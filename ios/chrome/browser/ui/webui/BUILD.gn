@@ -77,7 +77,7 @@ source_set("webui") {
     "//ios/chrome/browser/suggestions",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/ui/util:terms_util",
-    "//ios/chrome/browser/web:java_script_console",
+    "//ios/chrome/browser/web/java_script_console",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/common",
     "//ios/web/public/js_messaging",

@@ -15,8 +15,6 @@ source_set("fakes") {
     "fake_download_manager_consumer.mm",
     "fake_download_manager_tab_helper_delegate.h",
     "fake_download_manager_tab_helper_delegate.mm",
-    "fake_java_script_console_tab_helper_delegate.cc",
-    "fake_java_script_console_tab_helper_delegate.h",
     "fake_language_detection_tab_helper_observer.h",
     "fake_language_detection_tab_helper_observer.mm",
     "fake_overscroll_actions_controller_delegate.h",

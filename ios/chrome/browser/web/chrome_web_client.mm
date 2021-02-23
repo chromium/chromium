@@ -34,6 +34,8 @@
 #include "ios/chrome/browser/web/error_page_controller_bridge.h"
 #import "ios/chrome/browser/web/error_page_util.h"
 #include "ios/chrome/browser/web/features.h"
+#import "ios/chrome/browser/web/java_script_console/java_script_console_feature.h"
+#import "ios/chrome/browser/web/java_script_console/java_script_console_feature_factory.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 #import "ios/components/security_interstitials/legacy_tls/legacy_tls_blocking_page.h"
 #import "ios/components/security_interstitials/legacy_tls/legacy_tls_controller_client.h"
@@ -290,6 +292,12 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
       base::ios::IsRunningOnIOS14OrLater()) {
     features.push_back(PasswordProtectionJavaScriptFeature::GetInstance());
   }
+
+  JavaScriptConsoleFeature* java_script_console_feature =
+      JavaScriptConsoleFeatureFactory::GetInstance()->GetForBrowserState(
+          browser_state);
+  features.push_back(java_script_console_feature);
+
   return features;
 }
 
