@@ -273,9 +273,7 @@ class AppCacheStorageImplTest : public testing::Test {
   // Test harness --------------------------------------------------
 
   AppCacheStorageImplTest()
-      : interceptor_(base::BindRepeating(&InterceptRequest)),
-        weak_partition_factory_(static_cast<StoragePartitionImpl*>(
-            BrowserContext::GetDefaultStoragePartition(&browser_context_))) {
+      : interceptor_(base::BindRepeating(&InterceptRequest)) {
     ChildProcessSecurityPolicyImpl::GetInstance()->AddForTesting(
         kProcessId, &browser_context_);
     appcache_require_origin_trial_feature_.InitAndDisableFeature(
@@ -295,6 +293,14 @@ class AppCacheStorageImplTest : public testing::Test {
         base::BindOnce(&AppCacheStorageImplTest::MethodWrapper<Method>,
                        base::Unretained(this), method));
     run_loop.Run();
+  }
+
+  void SetUp() override {
+    // Calling GetDefaultStoragePartition kicks off a bunch of things,
+    // including setting up a disk cache, which checks feature lists.
+    // Defer until here so test constructors can set feature lists first.
+    weak_partition_factory_.emplace(static_cast<StoragePartitionImpl*>(
+        BrowserContext::GetDefaultStoragePartition(&browser_context_)));
   }
 
   void SetUpTest() {
@@ -1586,7 +1592,7 @@ class AppCacheStorageImplTest : public testing::Test {
 
     // Recreate the service to point at the db and corruption on disk.
     service_ = std::make_unique<AppCacheServiceImpl>(
-        nullptr, weak_partition_factory_.GetWeakPtr());
+        nullptr, weak_partition_factory_->GetWeakPtr());
 
     service_->set_appcache_policy(&mock_policy_);
     service_->Initialize(temp_directory_.GetPath());
@@ -1811,7 +1817,9 @@ class AppCacheStorageImplTest : public testing::Test {
   URLLoaderInterceptor interceptor_;
   TestBrowserContext browser_context_;
   base::test::ScopedFeatureList appcache_require_origin_trial_feature_;
-  base::WeakPtrFactory<StoragePartitionImpl> weak_partition_factory_;
+  // Delayed initialization to avoid data races with feature list.
+  base::Optional<base::WeakPtrFactory<StoragePartitionImpl>>
+      weak_partition_factory_;
 
   // Test data
   const base::Time kZeroTime;
@@ -1857,6 +1865,20 @@ class AppCacheStorageImplTest : public testing::Test {
   const int kDefaultEntryIdOffset = 12345;
 };
 
+// By default AppCacheStorageImplTest disables the origin trial.
+// Specific tests use this to turn it back on.
+class AppCacheStorageImplTestEnableOriginTrial
+    : public AppCacheStorageImplTest {
+ public:
+  AppCacheStorageImplTestEnableOriginTrial() {
+    appcache_require_origin_trial_feature_.InitAndEnableFeature(
+        blink::features::kAppCacheRequireOriginTrial);
+  }
+
+ private:
+  base::test::ScopedFeatureList appcache_require_origin_trial_feature_;
+};
+
 TEST_F(AppCacheStorageImplTest, LoadCache_Miss) {
   RunTestOnUIThread(&AppCacheStorageImplTest::LoadCache_Miss);
 }
@@ -1865,15 +1887,11 @@ TEST_F(AppCacheStorageImplTest, LoadCache_NearHit) {
   RunTestOnUIThread(&AppCacheStorageImplTest::LoadCache_NearHit);
 }
 
-TEST_F(AppCacheStorageImplTest, LoadCache_OriginTrialSuccess) {
-  base::test::ScopedFeatureList f;
-  f.InitAndEnableFeature(blink::features::kAppCacheRequireOriginTrial);
+TEST_F(AppCacheStorageImplTestEnableOriginTrial, LoadCache_OriginTrialSuccess) {
   RunTestOnUIThread(&AppCacheStorageImplTest::LoadCache_OriginTrialSuccess);
 }
 
-TEST_F(AppCacheStorageImplTest, LoadCache_OriginTrialFailure) {
-  base::test::ScopedFeatureList f;
-  f.InitAndEnableFeature(blink::features::kAppCacheRequireOriginTrial);
+TEST_F(AppCacheStorageImplTestEnableOriginTrial, LoadCache_OriginTrialFailure) {
   RunTestOnUIThread(&AppCacheStorageImplTest::LoadCache_OriginTrialFailure);
 }
 
@@ -1889,9 +1907,8 @@ TEST_F(AppCacheStorageImplTest, LoadGroupAndCache_FarHit) {
   RunTestOnUIThread(&AppCacheStorageImplTest::LoadGroupAndCache_FarHit);
 }
 
-TEST_F(AppCacheStorageImplTest, LoadGroupAndCache_OriginTrialSuccess) {
-  base::test::ScopedFeatureList f;
-  f.InitAndEnableFeature(blink::features::kAppCacheRequireOriginTrial);
+TEST_F(AppCacheStorageImplTestEnableOriginTrial,
+       LoadGroupAndCache_OriginTrialSuccess) {
   RunTestOnUIThread(&AppCacheStorageImplTest::LoadGroupAndCache_FarHit);
 }
 
@@ -1936,16 +1953,14 @@ TEST_F(AppCacheStorageImplTest, BasicFindMainResponseInDatabase) {
   RunTestOnUIThread(&AppCacheStorageImplTest::BasicFindMainResponseInDatabase);
 }
 
-TEST_F(AppCacheStorageImplTest, BasicFindMainResponse_OriginTrialFailure) {
-  base::test::ScopedFeatureList f;
-  f.InitAndEnableFeature(blink::features::kAppCacheRequireOriginTrial);
+TEST_F(AppCacheStorageImplTestEnableOriginTrial,
+       BasicFindMainResponse_OriginTrialFailure) {
   RunTestOnUIThread(
       &AppCacheStorageImplTest::BasicFindMainResponse_OriginTrialFailure);
 }
 
-TEST_F(AppCacheStorageImplTest, BasicFindMainResponse_OriginTrialSuccess) {
-  base::test::ScopedFeatureList f;
-  f.InitAndEnableFeature(blink::features::kAppCacheRequireOriginTrial);
+TEST_F(AppCacheStorageImplTestEnableOriginTrial,
+       BasicFindMainResponse_OriginTrialSuccess) {
   RunTestOnUIThread(
       &AppCacheStorageImplTest::BasicFindMainFallbackResponseInDatabase);
 }
@@ -1965,16 +1980,14 @@ TEST_F(AppCacheStorageImplTest, BasicFindMainFallbackResponseInWorkingSet) {
       &AppCacheStorageImplTest::BasicFindMainFallbackResponseInWorkingSet);
 }
 
-TEST_F(AppCacheStorageImplTest, FindMainFallbackResponse_OriginTrialSuccess) {
-  base::test::ScopedFeatureList f;
-  f.InitAndEnableFeature(blink::features::kAppCacheRequireOriginTrial);
+TEST_F(AppCacheStorageImplTestEnableOriginTrial,
+       FindMainFallbackResponse_OriginTrialSuccess) {
   RunTestOnUIThread(
       &AppCacheStorageImplTest::BasicFindMainFallbackResponseInDatabase);
 }
 
-TEST_F(AppCacheStorageImplTest, FindMainFallbackResponse_OriginTrialFailure) {
-  base::test::ScopedFeatureList f;
-  f.InitAndEnableFeature(blink::features::kAppCacheRequireOriginTrial);
+TEST_F(AppCacheStorageImplTestEnableOriginTrial,
+       FindMainFallbackResponse_OriginTrialFailure) {
   RunTestOnUIThread(
       &AppCacheStorageImplTest::FindMainFallbackResponse_OriginTrialFailure);
 }
@@ -1989,16 +2002,14 @@ TEST_F(AppCacheStorageImplTest, BasicFindMainInterceptResponseInWorkingSet) {
       &AppCacheStorageImplTest::BasicFindMainInterceptResponseInWorkingSet);
 }
 
-TEST_F(AppCacheStorageImplTest, FindMainInterceptResponse_OriginTrialSuccess) {
-  base::test::ScopedFeatureList f;
-  f.InitAndEnableFeature(blink::features::kAppCacheRequireOriginTrial);
+TEST_F(AppCacheStorageImplTestEnableOriginTrial,
+       FindMainInterceptResponse_OriginTrialSuccess) {
   RunTestOnUIThread(
       &AppCacheStorageImplTest::BasicFindMainInterceptResponseInDatabase);
 }
 
-TEST_F(AppCacheStorageImplTest, FindMainInterceptResponse_OriginTrialFailure) {
-  base::test::ScopedFeatureList f;
-  f.InitAndEnableFeature(blink::features::kAppCacheRequireOriginTrial);
+TEST_F(AppCacheStorageImplTestEnableOriginTrial,
+       FindMainInterceptResponse_OriginTrialFailure) {
   RunTestOnUIThread(
       &AppCacheStorageImplTest::FindMainInterceptResponse_OriginTrialFailure);
 }
