@@ -15,6 +15,7 @@ class ExceptionState;
 class MediaStreamVideoTrackUnderlyingSource;
 class MediaStreamAudioTrackUnderlyingSource;
 class MediaStreamTrack;
+class MediaStreamTrackProcessorInit;
 class ReadableStream;
 class ScriptState;
 class UnderlyingSinkBase;
@@ -25,8 +26,10 @@ class MODULES_EXPORT MediaStreamTrackProcessor : public ScriptWrappable {
 
  public:
   static MediaStreamTrackProcessor* Create(ScriptState*,
+                                           MediaStreamTrackProcessorInit*,
+                                           ExceptionState&);
+  static MediaStreamTrackProcessor* Create(ScriptState*,
                                            MediaStreamTrack*,
-
                                            uint16_t buffer_size,
                                            ExceptionState&);
   static MediaStreamTrackProcessor* Create(ScriptState*,

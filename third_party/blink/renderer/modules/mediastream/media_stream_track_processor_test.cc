@@ -383,8 +383,9 @@ TEST_F(MediaStreamTrackProcessorTest, NullInputTrack) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   ExceptionState& exception_state = v8_scope.GetExceptionState();
+  MediaStreamTrack* track = nullptr;
   MediaStreamTrackProcessor* track_processor =
-      MediaStreamTrackProcessor::Create(script_state, nullptr, exception_state);
+      MediaStreamTrackProcessor::Create(script_state, track, exception_state);
 
   EXPECT_EQ(track_processor, nullptr);
   EXPECT_TRUE(exception_state.HadException());

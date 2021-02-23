@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_audio_track_underlying_source.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track_processor_init.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_utils.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track_underlying_source.h"
@@ -201,6 +202,17 @@ MediaStreamTrackProcessor* MediaStreamTrackProcessor::Create(
   // the Web Audio MediaStream sink.
   uint16_t buffer_size = track->kind() == "video" ? 1u : 10u;
   return Create(script_state, track, buffer_size, exception_state);
+}
+
+MediaStreamTrackProcessor* MediaStreamTrackProcessor::Create(
+    ScriptState* script_state,
+    MediaStreamTrackProcessorInit* init,
+    ExceptionState& exception_state) {
+  if (init->hasMaxBufferSize()) {
+    return Create(script_state, init->track(), init->maxBufferSize(),
+                  exception_state);
+  }
+  return Create(script_state, init->track(), exception_state);
 }
 
 void MediaStreamTrackProcessor::Trace(Visitor* visitor) const {
