@@ -14,6 +14,7 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
@@ -198,6 +199,9 @@ WmGestureHandler::WmGestureHandler()
 WmGestureHandler::~WmGestureHandler() = default;
 
 bool WmGestureHandler::ProcessScrollEvent(const ui::ScrollEvent& event) {
+  // Disable touchpad swipe when screen is pinned.
+  if (Shell::Get()->screen_pinning_controller()->IsPinned())
+    return false;
   // ET_SCROLL_FLING_CANCEL means a touchpad swipe has started.
   if (event.type() == ui::ET_SCROLL_FLING_CANCEL) {
     scroll_data_ = ScrollData();
@@ -210,7 +214,6 @@ bool WmGestureHandler::ProcessScrollEvent(const ui::ScrollEvent& event) {
     DCHECK(!scroll_data_);
     return success;
   }
-
   DCHECK_EQ(ui::ET_SCROLL, event.type());
 
   return ProcessEventImpl(event.finger_count(), event.x_offset(),

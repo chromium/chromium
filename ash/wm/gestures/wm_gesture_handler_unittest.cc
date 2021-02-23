@@ -17,6 +17,7 @@
 #include "ash/wm/desks/root_window_desk_switch_animator_test_api.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_test_util.h"
+#include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_cycle/window_cycle_list.h"
 #include "ash/wm/window_util.h"
@@ -287,6 +288,25 @@ TEST_F(WmGestureHandlerTest, EnterOverviewOnScrollEnd) {
                               GetOffsetY(-10), num_fingers);
   GetEventGenerator()->Dispatch(&fling_start);
   EXPECT_TRUE(InOverviewSession());
+}
+
+// Test switch desk is disabled when screen is pinned.
+TEST_F(WmGestureHandlerTest, LockedModeNoSwitchDesk) {
+  auto* desk_controller = DesksController::Get();
+  desk_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desk_controller->desks().size());
+  ASSERT_EQ(desk_controller->desks()[0].get(), desk_controller->active_desk());
+
+  // Pin a window to current desk.
+  aura::Window* w1 = CreateTestWindowInShellWithId(0);
+  wm::ActivateWindow(w1);
+  window_util::PinWindow(w1, /*trusted=*/false);
+  EXPECT_TRUE(Shell::Get()->screen_pinning_controller()->IsPinned());
+
+  // Tests that scrolling right won't switch desks when screen is pinned.
+  const float long_scroll = WmGestureHandler::kHorizontalThresholdDp;
+  Scroll(long_scroll, 0.f, kNumFingersForDesksSwitch);
+  EXPECT_EQ(desk_controller->desks()[0].get(), desk_controller->active_desk());
 }
 
 using DesksGestureHandlerTest = WmGestureHandlerTest;
