@@ -16,7 +16,6 @@
 #include "chrome/browser/chromeos/login/screens/base_screen.h"
 #include "chrome/browser/chromeos/login/screens/error_screen.h"
 #include "chrome/browser/chromeos/login/version_updater/version_updater.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "components/user_manager/remove_user_delegate.h"
 
 namespace base {

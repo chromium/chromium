@@ -27,7 +27,6 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/policy/status_collector/app_info_generator.h"
 #include "chrome/browser/chromeos/policy/status_collector/status_collector.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"

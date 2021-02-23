@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "build/build_config.h"
-#include "chrome/browser/chromeos/settings/token_encryptor.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/device_identity/chromeos/device_oauth2_token_store_chromeos.h"
 #else

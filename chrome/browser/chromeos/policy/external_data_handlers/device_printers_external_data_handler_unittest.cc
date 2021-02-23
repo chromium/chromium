@@ -9,7 +9,6 @@
 
 #include "base/test/task_environment.h"
 #include "chrome/browser/chromeos/printing/bulk_printers_calculator.h"
-#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/policy/core/common/mock_policy_service.h"

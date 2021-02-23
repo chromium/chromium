@@ -21,7 +21,6 @@
 #include "chrome/browser/chromeos/login/screens/base_screen.h"
 #include "chrome/browser/chromeos/login/signin/token_handle_util.h"
 #include "chrome/browser/chromeos/login/ui/login_display.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "components/account_id/account_id.h"

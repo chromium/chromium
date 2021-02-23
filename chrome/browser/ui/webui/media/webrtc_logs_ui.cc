@@ -39,10 +39,6 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "ui/base/webui/web_ui_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/settings/cros_settings.h"
-#endif
-
 using content::WebContents;
 using content::WebUIMessageHandler;
 

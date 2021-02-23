@@ -15,8 +15,6 @@
 #include "chrome/browser/chromeos/login/version_updater/mock_version_updater_delegate.h"
 #include "chrome/browser/chromeos/login/version_updater/update_time_estimator.h"
 #include "chrome/browser/chromeos/net/network_portal_detector_test_impl.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
-#include "chrome/browser/chromeos/settings/device_settings_service.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/dbus_thread_manager.h"

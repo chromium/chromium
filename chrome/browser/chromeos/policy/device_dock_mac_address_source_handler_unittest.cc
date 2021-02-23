@@ -10,7 +10,6 @@
 
 #include "base/macros.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
-#include "chrome/browser/chromeos/settings/device_settings_service.h"
 #include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
 #include "chromeos/network/mock_network_device_handler.h"
 #include "chromeos/network/network_device_handler.h"
