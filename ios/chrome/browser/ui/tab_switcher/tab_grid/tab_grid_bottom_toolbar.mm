@@ -182,11 +182,8 @@
 }
 
 - (void)updateLayout {
-  CGFloat floatingButtonVerticalInset = kTabGridFloatingButtonVerticalInset;
-  if (ShowThumbStripInTraitCollection(self.traitCollection)) {
-    floatingButtonVerticalInset += kBVCHeightTabGrid;
-  }
-  _largeNewTabButtonBottomAnchor.constant = -floatingButtonVerticalInset;
+  _largeNewTabButtonBottomAnchor.constant =
+      -kTabGridFloatingButtonVerticalInset;
 
   if ([self shouldUseCompactLayout]) {
     // For incognito/regular pages, display all 3 buttons;
@@ -208,7 +205,10 @@
     [NSLayoutConstraint deactivateConstraints:_compactConstraints];
     [_toolbar removeFromSuperview];
 
-    if (self.page == TabGridPageRemoteTabs) {
+    // When the thumb strip is enabled, there should be no new tab button on the
+    // bottom ever.
+    if (ShowThumbStripInTraitCollection(self.traitCollection) ||
+        self.page == TabGridPageRemoteTabs) {
       [NSLayoutConstraint deactivateConstraints:_floatingConstraints];
       [_largeNewTabButton removeFromSuperview];
     } else {
