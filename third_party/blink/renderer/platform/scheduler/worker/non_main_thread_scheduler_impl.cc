@@ -29,10 +29,6 @@ std::unique_ptr<NonMainThreadSchedulerImpl> NonMainThreadSchedulerImpl::Create(
                                                  proxy);
 }
 
-void NonMainThreadSchedulerImpl::Init() {
-  InitImpl();
-}
-
 scoped_refptr<NonMainThreadTaskQueue>
 NonMainThreadSchedulerImpl::CreateTaskQueue(const char* name) {
   helper_.CheckOnValidThread();
@@ -120,6 +116,10 @@ const base::TickClock* NonMainThreadSchedulerImpl::GetTickClock() {
 scoped_refptr<base::SingleThreadTaskRunner>
 NonMainThreadSchedulerImpl::DeprecatedDefaultTaskRunner() {
   return DefaultTaskRunner();
+}
+
+void NonMainThreadSchedulerImpl::AttachToCurrentThread() {
+  helper_.AttachToCurrentThread();
 }
 
 }  // namespace scheduler

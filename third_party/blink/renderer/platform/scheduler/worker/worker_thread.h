@@ -8,10 +8,10 @@
 #include "base/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
-#include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/threading/simple_thread.h"
+#include "base/time/time.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/renderer/platform/heap/gc_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -72,15 +72,16 @@ class PLATFORM_EXPORT WorkerThread : public Thread {
 
     explicit SimpleThreadImpl(const WTF::String& name_prefix,
                               const base::SimpleThread::Options& options,
-                              NonMainThreadSchedulerFactory factory,
                               bool supports_gc,
                               WorkerThread* worker_thread);
 
-    // Attention: Can only be called after the worker thread has initialized
-    // the internal state. The best way to be sure that is the case is to call
-    // WaitForInit().
+    // Creates the thread's scheduler. Must be invoked before starting the
+    // thread or accessing the default TaskRunner.
+    void CreateScheduler();
+
+    // Attention: Can only be called after CreateScheduler().
     scoped_refptr<base::SingleThreadTaskRunner> GetDefaultTaskRunner() const {
-      DCHECK(is_initialized_.IsSet());
+      DCHECK(default_task_runner_);
       return default_task_runner_;
     }
 
@@ -95,10 +96,6 @@ class PLATFORM_EXPORT WorkerThread : public Thread {
     // WorkerThread::ShutdownOnThread().
     void ShutdownOnThread();
 
-    // Blocks until the worker thread is ready to enter the run loop and the
-    // default task runner has been initialized.
-    void WaitForInit();
-
     // Makes sure that Run will eventually finish and thus the thread can be
     // joined.
     // Can be called from any thread.
@@ -108,7 +105,6 @@ class PLATFORM_EXPORT WorkerThread : public Thread {
    private:
     void Run() override;
 
-    base::AtomicFlag is_initialized_;
     // Internal queue not exposed externally nor to the scheduler used for
     // internal operations such as posting the task that will stop the run
     // loop.
@@ -117,7 +113,6 @@ class PLATFORM_EXPORT WorkerThread : public Thread {
     WorkerThread* thread_;
 
     // The following variables are "owned" by the worker thread
-    NonMainThreadSchedulerFactory scheduler_factory_;
     std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager_;
     scoped_refptr<base::sequence_manager::TaskQueue> internal_task_queue_;
     std::unique_ptr<scheduler::NonMainThreadSchedulerImpl>

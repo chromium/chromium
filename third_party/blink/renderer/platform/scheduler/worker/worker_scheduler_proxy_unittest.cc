@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -76,9 +77,14 @@ class WorkerThreadForTest : public WorkerThread {
     auto scheduler = std::make_unique<WorkerThreadSchedulerForTest>(
         manager, worker_scheduler_proxy(), throtting_state_changed_);
     scheduler_ = scheduler.get();
+    return scheduler;
+  }
+
+  void CreateWorkerScheduler() {
+    DCHECK(scheduler_);
+    DCHECK(!worker_scheduler_);
     worker_scheduler_ = std::make_unique<scheduler::WorkerScheduler>(
         scheduler_, worker_scheduler_proxy());
-    return scheduler;
   }
 
   WorkerThreadSchedulerForTest* GetWorkerScheduler() { return scheduler_; }
@@ -86,7 +92,7 @@ class WorkerThreadForTest : public WorkerThread {
  private:
   base::WaitableEvent* throtting_state_changed_;       // NOT OWNED
   WorkerThreadSchedulerForTest* scheduler_ = nullptr;  // NOT OWNED
-  std::unique_ptr<WorkerScheduler> worker_scheduler_ = nullptr;
+  std::unique_ptr<WorkerScheduler> worker_scheduler_;
 };
 
 std::unique_ptr<WorkerThreadForTest> CreateWorkerThread(
@@ -95,6 +101,17 @@ std::unique_ptr<WorkerThreadForTest> CreateWorkerThread(
   auto thread = std::make_unique<WorkerThreadForTest>(frame_scheduler,
                                                       throtting_state_changed);
   thread->Init();
+
+  base::RunLoop run_loop;
+  thread->GetTaskRunner()->PostTask(FROM_HERE,
+                                    base::BindLambdaForTesting([&]() {
+                                      // The WorkerScheduler must be created on
+                                      // the worker thread.
+                                      thread->CreateWorkerScheduler();
+                                      run_loop.Quit();
+                                    }));
+  run_loop.Run();
+
   return thread;
 }
 

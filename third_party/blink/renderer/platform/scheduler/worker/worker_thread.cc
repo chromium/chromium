@@ -33,13 +33,10 @@ WorkerThread::WorkerThread(const ThreadCreationParams& params)
                                         params.frame_or_worker_scheduler)
                                   : nullptr),
       supports_gc_(params.supports_gc) {
-  auto non_main_thread_scheduler_factory = base::BindOnce(
-      &WorkerThread::CreateNonMainThreadScheduler, base::Unretained(this));
   base::SimpleThread::Options options;
   options.priority = params.thread_priority;
   thread_ = std::make_unique<SimpleThreadImpl>(
-      params.name ? params.name : String(), options,
-      std::move(non_main_thread_scheduler_factory), supports_gc_,
+      params.name ? params.name : String(), options, supports_gc_,
       const_cast<scheduler::WorkerThread*>(this));
   if (supports_gc_) {
     MemoryPressureListenerRegistry::Instance().RegisterThread(
@@ -58,12 +55,8 @@ WorkerThread::~WorkerThread() {
 }
 
 void WorkerThread::Init() {
+  thread_->CreateScheduler();
   thread_->StartAsync();
-  // TODO(https://crbug.com/1146622): We could get rid of this if the
-  // NonMainThreadSchedulerImpl and the default_task_runner could be created on
-  // the main thread and then bound in the worker thread (similar to what
-  // happens with SequenceManager)
-  thread_->WaitForInit();
 }
 
 std::unique_ptr<NonMainThreadSchedulerImpl>
@@ -90,12 +83,10 @@ void WorkerThread::ShutdownOnThread() {
 WorkerThread::SimpleThreadImpl::SimpleThreadImpl(
     const WTF::String& name_prefix,
     const base::SimpleThread ::Options& options,
-    NonMainThreadSchedulerFactory factory,
     bool supports_gc,
     WorkerThread* worker_thread)
     : SimpleThread(name_prefix.Utf8(), options),
       thread_(worker_thread),
-      scheduler_factory_(std::move(factory)),
       supports_gc_(supports_gc) {
   // TODO(alexclarke): Do we need to unify virtual time for workers and the main
   // thread?
@@ -110,15 +101,17 @@ WorkerThread::SimpleThreadImpl::SimpleThreadImpl(
       base::sequence_manager::kTaskTypeNone);
 }
 
-void WorkerThread::SimpleThreadImpl::WaitForInit() {
-  if (is_initialized_.IsSet())
-    return;
-  base::WaitableEvent initialized;
-  internal_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&base::WaitableEvent::Signal,
-                                base::Unretained(&initialized)));
-  base::ScopedAllowBaseSyncPrimitives allow_wait;
-  initialized.Wait();
+void WorkerThread::SimpleThreadImpl::CreateScheduler() {
+  DCHECK(!non_main_thread_scheduler_);
+  DCHECK(!default_task_runner_);
+  DCHECK(sequence_manager_);
+
+  non_main_thread_scheduler_ =
+      thread_->CreateNonMainThreadScheduler(sequence_manager_.get());
+  non_main_thread_scheduler_->Init();
+  default_task_runner_ =
+      non_main_thread_scheduler_->DefaultTaskQueue()->CreateTaskRunner(
+          TaskType::kWorkerThreadTaskQueueDefault);
 }
 
 WorkerThread::GCSupport::GCSupport(WorkerThread* thread) {
@@ -142,20 +135,17 @@ void WorkerThread::SimpleThreadImpl::ShutdownOnThread() {
 }
 
 void WorkerThread::SimpleThreadImpl::Run() {
+  DCHECK(non_main_thread_scheduler_)
+      << "CreateScheduler() should be called before starting the thread.";
+  non_main_thread_scheduler_->AttachToCurrentThread();
+
   auto scoped_sequence_manager = std::move(sequence_manager_);
   auto scoped_internal_task_queue = std::move(internal_task_queue_);
   scoped_sequence_manager->BindToMessagePump(
       base::MessagePump::Create(base::MessagePumpType::DEFAULT));
-  non_main_thread_scheduler_ =
-      std::move(scheduler_factory_).Run(scoped_sequence_manager.get());
-  non_main_thread_scheduler_->Init();
-  default_task_runner_ =
-      non_main_thread_scheduler_->DefaultTaskQueue()->CreateTaskRunner(
-          TaskType::kWorkerThreadTaskQueueDefault);
+
   base::RunLoop run_loop;
   run_loop_ = &run_loop;
-  is_initialized_.Set();
-  // UpdateThreadTLS requires |default_task_runner_| and |is_initialized| set.
   Thread::UpdateThreadTLS(thread_);
 
   if (supports_gc_)

@@ -105,6 +105,7 @@ class WorkerSchedulerTest : public testing::Test {
 
   void SetUp() override {
     scheduler_->Init();
+    scheduler_->AttachToCurrentThread();
     worker_scheduler_ =
         std::make_unique<WorkerSchedulerForTest>(scheduler_.get());
   }

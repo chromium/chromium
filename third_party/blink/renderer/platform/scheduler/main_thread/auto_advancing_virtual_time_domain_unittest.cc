@@ -36,6 +36,7 @@ class AutoAdvancingVirtualTimeDomainTest : public testing::Test {
         nullptr, test_task_runner_, test_task_runner_->GetMockTickClock());
     scheduler_helper_.reset(new NonMainThreadSchedulerHelper(
         sequence_manager_.get(), nullptr, TaskType::kInternalTest));
+    scheduler_helper_->AttachToCurrentThread();
 
     scheduler_helper_->AddTaskTimeObserver(&test_task_time_observer_);
     task_queue_ = scheduler_helper_->DefaultNonMainThreadTaskQueue();
