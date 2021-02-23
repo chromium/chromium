@@ -1730,37 +1730,6 @@
             ]
         }
     ],
-    "ClientSideDetectionModel": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithVisualModel2",
-                    "params": {
-                        "ModelNum": "6"
-                    },
-                    "enable_features": [
-                        "ClientSideDetectionModel"
-                    ]
-                },
-                {
-                    "name": "EnabledDomOnly",
-                    "params": {
-                        "ModelNum": "4"
-                    },
-                    "enable_features": [
-                        "ClientSideDetectionModel"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClientSideDetectionModelOnAndroid": [
         {
             "platforms": [
@@ -6190,6 +6159,28 @@
                     "name": "Enabled",
                     "enable_features": [
                         "SafeBrowsingRealTimeUrlLookupEnabledWithToken"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SafeBrowsingVisualCsdModel": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20210208",
+                    "params": {
+                        "ModelNum": "8"
+                    },
+                    "enable_features": [
+                        "ClientSideDetectionModel"
                     ]
                 }
             ]
