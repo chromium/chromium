@@ -2949,6 +2949,8 @@ static_library("ui") {
       "webui/signin/signin_reauth_handler.h",
       "webui/signin/signin_reauth_ui.cc",
       "webui/signin/signin_reauth_ui.h",
+      "webui/signin/signin_ui_error.cc",
+      "webui/signin/signin_ui_error.h",
       "webui/signin/signin_utils_desktop.cc",
       "webui/signin/signin_utils_desktop.h",
       "webui/welcome/bookmark_handler.cc",

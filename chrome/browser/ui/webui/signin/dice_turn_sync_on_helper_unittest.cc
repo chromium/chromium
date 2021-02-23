@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
+#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/test_signin_client_builder.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -78,8 +80,7 @@ class TestDiceTurnSyncOnHelperDelegate : public DiceTurnSyncOnHelper::Delegate {
 
  private:
   // DiceTurnSyncOnHelper::Delegate:
-  void ShowLoginError(const std::string& email,
-                      const std::string& error_message) override;
+  void ShowLoginError(const SigninUIError& error) override;
   void ShowMergeSyncDataConfirmation(
       const std::string& previous_email,
       const std::string& new_email,
@@ -354,8 +355,7 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
   }
 
   void CheckDelegateCalls() {
-    EXPECT_EQ(expected_login_error_email_, login_error_email_);
-    EXPECT_EQ(expected_login_error_message_, login_error_message_);
+    EXPECT_EQ(expected_login_error_, login_error_);
     EXPECT_EQ(expected_merge_data_previous_email_, merge_data_previous_email_);
     EXPECT_EQ(expected_merge_data_new_email_, merge_data_new_email_);
     EXPECT_EQ(expected_enterprise_confirmation_email_,
@@ -368,14 +368,12 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
   }
 
   // Functions called by the DiceTurnSyncOnHelper::Delegate:
-  void OnShowLoginError(const std::string& email,
-                        const std::string& error_message) {
+  void OnShowLoginError(const SigninUIError& error) {
     EXPECT_FALSE(sync_confirmation_shown_);
-    EXPECT_FALSE(email.empty());
-    EXPECT_TRUE(login_error_email_.empty())
+    EXPECT_FALSE(error.IsOk());
+    EXPECT_FALSE(login_error_.has_value())
         << "Login error should be shown only once.";
-    login_error_email_ = email;
-    login_error_message_ = error_message;  // May be empty.
+    login_error_ = error;
   }
 
   void OnShowMergeSyncDataConfirmation(
@@ -483,8 +481,7 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
   bool run_delegate_callbacks_ = true;
 
   // Expected delegate calls.
-  std::string expected_login_error_email_;
-  std::string expected_login_error_message_;
+  base::Optional<SigninUIError> expected_login_error_;
   std::string expected_enterprise_confirmation_email_;
   std::string expected_merge_data_previous_email_;
   std::string expected_merge_data_new_email_;
@@ -512,8 +509,7 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
 
   // State of the delegate calls.
   int delegate_destroyed_ = 0;
-  std::string login_error_email_;
-  std::string login_error_message_;
+  base::Optional<SigninUIError> login_error_;
   std::string enterprise_confirmation_email_;
   std::string merge_data_previous_email_;
   std::string merge_data_new_email_;
@@ -532,9 +528,8 @@ TestDiceTurnSyncOnHelperDelegate::~TestDiceTurnSyncOnHelperDelegate() {
 }
 
 void TestDiceTurnSyncOnHelperDelegate::ShowLoginError(
-    const std::string& email,
-    const std::string& error_message) {
-  test_fixture_->OnShowLoginError(email, error_message);
+    const SigninUIError& error) {
+  test_fixture_->OnShowLoginError(error);
 }
 
 void TestDiceTurnSyncOnHelperDelegate::ShowMergeSyncDataConfirmation(
@@ -584,7 +579,7 @@ TEST_F(DiceTurnSyncOnHelperTest, InvalidAccount) {
 // Tests that the login error is displayed and that the account is kept.
 TEST_F(DiceTurnSyncOnHelperTest, CanOfferSigninErrorKeepAccount) {
   // Set expectations.
-  expected_login_error_email_ = kEmail;
+  expected_login_error_ = SigninUIError::Other(kEmail);
   // Configure the test.
   profile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
   // Signin flow.
@@ -601,7 +596,7 @@ TEST_F(DiceTurnSyncOnHelperTest, CanOfferSigninErrorKeepAccount) {
 // Tests that the login error is displayed and that the account is removed.
 TEST_F(DiceTurnSyncOnHelperTest, CanOfferSigninErrorRemoveAccount) {
   // Set expectations.
-  expected_login_error_email_ = kEmail;
+  expected_login_error_ = SigninUIError::Other(kEmail);
   // Configure the test.
   profile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
   // Signin flow.

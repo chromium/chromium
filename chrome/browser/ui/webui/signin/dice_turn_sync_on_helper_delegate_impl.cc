@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_email_confirmation_dialog.h"
+#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/common/url_constants.h"
 
 namespace {
@@ -84,10 +85,10 @@ DiceTurnSyncOnHelperDelegateImpl::~DiceTurnSyncOnHelperDelegateImpl() {
 }
 
 void DiceTurnSyncOnHelperDelegateImpl::ShowLoginError(
-    const std::string& email,
-    const std::string& error_message) {
-  DiceTurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser(email, error_message,
-                                                           browser_);
+    const SigninUIError& error) {
+  DCHECK(!error.IsOk());
+  DiceTurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser(
+      error.email(), error.message(), browser_);
 }
 
 void DiceTurnSyncOnHelperDelegateImpl::ShowEnterpriseAccountConfirmation(

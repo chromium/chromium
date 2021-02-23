@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 
 class Profile;
+class SigninUIError;
 
 // Handles the sync consent screen for creating a signed-in profile from the
 // profile picker.
@@ -27,8 +28,7 @@ class ProfilePickerViewSyncDelegate : public DiceTurnSyncOnHelper::Delegate,
 
  private:
   // DiceTurnSyncOnHelper::Delegate:
-  void ShowLoginError(const std::string& email,
-                      const std::string& error_message) override;
+  void ShowLoginError(const SigninUIError& error) override;
   void ShowMergeSyncDataConfirmation(
       const std::string& previous_email,
       const std::string& new_email,

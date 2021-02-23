@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
+#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/common/webui_url_constants.h"
 
 namespace {
@@ -86,9 +87,7 @@ ProfilePickerViewSyncDelegate::ProfilePickerViewSyncDelegate(
 
 ProfilePickerViewSyncDelegate::~ProfilePickerViewSyncDelegate() = default;
 
-void ProfilePickerViewSyncDelegate::ShowLoginError(
-    const std::string& email,
-    const std::string& error_message) {
+void ProfilePickerViewSyncDelegate::ShowLoginError(const SigninUIError& error) {
   ProfileMetrics::LogProfileAddSignInFlowOutcome(
       ProfileMetrics::ProfileAddSignInFlowOutcome::kLoginError);
 
@@ -100,8 +99,8 @@ void ProfilePickerViewSyncDelegate::ShowLoginError(
   // switch or to start sign-in once again.
   std::move(open_browser_callback_)
       .Run(base::BindOnce(
-               &DiceTurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser, email,
-               error_message),
+               &DiceTurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser,
+               error.email(), error.message()),
            /*enterprise_sync_consent_needed=*/false);
 }
 

@@ -15,6 +15,7 @@
 
 class Browser;
 class Profile;
+class SigninUIError;
 
 // Default implementation for DiceTurnSyncOnHelper::Delegate.
 class DiceTurnSyncOnHelperDelegateImpl : public DiceTurnSyncOnHelper::Delegate,
@@ -26,8 +27,7 @@ class DiceTurnSyncOnHelperDelegateImpl : public DiceTurnSyncOnHelper::Delegate,
 
  private:
   // DiceTurnSyncOnHelper::Delegate:
-  void ShowLoginError(const std::string& email,
-                      const std::string& error_message) override;
+  void ShowLoginError(const SigninUIError& error) override;
   void ShowMergeSyncDataConfirmation(
       const std::string& previous_email,
       const std::string& new_email,

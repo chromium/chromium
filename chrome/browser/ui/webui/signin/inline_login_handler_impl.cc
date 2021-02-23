@@ -56,6 +56,7 @@
 #include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper_delegate_impl.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
+#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 #include "chrome/common/search/selected_colors_info.h"
@@ -795,13 +796,15 @@ void InlineLoginHandlerImpl::FinishCompleteLogin(
       can_offer_for = CAN_OFFER_SIGNIN_FOR_SECONDARY_ACCOUNT;
   }
 
-  std::string error_msg;
-  bool can_offer = reason == HandlerSigninReason::FETCH_LST_ONLY ||
-                   CanOfferSignin(profile, can_offer_for, params.gaia_id,
-                                  params.email, &error_msg);
-  if (!can_offer) {
-    params.handler->HandleLoginError(error_msg,
-                                     base::UTF8ToUTF16(params.email));
+  SigninUIError can_offer_error = SigninUIError::Ok();
+  if (reason != HandlerSigninReason::FETCH_LST_ONLY) {
+    can_offer_error =
+        CanOfferSignin(profile, can_offer_for, params.gaia_id, params.email);
+  }
+  if (!can_offer_error.IsOk()) {
+    params.handler->HandleLoginError(
+        base::UTF16ToUTF8(can_offer_error.message()),
+        base::UTF8ToUTF16(params.email));
     return;
   }
 

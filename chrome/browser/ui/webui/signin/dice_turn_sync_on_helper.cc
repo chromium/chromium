@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper_delegate_impl.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
+#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
@@ -161,12 +162,11 @@ void SetCurrentDiceTurnSyncOnHelper(Profile* profile,
 
 // static
 void DiceTurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser(
-    const std::string& email,
-    const std::string& error_message,
+    const base::string16& email,
+    const base::string16& error_message,
     Browser* browser) {
   LoginUIServiceFactory::GetForProfile(browser->profile())
-      ->DisplayLoginResult(browser, base::UTF8ToUTF16(error_message),
-                           base::UTF8ToUTF16(email));
+      ->DisplayLoginResult(browser, error_message, email);
 }
 
 // static
@@ -282,15 +282,14 @@ DiceTurnSyncOnHelper::~DiceTurnSyncOnHelper() {
 }
 
 bool DiceTurnSyncOnHelper::HasCanOfferSigninError() {
-  std::string error_msg;
-  bool can_offer =
+  SigninUIError can_offer_error =
       CanOfferSignin(profile_, CAN_OFFER_SIGNIN_FOR_ALL_ACCOUNTS,
-                     account_info_.gaia, account_info_.email, &error_msg);
-  if (can_offer)
+                     account_info_.gaia, account_info_.email);
+  if (can_offer_error.IsOk())
     return false;
 
   // Display the error message
-  delegate_->ShowLoginError(account_info_.email, error_msg);
+  delegate_->ShowLoginError(can_offer_error);
   return true;
 }
 

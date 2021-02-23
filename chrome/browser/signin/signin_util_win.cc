@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
+#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "components/prefs/pref_service.h"
@@ -309,9 +310,9 @@ bool IsGCPWUsedInOtherProfile(Profile* profile) {
 bool CanSignInToCurrentProfile(const std::string& gaia_id,
                                const std::string& email,
                                Profile* profile) {
-  std::string error_message;
   return CanOfferSignin(profile, CAN_OFFER_SIGNIN_FOR_ALL_ACCOUNTS, gaia_id,
-                        email, &error_message);
+                        email)
+      .IsOk();
 }
 
 void SigninWithCredentialProviderIfPossible(Profile* profile) {
