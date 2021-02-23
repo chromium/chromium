@@ -13,6 +13,9 @@ namespace web_app {
 
 namespace {
 
+const std::string kTestCaseFileName =
+    "web_app_integration_browsertest_cases.csv";
+
 // Returns the path of the requested file in the test data directory.
 base::FilePath GetTestFileDir() {
   base::FilePath file_path;
@@ -25,13 +28,14 @@ base::FilePath GetTestFileDir() {
 
 std::vector<std::string> BuildAllPlatformTestCaseSet() {
   return WebAppIntegrationBrowserTestBase::BuildAllPlatformTestCaseSet(
-      GetTestFileDir());
+      GetTestFileDir(), kTestCaseFileName);
 }
 
 }  // anonymous namespace
 
 class WebAppIntegrationBrowserTest
     : public InProcessBrowserTest,
+      public WebAppIntegrationBrowserTestBase::TestDelegate,
       public testing::WithParamInterface<std::string> {
  public:
   WebAppIntegrationBrowserTest() : helper_(this) {}
@@ -46,10 +50,35 @@ class WebAppIntegrationBrowserTest
   void SetUpOnMainThread() override { helper_.SetUpOnMainThread(); }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    ASSERT_TRUE(embedded_test_server()->Start());
     command_line->AppendSwitchASCII(
         network::switches::kUnsafelyTreatInsecureOriginAsSecure,
         helper_.GetInstallableAppURL().GetOrigin().spec());
   }
+
+  // WebAppIntegrationBrowserTestBase::TestDelegate
+  Browser* CreateBrowser(Profile* profile) override {
+    return InProcessBrowserTest::CreateBrowser(profile);
+  }
+
+  void AddBlankTabAndShow(Browser* browser) override {
+    InProcessBrowserTest::AddBlankTabAndShow(browser);
+  }
+
+  net::EmbeddedTestServer* EmbeddedTestServer() override {
+    return embedded_test_server();
+  }
+
+  std::vector<Profile*> GetAllProfiles() override {
+    return std::vector<Profile*>{browser()->profile()};
+  }
+
+  bool UserSigninInternal() override {
+    NOTREACHED();
+    return false;
+  }
+  void TurnSyncOff() override { NOTREACHED(); }
+  void TurnSyncOn() override { NOTREACHED(); }
 
   WebAppIntegrationBrowserTestBase helper_;
 };

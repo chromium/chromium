@@ -98,6 +98,9 @@ class WebAppInstallObserver final : public AppRegistrarObserver {
   void SetWebAppWillBeUpdatedFromSyncDelegate(
       WebAppWillBeUpdatedFromSyncDelegate delegate);
 
+  const std::set<AppId>& listening_for_install_app_ids();
+  const std::set<AppId>& listening_for_uninstall_app_ids();
+
   // AppRegistrarObserver:
   void OnWebAppInstalled(const AppId& app_id) override;
   void OnWebAppInstalledWithOsHooks(const AppId& app_id) override;

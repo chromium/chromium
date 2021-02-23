@@ -29,6 +29,17 @@ const WebApp* WebAppRegistrar::GetAppById(const AppId& app_id) const {
   return it == registry_.end() ? nullptr : it->second.get();
 }
 
+std::vector<AppId> WebAppRegistrar::GetAppsInSyncInstall() {
+  AppSet apps_in_sync_install = AppSet(
+      this, [](const WebApp& web_app) { return web_app.is_in_sync_install(); });
+
+  std::vector<AppId> app_ids;
+  for (const WebApp& app : apps_in_sync_install)
+    app_ids.push_back(app.app_id());
+
+  return app_ids;
+}
+
 void WebAppRegistrar::Start() {
   // Profile manager can be null in unit tests.
   if (g_browser_process->profile_manager())

@@ -51,7 +51,9 @@ struct AppState {
   AppState(web_app::AppId app_id,
            const std::string app_name,
            const GURL app_scope,
-           const blink::mojom::DisplayMode& app_display_mode);
+           const blink::mojom::DisplayMode& effective_display_mode,
+           const blink::mojom::DisplayMode& user_display_mode,
+           bool is_installed_locally);
   ~AppState();
   AppState(const AppState&);
   bool operator==(const AppState& other) const;
@@ -59,39 +61,58 @@ struct AppState {
   web_app::AppId id;
   std::string name;
   GURL scope;
-  blink::mojom::DisplayMode display_mode;
+  blink::mojom::DisplayMode effective_display_mode;
+  blink::mojom::DisplayMode user_display_mode;
+  bool is_installed_locally;
 };
 
-struct StateSnapshot {
-  StateSnapshot(base::flat_map<Browser*, BrowserState> browser_state,
-                base::flat_map<web_app::AppId, AppState> app_state);
-  ~StateSnapshot();
-  StateSnapshot(const StateSnapshot&);
-  bool operator==(const StateSnapshot& other) const;
+struct ProfileState {
+  ProfileState(base::flat_map<Browser*, BrowserState> browser_state,
+               base::flat_map<web_app::AppId, AppState> app_state);
+  ~ProfileState();
+  ProfileState(const ProfileState&);
+  bool operator==(const ProfileState& other) const;
 
   base::flat_map<Browser*, BrowserState> browsers;
   base::flat_map<web_app::AppId, AppState> apps;
 };
 
-struct NavigateToSiteResult {
-  content::WebContents* web_contents;
-  webapps::TestAppBannerManagerDesktop* app_banner_manager;
-  bool installable;
+struct StateSnapshot {
+  explicit StateSnapshot(base::flat_map<Profile*, ProfileState> profile_state);
+  ~StateSnapshot();
+  StateSnapshot(const StateSnapshot&);
+  bool operator==(const StateSnapshot& other) const;
+
+  base::flat_map<Profile*, ProfileState> profiles;
 };
 
 class WebAppIntegrationBrowserTestBase {
  public:
-  explicit WebAppIntegrationBrowserTestBase(
-      InProcessBrowserTest* in_process_browser_test);
+  struct TestDelegate {
+    virtual Browser* CreateBrowser(Profile* profile) = 0;
+    virtual void AddBlankTabAndShow(Browser* browser) = 0;
+    virtual net::EmbeddedTestServer* EmbeddedTestServer() = 0;
+    virtual std::vector<Profile*> GetAllProfiles() = 0;
+    virtual bool UserSigninInternal() = 0;
+    virtual void TurnSyncOff() = 0;
+    virtual void TurnSyncOn() = 0;
+  };
+
+  explicit WebAppIntegrationBrowserTestBase(TestDelegate* delegate);
   ~WebAppIntegrationBrowserTestBase();
 
+  static base::Optional<ProfileState> GetStateForProfile(
+      StateSnapshot* state_snapshot,
+      Profile* profile);
   static base::Optional<BrowserState> GetStateForBrowser(
-      base::flat_map<Browser*, BrowserState> browser_state_map,
+      StateSnapshot* state_snapshot,
+      Profile* profile,
       Browser* browser);
   static base::Optional<TabState> GetStateForActiveTab(
       BrowserState browser_state);
   static base::Optional<AppState> GetStateForAppId(
-      base::flat_map<web_app::AppId, AppState> apps,
+      StateSnapshot* state_snapshot,
+      Profile* profile,
       web_app::AppId id);
 
   static bool IsInspectionAction(const std::string& action);
@@ -111,7 +132,8 @@ class WebAppIntegrationBrowserTestBase {
       base::FilePath test_data_dir,
       const std::string& file_name);
   static std::vector<std::string> BuildAllPlatformTestCaseSet(
-      base::FilePath test_data_dir);
+      base::FilePath test_data_dir,
+      const std::string& test_case_file_name);
   void ParseParams(std::string action_strings);
   void ExecuteAction(const std::string& action_string);
 
@@ -119,20 +141,26 @@ class WebAppIntegrationBrowserTestBase {
   void AddPolicyAppInternal(base::Value default_launch_container);
   void ClosePWA();
   void InstallCreateShortcutTabbed();
+  void InstallLocally();
   web_app::AppId InstallOmniboxOrMenu();
   void LaunchInternal();
   void ListAppsInternal();
-  NavigateToSiteResult NavigateToSite(Browser* browser, const GURL& url);
+  void NavigateTabbedBrowserToSite(const GURL& url);
   void RemovePolicyApp();
   void SetOpenInTabInternal();
   void SetOpenInWindowInternal();
+  void SwitchProfileClients();
+  void TurnSyncOff();
+  void TurnSyncOn();
   void UninstallFromMenu();
   void UninstallInternal();
+  void UserSigninInternal();
 
   // Assert Actions
-  void AssertAppInListNotWindowed();
+  void AssertAppNotLocallyInstalledInternal();
   void AssertAppNotInList();
-  void AssertDisplayModeInternal(DisplayMode display_mode);
+  void AssertManifestDisplayModeInternal(DisplayMode display_mode);
+  void AssertUserDisplayModeInternal(DisplayMode display_mode);
   void AssertInstallable();
   void AssertInstallIconShown();
   void AssertInstallIconNotShown();
@@ -141,34 +169,41 @@ class WebAppIntegrationBrowserTestBase {
   void AssertTabCreated();
   void AssertWindowCreated();
 
+  // Helpers
   std::vector<std::string>& testing_actions() { return testing_actions_; }
+  std::vector<AppId> GetAppIdsForProfile(Profile* profile);
   GURL GetInstallableAppURL();
+  WebAppProvider* GetProviderForProfile(Profile* profile);
 
  private:
   StateSnapshot ConstructStateSnapshot();
+  const net::EmbeddedTestServer* embedded_test_server();
   GURL GetNonInstallableAppURL();
   GURL GetInScopeURL();
   GURL GetOutOfScopeURL();
 
   content::WebContents* GetCurrentTab(Browser* browser);
-  Browser* browser() { return in_process_browser_test_->browser(); }
-  Profile* profile() { return browser()->profile(); }
-  Browser* app_browser() { return app_browser_; }
   WebAppProvider* GetProvider() { return WebAppProvider::Get(profile()); }
-  PageActionIconView* pwa_install_view() { return pwa_install_view_; }
+  Browser* browser();
+  Profile* profile() {
+    if (!active_profile_) {
+      active_profile_ = delegate_->GetAllProfiles()[0];
+    }
+    return active_profile_;
+  }
+  Browser* app_browser() { return app_browser_; }
+  PageActionIconView* pwa_install_view();
 
-  InProcessBrowserTest* in_process_browser_test_;
+  TestDelegate* delegate_;
   std::unique_ptr<StateSnapshot> before_action_state_;
   std::unique_ptr<StateSnapshot> after_action_state_;
   base::flat_map<std::string, bool> site_installability_map_;
   Browser* app_browser_ = nullptr;
+  Browser* active_browser_ = nullptr;
+  Profile* active_profile_ = nullptr;
   std::vector<AppId> app_ids_;
   std::vector<std::string> testing_actions_;
-  NavigateToSiteResult last_navigation_result_;
   AppId active_app_id_;
-  net::EmbeddedTestServer https_server_;
-  base::FilePath test_data_dir_;
-  PageActionIconView* pwa_install_view_ = nullptr;
   ScopedOsHooksSuppress os_hooks_suppress_;
 };
 

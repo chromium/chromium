@@ -107,6 +107,8 @@ class WebAppSyncBridge : public AppRegistryController,
   std::string GetClientTag(const syncer::EntityData& entity_data) override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
 
+  const std::set<AppId>& GetAppsInSyncUninstallForTest();
+
  private:
   void CheckRegistryUpdateData(const RegistryUpdateData& update_data) const;
 
@@ -114,6 +116,9 @@ class WebAppSyncBridge : public AppRegistryController,
   // disposed.
   std::vector<std::unique_ptr<WebApp>> UpdateRegistrar(
       std::unique_ptr<RegistryUpdateData> update_data);
+
+  // Useful for identifying apps that have not yet been fully uninstalled.
+  std::set<AppId> apps_in_sync_uninstall_;
 
   // Update the remote sync server.
   void UpdateSync(const RegistryUpdateData& update_data,
@@ -123,6 +128,7 @@ class WebAppSyncBridge : public AppRegistryController,
                         Registry registry,
                         std::unique_ptr<syncer::MetadataBatch> metadata_batch);
   void OnDataWritten(CommitCallback callback, bool success);
+  void WebAppUninstalled(const AppId& app, bool uninstalled);
 
   void ReportErrorToChangeProcessor(const syncer::ModelError& error);
 

@@ -36,6 +36,7 @@ class WebAppRegistrar : public AppRegistrar, public ProfileManagerObserver {
   bool is_empty() const { return registry_.empty(); }
 
   const WebApp* GetAppById(const AppId& app_id) const;
+  std::vector<AppId> GetAppsInSyncInstall();
 
   // AppRegistrar:
   void Start() override;

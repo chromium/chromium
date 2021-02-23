@@ -143,6 +143,15 @@ void WebAppInstallObserver::SetWebAppWillBeUpdatedFromSyncDelegate(
   app_will_be_updated_from_sync_delegate_ = delegate;
 }
 
+const std::set<AppId>& WebAppInstallObserver::listening_for_install_app_ids() {
+  return listening_for_install_app_ids_;
+}
+
+const std::set<AppId>&
+WebAppInstallObserver::listening_for_uninstall_app_ids() {
+  return listening_for_uninstall_app_ids_;
+}
+
 void WebAppInstallObserver::OnWebAppInstalled(const AppId& app_id) {
   listening_for_install_app_ids_.erase(app_id);
   if (!listening_for_install_app_ids_.empty())

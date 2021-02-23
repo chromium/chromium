@@ -199,6 +199,13 @@ static_library("test_support") {
     ]
   }
 
+  if (!is_android) {
+    sources += [
+      "../browser/banners/test_app_banner_manager_desktop.cc",
+      "../browser/banners/test_app_banner_manager_desktop.h",
+    ]
+  }
+
   configs += [ "//build/config:precompiled_headers" ]
 
   deps = [
@@ -989,8 +996,6 @@ if (!is_android) {
       "../browser/banners/app_banner_manager_browsertest_base.cc",
       "../browser/banners/app_banner_manager_browsertest_base.h",
       "../browser/banners/app_banner_manager_desktop_browsertest.cc",
-      "../browser/banners/test_app_banner_manager_desktop.cc",
-      "../browser/banners/test_app_banner_manager_desktop.h",
       "../browser/battery/battery_metrics_browsertest.cc",
       "../browser/bitmap_fetcher/bitmap_fetcher_browsertest.cc",
       "../browser/bluetooth/web_bluetooth_browsertest.cc",
@@ -1520,8 +1525,6 @@ if (!is_android) {
       "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_browsertest.cc",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_minimal_ui_test.cc",
       "../browser/ui/views/web_apps/web_app_integration_browsertest.cc",
-      "../browser/ui/views/web_apps/web_app_integration_browsertest_base.cc",
-      "../browser/ui/views/web_apps/web_app_integration_browsertest_base.h",
       "../browser/ui/views/web_apps/web_app_tab_strip_browsertest.cc",
       "../browser/ui/views/webauthn/authenticator_dialog_view_browsertest.cc",
       "../browser/ui/views/webauthn/webauthn_icon_interactive_uitest.cc",
@@ -6336,6 +6339,8 @@ if (!is_android) {
       "../browser/ui/search/instant_test_utils.h",
       "../browser/ui/search/local_ntp_test_utils.cc",
       "../browser/ui/search/local_ntp_test_utils.h",
+      "../browser/ui/views/web_apps/web_app_integration_browsertest_base.cc",
+      "../browser/ui/views/web_apps/web_app_integration_browsertest_base.h",
       "../browser/ui/webui/signin/login_ui_test_utils.cc",
       "../browser/ui/webui/signin/login_ui_test_utils.h",
       "../browser/web_applications/test/profile_test_helper.cc",
@@ -7222,6 +7227,7 @@ if (!is_fuchsia && !is_android) {
       "../browser/sync/test/integration/two_client_user_events_sync_test.cc",
       "../browser/sync/test/integration/two_client_wallet_sync_test.cc",
       "../browser/sync/test/integration/two_client_web_apps_bmo_sync_test.cc",
+      "../browser/sync/test/integration/two_client_web_apps_integration_sync_test.cc",
       "../browser/sync/test/integration/two_client_web_apps_sync_test.cc",
     ]
 
@@ -7229,6 +7235,7 @@ if (!is_fuchsia && !is_android) {
       "//chrome/test/data/password/",
       "//chrome/test/data/sync/",
       "//chrome/test/data/web_apps/",
+      "//chrome/test/data/banners/",
       "//net/tools/testserver/",
       "//third_party/pywebsocket3/src/mod_pywebsocket/",
       "//third_party/tlslite/",
