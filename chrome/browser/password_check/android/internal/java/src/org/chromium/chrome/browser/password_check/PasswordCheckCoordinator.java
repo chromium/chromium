@@ -12,8 +12,8 @@ import androidx.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckChangePasswordHelper;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckIconHelper;
-import org.chromium.chrome.browser.password_check.helper.PasswordCheckReauthenticationHelper;
 import org.chromium.chrome.browser.password_check.internal.R;
+import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -28,7 +28,7 @@ class PasswordCheckCoordinator implements PasswordCheckComponentUi, LifecycleObs
     private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
     private final PasswordCheckFragmentView mFragmentView;
     private final SettingsLauncher mSettingsLauncher;
-    private final PasswordCheckReauthenticationHelper mReauthenticationHelper;
+    private final PasswordAccessReauthenticationHelper mReauthenticationHelper;
     private final PasswordCheckMediator mMediator;
     private PropertyModel mModel;
 
@@ -82,7 +82,7 @@ class PasswordCheckCoordinator implements PasswordCheckComponentUi, LifecycleObs
         //  Figure out why it isn't working and use the following lifecycle observer once it does:
         // mFragmentView.getLifecycle().addObserver(this);
 
-        mReauthenticationHelper = new PasswordCheckReauthenticationHelper(
+        mReauthenticationHelper = new PasswordAccessReauthenticationHelper(
                 mFragmentView.getActivity(), mFragmentView.getParentFragmentManager());
 
         PasswordCheckChangePasswordHelper changePasswordHelper =

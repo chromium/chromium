@@ -112,7 +112,6 @@ android_library("internal_java") {
     "java/src/org/chromium/chrome/browser/password_check/PasswordCheckViewHolder.java",
     "java/src/org/chromium/chrome/browser/password_check/helper/PasswordCheckChangePasswordHelper.java",
     "java/src/org/chromium/chrome/browser/password_check/helper/PasswordCheckIconHelper.java",
-    "java/src/org/chromium/chrome/browser/password_check/helper/PasswordCheckReauthenticationHelper.java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   resources_package = "org.chromium.chrome.browser.password_check.internal"

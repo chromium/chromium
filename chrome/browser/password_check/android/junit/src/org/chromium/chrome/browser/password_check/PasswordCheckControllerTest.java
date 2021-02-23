@@ -63,8 +63,8 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.password_check.PasswordCheckProperties.ItemType;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckChangePasswordHelper;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckIconHelper;
-import org.chromium.chrome.browser.password_check.helper.PasswordCheckReauthenticationHelper;
-import org.chromium.chrome.browser.password_check.helper.PasswordCheckReauthenticationHelper.ReauthReason;
+import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper;
+import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper.ReauthReason;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -110,7 +110,7 @@ public class PasswordCheckControllerTest {
     @Mock
     private PasswordCheck mPasswordCheck;
     @Mock
-    private PasswordCheckReauthenticationHelper mReauthenticationHelper;
+    private PasswordAccessReauthenticationHelper mReauthenticationHelper;
     @Mock
     private SettingsLauncher mSettingsLauncher;
     @Mock
