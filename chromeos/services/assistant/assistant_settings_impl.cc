@@ -13,7 +13,6 @@
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/services/assistant/assistant_manager_service_impl.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
-#include "chromeos/services/assistant/public/proto/assistant_device_settings_ui.pb.h"
 #include "chromeos/services/assistant/public/proto/settings_ui.pb.h"
 #include "chromeos/services/assistant/service_context.h"
 #include "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom.h"
@@ -171,42 +170,6 @@ void AssistantSettingsImpl::SyncDeviceAppsStatus(
   GetSettings(selector.SerializeAsString(),
               base::BindOnce(&AssistantSettingsImpl::HandleDeviceAppsStatusSync,
                              weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void AssistantSettingsImpl::UpdateServerDeviceSettings() {
-  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
-
-  const std::string device_id =
-      assistant_manager_service_->assistant_manager()->GetDeviceId();
-  if (device_id.empty())
-    return;
-
-  // Update device id and device type.
-  assistant::SettingsUiUpdate update;
-  assistant::AssistantDeviceSettingsUpdate* device_settings_update =
-      update.mutable_assistant_device_settings_update()
-          ->add_assistant_device_settings_update();
-  device_settings_update->set_device_id(device_id);
-  device_settings_update->set_assistant_device_type(
-      assistant::AssistantDevice::CROS);
-
-  if (assistant_state()->hotword_enabled().value()) {
-    device_settings_update->mutable_device_settings()->set_speaker_id_enabled(
-        true);
-  }
-
-  VLOG(1) << "Update assistant device locale: "
-          << assistant_state()->locale().value();
-  device_settings_update->mutable_device_settings()->set_locale(
-      assistant_state()->locale().value());
-
-  // Enable personal readout to grant permission for personal features.
-  device_settings_update->mutable_device_settings()->set_personal_readout(
-      assistant::AssistantDeviceSettings::PERSONAL_READOUT_ENABLED);
-
-  // Device settings update result is not handled because it is not included in
-  // the SettingsUiUpdateResult.
-  UpdateSettings(update.SerializeAsString(), base::DoNothing());
 }
 
 void AssistantSettingsImpl::HandleSpeakerIdEnrollmentStatusSync(

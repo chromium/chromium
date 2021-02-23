@@ -56,16 +56,12 @@ class ServiceControllerProxy {
   void Start(
       assistant_client::AssistantManagerDelegate* assistant_manager_delegate,
       BootupConfigPtr bootup_config,
-      const std::string& locale,
-      const std::string& locale_override,
-      bool spoken_feedback_enabled,
       const AuthTokens& auth_tokens);
   // Stop and destroy the |AssistantManager| and all related objects.
   void Stop();
   void ResetAllDataAndStop();
 
-  void UpdateInternalOptions(const std::string& locale,
-                             bool spoken_feedback_enabled);
+  void SetSpokenFeedbackEnabled(bool value);
 
   // Passing in an empty vector will start Libassistant in signed-out mode.
   void SetAuthTokens(const AuthTokens& tokens);

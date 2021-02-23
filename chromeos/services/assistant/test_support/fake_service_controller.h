@@ -89,11 +89,10 @@ class FakeServiceController : public libassistant::mojom::ServiceController {
   void AddAndFireStateObserver(
       mojo::PendingRemote<libassistant::mojom::StateObserver> pending_observer)
       override;
-  void SetLocaleOverride(const std::string&) override {}
-  void SetInternalOptions(const std::string& locale,
-                          bool spoken_feedback_enabled) override {}
+  void SetSpokenFeedbackEnabled(bool value) override {}
   void SetAuthenticationTokens(
       std::vector<libassistant::mojom::AuthenticationTokenPtr> tokens) override;
+  void SetHotwordEnabled(bool value) override {}
 
   // Mutex taken in |Start| to allow the calls to block if |BlockStartCalls| was
   // called.

@@ -54,8 +54,6 @@ class AssistantSettingsImpl : public AssistantSettings {
 
   void SyncDeviceAppsStatus(base::OnceCallback<void(bool)> callback);
 
-  void UpdateServerDeviceSettings();
-
  private:
   void HandleSpeakerIdEnrollmentStatusSync(
       libassistant::mojom::SpeakerIdEnrollmentStatusPtr status);

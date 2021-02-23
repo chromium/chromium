@@ -38,16 +38,15 @@ interface ServiceController {
   // Will be a noop if the service is already stopped.
   ResetAllDataAndStop();
 
-  // Sets the locale override of the device. This field overrides the
-  // value obtained from the user's assistant settings.
-  SetLocaleOverride(string locale_override);
-
-  // Sets the internal Libassistant options.
-  SetInternalOptions(string locale, bool spoken_feedback_enabled);
+  // Sets whether spoken feedback is enabled.
+  SetSpokenFeedbackEnabled(bool value);
 
   // Sets the authentication tokens used by Libassistant.
   // Passing in an empty array will restart Libassistant in signed-out mode.
   SetAuthenticationTokens(array<AuthenticationToken> tokens);
+
+  // Sets whether hotword detection is enabled.
+  SetHotwordEnabled(bool value);
 
   // Add a state observer. It will immediately be called with the current state,
   // and then once for each state change.
@@ -78,4 +77,8 @@ struct BootupConfig {
   // If true, Libassistant logs will appear in the user's home directory.
   // If false, the logs will end up in /var/log/chrome/.
   bool log_in_home_dir;
+
+  string locale;
+  bool spoken_feedback_enabled;
+  bool hotword_enabled;
 };

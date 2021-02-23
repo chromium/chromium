@@ -8,7 +8,6 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/optional.h"
-#include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/services/assistant/proxy/libassistant_service_host.h"
 #include "chromeos/services/assistant/public/cpp/migration/assistant_manager_service_delegate.h"
 #include "chromeos/services/assistant/public/cpp/migration/libassistant_v1_api.h"
@@ -81,9 +80,6 @@ ServiceControllerProxy::~ServiceControllerProxy() = default;
 void ServiceControllerProxy::Start(
     assistant_client::AssistantManagerDelegate* assistant_manager_delegate,
     BootupConfigPtr bootup_config,
-    const std::string& locale,
-    const std::string& locale_override,
-    bool spoken_feedback_enabled,
     const AuthTokens& auth_tokens) {
   // We need to initialize the |AssistantManager| once it's created and before
   // it's started, so we register a callback to do just that.
@@ -95,8 +91,6 @@ void ServiceControllerProxy::Start(
   // The mojom service will create the |AssistantManager|.
   service_controller_remote_->Initialize(std::move(bootup_config),
                                          BindURLLoaderFactory());
-  service_controller_remote_->SetLocaleOverride(locale_override);
-  UpdateInternalOptions(locale, spoken_feedback_enabled);
   SetAuthTokens(auth_tokens);
   service_controller_remote_->Start();
 }
@@ -109,11 +103,8 @@ void ServiceControllerProxy::ResetAllDataAndStop() {
   service_controller_remote_->ResetAllDataAndStop();
 }
 
-void ServiceControllerProxy::UpdateInternalOptions(
-    const std::string& locale,
-    bool spoken_feedback_enabled) {
-  service_controller_remote_->SetInternalOptions(locale,
-                                                 spoken_feedback_enabled);
+void ServiceControllerProxy::SetSpokenFeedbackEnabled(bool value) {
+  service_controller_remote_->SetSpokenFeedbackEnabled(value);
 }
 
 void ServiceControllerProxy::SetAuthTokens(const AuthTokens& tokens) {

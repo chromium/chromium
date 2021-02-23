@@ -136,6 +136,16 @@ bool ShouldPutLogsInHomeDirectory() {
   return !redirect_logging;
 }
 
+ServiceControllerProxy::BootupConfigPtr CreateBootupConfig(
+    const base::Optional<std::string>& s3_server_uri_override,
+    const base::Optional<std::string>& device_id_override) {
+  auto result = ServiceControllerProxy::BootupConfig::New();
+  result->s3_server_uri_override = s3_server_uri_override;
+  result->device_id_override = device_id_override;
+  result->log_in_home_dir = ShouldPutLogsInHomeDirectory();
+  return result;
+}
+
 }  // namespace
 
 // Observer that will receive all speech recognition related events,
@@ -224,10 +234,8 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
       speech_recognition_observer_(
           std::make_unique<SpeechRecognitionObserverWrapper>(
               &interaction_subscribers_)),
-      bootup_config_(ServiceControllerProxy::BootupConfig::New(
-          s3_server_uri_override,
-          device_id_override,
-          ShouldPutLogsInHomeDirectory())),
+      bootup_config_(
+          CreateBootupConfig(s3_server_uri_override, device_id_override)),
       weak_factory_(this) {
   if (libassistant_service_host) {
     // During unittests a custom host is passed in, so we'll use that one.
@@ -280,7 +288,7 @@ void AssistantManagerServiceImpl::Start(const base::Optional<UserInfo>& user,
 
   EnableHotword(enable_hotword);
 
-  InitAssistant(user, assistant_state()->locale().value());
+  InitAssistant(user);
 }
 
 void AssistantManagerServiceImpl::Stop() {
@@ -787,14 +795,17 @@ void AssistantManagerServiceImpl::OnStateChanged(
 }
 
 void AssistantManagerServiceImpl::InitAssistant(
-    const base::Optional<UserInfo>& user,
-    const std::string& locale) {
+    const base::Optional<UserInfo>& user) {
   DCHECK(!IsServiceStarted());
 
+  auto bootup_config = bootup_config_.Clone();
+  bootup_config->locale = assistant_state()->locale().value();
+  bootup_config->spoken_feedback_enabled = spoken_feedback_enabled_;
+  bootup_config->hotword_enabled = assistant_state()->hotword_enabled().value();
+
   service_controller().Start(
-      /*assistant_manager_delegate=*/this, bootup_config_.Clone(), locale,
-      GetLocaleOrDefault(assistant_state()->locale().value()),
-      spoken_feedback_enabled_, ToAuthTokensOrEmpty(user));
+      /*assistant_manager_delegate=*/this, std::move(bootup_config),
+      ToAuthTokensOrEmpty(user));
 }
 
 base::Thread& AssistantManagerServiceImpl::GetBackgroundThreadForTesting() {
@@ -809,8 +820,6 @@ void AssistantManagerServiceImpl::OnServiceStarted() {
   UMA_HISTOGRAM_TIMES("Assistant.ServiceStartTime", time_since_started);
 
   SetStateAndInformObservers(State::STARTED);
-
-  assistant_settings_->UpdateServerDeviceSettings();
 
   if (base::FeatureList::IsEnabled(assistant::features::kAssistantAppSupport))
     scoped_app_list_event_subscriber_.Observe(device_actions());
@@ -881,10 +890,8 @@ void AssistantManagerServiceImpl::OnAccessibilityStatusChanged(
 
   // When |spoken_feedback_enabled_| changes we need to update our internal
   // options to turn on/off A11Y features in LibAssistant.
-  if (IsServiceStarted()) {
-    service_controller().UpdateInternalOptions(
-        assistant_state()->locale().value(), spoken_feedback_enabled_);
-  }
+  if (IsServiceStarted())
+    service_controller().SetSpokenFeedbackEnabled(spoken_feedback_enabled_);
 }
 
 void AssistantManagerServiceImpl::OnDeviceAppsEnabled(bool enabled) {

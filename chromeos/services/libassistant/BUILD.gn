@@ -81,6 +81,7 @@ source_set("internal") {
     "//chromeos/resources:resources_grit",
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/cpp/migration",
+    "//chromeos/services/assistant/public/proto",
     "//chromeos/services/libassistant/public/mojom",
     "//libassistant/shared/internal_api:assistant_manager_internal",
     "//libassistant/shared/internal_api:fuchsia_api_helper",
