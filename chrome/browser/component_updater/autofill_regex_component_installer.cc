@@ -127,8 +127,7 @@ AutofillRegexComponentInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();
 }
 
-void RegisterAutofillRegexComponent(ComponentUpdateService* cus,
-                                    const base::FilePath& user_data_dir) {
+void RegisterAutofillRegexComponent(ComponentUpdateService* cus) {
   VLOG(1) << "Registering Autofill Regex component.";
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<AutofillRegexComponentInstallerPolicy>());

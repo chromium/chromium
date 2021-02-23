@@ -179,6 +179,8 @@ void RegisterComponentsForUpdate(bool is_off_the_record_profile,
   RegisterZxcvbnDataComponent(cus);
 
   RegisterAutofillStatesComponent(cus, g_browser_process->local_state());
+
+  RegisterAutofillRegexComponent(cus);
 }
 
 }  // namespace component_updater
