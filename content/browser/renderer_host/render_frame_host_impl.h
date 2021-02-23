@@ -1279,7 +1279,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
             interface_params) = 0;
   };
 
-  // Sets the specified |interceptor|.
+  // Sets the specified |interceptor|. The caller is responsible for ensuring
+  // |interceptor| remains live as long as it is set as the interceptor.
   void SetCommitCallbackInterceptorForTesting(
       CommitCallbackInterceptor* interceptor);
 

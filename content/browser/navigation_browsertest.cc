@@ -27,6 +27,8 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/frame_messages.h"
+#include "content/common/frame_messages.mojom-forward.h"
+#include "content/common/navigation_client.mojom-forward.h"
 #include "content/common/navigation_client.mojom.h"
 #include "content/common/navigation_params.h"
 #include "content/public/browser/browser_context.h"
@@ -4819,6 +4821,89 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   child_frame1 = main_frame->child_at(0)->current_frame_host();
   child_frame2 = main_frame->child_at(1)->current_frame_host();
   VerifyResultsOfAboutBlankNavigation(child_frame2, child_frame1);
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, Bug838348) {
+  if (!AreAllSitesIsolatedForTesting())
+    return;
+
+  // Helper that ignores a request from the renderer to commit a navigation and
+  // instead, begins another navigation to the specified `url` in `shell`.
+  class CommitCallbackInterceptor
+      : public RenderFrameHostImpl::CommitCallbackInterceptor {
+   public:
+    CommitCallbackInterceptor(Shell* shell, const GURL& url)
+        : shell_(shell), url_(url) {}
+
+    bool WillProcessDidCommitNavigation(
+        NavigationRequest* request,
+        mojom::DidCommitProvisionalLoadParamsPtr* params,
+        mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params)
+        override {
+      request->GetRenderFrameHost()->SetCommitCallbackInterceptorForTesting(
+          nullptr);
+      // At this point, the renderer has already committed the RenderFrame, but
+      // on the browser side, the RenderFrameHost is still speculative. Begin
+      // another navigation, which should cause `this` to be discarded.
+      EXPECT_TRUE(BeginNavigateToURLFromRenderer(shell_, url_));
+
+      // Ignore the commit message.
+      return false;
+    }
+
+   private:
+    Shell* const shell_;
+    const GURL url_;
+  };
+
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+
+  // Open a new window from `shell()` and navigate it a document in b.com.
+  ASSERT_TRUE(ExecJs(
+      shell(), JsReplace("window.open($1)", embedded_test_server()->GetURL(
+                                                "b.com", "/title1.html"))));
+  ASSERT_EQ(2u, Shell::windows().size());
+  WebContentsImpl* new_web_contents =
+      static_cast<WebContentsImpl*>(Shell::windows()[1]->web_contents());
+  WaitForLoadStop(new_web_contents);
+  RenderProcessHost* const b_com_render_process_host =
+      new_web_contents->GetMainFrame()->GetProcess();
+
+  // Start a navigation that will create a speculative RFH in the existing
+  // render process for b.com.
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+
+  // Ensure the speculative RFH is in the expected process (i.e. the b.com
+  // process that was created for the navigation in the new window earlier).
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderFrameHostImpl* speculative_render_frame_host =
+      web_contents->GetFrameTree()
+          ->root()
+          ->render_manager()
+          ->speculative_frame_host();
+  ASSERT_TRUE(speculative_render_frame_host);
+  EXPECT_EQ(b_com_render_process_host,
+            speculative_render_frame_host->GetProcess());
+
+  // Intercept the next commit navigation and ignore it, triggering a
+  // navigation to a document in c.com instead.
+  CommitCallbackInterceptor interceptor(
+      shell(), embedded_test_server()->GetURL("c.com", "/title1.html"));
+  speculative_render_frame_host->SetCommitCallbackInterceptorForTesting(
+      &interceptor);
+
+  // The renderer process for b.com should crash, as the state between the
+  // browser and renderer would be out of sync otherwise. The previously opened
+  // window should ensure that fast shutdown is not used for b.com.
+  // TODO(dcheng): The render process should, in fact, not crash.
+  // https://crbug.com/838348
+  RenderProcessHostWatcher crash_observer(
+      speculative_render_frame_host->GetProcess(),
+      RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  crash_observer.Wait();
 }
 
 }  // namespace content
