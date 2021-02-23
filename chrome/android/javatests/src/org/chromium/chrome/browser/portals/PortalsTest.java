@@ -587,6 +587,7 @@ public class PortalsTest {
     @LargeTest
     @Feature({"Portals"})
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @DisabledTest(message = "https://crbug.com/1174005")
     public void testMediaCaptureNotificationVisibleAfterAdoption() throws Exception {
         String mainUrl = mTestServer.getURL("/chrome/test/data/android/portals/media-capture.html");
         mActivityTestRule.startMainActivityWithURL(mainUrl);
