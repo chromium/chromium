@@ -306,6 +306,18 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
         mChipController.showChip(chipRenderParamsForTesting);
     }
 
+    @VisibleForTesting
+    void simulateTranslateImageClassificationForTesting() {
+        // Don't need to initialize controller because that should be triggered by
+        // forcing feature flags.
+        mChipController.setFakeLensQueryResultForTesting(); // IN-TEST
+        ChipRenderParams chipRenderParamsForTesting = new ChipRenderParams();
+        chipRenderParamsForTesting.titleResourceId =
+                R.string.contextmenu_translate_image_with_google_lens;
+        chipRenderParamsForTesting.onClickCallback = () -> {};
+        mChipController.showChip(chipRenderParamsForTesting);
+    }
+
     // Public only to allow references from RevampedContextMenuUtils.java
     public void clickChipForTesting() {
         mChipController.clickChipForTesting(); // IN-TEST

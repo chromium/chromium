@@ -5,8 +5,12 @@
 package org.chromium.chrome.browser.contextmenu;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * An object that contains the required fields to generate the context menu chip.
@@ -24,4 +28,18 @@ public class ChipRenderParams {
 
     // A callback to be called when the chip shown.
     public @Nullable Runnable onShowCallback;
+
+    // The type of chip to render. Defined to differentiate the chip being rendered to the user
+    // based on asynchronous calls.
+    public @ChipType int chipType;
+
+    /**
+     * Defines the types of chips that can be rendered.
+     */
+    @IntDef({ChipType.LENS_SHOPPING_CHIP, ChipType.LENS_TRANSLATE_CHIP})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ChipType {
+        int LENS_SHOPPING_CHIP = 0;
+        int LENS_TRANSLATE_CHIP = 1;
+    }
 }

@@ -6049,6 +6049,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          chrome::android::kContextMenuSearchAndShopWithGoogleLens)},
+
+    {"context-menu-translate-with-google-lens",
+     flag_descriptions::kContextMenuTranslateWithGoogleLensName,
+     flag_descriptions::kContextMenuTranslateWithGoogleLensDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kContextMenuTranslateWithGoogleLens)},
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

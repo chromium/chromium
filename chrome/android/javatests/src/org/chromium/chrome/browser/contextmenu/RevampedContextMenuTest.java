@@ -408,8 +408,85 @@ public class RevampedContextMenuTest implements DownloadTestRule.CustomMainActiv
     @Test
     @MediumTest
     @Feature({"Browser"})
+    @Features.EnableFeatures({ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS})
+    public void testLensTranslateChipNotShowingIfNotEnabled() throws Throwable {
+        // Required to avoid runtime error.
+        Looper.prepare();
+
+        Tab tab = mDownloadTestRule.getActivity().getActivityTab();
+        hardcodeTestImageForSharing(TEST_JPG_IMAGE_FILE_EXTENSION);
+
+        RevampedContextMenuCoordinator menuCoordinator =
+                RevampedContextMenuUtils.openContextMenu(tab, "testImage");
+        // Needs to run on UI thread so creation happens on same thread as dismissal.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertNull("Chip popoup was initialized.",
+                    menuCoordinator.getCurrentPopupWindowForTesting());
+        });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Browser"})
+    @Features.EnableFeatures({ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS})
+    public void testSelectLensTranslateChip() throws Throwable {
+        // Required to avoid runtime error.
+        Looper.prepare();
+
+        Tab tab = mDownloadTestRule.getActivity().getActivityTab();
+        ShareHelper.setIgnoreActivityNotFoundExceptionForTesting(true);
+        hardcodeTestImageForSharing(TEST_JPG_IMAGE_FILE_EXTENSION);
+
+        RevampedContextMenuCoordinator menuCoordinator =
+                RevampedContextMenuUtils.openContextMenu(tab, "testImage");
+        // Needs to run on UI thread so creation happens on same thread as dismissal.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            menuCoordinator.simulateTranslateImageClassificationForTesting();
+            Assert.assertTrue("Chip popoup not showing.",
+                    menuCoordinator.getCurrentPopupWindowForTesting().isShowing());
+            menuCoordinator.clickChipForTesting();
+        });
+
+        Assert.assertEquals("Selection histogram pings not equal to one", 1,
+                RecordHistogram.getHistogramValueCountForTesting("ContextMenu.LensChip.Event",
+                        RevampedContextMenuChipController.ChipEvent.CLICKED));
+        Assert.assertFalse("Chip popoup still showing.",
+                menuCoordinator.getCurrentPopupWindowForTesting().isShowing());
+    }
+
+    // Assert that focus is unchanged and that the chip popup does not block the dismissal of the
+    // context menu.
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS})
+    public void testDismissContextMenuOnClickLensTranslateChipEnabled() throws TimeoutException {
+        // Required to avoid runtime error.
+        Looper.prepare();
+
+        Tab tab = mDownloadTestRule.getActivity().getActivityTab();
+        RevampedContextMenuCoordinator menuCoordinator =
+                RevampedContextMenuUtils.openContextMenu(tab, "testImage");
+        // Needs to run on UI thread so creation happens on same thread as dismissal.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> menuCoordinator.simulateTranslateImageClassificationForTesting());
+        Assert.assertNotNull("Context menu was not properly created", menuCoordinator);
+        CriteriaHelper.pollUiThread(() -> {
+            return !mDownloadTestRule.getActivity().hasWindowFocus();
+        }, "Context menu did not have window focus");
+
+        TestTouchUtils.singleClickView(InstrumentationRegistry.getInstrumentation(), tab.getView(),
+                tab.getView().getWidth() - 5, tab.getView().getHeight() - 5);
+
+        CriteriaHelper.pollUiThread(() -> {
+            return mDownloadTestRule.getActivity().hasWindowFocus();
+        }, "Activity did not regain focus.");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Browser"})
     @Features.EnableFeatures({ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP})
-    public void testLensChipNotShowingIfNotEnabled() throws Throwable {
+    public void testLensShoppingChipNotShowingIfNotEnabled() throws Throwable {
         // Required to avoid runtime error.
         Looper.prepare();
 
@@ -429,7 +506,7 @@ public class RevampedContextMenuTest implements DownloadTestRule.CustomMainActiv
     @MediumTest
     @Feature({"Browser"})
     @Features.EnableFeatures({ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP})
-    public void testSelectLensChip() throws Throwable {
+    public void testSelectLensShoppingChip() throws Throwable {
         // Required to avoid runtime error.
         Looper.prepare();
 
@@ -459,7 +536,7 @@ public class RevampedContextMenuTest implements DownloadTestRule.CustomMainActiv
     @Test
     @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP})
-    public void testDismissContextMenuOnClickLensChipEnabled() throws TimeoutException {
+    public void testDismissContextMenuOnClickShoppingLensChipEnabled() throws TimeoutException {
         // Required to avoid runtime error.
         Looper.prepare();
 

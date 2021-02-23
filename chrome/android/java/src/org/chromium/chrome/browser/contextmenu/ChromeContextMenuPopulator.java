@@ -26,6 +26,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
@@ -136,7 +137,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 Action.DIRECT_SHARE_LINK, Action.DIRECT_SHARE_IMAGE, Action.SEARCH_WITH_GOOGLE_LENS,
                 Action.COPY_IMAGE, Action.SHOP_SIMILAR_PRODUCTS, Action.SHOP_IMAGE_WITH_GOOGLE_LENS,
                 Action.SEARCH_SIMILAR_PRODUCTS, Action.READ_LATER,
-                Action.SHOP_WITH_GOOGLE_LENS_CHIP})
+                Action.SHOP_WITH_GOOGLE_LENS_CHIP, Action.TRANSLATE_WITH_GOOGLE_LENS_CHIP})
         @Retention(RetentionPolicy.SOURCE)
         public @interface Action {
             int OPEN_IN_NEW_TAB = 0;
@@ -178,7 +179,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             int SEARCH_SIMILAR_PRODUCTS = 32;
             int READ_LATER = 33;
             int SHOP_WITH_GOOGLE_LENS_CHIP = 34;
-            int NUM_ENTRIES = 35;
+            int TRANSLATE_WITH_GOOGLE_LENS_CHIP = 35;
+            int NUM_ENTRIES = 36;
         }
 
         // Note: these values must match the ContextMenuSaveLinkType enum in enums.xml.
@@ -856,26 +858,51 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
     @Override
     public @Nullable ChipDelegate getChipDelegate() {
-        if (LensUtils.enableImageChip(isIncognito())) {
+        // TODO(crbug/1181101): Use #isLensAvailable to check Lens availablility before creating
+        // chip delegate.
+        if (LensUtils.enableImageChip() || LensUtils.enableTranslateChip()) {
             // TODO(crbug.com/783819): Migrate LensChipDelegate to GURL.
             return new LensChipDelegate(mParams.getPageUrl().getSpec(), mParams.getTitleText(),
                     mParams.getSrcUrl().getSpec(), getPageTitle(), isIncognito(),
-                    mItemDelegate.getWebContents(), mNativeDelegate, getOnChipClickedCallback(),
-                    getOnChipShownCallback());
+                    mItemDelegate.getWebContents(), mNativeDelegate, getOnLensChipClickedCallback(),
+                    getOnLensChipShownCallback());
         }
-
         return null;
     }
 
-    private Runnable getOnChipClickedCallback() {
-        return () -> {
-            recordContextMenuSelection(ContextMenuUma.Action.SHOP_WITH_GOOGLE_LENS_CHIP);
+    private Callback<Integer> getOnLensChipShownCallback() {
+        return (Integer result) -> {
+            int chipType = result.intValue();
+            switch (chipType) {
+                case ChipRenderParams.ChipType.LENS_SHOPPING_CHIP:
+                    maybeRecordBooleanUkm("ContextMenuAndroid.Shown", "ShopWithGoogleLensChip");
+                    return;
+                case ChipRenderParams.ChipType.LENS_TRANSLATE_CHIP:
+                    maybeRecordBooleanUkm(
+                            "ContextMenuAndroid.Shown", "TranslateWithGoogleLensChip");
+                    return;
+                default:
+                    // Unreachable value.
+                    throw new IllegalArgumentException("Invalid chip type provided to callback.");
+            }
         };
     }
 
-    private Runnable getOnChipShownCallback() {
-        return () -> {
-            maybeRecordBooleanUkm("ContextMenuAndroid.Shown", "ShopWithGoogleLensChip");
+    private Callback<Integer> getOnLensChipClickedCallback() {
+        return (Integer result) -> {
+            int chipType = result.intValue();
+            switch (chipType) {
+                case ChipRenderParams.ChipType.LENS_SHOPPING_CHIP:
+                    recordContextMenuSelection(ContextMenuUma.Action.SHOP_WITH_GOOGLE_LENS_CHIP);
+                    return;
+                case ChipRenderParams.ChipType.LENS_TRANSLATE_CHIP:
+                    recordContextMenuSelection(
+                            ContextMenuUma.Action.TRANSLATE_WITH_GOOGLE_LENS_CHIP);
+                    return;
+                default:
+                    // Unreachable value.
+                    throw new IllegalArgumentException("Invalid chip type provided to callback.");
+            }
         };
     }
 

@@ -13166,6 +13166,7 @@ Called by update_net_error_codes.py.-->
   <int value="32" label="Search Similar Products"/>
   <int value="33" label="Read later"/>
   <int value="34" label="Shop with Google Lens Chip"/>
+  <int value="35" label="Translate with Google Lens Chip"/>
 </enum>
 
 <enum name="ContextMenuOptionDesktop">
@@ -42166,15 +42167,16 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 <enum name="LensClassifyResultState">
   <int value="0" label="Unknown"/>
   <int value="1" label="Success: shoppy image"/>
-  <int value="2" label="Success: not shoppy image - other intent type"/>
-  <int value="3" label="Success: not shoppy image - empty Lens result"/>
-  <int value="4" label="Success: not shoppy image - empty intent type"/>
+  <int value="2" label="Success: unknown intent type"/>
+  <int value="3" label="Success: empty Lens result"/>
+  <int value="4" label="Success: empty intent type"/>
   <int value="5" label="Error: invalid callback"/>
   <int value="6" label="Error: invalid package signature"/>
   <int value="7" label="Error: invalid image uri"/>
   <int value="8" label="Error: early terminated"/>
   <int value="9" label="Disabled"/>
   <int value="10" label="Error: additional web context malformed (nonfatal)"/>
+  <int value="11" label="Success: Image is translatable"/>
 </enum>
 
 <enum name="LensSdkError">
@@ -44962,6 +44964,7 @@ from previous Chrome versions.
   <int value="-450976085"
       label="AutofillSaveCreditCardUsesImprovedMessaging:disabled"/>
   <int value="-449465495" label="disable-browser-task-scheduler"/>
+  <int value="-447148659" label="ContextMenuTranslateWithGoogleLens:enabled"/>
   <int value="-446560063" label="finch-seed-min-update-period"/>
   <int value="-446220201" label="EnableIncognitoShortcutOnDesktop:enabled"/>
   <int value="-444867364" label="Metal:enabled"/>
@@ -46071,6 +46074,7 @@ from previous Chrome versions.
   <int value="605150752" label="WebUSB:disabled"/>
   <int value="606288133" label="enable-print-preview-register-promos"/>
   <int value="606512202" label="AutofillCreditCardPopupLayout:enabled"/>
+  <int value="606611135" label="ContextMenuTranslateWithGoogleLens:disabled"/>
   <int value="606723570" label="SharingUseDeviceInfo:disabled"/>
   <int value="606834606" label="force-color-profile"/>
   <int value="606969417" label="DiscoverApp:enabled"/>

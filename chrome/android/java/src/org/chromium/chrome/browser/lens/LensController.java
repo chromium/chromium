@@ -118,6 +118,7 @@ public class LensController {
     protected @StringRes int getShopWithGoogleLensTextResourceId() {
         return R.string.contextmenu_shop_image_with_google_lens;
     }
+
     /**
      * Retrieve the Lens icon resource id.
      * Need to put the resource id on the base class to suppress the UnusedResources warning.
@@ -125,6 +126,14 @@ public class LensController {
      */
     protected @DrawableRes int getLensIconResourceId() {
         return R.drawable.lens_icon;
+    }
+
+    /**
+     * Retrieve the Text resource id for "Translate image with Google Lens".
+     * @return The resource id for "Translate image with Google Lens" string.
+     */
+    protected @StringRes int getTranslateWithGoogleLensTextResourceId() {
+        return R.string.contextmenu_translate_image_with_google_lens;
     }
 
     /** Starts the Lens connection. */

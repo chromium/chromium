@@ -3814,8 +3814,14 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="ShopWithGoogleLensChip" enum="Boolean">
     <summary>
-      Recorded when the context menu is constructed and logged if the Lens chip
-      was displayed.
+      Recorded when the context menu is constructed and logged if the Lens
+      shopping chip was displayed.
+    </summary>
+  </metric>
+  <metric name="TranslateWithGoogleLensChip" enum="Boolean">
+    <summary>
+      Recorded when the context menu is constructed and logged if the Lens
+      translate chip was displayed.
     </summary>
   </metric>
 </event>

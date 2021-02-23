@@ -673,6 +673,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "context-menu-translate-with-google-lens",
+    "owners": [ "juanmojica", "hakop", "benwgold", "lens-chrome" ],
+    "expiry_milestone": 90
+  },
+  {
     "name": "contextual-nudges",
     "owners": [ "yulunwu" ],
     "expiry_milestone": 83

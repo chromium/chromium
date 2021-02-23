@@ -536,14 +536,18 @@ public class LensUtils {
     /**
      * Whether to display the lens shop image with google lens chip.
      */
-    public static boolean enableImageChip(boolean isIncognito) {
+    public static boolean enableImageChip() {
         // TODO(benwgold): Consider adding isSdkAvailable() check if it gains any utility.
         //                 Currently it is not necessary and should always evaluate to true.
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP)
-                && !(isIncognito
-                        && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                                ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP,
-                                DISABLE_ON_INCOGNITO_PARAM_NAME, true));
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP);
+    }
+
+    /**
+     * Whether to display the Lens translate with Google Lens chip.
+     */
+    public static boolean enableTranslateChip() {
+        return ChromeFeatureList.isEnabled(
+                ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS);
     }
 
     /**
@@ -630,9 +634,15 @@ public class LensUtils {
      */
     public static boolean shouldLogUkm(boolean isIncognito) {
         // Lens shopping feature takes the priority over the "Search image with Google Lens".
-        if (enableImageChip(isIncognito)) {
+        if (enableImageChip()) {
             return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                     ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP, LOG_UKM_PARAM_NAME, true);
+        }
+
+        if (enableTranslateChip()) {
+            return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS, LOG_UKM_PARAM_NAME,
+                    true);
         }
 
         if (isGoogleLensShoppingFeatureEnabled(isIncognito)) {

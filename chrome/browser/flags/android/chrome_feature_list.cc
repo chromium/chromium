@@ -167,6 +167,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kContextMenuSearchWithGoogleLens,
     &kContextMenuShopWithGoogleLens,
     &kContextMenuSearchAndShopWithGoogleLens,
+    &kContextMenuTranslateWithGoogleLens,
     &kContextualSearchDebug,
     &kContextualSearchDefinitions,
     &kContextualSearchLegacyHttpPolicy,
@@ -455,6 +456,9 @@ const base::Feature kContextMenuShopWithGoogleLens{
 const base::Feature kContextMenuSearchAndShopWithGoogleLens{
     "ContextMenuSearchAndShopWithGoogleLens",
     base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kContextMenuTranslateWithGoogleLens{
+    "ContextMenuTranslateWithGoogleLens", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kContextualSearchDebug{"ContextualSearchDebug",
                                            base::FEATURE_DISABLED_BY_DEFAULT};

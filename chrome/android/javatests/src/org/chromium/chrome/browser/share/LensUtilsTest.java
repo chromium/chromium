@@ -240,69 +240,6 @@ public class LensUtilsTest {
     }
 
     /**
-     * Test {@link LensUtils#enableImageChip()} method when disable incognito param is
-     * unset and user is incognito.
-     */
-    @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_SHOP_WITH_GOOGLE_LENS
-                    + "<FakeStudyName",
-            "force-fieldtrials=FakeStudyName/Enabled"})
-    @Test
-    @SmallTest
-    public void
-    enableImageChip_incognitoParamUnsetIncognitoUser() {
-        Assert.assertFalse("Feature incorrectly enabled when incognito param is not set",
-                enableImageChipOnUiThread(true));
-    }
-
-    /**
-     * Test {@link LensUtils#enableImageChip()} method when incognito users are
-     * enabled and user is incognito.
-     */
-    @CommandLineFlags.
-    Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP + "<FakeStudyName",
-            "force-fieldtrials=FakeStudyName/Enabled",
-            "force-fieldtrial-params=FakeStudyName.Enabled:disableOnIncognito/false"})
-    @Test
-    @SmallTest
-    public void
-    enableImageChip_incognitoEnabledIncognitoUser() {
-        Assert.assertTrue("Feature incorrectly disabled when incognito param is not set",
-                enableImageChipOnUiThread(true));
-    }
-
-    /**
-     * Test {@link LensUtils#enableImageChip()} method when incognito users are disabled
-     * and user is incognito.
-     */
-    @CommandLineFlags.
-    Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP + "<FakeStudyName",
-            "force-fieldtrials=FakeStudyName/Enabled",
-            "force-fieldtrial-params=FakeStudyName.Enabled:disableOnIncognito/true"})
-    @Test
-    @SmallTest
-    public void
-    enableImageChip_incognitoDisabledIncognitoUser() {
-        Assert.assertFalse("Feature incorrectly not disabled when incognito param was set",
-                enableImageChipOnUiThread(true));
-    }
-
-    /**
-     * Test {@link LensUtils#enableImageChip()} method when incognito users are disabled
-     * and user is not incognito.
-     */
-    @CommandLineFlags.
-    Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP + "<FakeStudyName",
-            "force-fieldtrials=FakeStudyName/Enabled",
-            "force-fieldtrial-params=FakeStudyName.Enabled:disableOnIncognito/true"})
-    @Test
-    @SmallTest
-    public void
-    enableImageChip_incognitoDisabledStandardUser() {
-        Assert.assertTrue("Feature incorrectly disabled when user was not incognito",
-                enableImageChipOnUiThread(false));
-    }
-
-    /**
      * Test {@link LensUtils#getShareWithGoogleLensIntent()} method when user is signed
      * in and the direct intent experiment is enabled.
      */
@@ -938,11 +875,6 @@ public class LensUtilsTest {
     private boolean isGoogleLensShoppingFeatureEnabledOnUiThread(boolean isIncognito) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> LensUtils.isGoogleLensShoppingFeatureEnabled(isIncognito));
-    }
-
-    private boolean enableImageChipOnUiThread(boolean isIncognito) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> LensUtils.enableImageChip(isIncognito));
     }
 
     private boolean shouldLogUkmOnUiThread(boolean isIncognito) {

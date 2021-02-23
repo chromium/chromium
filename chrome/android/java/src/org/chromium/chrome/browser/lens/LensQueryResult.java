@@ -9,6 +9,7 @@ package org.chromium.chrome.browser.lens;
  */
 public class LensQueryResult {
     private boolean mIsShoppyIntent;
+    private boolean mIsTranslateIntent;
     private int mLensIntentType;
 
     /**
@@ -16,11 +17,18 @@ public class LensQueryResult {
      */
     public static class Builder {
         private boolean mIsShoppyIntent;
+        private boolean mIsTranslateIntent;
         private int mLensIntentType;
+
         public Builder() {}
 
         public Builder withIsShoppyIntent(boolean isShoppyIntent) {
             this.mIsShoppyIntent = isShoppyIntent;
+            return this;
+        }
+
+        public Builder withIsTranslateIntent(boolean isTranslateIntent) {
+            this.mIsTranslateIntent = isTranslateIntent;
             return this;
         }
 
@@ -32,6 +40,7 @@ public class LensQueryResult {
         public LensQueryResult build() {
             LensQueryResult lensQueryResult = new LensQueryResult();
             lensQueryResult.mIsShoppyIntent = this.mIsShoppyIntent;
+            lensQueryResult.mIsTranslateIntent = this.mIsTranslateIntent;
             lensQueryResult.mLensIntentType = this.mLensIntentType;
             return lensQueryResult;
         }
@@ -39,6 +48,13 @@ public class LensQueryResult {
 
     public boolean getIsShoppyIntent() {
         return mIsShoppyIntent;
+    }
+
+    /*
+     * Returns whether the Prime API specified a translate intent.
+     */
+    public boolean getIsTranslateIntent() {
+        return mIsTranslateIntent;
     }
 
     public int getLensIntentType() {
@@ -61,6 +77,7 @@ public class LensQueryResult {
         final LensQueryResult other = (LensQueryResult) o;
 
         return mLensIntentType == other.getLensIntentType()
-                && mIsShoppyIntent == other.getIsShoppyIntent();
+                && mIsShoppyIntent == other.getIsShoppyIntent()
+                && mIsTranslateIntent == other.getIsTranslateIntent();
     }
 }

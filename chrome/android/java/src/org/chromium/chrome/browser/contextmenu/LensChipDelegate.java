@@ -19,12 +19,12 @@ public class LensChipDelegate implements ChipDelegate {
     private LensQueryParams mLensQueryParams;
     private LensController mLensController;
     private ContextMenuNativeDelegate mNativeDelegate;
-    private Runnable mOnChipClickedCallback;
-    private Runnable mOnChipShownCallback;
+    private Callback<Integer> mOnChipClickedCallback;
+    private Callback<Integer> mOnChipShownCallback;
 
     public LensChipDelegate(String pageUrl, String titleOrAltText, String srcUrl, String pageTitle,
             boolean isIncognito, WebContents webContents, ContextMenuNativeDelegate nativeDelegate,
-            Runnable onChipClickedCallback, Runnable onChipShownCallback) {
+            Callback<Integer> onChipClickedCallback, Callback<Integer> onChipShownCallback) {
         mLensController = LensController.getInstance();
         if (!mLensController.isQueryEnabled()) {
             return;
@@ -60,10 +60,10 @@ public class LensChipDelegate implements ChipDelegate {
                         // The onClickCallback defined in LensController.
                         originalOnClickCallback.run();
                         // The onClickCallback defined when initialize the LensChipDelegate.
-                        mOnChipClickedCallback.run();
+                        mOnChipClickedCallback.bind(chipParams.chipType).run();
                     };
                     chipParams.onClickCallback = mergedOnClickCallback;
-                    chipParams.onShowCallback = mOnChipShownCallback;
+                    chipParams.onShowCallback = mOnChipShownCallback.bind(chipParams.chipType);
                 }
                 chipParamsCallback.onResult(chipParams);
             });

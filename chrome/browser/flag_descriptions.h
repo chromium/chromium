@@ -231,6 +231,9 @@ extern const char kContextMenuShopWithGoogleLensDescription[];
 extern const char kContextMenuSearchAndShopWithGoogleLensName[];
 extern const char kContextMenuSearchAndShopWithGoogleLensDescription[];
 
+extern const char kContextMenuTranslateWithGoogleLensName[];
+extern const char kContextMenuTranslateWithGoogleLensDescription[];
+
 extern const char kClickToOpenPDFName[];
 extern const char kClickToOpenPDFDescription[];
 
