@@ -13262,6 +13262,9 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "chrome_sizes",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -13286,6 +13289,9 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "chrome_sizes",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -15120,6 +15126,9 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "chrome_sizes",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -15144,6 +15153,9 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "chrome_sizes",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -16707,6 +16719,9 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "chrome_sizes",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -18292,6 +18307,9 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "chrome_sizes",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -19844,6 +19862,9 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "chrome_sizes",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -21429,6 +21450,9 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "chrome_sizes",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -23014,6 +23038,9 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "chrome_sizes",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24063,6 +24090,9 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "chrome_sizes",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -24305,6 +24335,9 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "chrome_sizes",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -26564,6 +26597,9 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "chrome_sizes",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -28034,6 +28070,9 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "chrome_sizes",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -29313,6 +29352,9 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "chrome_sizes",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -30560,6 +30602,9 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "chrome_sizes",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -32327,6 +32372,9 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "chrome_sizes",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -34205,6 +34253,9 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "chrome_sizes",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -36086,6 +36137,9 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "chrome_sizes",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -39918,6 +39972,9 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "chrome_sizes",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -41197,6 +41254,9 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "chrome_sizes",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
