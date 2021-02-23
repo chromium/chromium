@@ -55,10 +55,10 @@ TEST_F(AwComponentUpdaterConfiguratorTest, TestDelays) {
   scoped_refptr<update_client::Configurator> config =
       MakeAwComponentUpdaterConfigurator(GetCommandLine(), GetPrefService());
 
-  CHECK_EQ(config->InitialDelay(), 10);
-  CHECK_EQ(config->NextCheckDelay(), 5 * 60 * 60);
-  CHECK_EQ(config->OnDemandDelay(), 30 * 60);
-  CHECK_EQ(config->UpdateDelay(), 0);
+  EXPECT_EQ(config->InitialDelay(), 10);
+  EXPECT_EQ(config->NextCheckDelay(), 5 * 60 * 60);
+  EXPECT_EQ(config->OnDemandDelay(), 30 * 60);
+  EXPECT_EQ(config->UpdateDelay(), 0);
 }
 
 TEST_F(AwComponentUpdaterConfiguratorTest, TestDelaysWithFastUpdate) {
@@ -67,10 +67,10 @@ TEST_F(AwComponentUpdaterConfiguratorTest, TestDelaysWithFastUpdate) {
   scoped_refptr<update_client::Configurator> config =
       MakeAwComponentUpdaterConfigurator(cmdline, GetPrefService());
 
-  CHECK_EQ(config->InitialDelay(), 10);
-  CHECK_EQ(config->NextCheckDelay(), 5 * 60 * 60);
-  CHECK_EQ(config->OnDemandDelay(), 2);
-  CHECK_EQ(config->UpdateDelay(), 0);
+  EXPECT_EQ(config->InitialDelay(), 10);
+  EXPECT_EQ(config->NextCheckDelay(), 5 * 60 * 60);
+  EXPECT_EQ(config->OnDemandDelay(), 2);
+  EXPECT_EQ(config->UpdateDelay(), 0);
 }
 
 TEST_F(AwComponentUpdaterConfiguratorTest, TestDefaultImpl) {
@@ -81,12 +81,12 @@ TEST_F(AwComponentUpdaterConfiguratorTest, TestDefaultImpl) {
   std::vector<GURL> urls = config->UpdateUrl();
   ASSERT_EQ(urls.size(), 2u);
   EXPECT_TRUE(urls.front().SchemeIsCryptographic());
-  ASSERT_STREQ(component_updater::kUpdaterJSONDefaultUrl,
+  EXPECT_STREQ(component_updater::kUpdaterJSONDefaultUrl,
                urls[0].spec().c_str());
-  ASSERT_STREQ(component_updater::kUpdaterJSONFallbackUrl,
+  EXPECT_STREQ(component_updater::kUpdaterJSONFallbackUrl,
                urls[1].spec().c_str());
 
-  ASSERT_EQ(config->UpdateUrl(), config->PingUrl());
+  EXPECT_EQ(config->UpdateUrl(), config->PingUrl());
 
   EXPECT_TRUE(config->ExtraRequestParams().empty());
   EXPECT_TRUE(config->GetDownloadPreference().empty());
