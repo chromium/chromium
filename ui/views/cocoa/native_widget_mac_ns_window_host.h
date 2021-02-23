@@ -15,6 +15,7 @@
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_host_helper.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #include "components/remote_cocoa/browser/application_host.h"
+#include "components/remote_cocoa/browser/scoped_cg_window_id.h"
 #include "components/remote_cocoa/common/native_widget_ns_window.mojom.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -456,6 +457,7 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   gfx::Rect window_bounds_before_fullscreen_;
 
   std::unique_ptr<ui::RecyclableCompositorMac> compositor_;
+  std::unique_ptr<remote_cocoa::ScopedCGWindowID> scoped_cg_window_id_;
 
   // Properties used by Set/GetNativeWindowProperty.
   std::map<std::string, void*> native_window_properties_;

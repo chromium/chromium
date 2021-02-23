@@ -1028,7 +1028,8 @@ void NativeWidgetNSWindowBridge::OnShowAnimationComplete() {
   show_animation_.reset();
 }
 
-void NativeWidgetNSWindowBridge::InitCompositorView() {
+void NativeWidgetNSWindowBridge::InitCompositorView(
+    InitCompositorViewCallback callback) {
   // Use the regular window background for window modal sheets. The layer will
   // still paint over most of it, but the native -[NSApp beginSheet:] animation
   // blocks the UI thread, so there's no way to invalidate the shadow to match
@@ -1053,6 +1054,9 @@ void NativeWidgetNSWindowBridge::InitCompositorView() {
   // will be forwarded.
   UpdateWindowDisplay();
   UpdateWindowGeometry();
+
+  // Inform the browser of the CGWindowID for this NSWindow.
+  std::move(callback).Run([window_ windowNumber]);
 }
 
 void NativeWidgetNSWindowBridge::SortSubviews(

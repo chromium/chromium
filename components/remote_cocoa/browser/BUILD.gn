@@ -14,6 +14,8 @@ component("browser") {
     "ns_view_ids.cc",
     "ns_view_ids.h",
     "remote_cocoa_browser_export.h",
+    "scoped_cg_window_id.cc",
+    "scoped_cg_window_id.h",
     "window.h",
     "window.mm",
   ]
@@ -21,6 +23,7 @@ component("browser") {
   deps = [
     "//base",
     "//components/remote_cocoa/common:mojo",
+    "//components/viz/common:common",
     "//mojo/public/cpp/bindings:bindings",
     "//ui/gfx",
   ]

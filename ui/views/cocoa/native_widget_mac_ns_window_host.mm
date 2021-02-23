@@ -519,7 +519,19 @@ void NativeWidgetMacNSWindowHost::CreateCompositor(
   if (is_visible_)
     compositor_->Unsuspend();
 
-  GetNSWindowMojo()->InitCompositorView();
+  // Register the CGWindowID (used to identify this window for video capture)
+  // when it is received. Note that this is done at this moment (as opposed to
+  // as a callback to CreateWindow) so that we can associate the CGWindowID with
+  // the (now existing) compositor.
+  auto lambda = [](NativeWidgetMacNSWindowHost* host, uint32_t cg_window_id) {
+    if (!host->compositor_)
+      return;
+    host->scoped_cg_window_id_ =
+        std::make_unique<remote_cocoa::ScopedCGWindowID>(
+            cg_window_id, host->compositor_->compositor()->frame_sink_id());
+  };
+  GetNSWindowMojo()->InitCompositorView(
+      base::BindOnce(lambda, base::Unretained(this)));
 }
 
 void NativeWidgetMacNSWindowHost::UpdateCompositorProperties() {

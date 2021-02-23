@@ -208,7 +208,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   void ShowEmojiPanel() override;
   void InitWindow(
       remote_cocoa::mojom::NativeWidgetNSWindowInitParamsPtr params) override;
-  void InitCompositorView() override;
+  void InitCompositorView(InitCompositorViewCallback callback) override;
   void CreateContentView(uint64_t ns_view_id, const gfx::Rect& bounds) override;
   void DestroyContentView() override;
   void CloseWindow() override;

@@ -109,8 +109,9 @@ interface NativeWidgetNSWindow {
 
   // Initialize the view to display compositor output. This will send the
   // current visibility and dimensions (and any future updates) to the
-  // NativeWidgetNSWindowHost.
-  InitCompositorView();
+  // NativeWidgetNSWindowHost. Returns the CGWindowID to associate with
+  // the compositor's FrameSinkId.
+  InitCompositorView() => (uint32 cg_window_id);
 
   // Create the NSView to be the content view for the window. Use |ns_view_id|
   // to look up this NSView in other functions (e.g, to specify a parent view).
