@@ -234,6 +234,8 @@ static_library("browser") {
     "web/element_store.h",
     "web/js_snippets.cc",
     "web/js_snippets.h",
+    "web/send_keyboard_input_worker.cc",
+    "web/send_keyboard_input_worker.h",
     "web/web_controller.cc",
     "web/web_controller.h",
     "web/web_controller_util.cc",

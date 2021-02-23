@@ -2067,6 +2067,47 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, SendKeyboardInput) {
   GetFieldsValue(selectors, {expected_output, expected_output});
 }
 
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, SendKeyboardInputWithDelay) {
+  Selector selector({"#input6"});
+
+  ElementFinder::Result element;
+  ClientStatus find_element_status;
+  FindElement(selector, &find_element_status, &element);
+  EXPECT_EQ(ACTION_APPLIED, find_element_status.proto_status());
+
+  ClientStatus status;
+  base::RunLoop run_loop;
+  PerformSendKeyboardInput(
+      UTF8ToUnicode("abc"),
+      /* delay_in_milli = */ 1,
+      /* use_js_focus = */ true, element,
+      base::BindOnce(&WebControllerBrowserTest::OnClientStatus,
+                     base::Unretained(this), run_loop.QuitClosure(), &status));
+  run_loop.Run();
+  EXPECT_EQ(ACTION_APPLIED, status.proto_status());
+
+  GetFieldsValue({selector}, {"abc"});
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
+                       SendKeyboardInputDevtoolsFailure) {
+  // This makes devtools action fail and is used as a way of testing that the
+  // case where SendKeyboardInput ends prematurely with 0 delay doesn't cause
+  // issues.
+  ElementFinder::Result bad_element;
+  bad_element.dom_object.object_data.node_frame_id = "doesnotexist";
+
+  ClientStatus status;
+  base::RunLoop run_loop;
+  web_controller_->SendKeyboardInput(
+      bad_element, UTF8ToUnicode("never sent"),
+      /* key_press_delay_in_millisecond= */ 0,
+      base::BindOnce(&WebControllerBrowserTest::OnClientStatus,
+                     base::Unretained(this), run_loop.QuitClosure(), &status));
+  run_loop.Run();
+  EXPECT_EQ(OTHER_ACTION_STATUS, status.proto_status());
+}
+
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
                        SendKeyboardInputSetsKeyProperty) {
   auto input = UTF8ToUnicode("Zürich\r");

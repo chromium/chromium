@@ -1176,24 +1176,27 @@ void WebController::SendKeyboardInput(
     const std::vector<UChar32>& codepoints,
     const int key_press_delay_in_millisecond,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  if (VLOG_IS_ON(3)) {
-    std::string input_str;
-    if (!UnicodeToUTF8(codepoints, &input_str)) {
-      input_str.assign("<invalid input>");
-    }
-#ifdef NDEBUG
-    VLOG(3) << __func__ << " input=(redacted)";
-#else
-    DVLOG(3) << __func__ << " input=" << input_str;
-#endif
-  }
-
-  DispatchKeyboardTextDownEvent(
-      element.node_frame_id(), codepoints, 0,
-      /* delay= */ false, key_press_delay_in_millisecond,
+  auto worker =
+      std::make_unique<SendKeyboardInputWorker>(devtools_client_.get());
+  auto* ptr = worker.get();
+  pending_workers_.emplace_back(std::move(worker));
+  ptr->Start(
+      element.node_frame_id(), codepoints, key_press_delay_in_millisecond,
       base::BindOnce(&DecorateWebControllerStatus,
                      WebControllerErrorInfoProto::SEND_KEYBOARD_INPUT,
-                     std::move(callback)));
+                     base::BindOnce(&WebController::OnSendKeyboardInputDone,
+                                    weak_ptr_factory_.GetWeakPtr(), ptr,
+                                    std::move(callback))));
+}
+
+void WebController::OnSendKeyboardInputDone(
+    SendKeyboardInputWorker* worker_to_release,
+    base::OnceCallback<void(const ClientStatus&)> callback,
+    const ClientStatus& status) {
+  base::EraseIf(pending_workers_, [worker_to_release](const auto& worker) {
+    return worker.get() == worker_to_release;
+  });
+  std::move(callback).Run(status);
 }
 
 void WebController::FocusField(
@@ -1213,89 +1216,6 @@ void WebController::FocusField(
                      base::BindOnce(&DecorateWebControllerStatus,
                                     WebControllerErrorInfoProto::FOCUS_FIELD,
                                     std::move(wrapped_callback))));
-}
-
-void WebController::DispatchKeyboardTextDownEvent(
-    const std::string& node_frame_id,
-    const std::vector<UChar32>& codepoints,
-    size_t index,
-    bool delay,
-    int delay_in_millisecond,
-    base::OnceCallback<void(const ClientStatus&)> callback) {
-  if (index >= codepoints.size()) {
-    std::move(callback).Run(OkClientStatus());
-    return;
-  }
-
-  if (delay && delay_in_millisecond > 0) {
-    content::GetUIThreadTaskRunner({})->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            &WebController::DispatchKeyboardTextDownEvent,
-            weak_ptr_factory_.GetWeakPtr(), node_frame_id, codepoints, index,
-            /* delay= */ false, delay_in_millisecond, std::move(callback)),
-        base::TimeDelta::FromMilliseconds(delay_in_millisecond));
-    return;
-  }
-
-  devtools_client_->GetInput()->DispatchKeyEvent(
-      CreateKeyEventParamsForCharacter(
-          autofill_assistant::input::DispatchKeyEventType::KEY_DOWN,
-          codepoints[index]),
-      node_frame_id,
-      base::BindOnce(&WebController::DispatchKeyboardTextUpEvent,
-                     weak_ptr_factory_.GetWeakPtr(), node_frame_id, codepoints,
-                     index, delay_in_millisecond, std::move(callback)));
-}
-
-void WebController::DispatchKeyboardTextUpEvent(
-    const std::string& node_frame_id,
-    const std::vector<UChar32>& codepoints,
-    size_t index,
-    int delay_in_millisecond,
-    base::OnceCallback<void(const ClientStatus&)> callback) {
-  DCHECK_LT(index, codepoints.size());
-  devtools_client_->GetInput()->DispatchKeyEvent(
-      CreateKeyEventParamsForCharacter(
-          autofill_assistant::input::DispatchKeyEventType::KEY_UP,
-          codepoints[index]),
-      node_frame_id,
-      base::BindOnce(
-          &WebController::DispatchKeyboardTextDownEvent,
-          weak_ptr_factory_.GetWeakPtr(), node_frame_id, codepoints, index + 1,
-          /* delay= */ true, delay_in_millisecond, std::move(callback)));
-}
-
-auto WebController::CreateKeyEventParamsForCharacter(
-    autofill_assistant::input::DispatchKeyEventType type,
-    UChar32 codepoint) -> DispatchKeyEventParamsPtr {
-  auto params = input::DispatchKeyEventParams::Builder().SetType(type).Build();
-
-  std::string text;
-  if (AppendUnicodeToUTF8(codepoint, &text)) {
-    params->SetText(text);
-  } else {
-#ifdef NDEBUG
-    VLOG(1) << __func__ << ": Failed to convert codepoint to UTF-8";
-#else
-    DVLOG(1) << __func__
-             << ": Failed to convert codepoint to UTF-8: " << codepoint;
-#endif
-  }
-
-  auto dom_key = ui::DomKey::FromCharacter(codepoint);
-  if (dom_key.IsValid()) {
-    params->SetKey(ui::KeycodeConverter::DomKeyToKeyString(dom_key));
-  } else {
-#ifdef NDEBUG
-    VLOG(1) << __func__ << ": Failed to set DomKey for codepoint";
-#else
-    DVLOG(1) << __func__
-             << ": Failed to set DomKey for codepoint: " << codepoint;
-#endif
-  }
-
-  return params;
 }
 
 void WebController::GetVisualViewport(
