@@ -80,6 +80,16 @@ void RequestManager::SetUpStreamsAndBuffers(
     base::flat_map<ClientType, VideoCaptureParams> capture_params,
     const cros::mojom::CameraMetadataPtr& static_metadata,
     std::vector<cros::mojom::Camera3StreamPtr> streams) {
+  auto request_keys = GetMetadataEntryAsSpan<int32_t>(
+      static_metadata,
+      cros::mojom::CameraMetadataTag::ANDROID_REQUEST_AVAILABLE_REQUEST_KEYS);
+  zero_shutter_lag_supported_ = base::Contains(
+      request_keys,
+      static_cast<int32_t>(
+          cros::mojom::CameraMetadataTag::ANDROID_CONTROL_ENABLE_ZSL));
+  VLOG(1) << "Zero-shutter lag is "
+          << (zero_shutter_lag_supported_ ? "" : "not ") << "supported";
+
   // The partial result count metadata is optional; defaults to 1 in case it
   // is not set in the static metadata.
   const cros::mojom::CameraMetadataEntryPtr* partial_count = GetMetadataEntry(
@@ -291,13 +301,24 @@ void RequestManager::PrepareCaptureRequest() {
   // If there is no pending reprocess task, then check if there are pending
   // one-shot requests. And also try to put preview in the request.
   if (!is_reprocess_request) {
-    is_preview_request = TryPreparePreviewRequest(&stream_types, &settings);
+    if (!zero_shutter_lag_supported_) {
+      is_preview_request = TryPreparePreviewRequest(&stream_types, &settings);
 
-    // Order matters here. If the preview request and oneshot request are both
-    // added in single capture request, the settings will be overridden by the
-    // later.
-    is_oneshot_request =
-        TryPrepareOneShotRequest(&stream_types, &settings, &callback);
+      // Order matters here. If the preview request and oneshot request are both
+      // added in single capture request, the settings will be overridden by the
+      // later.
+      is_oneshot_request =
+          TryPrepareOneShotRequest(&stream_types, &settings, &callback);
+    } else {
+      // Zero-shutter lag could potentially give a frame from the past. Don't
+      // prepare a preview request when a one shot request has been prepared.
+      is_oneshot_request =
+          TryPrepareOneShotRequest(&stream_types, &settings, &callback);
+
+      if (!is_oneshot_request) {
+        is_preview_request = TryPreparePreviewRequest(&stream_types, &settings);
+      }
+    }
   }
 
   if (is_preview_request) {

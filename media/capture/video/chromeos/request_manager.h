@@ -46,7 +46,6 @@ constexpr int32_t kMinConfiguredStreams = 1;
 // Maximum configured streams could contain two optional YUV streams.
 constexpr int32_t kMaxConfiguredStreams = 4;
 
-
 // RequestManager is responsible for managing the flow for sending capture
 // requests and receiving capture results. Having RequestBuilder to build
 // request and StreamBufferManager to handles stream buffers, it focuses on
@@ -273,6 +272,8 @@ class CAPTURE_EXPORT RequestManager final
   std::unique_ptr<StreamCaptureInterface> capture_interface_;
 
   CameraDeviceContext* device_context_;
+
+  bool zero_shutter_lag_supported_;
 
   bool video_capture_use_gmb_;
 
