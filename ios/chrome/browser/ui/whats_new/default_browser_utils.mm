@@ -30,11 +30,6 @@ const char kDefaultBrowserFullscreenPromoExperimentRemindMeGroupParam[] =
 const char kDefaultBrowserFullscreenPromoExperimentChangeStringsGroupParam[] =
     "show_switch_description";
 
-const char kDefaultBrowserFullscreenPromoCTAExperimentOpenLinksParam[] =
-    "show_open_links_title";
-const char kDefaultBrowserFullscreenPromoCTAExperimentSwitchParam[] =
-    "show_switch_title";
-
 // Time threshold before activity timestamps should be removed. Currently set to
 // seven days.
 const NSTimeInterval kUserActivityTimestampExpiration = 7 * 24 * 60 * 60;
@@ -47,6 +42,12 @@ const NSTimeInterval kRemindMeLaterPresentationDelay = 50 * 60 * 60;
 }
 
 NSString* const kLastHTTPURLOpenTime = @"lastHTTPURLOpenTime";
+
+const char kDefaultBrowserFullscreenPromoCTAExperimentOpenLinksParam[] =
+    "show_open_links_title";
+
+const char kDefaultBrowserFullscreenPromoCTAExperimentSwitchParam[] =
+    "show_switch_title";
 
 // Helper function to clear all timestamps that occur later than 7 days ago.
 NSMutableArray<NSDate*>* SanitizePastUserEvents(

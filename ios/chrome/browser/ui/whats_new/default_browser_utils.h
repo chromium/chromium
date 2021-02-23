@@ -11,6 +11,12 @@
 // by the app.
 extern NSString* const kLastHTTPURLOpenTime;
 
+// The feature parameter to indicate the open links arm.
+extern const char kDefaultBrowserFullscreenPromoCTAExperimentOpenLinksParam[];
+
+// The feature parameter to indicate the switch arm.
+extern const char kDefaultBrowserFullscreenPromoCTAExperimentSwitchParam[];
+
 // Logs the timestamp of user activity that is deemed to be an indication of
 // a user that would likely benefit from having Chrome set as their default
 // browser. Before logging the current activity, this method will also clear all
