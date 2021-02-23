@@ -139,6 +139,7 @@ class ReportingClient {
     bool is_initialized_{false};
 
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
+    SEQUENCE_CHECKER(sequence_checker_);
   };
 
   class InitializingContext : public TaskRunnerContext<Status> {

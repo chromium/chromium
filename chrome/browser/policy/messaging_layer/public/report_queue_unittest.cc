@@ -32,6 +32,8 @@ using ::policy::DMToken;
 
 using ::testing::_;
 using ::testing::Invoke;
+using ::testing::MockFunction;
+using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::WithArg;
 
@@ -86,11 +88,12 @@ class ReportQueueTest : public testing::Test {
         destination_(Destination::UPLOAD_EVENTS),
         storage_module_(base::MakeRefCounted<TestStorageModule>()),
         policy_check_callback_(
-            base::BindRepeating(&ReportQueueTest::MockedPolicyCheck,
-                                base::Unretained(this))) {}
+            base::BindRepeating(&MockFunction<Status()>::Call,
+                                base::Unretained(&mocked_policy_check_))) {}
 
   void SetUp() override {
-    ON_CALL(*this, MockedPolicyCheck).WillByDefault(Return(Status::StatusOK()));
+    ON_CALL(mocked_policy_check_, Call())
+        .WillByDefault(Return(Status::StatusOK()));
 
     StatusOr<std::unique_ptr<ReportQueueConfiguration>> config_result =
         ReportQueueConfiguration::Create(dm_token_, destination_,
@@ -114,7 +117,7 @@ class ReportQueueTest : public testing::Test {
     return test_storage_module;
   }
 
-  MOCK_METHOD(Status, MockedPolicyCheck, (), ());
+  NiceMock<MockFunction<Status()>> mocked_policy_check_;
 
   content::BrowserTaskEnvironment task_envrionment_;
 
@@ -197,7 +200,7 @@ TEST_F(ReportQueueTest, CallSuccessCallbackFailure) {
 }
 
 TEST_F(ReportQueueTest, EnqueueStringFailsOnPolicy) {
-  EXPECT_CALL(*this, MockedPolicyCheck)
+  EXPECT_CALL(mocked_policy_check_, Call())
       .WillOnce(Return(Status(error::UNAUTHENTICATED, "Failing for tests")));
   constexpr char kTestString[] = "El-Chupacabra";
   TestEvent<Status> a;
@@ -208,7 +211,7 @@ TEST_F(ReportQueueTest, EnqueueStringFailsOnPolicy) {
 }
 
 TEST_F(ReportQueueTest, EnqueueProtoFailsOnPolicy) {
-  EXPECT_CALL(*this, MockedPolicyCheck)
+  EXPECT_CALL(mocked_policy_check_, Call())
       .WillOnce(Return(Status(error::UNAUTHENTICATED, "Failing for tests")));
   reporting::test::TestMessage test_message;
   test_message.set_test("TEST_MESSAGE");
@@ -220,7 +223,7 @@ TEST_F(ReportQueueTest, EnqueueProtoFailsOnPolicy) {
 }
 
 TEST_F(ReportQueueTest, EnqueueValueFailsOnPolicy) {
-  EXPECT_CALL(*this, MockedPolicyCheck)
+  EXPECT_CALL(mocked_policy_check_, Call())
       .WillOnce(Return(Status(error::UNAUTHENTICATED, "Failing for tests")));
   constexpr char kTestKey[] = "TEST_KEY";
   constexpr char kTestValue[] = "TEST_VALUE";

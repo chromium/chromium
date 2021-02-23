@@ -189,7 +189,9 @@ ReportingClient::Configuration::Configuration() = default;
 ReportingClient::Configuration::~Configuration() = default;
 
 ReportingClient::InitializationStateTracker::InitializationStateTracker()
-    : sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})) {}
+    : sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
 
 ReportingClient::InitializationStateTracker::~InitializationStateTracker() =
     default;
@@ -220,6 +222,7 @@ void ReportingClient::InitializationStateTracker::RequestLeaderPromotion(
 
 void ReportingClient::InitializationStateTracker::OnIsInitializedRequest(
     GetInitStateCallback get_init_state_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::ThreadPool::PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -231,6 +234,7 @@ void ReportingClient::InitializationStateTracker::OnIsInitializedRequest(
 
 void ReportingClient::InitializationStateTracker::OnLeaderPromotionRequest(
     LeaderPromotionRequestCallback promo_request_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   StatusOr<ReleaseLeaderCallback> result;
   if (is_initialized_) {
     result = Status(error::FAILED_PRECONDITION,
@@ -263,6 +267,7 @@ void ReportingClient::InitializationStateTracker::ReleaseLeader(
 
 void ReportingClient::InitializationStateTracker::OnLeaderRelease(
     bool initialization_successful) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (initialization_successful) {
     is_initialized_ = true;
   }
