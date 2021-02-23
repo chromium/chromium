@@ -502,22 +502,6 @@ void ResolveContext::RecordRttForUma(size_t server_index,
         base::StringPrintf("Net.DNS.DnsTransaction.%s.%s.SuccessTime",
                            query_type.c_str(), provider_id.c_str()),
         rtt);
-    if (query_type == "SecureValidated") {
-      DCHECK(is_doh_server);
-
-      // Only for SecureValidated requests, record the ratio between successful
-      // RTT and the base fallback period for the server. Note that RTT could be
-      // much longer than the fallback period as previous attempts are often
-      // allowed to continue in parallel with new attempts made by the
-      // transaction. Scale the ratio up by 10 for sub-integer granularity.
-      // TODO(crbug.com/1105138): Remove after determining good fallback period
-      // logic.
-      int fallback_period_ratio =
-          base::ClampFloor(rtt / base_fallback_period * 10);
-      UMA_HISTOGRAM_COUNTS_1000(
-          "Net.DNS.DnsTransaction.SecureValidated.SuccessTimeoutRatio",
-          fallback_period_ratio);
-    }
   } else {
     base::UmaHistogramMediumTimes(
         base::StringPrintf("Net.DNS.DnsTransaction.%s.%s.FailureTime",

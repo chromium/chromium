@@ -2098,18 +2098,6 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     UMA_HISTOGRAM_LONG_TIMES_100("Net.DNS.JobQueueTime.Failure",
                                  total_transaction_time_queued_);
 
-    if (duration < base::TimeDelta::FromMilliseconds(10)) {
-      base::UmaHistogramSparse(
-          secure ? "Net.DNS.SecureDnsTask.ErrorBeforeFallback.Fast"
-                 : "Net.DNS.DnsTask.ErrorBeforeFallback.Fast",
-          std::abs(failure_results.error()));
-    } else {
-      base::UmaHistogramSparse(
-          secure ? "Net.DNS.SecureDnsTask.ErrorBeforeFallback.Slow"
-                 : "Net.DNS.DnsTask.ErrorBeforeFallback.Slow",
-          std::abs(failure_results.error()));
-    }
-
     // If one of the fallback tasks doesn't complete the request, store a result
     // to use during request completion.
     base::TimeDelta ttl = failure_results.has_ttl()

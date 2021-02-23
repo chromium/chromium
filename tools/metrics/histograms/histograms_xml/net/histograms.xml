@@ -560,6 +560,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.DNS.DnsTask.ErrorBeforeFallback.Fast" enum="NetErrorCodes"
     expires_after="M77">
+  <obsolete>
+    Removed from code 2021-02.
+  </obsolete>
   <owner>pauljensen@chromium.org</owner>
   <owner>mef@chromium.org</owner>
   <summary>
@@ -570,6 +573,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.DNS.DnsTask.ErrorBeforeFallback.Slow" enum="NetErrorCodes"
     expires_after="M77">
+  <obsolete>
+    Removed from code 2021-02.
+  </obsolete>
   <owner>pauljensen@chromium.org</owner>
   <owner>mef@chromium.org</owner>
   <summary>
@@ -728,6 +734,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.DNS.DnsTransaction.SecureValidated.SuccessTimeoutRatio"
     units="10*ratio" expires_after="2020-12-20">
+  <obsolete>
+    Removed from code 2021-02.
+  </obsolete>
   <owner>ericorth@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -1341,7 +1350,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.DNS.UpgradeConfig.Ineligible.UnhandledOptions"
-    enum="Boolean" expires_after="2021-02-28">
+    enum="Boolean" expires_after="2021-11-28">
   <owner>ericorth@chromium.org</owner>
   <owner>doh-core@google.com</owner>
   <summary>
