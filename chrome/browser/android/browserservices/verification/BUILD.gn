@@ -24,8 +24,8 @@ android_library("java") {
     "//content/public/android:content_java",
     "//third_party/android_deps:dagger_java",
     "//third_party/android_deps:javax_inject_javax_inject_java",
-    "//third_party/android_sdk/androidx_browser:androidx_browser_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_browser_browser_java",
   ]
   srcjar_deps =
       [ "//chrome/browser/installable/digital_asset_links:enums_srcjar" ]
@@ -54,7 +54,7 @@ android_library("javatests") {
     "//components/externalauth/android:java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
-    "//third_party/android_sdk/androidx_browser:androidx_browser_java",
+    "//third_party/androidx:androidx_browser_browser_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
   ]
