@@ -9,6 +9,7 @@ assert(enable_extensions,
 
 source_set("declarative") {
   sources = [
+    "../declarative_content/content_rules_registry.h",
     "declarative_api.cc",
     "declarative_api.h",
     "declarative_rule.h",
@@ -22,7 +23,12 @@ source_set("declarative") {
   ]
 
   deps = [
+    "//components/url_matcher",
     "//content/public/browser",
+    "//extensions/browser/api",
+    "//extensions/browser/api/declarative_webrequest",
+    "//extensions/browser/api/web_request",
+    "//extensions/common",
     "//extensions/common/api",
   ]
 
