@@ -1071,6 +1071,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // and returns the new style. Otherwise, returns null.
   scoped_refptr<ComputedStyle> PropagateInheritedProperties();
 
+  const ComputedStyle* EnsureOwnComputedStyle(const StyleRecalcContext&,
+                                              PseudoId);
+
   // Recalculate the ComputedStyle for this element and return a
   // StyleRecalcChange for propagation/traversal into child nodes.
   StyleRecalcChange RecalcOwnStyle(const StyleRecalcChange,

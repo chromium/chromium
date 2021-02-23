@@ -109,6 +109,10 @@ class StyleRecalcContext {
   STACK_ALLOCATED();
 
  public:
+  // Using the ancestor chain, build a StyleRecalcContext suitable for
+  // resolving the style of the given Element.
+  static StyleRecalcContext FromAncestors(Element&);
+
   // If style is being calculated for an element inside a container,
   // this ContainerQueryEvaluator may be used to evaluate @container
   // rules against that container.

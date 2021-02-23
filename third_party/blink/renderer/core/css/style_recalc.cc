@@ -72,4 +72,16 @@ bool StyleRecalcChange::RecalcContainerQueryDependentChildren(
   return true;
 }
 
+StyleRecalcContext StyleRecalcContext::FromAncestors(Element& element) {
+  Element* ancestor = &element;
+  // TODO(crbug.com/1145970): Avoid this work if we're not inside a container.
+  while ((ancestor = DynamicTo<Element>(
+              LayoutTreeBuilderTraversal::Parent(*ancestor)))) {
+    ContainerQueryEvaluator* evaluator = ancestor->GetContainerQueryEvaluator();
+    if (evaluator)
+      return StyleRecalcContext{evaluator};
+  }
+  return StyleRecalcContext();
+}
+
 }  // namespace blink

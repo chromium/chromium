@@ -4774,6 +4774,29 @@ bool Element::IsInDescendantTreeOf(const Element* shadow_host) const {
   return false;
 }
 
+namespace {
+
+bool NeedsEnsureComputedStyle(Element& element) {
+  const ComputedStyle* style = element.GetComputedStyle();
+  return !style || style->IsEnsuredOutsideFlatTree();
+}
+
+HeapVector<Member<Element>> CollectAncestorsToEnsure(Element& element) {
+  HeapVector<Member<Element>> ancestors;
+
+  Element* ancestor = &element;
+  while ((ancestor = DynamicTo<Element>(
+              LayoutTreeBuilderTraversal::Parent(*ancestor)))) {
+    if (!NeedsEnsureComputedStyle(*ancestor))
+      break;
+    ancestors.push_back(ancestor);
+  }
+
+  return ancestors;
+}
+
+}  // namespace
+
 const ComputedStyle* Element::EnsureComputedStyle(
     PseudoId pseudo_element_specifier) {
   if (PseudoElement* element = GetPseudoElement(pseudo_element_specifier))
@@ -4799,20 +4822,39 @@ const ComputedStyle* Element::EnsureComputedStyle(
   DCHECK(!GetDocument().NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
       *this, true /* ignore_adjacent_style */));
 
-  // TODO(crbug.com/1145970): Use actual StyleRecalcContext.
-  StyleRecalcContext style_recalc_context;
+  // Retrieve a list of (non-inclusive) ancestors that we need to ensure the
+  // ComputedStyle for *before* we can ensure the ComputedStyle for this
+  // element. Note that the list of ancestors can be empty if |this| is the
+  // root of the display:none subtree.
+  //
+  // The front() element is the LayoutTreeBuilderTraversal::Parent of |this|,
+  // and the back() element is the "top-most" ancestor in the chain.
+  HeapVector<Member<Element>> ancestors = CollectAncestorsToEnsure(*this);
 
+  Element* top = ancestors.IsEmpty() ? this : ancestors.back().Get();
+  auto style_recalc_context =
+      RuntimeEnabledFeatures::CSSContainerQueriesEnabled()
+          ? StyleRecalcContext::FromAncestors(*top)
+          : StyleRecalcContext();
+
+  while (!ancestors.IsEmpty()) {
+    Element* ancestor = ancestors.back();
+    ancestors.pop_back();
+    ancestor->EnsureOwnComputedStyle(style_recalc_context, kPseudoIdNone);
+  }
+
+  return EnsureOwnComputedStyle(style_recalc_context, pseudo_element_specifier);
+}
+
+const ComputedStyle* Element::EnsureOwnComputedStyle(
+    const StyleRecalcContext& style_recalc_context,
+    PseudoId pseudo_element_specifier) {
   // FIXME: Find and use the layoutObject from the pseudo element instead of the
   // actual element so that the 'length' properties, which are only known by the
   // layoutObject because it did the layout, will be correct and so that the
   // values returned for the ":selection" pseudo-element will be correct.
   const ComputedStyle* element_style = GetComputedStyle();
-  if (!element_style || element_style->IsEnsuredOutsideFlatTree()) {
-    if (ContainerNode* parent = LayoutTreeBuilderTraversal::Parent(*this)) {
-      parent->EnsureComputedStyle();
-      if (element_style)
-        element_style = GetComputedStyle();
-    }
+  if (NeedsEnsureComputedStyle(*this)) {
     if (element_style && NeedsStyleRecalc()) {
       // RecalcStyle() will not traverse into connected elements outside the
       // flat tree and we may have a dirty element or ancestors if this
@@ -4822,7 +4864,7 @@ const ComputedStyle* Element::EnsureComputedStyle(
       // for the uppermost dirty ancestor and all of its descendants. If
       // this element was not the uppermost dirty element, we would not end
       // up here because a dirty ancestor would have cleared the
-      // ComputedStyle in the recursive call above and element_style would
+      // ComputedStyle via EnsureComputedStyle and element_style would
       // have been null.
       GetDocument().GetStyleEngine().ClearEnsuredDescendantStyles(*this);
       element_style = nullptr;
