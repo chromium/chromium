@@ -767,8 +767,6 @@ NGConstraintSpace CreateConstraintSpaceForMulticol(
   NGConstraintSpaceBuilder space_builder(
       writing_direction_mode.GetWritingMode(), writing_direction_mode,
       /* is_new_fc */ true);
-
-  // TODO(almaher): Do we need to set available size, % res size, etc?
   return space_builder.ToConstraintSpace();
 }
 

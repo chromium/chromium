@@ -141,7 +141,11 @@ void NGOutOfFlowLayoutPart::Run(const LayoutBox* only_layout) {
       container_builder_->SwapOutOfFlowFragmentainerDescendants(
           &fragmentainer_descendants);
       DCHECK(!fragmentainer_descendants.IsEmpty());
-      LayoutFragmentainerDescendants(&fragmentainer_descendants);
+      LayoutUnit column_inline_progression = ColumnInlineProgression(
+          container_builder_->ChildAvailableSize().inline_size,
+          container_builder_->Style());
+      LayoutFragmentainerDescendants(&fragmentainer_descendants,
+                                     column_inline_progression);
     }
 
     if (container_builder_->HasMulticolsWithPendingOOFs()) {
@@ -645,6 +649,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(const NGBlockNode& multicol) {
   Vector<NGLogicalOutOfFlowPositionedNode> oof_nodes_to_layout;
   Vector<MulticolChildInfo> multicol_children;
   const NGBlockBreakToken* previous_column_break_token = nullptr;
+  LayoutUnit column_inline_progression = kIndefiniteSize;
 
   NGConstraintSpace multicol_constraint_space =
       CreateConstraintSpaceForMulticol(multicol);
@@ -660,13 +665,27 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(const NGBlockNode& multicol) {
     const NGPhysicalBoxFragment* multicol_box_fragment =
         To<NGPhysicalBoxFragment>(&multicol_fragment);
 
-    WritingDirectionMode writing_direction =
-        multicol_box_fragment->Style().GetWritingDirection();
+    const ComputedStyle& style = multicol_box_fragment->Style();
+    WritingDirectionMode writing_direction = style.GetWritingDirection();
     const WritingModeConverter converter(writing_direction,
                                          multicol_box_fragment->Size());
     const NGBlockBreakToken* current_column_break_token =
         previous_column_break_token;
     wtf_size_t current_column_index = 0;
+
+    if (column_inline_progression == kIndefiniteSize) {
+      // TODO(almaher): This should eventually include scrollbar, as well.
+      NGBoxStrut border_padding =
+          multicol_box_fragment->Borders().ConvertToLogical(writing_direction) +
+          multicol_box_fragment->Padding().ConvertToLogical(writing_direction);
+      LayoutUnit available_inline_size =
+          multicol_box_fragment->Size()
+              .ConvertToLogical(writing_direction.GetWritingMode())
+              .inline_size -
+          border_padding.InlineSum();
+      column_inline_progression =
+          ColumnInlineProgression(available_inline_size, style);
+    }
 
     // Collect the children of the multicol fragments.
     for (auto& child :
@@ -753,12 +772,15 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(const NGBlockNode& multicol) {
   // Layout the OOF positioned elements inside the inner multicol.
   NGOutOfFlowLayoutPart(multicol, multicol_constraint_space,
                         &multicol_container_builder)
-      .LayoutFragmentainerDescendants(&oof_nodes_to_layout, &multicol_children);
+      .LayoutFragmentainerDescendants(
+          &oof_nodes_to_layout, column_inline_progression, &multicol_children);
 }
 
 void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
     Vector<NGLogicalOutOfFlowPositionedNode>* descendants,
+    LayoutUnit column_inline_progression,
     Vector<MulticolChildInfo>* multicol_children) {
+  nested_fragmentation_context_ = multicol_children;
   original_column_block_size_ =
       ShrinkLogicalSize(container_builder_->InitialBorderBoxSize(),
                         container_builder_->BorderScrollbarPadding())
@@ -782,13 +804,17 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
 
   // Add all of the descendant layout results as children to the fragment at
   // the associated index.
-  for (const auto& descendant_result : fragmentainer_descendant_results_) {
-    // We don't allow keys of 0, so shift the index back by 1 when adding to the
-    // fragmentainer.
-    wtf_size_t index = descendant_result.key - 1;
-    const Vector<scoped_refptr<const NGLayoutResult>>& results =
-        descendant_result.value;
-    AddOOFResultsToFragmentainer(results, index, multicol_children);
+  wtf_size_t index = 0;
+  while (!fragmentainer_descendant_results_.IsEmpty()) {
+    // We don't allow keys of 0, so shift the index by 1.
+    auto it = fragmentainer_descendant_results_.find(index + 1);
+    if (it != fragmentainer_descendant_results_.end()) {
+      Vector<scoped_refptr<const NGLayoutResult>>& results = it->value;
+      AddOOFResultsToFragmentainer(results, index, column_inline_progression,
+                                   multicol_children);
+      fragmentainer_descendant_results_.erase(it);
+    }
+    index++;
   }
 }
 
@@ -1211,16 +1237,29 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::GenerateFragment(
 void NGOutOfFlowLayoutPart::AddOOFResultsToFragmentainer(
     const Vector<scoped_refptr<const NGLayoutResult>>& results,
     wtf_size_t index,
+    LayoutUnit column_inline_progression,
     Vector<MulticolChildInfo>* multicol_children) {
   wtf_size_t num_children = container_builder_->Children().size();
   bool is_new_fragment = index >= num_children;
 
+  // If an OOF positioned element is in a nested context, and it fragments
+  // beyond the last fragmentainer, we don't create a new column for it.
+  // Rather, we will add it to the last existing fragmentainter at the
+  // correct inline offset.
+  bool create_new_fragment = is_new_fragment && !nested_fragmentation_context_;
+  bool add_to_last_fragment = is_new_fragment && nested_fragmentation_context_;
+
+  wtf_size_t num_new_fragmentainers;
+  if (is_new_fragment)
+    num_new_fragmentainers = index - num_children + 1;
+
   // If |index| is greater than the number of current children, we need to add
   // empty column fragments at all of the indexes leading up to |index|.
-  if (index > num_children) {
+  if (create_new_fragment) {
     const Vector<scoped_refptr<const NGLayoutResult>> empty_results;
     while (index > num_children) {
-      AddOOFResultsToFragmentainer(empty_results, /*index */ num_children);
+      AddOOFResultsToFragmentainer(empty_results, /*index */ num_children,
+                                   column_inline_progression);
       num_children++;
     }
     DCHECK_EQ(index, container_builder_->Children().size());
@@ -1259,12 +1298,24 @@ void NGOutOfFlowLayoutPart::AddOOFResultsToFragmentainer(
   // |algorithm| corresponds to the "mutable copy" of our original
   // fragmentainer. As long as this "copy" hasn't been laid out via
   // NGSimplifiedOOFLayoutAlgorithm::Layout, we can append new items to it.
-  NGSimplifiedOOFLayoutAlgorithm algorithm(params, fragment, is_new_fragment);
+  NGSimplifiedOOFLayoutAlgorithm algorithm(params, fragment,
+                                           create_new_fragment);
 
-  for (const auto& result : results)
+  for (const auto& result : results) {
+    // If we are adding the result to the last fragmentainer rather than
+    // creating a new fragmentainer to hold it, adjust the inline offset as if
+    // we had created a new fragmentainer.
+    if (add_to_last_fragment) {
+      LogicalOffset oof_offset = result->OutOfFlowPositionedOffset();
+      oof_offset.inline_offset +=
+          column_inline_progression * num_new_fragmentainers;
+      result->GetMutableForOutOfFlow().SetOutOfFlowPositionedOffset(
+          oof_offset, allow_first_tier_oof_cache_);
+    }
     algorithm.AppendOutOfFlowResult(result);
+  }
 
-  if (is_new_fragment) {
+  if (create_new_fragment) {
     LogicalOffset offset;
     if (index != num_children - 1 && !container_builder_->Children()[index + 1]
                                           .fragment->IsFragmentainerBox()) {
@@ -1279,33 +1330,24 @@ void NGOutOfFlowLayoutPart::AddOOFResultsToFragmentainer(
       // TODO(almaher): Include trailing spanner margin.
       offset.block_offset += spanner_size.block_size;
     } else {
-      // Calculate the column inline progression in order to calculate the
-      // inline offset of any newly added column fragments.
-      if (column_inline_progression_ == kIndefiniteSize) {
-        LayoutUnit available_size =
-            container_builder_->ChildAvailableSize().inline_size;
-        const ComputedStyle& style = container_builder_->Style();
-        LayoutUnit column_inline_size =
-            ResolveUsedColumnInlineSize(available_size, style);
-        column_inline_progression_ =
-            column_inline_size + ResolveUsedColumnGap(available_size, style);
-      }
       offset = fragmentainer.offset;
-      offset.inline_offset += column_inline_progression_;
+      offset.inline_offset += column_inline_progression;
     }
     scoped_refptr<const NGLayoutResult> new_result = algorithm.Layout();
     node.AddColumnResult(new_result);
-    // TODO(almaher): Handle "new" columns for nested fragmentation.
     container_builder_->AddChild(new_result->PhysicalFragment(), offset);
   } else {
     scoped_refptr<const NGLayoutResult> new_result = algorithm.Layout();
     node.ReplaceColumnResult(new_result, fragment);
     const NGPhysicalContainerFragment* new_fragment =
         &new_result->PhysicalFragment();
+    container_builder_->ReplaceChild(index, *new_fragment,
+                                     fragmentainer.offset);
 
-    if (multicol_children) {
+    if (nested_fragmentation_context_) {
       // We are in a nested fragmentation context. Replace the column entry
       // and break token directly in the existing multicol fragment.
+      DCHECK(multicol_children);
       MulticolChildInfo& column_info = (*multicol_children)[index];
       if (auto* parent_break_token = column_info.parent_break_token) {
         DCHECK_GT(parent_break_token->ChildBreakTokens().size(), 0u);
@@ -1316,11 +1358,6 @@ void NGOutOfFlowLayoutPart::AddOOFResultsToFragmentainer(
       column_info.mutable_link->fragment->Release();
       new (&column_info.mutable_link->fragment)
           scoped_refptr<const NGPhysicalFragment>(std::move(new_fragment));
-    } else {
-      // We are not in a nested context, so replace the column entry in the
-      // builder itself.
-      container_builder_->ReplaceChild(index, *new_fragment,
-                                       fragmentainer.offset);
     }
   }
 }
@@ -1367,7 +1404,8 @@ const NGConstraintSpace& NGOutOfFlowLayoutPart::GetFragmentainerConstraintSpace(
 
   // If we are a new fragment and are separated from other columns by a
   // spanner, compute the correct column block size to use.
-  if (is_new_fragment && index != num_children - 1 &&
+  if (is_new_fragment && !nested_fragmentation_context_ &&
+      index != num_children - 1 &&
       original_column_block_size_ != kIndefiniteSize &&
       !container_builder_->Children()[index + 1]
            .fragment->IsFragmentainerBox()) {
@@ -1458,7 +1496,8 @@ void NGOutOfFlowLayoutPart::ComputeStartFragmentIndexAndRelativeOffset(
 
   // If we are a new fragment and are separated from other columns by a
   // spanner, compute the correct fragmentainer_block_size.
-  if (original_column_block_size_ != kIndefiniteSize &&
+  if (!nested_fragmentation_context_ &&
+      original_column_block_size_ != kIndefiniteSize &&
       !container_builder_->Children()[child_index - 1]
            .fragment->IsFragmentainerBox()) {
     fragmentainer_block_size =

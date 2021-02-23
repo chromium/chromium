@@ -983,6 +983,13 @@ LayoutUnit ResolveUsedColumnGap(LayoutUnit available_size,
   return LayoutUnit(style.GetFontDescription().ComputedPixelSize());
 }
 
+LayoutUnit ColumnInlineProgression(LayoutUnit available_size,
+                                   const ComputedStyle& style) {
+  LayoutUnit column_inline_size =
+      ResolveUsedColumnInlineSize(available_size, style);
+  return column_inline_size + ResolveUsedColumnGap(available_size, style);
+}
+
 NGPhysicalBoxStrut ComputePhysicalMargins(
     const ComputedStyle& style,
     LayoutUnit percentage_resolution_size) {
