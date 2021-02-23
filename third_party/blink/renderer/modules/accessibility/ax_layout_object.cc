@@ -881,7 +881,8 @@ static bool ShouldUseLayoutNG(const LayoutObject& layout_object) {
 // |start_object| does not have to be included in the tree.
 // If |first| is true, returns the deepest first descendant.
 // Otherwise, returns the deepest last descendant.
-static AXObject* GetDeepestChildOnSameLine(AXObject* start_object, bool first) {
+static AXObject* GetDeepestAXChildInLayoutTree(AXObject* start_object,
+                                               bool first) {
   if (!start_object)
     return nullptr;
 
@@ -913,7 +914,7 @@ static AXObject* GetDeepestChildOnSameLine(AXObject* start_object, bool first) {
     return nullptr;
 
   // Already a leaf: return current result.
-  if (!result->UnignoredChildCount())
+  if (!result->ChildCountIncludingIgnored())
     return result;
 
   // Get deepest AXObject descendant.
@@ -959,7 +960,7 @@ static AXObject* NextOnLineInternalNG(const AXObject& ax_object) {
       LayoutObject* runner_layout_object = cursor.CurrentMutableLayoutObject();
       AXObject* result =
           ax_object.AXObjectCache().GetOrCreate(runner_layout_object);
-      result = GetDeepestChildOnSameLine(result, true);
+      result = GetDeepestAXChildInLayoutTree(result, true);
       if (result)
         return result;
     }
@@ -993,7 +994,7 @@ AXObject* AXLayoutObject::NextOnLine() const {
     // A list marker should be followed by a list item on the same line.
     // Note that pseudo content is always included in the tree, so
     // NextSiblingIncludingIgnored() will succeed.
-    return GetDeepestChildOnSameLine(NextSiblingIncludingIgnored(), true);
+    return GetDeepestAXChildInLayoutTree(NextSiblingIncludingIgnored(), true);
   }
 
   if (ShouldUseLayoutNG(*GetLayoutObject())) {
@@ -1022,7 +1023,7 @@ AXObject* AXLayoutObject::NextOnLine() const {
     LayoutObject* layout_object =
         LineLayoutAPIShim::LayoutObjectFrom(next->GetLineLayoutItem());
     AXObject* result = AXObjectCache().GetOrCreate(layout_object);
-    result = GetDeepestChildOnSameLine(result, true);
+    result = GetDeepestAXChildInLayoutTree(result, true);
     if (result)
       return result;
   }
@@ -1092,7 +1093,7 @@ static AXObject* PreviousOnLineInlineNG(const AXObject& ax_object) {
       LayoutObject* runner_layout_object = cursor.CurrentMutableLayoutObject();
       AXObject* result =
           ax_object.AXObjectCache().GetOrCreate(runner_layout_object);
-      result = GetDeepestChildOnSameLine(result, false);
+      result = GetDeepestAXChildInLayoutTree(result, false);
       if (result)
         return result;
     }
@@ -1129,7 +1130,7 @@ AXObject* AXLayoutObject::PreviousOnLine() const {
   if (previous_sibling && previous_sibling->GetLayoutObject() &&
       previous_sibling->GetLayoutObject()->IsLayoutNGOutsideListMarker()) {
     // A list item should be proceeded by a list marker on the same line.
-    return GetDeepestChildOnSameLine(previous_sibling, false);
+    return GetDeepestAXChildInLayoutTree(previous_sibling, false);
   }
 
   if (ShouldUseLayoutNG(*GetLayoutObject()))
@@ -1157,7 +1158,7 @@ AXObject* AXLayoutObject::PreviousOnLine() const {
     LayoutObject* layout_object =
         LineLayoutAPIShim::LayoutObjectFrom(prev->GetLineLayoutItem());
     AXObject* result = AXObjectCache().GetOrCreate(layout_object);
-    result = GetDeepestChildOnSameLine(result, false);
+    result = GetDeepestAXChildInLayoutTree(result, false);
     if (result)
       return result;
   }
