@@ -35,21 +35,33 @@ WGPUOrigin3D GPUOrigin2DToWGPUOrigin3D(
     const UnsignedLongEnforceRangeSequenceOrGPUOrigin2DDict* webgpu_origin) {
   DCHECK(webgpu_origin);
 
-  WGPUOrigin3D dawn_origin = {};
+  WGPUOrigin3D dawn_origin = {
+      0,
+      0,
+      0,
+  };
 
   if (webgpu_origin->IsUnsignedLongEnforceRangeSequence()) {
     const Vector<uint32_t>& webgpu_origin_sequence =
         webgpu_origin->GetAsUnsignedLongEnforceRangeSequence();
-    DCHECK_EQ(webgpu_origin_sequence.size(), 3UL);
-    dawn_origin.x = webgpu_origin_sequence[0];
-    dawn_origin.y = webgpu_origin_sequence[1];
-    dawn_origin.z = 0;
+    // The WebGPU spec states that if the sequence isn't big enough then the
+    // default values of 0 are used (which are set above).
+    switch (webgpu_origin_sequence.size()) {
+      default:
+        // This is a 2D origin and the depth should be 0 always.
+        dawn_origin.y = webgpu_origin_sequence[1];
+        FALLTHROUGH;
+      case 1:
+        dawn_origin.x = webgpu_origin_sequence[0];
+        FALLTHROUGH;
+      case 0:
+        break;
+    }
   } else if (webgpu_origin->IsGPUOrigin2DDict()) {
     const GPUOrigin2DDict* webgpu_origin_2d_dict =
         webgpu_origin->GetAsGPUOrigin2DDict();
     dawn_origin.x = webgpu_origin_2d_dict->x();
     dawn_origin.y = webgpu_origin_2d_dict->y();
-    dawn_origin.z = 0;
   } else {
     NOTREACHED();
   }
