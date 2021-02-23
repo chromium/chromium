@@ -5,7 +5,6 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
-import("//third_party/protobuf/proto_library.gni")
 
 component("fido") {
   sources = [
@@ -266,7 +265,8 @@ component("fido") {
     ]
 
     deps += [
-      ":u2f_proto",
+      "//chromeos/dbus/u2f",
+      "//chromeos/dbus/u2f:u2f_proto",
       "//dbus",
     ]
   }
@@ -314,14 +314,6 @@ static_library("cablev2_test_util") {
     "//services/network:test_support",
     "//services/network/public/mojom",
   ]
-}
-
-if (is_chromeos_ash) {
-  proto_library("u2f_proto") {
-    sources = [ "//third_party/cros_system_api/dbus/u2f/u2f_interface.proto" ]
-
-    proto_out_dir = "chromeos/dbus/u2f"
-  }
 }
 
 source_set("mocks") {

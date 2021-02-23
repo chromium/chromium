@@ -99,7 +99,7 @@ void ReportUVPlatformAuthenticatorAvailability() {
       win_webauthn_api &&
       content::IsUVPlatformAuthenticatorAvailable(win_webauthn_api));
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-  ReportAvailability(content::IsUVPlatformAuthenticatorAvailable());
+  // TODO(crbug.com/1181426): Reenable the IsUVPAA() startup metric on CrOS.
 #endif
 }
 

@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chromeos/dbus/u2f/u2f_client.h"
 
 namespace device {
 
@@ -27,6 +28,17 @@ void FidoChromeOSDiscovery::set_require_power_button_mode(bool require) {
 void FidoChromeOSDiscovery::Start() {
   DCHECK(!authenticator_);
   if (!observer()) {
+    return;
+  }
+
+  chromeos::U2FClient::Get()->WaitForServiceToBeAvailable(
+      base::BindOnce(&FidoChromeOSDiscovery::OnU2FServiceAvailable,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void FidoChromeOSDiscovery::OnU2FServiceAvailable(bool u2f_service_available) {
+  if (!u2f_service_available) {
+    observer()->DiscoveryStarted(this, /*success=*/false);
     return;
   }
 

@@ -91,6 +91,10 @@
 #include "device/fido/win/fake_webauthn_api.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/dbus/u2f/u2f_client.h"
+#endif
+
 namespace content {
 
 using ::testing::_;
@@ -454,7 +458,20 @@ class AuthenticatorTestBase : public content::RenderViewHostTestHarness {
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    chromeos::U2FClient::InitializeFake();
+#endif
+
     ResetVirtualDevice();
+  }
+
+  void TearDown() override {
+    content::RenderViewHostTestHarness::TearDown();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    chromeos::U2FClient::Shutdown();
+#endif
   }
 
   void ResetVirtualDevice() {
@@ -1572,7 +1589,6 @@ TEST_F(AuthenticatorImplTest, IsUVPAA) {
 #endif  // defined(OS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug/1150681): Better testing, e.g. use a mock/fake u2fd proxy here.
 TEST_F(AuthenticatorImplTest, IsUVPAA) {
   NavigateAndCommit(GURL(kTestOrigin1));
   mojo::Remote<blink::mojom::Authenticator> authenticator =
@@ -1580,7 +1596,6 @@ TEST_F(AuthenticatorImplTest, IsUVPAA) {
   TestIsUvpaaCallback cb;
   authenticator->IsUserVerifyingPlatformAuthenticatorAvailable(cb.callback());
   cb.WaitForCallback();
-  // There's no u2fd DBus proxy in tests so not available.
   EXPECT_FALSE(cb.value());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

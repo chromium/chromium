@@ -9,9 +9,9 @@
 #include "device/fido/cros/authenticator.h"
 
 #include "base/bind.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/dbus/u2f/u2f_client.h"
 #include "chromeos/dbus/u2f/u2f_interface.pb.h"
 #include "components/cbor/reader.h"
 #include "components/device_event_log/device_event_log.h"
@@ -35,15 +35,6 @@ std::string ChromeOSAuthenticator::GetId() const {
 }
 
 namespace {
-
-// DBus timeout for method calls that doesn't involve user interaction.
-constexpr int kShortTimeoutMs = 3000;
-
-// UMA histogram names.
-constexpr char kMakeCredentialStatusHistogram[] =
-    "WebAuthentication.ChromeOS.MakeCredentialStatus";
-constexpr char kGetAssertionStatusHistogram[] =
-    "WebAuthentication.ChromeOS.GetAssertionStatus";
 
 AuthenticatorSupportedOptions ChromeOSAuthenticatorOptions() {
   AuthenticatorSupportedOptions options;
@@ -79,19 +70,6 @@ void ChromeOSAuthenticator::InitializeAuthenticator(
 
 void ChromeOSAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
                                            MakeCredentialCallback callback) {
-  dbus::Bus::Options options;
-  options.bus_type = dbus::Bus::SYSTEM;
-  scoped_refptr<dbus::Bus> bus = new dbus::Bus(options);
-  dbus::ObjectProxy* u2f_proxy = bus->GetObjectProxy(
-      u2f::kU2FServiceName, dbus::ObjectPath(u2f::kU2FServicePath));
-
-  if (!u2f_proxy) {
-    FIDO_LOG(ERROR) << "Couldn't get u2f proxy";
-    std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                            base::nullopt);
-    return;
-  }
-
   u2f::MakeCredentialRequest req;
   // Requests with UserPresence get upgraded to UserVerification unless
   // verification is explicitly discouraged.
@@ -147,47 +125,25 @@ void ChromeOSAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
     req.set_app_id_exclude(*request.app_id);
   }
 
-  dbus::MethodCall method_call(u2f::kU2FInterface, u2f::kU2FMakeCredential);
-  dbus::MessageWriter writer(&method_call);
-  writer.AppendProtoAsArrayOfBytes(req);
-
-  // Use infinite timeout because Cancel() will be called when the request
-  // times out.
-  u2f_proxy->CallMethodWithErrorResponse(
-      &method_call, dbus::ObjectProxy::TIMEOUT_INFINITE,
-      base::BindOnce(&ChromeOSAuthenticator::OnMakeCredentialResp,
-                     weak_factory_.GetWeakPtr(), std::move(request),
-                     std::move(callback)));
+  chromeos::U2FClient::Get()->MakeCredential(
+      req, base::BindOnce(&ChromeOSAuthenticator::OnMakeCredentialResponse,
+                          weak_factory_.GetWeakPtr(), std::move(request),
+                          std::move(callback)));
 }
 
-void ChromeOSAuthenticator::OnMakeCredentialResp(
+void ChromeOSAuthenticator::OnMakeCredentialResponse(
     CtapMakeCredentialRequest request,
     MakeCredentialCallback callback,
-    dbus::Response* dbus_response,
-    dbus::ErrorResponse* error) {
-  if (error) {
-    FIDO_LOG(ERROR) << "MakeCredential dbus call failed with error: "
-                    << error->ToString();
+    base::Optional<u2f::MakeCredentialResponse> response) {
+  if (!response) {
+    FIDO_LOG(ERROR) << "MakeCredential dbus call failed";
     std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOther,
                             base::nullopt);
     return;
   }
 
-  dbus::MessageReader reader(dbus_response);
-  u2f::MakeCredentialResponse resp;
-  if (!reader.PopArrayOfBytesAsProto(&resp)) {
-    FIDO_LOG(ERROR) << "Failed to parse reply for call to MakeCredential";
-    std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                            base::nullopt);
-    return;
-  }
-
-  FIDO_LOG(DEBUG) << "Make credential status: " << resp.status();
-  base::UmaHistogramEnumeration(
-      kMakeCredentialStatusHistogram, resp.status(),
-      static_cast<u2f::MakeCredentialResponse_MakeCredentialStatus>(
-          u2f::MakeCredentialResponse::MakeCredentialStatus_ARRAYSIZE));
-  if (resp.status() !=
+  FIDO_LOG(DEBUG) << "Make credential status: " << response->status();
+  if (response->status() !=
       u2f::MakeCredentialResponse_MakeCredentialStatus_SUCCESS) {
     std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOperationDenied,
                             base::nullopt);
@@ -196,7 +152,7 @@ void ChromeOSAuthenticator::OnMakeCredentialResp(
 
   base::Optional<AuthenticatorData> authenticator_data =
       AuthenticatorData::DecodeAuthenticatorData(
-          base::as_bytes(base::make_span(resp.authenticator_data())));
+          base::as_bytes(base::make_span(response->authenticator_data())));
   if (!authenticator_data) {
     FIDO_LOG(ERROR) << "Authenticator data corrupted.";
     std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOther,
@@ -205,7 +161,7 @@ void ChromeOSAuthenticator::OnMakeCredentialResp(
   }
 
   base::Optional<cbor::Value> statement_map = cbor::Reader::Read(
-      base::as_bytes(base::make_span(resp.attestation_statement())));
+      base::as_bytes(base::make_span(response->attestation_statement())));
   if (!statement_map ||
       statement_map.value().type() != cbor::Value::Type::MAP) {
     FIDO_LOG(ERROR) << "Attestation statement is not a CBOR map.";
@@ -214,32 +170,18 @@ void ChromeOSAuthenticator::OnMakeCredentialResp(
     return;
   }
   auto statement = std::make_unique<OpaqueAttestationStatement>(
-      resp.attestation_format(), std::move(*statement_map));
-
-  AuthenticatorMakeCredentialResponse response(
-      FidoTransportProtocol::kInternal,
-      AttestationObject(std::move(*authenticator_data), std::move(statement)));
+      response->attestation_format(), std::move(*statement_map));
 
   std::move(callback).Run(CtapDeviceResponseCode::kSuccess,
-                          std::move(response));
+                          AuthenticatorMakeCredentialResponse(
+                              FidoTransportProtocol::kInternal,
+                              AttestationObject(std::move(*authenticator_data),
+                                                std::move(statement))));
 }
 
 void ChromeOSAuthenticator::GetAssertion(CtapGetAssertionRequest request,
                                          CtapGetAssertionOptions options,
                                          GetAssertionCallback callback) {
-  dbus::Bus::Options dbus_options;
-  dbus_options.bus_type = dbus::Bus::SYSTEM;
-  scoped_refptr<dbus::Bus> bus = new dbus::Bus(dbus_options);
-  dbus::ObjectProxy* u2f_proxy = bus->GetObjectProxy(
-      u2f::kU2FServiceName, dbus::ObjectPath(u2f::kU2FServicePath));
-
-  if (!u2f_proxy) {
-    FIDO_LOG(ERROR) << "Couldn't get u2f proxy";
-    std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                            base::nullopt);
-    return;
-  }
-
   u2f::GetAssertionRequest req;
   // Requests with UserPresence get upgraded to UserVerification unless
   // verification is explicitly discouraged.
@@ -263,53 +205,33 @@ void ChromeOSAuthenticator::GetAssertion(CtapGetAssertionRequest request,
     req.add_allowed_credential_id(std::string(id.begin(), id.end()));
   }
 
-  dbus::MethodCall method_call(u2f::kU2FInterface, u2f::kU2FGetAssertion);
-  dbus::MessageWriter writer(&method_call);
-  writer.AppendProtoAsArrayOfBytes(req);
-
-  // Use infinite timeout because Cancel() will be called when the request
-  // times out.
-  u2f_proxy->CallMethodWithErrorResponse(
-      &method_call, dbus::ObjectProxy::TIMEOUT_INFINITE,
-      base::BindOnce(&ChromeOSAuthenticator::OnGetAssertionResp,
-                     weak_factory_.GetWeakPtr(), std::move(request),
-                     std::move(callback)));
+  chromeos::U2FClient::Get()->GetAssertion(
+      req, base::BindOnce(&ChromeOSAuthenticator::OnGetAssertionResponse,
+                          weak_factory_.GetWeakPtr(), std::move(request),
+                          std::move(callback)));
 }
 
-void ChromeOSAuthenticator::OnGetAssertionResp(CtapGetAssertionRequest request,
-                                               GetAssertionCallback callback,
-                                               dbus::Response* dbus_response,
-                                               dbus::ErrorResponse* error) {
-  if (error) {
-    FIDO_LOG(ERROR) << "GetAssertion dbus call failed with error: "
-                    << error->ToString();
+void ChromeOSAuthenticator::OnGetAssertionResponse(
+    CtapGetAssertionRequest request,
+    GetAssertionCallback callback,
+    base::Optional<u2f::GetAssertionResponse> response) {
+  if (!response) {
+    FIDO_LOG(ERROR) << "GetAssertion dbus call failed";
     std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOther,
                             base::nullopt);
     return;
   }
 
-  dbus::MessageReader reader(dbus_response);
-  u2f::GetAssertionResponse resp;
-  if (!reader.PopArrayOfBytesAsProto(&resp)) {
-    FIDO_LOG(ERROR) << "Failed to parse reply for call to GetAssertion";
-    std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                            base::nullopt);
-    return;
-  }
-
-  FIDO_LOG(DEBUG) << "GetAssertion status: " << resp.status();
-  base::UmaHistogramEnumeration(
-      kGetAssertionStatusHistogram, resp.status(),
-      static_cast<u2f::GetAssertionResponse_GetAssertionStatus>(
-          u2f::GetAssertionResponse::GetAssertionStatus_ARRAYSIZE));
-  if (resp.status() != u2f::GetAssertionResponse_GetAssertionStatus_SUCCESS ||
-      resp.assertion_size() < 1) {
+  FIDO_LOG(DEBUG) << "GetAssertion status: " << response->status();
+  if (response->status() !=
+          u2f::GetAssertionResponse_GetAssertionStatus_SUCCESS ||
+      response->assertion_size() < 1) {
     std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOperationDenied,
                             base::nullopt);
     return;
   }
 
-  u2f::Assertion assertion = resp.assertion(0);
+  u2f::Assertion assertion = response->assertion(0);
 
   base::Optional<AuthenticatorData> authenticator_data =
       AuthenticatorData::DecodeAuthenticatorData(
@@ -323,29 +245,18 @@ void ChromeOSAuthenticator::OnGetAssertionResp(CtapGetAssertionRequest request,
 
   std::vector<uint8_t> signature(assertion.signature().begin(),
                                  assertion.signature().end());
-  AuthenticatorGetAssertionResponse response(std::move(*authenticator_data),
-                                             std::move(signature));
+  AuthenticatorGetAssertionResponse authenticator_response(
+      std::move(*authenticator_data), std::move(signature));
   const std::string& credential_id = assertion.credential_id();
-  response.SetCredential(PublicKeyCredentialDescriptor(
+  authenticator_response.SetCredential(PublicKeyCredentialDescriptor(
       CredentialType::kPublicKey,
       std::vector<uint8_t>(credential_id.begin(), credential_id.end())));
   std::move(callback).Run(CtapDeviceResponseCode::kSuccess,
-                          std::move(response));
+                          std::move(authenticator_response));
 }
 
 bool ChromeOSAuthenticator::HasCredentialForGetAssertionRequest(
     const CtapGetAssertionRequest& request) {
-  dbus::Bus::Options dbus_options;
-  dbus_options.bus_type = dbus::Bus::SYSTEM;
-  scoped_refptr<dbus::Bus> bus = new dbus::Bus(dbus_options);
-  dbus::ObjectProxy* u2f_proxy = bus->GetObjectProxy(
-      u2f::kU2FServiceName, dbus::ObjectPath(u2f::kU2FServicePath));
-
-  if (!u2f_proxy) {
-    FIDO_LOG(ERROR) << "Couldn't get u2f proxy";
-    return false;
-  }
-
   u2f::HasCredentialsRequest req;
   req.set_rp_id(request.rp_id);
   if (request.app_id) {
@@ -357,45 +268,18 @@ bool ChromeOSAuthenticator::HasCredentialForGetAssertionRequest(
     req.add_credential_id(std::string(id.begin(), id.end()));
   }
 
-  dbus::MethodCall method_call(u2f::kU2FInterface, u2f::kU2FHasCredentials);
-  dbus::MessageWriter writer(&method_call);
-  writer.AppendProtoAsArrayOfBytes(req);
+  base::Optional<u2f::HasCredentialsResponse> response =
+      chromeos::U2FClient::Get()->HasCredentialsBlocking(req);
 
-  std::unique_ptr<dbus::Response> dbus_response =
-      u2f_proxy->CallMethodAndBlock(&method_call, kShortTimeoutMs);
-
-  if (!dbus_response) {
-    FIDO_LOG(ERROR) << "HasCredentials dbus call had no response or timed out";
-    return false;
-  }
-
-  dbus::MessageReader reader(dbus_response.get());
-  u2f::HasCredentialsResponse resp;
-  if (!reader.PopArrayOfBytesAsProto(&resp)) {
-    FIDO_LOG(ERROR) << "Failed to parse reply for call to HasCredentials";
-    return false;
-  }
-
-  return resp.status() ==
+  return response &&
+         response->status() ==
              u2f::HasCredentialsResponse_HasCredentialsStatus_SUCCESS &&
-         resp.credential_id().size() > 0;
+         response->credential_id().size() > 0;
 }
 
 void ChromeOSAuthenticator::HasLegacyU2fCredentialForGetAssertionRequest(
     const CtapGetAssertionRequest& request,
     base::OnceCallback<void(bool has_credential)> callback) {
-  dbus::Bus::Options dbus_options;
-  dbus_options.bus_type = dbus::Bus::SYSTEM;
-  scoped_refptr<dbus::Bus> bus = new dbus::Bus(dbus_options);
-  dbus::ObjectProxy* u2f_proxy = bus->GetObjectProxy(
-      u2f::kU2FServiceName, dbus::ObjectPath(u2f::kU2FServicePath));
-
-  if (!u2f_proxy) {
-    FIDO_LOG(ERROR) << "Couldn't get u2f proxy";
-    std::move(callback).Run(false);
-    return;
-  }
-
   u2f::HasCredentialsRequest req;
   req.set_rp_id(request.rp_id);
   if (request.app_id) {
@@ -407,36 +291,16 @@ void ChromeOSAuthenticator::HasLegacyU2fCredentialForGetAssertionRequest(
     req.add_credential_id(std::string(id.begin(), id.end()));
   }
 
-  dbus::MethodCall method_call(u2f::kU2FInterface,
-                               u2f::kU2FHasLegacyCredentials);
-  dbus::MessageWriter writer(&method_call);
-  writer.AppendProtoAsArrayOfBytes(req);
-
-  u2f_proxy->CallMethod(
-      &method_call, kShortTimeoutMs,
+  chromeos::U2FClient::Get()->HasLegacyU2FCredentials(
+      req,
       base::BindOnce(
           [](base::OnceCallback<void(bool has_credential)> callback,
-             dbus::Response* dbus_response) {
-            if (!dbus_response) {
-              FIDO_LOG(ERROR)
-                  << "HasCredentials dbus call had no response or timed out";
-              std::move(callback).Run(false);
-              return;
-            }
-
-            dbus::MessageReader reader(dbus_response);
-            u2f::HasCredentialsResponse resp;
-            if (!reader.PopArrayOfBytesAsProto(&resp)) {
-              FIDO_LOG(ERROR)
-                  << "Failed to parse reply for call to HasCredentials";
-              std::move(callback).Run(false);
-              return;
-            }
-
+             base::Optional<u2f::HasCredentialsResponse> response) {
             std::move(callback).Run(
-                resp.status() ==
+                response &&
+                response->status() ==
                     u2f::HasCredentialsResponse_HasCredentialsStatus_SUCCESS &&
-                resp.credential_id().size() > 0);
+                response->credential_id().size() > 0);
           },
           std::move(callback)));
 }
@@ -445,129 +309,44 @@ void ChromeOSAuthenticator::Cancel() {
   if (current_request_id_ == 0u)
     return;
 
-  dbus::Bus::Options dbus_options;
-  dbus_options.bus_type = dbus::Bus::SYSTEM;
-  scoped_refptr<dbus::Bus> bus = new dbus::Bus(dbus_options);
-  dbus::ObjectProxy* u2f_proxy = bus->GetObjectProxy(
-      u2f::kU2FServiceName, dbus::ObjectPath(u2f::kU2FServicePath));
-
-  if (!u2f_proxy) {
-    FIDO_LOG(ERROR) << "Couldn't get u2f proxy, cannot cancel request";
-    return;
-  }
-
   u2f::CancelWebAuthnFlowRequest req;
   req.set_request_id(current_request_id_);
-  dbus::MethodCall method_call(u2f::kU2FInterface, u2f::kU2FCancelWebAuthnFlow);
-  dbus::MessageWriter writer(&method_call);
-  writer.AppendProtoAsArrayOfBytes(req);
-
-  // This needs to be non-blocking since canceling the flow involves Ash.
-  u2f_proxy->CallMethod(&method_call, kShortTimeoutMs,
-                        base::BindOnce(&ChromeOSAuthenticator::OnCancelResp,
-                                       weak_factory_.GetWeakPtr()));
+  chromeos::U2FClient::Get()->CancelWebAuthnFlow(
+      req, base::BindOnce(&ChromeOSAuthenticator::OnCancelResponse,
+                          weak_factory_.GetWeakPtr()));
 }
 
-void ChromeOSAuthenticator::OnCancelResp(dbus::Response* dbus_response) {
-  if (!dbus_response) {
+void ChromeOSAuthenticator::OnCancelResponse(
+    base::Optional<u2f::CancelWebAuthnFlowResponse> response) {
+  current_request_id_ = 0u;
+
+  if (!response) {
     FIDO_LOG(ERROR)
         << "CancelWebAuthnFlow dbus call had no response or timed out";
     return;
   }
 
-  dbus::MessageReader reader(dbus_response);
-  u2f::CancelWebAuthnFlowResponse resp;
-  if (!reader.PopArrayOfBytesAsProto(&resp)) {
-    FIDO_LOG(ERROR) << "Failed to parse reply for call to CancelWebAuthnFlow";
-    return;
+  if (!response->canceled()) {
+    FIDO_LOG(ERROR) << "Failed to cancel WebAuthn request";
   }
-
-  if (!resp.canceled()) {
-    FIDO_LOG(ERROR) << "Failed to cancel WebAuthn request with id "
-                    << current_request_id_;
-  }
-
-  current_request_id_ = 0u;
 }
 
 // static
 bool ChromeOSAuthenticator::IsUVPlatformAuthenticatorAvailableBlocking() {
-  dbus::Bus::Options dbus_options;
-  dbus_options.bus_type = dbus::Bus::SYSTEM;
-  scoped_refptr<dbus::Bus> bus = new dbus::Bus(dbus_options);
-  dbus::ObjectProxy* u2f_proxy = bus->GetObjectProxy(
-      u2f::kU2FServiceName, dbus::ObjectPath(u2f::kU2FServicePath));
-
-  if (!u2f_proxy) {
-    FIDO_LOG(DEBUG) << "Couldn't get u2f proxy";
-    return false;
-  }
-
-  u2f::IsUvpaaRequest req;
-  dbus::MethodCall method_call(u2f::kU2FInterface, u2f::kU2FIsUvpaa);
-  dbus::MessageWriter writer(&method_call);
-  writer.AppendProtoAsArrayOfBytes(req);
-
-  std::unique_ptr<dbus::Response> dbus_response =
-      u2f_proxy->CallMethodAndBlock(&method_call, kShortTimeoutMs);
-
-  if (!dbus_response) {
-    FIDO_LOG(DEBUG) << "IsUvpaa dbus call had no response or timed out";
-    return false;
-  }
-
-  dbus::MessageReader reader(dbus_response.get());
-  u2f::IsUvpaaResponse resp;
-  if (!reader.PopArrayOfBytesAsProto(&resp)) {
-    FIDO_LOG(ERROR) << "Failed to parse reply for call to IsUvpaa";
-    return false;
-  }
-
-  return resp.available();
+  base::Optional<u2f::IsUvpaaResponse> response =
+      chromeos::U2FClient::Get()->IsUvpaaBlocking(u2f::IsUvpaaRequest());
+  return response && response->available();
 }
 
 // static
 void ChromeOSAuthenticator::IsPowerButtonModeEnabled(
     base::OnceCallback<void(bool is_enabled)> callback) {
-  dbus::Bus::Options dbus_options;
-  dbus_options.bus_type = dbus::Bus::SYSTEM;
-  scoped_refptr<dbus::Bus> bus = new dbus::Bus(dbus_options);
-  dbus::ObjectProxy* u2f_proxy = bus->GetObjectProxy(
-      u2f::kU2FServiceName, dbus::ObjectPath(u2f::kU2FServicePath));
-
-  if (!u2f_proxy) {
-    FIDO_LOG(DEBUG) << "Couldn't get u2f proxy";
-    std::move(callback).Run(false);
-    return;
-  }
-
-  u2f::IsUvpaaRequest req;
-  dbus::MethodCall method_call(u2f::kU2FInterface, u2f::kU2FIsU2fEnabled);
-  dbus::MessageWriter writer(&method_call);
-  writer.AppendProtoAsArrayOfBytes(req);
-
-  u2f_proxy->CallMethodWithErrorResponse(
-      &method_call, dbus::ObjectProxy::TIMEOUT_INFINITE,
+  chromeos::U2FClient::Get()->IsU2FEnabled(
+      u2f::IsUvpaaRequest(),
       base::BindOnce(
           [](base::OnceCallback<void(bool is_enabled)> callback,
-             dbus::Response* dbus_response, dbus::ErrorResponse* error) {
-            if (!dbus_response) {
-              FIDO_LOG(DEBUG)
-                  << "IsU2fEnabled dbus call had no response or timed out";
-              std::move(callback).Run(false);
-              return;
-            }
-
-            dbus::MessageReader reader(dbus_response);
-            u2f::IsU2fEnabledResponse resp;
-            if (!reader.PopArrayOfBytesAsProto(&resp)) {
-              FIDO_LOG(ERROR)
-                  << "Failed to parse reply for call to IsU2fEnabled";
-              std::move(callback).Run(false);
-              return;
-            }
-
-            std::move(callback).Run(resp.enabled());
+             base::Optional<u2f::IsUvpaaResponse> response) {
+            std::move(callback).Run(response && response->available());
           },
           std::move(callback)));
 }

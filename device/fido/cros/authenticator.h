@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "chromeos/dbus/u2f/u2f_interface.pb.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
@@ -75,17 +76,19 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
   base::WeakPtr<FidoAuthenticator> GetWeakPtr() override;
 
  private:
-  void OnMakeCredentialResp(CtapMakeCredentialRequest request,
-                            MakeCredentialCallback callback,
-                            dbus::Response* dbus_response,
-                            dbus::ErrorResponse* error);
-
-  void OnGetAssertionResp(CtapGetAssertionRequest request,
-                          GetAssertionCallback callback,
-                          dbus::Response* dbus_response,
-                          dbus::ErrorResponse* error);
-
-  void OnCancelResp(dbus::Response* dbus_response);
+  void OnMakeCredentialResponse(
+      CtapMakeCredentialRequest request,
+      MakeCredentialCallback callback,
+      base::Optional<u2f::MakeCredentialResponse> response);
+  void OnGetAssertionResponse(
+      CtapGetAssertionRequest request,
+      GetAssertionCallback callback,
+      base::Optional<u2f::GetAssertionResponse> response);
+  void OnHasLegacyCredentialsResponse(
+      base::OnceCallback<void(bool has_credential)> callback,
+      base::Optional<u2f::HasCredentialsResponse> response);
+  void OnCancelResponse(
+      base::Optional<u2f::CancelWebAuthnFlowResponse> response);
 
   // Current request_id, used for cancelling the request.
   uint32_t current_request_id_ = 0u;

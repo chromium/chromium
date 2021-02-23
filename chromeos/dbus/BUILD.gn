@@ -197,6 +197,8 @@ source_set("unit_tests") {
     "//chromeos/dbus/shill:test_support",
     "//chromeos/dbus/tpm_manager",
     "//chromeos/dbus/tpm_manager:tpm_manager_proto",
+    "//chromeos/dbus/u2f",
+    "//chromeos/dbus/u2f:u2f_proto",
     "//chromeos/tpm:test_support",
     "//components/account_id",
     "//dbus",

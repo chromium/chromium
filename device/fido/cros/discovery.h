@@ -28,6 +28,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoChromeOSDiscovery
   void Start() override;
 
  private:
+  void OnU2FServiceAvailable(bool u2f_service_available);
   void AddAuthenticatorIfIsUVPAA();
   void MaybeAddAuthenticator(bool is_available);
   void OnHasLegacyU2fCredential(bool has_credential);
