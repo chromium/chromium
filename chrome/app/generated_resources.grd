@@ -9791,6 +9791,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_DESKTOP_MEDIA_PICKER_MULTIPLE_SCREEN_NAME" desc="Name for screens in the desktop media picker UI when there are multiple monitors.">
         {SCREEN_INDEX, plural, =1{Screen #} other{Screen #}}
       </message>
+      <if expr="toolkit_views">
+        <message name="IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_CURRENT_TAB" desc="Text for one of the dialog-tabs on the media picker dialog. This dialog-tab controls sharing the current tab.">
+          Current Tab
+        </message>
+      </if>
 
       <!-- Confirmation dialog for getCurrentBrowsingContextMedia API -->
       <message name="IDS_GET_CURRENT_BROWSING_CONTEXT_MEDIA_DIALOG_TITLE" desc="Title for the confirmation dialog shown when getCurrentBrowsingContextMedia is requested by an app.">

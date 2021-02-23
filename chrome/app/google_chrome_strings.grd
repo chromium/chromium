@@ -1073,9 +1073,6 @@ Google Chrome is unable to recover your settings.
       <message name="IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_TAB" desc="Text for the button on the window picker dialog, clicking which takes one to tab sharing">
         Chrome Tab
       </message>
-      <message name="IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_CURRENT_TAB" desc="Text for one of the dialog-tabs on the media picker dialog. This dialog-tab controls sharing the current tab.">
-        Current Tab
-      </message>
 
       <!-- Runtime permission strings -->
       <if expr="is_android">
