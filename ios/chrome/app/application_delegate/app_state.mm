@@ -46,6 +46,7 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/help_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/ui/main/scene_delegate.h"
 #import "ios/chrome/browser/ui/safe_mode/safe_mode_coordinator.h"
@@ -56,6 +57,7 @@
 #include "ios/net/cookies/cookie_store_ios.h"
 #include "ios/net/cookies/system_cookie_util.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
 #include "ios/public/provider/chrome/browser/distribution/app_distribution_provider.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
 #include "ios/web/public/thread/web_task_traits.h"
@@ -430,6 +432,11 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   ios::GetChromeBrowserProvider()
       ->GetAppDistributionProvider()
       ->CancelDistributionNotifications();
+
+  if (IsDiscoverFeedEnabled()) {
+    // Stop the Discover feed so it disconnects its services.
+    ios::GetChromeBrowserProvider()->GetDiscoverFeedProvider()->StopFeed();
+  }
 
   // Halt the tabs, so any outstanding requests get cleaned up, without actually
   // closing the tabs. Set the BVC to inactive to cancel all the dialogs.

@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 @protocol ApplicationCommands;
-class AuthenticationService;
 class Browser;
 @class DiscoverFeedConfiguration;
 
@@ -38,8 +37,8 @@ class DiscoverFeedProvider {
   // Starts the Feed using |discover_config| which contains various configs for
   // the Feed.
   virtual void StartFeed(DiscoverFeedConfiguration* discover_config);
-  // DEPRECATED. Delete once this method has been deleted downstream.
-  virtual void StartFeed(AuthenticationService* auth_service);
+  // Stops the Feed, which will disconnect all of its services.
+  virtual void StopFeed();
   // Returns true if the Discover Feed is enabled.
   virtual bool IsDiscoverFeedEnabled();
   // Returns the Discover Feed ViewController.
