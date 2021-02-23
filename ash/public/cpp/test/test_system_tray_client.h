@@ -39,6 +39,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   void ShowGestureEducationHelp() override;
   void ShowPaletteHelp() override;
   void ShowPaletteSettings() override;
+  void ShowPrivacyAndSecuritySettings() override;
   void ShowPublicAccountInfo() override;
   void ShowEnterpriseInfo() override;
   void ShowNetworkConfigure(const std::string& network_id) override;
@@ -61,10 +62,15 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
     return show_connected_devices_settings_count_;
   }
 
+  int show_os_settings_privacy_and_security_count() const {
+    return show_os_settings_privacy_and_security_count_;
+  }
+
  private:
   int show_bluetooth_settings_count_ = 0;
   int show_multi_device_setup_count_ = 0;
   int show_connected_devices_settings_count_ = 0;
+  int show_os_settings_privacy_and_security_count_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(TestSystemTrayClient);
 };

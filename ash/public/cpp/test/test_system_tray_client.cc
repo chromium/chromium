@@ -54,6 +54,10 @@ void TestSystemTrayClient::ShowPaletteHelp() {}
 
 void TestSystemTrayClient::ShowPaletteSettings() {}
 
+void TestSystemTrayClient::ShowPrivacyAndSecuritySettings() {
+  show_os_settings_privacy_and_security_count_++;
+}
+
 void TestSystemTrayClient::ShowPublicAccountInfo() {}
 
 void TestSystemTrayClient::ShowEnterpriseInfo() {}

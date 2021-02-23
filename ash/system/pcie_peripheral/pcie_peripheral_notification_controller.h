@@ -1,0 +1,49 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_SYSTEM_PCIE_PERIPHERAL_PCIE_PERIPHERAL_NOTIFICATION_CONTROLLER_H_
+#define ASH_SYSTEM_PCIE_PERIPHERAL_PCIE_PERIPHERAL_NOTIFICATION_CONTROLLER_H_
+
+#include "ash/ash_export.h"
+
+namespace message_center {
+class MessageCenter;
+}  // namespace message_center
+
+namespace ash {
+
+// Manages showing notifications for Pciguard and TypeC daemon events.
+// We display a CRITICAL notification if a guest user is attempting to use a
+// Thunderbolt-only peripheral, which we prevent due to security risks with
+// direct memory accessing. Other WARNING notifications are used to inform users
+// that their peripherals may not be working due to data access protection
+// enabled in OS Settings.
+class ASH_EXPORT PciePeripheralNotificationController {
+ public:
+  explicit PciePeripheralNotificationController(
+      message_center::MessageCenter* message_center);
+  PciePeripheralNotificationController(
+      const PciePeripheralNotificationController&) = delete;
+  PciePeripheralNotificationController& operator=(
+      const PciePeripheralNotificationController&) = delete;
+  ~PciePeripheralNotificationController();
+
+  // Call to show a notification to indicate that the recently plugged in
+  // Thunderbolt/USB4 peripheral performance is limited.
+  void NotifyLimitedPerformance();
+
+  // Call to show a notification to indicate to the Guest user of the current
+  // state of their Thunderbolt/USB4 peripheral.
+  void NotifyGuestModeNotification(bool is_thunderbolt_only);
+
+ private:
+  friend class PciePeripheralNotificationControllerTest;
+
+  // MessageCenter for adding notifications.
+  message_center::MessageCenter* const message_center_;
+};
+
+}  // namespace ash
+
+#endif  // ASH_SYSTEM_PCIE_PERIPHERAL_PCIE_PERIPHERAL_NOTIFICATION_CONTROLLER_H_

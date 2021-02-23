@@ -3477,6 +3477,26 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SHORTCUT_DEPRECATION_ALT_CLICK" desc="Message telling user to use search/launcher click instead of alt click to emulate a right click. The name of the launcher key varies by device and may be either Search or Launcher depending on the glyph on the keyboard." translateable="false">
         The Alt + click keyboard shortcut has changed. To use your keyboard to right-click, press the <ph name="LAUNCHER_KEY_NAME">$1<ex>Launcher</ex></ph> key + click.
       </message>
+
+      <!-- PciePeripheral notifications -->
+      <message name="IDS_PCIE_PERIPHERAL_NOTIFICATION_PERFORMANCE_LIMITED_TITLE" translateable="false" desc="Notification title to indicate to users that their peripheral device's performance may be limited.">
+        Peripheral performance may be limited
+      </message>
+      <message name="IDS_PCIE_PERIPHERAL_NOTIFICATION_PERFORMANCE_LIMITED_BODY" translateable="false" desc="Notification body text that explains to users that their peripheral performance may be limited and to change their Peripheral Data Access Protection settings in the Settings app.">
+        If peripheral performance is limited, change your data access protection for peripherals to optimize.
+      </message>
+      <message name="IDS_PCIE_PERIPHERAL_NOTIFICATION_SETTINGS_BUTTON_TEXT" translateable="false" desc="Notification button text, if the user clicks on the button it will redirect them to the Settings App.">
+        Settings
+      </message>
+      <message name="IDS_PCIE_PERIPHERAL_NOTIFICATION_LEARN_MORE_BUTTON_TEXT" translateable="false" desc="Notification button text, if the user clicks on the button it will redirect them to the Help webpage.">
+        Learn more
+      </message>
+      <message name="IDS_PCIE_PERIPHERAL_NOTIFICATION_PERFORMANCE_LIMITED_GUEST_MODE" translateable="false" desc="Notification body text that explains to the user that their peripheral may be at limited performance because the user is in Guest mode.">
+        Peripheral performance may be limited in Guest mode
+      </message>
+      <message name="IDS_PCIE_PERIPHERAL_NOTIFICATION_GUEST_MODE_NOT_SUPPORTED" translateable="false" desc="Notification body text that explains to the user that their peripheral is not supported in Guest mode due to security reasons.">
+        Peripheral not supported in Guest mode for security reasons
+      </message>
     </messages>
   </release>
 </grit>

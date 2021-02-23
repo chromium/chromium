@@ -122,6 +122,7 @@
 #include "ash/system/nearby_share/nearby_share_controller_impl.h"
 #include "ash/system/network/sms_observer.h"
 #include "ash/system/night_light/night_light_controller_impl.h"
+#include "ash/system/pcie_peripheral/pcie_peripheral_notification_controller.h"
 #include "ash/system/power/backlights_forced_off_setter.h"
 #include "ash/system/power/peripheral_battery_notifier.h"
 #include "ash/system/power/power_button_controller.h"
@@ -879,6 +880,8 @@ Shell::~Shell() {
   // destructed before it.
   media_notification_controller_.reset();
 
+  pcie_peripheral_notification_controller_.reset();
+
   // Destroys the MessageCenter singleton, so must happen late.
   message_center_controller_.reset();
 
@@ -942,6 +945,10 @@ void Shell::Init(
   media_controller_ = std::make_unique<MediaControllerImpl>();
 
   tablet_mode_controller_ = std::make_unique<TabletModeController>();
+
+  pcie_peripheral_notification_controller_ =
+      std::make_unique<PciePeripheralNotificationController>(
+          message_center::MessageCenter::Get());
 
   accessibility_focus_ring_controller_ =
       std::make_unique<AccessibilityFocusRingControllerImpl>();

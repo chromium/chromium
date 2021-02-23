@@ -153,6 +153,7 @@ class OverlayEventFilter;
 class OverviewController;
 class ParentAccessController;
 class PartialMagnificationController;
+class PciePeripheralNotificationController;
 class PeripheralBatteryListener;
 class PeripheralBatteryNotifier;
 class PersistentWindowController;
@@ -565,6 +566,11 @@ class ASH_EXPORT Shell : public SessionObserver,
     return projector_controller_.get();
   }
 
+  PciePeripheralNotificationController*
+  pcie_peripheral_notification_controller() {
+    return pcie_peripheral_notification_controller_.get();
+  }
+
   // Force the shelf to query for it's current visibility state.
   // TODO(jamescook): Move to Shelf.
   void UpdateShelfVisibility();
@@ -721,6 +727,8 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<NearbyShareControllerImpl> nearby_share_controller_;
   std::unique_ptr<NearbyShareDelegate> nearby_share_delegate_;
   std::unique_ptr<ParentAccessController> parent_access_controller_;
+  std::unique_ptr<PciePeripheralNotificationController>
+      pcie_peripheral_notification_controller_;
   std::unique_ptr<QuickAnswersController> quick_answers_controller_;
   std::unique_ptr<ResizeShadowController> resize_shadow_controller_;
   std::unique_ptr<SessionControllerImpl> session_controller_;
