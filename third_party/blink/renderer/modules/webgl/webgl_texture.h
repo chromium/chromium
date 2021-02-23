@@ -26,8 +26,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_TEXTURE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_TEXTURE_H_
 
+#include "base/time/time.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_shared_platform_3d_object.h"
+#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 
 namespace blink {
 
@@ -47,22 +49,30 @@ class WebGLTexture : public WebGLSharedPlatform3DObject {
 
   static GLint ComputeLevelCount(GLsizei width, GLsizei height, GLsizei depth);
 
+  // For last-uploaded-frame-metadata API. https://crbug.com/639174
+  struct VideoFrameUploadMetadata {
+    int frame_id = -1;
+    IntRect visible_rect = {};
+    base::TimeDelta timestamp = {};
+    base::TimeDelta expected_timestamp = {};
+    bool skipped = false;
+  };
+
   int GetLastUploadedVideoFrameId() const {
     return last_uploaded_video_frame_metadata_.frame_id;
   }
 
-  void UpdateLastUploadedFrame(
-      blink::WebMediaPlayer::VideoFrameUploadMetadata frame_metadata) {
+  void UpdateLastUploadedFrame(VideoFrameUploadMetadata frame_metadata) {
     last_uploaded_video_frame_metadata_ = frame_metadata;
   }
 
   void ClearLastUploadedFrame() { last_uploaded_video_frame_metadata_ = {}; }
 
   unsigned lastUploadedVideoWidth() const {
-    return last_uploaded_video_frame_metadata_.visible_rect.width();
+    return last_uploaded_video_frame_metadata_.visible_rect.Width();
   }
   unsigned lastUploadedVideoHeight() const {
-    return last_uploaded_video_frame_metadata_.visible_rect.height();
+    return last_uploaded_video_frame_metadata_.visible_rect.Height();
   }
   double lastUploadedVideoTimestamp() const {
     return last_uploaded_video_frame_metadata_.timestamp.InSecondsF();
@@ -86,8 +96,7 @@ class WebGLTexture : public WebGLSharedPlatform3DObject {
 
   GLenum target_;
 
-  blink::WebMediaPlayer::VideoFrameUploadMetadata
-      last_uploaded_video_frame_metadata_ = {};
+  VideoFrameUploadMetadata last_uploaded_video_frame_metadata_ = {};
 };
 
 }  // namespace blink

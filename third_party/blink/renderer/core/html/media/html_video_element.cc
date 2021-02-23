@@ -376,12 +376,9 @@ void HTMLVideoElement::RequestExitPictureInPicture() {
       .ExitPictureInPicture(this, nullptr);
 }
 
-void HTMLVideoElement::PaintCurrentFrame(
-    cc::PaintCanvas* canvas,
-    const IntRect& dest_rect,
-    const PaintFlags* flags,
-    int already_uploaded_id,
-    WebMediaPlayer::VideoFrameUploadMetadata* out_metadata) const {
+void HTMLVideoElement::PaintCurrentFrame(cc::PaintCanvas* canvas,
+                                         const IntRect& dest_rect,
+                                         const PaintFlags* flags) const {
   if (!GetWebMediaPlayer())
     return;
 
@@ -394,81 +391,7 @@ void HTMLVideoElement::PaintCurrentFrame(
     media_flags.setBlendMode(SkBlendMode::kSrc);
   }
 
-  GetWebMediaPlayer()->Paint(canvas, dest_rect, media_flags,
-                             already_uploaded_id, out_metadata);
-}
-
-bool HTMLVideoElement::CopyVideoTextureToPlatformTexture(
-    gpu::gles2::GLES2Interface* gl,
-    GLenum target,
-    GLuint texture,
-    GLenum internal_format,
-    GLenum format,
-    GLenum type,
-    GLint level,
-    bool premultiply_alpha,
-    bool flip_y,
-    int already_uploaded_id,
-    WebMediaPlayer::VideoFrameUploadMetadata* out_metadata) {
-  if (!GetWebMediaPlayer())
-    return false;
-
-  return GetWebMediaPlayer()->CopyVideoTextureToPlatformTexture(
-      gl, target, texture, internal_format, format, type, level,
-      premultiply_alpha, flip_y, already_uploaded_id, out_metadata);
-}
-
-bool HTMLVideoElement::CopyVideoYUVDataToPlatformTexture(
-    gpu::gles2::GLES2Interface* gl,
-    GLenum target,
-    GLuint texture,
-    GLenum internal_format,
-    GLenum format,
-    GLenum type,
-    GLint level,
-    bool premultiply_alpha,
-    bool flip_y,
-    int already_uploaded_id,
-    WebMediaPlayer::VideoFrameUploadMetadata* out_metadata) {
-  if (!GetWebMediaPlayer())
-    return false;
-
-  return GetWebMediaPlayer()->CopyVideoYUVDataToPlatformTexture(
-      gl, target, texture, internal_format, format, type, level,
-      premultiply_alpha, flip_y, already_uploaded_id, out_metadata);
-}
-
-bool HTMLVideoElement::TexImageImpl(
-    WebMediaPlayer::TexImageFunctionID function_id,
-    GLenum target,
-    gpu::gles2::GLES2Interface* gl,
-    GLuint texture,
-    GLint level,
-    GLint internalformat,
-    GLenum format,
-    GLenum type,
-    GLint xoffset,
-    GLint yoffset,
-    GLint zoffset,
-    bool flip_y,
-    bool premultiply_alpha) {
-  if (!GetWebMediaPlayer())
-    return false;
-  return GetWebMediaPlayer()->TexImageImpl(
-      function_id, target, gl, texture, level, internalformat, format, type,
-      xoffset, yoffset, zoffset, flip_y, premultiply_alpha);
-}
-
-bool HTMLVideoElement::PrepareVideoFrameForWebGL(
-    gpu::gles2::GLES2Interface* gl,
-    GLenum target,
-    GLuint texture,
-    int already_uploaded_id,
-    WebMediaPlayer::VideoFrameUploadMetadata* out_metadata) {
-  if (!GetWebMediaPlayer())
-    return false;
-  return GetWebMediaPlayer()->PrepareVideoFrameForWebGL(
-      gl, target, texture, already_uploaded_id, out_metadata);
+  GetWebMediaPlayer()->Paint(canvas, dest_rect, media_flags);
 }
 
 bool HTMLVideoElement::HasAvailableVideoFrame() const {

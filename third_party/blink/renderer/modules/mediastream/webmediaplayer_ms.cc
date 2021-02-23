@@ -953,9 +953,7 @@ bool WebMediaPlayerMS::DidLoadingProgress() {
 
 void WebMediaPlayerMS::Paint(cc::PaintCanvas* canvas,
                              const gfx::Rect& rect,
-                             cc::PaintFlags& flags,
-                             int already_uploaded_id,
-                             VideoFrameUploadMetadata* out_metadata) {
+                             cc::PaintFlags& flags) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -1094,108 +1092,6 @@ void WebMediaPlayerMS::OnVolumeMultiplierUpdate(double multiplier) {
 
 void WebMediaPlayerMS::OnBecamePersistentVideo(bool value) {
   get_client()->OnBecamePersistentVideo(value);
-}
-
-bool WebMediaPlayerMS::CopyVideoTextureToPlatformTexture(
-    gpu::gles2::GLES2Interface* gl,
-    unsigned target,
-    unsigned int texture,
-    unsigned internal_format,
-    unsigned format,
-    unsigned type,
-    int level,
-    bool premultiply_alpha,
-    bool flip_y,
-    int already_uploaded_id,
-    VideoFrameUploadMetadata* out_metadata) {
-  TRACE_EVENT0("media", "copyVideoTextureToPlatformTexture");
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  scoped_refptr<media::VideoFrame> video_frame = compositor_->GetCurrentFrame();
-
-  if (!video_frame.get() || !video_frame->HasTextures())
-    return false;
-
-  auto provider = Platform::Current()->SharedMainThreadContextProvider();
-  // GPU Process crashed.
-  if (!provider)
-    return false;
-
-  return video_renderer_.CopyVideoFrameTexturesToGLTexture(
-      provider.get(), gl, video_frame.get(), target, texture, internal_format,
-      format, type, level, premultiply_alpha, flip_y);
-}
-
-bool WebMediaPlayerMS::CopyVideoYUVDataToPlatformTexture(
-    gpu::gles2::GLES2Interface* gl,
-    unsigned target,
-    unsigned int texture,
-    unsigned internal_format,
-    unsigned format,
-    unsigned type,
-    int level,
-    bool premultiply_alpha,
-    bool flip_y,
-    int already_uploaded_id,
-    VideoFrameUploadMetadata* out_metadata) {
-  TRACE_EVENT0("media", "copyVideoYUVDataToPlatformTexture");
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  scoped_refptr<media::VideoFrame> video_frame = compositor_->GetCurrentFrame();
-
-  if (!video_frame)
-    return false;
-  if (video_frame->HasTextures())
-    return false;
-
-  auto provider = Platform::Current()->SharedMainThreadContextProvider();
-  // GPU Process crashed.
-  if (!provider)
-    return false;
-
-  return video_renderer_.CopyVideoFrameYUVDataToGLTexture(
-      provider.get(), gl, *video_frame, target, texture, internal_format,
-      format, type, level, premultiply_alpha, flip_y);
-}
-
-bool WebMediaPlayerMS::TexImageImpl(TexImageFunctionID functionID,
-                                    unsigned target,
-                                    gpu::gles2::GLES2Interface* gl,
-                                    unsigned int texture,
-                                    int level,
-                                    int internalformat,
-                                    unsigned format,
-                                    unsigned type,
-                                    int xoffset,
-                                    int yoffset,
-                                    int zoffset,
-                                    bool flip_y,
-                                    bool premultiply_alpha) {
-  TRACE_EVENT0("media", "texImageImpl");
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  const scoped_refptr<media::VideoFrame> video_frame =
-      compositor_->GetCurrentFrame();
-  if (!video_frame || !video_frame->IsMappable() ||
-      video_frame->HasTextures() ||
-      video_frame->format() != media::PIXEL_FORMAT_Y16) {
-    return false;
-  }
-
-  if (functionID == kTexImage2D) {
-    auto provider = Platform::Current()->SharedMainThreadContextProvider();
-    // GPU Process crashed.
-    if (!provider)
-      return false;
-    return media::PaintCanvasVideoRenderer::TexImage2D(
-        target, texture, gl, provider->ContextCapabilities(), video_frame.get(),
-        level, internalformat, format, type, flip_y, premultiply_alpha);
-  } else if (functionID == kTexSubImage2D) {
-    return media::PaintCanvasVideoRenderer::TexSubImage2D(
-        target, gl, video_frame.get(), level, format, type, xoffset, yoffset,
-        flip_y, premultiply_alpha);
-  }
-  return false;
 }
 
 void WebMediaPlayerMS::ActivateSurfaceLayerForVideo() {

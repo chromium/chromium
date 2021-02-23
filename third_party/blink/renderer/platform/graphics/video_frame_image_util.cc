@@ -155,26 +155,30 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     video_renderer = local_video_renderer.get();
   }
 
-  video_renderer->Paint(frame.get(), resource_provider->Canvas(),
-                        gfx::RectF(frame->visible_rect()), media_flags,
-                        media::kNoTransformation,
-                        raster_context_provider.get());
+  // Since we're copying, the destination is always aligned with the origin.
+  const auto& visible_rect = frame->visible_rect();
+  const auto dest_rect =
+      gfx::RectF(0, 0, visible_rect.width(), visible_rect.height());
+
+  video_renderer->Paint(
+      frame.get(), resource_provider->Canvas(), dest_rect, media_flags,
+      frame->metadata().transformation.value_or(media::kNoTransformation),
+      raster_context_provider.get());
   return resource_provider->Snapshot();
 }
 
 std::unique_ptr<CanvasResourceProvider> CreateResourceProviderForVideoFrame(
     IntSize size,
     viz::RasterContextProvider* raster_context_provider) {
-  // TODO(crbug.com/1175907): Try ShouldInitialize::kNo below like WebGL.
   if (!ShouldCreateAcceleratedImages(raster_context_provider)) {
     return CanvasResourceProvider::CreateBitmapProvider(
         size, kLow_SkFilterQuality, CanvasResourceParams(),
-        CanvasResourceProvider::ShouldInitialize::kCallClear);
+        CanvasResourceProvider::ShouldInitialize::kNo);
   }
 
   return CanvasResourceProvider::CreateSharedImageProvider(
       size, kLow_SkFilterQuality, CanvasResourceParams(),
-      CanvasResourceProvider::ShouldInitialize::kCallClear,
+      CanvasResourceProvider::ShouldInitialize::kNo,
       SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
       false,  // Origin of GL texture is bottom left on screen
       gpu::SHARED_IMAGE_USAGE_DISPLAY);

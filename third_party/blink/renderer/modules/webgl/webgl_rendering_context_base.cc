@@ -118,6 +118,8 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
+#include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_util.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
@@ -5730,28 +5732,6 @@ void WebGLRenderingContextBase::texImage2D(
       GetTextureSourceSize(context_host), 1, 0, exception_state);
 }
 
-scoped_refptr<Image> WebGLRenderingContextBase::VideoFrameToImage(
-    HTMLVideoElement* video,
-    int already_uploaded_id,
-    WebMediaPlayer::VideoFrameUploadMetadata* out_metadata) {
-  const IntSize& visible_size = video->videoVisibleSize();
-  if (visible_size.IsEmpty()) {
-    SynthesizeGLError(GL_INVALID_VALUE, "tex(Sub)Image2D",
-                      "video visible size is empty");
-    return nullptr;
-  }
-  CanvasResourceProvider* resource_provider =
-      generated_image_cache_.GetCanvasResourceProvider(visible_size);
-  if (!resource_provider) {
-    SynthesizeGLError(GL_OUT_OF_MEMORY, "texImage2D", "out of memory");
-    return nullptr;
-  }
-  IntRect dest_rect(0, 0, visible_size.Width(), visible_size.Height());
-  video->PaintCurrentFrame(resource_provider->Canvas(), dest_rect, nullptr,
-                           already_uploaded_id, out_metadata);
-  return resource_provider->Snapshot();
-}
-
 void WebGLRenderingContextBase::TexImageHelperHTMLVideoElement(
     const SecurityOrigin* security_origin,
     TexImageFunctionID function_id,
@@ -5773,12 +5753,15 @@ void WebGLRenderingContextBase::TexImageHelperHTMLVideoElement(
     return;
 
   if (!ValidateHTMLVideoElement(security_origin, func_name, video,
-                                exception_state))
+                                exception_state)) {
     return;
+  }
+
   WebGLTexture* texture =
       ValidateTexImageBinding(func_name, function_id, target);
   if (!texture)
     return;
+
   TexImageFunctionType function_type;
   if (function_id == kTexImage2D || function_id == kTexImage3D)
     function_type = kTexImage;
@@ -5787,104 +5770,26 @@ void WebGLRenderingContextBase::TexImageHelperHTMLVideoElement(
   if (!ValidateTexFunc(func_name, function_type, kSourceHTMLVideoElement,
                        target, level, internalformat, video->videoWidth(),
                        video->videoHeight(), 1, 0, format, type, xoffset,
-                       yoffset, zoffset))
-    return;
-
-  GLint adjusted_internalformat =
-      ConvertTexInternalFormat(internalformat, type);
-
-  // For WebGL last-uploaded-frame-metadata API. https://crbug.com/639174
-  WebMediaPlayer::VideoFrameUploadMetadata frame_metadata = {};
-  int already_uploaded_id = -1;
-  WebMediaPlayer::VideoFrameUploadMetadata* frame_metadata_ptr = nullptr;
-  if (RuntimeEnabledFeatures::ExtraWebGLVideoTextureMetadataEnabled()) {
-    already_uploaded_id = texture->GetLastUploadedVideoFrameId();
-    frame_metadata_ptr = &frame_metadata;
-  }
-
-  if (!source_image_rect.IsValid()) {
-    SynthesizeGLError(GL_INVALID_OPERATION, func_name,
-                      "source sub-rectangle specified via pixel unpack "
-                      "parameters is invalid");
+                       yoffset, zoffset)) {
     return;
   }
-  bool source_image_rect_is_default =
-      source_image_rect == SentinelEmptyRect() ||
-      source_image_rect ==
-          IntRect(0, 0, video->videoWidth(), video->videoHeight());
 
-  const auto& caps = GetDrawingBuffer()->ContextProvider()->GetCapabilities();
-  const bool may_need_image_external_essl3 =
-      caps.egl_image_external &&
-      Extensions3DUtil::CopyTextureCHROMIUMNeedsESSL3(internalformat);
-  const bool have_image_external_essl3 = caps.egl_image_external_essl3;
-  const bool use_copyTextureCHROMIUM =
-      function_id == kTexImage2D && source_image_rect_is_default &&
-      depth == 1 && GL_TEXTURE_2D == target &&
-      (have_image_external_essl3 || !may_need_image_external_essl3) &&
-      CanUseTexImageViaGPU(format, type);
-
-  // Format of source video may be 16-bit format, e.g. Y16 format.
-  // glCopyTextureCHROMIUM requires the source texture to be in 8-bit format.
-  // Converting 16-bits formated source texture to 8-bits formated texture will
-  // cause precision lost. So, uploading such video texture to half float or
-  // float texture can not use GPU-GPU path.
-  if (use_copyTextureCHROMIUM) {
-    DCHECK(Extensions3DUtil::CanUseCopyTextureCHROMIUM(target));
-    DCHECK_EQ(xoffset, 0);
-    DCHECK_EQ(yoffset, 0);
-    DCHECK_EQ(zoffset, 0);
-    // Go through the fast path doing a GPU-GPU textures copy without a readback
-    // to system memory if possible.  Otherwise, it will fall back to the normal
-    // SW path.
-
-    if (video->CopyVideoTextureToPlatformTexture(
-            ContextGL(), target, texture->Object(), adjusted_internalformat,
-            format, type, level, unpack_premultiply_alpha_, unpack_flip_y_,
-            already_uploaded_id, frame_metadata_ptr)) {
-      texture->UpdateLastUploadedFrame(frame_metadata);
-      return;
-    }
-
-    // For certain video frame formats (e.g. I420/YUV), if they start on the CPU
-    // (e.g. video camera frames): upload them to the GPU, do a GPU decode, and
-    // then copy into the target texture.
-    if (video->CopyVideoYUVDataToPlatformTexture(
-            ContextGL(), target, texture->Object(), adjusted_internalformat,
-            format, type, level, unpack_premultiply_alpha_, unpack_flip_y_,
-            already_uploaded_id, frame_metadata_ptr)) {
-      texture->UpdateLastUploadedFrame(frame_metadata);
-      return;
-    }
+  media::PaintCanvasVideoRenderer* video_renderer = nullptr;
+  scoped_refptr<media::VideoFrame> media_video_frame;
+  if (auto* wmp = video->GetWebMediaPlayer()) {
+    media_video_frame = wmp->GetCurrentFrame();
+    video_renderer = wmp->GetPaintCanvasVideoRenderer();
   }
 
-  if (source_image_rect_is_default) {
-    // Try using optimized CPU-GPU path for some formats: e.g. Y16 and Y8. It
-    // leaves early for other formats or if frame is stored on GPU.
-    ScopedUnpackParametersResetRestore unpack_params(
-        this, unpack_flip_y_ || unpack_premultiply_alpha_);
-    if (video->TexImageImpl(
-            static_cast<WebMediaPlayer::TexImageFunctionID>(function_id),
-            target, ContextGL(), texture->Object(), level,
-            adjusted_internalformat, format, type, xoffset, yoffset, zoffset,
-            unpack_flip_y_,
-            unpack_premultiply_alpha_ &&
-                unpack_colorspace_conversion_ == GL_NONE)) {
-      texture->ClearLastUploadedFrame();
-      return;
-    }
-  }
-
-  scoped_refptr<Image> image =
-      VideoFrameToImage(video, already_uploaded_id, frame_metadata_ptr);
-  if (!image)
+  if (!media_video_frame || !video_renderer)
     return;
-  TexImageImpl(function_id, target, level, adjusted_internalformat, xoffset,
-               yoffset, zoffset, format, type, image.get(),
-               WebGLImageConversion::kHtmlDomVideo, unpack_flip_y_,
-               unpack_premultiply_alpha_, source_image_rect, depth,
-               unpack_image_height);
-  texture->UpdateLastUploadedFrame(frame_metadata);
+
+  // This is enforced by ValidateHTMLVideoElement(), but DCHECK to be sure.
+  DCHECK(!WouldTaintOrigin(video));
+  TexImageHelperMediaVideoFrame(
+      function_id, target, level, internalformat, format, type, xoffset,
+      yoffset, zoffset, source_image_rect, depth, unpack_image_height, texture,
+      std::move(media_video_frame), video_renderer);
 }
 
 void WebGLRenderingContextBase::TexImageHelperVideoFrame(
@@ -5918,14 +5823,14 @@ void WebGLRenderingContextBase::TexImageHelperVideoFrame(
   else
     function_type = kTexSubImage;
 
-  auto media_video_frame = frame->frame();
-  if (!media_video_frame)
+  auto local_handle = frame->handle()->CloneForInternalUse();
+  if (!local_handle)
     return;
 
-  const auto visible_rect = media_video_frame->visible_rect();
+  const auto natural_size = local_handle->frame()->natural_size();
   if (!ValidateTexFunc(func_name, function_type, kSourceVideoFrame, target,
-                       level, internalformat, visible_rect.width(),
-                       visible_rect.height(), 1, 0, format, type, xoffset,
+                       level, internalformat, natural_size.width(),
+                       natural_size.height(), 1, 0, format, type, xoffset,
                        yoffset, zoffset)) {
     return;
   }
@@ -5937,11 +5842,82 @@ void WebGLRenderingContextBase::TexImageHelperVideoFrame(
     return;
   }
 
+  // Some blink::VideoFrame objects reference a SkImage which can be used
+  // directly instead of making a copy through the VideoFrame.
+  if (auto sk_img = local_handle->sk_image()) {
+    DCHECK(!sk_img->isTextureBacked());
+    const GLint adjusted_internalformat =
+        ConvertTexInternalFormat(internalformat, type);
+
+    // For WebGL last-uploaded-frame-metadata API. https://crbug.com/639174
+    auto metadata = WebGLVideoTexture::CreateVideoFrameUploadMetadata(
+        local_handle->frame().get(), texture->GetLastUploadedVideoFrameId());
+    if (metadata.skipped) {
+      texture->UpdateLastUploadedFrame(metadata);
+      return;
+    }
+    auto image = UnacceleratedStaticBitmapImage::Create(std::move(sk_img));
+    TexImageImpl(function_id, target, level, adjusted_internalformat, xoffset,
+                 yoffset, zoffset, format, type, image.get(),
+                 // Note: kHtmlDomVideo means alpha won't be unmultiplied.
+                 WebGLImageConversion::kHtmlDomVideo, unpack_flip_y_,
+                 unpack_premultiply_alpha_, source_image_rect, depth,
+                 unpack_image_height);
+    texture->UpdateLastUploadedFrame(metadata);
+    return;
+  }
+
+  TexImageHelperMediaVideoFrame(function_id, target, level, internalformat,
+                                format, type, xoffset, yoffset, zoffset,
+                                source_image_rect, depth, unpack_image_height,
+                                texture, local_handle->frame(), nullptr);
+}
+
+void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
+    TexImageFunctionID function_id,
+    GLenum target,
+    GLint level,
+    GLint internalformat,
+    GLenum format,
+    GLenum type,
+    GLint xoffset,
+    GLint yoffset,
+    GLint zoffset,
+    const IntRect& source_image_rect,
+    GLsizei depth,
+    GLint unpack_image_height,
+    WebGLTexture* texture,
+    scoped_refptr<media::VideoFrame> media_video_frame,
+    media::PaintCanvasVideoRenderer* video_renderer) {
+  DCHECK(!isContextLost());
+  DCHECK(texture);
+  DCHECK(media_video_frame);
+  DCHECK(source_image_rect.IsValid());
+
+  auto metadata = WebGLVideoTexture::CreateVideoFrameUploadMetadata(
+      media_video_frame.get(), texture->GetLastUploadedVideoFrameId());
+  if (metadata.skipped) {
+    texture->UpdateLastUploadedFrame(metadata);
+    return;
+  }
+
+  TexImageFunctionType function_type;
+  if (function_id == kTexImage2D || function_id == kTexImage3D)
+    function_type = kTexImage;
+  else
+    function_type = kTexSubImage;
+
+  // TODO(crbug.com/1175907): Reconcile usage of natural size versus visible
+  // rect. The existing <video> path uses natural size for |source_image_rect|
+  // and visible size centered at zero for actual Paint/Copy operations. So for
+  // now preserve the same behavior for all media::VideoFrame texturing.
   const GLint adjusted_internalformat =
       ConvertTexInternalFormat(internalformat, type);
   const bool source_image_rect_is_default =
       source_image_rect == SentinelEmptyRect() ||
-      source_image_rect == IntRect(visible_rect);
+      source_image_rect == IntRect(0, 0,
+                                   media_video_frame->natural_size().width(),
+                                   media_video_frame->natural_size().height());
   const auto& caps = GetDrawingBuffer()->ContextProvider()->GetCapabilities();
   const bool may_need_image_external_essl3 =
       caps.egl_image_external &&
@@ -5953,14 +5929,20 @@ void WebGLRenderingContextBase::TexImageHelperVideoFrame(
       (have_image_external_essl3 || !may_need_image_external_essl3) &&
       CanUseTexImageViaGPU(format, type);
 
-  media::PaintCanvasVideoRenderer video_renderer;
+  // Callers may chose to provide a renderer which ensures that generated
+  // intermediates will be cached across TexImage calls for the same frame.
+  std::unique_ptr<media::PaintCanvasVideoRenderer> local_video_renderer;
+  if (!video_renderer) {
+    local_video_renderer = std::make_unique<media::PaintCanvasVideoRenderer>();
+    video_renderer = local_video_renderer.get();
+  }
 
   // Format of source VideoFrame may be 16-bit format, e.g. Y16 format.
   // glCopyTextureCHROMIUM requires the source texture to be in 8-bit format.
   // Converting 16-bits formatted source texture to 8-bits formatted texture
   // will cause precision lost. So, uploading such video texture to half float
   // or float texture can not use GPU-GPU path.
-  if (use_copy_texture_chromium && media_video_frame->HasTextures()) {
+  if (use_copy_texture_chromium) {
     DCHECK(Extensions3DUtil::CanUseCopyTextureCHROMIUM(target));
     DCHECK_EQ(xoffset, 0);
     DCHECK_EQ(yoffset, 0);
@@ -5976,20 +5958,28 @@ void WebGLRenderingContextBase::TexImageHelperVideoFrame(
     // to system memory if possible.  Otherwise, it will fall back to the normal
     // SW path.
 
-    if (video_renderer.CopyVideoFrameTexturesToGLTexture(
+    if (media_video_frame->HasTextures() &&
+        video_renderer->CopyVideoFrameTexturesToGLTexture(
             raster_context_provider, ContextGL(), media_video_frame, target,
             texture->Object(), adjusted_internalformat, format, type, level,
             unpack_premultiply_alpha_, unpack_flip_y_)) {
+      texture->UpdateLastUploadedFrame(metadata);
       return;
     }
 
     // For certain video frame formats (e.g. I420/YUV), if they start on the CPU
     // (e.g. video camera frames): upload them to the GPU, do a GPU decode, and
     // then copy into the target texture.
-    if (video_renderer.CopyVideoFrameYUVDataToGLTexture(
+    //
+    // TODO(crbug.com/1180879): I420A should be supported, but currently fails
+    // conformance/textures/misc/texture-video-transparent.html.
+    if (!media_video_frame->HasTextures() &&
+        media::IsOpaque(media_video_frame->format()) &&
+        video_renderer->CopyVideoFrameYUVDataToGLTexture(
             raster_context_provider, ContextGL(), *media_video_frame, target,
             texture->Object(), adjusted_internalformat, format, type, level,
             unpack_premultiply_alpha_, unpack_flip_y_)) {
+      texture->UpdateLastUploadedFrame(metadata);
       return;
     }
   }
@@ -6009,11 +5999,13 @@ void WebGLRenderingContextBase::TexImageHelperVideoFrame(
             target, texture->Object(), ContextGL(), caps,
             media_video_frame.get(), level, adjusted_internalformat, format,
             type, unpack_flip_y_, premultiply_alpha)) {
+      texture->UpdateLastUploadedFrame(metadata);
       return;
     } else if (function_id == kTexSubImage2D &&
                media::PaintCanvasVideoRenderer::TexSubImage2D(
                    target, ContextGL(), media_video_frame.get(), level, format,
                    type, xoffset, yoffset, unpack_flip_y_, premultiply_alpha)) {
+      texture->UpdateLastUploadedFrame(metadata);
       return;
     }
   }
@@ -6026,18 +6018,43 @@ void WebGLRenderingContextBase::TexImageHelperVideoFrame(
   // unmultiply has been requested or we need to never premultiply for Image
   // creation from a VideoFrame.
 
-  SourceImageStatus source_image_status = kInvalidSourceImageStatus;
-  scoped_refptr<Image> image = frame->GetSourceImageForCanvas(
-      &source_image_status,
-      FloatSize(source_image_rect.Width(), source_image_rect.Height()));
+#if defined(OS_MAC)
+  // TODO(crbug.com/1180726): Sampling from macOS IOSurfaces requires
+  // GL_ARB_texture_rectangle which is not available in the WebGL context.
+  constexpr bool kAllowZeroCopyImages = false;
+#else
+  constexpr bool kAllowZeroCopyImages = true;
+#endif
+
+#if defined(OS_ANDROID)
+  // TODO(crbug.com/1175907): Only TexImage2D seems to work with the GPU path on
+  // Android M -- appears to work fine on R, but to avoid regressions in <video>
+  // limit to TexImage2D only for now. Fails conformance test on Nexus 5X:
+  // conformance/textures/misc/texture-corner-case-videos.html
+  const bool function_supports_gpu_teximage = function_id == kTexImage2D;
+#else
+  const bool function_supports_gpu_teximage =
+      function_id == kTexImage2D || function_id == kTexSubImage2D;
+#endif
+
+  const bool can_upload_via_gpu = function_supports_gpu_teximage &&
+                                  CanUseTexImageViaGPU(format, type) &&
+                                  source_image_rect_is_default;
+
+  // If we can upload via GPU, try to to use an accelerated resource provider
+  // configured appropriately for video. Otherwise use the software cache.
+  auto& image_cache =
+      can_upload_via_gpu ? generated_video_cache_ : generated_image_cache_;
+
+  const auto visible_rect = media_video_frame->visible_rect();
+  scoped_refptr<Image> image = CreateImageFromVideoFrame(
+      std::move(media_video_frame), kAllowZeroCopyImages,
+      image_cache.GetCanvasResourceProvider(IntSize(visible_rect.size())),
+      video_renderer);
   if (!image)
     return;
 
-  const bool upload_via_gpu =
-      (function_id == kTexImage2D || function_id == kTexSubImage2D) &&
-      CanUseTexImageViaGPU(format, type) && image->IsTextureBacked();
-
-  if (upload_via_gpu) {
+  if (can_upload_via_gpu && image->IsTextureBacked()) {
     auto adjusted_source_image_rect = source_image_rect;
     if (adjusted_source_image_rect == SentinelEmptyRect())
       adjusted_source_image_rect = GetTextureSourceSize(image.get());
@@ -6063,6 +6080,8 @@ void WebGLRenderingContextBase::TexImageHelperVideoFrame(
                  unpack_premultiply_alpha_, source_image_rect, depth,
                  unpack_image_height);
   }
+
+  texture->UpdateLastUploadedFrame(metadata);
 }
 
 void WebGLRenderingContextBase::texImage2D(ExecutionContext* execution_context,
@@ -8576,8 +8595,8 @@ String WebGLRenderingContextBase::EnsureNotNull(const String& text) const {
 }
 
 WebGLRenderingContextBase::LRUCanvasResourceProviderCache::
-    LRUCanvasResourceProviderCache(wtf_size_t capacity)
-    : resource_providers_(capacity) {}
+    LRUCanvasResourceProviderCache(wtf_size_t capacity, CacheType type)
+    : type_(type), resource_providers_(capacity) {}
 
 CanvasResourceProvider* WebGLRenderingContextBase::
     LRUCanvasResourceProviderCache::GetCanvasResourceProvider(
@@ -8593,12 +8612,21 @@ CanvasResourceProvider* WebGLRenderingContextBase::
     return resource_provider;
   }
 
-  // TODO(fserb): why is this a BITMAP?
-  std::unique_ptr<CanvasResourceProvider> temp(
-      CanvasResourceProvider::CreateBitmapProvider(
-          size, kLow_SkFilterQuality, CanvasResourceParams(),
-          CanvasResourceProvider::ShouldInitialize::kNo));  // TODO: should this
-                                                            // use the canvas's
+  std::unique_ptr<CanvasResourceProvider> temp;
+  if (type_ == CacheType::kVideo) {
+    viz::RasterContextProvider* raster_context_provider = nullptr;
+    if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
+      if (auto* context_provider = wrapper->ContextProvider())
+        raster_context_provider = context_provider->RasterContextProvider();
+    }
+    temp = CreateResourceProviderForVideoFrame(size, raster_context_provider);
+  } else {
+    // TODO(fserb): why is this a BITMAP?
+    temp = CanvasResourceProvider::CreateBitmapProvider(
+        size, kLow_SkFilterQuality, CanvasResourceParams(),
+        CanvasResourceProvider::ShouldInitialize::kNo);  // TODO: should this
+                                                         // use the canvas's
+  }
 
   if (!temp)
     return nullptr;

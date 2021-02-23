@@ -90,9 +90,7 @@ class MockWebMediaPlayer : public WebMediaPlayer {
 
   void Paint(cc::PaintCanvas* canvas,
              const gfx::Rect& rect,
-             cc::PaintFlags&,
-             int already_uploaded_id,
-             VideoFrameUploadMetadata* out_metadata) override {
+             cc::PaintFlags&) override {
     return;
   }
 

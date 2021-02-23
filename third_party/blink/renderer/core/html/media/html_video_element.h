@@ -35,12 +35,6 @@
 #include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/khronos/GLES2/gl2.h"
 
-namespace gpu {
-namespace gles2 {
-class GLES2Interface;
-}
-}  // namespace gpu
-
 namespace blink {
 class ImageBitmapOptions;
 class IntersectionObserverEntry;
@@ -93,63 +87,9 @@ class CORE_EXPORT HTMLVideoElement final
   // Used by canvas to gain raw pixel access
   //
   // PaintFlags is optional. If unspecified, its blend mode defaults to kSrc.
-  void PaintCurrentFrame(
-      cc::PaintCanvas*,
-      const IntRect&,
-      const cc::PaintFlags*,
-      int already_uploaded_id = kNoAlreadyUploadedFrame,
-      WebMediaPlayer::VideoFrameUploadMetadata* out_metadata = nullptr) const;
-
-  // Used by WebGL to do GPU-GPU texture copy if possible.
-  bool CopyVideoTextureToPlatformTexture(
-      gpu::gles2::GLES2Interface*,
-      GLenum target,
-      GLuint texture,
-      GLenum internal_format,
-      GLenum format,
-      GLenum type,
-      GLint level,
-      bool premultiply_alpha,
-      bool flip_y,
-      int already_uploaded_id,
-      WebMediaPlayer::VideoFrameUploadMetadata* out_metadata);
-
-  // Used by WebGL to do YUV-RGB, CPU-GPU texture copy if possible.
-  bool CopyVideoYUVDataToPlatformTexture(
-      gpu::gles2::GLES2Interface*,
-      GLenum target,
-      GLuint texture,
-      GLenum internal_format,
-      GLenum format,
-      GLenum type,
-      GLint level,
-      bool premultiply_alpha,
-      bool flip_y,
-      int already_uploaded_id,
-      WebMediaPlayer::VideoFrameUploadMetadata* out_metadata);
-
-  // Used by WebGL to do CPU-GPU texture upload if possible.
-  bool TexImageImpl(WebMediaPlayer::TexImageFunctionID,
-                    GLenum target,
-                    gpu::gles2::GLES2Interface*,
-                    GLuint texture,
-                    GLint level,
-                    GLint internalformat,
-                    GLenum format,
-                    GLenum type,
-                    GLint xoffset,
-                    GLint yoffset,
-                    GLint zoffset,
-                    bool flip_y,
-                    bool premultiply_alpha);
-
-  // Used by WebGL to do GPU_GPU texture sharing if possible.
-  bool PrepareVideoFrameForWebGL(
-      gpu::gles2::GLES2Interface*,
-      GLenum target,
-      GLuint texture,
-      int already_uploaded_id,
-      WebMediaPlayer::VideoFrameUploadMetadata* out_metadata);
+  void PaintCurrentFrame(cc::PaintCanvas*,
+                         const IntRect&,
+                         const cc::PaintFlags*) const;
 
   bool HasAvailableVideoFrame() const;
 

@@ -50,14 +50,9 @@ class PaintCanvas;
 class PaintFlags;
 }  // namespace cc
 
-namespace gpu {
-namespace gles2 {
-class GLES2Interface;
-}
-}
-
 namespace media {
 class VideoFrame;
+class PaintCanvasVideoRenderer;
 }
 
 namespace blink {
@@ -123,16 +118,6 @@ class WebMediaPlayer {
   // of pre-rendering)
   enum LoadTiming { kImmediate, kDeferred };
 
-  // For last-uploaded-frame-metadata API. https://crbug.com/639174
-  struct VideoFrameUploadMetadata {
-    int frame_id = -1;
-    gfx::Rect visible_rect = {};
-    base::TimeDelta timestamp = {};
-    base::TimeDelta expected_timestamp = {};
-    bool skipped = false;
-  };
-
-  // TODO(crbug.com/639174): Attempt to merge this with VideoFrameUploadMetadata
   // For video.requestVideoFrameCallback(). https://wicg.github.io/video-rvfc/
   struct VideoFramePresentationMetadata {
     uint32_t presented_frames;
@@ -258,19 +243,8 @@ class WebMediaPlayer {
   // this just means the first frame has been delivered.
   virtual bool HasAvailableVideoFrame() const = 0;
 
-  // |already_uploaded_id| indicates the unique_id of the frame last uploaded
-  //   to this destination. It should only be set by the caller if the contents
-  //   of the destination are known not to have changed since that upload.
-  //   - If |out_metadata| is not null, |already_uploaded_id| is compared with
-  //     the unique_id of the frame being uploaded. If it's the same, the
-  //     upload may be skipped and considered to be successful.
-  // |out_metadata|, if not null, is used to return metadata about the frame
-  //   that is uploaded during this call.
-  virtual void Paint(cc::PaintCanvas*,
-                     const gfx::Rect&,
-                     cc::PaintFlags&,
-                     int already_uploaded_id = -1,
-                     VideoFrameUploadMetadata* out_metadata = nullptr) = 0;
+  // Renders the current frame into the provided cc::PaintCanvas.
+  virtual void Paint(cc::PaintCanvas*, const gfx::Rect&, cc::PaintFlags&) = 0;
 
   // Similar to Paint(), but just returns the frame directly instead of trying
   // to upload or convert it. Note: This may kick off a process to update the
@@ -278,112 +252,13 @@ class WebMediaPlayer {
   // is available.
   virtual scoped_refptr<media::VideoFrame> GetCurrentFrame() = 0;
 
-  // Do a GPU-GPU texture copy of the current video frame to |texture|,
-  // reallocating |texture| at the appropriate size with given internal
-  // format, format, and type if necessary.
-  //
-  // Returns true iff the copy succeeded.
-  //
-  // |already_uploaded_id| indicates the unique_id of the frame last uploaded
-  //   to this destination. It should only be set by the caller if the contents
-  //   of the destination are known not to have changed since that upload.
-  //   - If |out_metadata| is not null, |already_uploaded_id| is compared with
-  //     the unique_id of the frame being uploaded. If it's the same, the
-  //     upload may be skipped and considered to be successful.
-  // |out_metadata|, if not null, is used to return metadata about the frame
-  //   that is uploaded during this call.
-  virtual bool CopyVideoTextureToPlatformTexture(
-      gpu::gles2::GLES2Interface*,
-      unsigned target,
-      unsigned texture,
-      unsigned internal_format,
-      unsigned format,
-      unsigned type,
-      int level,
-      bool premultiply_alpha,
-      bool flip_y,
-      int already_uploaded_id,
-      VideoFrameUploadMetadata* out_metadata) {
-    return false;
-  }
-
-  // Do a CPU-GPU, YUV-RGB upload of the current video frame to |texture|,
-  // reallocating |texture| at the appropriate size with given internal
-  // format, format, and type if necessary.
-  //
-  // Returns true iff the copy succeeded.
-  //
-  // |already_uploaded_id| indicates the unique_id of the frame last uploaded
-  //   to this destination. It should only be set by the caller if the contents
-  //   of the destination are known not to have changed since that upload.
-  //   - If |out_metadata| is not null, |already_uploaded_id| is compared with
-  //     the unique_id of the frame being uploaded. If it's the same, the
-  //     upload may be skipped and considered to be successful.
-  // |out_metadata|, if not null, is used to return metadata about the frame
-  //   that is uploaded during this call.
-  virtual bool CopyVideoYUVDataToPlatformTexture(
-      gpu::gles2::GLES2Interface*,
-      unsigned target,
-      unsigned texture,
-      unsigned internal_format,
-      unsigned format,
-      unsigned type,
-      int level,
-      bool premultiply_alpha,
-      bool flip_y,
-      int already_uploaded_id,
-      VideoFrameUploadMetadata* out_metadata) {
-    return false;
-  }
-
-  // Copy sub video frame texture to |texture|.
-  //
-  // Returns true iff the copy succeeded.
-  virtual bool CopyVideoSubTextureToPlatformTexture(gpu::gles2::GLES2Interface*,
-                                                    unsigned target,
-                                                    unsigned texture,
-                                                    int level,
-                                                    int xoffset,
-                                                    int yoffset,
-                                                    bool premultiply_alpha,
-                                                    bool flip_y) {
-    return false;
-  }
-
-  // Do Tex(Sub)Image2D/3D for current frame. If it is not implemented for given
-  // parameters or fails, it returns false.
-  // The method is wrapping calls to glTexImage2D, glTexSubImage2D,
-  // glTexImage3D and glTexSubImage3D and parameters have the same name and
-  // meaning.
-  // Texture |texture| needs to be created and bound to active texture unit
-  // before this call. In addition, TexSubImage2D and TexSubImage3D require that
-  // previous TexImage2D and TexSubImage3D calls, respectively, defined the
-  // texture content.
-  virtual bool TexImageImpl(TexImageFunctionID function_id,
-                            unsigned target,
-                            gpu::gles2::GLES2Interface* gl,
-                            unsigned texture,
-                            int level,
-                            int internalformat,
-                            unsigned format,
-                            unsigned type,
-                            int xoffset,
-                            int yoffset,
-                            int zoffset,
-                            bool flip_y,
-                            bool premultiply_alpha) {
-    return false;
-  }
-
-  // Share video frame texture to |texture|. If the sharing is impossible or
-  // fails, it returns false.
-  virtual bool PrepareVideoFrameForWebGL(
-      gpu::gles2::GLES2Interface* gl,
-      unsigned target,
-      unsigned texture,
-      int already_uploaded_id = -1,
-      WebMediaPlayer::VideoFrameUploadMetadata* out_metadata = nullptr) {
-    return false;
+  // Provides a PaintCanvasVideoRenderer instance owned by this WebMediaPlayer.
+  // Useful for ensuring that the paint/texturing operation for current frame is
+  // cached in cases of repainting/retexturing (since clients may not know that
+  // the underlying frame is unchanged). May only be used on the main thread and
+  // should not be held outside the scope of a single call site.
+  virtual media::PaintCanvasVideoRenderer* GetPaintCanvasVideoRenderer() {
+    return nullptr;
   }
 
   virtual scoped_refptr<WebAudioSourceProviderImpl> GetAudioSourceProvider() {

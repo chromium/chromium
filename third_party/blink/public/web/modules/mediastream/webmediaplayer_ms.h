@@ -32,12 +32,6 @@ namespace cc {
 class VideoLayer;
 }
 
-namespace gpu {
-namespace gles2 {
-class GLES2Interface;
-}
-}  // namespace gpu
-
 namespace blink {
 using CreateSurfaceLayerBridgeCB =
     base::OnceCallback<std::unique_ptr<WebSurfaceLayerBridge>(
@@ -127,11 +121,9 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   // Methods for painting.
   void Paint(cc::PaintCanvas* canvas,
              const gfx::Rect& rect,
-             cc::PaintFlags& flags,
-             int already_uploaded_id,
-             VideoFrameUploadMetadata* out_metadata) override;
+             cc::PaintFlags& flags) override;
   scoped_refptr<media::VideoFrame> GetCurrentFrame() override;
-  media::PaintCanvasVideoRenderer* GetPaintCanvasVideoRenderer();
+  media::PaintCanvasVideoRenderer* GetPaintCanvasVideoRenderer() override;
   void ResetCanvasCache();
 
   // Methods to trigger resize event.
@@ -185,46 +177,6 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
                             bool is_opaque);
   void OnOpacityChanged(bool is_opaque);
   void OnRotationChanged(media::VideoRotation video_rotation);
-
-  bool CopyVideoTextureToPlatformTexture(
-      gpu::gles2::GLES2Interface* gl,
-      unsigned target,
-      unsigned int texture,
-      unsigned internal_format,
-      unsigned format,
-      unsigned type,
-      int level,
-      bool premultiply_alpha,
-      bool flip_y,
-      int already_uploaded_id,
-      VideoFrameUploadMetadata* out_metadata) override;
-
-  bool CopyVideoYUVDataToPlatformTexture(
-      gpu::gles2::GLES2Interface* gl,
-      unsigned target,
-      unsigned int texture,
-      unsigned internal_format,
-      unsigned format,
-      unsigned type,
-      int level,
-      bool premultiply_alpha,
-      bool flip_y,
-      int already_uploaded_id,
-      VideoFrameUploadMetadata* out_metadata) override;
-
-  bool TexImageImpl(TexImageFunctionID functionID,
-                    unsigned target,
-                    gpu::gles2::GLES2Interface* gl,
-                    unsigned int texture,
-                    int level,
-                    int internalformat,
-                    unsigned format,
-                    unsigned type,
-                    int xoffset,
-                    int yoffset,
-                    int zoffset,
-                    bool flip_y,
-                    bool premultiply_alpha) override;
 
   // WebMediaStreamObserver implementation
   void TrackAdded(const WebString& track_id) override;

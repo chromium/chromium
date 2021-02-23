@@ -1343,9 +1343,7 @@ bool WebMediaPlayerImpl::DidLoadingProgress() {
 
 void WebMediaPlayerImpl::Paint(cc::PaintCanvas* canvas,
                                const gfx::Rect& rect,
-                               cc::PaintFlags& flags,
-                               int already_uploaded_id,
-                               VideoFrameUploadMetadata* out_metadata) {
+                               cc::PaintFlags& flags) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   TRACE_EVENT0("media", "WebMediaPlayerImpl:paint");
 
@@ -1360,15 +1358,6 @@ void WebMediaPlayerImpl::Paint(cc::PaintCanvas* canvas,
       return;  // The context has been lost.
     }
   }
-  if (out_metadata && video_frame) {
-    // WebGL last-uploaded-frame-metadata API enabled. https://crbug.com/639174
-    ComputeFrameUploadMetadata(video_frame.get(), already_uploaded_id,
-                               out_metadata);
-    if (out_metadata->skipped) {
-      // Skip uploading this frame.
-      return;
-    }
-  }
   video_renderer_.Paint(
       video_frame, canvas, gfx::RectF(gfx_rect), flags,
       pipeline_metadata_.video_decoder_config.video_transformation(),
@@ -1377,6 +1366,12 @@ void WebMediaPlayerImpl::Paint(cc::PaintCanvas* canvas,
 
 scoped_refptr<VideoFrame> WebMediaPlayerImpl::GetCurrentFrame() {
   return GetCurrentFrameFromCompositor();
+}
+
+media::PaintCanvasVideoRenderer*
+WebMediaPlayerImpl::GetPaintCanvasVideoRenderer() {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  return &video_renderer_;
 }
 
 bool WebMediaPlayerImpl::WouldTaintOrigin() const {
@@ -1426,89 +1421,6 @@ uint64_t WebMediaPlayerImpl::VideoDecodedByteCount() const {
 
 bool WebMediaPlayerImpl::HasAvailableVideoFrame() const {
   return has_first_frame_;
-}
-
-bool WebMediaPlayerImpl::CopyVideoTextureToPlatformTexture(
-    gpu::gles2::GLES2Interface* gl,
-    unsigned int target,
-    unsigned int texture,
-    unsigned internal_format,
-    unsigned format,
-    unsigned type,
-    int level,
-    bool premultiply_alpha,
-    bool flip_y,
-    int already_uploaded_id,
-    VideoFrameUploadMetadata* out_metadata) {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
-  TRACE_EVENT0("media", "WebMediaPlayerImpl:copyVideoTextureToPlatformTexture");
-
-  scoped_refptr<VideoFrame> video_frame = GetCurrentFrameFromCompositor();
-  if (!video_frame || !video_frame->HasTextures()) {
-    return false;
-  }
-
-  if (out_metadata) {
-    // WebGL last-uploaded-frame-metadata API is enabled.
-    // https://crbug.com/639174
-    ComputeFrameUploadMetadata(video_frame.get(), already_uploaded_id,
-                               out_metadata);
-    if (out_metadata->skipped) {
-      // Skip uploading this frame.
-      return true;
-    }
-  }
-
-  return video_renderer_.CopyVideoFrameTexturesToGLTexture(
-      raster_context_provider_.get(), gl, video_frame.get(), target, texture,
-      internal_format, format, type, level, premultiply_alpha, flip_y);
-}
-
-bool WebMediaPlayerImpl::PrepareVideoFrameForWebGL(
-    gpu::gles2::GLES2Interface* gl,
-    unsigned target,
-    unsigned texture,
-    int already_uploaded_id,
-    WebMediaPlayer::VideoFrameUploadMetadata* out_metadata) {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
-  TRACE_EVENT0("media", "WebMediaPlayerImpl::PrepareVideoFrameForWebGL");
-
-  // TODO(crbug.com/776222): How to deal with protected frames.
-  scoped_refptr<VideoFrame> video_frame = GetCurrentFrameFromCompositor();
-  if (!video_frame.get() || !video_frame->HasTextures()) {
-    return false;
-  }
-  if (out_metadata) {
-    // WebGL last-uploaded-frame-metadata API is enabled.
-    ComputeFrameUploadMetadata(video_frame.get(), already_uploaded_id,
-                               out_metadata);
-    if (out_metadata->skipped) {
-      // Skip uploading this frame.
-      return true;
-    }
-  }
-
-  return video_renderer_.PrepareVideoFrameForWebGL(
-      raster_context_provider_.get(), gl, video_frame.get(), target, texture);
-}
-
-// static
-void WebMediaPlayerImpl::ComputeFrameUploadMetadata(
-    VideoFrame* frame,
-    int already_uploaded_id,
-    VideoFrameUploadMetadata* out_metadata) {
-  DCHECK(out_metadata);
-  DCHECK(frame);
-  out_metadata->frame_id = frame->unique_id();
-  out_metadata->visible_rect = frame->visible_rect();
-  out_metadata->timestamp = frame->timestamp();
-  if (frame->metadata().frame_duration.has_value()) {
-    out_metadata->expected_timestamp =
-        frame->timestamp() + *frame->metadata().frame_duration;
-  };
-  bool skip_possible = already_uploaded_id != -1;
-  bool same_frame_id = frame->unique_id() == already_uploaded_id;
-  out_metadata->skipped = skip_possible && same_frame_id;
 }
 
 void WebMediaPlayerImpl::SetContentDecryptionModule(

@@ -73,6 +73,10 @@ class GLES2Interface;
 }
 }  // namespace gpu
 
+namespace media {
+class PaintCanvasVideoRenderer;
+}
+
 namespace blink {
 
 class AcceleratedStaticBitmapImage;
@@ -788,11 +792,6 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
                                            int height,
                                            const char* function_name);
 
-  scoped_refptr<Image> VideoFrameToImage(
-      HTMLVideoElement*,
-      int already_uploaded_id,
-      WebMediaPlayer::VideoFrameUploadMetadata* out_metadata);
-
   // Structure for rendering to a DrawingBuffer, instead of directly
   // to the back-buffer of m_context.
   scoped_refptr<DrawingBuffer> drawing_buffer_;
@@ -861,19 +860,24 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
 
   Vector<GLenum> compressed_texture_formats_;
 
-  // Fixed-size cache of reusable resource providers for video texImage2D calls.
+  // Fixed-size cache of reusable resource providers for image and video
+  // texImage2D calls.
   class LRUCanvasResourceProviderCache {
    public:
-    explicit LRUCanvasResourceProviderCache(wtf_size_t capacity);
+    enum class CacheType { kImage, kVideo };
+    LRUCanvasResourceProviderCache(wtf_size_t capacity, CacheType type);
     // The pointer returned is owned by the image buffer map.
     CanvasResourceProvider* GetCanvasResourceProvider(const IntSize&);
 
    private:
     void BubbleToFront(wtf_size_t idx);
+    const CacheType type_;
     Vector<std::unique_ptr<CanvasResourceProvider>> resource_providers_;
   };
-  LRUCanvasResourceProviderCache generated_image_cache_ =
-      LRUCanvasResourceProviderCache(4);
+  LRUCanvasResourceProviderCache generated_image_cache_{
+      4, LRUCanvasResourceProviderCache::CacheType::kImage};
+  LRUCanvasResourceProviderCache generated_video_cache_{
+      4, LRUCanvasResourceProviderCache::CacheType::kVideo};
 
   GLint max_texture_size_;
   GLint max_cube_map_texture_size_;
@@ -1845,6 +1849,24 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
                                 const CanvasContextCreationAttributesCore&,
                                 Platform::ContextType context_type,
                                 bool* using_gpu_compositing);
+
+  void TexImageHelperMediaVideoFrame(
+      TexImageFunctionID function_id,
+      GLenum target,
+      GLint level,
+      GLint internalformat,
+      GLenum format,
+      GLenum type,
+      GLint xoffset,
+      GLint yoffset,
+      GLint zoffset,
+      const IntRect& source_image_rect,
+      GLsizei depth,
+      GLint unpack_image_height,
+      WebGLTexture* texture,
+      scoped_refptr<media::VideoFrame> media_video_frame,
+      media::PaintCanvasVideoRenderer* video_renderer);
+
   // Copy from the source directly to the texture via the gpu, without
   // a read-back to system memory. Source can be a texture-backed
   // Image, or another canvas's WebGLRenderingContext.

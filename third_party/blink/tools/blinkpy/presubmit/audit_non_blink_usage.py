@@ -868,8 +868,11 @@ _CONFIG = [
             'gpu::Mailbox',
             'gpu::MailboxHolder',
             'display::Display',
+            'media::IsOpaque',
             'media::PaintCanvasVideoRenderer',
             'media::PIXEL_FORMAT_Y16',
+            'media::VideoFrame',
+            'viz::RasterContextProvider',
         ],
     },
     {

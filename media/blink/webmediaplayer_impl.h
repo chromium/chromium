@@ -75,12 +75,6 @@ namespace cc {
 class VideoLayer;
 }
 
-namespace gpu {
-namespace gles2 {
-class GLES2Interface;
-}
-}  // namespace gpu
-
 namespace media {
 class CdmContextRef;
 class ChunkDemuxer;
@@ -146,13 +140,12 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
 
   // paint() the current video frame into |canvas|. This is used to support
   // various APIs and functionalities, including but not limited to: <canvas>,
-  // WebGL texImage2D, ImageBitmap, printing and capturing capabilities.
+  // ImageBitmap, printing and capturing capabilities.
   void Paint(cc::PaintCanvas* canvas,
              const gfx::Rect& rect,
-             cc::PaintFlags& flags,
-             int already_uploaded_id,
-             VideoFrameUploadMetadata* out_metadata) override;
+             cc::PaintFlags& flags) override;
   scoped_refptr<VideoFrame> GetCurrentFrame() override;
+  media::PaintCanvasVideoRenderer* GetPaintCanvasVideoRenderer() override;
 
   // True if the loaded media has a playable video/audio track.
   bool HasVideo() const override;
@@ -200,31 +193,6 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
   uint64_t VideoDecodedByteCount() const override;
 
   bool HasAvailableVideoFrame() const override;
-
-  bool CopyVideoTextureToPlatformTexture(
-      gpu::gles2::GLES2Interface* gl,
-      unsigned int target,
-      unsigned int texture,
-      unsigned internal_format,
-      unsigned format,
-      unsigned type,
-      int level,
-      bool premultiply_alpha,
-      bool flip_y,
-      int already_uploaded_id,
-      VideoFrameUploadMetadata* out_metadata) override;
-
-  bool PrepareVideoFrameForWebGL(
-      gpu::gles2::GLES2Interface* gl,
-      unsigned target,
-      unsigned texture,
-      int already_uploaded_id,
-      WebMediaPlayer::VideoFrameUploadMetadata* out_metadata) override;
-
-  static void ComputeFrameUploadMetadata(
-      VideoFrame* frame,
-      int already_uploaded_id,
-      VideoFrameUploadMetadata* out_metadata);
 
   scoped_refptr<blink::WebAudioSourceProviderImpl> GetAudioSourceProvider()
       override;
