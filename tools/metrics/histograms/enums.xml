@@ -1450,8 +1450,45 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <enum name="AMDDeviceId">
-  <int value="26464" label="0x6760, Radeon HD 6490M"/>
-  <int value="26657" label="0x6821, Radeon R9 M370X"/>
+  <int value="5592" label="0x15D8, Picasso"/>
+  <int value="5597"
+      label="0x15DD, Raven Ridge [Radeon Vega Series / Radeon Vega Mobile
+             Series]"/>
+  <int value="5686" label="0x1636, Renoir"/>
+  <int value="26112" label="0x6600, Mars [Radeon HD 8670A/8670M/8750M]"/>
+  <int value="26113" label="0x6601, Mars [Radeon HD 8730M]"/>
+  <int value="26129"
+      label="0x6611, Oland [Radeon HD 8570 / R5 430 OEM / R7 240/340 / Radeon
+             520 OEM]"/>
+  <int value="26208"
+      label="0x6660, Sun XT [Radeon HD 8670A/8670M/8690M / R5 M330 / M430 /
+             Radeon 520 Mobile]"/>
+  <int value="26213"
+      label="0x6665, Jet PRO [Radeon R5 M230 / R7 M260DX / Radeon 520 Mobile]"/>
+  <int value="26223" label="0x666F, Sun LE [Radeon HD 8550M / R5 M230]"/>
+  <int value="26464" label="0x6760, Seymour [Radeon HD 6400M/7400M Series]"/>
+  <int value="26591"
+      label="0x67DF, Ellesmere [Radeon RX 470/480/570/570X/580/580X/590]"/>
+  <int value="26607"
+      label="0x67EF, Baffin [Radeon RX 460/560D / Pro
+             450/455/460/555/555X/560/560X]"/>
+  <int value="26657"
+      label="0x6821, Venus XT [Radeon HD 8870M / R9 M270X/M370X]"/>
+  <int value="26688" label="0x6840, Thames [Radeon HD 7500M/7600M Series]"/>
+  <int value="26873"
+      label="0x68F9, Cedar [Radeon HD 5000/6000/7350/8350 Series]"/>
+  <int value="26880"
+      label="0x6900, Topaz XT [Radeon R7 M260/M265 / M340/M360 / M440/M445 /
+             530/535 / 620/625 Mobile]"/>
+  <int value="27015"
+      label="0x6987, Lexa [Radeon 540X/550X/630 / RX 640 / E9171 MCM]"/>
+  <int value="27039"
+      label="0x699F, Lexa PRO [Radeon 540/540X/550/550X / RX 540X/550/550X]"/>
+  <int value="27055" label="0x69AF, Vega 12 [Radeon Pro Vega 20]"/>
+  <int value="29471"
+      label="0x731F, Navi 10 [Radeon RX 5600 OEM/5600 XT / 5700/5700 XT]"/>
+  <int value="29504"
+      label="0x7340, Navi 14 [Radeon RX 5500/5500M / Pro 5500M]"/>
 </enum>
 
 <enum name="Android.ChildProcessBindingStateCombination">
@@ -55257,8 +55294,41 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="NvidiaDeviceId">
-  <int value="4073" label="0x0FE9, GeForce GT 750M"/>
-  <int value="7825" label="0x1E91, RTX 2070 Super"/>
+  <int value="1600" label="0x0640, GeForce 9500 GT"/>
+  <int value="2601" label="0x0A29, GeForce GT 330M"/>
+  <int value="4053" label="0x0FD5, GeForce GT 650M Mac Edition"/>
+  <int value="4056" label="0x0FD8, GeForce GT 640M Mac Edition"/>
+  <int value="4073" label="0x0FE9, GeForce GT 750M Mac Edition"/>
+  <int value="4074" label="0x0FEA, GeForce GT 755M Mac Edition"/>
+  <int value="4416"
+      label="0x1140, GeForce 610M/710M/810M/820M / GT 620M/625M/630M/720M"/>
+  <int value="4509" label="0x119D, GeForce GTX 775M Mac Edition"/>
+  <int value="4510" label="0x119E, GeForce GTX 780M Mac Edition"/>
+  <int value="4514" label="0x11A2, GeForce GTX 675MX Mac Edition"/>
+  <int value="4515" label="0x11A3, GeForce GTX 680MX"/>
+  <int value="4761" label="0x1299, GeForce 920M"/>
+  <int value="4929" label="0x1341, GeForce 840M"/>
+  <int value="4935" label="0x1347, GeForce 940M"/>
+  <int value="4941" label="0x134D, GeForce 940MX"/>
+  <int value="4943" label="0x134F, GeForce 920MX"/>
+  <int value="5018" label="0x139A, GeForce GTX 950M"/>
+  <int value="5019" label="0x139B, GeForce GTX 960M"/>
+  <int value="5965" label="0x174D, GeForce MX130"/>
+  <int value="5966" label="0x174E, GeForce MX110"/>
+  <int value="7171" label="0x1C03, GeForce GTX 1060 6GB"/>
+  <int value="7200" label="0x1C20, GeForce GTX 1060 Mobile"/>
+  <int value="7298" label="0x1C82, GeForce GTX 1050 Ti"/>
+  <int value="7308" label="0x1C8C, GeForce GTX 1050 Ti Mobile"/>
+  <int value="7309" label="0x1C8D, GeForce GTX 1050 Mobile"/>
+  <int value="7440" label="0x1D10, GeForce MX150"/>
+  <int value="7441" label="0x1D11, GeForce MX230"/>
+  <int value="7443" label="0x1D13, GeForce MX250"/>
+  <int value="7825" label="0x1E91, GeForce RTX 2070 SUPER Mobile / Max-Q"/>
+  <int value="7957" label="0x1F15, GeForce RTX 2060 Mobile"/>
+  <int value="8081" label="0x1F91, GeForce GTX 1650 Mobile / Max-Q"/>
+  <int value="8085" label="0x1F95, GeForce GTX 1650 Ti Mobile"/>
+  <int value="8089" label="0x1F99, GeForce ?"/>
+  <int value="8593" label="0x2191, GeForce GTX 1660 Ti Mobile"/>
 </enum>
 
 <enum name="OAuth2BadRequestError">
