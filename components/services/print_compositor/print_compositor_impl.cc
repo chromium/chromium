@@ -5,12 +5,10 @@
 #include "components/services/print_compositor/print_compositor_impl.h"
 
 #include <algorithm>
-#include <cstring>
 #include <tuple>
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/debug/alias.h"
 #include "base/logging.h"
 #include "base/memory/discardable_memory.h"
 #include "base/single_thread_task_runner.h"
@@ -42,34 +40,16 @@
 
 namespace printing {
 
-namespace {
-
-// TODO(https://crbug.com/1078170): Remove this. It's a sentinel value to
-// check for stack corruption before the stack unwinds at the end of the
-// constructor below.
-const char kStackPadding[] =
-    "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!";
-
-}  // namespace
-
 PrintCompositorImpl::PrintCompositorImpl(
     mojo::PendingReceiver<mojom::PrintCompositor> receiver,
     bool initialize_environment,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
     : io_task_runner_(std::move(io_task_runner)) {
-  // TODO(https://crbug.com/1078170): Remove this.
-  char stack_padding[64];
-  strcpy(stack_padding, kStackPadding);
-  base::debug::Alias(stack_padding);
-
   if (receiver)
     receiver_.Bind(std::move(receiver));
 
-  if (!initialize_environment) {
-    // TODO(https://crbug.com/1078170): Remove this.
-    CHECK_EQ(stack_padding, std::string(kStackPadding));
+  if (!initialize_environment)
     return;
-  }
 
 #if defined(OS_WIN)
   // Initialize direct write font proxy so skia can use it.
@@ -95,9 +75,6 @@ PrintCompositorImpl::PrintCompositorImpl(
   // policy setup.
   DCHECK(SkFontMgr::RefDefault()->countFamilies());
 #endif
-
-  // TODO(https://crbug.com/1078170): Remove this.
-  CHECK_EQ(stack_padding, std::string(kStackPadding));
 }
 
 PrintCompositorImpl::~PrintCompositorImpl() {
