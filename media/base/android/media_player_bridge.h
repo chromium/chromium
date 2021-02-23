@@ -92,6 +92,7 @@ class MEDIA_EXPORT MediaPlayerBridge {
 
   // Methods to partially expose the underlying MediaPlayer.
   void SetVideoSurface(gl::ScopedJavaSurface surface);
+  void SetPlaybackRate(double playback_rate);
   void Pause();
   void SeekTo(base::TimeDelta timestamp);
   base::TimeDelta GetCurrentTime();

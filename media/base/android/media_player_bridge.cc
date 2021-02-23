@@ -167,6 +167,17 @@ void MediaPlayerBridge::SetVideoSurface(gl::ScopedJavaSurface surface) {
                                     surface_.j_surface());
 }
 
+void MediaPlayerBridge::SetPlaybackRate(double playback_rate) {
+  if (j_media_player_bridge_.is_null())
+    return;
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  CHECK(env);
+
+  Java_MediaPlayerBridge_setPlaybackRate(env, j_media_player_bridge_,
+                                         playback_rate);
+}
+
 void MediaPlayerBridge::Prepare() {
   DCHECK(j_media_player_bridge_.is_null());
 

@@ -167,12 +167,9 @@ void MediaPlayerRenderer::SetPlaybackRate(double playback_rate) {
   if (playback_rate == 0) {
     media_player_->Pause();
   } else {
+    media_player_->SetPlaybackRate(playback_rate);
     // MediaPlayerBridge's Start() is idempotent.
     media_player_->Start();
-
-    // TODO(tguilbert): MediaPlayer's interface allows variable playback rate,
-    // but is not currently exposed in the MediaPlayerBridge interface.
-    // Investigate wether or not we want to add variable playback speed.
   }
 }
 
