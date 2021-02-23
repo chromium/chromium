@@ -19,6 +19,8 @@ namespace viz {
 
 class Surface;
 class SurfaceSavedFrameStorage;
+struct ReturnedResource;
+struct TransferableResource;
 
 // This class is responsible for processing CompositorFrameTransitionDirectives,
 // and keeping track of the animation state.
@@ -53,6 +55,10 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
   // Interpolates from the saved frame to the current active frame on the
   // surface, storing the result back on the surface.
   void InterpolateFrame(Surface* surface);
+
+  // Resource ref count management.
+  void RefResources(const std::vector<TransferableResource>& resources);
+  void UnrefResources(const std::vector<ReturnedResource>& resources);
 
  private:
   // Helpers to process specific directives.

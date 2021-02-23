@@ -36,6 +36,8 @@ class VIZ_SERVICE_EXPORT TransferableResourceTracker {
   void RefResource(ResourceId id);
   void UnrefResource(ResourceId id);
 
+  bool is_empty() const { return managed_resources_.empty(); }
+
  private:
   friend class TransferableResourceTrackerTest;
 
