@@ -9,6 +9,7 @@ import("//build/config/android/rules.gni")
 generate_jni("nonembedded_jni_headers") {
   sources = [
     "java/src/org/chromium/android_webview/nonembedded/AwComponentUpdateService.java",
+    "java/src/org/chromium/android_webview/nonembedded/DownloadFileTask.java",
     "java/src/org/chromium/android_webview/nonembedded/WebViewApkApplication.java",
   ]
 }
@@ -19,6 +20,7 @@ android_library("nonembedded_java") {
   sources = [
     "java/src/org/chromium/android_webview/nonembedded/AwComponentUpdateService.java",
     "java/src/org/chromium/android_webview/nonembedded/AwNonembeddedUmaRecorder.java",
+    "java/src/org/chromium/android_webview/nonembedded/DownloadFileTask.java",
     "java/src/org/chromium/android_webview/nonembedded/LicenseActivity.java",
     "java/src/org/chromium/android_webview/nonembedded/LicenseContentProvider.java",
     "java/src/org/chromium/android_webview/nonembedded/WebViewApkApplication.java",
@@ -39,6 +41,7 @@ android_library("nonembedded_java") {
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
@@ -129,6 +132,12 @@ source_set("nonembedded") {
     "component_updater/installer_policies/aw_trust_token_key_commitments_component_installer_policy.h",
     "component_updater/registration.cc",
     "component_updater/registration.h",
+    "net/download_file_task.cc",
+    "net/download_file_task.h",
+    "net/network_impl.cc",
+    "net/network_impl.h",
+    "net/network_task.cc",
+    "net/network_task.h",
     "webview_apk_application.cc",
     "webview_apk_process.cc",
     "webview_apk_process.h",
@@ -136,7 +145,6 @@ source_set("nonembedded") {
   deps = [
     ":nonembedded_jni_headers",
     "//android_webview/common",
-    "//base",
     "//base",
     "//components/component_updater",
     "//components/component_updater/installer_policies",
@@ -148,6 +156,8 @@ source_set("nonembedded") {
     "//components/update_client:unzip_impl",
     "//components/version_info",
     "//components/version_info/android:channel_getter",
+    "//url",
+    "//url:gurl_android",
 
     # Called via JNI by LicenseContentProvider in :nonembedded_java.
     "//components/about_ui:about_ui_android",

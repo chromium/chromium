@@ -543,6 +543,7 @@ junit_binary("android_webview_junit_tests") {
     "../junit/src/org/chromium/android_webview/robolectric/common/FlagOverrideHelperTest.java",
     "../junit/src/org/chromium/android_webview/robolectric/common/services/ServiceNamesTest.java",
     "../junit/src/org/chromium/android_webview/robolectric/metrics/AwNonembeddedUmaReplayerTest.java",
+    "../nonembedded/java/src/org/chromium/android_webview/nonembedded/DownloadFileTaskTest.java",
   ]
 
   deps = [
@@ -557,6 +558,7 @@ junit_binary("android_webview_junit_tests") {
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/blink/public/mojom:mojom_platform_java",
+    "//url:gurl_java",
   ]
 
   package_name = "org.chromium.android_webview.robolectric"
