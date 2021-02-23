@@ -57,6 +57,21 @@ PLATFORM_EXPORT scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     media::PaintCanvasVideoRenderer* video_renderer = nullptr,
     const gfx::Rect& dest_rect = gfx::Rect());
 
+// Similar to the above, but just skips creating the StaticBitmapImage from the
+// CanvasResourceProvider. Returns true if the frame could be drawn or false
+// otherwise. Note: In certain failure modes a black frame will be drawn.
+//
+// |video_renderer| may optionally be provided in cases where the same frame may
+// end up repeatedly drawn.
+//
+// A |raster_context_provider| is required to convert texture backed frames.
+PLATFORM_EXPORT bool DrawVideoFrameIntoResourceProvider(
+    scoped_refptr<media::VideoFrame> frame,
+    CanvasResourceProvider* resource_provider,
+    viz::RasterContextProvider* raster_context_provider,
+    const gfx::Rect& dest_rect,
+    media::PaintCanvasVideoRenderer* video_renderer = nullptr);
+
 // Creates a CanvasResourceProvider which is appropriate for drawing VideoFrame
 // objects into. Some callers to CreateImageFromVideoFrame() may choose to cache
 // their resource providers. If |raster_context_provider| is null a software

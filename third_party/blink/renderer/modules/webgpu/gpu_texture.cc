@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
 
 #include "gpu/command_buffer/client/webgpu_interface.h"
+#include "media/base/video_frame.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_view_descriptor.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
@@ -15,6 +16,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
+#include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 
 namespace blink {
 
@@ -116,14 +118,27 @@ GPUTexture* GPUTexture::FromVideo(GPUDevice* device,
     return nullptr;
   }
 
+  media::PaintCanvasVideoRenderer* video_renderer = nullptr;
+  scoped_refptr<media::VideoFrame> media_video_frame;
+  if (auto* wmp = video->GetWebMediaPlayer()) {
+    media_video_frame = wmp->GetCurrentFrame();
+    video_renderer = wmp->GetPaintCanvasVideoRenderer();
+  }
+
+  if (!media_video_frame || !video_renderer) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                      "Failed to import texture from video");
+    return nullptr;
+  }
+
   // Create a CanvasResourceProvider for producing WebGPU-compatible shared
   // images.
   // TODO(crbug.com/1174809): This should recycle resources instead of creating
   // a new shared image every time.
+  const auto intrinsic_size = IntSize(media_video_frame->natural_size());
   std::unique_ptr<CanvasResourceProvider> resource_provider =
       CanvasResourceProvider::CreateWebGPUImageProvider(
-          IntSize(video->videoWidth(), video->videoHeight()),
-          kLow_SkFilterQuality,
+          intrinsic_size, kLow_SkFilterQuality,
           CanvasResourceParams(CanvasColorSpace::kSRGB, kN32_SkColorType,
                                kPremul_SkAlphaType),
           CanvasResourceProvider::ShouldInitialize::kNo,
@@ -135,11 +150,23 @@ GPUTexture* GPUTexture::FromVideo(GPUDevice* device,
     return nullptr;
   }
 
-  // Copy the video frame into the shared image.
-  video->PaintCurrentFrame(
-      resource_provider->Canvas(),
-      IntRect(IntPoint(), IntSize(video->videoWidth(), video->videoHeight())),
-      nullptr);
+  viz::RasterContextProvider* raster_context_provider = nullptr;
+  if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
+    if (auto* context_provider = wrapper->ContextProvider())
+      raster_context_provider = context_provider->RasterContextProvider();
+  }
+
+  // TODO(crbug.com/1174809): This isn't efficient for VideoFrames which are
+  // already available as a shared image. A WebGPUMailboxTexture should be
+  // created directly from the VideoFrame instead.
+  const auto dest_rect = gfx::Rect(media_video_frame->natural_size());
+  if (!DrawVideoFrameIntoResourceProvider(
+          std::move(media_video_frame), resource_provider.get(),
+          raster_context_provider, dest_rect, video_renderer)) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                      "Failed to import texture from video");
+    return nullptr;
+  }
 
   // Acquire the CanvasResource wrapping the shared image.
   scoped_refptr<CanvasResource> canvas_resource =

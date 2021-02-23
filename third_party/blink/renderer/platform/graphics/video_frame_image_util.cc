@@ -120,21 +120,6 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
         Thread::Current()->GetTaskRunner(), std::move(release_callback));
   }
 
-  auto raster_context_provider = GetRasterContextProvider();
-  if (frame->HasTextures()) {
-    if (!raster_context_provider) {
-      DLOG(ERROR) << "Unable to process a texture backed VideoFrame w/o a "
-                     "RasterContextProvider.";
-      return nullptr;  // Unable to get/create a shared main thread context.
-    }
-    if (!raster_context_provider->GrContext() &&
-        !raster_context_provider->ContextCapabilities().supports_oop_raster) {
-      DLOG(ERROR) << "Unable to process a texture backed VideoFrame w/o a "
-                     "GrContext or OOP raster support.";
-      return nullptr;  // The context has been lost.
-    }
-  }
-
   gfx::Rect final_dest_rect = dest_rect;
   if (final_dest_rect.IsEmpty()) {
     // Since we're copying, the destination is always aligned with the origin.
@@ -154,6 +139,7 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     return nullptr;
   }
 
+  auto raster_context_provider = GetRasterContextProvider();
   const auto resource_provider_size = IntSize(final_dest_rect.size());
   std::unique_ptr<CanvasResourceProvider> local_resource_provider;
   if (!resource_provider) {
@@ -165,6 +151,38 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     }
 
     resource_provider = local_resource_provider.get();
+  }
+
+  if (!DrawVideoFrameIntoResourceProvider(std::move(frame), resource_provider,
+                                          raster_context_provider.get(),
+                                          final_dest_rect, video_renderer)) {
+    return nullptr;
+  }
+  return resource_provider->Snapshot();
+}
+
+bool DrawVideoFrameIntoResourceProvider(
+    scoped_refptr<media::VideoFrame> frame,
+    CanvasResourceProvider* resource_provider,
+    viz::RasterContextProvider* raster_context_provider,
+    const gfx::Rect& dest_rect,
+    media::PaintCanvasVideoRenderer* video_renderer) {
+  DCHECK(frame);
+  DCHECK(resource_provider);
+  DCHECK(gfx::Rect(gfx::Size(resource_provider->Size())).Contains(dest_rect));
+
+  if (frame->HasTextures()) {
+    if (!raster_context_provider) {
+      DLOG(ERROR) << "Unable to process a texture backed VideoFrame w/o a "
+                     "RasterContextProvider.";
+      return false;  // Unable to get/create a shared main thread context.
+    }
+    if (!raster_context_provider->GrContext() &&
+        !raster_context_provider->ContextCapabilities().supports_oop_raster) {
+      DLOG(ERROR) << "Unable to process a texture backed VideoFrame w/o a "
+                     "GrContext or OOP raster support.";
+      return false;  // The context has been lost.
+    }
   }
 
   cc::PaintFlags media_flags;
@@ -183,11 +201,11 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
   }
 
   video_renderer->Paint(
-      frame.get(), resource_provider->Canvas(), gfx::RectF(final_dest_rect),
+      frame.get(), resource_provider->Canvas(), gfx::RectF(dest_rect),
       media_flags,
       frame->metadata().transformation.value_or(media::kNoTransformation),
-      raster_context_provider.get());
-  return resource_provider->Snapshot();
+      raster_context_provider);
+  return true;
 }
 
 std::unique_ptr<CanvasResourceProvider> CreateResourceProviderForVideoFrame(
