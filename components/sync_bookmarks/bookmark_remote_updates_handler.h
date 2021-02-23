@@ -65,6 +65,15 @@ class BookmarkRemoteUpdatesHandler {
   static std::vector<const syncer::UpdateResponseData*> ReorderUpdates(
       const syncer::UpdateResponseDataList* updates);
 
+  // Returns the tracked entity that should be affected by a remote change, or
+  // null if there is none (e.g. indicating a remote creation).
+  // |should_ignore_update| must not be null and it can be marked as true if the
+  // function reports that the update should not be processed further (e.g. it
+  // is invalid).
+  const SyncedBookmarkTracker::Entity* DetermineLocalTrackedEntityToUpdate(
+      const syncer::EntityData& update_entity,
+      bool* should_ignore_update);
+
   // Given a remote update entity, it returns the parent bookmark node of the
   // corresponding node. It returns null if the parent node cannot be found.
   const bookmarks::BookmarkNode* GetParentNode(
