@@ -157,7 +157,7 @@ void CompositorFrameSinkSupport::OnSurfaceActivated(Surface* surface) {
   bool started_animation =
       surface_animation_manager_.ProcessTransitionDirectives(
           last_frame_time_,
-          surface->GetActiveFrame().metadata.transition_directives,
+          surface->GetActiveFrameMetadata().transition_directives,
           surface->GetSurfaceSavedFrameStorage());
   // If processing the new directives caused us to start an animation, then
   // interpoate the frame immediately. This is needed since if we wait until the
@@ -840,7 +840,7 @@ CompositorFrameSinkSupport::GetLastActivatedFrameMetadata() {
   Surface* surface =
       surface_manager_->GetSurfaceForId(last_activated_surface_id_);
   DCHECK(surface);
-  return &surface->GetActiveFrame().metadata;
+  return &surface->GetActiveFrameMetadata();
 }
 
 HitTestAggregator* CompositorFrameSinkSupport::GetHitTestAggregator() {

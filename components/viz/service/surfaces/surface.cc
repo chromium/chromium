@@ -493,7 +493,7 @@ void Surface::ActivateFrame(FrameData frame_data) {
 
   // Defer notifying the embedder of an updated token until the frame has been
   // completely processed.
-  const auto& metadata = GetActiveFrame().metadata;
+  const auto& metadata = GetActiveFrameMetadata();
   if (surface_client_ && metadata.send_frame_token_to_embedder)
     surface_client_->OnFrameTokenChanged(metadata.frame_token);
 }
@@ -612,6 +612,11 @@ bool Surface::HasCopyOutputRequests() const {
 const CompositorFrame& Surface::GetActiveFrame() const {
   DCHECK(active_frame_data_);
   return active_frame_data_->frame;
+}
+
+const CompositorFrameMetadata& Surface::GetActiveFrameMetadata() const {
+  DCHECK(active_frame_data_);
+  return active_frame_data_->frame.metadata;
 }
 
 const CompositorFrame& Surface::GetPendingFrame() {

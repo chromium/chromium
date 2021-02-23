@@ -159,10 +159,13 @@ class VIZ_SERVICE_EXPORT Surface final {
   // Returns whether there is a CopyOutputRequest inside the active frame.
   bool HasCopyOutputRequests() const;
 
-  // Returns the most recent frame that is eligible to be rendered.
-  // You must check whether HasActiveFrame() returns true before calling this
-  // method.
+  // Returns the most recent frame or frame metadata that is eligible to be
+  // rendered. You must check whether HasActiveFrame() returns true before
+  // calling these methods.
+  // Note that we prefer to call GetActiveFrameMetadata if the only thing that
+  // is required from the frame is the metadata.
   const CompositorFrame& GetActiveFrame() const;
+  const CompositorFrameMetadata& GetActiveFrameMetadata() const;
 
   // Returns the currently pending frame. You must check where HasPendingFrame()
   // returns true before calling this method.

@@ -1193,7 +1193,7 @@ void SurfaceAggregator::CopyPasses(const CompositorFrame& frame,
       IsRootSurface(surface) ? root_surface_transform_ : gfx::Transform();
 
   if (frame.metadata.delegated_ink_metadata) {
-    DCHECK(surface->GetActiveFrame().metadata.delegated_ink_metadata ==
+    DCHECK(surface->GetActiveFrameMetadata().delegated_ink_metadata ==
            frame.metadata.delegated_ink_metadata);
     // The metadata must be taken off of the surface, rather than a copy being
     // made, in order to ensure that the delegated ink metadata is used for
