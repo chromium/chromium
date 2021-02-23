@@ -470,7 +470,12 @@ void RootView::OnMouseReleased(const ui::MouseEvent& event) {
     // We allow the view to delete us from the event dispatch callback. As such,
     // configure state such that we're done first, then call View.
     View* mouse_pressed_handler = mouse_pressed_handler_;
-    SetMouseAndGestureHandler(nullptr);
+
+    // The gesture handler should not be reset when handling the mouse release.
+    // Otherwise, the gesture movements in progress such as the gesture scroll
+    // is interrupted.
+    SetMouseHandler(nullptr);
+
     ui::EventDispatchDetails dispatch_details =
         DispatchEvent(mouse_pressed_handler, &mouse_released);
     if (dispatch_details.dispatcher_destroyed)
@@ -633,11 +638,8 @@ bool RootView::OnMouseWheel(const ui::MouseWheelEvent& event) {
 }
 
 void RootView::SetMouseAndGestureHandler(View* new_handler) {
-  // If we're clearing the mouse handler, clear explicit_mouse_handler_ as well.
-  explicit_mouse_handler_ = (new_handler != nullptr);
-  mouse_pressed_handler_ = new_handler;
+  SetMouseHandler(new_handler);
   gesture_handler_ = new_handler;
-  drag_info_.Reset();
 }
 
 void RootView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -751,6 +753,13 @@ ui::EventDispatchDetails RootView::NotifyEnterExitOfDescendant(
     }
   }
   return ui::EventDispatchDetails();
+}
+
+void RootView::SetMouseHandler(View* new_mouse_handler) {
+  // If we're clearing the mouse handler, clear explicit_mouse_handler_ as well.
+  explicit_mouse_handler_ = (new_mouse_handler != nullptr);
+  mouse_pressed_handler_ = new_mouse_handler;
+  drag_info_.Reset();
 }
 
 bool RootView::CanDispatchToTarget(ui::EventTarget* target) {

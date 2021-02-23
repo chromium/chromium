@@ -168,6 +168,9 @@ class VIEWS_EXPORT RootView : public View,
       View* view,
       View* sibling) WARN_UNUSED_RESULT;
 
+  // Updates the mouse handler and other related data members.
+  void SetMouseHandler(View* new_mouse_handler);
+
   // ui::EventDispatcherDelegate:
   bool CanDispatchToTarget(ui::EventTarget* target) override;
   ui::EventDispatchDetails PreDispatchEvent(ui::EventTarget* target,
