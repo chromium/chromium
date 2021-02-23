@@ -16,6 +16,7 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/task/post_task.h"
+#include "base/threading/sequence_bound.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue.h"
@@ -60,68 +61,74 @@ class ReportingClient::Uploader : public UploaderInterface {
       base::OnceCallback<Status(std::unique_ptr<std::vector<EncryptedRecord>>)>;
 
   static StatusOr<std::unique_ptr<Uploader>> Create(
-      UploadCallback upload_callback);
+      UploadCallback upload_callback) {
+    auto uploader = base::WrapUnique(new Uploader(std::move(upload_callback)));
+    return uploader;
+  }
 
-  ~Uploader() override;
+  ~Uploader() override = default;
   Uploader(const Uploader& other) = delete;
   Uploader& operator=(const Uploader& other) = delete;
 
   void ProcessRecord(EncryptedRecord data,
-                     base::OnceCallback<void(bool)> processed_cb) override;
+                     base::OnceCallback<void(bool)> processed_cb) override {
+    helper_.AsyncCall(&Helper::ProcessRecord)
+        .WithArgs(std::move(data), std::move(processed_cb));
+  }
   void ProcessGap(SequencingInformation start,
                   uint64_t count,
-                  base::OnceCallback<void(bool)> processed_cb) override;
+                  base::OnceCallback<void(bool)> processed_cb) override {
+    helper_.AsyncCall(&Helper::ProcessGap)
+        .WithArgs(std::move(start), count, std::move(processed_cb));
+  }
 
-  void Completed(Status final_status) override;
+  void Completed(Status final_status) override {
+    helper_.AsyncCall(&Helper::Completed).WithArgs(final_status);
+  }
 
  private:
-  explicit Uploader(UploadCallback upload_callback_);
+  // Helper class that performs actions, wrapped in SequenceBound by |Uploader|.
+  class Helper {
+   public:
+    explicit Helper(UploadCallback upload_callback);
+    void ProcessRecord(EncryptedRecord data,
+                       base::OnceCallback<void(bool)> processed_cb);
+    void ProcessGap(SequencingInformation start,
+                    uint64_t count,
+                    base::OnceCallback<void(bool)> processed_cb);
+    void Completed(Status final_status);
 
-  static void RunUpload(
-      UploadCallback upload_callback,
-      std::unique_ptr<std::vector<EncryptedRecord>> encrypted_records);
+   private:
+    bool completed_{false};
+    std::unique_ptr<std::vector<EncryptedRecord>> encrypted_records_;
 
-  UploadCallback upload_callback_;
+    UploadCallback upload_callback_;
+  };
 
-  bool completed_{false};
-  std::unique_ptr<std::vector<EncryptedRecord>> encrypted_records_;
-  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
+  explicit Uploader(UploadCallback upload_callback)
+      : helper_(base::ThreadPool::CreateSequencedTaskRunner({}),
+                std::move(upload_callback)) {}
+
+  base::SequenceBound<Helper> helper_;
 };
 
-ReportingClient::Uploader::Uploader(UploadCallback upload_callback)
-    : upload_callback_(std::move(upload_callback)),
-      encrypted_records_(std::make_unique<std::vector<EncryptedRecord>>()),
-      sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})) {}
+ReportingClient::Uploader::Helper::Helper(
+    ReportingClient::Uploader::UploadCallback upload_callback)
+    : encrypted_records_(std::make_unique<std::vector<EncryptedRecord>>()),
+      upload_callback_(std::move(upload_callback)) {}
 
-ReportingClient::Uploader::~Uploader() = default;
-
-StatusOr<std::unique_ptr<ReportingClient::Uploader>>
-ReportingClient::Uploader::Create(UploadCallback upload_callback) {
-  auto uploader = base::WrapUnique(new Uploader(std::move(upload_callback)));
-  return uploader;
-}
-
-void ReportingClient::Uploader::ProcessRecord(
+void ReportingClient::Uploader::Helper::ProcessRecord(
     EncryptedRecord data,
     base::OnceCallback<void(bool)> processed_cb) {
   if (completed_) {
     std::move(processed_cb).Run(false);
     return;
   }
-
-  sequenced_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](std::vector<EncryptedRecord>* records, EncryptedRecord record,
-             base::OnceCallback<void(bool)> processed_cb) {
-            records->emplace_back(std::move(record));
-            std::move(processed_cb).Run(true);
-          },
-          base::Unretained(encrypted_records_.get()), std::move(data),
-          std::move(processed_cb)));
+  encrypted_records_->emplace_back(std::move(data));
+  std::move(processed_cb).Run(true);
 }
 
-void ReportingClient::Uploader::ProcessGap(
+void ReportingClient::Uploader::Helper::ProcessGap(
     SequencingInformation start,
     uint64_t count,
     base::OnceCallback<void(bool)> processed_cb) {
@@ -129,55 +136,32 @@ void ReportingClient::Uploader::ProcessGap(
     std::move(processed_cb).Run(false);
     return;
   }
-
-  sequenced_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](std::vector<EncryptedRecord>* records, SequencingInformation start,
-             uint64_t count, base::OnceCallback<void(bool)> processed_cb) {
-            EncryptedRecord record;
-            *record.mutable_sequencing_information() = std::move(start);
-            for (uint64_t i = 0; i < count; ++i) {
-              records->emplace_back(record);
-              record.mutable_sequencing_information()->set_sequencing_id(
-                  record.sequencing_information().sequencing_id() + 1);
-            }
-            std::move(processed_cb).Run(true);
-          },
-          base::Unretained(encrypted_records_.get()), std::move(start), count,
-          std::move(processed_cb)));
+  for (uint64_t i = 0; i < count; ++i) {
+    encrypted_records_->emplace_back();
+    *encrypted_records_->rbegin()->mutable_sequencing_information() = start;
+    start.set_sequencing_id(start.sequencing_id() + 1);
+  }
+  std::move(processed_cb).Run(true);
 }
 
-void ReportingClient::Uploader::Completed(Status final_status) {
+void ReportingClient::Uploader::Helper::Completed(Status final_status) {
   if (!final_status.ok()) {
-    // No work to do - something went wrong with storage and it no longer wants
-    // to upload the records. Let the records die with |this|.
+    // No work to do - something went wrong with storage and it no longer
+    // wants to upload the records. Let the records die with |this|.
     return;
   }
-
   if (completed_) {
-    // RunUpload has already been invoked. Return.
+    // Upload has already been invoked. Return.
     return;
   }
   completed_ = true;
-
-  sequenced_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&Uploader::RunUpload, std::move(upload_callback_),
-                     std::move(encrypted_records_)));
-}
-
-// static
-void ReportingClient::Uploader::RunUpload(
-    ReportingClient::Uploader::UploadCallback upload_callback,
-    std::unique_ptr<std::vector<EncryptedRecord>> encrypted_records) {
-  DCHECK(encrypted_records);
-  if (encrypted_records->empty()) {
+  DCHECK(encrypted_records_->empty());
+  if (encrypted_records_->empty()) {
     return;
   }
-
+  DCHECK(upload_callback_);
   Status upload_status =
-      std::move(upload_callback).Run(std::move(encrypted_records));
+      std::move(upload_callback_).Run(std::move(encrypted_records_));
   if (!upload_status.ok()) {
     LOG(ERROR) << "Unable to upload records: " << upload_status;
   }
