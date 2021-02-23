@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, GuestUser) {
   logged_in_user_mixin_.GetLoginManagerMixin()->LoginAsNewRegularUser();
   logged_in_user_mixin_.GetLoginManagerMixin()->WaitForActiveSession();
 
-  int total_user_count = IsUserExisting() ? 3 : 2;
+  size_t total_user_count = IsUserExisting() ? 3 : 2;
   EXPECT_EQ(total_user_count, user_manager_->GetUsers().size());
 
   // If no existing users on login screen, then this user is the first and only.
@@ -214,7 +214,7 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, ActiveDirectoryUser) {
   logged_in_user_mixin_.GetLoginManagerMixin()->LoginAsNewRegularUser();
   logged_in_user_mixin_.GetLoginManagerMixin()->WaitForActiveSession();
 
-  int total_user_count = IsUserExisting() ? 3 : 2;
+  size_t total_user_count = IsUserExisting() ? 3 : 2;
   EXPECT_EQ(total_user_count, user_manager_->GetUsers().size());
 
   // If no existing users on login screen, then this user is the first and only.
@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsManagedDeviceTest, KioskAppUser) {
   user_manager_->AddKioskAppUser(kManagedUserAccountId);
   LoginAsNewRegularUser();
 
-  int total_user_count = IsUserExisting() ? 3 : 2;
+  size_t total_user_count = IsUserExisting() ? 3 : 2;
   EXPECT_EQ(total_user_count, user_manager_->GetUsers().size());
 
   // If no existing users on login screen, then this user is the first and only.
@@ -270,7 +270,7 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsManagedDeviceTest,
   user_manager_->AddArcKioskAppUser(kManagedUserAccountId);
   LoginAsNewRegularUser();
 
-  int total_user_count = IsUserExisting() ? 3 : 2;
+  size_t total_user_count = IsUserExisting() ? 3 : 2;
   EXPECT_EQ(total_user_count, user_manager_->GetUsers().size());
 
   // If no existing users on login screen, then this user is the first and only.
@@ -289,7 +289,7 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsManagedDeviceTest,
   user_manager_->AddWebKioskAppUser(kManagedUserAccountId);
   LoginAsNewRegularUser();
 
-  int total_user_count = IsUserExisting() ? 3 : 2;
+  size_t total_user_count = IsUserExisting() ? 3 : 2;
   EXPECT_EQ(total_user_count, user_manager_->GetUsers().size());
 
   // If no existing users on login screen, then this user is the first and only.
@@ -308,7 +308,7 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsManagedDeviceTest,
   user_manager_->AddPublicAccountUser(kManagedUserAccountId);
   LoginAsNewRegularUser();
 
-  int total_user_count = IsUserExisting() ? 3 : 2;
+  size_t total_user_count = IsUserExisting() ? 3 : 2;
   EXPECT_EQ(total_user_count, user_manager_->GetUsers().size());
 
   // If no existing users on login screen, then this user is the first and only.
