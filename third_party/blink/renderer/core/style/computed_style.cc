@@ -2417,7 +2417,7 @@ EListStyleType ComputedStyle::ListStyleType() const {
   return GetListStyleType()->ToDeprecatedListStyleTypeEnum();
 }
 
-AtomicString ComputedStyle::ListStyleStringValue() const {
+const AtomicString& ComputedStyle::ListStyleStringValue() const {
   if (!GetListStyleType() || !GetListStyleType()->IsString())
     return g_null_atom;
   return GetListStyleType()->GetStringValue();

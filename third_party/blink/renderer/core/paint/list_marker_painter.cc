@@ -43,7 +43,7 @@ void ListMarkerPainter::PaintSymbol(const PaintInfo& paint_info,
   context.SetStrokeStyle(kSolidStroke);
   context.SetStrokeThickness(1.0f);
   IntRect snapped_rect = PixelSnappedIntRect(marker);
-  AtomicString type = style.GetListStyleType()->GetCounterStyleName();
+  const AtomicString& type = style.GetListStyleType()->GetCounterStyleName();
   if (type == "disc") {
     context.FillEllipse(FloatRect(snapped_rect));
   } else if (type == "circle") {

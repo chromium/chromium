@@ -974,7 +974,7 @@ class ComputedStyle : public ComputedStyleBase,
   // TODO(crbug.com/687225): These functions are deprecated. Callers should be
   // migrated to GetListStyleType().
   CORE_EXPORT EListStyleType ListStyleType() const;
-  AtomicString ListStyleStringValue() const;
+  const AtomicString& ListStyleStringValue() const;
   // TODO(crbug.com/687225): Get rid of the deprecated functions above so that
   // the getter can also be auto-generated.
   CORE_EXPORT ListStyleTypeData* GetListStyleType() const;
