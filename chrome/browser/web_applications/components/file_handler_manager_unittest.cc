@@ -106,11 +106,16 @@ TEST(FileHandlerUtilsTest, GetMimeTypesFromFileHandlers) {
 }
 
 class FileHandlerManagerTest : public WebAppTest {
+ public:
+  FileHandlerManagerTest() {
+    // |features_| needs to be initialized before SetUp kicks off tasks that
+    // check if a feature is enabled.
+    features_.InitAndEnableFeature(blink::features::kFileHandlingAPI);
+  }
+
  protected:
   void SetUp() override {
     WebAppTest::SetUp();
-
-    features_.InitAndEnableFeature(blink::features::kFileHandlingAPI);
 
     registrar_ = std::make_unique<TestAppRegistrar>();
     file_handler_manager_ = std::make_unique<TestFileHandlerManager>(profile());
