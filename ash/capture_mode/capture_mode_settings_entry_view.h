@@ -6,6 +6,7 @@
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_SETTINGS_ENTRY_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -24,7 +25,9 @@ namespace ash {
 
 // A view that is part of the Settings Bar view, from which the user can toggle
 // each of the settings on/off.
-class ASH_EXPORT CaptureModeSettingsEntryView : public views::View {
+class ASH_EXPORT CaptureModeSettingsEntryView
+    : public views::View,
+      public CaptureModeSessionFocusCycler::HighlightableView {
  public:
   METADATA_HEADER(CaptureModeSettingsEntryView);
 
@@ -41,6 +44,9 @@ class ASH_EXPORT CaptureModeSettingsEntryView : public views::View {
   }
 
   void SetIcon(const gfx::VectorIcon& icon);
+
+  // CaptureModeSessionFocusCycler::HighlightableView:
+  views::View* GetView() override;
 
  private:
   // Owned by the views hierarchy.

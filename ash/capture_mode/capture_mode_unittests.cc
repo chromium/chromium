@@ -68,6 +68,7 @@
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/wm/core/window_util.h"
@@ -98,12 +99,16 @@ void ClickOnView(const views::View* view,
   event_generator->ClickLeftButton();
 }
 
+// Sends a press release key combo |count| times.
 void SendKey(ui::KeyboardCode key_code,
              ui::test::EventGenerator* event_generator,
-             bool shift_down = false) {
-  int flags = shift_down ? ui::EF_SHIFT_DOWN : 0;
-  event_generator->PressKey(key_code, flags);
-  event_generator->ReleaseKey(key_code, flags);
+             bool shift_down = false,
+             int count = 1) {
+  const int flags = shift_down ? ui::EF_SHIFT_DOWN : 0;
+  for (int i = 0; i < count; ++i) {
+    event_generator->PressKey(key_code, flags);
+    event_generator->ReleaseKey(key_code, flags);
+  }
 }
 
 const message_center::Notification* GetPreviewNotification() {
@@ -222,6 +227,16 @@ class CaptureModeSessionTestApi {
     return session_->IsUsingCustomCursor(type);
   }
 
+  CaptureModeSessionFocusCycler::FocusGroup GetCurrentFocusGroup() const {
+    return session_->focus_cycler_->current_focus_group_;
+  }
+
+  size_t GetCurrentFocusIndex() const {
+    return session_->focus_cycler_->focus_index_;
+  }
+
+  bool HasFocus() const { return session_->focus_cycler_->HasFocus(); }
+
  private:
   const CaptureModeSession* const session_;
 };
@@ -251,6 +266,12 @@ class CaptureModeTest : public AshTestBase {
     auto* session = CaptureModeController::Get()->capture_mode_session();
     DCHECK(session);
     return CaptureModeSessionTestApi(session).capture_mode_bar_widget();
+  }
+
+  views::Widget* GetCaptureModeLabelWidget() const {
+    auto* session = CaptureModeController::Get()->capture_mode_session();
+    DCHECK(session);
+    return CaptureModeSessionTestApi(session).capture_label_widget();
   }
 
   CaptureModeSettingsView* GetCaptureModeSettingsView() const {
@@ -310,7 +331,7 @@ class CaptureModeTest : public AshTestBase {
   CaptureModeButton* GetCloseButton() const {
     auto* controller = CaptureModeController::Get();
     DCHECK(controller->IsActive());
-    return GetCaptureModeBarView()->close_button_for_testing();
+    return GetCaptureModeBarView()->close_button();
   }
 
   views::ToggleButton* GetMicrophoneToggle() const {
@@ -318,7 +339,7 @@ class CaptureModeTest : public AshTestBase {
     DCHECK(controller->IsActive());
     DCHECK(GetCaptureModeSettingsView());
     return GetCaptureModeSettingsView()
-        ->microphone_view_for_testing()
+        ->microphone_view()
         ->toggle_button_view();
   }
 
@@ -958,9 +979,7 @@ TEST_F(CaptureModeTest, CaptureRegionCaptureButtonLocation) {
   // Select a large region. Verify that the capture button widget is centered.
   SelectRegion(gfx::Rect(100, 100, 600, 600));
 
-  views::Widget* capture_button_widget =
-      CaptureModeSessionTestApi(controller->capture_mode_session())
-          .capture_label_widget();
+  views::Widget* capture_button_widget = GetCaptureModeLabelWidget();
   ASSERT_TRUE(capture_button_widget);
   aura::Window* capture_button_window =
       capture_button_widget->GetNativeWindow();
@@ -2498,10 +2517,9 @@ TEST_F(CaptureModeTest, TabletTouchCaptureLabelWidgetWindowMode) {
 
   // Press and release on where the capture label widget would be.
   auto* event_generator = GetEventGenerator();
-  CaptureModeSessionTestApi test_api(controller->capture_mode_session());
-  DCHECK(test_api.capture_label_widget());
+  DCHECK(GetCaptureModeLabelWidget());
   event_generator->set_current_screen_location(
-      test_api.capture_label_widget()->GetWindowBoundsInScreen().CenterPoint());
+      GetCaptureModeLabelWidget()->GetWindowBoundsInScreen().CenterPoint());
   event_generator->PressTouch();
   event_generator->ReleaseTouch();
 
@@ -2529,9 +2547,7 @@ TEST_F(CaptureModeTest, DisplayRotation) {
   EXPECT_TRUE(rotated_root_bounds.Contains(controller->user_capture_region()));
   EXPECT_TRUE(rotated_root_bounds.Contains(
       GetCaptureModeBarView()->GetBoundsInScreen()));
-  views::Widget* capture_label_widget =
-      CaptureModeSessionTestApi(controller->capture_mode_session())
-          .capture_label_widget();
+  views::Widget* capture_label_widget = GetCaptureModeLabelWidget();
   ASSERT_TRUE(capture_label_widget);
   EXPECT_EQ(controller->user_capture_region().CenterPoint(),
             capture_label_widget->GetWindowBoundsInScreen().CenterPoint());
@@ -2571,9 +2587,148 @@ TEST_F(CaptureModeTest, ReenterOnSmallerDisplay) {
   EXPECT_EQ(gfx::Rect(600, 400), controller->user_capture_region());
 }
 
+// Tests tabbing when in capture window mode.
+TEST_F(CaptureModeTest, KeyboardNavigationBasic) {
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kImage);
+
+  using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
+  CaptureModeSessionTestApi test_api(controller->capture_mode_session());
+
+  // Initially nothing is focused.
+  EXPECT_EQ(FocusGroup::kNone, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+
+  // Tab once, we are now focusing the type and source buttons group on the
+  // capture bar.
+  auto* event_generator = GetEventGenerator();
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(FocusGroup::kTypeSource, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+
+  // Tab four times to focus the last source button (window mode button).
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/4);
+  EXPECT_EQ(FocusGroup::kTypeSource, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(4u, test_api.GetCurrentFocusIndex());
+
+  // Tab once to focus the settings and close buttons group on the capture bar.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+
+  // Shift tab to focus the last source button again.
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/true);
+  EXPECT_EQ(FocusGroup::kTypeSource, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(4u, test_api.GetCurrentFocusIndex());
+
+  // Press esc to clear focus, but remain in capture mode.
+  SendKey(ui::VKEY_ESCAPE, event_generator);
+  EXPECT_EQ(FocusGroup::kNone, test_api.GetCurrentFocusGroup());
+  EXPECT_TRUE(controller->IsActive());
+
+  // Tests that pressing esc when there is no focus will exit capture mode.
+  SendKey(ui::VKEY_ESCAPE, event_generator);
+  EXPECT_FALSE(controller->IsActive());
+}
+
+// Tests that a click will remove focus.
+TEST_F(CaptureModeTest, KeyboardNavigationClicksRemoveFocus) {
+  auto* controller = StartImageRegionCapture();
+  auto* event_generator = GetEventGenerator();
+
+  CaptureModeSessionTestApi test_api(controller->capture_mode_session());
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_TRUE(test_api.HasFocus());
+
+  event_generator->ClickLeftButton();
+  EXPECT_FALSE(test_api.HasFocus());
+}
+
+// Tests that pressing space on a focused button will click it.
+TEST_F(CaptureModeTest, KeyboardNavigationSpaceToClickButtons) {
+  auto* controller = StartImageRegionCapture();
+  SelectRegion(gfx::Rect(200, 200));
+
+  auto* event_generator = GetEventGenerator();
+
+  // Tab to the button which changes the capture type to video and hit space.
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, 2);
+  SendKey(ui::VKEY_SPACE, event_generator);
+  EXPECT_EQ(CaptureModeType::kVideo, controller->type());
+
+  // Shift tab and space to change the capture type back to image.
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/true);
+  SendKey(ui::VKEY_SPACE, event_generator);
+  EXPECT_EQ(CaptureModeType::kImage, controller->type());
+
+  // Tab to the fullscreen button and hit space.
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, 2);
+  SendKey(ui::VKEY_SPACE, event_generator);
+  EXPECT_EQ(CaptureModeSource::kFullscreen, controller->source());
+
+  // Tab to the region button and hit space to return to region capture mode.
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false);
+  SendKey(ui::VKEY_SPACE, event_generator);
+  EXPECT_EQ(CaptureModeSource::kRegion, controller->source());
+
+  // Tab to the capture button and hit space to perform a capture, which exits
+  // capture mode.
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, 11);
+  SendKey(ui::VKEY_SPACE, event_generator);
+  EXPECT_FALSE(controller->IsActive());
+}
+
+TEST_F(CaptureModeTest, KeyboardNavigationSettingsMenuBehavior) {
+  using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
+
+  // Use window capture mode to avoid having to tab through the selection
+  // region.
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kImage);
+  auto* event_generator = GetEventGenerator();
+
+  // Tests that pressing tab closes the settings menu if it was opened with a
+  // button click.
+  ClickOnView(GetSettingsButton(), event_generator);
+  ASSERT_TRUE(GetCaptureModeSettingsWidget());
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_FALSE(GetCaptureModeSettingsWidget());
+
+  // Tab until we reach the settings button and press space to open the settings
+  // menu.
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, 6);
+  CaptureModeSessionTestApi test_api(controller->capture_mode_session());
+  ASSERT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
+  ASSERT_EQ(0u, test_api.GetCurrentFocusIndex());
+  SendKey(ui::VKEY_SPACE, event_generator);
+  ASSERT_TRUE(GetCaptureModeSettingsWidget());
+
+  // Verify that at this point, the focus cycler is in a pending state.
+  EXPECT_EQ(FocusGroup::kPendingSettings, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+
+  // The next tab should focus the microphone settings entry. Pressing space
+  // should toggle the setting.
+  SendKey(ui::VKEY_TAB, event_generator);
+  ASSERT_FALSE(controller->enable_audio_recording());
+  SendKey(ui::VKEY_SPACE, event_generator);
+  EXPECT_TRUE(controller->enable_audio_recording());
+
+  // Tests that the next tab will keep the menu open and move focus to the
+  // settings button.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_TRUE(GetCaptureModeSettingsWidget());
+  EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+
+  // Tests that pressing escape will close the menu and clear focus.
+  SendKey(ui::VKEY_ESCAPE, event_generator);
+  EXPECT_FALSE(GetCaptureModeSettingsWidget());
+}
+
 // Tests that functionality to create and adjust a region with keyboard
 // shortcuts works as intended.
-TEST_F(CaptureModeTest, SelectRegionWithKeyboard) {
+TEST_F(CaptureModeTest, KeyboardNavigationSelectRegion) {
   auto* controller = StartImageRegionCapture();
   auto* event_generator = GetEventGenerator();
   ASSERT_TRUE(controller->user_capture_region().IsEmpty());
@@ -2583,16 +2738,21 @@ TEST_F(CaptureModeTest, SelectRegionWithKeyboard) {
   gfx::Rect capture_region = controller->user_capture_region();
   EXPECT_FALSE(capture_region.IsEmpty());
 
-  // Test that hitting an arrow key will do nothing as nothing is focused
-  // initially.
+  // Test that hitting an arrow key will do nothing as the selection region is
+  // not focused initially.
   SendKey(ui::VKEY_RIGHT, event_generator);
   EXPECT_EQ(capture_region, controller->user_capture_region());
 
   const int arrow_shift = capture_mode::kArrowKeyboardRegionChangeDp;
 
-  // Hit tab so that the whole region is focused. Arrow keys should shift the
-  // whole region.
-  SendKey(ui::VKEY_TAB, event_generator);
+  // Hit tab until the whole region is focused.
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/6);
+  CaptureModeSessionTestApi test_api(controller->capture_mode_session());
+  EXPECT_EQ(CaptureModeSessionFocusCycler::FocusGroup::kSelection,
+            test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+
+  // Arrow keys should shift the whole region.
   SendKey(ui::VKEY_RIGHT, event_generator);
   EXPECT_EQ(capture_region.origin() + gfx::Vector2d(arrow_shift, 0),
             controller->user_capture_region().origin());
@@ -2619,10 +2779,7 @@ TEST_F(CaptureModeTest, SelectRegionWithKeyboard) {
 
   // Tab until we focus the bottom right affordance circle. Left and up keys
   // should shrink the region, right and bottom keys should enlarge the region.
-  SendKey(ui::VKEY_TAB, event_generator);
-  SendKey(ui::VKEY_TAB, event_generator);
-  SendKey(ui::VKEY_TAB, event_generator);
-  SendKey(ui::VKEY_TAB, event_generator);
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, 4);
 
   SendKey(ui::VKEY_LEFT, event_generator);
   SendKey(ui::VKEY_UP, event_generator);
@@ -2631,6 +2788,99 @@ TEST_F(CaptureModeTest, SelectRegionWithKeyboard) {
   SendKey(ui::VKEY_RIGHT, event_generator);
   SendKey(ui::VKEY_DOWN, event_generator);
   EXPECT_EQ(capture_region.size(), controller->user_capture_region().size());
+}
+
+// Tests behavior regarding the default region when using keyboard navigation.
+TEST_F(CaptureModeTest, KeyboardNavigationDefaultRegion) {
+  auto* controller = StartImageRegionCapture();
+  auto* event_generator = GetEventGenerator();
+  ASSERT_TRUE(controller->user_capture_region().IsEmpty());
+
+  // Hit space when nothing is focused to get the expected default capture
+  // region.
+  SendKey(ui::VKEY_SPACE, event_generator);
+  const gfx::Rect expected_default_region = controller->user_capture_region();
+  SelectRegion(gfx::Rect(20, 20, 200, 200));
+
+  // Hit space when there is an existing region. Tests that the region remains
+  // unchanged.
+  SendKey(ui::VKEY_SPACE, event_generator);
+  EXPECT_EQ(gfx::Rect(20, 20, 200, 200), controller->user_capture_region());
+
+  // Tab to the image toggle button. Tests that hitting space does not change
+  // the region size.
+  SelectRegion(gfx::Rect());
+  SendKey(ui::VKEY_TAB, event_generator);
+  CaptureModeSessionTestApi test_api(controller->capture_mode_session());
+  ASSERT_EQ(CaptureModeSessionFocusCycler::FocusGroup::kTypeSource,
+            test_api.GetCurrentFocusGroup());
+  ASSERT_EQ(0u, test_api.GetCurrentFocusIndex());
+
+  SendKey(ui::VKEY_SPACE, event_generator);
+  EXPECT_EQ(gfx::Rect(), controller->user_capture_region());
+
+  // Tests that hitting space while focusing the region toggle button when in
+  // region capture mode will make the capture region the default size.
+  // SelectRegion removes focus since it uses mouse clicks.
+  SelectRegion(gfx::Rect());
+  SendKey(ui::VKEY_TAB, event_generator,
+          /*is_shift_down=*/false,
+          /*count=*/4);
+  SendKey(ui::VKEY_SPACE, event_generator);
+  EXPECT_EQ(expected_default_region, controller->user_capture_region());
+
+  // Tests that hitting space while focusing the region toggle button when not
+  // in region capture mode does nothing to the capture region.
+  SelectRegion(gfx::Rect());
+  ClickOnView(GetWindowToggleButton(), event_generator);
+  SendKey(ui::VKEY_TAB, event_generator,
+          /*is_shift_down=*/false,
+          /*count=*/4);
+  ASSERT_EQ(CaptureModeSessionFocusCycler::FocusGroup::kTypeSource,
+            test_api.GetCurrentFocusGroup());
+  ASSERT_EQ(3u, test_api.GetCurrentFocusIndex());
+  SendKey(ui::VKEY_SPACE, event_generator);
+  EXPECT_EQ(gfx::Rect(), controller->user_capture_region());
+}
+
+// Tests that accessibility overrides are set as expected on capture mode
+// widgets.
+TEST_F(CaptureModeTest, AccessibilityFocusAnnotator) {
+  StartImageRegionCapture();
+
+  // Helper that takes in a current widget and checks if the accessibility next
+  // and previous focus widgets match the given.
+  auto check_a11y_overrides = [](const std::string& id, views::Widget* widget,
+                                 views::Widget* expected_previous,
+                                 views::Widget* expected_next) -> void {
+    SCOPED_TRACE(id);
+    views::View* contents_view = widget->GetContentsView();
+    views::ViewAccessibility& view_accessibility =
+        contents_view->GetViewAccessibility();
+    EXPECT_EQ(expected_previous, view_accessibility.GetPreviousFocus());
+    EXPECT_EQ(expected_next, view_accessibility.GetNextFocus());
+  };
+
+  // With no region, there is no capture label button and no settings menu
+  // opened, so the bar is the only focusable capture session widget.
+  views::Widget* bar_widget = GetCaptureModeBarWidget();
+  check_a11y_overrides("bar", bar_widget, nullptr, nullptr);
+
+  // With a region, the focus should go from the bar widget to the label widget
+  // and back.
+  SendKey(ui::VKEY_SPACE, GetEventGenerator());
+  views::Widget* label_widget = GetCaptureModeLabelWidget();
+  check_a11y_overrides("bar", bar_widget, label_widget, label_widget);
+  check_a11y_overrides("label", label_widget, bar_widget, bar_widget);
+
+  // With a settings menu open, the focus should go from the bar widget to the
+  // label widget to the settings widget and back to the bar widget.
+  ClickOnView(GetSettingsButton(), GetEventGenerator());
+  views::Widget* settings_widget = GetCaptureModeSettingsWidget();
+  ASSERT_TRUE(settings_widget);
+  check_a11y_overrides("bar", bar_widget, settings_widget, label_widget);
+  check_a11y_overrides("label", label_widget, bar_widget, settings_widget);
+  check_a11y_overrides("settings", settings_widget, label_widget, bar_widget);
 }
 
 // A test class that uses a mock time task environment.

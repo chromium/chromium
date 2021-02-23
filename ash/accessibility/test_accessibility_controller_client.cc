@@ -84,6 +84,9 @@ void TestAccessibilityControllerClient::OnSelectToSpeakPanelAction(
   last_select_to_speak_panel_action_value_ = value;
 }
 
+void TestAccessibilityControllerClient::SetA11yOverrideWindow(
+    aura::Window* a11y_override_window) {}
+
 base::Optional<chromeos::Sound>
 TestAccessibilityControllerClient::GetPlayedEarconAndReset() {
   return std::exchange(sound_key_, base::nullopt);

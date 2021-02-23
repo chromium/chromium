@@ -12,6 +12,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/audio/chromeos_sounds.h"
 #include "content/public/browser/tts_controller.h"
+#include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -166,4 +167,10 @@ void AccessibilityControllerClient::OnSelectToSpeakPanelAction(
     double value) {
   chromeos::AccessibilityManager::Get()->OnSelectToSpeakPanelAction(action,
                                                                     value);
+}
+
+void AccessibilityControllerClient::SetA11yOverrideWindow(
+    aura::Window* a11y_override_window) {
+  AutomationManagerAura::GetInstance()->SetA11yOverrideWindow(
+      a11y_override_window);
 }

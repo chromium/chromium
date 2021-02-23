@@ -46,6 +46,7 @@ class TestAccessibilityControllerClient : public AccessibilityControllerClient {
   void OnSwitchAccessDisabled() override;
   void OnSelectToSpeakPanelAction(SelectToSpeakPanelAction action,
                                   double value) override;
+  void SetA11yOverrideWindow(aura::Window* a11y_override_window) override;
 
   base::Optional<chromeos::Sound> GetPlayedEarconAndReset();
 

@@ -60,6 +60,8 @@ class AutomationManagerAura : public ui::AXActionHandler,
   // AXActionHandlerBase implementation.
   void PerformAction(const ui::AXActionData& data) override;
 
+  void SetA11yOverrideWindow(aura::Window* a11y_override_window);
+
   // views::AXAuraObjCache::Delegate implementation.
   void OnChildWindowRemoved(views::AXAuraObjWrapper* parent) override;
   void OnEvent(views::AXAuraObjWrapper* aura_obj,

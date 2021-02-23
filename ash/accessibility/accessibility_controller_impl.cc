@@ -1116,6 +1116,12 @@ void AccessibilityControllerImpl::StartPointScan() {
   }
 }
 
+void AccessibilityControllerImpl::SetA11yOverrideWindow(
+    aura::Window* a11y_override_window) {
+  if (client_)
+    client_->SetA11yOverrideWindow(a11y_override_window);
+}
+
 void AccessibilityControllerImpl::StopPointScan() {
   point_scan_controller_.reset();
 }

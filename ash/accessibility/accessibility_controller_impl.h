@@ -22,6 +22,10 @@ class PrefChangeRegistrar;
 class PrefRegistrySimple;
 class PrefService;
 
+namespace aura {
+class Window;
+}  // namespace aura
+
 namespace ax {
 namespace mojom {
 enum class Gesture;
@@ -342,6 +346,14 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   // Starts point scanning, to select a point onscreen without using a mouse
   // (as used by Switch Access).
   void StartPointScanning();
+
+  // Sets a window to take a11y focus. This is for windows that need to work
+  // with accessibility clients that consume accessibility APIs, but cannot take
+  // real focus themselves. This is meant for temporary UIs, such as capture
+  // mode and should be set back to null when exiting those UIs, so a11y can
+  // focus windows with real focus. Destroying |a11y_override_window| will also
+  // set the a11y override window back to null.
+  void SetA11yOverrideWindow(aura::Window* a11y_override_window);
 
   // AccessibilityController:
   void SetClient(AccessibilityControllerClient* client) override;

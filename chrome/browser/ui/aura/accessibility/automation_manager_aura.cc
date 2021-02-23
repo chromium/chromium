@@ -126,6 +126,11 @@ void AutomationManagerAura::PerformAction(const ui::AXActionData& data) {
   tree_->HandleAccessibleAction(data);
 }
 
+void AutomationManagerAura::SetA11yOverrideWindow(
+    aura::Window* a11y_override_window) {
+  cache_->SetA11yOverrideWindow(a11y_override_window);
+}
+
 void AutomationManagerAura::OnChildWindowRemoved(
     views::AXAuraObjWrapper* parent) {
   if (!enabled_)
