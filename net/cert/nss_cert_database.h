@@ -181,6 +181,12 @@ class NET_EXPORT NSSCertDatabase {
   virtual void ListModules(std::vector<crypto::ScopedPK11Slot>* modules,
                            bool need_rw) const;
 
+  // Set trust values for certificate.
+  // Returns true on success or false on failure.
+  virtual bool SetCertTrust(CERTCertificate* cert,
+                            CertType type,
+                            TrustBits trust_bits);
+
   // Import certificates and private keys from PKCS #12 blob into the module.
   // If |is_extractable| is false, mark the private key as being unextractable
   // from the module.
@@ -240,10 +246,6 @@ class NET_EXPORT NSSCertDatabase {
 
   // Get trust bits for certificate.
   TrustBits GetCertTrust(const CERTCertificate* cert, CertType type) const;
-
-  // Set trust values for certificate.
-  // Returns true on success or false on failure.
-  bool SetCertTrust(CERTCertificate* cert, CertType type, TrustBits trust_bits);
 
   // Delete certificate and associated private key (if one exists).
   // |cert| is still valid when this function returns. Returns true on

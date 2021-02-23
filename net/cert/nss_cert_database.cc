@@ -179,6 +179,16 @@ void NSSCertDatabase::ListModules(std::vector<crypto::ScopedPK11Slot>* modules,
   }
 }
 
+bool NSSCertDatabase::SetCertTrust(CERTCertificate* cert,
+                                   CertType type,
+                                   TrustBits trust_bits) {
+  bool success = psm::SetCertTrust(cert, type, trust_bits);
+  if (success)
+    NotifyObserversCertDBChanged();
+
+  return success;
+}
+
 int NSSCertDatabase::ImportFromPKCS12(
     PK11SlotInfo* slot_info,
     const std::string& data,
@@ -324,16 +334,6 @@ NSSCertDatabase::TrustBits NSSCertDatabase::GetCertTrust(
     default:
       return TRUST_DEFAULT;
   }
-}
-
-bool NSSCertDatabase::SetCertTrust(CERTCertificate* cert,
-                                   CertType type,
-                                   TrustBits trust_bits) {
-  bool success = psm::SetCertTrust(cert, type, trust_bits);
-  if (success)
-    NotifyObserversCertDBChanged();
-
-  return success;
 }
 
 bool NSSCertDatabase::DeleteCertAndKey(CERTCertificate* cert) {
