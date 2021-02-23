@@ -42,7 +42,6 @@ js_type_check("closure_compile") {
     ":search",
     ":share_and_manage_dialog",
     ":sort_columns",
-    ":suggest_app_dialog",
     ":tab_index",
     ":tasks",
     ":toolbar",
@@ -228,11 +227,6 @@ js_library("share_and_manage_dialog") {
 }
 
 js_library("sort_columns") {
-  testonly = true
-  deps = []
-}
-
-js_library("suggest_app_dialog") {
   testonly = true
   deps = []
 }

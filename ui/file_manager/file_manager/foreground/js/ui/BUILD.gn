@@ -57,7 +57,6 @@ js_type_check("closure_compile_jsmodules") {
     ":progress_center_panel.m",
     ":providers_menu.m",
     ":search_box.m",
-    ":suggest_apps_dialog.m",
     "table:table.m",
     "table:table_column.m",
     "table:table_column_model.m",
@@ -103,7 +102,6 @@ js_type_check("closure_compile_module") {
     ":progress_center_panel",
     ":providers_menu",
     ":search_box",
-    ":suggest_apps_dialog",
     "table:table",
     "table:table_column",
     "table:table_column_model",
@@ -554,7 +552,6 @@ js_library("file_manager_ui") {
     ":progress_center_panel",
     ":providers_menu",
     ":search_box",
-    ":suggest_apps_dialog",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/elements:files_format_dialog",
     "//ui/file_manager/file_manager/foreground/elements:files_message",
@@ -602,7 +599,6 @@ js_library("file_manager_ui.m") {
     ":progress_center_panel.m",
     ":providers_menu.m",
     ":search_box.m",
-    ":suggest_apps_dialog.m",
     "//ui/file_manager/base/js:volume_manager_types.m",
     "//ui/file_manager/externs:volume_manager.m",
     "//ui/file_manager/file_manager/common/js:util.m",
@@ -1113,41 +1109,6 @@ js_library("autocomplete_list.m") {
   extra_deps = [ ":modulize" ]
 }
 
-js_library("suggest_apps_dialog") {
-  deps = [
-    ":file_manager_dialog_base",
-    "//ui/file_manager/base/js:volume_manager_types",
-    "//ui/file_manager/file_manager/common/js:metrics",
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/cws_widget:cws_widget_container",
-    "//ui/file_manager/file_manager/foreground/js:constants",
-    "//ui/file_manager/file_manager/foreground/js:launch_param",
-    "//ui/file_manager/file_manager/foreground/js:providers_model",
-    "//ui/file_manager/file_manager/foreground/js:web_store_utils",
-  ]
-  externs_list =
-      [ "//ui/file_manager/externs/chrome_webstore_widget_private.js" ]
-}
-
-js_library("suggest_apps_dialog.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/suggest_apps_dialog.m.js" ]
-  deps = [
-    ":file_manager_dialog_base.m",
-    "//ui/file_manager/file_manager/common/js:metrics.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/cws_widget:cws_widget_container.m",
-    "//ui/file_manager/file_manager/cws_widget:cws_widget_container_platform_delegate.m",
-    "//ui/file_manager/file_manager/foreground/js:launch_param.m",
-    "//ui/file_manager/file_manager/foreground/js:providers_model.m",
-    "//ui/file_manager/file_manager/foreground/js:web_store_utils.m",
-    "//ui/webui/resources/js:assert.m",
-  ]
-  externs_list =
-      [ "//ui/file_manager/externs/chrome_webstore_widget_private.js" ]
-
-  extra_deps = [ ":modulize" ]
-}
-
 js_test_gen_html("js_test_gen_html_modules") {
   deps = [
     ":actions_submenu_unittest.m",
@@ -1210,7 +1171,6 @@ js_modulizer("modulize") {
     "progress_center_panel.js",
     "providers_menu.js",
     "search_box.js",
-    "suggest_apps_dialog.js",
   ]
 
   namespace_rewrites = cr_namespace_rewrites

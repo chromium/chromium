@@ -38,9 +38,6 @@
      */
     this.separator_ = assert(this.menu_.firstElementChild);
 
-    const installItem = this.addMenuItem_();
-    installItem.command = '#install-new-extension';
-
     this.menu_.addEventListener('update', this.onUpdate_.bind(this));
   }
 

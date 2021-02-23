@@ -2598,12 +2598,6 @@ html[dir='rtl'] #tasks-menu cr-menu-item:not(.change-default) {
       url(../images/files/ui/2x/person_add.png) 2x);
 }
 
-cr-menu-item[command='#install-new-extension'] .icon.start {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/store.png) 1x,
-      url(../images/files/ui/2x/store.png) 2x);
-}
-
 #action-bar {
   display: flex;
   flex: none;

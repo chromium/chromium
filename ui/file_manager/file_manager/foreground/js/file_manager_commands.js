@@ -18,7 +18,6 @@
 // #import {FakeEntry, FilesAppEntry, FilesAppDirEntry} from '../../../externs/files_app_entry_interfaces.m.js';
 // #import {CommandHandlerDeps} from '../../../externs/command_handler_deps.m.js';
 // #import {FileType} from '../../common/js/file_type.m.js';
-// #import {SuggestAppsDialog} from './ui/suggest_apps_dialog.m.js';
 // #import {constants} from './constants.m.js';
 // #import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_center_common.m.js';
 // #import {ActionsModel} from './actions_model.m.js';
@@ -2779,29 +2778,6 @@ CommandHandler.COMMANDS_['inspect-background'] =
   execute(event, fileManager) {
     chrome.fileManagerPrivate.openInspector(
         chrome.fileManagerPrivate.InspectionType.BACKGROUND);
-  }
-};
-
-/**
- * Shows a suggest dialog with new services to be added to the left nav.
- */
-CommandHandler.COMMANDS_['install-new-extension'] =
-    new class extends FilesCommand {
-  execute(event, fileManager) {
-    fileManager.ui.suggestAppsDialog.showProviders((result, itemId) => {
-      // If a new provider is installed, then launch it so the configuration
-      // dialog is shown (if it's available).
-      if (result === SuggestAppsDialog.Result.SUCCESS) {
-        fileManager.providersModel.requestMount(assert(itemId));
-      }
-    });
-  }
-
-  /** @override */
-  canExecute(event, fileManager) {
-    const isFullPage = fileManager.dialogType === DialogType.FULL_PAGE;
-    event.canExecute = isFullPage && navigator.onLine;
-    event.command.setHidden(!isFullPage);
   }
 };
 

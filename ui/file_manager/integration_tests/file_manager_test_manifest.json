@@ -50,7 +50,6 @@
       "file_manager/search.js",
       "file_manager/share_and_manage_dialog.js",
       "file_manager/sort_columns.js",
-      "file_manager/suggest_app_dialog.js",
       "file_manager/tab_index.js",
       "file_manager/tasks.js",
       "file_manager/toolbar.js",

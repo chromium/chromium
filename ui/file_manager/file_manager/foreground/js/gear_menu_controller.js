@@ -64,35 +64,13 @@
   onShowGearMenu_() {
     this.toggleRipple_.activated = true;
     this.refreshRemainingSpace_(false); /* Without loading caption. */
-    this.updateNewServiceItem();
-  }
-
-  /**
-   * Update "New service" menu item to either directly show the Webstore dialog
-   * when there isn't any service/FSP extension installed, or display the
-   * providers menu with the currently installed extensions and also install new
-   * service.
-   *
-   * @private
-   */
-  updateNewServiceItem() {
-    this.providersModel_.getMountableProviders().then(providers => {
-      // Go straight to webstore to install the first provider.
-      let desiredMenu = '#install-new-extension';
-      let label = str('INSTALL_NEW_EXTENSION_LABEL');
-
-      const shouldDisplayProvidersMenu = providers.length > 0;
-      if (shouldDisplayProvidersMenu) {
-        // Open the providers menu with an installed provider and an install new
-        // provider option.
-        desiredMenu = '#new-service';
-        label = str('ADD_NEW_SERVICES_BUTTON_LABEL');
-        // Trigger an update of the providers submenu.
-        this.providersMenu_.updateSubMenu();
-      }
-
-      this.gearMenu_.setNewServiceCommand(desiredMenu, label);
-    });
+    // Open the providers menu with an installed provider and an install new
+    // provider option.
+    const commandId = '#new-service';
+    const label = str('ADD_NEW_SERVICES_BUTTON_LABEL');
+    // Trigger an update of the providers submenu.
+    this.providersMenu_.updateSubMenu();
+    this.gearMenu_.setNewServiceCommand(commandId, label);
   }
 
   /**

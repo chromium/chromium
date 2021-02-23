@@ -313,7 +313,6 @@ preprocess_if_expr("preprocess_generated") {
     "file_manager/foreground/js/ui/progress_center_panel.m.js",
     "file_manager/foreground/js/ui/providers_menu.m.js",
     "file_manager/foreground/js/ui/search_box.m.js",
-    "file_manager/foreground/js/ui/suggest_apps_dialog.m.js",
     "file_manager/foreground/js/ui/table/table.m.js",
     "file_manager/foreground/js/ui/table/table_column.m.js",
     "file_manager/foreground/js/ui/table/table_column_model.m.js",

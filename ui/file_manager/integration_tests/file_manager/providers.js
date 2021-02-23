@@ -41,20 +41,6 @@
   }
 
   /**
-   * Returns $i18n{} label if devtools code coverage is active, otherwise
-   * replaced text.
-   */
-  async function getExpectedInstallNewServiceLabelText() {
-    const isDevtoolsCoverageActive =
-        await sendTestMessage({name: 'isDevtoolsCoverageActive'});
-    if (isDevtoolsCoverageActive === 'true') {
-      return '$i18n{INSTALL_NEW_EXTENSION_LABEL}';
-    }
-
-    return 'Install new service';
-  }
-
-  /**
    * Clicks on the gear menu.
    */
   async function clickGearMenu(appId) {
@@ -156,17 +142,9 @@
       return;
     }
 
-    // If !multipleMounts and !isSmbEnabled, we open the gear menu and check the
-    // "add new service" menu item. add-new-servuces goes directly to
-    // install-new-extension, however install-new-service command uses webview
-    // which doesn't work in the integration tests.
     const isSmbEnabled =
         await sendTestMessage({name: 'isSmbEnabled'}) === 'true';
     if (!isSmbEnabled) {
-      await clickGearMenu(appId);
-      const selector = '#gear-menu:not([hidden]) ' +
-          'cr-menu-item[command="#install-new-extension"]';
-      result = await remoteCall.waitForElement(appId, selector);
       return;
     }
 
@@ -196,13 +174,6 @@
         await sendTestMessage({name: 'isSmbEnabled'}) === 'true';
 
     if (!isSmbEnabled) {
-      // Here we only check these attributes because the menu item calls
-      // Webstore using webview which doesn't work in the integration test.
-      chrome.test.assertEq('Install new service', element.text);
-      // Since there is no FSP provider, there should be no add-new-service
-      // sub-menu, it should instead point to CWS install-new-extension.
-      chrome.test.assertEq(
-          '#install-new-extension', element.attributes['command']);
       return;
     }
 
@@ -220,10 +191,8 @@
         'queryAllElements', appId, selector);
 
     // Check the sub-menu do not contain the |manifest| provider.
-    const expectedLabelText = await getExpectedInstallNewServiceLabelText();
-    chrome.test.assertEq(2, submenu.length);
+    chrome.test.assertEq(1, submenu.length);
     chrome.test.assertEq('SMB file share', submenu[0].text);
-    chrome.test.assertEq(expectedLabelText, submenu[1].text);
   }
 
   /**
@@ -289,35 +258,5 @@
     // JS errors due to volume related actions performed while volume is
     // ejected.
     return IGNORE_APP_ERRORS;
-  };
-
-  /**
-   * Tests that when online, the install new service button is enabled.
-   */
-  testcase.installNewServiceOnline = async () => {
-    const appId = await setUpProvider('manifest.json');
-    await showProvidersMenu(appId);
-
-    const expectedLabelText = await getExpectedInstallNewServiceLabelText();
-    const selector = '#add-new-services-menu:not([hidden]) ' +
-        'cr-menu-item[command="#install-new-extension"]:not([disabled])';
-    const element = await remoteCall.waitForElement(appId, selector);
-    chrome.test.assertEq(expectedLabelText, element.text);
-    chrome.test.assertFalse(element.hidden);
-  };
-
-  /**
-   * Tests that when offline, the install new service button is disabled.
-   */
-  testcase.installNewServiceOffline = async () => {
-    const appId = await setUpProvider('manifest.json');
-    await showProvidersMenu(appId);
-
-    const expectedLabelText = await getExpectedInstallNewServiceLabelText();
-    const selector = '#add-new-services-menu:not([hidden]) ' +
-        'cr-menu-item[command="#install-new-extension"][disabled]';
-    const element = await remoteCall.waitForElement(appId, selector);
-    chrome.test.assertEq(expectedLabelText, element.text);
-    chrome.test.assertFalse(element.hidden);
   };
 })();

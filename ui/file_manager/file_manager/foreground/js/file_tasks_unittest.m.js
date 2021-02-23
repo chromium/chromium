@@ -262,35 +262,6 @@ function showHtmlOfAlertDialogIsCalled(entries, expectedTitle, expectedText) {
 }
 
 /**
- * Returns a promise that resolves when openSuggestAppsDialog is called.
- *
- * @param {!Array<!Entry>} entries Entries.
- * @param {!Array<?string>} mimeTypes Mime types.
- * @return {!Promise}
- */
-function openSuggestAppsDialogIsCalled(entries, mimeTypes) {
-  return new Promise((resolve, reject) => {
-    const fileManager = getMockFileManager();
-    fileManager.ui.suggestAppsDialog = {
-      showByExtensionAndMime: function(extension, mimeType, onDialogClosed) {
-        resolve();
-      },
-    };
-
-    FileTasks
-        .create(
-            fileManager.volumeManager, fileManager.metadataModel,
-            fileManager.directoryModel, fileManager.ui,
-            mockFileTransferController, entries, mimeTypes, mockTaskHistory,
-            fileManager.namingController, fileManager.crostini,
-            fileManager.progressCenter)
-        .then(tasks => {
-          tasks.executeDefault();
-        });
-  });
-}
-
-/**
  * Returns a promise that resolves when the task picker is called.
  *
  * @param {!Array<!Entry>} entries Entries.
@@ -394,70 +365,9 @@ export function testToOpenRtfFile(callback) {
   const mockEntry = MockFileEntry.create(mockFileSystem, '/test.rtf');
 
   reportPromise(
-      openSuggestAppsDialogIsCalled([mockEntry], ['application/rtf']),
+      showHtmlOfAlertDialogIsCalled(
+          [mockEntry], 'test.rtf', 'NO_TASK_FOR_FILE'),
       callback);
-}
-
-/**
- * Tests opening an entry that has external metadata type.
- */
-export function testOpenSuggestAppsDialogWithMetadata(callback) {
-  const showByExtensionAndMimeIsCalled = new Promise((resolve, reject) => {
-    const mockFileSystem = new MockFileSystem('volumeId');
-    const mockEntry = MockFileEntry.create(mockFileSystem, '/test.rtf');
-    const fileManager = getMockFileManager();
-
-    FileTasks
-        .create(
-            fileManager.volumeManager, fileManager.metadataModel,
-            fileManager.directoryModel, /** @type {!FileManagerUI} */ ({
-              taskMenuButton: document.createElement('button'),
-              fileContextMenu: {
-                defaultActionMenuItem: document.createElement('div'),
-              },
-              suggestAppsDialog: {
-                showByExtensionAndMime: function(
-                    extension, mimeType, onDialogClosed) {
-                  assertEquals('.rtf', extension);
-                  assertEquals('application/rtf', mimeType);
-                  resolve();
-                },
-              },
-            }),
-            mockFileTransferController, [mockEntry], ['application/rtf'],
-            mockTaskHistory, fileManager.namingController, fileManager.crostini,
-            fileManager.progressCenter)
-        .then(tasks => {
-          tasks.openSuggestAppsDialog(() => {}, () => {}, () => {});
-        });
-  });
-
-  reportPromise(showByExtensionAndMimeIsCalled, callback);
-}
-
-/**
- * Tests opening an entry that has no extension. Since the entry extension and
- * entry MIME type are required, the onFalure method should be called.
- */
-export function testOpenSuggestAppsDialogFailure(callback) {
-  const onFailureIsCalled = new Promise((resolve, reject) => {
-    const mockFileSystem = new MockFileSystem('volumeId');
-    const mockEntry = MockFileEntry.create(mockFileSystem, '/test');
-    const fileManager = getMockFileManager();
-
-    FileTasks
-        .create(
-            fileManager.volumeManager, fileManager.metadataModel,
-            fileManager.directoryModel, fileManager.ui,
-            mockFileTransferController, [mockEntry], [null], mockTaskHistory,
-            fileManager.namingController, fileManager.crostini,
-            fileManager.progressCenter)
-        .then(tasks => {
-          tasks.openSuggestAppsDialog(() => {}, () => {}, resolve);
-        });
-  });
-
-  reportPromise(onFailureIsCalled, callback);
 }
 
 /**

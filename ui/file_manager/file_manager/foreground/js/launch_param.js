@@ -73,17 +73,6 @@
         AllowedPaths.ANY_PATH_OR_URL;
 
     /**
-     * @type {!SuggestAppDialogState}
-     * @const
-     */
-    this.suggestAppsDialogState = unformatted['suggestAppsDialogState'] ?
-        unformatted['suggestAppsDialogState'] :
-        {
-          overrideCwsContainerUrlForTest: '',
-          overrideCwsContainerOriginForTest: ''
-        };
-
-    /**
      * @type {string}
      * @const
      */

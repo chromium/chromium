@@ -189,7 +189,6 @@
 // <include src="ui/progress_center_panel.js">
 // <include src="ui/providers_menu.js">
 // <include src="ui/search_box.js">
-// <include src="ui/suggest_apps_dialog.js">
 // <include src="main_window_component.js">
 // <include src="../../../base/js/filtered_volume_manager.js">
 // <include src="webui_command_extender.js">

@@ -39,7 +39,6 @@
 // #import {SearchBox} from './search_box.m.js';
 // #import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
 // #import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
-// #import {SuggestAppsDialog} from './suggest_apps_dialog.m.js';
 // #import {FilesConfirmDialog} from './files_confirm_dialog.m.js';
 // #import {FilesAlertDialog} from './files_alert_dialog.m.js';
 // #import {str, util, strf} from '../../../common/js/util.m.js';
@@ -132,14 +131,6 @@
      * @const
      */
     this.defaultTaskPicker = new cr.filebrowser.DefaultTaskDialog(this.element);
-
-    /**
-     * Suggest apps dialog.
-     * @type {!SuggestAppsDialog}
-     * @const
-     */
-    this.suggestAppsDialog = new SuggestAppsDialog(
-        providersModel, this.element, launchParam.suggestAppsDialogState);
 
     /**
      * Dialog for installing .deb files

@@ -496,7 +496,6 @@
   onDriveConnectionChanged_() {
     const connection = this.volumeManager_.getDriveConnectionState();
     this.ui_.dialogContainer.setAttribute('connection', connection.type);
-    this.ui_.suggestAppsDialog.onDriveConnectionChanged(connection.type);
   }
 
   /**

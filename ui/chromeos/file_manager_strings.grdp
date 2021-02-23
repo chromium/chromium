@@ -309,9 +309,6 @@
   <message name="IDS_FILE_BROWSER_ADD_NEW_SERVICES_BUTTON_LABEL" desc="Title of the button in the left nav to add new services (file systems) to the Files app.">
     Add new service
   </message>
-  <message name="IDS_FILE_BROWSER_INSTALL_NEW_EXTENSION_LABEL" desc="Title of the menu item for installing new extensions from the web store.">
-    Install new service
-  </message>
   <message name="IDS_FILE_BROWSER_TASK_VIEW" desc="Title of the action to view (no edit) a file.">
     View
   </message>
