@@ -20,7 +20,8 @@ var TabStripTabListTest = class extends TabStripBrowserTest {
   }
 };
 
-TEST_F('TabStripTabListTest', 'All', function() {
+// TODO(https://crbug.com/1181007): Test disabled by Sheriff due to flakiness.
+TEST_F('TabStripTabListTest', 'DISABLED_All', function() {
   mocha.run();
 });
 
