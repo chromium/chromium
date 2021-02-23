@@ -141,21 +141,28 @@ public final class BundleUtils {
             boolean shouldReplaceClassLoader = isolatedSplitsEnabled()
                     && !parent.equals(BundleUtils.class.getClassLoader()) && appContext != null
                     && !parent.equals(appContext.getClassLoader());
-            if (shouldReplaceClassLoader) {
-                synchronized (sCachedClassLoaders) {
-                    if (!sCachedClassLoaders.containsKey(splitName)) {
-                        String[] splitNames =
-                                ApiHelperForO.getSplitNames(context.getApplicationInfo());
-                        int idx = Arrays.binarySearch(splitNames, splitName);
-                        assert idx >= 0;
-                        // The librarySearchPath argument to PathClassLoader is not needed here
-                        // because the framework doesn't pass it either, see b/171269960.
-                        sCachedClassLoaders.put(splitName,
-                                new PathClassLoader(
-                                        context.getApplicationInfo().splitSourceDirs[idx],
-                                        appContext.getClassLoader()));
+            synchronized (sCachedClassLoaders) {
+                if (shouldReplaceClassLoader && !sCachedClassLoaders.containsKey(splitName)) {
+                    String[] splitNames = ApiHelperForO.getSplitNames(context.getApplicationInfo());
+                    int idx = Arrays.binarySearch(splitNames, splitName);
+                    assert idx >= 0;
+                    // The librarySearchPath argument to PathClassLoader is not needed here
+                    // because the framework doesn't pass it either, see b/171269960.
+                    sCachedClassLoaders.put(splitName,
+                            new PathClassLoader(context.getApplicationInfo().splitSourceDirs[idx],
+                                    appContext.getClassLoader()));
+                }
+                // Always replace the ClassLoader if we have a cached version to make sure all
+                // ClassLoaders are consistent.
+                ClassLoader cachedClassLoader = sCachedClassLoaders.get(splitName);
+                if (cachedClassLoader != null) {
+                    if (!cachedClassLoader.equals(context.getClassLoader())) {
+                        // Set this for recording the histogram below.
+                        shouldReplaceClassLoader = true;
+                        replaceClassLoader(context, cachedClassLoader);
                     }
-                    replaceClassLoader(context, sCachedClassLoaders.get(splitName));
+                } else {
+                    sCachedClassLoaders.put(splitName, context.getClassLoader());
                 }
             }
             RecordHistogram.recordBooleanHistogram(
