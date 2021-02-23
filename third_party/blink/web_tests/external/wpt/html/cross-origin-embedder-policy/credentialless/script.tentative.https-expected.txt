@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS Main
+PASS script same-origin + undefined
+PASS script same-origin + anonymous
+PASS script same-origin + use-credentials
+FAIL script cross-origin + undefined assert_equals: coep:credentialless =>  expected (undefined) undefined but got (string) "cross_origin"
+PASS script cross-origin + anonymous
+PASS script cross-origin + use-credentials
+Harness: the test ran to completion.
+
