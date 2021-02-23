@@ -353,6 +353,7 @@
     '$mixin_append': {
       'args': [
         '--code-coverage',
+        '--code-coverage-dir=${ISOLATED_OUTDIR}'
       ],
     },
   },
