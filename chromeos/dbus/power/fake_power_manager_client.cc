@@ -392,7 +392,10 @@ void FakePowerManagerClient::RefreshBluetoothBattery(
   for (auto& observer : observers_) {
     observer.PeripheralBatteryStatusReceived(
         SysnameFromBluetoothAddress(address), "somename",
-        peripheral_battery_refresh_levels_[address]);
+        peripheral_battery_refresh_levels_[address],
+        power_manager::
+            PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_UNKNOWN,
+        /*active_update=*/true);
   }
 }
 

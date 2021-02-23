@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
-#include "base/time/tick_clock.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
@@ -31,12 +30,48 @@ class ASH_EXPORT PeripheralBatteryListener
       public device::BluetoothAdapter::Observer {
  public:
   struct BatteryInfo {
+    enum class PeripheralType {
+      kOther = 0,
+      kStylusViaScreen = 1,
+      kStylusViaCharger = 2
+    };
+
+    enum class ChargeStatus {
+      // Indicates that either peripheral is not a charger, or the
+      // charge device is not attached; level may be invalid (including 0)
+      // when this is reported for a charger, and likely should be ignored.
+      kUnknown = 0,
+
+      // Common state for peripherals in use.
+      kDischarging = 1,
+
+      // When a chargable device is attached and actively charging.
+      kCharging = 2,
+
+      // When a chargable device is attached and definitely has full charge.
+      // The device is not charging, but is powered.
+      kFull = 3,
+
+      // When a chargable device is attached and not charging; this can also
+      // be due to a full charge, or other unspecified reasons for not charging.
+      kNotCharging = 4,
+
+      // Error is reported when charger is unable to function, and user should
+      // take corrective action; for a wireless
+      // charger this could be foreign object debris that is preventing
+      // power transfer. When errors are reported no information is available
+      // on whether a charge is also occurring or a chargable device is
+      // attached.
+      kError = 5
+    };
+
     BatteryInfo();
     BatteryInfo(const std::string& key,
                 const base::string16& name,
                 base::Optional<uint8_t> level,
                 base::TimeTicks last_update_timestamp,
-                bool is_stylus,
+                PeripheralType type,
+                ChargeStatus charge_status,
                 const std::string& bluetooth_address);
     ~BatteryInfo();
     BatteryInfo(const BatteryInfo& info);
@@ -55,9 +90,21 @@ class ASH_EXPORT PeripheralBatteryListener
     // last known confirmed reading.
     base::TimeTicks last_update_timestamp;
 
-    // True if battery is for stylus being used with internal touch-screen,
-    // false for any other device.
-    bool is_stylus = false;
+    // If set, time of last known active update to the battery, indicating
+    // a peripheral notified the system of status, distinct from a periodic
+    // poll or poll on powerd restart. Unset (nullopt) if there has never been
+    // an active update.
+    base::Optional<base::TimeTicks> last_active_update_timestamp =
+        base::nullopt;
+
+    // Describes whether battery has been used for stylus-related elements,
+    // or anything else. Note that stylus information received through the
+    // touch-screen and the stylus charger (if present) are reported separately,
+    // though their capacity may refer to the same battery.
+    PeripheralType type = PeripheralType::kOther;
+
+    ChargeStatus charge_status = ChargeStatus::kUnknown;
+
     // Peripheral's Bluetooth address. Empty for non-Bluetooth devices.
     std::string bluetooth_address;
   };
@@ -106,9 +153,12 @@ class ASH_EXPORT PeripheralBatteryListener
   bool HasObserver(const Observer* observer) const;
 
   // chromeos::PowerManagerClient::Observer:
-  void PeripheralBatteryStatusReceived(const std::string& path,
-                                       const std::string& name,
-                                       int level) override;
+  void PeripheralBatteryStatusReceived(
+      const std::string& path,
+      const std::string& name,
+      int level,
+      power_manager::PeripheralBatteryStatus_ChargeStatus status,
+      bool active_update) override;
 
   // device::BluetoothAdapter::Observer:
   void DeviceBatteryChanged(
@@ -156,7 +206,7 @@ class ASH_EXPORT PeripheralBatteryListener
   void RemoveBluetoothBattery(const std::string& bluetooth_address);
 
   // Updates the battery information of the peripheral, posting the update.
-  void UpdateBattery(const BatteryInfo& battery_info);
+  void UpdateBattery(const BatteryInfo& battery_info, bool active_update);
 
   // Record of existing battery information. For Bluetooth Devices, the key is
   // kBluetoothDeviceIdPrefix + the device's address. For HID devices, the key
@@ -169,8 +219,6 @@ class ASH_EXPORT PeripheralBatteryListener
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
 
   base::ObserverList<Observer> observers_;
-
-  const base::TickClock* clock_;
 
   base::WeakPtrFactory<PeripheralBatteryListener> weak_factory_{this};
 };

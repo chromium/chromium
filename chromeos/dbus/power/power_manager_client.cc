@@ -736,12 +736,17 @@ class PowerManagerClientImpl : public PowerManagerClient {
     std::string path = protobuf_status.path();
     std::string name = protobuf_status.name();
     int level = protobuf_status.has_level() ? protobuf_status.level() : -1;
-
-    POWER_LOG(DEBUG) << "Device battery status received " << level << " for "
-                     << name << " at " << path;
-
+    power_manager::PeripheralBatteryStatus_ChargeStatus status =
+        protobuf_status.has_charge_status()
+            ? protobuf_status.charge_status()
+            : power_manager::
+                  PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_UNKNOWN;
+    bool active_update = protobuf_status.has_active_update()
+                             ? protobuf_status.active_update()
+                             : false;
     for (auto& observer : observers_)
-      observer.PeripheralBatteryStatusReceived(path, name, level);
+      observer.PeripheralBatteryStatusReceived(path, name, level, status,
+                                               active_update);
   }
 
   void PowerSupplyPollReceived(dbus::Signal* signal) {
