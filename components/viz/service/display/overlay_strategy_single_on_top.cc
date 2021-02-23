@@ -38,9 +38,9 @@ bool OverlayStrategySingleOnTop::Attempt(
   auto best_quad_it = quad_list->end();
   for (auto it = quad_list->begin(); it != quad_list->end(); ++it) {
     OverlayCandidate candidate;
-    if (OverlayCandidate::FromDrawQuad(resource_provider,
-                                       surface_damage_rect_list,
-                                       output_color_matrix, *it, &candidate) &&
+    if (OverlayCandidate::FromDrawQuad(
+            resource_provider, surface_damage_rect_list, output_color_matrix,
+            *it, GetPrimaryPlaneDisplayRect(primary_plane), &candidate) &&
         !OverlayCandidate::IsOccluded(candidate, quad_list->cbegin(), it)) {
       // If the candidate has been promoted previously and has not changed
       // (resource ID is the same) for 3 frames, do not use it as Overlay as
@@ -92,9 +92,9 @@ void OverlayStrategySingleOnTop::ProposePrioritized(
   auto best_quad_it = quad_list->end();
   for (auto it = quad_list->begin(); it != quad_list->end(); ++it) {
     OverlayCandidate candidate;
-    if (OverlayCandidate::FromDrawQuad(resource_provider,
-                                       surface_damage_rect_list,
-                                       output_color_matrix, *it, &candidate) &&
+    if (OverlayCandidate::FromDrawQuad(
+            resource_provider, surface_damage_rect_list, output_color_matrix,
+            *it, GetPrimaryPlaneDisplayRect(primary_plane), &candidate) &&
         !OverlayCandidate::IsOccluded(candidate, quad_list->cbegin(), it)) {
       candidates->push_back({it, candidate, this});
     }

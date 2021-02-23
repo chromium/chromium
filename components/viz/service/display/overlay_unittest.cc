@@ -3865,7 +3865,7 @@ TEST_F(SingleOverlayOnTopTest, IsOverlayRequiredBasic) {
   OverlayCandidate candidate;
   OverlayCandidate::FromDrawQuad(resource_provider_.get(),
                                  &surface_damage_rect_list, default_color,
-                                 new_quad, &candidate);
+                                 new_quad, gfx::RectF(), &candidate);
 
   // Verify that a default candidate is not a required overlay.
   EXPECT_FALSE(candidate.requires_overlay);
@@ -3887,7 +3887,7 @@ TEST_F(SingleOverlayOnTopTest, IsOverlayRequiredHwProtectedVideo) {
   OverlayCandidate candidate;
   OverlayCandidate::FromDrawQuad(resource_provider_.get(),
                                  &surface_damage_rect_list, default_color,
-                                 new_quad, &candidate);
+                                 new_quad, gfx::RectF(), &candidate);
 
   // Verify that a HW protected video candidate requires overlay.
   EXPECT_TRUE(candidate.requires_overlay);
@@ -3911,7 +3911,7 @@ TEST_F(SingleOverlayOnTopTest, RequiredOverlayClippingAndSubsampling) {
   OverlayCandidate candidate;
   OverlayCandidate::FromDrawQuad(resource_provider_.get(),
                                  &surface_damage_rect_list, default_color,
-                                 new_quad, &candidate);
+                                 new_quad, gfx::RectF(), &candidate);
 
   // Default uv rect is 0.1, 0.2, 1.0, 1.0 which in the 320x240 buffer
   // corresponds to 32, 48, 288x192. That maps to |kVideoCandidateRect| in the
@@ -3926,6 +3926,42 @@ TEST_F(SingleOverlayOnTopTest, RequiredOverlayClippingAndSubsampling) {
   EXPECT_TRUE(candidate.requires_overlay);
   EXPECT_FALSE(candidate.is_clipped);
   EXPECT_EQ(gfx::ToRoundedRect(candidate.display_rect), kOverlayClipRect);
+}
+
+TEST_F(SingleOverlayOnTopTest,
+       RequiredOverlayClippingAndSubsamplingWithPrimary) {
+  // Add a small quad.
+  auto pass = CreateRenderPass();
+  const auto kVideoCandidateRect = gfx::Rect(-19, -20, 320, 240);
+  auto* new_quad = CreateCandidateQuadAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      kVideoCandidateRect, gfx::ProtectedVideoType::kHardwareProtected,
+      YUV_420_BIPLANAR);
+  pass->shared_quad_state_list.back()->is_clipped = true;
+  pass->shared_quad_state_list.back()->clip_rect = kOverlayClipRect;
+  SurfaceDamageRectList surface_damage_rect_list;
+  SkMatrix44 default_color = GetIdentityColorMatrix();
+  gfx::RectF primary_rect(0, 0, 100, 120);
+  OverlayProcessorInterface::OutputSurfaceOverlayPlane primary_plane;
+  OverlayCandidate candidate;
+  OverlayCandidate::FromDrawQuad(resource_provider_.get(),
+                                 &surface_damage_rect_list, default_color,
+                                 new_quad, primary_rect, &candidate);
+
+  // Default uv rect is 0.1, 0.2, 1.0, 1.0 which in the 320x240 buffer
+  // corresponds to 32, 48, 288x192. That maps to |kVideoCandidateRect| in the
+  // destination space. After clipping by |kOverlayClipRect| and the
+  // |primary_rect| that clips the src rect to be 49.1, 64, 90x96. After
+  // rounding to the nearest subsample (2x), the result is 48, 64, 90x96.
+  const auto kTargetSrcRect = gfx::Rect(48, 64, 90, 96);
+  EXPECT_EQ(kTargetSrcRect,
+            gfx::ToRoundedRect(gfx::ScaleRect(
+                candidate.uv_rect, candidate.resource_size_in_pixels.width(),
+                candidate.resource_size_in_pixels.height())));
+  EXPECT_TRUE(candidate.requires_overlay);
+  EXPECT_FALSE(candidate.is_clipped);
+  EXPECT_EQ(candidate.display_rect, primary_rect);
 }
 
 TEST_F(UnderlayTest, EstimateOccludedDamage) {
@@ -4020,7 +4056,7 @@ TEST_F(UnderlayTest, EstimateOccludedDamage) {
     OverlayCandidate candidate;
     OverlayCandidate::FromDrawQuad(resource_provider_.get(),
                                    &surface_damage_rect_list, default_color,
-                                   quad_candidate, &candidate);
+                                   quad_candidate, gfx::RectF(), &candidate);
 
     // Before the 'EstimateOccludedDamage' function is called the damage area
     // will just be whatever comes from the |surface_damage_rect_list|.

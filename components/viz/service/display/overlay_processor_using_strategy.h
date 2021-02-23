@@ -115,6 +115,10 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
     virtual bool RemoveOutputSurfaceAsOverlay();
 
     virtual OverlayStrategy GetUMAEnum() const;
+
+    // Does a null-check on |primary_plane| and returns it's |display_rect|
+    // member if non-null and an empty gfx::RectF otherwise.
+    gfx::RectF GetPrimaryPlaneDisplayRect(const PrimaryPlane* primary_plane);
   };
   using StrategyList = std::vector<std::unique_ptr<Strategy>>;
 

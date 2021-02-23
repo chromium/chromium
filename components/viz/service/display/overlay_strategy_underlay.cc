@@ -38,9 +38,9 @@ bool OverlayStrategyUnderlay::Attempt(
 
   for (auto it = quad_list.begin(); it != quad_list.end(); ++it) {
     OverlayCandidate candidate;
-    if (!OverlayCandidate::FromDrawQuad(resource_provider,
-                                        surface_damage_rect_list,
-                                        output_color_matrix, *it, &candidate) ||
+    if (!OverlayCandidate::FromDrawQuad(
+            resource_provider, surface_damage_rect_list, output_color_matrix,
+            *it, GetPrimaryPlaneDisplayRect(primary_plane), &candidate) ||
         (opaque_mode_ == OpaqueMode::RequireOpaqueCandidates &&
          !candidate.is_opaque)) {
       continue;
@@ -102,9 +102,9 @@ void OverlayStrategyUnderlay::ProposePrioritized(
   for (auto it = quad_list.begin(); it != quad_list.end(); ++it) {
     OverlayCandidate candidate;
 
-    if (!OverlayCandidate::FromDrawQuad(resource_provider,
-                                        surface_damage_rect_list,
-                                        output_color_matrix, *it, &candidate) ||
+    if (!OverlayCandidate::FromDrawQuad(
+            resource_provider, surface_damage_rect_list, output_color_matrix,
+            *it, GetPrimaryPlaneDisplayRect(primary_plane), &candidate) ||
         (opaque_mode_ == OpaqueMode::RequireOpaqueCandidates &&
          !candidate.is_opaque)) {
       continue;
