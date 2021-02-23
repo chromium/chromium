@@ -32,6 +32,9 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_ACCOUNT_MANAGER) AccountManagerUI {
       base::OnceClosure close_dialog_closure) = 0;
 
   virtual bool IsDialogShown() = 0;
+
+  // Show OS Settings > Accounts.
+  virtual void ShowManageAccountsSettings() = 0;
 };
 
 }  // namespace ash

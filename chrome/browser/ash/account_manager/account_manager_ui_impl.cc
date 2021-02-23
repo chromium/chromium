@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/account_manager/account_manager_ui_impl.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
 
 namespace ash {
@@ -25,6 +29,12 @@ void AccountManagerUIImpl::ShowReauthAccountDialog(
 
 bool AccountManagerUIImpl::IsDialogShown() {
   return InlineLoginDialogChromeOS::IsShown();
+}
+
+void AccountManagerUIImpl::ShowManageAccountsSettings() {
+  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+      ProfileManager::GetActiveUserProfile(),
+      chromeos::settings::mojom::kMyAccountsSubpagePath);
 }
 
 }  // namespace ash

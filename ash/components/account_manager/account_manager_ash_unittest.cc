@@ -111,12 +111,16 @@ class FakeAccountManagerUI : public ash::AccountManagerUI {
     is_dialog_shown_ = false;
   }
 
-  int show_account_addition_dialog_calls() {
+  int show_account_addition_dialog_calls() const {
     return show_account_addition_dialog_calls_;
   }
 
-  int show_account_reauthentication_dialog_calls() {
+  int show_account_reauthentication_dialog_calls() const {
     return show_account_reauthentication_dialog_calls_;
+  }
+
+  int show_manage_accounts_settings_calls() const {
+    return show_manage_accounts_settings_calls_;
   }
 
  private:
@@ -134,11 +138,15 @@ class FakeAccountManagerUI : public ash::AccountManagerUI {
     is_dialog_shown_ = true;
   }
   bool IsDialogShown() override { return is_dialog_shown_; }
+  void ShowManageAccountsSettings() override {
+    show_manage_accounts_settings_calls_++;
+  }
 
   base::OnceClosure close_dialog_closure_;
   bool is_dialog_shown_ = false;
   int show_account_addition_dialog_calls_ = 0;
   int show_account_reauthentication_dialog_calls_ = 0;
+  int show_manage_accounts_settings_calls_ = 0;
 };
 
 class AccountManagerAshTest : public ::testing::Test {
@@ -205,6 +213,10 @@ class AccountManagerAshTest : public ::testing::Test {
       const account_manager::AccountAdditionResult& result) {
     account_manager_ash_->OnAccountAdditionFinished(result);
     GetFakeAccountManagerUI()->CloseDialog();
+  }
+
+  void ShowManageAccountsSettings() {
+    account_manager_ash_->ShowManageAccountsSettings();
   }
 
   int GetNumObservers() { return account_manager_ash_->observers_.size(); }
@@ -467,6 +479,14 @@ TEST_F(AccountManagerAshTest, ShowReauthAccountDialogOpensTheDialog) {
   EXPECT_EQ(
       1,
       GetFakeAccountManagerUI()->show_account_reauthentication_dialog_calls());
+}
+
+TEST_F(AccountManagerAshTest, ShowManageAccountSettingsTest) {
+  EXPECT_EQ(0,
+            GetFakeAccountManagerUI()->show_manage_accounts_settings_calls());
+  ShowManageAccountsSettings();
+  EXPECT_EQ(1,
+            GetFakeAccountManagerUI()->show_manage_accounts_settings_calls());
 }
 
 }  // namespace crosapi
