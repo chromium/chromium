@@ -5427,6 +5427,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="FamilyUser.GaiaUsersCount" units="Number of Users"
+    expires_after="2022-02-12">
+  <owner>agawronska@chromium.org</owner>
+  <owner>tobyhuang@chromium.org</owner>
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Records the number of Gaia users on a Chrome OS device, at the beginning of
+    the first active session daily for all user types except incognito session.
+    The user count could be 0 if the managed device has ephemeral user policy.
+  </summary>
+</histogram>
+
 <histogram name="FamilyUser.InstalledExtensionsCount"
     units="Number of Extensions" expires_after="2021-08-12">
   <obsolete>
@@ -5548,7 +5561,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FamilyUser.TotalUsersCount" units="Number of Users"
-    expires_after="2021-08-12">
+    expires_after="M90">
+  <obsolete>
+    Removed in M90. Use FamilyUser.GaiaUsersCount instead.
+  </obsolete>
   <owner>agawronska@chromium.org</owner>
   <owner>tobyhuang@chromium.org</owner>
   <owner>xiqiruan@chromium.org</owner>

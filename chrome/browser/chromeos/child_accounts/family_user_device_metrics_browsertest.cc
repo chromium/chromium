@@ -4,16 +4,21 @@
 
 #include "chrome/browser/chromeos/child_accounts/family_user_device_metrics.h"
 
+#include <memory>
 #include <tuple>
 
 #include "base/optional.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/chromeos/login/test/device_state_mixin.h"
 #include "chrome/browser/chromeos/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
+#include "chrome/browser/chromeos/login/test/scoped_policy_update.h"
 #include "chrome/browser/chromeos/login/test/user_policy_mixin.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "components/account_id/account_id.h"
+#include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"
 
 namespace chromeos {
@@ -21,6 +26,10 @@ namespace chromeos {
 namespace {
 const AccountId kDefaultOwnerAccountId =
     AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId);
+const AccountId kManagedUserAccountId =
+    AccountId::FromUserEmail("example@example.com");
+const AccountId kActiveDirectoryUserAccountId =
+    AccountId::AdFromUserEmailObjGuid("active@gmail.com", "obj-guid");
 }  // namespace
 
 // Test params:
@@ -47,7 +56,6 @@ class FamilyUserDeviceMetricsTest
       /*account_id=*/base::nullopt,
       /*include_initial_user=*/IsUserExisting()};
 
- private:
   // MixinBasedInProcessBrowserTest:
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
@@ -58,6 +66,7 @@ class FamilyUserDeviceMetricsTest
         static_cast<FakeChromeUserManager*>(user_manager::UserManager::Get());
   }
 
+ private:
   LoggedInUserMixin::LogInType GetLogInType() const {
     return std::get<0>(GetParam());
   }
@@ -116,15 +125,15 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, SingleUserCount) {
   logged_in_user_mixin_.LogInUser();
 
   const int family_link_users_count = IsUserChild() ? 1 : 0;
-  const int total_users_count = 1;
+  const int gaia_users_count = 1;
 
   histogram_tester.ExpectUniqueSample(
       FamilyUserDeviceMetrics::GetFamilyLinkUsersCountHistogramNameForTest(),
       /*sample=*/family_link_users_count,
       /*expected_count=*/1);
   histogram_tester.ExpectUniqueSample(
-      FamilyUserDeviceMetrics::GetTotalUsersCountHistogramNameForTest(),
-      /*sample=*/total_users_count,
+      FamilyUserDeviceMetrics::GetGaiaUsersCountHistogramNameForTest(),
+      /*sample=*/gaia_users_count,
       /*expected_count=*/1);
 }
 
@@ -137,7 +146,7 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, LoginAsNewChildUser) {
   // If existing Family Link user on login screen, then two Family Link users.
   const int family_link_users_count = IsUserExisting() && IsUserChild() ? 2 : 1;
   // If no existing users on login screen, then this user is the first and only.
-  const int total_users_count = IsUserExisting() ? 2 : 1;
+  const int gaia_users_count = IsUserExisting() ? 2 : 1;
 
   histogram_tester.ExpectUniqueSample(
       FamilyUserDeviceMetrics::GetNewUserAddedHistogramNameForTest(),
@@ -148,8 +157,8 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, LoginAsNewChildUser) {
       /*sample=*/family_link_users_count,
       /*expected_count=*/1);
   histogram_tester.ExpectUniqueSample(
-      FamilyUserDeviceMetrics::GetTotalUsersCountHistogramNameForTest(),
-      /*sample=*/total_users_count,
+      FamilyUserDeviceMetrics ::GetGaiaUsersCountHistogramNameForTest(),
+      /*sample=*/gaia_users_count,
       /*expected_count=*/1);
 }
 
@@ -162,7 +171,7 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, LoginAsNewRegularUser) {
   // If existing Family Link user on login screen, then one Family Link user.
   const int family_link_users_count = IsUserExisting() && IsUserChild() ? 1 : 0;
   // If no existing users on login screen, then this user is the first and only.
-  const int total_users_count = IsUserExisting() ? 2 : 1;
+  const int gaia_users_count = IsUserExisting() ? 2 : 1;
 
   histogram_tester.ExpectUniqueSample(
       FamilyUserDeviceMetrics::GetNewUserAddedHistogramNameForTest(),
@@ -173,8 +182,47 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, LoginAsNewRegularUser) {
       /*sample=*/family_link_users_count,
       /*expected_count=*/1);
   histogram_tester.ExpectUniqueSample(
-      FamilyUserDeviceMetrics::GetTotalUsersCountHistogramNameForTest(),
-      /*sample=*/total_users_count,
+      FamilyUserDeviceMetrics::GetGaiaUsersCountHistogramNameForTest(),
+      /*sample=*/gaia_users_count,
+      /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, GuestUser) {
+  base::HistogramTester histogram_tester;
+
+  user_manager_->AddGuestUser();
+
+  logged_in_user_mixin_.GetLoginManagerMixin()->LoginAsNewRegularUser();
+  logged_in_user_mixin_.GetLoginManagerMixin()->WaitForActiveSession();
+
+  int total_user_count = IsUserExisting() ? 3 : 2;
+  EXPECT_EQ(total_user_count, user_manager_->GetUsers().size());
+
+  // If no existing users on login screen, then this user is the first and only.
+  const int gaia_users_count = IsUserExisting() ? 2 : 1;
+
+  histogram_tester.ExpectUniqueSample(
+      FamilyUserDeviceMetrics::GetGaiaUsersCountHistogramNameForTest(),
+      /*sample=*/gaia_users_count,
+      /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, ActiveDirectoryUser) {
+  base::HistogramTester histogram_tester;
+
+  user_manager_->AddActiveDirectoryUser(kActiveDirectoryUserAccountId);
+  logged_in_user_mixin_.GetLoginManagerMixin()->LoginAsNewRegularUser();
+  logged_in_user_mixin_.GetLoginManagerMixin()->WaitForActiveSession();
+
+  int total_user_count = IsUserExisting() ? 3 : 2;
+  EXPECT_EQ(total_user_count, user_manager_->GetUsers().size());
+
+  // If no existing users on login screen, then this user is the first and only.
+  const int gaia_users_count = IsUserExisting() ? 2 : 1;
+
+  histogram_tester.ExpectUniqueSample(
+      FamilyUserDeviceMetrics::GetGaiaUsersCountHistogramNameForTest(),
+      /*sample=*/gaia_users_count,
       /*expected_count=*/1);
 }
 
@@ -184,5 +232,133 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::Values(LoggedInUserMixin::LogInType::kChild,
                                      LoggedInUserMixin::LogInType::kRegular),
                      /*IsUserExisting=*/testing::Bool()));
+
+class FamilyUserDeviceMetricsManagedDeviceTest
+    : public FamilyUserDeviceMetricsTest {
+ protected:
+  void LoginAsNewRegularUser() {
+    logged_in_user_mixin_.GetLoginManagerMixin()->LoginAsNewRegularUser();
+    logged_in_user_mixin_.GetLoginManagerMixin()->WaitForActiveSession();
+  }
+
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+};
+
+IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsManagedDeviceTest, KioskAppUser) {
+  base::HistogramTester histogram_tester;
+
+  user_manager_->AddKioskAppUser(kManagedUserAccountId);
+  LoginAsNewRegularUser();
+
+  int total_user_count = IsUserExisting() ? 3 : 2;
+  EXPECT_EQ(total_user_count, user_manager_->GetUsers().size());
+
+  // If no existing users on login screen, then this user is the first and only.
+  const int gaia_users_count = IsUserExisting() ? 2 : 1;
+
+  histogram_tester.ExpectUniqueSample(
+      FamilyUserDeviceMetrics::GetGaiaUsersCountHistogramNameForTest(),
+      /*sample=*/gaia_users_count,
+      /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsManagedDeviceTest,
+                       ArcKioskAppUser) {
+  base::HistogramTester histogram_tester;
+
+  user_manager_->AddArcKioskAppUser(kManagedUserAccountId);
+  LoginAsNewRegularUser();
+
+  int total_user_count = IsUserExisting() ? 3 : 2;
+  EXPECT_EQ(total_user_count, user_manager_->GetUsers().size());
+
+  // If no existing users on login screen, then this user is the first and only.
+  const int gaia_users_count = IsUserExisting() ? 2 : 1;
+
+  histogram_tester.ExpectUniqueSample(
+      FamilyUserDeviceMetrics::GetGaiaUsersCountHistogramNameForTest(),
+      /*sample=*/gaia_users_count,
+      /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsManagedDeviceTest,
+                       WebKioskAppUser) {
+  base::HistogramTester histogram_tester;
+
+  user_manager_->AddWebKioskAppUser(kManagedUserAccountId);
+  LoginAsNewRegularUser();
+
+  int total_user_count = IsUserExisting() ? 3 : 2;
+  EXPECT_EQ(total_user_count, user_manager_->GetUsers().size());
+
+  // If no existing users on login screen, then this user is the first and only.
+  const int gaia_users_count = IsUserExisting() ? 2 : 1;
+
+  histogram_tester.ExpectUniqueSample(
+      FamilyUserDeviceMetrics::GetGaiaUsersCountHistogramNameForTest(),
+      /*sample=*/gaia_users_count,
+      /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsManagedDeviceTest,
+                       PublicAccountUser) {
+  base::HistogramTester histogram_tester;
+
+  user_manager_->AddPublicAccountUser(kManagedUserAccountId);
+  LoginAsNewRegularUser();
+
+  int total_user_count = IsUserExisting() ? 3 : 2;
+  EXPECT_EQ(total_user_count, user_manager_->GetUsers().size());
+
+  // If no existing users on login screen, then this user is the first and only.
+  const int gaia_users_count = IsUserExisting() ? 2 : 1;
+
+  histogram_tester.ExpectUniqueSample(
+      FamilyUserDeviceMetrics::GetGaiaUsersCountHistogramNameForTest(),
+      /*sample=*/gaia_users_count,
+      /*expected_count=*/1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    FamilyUserDeviceMetricsManagedDeviceTest,
+    testing::Combine(testing::Values(LoggedInUserMixin::LogInType::kChild,
+                                     LoggedInUserMixin::LogInType::kRegular),
+                     /*IsUserExisting=*/testing::Bool()));
+
+class FamilyUserDeviceMetricsEphemeralUserTest
+    : public FamilyUserDeviceMetricsManagedDeviceTest {
+ protected:
+  // MixinBaseInProcessBrowserTest:
+  void SetUpInProcessBrowserTestFixture() override {
+    MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+    std::unique_ptr<ScopedDevicePolicyUpdate> device_policy_update =
+        device_state_.RequestDevicePolicyUpdate();
+    device_policy_update->policy_payload()
+        ->mutable_ephemeral_users_enabled()
+        ->set_ephemeral_users_enabled(true);
+
+    device_policy_update.reset();
+  }
+};
+
+// Tests that regular ephemeral users report 0 for FamilyUser.GaiaUsersCount.
+IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsEphemeralUserTest,
+                       EphemeralUser) {
+  base::HistogramTester histogram_tester;
+  LoginAsNewRegularUser();
+  histogram_tester.ExpectUniqueSample(
+      FamilyUserDeviceMetrics::GetGaiaUsersCountHistogramNameForTest(),
+      /*sample=*/0,
+      /*expected_count=*/1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    FamilyUserDeviceMetricsEphemeralUserTest,
+    testing::Combine(testing::Values(LoggedInUserMixin::LogInType::kChild,
+                                     LoggedInUserMixin::LogInType::kRegular),
+                     /*IsUserExisting=*/testing::Values(false)));
 
 }  // namespace chromeos
