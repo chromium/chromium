@@ -32,6 +32,7 @@
 #include "components/embedder_support/pref_names.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/spellcheck/browser/pref_names.h"
@@ -115,6 +116,8 @@ const PrefMappingEntry kPrefMapping[] = {
     {"spellingServiceEnabled", spellcheck::prefs::kSpellCheckUseSpellingService,
      APIPermission::kPrivacy, APIPermission::kPrivacy},
     {"thirdPartyCookiesAllowed", prefs::kCookieControlsMode,
+     APIPermission::kPrivacy, APIPermission::kPrivacy},
+    {"privacySandboxEnabled", prefs::kPrivacySandboxApisEnabled,
      APIPermission::kPrivacy, APIPermission::kPrivacy},
     {"translationServiceEnabled", prefs::kOfferTranslateEnabled,
      APIPermission::kPrivacy, APIPermission::kPrivacy},

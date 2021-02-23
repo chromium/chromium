@@ -21,6 +21,7 @@ var preferences_to_test = [
     root: chrome.privacy.websites,
     preferences: {
       thirdPartyCookiesAllowed: false,
+      privacySandboxEnabled: true,
       hyperlinkAuditingEnabled: false,
       referrersEnabled: false,
       doNotTrackEnabled: false,
