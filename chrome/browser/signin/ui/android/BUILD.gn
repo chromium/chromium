@@ -124,7 +124,7 @@ android_library("junit") {
     "junit/src/org/chromium/chrome/browser/signin/ui/ConfirmSyncDataStateMachineDelegateTest.java",
     "junit/src/org/chromium/chrome/browser/signin/ui/ConfirmSyncDataStateMachineTest.java",
     "junit/src/org/chromium/chrome/browser/signin/ui/SignOutDialogFragmentTest.java",
-    "junit/src/org/chromium/chrome/browser/signin/ui/SigninPromoUtilTest.java",
+    "junit/src/org/chromium/chrome/browser/signin/ui/SigninPromoUtilLaunchSigninPromoTest.java",
     "junit/src/org/chromium/chrome/browser/signin/ui/account_picker/AccountPickerDelegateImplTest.java",
     "junit/src/org/chromium/chrome/browser/signin/ui/account_picker/AccountPickerMediatorTest.java",
   ]

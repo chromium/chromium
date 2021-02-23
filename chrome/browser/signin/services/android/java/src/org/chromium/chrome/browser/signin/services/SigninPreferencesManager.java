@@ -106,6 +106,15 @@ public class SigninPreferencesManager {
     }
 
     /**
+     * Clears the accounts state-related shared prefs.
+     */
+    @VisibleForTesting
+    public void clearSigninPromoLastShownPrefsForTesting() {
+        mManager.removeKey(ChromePreferenceKeys.SIGNIN_PROMO_LAST_SHOWN_MAJOR_VERSION);
+        mManager.removeKey(ChromePreferenceKeys.SIGNIN_PROMO_LAST_SHOWN_ACCOUNT_NAMES);
+    }
+
+    /**
      * Returns Chrome major version number when signin promo was last shown, or 0 if version number
      * isn't known.
      */
