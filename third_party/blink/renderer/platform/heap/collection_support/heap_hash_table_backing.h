@@ -225,6 +225,9 @@ struct TraceInCollectionTrait<
   }
 };
 
+template <typename T>
+struct IsWeak<internal::ConcurrentBucket<T>> : IsWeak<T> {};
+
 }  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_HEAP_HASH_TABLE_BACKING_H_
