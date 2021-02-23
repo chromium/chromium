@@ -67,17 +67,9 @@ bool SchemeIsInSchemes(const std::string& scheme,
 }  // namespace
 
 URLDataManagerBackend::URLDataManagerBackend() : next_request_id_(0) {
-  // Add a shared data source for chrome://resources. For chrome:// data sources
-  // we use the host name as the source name.
-  AddDataSource(new URLDataSourceImpl(
-      kChromeUIResourcesHost,
-      SharedResourcesDataSource::CreateForChromeScheme()));
-
-  // Add a shared data source for chrome-untrusted://resources. For
-  // chrome-untrusted:// data sources we use the full origin as the source name.
-  AddDataSource(new URLDataSourceImpl(
-      kChromeUIUntrustedResourcesURL,
-      SharedResourcesDataSource::CreateForChromeUntrustedScheme()));
+  URLDataSource* shared_source = new SharedResourcesDataSource();
+  AddDataSource(new URLDataSourceImpl(shared_source->GetSource(),
+                                      base::WrapUnique(shared_source)));
 }
 
 URLDataManagerBackend::~URLDataManagerBackend() = default;

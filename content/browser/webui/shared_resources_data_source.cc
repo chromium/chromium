@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
@@ -165,39 +164,12 @@ int GetIdrForPath(const std::string& path) {
 
 }  // namespace
 
-// static
-std::unique_ptr<SharedResourcesDataSource>
-SharedResourcesDataSource::CreateForChromeScheme() {
-  return std::make_unique<SharedResourcesDataSource>(PassKey(),
-                                                     kChromeUIScheme);
-}
-
-// static
-std::unique_ptr<SharedResourcesDataSource>
-SharedResourcesDataSource::CreateForChromeUntrustedScheme() {
-  return std::make_unique<SharedResourcesDataSource>(PassKey(),
-                                                     kChromeUIUntrustedScheme);
-}
-
-SharedResourcesDataSource::SharedResourcesDataSource(PassKey,
-                                                     const std::string& scheme)
-    : scheme_(scheme) {}
+SharedResourcesDataSource::SharedResourcesDataSource() = default;
 
 SharedResourcesDataSource::~SharedResourcesDataSource() = default;
 
 std::string SharedResourcesDataSource::GetSource() {
-  // URLDataManagerBackend assumes that chrome:// data sources return just the
-  // hostname for GetSource().
-  if (scheme_ == kChromeUIScheme)
-    return kChromeUIResourcesHost;
-
-  // We only expect chrome-untrusted:// scheme at this point.
-  DCHECK_EQ(kChromeUIUntrustedScheme, scheme_);
-
-  // Other schemes (i.e. chrome-untrusted://) return the scheme and host
-  // together.
-  return base::StrCat(
-      {scheme_, url::kStandardSchemeSeparator, kChromeUIResourcesHost});
+  return kChromeUIResourcesHost;
 }
 
 void SharedResourcesDataSource::StartDataRequest(
@@ -274,12 +246,12 @@ bool SharedResourcesDataSource::ShouldServeMimeTypeAsContentTypeHeader() {
 
 std::string SharedResourcesDataSource::GetAccessControlAllowOriginForOrigin(
     const std::string& origin) {
-  // For now we give access only for origins with the allowed scheme.
+  // For now we give access only for "chrome://*" origins.
   // According to CORS spec, Access-Control-Allow-Origin header doesn't support
   // wildcards, so we need to set its value explicitly by passing the |origin|
   // back.
-  const std::string allowed_origin_prefix =
-      base::StrCat({scheme_, url::kStandardSchemeSeparator});
+  std::string allowed_origin_prefix = kChromeUIScheme;
+  allowed_origin_prefix += "://";
   if (!base::StartsWith(origin, allowed_origin_prefix,
                         base::CompareCase::SENSITIVE)) {
     return "null";

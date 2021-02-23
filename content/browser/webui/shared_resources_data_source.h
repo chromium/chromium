@@ -8,34 +8,15 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/types/pass_key.h"
+#include "base/macros.h"
 #include "content/public/browser/url_data_source.h"
 
 namespace content {
 
-// A DataSource for chrome://resources/ and chrome-untrusted://resources/ URLs.
-// TODO(https://crbug.com/866236): chrome-untrusted://resources/ is not
-// currently fully functional, as some resources have absolute
-// chrome://resources URLs. If you need access to chrome-untrusted://resources/
-// resources that are not currently functional, it is up to you to get them
-// working.
+// A DataSource for chrome://resources/ URLs.
 class SharedResourcesDataSource : public URLDataSource {
  public:
-  using PassKey = base::PassKey<SharedResourcesDataSource>;
-
-  // Creates a SharedResourcesDataSource instance for chrome://resources.
-  static std::unique_ptr<SharedResourcesDataSource> CreateForChromeScheme();
-
-  // Creates a SharedResourcesDataSource instance for
-  // chrome-untrusted://resources.
-  static std::unique_ptr<SharedResourcesDataSource>
-  CreateForChromeUntrustedScheme();
-
-  SharedResourcesDataSource(PassKey, const std::string& scheme);
-  SharedResourcesDataSource(const SharedResourcesDataSource&) = delete;
-  SharedResourcesDataSource& operator=(const SharedResourcesDataSource&) =
-      delete;
-  ~SharedResourcesDataSource() override;
+  SharedResourcesDataSource();
 
   // URLDataSource implementation.
   std::string GetSource() override;
@@ -51,9 +32,9 @@ class SharedResourcesDataSource : public URLDataSource {
       network::mojom::CSPDirectiveName directive) override;
 
  private:
-  // The URL scheme this data source is accessed from, e.g. "chrome" or
-  // "chrome-untrusted".
-  const std::string scheme_;
+  ~SharedResourcesDataSource() override;
+
+  DISALLOW_COPY_AND_ASSIGN(SharedResourcesDataSource);
 };
 
 }  // namespace content
