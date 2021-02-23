@@ -3177,7 +3177,7 @@
   {
     "name": "installed-apps-in-cbd",
     "owners": [ "jarrydg", "pwnall" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 97
   },
   {
     "name": "instant-tethering",
