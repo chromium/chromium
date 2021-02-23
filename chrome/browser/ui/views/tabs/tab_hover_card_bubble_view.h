@@ -7,21 +7,12 @@
 
 #include <memory>
 
-#include "base/callback_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
-#include "ui/views/animation/bubble_slide_animator.h"
-#include "ui/views/animation/widget_fade_animator.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/metadata/metadata_header_macros.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/metrics_util.h"
-#include "base/optional.h"
-#endif
 
 namespace gfx {
 class ImageSkia;
@@ -75,6 +66,8 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
  private:
   friend class TabHoverCardBubbleViewBrowserTest;
   friend class TabHoverCardBubbleViewInteractiveUiTest;
+  class WidgetFadeAnimationDelegate;
+  class WidgetSlideAnimationDelegate;
   class FadeLabel;
   class ThumbnailObserver;
 
@@ -92,24 +85,22 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   void OnThumbnailImageAvailable(gfx::ImageSkia thumbnail_image);
   void ClearPreviewImage();
 
+  // Called when a hover card lands on the tab it's supposed to be a preview
+  // for; happens immediately if there is no slide animation, otherwise when the
+  // animation completes.
+  void OnHoverCardLanded();
+
   // views::BubbleDialogDelegateView:
   gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
 
   void RecordTimeSinceLastSeenMetric(base::TimeDelta elapsed_time);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void OnFadeAnimationEnded(views::WidgetFadeAnimator* animator,
-                            views::WidgetFadeAnimator::FadeType fade_type);
-#endif
-  void OnSlideAnimationProgressed(views::BubbleSlideAnimator* animator,
-                                  double value);
-  void OnSlideAnimationComplete(views::BubbleSlideAnimator* animator);
-
   // Fade animations interfere with browser tests so we disable them in tests.
   static bool disable_animations_for_testing_;
-  std::unique_ptr<views::WidgetFadeAnimator> fade_animator_;
-  std::unique_ptr<views::BubbleSlideAnimator> slide_animator_;
+  std::unique_ptr<WidgetFadeAnimationDelegate> fade_animation_delegate_;
+  // Used to animate the tab hover card's movement between tabs.
+  std::unique_ptr<WidgetSlideAnimationDelegate> slide_animation_delegate_;
   std::unique_ptr<ThumbnailObserver> thumbnail_observation_;
 
   // Timestamp of the last time a hover card was visible, recorded before it is
@@ -136,13 +127,6 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   const bool using_rounded_corners_;
 
   base::OneShotTimer delayed_show_timer_;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::Optional<ui::ThroughputTracker> throughput_tracker_;
-  base::CallbackListSubscription fade_complete_subscription_;
-#endif
-  base::CallbackListSubscription slide_progressed_subscription_;
-  base::CallbackListSubscription slide_complete_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_HOVER_CARD_BUBBLE_VIEW_H_
