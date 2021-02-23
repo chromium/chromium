@@ -3919,5 +3919,30 @@ TEST_F(ElementAnimationsTest, FinishedKeyframeModelsNotCopiedToImpl) {
   EXPECT_TRUE(animation_impl_->keyframe_effect()->GetKeyframeModelById(2));
 }
 
+TEST_F(ElementAnimationsTest, ClientAnimationState) {
+  client_.RegisterElementId(element_id_, ElementListType::ACTIVE);
+  AttachTimelineAnimationLayer();
+  CreateImplTimelineAndAnimation();
+
+  animation_->AddKeyframeModel(KeyframeModel::Create(
+      std::make_unique<FakeTransformTransition>(1.0), 1, 1,
+      KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM)));
+
+  auto* layer = client_.FindTestLayer(element_id_, ElementListType::ACTIVE);
+  EXPECT_TRUE(layer->is_currently_animating(TargetProperty::TRANSFORM));
+  EXPECT_EQ(1.f, layer->maximum_animation_scale());
+
+  // The client resets the cached data, simulating a property rebuild or a
+  // property push with different values.
+  layer->set_is_currently_animating(TargetProperty::TRANSFORM, false);
+  layer->set_maximum_animation_scale(kInvalidScale);
+
+  // The client should call this function which should refresh all data of the
+  // client.
+  element_animations_->InitClientAnimationState();
+  EXPECT_TRUE(layer->is_currently_animating(TargetProperty::TRANSFORM));
+  EXPECT_EQ(1.f, layer->maximum_animation_scale());
+}
+
 }  // namespace
 }  // namespace cc

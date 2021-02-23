@@ -292,6 +292,8 @@ void ElementAnimations::InitClientAnimationState() {
   // (instead of only changed) recalculated current states to the client.
   pending_state_.Clear();
   active_state_.Clear();
+  active_maximum_scale_ = kInvalidScale;
+  pending_maximum_scale_ = kInvalidScale;
   UpdateClientAnimationState();
 }
 

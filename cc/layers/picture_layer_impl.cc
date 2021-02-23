@@ -1370,11 +1370,14 @@ bool PictureLayerImpl::ShouldAdjustRasterScale() const {
     // Or when the raster scale is not affected by invalid scale and is too
     // small compared to the ideal scale.
     if (ideal_contents_scale_ >
-            raster_contents_scale_ *
-                kRatioToAdjustRasterScaleForTransformAnimation &&
-        !layer_tree_impl()->property_trees()->AnimationAffectedByInvalidScale(
-            transform_tree_index())) {
-      return true;
+        raster_contents_scale_ *
+            kRatioToAdjustRasterScaleForTransformAnimation) {
+      auto* property_trees = layer_tree_impl()->property_trees();
+      int transform_id = transform_tree_index();
+      if (property_trees->AnimationScaleCacheIsInvalid(transform_id) ||
+          !property_trees->AnimationAffectedByInvalidScale(transform_id)) {
+        return true;
+      }
     }
     return false;
   }

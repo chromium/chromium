@@ -83,6 +83,11 @@ class TestLayer {
     return mutated_properties_[property];
   }
 
+  float maximum_animation_scale() const { return maximum_animation_scale_; }
+  void set_maximum_animation_scale(float scale) {
+    maximum_animation_scale_ = scale;
+  }
+
  private:
   TestLayer();
 
@@ -95,6 +100,7 @@ class TestLayer {
   TargetProperties has_potential_animation_;
   TargetProperties is_currently_animating_;
   TargetProperties mutated_properties_;
+  float maximum_animation_scale_ = kInvalidScale;
 };
 
 class TestHostClient : public MutatorHostClient {

@@ -170,7 +170,10 @@ void TestHostClient::ElementIsAnimatingChanged(
 
 void TestHostClient::MaximumScaleChanged(ElementId element_id,
                                          ElementListType list_type,
-                                         float maximum_scale) {}
+                                         float maximum_scale) {
+  if (TestLayer* layer = FindTestLayer(element_id, list_type))
+    layer->set_maximum_animation_scale(maximum_scale);
+}
 
 void TestHostClient::SetScrollOffsetForAnimation(
     const gfx::ScrollOffset& scroll_offset) {

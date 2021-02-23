@@ -2040,6 +2040,17 @@ std::string PropertyTrees::ToString() const {
   return value.ToFormattedJSON();
 }
 
+bool PropertyTrees::AnimationScaleCacheIsInvalid(int transform_id) const {
+  DCHECK(!is_main_thread);
+  // This doesn't check if |update_number| equals to
+  // |transform_tree_update_number| because the the latter is changed by the
+  // animation itself while we want to treat the scale as valid during the
+  // animation. |update_number| is reset to kInvalidUpdateNumber when a new
+  // property tree is pushed.
+  return cached_data_.animation_scales[transform_id].update_number ==
+         kInvalidUpdateNumber;
+}
+
 float PropertyTrees::MaximumAnimationToScreenScale(int transform_id) {
   return GetAnimationScaleData(transform_id).maximum_to_screen_scale;
 }
@@ -2050,6 +2061,8 @@ bool PropertyTrees::AnimationAffectedByInvalidScale(int transform_id) {
 
 const AnimationScaleData& PropertyTrees::GetAnimationScaleData(
     int transform_id) {
+  DCHECK(!is_main_thread);
+
   auto& animation_scale = cached_data_.animation_scales[transform_id];
   if (animation_scale.update_number ==
       cached_data_.transform_tree_update_number) {
@@ -2186,7 +2199,7 @@ DrawTransformData& PropertyTrees::FetchDrawTransformsDataFromCache(
   // Add an entry to the cache.
   cached_data_.draw_transforms[transform_id].push_back(DrawTransformData());
   DrawTransformData& data = cached_data_.draw_transforms[transform_id].back();
-  data.update_number = -1;
+  data.update_number = kInvalidUpdateNumber;
   data.target_id = dest_id;
   return data;
 }
@@ -2196,7 +2209,8 @@ ClipRectData* PropertyTrees::FetchClipRectFromCache(int clip_id,
   ClipNode* clip_node = clip_tree.Node(clip_id);
   for (size_t i = 0; i < clip_node->cached_clip_rects->size(); ++i) {
     auto& data = clip_node->cached_clip_rects[i];
-    if (data.target_id == target_id || data.target_id == -1)
+    if (data.target_id == target_id ||
+        data.target_id == EffectTree::kInvalidNodeId)
       return &data;
   }
   clip_node->cached_clip_rects->emplace_back();
@@ -2272,13 +2286,13 @@ void PropertyTrees::ResetCachedData() {
   const auto transform_count = transform_tree.nodes().size();
   cached_data_.animation_scales.resize(transform_count);
   for (auto& animation_scale : cached_data_.animation_scales)
-    animation_scale.update_number = -1;
+    animation_scale.update_number = kInvalidUpdateNumber;
 
   cached_data_.draw_transforms.resize(transform_count,
                                       std::vector<DrawTransformData>(1));
   for (auto& draw_transforms_for_id : cached_data_.draw_transforms) {
     draw_transforms_for_id.resize(1);
-    draw_transforms_for_id[0].update_number = -1;
+    draw_transforms_for_id[0].update_number = kInvalidUpdateNumber;
     draw_transforms_for_id[0].target_id = EffectTree::kInvalidNodeId;
   }
 }

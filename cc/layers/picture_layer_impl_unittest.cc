@@ -2998,7 +2998,7 @@ TEST_F(LegacySWPictureLayerImplTest,
   EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 0.5f);
 
   // Raster scale change during animation should be avoided.
-  contents_scale = 0.8f;
+  contents_scale = 1.2f;
   SetContentsAndAnimationScalesOnBothLayers(contents_scale, device_scale,
                                             page_scale, maximum_animation_scale,
                                             affected_by_invalid_scale);
@@ -3010,6 +3010,21 @@ TEST_F(LegacySWPictureLayerImplTest,
                                             page_scale, maximum_animation_scale,
                                             affected_by_invalid_scale);
   EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 0.5f);
+
+  // Should update raster scale if the cache is invalidated (simulating that a
+  // new property tree is pushed).
+  contents_scale = 1.2f;
+  SetMaximumAnimationToScreenScale(pending_layer(), maximum_animation_scale,
+                                   affected_by_invalid_scale);
+  host_impl()->pending_tree()->property_trees()->ResetCachedData();
+  SetupDrawPropertiesAndUpdateTiles(pending_layer(), contents_scale,
+                                    device_scale, page_scale);
+  SetMaximumAnimationToScreenScale(active_layer(), maximum_animation_scale,
+                                   affected_by_invalid_scale);
+  host_impl()->active_tree()->property_trees()->ResetCachedData();
+  SetupDrawPropertiesAndUpdateTiles(active_layer(), contents_scale,
+                                    device_scale, page_scale);
+  EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 1.2f);
 }
 
 TEST_F(LegacySWPictureLayerImplTest, ViewportSizeChangeDuringAnimation) {

@@ -539,10 +539,12 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
                                            bool use_fractional_deltas);
 };
 
+constexpr int kInvalidUpdateNumber = -1;
+
 struct AnimationScaleData {
   // Variable used to invalidate cached maximum scale data when transform tree
   // updates.
-  int update_number = -1;
+  int update_number = kInvalidUpdateNumber;
 
   // The maximum scale that this node's |to_screen| transform will have during
   // current animations of this node and its ancestors, or the current scale of
@@ -585,17 +587,12 @@ struct DrawTransforms {
 };
 
 struct DrawTransformData {
-  int update_number;
-  int target_id;
-
-  DrawTransforms transforms;
+  int update_number = kInvalidUpdateNumber;
+  int target_id = EffectTree::kInvalidNodeId;
 
   // TODO(sunxd): Move screen space transforms here if it can improve
   // performance.
-  DrawTransformData()
-      : update_number(-1),
-        target_id(EffectTree::kInvalidNodeId),
-        transforms(gfx::Transform(), gfx::Transform()) {}
+  DrawTransforms transforms{gfx::Transform(), gfx::Transform()};
 };
 
 struct ConditionalClip {
@@ -604,10 +601,8 @@ struct ConditionalClip {
 };
 
 struct ClipRectData {
-  int target_id;
+  int target_id = ClipTree::kInvalidNodeId;
   ConditionalClip clip;
-
-  ClipRectData() : target_id(-1) {}
 };
 
 struct PropertyTreesCachedData {
@@ -693,6 +688,7 @@ class CC_EXPORT PropertyTrees final {
   void AsValueInto(base::trace_event::TracedValue* value) const;
   std::string ToString() const;
 
+  bool AnimationScaleCacheIsInvalid(int transform_id) const;
   float MaximumAnimationToScreenScale(int transform_id);
   bool AnimationAffectedByInvalidScale(int transform_id);
 
