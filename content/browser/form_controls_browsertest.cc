@@ -185,12 +185,17 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Radio) {
           /* screenshot_height */ 40);
 }
 
-IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, DarkModeTextSelection) {
-  if (SkipTestForOldAndroidVersions())
-    return;
-
+// TODO(crbug.com/1165919): Re-enable test when there is a resolution for
+// android-bfcache-rel builder producing different results.
+#if defined(OS_ANDROID) || defined(OS_MAC)
+#define MAYBE_DarkModeTextSelection DISABLED_DarkModeTextSelection
+#else
+#define MAYBE_DarkModeTextSelection DarkModeTextSelection
+#endif
+IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_DarkModeTextSelection) {
   RunTest("form_controls_browsertest_dark_mode_text_selection",
           "<meta name=\"color-scheme\" content=\"dark\">"
+          "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
           "<div id=\"target\">This is some basic text that we are going to "
           "select.</div>"
           "<script>"
@@ -204,11 +209,17 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, DarkModeTextSelection) {
           /* screenshot_height */ 40);
 }
 
-IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Input) {
-  if (SkipTestForOldAndroidVersions())
-    return;
-
+// TODO(crbug.com/1165919) skip this test until there is a resolution for
+// android-bfcache-rel builder producing different results.
+#if defined(OS_ANDROID)
+#define MAYBE_Input DISABLED_Input
+#else
+#define MAYBE_Input Input
+#endif
+IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_Input) {
   RunTest("form_controls_browsertest_input",
+          "<!-- text inputs -->"
+          "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
           "<style>body {margin: 8px} input {width: 150px; "
           "margin-bottom: 18px}</style>"
           "<input type=\"text\" /><br>"
@@ -225,177 +236,6 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Input) {
           "<input type=\"text\" disabled/>",
           /* screenshot_width */ 200,
           /* screenshot_height */ 330);
-}
-
-IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Textarea) {
-  if (SkipTestForOldAndroidVersions())
-    return;
-
-  RunTest("form_controls_browsertest_textarea",
-          "<style>body {margin: 8px} textarea {width: 150px; "
-          "margin-bottom: 18px}</style>"
-          "<textarea></textarea><br>"
-          "<textarea style=\"border: 3px solid lime\"></textarea><br>"
-          "<!-- shadow -->"
-          "<textarea style=\"box-shadow: 4px 4px 10px rgba(255,0,0,0.5),"
-          " inset 4px 4px 4px rgba(0,255,0,0.5);\"></textarea><br>"
-          "<!-- disabled -->"
-          "<textarea disabled></textarea>",
-          /* screenshot_width */ 200,
-          /* screenshot_height */ 260);
-}
-
-IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Button) {
-  if (SkipTestForOldAndroidVersions())
-    return;
-
-  RunTest("form_controls_browsertest_button",
-          "<style>body {margin: 8px} input {margin-bottom: 18px;}</style>"
-          "<input type=\"button\" value=\"button\"/><br>"
-          "<input type=\"submit\" /><br>"
-          "<input type=\"reset\" /><br>"
-          "<input type=\"file\" /><br>"
-          "<!-- border -->"
-          "<input type=\"button\" value=\"button\""
-          " style=\"border: 3px solid lime;\"/><br>"
-          "<!-- shadow -->"
-          "<input type=\"button\" value=\"button\""
-          " style=\"box-shadow: 4px 4px 10px "
-          "rgba(255,0,0,0.5), inset 4px 4px 4px rgba(0,255,0,0.5);\"/><br>"
-          "<!-- disabled -->"
-          "<input type=\"button\" value=\"button\" disabled/>",
-          /* screenshot_width */ 200,
-          /* screenshot_height */ 300);
-}
-
-IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, ColorInput) {
-  if (SkipTestForOldAndroidVersions())
-    return;
-
-  RunTest("form_controls_browsertest_color_input",
-          "<style>body {margin: 8px} input {margin-bottom: 18px;}</style>"
-          "<input type=\"color\" /><br>"
-          "<input type=\"color\" value='%2300ff00' /><br>"
-          "<input type=\"color\" list /><br>"
-          "<!-- border -->"
-          "<input type=\"color\" value=\"%2300ff00\""
-          " style=\"border: 3px solid lime;\"/><br>"
-          "<!-- disabled -->"
-          "<input type=\"color\" disabled/>",
-          /* screenshot_width */ 200,
-          /* screenshot_height */ 250);
-}
-
-IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Select) {
-  if (SkipTestForOldAndroidVersions())
-    return;
-
-  RunTest("form_controls_browsertest_select",
-          "<style>body {margin: 8px} select {margin-bottom: 18px}</style>"
-          "<select><option>unstyled</option></select><br>"
-          "<select style=\"color:darkturquoise\"><option>turquoise text"
-          "</option></select><br>"
-          "<!-- border -->"
-          "<select style=\"border: 3px solid lime;\"><option>thick lime border"
-          "</option></select><br>"
-          "<!-- shadow -->"
-          "<select style=\"box-shadow: 4px 4px 10px rgba(255,0,0,0.5),"
-          " inset 4px 4px 4px rgba(0,255,0,0.5);\"><option>box-shadow</option>"
-          "</select><br>"
-          "<!-- disabled -->"
-          "<select disabled><option>disabled</option></select><br>",
-          /* screenshot_width */ 200,
-          /* screenshot_height */ 200);
-}
-
-IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MultiSelect) {
-  if (SkipTestForOldAndroidVersions())
-    return;
-
-  RunTest("form_controls_browsertest_multi_select",
-          "<style>body {margin: 8px} select {margin-bottom: 18px}</style>"
-          "<select multiple autofocus size=5>"
-          "  <optgroup label=\"unstyled\">"
-          "    <option selected>first selected option</option>"
-          "    <option>unselected option</option>"
-          "    <option selected selected>2nd selected</option>"
-          "  </optgroup>"
-          "</select> <br>"
-          "<!-- border -->"
-          "<select multiple style=\"border: 3px solid lime;\">"
-          "  <optgroup label=\"thick lime border\">"
-          "    <option selected>first selected option</option>"
-          "    <option>unselected option</option>"
-          "    <option selected>second selected option</option>"
-          "  </optgroup>"
-          "</select><br>"
-          "<!-- disabled -->"
-          "<select multiple disabled size=5>"
-          "  <optgroup label=\"disabled select\">"
-          "    <option selected>first selected option</option>"
-          "    <option>unselected option</option>"
-          "    <option selected>second selected option</option>"
-          "  </optgroup>"
-          "</select>",
-          /* screenshot_width */ 200,
-          /* screenshot_height */ 330);
-}
-
-IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Progress) {
-  if (SkipTestForOldAndroidVersions())
-    return;
-
-  RunTest(
-      "form_controls_browsertest_progress",
-      "<style>body {margin: 8px} progress {margin-bottom: 18px}</style>"
-      "<progress max=\"100\" value=\"0\"></progress><br>"
-      "<progress max=\"100\" value=\"5\"></progress><br>"
-      "<progress max=\"100\" value=\"25\"></progress><br><br>"
-      "<progress max=\"100\" value=\"50\"></progress><br><br>"
-      "<progress max=\"100\" value=\"100\"></progress><br><br>"
-      "<progress max=\"100\" value=\"50\" style=\"height:30px\"></progress>",
-      /* screenshot_width */ 200,
-      /* screenshot_height */ 300);
-}
-
-IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Meter) {
-  if (SkipTestForOldAndroidVersions())
-    return;
-
-  RunTest("form_controls_browsertest_meter",
-          "<style>body {margin: 8px} meter {margin-bottom: 10px}</style>"
-          "<meter min=\"0\" max=\"100\" low=\"33\" high=\"66\" optimum=\"100\""
-          " value=\"20\"></meter><br>"
-          "<meter min=\"0\" max=\"100\" low=\"33\" high=\"66\" optimum=\"100\""
-          " value=\"50\"></meter><br>"
-          "<meter min=\"0\" max=\"100\" low=\"33\" high=\"66\" optimum=\"100\""
-          " value=\"66\"></meter><br>"
-          "<meter min=\"0\" max=\"100\" low=\"33\" high=\"66\" optimum=\"100\""
-          " value=\"90\"></meter><br>"
-          "<!-- border -->"
-          "<meter style=\"border-color: %23000000; border-style: solid;"
-          " border-width: 5px;\" min=\"0\" max=\"100\" low=\"30\" high=\"60\""
-          " optimum=\"100\" value=\"80\" ></meter><br>"
-          "<meter style=\"box-shadow: 4px 4px 10px rgba(255,0,0,0.5),"
-          " inset 4px 4px 4px rgba(0,255,0,0.5);\"></meter>",
-          /* screenshot_width */ 150,
-          /* screenshot_height */ 200);
-}
-
-IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Range) {
-  if (SkipTestForOldAndroidVersions())
-    return;
-
-  RunTest("form_controls_browsertest_range",
-          "<style>body {margin: 8px} input {margin-bottom: 18px}</style>"
-          "<input type=\"range\"><br>"
-          "<!-- border -->"
-          "<input type=\"range\" style=\"border: 3px solid lime;\"><br>"
-          "<!-- shadow -->"
-          "<input type=\"range\" style=\"box-shadow: 4px 4px 10px "
-          "rgba(255,0,0,0.5), inset 4px 4px 4px rgba(0,255,0,0.5);\"/><br>",
-          /* screenshot_width */ 150,
-          /* screenshot_height */ 150);
 }
 
 // TODO(jarhar): Add tests for other elements from

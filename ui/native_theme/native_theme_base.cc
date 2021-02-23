@@ -887,7 +887,6 @@ void NativeThemeBase::PaintButton(cc::PaintCanvas* canvas,
   if (features::IsFormControlsRefreshEnabled()) {
     cc::PaintFlags flags;
     SkRect skrect = gfx::RectToSkRect(rect);
-    float border_width = AdjustBorderWidthByZoom(kBorderWidth, button.zoom);
 
     flags.setAntiAlias(true);
     flags.setStyle(cc::PaintFlags::kFill_Style);
@@ -902,7 +901,7 @@ void NativeThemeBase::PaintButton(cc::PaintCanvas* canvas,
     float border_radius =
         GetBorderRadiusForPart(kPushButton, rect.width(), rect.height());
     // Paint the background (is not visible behind the rounded corners).
-    skrect.inset(border_width / 2, border_width / 2);
+    skrect.inset(kBorderWidth / 2, kBorderWidth / 2);
     PaintLightenLayer(canvas, skrect, state, border_radius, color_scheme);
     flags.setColor(ButtonFillColorForState(state, color_scheme));
     canvas->drawRoundRect(skrect, border_radius, border_radius, flags);
@@ -910,7 +909,7 @@ void NativeThemeBase::PaintButton(cc::PaintCanvas* canvas,
     // Paint the border: 1px solid.
     if (button.has_border) {
       flags.setStyle(cc::PaintFlags::kStroke_Style);
-      flags.setStrokeWidth(border_width);
+      flags.setStrokeWidth(kBorderWidth);
       flags.setColor(ButtonBorderColorForState(state, color_scheme));
       canvas->drawRoundRect(skrect, border_radius, border_radius, flags);
     }
@@ -975,10 +974,9 @@ void NativeThemeBase::PaintTextField(cc::PaintCanvas* canvas,
     SkRect bounds = gfx::RectToSkRect(rect);
     const SkScalar border_radius =
         GetBorderRadiusForPart(kTextField, rect.width(), rect.height());
-    float border_width = AdjustBorderWidthByZoom(kBorderWidth, text.zoom);
 
     // Paint the background (is not visible behind the rounded corners).
-    bounds.inset(border_width / 2, border_width / 2);
+    bounds.inset(kBorderWidth / 2, kBorderWidth / 2);
     cc::PaintFlags fill_flags;
     fill_flags.setStyle(cc::PaintFlags::kFill_Style);
     if (text.background_color != 0) {
@@ -998,7 +996,7 @@ void NativeThemeBase::PaintTextField(cc::PaintCanvas* canvas,
       cc::PaintFlags stroke_flags;
       stroke_flags.setColor(ControlsBorderColorForState(state, color_scheme));
       stroke_flags.setStyle(cc::PaintFlags::kStroke_Style);
-      stroke_flags.setStrokeWidth(border_width);
+      stroke_flags.setStrokeWidth(kBorderWidth);
       canvas->drawRoundRect(bounds, border_radius, border_radius, stroke_flags);
     }
 
@@ -1035,7 +1033,6 @@ void NativeThemeBase::PaintMenuList(cc::PaintCanvas* canvas,
       TextFieldExtraParams text_field = {0};
       text_field.background_color = menu_list.background_color;
       text_field.has_border = menu_list.has_border;
-      text_field.zoom = menu_list.zoom;
       PaintTextField(canvas, state, rect, text_field, color_scheme);
     }
 
@@ -1151,7 +1148,6 @@ void NativeThemeBase::PaintSliderTrack(cc::PaintCanvas* canvas,
     flags.setColor(ControlsFillColorForState(state, color_scheme));
     const float track_height = kSliderTrackHeight * slider.zoom;
     SkRect track_rect = AlignSliderTrack(rect, slider, false, track_height);
-    float border_width = AdjustBorderWidthByZoom(kBorderWidth, slider.zoom);
     // Shrink the track by 1 pixel so the thumb can completely cover the track
     // on both ends.
     if (slider.vertical)
@@ -1174,13 +1170,13 @@ void NativeThemeBase::PaintSliderTrack(cc::PaintCanvas* canvas,
 
     // Paint the border.
     flags.setStyle(cc::PaintFlags::kStroke_Style);
-    flags.setStrokeWidth(border_width);
+    flags.setStrokeWidth(kBorderWidth);
     SkColor border_color = ControlsBorderColorForState(state, color_scheme);
     if (!UserHasContrastPreference() && state != kDisabled &&
         color_scheme != ColorScheme::kDark)
       border_color = SkColorSetA(border_color, 0x80);
     flags.setColor(border_color);
-    track_rect.inset(border_width / 2, border_width / 2);
+    track_rect.inset(kBorderWidth / 2, kBorderWidth / 2);
     canvas->drawRoundRect(track_rect, border_radius, border_radius, flags);
     return;
   }
@@ -1338,15 +1334,13 @@ void NativeThemeBase::PaintProgressBar(
     }
 
     // Paint the border.
-    float border_width =
-        AdjustBorderWidthByZoom(kBorderWidth, progress_bar.zoom);
     flags.setStyle(cc::PaintFlags::kStroke_Style);
-    flags.setStrokeWidth(border_width);
+    flags.setStrokeWidth(kBorderWidth);
     SkColor border_color = GetControlColor(kBorder, color_scheme);
     if (!UserHasContrastPreference() && color_scheme != ColorScheme::kDark)
       border_color = SkColorSetA(border_color, 0x80);
     flags.setColor(border_color);
-    track_rect.inset(border_width / 2, border_width / 2);
+    track_rect.inset(kBorderWidth / 2, kBorderWidth / 2);
     canvas->drawRoundRect(track_rect, border_radius, border_radius, flags);
     return;
   }
@@ -1404,11 +1398,6 @@ void NativeThemeBase::AdjustCheckboxRadioRectForPadding(SkRect* rect) const {
   rect->setLTRB(static_cast<int>(rect->x()), static_cast<int>(rect->y()),
                 static_cast<int>(rect->right()) - 1,
                 static_cast<int>(rect->bottom()) - 1);
-}
-
-float NativeThemeBase::AdjustBorderWidthByZoom(float border_width,
-                                               float) const {
-  return border_width;
 }
 
 SkColor NativeThemeBase::SaturateAndBrighten(SkScalar* hsv,

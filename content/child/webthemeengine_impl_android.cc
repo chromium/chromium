@@ -51,7 +51,6 @@ static void GetNativeThemeExtraParams(
       native_theme_extra_params->button.is_focused = false;
       native_theme_extra_params->button.background_color =
           extra_params->button.background_color;
-      native_theme_extra_params->button.zoom = extra_params->button.zoom;
       break;
     case WebThemeEngine::kPartTextField:
       native_theme_extra_params->text_field.is_text_area =
@@ -62,8 +61,6 @@ static void GetNativeThemeExtraParams(
           extra_params->text_field.background_color;
       native_theme_extra_params->text_field.has_border =
           extra_params->text_field.has_border;
-      native_theme_extra_params->text_field.zoom =
-          extra_params->text_field.zoom;
       break;
     case WebThemeEngine::kPartMenuList:
       native_theme_extra_params->menu_list.has_border =
@@ -80,7 +77,6 @@ static void GetNativeThemeExtraParams(
           extra_params->menu_list.arrow_color;
       native_theme_extra_params->menu_list.background_color =
           extra_params->menu_list.background_color;
-      native_theme_extra_params->menu_list.zoom = extra_params->menu_list.zoom;
       break;
     case WebThemeEngine::kPartSliderTrack:
       native_theme_extra_params->slider.thumb_x = extra_params->slider.thumb_x;
@@ -111,8 +107,6 @@ static void GetNativeThemeExtraParams(
           extra_params->progress_bar.value_rect_width;
       native_theme_extra_params->progress_bar.value_rect_height =
           extra_params->progress_bar.value_rect_height;
-      native_theme_extra_params->progress_bar.zoom =
-          extra_params->progress_bar.zoom;
       break;
     default:
       break;  // Parts that have no extra params get here.
