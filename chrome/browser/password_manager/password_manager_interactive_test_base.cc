@@ -139,6 +139,8 @@ void PasswordManagerInteractiveTestBase::VerifyPasswordIsSavedAndFilled(
 // Erases all characters that have been typed into |field_id|.
 void PasswordManagerInteractiveTestBase::SimulateUserDeletingFieldContent(
     const std::string& field_id) {
+  SCOPED_TRACE(::testing::Message()
+               << "SimulateUserDeletingFieldContent " << field_id);
   std::string focus("document.getElementById('" + field_id + "').focus();");
   ASSERT_TRUE(content::ExecuteScript(WebContents(), focus));
   std::string select("document.getElementById('" + field_id + "').select();");
