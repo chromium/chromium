@@ -4,14 +4,17 @@
         <title>Pointer Events properties tests</title>
         <meta name="timeout" content="long">
         <meta name="viewport" content="width=device-width">
-        <link rel="stylesheet" type="text/css" href="../pointerevent_styles.css">
+        <meta name="variant" content="?mouse">
+        <meta name="variant" content="?touch">
+        <meta name="variant" content="?pen">
+        <link rel="stylesheet" type="text/css" href="pointerevent_styles.css">
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
         <script src="/resources/testdriver.js"></script>
         <script src="/resources/testdriver-actions.js"></script>
         <script src="/resources/testdriver-vendor.js"></script>
         <!-- Additional helper script for common checks across event types -->
-        <script type="text/javascript" src="../pointerevent_support.js"></script>
+        <script type="text/javascript" src="pointerevent_support.js"></script>
         <style>
           #testContainer {
             touch-action: none;
@@ -37,12 +40,11 @@
           }
         </style>
         <script>
+            var inputSource = location.search.substring(1);
             var expectedPointerId = NaN;
             var lastScreenX = null;
             var lastScreenY = null;
-            var actionsPromiseMouse;
-            var actionsPromiseTouch;
-            var actionsPromisePen;
+            var actionsPromise;
 
             function resetTestState() {
                 lastScreenX = null;
@@ -75,7 +77,7 @@
             }
 
             function run() {
-                var test_pointerEvent = setup_pointerevent_test("pointerevent attributes", ALL_POINTERS);
+                var test_pointerEvent = setup_pointerevent_test("pointerevent attributes", [inputSource]);
 
                 [document, document.getElementById('innerFrame').contentDocument].forEach(function(element) {
                   nonPointermoveEventList.forEach(function(eventName) {
@@ -115,25 +117,13 @@
                 });
                 on_event(document.querySelector('#box2'), 'pointerup', function(event) {
                   // Make sure the test finishes after all the input actions are completed.
-                  if (expectedPointerType == "mouse") {
-                    actionsPromiseTouch = actionsPromiseMouse.then(function(){
-                      test_pointerEvent.done();
-                      return injectInput("touch");
-                    });
-                  } else if (expectedPointerType == "touch") {
-                    actionsPromisePen = actionsPromiseTouch.then(function(){
-                      test_pointerEvent.done();
-                      return injectInput("pen");
-                    });
-                  } else {
-                    actionsPromisePen.then( () => {
-                      test_pointerEvent.done();
-                    });
-                  }
+                  actionsPromise.then( () => {
+                    test_pointerEvent.done();
+                  });
                 });
 
-                // Inject mouse input
-                actionsPromiseMouse = injectInput("mouse");
+                // Inject input
+                actionsPromise = injectInput(inputSource);
             }
 
         </script>
