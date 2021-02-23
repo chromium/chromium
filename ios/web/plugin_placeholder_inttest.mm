@@ -6,6 +6,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ios/testing/embedded_test_server_handlers.h"
+#import "ios/web/js_messaging/java_script_feature_util_impl.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
@@ -35,6 +36,16 @@ class PluginPlaceholderTest : public WebTestWithWebState {
     FakeWebClient* web_client = static_cast<FakeWebClient*>(GetWebClient());
     web_client->SetPluginNotSupportedText(
         base::UTF8ToUTF16(kPluginNotSupportedText));
+  }
+
+  void SetUp() override {
+    WebTestWithWebState::SetUp();
+    web::java_script_features::ResetPluginPlaceholderJavaScriptFeature();
+  }
+
+  void TearDown() override {
+    web::java_script_features::ResetPluginPlaceholderJavaScriptFeature();
+    WebTestWithWebState::TearDown();
   }
 
   // Sets up |server_| with |html| as response content.

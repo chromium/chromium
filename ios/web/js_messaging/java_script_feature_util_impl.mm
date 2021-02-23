@@ -35,6 +35,7 @@ NSString* EscapedQuotedString(NSString* string) {
                                              withString:@"\\\\"];
   return [string stringByReplacingOccurrencesOfString:@"'" withString:@"\\'"];
 }
+static dispatch_once_t get_plugin_placeholder_once;
 
 web::WindowErrorJavaScriptFeature* GetWindowErrorJavaScriptFeature() {
   // Static storage is ok for |window_error_feature| as it holds no state.
@@ -69,8 +70,7 @@ web::JavaScriptFeature* GetPluginPlaceholderJavaScriptFeature() {
   // Static storage is ok for |plugin_placeholder_feature| as it holds no state.
   static std::unique_ptr<web::JavaScriptFeature> plugin_placeholder_feature =
       nullptr;
-  static dispatch_once_t once;
-  dispatch_once(&once, ^{
+  dispatch_once(&get_plugin_placeholder_once, ^{
     std::map<std::string, NSString*> replacement_map{
         {"$(PLUGIN_NOT_SUPPORTED_TEXT)",
          EscapedQuotedString(base::SysUTF16ToNSString(
@@ -160,6 +160,10 @@ JavaScriptFeature* GetMessageJavaScriptFeature() {
         dependencies);
   });
   return message_feature.get();
+}
+
+void ResetPluginPlaceholderJavaScriptFeature() {
+  get_plugin_placeholder_once = 0;
 }
 
 }  // namespace java_script_features
