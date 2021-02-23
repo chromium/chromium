@@ -30,6 +30,8 @@ struct AppLaunchData {
   int suggestion_index = 0;
   // User's search query string, if relevant.
   std::string query;
+  // The score of the suggestion.
+  double score = 0.0;
 };
 
 }  // namespace app_list

@@ -226,6 +226,12 @@
         from the RankingItemType enum.
       </summary>
     </metric>
+    <metric name="Score" type="int">
+      <summary>
+        The relevance score of the launched result. This is a double multiplied by
+        1000 and cast to an int64. Results that don't have a score report 0.
+      </summary>
+    </metric>
     <metric name="SearchQuery" type="hmac-string">
       <summary>
         The search query associated with this launch. Before hashing, the query is

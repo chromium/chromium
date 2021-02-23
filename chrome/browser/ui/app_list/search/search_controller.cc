@@ -232,6 +232,7 @@ void SearchController::Train(AppLaunchData&& app_launch_data) {
         .SetSearchQueryLength(last_query_.size())
         .SetProviderType(static_cast<int>(app_launch_data.ranking_item_type))
         .SetHour(now_exploded.hour)
+        .SetScore(app_launch_data.score)
         .Record();
 
     // Only record the last launched app if the hashed logging feature flag is
