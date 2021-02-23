@@ -46,6 +46,9 @@ extern const base::Feature kGlobalMediaControlsCastStartStop;
 // Presentation API. If disabled, only the allowlisted sites can do so.
 extern const base::Feature kAllowAllSitesToInitiateMirroring;
 
+// If enabled, meetings appear as receivers in the Cast menu.
+extern const base::Feature kCastToMeetingFromCastDialog;
+
 namespace prefs {
 // Pref name for the enterprise policy for allowing Cast devices on all IPs.
 constexpr char kMediaRouterCastAllowAllIPs[] =

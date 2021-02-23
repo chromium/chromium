@@ -46,6 +46,8 @@ const base::Feature kGlobalMediaControlsCastStartStop{
     "GlobalMediaControlsCastStartStop", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kAllowAllSitesToInitiateMirroring{
     "AllowAllSitesToInitiateMirroring", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kCastToMeetingFromCastDialog{
+    "CastToMeetingFromCastDialog", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // !defined(OS_ANDROID)
 
 #if defined(OS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS)

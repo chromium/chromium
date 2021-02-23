@@ -5,11 +5,13 @@
 #include "chrome/browser/ui/views/media_router/cast_dialog_sink_button.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/debug/stack_trace.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -46,6 +48,24 @@
 namespace media_router {
 
 namespace {
+
+bool CastToMeetingEnabled() {
+  return base::FeatureList::IsEnabled(kCastToMeetingFromCastDialog);
+}
+
+bool IsMeetingIconType(SinkIconType icon_type) {
+  switch (icon_type) {
+    case SinkIconType::MEETING:
+    case SinkIconType::HANGOUT:
+      return true;
+    default:
+      return false;
+  }
+}
+
+bool IsEnabledIconType(SinkIconType icon_type) {
+  return CastToMeetingEnabled() || !IsMeetingIconType(icon_type);
+}
 
 gfx::ImageSkia CreateSinkIcon(SinkIconType icon_type, bool enabled = true) {
   SkColor icon_color = enabled ? gfx::kChromeIconGrey : gfx::kGoogleGrey500;
@@ -87,6 +107,9 @@ bool IsIncompatibleDialSink(const UIMediaSink& sink) {
 }
 
 base::string16 GetStatusTextForSink(const UIMediaSink& sink) {
+  if (!IsEnabledIconType(sink.icon_type))
+    return base::string16();
+
   if (sink.issue)
     return base::UTF8ToUTF16(sink.issue->info().title);
   // If the sink is disconnecting, say so instead of using the source info
@@ -173,8 +196,9 @@ class CastToMeetingDeprecationWarningView : public views::View {
     auto* spacer = AddChildView(std::make_unique<views::View>());
     spacer->SetPreferredSize(gfx::Size(55, 1));
 
-    base::string16 text =
-        l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_CAST_TO_MEETING_DEPRECATED);
+    base::string16 text = l10n_util::GetStringUTF16(
+        CastToMeetingEnabled() ? IDS_MEDIA_ROUTER_CAST_TO_MEETING_DEPRECATED
+                               : IDS_MEDIA_ROUTER_CAST_TO_MEETING_REMOVED);
     std::vector<base::string16> substrings{base::ASCIIToUTF16("Google Meet")};
     std::vector<size_t> offsets;
     text = base::ReplaceStringPlaceholders(text, substrings, &offsets);
@@ -206,11 +230,17 @@ END_METADATA
 
 CastDialogSinkButton::CastDialogSinkButton(PressedCallback callback,
                                            const UIMediaSink& sink)
-    : HoverButton(std::move(callback),
-                  CreatePrimaryIconForSink(sink),
-                  sink.friendly_name,
-                  GetStatusTextForSink(sink),
-                  /** secondary_icon_view */ nullptr),
+    : HoverButton(
+          IsEnabledIconType(sink.icon_type)
+              ? std::move(callback)
+              // Using the default constructor here causes the button to be
+              // disabled, including the visual "ink drop" effect.  Calling
+              // SetEnabled() or SetState() does not have the same effect.
+              : PressedCallback(),
+          CreatePrimaryIconForSink(sink),
+          sink.friendly_name,
+          GetStatusTextForSink(sink),
+          /** secondary_icon_view */ nullptr),
       sink_(sink) {
   SetEnabled(sink.state == UIMediaSinkState::AVAILABLE ||
              sink.state == UIMediaSinkState::CONNECTED);
@@ -316,19 +346,18 @@ void CastDialogSinkButton::OnBlur() {
 std::unique_ptr<views::View>
 CastDialogSinkButton::MakeCastToMeetingDeprecationWarningView(
     Profile* profile) {
-  switch (sink_.icon_type) {
-    case SinkIconType::MEETING:
-    case SinkIconType::HANGOUT:
-      return std::make_unique<CastToMeetingDeprecationWarningView>(sink_.id,
-                                                                   profile);
-    default:
-      return nullptr;
-  }
+  return IsMeetingIconType(sink_.icon_type)
+             ? std::make_unique<CastToMeetingDeprecationWarningView>(sink_.id,
+                                                                     profile)
+             : nullptr;
 }
 
 // static
 const gfx::VectorIcon* CastDialogSinkButton::GetVectorIcon(
     SinkIconType icon_type) {
+  if (!IsEnabledIconType(icon_type))
+    return &::vector_icons::kHelpOutlineIcon;
+
   const gfx::VectorIcon* vector_icon;
   switch (icon_type) {
     case SinkIconType::CAST_AUDIO_GROUP:
