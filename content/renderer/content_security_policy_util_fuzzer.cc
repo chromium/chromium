@@ -57,13 +57,10 @@ namespace content {
 int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static Environment environment = Environment();
 
-  // We need two pieces of input: a URL and a CSP string. The URL should only
-  // contain ASCII printable characters (otherwise the GURL parser can produce
-  // unexpected data). Split |data| in two at the first whitespace.
+  // We need two pieces of input: a URL and a CSP string. Split |data| in two at
+  // the first whitespace.
   const uint8_t* it = data;
   for (; it < data + size; it++) {
-    if (!base::IsAsciiPrintable(*reinterpret_cast<const char*>(it)))
-      return EXIT_SUCCESS;
     if (base::IsAsciiWhitespace(*reinterpret_cast<const char*>(it))) {
       it++;
       break;
@@ -84,6 +81,11 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   if (blink::WebString::FromUTF8(raw_url).Utf8() != raw_url ||
       blink::WebString::FromUTF8(raw_csp).Utf8() != raw_csp) {
     // The back-and-forth conversion can only work for valid utf8 input.
+    return EXIT_SUCCESS;
+  }
+
+  GURL parsed_url(raw_url);
+  if (!parsed_url.is_valid()) {
     return EXIT_SUCCESS;
   }
 
