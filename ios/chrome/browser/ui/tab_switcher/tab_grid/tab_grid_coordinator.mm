@@ -384,8 +384,9 @@
 
   DCHECK(self.incognitoThumbStripSupporting);
   DCHECK(self.regularThumbStripSupporting);
-  [self.baseViewController thumbStripEnabledWithPanHandler:panHandler];
+  // Enable first on BVCContainer, so it is ready to show another BVC.
   [self.bvcContainer thumbStripEnabledWithPanHandler:panHandler];
+  [self.baseViewController thumbStripEnabledWithPanHandler:panHandler];
   [self.incognitoThumbStripSupporting
       thumbStripEnabledWithPanHandler:panHandler];
   [self.regularThumbStripSupporting thumbStripEnabledWithPanHandler:panHandler];
@@ -394,10 +395,12 @@
       self.regularBrowser->GetCommandDispatcher(), PopupMenuCommands);
   self.baseViewController.incognitoPopupMenuHandler = HandlerForProtocol(
       self.incognitoBrowser->GetCommandDispatcher(), PopupMenuCommands);
+
+  [self.baseViewController setNeedsStatusBarAppearanceUpdate];
 }
 
 // Uninstalls the thumb strip and informs this object dependencies.
-- (void)thumbStripDisabled {
+- (void)uninstallThumbStrip {
   DCHECK(self.isThumbStripEnabled);
 
   BOOL showGridAfterUninstall = self.isTabGridActive;
@@ -417,6 +420,7 @@
     [self.bvcContainer removeFromParentViewController];
     self.bvcContainer = nil;
   }
+  [self.baseViewController setNeedsStatusBarAppearanceUpdate];
 }
 
 #pragma mark - ChromeCoordinator
@@ -527,7 +531,7 @@
 
 - (void)stop {
   if ([self isThumbStripEnabled]) {
-    [self thumbStripDisabled];
+    [self uninstallThumbStrip];
   }
   // The TabGridViewController may still message its application commands
   // handler after this coordinator has stopped; make this action a no-op by
@@ -762,7 +766,7 @@
     if (canShowThumbStrip) {
       [self installThumbStrip];
     } else {
-      [self thumbStripDisabled];
+      [self uninstallThumbStrip];
     }
   }
 }

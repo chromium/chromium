@@ -1928,7 +1928,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   CGRect statusBarFrame = CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 0);
   _fakeStatusBarView = [[UIView alloc] initWithFrame:statusBarFrame];
   [_fakeStatusBarView setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
-  if ([self canShowTabStrip]) {
+  if (IsIPadIdiom()) {
     _fakeStatusBarView.backgroundColor = UIColor.blackColor;
     _fakeStatusBarView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     DCHECK(self.contentArea);
