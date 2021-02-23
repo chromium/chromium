@@ -290,7 +290,9 @@ void InitializeZygoteSandboxForBrowserProcess(
 
   // Tickle the zygote host so it forks now.
   ZygoteHostImpl::GetInstance()->Init(parsed_command_line);
-  CreateUnsandboxedZygote(base::BindOnce(LaunchZygoteHelper));
+  if (!parsed_command_line.HasSwitch(switches::kNoUnsandboxedZygote)) {
+    CreateUnsandboxedZygote(base::BindOnce(LaunchZygoteHelper));
+  }
   ZygoteHandle generic_zygote =
       CreateGenericZygote(base::BindOnce(LaunchZygoteHelper));
 

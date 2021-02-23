@@ -557,6 +557,12 @@ const char kMojoCoreLibraryPath[] = "mojo-core-library-path";
 // Use a Mojo-based LocalStorage implementation.
 const char kMojoLocalStorage[]              = "mojo-local-storage";
 
+// Disables the unsandboxed zygote.
+// Note: this flag should not be used on most platforms. It is introduced
+// because some platforms (e.g. Cast) have very limited memory and binaries
+// won't be updated when the browser process is running.
+const char kNoUnsandboxedZygote[] = "no-unsandboxed-zygote";
+
 // Disables the use of a zygote process for forking child processes. Instead,
 // child processes will be forked and exec'd directly. Note that --no-sandbox
 // should also be used together with this flag because the sandbox needs the
