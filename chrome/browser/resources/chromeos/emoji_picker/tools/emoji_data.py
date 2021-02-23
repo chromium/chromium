@@ -32,10 +32,16 @@ def parse_emoji_annotations(keyword_file):
 
     for tag in root.iterfind('./annotations/annotation'):
         cp = tag.attrib['cp']
+        # The Fuse search library in ChromeOS doesn't support prefix matching.
+        # A workaround is appending a space before all name and keyword labels.
+        # This allows us to force a prefix matching by prepending a space on
+        # users' searches. E.g. for the Emoji "smile face", we store " smile
+        # face", if the user searches for "fa", the search will be " fa" and
+        # will match " smile face", but not "  infant".
         if tag.attrib.get('type') == 'tts':
-            names[cp] = tag.text
+            names[cp] = ' ' + tag.text
         else:
-            keywords[cp] = tag.text.split(' | ')
+            keywords[cp] = map(lambda k: ' ' + k, tag.text.split(' | '))
 
     return names, keywords
 

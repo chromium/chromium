@@ -44,7 +44,14 @@ export class EmojiSearch extends PolymerElement {
 
   constructor() {
     super();
-    this.fuse = new Fuse([], {keys: ['base.name', 'base.keywords']});
+    this.fuse = new Fuse([], {
+      threshold: 0.0,        // Exact match only.
+      ignoreLocation: true,  // Match in all locations.
+      keys: [
+        {name: 'base.name', weight: 10},  // Increase scoring of emoji name.
+        'base.keywords',
+      ]
+    });
   }
 
   ready() {
@@ -155,8 +162,8 @@ export class EmojiSearch extends PolymerElement {
   computeSearchResults(search, emojiList) {
     if (!search)
       return [];
-
-    return this.fuse.search(search);
+    // Add an initial space to force prefix matching only.
+    return this.fuse.search(' ' + search);
   }
 }
 
