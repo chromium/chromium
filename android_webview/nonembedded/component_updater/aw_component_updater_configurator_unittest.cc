@@ -55,7 +55,7 @@ TEST_F(AwComponentUpdaterConfiguratorTest, TestDelays) {
   scoped_refptr<update_client::Configurator> config =
       MakeAwComponentUpdaterConfigurator(GetCommandLine(), GetPrefService());
 
-  CHECK_EQ(config->InitialDelay(), 0);
+  CHECK_EQ(config->InitialDelay(), 10);
   CHECK_EQ(config->NextCheckDelay(), 5 * 60 * 60);
   CHECK_EQ(config->OnDemandDelay(), 30 * 60);
   CHECK_EQ(config->UpdateDelay(), 0);
@@ -67,7 +67,7 @@ TEST_F(AwComponentUpdaterConfiguratorTest, TestDelaysWithFastUpdate) {
   scoped_refptr<update_client::Configurator> config =
       MakeAwComponentUpdaterConfigurator(cmdline, GetPrefService());
 
-  CHECK_EQ(config->InitialDelay(), 0);
+  CHECK_EQ(config->InitialDelay(), 10);
   CHECK_EQ(config->NextCheckDelay(), 5 * 60 * 60);
   CHECK_EQ(config->OnDemandDelay(), 2);
   CHECK_EQ(config->UpdateDelay(), 0);

@@ -87,8 +87,15 @@ AwConfigurator::AwConfigurator(const base::CommandLine* cmdline,
       pref_service_(pref_service) {}
 
 double AwConfigurator::InitialDelay() const {
-  // We want the update to start immediately.
-  return 0;
+  // Initial delay acts as a "registration window" for components, so we should
+  // have a reasonable window to allow for all components to complete
+  // registration. We are choosing a small window of 10 seconds here because
+  // WebView has a short list of components and components registration happens
+  // in an android background service so we want to start the update as soon as
+  // possible.
+  // TODO(crbug.com/1181094): git rid of dependency in initial delay for
+  // WebView.
+  return 10;
 }
 
 int AwConfigurator::NextCheckDelay() const {
