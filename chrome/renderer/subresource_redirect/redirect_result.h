@@ -8,7 +8,8 @@
 namespace subresource_redirect {
 
 // Enumerates the different results possible for subresource redirection, such
-// as redirectable or different reasons of ineligibility.
+// as redirectable or different reasons of ineligibility. This enum should be in
+// sync with SubresourceRedirectRedirectResult in enums.xml
 enum class RedirectResult {
   kUnknown = 0,
 

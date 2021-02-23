@@ -56,6 +56,7 @@ void PublicImageHintsDeciderAgent::DidStartNavigation(
 
 void PublicImageHintsDeciderAgent::ReadyToCommitNavigation(
     blink::WebDocumentLoader* document_loader) {
+  PublicResourceDeciderAgent::ReadyToCommitNavigation(document_loader);
   if (!IsMainFrame())
     return;
   // Its ok to use base::Unretained(this) here since the timer object is owned

@@ -23,6 +23,15 @@ PublicResourceDeciderAgent::PublicResourceDeciderAgent(
 
 PublicResourceDeciderAgent::~PublicResourceDeciderAgent() = default;
 
+void PublicResourceDeciderAgent::ReadyToCommitNavigation(
+    blink::WebDocumentLoader* document_loader) {
+  navigation_start_ = base::TimeTicks::Now();
+}
+
+base::TimeTicks PublicResourceDeciderAgent::GetNavigationStartTime() const {
+  return navigation_start_;
+}
+
 void PublicResourceDeciderAgent::OnDestruct() {
   delete this;
 }

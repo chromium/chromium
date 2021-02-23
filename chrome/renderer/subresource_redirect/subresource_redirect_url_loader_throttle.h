@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "chrome/renderer/subresource_redirect/login_robots_compression_metrics.h"
 #include "chrome/renderer/subresource_redirect/public_resource_decider_agent.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
@@ -102,7 +103,11 @@ class SubresourceRedirectURLLoaderThrottle : public blink::URLLoaderThrottle {
 
   // Whether the subresource can be redirected or not and what was the reason if
   // its not eligible.
-  RedirectResult redirect_result_;
+  RedirectResult redirect_result_ = RedirectResult::kUnknown;
+
+  // Used to record the image load and compression metrics.
+  base::Optional<LoginRobotsCompressionMetrics>
+      login_robots_compression_metrics_;
 
   // Used to get a weak pointer to |this|.
   base::WeakPtrFactory<SubresourceRedirectURLLoaderThrottle> weak_ptr_factory_{
