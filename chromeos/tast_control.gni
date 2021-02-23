@@ -43,4 +43,11 @@ tast_disabled_tests_from_chrome_all = [
 
   # crbug.com/1171146
   "session.LogoutCleanup",
+
+  # crbug.com/1181243
+  "camera.GetUserMedia.fake",
+  "network.ConfigureServiceForUserProfile.normal",
+
+  # crbug.com/1181283
+  "ui.QuickSettingsLockScreen.no_battery",
 ]
