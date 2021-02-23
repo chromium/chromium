@@ -1781,6 +1781,12 @@ TEST_F(NGGridLayoutAlgorithmTest, PositionedOutOfFlowItems) {
         background-color: purple;
       }
 
+      #seventhItem {
+        grid-column: -5 / 1;
+        grid-row: 3 / -1;
+        background-color: darkgreen;
+      }
+
       .descendant {
         background: blue;
         grid-column: 3;
@@ -1801,6 +1807,7 @@ TEST_F(NGGridLayoutAlgorithmTest, PositionedOutOfFlowItems) {
         <div class="absolute" id="fourthItem"></div>
         <div class="absolute" id="fifthItem"></div>
         <div class="absolute" id="sixthItem"></div>
+        <div class="absolute" id="seventhItem"></div>
         <div class="item">
           <div class="absolute descendant"></div>
         </div>
@@ -1839,6 +1846,7 @@ TEST_F(NGGridLayoutAlgorithmTest, PositionedOutOfFlowItems) {
       offset:5,5 size:50x50
       offset:5,110 size:50x50
       offset:310,110 size:50x50
+      offset:5,210 size:50x50
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }

@@ -309,6 +309,8 @@ NGGridLayoutAlgorithm::GridItemData::SetIndices(
         track_collection, node.Style(), &start_line, &end_line);
   }
 
+  // TODO(ansollano): An out of flow item can have an index that is in the
+  // middle of a range. Correctly handle this case.
   ItemSetIndices set_indices;
   if (start_line != kNotFound) {
     DCHECK(track_collection.IsGridLineWithinImplicitGrid(start_line));

@@ -362,27 +362,23 @@ void NGGridPlacement::ResolveOutOfFlowItemGridLines(
     return;
   }
 
-  // Handle the case where the start line is 'auto' and the end line is the
-  // first line of the grid.
-  // TODO(ansollan): Handle out of flow positioned items with negative indexes.
-  if (span.UntranslatedStartLine() < 0 &&
-      IsStartLineAuto(track_direction, out_of_flow_item_style)) {
-    *start_line = kNotFound;
-    *end_line = 0;
-    return;
-  }
+  wtf_size_t start_offset = StartOffset(track_direction);
+  int span_start_line = span.UntranslatedStartLine() + start_offset;
+  int span_end_line = span.UntranslatedEndLine() + start_offset;
 
-  span.Translate(StartOffset(track_direction));
-  *start_line = span.StartLine();
-  *end_line = span.EndLine();
-
-  if (IsStartLineAuto(track_direction, out_of_flow_item_style) ||
-      !track_collection.IsGridLineWithinImplicitGrid(*start_line)) {
+  if (span_start_line < 0 ||
+      IsStartLineAuto(track_direction, out_of_flow_item_style) ||
+      !track_collection.IsGridLineWithinImplicitGrid(span_start_line)) {
     *start_line = kNotFound;
+  } else {
+    *start_line = span_start_line;
   }
-  if (IsEndLineAuto(track_direction, out_of_flow_item_style) ||
-      !track_collection.IsGridLineWithinImplicitGrid(*end_line)) {
+  if (span_end_line < 0 ||
+      IsEndLineAuto(track_direction, out_of_flow_item_style) ||
+      !track_collection.IsGridLineWithinImplicitGrid(span_end_line)) {
     *end_line = kNotFound;
+  } else {
+    *end_line = span_end_line;
   }
 }
 
