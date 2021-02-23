@@ -20,7 +20,7 @@
 #include "content/browser/file_system/browser_file_system_helper.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/permissions/permission_controller_impl.h"
-#include "content/browser/renderer_host/drop_data_util.h"
+#include "content/browser/renderer_host/data_transfer_util.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -365,43 +365,24 @@ void ClipboardHostImpl::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
   RenderFrameHostImpl* render_frame_host =
       RenderFrameHostImpl::FromID(render_frame_routing_id_);
   DCHECK(render_frame_host);
-  // TODO(crbug.com/1175483): Rename '*Drop*' names to '*DataTransfer*'.
-  // The functions and data structures are used by both clipboard, and
-  // drag-and-drop, which are both represented in JS by type 'DataTransfer'.
-
   // This code matches the drag-and-drop DataTransfer code in
   // RenderWidgetHostImpl::DragTargetDrop().
 
-  // Create DropData with filenames.
-  DropData drop_data;
-  drop_data.filenames = std::move(filenames);
-
-  // Call PrepareDropDataForChildProcess() to register files so they can be
-  // accessed by the renderer.
+  // Call PrepareDataTransferFilenamesForChildProcess() to register files so
+  // they can be accessed by the renderer.
   RenderProcessHost* process = render_frame_host->GetProcess();
-  PrepareDropDataForChildProcess(
-      &drop_data, ChildProcessSecurityPolicyImpl::GetInstance(),
+  result->file_system_id = PrepareDataTransferFilenamesForChildProcess(
+      filenames, ChildProcessSecurityPolicyImpl::GetInstance(),
       process->GetID(), process->GetStoragePartition()->GetFileSystemContext());
+
+  // Convert to DataTransferFiles which creates the access token for each file.
   StoragePartitionImpl* storage_partition = static_cast<StoragePartitionImpl*>(
       render_frame_host->GetProcess()->GetStoragePartition());
-
-  // Convert to DragData which creates the access token and remaps paths.
-  blink::mojom::DragDataPtr drag_data = DropDataToDragData(
-      drop_data, storage_partition->GetFileSystemAccessManager(),
-      process->GetID());
-
-  // Extract mojom::ClipboardFiles from mojom::DragData.
-  for (const auto& item : drag_data->items) {
-    DCHECK_EQ(item->which(), blink::mojom::DragItemDataView::Tag::FILE);
-    const blink::mojom::DragItemFilePtr& file_item = item->get_file();
-    blink::mojom::ClipboardFilePtr file = blink::mojom::ClipboardFile::New();
-    file->path = std::move(file_item->path);
-    file->display_name = std::move(file_item->display_name);
-    file->file_system_access_token =
-        std::move(file_item->file_system_access_token);
-    result->files.push_back(std::move(file));
-  }
-  result->file_system_id = std::move(drag_data->file_system_id);
+  std::vector<blink::mojom::DataTransferFilePtr> files =
+      FileInfosToDataTransferFiles(
+          filenames, storage_partition->GetFileSystemAccessManager(),
+          process->GetID());
+  std::move(files.begin(), files.end(), std::back_inserter(result->files));
 
   PerformPasteIfContentAllowed(
       clipboard_->GetSequenceNumber(clipboard_buffer),

@@ -201,9 +201,48 @@ void PrepareDropDataForChildProcess(
     security_policy->GrantCommitURL(child_id, drop_data->url);
 #endif
 
+  std::string filesystem_id = PrepareDataTransferFilenamesForChildProcess(
+      drop_data->filenames, security_policy, child_id, file_system_context);
+  drop_data->filesystem_id = base::UTF8ToUTF16(filesystem_id);
+
+  storage::IsolatedContext* isolated_context =
+      storage::IsolatedContext::GetInstance();
+  DCHECK(isolated_context);
+
+  for (auto& file_system_file : drop_data->file_system_files) {
+    storage::FileSystemURL file_system_url =
+        file_system_context->CrackURL(file_system_file.url);
+
+    std::string register_name;
+    storage::IsolatedContext::ScopedFSHandle filesystem =
+        isolated_context->RegisterFileSystemForPath(
+            file_system_url.type(), file_system_url.filesystem_id(),
+            file_system_url.path(), &register_name);
+
+    if (filesystem.is_valid()) {
+      // Grant the permission iff the ID is valid. This will also keep the FS
+      // alive after |filesystem| goes out of scope.
+      security_policy->GrantReadFileSystem(child_id, filesystem.id());
+    }
+
+    // Note: We are using the origin URL provided by the sender here. It may be
+    // different from the receiver's.
+    file_system_file.url = GURL(
+        storage::GetIsolatedFileSystemRootURIString(
+            file_system_url.origin().GetURL(), filesystem.id(), std::string())
+            .append(register_name));
+    file_system_file.filesystem_id = filesystem.id();
+  }
+}
+
+std::string PrepareDataTransferFilenamesForChildProcess(
+    std::vector<ui::FileInfo>& filenames,
+    ChildProcessSecurityPolicyImpl* security_policy,
+    int child_id,
+    const storage::FileSystemContext* file_system_context) {
   // The filenames vector represents a capability to access the given files.
   storage::IsolatedContext::FileInfoSet files;
-  for (auto& filename : drop_data->filenames) {
+  for (auto& filename : filenames) {
     // Make sure we have the same display_name as the one we register.
     if (filename.display_name.empty()) {
       std::string name;
@@ -235,40 +274,15 @@ void PrepareDropDataForChildProcess(
       storage::IsolatedContext::GetInstance();
   DCHECK(isolated_context);
 
+  std::string filesystem_id;
   if (!files.fileset().empty()) {
-    std::string filesystem_id =
-        isolated_context->RegisterDraggedFileSystem(files);
+    filesystem_id = isolated_context->RegisterDraggedFileSystem(files);
     if (!filesystem_id.empty()) {
       // Grant the permission iff the ID is valid.
       security_policy->GrantReadFileSystem(child_id, filesystem_id);
     }
-    drop_data->filesystem_id = base::UTF8ToUTF16(filesystem_id);
   }
-
-  for (auto& file_system_file : drop_data->file_system_files) {
-    storage::FileSystemURL file_system_url =
-        file_system_context->CrackURL(file_system_file.url);
-
-    std::string register_name;
-    storage::IsolatedContext::ScopedFSHandle filesystem =
-        isolated_context->RegisterFileSystemForPath(
-            file_system_url.type(), file_system_url.filesystem_id(),
-            file_system_url.path(), &register_name);
-
-    if (filesystem.is_valid()) {
-      // Grant the permission iff the ID is valid. This will also keep the FS
-      // alive after |filesystem| goes out of scope.
-      security_policy->GrantReadFileSystem(child_id, filesystem.id());
-    }
-
-    // Note: We are using the origin URL provided by the sender here. It may be
-    // different from the receiver's.
-    file_system_file.url = GURL(
-        storage::GetIsolatedFileSystemRootURIString(
-            file_system_url.origin().GetURL(), filesystem.id(), std::string())
-            .append(register_name));
-    file_system_file.filesystem_id = filesystem.id();
-  }
+  return filesystem_id;
 }
 
 }  // namespace content

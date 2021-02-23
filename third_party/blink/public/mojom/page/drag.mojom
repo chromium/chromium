@@ -11,7 +11,7 @@ import "services/network/public/mojom/referrer_policy.mojom";
 import "ui/base/dragdrop/mojom/drag_drop_types.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
-import "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom";
+import "third_party/blink/public/mojom/data_transfer/data_transfer.mojom";
 
 // This struct encodes what drag-and-drop operations are allowed. It's
 // typemapped to blink::DragOperationsMask.
@@ -40,13 +40,6 @@ struct DragItemString {
   url.mojom.Url? base_url;
 };
 
-// Used for dragging a list of files.
-struct DragItemFile {
-  mojo_base.mojom.FilePath path;
-  mojo_base.mojom.FilePath display_name;
-  pending_remote<FileSystemAccessDataTransferToken>? file_system_access_token;
-};
-
 // Only used when dragging images out of Blink.
 struct DragItemBinary {
   // Image data.
@@ -66,7 +59,7 @@ struct DragItemFileSystemFile {
 
 union DragItem {
   DragItemString string;
-  DragItemFile file;
+  DataTransferFile file;
   DragItemBinary binary;
   DragItemFileSystemFile file_system_file;
 };

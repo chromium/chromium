@@ -65,7 +65,7 @@ DataObject* DataObject::CreateFromClipboard(SystemClipboard* system_clipboard,
       if (system_clipboard->SequenceNumber() != sequence_number) {
         files->files.clear();
       }
-      for (const mojom::blink::ClipboardFilePtr& file : files->files) {
+      for (const mojom::blink::DataTransferFilePtr& file : files->files) {
         data_object->AddFilename(
             FilePathToString(file->path), FilePathToString(file->display_name),
             files->file_system_id,

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/drop_data_util.h"
+#include "content/browser/renderer_host/data_transfer_util.h"
 
 #include <string>
 #include <utility>
@@ -49,6 +49,30 @@ content::FileSystemAccessEntryFactory::PathType MaybeRemapPath(
 
 }  // namespace
 
+std::vector<blink::mojom::DataTransferFilePtr> FileInfosToDataTransferFiles(
+    const std::vector<ui::FileInfo>& filenames,
+    FileSystemAccessManagerImpl* file_system_access_manager,
+    int child_id) {
+  std::vector<blink::mojom::DataTransferFilePtr> result;
+  for (const ui::FileInfo& file_info : filenames) {
+    blink::mojom::DataTransferFilePtr file =
+        blink::mojom::DataTransferFile::New();
+    file->path = file_info.path;
+    file->display_name = file_info.display_name;
+    mojo::PendingRemote<blink::mojom::FileSystemAccessDataTransferToken>
+        pending_token;
+    base::FilePath entry_path = file_info.path;
+    FileSystemAccessManagerImpl::PathType path_type =
+        MaybeRemapPath(&entry_path);
+    file_system_access_manager->CreateFileSystemAccessDataTransferToken(
+        path_type, entry_path, child_id,
+        pending_token.InitWithNewPipeAndPassReceiver());
+    file->file_system_access_token = std::move(pending_token);
+    result.push_back(std::move(file));
+  }
+  return result;
+}
+
 blink::mojom::DragDataPtr DropDataToDragData(
     const DropData& drop_data,
     FileSystemAccessManagerImpl* file_system_access_manager,
@@ -79,21 +103,11 @@ blink::mojom::DragDataPtr DropDataToDragData(
     item->base_url = drop_data.html_base_url;
     items.push_back(blink::mojom::DragItem::NewString(std::move(item)));
   }
-  for (const ui::FileInfo& file : drop_data.filenames) {
-    blink::mojom::DragItemFilePtr item = blink::mojom::DragItemFile::New();
-    item->path = file.path;
-    item->display_name = file.display_name;
-    mojo::PendingRemote<blink::mojom::FileSystemAccessDataTransferToken>
-        pending_token;
-    base::FilePath entry_path = file.path;
-    FileSystemAccessManagerImpl::PathType path_type =
-        MaybeRemapPath(&entry_path);
-    file_system_access_manager->CreateFileSystemAccessDataTransferToken(
-        path_type, entry_path, child_id,
-        pending_token.InitWithNewPipeAndPassReceiver());
-    item->file_system_access_token = std::move(pending_token);
-
-    items.push_back(blink::mojom::DragItem::NewFile(std::move(item)));
+  std::vector<blink::mojom::DataTransferFilePtr> files =
+      FileInfosToDataTransferFiles(drop_data.filenames,
+                                   file_system_access_manager, child_id);
+  for (size_t i = 0; i < files.size(); ++i) {
+    items.push_back(blink::mojom::DragItem::NewFile(std::move(files[i])));
   }
   for (const content::DropData::FileSystemFileInfo& file_system_file :
        drop_data.file_system_files) {
@@ -152,7 +166,8 @@ blink::mojom::DragDataPtr DropMetaDataToDragData(
     // platform.
     if ((meta_data_item.kind == DropData::Kind::FILENAME) &&
         !meta_data_item.filename.empty()) {
-      blink::mojom::DragItemFilePtr item = blink::mojom::DragItemFile::New();
+      blink::mojom::DataTransferFilePtr item =
+          blink::mojom::DataTransferFile::New();
       item->path = meta_data_item.filename;
       items.push_back(blink::mojom::DragItem::NewFile(std::move(item)));
       continue;
@@ -217,7 +232,7 @@ DropData DragDataToDropData(const blink::mojom::DragData& drag_data) {
         break;
       }
       case blink::mojom::DragItemDataView::Tag::FILE: {
-        const blink::mojom::DragItemFilePtr& file_item = item->get_file();
+        const blink::mojom::DataTransferFilePtr& file_item = item->get_file();
         // TODO(varunjain): This only works on chromeos. Support win/mac/gtk.
         result.filenames.emplace_back(file_item->path, file_item->display_name);
         break;

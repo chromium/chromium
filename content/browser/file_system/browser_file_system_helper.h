@@ -8,6 +8,7 @@
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "storage/browser/file_system/file_system_context.h"
+#include "ui/base/clipboard/file_info.h"
 
 namespace storage {
 class FileSystemContext;
@@ -53,6 +54,15 @@ CONTENT_EXPORT void SyncGetPlatformPath(storage::FileSystemContext* context,
 // grant |child_id| appropriate file access.
 CONTENT_EXPORT void PrepareDropDataForChildProcess(
     DropData* drop_data,
+    ChildProcessSecurityPolicyImpl* security_policy,
+    int child_id,
+    const storage::FileSystemContext* file_system_context);
+
+// Make it possible for local files to be read by |child_id|'s process. This is
+// used by clipboard, and by drag-and-drop. Returns filesystem_id of the
+// registered isolated filesystem.
+CONTENT_EXPORT std::string PrepareDataTransferFilenamesForChildProcess(
+    std::vector<ui::FileInfo>& filenames,
     ChildProcessSecurityPolicyImpl* security_policy,
     int child_id,
     const storage::FileSystemContext* file_system_context);

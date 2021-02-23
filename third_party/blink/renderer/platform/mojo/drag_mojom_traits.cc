@@ -76,22 +76,22 @@ bool StructTraits<
 
 // static
 base::FilePath StructTraits<
-    blink::mojom::DragItemFileDataView,
+    blink::mojom::DataTransferFileDataView,
     blink::WebDragData::Item>::path(const blink::WebDragData::Item& item) {
   return WebStringToFilePath(item.filename_data);
 }
 
 // static
 base::FilePath
-StructTraits<blink::mojom::DragItemFileDataView, blink::WebDragData::Item>::
+StructTraits<blink::mojom::DataTransferFileDataView, blink::WebDragData::Item>::
     display_name(const blink::WebDragData::Item& item) {
   return WebStringToFilePath(item.display_name_data);
 }
 
 // static
 bool StructTraits<
-    blink::mojom::DragItemFileDataView,
-    blink::WebDragData::Item>::Read(blink::mojom::DragItemFileDataView data,
+    blink::mojom::DataTransferFileDataView,
+    blink::WebDragData::Item>::Read(blink::mojom::DataTransferFileDataView data,
                                     blink::WebDragData::Item* out) {
   blink::WebDragData::Item item;
   base::FilePath filename_data, display_name_data;
@@ -183,7 +183,7 @@ WTF::String StructTraits<blink::mojom::DragItemFileSystemFileDataView,
 
 //  static
 mojo::PendingRemote<blink::mojom::blink::FileSystemAccessDataTransferToken>
-StructTraits<blink::mojom::DragItemFileDataView, blink::WebDragData::Item>::
+StructTraits<blink::mojom::DataTransferFileDataView, blink::WebDragData::Item>::
     file_system_access_token(const blink::WebDragData::Item& item) {
   // Should never have to send a transfer token information from the renderer
   // to the browser.
