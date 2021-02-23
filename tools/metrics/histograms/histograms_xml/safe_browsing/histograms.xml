@@ -21,6 +21,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="MetricsCollectorBypassEventType">
+  <variant name="CsdInterstitialBypass"
+      summary="client-side detection interstitial bypass"/>
+  <variant name="DangerousDownloadBypass"
+      summary="dangerous download warning bypass"/>
+  <variant name="DatabaseInterstitialBypass"
+      summary="Safe Browsing database interstitial bypass"/>
+  <variant name="PasswordReuseModalBypass"
+      summary="password reuse modal warning bypass"/>
+  <variant name="RealTimeInterstitialBypass"
+      summary="real time URL check warning bypass"/>
+</variants>
+
+<variants name="MetricsCollectorUserState">
+  <variant name="EnhancedProtection" summary="enhanced protection"/>
+  <variant name="Managed" summary="Safe Browsing managed mode"/>
+  <variant name="StandardProtection" summary="standard protection"/>
+</variants>
+
 <histogram name="SafeBrowsing.AdvancedProtection.APTokenFetchStatus"
     enum="GoogleServiceAuthError" expires_after="2021-07-18">
   <owner>drubery@chromium.org</owner>
@@ -160,20 +179,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
-    Logs the total number of Safe Browsing bypass events in the last 28 days.
-    Recorded for all non-Incognito profiles every 24 hours and at startup if the
-    last recording was more than 24 hours ago.
+    Logs the total number of {EventType} in the last 28 days. Recorded for all
+    non-Incognito profiles that are under {UserState} every 24 hours and at
+    startup if the last recording was more than 24 hours ago.
   </summary>
-  <token key="UserState">
-    <variant name="EnhancedProtection"
-        summary="The user is under enhanced protection mode."/>
-    <variant name="Managed"
-        summary="The user's Safe Browsing mode is managed."/>
-    <variant name="StandardProtection"
-        summary="The user is under standard protection mode."/>
-  </token>
-  <token key="EventType">
-    <variant name="AllEvents" summary="Sum up all bypass events."/>
+  <token key="UserState" variants="MetricsCollectorUserState"/>
+  <token key="EventType" variants="MetricsCollectorBypassEventType">
+    <variant name="AllEvents" summary="any type of events"/>
   </token>
 </histogram>
 
@@ -690,6 +702,33 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     has disabled URL elision via &quot;Always Show Full URLs&quot; context menu
     item, or by installing the Suspicious Site Reporter extension.
   </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.EsbDisabled.BypassCountLast28Days.{EventType}"
+    units="events" expires_after="2022-02-22">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the total number of {EventType} in the last 28 days. Logged each
+    time a user disables Enhanced Safe Browsing. Logged at most three times a
+    week. If ESB is disabled for more than three times a week, later records
+    will be dropped.
+  </summary>
+  <token key="EventType" variants="MetricsCollectorBypassEventType"/>
+</histogram>
+
+<histogram name="SafeBrowsing.EsbDisabled.LastBypassEventInterval.{EventType}"
+    units="ms" expires_after="2022-02-22">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the time between the last bypass event and when the user disables
+    Enhanced Safe Browsing. Logged each time a user disables Enhanced Safe
+    Browsing and the {EventType} is the last bypass event type. Logged at most
+    three times a week. If ESB is disabled for more than three times a week,
+    later records will be dropped.
+  </summary>
+  <token key="EventType" variants="MetricsCollectorBypassEventType"/>
 </histogram>
 
 <histogram name="SafeBrowsing.EsbDisabled.LastBypassEventType"

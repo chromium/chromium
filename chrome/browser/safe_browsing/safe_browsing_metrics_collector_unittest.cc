@@ -260,11 +260,31 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
                          EventType::CSD_INTERSITITAL_BYPASS);
 
+  task_environment_->FastForwardBy(base::TimeDelta::FromHours(1));
   // Changing enhanced protection to standard protection should log the metric.
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
   histograms.ExpectUniqueSample("SafeBrowsing.EsbDisabled.LastBypassEventType",
                                 /* sample */ EventType::CSD_INTERSITITAL_BYPASS,
                                 /* expected_count */ 1);
+  histograms.ExpectUniqueTimeSample(
+      "SafeBrowsing.EsbDisabled.LastBypassEventInterval.CsdInterstitialBypass",
+      /* sample */ base::TimeDelta::FromHours(1),
+      /* expected_count */ 1);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.EsbDisabled.BypassCountLast28Days."
+      "DatabaseInterstitialBypass",
+      /* sample */ 2,
+      /* expected_count */ 1);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.EsbDisabled.BypassCountLast28Days."
+      "CsdInterstitialBypass",
+      /* sample */ 2,
+      /* expected_count */ 1);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.EsbDisabled.BypassCountLast28Days."
+      "RealTimeInterstitialBypass",
+      /* sample */ 0,
+      /* expected_count */ 1);
 
   // Changing standard protection to enhanced protection shouldn't log the
   // metric.
@@ -276,12 +296,33 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   // Changing enhanced protection to no protection should log the metric.
   FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
                          EventType::REAL_TIME_INTERSTITIAL_BYPASS);
+  task_environment_->FastForwardBy(base::TimeDelta::FromDays(1));
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::NO_SAFE_BROWSING);
   histograms.ExpectTotalCount("SafeBrowsing.EsbDisabled.LastBypassEventType",
                               /* expected_count */ 2);
   histograms.ExpectBucketCount(
       "SafeBrowsing.EsbDisabled.LastBypassEventType",
       /* sample */ EventType::REAL_TIME_INTERSTITIAL_BYPASS,
+      /* expected_count */ 1);
+  histograms.ExpectTimeBucketCount(
+      "SafeBrowsing.EsbDisabled.LastBypassEventInterval."
+      "RealTimeInterstitialBypass",
+      /* sample */ base::TimeDelta::FromDays(1),
+      /* expected_count */ 1);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.EsbDisabled.BypassCountLast28Days."
+      "DatabaseInterstitialBypass",
+      /* sample */ 2,
+      /* expected_count */ 2);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.EsbDisabled.BypassCountLast28Days."
+      "CsdInterstitialBypass",
+      /* sample */ 2,
+      /* expected_count */ 2);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.EsbDisabled.BypassCountLast28Days."
+      "RealTimeInterstitialBypass",
+      /* sample */ 1,
       /* expected_count */ 1);
 
   // Changing no protection to enhanced protection shouldn't log the metric.
@@ -374,6 +415,21 @@ TEST_F(SafeBrowsingMetricsCollectorTest, LogDailyEventMetrics_LoggedDaily) {
       "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection.AllEvents",
       /* sample */ 4,
       /* expected_count */ 1);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection."
+      "DatabaseInterstitialBypass",
+      /* sample */ 2,
+      /* expected_count */ 1);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection."
+      "CsdInterstitialBypass",
+      /* sample */ 1,
+      /* expected_count */ 1);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection."
+      "RealTimeInterstitialBypass",
+      /* sample */ 1,
+      /* expected_count */ 1);
 
   FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
                          EventType::CSD_INTERSITITAL_BYPASS);
@@ -385,6 +441,11 @@ TEST_F(SafeBrowsingMetricsCollectorTest, LogDailyEventMetrics_LoggedDaily) {
       "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection.AllEvents",
       /* sample */ 5,
       /* expected_count */ 1);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection."
+      "CsdInterstitialBypass",
+      /* sample */ 2,
+      /* expected_count */ 1);
 
   task_environment_->FastForwardBy(base::TimeDelta::FromDays(1));
   histograms.ExpectTotalCount(
@@ -393,6 +454,11 @@ TEST_F(SafeBrowsingMetricsCollectorTest, LogDailyEventMetrics_LoggedDaily) {
   histograms.ExpectBucketCount(
       "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection.AllEvents",
       /* sample */ 5,
+      /* expected_count */ 2);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection."
+      "CsdInterstitialBypass",
+      /* sample */ 2,
       /* expected_count */ 2);
 }
 
@@ -414,11 +480,26 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
       "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection.AllEvents",
       /* sample */ 1,
       /* expected_count */ 1);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection."
+      "DatabaseInterstitialBypass",
+      /* sample */ 0,
+      /* expected_count */ 0);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection."
+      "DatabaseInterstitialBypass",
+      /* sample */ 1,
+      /* expected_count */ 1);
 
   task_environment_->FastForwardBy(base::TimeDelta::FromDays(28));
   // The event is older than 28 days, so it shouldn't be counted.
   histograms.ExpectBucketCount(
       "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection.AllEvents",
+      /* sample */ 0,
+      /* expected_count */ 1);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection."
+      "DatabaseInterstitialBypass",
       /* sample */ 0,
       /* expected_count */ 1);
 }

@@ -122,9 +122,14 @@ void SafeBrowsingMetricsCollector::LogDailyEventMetrics() {
     if (!IsBypassEventType(event_type)) {
       continue;
     }
-    total_bypass_count +=
+    int bypass_count =
         GetEventCountSince(user_state, event_type,
                            base::Time::Now() - base::TimeDelta::FromDays(28));
+    base::UmaHistogramCounts100("SafeBrowsing.Daily.BypassCountLast28Days." +
+                                    GetUserStateMetricSuffix(user_state) + "." +
+                                    GetEventTypeMetricSuffix(event_type),
+                                bypass_count);
+    total_bypass_count += bypass_count;
   }
   base::UmaHistogramCounts100("SafeBrowsing.Daily.BypassCountLast28Days." +
                                   GetUserStateMetricSuffix(user_state) +
@@ -224,6 +229,11 @@ void SafeBrowsingMetricsCollector::LogEnhancedProtectionDisabledMetrics() {
     if (!IsBypassEventType(event_type)) {
       continue;
     }
+    base::UmaHistogramCounts100(
+        "SafeBrowsing.EsbDisabled.BypassCountLast28Days." +
+            GetEventTypeMetricSuffix(event_type),
+        GetEventCountSince(UserState::ENHANCED_PROTECTION, event_type,
+                           base::Time::Now() - base::TimeDelta::FromDays(28)));
     const base::Value* timestamps =
         event_dict->FindListKey(EventTypeToPrefKey(event_type));
 
@@ -241,6 +251,12 @@ void SafeBrowsingMetricsCollector::LogEnhancedProtectionDisabledMetrics() {
   if (latest_event != bypass_events.end()) {
     base::UmaHistogramEnumeration(
         "SafeBrowsing.EsbDisabled.LastBypassEventType", latest_event->type);
+    base::UmaHistogramCustomTimes(
+        "SafeBrowsing.EsbDisabled.LastBypassEventInterval." +
+            GetEventTypeMetricSuffix(latest_event->type),
+        /* sample */ base::Time::Now() - latest_event->timestamp,
+        /* min */ base::TimeDelta::FromSeconds(1),
+        /* max */ base::TimeDelta::FromDays(1), /* buckets */ 50);
   }
 }
 
@@ -307,6 +323,26 @@ std::string SafeBrowsingMetricsCollector::GetUserStateMetricSuffix(
       return "EnhancedProtection";
     case UserState::MANAGED:
       return "Managed";
+  }
+}
+
+std::string SafeBrowsingMetricsCollector::GetEventTypeMetricSuffix(
+    const EventType& event_type) {
+  switch (event_type) {
+    case EventType::USER_STATE_DISABLED:
+      return "UserStateDisabled";
+    case EventType::USER_STATE_ENABLED:
+      return "UserStateEnabled";
+    case EventType::DATABASE_INTERSTITIAL_BYPASS:
+      return "DatabaseInterstitialBypass";
+    case EventType::CSD_INTERSITITAL_BYPASS:
+      return "CsdInterstitialBypass";
+    case EventType::REAL_TIME_INTERSTITIAL_BYPASS:
+      return "RealTimeInterstitialBypass";
+    case EventType::DANGEROUS_DOWNLOAD_BYPASS:
+      return "DangerousDownloadBypass";
+    case EventType::PASSWORD_REUSE_MODAL_BYPASS:
+      return "PasswordReuseModalBypass";
   }
 }
 
