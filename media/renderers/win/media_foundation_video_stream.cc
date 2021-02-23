@@ -185,17 +185,24 @@ HRESULT MediaFoundationH264VideoStream::GetMediaType(
 }
 
 bool MediaFoundationH264VideoStream::AreFormatChangesEnabled() {
-  // Disable format changes for H264 streams as it causes the H264 decoder MFT
-  // to clear previously received SPS / PPS data, causing a stall until another
-  // set of SPS and PPS NALUs are received.
+  // Disable explicit format change event for H264 to allow switching to the
+  // new stream without a full re-create, which will be much faster. This is
+  // also due to the fact that the MFT decoder can handle some format changes
+  // without a format change event. For format changes that the MFT decoder
+  // cannot support (e.g. codec change), the playback will fail later with
+  // MF_E_INVALIDMEDIATYPE (0xC00D36B4).
   return false;
 }
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 bool MediaFoundationHEVCVideoStream::AreFormatChangesEnabled() {
-  // Disable format changes for HEVC streams to work around HEVC decoder MFT
-  // limitation.
+  // Disable explicit format change event for HEVC to allow switching to the
+  // new stream without a full re-create, which will be much faster. This is
+  // also due to the fact that the MFT decoder can handle some format changes
+  // without a format change event. For format changes that the MFT decoder
+  // cannot support (e.g. codec change), the playback will fail later with
+  // MF_E_INVALIDMEDIATYPE (0xC00D36B4).
   return false;
 }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
