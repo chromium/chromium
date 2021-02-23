@@ -559,8 +559,4 @@ void WindowTreeHost::OnCompositingChildResizing(ui::Compositor* compositor) {
   holding_pointer_moves_ = true;
 }
 
-void WindowTreeHost::OnCompositingShuttingDown(ui::Compositor* compositor) {
-  compositor->RemoveObserver(this);
-}
-
 }  // namespace aura

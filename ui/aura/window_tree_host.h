@@ -337,7 +337,6 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   // Overrided from CompositorObserver:
   void OnCompositingEnded(ui::Compositor* compositor) override;
   void OnCompositingChildResizing(ui::Compositor* compositor) override;
-  void OnCompositingShuttingDown(ui::Compositor* compositor) override;
 
   // We don't use a std::unique_ptr for |window_| since we need this ptr to be
   // valid during its deletion. (Window's dtor notifies observers that may
