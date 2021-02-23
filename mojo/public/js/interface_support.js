@@ -1094,6 +1094,8 @@ mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal = class {
 
   /** @override */
   onError(endpoint, reason = undefined) {
+    this.endpoints_.delete(endpoint);
+    endpoint.close();
     this.connectionErrorEventRouter_.dispatchErrorEvent();
   }
 };
