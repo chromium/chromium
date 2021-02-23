@@ -698,6 +698,11 @@ message PolicyData {
   // customer, and primary admin email for domainless customer. The client side
   // will use this field to display who manages this device/browser/user.
   optional string managed_by = 36;
+
+  // An identifier (e.g. "inboundSamlSsoProfiles/0abcdefg1234567") for the
+  // device's managing OU's SSO profile. Currently, this points to the OU's
+  // SAML settings. May support OIDC in the future.
+  optional string sso_profile = 37;
 }
 
 message ClientActionRequired {

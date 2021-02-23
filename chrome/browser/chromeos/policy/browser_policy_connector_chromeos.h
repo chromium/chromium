@@ -106,6 +106,10 @@ class BrowserPolicyConnectorChromeOS
   // depend on this method
   std::string GetEnterpriseDomainManager() const;
 
+  // Returns the SSO profile id for the managing OU of this device. Currently
+  // identifies the SAML settings for the device.
+  std::string GetSSOProfile() const;
+
   // Returns the Kerberos realm (aka Windows Domain) if the device is managed by
   // Active Directory.
   std::string GetRealm() const;

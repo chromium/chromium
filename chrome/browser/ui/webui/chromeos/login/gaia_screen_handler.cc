@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 
 #include <memory>
+#include <string>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -177,6 +178,12 @@ std::string GetEnterpriseEnrollmentDomain() {
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
   return connector->GetEnterpriseEnrollmentDomain();
+}
+
+std::string GetSSOProfile() {
+  policy::BrowserPolicyConnectorChromeOS* connector =
+      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  return connector->GetSSOProfile();
 }
 
 std::string GetRealm() {
@@ -408,11 +415,16 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   const std::string enterprise_enrollment_domain(
       GetEnterpriseEnrollmentDomain());
   const std::string enterprise_domain_manager(GetEnterpriseDomainManager());
+  const std::string sso_profile(GetSSOProfile());
+
   if (!enterprise_display_domain.empty())
     params.SetString("enterpriseDisplayDomain", enterprise_display_domain);
   if (!enterprise_enrollment_domain.empty()) {
     params.SetString("enterpriseEnrollmentDomain",
                      enterprise_enrollment_domain);
+  }
+  if (!sso_profile.empty()) {
+    params.SetString("ssoProfile", sso_profile);
   }
   if (!enterprise_domain_manager.empty()) {
     params.SetString("enterpriseDomainManager", enterprise_domain_manager);
