@@ -79,6 +79,8 @@ class BASE_EXPORT MessagePump {
 
     class ScopedDoNativeWork {
      public:
+      ScopedDoNativeWork() : outer_(nullptr) {}
+
       ~ScopedDoNativeWork() {
         if (outer_)
           outer_->OnEndNativeWork();

@@ -214,7 +214,7 @@ void MessagePumpLibevent::Run(Delegate* delegate) {
 
     // Process native events if any are ready. Do not block waiting for more.
     {
-      const auto scoped_do_native_work = delegate->BeginNativeWork();
+      auto scoped_do_native_work = delegate->BeginNativeWork();
       event_base_loop(event_base_, EVLOOP_NONBLOCK);
     }
 
