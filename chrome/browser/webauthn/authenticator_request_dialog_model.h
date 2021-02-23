@@ -382,9 +382,9 @@ class AuthenticatorRequestDialogModel {
 
   const std::string& cable_qr_string() const { return *cable_qr_string_; }
 
-  // cable_is_serverlink returns true if the caBLE "v1" UI was triggered by a
-  // caBLEv2 server-linked request.
-  bool cable_is_serverlink() const;
+  // cable_should_suggest_usb returns true if the caBLE "v1" UI was triggered by
+  // a caBLEv2 server-linked request and attaching a USB cable is an option.
+  bool cable_should_suggest_usb() const;
 
   void CollectPIN(device::pin::PINEntryReason reason,
                   device::pin::PINEntryError error,

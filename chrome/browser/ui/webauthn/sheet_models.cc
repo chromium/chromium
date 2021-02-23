@@ -578,7 +578,7 @@ base::string16 AuthenticatorPaaskSheetModel::GetStepTitle() const {
 }
 
 base::string16 AuthenticatorPaaskSheetModel::GetStepDescription() const {
-  if (dialog_model()->cable_is_serverlink()) {
+  if (dialog_model()->cable_should_suggest_usb()) {
     // The description will be shown by AuthenticatorPaaskSheetView because it
     // needs to include a clickable link.
     return base::string16();

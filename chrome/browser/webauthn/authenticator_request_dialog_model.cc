@@ -563,11 +563,7 @@ void AuthenticatorRequestDialogModel::SetSelectedAuthenticatorForTesting(
       std::move(test_authenticator));
 }
 
-bool AuthenticatorRequestDialogModel::cable_is_serverlink() const {
-  // A caBLEv2 serverlink is detected by the presence of the AOA transport. The
-  // result of this function is used to decide whether to use a UI prompt for
-  // plugging the phone in with a USB cable and the AOA transport needs to exist
-  // for that to function.
+bool AuthenticatorRequestDialogModel::cable_should_suggest_usb() const {
   return base::Contains(transport_availability_.available_transports,
                         AuthenticatorTransport::kAndroidAccessory);
 }

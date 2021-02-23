@@ -585,6 +585,12 @@ base::flat_set<device::FidoTransportProtocol> GetAvailableTransports(
         device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy);
   }
 
+#if !defined(OS_WIN)
+  // kAndroidAccessory doesn't work on Windows because of USB stack issues.
+  // Note: even if this value were inserted it wouldn't take effect on Windows
+  // versions with a native API because FidoRequestHandlerBase filters out
+  // non-kCloudAssistedBluetoothLowEnergy transports in that case.
+
   if (base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport) ||
       base::FeatureList::IsEnabled(device::kWebAuthCableServerLink)) {
     // In order for AOA to be active the |AuthenticatorRequestClientDelegate|
@@ -592,6 +598,7 @@ base::flat_set<device::FidoTransportProtocol> GetAvailableTransports(
     // |kWebAuthPhoneSupport| is enabled, or if a V2 caBLE extension is seen.
     transports.insert(device::FidoTransportProtocol::kAndroidAccessory);
   }
+#endif
 
   return transports;
 }

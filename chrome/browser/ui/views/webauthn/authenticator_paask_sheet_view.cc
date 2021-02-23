@@ -22,8 +22,8 @@ std::unique_ptr<views::View>
 AuthenticatorPaaskSheetView::BuildStepSpecificContent() {
   AuthenticatorRequestDialogModel* const dialog_model =
       reinterpret_cast<AuthenticatorPaaskSheetModel*>(model())->dialog_model();
-  // This context is only shown in serverlink mode.
-  if (!dialog_model->cable_is_serverlink()) {
+  // This context is only shown when USB fallback is an option.
+  if (!dialog_model->cable_should_suggest_usb()) {
     return nullptr;
   }
 
