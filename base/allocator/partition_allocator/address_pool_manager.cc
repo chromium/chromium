@@ -84,8 +84,16 @@ void AddressPoolManager::Remove(pool_handle handle) {
   pool->Reset();
 }
 
-char* AddressPoolManager::Reserve(pool_handle handle, void*, size_t length) {
+char* AddressPoolManager::Reserve(pool_handle handle,
+                                  void* requested_address,
+                                  size_t length) {
   Pool* pool = GetPool(handle);
+  if (!requested_address)
+    return reinterpret_cast<char*>(pool->FindChunk(length));
+  const bool is_available = pool->TryReserveChunk(
+      reinterpret_cast<uintptr_t>(requested_address), length);
+  if (is_available)
+    return static_cast<char*>(requested_address);
   return reinterpret_cast<char*>(pool->FindChunk(length));
 }
 
@@ -177,6 +185,25 @@ uintptr_t AddressPoolManager::Pool::FindChunk(size_t requested_size) {
 
   NOTREACHED();
   return 0;
+}
+
+bool AddressPoolManager::Pool::TryReserveChunk(uintptr_t address,
+                                               size_t requested_size) {
+  base::AutoLock scoped_lock(lock_);
+  PA_DCHECK(!(address & kSuperPageOffsetMask));
+  PA_DCHECK(!(requested_size & kSuperPageOffsetMask));
+  const size_t bit = (address - address_begin_) / kSuperPageSize;
+  const size_t need_bits = requested_size / kSuperPageSize;
+  // Check if any bit of the requested region is set already.
+  for (size_t i = bit; i < bit + need_bits; ++i) {
+    if (alloc_bitset_.test(i))
+      return false;
+  }
+  // Otherwise, set the bits.
+  for (size_t i = bit; i < bit + need_bits; ++i) {
+    alloc_bitset_.set(i);
+  }
+  return true;
 }
 
 void AddressPoolManager::Pool::FreeChunk(uintptr_t address, size_t free_size) {

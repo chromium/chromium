@@ -85,6 +85,8 @@ class BASE_EXPORT AddressPoolManager {
     uintptr_t FindChunk(size_t size);
     void FreeChunk(uintptr_t address, size_t size);
 
+    bool TryReserveChunk(uintptr_t address, size_t size);
+
    private:
     // The bitset stores the allocation state of the address pool. 1 bit per
     // super-page: 1 = allocated, 0 = free.
