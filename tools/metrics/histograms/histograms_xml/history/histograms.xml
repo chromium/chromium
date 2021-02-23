@@ -226,20 +226,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="History.ClearBrowsingData.InstalledAppExcluded"
-    units="Boolean" expires_after="2021-03-12">
+    units="Boolean" expires_after="2022-02-16">
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Recorded when the user presses the 'clear' button when presented with the
     list of installed apps they might want to exclude from clearing browsing
-    data. This histogram will be true if the user choose to exclude at least one
-    installed app from clearing. The default has all apps selected, in which
+    data. This histogram will be true if the user chooses to exclude at least
+    one installed app from clearing. The default has all apps selected, in which
     case this enum would be false.
   </summary>
 </histogram>
 
 <histogram name="History.ClearBrowsingData.InstalledDeselectedNum"
-    units="units" expires_after="2021-03-12">
+    units="units" expires_after="2022-02-16">
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -251,7 +251,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="History.ClearBrowsingData.InstalledDeselectedPercent"
-    units="%" expires_after="2021-03-12">
+    units="%" expires_after="2022-02-16">
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
