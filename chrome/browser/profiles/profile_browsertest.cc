@@ -33,12 +33,15 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/chrome_version_service.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/profiles/profile_impl.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_observer.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -774,9 +777,21 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, CreateTwoNonPrimaryOTRs) {
   EXPECT_TRUE(regular_profile->HasOffTheRecordProfile(otr_profile_id2));
 }
 
+class ProfileBrowserTestWithoutDestroyProfile : public ProfileBrowserTest {
+ public:
+  ProfileBrowserTestWithoutDestroyProfile() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kDestroyProfileOnBrowserClose);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Verifies destroying regular profile will result in destruction of OTR
 // profiles.
-IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, DestroyRegularProfileBeforeOTRs) {
+IN_PROC_BROWSER_TEST_F(ProfileBrowserTestWithoutDestroyProfile,
+                       DestroyRegularProfileBeforeOTRs) {
   Profile::OTRProfileID otr_profile_id1("profile::otr1");
   Profile::OTRProfileID otr_profile_id2("profile::otr2");
 
@@ -808,6 +823,59 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, DestroyRegularProfileBeforeOTRs) {
   EXPECT_TRUE(watcher1.destroyed());
   EXPECT_TRUE(watcher2.destroyed());
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+class ProfileBrowserTestWithDestroyProfile : public ProfileBrowserTest {
+ public:
+  ProfileBrowserTestWithDestroyProfile() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kDestroyProfileOnBrowserClose);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verifies the regular Profile doesn't get destroyed as long as there's an OTR
+// Profile around.
+IN_PROC_BROWSER_TEST_F(ProfileBrowserTestWithDestroyProfile,
+                       OTRProfileKeepsRegularProfileAlive) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Profile* regular_profile = browser()->profile();
+  EXPECT_FALSE(profile_manager->HasKeepAliveForTesting(
+      regular_profile, ProfileKeepAliveOrigin::kOffTheRecordProfile));
+
+  Profile::OTRProfileID otr_profile_id("profile::otr");
+  Profile* otr_profile =
+      regular_profile->GetOffTheRecordProfile(otr_profile_id);
+
+  ProfileDestructionWatcher regular_watcher;
+  ProfileDestructionWatcher otr_watcher;
+  regular_watcher.Watch(regular_profile);
+  otr_watcher.Watch(otr_profile);
+
+  EXPECT_TRUE(profile_manager->HasKeepAliveForTesting(
+      regular_profile, ProfileKeepAliveOrigin::kBrowserWindow));
+  EXPECT_TRUE(profile_manager->HasKeepAliveForTesting(
+      regular_profile, ProfileKeepAliveOrigin::kOffTheRecordProfile));
+
+  // Close the browser. Because there's an OTR profile open, the regular Profile
+  // shouldn't get deleted.
+  browser()->tab_strip_model()->CloseAllTabs();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(profile_manager->HasKeepAliveForTesting(
+      regular_profile, ProfileKeepAliveOrigin::kBrowserWindow));
+  EXPECT_TRUE(profile_manager->HasKeepAliveForTesting(
+      regular_profile, ProfileKeepAliveOrigin::kOffTheRecordProfile));
+
+  // Destroy the OTR profile. *Now* the regular Profile should get deleted.
+  ProfileDestroyer::DestroyProfileWhenAppropriate(otr_profile);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(regular_watcher.destroyed());
+  EXPECT_TRUE(otr_watcher.destroyed());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Tests Profile::GetAllOffTheRecordProfiles
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, TestGetAllOffTheRecordProfiles) {
