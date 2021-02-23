@@ -160,6 +160,18 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
    */
   onAlert(evt) {
     const node = evt.target;
+
+    if (node.role === RoleType.ALERT && node.root.role === RoleType.DESKTOP) {
+      // Exclude alerts in the desktop tree that are inside of menus.
+      let ancestor = node;
+      while (ancestor) {
+        if (ancestor.role === RoleType.MENU) {
+          return;
+        }
+        ancestor = ancestor.parent;
+      }
+    }
+
     const range = cursors.Range.fromNode(node);
 
     const output = new Output()
