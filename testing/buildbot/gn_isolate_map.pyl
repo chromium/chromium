@@ -608,6 +608,10 @@
     "label": "//:chromiumos_preflight",
     "type": "additional_compile_target",
   },
+  "color_unittests": {
+    "label": "//ui/color:color_unittests",
+    "type": "console_test_launcher",
+  },
   "command_buffer_perftests": {
     "args": [
       "command_buffer_perftests",
