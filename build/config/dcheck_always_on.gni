@@ -5,7 +5,7 @@
 declare_args() {
   # Enables DCHECKs to be built-in, but to default to being non-fatal/log-only.
   # DCHECKS can then be set as fatal/non-fatal via the DCheckIsFatal feature.
-  # See crbug.com/596231 for details on how this is used.
+  # See https://bit.ly/dcheck-albatross for details on how this is used.
   dcheck_is_configurable = false
 }
 
