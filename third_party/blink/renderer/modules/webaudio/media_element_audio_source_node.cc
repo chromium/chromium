@@ -238,7 +238,7 @@ void MediaElementAudioSourceHandler::unlock() {
   process_lock_.unlock();
 }
 
-// ----------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 MediaElementAudioSourceNode::MediaElementAudioSourceNode(
     AudioContext& context,
@@ -286,12 +286,6 @@ MediaElementAudioSourceNode* MediaElementAudioSourceNode::Create(
   return Create(*context, *options->mediaElement(), exception_state);
 }
 
-void MediaElementAudioSourceNode::Trace(Visitor* visitor) const {
-  visitor->Trace(media_element_);
-  AudioSourceProviderClient::Trace(visitor);
-  AudioNode::Trace(visitor);
-}
-
 MediaElementAudioSourceHandler&
 MediaElementAudioSourceNode::GetMediaElementAudioSourceHandler() const {
   return static_cast<MediaElementAudioSourceHandler&>(Handler());
@@ -321,6 +315,17 @@ void MediaElementAudioSourceNode::ReportDidCreate() {
 
 void MediaElementAudioSourceNode::ReportWillBeDestroyed() {
   GraphTracer().WillDestroyAudioNode(this);
+}
+
+bool MediaElementAudioSourceNode::HasPendingActivity() const {
+  // The node stays alive as long as the context is running.
+  return context()->ContextState() == BaseAudioContext::kRunning;
+}
+
+void MediaElementAudioSourceNode::Trace(Visitor* visitor) const {
+  visitor->Trace(media_element_);
+  AudioSourceProviderClient::Trace(visitor);
+  AudioNode::Trace(visitor);
 }
 
 }  // namespace blink
