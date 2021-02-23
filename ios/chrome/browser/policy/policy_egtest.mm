@@ -168,6 +168,8 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
 - (void)testDefaultSearchProviderUpdate {
   [ChromeEarlGreyUI openSettingsMenu];
 
+  SetPolicy(true, policy::key::kDefaultSearchProviderEnabled);
+
   // Check that the non-managed item is present.
   [[[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                            kSettingsSearchEngineCellId)]
