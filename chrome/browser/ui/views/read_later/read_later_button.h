@@ -21,6 +21,10 @@
 class Browser;
 class WebUIBubbleDialogView;
 
+namespace views {
+class DotIndicator;
+}
+
 // Button in the bookmarks bar that provides access to the corresponding
 // read later menu.
 // TODO(corising): Handle the the async presentation of the UI bubble.
@@ -35,6 +39,8 @@ class ReadLaterButton : public views::LabelButton,
   ~ReadLaterButton() override;
 
   void CloseBubble();
+
+  views::DotIndicator* dot_indicator_for_testing() { return dot_indicator_; }
 
  private:
   class HighlightColorAnimation : gfx::AnimationDelegate {
@@ -78,12 +84,13 @@ class ReadLaterButton : public views::LabelButton,
       const override;
   SkColor GetInkDropBaseColor() const override;
   void OnThemeChanged() override;
+  void Layout() override;
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
   // ReadingListModelObserver:
-  void ReadingListModelLoaded(const ReadingListModel* model) override {}
+  void ReadingListModelLoaded(const ReadingListModel* model) override;
   void ReadingListModelBeingDeleted(const ReadingListModel* model) override;
   void ReadingListDidAddEntry(const ReadingListModel* model,
                               const GURL& url,
@@ -97,6 +104,8 @@ class ReadLaterButton : public views::LabelButton,
 
   // TODO(pbos): Figure out a better way to handle this.
   WebUIBubbleDialogView* read_later_side_panel_bubble_ = nullptr;
+
+  views::DotIndicator* dot_indicator_ = nullptr;
 
   ReadingListModel* reading_list_model_ = nullptr;
   base::ScopedObservation<ReadingListModel, ReadingListModelObserver>
