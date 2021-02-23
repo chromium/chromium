@@ -133,8 +133,6 @@ public class StatusProperties {
      * highlight.
      */
     static class PermissionIconResource extends StatusIconResource {
-        private static Bitmap sCircleBackground;
-
         PermissionIconResource(Drawable drawable) {
             super(drawable);
         }
@@ -157,7 +155,7 @@ public class StatusProperties {
             icon.setColorFilter(
                     ApiCompatibilityUtils.getColor(resources, R.color.default_icon_color_blue),
                     PorterDuff.Mode.SRC_IN);
-            Bitmap circleCopy = getCircleBackground(resources);
+            Bitmap circleCopy = createCircleBackground(resources);
             Canvas canvas = new Canvas(circleCopy);
             float radius = 0.5f * canvas.getWidth();
             Bitmap iconBitmap = createScaledIcon(icon, 0.9f);
@@ -184,19 +182,18 @@ public class StatusProperties {
         }
 
         /** Returns a bitmap of the circle icon to be used for the Drawable. */
-        private Bitmap getCircleBackground(Resources resources) {
-            if (sCircleBackground == null) {
-                int width = resources.getDimensionPixelSize(R.dimen.location_bar_status_icon_width);
-                float radius = 0.5f * width;
-                sCircleBackground = Bitmap.createBitmap(width, width, Bitmap.Config.ARGB_8888);
-                Canvas canvas = new Canvas(sCircleBackground);
-                Paint paint = new Paint();
-                paint.setColor(ApiCompatibilityUtils.getColor(
-                        resources, R.color.toolbar_background_primary));
-                paint.setAntiAlias(true);
-                canvas.drawCircle(radius, radius, radius, paint);
-            }
-            return sCircleBackground.copy(sCircleBackground.getConfig(), true);
+        private Bitmap createCircleBackground(Resources resources) {
+            // Recreate circle every time due to changing dpi and light/dark themes.
+            int width = resources.getDimensionPixelSize(R.dimen.location_bar_status_icon_width);
+            float radius = 0.5f * width;
+            Bitmap circleBackground = Bitmap.createBitmap(width, width, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(circleBackground);
+            Paint paint = new Paint();
+            paint.setColor(
+                    ApiCompatibilityUtils.getColor(resources, R.color.toolbar_background_primary));
+            paint.setAntiAlias(true);
+            canvas.drawCircle(radius, radius, radius, paint);
+            return circleBackground;
         }
     }
 
