@@ -8,7 +8,11 @@
     Exposed(Window WebGPU, Worker WebGPU)
 ] interface GPUDevice : EventTarget {
     [SameObject] readonly attribute GPUAdapter adapter;
-    readonly attribute FrozenArray<GPUExtensionName> extensions;
+
+    readonly attribute FrozenArray<GPUFeatureName> features;
+    // Deprecated
+    readonly attribute FrozenArray<GPUFeatureName> extensions;
+
     [CallWith=ScriptState] readonly attribute Promise<GPUDeviceLostInfo> lost;
 
     [SameObject] readonly attribute GPUQueue queue;

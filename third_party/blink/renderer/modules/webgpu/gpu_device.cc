@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_compute_pipeline_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_device_descriptor.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_extension_name.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_feature_name.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_uncaptured_error_event_init.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -62,9 +62,9 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
       DawnObject(dawn_control_client, dawn_device),
       adapter_(adapter),
 #ifdef USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY
-      extension_name_list_(ToStringVector(descriptor->extensions())),
+      feature_name_list_(ToStringVector(descriptor->nonGuaranteedFeatures())),
 #else
-      extension_name_list_(descriptor->extensions()),
+      feature_name_list_(descriptor->nonGuaranteedFeatures()),
 #endif
       queue_(MakeGarbageCollected<GPUQueue>(
           this,
@@ -152,8 +152,15 @@ GPUAdapter* GPUDevice::adapter() const {
   return adapter_;
 }
 
-Vector<String> GPUDevice::extensions() const {
-  return extension_name_list_;
+Vector<String> GPUDevice::features() const {
+  return feature_name_list_;
+}
+
+Vector<String> GPUDevice::extensions() {
+  AddConsoleWarning(
+      "The extensions attribute has been deprecated in favor of the features "
+      "attribute, and will soon be removed.");
+  return feature_name_list_;
 }
 
 ScriptPromise GPUDevice::lost(ScriptState* script_state) {

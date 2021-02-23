@@ -158,8 +158,8 @@ void GPU::RecordAdapterForIdentifiability(
   IdentifiableTokenBuilder output_builder;
   if (adapter) {
     output_builder.AddToken(IdentifiabilityBenignStringToken(adapter->name()));
-    for (const auto& extension : adapter->extensions(script_state)) {
-      output_builder.AddToken(IdentifiabilityBenignStringToken(extension));
+    for (const auto& feature : adapter->features()) {
+      output_builder.AddToken(IdentifiabilityBenignStringToken(feature));
     }
   }
 

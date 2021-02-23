@@ -4,7 +4,7 @@
 
 // https://gpuweb.github.io/gpuweb/
 
-enum GPUExtensionName {
+enum GPUFeatureName {
     "pipeline-statistics-query",
     "texture-compression-bc",
     "timestamp-query",
@@ -15,7 +15,9 @@ enum GPUExtensionName {
     Exposed(Window WebGPU, Worker WebGPU)
 ] interface GPUAdapter {
     [HighEntropy=Direct, MeasureAs=GPUAdapter_Name] readonly attribute DOMString name;
-    [CallWith=ScriptState, SameObject] readonly attribute FrozenArray<GPUExtensionName> extensions;
+    [SameObject] readonly attribute FrozenArray<GPUFeatureName> features;
+    // Deprecated
+    [CallWith=ExecutionContext, SameObject] readonly attribute FrozenArray<GPUFeatureName> extensions;
 
     [CallWith=ScriptState] Promise<GPUDevice> requestDevice(optional GPUDeviceDescriptor descriptor = {});
 };
