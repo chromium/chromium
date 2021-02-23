@@ -203,7 +203,7 @@ class RenderFrameHostImplBrowserTest : public ContentBrowserTest {
     CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &path));
     path = path.Append(GetTestDataFilePath());
     path = path.Append(file_path);
-    return GURL(FILE_PATH_LITERAL("file:") + path.value());
+    return GURL("file:" + path.AsUTF8Unsafe());
   }
 
  protected:

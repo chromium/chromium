@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 
 namespace content {
@@ -18,7 +19,7 @@ MockKeyboard::~MockKeyboard() {
 int MockKeyboard::GetCharacters(Layout layout,
                                 int key_code,
                                 Modifiers modifiers,
-                                std::wstring* output) {
+                                base::string16* output) {
 #if defined(OS_WIN)
   CHECK(output);
   // Change the keyboard layout only when we have to because it takes a lot of
@@ -40,7 +41,10 @@ int MockKeyboard::GetCharacters(Layout layout,
   }
 
   // Retrieve Unicode characters associate with the key code.
-  return driver_.GetCharacters(key_code, output);
+  std::wstring wide_output;
+  int result = driver_.GetCharacters(key_code, &wide_output);
+  *output = base::WideToUTF16(wide_output);
+  return result;
 #else
   NOTIMPLEMENTED();
   return -1;

@@ -245,11 +245,10 @@ IN_PROC_BROWSER_TEST_F(FileURLLoaderFactoryBrowserTest, ResolveShortcutTest) {
         CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&shell))));
     Microsoft::WRL::ComPtr<IPersistFile> persist;
     ASSERT_TRUE(SUCCEEDED(shell.As<IPersistFile>(&persist)));
-    EXPECT_TRUE(
-        SUCCEEDED(shell->SetPath(base::as_wcstr(TestFilePath().value()))));
+    EXPECT_TRUE(SUCCEEDED(shell->SetPath(TestFilePath().value().c_str())));
     EXPECT_TRUE(SUCCEEDED(shell->SetDescription(L"ResolveShortcutTest")));
-    base::string16 lnk_string = lnk_path.value();
-    EXPECT_TRUE(SUCCEEDED(persist->Save(base::as_wcstr(lnk_string), TRUE)));
+    std::wstring lnk_string = lnk_path.value();
+    EXPECT_TRUE(SUCCEEDED(persist->Save(lnk_string.c_str(), TRUE)));
   }
 
   EXPECT_TRUE(NavigateToURL(

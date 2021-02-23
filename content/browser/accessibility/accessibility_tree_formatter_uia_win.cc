@@ -947,11 +947,11 @@ void AccessibilityTreeFormatterUia::WriteI4Property(
       break;
     case UIA_OrientationPropertyId:
       dict->SetString(GetPropertyName(propertyId),
-                      UiaOrientationToString(lval));
+                      base::WideToUTF8(UiaOrientationToString(lval)));
       break;
     case UIA_LiveSettingPropertyId:
       dict->SetString(GetPropertyName(propertyId),
-                      UiaLiveSettingToString(lval));
+                      base::WideToUTF8(UiaLiveSettingToString(lval)));
       break;
     default:
       dict->SetInteger(GetPropertyName(propertyId), lval);

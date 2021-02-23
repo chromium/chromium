@@ -1034,8 +1034,8 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, SSLKeyLogFileMetrics) {
   base::CreateTemporaryFile(&log_file_path);
 
 #if defined(OS_WIN)
-  // On Windows, FilePath::value() returns base::string16, so convert.
-  std::string log_file_path_str = base::UTF16ToUTF8(log_file_path.value());
+  // On Windows, FilePath::value() returns std::wstring, so convert.
+  std::string log_file_path_str = base::WideToUTF8(log_file_path.value());
 #else
   std::string log_file_path_str = log_file_path.value();
 #endif

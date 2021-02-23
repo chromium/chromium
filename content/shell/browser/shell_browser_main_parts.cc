@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
@@ -90,7 +91,11 @@ GURL GetStartupURL() {
   if (args.empty())
     return GURL("https://www.google.com/");
 
+#if defined(OS_WIN)
+  GURL url(base::WideToUTF16(args[0]));
+#else
   GURL url(args[0]);
+#endif
   if (url.is_valid() && url.has_scheme())
     return url;
 

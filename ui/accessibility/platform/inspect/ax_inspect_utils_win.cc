@@ -30,16 +30,16 @@ struct PlatformConstantToNameEntry {
   const char* name;
 };
 
-base::string16 GetNameForPlatformConstant(
+std::wstring GetNameForPlatformConstant(
     const PlatformConstantToNameEntry table[],
     size_t table_size,
     int32_t value) {
   for (size_t i = 0; i < table_size; ++i) {
     auto& entry = table[i];
     if (entry.value == value)
-      return base::ASCIIToUTF16(entry.name);
+      return base::ASCIIToWide(entry.name);
   }
-  return base::string16();
+  return std::wstring();
 }
 
 struct HwndWithProcId {
@@ -64,7 +64,7 @@ BOOL CALLBACK EnumWindowsProcPid(HWND hwnd, LPARAM lParam) {
 #define QUOTE(X) \
   { X, #X }
 
-AX_EXPORT base::string16 IAccessibleRoleToString(int32_t ia_role) {
+AX_EXPORT std::wstring IAccessibleRoleToString(int32_t ia_role) {
   // MSAA / IAccessible roles. Each one of these is also a valid
   // IAccessible2 role.
   static const PlatformConstantToNameEntry ia_table[] = {
@@ -105,8 +105,8 @@ AX_EXPORT base::string16 IAccessibleRoleToString(int32_t ia_role) {
   return GetNameForPlatformConstant(ia_table, base::size(ia_table), ia_role);
 }
 
-AX_EXPORT base::string16 IAccessible2RoleToString(int32_t ia2_role) {
-  base::string16 result = IAccessibleRoleToString(ia2_role);
+AX_EXPORT std::wstring IAccessible2RoleToString(int32_t ia2_role) {
+  std::wstring result = IAccessibleRoleToString(ia2_role);
   if (!result.empty())
     return result;
 
@@ -169,7 +169,7 @@ AX_EXPORT base::string16 IAccessible2RoleToString(int32_t ia2_role) {
   return GetNameForPlatformConstant(ia2_table, base::size(ia2_table), ia2_role);
 }
 
-AX_EXPORT base::string16 AccessibilityEventToString(int32_t event) {
+AX_EXPORT std::wstring AccessibilityEventToString(int32_t event) {
   static const PlatformConstantToNameEntry event_table[] = {
       QUOTE(EVENT_OBJECT_CREATE),
       QUOTE(EVENT_OBJECT_DESTROY),
@@ -248,7 +248,7 @@ AX_EXPORT base::string16 AccessibilityEventToString(int32_t event) {
 }
 
 void IAccessibleStateToStringVector(int32_t ia_state,
-                                    std::vector<base::string16>* result) {
+                                    std::vector<std::wstring>* result) {
 #define QUOTE_STATE(X) \
   { STATE_SYSTEM_##X, #X }
   // MSAA / IAccessible states. Unlike roles, these are not also IA2 states.
@@ -276,18 +276,18 @@ void IAccessibleStateToStringVector(int32_t ia_state,
   };
   for (auto& entry : ia_table) {
     if (entry.value & ia_state)
-      result->push_back(base::ASCIIToUTF16(entry.name));
+      result->push_back(base::ASCIIToWide(entry.name));
   }
 }
 
-base::string16 IAccessibleStateToString(int32_t ia_state) {
-  std::vector<base::string16> strings;
+std::wstring IAccessibleStateToString(int32_t ia_state) {
+  std::vector<std::wstring> strings;
   IAccessibleStateToStringVector(ia_state, &strings);
-  return base::JoinString(strings, base::ASCIIToUTF16(","));
+  return base::JoinString(strings, L",");
 }
 
 void IAccessible2StateToStringVector(int32_t ia2_state,
-                                     std::vector<base::string16>* result) {
+                                     std::vector<std::wstring>* result) {
   // Note: for historical reasons these are in numerical order rather than
   // alphabetical order. Changing the order would change the order in which
   // the states are printed, which would affect a bunch of tests.
@@ -317,17 +317,17 @@ void IAccessible2StateToStringVector(int32_t ia2_state,
 
   for (auto& entry : ia2_table) {
     if (entry.value & ia2_state)
-      result->push_back(base::ASCIIToUTF16(entry.name));
+      result->push_back(base::ASCIIToWide(entry.name));
   }
 }
 
-base::string16 IAccessible2StateToString(int32_t ia2_state) {
-  std::vector<base::string16> strings;
+std::wstring IAccessible2StateToString(int32_t ia2_state) {
+  std::vector<std::wstring> strings;
   IAccessible2StateToStringVector(ia2_state, &strings);
-  return base::JoinString(strings, base::ASCIIToUTF16(","));
+  return base::JoinString(strings, L",");
 }
 
-AX_EXPORT base::string16 UiaIdentifierToString(int32_t identifier) {
+AX_EXPORT std::wstring UiaIdentifierToString(int32_t identifier) {
   static const PlatformConstantToNameEntry id_table[] = {
       // Patterns
       QUOTE(UIA_InvokePatternId),
@@ -669,14 +669,14 @@ AX_EXPORT base::string16 UiaIdentifierToString(int32_t identifier) {
   return GetNameForPlatformConstant(id_table, base::size(id_table), identifier);
 }
 
-AX_EXPORT base::string16 UiaOrientationToString(int32_t identifier) {
+AX_EXPORT std::wstring UiaOrientationToString(int32_t identifier) {
   static const PlatformConstantToNameEntry id_table[] = {
       QUOTE(OrientationType_None), QUOTE(OrientationType_Horizontal),
       QUOTE(OrientationType_Vertical)};
   return GetNameForPlatformConstant(id_table, base::size(id_table), identifier);
 }
 
-AX_EXPORT base::string16 UiaLiveSettingToString(int32_t identifier) {
+AX_EXPORT std::wstring UiaLiveSettingToString(int32_t identifier) {
   static const PlatformConstantToNameEntry id_table[] = {
       QUOTE(LiveSetting::Off), QUOTE(LiveSetting::Polite),
       QUOTE(LiveSetting::Assertive)};
@@ -689,7 +689,7 @@ AX_EXPORT std::string BstrToUTF8(BSTR bstr) {
 }
 
 AX_EXPORT std::string UiaIdentifierToStringUTF8(int32_t id) {
-  return base::UTF16ToUTF8(UiaIdentifierToString(id));
+  return base::WideToUTF8(UiaIdentifierToString(id));
 }
 
 AX_EXPORT HWND GetHwndForProcess(base::ProcessId pid) {

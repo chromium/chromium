@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "content/shell/app/resource.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_javascript_dialog_manager.h"
@@ -25,10 +26,11 @@ INT_PTR CALLBACK ShellJavaScriptDialog::DialogProc(HWND dialog,
       ShellJavaScriptDialog* owner =
           reinterpret_cast<ShellJavaScriptDialog*>(lparam);
       owner->dialog_win_ = dialog;
-      SetDlgItemText(dialog, IDC_DIALOGTEXT, owner->message_text_.c_str());
+      SetDlgItemText(dialog, IDC_DIALOGTEXT,
+                     base::as_wcstr(owner->message_text_));
       if (owner->dialog_type_ == JAVASCRIPT_DIALOG_TYPE_PROMPT)
         SetDlgItemText(dialog, IDC_PROMPTEDIT,
-                       owner->default_prompt_text_.c_str());
+                       base::as_wcstr(owner->default_prompt_text_));
       break;
     }
     case WM_DESTROY: {
@@ -44,7 +46,7 @@ INT_PTR CALLBACK ShellJavaScriptDialog::DialogProc(HWND dialog,
     case WM_COMMAND: {
       ShellJavaScriptDialog* owner = reinterpret_cast<ShellJavaScriptDialog*>(
           GetWindowLongPtr(dialog, DWLP_USER));
-      base::string16 user_input;
+      std::wstring user_input;
       bool finish = false;
       bool result = false;
       switch (LOWORD(wparam)) {
@@ -65,7 +67,7 @@ INT_PTR CALLBACK ShellJavaScriptDialog::DialogProc(HWND dialog,
       }
       if (finish) {
         owner->dialog_win_ = 0;
-        std::move(owner->callback_).Run(result, user_input);
+        std::move(owner->callback_).Run(result, base::WideToUTF16(user_input));
         DestroyWindow(dialog);
         owner->manager_->DialogClosed(owner);
       }

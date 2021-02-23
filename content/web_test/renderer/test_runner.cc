@@ -279,7 +279,7 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
   void ForceNextWebGLContextCreationToFail();
   void GetBluetoothManualChooserEvents(v8::Local<v8::Function> callback);
   void GetManifestThen(v8::Local<v8::Function> callback);
-  base::FilePath::StringType GetWritableDirectory();
+  std::string GetWritableDirectory();
   void InsertStyleSheet(const std::string& source_code);
   void UpdateAllLifecyclePhasesAndComposite();
   void UpdateAllLifecyclePhasesAndCompositeThen(
@@ -324,7 +324,7 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
   void SetDumpConsoleMessages(bool value);
   void SetDumpJavaScriptDialogs(bool value);
   void SetEffectiveConnectionType(const std::string& connection_type);
-  void SetFilePathForMockFileDialog(const base::FilePath::StringType& path);
+  void SetFilePathForMockFileDialog(const std::string& path);
   void SetMockSpellCheckerEnabled(bool enabled);
   void SetImagesAllowed(bool allowed);
   void SetIsolatedWorldInfo(int world_id,
@@ -1033,20 +1033,19 @@ void TestRunnerBindings::SetEffectiveConnectionType(
     runner_->SetEffectiveConnectionType(web_type);
 }
 
-base::FilePath::StringType TestRunnerBindings::GetWritableDirectory() {
+std::string TestRunnerBindings::GetWritableDirectory() {
   if (invalid_)
     return {};
   base::FilePath result;
   runner_->GetWebTestControlHostRemote()->GetWritableDirectory(&result);
-  return result.value();
+  return result.AsUTF8Unsafe();
 }
 
-void TestRunnerBindings::SetFilePathForMockFileDialog(
-    const base::FilePath::StringType& path) {
+void TestRunnerBindings::SetFilePathForMockFileDialog(const std::string& path) {
   if (invalid_)
     return;
   runner_->GetWebTestControlHostRemote()->SetFilePathForMockFileDialog(
-      base::FilePath(path));
+      base::FilePath::FromUTF8Unsafe(path));
 }
 
 void TestRunnerBindings::SetMockSpellCheckerEnabled(bool enabled) {

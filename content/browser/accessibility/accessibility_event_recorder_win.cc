@@ -35,7 +35,7 @@ namespace {
 
 std::string RoleVariantToString(const base::win::ScopedVariant& role) {
   if (role.type() == VT_I4) {
-    return base::UTF16ToUTF8(IAccessibleRoleToString(V_I4(role.ptr())));
+    return base::WideToUTF8(IAccessibleRoleToString(V_I4(role.ptr())));
   } else if (role.type() == VT_BSTR) {
     return base::WideToUTF8(
         std::wstring(V_BSTR(role.ptr()), SysStringLen(V_BSTR(role.ptr()))));
@@ -75,7 +75,7 @@ std::string BstrToPrettyUTF8(BSTR bstr) {
 }
 
 std::string AccessibilityEventToStringUTF8(int32_t event_id) {
-  return base::UTF16ToUTF8(AccessibilityEventToString(event_id));
+  return base::WideToUTF8(AccessibilityEventToString(event_id));
 }
 
 }  // namespace
@@ -178,10 +178,10 @@ void AccessibilityEventRecorderWin::OnWinEventHook(HWINEVENTHOOK handle,
   // Log all caret events  that occur, with their window class, so that we can
   // test to make sure they are only occurring on the desired window class.
   if (ROLE_SYSTEM_CARET == V_I4(role.ptr())) {
-    base::string16 state_str = IAccessibleStateToString(ia_state);
+    std::wstring state_str = IAccessibleStateToString(ia_state);
     std::string log = base::StringPrintf(
         "%s role=ROLE_SYSTEM_CARET %ls window_class=%s", event_str.c_str(),
-        base::as_wcstr(state_str), hwnd_class_name.c_str());
+        state_str.c_str(), hwnd_class_name.c_str());
     OnEvent(log);
     return;
   }
@@ -280,9 +280,9 @@ void AccessibilityEventRecorderWin::OnWinEventHook(HWINEVENTHOOK handle,
                                     BstrToPrettyUTF8(value_bstr.Get()).c_str());
   }
   log += " ";
-  log += base::UTF16ToUTF8(IAccessibleStateToString(ia_state));
+  log += base::WideToUTF8(IAccessibleStateToString(ia_state));
   log += " ";
-  log += base::UTF16ToUTF8(IAccessible2StateToString(ia2_state));
+  log += base::WideToUTF8(IAccessible2StateToString(ia2_state));
 
   // Group position, e.g. L3, 5 of 7
   LONG group_level, similar_items_in_group, position_in_group;

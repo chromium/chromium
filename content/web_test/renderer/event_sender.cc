@@ -1829,7 +1829,8 @@ void EventSender::DumpFilenameBeingDragged() {
                                 std::string(),   // mime_type
                                 std::string());  // default_name
 #if defined(OS_WIN)
-      filename = filename.ReplaceExtension(filename_extension.Utf16());
+      filename = filename.ReplaceExtension(
+          base::UTF8ToWide(filename_extension.Utf8()));
 #else
       filename = filename.ReplaceExtension(filename_extension.Utf8());
 #endif

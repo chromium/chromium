@@ -354,7 +354,7 @@ void AccessibilityTreeFormatterWin::AddProperties(
 
 base::string16 RoleVariantToString(const base::win::ScopedVariant& role) {
   if (role.type() == VT_I4) {
-    return IAccessible2RoleToString(V_I4(role.ptr()));
+    return base::WideToUTF16(IAccessible2RoleToString(V_I4(role.ptr())));
   } else if (role.type() == VT_BSTR) {
     BSTR bstr_role = V_BSTR(role.ptr());
     return base::WideToUTF16({bstr_role, SysStringLen(bstr_role)});
@@ -421,13 +421,13 @@ void AccessibilityTreeFormatterWin::AddMSAAProperties(
   if (node->get_accState(variant_self, ia_state_variant.Receive()) == S_OK &&
       ia_state_variant.type() == VT_I4) {
     ia_state = ia_state_variant.ptr()->intVal;
-    std::vector<base::string16> state_strings;
+    std::vector<std::wstring> state_strings;
     IAccessibleStateToStringVector(ia_state, &state_strings);
 
     base::Value::ListStorage states;
     states.reserve(state_strings.size());
     for (const auto& str : state_strings)
-      states.push_back(base::Value(str));
+      states.emplace_back(base::WideToUTF8(str));
     dict->SetKey("states", base::Value(std::move(states)));
   }
 
@@ -502,10 +502,11 @@ bool AccessibilityTreeFormatterWin::AddIA2Properties(
     dict->GetString("role", &legacy_role);
     dict->SetString("msaa_legacy_role", legacy_role);
     // Overwrite MSAA role which is more limited.
-    dict->SetString("role", IAccessible2RoleToString(ia2_role));
+    dict->SetString("role",
+                    base::WideToUTF8(IAccessible2RoleToString(ia2_role)));
   }
 
-  std::vector<base::string16> state_strings;
+  std::vector<std::wstring> state_strings;
   AccessibleStates states;
   if (ia2->get_states(&states) == S_OK) {
     IAccessible2StateToStringVector(states, &state_strings);
@@ -513,7 +514,7 @@ bool AccessibilityTreeFormatterWin::AddIA2Properties(
     base::Value* states_list = dict->FindListKey("states");
     if (states_list) {
       for (const auto& str : state_strings)
-        states_list->Append(str);
+        states_list->Append(base::WideToUTF8(str));
     }
   }
 

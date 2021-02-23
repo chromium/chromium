@@ -3162,8 +3162,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   base::FilePath simple_links_path =
       test_data_dir.Append(GetTestDataFilePath())
           .Append(FILE_PATH_LITERAL("simple_links.html"));
-  GURL url(base::FilePath::StringType(FILE_PATH_LITERAL("file://")) +
-           simple_links_path.value());
+  GURL url("file://" + simple_links_path.AsUTF8Unsafe());
 
   shell()->set_delay_popup_contents_delegate_for_testing(true);
   EXPECT_TRUE(NavigateToURL(shell(), url));

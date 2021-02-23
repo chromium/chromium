@@ -31,7 +31,7 @@ using ui::UiaIdentifierToString;
 namespace {
 
 std::string UiaIdentifierToStringPretty(int32_t id) {
-  auto str = base::UTF16ToUTF8(UiaIdentifierToString(id));
+  auto str = base::WideToUTF8(UiaIdentifierToString(id));
   // Remove UIA_ prefix, and EventId/PropertyId suffixes
   if (base::StartsWith(str, "UIA_", base::CompareCase::SENSITIVE))
     str = str.substr(base::size("UIA_") - 1);

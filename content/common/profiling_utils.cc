@@ -39,7 +39,7 @@ base::File OpenProfilingFile() {
   base::FilePath path;
   if (env->GetVar("LLVM_PROFILE_FILE", &prof_template)) {
 #if defined(OS_WIN)
-    path = base::FilePath(base::UTF8ToUTF16(prof_template)).DirName();
+    path = base::FilePath(base::UTF8ToWide(prof_template)).DirName();
 #else
     path = base::FilePath(prof_template).DirName();
 #endif
@@ -56,7 +56,7 @@ base::File OpenProfilingFile() {
   std::string filename = base::StrCat(
       {"child_pool-", base::NumberToString(pool_index), ".profraw"});
 #if defined(OS_WIN)
-  path = path.Append(base::UTF8ToUTF16(filename));
+  path = path.Append(base::UTF8ToWide(filename));
 #else
   path = path.Append(filename);
 #endif
