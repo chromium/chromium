@@ -36,6 +36,13 @@
       #exceptionHeader {
         padding: 0 var(--cr-section-padding);
       }
+
+      #toastText {
+        align-items: center;
+        display: flex;
+        max-width: 300px;
+        min-height: var(--settings-row-two-line-min-height);
+      }
     </style>
     <picture>
       <source
@@ -166,7 +173,7 @@
         search-filter="[[searchTerm]]">
     </site-list>
     <cr-toast id="toast" duration="8500">
-      <div>$i18n{privacySandboxCookiesDialog}</div>
+      <div id="toastText">$i18n{privacySandboxCookiesDialog}</div>
       <cr-button on-click="onPrivacySandboxClick_">
         $i18n{privacySandboxCookiesDialogMore}
       </cr-button>
