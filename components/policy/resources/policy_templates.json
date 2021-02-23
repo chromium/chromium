@@ -1227,7 +1227,7 @@
     },
     {
       'name': 'HomepageLocation',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:8-', 'chrome_os:11-', 'android:81-'],
@@ -1253,7 +1253,7 @@
     },
     {
       'name': 'HomepageIsNewTabPage',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:8-', 'chrome_os:11-'],
@@ -1274,7 +1274,7 @@
     },
     {
       'name': 'NewTabPageLocation',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:58-', 'chrome_os:58-'],
@@ -1301,7 +1301,7 @@
     },
     {
       'name': 'DefaultBrowserSettingEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.win7:11-', 'chrome.mac:11-', 'chrome.linux:11-'],
@@ -1322,7 +1322,7 @@
     },
     {
       'name': 'ApplicationLocaleValue',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'hendrich@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.win:8-'],
@@ -1345,7 +1345,7 @@
     },
     {
       'name': 'AlternateErrorPagesEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': [
@@ -1368,7 +1368,7 @@
     },
     {
       'name': 'SearchSuggestEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'emaxx@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': [
@@ -1392,7 +1392,7 @@
     },
     {
       'name': 'NativeWindowOcclusionEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pmarko@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': [
@@ -1420,7 +1420,7 @@
     },
     {
       'name': 'WindowOcclusionEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'zmin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': [
@@ -1456,7 +1456,7 @@
     },
     {
       'name': 'DnsPrefetchingEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'poromov@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:8-53', 'chrome_os:11-53', 'android:30-53'],
@@ -1482,7 +1482,7 @@
     },
     {
       'name': 'NetworkPredictionOptions',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'poromov@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -1522,7 +1522,7 @@
     },
     {
       'name': 'WPADQuickCheckEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': [ 'chrome.*:35-', 'chrome_os:35-' ],
@@ -1553,7 +1553,7 @@
     },
     {
       'name': 'DisableSpdy',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'hendrich@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:8-53', 'chrome_os:11-53', 'android:30-53'],
@@ -1578,7 +1578,7 @@
     },
     {
       'name': 'DisabledSchemes',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'zmin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -1605,7 +1605,7 @@
     },
     {
       'name': 'GloballyScopeHTTPAuthCacheEnabled',
-      'owners': ['file://net/OWNERS'],
+      'owners': ['file://net/OWNERS', 'mmenke@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:80-', 'chrome_os:80-'],
@@ -1707,7 +1707,7 @@
     },
     {
       'name': 'Http09OnNonDefaultPortsEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'anqing@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:54-77', 'chrome_os:54-77'],
@@ -1732,7 +1732,7 @@
     },
     {
       'name': 'JavascriptEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'bartfab@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:8-', 'chrome_os:11-', 'android:30-'],
@@ -1755,7 +1755,7 @@
     },
     {
       'name': 'IncognitoEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'hendrich@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:11-', 'chrome_os:11-', 'android:30-'],
@@ -1779,7 +1779,7 @@
     },
     {
       'name': 'IncognitoModeAvailability',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'emaxx@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -1830,7 +1830,7 @@
     },
     {
       'name': 'SavingBrowserHistoryDisabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'emaxx@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': [
@@ -1853,7 +1853,7 @@
     },
     {
       'name': 'AllowDeletingBrowserHistory',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'bartfab@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:57-', 'chrome_os:57-'],
@@ -1871,7 +1871,7 @@
     },
     {
       'name': 'AllowDinosaurEasterEgg',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'poromov@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:48-', 'chrome.*:48-'],
@@ -1913,7 +1913,7 @@
     },
     {
       'name': 'RemoteAccessClientFirewallTraversal',
-      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org', 'garykac@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:14-16', 'chrome_os:14-16'],
@@ -1936,7 +1936,7 @@
     },
     {
       'name': 'RemoteAccessHostClientDomain',
-      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org', 'joedow@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:22-', 'chrome_os:41-'],
@@ -1954,7 +1954,7 @@
     },
     {
       'name': 'RemoteAccessHostClientDomainList',
-      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org', 'garykac@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -1999,7 +1999,7 @@
     },
     {
       'name': 'RemoteAccessHostDomain',
-      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org', 'yuweih@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:22-', 'chrome_os:41-'],
@@ -2017,7 +2017,7 @@
     },
     {
       'name': 'RemoteAccessHostDomainList',
-      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org', 'yuweih@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -2043,7 +2043,7 @@
     },
     {
       'name': 'RemoteAccessHostRequireTwoFactor',
-      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org', 'lambroslambrou@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:22-22'],
@@ -2066,7 +2066,7 @@
     },
     {
       'name': 'RemoteAccessHostTalkGadgetPrefix',
-      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org', 'joedow@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:22-75', 'chrome_os:41-75'],
@@ -2092,7 +2092,7 @@
     },
     {
       'name': 'RemoteAccessHostRequireCurtain',
-      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org', 'garykac@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:23-'],
@@ -2130,7 +2130,7 @@
     },
     {
       'name': 'RemoteAccessHostAllowGnubbyAuth',
-      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org', 'lambroslambrou@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:35-'],
@@ -2152,7 +2152,7 @@
     },
     {
       'name': 'RemoteAccessHostAllowRelayedConnection',
-      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org', 'garykac@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:36-', 'chrome_os:86-'],
@@ -2171,7 +2171,7 @@
     },
     {
       'name': 'RemoteAccessHostUdpPortRange',
-      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org', 'yuweih@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:36-', 'chrome_os:41-'],
@@ -2233,7 +2233,7 @@
     },
     {
       'name': 'RemoteAccessHostTokenValidationUrl',
-      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org', 'garykac@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:28-'],
@@ -2291,7 +2291,7 @@
     },
     {
       'name': 'RemoteAccessHostAllowUiAccessForRemoteAssistance',
-      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org', 'lambroslambrou@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.win:55-'],
@@ -2331,7 +2331,7 @@
     },
     {
       'name': 'RemoteAccessHostEnableUserInterface',
-      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org', 'joedow@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:88-'],
@@ -2352,7 +2352,7 @@
     },
     {
       'name': 'RemoteAccessHostAllowRemoteAccessConnections',
-      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org', 'joedow@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:89-'],
@@ -2382,7 +2382,7 @@
     },
     {
       'name': 'RemoteAccessHostMaximumSessionDurationMinutes',
-      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org', 'joedow@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer', 'minimum': 30, 'maximum': 10080 },
       'supported_on': ['chrome.*:89-'],
@@ -2429,7 +2429,7 @@
     },
     {
       'name': 'PrintingEnabled',
-      'owners': ['file://printing/OWNERS', 'thestig@chromium.org'],
+      'owners': ['file://printing/OWNERS', 'thestig@chromium.org', 'rbpotter@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': [
@@ -3159,7 +3159,7 @@
     },
     {
       'name': 'ForceYouTubeRestrict',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'poromov@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -3203,7 +3203,7 @@
     },
     {
       'name': 'SafeBrowsingEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': [
@@ -3291,7 +3291,7 @@
     },
     {
       'name': 'MetricsReportingEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'zmin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': [
@@ -3319,7 +3319,7 @@
     },
     {
       'name': 'PasswordManagerEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': [
@@ -3346,7 +3346,7 @@
     },
     {
       'name': 'PasswordManagerAllowShowPasswords',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:8-50', 'chrome_os:11-50'],
@@ -3369,7 +3369,7 @@
     },
     {
       'name': 'PasswordLeakDetectionEnabled',
-      'owners': ['file://components/password_manager/OWNERS'],
+      'owners': ['file://components/password_manager/OWNERS', 'mamir@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': [
@@ -3394,7 +3394,7 @@
     },
     {
       'name': 'AutoFillEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'hendrich@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': [
@@ -3422,7 +3422,7 @@
     },
     {
       'name': 'AutofillAddressEnabled',
-      'owners': ['file://components/autofill/OWNERS'],
+      'owners': ['file://components/autofill/OWNERS', 'sebsg@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': [
@@ -3470,7 +3470,7 @@
     },
     {
       'name': 'DisabledPlugins',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -3501,7 +3501,7 @@
     },
     {
       'name': 'EnabledPlugins',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -3532,7 +3532,7 @@
     },
     {
       'name': 'DisabledPluginsExceptions',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -3565,7 +3565,7 @@
     },
     {
       'name': 'AlwaysOpenPdfExternally',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:55-'],
@@ -3583,7 +3583,7 @@
     },
     {
       'name': 'DisablePluginFinder',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:11-64', 'chrome_os:11-64'],
@@ -3603,7 +3603,7 @@
     },
     {
       'name': 'SyncDisabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:8-', 'chrome_os:11-'],
@@ -3648,7 +3648,7 @@
     },
     {
       'name': 'RoamingProfileSupportEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.win:57-', 'chrome.mac:88-', 'chrome.linux:88-'],
@@ -3667,7 +3667,7 @@
     },
     {
       'name': 'RoamingProfileLocation',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.win:57-', 'chrome.mac:88-', 'chrome.linux:88-'],
@@ -3713,7 +3713,7 @@
     },
     {
       'name': 'EnableDeprecatedWebBasedSignin',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'emaxx@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:35-42'],
@@ -3736,7 +3736,7 @@
     },
     {
       'name': 'UserDataDir',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.win:11-', 'chrome.mac:11-'],
@@ -3762,7 +3762,7 @@
     },
     {
       'name': 'DiskCacheDir',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:13-'],
@@ -3783,7 +3783,7 @@
     },
     {
       'name': 'DiskCacheSize',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer' },
       'supported_on': ['chrome.*:17-'],
@@ -3804,7 +3804,7 @@
     },
     {
       'name': 'MediaCacheSize',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer' },
       'supported_on': ['chrome.*:17-71'],
@@ -3888,7 +3888,7 @@
     },
     {
       'name': 'DownloadDirectory',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:11-', 'chrome_os:35-'],
@@ -3911,7 +3911,7 @@
     },
     {
       'name': 'AutoOpenFileTypes',
-      'owners': ['csharp@chromium.org', 'qinmin@chromium.org'],
+      'owners': ['csharp@chromium.org', 'qinmin@chromium.org', 'pastarmovj@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -4039,7 +4039,7 @@
     },
     {
       'name': 'ClearSiteDataOnExit',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:11-28', 'chrome_os:11-28'],
@@ -4078,7 +4078,7 @@
     },
     {
       'name': 'ProxyMode',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'string-enum',
       'schema': {
         'type': 'string',
@@ -4150,7 +4150,7 @@
     },
     {
       'name': 'ProxyServerMode',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -4215,7 +4215,7 @@
     },
     {
       'name': 'ProxyServer',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': [
@@ -4243,7 +4243,7 @@
     },
     {
       'name': 'ProxyPacUrl',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': [
@@ -4271,7 +4271,7 @@
     },
     {
       'name': 'ProxyBypassList',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': [
@@ -4300,7 +4300,7 @@
     },
     {
       'name': 'ProxySettings',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'zmin@chromium.org'],
       'type': 'dict',
       'schema': {
         'type': 'object',
@@ -4352,7 +4352,7 @@
     },
     {
       'name': 'AuthSchemes',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:9-','android:46-','chrome_os:62-'],
@@ -4382,7 +4382,7 @@
     },
     {
       'name': 'DisableAuthNegotiateCnameLookup',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:9-','android:46-','chrome_os:62-'],
@@ -4400,7 +4400,7 @@
     },
     {
       'name': 'EnableAuthNegotiatePort',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:9-','chrome_os:62-'],
@@ -4418,7 +4418,7 @@
     },
     {
       'name': 'BasicAuthOverHttpEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'bartfab@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:88-','chrome_os:88-'],
@@ -4449,7 +4449,7 @@
     },
     {
       'name': 'AuthServerWhitelist',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:9-','android:46-','webview_android:49-','chrome_os:62-'],
@@ -4472,7 +4472,7 @@
     },
     {
       'name': 'AuthServerAllowlist',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'bartfab@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:86-','android:86-','webview_android:86-','chrome_os:86-'],
@@ -4492,7 +4492,7 @@
     },
     {
       'name': 'AuthNegotiateDelegateWhitelist',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:9-','android:46-','chrome_os:62-'],
@@ -4513,7 +4513,7 @@
     },
     {
       'name': 'AuthNegotiateDelegateAllowlist',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:86-','android:86-','chrome_os:86-'],
@@ -4531,7 +4531,7 @@
     },
     {
       'name': 'AuthNegotiateDelegateByKdcPolicy',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.linux:74-','chrome.mac:74-','chrome_os:74-'],
@@ -4583,7 +4583,7 @@
     },
     {
       'name': 'GSSAPILibraryName',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.linux:9-'],
@@ -4601,7 +4601,7 @@
     },
     {
       'name': 'AuthAndroidNegotiateAccountType',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['android:46-','webview_android:49-'],
@@ -4619,7 +4619,7 @@
     },
     {
       'name': 'AllowCrossOriginAuthPrompt',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:13-','chrome_os:62-'],
@@ -4639,7 +4639,7 @@
     },
     {
       'name': 'NtlmV2Enabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.linux:63-','chrome.mac:63-','chrome_os:63-','android:63-','webview_android:63-'],
@@ -4670,7 +4670,7 @@
     },
     {
       'name': 'ExtensionInstallBlacklist',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -4696,7 +4696,7 @@
     {
 
       'name': 'ExtensionInstallBlocklist',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'poromov@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -4720,7 +4720,7 @@
     },
     {
       'name': 'ExtensionInstallAllowlist',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'emaxx@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -4744,7 +4744,7 @@
     },
     {
       'name': 'ExtensionInstallWhitelist',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -4767,7 +4767,7 @@
     },
     {
       'name': 'ExtensionInstallForcelist',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -4802,7 +4802,7 @@
     },
     {
       'name': 'ExtensionInstallSources',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -4848,7 +4848,7 @@
     },
     {
       'name': 'ExtensionAllowedTypes',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -4901,7 +4901,7 @@
     },
     {
       'name': 'ExtensionSettings',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'dict',
       'schema': {
         'type': 'object',
@@ -5059,7 +5059,7 @@
     },
     {
       'name': 'BlockExternalExtensions',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:80-'],
@@ -5082,7 +5082,7 @@
     },
     {
       'name': 'ShowHomeButton',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'poromov@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:8-', 'chrome_os:11-'],
@@ -5101,7 +5101,7 @@
     },
     {
       'name': 'DeveloperToolsDisabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:9-', 'chrome_os:11-'],
@@ -5127,7 +5127,7 @@
     },
     {
       'name': 'DeveloperToolsAvailability',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pmarko@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -5166,7 +5166,7 @@
     },
     {
       'name': 'RestoreOnStartup',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -5209,7 +5209,7 @@
     },
     {
       'name': 'RestoreOnStartupURLs',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -5233,7 +5233,7 @@
     },
     {
       'name': 'BlockThirdPartyCookies',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'zmin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:10-', 'chrome_os:11-', 'android:83-'],
@@ -5267,7 +5267,7 @@
     },
     {
       'name': 'DefaultSearchProviderEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': [
@@ -5292,7 +5292,7 @@
     },
     {
       'name': 'DefaultSearchProviderContextMenuAccessAllowed',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:85-', 'chrome_os:85-'],
@@ -5314,7 +5314,7 @@
     },
     {
       'name': 'DefaultSearchProviderName',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': [
@@ -5337,7 +5337,7 @@
     },
     {
       'name': 'DefaultSearchProviderKeyword',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': [
@@ -5360,7 +5360,7 @@
     },
     {
       'name': 'DefaultSearchProviderSearchURL',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': [
@@ -5383,7 +5383,7 @@
     },
     {
       'name': 'DefaultSearchProviderSuggestURL',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': [
@@ -5406,7 +5406,7 @@
     },
     {
       'name': 'DefaultSearchProviderInstantURL',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:10-63', 'chrome_os:11-63', 'android:30-63'],
@@ -5429,7 +5429,7 @@
     },
     {
       'name': 'DefaultSearchProviderIconURL',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': [
@@ -5452,7 +5452,7 @@
     },
     {
       'name': 'DefaultSearchProviderEncodings',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -5478,7 +5478,7 @@
     },
     {
       'name': 'DefaultSearchProviderAlternateURLs',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -5504,7 +5504,7 @@
     },
     {
       'name': 'DefaultSearchProviderSearchTermsReplacementKey',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:25-63', 'chrome_os:25-63', 'android:30-63'],
@@ -5525,7 +5525,7 @@
     },
     {
       'name': 'DefaultSearchProviderImageURL',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': [
@@ -5548,7 +5548,7 @@
     },
     {
       'name': 'DefaultSearchProviderNewTabURL',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': [
@@ -5571,7 +5571,7 @@
     },
     {
       'name': 'DefaultSearchProviderSearchURLPostParams',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': [
@@ -5594,7 +5594,7 @@
     },
     {
       'name': 'DefaultSearchProviderSuggestURLPostParams',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': [
@@ -5617,7 +5617,7 @@
     },
     {
       'name': 'DefaultSearchProviderInstantURLPostParams',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:29-63', 'chrome_os:29-63', 'android:30-63'],
@@ -5638,7 +5638,7 @@
     },
     {
       'name': 'DefaultSearchProviderImageURLPostParams',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': [
@@ -5661,7 +5661,7 @@
     },
     {
       'name': 'DefaultCookiesSetting',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -5707,7 +5707,7 @@
     },
     {
       'name': 'DefaultImagesSetting',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -5740,7 +5740,7 @@
     },
     {
       'name': 'DefaultJavaScriptSetting',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -5773,7 +5773,7 @@
     },
     {
       'name': 'DefaultPluginsSetting',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -5814,7 +5814,7 @@
     },
     {
       'name': 'DefaultPopupsSetting',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -5852,7 +5852,7 @@
     },
     {
       'name': 'DefaultNotificationsSetting',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -5890,7 +5890,7 @@
     },
     {
       'name': 'DefaultGeolocationSetting',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -5929,7 +5929,7 @@
     },
     {
       'name': 'DefaultMediaStreamSetting',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -5963,7 +5963,7 @@
     },
     {
       'name': 'DefaultWebBluetoothGuardSetting',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -5997,7 +5997,7 @@
     },
     {
       'name': 'DefaultKeygenSetting',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -6031,7 +6031,7 @@
     },
     {
       'name': 'DefaultSensorsSetting',
-      'owners': ['file://third_party/blink/renderer/modules/sensor/OWNERS'],
+      'owners': ['file://third_party/blink/renderer/modules/sensor/OWNERS', 'reillyg@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -6498,7 +6498,7 @@
     },
     {
       'name': 'AutoSelectCertificateForUrls',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -6558,7 +6558,7 @@
     },
     {
       'name': 'DeviceLoginScreenAutoSelectCertificateForUrls',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pmarko@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -6617,7 +6617,7 @@
     },
     {
       'name': 'CookiesAllowedForUrls',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -6646,7 +6646,7 @@
     },
     {
       'name': 'CookiesBlockedForUrls',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -6675,7 +6675,7 @@
     },
     {
       'name': 'CookiesSessionOnlyForUrls',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -6706,7 +6706,7 @@
     },
     {
       'name': 'ImagesAllowedForUrls',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -6731,7 +6731,7 @@
     },
     {
       'name': 'ImagesBlockedForUrls',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -6756,7 +6756,7 @@
     },
     {
       'name': 'JavaScriptAllowedForUrls',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -6779,7 +6779,7 @@
     },
     {
       'name': 'JavaScriptBlockedForUrls',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -6802,7 +6802,7 @@
     },
     {
       'name': 'KeygenAllowedForUrls',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -6826,7 +6826,7 @@
     },
     {
       'name': 'KeygenBlockedForUrls',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -6988,7 +6988,7 @@
     },
     {
       'name': 'PluginsAllowedForUrls',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -7012,7 +7012,7 @@
     },
     {
       'name': 'PluginsBlockedForUrls',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -7036,7 +7036,7 @@
     },
     {
       'name': 'PopupsAllowedForUrls',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -7064,7 +7064,7 @@
     },
     {
       'name': 'RegisteredProtocolHandlers',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'dict',
       'schema': {
         'type': 'array',
@@ -7105,7 +7105,7 @@
     },
     {
       'name': 'PopupsBlockedForUrls',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -7133,7 +7133,7 @@
     },
     {
       'name': 'NotificationsAllowedForUrls',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -7156,7 +7156,7 @@
     },
     {
       'name': 'NotificationsBlockedForUrls',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -7179,7 +7179,7 @@
     },
     {
       'name': 'SensorsAllowedForUrls',
-      'owners': ['file://third_party/blink/renderer/modules/sensor/OWNERS'],
+      'owners': ['file://third_party/blink/renderer/modules/sensor/OWNERS', 'timvolodine@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -7204,7 +7204,7 @@
     },
     {
       'name': 'SensorsBlockedForUrls',
-      'owners': ['file://third_party/blink/renderer/modules/sensor/OWNERS'],
+      'owners': ['file://third_party/blink/renderer/modules/sensor/OWNERS', 'rijubrata.bhaumik@intel.com'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -7229,7 +7229,7 @@
     },
     {
       'name': 'NativeMessagingBlacklist',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -7257,7 +7257,7 @@
     },
     {
       'name': 'NativeMessagingBlocklist',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -7282,7 +7282,7 @@
     },
     {
       'name': 'NativeMessagingWhitelist',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -7310,7 +7310,7 @@
     },
     {
       'name': 'NativeMessagingAllowlist',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'zmin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -7335,7 +7335,7 @@
     },
     {
       'name': 'NativeMessagingUserLevelHosts',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:34-'],
@@ -7371,7 +7371,7 @@
     },
     {
       'name': 'PolicyRefreshRate',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'anqing@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer', 'minimum': 1800000, 'maximum': 86400000 },
       'supported_on': ['chrome_os:11-', 'chrome.*:79-', 'ios:90-'],
@@ -7442,7 +7442,7 @@
     },
     {
       'name': 'RenderInChromeFrameList',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -7465,7 +7465,7 @@
     },
     {
       'name': 'RenderInHostList',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -7488,7 +7488,7 @@
     },
     {
       'name': 'AdditionalLaunchParameters',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome_frame:19-32'],
@@ -7506,7 +7506,7 @@
     },
     {
       'name': 'SkipMetadataCheck',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_frame:31-32'],
@@ -7669,7 +7669,7 @@
     },
     {
       'name': 'SecurityTokenSessionBehavior',
-      'owners': ['fabiansommer@chromium.org, emaxx@chromium.org'],
+      'owners': ['fabiansommer@chromium.org, emaxx@chromium.org', 'fabiansommer@chromium.org'],
       'type': 'string-enum',
       'schema': {
         'type': 'string',
@@ -7705,7 +7705,7 @@
     },
     {
       'name': 'SecurityTokenSessionNotificationSeconds',
-      'owners': ['fabiansommer@chromium.org, emaxx@chromium.org'],
+      'owners': ['fabiansommer@chromium.org, emaxx@chromium.org', 'fabiansommer@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer', 'minimum': 0, 'maximum': 9999 },
       'supported_on': ['chrome_os:90-'],
@@ -7754,7 +7754,7 @@
     },
     {
       'name': 'InstantEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'anqing@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:11-28', 'chrome_os:11-28'],
@@ -7802,7 +7802,7 @@
     },
     {
       'name': 'TranslateEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': [
@@ -7826,7 +7826,7 @@
     },
     {
       'name': 'AllowOutdatedPlugins',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'hendrich@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:12-87', 'chrome_os:12-87'],
@@ -7845,7 +7845,7 @@
     },
     {
       'name': 'AlwaysAuthorizePlugins',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'zmin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:13-64', 'chrome_os:13-64'],
@@ -7864,7 +7864,7 @@
     },
     {
       'name': 'RunAllFlashInAllowMode',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:63-', 'chrome_os:63-'],
@@ -7884,7 +7884,7 @@
     },
     {
       'name': 'BookmarkBarEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:12-', 'chrome_os:12-'],
@@ -7903,7 +7903,7 @@
     },
     {
       'name': 'EditBookmarksEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'hendrich@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': [
@@ -7926,7 +7926,7 @@
     },
     {
       'name': 'ShowAppsShortcutInBookmarkBar',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'hendrich@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:37-'],
@@ -7959,7 +7959,7 @@
     },
     {
       'name': 'AllowFileSelectionDialogs',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:12-'],
@@ -8032,7 +8032,7 @@
     },
     {
       'name': 'DevicePolicyRefreshRate',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer' },
       'supported_on': ['chrome_os:11-'],
@@ -8053,7 +8053,7 @@
     },
     {
       'name': 'ImportBookmarks',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:15-'],
@@ -8074,7 +8074,7 @@
     },
     {
       'name': 'ImportHistory',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:15-'],
@@ -8095,7 +8095,7 @@
     },
     {
       'name': 'ImportHomepage',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'poromov@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:15-'],
@@ -8114,7 +8114,7 @@
     },
     {
       'name': 'ImportSearchEngine',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'bartfab@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:15-'],
@@ -8134,7 +8134,7 @@
     },
     {
       'name': 'ImportSavedPasswords',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pmarko@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:15-'],
@@ -8154,7 +8154,7 @@
     },
     {
       'name': 'ImportAutofillFormData',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'poromov@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:39-'],
@@ -8174,7 +8174,7 @@
     },
     {
       'name': 'MaxConnectionsPerProxy',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer' },
       'supported_on': ['chrome.*:14-'],
@@ -8193,7 +8193,7 @@
     },
     {
       'name': 'HideWebStorePromo',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'bartfab@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:15-21', 'chrome_os:15-21'],
@@ -8211,7 +8211,7 @@
     },
     {
       'name': 'URLBlacklist',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'hendrich@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -8243,7 +8243,7 @@
     },
     {
       'name': 'URLWhitelist',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -8277,7 +8277,7 @@
     },
     {
       'name': 'URLBlocklist',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -8307,7 +8307,7 @@
     },
     {
       'name': 'URLAllowlist',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -8455,7 +8455,7 @@
     },
     {
       'name': 'EnableExperimentalPolicies',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'zmin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -8484,7 +8484,7 @@
     },
     {
       'name': 'OpenNetworkConfiguration',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'hendrich@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'url_schema': 'https://chromium.googlesource.com/chromium/src/+/master/components/onc/docs/onc_spec.md',
@@ -8502,7 +8502,7 @@
     },
     {
       'name': 'DeviceOpenNetworkConfiguration',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pmarko@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'url_schema': 'https://chromium.googlesource.com/chromium/src/+/master/components/onc/docs/onc_spec.md',
@@ -8520,7 +8520,7 @@
     },
     {
       'name': 'DeviceKerberosEncryptionTypes',
-      'owners': ['file://chrome/browser/chromeos/authpolicy/OWNERS'],
+      'owners': ['file://chrome/browser/chromeos/authpolicy/OWNERS', 'fsandrade@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -8567,7 +8567,7 @@
     },
     {
       'name': 'DeviceUserPolicyLoopbackProcessingMode',
-      'owners': ['file://chrome/browser/chromeos/authpolicy/OWNERS'],
+      'owners': ['file://chrome/browser/chromeos/authpolicy/OWNERS', 'tomdobro@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -8610,7 +8610,7 @@
     },
     {
       'name': 'DeviceMachinePasswordChangeRate',
-      'owners': ['file://chrome/browser/chromeos/authpolicy/OWNERS'],
+      'owners': ['file://chrome/browser/chromeos/authpolicy/OWNERS', 'fsandrade@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer', 'minimum': 0, 'maximum': 9999 },
       'supported_on': ['chrome_os:66-'],
@@ -8633,7 +8633,7 @@
     },
     {
       'name': 'DeviceGpoCacheLifetime',
-      'owners': ['file://chrome/browser/chromeos/authpolicy/OWNERS'],
+      'owners': ['file://chrome/browser/chromeos/authpolicy/OWNERS', 'tomdobro@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer', 'minimum': 0, 'maximum': 9999 },
       'supported_on': ['chrome_os:73-'],
@@ -8656,7 +8656,7 @@
     },
     {
       'name': 'DeviceAuthDataCacheLifetime',
-      'owners': ['file://chrome/browser/chromeos/authpolicy/OWNERS'],
+      'owners': ['file://chrome/browser/chromeos/authpolicy/OWNERS', 'fsandrade@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer', 'minimum': 0, 'maximum': 9999 },
       'supported_on': ['chrome_os:73-'],
@@ -8699,7 +8699,7 @@
     },
     {
       'name': 'EnterpriseWebStoreURL',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'anqing@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:17-28', 'chrome_os:17-28'],
@@ -8716,7 +8716,7 @@
     },
     {
       'name': 'EnterpriseWebStoreName',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:17-28', 'chrome_os:17-28'],
@@ -8733,7 +8733,7 @@
     },
     {
       'name': 'DisablePrintPreview',
-      'owners': ['file://printing/OWNERS', 'rbpotter@chomium.org'],
+      'owners': ['file://printing/OWNERS', 'rbpotter@chomium.org', 'thestig@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:18-'],
@@ -8811,7 +8811,7 @@
     },
     {
       'name': 'DisableSSLRecordSplitting',
-      'owners': ['file://crypto/OWNERS'],
+      'owners': ['file://crypto/OWNERS', 'agl@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:18-46', 'chrome_os:18-46'],
@@ -8830,7 +8830,7 @@
     },
     {
       'name': 'EnableOnlineRevocationChecks',
-      'owners': ['file://net/cert/OWNERS'],
+      'owners': ['file://net/cert/OWNERS', 'mattm@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:19-', 'chrome_os:19-'],
@@ -8850,7 +8850,7 @@
     },
     {
       'name': 'RequireOnlineRevocationChecksForLocalAnchors',
-      'owners': ['file://net/cert/OWNERS'],
+      'owners': ['file://net/cert/OWNERS', 'rsleevi@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:30-', 'chrome.linux:30-', 'chrome.win:30-'],
@@ -8900,7 +8900,7 @@
     },
     {
       'name': 'EnableCommonNameFallbackForLocalAnchors',
-      'owners': ['file://net/cert/OWNERS'],
+      'owners': ['file://net/cert/OWNERS', 'rsleevi@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:58-65', 'chrome_os:58-65', 'android:58-65'],
@@ -8921,7 +8921,7 @@
     },
     {
       'name': 'EnableSymantecLegacyInfrastructure',
-      'owners': ['file://net/cert/OWNERS'],
+      'owners': ['file://net/cert/OWNERS', 'rsleevi@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:66-75', 'chrome_os:66-75', 'android:66-75'],
@@ -8944,7 +8944,7 @@
     },
     {
       'name': 'BuiltinCertificateVerifierEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pmarko@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:77-83', 'chrome.linux:79-83', 'chrome.mac:83-'],
@@ -8969,7 +8969,7 @@
     },
     {
       'name': 'ForceEphemeralProfiles',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'zmin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:32-'],
@@ -9016,7 +9016,7 @@
     },
     {
       'name': 'SAMLOfflineSigninTimeLimit',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'bartfab@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer', 'minimum': -1 },
       'supported_on': ['chrome_os:34-'],
@@ -9040,7 +9040,7 @@
     },
     {
       'name': 'AutoCleanUpStrategy',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'string-enum',
       'schema': {
         'type': 'string',
@@ -9080,7 +9080,7 @@
     },
     {
       'name': 'ReportDeviceVersionInfo',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'bartfab@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:18-'],
@@ -9100,7 +9100,7 @@
     },
     {
       'name': 'ReportDeviceActivityTimes',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pmarko@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:18-'],
@@ -9120,7 +9120,7 @@
     },
     {
       'name': 'ReportDeviceBootMode',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'bartfab@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:18-'],
@@ -9140,7 +9140,7 @@
     },
     {
       'name': 'ReportDeviceLocation',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'hendrich@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'future_on': ['chrome_os'],
@@ -9160,7 +9160,7 @@
     },
     {
       'name': 'ReportDeviceNetworkInterfaces',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:29-'],
@@ -9240,7 +9240,7 @@
     },
     {
       'name': 'ReportDeviceGraphicsStatus',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'anqing@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:81-'],
@@ -9263,7 +9263,7 @@
     },
     {
       'name': 'ReportDeviceCrashReportInfo',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:83-'],
@@ -9368,7 +9368,7 @@
     },
     {
       'name': 'ReportDeviceCpuInfo',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'anqing@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:81-'],
@@ -9390,7 +9390,7 @@
     },
     {
       'name': 'ReportDeviceTimezoneInfo',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'poromov@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:83-'],
@@ -9411,7 +9411,7 @@
     },
     {
       'name': 'ReportDeviceMemoryInfo',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:83-'],
@@ -9432,7 +9432,7 @@
     },
     {
       'name': 'ReportDeviceBacklightInfo',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:83-'],
@@ -9474,7 +9474,7 @@
     },
     {
       'name': 'ReportDeviceBluetoothInfo',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:85-'],
@@ -9495,7 +9495,7 @@
     },
     {
       'name': 'ReportDeviceFanInfo',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'anqing@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:85-'],
@@ -9516,7 +9516,7 @@
     },
     {
       'name': 'ReportDeviceVpdInfo',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:85-'],
@@ -9538,7 +9538,7 @@
     },
     {
       'name': 'ReportDeviceSystemInfo',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'hendrich@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:86-'],
@@ -9559,7 +9559,7 @@
     },
     {
       'name': 'ReportUploadFrequency',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer', 'minimum': 60000 },
       'supported_on': ['chrome_os:42-'],
@@ -9617,7 +9617,7 @@
     },
     {
       'name': 'HeartbeatEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:43-'],
@@ -9637,7 +9637,7 @@
     },
     {
       'name': 'HeartbeatFrequency',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer', 'minimum': 30000 },
       'supported_on': ['chrome_os:43-'],
@@ -9677,7 +9677,7 @@
     },
     {
       'name': 'DeviceUserWhitelist',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pmarko@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -9705,7 +9705,7 @@
     },
     {
       'name': 'DeviceUserAllowlist',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -9729,7 +9729,7 @@
     },
     {
       'name': 'DeviceAllowNewUsers',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:12-'],
@@ -9748,7 +9748,7 @@
     },
     {
       'name': 'DeviceGuestModeEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'anqing@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:12-'],
@@ -9766,7 +9766,7 @@
     },
     {
       'name': 'DeviceShowUserNamesOnSignin',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:12-'],
@@ -9786,7 +9786,7 @@
     },
     {
       'name': 'DeviceDataRoamingEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'poromov@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:12-'],
@@ -9804,7 +9804,7 @@
     },
     {
       'name': 'DeviceMetricsReportingEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'zmin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:14-'],
@@ -9826,7 +9826,7 @@
     },
     {
       'name': 'ChromeOsReleaseChannel',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'string-enum',
       'schema': {
         'type': 'string',
@@ -9864,7 +9864,7 @@
     },
     {
       'name': 'ChromeOsReleaseChannelDelegated',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:19-'],
@@ -9882,7 +9882,7 @@
     },
     {
       'name': 'DeviceReleaseLtsTag',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'hendrich@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome_os:86-'],
@@ -9943,7 +9943,7 @@
     },
     {
       'name': 'DeviceEphemeralUsersEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'zmin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:19-'],
@@ -9959,7 +9959,7 @@
     },
     {
       'name': 'DeviceStartUpUrls',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -9981,7 +9981,7 @@
     },
     {
       'name': 'DeviceIdleLogoutTimeout',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer' },
       'supported_on': ['chrome_os:19-40'],
@@ -10002,7 +10002,7 @@
     },
     {
       'name': 'DeviceIdleLogoutWarningDuration',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer' },
       'supported_on': ['chrome_os:19-40'],
@@ -10023,7 +10023,7 @@
     },
     {
       'name': 'DeviceLoginScreenSaverId',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome_os:19-40'],
@@ -10042,7 +10042,7 @@
     },
     {
       'name': 'DeviceLoginScreenSaverTimeout',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer' },
       'supported_on': ['chrome_os:19-40'],
@@ -10063,7 +10063,7 @@
     },
     {
       'name': 'DeviceAppPack',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'zmin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -10087,7 +10087,7 @@
     },
     {
       'name': 'DeviceAutoUpdateDisabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'hendrich@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:19-'],
@@ -10123,7 +10123,7 @@
     },
     {
       'name': 'DeviceRollbackAllowedMilestones',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int',
       'schema': {
         'type': 'integer',
@@ -10151,7 +10151,7 @@
     },
     {
       'name': 'DeviceRollbackToTargetVersion',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'anqing@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -10190,7 +10190,7 @@
     },
     {
       'name': 'DeviceTargetVersionPrefix',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pmarko@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome_os:19-'],
@@ -10215,7 +10215,7 @@
     },
     {
       'name': 'DeviceUpdateScatterFactor',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'emaxx@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer' },
       'supported_on': ['chrome_os:20-'],
@@ -10231,7 +10231,7 @@
     },
     {
       'name': 'DeviceUpdateAllowedConnectionTypes',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'poromov@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -10252,7 +10252,7 @@
     },
     {
       'name': 'DeviceUpdateHttpDownloadsEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'bartfab@chromium.org'],
       'type': 'main',
       'schema': {
         'type': 'boolean',
@@ -10272,7 +10272,7 @@
     },
     {
       'name': 'DeviceLocalAccounts',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'zmin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -10294,7 +10294,7 @@
     },
     {
       'name': 'DeviceLocalAccountAutoLoginId',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'poromov@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome_os:26-'],
@@ -10313,7 +10313,7 @@
     },
     {
       'name': 'DeviceLocalAccountAutoLoginDelay',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'emaxx@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer' },
       'supported_on': ['chrome_os:26-'],
@@ -10334,7 +10334,7 @@
     },
     {
       'name': 'DeviceLocalAccountAutoLoginBailoutEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pmarko@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:28-'],
@@ -10394,7 +10394,7 @@
     },
     {
       'name': 'DeviceBlockDevmode',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:37-'],
@@ -10413,7 +10413,7 @@
       'arc_support': 'This policy controls <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> developer mode only. If you want to prevent access to Android Developer Options, you need to set the <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME">DeveloperToolsDisabled</ph> policy.',
     }, {
       'name': 'ManagedGuestSessionAutoLaunchNotificationReduced',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:83-88'],
@@ -10437,7 +10437,7 @@
     },
     {
       'name': 'ManagedGuestSessionPrivacyWarningsEnabled',
-      'owners': ['file://components/policy/resources/OWNERS', 'ayaelattar@chromium.org'],
+      'owners': ['file://components/policy/resources/OWNERS', 'ayaelattar@chromium.org', 'pastarmovj@chromium.org'],
       'device_only': True,
       'type': 'main',
       'schema': { 'type': 'boolean' },
@@ -10461,7 +10461,7 @@
     },
     {
       'name': 'BackgroundModeEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pmarko@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.win:19-', 'chrome.linux:19-'],
@@ -10482,7 +10482,7 @@
     },
     {
       'name': 'DriveDisabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:19-'],
@@ -10501,7 +10501,7 @@
     },
     {
       'name': 'DriveDisabledOverCellular',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:19-'],
@@ -10520,7 +10520,7 @@
     },
     {
       'name': 'PinnedLauncherApps',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -10545,7 +10545,7 @@
     },
     {
       'name': 'RestrictSigninToPattern',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:21-'],
@@ -10565,7 +10565,7 @@
     },
     {
       'name': 'DisableSafeBrowsingProceedAnyway',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': [
@@ -10611,7 +10611,7 @@
     },
     {
       'name': 'SpellCheckServiceEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pmarko@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:22-', 'chrome_os:22-'],
@@ -10647,7 +10647,7 @@
     },
     {
       'name': 'ExternalStorageDisabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:22-'],
@@ -10683,7 +10683,7 @@
     },
     {
       'name': 'AudioOutputAllowed',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:23-'],
@@ -10703,7 +10703,7 @@
     },
     {
       'name': 'AudioCaptureAllowed',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:25-', 'chrome_os:23-'],
@@ -10745,7 +10745,7 @@
     },
     {
       'name': 'VideoCaptureAllowed',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:25-', 'chrome_os:25-'],
@@ -10786,7 +10786,7 @@
     },
     {
       'name': 'DisableScreenshots',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'poromov@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:22-', 'chrome.*:22-'],
@@ -10802,7 +10802,7 @@
     },
     {
       'name': 'SystemTimezone',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'bartfab@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome_os:22-'],
@@ -10866,7 +10866,7 @@
     },
     {
       'name': 'ShowLogoutButtonInTray',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'bartfab@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:25-'],
@@ -10993,7 +10993,7 @@
     },
     {
       'name': 'ShelfAutoHideBehavior',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'bartfab@chromium.org'],
       'type': 'string-enum',
       'schema': {
         'type': 'string',
@@ -11030,7 +11030,7 @@
     },
     {
       'name': 'ShelfAlignment',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'string-enum',
 # In shelf_prefs.cc, there are 3 const char[] defining kShelfAlignmentLocal values:
 # ash::kShelfAlignmentBottom = "Bottom", ash::kShelfAlignmnetLeft = "Left",
@@ -11085,7 +11085,7 @@
     },
     {
       'name': 'SystemFeaturesDisableList',
-      'owners': ['file://components/policy/resources/OWNERS', 'ayaelattar@chromium.org'],
+      'owners': ['file://components/policy/resources/OWNERS', 'ayaelattar@chromium.org', 'pmarko@chromium.org'],
       'type': 'string-enum-list',
       'schema': {
         'type': 'array',
@@ -11215,7 +11215,7 @@
     },
     {
       'name': 'UserDisplayName',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'poromov@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome_os:25-'],
@@ -11237,7 +11237,7 @@
     },
     {
       'name': 'SessionLengthLimit',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'bartfab@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer' },
       'supported_on': ['chrome_os:25-'],
@@ -11259,7 +11259,7 @@
     },
     {
       'name': 'FullscreenAllowed',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'bartfab@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.win:31-', 'chrome.linux:31-', 'chrome_os:31-'],
@@ -11311,7 +11311,7 @@
     },
     {
       'name': 'ScreenDimDelayAC',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int',
       'schema': {
         'type': 'integer',
@@ -11342,7 +11342,7 @@
     },
     {
       'name': 'ScreenOffDelayAC',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int',
       'schema': {
         'type': 'integer',
@@ -11373,7 +11373,7 @@
     },
     {
       'name': 'ScreenLockDelayAC',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int',
       'schema': {
         'type': 'integer',
@@ -11406,7 +11406,7 @@
     },
     {
       'name': 'IdleWarningDelayAC',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int',
       'schema': {
         'type': 'integer',
@@ -11437,7 +11437,7 @@
     },
     {
       'name': 'IdleDelayAC',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int',
       'schema': {
         'type': 'integer',
@@ -11466,7 +11466,7 @@
     },
     {
       'name': 'ScreenDimDelayBattery',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int',
       'schema': {
         'type': 'integer',
@@ -11497,7 +11497,7 @@
     },
     {
       'name': 'ScreenOffDelayBattery',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int',
       'schema': {
         'type': 'integer',
@@ -11528,7 +11528,7 @@
     },
     {
       'name': 'ScreenLockDelayBattery',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int',
       'schema': {
         'type': 'integer',
@@ -11561,7 +11561,7 @@
     },
     {
       'name': 'IdleWarningDelayBattery',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int',
       'schema': {
         'type': 'integer',
@@ -11592,7 +11592,7 @@
     },
     {
       'name': 'IdleDelayBattery',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int',
       'schema': {
         'type': 'integer',
@@ -11621,7 +11621,7 @@
     },
     {
       'name': 'IdleAction',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -11668,7 +11668,7 @@
     },
     {
       'name': 'IdleActionAC',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -11717,7 +11717,7 @@
     },
     {
       'name': 'IdleActionBattery',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -11766,7 +11766,7 @@
     },
     {
       'name': 'LidCloseAction',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -11811,7 +11811,7 @@
     },
     {
       'name': 'PowerManagementUsesAudioActivity',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:26-'],
@@ -11829,7 +11829,7 @@
     },
     {
       'name': 'PowerManagementUsesVideoActivity',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:26-'],
@@ -11848,7 +11848,7 @@
     },
     {
       'name': 'PresentationIdleDelayScale',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer' },
       'supported_on': ['chrome_os:26-28'],
@@ -11865,7 +11865,7 @@
     },
     {
       'name': 'PresentationScreenDimDelayScale',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer' },
       'supported_on': ['chrome_os:29-'],
@@ -11885,7 +11885,7 @@
     },
     {
       'name': 'AllowWakeLocks',
-      'owners': ['file://chrome/browser/chromeos/login/demo_mode/OWNERS'],
+      'owners': ['file://chrome/browser/chromeos/login/demo_mode/OWNERS', 'michaelpg@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:71-'],
@@ -11914,7 +11914,7 @@
     },
     {
       'name': 'AllowScreenWakeLocks',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:28-'],
@@ -11943,7 +11943,7 @@
     },
     {
       'name': 'UserActivityScreenDimDelayScale',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer' },
       'supported_on': ['chrome_os:29-'],
@@ -11963,7 +11963,7 @@
     },
     {
       'name': 'WaitForInitialUserActivity',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:32-'],
@@ -11981,7 +11981,7 @@
     },
     {
       'name': 'PowerManagementIdleSettings',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'dict',
       'schema': {
         'type': 'object',
@@ -12085,7 +12085,7 @@
     },
     {
       'name': 'ScreenLockDelays',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'dict',
       'schema': {
         'type': 'object',
@@ -12122,7 +12122,7 @@
     },
     {
       'name': 'DeviceLoginScreenPowerManagement',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'bartfab@chromium.org'],
       'type': 'dict',
       'schema': {
         'type': 'object',
@@ -12239,7 +12239,7 @@
     },
     {
       'name': 'TermsOfServiceURL',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'bartfab@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome_os:26-'],
@@ -12259,7 +12259,7 @@
     },
     {
       'name': 'ShowAccessibilityOptionsInSystemTrayMenu',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:27-'],
@@ -12280,7 +12280,7 @@
     },
     {
       'name': 'DeviceLoginScreenShowOptionsInSystemTrayMenu',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'bartfab@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:80-'],
@@ -12301,7 +12301,7 @@
     },
     {
       'name': 'LargeCursorEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:29-'],
@@ -12320,7 +12320,7 @@
     },
     {
       'name': 'SpokenFeedbackEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:29-'],
@@ -12339,7 +12339,7 @@
     },
     {
       'name': 'HighContrastEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:29-'],
@@ -12408,7 +12408,7 @@
     },
     {
       'name': 'VirtualKeyboardEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:34-'],
@@ -12683,7 +12683,7 @@
     },
     {
       'name': 'KeyboardDefaultToFunctionKeys',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:35-'],
@@ -12702,7 +12702,7 @@
     },
     {
       'name': 'ScreenMagnifierType',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -12741,7 +12741,7 @@
     },
     {
       'name': 'DeviceLoginScreenDefaultLargeCursorEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:29-'],
@@ -12788,7 +12788,7 @@
     },
     {
       'name': 'DeviceLoginScreenDefaultSpokenFeedbackEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:29-'],
@@ -12835,7 +12835,7 @@
     },
     {
       'name': 'DeviceLoginScreenDefaultHighContrastEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:29-'],
@@ -12882,7 +12882,7 @@
     },
     {
       'name': 'DeviceLoginScreenDefaultVirtualKeyboardEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:34-'],
@@ -13008,7 +13008,7 @@
     },
     {
       'name': 'DeviceLoginScreenDefaultScreenMagnifierType',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -13305,7 +13305,7 @@
     },
     {
       'name': 'HideWebStoreIcon',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:26-', 'chrome_os:68-'],
@@ -13325,7 +13325,7 @@
     },
     {
       'name': 'DeviceStartUpFlags',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'emaxx@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -13347,7 +13347,7 @@
     },
     {
       'name': 'UptimeLimit',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'bartfab@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer' },
       'supported_on': ['chrome_os:29-'],
@@ -13368,7 +13368,7 @@
     },
     {
       'name': 'RebootAfterUpdate',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'bartfab@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:29-'],
@@ -13392,7 +13392,7 @@
     },
     {
       'name': 'VariationsRestrictParameter',
-      'owners': ['file://components/variations/OWNERS'],
+      'owners': ['file://components/variations/OWNERS', 'mpearson@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:27-', 'android:34-'],
@@ -13413,7 +13413,7 @@
     },
     {
       'name': 'DeviceVariationsRestrictParameter',
-      'owners': ['file://components/variations/OWNERS'],
+      'owners': ['file://components/variations/OWNERS', 'rkaplow@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome_os:28-'],
@@ -13526,7 +13526,7 @@
     },
     {
       'name': 'AttestationEnabledForDevice',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:28-'],
@@ -13545,7 +13545,7 @@
     },
     {
       'name': 'AttestationEnabledForUser',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:28-'],
@@ -13563,7 +13563,7 @@
     },
     {
       'name': 'AttestationExtensionAllowlist',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'poromov@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -13584,7 +13584,7 @@
     },
     {
       'name': 'AttestationExtensionWhitelist',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -13608,7 +13608,7 @@
     },
     {
       'name': 'AttestationForContentProtectionEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:31-'],
@@ -13627,7 +13627,7 @@
     },
     {
       'name': 'SuppressChromeFrameTurndownPrompt',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'caption': '''Suppress the <ph name="PRODUCT_FRAME_NAME">$3<ex>Google Chrome Frame</ex></ph> turndown prompt''',
       'tags': [],
       'desc': '''Suppresses the turndown prompt that appears when a site is rendered by <ph name="PRODUCT_FRAME_NAME">$3<ex>Google Chrome Frame</ex></ph>.''',
@@ -13643,7 +13643,7 @@
     },
     {
       'name': 'SupervisedUsersEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'deprecated': True,
@@ -13666,7 +13666,7 @@
     },
     {
       'name': 'SupervisedUserCreationEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'deprecated': True,
@@ -13689,7 +13689,7 @@
       # It, however, needs to be here both because this is the source of the list of Chrome's App
       # Restrictions on Android, and to avoid possible future naming conflicts with policies.
       'name': 'SupervisedUserContentProviderEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'deprecated': True,
@@ -13708,7 +13708,7 @@
     },
     {
       'name': 'ManagedBookmarks',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'anqing@chromium.org'],
       'type': 'dict',
       'schema': {
         'type': 'array',
@@ -13786,7 +13786,7 @@
     },
     {
       'name': 'UserAvatarImage',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'bartfab@chromium.org'],
       'type': 'external',
       'schema': {
         'type': 'object',
@@ -13823,7 +13823,7 @@
     },
     {
       'name': 'WallpaperImage',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'anqing@chromium.org'],
       'type': 'external',
       'schema': {
         'type': 'object',
@@ -13858,7 +13858,7 @@
     },
     {
       'name': 'EnableDeprecatedWebPlatformFeatures',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
       'type': 'string-enum-list',
       'schema': {
         'type': 'array',
@@ -13897,7 +13897,7 @@
     },
     {
       'name': 'DeviceTransferSAMLCookies',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'bartfab@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:38-'],
@@ -13923,7 +13923,7 @@
     },
     {
       'name': 'EasyUnlockAllowed',
-      'owners': ['file://chrome/browser/chromeos/login/easy_unlock/OWNERS'],
+      'owners': ['file://chrome/browser/chromeos/login/easy_unlock/OWNERS', 'hansberry@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:38-'],
@@ -13944,7 +13944,7 @@
     },
     {
       'name': 'SessionLocales',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'bartfab@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -14047,7 +14047,7 @@
     },
     {
       'name': 'BrowserSignin',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -14093,7 +14093,7 @@
     },
     {
       'name': 'SSLVersionMin',
-      'owners': ['file://crypto/OWNERS'],
+      'owners': ['file://crypto/OWNERS', 'agl@chromium.org'],
       'type': 'string-enum',
       'schema': {
         'type': 'string',
@@ -14141,7 +14141,7 @@
     },
     {
       'name': 'SSLVersionFallbackMin',
-      'owners': ['file://crypto/OWNERS'],
+      'owners': ['file://crypto/OWNERS', 'agl@chromium.org'],
       'type': 'string-enum',
       'schema': {
         'type': 'string',
@@ -14186,7 +14186,7 @@
     },
     {
       'name': 'SSLVersionMax',
-      'owners': ['file://crypto/OWNERS'],
+      'owners': ['file://crypto/OWNERS', 'agl@chromium.org'],
       'type': 'string-enum',
       'schema': {
         'type': 'string',
@@ -14229,7 +14229,7 @@
     },
     {
       'name': 'CertificateTransparencyEnforcementDisabledForUrls',
-      'owners': ['file://components/certificate_transparency/OWNERS'],
+      'owners': ['file://components/certificate_transparency/OWNERS', 'rsleevi@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -14256,7 +14256,7 @@
     },
     {
       'name': 'CertificateTransparencyEnforcementDisabledForCas',
-      'owners': ['file://components/certificate_transparency/OWNERS'],
+      'owners': ['file://components/certificate_transparency/OWNERS', 'rsleevi@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -14289,7 +14289,7 @@
     },
     {
       'name': 'CertificateTransparencyEnforcementDisabledForLegacyCas',
-      'owners': ['file://components/certificate_transparency/OWNERS'],
+      'owners': ['file://components/certificate_transparency/OWNERS', 'rsleevi@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -14316,7 +14316,7 @@
     },
     {
       'name': 'RC4Enabled',
-      'owners': ['file://crypto/OWNERS'],
+      'owners': ['file://crypto/OWNERS', 'davidben@chromium.org'],
       'type': 'main',
       'schema': {
         'type': 'boolean',
@@ -14341,7 +14341,7 @@
     },
     {
       'name': 'DHEEnabled',
-      'owners': ['file://crypto/OWNERS'],
+      'owners': ['file://crypto/OWNERS', 'davidben@chromium.org'],
       'type': 'main',
       'schema': {
         'type': 'boolean',
@@ -14399,7 +14399,7 @@
     },
     {
       'name': 'DeviceRebootOnShutdown',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'emaxx@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:41-'],
@@ -14417,7 +14417,7 @@
     },
     {
       'name': 'ExtensionCacheSize',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'bartfab@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer' },
       'supported_on': ['chrome_os:43-'],
@@ -14436,7 +14436,7 @@
     },
     {
       'name': 'DeviceLoginScreenDomainAutoComplete',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'bartfab@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': [ 'chrome_os:44-'],
@@ -14454,7 +14454,7 @@
     },
     {
       'name': 'ForceMaximizeOnFirstRun',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'poromov@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:43-'],
@@ -14515,7 +14515,7 @@
     },
     {
       'name': 'QuicAllowed',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'zmin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:43-', 'chrome_os:43-'],
@@ -14533,7 +14533,7 @@
     },
     {
       'name': 'KeyPermissions',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'hendrich@chromium.org'],
       'type': 'dict',
       'schema': {
         'type': 'object',
@@ -14695,7 +14695,7 @@
     },
     {
       'name': 'ArcPolicy',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'bartfab@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'description_schema': {
@@ -14854,7 +14854,7 @@
     },
     {
       'name': 'UsbDetachableAllowlist',
-      'owners': ['file://components/policy/OWNERS'],
+      'owners': ['file://components/policy/OWNERS', 'hendrich@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -15017,7 +15017,7 @@
     },
     {
       'name': 'TaskManagerEndProcessEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
       'caption': '''Enable ending processes in Task Manager''',
       'desc': '''Setting the policy to Disabled prevents users from ending processes in the Task Manager.
 
@@ -15245,7 +15245,7 @@
     },
     {
       'name': 'AllowScreenLock',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'emaxx@chromium.org'],
       'caption': '''Permit locking the screen''',
       'desc': '''Setting the policy to Enabled or leaving it unset lets users who authenticate with a password lock the screen.
 
@@ -15354,7 +15354,7 @@
     },
     {
       'name': 'EnableMediaRouter',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:52-', 'chrome_os:52-', 'android:52-'],
@@ -15372,7 +15372,7 @@
     },
     {
       'name': 'ShowCastIconInToolbar',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:58-', 'chrome_os:58-'],
@@ -15392,7 +15392,7 @@
     },
     {
       'name': 'MediaRouterCastAllowAllIPs',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'hendrich@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:67-', 'chrome_os:67-'],
@@ -15412,7 +15412,7 @@
     },
     {
       'name': 'ArcBackupRestoreEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'poromov@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:53-67'],
@@ -15430,7 +15430,7 @@
     },
     {
       'name': 'ArcLocationServiceEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'emaxx@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:57-67'],
@@ -15589,7 +15589,7 @@
     },
     {
       'name': 'WebRestrictionsAuthority',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'hendrich@chromium.org'],
       'id': 341,
       'type': 'string',
       'schema' : { 'type': 'string' },
@@ -15605,7 +15605,7 @@
     },
     {
       'name': 'ComponentUpdatesEnabled',
-      'owners': ['file://components/update_client/OWNERS'],
+      'owners': ['file://components/update_client/OWNERS', 'sorin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:54-', 'chrome_os:54-'],
@@ -15782,7 +15782,7 @@
     },
     {
       'name': 'NativePrintersBulkConfiguration',
-      'owners': ['file://chromeos/printing/OWNERS', 'luum@chromium.org'],
+      'owners': ['file://chromeos/printing/OWNERS', 'luum@chromium.org', 'skau@chromium.org'],
       'id': 382,
       'type': 'external',
       'schema': {
@@ -15845,7 +15845,7 @@
     },
     {
       'name': 'NativePrintersBulkAccessMode',
-      'owners': ['file://chromeos/printing/OWNERS', 'zentaro@chromium.org'],
+      'owners': ['file://chromeos/printing/OWNERS', 'zentaro@chromium.org', 'skau@chromium.org'],
       'id': 383,
       'supported_on': ['chrome_os:65-'],
       'type': 'int-enum',
@@ -15893,7 +15893,7 @@
     },
     {
       'name': 'PrintersBulkAccessMode',
-      'owners': ['file://chromeos/printing/OWNERS', 'zentaro@chromium.org'],
+      'owners': ['file://chromeos/printing/OWNERS', 'zentaro@chromium.org', 'thestig@chromium.org'],
       'id': 772,
       'supported_on': ['chrome_os:86-'],
       'type': 'int-enum',
@@ -15938,7 +15938,7 @@
     },
     {
       'name': 'NativePrintersBulkBlacklist',
-      'owners': ['file://chromeos/printing/OWNERS', 'thestig@chromium.org'],
+      'owners': ['file://chromeos/printing/OWNERS', 'thestig@chromium.org', 'skau@chromium.org'],
       'supported_on': ['chrome_os:65-'],
       'id': 384,
       'type': 'list',
@@ -15979,7 +15979,7 @@
     },
     {
       'name': 'NativePrintersBulkWhitelist',
-      'owners': ['file://chromeos/printing/OWNERS', 'thestig@chromium.org'],
+      'owners': ['file://chromeos/printing/OWNERS', 'thestig@chromium.org', 'skau@chromium.org'],
       'supported_on': ['chrome_os:65-'],
       'id': 385,
       'type': 'list',
@@ -16270,7 +16270,7 @@
     },
     {
       'name': 'TPMFirmwareUpdateSettings',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pmarko@chromium.org'],
       'supported_on': ['chrome_os:63-'],
       'device_only': True,
       'id': 390,
@@ -16457,7 +16457,7 @@
     },
     {
       'name': 'QuickUnlockModeAllowlist',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'bartfab@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -16495,7 +16495,7 @@
     },
     {
       'name': 'QuickUnlockModeWhitelist',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -16536,7 +16536,7 @@
     },
     {
       'name': 'QuickUnlockTimeout',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -16579,7 +16579,7 @@
     },
     {
       'name': 'PinUnlockMinimumLength',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer' },
       'supported_on': ['chrome_os:57-'],
@@ -16597,7 +16597,7 @@
     },
     {
       'name': 'PinUnlockMaximumLength',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer' },
       'supported_on': ['chrome_os:57-'],
@@ -16615,7 +16615,7 @@
     },
     {
       'name': 'PinUnlockWeakPinsAllowed',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:57-'],
@@ -16666,7 +16666,7 @@
     },
     {
       'name': 'DeviceLoginScreenLocales',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pmarko@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -16687,7 +16687,7 @@
     },
     {
       'name': 'DeviceLoginScreenInputMethods',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pmarko@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -17003,7 +17003,7 @@
     },
     {
       'name': 'PrintPreviewUseSystemDefaultPrinter',
-      'owners': ['file://printing/OWNERS', 'thestig@chromium.org'],
+      'owners': ['file://printing/OWNERS', 'thestig@chromium.org', 'rbpotter@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': [
@@ -17081,7 +17081,7 @@
     },
     {
       'name': 'EcryptfsMigrationStrategy',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pmarko@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -17137,7 +17137,7 @@
     },
     {
       'name': 'SchedulerConfiguration',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'emaxx@chromium.org'],
       'type': 'string-enum',
       'schema': {
         'type': 'string',
@@ -17231,7 +17231,7 @@
     },
     {
       'name': 'CastReceiverEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'future_on': ['chrome_os'],
@@ -17251,7 +17251,7 @@
     },
     {
       'name': 'CastReceiverName',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'future_on': ['chrome_os'],
@@ -17271,7 +17271,7 @@
     },
     {
       'name': 'DeviceOffHours',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'zmin@chromium.org'],
       'type': 'dict',
       'schema': {
         'type': 'object',
@@ -17414,7 +17414,7 @@
     },
     {
       'name': 'DeviceArcDataSnapshotHours',
-      'owners': ['pbond@chromium.org', 'file://components/policy/resources/OWNERS'],
+      'owners': ['pbond@chromium.org', 'file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
       'type': 'dict',
       'schema': {
         'type': 'object',
@@ -17508,7 +17508,7 @@
     },
     {
       'name': 'DeviceLoginScreenIsolateOrigins',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pmarko@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome_os:66-76'],
@@ -17531,7 +17531,7 @@
     },
     {
       'name': 'DeviceLoginScreenSitePerProcess',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pmarko@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:66-76'],
@@ -17598,7 +17598,7 @@
     },
     {
       'name': 'WebDriverOverridesIncompatiblePolicies',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:65-79'],
@@ -18061,7 +18061,7 @@
     {
       'id': 567,
       'name': 'RelaunchHeadsUpPeriod',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'zmin@chromium.org'],
       'tags': [],
       'features': {
         'dynamic_refresh': True,
@@ -18613,7 +18613,7 @@
     },
     {
       'name': 'DeviceSamlLoginAuthenticationType',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'emaxx@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -18692,7 +18692,7 @@
     },
     {
       'name': 'AllowedLanguages',
-      'owners': ['hendrich@chromium.org', 'file://components/policy/resources/OWNERS'],
+      'owners': ['hendrich@chromium.org', 'file://components/policy/resources/OWNERS', 'poromov@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -18740,7 +18740,7 @@
     },
     {
       'name': 'ArcAppInstallEventLoggingEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:67-'],
@@ -18757,7 +18757,7 @@
     },
     {
       'name': 'ExtensionInstallEventLoggingEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'hendrich@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:85-'],
@@ -18944,7 +18944,7 @@
     },
     {
       'name': 'ArcBackupRestoreServiceEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'anqing@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -18986,7 +18986,7 @@
     },
     {
       'name': 'ArcGoogleLocationServicesEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -19046,7 +19046,7 @@
     },
     {
       'name': 'ContextualSuggestionsEnabled',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'emaxx@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['android:69-75'],
@@ -19067,7 +19067,7 @@
     },
     {
       'name': 'DeviceAutoUpdateTimeRestrictions',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pmarko@chromium.org'],
       'type': 'dict',
       'schema': {
         'type': 'array',
@@ -19235,7 +19235,7 @@
     },
     {
       'name': 'DeviceUpdateStagingSchedule',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'anqing@chromium.org'],
       'type': 'dict',
       'schema': {
         'type': 'array',
@@ -19301,7 +19301,7 @@
     },
     {
       'name': 'UrlKeyedAnonymizedDataCollectionEnabled',
-      'owners': ['file://base/metrics/OWNERS'],
+      'owners': ['file://base/metrics/OWNERS', 'bcwhite@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:69-', 'chrome_os:69-', 'android:70-', 'ios:90-'],
@@ -19418,7 +19418,7 @@
     },
     {
       'name': 'ManagedConfigurationPerOrigin',
-      'owners': ['file://chrome/browser/device_api/OWNERS'],
+      'owners': ['file://chrome/browser/device_api/OWNERS', 'apotapchuk@chromium.org'],
       'type': 'dict',
       'schema': {
         'type': 'array',
@@ -19456,7 +19456,7 @@
     },
     {
       'name': 'WebAppInstallForceList',
-      'owners': ['file://chrome/browser/web_applications/OWNERS'],
+      'owners': ['file://chrome/browser/web_applications/OWNERS', 'ortuno@chromium.org'],
       'type': 'dict',
       'schema': {
         'type': 'array',
@@ -19827,7 +19827,7 @@
     },
     {
       'name': 'ScreenBrightnessPercent',
-      'owners': ['file://chrome/browser/chromeos/login/demo_mode/OWNERS'],
+      'owners': ['file://chrome/browser/chromeos/login/demo_mode/OWNERS', 'agawronska@chromium.org'],
       'type': 'dict',
       'schema': {
         'type': 'object',
@@ -20132,7 +20132,7 @@
     },
     {
       'name': 'DeviceDisplayResolution',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'dict',
       'schema': {
         'type': 'object',
@@ -20322,7 +20322,7 @@
     },
     {
       'name': 'ParentAccessCodeConfig',
-      'owners': ['file://chrome/browser/chromeos/child_accounts/OWNERS'],
+      'owners': ['file://chrome/browser/chromeos/child_accounts/OWNERS', 'agawronska@chromium.org'],
       'type': 'dict',
       'schema': {
         'sensitiveValue': True,
@@ -20400,7 +20400,7 @@
     },
     {
       'name': 'ClientCertificateManagementAllowed',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'emaxx@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -20440,7 +20440,7 @@
     {
       'id': 520,
       'name': 'DeviceRebootOnUserSignout',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pmarko@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -20487,7 +20487,7 @@
     },
     {
       'name': 'ForceNetworkInProcess',
-      'owners': ['file://services/network/OWNERS'],
+      'owners': ['file://services/network/OWNERS', 'jam@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.win:72-83'],
@@ -20844,7 +20844,7 @@
     },
     {
       'name': 'SignedHTTPExchangeEnabled',
-      'owners': ['file://content/browser/web_package/OWNERS'],
+      'owners': ['file://content/browser/web_package/OWNERS', 'ksakamoto@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:75-', 'chrome_os:75-'],
@@ -21267,7 +21267,7 @@
     },
     {
       'name': 'KerberosEnabled',
-      'owners': ['file://chrome/browser/chromeos/kerberos/OWNERS'],
+      'owners': ['file://chrome/browser/chromeos/kerberos/OWNERS', 'fsandrade@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:87-'],
@@ -21288,7 +21288,7 @@
     },
     {
       'name': 'KerberosRememberPasswordEnabled',
-      'owners': ['file://chrome/browser/chromeos/kerberos/OWNERS'],
+      'owners': ['file://chrome/browser/chromeos/kerberos/OWNERS', 'tomdobro@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:87-'],
@@ -21309,7 +21309,7 @@
     },
     {
       'name': 'KerberosAddAccountsAllowed',
-      'owners': ['file://chrome/browser/chromeos/kerberos/OWNERS'],
+      'owners': ['file://chrome/browser/chromeos/kerberos/OWNERS', 'tomdobro@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:87-'],
@@ -21330,7 +21330,7 @@
     },
     {
       'name': 'KerberosAccounts',
-      'owners': ['file://chrome/browser/chromeos/kerberos/OWNERS'],
+      'owners': ['file://chrome/browser/chromeos/kerberos/OWNERS', 'tomdobro@chromium.org'],
       'type': 'dict',
       'schema': {
         'type': 'array',
@@ -21459,7 +21459,7 @@
     {
       'id': 571,
       'name': 'DevicePowerwashAllowed',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'emaxx@chromium.org'],
       'type': 'main',
       'schema': {
         'type': 'boolean',
@@ -21479,7 +21479,7 @@
     },
     {
       'name': 'ExternalPrintServers',
-      'owners': ['file://chromeos/printing/OWNERS'],
+      'owners': ['file://chromeos/printing/OWNERS', 'luum@chromium.org'],
       'type': 'external',
       'schema': {
         'type': 'object',
@@ -21593,7 +21593,7 @@
     },
     {
       'name': 'CACertificateManagementAllowed',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'poromov@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -21631,7 +21631,7 @@
     {
       'id': 581,
       'name': 'LockScreenMediaPlaybackEnabled',
-      'owners': ['file://services/media_session/OWNERS'],
+      'owners': ['file://services/media_session/OWNERS', 'mlamouri@chromium.org'],
       'type': 'main',
       'schema': {
         'type': 'boolean',
@@ -22177,7 +22177,7 @@
     },
     {
       'name': 'AllowSyncXHRInPageDismissal',
-      'owners': ['kdillon@chromium.org, panicker@chromium.org'],
+      'owners': ['kdillon@chromium.org, panicker@chromium.org', 'kdillon@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:78-', 'chrome_os:78-', 'android:78-'],
@@ -22228,7 +22228,7 @@
     {
       'id': 626,
       'name': 'TLS13HardeningForLocalAnchorsEnabled',
-      'owners': ['file://net/ssl/OWNERS'],
+      'owners': ['file://net/ssl/OWNERS', 'davidben@chromium.org'],
       'type': 'main',
       'schema': {
         'type': 'boolean',
@@ -22253,7 +22253,7 @@
     },
     {
       'name': 'AudioSandboxEnabled',
-      'owners': ['file://services/audio/OWNERS'],
+      'owners': ['file://services/audio/OWNERS', 'dalecurtis@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.win:79-', 'chrome.linux:79-', 'chrome.mac:79-'],
@@ -22331,7 +22331,7 @@
     },
     {
       'name': 'ExternalPrintServersWhitelist',
-      'owners': ['file://chromeos/printing/OWNERS'],
+      'owners': ['file://chromeos/printing/OWNERS', 'luum@chromium.org'],
       'supported_on': ['chrome_os:79-'],
       'id': 631,
       'features': {
@@ -22359,7 +22359,7 @@
     },
     {
       'name': 'ExternalPrintServersAllowlist',
-      'owners': ['file://chromeos/printing/OWNERS'],
+      'owners': ['file://chromeos/printing/OWNERS', 'thestig@chromium.org'],
       'supported_on': ['chrome_os:86-'],
       'id': 750,
       'features': {
@@ -22789,7 +22789,7 @@
     },
     {
       'name': 'PrinterTypeDenyList',
-      'owners': ['file://printing/OWNERS'],
+      'owners': ['file://printing/OWNERS', 'weili@chromium.org'],
       'type': 'string-enum-list',
       'schema': {
         'type': 'array',
@@ -22972,7 +22972,7 @@
     },
     {
       'name': 'PaymentMethodQueryEnabled',
-      'owners': ['file://components/payments/OWNERS'],
+      'owners': ['file://components/payments/OWNERS', 'nburris@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:80-', 'chrome_os:80-', 'android:80-'],
@@ -23159,7 +23159,7 @@
     },
     {
       'name': 'LocalDiscoveryEnabled',
-      'owners': ['file://cloud_print/OWNERS'],
+      'owners': ['file://cloud_print/OWNERS', 'weili@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:81-87', 'chrome_os:81-87'],
@@ -23214,7 +23214,7 @@
     },
     {
       'name': 'AdvancedProtectionDeepScanningEnabled',
-      'owners': ['file://chrome/browser/safe_browsing/OWNERS'],
+      'owners': ['file://chrome/browser/safe_browsing/OWNERS', 'drubery@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:81-81'],
@@ -23344,7 +23344,7 @@ If this policy is left unset, privacy screen is disabled initially but can be co
     },
     {
       'name': 'AllowNativeNotifications',
-      'owners': ['file://chrome/browser/notifications/OWNERS'],
+      'owners': ['file://chrome/browser/notifications/OWNERS', 'knollr@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.linux:83-'],
@@ -23365,7 +23365,7 @@ If set to False, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will not 
     },
     {
       'name': 'RequiredClientCertificateForUser',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
       'type': 'dict',
       'schema': {
         'type': 'array',
@@ -23417,7 +23417,7 @@ If set to False, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will not 
     },
     {
       'name': 'RequiredClientCertificateForDevice',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
       'type': 'dict',
       'schema': {
         'type': 'array',
@@ -23469,7 +23469,7 @@ If set to False, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will not 
     },
     {
       'name': 'AdvancedProtectionAllowed',
-      'owners': ['file://chrome/browser/safe_browsing/OWNERS'],
+      'owners': ['file://chrome/browser/safe_browsing/OWNERS', 'drubery@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:83-', 'chrome_os:83-'],
@@ -23526,7 +23526,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
     },
     {
       'name': 'AccessibilityImageLabelsEnabled',
-      'owners': ['file://ui/accessibility/OWNERS'],
+      'owners': ['file://ui/accessibility/OWNERS', 'dmazzoni@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:84-', 'chrome.*:84-'],
@@ -23577,7 +23577,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
     },
     {
       'name': 'IntensiveWakeUpThrottlingEnabled',
-      'owners': ['file://components/performance_manager/OWNERS', 'chrisha@google.com'],
+      'owners': ['file://components/performance_manager/OWNERS', 'chrisha@google.com', 'chrisha@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:85-', 'chrome.*:85-', 'android:85-'],
@@ -23615,7 +23615,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
     },
     {
       'name': 'BackForwardCacheEnabled',
-      'owners': ['chrome-bfcache@google.com'],
+      'owners': ['chrome-bfcache@google.com', 'rakina@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['android:86-'],
@@ -23695,7 +23695,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
     },
     {
       'name': 'UserAgentClientHintsEnabled',
-      'owners': ['file://components/client_hints/OWNERS', 'yoavweiss@google.com'],
+      'owners': ['file://components/client_hints/OWNERS', 'yoavweiss@google.com', 'aarontag@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:84-', 'chrome.*:84-', 'android:84-'],
@@ -23782,7 +23782,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
     },
     {
       'name': 'LookalikeWarningAllowlistDomains',
-      'owners': ['file://chrome/browser/lookalikes/OWNERS'],
+      'owners': ['file://chrome/browser/lookalikes/OWNERS', 'jdeblasio@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -23881,7 +23881,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
     },
     {
       'name': 'CloudPrintWarningsSuppressed',
-      'owners': ['file://printing/OWNERS'],
+      'owners': ['file://printing/OWNERS', 'rbpotter@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:86-87', 'chrome_os:86-87'],
@@ -23911,7 +23911,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
     },
     {
       'name': 'EnableDeprecatedPrivetPrinting',
-      'owners': ['file://printing/OWNERS'],
+      'owners': ['file://printing/OWNERS', 'rbpotter@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:89-93', 'chrome_os:89-93'],
@@ -23940,7 +23940,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
     },
     {
       'name': 'DataLeakPreventionRulesList',
-      'owners': ['file://chrome/browser/chromeos/policy/dlp/OWNERS'],
+      'owners': ['file://chrome/browser/chromeos/policy/dlp/OWNERS', 'ayaelattar@chromium.org'],
       'type': 'dict',
       'schema': {
         'type': 'array',
@@ -24436,7 +24436,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
     },
     {
       'name': 'ProfilePickerOnStartupAvailability',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -24670,7 +24670,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
     },
     {
       'name': 'WebAppSettings',
-      'owners': ['mjackson@microsoft.com', 'cmp@chromium.org', 'file://chrome/browser/web_applications/OWNERS'],
+      'owners': ['mjackson@microsoft.com', 'cmp@chromium.org', 'file://chrome/browser/web_applications/OWNERS', 'tapted@chromium.org'],
       'type': 'dict',
       'schema': {
         'type': 'object',
@@ -25249,7 +25249,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     {
       'id': 6,
       'name': 'RestoreOnStartup',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'caption': '''Action on startup''',
       'policies': [
         'RestoreOnStartup',
