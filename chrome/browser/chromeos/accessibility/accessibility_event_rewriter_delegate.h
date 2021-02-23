@@ -11,7 +11,6 @@
 #include "base/macros.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/wm/public/activation_change_observer.h"
 
 namespace ash {
 enum class SwitchAccessCommand;
@@ -24,8 +23,7 @@ enum class MagnifierCommand;
 // TODO(http://crbug.com/839541): Avoid reposting unhandled events.
 class AccessibilityEventRewriterDelegate
     : public ash::AccessibilityEventRewriterDelegate,
-      public content::WebContentsDelegate,
-      public wm::ActivationChangeObserver {
+      public content::WebContentsDelegate {
  public:
   AccessibilityEventRewriterDelegate();
   AccessibilityEventRewriterDelegate(
@@ -50,13 +48,6 @@ class AccessibilityEventRewriterDelegate
   bool HandleKeyboardEvent(
       content::WebContents* source,
       const content::NativeWebKeyboardEvent& event) override;
-
-  // wm::ActivationChangeObserver overrides.
-  void OnWindowActivated(ActivationReason reason,
-                         aura::Window* gained_active,
-                         aura::Window* lost_active) override;
-
-  bool is_arc_window_active_ = false;
 };
 
 #endif  // CHROME_BROWSER_CHROMEOS_ACCESSIBILITY_ACCESSIBILITY_EVENT_REWRITER_DELEGATE_H_

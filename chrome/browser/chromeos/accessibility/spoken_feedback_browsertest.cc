@@ -20,6 +20,7 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/task/post_task.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -52,6 +53,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -781,15 +784,36 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, TouchExploreStatusTray) {
   EnableChromeVox();
   sm_.Call([this]() { SimulateTouchScreenInChromeVox(); });
 
-  // Send an accessibility hover event on the system tray, which is
-  // what we get when you tap it on a touch screen when ChromeVox is on.
-  sm_.Call([]() {
-    ash::TrayBackgroundView* tray = ash::Shell::Get()
+  base::SimpleTestTickClock clock;
+  auto* clock_ptr = &clock;
+  ui::SetEventTickClockForTesting(clock_ptr);
+
+  auto* root_window = ash::Shell::Get()->GetPrimaryRootWindow();
+  ui::test::EventGenerator generator(root_window);
+  auto* generator_ptr = &generator;
+
+  // Touch the status tray.
+  sm_.Call([clock_ptr, generator_ptr]() {
+    const gfx::Point& tray_center = ash::Shell::Get()
                                         ->GetPrimaryRootWindowController()
                                         ->GetStatusAreaWidget()
-                                        ->unified_system_tray();
-    tray->NotifyAccessibilityEvent(ax::mojom::Event::kHover, true);
+                                        ->unified_system_tray()
+                                        ->GetBoundsInScreen()
+                                        .CenterPoint();
+
+    ui::TouchEvent touch_press(
+        ui::ET_TOUCH_PRESSED, tray_center, base::TimeTicks::Now(),
+        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+    generator_ptr->Dispatch(&touch_press);
+
+    clock_ptr->Advance(base::TimeDelta::FromSeconds(1));
+
+    ui::TouchEvent touch_move(
+        ui::ET_TOUCH_MOVED, tray_center, base::TimeTicks::Now(),
+        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+    generator_ptr->Dispatch(&touch_move);
   });
+
   sm_.ExpectSpeechPattern("Status tray, time* Battery at* percent*");
   sm_.ExpectSpeech("Button");
 

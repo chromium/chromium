@@ -29,6 +29,8 @@ PointerHandler = class extends BaseAutomationHandler {
     this.lastNoPointerAnchorEarconPlayedTime_ = new Date();
     /** @private {!AutomationNode|undefined} */
     this.lastValidNodeBeforePointerInvalidation_;
+    /** @private {boolean} */
+    this.isExpectingHover_ = false;
 
     chrome.automation.getDesktop((desktop) => {
       this.node_ = desktop;
@@ -37,6 +39,10 @@ PointerHandler = class extends BaseAutomationHandler {
       // This is needed for ARC++ which sends back hovers when we send mouse
       // moves.
       this.addListener_(EventType.HOVER, (evt) => {
+        if (!this.isExpectingHover_) {
+          return;
+        }
+        this.isExpectingHover_ = false;
         this.handleHitTestResult(evt.target);
         this.runHitTest();
       });
@@ -121,6 +127,7 @@ PointerHandler = class extends BaseAutomationHandler {
       return;
     }
 
+    this.isExpectingHover_ = true;
     EventGenerator.sendMouseMove(
         this.mouseX_, this.mouseY_, true /* touchAccessibility */);
   }

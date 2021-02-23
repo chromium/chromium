@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
 #include "chrome/common/extensions/api/accessibility_private.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "components/exo/wm_helper.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/web_contents.h"
@@ -67,18 +66,11 @@ std::string ToString(ash::MagnifierCommand command) {
 
 }  // namespace
 
-AccessibilityEventRewriterDelegate::AccessibilityEventRewriterDelegate() {
-  // If WMHelper doesn't exist, do nothing. This occurs in tests.
-  if (exo::WMHelper::HasInstance())
-    exo::WMHelper::GetInstance()->AddActivationObserver(this);
-}
+AccessibilityEventRewriterDelegate::AccessibilityEventRewriterDelegate() =
+    default;
 
-AccessibilityEventRewriterDelegate::~AccessibilityEventRewriterDelegate() {
-  // If WMHelper is already destroyed, do nothing.
-  // TODO(crbug.com/748380): Fix shutdown order.
-  if (exo::WMHelper::HasInstance())
-    exo::WMHelper::GetInstance()->RemoveActivationObserver(this);
-}
+AccessibilityEventRewriterDelegate::~AccessibilityEventRewriterDelegate() =
+    default;
 
 void AccessibilityEventRewriterDelegate::DispatchKeyEventToChromeVox(
     std::unique_ptr<ui::Event> event,
@@ -98,9 +90,6 @@ void AccessibilityEventRewriterDelegate::DispatchKeyEventToChromeVox(
 
 void AccessibilityEventRewriterDelegate::DispatchMouseEvent(
     std::unique_ptr<ui::Event> event) {
-  if (is_arc_window_active_)
-    return;
-
   AutomationManagerAura::GetInstance()->HandleEvent(
       ax::mojom::Event::kMouseMoved);
 }
@@ -172,14 +161,4 @@ bool AccessibilityEventRewriterDelegate::HandleKeyboardEvent(
     const content::NativeWebKeyboardEvent& event) {
   OnUnhandledSpokenFeedbackEvent(ui::Event::Clone(*event.os_event));
   return true;
-}
-
-void AccessibilityEventRewriterDelegate::OnWindowActivated(
-    ActivationReason reason,
-    aura::Window* gained_active,
-    aura::Window* lost_active) {
-  if (gained_active == lost_active)
-    return;
-
-  is_arc_window_active_ = ash::IsArcWindow(gained_active);
 }
