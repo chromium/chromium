@@ -256,21 +256,25 @@ enum class LayoutTransitionState {
   }
   DCHECK_EQ(self.layoutTransitionState, LayoutTransitionState::Inactive);
   auto completion = ^(BOOL completed, BOOL finished) {
-    if (self.nextState == self.currentState) {
+    if (self.nextState == self.currentState ||
+        self.animator.state == UIViewAnimatingStateActive) {
       self.layoutTransitionState = LayoutTransitionState::Inactive;
       return;
     }
-    // If current state doesn't match the next state, then next state has been
-    // changed while the transition is finishing. Start a new programmatic
-    // transition to the correct final state. Triggering a transiton from inside
-    // the completion block of a transition seems to cause the new transition's
-    // completion block to never fire, so do that on the next run loop.
+    // If current state doesn't match the next state and the animator is not
+    // active, then next state has been changed while the transition is
+    // finishing. Start a new programmatic transition to the correct final
+    // state. Triggering a transiton from inside the completion block of a
+    // transition seems to cause the new transition's completion block to never
+    // fire, so do that on the next run loop.
     dispatch_async(dispatch_get_main_queue(), ^{
       self.layoutTransitionState = LayoutTransitionState::Inactive;
       // Make sure the next state hasn't changed.
-      if (self.nextState != self.currentState) {
-        [self setNextState:self.nextState animated:YES];
+      if (self.nextState == self.currentState ||
+          self.animator.state == UIViewAnimatingStateActive) {
+        return;
       }
+      [self setNextState:self.nextState animated:YES];
     });
   };
   [self.layoutSwitcherProvider.layoutSwitcher
