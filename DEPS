@@ -43,9 +43,9 @@ gclient_gn_args = [
   'checkout_ios_webkit',
   'checkout_nacl',
   'checkout_openxr',
+  'checkout_rts_model',
   'cros_boards',
   'cros_boards_with_qemu_images',
-  'use_rts',
 ]
 
 
@@ -186,7 +186,7 @@ vars = {
 
   # See //docs/testing/regression-test-selection.md
   # for info on RTS
-  'use_rts': False,
+  'checkout_rts_model': False,
 
   # reclient CIPD package version
   'reclient_version': 're_client_version:0.20.1.c4bbd2f',
