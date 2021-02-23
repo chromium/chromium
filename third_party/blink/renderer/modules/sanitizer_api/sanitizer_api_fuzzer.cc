@@ -2,6 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Fuzzer for the Sanitizer API, intended to be run on ClusterFuzz.
+//
+// To test out locally:
+// - Assuming
+//     $OUT is your local build output directory with use_libbfuzzer set.
+//     $GEN is the suitable 'gen' directory under $OUT. $GEN is
+//         $OUT/gen/third_party_blink/renderer/modules/sanitizer_api.
+// - Build:
+//   $ ninja -C $OUT sanitizer_api_fuzzer
+// - Run with:
+//   $ $OUT/sanitizer_api_fuzzer --dict=$GEN/sanitizer_api.dict \
+//       $(mktemp -d) $GEN/corpus/
+
 #include "sanitizer.h"
 
 #include "testing/libfuzzer/proto/lpm_interface.h"
@@ -13,6 +26,7 @@
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/modules/sanitizer_api/sanitizer_config.pb.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
@@ -69,19 +83,32 @@ void MakeConfiguration(SanitizerConfig* sanitizer_config,
 
 void TextProtoFuzzer(const SanitizerConfigProto& proto,
                      ScriptState* script_state) {
-  // Create random Sanitizer.
+  // Create Sanitizer based on proto's config..
   auto* sanitizer_config = MakeGarbageCollected<SanitizerConfig>();
   MakeConfiguration(sanitizer_config, proto);
   auto* sanitizer = MakeGarbageCollected<Sanitizer>(sanitizer_config);
 
-  // Sanitize random strings.
+  // Sanitize string given in proto. Method depends on sanitize_to_string.
   String str = proto.html_string().c_str();
-  StringOrTrustedHTMLOrDocumentFragmentOrDocument str1 =
-      StringOrTrustedHTMLOrDocumentFragmentOrDocument::FromString(str);
-  sanitizer->sanitize(script_state, str1, IGNORE_EXCEPTION_FOR_TESTING);
-  StringOrDocumentFragmentOrDocument str2 =
-      StringOrDocumentFragmentOrDocument::FromString(str);
-  sanitizer->sanitizeToString(script_state, str2, IGNORE_EXCEPTION_FOR_TESTING);
+  if (proto.sanitize_to_string()) {
+    StringOrTrustedHTMLOrDocumentFragmentOrDocument str1 =
+        StringOrTrustedHTMLOrDocumentFragmentOrDocument::FromString(str);
+    sanitizer->sanitize(script_state, str1, IGNORE_EXCEPTION_FOR_TESTING);
+  } else {
+    StringOrDocumentFragmentOrDocument str2 =
+        StringOrDocumentFragmentOrDocument::FromString(str);
+    sanitizer->sanitizeToString(script_state, str2,
+                                IGNORE_EXCEPTION_FOR_TESTING);
+  }
+
+  // The fuzzer will eventually run out of memory. Force the GC to run every
+  // N-th time. This will trigger both V8 + Oilpan GC.
+  static size_t counter = 0;
+  if (counter++ > 1000) {
+    counter = 0;
+    V8PerIsolateData::MainThreadIsolate()->RequestGarbageCollectionForTesting(
+        v8::Isolate::kFullGarbageCollection);
+  }
 }
 
 }  // namespace blink

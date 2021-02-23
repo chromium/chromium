@@ -7,12 +7,14 @@ syntax = "proto2";
 message SanitizerConfigProto {
   required string html_string = 1;
 
-  message Elements { repeated string element = 1; }
   repeated string allow_elements = 2;
   repeated string block_elements = 3;
   repeated string drop_elements = 4;
 
+  message Elements { repeated string element = 1; }
   map<string, Elements> allow_attributes = 5;
   map<string, Elements> drop_attributes = 6;
+
   optional bool allow_custom_elements = 7;
+  optional bool sanitize_to_string = 8;
 }

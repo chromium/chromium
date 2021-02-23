@@ -1,0 +1,17 @@
+allow_elements: "div"
+allow_elements: "p"
+allow_elements: "span"
+allow_elements: "em"
+allow_elements: "strong"
+allow_attributes {
+  key: "class"
+  value {
+    element: "*"
+  }
+}
+allow_attributes {
+  key: "id"
+  value {
+    element: "*"
+  }
+}
