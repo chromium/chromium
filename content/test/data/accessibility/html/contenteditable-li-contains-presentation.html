@@ -1,11 +1,15 @@
 <!--
 @BLINK-ALLOW:next*
 @BLINK-ALLOW:prev*
+@BLINK-ALLOW:isLineBreakingObject=true
 -->
 <div contenteditable>
-  <ul>
+  <ol>
     <li>
-      <p role="presentation">A list item with both a br and <br>an inner p role=presentation</p>
+      <p role="presentation"><span>text in span in presentational paragraph in li</span></p>
     </li>
-  </ul>
+    <li>
+      <p role="presentation">A list item with both a br and<br>an inner p role=presentation</p>
+    </li>
+  </ol>
 </div>

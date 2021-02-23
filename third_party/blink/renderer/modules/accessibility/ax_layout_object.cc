@@ -928,35 +928,48 @@ static AXObject* GetDeepestChildOnSameLine(AXObject* start_object, bool first) {
 // "next" and |back()| instead of "previous" and |front()|.
 static AXObject* NextOnLineInternalNG(const AXObject& ax_object) {
   DCHECK(!ax_object.IsDetached());
-  const LayoutObject& layout_object = *ax_object.GetLayoutObject();
-  DCHECK(ShouldUseLayoutNG(layout_object)) << layout_object;
-  if (layout_object.IsBoxListMarkerIncludingNG() ||
-      !layout_object.IsInLayoutNGInlineFormattingContext())
+  const LayoutObject* layout_object = ax_object.GetLayoutObject();
+  DCHECK(layout_object);
+  DCHECK(ShouldUseLayoutNG(*layout_object)) << layout_object;
+  if (layout_object->IsBoxListMarkerIncludingNG() ||
+      !layout_object->IsInLayoutNGInlineFormattingContext()) {
     return nullptr;
+  }
 
   NGInlineCursor cursor;
-  cursor.MoveTo(layout_object);
-  if (!cursor)
-    return nullptr;
-
-  for (;;) {
-    cursor.MoveToNextInlineLeafOnLine();
-    if (!cursor)
+  while (true) {
+    // Try to get cursor for layout_object.
+    cursor.MoveToIncludingCulledInline(*layout_object);
+    if (cursor)
       break;
-    LayoutObject* runner_layout_object = cursor.CurrentMutableLayoutObject();
-    AXObject* result =
-        ax_object.AXObjectCache().GetOrCreate(runner_layout_object);
-    result = GetDeepestChildOnSameLine(result, true);
-    if (result)
-      return result;
+
+    // No cursor found: will try get cursor from first layout child.
+    // This can happen on an inline element.
+    LayoutObject* layout_child = layout_object->SlowLastChild();
+    if (!layout_child)
+      break;
+
+    layout_object = layout_child;
+  }
+
+  // Found cursor: use it to find next inline leaf.
+  if (cursor) {
+    cursor.MoveToNextInlineLeafOnLine();
+    if (cursor) {
+      LayoutObject* runner_layout_object = cursor.CurrentMutableLayoutObject();
+      AXObject* result =
+          ax_object.AXObjectCache().GetOrCreate(runner_layout_object);
+      result = GetDeepestChildOnSameLine(result, true);
+      if (result)
+        return result;
+    }
   }
 
   // We need to ensure that we are at the end of our parent layout object
   // before attempting to connect to the next AXObject that is on the same
   // line as its first line.
-  if (layout_object.NextSibling())
+  if (layout_object->NextSibling())
     return nullptr;  // Not at end of parent layout object.
-
   if (!ax_object.ParentObject()) {
     NOTREACHED();
     return nullptr;
@@ -1047,34 +1060,48 @@ AXObject* AXLayoutObject::NextOnLine() const {
 // instead of "next" and |back()|.
 static AXObject* PreviousOnLineInlineNG(const AXObject& ax_object) {
   DCHECK(!ax_object.IsDetached());
-  const LayoutObject& layout_object = *ax_object.GetLayoutObject();
-  DCHECK(ShouldUseLayoutNG(layout_object)) << layout_object;
+  const LayoutObject* layout_object = ax_object.GetLayoutObject();
+  DCHECK(layout_object);
+  DCHECK(ShouldUseLayoutNG(*layout_object)) << layout_object;
 
-  if (layout_object.IsBoxListMarkerIncludingNG() ||
-      !layout_object.IsInLayoutNGInlineFormattingContext()) {
+  if (layout_object->IsBoxListMarkerIncludingNG() ||
+      !layout_object->IsInLayoutNGInlineFormattingContext()) {
     return nullptr;
   }
 
   NGInlineCursor cursor;
-  cursor.MoveTo(layout_object);
-  if (!cursor)
-    return nullptr;
-  for (;;) {
-    cursor.MoveToPreviousInlineLeafOnLine();
-    if (!cursor)
+  while (true) {
+    // Try to get cursor for layout_object.
+    cursor.MoveToIncludingCulledInline(*layout_object);
+    if (cursor)
       break;
-    LayoutObject* earlier_layout_object = cursor.CurrentMutableLayoutObject();
-    AXObject* result =
-        ax_object.AXObjectCache().GetOrCreate(earlier_layout_object);
-    result = GetDeepestChildOnSameLine(result, false);
-    if (result)
-      return result;
+
+    // No cursor found: will try get cursor from first layout child.
+    // This can happen on an inline element.
+    LayoutObject* layout_child = layout_object->SlowFirstChild();
+    if (!layout_child)
+      break;
+
+    layout_object = layout_child;
+  }
+
+  // Found cursor: use it to find previous inline leaf.
+  if (cursor) {
+    cursor.MoveToPreviousInlineLeafOnLine();
+    if (cursor) {
+      LayoutObject* runner_layout_object = cursor.CurrentMutableLayoutObject();
+      AXObject* result =
+          ax_object.AXObjectCache().GetOrCreate(runner_layout_object);
+      result = GetDeepestChildOnSameLine(result, false);
+      if (result)
+        return result;
+    }
   }
 
   // We need to ensure that we are at the start of our parent layout object
   // before attempting to connect to the previous AXObject that is on the same
   // line as its first line.
-  if (layout_object.PreviousSibling())
+  if (layout_object->PreviousSibling())
     return nullptr;  // Not at start of parent layout object.
 
   if (!ax_object.ParentObject()) {
