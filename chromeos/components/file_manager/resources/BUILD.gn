@@ -2,7 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/browser/resources/tools/optimize_webui.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+
+js_library("browser_proxy") {
+}
+
+js_library("script_loader") {
+}
+
+js_library("main") {
+}
 
 js_library("main_js") {
   sources = [
@@ -34,5 +45,53 @@ action("gen_main_html") {
   outputs = [
     "$target_gen_dir/main.html",
     "$target_gen_dir/main.html.stamp",
+  ]
+}
+
+preprocess_folder = "$target_gen_dir/preprocessed"
+
+preprocess_if_expr("preprocess") {
+  in_folder = "./"  #target_gen_dir
+  out_folder = preprocess_folder
+
+  in_files = [
+    "browser_proxy.js",
+    "main.js",
+    "script_loader.js",
+  ]
+
+  deps = [
+    ":browser_proxy",
+    ":main",
+    ":script_loader",
+  ]
+}
+
+preprocess_if_expr("preprocess_gen") {
+  in_folder = target_gen_dir + "/../mojom"
+  out_folder = preprocess_folder
+  in_files = [ "file_manager.mojom-lite.js" ]
+
+  deps = [
+    "//chromeos/components/file_manager/mojom:mojom_js_library_for_compile",
+  ]
+}
+
+optimize_webui("build") {
+  host = "file_manager"
+  input = rebase_path(preprocess_folder, root_build_dir)
+
+  js_module_in_files = [ "main.js" ]
+
+  js_out_files = [ "main.rollup.js" ]
+
+  excludes = [ "chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js" ]
+
+  deps = [
+    ":preprocess",
+    ":preprocess_gen",
+    "//ui/file_manager:preprocess_generated",
+    "//ui/file_manager:preprocess_static",
+    "//ui/webui/resources:preprocess",
   ]
 }

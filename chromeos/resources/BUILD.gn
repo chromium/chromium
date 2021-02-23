@@ -99,6 +99,7 @@ if (!is_official_build) {
 
     deps = [
       "//chromeos/components/file_manager/mojom:mojom_js",
+      "//chromeos/components/file_manager/resources:build",
       "//chromeos/components/file_manager/resources:gen_main_html",
       "//mojo/public/js:bindings_lite",
     ]
