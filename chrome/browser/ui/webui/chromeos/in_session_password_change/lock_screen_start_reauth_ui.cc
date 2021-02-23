@@ -41,8 +41,10 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
   source->AddString("lockScreenReauthSubtitile",
                     l10n_util::GetStringFUTF16(IDS_LOCK_SCREEN_REAUTH_SUBTITLE,
                                                base::UTF8ToUTF16(email)));
-  source->AddString("lockScreenReauthSubtitileWithError",
-                    l10n_util::GetStringFUTF16(IDS_LOCK_SCREEN_WRONG_USER,
+  source->AddString("lockScreenReauthSubtitile1WithError",
+                    l10n_util::GetStringUTF16(IDS_LOCK_SCREEN_WRONG_USER_SUBTITLE1));           
+  source->AddString("lockScreenReauthSubtitile2WithError",
+                    l10n_util::GetStringFUTF16(IDS_LOCK_SCREEN_WRONG_USER_SUBTITLE2,
                                                base::UTF8ToUTF16(email)));
 
   source->AddString("lockScreenVerifyButton",

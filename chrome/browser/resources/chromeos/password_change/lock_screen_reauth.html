@@ -94,23 +94,38 @@
           color: var(--cr-primary-text-color);
           font-size: 28px;
           font-weight: 400;
-          padding-top: 30px;
+          padding-top: 15px;
           margin: 0;
         }
 
         .subtitle {
           color: var(--cr-secondary-text-color);
+          line-height: 150%;
           font-size: 13px;
           font-weight: 400;
           padding-top: 15px;
           margin: 0;
         }
 
+        .illustration-container {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        .illustration {
+          height: 100%;
+          width: 100%;
+          max-width: 600px;
+          object-fit: contain;
+        }
+
         .button-container {
           display: flex;
           justify-content: flex-end;
           flex-shrink: 0;
-          padding: 40px;
+          padding-bottom: 40px;
+          padding-inline-end: 40px;
         }
 
         [hidden] {
@@ -125,6 +140,13 @@
           padding-inline-start: 64px;
         }
 
+        cr-input {
+          height: 32px;
+          border-radius: 4px;
+          max-width: 560px;
+          padding-bottom: 8px;
+        }
+
         :host-context([dir=rtl]) #arrowForward {
           transform: rotate(180deg);
         }
@@ -133,13 +155,18 @@
           aria-modal="true"
           aria-label="$i18n{loginWelcomeMessage}">
         <div class="header">
-          <iron-icon class="title-icon" icon="oobe-64:alert"></iron-icon>
+          <iron-icon class="title-icon" icon="oobe-32:avatar"></iron-icon>
           <div class="title">
             $i18n{loginWelcomeMessage}
           </div>
           <div class="subtitle">
             $i18n{lockScreenReauthSubtitile}
           </div>
+        </div>
+        <div class="illustration-container">
+          <img class="illustration"
+               srcset="../login/images/1x/verify-account.svg 1x,
+                       ../login/images/2x/verify-account.svg 2x">
         </div>
         <div class="flex layout horizontal button-container">
           <cr-button id="cancelButton" class="cancel-button" on-click="onCloseTap_">
@@ -155,13 +182,19 @@
           aria-modal="true"
           aria-label="$i18n{loginWelcomeMessageWithError}">
         <div class="header">
-          <iron-icon class="title-icon" icon="oobe-64:alert"></iron-icon>
+          <iron-icon class="title-icon" icon="oobe-64:warning"></iron-icon>
           <div class="title">
             $i18n{loginWelcomeMessageWithError}
           </div>
           <div class="subtitle">
-            $i18n{lockScreenReauthSubtitileWithError}
+            <div>$i18n{lockScreenReauthSubtitile1WithError}</div>
+            <div>$i18n{lockScreenReauthSubtitile2WithError}</div>
           </div>
+        </div>
+        <div class="illustration-container">
+          <img class="illustration"
+               srcset="../login/images/1x/error.svg 1x,
+                       ../login/images/2x/error.svg 2x">
         </div>
         <div class="flex layout horizontal button-container">
           <cr-button id="cancelButton" class="cancel-button" on-click="onCloseTap_">
