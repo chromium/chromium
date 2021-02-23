@@ -122,10 +122,6 @@ void FrameOverlay::GraphicsLayersDidChange() {
   frame_->View()->SetPaintArtifactCompositorNeedsUpdate();
 }
 
-PaintArtifactCompositor* FrameOverlay::GetPaintArtifactCompositor() {
-  return frame_->View()->GetPaintArtifactCompositor();
-}
-
 void FrameOverlay::ServiceScriptedAnimations(
     base::TimeTicks monotonic_frame_begin_time) {
   delegate_->ServiceScriptedAnimations(monotonic_frame_begin_time);

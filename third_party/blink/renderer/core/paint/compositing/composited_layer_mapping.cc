@@ -1975,12 +1975,6 @@ void CompositedLayerMapping::GraphicsLayersDidChange() {
   frame_view->SetPaintArtifactCompositorNeedsUpdate();
 }
 
-PaintArtifactCompositor* CompositedLayerMapping::GetPaintArtifactCompositor() {
-  LocalFrameView* frame_view = GetLayoutObject().GetFrameView();
-  DCHECK(frame_view);
-  return frame_view->GetPaintArtifactCompositor();
-}
-
 #if DCHECK_IS_ON()
 void CompositedLayerMapping::VerifyNotPainting() {
   DCHECK(!GetLayoutObject().GetFrame()->GetPage() ||

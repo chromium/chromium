@@ -2862,8 +2862,12 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
   bool repainted = PaintTree(benchmark_mode);
 
   if (paint_artifact_compositor_ &&
-      benchmark_mode ==
-          PaintBenchmarkMode::kForcePaintArtifactCompositorUpdate) {
+      (benchmark_mode ==
+           PaintBenchmarkMode::kForcePaintArtifactCompositorUpdate ||
+       // TODO(paint-dev): Separate requirement for update for repaint and full
+       // PaintArtifactCompositor update.
+       (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
+        benchmark_mode != PaintBenchmarkMode::kNormal))) {
     paint_artifact_compositor_->SetNeedsUpdate();
   }
 
@@ -3043,9 +3047,6 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode) {
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
     EnsurePaintController();
 
-    PaintChunkSubset previous_chunks(
-        paint_controller_->GetPaintArtifactShared());
-
     PaintController::ScopedBenchmarkMode scoped_benchmark(*paint_controller_,
                                                           benchmark_mode);
 
@@ -3100,18 +3101,14 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode) {
       GetPage()->GetLinkHighlight().Paint(graphics_context);
 
       paint_controller_->CommitNewDisplayItems();
-
       repainted = true;
-      PaintChunkSubset repainted_chunks =
-          PaintChunkSubset(paint_controller_->GetPaintArtifactShared());
-      if (paint_artifact_compositor_) {
-        paint_artifact_compositor_->SetNeedsFullUpdateAfterPaintIfNeeded(
-            previous_chunks, repainted_chunks);
-      }
+      // TODO(paint-dev): Implement repaint-only update for CompositeAfterPaint.
+      SetPaintArtifactCompositorNeedsUpdate();
 
       // As if we created a root layer containing all paintings which needs full
       // layerization.
-      pre_composited_layers_ = {{repainted_chunks}};
+      pre_composited_layers_ = {
+          {PaintChunkSubset(paint_controller_->GetPaintArtifactShared())}};
     }
   } else {
     // A null graphics layer can occur for painting of SVG images that are not
@@ -3197,11 +3194,14 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
 
   // Skip updating property trees, pushing cc::Layers, and issuing raster
   // invalidations if possible.
+  // TODO(paint-dev): In CompositeAfterPaint mode, we always set
+  // PaintArtifactCompositor::NeedsUpdate() when anything needs repaint.
+  // We need an equivalent signal to indicate that PAC doesn't need to run the
+  // layerization algorithm, but it does need to update properties on layers
+  // that depend on painted output.
   if (!paint_artifact_compositor_->NeedsUpdate()) {
     if (repainted)
-      paint_artifact_compositor_->UpdateRepaintedLayers(pre_composited_layers_);
-    // TODO(pdr): Should we clear the property tree state change bits (
-    // |PaintArtifactCompositor::ClearPropertyTreeChangedState|)?
+      paint_artifact_compositor_->UpdateRepaintedLayerProperties();
     return;
   }
 

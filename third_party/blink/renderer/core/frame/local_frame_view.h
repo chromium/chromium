@@ -752,10 +752,6 @@ class CORE_EXPORT LocalFrameView final
     return EnsurePaintController();
   }
 
-  PaintArtifactCompositor* GetPaintArtifactCompositor() {
-    return paint_artifact_compositor_.get();
-  }
-
  protected:
   void FrameRectsChanged(const IntRect&) override;
   void SelfVisibleChanged() override;
