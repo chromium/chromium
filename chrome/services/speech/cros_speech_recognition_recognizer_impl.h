@@ -60,6 +60,7 @@ class CrosSpeechRecognitionRecognizerImpl
   OnRecognitionEventCallback recognition_event_callback_;
 
   const bool enable_soda_;
+  const base::FilePath binary_path_, languagepack_path_;
 
   base::WeakPtrFactory<CrosSpeechRecognitionRecognizerImpl> weak_factory_{this};
 };

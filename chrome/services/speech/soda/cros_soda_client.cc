@@ -40,13 +40,10 @@ void CrosSodaClient::Reset(
   soda_client_.reset();
   ml_service_.reset();
   is_initialized_ = true;
-  auto mojom_config = chromeos::machine_learning::mojom::SodaConfig::New();
-  mojom_config->channel_count = channel_count_;
-  mojom_config->sample_rate = sample_rate_;
   chromeos::machine_learning::ServiceConnection::GetInstance()
       ->BindMachineLearningService(ml_service_.BindNewPipeAndPassReceiver());
   ml_service_->LoadSpeechRecognizer(
-      std::move(mojom_config), soda_client_.BindNewPipeAndPassRemote(),
+      std::move(soda_config), soda_client_.BindNewPipeAndPassRemote(),
       soda_recognizer_.BindNewPipeAndPassReceiver(),
       base::BindOnce(
           [](chromeos::machine_learning::mojom::LoadModelResult result) {

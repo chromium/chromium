@@ -4,6 +4,7 @@
 
 #include "chrome/services/speech/cros_speech_recognition_recognizer_impl.h"
 
+#include "base/files/file_path.h"
 #include "chrome/services/speech/soda/cros_soda_client.h"
 #include "google_apis/google_api_keys.h"
 #include "media/base/audio_buffer.h"
@@ -42,8 +43,9 @@ CrosSpeechRecognitionRecognizerImpl::CrosSpeechRecognitionRecognizerImpl(
           std::move(speech_recognition_service_impl),
           binary_path,
           config_path),
-      enable_soda_(
-          base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {
+      enable_soda_(base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)),
+      binary_path_(binary_path),
+      languagepack_path_(config_path) {
   recognition_event_callback_ = base::BindRepeating(
       &CrosSpeechRecognitionRecognizerImpl::OnRecognitionEvent,
       weak_factory_.GetWeakPtr());
@@ -88,7 +90,8 @@ void CrosSpeechRecognitionRecognizerImpl::
     config->channel_count = channel_count;
     config->sample_rate = sample_rate;
     config->api_key = google_apis::GetSodaAPIKey();
-    // TODO(robsc): add in library locations.
+    config->language_dlc_path = languagepack_path_.value();
+    config->library_dlc_path = binary_path_.value();
     cros_soda_client_->Reset(std::move(config), recognition_event_callback_);
   }
   cros_soda_client_->AddAudio(reinterpret_cast<char*>(buffer->data.data()),
