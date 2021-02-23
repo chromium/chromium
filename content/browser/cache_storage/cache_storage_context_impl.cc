@@ -76,6 +76,9 @@ void CacheStorageContextImpl::Init(
       base::MakeRefCounted<BlobStorageContextWrapper>(
           std::move(blob_storage_context)));
 
+  if (!quota_manager_proxy)
+    return;
+
   mojo::PendingRemote<storage::mojom::QuotaClient> cache_storage_client;
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<CacheStorageQuotaClient>(
