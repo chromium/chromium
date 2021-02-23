@@ -1092,6 +1092,19 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionContentSettingJSTest, NoBeepThenBeep) {
   EXPECT_EQ(1, CountPDFProcesses());
 }
 
+IN_PROC_BROWSER_TEST_F(PDFExtensionContentSettingJSTest, BeepCsp) {
+  // The script-source * directive in the mock headers file should
+  // allow the JavaScript to execute the beep().
+  RunTestsInJsModule("beep_test.js", "test-beep-csp.pdf");
+}
+
+IN_PROC_BROWSER_TEST_F(PDFExtensionContentSettingJSTest, DISABLED_NoBeepCsp) {
+  // The script-source none directive in the mock headers file should
+  // prevent the JavaScript from executing the beep().
+  // TODO(https://crbug.com/1032511) functionality not implemented.
+  RunTestsInJsModule("nobeep_test.js", "test-nobeep-csp.pdf");
+}
+
 // Service worker tests are regression tests for
 // https://crbug.com/916514.
 class PDFExtensionServiceWorkerJSTest : public PDFExtensionJSTest {
