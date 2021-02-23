@@ -6,12 +6,14 @@
 #define COMPONENTS_PAYMENTS_CONTENT_PAYMENT_CREDENTIAL_H_
 
 #include <map>
+#include <memory>
 #include <set>
 #include <string>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/payments/content/payment_credential_enrollment_controller.h"
 #include "components/webdata/common/web_data_service_base.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 #include "content/public/browser/global_routing_id.h"
@@ -27,7 +29,6 @@ class WebContents;
 namespace payments {
 
 class PaymentManifestWebDataService;
-class PaymentCredentialEnrollmentController;
 
 // Implementation of the mojom::PaymentCredential interface for storing
 // PaymentCredential instruments and their associated WebAuthn credential IDs.
@@ -86,6 +87,7 @@ class PaymentCredential : public mojom::PaymentCredential,
   mojo::Receiver<mojom::PaymentCredential> receiver_{this};
   base::Optional<int> pending_icon_download_request_id_;
   std::vector<uint8_t> encoded_icon_;
+  std::unique_ptr<PaymentCredentialEnrollmentController::ScopedToken> token_;
   base::WeakPtr<PaymentCredentialEnrollmentController> controller_;
 
   base::WeakPtrFactory<PaymentCredential> weak_ptr_factory_{this};

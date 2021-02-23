@@ -22,10 +22,29 @@ class PaymentCredentialEnrollmentController
  public:
   using ResponseCallback = base::OnceCallback<void(bool user_confirm_from_ui)>;
 
+  // Only one of these tokens can be given out at a time.
+  class ScopedToken {
+   public:
+    ScopedToken();
+    ~ScopedToken();
+
+    ScopedToken(const ScopedToken& other) = delete;
+    ScopedToken& operator=(const ScopedToken& other) = delete;
+
+    base::WeakPtr<ScopedToken> GetWeakPtr();
+
+   private:
+    base::WeakPtrFactory<ScopedToken> weak_ptr_factory_{this};
+  };
+
   class ObserverForTest {
    public:
     virtual void OnDialogOpened() = 0;
   };
+
+  // Returns the object owned by the given contents, creating it if necessary.
+  static PaymentCredentialEnrollmentController* GetOrCreateForWebContents(
+      content::WebContents* web_contents);
 
   explicit PaymentCredentialEnrollmentController(
       content::WebContents* web_contents);
@@ -49,6 +68,12 @@ class PaymentCredentialEnrollmentController
     observer_for_test_ = observer_for_test;
   }
 
+  // Returns a new token or nullptr if a token is not available to give out. The
+  // next token cannot be given out until the previous one has been destroyed.
+  // Used for ensuring only one enrollment at a time takes place in a
+  // WebContents.
+  std::unique_ptr<ScopedToken> GetTokenIfAvailable();
+
   base::WeakPtr<PaymentCredentialEnrollmentController> GetWeakPtr();
 
  private:
@@ -67,6 +92,7 @@ class PaymentCredentialEnrollmentController
   base::WeakPtr<PaymentCredentialEnrollmentView> view_;
 
   ObserverForTest* observer_for_test_ = nullptr;
+  base::WeakPtr<ScopedToken> token_;
 
   base::WeakPtrFactory<PaymentCredentialEnrollmentController> weak_ptr_factory_{
       this};

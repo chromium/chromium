@@ -9,7 +9,6 @@
 
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/payments/content/payment_credential_enrollment_controller.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/core/secure_payment_confirmation_instrument.h"
 #include "components/payments/core/url_util.h"
@@ -51,6 +50,19 @@ void PaymentCredential::DownloadIconAndShowUserPrompt(
   content::RenderFrameHost* render_frame_host =
       content::RenderFrameHost::FromID(initiator_frame_routing_id_);
   if (!render_frame_host || !render_frame_host->IsCurrent()) {
+    AbortAndCleanup();
+    std::move(callback).Run(
+        mojom::PaymentCredentialUserPromptStatus::FAILED_TO_DOWNLOAD_ICON);
+    return;
+  }
+
+  // Only one enrollment UI per WebContents at a time.
+  controller_ =
+      PaymentCredentialEnrollmentController::GetOrCreateForWebContents(
+          web_contents())
+          ->GetWeakPtr();
+  token_ = controller_->GetTokenIfAvailable();
+  if (!token_) {
     AbortAndCleanup();
     std::move(callback).Run(
         mojom::PaymentCredentialUserPromptStatus::FAILED_TO_DOWNLOAD_ICON);
@@ -149,7 +161,7 @@ void PaymentCredential::DidDownloadIcon(
   DCHECK_EQ(pending_icon_download_request_id_.value(), request_id);
   pending_icon_download_request_id_.reset();
 
-  if (bitmaps.empty() || !web_contents() || controller_ || IsDialogShowing()) {
+  if (bitmaps.empty() || !web_contents() || !controller_ || IsDialogShowing()) {
     AbortAndCleanup();
     std::move(callback).Run(
         mojom::PaymentCredentialUserPromptStatus::FAILED_TO_DOWNLOAD_ICON);
@@ -165,10 +177,6 @@ void PaymentCredential::DidDownloadIcon(
       std::vector<uint8_t>(raw_data->front_as<uint8_t>(),
                            raw_data->front_as<uint8_t>() + raw_data->size());
 
-  PaymentCredentialEnrollmentController::CreateForWebContents(web_contents());
-  controller_ =
-      PaymentCredentialEnrollmentController::FromWebContents(web_contents())
-          ->GetWeakPtr();
   controller_->ShowDialog(
       base::BindOnce(&PaymentCredential::OnUserResponseFromUI,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -195,6 +203,7 @@ void PaymentCredential::AbortAndCleanup() {
   callbacks_.clear();
   encoded_icon_.clear();
   pending_icon_download_request_id_.reset();
+  token_.reset();
   if (controller_)
     controller_->CloseDialog();
   controller_.reset();

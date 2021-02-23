@@ -12,6 +12,24 @@
 
 namespace payments {
 
+PaymentCredentialEnrollmentController::ScopedToken::ScopedToken() = default;
+PaymentCredentialEnrollmentController::ScopedToken::~ScopedToken() = default;
+
+base::WeakPtr<PaymentCredentialEnrollmentController::ScopedToken>
+PaymentCredentialEnrollmentController::ScopedToken::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
+// static
+PaymentCredentialEnrollmentController*
+PaymentCredentialEnrollmentController::GetOrCreateForWebContents(
+    content::WebContents* web_contents) {
+  // Creates a new object only if WebContents does not already have one attached
+  // to it:
+  PaymentCredentialEnrollmentController::CreateForWebContents(web_contents);
+  return PaymentCredentialEnrollmentController::FromWebContents(web_contents);
+}
+
 PaymentCredentialEnrollmentController::PaymentCredentialEnrollmentController(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents) {}
@@ -89,6 +107,16 @@ void PaymentCredentialEnrollmentController::OnConfirm() {
   // OS-level UI, while on MacOS, there's an OS-level prompt for the Touch ID
   // that shows on top of Chrome.
   std::move(response_callback_).Run(true);
+}
+
+std::unique_ptr<PaymentCredentialEnrollmentController::ScopedToken>
+PaymentCredentialEnrollmentController::GetTokenIfAvailable() {
+  if (token_)
+    return nullptr;
+
+  auto token = std::make_unique<ScopedToken>();
+  token_ = token->GetWeakPtr();
+  return token;
 }
 
 base::WeakPtr<PaymentCredentialEnrollmentController>
