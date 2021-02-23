@@ -1363,10 +1363,10 @@
     Close
   </message>
   <message name="IDS_OFFLINE_LOGIN_WARNING_TITLE" desc="Title shown on warning dialog when policy does not allow to proceed with offline login.">
-    No network
+    Network connection required
   </message>
   <message name="IDS_OFFLINE_LOGIN_WARNING_TEXT" desc="Text shown on warning dialog when policy does not allow to proceed with offline login.">
-    Your administrator requires this user to sign in while the device is online
+    <ph name="DOMAIN_NAME">$1<ex>google.com</ex></ph> requires the device to be online when signing into <ph name="EMAIL">$2<ex>user@google.com</ex></ph>
   </message>
   <message name="IDS_OFFLINE_LOGIN_OK_BUTTON_TEXT" desc="Text shown on the ok button of warning dialog during offline signin flow.">
     Ok
