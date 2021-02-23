@@ -60,12 +60,23 @@ class PaymentCredential : public mojom::PaymentCredential,
   void HideUserPrompt(HideUserPromptCallback callback) override;
 
  private:
+  // States of the enrollment flow, necessary to ensure correctness with
+  // multiple round-trips to the renderer process. Each state is allowed to
+  // transition only to the next state (if any) or back to idle.
+  enum class State {
+    kIdle,
+    kDownloadingIcon,
+    kShowingUserPrompt,
+    kMakingCredential,
+    kStoringCredential
+  };
+
   // WebDataServiceConsumer:
   void OnWebDataServiceRequestDone(
       WebDataServiceBase::Handle h,
       std::unique_ptr<WDTypedResult> result) override;
 
-  bool IsDialogShowing() const;
+  bool IsCurrentStateValid() const;
 
   void DidDownloadIcon(DownloadIconAndShowUserPromptCallback callback,
                        int request_id,
@@ -79,16 +90,18 @@ class PaymentCredential : public mojom::PaymentCredential,
 
   void AbortAndCleanup();
 
+  State state_ = State::kIdle;
   const content::GlobalFrameRoutingId initiator_frame_routing_id_;
   scoped_refptr<PaymentManifestWebDataService> web_data_service_;
   std::map<WebDataServiceBase::Handle,
            StorePaymentCredentialAndHideUserPromptCallback>
-      callbacks_;
+      storage_callbacks_;
   mojo::Receiver<mojom::PaymentCredential> receiver_{this};
   base::Optional<int> pending_icon_download_request_id_;
   std::vector<uint8_t> encoded_icon_;
-  std::unique_ptr<PaymentCredentialEnrollmentController::ScopedToken> token_;
-  base::WeakPtr<PaymentCredentialEnrollmentController> controller_;
+  std::unique_ptr<PaymentCredentialEnrollmentController::ScopedToken>
+      ui_controller_token_;
+  base::WeakPtr<PaymentCredentialEnrollmentController> ui_controller_;
 
   base::WeakPtrFactory<PaymentCredential> weak_ptr_factory_{this};
 };

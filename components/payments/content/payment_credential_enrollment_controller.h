@@ -58,7 +58,6 @@ class PaymentCredentialEnrollmentController
   void ShowDialog(ResponseCallback response_callback);
   void CloseDialog();
   void ShowProcessingSpinner();
-  bool IsShowing() const;
 
   // Dialog callbacks.
   void OnCancel();

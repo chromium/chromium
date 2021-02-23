@@ -73,12 +73,6 @@ void PaymentCredentialEnrollmentController::ShowProcessingSpinner() {
   view_->OnModelUpdated();
 }
 
-bool PaymentCredentialEnrollmentController::IsShowing() const {
-  // The `view_` is created when the dialog is being shown, is owned by the
-  // Views framework, and is destroyed when it is hidden.
-  return !!view_;
-}
-
 void PaymentCredentialEnrollmentController::CloseDialog() {
   if (view_)
     view_->HideDialog();
