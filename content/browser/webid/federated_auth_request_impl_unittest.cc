@@ -228,9 +228,9 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
   }
 
   void SetMockExpectations(const AuthRequestTestCase& test_case) {
-    EXPECT_CALL(*mock_dialog_controller_, ShowInitialPermissionDialog(_, _))
+    EXPECT_CALL(*mock_dialog_controller_, ShowInitialPermissionDialog(_, _, _))
         .WillOnce(
-            Invoke([&](WebContents*,
+            Invoke([&](WebContents*, const GURL&,
                        IdentityRequestDialogController::InitialApprovalCallback
                            callback) {
               std::move(callback).Run(test_case.config.initial_permission);
@@ -282,9 +282,10 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
 
     if (test_case.config.token_permission) {
       EXPECT_CALL(*mock_dialog_controller_,
-                  ShowTokenExchangePermissionDialog(_))
+                  ShowTokenExchangePermissionDialog(_, _, _))
           .WillOnce(Invoke(
-              [&](IdentityRequestDialogController::TokenExchangeApprovalCallback
+              [&](content::WebContents* idp_web_contents, const GURL& idp_url,
+                  IdentityRequestDialogController::TokenExchangeApprovalCallback
                       callback) {
                 std::move(callback).Run(*test_case.config.token_permission);
               }));

@@ -37,14 +37,19 @@ class CONTENT_EXPORT IdentityRequestDialogController {
 
   // Permission-oriented flow methods.
 
-  // Shows the initial permission dialog to the user. The |approval_callback|
-  // callback is called with appropriate status depending on whether user
-  // granted or denied the permission.
+  // Shows the initial permission dialog to the user.
+  //
+  // - |rp_web_contents| is the RP web contents that has initiated the
+  //   identity request.
+  // - |idp_url| is the IDP URL that gets displayed to the user.
+  // - |approval_callback| callback is called with appropriate status depending
+  //   on whether user granted or denied the permission.
   //
   // 'IdentityRequestDialogController' is destroyed before
-  // |initiator_web_contents|.
+  // |rp_web_contents|.
   virtual void ShowInitialPermissionDialog(
-      WebContents* initiator_web_contents,
+      WebContents* rp_web_contents,
+      const GURL& idp_url,
       InitialApprovalCallback approval_callback) = 0;
 
   // Shows the identity provider sign-in page at the given URL using the
@@ -54,7 +59,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   //
   // 'IdentityRequestDialogController' is destroyed before either WebContents.
   virtual void ShowIdProviderWindow(
-      content::WebContents* initiator_web_contents,
+      content::WebContents* rp_web_contents,
       content::WebContents* idp_web_contents,
       const GURL& idp_signin_url,
       IdProviderWindowClosedCallback on_closed) = 0;
@@ -62,10 +67,15 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // Closes the identity provider sign-in window if any.
   virtual void CloseIdProviderWindow() = 0;
 
-  // Shows the secondary permission dialog to the user. The |approval_callback|
-  // callback is called with appropriate status depending on whether user
-  // granted or denied the permission.
+  // Shows the secondary permission dialog to the user.
+  // - |rp_web_contents| is the RP web contents that has initiated the
+  //   identity request.
+  // - |idp_url| is the IDP URL that gets displayed to the user.
+  // - |approval_callback| callback is called with appropriate status depending
+  //   on whether user granted or denied the permission.
   virtual void ShowTokenExchangePermissionDialog(
+      content::WebContents* rp_web_contents,
+      const GURL& idp_url,
       TokenExchangeApprovalCallback approval_callback) = 0;
 };
 

@@ -79,6 +79,7 @@ class FakeIdentityRequestDialogController
       const FakeIdentityRequestDialogController&) = delete;
 
   void ShowInitialPermissionDialog(WebContents*,
+                                   const GURL&,
                                    InitialApprovalCallback callback) override {
     std::move(callback).Run(initial_permission_response_);
   }
@@ -106,6 +107,8 @@ class FakeIdentityRequestDialogController
   }
 
   void ShowTokenExchangePermissionDialog(
+      content::WebContents*,
+      const GURL&,
       TokenExchangeApprovalCallback callback) override {
     std::move(callback).Run(token_exchange_permission_response_);
   }

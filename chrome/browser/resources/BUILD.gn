@@ -24,6 +24,7 @@ group("resources") {
       ":component_extension_resources",
       ":dev_ui_paks",
       ":local_ntp_resources",
+      ":webid_resources",
       "bookmarks:resources",
       "commander:resources",
       "downloads:resources",
@@ -207,6 +208,18 @@ if (!is_android) {
     outputs = [
       "grit/local_ntp_resources.h",
       "local_ntp_resources.pak",
+    ]
+    output_dir = "$root_gen_dir/chrome"
+  }
+
+  grit("webid_resources") {
+    source = "webid/webid_resources.grd"
+    defines = chrome_grit_defines
+    outputs = [
+      "grit/webid_resources.h",
+      "grit/webid_resources_map.cc",
+      "grit/webid_resources_map.h",
+      "webid_resources_100_percent.pak",
     ]
     output_dir = "$root_gen_dir/chrome"
   }

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+  <outputs>
+    <output filename="grit/webid_resources.h" type="rc_header" context="default_100_percent">
+      <emit emit_type='prepend'></emit>
+    </output>
+
+    <output filename="grit/webid_resources_map.cc" type="resource_map_source" context="default_100_percent" />
+    <output filename="grit/webid_resources_map.h" type="resource_map_header" context="default_100_percent" />
+    <output filename="webid_resources_100_percent.pak" type="data_package" context="default_100_percent" />
+  </outputs>
+  <release seq="1">
+    <structures fallback_to_low_resolution="true">
+      <structure type="chrome_scaled_image" name="IDR_WEBID_SIGN_IN" file="sign_in.png" />
+      <structure type="chrome_scaled_image" name="IDR_WEBID_GLOBAL_ID_RISK" file="global_id_risk.png" />
+    </structures>
+  </release>
+</grit>

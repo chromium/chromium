@@ -33,15 +33,20 @@ class IdentityDialogController
   ~IdentityDialogController() override;
 
   // content::IdentityRequestDelegate
-  void ShowInitialPermissionDialog(content::WebContents*,
+  void ShowInitialPermissionDialog(content::WebContents* rp_web_contents,
+                                   const GURL& idp_url,
                                    InitialApprovalCallback) override;
-  void ShowIdProviderWindow(content::WebContents* initiator_web_contents,
+
+  void ShowIdProviderWindow(content::WebContents* rp_web_contents,
                             content::WebContents* idp_web_contents,
                             const GURL& idp_signin_url,
                             IdProviderWindowClosedCallback) override;
+
   void CloseIdProviderWindow() override;
 
   void ShowTokenExchangePermissionDialog(
+      content::WebContents* rp_web_contents,
+      const GURL& idp_url,
       TokenExchangeApprovalCallback) override;
 
  private:

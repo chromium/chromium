@@ -76,8 +76,9 @@ void FederatedAuthRequestImpl::RequestIdToken(const GURL& provider,
       WebContents::FromRenderFrameHost(render_frame_host());
 
   request_dialog_controller_->ShowInitialPermissionDialog(
-      web_contents, base::BindOnce(&FederatedAuthRequestImpl::OnSigninApproved,
-                                   weak_ptr_factory_.GetWeakPtr()));
+      web_contents, provider_,
+      base::BindOnce(&FederatedAuthRequestImpl::OnSigninApproved,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FederatedAuthRequestImpl::OnWellKnownFetched(
@@ -220,7 +221,11 @@ void FederatedAuthRequestImpl::OnIdpPageClosed() {
     return;
   }
 
+  WebContents* rp_web_contents =
+      WebContents::FromRenderFrameHost(render_frame_host());
+
   request_dialog_controller_->ShowTokenExchangePermissionDialog(
+      rp_web_contents, provider_,
       base::BindOnce(&FederatedAuthRequestImpl::OnTokenProvisionApproved,
                      weak_ptr_factory_.GetWeakPtr()));
 }

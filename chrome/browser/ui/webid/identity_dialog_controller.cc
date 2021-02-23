@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webid/identity_dialog_controller.h"
 
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/webid/identity_dialogs.h"
 #include "components/infobars/core/infobar.h"
@@ -14,30 +15,29 @@ IdentityDialogController::IdentityDialogController() = default;
 IdentityDialogController::~IdentityDialogController() = default;
 
 void IdentityDialogController::ShowInitialPermissionDialog(
-    content::WebContents* web_contents,
+    content::WebContents* rp_web_contents,
+    const GURL& idp_url,
     InitialApprovalCallback callback) {
   // The WebContents should be that of RP page to make sure info bar is shown on
   // the RP page.
 
-  // TODO(majidvp): Consider using a modal dialog instead of an Inforbar.
-  // http://crbug.com/1141125
+  // TODO(majidvp): Use the provider name/url here
+  auto idp_hostname = base::UTF8ToUTF16(idp_url.GetOrigin().host());
 
-  // TODO(majidvp): Use a localized string. http://crbug.com/1141125
-  ShowWebIdPermissionInfoBar(
-      web_contents,
-      base::ASCIIToUTF16(
-          "WebId: Allow Identity provider to learn about this site?"),
-      std::move(callback));
+  auto rp_hostname =
+      base::UTF8ToUTF16(rp_web_contents->GetVisibleURL().GetOrigin().host());
+
+  ShowInitialWebIdPermissionDialog(rp_web_contents, idp_hostname, rp_hostname,
+                                   std::move(callback));
 }
 
 void IdentityDialogController::ShowIdProviderWindow(
-    content::WebContents* initiator_web_contents,
+    content::WebContents* rp_web_contents,
     content::WebContents* idp_web_contents,
     const GURL& idp_signin_url,
     IdProviderWindowClosedCallback callback) {
-  signin_window_ =
-      ShowWebIdSigninWindow(initiator_web_contents, idp_web_contents,
-                            idp_signin_url, std::move(callback));
+  signin_window_ = ShowWebIdSigninWindow(rp_web_contents, idp_web_contents,
+                                         idp_signin_url, std::move(callback));
 }
 
 void IdentityDialogController::CloseIdProviderWindow() {
@@ -60,8 +60,14 @@ void IdentityDialogController::CloseIdProviderWindow() {
 }
 
 void IdentityDialogController::ShowTokenExchangePermissionDialog(
+    content::WebContents* rp_web_contents,
+    const GURL& idp_url,
     TokenExchangeApprovalCallback callback) {
-  // TODO(kenrb): Add Identity permission dialog.
-  std::move(callback).Run(
-      content::IdentityRequestDialogController::UserApproval::kApproved);
+  auto idp_hostname = base::UTF8ToUTF16(idp_url.GetOrigin().host());
+
+  auto rp_hostname =
+      base::UTF8ToUTF16(rp_web_contents->GetVisibleURL().GetOrigin().host());
+
+  ShowTokenExchangeWebIdPermissionDialog(rp_web_contents, idp_hostname,
+                                         rp_hostname, std::move(callback));
 }
