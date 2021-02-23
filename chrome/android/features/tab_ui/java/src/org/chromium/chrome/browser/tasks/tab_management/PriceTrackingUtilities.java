@@ -10,6 +10,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.components.sync.ModelType;
 
@@ -49,7 +50,7 @@ public class PriceTrackingUtilities {
                     && sIsSignedInAndSyncEnabledForTesting;
         }
         return TabUiFeatureUtilities.isPriceTrackingEnabled() && isSignedIn()
-                && isOpenTabsSyncEnabled();
+                && isAnonymizedUrlDataCollectionEnabled() && isOpenTabsSyncEnabled();
     }
 
     /**
@@ -127,6 +128,11 @@ public class PriceTrackingUtilities {
         ProfileSyncService syncService = ProfileSyncService.get();
         return syncService != null && syncService.isSyncRequested()
                 && syncService.getActiveDataTypes().contains(ModelType.SESSIONS);
+    }
+
+    private static boolean isAnonymizedUrlDataCollectionEnabled() {
+        return UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(
+                Profile.getLastUsedRegularProfile());
     }
 
     @VisibleForTesting
