@@ -342,16 +342,23 @@ void DataOffer::SetClipboardData(DataExchangeDelegate* data_exchange_delegate,
     data_callbacks_.emplace(std::string(kImagePngMimeType),
                             base::BindOnce(&ReadPNGFromClipboard, data_dst));
   }
-  std::vector<ui::FileInfo> file_info =
+
+  // We accept the filenames pickle from FilesApp, or text/uri-list from apps.
+  std::vector<ui::FileInfo> filenames =
       data_exchange_delegate->ParseClipboardFilenamesPickle(endpoint_type,
                                                             data);
-  if (!file_info.empty()) {
+  if (filenames.empty() &&
+      data.IsFormatAvailable(ui::ClipboardFormatType::GetFilenamesType(),
+                             ui::ClipboardBuffer::kCopyPaste, &data_dst)) {
+    data.ReadFilenames(ui::ClipboardBuffer::kCopyPaste, &data_dst, &filenames);
+  }
+  if (!filenames.empty()) {
     delegate_->OnOffer(std::string(ui::kMimeTypeURIList));
     data_callbacks_.emplace(
         std::string(ui::kMimeTypeURIList),
         base::BindOnce(&DataExchangeDelegate::SendFileInfo,
                        base::Unretained(data_exchange_delegate), endpoint_type,
-                       std::move(file_info)));
+                       std::move(filenames)));
   }
 }
 
