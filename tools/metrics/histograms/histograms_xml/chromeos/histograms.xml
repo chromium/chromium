@@ -100,6 +100,18 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Attestation.AttestationFlowStatus"
+    enum="AttestationFlowStatus" expires_after="2021-07-31">
+  <owner>cylai@chromium.org</owner>
+  <owner>cros-hwsec+umas@chromium.org</owner>
+  <summary>
+    Records the status of attestation flow. The value represents 6 flags in 6
+    rightmost bits; starting from more significant bits they mean: 1. Has proxy.
+    2. Is System proxy active. 3. Run the default flow. 4. The default flow
+    succeeds. 5. Run the fallback flow. 6. The fallback flow succeeds.
+  </summary>
+</histogram>
+
 <histogram base="true"
     name="ChromeOS.Camera.ConfigureStreams.Output.Resolution" units="pixels"
     expires_after="2021-10-01">

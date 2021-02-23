@@ -57,27 +57,32 @@ void AttestationFlowAdaptive::GetCertificate(
       /*.key_name=*/key_name,
   };
 
+  auto status_reporter = std::make_unique<AttestationFlowStatusReporter>();
+  auto* raw_status_reporter = status_reporter.get();
+
   // Start the flow with checking if platform-side integrated attestation is an
   // valid option.
   attestation_flow_type_decider_->CheckType(
-      server_proxy_.get(),
+      server_proxy_.get(), raw_status_reporter,
       base::BindOnce(&AttestationFlowAdaptive::OnCheckAttestationFlowType,
                      weak_factory_.GetWeakPtr(), std::move(params),
-                     std::move(callback)));
+                     std::move(status_reporter), std::move(callback)));
 }
 
 void AttestationFlowAdaptive::OnCheckAttestationFlowType(
     const GetCertificateParams& params,
+    std::unique_ptr<AttestationFlowStatusReporter> status_reporter,
     CertificateCallback callback,
     bool is_integrated_flow_possible) {
-  // TODO(b/158532239): Collect the attribute for UMA reporting.
   LOG_IF(WARNING, !is_integrated_flow_possible)
       << "Skipping the integrated attestation flow.";
-  StartGetCertificate(params, std::move(callback), is_integrated_flow_possible);
+  StartGetCertificate(params, std::move(status_reporter), std::move(callback),
+                      is_integrated_flow_possible);
 }
 
 void AttestationFlowAdaptive::StartGetCertificate(
     const GetCertificateParams& params,
+    std::unique_ptr<AttestationFlowStatusReporter> status_reporter,
     CertificateCallback callback,
     bool is_default_flow_valid) {
   InitializeAttestationFlowFactory();
@@ -91,7 +96,8 @@ void AttestationFlowAdaptive::StartGetCertificate(
         params.force_new_key, params.key_name,
         base::BindOnce(
             &AttestationFlowAdaptive::OnGetCertificateWithFallbackFlow,
-            weak_factory_.GetWeakPtr(), std::move(callback)));
+            weak_factory_.GetWeakPtr(), std::move(status_reporter),
+            std::move(callback)));
     return;
   }
   AttestationFlow* default_attestation_flow =
@@ -100,7 +106,8 @@ void AttestationFlowAdaptive::StartGetCertificate(
       params.certificate_profile, params.account_id, params.request_origin,
       params.force_new_key, params.key_name,
       base::BindOnce(&AttestationFlowAdaptive::OnGetCertificateWithDefaultFlow,
-                     weak_factory_.GetWeakPtr(), params, std::move(callback)));
+                     weak_factory_.GetWeakPtr(), params,
+                     std::move(status_reporter), std::move(callback)));
 }
 
 void AttestationFlowAdaptive::InitializeAttestationFlowFactory() {
@@ -114,26 +121,29 @@ void AttestationFlowAdaptive::InitializeAttestationFlowFactory() {
 
 void AttestationFlowAdaptive::OnGetCertificateWithDefaultFlow(
     const GetCertificateParams& params,
+    std::unique_ptr<AttestationFlowStatusReporter> status_reporter,
     CertificateCallback callback,
     AttestationStatus status,
     const std::string& pem_certificate_chain) {
+  status_reporter->OnDefaultFlowStatus(/*success=*/status ==
+                                       ATTESTATION_SUCCESS);
   if (status == ATTESTATION_SUCCESS) {
-    // TODO(b/158532239): Report UMA.
     std::move(callback).Run(status, pem_certificate_chain);
     return;
   }
 
-  // TODO(b/158532239): Record the failure for UMA reporting.
   LOG(WARNING) << "Default attestation flow failed: " << status;
-  StartGetCertificate(params, std::move(callback),
+  StartGetCertificate(params, std::move(status_reporter), std::move(callback),
                       /*is_default_flow_valid=*/false);
 }
 
 void AttestationFlowAdaptive::OnGetCertificateWithFallbackFlow(
+    std::unique_ptr<AttestationFlowStatusReporter> status_reporter,
     CertificateCallback callback,
     AttestationStatus status,
     const std::string& pem_certificate_chain) {
-  // TODO(b/158532239): Report UMA.
+  status_reporter->OnFallbackFlowStatus(/*success=*/status ==
+                                        ATTESTATION_SUCCESS);
   std::move(callback).Run(status, pem_certificate_chain);
 }
 

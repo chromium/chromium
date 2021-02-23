@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/attestation/mock_attestation_flow.h"
@@ -54,7 +55,7 @@ class TestAttestationFlowFactory : public AttestationFlowFactory {
 class FakeAttestationFlowTypeDecider : public AttestationFlowTypeDecider {
  public:
   FakeAttestationFlowTypeDecider() {
-    ON_CALL(*this, CheckType(_, _))
+    ON_CALL(*this, CheckType(_, _, _))
         .WillByDefault(
             Invoke(this, &FakeAttestationFlowTypeDecider::FakeCheck));
   }
@@ -62,16 +63,28 @@ class FakeAttestationFlowTypeDecider : public AttestationFlowTypeDecider {
 
   MOCK_METHOD(void,
               CheckType,
-              (ServerProxy*, AttestationFlowTypeCheckCallback));
+              (ServerProxy*,
+               AttestationFlowStatusReporter*,
+               AttestationFlowTypeCheckCallback));
 
+  // TODO(b/158532239): When adding check of system proxy availability, emulate
+  // the real decider by jugding the validity by sub-factors.
   void set_is_default_attestation_valid(bool is_valid) { is_valid_ = is_valid; }
+  void set_has_proxy(bool has_proxy) { has_proxy_ = has_proxy; }
 
  private:
-  void FakeCheck(ServerProxy*, AttestationFlowTypeCheckCallback callback) {
+  void FakeCheck(ServerProxy*,
+                 AttestationFlowStatusReporter* reporter,
+                 AttestationFlowTypeCheckCallback callback) {
+    reporter->OnHasProxy(has_proxy_);
+    // TODO(b/158532239): Add test after determining the availability of
+    // system proxy at runtime.
+    reporter->OnIsSystemProxyAvailable(false);
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), is_valid_));
   }
   bool is_valid_ = false;
+  bool has_proxy_ = false;
 };
 
 }  // namespace
@@ -82,7 +95,13 @@ class AttestationFlowAdaptiveTest : public testing::Test {
   ~AttestationFlowAdaptiveTest() override = default;
 
  protected:
+  void ExpectReport(int metric_value) {
+    histogram_tester_.ExpectUniqueSample(
+        "ChromeOS.Attestation.AttestationFlowStatus", metric_value, 1);
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(AttestationFlowAdaptiveTest, DefaultFlowSuccess) {
@@ -93,7 +112,7 @@ TEST_F(AttestationFlowAdaptiveTest, DefaultFlowSuccess) {
   TestAttestationFlowFactory* test_factory = new TestAttestationFlowFactory();
 
   fake_decider->set_is_default_attestation_valid(true);
-  EXPECT_CALL(*fake_decider, CheckType(_, _)).Times(1);
+  EXPECT_CALL(*fake_decider, CheckType(_, _, _)).Times(1);
   EXPECT_CALL(
       *(test_factory->GetDefaultMock()),
       GetCertificate(kFakeProfile, AccountId::FromUserEmail(kFakeUserEmail),
@@ -125,6 +144,8 @@ TEST_F(AttestationFlowAdaptiveTest, DefaultFlowSuccess) {
   run_loop.Run();
   EXPECT_EQ(result_status, ATTESTATION_SUCCESS);
   EXPECT_EQ(result_cert, kFakeCert);
+  // No proxy, run default flow, and default flow works.
+  ExpectReport(0b001100);
 }
 
 TEST_F(AttestationFlowAdaptiveTest, DefaultFlowFailureAndFallback) {
@@ -135,7 +156,7 @@ TEST_F(AttestationFlowAdaptiveTest, DefaultFlowFailureAndFallback) {
   TestAttestationFlowFactory* test_factory = new TestAttestationFlowFactory();
 
   fake_decider->set_is_default_attestation_valid(true);
-  EXPECT_CALL(*fake_decider, CheckType(_, _)).Times(1);
+  EXPECT_CALL(*fake_decider, CheckType(_, _, _)).Times(1);
   EXPECT_CALL(
       *(test_factory->GetDefaultMock()),
       GetCertificate(kFakeProfile, AccountId::FromUserEmail(kFakeUserEmail),
@@ -175,6 +196,8 @@ TEST_F(AttestationFlowAdaptiveTest, DefaultFlowFailureAndFallback) {
   run_loop.Run();
   EXPECT_EQ(result_status, ATTESTATION_SUCCESS);
   EXPECT_EQ(result_cert, kFakeCert);
+  // No proxy, run default flow, and default flow fails, but the fallback works.
+  ExpectReport(0b001011);
 }
 
 TEST_F(AttestationFlowAdaptiveTest, SkipDefaultFlow) {
@@ -185,7 +208,8 @@ TEST_F(AttestationFlowAdaptiveTest, SkipDefaultFlow) {
   TestAttestationFlowFactory* test_factory = new TestAttestationFlowFactory();
 
   fake_decider->set_is_default_attestation_valid(false);
-  EXPECT_CALL(*fake_decider, CheckType(_, _)).Times(1);
+  fake_decider->set_has_proxy(true);
+  EXPECT_CALL(*fake_decider, CheckType(_, _, _)).Times(1);
   EXPECT_CALL(
       *(test_factory->GetFallbackMock()),
       GetCertificate(kFakeProfile, AccountId::FromUserEmail(kFakeUserEmail),
@@ -217,6 +241,8 @@ TEST_F(AttestationFlowAdaptiveTest, SkipDefaultFlow) {
   run_loop.Run();
   EXPECT_EQ(result_status, ATTESTATION_SUCCESS);
   EXPECT_EQ(result_cert, kFakeCert);
+  // Has proxy, falls back directly, and the fallback works.
+  ExpectReport(0b100011);
 }
 
 }  // namespace attestation

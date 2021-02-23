@@ -12,6 +12,7 @@
 namespace chromeos {
 namespace attestation {
 
+class AttestationFlowStatusReporter;
 class ServerProxy;
 
 // An object that decides if the default (platform-side integrated) flow is a
@@ -26,11 +27,13 @@ class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) AttestationFlowTypeDecider {
 
   // Checks if the default attestation flow is a valid option.
   virtual void CheckType(ServerProxy* server_proxy,
+                         AttestationFlowStatusReporter* reporter,
                          AttestationFlowTypeCheckCallback callback);
 
  private:
   // Called when `proxy_server` returns the check of proxy presence.
-  void OnCheckProxyPresence(AttestationFlowTypeCheckCallback callback,
+  void OnCheckProxyPresence(AttestationFlowStatusReporter* reporter,
+                            AttestationFlowTypeCheckCallback callback,
                             bool is_proxy_present);
 
   base::WeakPtrFactory<AttestationFlowTypeDecider> weak_factory_{this};

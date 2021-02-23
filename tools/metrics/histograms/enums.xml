@@ -4219,6 +4219,19 @@ others/histograms.xml -->
   <int value="12" label="Other error (file missing)"/>
 </enum>
 
+<enum name="AttestationFlowStatus">
+<!--
+  Uninteresting/unused values are not labeled.
+  See "ChromeOS.Attestation.AttestationFlowStatus" histogram
+-->
+
+  <int value="10" label="Failure w/o proxy"/>
+  <int value="11" label="Fallback w/o proxy"/>
+  <int value="12" label="Success w/o proxy"/>
+  <int value="34" label="Failure w/ default flow being skipped w/ proxy"/>
+  <int value="35" label="Success w/ default flow being skipped w/ proxy"/>
+</enum>
+
 <enum name="AudioCaptureDeviceError">
   <int value="0" label="No error"/>
   <int value="1" label="Error during stream creation"/>

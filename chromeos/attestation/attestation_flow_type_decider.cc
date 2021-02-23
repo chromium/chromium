@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "chromeos/attestation/attestation_flow.h"
+#include "chromeos/attestation/attestation_flow_status_reporter.h"
 
 #include "base/logging.h"
 
@@ -20,17 +21,21 @@ AttestationFlowTypeDecider::~AttestationFlowTypeDecider() = default;
 
 void AttestationFlowTypeDecider::CheckType(
     ServerProxy* server_proxy,
+    AttestationFlowStatusReporter* reporter,
     AttestationFlowTypeCheckCallback callback) {
-  server_proxy->CheckIfAnyProxyPresent(
-      base::BindOnce(&AttestationFlowTypeDecider::OnCheckProxyPresence,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+  server_proxy->CheckIfAnyProxyPresent(base::BindOnce(
+      &AttestationFlowTypeDecider::OnCheckProxyPresence,
+      weak_factory_.GetWeakPtr(), reporter, std::move(callback)));
 }
 
 void AttestationFlowTypeDecider::OnCheckProxyPresence(
+    AttestationFlowStatusReporter* reporter,
     AttestationFlowTypeCheckCallback callback,
     bool is_proxy_present) {
-  // The integrated flow is currently only allowed if no proxy is present, until
-  // the system-proxy daemon is enabled by default for pca_agentd.
+  reporter->OnHasProxy(is_proxy_present);
+  // The integrated flow is currently only allowed if no proxy is present.
+  // TODO(b/158532239): Determine if system proxy is available at runtime.
+  reporter->OnIsSystemProxyAvailable(false);
   std::move(callback).Run(!is_proxy_present);
 }
 

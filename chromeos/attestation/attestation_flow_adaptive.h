@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "chromeos/attestation/attestation_flow.h"
 #include "chromeos/attestation/attestation_flow_factory.h"
+#include "chromeos/attestation/attestation_flow_status_reporter.h"
 #include "chromeos/attestation/attestation_flow_type_decider.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
@@ -53,15 +54,19 @@ class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) AttestationFlowAdaptive
   // Called when the validity of the default attestation flow is checked.
   // Performs actions for verbosity, e.g., logging, before invoking
   // `StartGetCertificate()`.
-  void OnCheckAttestationFlowType(const GetCertificateParams& params,
-                                  CertificateCallback callback,
-                                  bool is_integrated_flow_possible);
+  void OnCheckAttestationFlowType(
+      const GetCertificateParams& params,
+      std::unique_ptr<AttestationFlowStatusReporter> status_reporter,
+      CertificateCallback callback,
+      bool is_integrated_flow_possible);
 
   // Starts the default attestation flow if valid, otherwise just use the
   // fallback flow.
-  void StartGetCertificate(const GetCertificateParams& params,
-                           CertificateCallback callback,
-                           bool is_default_flow_valid);
+  void StartGetCertificate(
+      const GetCertificateParams& params,
+      std::unique_ptr<AttestationFlowStatusReporter> status_reporter,
+      CertificateCallback callback,
+      bool is_default_flow_valid);
 
   // Initialize the factory if needed. This can be called multiple times. This
   // function is designed to be idempotent.
@@ -71,12 +76,14 @@ class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) AttestationFlowAdaptive
   // `callback` if the flow succeeds; otherwise, try the fallback.
   void OnGetCertificateWithDefaultFlow(
       const GetCertificateParams& params,
+      std::unique_ptr<AttestationFlowStatusReporter> status_reporter,
       CertificateCallback callback,
       AttestationStatus status,
       const std::string& pem_certificate_chain);
 
   // Called when the fallback flow returns the result.
   void OnGetCertificateWithFallbackFlow(
+      std::unique_ptr<AttestationFlowStatusReporter> status_reporter,
       CertificateCallback callback,
       AttestationStatus status,
       const std::string& pem_certificate_chain);
