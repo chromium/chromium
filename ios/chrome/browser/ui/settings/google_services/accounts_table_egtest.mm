@@ -136,6 +136,36 @@ id<GREYMatcher> NoBookmarksLabel() {
       performAction:grey_tap()];
 }
 
+// Tests opening the remove identity confirmation dialog once, and cancel the
+// dialog. Then we open the remove identity confirmation dialog to remove the
+// identity. And finally the remove identity confirmation dialog is opened a
+// third time to remove a second identity.
+// The goal of this test is to confirm the dialog can be opened several times.
+// Related to http://crbug.com/1180798
+- (void)testRemoveAccountSeveralTime {
+  FakeChromeIdentity* fakeIdentity1 = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity2 = [SigninEarlGrey fakeIdentity2];
+  FakeChromeIdentity* fakeIdentity3 = [SigninEarlGrey fakeManagedIdentity];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity2];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity3];
+
+  // Sign In |fakeIdentity|, then open the Account Settings.
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Open the remove identity confirmation dialog for the first time.
+  [SigninEarlGreyUI
+      openRemoveAccountConfirmationDialogWithFakeIdentity:fakeIdentity2];
+  // Cancel it.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]
+      performAction:grey_tap()];
+  // Open it a second time, confirmal removal.
+  [SigninEarlGreyUI tapRemoveAccountFromDeviceWithFakeIdentity:fakeIdentity2];
+  // Open it a third time, confirmal removal.
+  [SigninEarlGreyUI tapRemoveAccountFromDeviceWithFakeIdentity:fakeIdentity3];
+}
+
 // Tests that the Account Settings screen is popped and the user signed out
 // when the account is removed.
 - (void)testSignOutOnRemoveAccount {

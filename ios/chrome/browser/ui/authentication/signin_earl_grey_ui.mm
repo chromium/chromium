@@ -252,7 +252,7 @@ void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
       assertWithMatcher:grey_nil()];
 }
 
-+ (void)tapRemoveAccountFromDeviceWithFakeIdentity:
++ (void)openRemoveAccountConfirmationDialogWithFakeIdentity:
     (FakeChromeIdentity*)fakeIdentity {
   [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabel(
                                           fakeIdentity.userEmail)]
@@ -262,6 +262,11 @@ void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
                                    l10n_util::GetNSString(
                                        IDS_IOS_REMOVE_GOOGLE_ACCOUNT_TITLE))]
       performAction:grey_tap()];
+}
+
++ (void)tapRemoveAccountFromDeviceWithFakeIdentity:
+    (FakeChromeIdentity*)fakeIdentity {
+  [self openRemoveAccountConfirmationDialogWithFakeIdentity:fakeIdentity];
   [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabel(
                                           l10n_util::GetNSString(
                                               IDS_IOS_REMOVE_ACCOUNT_LABEL))]

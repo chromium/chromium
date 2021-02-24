@@ -69,6 +69,11 @@ typedef NS_ENUM(NSInteger, SignOutConfirmationChoice) {
 // This method should only be used with UnifiedConsent flag.
 + (void)tapAddAccountButton;
 
+// Opens the confirmation dialog to remove an account from the device, without
+// confirming it.
++ (void)openRemoveAccountConfirmationDialogWithFakeIdentity:
+    (FakeChromeIdentity*)fakeIdentity;
+
 // Taps "Remove account from this device" button and follow-up confirmation.
 // Assumes the user is on the Settings screen.
 + (void)tapRemoveAccountFromDeviceWithFakeIdentity:

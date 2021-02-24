@@ -174,7 +174,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)settingsWillBeDismissed {
   [_alertCoordinator stop];
+  _alertCoordinator = nil;
   [self.removeAccountCoordinator stop];
+  self.removeAccountCoordinator = nil;
   [self stopBrowserStateServiceObservers];
 }
 
@@ -526,11 +528,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                                    browser:_browser
                                                      title:title
                                                    message:message];
+  __weak __typeof(self) weakSelf = self;
   [self.removeAccountCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
-                action:nil
+                action:^{
+                  weakSelf.removeAccountCoordinator = nil;
+                }
                  style:UIAlertActionStyleCancel];
-  __weak __typeof(self) weakSelf = self;
   [self.removeAccountCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_IOS_REMOVE_ACCOUNT_LABEL)
                 action:^{
@@ -541,6 +545,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)removeSecondaryIdentity:(ChromeIdentity*)identity {
+  DCHECK(self.removeAccountCoordinator);
+  self.removeAccountCoordinator = nil;
   self.uiDisabled = YES;
   ios::GetChromeBrowserProvider()->GetChromeIdentityService()->ForgetIdentity(
       identity, ^(NSError* error) {
