@@ -51,6 +51,8 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
 
   void Trace(Visitor*) const override;
 
+  std::unique_ptr<TracedValue> ToTracedValue() const;
+
  private:
   AtomicString entry_type_;
   DOMHighResTimeStamp processing_start_;

@@ -31,6 +31,7 @@
 
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 
+#include "base/trace_event/common/trace_event_common.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -386,6 +387,11 @@ void WindowPerformance::ReportEventTimings(uint64_t frame_index,
   DCHECK(event_timings_.size() == event_frames_.size());
   if (event_timings_.IsEmpty())
     return;
+
+  if (!DomWindow())
+    return;
+  InteractiveDetector* interactive_detector =
+      InteractiveDetector::From(*(DomWindow()->document()));
   bool event_timing_enabled =
       RuntimeEnabledFeatures::EventTimingEnabled(GetExecutionContext());
   DOMHighResTimeStamp end_time = MonotonicTimeToDOMHighResTimeStamp(timestamp);
@@ -408,10 +414,10 @@ void WindowPerformance::ReportEventTimings(uint64_t frame_index,
         entry->processingEnd() - entry->processingStart());
     base::TimeDelta time_to_next_paint =
         base::TimeDelta::FromMillisecondsD(end_time - entry->processingEnd());
-    InteractiveDetector* interactive_detector =
-        DomWindow() ? InteractiveDetector::From(*(DomWindow()->document()))
-                    : nullptr;
     entry->SetDuration(duration_in_ms);
+    TRACE_EVENT2("devtools.timeline", "EventTiming", "data",
+                 entry->ToTracedValue(), "frame",
+                 ToTraceValue(DomWindow()->GetFrame()));
     if (entry->name() == "pointerdown") {
       pending_pointer_down_input_delay_ = input_delay;
       pending_pointer_down_processing_time_ = processing_time;
