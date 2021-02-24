@@ -60,7 +60,7 @@ PrintingContextWin::~PrintingContextWin() {
   ReleaseContext();
 }
 
-void PrintingContextWin::PrintDocument(const base::string16& device_name,
+void PrintingContextWin::PrintDocument(const std::wstring& device_name,
                                        const MetafileSkia& metafile) {
   // TODO(crbug.com/1008222)
   NOTIMPLEMENTED();
@@ -78,8 +78,8 @@ PrintingContext::Result PrintingContextWin::UseDefaultSettings() {
 
   scoped_refptr<PrintBackend> backend =
       PrintBackend::CreateInstance(delegate_->GetAppLocale());
-  base::string16 default_printer =
-      base::UTF8ToUTF16(backend->GetDefaultPrinterName());
+  std::wstring default_printer =
+      base::UTF8ToWide(backend->GetDefaultPrinterName());
   if (!default_printer.empty()) {
     ScopedPrinterHandle printer;
     if (printer.OpenPrinterWithName(default_printer.c_str())) {
@@ -110,13 +110,11 @@ PrintingContext::Result PrintingContextWin::UseDefaultSettings() {
       const PRINTER_INFO_2* info_2_end = info_2 + count_returned;
       for (; info_2 < info_2_end; ++info_2) {
         ScopedPrinterHandle printer;
-        if (!printer.OpenPrinterWithName(
-                base::as_u16cstr(info_2->pPrinterName)))
+        if (!printer.OpenPrinterWithName(info_2->pPrinterName))
           continue;
         std::unique_ptr<DEVMODE, base::FreeDeleter> dev_mode =
             CreateDevMode(printer.Get(), nullptr);
-        if (InitializeSettings(base::as_u16cstr(info_2->pPrinterName),
-                               dev_mode.get()) == OK)
+        if (InitializeSettings(info_2->pPrinterName, dev_mode.get()) == OK)
           return OK;
       }
       if (context_)
@@ -164,13 +162,14 @@ PrintingContext::Result PrintingContextWin::UpdatePrinterSettings(
   DCHECK(!external_preview) << "Not implemented";
 
   ScopedPrinterHandle printer;
-  if (!printer.OpenPrinterWithName(settings_->device_name().c_str()))
+  if (!printer.OpenPrinterWithName(base::as_wcstr(settings_->device_name())))
     return OnError();
 
   // Make printer changes local to Chrome.
   // See MSDN documentation regarding DocumentProperties.
   std::unique_ptr<DEVMODE, base::FreeDeleter> scoped_dev_mode =
-      CreateDevModeWithColor(printer.Get(), settings_->device_name(),
+      CreateDevModeWithColor(printer.Get(),
+                             base::UTF16ToWide(settings_->device_name()),
                              settings_->color() != mojom::ColorModel::kGray);
   if (!scoped_dev_mode)
     return OnError();
@@ -249,7 +248,8 @@ PrintingContext::Result PrintingContextWin::UpdatePrinterSettings(
                                  ? DMCOLOR_COLOR
                                  : DMCOLOR_MONOCHROME;
 
-  return InitializeSettings(settings_->device_name(), scoped_dev_mode.get());
+  return InitializeSettings(base::UTF16ToWide(settings_->device_name()),
+                            scoped_dev_mode.get());
 }
 
 PrintingContext::Result PrintingContextWin::InitWithSettingsForTest(
@@ -260,13 +260,14 @@ PrintingContext::Result PrintingContextWin::InitWithSettingsForTest(
 
   // TODO(maruel): settings_.ToDEVMODE()
   ScopedPrinterHandle printer;
-  if (!printer.OpenPrinterWithName(settings_->device_name().c_str()))
+  if (!printer.OpenPrinterWithName(base::as_wcstr(settings_->device_name())))
     return FAILED;
 
   std::unique_ptr<DEVMODE, base::FreeDeleter> dev_mode =
       CreateDevMode(printer.Get(), nullptr);
 
-  return InitializeSettings(settings_->device_name(), dev_mode.get());
+  return InitializeSettings(base::UTF16ToWide(settings_->device_name()),
+                            dev_mode.get());
 }
 
 PrintingContext::Result PrintingContextWin::NewDocument(
@@ -380,21 +381,20 @@ BOOL PrintingContextWin::AbortProc(HDC hdc, int nCode) {
 }
 
 PrintingContext::Result PrintingContextWin::InitializeSettings(
-    const base::string16& device_name,
+    const std::wstring& device_name,
     DEVMODE* dev_mode) {
   if (!dev_mode)
     return OnError();
 
   ReleaseContext();
-  context_ =
-      CreateDC(L"WINSPOOL", base::as_wcstr(device_name), nullptr, dev_mode);
+  context_ = CreateDC(L"WINSPOOL", device_name.c_str(), nullptr, dev_mode);
   if (!context_)
     return OnError();
 
   skia::InitializeDC(context_);
 
   DCHECK(!in_print_job_);
-  settings_->set_device_name(device_name);
+  settings_->set_device_name(base::WideToUTF16(device_name));
   PrintSettingsInitializerWin::InitPrintSettings(context_, *dev_mode,
                                                  settings_.get());
 

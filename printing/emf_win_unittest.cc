@@ -87,7 +87,7 @@ TEST_F(EmfPrintingTest, Enumerate) {
   auto settings = std::make_unique<PrintSettings>();
 
   // My test case is a HP Color LaserJet 4550 PCL.
-  settings->set_device_name(L"UnitTest Printer");
+  settings->set_device_name(STRING16_LITERAL("UnitTest Printer"));
 
   // Initialize it.
   PrintingContextWin context(this);
@@ -114,7 +114,7 @@ TEST_F(EmfPrintingTest, Enumerate) {
   // unit_test, PrintingContext automatically dumps its files to the
   // current directory.
   // TODO(maruel):  Clean the .PRN file generated in current directory.
-  context.NewDocument(L"EmfTest.Enumerate");
+  context.NewDocument(STRING16_LITERAL("EmfTest.Enumerate"));
   context.NewPage();
   // Process one at a time.
   RECT page_bounds = emf.GetPageBounds(1).ToRECT();

@@ -31,7 +31,7 @@ namespace {
 
 ScopedPrinterHandle GetPrinterHandle(const std::string& printer_name) {
   ScopedPrinterHandle handle;
-  handle.OpenPrinterWithName(base::UTF8ToUTF16(printer_name).c_str());
+  handle.OpenPrinterWithName(base::UTF8ToWide(printer_name).c_str());
   return handle;
 }
 
@@ -212,8 +212,7 @@ bool PrintBackendWin::EnumeratePrinters(PrinterList* printer_list) {
   for (DWORD index = 0; index < count_returned; index++) {
     ScopedPrinterHandle printer;
     PrinterBasicInfo info;
-    if (printer.OpenPrinterWithName(
-            base::as_u16cstr(printer_info[index].pPrinterName)) &&
+    if (printer.OpenPrinterWithName(printer_info[index].pPrinterName) &&
         InitBasicPrinterInfo(printer.Get(), &info)) {
       info.is_default = (info.printer_name == default_printer);
       printer_list->push_back(info);
@@ -332,8 +331,8 @@ bool PrintBackendWin::GetPrinterCapsAndDefaults(
     return false;
 
   HPTPROVIDER provider = nullptr;
-  base::string16 printer_name_16 = base::UTF8ToUTF16(printer_name);
-  HRESULT hr = XPSModule::OpenProvider(printer_name_16, 1, &provider);
+  std::wstring wide_printer_name = base::UTF8ToWide(printer_name);
+  HRESULT hr = XPSModule::OpenProvider(wide_printer_name, 1, &provider);
   if (!provider)
     return true;
 
@@ -355,7 +354,7 @@ bool PrintBackendWin::GetPrinterCapsAndDefaults(
       printer_info->caps_mime_type = "text/xml";
     }
     ScopedPrinterHandle printer_handle;
-    if (printer_handle.OpenPrinterWithName(printer_name_16.c_str())) {
+    if (printer_handle.OpenPrinterWithName(wide_printer_name.c_str())) {
       std::unique_ptr<DEVMODE, base::FreeDeleter> devmode_out(
           CreateDevMode(printer_handle.Get(), nullptr));
       if (!devmode_out)
