@@ -68,6 +68,7 @@ class TestDiceTurnSyncOnHelperDelegate : public DiceTurnSyncOnHelper::Delegate {
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
           callback) override {}
   void ShowSyncDisabledConfirmation(
+      bool is_managed_account,
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
           callback) override;
   void ShowSyncSettings() override;
@@ -350,6 +351,7 @@ void TestDiceTurnSyncOnHelperDelegate::ShowEnterpriseAccountConfirmation(
 }
 
 void TestDiceTurnSyncOnHelperDelegate::ShowSyncDisabledConfirmation(
+    bool is_managed_account,
     base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
         callback) {
   test_fixture_->OnShowSyncDisabledConfirmation(std::move(callback));

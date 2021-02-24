@@ -63,6 +63,7 @@ class TestDiceTurnSyncOnHelperDelegate : public DiceTurnSyncOnHelper::Delegate {
     std::move(callback).Run(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
   }
   void ShowSyncDisabledConfirmation(
+      bool is_managed_account,
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
           callback) override {}
   void ShowSyncSettings() override {}

@@ -114,6 +114,7 @@ void DiceTurnSyncOnHelperDelegateImpl::ShowSyncConfirmation(
 }
 
 void DiceTurnSyncOnHelperDelegateImpl::ShowSyncDisabledConfirmation(
+    bool is_managed_account,
     base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
         callback) {
   // This is handled by the same UI element as the normal sync confirmation.

@@ -557,7 +557,14 @@ void DiceTurnSyncOnHelper::ShowSyncConfirmationUI() {
     // The sync disabled dialog has an explicit "sign-out" label for the
     // LoginUIService::ABORT_SYNC action, force the mode to remove the account.
     signin_aborted_mode_ = SigninAbortedMode::REMOVE_ACCOUNT;
+    // Use the email-based heuristic if `account_info_` isn't fully initialized.
+    const bool is_managed_account =
+        account_info_.IsValid()
+            ? account_info_.IsManaged()
+            : !policy::BrowserPolicyConnector::IsNonEnterpriseUser(
+                  account_info_.email);
     delegate_->ShowSyncDisabledConfirmation(
+        is_managed_account,
         base::BindOnce(&DiceTurnSyncOnHelper::FinishSyncSetupAndDelete,
                        weak_pointer_factory_.GetWeakPtr()));
   }

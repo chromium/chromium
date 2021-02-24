@@ -152,6 +152,7 @@ void ProfilePickerViewSyncDelegate::ShowSyncConfirmation(
 }
 
 void ProfilePickerViewSyncDelegate::ShowSyncDisabledConfirmation(
+    bool is_managed_account,
     base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
         callback) {
   DCHECK(callback);

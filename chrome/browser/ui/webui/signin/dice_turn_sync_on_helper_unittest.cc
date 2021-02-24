@@ -57,6 +57,7 @@ namespace {
 const char kEmail[] = "foo@gmail.com";
 const char kPreviousEmail[] = "notme@bar.com";
 const char kEnterpriseEmail[] = "enterprise@managed.com";
+const char kEnterpriseHostedDomain[] = "managed.com";
 
 const signin_metrics::AccessPoint kAccessPoint =
     signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER;
@@ -92,6 +93,7 @@ class TestDiceTurnSyncOnHelperDelegate : public DiceTurnSyncOnHelper::Delegate {
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
           callback) override;
   void ShowSyncDisabledConfirmation(
+      bool is_managed_account,
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
           callback) override;
   void ShowSyncSettings() override;
@@ -315,9 +317,18 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
   }
 
   void UseEnterpriseAccount() {
-    account_id_ =
-        identity_test_env()->MakeAccountAvailable(kEnterpriseEmail).account_id;
+    CoreAccountInfo core_account_info =
+        identity_test_env()->MakeAccountAvailable(kEnterpriseEmail);
+    account_id_ = core_account_info.account_id;
     user_policy_signin_service_->set_account(account_id_, kEnterpriseEmail);
+
+    // Update the account info to have a consistent hosted domain field.
+    base::Optional<AccountInfo> account_info =
+        identity_manager()->FindExtendedAccountInfoForAccountWithRefreshToken(
+            core_account_info);
+    EXPECT_TRUE(account_info);
+    account_info->hosted_domain = kEnterpriseHostedDomain;
+    signin::UpdateAccountInfoForAccount(identity_manager(), *account_info);
   }
 
   void UseInvalidAccount() { account_id_ = CoreAccountId("invalid_account"); }
@@ -362,8 +373,8 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
               enterprise_confirmation_email_);
     EXPECT_EQ(expected_switched_to_new_profile_, switched_to_new_profile_);
     EXPECT_EQ(expected_sync_confirmation_shown_, sync_confirmation_shown_);
-    EXPECT_EQ(expected_sync_disabled_confirmation_shown_,
-              sync_disabled_confirmation_shown_);
+    EXPECT_EQ(expected_sync_disabled_confirmation_,
+              sync_disabled_confirmation_);
     EXPECT_EQ(expected_sync_settings_shown_, sync_settings_shown_);
   }
 
@@ -416,11 +427,13 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
   }
 
   void OnShowSyncDisabledConfirmation(
+      bool is_managed_account,
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
           callback) {
-    EXPECT_FALSE(sync_disabled_confirmation_shown_)
+    EXPECT_EQ(sync_disabled_confirmation_, kNotShown)
         << "Sync disabled confirmation should be shown only once.";
-    sync_disabled_confirmation_shown_ = true;
+    sync_disabled_confirmation_ =
+        is_managed_account ? kShownManaged : kShownNonManaged;
     if (run_delegate_callbacks_)
       std::move(callback).Run(sync_confirmation_result_);
   }
@@ -471,6 +484,9 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
   }
 
  protected:
+  // Type of sync disabled confirmation shown.
+  enum SyncDisabledConfirmation { kNotShown, kShownManaged, kShownNonManaged };
+
   // Delegate behavior.
   DiceTurnSyncOnHelper::SigninChoice merge_data_choice_ =
       DiceTurnSyncOnHelper::SIGNIN_CHOICE_CANCEL;
@@ -487,7 +503,7 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
   std::string expected_merge_data_new_email_;
   bool expected_switched_to_new_profile_ = false;
   bool expected_sync_confirmation_shown_ = false;
-  bool expected_sync_disabled_confirmation_shown_ = false;
+  SyncDisabledConfirmation expected_sync_disabled_confirmation_ = kNotShown;
   bool expected_sync_settings_shown_ = false;
 
  private:
@@ -515,7 +531,7 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
   std::string merge_data_new_email_;
   bool switched_to_new_profile_ = false;
   bool sync_confirmation_shown_ = false;
-  bool sync_disabled_confirmation_shown_ = false;
+  SyncDisabledConfirmation sync_disabled_confirmation_ = kNotShown;
   bool sync_settings_shown_ = false;
 };
 
@@ -554,9 +570,11 @@ void TestDiceTurnSyncOnHelperDelegate::ShowSyncConfirmation(
 }
 
 void TestDiceTurnSyncOnHelperDelegate::ShowSyncDisabledConfirmation(
+    bool is_managed_account,
     base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
         callback) {
-  test_fixture_->OnShowSyncDisabledConfirmation(std::move(callback));
+  test_fixture_->OnShowSyncDisabledConfirmation(is_managed_account,
+                                                std::move(callback));
 }
 
 void TestDiceTurnSyncOnHelperDelegate::ShowSyncSettings() {
@@ -614,7 +632,7 @@ TEST_F(DiceTurnSyncOnHelperTest, CanOfferSigninErrorRemoveAccount) {
 // removed upon the ABORT_SYNC action.
 TEST_F(DiceTurnSyncOnHelperTest, SyncDisabledAbortRemoveAccount) {
   // Set expectations.
-  expected_sync_disabled_confirmation_shown_ = true;
+  expected_sync_disabled_confirmation_ = kShownNonManaged;
   SetExpectationsForSyncDisabled(profile());
   // Configure the test.
   sync_confirmation_result_ =
@@ -637,7 +655,7 @@ TEST_F(DiceTurnSyncOnHelperTest, SyncDisabledAbortRemoveAccount) {
 // removed upon the ABORT_SYNC action (despite SigninAbortedMode::KEEP_ACCOUNT).
 TEST_F(DiceTurnSyncOnHelperTest, SyncDisabledAbortKeepAccount) {
   // Set expectations.
-  expected_sync_disabled_confirmation_shown_ = true;
+  expected_sync_disabled_confirmation_ = kShownNonManaged;
   SetExpectationsForSyncDisabled(profile());
   // Configure the test.
   sync_confirmation_result_ =
@@ -660,7 +678,32 @@ TEST_F(DiceTurnSyncOnHelperTest, SyncDisabledAbortKeepAccount) {
 // kept upon the SYNC_WITH_DEFAULT_SETTINGS action.
 TEST_F(DiceTurnSyncOnHelperTest, SyncDisabledContinueKeepAccount) {
   // Set expectations.
-  expected_sync_disabled_confirmation_shown_ = true;
+  expected_sync_disabled_confirmation_ = kShownNonManaged;
+  SetExpectationsForSyncDisabled(profile());
+  // Configure the test.
+  sync_confirmation_result_ = LoginUIService::SyncConfirmationUIClosedResult::
+      SYNC_WITH_DEFAULT_SETTINGS;
+
+  // Signin flow.
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  CreateDiceTurnOnSyncHelper(
+      DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  base::RunLoop().RunUntilIdle();
+  // Check expectations.
+  EXPECT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id()));
+  CheckDelegateCalls();
+}
+
+// Tests that the sync disabled message is displayed and that the account is
+// kept upon the SYNC_WITH_DEFAULT_SETTINGS action.
+TEST_F(DiceTurnSyncOnHelperTest, SyncDisabledManagedContinueKeepAccount) {
+  // Reset the account info to be an enterprise account.
+  UseEnterpriseAccount();
+  // Set expectations.
+  expected_sync_disabled_confirmation_ = kShownManaged;
   SetExpectationsForSyncDisabled(profile());
   // Configure the test.
   sync_confirmation_result_ = LoginUIService::SyncConfirmationUIClosedResult::
