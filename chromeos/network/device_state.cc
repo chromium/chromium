@@ -66,6 +66,16 @@ bool DeviceState::PropertyChanged(const std::string& key,
       return false;
     scan_results_.swap(parsed_results);
     return true;
+  } else if (key == shill::kSIMSlotInfoProperty) {
+    if (!value.is_list())
+      return false;
+    CellularSIMSlotInfos parsed_results;
+    if (!network_util::ParseCellularSIMSlotInfo(value.GetList(),
+                                                &parsed_results)) {
+      return false;
+    }
+    sim_slot_infos_.swap(parsed_results);
+    return true;
   } else if (key == shill::kSIMLockStatusProperty) {
     const base::DictionaryValue* dict = nullptr;
     if (!value.GetAsDictionary(&dict))

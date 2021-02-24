@@ -4,7 +4,9 @@
 
 #include "chromeos/network/cellular_utils.h"
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
@@ -69,6 +71,18 @@ std::vector<CellularESimProfile> GenerateProfilesFromEuicc(
   return profiles;
 }
 
+const base::flat_map<int32_t, std::string> GetESimSlotToEidMap() {
+  base::flat_map<int32_t, std::string> esim_slot_to_eid;
+  for (auto& euicc_path : HermesManagerClient::Get()->GetAvailableEuiccs()) {
+    HermesEuiccClient::Properties* properties =
+        HermesEuiccClient::Get()->GetProperties(euicc_path);
+    int32_t slot_id = properties->physical_slot().value();
+    std::string eid = properties->eid().value();
+    esim_slot_to_eid.emplace(slot_id, eid);
+  }
+  return esim_slot_to_eid;
+}
+
 }  // namespace
 
 std::vector<CellularESimProfile> GenerateProfilesFromHermes() {
@@ -83,6 +97,34 @@ std::vector<CellularESimProfile> GenerateProfilesFromHermes() {
   }
 
   return profiles;
+}
+
+const DeviceState::CellularSIMSlotInfos GetSimSlotInfosWithUpdatedEid(
+    const DeviceState* device) {
+  const base::flat_map<int32_t, std::string> esim_slot_to_eid =
+      GetESimSlotToEidMap();
+
+  DeviceState::CellularSIMSlotInfos sim_slot_infos = device->sim_slot_infos();
+  for (auto& sim_slot_info : sim_slot_infos) {
+    const std::string shill_provided_eid = sim_slot_info.eid;
+
+    // If there is no associated |slot_id| in the map, the SIM slot info refers
+    // to a pSIM, and the Hermes provided data is irrelevant.
+    auto it = esim_slot_to_eid.find(sim_slot_info.slot_id);
+    if (it == esim_slot_to_eid.end())
+      continue;
+
+    const std::string hermes_provided_eid = it->second;
+    if (!shill_provided_eid.empty() &&
+        hermes_provided_eid != shill_provided_eid) {
+      LOG(ERROR) << "Hermes provided EID of " << hermes_provided_eid
+                 << " does not match Shill provided non-empty EID of "
+                 << shill_provided_eid << ". Defaulting to Shill provided EID.";
+    } else {
+      sim_slot_info.eid = hermes_provided_eid;
+    }
+  }
+  return sim_slot_infos;
 }
 
 }  // namespace chromeos

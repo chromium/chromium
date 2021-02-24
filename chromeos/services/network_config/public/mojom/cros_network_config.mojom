@@ -129,12 +129,12 @@ struct SIMLockStatus {
 // Details about a sim slot available on the device.
 struct SIMInfo {
   // Slot identifier.
-  uint32 slot_id;
+  int32 slot_id;
   // EID of EUICC at this slot. Empty if this is a physical SIM slot.
   string eid;
-  // TODO(hsuregan): Add ICCID of the eSIM profile or the physical SIM
+  // ICCID of the eSIM profile or the physical SIM
   // card active on this slot when available from Shill.
-  // string iccid;
+  string iccid;
 };
 
 struct CellularStateProperties {

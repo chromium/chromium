@@ -49,6 +49,13 @@ CellularScanResult::CellularScanResult(const CellularScanResult& other) =
 
 CellularScanResult::~CellularScanResult() = default;
 
+CellularSIMSlotInfo::CellularSIMSlotInfo() = default;
+
+CellularSIMSlotInfo::CellularSIMSlotInfo(const CellularSIMSlotInfo& other) =
+    default;
+
+CellularSIMSlotInfo::~CellularSIMSlotInfo() = default;
+
 namespace network_util {
 
 std::string PrefixLengthToNetmask(int32_t prefix_length) {
@@ -152,6 +159,38 @@ bool ParseCellularScanResults(const base::ListValue& list,
     dict->GetStringWithoutPathExpansion(shill::kTechnologyProperty,
                                         &scan_result.technology);
     scan_results->push_back(scan_result);
+  }
+  return true;
+}
+
+bool ParseCellularSIMSlotInfo(
+    const base::Value::ConstListView list,
+    std::vector<CellularSIMSlotInfo>* sim_slot_infos) {
+  sim_slot_infos->clear();
+  sim_slot_infos->reserve(list.size());
+  for (size_t i = 0; i < list.size(); i++) {
+    const auto& value = list[i];
+    if (!value.is_dict())
+      return false;
+
+    CellularSIMSlotInfo sim_slot_info;
+    // The |slot_id| should start with 1.
+    sim_slot_info.slot_id = i + 1;
+
+    const std::string* eid = value.FindStringKey(shill::kSIMSlotInfoEID);
+    if (eid)
+      sim_slot_info.eid = *eid;
+
+    const std::string* iccid = value.FindStringKey(shill::kSIMSlotInfoICCID);
+    if (iccid)
+      sim_slot_info.iccid = *iccid;
+
+    const std::string* primary =
+        value.FindStringKey(shill::kSIMSlotInfoPrimary);
+    if (primary)
+      sim_slot_info.primary = *primary;
+
+    sim_slot_infos->push_back(sim_slot_info);
   }
   return true;
 }

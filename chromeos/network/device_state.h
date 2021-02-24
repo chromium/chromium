@@ -19,6 +19,7 @@ namespace chromeos {
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) DeviceState : public ManagedState {
  public:
   typedef std::vector<CellularScanResult> CellularScanResults;
+  typedef std::vector<CellularSIMSlotInfo> CellularSIMSlotInfos;
 
   explicit DeviceState(const std::string& path);
   ~DeviceState() override;
@@ -53,6 +54,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) DeviceState : public ManagedState {
   const std::string& iccid() const { return iccid_; }
   const std::string& mdn() const { return mdn_; }
   const CellularScanResults& scan_results() const { return scan_results_; }
+  const CellularSIMSlotInfos& sim_slot_infos() const { return sim_slot_infos_; }
   bool inhibited() const { return inhibited_; }
 
   // |ip_configs_| is kept up to date by NetworkStateHandler.
@@ -114,6 +116,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) DeviceState : public ManagedState {
   std::string iccid_;
   std::string mdn_;
   CellularScanResults scan_results_;
+  CellularSIMSlotInfos sim_slot_infos_;
   bool inhibited_ = false;
 
   // Ethernet specific properties

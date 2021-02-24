@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -14,6 +15,7 @@
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/cellular_esim_profile_handler.h"
+#include "chromeos/network/cellular_utils.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_connection_handler.h"
@@ -469,12 +471,17 @@ mojom::NetworkStatePropertiesPtr NetworkStateToMojo(
   return result;
 }
 
-mojom::SIMInfoPtr HermesSimPropertiesToMojo(
-    HermesEuiccClient::Properties* properties) {
-  auto sim_info = mojom::SIMInfo::New();
-  sim_info->eid = properties->eid().value();
-  sim_info->slot_id = properties->physical_slot().value();
-  return sim_info;
+std::vector<mojom::SIMInfoPtr> CellularSIMInfosToMojo(
+    const DeviceState* device) {
+  std::vector<mojom::SIMInfoPtr> sim_info_mojos;
+  for (const auto& sim_slot : GetSimSlotInfosWithUpdatedEid(device)) {
+    auto sim_info_mojo = mojom::SIMInfo::New();
+    sim_info_mojo->slot_id = sim_slot.slot_id;
+    sim_info_mojo->iccid = sim_slot.iccid;
+    sim_info_mojo->eid = sim_slot.eid;
+    sim_info_mojos.push_back(std::move(sim_info_mojo));
+  }
+  return sim_info_mojos;
 }
 
 mojom::DeviceStatePropertiesPtr DeviceStateToMojo(
@@ -514,18 +521,7 @@ mojom::DeviceStatePropertiesPtr DeviceStateToMojo(
     result->sim_lock_status = std::move(sim_lock_status);
   }
   if (type == mojom::NetworkType::kCellular) {
-    // TODO(hsuregan): Once Shill exposes a SIMInfo array of dictionaries, which
-    // may contain incomplete info about the different slots, use
-    // HermesManagerClient::Get()->GetAvailableEuiccs() to fill in the missing
-    // info to make sure eid is always populated for eSIM slots. This addition
-    // added preemptively to unblock UI work.
-    std::vector<mojom::SIMInfoPtr> sim_infos;
-    for (auto& euicc_path : HermesManagerClient::Get()->GetAvailableEuiccs()) {
-      HermesEuiccClient::Properties* properties =
-          HermesEuiccClient::Get()->GetProperties(euicc_path);
-      sim_infos.push_back(HermesSimPropertiesToMojo(properties));
-    }
-    result->sim_infos = std::move(sim_infos);
+    result->sim_infos = CellularSIMInfosToMojo(device);
   }
   return result;
 }

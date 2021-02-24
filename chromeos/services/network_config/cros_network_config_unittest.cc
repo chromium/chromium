@@ -155,6 +155,18 @@ class CrosNetworkConfigTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void AddSimSlotInfoToList(
+      base::Value::ListStorage& ordered_sim_slot_info_list,
+      const std::string& eid,
+      const std::string& iccid,
+      const std::string& primary = "") {
+    base::Value item(base::Value::Type::DICTIONARY);
+    item.SetStringKey(shill::kSIMSlotInfoEID, eid);
+    item.SetStringKey(shill::kSIMSlotInfoICCID, iccid);
+    item.SetStringKey(shill::kSIMSlotInfoPrimary, primary);
+    ordered_sim_slot_info_list.push_back(std::move(item));
+  }
+
   void SetupNetworks() {
     // Wifi device exists by default, add Ethernet and Cellular.
     helper().device_test()->AddDevice("/device/stub_eth_device",
@@ -662,6 +674,69 @@ TEST_F(CrosNetworkConfigTest, GetNetworkStateList) {
   EXPECT_EQ("wifi2_guid", networks[0]->guid);
   EXPECT_EQ("wifi4_guid", networks[1]->guid);
   EXPECT_EQ("wifi3_guid", networks[2]->guid);
+}
+
+TEST_F(CrosNetworkConfigTest, ESimAndPSimSlotInfo) {
+  const char kTestEuiccPath1[] = "euicc_path_1";
+  const char kTestEuiccPath2[] = "euicc_path_2";
+
+  // pSIM slot info (existing ICCID).
+  const char kTestPSimIccid[] = "test_psim_iccid";
+  const int32_t psim_physical_slot = 1;
+
+  // eSIM 1 slot info (existing ICCID).
+  const char kTestEid1[] = "test_eid_1_esim_only";
+  const char kTestESimIccid[] = "test_esim_iccid";
+  const int32_t esim_1_physical_slot = 2;
+
+  // eSIM 2 slot info (no ICCID).
+  const char kTestEid2[] = "test_eid_2_esim_only";
+  const int32_t esim_2_physical_slot = 3;
+
+  // Add eSIM 1 and 2 info to Hermes.
+  helper().hermes_manager_test()->AddEuicc(
+      dbus::ObjectPath(kTestEuiccPath1), kTestEid1, /*is_active=*/false,
+      /*esim_1_physical_slot=*/esim_1_physical_slot);
+  helper().hermes_manager_test()->AddEuicc(
+      dbus::ObjectPath(kTestEuiccPath2), kTestEid2, /*is_active=*/true,
+      /*esim_1_physical_slot=*/esim_2_physical_slot);
+
+  // Add pSIM and eSIM slot info to Shill.
+  base::Value::ListStorage ordered_sim_slot_info_list;
+  // Add pSIM first to correspond to |psim_physical_slot| index. Note that
+  // pSIMs do not have EIDs.
+  AddSimSlotInfoToList(ordered_sim_slot_info_list, /*eid=*/"", kTestPSimIccid);
+  // Add eSIM next to correspond to |esim_1_physical_slot| index. Intentionally
+  // exclude the EID; it's expected that Hermes will fill in the missing EID.
+  AddSimSlotInfoToList(ordered_sim_slot_info_list, /*eid=*/"", kTestESimIccid);
+  // Add eSIM next to correspond to |esim_2_physical_slot| index. Intentionally
+  // exclude the EID and ICCID; it's expected that Hermes will still fill in
+  // the missing EID.
+  AddSimSlotInfoToList(ordered_sim_slot_info_list, /*eid=*/"", /*iccid=*/"");
+  helper().device_test()->SetDeviceProperty(
+      kCellularDevicePath, shill::kSIMSlotInfoProperty,
+      base::Value(ordered_sim_slot_info_list),
+      /*notify_changed=*/true);
+  base::RunLoop().RunUntilIdle();
+
+  mojom::DeviceStatePropertiesPtr cellular =
+      GetDeviceStateFromList(mojom::NetworkType::kCellular);
+
+  // Check pSIM slot info.
+  EXPECT_EQ(psim_physical_slot, (*cellular->sim_infos)[0]->slot_id);
+  ASSERT_TRUE((*cellular->sim_infos)[0]->eid.empty());
+  EXPECT_EQ(kTestPSimIccid, (*cellular->sim_infos)[0]->iccid);
+
+  // Check eSIM 1 slot info.
+  EXPECT_EQ(esim_1_physical_slot, (*cellular->sim_infos)[1]->slot_id);
+  EXPECT_EQ(kTestEid1, (*cellular->sim_infos)[1]->eid);
+  EXPECT_EQ(kTestESimIccid, (*cellular->sim_infos)[1]->iccid);
+
+  // Check eSIM 2 slot info. Note that the ICCID is empty here but the
+  // EID still exists.
+  EXPECT_EQ(esim_2_physical_slot, (*cellular->sim_infos)[2]->slot_id);
+  EXPECT_EQ(kTestEid2, (*cellular->sim_infos)[2]->eid);
+  ASSERT_TRUE((*cellular->sim_infos)[2]->iccid.empty());
 }
 
 TEST_F(CrosNetworkConfigTest, ESimNetworkNameComesFromHermes) {
