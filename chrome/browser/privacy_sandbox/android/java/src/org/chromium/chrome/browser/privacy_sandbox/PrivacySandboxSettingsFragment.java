@@ -5,13 +5,20 @@
 package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Browser;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
@@ -39,6 +46,8 @@ public class PrivacySandboxSettingsFragment
     public static final String TOGGLE_PREFERENCE = "privacy_sandbox_toggle";
 
     private @PrivacySandboxReferrer int mPrivacySandboxReferrer;
+    private PrivacySandboxHelpers.CustomTabIntentHelper mCustomTabHelper;
+    private PrivacySandboxHelpers.TrustedIntentHelper mTrustedIntentHelper;
 
     public static CharSequence getStatusString(Context context) {
         return context.getString(PrivacySandboxBridge.isPrivacySandboxEnabled()
@@ -94,6 +103,36 @@ public class PrivacySandboxSettingsFragment
         outState.putInt(PRIVACY_SANDBOX_REFERRER, mPrivacySandboxReferrer);
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Add the custom question mark button.
+        menu.clear();
+        MenuItem help =
+                menu.add(Menu.NONE, R.id.menu_id_targeted_help, Menu.NONE, R.string.menu_help);
+        help.setIcon(VectorDrawableCompat.create(
+                getResources(), R.drawable.ic_help_and_feedback, getActivity().getTheme()));
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_id_targeted_help) {
+            // Action for the question mark button.
+            openUrlInCct(PRIVACY_SANDBOX_URL);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Set the necessary CCT helpers to be able to natively open links. This is needed because the
+     * helpers are not modularized.
+     */
+    public void setCctHelpers(PrivacySandboxHelpers.CustomTabIntentHelper tabHelper,
+            PrivacySandboxHelpers.TrustedIntentHelper intentHelper) {
+        mCustomTabHelper = tabHelper;
+        mTrustedIntentHelper = intentHelper;
+    }
+
     private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {
         return preference -> {
             if (!TOGGLE_PREFERENCE.equals(preference.getKey())) return false;
@@ -102,11 +141,18 @@ public class PrivacySandboxSettingsFragment
     }
 
     private void openUrlInCct(String url) {
+        assert (mCustomTabHelper != null)
+                && (mTrustedIntentHelper != null)
+            : "CCT helpers must be set on PrivacySandboxSettingsFragment before opening a link.";
         CustomTabsIntent customTabIntent =
                 new CustomTabsIntent.Builder().setShowTitle(true).build();
-        // TODO(crbug.com/1152351): update to use LaunchIntentDispatcher and IntentHandler to launch
-        // a Chrome Custom Tab as opposed to relying on the OS for browser picking.
-        customTabIntent.launchUrl(getContext(), Uri.parse(url));
+        customTabIntent.intent.setData(Uri.parse(url));
+        Intent intent = mCustomTabHelper.createCustomTabActivityIntent(
+                getContext(), customTabIntent.intent);
+        intent.setPackage(getContext().getPackageName());
+        intent.putExtra(Browser.EXTRA_APPLICATION_ID, getContext().getPackageName());
+        mTrustedIntentHelper.addTrustedIntentExtras(intent);
+        IntentUtils.safeStartActivity(getContext(), intent);
     }
 
     private void parseAndRecordReferrer(Bundle savedInstanceState) {
