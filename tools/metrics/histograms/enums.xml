@@ -75573,6 +75573,24 @@ would be helpful to identify which type is being sent.
   <int value="8" label="EXIT_CODE_SUCCESS_COLD_REBOOT"/>
 </enum>
 
+<enum name="TpmManagerSecretStatus">
+  <summary>
+    The status of the sercrets that tpm manager hold. Each bit field presents
+    the meanings listed below: 1. (0bX0000000): when the flag is set, the device
+    uses TPM2. 2. (0b0XX00000): reserved. 3. (0b000X0000): has owner password.
+    4. (0b0000X000): has endorsement password (TPM2.0 only). 5. (0b00000X00):
+    has lockout password (TPM2.0 only). 6. (0b000000X0): has owner delegate
+    (TPM1.2 only). 7. (0b0000000X): has reset DA premissions.
+  </summary>
+  <int value="0" label="(0b00000000) empty database (TPM1.2)"/>
+  <int value="2" label="(0b00000010) intact database (legacy TPM1.2)"/>
+  <int value="3" label="(0b00000011) intact database (TPM1.2)"/>
+  <int value="19" label="(0b00010011) stale owner auth (TPM1.2)"/>
+  <int value="128" label="(0b10000000) empty database (TPM2.0)"/>
+  <int value="141" label="(0b10001101) intact database (TPM2.0)"/>
+  <int value="157" label="(0b10011101) stale owner auth (TPM2.0)"/>
+</enum>
+
 <enum name="TPMResultCodeEnum">
   <int value="0" label="TPM_SUCCESS"/>
   <int value="1" label="TPM_E_AUTHFAIL"/>
