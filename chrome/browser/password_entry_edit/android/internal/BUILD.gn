@@ -23,6 +23,7 @@ android_library("java") {
     "//base:base_java",
     "//base:jni_java",
     "//chrome/browser/password_entry_edit/android:java",
+    "//chrome/browser/password_manager/android:java",
     "//components/browser_ui/settings/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
@@ -38,10 +39,13 @@ android_library("junit") {
   sources = [ "java/src/org/chromium/chrome/browser/password_entry_edit/CredentialEditControllerTest.java" ]
   deps = [
     ":java",
+    "//base:base_java",
     "//base:base_junit_test_support",
     "//chrome/browser/password_entry_edit/android:java",
+    "//chrome/browser/password_manager/android:java",
     "//third_party/android_deps:robolectric_all_java",
     "//third_party/junit",
+    "//third_party/mockito:mockito_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
 }

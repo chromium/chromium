@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.password_entry_edit;
 
+import org.chromium.chrome.browser.password_entry_edit.CredentialEditFragmentView.UiActionHandler;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -11,6 +12,8 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Properties defined here reflect the visible state of the credential edit UI.
  */
 class CredentialEditProperties {
+    static final PropertyModel.ReadableObjectPropertyKey<UiActionHandler> UI_ACTION_HANDLER =
+            new PropertyModel.ReadableObjectPropertyKey<>("ui action handler");
     static final PropertyModel.ReadableObjectPropertyKey<String> URL_OR_APP =
             new PropertyModel.ReadableObjectPropertyKey<>("url or app");
     static final PropertyModel.WritableObjectPropertyKey<String> USERNAME =
@@ -25,8 +28,8 @@ class CredentialEditProperties {
     static final PropertyModel.WritableBooleanPropertyKey UI_DISMISSED_BY_NATIVE =
             new PropertyModel.WritableBooleanPropertyKey("ui dismissed by native");
 
-    static final PropertyKey[] ALL_KEYS = {URL_OR_APP, USERNAME, PASSWORD_VISIBLE, PASSWORD,
-            FEDERATION_ORIGIN, UI_DISMISSED_BY_NATIVE};
+    static final PropertyKey[] ALL_KEYS = {UI_ACTION_HANDLER, URL_OR_APP, USERNAME,
+            PASSWORD_VISIBLE, PASSWORD, FEDERATION_ORIGIN, UI_DISMISSED_BY_NATIVE};
 
     private CredentialEditProperties() {}
 }

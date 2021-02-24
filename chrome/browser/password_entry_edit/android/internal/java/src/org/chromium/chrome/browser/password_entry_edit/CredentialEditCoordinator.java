@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.password_entry_edit;
 
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.ALL_KEYS;
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.FEDERATION_ORIGIN;
+import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.UI_ACTION_HANDLER;
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.URL_OR_APP;
 
 import org.chromium.chrome.browser.password_entry_edit.CredentialEditFragmentView.ComponentStateDelegate;
+import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -17,8 +19,10 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  */
 class CredentialEditCoordinator implements ComponentStateDelegate {
     private final CredentialEditFragmentView mFragmentView;
+    private final PasswordAccessReauthenticationHelper mReauthenticationHelper;
     private final CredentialEditMediator mMediator;
     private final UiDismissalHandler mDismissalHandler;
+
     private PropertyModel mModel;
 
     interface UiDismissalHandler {
@@ -31,7 +35,9 @@ class CredentialEditCoordinator implements ComponentStateDelegate {
     CredentialEditCoordinator(
             CredentialEditFragmentView fragmentView, UiDismissalHandler dismissalHandler) {
         mFragmentView = fragmentView;
-        mMediator = new CredentialEditMediator();
+        mReauthenticationHelper = new PasswordAccessReauthenticationHelper(
+                mFragmentView.getActivity(), mFragmentView.getParentFragmentManager());
+        mMediator = new CredentialEditMediator(mReauthenticationHelper);
         mDismissalHandler = dismissalHandler;
         mFragmentView.setComponentStateDelegate(this);
     }
@@ -39,6 +45,7 @@ class CredentialEditCoordinator implements ComponentStateDelegate {
     void setCredential(String displayUrlOrAppName, String username, String password,
             String displayFederationOrigin) {
         mModel = new PropertyModel.Builder(ALL_KEYS)
+                         .with(UI_ACTION_HANDLER, mMediator)
                          .with(URL_OR_APP, displayUrlOrAppName)
                          .with(FEDERATION_ORIGIN, displayFederationOrigin)
                          .build();
@@ -53,6 +60,11 @@ class CredentialEditCoordinator implements ComponentStateDelegate {
     @Override
     public void onStartFragment() {
         CredentialEditCoordinator.setupModelChangeProcessor(mModel, mFragmentView);
+    }
+
+    @Override
+    public void onResumeFragment() {
+        mReauthenticationHelper.onReauthenticationMaybeHappened();
     }
 
     @Override
