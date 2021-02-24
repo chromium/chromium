@@ -46,7 +46,22 @@ VisiblePositionInFlatTree CreateVisiblePositionInFlatTree(
   return CreateVisiblePosition(PositionInFlatTree(&anchor, offset), affinity);
 }
 
-class VisibleUnitsTest : public EditingTestBase {};
+class VisibleUnitsTest : public EditingTestBase {
+ protected:
+  std::string TestSnapBackward(
+      const std::string& selection_text,
+      EditingBoundaryCrossingRule rule = kCannotCrossEditingBoundary) {
+    const Position position = SetSelectionTextToBody(selection_text).Base();
+    return GetCaretTextFromBody(MostBackwardCaretPosition(position, rule));
+  }
+
+  std::string TestSnapForward(
+      const std::string& selection_text,
+      EditingBoundaryCrossingRule rule = kCannotCrossEditingBoundary) {
+    const Position position = SetSelectionTextToBody(selection_text).Base();
+    return GetCaretTextFromBody(MostForwardCaretPosition(position, rule));
+  }
+};
 
 TEST_F(VisibleUnitsTest, caretMinOffset) {
   const char* body_content = "<p id=one>one</p>";
@@ -821,6 +836,53 @@ TEST_F(VisibleUnitsTest, MostBackwardOrForwardCaretPositionWithBrInOptgroup) {
   const Position& after = Position::AfterNode(*br);
   EXPECT_EQ(after, MostBackwardCaretPosition(after));
   EXPECT_EQ(after, MostForwardCaretPosition(after));
+}
+
+// http://crbug.com/1134470
+TEST_F(VisibleUnitsTest, SnapBackwardWithZeroWidthSpace) {
+  // Note: We should skip <wbr> otherwise caret stops before/after <wbr>.
+
+  EXPECT_EQ(u8"<p>ab|<wbr></p>", TestSnapBackward(u8"<p>ab<wbr>|</p>"));
+  EXPECT_EQ(u8"<p>ab\u200B|</p>", TestSnapBackward(u8"<p>ab\u200B|</p>"));
+  EXPECT_EQ(u8"<p>ab<!-- -->\u200B|</p>",
+            TestSnapBackward(u8"<p>ab<!-- -->\u200B|</p>"));
+
+  EXPECT_EQ(u8"<p>ab|<wbr><wbr></p>",
+            TestSnapBackward(u8"<p>ab<wbr><wbr>|</p>"));
+  EXPECT_EQ(u8"<p>ab\u200B\u200B|</p>",
+            TestSnapBackward(u8"<p>ab\u200B\u200B|</p>"));
+
+  EXPECT_EQ(u8"<p>ab|<wbr>cd</p>", TestSnapBackward(u8"<p>ab<wbr>|cd</p>"));
+  EXPECT_EQ(u8"<p>ab\u200B|cd</p>", TestSnapBackward(u8"<p>ab\u200B|cd</p>"));
+
+  EXPECT_EQ(u8"<p>ab|<wbr><wbr>cd</p>",
+            TestSnapBackward(u8"<p>ab<wbr><wbr>|cd</p>"));
+  EXPECT_EQ(u8"<p>ab\u200B\u200B|cd</p>",
+            TestSnapBackward(u8"<p>ab\u200B\u200B|cd</p>"));
+}
+
+// http://crbug.com/1134470
+TEST_F(VisibleUnitsTest, SnapForwardWithZeroWidthSpace) {
+  // Note: We should skip <wbr> otherwise caret stops before/after <wbr>.
+
+  EXPECT_EQ(u8"<p>ab<wbr></p>", TestSnapForward(u8"<p>ab|<wbr></p>"))
+      << "We get <wbr>@0";
+  EXPECT_EQ(u8"<p>ab|\u200B</p>", TestSnapForward(u8"<p>ab|\u200B</p>"));
+  EXPECT_EQ(u8"<p>ab<!-- -->|\u200B</p>",
+            TestSnapForward(u8"<p>ab<!-- -->|\u200B</p>"));
+
+  EXPECT_EQ(u8"<p>ab<wbr><wbr></p>", TestSnapForward(u8"<p>ab|<wbr><wbr></p>"))
+      << "We get <wbr>@0";
+  EXPECT_EQ(u8"<p>ab|\u200B\u200B</p>",
+            TestSnapForward(u8"<p>ab|\u200B\u200B</p>"));
+
+  EXPECT_EQ(u8"<p>ab<wbr>|cd</p>", TestSnapForward(u8"<p>ab|<wbr>cd</p>"));
+  EXPECT_EQ(u8"<p>ab|\u200Bcd</p>", TestSnapForward(u8"<p>ab|\u200Bcd</p>"));
+
+  EXPECT_EQ(u8"<p>ab<wbr><wbr>|cd</p>",
+            TestSnapForward(u8"<p>ab|<wbr><wbr>cd</p>"));
+  EXPECT_EQ(u8"<p>ab|\u200B\u200Bcd</p>",
+            TestSnapForward(u8"<p>ab|\u200B\u200Bcd</p>"));
 }
 
 }  // namespace visible_units_test
