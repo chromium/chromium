@@ -102,7 +102,8 @@ IN_PROC_BROWSER_TEST_F(PermissionsApiTest, MAYBE_FaviconPermission) {
 // permissions).
 // Flaky on MacOS, Linux and CrOS (see crbug/1064929, crbug/1101043,
 // crbug/1181237).
-#if (defined(OS_MAC) || defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH))
+#if (defined(OS_MAC) || defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+     defined(OS_WIN))
 #define MAYBE_AlwaysAllowed DISABLED_AlwaysAllowed
 #else
 #define MAYBE_AlwaysAllowed AlwaysAllowed
