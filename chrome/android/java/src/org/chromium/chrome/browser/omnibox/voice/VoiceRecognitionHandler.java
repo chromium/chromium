@@ -57,49 +57,90 @@ import java.util.List;
 public class VoiceRecognitionHandler implements ProfileManager.Observer {
     private static final String TAG = "VoiceRecognition";
 
-    // The minimum confidence threshold that will result in navigating directly to a voice search
-    // response (as opposed to treating it like a typed string in the Omnibox).
+    /**
+     * The minimum confidence threshold that will result in navigating directly to a voice search
+     * response (as opposed to treating it like a typed string in the Omnibox).
+     */
     @VisibleForTesting
     public static final float VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD = 0.9f;
-    // Extra containing the languages for the returned voice transcriptions (ArrayList<String>).
-    // This language is only returned for queries handled by Assistant.
+    /**
+     * Extra containing the languages for the returned voice transcriptions (ArrayList<String>).
+     *
+     * This language is only returned for queries handled by Assistant.
+     */
     @VisibleForTesting
     static final String VOICE_QUERY_RESULT_LANGUAGES = "android.speech.extra.LANGUAGE";
-    // Extra containing an identifier for the current Assistant experiment. This is only populated
-    // for intents initiated via the toolbar button, and is not populated for internal Chrome URLs.
+    /**
+     * Extra containing an identifier for the current Assistant experiment.
+     *
+     * This is only populated for intents initiated via the toolbar button, and is not populated for
+     * internal Chrome URLs.
+     */
     @VisibleForTesting
     static final String EXTRA_EXPERIMENT_ID = "com.android.chrome.voice.EXPERIMENT_ID";
-    // The parameter from the ASSISTANT_INTENT_EXPERIMENT_ID feature that configures the experiment
-    // ID attached via the EXTRA_EXPERIMENT_ID extra.
+    /**
+     * The parameter from the ASSISTANT_INTENT_EXPERIMENT_ID feature that configures the experiment
+     * ID attached via the EXTRA_EXPERIMENT_ID extra.
+     */
     @VisibleForTesting
     static final String ASSISTANT_EXPERIMENT_ID_PARAM_NAME = "experiment_id";
-    // Extra containing the URL of the current page. This is only populated for intents initiated
-    // via the toolbar button, and is not populated for internal Chrome URLs.
+    /**
+     * Extra containing the URL of the current page.
+     *
+     * This is only populated for intents initiated via the toolbar button, and is not populated for
+     * internal Chrome URLs.
+     */
     @VisibleForTesting
     static final String EXTRA_PAGE_URL = "com.android.chrome.voice.PAGE_URL";
-    // Extra containing the original language code of the current page. This is only populated for
-    // pages that are translatable and only for intents initiated via the toolbar button.
+    /**
+     * Extra containing the original language code of the current page.
+     *
+     * This is only populated for pages that are translatable and only for intents initiated via the
+     * toolbar button.
+     */
     @VisibleForTesting
     static final String EXTRA_TRANSLATE_ORIGINAL_LANGUAGE =
             "com.android.chrome.voice.TRANSLATE_ORIGINAL_LANGUAGE";
-    // Extra containing the current language code of the current page. This is only populated for
-    // pages that are translatable and only for intents initiated via the toolbar button.
+    /**
+     * Extra containing the current language code of the current page.
+     *
+     * This is only populated for pages that are translatable and only for intents initiated via the
+     * toolbar button.
+     */
     @VisibleForTesting
     static final String EXTRA_TRANSLATE_CURRENT_LANGUAGE =
             "com.android.chrome.voice.TRANSLATE_CURRENT_LANGUAGE";
-    // Extra containing the user's default target language code. This is only populated for pages
-    // that are translatable and only for intents initiated via the toolbar button.
+    /**
+     * Extra containing the user's default target language code.
+     *
+     * This is only populated for pages that are translatable and only for intents initiated via the
+     * toolbar button.
+     */
     @VisibleForTesting
     static final String EXTRA_TRANSLATE_TARGET_LANGUAGE =
             "com.android.chrome.voice.TRANSLATE_TARGET_LANGUAGE";
-    // Extra containing a string that represents the action taken by Assistant after being opened
-    // for voice transcription. See AssistantActionPerformed, below.
+    /**
+     * Extra containing a string that represents the action taken by Assistant after being opened
+     * for voice transcription.
+     *
+     * See AssistantActionPerformed, below.
+     */
     @VisibleForTesting
     static final String EXTRA_ACTION_PERFORMED = "com.android.chrome.voice.ACTION_PERFORMED";
-    // Extra containing the current timestamp (in epoch time) used for tracking intent latency.
+    /**
+     * Extra containing the current timestamp (in epoch time) used for tracking intent latency.
+     */
     @VisibleForTesting
     static final String EXTRA_INTENT_SENT_TIMESTAMP =
             "com.android.chrome.voice.INTENT_SENT_TIMESTAMP";
+    /**
+     * Extra containing an integer that indicates which voice entrypoint the intent was initiated
+     * from.
+     *
+     * See VoiceInteractionEventSource for possible values.
+     */
+    @VisibleForTesting
+    static final String EXTRA_VOICE_ENTRYPOINT = "com.android.chrome.voice.VOICE_ENTRYPOINT";
 
     private final Delegate mDelegate;
     private Long mQueryStartTimeMs;
@@ -108,8 +149,11 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
     private TranslateBridgeWrapper mTranslateBridgeWrapper;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
 
-    // VoiceInteractionEventSource defined in tools/metrics/histograms/enums.xml.
-    // Do not reorder or remove items, only add new items before HISTOGRAM_BOUNDARY.
+    /**
+     * VoiceInteractionEventSource defined in tools/metrics/histograms/enums.xml.
+     *
+     * Do not reorder or remove items, only add new items before HISTOGRAM_BOUNDARY.
+     */
     @IntDef({VoiceInteractionSource.OMNIBOX, VoiceInteractionSource.NTP,
             VoiceInteractionSource.SEARCH_WIDGET, VoiceInteractionSource.TASKS_SURFACE,
             VoiceInteractionSource.TOOLBAR})
@@ -124,8 +168,11 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
         int HISTOGRAM_BOUNDARY = 5;
     }
 
-    // AssistantActionPerformed defined in tools/metrics/histograms/enums.xml.
-    // Do not reorder or remove items, only add new items before HISTOGRAM_BOUNDARY.
+    /**
+     * AssistantActionPerformed defined in tools/metrics/histograms/enums.xml.
+     *
+     * Do not reorder or remove items, only add new items before HISTOGRAM_BOUNDARY.
+     */
     @IntDef({AssistantActionPerformed.UNKNOWN, AssistantActionPerformed.TRANSCRIPTION,
             AssistantActionPerformed.TRANSLATE, AssistantActionPerformed.READOUT})
     public @interface AssistantActionPerformed {
@@ -715,6 +762,7 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
         if (!assistantVoiceSearchService.shouldRequestAssistantVoiceSearch()) return false;
 
         Intent intent = assistantVoiceSearchService.getAssistantVoiceSearchIntent();
+        intent.putExtra(EXTRA_VOICE_ENTRYPOINT, source);
         // Allows Assistant to track intent latency.
         intent.putExtra(EXTRA_INTENT_SENT_TIMESTAMP, System.currentTimeMillis());
 

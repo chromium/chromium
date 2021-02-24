@@ -716,6 +716,8 @@ public class VoiceRecognitionHandlerTest {
         verify(mAssistantVoiceSearchService).reportUserEligibility();
         verify(mIntent).putExtra(
                 eq(VoiceRecognitionHandler.EXTRA_INTENT_SENT_TIMESTAMP), anyLong());
+        verify(mIntent).putExtra(
+                VoiceRecognitionHandler.EXTRA_VOICE_ENTRYPOINT, VoiceInteractionSource.OMNIBOX);
     }
 
     @Test
