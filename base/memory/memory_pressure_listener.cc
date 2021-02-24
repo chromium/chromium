@@ -88,6 +88,7 @@ MemoryPressureListener::~MemoryPressureListener() {
   GetMemoryPressureObserver()->RemoveObserver(this);
 }
 
+#if BUILDFLAG(ENABLE_BASE_TRACING)
 perfetto::protos::pbzero::MemoryPressureLevel to_proto_enum(
     MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
   using ProtoLevel = perfetto::protos::pbzero::MemoryPressureLevel;
@@ -100,6 +101,7 @@ perfetto::protos::pbzero::MemoryPressureLevel to_proto_enum(
       return ProtoLevel::MEMORY_PRESSURE_LEVEL_CRITICAL;
   }
 }
+#endif
 
 void MemoryPressureListener::Notify(MemoryPressureLevel memory_pressure_level) {
   TRACE_EVENT(
