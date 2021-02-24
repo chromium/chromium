@@ -96,8 +96,6 @@ class ServiceWorkerDiskCache {
     is_waiting_to_initialize_ = is_waiting_to_initialize;
   }
 
-  disk_cache::Backend* disk_cache() { return disk_cache_.get(); }
-
  private:
   class CreateBackendCallbackShim;
   friend class ServiceWorkerDiskCacheEntry;
