@@ -27,8 +27,6 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/reporting_util.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -866,17 +864,22 @@ bool SafeBrowsingPrivateEventRouter::ShouldInitRealtimeReportingClient() {
 
 void SafeBrowsingPrivateEventRouter::SetBrowserCloudPolicyClientForTesting(
     policy::CloudPolicyClient* client) {
+  if (client == nullptr && browser_client_)
+    browser_client_->RemoveObserver(this);
+
   browser_client_ = client;
+  if (browser_client_)
+    browser_client_->AddObserver(this);
 }
 
 void SafeBrowsingPrivateEventRouter::SetProfileCloudPolicyClientForTesting(
     policy::CloudPolicyClient* client) {
-  profile_client_ = client;
-}
+  if (client == nullptr && profile_client_)
+    profile_client_->RemoveObserver(this);
 
-void SafeBrowsingPrivateEventRouter::SetBinaryUploadServiceForTesting(
-    safe_browsing::BinaryUploadService* binary_upload_service) {
-  binary_upload_service_ = binary_upload_service;
+  profile_client_ = client;
+  if (profile_client_)
+    profile_client_->AddObserver(this);
 }
 
 void SafeBrowsingPrivateEventRouter::SetIdentityManagerForTesting(
@@ -982,7 +985,6 @@ SafeBrowsingPrivateEventRouter::InitBrowserReportingClient(
   // the uploaded reports, do the following:
   //     client->add_connector_url_params(base::FeatureList::IsEnabled(
   //        enterprise_connectors::kEnterpriseConnectorsEnabled));
-
   if (!client->is_registered()) {
     client->SetupRegistration(
         dm_token, client_id,
@@ -1050,27 +1052,14 @@ SafeBrowsingPrivateEventRouter::GetReportingSettings() {
           enterprise_connectors::ReportingConnector::SECURITY_EVENT);
 }
 
-void SafeBrowsingPrivateEventRouter::IfAuthorized(
-    const std::string& dm_token,
-    base::OnceCallback<void(bool)> cont) {
-  if (!binary_upload_service_ && g_browser_process) {
-    binary_upload_service_ =
-        safe_browsing::BinaryUploadServiceFactory::GetForProfile(
-            Profile::FromBrowserContext(context_));
-  }
-
-  // TODO(crbug/1069049): Use reporting URL.
-  if (binary_upload_service_)
-    binary_upload_service_->IsAuthorized(
-        GURL(), std::move(cont), dm_token,
-        enterprise_connectors::AnalysisConnector::
-            ANALYSIS_CONNECTOR_UNSPECIFIED);
-}
-
 void SafeBrowsingPrivateEventRouter::ReportRealtimeEvent(
     const std::string& name,
     enterprise_connectors::ReportingSettings settings,
     EventBuilder event_builder) {
+  if (rejected_dm_token_timers_.contains(settings.dm_token)) {
+    return;
+  }
+
 #ifndef NDEBUG
   // Make sure that the event is included in the kAllEvents array.
   bool found = false;
@@ -1083,26 +1072,6 @@ void SafeBrowsingPrivateEventRouter::ReportRealtimeEvent(
   }
   DCHECK(found);
 #endif
-
-  // Copy the DM token since |settings| is about to move.
-  std::string dm_token = settings.dm_token;
-  IfAuthorized(dm_token,
-               base::BindOnce(
-                   &SafeBrowsingPrivateEventRouter::ReportRealtimeEventCallback,
-                   weak_ptr_factory_.GetWeakPtr(), name, std::move(settings),
-                   std::move(event_builder)));
-}
-
-void SafeBrowsingPrivateEventRouter::ReportRealtimeEventCallback(
-    const std::string& name,
-    enterprise_connectors::ReportingSettings settings,
-    EventBuilder event_builder,
-    bool authorized) {
-  // Ignore the event if we know we can't report it.
-  if (!authorized) {
-    DVLOG(2) << "Safe browsing real-time reporting is not authorized.";
-    return;
-  }
 
   // Make sure real-time reporting is initialized.
   InitRealtimeReportingClient(settings);
@@ -1178,6 +1147,11 @@ bool SafeBrowsingPrivateEventRouter::IsRealtimeReportingAvailable() {
 #endif
 }
 
+void SafeBrowsingPrivateEventRouter::RemoveDmTokenFromRejectedSet(
+    const std::string& dm_token) {
+  rejected_dm_token_timers_.erase(dm_token);
+}
+
 void SafeBrowsingPrivateEventRouter::OnClientError(
     policy::CloudPolicyClient* client) {
   base::Value error_value(base::Value::Type::DICTIONARY);
@@ -1186,6 +1160,22 @@ void SafeBrowsingPrivateEventRouter::OnClientError(
   error_value.SetIntKey("status", client->status());
   safe_browsing::WebUIInfoSingleton::GetInstance()->AddToReportingEvents(
       error_value);
+
+  // This is the status set when the server returned 403, which is what the
+  // reporting server returns when the customer is not allowed to report events.
+  if (client->status() == policy::DM_STATUS_SERVICE_MANAGEMENT_NOT_SUPPORTED) {
+    // This could happen if a second event was fired before the first one
+    // returned an error.
+    if (!rejected_dm_token_timers_.contains(client->dm_token())) {
+      rejected_dm_token_timers_[client->dm_token()] =
+          std::make_unique<base::OneShotTimer>();
+      rejected_dm_token_timers_[client->dm_token()]->Start(
+          FROM_HERE, base::TimeDelta::FromHours(24),
+          base::BindOnce(
+              &SafeBrowsingPrivateEventRouter::RemoveDmTokenFromRejectedSet,
+              weak_ptr_factory_.GetWeakPtr(), client->dm_token()));
+    }
+  }
 }
 
 }  // namespace extensions

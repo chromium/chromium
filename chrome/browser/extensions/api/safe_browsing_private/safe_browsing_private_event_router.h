@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/connectors/common.h"
@@ -40,7 +41,6 @@ class DeviceManagementService;
 }
 
 namespace safe_browsing {
-class BinaryUploadService;
 enum class DeepScanAccessPoint;
 }
 
@@ -216,9 +216,6 @@ class SafeBrowsingPrivateEventRouter
   void SetBrowserCloudPolicyClientForTesting(policy::CloudPolicyClient* client);
   void SetProfileCloudPolicyClientForTesting(policy::CloudPolicyClient* client);
 
-  void SetBinaryUploadServiceForTesting(
-      safe_browsing::BinaryUploadService* binary_upload_service);
-
   void SetIdentityManagerForTesting(signin::IdentityManager* identity_manager);
 
   // policy::CloudPolicyClient::Observer:
@@ -227,16 +224,15 @@ class SafeBrowsingPrivateEventRouter
   void OnRegistrationStateChanged(policy::CloudPolicyClient* client) override {}
 
  protected:
-  // Callback to report safe browsing event through real-time reporting channel,
-  // if the browser is authorized to do so. Declared as protected to be called
-  // directly by tests. Events are created lazily to avoid doing useless work if
-  // they are discarded.
+  // Report safe browsing event through real-time reporting channel, if enabled.
+  // Declared as virtual for tests. Declared as protected to be called directly
+  // by tests. Events are created lazily to avoid doing useless work if they are
+  // discarded.
   using EventBuilder = base::OnceCallback<base::Value()>;
-  void ReportRealtimeEventCallback(
-      const std::string& name,
+  virtual void ReportRealtimeEvent(
+      const std::string&,
       enterprise_connectors::ReportingSettings settings,
-      EventBuilder event_builder,
-      bool authorized);
+      EventBuilder event_builder);
 
  private:
   // Initialize a real-time report client if needed.  This client is used only
@@ -257,10 +253,6 @@ class SafeBrowsingPrivateEventRouter
       const std::string& dm_token);
 #endif
 
-  // Continues execution if the client is authorized to do so.
-  void IfAuthorized(const std::string& dm_token,
-                    base::OnceCallback<void(bool)> cont);
-
   // Determines if the real-time reporting feature is enabled.
   // Obtain settings to apply to a reporting event from ConnectorsService.
   // base::nullopt represents that reporting should not be done.
@@ -269,13 +261,6 @@ class SafeBrowsingPrivateEventRouter
 
   // Called whenever the real-time reporting policy changes.
   void RealtimeReportingPrefChanged(const std::string& pref);
-
-  // Report safe browsing event through real-time reporting channel, if enabled.
-  // Declared as virtual for tests.
-  virtual void ReportRealtimeEvent(
-      const std::string&,
-      enterprise_connectors::ReportingSettings settings,
-      EventBuilder event_builder);
 
   // Create a privately owned cloud policy client for events routing.
   void CreatePrivateCloudPolicyClient(
@@ -328,10 +313,11 @@ class SafeBrowsingPrivateEventRouter
       const int64_t content_size,
       safe_browsing::EventResult event_result);
 
+  void RemoveDmTokenFromRejectedSet(const std::string& dm_token);
+
   content::BrowserContext* context_;
   signin::IdentityManager* identity_manager_ = nullptr;
   EventRouter* event_router_ = nullptr;
-  safe_browsing::BinaryUploadService* binary_upload_service_ = nullptr;
 
   // The cloud policy clients used to upload browser events and profile events
   // to the cloud. These clients are never used to fetch policies. These
@@ -343,6 +329,11 @@ class SafeBrowsingPrivateEventRouter
   // client and we create our own (used through the above client pointers).
   std::unique_ptr<policy::CloudPolicyClient> browser_private_client_;
   std::unique_ptr<policy::CloudPolicyClient> profile_private_client_;
+
+  // When a request is rejected for a given DM token, wait 24 hours before
+  // trying again for this specific DM Token.
+  base::flat_map<std::string, std::unique_ptr<base::OneShotTimer>>
+      rejected_dm_token_timers_;
 
   base::WeakPtrFactory<SafeBrowsingPrivateEventRouter> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(SafeBrowsingPrivateEventRouter);

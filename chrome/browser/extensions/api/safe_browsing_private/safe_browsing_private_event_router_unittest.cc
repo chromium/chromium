@@ -75,38 +75,6 @@ constexpr char kConnectorsPrefValue[] = R"([
 
 }  // namespace
 
-class FakeAuthorizedSafeBrowsingPrivateEventRouter
-    : public SafeBrowsingPrivateEventRouter {
- public:
-  explicit FakeAuthorizedSafeBrowsingPrivateEventRouter(
-      content::BrowserContext* context)
-      : SafeBrowsingPrivateEventRouter(context) {}
-
- private:
-  void ReportRealtimeEvent(const std::string& name,
-                           enterprise_connectors::ReportingSettings settings,
-                           EventBuilder event_builder) override {
-    ReportRealtimeEventCallback(name, std::move(settings),
-                                std::move(event_builder), true);
-  }
-};
-
-class FakeUnauthorizedSafeBrowsingPrivateEventRouter
-    : public SafeBrowsingPrivateEventRouter {
- public:
-  explicit FakeUnauthorizedSafeBrowsingPrivateEventRouter(
-      content::BrowserContext* context)
-      : SafeBrowsingPrivateEventRouter(context) {}
-
- private:
-  void ReportRealtimeEvent(const std::string& name,
-                           enterprise_connectors::ReportingSettings settings,
-                           EventBuilder event_builder) override {
-    ReportRealtimeEventCallback(name, std::move(settings),
-                                std::move(event_builder), false);
-  }
-};
-
 class SafeBrowsingEventObserver : public TestEventRouter::EventObserver {
  public:
   // The observer will only listen to events with the |event_name|.
@@ -136,14 +104,9 @@ class SafeBrowsingEventObserver : public TestEventRouter::EventObserver {
 };
 
 std::unique_ptr<KeyedService> BuildSafeBrowsingPrivateEventRouter(
-    bool authorized,
     content::BrowserContext* context) {
-  if (authorized)
-    return std::unique_ptr<KeyedService>(
-        new FakeAuthorizedSafeBrowsingPrivateEventRouter(context));
-  else
-    return std::unique_ptr<KeyedService>(
-        new FakeUnauthorizedSafeBrowsingPrivateEventRouter(context));
+  return std::unique_ptr<KeyedService>(
+      new SafeBrowsingPrivateEventRouter(context));
 }
 
 class SafeBrowsingPrivateEventRouterTest : public testing::Test {
@@ -236,6 +199,7 @@ class SafeBrowsingPrivateEventRouterTest : public testing::Test {
   }
 
   void SetReportingPolicy(bool enabled,
+                          bool authorized = true,
                           const std::set<std::string>& enabled_event_names =
                               std::set<std::string>()) {
     safe_browsing::SetOnSecurityEventReporting(profile_->GetPrefs(), enabled,
@@ -243,14 +207,22 @@ class SafeBrowsingPrivateEventRouterTest : public testing::Test {
 
     // If we are not enabling reporting, or if the client has already been
     // set for testing, just return.
-    if (!enabled || client_)
+    if (!enabled)
       return;
 
-    // Set a mock cloud policy client in the router.
-    client_ = std::make_unique<policy::MockCloudPolicyClient>();
-    client_->SetDMToken("fake-token");
-    SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
-        ->SetBrowserCloudPolicyClientForTesting(client_.get());
+    if (client_ == nullptr) {
+      // Set a mock cloud policy client in the router.
+      client_ = std::make_unique<policy::MockCloudPolicyClient>();
+      client_->SetDMToken("fake-token");
+      SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
+          ->SetBrowserCloudPolicyClientForTesting(client_.get());
+    }
+
+    if (!authorized) {
+      // This causes the DM Token to be rejected, and unauthorized for 24 hours.
+      client_->SetStatus(policy::DM_STATUS_SERVICE_MANAGEMENT_NOT_SUPPORTED);
+      client_->NotifyClientError();
+    }
   }
 
   void SetUpRouters(bool authorized = true,
@@ -259,10 +231,10 @@ class SafeBrowsingPrivateEventRouterTest : public testing::Test {
                         std::set<std::string>()) {
     event_router_ = extensions::CreateAndUseTestEventRouter(profile_);
     SafeBrowsingPrivateEventRouterFactory::GetInstance()->SetTestingFactory(
-        profile_,
-        base::BindRepeating(&BuildSafeBrowsingPrivateEventRouter, authorized));
+        profile_, base::BindRepeating(&BuildSafeBrowsingPrivateEventRouter));
 
-    SetReportingPolicy(realtime_reporting_enable, enabled_event_names);
+    SetReportingPolicy(realtime_reporting_enable, authorized,
+                       enabled_event_names);
   }
 
  protected:

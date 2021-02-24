@@ -432,9 +432,6 @@ class DeepScanningReportingTest : public DeepScanningRequestTest {
             base::BindRepeating(&BuildSafeBrowsingPrivateEventRouter));
     extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->SetBrowserCloudPolicyClientForTesting(client_.get());
-    extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
-        ->SetBinaryUploadServiceForTesting(
-            download_protection_service_.GetFakeBinaryUploadService());
     identity_test_environment_.MakePrimaryAccountAvailable(kUserName);
     extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->SetIdentityManagerForTesting(

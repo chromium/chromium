@@ -234,10 +234,19 @@ class ContentAnalysisDelegateBrowserTestBase
     safe_browsing::SetOnSecurityEventReporting(browser()->profile()->GetPrefs(),
                                                /*enabled*/ true,
                                                /*enabled_event_names*/ {},
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+                                               /*machine_scope*/ false);
+#else
                                                machine_scope_);
+#endif
 
     client_ = std::make_unique<policy::MockCloudPolicyClient>();
-    client_->SetDMToken(machine_scope_ ? kBrowserDMToken : kProfileDMToken);
+    client_->SetDMToken(
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+        kBrowserDMToken);
+#else
+        machine_scope_ ? kBrowserDMToken : kProfileDMToken);
+#endif
     if (machine_scope_) {
       extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
           browser()->profile())
@@ -251,9 +260,6 @@ class ContentAnalysisDelegateBrowserTestBase
           ->SetProfileCloudPolicyClientForTesting(client_.get());
 #endif
     }
-    extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
-        browser()->profile())
-        ->SetBinaryUploadServiceForTesting(FakeBinaryUploadServiceStorage());
     identity_test_environment_ =
         std::make_unique<signin::IdentityTestEnvironment>();
     identity_test_environment_->MakePrimaryAccountAvailable(kUserName);
@@ -299,6 +305,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Unauthorized) {
       base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create));
 
   FakeBinaryUploadServiceStorage()->SetAuthorized(false);
+  // This causes the DM Token to be rejected, and unauthorized for 24 hours.
+  client()->SetStatus(policy::DM_STATUS_SERVICE_MANAGEMENT_NOT_SUPPORTED);
+  client()->NotifyClientError();
 
   bool called = false;
   base::RunLoop run_loop;
@@ -334,9 +343,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Unauthorized) {
   run_loop.Run();
   EXPECT_TRUE(called);
 
-  // 1 request to authenticate for upload,
-  // and 1 request to authenticate for reporting.
-  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 2);
+  // 1 request to authenticate for upload.
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 1);
 }
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Files) {
@@ -415,9 +423,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Files) {
   EXPECT_TRUE(called);
 
   // There should have been 1 request per file (2 files) and 1 for
-  // authentication, and 1 more for final request to validate reporting
-  // authentication with the corresponding request type.
-  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 4);
+  // authentication.
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 3);
 }
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Texts) {
@@ -494,17 +501,14 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Texts) {
           }),
       safe_browsing::DeepScanAccessPoint::PASTE);
 
-  // 2 responses are needed: 1 for pasting and 1 for reporting.
-  FakeBinaryUploadServiceStorage()->ReturnAuthorizedResponse();
   FakeBinaryUploadServiceStorage()->ReturnAuthorizedResponse();
 
   run_loop.Run();
   EXPECT_TRUE(called);
 
   // There should have been 1 request for all texts,
-  // 1 for authentication of the scanning request,
-  // and 1 for final request to validate reporting authentication.
-  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 3);
+  // 1 for authentication of the scanning request.
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 2);
 }
 
 // This class tests each of the blocking settings used in Connector policies:
@@ -615,10 +619,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
 
   run_loop.Run();
   EXPECT_TRUE(called);
-
-  // Expect 1 request for authentication needed to report the unscanned file
-  // event.
-  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 1);
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 0);
 }
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
@@ -694,10 +695,6 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
 
   run_loop.Run();
   EXPECT_TRUE(called);
-
-  // Expect 1 request for authentication needed to report the unscanned file
-  // event.
-  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 1);
 }
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
@@ -777,10 +774,6 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
 
   run_loop.Run();
   EXPECT_TRUE(called);
-
-  // Expect 1 request for authentication needed to report the unscanned file
-  // event.
-  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 1);
 }
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
@@ -886,10 +879,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   EXPECT_TRUE(called);
 
   // Expect 1 request for initial authentication (unspecified type, to be
-  // removed for crbug.com/1090088, then count should be 2), 1 to scan the file
-  // in all cases, and 1 more for final request to validate reportin
-  // authentication with the corresponding request type.
-  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 3);
+  // removed for crbug.com/1090088, then count should be 1), + 1 to scan the
+  // file in all cases.
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 2);
 }
 
 // This class tests that ContentAnalysisDelegate is handled correctly when the
