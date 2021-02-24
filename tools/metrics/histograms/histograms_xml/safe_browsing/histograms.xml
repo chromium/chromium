@@ -1792,6 +1792,18 @@ failing to fetch the updates which puts users' security at risk. -->
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsingBinaryUploadService.ActiveRequestsAtShutdown"
+    units="requests" expires_after="2022-01-31">
+  <owner>domfc@chromium.org</owner>
+  <owner>jgingras@chromium.org</owner>
+  <owner>webprotect-eng@google.com</owner>
+  <summary>
+    This records the number of active requests when a BinaryUploadService
+    instance is shutdown. This metric is only logged if the number of active
+    requests is not 0.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsingFCMService.IncomingMessageHasKey" enum="Boolean"
     expires_after="M90">
   <owner>drubery@chromium.org</owner>
