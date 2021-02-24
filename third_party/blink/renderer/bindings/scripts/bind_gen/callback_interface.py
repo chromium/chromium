@@ -286,6 +286,7 @@ def generate_callback_interface(callback_interface_identifier):
     source_node.accumulator.add_include_headers([
         "third_party/blink/renderer/bindings/core/v8/callback_invoke_helper.h",
         "third_party/blink/renderer/bindings/core/v8/generated_code_helper.h",
+        "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h",
     ])
     (header_forward_decls, header_include_headers, source_forward_decls,
      source_include_headers) = collect_forward_decls_and_include_headers(
