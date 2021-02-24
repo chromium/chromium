@@ -8,3 +8,7 @@ Security Critical: yes
 
 Description:
 A gradle-specified repository for Androidx dependencies.
+
+New snapshots are created daily by: https://ci.chromium.org/p/chromium/builders/ci/android-androidx-packager
+They are then rolled in by: https://autoroll.skia.org/r/androidx-chromium
+Trigger a manual run via: https://luci-scheduler.appspot.com/jobs/chromium/android-androidx-packager
