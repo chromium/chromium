@@ -10,11 +10,17 @@ import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProp
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.UI_DISMISSED_BY_NATIVE;
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.USERNAME;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEditFragmentView.UiActionHandler;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper.ReauthReason;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
+import org.chromium.ui.widget.Toast;
 
 /**
  * Contains the logic for the edit component. It  updates the model when needed and reacts to UI
@@ -57,11 +63,38 @@ public class CredentialEditMediator implements UiActionHandler {
         });
     }
 
+    @Override
+    public void onCopyUsername(Context context) {
+        copyToClipboard(context, "username", USERNAME);
+        Toast.makeText(context, R.string.password_entry_viewer_username_copied_into_clipboard,
+                     Toast.LENGTH_SHORT)
+                .show();
+    }
+
+    @Override
+    public void onCopyPassword(Context context) {
+        reauthenticateUser(ReauthReason.COPY_PASSWORD, (reauthSucceeded) -> {
+            if (!reauthSucceeded) return;
+            copyToClipboard(context, "password", PASSWORD);
+            Toast.makeText(context, R.string.password_entry_viewer_password_copied_into_clipboard,
+                         Toast.LENGTH_SHORT)
+                    .show();
+        });
+    }
+
     private void reauthenticateUser(@ReauthReason int reason, Callback<Boolean> action) {
         if (!mReauthenticationHelper.canReauthenticate()) {
             mReauthenticationHelper.showScreenLockToast(reason);
             return;
         }
         mReauthenticationHelper.reauthenticate(reason, action);
+    }
+
+    private void copyToClipboard(
+            Context context, CharSequence label, ReadableObjectPropertyKey<String> dataKey) {
+        ClipboardManager clipboard =
+                (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText(label, mModel.get(dataKey));
+        clipboard.setPrimaryClip(clip);
     }
 }

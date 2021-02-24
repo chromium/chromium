@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.password_entry_edit;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -26,8 +27,23 @@ public class CredentialEditFragmentView extends PreferenceFragmentCompat {
     private ComponentStateDelegate mComponentStateDelegate;
 
     interface UiActionHandler {
-        /** Called when the user clicks the button to mask/unmask the password*/
+        /** Called when the user clicks the button to mask/unmask the password */
         void onMaskOrUnmaskPassword();
+
+        /**
+         * Called when the user clicks the button to copy the username
+         *
+         * @param context application context that can be used to get the {@link ClipboardManager}
+         */
+
+        void onCopyUsername(Context context);
+
+        /**
+         * Called when the user clicks the button to copy the password
+         *
+         * @param context application context that can be used to get the {@link ClipboardManager}
+         */
+        void onCopyPassword(Context context);
     }
 
     // TODO(crbug.com/1178519): The coordinator should be made a LifecycleObserver instead.
@@ -102,10 +118,20 @@ public class CredentialEditFragmentView extends PreferenceFragmentCompat {
     }
 
     void setUiActionHandler(UiActionHandler uiActionHandler) {
+        ChromeImageButton usernameCopyButton = getView().findViewById(R.id.copy_username_button);
+        usernameCopyButton.setOnClickListener(
+                (unusedView)
+                        -> uiActionHandler.onCopyUsername(getActivity().getApplicationContext()));
+
+        ChromeImageButton passwordCopyButton = getView().findViewById(R.id.copy_password_button);
+        passwordCopyButton.setOnClickListener(
+                (unusedView)
+                        -> uiActionHandler.onCopyPassword(getActivity().getApplicationContext()));
+
         ChromeImageButton passwordVisibilityButton =
                 getView().findViewById(R.id.password_visibility_button);
         passwordVisibilityButton.setOnClickListener(
-                (view) -> uiActionHandler.onMaskOrUnmaskPassword());
+                (unusedView) -> uiActionHandler.onMaskOrUnmaskPassword());
     }
 
     void setUrlOrApp(String urlOrApp) {

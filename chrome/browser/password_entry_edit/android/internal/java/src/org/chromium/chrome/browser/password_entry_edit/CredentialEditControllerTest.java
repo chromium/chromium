@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.password_entry_edit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -22,6 +24,12 @@ import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProp
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.UI_DISMISSED_BY_NATIVE;
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.URL_OR_APP;
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.USERNAME;
+
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -96,11 +104,78 @@ public class CredentialEditControllerTest {
     }
 
     @Test
-    public void testCanReauthTriggersReauthenticate() {
+    public void testUnmaskTriggersReauthenticate() {
         when(mReauthenticationHelper.canReauthenticate()).thenReturn(true);
         mModel.set(PASSWORD_VISIBLE, false);
         mMediator.onMaskOrUnmaskPassword();
         verify(mReauthenticationHelper)
                 .reauthenticate(eq(ReauthReason.VIEW_PASSWORD), any(Callback.class));
+    }
+
+    @Test
+    public void testCannotUnmaskIfReauthFailed() {
+        when(mReauthenticationHelper.canReauthenticate()).thenReturn(true);
+        mModel.set(PASSWORD_VISIBLE, false);
+        doAnswer((invocation) -> {
+            Callback callback = (Callback) invocation.getArguments()[1];
+            callback.onResult(false);
+            return null;
+        })
+                .when(mReauthenticationHelper)
+                .reauthenticate(eq(ReauthReason.VIEW_PASSWORD), any(Callback.class));
+        mMediator.onMaskOrUnmaskPassword();
+        verify(mReauthenticationHelper)
+                .reauthenticate(eq(ReauthReason.VIEW_PASSWORD), any(Callback.class));
+        assertFalse(mModel.get(PASSWORD_VISIBLE));
+    }
+
+    @Test
+    public void testCopyPasswordTriggersReauth() {
+        when(mReauthenticationHelper.canReauthenticate()).thenReturn(true);
+        mMediator.onCopyPassword(ApplicationProvider.getApplicationContext());
+        verify(mReauthenticationHelper)
+                .reauthenticate(eq(ReauthReason.COPY_PASSWORD), any(Callback.class));
+    }
+
+    @Test
+    public void testCantCopyPasswordIfReauthFails() {
+        mModel.set(PASSWORD, TEST_PASSWORD);
+        when(mReauthenticationHelper.canReauthenticate()).thenReturn(true);
+        doAnswer((invocation) -> {
+            Callback callback = (Callback) invocation.getArguments()[1];
+            callback.onResult(false);
+            return null;
+        })
+                .when(mReauthenticationHelper)
+                .reauthenticate(eq(ReauthReason.COPY_PASSWORD), any(Callback.class));
+
+        Context context = ApplicationProvider.getApplicationContext();
+        mMediator.onCopyPassword(context);
+
+        verify(mReauthenticationHelper)
+                .reauthenticate(eq(ReauthReason.COPY_PASSWORD), any(Callback.class));
+        ClipboardManager clipboard =
+                (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        assertNull(clipboard.getPrimaryClip());
+    }
+
+    @Test
+    public void testCanCopyPasswordIfReauthSucceeds() {
+        mModel.set(PASSWORD, TEST_PASSWORD);
+        when(mReauthenticationHelper.canReauthenticate()).thenReturn(true);
+        doAnswer((invocation) -> {
+            Callback callback = (Callback) invocation.getArguments()[1];
+            callback.onResult(true);
+            return null;
+        })
+                .when(mReauthenticationHelper)
+                .reauthenticate(eq(ReauthReason.COPY_PASSWORD), any(Callback.class));
+        Context context = ApplicationProvider.getApplicationContext();
+        mMediator.onCopyPassword(context);
+
+        ClipboardManager clipboard =
+                (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData expectedClip = ClipData.newPlainText("password", TEST_PASSWORD);
+        assertEquals(expectedClip.toString(), clipboard.getPrimaryClip().toString());
     }
 }
