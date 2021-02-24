@@ -24,6 +24,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/federated_learning/floc.mojom.h"
 
 namespace {
 
@@ -32,10 +33,14 @@ class FixedFlocIdProvider : public federated_learning::FlocIdProvider {
   FixedFlocIdProvider() = default;
   ~FixedFlocIdProvider() override = default;
 
-  std::string GetInterestCohortForJsApi(
+  blink::mojom::InterestCohortPtr GetInterestCohortForJsApi(
       const GURL& url,
       const base::Optional<url::Origin>& top_frame_origin) const override {
-    return "12345.6.7.8.9";
+    blink::mojom::InterestCohortPtr cohort =
+        blink::mojom::InterestCohort::New();
+    cohort->id = "12345";
+    cohort->version = "chrome.6.7.8.9";
+    return cohort;
   }
 
   void MaybeRecordFlocToUkm(ukm::SourceId source_id) override {}
@@ -84,7 +89,7 @@ class FlocEligibilityBrowserTest
         'not a function';
       } else {
         document.interestCohort()
-        .then(floc => floc)
+        .then(floc => JSON.stringify(floc, Object.keys(floc).sort()))
         .catch(error => 'rejected');
       }
     )")
@@ -217,7 +222,8 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
 
   // Expect that the navigation history is eligible for floc computation after
   // an API call.
-  EXPECT_EQ("12345.6.7.8.9", InvokeInterestCohortJsApi(web_contents()));
+  EXPECT_EQ("{\"id\":\"12345\",\"version\":\"chrome.6.7.8.9\"}",
+            InvokeInterestCohortJsApi(web_contents()));
   EXPECT_TRUE(IsUrlVisitEligibleToComputeFloc(main_page_url));
 }
 
@@ -277,9 +283,11 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
                                /*iframe_id=*/"test", manual_subframe_url);
   ASSERT_TRUE(HistoryContainsUrlVisit(manual_subframe_url));
 
-  EXPECT_EQ("12345.6.7.8.9", InvokeInterestCohortJsApi(web_contents()));
-  EXPECT_EQ("12345.6.7.8.9", InvokeInterestCohortJsApi(content::ChildFrameAt(
-                                 web_contents()->GetMainFrame(), 0)));
+  EXPECT_EQ("{\"id\":\"12345\",\"version\":\"chrome.6.7.8.9\"}",
+            InvokeInterestCohortJsApi(web_contents()));
+  EXPECT_EQ("{\"id\":\"12345\",\"version\":\"chrome.6.7.8.9\"}",
+            InvokeInterestCohortJsApi(
+                content::ChildFrameAt(web_contents()->GetMainFrame(), 0)));
 
   // Expect that only the main frame navigation history is eligible for floc
   // computation.
@@ -303,7 +311,8 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
 
   // Expect that attempting to set the "floc allowed" bit will be a no-op if the
   // page visit doesn't exist.
-  EXPECT_EQ("12345.6.7.8.9", InvokeInterestCohortJsApi(web_contents()));
+  EXPECT_EQ("{\"id\":\"12345\",\"version\":\"chrome.6.7.8.9\"}",
+            InvokeInterestCohortJsApi(web_contents()));
   ASSERT_FALSE(HistoryContainsUrlVisit(main_page_url));
 }
 
@@ -323,8 +332,10 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest, ApiAllowedByDefault) {
       content::ChildFrameAt(web_contents()->GetMainFrame(), 0);
 
   // Expect that both main frame and subframe are allowed to access floc.
-  EXPECT_EQ("12345.6.7.8.9", InvokeInterestCohortJsApi(web_contents()));
-  EXPECT_EQ("12345.6.7.8.9", InvokeInterestCohortJsApi(child));
+  EXPECT_EQ("{\"id\":\"12345\",\"version\":\"chrome.6.7.8.9\"}",
+            InvokeInterestCohortJsApi(web_contents()));
+  EXPECT_EQ("{\"id\":\"12345\",\"version\":\"chrome.6.7.8.9\"}",
+            InvokeInterestCohortJsApi(child));
 }
 
 IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
@@ -388,7 +399,8 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
       content::ChildFrameAt(web_contents()->GetMainFrame(), 0);
 
   // Expect that only the main frame can access floc.
-  EXPECT_EQ("12345.6.7.8.9", InvokeInterestCohortJsApi(web_contents()));
+  EXPECT_EQ("{\"id\":\"12345\",\"version\":\"chrome.6.7.8.9\"}",
+            InvokeInterestCohortJsApi(web_contents()));
   EXPECT_EQ("rejected", InvokeInterestCohortJsApi(child));
 }
 
@@ -453,8 +465,10 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTestChromeFeaturePolicyDisabled,
       content::ChildFrameAt(web_contents()->GetMainFrame(), 0);
 
   // Expect that both main frame and subframe are allowed to access floc.
-  EXPECT_EQ("12345.6.7.8.9", InvokeInterestCohortJsApi(web_contents()));
-  EXPECT_EQ("12345.6.7.8.9", InvokeInterestCohortJsApi(child));
+  EXPECT_EQ("{\"id\":\"12345\",\"version\":\"chrome.6.7.8.9\"}",
+            InvokeInterestCohortJsApi(web_contents()));
+  EXPECT_EQ("{\"id\":\"12345\",\"version\":\"chrome.6.7.8.9\"}",
+            InvokeInterestCohortJsApi(child));
 
   // Expect that the navigation history is eligible for floc computation.
   EXPECT_TRUE(IsUrlVisitEligibleToComputeFloc(main_page_url));

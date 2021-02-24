@@ -11,6 +11,7 @@
 #include "components/federated_learning/sim_hash.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/blink/public/mojom/federated_learning/floc.mojom.h"
 
 namespace federated_learning {
 
@@ -59,14 +60,18 @@ bool FlocId::operator!=(const FlocId& other) const {
   return !(*this == other);
 }
 
-std::string FlocId::ToStringForJsApi() const {
-  DCHECK(id_.has_value());
-
+blink::mojom::InterestCohortPtr FlocId::ToInterestCohortForJsApi() const {
   // TODO(yaoxia): consider returning the version part even when floc is
   // invalid.
-  return base::StrCat({base::NumberToString(id_.value()), ".",
-                       base::NumberToString(finch_config_version_), ".",
-                       base::NumberToString(sorting_lsh_version_)});
+
+  DCHECK(id_.has_value());
+
+  blink::mojom::InterestCohortPtr result = blink::mojom::InterestCohort::New();
+  result->id = base::NumberToString(id_.value());
+  result->version =
+      base::StrCat({"chrome.", base::NumberToString(finch_config_version_), ".",
+                    base::NumberToString(sorting_lsh_version_)});
+  return result;
 }
 
 uint64_t FlocId::ToUint64() const {

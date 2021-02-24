@@ -29,6 +29,7 @@
 #include "content/public/test/test_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/federated_learning/floc.mojom.h"
 
 namespace federated_learning {
 
@@ -992,7 +993,7 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
 
   set_floc_id(expected_floc);
 
-  EXPECT_EQ(expected_floc.ToStringForJsApi(),
+  EXPECT_EQ(expected_floc.ToInterestCohortForJsApi(),
             floc_id_provider_->GetInterestCohortForJsApi(
                 /*requesting_origin=*/{}, /*site_for_cookies=*/{}));
 }
@@ -1008,7 +1009,7 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
 
   set_floc_id(FlocId(123, kTime, kTime, 999));
 
-  EXPECT_EQ(std::string(),
+  EXPECT_EQ(blink::mojom::InterestCohort::New(),
             floc_id_provider_->GetInterestCohortForJsApi(
                 /*requesting_origin=*/{}, /*site_for_cookies=*/{}));
 }
@@ -1024,7 +1025,7 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
 
   set_floc_id(FlocId(123, kTime, kTime, 999));
 
-  EXPECT_EQ(std::string(),
+  EXPECT_EQ(blink::mojom::InterestCohort::New(),
             floc_id_provider_->GetInterestCohortForJsApi(
                 /*requesting_origin=*/{}, /*site_for_cookies=*/{}));
 }
@@ -1034,7 +1035,7 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   InitializeFlocIdProvider();
   task_environment_.RunUntilIdle();
 
-  EXPECT_EQ(std::string(),
+  EXPECT_EQ(blink::mojom::InterestCohort::New(),
             floc_id_provider_->GetInterestCohortForJsApi(
                 /*requesting_origin=*/{}, /*site_for_cookies=*/{}));
 }

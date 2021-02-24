@@ -152,6 +152,7 @@ static_idl_files_in_core = get_path_info(
           "//third_party/blink/renderer/core/dom/idle_deadline.idl",
           "//third_party/blink/renderer/core/dom/idle_request_callback.idl",
           "//third_party/blink/renderer/core/dom/idle_request_options.idl",
+          "//third_party/blink/renderer/core/dom/interest_cohort.idl",
           "//third_party/blink/renderer/core/dom/iterator.idl",
           "//third_party/blink/renderer/core/dom/mutation_observer.idl",
           "//third_party/blink/renderer/core/dom/mutation_observer_init.idl",

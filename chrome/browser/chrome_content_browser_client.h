@@ -642,7 +642,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       bool user_gesture,
       blink::NavigationDownloadPolicy* download_policy) override;
 
-  std::string GetInterestCohortForJsApi(
+  blink::mojom::InterestCohortPtr GetInterestCohortForJsApi(
       content::WebContents* web_contents,
       const GURL& url,
       const base::Optional<url::Origin>& top_frame_origin) override;
