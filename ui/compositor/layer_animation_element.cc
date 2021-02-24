@@ -447,7 +447,7 @@ class ThreadedOpacityTransition : public ThreadedLayerAnimationElement {
   }
 
   std::unique_ptr<cc::KeyframeModel> CreateCCKeyframeModel() override {
-    std::unique_ptr<cc::AnimationCurve> animation_curve(
+    std::unique_ptr<gfx::AnimationCurve> animation_curve(
         new FloatAnimationCurveAdapter(tween_type(), start_, target_,
                                        duration()));
     std::unique_ptr<cc::KeyframeModel> keyframe_model(cc::KeyframeModel::Create(
@@ -517,7 +517,7 @@ class ThreadedTransformTransition : public ThreadedLayerAnimationElement {
   }
 
   std::unique_ptr<cc::KeyframeModel> CreateCCKeyframeModel() override {
-    std::unique_ptr<cc::AnimationCurve> animation_curve(
+    std::unique_ptr<gfx::AnimationCurve> animation_curve(
         new TransformAnimationCurveAdapter(tween_type(), start_, target_,
                                            duration()));
     std::unique_ptr<cc::KeyframeModel> keyframe_model(cc::KeyframeModel::Create(

@@ -9,8 +9,8 @@
 
 #include "base/macros.h"
 #include "base/time/time.h"
-#include "cc/animation/animation_curve.h"
 #include "ui/compositor/compositor_export.h"
+#include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/transform.h"
 #include "ui/gfx/transform_operations.h"
@@ -19,7 +19,7 @@
 namespace ui {
 
 class COMPOSITOR_EXPORT TransformAnimationCurveAdapter
-    : public cc::TransformAnimationCurve {
+    : public gfx::TransformAnimationCurve {
  public:
   TransformAnimationCurveAdapter(gfx::Tween::Type tween_type,
                                  gfx::Transform intial_value,
@@ -32,7 +32,7 @@ class COMPOSITOR_EXPORT TransformAnimationCurveAdapter
 
   // TransformAnimationCurve implementation.
   base::TimeDelta Duration() const override;
-  std::unique_ptr<AnimationCurve> Clone() const override;
+  std::unique_ptr<gfx::AnimationCurve> Clone() const override;
   gfx::TransformOperations GetValue(base::TimeDelta t) const override;
   bool PreservesAxisAlignment() const override;
   bool MaximumScale(float* max_scale) const override;

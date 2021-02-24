@@ -177,6 +177,7 @@ group("blink_platform_public_deps") {
     "//third_party/libpng",
     "//third_party/libwebp",
     "//third_party/ots",
+    "//ui/gfx/animation/keyframe",
     "//url",
     "//v8",
   ]

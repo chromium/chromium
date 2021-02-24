@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_VR_TRANSITION_H_
-#define CHROME_BROWSER_VR_TRANSITION_H_
+#ifndef UI_GFX_ANIMATION_KEYFRAME_TRANSITION_H_
+#define UI_GFX_ANIMATION_KEYFRAME_TRANSITION_H_
 
 #include <set>
 
 #include "base/time/time.h"
-#include "chrome/browser/vr/vr_ui_export.h"
+#include "ui/gfx/animation/keyframe/keyframe_animation_export.h"
 
-namespace vr {
+namespace gfx {
 
-struct VR_UI_EXPORT Transition {
+struct GFX_KEYFRAME_ANIMATION_EXPORT Transition {
   Transition();
   ~Transition();
 
@@ -20,6 +20,6 @@ struct VR_UI_EXPORT Transition {
   std::set<int> target_properties;
 };
 
-}  // namespace vr
+}  // namespace gfx
 
-#endif  // CHROME_BROWSER_VR_TRANSITION_H_
+#endif  // UI_GFX_ANIMATION_KEYFRAME_TRANSITION_H_

@@ -264,8 +264,9 @@ class CSSAnimationsCompositorSyncTest : public CSSAnimationsTest {
   void VerifyCompositorOpacity(double expected_value) {
     cc::KeyframeModel* keyframe_model = GetCompositorKeyframeForOpacity();
     base::TimeDelta iteration_time = CompositorIterationTime();
-    const cc::FloatAnimationCurve* opacity_curve =
-        cc::FloatAnimationCurve::ToFloatAnimationCurve(keyframe_model->curve());
+    const gfx::FloatAnimationCurve* opacity_curve =
+        gfx::FloatAnimationCurve::ToFloatAnimationCurve(
+            keyframe_model->curve());
     EXPECT_NEAR(expected_value, opacity_curve->GetValue(iteration_time),
                 kTolerance);
   }

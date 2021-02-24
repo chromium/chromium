@@ -67,7 +67,7 @@ class VR_UI_EXPORT Button : public UiElement {
   void OnSetCornerRadii(const CornerRadii& radii) override;
   void OnSizeAnimated(const gfx::SizeF& size,
                       int target_property_id,
-                      cc::KeyframeModel* keyframe_model) override;
+                      gfx::KeyframeModel* keyframe_model) override;
   virtual void OnStateUpdated();
 
  private:

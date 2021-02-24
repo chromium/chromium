@@ -24,7 +24,7 @@ include_rules = [
     "+base/unguessable_token.h",
     "+build/mac",
     "+build/win",
-    "+cc/animation/animation_curve.h",
+    "+ui/gfx/animation/keyframe/animation_curve.h",
     "+cc/animation/animation_host.h",
     "+cc/animation/scroll_offset_animations.h",
     "+cc/animation/scroll_offset_animation_curve.h",

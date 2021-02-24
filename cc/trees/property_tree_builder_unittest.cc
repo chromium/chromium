@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "cc/animation/keyframed_animation_curve.h"
+#include "cc/animation/filter_animation_curve.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/picture_layer.h"
@@ -17,6 +17,7 @@
 #include "cc/test/fake_content_layer_client.h"
 #include "cc/test/layer_tree_impl_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/gfx/transform.h"

@@ -94,8 +94,8 @@ void UiPixelTest::DrawUi(const gfx::Vector3dF& laser_direction,
   InputEventList input_event_list;
   ReticleModel reticle_model;
   EXPECT_TRUE(ui_->OnBeginFrame(base::TimeTicks(), render_info.head_pose));
-  ui_->HandleInput(MsToTicks(1), render_info, controller_model, &reticle_model,
-                   &input_event_list);
+  ui_->HandleInput(gfx::MsToTicks(1), render_info, controller_model,
+                   &reticle_model, &input_event_list);
   std::vector<ControllerModel> controllers;
   controllers.push_back(controller_model);
   ui_->OnControllersUpdated(controllers, reticle_model);

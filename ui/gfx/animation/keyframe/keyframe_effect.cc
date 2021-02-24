@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/vr/animation.h"
+#include "ui/gfx/animation/keyframe/keyframe_effect.h"
 
 #include <algorithm>
 
 #include "base/numerics/ranges.h"
 #include "base/stl_util.h"
-#include "cc/animation/animation_curve.h"
-#include "cc/animation/keyframe_effect.h"
-#include "cc/animation/keyframed_animation_curve.h"
-#include "chrome/browser/vr/elements/ui_element.h"
+#include "ui/gfx/animation/keyframe/animation_curve.h"
+#include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 
-namespace vr {
+namespace gfx {
 
 namespace {
 
@@ -23,11 +21,11 @@ static int s_next_keyframe_model_id = 1;
 static int s_next_group_id = 1;
 
 void ReverseKeyframeModel(base::TimeTicks monotonic_time,
-                          cc::KeyframeModel* keyframe_model) {
+                          KeyframeModel* keyframe_model) {
   keyframe_model->set_direction(keyframe_model->direction() ==
-                                        cc::KeyframeModel::Direction::NORMAL
-                                    ? cc::KeyframeModel::Direction::REVERSE
-                                    : cc::KeyframeModel::Direction::NORMAL);
+                                        KeyframeModel::Direction::NORMAL
+                                    ? KeyframeModel::Direction::REVERSE
+                                    : KeyframeModel::Direction::NORMAL);
   // Our goal here is to reverse the given keyframe_model. That is, if
   // we're 20% of the way through the keyframe_model in the forward direction,
   // we'd like to be 80% of the way of the reversed keyframe model (so it will
@@ -67,21 +65,20 @@ void ReverseKeyframeModel(base::TimeTicks monotonic_time,
       (2 * (monotonic_time - keyframe_model->start_time())));
 }
 
-std::unique_ptr<cc::CubicBezierTimingFunction>
-CreateTransitionTimingFunction() {
-  return cc::CubicBezierTimingFunction::CreatePreset(
-      cc::CubicBezierTimingFunction::EaseType::EASE);
+std::unique_ptr<CubicBezierTimingFunction> CreateTransitionTimingFunction() {
+  return CubicBezierTimingFunction::CreatePreset(
+      CubicBezierTimingFunction::EaseType::EASE);
 }
 
-base::TimeDelta GetStartTime(cc::KeyframeModel* keyframe_model) {
-  if (keyframe_model->direction() == cc::KeyframeModel::Direction::NORMAL) {
+base::TimeDelta GetStartTime(KeyframeModel* keyframe_model) {
+  if (keyframe_model->direction() == KeyframeModel::Direction::NORMAL) {
     return base::TimeDelta();
   }
   return keyframe_model->curve()->Duration();
 }
 
-base::TimeDelta GetEndTime(cc::KeyframeModel* keyframe_model) {
-  if (keyframe_model->direction() == cc::KeyframeModel::Direction::REVERSE) {
+base::TimeDelta GetEndTime(KeyframeModel* keyframe_model) {
+  if (keyframe_model->direction() == KeyframeModel::Direction::REVERSE) {
     return base::TimeDelta();
   }
   return keyframe_model->curve()->Duration();
@@ -108,22 +105,22 @@ bool SufficientlyEqual(SkColor lhs, SkColor rhs) {
 template <typename T>
 struct AnimationTraits {};
 
-#define DEFINE_ANIMATION_TRAITS(value_type, name)                             \
-  template <>                                                                 \
-  struct AnimationTraits<value_type> {                                        \
-    typedef value_type ValueType;                                             \
-    typedef cc::name##AnimationCurve::Target TargetType;                      \
-    typedef cc::name##AnimationCurve CurveType;                               \
-    typedef cc::Keyframed##name##AnimationCurve KeyframedCurveType;           \
-    typedef cc::name##Keyframe KeyframeType;                                  \
-    static const CurveType* ToDerivedCurve(const cc::AnimationCurve* curve) { \
-      return cc::name##AnimationCurve::To##name##AnimationCurve(curve);       \
-    }                                                                         \
-    static void OnValueAnimated(cc::name##AnimationCurve::Target* target,     \
-                                const ValueType& target_value,                \
-                                int target_property) {                        \
-      target->On##name##Animated(target_value, target_property, nullptr);     \
-    }                                                                         \
+#define DEFINE_ANIMATION_TRAITS(value_type, name)                         \
+  template <>                                                             \
+  struct AnimationTraits<value_type> {                                    \
+    typedef value_type ValueType;                                         \
+    typedef name##AnimationCurve::Target TargetType;                      \
+    typedef name##AnimationCurve CurveType;                               \
+    typedef Keyframed##name##AnimationCurve KeyframedCurveType;           \
+    typedef name##Keyframe KeyframeType;                                  \
+    static const CurveType* ToDerivedCurve(const AnimationCurve* curve) { \
+      return name##AnimationCurve::To##name##AnimationCurve(curve);       \
+    }                                                                     \
+    static void OnValueAnimated(name##AnimationCurve::Target* target,     \
+                                const ValueType& target_value,            \
+                                int target_property) {                    \
+      target->On##name##Animated(target_value, target_property, nullptr); \
+    }                                                                     \
   }
 
 DEFINE_ANIMATION_TRAITS(float, Float);
@@ -134,7 +131,7 @@ DEFINE_ANIMATION_TRAITS(SkColor, Color);
 #undef DEFINE_ANIMATION_TRAITS
 
 template <typename ValueType>
-void TransitionValueTo(Animation* animation,
+void TransitionValueTo(KeyframeEffect* animator,
                        typename AnimationTraits<ValueType>::TargetType* target,
                        base::TimeTicks monotonic_time,
                        int target_property,
@@ -142,14 +139,14 @@ void TransitionValueTo(Animation* animation,
                        const ValueType& to) {
   DCHECK(target);
 
-  if (animation->transition().target_properties.find(target_property) ==
-      animation->transition().target_properties.end()) {
+  if (animator->transition().target_properties.find(target_property) ==
+      animator->transition().target_properties.end()) {
     AnimationTraits<ValueType>::OnValueAnimated(target, to, target_property);
     return;
   }
 
-  cc::KeyframeModel* running_keyframe_model =
-      animation->GetRunningKeyframeModelForProperty(target_property);
+  KeyframeModel* running_keyframe_model =
+      animator->GetRunningKeyframeModelForProperty(target_property);
 
   ValueType effective_current = from;
 
@@ -174,7 +171,7 @@ void TransitionValueTo(Animation* animation,
     return;
   }
 
-  animation->RemoveKeyframeModels(target_property);
+  animator->RemoveKeyframeModels(target_property);
 
   std::unique_ptr<typename AnimationTraits<ValueType>::KeyframedCurveType>
       curve(AnimationTraits<ValueType>::KeyframedCurveType::Create());
@@ -183,78 +180,91 @@ void TransitionValueTo(Animation* animation,
       base::TimeDelta(), effective_current, CreateTransitionTimingFunction()));
 
   curve->AddKeyframe(AnimationTraits<ValueType>::KeyframeType::Create(
-      animation->transition().duration, to, CreateTransitionTimingFunction()));
+      animator->transition().duration, to, CreateTransitionTimingFunction()));
 
   curve->set_target(target);
 
-  animation->AddKeyframeModel(cc::KeyframeModel::Create(
-      std::move(curve), Animation::GetNextKeyframeModelId(),
-      Animation::GetNextGroupId(),
-      cc::KeyframeModel::TargetPropertyId(target_property)));
+  animator->AddKeyframeModel(KeyframeModel::Create(
+      std::move(curve), KeyframeEffect::GetNextKeyframeModelId(),
+      target_property));
 }
 
 }  // namespace
 
-int Animation::GetNextKeyframeModelId() {
+int KeyframeEffect::GetNextKeyframeModelId() {
   return s_next_keyframe_model_id++;
 }
 
-int Animation::GetNextGroupId() {
+int KeyframeEffect::GetNextGroupId() {
   return s_next_group_id++;
 }
 
-Animation::Animation() {}
-Animation::~Animation() {}
+KeyframeEffect::KeyframeEffect() {}
+KeyframeEffect::~KeyframeEffect() {}
 
-void Animation::AddKeyframeModel(
-    std::unique_ptr<cc::KeyframeModel> keyframe_model) {
+void KeyframeEffect::AddKeyframeModel(
+    std::unique_ptr<KeyframeModel> keyframe_model) {
   keyframe_models_.push_back(std::move(keyframe_model));
 }
 
-void Animation::RemoveKeyframeModel(int keyframe_model_id) {
+void KeyframeEffect::RemoveKeyframeModel(int keyframe_model_id) {
   base::EraseIf(keyframe_models_,
                 [keyframe_model_id](
-                    const std::unique_ptr<cc::KeyframeModel>& keyframe_model) {
+                    const std::unique_ptr<KeyframeModel>& keyframe_model) {
                   return keyframe_model->id() == keyframe_model_id;
                 });
 }
 
-void Animation::RemoveKeyframeModels(int target_property) {
-  base::EraseIf(keyframe_models_,
-                [target_property](
-                    const std::unique_ptr<cc::KeyframeModel>& keyframe_model) {
-                  return keyframe_model->target_property_type() ==
-                         target_property;
-                });
+void KeyframeEffect::RemoveKeyframeModels(int target_property) {
+  base::EraseIf(
+      keyframe_models_,
+      [target_property](const std::unique_ptr<KeyframeModel>& keyframe_model) {
+        return keyframe_model->TargetProperty() == target_property;
+      });
 }
 
-void Animation::Tick(base::TimeTicks monotonic_time) {
+void KeyframeEffect::Tick(base::TimeTicks monotonic_time) {
   TickInternal(monotonic_time, true);
 }
 
-void Animation::TickInternal(base::TimeTicks monotonic_time,
-                             bool include_infinite_animations) {
+void KeyframeEffect::TickKeyframeModel(base::TimeTicks monotonic_time,
+                                       KeyframeModel* keyframe_model) {
+  if ((keyframe_model->run_state() != KeyframeModel::STARTING &&
+       keyframe_model->run_state() != KeyframeModel::RUNNING &&
+       keyframe_model->run_state() != KeyframeModel::PAUSED) ||
+      !keyframe_model->HasActiveTime(monotonic_time)) {
+    return;
+  }
+
+  AnimationCurve* curve = keyframe_model->curve();
+  base::TimeDelta trimmed =
+      keyframe_model->TrimTimeToCurrentIteration(monotonic_time);
+  curve->Tick(trimmed, keyframe_model->TargetProperty(), keyframe_model);
+}
+
+void KeyframeEffect::TickInternal(base::TimeTicks monotonic_time,
+                                  bool include_infinite_animations) {
   StartKeyframeModels(monotonic_time, include_infinite_animations);
 
   for (auto& keyframe_model : keyframe_models_) {
     if (!include_infinite_animations &&
         keyframe_model->iterations() == std::numeric_limits<double>::infinity())
       continue;
-    cc::KeyframeEffect::TickKeyframeModel(monotonic_time, keyframe_model.get());
+    TickKeyframeModel(monotonic_time, keyframe_model.get());
   }
 
   // Remove finished keyframe_models.
-  base::EraseIf(keyframe_models_,
-                [monotonic_time](
-                    const std::unique_ptr<cc::KeyframeModel>& keyframe_model) {
-                  return !keyframe_model->is_finished() &&
-                         keyframe_model->IsFinishedAt(monotonic_time);
-                });
+  base::EraseIf(
+      keyframe_models_,
+      [monotonic_time](const std::unique_ptr<KeyframeModel>& keyframe_model) {
+        return !keyframe_model->is_finished() &&
+               keyframe_model->IsFinishedAt(monotonic_time);
+      });
 
   StartKeyframeModels(monotonic_time, include_infinite_animations);
 }
 
-void Animation::FinishAll() {
+void KeyframeEffect::FinishAll() {
   base::TimeTicks now = base::TimeTicks::Now();
   const bool include_infinite_animations = false;
   TickInternal(now, include_infinite_animations);
@@ -267,25 +277,26 @@ void Animation::FinishAll() {
 #endif
 }
 
-void Animation::SetTransitionedProperties(const std::set<int>& properties) {
+void KeyframeEffect::SetTransitionedProperties(
+    const std::set<int>& properties) {
   transition_.target_properties = properties;
 }
 
-void Animation::SetTransitionDuration(base::TimeDelta delta) {
+void KeyframeEffect::SetTransitionDuration(base::TimeDelta delta) {
   transition_.duration = delta;
 }
 
-void Animation::TransitionFloatTo(cc::FloatAnimationCurve::Target* target,
-                                  base::TimeTicks monotonic_time,
-                                  int target_property,
-                                  float from,
-                                  float to) {
+void KeyframeEffect::TransitionFloatTo(FloatAnimationCurve::Target* target,
+                                       base::TimeTicks monotonic_time,
+                                       int target_property,
+                                       float from,
+                                       float to) {
   TransitionValueTo<float>(this, target, monotonic_time, target_property, from,
                            to);
 }
 
-void Animation::TransitionTransformOperationsTo(
-    cc::TransformAnimationCurve::Target* target,
+void KeyframeEffect::TransitionTransformOperationsTo(
+    TransformAnimationCurve::Target* target,
     base::TimeTicks monotonic_time,
     int target_property,
     const gfx::TransformOperations& from,
@@ -294,97 +305,97 @@ void Animation::TransitionTransformOperationsTo(
                                               target_property, from, to);
 }
 
-void Animation::TransitionSizeTo(cc::SizeAnimationCurve::Target* target,
-                                 base::TimeTicks monotonic_time,
-                                 int target_property,
-                                 const gfx::SizeF& from,
-                                 const gfx::SizeF& to) {
+void KeyframeEffect::TransitionSizeTo(SizeAnimationCurve::Target* target,
+                                      base::TimeTicks monotonic_time,
+                                      int target_property,
+                                      const gfx::SizeF& from,
+                                      const gfx::SizeF& to) {
   TransitionValueTo<gfx::SizeF>(this, target, monotonic_time, target_property,
                                 from, to);
 }
 
-void Animation::TransitionColorTo(cc::ColorAnimationCurve::Target* target,
-                                  base::TimeTicks monotonic_time,
-                                  int target_property,
-                                  SkColor from,
-                                  SkColor to) {
+void KeyframeEffect::TransitionColorTo(ColorAnimationCurve::Target* target,
+                                       base::TimeTicks monotonic_time,
+                                       int target_property,
+                                       SkColor from,
+                                       SkColor to) {
   TransitionValueTo<SkColor>(this, target, monotonic_time, target_property,
                              from, to);
 }
 
-bool Animation::IsAnimatingProperty(int property) const {
+bool KeyframeEffect::IsAnimatingProperty(int property) const {
   for (auto& keyframe_model : keyframe_models_) {
-    if (keyframe_model->target_property_type() == property)
+    if (keyframe_model->TargetProperty() == property)
       return true;
   }
   return false;
 }
 
-float Animation::GetTargetFloatValue(int target_property,
-                                     float default_value) const {
+float KeyframeEffect::GetTargetFloatValue(int target_property,
+                                          float default_value) const {
   return GetTargetValue<float>(target_property, default_value);
 }
 
-gfx::TransformOperations Animation::GetTargetTransformOperationsValue(
+gfx::TransformOperations KeyframeEffect::GetTargetTransformOperationsValue(
     int target_property,
     const gfx::TransformOperations& default_value) const {
   return GetTargetValue<gfx::TransformOperations>(target_property,
                                                   default_value);
 }
 
-gfx::SizeF Animation::GetTargetSizeValue(
+gfx::SizeF KeyframeEffect::GetTargetSizeValue(
     int target_property,
     const gfx::SizeF& default_value) const {
   return GetTargetValue<gfx::SizeF>(target_property, default_value);
 }
 
-SkColor Animation::GetTargetColorValue(int target_property,
-                                       SkColor default_value) const {
+SkColor KeyframeEffect::GetTargetColorValue(int target_property,
+                                            SkColor default_value) const {
   return GetTargetValue<SkColor>(target_property, default_value);
 }
 
-void Animation::StartKeyframeModels(base::TimeTicks monotonic_time,
-                                    bool include_infinite_animations) {
-  cc::TargetProperties animated_properties;
+void KeyframeEffect::StartKeyframeModels(base::TimeTicks monotonic_time,
+                                         bool include_infinite_animations) {
+  TargetProperties animated_properties;
   for (auto& keyframe_model : keyframe_models_) {
     if (!include_infinite_animations &&
         keyframe_model->iterations() == std::numeric_limits<double>::infinity())
       continue;
-    if (keyframe_model->run_state() == cc::KeyframeModel::RUNNING ||
-        keyframe_model->run_state() == cc::KeyframeModel::PAUSED) {
-      animated_properties[keyframe_model->target_property_type()] = true;
+    if (keyframe_model->run_state() == KeyframeModel::RUNNING ||
+        keyframe_model->run_state() == KeyframeModel::PAUSED) {
+      animated_properties[keyframe_model->TargetProperty()] = true;
     }
   }
   for (auto& keyframe_model : keyframe_models_) {
     if (!include_infinite_animations &&
         keyframe_model->iterations() == std::numeric_limits<double>::infinity())
       continue;
-    if (!animated_properties[keyframe_model->target_property_type()] &&
+    if (!animated_properties[keyframe_model->TargetProperty()] &&
         keyframe_model->run_state() ==
-            cc::KeyframeModel::WAITING_FOR_TARGET_AVAILABILITY) {
-      animated_properties[keyframe_model->target_property_type()] = true;
-      keyframe_model->SetRunState(cc::KeyframeModel::RUNNING, monotonic_time);
+            KeyframeModel::WAITING_FOR_TARGET_AVAILABILITY) {
+      animated_properties[keyframe_model->TargetProperty()] = true;
+      keyframe_model->SetRunState(KeyframeModel::RUNNING, monotonic_time);
       keyframe_model->set_start_time(monotonic_time);
     }
   }
 }
 
-cc::KeyframeModel* Animation::GetRunningKeyframeModelForProperty(
+KeyframeModel* KeyframeEffect::GetRunningKeyframeModelForProperty(
     int target_property) const {
   for (auto& keyframe_model : keyframe_models_) {
-    if ((keyframe_model->run_state() == cc::KeyframeModel::RUNNING ||
-         keyframe_model->run_state() == cc::KeyframeModel::PAUSED) &&
-        keyframe_model->target_property_type() == target_property) {
+    if ((keyframe_model->run_state() == KeyframeModel::RUNNING ||
+         keyframe_model->run_state() == KeyframeModel::PAUSED) &&
+        keyframe_model->TargetProperty() == target_property) {
       return keyframe_model.get();
     }
   }
   return nullptr;
 }
 
-cc::KeyframeModel* Animation::GetKeyframeModelForProperty(
+KeyframeModel* KeyframeEffect::GetKeyframeModelForProperty(
     int target_property) const {
   for (auto& keyframe_model : keyframe_models_) {
-    if (keyframe_model->target_property_type() == target_property) {
+    if (keyframe_model->TargetProperty() == target_property) {
       return keyframe_model.get();
     }
   }
@@ -392,9 +403,9 @@ cc::KeyframeModel* Animation::GetKeyframeModelForProperty(
 }
 
 template <typename ValueType>
-ValueType Animation::GetTargetValue(int target_property,
-                                    const ValueType& default_value) const {
-  cc::KeyframeModel* running_keyframe_model =
+ValueType KeyframeEffect::GetTargetValue(int target_property,
+                                         const ValueType& default_value) const {
+  KeyframeModel* running_keyframe_model =
       GetKeyframeModelForProperty(target_property);
   if (!running_keyframe_model) {
     return default_value;
@@ -404,4 +415,4 @@ ValueType Animation::GetTargetValue(int target_property,
   return curve->GetValue(GetEndTime(running_keyframe_model));
 }
 
-}  // namespace vr
+}  // namespace gfx

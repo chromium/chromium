@@ -14,6 +14,7 @@
 #include "cc/animation/animation_events.h"
 #include "cc/animation/animation_export.h"
 #include "cc/animation/element_animations.h"
+#include "cc/animation/keyframe_model.h"
 #include "cc/paint/element_id.h"
 #include "cc/trees/mutator_host_client.h"
 #include "cc/trees/target_property.h"

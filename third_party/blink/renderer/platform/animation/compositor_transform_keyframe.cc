@@ -13,9 +13,9 @@ CompositorTransformKeyframe::CompositorTransformKeyframe(
     CompositorTransformOperations value,
     const TimingFunction& timing_function)
     : transform_keyframe_(
-          cc::TransformKeyframe::Create(base::TimeDelta::FromSecondsD(time),
-                                        value.ReleaseGfxTransformOperations(),
-                                        timing_function.CloneToCC())) {}
+          gfx::TransformKeyframe::Create(base::TimeDelta::FromSecondsD(time),
+                                         value.ReleaseGfxTransformOperations(),
+                                         timing_function.CloneToCC())) {}
 
 CompositorTransformKeyframe::~CompositorTransformKeyframe() = default;
 
@@ -23,12 +23,12 @@ double CompositorTransformKeyframe::Time() const {
   return transform_keyframe_->Time().InSecondsF();
 }
 
-const cc::TimingFunction* CompositorTransformKeyframe::CcTimingFunction()
+const gfx::TimingFunction* CompositorTransformKeyframe::CcTimingFunction()
     const {
   return transform_keyframe_->timing_function();
 }
 
-std::unique_ptr<cc::TransformKeyframe> CompositorTransformKeyframe::CloneToCC()
+std::unique_ptr<gfx::TransformKeyframe> CompositorTransformKeyframe::CloneToCC()
     const {
   return transform_keyframe_->Clone();
 }

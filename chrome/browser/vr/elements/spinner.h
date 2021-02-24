@@ -32,7 +32,7 @@ class VR_UI_EXPORT Spinner : public TexturedElement {
 
   void OnFloatAnimated(const float& value,
                        int target_property_id,
-                       cc::KeyframeModel* keyframe_model) override;
+                       gfx::KeyframeModel* keyframe_model) override;
   std::unique_ptr<SpinnerTexture> texture_;
   int texture_width_;
 

@@ -48,7 +48,7 @@ TEST(Spinner, Animation) {
   auto spinner_element = std::make_unique<TestSpinner>(kMaximumWidth);
   UiTexture* texture = spinner_element->GetTexture();
   scene.AddUiElement(kRoot, std::move(spinner_element));
-  base::TimeTicks start_time = MsToTicks(1);
+  base::TimeTicks start_time = gfx::MsToTicks(1);
   scene.OnBeginFrame(start_time, kStartHeadPose);
 
   struct TestCase {
@@ -68,7 +68,7 @@ TEST(Spinner, Animation) {
   };
 
   for (const auto& test_case : test_cases) {
-    scene.OnBeginFrame(MsToTicks(1) + test_case.delta, kStartHeadPose);
+    scene.OnBeginFrame(gfx::MsToTicks(1) + test_case.delta, kStartHeadPose);
     CheckArc(texture, test_case.start_angle, test_case.sweep_angle);
   }
 }

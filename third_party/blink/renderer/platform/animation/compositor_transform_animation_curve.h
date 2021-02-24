@@ -36,10 +36,10 @@ class PLATFORM_EXPORT CompositorTransformAnimationCurve
   void SetScaledDuration(double);
 
   // CompositorAnimationCurve implementation.
-  std::unique_ptr<cc::AnimationCurve> CloneToAnimationCurve() const override;
+  std::unique_ptr<gfx::AnimationCurve> CloneToAnimationCurve() const override;
 
  private:
-  std::unique_ptr<cc::KeyframedTransformAnimationCurve> curve_;
+  std::unique_ptr<gfx::KeyframedTransformAnimationCurve> curve_;
 
   DISALLOW_COPY_AND_ASSIGN(CompositorTransformAnimationCurve);
 };

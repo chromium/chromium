@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "cc/animation/timing_function.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/animation/keyframe/timing_function.h"
 
 using blink::CompositorAnimationCurve;
 using blink::CompositorColorAnimationCurve;
@@ -147,8 +147,8 @@ TEST(WebColorAnimationCurveTest, EaseTimingFunction) {
   curve->AddKeyframe(CompositorColorKeyframe(1, SkColorSetRGB(0, 100, 0),
                                              *LinearTimingFunction::Shared()));
 
-  std::unique_ptr<cc::TimingFunction> timing_function(
-      cc::CubicBezierTimingFunction::CreatePreset(
+  std::unique_ptr<gfx::TimingFunction> timing_function(
+      gfx::CubicBezierTimingFunction::CreatePreset(
           CubicBezierTimingFunction::EaseType::EASE));
   for (int i = 0; i <= 4; ++i) {
     const double time = i * 0.25;
@@ -180,8 +180,8 @@ TEST(WebColorAnimationCurveTest, EaseInTimingFunction) {
   curve->AddKeyframe(CompositorColorKeyframe(1, SkColorSetRGB(0, 100, 0),
                                              *LinearTimingFunction::Shared()));
 
-  std::unique_ptr<cc::TimingFunction> timing_function(
-      cc::CubicBezierTimingFunction::CreatePreset(
+  std::unique_ptr<gfx::TimingFunction> timing_function(
+      gfx::CubicBezierTimingFunction::CreatePreset(
           CubicBezierTimingFunction::EaseType::EASE_IN));
   for (int i = 0; i <= 4; ++i) {
     const double time = i * 0.25;
@@ -200,8 +200,8 @@ TEST(WebColorAnimationCurveTest, EaseOutTimingFunction) {
   curve->AddKeyframe(CompositorColorKeyframe(1, SkColorSetRGB(0, 100, 0),
                                              *LinearTimingFunction::Shared()));
 
-  std::unique_ptr<cc::TimingFunction> timing_function(
-      cc::CubicBezierTimingFunction::CreatePreset(
+  std::unique_ptr<gfx::TimingFunction> timing_function(
+      gfx::CubicBezierTimingFunction::CreatePreset(
           CubicBezierTimingFunction::EaseType::EASE_OUT));
   for (int i = 0; i <= 4; ++i) {
     const double time = i * 0.25;
@@ -220,8 +220,8 @@ TEST(WebColorAnimationCurveTest, EaseInOutTimingFunction) {
   curve->AddKeyframe(CompositorColorKeyframe(1, SkColorSetRGB(0, 100, 0),
                                              *LinearTimingFunction::Shared()));
 
-  std::unique_ptr<cc::TimingFunction> timing_function(
-      cc::CubicBezierTimingFunction::CreatePreset(
+  std::unique_ptr<gfx::TimingFunction> timing_function(
+      gfx::CubicBezierTimingFunction::CreatePreset(
           CubicBezierTimingFunction::EaseType::EASE_IN_OUT));
   for (int i = 0; i <= 4; ++i) {
     const double time = i * 0.25;
@@ -243,8 +243,8 @@ TEST(WebColorAnimationCurveTest, CustomBezierTimingFunction) {
   curve->AddKeyframe(CompositorColorKeyframe(1, SkColorSetRGB(0, 100, 0),
                                              *LinearTimingFunction::Shared()));
 
-  std::unique_ptr<cc::TimingFunction> timing_function(
-      cc::CubicBezierTimingFunction::Create(x1, y1, x2, y2));
+  std::unique_ptr<gfx::TimingFunction> timing_function(
+      gfx::CubicBezierTimingFunction::Create(x1, y1, x2, y2));
   for (int i = 0; i <= 4; ++i) {
     const double time = i * 0.25;
     EXPECT_EQ((unsigned)round(timing_function->GetValue(time) * 100),
@@ -262,8 +262,8 @@ TEST(WebColorAnimationCurveTest, DefaultTimingFunction) {
   curve->AddKeyframe(CompositorColorKeyframe(1, SkColorSetRGB(0, 100, 0),
                                              *LinearTimingFunction::Shared()));
 
-  std::unique_ptr<cc::TimingFunction> timing_function(
-      cc::CubicBezierTimingFunction::CreatePreset(
+  std::unique_ptr<gfx::TimingFunction> timing_function(
+      gfx::CubicBezierTimingFunction::CreatePreset(
           CubicBezierTimingFunction::EaseType::EASE));
   for (int i = 0; i <= 4; ++i) {
     const double time = i * 0.25;

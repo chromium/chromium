@@ -7,7 +7,6 @@
 
 #include <memory>
 #include "base/gtest_prod_util.h"
-#include "cc/animation/animation_curve.h"
 #include "cc/animation/scroll_offset_animations.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
@@ -16,6 +15,7 @@
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "ui/gfx/animation/keyframe/animation_curve.h"
 
 namespace blink {
 
@@ -154,7 +154,7 @@ class CORE_EXPORT ScrollAnimatorCompositorCoordinator
   void NotifyAnimationAborted(double monotonic_time, int group) override;
   void NotifyAnimationTakeover(double monotonic_time,
                                double animation_start_time,
-                               std::unique_ptr<cc::AnimationCurve>) override {}
+                               std::unique_ptr<gfx::AnimationCurve>) override {}
 
   // CompositorAnimationClient implementation.
   CompositorAnimation* GetCompositorAnimation() const override;

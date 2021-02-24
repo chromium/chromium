@@ -128,8 +128,9 @@ class UiInputManagerTest : public testing::Test {
     controller_model_.laser_direction = laser_direction;
     controller_model_.laser_origin = laser_origin;
     controller_model_.touchpad_button_state = button_state;
-    input_manager_->HandleInput(MsToTicks(1), render_info, controller_model_,
-                                &reticle_model_, &gesture_list_);
+    input_manager_->HandleInput(gfx::MsToTicks(1), render_info,
+                                controller_model_, &reticle_model_,
+                                &gesture_list_);
   }
 
   void AddGesture(InputEvent::Type type) {
@@ -267,12 +268,12 @@ TEST_F(UiInputManagerTest, ReticleRenderTarget) {
   ReticleModel reticle_model;
   InputEventList input_event_list;
 
-  input_manager_->HandleInput(MsToTicks(1), RenderInfo(), controller_model,
+  input_manager_->HandleInput(gfx::MsToTicks(1), RenderInfo(), controller_model,
                               &reticle_model, &input_event_list);
   EXPECT_EQ(0, reticle_model.target_element_id);
 
   controller_model.laser_direction = kForwardVector;
-  input_manager_->HandleInput(MsToTicks(1), RenderInfo(), controller_model,
+  input_manager_->HandleInput(gfx::MsToTicks(1), RenderInfo(), controller_model,
                               &reticle_model, &input_event_list);
   EXPECT_EQ(p_element->id(), reticle_model.target_element_id);
   EXPECT_NEAR(-1.0, reticle_model.target_point.z(), kEpsilon);
@@ -506,7 +507,7 @@ TEST_F(UiInputManagerContentTest, NoMouseMovesDuringClick) {
   controller_model.touchpad_button_state = ControllerModel::ButtonState::kDown;
   ReticleModel reticle_model;
   InputEventList input_event_list;
-  input_manager_->HandleInput(MsToTicks(1), RenderInfo(), controller_model,
+  input_manager_->HandleInput(gfx::MsToTicks(1), RenderInfo(), controller_model,
                               &reticle_model, &input_event_list);
 
   // We should have hit the content quad if our math was correct.
@@ -518,7 +519,7 @@ TEST_F(UiInputManagerContentTest, NoMouseMovesDuringClick) {
   // set the expected number of calls to zero.
   EXPECT_CALL(*content_input_delegate_, OnHoverMove(_, _)).Times(0);
 
-  input_manager_->HandleInput(MsToTicks(1), RenderInfo(), controller_model,
+  input_manager_->HandleInput(gfx::MsToTicks(1), RenderInfo(), controller_model,
                               &reticle_model, &input_event_list);
 }
 
@@ -537,7 +538,7 @@ TEST_F(UiInputManagerContentTest, AudioPermissionPromptHitTesting) {
   controller_model.touchpad_button_state = ControllerModel::ButtonState::kDown;
   ReticleModel reticle_model;
   InputEventList input_event_list;
-  input_manager_->HandleInput(MsToTicks(1), RenderInfo(), controller_model,
+  input_manager_->HandleInput(gfx::MsToTicks(1), RenderInfo(), controller_model,
                               &reticle_model, &input_event_list);
 
   // Even if the reticle is over the URL bar, the backplane should be in front
@@ -563,7 +564,7 @@ TEST_F(UiInputManagerContentTest, TreeVsZOrder) {
   controller_model.touchpad_button_state = ControllerModel::ButtonState::kDown;
   ReticleModel reticle_model;
   InputEventList input_event_list;
-  input_manager_->HandleInput(MsToTicks(1), RenderInfo(), controller_model,
+  input_manager_->HandleInput(gfx::MsToTicks(1), RenderInfo(), controller_model,
                               &reticle_model, &input_event_list);
 
   // We should have hit the content quad if our math was correct.
@@ -574,7 +575,7 @@ TEST_F(UiInputManagerContentTest, TreeVsZOrder) {
   content_quad->SetTranslate(0, 0, -1.0);
   AdvanceFrame();
 
-  input_manager_->HandleInput(MsToTicks(1), RenderInfo(), controller_model,
+  input_manager_->HandleInput(gfx::MsToTicks(1), RenderInfo(), controller_model,
                               &reticle_model, &input_event_list);
 
   // We should have hit the content quad even though, geometrically, it stacks
@@ -603,7 +604,7 @@ TEST_F(UiInputManagerContentTest, ControllerRestingInViewport) {
 
   std::vector<ControllerModel> controllers;
 
-  input_manager_->HandleInput(MsToTicks(1), render_info, controller_model,
+  input_manager_->HandleInput(gfx::MsToTicks(1), render_info, controller_model,
                               &reticle_model, &input_event_list);
   controllers.push_back(controller_model);
   ui_->OnControllersUpdated(controllers, reticle_model);
@@ -613,8 +614,9 @@ TEST_F(UiInputManagerContentTest, ControllerRestingInViewport) {
   // It must remain in the viewport for the requisite amount of time.
   EXPECT_FALSE(input_manager_->ControllerRestingInViewport());
 
-  input_manager_->HandleInput(MsToTicks(50000), render_info, controller_model,
-                              &reticle_model, &input_event_list);
+  input_manager_->HandleInput(gfx::MsToTicks(50000), render_info,
+                              controller_model, &reticle_model,
+                              &input_event_list);
   controllers[0] = controller_model;
   ui_->OnControllersUpdated(controllers, reticle_model);
   scene_->OnBeginFrame(base::TimeTicks(), head_pose_);

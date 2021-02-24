@@ -11,7 +11,7 @@
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/ranges.h"
-#include "cc/animation/timing_function.h"
+#include "ui/gfx/animation/keyframe/timing_function.h"
 #include "ui/gfx/animation/tween.h"
 
 const double kConstantDuration = 9.0;
@@ -31,6 +31,10 @@ const double kInverseDeltaSlope =
 
 const double kInverseDeltaOffset =
     kInverseDeltaMaxDuration - kInverseDeltaRampStartPx * kInverseDeltaSlope;
+
+using gfx::CubicBezierTimingFunction;
+using gfx::LinearTimingFunction;
+using gfx::TimingFunction;
 
 namespace cc {
 
@@ -324,13 +328,14 @@ const char* ScrollOffsetAnimationCurve::TypeName() const {
   return "ScrollOffset";
 }
 
-std::unique_ptr<AnimationCurve> ScrollOffsetAnimationCurve::Clone() const {
+std::unique_ptr<gfx::AnimationCurve> ScrollOffsetAnimationCurve::Clone() const {
   return CloneToScrollOffsetAnimationCurve();
 }
 
-void ScrollOffsetAnimationCurve::Tick(base::TimeDelta t,
-                                      int property_id,
-                                      KeyframeModel* keyframe_model) const {
+void ScrollOffsetAnimationCurve::Tick(
+    base::TimeDelta t,
+    int property_id,
+    gfx::KeyframeModel* keyframe_model) const {
   if (target_) {
     target_->OnScrollOffsetAnimated(GetValue(t), property_id, keyframe_model);
   }

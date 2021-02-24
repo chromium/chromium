@@ -120,7 +120,7 @@ void CompositorAnimation::NotifyAnimationTakeover(
     base::TimeTicks monotonic_time,
     int target_property,
     base::TimeTicks animation_start_time,
-    std::unique_ptr<cc::AnimationCurve> curve) {
+    std::unique_ptr<gfx::AnimationCurve> curve) {
   if (delegate_) {
     delegate_->NotifyAnimationTakeover(
         (monotonic_time - base::TimeTicks()).InSecondsF(),

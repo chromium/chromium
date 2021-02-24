@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "cc/animation/timing_function.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/animation/keyframe/timing_function.h"
 
 using blink::CompositorAnimationCurve;
 using blink::CompositorFloatAnimationCurve;
@@ -131,8 +131,8 @@ TEST(WebFloatAnimationCurveTest, EaseTimingFunction) {
   curve->AddKeyframe(
       CompositorFloatKeyframe(1, 1, *LinearTimingFunction::Shared()));
 
-  std::unique_ptr<cc::TimingFunction> timing_function(
-      cc::CubicBezierTimingFunction::CreatePreset(
+  std::unique_ptr<gfx::TimingFunction> timing_function(
+      gfx::CubicBezierTimingFunction::CreatePreset(
           CubicBezierTimingFunction::EaseType::EASE));
   for (int i = 0; i <= 4; ++i) {
     const double time = i * 0.25;
@@ -164,8 +164,8 @@ TEST(WebFloatAnimationCurveTest, EaseInTimingFunction) {
   curve->AddKeyframe(
       CompositorFloatKeyframe(1, 1, *LinearTimingFunction::Shared()));
 
-  std::unique_ptr<cc::TimingFunction> timing_function(
-      cc::CubicBezierTimingFunction::CreatePreset(
+  std::unique_ptr<gfx::TimingFunction> timing_function(
+      gfx::CubicBezierTimingFunction::CreatePreset(
           CubicBezierTimingFunction::EaseType::EASE_IN));
   for (int i = 0; i <= 4; ++i) {
     const double time = i * 0.25;
@@ -183,8 +183,8 @@ TEST(WebFloatAnimationCurveTest, EaseOutTimingFunction) {
   curve->AddKeyframe(
       CompositorFloatKeyframe(1, 1, *LinearTimingFunction::Shared()));
 
-  std::unique_ptr<cc::TimingFunction> timing_function(
-      cc::CubicBezierTimingFunction::CreatePreset(
+  std::unique_ptr<gfx::TimingFunction> timing_function(
+      gfx::CubicBezierTimingFunction::CreatePreset(
           CubicBezierTimingFunction::EaseType::EASE_OUT));
   for (int i = 0; i <= 4; ++i) {
     const double time = i * 0.25;
@@ -202,8 +202,8 @@ TEST(WebFloatAnimationCurveTest, EaseInOutTimingFunction) {
   curve->AddKeyframe(
       CompositorFloatKeyframe(1, 1, *LinearTimingFunction::Shared()));
 
-  std::unique_ptr<cc::TimingFunction> timing_function(
-      cc::CubicBezierTimingFunction::CreatePreset(
+  std::unique_ptr<gfx::TimingFunction> timing_function(
+      gfx::CubicBezierTimingFunction::CreatePreset(
           CubicBezierTimingFunction::EaseType::EASE_IN_OUT));
   for (int i = 0; i <= 4; ++i) {
     const double time = i * 0.25;
@@ -224,8 +224,8 @@ TEST(WebFloatAnimationCurveTest, CustomBezierTimingFunction) {
   curve->AddKeyframe(
       CompositorFloatKeyframe(1, 1, *LinearTimingFunction::Shared()));
 
-  std::unique_ptr<cc::TimingFunction> timing_function(
-      cc::CubicBezierTimingFunction::Create(x1, y1, x2, y2));
+  std::unique_ptr<gfx::TimingFunction> timing_function(
+      gfx::CubicBezierTimingFunction::Create(x1, y1, x2, y2));
   for (int i = 0; i <= 4; ++i) {
     const double time = i * 0.25;
     EXPECT_NEAR(timing_function->GetValue(time), curve->GetValue(time), 1e-7);
@@ -242,8 +242,8 @@ TEST(WebFloatAnimationCurveTest, DefaultTimingFunction) {
   curve->AddKeyframe(
       CompositorFloatKeyframe(1, 1, *LinearTimingFunction::Shared()));
 
-  std::unique_ptr<cc::TimingFunction> timing_function(
-      cc::CubicBezierTimingFunction::CreatePreset(
+  std::unique_ptr<gfx::TimingFunction> timing_function(
+      gfx::CubicBezierTimingFunction::CreatePreset(
           CubicBezierTimingFunction::EaseType::EASE));
   for (int i = 0; i <= 4; ++i) {
     const double time = i * 0.25;
