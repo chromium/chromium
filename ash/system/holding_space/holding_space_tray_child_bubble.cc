@@ -156,6 +156,16 @@ void HoldingSpaceTrayChildBubble::Reset() {
     section->Reset();
 }
 
+std::vector<HoldingSpaceItemView*>
+HoldingSpaceTrayChildBubble::GetHoldingSpaceItemViews() {
+  std::vector<HoldingSpaceItemView*> views;
+  for (HoldingSpaceItemViewsSection* section : sections_) {
+    auto section_views = section->GetHoldingSpaceItemViews();
+    views.insert(views.end(), section_views.begin(), section_views.end());
+  }
+  return views;
+}
+
 void HoldingSpaceTrayChildBubble::OnHoldingSpaceModelAttached(
     HoldingSpaceModel* model) {
   model_observer_.Observe(model);

@@ -810,7 +810,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, RemoveItem) {
   ASSERT_GT(download_chips.size(), 1u);
 
   // Add a download item to the selection and show the context menu.
-  Click(download_chips.front(), ui::EF_SHIFT_DOWN);
+  Click(download_chips.front(), ui::EF_CONTROL_DOWN);
   RightClick(download_chips.front());
   ASSERT_TRUE(views::MenuController::GetActiveInstance());
 
@@ -822,7 +822,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, RemoveItem) {
   ASSERT_FALSE(views::MenuController::GetActiveInstance());
 
   // Unselect the pinned item and right click show the context menu.
-  Click(pinned_file_chips.front(), ui::EF_SHIFT_DOWN);
+  Click(pinned_file_chips.front(), ui::EF_CONTROL_DOWN);
   RightClick(download_chips.front());
   ASSERT_TRUE(views::MenuController::GetActiveInstance());
 

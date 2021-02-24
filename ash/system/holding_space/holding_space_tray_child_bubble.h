@@ -21,6 +21,7 @@ class LayerAnimationObserver;
 
 namespace ash {
 
+class HoldingSpaceItemView;
 class HoldingSpaceItemViewDelegate;
 class HoldingSpaceItemViewsSection;
 
@@ -43,6 +44,10 @@ class HoldingSpaceTrayChildBubble : public views::View,
   // observing the holding space controller/model to ensure that no new items
   // are created while the bubble widget is begin asynchronously closed.
   void Reset();
+
+  // Returns all holding space item views in the child bubble. Views are
+  // returned in top-to-bottom, left-to-right order (or mirrored for RTL).
+  std::vector<HoldingSpaceItemView*> GetHoldingSpaceItemViews();
 
   // HoldingSpaceControllerObserver:
   void OnHoldingSpaceModelAttached(HoldingSpaceModel* model) override;

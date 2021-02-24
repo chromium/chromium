@@ -1947,8 +1947,8 @@ TEST_P(HoldingSpaceTrayTest, EnterKeyOpensSelectedFiles) {
   EXPECT_TRUE(item_views[1]->selected());
 
   // Press the enter key. We expect the client to open the selected items.
-  EXPECT_CALL(*client(), OpenItems(testing::ElementsAre(item_views[1]->item(),
-                                                        item_views[0]->item()),
+  EXPECT_CALL(*client(), OpenItems(testing::ElementsAre(item_views[0]->item(),
+                                                        item_views[1]->item()),
                                    testing::_));
   PressKey(item_views[1], ui::KeyboardCode::VKEY_RETURN);
   testing::Mock::VerifyAndClearExpectations(client());
@@ -2003,6 +2003,150 @@ TEST_P(HoldingSpaceTrayTest, ClickBackgroundToDeselectItems) {
   Click(download_chips[0]->parent());
   ASSERT_FALSE(item_views[0]->selected());
   ASSERT_FALSE(item_views[1]->selected());
+}
+
+// It should be possible to select multiple items in clamshell mode.
+TEST_P(HoldingSpaceTrayTest, MultiselectInClamshellMode) {
+  StartSession();
+
+  // Add a few holding space items to populate each section.
+  AddItem(HoldingSpaceItem::Type::kPinnedFile, base::FilePath("/tmp/fake1"));
+  AddItem(HoldingSpaceItem::Type::kScreenshot, base::FilePath("/tmp/fake2"));
+  AddItem(HoldingSpaceItem::Type::kScreenshot, base::FilePath("/tmp/fake3"));
+  AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake4"));
+  AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake5"));
+
+  // Show the bubble and cache holding space item views.
+  test_api()->Show();
+  std::vector<views::View*> pinned_file_chips =
+      test_api()->GetPinnedFileChips();
+  ASSERT_EQ(pinned_file_chips.size(), 1u);
+  std::vector<views::View*> screen_capture_views =
+      test_api()->GetScreenCaptureViews();
+  ASSERT_EQ(screen_capture_views.size(), 2u);
+  std::vector<views::View*> download_chips = test_api()->GetDownloadChips();
+  ASSERT_EQ(download_chips.size(), 2u);
+  std::vector<HoldingSpaceItemView*> item_views(
+      {HoldingSpaceItemView::Cast(pinned_file_chips[0]),
+       HoldingSpaceItemView::Cast(screen_capture_views[0]),
+       HoldingSpaceItemView::Cast(screen_capture_views[1]),
+       HoldingSpaceItemView::Cast(download_chips[0]),
+       HoldingSpaceItemView::Cast(download_chips[1])});
+
+  // Shift-click the middle view. It should become selected.
+  Click(item_views[2], ui::EF_SHIFT_DOWN);
+  EXPECT_FALSE(item_views[0]->selected());
+  EXPECT_FALSE(item_views[1]->selected());
+  EXPECT_TRUE(item_views[2]->selected());  // The clicked view.
+  EXPECT_FALSE(item_views[3]->selected());
+  EXPECT_FALSE(item_views[4]->selected());
+
+  // Click the middle view. It should *not* become unselected.
+  Click(item_views[2]);
+  EXPECT_FALSE(item_views[0]->selected());
+  EXPECT_FALSE(item_views[1]->selected());
+  EXPECT_TRUE(item_views[2]->selected());  // The clicked view.
+  EXPECT_FALSE(item_views[3]->selected());
+  EXPECT_FALSE(item_views[4]->selected());
+
+  // Shift-click the bottom view. We should now have selected a range.
+  Click(item_views[4], ui::EF_SHIFT_DOWN);
+  EXPECT_FALSE(item_views[0]->selected());
+  EXPECT_FALSE(item_views[1]->selected());
+  EXPECT_TRUE(item_views[2]->selected());  // The previously clicked view.
+  EXPECT_TRUE(item_views[3]->selected());
+  EXPECT_TRUE(item_views[4]->selected());  // The clicked view.
+
+  // Shift-click the top view. The previous range should be cleared and the
+  // new range selected.
+  Click(item_views[0], ui::EF_SHIFT_DOWN);
+  EXPECT_TRUE(item_views[0]->selected());  // The clicked view.
+  EXPECT_TRUE(item_views[1]->selected());
+  EXPECT_TRUE(item_views[2]->selected());  // The previously clicked view.
+  EXPECT_FALSE(item_views[3]->selected());
+  EXPECT_FALSE(item_views[4]->selected());
+
+  // Control-click the bottom view. The previous range should still be selected
+  // as well as the view that was just clicked.
+  Click(item_views[4], ui::EF_CONTROL_DOWN);
+  EXPECT_TRUE(item_views[0]->selected());
+  EXPECT_TRUE(item_views[1]->selected());
+  EXPECT_TRUE(item_views[2]->selected());
+  EXPECT_FALSE(item_views[3]->selected());
+  EXPECT_TRUE(item_views[4]->selected());  // The clicked view.
+
+  // Shift-click the second-from-the-bottom view. A new range should be selected
+  // from the bottom view to the view that was just clicked. The previous range
+  // that was selected should still be selected.
+  Click(item_views[3], ui::EF_SHIFT_DOWN);
+  EXPECT_TRUE(item_views[0]->selected());
+  EXPECT_TRUE(item_views[1]->selected());
+  EXPECT_TRUE(item_views[2]->selected());
+  EXPECT_TRUE(item_views[3]->selected());  // The clicked view.
+  EXPECT_TRUE(item_views[4]->selected());  // The previously clicked view.
+
+  // Control-click the second-from-the-top view. The view that was just clicked
+  // should now be unselected. No other views that were selected should change.
+  Click(item_views[1], ui::EF_CONTROL_DOWN);
+  EXPECT_TRUE(item_views[0]->selected());
+  EXPECT_FALSE(item_views[1]->selected());  // The clicked view.
+  EXPECT_TRUE(item_views[2]->selected());
+  EXPECT_TRUE(item_views[3]->selected());
+  EXPECT_TRUE(item_views[4]->selected());
+
+  // Add another holding space item. This should cause views for existing
+  // holding space items to be destroyed and recreated.
+  AddItem(HoldingSpaceItem::Type::kScreenshot, base::FilePath("/tmp/fake6"));
+  pinned_file_chips = test_api()->GetPinnedFileChips();
+  ASSERT_EQ(pinned_file_chips.size(), 1u);
+  screen_capture_views = test_api()->GetScreenCaptureViews();
+  ASSERT_EQ(screen_capture_views.size(), 3u);
+  download_chips = test_api()->GetDownloadChips();
+  ASSERT_EQ(download_chips.size(), 2u);
+  item_views = {HoldingSpaceItemView::Cast(pinned_file_chips[0]),
+                HoldingSpaceItemView::Cast(screen_capture_views[0]),
+                HoldingSpaceItemView::Cast(screen_capture_views[1]),
+                HoldingSpaceItemView::Cast(screen_capture_views[2]),
+                HoldingSpaceItemView::Cast(download_chips[0]),
+                HoldingSpaceItemView::Cast(download_chips[1])};
+
+  // Views for items previously selected should have selection restored.
+  EXPECT_TRUE(item_views[0]->selected());
+  EXPECT_FALSE(item_views[1]->selected());  // The view for the new item.
+  EXPECT_FALSE(item_views[2]->selected());  // The previously clicked view.
+  EXPECT_TRUE(item_views[3]->selected());
+  EXPECT_TRUE(item_views[4]->selected());
+  EXPECT_TRUE(item_views[5]->selected());
+
+  // Shift-click the second-from-the-bottom view. A new range should be selected
+  // from the previously clicked view to the view that was just clicked.
+  Click(item_views[4], ui::EF_SHIFT_DOWN);
+  EXPECT_TRUE(item_views[0]->selected());
+  EXPECT_FALSE(item_views[1]->selected());
+  EXPECT_TRUE(item_views[2]->selected());  // The previously clicked view.
+  EXPECT_TRUE(item_views[3]->selected());
+  EXPECT_TRUE(item_views[4]->selected());  // The clicked view.
+  EXPECT_TRUE(item_views[5]->selected());
+
+  // Click the third-from-the-bottom view. Even though it was already selected
+  // it should now be the only view selected.
+  Click(item_views[3]);
+  EXPECT_FALSE(item_views[0]->selected());
+  EXPECT_FALSE(item_views[1]->selected());
+  EXPECT_FALSE(item_views[2]->selected());
+  EXPECT_TRUE(item_views[3]->selected());  // The clicked view.
+  EXPECT_FALSE(item_views[4]->selected());
+  EXPECT_FALSE(item_views[5]->selected());
+
+  // Control-click the third-from-the-bottom view. There should no longer be
+  // any views selected.
+  Click(item_views[3], ui::EF_CONTROL_DOWN);
+  EXPECT_FALSE(item_views[0]->selected());
+  EXPECT_FALSE(item_views[1]->selected());
+  EXPECT_FALSE(item_views[2]->selected());
+  EXPECT_FALSE(item_views[3]->selected());  // The clicked view.
+  EXPECT_FALSE(item_views[4]->selected());
+  EXPECT_FALSE(item_views[5]->selected());
 }
 
 // It should be possible to select multiple items in touch mode.
@@ -2061,11 +2205,8 @@ TEST_P(HoldingSpaceTrayTest, MultiselectInTouchMode) {
           testing::Invoke([&](const std::vector<const HoldingSpaceItem*>& items,
                               HoldingSpaceClient::SuccessCallback callback) {
             ASSERT_EQ(items.size(), 2u);
-            // NOTE: Since `item_views` are indexed in reverse chronological
-            // order of their creation, it is expected that the order of their
-            // respective `items` be reversed when selected.
-            EXPECT_EQ(item_views[0]->item(), items[1]);
-            EXPECT_EQ(item_views[1]->item(), items[0]);
+            EXPECT_EQ(item_views[0]->item(), items[0]);
+            EXPECT_EQ(item_views[1]->item(), items[1]);
           }));
   GestureTap(item_views[0]);
   testing::Mock::VerifyAndClearExpectations(client());

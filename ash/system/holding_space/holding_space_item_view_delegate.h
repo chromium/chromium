@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "base/optional.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/context_menu_controller.h"
@@ -30,6 +31,7 @@ class MenuRunner;
 namespace ash {
 
 class HoldingSpaceItemView;
+class HoldingSpaceTrayBubble;
 
 // A delegate for `HoldingSpaceItemView`s which implements context menu,
 // drag-and-drop, and selection functionality. In order to support multiple
@@ -53,9 +55,11 @@ class ASH_EXPORT HoldingSpaceItemViewDelegate
    private:
     HoldingSpaceItemViewDelegate* const delegate_;
     std::vector<std::string> selected_item_ids_;
+    base::Optional<std::string> selected_range_start_item_id_;
+    base::Optional<std::string> selected_range_end_item_id_;
   };
 
-  HoldingSpaceItemViewDelegate();
+  explicit HoldingSpaceItemViewDelegate(HoldingSpaceTrayBubble* bubble);
   HoldingSpaceItemViewDelegate(const HoldingSpaceItemViewDelegate&) = delete;
   HoldingSpaceItemViewDelegate& operator=(const HoldingSpaceItemViewDelegate&) =
       delete;
@@ -120,31 +124,42 @@ class ASH_EXPORT HoldingSpaceItemViewDelegate
   // Builds and returns a raw pointer to `context_menu_model_`.
   ui::SimpleMenuModel* BuildMenuModel();
 
-  // TODO(crbug.com/1177451): Stabilize ordering.
-  // Returns the subset of `views_` which are currently selected. Note that
-  // ordering of the selection may be unstable as it is based on the creation
-  // order of holding space item views which are destroyed/re-created during
-  // section animations.
+  // Returns the subset of views which are currently selected. Views are
+  // returned in top-to-bottom, left-to-right order (or mirrored for RTL).
   std::vector<const HoldingSpaceItemView*> GetSelection();
 
-  // Marks `view` as selected. All other `views_` are marked unselected.
-  void SetSelection(views::View* view);
+  // Marks all views as unselected.
+  void ClearSelection();
 
-  // Marks any `views_` whose associated holding space items are contained in
-  // `item_ids` as selected. All other `views_` are marked unselected.
+  // Marks `view` as selected. All other views are marked unselected.
+  void SetSelection(HoldingSpaceItemView* view);
+
+  // Marks any views whose associated holding space items are contained in
+  // `item_ids` as selected. All other views are marked unselected.
   void SetSelection(const std::vector<std::string>& item_ids);
+
+  // Marks any views between the specified `start` and `end` points (inclusive)
+  // as selected. Any views in a previously selected range, as tracked by
+  // `selected_range_start_` and `selected_range_end_`, will be marked as
+  // unselected. Any views outside of these ranges will not be affected.
+  void SetSelectedRange(HoldingSpaceItemView* start, HoldingSpaceItemView* end);
+
+  HoldingSpaceTrayBubble* const bubble_;
 
   std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
-
-  std::vector<HoldingSpaceItemView*> views_;
 
   // Caches a view for which mouse released events should be temporarily
   // ignored. This is to prevent us from selecting a view on mouse pressed but
   // then unselecting that same view on mouse released.
   HoldingSpaceItemView* ignore_mouse_released_ = nullptr;
 
-  // We observe `views_` for their lifetime so we can track selected state.
+  // Caches views from which range-based selections should start and end. This
+  // is used when determining the range for selection performed via shift-click.
+  HoldingSpaceItemView* selected_range_start_ = nullptr;
+  HoldingSpaceItemView* selected_range_end_ = nullptr;
+
+  // We observe views for their lifetime so we can track selected state.
   base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
       view_observations_{this};
 };

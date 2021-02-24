@@ -39,6 +39,10 @@ class ASH_EXPORT HoldingSpaceTrayBubble : public ScreenLayoutObserver,
   TrayBubbleView* GetBubbleView();
   views::Widget* GetBubbleWidget();
 
+  // Returns all holding space item views in the bubble. Views are returned in
+  // top-to-bottom, left-to-right order (or mirrored for RTL).
+  std::vector<HoldingSpaceItemView*> GetHoldingSpaceItemViews();
+
  private:
   class ChildBubbleContainer;
 
@@ -62,7 +66,7 @@ class ASH_EXPORT HoldingSpaceTrayBubble : public ScreenLayoutObserver,
 
   // The singleton delegate for `HoldingSpaceItemView`s that implements support
   // for context menu, drag-and-drop, and multiple selection.
-  HoldingSpaceItemViewDelegate delegate_;
+  HoldingSpaceItemViewDelegate delegate_{this};
 
   // Views owned by view hierarchy.
   ChildBubbleContainer* child_bubble_container_;

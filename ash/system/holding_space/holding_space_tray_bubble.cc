@@ -388,6 +388,17 @@ views::Widget* HoldingSpaceTrayBubble::GetBubbleWidget() {
   return bubble_wrapper_->GetBubbleWidget();
 }
 
+std::vector<HoldingSpaceItemView*>
+HoldingSpaceTrayBubble::GetHoldingSpaceItemViews() {
+  std::vector<HoldingSpaceItemView*> views;
+  for (HoldingSpaceTrayChildBubble* child_bubble : child_bubbles_) {
+    auto child_bubble_views = child_bubble->GetHoldingSpaceItemViews();
+    views.insert(views.end(), child_bubble_views.begin(),
+                 child_bubble_views.end());
+  }
+  return views;
+}
+
 int HoldingSpaceTrayBubble::CalculateMaxHeight() const {
   const WorkAreaInsets* work_area = WorkAreaInsets::ForWindow(
       holding_space_tray_->shelf()->GetWindow()->GetRootWindow());

@@ -14,6 +14,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/holding_space/holding_space_drag_util.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
+#include "ash/system/holding_space/holding_space_tray_bubble.h"
 #include "base/bind.h"
 #include "net/base/mime_util.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -47,6 +48,34 @@ std::vector<const HoldingSpaceItem*> GetItems(
   return items;
 }
 
+// Returns the subset of `views` in the range of `start` and `end` (inclusive).
+std::vector<HoldingSpaceItemView*> GetViewsInRange(
+    const std::vector<HoldingSpaceItemView*>& views,
+    HoldingSpaceItemView* start,
+    HoldingSpaceItemView* end) {
+  if (!start || !end)
+    return {};
+
+  bool found_start = false;
+  bool found_end = false;
+
+  std::vector<HoldingSpaceItemView*> range;
+  for (HoldingSpaceItemView* view : views) {
+    if (view == start)
+      found_start = true;
+    if (view == end)
+      found_end = true;
+    if (found_start || found_end)
+      range.push_back(view);
+    if (found_start && found_end)
+      break;
+  }
+
+  DCHECK(found_start);
+  DCHECK(found_end);
+  return range;
+}
+
 // Attempts to open the holding space items associated with the given `views`.
 void OpenItems(const std::vector<const HoldingSpaceItemView*>& views) {
   DCHECK_GE(views.size(), 1u);
@@ -61,18 +90,55 @@ void OpenItems(const std::vector<const HoldingSpaceItemView*>& views) {
 HoldingSpaceItemViewDelegate::ScopedSelectionRestore::ScopedSelectionRestore(
     HoldingSpaceItemViewDelegate* delegate)
     : delegate_(delegate) {
+  // Save selection.
   for (const HoldingSpaceItemView* view : delegate_->GetSelection())
     selected_item_ids_.push_back(view->item_id());
+
+  // Save `selected_range_start_`.
+  if (delegate_->selected_range_start_)
+    selected_range_start_item_id_ = delegate_->selected_range_start_->item_id();
+
+  // Save `selected_range_end_`.
+  if (delegate_->selected_range_end_)
+    selected_range_end_item_id_ = delegate_->selected_range_end_->item_id();
 }
 
 HoldingSpaceItemViewDelegate::ScopedSelectionRestore::
     ~ScopedSelectionRestore() {
+  // Restore selection.
   delegate_->SetSelection(selected_item_ids_);
+
+  if (!selected_range_start_item_id_ || !selected_range_end_item_id_)
+    return;
+
+  HoldingSpaceItemView* selected_range_start = nullptr;
+  HoldingSpaceItemView* selected_range_end = nullptr;
+
+  for (HoldingSpaceItemView* view :
+       delegate_->bubble_->GetHoldingSpaceItemViews()) {
+    // Cache `selected_range_start`.
+    if (selected_range_start_item_id_ == view->item_id())
+      selected_range_start = view;
+
+    // Cache `selected_range_end`.
+    if (selected_range_end_item_id_ == view->item_id())
+      selected_range_end = view;
+
+    // Restore `selected_range_start_` and `selected_range_end_` iff both are
+    // still in existence during the restoration process.
+    if (selected_range_start && selected_range_end) {
+      delegate_->selected_range_start_ = selected_range_start;
+      delegate_->selected_range_end_ = selected_range_end;
+      break;
+    }
+  }
 }
 
 // HoldingSpaceItemViewDelegate ------------------------------------------------
 
-HoldingSpaceItemViewDelegate::HoldingSpaceItemViewDelegate() {
+HoldingSpaceItemViewDelegate::HoldingSpaceItemViewDelegate(
+    HoldingSpaceTrayBubble* bubble)
+    : bubble_(bubble) {
   DCHECK_EQ(nullptr, instance);
   instance = this;
 }
@@ -85,7 +151,6 @@ HoldingSpaceItemViewDelegate::~HoldingSpaceItemViewDelegate() {
 void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewCreated(
     HoldingSpaceItemView* view) {
   view_observations_.AddObservation(view);
-  views_.push_back(view);
 }
 
 bool HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewAccessibleAction(
@@ -115,6 +180,13 @@ bool HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewAccessibleAction(
 void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewGestureEvent(
     HoldingSpaceItemView* view,
     const ui::GestureEvent& event) {
+  // The user may alternate between using mouse and touch inputs. Treat gesture
+  // events as mouse events when tracking range-based selection so that if
+  // the user switches back to using mouse input, selection state will be
+  // determined based on this most recent interaction with `view`.
+  selected_range_start_ = view;
+  selected_range_end_ = view;
+
   // When a long press or two finger tap gesture occurs we are going to show the
   // context menu. Ensure that the pressed `view` is part of the selection.
   if (event.type() == ui::ET_GESTURE_LONG_PRESS ||
@@ -162,27 +234,43 @@ bool HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewMousePressed(
   // clear any view that we had cached to ignore mouse released events for.
   ignore_mouse_released_ = nullptr;
 
+  // If SHIFT is *not* pressed, set `view` as the starting point for range-based
+  // selection so that the next time the user shift-clicks, selection state
+  // will be updated in the range of `view` and the view being shift-clicked.
+  // Note that `view` is also set as the starting point if previously unset.
+  if (!event.IsShiftDown() || !selected_range_start_)
+    selected_range_start_ = view;
+
+  // When a `view` is pressed it becomes the new end for range-based selection.
+  // Note that this is performed in a scoped closure runner in order to give
+  // `SetSelectedRange()` a chance to run and clean up any previous range-based
+  // selection.
+  base::ScopedClosureRunner set_selected_range_end(base::BindOnce(
+      [](HoldingSpaceItemView** selected_range_end,
+         HoldingSpaceItemView* view) { *selected_range_end = view; },
+      &selected_range_end_, view));
+
+  // If the SHIFT key is down, the user is attempting a range-based selection.
+  // Remove from the selection the previously selected range and instead add
+  // the newly selected range to the selection. Note that the next mouse
+  // released event on `view` is ignored so that `view` isn't accidentally
+  // unselected right after having selected it.
+  if (event.IsShiftDown()) {
+    ignore_mouse_released_ = view;
+    SetSelectedRange(selected_range_start_, /*end=*/view);
+    return true;
+  }
+
   // If the `view` is already selected, mouse press is a no-op. Actions taken on
   // selected views are performed on mouse released in order to give drag/drop
   // a chance to take effect (assuming that drag thresholds are met).
   if (view->selected())
     return true;
 
-  // If the right mouse button is pressed, we're going to be showing the context
-  // menu. Make sure that `view` is part of the current selection. If the SHIFT
-  // key is not down, it should be the entire selection.
-  if (event.IsRightMouseButton()) {
-    if (event.IsShiftDown())
-      view->SetSelected(true);
-    else
-      SetSelection(view);
-    return true;
-  }
-
-  // If the SHIFT key is down, we need to add `view` to the current selection.
+  // If the CTRL key is down, we need to add `view` to the current selection.
   // We're going to need to ignore the next mouse released event on `view` so
   // that we don't unselect `view` accidentally right after having selected it.
-  if (event.IsShiftDown()) {
+  if (event.IsControlDown()) {
     ignore_mouse_released_ = view;
     view->SetSelected(true);
     return true;
@@ -197,17 +285,14 @@ bool HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewMousePressed(
 void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewMouseReleased(
     HoldingSpaceItemView* view,
     const ui::MouseEvent& event) {
-  // We should always clear `ignore_mouse_released_` after this method runs
-  // since that property should affect at most one press/release sequence.
-  base::ScopedClosureRunner clear_ignore_mouse_released(base::BindOnce(
-      [](HoldingSpaceItemView** ignore_mouse_released) {
-        *ignore_mouse_released = nullptr;
-      },
-      &ignore_mouse_released_));
+  // We should always clear `ignore_mouse_released_` since that property should
+  // affect at most one press/release sequence.
+  views::View* const old_ignore_mouse_released = ignore_mouse_released_;
+  ignore_mouse_released_ = nullptr;
 
   // We might be ignoring mouse released events for `view` if it was just
   // selected on mouse pressed. In this case, no-op here.
-  if (ignore_mouse_released_ == view)
+  if (old_ignore_mouse_released == view)
     return;
 
   // If the right mouse button is released we're showing the context menu. In
@@ -215,18 +300,24 @@ void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewMouseReleased(
   if (event.IsRightMouseButton())
     return;
 
-  // If the SHIFT key is down, mouse release should toggle the selected state of
-  // `view`. If `view` is the only selected view, this is a no-op.
-  if (event.IsShiftDown()) {
-    if (GetSelection().size() > 1u)
-      view->SetSelected(!view->selected());
+  // If the CTRL key is down, mouse release should toggle the selected state of
+  // `view`. It's possible that the current selection be empty after doing so.
+  if (event.IsControlDown()) {
+    view->SetSelected(!view->selected());
     return;
   }
 
   // If this mouse released `event` is part of a double click, we should open
   // the items associated with the current selection.
-  if (event.flags() & ui::EF_IS_DOUBLE_CLICK)
+  if (event.flags() & ui::EF_IS_DOUBLE_CLICK) {
     OpenItems(GetSelection());
+    return;
+  }
+
+  // This mouse released `event` is not part of a double click, nor were there
+  // any modifiers which resulted in special handling. In this case, the `view`
+  // under the mouse should become the only selected view.
+  SetSelection(view);
 }
 
 bool HoldingSpaceItemViewDelegate::OnHoldingSpaceTrayBubbleKeyPressed(
@@ -244,12 +335,12 @@ bool HoldingSpaceItemViewDelegate::OnHoldingSpaceTrayBubbleKeyPressed(
 void HoldingSpaceItemViewDelegate::OnHoldingSpaceTrayChildBubbleGestureEvent(
     const ui::GestureEvent& event) {
   if (event.type() == ui::ET_GESTURE_TAP)
-    SetSelection({});
+    ClearSelection();
 }
 
 void HoldingSpaceItemViewDelegate::OnHoldingSpaceTrayChildBubbleMousePressed(
     const ui::MouseEvent& event) {
-  SetSelection({});
+  ClearSelection();
 }
 
 void HoldingSpaceItemViewDelegate::ShowContextMenuForViewImpl(
@@ -327,8 +418,14 @@ void HoldingSpaceItemViewDelegate::WriteDragDataForView(
 }
 
 void HoldingSpaceItemViewDelegate::OnViewIsDeleting(views::View* view) {
-  base::Erase(views_, view);
   view_observations_.RemoveObservation(view);
+
+  // If either endpoint of the selected range is destroyed, clear the cache so
+  // that the next range-based selection attempt will start from scratch.
+  if (selected_range_start_ == view || selected_range_end_ == view) {
+    selected_range_start_ = nullptr;
+    selected_range_end_ = nullptr;
+  }
 }
 
 void HoldingSpaceItemViewDelegate::ExecuteCommand(int command_id,
@@ -454,22 +551,58 @@ ui::SimpleMenuModel* HoldingSpaceItemViewDelegate::BuildMenuModel() {
 std::vector<const HoldingSpaceItemView*>
 HoldingSpaceItemViewDelegate::GetSelection() {
   std::vector<const HoldingSpaceItemView*> selection;
-  for (const HoldingSpaceItemView* view : views_) {
+  for (const HoldingSpaceItemView* view : bubble_->GetHoldingSpaceItemViews()) {
     if (view->selected())
       selection.push_back(view);
   }
   return selection;
 }
 
-void HoldingSpaceItemViewDelegate::SetSelection(views::View* selection) {
-  for (HoldingSpaceItemView* view : views_)
-    view->SetSelected(view == selection);
+void HoldingSpaceItemViewDelegate::ClearSelection() {
+  SetSelection(std::vector<std::string>());
+}
+
+void HoldingSpaceItemViewDelegate::SetSelection(
+    HoldingSpaceItemView* selection) {
+  SetSelection({selection->item_id()});
 }
 
 void HoldingSpaceItemViewDelegate::SetSelection(
     const std::vector<std::string>& item_ids) {
-  for (HoldingSpaceItemView* view : views_)
+  std::vector<HoldingSpaceItemView*> selection;
+
+  for (HoldingSpaceItemView* view : bubble_->GetHoldingSpaceItemViews()) {
     view->SetSelected(base::Contains(item_ids, view->item_id()));
+    if (view->selected())
+      selection.push_back(view);
+  }
+
+  if (selection.size() == 1u) {
+    selected_range_start_ = selection.front();
+    selected_range_end_ = selection.front();
+  } else {
+    selected_range_start_ = nullptr;
+    selected_range_end_ = nullptr;
+  }
+}
+
+void HoldingSpaceItemViewDelegate::SetSelectedRange(HoldingSpaceItemView* start,
+                                                    HoldingSpaceItemView* end) {
+  const std::vector<HoldingSpaceItemView*> views =
+      bubble_->GetHoldingSpaceItemViews();
+
+  for (HoldingSpaceItemView* view :
+       GetViewsInRange(views, selected_range_start_, selected_range_end_)) {
+    view->SetSelected(false);
+  }
+
+  selected_range_start_ = start;
+  selected_range_end_ = end;
+
+  for (HoldingSpaceItemView* view :
+       GetViewsInRange(views, selected_range_start_, selected_range_end_)) {
+    view->SetSelected(true);
+  }
 }
 
 }  // namespace ash

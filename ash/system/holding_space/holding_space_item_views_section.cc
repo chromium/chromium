@@ -198,6 +198,16 @@ void HoldingSpaceItemViewsSection::Reset() {
   weak_factory_.InvalidateWeakPtrs();
 }
 
+std::vector<HoldingSpaceItemView*>
+HoldingSpaceItemViewsSection::GetHoldingSpaceItemViews() {
+  std::vector<HoldingSpaceItemView*> views;
+  for (views::View* view : container_->children()) {
+    DCHECK(HoldingSpaceItemView::IsInstance(view));
+    views.push_back(HoldingSpaceItemView::Cast(view));
+  }
+  return views;
+}
+
 void HoldingSpaceItemViewsSection::ChildPreferredSizeChanged(
     views::View* child) {
   PreferredSizeChanged();
