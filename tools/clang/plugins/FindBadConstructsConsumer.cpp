@@ -687,20 +687,23 @@ void FindBadConstructsConsumer::CountType(const Type* type,
     case Type::TemplateSpecialization: {
       TemplateName name =
           dyn_cast<TemplateSpecializationType>(type)->getTemplateName();
-      bool whitelisted_template = false;
 
       // HACK: I'm at a loss about how to get the syntax checker to get
       // whether a template is externed or not. For the first pass here,
       // just do simple string comparisons.
       if (TemplateDecl* decl = name.getAsTemplateDecl()) {
-        std::string base_name = decl->getNameAsString();
-        if (base_name == "basic_string")
-          whitelisted_template = true;
+        std::string base_name = decl->getQualifiedNameAsString();
+        if (base_name == "std::basic_string") {
+          (*non_trivial_member)++;
+          break;
+        }
+        if (options_.checked_ptr_as_trivial_member &&
+            base_name == "base::CheckedPtr") {
+          (*trivial_member)++;
+          break;
+        }
       }
 
-      if (whitelisted_template)
-        (*non_trivial_member)++;
-      else
         (*templated_non_trivial_member)++;
       break;
     }

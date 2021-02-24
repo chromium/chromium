@@ -5,6 +5,9 @@
 #ifndef MISSING_CTOR_H_
 #define MISSING_CTOR_H_
 
+#include <string>
+#include "base/memory/checked_ptr.h"
+
 struct MyString {
   MyString();
   ~MyString();
@@ -89,6 +92,82 @@ union UnionDoesNotWarn {
  int x;
  int y;
  int z;
+};
+
+class StringDoesNotWarn {
+ public:
+  StringDoesNotWarn() = default;
+  ~StringDoesNotWarn() = default;
+
+ private:
+  std::string foo_;
+};
+
+class ThreeStringsDoesNotWarn {
+ public:
+  ThreeStringsDoesNotWarn() = default;
+  ~ThreeStringsDoesNotWarn() = default;
+
+ private:
+  std::string one_;
+  std::string two_;
+  std::string three_;
+};
+
+class FourStringsWarns {
+ public:
+  FourStringsWarns() = default;
+  ~FourStringsWarns() = default;
+
+ private:
+  std::string one_;
+  std::string two_;
+  std::string three_;
+  std::string four_;
+};
+
+class CheckedPtrDoesNotWarn {
+ public:
+  CheckedPtrDoesNotWarn() = default;
+  ~CheckedPtrDoesNotWarn() = default;
+
+ private:
+  CheckedPtr<CheckedPtrDoesNotWarn> foo_;
+};
+
+class NineCheckedPtrDoesNotWarn {
+ public:
+  NineCheckedPtrDoesNotWarn() = default;
+  ~NineCheckedPtrDoesNotWarn() = default;
+
+ private:
+  CheckedPtr<NineCheckedPtrDoesNotWarn> one_;
+  CheckedPtr<NineCheckedPtrDoesNotWarn> two_;
+  CheckedPtr<NineCheckedPtrDoesNotWarn> three_;
+  CheckedPtr<NineCheckedPtrDoesNotWarn> four_;
+  CheckedPtr<NineCheckedPtrDoesNotWarn> five_;
+  CheckedPtr<NineCheckedPtrDoesNotWarn> six_;
+  CheckedPtr<NineCheckedPtrDoesNotWarn> seven_;
+  CheckedPtr<NineCheckedPtrDoesNotWarn> eight_;
+  CheckedPtr<NineCheckedPtrDoesNotWarn> nine_;
+};
+
+class TenCheckedPtrWarns {
+ public:
+  TenCheckedPtrWarns() = default;
+  ~TenCheckedPtrWarns() = default;
+
+ private:
+  CheckedPtr<TenCheckedPtrWarns> one_;
+  CheckedPtr<TenCheckedPtrWarns> two_;
+  CheckedPtr<TenCheckedPtrWarns> three_;
+  CheckedPtr<TenCheckedPtrWarns> four_;
+  CheckedPtr<TenCheckedPtrWarns> five_;
+  CheckedPtr<TenCheckedPtrWarns> six_;
+  CheckedPtr<TenCheckedPtrWarns> seven_;
+  CheckedPtr<TenCheckedPtrWarns> eight_;
+  CheckedPtr<TenCheckedPtrWarns> nine_;
+  CheckedPtr<TenCheckedPtrWarns> ten_;
 };
 
 #endif  // MISSING_CTOR_H_
