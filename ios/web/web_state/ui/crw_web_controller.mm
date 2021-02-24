@@ -2049,9 +2049,8 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 
 - (id<CRWResponderInputView>)responderInputView {
   web::WebState* webState = self.webStateImpl;
-  web::WebStateDelegate* webStateDelegate = webState->GetDelegate();
-  if (webStateDelegate) {
-    return webStateDelegate->GetResponderInputView(webState);
+  if (webState && webState->GetDelegate()) {
+    return webState->GetDelegate()->GetResponderInputView(webState);
   }
   return nil;
 }
