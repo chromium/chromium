@@ -86,29 +86,47 @@ base::Optional<base::FilePath> GetPath(const std::string& friendly_name) {
   return FixUpPortName(com_port);
 }
 
-// Searches for the display name in the device's friendly name, assigns its
-// value to display_name, and returns whether the operation was successful.
-bool GetDisplayName(const std::string friendly_name,
-                    std::string* display_name) {
-  return RE2::PartialMatch(friendly_name, R"((.*) \(COM[0-9]+\))",
-                           display_name);
+// Searches for the display name in the device's friendly name. Returns nullopt
+// if the name does not match the expected pattern.
+base::Optional<std::string> GetDisplayName(const std::string& friendly_name) {
+  std::string display_name;
+  if (!RE2::PartialMatch(friendly_name, R"((.*) \(COM[0-9]+\))",
+                         &display_name)) {
+    return base::nullopt;
+  }
+  return display_name;
 }
 
-// Searches for the vendor ID in the device's instance ID, assigns its value to
-// vendor_id, and returns whether the operation was successful.
-bool GetVendorID(const std::string& instance_id, uint32_t* vendor_id) {
+// Searches for the vendor ID in the device's instance ID. Returns nullopt if
+// the instance ID does not match the expected pattern.
+base::Optional<uint32_t> GetVendorID(const std::string& instance_id) {
   std::string vendor_id_str;
-  return RE2::PartialMatch(instance_id, "VID_([0-9a-fA-F]+)", &vendor_id_str) &&
-         base::HexStringToUInt(vendor_id_str, vendor_id);
+  if (!RE2::PartialMatch(instance_id, "VID_([0-9a-fA-F]+)", &vendor_id_str)) {
+    return base::nullopt;
+  }
+
+  uint32_t vendor_id;
+  if (!base::HexStringToUInt(vendor_id_str, &vendor_id)) {
+    return base::nullopt;
+  }
+
+  return vendor_id;
 }
 
-// Searches for the product ID in the device's instance ID, assigns its value to
-// product_id, and returns whether the operation was successful.
-bool GetProductID(const std::string& instance_id, uint32_t* product_id) {
+// Searches for the product ID in the device's instance ID. Returns nullopt if
+// the instance ID does not match the expected pattern.
+base::Optional<uint32_t> GetProductID(const std::string& instance_id) {
   std::string product_id_str;
-  return RE2::PartialMatch(instance_id, "PID_([0-9a-fA-F]+)",
-                           &product_id_str) &&
-         base::HexStringToUInt(product_id_str, product_id);
+  if (!RE2::PartialMatch(instance_id, "PID_([0-9a-fA-F]+)", &product_id_str)) {
+    return base::nullopt;
+  }
+
+  uint32_t product_id;
+  if (!base::HexStringToUInt(product_id_str, &product_id)) {
+    return base::nullopt;
+  }
+
+  return product_id;
 }
 
 }  // namespace
@@ -283,9 +301,8 @@ void SerialDeviceEnumeratorWin::EnumeratePort(HDEVINFO dev_info,
 
   // Some versions of Windows pad this string with a variable number of NUL
   // bytes for no discernible reason.
-  instance_id = base::TrimString(*instance_id, base::StringPiece("\0", 1),
-                                 base::TRIM_TRAILING)
-                    .as_string();
+  instance_id = std::string(base::TrimString(
+      *instance_id, base::StringPiece("\0", 1), base::TRIM_TRAILING));
 
   base::UnguessableToken token = base::UnguessableToken::Create();
   auto info = mojom::SerialPortInfo::New();
@@ -293,23 +310,37 @@ void SerialDeviceEnumeratorWin::EnumeratePort(HDEVINFO dev_info,
   info->path = *path;
   info->device_instance_id = *instance_id;
 
-  // TODO(https://crbug.com/1015074): Read the real USB strings here.
-  std::string display_name;
-  if (GetDisplayName(*friendly_name, &display_name))
-    info->display_name = std::move(display_name);
+  // TODO(https://crbug.com/1015074): While the "bus reported device
+  // description" is usually the USB product string this is still up to the
+  // individual serial driver and could be equal to the "friendly name". It
+  // would be more reliable to read the real USB strings here.
+  info->display_name = GetProperty(dev_info, dev_info_data,
+                                   DEVPKEY_Device_BusReportedDeviceDesc);
+  if (info->display_name) {
+    // This string is also sometimes padded with a variable number of NUL bytes
+    // for no discernible reason.
+    info->display_name = std::string(base::TrimString(
+        *info->display_name, base::StringPiece("\0", 1), base::TRIM_TRAILING));
+  } else {
+    // Fall back to the "friendly name" if no "bus reported device description"
+    // is available. This name will likely be the same for all devices using the
+    // same driver.
+    info->display_name = GetDisplayName(*friendly_name);
+  }
 
   // The instance ID looks like "FTDIBUS\VID_0403+PID_6001+A703X87GA\0000".
-  uint32_t vendor_id, product_id;
+  base::Optional<uint32_t> vendor_id = GetVendorID(*instance_id);
+  base::Optional<uint32_t> product_id = GetProductID(*instance_id);
   base::Optional<std::string> vendor_id_str, product_id_str;
-  if (GetVendorID(*instance_id, &vendor_id)) {
+  if (vendor_id) {
     info->has_vendor_id = true;
-    info->vendor_id = vendor_id;
-    vendor_id_str = base::StringPrintf("%04X", vendor_id);
+    info->vendor_id = *vendor_id;
+    vendor_id_str = base::StringPrintf("%04X", *vendor_id);
   }
-  if (GetProductID(*instance_id, &product_id)) {
+  if (product_id) {
     info->has_product_id = true;
-    info->product_id = product_id;
-    product_id_str = base::StringPrintf("%04X", product_id);
+    info->product_id = *product_id;
+    product_id_str = base::StringPrintf("%04X", *product_id);
   }
 
   SERIAL_LOG(EVENT) << "Serial device added: path=" << info->path
