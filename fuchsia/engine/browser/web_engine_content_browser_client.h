@@ -74,6 +74,7 @@ class WebEngineContentBrowserClient : public content::ContentBrowserClient {
       network::mojom::NetworkContextParams* network_context_params,
       network::mojom::CertVerifierCreationParams* cert_verifier_creation_params)
       final;
+  std::vector<url::Origin> GetOriginsRequiringDedicatedProcess() final;
 
  private:
   fidl::InterfaceRequest<fuchsia::web::Context> request_;
