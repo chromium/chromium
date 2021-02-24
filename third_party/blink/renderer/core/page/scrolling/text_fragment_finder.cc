@@ -12,7 +12,9 @@
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/finder/async_find_buffer.h"
+#include "third_party/blink/renderer/core/editing/finder/find_buffer.h"
 #include "third_party/blink/renderer/core/editing/finder/find_options.h"
+#include "third_party/blink/renderer/core/editing/finder/sync_find_buffer.h"
 #include "third_party/blink/renderer/core/editing/iterators/character_iterator.h"
 #include "third_party/blink/renderer/core/html/list_item_ordinal.h"
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_selector.h"
@@ -157,8 +159,8 @@ void TextFragmentFinder::FindMatchInRange(String search_text,
                                           Range* search_range,
                                           bool word_start_bounded,
                                           bool word_end_bounded) {
-  AsyncFindBuffer::FindMatchInRange(
-      EphemeralRangeInFlatTree(search_range), search_text, kCaseInsensitive,
+  find_buffer_runner_->FindMatchInRange(
+      search_range, search_text, kCaseInsensitive,
       WTF::Bind(&TextFragmentFinder::OnFindMatchInRangeComplete,
                 WrapWeakPersistent(this), search_text,
                 WrapWeakPersistent(search_range), word_start_bounded,
@@ -372,13 +374,22 @@ bool TextFragmentFinder::IsInSameUninterruptedBlock(
 
 TextFragmentFinder::TextFragmentFinder(Client& client,
                                        const TextFragmentSelector& selector,
-                                       Document* document)
+                                       Document* document,
+                                       FindBufferRunnerType runner_type)
     : client_(client), selector_(selector), document_(document) {
   DCHECK(!selector_.Start().IsEmpty());
   DCHECK(selector_.Type() != TextFragmentSelector::SelectorType::kInvalid);
+  if (runner_type == TextFragmentFinder::FindBufferRunnerType::kAsynchronous) {
+    find_buffer_runner_ = MakeGarbageCollected<AsyncFindBuffer>();
+  } else {
+    find_buffer_runner_ = MakeGarbageCollected<SyncFindBuffer>();
+  }
 }
 
 void TextFragmentFinder::FindMatch() {
+  if (find_buffer_runner_ && find_buffer_runner_->IsActive())
+    find_buffer_runner_->Cancel();
+
   auto forced_lock_scope =
       document_->GetDisplayLockDocumentState().GetScopedForceActivatableLocks();
   document_->UpdateStyleAndLayout(DocumentUpdateReason::kFindInPage);
@@ -451,6 +462,7 @@ void TextFragmentFinder::Trace(Visitor* visitor) const {
   visitor->Trace(first_match_);
   visitor->Trace(search_range_);
   visitor->Trace(match_range_);
+  visitor->Trace(find_buffer_runner_);
 }
 
 void TextFragmentFinder::SetPotentialMatch(EphemeralRangeInFlatTree range) {

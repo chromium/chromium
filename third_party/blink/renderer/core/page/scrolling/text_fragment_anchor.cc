@@ -194,7 +194,8 @@ TextFragmentAnchor::TextFragmentAnchor(
   text_fragment_finders_.ReserveCapacity(text_fragment_selectors.size());
   for (TextFragmentSelector selector : text_fragment_selectors) {
     text_fragment_finders_.push_back(MakeGarbageCollected<TextFragmentFinder>(
-        *this, selector, frame_->GetDocument()));
+        *this, selector, frame_->GetDocument(),
+        TextFragmentFinder::FindBufferRunnerType::kSynchronous));
   }
 }
 

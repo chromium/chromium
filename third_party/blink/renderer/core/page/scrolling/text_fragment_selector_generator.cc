@@ -352,7 +352,8 @@ void TextFragmentSelectorGenerator::RunTextFinder() {
   iteration_++;
   // |FindMatch| will call |DidFindMatch| indicating if the match was unique.
   finder_ = MakeGarbageCollected<TextFragmentFinder>(
-      *this, *selector_, selection_frame_->GetDocument());
+      *this, *selector_, selection_frame_->GetDocument(),
+      TextFragmentFinder::FindBufferRunnerType::kAsynchronous);
   finder_->FindMatch();
 }
 

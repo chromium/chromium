@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
+#include "third_party/blink/renderer/core/editing/finder/find_buffer_runner.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/position_iterator.h"
@@ -34,6 +35,8 @@ class CORE_EXPORT TextFragmentFinder final
     virtual void NoMatchFound() = 0;
   };
 
+  // Used for tracking what should be the next match stage.
+  enum FindBufferRunnerType { kAsynchronous, kSynchronous };
   // Returns true if start and end positions are in the same block and there are
   // no other blocks between them. Otherwise, returns false.
   static bool IsInSameUninterruptedBlock(const PositionInFlatTree& start,
@@ -42,7 +45,8 @@ class CORE_EXPORT TextFragmentFinder final
   // Client must outlive the finder.
   TextFragmentFinder(Client& client,
                      const TextFragmentSelector& selector,
-                     Document* document);
+                     Document* document,
+                     FindBufferRunnerType runner_type);
   ~TextFragmentFinder() = default;
 
   // Begins searching in the given top-level document.
@@ -114,6 +118,8 @@ class CORE_EXPORT TextFragmentFinder final
   // Range used for search for |potential_match_|.
   // https://wicg.github.io/scroll-to-text-fragment/#ref-for-range-collapsed:~:text=Let-,matchRange
   Member<Range> match_range_;
+  // Used for running FindBuffer tasks.
+  Member<FindBufferRunner> find_buffer_runner_;
 };
 
 }  // namespace blink
