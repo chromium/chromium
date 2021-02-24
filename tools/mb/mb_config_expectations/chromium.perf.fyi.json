@@ -1,6 +1,7 @@
 {
   "android-cfi-builder-perf-fyi": {
     "gn_args": {
+      "clang_use_default_sample_profile": false,
       "ffmpeg_branding": "Chrome",
       "is_chrome_branded": true,
       "is_official_build": true,
@@ -14,6 +15,7 @@
   },
   "android_arm64-cfi-builder-perf-fyi": {
     "gn_args": {
+      "clang_use_default_sample_profile": false,
       "ffmpeg_branding": "Chrome",
       "is_chrome_branded": true,
       "is_official_build": true,
