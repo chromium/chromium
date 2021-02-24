@@ -62,8 +62,7 @@ void OfferNotificationIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {}
 
 const gfx::VectorIcon& OfferNotificationIconView::GetVectorIcon() const {
-  // TODO(crbug/1093057): Introduce a new vector icon.
-  return kCreditCardIcon;
+  return kGpayOfferIcon;
 }
 
 const char* OfferNotificationIconView::GetClassName() const {
