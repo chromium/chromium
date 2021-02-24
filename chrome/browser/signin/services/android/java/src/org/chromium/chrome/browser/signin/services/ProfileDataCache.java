@@ -261,10 +261,12 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
      */
     @Override
     public void onExtendedAccountInfoUpdated(AccountInfo accountInfo) {
-        final String accountEmail = accountInfo.getEmail();
-        updateCachedProfileDataAndNotifyObservers(new DisplayableProfileData(accountEmail,
-                prepareAvatar(accountInfo.getAccountImage(), accountEmail),
-                accountInfo.getFullName(), accountInfo.getGivenName()));
+        if (accountInfo.getAccountImage() != null) {
+            final String accountEmail = accountInfo.getEmail();
+            updateCachedProfileDataAndNotifyObservers(new DisplayableProfileData(accountEmail,
+                    prepareAvatar(accountInfo.getAccountImage(), accountEmail),
+                    accountInfo.getFullName(), accountInfo.getGivenName()));
+        }
     }
 
     /**

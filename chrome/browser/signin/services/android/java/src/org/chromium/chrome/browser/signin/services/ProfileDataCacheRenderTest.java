@@ -176,6 +176,20 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    public void testNoProfileDataRemovedWithEmptyAccountInfo() throws IOException {
+        mIdentityManager.onExtendedAccountInfoUpdated(mAccountInfoWithAvatar);
+        final AccountInfo emptyAccountInfo =
+                new AccountInfo(mAccountInfoWithAvatar.getId(), mAccountInfoWithAvatar.getEmail(),
+                        mAccountInfoWithAvatar.getGaiaId(), null, null, null);
+        mIdentityManager.onExtendedAccountInfoUpdated(emptyAccountInfo);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { checkImageIsScaled(mAccountInfoWithAvatar.getEmail()); });
+        mRenderTestRule.render(mImageView, "profile_data_cache_avatar" + mImageSize);
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
     public void testPlaceholderIsScaled() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { checkImageIsScaled("no.data.for.this.account@example.com"); });
