@@ -1099,5 +1099,74 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LowEndDevice) {
       PrerenderHost::FinalStatus::kLowEndDevice, 1);
 }
 
+class PrerenderWithBackForwardCacheTest : public PrerenderBrowserTest {
+ public:
+  PrerenderWithBackForwardCacheTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{features::kBackForwardCache,
+                               {{"TimeToLiveInBackForwardCacheInSeconds",
+                                 "3600"},  // Prevent evictions for long running
+                                           // tests.
+                                {"enable_same_site", "true"}}}},
+        // Allow BackForwardCache for all devices regardless of their memory.
+        /*disabled_features=*/{features::kBackForwardCacheMemoryControls});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrerenderWithBackForwardCacheTest,
+                         testing::Values(kWebContents, kMPArch),
+                         ToString);
+
+// Make sure that when a navigation commits in the prerenderer frame tree, the
+// old page is not stored in back/forward cache and the appropriate reason is
+// recorded in the metrics.
+IN_PROC_BROWSER_TEST_P(PrerenderWithBackForwardCacheTest,
+                       BackForwardCacheDisabled) {
+  base::HistogramTester histogram_tester;
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html");
+  const GURL kSameSitePrerenderingUrl = GetUrl("/title1.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start a prerender.
+  AddPrerender(kPrerenderingUrl);
+
+  PrerenderHost* prerender_host =
+      GetPrerenderHostRegistry().FindHostByUrlForTesting(kPrerenderingUrl);
+  ASSERT_TRUE(prerender_host);
+  RenderFrameHostImpl* prerendered_render_frame_host =
+      prerender_host->GetPrerenderedMainFrameHostForTesting();
+
+  // Navigate the Prerender page to a new URL.
+  EXPECT_TRUE(
+      ExecJs(prerendered_render_frame_host,
+             JsReplace("window.location.href = $1", kSameSitePrerenderingUrl)));
+  prerender_host->WaitForLoadStopForTesting();
+
+  prerender_host =
+      GetPrerenderHostRegistry().FindHostByUrlForTesting(kPrerenderingUrl);
+  ASSERT_TRUE(prerender_host);
+  prerendered_render_frame_host =
+      prerender_host->GetPrerenderedMainFrameHostForTesting();
+
+  // Go back. The page should not be restored from the bfcache.
+  EXPECT_TRUE(ExecJs(prerendered_render_frame_host, "history.back();"));
+  prerender_host->WaitForLoadStopForTesting();
+
+  // Make sure that page is not cacheable for the right reason.
+  histogram_tester.ExpectBucketCount(
+      "BackForwardCache.HistoryNavigationOutcome."
+      "NotRestoredReason",
+      base::HistogramBase::Sample(BackForwardCacheMetrics::NotRestoredReason::
+                                      kBackForwardCacheDisabledForPrerender),
+      1);
+}
+
 }  // namespace
 }  // namespace content

@@ -91,7 +91,8 @@ class BackForwardCacheMetrics
     kNetworkRequestTimeout = 39,
     kNetworkExceedsBufferLimit = 40,
     kNavigationCancelledWhileRestoring = 41,
-    kMaxValue = kNavigationCancelledWhileRestoring,
+    kBackForwardCacheDisabledForPrerender = 42,
+    kMaxValue = kBackForwardCacheDisabledForPrerender,
   };
 
   using NotRestoredReasons =

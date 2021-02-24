@@ -142,6 +142,8 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "Network request is open for too long and exceeds time limit";
     case Reason::kNetworkExceedsBufferLimit:
       return "Network request reads too much data and exceeds buffer limit";
+    case Reason::kBackForwardCacheDisabledForPrerender:
+      return "BackForwardCache is disabled for Prerender";
   }
 }
 
