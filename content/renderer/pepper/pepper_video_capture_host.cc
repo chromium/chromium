@@ -23,7 +23,6 @@
 #include "ppapi/thunk/ppb_buffer_api.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
-#include "third_party/webrtc/common_video/libyuv/include/webrtc_libyuv.h"
 
 using ppapi::HostResource;
 using ppapi::TrackedCallback;
