@@ -18,9 +18,3 @@ gaia-card p.enterprise-info {
   color: white;
   margin: 8px 0 0 0;
 }
-
-gaia-card h1.welcome-message {
-  color: white;
-  margin-bottom: 0;
-  @apply --oobe-header-font;
-}

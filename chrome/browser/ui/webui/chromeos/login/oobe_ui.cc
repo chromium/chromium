@@ -527,7 +527,7 @@ void OobeUI::ConfigureOobeDisplay() {
 
   auto password_change_handler =
       std::make_unique<ActiveDirectoryPasswordChangeScreenHandler>(
-          js_calls_container_.get(), core_handler_);
+          js_calls_container_.get());
 
   AddScreenHandler(std::make_unique<GaiaScreenHandler>(
       js_calls_container_.get(), core_handler_, network_state_informer_));

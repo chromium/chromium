@@ -35,19 +35,32 @@ const ACTIVE_DIRECTORY_PASSWORD_CHANGE_ERROR_STATE = {
   NEW_PASSWORD_REJECTED: 2,
 };
 
+/**
+ * UI mode for the dialog.
+ * @enum {string}
+ */
+const UIState = {
+  PASSWORD: 'password',
+  PROGRESS: 'progress',
+};
+
 Polymer({
   is: 'active-directory-password-change-element',
 
-  behaviors: [OobeI18nBehavior, LoginScreenBehavior],
+  behaviors: [
+    OobeI18nBehavior,
+    OobeDialogHostBehavior,
+    LoginScreenBehavior,
+    MultiStepBehavior,
+  ],
 
-  EXTERNAL_API: [],
+  EXTERNAL_API: ['showErrorDialog'],
 
   properties: {
     /**
      * The user principal name.
      */
     username: String,
-
     /**
      * The old password.
      */
@@ -60,7 +73,10 @@ Polymer({
      * The new password (second copy).
      */
     newPasswordRepeat_: String,
-
+    /**
+     * The text content for error dialog.
+     */
+    errorDialogText_: String,
     /**
      * Indicates if old password is wrong.
      */
@@ -83,6 +99,12 @@ Polymer({
       value: false,
     },
   },
+
+  defaultUIStep() {
+    return UIState.PASSWORD;
+  },
+
+  UI_STEPS: UIState,
 
   /** @override */
   ready() {
@@ -114,22 +136,19 @@ Polymer({
   },
 
   /**
-   * Shows sign-in error bubble.
-   * @param {number} loginAttempts Number of login attempts tried.
-   * @param {HTMLElement} error Content to show in bubble.
-   * @suppress {missingProperties}
+   * @public
+   * Shows sign-in error dialog.
+   * @param {string} content Content to show in dialog.
    */
-  showErrorBubble(loginAttempts, error) {
-    $('bubble').showContentForElement(
-        this, cr.ui.Bubble.Attachment.BOTTOM, error, BUBBLE_HORIZONTAL_PADDING,
-        BUBBLE_VERTICAL_PADDING);
+  showErrorDialog(content) {
+    this.errorDialogText_ = content;
+    this.$.errorDialog.showDialog();
   },
 
   /** @public */
   reset() {
-    this.$.animatedPages.selected = 0;
+    this.setUIStep(UIState.PASSWORD);
     this.resetInputFields_();
-    this.updateNavigation_();
   },
 
   /** @private */
@@ -137,6 +156,7 @@ Polymer({
     this.oldPassword = '';
     this.newPassword = '';
     this.newPasswordRepeat = '';
+    this.errorDialogText_ = '';
 
     this.oldPasswordWrong_ = false;
     this.newPasswordRejected_ = false;
@@ -173,8 +193,7 @@ Polymer({
       this.passwordMismatch_ = true;
       return;
     }
-    this.$.animatedPages.selected++;
-    this.updateNavigation_();
+    this.setUIStep(UIState.PROGRESS);
     this.resetInputFields_();
     chrome.send(
         'login.ActiveDirectoryPasswordChangeScreen.changePassword',
@@ -186,14 +205,7 @@ Polymer({
    * Cancels password changing.
    */
   onClose_() {
-    if (!this.$.navigation.closeVisible)
-      return;
     this.userActed('cancel');
-  },
-
-  /** @private */
-  updateNavigation_() {
-    this.$.navigation.closeVisible = (this.$.animatedPages.selected == 0);
   },
 });
 })();

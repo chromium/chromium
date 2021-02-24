@@ -611,24 +611,18 @@ cr.define('cr.ui.login.debug', function() {
     {
       id: 'ad-password-change',
       kind: ScreenKind.OTHER,
+      handledSteps: 'password',
       states: [
         {
           // No error
           id: 'no-error',
           data: {
             username: 'username',
-          },
-        },
-        {
-          // First error
-          id: 'error-0',
-          data: {
-            username: 'username',
             error: 0,
           },
         },
         {
-          // Second error
+          // First error
           id: 'error-1',
           data: {
             username: 'username',
@@ -636,15 +630,20 @@ cr.define('cr.ui.login.debug', function() {
           },
         },
         {
-          // Error bubble
-          id: 'error-bubble',
-          trigger: (screen) => {
-            let errorElement = document.createElement('div');
-            errorElement.textContent = 'Some error text';
-            screen.showErrorBubble(
-                1,  // Login attempts
-                errorElement);
+          // Second error
+          id: 'error-2',
+          data: {
+            username: 'username',
+            error: 2,
           },
+        },
+        {
+          // Error dialog
+          id: 'error-dialog',
+          trigger: (screen) => {
+            let error = 'Some error text';
+            screen.showErrorDialog(error);
+          }
         },
       ],
     },

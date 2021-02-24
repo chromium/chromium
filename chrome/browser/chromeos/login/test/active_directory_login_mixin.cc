@@ -37,10 +37,10 @@ const test::UIPath kAdBackButton = {kAdOfflineAuthId, "backButton"};
 const test::UIPath kAdCredsButton = {kAdOfflineAuthId, "nextButton"};
 const test::UIPath kAdAutocompleteRealm = {kAdOfflineAuthId, "userRealm"};
 
-const test::UIPath kAdAnimatedPages = {kPasswordChangeId, "animatedPages"};
-const test::UIPath kFormButtonId = {kPasswordChangeId, "inputForm", "button"};
-const test::UIPath kCloseButtonId = {kPasswordChangeId, "navigation",
-                                     "closeButton"};
+const test::UIPath kAdPasswordChangeDialog = {kPasswordChangeId,
+                                              "passwordChangeDialog"};
+const test::UIPath kNextButtonId = {kPasswordChangeId, "next"};
+const test::UIPath kCancelButtonId = {kPasswordChangeId, "cancel"};
 const test::UIPath kAdOldPasswordInputPath = {kPasswordChangeId,
                                               kAdOldPasswordInput};
 const test::UIPath kAdNewPassword1InputPath = {kPasswordChangeId,
@@ -82,7 +82,7 @@ void ActiveDirectoryLoginMixin::TriggerPasswordChangeScreen() {
 }
 
 void ActiveDirectoryLoginMixin::ClosePasswordChangeScreen() {
-  test::OobeJS().TapOnPath(kCloseButtonId);
+  test::OobeJS().TapOnPath(kCancelButtonId);
 }
 
 void ActiveDirectoryLoginMixin::ClickBackButton() {
@@ -118,9 +118,8 @@ void ActiveDirectoryLoginMixin::TestPasswordChangeVisible() {
   test::OobeJS().ExpectHiddenPath(kGaiaSigninDialogId);
   // Checks if Active Directory signin is visible.
   test::OobeJS().ExpectVisible(kPasswordChangeId);
-  test::OobeJS().ExpectTrue(test::GetOobeElementPath(kAdAnimatedPages) +
-                            ".selected == 0");
-  test::OobeJS().ExpectVisiblePath(kCloseButtonId);
+  test::OobeJS().ExpectVisiblePath(kAdPasswordChangeDialog);
+  test::OobeJS().ExpectVisiblePath(kCancelButtonId);
 }
 
 // Checks if user input is marked as invalid.
@@ -208,7 +207,7 @@ void ActiveDirectoryLoginMixin::SubmitActiveDirectoryPasswordChangeCredentials(
   test::OobeJS().TypeIntoPath(old_password, kAdOldPasswordInputPath);
   test::OobeJS().TypeIntoPath(new_password1, kAdNewPassword1InputPath);
   test::OobeJS().TypeIntoPath(new_password2, kAdNewPassword2InputPath);
-  test::OobeJS().ClickOnPath(kFormButtonId);
+  test::OobeJS().ClickOnPath(kNextButtonId);
 }
 
 void ActiveDirectoryLoginMixin::SetupActiveDirectoryJSNotifications() {
