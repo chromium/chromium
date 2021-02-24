@@ -635,3 +635,9 @@ IN_PROC_BROWSER_TEST_P(FileManagerPrivateHoldingSpaceApiTest, HoldingSpace) {
         RunComponentExtensionTest("file_browser/holding_space_disabled"));
   }
 }
+
+IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, GetVolumeRoot) {
+  AddLocalFileSystem(browser()->profile(), temp_dir_.GetPath());
+
+  ASSERT_TRUE(RunComponentExtensionTest("file_browser/get_volume_root"));
+}

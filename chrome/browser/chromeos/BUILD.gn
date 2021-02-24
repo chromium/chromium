@@ -3030,6 +3030,8 @@ source_set("chromeos") {
     "extensions/file_manager/file_stream_string_converter.h",
     "extensions/file_manager/files_extension_function.cc",
     "extensions/file_manager/files_extension_function.h",
+    "extensions/file_manager/fmpi_get_volume_root_function.cc",
+    "extensions/file_manager/fmpi_get_volume_root_function.h",
     "extensions/file_manager/private_api_base.cc",
     "extensions/file_manager/private_api_base.h",
     "extensions/file_manager/private_api_dialog.cc",

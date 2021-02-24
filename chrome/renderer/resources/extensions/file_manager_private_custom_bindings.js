@@ -74,6 +74,12 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
     });
   });
 
+  apiFunctions.setHandleRequest('getVolumeRoot', function(options, callback) {
+    fileManagerPrivateInternal.getVolumeRoot(options, function(entry) {
+      callback(entry ? GetExternalFileEntry(entry) : undefined);
+    });
+  });
+
   apiFunctions.setHandleRequest('getEntryProperties',
                                 function(entries, names, callback) {
     var urls = entries.map(function(entry) {

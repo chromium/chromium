@@ -1603,6 +1603,7 @@ enum HistogramValue {
   FILEMANAGERPRIVATE_NOTIFYDRIVEDIALOGRESULT = 1540,
   ENTERPRISEREPORTINGPRIVATE_GETCONTEXTINFO = 1541,
   SCRIPTING_REMOVECSS = 1542,
+  FILEMANAGERPRIVATEINTERNAL_GETVOLUMEROOT = 1543,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

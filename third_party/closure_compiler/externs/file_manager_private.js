@@ -613,6 +613,14 @@ chrome.fileManagerPrivate.MediaMetadata;
 chrome.fileManagerPrivate.HoldingSpaceState;
 
 /**
+ * @typedef {{
+ *   volumeId: string,
+ *   writable: boolean,
+ * }}
+ */
+chrome.fileManagerPrivate.GetVolumeRootOptions;
+
+/**
  * Logout the current user for navigating to the re-authentication screen for
  * the Google account.
  */
@@ -1060,6 +1068,14 @@ chrome.fileManagerPrivate.getDirectorySize = function(entry, callback) {};
  * @param {function((!Array<!FileEntry>))} callback
  */
 chrome.fileManagerPrivate.getRecentFiles = function(restriction, fileType, callback) {};
+
+/**
+ * Requests the root directory of a volume. The ID of the volume must be
+ * specified as |volumeId| of the |options| paramter.
+ * @param {!chrome.fileManagerPrivate.GetVolumeRootOptions} options
+ * @param {function(!DirectoryEntry)} callback
+ */
+chrome.fileManagerPrivate.getVolumeRoot = function(options, callback) {};
 
 /**
  * Starts and mounts crostini container.

@@ -627,6 +627,16 @@ dictionary FileWatchEvent {
   FileChange[]? changedFiles;
 };
 
+// Parameters passed to fileManagerPrivateInternal.getVolumeRoot function.
+dictionary GetVolumeRootOptions {
+  // The ID of the requested volume.
+  DOMString volumeId;
+
+  // Whether the requested file system should be writable. The default is
+  // read-only.
+  boolean? writable;
+};
+
 dictionary Preferences {
   boolean driveEnabled;
   boolean cellularDisabled;
@@ -933,6 +943,10 @@ callback GetDirectorySizeCallback = void(double size);
 
 // |entries| Recently modified entries.
 callback GetRecentFilesCallback = void([instanceOf=Entry] object[] entries);
+
+// |rootDir| The root directory of the volume to which access was requested.
+callback GetVolumeRootCallback =
+    void([instanceof=DirectoryEntry] object rootDir);
 
 // |entries| Entries shared with crostini container.
 // |firstForSession| true the first time this is called for the session.
@@ -1300,6 +1314,12 @@ interface Functions {
   static void getRecentFiles(SourceRestriction restriction,
                              RecentFileType fileType,
                              GetRecentFilesCallback callback);
+
+  // Requests the root directory of the volume with the ID specified in
+  // |options.volumeId|.
+  [nocompile]
+  static void getVolumeRoot(GetVolumeRootOptions options,
+                            GetVolumeRootCallback callback);
 
   // Starts and mounts crostini container.
   // |callback|
