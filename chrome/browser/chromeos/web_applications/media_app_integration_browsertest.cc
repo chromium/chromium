@@ -160,7 +160,9 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaApp) {
 
 // Test that the MediaApp successfully loads a file passed in on its launch
 // params.
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchWithFile) {
+// Test is flaky: https://crbug.com/1181638
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
+                       DISABLED_MediaAppLaunchWithFile) {
   WaitForTestSystemAppInstall();
   content::WebContents* app;
   {
