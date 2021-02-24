@@ -1036,6 +1036,7 @@ extern const char kBlockAutoplayEnabled[];
 // of lacros-chrome is complete.
 #if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 extern const char kAllowNativeNotifications[];
+extern const char kAllowSystemNotifications[];
 #endif
 
 extern const char kNotificationNextPersistentId[];

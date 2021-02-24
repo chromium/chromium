@@ -9076,6 +9076,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Suppressed"/>
 </enum>
 
+<enum name="BooleanSystemNotifications">
+  <int value="0" label="Using Chrome notifications"/>
+  <int value="1" label="Using system notifications"/>
+</enum>
+
 <enum name="BooleanTabDiscard">
   <int value="0" label="Memory OK, no discards"/>
   <int value="1" label="Memory low, tabs discarded"/>
@@ -23727,6 +23732,7 @@ Called by update_document_policy_enum.py.-->
   <int value="825" label="DevicePciPeripheralDataAccessEnabled"/>
   <int value="826" label="ContextAwareAccessSignalsAllowlist"/>
   <int value="827" label="FetchKeepaliveDurationOnShutdown"/>
+  <int value="828" label="AllowSystemNotifications"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">
@@ -43335,6 +43341,7 @@ from previous Chrome versions.
   <int value="-1938263248" label="enable-extension-info-dialog"/>
   <int value="-1937077699" label="http-form-warning"/>
   <int value="-1936032607" label="enable-experimental-webassembly-features"/>
+  <int value="-1935787681" label="SystemNotifications:disabled"/>
   <int value="-1935055754" label="WebShare:enabled"/>
   <int value="-1934661084" label="ForceUnifiedConsentBump:disabled"/>
   <int value="-1933425042" label="OfflinePreviews:enabled"/>
@@ -45161,6 +45168,7 @@ from previous Chrome versions.
   <int value="-300542825" label="ChromeShareQRCode:disabled"/>
   <int value="-300018686" label="disable-cloud-import"/>
   <int value="-299841473" label="top-document-isolation:enabled"/>
+  <int value="-298458993" label="SystemNotifications:enabled"/>
   <int value="-297716805"
       label="CrossOriginMediaPlaybackRequiresUserGesture:disabled"/>
   <int value="-296762162" label="ExoOrdinalMotion:enabled"/>

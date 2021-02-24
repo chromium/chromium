@@ -3177,13 +3177,13 @@ const FeatureEntry kFeatureEntries[] = {
          kOverrideSitePrefsForHrefTranslateVariations,
          "OverrideSitePrefsForHrefTranslate")},
 
-#if BUILDFLAG(ENABLE_NATIVE_NOTIFICATIONS) && !BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enable-native-notifications",
-     flag_descriptions::kNotificationsNativeFlagName,
-     flag_descriptions::kNotificationsNativeFlagDescription,
+#if BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS) && !BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-system-notifications",
+     flag_descriptions::kNotificationsSystemFlagName,
+     flag_descriptions::kNotificationsSystemFlagDescription,
      kOsMac | kOsLinux | kOsWin,
-     FEATURE_VALUE_TYPE(features::kNativeNotifications)},
-#endif  // ENABLE_NATIVE_NOTIFICATIONS
+     FEATURE_VALUE_TYPE(features::kSystemNotifications)},
+#endif  // BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #if defined(OS_ANDROID)
     {"reader-mode-heuristics", flag_descriptions::kReaderModeHeuristicsName,
      flag_descriptions::kReaderModeHeuristicsDescription, kOsAndroid,

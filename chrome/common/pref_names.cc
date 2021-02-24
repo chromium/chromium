@@ -2990,8 +2990,12 @@ const char kBlockAutoplayEnabled[] = "media.block_autoplay";
 // of lacros-chrome is complete.
 #if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Boolean that indicates if native notifications are allowed to be used in
-// place of Chrome notifications.
+// place of Chrome notifications. Will be replaced by kAllowSystemNotifications.
 const char kAllowNativeNotifications[] = "native_notifications.allowed";
+
+// Boolean that indicates if system notifications are allowed to be used in
+// place of Chrome notifications.
+const char kAllowSystemNotifications[] = "system_notifications.allowed";
 #endif
 
 // Integer that holds the value of the next persistent notification ID to be

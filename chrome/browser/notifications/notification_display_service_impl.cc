@@ -68,6 +68,7 @@ void NotificationDisplayServiceImpl::RegisterProfilePrefs(
 // of lacros-chrome is complete.
 #if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   registry->RegisterBooleanPref(prefs::kAllowNativeNotifications, true);
+  registry->RegisterBooleanPref(prefs::kAllowSystemNotifications, true);
 #endif
 }
 

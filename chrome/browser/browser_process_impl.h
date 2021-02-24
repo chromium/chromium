@@ -308,7 +308,7 @@ class BrowserProcessImpl : public BrowserProcess,
 
   std::unique_ptr<StatusTray> status_tray_;
 
-#if BUILDFLAG(ENABLE_NATIVE_NOTIFICATIONS)
+#if BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS)
   bool created_notification_bridge_ = false;
 #endif
 

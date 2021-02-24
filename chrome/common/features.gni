@@ -47,7 +47,7 @@ declare_args() {
   enable_hangout_services_extension = is_chrome_branded
 
   # Enables usage of the system-provided notification center.
-  enable_native_notifications =
+  enable_system_notifications =
       is_android || is_mac || is_win ||
       ((is_linux || is_chromeos_lacros) && use_dbus) || is_chromeos
 

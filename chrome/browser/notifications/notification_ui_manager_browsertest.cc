@@ -35,7 +35,8 @@ using message_center::Notification;
 class NotificationUIManagerBrowserTest : public InProcessBrowserTest {
  public:
   NotificationUIManagerBrowserTest() {
-    feature_list_.InitAndDisableFeature(features::kNativeNotifications);
+    feature_list_.InitWithFeatures(
+        {}, {features::kNativeNotifications, features::kSystemNotifications});
   }
 
   NotificationUIManagerImpl* manager() {

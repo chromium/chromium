@@ -631,13 +631,16 @@ const base::FeatureParam<std::string> kMoveWebAppUninstallStartUrlPattern(
 const base::FeatureParam<std::string>
     kMoveWebAppInstallStartUrl(&kMoveWebApp, "installStartUrl", "");
 
-// Enables the use of native notification centers instead of using the Message
+// Enables the use of system notification centers instead of using the Message
 // Center for displaying the toasts. The feature is hardcoded to enabled for
 // Chrome OS.
-#if BUILDFLAG(ENABLE_NATIVE_NOTIFICATIONS) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS) && !BUILDFLAG(IS_CHROMEOS_ASH)
 const base::Feature kNativeNotifications{"NativeNotifications",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
-#endif  // BUILDFLAG(ENABLE_NATIVE_NOTIFICATIONS)
+
+const base::Feature kSystemNotifications{"SystemNotifications",
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
+#endif  // BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS)
 
 #if defined(OS_MAC)
 // Enables the usage of Apple's new Notification API on macOS 10.14+

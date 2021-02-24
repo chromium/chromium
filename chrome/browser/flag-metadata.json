@@ -2055,11 +2055,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "enable-native-notifications",
-    "owners": [ "peter", "finnur", "knollr" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "enable-navigation-predictor",
     "owners": [ "tbansal", "ryansturm", "instant-nav" ],
     "expiry_milestone": 90
@@ -2420,6 +2415,11 @@
     "name": "enable-sync-requires-policies-loaded",
     "owners": ["ydago"],
     "expiry_milestone": 95
+  },
+  {
+    "name": "enable-system-notifications",
+    "owners": [ "peter", "finnur", "knollr" ],
+    "expiry_milestone": 94
   },
   {
     "name": "enable-tab-engagement-reporting",

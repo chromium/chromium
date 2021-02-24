@@ -421,9 +421,12 @@ extern const base::FeatureParam<std::string>
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<std::string> kMoveWebAppInstallStartUrl;
 
-#if BUILDFLAG(ENABLE_NATIVE_NOTIFICATIONS)
+#if BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kNativeNotifications;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kSystemNotifications;
 #endif
 
 #if defined(OS_MAC)

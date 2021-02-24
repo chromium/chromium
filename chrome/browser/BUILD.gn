@@ -4278,7 +4278,7 @@ static_library("browser") {
   }
 
   if (is_chromeos_ash) {
-    assert(enable_native_notifications)
+    assert(enable_system_notifications)
     sources += [
       "apps/app_service/app_notifications.cc",
       "apps/app_service/app_notifications.h",
@@ -4644,7 +4644,7 @@ static_library("browser") {
   }
 
   if (is_chromeos_lacros) {
-    assert(enable_native_notifications)
+    assert(enable_system_notifications)
     sources += [
       "chrome_browser_main_parts_lacros.cc",
       "chrome_browser_main_parts_lacros.h",
@@ -4893,7 +4893,7 @@ static_library("browser") {
 
     all_dependent_configs = [ ":browser_win_linker_flags" ]
 
-    if (enable_native_notifications) {
+    if (enable_system_notifications) {
       sources += [
         "notifications/notification_platform_bridge_win.cc",
         "notifications/notification_platform_bridge_win.h",
@@ -5155,7 +5155,7 @@ static_library("browser") {
     if (!is_chromeos_lacros) {
       sources += [ "platform_util_linux.cc" ]
 
-      if (enable_native_notifications) {
+      if (enable_system_notifications) {
         sources += [
           "notifications/notification_platform_bridge_linux.cc",
           "notifications/notification_platform_bridge_linux.h",

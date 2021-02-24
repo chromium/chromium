@@ -50,8 +50,8 @@ class NotificationPlatformBridgeWin : public NotificationPlatformBridge {
   // notification-launch-id switch.
   static bool HandleActivation(const base::CommandLine& command_line);
 
-  // Checks if native notification is enabled.
-  static bool NativeNotificationEnabled();
+  // Checks if system notifications are enabled.
+  static bool SystemNotificationEnabled();
 
   // Struct used to build the key to identify the notifications.
   struct NotificationKeyType {

@@ -4945,7 +4945,7 @@ test("unit_tests") {
     }
   }
 
-  if (enable_native_notifications) {
+  if (enable_system_notifications) {
     # TODO(crbug.com/1052397): Rename is_chromeos_lacros to is_chromeos_lacros.
     if ((is_linux || is_chromeos_lacros) && !is_chromeos_lacros) {
       sources += [ "../browser/notifications/notification_platform_bridge_linux_unittest.cc" ]
@@ -4968,7 +4968,7 @@ test("unit_tests") {
   }
 
   if (is_chromeos_lacros) {
-    assert(enable_native_notifications)
+    assert(enable_system_notifications)
     sources += [
       "../browser/lacros/client_cert_store_lacros_unittest.cc",
       "../browser/lacros/lacros_chrome_service_delegate_impl_unittest.cc",
@@ -6892,7 +6892,7 @@ if (!is_android) {
       }
     }
 
-    if (!enable_native_notifications) {
+    if (!enable_system_notifications) {
       sources += [ "../browser/notifications/notification_ui_manager_interactive_uitest.cc" ]
     }
 

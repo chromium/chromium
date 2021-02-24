@@ -96,10 +96,11 @@ const std::string& TestMessageCenterObserver::last_displayed_id() const {
 
 NotificationsTest::NotificationsTest() {
 // Temporary change while the whole support class is changed to deal
-// with native notifications. crbug.com/714679
-#if BUILDFLAG(ENABLE_NATIVE_NOTIFICATIONS)
-  feature_list_.InitAndDisableFeature(features::kNativeNotifications);
-#endif  // BUILDFLAG(ENABLE_NATIVE_NOTIFICATIONS)
+// with system notifications. crbug.com/714679
+#if BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS)
+  feature_list_.InitWithFeatures(
+      {}, {features::kNativeNotifications, features::kSystemNotifications});
+#endif  // BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS)
 }
 
 int NotificationsTest::GetNotificationCount() {
@@ -271,15 +272,15 @@ content::WebContents* NotificationsTest::GetActiveWebContents(
 
 NotificationsTestWithPermissionsEmbargo ::
     NotificationsTestWithPermissionsEmbargo() {
-#if BUILDFLAG(ENABLE_NATIVE_NOTIFICATIONS)
+#if BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS)
   feature_list_.InitWithFeatures(
       {permissions::features::kBlockPromptsIfDismissedOften,
        permissions::features::kBlockPromptsIfIgnoredOften},
-      {features::kNativeNotifications});
+      {features::kSystemNotifications});
 #else
   feature_list_.InitWithFeatures(
       {permissions::features::kBlockPromptsIfDismissedOften,
        permissions::features::kBlockPromptsIfIgnoredOften},
       {});
-#endif  //  BUILDFLAG(ENABLE_NATIVE_NOTIFICATIONS)
+#endif  //  BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS)
 }

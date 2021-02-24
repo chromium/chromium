@@ -237,7 +237,7 @@ TEST_F(RemoteCopyMessageHandlerTest, ProgressNotificationWithProgressFlag) {
 
 #if defined(OS_WIN)
   base::string16 expected_status = l10n_util::GetStringUTF16(
-      NotificationPlatformBridgeWin::NativeNotificationEnabled()
+      NotificationPlatformBridgeWin::SystemNotificationEnabled()
           ? IDS_SHARING_REMOTE_COPY_NOTIFICATION_PROCESSING_IMAGE
           : IDS_SHARING_REMOTE_COPY_NOTIFICATION_PREPARING_DOWNLOAD);
 #else

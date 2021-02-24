@@ -597,6 +597,16 @@
     ]
   },
 
+  "AllowSystemNotifications" : {
+    "os": ["linux"],
+    "policy_pref_mapping_test": [
+      {
+        "policies": { "AllowSystemNotifications": true },
+        "prefs": { "system_notifications.allowed": {} }
+      }
+    ]
+  },
+
   "NativePrinters": {
     "note": "This policy is deprecated by 'Printers' policy. See http://crbug.com/1113362.",
     "os": ["chromeos"],

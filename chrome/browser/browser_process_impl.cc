@@ -708,7 +708,7 @@ BrowserProcessImpl::extension_event_router_forwarder() {
 
 NotificationUIManager* BrowserProcessImpl::notification_ui_manager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-// TODO(miguelg) return NULL for MAC as well once native notifications
+// TODO(miguelg) return nullptr for MAC as well once system notifications
 // are enabled by default.
 #if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   return nullptr;
@@ -720,7 +720,7 @@ NotificationUIManager* BrowserProcessImpl::notification_ui_manager() {
 }
 
 NotificationPlatformBridge* BrowserProcessImpl::notification_platform_bridge() {
-#if BUILDFLAG(ENABLE_NATIVE_NOTIFICATIONS)
+#if BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS)
   if (!created_notification_bridge_)
     CreateNotificationPlatformBridge();
   return notification_bridge_.get();
@@ -1174,7 +1174,7 @@ void BrowserProcessImpl::CreateIconManager() {
 }
 
 void BrowserProcessImpl::CreateNotificationPlatformBridge() {
-#if BUILDFLAG(ENABLE_NATIVE_NOTIFICATIONS)
+#if BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS)
   DCHECK(!notification_bridge_);
   notification_bridge_ = NotificationPlatformBridge::Create();
   created_notification_bridge_ = true;

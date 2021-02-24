@@ -1558,9 +1558,9 @@ const char kNotificationSchedulerDebugOptionDescription[] =
 const char kNotificationSchedulerImmediateBackgroundTaskDescription[] =
     "Show scheduled notification right away.";
 
-const char kNotificationsNativeFlagName[] = "Enable native notifications.";
-const char kNotificationsNativeFlagDescription[] =
-    "Enable support for using the native notification toasts and notification "
+const char kNotificationsSystemFlagName[] = "Enable system notifications.";
+const char kNotificationsSystemFlagDescription[] =
+    "Enable support for using the system notification toasts and notification "
     "center on platforms where these are available.";
 
 const char kUpdateHoverAtBeginFrameName[] = "Update hover at the begin frame";

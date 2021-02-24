@@ -765,6 +765,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Notifications.UsingNativeNotificationCenter"
     enum="BooleanNativeNotifications" expires_after="never">
+  <obsolete>
+    Replaced by Notifications.UsingSystemNotificationCenter in October 2020.
+  </obsolete>
+<!-- expires-never: core to the notification user experience. -->
+
+  <owner>peter@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
+  <owner>thomasanderson@chromium.org</owner>
+  <summary>
+    Indicates if Chrome is using system notifications or the Chrome notification
+    center. Logged on each start up.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.UsingSystemNotificationCenter"
+    enum="BooleanSystemNotifications" expires_after="never">
 <!-- expires-never: core to the notification user experience. -->
 
   <owner>peter@chromium.org</owner>

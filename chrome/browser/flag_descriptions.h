@@ -929,8 +929,8 @@ extern const char kNotificationSchedulerDebugOptionName[];
 extern const char kNotificationSchedulerDebugOptionDescription[];
 extern const char kNotificationSchedulerImmediateBackgroundTaskDescription[];
 
-extern const char kNotificationsNativeFlagName[];
-extern const char kNotificationsNativeFlagDescription[];
+extern const char kNotificationsSystemFlagName[];
+extern const char kNotificationsSystemFlagDescription[];
 
 extern const char kUseMultiloginEndpointName[];
 extern const char kUseMultiloginEndpointDescription[];

@@ -152,10 +152,10 @@ base::string16 GetProgressString(int64_t current, int64_t total) {
 
 bool CanUpdateProgressNotification() {
 #if defined(OS_WIN)
-  // TODO(crbug.com/1064558): Windows native notifications don't support updates
+  // TODO(crbug.com/1064558): Windows system notifications don't support updates
   // so only show the initial progress notification and replace it with the
   // final image notification at the end.
-  if (NotificationPlatformBridgeWin::NativeNotificationEnabled())
+  if (NotificationPlatformBridgeWin::SystemNotificationEnabled())
     return false;
 #endif  // defined(OS_WIN)
   return true;
