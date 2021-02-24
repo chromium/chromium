@@ -21,6 +21,7 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_state_new_desk_button.h"
 #include "ash/wm/desks/new_desk_button.h"
+#include "ash/wm/desks/scroll_arrow_button.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -31,7 +32,6 @@
 #include "ui/aura/window.h"
 #include "ui/events/event_observer.h"
 #include "ui/events/types/event_type.h"
-#include "ui/views/controls/scroll_view.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
@@ -68,6 +68,12 @@ constexpr int kZeroStateButtonSpacing = 8;
 
 // The local Y coordinate of the zero state desk buttons.
 constexpr int kZeroStateY = 6;
+
+// Size of the scroll button.
+constexpr int kScrollButtonSize = 20;
+
+// Padding between the scroll view and the scroll buttons.
+constexpr int kScrollButtonHorizontalPadding = 4;
 
 gfx::Rect GetGestureEventScreenRect(const ui::Event& event) {
   DCHECK(event.IsGestureEvent());
@@ -239,10 +245,10 @@ class DesksBarLayout : public views::LayoutManager {
 // TODO(minch): Remove this layout manager and move the layout code back to
 // DesksBarView::Layout() once the kBento feature is launched and becomes
 // stable.
-// Layout manager for desks bar of Bento. This will only lay out the
-// |background_view_| and the |scroll_view_|. All the other contents that are
-// the children of |scroll_view_| will be laid out by
-// BentoDesksBarScrollViewLayout.
+// Layout manager for desks bar of Bento. This will lay out the direct children
+// of the DesksBarView. E.g, |background_view_|, |scroll_view_| and scroll
+// buttons. All the other contents that are the children of |scroll_view_| will
+// be laid out by BentoDesksBarScrollViewLayout.
 class BentoDesksBarLayout : public views::LayoutManager {
  public:
   BentoDesksBarLayout(DesksBarView* bar_view) : bar_view_(bar_view) {}
@@ -263,6 +269,14 @@ class BentoDesksBarLayout : public views::LayoutManager {
 
     // Clip the contents that are outside of the |scroll_view_|'s bounds.
     bar_view_->scroll_view_->layer()->SetMasksToBounds(true);
+
+    bar_view_->left_scroll_button_->SetBounds(
+        scroll_bounds.x() - kScrollButtonSize - kScrollButtonHorizontalPadding,
+        scroll_bounds.y(), kScrollButtonSize, scroll_bounds.height());
+    bar_view_->right_scroll_button_->SetBounds(
+        scroll_bounds.right() + kScrollButtonHorizontalPadding,
+        scroll_bounds.y(), kScrollButtonSize, scroll_bounds.height());
+    bar_view_->UpdateScrollButtonsVisibility();
 
     bar_view_->scroll_view_->Layout();
   }
@@ -395,6 +409,15 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
         views::ScrollView::ScrollBarMode::kHiddenButEnabled);
     scroll_view_->SetTreatAllScrollEventsAsHorizontal(true);
 
+    left_scroll_button_ = AddChildView(std::make_unique<ScrollArrowButton>(
+        base::BindRepeating(&DesksBarView::ClickOnLeftScrollButton,
+                            base::Unretained(this)),
+        /*is_left_arrow=*/true, this));
+    right_scroll_button_ = AddChildView(std::make_unique<ScrollArrowButton>(
+        base::BindRepeating(&DesksBarView::ClickOnRightScrollButton,
+                            base::Unretained(this)),
+        /*is_left_arrow=*/false, this));
+
     scroll_view_contents_ =
         scroll_view_->SetContents(std::make_unique<views::View>());
     expanded_state_new_desk_button_ = scroll_view_contents_->AddChildView(
@@ -405,6 +428,8 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
         std::make_unique<ZeroStateNewDeskButton>());
     scroll_view_contents_->SetLayoutManager(
         std::make_unique<BentoDesksBarScrollViewLayout>(this));
+
+    scroll_view_->AddScrollViewObserver(this);
   } else {
     new_desk_button_ = AddChildView(std::make_unique<NewDeskButton>());
     SetLayoutManager(
@@ -416,6 +441,8 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
 
 DesksBarView::~DesksBarView() {
   DesksController::Get()->RemoveObserver(this);
+  if (features::IsBentoEnabled())
+    scroll_view_->RemoveScrollViewObserver(this);
   if (drag_view_)
     EndDragDesk(drag_view_, /*end_by_user=*/false);
 }
@@ -760,6 +787,10 @@ void DesksBarView::OnDeskSwitchAnimationLaunching() {}
 
 void DesksBarView::OnDeskSwitchAnimationFinished() {}
 
+void DesksBarView::OnContentsScrolled() {
+  UpdateScrollButtonsVisibility();
+}
+
 void DesksBarView::UpdateNewMiniViews(bool initializing_bar_view,
                                       bool expanding_bar_view) {
   const bool is_bento_enabled = features::IsBentoEnabled();
@@ -886,6 +917,24 @@ void DesksBarView::UpdateBentoDeskButtonsVisibility() {
   zero_state_default_desk_button_->SetVisible(is_zero_state);
   zero_state_new_desk_button_->SetVisible(is_zero_state);
   expanded_state_new_desk_button_->SetVisible(!is_zero_state);
+}
+
+void DesksBarView::UpdateScrollButtonsVisibility() {
+  const gfx::Rect visible_bounds = scroll_view_->GetVisibleRect();
+  const bool left_visible = visible_bounds.x() > 0;
+  const bool right_visible =
+      visible_bounds.right() < scroll_view_contents_->bounds().width();
+  left_scroll_button_->SetVisible(left_visible);
+  right_scroll_button_->SetVisible(right_visible);
+}
+
+void DesksBarView::ClickOnLeftScrollButton() {
+  scroll_view_->ScrollToPosition(scroll_view_->horizontal_scroll_bar(), 0);
+}
+
+void DesksBarView::ClickOnRightScrollButton() {
+  scroll_view_->ScrollToPosition(scroll_view_->horizontal_scroll_bar(),
+                                 scroll_view_contents_->bounds().width());
 }
 
 }  // namespace ash

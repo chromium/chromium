@@ -1,0 +1,54 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/wm/desks/scroll_arrow_button.h"
+
+#include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/style/ash_color_provider.h"
+#include "ash/wm/desks/desk_mini_view.h"
+#include "ash/wm/desks/desk_preview_view.h"
+#include "ash/wm/desks/desks_bar_view.h"
+#include "ui/gfx/canvas.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/widget/widget.h"
+
+namespace ash {
+
+ScrollArrowButton::ScrollArrowButton(PressedCallback callback,
+                                     bool is_left_arrow,
+                                     DesksBarView* bar_view)
+    : Button(std::move(callback)),
+      is_left_arrow_(is_left_arrow),
+      bar_view_(bar_view) {
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
+
+  SetAccessibleName(base::UTF8ToUTF16(GetClassName()));
+}
+
+void ScrollArrowButton::PaintButtonContents(gfx::Canvas* canvas) {
+  const bool show_left_arrow = is_left_arrow_ ^ base::i18n::IsRTL();
+  gfx::ImageSkia img = CreateVectorIcon(
+      show_left_arrow ? kOverflowShelfLeftIcon : kOverflowShelfRightIcon,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorPrimary));
+
+  DCHECK(!bar_view_->mini_views().empty());
+  const auto* mini_view = bar_view_->mini_views()[0];
+  canvas->DrawImageInt(
+      img, (width() - img.width()) / 2,
+      mini_view->bounds().y() +
+          (mini_view->desk_preview()->bounds().height() - img.height()) / 2);
+}
+
+void ScrollArrowButton::OnThemeChanged() {
+  views::Button::OnThemeChanged();
+  SchedulePaint();
+}
+
+const char* ScrollArrowButton::GetClassName() const {
+  return "ScrollArrowButton";
+}
+
+}  // namespace ash

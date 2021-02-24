@@ -58,6 +58,7 @@ class ASH_EXPORT DeskMiniView
   }
 
   DesksBarView* owner_bar() { return owner_bar_; }
+  const DeskPreviewView* desk_preview() const { return desk_preview_; }
 
   gfx::Rect GetPreviewBoundsInScreen() const;
 
@@ -126,9 +127,6 @@ class ASH_EXPORT DeskMiniView
   int GetMinWidthForDefaultLayout() const;
 
   bool IsDeskNameViewVisibleForTesting() const;
-  const DeskPreviewView* GetDeskPreviewForTesting() const {
-    return desk_preview_;
-  }
 
  private:
   void OnCloseButtonPressed();

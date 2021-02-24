@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "base/macros.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -23,13 +24,15 @@ class DeskMiniView;
 class ExpandedStateNewDeskButton;
 class NewDeskButton;
 class OverviewGrid;
+class ScrollArrowButton;
 class ZeroStateDefaultDeskButton;
 class ZeroStateNewDeskButton;
 
 // A bar that resides at the top portion of the overview mode's ShieldView,
 // which contains the virtual desks mini_views, as well as the new desk button.
 class ASH_EXPORT DesksBarView : public views::View,
-                                public DesksController::Observer {
+                                public DesksController::Observer,
+                                public views::ScrollView::Observer {
  public:
   explicit DesksBarView(OverviewGrid* overview_grid);
   ~DesksBarView() override;
@@ -154,6 +157,9 @@ class ASH_EXPORT DesksBarView : public views::View,
   void OnDeskSwitchAnimationLaunching() override;
   void OnDeskSwitchAnimationFinished() override;
 
+  // views::ScrollView::Observer:
+  void OnContentsScrolled() override;
+
   // This is called on initialization, creating a new desk through the
   // NewDeskButton or ExpandedStateNewDeskButton, or expanding from zero state
   // bar to the expanded desks bar when Bento is enabled. Performs the expanding
@@ -161,6 +167,13 @@ class ASH_EXPORT DesksBarView : public views::View,
   // mini_views (also the ExpandedStateNewDeskButton if Bento is enabled) to
   // their final positions if |initializing_bar_view| is false.
   void UpdateNewMiniViews(bool initializing_bar_view, bool expanding_bar_view);
+
+  ScrollArrowButton* GetLeftScrollButtonForTesting() const {
+    return left_scroll_button_;
+  }
+  ScrollArrowButton* GetRightScrollButtonForTesting() const {
+    return right_scroll_button_;
+  }
 
  private:
   friend class BentoDesksBarLayout;
@@ -187,6 +200,20 @@ class ASH_EXPORT DesksBarView : public views::View,
   // and the ExpandedStateNewDeskButton on the desk bar's state. Used only when
   // Bento is enabled.
   void UpdateBentoDeskButtonsVisibility();
+
+  // Updates the visibility of |left_scroll_button_| and |right_scroll_button_|.
+  // Show |left_scroll_button_| if there are contents outside of the left edge
+  // of the |scroll_view_|, the same for |right_scroll_button_| based on the
+  // right side of the |scroll_view_|.
+  void UpdateScrollButtonsVisibility();
+
+  // Performs on clicking the |left_scroll_button_|, scrolls to the start
+  // position of the scroll view.
+  void ClickOnLeftScrollButton();
+
+  // Performs on clicking the |right_scroll_button_|, scrolls to the end
+  // position of the scroll view.
+  void ClickOnRightScrollButton();
 
   // A view that shows a dark gary transparent background that can be animated
   // when the very first mini_views are created.
@@ -225,9 +252,11 @@ class ASH_EXPORT DesksBarView : public views::View,
   views::View* scroll_view_contents_ = nullptr;
 
   // Used only when Bento is enabled.
-  ZeroStateDefaultDeskButton* zero_state_default_desk_button_;
-  ZeroStateNewDeskButton* zero_state_new_desk_button_;
-  ExpandedStateNewDeskButton* expanded_state_new_desk_button_;
+  ZeroStateDefaultDeskButton* zero_state_default_desk_button_ = nullptr;
+  ZeroStateNewDeskButton* zero_state_new_desk_button_ = nullptr;
+  ExpandedStateNewDeskButton* expanded_state_new_desk_button_ = nullptr;
+  ScrollArrowButton* left_scroll_button_ = nullptr;
+  ScrollArrowButton* right_scroll_button_ = nullptr;
   // Mini view whose preview is being dragged.
   DeskMiniView* drag_view_ = nullptr;
   // Drag proxy for the dragged desk.

@@ -39,6 +39,7 @@
 #include "ash/wm/desks/expanded_state_new_desk_button.h"
 #include "ash/wm/desks/new_desk_button.h"
 #include "ash/wm/desks/root_window_desk_switch_animator_test_api.h"
+#include "ash/wm/desks/scroll_arrow_button.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -255,7 +256,7 @@ void DesksBarViewLayoutTestHelper(const DesksBarView* desks_bar_view,
   EXPECT_EQ(button->IsLabelVisibleForTesting(), !use_compact_layout);
 
   for (auto* mini_view : desks_bar_view->mini_views()) {
-    EXPECT_EQ(mini_view->GetDeskPreviewForTesting()->height(),
+    EXPECT_EQ(mini_view->desk_preview()->height(),
               DeskPreviewView::GetHeight(root_window, use_compact_layout));
     EXPECT_EQ(mini_view->IsDeskNameViewVisibleForTesting(),
               !use_compact_layout);
@@ -3981,6 +3982,63 @@ TEST_F(DesksBentoTest, ScrollableDesks) {
   EXPECT_TRUE(display_bounds.Contains(
       desks_bar_view->mini_views()[0]->GetBoundsInScreen()));
   EXPECT_FALSE(display_bounds.Contains(new_desk_button->GetBoundsInScreen()));
+}
+
+// Tests the visibility of the scroll buttons and behavior while clicking the
+// corresponding scroll button.
+TEST_F(DesksBentoTest, ScrollButtons) {
+  UpdateDisplay("201x400");
+  auto* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview();
+  auto* root_window = Shell::GetPrimaryRootWindow();
+  auto* desks_bar_view = GetOverviewGridForRoot(root_window)->desks_bar_view();
+  ASSERT_TRUE(desks_bar_view->IsZeroState());
+  auto* event_generator = GetEventGenerator();
+  ClickOnView(desks_bar_view->zero_state_new_desk_button(), event_generator);
+
+  // Click the new desk button to create maximum number of desks.
+  auto* new_desk_button =
+      desks_bar_view->expanded_state_new_desk_button()->new_desk_button();
+  // Set the scroll delta large enough to make sure the desks bar can be
+  // scrolled to the end each time.
+  const int x_scroll_delta = 200;
+  for (size_t i = 1; i < desks_util::GetMaxNumberOfDesks(); i++) {
+    ClickOnView(new_desk_button, event_generator);
+    event_generator->MoveMouseWheel(-x_scroll_delta, 0);
+  }
+
+  auto* controller = DesksController::Get();
+  EXPECT_EQ(desks_util::GetMaxNumberOfDesks(), controller->desks().size());
+  EXPECT_FALSE(controller->CanCreateDesks());
+
+  // Scroll to the end position should show the left scroll button and hide the
+  // right scroll button.
+  event_generator->MoveMouseWheel(-x_scroll_delta, 0);
+  EXPECT_TRUE(desks_bar_view->GetLeftScrollButtonForTesting()->GetVisible());
+  EXPECT_FALSE(desks_bar_view->GetRightScrollButtonForTesting()->GetVisible());
+
+  // Scroll to the start position should show the right scroll button and hide
+  // the left scroll button.
+  event_generator->MoveMouseWheel(x_scroll_delta, 0);
+  EXPECT_FALSE(desks_bar_view->GetLeftScrollButtonForTesting()->GetVisible());
+  EXPECT_TRUE(desks_bar_view->GetRightScrollButtonForTesting()->GetVisible());
+
+  // Scroll to the middle position should show both left scroll button and right
+  // scroll button.
+  event_generator->MoveMouseWheel(-x_scroll_delta / 4, 0);
+  EXPECT_TRUE(desks_bar_view->GetLeftScrollButtonForTesting()->GetVisible());
+  EXPECT_TRUE(desks_bar_view->GetRightScrollButtonForTesting()->GetVisible());
+
+  // Clicking the left scroll button should scroll to the start position.
+  ClickOnView(desks_bar_view->GetLeftScrollButtonForTesting(), event_generator);
+  EXPECT_FALSE(desks_bar_view->GetLeftScrollButtonForTesting()->GetVisible());
+  EXPECT_TRUE(desks_bar_view->GetRightScrollButtonForTesting()->GetVisible());
+
+  // Clicking the right scroll button should scroll to the end position.
+  ClickOnView(desks_bar_view->GetRightScrollButtonForTesting(),
+              event_generator);
+  EXPECT_TRUE(desks_bar_view->GetLeftScrollButtonForTesting()->GetVisible());
+  EXPECT_FALSE(desks_bar_view->GetRightScrollButtonForTesting()->GetVisible());
 }
 
 // Tests that the bounds of a window that is visible on all desks is shared

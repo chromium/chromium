@@ -63,6 +63,12 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
     kEnabled
   };
 
+  class Observer {
+   public:
+    // Called when |contents_| scrolled.
+    virtual void OnContentsScrolled() {}
+  };
+
   ScrollView();
 
   // Additional constructor for overriding scrolling as defined by
@@ -170,6 +176,9 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   // Gets/Sets whether this ScrollView has a focus indicator or not.
   bool GetHasFocusIndicator() const { return draw_focus_indicator_; }
   void SetHasFocusIndicator(bool has_focus_indicator);
+
+  void AddScrollViewObserver(Observer* observer);
+  void RemoveScrollViewObserver(Observer* observer);
 
   // View overrides:
   gfx::Size CalculatePreferredSize() const override;
@@ -333,6 +342,8 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
 
   // The focus ring for this ScrollView.
   FocusRing* focus_ring_ = nullptr;
+
+  base::ObserverList<Observer>::Unchecked observers_;
 
   DISALLOW_COPY_AND_ASSIGN(ScrollView);
 };

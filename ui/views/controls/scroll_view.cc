@@ -458,6 +458,14 @@ void ScrollView::SetHasFocusIndicator(bool has_focus_indicator) {
   OnPropertyChanged(&draw_focus_indicator_, kPropertyEffectsPaint);
 }
 
+void ScrollView::AddScrollViewObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ScrollView::RemoveScrollViewObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 gfx::Size ScrollView::CalculatePreferredSize() const {
   if (!is_bounded())
     return View::CalculatePreferredSize();
@@ -1102,6 +1110,9 @@ void ScrollView::OnScrolled(const gfx::ScrollOffset& offset) {
   UpdateOverflowIndicatorVisibility(offset);
   UpdateScrollBarPositions();
   ScrollHeader();
+
+  for (auto& observer : observers_)
+    observer.OnContentsScrolled();
 }
 
 void ScrollView::ScrollHeader() {
