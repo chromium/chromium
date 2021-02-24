@@ -277,11 +277,6 @@ ui::ImageModel AvatarToolbarButton::GetAvatarIcon(
     case State::kGuestSession:
       return profiles::GetGuestAvatar(icon_size);
     case State::kGenericProfile:
-      if (!base::FeatureList::IsEnabled(features::kNewProfilePicker)) {
-        return ui::ImageModel::FromVectorIcon(kUserAccountAvatarIcon,
-                                              icon_color, icon_size);
-      }
-      FALLTHROUGH;
     case State::kAnimatedUserIdentity:
     case State::kPasswordsOnlySyncError:
     case State::kSyncError:

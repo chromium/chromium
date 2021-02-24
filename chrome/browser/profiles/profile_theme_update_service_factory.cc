@@ -11,7 +11,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_theme_update_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -40,8 +39,6 @@ ProfileThemeUpdateServiceFactory::~ProfileThemeUpdateServiceFactory() = default;
 
 KeyedService* ProfileThemeUpdateServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(features::kNewProfilePicker))
-    return nullptr;
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   if (!profile_manager)

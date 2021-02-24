@@ -100,11 +100,6 @@ int GetLowEntropyHashValue(const std::string& value) {
   return base::PersistentHash(value) % kNumberOfLowEntropyHashValues;
 }
 
-bool ShouldShowGenericColoredAvatar(size_t avatar_icon_index) {
-  return base::FeatureList::IsEnabled(features::kNewProfilePicker) &&
-         avatar_icon_index == profiles::GetPlaceholderAvatarIndex();
-}
-
 }  // namespace
 
 const char ProfileAttributesEntry::kSupervisedUserId[] = "managed_user_id";
@@ -295,11 +290,13 @@ gfx::Image ProfileAttributesEntry::GetAvatarIcon(
       return *image;
   }
 
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(crbug.com/1100835): After launch, remove the treatment of placeholder
   // avatars from GetHighResAvatar() and from any other places.
-  if (ShouldShowGenericColoredAvatar(GetAvatarIconIndex())) {
+  if (GetAvatarIconIndex() == profiles::GetPlaceholderAvatarIndex()) {
     return GetPlaceholderAvatarIcon(size_for_placeholder_avatar);
   }
+#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !defined(OS_ANDROID)
   // Use the high resolution version of the avatar if it exists. Mobile doesn't
@@ -662,7 +659,7 @@ void ProfileAttributesEntry::SetProfileThemeColors(
 
   if (changed) {
     profile_info_cache_->NotifyProfileThemeColorsChanged(GetPath());
-    if (ShouldShowGenericColoredAvatar(GetAvatarIconIndex()))
+    if (GetAvatarIconIndex() == profiles::GetPlaceholderAvatarIndex())
       profile_info_cache_->NotifyOnProfileAvatarChanged(GetPath());
   }
 }
