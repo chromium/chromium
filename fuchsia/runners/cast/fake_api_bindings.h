@@ -5,12 +5,12 @@
 #ifndef FUCHSIA_RUNNERS_CAST_FAKE_API_BINDINGS_H_
 #define FUCHSIA_RUNNERS_CAST_FAKE_API_BINDINGS_H_
 
-#include <map>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/strings/string_piece.h"
 #include "fuchsia/fidl/chromium/cast/cpp/fidl.h"
 
@@ -47,9 +47,7 @@ class FakeApiBindingsImpl : public chromium::cast::ApiBindings {
   // Holds ports received via Connect(), for tests to take by calling
   // RunAndReturnConnectedPort(). Uses std::less<> as the comparator so that
   // StringPieces can be used for lookup without requiring a conversion.
-  std::map<std::string,
-           fidl::InterfaceHandle<fuchsia::web::MessagePort>,
-           std::less<>>
+  base::flat_map<std::string, fidl::InterfaceHandle<fuchsia::web::MessagePort>>
       ports_;
 
   // Used to wait for a specific port to be Connect()ed.
