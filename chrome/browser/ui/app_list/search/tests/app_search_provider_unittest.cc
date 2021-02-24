@@ -38,6 +38,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/arc/test/fake_app_instance.h"
 #include "components/crx_file/id_util.h"
 #include "components/services/app_service/public/cpp/stub_icon_loader.h"
@@ -731,7 +732,25 @@ TEST_F(AppSearchProviderTest, WebApp) {
   EXPECT_EQ("WebApp1", RunQuery("WebA"));
 }
 
-using AppSearchProviderCrostiniTest = AppSearchProviderTest;
+class AppSearchProviderCrostiniTest : public AppSearchProviderTest {
+ public:
+  void SetUp() override {
+    chromeos::DBusThreadManager::Initialize();
+    AppSearchProviderTest::SetUp();
+  }
+
+  void TearDown() override {
+    profile_.reset();
+    AppSearchProviderTest::TearDown();
+
+    // |profile_| is initialized in AppListTestBase::SetUp but not destroyed in
+    // the ::TearDown method, but we need it to go away before shutting down
+    // DBusThreadManager to ensure all keyed services that might rely on DBus
+    // clients are destroyed.
+    profile_.reset();
+    chromeos::DBusThreadManager::Shutdown();
+  }
+};
 
 TEST_F(AppSearchProviderCrostiniTest, CrostiniTerminal) {
   CreateSearch();

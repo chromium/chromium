@@ -103,6 +103,7 @@
 #include "chrome/test/base/test_browser_window_aura.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/arc_util.h"
@@ -341,6 +342,8 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     command_line->AppendSwitch(switches::kUseFirstDisplayAsInternal);
 
+    chromeos::DBusThreadManager::Initialize();
+
     app_list::AppListSyncableServiceFactory::SetUseInTesting(true);
 
     BrowserWithTestWindowTest::SetUp();
@@ -539,6 +542,7 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
     arc_test_.TearDown();
     launcher_controller_ = nullptr;
     BrowserWithTestWindowTest::TearDown();
+    chromeos::DBusThreadManager::Shutdown();
     app_list::AppListSyncableServiceFactory::SetUseInTesting(false);
   }
 

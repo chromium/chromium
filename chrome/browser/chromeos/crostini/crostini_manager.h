@@ -627,8 +627,6 @@ class CrostiniManager : public KeyedService,
   void AddContainerShutdownObserver(ContainerShutdownObserver* observer);
   void RemoveContainerShutdownObserver(ContainerShutdownObserver* observer);
 
-  void OnDBusShuttingDownForTesting();
-
   bool IsContainerUpgradeable(const ContainerId& container_id) const;
   bool ShouldPromptContainerUpgrade(const ContainerId& container_id) const;
   void UpgradePromptShown(const ContainerId& container_id);

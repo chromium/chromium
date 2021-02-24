@@ -47,7 +47,8 @@ class GuestOsStabilityMonitorTest : public testing::Test {
 
   ~GuestOsStabilityMonitorTest() override {
     crostini::CrostiniTestHelper::DisableCrostini(profile_.get());
-    crostini_manager_->OnDBusShuttingDownForTesting();
+    crostini_manager_.reset();
+    profile_.reset();
     chromeos::DBusThreadManager::Shutdown();
   }
 

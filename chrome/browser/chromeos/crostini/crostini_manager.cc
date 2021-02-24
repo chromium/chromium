@@ -2061,10 +2061,6 @@ void CrostiniManager::RemoveContainerShutdownObserver(
   container_shutdown_observers_.RemoveObserver(observer);
 }
 
-void CrostiniManager::OnDBusShuttingDownForTesting() {
-  RemoveDBusObservers();
-}
-
 void CrostiniManager::AddFileWatch(const ContainerId& container_id,
                                    const base::FilePath& path,
                                    BoolCallback callback) {

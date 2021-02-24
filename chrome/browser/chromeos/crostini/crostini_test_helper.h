@@ -76,7 +76,6 @@ class CrostiniTestHelper {
   void UpdateRegistry();
 
   TestingProfile* profile_;
-  bool initialized_dbus_;
   vm_tools::apps::ApplicationList current_apps_;
 
   // This are used to allow Crostini.

@@ -45,6 +45,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/arc/mojom/app.mojom.h"
 #include "components/arc/test/fake_app_instance.h"
@@ -92,31 +93,35 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
   ~ShelfContextMenuTest() override = default;
 
   void SetUp() override {
+    chromeos::DBusThreadManager::Initialize();
+
     ChromeAshTestBase::SetUp();
 
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kDisableDefaultApps);
 
+    profile_ = std::make_unique<TestingProfile>();
+
     extensions::TestExtensionSystem* extension_system(
         static_cast<extensions::TestExtensionSystem*>(
-            extensions::ExtensionSystem::Get(&profile_)));
+            extensions::ExtensionSystem::Get(profile())));
     extension_service_ = extension_system->CreateExtensionService(
         base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
     extension_service_->Init();
 
     ConfigureWebAppProvider();
-    web_app::TestWebAppProvider::Get(&profile_)->Start();
+    web_app::TestWebAppProvider::Get(profile())->Start();
 
     crostini_helper_ = std::make_unique<CrostiniTestHelper>(profile());
     crostini_helper_->ReInitializeAppServiceIntegration();
 
-    app_service_test_.SetUp(&profile_);
-    arc_test_.SetUp(&profile_);
+    app_service_test_.SetUp(profile());
+    arc_test_.SetUp(profile());
 
     session_manager_ = std::make_unique<session_manager::SessionManager>();
     model_ = std::make_unique<ash::ShelfModel>();
     launcher_controller_ =
-        std::make_unique<ChromeLauncherController>(&profile_, model_.get());
+        std::make_unique<ChromeLauncherController>(profile(), model_.get());
     launcher_controller_->Init();
 
     // Disable safe icon decoding to ensure ArcAppShortcutRequests returns in
@@ -180,15 +185,18 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
     arc_test_.TearDown();
 
     crostini_helper_.reset();
+    profile_.reset();
 
     ChromeAshTestBase::TearDown();
+
+    chromeos::DBusThreadManager::Shutdown();
   }
 
   ArcAppTest& arc_test() { return arc_test_; }
 
   apps::AppServiceTest& app_service_test() { return app_service_test_; }
 
-  TestingProfile* profile() { return &profile_; }
+  TestingProfile* profile() { return profile_.get(); }
 
   CrostiniTestHelper* crostini_helper() { return crostini_helper_.get(); }
 
@@ -215,15 +223,15 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
  private:
   void ConfigureWebAppProvider() {
     auto system_web_app_manager =
-        std::make_unique<web_app::TestSystemWebAppManager>(&profile_);
+        std::make_unique<web_app::TestSystemWebAppManager>(profile());
 
-    auto* provider = web_app::TestWebAppProvider::Get(&profile_);
+    auto* provider = web_app::TestWebAppProvider::Get(profile());
     provider->SetSystemWebAppManager(std::move(system_web_app_manager));
     provider->SetRunSubsystemStartupTasks(true);
   }
 
   base::test::ScopedCommandLine scoped_command_line_;
-  TestingProfile profile_;
+  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<CrostiniTestHelper> crostini_helper_;
   ArcAppTest arc_test_;
   apps::AppServiceTest app_service_test_;
@@ -632,7 +640,7 @@ TEST_F(ShelfContextMenuTest, CrostiniTerminalApp) {
 // Checks the context menu for a "normal" crostini app (i.e. a registered one).
 // Particularly, we ensure that the density changing option exists.
 // TODO(crbug.com/1177126) Re-enable test
-TEST_F(ShelfContextMenuTest, DISABLED_CrostiniNormalApp) {
+TEST_F(ShelfContextMenuTest, CrostiniNormalApp) {
   const std::string app_name = "foo";
   crostini_helper()->AddApp(crostini::CrostiniTestHelper::BasicApp(app_name));
   app_service_test().FlushMojoCalls();

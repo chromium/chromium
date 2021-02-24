@@ -670,6 +670,7 @@ class CrostiniAppTest : public AppServiceAppModelBuilderTest {
   CrostiniAppTest& operator=(const CrostiniAppTest&) = delete;
 
   void SetUp() override {
+    chromeos::DBusThreadManager::Initialize();
     AppServiceAppModelBuilderTest::SetUp();
     test_helper_ = std::make_unique<CrostiniTestHelper>(testing_profile());
     test_helper_->ReInitializeAppServiceIntegration();
@@ -680,6 +681,13 @@ class CrostiniAppTest : public AppServiceAppModelBuilderTest {
     ResetBuilder();
     test_helper_.reset();
     AppListTestBase::TearDown();
+
+    // |profile_| is initialized in AppListTestBase::SetUp but not destroyed in
+    // the ::TearDown method, but we need it to go away before shutting down
+    // DBusThreadManager to ensure all keyed services that might rely on DBus
+    // clients are destroyed.
+    profile_.reset();
+    chromeos::DBusThreadManager::Shutdown();
   }
 
  protected:
