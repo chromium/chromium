@@ -42,6 +42,7 @@ constexpr char kUsageMsg[] =
     "           [--frames=<number of frames to decode>]\n"
     "           [--out-prefix=<path prefix of decoded frame PNGs>]\n"
     "           [--md5]\n"
+    "           [--visible]\n"
     "           [--loop]\n"
     "           [--v=<log verbosity>]\n"
     "           [--help]\n";
@@ -57,18 +58,22 @@ constexpr char kHelpMsg[] =
     "        Optional. Number of frames to decode, defaults to all.\n"
     "        Override with a positive integer to decode at most that many.\n"
     "    --out-prefix=<string>\n"
-    "        Optional. Save PNGs of decoded frames if and only if a path\n"
-    "        prefix (which may specify a directory) is provided here,\n"
-    "        resulting in e.g. frame_0.png, frame_1.png, etc. if passed\n"
-    "        \"frame\".\n"
+    "        Optional. Save PNGs of decoded (and visible, if --visible is\n"
+    "        specified) frames if and only if a path prefix (which may\n"
+    "        specify a directory) is provided here, resulting in\n"
+    "        e.g. frame_0.png, frame_1.png, etc. if passed \"frame\".\n"
     "        If specified along with --loop (see below), only saves the first\n"
     "        iteration of decoded frames.\n"
     "        If omitted, the output of this binary is error or lack thereof.\n"
     "    --md5\n"
-    "        Optional. If specified, prints the md5 of each decoded and\n"
-    "        visible frame in I420 format to stdout.\n"
+    "        Optional. If specified, prints the md5 of each decoded (and\n"
+    "        visible, if --visible is specified) frame in I420 format to\n"
+    "        stdout.\n"
     "        Only supported when vaDeriveImage() produces I420 and NV12 data\n"
     "        for all frames in the video.\n"
+    "    --visible\n"
+    "        Optional. If specified, applies post-decode processing (PNG\n"
+    "        output, md5 hash) only to visible frames.\n"
     "    --loop\n"
     "        Optional. If specified, loops decoding until terminated\n"
     "        externally or until an error occurs, at which point the current\n"
@@ -180,9 +185,8 @@ int main(int argc, char** argv) {
       LOG(ERROR) << "Failed to create decoder for file: " << video_path;
       return EXIT_FAILURE;
     }
-    int i = 0;
 
-    while (true) {
+    for (int i = 0; i < n_frames || n_frames == 0; i++) {
       LOG(INFO) << "Frame " << i << "...";
       const VideoDecoder::Result res = dec->DecodeNextFrame();
 
@@ -197,16 +201,16 @@ int main(int argc, char** argv) {
         continue;
       }
 
+      if (cmd->HasSwitch("visible") && !dec->LastDecodedFrameVisible())
+        continue;
+
       if (!output_prefix.empty() && first_loop) {
         dec->LastDecodedFrameToPNG(
             base::StringPrintf("%s_%d.png", output_prefix.c_str(), i));
       }
-      if (cmd->HasSwitch("md5") && dec->LastDecodedFrameVisible()) {
+      if (cmd->HasSwitch("md5")) {
         std::cout << dec->LastDecodedFrameMD5Sum() << std::endl;
       }
-
-      if (++i == n_frames)
-        break;
     }
 
     first_loop = false;
