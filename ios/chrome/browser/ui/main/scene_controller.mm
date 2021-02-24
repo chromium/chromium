@@ -2466,9 +2466,20 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 // Starts the sign-in coordinator with a default cleanup completion.
 - (void)startSigninCoordinatorWithCompletion:
     (signin_ui::CompletionCallback)completion {
+  DCHECK(self.signinCoordinator);
+  if (!signin::IsSigninAllowed(
+          self.signinCoordinator.browser->GetBrowserState()->GetPrefs())) {
+    completion(/*success=*/NO);
+    [self.signinCoordinator stop];
+    id<PolicySignoutPromptCommands> handler = HandlerForProtocol(
+        self.signinCoordinator.browser->GetCommandDispatcher(),
+        PolicySignoutPromptCommands);
+    [handler showPolicySignoutPrompt];
+    self.signinCoordinator = nil;
+  }
+
   __block std::unique_ptr<ScopedUIBlocker> uiBlocker =
       std::make_unique<ScopedUIBlocker>(self.sceneState);
-  DCHECK(self.signinCoordinator);
   __weak SceneController* weakSelf = self;
   self.signinCoordinator.signinCompletion =
       ^(SigninCoordinatorResult result, SigninCompletionInfo*) {

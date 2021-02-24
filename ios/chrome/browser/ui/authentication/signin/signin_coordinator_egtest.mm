@@ -6,6 +6,7 @@
 #include "base/ios/ios_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_constants.h"
@@ -591,6 +592,27 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
   [[EarlGrey selectElementWithMatcher:identityChooserButtonMatcherWithEmail(
                                           fakeIdentity.userEmail)]
       assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that the sign-in coordinator isn't started when sign-in is disabled.
+- (void)testSigninDisabled {
+  // Disable browser sign-in only after the "Sign in to Chrome" button is
+  // visible.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kSigninAllowed];
+
+  // Attempt to sign in.
+  [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Verify the sign-in view isn't showing.
+  id<GREYMatcher> signin_matcher = StaticTextWithAccessibilityLabelId(
+      IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_SUBTITLE);
+  [[EarlGrey selectElementWithMatcher:signin_matcher]
+      assertWithMatcher:grey_notVisible()];
+
+  // Prefs clean-up.
+  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kSigninAllowed];
 }
 
 @end
