@@ -24,6 +24,9 @@
   --exit-easing: cubic-bezier(0.4, 0, 1, 1);
 
   /* App specific settings */
+  --default-font-family: 'Google Sans', sans-serif;
+  --fixed-width-font-family: 'Cousine', monospace;
+
   --focus-color: rgba(var(--blue-600-dark-rgb), 0.7);
 }
 
@@ -36,8 +39,6 @@ audio {
 }
 
 body {
-  --default-font-family: 'Google Sans', sans-serif;
-
   background: black;
   bottom: 0;
   font-family: var(--default-font-family);
@@ -1092,6 +1093,7 @@ body:not(.recording-ui-paused) #record-time [i18n-text=record_video_paused_msg] 
 #record-time [i18n-text=record_video_paused_msg] {
   color: white;
   flex-shrink: 0;
+  font-family: var(--fixed-width-font-family);
   font-size: 13px;
 }
 
