@@ -331,7 +331,6 @@ _BANNED_IOS_EGTEST_FUNCTIONS = (
 _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^base/callback.h',  # Intentional.
   '^base/cancelable_callback.h',  # Intentional.
-  '^chrome/browser/apps/guest_view/web_view_browsertest.cc',
   "^chrome/browser/ash/accessibility/",
   '^chrome/browser/media_galleries/',
   "^chrome/browser/metrics/",
