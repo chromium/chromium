@@ -78,56 +78,6 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, I18nProcessCssTest) {
   LoadTestUrl("i18n_process_css_test.html");
 }
 
-class WebUIResourceBrowserTestV0 : public InProcessBrowserTest {
- public:
-  void SetUpOnMainThread() override {
-    // Load resources that are only used by browser_tests.
-    base::FilePath pak_path;
-    ASSERT_TRUE(base::PathService::Get(base::DIR_MODULE, &pak_path));
-    pak_path = pak_path.AppendASCII("browser_tests.pak");
-    ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-        pak_path, ui::SCALE_FACTOR_NONE);
-
-    ASSERT_TRUE(embedded_test_server()->Start());
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // TODO(yoichio): This is temporary switch to support chrome internal
-    // components migration from the old web APIs.
-    // After completion of the migration, we should remove this.
-    // See crbug.com/911943 for detail.
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "HTMLImports");
-  }
-
-  // Runs all test functions in |file|, waiting for them to complete.
-  void LoadFile(const std::string& file) {
-    GURL test_url =
-        embedded_test_server()->GetURL(std::string("/webui/") + file);
-    RunTest(test_url);
-  }
-
-  // Queues the library corresponding to |resource_id| for injection into the
-  // test. The code injection is performed post-load, so any common test
-  // initialization that depends on the library should be placed in a setUp
-  // function.
-  void AddLibrary(int resource_id) {
-    include_libraries_.push_back(resource_id);
-  }
-
- private:
-  void RunTest(const GURL& url) {
-    ui_test_utils::NavigateToURL(browser(), url);
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    ASSERT_TRUE(web_contents);
-    EXPECT_TRUE(ExecuteWebUIResourceTest(web_contents, include_libraries_));
-  }
-
-  // Resource IDs for internal javascript libraries to inject into the test.
-  std::vector<int> include_libraries_;
-};
-
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListTest) {
   LoadTestUrl("js/cr/ui/list_test.html");
 }
