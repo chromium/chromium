@@ -44,6 +44,9 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   WindowCycleList& operator=(const WindowCycleList&) = delete;
   ~WindowCycleList() override;
 
+  // Horizontal padding between the alt-tab bandshield and the window previews.
+  static constexpr int kInsideBorderHorizontalPaddingDp = 64;
+
   // Returns the |target_window_| from |cycle_view_|.
   aura::Window* GetTargetWindow();
 
@@ -59,6 +62,10 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   void ScrollInDirection(
       WindowCycleController::WindowCyclingDirection direction);
 
+  // Should be called when a user drags their finger on the touch screen.
+  // Translates the mirror container by |delta_x|.
+  void Drag(float delta_x);
+
   // Moves the focus ring to the respective preview for |window|. Does not
   // scroll the window cycle list.
   void SetFocusedWindow(aura::Window* window);
@@ -73,7 +80,11 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
 
   // Checks whether |event| occurs within the cycle view. Returns false if
   // |cycle_view_| does not exist.
-  bool IsEventInCycleView(ui::LocatedEvent* event);
+  bool IsEventInCycleView(const ui::LocatedEvent* event);
+
+  // Returns the window for the preview item located at |event|. Returns nullptr
+  // if |event| not in cycle view or if |cycle_view_| does not exist.
+  aura::Window* GetWindowAtPoint(const ui::LocatedEvent* event);
 
   // Returns true if the window list overlay should be shown.
   bool ShouldShowUi();
