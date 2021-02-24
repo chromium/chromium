@@ -24,6 +24,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/lock.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
@@ -760,16 +761,19 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
 
   // Register a handler which serves different script on each request. The
   // service worker returns a page titled by "Title" via Blob.
+  base::Lock service_worker_served_count_lock;
   int service_worker_served_count = 0;
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.RegisterRequestHandler(base::BindLambdaForTesting(
       [&](const net::test_server::HttpRequest& request)
           -> std::unique_ptr<net::test_server::HttpResponse> {
+        // Note this callback runs on a background thread.
         if (request.relative_url != kWorkerUrl)
           return nullptr;
         auto response = std::make_unique<net::test_server::BasicHttpResponse>();
         response->set_code(net::HTTP_OK);
         response->set_content_type("text/javascript");
+        base::AutoLock lock(service_worker_served_count_lock);
         response->set_content(
             base::StringPrintf(kWorkerScript, ++service_worker_served_count));
         return response;
@@ -790,7 +794,10 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
         base::BindOnce(&ExpectRegisterResultAndRun,
                        blink::ServiceWorkerStatusCode::kOk, base::DoNothing()));
     observer->Wait();
-    EXPECT_EQ(1, service_worker_served_count);
+    {
+      base::AutoLock lock(service_worker_served_count_lock);
+      EXPECT_EQ(1, service_worker_served_count);
+    }
 
     // Wait until the page is appropriately served by the service worker.
     const base::string16 title = base::ASCIIToUTF16("Title");
