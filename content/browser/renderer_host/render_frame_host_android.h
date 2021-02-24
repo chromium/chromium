@@ -57,6 +57,10 @@ class RenderFrameHostAndroid : public base::SupportsUserData::Data {
   void NotifyUserActivation(JNIEnv* env,
                             const base::android::JavaParamRef<jobject>&);
 
+  jboolean SignalModalCloseWatcherIfActive(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>&) const;
+
   jboolean IsRenderFrameCreated(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>&) const;

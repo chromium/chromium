@@ -79,6 +79,12 @@ public interface RenderFrameHost {
     void notifyUserActivation();
 
     /**
+     * If a ModalCloseWatcher is active in this RenderFrameHost, signal it to close.
+     * @return Whether a close signal was sent.
+     */
+    boolean signalModalCloseWatcherIfActive();
+
+    /**
      * Returns whether we're in incognito mode.
      *
      * @return {@code true} if we're in incognito mode.

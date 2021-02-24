@@ -137,6 +137,8 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
   void CapturePaintPreviewOfSubframe(
       const gfx::Rect& clip_rect,
       const base::UnguessableToken& guid) override;
+  void SetModalCloseListener(
+      mojo::PendingRemote<mojom::blink::ModalCloseListener>) override;
   void Detach() override;
   void GetKeepAliveHandleFactory(
       mojo::PendingReceiver<mojom::blink::KeepAliveHandleFactory> receiver)

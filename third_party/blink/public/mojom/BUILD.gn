@@ -120,6 +120,7 @@ mojom("mojom_platform") {
     "mediastream/media_devices.mojom",
     "mediastream/media_stream.mojom",
     "mime/mime_registry.mojom",
+    "modal_close_watcher/modal_close_listener.mojom",
     "native_io/native_io.mojom",
     "notifications/notification.mojom",
     "notifications/notification_service.mojom",

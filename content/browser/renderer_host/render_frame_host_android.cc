@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "content/browser/bad_message.h"
+#include "content/browser/renderer_host/modal_close_listener_host.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/android/content_jni_headers/RenderFrameHostImpl_jni.h"
@@ -140,6 +141,14 @@ void RenderFrameHostAndroid::NotifyUserActivation(
     const base::android::JavaParamRef<jobject>&) {
   render_frame_host_->GetAssociatedLocalFrame()->NotifyUserActivation(
       blink::mojom::UserActivationNotificationType::kVoiceSearch);
+}
+
+jboolean RenderFrameHostAndroid::SignalModalCloseWatcherIfActive(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>&) const {
+  auto* modal_close_listener_host =
+      ModalCloseListenerHost::GetOrCreateForCurrentDocument(render_frame_host_);
+  return modal_close_listener_host->SignalIfActive();
 }
 
 jboolean RenderFrameHostAndroid::IsRenderFrameCreated(

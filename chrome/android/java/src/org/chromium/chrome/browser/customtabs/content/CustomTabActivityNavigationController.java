@@ -37,7 +37,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
 
 import java.lang.annotation.Retention;
@@ -216,6 +218,12 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
         if (mFullscreenManager.get().getPersistentFullscreenMode()) {
             mFullscreenManager.get().exitPersistentFullscreenMode();
             return true;
+        }
+
+        final WebContents webContents = mTabProvider.getTab().getWebContents();
+        if (webContents != null) {
+            RenderFrameHost focusedFrame = webContents.getFocusedFrame();
+            if (focusedFrame != null && focusedFrame.signalModalCloseWatcherIfActive()) return true;
         }
 
         if (mToolbarManager != null && mToolbarManager.back()) return true;

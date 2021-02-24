@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/modalclosewatcher/modal_close_watcher.h"
 
+#include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -26,11 +27,14 @@ ModalCloseWatcher::WatcherStack& ModalCloseWatcher::WatcherStack::From(
 }
 
 ModalCloseWatcher::WatcherStack::WatcherStack(LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window) {}
+    : Supplement<LocalDOMWindow>(window), receiver_(this, &window) {}
 
 void ModalCloseWatcher::WatcherStack::Add(ModalCloseWatcher* watcher) {
   if (watchers_.IsEmpty()) {
     GetSupplementable()->addEventListener(event_type_names::kKeyup, this);
+    auto& host = GetSupplementable()->GetFrame()->GetLocalFrameHostRemote();
+    host.SetModalCloseListener(receiver_.BindNewPipeAndPassRemote(
+        GetSupplementable()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
   }
   watchers_.insert(watcher);
 }
@@ -39,6 +43,7 @@ void ModalCloseWatcher::WatcherStack::Remove(ModalCloseWatcher* watcher) {
   watchers_.erase(watcher);
   if (watchers_.IsEmpty()) {
     GetSupplementable()->removeEventListener(event_type_names::kKeyup, this);
+    receiver_.reset();
   }
 }
 
@@ -46,6 +51,7 @@ void ModalCloseWatcher::WatcherStack::Trace(Visitor* visitor) const {
   NativeEventListener::Trace(visitor);
   Supplement<LocalDOMWindow>::Trace(visitor);
   visitor->Trace(watchers_);
+  visitor->Trace(receiver_);
 }
 
 void ModalCloseWatcher::WatcherStack::Invoke(ExecutionContext*, Event* e) {

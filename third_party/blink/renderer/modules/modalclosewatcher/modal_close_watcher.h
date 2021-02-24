@@ -5,10 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MODALCLOSEWATCHER_MODAL_CLOSE_WATCHER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MODALCLOSEWATCHER_MODAL_CLOSE_WATCHER_H_
 
+#include "third_party/blink/public/mojom/modal_close_watcher/modal_close_listener.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
@@ -44,7 +46,8 @@ class ModalCloseWatcher final : public EventTargetWithInlineData,
   // the first ModalCloseWatcher is "free", but creating a new
   // ModalCloseWatcher when the stack is non-empty requires a user activation.
   class WatcherStack final : public NativeEventListener,
-                             public Supplement<LocalDOMWindow> {
+                             public Supplement<LocalDOMWindow>,
+                             public mojom::blink::ModalCloseListener {
    public:
     static const char kSupplementName[];
 
@@ -61,9 +64,14 @@ class ModalCloseWatcher final : public EventTargetWithInlineData,
     // NativeEventListener override:
     void Invoke(ExecutionContext*, Event*) final;
 
-    void Signal() { watchers_.back()->signalClosed(); }
+    // mojom::blink::ModalCloseListener override:
+    void Signal() final { watchers_.back()->signalClosed(); }
 
     HeapLinkedHashSet<Member<ModalCloseWatcher>> watchers_;
+
+    // Holds a pipe which the service uses to notify this object
+    // when the idle state has changed.
+    HeapMojoReceiver<mojom::blink::ModalCloseListener, WatcherStack> receiver_;
   };
 
   enum class State { kActive, kModal, kClosed };

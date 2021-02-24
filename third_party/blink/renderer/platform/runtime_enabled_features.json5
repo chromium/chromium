@@ -1336,7 +1336,7 @@
     },
     {
       name: "ModalCloseWatcher",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "ModuleServiceWorker",
