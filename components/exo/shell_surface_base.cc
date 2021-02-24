@@ -28,6 +28,7 @@
 #include "chromeos/ui/base//window_properties.h"
 #include "chromeos/ui/base/window_pin_type.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
@@ -291,6 +292,15 @@ void CloseAllTransientChildren(aura::Window* window) {
 
 int shell_id = 0;
 
+void ShowSnapPreview(aura::Window* window,
+                     chromeos::SnapDirection snap_direction) {
+  chromeos::SnapController::Get()->ShowSnapPreview(window, snap_direction);
+}
+
+void CommitSnap(aura::Window* window, chromeos::SnapDirection snap_direction) {
+  chromeos::SnapController::Get()->CommitSnap(window, snap_direction);
+}
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -438,6 +448,30 @@ void ShellSurfaceBase::SetUseImmersiveForFullscreen(bool value) {
 
   if (widget_ && widget_->GetNativeWindow())
     SetShellUseImmersiveForFullscreen(widget_->GetNativeWindow(), value);
+}
+
+void ShellSurfaceBase::ShowSnapPreviewToLeft() {
+  ShowSnapPreview(widget_->GetNativeWindow(), chromeos::SnapDirection::kLeft);
+}
+
+void ShellSurfaceBase::ShowSnapPreviewToRight() {
+  ShowSnapPreview(widget_->GetNativeWindow(), chromeos::SnapDirection::kRight);
+}
+
+void ShellSurfaceBase::HideSnapPreview() {
+  ShowSnapPreview(widget_->GetNativeWindow(), chromeos::SnapDirection::kNone);
+}
+
+void ShellSurfaceBase::SetSnappedToLeft() {
+  CommitSnap(widget_->GetNativeWindow(), chromeos::SnapDirection::kLeft);
+}
+
+void ShellSurfaceBase::SetSnappedToRight() {
+  CommitSnap(widget_->GetNativeWindow(), chromeos::SnapDirection::kRight);
+}
+
+void ShellSurfaceBase::UnsetSnap() {
+  CommitSnap(widget_->GetNativeWindow(), chromeos::SnapDirection::kNone);
 }
 
 void ShellSurfaceBase::SetChildAxTreeId(ui::AXTreeID child_ax_tree_id) {

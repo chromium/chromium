@@ -56,7 +56,7 @@ namespace {
 // The maximum supported versions for a given interface.
 // The version bound will be the minimum of the value and the version
 // advertised by the server.
-constexpr uint32_t kMaxAuraShellVersion = 15;
+constexpr uint32_t kMaxAuraShellVersion = 16;
 constexpr uint32_t kMaxCompositorVersion = 4;
 constexpr uint32_t kMaxCursorShapesVersion = 1;
 constexpr uint32_t kMaxGtkPrimarySelectionDeviceManagerVersion = 1;

@@ -562,6 +562,36 @@ void Surface::SetUseImmersiveForFullscreen(bool value) {
     delegate_->SetUseImmersiveForFullscreen(value);
 }
 
+void Surface::ShowSnapPreviewToRight() {
+  if (delegate_)
+    delegate_->ShowSnapPreviewToRight();
+}
+
+void Surface::ShowSnapPreviewToLeft() {
+  if (delegate_)
+    delegate_->ShowSnapPreviewToLeft();
+}
+
+void Surface::HideSnapPreview() {
+  if (delegate_)
+    delegate_->HideSnapPreview();
+}
+
+void Surface::SetSnappedToRight() {
+  if (delegate_)
+    delegate_->SetSnappedToRight();
+}
+
+void Surface::SetSnappedToLeft() {
+  if (delegate_)
+    delegate_->SetSnappedToLeft();
+}
+
+void Surface::UnsetSnap() {
+  if (delegate_)
+    delegate_->UnsetSnap();
+}
+
 void Surface::SetColorSpace(gfx::ColorSpace color_space) {
   TRACE_EVENT1("exo", "Surface::SetColorSpace", "color_space",
                color_space.ToString());

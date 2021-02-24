@@ -99,12 +99,6 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   // Called when the client changed the fullscreen state.
   void SetFullscreen(bool fullscreen);
 
-  // Called when the client was snapped to left.
-  void SetSnappedToLeft();
-
-  // Called when the client was snapped to right.
-  void SetSnappedToRight();
-
   // Called when the client was set to PIP.
   void SetPip();
 
@@ -197,6 +191,8 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   bool IsInputEnabled(Surface* surface) const override;
   void OnSetFrame(SurfaceFrameType type) override;
   void OnSetFrameColors(SkColor active_color, SkColor inactive_color) override;
+  void SetSnappedToLeft() override;
+  void SetSnappedToRight() override;
 
   // Overridden from views::WidgetDelegate:
   bool CanMaximize() const override;

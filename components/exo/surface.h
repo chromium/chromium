@@ -185,6 +185,16 @@ class Surface final : public ui::PropertyHandler {
   // mouse gesture (immersive fullscreen).
   void SetUseImmersiveForFullscreen(bool value);
 
+  // Called to show the snap preview to the right or left, or to hide it.
+  void ShowSnapPreviewToRight();
+  void ShowSnapPreviewToLeft();
+  void HideSnapPreview();
+
+  // Called when the client was snapped to right or left, or reset.
+  void SetSnappedToRight();
+  void SetSnappedToLeft();
+  void UnsetSnap();
+
   // This sets the color space for the buffer for this surface.
   void SetColorSpace(gfx::ColorSpace color_space);
 

@@ -165,6 +165,24 @@ void aura_surface_set_server_start_resize(wl_client* client,
   GetUserDataAs<AuraSurface>(resource)->SetServerStartResize();
 }
 
+void aura_surface_intent_to_snap(wl_client* client,
+                                 wl_resource* resource,
+                                 uint32_t snap_direction) {
+  GetUserDataAs<AuraSurface>(resource)->IntentToSnap(snap_direction);
+}
+
+void aura_surface_set_snap_left(wl_client* client, wl_resource* resource) {
+  GetUserDataAs<AuraSurface>(resource)->SetSnapLeft();
+}
+
+void aura_surface_set_snap_right(wl_client* client, wl_resource* resource) {
+  GetUserDataAs<AuraSurface>(resource)->SetSnapRight();
+}
+
+void aura_surface_unset_snap(wl_client* client, wl_resource* resource) {
+  GetUserDataAs<AuraSurface>(resource)->UnsetSnap();
+}
+
 const struct zaura_surface_interface aura_surface_implementation = {
     aura_surface_set_frame,
     aura_surface_set_parent,
@@ -178,7 +196,11 @@ const struct zaura_surface_interface aura_surface_implementation = {
     aura_surface_draw_attention,
     aura_surface_set_fullscreen_mode,
     aura_surface_set_client_surface_str_id,
-    aura_surface_set_server_start_resize};
+    aura_surface_set_server_start_resize,
+    aura_surface_intent_to_snap,
+    aura_surface_set_snap_left,
+    aura_surface_set_snap_right,
+    aura_surface_unset_snap};
 
 }  // namespace
 
@@ -269,6 +291,32 @@ void AuraSurface::SetFullscreenMode(uint32_t mode) {
               << mode;
       break;
   }
+}
+
+void AuraSurface::IntentToSnap(uint32_t snap_direction) {
+  switch (snap_direction) {
+    case ZAURA_SURFACE_SNAP_DIRECTION_NONE:
+      surface_->HideSnapPreview();
+      break;
+    case ZAURA_SURFACE_SNAP_DIRECTION_LEFT:
+      surface_->ShowSnapPreviewToLeft();
+      break;
+    case ZAURA_SURFACE_SNAP_DIRECTION_RIGHT:
+      surface_->ShowSnapPreviewToRight();
+      break;
+  }
+}
+
+void AuraSurface::SetSnapLeft() {
+  surface_->SetSnappedToLeft();
+}
+
+void AuraSurface::SetSnapRight() {
+  surface_->SetSnappedToRight();
+}
+
+void AuraSurface::UnsetSnap() {
+  surface_->UnsetSnap();
 }
 
 // Overridden from SurfaceObserver:

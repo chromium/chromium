@@ -95,6 +95,12 @@ class SurfaceTreeHost : public SurfaceDelegate,
   void OnActivationRequested() override {}
   void OnNewOutputAdded() override;
   void OnSetServerStartResize() override {}
+  void ShowSnapPreviewToLeft() override {}
+  void ShowSnapPreviewToRight() override {}
+  void HideSnapPreview() override {}
+  void SetSnappedToLeft() override {}
+  void SetSnappedToRight() override {}
+  void UnsetSnap() override {}
 
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,

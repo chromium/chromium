@@ -144,6 +144,12 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   void OnSetStartupId(const char* startup_id) override;
   void OnSetApplicationId(const char* application_id) override;
   void SetUseImmersiveForFullscreen(bool value) override;
+  void ShowSnapPreviewToLeft() override;
+  void ShowSnapPreviewToRight() override;
+  void HideSnapPreview() override;
+  void SetSnappedToLeft() override;
+  void SetSnappedToRight() override;
+  void UnsetSnap() override;
   void OnActivationRequested() override;
   void OnSetServerStartResize() override;
 

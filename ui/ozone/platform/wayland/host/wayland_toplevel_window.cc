@@ -393,6 +393,51 @@ void WaylandToplevelWindow::SetImmersiveFullscreenStatus(bool status) {
   }
 }
 
+void WaylandToplevelWindow::ShowSnapPreview(
+    WaylandWindowSnapDirection snap_direction) {
+  if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
+                           ZAURA_SURFACE_INTENT_TO_SNAP_SINCE_VERSION) {
+    uint32_t zaura_shell_snap_direction = ZAURA_SURFACE_SNAP_DIRECTION_NONE;
+    switch (snap_direction) {
+      case WaylandWindowSnapDirection::kLeft:
+        zaura_shell_snap_direction = ZAURA_SURFACE_SNAP_DIRECTION_LEFT;
+        break;
+      case WaylandWindowSnapDirection::kRight:
+        zaura_shell_snap_direction = ZAURA_SURFACE_SNAP_DIRECTION_RIGHT;
+        break;
+      case WaylandWindowSnapDirection::kNone:
+        break;
+    }
+    zaura_surface_intent_to_snap(aura_surface_.get(),
+                                 zaura_shell_snap_direction);
+    return;
+  }
+
+  NOTIMPLEMENTED_LOG_ONCE()
+      << "Window snapping isn't available for non-lacros builds.";
+}
+
+void WaylandToplevelWindow::CommitSnap(
+    WaylandWindowSnapDirection snap_direction) {
+  if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
+                           ZAURA_SURFACE_UNSET_SNAP_SINCE_VERSION) {
+    switch (snap_direction) {
+      case WaylandWindowSnapDirection::kLeft:
+        zaura_surface_set_snap_left(aura_surface_.get());
+        return;
+      case WaylandWindowSnapDirection::kRight:
+        zaura_surface_set_snap_right(aura_surface_.get());
+        return;
+      case WaylandWindowSnapDirection::kNone:
+        zaura_surface_unset_snap(aura_surface_.get());
+        return;
+    }
+  }
+
+  NOTIMPLEMENTED_LOG_ONCE()
+      << "Window snapping isn't available for non-lacros builds.";
+}
+
 void WaylandToplevelWindow::TriggerStateChanges() {
   if (!shell_toplevel_)
     return;
