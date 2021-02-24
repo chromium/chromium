@@ -334,14 +334,14 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     return nullptr;
   }
 
-  for (size_t i = 0; i < planes.size(); ++i) {
+  for (wtf_size_t i = 0; i < planes.size(); ++i) {
     const auto minimum_size =
         media::VideoFrame::PlaneSize(media_fmt, i, coded_size);
     if (planes[i]->stride() < uint32_t{minimum_size.width()}) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kConstraintError,
           String::Format(
-              "The stride of plane %zu is too small for the given coded size "
+              "The stride of plane %u is too small for the given coded size "
               "(%s); expected at least %d, received %u",
               i, coded_size.ToString().c_str(), minimum_size.width(),
               planes[i]->stride()));
@@ -351,7 +351,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
       exception_state.ThrowDOMException(
           DOMExceptionCode::kConstraintError,
           String::Format(
-              "The row count for plane %zu is incorrect for the given coded "
+              "The row count for plane %u is incorrect for the given coded "
               "size (%s); expected %d, received %u",
               i, coded_size.ToString().c_str(), minimum_size.height(),
               planes[i]->rows()));
@@ -364,7 +364,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     if (!required_byte_size.IsValid()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kConstraintError,
-          String::Format("The size of plane %zu is too large", i));
+          String::Format("The size of plane %u is too large", i));
       return nullptr;
     }
 
@@ -375,7 +375,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
       exception_state.ThrowDOMException(
           DOMExceptionCode::kConstraintError,
           String::Format(
-              "The size of plane %zu is too small for the given coded "
+              "The size of plane %u is too small for the given coded "
               "size (%s); expected at least %d, received %zu",
               i, coded_size.ToString().c_str(), provided_size.GetArea(),
               buffer.ByteLength()));
@@ -440,7 +440,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     return nullptr;
   }
 
-  for (size_t i = 0; i < planes.size(); ++i) {
+  for (wtf_size_t i = 0; i < planes.size(); ++i) {
     const auto minimum_size =
         media::VideoFrame::PlaneSize(media_fmt, i, coded_size);
 

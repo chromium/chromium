@@ -38,7 +38,7 @@ AudioFrame::AudioFrame(scoped_refptr<media::AudioBuffer> buffer)
       media::AudioBus::Create(buffer->channel_count(), buffer->frame_count());
 
   std::vector<float*> wrapped_channels(buffer_->numberOfChannels());
-  for (size_t ch = 0; ch < wrapped_channels.size(); ++ch)
+  for (unsigned ch = 0; ch < buffer_->numberOfChannels(); ++ch)
     wrapped_channels[ch] = buffer_->getChannelData(ch)->Data();
 
   // Copy the frames, converting from |buffer|'s internal format to float.

@@ -149,7 +149,7 @@ String GetIgnoredReasonsDebugString(AXObject::IgnoredReasons& reasons) {
   if (reasons.size() == 0)
     return "";
   String string_builder = "(";
-  for (size_t count = 0; count < reasons.size(); count++) {
+  for (wtf_size_t count = 0; count < reasons.size(); count++) {
     if (count > 0)
       string_builder = string_builder + ',';
     string_builder = string_builder + IgnoredReasonName(reasons[count].reason);

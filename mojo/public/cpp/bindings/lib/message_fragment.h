@@ -146,12 +146,16 @@ class MessageFragment<Array_Data<T>> {
   // Allocates and claims enough memory for `num_elements` elements of type `T`,
   // plus an array header, and initializes a new `Array_Data<T>` in place.
   void AllocateArrayData(size_t num_elements) {
+    static_assert(
+        std::numeric_limits<uint32_t>::max() > Traits::kMaxNumElements,
+        "Max num elements castable to 32bit");
     if (num_elements > Traits::kMaxNumElements)
       return;
 
-    const size_t num_bytes = Traits::GetStorageSize(num_elements);
+    const uint32_t num_bytes =
+        Traits::GetStorageSize(static_cast<uint32_t>(num_elements));
     index_ = message_.payload_buffer()->Allocate(num_bytes);
-    new (data()) Array_Data<T>(num_bytes, num_elements);
+    new (data()) Array_Data<T>(num_bytes, static_cast<uint32_t>(num_elements));
   }
 
  private:

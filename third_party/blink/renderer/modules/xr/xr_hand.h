@@ -33,7 +33,7 @@ class XRHand : public ScriptWrappable,
                   XRInputSource* input_source);
   ~XRHand() override = default;
 
-  unsigned int size() const { return joint_spaces_.size(); }
+  size_t size() const { return joint_spaces_.size(); }
 
   XRJointSpace* get(const String& key);
 
