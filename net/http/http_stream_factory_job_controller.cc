@@ -847,17 +847,20 @@ void HttpStreamFactory::JobController::MaybeReportBrokenAlternativeService() {
     return;
   }
 
-  // Report brokenness if alternative job failed.
-  base::UmaHistogramSparse("Net.AlternateServiceFailed",
-                           -alternative_job_net_error_);
-
   if (alternative_job_net_error_ == ERR_NETWORK_CHANGED ||
-      alternative_job_net_error_ == ERR_INTERNET_DISCONNECTED) {
+      alternative_job_net_error_ == ERR_INTERNET_DISCONNECTED ||
+      (alternative_job_net_error_ == ERR_NAME_NOT_RESOLVED &&
+       request_info_.url.host() ==
+           alternative_service_info_.alternative_service().host)) {
     // No need to mark alternative service as broken.
     // Reset error status for Jobs.
     ResetErrorStatusForJobs();
     return;
   }
+
+  // Report brokenness if alternative job failed.
+  base::UmaHistogramSparse("Net.AlternateServiceFailed",
+                           -alternative_job_net_error_);
 
   HistogramBrokenAlternateProtocolLocation(
       BROKEN_ALTERNATE_PROTOCOL_LOCATION_HTTP_STREAM_FACTORY_JOB_ALT);
