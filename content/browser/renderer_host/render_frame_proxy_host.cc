@@ -285,7 +285,7 @@ bool RenderFrameProxyHost::InitRenderFrameProxy() {
     CHECK_NE(parent_routing_id, MSG_ROUTING_NONE);
   }
 
-  base::Optional<base::UnguessableToken> opener_frame_token;
+  base::Optional<blink::FrameToken> opener_frame_token;
   if (frame_tree_node_->opener()) {
     opener_frame_token =
         frame_tree_node_->render_manager()->GetOpenerFrameToken(

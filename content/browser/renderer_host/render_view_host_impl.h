@@ -35,6 +35,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_states.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/page/page.mojom.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "third_party/blink/public/web/web_console_message.h"
@@ -152,7 +153,7 @@ class CONTENT_EXPORT RenderViewHostImpl
   // |proxy_route_id| is only used when creating a RenderView in an inactive
   //   state.
   virtual bool CreateRenderView(
-      const base::Optional<base::UnguessableToken>& opener_frame_token,
+      const base::Optional<blink::FrameToken>& opener_frame_token,
       int proxy_route_id,
       bool window_was_created_with_opener);
 

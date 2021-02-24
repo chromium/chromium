@@ -189,18 +189,18 @@ void FakeLocalFrameHost::DidLoadResourceFromMemoryCache(
     network::mojom::blink::RequestDestination request_destination) {}
 
 void FakeLocalFrameHost::DidChangeFrameOwnerProperties(
-    const base::UnguessableToken& child_frame_token,
+    const blink::FrameToken& child_frame_token,
     mojom::blink::FrameOwnerPropertiesPtr frame_owner_properties) {}
 
 void FakeLocalFrameHost::DidChangeOpener(
     const base::Optional<LocalFrameToken>& opener_frame) {}
 
 void FakeLocalFrameHost::DidChangeCSPAttribute(
-    const base::UnguessableToken& child_frame_token,
+    const blink::FrameToken& child_frame_token,
     network::mojom::blink::ContentSecurityPolicyPtr) {}
 
 void FakeLocalFrameHost::DidChangeFramePolicy(
-    const base::UnguessableToken& child_frame_token,
+    const blink::FrameToken& child_frame_token,
     const FramePolicy& frame_policy) {}
 
 void FakeLocalFrameHost::CapturePaintPreviewOfSubframe(

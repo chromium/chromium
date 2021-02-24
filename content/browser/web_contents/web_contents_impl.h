@@ -965,7 +965,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   bool CreateRenderViewForRenderManager(
       RenderViewHost* render_view_host,
-      const base::Optional<base::UnguessableToken>& opener_frame_token,
+      const base::Optional<blink::FrameToken>& opener_frame_token,
       RenderFrameProxyHost* proxy_host) override;
   void ReattachOuterDelegateIfNeeded() override;
   void CreateRenderWidgetHostViewForRenderManager(

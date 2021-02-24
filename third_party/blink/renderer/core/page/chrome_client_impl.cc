@@ -300,7 +300,7 @@ void ChromeClientImpl::SetOverscrollBehavior(
       overscroll_behavior);
 }
 
-void ChromeClientImpl::Show(const base::UnguessableToken& opener_frame_token,
+void ChromeClientImpl::Show(const blink::LocalFrameToken& opener_frame_token,
                             NavigationPolicy navigation_policy,
                             const IntRect& initial_rect,
                             bool user_gesture) {

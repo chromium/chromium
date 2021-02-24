@@ -671,7 +671,7 @@ class CORE_EXPORT LocalFrame final
   void BindReportingObserver(
       mojo::PendingReceiver<mojom::blink::ReportingObserver> receiver) final;
   void UpdateOpener(
-      const base::Optional<base::UnguessableToken>& opener_routing_id) final;
+      const base::Optional<blink::FrameToken>& opener_routing_id) final;
   void GetSavableResourceLinks(GetSavableResourceLinksCallback callback) final;
   void MixedContentFound(
       const KURL& main_resource_url,

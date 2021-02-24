@@ -2080,7 +2080,7 @@ class UpdateOpenerProxyObserver {
     RenderFrameProxyHost::SetCreatedCallbackForTesting(
         RenderFrameProxyHost::CreatedCallback());
   }
-  base::Optional<base::UnguessableToken> OpenerFrameToken(
+  base::Optional<blink::FrameToken> OpenerFrameToken(
       RenderFrameProxyHost* proxy) {
     return remote_frames_[proxy]->opener_frame_token();
   }
@@ -2092,15 +2092,15 @@ class UpdateOpenerProxyObserver {
       Init(proxy->GetRemoteAssociatedInterfacesTesting());
     }
     void UpdateOpener(
-        const base::Optional<base::UnguessableToken>& frame_token) override {
+        const base::Optional<blink::FrameToken>& frame_token) override {
       frame_token_ = frame_token;
     }
-    base::Optional<base::UnguessableToken> opener_frame_token() {
+    base::Optional<blink::FrameToken> opener_frame_token() {
       return frame_token_;
     }
 
    private:
-    base::Optional<base::UnguessableToken> frame_token_;
+    base::Optional<blink::FrameToken> frame_token_;
   };
 
   void RenderFrameProxyHostCreatedCallback(RenderFrameProxyHost* proxy_host) {

@@ -74,7 +74,7 @@ struct SavableSubframe {
 
   // The unique identifier of the RenderFrameHost or RenderFrameProxy for the
   // subframe.
-  mojo_base.mojom.UnguessableToken subframe_token;
+  blink.mojom.FrameToken subframe_token;
 };
 
 struct GetSavableResourceLinksReply {
@@ -453,7 +453,7 @@ interface LocalFrameHost {
   // Frame owner properties currently include: name, scrollbar_mode,
   // margin_width and margin_height, among others.
   DidChangeFrameOwnerProperties(
-    mojo_base.mojom.UnguessableToken child_frame_token,
+    blink.mojom.FrameToken child_frame_token,
     blink.mojom.FrameOwnerProperties frame_owner_properties);
 
   // Sent when a local renderer frame either updates its opener to another
@@ -464,13 +464,13 @@ interface LocalFrameHost {
   // Notifies the browser that sandbox flags or container policy have changed
   // for a subframe of this frame.
   DidChangeFramePolicy(
-      mojo_base.mojom.UnguessableToken child_frame_token,
+      blink.mojom.FrameToken child_frame_token,
       blink.mojom.FramePolicy frame_policy);
 
   // Notifies the browser that the frame changed the 'csp' attribute
   // of one of its child frames.
   DidChangeCSPAttribute(
-      mojo_base.mojom.UnguessableToken child_frame_token,
+      blink.mojom.FrameToken child_frame_token,
       network.mojom.ContentSecurityPolicy? parsed_csp_attribute);
 
   // Sent by the renderer to request a paint preview of a subframe. |clip_rect|
@@ -690,9 +690,7 @@ interface LocalFrame {
 
   // Requests that the blink::LocalFrame updates its opener to the specified
   // frame. The frame token may be "empty" if the opener was disowned.
-  // TODO(1096617): Migrate this to use FrameToken, after frame tree code has
-  // been updated to use it.
-  UpdateOpener(mojo_base.mojom.UnguessableToken? opener_frame_token);
+  UpdateOpener(blink.mojom.FrameToken? opener_frame_token);
 
   // Request to enumerate and return links to all savable resources in the frame
   // Note: this covers only the immediate frame / doesn't cover subframes.
@@ -971,9 +969,7 @@ interface RemoteFrame {
 
   // Requests that the blink::RemoteFrame updates its opener to the specified
   // frame. The frame token may be "empty" if the opener was disowned.
-  // TODO(1096617): Migrate this to use FrameToken, after frame tree code has
-  // been updated to use it.
-  UpdateOpener(mojo_base.mojom.UnguessableToken? opener_frame_token);
+  UpdateOpener(blink.mojom.FrameToken? opener_frame_token);
 
   // Requests the corresponding RemoteFrame to be deleted and removed from
   // the frame tree. This should not be called on the main frame as that frame
@@ -1131,7 +1127,7 @@ interface LocalMainFrameHost {
   // Causes a window previously opened via RenderMessageFilter::CreateNewWindow
   // to be shown on the screen. This message contains the opener_frame_token
   // which is always set. This is called on the main frame of the window to be shown.
-  ShowCreatedWindow(mojo_base.mojom.UnguessableToken opener_frame_token,
+  ShowCreatedWindow(blink.mojom.LocalFrameToken opener_frame_token,
                     ui.mojom.WindowOpenDisposition disposition,
                     gfx.mojom.Rect rect, bool opened_by_user_gesture) => ();
 

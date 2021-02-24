@@ -228,9 +228,10 @@ void RendererResourceCoordinatorImpl::OnBeforeContentFrameAttached(
   LocalFrame* parent = GetLocalParentOfRemoteFrame(frame);
   if (!parent)
     return;
-  service_->OnRemoteIframeAttached(LocalFrameToken(parent->GetFrameToken()),
-                                   RemoteFrameToken(frame.GetFrameToken()),
-                                   AttributionDataForOwner(owner));
+  service_->OnRemoteIframeAttached(
+      parent->GetLocalFrameToken(),
+      frame.GetFrameToken().GetAs<RemoteFrameToken>(),
+      AttributionDataForOwner(owner));
 }
 
 void RendererResourceCoordinatorImpl::OnBeforeContentFrameDetached(
@@ -242,8 +243,9 @@ void RendererResourceCoordinatorImpl::OnBeforeContentFrameDetached(
   LocalFrame* parent = GetLocalParentOfRemoteFrame(frame);
   if (!parent)
     return;
-  service_->OnRemoteIframeDetached(LocalFrameToken(parent->GetFrameToken()),
-                                   RemoteFrameToken(frame.GetFrameToken()));
+  service_->OnRemoteIframeDetached(
+      parent->GetLocalFrameToken(),
+      frame.GetFrameToken().GetAs<RemoteFrameToken>());
 }
 
 RendererResourceCoordinatorImpl::RendererResourceCoordinatorImpl(

@@ -86,7 +86,7 @@ struct CreateViewParams {
 
   // The frame token of the opener frame if one exists, or base::nullopt
   // otherwise.
-  mojo_base.mojom.UnguessableToken? opener_frame_token;
+  blink.mojom.FrameToken? opener_frame_token;
 
   // Information that needs to be replicated to the view's main frame, e.g.
   // frame name and sandbox flags.
@@ -211,7 +211,7 @@ struct CreateFrameParams {
 
   // Specifies the new frame's opener.  The opener will be null if this is
   // base::nullopt.
-  mojo_base.mojom.UnguessableToken? opener_frame_token;
+  blink.mojom.FrameToken? opener_frame_token;
 
   // The new frame should be created as a child of the object
   // identified by |parent_routing_id| or as top level if that is
@@ -462,7 +462,7 @@ interface Frame {
   // object that initiated the process can be established.
   GetSerializedHtmlWithLocalLinks(
       map<url.mojom.Url, mojo_base.mojom.FilePath> url_map,
-      map<mojo_base.mojom.UnguessableToken, mojo_base.mojom.FilePath>
+      map<blink.mojom.FrameToken, mojo_base.mojom.FilePath>
           frame_token_map, bool save_with_empty_url,
           pending_remote<FrameHTMLSerializerHandler> handler_remote);
 };

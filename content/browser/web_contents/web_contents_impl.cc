@@ -7622,7 +7622,7 @@ void WebContentsImpl::ReattachOuterDelegateIfNeeded() {
 
 bool WebContentsImpl::CreateRenderViewForRenderManager(
     RenderViewHost* render_view_host,
-    const base::Optional<base::UnguessableToken>& opener_frame_token,
+    const base::Optional<blink::FrameToken>& opener_frame_token,
     RenderFrameProxyHost* proxy_host) {
   TRACE_EVENT1("browser,navigation",
                "WebContentsImpl::CreateRenderViewForRenderManager",

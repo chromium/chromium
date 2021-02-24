@@ -982,8 +982,7 @@ void SavePackage::GetSerializedHtmlWithLocalLinksForFrame(
   // those that the given frame had access to already (because it contained
   // the savable resources / subframes associated with save items).
   base::flat_map<GURL, base::FilePath> url_to_local_path;
-  base::flat_map<base::UnguessableToken, base::FilePath>
-      frame_token_to_local_path;
+  base::flat_map<blink::FrameToken, base::FilePath> frame_token_to_local_path;
 
   auto it = frame_tree_node_id_to_contained_save_items_.find(
       target_frame_tree_node_id);
@@ -1018,7 +1017,7 @@ void SavePackage::GetSerializedHtmlWithLocalLinksForFrame(
           continue;
         }
 
-        base::Optional<base::UnguessableToken> frame_token =
+        base::Optional<blink::FrameToken> frame_token =
             save_item_frame_tree_node->render_manager()
                 ->GetFrameTokenForSiteInstance(target->GetSiteInstance());
 

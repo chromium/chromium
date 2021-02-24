@@ -64,9 +64,8 @@ void PolicyContainerHost::AssociateWithFrameToken(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!frame_token_);
   frame_token_ = frame_token;
-  g_token_policy_container_map.Get().erase(frame_token.value());
-  g_token_policy_container_map.Get().insert(
-      std::make_pair(frame_token.value(), this));
+  g_token_policy_container_map.Get().erase(frame_token);
+  g_token_policy_container_map.Get().emplace(frame_token, this);
 }
 
 PolicyContainerHost* PolicyContainerHost::FromFrameToken(

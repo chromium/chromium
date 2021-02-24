@@ -21,7 +21,7 @@ interface AgentSchedulingGroupHost {
   // is already destroyed. This timing is required to ensure that any scheduled
   // postMessages are dispatched prior to acknowledging the unload (which tears
   // down the browser-side RFHI by removing it from the pending delete list)
-  DidUnloadRenderFrame(mojo_base.mojom.UnguessableToken frame_token);
+  DidUnloadRenderFrame(blink.mojom.LocalFrameToken frame_token);
 };
 
 // Interface for general communication between the browser process's
@@ -75,7 +75,7 @@ interface AgentSchedulingGroup {
   //    RenderFrameProxyHost in the browser process, as the token is shared,
   //    making the mapping ambiguous and non-authoritative.
   CreateFrameProxy(blink.mojom.RemoteFrameToken token, int32 routing_id,
-                   mojo_base.mojom.UnguessableToken? opener_frame_token,
+                   blink.mojom.FrameToken? opener_frame_token,
                    int32 view_routing_id, int32 parent_routing_id,
                    FrameReplicationState replication_state,
                    mojo_base.mojom.UnguessableToken devtools_frame_token);

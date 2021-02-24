@@ -284,6 +284,7 @@ int RenderFrameHostImpl::max_accessibility_resets_ = 0;
 int RenderFrameHostImpl::max_accessibility_resets_ = 4;
 #endif  // AX_FAIL_FAST_BUILD
 
+// TODO(crbug.com/1181748): This should use absl::variant
 struct RenderFrameHostOrProxy {
   RenderFrameHostImpl* const frame;
   RenderFrameProxyHost* const proxy;
@@ -598,20 +599,23 @@ RenderFrameHostOrProxy LookupRenderFrameHostOrProxy(int process_id,
 
 RenderFrameHostOrProxy LookupRenderFrameHostOrProxy(
     int process_id,
-    const base::UnguessableToken& frame_token) {
-  auto it = g_token_frame_map.Get().find(frame_token);
-  RenderFrameHostImpl* rfh = nullptr;
-  RenderFrameProxyHost* proxy = nullptr;
-  if (it != g_token_frame_map.Get().end()) {
+    const blink::FrameToken& frame_token) {
+  if (frame_token.Is<blink::LocalFrameToken>()) {
+    auto it = g_token_frame_map.Get().find(
+        frame_token.GetAs<blink::LocalFrameToken>());
     // The check against |process_id| isn't strictly necessary, but represents
     // an extra level of protection against a renderer trying to force a frame
     // token.
-    rfh =
-        process_id == it->second->GetProcess()->GetID() ? it->second : nullptr;
-  } else {
-    proxy = RenderFrameProxyHost::FromFrameToken(process_id, frame_token);
+    if (it == g_token_frame_map.Get().end() ||
+        process_id != it->second->GetProcess()->GetID()) {
+      return RenderFrameHostOrProxy(nullptr, nullptr);
+    }
+    return RenderFrameHostOrProxy(it->second, nullptr);
   }
-  return RenderFrameHostOrProxy(rfh, proxy);
+  DCHECK(frame_token.Is<blink::RemoteFrameToken>());
+  return RenderFrameHostOrProxy(
+      nullptr, RenderFrameProxyHost::FromFrameToken(
+                   process_id, frame_token.GetAs<blink::RemoteFrameToken>()));
 }
 
 // Takes the lower 31 bits of the metric-name-hash of a Mojo interface |name|.
@@ -1638,8 +1642,7 @@ void RenderFrameHostImpl::GetCanonicalUrlForSharing(
 
 void RenderFrameHostImpl::GetSerializedHtmlWithLocalLinks(
     const base::flat_map<GURL, base::FilePath>& url_map,
-    const base::flat_map<base::UnguessableToken, base::FilePath>&
-        frame_token_map,
+    const base::flat_map<blink::FrameToken, base::FilePath>& frame_token_map,
     bool save_with_empty_url,
     mojo::PendingRemote<mojom::FrameHTMLSerializerHandler> serializer_handler) {
   if (!IsRenderFrameCreated())
@@ -2274,7 +2277,7 @@ bool RenderFrameHostImpl::RequiresPerformActionPointInPixels() const {
 
 bool RenderFrameHostImpl::CreateRenderFrame(
     int previous_routing_id,
-    const base::Optional<base::UnguessableToken>& opener_frame_token,
+    const base::Optional<blink::FrameToken>& opener_frame_token,
     int parent_routing_id,
     int previous_sibling_routing_id) {
   TRACE_EVENT0("navigation", "RenderFrameHostImpl::CreateRenderFrame");
@@ -3749,7 +3752,7 @@ void RenderFrameHostImpl::RequestClose() {
 }
 
 void RenderFrameHostImpl::ShowCreatedWindow(
-    const base::UnguessableToken& opener_frame_token,
+    const blink::LocalFrameToken& opener_frame_token,
     WindowOpenDisposition disposition,
     const gfx::Rect& initial_rect,
     bool user_gesture,
@@ -4144,7 +4147,7 @@ RenderFrameHostImpl* RenderFrameHostImpl::FindAndVerifyChild(
 }
 
 RenderFrameHostImpl* RenderFrameHostImpl::FindAndVerifyChild(
-    const base::UnguessableToken& child_frame_token,
+    const blink::FrameToken& child_frame_token,
     bad_message::BadMessageReason reason) {
   auto child_frame_or_proxy =
       LookupRenderFrameHostOrProxy(GetProcess()->GetID(), child_frame_token);
@@ -5016,7 +5019,7 @@ void RenderFrameHostImpl::DidLoadResourceFromMemoryCache(
 }
 
 void RenderFrameHostImpl::DidChangeFrameOwnerProperties(
-    const base::UnguessableToken& child_frame_token,
+    const blink::FrameToken& child_frame_token,
     blink::mojom::FrameOwnerPropertiesPtr properties) {
   auto* child =
       FindAndVerifyChild(child_frame_token, bad_message::RFH_OWNER_PROPERTY);
@@ -5044,7 +5047,7 @@ void RenderFrameHostImpl::DidChangeOpener(
 }
 
 void RenderFrameHostImpl::DidChangeCSPAttribute(
-    const base::UnguessableToken& child_frame_token,
+    const blink::FrameToken& child_frame_token,
     network::mojom::ContentSecurityPolicyPtr parsed_csp_attribute) {
   if (parsed_csp_attribute &&
       !ValidateCSPAttribute(parsed_csp_attribute->header->header_value)) {
@@ -5062,7 +5065,7 @@ void RenderFrameHostImpl::DidChangeCSPAttribute(
 }
 
 void RenderFrameHostImpl::DidChangeFramePolicy(
-    const base::UnguessableToken& child_frame_token,
+    const blink::FrameToken& child_frame_token,
     const blink::FramePolicy& frame_policy) {
   // Ensure that a frame can only update sandbox flags or feature policy for its
   // immediate children.  If this is not the case, the renderer is considered

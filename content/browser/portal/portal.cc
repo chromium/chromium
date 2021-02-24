@@ -44,8 +44,7 @@ void CreatePortalRenderWidgetHostView(WebContentsImpl* web_contents,
 Portal::Portal(RenderFrameHostImpl* owner_render_frame_host)
     : WebContentsObserver(
           WebContents::FromRenderFrameHost(owner_render_frame_host)),
-      owner_render_frame_host_(owner_render_frame_host),
-      portal_token_(base::UnguessableToken::Create()) {}
+      owner_render_frame_host_(owner_render_frame_host) {}
 
 Portal::Portal(RenderFrameHostImpl* owner_render_frame_host,
                std::unique_ptr<WebContents> existing_web_contents)
@@ -142,7 +141,7 @@ RenderFrameProxyHost* Portal::CreateProxyAndAttachPortal() {
       // mojo message.
       /*policy_container_bind_params=*/nullptr,
       blink::mojom::TreeScopeType::kDocument, "", "", true,
-      base::UnguessableToken::Create(), base::UnguessableToken::Create(),
+      blink::LocalFrameToken(), base::UnguessableToken::Create(),
       blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), false,
       blink::mojom::FrameOwnerElementType::kPortal);
   outer_node->AddObserver(this);

@@ -118,7 +118,7 @@ void FakeLocalFrame::BindReportingObserver(
     mojo::PendingReceiver<blink::mojom::ReportingObserver> receiver) {}
 
 void FakeLocalFrame::UpdateOpener(
-    const base::Optional<base::UnguessableToken>& opener_frame_token) {}
+    const base::Optional<blink::FrameToken>& opener_frame_token) {}
 
 void FakeLocalFrame::MixedContentFound(
     const GURL& main_resource_url,

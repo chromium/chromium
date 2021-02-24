@@ -210,7 +210,7 @@ class CONTENT_EXPORT RenderFrameImpl
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker,
       int previous_routing_id,
-      const base::Optional<base::UnguessableToken>& opener_frame_token,
+      const base::Optional<blink::FrameToken>& opener_frame_token,
       int parent_routing_id,
       int previous_sibling_routing_id,
       const base::UnguessableToken& devtools_frame_token,
@@ -867,8 +867,7 @@ class CONTENT_EXPORT RenderFrameImpl
       SnapshotAccessibilityTreeCallback callback) override;
   void GetSerializedHtmlWithLocalLinks(
       const base::flat_map<GURL, base::FilePath>& url_map,
-      const base::flat_map<base::UnguessableToken, base::FilePath>&
-          frame_token_map,
+      const base::flat_map<blink::FrameToken, base::FilePath>& frame_token_map,
       bool save_with_empty_url,
       mojo::PendingRemote<mojom::FrameHTMLSerializerHandler> handler_remote)
       override;

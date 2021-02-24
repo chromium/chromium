@@ -193,7 +193,7 @@ class TestRenderViewHost
   // RenderViewHostImpl overrides.
   MockRenderProcessHost* GetProcess() override;
   bool CreateRenderView(
-      const base::Optional<base::UnguessableToken>& opener_frame_token,
+      const base::Optional<blink::FrameToken>& opener_frame_token,
       int proxy_route_id,
       bool window_was_created_with_opener) override;
   bool IsTestRenderViewHost() const override;
@@ -214,7 +214,7 @@ class TestRenderViewHost
   }
 
   // The opener frame route id passed to CreateRenderView().
-  const base::Optional<base::UnguessableToken>& opener_frame_token() const {
+  const base::Optional<blink::FrameToken>& opener_frame_token() const {
     return opener_frame_token_;
   }
 
@@ -240,8 +240,8 @@ class TestRenderViewHost
   // See set_delete_counter() above. May be NULL.
   int* delete_counter_;
 
-  // See opener_frame_route_id() above.
-  base::Optional<base::UnguessableToken> opener_frame_token_;
+  // See opener_frame_token() above.
+  base::Optional<blink::FrameToken> opener_frame_token_;
 
   DISALLOW_COPY_AND_ASSIGN(TestRenderViewHost);
 };

@@ -6,7 +6,6 @@
 #define CONTENT_PUBLIC_TEST_FAKE_LOCAL_FRAME_H_
 
 #include "base/optional.h"
-#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -90,8 +89,8 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
 #endif
   void BindReportingObserver(
       mojo::PendingReceiver<blink::mojom::ReportingObserver> receiver) override;
-  void UpdateOpener(const base::Optional<base::UnguessableToken>&
-                        opener_frame_token) override;
+  void UpdateOpener(
+      const base::Optional<blink::FrameToken>& opener_frame_token) override;
   void MixedContentFound(
       const GURL& main_resource_url,
       const GURL& mixed_content_url,

@@ -492,7 +492,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Creates a RenderFrame in the renderer process.
   bool CreateRenderFrame(
       int previous_routing_id,
-      const base::Optional<base::UnguessableToken>& opener_frame_token,
+      const base::Optional<blink::FrameToken>& opener_frame_token,
       int parent_routing_id,
       int previous_sibling_routing_id);
 
@@ -651,8 +651,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // with paths to local copies as specified by |url_map| and |frame_token_map|.
   void GetSerializedHtmlWithLocalLinks(
       const base::flat_map<GURL, base::FilePath>& url_map,
-      const base::flat_map<base::UnguessableToken, base::FilePath>&
-          frame_token_map,
+      const base::flat_map<blink::FrameToken, base::FilePath>& frame_token_map,
       bool save_with_empty_url,
       mojo::PendingRemote<mojom::FrameHTMLSerializerHandler>
           serializer_handler);
@@ -1089,9 +1088,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // to send pid + RoutingID, but one cannot send pid.  One can get it from the
   // channel, but this makes it much harder to get wrong.
   // Once media switches to mojo, we should be able to remove this in favor of
-  // sending a mojo overlay factory.
+  // sending a mojo overlay factory. Note that this value should only be shared
+  // with the renderer process that hosts the frame and other utility processes;
+  // it should specifically *not* be shared with any renderer processes that
+  // do not host the frame.
   const base::UnguessableToken& GetOverlayRoutingToken() const {
-    return frame_token_;
+    return frame_token_.value();
   }
 
   // Binds the receiver end of the BrowserInterfaceBroker interface through
@@ -1746,14 +1748,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const std::string& mime_type,
       network::mojom::RequestDestination request_destination) override;
   void DidChangeFrameOwnerProperties(
-      const base::UnguessableToken& child_frame_token,
+      const blink::FrameToken& child_frame_token,
       blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties) override;
   void DidChangeOpener(
       const base::Optional<blink::LocalFrameToken>& opener_frame) override;
   void DidChangeCSPAttribute(
-      const base::UnguessableToken& child_frame_token,
+      const blink::FrameToken& child_frame_token,
       network::mojom::ContentSecurityPolicyPtr parsed_csp_attribute) override;
-  void DidChangeFramePolicy(const base::UnguessableToken& child_frame_token,
+  void DidChangeFramePolicy(const blink::FrameToken& child_frame_token,
                             const blink::FramePolicy& frame_policy) override;
   void CapturePaintPreviewOfSubframe(
       const gfx::Rect& clip_rect,
@@ -1780,7 +1782,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
                        blink::mojom::LocalMainFrameHost::UpdateTargetURLCallback
                            callback) override;
   void RequestClose() override;
-  void ShowCreatedWindow(const base::UnguessableToken& opener_frame_token,
+  void ShowCreatedWindow(const blink::LocalFrameToken& opener_frame_token,
                          WindowOpenDisposition disposition,
                          const gfx::Rect& initial_rect,
                          bool user_gesture,
@@ -1859,7 +1861,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // untrusted, so the renderer process is killed if it refers to a
   // RenderFrameHostImpl that is not a child of this node.
   RenderFrameHostImpl* FindAndVerifyChild(
-      const base::UnguessableToken& child_frame_token,
+      const blink::FrameToken& child_frame_token,
       bad_message::BadMessageReason reason);
 
   // Whether we should run the pagehide/visibilitychange handlers of the

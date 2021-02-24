@@ -169,7 +169,7 @@ void AgentSchedulingGroup::RemoveRoute(int32_t routing_id) {
 }
 
 void AgentSchedulingGroup::DidUnloadRenderFrame(
-    const base::UnguessableToken& frame_token) {
+    const blink::LocalFrameToken& frame_token) {
   host_remote_->DidUnloadRenderFrame(frame_token);
 }
 
@@ -219,7 +219,7 @@ void AgentSchedulingGroup::CreateFrame(mojom::CreateFrameParamsPtr params) {
 void AgentSchedulingGroup::CreateFrameProxy(
     const blink::RemoteFrameToken& token,
     int32_t routing_id,
-    const base::Optional<base::UnguessableToken>& opener_frame_token,
+    const base::Optional<blink::FrameToken>& opener_frame_token,
     int32_t view_routing_id,
     int32_t parent_routing_id,
     mojom::FrameReplicationStatePtr replicated_state,

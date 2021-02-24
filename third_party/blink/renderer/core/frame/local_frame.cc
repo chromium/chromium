@@ -2111,9 +2111,10 @@ void LocalFrame::SetOpener(Frame* opener_frame) {
   auto* web_frame = WebFrame::FromCoreFrame(this);
   if (web_frame && Opener() != opener_frame) {
     GetLocalFrameHostRemote().DidChangeOpener(
-        opener_frame ? base::Optional<base::UnguessableToken>(
-                           opener_frame->GetFrameToken())
-                     : base::nullopt);
+        opener_frame
+            ? base::Optional<blink::LocalFrameToken>(
+                  opener_frame->GetFrameToken().GetAs<LocalFrameToken>())
+            : base::nullopt);
   }
   SetOpenerDoNotNotify(opener_frame);
 }
@@ -3400,7 +3401,7 @@ void LocalFrame::BindReportingObserver(
 }
 
 void LocalFrame::UpdateOpener(
-    const base::Optional<base::UnguessableToken>& opener_frame_token) {
+    const base::Optional<blink::FrameToken>& opener_frame_token) {
   if (auto* web_frame = WebFrame::FromCoreFrame(this)) {
     Frame* opener_frame = nullptr;
     if (opener_frame_token)

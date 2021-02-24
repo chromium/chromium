@@ -8175,7 +8175,7 @@ class ShowCreatedWindowInterceptor
     return render_frame_host_;
   }
 
-  void ShowCreatedWindow(const base::UnguessableToken& opener_frame_token,
+  void ShowCreatedWindow(const blink::LocalFrameToken& opener_frame_token,
                          WindowOpenDisposition disposition,
                          const gfx::Rect& initial_rect,
                          bool user_gesture,
@@ -8199,7 +8199,7 @@ class ShowCreatedWindowInterceptor
   RenderFrameHostImpl* render_frame_host_;
   base::OnceCallback<void(int32_t pending_widget_routing_id)> test_callback_;
   ShowCreatedWindowCallback show_callback_;
-  base::UnguessableToken opener_frame_token_;
+  blink::LocalFrameToken opener_frame_token_;
   gfx::Rect initial_rect_;
   bool user_gesture_ = false;
   WindowOpenDisposition disposition_;

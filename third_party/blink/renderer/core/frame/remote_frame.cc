@@ -749,7 +749,7 @@ void RemoteFrame::DidUpdateFramePolicy(const FramePolicy& frame_policy) {
 }
 
 void RemoteFrame::UpdateOpener(
-    const base::Optional<base::UnguessableToken>& opener_frame_token) {
+    const base::Optional<blink::FrameToken>& opener_frame_token) {
   if (auto* web_frame = WebFrame::FromCoreFrame(this)) {
     Frame* opener_frame = nullptr;
     if (opener_frame_token)
@@ -786,9 +786,10 @@ void RemoteFrame::SetOpener(Frame* opener_frame) {
       // update another frame's opener.
       DCHECK(opener_frame->IsLocalFrame());
       GetRemoteFrameHostRemote().DidChangeOpener(
-          opener_frame ? base::Optional<base::UnguessableToken>(
-                             opener_frame->GetFrameToken())
-                       : base::nullopt);
+          opener_frame
+              ? base::Optional<blink::LocalFrameToken>(
+                    opener_frame->GetFrameToken().GetAs<LocalFrameToken>())
+              : base::nullopt);
     }
   }
   SetOpenerDoNotNotify(opener_frame);

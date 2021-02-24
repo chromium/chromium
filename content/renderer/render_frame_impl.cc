@@ -652,17 +652,14 @@ class LinkRewritingDelegate : public WebFrameSerializer::LinkRewritingDelegate {
  public:
   LinkRewritingDelegate(
       const base::flat_map<GURL, base::FilePath>& url_to_local_path,
-      const base::flat_map<base::UnguessableToken, base::FilePath>&
+      const base::flat_map<blink::FrameToken, base::FilePath>&
           frame_token_to_local_path)
       : url_to_local_path_(url_to_local_path),
         frame_token_to_local_path_(frame_token_to_local_path) {}
 
   bool RewriteFrameSource(WebFrame* frame, WebString* rewritten_link) override {
-    const base::Optional<base::UnguessableToken>& frame_token =
-        frame->GetFrameToken();
-
-    DCHECK(frame_token.has_value());
-    auto it = frame_token_to_local_path_.find(frame_token.value());
+    const blink::FrameToken frame_token = frame->GetFrameToken();
+    auto it = frame_token_to_local_path_.find(frame_token);
     if (it == frame_token_to_local_path_.end())
       return false;  // This can happen because of https://crbug.com/541354.
 
@@ -683,7 +680,7 @@ class LinkRewritingDelegate : public WebFrameSerializer::LinkRewritingDelegate {
 
  private:
   const base::flat_map<GURL, base::FilePath>& url_to_local_path_;
-  const base::flat_map<base::UnguessableToken, base::FilePath>&
+  const base::flat_map<blink::FrameToken, base::FilePath>&
       frame_token_to_local_path_;
 };
 
@@ -1631,7 +1628,7 @@ void RenderFrameImpl::CreateFrame(
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker,
     int previous_routing_id,
-    const base::Optional<base::UnguessableToken>& opener_frame_token,
+    const base::Optional<blink::FrameToken>& opener_frame_token,
     int parent_routing_id,
     int previous_sibling_routing_id,
     const base::UnguessableToken& devtools_frame_token,
@@ -2262,7 +2259,7 @@ void RenderFrameImpl::Unload(
   RenderViewImpl* render_view = render_view_;
   bool is_main_frame = is_main_frame_;
   auto& agent_scheduling_group = agent_scheduling_group_;
-  base::UnguessableToken frame_token = frame_->GetFrameToken();
+  blink::LocalFrameToken frame_token = frame_->GetLocalFrameToken();
 
   // Before |this| is destroyed, grab the TaskRunner to be used for sending the
   // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame.  This will be used to
@@ -2324,7 +2321,7 @@ void RenderFrameImpl::Unload(
   // sent before the ACK (see https://crbug.com/857274).
   auto send_unload_ack = base::BindOnce(
       [](AgentSchedulingGroup* agent_scheduling_group,
-         const base::UnguessableToken& frame_token) {
+         const blink::LocalFrameToken& frame_token) {
         agent_scheduling_group->DidUnloadRenderFrame(frame_token);
       },
       &agent_scheduling_group, frame_token);
@@ -2567,8 +2564,7 @@ void RenderFrameImpl::SnapshotAccessibilityTree(
 
 void RenderFrameImpl::GetSerializedHtmlWithLocalLinks(
     const base::flat_map<GURL, base::FilePath>& url_map,
-    const base::flat_map<base::UnguessableToken, base::FilePath>&
-        frame_token_map,
+    const base::flat_map<blink::FrameToken, base::FilePath>& frame_token_map,
     bool save_with_empty_url,
     mojo::PendingRemote<mojom::FrameHTMLSerializerHandler> handler_remote) {
   // Convert input to the canonical way of passing a map into a Blink API.
@@ -5492,7 +5488,7 @@ void RenderFrameImpl::OnWriteMHTMLComplete(
 
 void RenderFrameImpl::RequestOverlayRoutingToken(
     media::RoutingTokenCallback callback) {
-  std::move(callback).Run(GetWebFrame()->GetFrameToken());
+  std::move(callback).Run(GetWebFrame()->GetFrameToken().value());
 }
 
 void RenderFrameImpl::OpenURL(std::unique_ptr<blink::WebNavigationInfo> info) {

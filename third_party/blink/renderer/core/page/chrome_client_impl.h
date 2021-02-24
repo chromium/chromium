@@ -89,7 +89,7 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
                              network::mojom::blink::WebSandboxFlags,
                              const SessionStorageNamespaceId&,
                              bool& consumed_user_gesture) override;
-  void Show(const base::UnguessableToken& opener_frame_token,
+  void Show(const blink::LocalFrameToken& opener_frame_token,
             NavigationPolicy navigation_policy,
             const IntRect& initial_rect,
             bool user_gesture) override;

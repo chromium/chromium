@@ -85,7 +85,7 @@ void FakeRemoteFrame::IntrinsicSizingInfoOfChildChanged(
     blink::mojom::IntrinsicSizingInfoPtr sizing_info) {}
 
 void FakeRemoteFrame::UpdateOpener(
-    const base::Optional<base::UnguessableToken>& opener_frame_token) {}
+    const base::Optional<blink::FrameToken>& opener_frame_token) {}
 
 void FakeRemoteFrame::FakeRemoteFrame::BindFrameHostReceiver(
     mojo::ScopedInterfaceEndpointHandle handle) {

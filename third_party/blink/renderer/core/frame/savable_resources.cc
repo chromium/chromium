@@ -22,8 +22,9 @@ namespace {
 // a html document.
 bool DoesFrameContainHtmlDocument(Frame* frame, Element* element) {
   if (frame->IsLocalFrame()) {
-    Document* document =
-        LocalFrame::FromFrameToken(frame->GetFrameToken())->GetDocument();
+    Document* document = LocalFrame::FromFrameToken(
+                             frame->GetFrameToken().GetAs<LocalFrameToken>())
+                             ->GetDocument();
     return document->IsHTMLDocument() || document->IsXHTMLDocument();
   }
 

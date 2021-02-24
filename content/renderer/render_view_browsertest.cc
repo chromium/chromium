@@ -1366,7 +1366,7 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
   static_cast<mojom::Frame*>(main_frame)
       ->Unload(kProxyRoutingId, true,
                ReconstructReplicationStateForTesting(main_frame),
-               base::UnguessableToken::Create());
+               blink::RemoteFrameToken());
   EXPECT_TRUE(view()->GetWebView()->MainFrame()->IsWebRemoteFrame());
 }
 
@@ -3055,7 +3055,7 @@ TEST_F(RenderViewImplAddMessageToConsoleTest,
         // Unloads the main frame.
         static_cast<mojom::Frame*>(frame())->Unload(
             1, false, mojom::FrameReplicationState::New(),
-            base::UnguessableToken::Create());
+            blink::RemoteFrameToken());
 
         was_callback_run = true;
         run_loop.Quit();

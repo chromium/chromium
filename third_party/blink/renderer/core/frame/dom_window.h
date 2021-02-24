@@ -194,7 +194,7 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
   // happens a report will sent to |reporter|.
   struct CoopAccessMonitor {
     network::mojom::blink::CoopAccessReportType report_type;
-    base::UnguessableToken accessing_main_frame;
+    blink::LocalFrameToken accessing_main_frame;
     mojo::Remote<network::mojom::blink::CrossOriginOpenerPolicyReporter>
         reporter;
     bool endpoint_defined;

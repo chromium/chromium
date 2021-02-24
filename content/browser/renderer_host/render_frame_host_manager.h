@@ -126,7 +126,7 @@ class CONTENT_EXPORT RenderFrameHostManager
     // automatically called from LoadURL.
     virtual bool CreateRenderViewForRenderManager(
         RenderViewHost* render_view_host,
-        const base::Optional<base::UnguessableToken>& opener_frame_token,
+        const base::Optional<blink::FrameToken>& opener_frame_token,
         RenderFrameProxyHost* proxy_host) = 0;
     virtual void CreateRenderWidgetHostViewForRenderManager(
         RenderViewHost* render_view_host) = 0;
@@ -316,8 +316,11 @@ class CONTENT_EXPORT RenderFrameHostManager
 
   // Returns the frame token for a RenderFrameHost or RenderFrameProxyHost
   // that has the given SiteInstance and is associated with this
-  // RenderFrameHostManager. Returns base::nullopt if none is found.
-  base::Optional<base::UnguessableToken> GetFrameTokenForSiteInstance(
+  // RenderFrameHostManager. Returns base::nullopt if none is found. Note that
+  // the FrameToken will internally be either a LocalFrameToken (if the frame is
+  // a RenderFrameHost in the given |site_instance|) or a RemoteFrameToken (if
+  // it is a RenderFrameProxyHost).
+  base::Optional<blink::FrameToken> GetFrameTokenForSiteInstance(
       SiteInstance* site_instance);
 
   // Notifies the RenderFrameHostManager that a new NavigationRequest has been
@@ -421,13 +424,12 @@ class CONTENT_EXPORT RenderFrameHostManager
   // https://crbug.com/511474.
   void CreateProxiesForNewNamedFrame();
 
-  // Returns a base::UnguessableToken for the current FrameTreeNode's opener
+  // Returns a blink::FrameToken for the current FrameTreeNode's opener
   // node in the given SiteInstance.  May return a frame token of either a
   // RenderFrameHost (if opener's current or pending RFH has SiteInstance
   // |instance|) or a RenderFrameProxyHost.  Returns base::nullopt if there is
   // no opener, or if the opener node doesn't have a proxy for |instance|.
-  base::Optional<base::UnguessableToken> GetOpenerFrameToken(
-      SiteInstance* instance);
+  base::Optional<blink::FrameToken> GetOpenerFrameToken(SiteInstance* instance);
 
   // Called on the RFHM of the inner WebContents to create a
   // RenderFrameProxyHost in its outer WebContents's SiteInstance,

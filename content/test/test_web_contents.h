@@ -98,7 +98,7 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   // Prevent interaction with views.
   bool CreateRenderViewForRenderManager(
       RenderViewHost* render_view_host,
-      const base::Optional<base::UnguessableToken>& opener_frame_token,
+      const base::Optional<blink::FrameToken>& opener_frame_token,
       RenderFrameProxyHost* proxy_host) override;
 
   // Returns a clone of this TestWebContents. The returned object is also a

@@ -29,7 +29,7 @@ TEST(PolicyContainerHostTest, AssociateWithFrameToken) {
 
   scoped_refptr<PolicyContainerHost> policy_container_host =
       base::MakeRefCounted<PolicyContainerHost>();
-  base::UnguessableToken token = base::UnguessableToken::Create();
+  blink::LocalFrameToken token;
   policy_container_host->AssociateWithFrameToken(token);
   EXPECT_EQ(policy_container_host.get(),
             PolicyContainerHost::FromFrameToken(token));
@@ -50,7 +50,7 @@ TEST(PolicyContainerHostTest, KeepAliveThroughBlinkPolicyContainerRemote) {
 
   scoped_refptr<PolicyContainerHost> policy_container_host =
       base::MakeRefCounted<PolicyContainerHost>();
-  base::UnguessableToken token = base::UnguessableToken::Create();
+  blink::LocalFrameToken token;
   policy_container_host->AssociateWithFrameToken(token);
 
   blink::mojom::PolicyContainerPtr blink_policy_container =
@@ -77,7 +77,7 @@ TEST(PolicyContainerHostTest, KeepAliveThroughKeepAlives) {
 
   scoped_refptr<PolicyContainerHost> policy_container_host =
       base::MakeRefCounted<PolicyContainerHost>();
-  base::UnguessableToken token = base::UnguessableToken::Create();
+  blink::LocalFrameToken token;
   policy_container_host->AssociateWithFrameToken(token);
 
   mojo::PendingRemote<blink::mojom::PolicyContainerHostKeepAliveHandle>

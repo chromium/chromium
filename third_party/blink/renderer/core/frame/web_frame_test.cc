@@ -8971,7 +8971,7 @@ class WebFrameSwapTestClient : public frame_test_helpers::TestWebFrameClient {
 
     // FakeLocalFrameHost:
     void DidChangeFrameOwnerProperties(
-        const base::UnguessableToken& child_frame_token,
+        const blink::FrameToken& child_frame_token,
         mojom::blink::FrameOwnerPropertiesPtr properties) override {
       if (parent_)
         parent_->DidChangeFrameOwnerProperties(std::move(properties));

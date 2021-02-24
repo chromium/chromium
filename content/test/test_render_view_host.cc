@@ -262,7 +262,7 @@ bool TestRenderViewHost::CreateTestRenderView() {
 }
 
 bool TestRenderViewHost::CreateRenderView(
-    const base::Optional<base::UnguessableToken>& opener_frame_token,
+    const base::Optional<blink::FrameToken>& opener_frame_token,
     int proxy_route_id,
     bool window_was_created_with_opener) {
   DCHECK(!IsRenderViewLive());
