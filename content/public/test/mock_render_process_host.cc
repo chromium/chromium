@@ -363,11 +363,11 @@ size_t MockRenderProcessHost::GetKeepAliveRefCount() const {
   return keep_alive_ref_count_;
 }
 
-void MockRenderProcessHost::IncrementKeepAliveRefCount(KeepAliveSource source) {
+void MockRenderProcessHost::IncrementKeepAliveRefCount() {
   ++keep_alive_ref_count_;
 }
 
-void MockRenderProcessHost::DecrementKeepAliveRefCount(KeepAliveSource source) {
+void MockRenderProcessHost::DecrementKeepAliveRefCount() {
   --keep_alive_ref_count_;
 }
 
