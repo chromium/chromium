@@ -13094,6 +13094,10 @@ Called by update_net_error_codes.py.-->
   <int value="6" label="Invalid Package"/>
   <int value="7" label="Lens Shop Supported"/>
   <int value="8" label="Lens Search And Shop Supported"/>
+  <int value="9" label="Camera Not Available"/>
+  <int value="10" label="Low End Device"/>
+  <int value="11" label="Lens Camera Assisted Search Supported"/>
+  <int value="12" label="Lens Translate Supported"/>
 </enum>
 
 <enum name="ContextMenuOption">
