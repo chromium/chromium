@@ -744,7 +744,14 @@ bool AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::
 #if defined(AX_FAIL_FAST_BUILD)
         CHECK(false) << error.str();
 #endif  // defined(AX_FAIL_FAST_BUILD)
-        base::debug::DumpWithoutCrashing();
+        static bool has_sent_dupe_id_err = false;
+        if (!has_sent_dupe_id_err) {
+          std::srand(std::time(nullptr));  // use current time as seed.
+          if (std::rand() % 50 == 0) {     // Roughly 2% of the time.
+            base::debug::DumpWithoutCrashing();
+            has_sent_dupe_id_err = true;  // Only send once.
+          }
+        }
         Reset();
         return false;
       }
