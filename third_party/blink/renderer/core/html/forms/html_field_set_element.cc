@@ -135,10 +135,6 @@ LayoutBox* HTMLFieldSetElement::GetLayoutBoxForScrolling() const {
   return HTMLFormControlElement::GetLayoutBoxForScrolling();
 }
 
-bool HTMLFieldSetElement::TypeShouldForceLegacyLayout() const {
-  return !RuntimeEnabledFeatures::LayoutNGFieldsetEnabled();
-}
-
 HTMLLegendElement* HTMLFieldSetElement::Legend() const {
   return Traversal<HTMLLegendElement>::FirstChild(*this);
 }

@@ -250,11 +250,8 @@ LayoutObject* LayoutObjectFactory::CreateButton(Node& node,
 LayoutBlock* LayoutObjectFactory::CreateFieldset(Node& node,
                                                  const ComputedStyle& style,
                                                  LegacyLayout legacy) {
-  bool disable_ng_for_type = !RuntimeEnabledFeatures::LayoutNGFieldsetEnabled();
-  if (disable_ng_for_type)
-    UseCounter::Count(node.GetDocument(), WebFeature::kLegacyLayoutByFieldSet);
   return CreateObject<LayoutBlock, LayoutNGFieldset, LayoutFieldset>(
-      node, style, legacy, disable_ng_for_type);
+      node, style, legacy);
 }
 
 LayoutBlockFlow* LayoutObjectFactory::CreateFileUploadControl(

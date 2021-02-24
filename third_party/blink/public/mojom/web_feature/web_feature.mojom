@@ -2535,7 +2535,6 @@ enum WebFeature {
   kLegacyLayoutByDeprecatedFlexBox = 3205,
   kLegacyLayoutByDetailsMarker = 3206,
   kLegacyLayoutByEditing = 3207,
-  kLegacyLayoutByFieldSet = 3208,
   kLegacyLayoutByFlexBox = 3210,
   kLegacyLayoutByFrameSet = 3211,
   kLegacyLayoutByGrid = 3212,

@@ -15,12 +15,10 @@ namespace {
 
 class NGFieldsetLayoutAlgorithmTest
     : public NGBaseLayoutAlgorithmTest,
-      private ScopedLayoutNGFieldsetForTest,
       private ScopedLayoutNGBlockFragmentationForTest {
  protected:
   NGFieldsetLayoutAlgorithmTest()
-      : ScopedLayoutNGFieldsetForTest(true),
-        ScopedLayoutNGBlockFragmentationForTest(true) {}
+      : ScopedLayoutNGBlockFragmentationForTest(true) {}
 
   scoped_refptr<const NGPhysicalBoxFragment> RunBlockLayoutAlgorithm(
       Element* element) {

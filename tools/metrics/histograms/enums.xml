@@ -30961,7 +30961,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3205" label="LegacyLayoutByDeprecatedFlexBox"/>
   <int value="3206" label="LegacyLayoutByDetailsMarker"/>
   <int value="3207" label="LegacyLayoutByEditing"/>
-  <int value="3208" label="LegacyLayoutByFieldSet"/>
+  <int value="3208" label="OBSOLETE_LegacyLayoutByFieldSet"/>
   <int value="3209" label="OBSOLETE_LegacyLayoutByFileUploadControl"/>
   <int value="3210" label="LegacyLayoutByFlexBox"/>
   <int value="3211" label="LegacyLayoutByFrameSet"/>

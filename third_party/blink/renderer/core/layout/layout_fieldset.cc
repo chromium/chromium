@@ -145,18 +145,16 @@ LayoutObject* LayoutFieldset::LayoutSpecialExcludedChild(bool relayout_children,
 LayoutBox* LayoutFieldset::FindInFlowLegend(const LayoutBlock& fieldset) {
   DCHECK(fieldset.IsFieldset() || fieldset.IsLayoutNGFieldset());
   const LayoutBlock* parent = &fieldset;
-  if (RuntimeEnabledFeatures::LayoutNGFieldsetEnabled()) {
-    if (fieldset.IsLayoutNGFieldset()) {
-      // If there is a rendered legend, it will be found inside the anonymous
-      // fieldset wrapper.
-      parent = To<LayoutBlock>(fieldset.FirstChild());
-      if (!parent)
-        return nullptr;
-      // If the anonymous fieldset wrapper is a multi-column, the rendered
-      // legend will be found inside the multi-column flow thread.
-      if (parent->FirstChild() && parent->FirstChild()->IsLayoutFlowThread())
-        parent = To<LayoutBlock>(parent->FirstChild());
-    }
+  if (fieldset.IsLayoutNGFieldset()) {
+    // If there is a rendered legend, it will be found inside the anonymous
+    // fieldset wrapper.
+    parent = To<LayoutBlock>(fieldset.FirstChild());
+    if (!parent)
+      return nullptr;
+    // If the anonymous fieldset wrapper is a multi-column, the rendered
+    // legend will be found inside the multi-column flow thread.
+    if (parent->FirstChild() && parent->FirstChild()->IsLayoutFlowThread())
+      parent = To<LayoutBlock>(parent->FirstChild());
   }
   for (LayoutObject* legend = parent->FirstChild(); legend;
        legend = legend->NextSibling()) {
