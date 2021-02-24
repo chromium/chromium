@@ -940,18 +940,12 @@
       'Win10 Tests x64 (dbg)',
     ],
   },
-  'components_browsertests': {
-    'remove_from': [
-      'android-code-coverage-native', # crbug/1018434
-    ],
-  },
   'components_unittests': {
     'remove_from': [
       # https://crbug.com/1147531 - covered on lollipop
       'android-marshmallow-arm64-rel',
       'Fuchsia ARM64',  # https://crbug.com/961457
       'Fuchsia x64', # https://crbug.com/961457
-      'android-code-coverage-native', # crbug/1018431
       'fuchsia-code-coverage',  # https://crbug.com/961457
       'fuchsia-fyi-arm64-dbg',  # https://crbug.com/961457
       'fuchsia-fyi-arm64-rel',  # https://crbug.com/961457
@@ -1010,7 +1004,6 @@
   'content_browsertests': {
     'remove_from': [
       'CrWinAsan(dll)', # https://crbug.com/935598
-      'android-code-coverage-native', # crbug/1018434
       'android-lollipop-arm-rel', # crbug.com/1133002
       # http://crbug.com/1060245#c30: due to low utility and capacity.
       'android-marshmallow-arm64-rel',
@@ -1181,7 +1174,6 @@
   'content_shell_test_apk': {
     'remove_from': [
       'android-asan',  # https://crbug.com/964562
-      'android-code-coverage-native', # crbug/1018434
     ],
     'modifications': {
       'android-marshmallow-x86-rel-non-cq': {
@@ -1197,9 +1189,6 @@
     },
   },
   'content_unittests': {
-    'remove_from': [
-      'android-code-coverage-native', # crbug/1018434
-    ],
     'modifications': {
       'Linux ASan LSan Tests (1)': {
         # These are slow on the ASAN trybot for some reason.
@@ -2612,7 +2601,6 @@
   },
   'unit_tests': {
     'remove_from': [
-      'android-code-coverage-native', # crbug/1018434
       # There's no need to run unit_tests on both lollipop and marshmallow
       # on the CQ. https://crbug.com/1026487.
       'android-marshmallow-arm64-rel',
@@ -2755,20 +2743,17 @@
     'remove_from': [
       'android-marshmallow-x86-rel-non-cq',
       'android-pie-x86-rel',
-      'android-code-coverage-native', # crbug/1018434
     ],
   },
   'vr_common_unittests': {
     'remove_from': [
       'android-pie-x86-rel',
-      'android-code-coverage-native', # crbug/1018431
     ],
   },
   'vr_pixeltests': {
     'remove_from': [
       'android-pie-x86-rel',
       'VR Linux',
-      'android-code-coverage-native', # crbug/1018431
     ],
   },
   'wayland_client_perftests': {
@@ -2858,7 +2843,6 @@
       # Flakily fails on Win7. https://crbug.com/943372.
       'Win7 Tests (1)',
       'Win 7 Tests x64 (1)',
-      'android-code-coverage-native', # crbug/1018431
       'android-lollipop-arm-rel', # crbug.com/1133002#c6
       # Runs on android-marshmallow-x86-rel already (crbug.com/1127110)
       'android-marshmallow-arm64-rel',
@@ -2968,7 +2952,6 @@
       # On chromium.swarm, this should possibly be being run (or removed
       # from android-marshmallow-arm64-rel-swarming).
       'android-lollipop-arm-rel-swarming',
-      'android-code-coverage-native', # https://crbug.com/1018431
       # https://crbug.com/1147531 - covered on pie
       'android-marshmallow-arm64-rel',
     ],
