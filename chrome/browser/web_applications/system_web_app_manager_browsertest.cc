@@ -30,8 +30,11 @@
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
+#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -1092,14 +1095,14 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerUninstallBrowserTest, Uninstall) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Test that all registered System Apps can be re-installed.
-class SystemWebAppManagerUpgradeBrowserTest
+class SystemWebAppManagerInstallAllAppsBrowserTest
     : public SystemWebAppManagerBrowserTest {
  public:
-  SystemWebAppManagerUpgradeBrowserTest()
+  SystemWebAppManagerInstallAllAppsBrowserTest()
       : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
     features_.InitAndEnableFeature(features::kEnableAllSystemWebApps);
   }
-  ~SystemWebAppManagerUpgradeBrowserTest() override = default;
+  ~SystemWebAppManagerInstallAllAppsBrowserTest() override = default;
 
   // Don't use WaitForTestSystemAppInstall in this test, because it artificially
   // resets the OnAppsSynchronized signal, and starts a new synchronize request.
@@ -1116,13 +1119,36 @@ class SystemWebAppManagerUpgradeBrowserTest
   base::test::ScopedFeatureList features_;
 };
 
-IN_PROC_BROWSER_TEST_P(SystemWebAppManagerUpgradeBrowserTest, PRE_Upgrade) {
+// TODO(https://crbug.com/1162992): At the moment, PRE_Test failures aren't
+// reported in test summary, thus won't fail the CI build job. So we need a
+// ordinary test to fail the job and block CQ.
+//
+// Technically speaking, this test can merge into PRE_Upgrade if the
+// aforementioned crbug is fixed.
+IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
+                       WebAppProtoEntryDefined) {
+  const auto& app_map = GetManager().GetRegisteredSystemAppsForTesting();
+  ASSERT_GT(app_map.size(), 0U);
+
+  // Check all system app types has a corresponding SystemWebAppDataProto entry
+  // defined.
+  for (const auto& type_and_info : app_map) {
+    EXPECT_TRUE(::web_app::SystemWebAppDataProto_SystemAppType_IsValid(
+        static_cast<::web_app::SystemWebAppDataProto_SystemAppType>(
+            type_and_info.first)))
+        << "Please make sure you have added a corresponding entry to "
+           "web_app::SystemWebAppDataProto when adding a new System Web App.";
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
+                       PRE_Upgrade) {
   WaitForSystemAppsSynchronized();
   EXPECT_GE(GetManager().GetRegisteredSystemAppsForTesting().size(),
             GetManager().GetAppIds().size());
 }
 
-IN_PROC_BROWSER_TEST_P(SystemWebAppManagerUpgradeBrowserTest, Upgrade) {
+IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest, Upgrade) {
   WaitForSystemAppsSynchronized();
   const auto& app_ids = GetManager().GetAppIds();
 
@@ -1597,7 +1623,7 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    SystemWebAppManagerUpgradeBrowserTest);
+    SystemWebAppManagerInstallAllAppsBrowserTest);
 #endif
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
