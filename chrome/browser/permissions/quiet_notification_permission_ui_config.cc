@@ -90,13 +90,13 @@ bool QuietNotificationPermissionUiConfig::IsCrowdDenyTriggeringEnabled() {
 
   return base::GetFieldTrialParamByFeatureAsBool(
       features::kQuietNotificationPrompts, kEnableCrowdDenyTriggering,
-      true /* default */);
+      false /* default */);
 }
 
 // static
 double QuietNotificationPermissionUiConfig::GetCrowdDenyHoldBackChance() {
   return base::GetFieldTrialParamByFeatureAsDouble(
-      features::kQuietNotificationPrompts, kCrowdDenyHoldBackChance, 0.3);
+      features::kQuietNotificationPrompts, kCrowdDenyHoldBackChance, 0);
 }
 
 // static
@@ -115,7 +115,7 @@ bool QuietNotificationPermissionUiConfig::IsAbusiveRequestBlockingEnabled() {
 
   return base::GetFieldTrialParamByFeatureAsBool(
       features::kQuietNotificationPrompts, kEnableAbusiveRequestBlocking,
-      true /* default */);
+      false /* default */);
 }
 
 // static
@@ -125,7 +125,7 @@ bool QuietNotificationPermissionUiConfig::IsAbusiveRequestWarningEnabled() {
 
   return base::GetFieldTrialParamByFeatureAsBool(
       features::kQuietNotificationPrompts, kEnableAbusiveRequestWarning,
-      true /* default */);
+      false /* default */);
 }
 
 // static
@@ -136,7 +136,7 @@ bool QuietNotificationPermissionUiConfig::
 
   return base::GetFieldTrialParamByFeatureAsBool(
       features::kQuietNotificationPrompts,
-      kEnableAbusiveContentTriggeredRequestBlocking, true /* default */);
+      kEnableAbusiveContentTriggeredRequestBlocking, false /* default */);
 }
 
 // static
@@ -147,5 +147,5 @@ bool QuietNotificationPermissionUiConfig::
 
   return base::GetFieldTrialParamByFeatureAsBool(
       features::kQuietNotificationPrompts,
-      kEnableAbusiveContentTriggeredRequestWarning, true /* default */);
+      kEnableAbusiveContentTriggeredRequestWarning, false /* default */);
 }

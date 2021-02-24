@@ -322,12 +322,7 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest, AllTriggersDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kQuietNotificationPrompts,
-      {{Config::kEnableAdaptiveActivation, "true"},
-       {Config::kEnableCrowdDenyTriggering, "false"},
-       {Config::kEnableAbusiveRequestBlocking, "false"},
-       {Config::kEnableAbusiveRequestWarning, "false"},
-       {Config::kEnableAbusiveContentTriggeredRequestBlocking, "false"},
-       {Config::kEnableAbusiveContentTriggeredRequestWarning, "false"}});
+      {{Config::kEnableAdaptiveActivation, "true"}});
 
   SetQuietUiEnabledInPrefs(true);
   LoadTestPreloadData();
@@ -347,11 +342,7 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest, OnlyCrowdDenyEnabled) {
   feature_list.InitAndEnableFeatureWithParameters(
       features::kQuietNotificationPrompts,
       {{Config::kEnableAdaptiveActivation, "true"},
-       {Config::kEnableCrowdDenyTriggering, "true"},
-       {Config::kEnableAbusiveRequestBlocking, "false"},
-       {Config::kEnableAbusiveRequestWarning, "false"},
-       {Config::kEnableAbusiveContentTriggeredRequestBlocking, "false"},
-       {Config::kEnableAbusiveContentTriggeredRequestWarning, "false"}});
+       {Config::kEnableCrowdDenyTriggering, "true"}});
 
   LoadTestPreloadData();
   LoadTestSafeBrowsingBlocklist();
@@ -387,11 +378,7 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest,
   feature_list.InitAndEnableFeatureWithParameters(
       features::kQuietNotificationPrompts,
       {{Config::kEnableAdaptiveActivation, "true"},
-       {Config::kEnableCrowdDenyTriggering, "false"},
-       {Config::kEnableAbusiveRequestBlocking, "false"},
-       {Config::kEnableAbusiveRequestWarning, "false"},
-       {Config::kEnableAbusiveContentTriggeredRequestBlocking, "true"},
-       {Config::kEnableAbusiveContentTriggeredRequestWarning, "false"}});
+       {Config::kEnableAbusiveContentTriggeredRequestBlocking, "true"}});
 
   LoadTestPreloadData();
   LoadTestSafeBrowsingBlocklist();
@@ -427,10 +414,6 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest,
   feature_list.InitAndEnableFeatureWithParameters(
       features::kQuietNotificationPrompts,
       {{Config::kEnableAdaptiveActivation, "true"},
-       {Config::kEnableCrowdDenyTriggering, "false"},
-       {Config::kEnableAbusiveRequestBlocking, "false"},
-       {Config::kEnableAbusiveRequestWarning, "false"},
-       {Config::kEnableAbusiveContentTriggeredRequestBlocking, "false"},
        {Config::kEnableAbusiveContentTriggeredRequestWarning, "true"}});
 
   LoadTestPreloadData();
@@ -468,11 +451,7 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest,
   feature_list.InitAndEnableFeatureWithParameters(
       features::kQuietNotificationPrompts,
       {{Config::kEnableAdaptiveActivation, "true"},
-       {Config::kEnableCrowdDenyTriggering, "false"},
-       {Config::kEnableAbusiveRequestBlocking, "true"},
-       {Config::kEnableAbusiveRequestWarning, "false"},
-       {Config::kEnableAbusiveContentTriggeredRequestBlocking, "false"},
-       {Config::kEnableAbusiveContentTriggeredRequestWarning, "false"}});
+       {Config::kEnableAbusiveRequestBlocking, "true"}});
 
   LoadTestPreloadData();
   LoadTestSafeBrowsingBlocklist();
@@ -510,11 +489,7 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest,
   feature_list.InitAndEnableFeatureWithParameters(
       features::kQuietNotificationPrompts,
       {{Config::kEnableAdaptiveActivation, "true"},
-       {Config::kEnableCrowdDenyTriggering, "false"},
-       {Config::kEnableAbusiveRequestBlocking, "false"},
-       {Config::kEnableAbusiveRequestWarning, "true"},
-       {Config::kEnableAbusiveContentTriggeredRequestBlocking, "false"},
-       {Config::kEnableAbusiveContentTriggeredRequestWarning, "false"}});
+       {Config::kEnableAbusiveRequestWarning, "true"}});
 
   LoadTestPreloadData();
   LoadTestSafeBrowsingBlocklist();
