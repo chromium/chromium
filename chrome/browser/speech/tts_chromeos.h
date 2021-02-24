@@ -18,6 +18,9 @@ class TtsPlatformImplChromeOs : public content::TtsPlatform {
   // Sets the voices exposed by this TtsPlatform.
   void SetVoices(std::vector<content::VoiceData> voices);
 
+  // Called by ArcTtsService when it receives a word event.
+  void ReceivedWordEvent();
+
   // TtsPlatform overrides:
   bool PlatformImplSupported() override;
   bool PlatformImplInitialized() override;
@@ -61,6 +64,8 @@ class TtsPlatformImplChromeOs : public content::TtsPlatform {
   std::string error_;
 
   std::vector<content::VoiceData> voices_;
+
+  bool received_word_event_ = false;
 };
 
 #endif  // CHROME_BROWSER_SPEECH_TTS_CHROMEOS_H_

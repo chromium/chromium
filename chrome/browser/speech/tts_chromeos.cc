@@ -20,6 +20,18 @@ void TtsPlatformImplChromeOs::SetVoices(
     return !v1.remote && v2.remote;
   });
   voices_ = std::move(voices);
+  received_word_event_ = false;
+}
+
+void TtsPlatformImplChromeOs::ReceivedWordEvent() {
+  if (received_word_event_)
+    return;
+
+  received_word_event_ = true;
+  for (auto& voice : voices_)
+    voice.events.insert(content::TTS_EVENT_WORD);
+
+  content::TtsController::GetInstance()->VoicesChanged();
 }
 
 TtsPlatformImplChromeOs::TtsPlatformImplChromeOs() = default;

@@ -110,28 +110,28 @@ TEST_F(ArcTtsServiceTest, TestConstructDestruct) {}
 // Tests that OnTtsEvent() properly calls into
 // TtsControllerDelegateImpl::OnTtsEvent().
 TEST_F(ArcTtsServiceTest, TestOnTtsEvent) {
-  tts_service()->OnTtsEvent(1, mojom::TtsEventType::START, 0, "");
+  tts_service()->OnTtsEvent(1, mojom::TtsEventType::START, 0, -1, "");
   EXPECT_EQ(1, tts_controller()->last_utterance_id_);
   EXPECT_EQ(content::TTS_EVENT_START, tts_controller()->last_event_type_);
   EXPECT_EQ(-1, tts_controller()->last_length_);
   EXPECT_EQ("", tts_controller()->last_error_message_);
 
-  tts_service()->OnTtsEvent(1, mojom::TtsEventType::END, 10, "");
+  tts_service()->OnTtsEvent(1, mojom::TtsEventType::END, 10, 2, "");
   EXPECT_EQ(1, tts_controller()->last_utterance_id_);
   EXPECT_EQ(content::TTS_EVENT_END, tts_controller()->last_event_type_);
-  EXPECT_EQ(-1, tts_controller()->last_length_);
+  EXPECT_EQ(2, tts_controller()->last_length_);
   EXPECT_EQ("", tts_controller()->last_error_message_);
 
-  tts_service()->OnTtsEvent(2, mojom::TtsEventType::INTERRUPTED, 0, "");
+  tts_service()->OnTtsEvent(2, mojom::TtsEventType::INTERRUPTED, 0, -1, "");
   EXPECT_EQ(2, tts_controller()->last_utterance_id_);
   EXPECT_EQ(content::TTS_EVENT_INTERRUPTED, tts_controller()->last_event_type_);
   EXPECT_EQ(-1, tts_controller()->last_length_);
   EXPECT_EQ("", tts_controller()->last_error_message_);
 
-  tts_service()->OnTtsEvent(3, mojom::TtsEventType::ERROR, 0, "");
+  tts_service()->OnTtsEvent(3, mojom::TtsEventType::ERROR, 0, 10, "");
   EXPECT_EQ(3, tts_controller()->last_utterance_id_);
   EXPECT_EQ(content::TTS_EVENT_ERROR, tts_controller()->last_event_type_);
-  EXPECT_EQ(-1, tts_controller()->last_length_);
+  EXPECT_EQ(10, tts_controller()->last_length_);
   EXPECT_EQ("", tts_controller()->last_error_message_);
 }
 

@@ -80,9 +80,17 @@ ArcTtsService::~ArcTtsService() {
   arc_bridge_service_->tts()->SetHost(nullptr);
 }
 
+void ArcTtsService::OnTtsEventDeprecated(uint32_t id,
+                                         mojom::TtsEventType event_type,
+                                         uint32_t char_index,
+                                         const std::string& error_msg) {
+  OnTtsEvent(id, event_type, char_index, -1 /* length */, error_msg);
+}
+
 void ArcTtsService::OnTtsEvent(uint32_t id,
                                mojom::TtsEventType event_type,
                                uint32_t char_index,
+                               uint32_t length,
                                const std::string& error_msg) {
   if (!tts_controller_) {
     // GetInstance() returns a base::Singleton<> object which always outlives
@@ -108,8 +116,12 @@ void ArcTtsService::OnTtsEvent(uint32_t id,
     case mojom::TtsEventType::ERROR:
       chrome_event_type = content::TTS_EVENT_ERROR;
       break;
+    case mojom::TtsEventType::WORD:
+      chrome_event_type = content::TTS_EVENT_WORD;
+      TtsPlatformImplChromeOs::GetInstance()->ReceivedWordEvent();
   }
-  tts_controller_->OnTtsEvent(id, chrome_event_type, char_index, -1, error_msg);
+  tts_controller_->OnTtsEvent(id, chrome_event_type, char_index, length,
+                              error_msg);
 }
 
 void ArcTtsService::OnVoicesChanged(std::vector<mojom::TtsVoicePtr> voices) {
