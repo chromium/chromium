@@ -205,6 +205,7 @@ void PaymentCredential::DidDownloadIcon(
 
   state_ = State::kShowingUserPrompt;
   ui_controller_->ShowDialog(
+      initiator_frame_routing_id_,
       base::BindOnce(&PaymentCredential::OnUserResponseFromUI,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

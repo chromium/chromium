@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/payment_credential_enrollment_model.h"
 #include "components/payments/content/payment_credential_enrollment_view.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -55,7 +56,8 @@ class PaymentCredentialEnrollmentController
   PaymentCredentialEnrollmentController& operator=(
       const PaymentCredentialEnrollmentController& other) = delete;
 
-  void ShowDialog(ResponseCallback response_callback);
+  void ShowDialog(content::GlobalFrameRoutingId initiator_frame_routing_id,
+                  ResponseCallback response_callback);
   void CloseDialog();
   void ShowProcessingSpinner();
 
@@ -79,6 +81,13 @@ class PaymentCredentialEnrollmentController
   friend class content::WebContentsUserData<
       PaymentCredentialEnrollmentController>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
+
+  // content::WebContentsObserver:
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override;
+  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
+
+  content::GlobalFrameRoutingId initiator_frame_routing_id_;
 
   ResponseCallback response_callback_;
 
