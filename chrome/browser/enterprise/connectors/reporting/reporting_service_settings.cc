@@ -21,6 +21,7 @@ ReportingServiceSettings::ReportingServiceSettings(
   const std::string* service_provider_name =
       settings_value.FindStringKey(kKeyServiceProvider);
   if (service_provider_name) {
+    service_provider_name_ = *service_provider_name;
     service_provider_ =
         service_provider_config.GetServiceProvider(*service_provider_name);
   }

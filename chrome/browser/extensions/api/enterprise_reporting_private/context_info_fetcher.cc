@@ -104,9 +104,8 @@ ContextInfoFetcher::GetRealtimeUrlCheckMode() {
 }
 
 std::vector<std::string> ContextInfoFetcher::GetOnSecurityEventProviders() {
-  // TODO(crbug.com/1169219): Add code here and in ConnectorsService to obtain
-  // the providers of this policy.
-  return {};
+  return connectors_service_->GetReportingServiceProviderNames(
+      enterprise_connectors::ReportingConnector::SECURITY_EVENT);
 }
 
 }  // namespace enterprise_reporting

@@ -28,6 +28,8 @@ class ReportingServiceSettings {
   // report should take place.
   base::Optional<ReportingSettings> GetReportingSettings() const;
 
+  std::string service_provider_name() const { return service_provider_name_; }
+
  private:
   // Returns true if the settings were initialized correctly. If this returns
   // false, then GetAnalysisSettings will always return base::nullopt.
@@ -37,6 +39,8 @@ class ReportingServiceSettings {
   // implies that a corresponding service provider doesn't exist and that these
   // settings are not valid.
   const ServiceProviderConfig::ServiceProvider* service_provider_ = nullptr;
+
+  std::string service_provider_name_;
 
   // The events that are enabled for the current service provider.
   std::set<std::string> enabled_event_names_;

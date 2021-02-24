@@ -65,6 +65,8 @@ class ConnectorsService : public KeyedService {
 
   std::vector<std::string> GetAnalysisServiceProviderNames(
       AnalysisConnector connector);
+  std::vector<std::string> GetReportingServiceProviderNames(
+      ReportingConnector connector);
 
   // DM token accessor function for real-time URL checks. Returns a profile or
   // browser DM token depending on the policy scope, and base::nullopt if there

@@ -293,4 +293,46 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetContextInfoBaseBrowserTest,
   EXPECT_EQ("another", info.on_file_downloaded_providers[0]);
 }
 
+IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetContextInfoBaseBrowserTest,
+                       TestOnSecurityEventProviderNameUnset) {
+  SetupDMToken();
+
+  auto function =
+      base::MakeRefCounted<EnterpriseReportingPrivateGetContextInfoFunction>();
+  auto context_info_value = std::unique_ptr<base::Value>(
+      extension_function_test_utils::RunFunctionAndReturnSingleResult(
+          function.get(),
+          /*args*/ "[]", browser()));
+  ASSERT_TRUE(context_info_value.get());
+
+  enterprise_reporting_private::ContextInfo info;
+  ASSERT_TRUE(enterprise_reporting_private::ContextInfo::Populate(
+      *context_info_value, &info));
+
+  EXPECT_EQ(0UL, info.on_security_event_providers.size());
+}
+
+IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetContextInfoBaseBrowserTest,
+                       TestOnSecurityEventProviderNameSet) {
+  SetupDMToken();
+  safe_browsing::SetOnSecurityEventReporting(browser()->profile()->GetPrefs(),
+                                             /* enabled= */ true);
+
+  auto function =
+      base::MakeRefCounted<EnterpriseReportingPrivateGetContextInfoFunction>();
+  auto context_info_value = std::unique_ptr<base::Value>(
+      extension_function_test_utils::RunFunctionAndReturnSingleResult(
+          function.get(),
+          /*args*/ "[]", browser()));
+  ASSERT_TRUE(context_info_value.get());
+
+  enterprise_reporting_private::ContextInfo info;
+  ASSERT_TRUE(enterprise_reporting_private::ContextInfo::Populate(
+      *context_info_value, &info));
+
+  EXPECT_EQ(1UL, info.on_security_event_providers.size());
+  // SetOnSecurityEventReporting sets the provider name to google
+  EXPECT_EQ("google", info.on_security_event_providers[0]);
+}
+
 }  // namespace extensions
