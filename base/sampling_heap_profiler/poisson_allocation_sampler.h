@@ -33,7 +33,7 @@ class NoDestructor;
 //
 class BASE_EXPORT PoissonAllocationSampler {
  public:
-  enum AllocatorType : uint32_t { kMalloc, kPartitionAlloc, kBlinkGC };
+  enum AllocatorType : uint32_t { kMalloc, kPartitionAlloc };
 
   class SamplesObserver {
    public:

@@ -59,9 +59,6 @@
 
 namespace blink {
 
-HeapAllocHooks::AllocationHook* HeapAllocHooks::allocation_hook_ = nullptr;
-HeapAllocHooks::FreeHook* HeapAllocHooks::free_hook_ = nullptr;
-
 class ProcessHeapReporter final : public ThreadHeapStatsObserver {
  public:
   void IncreaseAllocatedSpace(size_t bytes) final {

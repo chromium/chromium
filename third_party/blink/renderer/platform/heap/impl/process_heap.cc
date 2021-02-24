@@ -13,20 +13,6 @@
 
 namespace blink {
 
-namespace {
-
-void BlinkGCAllocHook(uint8_t* address, size_t size, const char* context) {
-  base::PoissonAllocationSampler::RecordAlloc(
-      address, size, base::PoissonAllocationSampler::AllocatorType::kBlinkGC,
-      context);
-}
-
-void BlinkGCFreeHook(uint8_t* address) {
-  base::PoissonAllocationSampler::RecordFree(address);
-}
-
-}  // namespace
-
 void ProcessHeap::Init() {
   DCHECK(!base::FeatureList::IsEnabled(
              blink::features::kBlinkHeapConcurrentMarking) ||
@@ -37,11 +23,6 @@ void ProcessHeap::Init() {
   total_allocated_object_size_ = 0;
 
   GCInfoTable::CreateGlobalTable();
-
-  base::PoissonAllocationSampler::SetHooksInstallCallback([]() {
-    HeapAllocHooks::SetAllocationHook(&BlinkGCAllocHook);
-    HeapAllocHooks::SetFreeHook(&BlinkGCFreeHook);
-  });
 }
 
 void ProcessHeap::ResetHeapCounters() {

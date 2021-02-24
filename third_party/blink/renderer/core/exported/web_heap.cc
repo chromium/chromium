@@ -44,12 +44,4 @@ void WebHeap::CollectAllGarbageForTesting() {
   ThreadState::Current()->CollectAllGarbageForTesting();
 }
 
-void WebHeap::SetAllocationHook(AllocationHook alloc_hook) {
-  HeapAllocHooks::SetAllocationHook(alloc_hook);
-}
-
-void WebHeap::SetFreeHook(FreeHook free_hook) {
-  HeapAllocHooks::SetFreeHook(free_hook);
-}
-
 }  // namespace blink

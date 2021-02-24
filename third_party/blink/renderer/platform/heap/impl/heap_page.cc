@@ -89,7 +89,6 @@ namespace blink {
 
 void HeapObjectHeader::Finalize(Address object, size_t object_size) {
   DCHECK(!IsInConstruction<HeapObjectHeader::AccessMode::kAtomic>());
-  HeapAllocHooks::FreeHookIfEnabled(object);
   const GCInfo& gc_info = GCInfo::From(GcInfoIndex());
   if (gc_info.finalize)
     gc_info.finalize(object);
