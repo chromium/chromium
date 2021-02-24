@@ -1654,6 +1654,42 @@ TEST_F(WebContentsImplTest, PendingContentsShown) {
   EXPECT_FALSE(contents()->GetCreatedWindow(process_id, widget_id).has_value());
 }
 
+TEST_F(WebContentsImplTest, CaptureHoldsWakeLock) {
+  EXPECT_FALSE(contents()->IsBeingCaptured());
+  EXPECT_FALSE(contents()->capture_wake_lock_);
+
+  auto expect_wake_lock = [&](bool expect_has_wake_lock) {
+    base::RunLoop run_loop;
+    contents()->capture_wake_lock_->HasWakeLockForTests(
+        base::BindLambdaForTesting([&](bool has_wake_lock) {
+          EXPECT_EQ(expect_has_wake_lock, has_wake_lock);
+          run_loop.QuitWhenIdle();
+        }));
+    run_loop.Run();
+  };
+
+  // Add capturer and ensure wake lock is held.
+  contents()->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/false);
+  EXPECT_TRUE(contents()->IsBeingCaptured());
+  ASSERT_TRUE(contents()->capture_wake_lock_);
+  expect_wake_lock(true);
+
+  // Add another capturer and ensure the wake lock is still held.
+  contents()->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/true);
+  EXPECT_TRUE(contents()->IsBeingCaptured());
+  expect_wake_lock(true);
+
+  // Remove one capturer, but one remains so wake lock should still be held.
+  contents()->DecrementCapturerCount(/*stay_hidden=*/true);
+  EXPECT_TRUE(contents()->IsBeingCaptured());
+  expect_wake_lock(true);
+
+  // Remove the last capturer and ensure the wake lock is released.
+  contents()->DecrementCapturerCount(/*stay_hidden=*/false);
+  EXPECT_FALSE(contents()->IsBeingCaptured());
+  expect_wake_lock(false);
+}
+
 TEST_F(WebContentsImplTest, CapturerOverridesPreferredSize) {
   const gfx::Size original_preferred_size(1024, 768);
   contents()->UpdatePreferredSize(original_preferred_size);

@@ -151,6 +151,7 @@
 #include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
@@ -1817,6 +1818,19 @@ void WebContentsImpl::IncrementCapturerCount(const gfx::Size& capture_size,
     OnPreferredSizeChanged(preferred_size_);
   }
 
+  if (!capture_wake_lock_) {
+    if (auto* wake_lock_context = GetWakeLockContext()) {
+      auto receiver = capture_wake_lock_.BindNewPipeAndPassReceiver();
+      wake_lock_context->GetWakeLock(
+          device::mojom::WakeLockType::kPreventDisplaySleepAllowDimming,
+          device::mojom::WakeLockReason::kOther, "Capturing",
+          std::move(receiver));
+    }
+  }
+
+  if (capture_wake_lock_)
+    capture_wake_lock_->RequestWakeLock();
+
   UpdateVisibilityAndNotifyPageAndView(GetVisibility());
 }
 
@@ -1836,6 +1850,8 @@ void WebContentsImpl::DecrementCapturerCount(bool stay_hidden) {
     const gfx::Size old_size = preferred_size_for_capture_;
     preferred_size_for_capture_ = gfx::Size();
     OnPreferredSizeChanged(old_size);
+    if (capture_wake_lock_)
+      capture_wake_lock_->CancelWakeLock();
   }
 
   UpdateVisibilityAndNotifyPageAndView(GetVisibility());

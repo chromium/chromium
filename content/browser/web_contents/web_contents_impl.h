@@ -90,6 +90,12 @@ namespace base {
 class FilePath;
 }  // namespace base
 
+namespace device {
+namespace mojom {
+class WakeLock;
+}
+}  // namespace device
+
 namespace service_manager {
 class InterfaceProvider;
 }  // namespace service_manager
@@ -1240,6 +1246,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   friend class BeforeUnloadBlockingDelegate;
   friend class TestWCDelegateForDialogsAndFullscreen;
 
+  FRIEND_TEST_ALL_PREFIXES(WebContentsImplTest, CaptureHoldsWakeLock);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplTest, NoJSMessageOnInterstitials);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplTest, UpdateTitle);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplTest, FindOpenerRVHWhenPending);
@@ -1818,6 +1825,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // to be hidden but still paint.
   int visible_capturer_count_;
   int hidden_capturer_count_;
+  mojo::Remote<device::mojom::WakeLock> capture_wake_lock_;
 
   // The visibility of the WebContents. Initialized from
   // |CreateParams::initially_hidden|. Updated from
