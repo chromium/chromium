@@ -16,6 +16,8 @@ import org.chromium.base.annotations.NativeMethods;
 @JNINamespace("translate::android")
 public class TranslateFeatureList {
     /** Alphabetical: */
+    public static final String CONTENT_LANGUAGES_IN_LANGUAGE_PICKER =
+            "ContentLanguagesInLanguagePicker";
     public static final String DETECTED_SOURCE_LANGUAGE_OPTION = "DetectedSourceLanguageOption";
 
     // Do not instantiate this class.

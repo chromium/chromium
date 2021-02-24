@@ -48,7 +48,8 @@ class TranslateUtilsTest : public ::testing::Test {
   JNIEnv* env_;
 };
 // Tests that content languages information in the java format is correct for
-// content languages (names, native names, codes and hashcodes are as expected).
+// content languages (names, native names, codes are as expected, hashcodes are
+// empty).
 TEST_F(TranslateUtilsTest, GetJavaContentLangauges) {
   // Set up the mock delegate.
   LanguageNameTriple en;
@@ -86,12 +87,6 @@ TEST_F(TranslateUtilsTest, GetJavaContentLangauges) {
   base::android::AppendJavaStringArrayToStringVector(
       env_, contentLanguages.java_codes, &actual_codes);
   EXPECT_THAT(actual_codes, ::testing::ContainerEq(kCodes));
-
-  // Test hash codes are as expected.
-  std::vector<int> actual_hash_codes;
-  base::android::JavaIntArrayToIntVector(env_, contentLanguages.java_hash_codes,
-                                         &actual_hash_codes);
-  EXPECT_THAT(actual_hash_codes, ::testing::ContainerEq(kHashCodes));
 }
 
 // Tests that application handles empty content language data gracefully.
@@ -118,12 +113,6 @@ TEST_F(TranslateUtilsTest, GetJavaContentLangaugesEmpty) {
   base::android::AppendJavaStringArrayToStringVector(
       env_, contentLanguages.java_codes, &actual_codes);
   ASSERT_TRUE(actual_codes.empty());
-
-  // Test hash codes are empty.
-  std::vector<int> actual_hash_codes;
-  base::android::JavaIntArrayToIntVector(env_, contentLanguages.java_hash_codes,
-                                         &actual_hash_codes);
-  ASSERT_TRUE(actual_hash_codes.empty());
 }
 
 // Test that language information in the java format is correct for all

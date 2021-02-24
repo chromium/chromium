@@ -49,6 +49,11 @@ class TranslateCompactInfoBar
   jboolean IsIncognito(JNIEnv* env,
                        const base::android::JavaParamRef<jobject>& obj);
 
+  // Returns codes of the content languages in Java format.
+  base::android::ScopedJavaLocalRef<jobjectArray> GetContentLanguagesCodes(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj);
+
   // TranslateInfoBarDelegate::Observer implementation.
   void OnTranslateStepChanged(translate::TranslateStep step,
                     translate::TranslateErrors::Type error_type) override;

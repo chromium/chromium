@@ -107,7 +107,8 @@ public class TranslateCompactInfoBar extends InfoBar
         mInitialStep = initialStep;
         mDefaultTextColor = tabTextColor;
         mOptions = TranslateOptions.create(sourceLanguageCode, targetLanguageCode, languages,
-                languageCodes, alwaysTranslate, triggeredFromMenu, hashCodes);
+                languageCodes, alwaysTranslate, triggeredFromMenu, hashCodes,
+                /*contentLanguagesCodes*/ null);
     }
 
     @Override

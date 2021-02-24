@@ -251,6 +251,24 @@ TEST_F(TranslateUIDelegateTest, ContentLanguagesWhenEnabled) {
   EXPECT_THAT(expected_names, ::testing::ContainerEq(actual_names));
   EXPECT_THAT(expected_native_names,
               ::testing::ContainerEq(actual_native_names));
+
+  // Mimic an update.
+  prefs->AddToLanguageList("it", /*force_blocked=*/false);
+  delegate->MaybeSetContentLanguages();
+  delegate->GetContentLanguagesCodes(&actual_codes);
+  delegate->GetContentLanguagesNames(&actual_names);
+  delegate->GetContentLanguagesNativeNames(&actual_native_names);
+
+  expected_names = {base::UTF8ToUTF16("German"), base::UTF8ToUTF16("Polish"),
+                    base::UTF8ToUTF16("Italian")};
+  expected_native_names = {base::UTF8ToUTF16("Deutsch"),
+                           base::UTF8ToUTF16("polski"),
+                           base::UTF8ToUTF16("italiano")};
+  expected_codes = {"de", "pl", "it"};
+  EXPECT_THAT(expected_codes, ::testing::ContainerEq(actual_codes));
+  EXPECT_THAT(expected_names, ::testing::ContainerEq(actual_names));
+  EXPECT_THAT(expected_native_names,
+              ::testing::ContainerEq(actual_native_names));
 }
 
 TEST_F(TranslateUIDelegateTest, ContentLanguagesWhenDisabled) {

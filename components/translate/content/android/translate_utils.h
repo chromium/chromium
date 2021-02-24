@@ -44,14 +44,15 @@ class TranslateUtils {
       std::vector<std::string>& language_codes);
 
   // An utility method that converts information about all translatable
-  // languages to a Java format.
+  // languages to a Java format. Note that translate languages won't have native
+  // names set.
   static JavaLanguageInfoWrapper GetTranslateLanguagesInJavaFormat(
       JNIEnv* env,
       TranslateInfoBarDelegate* delegate);
 
   // An utility method that converts information about translatable user's
-  // content languages languages
-  // to a Java format.
+  // content languages languages to a Java format. Note that content languages
+  // won't have hash codes set.
   static JavaLanguageInfoWrapper GetContentLanguagesInJavaFormat(
       JNIEnv* env,
       TranslateInfoBarDelegate* delegate);

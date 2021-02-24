@@ -639,6 +639,14 @@
     "expiry_milestone": 90
   },
   {
+    "name": "content-languages-in-language-picker",
+    "owners": [
+      "basiaz",
+      "chrome-language"
+    ],
+    "expiry_milestone": 93
+  },
+  {
     "name": "content-settings-redesign",
     "owners": [
       "harrisonsean",

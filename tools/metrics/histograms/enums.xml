@@ -43963,6 +43963,7 @@ from previous Chrome versions.
       label="SyncPseudoUSSHistoryDeleteDirectives:enabled"/>
   <int value="-1390005994" label="AppCache:disabled"/>
   <int value="-1388817073" label="OmniboxReverseAnswers:disabled"/>
+  <int value="-1388044691" label="ContentLanguagesInLanguagePicker:enabled"/>
   <int value="-1386966873" label="disable-mac-views-native-app-windows"/>
   <int value="-1386790338" label="ImeMozcProto:disabled"/>
   <int value="-1386776772" label="FilesZipPack:disabled"/>
@@ -46046,6 +46047,7 @@ from previous Chrome versions.
   <int value="538468149" label="OfflinePagesCT:enabled"/>
   <int value="538600423" label="OmniboxDocumentProvider:enabled"/>
   <int value="538685995" label="InstallableInkDrop:enabled"/>
+  <int value="541667888" label="ContentLanguagesInLanguagePicker:disabled"/>
   <int value="542930298" label="WebAppEnableLinkCapturing:disabled"/>
   <int value="542960889" label="HeavyAdIntervention:enabled"/>
   <int value="544443920" label="QuickAnswers:disabled"/>

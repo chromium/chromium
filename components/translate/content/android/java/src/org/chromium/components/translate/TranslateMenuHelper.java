@@ -57,7 +57,23 @@ public class TranslateMenuHelper implements AdapterView.OnItemClickListener {
         mIsSourceLangUnknown = isSourceLangUnknown;
     }
 
+    // Helper method for deciding if a language should be skipped from the list
+    // in case it's a source or target language for the corresponding language list.
+    private boolean shouldBeSkippedFromList(int menuType, String code) {
+        // Avoid source language in the source language list.
+        if (menuType == TranslateMenu.MENU_SOURCE_LANGUAGE
+                && code.equals(mOptions.sourceLanguageCode())) {
+            return true;
+        }
+        // Avoid target language in the target language list.
+        if (menuType == TranslateMenu.MENU_TARGET_LANGUAGE
+                && code.equals(mOptions.targetLanguageCode())) {
+            return true;
+        }
+        return false;
+    }
     /**
+     *
      * Build translate menu by menu type.
      */
     private List<TranslateMenu.MenuItem> getMenuList(int menuType) {
@@ -66,6 +82,32 @@ public class TranslateMenuHelper implements AdapterView.OnItemClickListener {
             // TODO(googleo): Add language short list above static menu after its data is ready.
             menuList.addAll(TranslateMenu.getOverflowMenu(mIsIncognito, mIsSourceLangUnknown));
         } else {
+            int contentLanguagesCount = 0;
+            if (TranslateFeatureList.isEnabled(
+                        TranslateFeatureList.CONTENT_LANGUAGES_IN_LANGUAGE_PICKER)
+                    && menuType == TranslateMenu.MENU_TARGET_LANGUAGE
+                    && mOptions.contentLanguages() != null) {
+                contentLanguagesCount = mOptions.contentLanguages().length;
+                // If false it means that the list is not empty and the last element should be
+                // skipped from the list, meaning the second to last should have a divider.
+                boolean lastHasDivider = contentLanguagesCount > 0
+                        && !(shouldBeSkippedFromList(
+                                menuType, mOptions.contentLanguages()[contentLanguagesCount - 1]));
+
+                for (int i = 0; i < contentLanguagesCount; ++i) {
+                    String code = mOptions.contentLanguages()[i];
+                    if (shouldBeSkippedFromList(menuType, code)) {
+                        continue;
+                    }
+                    menuList.add(
+                            new TranslateMenu.MenuItem(TranslateMenu.ITEM_CONTENT_LANGUAGE, i, code,
+                                    (i == contentLanguagesCount - 1 && lastHasDivider
+                                            || i == contentLanguagesCount - 2 && !lastHasDivider)));
+                }
+
+                // Keeps track how many were added.
+                contentLanguagesCount = menuList.size();
+            }
             // "Detected Language" option is added to the top of the languages list if the feature
             // is enabled. This option is only used in the source language menu.
             boolean should_skip_detected_source_language_option =
@@ -77,22 +119,26 @@ public class TranslateMenuHelper implements AdapterView.OnItemClickListener {
                     continue;
                 }
                 String code = mOptions.allLanguages().get(i).mLanguageCode;
-                // Avoid source language in the source language list.
-                if (menuType == TranslateMenu.MENU_SOURCE_LANGUAGE
-                        && code.equals(mOptions.sourceLanguageCode())) {
-                    continue;
-                }
-                // Avoid target language in the target language list.
-                if (menuType == TranslateMenu.MENU_TARGET_LANGUAGE
-                        && code.equals(mOptions.targetLanguageCode())) {
+                if (shouldBeSkippedFromList(menuType, code)) {
                     continue;
                 }
                 // Subtract 1 from item IDs if skipping the "Detected Language" option.
-                int itemID = should_skip_detected_source_language_option ? i - 1 : i;
+                int itemID = should_skip_detected_source_language_option
+                        ? contentLanguagesCount + i - 1
+                        : contentLanguagesCount + i;
                 menuList.add(new TranslateMenu.MenuItem(TranslateMenu.ITEM_LANGUAGE, itemID, code));
             }
         }
         return menuList;
+    }
+
+    /**
+     * Content languages are the only mutable property of translate options.
+     * Refresh menu when they change.
+     */
+    public void onContentLanguagesChanged(String[] codes) {
+        mOptions.updateContentLanguages(codes);
+        mAdapter.refreshMenu(TranslateMenu.MENU_TARGET_LANGUAGE);
     }
 
     /**
@@ -292,6 +338,22 @@ public class TranslateMenuHelper implements AdapterView.OnItemClickListener {
             return menuItemView;
         }
 
+        private View getExtendedItemView(
+                View menuItemView, int position, ViewGroup parent, int resourceId) {
+            if (menuItemView == null) {
+                menuItemView = mInflater.inflate(resourceId, parent, false);
+            }
+            TranslateMenu.MenuItem item = getItem(position);
+            ((TextView) menuItemView.findViewById(R.id.menu_item_text))
+                    .setText(getItemViewText(item));
+            ((TextView) menuItemView.findViewById(R.id.menu_item_secondary_text))
+                    .setText(mOptions.getNativeRepresentationFromCode(item.mCode));
+
+            int dividerVisibility = item.mWithDivider ? View.VISIBLE : View.GONE;
+            menuItemView.findViewById(R.id.menu_item_list_divider).setVisibility(dividerVisibility);
+            return menuItemView;
+        }
+
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View menuItemView = convertView;
@@ -318,6 +380,10 @@ public class TranslateMenuHelper implements AdapterView.OnItemClickListener {
                     if (getItem(position).mWithDivider) {
                         divider.setVisibility(View.VISIBLE);
                     }
+                    break;
+                case TranslateMenu.ITEM_CONTENT_LANGUAGE:
+                    menuItemView = getExtendedItemView(
+                            menuItemView, position, parent, R.layout.translate_menu_extended_item);
                     break;
                 case TranslateMenu.ITEM_LANGUAGE:
                     menuItemView = getItemView(

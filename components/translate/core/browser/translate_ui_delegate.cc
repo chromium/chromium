@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/language_experiments.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/translate/core/browser/language_state.h"
@@ -90,24 +91,21 @@ TranslateUIDelegate::TranslateUIDelegate(
   DCHECK(translate_driver_);
   DCHECK(translate_manager_);
 
-  std::string locale =
-      TranslateDownloadManager::GetInstance()->application_locale();
-
   if (base::FeatureList::IsEnabled(
           language::kContentLanguagesInLanguagePicker)) {
-    std::vector<std::string> content_language_codes;
-    prefs_->GetTranslatableContentLanguages(locale, &content_language_codes);
-    translatable_content_languages_.reserve(content_language_codes.size());
-    for (std::string& language_code : content_language_codes) {
-      LanguageNameTriple languageInfo;
-      languageInfo.code = language_code;
-      languageInfo.name =
-          l10n_util::GetDisplayNameForLocale(language_code, locale, true);
-      languageInfo.native_name = l10n_util::GetDisplayNameForLocale(
-          language_code, language_code, true);
-      translatable_content_languages_.emplace_back(languageInfo);
-    }
+    MaybeSetContentLanguages();
+    // Also start listening for changes in the accept languages.
+    PrefService* pref_service =
+        translate_manager->translate_client()->GetPrefs();
+    pref_change_registrar_.Init(pref_service);
+    pref_change_registrar_.Add(
+        language::prefs::kAcceptLanguages,
+        base::BindRepeating(&TranslateUIDelegate::MaybeSetContentLanguages,
+                            base::Unretained(this)));
   }
+
+  std::string locale =
+      TranslateDownloadManager::GetInstance()->application_locale();
 
   std::vector<std::string> language_codes;
   TranslateDownloadManager::GetSupportedLanguages(
@@ -191,6 +189,24 @@ TranslateUIDelegate::TranslateUIDelegate(
 }
 
 TranslateUIDelegate::~TranslateUIDelegate() {}
+
+void TranslateUIDelegate::MaybeSetContentLanguages() {
+  std::string locale =
+      TranslateDownloadManager::GetInstance()->application_locale();
+  translatable_content_languages_.clear();
+  std::vector<std::string> content_language_codes;
+  prefs_->GetTranslatableContentLanguages(locale, &content_language_codes);
+  translatable_content_languages_.reserve(content_language_codes.size());
+  for (std::string& language_code : content_language_codes) {
+    LanguageNameTriple languageInfo;
+    languageInfo.code = language_code;
+    languageInfo.name =
+        l10n_util::GetDisplayNameForLocale(language_code, locale, true);
+    languageInfo.native_name =
+        l10n_util::GetDisplayNameForLocale(language_code, language_code, true);
+    translatable_content_languages_.emplace_back(languageInfo);
+  }
+}
 
 void TranslateUIDelegate::OnErrorShown(TranslateErrors::Type error_type) {
   DCHECK_LE(TranslateErrors::NONE, error_type);

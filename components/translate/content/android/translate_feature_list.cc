@@ -18,6 +18,7 @@ namespace {
 // API. Entries in this array refer to features defined in
 // components/language/core/common/language_experiments.h.
 const base::Feature* kFeaturesExposedToJava[] = {
+    &language::kContentLanguagesInLanguagePicker,
     &language::kDetectedSourceLanguageOption,
 };
 

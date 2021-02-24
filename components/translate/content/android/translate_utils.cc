@@ -63,7 +63,6 @@ JavaLanguageInfoWrapper TranslateUtils::GetContentLanguagesInJavaFormat(
       base::android::ToJavaArrayOfStrings(env, languages_native_names);
   result.java_languages = base::android::ToJavaArrayOfStrings(env, languages);
   result.java_codes = base::android::ToJavaArrayOfStrings(env, codes);
-  result.java_hash_codes = GetJavaLanguageHashCodes(env, codes);
   return result;
 }
 }  // namespace translate

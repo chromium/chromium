@@ -13,6 +13,7 @@ android_resources("java_resources") {
     "java/res/drawable-xxhdpi/infobar_translate_compact.png",
     "java/res/drawable-xxxhdpi/infobar_translate_compact.png",
     "java/res/layout/infobar_translate_tab_content.xml",
+    "java/res/layout/translate_menu_extended_item.xml",
     "java/res/layout/translate_menu_item.xml",
     "java/res/layout/translate_menu_item_checked.xml",
     "java/res/values/dimens.xml",
@@ -84,6 +85,7 @@ android_library("javatests") {
       [ "java/src/org/chromium/components/translate/TranslateOptionsTest.java" ]
   deps = [
     ":java",
+    "//base:base_java",
     "//base:base_java_test_support",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",

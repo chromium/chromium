@@ -7131,6 +7131,13 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(language::kDetectedSourceLanguageOption)},
 
+#if defined(OS_ANDROID)
+    {"content-languages-in-language-picker",
+     flag_descriptions::kContentLanguagesInLanguagePickerName,
+     flag_descriptions::kContentLanguagesInLanguagePickerName, kOsAndroid,
+     FEATURE_VALUE_TYPE(language::kContentLanguagesInLanguagePicker)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
 #include "components/translate/core/common/translate_errors.h"
 
@@ -164,8 +165,13 @@ class TranslateUIDelegate {
   // Records a high level UI interaction.
   void ReportUIInteraction(UIInteraction ui_interaction);
 
+  // If kContentLanguagesinLanguagePicker is on, build a vector of content
+  // languages data.
+  void MaybeSetContentLanguages();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(TranslateUIDelegateTest, GetPageHost);
+  FRIEND_TEST_ALL_PREFIXES(TranslateUIDelegateTest, MaybeSetContentLanguages);
 
   // Gets the host of the page being translated, or an empty string if no URL is
   // associated with the current page.
@@ -200,6 +206,9 @@ class TranslateUIDelegate {
 
   // The translation related preferences.
   std::unique_ptr<TranslatePrefs> prefs_;
+
+  // Listens to accept languages changes.
+  PrefChangeRegistrar pref_change_registrar_;
 
   DISALLOW_COPY_AND_ASSIGN(TranslateUIDelegate);
 };
