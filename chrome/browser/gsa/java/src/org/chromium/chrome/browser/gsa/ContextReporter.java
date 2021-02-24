@@ -13,7 +13,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -81,32 +80,6 @@ public class ContextReporter {
     private String mLastUrl;
     private String mLastTitle;
     private final AtomicBoolean mContextInUse;
-
-    /**
-     * Creates a ContextReporter for an Activity.
-     * @param activity Chrome Activity which context will be reported.
-     * @param controller used to communicate with GSA
-     */
-    public ContextReporter(ChromeActivity activity, GSAContextReportDelegate controller) {
-        mDelegate = controller;
-        mCurrentTabSupplier = activity.getActivityTabProvider();
-        mTabModelSelectorSupplier = activity::getTabModelSelector;
-        mSelectionReporter = activity.getContextualSearchManager() == null
-                ? null
-                : new ContextReporter.SelectionReporter() {
-                      @Override
-                      public void enable(Callback<GSAContextDisplaySelection> callback) {
-                          activity.getContextualSearchManager().enableContextReporting(callback);
-                      }
-
-                      @Override
-                      public void disable() {
-                          activity.getContextualSearchManager().disableContextReporting();
-                      }
-                  };
-        mContextInUse = new AtomicBoolean(false);
-        Log.d(TAG, "Created a new ContextReporter");
-    }
 
     /**
      * Creates a ContextReporter for an Activity.

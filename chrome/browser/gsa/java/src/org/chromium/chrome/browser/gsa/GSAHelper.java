@@ -10,7 +10,6 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
@@ -18,15 +17,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
  * Helper class that triggers integration methods with GSA.
  */
 public class GSAHelper {
-    /**
-     * Returns A {@link ContextReporter} instance that handles reporting context to GSA. Might
-     * return null.
-     */
-    @SuppressWarnings("unused")
-    public ContextReporter getContextReporter(ChromeActivity activity) {
-        return null;
-    }
-
     /**
      * Returns A {@link ContextReporter} instance that handles reporting context to GSA. Might
      * return null.
