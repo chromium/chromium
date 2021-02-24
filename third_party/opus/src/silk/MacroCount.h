@@ -27,9 +27,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #ifndef SIGPROCFIX_API_MACROCOUNT_H
 #define SIGPROCFIX_API_MACROCOUNT_H
-#include <stdio.h>
 
 #ifdef    silk_MACRO_COUNT
+#include <stdio.h>
 #define varDefine opus_int64 ops_count = 0;
 
 extern opus_int64 ops_count;

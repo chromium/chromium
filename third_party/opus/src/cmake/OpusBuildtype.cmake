@@ -1,4 +1,8 @@
 # Set a default build type if none was specified
+if(__opus_buildtype)
+  return()
+endif()
+set(__opus_buildtype INCLUDED)
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   if(CMAKE_C_FLAGS)

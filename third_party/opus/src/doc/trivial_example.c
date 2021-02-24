@@ -85,7 +85,7 @@ int main(int argc, char **argv)
       return EXIT_FAILURE;
    }
    inFile = argv[1];
-   fin = fopen(inFile, "r");
+   fin = fopen(inFile, "rb");
    if (fin==NULL)
    {
       fprintf(stderr, "failed to open input file: %s\n", strerror(errno));
@@ -101,7 +101,7 @@ int main(int argc, char **argv)
       return EXIT_FAILURE;
    }
    outFile = argv[2];
-   fout = fopen(outFile, "w");
+   fout = fopen(outFile, "wb");
    if (fout==NULL)
    {
       fprintf(stderr, "failed to open output file: %s\n", strerror(errno));
@@ -113,14 +113,25 @@ int main(int argc, char **argv)
       int i;
       unsigned char pcm_bytes[MAX_FRAME_SIZE*CHANNELS*2];
       int frame_size;
+      size_t samples;
 
       /* Read a 16 bits/sample audio frame. */
-      fread(pcm_bytes, sizeof(short)*CHANNELS, FRAME_SIZE, fin);
-      if (feof(fin))
+      samples = fread(pcm_bytes, sizeof(short)*CHANNELS, FRAME_SIZE, fin);
+
+      /* For simplicity, only read whole frames. In a real application,
+       * we'd pad the final partial frame with zeroes, record the exact
+       * duration, and trim the decoded audio to match.
+       */
+      if (samples != FRAME_SIZE)
+      {
          break;
+      }
+
       /* Convert from little-endian ordering. */
       for (i=0;i<CHANNELS*FRAME_SIZE;i++)
+      {
          in[i]=pcm_bytes[2*i+1]<<8|pcm_bytes[2*i];
+      }
 
       /* Encode the frame. */
       nbBytes = opus_encode(encoder, in, FRAME_SIZE, cbits, MAX_PACKET_SIZE);

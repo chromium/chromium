@@ -1,6 +1,6 @@
 Name: opus
-URL: https://git.xiph.org/?p=opus.git
-Version: 6d29f51a40be64e03acc2619f35b4971ba00617c
+URL: https://gitlab.xiph.org/xiph/opus
+Version: 16286a25fdd865c66a837a73b65fbaa7b25bf484
 License: BSD
 License File: src/COPYING
 Security Critical: yes
@@ -15,8 +15,6 @@ Local changes:
 * copy .gitignore from https://git.xiph.org/?p=opus.git;a=tree
 * set 'x' flags: "chmod 750 win32/genversion.bat"
 * remove assertion messages in release builds (see crbug/1053572)
-* apply patch to fix int-overflow in silk (https://gitlab.xiph.org/xiph/opus/-/commit/923bebde)
-* apply patch to fix another int-overflow in silk (https://gitlab.xiph.org/xiph/opus/-/commit/adcb7bc2)
 * add workaround to ignore some int-overflows when fuzzing (see crbug/1146174)
 
 Opus' own unit tests are located in ./src/tests

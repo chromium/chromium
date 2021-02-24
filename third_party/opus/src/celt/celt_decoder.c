@@ -117,13 +117,19 @@ void validate_celt_decoder(CELTDecoder *st)
 #ifndef CUSTOM_MODES
    celt_assert(st->mode == opus_custom_mode_create(48000, 960, NULL));
    celt_assert(st->overlap == 120);
+   celt_assert(st->end <= 21);
+#else
+/* From Section 4.3 in the spec: "The normal CELT layer uses 21 of those bands,
+   though Opus Custom (see Section 6.2) may use a different number of bands"
+
+   Check if it's within the maximum number of Bark frequency bands instead */
+   celt_assert(st->end <= 25);
 #endif
    celt_assert(st->channels == 1 || st->channels == 2);
    celt_assert(st->stream_channels == 1 || st->stream_channels == 2);
    celt_assert(st->downsample > 0);
    celt_assert(st->start == 0 || st->start == 17);
    celt_assert(st->start < st->end);
-   celt_assert(st->end <= 21);
 #ifdef OPUS_ARCHMASK
    celt_assert(st->arch >= 0);
    celt_assert(st->arch <= OPUS_ARCHMASK);

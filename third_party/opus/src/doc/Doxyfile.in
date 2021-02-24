@@ -1,4 +1,4 @@
-# Doxyfile 1.8.10
+# Doxyfile 1.8.18
 
 # This file describes the settings to be used by the documentation system
 # doxygen (www.doxygen.org) for a project.
@@ -101,7 +101,7 @@ EXTRACT_PRIVATE        = NO
 # names in lower-case letters. If set to YES, upper-case letters are also
 # allowed. This is useful if you have classes or files whose names only differ
 # in case and if your file system supports case sensitive file names. Windows
-# and Mac users are advised to set this option to NO.
+# (including Cygwin) ands Mac users are advised to set this option to NO.
 # The default value is: system dependent.
 
 CASE_SENSE_NAMES       = YES
@@ -248,8 +248,8 @@ HTML_TIMESTAMP         = YES
 # MATHJAX_RELPATH should be ../mathjax. The default value points to the MathJax
 # Content Delivery Network so you can quickly see the result without installing
 # MathJax. However, it is strongly recommended to install a local copy of
-# MathJax from http://www.mathjax.org before deployment.
-# The default value is: http://cdn.mathjax.org/mathjax/latest.
+# MathJax from https://www.mathjax.org before deployment.
+# The default value is: https://cdn.jsdelivr.net/npm/mathjax@2.
 # This tag requires that the tag USE_MATHJAX is set to YES.
 
 MATHJAX_RELPATH        = https://www.mathjax.org/mathjax
@@ -326,10 +326,15 @@ PREDEFINED             = OPUS_EXPORT= \
 # If you set the HAVE_DOT tag to YES then doxygen will assume the dot tool is
 # available from the path. This tool is part of Graphviz (see:
 # http://www.graphviz.org/), a graph visualization toolkit from AT&T and Lucent
-# Bell Labs.
+# Bell Labs. The other options in this section have no effect if this option is
+# set to NO
+# The default value is: NO.
 
 # Debian defaults to YES here, while Fedora and Homebrew default to NO.
 # So we set this based on whether the graphviz package is available at
 # configure time.
 #
-HAVE_DOT = @HAVE_DOT@
+HAVE_DOT               = @HAVE_DOT@
+
+# move docs to the correct place
+OUTPUT_DIRECTORY       = @top_builddir@/doc

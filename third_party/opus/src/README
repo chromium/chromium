@@ -35,7 +35,7 @@ An opus-tools package is available which provides encoding and decoding of
 Ogg encapsulated Opus files and includes a number of useful features.
 
 Opus-tools can be found at:
- https://git.xiph.org/?p=opus-tools.git
+ https://gitlab.xiph.org/xiph/opus-tools.git
 or on the main Opus website:
  https://opus-codec.org/
 
@@ -68,7 +68,7 @@ On Apple macOS, install Xcode and brew.sh, then in the Terminal enter:
 
 1) Clone the repository:
 
-    % git clone https://git.xiph.org/opus.git
+    % git clone https://gitlab.xiph.org/xiph/opus.git
     % cd opus
 
 2) Compiling the source
