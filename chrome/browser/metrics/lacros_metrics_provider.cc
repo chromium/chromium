@@ -9,6 +9,7 @@
 #include "chrome/browser/metrics/enrollment_status.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 namespace {
 
@@ -46,5 +47,6 @@ void LacrosMetricsProvider::ProvideStabilityMetrics(
 
 void LacrosMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
+  ProvideStabilityMetrics(uma_proto->mutable_system_profile());
   base::UmaHistogramBoolean("ChromeOS.IsLacrosBrowser", true);
 }
