@@ -34,6 +34,11 @@
 #include "media/mojo/services/mojo_cdm_service.h"
 #endif  // BUILDFLAG(ENABLE_MOJO_CDM)
 
+#if defined(OS_WIN)
+#include "media/mojo/services/media_foundation_renderer_wrapper.h"
+#include "media/mojo/services/mojo_renderer_service.h"
+#endif  // defined(OS_WIN)
+
 namespace media {
 
 InterfaceFactoryImpl::InterfaceFactoryImpl(
@@ -301,8 +306,12 @@ void InterfaceFactoryImpl::CreateMediaFoundationRendererOnTaskRunner(
 
   DVLOG(1) << __func__ << ": this=" << this;
 
-  // TODO(frankli): Invoke media::MojoRendererService::Create() with our
-  // specific parameters.
+  auto renderer = std::make_unique<media::MediaFoundationRendererWrapper>(
+      /*muted=*/false, std::move(task_runner),
+      std::move(renderer_extension_receiver));
+
+  media::MojoRendererService::Create(&cdm_service_context_, std::move(renderer),
+                                     std::move(receiver));
 }
 #endif  // defined(OS_WIN)
 

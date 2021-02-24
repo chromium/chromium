@@ -40,6 +40,7 @@ void RendererFactorySelector::AddFactory(
     std::unique_ptr<RendererFactory> factory) {
   DCHECK(factory);
   DCHECK(!factories_.count(type));
+  DVLOG(2) << __func__ << ": type=" << static_cast<int>(type);
   factories_[type] = std::move(factory);
 }
 

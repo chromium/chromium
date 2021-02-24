@@ -105,6 +105,11 @@
 #include "media/remoting/remoting_renderer_factory.h"  // nogncheck
 #endif
 
+#if defined(OS_WIN)
+#include "base/win/windows_version.h"
+#include "media/mojo/clients/win/media_foundation_renderer_client_factory.h"
+#endif  // defined(OS_WIN)
+
 namespace {
 class FrameFetchContext : public media::ResourceFetchContext {
  public:
@@ -665,6 +670,16 @@ MediaFactory::CreateRendererFactorySelector(
   factory_selector->AddConditionalFactory(
       FactoryType::kCourier, std::move(courier_factory), is_remoting_cb);
 #endif
+
+#if defined(OS_WIN)
+  if (base::win::GetVersion() >= base::win::Version::WIN10_20H1) {
+    factory_selector->AddFactory(
+        FactoryType::kMediaFoundation,
+        std::make_unique<media::MediaFoundationRendererClientFactory>(
+            render_thread->compositor_task_runner(),
+            CreateMojoRendererFactory()));
+  }
+#endif  // defined(OS_WIN)
 
 #if BUILDFLAG(IS_CHROMECAST)
   if (renderer_media_playback_options.is_remoting_renderer_enabled()) {
