@@ -31,10 +31,6 @@ void SavePasswordMessageDelegate::DisplaySavePasswordPrompt(
   DCHECK_NE(nullptr, web_contents);
   DCHECK(form_to_save);
 
-  // Dismiss previous message if it is displayed.
-  DismissSavePasswordPrompt();
-  DCHECK(message_ == nullptr);
-
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   // is_saving_google_account indicates whether the user is syncing
@@ -46,13 +42,8 @@ void SavePasswordMessageDelegate::DisplaySavePasswordPrompt(
   base::Optional<AccountInfo> account_info =
       password_manager::GetAccountInfoForPasswordMessages(
           profile, is_saving_google_account);
-  // All the DisplaySavePasswordPrompt parameters are passed to CreateMessage to
-  // avoid a call to MessageDispatcherBridge::EnqueueMessage from test while
-  // still providing decent test coverage.
-  CreateMessage(web_contents, std::move(form_to_save), account_info);
-
-  messages::MessageDispatcherBridge::EnqueueMessage(message_.get(),
-                                                    web_contents_);
+  DisplaySavePasswordPromptInternal(web_contents, std::move(form_to_save),
+                                    account_info);
 }
 
 void SavePasswordMessageDelegate::DismissSavePasswordPrompt() {
@@ -62,15 +53,19 @@ void SavePasswordMessageDelegate::DismissSavePasswordPrompt() {
 void SavePasswordMessageDelegate::DismissSavePasswordPromptInternal(
     messages::DismissReason dismiss_reason) {
   if (message_ != nullptr) {
-    messages::MessageDispatcherBridge::DismissMessage(
+    messages::MessageDispatcherBridge::Get()->DismissMessage(
         message_.get(), web_contents_, dismiss_reason);
   }
 }
 
-void SavePasswordMessageDelegate::CreateMessage(
+void SavePasswordMessageDelegate::DisplaySavePasswordPromptInternal(
     content::WebContents* web_contents,
     std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
     base::Optional<AccountInfo> account_info) {
+  // Dismiss previous message if it is displayed.
+  DismissSavePasswordPrompt();
+  DCHECK(message_ == nullptr);
+
   web_contents_ = web_contents;
   form_to_save_ = std::move(form_to_save);
 
@@ -120,9 +115,9 @@ void SavePasswordMessageDelegate::CreateMessage(
   message_->SetSecondaryActionCallback(base::BindOnce(
       &SavePasswordMessageDelegate::HandleNeverClick, base::Unretained(this)));
 
-  // Recording metrics is not a part of message creation. It is included here to
-  // ensure metrics recording test coverage.
   RecordMessageShownMetrics();
+  messages::MessageDispatcherBridge::Get()->EnqueueMessage(message_.get(),
+                                                           web_contents_);
 }
 
 void SavePasswordMessageDelegate::HandleSaveClick() {
@@ -141,8 +136,8 @@ void SavePasswordMessageDelegate::HandleDismissCallback(
       MessageDismissReasonToPasswordManagerUIDismissalReason(dismiss_reason));
   message_.reset();
   form_to_save_.reset();
-  // web_contents_ is also set in CreateMessage(). Resetting it here to keep the
-  // state clean when no message is enqueued.
+  // web_contents_ is set in DisplaySavePasswordPromptInternal(). Resetting it
+  // here to keep the state clean when no message is enqueued.
   web_contents_ = nullptr;
 }
 

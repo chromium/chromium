@@ -41,7 +41,7 @@ class SavePasswordMessageDelegate {
   void DismissSavePasswordPromptInternal(
       messages::DismissReason dismiss_reason);
 
-  void CreateMessage(
+  void DisplaySavePasswordPromptInternal(
       content::WebContents* web_contents,
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
       base::Optional<AccountInfo> account_info);

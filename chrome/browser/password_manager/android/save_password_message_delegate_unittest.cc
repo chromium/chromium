@@ -13,6 +13,7 @@
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/messages/android/mock_message_dispatcher_bridge.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
@@ -42,22 +43,30 @@ class SavePasswordMessageDelegateTest : public ChromeRenderViewHostTestHarness {
 
  protected:
   void SetUp() override;
+  void TearDown() override;
 
   std::unique_ptr<MockPasswordFormManagerForUI> CreateFormManager(
       const GURL& url);
   void SetUsernameAndPassword(base::string16 username, base::string16 password);
 
-  void CreateMessage(std::unique_ptr<PasswordFormManagerForUI> form_to_save,
-                     bool user_signed_in);
+  void EnqueueMessage(std::unique_ptr<PasswordFormManagerForUI> form_to_save,
+                      bool user_signed_in);
   void TriggerActionClick();
   void TriggerBlocklistClick();
-  void TriggerMessageDismissedCallback(messages::DismissReason dismiss_reason);
+
+  void ExpectDismissMessageCall();
+  void DismissMessage(messages::DismissReason dismiss_reason);
 
   messages::MessageWrapper* GetMessageWrapper();
 
+  void CommitPasswordFormMetrics();
   void VerifyUkmMetrics(const ukm::TestUkmRecorder& ukm_recorder,
                         PasswordFormMetricsRecorder::BubbleDismissalReason
                             expected_dismissal_reason);
+
+  messages::MockMessageDispatcherBridge* message_dispatcher_bridge() {
+    return &message_dispatcher_bridge_;
+  }
 
  private:
   SavePasswordMessageDelegate delegate_;
@@ -65,19 +74,32 @@ class SavePasswordMessageDelegateTest : public ChromeRenderViewHostTestHarness {
   GURL password_form_url_;
   scoped_refptr<PasswordFormMetricsRecorder> metrics_recorder_;
   ukm::SourceId ukm_source_id_;
+  messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
 };
 
 void SavePasswordMessageDelegateTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
   ukm_source_id_ = ukm::UkmRecorder::GetNewSourceID();
+  metrics_recorder_ = base::MakeRefCounted<PasswordFormMetricsRecorder>(
+      true /*is_main_frame_secure*/, ukm_source_id_, nullptr /*pref_service*/);
+
   NavigateAndCommit(GURL(kDefaultUrl));
+
+  messages::MessageDispatcherBridge::SetInstanceForTesting(
+      &message_dispatcher_bridge_);
+}
+
+void SavePasswordMessageDelegateTest::TearDown() {
+  messages::MessageDispatcherBridge::SetInstanceForTesting(nullptr);
+  ChromeRenderViewHostTestHarness::TearDown();
 }
 
 std::unique_ptr<MockPasswordFormManagerForUI>
 SavePasswordMessageDelegateTest::CreateFormManager(
     const GURL& password_form_url) {
   password_form_url_ = password_form_url;
-  auto form_manager = std::make_unique<MockPasswordFormManagerForUI>();
+  auto form_manager =
+      std::make_unique<testing::NiceMock<MockPasswordFormManagerForUI>>();
   ON_CALL(*form_manager, GetPendingCredentials())
       .WillByDefault(testing::ReturnRef(form_));
   ON_CALL(*form_manager, GetCredentialSource())
@@ -86,8 +108,6 @@ SavePasswordMessageDelegateTest::CreateFormManager(
                               kPasswordManager));
   ON_CALL(*form_manager, GetURL())
       .WillByDefault(testing::ReturnRef(password_form_url_));
-  metrics_recorder_ = base::MakeRefCounted<PasswordFormMetricsRecorder>(
-      true /*is_main_frame_secure*/, ukm_source_id_, nullptr /*pref_service*/);
   ON_CALL(*form_manager, GetMetricsRecorder())
       .WillByDefault(testing::Return(metrics_recorder_.get()));
   return form_manager;
@@ -100,7 +120,7 @@ void SavePasswordMessageDelegateTest::SetUsernameAndPassword(
   form_.password_value = std::move(password);
 }
 
-void SavePasswordMessageDelegateTest::CreateMessage(
+void SavePasswordMessageDelegateTest::EnqueueMessage(
     std::unique_ptr<PasswordFormManagerForUI> form_to_save,
     bool user_signed_in) {
   base::Optional<AccountInfo> account_info;
@@ -108,8 +128,9 @@ void SavePasswordMessageDelegateTest::CreateMessage(
     account_info = AccountInfo();
     account_info.value().email = kAccountEmail;
   }
-  delegate_.CreateMessage(web_contents(), std::move(form_to_save),
-                          account_info);
+  EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
+  delegate_.DisplaySavePasswordPromptInternal(
+      web_contents(), std::move(form_to_save), account_info);
 }
 
 void SavePasswordMessageDelegateTest::TriggerActionClick() {
@@ -121,16 +142,30 @@ void SavePasswordMessageDelegateTest::TriggerBlocklistClick() {
       base::android::AttachCurrentThread());
 }
 
-void SavePasswordMessageDelegateTest::TriggerMessageDismissedCallback(
+void SavePasswordMessageDelegateTest::ExpectDismissMessageCall() {
+  EXPECT_CALL(message_dispatcher_bridge_, DismissMessage)
+      .WillOnce([](messages::MessageWrapper* message,
+                   content::WebContents* web_contents,
+                   messages::DismissReason dismiss_reason) {
+        message->HandleDismissCallback(base::android::AttachCurrentThread(),
+                                       static_cast<int>(dismiss_reason));
+      });
+}
+
+void SavePasswordMessageDelegateTest::DismissMessage(
     messages::DismissReason dismiss_reason) {
-  GetMessageWrapper()->HandleDismissCallback(
-      base::android::AttachCurrentThread(), static_cast<int>(dismiss_reason));
+  ExpectDismissMessageCall();
+  delegate_.DismissSavePasswordPromptInternal(dismiss_reason);
   EXPECT_EQ(nullptr, GetMessageWrapper());
-  metrics_recorder_.reset();
 }
 
 messages::MessageWrapper* SavePasswordMessageDelegateTest::GetMessageWrapper() {
   return delegate_.message_.get();
+}
+
+void SavePasswordMessageDelegateTest::CommitPasswordFormMetrics() {
+  // PasswordFormMetricsRecorder::dtor commits accumulated metrics.
+  metrics_recorder_.reset();
 }
 
 void SavePasswordMessageDelegateTest::VerifyUkmMetrics(
@@ -160,7 +195,7 @@ TEST_F(SavePasswordMessageDelegateTest, MessagePropertyValues) {
   SetUsernameAndPassword(base::ASCIIToUTF16(kUsername),
                          base::ASCIIToUTF16(kPassword));
   auto form_manager = CreateFormManager(GURL(kDefaultUrl));
-  CreateMessage(std::move(form_manager), false /*user_signed_in*/);
+  EnqueueMessage(std::move(form_manager), false /*user_signed_in*/);
 
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD),
             GetMessageWrapper()->GetTitle());
@@ -181,7 +216,7 @@ TEST_F(SavePasswordMessageDelegateTest, MessagePropertyValues) {
   EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_SETTINGS),
             GetMessageWrapper()->GetSecondaryIconResourceId());
 
-  TriggerMessageDismissedCallback(messages::DismissReason::UNKNOWN);
+  DismissMessage(messages::DismissReason::UNKNOWN);
 }
 
 // Tests that the description is set correctly when the user is signed.
@@ -189,7 +224,7 @@ TEST_F(SavePasswordMessageDelegateTest, SignedInDescription) {
   SetUsernameAndPassword(base::ASCIIToUTF16(kUsername),
                          base::ASCIIToUTF16(kPassword));
   auto form_manager = CreateFormManager(GURL(kDefaultUrl));
-  CreateMessage(std::move(form_manager), true /*user_signed_in*/);
+  EnqueueMessage(std::move(form_manager), true /*user_signed_in*/);
 
   EXPECT_NE(base::string16::npos, GetMessageWrapper()->GetDescription().find(
                                       base::ASCIIToUTF16(kUsername)));
@@ -198,7 +233,20 @@ TEST_F(SavePasswordMessageDelegateTest, SignedInDescription) {
   EXPECT_NE(base::string16::npos, GetMessageWrapper()->GetDescription().find(
                                       base::ASCIIToUTF16(kAccountEmail)));
 
-  TriggerMessageDismissedCallback(messages::DismissReason::UNKNOWN);
+  DismissMessage(messages::DismissReason::UNKNOWN);
+}
+
+// Tests that the previous prompt gets dismissed when the new one is enqueued.
+TEST_F(SavePasswordMessageDelegateTest, OnlyOnePromptAtATime) {
+  SetUsernameAndPassword(base::ASCIIToUTF16(kUsername),
+                         base::ASCIIToUTF16(kPassword));
+  auto form_manager = CreateFormManager(GURL(kDefaultUrl));
+  EnqueueMessage(std::move(form_manager), true /*user_signed_in*/);
+
+  ExpectDismissMessageCall();
+  auto form_manager2 = CreateFormManager(GURL(kDefaultUrl));
+  EnqueueMessage(std::move(form_manager2), true /*user_signed_in*/);
+  DismissMessage(messages::DismissReason::UNKNOWN);
 }
 
 // Tests that password form is saved and metrics recorded correctly when the
@@ -209,13 +257,14 @@ TEST_F(SavePasswordMessageDelegateTest, SaveOnActionClick) {
 
   auto form_manager = CreateFormManager(GURL(kDefaultUrl));
   EXPECT_CALL(*form_manager, Save());
-  CreateMessage(std::move(form_manager), false /*user_signed_in*/);
+  EnqueueMessage(std::move(form_manager), false /*user_signed_in*/);
   EXPECT_NE(nullptr, GetMessageWrapper());
   TriggerActionClick();
   EXPECT_NE(nullptr, GetMessageWrapper());
-  TriggerMessageDismissedCallback(messages::DismissReason::PRIMARY_ACTION);
+  DismissMessage(messages::DismissReason::PRIMARY_ACTION);
   EXPECT_EQ(nullptr, GetMessageWrapper());
 
+  CommitPasswordFormMetrics();
   VerifyUkmMetrics(
       test_ukm_recorder,
       PasswordFormMetricsRecorder::BubbleDismissalReason::kAccepted);
@@ -232,11 +281,12 @@ TEST_F(SavePasswordMessageDelegateTest, DontSaveOnDismiss) {
 
   auto form_manager = CreateFormManager(GURL(kDefaultUrl));
   EXPECT_CALL(*form_manager, Save()).Times(0);
-  CreateMessage(std::move(form_manager), false /*user_signed_in*/);
+  EnqueueMessage(std::move(form_manager), false /*user_signed_in*/);
   EXPECT_NE(nullptr, GetMessageWrapper());
-  TriggerMessageDismissedCallback(messages::DismissReason::GESTURE);
+  DismissMessage(messages::DismissReason::GESTURE);
   EXPECT_EQ(nullptr, GetMessageWrapper());
 
+  CommitPasswordFormMetrics();
   VerifyUkmMetrics(
       test_ukm_recorder,
       PasswordFormMetricsRecorder::BubbleDismissalReason::kDeclined);
@@ -253,11 +303,12 @@ TEST_F(SavePasswordMessageDelegateTest, MetricOnAutodismissTimer) {
 
   auto form_manager = CreateFormManager(GURL(kDefaultUrl));
   EXPECT_CALL(*form_manager, Save()).Times(0);
-  CreateMessage(std::move(form_manager), false /*user_signed_in*/);
+  EnqueueMessage(std::move(form_manager), false /*user_signed_in*/);
   EXPECT_NE(nullptr, GetMessageWrapper());
-  TriggerMessageDismissedCallback(messages::DismissReason::TIMER);
+  DismissMessage(messages::DismissReason::TIMER);
   EXPECT_EQ(nullptr, GetMessageWrapper());
 
+  CommitPasswordFormMetrics();
   VerifyUkmMetrics(
       test_ukm_recorder,
       PasswordFormMetricsRecorder::BubbleDismissalReason::kIgnored);

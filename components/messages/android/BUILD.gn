@@ -75,6 +75,19 @@ static_library("android") {
   ]
 }
 
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "mock_message_dispatcher_bridge.cc",
+    "mock_message_dispatcher_bridge.h",
+  ]
+
+  deps = [
+    ":android",
+    "//testing/gmock",
+  ]
+}
+
 java_cpp_enum("message_enums_java") {
   sources = [ "message_enums.h" ]
 }

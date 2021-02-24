@@ -18,11 +18,18 @@ namespace messages {
 // enqueue/dismiss messages with MessageDispatcher.java.
 class MessageDispatcherBridge {
  public:
-  static void EnqueueMessage(MessageWrapper* message,
-                             content::WebContents* web_contents);
-  static void DismissMessage(MessageWrapper* message,
-                             content::WebContents* web_contents,
-                             DismissReason dismiss_reason);
+  static MessageDispatcherBridge* Get();
+
+  static void SetInstanceForTesting(MessageDispatcherBridge* instance);
+
+  virtual void EnqueueMessage(MessageWrapper* message,
+                              content::WebContents* web_contents);
+  virtual void DismissMessage(MessageWrapper* message,
+                              content::WebContents* web_contents,
+                              DismissReason dismiss_reason);
+
+ protected:
+  virtual ~MessageDispatcherBridge() = default;
 };
 
 }  // namespace messages

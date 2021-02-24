@@ -4439,6 +4439,7 @@ test("unit_tests") {
       "//components/gcm_driver/instance_id/android:instance_id_driver_java",
       "//components/gcm_driver/instance_id/android:instance_id_driver_test_support_java",
       "//components/location/android:test_support",
+      "//components/messages/android:test_support",
       "//components/module_installer/android:module_installer_java",
       "//components/permissions/android:test_support",
       "//content/public/android:content_java",
