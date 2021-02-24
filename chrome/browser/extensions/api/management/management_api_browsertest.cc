@@ -163,8 +163,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
   ASSERT_TRUE(listener1.WaitUntilSatisfied());
 }
 
+// TODO(crbug.com/1181677): Test disabled due to many failures.
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
-                       SelfUninstall) {
+                       DISABLED_SelfUninstall) {
   ExtensionTestMessageListener listener1("success", false);
   ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("management/self_uninstall_helper")));
