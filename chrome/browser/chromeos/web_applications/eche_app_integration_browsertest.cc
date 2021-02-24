@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/web_applications/system_web_app_manager.h"
 #include "chromeos/components/eche_app_ui/url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -64,6 +65,17 @@ IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest,
       BrowserView::GetBrowserViewForBrowser(browser);
   EXPECT_FALSE(browser_view->CanResize());
   EXPECT_FALSE(browser_view->CanMaximize());
+}
+
+IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest, MinimalUi) {
+  WaitForTestSystemAppInstall();
+  Browser* browser;
+  LaunchApp(web_app::SystemAppType::ECHE, &browser);
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser);
+  ToolbarButtonProvider* provider = browser_view->toolbar_button_provider();
+  EXPECT_TRUE(provider->GetBackButton());
+  EXPECT_TRUE(provider->GetReloadButton());
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(

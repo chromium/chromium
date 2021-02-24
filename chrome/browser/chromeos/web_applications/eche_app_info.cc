@@ -27,7 +27,7 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForEcheApp() {
       {{"app_icon_256.png", 256, IDR_CHROMEOS_ECHE_APP_ICON_256_PNG}}, *info);
   info->theme_color = 0xFF4285F4;
   info->background_color = 0xFFFFFFFF;
-  info->display_mode = blink::mojom::DisplayMode::kStandalone;
+  info->display_mode = blink::mojom::DisplayMode::kMinimalUi;
   info->open_as_window = true;
 
   return info;
