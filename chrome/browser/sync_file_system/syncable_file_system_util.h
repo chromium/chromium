@@ -81,7 +81,7 @@ bool DeserializeSyncableFileSystemURL(const std::string& serialized_url,
 base::FilePath GetSyncFileSystemDir(const base::FilePath& profile_base_dir);
 
 // Posts |callback| to the current thread.
-void RunSoon(const base::Location& from_here, const base::Closure& callback);
+void RunSoon(const base::Location& from_here, base::OnceClosure callback);
 
 }  // namespace sync_file_system
 

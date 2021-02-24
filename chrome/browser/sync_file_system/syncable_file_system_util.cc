@@ -103,8 +103,8 @@ base::FilePath GetSyncFileSystemDir(const base::FilePath& profile_base_dir) {
   return profile_base_dir.Append(kSyncFileSystemDir);
 }
 
-void RunSoon(const base::Location& from_here, const base::Closure& callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(from_here, callback);
+void RunSoon(const base::Location& from_here, base::OnceClosure callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(from_here, std::move(callback));
 }
 
 }  // namespace sync_file_system
