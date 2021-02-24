@@ -167,7 +167,7 @@ constexpr MessageInfo kChromeFrameReporter = {kChromeFrameReporterIndices,
                                               nullptr};
 
 // Proto Message: ChromeMessagePump
-constexpr int kChromeMessagePumpIndices[] = {1, -1};
+constexpr int kChromeMessagePumpIndices[] = {1, 2, -1};
 constexpr MessageInfo kChromeMessagePump = {kChromeMessagePumpIndices, nullptr};
 
 // Proto Message: ChromeMojoEventInfo
@@ -195,10 +195,15 @@ constexpr int kChromeContentSettingsEventInfoIndices[] = {1, -1};
 constexpr MessageInfo kChromeContentSettingsEventInfo = {
     kChromeContentSettingsEventInfoIndices, nullptr};
 
+// Proto Message: ChromeMemoryPressureNotification
+constexpr int kChromeMemoryPressureNotificationIndices[] = {1, 2, -1};
+constexpr MessageInfo kChromeMemoryPressureNotification = {
+    kChromeMemoryPressureNotificationIndices, nullptr};
+
 // Proto Message: TrackEvent
 constexpr int kTrackEventIndices[] = {
-    1,  2,  3,  5,  6,  9,  10, 11, 12, 16, 17, 24, 25, 26, 27, 28,
-    29, 30, 31, 32, 33, 34, 35, 36, 38, 39, 40, 41, 42, 43, -1};
+    1,  2,  3,  5,  6,  9,  10, 11, 12, 16, 17, 24, 25, 26, 27,   28,
+    29, 30, 31, 32, 33, 34, 35, 36, 38, 39, 40, 41, 42, 43, 1001, -1};
 constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     nullptr,
     nullptr,
@@ -229,7 +234,8 @@ constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     &kChromeRendererSchedulerState,
     &kChromeWindowHandleEventInfo,
     nullptr,
-    &kChromeContentSettingsEventInfo};
+    &kChromeContentSettingsEventInfo,
+    &kChromeMemoryPressureNotification};
 constexpr MessageInfo kTrackEvent = {kTrackEventIndices,
                                      kTrackEventComplexMessages};
 
@@ -391,11 +397,9 @@ constexpr MessageInfo kTrackDescriptor = {kTrackDescriptorIndices,
                                           kTrackDescriptorComplexMessages};
 
 // Proto Message: TracePacket
-// EDIT: Manually allowlisted: 3 (trusted_uid).
-constexpr int kTracePacketIndices[] = {3,  6,  8,  10, 11, 12, 13, 35, 36, 41,
-                                       42, 43, 44, 51, 54, 56, 58, 59, 60, -1};
+constexpr int kTracePacketIndices[] = {6,  8,  10, 11, 12, 13, 35, 36, 41, 42,
+                                       43, 44, 51, 54, 56, 58, 59, 60, -1};
 constexpr MessageInfo const* kTracePacketComplexMessages[] = {
-    nullptr,
     &kClockSnapshot,
     nullptr,
     nullptr,
