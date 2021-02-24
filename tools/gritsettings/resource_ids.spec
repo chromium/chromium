@@ -309,7 +309,8 @@
   "components/resources/dev_ui_components_resources.grd": {
     "includes": [2260],
   },
-  "content/browser/resources/media/media_internals_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/content/browser/resources/media/resources.grd": {
+    "META": {"sizes": {"includes": [10],}},
     "includes": [2270],
   },
   "content/browser/webrtc/resources/resources.grd": {

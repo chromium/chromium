@@ -112,7 +112,7 @@ source_set("browser") {
     "//content/browser/notifications:notification_proto",
     "//content/browser/payments:payment_app_proto",
     "//content/browser/process_internals:mojo_bindings",
-    "//content/browser/resources/media:media_internals_resources",
+    "//content/browser/resources/media:resources",
     "//content/browser/webrtc/resources",
     "//content/common",
     "//content/common:buildflags",

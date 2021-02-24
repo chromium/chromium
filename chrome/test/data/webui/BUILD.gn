@@ -86,6 +86,7 @@ if (include_js_tests) {
       "js2gtest_browsertest.js",
       "load_time_data_browsertest.js",
       "management/a11y/management_a11y_test.js",
+      "media_internals/media_internals_ui_browsertest.js",
       "net_internals/net_internals_browsertest.js",
       "ntp4.js",
       "resources/webui_resources_v3_browsertest.js",

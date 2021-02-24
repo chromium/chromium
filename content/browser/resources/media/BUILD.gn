@@ -3,9 +3,31 @@
 # found in the LICENSE file.
 
 import("//tools/grit/grit_rule.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 
-grit("media_internals_resources") {
-  source = "media_internals_resources.grd"
+generated_grd = "$target_gen_dir/resources.grd"
+
+generate_grd("build_grd") {
+  out_grd = generated_grd
+  grd_prefix = "media_internals"
+  input_files_base_dir = rebase_path(".", "//")
+
+  input_files = [
+    "media_internals.html",
+    "media_internals.css",
+    "media_internals.js",
+    "main.js",
+    "client_renderer.js",
+    "manager.js",
+    "player_info.js",
+    "util.js",
+  ]
+}
+
+grit("resources") {
+  source = generated_grd
+  enable_input_discovery_for_gn_analyze = false
+  deps = [ ":build_grd" ]
 
   outputs = [
     "grit/media_internals_resources.h",
