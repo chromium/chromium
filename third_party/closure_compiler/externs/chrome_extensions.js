@@ -233,72 +233,6 @@ if (Math.random() < 1) {  // always true but the compiler doesn't know that
 }
 
 
-/**
- * @see https://developer.chrome.com/extensions/accessibilityFeatures
- * @const
- */
-chrome.accessibilityFeatures = {};
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.spokenFeedback;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.largeCursor;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.stickyKeys;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.highContrast;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.screenMagnifier;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.autoclick;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.virtualKeyboard;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.caretHighlight;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.cursorHighlight;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.cursorColor;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.dockedMagnifier;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.focusHighlight;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.selectToSpeak;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.switchAccess;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.animationPolicy;
-
 
 /**
  * @const
@@ -3593,9 +3527,12 @@ chrome.pageAction.hide = function(tabId) {};
 /**
  * @param {Object} details An object which has 'tabId' and either
  *     'imageData' or 'path'.
+ * @param {(function(): void)=} callback The callback function. If an error
+ * occurs setting the icon, chrome.runtime.lastError will be set to the error
+ * message.
  * @return {undefined}
  */
-chrome.pageAction.setIcon = function(details) {};
+chrome.pageAction.setIcon = function(details, callback) {};
 
 
 /**
@@ -3614,9 +3551,12 @@ chrome.pageAction.setTitle = function(details) {};
 
 /**
  * @param {number} tabId Tab Id.
+ * @param {(function(): void)=} callback The callback function. If an error
+ * occurs showing the pageAction, chrome.runtime.lastError will be set to the
+ * error message.
  * @return {undefined}
  */
-chrome.pageAction.show = function(tabId) {};
+chrome.pageAction.show = function(tabId, callback) {};
 
 
 /** @type {!ChromeEvent} */
@@ -4861,8 +4801,11 @@ chrome.identity.launchWebAuthFlow = function(details, callback) {};
 chrome.identity.WebAuthFlowDetails;
 
 
+/** @typedef {?{id: string, email: string}} */
+chrome.identity.ProfileUserInfo;
+
 /**
- * @param {function(!Object):void} callback
+ * @param {function(!chrome.identity.ProfileUserInfo):void} callback
  * @return {undefined}
  */
 chrome.identity.getProfileUserInfo = function(callback) {};

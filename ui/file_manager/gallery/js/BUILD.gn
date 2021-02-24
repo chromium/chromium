@@ -40,8 +40,12 @@ js_library("dimmable_ui_controller") {
     "//ui/webui/resources/js:assert",
   ]
   externs_list = [
+    # We need both chrome_extensions.js and accessibility_features.js to support
+    # chrome.accessibilityFeatures, since accessibility_features.js uses the
+    # ChromeSetting type (only defined in chrome_extensions.js).
+    "$externs_path/accessibility_features.js",
     "$externs_path/chrome.js",
-    "$externs_path/chrome_extensions.js",  # For chrome.accessibilityFeatures.
+    "$externs_path/chrome_extensions.js",
   ]
 }
 

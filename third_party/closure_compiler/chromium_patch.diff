@@ -108,3 +108,81 @@ index c0fb4e1c9e17..f2bd83291aec 100644
  
  
  /** @type {string} */
+
+ diff --git a/third_party/closure_compiler/externs/chrome_extensions.js b/third_party/closure_compiler/externs/chrome_extensions.js
+index 747ab45177ed..5156de1a82d1 100644
+--- a/third_party/closure_compiler/externs/chrome_extensions.js
++++ b/third_party/closure_compiler/externs/chrome_extensions.js
+@@ -233,72 +233,6 @@ if (Math.random() < 1) {  // always true but the compiler doesn't know that
+ }
+
+
+-/**
+- * @see https://developer.chrome.com/extensions/accessibilityFeatures
+- * @const
+- */
+-chrome.accessibilityFeatures = {};
+-
+-
+-/** @type {!ChromeSetting} */
+-chrome.accessibilityFeatures.spokenFeedback;
+-
+-
+-/** @type {!ChromeSetting} */
+-chrome.accessibilityFeatures.largeCursor;
+-
+-
+-/** @type {!ChromeSetting} */
+-chrome.accessibilityFeatures.stickyKeys;
+-
+-
+-/** @type {!ChromeSetting} */
+-chrome.accessibilityFeatures.highContrast;
+-
+-
+-/** @type {!ChromeSetting} */
+-chrome.accessibilityFeatures.screenMagnifier;
+-
+-
+-/** @type {!ChromeSetting} */
+-chrome.accessibilityFeatures.autoclick;
+-
+-
+-/** @type {!ChromeSetting} */
+-chrome.accessibilityFeatures.virtualKeyboard;
+-
+-
+-/** @type {!ChromeSetting} */
+-chrome.accessibilityFeatures.caretHighlight;
+-
+-
+-/** @type {!ChromeSetting} */
+-chrome.accessibilityFeatures.cursorHighlight;
+-
+-
+-/** @type {!ChromeSetting} */
+-chrome.accessibilityFeatures.cursorColor;
+-
+-
+-/** @type {!ChromeSetting} */
+-chrome.accessibilityFeatures.dockedMagnifier;
+-
+-
+-/** @type {!ChromeSetting} */
+-chrome.accessibilityFeatures.focusHighlight;
+-
+-
+-/** @type {!ChromeSetting} */
+-chrome.accessibilityFeatures.selectToSpeak;
+-
+-
+-/** @type {!ChromeSetting} */
+-chrome.accessibilityFeatures.switchAccess;
+-
+-
+-/** @type {!ChromeSetting} */
+-chrome.accessibilityFeatures.animationPolicy;
+-
+
+ /**
+  * @const

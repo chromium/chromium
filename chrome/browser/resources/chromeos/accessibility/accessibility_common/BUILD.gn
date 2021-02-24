@@ -96,6 +96,7 @@ js_library("accessibility_common") {
   ]
   externs_list = [
     "$externs_path/chrome_extensions.js",
+    "$externs_path/accessibility_features.js",
     "$externs_path/accessibility_private.js",
     "$externs_path/automation.js",
   ]
