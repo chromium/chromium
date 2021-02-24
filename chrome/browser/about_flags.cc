@@ -5079,11 +5079,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kFilteringPredictionFeatureVariations,
                                     "FilteringScrollPrediction")},
 
-    {"enable-first-scroll-latency-measurement",
-     flag_descriptions::kFirstScrollLatencyMeasurementName,
-     flag_descriptions::kFirstScrollLatencyMeasurementDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFirstScrollLatencyMeasurement)},
-
     {"compositor-threaded-scrollbar-scrolling",
      flag_descriptions::kCompositorThreadedScrollbarScrollingName,
      flag_descriptions::kCompositorThreadedScrollbarScrollingDescription,

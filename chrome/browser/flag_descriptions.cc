@@ -1178,12 +1178,6 @@ const char kFilteringScrollPredictionName[] = "Filtering scroll prediction";
 const char kFilteringScrollPredictionDescription[] =
     "Enable filtering of predicted scroll events";
 
-const char kFirstScrollLatencyMeasurementName[] =
-    "First Scroll Latency Measurement";
-const char kFirstScrollLatencyMeasurementDescription[] =
-    "Enables measurement of the latency between user input events and visual "
-    "updates for the first scroll of a navigation.";
-
 const char kFractionalScrollOffsetsName[] = "Fractional Scroll Offsets";
 const char kFractionalScrollOffsetsDescription[] =
     "Enables fractional scroll offsets inside Blink, exposing non-integer "

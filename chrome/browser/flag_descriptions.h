@@ -693,9 +693,6 @@ extern const char kExtensionsOnChromeUrlsDescription[];
 extern const char kFilteringScrollPredictionName[];
 extern const char kFilteringScrollPredictionDescription[];
 
-extern const char kFirstScrollLatencyMeasurementName[];
-extern const char kFirstScrollLatencyMeasurementDescription[];
-
 extern const char kFractionalScrollOffsetsName[];
 extern const char kFractionalScrollOffsetsDescription[];
 

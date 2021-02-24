@@ -1762,11 +1762,6 @@
     "expiry_milestone": 99
   },
   {
-    "name": "enable-first-scroll-latency-measurement",
-    "owners": [ "tommckee", "speed-metrics-dev" ],
-    "expiry_milestone": 83
-  },
-  {
     "name": "enable-force-dark",
     "owners": [ "pdr", "khorimoto@chromium.org", "jessejames@chromium.org" ],
     "expiry_milestone": 99
