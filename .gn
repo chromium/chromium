@@ -113,7 +113,6 @@ no_check_targets = [
   "//third_party/icu/*",
   "//third_party/libvpx:*",  # 164 errors
   "//third_party/libwebp:*",  # 80 errors, https://crbug.com/800762
-  "//third_party/openscreen/src/discovery:*",  # 36 errors
 
   # //v8/*, https://crbug.com/v8/7330
   "//v8/src/inspector:*",  # 20 errors
