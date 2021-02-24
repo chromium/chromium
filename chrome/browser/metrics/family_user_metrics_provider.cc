@@ -43,6 +43,18 @@ bool IsEnterpriseManaged() {
   return connector->IsEnterpriseManaged();
 }
 
+Profile* GetPrimaryUserProfile() {
+  const user_manager::User* primary_user =
+      user_manager::UserManager::Get()->GetPrimaryUser();
+  DCHECK(primary_user);
+  DCHECK(primary_user->is_profile_created());
+  Profile* profile =
+      chromeos::ProfileHelper::Get()->GetProfileByUser(primary_user);
+  DCHECK(profile);
+  DCHECK(chromeos::ProfileHelper::IsRegularProfile(profile));
+  return profile;
+}
+
 }  // namespace
 
 FamilyUserMetricsProvider::FamilyUserMetricsProvider()
@@ -74,14 +86,7 @@ void FamilyUserMetricsProvider::ProvideCurrentSessionData(
 void FamilyUserMetricsProvider::OnUserSessionStarted(bool is_primary_user) {
   if (!is_primary_user)
     return;
-  const user_manager::User* primary_user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
-  DCHECK(primary_user);
-  DCHECK(primary_user->is_profile_created());
-  Profile* profile =
-      chromeos::ProfileHelper::Get()->GetProfileByUser(primary_user);
-  DCHECK(profile);
-  DCHECK(chromeos::ProfileHelper::IsRegularProfile(profile));
+  Profile* profile = GetPrimaryUserProfile();
 
   // Check for incognito profiles.
   if (!profile->IsRegularProfile()) {
@@ -122,10 +127,7 @@ void FamilyUserMetricsProvider::OnUserSessionStarted(bool is_primary_user) {
 // detecting when a supervised user adds an EDU secondary account.
 void FamilyUserMetricsProvider::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
-  const user_manager::User* primary_user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
-  Profile* profile =
-      chromeos::ProfileHelper::Get()->GetProfileByUser(primary_user);
+  Profile* profile = GetPrimaryUserProfile();
   // Check for incognito profiles.
   if (!profile->IsRegularProfile())
     return;
@@ -138,6 +140,23 @@ void FamilyUserMetricsProvider::OnRefreshTokenUpdatedForAccount(
   // must be EDU.
   if (profile->IsChild() && accounts_size > 1)
     log_segment_ = LogSegment::kSupervisedStudent;
+}
+
+// Called when the user removes a secondary account. We're interested in
+// detecting when a supervised user removes an EDU secondary account.
+void FamilyUserMetricsProvider::OnRefreshTokenRemovedForAccount(
+    const CoreAccountId& account_id) {
+  Profile* profile = GetPrimaryUserProfile();
+  // Check for incognito profiles.
+  if (!profile->IsRegularProfile())
+    return;
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  auto accounts_size = identity_manager->GetAccountsWithRefreshTokens().size();
+
+  if (profile->IsChild() && accounts_size == 1)
+    log_segment_ = LogSegment::kSupervisedUser;
 }
 
 // static

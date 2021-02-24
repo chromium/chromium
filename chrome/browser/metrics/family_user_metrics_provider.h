@@ -64,6 +64,8 @@ class FamilyUserMetricsProvider
   // signin::IdentityManager::Observer:
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
+  void OnRefreshTokenRemovedForAccount(
+      const CoreAccountId& account_id) override;
 
   static const char* GetHistogramNameForTesting();
 
