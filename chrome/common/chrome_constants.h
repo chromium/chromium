@@ -20,10 +20,6 @@ extern const base::FilePath::CharType kBrowserProcessExecutableName[];
 extern const base::FilePath::CharType kHelperProcessExecutableName[];
 extern const base::FilePath::CharType kBrowserProcessExecutablePath[];
 extern const base::FilePath::CharType kHelperProcessExecutablePath[];
-extern const base::FilePath::CharType kBrowserProcessExecutableNameChromium[];
-extern const base::FilePath::CharType kHelperProcessExecutableNameChromium[];
-extern const base::FilePath::CharType kBrowserProcessExecutablePathChromium[];
-extern const base::FilePath::CharType kHelperProcessExecutablePathChromium[];
 #if defined(OS_MAC)
 // NOTE: if you change the value of kFrameworkName, please don't forget to
 // update components/test/run_all_unittests.cc as well.
