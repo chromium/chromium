@@ -655,9 +655,6 @@ public class StatusMediator implements PermissionDialogController.Observer {
     @Override
     public void onDialogResult(
             @ContentSettingsType int[] permissions, @ContentSettingValues int result) {
-        if (mPageInfoIPHController != null) {
-            mPageInfoIPHController.onPermissionDialogShown(permissions);
-        }
         if (!PageInfoFeatureList.isEnabled(PageInfoFeatureList.PAGE_INFO_DISCOVERABILITY)) {
             return;
         }
@@ -672,6 +669,11 @@ public class StatusMediator implements PermissionDialogController.Observer {
         mModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIcon);
         mPermissionTaskHandler.postDelayed(
                 this::resetPermissionIcon, PERMISSION_ICON_DISPLAY_TIMEOUT_MS);
+        if (mPageInfoIPHController != null) {
+            // We only want to show the IPH after the icon transition is finished.
+            mPermissionTaskHandler.postDelayed(mPageInfoIPHController::onPermissionDialogShown,
+                    StatusView.ICON_ROTATION_DURATION_MS);
+        }
     }
 
     /** Triggers an update to the status icon to stop showing the permission icon. */

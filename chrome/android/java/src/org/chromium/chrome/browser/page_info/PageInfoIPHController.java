@@ -37,20 +37,15 @@ public class PageInfoIPHController {
         mStatusView = statusView;
     }
 
-    /**
-     * Called when a permission prompt was shown.
-     * @param contentSettings The content settings of the prompt.
-     */
-    public void onPermissionDialogShown(int[] contentSettings) {
+    /** Called when a permission prompt was shown. */
+    public void onPermissionDialogShown() {
         Tracker tracker = TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
         tracker.notifyEvent(EventConstants.PERMISSION_REQUEST_SHOWN);
 
-        if (contentSettings == null || contentSettings.length == 0) return;
         mUserEducationHelper.requestShowIPH(new IPHCommandBuilder(
                 mStatusView.getContext().getResources(), FeatureConstants.PAGE_INFO_FEATURE,
                 R.string.page_info_iph, R.string.page_info_iph)
                                                     .setAnchorView(mStatusView)
-                                                    .setShouldHighlight(true)
                                                     .build());
     }
 }

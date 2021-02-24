@@ -49,7 +49,7 @@ public class StatusView extends LinearLayout {
         int ROTATE = 1;
     }
     public static final int ICON_ANIMATION_DURATION_MS = 225;
-    private static final int ICON_ROTATION_DURATION_MS = 250;
+    public static final int ICON_ROTATION_DURATION_MS = 250;
     private static final int ICON_ROTATION_DEGREES = 180;
 
     private @Nullable View mIncognitoBadge;
