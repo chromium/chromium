@@ -74,6 +74,13 @@ source_set("base") {
   }
 }
 
+# Split up from common to avoid circular dependency.
+source_set("client_session_control") {
+  sources = [ "client_session_control.h" ]
+
+  deps = [ "//remoting/protocol" ]
+}
+
 # This must be a static library instead of a source set because
 # remoting_unittests requires that remoting_me2me_host.cc not be pulled in,
 # which in turn depends on remoting_me2me_host_static which isn't part of that
@@ -110,7 +117,6 @@ static_library("common") {
     "chromoting_param_traits_impl.h",
     "client_session.cc",
     "client_session.h",
-    "client_session_control.h",
     "client_session_details.h",
     "clipboard.h",
     "config_file_watcher.cc",
@@ -271,6 +277,7 @@ static_library("common") {
 
   deps = [
     ":base",
+    ":client_session_control",
     "//base:i18n",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",

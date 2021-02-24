@@ -16,9 +16,11 @@ source_set("input_monitor") {
   ]
 
   deps = [
+    "//remoting/host:client_session_control",
     "//remoting/proto",
     "//third_party/webrtc_overrides:webrtc_component",
     "//ui/events",
+    "//ui/events:dom_keycode_converter",
   ]
 
   if (use_ozone) {
@@ -40,6 +42,11 @@ source_set("input_monitor") {
       "local_keyboard_input_monitor_x11.cc",
       "local_mouse_input_monitor_x11.cc",
     ]
+
+    deps += [
+      "//ui/events/devices/x11",
+      "//ui/gfx/x",
+    ]
   }
 
   if (is_win) {
@@ -58,5 +65,7 @@ source_set("input_monitor") {
       "local_keyboard_input_monitor_chromeos.cc",
       "local_pointer_input_monitor_chromeos.cc",
     ]
+
+    deps += [ "//remoting/host/chromeos:chromeos" ]
   }
 }
