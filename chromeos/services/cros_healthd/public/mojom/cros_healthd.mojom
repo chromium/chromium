@@ -37,6 +37,9 @@ interface CrosHealthdServiceFactory {
       pending_remote<
           chromeos.network_diagnostics.mojom.NetworkDiagnosticsRoutines>
               network_diagnostics_routines);
+  // TODO(http://b/181133872): Move this service out of this interface
+  // Returns a bound interface to the system service.
+  GetSystemService(CrosHealthdSystemService& service);
 };
 
 // Diagnostics interface exposed by the cros_healthd daemon. Consumed in Chrome
@@ -491,4 +494,20 @@ interface CrosHealthdProbeService {
   //                      will be non-null.
   ProbeTelemetryInfo(array<ProbeCategoryEnum> categories)
       => (TelemetryInfo telemetry_info);
+};
+
+// Contains data about the current service instance of cros_healthd.
+struct ServiceStatus {
+  // Boolean flag if the NetworkHealthService mojo remote has been sent from
+  // Chrome and bound in cros_healthd.
+  bool network_health_bound;
+  // Boolean flag if the NetworkDiagnosticsService mojo remote has been sent
+  // from Chrome and bound in cros_healthd.
+  bool network_diagnostics_bound;
+};
+
+// Interface to query the status of the cros_healthd service.
+interface CrosHealthdSystemService {
+  // Returns the status of the cros_healthd service and external mojo remotes.
+  GetServiceStatus() => (ServiceStatus response);
 };

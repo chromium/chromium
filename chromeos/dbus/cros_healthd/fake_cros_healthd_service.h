@@ -33,7 +33,8 @@ class FakeCrosHealthdService final
     : public mojom::CrosHealthdServiceFactory,
       public mojom::CrosHealthdDiagnosticsService,
       public mojom::CrosHealthdEventService,
-      public mojom::CrosHealthdProbeService {
+      public mojom::CrosHealthdProbeService,
+      public mojom::CrosHealthdSystemService {
  public:
   struct RoutineUpdateParams {
     RoutineUpdateParams(int32_t id,
@@ -60,6 +61,8 @@ class FakeCrosHealthdService final
       mojo::PendingRemote<
           chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
           network_diagnostics_routines) override;
+  void GetSystemService(
+      mojom::CrosHealthdSystemServiceRequest service) override;
 
   // CrosHealthdDiagnosticsService overrides:
   void GetAvailableRoutines(GetAvailableRoutinesCallback callback) override;
@@ -145,6 +148,9 @@ class FakeCrosHealthdService final
 
   void ProbeProcessInfo(const uint32_t process_id,
                         ProbeProcessInfoCallback callback) override;
+
+  // CrosHealthdSystemService overrides:
+  void GetServiceStatus(GetServiceStatusCallback callback) override;
 
   // Set the list of routines that will be used in the response to any
   // GetAvailableRoutines IPCs received.
@@ -259,6 +265,7 @@ class FakeCrosHealthdService final
   mojo::ReceiverSet<mojom::CrosHealthdDiagnosticsService>
       diagnostics_receiver_set_;
   mojo::ReceiverSet<mojom::CrosHealthdEventService> event_receiver_set_;
+  mojo::ReceiverSet<mojom::CrosHealthdSystemService> system_receiver_set_;
 
   // NetworkHealthService remote.
   mojo::Remote<chromeos::network_health::mojom::NetworkHealthService>

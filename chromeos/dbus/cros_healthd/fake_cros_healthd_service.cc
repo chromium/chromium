@@ -49,6 +49,19 @@ void FakeCrosHealthdService::SendNetworkDiagnosticsRoutines(
   network_diagnostics_routines_.Bind(std::move(network_diagnostics_routines));
 }
 
+void FakeCrosHealthdService::GetSystemService(
+    mojom::CrosHealthdSystemServiceRequest service) {
+  system_receiver_set_.Add(this, std::move(service));
+}
+
+void FakeCrosHealthdService::GetServiceStatus(
+    GetServiceStatusCallback callback) {
+  auto response = mojom::ServiceStatus::New();
+  response->network_health_bound = network_health_remote_.is_bound();
+  response->network_diagnostics_bound = network_health_remote_.is_bound();
+  std::move(callback).Run(std::move(response));
+}
+
 void FakeCrosHealthdService::GetAvailableRoutines(
     GetAvailableRoutinesCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
