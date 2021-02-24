@@ -40,6 +40,8 @@ class ASH_EXPORT StylusBatteryDelegate
   void OnUpdatedBatteryLevel(
       const PeripheralBatteryListener::BatteryInfo& battery) override;
 
+  PeripheralBatteryListener::BatteryInfo::ChargeStatus battery_charge_status_ =
+      PeripheralBatteryListener::BatteryInfo::ChargeStatus::kUnknown;
   base::Optional<uint8_t> battery_level_;
   base::Optional<base::TimeTicks> last_update_timestamp_;
 

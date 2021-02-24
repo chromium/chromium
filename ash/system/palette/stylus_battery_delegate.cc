@@ -44,6 +44,13 @@ gfx::ImageSkia StylusBatteryDelegate::GetBatteryImage() const {
   PowerStatus::BatteryImageInfo info;
   info.charge_percent = battery_level_.value_or(0);
 
+  if (battery_charge_status_ ==
+          PeripheralBatteryListener::BatteryInfo::ChargeStatus::kCharging ||
+      battery_charge_status_ ==
+          PeripheralBatteryListener::BatteryInfo::ChargeStatus::kFull) {
+    info.icon_badge = &kUnifiedMenuBatteryBoltIcon;
+  }
+
   const SkColor icon_fg_color = GetColorForBatteryLevel();
   const SkColor icon_bg_color = AshColorProvider::Get()->GetBackgroundColor();
 
@@ -77,6 +84,7 @@ bool StylusBatteryDelegate::IsBatteryStatusStale() const {
 void StylusBatteryDelegate::OnAddingBattery(
     const PeripheralBatteryListener::BatteryInfo& battery) {
   battery_level_ = battery.level;
+  battery_charge_status_ = battery.charge_status;
   last_update_timestamp_ = battery.last_update_timestamp;
 }
 
@@ -86,6 +94,7 @@ void StylusBatteryDelegate::OnRemovingBattery(
 void StylusBatteryDelegate::OnUpdatedBatteryLevel(
     const PeripheralBatteryListener::BatteryInfo& battery) {
   battery_level_ = battery.level;
+  battery_charge_status_ = battery.charge_status;
   last_update_timestamp_ = battery.last_update_timestamp;
 }
 
