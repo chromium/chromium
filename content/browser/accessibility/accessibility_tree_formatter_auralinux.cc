@@ -16,10 +16,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
-#include "content/browser/accessibility/accessibility_tree_formatter_utils_auralinux.h"
 #include "content/browser/accessibility/browser_accessibility_auralinux.h"
 #include "content/public/browser/ax_inspect_factory.h"
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
+#include "ui/accessibility/platform/inspect/ax_inspect_utils_auralinux.h"
 
 #define CHECK_ATSPI_ERROR(error)                       \
   if (error) {                                         \
@@ -41,7 +41,10 @@ const char kFirefoxTitle[] = "Firefox";
 
 namespace content {
 
-AccessibilityTreeFormatterAuraLinux::AccessibilityTreeFormatterAuraLinux() {}
+using ui::AtkRoleToString;
+using ui::ATSPIStateToString;
+
+AccessibilityTreeFormatterAuraLinux::AccessibilityTreeFormatterAuraLinux() = default;
 
 AccessibilityTreeFormatterAuraLinux::~AccessibilityTreeFormatterAuraLinux() {}
 

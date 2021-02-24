@@ -143,6 +143,8 @@ source_set("platform") {
         "ax_platform_atk_hyperlink.h",
         "ax_platform_node_auralinux.cc",
         "ax_platform_node_auralinux.h",
+        "inspect/ax_inspect_utils_auralinux.cc",
+        "inspect/ax_inspect_utils_auralinux.h",
       ]
 
       # ax_platform_text_boundary.h includes atk.h, so ATK is needed

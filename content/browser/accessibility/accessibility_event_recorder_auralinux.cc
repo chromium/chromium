@@ -12,15 +12,19 @@
 #include "base/stl_util.h"
 #include "base/strings/pattern.h"
 #include "base/strings/stringprintf.h"
-#include "content/browser/accessibility/accessibility_tree_formatter_utils_auralinux.h"
 #include "content/browser/accessibility/browser_accessibility_auralinux.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "ui/accessibility/platform/inspect/ax_inspect_utils_auralinux.h"
 
 #if defined(ATK_CHECK_VERSION) && ATK_CHECK_VERSION(2, 16, 0)
 #define ATK_216
 #endif
 
 namespace content {
+
+using ui::AtkRoleToString;
+using ui::ATSPIRoleToString;
+using ui::ATSPIStateToString;
 
 // static
 AccessibilityEventRecorderAuraLinux*

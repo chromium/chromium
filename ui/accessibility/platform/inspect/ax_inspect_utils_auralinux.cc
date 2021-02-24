@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/accessibility/accessibility_tree_formatter_utils_auralinux.h"
+#include "ui/accessibility/platform/inspect/ax_inspect_utils_auralinux.h"
 
 #include "base/stl_util.h"
 
-namespace content {
+namespace ui {
 namespace {
 struct PlatformConstantToNameEntry {
   int32_t value;
@@ -35,7 +35,7 @@ const char* GetNameForPlatformConstant(
       ((major) == ATSPI_MAJOR_VERSION && (minor) == ATSPI_MINOR_VERSION && \
        (micro) <= ATSPI_MICRO_VERSION)
 
-CONTENT_EXPORT const char* ATSPIStateToString(AtspiStateType state) {
+AX_EXPORT const char* ATSPIStateToString(AtspiStateType state) {
   // These roles are listed in the order they are defined in the enum so that
   // we can more easily discard ones that are too new for the version of
   // atspi2 that we are compiling against.
@@ -94,7 +94,7 @@ CONTENT_EXPORT const char* ATSPIStateToString(AtspiStateType state) {
                                     state);
 }
 
-CONTENT_EXPORT const char* ATSPIRoleToString(AtspiRole role) {
+AX_EXPORT const char* ATSPIRoleToString(AtspiRole role) {
   // These roles are listed in the order they are defined in the enum so that
   // we can more easily discard ones that are too new for the version of
   // atspi2 that we are compiling against.
@@ -374,4 +374,4 @@ const char* AtkRoleToString(AtkRole role) {
   return "<unknown AtkRole>";
 }
 
-}  // namespace content
+}  // namespace ui
