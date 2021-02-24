@@ -203,7 +203,8 @@ FormControlState InputTypeView::SaveFormControlState() const {
 }
 
 void InputTypeView::RestoreFormControlState(const FormControlState& state) {
-  GetElement().setValue(state[0]);
+  GetElement().setValue(state[0],
+                        TextFieldEventBehavior::kDispatchInputAndChangeEvent);
 }
 
 bool InputTypeView::IsDraggedSlider() const {

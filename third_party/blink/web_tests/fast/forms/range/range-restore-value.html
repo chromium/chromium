@@ -1,0 +1,33 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script>
+    const newRangeValue = "1";
+    var restorationValueTest = async_test('Range control restoration: range input value');
+
+    function runTest() {
+        var beenHere = document.getElementById("been-here");
+        var rangeInput = document.getElementById("range-input");
+        var form = document.getElementById("form");
+        if (!beenHere.value) {
+            beenHere.value = "visited";
+            rangeInput.value = newRangeValue;
+
+            // Submit form in a timeout to make sure that we create a new back/forward list item.
+            setTimeout(function() {form.submit();}, 0);
+        } else {
+            restorationValueTest.step(function() {
+                assert_equals(rangeInput.value, newRangeValue);
+            });
+            restorationValueTest.done();
+        }
+    }
+</script>
+<body onload="setTimeout(runTest, 0)">
+    <p>
+        This test checks whether range control value is correcly restored. Duplicating tabs and navigating back-forwards are the related scenarios.
+    </p>
+    <input id="been-here">
+    <input type="range" value="128" id="range-input" min="1" max="256">
+    <form action="../../../resources/back.html" method="POST" id="form"></form>
+</body>
