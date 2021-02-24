@@ -39,7 +39,10 @@ def parse_emoji_annotations(keyword_file):
         # face", if the user searches for "fa", the search will be " fa" and
         # will match " smile face", but not "  infant".
         if tag.attrib.get('type') == 'tts':
-            names[cp] = ' ' + tag.text
+            if tag.text.startswith("flag"):
+              names[cp] = ' ' + tag.text.replace("flag:","flag of")
+            else:
+              names[cp] = ' ' + tag.text
         else:
             keywords[cp] = map(lambda k: ' ' + k, tag.text.split(' | '))
 
