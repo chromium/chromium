@@ -225,7 +225,7 @@ void KioskAppManager::InitSession(Profile* profile,
     chromeos::UserSessionManager::GetInstance()->SetSwitchesForUser(
         user_manager::UserManager::Get()->GetActiveUser()->GetAccountId(),
         chromeos::UserSessionManager::CommandLineSwitchesType::
-            kPolicyAndFlagsAndKioskControl,
+            kPolicyAndKioskControl,
         flags);
   }
 
