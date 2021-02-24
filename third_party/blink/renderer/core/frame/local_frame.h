@@ -159,10 +159,7 @@ class CORE_EXPORT LocalFrame final
       public mojom::blink::HighPriorityLocalFrame {
  public:
   // Returns the LocalFrame instance for the given |frame_token|.
-  // TODO(crbug.com/1096617): Remove unneeded versions of this.
-  static LocalFrame* FromFrameToken(const base::UnguessableToken& frame_token);
   static LocalFrame* FromFrameToken(const LocalFrameToken& frame_token);
-  static LocalFrame* FromFrameToken(const FrameToken& frame_token);
 
   // For a description of |inheriting_agent_factory| go see the comment on the
   // Frame constructor.

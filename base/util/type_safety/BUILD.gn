@@ -29,14 +29,3 @@ source_set("tests") {
     "//testing/gtest",
   ]
 }
-
-if (enable_nocompile_tests) {
-  nocompile_test("base_util_typesafety_nocompile_tests") {
-    sources = [ "token_type_unittest.nc" ]
-    deps = [
-      ":type_safety",
-      "//base/test:run_all_unittests",
-      "//testing/gtest",
-    ]
-  }
-}

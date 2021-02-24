@@ -426,23 +426,10 @@ class ActiveURLMessageFilter : public mojo::MessageFilter {
 template class CORE_TEMPLATE_EXPORT Supplement<LocalFrame>;
 
 // static
-LocalFrame* LocalFrame::FromFrameToken(
-    const base::UnguessableToken& frame_token) {
-  LocalFramesByTokenMap& local_frames_map = GetLocalFramesMap();
-  auto it = local_frames_map.find(base::UnguessableTokenHash()(frame_token));
-  return it == local_frames_map.end() ? nullptr : it->value.Get();
-}
-
-// static
 LocalFrame* LocalFrame::FromFrameToken(const LocalFrameToken& frame_token) {
-  return FromFrameToken(frame_token.value());
-}
-
-// static
-LocalFrame* LocalFrame::FromFrameToken(const FrameToken& frame_token) {
-  if (!frame_token.Is<LocalFrameToken>())
-    return nullptr;
-  return FromFrameToken(frame_token.GetAs<LocalFrameToken>());
+  LocalFramesByTokenMap& local_frames_map = GetLocalFramesMap();
+  auto it = local_frames_map.find(LocalFrameToken::Hasher()(frame_token));
+  return it == local_frames_map.end() ? nullptr : it->value.Get();
 }
 
 void LocalFrame::Init(Frame* opener) {

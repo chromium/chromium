@@ -78,23 +78,10 @@ FloatRect DeNormalizeRect(const gfx::RectF& normalized, const IntRect& base) {
 }  // namespace
 
 // static
-RemoteFrame* RemoteFrame::FromFrameToken(
-    const base::UnguessableToken& frame_token) {
-  RemoteFramesByTokenMap& remote_frames_map = GetRemoteFramesMap();
-  auto it = remote_frames_map.find(base::UnguessableTokenHash()(frame_token));
-  return it == remote_frames_map.end() ? nullptr : it->value.Get();
-}
-
-// static
 RemoteFrame* RemoteFrame::FromFrameToken(const RemoteFrameToken& frame_token) {
-  return FromFrameToken(frame_token.value());
-}
-
-// static
-RemoteFrame* RemoteFrame::FromFrameToken(const FrameToken& frame_token) {
-  if (!frame_token.Is<RemoteFrameToken>())
-    return nullptr;
-  return FromFrameToken(frame_token.GetAs<RemoteFrameToken>());
+  RemoteFramesByTokenMap& remote_frames_map = GetRemoteFramesMap();
+  auto it = remote_frames_map.find(RemoteFrameToken::Hasher()(frame_token));
+  return it == remote_frames_map.end() ? nullptr : it->value.Get();
 }
 
 RemoteFrame::RemoteFrame(

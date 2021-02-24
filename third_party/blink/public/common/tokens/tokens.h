@@ -26,35 +26,17 @@ namespace blink {
 // Uniquely identifies a blink::LocalFrame / blink::WebLocalFrame /
 // content::RenderFrame in a renderer process, and its content::RenderFrameHost
 // counterpart in the browser.
-// TODO(crbug.com/1096617): Remove this after the token type migration.
-using LocalFrameToken = util::TokenType<class LocalFrameTokenTypeMarker,
-                                        /* kAllowImplicitConversion = */ true>;
+using LocalFrameToken = util::TokenType<class LocalFrameTokenTypeMarker>;
 
 // Uniquely identifies a blink::RemoteFrame / blink::WebRemoteFrame /
 // content::RenderFrameProxy in a renderer process, and its
 // content::RenderFrameProxyHost counterpart in the browser. There can be
 // multiple RemoteFrames corresponding to a single LocalFrame, and each token
 // will be distinct.
-// TODO(crbug.com/1096617): Remove this after the token type migration.
-using RemoteFrameToken = util::TokenType<class RemoteFrameTokenTypeMarker,
-                                         /* kAllowImplicitConversion = */ true>;
+using RemoteFrameToken = util::TokenType<class RemoteFrameTokenTypeMarker>;
 
 // Can represent either type of FrameToken.
-// TODO(crbug.com/1096617): Remove the implicit casting support after the token
-// type migration.
-class FrameToken : public MultiToken<LocalFrameToken, RemoteFrameToken> {
- public:
-  using MultiToken<LocalFrameToken, RemoteFrameToken>::MultiToken;
-
-  // Allow implicit casting down to base::UnguessableToken during the migration.
-  // NOLINTNEXTLINE(google-explicit-constructor)
-  operator const base::UnguessableToken&() const& { return this->value(); }
-
-  // Allow direct comparison with base::UnguessableToken.
-  bool operator==(const base::UnguessableToken& rhs) const {
-    return this->value() == rhs;
-  }
-};
+using FrameToken = MultiToken<LocalFrameToken, RemoteFrameToken>;
 
 ////////////////////////////////////////////////////////////////////////////////
 // WORKER TOKENS
