@@ -9,5 +9,5 @@
   RuntimeEnabled=NativeIO,
   SecureContext
 ] partial interface Window {
-  readonly attribute NativeIOFileManager nativeIO;
+  readonly attribute NativeIOFileManager storageFoundation;
 };

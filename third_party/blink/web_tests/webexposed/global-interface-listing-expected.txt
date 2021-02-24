@@ -11108,7 +11108,6 @@ namespace CSS
     getter locationbar
     getter menubar
     getter name
-    getter nativeIO
     getter navigator
     getter offscreenBuffering
     getter onabort
@@ -11252,6 +11251,7 @@ namespace CSS
     getter speechSynthesis
     getter status
     getter statusbar
+    getter storageFoundation
     getter styleMedia
     getter toolbar
     getter top

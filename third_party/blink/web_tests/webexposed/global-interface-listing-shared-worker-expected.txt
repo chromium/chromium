@@ -2793,7 +2793,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter indexedDB
 [Worker]     getter isSecureContext
 [Worker]     getter location
-[Worker]     getter nativeIO
 [Worker]     getter navigator
 [Worker]     getter onerror
 [Worker]     getter onlanguagechange
@@ -2803,6 +2802,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter origin
 [Worker]     getter performance
 [Worker]     getter self
+[Worker]     getter storageFoundation
 [Worker]     getter trustedTypes
 [Worker]     method atob
 [Worker]     method btoa

@@ -2923,7 +2923,6 @@ interface WorkerGlobalScope : EventTarget
     getter indexedDB
     getter isSecureContext
     getter location
-    getter nativeIO
     getter navigator
     getter onerror
     getter onlanguagechange
@@ -2933,6 +2932,7 @@ interface WorkerGlobalScope : EventTarget
     getter origin
     getter performance
     getter self
+    getter storageFoundation
     getter trustedTypes
     method atob
     method btoa

@@ -4,8 +4,8 @@
   let test_file;
 
   async function openFile() {
-    if (nativeIO) {
-      test_file = await nativeIO.open('test_file');
+    if (storageFoundation) {
+      test_file = await storageFoundation.open('test_file');
       return await test_file.getLength() == 0;
     } else {
       return false;
@@ -22,8 +22,8 @@
   }
 
   async function openAnotherFile() {
-    if (nativeIO) {
-      let another_file = await nativeIO.open('another_file');
+    if (storageFoundation) {
+      let another_file = await storageFoundation.open('another_file');
       return await another_file.getLength() == 0;
     } else {
       return false;
@@ -31,6 +31,6 @@
   }
 
   function countFiles() {
-    return nativeIO.getAll().then(files => { return files.length; });
+    return storageFoundation.getAll().then(files => { return files.length; });
   }
 </script>

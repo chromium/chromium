@@ -75,13 +75,14 @@ const char GlobalNativeIOImpl<T>::kSupplementName[] = "GlobalNativeIOImpl";
 }  // namespace
 
 // static
-NativeIOFileManager* GlobalNativeIO::nativeIO(LocalDOMWindow& window) {
+NativeIOFileManager* GlobalNativeIO::storageFoundation(LocalDOMWindow& window) {
   return GlobalNativeIOImpl<LocalDOMWindow>::From(window)
       .GetNativeIOFileManager(window);
 }
 
 // static
-NativeIOFileManager* GlobalNativeIO::nativeIO(WorkerGlobalScope& worker) {
+NativeIOFileManager* GlobalNativeIO::storageFoundation(
+    WorkerGlobalScope& worker) {
   return GlobalNativeIOImpl<WorkerGlobalScope>::From(worker)
       .GetNativeIOFileManager(worker);
 }
