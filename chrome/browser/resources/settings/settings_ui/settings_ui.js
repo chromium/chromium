@@ -12,7 +12,7 @@
  */
 import 'chrome://resources/cr_elements/cr_drawer/cr_drawer.m.js';
 import 'chrome://resources/cr_elements/cr_page_host_style_css.m.js';
-import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.m.js';
+import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';

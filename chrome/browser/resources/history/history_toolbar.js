@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
-import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.m.js';
+import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import './shared_style.js';
 import './strings.js';
 

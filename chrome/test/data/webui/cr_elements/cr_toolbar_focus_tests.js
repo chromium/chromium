@@ -5,7 +5,7 @@
 /** @fileoverview Suite of tests for cr-toolbar. */
 
 // clang-format off
-// #import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.m.js';
+// #import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 //
 // #import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 // clang-format on

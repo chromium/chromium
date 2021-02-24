@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
-import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.m.js';
+import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';

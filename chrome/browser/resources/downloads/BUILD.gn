@@ -207,7 +207,7 @@ js_library("toolbar") {
     ":search_service",
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
     "//ui/webui/resources/cr_elements/cr_toast:cr_toast_manager.m",
-    "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar.m",
+    "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:util.m",

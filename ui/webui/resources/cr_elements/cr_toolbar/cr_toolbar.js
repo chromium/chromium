@@ -2,8 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import '../cr_icon_button/cr_icon_button.m.js';
+import '../cr_icons_css.m.js';
+import './cr_toolbar_search_field.m.js';
+import '../hidden_style_css.m.js';
+import '../icons.m.js';
+import '../shared_vars_css.m.js';
+import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
+
 Polymer({
   is: 'cr-toolbar',
+
+  _template: html`{__html_template__}`,
 
   properties: {
     // Name to display in the toolbar, in titlecase.
@@ -86,4 +98,3 @@ Polymer({
         this.shadowRoot.activeElement.id === 'menuButton';
   }
 });
-/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

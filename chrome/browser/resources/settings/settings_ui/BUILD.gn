@@ -26,7 +26,7 @@ js_library("settings_ui") {
     "//ui/webui/resources/cr_elements:cr_container_shadow_behavior.m",
     "//ui/webui/resources/cr_elements:find_shortcut_behavior.m",
     "//ui/webui/resources/cr_elements/cr_drawer:cr_drawer.m",
-    "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar.m",
+    "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar",
     "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar_search_field.m",
     "//ui/webui/resources/cr_elements/policy:cr_policy_indicator_behavior.m",
     "//ui/webui/resources/js:assert.m",
