@@ -31591,6 +31591,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3811" label="SelectMenuElement"/>
   <int value="3812"
       label="RTCPeerConnectionSdpSemanticsPlanBWithReverseOriginTrial"/>
+  <int value="3813" label="WebAppManifestCaptureLinks"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

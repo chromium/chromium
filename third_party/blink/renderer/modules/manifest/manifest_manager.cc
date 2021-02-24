@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/frame/frame_console.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -202,7 +203,15 @@ void ManifestManager::OnManifestFetchComplete(const KURL& document_url,
 
   manifest_url_ = response.CurrentRequestUrl();
   manifest_ = parser.manifest().Clone();
+  RecordMetrics(*manifest_);
   ResolveCallbacks(ResolveStateSuccess);
+}
+
+void ManifestManager::RecordMetrics(const mojom::blink::Manifest& manifest) {
+  if (manifest.capture_links != mojom::blink::CaptureLinks::kUndefined) {
+    UseCounter::Count(GetSupplementable(),
+                      WebFeature::kWebAppManifestCaptureLinks);
+  }
 }
 
 void ManifestManager::ResolveCallbacks(ResolveState state) {
