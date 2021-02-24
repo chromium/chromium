@@ -21738,6 +21738,27 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SharingHubAndroid.LinkGeneration.Failure">
+  <owner>cheickcisse@google.com</owner>
+  <description>
+    The user request to share link-to-text in the sharing hub failed.
+  </description>
+</action>
+
+<action name="SharingHubAndroid.LinkGeneration.Link">
+  <owner>cheickcisse@google.com</owner>
+  <description>
+    The user requested sharing the link-to-text in the sharing hub.
+  </description>
+</action>
+
+<action name="SharingHubAndroid.LinkGeneration.Text">
+  <owner>cheickcisse@google.com</owner>
+  <description>
+    The user requested sharing the text only in the sharing hub.
+  </description>
+</action>
+
 <action name="SharingHubAndroid.LinkToTextSelected">
   <owner>gayane@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>

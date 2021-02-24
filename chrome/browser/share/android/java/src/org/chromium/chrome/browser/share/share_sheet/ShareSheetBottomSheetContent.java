@@ -335,6 +335,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
                     showToast(R.string.link_to_text_failure_toast_message_v2);
                     linkImageView.setContentDescription(mContext.getResources().getString(
                             R.string.link_to_text_failure_toast_message_v2));
+                    RecordUserAction.record("SharingHubAndroid.LinkGeneration.Failure");
                     break;
                 case LinkGeneration.LINK:
                     showToast(R.string.link_to_text_success_link_toast_message);
@@ -343,6 +344,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
                     linkImageView.setContentDescription(mContext.getResources().getString(
                             R.string.link_to_text_success_link_toast_message));
                     mShareSheetCoordinator.updateShareSheetForLinkToText(LinkGeneration.LINK);
+                    RecordUserAction.record("SharingHubAndroid.LinkGeneration.Link");
                     break;
                 case LinkGeneration.TEXT:
                     showToast(R.string.link_to_text_success_text_toast_message);
@@ -351,6 +353,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
                     linkImageView.setContentDescription(mContext.getResources().getString(
                             R.string.link_to_text_success_text_toast_message));
                     mShareSheetCoordinator.updateShareSheetForLinkToText(LinkGeneration.TEXT);
+                    RecordUserAction.record("SharingHubAndroid.LinkGeneration.Text");
                     break;
             }
         });
