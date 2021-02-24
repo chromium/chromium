@@ -623,6 +623,9 @@ crbug.com/846753 [ Mac ] http/tests/media/reload-after-dialog.html [ Failure Pas
 crbug.com/708345 external/wpt/css/css-tables/height-distribution/extra-height-given-to-all-row-groups-004.html [ Failure ]
 crbug.com/694374 external/wpt/css/css-tables/anonymous-table-ws-001.html [ Failure ]
 crbug.com/174167 external/wpt/css/css-tables/visibility-collapse-colspan-003.html [ Failure ]
+crbug.com/1179497 external/wpt/css/css-tables/col-definite-max-size-001.html [ Failure ]
+crbug.com/1179497 external/wpt/css/css-tables/col-definite-min-size-001.html [ Failure ]
+crbug.com/1179497 external/wpt/css/css-tables/col-definite-size-001.html [ Failure ]
 
 # [css-contain]
 
@@ -2479,9 +2482,6 @@ crbug.com/626703 [ Mac10.15 ] external/wpt/css/css-color/rgba-004.html [ Failure
 crbug.com/626703 [ Mac11.0 ] external/wpt/css/css-color/rgba-004.html [ Failure ]
 crbug.com/626703 [ Win ] external/wpt/css/css-color/rgba-004.html [ Failure ]
 crbug.com/626703 virtual/system-color-compute/external/wpt/css/css-color/hsl-008.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-tables/col-definite-max-size-001.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-tables/col-definite-min-size-001.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-tables/col-definite-size-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-transforms/translate/translate-and-transform-attribute-in-svg.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-transforms/translate/translate-and-transform-css-property-in-svg.html [ Failure ]
 crbug.com/626703 external/wpt/css/selectors/focus-visible-007.html [ Timeout ]
