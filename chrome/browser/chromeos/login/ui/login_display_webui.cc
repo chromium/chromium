@@ -5,7 +5,7 @@
 #include "chrome/browser/chromeos/login/ui/login_display_webui.h"
 
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#include "chrome/browser/chromeos/login/lock/screen_locker.h"
+#include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/chromeos/login/startup_utils.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/ui/user_adding_screen.h"

@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/optional.h"
-#include "chrome/browser/chromeos/login/enrollment/enrollment_screen.h"
+#include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 
 namespace chromeos {

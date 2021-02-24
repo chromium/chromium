@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"
-#include "chrome/browser/chromeos/login/enrollment/enterprise_enrollment_helper.h"
-#include "chrome/browser/chromeos/login/enrollment/enterprise_enrollment_helper_mock.h"
+#include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
+#include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper_mock.h"
 #include "chrome/browser/chromeos/policy/enrollment_config.h"
 #include "chrome/browser/policy/enrollment_status.h"
 #include "chromeos/tpm/install_attributes.h"

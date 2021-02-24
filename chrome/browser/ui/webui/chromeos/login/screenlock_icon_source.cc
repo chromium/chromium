@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/screenlock_icon_source.h"
 
-#include "chrome/browser/chromeos/login/lock/screen_locker.h"
+#include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ui/webui/chromeos/login/screenlock_icon_provider.h"
 #include "chrome/common/url_constants.h"
 #include "net/base/escape.h"

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/ash/network/network_connect_delegate_chromeos.h"
 
-#include "chrome/browser/chromeos/login/lock/screen_locker.h"
+#include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ui/ash/network/enrollment_dialog_view.h"
 #include "chrome/browser/ui/ash/network/network_state_notifier.h"
 #include "chrome/browser/ui/ash/system_tray_client.h"

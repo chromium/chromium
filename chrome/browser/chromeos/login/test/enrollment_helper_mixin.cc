@@ -5,9 +5,9 @@
 #include "chrome/browser/chromeos/login/test/enrollment_helper_mixin.h"
 
 #include "base/bind.h"
-#include "chrome/browser/chromeos/login/enrollment/enrollment_screen.h"
-#include "chrome/browser/chromeos/login/enrollment/enterprise_enrollment_helper.h"
-#include "chrome/browser/chromeos/login/enrollment/enterprise_enrollment_helper_mock.h"
+#include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
+#include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
+#include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper_mock.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/chromeos/policy/active_directory_join_delegate.h"
 
