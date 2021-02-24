@@ -13,6 +13,9 @@
   </style>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
   <script>
    setup({explicit_timeout: true});
   </script>
@@ -35,8 +38,10 @@
  </section>
 
  <script>
+    var mouse_test = async_test("Mousemove events");
     var start = document.getElementById("start");
     var end = document.getElementById("end");
+    var actions_promise;
 
     EventRecorder.configure({
       mergeEventTypes: ["mousemove"],
@@ -56,21 +61,32 @@
       e.stopPropagation();
       this.className = "green";
       endTest();
-      done();
+      // Make sure the test finishes after all the input actions are completed.
+      actions_promise.then( () =>  mouse_test.done() );
     });
 
     function endTest() {
       EventRecorder.stop();
       var results = EventRecorder.getRecords();
       // Check results:
-      assert_equals(results.length, 2, "Two mousemove events");
-      assert_equals(results[0].event.type, "mousemove", "First event is a mousemove event");
-      assert_equals(results[1].event.type, "mousemove", "Second event is a mousemove event");
-      assert_equals(results[0].event.target, "div#start", "First event targetted #start");
-      assert_equals(results[1].event.target, "div#end", "Second event targetted #end");
+      mouse_test.step(function () {
+        assert_equals(results.length, 2, "Two mousemove events");
+        assert_equals(results[0].event.type, "mousemove", "First event is a mousemove event");
+        assert_equals(results[1].event.type, "mousemove", "Second event is a mousemove event");
+        assert_equals(results[0].event.target, "div#start", "First event targetted #start");
+        assert_equals(results[1].event.target, "div#end", "Second event targetted #end");
+      });
     }
 
     EventRecorder.start();
+
+    var rect = start.getClientRects()[0];
+    // Inject mouse inputs.
+    actions_promise = new test_driver.Actions()
+        .pointerMove(0, 0, {origin: start})
+        .pointerMove(Math.round(rect.width/2) + 10,
+                     Math.round(rect.height/2) + 10, {origin: start})
+        .send();
   </script>
  </body>
 </html>

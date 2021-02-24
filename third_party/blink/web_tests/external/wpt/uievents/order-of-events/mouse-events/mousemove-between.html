@@ -3,6 +3,9 @@
 <title>Mousemove handling between elements</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <script src="/uievents/resources/eventrecorder.js"></script>
 <style>
 #a {
@@ -58,7 +61,7 @@ function stopPropagation(e) {
   event.stopPropagation();
 }
 
-window.onload = function() {
+window.onload = async function() {
   var a = document.getElementById("a");
   var b = document.getElementById("b");
   var c = document.getElementById("c");
@@ -102,5 +105,22 @@ window.onload = function() {
     }, false);
   }, "Mousemove events between elements should fire in the correct order.");
   EventRecorder.start();
+
+  var a_rect = a.getClientRects()[0];
+  var b_rect = b.getClientRects()[0];
+  var c_rect = c.getClientRects()[0];
+  var center_b_y = Math.round((b_rect.top + b_rect.bottom) / 2);
+  var center_c_y = Math.round((c_rect.top + c_rect.bottom) / 2);
+
+  // Inject mouse inputs.
+  await new test_driver.Actions()
+      .pointerMove(b_rect.right + 10, center_b_y)
+      .pointerMove(0, 0, {origin: b})
+      .pointerMove(b_rect.right + 10, center_b_y)
+      .pointerMove(a_rect.right + 10, center_b_y)
+      .pointerMove(c_rect.right + 10, center_c_y)
+      .pointerMove(0, 0, {origin: c})
+      .pointerMove(c_rect.right + 20, c_rect.bottom + 20)
+      .send();
 };
 </script>
