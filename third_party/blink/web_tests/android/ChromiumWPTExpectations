@@ -3541,7 +3541,6 @@ crbug.com/1050754 external/wpt/pointerevents/compat/pointerevent_mouse-on-object
 crbug.com/1050754 external/wpt/pointerevents/compat/pointerevent_mouse-pointer-on-scrollbar.html [ Failure ]
 crbug.com/1050754 external/wpt/pointerevents/idlharness.window.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/pointerevents/pointerevent_coalesced_events_attributes.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/pointerevents/pointerevent_iframe-touch-action-none_touch.html [ Failure ]
 crbug.com/1050754 external/wpt/pointerevents/pointerevent_pointercapture-not-lost-in-chorded-buttons.html [ Failure ]
 crbug.com/1050754 external/wpt/pointerevents/pointerevent_pointercapture_in_frame.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/pointerevents/pointerevent_touch-action-none-css_touch.html [ Pass Timeout ]

@@ -1645,7 +1645,6 @@ crbug.com/1050754 external/wpt/picture-in-picture/request-picture-in-picture.htm
 crbug.com/1050754 external/wpt/picture-in-picture/shadow-dom.html [ Failure ]
 crbug.com/1050754 external/wpt/pointerevents/compat/pointerevent_mouse-on-object.html [ Failure ]
 crbug.com/1050754 external/wpt/pointerevents/compat/pointerevent_mouse-pointer-on-scrollbar.html [ Failure ]
-crbug.com/1050754 external/wpt/pointerevents/pointerevent_iframe-touch-action-none_touch.html [ Failure ]
 crbug.com/1050754 external/wpt/pointerevents/pointerevent_touch-adjustment_click_target.html [ Failure ]
 crbug.com/1050754 external/wpt/pointerevents/pointerlock/pointerevent_coordinates_when_locked.html [ Failure ]
 crbug.com/1050754 external/wpt/pointerevents/pointerlock/pointerevent_getCoalescedEvents_when_pointerlocked.html [ Failure ]
