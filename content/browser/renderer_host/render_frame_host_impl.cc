@@ -1050,7 +1050,8 @@ RenderFrameHostImpl::RenderFrameHostImpl(
               {ServiceWorkerContext::GetCoreThreadId()}))),
       frame_token_(frame_token),
       keep_alive_handle_factory_(agent_scheduling_group_.GetProcess(),
-                                 base::TimeDelta::FromSeconds(30)),
+                                 base::TimeDelta::FromSeconds(
+                                     kKeepAliveHandleFactoryTimeoutInSeconds)),
       subframe_unload_timeout_(RenderViewHostImpl::kUnloadTimeout),
       media_device_id_salt_base_(
           BrowserContext::CreateRandomMediaDeviceIDSalt()),
