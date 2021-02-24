@@ -171,6 +171,7 @@ base::Optional<SkColor> GetIncognitoColor(int id) {
       return gfx::kGoogleGrey200;
     case ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE:
     case ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_INACTIVE:
+      return gfx::kGoogleGrey400;
     case ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR:
       return SkColorSetRGB(0x28, 0x28, 0x28);
     case ThemeProperties::COLOR_NTP_LINK:
