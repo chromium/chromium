@@ -5,7 +5,6 @@
 #include "ash/system/ime_menu/ime_menu_tray.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/constants/ash_features.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -29,7 +28,6 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
 #include "ash/system/unified/top_shortcut_button.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
@@ -39,7 +37,6 @@
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/range/range.h"
@@ -546,11 +543,6 @@ void ImeMenuTray::UpdateTrayLabel() {
 
   label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kIconColorPrimary));
-
-  // TODO(crbug.com/1168355): Remove before enabling kImeMojoDecoder by default.
-  if (base::FeatureList::IsEnabled(chromeos::features::kImeMojoDecoder)) {
-    label_->SetEnabledColor(gfx::kGoogleYellow500);
-  }
 
   if (current_ime.third_party)
     label_->SetText(current_ime.short_name + base::UTF8ToUTF16("*"));
