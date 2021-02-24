@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/address_profiles/address_profile_save_manager.h"
+#include "components/autofill/core/browser/address_profile_save_manager.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
