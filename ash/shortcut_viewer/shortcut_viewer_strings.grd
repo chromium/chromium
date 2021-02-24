@@ -838,6 +838,9 @@
   <message name="IDS_KSV_DESCRIPTION_CARET_BROWSING_TOGGLE" desc="Description of the command in keyboard shortcut viewer.">
     Turn caret browsing on or off
   </message>
+  <message name="IDS_KSV_DESCRIPTION_SHOW_EMOJI_PICKER" desc="Description of the command in keyboard shortcut viewer.">
+    Open Emoji Picker
+  </message>
     </messages>
   </release>
 </grit>

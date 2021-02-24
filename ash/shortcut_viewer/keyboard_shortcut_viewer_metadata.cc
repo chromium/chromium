@@ -1447,6 +1447,13 @@ const std::vector<KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
        {},
        // |accelerator_ids|
        {{ui::VKEY_PRIVACY_SCREEN_TOGGLE, ui::EF_NONE}}},
+
+      {// |categories|
+       {ShortcutCategory::kTextEditing},
+       IDS_KSV_DESCRIPTION_SHOW_EMOJI_PICKER,
+       {},
+       // |accelerator_ids|
+       {{ui::VKEY_SPACE, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN}}},
   });
 
   static bool is_initialized = false;

@@ -102,6 +102,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/accelerator_manager.h"
+#include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/chromeos/events/keyboard_layout_util.h"
@@ -995,6 +996,11 @@ void HandleTopWindowMinimizeOnBack() {
   base::RecordAction(
       base::UserMetricsAction("Accel_Minimize_Top_Window_On_Back"));
   WindowState::Get(window_util::GetTopWindow())->Minimize();
+}
+
+void HandleShowEmojiPicker() {
+  base::RecordAction(UserMetricsAction("Accel_Show_Emoji_Picker"));
+  ui::ShowEmojiPanel();
 }
 
 void HandleShowImeMenuBubble() {
@@ -2073,6 +2079,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case PRINT_UI_HIERARCHIES:
     case RESTORE_TAB:
     case ROTATE_WINDOW:
+    case SHOW_EMOJI_PICKER:
     case SHOW_IME_MENU_BUBBLE:
     case SHOW_SHORTCUT_VIEWER:
     case SHOW_TASK_MANAGER:
@@ -2334,6 +2341,9 @@ void AcceleratorControllerImpl::PerformAction(
       break;
     case SCALE_UI_UP:
       accelerators::ZoomDisplay(true /* up */);
+      break;
+    case SHOW_EMOJI_PICKER:
+      HandleShowEmojiPicker();
       break;
     case SHOW_IME_MENU_BUBBLE:
       HandleShowImeMenuBubble();

@@ -197,6 +197,10 @@ const AcceleratorData kAcceleratorData[] = {
     // IME mode change key.
     {true, ui::VKEY_MODECHANGE, ui::EF_NONE, SWITCH_TO_NEXT_IME},
 
+    // Emoji picker shortcut.
+    {true, ui::VKEY_SPACE, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN,
+     SHOW_EMOJI_PICKER},
+
     // Debugging shortcuts that need to be available to end-users in
     // release builds.
     {true, ui::VKEY_U, kDebugModifier, PRINT_UI_HIERARCHIES},
