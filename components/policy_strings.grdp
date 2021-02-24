@@ -288,6 +288,12 @@ Additional details:
   <message name="IDS_POLICY_RELOAD_POLICIES" desc="Label for the button that reloads policies.">
     Reload policies
   </message>
+  <message name="IDS_POLICY_LOADING_POLICIES" desc="Screen reader message indicates policies are being loaded.">
+    Loading policies
+  </message>
+  <message name="IDS_POLICY_LOAD_POLICIES_DONE" desc="Screen reader message indicates policies have been loaded.">
+    Policies is loaded
+  </message>
   <message name="IDS_EXPORT_POLICIES_JSON" desc="Label for the button that exports policies in JSON format.">
     Export to JSON
   </message>

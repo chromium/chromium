@@ -199,6 +199,11 @@ a {
   display: none;
 }
 
+#screen-reader-message {
+  clip: rect(0,0,0,0);
+  position: fixed;
+}
+
 <if expr="is_android or is_ios">
 body > main {
   padding: 0;

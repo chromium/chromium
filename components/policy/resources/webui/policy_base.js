@@ -562,6 +562,8 @@ cr.define('policy', function() {
       };
       $('reload-policies').onclick = function(event) {
         this.disabled = true;
+        $('screen-reader-message').textContent =
+            loadTimeData.getString('loadingPolicies');
         chrome.send('reloadPolicies');
       };
 
@@ -667,6 +669,8 @@ cr.define('policy', function() {
      */
     reloadPoliciesDone() {
       $('reload-policies').disabled = false;
+      $('screen-reader-message').textContent =
+          loadTimeData.getString('loadPoliciesDone');
     },
   };
 
