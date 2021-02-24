@@ -54,7 +54,6 @@
 #include "chrome/browser/sharing/shared_clipboard/feature_flags.h"
 #include "chrome/browser/sharing/sms/sms_flags.h"
 #include "chrome/browser/signin/signin_features.h"
-#include "chrome/browser/site_isolation/about_flags.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/unexpire_flags.h"
 #include "chrome/browser/unexpire_flags_gen.h"
@@ -3325,7 +3324,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"isolate-origins", flag_descriptions::kIsolateOriginsName,
      flag_descriptions::kIsolateOriginsDescription, kOsAll,
      ORIGIN_LIST_VALUE_TYPE(switches::kIsolateOrigins, "")},
-    {about_flags::kSiteIsolationTrialOptOutInternalName,
+    {"site-isolation-trial-opt-out",
      flag_descriptions::kSiteIsolationOptOutName,
      flag_descriptions::kSiteIsolationOptOutDescription, kOsAll,
      MULTI_VALUE_TYPE(kSiteIsolationOptOutChoices)},
@@ -7276,6 +7275,24 @@ std::vector<std::string> RegisterAllFeatureVariationParameters(
       ->RegisterAllFeatureVariationParameters(flags_storage, feature_list);
 }
 
+bool AreSwitchesIdenticalToCurrentCommandLine(
+    const base::CommandLine& new_cmdline,
+    const base::CommandLine& active_cmdline,
+    std::set<base::CommandLine::StringType>* out_difference) {
+  const char* extra_flag_sentinel_begin_flag_name = nullptr;
+  const char* extra_flag_sentinel_end_flag_name = nullptr;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Put the flags between --policy-switches--begin and --policy-switches-end on
+  // ChromeOS.
+  extra_flag_sentinel_begin_flag_name =
+      chromeos::switches::kPolicySwitchesBegin;
+  extra_flag_sentinel_end_flag_name = chromeos::switches::kPolicySwitchesEnd;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  return flags_ui::FlagsState::AreSwitchesIdenticalToCurrentCommandLine(
+      new_cmdline, active_cmdline, out_difference,
+      extra_flag_sentinel_begin_flag_name, extra_flag_sentinel_end_flag_name);
+}
+
 void GetFlagFeatureEntries(flags_ui::FlagsStorage* flags_storage,
                            flags_ui::FlagAccess access,
                            base::ListValue* supported_entries,
@@ -7328,13 +7345,13 @@ void ResetAllFlags(flags_ui::FlagsStorage* flags_storage) {
   FlagsStateSingleton::GetFlagsState()->ResetAllFlags(flags_storage);
 }
 
-void RecordUMAStatistics(flags_ui::FlagsStorage* flags_storage,
-                         const std::string& histogram_name) {
+void RecordUMAStatistics(flags_ui::FlagsStorage* flags_storage) {
   std::set<std::string> switches;
   std::set<std::string> features;
   FlagsStateSingleton::GetFlagsState()->GetSwitchesAndFeaturesFromFlags(
       flags_storage, &switches, &features);
-  flags_ui::ReportAboutFlagsHistogram(histogram_name, switches, features);
+  flags_ui::ReportAboutFlagsHistogram("Launch.FlagsAtStartup", switches,
+                                      features);
 }
 
 namespace testing {

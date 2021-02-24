@@ -48,6 +48,10 @@ class Profile;
 class TokenHandleFetcher;
 class TurnSyncOnHelper;
 
+namespace base {
+class CommandLine;
+}
+
 namespace user_manager {
 class User;
 }  // namespace user_manager
@@ -119,12 +123,13 @@ class UserSessionManager
     // Switches for controlling session initialization, such as if the profile
     // requires enterprise policy.
     kSessionControl,
-    // Switches derived from user policy and kiosk app control switches.
+    // Switches derived from user policy, from user-set flags and kiosk app
+    // control switches.
     // TODO(pmarko): Split this into multiple categories, such as kPolicy,
-    // kKioskControl. Consider also adding sentinels automatically and
+    // kFlags, kKioskControl. Consider also adding sentinels automatically and
     // pre-filling these switches from the command-line if the chrome has been
     // started with the --login-user flag (https://crbug.com/832857).
-    kPolicyAndKioskControl
+    kPolicyAndFlagsAndKioskControl
   };
 
   // To keep track of which systems need the login password to be stored in the
@@ -151,11 +156,11 @@ class UserSessionManager
   // Registers session related preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  // Applies user policies to `flags`. This could mean removing flags that have
-  // been added by the flag handling logic or appending additional flags due to
-  // enterprise policy.
-  static void ApplyUserPolicyToFlags(PrefService* user_profile_prefs,
-                                     std::set<std::string>* flags);
+  // Applies user policies to `user_flags` .
+  // This could mean removing command-line switchis that have been added by the
+  // flag handling logic or appending additional switches due to policy.
+  static void ApplyUserPolicyToSwitches(PrefService* user_profile_prefs,
+                                        base::CommandLine* user_flags);
 
   // Invoked after the tmpfs is successfully mounted.
   // Asks session_manager to restart Chrome in Guest session mode.

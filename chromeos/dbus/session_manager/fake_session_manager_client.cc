@@ -593,11 +593,7 @@ void FakeSessionManagerClient::SetFlagsForUser(
 
 void FakeSessionManagerClient::SetFeatureFlagsForUser(
     const cryptohome::AccountIdentifier& cryptohome_id,
-    const std::vector<std::string>& feature_flags) {
-  // session_manager's SetFeatureFlagsForUser implementation has the side effect
-  // of clearing flags, match that behavior.
-  flags_for_user_[cryptohome_id] = {};
-}
+    const std::vector<std::string>& feature_flags) {}
 
 void FakeSessionManagerClient::GetServerBackedStateKeys(
     StateKeysCallback callback) {
