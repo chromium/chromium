@@ -187,6 +187,21 @@ TEST(ToV8TraitsTest, EmptyString) {
   TEST_TOV8_TRAITS(scope, IDLStringV2, "", empty);
 }
 
+TEST(ToV8TraitsTest, Object) {
+  const V8TestingScope scope;
+  Vector<String> string_vector;
+  string_vector.push_back("hello");
+  string_vector.push_back("world");
+  ScriptValue value(scope.GetIsolate(),
+                    ToV8Traits<IDLSequence<IDLStringV2>>::ToV8(
+                        scope.GetScriptState(), string_vector));
+  TEST_TOV8_TRAITS(scope, IDLObject, "hello,world", value);
+  v8::Local<v8::Value> actual;
+  ASSERT_TRUE(ToV8Traits<IDLObject>::ToV8(scope.GetScriptState(), value)
+                  .ToLocal(&actual));
+  EXPECT_TRUE(actual->IsObject());
+}
+
 TEST(ToV8TraitsTest, Promise) {
   const V8TestingScope scope;
   ScriptPromise::InternalResolver resolver(scope.GetScriptState());

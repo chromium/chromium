@@ -155,6 +155,19 @@ struct ToV8Traits<
   }
 };
 
+// Object
+template <>
+struct ToV8Traits<IDLObject> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const ScriptValue& script_value)
+      WARN_UNUSED_RESULT {
+    DCHECK(!script_value.IsEmpty());
+    v8::Local<v8::Value> v8_value = script_value.V8Value();
+    DCHECK(v8_value->IsObject());
+    return v8_value;
+  }
+};
+
 // Promise
 template <>
 struct ToV8Traits<IDLPromise> {
