@@ -62,6 +62,7 @@ content::WebUIDataSource* CreateFeedbackHTMLSource() {
   source->AddResourcePaths(
       base::make_span(kFeedbackResources, kFeedbackResourcesSize));
   source->AddResourcePath("", IDR_FEEDBACK_DEFAULT_HTML);
+  source->UseStringsJs();
 
   AddStringResources(source);
 

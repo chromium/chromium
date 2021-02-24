@@ -234,6 +234,5 @@ function createTable(systemInfo) {
  */
 window.onload = function() {
   loadTimeData = getLoadTimeData();
-  i18nTemplate.process(document, loadTimeData);
   getFullSystemInfo(createTable);
 };

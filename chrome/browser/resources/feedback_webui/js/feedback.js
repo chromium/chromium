@@ -2,6 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(crbug.com/1167223
+// dummy data, use  temporarily until a message handler is implemented
+// real data shall be retrieved from backend or be passed via query string
+const feedbackInfo = {
+  categoryTag: '',
+  description: '',
+  descriptionPlaceholder: 'Please enter a description of your issue',
+  flow: 'regular',
+  pageUrl:
+      'https://superuser.com/questions/777213/copy-json-from-console-log-in-developer-tool-to-clipboard',
+  systemInformation: [],
+  useSystemWindowFrame: false,
+  screenshot: {}
+};
+
 /** @type {number}
  * @const
  */
@@ -37,13 +52,6 @@ const SYSINFO_WINDOW_ID = 'sysinfo_window';
 
 let attachedFileBlob = null;
 const lastReader = null;
-
-/**
- * Determines whether the system information associated with this instance of
- * the feedback window has been received.
- * @type {boolean}
- */
-let isSystemInfoReady = false;
 
 /**
  * Regular expression to check for all variants of blu[e]toot[h] with or without
@@ -89,13 +97,6 @@ const smartLockRegEx = new RegExp('(smart|easy)[ ]?(un)?lock', 'i');
  * @type {RegExp}
  */
 const nearbyShareRegEx = new RegExp('nearby|phone', 'i');
-
-/**
- * The callback used by the sys_info_page to receive the event that the system
- * information is ready.
- * @type {function(sysInfo)}
- */
-let sysInfoPageOnSysInfoReadyCallback = null;
 
 /**
  * Reads the selected file when the user selects a file.
@@ -167,8 +168,7 @@ function setupLinkHandlers(anchorElement, url, useAppWindow) {
  * Opens a new window with chrome://slow_trace, downloading performance data.
  */
 function openSlowTraceWindow() {
-  chrome.app.window.create(
-      'chrome://slow_trace/tracing.zip#' + feedbackInfo.traceId);
+  window.open('chrome://slow_trace/tracing.zip#' + feedbackInfo.traceId);
 }
 
 /**
@@ -355,23 +355,8 @@ function resizeAppWindow() {
   }
   height = Math.max(height, minHeight);
 
-  // Update |outerBounds.maxHeight| in case available screen height has changed.
-  chrome.app.window.current().outerBounds.maxHeight = window.screen.availHeight;
-  chrome.app.window.current().innerBounds.width = width;
-  chrome.app.window.current().innerBounds.height = height;
-}
-
-/**
- * A callback to be invoked when the background page of this extension receives
- * the system information.
- */
-function onSystemInformation() {
-  isSystemInfoReady = true;
-  // In case the sys_info_page needs to be notified by this event, do so.
-  if (sysInfoPageOnSysInfoReadyCallback != null) {
-    sysInfoPageOnSysInfoReadyCallback(feedbackInfo.systemInformation);
-    sysInfoPageOnSysInfoReadyCallback = null;
-  }
+  window.innerWidth = width;
+  window.innerHeight = height;
 }
 
 /**
@@ -395,245 +380,219 @@ function scheduleWindowClose() {
  * .) Screenshot taken         -> . Show Feedback window.
  */
 function initialize() {
-  // Add listener to receive the feedback info object.
-  chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    if (request.sentFromEventPage) {
-      if (!feedbackInfo.flow) {
-        feedbackInfo.flow = chrome.feedbackPrivate.FeedbackFlow.REGULAR;
-      }
-
-      if (feedbackInfo.includeBluetoothLogs) {
-        assert(
-            feedbackInfo.flow ==
-            chrome.feedbackPrivate.FeedbackFlow.GOOGLE_INTERNAL);
-        $('description-text')
-            .addEventListener('input', checkForBluetoothKeywords);
-      }
-
-      if ($('assistant-checkbox-container') != null &&
+  // apply received feedback info object.
+  const applyData = function(feedbackInfo) {
+    if (feedbackInfo.includeBluetoothLogs) {
+      assert(
           feedbackInfo.flow ==
-              chrome.feedbackPrivate.FeedbackFlow.GOOGLE_INTERNAL &&
-          feedbackInfo.fromAssistant) {
-        $('assistant-checkbox-container').hidden = false;
-      }
-
-      $('description-text').textContent = feedbackInfo.description;
-      if (feedbackInfo.descriptionPlaceholder) {
-        $('description-text').placeholder = feedbackInfo.descriptionPlaceholder;
-      }
-      if (feedbackInfo.pageUrl) {
-        $('page-url-text').value = feedbackInfo.pageUrl;
-      }
-
-      takeScreenshot(function(screenshotCanvas) {
-        // We've taken our screenshot, show the feedback page without any
-        // further delay.
-        window.requestAnimationFrame(function() {
-          resizeAppWindow();
-        });
-        chrome.app.window.current().show();
-
-        // Allow feedback to be sent even if the screenshot failed.
-        if (!screenshotCanvas) {
-          $('screenshot-checkbox').disabled = true;
-          $('screenshot-checkbox').checked = false;
-          return;
-        }
-
-        screenshotCanvas.toBlob(function(blob) {
-          $('screenshot-image').src = URL.createObjectURL(blob);
-          // Only set the alt text when the src url is available, otherwise we'd
-          // get a broken image picture instead. crbug.com/773985.
-          $('screenshot-image').alt = 'screenshot';
-          $('screenshot-image')
-              .classList.toggle(
-                  'wide-screen',
-                  $('screenshot-image').width > MAX_SCREENSHOT_WIDTH);
-          feedbackInfo.screenshot = blob;
-        });
-      });
-
-      chrome.feedbackPrivate.getUserEmail(function(email) {
-        // Never add an empty option.
-        if (!email) {
-          return;
-        }
-        const optionElement = document.createElement('option');
-        optionElement.value = email;
-        optionElement.text = email;
-        optionElement.selected = true;
-        // Make sure the "Report anonymously" option comes last.
-        $('user-email-drop-down')
-            .insertBefore(optionElement, $('anonymous-user-option'));
-
-        // Now we can unhide the user email section:
-        $('user-email').hidden = false;
-      });
-
-      // Initiate getting the system info.
-      isSystemInfoReady = false;
-      getSystemInformation(onSystemInformation);
-
-      // An extension called us with an attached file.
-      if (feedbackInfo.attachedFile) {
-        $('attached-filename-text').textContent =
-            feedbackInfo.attachedFile.name;
-        attachedFileBlob = feedbackInfo.attachedFile.data;
-        $('custom-file-container').hidden = false;
-        $('attach-file').hidden = true;
-      }
-
-      // No URL, file attachment, or window minimizing for login screen
-      // feedback.
-      if (feedbackInfo.flow == chrome.feedbackPrivate.FeedbackFlow.LOGIN) {
-        $('page-url').hidden = true;
-        $('attach-file-container').hidden = true;
-        $('attach-file-note').hidden = true;
-        $('minimize-button').hidden = true;
-      }
-
-      // <if expr="chromeos">
-      if (feedbackInfo.traceId && ($('performance-info-area'))) {
-        $('performance-info-area').hidden = false;
-        $('performance-info-checkbox').checked = true;
-        performanceFeedbackChanged();
-        $('performance-info-link').onclick = openSlowTraceWindow;
-      }
-      // </if>
-      chrome.feedbackPrivate.getStrings(feedbackInfo.flow, function(strings) {
-        loadTimeData.data = strings;
-        i18nTemplate.process(document, loadTimeData);
-
-        const sysInfoUrlElement = $('sys-info-url');
-        if (sysInfoUrlElement) {
-          // Opens a new window showing the full anonymized system+app
-          // information.
-          sysInfoUrlElement.onclick = function(e) {
-            e.preventDefault();
-            const win = chrome.app.window.get(SYSINFO_WINDOW_ID);
-            if (win) {
-              win.show();
-              return;
-            }
-            chrome.app.window.create(
-                '/html/sys_info.html', {
-                  frame: 'chrome',
-                  id: SYSINFO_WINDOW_ID,
-                  width: 640,
-                  height: 400,
-                  hidden: false,
-                  resizable: true
-                },
-                function(appWindow) {
-                  // Define functions for the newly created window.
-
-                  // Gets the full system information for the new window.
-                  appWindow.contentWindow.getFullSystemInfo = function(
-                      callback) {
-                    if (isSystemInfoReady) {
-                      callback(feedbackInfo.systemInformation);
-                      return;
-                    }
-
-                    sysInfoPageOnSysInfoReadyCallback = callback;
-                  };
-
-                  // Returns the loadTimeData for the new window.
-                  appWindow.contentWindow.getLoadTimeData = function() {
-                    return loadTimeData;
-                  };
-                });
-          };
-
-          sysInfoUrlElement.onauxclick = function(e) {
-            e.preventDefault();
-          };
-        }
-
-        const histogramUrlElement = $('histograms-url');
-        if (histogramUrlElement) {
-          // Opens a new window showing the histogram metrics.
-          setupLinkHandlers(
-              histogramUrlElement, 'chrome://histograms',
-              true /* useAppWindow */);
-        }
-
-        // The following URLs don't open on login screen, so hide them.
-        // TODO(crbug.com/1116383): Find a solution to display them properly.
-        if (feedbackInfo.flow != chrome.feedbackPrivate.FeedbackFlow.LOGIN) {
-          const legalHelpPageUrlElement = $('legal-help-page-url');
-          if (legalHelpPageUrlElement) {
-            setupLinkHandlers(
-                legalHelpPageUrlElement, FEEDBACK_LEGAL_HELP_URL,
-                false /* useAppWindow */);
-          }
-
-          const privacyPolicyUrlElement = $('privacy-policy-url');
-          if (privacyPolicyUrlElement) {
-            setupLinkHandlers(
-                privacyPolicyUrlElement, FEEDBACK_PRIVACY_POLICY_URL,
-                false /* useAppWindow */);
-          }
-
-          const termsOfServiceUrlElement = $('terms-of-service-url');
-          if (termsOfServiceUrlElement) {
-            setupLinkHandlers(
-                termsOfServiceUrlElement, FEEDBACK_TERM_OF_SERVICE_URL,
-                false /* useAppWindow */);
-          }
-
-          const bluetoothLogsInfoLinkElement = $('bluetooth-logs-info-link');
-          if (bluetoothLogsInfoLinkElement) {
-            bluetoothLogsInfoLinkElement.onclick = function(e) {
-              e.preventDefault();
-
-              chrome.app.window.create(
-                  '/html/bluetooth_logs_info.html',
-                  {width: 400, height: 120, resizable: false},
-                  function(appWindow) {
-                    appWindow.contentWindow.onload = function() {
-                      i18nTemplate.process(
-                          appWindow.contentWindow.document, loadTimeData);
-                    };
-                  });
-
-              bluetoothLogsInfoLinkElement.onauxclick = function(e) {
-                e.preventDefault();
-              };
-            };
-          }
-
-          const assistantLogsInfoLinkElement = $('assistant-logs-info-link');
-          if (assistantLogsInfoLinkElement) {
-            assistantLogsInfoLinkElement.onclick = function(e) {
-              e.preventDefault();
-
-              chrome.app.window.create(
-                  '/html/assistant_logs_info.html',
-                  {width: 400, height: 120, resizable: false, frame: 'none'},
-                  function(appWindow) {
-                    appWindow.contentWindow.onload = function() {
-                      i18nTemplate.process(
-                          appWindow.contentWindow.document, loadTimeData);
-                    };
-                  });
-
-              assistantLogsInfoLinkElement.onauxclick = function(e) {
-                e.preventDefault();
-              };
-            };
-          }
-        }
-
-        // Make sure our focus starts on the description field.
-        $('description-text').focus();
-      });
+          chrome.feedbackPrivate.FeedbackFlow.GOOGLE_INTERNAL);
+      $('description-text')
+          .addEventListener('input', checkForBluetoothKeywords);
     }
-  });
+
+    if ($('assistant-checkbox-container') != null &&
+        feedbackInfo.flow ==
+            chrome.feedbackPrivate.FeedbackFlow.GOOGLE_INTERNAL &&
+        feedbackInfo.fromAssistant) {
+      $('assistant-checkbox-container').hidden = false;
+    }
+
+    $('description-text').textContent = feedbackInfo.description;
+    if (feedbackInfo.descriptionPlaceholder) {
+      $('description-text').placeholder = feedbackInfo.descriptionPlaceholder;
+    }
+    if (feedbackInfo.pageUrl) {
+      $('page-url-text').value = feedbackInfo.pageUrl;
+    }
+
+    takeScreenshot(function(screenshotCanvas) {
+      // We've taken our screenshot, show the feedback page without any
+      // further delay.
+      window.requestAnimationFrame(function() {
+        resizeAppWindow();
+      });
+
+      window.focus();
+
+      // Allow feedback to be sent even if the screenshot failed.
+      if (!screenshotCanvas) {
+        $('screenshot-checkbox').disabled = true;
+        $('screenshot-checkbox').checked = false;
+        return;
+      }
+
+      screenshotCanvas.toBlob(function(blob) {
+        $('screenshot-image').src = URL.createObjectURL(blob);
+        // Only set the alt text when the src url is available, otherwise we'd
+        // get a broken image picture instead. crbug.com/773985.
+        $('screenshot-image').alt = 'screenshot';
+        $('screenshot-image')
+            .classList.toggle(
+                'wide-screen',
+                $('screenshot-image').width > MAX_SCREENSHOT_WIDTH);
+        feedbackInfo.screenshot = blob;
+      });
+    });
+
+    chrome.feedbackPrivate.getUserEmail(function(email) {
+      // Never add an empty option.
+      if (!email) {
+        return;
+      }
+      const optionElement = document.createElement('option');
+      optionElement.value = email;
+      optionElement.text = email;
+      optionElement.selected = true;
+      // Make sure the "Report anonymously" option comes last.
+      $('user-email-drop-down')
+          .insertBefore(optionElement, $('anonymous-user-option'));
+
+      // Now we can unhide the user email section:
+      $('user-email').hidden = false;
+    });
+
+    // An extension called us with an attached file.
+    if (feedbackInfo.attachedFile) {
+      $('attached-filename-text').textContent = feedbackInfo.attachedFile.name;
+      attachedFileBlob = feedbackInfo.attachedFile.data;
+      $('custom-file-container').hidden = false;
+      $('attach-file').hidden = true;
+    }
+
+    // No URL, file attachment, or window minimizing for login screen
+    // feedback.
+    if (feedbackInfo.flow == chrome.feedbackPrivate.FeedbackFlow.LOGIN) {
+      $('page-url').hidden = true;
+      $('attach-file-container').hidden = true;
+      $('attach-file-note').hidden = true;
+      $('minimize-button').hidden = true;
+    }
+
+    // <if expr="chromeos">
+    if (feedbackInfo.traceId && ($('performance-info-area'))) {
+      $('performance-info-area').hidden = false;
+      $('performance-info-checkbox').checked = true;
+      performanceFeedbackChanged();
+      $('performance-info-link').onclick = openSlowTraceWindow;
+    }
+    // </if>
+
+    const sysInfoUrlElement = $('sys-info-url');
+    if (sysInfoUrlElement) {
+      // Opens a new window showing the full anonymized system+app
+      // information.
+      sysInfoUrlElement.onclick = function(e) {
+        e.preventDefault();
+        const params = `status=no,location=no,toolbar=no,menubar=no,
+              width=640,height=400,left=200,top=200`;
+
+        const sysWin =
+            window.open('/html/sys_info.html', SYSINFO_WINDOW_ID, params);
+
+        if (sysWin) {
+          sysWin.window.getFullSystemInfo = function(callback) {
+            chrome.feedbackPrivate.getSystemInformation(function(sysInfo) {
+              if (feedbackInfo.systemInformation) {
+                callback(sysInfo.concat(feedbackInfo.systemInformation));
+              } else {
+                callback(sysInfo);
+              }
+            });
+          };
+
+          sysWin.window.getLoadTimeData = function() {
+            return loadTimeData;
+          };
+        }
+      };
+
+      sysInfoUrlElement.onauxclick = function(e) {
+        e.preventDefault();
+      };
+    }
+
+    const histogramUrlElement = $('histograms-url');
+    if (histogramUrlElement) {
+      // Opens a new window showing the histogram metrics.
+      setupLinkHandlers(
+          histogramUrlElement, 'chrome://histograms', true /* useAppWindow */);
+    }
+
+    // The following URLs don't open on login screen, so hide them.
+    // TODO(crbug.com/1116383): Find a solution to display them properly.
+    if (feedbackInfo.flow != chrome.feedbackPrivate.FeedbackFlow.LOGIN) {
+      const legalHelpPageUrlElement = $('legal-help-page-url');
+      if (legalHelpPageUrlElement) {
+        setupLinkHandlers(
+            legalHelpPageUrlElement, FEEDBACK_LEGAL_HELP_URL,
+            false /* useAppWindow */);
+      }
+
+      const privacyPolicyUrlElement = $('privacy-policy-url');
+      if (privacyPolicyUrlElement) {
+        setupLinkHandlers(
+            privacyPolicyUrlElement, FEEDBACK_PRIVACY_POLICY_URL,
+            false /* useAppWindow */);
+      }
+
+      const termsOfServiceUrlElement = $('terms-of-service-url');
+      if (termsOfServiceUrlElement) {
+        setupLinkHandlers(
+            termsOfServiceUrlElement, FEEDBACK_TERM_OF_SERVICE_URL,
+            false /* useAppWindow */);
+      }
+
+      const bluetoothLogsInfoLinkElement = $('bluetooth-logs-info-link');
+      if (bluetoothLogsInfoLinkElement) {
+        bluetoothLogsInfoLinkElement.onclick = function(e) {
+          e.preventDefault();
+
+          const params = `status=no,location=no,toolbar=no,menubar=no,
+              width=400,height=120,left=200,top=200,resizable=no,`;
+
+          const blueToothWin = window.open(
+              '/html/bluetooth_logs_info.html', 'bluetooth_logs_window',
+              params);
+
+          bluetoothLogsInfoLinkElement.onauxclick = function(e) {
+            e.preventDefault();
+          };
+        };
+      }
+
+      const assistantLogsInfoLinkElement = $('assistant-logs-info-link');
+      if (assistantLogsInfoLinkElement) {
+        assistantLogsInfoLinkElement.onclick = function(e) {
+          e.preventDefault();
+
+          const params = `status=no,location=no,toolbar=no,menubar=no,
+              width=400,height=120,left=200,top=200,resizable=no,`;
+
+          const blueToothWin = window.open(
+              '/html/assistant_logs_info.html', 'assistant_logs_window',
+              params);
+
+          assistantLogsInfoLinkElement.onauxclick = function(e) {
+            e.preventDefault();
+          };
+        };
+      }
+    }
+
+    // Make sure our focus starts on the description field.
+    $('description-text').focus();
+  };
 
   window.addEventListener('DOMContentLoaded', function() {
-    // Ready to receive the feedback object.
-    chrome.runtime.sendMessage({ready: true});
+    // TODO(crbug.com/1167223
+    // feedbackInfo will be retrieved from backend or
+    // be passed as query string. This will be addressed via
+    // following CL.
+    // chrome.feedbackPrivate.getFeedbackInfo(function(feedbackInfo) {
+    //   applyData(feedbackInfo);
+    // });
+    applyData(feedbackInfo);
+
 
     // Setup our event handlers.
     $('attach-file').addEventListener('change', onFileSelected);

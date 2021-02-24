@@ -35,12 +35,8 @@ const FEEDBACK_TERM_OF_SERVICE_URL = 'https://policies.google.com/terms';
  * @param {string} url The destination URL for the link.
  */
 function openUrlInAppWindow(url) {
-  chrome.app.window.create(url, {
-    frame: 'chrome',
-    id: url,
-    width: 640,
-    height: 400,
-    hidden: false,
-    resizable: true
-  });
+  const params = `status=no,location=no,toolbar=no,menubar=no,
+  width=640,height=400,left=200,top=200`;
+
+  window.open(url, url, params);
 }
