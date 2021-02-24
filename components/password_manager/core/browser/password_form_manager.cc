@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -901,6 +902,9 @@ PasswordFormManager::PasswordFormManager(
   }
   password_save_manager_->Init(client_, form_fetcher_, metrics_recorder_,
                                &votes_uploader_);
+  // TODO(https://crbug.com/1167475): Add test for this metric.
+  base::UmaHistogramEnumeration("PasswordManager.FormVisited.PerProfileType",
+                                client_->GetProfileType());
 }
 
 void PasswordFormManager::RecordMetricOnReadonly(
