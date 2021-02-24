@@ -55,6 +55,9 @@ class ErrorScreen : public BaseScreen,
   // Toggles the offline sign-in.
   void AllowOfflineLogin(bool allowed);
 
+  // Sets offline flag for focused user.
+  void AllowOfflineLoginPerUser(bool allowed);
+
   // Initializes captive portal dialog and shows that if needed.
   virtual void FixCaptivePortal();
 
@@ -171,6 +174,14 @@ class ErrorScreen : public BaseScreen,
   std::unique_ptr<LoginPerformer> guest_login_performer_;
 
   bool offline_login_allowed_ = false;
+
+  // Additional flag applied on top of offline_login_allowed_ that can block
+  // visibility of offline login link when a focused pod user has offline login
+  // timer (set by policy) expired. If that happens flag is flipped to false.
+  // In all other cases it should be set to a default value of true.
+  // Even if a user gets to the (hidden) flow, the offline login may be blocked
+  // by checking the policy value there.
+  bool offline_login_per_user_allowed_ = true;
 
   // Proxy which manages showing of the window for captive portal entering.
   std::unique_ptr<CaptivePortalWindowProxy> captive_portal_window_proxy_;

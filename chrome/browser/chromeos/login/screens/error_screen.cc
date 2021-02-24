@@ -109,6 +109,10 @@ void ErrorScreen::AllowOfflineLogin(bool allowed) {
   offline_login_allowed_ = allowed;
 }
 
+void ErrorScreen::AllowOfflineLoginPerUser(bool allowed) {
+  offline_login_per_user_allowed_ = allowed;
+}
+
 void ErrorScreen::FixCaptivePortal() {
   MaybeInitCaptivePortalWindowProxy(
       LoginDisplayHost::default_host()->GetOobeWebContents());
@@ -242,9 +246,9 @@ void ErrorScreen::ShowNetworkErrorMessage(NetworkStateInformer::State state,
   const bool guest_signin_allowed =
       user_manager::UserManager::Get()->IsGuestSessionAllowed();
   AllowGuestSignin(guest_signin_allowed);
-  ShowOfflineLoginOption(offline_login_allowed_ &&
-                         GetErrorState() !=
-                             NetworkError::ERROR_STATE_AUTH_EXT_TIMEOUT);
+  ShowOfflineLoginOption(
+      offline_login_allowed_ && offline_login_per_user_allowed_ &&
+      GetErrorState() != NetworkError::ERROR_STATE_AUTH_EXT_TIMEOUT);
 
   // No need to show the screen again if it is already shown.
   if (is_hidden()) {

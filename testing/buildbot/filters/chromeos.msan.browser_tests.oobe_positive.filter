@@ -138,6 +138,7 @@ UserCloudExternalDataManagerTest.*
 UserCreationScreenEnrolledTest.*
 UserCreationScreenLoginTest.*
 UserCreationScreenTest.*
+UserSelectionScreenBlockOfflineTest.*
 WebKioskTest.*
 WebviewClientCertsLoginTest.*
 WebviewClientCertsLoginTestBase.*
