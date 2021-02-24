@@ -654,6 +654,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPasswordReuseDetectionDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          password_manager::features::kPasswordReuseDetectionEnabled)},
+    {"enable-manual-password-generation",
+     flag_descriptions::kEnableManualPasswordGenerationName,
+     flag_descriptions::kEnableManualPasswordGenerationDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kEnableManualPasswordGeneration)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

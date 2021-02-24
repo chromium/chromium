@@ -177,6 +177,12 @@ extern const char kEnableIncognitoModeAvailabilityIOSDescription[];
 extern const char kEnableIOSManagedSettingsUIName[];
 extern const char kEnableIOSManagedSettingsUIDescription[];
 
+// Title and description for the flag to enable UI that allows the user to
+// create a strong password even if the field wasn't parsed as a new password
+// field.
+extern const char kEnableManualPasswordGenerationName[];
+extern const char kEnableManualPasswordGenerationDescription[];
+
 // Title and description for the flag to enable an expanded tab strip.
 extern const char kExpandedTabStripName[];
 extern const char kExpandedTabStripDescription[];

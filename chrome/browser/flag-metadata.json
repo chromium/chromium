@@ -1987,6 +1987,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "enable-manual-password-generation",
+    "owners": [ "kazinova" ],
+    "expiry_milestone": 93
+  },
+  {
     "name": "enable-mark-http-as",
     "owners": [ "cthomp", "estark" ],
     "expiry_milestone": 86

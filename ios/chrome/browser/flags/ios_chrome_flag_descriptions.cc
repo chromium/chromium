@@ -199,6 +199,12 @@ const char kEnableIOSManagedSettingsUIDescription[] =
     "Enable showing a different UI when the setting is managed by an "
     "enterprise policy on iOS.";
 
+const char kEnableManualPasswordGenerationName[] =
+    "Enable manual password generation.";
+const char kEnableManualPasswordGenerationDescription[] =
+    "Enable UI that allows to generate a strong password for any password "
+    "field";
+
 const char kExpandedTabStripName[] = "Enable expanded tabstrip";
 const char kExpandedTabStripDescription[] =
     "Enables the new expanded tabstrip. Activated by swiping down the tabstrip"

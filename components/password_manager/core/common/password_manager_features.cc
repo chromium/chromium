@@ -34,6 +34,12 @@ const base::Feature kEditPasswordsInSettings = {
     "EditPasswordsInSettings", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
+// Enables UI that allows the user to create a strong password even if the field
+// wasn't parsed as a new password field.
+// TODO(crbug/1181254): Remove once it's launched.
+const base::Feature kEnableManualPasswordGeneration = {
+    "EnableManualPasswordGeneration", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables UI in settings that allows the user to move multiple passwords to the
 // account storage.
 const base::Feature kEnableMovingMultiplePasswordsToAccount = {
