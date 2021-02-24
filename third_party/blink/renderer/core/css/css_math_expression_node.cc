@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
+#include "third_party/blink/renderer/core/css/css_value_clamping_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_expression_node.h"
@@ -123,6 +124,39 @@ static bool HasDoubleValue(CSSPrimitiveValue::UnitType type) {
   }
 }
 
+namespace {
+
+const PixelsAndPercent CreateClampedSamePixelsAndPercent(float value) {
+  return PixelsAndPercent(CSSValueClampingUtils::ClampLength(value),
+                          CSSValueClampingUtils::ClampLength(value));
+}
+
+bool IsNaN(PixelsAndPercent value, bool allows_negative_percentage_reference) {
+  if (std::isnan(value.pixels + value.percent) ||
+      (allows_negative_percentage_reference && std::isinf(value.percent))) {
+    return true;
+  }
+  return false;
+}
+
+base::Optional<PixelsAndPercent> EvaluateValueIfNaNorInfinity(
+    scoped_refptr<const blink::CalculationExpressionNode> value,
+    bool allows_negative_percentage_reference) {
+  float evaluated_value = value->Evaluate(1);
+  if (std::isnan(evaluated_value) || std::isinf(evaluated_value)) {
+    return CreateClampedSamePixelsAndPercent(evaluated_value);
+  }
+  if (allows_negative_percentage_reference) {
+    evaluated_value = value->Evaluate(-1);
+    if (std::isnan(evaluated_value) || std::isinf(evaluated_value)) {
+      return CreateClampedSamePixelsAndPercent(evaluated_value);
+    }
+  }
+  return base::nullopt;
+}
+
+}  // namespace
+
 // ------ Start of CSSMathExpressionNumericLiteral member functions ------
 
 // static
@@ -167,11 +201,23 @@ CSSMathExpressionNumericLiteral::ToPixelsAndPercent(
   PixelsAndPercent value(0, 0);
   switch (category_) {
     case kCalcLength:
-      value.pixels = value_->ComputeLength<float>(conversion_data);
+      // When CSSCalcInfinityAndNaN is enabled, we allow infinity and NaN in
+      // PixelsAndPercent. Therefore, we need to use a function that doesn't
+      // internally clamp the result to the float range.
+      if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled())
+        value.pixels = value_->ComputeLengthPx(conversion_data);
+      else
+        value.pixels = value_->ComputeLength<float>(conversion_data);
       break;
     case kCalcPercent:
       DCHECK(value_->IsPercentage());
-      value.percent = value_->GetFloatValue();
+      // When CSSCalcInfinityAndNaN is enabled, we allow infinity and NaN in
+      // PixelsAndPercent. Therefore, we need to use a function that doesn't
+      // internally clamp the result to the float range.
+      if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled())
+        value.percent = value_->GetDoubleValue();
+      else
+        value.percent = value_->GetFloatValue();
       break;
     case kCalcNumber:
       // TODO(alancutter): Stop treating numbers like pixels unconditionally
@@ -224,6 +270,11 @@ double CSSMathExpressionNumericLiteral::ComputeLengthPx(
     const CSSToLengthConversionData& conversion_data) const {
   switch (category_) {
     case kCalcLength:
+      // When CSSCalcInfinityAndNaN is enabled, we allow infinity and NaN in
+      // PixelsAndPercent. Therefore, we need to use a function that doesn't
+      // internally clamp the result to the float range.
+      if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled())
+        return value_->ComputeLengthPx(conversion_data);
       return value_->ComputeLength<double>(conversion_data);
     case kCalcNumber:
     case kCalcPercent:
@@ -727,15 +778,6 @@ void CSSMathExpressionBinaryOperation::Trace(Visitor* visitor) const {
 }
 
 // static
-bool CheckSameSign(double left_value, double right_value) {
-  if (left_value >= 0 && right_value >= 0)
-    return true;
-  if (left_value <= 0 && right_value <= 0)
-    return true;
-  return false;
-}
-
-// static
 const CSSMathExpressionNode* CSSMathExpressionBinaryOperation::GetNumberSide(
     const CSSMathExpressionNode* left_side,
     const CSSMathExpressionNode* right_side) {
@@ -837,6 +879,9 @@ bool CSSMathExpressionVariadicOperation::IsZero() const {
 
 double CSSMathExpressionVariadicOperation::EvaluateBinary(double lhs,
                                                           double rhs) const {
+  if (std::isnan(lhs) || std::isnan(rhs))
+    return std::numeric_limits<double>::quiet_NaN();
+
   switch (operator_) {
     case CSSMathOperator::kMin:
       return std::min(lhs, rhs);
@@ -1251,11 +1296,37 @@ class CSSMathExpressionNodeParser {
 
 scoped_refptr<CalculationValue> CSSMathExpressionNode::ToCalcValue(
     const CSSToLengthConversionData& conversion_data,
-    ValueRange range) const {
-  if (auto maybe_pixels_and_percent = ToPixelsAndPercent(conversion_data))
+    ValueRange range,
+    bool allows_negative_percentage_reference) const {
+  if (auto maybe_pixels_and_percent = ToPixelsAndPercent(conversion_data)) {
+    // Clamping if pixels + percent could result in NaN. In special case,
+    // inf px + inf % could evaluate to nan when
+    // allows_negative_percentage_reference is true.
+    if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
+      if (IsNaN(*maybe_pixels_and_percent,
+                allows_negative_percentage_reference)) {
+        maybe_pixels_and_percent = CreateClampedSamePixelsAndPercent(
+            std::numeric_limits<float>::quiet_NaN());
+      } else {
+        maybe_pixels_and_percent->pixels = CSSValueClampingUtils::ClampLength(
+            maybe_pixels_and_percent->pixels);
+        maybe_pixels_and_percent->percent = CSSValueClampingUtils::ClampLength(
+            maybe_pixels_and_percent->percent);
+      }
+    }
     return CalculationValue::Create(*maybe_pixels_and_percent, range);
-  return CalculationValue::CreateSimplified(
-      ToCalculationExpression(conversion_data), range);
+  }
+
+  auto value = ToCalculationExpression(conversion_data);
+  if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
+    base::Optional<PixelsAndPercent> evaluated_value =
+        EvaluateValueIfNaNorInfinity(value,
+                                     allows_negative_percentage_reference);
+    if (evaluated_value.has_value()) {
+      return CalculationValue::Create(evaluated_value.value(), range);
+    }
+  }
+  return CalculationValue::CreateSimplified(value, range);
 }
 
 // static

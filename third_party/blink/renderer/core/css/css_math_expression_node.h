@@ -95,7 +95,8 @@ class CORE_EXPORT CSSMathExpressionNode
 
   scoped_refptr<CalculationValue> ToCalcValue(
       const CSSToLengthConversionData& conversion_data,
-      ValueRange range) const;
+      ValueRange range,
+      bool allows_negative_percentage_reference) const;
 
   // Evaluates the expression with type conversion (e.g., cm -> px) handled, and
   // returns the result value in the canonical unit of the corresponding

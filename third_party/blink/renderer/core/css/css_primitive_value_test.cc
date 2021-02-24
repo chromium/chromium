@@ -102,5 +102,56 @@ TEST(CSSPrimitiveValueTest, Zooming) {
   EXPECT_EQ("calc(10% + 100px)", converted->CustomCSSText());
 }
 
+TEST(CSSPrimitiveValueTest, PositiveInfinityLengthClamp) {
+  UnitValue a = {std::numeric_limits<double>::infinity(), UnitType::kPixels};
+  UnitValue b = {1, UnitType::kPixels};
+  CSSPrimitiveValue* value = CreateAddition(a, b);
+  CSSToLengthConversionData conversion_data;
+  EXPECT_EQ(std::numeric_limits<double>::max(),
+            value->ComputeLength<double>(conversion_data));
+}
+
+TEST(CSSPrimitiveValueTest, NegativeInfinityLengthClamp) {
+  UnitValue a = {-std::numeric_limits<double>::infinity(), UnitType::kPixels};
+  UnitValue b = {1, UnitType::kPixels};
+  CSSPrimitiveValue* value = CreateAddition(a, b);
+  CSSToLengthConversionData conversion_data;
+  EXPECT_EQ(std::numeric_limits<double>::lowest(),
+            value->ComputeLength<double>(conversion_data));
+}
+
+TEST(CSSPrimitiveValueTest, NaNLengthClamp) {
+  UnitValue a = {-std::numeric_limits<double>::quiet_NaN(), UnitType::kPixels};
+  UnitValue b = {1, UnitType::kPixels};
+  CSSPrimitiveValue* value = CreateAddition(a, b);
+  CSSToLengthConversionData conversion_data;
+  EXPECT_EQ(std::numeric_limits<double>::max(),
+            value->ComputeLength<double>(conversion_data));
+}
+
+TEST(CSSPrimitiveValueTest, PositiveInfinityPercentLengthClamp) {
+  CSSPrimitiveValue* value =
+      Create({std::numeric_limits<double>::infinity(), UnitType::kPercentage});
+  CSSToLengthConversionData conversion_data;
+  Length length = value->ConvertToLength(conversion_data);
+  EXPECT_EQ(std::numeric_limits<float>::max(), length.Percent());
+}
+
+TEST(CSSPrimitiveValueTest, NegativeInfinityPercentLengthClamp) {
+  CSSPrimitiveValue* value =
+      Create({-std::numeric_limits<double>::infinity(), UnitType::kPercentage});
+  CSSToLengthConversionData conversion_data;
+  Length length = value->ConvertToLength(conversion_data);
+  EXPECT_EQ(std::numeric_limits<float>::lowest(), length.Percent());
+}
+
+TEST(CSSPrimitiveValueTest, NaNPercentLengthClamp) {
+  CSSPrimitiveValue* value = Create(
+      {-std::numeric_limits<double>::quiet_NaN(), UnitType::kPercentage});
+  CSSToLengthConversionData conversion_data;
+  Length length = value->ConvertToLength(conversion_data);
+  EXPECT_EQ(std::numeric_limits<float>::max(), length.Percent());
+}
+
 }  // namespace
 }  // namespace blink

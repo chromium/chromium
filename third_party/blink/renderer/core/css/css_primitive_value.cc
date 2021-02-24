@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
+#include "third_party/blink/renderer/core/css/css_value_clamping_utils.h"
 #include "third_party/blink/renderer/core/css/css_value_pool.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -58,6 +59,9 @@ float CSSPrimitiveValue::ClampToCSSLengthRange(double value) {
   // TODO(crbug.com/1133390): clampTo function could occur the DECHECK failure
   // for NaN value. Therefore, infinity and NaN values should not be clamped
   // here.
+  if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
+    value = CSSValueClampingUtils::ClampLength(value);
+  }
   return clampTo<float>(value, kMinValueForCssLength, kMaxValueForCssLength);
 }
 
@@ -267,13 +271,21 @@ float CSSPrimitiveValue::ComputeLength(
   // TODO(crbug.com/1133390): clampTo function could occur the DECHECK failure
   // for NaN value. Therefore, infinity and NaN values should not be clamped
   // here.
-  return clampTo<float>(ComputeLengthDouble(conversion_data));
+  float value = ComputeLengthDouble(conversion_data);
+  if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
+    return CSSValueClampingUtils::ClampLength(value);
+  }
+  return value;
 }
 
 template <>
 double CSSPrimitiveValue::ComputeLength(
     const CSSToLengthConversionData& conversion_data) const {
-  return ComputeLengthDouble(conversion_data);
+  double value = ComputeLengthDouble(conversion_data);
+  if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
+    return CSSValueClampingUtils::ClampLength(value);
+  }
+  return value;
 }
 
 double CSSPrimitiveValue::ComputeLengthDouble(
@@ -365,7 +377,11 @@ Length CSSPrimitiveValue::ConvertToLength(
   if (IsPercentage()) {
     if (IsNumericLiteralValue() ||
         !To<CSSMathFunctionValue>(this)->AllowsNegativePercentageReference()) {
-      return Length::Percent(GetDoubleValue());
+      double value = GetDoubleValue();
+      if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
+        value = CSSValueClampingUtils::ClampLength(value);
+      }
+      return Length::Percent(value);
     }
   }
   DCHECK(IsCalculated());

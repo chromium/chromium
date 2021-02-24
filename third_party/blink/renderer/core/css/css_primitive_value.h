@@ -296,7 +296,8 @@ CORE_EXPORT float CSSPrimitiveValue::ComputeLength(
     const CSSToLengthConversionData&) const;
 
 template <>
-double CSSPrimitiveValue::ComputeLength(const CSSToLengthConversionData&) const;
+CORE_EXPORT double CSSPrimitiveValue::ComputeLength(
+    const CSSToLengthConversionData&) const;
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PRIMITIVE_VALUE_H_
