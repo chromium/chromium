@@ -55,12 +55,6 @@ class FrameAssociatedMeasurementDelegate : public v8::MeasureMemoryDelegate {
     DCHECK(IsMainThread());
     mojom::blink::PerIsolateV8MemoryUsagePtr isolate_memory_usage =
         mojom::blink::PerIsolateV8MemoryUsage::New();
-    // This function and V8ProcessMemoryReporter::StartMeasurements both
-    // run on the main thread of the renderer. This means that the Blink
-    // heap given by ThreadState::Current() is attached to the main V8
-    // isolate given by v8::Isolate::GetCurrent().
-    size_t blink_bytes_used = ThreadState::Current()->GetUsedSizeInBytes();
-    isolate_memory_usage->blink_bytes_used = blink_bytes_used;
     for (const auto& context_and_size : context_sizes_in_bytes) {
       const v8::Local<v8::Context>& context = context_and_size.first;
       const size_t size = context_and_size.second;
@@ -145,7 +139,7 @@ class V8ProcessMemoryReporter : public RefCounted<V8ProcessMemoryReporter> {
       MainMeasurementComplete(mojom::blink::PerIsolateV8MemoryUsage::New());
     } else {
       auto delegate = std::make_unique<FrameAssociatedMeasurementDelegate>(
-          WTF::Bind(&V8ProcessMemoryReporter::MainMeasurementComplete,
+          WTF::Bind(&V8ProcessMemoryReporter::MainV8MeasurementComplete,
                     scoped_refptr<V8ProcessMemoryReporter>(this)));
 
       isolate->MeasureMemory(std::move(delegate),
@@ -159,6 +153,30 @@ class V8ProcessMemoryReporter : public RefCounted<V8ProcessMemoryReporter> {
   }
 
  private:
+  void MainV8MeasurementComplete(
+      mojom::blink::PerIsolateV8MemoryUsagePtr isolate_memory_usage) {
+    // At this point measurement of the main V8 isolate is done and we
+    // can measure the corresponding Blink memory. Note that the order
+    // of the measurements is important because the V8 measurement does
+    // a GC and we want to get the Blink memory after the GC.
+    // This function and V8ProcessMemoryReporter::StartMeasurements both
+    // run on the main thread of the renderer. This means that the Blink
+    // heap given by ThreadState::Current() is attached to the main V8
+    // isolate given by v8::Isolate::GetCurrent().
+    ThreadState::Current()->CollectNodeAndCssStatistics(
+        WTF::Bind(&V8ProcessMemoryReporter::MainBlinkMeasurementComplete,
+                  scoped_refptr<V8ProcessMemoryReporter>(this),
+                  std::move(isolate_memory_usage)));
+  }
+
+  void MainBlinkMeasurementComplete(
+      mojom::blink::PerIsolateV8MemoryUsagePtr isolate_memory_usage,
+      size_t node_bytes,
+      size_t css_bytes) {
+    isolate_memory_usage->blink_bytes_used = node_bytes + css_bytes;
+    MainMeasurementComplete(std::move(isolate_memory_usage));
+  }
+
   void MainMeasurementComplete(
       mojom::blink::PerIsolateV8MemoryUsagePtr isolate_memory_usage) {
     result_->isolates.push_back(std::move(isolate_memory_usage));
