@@ -15,6 +15,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_process_host.h"
 #include "media/audio/audio_device_description.h"
 #include "media/mojo/mojom/display_media_information.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -130,6 +131,30 @@ base::string16 GetStopSharingUIString(
   return base::string16();
 }
 
+std::string DeviceNamePrefix(
+    content::WebContents* web_contents,
+    blink::mojom::MediaStreamType requested_stream_type,
+    const content::DesktopMediaID& media_id) {
+  if (!web_contents ||
+      requested_stream_type !=
+          blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB) {
+    return std::string();
+  }
+
+  // Note that all of these must still be checked, as the explicit-selection
+  // dialog for |getCurrentBrowsingContextMedia| could still return something
+  // other than the current tab - be it a screen, window, or another tab.
+  if (media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS &&
+      web_contents->GetMainFrame()->GetProcess()->GetID() ==
+          media_id.web_contents_id.render_process_id &&
+      web_contents->GetMainFrame()->GetRoutingID() ==
+          media_id.web_contents_id.main_render_frame_id) {
+    return "current-";
+  }
+
+  return std::string();
+}
+
 }  // namespace
 
 std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
@@ -153,8 +178,11 @@ std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
            << registered_extension_name;
 
   // Add selected desktop source to the list.
-  auto device = blink::MediaStreamDevice(
-      devices_video_type, media_id.ToString(), media_id.ToString());
+  const std::string device_id = media_id.ToString();
+  const std::string device_name =
+      DeviceNamePrefix(web_contents, devices_video_type, media_id) + device_id;
+  auto device =
+      blink::MediaStreamDevice(devices_video_type, device_id, device_name);
   device.display_media_info = DesktopMediaIDToDisplayMediaInformation(media_id);
   devices->push_back(device);
   if (capture_audio) {
