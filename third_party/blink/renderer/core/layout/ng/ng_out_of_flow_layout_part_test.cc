@@ -1403,58 +1403,6 @@ TEST_F(NGOutOfFlowLayoutPartTest, AbsposNestedFragmentationNewColumns) {
   EXPECT_EQ(expectation, dump);
 }
 
-// Fragmented OOF element inside a nested multi-column with new columns.
-TEST_F(NGOutOfFlowLayoutPartTest, AbsposNestedFragAutoHeightNewColumns) {
-  SetBodyInnerHTML(
-      R"HTML(
-      <style>
-        .multicol {
-          columns:2; column-fill:auto; column-gap:0px;
-        }
-        .rel {
-          position: relative; width:55px; height:80px;
-        }
-        .abs {
-          position:absolute; top:0px; width:5px; height:160px;
-        }
-      </style>
-      <div id="container">
-        <div class="multicol" id="outer" style="height:100px;">
-          <div style="height:40px; width:40px;"></div>
-          <div class="multicol" id="inner" style="column-gap:16px;">
-            <div class="rel">
-              <div class="abs"></div>
-            </div>
-            <div style="column-span:all;"></div>
-            <div style="column-span:all;"></div>
-            <div style="column-span:all;"></div>
-          </div>
-        </div>
-      </div>
-      )HTML");
-  String dump = DumpFragmentTree(GetElementById("container"));
-
-  String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
-  offset:unplaced size:1000x100
-    offset:0,0 size:1000x100
-      offset:0,0 size:500x100
-        offset:0,0 size:40x40
-        offset:0,40 size:500x40
-          offset:0,0 size:242x40
-            offset:0,0 size:55x40
-            offset:0,0 size:5x40
-          offset:258,0 size:242x40
-            offset:0,0 size:55x40
-            offset:0,0 size:5x40
-            offset:258,0 size:5x40
-            offset:516,0 size:5x40
-          offset:0,40 size:500x0
-          offset:0,40 size:500x0
-          offset:0,40 size:500x0
-)DUMP";
-  EXPECT_EQ(expectation, dump);
-}
-
 // TODO(almaher): Figure out why this is hitting a DCHECK in
 // AssertClearedPaintInvalidationFlags.
 //

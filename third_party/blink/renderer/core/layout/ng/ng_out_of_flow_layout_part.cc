@@ -709,8 +709,9 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(const NGBlockNode& multicol) {
     // (representing the last column laid out in that fragment). Thus, search
     // for |current_column_break_token| in |multicol_box_fragment|'s list of
     // child break tokens and update the stored MulticolChildInfo if found.
-    if (const NGBlockBreakToken* break_token =
-            To<NGBlockBreakToken>(multicol_box_fragment->BreakToken())) {
+    const NGBlockBreakToken* break_token =
+        To<NGBlockBreakToken>(multicol_box_fragment->BreakToken());
+    if (break_token && break_token->ChildBreakTokens().size()) {
       // If there is a column break token, it will be the last item in its
       // parent's list of break tokens.
       const auto children = break_token->ChildBreakTokens();
