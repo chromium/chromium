@@ -172,6 +172,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [super viewWillDisappear:animated];
 }
 
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+  [self updateFractionVisibleOfLastItem];
+}
+
 #pragma mark - UITraitEnvironment
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
