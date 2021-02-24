@@ -2,7 +2,7 @@ Name: transport-api
 Short Name: transport-api
 URL: https://developers.google.com/android/guides/setup
 Version: 2.2.1
-License: Apache Version 2.0
+License: Android Software Development Kit License
 License File: LICENSE
 Security Critical: yes
 
