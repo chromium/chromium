@@ -1,7 +1,0 @@
-Tests that breakpoints can be added and removed by clicking the gutter.
-
-Script execution paused.
-Breakpoint sidebar pane while paused
-click-breakpoints.js:4checked breakpoint hit    var b = 1; // The breakpoint should happen here
-Script execution resumed.
-
