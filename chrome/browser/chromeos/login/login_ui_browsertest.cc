@@ -4,8 +4,6 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/login_screen_test_api.h"
-#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/login/lock/screen_locker_tester.h"
 #include "chrome/browser/chromeos/login/login_manager_test.h"
@@ -21,6 +19,8 @@
 #include "chrome/browser/chromeos/login/test/scoped_policy_update.h"
 #include "chrome/browser/chromeos/login/test/user_policy_mixin.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
+#include "chrome/browser/chromeos/settings/scoped_testing_cros_settings.h"
+#include "chrome/browser/chromeos/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
 #include "chrome/common/pref_names.h"
