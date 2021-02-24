@@ -58,7 +58,7 @@ def PutCommentsInNode(doc, node, comments):
 
 
 def GetChildrenByTag(node, tag):
-  """Get all children of a particular tag type.
+  """Gets all children of a particular tag type.
 
   Args:
     node: The DOM node to write comments to.
@@ -67,6 +67,13 @@ def GetChildrenByTag(node, tag):
     A list of DOM nodes.
   """
   return [child for child in node.childNodes if child.nodeName == tag]
+
+
+def GetUnexpectedChildren(node, tags):
+  """Gets a set of unexpected children from |node|."""
+  # Ingore text and comment nodes.
+  return (set(child.nodeName for child in node.childNodes) - set(tags) - set(
+      ('#comment', '#text')))
 
 
 class NodeType(object):
@@ -198,6 +205,12 @@ class TextNodeType(NodeType):
     text = node.firstChild.nodeValue
     obj[TEXT_KEY] = '\n\n'.join(pretty_print_xml.SplitParagraphs(text))
 
+    # TextNode shouldn't have any child.
+    unexpected = GetUnexpectedChildren(node, set())
+    if unexpected:
+      raise ValueError("Unexpected children: %s in <%s> node" %
+                       (','.join(unexpected), self.tag))
+
     return obj
 
   def Marshall(self, doc, obj):
@@ -324,6 +337,12 @@ class ObjectNodeType(NodeType):
             child.node_type.Unmarshall(n) for n in nodes]
       elif nodes:
         obj[child.attr] = child.node_type.Unmarshall(nodes[0])
+
+    unexpected = GetUnexpectedChildren(
+        node, set([child.node_type.tag for child in self.children]))
+    if unexpected:
+      raise ValueError("Unexpected children: %s in <%s> node" %
+                       (','.join(unexpected), self.tag))
 
     return obj
 
