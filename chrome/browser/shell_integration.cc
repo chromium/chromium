@@ -263,7 +263,7 @@ void DefaultBrowserWorker::SetAsDefaultImpl(
     base::OnceClosure on_finished_callback) {
   switch (GetDefaultWebClientSetPermission()) {
     case SET_DEFAULT_NOT_ALLOWED:
-      NOTREACHED();
+      DCHECK(false);  // Only fatal in debug builds
       break;
     case SET_DEFAULT_UNATTENDED:
       SetAsDefaultBrowser();
