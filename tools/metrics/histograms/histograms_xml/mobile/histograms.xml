@@ -1121,6 +1121,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="MobileStartup.Experimental.LaunchCause" enum="LaunchCause"
     expires_after="2022-01-07">
+  <obsolete>
+    Removed Experimental label in 02/2021.
+  </obsolete>
   <owner>mthiesse@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
@@ -1141,6 +1144,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Android: The time it takes from creating an intent for ChromeActivity to
     activity creation. This includes activity creation time spent in the
     framework.
+  </summary>
+</histogram>
+
+<histogram name="MobileStartup.LaunchCause" enum="LaunchCause"
+    expires_after="2022-02-23">
+  <owner>mthiesse@chromium.org</owner>
+  <owner>tedchoc@chromium.org</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Records what caused Chrome to be launched.
+
+    Recorded for all types of ChromeActivity, in all cases where Chrome becomes
+    visible to the user, or intentionally transitions between Chrome Activities.
   </summary>
 </histogram>
 

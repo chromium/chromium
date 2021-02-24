@@ -37,7 +37,7 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
     private static boolean sRecordedLaunchCause;
 
     @VisibleForTesting
-    public static final String LAUNCH_CAUSE_HISTOGRAM = "MobileStartup.Experimental.LaunchCause";
+    public static final String LAUNCH_CAUSE_HISTOGRAM = "MobileStartup.LaunchCause";
 
     private PerLaunchState mPerLaunchState = new PerLaunchState();
     private BetweenLaunchState mBetweenLaunchState = new BetweenLaunchState();
@@ -301,6 +301,21 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
                 break;
             case LaunchCause.NOTIFICATION:
                 launchCause = "NOTIFICATION";
+                break;
+            case LaunchCause.EXTERNAL_VIEW_INTENT:
+                launchCause = "EXTERNAL_VIEW_INTENT";
+                break;
+            case LaunchCause.OTHER_CHROME:
+                launchCause = "OTHER_CHROME";
+                break;
+            case LaunchCause.WEBAPK_CHROME_DISTRIBUTOR:
+                launchCause = "WEBAPK_CHROME_DISTRIBUTOR";
+                break;
+            case LaunchCause.WEBAPK_OTHER_DISTRIBUTOR:
+                launchCause = "WEBAPK_OTHER_DISTRIBUTOR";
+                break;
+            case LaunchCause.HOME_SCREEN_SHORTCUT:
+                launchCause = "HOME_SCREEN_SHORTCUT";
                 break;
         }
         Log.d(TAG, "Launch Cause: " + launchCause);
