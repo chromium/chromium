@@ -40,7 +40,7 @@ source_set("file_transfer") {
     sources += [ "get_desktop_directory.cc" ]
   }
 
-  if (is_linux || is_chromeos_lacros) {
+  if (is_linux && !is_chromeos_lacros) {
     sources += [ "file_chooser_linux.cc" ]
     deps += [ "//build/config/linux/gtk" ]
   }

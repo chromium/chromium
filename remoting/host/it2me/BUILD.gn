@@ -28,7 +28,7 @@ source_set("common") {
     "it2me_native_messaging_host.h",
   ]
 
-  if (is_linux || is_chromeos_lacros) {
+  if (is_linux && !is_chromeos_lacros) {
     sources += [ "it2me_confirmation_dialog_linux.cc" ]
   }
 
@@ -60,7 +60,7 @@ source_set("common") {
     "//remoting/resources",
     "//remoting/signaling",
   ]
-  if (is_linux || is_chromeos_lacros) {
+  if (is_linux && !is_chromeos_lacros) {
     deps += [
       "//build/config/linux/gtk",
 
@@ -236,7 +236,7 @@ if (!is_chromeos_ash && enable_remoting_host) {
         }
       }
 
-      if (is_linux || is_chromeos_lacros) {
+      if (is_linux && !is_chromeos_lacros) {
         deps += [ "//build/config/linux/gtk" ]
       }
     }

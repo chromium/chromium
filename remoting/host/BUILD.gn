@@ -349,7 +349,7 @@ static_library("common") {
     deps += [ "//components/policy:generated" ]
   }
 
-  if (is_linux || is_chromeos_lacros) {
+  if (is_linux && !is_chromeos_lacros) {
     sources += [
       "desktop_resizer_linux.cc",
       "linux/audio_pipe_reader.cc",
@@ -367,7 +367,7 @@ static_library("common") {
     }
   }
 
-  if (use_x11 && (!is_chromeos_ash || !use_ozone)) {
+  if (use_x11 && ((!is_chromeos_ash && !is_chromeos_lacros) || !use_ozone)) {
     sources += [
       "desktop_resizer_x11.cc",
       "desktop_resizer_x11.h",
@@ -378,27 +378,30 @@ static_library("common") {
       "//ui/events/platform/x11",
       "//ui/gfx/x",
     ]
-    if (is_linux || is_chromeos_lacros) {
+    if (is_linux && !is_chromeos_lacros) {
       deps += [ "//build/config/linux/gtk" ]
     }
   }
 
-  if (use_ozone && !is_chromeos_ash) {
+  if (use_ozone && !is_chromeos_ash && !is_chromeos_lacros) {
     sources += [
       "desktop_resizer_ozone.cc",
       "desktop_resizer_ozone.h",
     ]
   }
 
-  if (is_linux || is_chromeos) {
+  if (is_linux && !is_chromeos_lacros) {
     sources += [
       "pairing_registry_delegate_linux.cc",
       "pairing_registry_delegate_linux.h",
-      "resources_linux.cc",
     ]
   }
 
-  if (is_linux || is_chromeos_lacros) {
+  if (is_linux || is_chromeos) {
+    sources += [ "resources_linux.cc" ]
+  }
+
+  if (is_linux && !is_chromeos_lacros) {
     sources += [
       "audio_capturer_linux.cc",
       "audio_capturer_linux.h",
@@ -614,11 +617,11 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  if (is_linux || is_chromeos) {
+  if (is_linux && !is_chromeos) {
     sources += [ "pairing_registry_delegate_linux_unittest.cc" ]
   }
 
-  if (is_linux || is_chromeos_lacros) {
+  if (is_linux && !is_chromeos_lacros) {
     deps += [ "//remoting/host/linux:unit_tests" ]
   }
 

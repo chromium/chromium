@@ -73,7 +73,8 @@ static_library("test_support") {
   ]
 }
 
-if (enable_remoting_host && !is_android && !is_chromeos_ash) {
+if (enable_remoting_host && !is_android && !is_chromeos_ash &&
+    !is_chromeos_lacros) {
   static_library("fake_connection_event_logger") {
     testonly = true
 

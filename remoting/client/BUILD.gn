@@ -68,7 +68,7 @@ static_library("client") {
 
   libs = []
 
-  if (!is_chromeos_ash) {
+  if (!is_chromeos_ash && !is_chromeos_lacros) {
     # GestureInterpreter depends on //remoting/client/display, which currently
     # doesn't build on CrOS. crbug.com/869578
     sources += [
