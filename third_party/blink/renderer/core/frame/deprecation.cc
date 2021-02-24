@@ -620,7 +620,7 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
     case WebFeature::kAddressSpacePublicNonSecureContextEmbeddedLocal:
     case WebFeature::kAddressSpacePrivateNonSecureContextEmbeddedLocal:
       return {"InsecurePrivateNetworkSubresourceRequest", kM92,
-              "The website requested a subresource was requested from a "
+              "The website requested a subresource from a "
               "network that it could only access because of its users' "
               "privileged network position. These requests expose non-public "
               "devices and servers to the internet, increasing the risk of a "
