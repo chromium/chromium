@@ -37,12 +37,12 @@ function boom() {
     css.insertRule(".c4:out-of-range { -webkit-animation:anim1 10s linear 5s 3; } ", css.rules.length); 
     css.insertRule("#el3 { -webkit-transform-origin:middle  }", css.rules.length);
 
-    setTimeout(boom2, 0);
+    setTimeout(boom2, 1);
 }
 
 onload = function() {
     css = document.styleSheets[0];
-    setTimeout(boom, 0);
+    setTimeout(boom, 1);
 }
 </script>
 <!--
