@@ -6,13 +6,6 @@ import("//chromecast/chromecast.gni")
 import("//media/media_options.gni")
 import("//testing/test.gni")
 
-declare_args() {
-  # Defines bounds for the output buffer size (in frames)
-  minimum_output_buffer_size_in_frames = 512
-  maximum_output_buffer_size_in_frames = 8192
-  default_output_buffer_size_in_frames = 2048
-}
-
 cast_source_set("audio_log") {
   sources = [
     "audio_log.cc",
@@ -183,12 +176,7 @@ source_set("fake_external_audio_pipeline") {
 buildflag_header("audio_buildflags") {
   header = "audio_buildflags.h"
 
-  flags = [
-    "MINIMUM_OUTPUT_BUFFER_SIZE_IN_FRAMES=$minimum_output_buffer_size_in_frames",
-    "MAXIMUM_OUTPUT_BUFFER_SIZE_IN_FRAMES=$maximum_output_buffer_size_in_frames",
-    "DEFAULT_OUTPUT_BUFFER_SIZE_IN_FRAMES=$default_output_buffer_size_in_frames",
-    "ENABLE_AUDIO_CAPTURE_SERVICE=$enable_audio_capture_service",
-  ]
+  flags = [ "ENABLE_AUDIO_CAPTURE_SERVICE=$enable_audio_capture_service" ]
 
   if (use_alsa) {
     # Currently, this flag will only be used in cast_audio_manager_alsa.cc
