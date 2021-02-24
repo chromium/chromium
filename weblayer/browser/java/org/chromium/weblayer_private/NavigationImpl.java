@@ -11,6 +11,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.IClientNavigation;
+import org.chromium.weblayer_private.interfaces.IClientPage;
 import org.chromium.weblayer_private.interfaces.INavigation;
 import org.chromium.weblayer_private.interfaces.INavigationControllerClient;
 import org.chromium.weblayer_private.interfaces.LoadError;
@@ -26,6 +27,7 @@ import java.util.List;
 @JNINamespace("weblayer")
 public final class NavigationImpl extends INavigation.Stub {
     private final IClientNavigation mClientNavigation;
+    private final NavigationControllerImpl mNavigationController;
     // WARNING: NavigationImpl may outlive the native side, in which case this member is set to 0.
     private long mNativeNavigationImpl;
 
@@ -37,8 +39,12 @@ public final class NavigationImpl extends INavigation.Stub {
     // user via which the user will determine whether an intent should be launched.
     private boolean mIsUserDecidingIntentLaunch;
 
-    public NavigationImpl(INavigationControllerClient client, long nativeNavigationImpl) {
+    private PageImpl mPage;
+
+    public NavigationImpl(INavigationControllerClient client, long nativeNavigationImpl,
+            NavigationControllerImpl navigationController) {
         mNativeNavigationImpl = nativeNavigationImpl;
+        mNavigationController = navigationController;
         try {
             mClientNavigation = client.createClientNavigation(this);
         } catch (RemoteException e) {
@@ -214,6 +220,23 @@ public final class NavigationImpl extends INavigation.Stub {
         return NavigationImplJni.get().getReferrer(mNativeNavigationImpl);
     }
 
+    @Override
+    public IClientPage getPage() {
+        StrictModeWorkaround.apply();
+        throwIfNativeDestroyed();
+        if (mPage == null) {
+            long nativePageImpl = NavigationImplJni.get().getPage(mNativeNavigationImpl);
+            if (nativePageImpl == -1) {
+                throw new IllegalStateException("Using Navigation after native destroyed");
+            }
+
+            if (nativePageImpl == 0) return null;
+
+            mPage = mNavigationController.getPage(nativePageImpl);
+        }
+        return mPage.getClientPage();
+    }
+
     public void setIntentLaunched() {
         mIntentLaunched = true;
     }
@@ -284,5 +307,6 @@ public final class NavigationImpl extends INavigation.Stub {
         boolean areIntentLaunchesAllowedInBackground(long nativeNavigationImpl);
         boolean isFormSubmission(long nativeNavigationImpl);
         String getReferrer(long nativeNavigationImpl);
+        long getPage(long nativeNavigationImpl);
     }
 }

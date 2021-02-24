@@ -13,6 +13,8 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
+import org.chromium.weblayer_private.interfaces.APICallException;
+import org.chromium.weblayer_private.interfaces.IClientPage;
 import org.chromium.weblayer_private.interfaces.INavigateParams;
 import org.chromium.weblayer_private.interfaces.INavigationController;
 import org.chromium.weblayer_private.interfaces.INavigationControllerClient;
@@ -20,6 +22,9 @@ import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.NavigateParams;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Acts as the bridge between java and the C++ implementation of of NavigationController.
@@ -33,6 +38,8 @@ public final class NavigationControllerImpl extends INavigationController.Stub {
     // Conversion between native TimeTicks and SystemClock.uptimeMillis().
     private long mNativeTickOffsetUs;
     private boolean mNativeTickOffsetUsComputed;
+
+    private Map<Long, PageImpl> mPages = new HashMap<>();
 
     public NavigationControllerImpl(TabImpl tab, INavigationControllerClient client) {
         mTab = tab;
@@ -182,9 +189,39 @@ public final class NavigationControllerImpl extends INavigationController.Stub {
                 mNativeNavigationController, id);
     }
 
+    public PageImpl getPage(long nativePageImpl) {
+        // Ensure that each C++ object has only one Java counterpart so that the embedder sees the
+        // same object for multiple navigations that have the same Page.
+        PageImpl page = mPages.get(nativePageImpl);
+        if (page == null) {
+            IClientPage clientPage = null;
+            if (WebLayerFactoryImpl.getClientMajorVersion() >= 90) {
+                try {
+                    clientPage = mNavigationControllerClient.createClientPage();
+                } catch (RemoteException e) {
+                    throw new APICallException(e);
+                }
+            }
+            page = new PageImpl(clientPage, nativePageImpl, this);
+            mPages.put(nativePageImpl, page);
+        }
+        return page;
+    }
+
+    public void onPageDestroyed(PageImpl page) {
+        mPages.remove(page.getNativePageImpl());
+        if (WebLayerFactoryImpl.getClientMajorVersion() >= 90) {
+            try {
+                mNavigationControllerClient.onPageDestroyed(page.getClientPage());
+            } catch (RemoteException e) {
+                throw new APICallException(e);
+            }
+        }
+    }
+
     @CalledByNative
     private NavigationImpl createNavigation(long nativeNavigationImpl) {
-        return new NavigationImpl(mNavigationControllerClient, nativeNavigationImpl);
+        return new NavigationImpl(mNavigationControllerClient, nativeNavigationImpl, this);
     }
 
     @CalledByNative

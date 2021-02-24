@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.RemoteException;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.IClientNavigation;
@@ -17,7 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Information about a navigation.
+ * Information about a navigation. Each time there is a new navigation, a new
+ * Navigation object will be created and that same object will be used in all
+ * of the NavigationCallback methods.
  */
 public class Navigation extends IClientNavigation.Stub {
     private final INavigation mNavigationImpl;
@@ -389,6 +392,29 @@ public class Navigation extends IClientNavigation.Stub {
         }
         try {
             return Uri.parse(mNavigationImpl.getReferrer());
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    /*
+     * Returns the Page object this navigation is occurring for.
+     * This method may only be called in or after {@link NavigationCallback.onNavigationCompleted}
+     * or {@link NavigationCallback.onNavigationFailed}. It can return null if the navigation didn't
+     * commit (e.g. 204/205 or download).
+     *
+     * @throws IllegalStateException If called before completion or failure.
+     *
+     * @since 90
+     */
+    @Nullable
+    public Page getPage() {
+        ThreadCheck.ensureOnUiThread();
+        if (WebLayer.getSupportedMajorVersionInternal() < 90) {
+            throw new UnsupportedOperationException();
+        }
+        try {
+            return (Page) mNavigationImpl.getPage();
         } catch (RemoteException e) {
             throw new APICallException(e);
         }

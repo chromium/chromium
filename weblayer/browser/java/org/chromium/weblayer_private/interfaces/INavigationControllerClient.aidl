@@ -5,6 +5,7 @@
 package org.chromium.weblayer_private.interfaces;
 
 import org.chromium.weblayer_private.interfaces.IClientNavigation;
+import org.chromium.weblayer_private.interfaces.IClientPage;
 import org.chromium.weblayer_private.interfaces.INavigation;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 
@@ -36,4 +37,8 @@ interface INavigationControllerClient {
   // Added in M88.
   void onFirstContentfulPaint2(long navigationStartMs, long firstContentfulPaintDurationMs) = 10;
   void onLargestContentfulPaint(long navigationStartMs, long largestContentfulPaintDurationMs) = 11;
+
+  // Added in M90.
+  IClientPage createClientPage() = 12;
+  void onPageDestroyed(IClientPage page) = 13;
 }

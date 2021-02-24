@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.IClientNavigation;
+import org.chromium.weblayer_private.interfaces.IClientPage;
 import org.chromium.weblayer_private.interfaces.INavigateParams;
 import org.chromium.weblayer_private.interfaces.INavigation;
 import org.chromium.weblayer_private.interfaces.INavigationController;
@@ -380,6 +381,20 @@ public class NavigationController {
             StrictModeWorkaround.apply();
             for (NavigationCallback callback : mCallbacks) {
                 callback.onOldPageNoLongerRendered(Uri.parse(uri));
+            }
+        }
+
+        @Override
+        public IClientPage createClientPage() {
+            StrictModeWorkaround.apply();
+            return new Page();
+        }
+
+        @Override
+        public void onPageDestroyed(IClientPage page) {
+            StrictModeWorkaround.apply();
+            for (NavigationCallback callback : mCallbacks) {
+                callback.onPageDestroyed((Page) page);
             }
         }
     }

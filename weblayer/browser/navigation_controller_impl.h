@@ -63,6 +63,8 @@ class NavigationControllerImpl : public NavigationController,
       const base::TimeTicks& navigation_start,
       const base::TimeDelta& largest_contentful_paint);
 
+  void OnPageDestroyed(Page* page);
+
 #if defined(OS_ANDROID)
   void SetNavigationControllerImpl(
       JNIEnv* env,

@@ -11,6 +11,7 @@
 class GURL;
 
 namespace weblayer {
+class Page;
 
 // These types are sent over IPC and across different versions. Never remove
 // or change the order.
@@ -144,7 +145,7 @@ class Navigation {
   // Whether the navigation is restoring a page from back-forward cache (see
   // https://web.dev/bfcache/). Since a previously loaded page is being reused,
   // there are some things embedders have to keep in mind such as:
-  //   * there will be no NavigationObserver::onFirstContentfulPaint callbacks
+  //   * there will be no NavigationObserver::OnFirstContentfulPaint callbacks
   //   * if an embedder injects code using Tab::ExecuteScript there is no need
   //     to reinject scripts
   virtual bool IsServedFromBackForwardCache() = 0;
@@ -154,6 +155,12 @@ class Navigation {
 
   // Returns the referrer for this request.
   virtual GURL GetReferrer() = 0;
+
+  // Returns the Page object this navigation is occurring for. This method may
+  // only be called in or after NavigationObserver::NavigationCompleted() or
+  // NavigationObserve::NavigationFailed(). It can return null if the navigation
+  // didn't commit (e.g. 204/205 or download).
+  virtual Page* GetPage() = 0;
 };
 
 }  // namespace weblayer

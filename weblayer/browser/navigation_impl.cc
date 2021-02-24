@@ -12,6 +12,7 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "weblayer/browser/navigation_ui_data_impl.h"
+#include "weblayer/browser/page_impl.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/jni_array.h"
@@ -118,6 +119,12 @@ base::android::ScopedJavaLocalRef<jstring> NavigationImpl::GetReferrer(
       base::android::ConvertUTF8ToJavaString(env, GetReferrer().spec()));
 }
 
+jlong NavigationImpl::GetPage(JNIEnv* env) {
+  if (!safe_to_get_page_)
+    return -1;
+  return reinterpret_cast<intptr_t>(GetPage());
+}
+
 void NavigationImpl::SetResponse(
     std::unique_ptr<embedder_support::WebResourceResponse> response) {
   response_ = std::move(response);
@@ -140,6 +147,14 @@ bool NavigationImpl::IsReload() {
 
 bool NavigationImpl::IsServedFromBackForwardCache() {
   return navigation_handle_->IsServedFromBackForwardCache();
+}
+
+Page* NavigationImpl::GetPage() {
+  if (!safe_to_get_page_)
+    return nullptr;
+
+  return PageImpl::GetForCurrentDocument(
+      navigation_handle_->GetRenderFrameHost());
 }
 
 GURL NavigationImpl::GetURL() {

@@ -53,6 +53,8 @@ class NavigationImpl : public Navigation {
     safe_to_disable_network_error_auto_reload_ = value;
   }
 
+  void set_safe_to_get_page() { safe_to_get_page_ = true; }
+
   void set_was_stopped() { was_stopped_ = true; }
 
   bool set_user_agent_string_called() { return set_user_agent_string_called_; }
@@ -95,6 +97,7 @@ class NavigationImpl : public Navigation {
   jboolean AreIntentLaunchesAllowedInBackground(JNIEnv* env);
   jboolean IsFormSubmission(JNIEnv* env) { return IsFormSubmission(); }
   base::android::ScopedJavaLocalRef<jstring> GetReferrer(JNIEnv* env);
+  jlong GetPage(JNIEnv* env);
 
   void SetResponse(
       std::unique_ptr<embedder_support::WebResourceResponse> response);
@@ -125,6 +128,7 @@ class NavigationImpl : public Navigation {
   bool IsServedFromBackForwardCache() override;
   bool IsFormSubmission() override;
   GURL GetReferrer() override;
+  Page* GetPage() override;
 
  private:
   content::NavigationHandle* navigation_handle_;
@@ -151,6 +155,9 @@ class NavigationImpl : public Navigation {
 
   // Whether DisableNetworkErrorAutoReload is allowed at this time.
   bool safe_to_disable_network_error_auto_reload_ = false;
+
+  // Whether GetPage is allowed at this time.
+  bool safe_to_get_page_ = false;
 
   bool disable_network_error_auto_reload_ = false;
 

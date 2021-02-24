@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.util.Pair;
 import android.webkit.WebResourceResponse;
 
 import androidx.test.filters.SmallTest;
@@ -39,6 +40,7 @@ import org.chromium.weblayer.Navigation;
 import org.chromium.weblayer.NavigationCallback;
 import org.chromium.weblayer.NavigationController;
 import org.chromium.weblayer.NavigationState;
+import org.chromium.weblayer.Page;
 import org.chromium.weblayer.Tab;
 import org.chromium.weblayer.TabCallback;
 import org.chromium.weblayer.TabListCallback;
@@ -102,8 +104,13 @@ public class NavigationTest {
             private boolean mIsServedFromBackForwardCache;
             private boolean mIsFormSubmission;
             private Uri mReferrer;
+            private Page mPage;
 
             public void notifyCalled(Navigation navigation) {
+                notifyCalled(navigation, false);
+            }
+
+            public void notifyCalled(Navigation navigation, boolean getPage) {
                 mUri = navigation.getUri();
                 mIsSameDocument = navigation.isSameDocument();
                 mHttpStatusCode = navigation.getHttpStatusCode();
@@ -120,6 +127,9 @@ public class NavigationTest {
                 if (majorVersion >= 90) {
                     mIsFormSubmission = navigation.isFormSubmission();
                     mReferrer = navigation.getReferrer();
+                    if (getPage) {
+                        mPage = navigation.getPage();
+                    }
                 }
                 notifyCalled();
             }
@@ -177,6 +187,10 @@ public class NavigationTest {
             public Uri getReferrer() {
                 return mReferrer;
             }
+
+            public Page getPage() {
+                return mPage;
+            }
         }
 
         public class UriCallbackHelper extends CallbackHelper {
@@ -189,6 +203,24 @@ public class NavigationTest {
 
             public Uri getUri() {
                 return mUri;
+            }
+        }
+
+        public class PageCallbackHelper extends CallbackHelper {
+            private Page mPage;
+
+            public void notifyCalled(Page page) {
+                mPage = page;
+                notifyCalled();
+            }
+
+            public Page getPage() {
+                return mPage;
+            }
+
+            public void assertCalledWith(int currentCallCount, Page page) throws TimeoutException {
+                waitForCallback(currentCallCount);
+                assertEquals(mPage, page);
             }
         }
 
@@ -262,6 +294,7 @@ public class NavigationTest {
         public LargestContentfulPaintCallbackHelper onLargestContentfulPaintCallback =
                 new LargestContentfulPaintCallbackHelper();
         public UriCallbackHelper onOldPageNoLongerRenderedCallback = new UriCallbackHelper();
+        public PageCallbackHelper onPageDestroyedCallback = new PageCallbackHelper();
 
         @Override
         public void onNavigationStarted(Navigation navigation) {
@@ -275,7 +308,7 @@ public class NavigationTest {
 
         @Override
         public void onNavigationCompleted(Navigation navigation) {
-            onCompletedCallback.notifyCalled(navigation);
+            onCompletedCallback.notifyCalled(navigation, true);
         }
 
         @Override
@@ -317,6 +350,11 @@ public class NavigationTest {
         public void onLoadProgressChanged(double progress) {
             loadProgressChangedCallback.recordValue(
                     progress == 1 ? "load complete" : "load started");
+        }
+
+        @Override
+        public void onPageDestroyed(Page page) {
+            onPageDestroyedCallback.notifyCalled(page);
         }
     }
 
@@ -1371,5 +1409,42 @@ public class NavigationTest {
         mActivityTestRule.navigateAndWait(url);
         mCallback.onCompletedCallback.waitForCallback(currentCallCount);
         assertEquals(referrer, mCallback.onCompletedCallback.getReferrer().toString());
+    }
+
+    /* Disable BackForwardCacheMemoryControls to allow BackForwardCache for all devices regardless
+     * of their memory. */
+    @MinWebLayerVersion(90)
+    @Test
+    @SmallTest
+    @CommandLineFlags.
+    Add({"enable-features=BackForwardCache", "disable-features=BackForwardCacheMemoryControls"})
+    public void testPageApi() throws Exception {
+        TestWebServer testServer = TestWebServer.start();
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(null);
+        setNavigationCallback(activity);
+
+        String url1 = mActivityTestRule.getTestServer().getURL("/echo");
+        navigateAndWaitForCompletion(url1,
+                () -> { activity.getTab().getNavigationController().navigate(Uri.parse(url1)); });
+        Page page1 = mCallback.onCompletedCallback.getPage();
+
+        // Ensure the second page doesn't go into bfcache so that we can observe its Page object
+        // being destroyed.
+        List<Pair<String, String>> headers =
+                Collections.singletonList(Pair.create("Cache-Control", "no-store"));
+        String url2 = testServer.setResponse("/ok.html", "<html>ok</html>", headers);
+        mActivityTestRule.navigateAndWait(url2);
+        Page page2 = mCallback.onCompletedCallback.getPage();
+        assertNotEquals(page1, page2);
+
+        int curOnPageDestroyedCount = mCallback.onPageDestroyedCallback.getCallCount();
+
+        navigateAndWaitForCompletion(
+                url1, () -> { activity.getTab().getNavigationController().goBack(); });
+        Assert.assertTrue(mCallback.onCompletedCallback.isServedFromBackForwardCache());
+        Page page3 = mCallback.onCompletedCallback.getPage();
+        assertEquals(page1, page3);
+
+        mCallback.onPageDestroyedCallback.assertCalledWith(curOnPageDestroyedCount, page2);
     }
 }

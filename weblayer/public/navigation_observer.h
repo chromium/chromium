@@ -14,6 +14,7 @@ class TimeTicks;
 
 namespace weblayer {
 class Navigation;
+class Page;
 
 // An interface for a WebLayer embedder to get notified about navigations. For
 // now this only notifies for the main frame.
@@ -109,6 +110,14 @@ class NavigationObserver {
   // being rendered. Note this is not ordered with respect to
   // OnFirstContentfulPaint.
   virtual void OnOldPageNoLongerRendered(const GURL& url) {}
+
+  // Called when a Page is destroyed. For the common case, this is called when
+  // the user navigates away from a page to a new one or when the Tab is
+  // destroyed. However there are situations when a page is alive when it's not
+  // visible, e.g. when it goes into the back-forward cache. In that case this
+  // method will either be called when the back-forward cache entry is evicted
+  // or if it is used then this cycle repeats.
+  virtual void OnPageDestroyed(Page* page) {}
 };
 
 }  // namespace weblayer
