@@ -1,4 +1,7 @@
 {
+  "program": {
+    "binary": "web_engine_exe"
+  },
   "sandbox": {
     "features": [
       "config-data",
