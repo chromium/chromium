@@ -6,6 +6,20 @@
 
 namespace ui {
 
+std::string AXTreeSelector::AppName() const {
+  if (types & Chrome)
+    return "Chrome";
+  if (types & Chromium)
+    return "Chromium";
+  if (types & Edge)
+    return "Edge";
+  if (types & Firefox)
+    return "Firefox";
+  if (types & Safari)
+    return "Safari";
+  return "Unknown";
+}
+
 AXPropertyFilter::AXPropertyFilter(const AXPropertyFilter&) = default;
 
 AXPropertyFilter::AXPropertyFilter(const std::string& str, Type type)

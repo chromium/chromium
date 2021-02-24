@@ -733,6 +733,8 @@ AX_EXPORT HWND GetHWNDBySelector(const AXTreeSelector& selector) {
   } else if (selector.types & AXTreeSelector::Firefox) {
     info.title = kFirefoxTitle;
   } else {
+    LOG(ERROR) << selector.AppName()
+               << " application is not supported on the system";
     return NULL;
   }
 

@@ -33,6 +33,10 @@ struct AX_EXPORT AXTreeSelector {
       : types(types), pattern(pattern) {}
 
   bool empty() const { return types == None && pattern.empty(); }
+
+  // Returns an application name for a type if the type specifies an
+  // application.
+  std::string AppName() const;
 };
 
 // A single property filter specification. Represents a parsed string of the

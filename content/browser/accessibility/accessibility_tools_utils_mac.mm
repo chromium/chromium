@@ -238,6 +238,10 @@ std::pair<AXUIElementRef, int> FindAXUIElement(const AXTreeSelector& selector) {
     title = kFirefoxTitle;
   } else if (selector.types & AXTreeSelector::Safari) {
     title = kSafariTitle;
+  } else {
+    LOG(ERROR) << selector.AppName()
+               << " application is not supported on the system";
+    return {nil, 0};
   }
 
   for (NSDictionary* window_info in windows) {
