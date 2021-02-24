@@ -18,6 +18,7 @@ source_set("video") {
   sources = [
     "gpu_memory_buffer_video_frame_pool.cc",
     "gpu_memory_buffer_video_frame_pool.h",
+    "gpu_video_accelerator_factories.cc",
     "gpu_video_accelerator_factories.h",
     "h264_bit_reader.cc",
     "h264_bit_reader.h",

@@ -33,7 +33,7 @@ function cycleAvcOutputFormats(acc, desc) {
 
     let encoderConfig = {
       codec: "avc1.42001E",
-      acceleration: acc,
+      hardwareAcceleration: acc,
       width: defaultWidth,
       height: defaultHeight,
     };
@@ -105,7 +105,7 @@ promise_test(async t => {
 
   const vp8Config = {
     codec: 'vp8',
-    acceleration: "allow",
+    hardwareAcceleration: "allow",
     width: defaultWidth,
     height: defaultHeight,
     avc: { outputFormat: "avc" },

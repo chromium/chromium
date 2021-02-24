@@ -1240,25 +1240,9 @@ void MediaCapabilities::GetGpuFactoriesSupport(
       gfx::Rect(natural_size) /* visible_rect */, natural_size,
       media::EmptyExtraData(), encryption_scheme);
 
-  static_assert(media::VideoDecoderImplementation::kAlternate ==
-                    media::VideoDecoderImplementation::kMaxValue,
-                "Keep the array below in sync.");
-  media::VideoDecoderImplementation decoder_impls[] = {
-      media::VideoDecoderImplementation::kDefault,
-      media::VideoDecoderImplementation::kAlternate};
-  media::GpuVideoAcceleratorFactories::Supported supported =
-      media::GpuVideoAcceleratorFactories::Supported::kUnknown;
-  for (const auto& impl : decoder_impls) {
-    supported = gpu_factories->IsDecoderConfigSupported(impl, config);
-    DCHECK_NE(supported,
-              media::GpuVideoAcceleratorFactories::Supported::kUnknown);
-    if (supported == media::GpuVideoAcceleratorFactories::Supported::kTrue)
-      break;
-  }
-
   OnGpuFactoriesSupport(
-      callback_id,
-      supported == media::GpuVideoAcceleratorFactories::Supported::kTrue);
+      callback_id, gpu_factories->IsDecoderConfigSupported(config) ==
+                       media::GpuVideoAcceleratorFactories::Supported::kTrue);
 }
 
 void MediaCapabilities::ResolveCallbackIfReady(int callback_id) {

@@ -41,7 +41,7 @@ async function encode_decode_test(codec, acc, avc_format) {
 
   let encoder_config = {
     codec: codec,
-    acceleration: acc,
+    hardwareAcceleration: acc,
     width: w,
     height: h,
     bitrate: 5000000,
@@ -105,7 +105,7 @@ async function encode_test(codec, acc) {
   };
   const params = {
     codec: codec,
-    acceleration: acc,
+    hardwareAcceleration: acc,
     width: w,
     height: h,
     bitrate: 5000000,

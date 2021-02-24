@@ -45,7 +45,7 @@ async function change_encoding_params_test(codec, acc) {
   };
   const params = {
     codec: codec,
-    acceleration: acc,
+    hardwareAcceleration: acc,
     width: original_w,
     height: original_h,
     bitrate: original_bitrate,

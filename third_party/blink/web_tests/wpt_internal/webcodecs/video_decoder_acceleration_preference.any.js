@@ -16,15 +16,22 @@ function cycleAccelerationPreferences(codec, expected_success, desc) {
     };
 
     for (const [key, value] of Object.entries(expected_success)) {
+      var iteration_name = "acceleration=" + key;
+
       let decoder = new VideoDecoder(decoderInit);
 
       config_success = true;
       let decoderConfig = {
         codec: codec,
-        acceleration: key,
-        width: defaultWidth,
-        height: defaultHeight,
+        hardwareAcceleration: key,
+        codedWidth: defaultWidth,
+        codedHeight: defaultHeight,
       };
+
+      var support = await VideoDecoder.isConfigSupported(decoderConfig);
+
+      assert_equals(support.supported, value, iteration_name);
+      assert_object_equals(support.config, decoderConfig, iteration_name);
 
       decoder.configure(decoderConfig);
 
@@ -32,7 +39,7 @@ function cycleAccelerationPreferences(codec, expected_success, desc) {
         // A failed configure might cause flush to throw an exception.
         await decoder.flush();
       } catch {
-        assert_equals(config_success, value, "acceleration=" + key);
+        assert_equals(config_success, value, iteration_name);
       }
 
       if(decoder.state != "closed")

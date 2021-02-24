@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_RENDERERS_GPU_VIDEO_ACCELERATOR_FACTORIES_H_
-#define MEDIA_RENDERERS_GPU_VIDEO_ACCELERATOR_FACTORIES_H_
+#ifndef MEDIA_VIDEO_GPU_VIDEO_ACCELERATOR_FACTORIES_H_
+#define MEDIA_VIDEO_GPU_VIDEO_ACCELERATOR_FACTORIES_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -97,6 +97,16 @@ class MEDIA_EXPORT GpuVideoAcceleratorFactories {
   virtual Supported IsDecoderConfigSupported(
       VideoDecoderImplementation implementation,
       const VideoDecoderConfig& config) = 0;
+
+  // Helper function that merges IsDecoderConfigSupported() results across all
+  // VideoDecoderImplementations. Returns kTrue if any of the implementations
+  // support the config.
+  //
+  // Callers must verify IsDecoderSupportKnown() prior to using this, or they
+  // will immediately receive a kUnknown.
+  //
+  // May be called on any thread.
+  Supported IsDecoderConfigSupported(const VideoDecoderConfig& config);
 
   // Returns true if IsDecoderConfigSupported() is ready to answer queries.
   // Once decoder support is known, it remains known for the lifetime of |this|.
@@ -198,4 +208,4 @@ class MEDIA_EXPORT GpuVideoAcceleratorFactories {
 
 }  // namespace media
 
-#endif  // MEDIA_RENDERERS_GPU_VIDEO_ACCELERATOR_FACTORIES_H_
+#endif  // MEDIA_VIDEO_GPU_VIDEO_ACCELERATOR_FACTORIES_H_

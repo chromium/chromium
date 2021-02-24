@@ -633,8 +633,13 @@ TEST(MediaCapabilitiesTests, PredictPowerEfficientWithGpuFactories) {
         .WillOnce(Return(false));
     EXPECT_CALL(*mock_gpu_factories, NotifyDecoderSupportKnown(_))
         .WillOnce(GpuFactoriesNotifyCallback());
+
+    // MediaCapabilities calls IsDecoderSupportKnown() once, and
+    // GpuVideoAcceleratorFactories::IsDecoderConfigSupported() also calls it
+    // once internally.
     EXPECT_CALL(*mock_gpu_factories, IsDecoderSupportKnown())
-        .WillOnce(Return(true));
+        .Times(2)
+        .WillRepeatedly(Return(true));
     EXPECT_CALL(*mock_gpu_factories, IsDecoderConfigSupported(_, _))
         .WillOnce(
             Return(media::GpuVideoAcceleratorFactories::Supported::kTrue));
@@ -654,7 +659,8 @@ TEST(MediaCapabilitiesTests, PredictPowerEfficientWithGpuFactories) {
       .WillOnce(DbCallback(kFeatures, /*smooth*/ false, /*power_eff*/ true));
   EXPECT_CALL(context.GetMockPlatform(), GetGpuFactories());
   EXPECT_CALL(*mock_gpu_factories, IsDecoderSupportKnown())
-      .WillOnce(Return(true));
+      .Times(2)
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(*mock_gpu_factories, IsDecoderConfigSupported(_, _))
       .WillRepeatedly(
           Return(media::GpuVideoAcceleratorFactories::Supported::kFalse));
@@ -926,8 +932,12 @@ void RunCallbackPermutationTest(std::vector<PredictionType> callback_order) {
     EXPECT_CALL(*mock_gpu_factories, NotifyDecoderSupportKnown(_))
         .WillOnce(
             Invoke(&cb_saver, &CallbackSaver::SaveGpuFactoriesNotifyCallback));
+    // MediaCapabilities calls IsDecoderSupportKnown() once, and
+    // GpuVideoAcceleratorFactories::IsDecoderConfigSupported() also calls it
+    // once internally.
     EXPECT_CALL(*mock_gpu_factories, IsDecoderSupportKnown())
-        .WillOnce(Return(true));
+        .Times(2)
+        .WillRepeatedly(Return(true));
     EXPECT_CALL(*mock_gpu_factories, IsDecoderConfigSupported(_, _))
         .WillRepeatedly(
             Return(media::GpuVideoAcceleratorFactories::Supported::kFalse));
