@@ -20,9 +20,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -31,6 +31,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder.ContentType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.share.ShareParams;
@@ -57,13 +58,6 @@ import java.util.Set;
 class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickListener {
     private static final int SHARE_SHEET_ITEM = 0;
 
-    @IntDef({LinkGeneration.FAILURE, LinkGeneration.SUCCESS_LINK, LinkGeneration.SUCCESS_TEXT})
-    @interface LinkGeneration {
-        int FAILURE = 0;
-        int SUCCESS_LINK = 1;
-        int SUCCESS_TEXT = 2;
-    }
-
     private final Context mContext;
     private final LargeIconBridge mIconBridge;
     private final ShareSheetCoordinator mShareSheetCoordinator;
@@ -89,7 +83,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         mParams = params;
         mLinkGenerationState =
                 mParams.getLinkToTextSuccessful() != null && mParams.getLinkToTextSuccessful()
-                ? LinkGeneration.SUCCESS_LINK
+                ? LinkGeneration.LINK
                 : LinkGeneration.FAILURE;
         createContentView();
     }
@@ -134,6 +128,10 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
             firstPartyRow.addOnScrollListener(
                     new ScrollEventReporter("SharingHubAndroid.FirstPartyAppsScrolled"));
         }
+    }
+
+    void updateShareParams(ShareParams params) {
+        mParams = params;
     }
 
     private void populateView(List<PropertyModel> models, RecyclerView view, boolean firstParty) {
@@ -236,7 +234,9 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
                 && contentTypes.contains(ContentType.LINK_PAGE_NOT_VISIBLE)) {
             title = mParams.getText();
             setTitleStyle(R.style.TextAppearance_TextMedium_Primary);
-        } else {
+            setSubtitleMaxLines(1);
+        } else if (!TextUtils.isEmpty(title)) {
+            // Set title style if title is non empty.
             setTitleStyle(R.style.TextAppearance_TextMediumThick_Primary);
         }
 
@@ -272,7 +272,10 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         // If there is no title, have subtitleView take up the whole area.
         if (TextUtils.isEmpty(title)) {
             titleView.setVisibility(View.GONE);
+            return;
         }
+
+        titleView.setVisibility(View.VISIBLE);
     }
 
     private void setSubtitleMaxLines(int maxLines) {
@@ -288,33 +291,38 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
 
     public void updateLinkGenerationState() {
         if (mLinkGenerationState == LinkGeneration.FAILURE) return;
-        if (mLinkGenerationState == LinkGeneration.SUCCESS_LINK) {
-            mLinkGenerationState = LinkGeneration.SUCCESS_TEXT;
+        if (mLinkGenerationState == LinkGeneration.LINK) {
+            mLinkGenerationState = LinkGeneration.TEXT;
         } else {
-            mLinkGenerationState = LinkGeneration.SUCCESS_LINK;
+            mLinkGenerationState = LinkGeneration.LINK;
         }
     }
 
     private void setLinkImageViewForPreview() {
         int drawable = 0;
         int contentDescription = 0;
+        int skillColor = 0;
 
         switch (mLinkGenerationState) {
             case LinkGeneration.FAILURE:
                 drawable = R.drawable.link_off;
                 contentDescription = R.string.link_to_text_failure_toast_message_v2;
+                skillColor = R.color.default_icon_color;
                 break;
-            case LinkGeneration.SUCCESS_LINK:
+            case LinkGeneration.LINK:
                 drawable = R.drawable.link;
                 contentDescription = R.string.link_to_text_success_link_toast_message;
+                skillColor = R.color.default_icon_color_blue;
                 break;
-            case LinkGeneration.SUCCESS_TEXT:
+            case LinkGeneration.TEXT:
                 drawable = R.drawable.link_off;
                 contentDescription = R.string.link_to_text_success_text_toast_message;
+                skillColor = R.color.default_icon_color;
                 break;
         }
 
         ImageView linkImageView = this.getContentView().findViewById(R.id.image_preview_link);
+        linkImageView.setColorFilter(ContextCompat.getColor(mContext, skillColor));
         linkImageView.setVisibility(View.VISIBLE);
         linkImageView.setImageDrawable(AppCompatResources.getDrawable(mContext, drawable));
         linkImageView.setContentDescription(mContext.getResources().getString(contentDescription));
@@ -328,19 +336,21 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
                     linkImageView.setContentDescription(mContext.getResources().getString(
                             R.string.link_to_text_failure_toast_message_v2));
                     break;
-                case LinkGeneration.SUCCESS_LINK:
+                case LinkGeneration.LINK:
                     showToast(R.string.link_to_text_success_link_toast_message);
                     linkImageView.setImageDrawable(
                             AppCompatResources.getDrawable(mContext, R.drawable.link));
                     linkImageView.setContentDescription(mContext.getResources().getString(
                             R.string.link_to_text_success_link_toast_message));
+                    mShareSheetCoordinator.updateShareSheetForLinkToText(LinkGeneration.LINK);
                     break;
-                case LinkGeneration.SUCCESS_TEXT:
+                case LinkGeneration.TEXT:
                     showToast(R.string.link_to_text_success_text_toast_message);
                     linkImageView.setImageDrawable(
                             AppCompatResources.getDrawable(mContext, R.drawable.link_off));
                     linkImageView.setContentDescription(mContext.getResources().getString(
                             R.string.link_to_text_success_text_toast_message));
+                    mShareSheetCoordinator.updateShareSheetForLinkToText(LinkGeneration.TEXT);
                     break;
             }
         });

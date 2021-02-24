@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.share.link_to_text;
 import android.content.Context;
 import android.net.Uri;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.blink.mojom.TextFragmentSelectorProducer;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -23,6 +25,13 @@ import org.chromium.url.GURL;
  * Handles the Link To Text action in the Sharing Hub.
  */
 public class LinkToTextCoordinator extends EmptyTabObserver {
+    @IntDef({LinkGeneration.TEXT, LinkGeneration.LINK, LinkGeneration.FAILURE})
+    public @interface LinkGeneration {
+        int TEXT = 0;
+        int LINK = 1;
+        int FAILURE = 2;
+    }
+
     private static final String SHARE_TEXT_TEMPLATE = "\"%s\"\n";
     private static final String TEXT_FRAGMENT_PREFIX = ":~:text=";
     private static final String INVALID_SELECTOR = "";
@@ -33,8 +42,9 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     private final Tab mTab;
     private final ChromeShareExtras mChromeShareExtras;
     private final long mShareStartTime;
-    private final ShareParams mShareParams;
+    private final ShareParams mShareTextParams;
 
+    private ShareParams mShareLinkParams;
     private TextFragmentSelectorProducer mProducer;
     private boolean mCancelRequest;
 
@@ -50,7 +60,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         mCancelRequest = false;
         mChromeShareExtras = null;
         mShareStartTime = 0;
-        mShareParams = null;
+        mShareTextParams = null;
 
         requestSelector();
     }
@@ -59,13 +69,13 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     public LinkToTextCoordinator(ShareParams shareParams, Tab tab,
             ChromeOptionShareCallback chromeOptionShareCallback,
             ChromeShareExtras chromeShareExtras, long shareStartTime, String visibleUrl) {
-        mShareParams = shareParams;
+        mShareTextParams = shareParams;
         mTab = tab;
         mChromeOptionShareCallback = chromeOptionShareCallback;
         mChromeShareExtras = chromeShareExtras;
         mShareStartTime = shareStartTime;
         mVisibleUrl = visibleUrl;
-        mSelectedText = mShareParams.getText();
+        mSelectedText = shareParams.getText();
         mTab.addObserver(this);
         mCancelRequest = false;
         mContext = null;
@@ -73,12 +83,21 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         requestSelector();
     }
 
+    public ShareParams getShareParams(@LinkGeneration int linkGeneration) {
+        switch (linkGeneration) {
+            case LinkGeneration.LINK:
+                return mShareLinkParams;
+            default:
+                return mShareTextParams;
+        }
+    }
+
     public void onSelectorReady(String selector) {
         if (mCancelRequest) return;
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMTIVE_LINK_TO_TEXT_GENERATION)) {
-            ShareParams params = selector.isEmpty()
-                    ? mShareParams
+            mShareLinkParams = selector.isEmpty()
+                    ? null
                     : new ShareParams
                               .Builder(mTab.getWindowAndroid(), /*title=*/"",
                                       getUrlToShare(selector))
@@ -86,7 +105,10 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
                               .setLinkToTextSuccessful(true)
                               .build();
 
-            mChromeOptionShareCallback.showShareSheet(params, mChromeShareExtras, mShareStartTime);
+            mChromeOptionShareCallback.showShareSheet(
+                    getShareParams(
+                            selector.isEmpty() ? LinkGeneration.FAILURE : LinkGeneration.LINK),
+                    mChromeShareExtras, mShareStartTime);
             cleanup();
             return;
         }

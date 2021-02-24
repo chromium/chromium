@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
+import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -66,6 +67,8 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     private ShareParams mShareParams;
     private ShareSheetBottomSheetContent mBottomSheet;
     private WindowAndroid mWindowAndroid;
+    private ChromeShareExtras mChromeShareExtras;
+    private LinkToTextCoordinator mLinkToTextCoordinator;
     private final BottomSheetObserver mBottomSheetObserver;
     private final LargeIconBridge mIconBridge;
     private final Tracker mFeatureEngagementTracker;
@@ -135,6 +138,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     public void showShareSheet(
             ShareParams params, ChromeShareExtras chromeShareExtras, long shareStartTime) {
         mShareParams = params;
+        mChromeShareExtras = chromeShareExtras;
         mActivity = params.getWindow().getActivity().get();
         if (mActivity == null) return;
 
@@ -148,14 +152,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         mBottomSheet = new ShareSheetBottomSheetContent(mActivity, mIconBridge, this, params);
 
         mShareStartTime = shareStartTime;
-        mContentTypes = ShareSheetPropertyModelBuilder.getContentTypes(params, chromeShareExtras);
-        List<PropertyModel> firstPartyApps =
-                createFirstPartyPropertyModels(mActivity, params, chromeShareExtras, mContentTypes);
-        List<PropertyModel> thirdPartyApps = createThirdPartyPropertyModels(
-                mActivity, params, mContentTypes, chromeShareExtras.saveLastUsed());
-
-        mBottomSheet.createRecyclerViews(
-                firstPartyApps, thirdPartyApps, mContentTypes, params.getFileContentType());
+        updateShareSheet();
 
         boolean shown = mBottomSheetController.requestShowContent(mBottomSheet, true);
         if (shown) {
@@ -163,6 +160,35 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
             RecordHistogram.recordMediumTimesHistogram(
                     "Sharing.SharingHubAndroid.TimeToShowShareSheet", delta);
         }
+    }
+
+    /**
+     * Updates {@code mShareParams} from the {@link LinkGeneration} state.
+     * Called when toggling between LinkToText options
+     *
+     * @param state The state from {@link LinkGeneration} to which ShareParams should be updated.
+     */
+    void updateShareSheetForLinkToText(@LinkGeneration int state) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMTIVE_LINK_TO_TEXT_GENERATION)
+                || mLinkToTextCoordinator == null) {
+            return;
+        }
+
+        mShareParams = mLinkToTextCoordinator.getShareParams(state);
+        mBottomSheet.updateShareParams(mShareParams);
+        updateShareSheet();
+    }
+
+    private void updateShareSheet() {
+        mContentTypes =
+                ShareSheetPropertyModelBuilder.getContentTypes(mShareParams, mChromeShareExtras);
+        List<PropertyModel> firstPartyApps = createFirstPartyPropertyModels(
+                mActivity, mShareParams, mChromeShareExtras, mContentTypes);
+        List<PropertyModel> thirdPartyApps = createThirdPartyPropertyModels(
+                mActivity, mShareParams, mContentTypes, mChromeShareExtras.saveLastUsed());
+
+        mBottomSheet.createRecyclerViews(
+                firstPartyApps, thirdPartyApps, mContentTypes, mShareParams.getFileContentType());
     }
 
     /**
@@ -180,7 +206,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
                 && chromeShareExtras.isUserHighlightedText()) {
             String tabUrl =
                     mTabProvider.get().isInitialized() ? mTabProvider.get().getUrl().getSpec() : "";
-            LinkToTextCoordinator linkToTextCoordinator =
+            mLinkToTextCoordinator =
                     new LinkToTextCoordinator(params, mTabProvider.get(), this, chromeShareExtras,
                             shareStartTime, getUrlToShare(params, chromeShareExtras, tabUrl));
             return;
