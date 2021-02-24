@@ -39,14 +39,6 @@ const base::TimeDelta V8WorkerMemoryReporter::kTimeout =
     base::TimeDelta::FromSeconds(60);
 
 namespace {
-
-// TODO(906991): Remove this once PlzDedicatedWorker ships. Until then
-// the browser does not know URLs of dedicated workers, so we pass them
-// together with the measurement result. We limit the max length of the
-// URLs to reduce memory allocations and the traffic between the renderer
-// and the browser processes.
-constexpr size_t kMaxReportedUrlLength = 2000;
-
 // This delegate is provided to v8::Isolate::MeasureMemory API.
 // V8 calls MeasurementComplete with the measurement result.
 //
@@ -99,14 +91,8 @@ void WorkerMeasurementDelegate::MeasurementComplete(
   for (auto& context_size : context_sizes) {
     bytes += context_size.second;
   }
-  auto* worker_global_scope = To<WorkerGlobalScope>(global_scope);
-  KURL url;
-  if (worker_global_scope->Url().GetString().length() < kMaxReportedUrlLength) {
-    // Copy the URL to send it over to the main thread.
-    url = worker_global_scope->Url().Copy();
-  }
   NotifyMeasurementSuccess(V8WorkerMemoryReporter::WorkerMemoryUsage{
-      worker_global_scope->GetWorkerToken(), bytes, std::move(url)});
+      To<WorkerGlobalScope>(global_scope)->GetWorkerToken(), bytes});
 }
 
 void WorkerMeasurementDelegate::NotifyMeasurementFailure() {
@@ -188,7 +174,7 @@ void V8WorkerMemoryReporter::NotifyMeasurementSuccess(
   PostCrossThreadTask(
       *Thread::MainThread()->GetTaskRunner(), FROM_HERE,
       CrossThreadBindOnce(&V8WorkerMemoryReporter::OnMeasurementSuccess,
-                          worker_memory_reporter, std::move(memory_usage)));
+                          worker_memory_reporter, memory_usage));
 }
 
 // static

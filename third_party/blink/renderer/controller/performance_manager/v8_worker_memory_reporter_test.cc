@@ -68,7 +68,6 @@ class MemoryUsageChecker {
     EXPECT_THAT(expected_counts, testing::Contains(worker_count_));
     if (worker_count_ == 1) {
       EXPECT_LE(bytes_per_worker_lower_bound_, result.workers[0].bytes);
-      EXPECT_EQ(KURL("http://fake.url/"), result.workers[0].url);
     }
     called_ = true;
     if (callback_action_ == CallbackAction::kExitRunLoop) {
