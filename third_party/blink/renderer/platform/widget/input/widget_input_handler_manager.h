@@ -121,6 +121,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
 
   mojom::blink::WidgetInputHandlerHost* GetWidgetInputHandlerHost();
 
+#if defined(OS_ANDROID)
   void AttachSynchronousCompositor(
       mojo::PendingRemote<mojom::blink::SynchronousCompositorControlHost>
           control_host,
@@ -129,7 +130,6 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
       mojo::PendingAssociatedReceiver<mojom::blink::SynchronousCompositor>
           compositor_request);
 
-#if defined(OS_ANDROID)
   SynchronousCompositorRegistry* GetSynchronousCompositorRegistry();
 #endif
 

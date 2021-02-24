@@ -7,6 +7,8 @@
 
 #include "cc/input/layer_selection_bound.h"
 #include "mojo/public/mojom/base/text_direction.mojom-blink.h"
+#include "services/viz/public/mojom/compositing/delegated_ink_metadata.mojom-blink.h"
+#include "services/viz/public/mojom/compositing/frame_sink_id.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink.h"
 #include "third_party/blink/public/platform/web_text_input_info.h"
@@ -25,6 +27,7 @@ class Layer;
 class LayerTreeSettings;
 class LayerTreeDebugState;
 class PaintImage;
+struct ElementId;
 }  // namespace cc
 
 namespace ui {

@@ -582,5 +582,17 @@ mojom("mojom") {
         "//ui/latency/mojom",
       ]
     },
+    {
+      types = [
+        {
+          mojom = "viz.mojom.DelegatedInkMetadata"
+          cpp = "::std::unique_ptr<::viz::DelegatedInkMetadata>"
+          move_only = true
+          nullable_is_same_type = true
+        },
+      ]
+      traits_headers = [ "//services/viz/public/cpp/compositing/delegated_ink_metadata_mojom_traits.h" ]
+      traits_public_deps = [ "//components/viz/common" ]
+    },
   ]
 }

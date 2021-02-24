@@ -90,7 +90,6 @@ mojom("mojom_platform") {
     "input/pointer_lock_context.mojom",
     "input/pointer_lock_result.mojom",
     "input/scroll_direction.mojom",
-    "input/synchronous_compositor.mojom",
     "input/touch_event.mojom",
     "insecure_input/insecure_input_service.mojom",
     "keyboard_lock/keyboard_lock.mojom",
@@ -206,6 +205,10 @@ mojom("mojom_platform") {
     "worker/worker_main_script_load_params.mojom",
     "worker/worker_options.mojom",
   ]
+
+  if (is_android) {
+    sources += [ "input/synchronous_compositor.mojom" ]
+  }
 
   if (is_win) {
     sources += [ "dwrite_font_proxy/dwrite_font_proxy.mojom" ]

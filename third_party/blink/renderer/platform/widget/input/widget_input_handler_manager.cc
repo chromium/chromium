@@ -364,21 +364,21 @@ WidgetInputHandlerManager::GetWidgetInputHandlerHost() {
   return nullptr;
 }
 
+#if defined(OS_ANDROID)
 void WidgetInputHandlerManager::AttachSynchronousCompositor(
     mojo::PendingRemote<mojom::blink::SynchronousCompositorControlHost>
         control_host,
     mojo::PendingAssociatedRemote<mojom::blink::SynchronousCompositorHost> host,
     mojo::PendingAssociatedReceiver<mojom::blink::SynchronousCompositor>
         compositor_request) {
-#if defined(OS_ANDROID)
   DCHECK(synchronous_compositor_registry_);
   if (synchronous_compositor_registry_->proxy()) {
     synchronous_compositor_registry_->proxy()->BindChannel(
         std::move(control_host), std::move(host),
         std::move(compositor_request));
   }
-#endif
 }
+#endif
 
 void WidgetInputHandlerManager::ObserveGestureEventOnMainThread(
     const WebGestureEvent& gesture_event,
