@@ -5757,3 +5757,4 @@ crbug.com/1181466 [ Mac ] virtual/threaded/external/wpt/css/css-scroll-snap/snap
 # Sheriff 2021-02-24
 crbug.com/1181466 [ Linux ] external/wpt/css/css-scroll-snap/snap-after-relayout/resnap-to-focused.html [ Pass Failure ]
 crbug.com/1181466 [ Linux ] virtual/threaded/external/wpt/css/css-scroll-snap/snap-after-relayout/resnap-to-focused.html [ Pass Failure ]
+crbug.com/1181667 [ Linux ] external/wpt/css/selectors/focus-visible-011.html [ Pass Failure ]
