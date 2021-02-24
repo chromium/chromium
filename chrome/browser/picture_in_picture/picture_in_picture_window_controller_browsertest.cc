@@ -61,8 +61,6 @@
 #include "ui/views/widget/widget_observer.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/accelerators.h"
-#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/hit_test.h"
 #endif
 
@@ -1602,53 +1600,6 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Tests that video in Picture-in-Picture is paused when user presses
-// VKEY_MEDIA_PLAY_PAUSE key even if there's another media playing in a
-// foreground tab.
-// Flaky, see crbug.com/1156754
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
-                       DISABLED_HandleMediaKeyPlayPause) {
-  GURL test_page_url = ui_test_utils::GetTestUrl(
-      base::FilePath(base::FilePath::kCurrentDirectory),
-      base::FilePath(kPictureInPictureWindowSizePage));
-  ui_test_utils::NavigateToURL(browser(), test_page_url);
-
-  content::WebContents* first_active_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(first_active_web_contents);
-  EXPECT_TRUE(
-      content::ExecuteScript(first_active_web_contents, "video.play();"));
-
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      first_active_web_contents, "enterPictureInPicture();", &result));
-  EXPECT_TRUE(result);
-
-  Browser* second_browser = CreateBrowser(browser()->profile());
-  ui_test_utils::NavigateToURL(second_browser, test_page_url);
-
-  content::WebContents* second_active_web_contents =
-      second_browser->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(second_active_web_contents);
-  EXPECT_TRUE(
-      content::ExecuteScript(second_active_web_contents, "video.play();"));
-
-  ash::AcceleratorController::Get()->Process(
-      ui::Accelerator(ui::VKEY_MEDIA_PLAY_PAUSE, ui::EF_NONE));
-  base::RunLoop().RunUntilIdle();
-
-  bool is_paused = false;
-  // Picture-in-Picture video in first browser window is paused.
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(first_active_web_contents,
-                                          "isPaused();", &is_paused));
-  EXPECT_TRUE(is_paused);
-
-  // Video in second browser window is not paused.
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(second_active_web_contents,
-                                          "isPaused();", &is_paused));
-  EXPECT_FALSE(is_paused);
-}
-
 // Tests that the back-to-tab, close, and resize controls move properly as
 // the window changes quadrants.
 IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
@@ -1748,7 +1699,6 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   // The resize button hit test should start a bottom right resizing drag.
   EXPECT_EQ(HTBOTTOMRIGHT, GetOverlayWindow()->GetResizeHTComponent());
 }
-
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Tests that the Play/Pause button is displayed appropriately in the
