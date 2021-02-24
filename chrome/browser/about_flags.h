@@ -108,17 +108,11 @@ void RecordUMAStatistics(flags_ui::FlagsStorage* flags_storage);
 
 namespace testing {
 
-// This class sets the testing feature entries to the feature entries passed in
-// to Init. It clears the testing feature entries on destruction, so
-// the feature entries return to their non test values.
-class ScopedFeatureEntries final {
- public:
-  explicit ScopedFeatureEntries(
-      const std::vector<flags_ui::FeatureEntry>& entries);
-  ~ScopedFeatureEntries();
-};
-
+// Returns the global set of feature entries.
 const flags_ui::FeatureEntry* GetFeatureEntries(size_t* count);
+
+// Sets the global set of feature entries.
+void SetFeatureEntries(const std::vector<flags_ui::FeatureEntry>& entries);
 
 }  // namespace testing
 
