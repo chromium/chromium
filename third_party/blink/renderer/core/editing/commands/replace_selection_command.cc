@@ -820,10 +820,13 @@ void ReplaceSelectionCommand::RemoveUnrenderedTextNodesAtEnds(
   // can't insert into those elements.
   auto* first_node_inserted =
       DynamicTo<Text>(inserted_nodes.FirstNodeInserted());
-  if (first_node_inserted && !NodeHasVisibleLayoutText(*first_node_inserted)) {
-    inserted_nodes.WillRemoveNode(*first_node_inserted);
-    // Removing a Text node won't dispatch synchronous events.
-    RemoveNode(first_node_inserted, ASSERT_NO_EDITING_ABORT);
+  if (first_node_inserted) {
+    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+    if (!NodeHasVisibleLayoutText(*first_node_inserted)) {
+      inserted_nodes.WillRemoveNode(*first_node_inserted);
+      // Removing a Text node won't dispatch synchronous events.
+      RemoveNode(first_node_inserted, ASSERT_NO_EDITING_ABORT);
+    }
   }
 }
 
