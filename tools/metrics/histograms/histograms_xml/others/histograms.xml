@@ -6254,7 +6254,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Graphics.PresentationTimestamp.InvalidBeforeSwap" units="ms"
-    expires_after="2021-03-01">
+    expires_after="2021-09-01">
   <owner>sadrul@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -6267,7 +6267,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Graphics.PresentationTimestamp.InvalidFromFuture" units="ms"
-    expires_after="2021-03-01">
+    expires_after="2021-09-01">
   <owner>sadrul@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -6279,7 +6279,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Graphics.PresentationTimestamp.LargePresentationDelta"
-    units="ms" expires_after="2021-03-01">
+    units="ms" expires_after="2021-09-01">
   <owner>sadrul@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
