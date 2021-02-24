@@ -324,7 +324,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         } else if (mCurrentAutocompleteRequest != null) {
             // Re-schedule the autocomplete action for immediate execution.
             // These requests are not executed until Native libraries are loaded.
-            mCurrentAutocompleteRequest.run();
+            mHandler.postAtFrontOfQueue(mCurrentAutocompleteRequest);
         }
 
         mDropdownViewInfoListBuilder.onNativeInitialized();
