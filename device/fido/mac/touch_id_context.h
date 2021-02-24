@@ -46,7 +46,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO)
   // Returns whether the device has a secure enclave and can authenticate the
   // local user, and whether the current binary carries a
   // keychain-access-groups entitlement that matches the one set in |config|.
-  static bool TouchIdAvailable(const AuthenticatorConfig& config);
+  static void TouchIdAvailable(AuthenticatorConfig config,
+                               base::OnceCallback<void(bool is_available)>);
 
   virtual ~TouchIdContext();
 
@@ -69,13 +70,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO)
 
  private:
   using CreateFuncPtr = decltype(&Create);
-  using TouchIdAvailableFuncPtr = decltype(&TouchIdAvailable);
-
   static CreateFuncPtr g_create_;
+
+  static bool TouchIdAvailableImplBlocking(AuthenticatorConfig config);
+  using TouchIdAvailableFuncPtr = decltype(&TouchIdAvailableImplBlocking);
   static TouchIdAvailableFuncPtr g_touch_id_available_;
 
   static std::unique_ptr<TouchIdContext> CreateImpl();
-  static bool TouchIdAvailableImpl(const AuthenticatorConfig& config);
 
   void RunCallback(bool success);
 

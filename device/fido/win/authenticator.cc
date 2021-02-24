@@ -18,6 +18,7 @@
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "device/fido/authenticator_supported_options.h"
 #include "device/fido/ctap_get_assertion_request.h"
@@ -30,13 +31,23 @@
 
 namespace device {
 
-// static
-bool WinWebAuthnApiAuthenticator::IsUserVerifyingPlatformAuthenticatorAvailable(
-    WinWebAuthnApi* api) {
-  BOOL result;
-  return api && api->IsAvailable() &&
-         api->IsUserVerifyingPlatformAuthenticatorAvailable(&result) == S_OK &&
-         result == TRUE;
+void WinWebAuthnApiAuthenticator::IsUserVerifyingPlatformAuthenticatorAvailable(
+    WinWebAuthnApi* api,
+    base::OnceCallback<void(bool is_available)> callback) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(
+          [](WinWebAuthnApi* api) {
+            BOOL result;
+            return api && api->IsAvailable() &&
+                   api->IsUserVerifyingPlatformAuthenticatorAvailable(
+                       &result) == S_OK &&
+                   result == TRUE;
+          },
+          api),
+      std::move(callback));
 }
 
 WinWebAuthnApiAuthenticator::WinWebAuthnApiAuthenticator(

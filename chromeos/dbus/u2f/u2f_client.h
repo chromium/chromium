@@ -44,9 +44,8 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_U2F) U2FClient {
   // or fingerprint is enrolled). The name is short for
   // IsUserVerifyingPlatformAuthenticatorAvailable(), which is a method defined
   // in the WebAuthn spec.
-  // TODO(martinkr): Change to take a callback.
-  virtual base::Optional<u2f::IsUvpaaResponse> IsUvpaaBlocking(
-      const u2f::IsUvpaaRequest& request) = 0;
+  virtual void IsUvpaa(const u2f::IsUvpaaRequest& request,
+                       DBusMethodCallback<u2f::IsUvpaaResponse> callback) = 0;
 
   // Returns whether the legacy enterprise policy to enable a U2F authenticator
   // that requires a power button press to register or sign with a credential is

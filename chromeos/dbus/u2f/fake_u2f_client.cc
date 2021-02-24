@@ -22,11 +22,12 @@ void FakeU2FClient::WaitForServiceToBeAvailable(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
-base::Optional<u2f::IsUvpaaResponse> FakeU2FClient::IsUvpaaBlocking(
-    const u2f::IsUvpaaRequest& request) {
+void FakeU2FClient::IsUvpaa(const u2f::IsUvpaaRequest& request,
+                            DBusMethodCallback<u2f::IsUvpaaResponse> callback) {
   u2f::IsUvpaaResponse response;
   response.set_available(false);
-  return response;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(response)));
 }
 
 void FakeU2FClient::IsU2FEnabled(

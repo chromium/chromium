@@ -38,8 +38,12 @@ void ReportAvailability(bool available) {
 #if defined(OS_MAC)
 void ReportUVPlatformAuthenticatorAvailabilityWithConfig(
     base::Optional<device::fido::mac::AuthenticatorConfig> config) {
-  ReportAvailability(config &&
-                     content::IsUVPlatformAuthenticatorAvailable(*config));
+  if (!config) {
+    ReportAvailability(false);
+    return;
+  }
+  content::IsUVPlatformAuthenticatorAvailable(
+      *config, base::BindOnce(&ReportAvailability));
 }
 
 void ReportUVPlatformAuthenticatorAvailabilityMainThreadMac() {
@@ -91,13 +95,9 @@ void ReportUVPlatformAuthenticatorAvailability() {
                  base::BindOnce(
                      &ReportUVPlatformAuthenticatorAvailabilityMainThreadMac));
 #elif defined(OS_WIN)
-  std::unique_ptr<content::AuthenticatorRequestClientDelegate> client_delegate =
-      std::make_unique<content::AuthenticatorRequestClientDelegate>();
-  device::WinWebAuthnApi* win_webauthn_api =
-      device::WinWebAuthnApi::GetDefault();
-  ReportAvailability(
-      win_webauthn_api &&
-      content::IsUVPlatformAuthenticatorAvailable(win_webauthn_api));
+  content::IsUVPlatformAuthenticatorAvailable(
+      device::WinWebAuthnApi::GetDefault(),
+      base::BindOnce(&ReportAvailability));
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(crbug.com/1181426): Reenable the IsUVPAA() startup metric on CrOS.
 #endif

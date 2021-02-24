@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback.h"
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -24,20 +25,21 @@ namespace mac {
 
 struct AuthenticatorConfig;
 
+// TouchIdAuthenticator is a platform authenticator on macOS. It persists Secure
+// Enclave backed credentials along with metadata in the macOS keychain. Each
+// Chrome profile maintains its own set of credentials.
+//
+// Despite the name, any local login factor can be used for User Verification
+// (e.g. Touch ID, password, Apple Watch).
 class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdAuthenticator
     : public FidoAuthenticator {
  public:
-  // IsAvailable returns true iff Touch ID is available and
-  // enrolled on the current device and the current binary carries
-  // a keychain-access-groups entitlement that matches the one set
-  // in |config|.
-  //
-  // Note that this may differ from the result of
-  // AuthenticatorImpl::IsUserVerifyingPlatformAuthenticatorAvailable(),
-  // which also checks whether the embedder supports this
-  // authenticator, and if the request occurs from an
-  // off-the-record/incognito context.
-  static bool IsAvailable(const AuthenticatorConfig& config);
+  // IsAvailable runs |callback| with a bool incidating whether the
+  // authenticator is available, i.e. whether the device has a Secure Enclave
+  // and the current binary carries a keychain-access-groups entitlement that
+  // matches the one set in |config|.
+  static void IsAvailable(AuthenticatorConfig config,
+                          base::OnceCallback<void(bool is_available)> callback);
 
   // CreateIfAvailable returns a TouchIdAuthenticator. Callers must check
   // IsAvailable() first.

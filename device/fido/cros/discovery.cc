@@ -5,8 +5,7 @@
 #include "device/fido/cros/discovery.h"
 
 #include "base/bind.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
+#include "base/logging.h"
 #include "chromeos/dbus/u2f/u2f_client.h"
 
 namespace device {
@@ -57,14 +56,7 @@ void FidoChromeOSDiscovery::OnU2FServiceAvailable(bool u2f_service_available) {
     return;
   }
 
-  AddAuthenticatorIfIsUVPAA();
-}
-
-void FidoChromeOSDiscovery::AddAuthenticatorIfIsUVPAA() {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
-      base::BindOnce(
-          &ChromeOSAuthenticator::IsUVPlatformAuthenticatorAvailableBlocking),
+  ChromeOSAuthenticator::IsUVPlatformAuthenticatorAvailable(
       base::BindOnce(&FidoChromeOSDiscovery::MaybeAddAuthenticator,
                      weak_factory_.GetWeakPtr()));
 }
@@ -82,7 +74,9 @@ void FidoChromeOSDiscovery::MaybeAddAuthenticator(bool is_available) {
 void FidoChromeOSDiscovery::OnHasLegacyU2fCredential(bool has_credential) {
   DCHECK(!authenticator_);
   if (!has_credential) {
-    AddAuthenticatorIfIsUVPAA();
+    ChromeOSAuthenticator::IsUVPlatformAuthenticatorAvailable(
+        base::BindOnce(&FidoChromeOSDiscovery::MaybeAddAuthenticator,
+                       weak_factory_.GetWeakPtr()));
     return;
   }
 

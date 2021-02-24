@@ -32,17 +32,19 @@ namespace fido {
 namespace mac {
 
 // static
-bool TouchIdAuthenticator::IsAvailable(const AuthenticatorConfig& config) {
+void TouchIdAuthenticator::IsAvailable(
+    AuthenticatorConfig config,
+    base::OnceCallback<void(bool is_available)> callback) {
   if (__builtin_available(macOS 10.12.2, *)) {
-    return TouchIdContext::TouchIdAvailable(config);
+    TouchIdContext::TouchIdAvailable(std::move(config), std::move(callback));
+    return;
   }
-  return false;
+  std::move(callback).Run(false);
 }
 
 // static
 std::unique_ptr<TouchIdAuthenticator> TouchIdAuthenticator::Create(
     AuthenticatorConfig config) {
-  DCHECK(IsAvailable(config));
   return base::WrapUnique(
       new TouchIdAuthenticator(std::move(config.keychain_access_group),
                                std::move(config.metadata_secret)));

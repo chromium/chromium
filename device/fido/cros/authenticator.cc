@@ -331,14 +331,18 @@ void ChromeOSAuthenticator::OnCancelResponse(
   }
 }
 
-// static
-bool ChromeOSAuthenticator::IsUVPlatformAuthenticatorAvailableBlocking() {
-  base::Optional<u2f::IsUvpaaResponse> response =
-      chromeos::U2FClient::Get()->IsUvpaaBlocking(u2f::IsUvpaaRequest());
-  return response && response->available();
+void ChromeOSAuthenticator::IsUVPlatformAuthenticatorAvailable(
+    base::OnceCallback<void(bool is_available)> callback) {
+  chromeos::U2FClient::Get()->IsUvpaa(
+      u2f::IsUvpaaRequest(),
+      base::BindOnce(
+          [](base::OnceCallback<void(bool is_available)> callback,
+             base::Optional<u2f::IsUvpaaResponse> response) {
+            std::move(callback).Run(response && response->available());
+          },
+          std::move(callback)));
 }
 
-// static
 void ChromeOSAuthenticator::IsPowerButtonModeEnabled(
     base::OnceCallback<void(bool is_enabled)> callback) {
   chromeos::U2FClient::Get()->IsU2FEnabled(

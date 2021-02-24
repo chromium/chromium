@@ -48,10 +48,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO)
 
  private:
   static std::unique_ptr<TouchIdContext> ForwardCreate();
-  static bool ForwardTouchIdAvailable(const AuthenticatorConfig& config);
+  static bool ForwardTouchIdAvailable(AuthenticatorConfig);
 
   std::unique_ptr<TouchIdContext> CreateTouchIdContext();
-  bool TouchIdAvailable(const AuthenticatorConfig&);
+  bool TouchIdAvailable(AuthenticatorConfig);
 
   using CreateFuncPtr = decltype(&ForwardCreate);
   CreateFuncPtr touch_id_context_create_ptr_;

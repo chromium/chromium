@@ -36,14 +36,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
       const CtapGetAssertionRequest& request,
       base::OnceCallback<void(bool has_credential)> callback);
 
-  // Returns whether the platform authenticator is available, which is true if
-  // the current user has a PIN set up or biometrics enrolled.
-  //
-  // Since this call makes a (quick) dbus call, it is potentially blocking and
-  // should not run on the main thread/sequence.
-  //
-  // TODO(crbug.com/1154063): Refactor IsUVPAA() to be async.
-  static bool IsUVPlatformAuthenticatorAvailableBlocking();
+  // Invokes |callback| with a bool indicating  whether the platform
+  // authenticator is available, which is true if the current user has a PIN set
+  // up or biometrics enrolled.
+  static void IsUVPlatformAuthenticatorAvailable(
+      base::OnceCallback<void(bool is_available)> callback);
 
   // Invokes |callback| with a bool indicating whether the legacy U2F
   // authenticator, which uses the power button for user presence checking, is
