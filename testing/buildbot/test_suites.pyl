@@ -4073,6 +4073,7 @@
         'experiment_percentage': 100,
       },
       'wayland_client_perftests': {},
+      'wayland_client_tests': {},
     },
 
     'linux_example_builder_gtests': {

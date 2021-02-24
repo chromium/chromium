@@ -36,31 +36,15 @@ class ClientVersionTest {
         3,  // ...advertised_version + 1, greater than highest supported
   };
 
-  struct Globals {
-    Globals();
-    ~Globals();
-
-    std::unique_ptr<wl_compositor> compositor;
-    std::vector<std::string> protocols;
-    std::string protocol_tested;
-    VersionValidityType validity_type = VersionValidityType::VALID_ADVERTISED;
-    // A dump all for all unused interface binding (test only), to avoid memory
-    // leak.
-    std::vector<std::unique_ptr<void, Deleter>> ptrs;
-  };
-
   // Test binding a given protocol with a given validity type. If the protocol
   // name is empty, then it will only initialize the list of protocol names.
-  bool TestProtocol(const std::string& protocol,
-                    VersionValidityType validity_type);
+  static void TestProtocol(const std::string& protocol,
+                           VersionValidityType validity_type);
 
   ClientVersionTest() = default;
   ~ClientVersionTest() = default;
 
-  const std::vector<std::string>& Protocols() const;
-
- protected:
-  Globals globals_;
+  static const std::vector<std::string> Protocols();
 };
 
 }  // namespace clients

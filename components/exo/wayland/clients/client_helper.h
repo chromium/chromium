@@ -5,16 +5,35 @@
 #ifndef COMPONENTS_EXO_WAYLAND_CLIENTS_CLIENT_HELPER_H_
 #define COMPONENTS_EXO_WAYLAND_CLIENTS_CLIENT_HELPER_H_
 
+#include <alpha-compositing-unstable-v1-client-protocol.h>
 #include <aura-shell-client-protocol.h>
 #include <color-space-unstable-v1-client-protocol.h>
+#include <cursor-shapes-unstable-v1-client-protocol.h>
+#include <extended-drag-unstable-v1-client-protocol.h>
 #include <fullscreen-shell-unstable-v1-client-protocol.h>
+#include <gaming-input-unstable-v2-client-protocol.h>
 #include <input-timestamps-unstable-v1-client-protocol.h>
+#include <keyboard-configuration-unstable-v1-client-protocol.h>
+#include <keyboard-extension-unstable-v1-client-protocol.h>
 #include <linux-dmabuf-unstable-v1-client-protocol.h>
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
+#include <notification-shell-unstable-v1-client-protocol.h>
+#include <pointer-constraints-unstable-v1-client-protocol.h>
+#include <pointer-gestures-unstable-v1-client-protocol.h>
 #include <presentation-time-client-protocol.h>
+#include <relative-pointer-unstable-v1-client-protocol.h>
+#include <remote-shell-unstable-v1-client-protocol.h>
+#include <secure-output-unstable-v1-client-protocol.h>
+#include <stylus-tools-unstable-v1-client-protocol.h>
+#include <stylus-unstable-v2-client-protocol.h>
+#include <text-input-unstable-v1-client-protocol.h>
+#include <viewporter-client-protocol.h>
 #include <vsync-feedback-unstable-v1-client-protocol.h>
 #include <wayland-client-core.h>
 #include <wayland-client-protocol.h>
+#include <xdg-decoration-unstable-v1-client-protocol.h>
+#include <xdg-shell-client-protocol.h>
+#include <xdg-shell-unstable-v6-client-protocol.h>
 
 #include <memory>
 
@@ -69,6 +88,26 @@ DEFAULT_DELETER_FDECL(zwp_linux_surface_synchronization_v1)
 DEFAULT_DELETER_FDECL(zcr_color_space_v1)
 DEFAULT_DELETER_FDECL(zcr_vsync_feedback_v1)
 DEFAULT_DELETER_FDECL(zcr_vsync_timing_v1)
+DEFAULT_DELETER_FDECL(wl_data_device_manager)
+DEFAULT_DELETER_FDECL(wp_viewporter)
+DEFAULT_DELETER_FDECL(zxdg_shell_v6)
+DEFAULT_DELETER_FDECL(xdg_wm_base)
+DEFAULT_DELETER_FDECL(zwp_text_input_manager_v1)
+DEFAULT_DELETER_FDECL(zcr_secure_output_v1)
+DEFAULT_DELETER_FDECL(zcr_alpha_compositing_v1)
+DEFAULT_DELETER_FDECL(zcr_stylus_v2)
+DEFAULT_DELETER_FDECL(zcr_cursor_shapes_v1)
+DEFAULT_DELETER_FDECL(zcr_gaming_input_v2)
+DEFAULT_DELETER_FDECL(zcr_keyboard_configuration_v1)
+DEFAULT_DELETER_FDECL(zcr_keyboard_extension_v1)
+DEFAULT_DELETER_FDECL(zcr_notification_shell_v1)
+DEFAULT_DELETER_FDECL(zcr_remote_shell_v1)
+DEFAULT_DELETER_FDECL(zcr_stylus_tools_v1)
+DEFAULT_DELETER_FDECL(zwp_pointer_gestures_v1)
+DEFAULT_DELETER_FDECL(zwp_pointer_constraints_v1)
+DEFAULT_DELETER_FDECL(zwp_relative_pointer_manager_v1)
+DEFAULT_DELETER_FDECL(zxdg_decoration_manager_v1)
+DEFAULT_DELETER_FDECL(zcr_extended_drag_v1)
 
 #if defined(USE_GBM)
 DEFAULT_DELETER_FDECL(gbm_bo)

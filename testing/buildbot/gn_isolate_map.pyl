@@ -1872,6 +1872,10 @@
     "label": "//components/exo/wayland:wayland_client_perftests",
     "type": "windowed_test_launcher",
   },
+  "wayland_client_tests": {
+    "label": "//components/exo/wayland:wayland_client_tests",
+    "type": "windowed_test_launcher",
+  },
   "web_engine_browsertests": {
     "label": "//fuchsia/engine:web_engine_browsertests",
     "type": "console_test_launcher",

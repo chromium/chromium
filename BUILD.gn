@@ -933,6 +933,7 @@ if (is_chromeos_ash) {
       "//chrome/test/chromedriver",
       "//components/chromeos_camera:jpeg_decode_accelerator_unittest",
       "//components/exo/wayland:wayland_client_perftests",
+      "//components/exo/wayland:wayland_client_tests",
       "//media:media_unittests",
       "//media/capture:capture_unittests",
       "//ppapi/examples/video_decode",
