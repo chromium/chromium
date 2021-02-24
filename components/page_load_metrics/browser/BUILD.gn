@@ -67,6 +67,8 @@ source_set("browser") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "ads_page_load_metrics_test_waiter.cc",
+    "ads_page_load_metrics_test_waiter.h",
     "observers/page_load_metrics_observer_tester.cc",
     "observers/page_load_metrics_observer_tester.h",
     "page_load_metrics_test_content_browser_client.cc",

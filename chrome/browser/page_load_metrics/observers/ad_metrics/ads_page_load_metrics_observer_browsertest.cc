@@ -22,6 +22,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/page_load_metrics/browser/ads_page_load_metrics_test_waiter.h"
 #include "components/page_load_metrics/browser/observers/use_counter_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
@@ -1252,33 +1253,6 @@ IN_PROC_BROWSER_TEST_F(
       "PageLoad.Clients.Ads.FrameCounts.IgnoredByRestrictedAdTagging", 1, 1);
 }
 
-class AdsPageLoadMetricsTestWaiter
-    : public page_load_metrics::PageLoadMetricsTestWaiter {
- public:
-  explicit AdsPageLoadMetricsTestWaiter(content::WebContents* web_contents)
-      : page_load_metrics::PageLoadMetricsTestWaiter(web_contents) {}
-  void AddMinimumAdResourceExpectation(int num_ad_resources) {
-    expected_minimum_ad_resources_ = num_ad_resources;
-  }
-
- protected:
-  bool ExpectationsSatisfied() const override {
-    return complete_ad_resources_ >= expected_minimum_ad_resources_ &&
-           PageLoadMetricsTestWaiter::ExpectationsSatisfied();
-  }
-
-  void HandleResourceUpdate(
-      const page_load_metrics::mojom::ResourceDataUpdatePtr& resource)
-      override {
-    if (resource->reported_as_ad_resource && resource->is_complete)
-      complete_ad_resources_++;
-  }
-
- private:
-  int complete_ad_resources_ = 0;
-  int expected_minimum_ad_resources_ = 0;
-};
-
 // This test harness does not start the test server and allows
 // ControllableHttpResponses to be declared.
 class AdsPageLoadMetricsObserverResourceBrowserTest
@@ -1343,11 +1317,12 @@ class AdsPageLoadMetricsObserverResourceBrowserTest
   }
 
  protected:
-  std::unique_ptr<AdsPageLoadMetricsTestWaiter>
+  std::unique_ptr<page_load_metrics::AdsPageLoadMetricsTestWaiter>
   CreateAdsPageLoadMetricsTestWaiter() {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    return std::make_unique<AdsPageLoadMetricsTestWaiter>(web_contents);
+    return std::make_unique<page_load_metrics::AdsPageLoadMetricsTestWaiter>(
+        web_contents);
   }
 
  private:

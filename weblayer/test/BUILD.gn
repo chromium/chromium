@@ -117,6 +117,7 @@ test("weblayer_browsertests") {
     "//components/network_time",
     "//components/no_state_prefetch/browser",
     "//components/page_load_metrics/browser:browser",
+    "//components/page_load_metrics/browser:test_support",
     "//components/permissions",
     "//components/prefs",
     "//components/security_interstitials/content:security_interstitial_page",
@@ -127,11 +128,13 @@ test("weblayer_browsertests") {
     "//components/subresource_filter/content/browser",
     "//components/subresource_filter/content/browser:test_support",
     "//components/subresource_filter/core/browser",
+    "//components/subresource_filter/core/common",
     "//components/subresource_filter/core/common:test_support",
     "//components/translate/content/browser",
     "//components/translate/content/browser:test_support",
     "//components/ukm:test_support",
     "//components/ukm:ukm_test_helper",
+    "//components/url_pattern_index/proto:url_pattern_index",
     "//components/user_prefs",
     "//components/variations",
     "//components/variations/net",
@@ -147,6 +150,7 @@ test("weblayer_browsertests") {
   ]
 
   sources = [
+    "../browser/ads_page_load_metrics_observer_browsertest.cc",
     "../browser/autofill_browsertest.cc",
     "../browser/background_sync/background_sync_browsertest.cc",
     "../browser/client_hints_browsertest.cc",

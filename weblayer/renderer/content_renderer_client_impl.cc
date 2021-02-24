@@ -20,6 +20,7 @@
 #include "components/no_state_prefetch/renderer/prerender_render_frame_observer.h"
 #include "components/no_state_prefetch/renderer/prerender_utils.h"
 #include "components/page_load_metrics/renderer/metrics_render_frame_observer.h"
+#include "components/subresource_filter/content/renderer/ad_resource_tracker.h"
 #include "components/subresource_filter/content/renderer/subresource_filter_agent.h"
 #include "components/subresource_filter/content/renderer/unverified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/common_features.h"
@@ -120,13 +121,17 @@ void ContentRendererClientImpl::RenderFrameCreated(
   if (weblayer_observer_)
     agent->SetContentSettingRules(weblayer_observer_->content_setting_rules());
 
-  new page_load_metrics::MetricsRenderFrameObserver(render_frame);
+  auto* metrics_render_frame_observer =
+      new page_load_metrics::MetricsRenderFrameObserver(render_frame);
 
-  // TODO(crbug.com/1116095): Bring up AdResourceTracker?
+  auto ad_resource_tracker =
+      std::make_unique<subresource_filter::AdResourceTracker>();
+  metrics_render_frame_observer->SetAdResourceTracker(
+      ad_resource_tracker.get());
   auto* subresource_filter_agent =
       new subresource_filter::SubresourceFilterAgent(
           render_frame, subresource_filter_ruleset_dealer_.get(),
-          /*ad_resource_tracker=*/nullptr);
+          std::move(ad_resource_tracker));
   subresource_filter_agent->Initialize();
 
 #if defined(OS_ANDROID)
