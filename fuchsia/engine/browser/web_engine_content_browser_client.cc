@@ -12,6 +12,8 @@
 #include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "components/policy/content/safe_sites_navigation_throttle.h"
+#include "components/site_isolation/features.h"
+#include "components/site_isolation/preloaded_isolated_origins.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/devtools_manager_delegate.h"
@@ -272,4 +274,18 @@ void WebEngineContentBrowserClient::ConfigureNetworkContextParams(
   // starting with the headers passed in via
   // |CreateContextParams.cors_exempt_headers|.
   network_context_params->cors_exempt_header_list = cors_exempt_headers_;
+}
+
+std::vector<url::Origin>
+WebEngineContentBrowserClient::GetOriginsRequiringDedicatedProcess() {
+  std::vector<url::Origin> isolated_origin_list;
+
+  // Include additional origins preloaded with specific browser configurations,
+  // if any.
+  auto built_in_origins =
+      site_isolation::GetBrowserSpecificBuiltInIsolatedOrigins();
+  std::move(std::begin(built_in_origins), std::end(built_in_origins),
+            std::back_inserter(isolated_origin_list));
+
+  return isolated_origin_list;
 }
