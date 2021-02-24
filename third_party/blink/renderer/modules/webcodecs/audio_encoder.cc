@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/audio_encoder.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "media/audio/audio_opus_encoder.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -149,8 +150,13 @@ AudioEncoder::ParsedConfig* AudioEncoder::ParseConfig(
 
   result->options.sample_rate = opts->sampleRate();
   result->codec_string = opts->codec();
-  if (opts->hasBitrate())
-    result->options.bitrate = opts->bitrate();
+  if (opts->hasBitrate()) {
+    if (!base::IsValueInRangeForNumericType<int>(opts->bitrate())) {
+      exception_state.ThrowTypeError("Invalid bitrate.");
+      return nullptr;
+    }
+    result->options.bitrate = static_cast<int>(opts->bitrate());
+  }
 
   if (result->options.channels == 0) {
     exception_state.ThrowTypeError("Invalid channel number.");
