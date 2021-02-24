@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/tablet_mode.h"
+#include "base/command_line.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/assistant/assistant_util.h"
@@ -78,6 +79,9 @@ void ChromeHelpAppUIDelegate::PopulateLoadTimeData(
   source->AddString("customizationId", customization_id);
   source->AddString("deviceName", ui::GetChromeOSDeviceName());
   source->AddString("hwid", hwid);
+  source->AddString("deviceHelpContentId",
+                    base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+                        "device-help-content-id"));
 
   // Add any features that have been enabled.
   source->AddBoolean("HelpAppReleaseNotes", true);
