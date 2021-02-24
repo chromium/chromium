@@ -61,6 +61,7 @@ tools/metrics/histograms/histograms_xml/mobile/histograms.xml
 tools/metrics/histograms/histograms_xml/multi_device/histograms.xml
 tools/metrics/histograms/histograms_xml/na_cl/histograms.xml
 tools/metrics/histograms/histograms_xml/navigation/histograms.xml
+tools/metrics/histograms/histograms_xml/nearby/histograms.xml
 tools/metrics/histograms/histograms_xml/net/histograms.xml
 tools/metrics/histograms/histograms_xml/network/histograms.xml
 tools/metrics/histograms/histograms_xml/new_tab_page/histograms.xml
