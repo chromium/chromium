@@ -283,4 +283,69 @@ TEST_F(VisibleUnitsParagraphTest,
   EXPECT_EQ(downstream.DeepEquivalent(), end_of_paragraph.DeepEquivalent());
 }
 
+TEST_F(VisibleUnitsParagraphTest, endOfParagraphCannotBeBeforePosition) {
+  SetBodyContent(
+      "<span contenteditable>x<br contenteditable=false>"
+      "<br contenteditable=false></span>");
+  Element* span = GetDocument().QuerySelector("span");
+  const Position& p1 = Position(span, 2);
+  const Position& p2 = Position::LastPositionInNode(*span);
+  const Position& p3 = Position::AfterNode(*span);
+  const VisiblePosition& vp1 = CreateVisiblePosition(p1);
+  const VisiblePosition& vp2 = CreateVisiblePosition(p2);
+  const VisiblePosition& vp3 = CreateVisiblePosition(p3);
+
+  // The anchor should still be the span after the VisiblePosition
+  // normalization, or the test would become useless.
+  EXPECT_EQ(p1, vp1.DeepEquivalent());
+  EXPECT_EQ(p2, vp2.DeepEquivalent());
+  EXPECT_EQ(vp2.DeepEquivalent(), vp3.DeepEquivalent());
+
+  // No need to test vp3 since it's equal to vp2.
+  const VisiblePosition& end1 = EndOfParagraph(vp1);
+  const VisiblePosition& end2 = EndOfParagraph(vp2);
+
+  // EndOfParagraph() iterates nodes starting from the span, and "x"@1 would be
+  // a suitable candidate. But it's skipped because it precedes the positions.
+  EXPECT_LE(vp1.DeepEquivalent(), end1.DeepEquivalent());
+  EXPECT_LE(vp2.DeepEquivalent(), end2.DeepEquivalent());
+
+  // Test the actual values.
+  EXPECT_EQ(p1, end1.DeepEquivalent());
+  EXPECT_EQ(p2, end2.DeepEquivalent());
+}
+
+TEST_F(VisibleUnitsParagraphTest, startOfParagraphCannotBeAfterPosition) {
+  SetBodyContent(
+      "<span contenteditable><br contenteditable=false>"
+      "<br contenteditable=false>x</span>");
+  Element* span = GetDocument().QuerySelector("span");
+  const Position& p1 = Position(span, 1);
+  const Position& p2 = Position::FirstPositionInNode(*span);
+  const Position& p3 = Position::BeforeNode(*span);
+  const VisiblePosition& vp1 = CreateVisiblePosition(p1);
+  const VisiblePosition& vp2 = CreateVisiblePosition(p2);
+  const VisiblePosition& vp3 = CreateVisiblePosition(p3);
+
+  // The anchor should still be the span after the VisiblePosition
+  // normalization, or the test would become useless.
+  EXPECT_EQ(p1, vp1.DeepEquivalent());
+  EXPECT_EQ(p2, vp2.DeepEquivalent());
+  EXPECT_EQ(vp2.DeepEquivalent(), vp3.DeepEquivalent());
+
+  // No need to test vp3 since it's equal to vp2.
+  const VisiblePosition& start1 = StartOfParagraph(vp1);
+  const VisiblePosition& start2 = StartOfParagraph(vp2);
+
+  // StartOfParagraph() iterates nodes in post order starting from the span, and
+  // "x"@0 would be a suitable candidate. But it's skipped because it's after
+  // the positions.
+  EXPECT_LE(start1.DeepEquivalent(), vp1.DeepEquivalent());
+  EXPECT_LE(start2.DeepEquivalent(), vp2.DeepEquivalent());
+
+  // Test the actual values.
+  EXPECT_EQ(p1, start1.DeepEquivalent());
+  EXPECT_EQ(p2, start2.DeepEquivalent());
+}
+
 }  // namespace blink
