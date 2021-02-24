@@ -51,7 +51,8 @@ SettingsProviderGSettings::SettingsProviderGSettings(GtkUi* delegate)
       g_settings_schema_source_get_default(), settings_schema, FALSE);
   if (!button_schema ||
       !g_settings_schema_has_key(button_schema, kButtonLayoutKey) ||
-      !(button_settings_ = g_settings_new(settings_schema))) {
+      !(button_settings_ =
+            ScopedGObject<GSettings>(g_settings_new(settings_schema)))) {
     ParseAndStoreButtonValue(kDefaultButtonString);
   } else {
     // Get the inital value of the keys we're interested in.
@@ -66,7 +67,8 @@ SettingsProviderGSettings::SettingsProviderGSettings(GtkUi* delegate)
   // If this fails, the default action has already been set in gtk_ui.cc.
   if (click_schema &&
       g_settings_schema_has_key(click_schema, kMiddleClickActionKey) &&
-      (click_settings_ = g_settings_new(kGnomePreferencesSchema))) {
+      (click_settings_ =
+           ScopedGObject<GSettings>(g_settings_new(kGnomePreferencesSchema)))) {
     OnMiddleClickActionChanged(click_settings_, kMiddleClickActionKey);
     signal_middle_click_id_ =
         g_signal_connect(click_settings_, kMiddleClickActionChangedSignal,
@@ -75,16 +77,10 @@ SettingsProviderGSettings::SettingsProviderGSettings(GtkUi* delegate)
 }
 
 SettingsProviderGSettings::~SettingsProviderGSettings() {
-  if (button_settings_) {
-    if (signal_button_id_)
-      g_signal_handler_disconnect(button_settings_, signal_button_id_);
-    g_free(button_settings_);
-  }
-  if (click_settings_) {
-    if (signal_middle_click_id_)
-      g_signal_handler_disconnect(click_settings_, signal_middle_click_id_);
-    g_free(click_settings_);
-  }
+  if (signal_button_id_)
+    g_signal_handler_disconnect(button_settings_, signal_button_id_);
+  if (signal_middle_click_id_)
+    g_signal_handler_disconnect(click_settings_, signal_middle_click_id_);
 }
 
 // Private:

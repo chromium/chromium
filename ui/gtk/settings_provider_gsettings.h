@@ -11,6 +11,7 @@
 
 #include "base/macros.h"
 #include "ui/base/glib/glib_signal.h"
+#include "ui/base/glib/scoped_gobject.h"
 #include "ui/gtk/settings_provider.h"
 
 namespace gtk {
@@ -44,8 +45,8 @@ class SettingsProviderGSettings : public SettingsProvider {
 
   GtkUi* delegate_;
 
-  GSettings* button_settings_ = nullptr;
-  GSettings* click_settings_ = nullptr;
+  ScopedGObject<GSettings> button_settings_;
+  ScopedGObject<GSettings> click_settings_;
   gulong signal_button_id_;
   gulong signal_middle_click_id_;
 
