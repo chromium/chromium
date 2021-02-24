@@ -5,12 +5,12 @@
 #include "media/blink/video_frame_compositor.h"
 
 #include "base/bind.h"
+#include "base/bind_post_task.h"
 #include "base/callback_helpers.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/blink/webmediaplayer_params.h"
@@ -46,7 +46,7 @@ VideoFrameCompositor::VideoFrameCompositor(
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&VideoFrameCompositor::InitializeSubmitter,
                                   weak_ptr_factory_.GetWeakPtr()));
-    update_submission_state_callback_ = BindToLoop(
+    update_submission_state_callback_ = base::BindPostTask(
         task_runner_,
         base::BindRepeating(&VideoFrameCompositor::SetIsSurfaceVisible,
                             weak_ptr_factory_.GetWeakPtr()));

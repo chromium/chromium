@@ -7,6 +7,7 @@
 #include <limits>
 #include <vector>
 
+#include "base/bind_post_task.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -589,7 +590,7 @@ T VideoEncodeAcceleratorAdapter::WrapCallback(T cb) {
   DCHECK(callback_task_runner_);
   if (cb.is_null())
     return cb;
-  return BindToLoop(callback_task_runner_.get(), std::move(cb));
+  return base::BindPostTask(callback_task_runner_, std::move(cb));
 }
 
 // Copy a frame into a shared mem buffer and resize it as the same time. Input
