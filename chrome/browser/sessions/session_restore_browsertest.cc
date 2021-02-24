@@ -1901,7 +1901,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, TabWithDownloadDoesNotGetRestored) {
   }
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Test is flaky on Linux and Windows: https://crbug.com/1181867
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_LINUX) && !defined(OS_WIN)
 namespace {
 
 class MultiBrowserObserver : public BrowserListObserver {
