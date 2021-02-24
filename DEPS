@@ -381,7 +381,7 @@ vars = {
   'clang_fmt_revision':    '99803d74e35962f63a775f29477882afd4d57d94',
   'libcxx_revision':       '8fa87946779682841e21e2da977eccfb6cb3bded',
   'libcxxabi_revision':    '5fb4080bfe3daeb36e10abe50202d6579bf95072',
-  'libunwind_revision':    'a2cc4f8c554dedcb0c64cac5511b19c43f1f3d32',
+  'libunwind_revision':    '8d5fb6f1dd53c7cb8fda272eb70f45ac718fc671',
 
   # resultdb CIPD package version.
   'resultdb_version': 'git_revision:b7e2ebc4a66838d4a66cd18a141360b5909bdf19',
