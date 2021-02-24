@@ -198,6 +198,10 @@ ScriptPromise MediaDevices::getCurrentBrowsingContextMedia(
     return ScriptPromise();
   }
 
+  // This call should not be possible otherwise, as per the RuntimeEnabled
+  // in the IDL.
+  CHECK(RuntimeEnabledFeatures::GetCurrentBrowsingContextMediaEnabled(context));
+
   if (!context->IsFeatureEnabled(
           mojom::blink::FeaturePolicyFeature::kDisplayCapture,
           ReportOptions::kReportOnFailure)) {

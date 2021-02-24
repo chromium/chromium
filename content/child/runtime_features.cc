@@ -248,8 +248,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableForcedColors, features::kForcedColors},
     {wf::EnableFractionalScrollOffsets, features::kFractionalScrollOffsets},
     {wf::EnableGenericSensorExtraClasses, features::kGenericSensorExtraClasses},
-    {wf::EnableGetCurrentBrowsingContextMedia,
-     blink::features::kRTCGetCurrentBrowsingContextMedia},
 #if defined(OS_ANDROID)
     {wf::EnableGetDisplayMedia, features::kUserMediaScreenCapturing},
 #endif

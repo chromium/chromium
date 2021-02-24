@@ -782,10 +782,10 @@
     },
     {
       name: "DisplayCapturePermissionPolicy",
-      implied_by: ["GetCurrentBrowsingContextMedia"],
+      origin_trial_feature_name: "GetCurrentBrowsingContextMedia",
       // TODO(crbug.com/1150788): Implement for Android when this is applied
       // to getDisplayMedia.
-      status: {"Android": "", "default": "test"},
+      status: {"Android": "", "default": "experimental"},
     },
     {
       name: "DisplayCutoutAPI",
@@ -1010,8 +1010,9 @@
     },
     {
       name: "GetCurrentBrowsingContextMedia",
+      origin_trial_feature_name: "GetCurrentBrowsingContextMedia",
       depends_on: ["GetDisplayMedia"],
-      status: {"Android": "", "default": "test"},
+      status: {"Android": "", "default": "experimental"},
     },
     {
       name: "GetDisplayMedia",
