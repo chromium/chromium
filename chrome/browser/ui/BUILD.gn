@@ -3476,6 +3476,8 @@ static_library("ui") {
       "views/accessibility/caret_browsing_dialog_delegate.h",
       "views/accessibility/non_accessible_image_view.cc",
       "views/accessibility/non_accessible_image_view.h",
+      "views/accessibility/theme_tracking_non_accessible_image_view.cc",
+      "views/accessibility/theme_tracking_non_accessible_image_view.h",
       "views/apps/app_dialog/app_dialog_view.cc",
       "views/apps/app_dialog/app_dialog_view.h",
       "views/apps/app_dialog/app_uninstall_dialog_view.cc",
