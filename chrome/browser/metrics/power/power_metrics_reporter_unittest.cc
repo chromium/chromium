@@ -190,6 +190,10 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kBatteryDischargeRateName, 2500);
   test_ukm_recorder_.ExpectEntryMetric(
+      entries[0], UkmEntry::kBatteryDischargeModeName,
+      static_cast<int64_t>(
+          PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging));
+  test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kCPUTimeMsName,
       kExpectedMetricsCollectionInterval.InSeconds() * 1000 *
           fake_metrics.cpu_usage);
@@ -264,9 +268,11 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsPluggedIn) {
   auto entries = test_ukm_recorder_.GetEntriesByName(
       ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
   EXPECT_EQ(1u, entries.size());
+  EXPECT_FALSE(test_ukm_recorder_.EntryHasMetric(
+      entries[0], UkmEntry::kBatteryDischargeRateName));
   test_ukm_recorder_.ExpectEntryMetric(
-      entries[0], UkmEntry::kBatteryDischargeRateName,
-      -static_cast<int64_t>(
+      entries[0], UkmEntry::kBatteryDischargeModeName,
+      static_cast<int64_t>(
           PowerMetricsReporterAccess::BatteryDischargeMode::kPluggedIn));
 
   histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
@@ -290,9 +296,11 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateChanges) {
   auto entries = test_ukm_recorder_.GetEntriesByName(
       ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
   EXPECT_EQ(1u, entries.size());
+  EXPECT_FALSE(test_ukm_recorder_.EntryHasMetric(
+      entries[0], UkmEntry::kBatteryDischargeRateName));
   test_ukm_recorder_.ExpectEntryMetric(
-      entries[0], UkmEntry::kBatteryDischargeRateName,
-      -static_cast<int64_t>(
+      entries[0], UkmEntry::kBatteryDischargeModeName,
+      static_cast<int64_t>(
           PowerMetricsReporterAccess::BatteryDischargeMode::kStateChanged));
 
   histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
@@ -315,10 +323,12 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateUnavailable) {
   auto entries = test_ukm_recorder_.GetEntriesByName(
       ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
   EXPECT_EQ(1u, entries.size());
+  EXPECT_FALSE(test_ukm_recorder_.EntryHasMetric(
+      entries[0], UkmEntry::kBatteryDischargeRateName));
   test_ukm_recorder_.ExpectEntryMetric(
-      entries[0], UkmEntry::kBatteryDischargeRateName,
-      -static_cast<int64_t>(PowerMetricsReporterAccess::BatteryDischargeMode::
-                                kChargeLevelUnavailable));
+      entries[0], UkmEntry::kBatteryDischargeModeName,
+      static_cast<int64_t>(PowerMetricsReporterAccess::BatteryDischargeMode::
+                               kChargeLevelUnavailable));
 
   histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
   histogram_tester_.ExpectUniqueSample(
@@ -341,9 +351,11 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsNoBattery) {
   auto entries = test_ukm_recorder_.GetEntriesByName(
       ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
   EXPECT_EQ(1u, entries.size());
+  EXPECT_FALSE(test_ukm_recorder_.EntryHasMetric(
+      entries[0], UkmEntry::kBatteryDischargeRateName));
   test_ukm_recorder_.ExpectEntryMetric(
-      entries[0], UkmEntry::kBatteryDischargeRateName,
-      -static_cast<int64_t>(
+      entries[0], UkmEntry::kBatteryDischargeModeName,
+      static_cast<int64_t>(
           PowerMetricsReporterAccess::BatteryDischargeMode::kNoBattery));
 
   histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
@@ -370,10 +382,12 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateIncrease) {
       ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
   EXPECT_EQ(1u, entries.size());
   // An increase in charge level is reported as an invalid discharge rate.
+  EXPECT_FALSE(test_ukm_recorder_.EntryHasMetric(
+      entries[0], UkmEntry::kBatteryDischargeRateName));
   test_ukm_recorder_.ExpectEntryMetric(
-      entries[0], UkmEntry::kBatteryDischargeRateName,
-      -static_cast<int64_t>(PowerMetricsReporterAccess::BatteryDischargeMode::
-                                kInvalidDischargeRate));
+      entries[0], UkmEntry::kBatteryDischargeModeName,
+      static_cast<int64_t>(PowerMetricsReporterAccess::BatteryDischargeMode::
+                               kInvalidDischargeRate));
 
   histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
   histogram_tester_.ExpectUniqueSample(

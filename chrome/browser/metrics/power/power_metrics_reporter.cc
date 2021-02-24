@@ -122,16 +122,10 @@ void PowerMetricsReporter::ReportUKMs(
   builder.SetIntervalDurationSeconds(interval_duration.InSeconds());
   builder.SetUptimeSeconds(ukm::GetExponentialBucketMinForUserTiming(
       usage_metrics.uptime_at_interval_end.InSeconds()));
+  builder.SetBatteryDischargeMode(static_cast<int64_t>(discharge_mode));
   if (discharge_mode == BatteryDischargeMode::kDischarging) {
     DCHECK(discharge_rate_during_interval.has_value());
     builder.SetBatteryDischargeRate(*discharge_rate_during_interval);
-  } else {
-    // Any mode other than BatteryDischargeMode::kDischarging means
-    // |discharge_rate_during_interval| is irrelevant. We instead report
-    // |discharge_mode| as a negative value directly in the same metric.
-    // TODO(etiennep): Encode |discharge_mode| as a separate enum metric if
-    // possible.
-    builder.SetBatteryDischargeRate(-static_cast<int64_t>(discharge_mode));
   }
   builder.SetCPUTimeMs(metrics.cpu_usage * interval_duration.InMilliseconds());
 #if defined(OS_MAC)
