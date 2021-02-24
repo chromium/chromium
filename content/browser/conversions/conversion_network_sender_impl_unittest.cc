@@ -128,6 +128,32 @@ TEST_F(ConversionNetworkSenderTest, ReportRequestHangs_TimesOut) {
   EXPECT_EQ(1u, num_reports_sent_);
 }
 
+TEST_F(ConversionNetworkSenderTest,
+       ReportRequesFailsDueToNetworkChange_Retries) {
+  auto report = GetReport(/*conversion_id=*/1);
+  network_sender_->SendReport(&report, GetSentCallback());
+  EXPECT_EQ(1, test_url_loader_factory_.NumPending());
+
+  // Simulate the request failing due to network change.
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      GURL(GetReportUrl("1")),
+      network::URLLoaderCompletionStatus(net::ERR_NETWORK_CHANGED),
+      network::mojom::URLResponseHead::New(), std::string());
+
+  // The sender should automatically retry.
+  EXPECT_EQ(1, test_url_loader_factory_.NumPending());
+
+  // Simulate a second request failure due to network change.
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      GURL(GetReportUrl("1")),
+      network::URLLoaderCompletionStatus(net::ERR_NETWORK_CHANGED),
+      network::mojom::URLResponseHead::New(), std::string());
+
+  // We should not retry again. Verify the report sent callback only gets fired once.
+  EXPECT_EQ(0, test_url_loader_factory_.NumPending());
+  EXPECT_EQ(1u, num_reports_sent_);
+}
+
 TEST_F(ConversionNetworkSenderTest, ReportSent_QueryParamsSetCorrectly) {
   auto impression =
       ImpressionBuilder(base::Time())
