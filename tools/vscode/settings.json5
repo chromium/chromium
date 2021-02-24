@@ -50,15 +50,11 @@
   // https://marketplace.visualstudio.com/items?itemName=ryu1kn.annotator
   "annotator.annotationColumnWidth": "24em",
 
-  // C++ clang format settings. |workspaceFolder| is assumed to be chromium/src.
+  // C++ clang format settings. |workspaceFolder| is assumed to be Chromium's
+  // src/ directory.
   "C_Cpp.clang_format_path": "${workspaceFolder}/third_party/depot_tools/clang-format",
   "C_Cpp.clang_format_sortIncludes": true,
   "editor.formatOnSave": true,
-
-  // YouCompleteMe settings. |workspaceFolder| is assumed to be chromium/src.
-  "ycmd.path": "<full_path_to_your_home>/.ycmd", // Please replace this path
-  "ycmd.global_extra_config": "${workspaceFolder}/tools/vim/chromium.ycm_extra_conf.py",
-  "ycmd.confirm_extra_conf": false,
 
   // Optional: Only format modified lines instead of the whole file.
   // "editor.formatOnSaveMode": "modifications",
