@@ -9,7 +9,7 @@ grit("strings") {
   source = "ios_share_extension_strings.grd"
   output_dir = "$root_gen_dir/ios/share_extension"
   outputs = [ "grit/ios_share_extension_strings.h" ]
-  foreach(locale, locales_and_pseudolocales) {
+  foreach(locale, locales_with_fake_bidi) {
     outputs += [ "ios_share_extension_strings_$locale.pak" ]
   }
 }

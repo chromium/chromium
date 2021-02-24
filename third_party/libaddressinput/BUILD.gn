@@ -29,7 +29,7 @@ grit("strings") {
     "messages.h",
     "en_messages.cc",
   ]
-  foreach(locale, locales_and_pseudolocales) {
+  foreach(locale, locales_with_fake_bidi) {
     outputs += [ "address_input_strings_$locale.pak" ]
   }
 
