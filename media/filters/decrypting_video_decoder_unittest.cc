@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/task_environment.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decrypt_config.h"
@@ -22,12 +23,10 @@
 #include "media/filters/decrypting_video_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-using ::base::test::RunCallback;
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Return;
-using ::testing::SaveArg;
 using ::testing::StrictMock;
 using ::testing::WithArg;
 
@@ -135,20 +134,20 @@ class DecryptingVideoDecoderTest : public testing::Test {
   // Helper function to simulate the decrypting and decoding process in the
   // |decryptor_| with a decoding delay of kDecodingDelay buffers.
   void DecryptAndDecodeVideo(scoped_refptr<DecoderBuffer> encrypted,
-                             const Decryptor::VideoDecodeCB& video_decode_cb) {
+                             Decryptor::VideoDecodeCB video_decode_cb) {
     num_decrypt_and_decode_calls_++;
     if (!encrypted->end_of_stream())
       num_frames_in_decryptor_++;
 
     if (num_decrypt_and_decode_calls_ <= kDecodingDelay ||
         num_frames_in_decryptor_ == 0) {
-      video_decode_cb.Run(Decryptor::kNeedMoreData,
-                          scoped_refptr<VideoFrame>());
+      std::move(video_decode_cb)
+          .Run(Decryptor::kNeedMoreData, scoped_refptr<VideoFrame>());
       return;
     }
 
     num_frames_in_decryptor_--;
-    video_decode_cb.Run(Decryptor::kSuccess, decoded_video_frame_);
+    std::move(video_decode_cb).Run(Decryptor::kSuccess, decoded_video_frame_);
   }
 
   // Sets up expectations and actions to put DecryptingVideoDecoder in an
@@ -176,7 +175,7 @@ class DecryptingVideoDecoderTest : public testing::Test {
   void EnterPendingDecodeState() {
     EXPECT_TRUE(!pending_video_decode_cb_);
     EXPECT_CALL(*decryptor_, DecryptAndDecodeVideo(encrypted_buffer_, _))
-        .WillOnce(SaveArg<1>(&pending_video_decode_cb_));
+        .WillOnce(MoveArg<1>(&pending_video_decode_cb_));
 
     decoder_->Decode(encrypted_buffer_,
                      base::BindOnce(&DecryptingVideoDecoderTest::DecodeDone,
@@ -189,7 +188,8 @@ class DecryptingVideoDecoderTest : public testing::Test {
 
   void EnterWaitingForKeyState() {
     EXPECT_CALL(*decryptor_, DecryptAndDecodeVideo(_, _))
-        .WillRepeatedly(RunCallback<1>(Decryptor::kNoKey, null_video_frame_));
+        .WillRepeatedly(
+            RunOnceCallback<1>(Decryptor::kNoKey, null_video_frame_));
     EXPECT_CALL(*this, OnWaiting(WaitingReason::kNoDecryptionKey));
     decoder_->Decode(encrypted_buffer_,
                      base::BindOnce(&DecryptingVideoDecoderTest::DecodeDone,
@@ -319,8 +319,8 @@ TEST_F(DecryptingVideoDecoderTest, DecryptAndDecode_DecodeError) {
   Initialize();
 
   EXPECT_CALL(*decryptor_, DecryptAndDecodeVideo(_, _))
-      .WillRepeatedly(RunCallback<1>(Decryptor::kError,
-                                     scoped_refptr<VideoFrame>(nullptr)));
+      .WillRepeatedly(RunOnceCallback<1>(Decryptor::kError,
+                                         scoped_refptr<VideoFrame>(nullptr)));
 
   DecodeAndExpectError(encrypted_buffer_);
 
@@ -343,7 +343,7 @@ TEST_F(DecryptingVideoDecoderTest, KeyAdded_DuringWaitingForKey) {
 
   EXPECT_CALL(*decryptor_, DecryptAndDecodeVideo(_, _))
       .WillRepeatedly(
-          RunCallback<1>(Decryptor::kSuccess, decoded_video_frame_));
+          RunOnceCallback<1>(Decryptor::kSuccess, decoded_video_frame_));
   EXPECT_CALL(*this, FrameReady(decoded_video_frame_));
   EXPECT_CALL(*this, DecodeDone(IsOkStatus()));
   event_cb_.Run(CdmContext::Event::kHasAdditionalUsableKey);
@@ -358,7 +358,7 @@ TEST_F(DecryptingVideoDecoderTest, KeyAdded_DuringPendingDecode) {
 
   EXPECT_CALL(*decryptor_, DecryptAndDecodeVideo(_, _))
       .WillRepeatedly(
-          RunCallback<1>(Decryptor::kSuccess, decoded_video_frame_));
+          RunOnceCallback<1>(Decryptor::kSuccess, decoded_video_frame_));
   EXPECT_CALL(*this, FrameReady(decoded_video_frame_));
   EXPECT_CALL(*this, DecodeDone(IsOkStatus()));
   // The video decode callback is returned after the correct decryption key is

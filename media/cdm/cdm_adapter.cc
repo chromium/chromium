@@ -540,7 +540,7 @@ void CdmAdapter::InitializeVideoDecoder(const VideoDecoderConfig& config,
 }
 
 void CdmAdapter::DecryptAndDecodeAudio(scoped_refptr<DecoderBuffer> encrypted,
-                                       const AudioDecodeCB& audio_decode_cb) {
+                                       AudioDecodeCB audio_decode_cb) {
   DVLOG(3) << __func__ << ": "
            << encrypted->AsHumanReadableString(/*verbose=*/true);
   DCHECK(task_runner_->BelongsToCurrentThread());
@@ -562,7 +562,8 @@ void CdmAdapter::DecryptAndDecodeAudio(scoped_refptr<DecoderBuffer> encrypted,
   const Decryptor::AudioFrames empty_frames;
   if (status != cdm::kSuccess) {
     DVLOG(1) << __func__ << ": status = " << status;
-    audio_decode_cb.Run(ToMediaDecryptorStatus(status), empty_frames);
+    std::move(audio_decode_cb)
+        .Run(ToMediaDecryptorStatus(status), empty_frames);
     return;
   }
 
@@ -571,15 +572,15 @@ void CdmAdapter::DecryptAndDecodeAudio(scoped_refptr<DecoderBuffer> encrypted,
   if (!AudioFramesDataToAudioFrames(std::move(audio_frames),
                                     &audio_frame_list)) {
     DVLOG(1) << __func__ << " unable to convert Audio Frames";
-    audio_decode_cb.Run(Decryptor::kError, empty_frames);
+    std::move(audio_decode_cb).Run(Decryptor::kError, empty_frames);
     return;
   }
 
-  audio_decode_cb.Run(Decryptor::kSuccess, audio_frame_list);
+  std::move(audio_decode_cb).Run(Decryptor::kSuccess, audio_frame_list);
 }
 
 void CdmAdapter::DecryptAndDecodeVideo(scoped_refptr<DecoderBuffer> encrypted,
-                                       const VideoDecodeCB& video_decode_cb) {
+                                       VideoDecodeCB video_decode_cb) {
   DVLOG(3) << __func__ << ": "
            << encrypted->AsHumanReadableString(/*verbose=*/true);
   DCHECK(task_runner_->BelongsToCurrentThread());
@@ -604,7 +605,7 @@ void CdmAdapter::DecryptAndDecodeVideo(scoped_refptr<DecoderBuffer> encrypted,
 
   if (status != cdm::kSuccess) {
     DVLOG(1) << __func__ << ": status = " << status;
-    video_decode_cb.Run(ToMediaDecryptorStatus(status), nullptr);
+    std::move(video_decode_cb).Run(ToMediaDecryptorStatus(status), nullptr);
     return;
   }
 
@@ -613,13 +614,13 @@ void CdmAdapter::DecryptAndDecodeVideo(scoped_refptr<DecoderBuffer> encrypted,
       GetNaturalSize(visible_rect, pixel_aspect_ratio_));
   if (!decoded_frame) {
     DLOG(ERROR) << __func__ << ": TransformToVideoFrame failed.";
-    video_decode_cb.Run(Decryptor::kError, nullptr);
+    std::move(video_decode_cb).Run(Decryptor::kError, nullptr);
     return;
   }
 
   decoded_frame->metadata().protected_video = is_video_encrypted_;
 
-  video_decode_cb.Run(Decryptor::kSuccess, decoded_frame);
+  std::move(video_decode_cb).Run(Decryptor::kSuccess, decoded_frame);
 }
 
 void CdmAdapter::ResetDecoder(StreamType stream_type) {

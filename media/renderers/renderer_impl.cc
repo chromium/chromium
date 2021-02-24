@@ -954,7 +954,7 @@ void RendererImpl::OnVideoFrameRateChange(base::Optional<int> fps) {
   client_->OnVideoFrameRateChange(fps);
 }
 
-void RendererImpl::CleanUpTrackChange(base::RepeatingClosure on_finished,
+void RendererImpl::CleanUpTrackChange(base::OnceClosure on_finished,
                                       bool* ended,
                                       bool* playing) {
   *playing = false;
@@ -981,15 +981,15 @@ void RendererImpl::OnSelectedVideoTracksChanged(
 
   // 'fixing' the stream -> restarting if its the same stream,
   //                        reinitializing if it is different.
-  base::RepeatingClosure fix_stream_cb;
+  base::OnceClosure fix_stream_cb;
   if (stream && stream != current_video_stream_) {
-    fix_stream_cb = base::BindRepeating(
-        &RendererImpl::ReinitializeVideoRenderer, weak_this_, stream,
-        GetMediaTime(), base::Passed(&change_completed_cb));
+    fix_stream_cb =
+        base::BindOnce(&RendererImpl::ReinitializeVideoRenderer, weak_this_,
+                       stream, GetMediaTime(), std::move(change_completed_cb));
   } else {
-    fix_stream_cb = base::BindRepeating(
+    fix_stream_cb = base::BindOnce(
         &RendererImpl::RestartVideoRenderer, weak_this_, current_video_stream_,
-        GetMediaTime(), base::Passed(&change_completed_cb));
+        GetMediaTime(), std::move(change_completed_cb));
   }
 
   pending_video_track_change_ = true;
@@ -1014,16 +1014,16 @@ void RendererImpl::OnEnabledAudioTracksChanged(
 
   // 'fixing' the stream -> restarting if its the same stream,
   //                        reinitializing if it is different.
-  base::RepeatingClosure fix_stream_cb;
+  base::OnceClosure fix_stream_cb;
 
   if (stream && stream != current_audio_stream_) {
-    fix_stream_cb = base::BindRepeating(
-        &RendererImpl::ReinitializeAudioRenderer, weak_this_, stream,
-        GetMediaTime(), base::Passed(&change_completed_cb));
+    fix_stream_cb =
+        base::BindOnce(&RendererImpl::ReinitializeAudioRenderer, weak_this_,
+                       stream, GetMediaTime(), std::move(change_completed_cb));
   } else {
-    fix_stream_cb = base::BindRepeating(
+    fix_stream_cb = base::BindOnce(
         &RendererImpl::RestartAudioRenderer, weak_this_, current_audio_stream_,
-        GetMediaTime(), base::Passed(&change_completed_cb));
+        GetMediaTime(), std::move(change_completed_cb));
   }
 
   {

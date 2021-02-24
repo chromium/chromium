@@ -568,10 +568,10 @@ class MockDecryptor : public Decryptor {
                void(const VideoDecoderConfig& config, DecoderInitCB init_cb));
   MOCK_METHOD2(DecryptAndDecodeAudio,
                void(scoped_refptr<DecoderBuffer> encrypted,
-                    const AudioDecodeCB& audio_decode_cb));
+                    AudioDecodeCB audio_decode_cb));
   MOCK_METHOD2(DecryptAndDecodeVideo,
                void(scoped_refptr<DecoderBuffer> encrypted,
-                    const VideoDecodeCB& video_decode_cb));
+                    VideoDecodeCB video_decode_cb));
   MOCK_METHOD1(ResetDecoder, void(StreamType stream_type));
   MOCK_METHOD1(DeinitializeDecoder, void(StreamType stream_type));
   MOCK_METHOD0(CanAlwaysDecrypt, bool());

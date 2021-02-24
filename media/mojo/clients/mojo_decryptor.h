@@ -43,23 +43,13 @@ class MojoDecryptor final : public Decryptor {
   void InitializeVideoDecoder(const VideoDecoderConfig& config,
                               DecoderInitCB init_cb) final;
   void DecryptAndDecodeAudio(scoped_refptr<DecoderBuffer> encrypted,
-                             const AudioDecodeCB& audio_decode_cb) final;
+                             AudioDecodeCB audio_decode_cb) final;
   void DecryptAndDecodeVideo(scoped_refptr<DecoderBuffer> encrypted,
-                             const VideoDecodeCB& video_decode_cb) final;
+                             VideoDecodeCB video_decode_cb) final;
   void ResetDecoder(StreamType stream_type) final;
   void DeinitializeDecoder(StreamType stream_type) final;
 
  private:
-  // These are once callbacks corresponding to repeating callbacks DecryptCB,
-  // DecoderInitCB, AudioDecodeCB and VideoDecodeCB. They are needed so that we
-  // can use WrapCallbackWithDefaultInvokeIfNotRun to make sure callbacks always
-  // run.
-  // TODO(xhwang): Update Decryptor to use OnceCallback. The change is easy,
-  // but updating tests is hard given gmock doesn't support move-only types.
-  // See http://crbug.com/751838
-  using AudioDecodeOnceCB = base::OnceCallback<AudioDecodeCB::RunType>;
-  using VideoDecodeOnceCB = base::OnceCallback<VideoDecodeCB::RunType>;
-
   // Called when a buffer is decrypted.
   void OnBufferDecrypted(DecryptCB decrypt_cb,
                          Status status,
@@ -67,11 +57,11 @@ class MojoDecryptor final : public Decryptor {
   void OnBufferRead(DecryptCB decrypt_cb,
                     Status status,
                     scoped_refptr<DecoderBuffer> buffer);
-  void OnAudioDecoded(AudioDecodeOnceCB audio_decode_cb,
+  void OnAudioDecoded(AudioDecodeCB audio_decode_cb,
                       Status status,
                       std::vector<mojom::AudioBufferPtr> audio_buffers);
   void OnVideoDecoded(
-      VideoDecodeOnceCB video_decode_cb,
+      VideoDecodeCB video_decode_cb,
       Status status,
       const scoped_refptr<VideoFrame>& video_frame,
       mojo::PendingRemote<mojom::FrameResourceReleaser> releaser);

@@ -511,12 +511,12 @@ void AesDecryptor::InitializeVideoDecoder(const VideoDecoderConfig& config,
 }
 
 void AesDecryptor::DecryptAndDecodeAudio(scoped_refptr<DecoderBuffer> encrypted,
-                                         const AudioDecodeCB& audio_decode_cb) {
+                                         AudioDecodeCB audio_decode_cb) {
   NOTREACHED() << "AesDecryptor does not support audio decoding";
 }
 
 void AesDecryptor::DecryptAndDecodeVideo(scoped_refptr<DecoderBuffer> encrypted,
-                                         const VideoDecodeCB& video_decode_cb) {
+                                         VideoDecodeCB video_decode_cb) {
   NOTREACHED() << "AesDecryptor does not support video decoding";
 }
 

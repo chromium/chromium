@@ -106,9 +106,9 @@ class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
   void InitializeVideoDecoder(const VideoDecoderConfig& config,
                               DecoderInitCB init_cb) final;
   void DecryptAndDecodeAudio(scoped_refptr<DecoderBuffer> encrypted,
-                             const AudioDecodeCB& audio_decode_cb) final;
+                             AudioDecodeCB audio_decode_cb) final;
   void DecryptAndDecodeVideo(scoped_refptr<DecoderBuffer> encrypted,
-                             const VideoDecodeCB& video_decode_cb) final;
+                             VideoDecodeCB video_decode_cb) final;
   void ResetDecoder(StreamType stream_type) final;
   void DeinitializeDecoder(StreamType stream_type) final;
 

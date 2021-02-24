@@ -113,17 +113,6 @@ TEST_F(BindToCurrentLoopTest, BoolOnce) {
   EXPECT_TRUE(bool_var);
 }
 
-TEST_F(BindToCurrentLoopTest, BoundUniquePtrBoolRepeating) {
-  bool bool_val = false;
-  std::unique_ptr<bool> unique_ptr_bool(new bool(true));
-  base::RepeatingClosure cb = BindToCurrentLoop(base::BindRepeating(
-      &BoundBoolSetFromUniquePtr, &bool_val, base::Passed(&unique_ptr_bool)));
-  cb.Run();
-  EXPECT_FALSE(bool_val);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(bool_val);
-}
-
 TEST_F(BindToCurrentLoopTest, BoundUniquePtrBoolOnce) {
   bool bool_val = false;
   std::unique_ptr<bool> unique_ptr_bool(new bool(true));
@@ -155,19 +144,6 @@ TEST_F(BindToCurrentLoopTest, PassedUniquePtrBoolOnce) {
   base::OnceCallback<void(std::unique_ptr<bool>)> cb =
       BindToCurrentLoop(base::BindOnce(&BoundBoolSetFromUniquePtr, &bool_val));
   std::move(cb).Run(std::make_unique<bool>(true));
-  EXPECT_FALSE(bool_val);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(bool_val);
-}
-
-TEST_F(BindToCurrentLoopTest, BoundUniquePtrArrayBoolRepeating) {
-  bool bool_val = false;
-  std::unique_ptr<bool[]> unique_ptr_array_bool(new bool[1]);
-  unique_ptr_array_bool[0] = true;
-  base::RepeatingClosure cb = BindToCurrentLoop(
-      base::BindRepeating(&BoundBoolSetFromUniquePtrArray, &bool_val,
-                          base::Passed(&unique_ptr_array_bool)));
-  cb.Run();
   EXPECT_FALSE(bool_val);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(bool_val);
@@ -214,20 +190,6 @@ TEST_F(BindToCurrentLoopTest, PassedUniquePtrArrayBoolOnce) {
   std::unique_ptr<bool[]> unique_ptr_array_bool(new bool[1]);
   unique_ptr_array_bool[0] = true;
   std::move(cb).Run(std::move(unique_ptr_array_bool));
-  EXPECT_FALSE(bool_val);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(bool_val);
-}
-
-TEST_F(BindToCurrentLoopTest, BoundUniquePtrFreeDeleterBoolRepeating) {
-  bool bool_val = false;
-  std::unique_ptr<bool, base::FreeDeleter> unique_ptr_free_deleter_bool(
-      static_cast<bool*>(malloc(sizeof(bool))));
-  *unique_ptr_free_deleter_bool = true;
-  base::RepeatingClosure cb = BindToCurrentLoop(
-      base::BindRepeating(&BoundBoolSetFromUniquePtrFreeDeleter, &bool_val,
-                          base::Passed(&unique_ptr_free_deleter_bool)));
-  cb.Run();
   EXPECT_FALSE(bool_val);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(bool_val);

@@ -152,7 +152,7 @@ class MEDIA_EXPORT RendererImpl final : public Renderer {
                             base::OnceClosure restart_completed_cb);
 
   // Fix state booleans after the stream switching is finished.
-  void CleanUpTrackChange(base::RepeatingClosure on_finished,
+  void CleanUpTrackChange(base::OnceClosure on_finished,
                           bool* ended,
                           bool* playing);
 
