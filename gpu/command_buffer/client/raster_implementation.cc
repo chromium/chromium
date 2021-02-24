@@ -1321,6 +1321,9 @@ void RasterImplementation::ReadbackImagePixels(
   GLint shm_id = scoped_shared_memory.shm_id();
   GLuint shm_offset = scoped_shared_memory.offset();
   void* address = scoped_shared_memory.address();
+  auto result =
+      GetResultAs<cmds::ReadbackImagePixelsINTERNALImmediate::Result>();
+  *result = 0;
 
   if (dst_info.colorSpace()) {
     size_t bytes_written = dst_info.colorSpace()->writeToMemory(address);
@@ -1330,8 +1333,12 @@ void RasterImplementation::ReadbackImagePixels(
   helper_->ReadbackImagePixelsINTERNALImmediate(
       src_x, src_y, dst_info.width(), dst_info.height(), dst_row_bytes,
       dst_info.colorType(), dst_info.alphaType(), shm_id, shm_offset,
-      pixels_offset, source_mailbox.name);
+      pixels_offset, GetResultShmId(), result.offset(), source_mailbox.name);
   WaitForCmd();
+
+  if (!*result)
+    return;
+
   memcpy(dst_pixels, static_cast<uint8_t*>(address) + pixels_offset, dst_size);
 }
 

@@ -982,6 +982,8 @@ struct ReadbackImagePixelsINTERNALImmediate {
   static const cmd::ArgFlags kArgFlags = cmd::kAtLeastN;
   static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(2);
 
+  typedef uint32_t Result;
+
   static uint32_t ComputeDataSize() {
     return static_cast<uint32_t>(sizeof(GLbyte) * 16);
   }
@@ -1002,6 +1004,8 @@ struct ReadbackImagePixelsINTERNALImmediate {
             GLint _shm_id,
             GLuint _shm_offset,
             GLuint _pixels_offset,
+            GLint _result_shm_id,
+            GLuint _result_shm_offset,
             const GLbyte* _mailbox) {
     SetHeader();
     src_x = _src_x;
@@ -1014,6 +1018,8 @@ struct ReadbackImagePixelsINTERNALImmediate {
     shm_id = _shm_id;
     shm_offset = _shm_offset;
     pixels_offset = _pixels_offset;
+    result_shm_id = _result_shm_id;
+    result_shm_offset = _result_shm_offset;
     memcpy(ImmediateDataAddress(this), _mailbox, ComputeDataSize());
   }
 
@@ -1028,10 +1034,13 @@ struct ReadbackImagePixelsINTERNALImmediate {
             GLint _shm_id,
             GLuint _shm_offset,
             GLuint _pixels_offset,
+            GLint _result_shm_id,
+            GLuint _result_shm_offset,
             const GLbyte* _mailbox) {
     static_cast<ValueType*>(cmd)->Init(
         _src_x, _src_y, _dst_width, _dst_height, _row_bytes, _dst_sk_color_type,
-        _dst_sk_alpha_type, _shm_id, _shm_offset, _pixels_offset, _mailbox);
+        _dst_sk_alpha_type, _shm_id, _shm_offset, _pixels_offset,
+        _result_shm_id, _result_shm_offset, _mailbox);
     const uint32_t size = ComputeSize();
     return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
   }
@@ -1047,10 +1056,12 @@ struct ReadbackImagePixelsINTERNALImmediate {
   int32_t shm_id;
   uint32_t shm_offset;
   uint32_t pixels_offset;
+  int32_t result_shm_id;
+  uint32_t result_shm_offset;
 };
 
-static_assert(sizeof(ReadbackImagePixelsINTERNALImmediate) == 44,
-              "size of ReadbackImagePixelsINTERNALImmediate should be 44");
+static_assert(sizeof(ReadbackImagePixelsINTERNALImmediate) == 52,
+              "size of ReadbackImagePixelsINTERNALImmediate should be 52");
 static_assert(
     offsetof(ReadbackImagePixelsINTERNALImmediate, header) == 0,
     "offset of ReadbackImagePixelsINTERNALImmediate header should be 0");
@@ -1087,6 +1098,14 @@ static_assert(offsetof(ReadbackImagePixelsINTERNALImmediate, pixels_offset) ==
                   40,
               "offset of ReadbackImagePixelsINTERNALImmediate pixels_offset "
               "should be 40");
+static_assert(offsetof(ReadbackImagePixelsINTERNALImmediate, result_shm_id) ==
+                  44,
+              "offset of ReadbackImagePixelsINTERNALImmediate result_shm_id "
+              "should be 44");
+static_assert(offsetof(ReadbackImagePixelsINTERNALImmediate,
+                       result_shm_offset) == 48,
+              "offset of ReadbackImagePixelsINTERNALImmediate "
+              "result_shm_offset should be 48");
 
 struct ConvertYUVAMailboxesToRGBINTERNALImmediate {
   typedef ConvertYUVAMailboxesToRGBINTERNALImmediate ValueType;

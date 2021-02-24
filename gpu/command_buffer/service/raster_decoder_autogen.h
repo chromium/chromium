@@ -349,6 +349,8 @@ error::Error RasterDecoderImpl::HandleReadbackImagePixelsINTERNALImmediate(
   GLint shm_id = static_cast<GLint>(c.shm_id);
   GLuint shm_offset = static_cast<GLuint>(c.shm_offset);
   GLuint pixels_offset = static_cast<GLuint>(c.pixels_offset);
+  GLint result_shm_id = static_cast<GLint>(c.result_shm_id);
+  GLuint result_shm_offset = static_cast<GLuint>(c.result_shm_offset);
   uint32_t mailbox_size;
   if (!gles2::GLES2Util::ComputeDataSize<GLbyte, 16>(1, &mailbox_size)) {
     return error::kOutOfBounds;
@@ -364,7 +366,8 @@ error::Error RasterDecoderImpl::HandleReadbackImagePixelsINTERNALImmediate(
   }
   DoReadbackImagePixelsINTERNAL(src_x, src_y, dst_width, dst_height, row_bytes,
                                 dst_sk_color_type, dst_sk_alpha_type, shm_id,
-                                shm_offset, pixels_offset, mailbox);
+                                shm_offset, pixels_offset, result_shm_id,
+                                result_shm_offset, mailbox);
   return error::kNoError;
 }
 

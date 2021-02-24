@@ -38,7 +38,7 @@ GL_APICALL void         GL_APIENTRY glClearPaintCacheINTERNAL (void);
 // |mailboxes| argument is the concatenation of the source mailbox and the destination mailbox (32 bytes total)
 GL_APICALL void         GL_APIENTRY glCopySubTextureINTERNAL (GLint xoffset, GLint yoffset, GLint x, GLint y, GLsizei width, GLsizei height, GLboolean unpack_flip_y, const GLbyte* mailboxes);
 GL_APICALL void         GL_APIENTRY glWritePixelsINTERNAL (GLint x_offset, GLint y_offset, GLuint src_width, GLuint src_height, GLuint row_bytes, GLuint src_sk_color_type, GLuint src_sk_alpha_type, GLint shm_id, GLuint shm_offset, GLuint pixels_offset, const GLbyte* mailbox);
-GL_APICALL void         GL_APIENTRY glReadbackImagePixelsINTERNAL (GLint src_x, GLint src_y, GLuint dst_width, GLuint dst_height, GLuint row_bytes, GLuint dst_sk_color_type, GLuint dst_sk_alpha_type, GLint shm_id, GLuint shm_offset, GLuint pixels_offset, const GLbyte* mailbox);
+GL_APICALL void         GL_APIENTRY glReadbackImagePixelsINTERNAL (GLint src_x, GLint src_y, GLuint dst_width, GLuint dst_height, GLuint row_bytes, GLuint dst_sk_color_type, GLuint dst_sk_alpha_type, GLint shm_id, GLuint shm_offset, GLuint pixels_offset, GLint result_shm_id, GLuint result_shm_offset, const GLbyte* mailbox);
 GL_APICALL void         GL_APIENTRY glConvertYUVAMailboxesToRGBINTERNAL (GLenum planes_yuv_color_space, GLenum plane_config, GLenum subsampling, const GLbyte* mailboxes);
 GL_APICALL void         GL_APIENTRY glTraceBeginCHROMIUM (const char* category_name, const char* trace_name);
 GL_APICALL void         GL_APIENTRY glTraceEndCHROMIUM (void);

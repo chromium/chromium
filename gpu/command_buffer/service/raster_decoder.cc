@@ -613,6 +613,8 @@ class RasterDecoderImpl final : public RasterDecoder,
                                      GLint shm_id,
                                      GLuint shm_offset,
                                      GLuint pixels_offset,
+                                     GLint result_shm_id,
+                                     GLuint result_shm_offset,
                                      const volatile GLbyte* mailbox);
   void DoConvertYUVAMailboxesToRGBINTERNAL(GLenum yuv_color_space,
                                            GLenum plane_config,
@@ -2626,6 +2628,8 @@ void RasterDecoderImpl::DoReadbackImagePixelsINTERNAL(
     GLint shm_id,
     GLuint shm_offset,
     GLuint pixels_offset,
+    GLint result_shm_id,
+    GLuint result_shm_offset,
     const volatile GLbyte* mailbox) {
   if (dst_sk_color_type > kLastEnum_SkColorType) {
     LOCAL_SET_GL_ERROR(GL_INVALID_ENUM, "ReadbackImagePixels",
@@ -2724,11 +2728,20 @@ void RasterDecoderImpl::DoReadbackImagePixelsINTERNAL(
     return;
   }
 
+  typedef cmds::ReadbackImagePixelsINTERNALImmediate::Result Result;
+  Result* result = nullptr;
+  if (result_shm_id != 0) {
+    result = GetSharedMemoryAs<Result*>(result_shm_id, result_shm_offset,
+                                        sizeof(*result));
+  }
+
   bool success =
       sk_image->readPixels(dst_info, shm_address, row_bytes, src_x, src_y);
   if (!success) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackImagePixels",
                        "Failed to read pixels from SkImage");
+  } else if (result != nullptr) {
+    *result = 1;
   }
 }
 

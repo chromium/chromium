@@ -174,7 +174,6 @@ crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-text
 crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-Bitmaprenderer-toBlob-worker.html [ Pass Failure ]
 crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-clearRect.html [ Pass Failure ]
 crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-getImageData.html [ Pass Failure ]
-crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-createImageBitmap-recursive.html [ Pass Failure ]
 
 # We're rolling these tests out on Windows first, other platforms to follow. When removing [ Skip ]
 # for a platform please add the platform tag to the failing tests above.

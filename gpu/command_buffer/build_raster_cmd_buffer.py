@@ -203,6 +203,7 @@ _FUNCTION_INFO = {
     'type': 'PUT',
     'count': 16,  # GL_MAILBOX_SIZE_CHROMIUM
     'unit_test': False,
+    'result': ['uint32_t'],
     'trace_level': 2,
   },
   'ConvertYUVAMailboxesToRGBINTERNAL': {
