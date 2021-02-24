@@ -222,10 +222,7 @@ PolicyServiceImpl::~PolicyServiceImpl() {
 void PolicyServiceImpl::AddObserver(PolicyDomain domain,
                                     PolicyService::Observer* observer) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  std::unique_ptr<Observers>& list = observers_[domain];
-  if (!list)
-    list = std::make_unique<Observers>();
-  list->AddObserver(observer);
+  observers_[domain].AddObserver(observer);
 }
 
 void PolicyServiceImpl::RemoveObserver(PolicyDomain domain,
@@ -234,8 +231,8 @@ void PolicyServiceImpl::RemoveObserver(PolicyDomain domain,
   auto it = observers_.find(domain);
   if (it == observers_.end())
     return;
-  it->second->RemoveObserver(observer);
-  if (it->second->empty()) {
+  it->second.RemoveObserver(observer);
+  if (it->second.empty()) {
     observers_.erase(it);
   }
 }
@@ -346,7 +343,7 @@ void PolicyServiceImpl::NotifyNamespaceUpdated(
   DCHECK(thread_checker_.CalledOnValidThread());
   auto iterator = observers_.find(ns.domain);
   if (iterator != observers_.end()) {
-    for (auto& observer : *iterator->second)
+    for (auto& observer : iterator->second)
       observer.OnPolicyUpdated(ns, previous, current);
   }
 }
@@ -500,7 +497,7 @@ void PolicyServiceImpl::MaybeNotifyPolicyDomainStatusChange(
   if (iter == observers_.end())
     return;
 
-  for (auto& observer : *iter->second) {
+  for (auto& observer : iter->second) {
     observer.OnPolicyServiceInitialized(policy_domain);
     if (policy_domain_status_[policy_domain] ==
         PolicyDomainStatus::kPolicyReady)
