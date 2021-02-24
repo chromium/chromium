@@ -13,18 +13,19 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/message_center/ash_message_center_lock_screen_controller.h"
 #include "ash/system/message_center/message_center_utils.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_utils.h"
 #include "ash/system/unified/notification_icons_controller.h"
-#include "ash/system/unified/unified_system_tray.h"
 #include "base/i18n/number_formatting.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/message_center/message_center.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 
@@ -93,20 +94,14 @@ class NumberIconImageSource : public gfx::CanvasImageSource {
 }  // namespace
 
 NotificationCounterView::NotificationCounterView(
-    UnifiedSystemTray* tray,
+    Shelf* shelf,
     NotificationIconsController* controller)
-    : TrayItemView(tray->shelf()), controller_(controller) {
-  system_tray_model_observation_.Observe(tray->model());
+    : TrayItemView(shelf), controller_(controller) {
   CreateImageView();
   SetVisible(false);
-  Shell::Get()->session_controller()->AddObserver(this);
-
-  OnSystemTrayButtonSizeChanged(tray->model()->GetSystemTrayButtonSize());
 }
 
-NotificationCounterView::~NotificationCounterView() {
-  Shell::Get()->session_controller()->RemoveObserver(this);
-}
+NotificationCounterView::~NotificationCounterView() = default;
 
 void NotificationCounterView::Update() {
   size_t notification_count = message_center_utils::GetNotificationCount();
@@ -114,7 +109,7 @@ void NotificationCounterView::Update() {
   // If we are currently showing icons of some notifications in the tray, this
   // counter should not be shown.
   const bool tray_notification_icons_shown =
-      icons_view_visible_ && controller_ &&
+      controller_->icons_view_visible() &&
       controller_->TrayItemHasNotification();
   if (notification_count == 0 || tray_notification_icons_shown ||
       !controller_->ShouldShowNotificationItemsInTray()) {
@@ -138,23 +133,7 @@ base::string16 NotificationCounterView::GetAccessibleNameString() const {
       message_center::MessageCenter::Get()->NotificationCount());
 }
 
-void NotificationCounterView::Reset() {
-  system_tray_model_observation_.Reset();
-}
-
 void NotificationCounterView::HandleLocaleChange() {
-  Update();
-}
-
-void NotificationCounterView::OnSessionStateChanged(
-    session_manager::SessionState state) {
-  Update();
-}
-
-void NotificationCounterView::OnSystemTrayButtonSizeChanged(
-    UnifiedSystemTrayModel::SystemTrayButtonSize system_tray_size) {
-  icons_view_visible_ =
-      system_tray_size != UnifiedSystemTrayModel::SystemTrayButtonSize::kSmall;
   Update();
 }
 
@@ -211,12 +190,9 @@ QuietModeView::QuietModeView(Shelf* shelf) : TrayItemView(shelf) {
   image_view()->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_QUIET_MODE_TOOLTIP));
   SetVisible(false);
-  Shell::Get()->session_controller()->AddObserver(this);
 }
 
-QuietModeView::~QuietModeView() {
-  Shell::Get()->session_controller()->RemoveObserver(this);
-}
+QuietModeView::~QuietModeView() = default;
 
 void QuietModeView::Update() {
   // TODO(yamaguchi): Add this check when new style of the system tray is
@@ -236,10 +212,6 @@ void QuietModeView::Update() {
 void QuietModeView::HandleLocaleChange() {
   image_view()->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_QUIET_MODE_TOOLTIP));
-}
-
-void QuietModeView::OnSessionStateChanged(session_manager::SessionState state) {
-  Update();
 }
 
 const char* QuietModeView::GetClassName() const {

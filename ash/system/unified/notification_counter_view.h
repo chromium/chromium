@@ -6,16 +6,13 @@
 #define ASH_SYSTEM_UNIFIED_NOTIFICATION_COUNTER_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/tray/tray_item_view.h"
-#include "ash/system/unified/unified_system_tray_model.h"
 #include "base/macros.h"
 #include "base/scoped_observation.h"
 
 namespace ash {
 
 class NotificationIconsController;
-class UnifiedSystemTray;
 
 // Maximum count of notification shown by a number label. "+" icon is shown
 // instead if it exceeds this limit.
@@ -23,12 +20,9 @@ constexpr size_t kTrayNotificationMaxCount = 9;
 
 // A notification counter view in UnifiedSystemTray button. This will be shown
 // when there's notification and the tray doesn't show any notification icons.
-class ASH_EXPORT NotificationCounterView
-    : public TrayItemView,
-      public SessionObserver,
-      public UnifiedSystemTrayModel::Observer {
+class ASH_EXPORT NotificationCounterView : public TrayItemView {
  public:
-  NotificationCounterView(UnifiedSystemTray* tray,
+  NotificationCounterView(Shelf* shelf,
                           NotificationIconsController* controller);
   ~NotificationCounterView() override;
   NotificationCounterView(const NotificationCounterView&) = delete;
@@ -39,18 +33,8 @@ class ASH_EXPORT NotificationCounterView
   // Returns a string describing the current state for accessibility.
   base::string16 GetAccessibleNameString() const;
 
-  // Reset the view by removing observer to |model_|.
-  void Reset();
-
   // TrayItemView:
   void HandleLocaleChange() override;
-
-  // SessionObserver:
-  void OnSessionStateChanged(session_manager::SessionState state) override;
-
-  // UnifiedSystemTrayModel::Observer:
-  void OnSystemTrayButtonSizeChanged(
-      UnifiedSystemTrayModel::SystemTrayButtonSize system_tray_size) override;
 
   // views::TrayItemView:
   const char* GetClassName() const override;
@@ -64,15 +48,7 @@ class ASH_EXPORT NotificationCounterView
   // |kTrayNotificationMaxCount| + 1 indicates the plus icon.
   int count_for_display_ = 0;
 
-  // Indicates if the notification icons view is set to be shown. Currently, we
-  // show the icon view in medium or large screen size.
-  bool icons_view_visible_ = false;
-
   NotificationIconsController* const controller_;
-
-  base::ScopedObservation<UnifiedSystemTrayModel,
-                          UnifiedSystemTrayModel::Observer>
-      system_tray_model_observation_{this};
 };
 
 // An icon view to indicate the number of hidden notifications (besides from the
@@ -97,7 +73,7 @@ class ASH_EXPORT HiddenNotificationCountView : public TrayItemView {
 };
 
 // A do-not-distrub icon view in UnifiedSystemTray button.
-class QuietModeView : public TrayItemView, public SessionObserver {
+class QuietModeView : public TrayItemView {
  public:
   explicit QuietModeView(Shelf* shelf);
   ~QuietModeView() override;
@@ -108,9 +84,6 @@ class QuietModeView : public TrayItemView, public SessionObserver {
 
   // TrayItemView:
   void HandleLocaleChange() override;
-
-  // SessionObserver:
-  void OnSessionStateChanged(session_manager::SessionState state) override;
 
   // views::TrayItemView:
   const char* GetClassName() const override;

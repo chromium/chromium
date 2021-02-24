@@ -53,26 +53,18 @@ class NotificationCounterViewTest : public AshTestBase,
     AshTestBase::SetUp();
     scoped_feature_list_.InitWithFeatureState(features::kScalableStatusArea,
                                               IsScalableStatusAreaEnabled());
-
     tray_ = std::make_unique<UnifiedSystemTray>(GetPrimaryShelf());
-
-    if (IsScalableStatusAreaEnabled()) {
-      notification_icons_controller_ =
-          std::make_unique<NotificationIconsController>(tray_.get());
-      notification_icons_controller_->AddNotificationTrayItems(
-          tray_->tray_container());
-      notification_counter_view_ = std::make_unique<NotificationCounterView>(
-          tray_.get(), notification_icons_controller_.get());
-    } else {
-      notification_counter_view_ =
-          std::make_unique<NotificationCounterView>(tray_.get(), nullptr);
-    }
+    notification_icons_controller_ =
+        std::make_unique<NotificationIconsController>(tray_.get());
+    notification_icons_controller_->AddNotificationTrayItems(
+        tray_->tray_container());
+    notification_counter_view_ =
+        notification_icons_controller_->notification_counter_view();
   }
 
   bool IsScalableStatusAreaEnabled() { return GetParam(); }
 
   void TearDown() override {
-    notification_counter_view_.reset();
     notification_icons_controller_.reset();
     tray_.reset();
     AshTestBase::TearDown();
@@ -80,14 +72,14 @@ class NotificationCounterViewTest : public AshTestBase,
 
  protected:
   NotificationCounterView* notification_counter_view() {
-    return notification_counter_view_.get();
+    return notification_counter_view_;
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<UnifiedSystemTray> tray_;
   std::unique_ptr<NotificationIconsController> notification_icons_controller_;
-  std::unique_ptr<NotificationCounterView> notification_counter_view_;
+  NotificationCounterView* notification_counter_view_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -165,6 +157,10 @@ class HiddenNotificationCountViewTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
+    // We will not do parameterized test here since this class is removed in
+    // future CLs.
+    scoped_feature_list_.InitAndEnableFeature(features::kScalableStatusArea);
+
     tray_ = std::make_unique<UnifiedSystemTray>(GetPrimaryShelf());
     notification_icons_controller_ =
         std::make_unique<NotificationIconsController>(tray_.get());
@@ -186,6 +182,7 @@ class HiddenNotificationCountViewTest : public AshTestBase {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<UnifiedSystemTray> tray_;
   std::unique_ptr<NotificationIconsController> notification_icons_controller_;
   HiddenNotificationCountView* hidden_notification_count_view_;

@@ -28,9 +28,7 @@ class TimeTrayItemView;
 class CurrentLocaleView;
 class ImeModeView;
 class ManagedDeviceTrayItemView;
-class NotificationCounterView;
 class NotificationIconsController;
-class QuietModeView;
 class PrivacyScreenToastController;
 class TrayItemView;
 class UnifiedSliderBubbleController;
@@ -214,8 +212,6 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
   ManagedDeviceTrayItemView* const managed_device_view_;
   CameraMicTrayItemView* const camera_view_;
   CameraMicTrayItemView* const mic_view_;
-  NotificationCounterView* const notification_counter_item_;
-  QuietModeView* const quiet_mode_view_;
   tray::TimeTrayItemView* const time_view_;
 
   tray::NetworkTrayView* network_tray_view_ = nullptr;

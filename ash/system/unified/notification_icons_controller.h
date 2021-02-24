@@ -22,6 +22,8 @@ class UnifiedSystemTray;
 class TrayContainer;
 class TrayItemView;
 class HiddenNotificationCountView;
+class NotificationCounterView;
+class QuietModeView;
 
 // Tray item view for notification icon shown in the tray.
 class ASH_EXPORT NotificationIconTrayItemView : public TrayItemView {
@@ -94,6 +96,9 @@ class ASH_EXPORT NotificationIconsController
   // Returns a string describing the current state for accessibility.
   base::string16 GetAccessibleNameString() const;
 
+  // Update notification indicators, including counters and quiet mode view.
+  void UpdateNotificationIndicators();
+
   // UnifiedSystemTrayModel::Observer:
   void OnSystemTrayButtonSizeChanged(
       UnifiedSystemTrayModel::SystemTrayButtonSize system_tray_size) override;
@@ -113,6 +118,12 @@ class ASH_EXPORT NotificationIconsController
   HiddenNotificationCountView* hidden_notification_count_view() {
     return hidden_notification_count_view_;
   }
+
+  NotificationCounterView* notification_counter_view() {
+    return notification_counter_view_;
+  }
+
+  QuietModeView* quiet_mode_view() { return quiet_mode_view_; }
 
   bool icons_view_visible() const { return icons_view_visible_; }
 
@@ -143,6 +154,8 @@ class ASH_EXPORT NotificationIconsController
   UnifiedSystemTray* tray_;
 
   HiddenNotificationCountView* hidden_notification_count_view_ = nullptr;
+  NotificationCounterView* notification_counter_view_ = nullptr;
+  QuietModeView* quiet_mode_view_ = nullptr;
   TrayItemView* separator_ = nullptr;
 
   base::ScopedObservation<UnifiedSystemTrayModel,
