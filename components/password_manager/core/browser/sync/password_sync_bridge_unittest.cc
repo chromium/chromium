@@ -86,7 +86,7 @@ MATCHER_P(FormHasSignonRealm, expected_signon_realm, "") {
 
 // |*arg| must be of type PasswordStoreChange.
 MATCHER_P(ChangeHasPrimaryKey, expected_primary_key, "") {
-  return arg.primary_key() == expected_primary_key;
+  return arg.primary_key().value() == expected_primary_key;
 }
 
 // |*arg| must be of type SyncMetadataStoreChangeList.
@@ -208,7 +208,7 @@ class FakeDatabase {
 
   std::vector<InsecureCredential> ReadSecurityIssues(
       FormPrimaryKey parent_key) {
-    return security_issues_[parent_key.value()];
+    return security_issues_[parent_key];
   }
 
   PasswordStoreChangeList AddLogin(const PasswordForm& form,
@@ -217,9 +217,10 @@ class FakeDatabase {
       *error = error_;
     }
     if (error_ == AddLoginError::kNone) {
-      data_[primary_key_] = std::make_unique<PasswordForm>(form);
-      return {
-          PasswordStoreChange(PasswordStoreChange::ADD, form, primary_key_++)};
+      data_[FormPrimaryKey(primary_key_)] =
+          std::make_unique<PasswordForm>(form);
+      return {PasswordStoreChange(PasswordStoreChange::ADD, form,
+                                  FormPrimaryKey(primary_key_++))};
     }
     return PasswordStoreChangeList();
   }
@@ -227,8 +228,8 @@ class FakeDatabase {
   bool AddInsecureCredentials(base::span<const InsecureCredential> issues) {
     if (issues.empty())
       return true;
-    int primary_key = GetPrimaryKey(issues[0]);
-    DCHECK_NE(primary_key, -1);
+    FormPrimaryKey primary_key = GetPrimaryKey(issues[0]);
+    DCHECK_NE(primary_key.value(), -1);
     DCHECK(!base::Contains(security_issues_, primary_key));
     for (const auto& issue : issues)
       security_issues_[primary_key].push_back(issue);
@@ -237,9 +238,11 @@ class FakeDatabase {
 
   PasswordStoreChangeList AddLoginForPrimaryKey(int primary_key,
                                                 const PasswordForm& form) {
-    DCHECK_EQ(0U, data_.count(primary_key));
-    data_[primary_key] = std::make_unique<PasswordForm>(form);
-    return {PasswordStoreChange(PasswordStoreChange::ADD, form, primary_key)};
+    FormPrimaryKey form_primary_key(primary_key);
+    DCHECK_EQ(0U, data_.count(form_primary_key));
+    data_[form_primary_key] = std::make_unique<PasswordForm>(form);
+    return {
+        PasswordStoreChange(PasswordStoreChange::ADD, form, form_primary_key)};
   }
 
   PasswordStoreChangeList UpdateLogin(const PasswordForm& form,
@@ -247,8 +250,8 @@ class FakeDatabase {
     if (error) {
       *error = UpdateLoginError::kNone;
     }
-    int key = GetPrimaryKey(form);
-    DCHECK_NE(-1, key);
+    FormPrimaryKey key = GetPrimaryKey(form);
+    DCHECK_NE(-1, key.value());
     data_[key] = std::make_unique<PasswordForm>(form);
     return {PasswordStoreChange(PasswordStoreChange::UPDATE, form, key)};
   }
@@ -256,14 +259,14 @@ class FakeDatabase {
   bool UpdateInsecureCredentialsSync(
       const PasswordForm& form,
       base::span<const InsecureCredential> credentials) {
-    int key = GetPrimaryKey(form);
-    if (key == -1)
+    FormPrimaryKey key = GetPrimaryKey(form);
+    if (key.value() == -1)
       return false;
     security_issues_[key].assign(credentials.begin(), credentials.end());
     return true;
   }
 
-  PasswordStoreChangeList RemoveLogin(int key) {
+  PasswordStoreChangeList RemoveLogin(FormPrimaryKey key) {
     DCHECK_NE(0U, data_.count(key));
     PasswordForm form = *data_[key];
     data_.erase(key);
@@ -273,28 +276,28 @@ class FakeDatabase {
   void SetAddLoginError(AddLoginError error) { error_ = error; }
 
  private:
-  int GetPrimaryKey(const PasswordForm& form) const {
+  FormPrimaryKey GetPrimaryKey(const PasswordForm& form) const {
     for (const auto& pair : data_) {
       if (ArePasswordFormUniqueKeysEqual(*pair.second, form)) {
         return pair.first;
       }
     }
-    return -1;
+    return FormPrimaryKey(-1);
   }
 
-  int GetPrimaryKey(const InsecureCredential& issue) const {
+  FormPrimaryKey GetPrimaryKey(const InsecureCredential& issue) const {
     for (const auto& pair : data_) {
       if (pair.second->username_value == issue.username &&
           pair.second->signon_realm == issue.signon_realm) {
         return pair.first;
       }
     }
-    return -1;
+    return FormPrimaryKey(-1);
   }
 
   int primary_key_ = 1;
   PrimaryKeyToFormMap data_;
-  std::map<int, std::vector<InsecureCredential>> security_issues_;
+  std::map<FormPrimaryKey, std::vector<InsecureCredential>> security_issues_;
   AddLoginError error_ = AddLoginError::kNone;
 
   DISALLOW_COPY_AND_ASSIGN(FakeDatabase);
@@ -341,7 +344,7 @@ class MockPasswordStoreSync : public PasswordStoreSync {
               (override));
   MOCK_METHOD(PasswordStoreChangeList,
               RemoveLoginByPrimaryKeySync,
-              (int),
+              (FormPrimaryKey),
               (override));
   MOCK_METHOD(DatabaseCleanupResult, DeleteUndecryptableLogins, (), (override));
   MOCK_METHOD(PasswordStoreChangeList,
@@ -519,13 +522,13 @@ TEST_P(PasswordSyncBridgeTest, ShouldForwardLocalChangesToTheProcessor) {
   PasswordStoreChangeList changes;
   changes.push_back(PasswordStoreChange(PasswordStoreChange::ADD,
                                         MakePasswordForm(kSignonRealm1),
-                                        /*primary_key=*/1));
+                                        FormPrimaryKey(1)));
   changes.push_back(PasswordStoreChange(PasswordStoreChange::UPDATE,
                                         MakePasswordForm(kSignonRealm2),
-                                        /*primary_key=*/2));
+                                        FormPrimaryKey(2)));
   changes.push_back(PasswordStoreChange(PasswordStoreChange::REMOVE,
                                         MakePasswordForm(kSignonRealm3),
-                                        /*primary_key=*/3));
+                                        FormPrimaryKey(3)));
   PasswordStoreSync::MetadataStore* store =
       mock_password_store_sync()->GetMetadataStore();
   EXPECT_CALL(mock_processor(),
@@ -547,13 +550,13 @@ TEST_P(PasswordSyncBridgeTest,
   PasswordStoreChangeList changes;
   changes.push_back(PasswordStoreChange(PasswordStoreChange::ADD,
                                         MakePasswordForm(kSignonRealm1),
-                                        /*primary_key=*/1));
+                                        FormPrimaryKey(1)));
   changes.push_back(PasswordStoreChange(PasswordStoreChange::UPDATE,
                                         MakePasswordForm(kSignonRealm2),
-                                        /*primary_key=*/2));
+                                        FormPrimaryKey(2)));
   changes.push_back(PasswordStoreChange(PasswordStoreChange::REMOVE,
                                         MakePasswordForm(kSignonRealm3),
-                                        /*primary_key=*/3));
+                                        FormPrimaryKey(3)));
 
   EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_CALL(mock_processor(), Delete).Times(0);
@@ -683,7 +686,7 @@ TEST_P(PasswordSyncBridgeTest, ShouldApplyRemoteDeletion) {
   testing::InSequence in_sequence;
   EXPECT_CALL(*mock_password_store_sync(), BeginTransaction());
   EXPECT_CALL(*mock_password_store_sync(),
-              RemoveLoginByPrimaryKeySync(kPrimaryKey));
+              RemoveLoginByPrimaryKeySync(FormPrimaryKey(kPrimaryKey)));
   EXPECT_CALL(*mock_password_store_sync(), CommitTransaction());
   EXPECT_CALL(*mock_password_store_sync(),
               NotifyLoginsChanged(
@@ -1326,8 +1329,8 @@ TEST_P(PasswordSyncBridgeTest, ShouldPutSecurityIssuesOnLoginChange) {
       MakeInsecureCredentials(kForm, kIssuesTypes));
 
   PasswordStoreChangeList changes;
-  changes.push_back(
-      PasswordStoreChange(PasswordStoreChange::UPDATE, kForm, kPrimaryKey1));
+  changes.push_back(PasswordStoreChange(PasswordStoreChange::UPDATE, kForm,
+                                        FormPrimaryKey(kPrimaryKey1)));
   EXPECT_CALL(
       mock_processor(),
       Put(kPrimaryKeyStr1, EntityDataHasSecurityIssueTypes(kIssuesTypes), _));

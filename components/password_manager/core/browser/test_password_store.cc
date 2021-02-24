@@ -431,7 +431,7 @@ std::vector<InsecureCredential> TestPasswordStore::ReadSecurityIssues(
 }
 
 PasswordStoreChangeList TestPasswordStore::RemoveLoginByPrimaryKeySync(
-    int primary_key) {
+    FormPrimaryKey primary_key) {
   NOTIMPLEMENTED();
   return PasswordStoreChangeList();
 }

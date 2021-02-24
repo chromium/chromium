@@ -21,6 +21,9 @@
 
 namespace password_manager {
 
+// PasswordForm primary key which is used in the database.
+using FormPrimaryKey = base::StrongAlias<class FormPrimaryKeyTag, int>;
+
 // Pair of a value and the name of the element that contained this value.
 using ValueElementPair = std::pair<base::string16, base::string16>;
 

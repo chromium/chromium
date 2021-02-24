@@ -164,7 +164,7 @@ PasswordStoreChangeList PasswordStoreImpl::DisableAutoSignInForOriginsImpl(
   for (const auto& pair : key_to_form_map) {
     if (origins_updated.count(pair.second->url)) {
       changes.emplace_back(PasswordStoreChange::UPDATE, *pair.second,
-                           /*primary_key=*/pair.first);
+                           FormPrimaryKey(pair.first));
     }
   }
 
@@ -365,7 +365,7 @@ std::vector<InsecureCredential> PasswordStoreImpl::ReadSecurityIssues(
 }
 
 PasswordStoreChangeList PasswordStoreImpl::RemoveLoginByPrimaryKeySync(
-    int primary_key) {
+    FormPrimaryKey primary_key) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   PasswordStoreChangeList changes;
   if (login_db_ && login_db_->RemoveLoginByPrimaryKey(primary_key, &changes)) {

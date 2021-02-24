@@ -55,9 +55,9 @@ TEST_F(InsecureCredentialsObserverTest, DeletePassword) {
 TEST_F(InsecureCredentialsObserverTest, UpdateFormNoPasswordChange) {
   const PasswordForm form = TestForm(kUsername);
   EXPECT_CALL(remove_callback(), Run).Times(0);
-  ProcessLoginsChanged(
-      {PasswordStoreChange(PasswordStoreChange::UPDATE, form, 1000, false)},
-      remove_callback().Get());
+  ProcessLoginsChanged({PasswordStoreChange(PasswordStoreChange::UPDATE, form,
+                                            FormPrimaryKey(1000), false)},
+                       remove_callback().Get());
   histogram_tester().ExpectTotalCount(kHistogramName, 0);
 }
 
@@ -65,9 +65,9 @@ TEST_F(InsecureCredentialsObserverTest, UpdatePassword) {
   const PasswordForm form = TestForm(kUsername);
   EXPECT_CALL(remove_callback(), Run(form.signon_realm, form.username_value,
                                      RemoveInsecureCredentialsReason::kUpdate));
-  ProcessLoginsChanged(
-      {PasswordStoreChange(PasswordStoreChange::UPDATE, form, 1000, true)},
-      remove_callback().Get());
+  ProcessLoginsChanged({PasswordStoreChange(PasswordStoreChange::UPDATE, form,
+                                            FormPrimaryKey(1000), true)},
+                       remove_callback().Get());
   histogram_tester().ExpectUniqueSample(kHistogramName,
                                         PasswordStoreChange::UPDATE, 1);
 }
@@ -78,8 +78,9 @@ TEST_F(InsecureCredentialsObserverTest, UpdateTwice) {
                                      RemoveInsecureCredentialsReason::kUpdate));
   ProcessLoginsChanged(
       {PasswordStoreChange(PasswordStoreChange::UPDATE, TestForm(kUsernameNew),
-                           1000, false),
-       PasswordStoreChange(PasswordStoreChange::UPDATE, form, 1001, true)},
+                           FormPrimaryKey(1000), false),
+       PasswordStoreChange(PasswordStoreChange::UPDATE, form,
+                           FormPrimaryKey(1001), true)},
       remove_callback().Get());
   histogram_tester().ExpectUniqueSample(kHistogramName,
                                         PasswordStoreChange::UPDATE, 1);

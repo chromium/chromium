@@ -58,8 +58,8 @@ PasswordStoreChangeList AddChangeForForm(const PasswordForm& form) {
 PasswordStoreChangeList UpdateChangeForForm(const PasswordForm& form,
                                             const bool password_changed) {
   return PasswordStoreChangeList(
-      1,
-      PasswordStoreChange(PasswordStoreChange::UPDATE, form, password_changed));
+      1, PasswordStoreChange(PasswordStoreChange::UPDATE, form,
+                             FormPrimaryKey(1), password_changed));
 }
 
 PasswordStoreChangeList RemoveChangeForForm(const PasswordForm& form) {
@@ -301,7 +301,7 @@ TEST_F(LoginDatabaseTest, Logins) {
   // correctly.
   PasswordStoreChangeList changes = db().AddLogin(form);
   ASSERT_EQ(AddChangeForForm(form), changes);
-  EXPECT_EQ(1, changes[0].primary_key());
+  EXPECT_EQ(1, changes[0].primary_key().value());
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
   ASSERT_EQ(1U, result.size());
   EXPECT_EQ(form, *result[0]);
@@ -310,7 +310,7 @@ TEST_F(LoginDatabaseTest, Logins) {
 
   EXPECT_EQ(db().GetAllLogins(&key_to_form_map), FormRetrievalResult::kSuccess);
   EXPECT_EQ(1U, key_to_form_map.size());
-  EXPECT_EQ(form, *key_to_form_map[1]);
+  EXPECT_EQ(form, *key_to_form_map[FormPrimaryKey(1)]);
   key_to_form_map.clear();
 
   // Match against an exact copy.
@@ -349,7 +349,7 @@ TEST_F(LoginDatabaseTest, Logins) {
   // Let's imagine the user logs into the secure site.
   changes = db().AddLogin(form4);
   ASSERT_EQ(AddChangeForForm(form4), changes);
-  EXPECT_EQ(2, changes[0].primary_key());
+  EXPECT_EQ(2, changes[0].primary_key().value());
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
   EXPECT_EQ(2U, result.size());
   result.clear();
@@ -362,7 +362,7 @@ TEST_F(LoginDatabaseTest, Logins) {
   // The user chose to forget the original but not the new.
   EXPECT_TRUE(db().RemoveLogin(form, &changes));
   ASSERT_EQ(1U, changes.size());
-  EXPECT_EQ(1, changes[0].primary_key());
+  EXPECT_EQ(1, changes[0].primary_key().value());
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
   EXPECT_EQ(1U, result.size());
   result.clear();
@@ -397,7 +397,7 @@ TEST_F(LoginDatabaseTest, Logins) {
   // Make sure everything can disappear.
   EXPECT_TRUE(db().RemoveLogin(form4, &changes));
   ASSERT_EQ(1U, changes.size());
-  EXPECT_EQ(2, changes[0].primary_key());
+  EXPECT_EQ(2, changes[0].primary_key().value());
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
   EXPECT_EQ(0U, result.size());
   EXPECT_TRUE(db().IsEmpty());
@@ -419,7 +419,7 @@ TEST_F(LoginDatabaseTest, AddLoginReturnsPrimaryKey) {
   PasswordStoreChangeList change_list = db().AddLogin(form);
   ASSERT_EQ(1U, change_list.size());
   EXPECT_EQ(AddChangeForForm(form), change_list);
-  EXPECT_EQ(1, change_list[0].primary_key());
+  EXPECT_EQ(1, change_list[0].primary_key().value());
 }
 
 TEST_F(LoginDatabaseTest, RemoveLoginsByPrimaryKey) {
@@ -437,7 +437,7 @@ TEST_F(LoginDatabaseTest, RemoveLoginsByPrimaryKey) {
   // correctly.
   PasswordStoreChangeList change_list = db().AddLogin(form);
   ASSERT_EQ(1U, change_list.size());
-  int primary_key = change_list[0].primary_key();
+  FormPrimaryKey primary_key = change_list[0].primary_key();
   EXPECT_EQ(AddChangeForForm(form), change_list);
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
   ASSERT_EQ(1U, result.size());
@@ -463,7 +463,7 @@ TEST_F(LoginDatabaseTest, ShouldNotRecyclePrimaryKeys) {
   // Add the form.
   PasswordStoreChangeList change_list = db().AddLogin(form);
   ASSERT_EQ(1U, change_list.size());
-  int primary_key1 = change_list[0].primary_key();
+  FormPrimaryKey primary_key1 = change_list[0].primary_key();
   change_list.clear();
   // Delete the form
   EXPECT_TRUE(db().RemoveLoginByPrimaryKey(primary_key1, &change_list));
@@ -1010,8 +1010,8 @@ TEST_F(LoginDatabaseTest, ClearPrivateData_SavedPasswords) {
   db().RemoveLoginsCreatedBetween(now, base::Time(), &changes);
   ASSERT_EQ(2U, changes.size());
   // The 3rd and the 4th should have been deleted.
-  EXPECT_EQ(3, changes[0].primary_key());
-  EXPECT_EQ(4, changes[1].primary_key());
+  EXPECT_EQ(3, changes[0].primary_key().value());
+  EXPECT_EQ(4, changes[1].primary_key().value());
 
   // Should have deleted two logins.
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
@@ -1022,8 +1022,8 @@ TEST_F(LoginDatabaseTest, ClearPrivateData_SavedPasswords) {
   db().RemoveLoginsCreatedBetween(base::Time(), back_30_days, &changes);
   ASSERT_EQ(2U, changes.size());
   // The 1st and the 5th should have been deleted.
-  EXPECT_EQ(1, changes[0].primary_key());
-  EXPECT_EQ(5, changes[1].primary_key());
+  EXPECT_EQ(1, changes[0].primary_key().value());
+  EXPECT_EQ(5, changes[1].primary_key().value());
 
   // Should have deleted two logins.
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
@@ -1034,7 +1034,7 @@ TEST_F(LoginDatabaseTest, ClearPrivateData_SavedPasswords) {
   db().RemoveLoginsCreatedBetween(base::Time(), base::Time(), &changes);
   ASSERT_EQ(1U, changes.size());
   // The 2nd should have been deleted.
-  EXPECT_EQ(2, changes[0].primary_key());
+  EXPECT_EQ(2, changes[0].primary_key().value());
 
   // Verify nothing is left.
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
@@ -1361,7 +1361,7 @@ TEST_F(LoginDatabaseTest, UpdateLogin) {
   PasswordStoreChangeList changes = db().UpdateLogin(form);
   EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/true), changes);
   ASSERT_EQ(1U, changes.size());
-  EXPECT_EQ(1, changes[0].primary_key());
+  EXPECT_EQ(1, changes[0].primary_key().value());
 
   // When we retrieve the form from the store, it should have |in_store| set.
   form.in_store = PasswordForm::Store::kProfileStore;
@@ -1399,7 +1399,7 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithoutPassword) {
   PasswordStoreChangeList changes = db().UpdateLogin(form);
   EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/false), changes);
   ASSERT_EQ(1U, changes.size());
-  EXPECT_EQ(1, changes[0].primary_key());
+  EXPECT_EQ(1, changes[0].primary_key().value());
 
   // When we retrieve the form from the store, it should have |in_store| set.
   form.in_store = PasswordForm::Store::kProfileStore;
@@ -2646,8 +2646,8 @@ TEST_F(LoginDatabaseTest, GetLoginsBySignonRealmAndUsername) {
   EXPECT_EQ(FormRetrievalResult::kSuccess,
             db().GetLoginsBySignonRealmAndUsername(signon_realm, username1,
                                                    key_to_form_map));
-  EXPECT_THAT(key_to_form_map,
-              testing::ElementsAre(testing::Pair(1, Pointee(form1))));
+  EXPECT_THAT(key_to_form_map, testing::ElementsAre(testing::Pair(
+                                   FormPrimaryKey(1), Pointee(form1))));
 
   // Insert another form with the same username as form1.
   PasswordForm form3;
@@ -2661,9 +2661,10 @@ TEST_F(LoginDatabaseTest, GetLoginsBySignonRealmAndUsername) {
   EXPECT_EQ(FormRetrievalResult::kSuccess,
             db().GetLoginsBySignonRealmAndUsername(signon_realm, username1,
                                                    key_to_form_map));
-  EXPECT_THAT(key_to_form_map,
-              testing::ElementsAre(testing::Pair(1, Pointee(form1)),
-                                   testing::Pair(3, Pointee(form3))));
+  EXPECT_THAT(
+      key_to_form_map,
+      testing::ElementsAre(testing::Pair(FormPrimaryKey(1), Pointee(form1)),
+                           testing::Pair(FormPrimaryKey(3), Pointee(form3))));
 }
 
 class LoginDatabaseForAccountStoreTest : public testing::Test {

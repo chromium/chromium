@@ -119,7 +119,8 @@ class MockPasswordStore : public PasswordStore {
   MOCK_METHOD1(ReadAllLogins, FormRetrievalResult(PrimaryKeyToFormMap*));
   MOCK_METHOD1(ReadSecurityIssues,
                std::vector<InsecureCredential>(FormPrimaryKey));
-  MOCK_METHOD1(RemoveLoginByPrimaryKeySync, PasswordStoreChangeList(int));
+  MOCK_METHOD1(RemoveLoginByPrimaryKeySync,
+               PasswordStoreChangeList(FormPrimaryKey));
   MOCK_METHOD0(GetMetadataStore, PasswordStoreSync::MetadataStore*());
   MOCK_CONST_METHOD0(IsAccountStore, bool());
   MOCK_METHOD0(DeleteAndRecreateDatabaseFile, bool());

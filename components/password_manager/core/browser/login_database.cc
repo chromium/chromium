@@ -1168,7 +1168,7 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
     FillFormInStore(&form_with_encrypted_password);
     list.emplace_back(PasswordStoreChange::ADD,
                       std::move(form_with_encrypted_password),
-                      db_.GetLastInsertRowId(),
+                      FormPrimaryKey(db_.GetLastInsertRowId()),
                       /*password_changed=*/false);
     return list;
   }
@@ -1187,11 +1187,11 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
     PasswordForm removed_form = form;
     FillFormInStore(&removed_form);
     list.emplace_back(PasswordStoreChange::REMOVE, removed_form,
-                      old_primary_key_password.primary_key);
+                      FormPrimaryKey(old_primary_key_password.primary_key));
     FillFormInStore(&form_with_encrypted_password);
-    list.emplace_back(PasswordStoreChange::ADD,
-                      std::move(form_with_encrypted_password),
-                      db_.GetLastInsertRowId(), password_changed);
+    list.emplace_back(
+        PasswordStoreChange::ADD, std::move(form_with_encrypted_password),
+        FormPrimaryKey(db_.GetLastInsertRowId()), password_changed);
   } else if (error) {
     if (sqlite_error_code == 19 /*SQLITE_CONSTRAINT*/) {
       *error = AddLoginError::kConstraintViolation;
@@ -1285,9 +1285,9 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(const PasswordForm& form,
     PasswordForm form_with_encrypted_password = form;
     form_with_encrypted_password.encrypted_password = encrypted_password;
     FillFormInStore(&form_with_encrypted_password);
-    list.emplace_back(PasswordStoreChange::UPDATE,
-                      std::move(form_with_encrypted_password),
-                      old_primary_key_password.primary_key, password_changed);
+    list.emplace_back(
+        PasswordStoreChange::UPDATE, std::move(form_with_encrypted_password),
+        FormPrimaryKey(old_primary_key_password.primary_key), password_changed);
   } else if (error) {
     *error = UpdateLoginError::kNoUpdatedRecords;
   }
@@ -1324,13 +1324,13 @@ bool LoginDatabase::RemoveLogin(const PasswordForm& form,
     PasswordForm removed_form = form;
     FillFormInStore(&removed_form);
     changes->emplace_back(PasswordStoreChange::REMOVE, removed_form,
-                          old_primary_key_password.primary_key,
+                          FormPrimaryKey(old_primary_key_password.primary_key),
                           /*password_changed=*/true);
   }
   return true;
 }
 
-bool LoginDatabase::RemoveLoginByPrimaryKey(int primary_key,
+bool LoginDatabase::RemoveLoginByPrimaryKey(FormPrimaryKey primary_key,
                                             PasswordStoreChangeList* changes) {
   TRACE_EVENT0("passwords", "LoginDatabase::RemoveLoginByPrimaryKey");
   PasswordForm form;
@@ -1338,7 +1338,7 @@ bool LoginDatabase::RemoveLoginByPrimaryKey(int primary_key,
     changes->clear();
     sql::Statement s1(db_.GetCachedStatement(
         SQL_FROM_HERE, "SELECT * FROM logins WHERE id = ?"));
-    s1.BindInt(0, primary_key);
+    s1.BindInt(0, primary_key.value());
     if (!s1.Step()) {
       return false;
     }
@@ -1346,23 +1346,24 @@ bool LoginDatabase::RemoveLoginByPrimaryKey(int primary_key,
     EncryptionResult result = InitPasswordFormFromStatement(
         s1, /*decrypt_and_fill_password_value=*/false, &db_primary_key, &form);
     DCHECK_EQ(result, ENCRYPTION_RESULT_SUCCESS);
-    DCHECK_EQ(db_primary_key, primary_key);
+    DCHECK_EQ(db_primary_key, primary_key.value());
   }
 
 #if defined(OS_IOS)
-  DeleteEncryptedPasswordById(primary_key);
+  DeleteEncryptedPasswordById(primary_key.value());
 #endif
   DCHECK(!delete_by_id_statement_.empty());
   sql::Statement s2(
       db_.GetCachedStatement(SQL_FROM_HERE, delete_by_id_statement_.c_str()));
-  s2.BindInt(0, primary_key);
+  s2.BindInt(0, primary_key.value());
   if (!s2.Run() || db_.GetLastChangeCount() == 0) {
     return false;
   }
   if (changes) {
     FillFormInStore(&form);
     changes->emplace_back(PasswordStoreChange::REMOVE, std::move(form),
-                          primary_key, /*password_changed=*/true);
+                          primary_key,
+                          /*password_changed=*/true);
   }
   return true;
 }
@@ -1383,7 +1384,7 @@ bool LoginDatabase::RemoveLoginsCreatedBetween(
 
 #if defined(OS_IOS)
   for (const auto& pair : key_to_form_map) {
-    DeleteEncryptedPasswordById(pair.first);
+    DeleteEncryptedPasswordById(pair.first.value());
   }
 #endif
 
@@ -1402,7 +1403,7 @@ bool LoginDatabase::RemoveLoginsCreatedBetween(
     for (const auto& pair : key_to_form_map) {
       changes->emplace_back(PasswordStoreChange::REMOVE,
                             /*form=*/std::move(*pair.second),
-                            /*primary_key=*/pair.first,
+                            FormPrimaryKey(pair.first),
                             /*password_changed=*/true);
     }
   }

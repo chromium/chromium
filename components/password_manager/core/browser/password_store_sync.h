@@ -26,8 +26,8 @@ struct CompromisedCredentials;
 using InsecureCredential = CompromisedCredentials;
 using ForceInitialSyncCycle =
     base::StrongAlias<class ForceInitialSyncCycleTag, bool>;
-using FormPrimaryKey = base::StrongAlias<class FormPrimaryKeyTag, int>;
-using PrimaryKeyToFormMap = std::map<int, std::unique_ptr<PasswordForm>>;
+using PrimaryKeyToFormMap =
+    std::map<FormPrimaryKey, std::unique_ptr<PasswordForm>>;
 
 // This enum is used to determine result status when deleting undecryptable
 // logins from database.
@@ -161,7 +161,7 @@ class PasswordStoreSync {
 
   // Synchronous implementation to remove the login with the given primary key.
   virtual PasswordStoreChangeList RemoveLoginByPrimaryKeySync(
-      int primary_key) = 0;
+      FormPrimaryKey primary_key) = 0;
 
   // Notifies observers that password store data may have been changed.
   virtual void NotifyLoginsChanged(const PasswordStoreChangeList& changes) = 0;

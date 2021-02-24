@@ -106,7 +106,7 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
 
   // Removes the form with |primary_key| from the list of remembered password
   // forms. Returns true if the form was successfully removed from the database.
-  bool RemoveLoginByPrimaryKey(int primary_key,
+  bool RemoveLoginByPrimaryKey(FormPrimaryKey primary_key,
                                PasswordStoreChangeList* changes)
       WARN_UNUSED_RESULT;
 
