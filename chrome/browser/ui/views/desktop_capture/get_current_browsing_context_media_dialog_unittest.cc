@@ -28,6 +28,8 @@
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/web_dialogs/web_dialog_web_contents_delegate.h"
 
+// All tests are flaky on Win10: https://crbug.com/1181150
+#if !defined(OS_WIN)
 namespace {
 #if defined(OS_MAC)
 constexpr ui::KeyboardCode kDefaultKey = ui::VKEY_SPACE;
@@ -35,6 +37,7 @@ constexpr ui::KeyboardCode kDefaultKey = ui::VKEY_SPACE;
 constexpr ui::KeyboardCode kDefaultKey = ui::VKEY_RETURN;
 #endif
 }  // namespace
+#endif
 
 enum AutoAction { kNone, kAutoAccept, kAutoReject };
 
@@ -164,6 +167,8 @@ class GetCurrentBrowsingContextMediaDialogTest
   base::RunLoop run_loop_;
 };
 
+// All tests are flaky on Win10: https://crbug.com/1181150
+#if !defined(OS_WIN)
 TEST_F(GetCurrentBrowsingContextMediaDialogTest, CancelButtonAlwaysEnabled) {
   CustomSetUp(/*request_audio=*/true, /*approve_audio_by_default=*/true,
               /*is_closed_called=*/false);
@@ -300,5 +305,6 @@ TEST_F(GetCurrentBrowsingContextMediaDialogTest,
             l10n_util::GetStringUTF16(
                 IDS_GET_CURRENT_BROWSING_CONTEXT_MEDIA_DIALOG_TITLE));
 }
+#endif
 
 }  // namespace views
