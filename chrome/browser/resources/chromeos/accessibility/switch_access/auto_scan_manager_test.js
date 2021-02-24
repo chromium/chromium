@@ -33,7 +33,7 @@ SwitchAccessAutoScanManagerTest = class extends SwitchAccessE2ETest {
       window.defaultSetInterval = window.setInterval;
       window.defaultClearInterval = window.clearInterval;
       this.defaultMoveForward =
-          Navigator.instance.moveForward.bind(Navigator.instance);
+          Navigator.byItem.moveForward.bind(Navigator.byItem);
       this.moveForwardCount = 0;
 
       window.setInterval = function(func, delay) {
@@ -51,7 +51,7 @@ SwitchAccessAutoScanManagerTest = class extends SwitchAccessE2ETest {
         window.defaultClearInterval(intervalId);
       };
 
-      Navigator.instance.moveForward = () => {
+      Navigator.byItem.moveForward = () => {
         this.moveForwardCount++;
         this.onMoveForward_ && this.onMoveForward_();
         this.defaultMoveForward();

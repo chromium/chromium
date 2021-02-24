@@ -142,8 +142,7 @@ export class AutoScanManager {
     }
 
     this.intervalID_ = window.setInterval(
-        Navigator.instance.moveForward.bind(Navigator.instance),
-        currentScanTime);
+        Navigator.byItem.moveForward.bind(Navigator.byItem), currentScanTime);
   }
 
   /**

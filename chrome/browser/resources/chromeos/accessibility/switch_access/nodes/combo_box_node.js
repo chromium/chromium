@@ -77,7 +77,7 @@ class ComboBoxNode extends BasicNode {
     // TODO: figure out why a short timeout is needed here.
     window.setTimeout(() => {
       if (this.isGroup()) {
-        Navigator.instance.enterGroup();
+        Navigator.byItem.enterGroup();
       }
     }, 250);
   }

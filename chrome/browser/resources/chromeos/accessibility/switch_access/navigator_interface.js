@@ -7,7 +7,7 @@ import {SAChildNode, SARootNode} from './nodes/switch_access_node.js';
 const AutomationNode = chrome.automation.AutomationNode;
 
 /** @abstract */
-export class NavigatorInterface {
+export class ItemNavigatorInterface {
   /**
    * @param {!SAChildNode} node
    * @return {boolean}

@@ -7,7 +7,7 @@ import {AutoScanManager} from './auto_scan_manager.js';
 import {FocusRingManager} from './focus_ring_manager.js';
 import {FocusData, FocusHistory} from './history.js';
 import {MenuManager} from './menu_manager.js';
-import {NavigatorInterface} from './navigator_interface.js';
+import {ItemNavigatorInterface} from './navigator_interface.js';
 import {BackButtonNode} from './nodes/back_button_node.js';
 import {BasicNode, BasicRootNode} from './nodes/basic_node.js';
 import {DesktopNode} from './nodes/desktop_node.js';
@@ -22,7 +22,7 @@ import {SwitchAccessPredicate} from './switch_access_predicate.js';
 const AutomationNode = chrome.automation.AutomationNode;
 
 /** This class handles navigation amongst the elements onscreen. */
-export class ItemScanManager extends NavigatorInterface {
+export class ItemScanManager extends ItemNavigatorInterface {
   /**
    * @param {!AutomationNode} desktop
    */
@@ -50,7 +50,7 @@ export class ItemScanManager extends NavigatorInterface {
     this.init_();
   }
 
-  // =============== NavigatorInterface implementation ==============
+  // =============== ItemNavigatorInterface implementation ==============
 
   /** @override */
   currentGroupHasChild(node) {

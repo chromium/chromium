@@ -129,7 +129,7 @@ export class FocusHistory {
     }
 
     // If we don't have any valid history entries, fallback to the desktop node.
-    const desktop = new DesktopNode(Navigator.instance.desktopNode);
+    const desktop = new DesktopNode(Navigator.byItem.desktopNode);
     return new FocusData(desktop, desktop.firstChild);
   }
 

@@ -3,18 +3,19 @@
 // found in the LICENSE file.
 
 import {ItemScanManager} from './item_scan_manager.js';
-import {NavigatorInterface} from './navigator_interface.js';
+import {ItemNavigatorInterface} from './navigator_interface.js';
 
 export class Navigator {
   /** @param {!chrome.automation.AutomationNode} desktop */
   static initializeSingletonInstance(desktop) {
-    Navigator.instance_ = new ItemScanManager(desktop);
+    Navigator.item_manager_ = new ItemScanManager(desktop);
     window.getTreeForDebugging =
-        Navigator.instance_.getTreeForDebugging.bind(Navigator.instance_);
+        Navigator.item_manager_.getTreeForDebugging.bind(
+            Navigator.item_manager_);
   }
 
-  /** @type {!NavigatorInterface} instance */
-  static get instance() {
-    return Navigator.instance_;
+  /** @return {!ItemNavigatorInterface} */
+  static get byItem() {
+    return Navigator.item_manager_;
   }
 }

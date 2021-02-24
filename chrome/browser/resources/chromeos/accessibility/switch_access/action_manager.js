@@ -73,7 +73,7 @@ export class ActionManager {
    * opens the action menu. Otherwise performs the node's default action.
    */
   static onSelect() {
-    const node = Navigator.instance.currentNode;
+    const node = Navigator.byItem.currentNode;
     if (node.actions.length <= 1 || !node.location) {
       node.doDefaultAction();
       return;
@@ -320,12 +320,12 @@ export class ActionManager {
     // having the menu on the group stack interferes with some actions. We do
     // not close the menu bubble until we receive the ActionResponse CLOSE_MENU.
     // If we receive a different response, we re-enter the menu.
-    Navigator.instance.exitIfInGroup(MenuManager.menuAutomationNode);
+    Navigator.byItem.exitIfInGroup(MenuManager.menuAutomationNode);
     const response = this.actionNode_.performAction(action);
     if (response === SAConstants.ActionResponse.CLOSE_MENU) {
       MenuManager.close();
     } else {
-      Navigator.instance.jumpToSwitchAccessMenu();
+      Navigator.byItem.jumpToSwitchAccessMenu();
     }
 
     switch (response) {

@@ -60,7 +60,7 @@ export class SwitchAccess {
    * @param {!function(!AutomationNode): void} foundCallback
    */
   static findNodeMatching(findParams, foundCallback) {
-    const desktop = Navigator.instance.desktopNode;
+    const desktop = Navigator.byItem.desktopNode;
     // First, check if the node is currently in the tree.
     let node = desktop.find(findParams);
     if (node) {
@@ -101,8 +101,7 @@ export class SwitchAccess {
    */
   static error(errorType, errorString, shouldRecover = false) {
     if (shouldRecover) {
-      setTimeout(
-          Navigator.instance.moveToValidNode.bind(Navigator.instance), 0);
+      setTimeout(Navigator.byItem.moveToValidNode.bind(Navigator.byItem), 0);
     }
     const errorTypeCountForUMA = Object.keys(SAConstants.ErrorType).length;
     chrome.metricsPrivate.recordEnumerationValue(

@@ -393,7 +393,7 @@ export class TextNavigationManager {
    */
   updateClipboardHasData_() {
     this.clipboardHasData_ = true;
-    const node = Navigator.instance.currentNode;
+    const node = Navigator.byItem.currentNode;
     if (node.hasAction(SwitchAccessMenuAction.PASTE)) {
       ActionManager.refreshMenuForNode(node);
     }
