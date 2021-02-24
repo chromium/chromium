@@ -29,6 +29,7 @@
 #include "base/stl_util.h"
 #include "cc/paint/paint_flags.h"
 #include "ui/aura/client/capture_client.h"
+#include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/base/cursor/cursor_factory.h"
@@ -551,7 +552,8 @@ CaptureModeSession::CaptureModeSession(CaptureModeController* controller)
   display::Screen::GetScreen()->AddObserver(this);
   // Our event handling code assumes the capture bar widget has been initialized
   // already. So we start handling events after everything has been setup.
-  Shell::Get()->AddPreTargetHandler(this);
+  aura::Env::GetInstance()->AddPreTargetHandler(
+      this, ui::EventTarget::Priority::kSystem);
 
   capture_mode_util::TriggerAccessibilityAlert(l10n_util::GetStringFUTF8(
       IDS_ASH_SCREEN_CAPTURE_ALERT_OPEN,
@@ -564,7 +566,7 @@ CaptureModeSession::CaptureModeSession(CaptureModeController* controller)
 }
 
 CaptureModeSession::~CaptureModeSession() {
-  Shell::Get()->RemovePreTargetHandler(this);
+  aura::Env::GetInstance()->RemovePreTargetHandler(this);
   display::Screen::GetScreen()->RemoveObserver(this);
   current_root_->RemoveObserver(this);
   TabletModeController::Get()->RemoveObserver(this);

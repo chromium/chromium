@@ -217,15 +217,15 @@ VideoRecordingWatcher::VideoRecordingWatcher(
 
   // Note the following:
   // 1- We add |this| as a pre-target handler of the |window_being_recorded_| as
-  //    opposed to |Shell|. This ensures that we only get mouse events when the
+  //    opposed to |Env|. This ensures that we only get mouse events when the
   //    window being recorded is the target. This is more efficient since we
   //    won't get any event when the curosr is in a different display, or
   //    targeting a different window.
-  // 2- We use the |kSystem| priority to ensure that we get these events before
-  //    other pre-target handlers can consume them (e.g. when opening a capture
-  //    mode session to take a screenshot while recording a video).
+  // 2- We use the |kAccessibility| priority to ensure that we get these events
+  //    before other pre-target handlers can consume them (e.g. when opening a
+  //    capture mode session to take a screenshot while recording a video).
   window_being_recorded_->AddPreTargetHandler(
-      this, ui::EventTarget::Priority::kSystem);
+      this, ui::EventTarget::Priority::kAccessibility);
 }
 
 VideoRecordingWatcher::~VideoRecordingWatcher() {
