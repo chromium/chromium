@@ -125,7 +125,7 @@ class NET_EXPORT_PRIVATE NtlmClient {
       const std::string& hostname,
       size_t updated_target_info_len) const;
 
-  void CalculatePayloadLayout(bool is_unicode,
+  bool CalculatePayloadLayout(bool is_unicode,
                               const base::string16& domain,
                               const base::string16& username,
                               const std::string& hostname,

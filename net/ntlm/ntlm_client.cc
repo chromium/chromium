@@ -8,6 +8,8 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/logging.h"
+#include "base/numerics/safe_math.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/ntlm/ntlm.h"
 #include "net/ntlm/ntlm_buffer_reader.h"
@@ -132,6 +134,25 @@ size_t GetStringPayloadLength(const std::string& str, bool is_unicode) {
   return base::UTF8ToUTF16(str).length() * 2;
 }
 
+// Sets |buffer| to point to |length| bytes from |offset| and updates |offset|
+// past those bytes. In case of overflow, returns false.
+bool ComputeSecurityBuffer(uint32_t* offset,
+                           size_t length,
+                           SecurityBuffer* buffer) {
+  base::CheckedNumeric<uint16_t> length_checked = length;
+  if (!length_checked.IsValid()) {
+    return false;
+  }
+  base::CheckedNumeric<uint32_t> new_offset = *offset + length_checked;
+  if (!new_offset.IsValid()) {
+    return false;
+  }
+  buffer->offset = *offset;
+  buffer->length = length_checked.ValueOrDie();
+  *offset = new_offset.ValueOrDie();
+  return true;
+}
+
 }  // namespace
 
 NtlmClient::NtlmClient(NtlmFeatures features)
@@ -254,10 +275,12 @@ std::vector<uint8_t> NtlmClient::GenerateAuthenticateMessage(
   SecurityBuffer session_key_info;
   size_t authenticate_message_len;
 
-  CalculatePayloadLayout(is_unicode, domain, username, hostname,
-                         updated_target_info.size(), &lm_info, &ntlm_info,
-                         &domain_info, &username_info, &hostname_info,
-                         &session_key_info, &authenticate_message_len);
+  if (!CalculatePayloadLayout(is_unicode, domain, username, hostname,
+                              updated_target_info.size(), &lm_info, &ntlm_info,
+                              &domain_info, &username_info, &hostname_info,
+                              &session_key_info, &authenticate_message_len)) {
+    return {};
+  }
 
   NtlmBufferWriter authenticate_writer(authenticate_message_len);
   bool writer_result = WriteAuthenticateMessage(
@@ -323,7 +346,7 @@ std::vector<uint8_t> NtlmClient::GenerateAuthenticateMessage(
   return auth_msg;
 }
 
-void NtlmClient::CalculatePayloadLayout(
+bool NtlmClient::CalculatePayloadLayout(
     bool is_unicode,
     const base::string16& domain,
     const base::string16& username,
@@ -336,33 +359,24 @@ void NtlmClient::CalculatePayloadLayout(
     SecurityBuffer* hostname_info,
     SecurityBuffer* session_key_info,
     size_t* authenticate_message_len) const {
-  size_t upto = GetAuthenticateHeaderLength();
+  uint32_t offset = GetAuthenticateHeaderLength();
+  if (!ComputeSecurityBuffer(&offset, 0, session_key_info) ||
+      !ComputeSecurityBuffer(&offset, kResponseLenV1, lm_info) ||
+      !ComputeSecurityBuffer(
+          &offset, GetNtlmResponseLength(updated_target_info_len), ntlm_info) ||
+      !ComputeSecurityBuffer(
+          &offset, GetStringPayloadLength(domain, is_unicode), domain_info) ||
+      !ComputeSecurityBuffer(&offset,
+                             GetStringPayloadLength(username, is_unicode),
+                             username_info) ||
+      !ComputeSecurityBuffer(&offset,
+                             GetStringPayloadLength(hostname, is_unicode),
+                             hostname_info)) {
+    return false;
+  }
 
-  session_key_info->offset = upto;
-  session_key_info->length = 0;
-  upto += session_key_info->length;
-
-  lm_info->offset = upto;
-  lm_info->length = kResponseLenV1;
-  upto += lm_info->length;
-
-  ntlm_info->offset = upto;
-  ntlm_info->length = GetNtlmResponseLength(updated_target_info_len);
-  upto += ntlm_info->length;
-
-  domain_info->offset = upto;
-  domain_info->length = GetStringPayloadLength(domain, is_unicode);
-  upto += domain_info->length;
-
-  username_info->offset = upto;
-  username_info->length = GetStringPayloadLength(username, is_unicode);
-  upto += username_info->length;
-
-  hostname_info->offset = upto;
-  hostname_info->length = GetStringPayloadLength(hostname, is_unicode);
-  upto += hostname_info->length;
-
-  *authenticate_message_len = upto;
+  *authenticate_message_len = offset;
+  return true;
 }
 
 size_t NtlmClient::GetAuthenticateHeaderLength() const {
