@@ -275,8 +275,7 @@ struct ToV8Traits<T,
     // Callback functions are not wrappers nor clonable. ToV8 on a callback
     // function must be used only when it's in the same world.
     DCHECK(callback);
-    DCHECK(&callback->GetWorld() ==
-           &ScriptState::From(script_state->GetContext())->World());
+    DCHECK(&callback->GetWorld() == &script_state->World());
     return callback->CallbackObject().template As<v8::Value>();
   }
 };
@@ -292,8 +291,7 @@ struct ToV8Traits<T,
     // Callback Interfaces are not wrappers nor clonable. ToV8 on a callback
     // interface must be used only when it's in the same world.
     DCHECK(callback);
-    DCHECK(&callback->GetWorld() ==
-           &ScriptState::From(script_state->GetContext())->World());
+    DCHECK(&callback->GetWorld() == &script_state->World());
     return callback->CallbackObject().template As<v8::Value>();
   }
 };
@@ -546,7 +544,7 @@ struct ToV8Traits<IDLNullable<T>,
                                         T* callback) WARN_UNUSED_RESULT {
     if (!callback)
       return v8::Null(script_state->GetIsolate());
-    return ToV8Traits<CallbackFunctionBase>::ToV8(script_state, callback);
+    return ToV8Traits<T>::ToV8(script_state, callback);
   }
 };
 
@@ -559,7 +557,7 @@ struct ToV8Traits<IDLNullable<T>,
                                         T* callback) WARN_UNUSED_RESULT {
     if (!callback)
       return v8::Null(script_state->GetIsolate());
-    return ToV8Traits<CallbackInterfaceBase>::ToV8(script_state, callback);
+    return ToV8Traits<T>::ToV8(script_state, callback);
   }
 };
 
