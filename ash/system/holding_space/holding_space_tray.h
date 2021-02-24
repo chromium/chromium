@@ -151,8 +151,10 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
 
   // Updates this view (and its children) to reflect state as a potential drop
   // target. If `is_drop_target` is true, this view represents a suitable drop
-  // target for the current drag payload.
-  void UpdateDropTargetState(bool is_drop_target);
+  // target for the current drag payload. When specified, `event` pinpoints the
+  // location of the event which triggered this method call.
+  void UpdateDropTargetState(bool is_drop_target,
+                             const ui::LocatedEvent* event);
 
   std::unique_ptr<HoldingSpaceTrayBubble> bubble_;
   std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;

@@ -30,6 +30,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/layout/fill_layout.h"
@@ -114,7 +115,6 @@ std::unique_ptr<views::ImageView> CreateDefaultTrayIcon() {
   return icon;
 }
 
-// TODO(crbug.com/1171059): Add ripple effects.
 // Creates the overlay to be drawn over all other child views to indicate that
 // the parent view is a drop target and is capable of handling the current drag
 // payload.
@@ -321,29 +321,29 @@ bool HoldingSpaceTray::CanDrop(const ui::OSExchangeData& data) {
 // `drop_target_overlay_` if the cursor is within range of this view.
 void HoldingSpaceTray::OnDragEntered(const ui::DropTargetEvent& event) {
   if (ExtractUnpinnedFilePaths(event.data()).empty())
-    UpdateDropTargetState(/*is_drop_target=*/false);
+    UpdateDropTargetState(/*is_drop_target=*/false, &event);
   else
-    UpdateDropTargetState(/*is_drop_target=*/true);
+    UpdateDropTargetState(/*is_drop_target=*/true, &event);
 }
 
 int HoldingSpaceTray::OnDragUpdated(const ui::DropTargetEvent& event) {
   if (ExtractUnpinnedFilePaths(event.data()).empty()) {
-    UpdateDropTargetState(/*is_drop_target=*/false);
+    UpdateDropTargetState(/*is_drop_target=*/false, &event);
     return ui::DragDropTypes::DRAG_NONE;
   }
-  UpdateDropTargetState(/*is_drop_target=*/true);
+  UpdateDropTargetState(/*is_drop_target=*/true, &event);
   return ui::DragDropTypes::DRAG_COPY;
 }
 
 // TODO(crbug.com/1171059): Instead of handling `OnDragExited()`, hide the
 // `drop_target_overlay_` if the cursor is outside range of this view.
 void HoldingSpaceTray::OnDragExited() {
-  UpdateDropTargetState(/*is_drop_target=*/false);
+  UpdateDropTargetState(/*is_drop_target=*/false, /*event=*/nullptr);
 }
 
 DragOperation HoldingSpaceTray::OnPerformDrop(
     const ui::DropTargetEvent& event) {
-  UpdateDropTargetState(/*is_drop_target=*/false);
+  UpdateDropTargetState(/*is_drop_target=*/false, /*event=*/nullptr);
 
   std::vector<base::FilePath> unpinned_file_paths(
       ExtractUnpinnedFilePaths(event.data()));
@@ -607,10 +607,32 @@ bool HoldingSpaceTray::PreviewsShown() const {
 }
 
 // TODO(crbug.com/1171059): Animate translation of tray icons.
-void HoldingSpaceTray::UpdateDropTargetState(bool is_drop_target) {
+void HoldingSpaceTray::UpdateDropTargetState(bool is_drop_target,
+                                             const ui::LocatedEvent* event) {
   AnimateToTargetOpacity(drop_target_overlay_, is_drop_target ? 1.f : 0.f);
   AnimateToTargetOpacity(default_tray_icon_, is_drop_target ? 0.f : 1.f);
   AnimateToTargetOpacity(previews_tray_icon_, is_drop_target ? 0.f : 1.f);
+
+  const views::InkDropState target_ink_drop_state =
+      is_drop_target ? views::InkDropState::ACTION_PENDING
+                     : views::InkDropState::HIDDEN;
+  if (GetInkDrop()->GetTargetInkDropState() == target_ink_drop_state)
+    return;
+
+  // Even though `event` is a `ui::LocatedEvent`, it may *not* return `true` for
+  // `IsLocatedEvent()` which is checked downstream when animating the ink drop.
+  // Since the only data that needs to propagate is `event` location, create a
+  // synthetic event that *will* return `true` for `IsLocatedEvent()` if needed.
+  std::unique_ptr<ui::MouseEvent> mouse_moved_event;
+  if (event && !event->IsLocatedEvent()) {
+    mouse_moved_event = std::make_unique<ui::MouseEvent>(
+        ui::ET_MOUSE_MOVED, event->location_f(), event->root_location_f(),
+        event->time_stamp(), /*flags=*/ui::EF_NONE,
+        /*changed_button_flags=*/ui::EF_NONE);
+    event = mouse_moved_event.get();
+  }
+
+  AnimateInkDrop(target_ink_drop_state, event);
 }
 
 BEGIN_METADATA(HoldingSpaceTray, TrayBackgroundView)
