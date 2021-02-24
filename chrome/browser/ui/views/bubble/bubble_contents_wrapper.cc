@@ -96,6 +96,10 @@ void BubbleContentsWrapper::RenderViewHostChanged(
                                             gfx::Size(INT_MAX, INT_MAX));
 }
 
+void BubbleContentsWrapper::RenderProcessGone(base::TerminationStatus status) {
+  CloseUI();
+}
+
 void BubbleContentsWrapper::ShowUI() {
   if (host_)
     host_->ShowUI();
@@ -112,6 +116,7 @@ base::WeakPtr<BubbleContentsWrapper::Host> BubbleContentsWrapper::GetHost() {
 
 void BubbleContentsWrapper::SetHost(
     base::WeakPtr<BubbleContentsWrapper::Host> host) {
+  DCHECK(!web_contents_->IsCrashed());
   host_ = std::move(host);
 }
 

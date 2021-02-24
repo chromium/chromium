@@ -59,6 +59,7 @@ class BubbleContentsWrapper : public content::WebContentsDelegate,
   // content::WebContentsObserver:
   void RenderViewHostChanged(content::RenderViewHost* old_host,
                              content::RenderViewHost* new_host) override;
+  void RenderProcessGone(base::TerminationStatus status) override;
 
   // MojoBubbleWebUIController::Embedder:
   void CloseUI() override;

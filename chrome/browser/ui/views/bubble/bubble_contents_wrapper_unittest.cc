@@ -148,5 +148,16 @@ TEST_F(BubbleContentsWrapperTest, EscapeKeyClosesHost) {
   EXPECT_EQ(1, host.close_ui_called());
 }
 
+TEST_F(BubbleContentsWrapperTest, ClosesHostOnWebContentsCrash) {
+  MockHost host;
+  contents_wrapper()->SetHost(host.GetWeakPtr());
+  EXPECT_EQ(0, host.close_ui_called());
+
+  contents_wrapper()->RenderProcessGone(
+      base::TerminationStatus::TERMINATION_STATUS_PROCESS_CRASHED);
+
+  EXPECT_EQ(1, host.close_ui_called());
+}
+
 }  // namespace test
 }  // namespace views

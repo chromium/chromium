@@ -133,6 +133,11 @@ class WebUIBubbleManagerT : public WebUIBubbleManager {
       if (contents_wrapper->GetHost())
         contents_wrapper->CloseUI();
       DCHECK(!contents_wrapper->GetHost());
+
+      // If the wrapped WebContents has crashed ensure we reload it here before
+      // passing it over to the dialog host.
+      if (contents_wrapper->web_contents()->IsCrashed())
+        contents_wrapper->ReloadWebContents();
     } else {
       set_bubble_using_cached_web_contents(!!cached_contents_wrapper());
 
