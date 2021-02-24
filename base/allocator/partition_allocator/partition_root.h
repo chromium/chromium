@@ -695,7 +695,8 @@ ALWAYS_INLINE void PartitionAllocFreeForRefCounting(void* slot_start) {
   // supports reference counts.
   PA_DCHECK(root->allow_ref_count);
 
-#if DCHECK_IS_ON()
+  // memset() can be really expensive.
+#if EXPENSIVE_DCHECKS_ARE_ON()
   memset(slot_start, kFreedByte, slot_span->GetUtilizedSlotSize());
 #endif
 
@@ -861,7 +862,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   // Note: ref-count and cookies can be 0-sized.
   //
   // For more context, see the other "Layout inside the slot" comment below.
-#if DCHECK_IS_ON() || ZERO_RANDOMLY_ON_FREE
+#if EXPENSIVE_DCHECKS_ARE_ON() || ZERO_RANDOMLY_ON_FREE
   const size_t utilized_slot_size = slot_span->GetUtilizedSlotSize();
 #endif
 #if BUILDFLAG(USE_BACKUP_REF_PTR) || DCHECK_IS_ON()
@@ -896,7 +897,8 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
-#if DCHECK_IS_ON()
+  // memset() can be really expensive.
+#if EXPENSIVE_DCHECKS_ARE_ON()
   memset(slot_start, kFreedByte, utilized_slot_size);
 #elif ZERO_RANDOMLY_ON_FREE
   // `memset` only once in a while: we're trading off safety for time
@@ -1284,7 +1286,8 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   bool zero_fill = flags & PartitionAllocZeroFill;
   // LIKELY: operator new() calls malloc(), not calloc().
   if (LIKELY(!zero_fill)) {
-#if DCHECK_IS_ON()
+    // memset() can be really expensive.
+#if EXPENSIVE_DCHECKS_ARE_ON()
     memset(ret, kUninitializedByte, usable_size);
 #endif
   } else if (!is_already_zeroed) {

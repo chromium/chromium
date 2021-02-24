@@ -13,3 +13,8 @@ declare_args() {
   # Set to true to enable dcheck in Release builds.
   dcheck_always_on = dcheck_is_configurable
 }
+
+declare_args() {
+  # Set to false to disable EXPENSIVE_DCHECK()s.
+  enable_expensive_dchecks = is_debug || dcheck_always_on
+}
