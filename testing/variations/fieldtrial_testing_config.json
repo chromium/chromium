@@ -8026,7 +8026,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "avx2_allowed": "true",
+                        "avx2_allowed": "false",
                         "extra_saturation_margin": "5",
                         "gain_applier_speech_frames_threshold": "6",
                         "initial_saturation_margin": "20",
