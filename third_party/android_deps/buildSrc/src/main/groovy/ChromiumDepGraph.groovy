@@ -523,7 +523,7 @@ class ChromiumDepGraph {
             dep.licenseUrl = ""
             // This should match fetch_all._ANDROID_SDK_LICENSE_PATH.
             dep.licensePath = "licenses/Android_SDK_License-December_9_2016.txt"
-            if (dep.url?.isEmpty()) {
+            if (!dep.url) {
                 dep.url = "https://developers.google.com/android/guides/setup"
             }
         } else if (dep.id?.startsWith("com_google_firebase_")) {
@@ -534,7 +534,7 @@ class ChromiumDepGraph {
                 dep.licensePath = "licenses/Android_SDK_License-December_9_2016.txt"
             }
             // Some firebase dependencies don't set their URL.
-            if (dep.url?.isEmpty()) {
+            if (!dep.url) {
                 dep.url = "https://firebase.google.com"
             }
         } else if (dep.licenseUrl?.equals("http://openjdk.java.net/legal/gplv2+ce.html")) {

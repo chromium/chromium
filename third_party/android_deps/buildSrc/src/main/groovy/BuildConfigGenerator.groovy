@@ -133,10 +133,10 @@ class BuildConfigGenerator extends DefaultTask {
                                                                        repositoryPath))
             new File("${absoluteDepDir}/OWNERS").write(makeOwners())
             if (!skipLicenses) {
-                if (!dependency.licensePath?.trim()?.isEmpty()) {
+                if (dependency.licensePath?.trim()) {
                     new File("${absoluteDepDir}/LICENSE").write(
                             new File("${normalisedRepoPath}/${dependency.licensePath}").text)
-                } else if (!dependency.licenseUrl?.trim()?.isEmpty()) {
+                } else if (dependency.licenseUrl?.trim()) {
                     File destFile = new File("${absoluteDepDir}/LICENSE")
                     downloadTasks.add(downloadExecutor.submit {
                         downloadFile(dependency.id, dependency.licenseUrl, destFile)
