@@ -213,6 +213,12 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
     dawn_desc.depthStencilAttachment = nullptr;
   }
 
+  if (descriptor->hasOcclusionQuerySet()) {
+    dawn_desc.occlusionQuerySet = AsDawnType(descriptor->occlusionQuerySet());
+  } else {
+    dawn_desc.occlusionQuerySet = nullptr;
+  }
+
   GPURenderPassEncoder* encoder = MakeGarbageCollected<GPURenderPassEncoder>(
       device_,
       GetProcs().commandEncoderBeginRenderPass(GetHandle(), &dawn_desc));

@@ -179,6 +179,14 @@ void GPURenderPassEncoder::executeBundles(
                                              dawn_bundles.get());
 }
 
+void GPURenderPassEncoder::beginOcclusionQuery(uint32_t queryIndex) {
+  GetProcs().renderPassEncoderBeginOcclusionQuery(GetHandle(), queryIndex);
+}
+
+void GPURenderPassEncoder::endOcclusionQuery() {
+  GetProcs().renderPassEncoderEndOcclusionQuery(GetHandle());
+}
+
 void GPURenderPassEncoder::writeTimestamp(GPUQuerySet* querySet,
                                           uint32_t queryIndex) {
   GetProcs().renderPassEncoderWriteTimestamp(GetHandle(), querySet->GetHandle(),
