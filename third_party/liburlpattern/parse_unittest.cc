@@ -94,7 +94,8 @@ TEST(ParseTest, FixedInUnbalancedGroup) {
 }
 
 TEST(ParseTest, FixedWithModifier) {
-  RunParseTest("/foo?", absl::InvalidArgumentError("Unexpected MODIFIER"));
+  RunParseTest("/foo?",
+               absl::InvalidArgumentError("Unexpected OTHER_MODIFIER"));
 }
 
 TEST(ParseTest, Regex) {
@@ -164,10 +165,78 @@ TEST(ParseTest, RegexWithModifier) {
 
 TEST(ParseTest, RegexLikeFullWildcard) {
   std::vector<Part> expected_parts = {
-      Part(PartType::kFullWildcard, /*name=*/"0", /*prefix=*/"/", "",
+      Part(PartType::kFullWildcard, /*name=*/"0", /*prefix=*/"/", /*value=*/"",
            /*suffix=*/"", Modifier::kNone),
   };
   RunParseTest("/(.*)", expected_parts);
+}
+
+TEST(ParseTest, Wildcard) {
+  std::vector<Part> expected_parts = {
+      Part(PartType::kFullWildcard, /*name=*/"0", /*prefix=*/"/", /*value=*/"",
+           /*suffix=*/"", Modifier::kNone),
+  };
+  RunParseTest("/*", expected_parts);
+}
+
+TEST(ParseTest, WildcardWithModifierStar) {
+  std::vector<Part> expected_parts = {
+      Part(PartType::kFullWildcard, /*name=*/"0", /*prefix=*/"/", /*value=*/"",
+           /*suffix=*/"", Modifier::kZeroOrMore),
+  };
+  RunParseTest("/**", expected_parts);
+}
+
+TEST(ParseTest, WildcardWithModifierPlus) {
+  std::vector<Part> expected_parts = {
+      Part(PartType::kFullWildcard, /*name=*/"0", /*prefix=*/"/", /*value=*/"",
+           /*suffix=*/"", Modifier::kOneOrMore),
+  };
+  RunParseTest("/*+", expected_parts);
+}
+
+TEST(ParseTest, WildcardWithModifierQuestion) {
+  std::vector<Part> expected_parts = {
+      Part(PartType::kFullWildcard, /*name=*/"0", /*prefix=*/"/", /*value=*/"",
+           /*suffix=*/"", Modifier::kOptional),
+  };
+  RunParseTest("/*?", expected_parts);
+}
+
+TEST(ParseTest, WildcardFollowingWildcardWithModifierStart) {
+  std::vector<Part> expected_parts = {
+      Part(PartType::kFullWildcard, /*name=*/"0", /*prefix=*/"/", /*value=*/"",
+           /*suffix=*/"", Modifier::kZeroOrMore),
+      Part(PartType::kFullWildcard, /*name=*/"1", /*prefix=*/"", /*value=*/"",
+           /*suffix=*/"", Modifier::kNone),
+  };
+  RunParseTest("/***", expected_parts);
+}
+
+TEST(ParseTest, WildcardWithMultipleModifiersPlus) {
+  RunParseTest("/**+", absl::InvalidArgumentError("expected END"));
+}
+
+TEST(ParseTest, WildcardWithMultipleModifiersQuestion) {
+  RunParseTest("/**?", absl::InvalidArgumentError("expected END"));
+}
+
+TEST(ParseTest, WildcardInGroup) {
+  std::vector<Part> expected_parts = {
+      Part(PartType::kFixed, "/f", Modifier::kNone),
+      Part(PartType::kFullWildcard, /*name=*/"0", /*prefix=*/"", /*value=*/"",
+           /*suffix=*/"", Modifier::kNone),
+  };
+  RunParseTest("/f{*}", expected_parts);
+}
+
+TEST(ParseTest, WildcardWithPrefixAndSuffixInGroup) {
+  std::vector<Part> expected_parts = {
+      Part(PartType::kFixed, "/", Modifier::kNone),
+      Part(PartType::kFullWildcard, /*name=*/"0", /*prefix=*/"f", /*value=*/"",
+           /*suffix=*/"o", Modifier::kNone),
+  };
+  RunParseTest("/{f*o}", expected_parts);
 }
 
 TEST(ParseTest, Name) {
@@ -234,6 +303,24 @@ TEST(ParseTest, NameWithModifier) {
            /*value=*/"", /*suffix=*/"", Modifier::kOptional),
   };
   RunParseTest("/:foo?", expected_parts);
+}
+
+TEST(ParseTest, NameWithModifierStarAndWildcard) {
+  std::vector<Part> expected_parts = {
+      Part(PartType::kSegmentWildcard, /*name=*/"foo", /*prefix=*/"/",
+           /*value=*/"", /*suffix=*/"", Modifier::kZeroOrMore),
+      Part(PartType::kFullWildcard, /*name=*/"0", /*prefix=*/"",
+           /*value=*/"", /*suffix=*/"", Modifier::kNone),
+  };
+  RunParseTest("/:foo**", expected_parts);
+}
+
+TEST(ParseTest, NameWithModifierStarAndModifierQuestion) {
+  RunParseTest("/:foo*?", absl::InvalidArgumentError("expected END"));
+}
+
+TEST(ParseTest, NameWithModifierStarAndModifierPlus) {
+  RunParseTest("/:foo*+", absl::InvalidArgumentError("expected END"));
 }
 
 }  // namespace liburlpattern

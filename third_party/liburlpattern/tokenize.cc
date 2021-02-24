@@ -42,8 +42,10 @@ const char* TokenTypeToString(TokenType type) {
       return "CHAR";
     case TokenType::kEscapedChar:
       return "ESCAPED_CHAR";
-    case TokenType::kModifier:
-      return "MODIFIER";
+    case TokenType::kOtherModifier:
+      return "OTHER_MODIFIER";
+    case TokenType::kAsterisk:
+      return "ASTERISK";
     case TokenType::kEnd:
       return "END";
   }
@@ -72,8 +74,15 @@ absl::StatusOr<std::vector<Token>> Tokenize(absl::string_view pattern) {
   size_t i = 0;
   while (i < pattern.size()) {
     char c = pattern[i];
-    if (c == '*' || c == '+' || c == '?') {
-      token_list.emplace_back(TokenType::kModifier, i, pattern.substr(i, 1));
+    if (c == '*') {
+      token_list.emplace_back(TokenType::kAsterisk, i, pattern.substr(i, 1));
+      i += 1;
+      continue;
+    }
+
+    if (c == '+' || c == '?') {
+      token_list.emplace_back(TokenType::kOtherModifier, i,
+                              pattern.substr(i, 1));
       i += 1;
       continue;
     }

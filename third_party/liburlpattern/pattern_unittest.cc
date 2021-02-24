@@ -68,16 +68,32 @@ TEST(PatternRegexTest, RegexFullWildcard) {
   RunRegexTest("(.*)", R"(^(.*)[\/#\?]?$)", {"0"});
 }
 
+TEST(PatternRegexTest, Wildcard) {
+  RunRegexTest("*", R"(^(.*)[\/#\?]?$)", {"0"});
+}
+
 TEST(PatternRegexTest, RegexWithOptionalModifier) {
   RunRegexTest("([a-z]+)?", R"(^([a-z]+)?[\/#\?]?$)", {"0"});
+}
+
+TEST(PatternRegexTest, WildcardWithOptionalModifier) {
+  RunRegexTest("*?", R"(^(.*)?[\/#\?]?$)", {"0"});
 }
 
 TEST(PatternRegexTest, RegexWithPrefix) {
   RunRegexTest("/foo/([a-z]+)", R"(^\/foo(?:\/([a-z]+))[\/#\?]?$)", {"0"});
 }
 
+TEST(PatternRegexTest, WildcardWithPrefix) {
+  RunRegexTest("/foo/*", R"(^\/foo(?:\/(.*))[\/#\?]?$)", {"0"});
+}
+
 TEST(PatternRegexTest, RegexWithPrefixAndOptionalModifier) {
   RunRegexTest("/foo/([a-z]+)?", R"(^\/foo(?:\/([a-z]+))?[\/#\?]?$)", {"0"});
+}
+
+TEST(PatternRegexTest, WildcardWithPrefixAndOptionalModifier) {
+  RunRegexTest("/foo/*?", R"(^\/foo(?:\/(.*))?[\/#\?]?$)", {"0"});
 }
 
 TEST(PatternRegexTest, RegexWithPrefixAndOneOrMoreModifier) {
@@ -85,9 +101,19 @@ TEST(PatternRegexTest, RegexWithPrefixAndOneOrMoreModifier) {
                R"(^\/foo(?:\/((?:[a-z]+)(?:\/(?:[a-z]+))*))[\/#\?]?$)", {"0"});
 }
 
+TEST(PatternRegexTest, WildcardWithPrefixAndOneOrMoreModifier) {
+  RunRegexTest("/foo/*+", R"(^\/foo(?:\/((?:.*)(?:\/(?:.*))*))[\/#\?]?$)",
+               {"0"});
+}
+
 TEST(PatternRegexTest, RegexWithPrefixAndZeroOrMoreModifier) {
   RunRegexTest("/foo/([a-z]+)*",
                R"(^\/foo(?:\/((?:[a-z]+)(?:\/(?:[a-z]+))*))?[\/#\?]?$)", {"0"});
+}
+
+TEST(PatternRegexTest, WildcardWithPrefixAndZeroOrMoreModifier) {
+  RunRegexTest("/foo/**", R"(^\/foo(?:\/((?:.*)(?:\/(?:.*))*))?[\/#\?]?$)",
+               {"0"});
 }
 
 TEST(PatternRegexTest, NameWithCustomRegex) {

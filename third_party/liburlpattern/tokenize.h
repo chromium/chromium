@@ -32,8 +32,11 @@ enum class TokenType {
   // The '\' escape character.
   kEscapedChar,
 
-  // A '*', '+', or '?' modifier.
-  kModifier,
+  // A '+' or '?' modifier.
+  kOtherModifier,
+
+  // A '*' character which can be a wildcard or modifier.
+  kAsterisk,
 
   // The end of the token stream.
   kEnd,

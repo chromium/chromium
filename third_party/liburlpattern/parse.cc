@@ -59,6 +59,13 @@ class State {
                         TokenTypeToString(type)));
   }
 
+  const Token* TryConsumeModifier() {
+    const Token* result = TryConsume(TokenType::kOtherModifier);
+    if (!result)
+      result = TryConsume(TokenType::kAsterisk);
+    return result;
+  }
+
   // Consume as many sequential kChar and kEscapedChar Tokens as possible
   // appending them together into a single string value.
   std::string ConsumeText() {
@@ -97,10 +104,10 @@ class State {
   // Add a Part for the given set of tokens.
   void AddPart(std::string prefix,
                const Token* name_token,
-               const Token* regex_token,
+               const Token* regex_or_wildcard_token,
                std::string suffix,
                const Token* modifier_token) {
-    // Convert the kModifier Token into a Modifier enum value.
+    // Convert the modifier Token into a Modifier enum value.
     Modifier modifier = Modifier::kNone;
     if (modifier_token) {
       ABSL_ASSERT(!modifier_token->value.empty());
@@ -120,27 +127,30 @@ class State {
       }
     }
 
-    // If there is no name or regex tokens then this is just a fixed string
-    // grouping; e.g. "{foo}?".  The fixed string ends up in the prefix value
-    // since it consumed the entire text of the grouping.  If the prefix value
-    // is empty then its an empty "{}" group and we return without adding any
-    // Part.
-    if (!name_token && !regex_token) {
+    // If there is no name, regex, or wildcard tokens then this is just a fixed
+    // string grouping; e.g. "{foo}?".  The fixed string ends up in the prefix
+    // value since it consumed the entire text of the grouping.  If the prefix
+    // value is empty then its an empty "{}" group and we return without adding
+    // any Part.
+    if (!name_token && !regex_or_wildcard_token) {
       ABSL_ASSERT(suffix.empty());
       if (!prefix.empty())
         part_list_.emplace_back(PartType::kFixed, std::move(prefix), modifier);
       return;
     }
 
-    // Determine the regex value.  If there is a kRegex Token, then this is
-    // explicitly set by that Token.  Otherwise a kName Token by itself gets
-    // an implicit regex value that matches through to the end of the segment.
-    // This is represented by the |segment_wildcard_regex_| value.
+    // Determine the regex value.  If there is a |kRegex| Token, then this is
+    // explicitly set by that Token.  If there is a wildcard token, then this
+    // is set to the |kFullWildcardRegex| constant.  Otherwise a kName Token by
+    // itself gets an implicit regex value that matches through to the end of
+    // the segment. This is represented by the |segment_wildcard_regex_| value.
     std::string regex_value;
-    if (regex_token)
-      regex_value = std::string(regex_token->value);
-    else
+    if (!regex_or_wildcard_token)
       regex_value = segment_wildcard_regex_;
+    else if (regex_or_wildcard_token->type == TokenType::kAsterisk)
+      regex_value = kFullWildcardRegex;
+    else
+      regex_value = std::string(regex_or_wildcard_token->value);
 
     // Next determine the type of the Part.  This depends on the regex value
     // since we give certain values special treatment with their own type.
@@ -162,7 +172,7 @@ class State {
     std::string name;
     if (name_token)
       name = std::string(name_token->value);
-    else if (regex_token)
+    else if (regex_or_wildcard_token)
       name = GenerateKey();
 
     // Finally add the part to the list.
@@ -232,11 +242,19 @@ absl::StatusOr<Pattern> Parse(absl::string_view pattern,
     //  * "/(bar)?" - char, regex, and modifier tokens
     const Token* char_token = state.TryConsume(TokenType::kChar);
     const Token* name_token = state.TryConsume(TokenType::kName);
-    const Token* regex_token = state.TryConsume(TokenType::kRegex);
+    const Token* regex_or_wildcard_token = state.TryConsume(TokenType::kRegex);
 
-    // If there is a name or regex token then we need to add a Pattern Part
-    // immediately.
-    if (name_token || regex_token) {
+    // If there is no name or regex token, then we may have a wildcard `*`
+    // token in place of an unnamed regex token.  Each wildcard will be
+    // treated as being equivalent to a "(.*)" regex token.  For example:
+    //  * "/*" - equivalent to "/(.*)"
+    //  * "/*?" - equivalent to "/(.*)?"
+    if (!name_token && !regex_or_wildcard_token)
+      regex_or_wildcard_token = state.TryConsume(TokenType::kAsterisk);
+
+    // If there is a name, regex, or wildcard token then we need to add a
+    // Pattern Part immediately.
+    if (name_token || regex_or_wildcard_token) {
       // Determine if the char token is a valid prefix.  Only characters in the
       // configured prefix_list are automatically treated as prefixes.  A
       // kEscapedChar Token is never treated as a prefix.
@@ -254,11 +272,11 @@ absl::StatusOr<Pattern> Parse(absl::string_view pattern,
       state.MaybeAddPartFromPendingFixedValue();
 
       // kName and kRegex tokens can optionally be followed by a modifier.
-      const Token* modifier_token = state.TryConsume(TokenType::kModifier);
+      const Token* modifier_token = state.TryConsumeModifier();
 
-      // Add the Part for the name and regex tokens.
-      state.AddPart(std::string(prefix), name_token, regex_token, /*suffix=*/"",
-                    modifier_token);
+      // Add the Part for the name and regex/wildcard tokens.
+      state.AddPart(std::string(prefix), name_token, regex_or_wildcard_token,
+                    /*suffix=*/"", modifier_token);
       continue;
     }
 
@@ -293,16 +311,25 @@ absl::StatusOr<Pattern> Parse(absl::string_view pattern,
     if (open_token) {
       std::string prefix = state.ConsumeText();
       const Token* name_token = state.TryConsume(TokenType::kName);
-      const Token* regex_token = state.TryConsume(TokenType::kRegex);
+      const Token* regex_or_wildcard_token =
+          state.TryConsume(TokenType::kRegex);
+
+      // If there is no name or regex token, then we may have a wildcard `*`
+      // token in place of an unnamed regex token.  Each wildcard will be
+      // treated as being equivalent to a "(.*)" regex token.  For example,
+      // "{a*b}" is equivalent to "{a(.*)b}".
+      if (!name_token && !regex_or_wildcard_token)
+        regex_or_wildcard_token = state.TryConsume(TokenType::kAsterisk);
+
       std::string suffix = state.ConsumeText();
 
       auto result = state.MustConsume(TokenType::kClose);
       if (!result.ok())
         return result.status();
 
-      const Token* modifier_token = state.TryConsume(TokenType::kModifier);
+      const Token* modifier_token = state.TryConsumeModifier();
 
-      state.AddPart(std::move(prefix), name_token, regex_token,
+      state.AddPart(std::move(prefix), name_token, regex_or_wildcard_token,
                     std::move(suffix), modifier_token);
       continue;
     }

@@ -263,6 +263,23 @@ TEST(TokenizeTest, RegexInPath) {
   RunTokenizeTest("/foo/(.*)/bar", expected_tokens);
 }
 
+TEST(TokenizeTest, WildcardInPath) {
+  std::vector<Token> expected_tokens = {
+      Token(TokenType::kChar, 0, "/"),
+      Token(TokenType::kChar, 1, "f"),
+      Token(TokenType::kChar, 2, "o"),
+      Token(TokenType::kChar, 3, "o"),
+      Token(TokenType::kChar, 4, "/"),
+      Token(TokenType::kAsterisk, 5, "*"),
+      Token(TokenType::kChar, 6, "/"),
+      Token(TokenType::kChar, 7, "b"),
+      Token(TokenType::kChar, 8, "a"),
+      Token(TokenType::kChar, 9, "r"),
+      Token(TokenType::kEnd, 10, absl::string_view()),
+  };
+  RunTokenizeTest("/foo/*/bar", expected_tokens);
+}
+
 TEST(TokenizeTest, ModifierStar) {
   std::vector<Token> expected_tokens = {
       Token(TokenType::kChar, 0, "/"),
@@ -271,7 +288,7 @@ TEST(TokenizeTest, ModifierStar) {
       Token(TokenType::kChar, 3, "o"),
       Token(TokenType::kChar, 4, "o"),
       Token(TokenType::kClose, 5, "}"),
-      Token(TokenType::kModifier, 6, "*"),
+      Token(TokenType::kAsterisk, 6, "*"),
       Token(TokenType::kEnd, 7, absl::string_view()),
   };
   RunTokenizeTest("/{foo}*", expected_tokens);
@@ -285,7 +302,7 @@ TEST(TokenizeTest, ModifierPlus) {
       Token(TokenType::kChar, 3, "o"),
       Token(TokenType::kChar, 4, "o"),
       Token(TokenType::kClose, 5, "}"),
-      Token(TokenType::kModifier, 6, "+"),
+      Token(TokenType::kOtherModifier, 6, "+"),
       Token(TokenType::kEnd, 7, absl::string_view()),
   };
   RunTokenizeTest("/{foo}+", expected_tokens);
@@ -299,7 +316,7 @@ TEST(TokenizeTest, ModifierQuestion) {
       Token(TokenType::kChar, 3, "o"),
       Token(TokenType::kChar, 4, "o"),
       Token(TokenType::kClose, 5, "}"),
-      Token(TokenType::kModifier, 6, "?"),
+      Token(TokenType::kOtherModifier, 6, "?"),
       Token(TokenType::kEnd, 7, absl::string_view()),
   };
   RunTokenizeTest("/{foo}?", expected_tokens);
@@ -317,7 +334,7 @@ TEST(TokenizeTest, Everything) {
       Token(TokenType::kChar, 15, "/"),
       Token(TokenType::kName, 16, "bar"),
       Token(TokenType::kClose, 20, "}"),
-      Token(TokenType::kModifier, 21, "*"),
+      Token(TokenType::kAsterisk, 21, "*"),
       Token(TokenType::kEnd, 22, absl::string_view()),
   };
   RunTokenizeTest("/\\foo/(a(?.*)){/:bar}*", expected_tokens);
