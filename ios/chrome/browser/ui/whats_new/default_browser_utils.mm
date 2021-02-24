@@ -24,11 +24,11 @@ NSString* const kUserHasInteractedWithFullscreenPromo =
 NSString* const kRemindMeLaterPromoActionInteraction =
     @"remindMeLaterPromoActionInteraction";
 
-const char kDefaultBrowserFullscreenPromoExperimentRemindMeGroupName[] =
-    "RemindMeLater";
+const char kDefaultBrowserFullscreenPromoExperimentRemindMeGroupParam[] =
+    "show_remind_me_later";
 
-const char kDefaultBrowserFullscreenPromoExperimentChangeStringsGroupName[] =
-    "ChangeStrings";
+const char kDefaultBrowserFullscreenPromoExperimentChangeStringsGroupParam[] =
+    "show_switch_description";
 
 // Time threshold before activity timestamps should be removed. Currently set to
 // seven days.
@@ -95,21 +95,17 @@ bool ShouldShowRemindMeLaterDefaultBrowserFullscreenPromo() {
 }
 
 bool IsInRemindMeLaterGroup() {
-  return base::FeatureList::IsEnabled(
-             kDefaultBrowserFullscreenPromoExperiment) &&
-         base::FeatureList::GetFieldTrial(
-             kDefaultBrowserFullscreenPromoExperiment)
-                 ->group_name() ==
-             kDefaultBrowserFullscreenPromoExperimentRemindMeGroupName;
+  std::string paramValue = base::GetFieldTrialParamValueByFeature(
+      kDefaultBrowserFullscreenPromoExperiment,
+      kDefaultBrowserFullscreenPromoExperimentRemindMeGroupParam);
+  return !paramValue.empty();
 }
 
 bool IsInModifiedStringsGroup() {
-  return base::FeatureList::IsEnabled(
-             kDefaultBrowserFullscreenPromoExperiment) &&
-         base::FeatureList::GetFieldTrial(
-             kDefaultBrowserFullscreenPromoExperiment)
-                 ->group_name() ==
-             kDefaultBrowserFullscreenPromoExperimentChangeStringsGroupName;
+  std::string paramValue = base::GetFieldTrialParamValueByFeature(
+      kDefaultBrowserFullscreenPromoExperiment,
+      kDefaultBrowserFullscreenPromoExperimentChangeStringsGroupParam);
+  return !paramValue.empty();
 }
 
 bool HasUserInteractedWithFullscreenPromoBefore() {
