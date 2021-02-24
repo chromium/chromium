@@ -140,6 +140,7 @@ std::string CalculateCommonMimeType(
 
 namespace apps_util {
 
+const char kIntentActionMain[] = "main";
 const char kIntentActionView[] = "view";
 const char kIntentActionSend[] = "send";
 const char kIntentActionSendMultiple[] = "send_multiple";

@@ -15,6 +15,10 @@ class ArcAppListPrefs;
 class Profile;
 class SupervisedUserService;
 
+namespace apps {
+class AppServiceProxy;
+}  // namespace apps
+
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -56,7 +60,8 @@ class OsSettingsSections {
       ArcAppListPrefs* arc_app_list_prefs,
       signin::IdentityManager* identity_manager,
       android_sms::AndroidSmsService* android_sms_service,
-      CupsPrintersManager* printers_manager);
+      CupsPrintersManager* printers_manager,
+      apps::AppServiceProxy* app_service_proxy);
   OsSettingsSections(const OsSettingsSections& other) = delete;
   OsSettingsSections& operator=(const OsSettingsSections& other) = delete;
   virtual ~OsSettingsSections();

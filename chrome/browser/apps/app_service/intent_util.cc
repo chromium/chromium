@@ -20,7 +20,9 @@ constexpr char kIntentExtraText[] = "android.intent.extra.TEXT";
 constexpr char kIntentExtraSubject[] = "android.intent.extra.SUBJECT";
 
 const char* GetArcIntentAction(const std::string& action) {
-  if (action == apps_util::kIntentActionView) {
+  if (action == apps_util::kIntentActionMain) {
+    return arc::kIntentActionMain;
+  } else if (action == apps_util::kIntentActionView) {
     return arc::kIntentActionView;
   } else if (action == apps_util::kIntentActionSend) {
     return arc::kIntentActionSend;
@@ -72,7 +74,8 @@ base::flat_map<std::string, std::string> CreateArcIntentExtras(
 arc::mojom::IntentInfoPtr CreateArcIntent(
     const apps::mojom::IntentPtr& intent) {
   arc::mojom::IntentInfoPtr arc_intent;
-  if (!intent->url.has_value() && !intent->share_text.has_value()) {
+  if (!intent->url.has_value() && !intent->share_text.has_value() &&
+      !intent->activity_name.has_value()) {
     return arc_intent;
   }
   arc_intent = arc::mojom::IntentInfo::New();

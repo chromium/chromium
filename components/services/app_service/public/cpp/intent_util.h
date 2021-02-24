@@ -15,6 +15,7 @@
 
 namespace apps_util {
 
+extern const char kIntentActionMain[];
 extern const char kIntentActionView[];
 extern const char kIntentActionSend[];
 extern const char kIntentActionSendMultiple[];

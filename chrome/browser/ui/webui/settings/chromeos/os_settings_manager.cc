@@ -28,7 +28,8 @@ OsSettingsManager::OsSettingsManager(
     ArcAppListPrefs* arc_app_list_prefs,
     signin::IdentityManager* identity_manager,
     android_sms::AndroidSmsService* android_sms_service,
-    CupsPrintersManager* printers_manager)
+    CupsPrintersManager* printers_manager,
+    apps::AppServiceProxy* app_service_proxy)
     : search_tag_registry_(
           std::make_unique<SearchTagRegistry>(local_search_service_proxy)),
       sections_(
@@ -42,7 +43,8 @@ OsSettingsManager::OsSettingsManager(
                                                arc_app_list_prefs,
                                                identity_manager,
                                                android_sms_service,
-                                               printers_manager)),
+                                               printers_manager,
+                                               app_service_proxy)),
       hierarchy_(std::make_unique<Hierarchy>(sections_.get())),
       settings_user_action_tracker_(
           std::make_unique<SettingsUserActionTracker>(hierarchy_.get(),

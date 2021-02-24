@@ -411,9 +411,6 @@ void SettingsUI::InitBrowserSettingsWebUIHandlers() {
             android_sms_service ? android_sms_service->android_sms_app_manager()
                                 : nullptr));
   }
-
-  web_ui()->AddMessageHandler(
-      std::make_unique<chromeos::settings::AndroidAppsHandler>(profile));
 }
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)
 void SettingsUI::BindInterface(
