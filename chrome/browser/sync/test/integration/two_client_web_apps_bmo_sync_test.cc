@@ -81,7 +81,7 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
     AppId dummy_app_id = InstallApp(info, profile1);
     EXPECT_EQ(
         WebAppInstallObserver::CreateInstallListener(profile2, {dummy_app_id})
-            ->AwaitNextInstall(),
+            ->AwaitAllInstalls(),
         dummy_app_id);
     return dummy_app_id;
   }
@@ -496,7 +496,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, AppSortingFixCollisions) {
   // Wait for both of the webapps to be installed on profile 1.
   WebAppInstallObserver::CreateInstallListener(GetProfile(1),
                                                {app_id1, app_id2})
-      ->AwaitNextInstall();
+      ->AwaitAllInstalls();
   EXPECT_TRUE(AllProfilesHaveSameWebAppIds());
 
   syncer::StringOrdinal page_ordinal =

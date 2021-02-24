@@ -27,8 +27,7 @@ class WebAppInstallObserver final : public AppRegistrarObserver {
   // Restricts this observer to only listen for the given
   // |listening_for_install_app_ids|. Settings these means that the
   // WebAppInstalledDelegate doesn't get called until all of the ids in
-  // |listening_for_install_app_ids| are installed. This also applies to
-  // AwaitNextInstall().
+  // |listening_for_install_app_ids| are installed.
   static std::unique_ptr<WebAppInstallObserver> CreateInstallListener(
       Profile* registrar,
       const std::set<AppId>& listening_for_install_app_ids);
@@ -46,8 +45,7 @@ class WebAppInstallObserver final : public AppRegistrarObserver {
   // Restricts this observer to only listen for the given
   // |listening_for_uninstall_app_ids|. Settings these means that the
   // WebAppUninstalledDelegate doesn't get called until all of the ids in
-  // |listening_for_uninstall_app_ids| are uninstalled. This also applies to
-  // AwaitNextUninstall().
+  // |listening_for_uninstall_app_ids| are uninstalled.
   static std::unique_ptr<WebAppInstallObserver> CreateUninstallListener(
       Profile* registrar,
       const std::set<AppId>& listening_for_uninstall_app_ids);
@@ -57,21 +55,28 @@ class WebAppInstallObserver final : public AppRegistrarObserver {
 
   ~WebAppInstallObserver() override;
 
-  // Convenience method to wait for the next install, or for all installations
-  // of |listening_for_install_app_ids| specified above. Calls
+  // Convenience method to wait for the next install.
+  AppId AwaitNextInstall();
+  // Convenience method to wait for the next uninstall.
+  static AppId AwaitNextUninstall(WebAppInstallObserver* observer);
+
+  // Convenience method to wait for all installations of
+  // |listening_for_install_app_ids| specified above. Calls
   // SetWebAppInstalledDelegate with a base::RunLoop quit closure, and then runs
   // the loop. Will DCHECK if an install delegate is already populated.
   // TODO(dmurph): Refactor to be static like AwaitNextUninstall().
-  AppId AwaitNextInstall();
+  AppId AwaitAllInstalls();
 
-  // Convenience method to wait for the next uninstall, or for all
-  // uninstallations of |listening_for_uninstall_app_ids| specified above. Calls
+  // Convenience method to wait for all uninstallations of
+  // |listening_for_uninstall_app_ids| specified above. Calls
   // SetWebAppUninstalledDelegate with a base::RunLoop quit closure, and then
   // runs the loop. Will DCHECK if an uninstall delegate is already populated.
-  static AppId AwaitNextUninstall(WebAppInstallObserver* install_observer);
+  static AppId AwaitAllUninstalls(WebAppInstallObserver* install_observer);
 
   using WebAppInstalledDelegate =
       base::RepeatingCallback<void(const AppId& app_id)>;
+  using SingleAppInstalledDelegate =
+      base::OnceCallback<void(const AppId& app_id)>;
   void SetWebAppInstalledDelegate(WebAppInstalledDelegate delegate);
 
   using WebAppInstalledWithOsHooksDelegate =
@@ -87,6 +92,8 @@ class WebAppInstallObserver final : public AppRegistrarObserver {
   using WebAppUninstalledDelegate =
       base::RepeatingCallback<void(const AppId& app_id)>;
   void SetWebAppUninstalledDelegate(WebAppUninstalledDelegate delegate);
+  using SingleAppUninstalledDelegate =
+      base::OnceCallback<void(const AppId& app_id)>;
 
   using WebAppProfileWillBeDeletedDelegate =
       base::RepeatingCallback<void(const AppId& app_id)>;
@@ -116,8 +123,7 @@ class WebAppInstallObserver final : public AppRegistrarObserver {
   // Settings these means that the WebAppInstalledDelegate or the
   // WebAppUninstalledDelegate don't get called until all of the ids in
   // |listening_for_install_app_ids| or |listening_for_uninstall_app_ids| are
-  // installed or uninstalled (respectively). This also applies to
-  // AwaitNextInstall() and AwaitNextUninstall().
+  // installed or uninstalled (respectively).
   explicit WebAppInstallObserver(
       AppRegistrar* registrar,
       const std::set<AppId>& listening_for_install_app_ids,
@@ -133,11 +139,13 @@ class WebAppInstallObserver final : public AppRegistrarObserver {
   std::set<AppId> listening_for_uninstall_app_ids_;
   std::set<AppId> listening_for_install_with_os_hooks_app_ids_;
 
-  WebAppInstalledDelegate app_installed_delegate_;
+  WebAppInstalledDelegate all_apps_installed_delegate_;
+  SingleAppInstalledDelegate single_app_installed_delegate_;
   WebAppInstalledWithOsHooksDelegate app_installed_with_os_hooks_delegate_;
   WebAppWillBeUpdatedFromSyncDelegate app_will_be_updated_from_sync_delegate_;
   WebAppWillBeUninstalledDelegate app_will_be_uninstalled_delegate_;
   WebAppUninstalledDelegate app_uninstalled_delegate_;
+  SingleAppUninstalledDelegate single_app_uninstalled_delegate_;
   WebAppProfileWillBeDeletedDelegate app_profile_will_be_deleted_delegate_;
 
   ScopedObserver<AppRegistrar, AppRegistrarObserver> observer_{this};

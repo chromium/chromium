@@ -88,7 +88,35 @@ WebAppInstallObserver::CreateUninstallListener(
 AppId WebAppInstallObserver::AwaitNextInstall() {
   base::RunLoop loop;
   AppId id;
-  DCHECK(app_installed_delegate_.is_null());
+  DCHECK(single_app_installed_delegate_.is_null());
+  single_app_installed_delegate_ =
+      base::BindLambdaForTesting([&](const AppId& app_id) {
+        id = app_id;
+        loop.Quit();
+      });
+  loop.Run();
+  return id;
+}
+
+// static
+AppId WebAppInstallObserver::AwaitNextUninstall(
+    WebAppInstallObserver* install_observer) {
+  base::RunLoop loop;
+  AppId id;
+  DCHECK(install_observer->single_app_uninstalled_delegate_.is_null());
+  install_observer->single_app_uninstalled_delegate_ =
+      base::BindLambdaForTesting([&](const AppId& app_id) {
+        id = app_id;
+        loop.Quit();
+      });
+  loop.Run();
+  return id;
+}
+
+AppId WebAppInstallObserver::AwaitAllInstalls() {
+  base::RunLoop loop;
+  AppId id;
+  DCHECK(all_apps_installed_delegate_.is_null());
   SetWebAppInstalledDelegate(
       base::BindLambdaForTesting([&](const AppId& app_id) {
         id = app_id;
@@ -99,7 +127,7 @@ AppId WebAppInstallObserver::AwaitNextInstall() {
 }
 
 // static
-AppId WebAppInstallObserver::AwaitNextUninstall(
+AppId WebAppInstallObserver::AwaitAllUninstalls(
     WebAppInstallObserver* install_observer) {
   base::RunLoop loop;
   AppId id;
@@ -115,7 +143,7 @@ AppId WebAppInstallObserver::AwaitNextUninstall(
 
 void WebAppInstallObserver::SetWebAppInstalledDelegate(
     WebAppInstalledDelegate delegate) {
-  app_installed_delegate_ = delegate;
+  all_apps_installed_delegate_ = delegate;
 }
 
 void WebAppInstallObserver::SetWebAppInstalledWithOsHooksDelegate(
@@ -157,8 +185,11 @@ void WebAppInstallObserver::OnWebAppInstalled(const AppId& app_id) {
   if (!listening_for_install_app_ids_.empty())
     return;
 
-  if (app_installed_delegate_)
-    app_installed_delegate_.Run(app_id);
+  if (single_app_installed_delegate_)
+    std::move(single_app_installed_delegate_).Run(app_id);
+
+  if (all_apps_installed_delegate_)
+    all_apps_installed_delegate_.Run(app_id);
 }
 
 void WebAppInstallObserver::OnWebAppInstalledWithOsHooks(const AppId& app_id) {
