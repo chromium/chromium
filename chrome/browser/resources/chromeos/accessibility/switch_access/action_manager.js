@@ -42,6 +42,11 @@ export class ActionManager {
     ActionManager.instance.menuStack_ = [];
     ActionManager.instance.actionNode_ = null;
     MenuManager.close();
+    if (SwitchAccess.mode === SAConstants.Mode.POINT_SCAN) {
+      Navigator.byPoint.start();
+    } else {
+      Navigator.byPoint.stop();
+    }
   }
 
   /**
@@ -170,7 +175,11 @@ export class ActionManager {
    * @private
    */
   addGlobalActions_(actions) {
-    actions.push(SwitchAccessMenuAction.POINT_SCAN);
+    if (SwitchAccess.mode === SAConstants.Mode.POINT_SCAN) {
+      actions.push(SwitchAccessMenuAction.ITEM_SCAN);
+    } else {
+      actions.push(SwitchAccessMenuAction.POINT_SCAN);
+    }
     actions.push(SwitchAccessMenuAction.SETTINGS);
     return actions;
   }
@@ -244,6 +253,9 @@ export class ActionManager {
         ActionManager.exitCurrentMenu();
         Navigator.byPoint.start();
         return true;
+      case SwitchAccessMenuAction.ITEM_SCAN:
+        Navigator.byPoint.stop();
+        return true;
       default:
         return false;
     }
@@ -265,7 +277,7 @@ export class ActionManager {
       case SwitchAccessMenuAction.LEFT_CLICK:
         EventGenerator.sendMouseClick(
             Navigator.byPoint.currentPoint.x, Navigator.byPoint.currentPoint.y);
-        Navigator.byPoint.stop();
+        Navigator.byPoint.start();
         return true;
       case SwitchAccessMenuAction.RIGHT_CLICK:
         EventGenerator.sendMouseClick(
@@ -274,7 +286,7 @@ export class ActionManager {
               mouseButton:
                   chrome.accessibilityPrivate.SyntheticMouseEventButton.RIGHT
             });
-        Navigator.byPoint.stop();
+        Navigator.byPoint.start();
         return true;
       default:
         return false;
