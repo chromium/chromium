@@ -313,7 +313,8 @@ TEST_F(LoginPasswordViewTest, CtrlZDisabled) {
 
 // Ensures that the switch animation between easy unlock icon and caps lock
 // icon works correctly.
-TEST_F(LoginPasswordViewTest, SwitchBetweenEasyUnlockAndCapsLock) {
+// TODO(crbug.com/1166659): Test is flaky.
+TEST_F(LoginPasswordViewTest, DISABLED_SwitchBetweenEasyUnlockAndCapsLock) {
   LoginPasswordView::TestApi test_api(view_);
 
   // Ensure there is no left icon shown.
