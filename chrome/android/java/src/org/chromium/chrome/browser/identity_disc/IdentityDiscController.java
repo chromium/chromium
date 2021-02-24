@@ -193,8 +193,8 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
         int dimension_id =
                 (state == IdentityDiscState.SMALL) ? R.dimen.toolbar_identity_disc_size
                                                    : R.dimen.toolbar_identity_disc_size_duet;
-        int imageSize = mContext.getResources().getDimensionPixelSize(dimension_id);
-        ProfileDataCache profileDataCache = new ProfileDataCache(mContext, imageSize);
+        ProfileDataCache profileDataCache =
+                ProfileDataCache.createWithoutBadge(mContext, dimension_id);
         profileDataCache.addObserver(this);
         profileDataCache.update(Collections.singletonList(accountName));
         mProfileDataCache[state] = profileDataCache;

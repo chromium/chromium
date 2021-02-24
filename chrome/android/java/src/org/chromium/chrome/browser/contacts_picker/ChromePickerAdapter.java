@@ -46,8 +46,8 @@ public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCac
     private boolean mWaitingOnOwnerInfo;
 
     public ChromePickerAdapter(Context context) {
-        mProfileDataCache = new ProfileDataCache(context,
-                context.getResources().getDimensionPixelSize(R.dimen.contact_picker_icon_size));
+        mProfileDataCache =
+                ProfileDataCache.createWithoutBadge(context, R.dimen.contact_picker_icon_size);
     }
 
     // Adapter:

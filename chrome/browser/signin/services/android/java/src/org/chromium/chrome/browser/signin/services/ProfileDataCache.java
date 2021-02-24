@@ -18,6 +18,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
+import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
@@ -116,25 +117,51 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
     private @Nullable final ProfileDataSource mProfileDataSource;
     private final IdentityManager mIdentityManager;
 
-    public ProfileDataCache(Context context, @Px int imageSize) {
-        this(context, imageSize, null);
-    }
-
-    public ProfileDataCache(Context context, @Px int imageSize, @Nullable BadgeConfig badgeConfig) {
-        this(context, imageSize, badgeConfig,
-                AccountManagerFacadeProvider.getInstance().getProfileDataSource());
-    }
-
     @VisibleForTesting
-    public ProfileDataCache(Context context, @Px int imageSize, @Nullable BadgeConfig badgeConfig,
-            @Nullable ProfileDataSource profileDataSource) {
+    ProfileDataCache(Context context, @Px int imageSize, @Nullable BadgeConfig badgeConfig) {
         mContext = context;
         mImageSize = imageSize;
         mBadgeConfig = badgeConfig;
         mPlaceholderImage = getScaledPlaceholderImage(context, imageSize);
-        mProfileDataSource = profileDataSource;
+        mProfileDataSource = AccountManagerFacadeProvider.getInstance().getProfileDataSource();
         mIdentityManager = IdentityServicesProvider.get().getIdentityManager(
                 Profile.getLastUsedRegularProfile());
+    }
+
+    /**
+     * @param context Context of the application to extract resources from.
+     * @return A {@link ProfileDataCache} object with default image size(R.dimen.user_picture_size)
+     *         and no badge.
+     */
+    public static ProfileDataCache createWithDefaultImageSizeAndNoBadge(Context context) {
+        return new ProfileDataCache(context,
+                context.getResources().getDimensionPixelSize(R.dimen.user_picture_size),
+                /*badgeConfig=*/null);
+    }
+
+    /**
+     * @param context Context of the application to extract resources from.
+     * @param badgeResId Resource id of the badge to be attached. If it is 0 then no badge is
+     *         attached.
+     * @return A {@link ProfileDataCache} object with default image size(R.dimen.user_picture_size)
+     *         and a badge of given badgeResId provided
+     */
+    public static ProfileDataCache createWithDefaultImageSize(
+            Context context, @DrawableRes int badgeResId) {
+        return new ProfileDataCache(context,
+                context.getResources().getDimensionPixelSize(R.dimen.user_picture_size),
+                createBadgeConfig(context, badgeResId));
+    }
+
+    /**
+     * @param context Context of the application to extract resources from.
+     * @param imageSizeRedId Resource id of the image size.
+     * @return A {@link ProfileDataCache} object with the given image size and no badge.
+     */
+    public static ProfileDataCache createWithoutBadge(
+            Context context, @DimenRes int imageSizeRedId) {
+        return new ProfileDataCache(context,
+                context.getResources().getDimensionPixelSize(imageSizeRedId), /*badgeConfig=*/null);
     }
 
     /**
@@ -267,37 +294,6 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
                     prepareAvatar(accountInfo.getAccountImage(), accountEmail),
                     accountInfo.getFullName(), accountInfo.getGivenName()));
         }
-    }
-
-    /**
-     * Returns a profile data cache object without a badge.The badge is put with respect to
-     * R.dimen.user_picture_size. So this method only works with the user avatar of this size.
-     * @param context Context of the application to extract resources from
-     */
-    public static ProfileDataCache createProfileDataCache(Context context) {
-        return createProfileDataCache(context, 0);
-    }
-
-    /**
-     * Returns a profile data cache object with the badgeResId provided. The badge is put with
-     * respect to R.dimen.user_picture_size. So this method only works with the user avatar of this
-     * size.
-     * @param context Context of the application to extract resources from
-     * @param badgeResId Resource id of the badge to be attached. If it is 0 then no badge is
-     *         attached
-     */
-    public static ProfileDataCache createProfileDataCache(
-            Context context, @DrawableRes int badgeResId) {
-        return createProfileDataCache(context, badgeResId,
-                AccountManagerFacadeProvider.getInstance().getProfileDataSource());
-    }
-
-    @VisibleForTesting
-    static ProfileDataCache createProfileDataCache(
-            Context context, @DrawableRes int badgeResId, ProfileDataSource profileDataSource) {
-        return new ProfileDataCache(context,
-                context.getResources().getDimensionPixelSize(R.dimen.user_picture_size),
-                createBadgeConfig(context, badgeResId), profileDataSource);
     }
 
     private static BadgeConfig createBadgeConfig(Context context, @DrawableRes int badgeResId) {

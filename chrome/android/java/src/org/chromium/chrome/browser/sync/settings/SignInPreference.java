@@ -73,9 +73,7 @@ public class SignInPreference
         setLayoutResource(R.layout.account_management_account_row);
 
         mPrefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
-
-        int imageSize = context.getResources().getDimensionPixelSize(R.dimen.user_picture_size);
-        mProfileDataCache = new ProfileDataCache(context, imageSize);
+        mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
 
         // State will be updated in registerForUpdates.

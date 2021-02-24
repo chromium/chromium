@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
-import org.chromium.chrome.browser.signin.ui.R;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerProperties.AddAccountRowProperties;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerProperties.ExistingAccountRowProperties;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerProperties.IncognitoAccountRowProperties;
@@ -50,8 +49,7 @@ class AccountPickerMediator {
             boolean showIncognitoRow) {
         mListModel = listModel;
         mAccountPickerListener = listener;
-        mProfileDataCache = new ProfileDataCache(
-                context, context.getResources().getDimensionPixelSize(R.dimen.user_picture_size));
+        mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
         mShowIncognitoRow = showIncognitoRow;
         mSelectedAccountName = selectedAccountName;
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();

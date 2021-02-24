@@ -109,7 +109,7 @@ public class RecentTabsManager implements ProfileSyncService.SyncStateChangedLis
                 : new RecentlyClosedBridge(profile);
         mSignInManager = IdentityServicesProvider.get().getSigninManager(mProfile);
 
-        mProfileDataCache = ProfileDataCache.createProfileDataCache(context);
+        mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
         mSigninPromoController = new SigninPromoController(
                 SigninAccessPoint.RECENT_TABS, SigninActivityLauncherImpl.get());
         mProfileSyncService = ProfileSyncService.get();

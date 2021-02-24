@@ -231,9 +231,10 @@ public abstract class SigninFragmentBase
 
         mConsentTextTracker = new ConsentTextTracker(getResources());
 
-        mProfileDataCache = ProfileDataCache.createProfileDataCache(getActivity(),
-                ChildAccountStatus.isChild(mChildAccountStatus) ? R.drawable.ic_account_child_20dp
-                                                                : 0);
+        mProfileDataCache = ChildAccountStatus.isChild(mChildAccountStatus)
+                ? ProfileDataCache.createWithDefaultImageSize(
+                        requireContext(), R.drawable.ic_account_child_20dp)
+                : ProfileDataCache.createWithDefaultImageSizeAndNoBadge(requireContext());
         // By default this is set to true so that when system back button is pressed user action
         // is recorded in onDestroy().
         mRecordUndoSignin = true;

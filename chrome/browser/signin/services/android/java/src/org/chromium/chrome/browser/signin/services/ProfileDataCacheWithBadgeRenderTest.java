@@ -126,7 +126,8 @@ public class ProfileDataCacheWithBadgeRenderTest extends DummyUiActivityTestCase
 
     private void setUpProfileDataCache(@DrawableRes int badgeResId) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mProfileDataCache = ProfileDataCache.createProfileDataCache(getActivity(), badgeResId);
+            mProfileDataCache =
+                    ProfileDataCache.createWithDefaultImageSize(getActivity(), badgeResId);
             // ProfileDataCache only populates the cache when an observer is added.
             mProfileDataCache.addObserver(mObserver);
 

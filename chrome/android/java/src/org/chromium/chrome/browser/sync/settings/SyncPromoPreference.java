@@ -64,7 +64,7 @@ public class SyncPromoPreference
         super(context, attrs);
         setLayoutResource(R.layout.personalized_signin_promo_view_settings);
 
-        mProfileDataCache = ProfileDataCache.createProfileDataCache(context);
+        mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
 
         // State will be updated in onAttached.

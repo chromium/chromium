@@ -99,7 +99,7 @@ class BookmarkPromoHeader implements ProfileSyncService.SyncStateChangedListener
 
         if (SigninPromoController.hasNotReachedImpressionLimit(
                     SigninAccessPoint.BOOKMARK_MANAGER)) {
-            mProfileDataCache = ProfileDataCache.createProfileDataCache(mContext);
+            mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext);
             mProfileDataCache.addObserver(this);
             mSigninPromoController = new SigninPromoController(
                     SigninAccessPoint.BOOKMARK_MANAGER, SigninActivityLauncherImpl.get());

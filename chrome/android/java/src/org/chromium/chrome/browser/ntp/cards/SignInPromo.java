@@ -80,7 +80,7 @@ public abstract class SignInPromo extends OptionalLeaf {
         mAccountsReady = AccountManagerFacadeProvider.getInstance().isCachePopulated();
         updateVisibility();
 
-        mProfileDataCache = ProfileDataCache.createProfileDataCache(context);
+        mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
         mSigninPromoController = new SigninPromoController(
                 SigninAccessPoint.NTP_CONTENT_SUGGESTIONS, SigninActivityLauncherImpl.get());
 

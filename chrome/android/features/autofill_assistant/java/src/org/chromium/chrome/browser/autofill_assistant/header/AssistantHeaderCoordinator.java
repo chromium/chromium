@@ -53,9 +53,8 @@ public class AssistantHeaderCoordinator implements ProfileDataCache.Observer {
                         R.dimen.autofill_assistant_poodle_size));
         addPoodle(mView, poodle.getView());
 
-        int imageSize = context.getResources().getDimensionPixelSize(
-                R.dimen.autofill_assistant_profile_size);
-        mProfileCache = new ProfileDataCache(context, imageSize);
+        mProfileCache = ProfileDataCache.createWithoutBadge(
+                context, R.dimen.autofill_assistant_profile_size);
         mProfileView = mView.findViewById(R.id.profile_image);
         IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
                 AutofillAssistantUiController.getProfile());
