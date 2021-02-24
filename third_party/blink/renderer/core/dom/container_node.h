@@ -321,7 +321,8 @@ class CORE_EXPORT ContainerNode : public Node {
                                &node,
                                unchanged_previous,
                                unchanged_next,
-                               {}};
+                               {},
+                               String()};
       return change;
     }
 
@@ -336,7 +337,8 @@ class CORE_EXPORT ContainerNode : public Node {
                                &node,
                                previous_sibling,
                                next_sibling,
-                               {}};
+                               {},
+                               String()};
       return change;
     }
 
@@ -373,6 +375,8 @@ class CORE_EXPORT ContainerNode : public Node {
     // Only populated if ChildrenChangedAllChildrenRemovedNeedsList() returns
     // true.
     HeapVector<Member<Node>> removed_nodes;
+    // |old_text| is mostly empty, only used for text node changes.
+    const String& old_text;
   };
 
   // Notifies the node that it's list of children have changed (either by adding

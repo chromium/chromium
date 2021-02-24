@@ -193,7 +193,7 @@ class CORE_EXPORT HTMLElement : public Element {
   unsigned ParseBorderWidthAttribute(const AtomicString&) const;
 
   void ChildrenChanged(const ChildrenChange&) override;
-  bool CalculateAndAdjustAutoDirectionality();
+  bool CalculateAndAdjustAutoDirectionality(Node* stay_within);
 
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode& insertion_point) override;
@@ -215,8 +215,10 @@ class CORE_EXPORT HTMLElement : public Element {
   DocumentFragment* TextToFragment(const String&, ExceptionState&);
 
   void AdjustDirectionalityIfNeededAfterChildAttributeChanged(Element* child);
-  void AdjustDirectionalityIfNeededAfterChildrenChanged();
-  TextDirection ResolveAutoDirectionality(bool& is_deferred) const;
+  void AdjustDirectionalityIfNeededAfterChildrenChanged(
+      const ChildrenChange& change);
+  TextDirection ResolveAutoDirectionality(bool& is_deferred,
+                                          Node* stay_within) const;
 
   TranslateAttributeMode GetTranslateAttributeMode() const;
 

@@ -1167,7 +1167,7 @@ void HTMLElement::ChildrenChanged(const ChildrenChange& change) {
   Element::ChildrenChanged(change);
 
   if (GetDocument().IsDirAttributeDirty()) {
-    AdjustDirectionalityIfNeededAfterChildrenChanged();
+    AdjustDirectionalityIfNeededAfterChildrenChanged(change);
 
     if (change.IsChildInsertion() && !SelfOrAncestorHasDirAutoAttribute()) {
       auto* element = DynamicTo<HTMLElement>(change.sibling_changed);
@@ -1186,7 +1186,8 @@ bool HTMLElement::HasDirectionAuto() const {
          EqualIgnoringASCIICase(direction, "auto");
 }
 
-TextDirection HTMLElement::ResolveAutoDirectionality(bool& is_deferred) const {
+TextDirection HTMLElement::ResolveAutoDirectionality(bool& is_deferred,
+                                                     Node* stay_within) const {
   is_deferred = false;
   if (auto* input_element = DynamicTo<HTMLInputElement>(*this)) {
     bool has_strong_directionality;
@@ -1203,7 +1204,7 @@ TextDirection HTMLElement::ResolveAutoDirectionality(bool& is_deferred) const {
         (element && element->IsTextControl()) ||
         (element && element->ShadowPseudoId() ==
                         shadow_element_names::kPseudoInputPlaceholder)) {
-      node = FlatTreeTraversal::NextSkippingChildren(*node, this);
+      node = FlatTreeTraversal::NextSkippingChildren(*node, stay_within);
       continue;
     }
 
@@ -1224,7 +1225,7 @@ TextDirection HTMLElement::ResolveAutoDirectionality(bool& is_deferred) const {
       AtomicString dir_attribute_value =
           element_node->FastGetAttribute(html_names::kDirAttr);
       if (IsValidDirAttribute(dir_attribute_value)) {
-        node = FlatTreeTraversal::NextSkippingChildren(*node, this);
+        node = FlatTreeTraversal::NextSkippingChildren(*node, stay_within);
         continue;
       }
     }
@@ -1236,7 +1237,7 @@ TextDirection HTMLElement::ResolveAutoDirectionality(bool& is_deferred) const {
       if (has_strong_directionality)
         return text_direction;
     }
-    node = FlatTreeTraversal::Next(*node, this);
+    node = FlatTreeTraversal::Next(*node, stay_within);
   }
   return TextDirection::kLtr;
 }
@@ -1245,7 +1246,7 @@ void HTMLElement::AdjustDirectionalityIfNeededAfterChildAttributeChanged(
     Element* child) {
   DCHECK(SelfOrAncestorHasDirAutoAttribute());
   bool is_deferred;
-  TextDirection text_direction = ResolveAutoDirectionality(is_deferred);
+  TextDirection text_direction = ResolveAutoDirectionality(is_deferred, this);
   if (CachedDirectionality() != text_direction && !is_deferred) {
     SetCachedDirectionality(text_direction);
 
@@ -1268,9 +1269,10 @@ void HTMLElement::AdjustDirectionalityIfNeededAfterChildAttributeChanged(
   }
 }
 
-bool HTMLElement::CalculateAndAdjustAutoDirectionality() {
+bool HTMLElement::CalculateAndAdjustAutoDirectionality(Node* stay_within) {
   bool is_deferred = false;
-  TextDirection text_direction = ResolveAutoDirectionality(is_deferred);
+  TextDirection text_direction =
+      ResolveAutoDirectionality(is_deferred, stay_within);
   if (CachedDirectionality() != text_direction && !is_deferred) {
     UpdateDirectionalityAndDescendant(text_direction);
 
@@ -1286,9 +1288,34 @@ bool HTMLElement::CalculateAndAdjustAutoDirectionality() {
   return false;
 }
 
-void HTMLElement::AdjustDirectionalityIfNeededAfterChildrenChanged() {
+void HTMLElement::AdjustDirectionalityIfNeededAfterChildrenChanged(
+    const ChildrenChange& change) {
   if (!SelfOrAncestorHasDirAutoAttribute())
     return;
+
+  Node* stay_within = nullptr;
+  bool has_strong_directionality;
+  if (change.type == ChildrenChangeType::kTextChanged) {
+    TextDirection old_text_direction =
+        DetermineDirectionality(change.old_text, &has_strong_directionality);
+    auto* character_data = DynamicTo<CharacterData>(change.sibling_changed);
+    DCHECK(character_data);
+    TextDirection new_text_direction = DetermineDirectionality(
+        character_data->data(), &has_strong_directionality);
+    if (old_text_direction == new_text_direction)
+      return;
+    stay_within = change.sibling_changed;
+  } else if (change.IsChildInsertion()) {
+    if (change.sibling_changed->IsTextNode()) {
+      TextDirection new_text_direction =
+          DetermineDirectionality(change.sibling_changed->textContent(true),
+                                  &has_strong_directionality);
+      if (!has_strong_directionality ||
+          new_text_direction == CachedDirectionality())
+        return;
+    }
+    stay_within = change.sibling_changed;
+  }
 
   UpdateDescendantHasDirAutoAttribute(true /* has_dir_auto */);
 
@@ -1298,7 +1325,8 @@ void HTMLElement::AdjustDirectionalityIfNeededAfterChildrenChanged() {
     if (ElementAffectsDirectionality(element_to_adjust)) {
       if (RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
         if (To<HTMLElement>(element_to_adjust)
-                ->CalculateAndAdjustAutoDirectionality()) {
+                ->CalculateAndAdjustAutoDirectionality(
+                    stay_within ? stay_within : element_to_adjust)) {
           SetNeedsStyleRecalc(kLocalStyleChange,
                               StyleChangeReasonForTracing::Create(
                                   style_change_reason::kPseudoClass));
@@ -1338,7 +1366,7 @@ void HTMLElement::AdjustCandidateDirectionalityForSlot(
   }
 
   for (auto& element : directionality_set) {
-    if (element->CalculateAndAdjustAutoDirectionality() &&
+    if (element->CalculateAndAdjustAutoDirectionality(element) &&
         RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
       element->SetNeedsStyleRecalc(kLocalStyleChange,
                                    StyleChangeReasonForTracing::Create(
@@ -1770,7 +1798,7 @@ void HTMLElement::OnDirAttrChanged(const AttributeModificationParams& params) {
   }
 
   if (is_new_auto) {
-    CalculateAndAdjustAutoDirectionality();
+    CalculateAndAdjustAutoDirectionality(this);
   } else {
     base::Optional<TextDirection> text_direction;
     if (EqualIgnoringASCIICase(params.new_value, "ltr")) {

@@ -838,7 +838,8 @@ void ContainerNode::RemoveChildren(SubtreeModificationAction action) {
                              nullptr,
                              nullptr,
                              nullptr,
-                             std::move(removed_nodes)};
+                             std::move(removed_nodes),
+                             String()};
     ChildrenChanged(change);
   }
 
