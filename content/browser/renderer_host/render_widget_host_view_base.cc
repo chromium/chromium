@@ -458,7 +458,7 @@ void RenderWidgetHostViewBase::UpdateScreenInfo(gfx::NativeView view) {
     host()->delegate()->SendScreenRects();
 
   // TODO(crbug.com/1169312): Unify display info caching and change detection.
-  bool old_display_rotation = current_display_.rotation();
+  display::Display::Rotation old_display_rotation = current_display_.rotation();
   if (HasDisplayPropertyChanged(view) && host()) {
     OnSynchronizedDisplayPropertiesChanged(old_display_rotation !=
                                            current_display_.rotation());
