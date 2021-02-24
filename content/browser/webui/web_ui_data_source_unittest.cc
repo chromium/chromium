@@ -238,6 +238,7 @@ TEST_F(WebUIDataSourceTest, MimeType) {
   EXPECT_EQ(GetMimeType("foopng"), html);
   EXPECT_EQ(GetMimeType("foo.png"), png);
   EXPECT_EQ(GetMimeType(".png.foo"), html);
+  EXPECT_EQ(GetMimeType(".woff2"), "application/font-woff2");
 
   // With query strings.
   EXPECT_EQ(GetMimeType("foo?abc?abc"), html);

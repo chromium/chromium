@@ -67,9 +67,9 @@ bool SchemeIsInSchemes(const std::string& scheme,
 }  // namespace
 
 URLDataManagerBackend::URLDataManagerBackend() : next_request_id_(0) {
-  URLDataSource* shared_source = new SharedResourcesDataSource();
-  AddDataSource(new URLDataSourceImpl(shared_source->GetSource(),
-                                      base::WrapUnique(shared_source)));
+  // Add a shared data source for chrome://resources.
+  AddDataSource(
+      static_cast<WebUIDataSourceImpl*>(CreateSharedResourcesDataSource()));
 }
 
 URLDataManagerBackend::~URLDataManagerBackend() = default;

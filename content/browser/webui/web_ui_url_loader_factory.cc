@@ -190,7 +190,8 @@ void StartURLLoader(
       source->source()->GetMimeType(path) == "application/javascript";
 
   const ui::TemplateReplacements* replacements = nullptr;
-  if (source->source()->GetMimeType(path) == "text/html" || replace_in_js)
+  const std::string mime_type = source->source()->GetMimeType(path);
+  if (mime_type == "text/html" || mime_type == "text/css" || replace_in_js)
     replacements = source->source()->GetReplacements();
 
   // To keep the same behavior as the old WebUI code, we call the source to get

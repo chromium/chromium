@@ -293,6 +293,9 @@ std::string WebUIDataSourceImpl::GetMimeType(const std::string& path) const {
   if (base::EndsWith(file_path, ".wasm", base::CompareCase::INSENSITIVE_ASCII))
     return "application/wasm";
 
+  if (base::EndsWith(file_path, ".woff2", base::CompareCase::INSENSITIVE_ASCII))
+    return "application/font-woff2";
+
   return "text/html";
 }
 
