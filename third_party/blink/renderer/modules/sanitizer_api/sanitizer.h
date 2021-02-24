@@ -15,6 +15,7 @@ namespace blink {
 class Document;
 class DocumentFragment;
 class ExceptionState;
+class ExecutionContext;
 class SanitizerConfig;
 class ScriptState;
 class StringOrDocumentFragmentOrDocument;
@@ -30,8 +31,10 @@ class MODULES_EXPORT Sanitizer final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static Sanitizer* Create(const SanitizerConfig*, ExceptionState&);
-  explicit Sanitizer(const SanitizerConfig*);
+  static Sanitizer* Create(ExecutionContext*,
+                           const SanitizerConfig*,
+                           ExceptionState&);
+  explicit Sanitizer(ExecutionContext*, const SanitizerConfig*);
   ~Sanitizer() override;
 
   String sanitizeToString(ScriptState*,
@@ -46,7 +49,7 @@ class MODULES_EXPORT Sanitizer final : public ScriptWrappable {
  private:
   Node* DropElement(Node*, DocumentFragment*);
   Node* BlockElement(Node*, DocumentFragment*, ExceptionState&);
-  Node* KeepElement(Node*, DocumentFragment*, String&);
+  Node* KeepElement(Node*, DocumentFragment*, String&, LocalDOMWindow*);
 
   void ElementFormatter(HashSet<String>&, const Vector<String>&);
   void AttrFormatter(HashMap<String, Vector<String>>&,

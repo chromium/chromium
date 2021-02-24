@@ -84,9 +84,11 @@ void MakeConfiguration(SanitizerConfig* sanitizer_config,
 void TextProtoFuzzer(const SanitizerConfigProto& proto,
                      ScriptState* script_state) {
   // Create Sanitizer based on proto's config..
+  LocalDOMWindow* window = LocalDOMWindow::From(script_state);
   auto* sanitizer_config = MakeGarbageCollected<SanitizerConfig>();
   MakeConfiguration(sanitizer_config, proto);
-  auto* sanitizer = MakeGarbageCollected<Sanitizer>(sanitizer_config);
+  auto* sanitizer = MakeGarbageCollected<Sanitizer>(
+      window->GetExecutionContext(), sanitizer_config);
 
   // Sanitize string given in proto. Method depends on sanitize_to_string.
   String str = proto.html_string().c_str();

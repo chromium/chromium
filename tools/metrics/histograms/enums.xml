@@ -31594,6 +31594,14 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3812"
       label="RTCPeerConnectionSdpSemanticsPlanBWithReverseOriginTrial"/>
   <int value="3813" label="WebAppManifestCaptureLinks"/>
+  <int value="3814" label="SanitizerAPICreated"/>
+  <int value="3815" label="SanitizerAPIDefaultConfiguration"/>
+  <int value="3816" label="SanitizerAPIToString"/>
+  <int value="3817" label="SanitizerAPIToFragment"/>
+  <int value="3818" label="SanitizerAPIActionTaken"/>
+  <int value="3819" label="SanitizerAPIFromString"/>
+  <int value="3820" label="SanitizerAPIFromDocument"/>
+  <int value="3821" label="SanitizerAPIFromFragment"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

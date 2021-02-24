@@ -3132,6 +3132,14 @@ enum WebFeature {
   kSelectMenuElement = 3811,
   kRTCPeerConnectionSdpSemanticsPlanBWithReverseOriginTrial = 3812,
   kWebAppManifestCaptureLinks = 3813,
+  kSanitizerAPICreated = 3814,
+  kSanitizerAPIDefaultConfiguration = 3815,
+  kSanitizerAPIToString = 3816,
+  kSanitizerAPIToFragment = 3817,
+  kSanitizerAPIActionTaken = 3818,
+  kSanitizerAPIFromString = 3819,
+  kSanitizerAPIFromDocument = 3820,
+  kSanitizerAPIFromFragment = 3821,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

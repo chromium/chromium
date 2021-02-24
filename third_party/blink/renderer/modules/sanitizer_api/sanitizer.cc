@@ -4,6 +4,7 @@
 
 #include "sanitizer.h"
 
+#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_node_filter.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_parse_from_string_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/string_or_document_fragment_or_document.h"
@@ -18,6 +19,7 @@
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
@@ -29,46 +31,65 @@
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
-Sanitizer* Sanitizer::Create(const SanitizerConfig* config,
+Sanitizer* Sanitizer::Create(ExecutionContext* execution_context,
+                             const SanitizerConfig* config,
                              ExceptionState& exception_state) {
-  return MakeGarbageCollected<Sanitizer>(config);
+  return MakeGarbageCollected<Sanitizer>(execution_context, config);
 }
 
-Sanitizer::Sanitizer(const SanitizerConfig* config)
+Sanitizer::Sanitizer(ExecutionContext* execution_context,
+                     const SanitizerConfig* config)
     : allow_custom_elements_(config->allowCustomElements()) {
+  bool use_default_config = true;
+  if (config->allowCustomElements()) {
+    use_default_config = false;
+  }
+
   // Format dropElements to uppercase.
   drop_elements_ = default_drop_elements_;
   if (config->hasDropElements()) {
     ElementFormatter(drop_elements_, config->dropElements());
+    use_default_config = false;
   }
 
   // Format blockElements to uppercase.
   block_elements_ = default_block_elements_;
   if (config->hasBlockElements()) {
     ElementFormatter(block_elements_, config->blockElements());
+    use_default_config = false;
   }
 
   // Format allowElements to uppercase.
   if (config->hasAllowElements()) {
     has_allow_elements_ = true;
     ElementFormatter(allow_elements_, config->allowElements());
+    use_default_config = false;
   }
 
   // Format dropAttributes to lowercase.
   drop_attributes_ = default_drop_attributes_;
   if (config->hasDropAttributes()) {
     AttrFormatter(drop_attributes_, config->dropAttributes());
+    use_default_config = false;
   }
 
   // Format allowAttributes to lowercase.
   if (config->hasAllowAttributes()) {
     has_allow_attributes_ = true;
     AttrFormatter(allow_attributes_, config->allowAttributes());
+    use_default_config = false;
+  }
+
+  if (use_default_config) {
+    // TODO(lyf): Add unit tests for counters.
+    UseCounter::Count(execution_context,
+                      WebFeature::kSanitizerAPIDefaultConfiguration);
   }
 }
 
@@ -139,9 +160,19 @@ DocumentFragment* Sanitizer::SanitizeImpl(
   DocumentFragment* fragment = nullptr;
 
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
+  if (!window) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Cannot find current DOM window.");
+    return nullptr;
+  }
   if (input.IsDocumentFragment()) {
+    UseCounter::Count(window->GetExecutionContext(),
+                      WebFeature::kSanitizerAPIFromFragment);
     fragment = input.GetAsDocumentFragment();
-  } else if (window && (input.IsString() || input.IsNull())) {
+  } else if (input.IsString() || input.IsNull()) {
+    UseCounter::Count(window->GetExecutionContext(),
+                      WebFeature::kSanitizerAPIFromString);
+
     Document* document =
         window->document()
             ? window->document()->implementation().createHTMLDocument()
@@ -154,6 +185,9 @@ DocumentFragment* Sanitizer::SanitizeImpl(
     fragment = document->createRange()->createContextualFragment(
         input.GetAsString(), exception_state);
   } else if (input.IsDocument()) {
+    UseCounter::Count(window->GetExecutionContext(),
+                      WebFeature::kSanitizerAPIFromDocument);
+
     fragment = input.GetAsDocument()->createDocumentFragment();
     fragment->CloneChildNodesFrom(*(input.GetAsDocument()->body()),
                                   CloneChildrenFlag::kClone);
@@ -188,22 +222,32 @@ DocumentFragment* Sanitizer::SanitizeImpl(
     if (kind == ElementKind::kRegular &&
         !default_allow_elements_.Contains(name)) {
       node = DropElement(node, fragment);
+      UseCounter::Count(window->GetExecutionContext(),
+                        WebFeature::kSanitizerAPIActionTaken);
     } else if (kind == ElementKind::kCustom && !allow_custom_elements_) {
       // 4. If |kind| is `custom` and if allow_custom_elements_ is unset or set
       // to anything other than `true`, then 'drop'.
       node = DropElement(node, fragment);
+      UseCounter::Count(window->GetExecutionContext(),
+                        WebFeature::kSanitizerAPIActionTaken);
     } else if (drop_elements_.Contains(name)) {
       // 5. If |name| is in |config|'s [=element drop list=] then 'drop'.
       node = DropElement(node, fragment);
+      UseCounter::Count(window->GetExecutionContext(),
+                        WebFeature::kSanitizerAPIActionTaken);
     } else if (block_elements_.Contains(name)) {
       // 6. If |name| is in |config|'s [=element block list=] then 'block'.
       node = BlockElement(node, fragment, exception_state);
+      UseCounter::Count(window->GetExecutionContext(),
+                        WebFeature::kSanitizerAPIActionTaken);
     } else if (has_allow_elements_ && !allow_elements_.Contains(name)) {
       // 7. if |config| has a non-empty [=element allow list=] and |name| is
       // not in |config|'s [=element allow list=] then 'block'.
       node = BlockElement(node, fragment, exception_state);
+      UseCounter::Count(window->GetExecutionContext(),
+                        WebFeature::kSanitizerAPIActionTaken);
     } else {
-      node = KeepElement(node, fragment, name);
+      node = KeepElement(node, fragment, name, window);
     }
   }
 
@@ -247,12 +291,15 @@ Node* Sanitizer::BlockElement(Node* node,
 // the next node (preorder, depth-first traversal).
 Node* Sanitizer::KeepElement(Node* node,
                              DocumentFragment* fragment,
-                             String& node_name) {
+                             String& node_name,
+                             LocalDOMWindow* window) {
   Element* element = To<Element>(node);
   if (has_allow_attributes_ && allow_attributes_.at("*").Contains(node_name)) {
   } else if (drop_attributes_.at("*").Contains(node_name)) {
     for (const auto& name : element->getAttributeNames()) {
       element->removeAttribute(name);
+      UseCounter::Count(window->GetExecutionContext(),
+                        WebFeature::kSanitizerAPIActionTaken);
     }
   } else {
     for (const auto& name : element->getAttributeNames()) {
@@ -265,8 +312,11 @@ Node* Sanitizer::KeepElement(Node* node,
                    !(allow_attributes_.Contains(name) &&
                      (allow_attributes_.at(name) == kVectorStar ||
                       allow_attributes_.at(name).Contains(node_name))));
-      if (drop)
+      if (drop) {
         element->removeAttribute(name);
+        UseCounter::Count(window->GetExecutionContext(),
+                          WebFeature::kSanitizerAPIActionTaken);
+      }
     }
   }
   node = NodeTraversal::Next(*node, fragment);
