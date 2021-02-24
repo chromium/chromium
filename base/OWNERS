@@ -1,5 +1,7 @@
 # See //base/README.md to find qualification for being an owner.
 
+set noparent
+# NOTE: keep this in sync with lsc-owners-override@chromium.org owners
 ajwong@chromium.org
 danakj@chromium.org
 dcheng@chromium.org
@@ -11,6 +13,7 @@ mark@chromium.org
 thakis@chromium.org
 thestig@chromium.org
 wez@chromium.org
+# NOTE: keep this in sync with lsc-owners-override@chromium.org owners
 
 # per-file rules:
 # These are for the common case of adding or renaming files. If you're doing

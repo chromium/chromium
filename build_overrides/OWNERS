@@ -1,3 +1,4 @@
+set noparent
 file://build/OWNERS
 machenbach@chromium.org
 mbonadei@chromium.org

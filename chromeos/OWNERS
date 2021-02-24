@@ -3,6 +3,8 @@
 # https://chromium.googlesource.com/chromiumos/chromite/+/master/scripts/chrome_chromeos_lkgm.py#38
 # see also https://crbug.com/917623 and https://crbug.com/919552.
 
+set noparent
+
 per-file BUILD.gn=*
 per-file CHROMEOS_LKGM=*
 # Translation artifacts:

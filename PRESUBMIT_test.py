@@ -3563,10 +3563,23 @@ class CheckFuzzTargetsTest(unittest.TestCase):
 
 
 class SetNoParentTest(unittest.TestCase):
-  def testSetNoParentMissing(self):
+  def testSetNoParentTopLevelAllowed(self):
     mock_input_api = MockInputApi()
     mock_input_api.files = [
       MockAffectedFile('goat/OWNERS',
+                       [
+                         'set noparent',
+                         'jochen@chromium.org',
+                       ])
+    ]
+    mock_output_api = MockOutputApi()
+    errors = PRESUBMIT.CheckSetNoParent(mock_input_api, mock_output_api)
+    self.assertEqual([], errors)
+
+  def testSetNoParentMissing(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+      MockAffectedFile('services/goat/OWNERS',
                        [
                          'set noparent',
                          'jochen@chromium.org',
@@ -3580,11 +3593,10 @@ class SetNoParentTest(unittest.TestCase):
     self.assertTrue('goat/OWNERS:1' in errors[0].long_text)
     self.assertTrue('goat/OWNERS:3' in errors[0].long_text)
 
-
   def testSetNoParentWithCorrectRule(self):
     mock_input_api = MockInputApi()
     mock_input_api.files = [
-      MockAffectedFile('goat/OWNERS',
+      MockAffectedFile('services/goat/OWNERS',
                        [
                          'set noparent',
                          'file://ipc/SECURITY_OWNERS',

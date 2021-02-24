@@ -1,3 +1,4 @@
+set noparent
 file://components/signin/OWNERS
 
 per-file BUILD.gn=*

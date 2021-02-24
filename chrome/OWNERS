@@ -1,6 +1,8 @@
 # This OWNERS list is a last resort. Please prefer to use more specific OWNERS
 # where possible.
 
+set noparent
+
 # Reviewers (in CET):
 blundell@chromium.org
 droger@chromium.org

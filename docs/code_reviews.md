@@ -15,7 +15,7 @@ touching. Any committer can review code, but an owner must provide a review
 for each directory you are touching. If you have doubts, look at the git blame
 for the file and the `OWNERS` files (see below).
 
-To indicate a positive review, the reviewer provides a "Code-Review +1" in
+To indicate a positive review, the reviewer provides a `Code-Review +1` in
 Gerrit, also known as an LGTM ("Looks Good To Me"). A score of "-1" indicates
 the change should not be submitted as-is.
 
@@ -168,15 +168,23 @@ per-file *_messages*.h=file://ipc/SECURITY_OWNERS
 
 ### Owners-Override
 
-Setting the `Owners-Override` label will bypass OWNERS enforcement. Active
-sheriffs and Large Scale Changes (see below) reviewers have this power.
+Setting the `Owners-Override +1` label will bypass OWNERS enforcement. Active
+sheriffs, Large Scale Changes and Global Approvers (see below) reviewers have
+this capability.
 
 ## Mechanical changes
 
+### Large Scale Changes
 You can use the [Large Scale Changes](process/lsc/large_scale_changes.md)
 process to get approval to bypass OWNERS enforcement for large changes like
 refactoring, architectural changes, or other repetitive code changes across the
-whole codebase.
+whole codebase. This is used for work that span many dozen CLs.
+
+### Global Approvals
+For one-off CLs API owners of base, blink, build, content and url can
+Owners-Override +1 a change to their APIs to avoid waiting for rubberstamp +1s
+from affected directories' owners. This should only be used for mechanical
+updates to the affected directories.
 
 ## Documentation updates
 

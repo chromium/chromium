@@ -5,6 +5,7 @@
 # Folks listed as unofficial can't do OWNERS approvals but are good people to
 # ask for informal reviews.
 
+set noparent
 # layers
 danakj@chromium.org
 pdr@chromium.org
