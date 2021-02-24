@@ -11885,7 +11885,7 @@
     },
     {
       'name': 'AllowWakeLocks',
-      'owners': ['file://chrome/browser/chromeos/login/demo_mode/OWNERS', 'michaelpg@chromium.org'],
+      'owners': ['file://chrome/browser/ash/login/demo_mode/OWNERS', 'michaelpg@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:71-'],
@@ -19827,7 +19827,7 @@
     },
     {
       'name': 'ScreenBrightnessPercent',
-      'owners': ['file://chrome/browser/chromeos/login/demo_mode/OWNERS', 'agawronska@chromium.org'],
+      'owners': ['file://chrome/browser/ash/login/demo_mode/OWNERS', 'agawronska@chromium.org'],
       'type': 'dict',
       'schema': {
         'type': 'object',

@@ -9,7 +9,7 @@
 #include "base/scoped_observer.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
-#include "chrome/browser/chromeos/login/app_mode/kiosk_launch_controller.h"
+#include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
 
 namespace chromeos {

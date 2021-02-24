@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "chrome/browser/chromeos/login/demo_mode/demo_resources.h"
-#include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/login/demo_mode/demo_resources.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 
 namespace arc {
 

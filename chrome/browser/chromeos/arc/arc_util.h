@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "components/arc/session/arc_supervision_transition.h"
 #include "storage/browser/file_system/file_system_url.h"
 
