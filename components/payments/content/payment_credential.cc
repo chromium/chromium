@@ -8,15 +8,26 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/core/secure_payment_confirmation_instrument.h"
 #include "components/payments/core/url_util.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
+#include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-shared.h"
 #include "ui/gfx/image/image.h"
 
 namespace payments {
+
+// static
+bool PaymentCredential::IsFrameAllowedToUseSecurePaymentConfirmation(
+    content::RenderFrameHost* rfh) {
+  return rfh && rfh->IsCurrent() &&
+         rfh->IsFeatureEnabled(blink::mojom::FeaturePolicyFeature::kPayment) &&
+         base::FeatureList::IsEnabled(features::kSecurePaymentConfirmation);
+}
 
 PaymentCredential::PaymentCredential(
     content::WebContents* web_contents,
@@ -135,7 +146,7 @@ bool PaymentCredential::IsCurrentStateValid() const {
   content::RenderFrameHost* render_frame_host =
       content::RenderFrameHost::FromID(initiator_frame_routing_id_);
 
-  if (!render_frame_host || !render_frame_host->IsCurrent() ||
+  if (!IsFrameAllowedToUseSecurePaymentConfirmation(render_frame_host) ||
       !web_contents() ||
       web_contents() !=
           content::WebContents::FromRenderFrameHost(render_frame_host) ||

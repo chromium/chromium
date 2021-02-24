@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/payments/content/payment_credential.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/payment_request_web_contents_manager.h"
 #include "content/public/browser/render_frame_host.h"
@@ -19,6 +20,10 @@ namespace payments {
 void CreatePaymentCredential(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<mojom::PaymentCredential> receiver) {
+  if (!PaymentCredential::IsFrameAllowedToUseSecurePaymentConfirmation(
+          render_frame_host))
+    return;
+
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
   if (!web_contents)

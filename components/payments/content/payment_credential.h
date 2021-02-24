@@ -38,6 +38,9 @@ class PaymentCredential : public mojom::PaymentCredential,
                           public WebDataServiceConsumer,
                           public content::WebContentsObserver {
  public:
+  static bool IsFrameAllowedToUseSecurePaymentConfirmation(
+      content::RenderFrameHost* rfh);
+
   PaymentCredential(
       content::WebContents* web_contents,
       content::GlobalFrameRoutingId initiator_frame_routing_id,
