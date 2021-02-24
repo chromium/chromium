@@ -1159,6 +1159,44 @@ TEST_F(ShellSurfaceTest, Caption) {
   }
 }
 
+TEST_F(ShellSurfaceTest, DragMaximizedWindow) {
+  gfx::Size buffer_size(256, 256);
+  auto buffer = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(buffer_size));
+  auto surface = std::make_unique<Surface>();
+  auto shell_surface = std::make_unique<ShellSurface>(surface.get());
+
+  surface->Attach(buffer.get());
+  shell_surface->OnSetFrame(SurfaceFrameType::NORMAL);
+  surface->Commit();
+  shell_surface->GetWidget()->SetBounds(gfx::Rect(0, 0, 256, 256));
+
+  // Maximize the window.
+  shell_surface->Maximize();
+
+  chromeos::WindowStateType configured_state =
+      chromeos::WindowStateType::kDefault;
+  shell_surface->set_configure_callback(base::BindLambdaForTesting(
+      [&](const gfx::Size& size, chromeos::WindowStateType state, bool resizing,
+          bool activated, const gfx::Vector2d& origin_offset) {
+        configured_state = state;
+        return uint32_t{0};
+      }));
+
+  // Initiate caption bar dragging for a window.
+  gfx::Size size = shell_surface->GetWidget()->GetWindowBoundsInScreen().size();
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  // Move mouse pointer to caption bar.
+  event_generator->MoveMouseTo(size.width() / 2, 2);
+  constexpr int kDragAmount = 10;
+  // Start dragging a window.
+  event_generator->DragMouseBy(kDragAmount, kDragAmount);
+
+  EXPECT_FALSE(shell_surface->GetWidget()->IsMaximized());
+  // `WindowStateType` after dragging should be `kNormal`.
+  EXPECT_EQ(chromeos::WindowStateType::kNormal, configured_state);
+}
+
 TEST_F(ShellSurfaceTest, CaptionWithPopup) {
   gfx::Size buffer_size(256, 256);
   auto buffer = std::make_unique<Buffer>(

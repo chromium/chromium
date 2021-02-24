@@ -418,7 +418,11 @@ void ShellSurface::OnPostWindowStateTypeChange(
     ash::WindowState* window_state,
     chromeos::WindowStateType old_type) {
   chromeos::WindowStateType new_type = window_state->GetStateType();
-  if (chromeos::IsMaximizedOrFullscreenOrPinnedWindowStateType(new_type)) {
+  // For exo-client using client-side decoration, window-state information is
+  // needed to toggle the maximize and restore buttons. When the window is
+  // restored, we show a maximized button; otherwise we show a restore button.
+  if (chromeos::IsMaximizedOrFullscreenOrPinnedWindowStateType(old_type) ||
+      chromeos::IsMaximizedOrFullscreenOrPinnedWindowStateType(new_type)) {
     Configure();
   }
 
