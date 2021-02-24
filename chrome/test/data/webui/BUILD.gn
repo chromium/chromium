@@ -580,7 +580,6 @@ group("closure_compile") {
 js_type_check("closure_compile_local") {
   is_polymer3 = true
   closure_flags = default_closure_args + [
-                    "browser_resolver_prefix_replacements=\"chrome://interventions-internals/=../../chrome/browser/resources/interventions-internals/\"",
                     "js_module_root=../../chrome/test/data/webui/",
                     "js_module_root=./gen/chrome/test/data/webui/",
                   ]
