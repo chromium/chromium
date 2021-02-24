@@ -85,7 +85,7 @@ class POLICY_EXPORT PolicyServiceImpl
   enum class PolicyDomainStatus { kUninitialized, kInitialized, kPolicyReady };
 
   using Observers =
-      base::ObserverList<PolicyService::Observer, true>::Unchecked;
+      base::ObserverList<PolicyService::Observer, true>;
 
   // This constructor is not publicly visible so callers that want a
   // PolicyServiceImpl with throttled initialization use

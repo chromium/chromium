@@ -35,7 +35,7 @@ class PolicyServiceAndroid;
 // BrowserProcess as a global singleton.
 class POLICY_EXPORT PolicyService {
  public:
-  class POLICY_EXPORT Observer {
+  class POLICY_EXPORT Observer : public base::CheckedObserver {
    public:
     // Invoked whenever policies for the given |ns| namespace are modified.
     // This is only invoked for changes that happen after AddObserver is called.
@@ -60,9 +60,6 @@ class POLICY_EXPORT PolicyService {
     // will wait for cloud policies to be fetched when the local cache is not
     // available, which may take some time depending on user's network.
     virtual void OnFirstPoliciesLoaded(PolicyDomain domain) {}
-
-   protected:
-    virtual ~Observer() {}
   };
 
   class POLICY_EXPORT ProviderUpdateObserver : public base::CheckedObserver {
