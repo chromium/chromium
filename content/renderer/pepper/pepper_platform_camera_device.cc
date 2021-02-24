@@ -95,10 +95,7 @@ void PepperPlatformCameraDevice::OnDeviceOpened(int request_id,
         device_manager->GetSessionID(PP_DEVICETYPE_DEV_VIDEOCAPTURE, label);
     blink::WebVideoCaptureImplManager* manager =
         RenderThreadImpl::current()->video_capture_impl_manager();
-    RenderFrameImpl* render_frame =
-        RenderFrameImpl::FromRoutingID(render_frame_id_);
-    release_device_cb_ = manager->UseDevice(
-        session_id_, render_frame->GetBrowserInterfaceBroker());
+    release_device_cb_ = manager->UseDevice(session_id_);
   }
 
   handler_->OnInitialized(succeeded);

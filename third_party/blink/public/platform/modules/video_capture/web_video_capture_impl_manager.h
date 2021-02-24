@@ -23,7 +23,6 @@
 
 namespace blink {
 
-class BrowserInterfaceBrokerProxy;
 class VideoCaptureImpl;
 class WebString;
 
@@ -50,9 +49,7 @@ class BLINK_PLATFORM_EXPORT WebVideoCaptureImplManager {
   // is used.
   // Returns a callback that should be used to release the acquired
   // resources.
-  base::OnceClosure UseDevice(
-      const media::VideoCaptureSessionId& id,
-      BrowserInterfaceBrokerProxy* browser_interface_broker);
+  base::OnceClosure UseDevice(const media::VideoCaptureSessionId& id);
 
   // Start receiving video frames for the given session ID.
   //
