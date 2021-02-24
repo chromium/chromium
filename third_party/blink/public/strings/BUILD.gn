@@ -8,6 +8,6 @@ import("//tools/grit/grit_rule.gni")
 grit("strings") {
   source = "blink_strings.grd"
   outputs = [ "grit/blink_strings.h" ] +
-            process_file_template(locales_with_fake_bidi,
+            process_file_template(locales_and_pseudolocales,
                                   [ "blink_strings_{{source_name_part}}.pak" ])
 }

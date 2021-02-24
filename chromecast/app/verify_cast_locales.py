@@ -17,6 +17,7 @@ CAST_LOCALES = [
     'pl', 'pt-BR', 'pt-PT', 'ro', 'ru', 'sk', 'sl', 'sr', 'sv', 'sw', 'ta',
     'te', 'th', 'tr', 'uk', 'vi', 'zh-CN', 'zh-TW'
 ]
+PSEUDOLOCALES = ['ar-XB', 'en-XA']
 
 SUCCESS_RETURN_CODE = 0
 FAILURE_RETURN_CODE = 1
@@ -39,13 +40,15 @@ def main():
                       help='The script will stamp this file if successful.')
   args = parser.parse_args()
 
-  if set(CAST_LOCALES) == set(args.locales):
-    open(args.stamp_file, 'w')
-    return SUCCESS_RETURN_CODE
-
   # The lists do not match. Compute the difference and log it to the developer.
   removed_locales = set(CAST_LOCALES) - set(args.locales)
-  added_locales = set(args.locales) - set(CAST_LOCALES)
+  # Pseudolocales may or may not be added to the build, depending on the
+  # enable_pseudolocales flag. Don't worry about whether they're here.
+  added_locales = set(args.locales) - set(CAST_LOCALES) - set(PSEUDOLOCALES)
+
+  if not removed_locales and not added_locales:
+    open(args.stamp_file, 'w')
+    return SUCCESS_RETURN_CODE
 
   print('CAST_LOCALES no longer matches the locales list from GN!')
   if removed_locales:
