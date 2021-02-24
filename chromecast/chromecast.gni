@@ -30,11 +30,6 @@ declare_args() {
   # Set true to enable assistant features.
   enable_assistant = false
 
-  # Set to true on devices that support multizone. Only indicates that the
-  # device supports multizone. The command line flag --enable-multizone must
-  # still be used to enable multizone.
-  supports_multizone = is_cast_audio_only && !is_cast_desktop_build
-
   # Set to true if there is a full mixer implementation; if not, we create a
   # shim mixer service receiver that pushes audio to the CMA backend.
   have_full_mixer = is_cast_audio_only

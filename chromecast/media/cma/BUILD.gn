@@ -51,6 +51,7 @@ cast_source_set("unittests") {
   testonly = true
   sources = [
     "backend/audio_video_pipeline_device_unittest.cc",
+    "backend/multizone_backend_unittest.cc",
     "base/balanced_media_task_runner_unittest.cc",
     "base/buffering_controller_unittest.cc",
     "base/buffering_frame_provider_unittest.cc",
@@ -100,9 +101,4 @@ cast_source_set("unittests") {
   }
 
   data = [ "//media/test/data/" ]
-
-  # MultizoneBackendTest verifies rendering delay reported by the backend.
-  if (supports_multizone) {
-    sources += [ "backend/multizone_backend_unittest.cc" ]
-  }
 }
