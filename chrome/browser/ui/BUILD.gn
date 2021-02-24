@@ -2150,8 +2150,6 @@ static_library("ui") {
       "views/frame/immersive_mode_controller_chromeos.cc",
       "views/frame/immersive_mode_controller_chromeos.h",
       "views/frame/native_browser_frame_factory_chromeos.cc",
-      "views/frame/top_controls_slide_controller_chromeos.cc",
-      "views/frame/top_controls_slide_controller_chromeos.h",
       "views/platform_keys_certificate_selector_chromeos.cc",
       "views/platform_keys_certificate_selector_chromeos.h",
       "views/plugin_vm/plugin_vm_installer_view.cc",
@@ -2805,6 +2803,8 @@ static_library("ui") {
       "views/frame/browser_non_client_frame_view_chromeos.cc",
       "views/frame/browser_non_client_frame_view_chromeos.h",
       "views/frame/browser_non_client_frame_view_factory_chromeos.cc",
+      "views/frame/top_controls_slide_controller_chromeos.cc",
+      "views/frame/top_controls_slide_controller_chromeos.h",
     ]
     deps += [ "//components/account_manager_core:account_manager_core" ]
   }

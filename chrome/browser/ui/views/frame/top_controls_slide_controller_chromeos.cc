@@ -34,17 +34,22 @@
 
 namespace {
 
-using ::ash::AccessibilityManager;
-
 bool IsTabletModeEnabled() {
   return chromeos::TabletState::Get() &&
          chromeos::TabletState::Get()->InTabletMode();
 }
 
 bool IsSpokenFeedbackEnabled() {
-  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  auto* accessibility_manager = ash::AccessibilityManager::Get();
   return accessibility_manager &&
          accessibility_manager->IsSpokenFeedbackEnabled();
+#else
+  // TODO(https://crbug.com/1165746): Enable accessibility (a11y) support for
+  // Lacros.
+  NOTIMPLEMENTED() << "Enable accessibility support for Lacros.";
+  return false;
+#endif
 }
 
 // Based on the current status of |contents|, returns the browser top controls
@@ -282,13 +287,15 @@ TopControlsSlideControllerChromeOS::TopControlsSlideControllerChromeOS(
   browser_view_->browser()->tab_strip_model()->AddObserver(this);
   display::Screen::GetScreen()->AddObserver(this);
 
-  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  auto* accessibility_manager = ash::AccessibilityManager::Get();
   if (accessibility_manager) {
     accessibility_status_subscription_ =
         accessibility_manager->RegisterCallback(base::BindRepeating(
             &TopControlsSlideControllerChromeOS::OnAccessibilityStatusChanged,
             base::Unretained(this)));
   }
+#endif
 
   OnEnabledStateChanged(CanEnable(base::nullopt));
 }
@@ -599,6 +606,7 @@ bool TopControlsSlideControllerChromeOS::CanEnable(
          !(fullscreen_state.value_or(browser_view_->IsFullscreen()));
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void TopControlsSlideControllerChromeOS::OnAccessibilityStatusChanged(
     const ash::AccessibilityStatusEventDetails& event_details) {
   if (event_details.notification_type !=
@@ -608,6 +616,7 @@ void TopControlsSlideControllerChromeOS::OnAccessibilityStatusChanged(
 
   UpdateBrowserControlsStateShown(/*web_contents=*/nullptr, /*animate=*/true);
 }
+#endif
 
 void TopControlsSlideControllerChromeOS::OnEnabledStateChanged(bool new_state) {
   if (new_state == is_enabled_)
