@@ -354,16 +354,28 @@ void AggregationPointVisitor::OnWorkerEntered(const WorkerNode* worker_node) {
   mojom::WebMemoryBreakdownEntry* aggregation_point = nullptr;
   switch (aggregation_type) {
     case NodeAggregationType::kSameOriginAggregationPoint:
-    case NodeAggregationType::kSameOriginAggregationPointWithHiddenAttributes:
+    case NodeAggregationType::kSameOriginAggregationPointWithHiddenAttributes: {
       // Create a new aggregation point with window scope. Since this node is
       // same-origin to the start node, the start node can view its current
       // url.
+      std::string url = worker_node->GetURL().spec();
+      if (url.empty()) {
+        // TODO(906991): Remove this once PlzDedicatedWorker ships. Until then
+        // the browser does not know URLs of dedicated workers, so we pass them
+        // together with the measurement result.
+        const auto* data =
+            V8DetailedMemoryExecutionContextData::ForWorkerNode(worker_node);
+        if (data->url()) {
+          url = *data->url();
+        }
+      }
       aggregation_point = WebMemoryAggregator::CreateBreakdownEntry(
           AttributionScopeFromWorkerType(worker_node->GetWorkerType()),
-          worker_node->GetURL().spec(), aggregation_result_.get());
+          std::move(url), aggregation_result_.get());
       WebMemoryAggregator::CopyBreakdownAttribution(
           enclosing_.top().aggregation_point, aggregation_point);
       break;
+    }
 
     case NodeAggregationType::kCrossOriginAggregated:
       // Update the enclosing aggregation point in-place.

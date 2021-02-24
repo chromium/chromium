@@ -519,6 +519,7 @@ void NodeAttachedProcessData::OnV8MemoryUsage(
 
       ec_data->data_available_ = true;
       ec_data->data_.set_v8_bytes_used(it->second->bytes_used);
+      ec_data->data_.set_url(std::move(it->second->url));
       // Zero out this datum as its usage has been consumed.
       // We avoid erase() here because it may take O(n) time.
       it->second.reset();
@@ -899,6 +900,22 @@ void V8DetailedMemoryRequestOneShot::OnOwnerUnregistered() {
 
 ////////////////////////////////////////////////////////////////////////////////
 // V8DetailedMemoryExecutionContextData
+
+V8DetailedMemoryExecutionContextData::V8DetailedMemoryExecutionContextData() =
+    default;
+V8DetailedMemoryExecutionContextData::~V8DetailedMemoryExecutionContextData() =
+    default;
+
+V8DetailedMemoryExecutionContextData::V8DetailedMemoryExecutionContextData(
+    const V8DetailedMemoryExecutionContextData&) = default;
+V8DetailedMemoryExecutionContextData::V8DetailedMemoryExecutionContextData(
+    V8DetailedMemoryExecutionContextData&&) = default;
+V8DetailedMemoryExecutionContextData&
+V8DetailedMemoryExecutionContextData::operator=(
+    const V8DetailedMemoryExecutionContextData&) = default;
+V8DetailedMemoryExecutionContextData&
+V8DetailedMemoryExecutionContextData::operator=(
+    V8DetailedMemoryExecutionContextData&&) = default;
 
 // static
 const V8DetailedMemoryExecutionContextData*

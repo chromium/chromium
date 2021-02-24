@@ -11,6 +11,12 @@ struct PerContextV8MemoryUsage {
   // PerformanceManager.
   ExecutionContextToken token;
   uint64 bytes_used = 0;
+  // TODO(906991): Remove this once PlzDedicatedWorker ships. Until then
+  // the browser does not know URLs of dedicated workers, so we pass them
+  // together with the measurement result.
+  // This field is filled only for dedicated workers and it may be empty
+  // if the URL is too long.
+  string? url;
 };
 
 struct PerIsolateV8MemoryUsage {

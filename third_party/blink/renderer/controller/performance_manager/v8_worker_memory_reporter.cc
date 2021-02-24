@@ -39,6 +39,14 @@ const base::TimeDelta V8WorkerMemoryReporter::kTimeout =
     base::TimeDelta::FromSeconds(60);
 
 namespace {
+
+// TODO(906991): Remove this once PlzDedicatedWorker ships. Until then
+// the browser does not know URLs of dedicated workers, so we pass them
+// together with the measurement result. We limit the max length of the
+// URLs to reduce memory allocations and the traffic between the renderer
+// and the browser processes.
+constexpr size_t kMaxReportedUrlLength = 2000;
+
 // This delegate is provided to v8::Isolate::MeasureMemory API.
 // V8 calls MeasurementComplete with the measurement result.
 //
@@ -64,7 +72,7 @@ class WorkerMeasurementDelegate : public v8::MeasureMemoryDelegate {
 
  private:
   void NotifyMeasurementSuccess(
-      V8WorkerMemoryReporter::WorkerMemoryUsage memory_usage);
+      std::unique_ptr<V8WorkerMemoryReporter::WorkerMemoryUsage> memory_usage);
   void NotifyMeasurementFailure();
   base::WeakPtr<V8WorkerMemoryReporter> worker_memory_reporter_;
   WorkerThread* worker_thread_;
@@ -91,8 +99,16 @@ void WorkerMeasurementDelegate::MeasurementComplete(
   for (auto& context_size : context_sizes) {
     bytes += context_size.second;
   }
-  NotifyMeasurementSuccess(V8WorkerMemoryReporter::WorkerMemoryUsage{
-      To<WorkerGlobalScope>(global_scope)->GetWorkerToken(), bytes});
+  auto* worker_global_scope = To<WorkerGlobalScope>(global_scope);
+  auto memory_usage =
+      std::make_unique<V8WorkerMemoryReporter::WorkerMemoryUsage>();
+  memory_usage->token = worker_global_scope->GetWorkerToken();
+  memory_usage->bytes = bytes;
+  if (worker_global_scope->Url().GetString().length() < kMaxReportedUrlLength) {
+    // Copy the URL to send it over to the main thread.
+    memory_usage->url = worker_global_scope->Url().Copy();
+  }
+  NotifyMeasurementSuccess(std::move(memory_usage));
 }
 
 void WorkerMeasurementDelegate::NotifyMeasurementFailure() {
@@ -104,11 +120,11 @@ void WorkerMeasurementDelegate::NotifyMeasurementFailure() {
 }
 
 void WorkerMeasurementDelegate::NotifyMeasurementSuccess(
-    V8WorkerMemoryReporter::WorkerMemoryUsage memory_usage) {
+    std::unique_ptr<V8WorkerMemoryReporter::WorkerMemoryUsage> memory_usage) {
   DCHECK(worker_thread_->IsCurrentThread());
   DCHECK(!did_notify_);
   V8WorkerMemoryReporter::NotifyMeasurementSuccess(
-      worker_thread_, worker_memory_reporter_, memory_usage);
+      worker_thread_, worker_memory_reporter_, std::move(memory_usage));
   did_notify_ = true;
 }
 
@@ -169,12 +185,12 @@ void V8WorkerMemoryReporter::StartMeasurement(
 void V8WorkerMemoryReporter::NotifyMeasurementSuccess(
     WorkerThread* worker_thread,
     base::WeakPtr<V8WorkerMemoryReporter> worker_memory_reporter,
-    WorkerMemoryUsage memory_usage) {
+    std::unique_ptr<WorkerMemoryUsage> memory_usage) {
   DCHECK(worker_thread->IsCurrentThread());
   PostCrossThreadTask(
       *Thread::MainThread()->GetTaskRunner(), FROM_HERE,
       CrossThreadBindOnce(&V8WorkerMemoryReporter::OnMeasurementSuccess,
-                          worker_memory_reporter, memory_usage));
+                          worker_memory_reporter, std::move(memory_usage)));
 }
 
 // static
@@ -200,11 +216,11 @@ void V8WorkerMemoryReporter::OnMeasurementFailure() {
 }
 
 void V8WorkerMemoryReporter::OnMeasurementSuccess(
-    WorkerMemoryUsage memory_usage) {
+    std::unique_ptr<WorkerMemoryUsage> memory_usage) {
   DCHECK(IsMainThread());
   if (state_ == State::kDone)
     return;
-  result_.workers.emplace_back(memory_usage);
+  result_.workers.emplace_back(*memory_usage);
   ++success_count_;
   if (success_count_ + failure_count_ == worker_count_) {
     InvokeCallback();
