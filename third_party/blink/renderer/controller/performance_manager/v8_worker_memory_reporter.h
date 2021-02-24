@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/controller/controller_export.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8.h"
 
@@ -40,6 +41,12 @@ class CONTROLLER_EXPORT V8WorkerMemoryReporter {
   struct WorkerMemoryUsage {
     WorkerToken token;
     size_t bytes;
+    // TODO(906991): Remove this once PlzDedicatedWorker ships. Until then
+    // the browser does not know URLs of dedicated workers, so we pass them
+    // together with the measurement result.
+    // URLs longer than kMaxReportedUrlLength are skipped. In such a case
+    // url.IsNull() returns true.
+    KURL url;
   };
 
   struct Result {

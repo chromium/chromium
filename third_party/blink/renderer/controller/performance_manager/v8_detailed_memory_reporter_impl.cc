@@ -172,6 +172,9 @@ class V8ProcessMemoryReporter : public RefCounted<V8ProcessMemoryReporter> {
       auto context_memory_usage = mojom::blink::PerContextV8MemoryUsage::New();
       context_memory_usage->token = ToExecutionContextToken(worker.token);
       context_memory_usage->bytes_used = worker.bytes;
+      if (!worker.url.IsNull()) {
+        context_memory_usage->url = worker.url.GetString();
+      }
       worker_memory_usage->contexts.push_back(std::move(context_memory_usage));
       result_->isolates.push_back(std::move(worker_memory_usage));
     }

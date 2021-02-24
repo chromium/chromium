@@ -287,11 +287,18 @@ class V8DetailedMemoryDecorator
 
 class V8DetailedMemoryExecutionContextData {
  public:
-  V8DetailedMemoryExecutionContextData() = default;
-  virtual ~V8DetailedMemoryExecutionContextData() = default;
+  V8DetailedMemoryExecutionContextData();
+  virtual ~V8DetailedMemoryExecutionContextData();
+  V8DetailedMemoryExecutionContextData(
+      const V8DetailedMemoryExecutionContextData&);
+  V8DetailedMemoryExecutionContextData(V8DetailedMemoryExecutionContextData&&);
+  V8DetailedMemoryExecutionContextData& operator=(
+      const V8DetailedMemoryExecutionContextData&);
+  V8DetailedMemoryExecutionContextData& operator=(
+      V8DetailedMemoryExecutionContextData&&);
 
   bool operator==(const V8DetailedMemoryExecutionContextData& other) const {
-    return v8_bytes_used_ == other.v8_bytes_used_;
+    return v8_bytes_used_ == other.v8_bytes_used_ && url_ == other.url_;
   }
 
   // Returns the number of bytes used by V8 for this frame at the last
@@ -301,6 +308,13 @@ class V8DetailedMemoryExecutionContextData {
   void set_v8_bytes_used(uint64_t v8_bytes_used) {
     v8_bytes_used_ = v8_bytes_used;
   }
+
+  // TODO(906991): Remove this once PlzDedicatedWorker ships. Until then
+  // the browser does not know URLs of dedicated workers, so we pass them
+  // together with the measurement result and store in ExecutionContext data.
+  base::Optional<std::string> url() const { return url_; }
+
+  void set_url(base::Optional<std::string> url) { url_ = std::move(url); }
 
   // Returns frame data for the given node, or nullptr if no measurement has
   // been taken. The returned pointer must only be accessed on the graph
@@ -321,6 +335,7 @@ class V8DetailedMemoryExecutionContextData {
       const WorkerNode* node);
 
   uint64_t v8_bytes_used_ = 0;
+  base::Optional<std::string> url_;
 };
 
 class V8DetailedMemoryProcessData {

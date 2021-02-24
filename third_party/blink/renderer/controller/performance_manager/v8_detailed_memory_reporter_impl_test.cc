@@ -39,6 +39,11 @@ class MemoryUsageChecker {
         // only check the lower bound.
         EXPECT_LE(1000000u, entry->bytes_used);
         ++actual_context_count;
+        if (entry->token.Is<DedicatedWorkerToken>()) {
+          EXPECT_EQ(String("http://fake.url/"), entry->url);
+        } else {
+          EXPECT_FALSE(entry->url);
+        }
       }
     }
     EXPECT_EQ(expected_context_count_, actual_context_count);
