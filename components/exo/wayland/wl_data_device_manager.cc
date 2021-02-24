@@ -306,9 +306,6 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
         serial_tracker_->GetEventType(serial);
     if (event_type == base::nullopt) {
       LOG(ERROR) << "The serial passed to StartDrag does not exist.";
-      if (source) {
-        source->Cancelled();
-      }
       return;
     }
     if (event_type == wayland::SerialTracker::EventType::POINTER_BUTTON_DOWN &&
@@ -324,9 +321,6 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
     } else {
       LOG(ERROR) << "The serial passed to StartDrag does not match its "
                     "expected types.";
-      if (source) {
-        source->Cancelled();
-      }
     }
   }
 
@@ -337,9 +331,6 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
         serial_tracker_->GetEventType(serial);
     if (event_type == base::nullopt) {
       LOG(ERROR) << "The serial passed to SetSelection does not exist.";
-      if (source) {
-        source->Cancelled();
-      }
       return;
     }
     DCHECK(data_device);

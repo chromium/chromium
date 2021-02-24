@@ -62,13 +62,7 @@ class FileSystemAccessClipboardBrowserTest : public ContentBrowserTest {
   base::test::ScopedFeatureList features_;
 };
 
-// TODO(crbug.com/1175483): Lacros wayland clipboard does not work in tests.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_File DISABLED_File
-#else
-#define MAYBE_File File
-#endif
-IN_PROC_BROWSER_TEST_F(FileSystemAccessClipboardBrowserTest, MAYBE_File) {
+IN_PROC_BROWSER_TEST_F(FileSystemAccessClipboardBrowserTest, File) {
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
 
@@ -120,13 +114,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessClipboardBrowserTest, MAYBE_File) {
   EXPECT_EQ(test_contents, EvalJs(shell(), "p"));
 }
 
-// TODO(crbug.com/1175483): Lacros wayland clipboard does not work in tests.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Directory DISABLED_Directory
-#else
-#define MAYBE_Directory Directory
-#endif
-IN_PROC_BROWSER_TEST_F(FileSystemAccessClipboardBrowserTest, MAYBE_Directory) {
+IN_PROC_BROWSER_TEST_F(FileSystemAccessClipboardBrowserTest, Directory) {
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
 
@@ -201,14 +189,7 @@ class FileSystemAccessClipboardDisabledBrowserTest : public ContentBrowserTest {
   base::test::ScopedFeatureList features_;
 };
 
-// TODO(crbug.com/1175483): Lacros wayland clipboard does not work in tests.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Disabled DISABLED_Disabled
-#else
-#define MAYBE_Disabled Disabled
-#endif
-IN_PROC_BROWSER_TEST_F(FileSystemAccessClipboardDisabledBrowserTest,
-                       MAYBE_Disabled) {
+IN_PROC_BROWSER_TEST_F(FileSystemAccessClipboardDisabledBrowserTest, Disabled) {
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
 
