@@ -4,7 +4,7 @@
 
 #include "chrome/browser/chromeos/virtual_machines/virtual_machines_util.h"
 
-#include "chrome/browser/chromeos/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/settings/cros_settings_names.h"
 
 namespace virtual_machines {

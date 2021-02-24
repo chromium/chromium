@@ -6,9 +6,9 @@
 
 #include <utility>
 
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/login/users/avatar/user_image_manager.h"
 #include "chrome/browser/chromeos/login/users/chrome_user_manager.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "components/policy/policy_constants.h"
 
 namespace policy {

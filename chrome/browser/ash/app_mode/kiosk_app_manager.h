@@ -18,10 +18,10 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/chromeos/extensions/external_cache.h"
 #include "chrome/browser/chromeos/extensions/external_cache_delegate.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 // TODO(https://crbug.com/1164001): use forward declaration when moved to
 // chrome/browser/ash/.
 #include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "extensions/common/extension_id.h"

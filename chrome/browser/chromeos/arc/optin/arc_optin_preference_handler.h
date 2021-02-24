@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 
-#include "chrome/browser/chromeos/settings/stats_reporting_controller.h"
+#include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefService;

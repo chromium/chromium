@@ -13,7 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/string16.h"
 #include "base/task/post_task.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"

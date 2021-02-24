@@ -34,7 +34,7 @@
 #include "services/service_manager/public/mojom/service.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #endif
 
 class ExtensionSpecialStoragePolicy;

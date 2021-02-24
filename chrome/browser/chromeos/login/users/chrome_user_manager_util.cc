@@ -5,8 +5,8 @@
 #include "chrome/browser/chromeos/login/users/chrome_user_manager_util.h"
 
 #include "base/values.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
-#include "chrome/browser/chromeos/settings/device_settings_provider.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/device_settings_provider.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"

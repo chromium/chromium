@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_CHROMEOS_CHILD_ACCOUNTS_FAMILY_USER_DEVICE_METRICS_H_
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/chromeos/child_accounts/family_user_metrics_service.h"
-#include "chrome/browser/chromeos/settings/device_settings_service.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
 namespace user_manager {

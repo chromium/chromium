@@ -14,7 +14,7 @@
 #include "base/observer_list.h"
 #include "base/path_service.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_delegate.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/account_id/account_id.h"
 #include "ui/gfx/image/image_skia.h"

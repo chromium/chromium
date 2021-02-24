@@ -9,8 +9,8 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/attestation/machine_certificate_uploader.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace chromeos {

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/chromebox_for_meetings/device_info/device_info_service.h"
+
 #include <cstdint>
 
 #include "base/bind.h"
@@ -11,7 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/settings/device_settings_service.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/common/channel_info.h"
 #include "chromeos/dbus/chromebox_for_meetings/cfm_hotline_client.h"
 #include "components/version_info/version_info.h"

@@ -7,11 +7,11 @@
 #include "base/memory/ptr_util.h"
 #include "base/time/clock.h"
 #include "base/values.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/policy/device_auto_update_time_restrictions_decoder.h"
 #include "chromeos/policy/weekly_time/time_utils.h"
 #include "chromeos/policy/weekly_time/weekly_time.h"
 #include "chromeos/policy/weekly_time/weekly_time_interval.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 

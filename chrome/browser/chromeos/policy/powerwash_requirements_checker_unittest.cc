@@ -4,8 +4,8 @@
 
 #include "chrome/browser/chromeos/policy/powerwash_requirements_checker.h"
 
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"

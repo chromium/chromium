@@ -7,9 +7,9 @@
 #include <memory>
 
 #include "base/test/gtest_util.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/chromeos/login/ui/login_screen_extension_ui/create_options.h"
 #include "chrome/browser/chromeos/login/ui/login_screen_extension_ui/window.h"
-#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ui/ash/test_login_screen.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
