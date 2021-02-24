@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/mojo/test/mojo_interface_interceptor.h"
 
+#include <utility>
+
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -140,7 +142,7 @@ void MojoInterfaceInterceptor::OnInterfaceRequest(
       ->PostTask(
           FROM_HERE,
           WTF::Bind(&MojoInterfaceInterceptor::DispatchInterfaceRequestEvent,
-                    WrapPersistent(this), WTF::Passed(std::move(handle))));
+                    WrapPersistent(this), std::move(handle)));
 }
 
 void MojoInterfaceInterceptor::DispatchInterfaceRequestEvent(

@@ -169,7 +169,7 @@ void WebSharedWorkerImpl::ConnectToChannel(int connection_request_id,
       *task_runner_for_connect_event_, FROM_HERE,
       CrossThreadBindOnce(&WebSharedWorkerImpl::ConnectTaskOnWorkerThread,
                           WTF::CrossThreadUnretained(this),
-                          WTF::Passed(std::move(channel))));
+                          std::move(channel)));
   host_->OnConnected(connection_request_id);
 }
 

@@ -28,6 +28,7 @@
 
 #include <atomic>
 #include <memory>
+#include <utility>
 
 #include "base/macros.h"
 #include "base/optional.h"
@@ -878,8 +879,7 @@ ScriptPromise Internals::getResourcePriority(ScriptState* script_state,
   DCHECK(document);
 
   auto callback = WTF::Bind(&Internals::ResolveResourcePriority,
-                            WTF::Passed(WrapPersistent(this)),
-                            WTF::Passed(WrapPersistent(resolver)));
+                            WrapPersistent(this), WrapPersistent(resolver));
   ResourceFetcher::AddPriorityObserverForTesting(resource_url,
                                                  std::move(callback));
 

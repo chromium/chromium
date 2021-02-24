@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/workers/threaded_object_proxy_base.h"
 
 #include <memory>
+
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/workers/parent_execution_context_task_runners.h"
@@ -33,7 +34,7 @@ void ThreadedObjectProxyBase::ReportConsoleMessage(
       FROM_HERE,
       CrossThreadBindOnce(&ThreadedMessagingProxyBase::ReportConsoleMessage,
                           MessagingProxyWeakPtr(), source, level, message,
-                          WTF::Passed(location->Clone())));
+                          location->Clone()));
 }
 
 void ThreadedObjectProxyBase::DidCloseWorkerGlobalScope() {

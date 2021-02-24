@@ -63,7 +63,7 @@ void DedicatedWorkerObjectProxy::PostMessageToWorkerObject(
       FROM_HERE,
       CrossThreadBindOnce(
           &DedicatedWorkerMessagingProxy::PostMessageToWorkerObject,
-          messaging_proxy_weak_ptr_, WTF::Passed(std::move(message))));
+          messaging_proxy_weak_ptr_, std::move(message)));
 }
 
 void DedicatedWorkerObjectProxy::ProcessMessageFromWorkerObject(
@@ -90,7 +90,7 @@ void DedicatedWorkerObjectProxy::ReportException(
       FROM_HERE,
       CrossThreadBindOnce(&DedicatedWorkerMessagingProxy::DispatchErrorEvent,
                           messaging_proxy_weak_ptr_, error_message,
-                          WTF::Passed(location->Clone()), exception_id));
+                          location->Clone(), exception_id));
 }
 
 void DedicatedWorkerObjectProxy::DidFailToFetchClassicScript() {

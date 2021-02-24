@@ -399,8 +399,8 @@ inline void ImageLoader::DispatchErrorEvent() {
       *GetElement()->GetDocument().GetTaskRunner(TaskType::kDOMManipulation),
       FROM_HERE,
       WTF::Bind(&ImageLoader::DispatchPendingErrorEvent, WrapPersistent(this),
-                WTF::Passed(std::make_unique<IncrementLoadEventDelayCount>(
-                    GetElement()->GetDocument()))));
+                std::make_unique<IncrementLoadEventDelayCount>(
+                    GetElement()->GetDocument())));
 }
 
 inline void ImageLoader::CrossSiteOrCSPViolationOccurred(
@@ -417,8 +417,7 @@ inline void ImageLoader::EnqueueImageLoadingMicroTask(
     network::mojom::ReferrerPolicy referrer_policy) {
   auto task = std::make_unique<Task>(this, update_behavior, referrer_policy);
   pending_task_ = task->GetWeakPtr();
-  Microtask::EnqueueMicrotask(
-      WTF::Bind(&Task::Run, WTF::Passed(std::move(task))));
+  Microtask::EnqueueMicrotask(WTF::Bind(&Task::Run, std::move(task)));
   delay_until_do_update_from_element_ =
       std::make_unique<IncrementLoadEventDelayCount>(element_->GetDocument());
 }
@@ -838,8 +837,8 @@ void ImageLoader::ImageNotifyFinished(ImageResourceContent* content) {
       *GetElement()->GetDocument().GetTaskRunner(TaskType::kDOMManipulation),
       FROM_HERE,
       WTF::Bind(&ImageLoader::DispatchPendingLoadEvent, WrapPersistent(this),
-                WTF::Passed(std::make_unique<IncrementLoadEventDelayCount>(
-                    GetElement()->GetDocument()))));
+                std::make_unique<IncrementLoadEventDelayCount>(
+                    GetElement()->GetDocument())));
 }
 
 LayoutImageResource* ImageLoader::GetLayoutImageResource() {

@@ -25,6 +25,8 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_css_agent.h"
 
+#include <utility>
+
 #include "base/macros.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation_data.h"
 #include "third_party/blink/renderer/core/css/css_color_value.h"
@@ -574,7 +576,7 @@ void InspectorCSSAgent::enable(std::unique_ptr<EnableCallback> prp_callback) {
   resource_content_loader_->EnsureResourcesContentLoaded(
       resource_content_loader_client_id_,
       WTF::Bind(&InspectorCSSAgent::ResourceContentLoaded, WrapPersistent(this),
-                WTF::Passed(std::move(prp_callback))));
+                std::move(prp_callback)));
 }
 
 void InspectorCSSAgent::ResourceContentLoaded(

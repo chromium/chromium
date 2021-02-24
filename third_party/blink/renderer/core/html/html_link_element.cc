@@ -25,6 +25,8 @@
 
 #include "third_party/blink/renderer/core/html/html_link_element.h"
 
+#include <utility>
+
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_icon_sizes_parser.h"
 #include "third_party/blink/public/platform/web_prescient_networking.h"
@@ -407,10 +409,9 @@ void HTMLLinkElement::ScheduleEvent() {
       .GetTaskRunner(TaskType::kDOMManipulation)
       ->PostTask(
           FROM_HERE,
-          WTF::Bind(&HTMLLinkElement::DispatchPendingEvent,
-                    WrapPersistent(this),
-                    WTF::Passed(std::make_unique<IncrementLoadEventDelayCount>(
-                        GetDocument()))));
+          WTF::Bind(
+              &HTMLLinkElement::DispatchPendingEvent, WrapPersistent(this),
+              std::make_unique<IncrementLoadEventDelayCount>(GetDocument())));
 }
 
 void HTMLLinkElement::StartLoadingDynamicSheet() {

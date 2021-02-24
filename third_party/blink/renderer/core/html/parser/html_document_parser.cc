@@ -839,9 +839,8 @@ void HTMLDocumentParser::DiscardSpeculationsAndResumeFrom(
 
   DCHECK(checkpoint->unparsed_input.IsSafeToSendToAnotherThread());
   loading_task_runner_->PostTask(
-      FROM_HERE,
-      WTF::Bind(&BackgroundHTMLParser::ResumeFrom, background_parser_,
-                WTF::Passed(std::move(checkpoint))));
+      FROM_HERE, WTF::Bind(&BackgroundHTMLParser::ResumeFrom,
+                           background_parser_, std::move(checkpoint)));
 }
 
 size_t HTMLDocumentParser::ProcessTokenizedChunkFromBackgroundParser(
@@ -1677,7 +1676,7 @@ void HTMLDocumentParser::AppendBytes(const char* data, size_t length) {
     loading_task_runner_->PostTask(
         FROM_HERE,
         WTF::Bind(&BackgroundHTMLParser::AppendRawBytesFromMainThread,
-                  background_parser_, WTF::Passed(std::move(buffer))));
+                  background_parser_, std::move(buffer)));
     return;
   }
 
@@ -1716,7 +1715,7 @@ void HTMLDocumentParser::SetDecoder(
   if (have_background_parser_) {
     loading_task_runner_->PostTask(
         FROM_HERE, WTF::Bind(&BackgroundHTMLParser::SetDecoder,
-                             background_parser_, WTF::Passed(TakeDecoder())));
+                             background_parser_, TakeDecoder()));
   }
 }
 

@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_page_agent.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/containers/span.h"
 #include "build/build_config.h"
@@ -775,8 +776,7 @@ void InspectorPageAgent::getResourceContent(
       resource_content_loader_client_id_,
       WTF::Bind(
           &InspectorPageAgent::GetResourceContentAfterResourcesContentLoaded,
-          WrapPersistent(this), frame_id, url,
-          WTF::Passed(std::move(callback))));
+          WrapPersistent(this), frame_id, url, std::move(callback)));
 }
 
 void InspectorPageAgent::SearchContentAfterResourcesContentLoaded(
@@ -827,8 +827,7 @@ void InspectorPageAgent::searchInResource(
       WTF::Bind(&InspectorPageAgent::SearchContentAfterResourcesContentLoaded,
                 WrapPersistent(this), frame_id, url, query,
                 optional_case_sensitive.fromMaybe(false),
-                optional_is_regex.fromMaybe(false),
-                WTF::Passed(std::move(callback))));
+                optional_is_regex.fromMaybe(false), std::move(callback)));
 }
 
 Response InspectorPageAgent::setBypassCSP(bool enabled) {

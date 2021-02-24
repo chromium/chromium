@@ -130,8 +130,7 @@ void DedicatedWorkerMessagingProxy::PostMessageToWorkerGlobalScope(
       *GetWorkerThread()->GetTaskRunner(TaskType::kPostedMessage), FROM_HERE,
       CrossThreadBindOnce(
           &DedicatedWorkerObjectProxy::ProcessMessageFromWorkerObject,
-          CrossThreadUnretained(&WorkerObjectProxy()),
-          WTF::Passed(std::move(message)),
+          CrossThreadUnretained(&WorkerObjectProxy()), std::move(message),
           CrossThreadUnretained(GetWorkerThread())));
 }
 
@@ -184,8 +183,7 @@ void DedicatedWorkerMessagingProxy::DidEvaluateScript(bool success) {
         *GetWorkerThread()->GetTaskRunner(TaskType::kPostedMessage), FROM_HERE,
         CrossThreadBindOnce(
             &DedicatedWorkerObjectProxy::ProcessMessageFromWorkerObject,
-            CrossThreadUnretained(&WorkerObjectProxy()),
-            WTF::Passed(std::move(task)),
+            CrossThreadUnretained(&WorkerObjectProxy()), std::move(task),
             CrossThreadUnretained(GetWorkerThread())));
   }
 }

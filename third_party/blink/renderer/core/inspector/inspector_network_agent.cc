@@ -1818,8 +1818,7 @@ void InspectorNetworkAgent::GetResponseBodyBlob(
   InspectorFileReaderLoaderClient* client = new InspectorFileReaderLoaderClient(
       blob, context->GetTaskRunner(TaskType::kFileReading),
       WTF::Bind(ResponseBodyFileReaderLoaderDone, resource_data->MimeType(),
-                resource_data->TextEncodingName(),
-                WTF::Passed(std::move(callback))));
+                resource_data->TextEncodingName(), std::move(callback)));
   client->Start();
 }
 
