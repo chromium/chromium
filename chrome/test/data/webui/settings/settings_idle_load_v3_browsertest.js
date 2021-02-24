@@ -18,9 +18,6 @@ SettingsIdleLoadV3BrowserTest.prototype = {
       'chrome://settings/test_loader.html?module=settings/idle_load_tests.js',
 
   /** @override */
-  extraLibraries: [],
-
-  /** @override */
   isAsync: true,
 };
 

@@ -21,11 +21,6 @@ PrintManagementBrowserTest.prototype = {
 
   browsePreload: 'chrome://print-management/test_loader.html?module=chromeos/' +
       'print_management/print_management_test.js',
-
-  extraLibraries: [
-    '//ui/webui/resources/js/assert.js',
-    '//ui/webui/resources/js/promise_resolver.js',
-  ],
 };
 
 TEST_F('PrintManagementBrowserTest', 'All', function() {

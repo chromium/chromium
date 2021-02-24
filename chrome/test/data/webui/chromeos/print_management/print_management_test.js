@@ -7,6 +7,7 @@ import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://print-management/print_management.js';
 
 import {setMetadataProviderForTesting} from 'chrome://print-management/mojo_interface_provider.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks} from 'chrome://test/test_util.m.js';
 
@@ -88,7 +89,7 @@ function decodeString16(arr) {
 function createJobEntry(
     id, title, date, printerErrorCode, completedInfo, activeInfo) {
   // Assert that only one of either |completedInfo| or |activeInfo| is non-null.
-  assert(completedInfo ? !activeInfo : activeInfo);
+  assertTrue(completedInfo ? !activeInfo : !!activeInfo);
 
   let jobEntry = {
     'id': id,
@@ -239,7 +240,7 @@ class FakePrintingMetadataProvider {
    */
   getResolver_(methodName) {
     let method = this.resolverMap_.get(methodName);
-    assert(!!method, `Method '${methodName}' not found.`);
+    assertTrue(!!method, `Method '${methodName}' not found.`);
     return method;
   }
 
@@ -431,7 +432,7 @@ suite('PrintManagementTest', () => {
     mojoApi_.setPrintJobs(printJobs);
     page = document.createElement('print-management');
     document.body.appendChild(page);
-    assert(!!page);
+    assertTrue(!!page);
     flush();
     return mojoApi_.whenCalled('observePrintJobs');
   }

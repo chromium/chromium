@@ -27,8 +27,6 @@ WelcomeA11y = class extends PolymerTest {
     return [
       '//third_party/mocha/mocha.js',
       '//chrome/test/data/webui/mocha_adapter.js',
-      '//ui/webui/resources/js/assert.js',
-      '//ui/webui/resources/js/util.js',
     ];
   }
 };

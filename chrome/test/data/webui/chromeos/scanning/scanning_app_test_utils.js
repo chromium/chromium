@@ -1,8 +1,8 @@
 // Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {assert} from 'chrome://resources/js/assert.m.js';
 import {alphabeticalCompare} from 'chrome://scanning/scanning_app_util.js';
+import {assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
 
 /**
@@ -15,7 +15,7 @@ export function assertOrderedAlphabetically(arr, conversionFn = (val) => val) {
   for (let i = 0; i < arr.length - 1; i++) {
     // |alphabeticalCompare| will return -1 if the first argument is less than
     // the second and 0 if the two arguments are equal.
-    assert(
+    assertTrue(
         alphabeticalCompare(conversionFn(arr[i]), conversionFn(arr[i + 1])) <=
         0);
   }

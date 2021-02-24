@@ -151,7 +151,7 @@ js_library("source_select") {
 }
 
 js_library("scanning_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr" ]
+  deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
 js_library("mojo_interface_provider") {

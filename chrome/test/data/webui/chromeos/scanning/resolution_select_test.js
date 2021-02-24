@@ -66,7 +66,7 @@ export function resolutionSelectTest() {
     // Verify the resolutions are sorted in descending order and that 300 is
     // selected by default.
     for (let i = 0; i < resolutionSelect.options.length - 1; i++) {
-      assert(resolutionSelect.options[i] > resolutionSelect.options[i + 1]);
+      assertTrue(resolutionSelect.options[i] > resolutionSelect.options[i + 1]);
     }
     assertEquals('300', resolutionSelect.selectedOption);
   });
