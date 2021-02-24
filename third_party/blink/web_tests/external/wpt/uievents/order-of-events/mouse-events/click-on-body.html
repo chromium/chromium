@@ -5,9 +5,11 @@
     <title>Clicking on the body element itself fires a click event</title>
     <link rel="author" title="Chris Rebert" href="http://chrisrebert.com">
     <link rel="help" href="https://w3c.github.io/uievents/#event-type-click">
-    <meta name="flags" content="interact">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
+    <script src="/resources/testdriver.js"></script>
+    <script src="/resources/testdriver-actions.js"></script>
+    <script src="/resources/testdriver-vendor.js"></script>
     <style>
 html {
   background-color: white;
@@ -27,11 +29,11 @@ body {
     </style>
   </head>
   <body>
-    <p id="guineapig">Click on the blue area below. If a "PASS" result appears, the test passes; otherwise, it fails.</p>
+    <p id="guineapig">Click on the blue area below.</p>
     <p id="other">&nbsp;</p><!-- Needed to prevent the margin from collapsing -->
     <script>
 setup({explicit_timeout: true});
-async_test(function(t) {
+promise_test(async function(t) {
   document.body.addEventListener('click', function (event) {
     t.step(function () {
       assert_equals(event.target, document.body, 'target of click event must be the body element');
@@ -47,6 +49,8 @@ async_test(function(t) {
       t.done();
     });
   }, false);
+
+  await test_driver.click(document.body);
 }, "Clicking on the body element itself should fire a click event targeted at the body element");
     </script>
   </body>

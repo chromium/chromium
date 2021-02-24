@@ -4,9 +4,11 @@
     <meta charset="utf-8">
     <title>Click-related events should fire in the correct order</title>
     <link rel="help" href="https://w3c.github.io/uievents/#events-clickevent-event-order">
-    <meta name="flags" content="interact">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
+    <script src="/resources/testdriver.js"></script>
+    <script src="/resources/testdriver-actions.js"></script>
+    <script src="/resources/testdriver-vendor.js"></script>
     <script src="/uievents/resources/eventrecorder.js"></script>
   </head>
   <body>
@@ -32,8 +34,9 @@ var relevantEvents = [
   "dblclick"
 ];
 
-window.onload = function () {
+window.onload = async function () {
   var blue = document.getElementById("blue");
+  var button = document.getElementById("done");
   var inputs = [blue];
   EventRecorder.configure({
     mergeEventTypes: ["mousemove"],
@@ -59,7 +62,7 @@ window.onload = function () {
   ];
 
   async_test(function(t) {
-    document.getElementById("done").addEventListener("click", function () {
+    button.addEventListener("click", function () {
       t.step(function () {
         assert_true(EventRecorder.checkRecords(expected));
         t.done();
@@ -67,6 +70,17 @@ window.onload = function () {
     }, false);
   }, "Click-related events should fire in the correct order");
   EventRecorder.start();
+
+  await new test_driver.Actions()
+    .pointerMove(0, 0, {origin: blue})
+    .pointerDown()
+    .pointerUp()
+    .pointerDown()
+    .pointerUp()
+    .pointerMove(0, 0, {origin: button})
+    .pointerDown()
+    .pointerUp()
+    .send();
 };
     </script>
 </html>

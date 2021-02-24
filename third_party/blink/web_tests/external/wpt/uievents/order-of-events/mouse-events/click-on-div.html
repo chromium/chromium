@@ -6,9 +6,11 @@
     <link rel="author" title="Chris Rebert" href="http://chrisrebert.com">
     <link rel="help" href="https://w3c.github.io/uievents/#event-type-click">
     <link rel="help" href="https://dom.spec.whatwg.org/#concept-event-dispatch">
-    <meta name="flags" content="interact">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
+    <script src="/resources/testdriver.js"></script>
+    <script src="/resources/testdriver-actions.js"></script>
+    <script src="/resources/testdriver-vendor.js"></script>
     <style>
 #square {
   width: 100px;
@@ -22,11 +24,11 @@
     </style>
   </head>
   <body>
-    <p>Click on the blue square below. If a "PASS" result appears, the test passes; otherwise, it fails.</p>
+    <p>Click on the blue square below.</p>
     <div id="square">Click me</div>
     <script>
 setup({explicit_timeout: true});
-async_test(function(t) {
+promise_test(async function(t) {
   document.addEventListener('click', function (event) {
     var square = document.getElementById('square');
     t.step(function () {
@@ -37,6 +39,8 @@ async_test(function(t) {
       t.done();
     });
   }, false);
+
+  await test_driver.click(square);
 }, "Clicking on a div element and having a click event listener on only document");
     </script>
   </body>
