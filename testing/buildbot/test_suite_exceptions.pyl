@@ -146,6 +146,25 @@
       },
     },
   },
+  'aura_unittests': {
+    'modifications': {
+      'fuchsia-code-coverage': {
+        'args': [
+          # http://crbug.com/1181465
+          '--child-arg=--ozone-platform=headless',
+        ],
+      },
+    },
+  },
+  'base_unittests': {
+    'modifications': {
+      'fuchsia-code-coverage': {
+        'swarming': {
+          'shards': 5,
+        },
+      },
+    },
+  },
   'blink_platform_unittests': {
     'modifications': {
       # TODO(crbug.com/1108121): Remove this filter
@@ -677,6 +696,11 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.cc_unittests.filter',
         ],
       },
+      'fuchsia-code-coverage': {
+        'swarming': {
+          'shards': 4,
+        },
+      },
     },
   },
   'check_static_initializers': {
@@ -929,6 +953,7 @@
       'Fuchsia ARM64',  # https://crbug.com/961457
       'Fuchsia x64', # https://crbug.com/961457
       'android-code-coverage-native', # crbug/1018431
+      'fuchsia-code-coverage',  # https://crbug.com/961457
       'fuchsia-fyi-arm64-dbg',  # https://crbug.com/961457
       'fuchsia-fyi-arm64-rel',  # https://crbug.com/961457
       'fuchsia-fyi-x64-dbg',  # https://crbug.com/961457
@@ -969,6 +994,16 @@
       'linux-lacros-tester-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/lacros.components_unittests.filter',
+        ],
+      },
+    },
+  },
+  'compositor_unittests': {
+    'modifications': {
+      'fuchsia-code-coverage': {
+        'args': [
+          # http://crbug.com/1181465
+          '--child-arg=--ozone-platform=headless',
         ],
       },
     },
@@ -1273,6 +1308,15 @@
       },
     },
   },
+  'gfx_unittests': {
+    'modifications': {
+      'fuchsia-code-coverage': {
+        'swarming': {
+          'shards': 2,
+        },
+      },
+    },
+  },
   'gin_unittests': {
     'remove_from': [
       'ToTLinuxASan',  # https://crbug.com/831667
@@ -1433,6 +1477,15 @@
     'remove_from': [
       'Android FYI Release (Pixel 2)',
     ],
+  },
+  'gpu_unittests': {
+    'modifications': {
+      'fuchsia-code-coverage': {
+        'swarming': {
+          'shards': 5,
+        },
+      },
+    },
   },
   'hardware_accelerated_feature_tests': {
     # TODO(https://crbug.com/850107): Remove the Android FYI Release (Pixel 2)
@@ -1681,6 +1734,11 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_p.media_unittests.filter',
         ],
       },
+      'fuchsia-code-coverage': {
+        'swarming': {
+          'shards': 3,
+        },
+      },
     },
   },
   'mojo_unittests': {
@@ -1688,6 +1746,11 @@
       'android-asan': {
         'swarming': {
           'shards': 5,
+        },
+      },
+      'fuchsia-code-coverage': {
+        'swarming': {
+          'shards': 2,
         },
       },
     },
@@ -2331,6 +2394,16 @@
       }
     }
   },
+  'snapshot_unittests': {
+    'modifications': {
+      'fuchsia-code-coverage': {
+        'args': [
+          # http://crbug.com/1181465
+          '--child-arg=--ozone-platform=headless',
+        ],
+      },
+    },
+  },
   'swiftshader_unittests': {
     'remove_from': [
       # Save capacity on the hardware where we have only a few machines.
@@ -2669,6 +2742,12 @@
       'android-pie-x86-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.viz_unittests.filter',
+        ],
+      },
+      'fuchsia-code-coverage': {
+        'args': [
+          # http://crbug.com/1181465
+          '--child-arg=--ozone-platform=headless',
         ],
       },
     },

@@ -13844,7 +13844,8 @@
           "--ram-size-mb=16384",
           "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs",
+          "--child-arg=--ozone-platform=headless"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13872,7 +13873,8 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 5
         },
         "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/"
@@ -14102,37 +14104,18 @@
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
+          "shards": 4
         },
         "test": "cc_unittests",
         "test_id_prefix": "ninja://cc:cc_unittests/"
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.components_unittests.filter",
           "--ram-size-mb=16384",
           "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "components_unittests",
-        "test_id_prefix": "ninja://components:components_unittests/"
-      },
-      {
-        "args": [
-          "--ram-size-mb=16384",
-          "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs",
+          "--child-arg=--ozone-platform=headless"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -14294,7 +14277,8 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "gfx_unittests",
         "test_id_prefix": "ninja://ui/gfx:gfx_unittests/"
@@ -14350,7 +14334,8 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 5
         },
         "test": "gpu_unittests",
         "test_id_prefix": "ninja://gpu:gpu_unittests/"
@@ -14484,7 +14469,8 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
         },
         "test": "media_unittests",
         "test_id_prefix": "ninja://media:media_unittests/"
@@ -14503,7 +14489,8 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "mojo_unittests",
         "test_id_prefix": "ninja://mojo:mojo_unittests/"
@@ -14649,7 +14636,8 @@
           "--ram-size-mb=16384",
           "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs",
+          "--child-arg=--ozone-platform=headless"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -14747,7 +14735,8 @@
           "--ram-size-mb=16384",
           "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs",
+          "--child-arg=--ozone-platform=headless"
         ],
         "isolate_profile_data": true,
         "merge": {
