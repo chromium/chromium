@@ -296,4 +296,29 @@ TEST_F(ResetShortcutsComponentTest, ResetShortcutPreserveIconLocation) {
   EXPECT_EQ(found_shortcuts[0].icon_location, icon_path.value());
   EXPECT_EQ(found_shortcuts[0].icon_index, 2);
 }
+
+TEST_F(ResetShortcutsComponentTest, NoShortcutResetIfChromeExeNotKnown) {
+  ASSERT_TRUE(temp_dir_with_chrome_lnk_.CreateUniqueTempDir());
+  temp_dirs_paths_.push_back(temp_dir_with_chrome_lnk_.GetPath());
+
+  base::win::ShortcutProperties properties;
+  properties.set_target(fake_chrome_path_);
+  properties.set_arguments(L"--bad-argument");
+  base::win::ScopedHandle unused_chrome_lnk_handle =
+      CreateAndOpenShortcutInTempDir("Google Chrome.lnk", properties,
+                                     &temp_dir_with_chrome_lnk_);
+  ASSERT_TRUE(unused_chrome_lnk_handle.IsValid());
+
+  // Pretend no valid chrome installations were found.
+  fake_chrome_exe_file_path_set_.clear();
+  ResetShortcuts();
+
+  std::vector<ShortcutInformation> found_shortcuts = component_->GetShortcuts();
+  // The shortcut should be found due to the filename, but it will not be reset
+  // (arguments remain the same) since no valid chrome installations were found.
+  ASSERT_EQ(found_shortcuts.size(), 1u);
+  EXPECT_EQ(found_shortcuts[0].command_line_arguments, L"--bad-argument");
+  ASSERT_TRUE(PathEqual(base::FilePath(found_shortcuts[0].target_path),
+                        fake_chrome_path_));
+}
 }  // namespace chrome_cleaner
