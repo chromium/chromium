@@ -825,8 +825,7 @@ void PageHandler::CaptureScreenshot(
     } else {
       requested_image_size = emulated_view_size;
     }
-    double scale = emulation_enabled ? original_params.device_scale_factor
-                                     : widget_host_device_scale_factor;
+    double scale = widget_host_device_scale_factor * dpfactor;
     if (clip.isJust())
       scale *= clip.fromJust()->GetScale();
     requested_image_size = gfx::ScaleToRoundedSize(requested_image_size, scale);

@@ -239,7 +239,8 @@
               "external/wpt/largest-contentful-paint",
               "fast/hidpi/static",
               "http/tests/csspaint/hidpi",
-              "http/tests/images/document-policy"],
+              "http/tests/images/document-policy",
+              "http/tests/inspector-protocol/page/page-captureScreenshot-clip-emulation.js"],
     "args": ["--force-device-scale-factor=2"]
   },
   {
