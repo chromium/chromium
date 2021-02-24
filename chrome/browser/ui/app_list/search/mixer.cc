@@ -38,17 +38,11 @@ void RemoveDuplicates(Mixer::SortedResults* results) {
   for (const Mixer::SortData& sort_data : *results) {
     // If a result is intended for display in two views, we will have two
     // results with the same id but different display types. We want to keep
-    // both of these.
+    // both of these, so insert concat(id, display_type).
     const std::string display_type = base::NumberToString(
         static_cast<int>(sort_data.result->display_type()));
-    // We want to keep results with different subtypes. For example, Omnibox
-    // calculator results have the same id as their pure search counterparts,
-    // but contain extra information.
-    const std::string result_subtype = base::NumberToString(
-        static_cast<int>(sort_data.result->result_subtype()));
-    if (!seen
-             .insert(base::JoinString(
-                 {sort_data.result->id(), display_type, result_subtype}, "-"))
+    if (!seen.insert(
+                 base::JoinString({sort_data.result->id(), display_type}, "-"))
              .second)
       continue;
 

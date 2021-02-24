@@ -11,6 +11,7 @@
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
@@ -240,6 +241,16 @@ OmniboxResult::OmniboxResult(Profile* profile,
     } else if (!match_.image_url.is_empty()) {
       SetOmniboxType(OmniboxType::kRichImage);
     }
+
+    // The stripped destination URL is no longer a unique identifier, so append
+    // result types.
+    // TODO(crbug.com/1130372): Consider generating a random unique ID instead.
+    const std::string id = base::JoinString(
+        {base::NumberToString(static_cast<int>(omnibox_type())),
+         base::NumberToString(static_cast<int>(result_subtype())),
+         match_.stripped_destination_url.spec()},
+        "-");
+    set_id(id);
   }
 
   // Derive relevance from omnibox relevance and normalize it to [0, 1].
