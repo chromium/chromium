@@ -5660,10 +5660,6 @@ crbug.com/1168785 [ Mac ] virtual/threaded-prefer-compositing/fast/scrolling/aut
 # Sheriff 2021-01-29
 crbug.com/1172437 svg/hixie/perf/004.xml [ Timeout Pass ]
 
-# COEP reporting for PlzDedicatedWorker
-crbug.com/1060837 external/wpt/html/cross-origin-embedder-policy/reporting-to-owner.https.html [ Timeout ]
-crbug.com/1060837 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/reporting-to-owner.https.html [ Pass ]
-
 # flaky test
 crbug.com/1173956 http/tests/xsl/xslt-transform-with-javascript-disabled.html [ Failure Pass ]
 
