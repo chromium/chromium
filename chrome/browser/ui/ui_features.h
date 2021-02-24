@@ -106,6 +106,8 @@ extern const base::Feature kWebUIBubblePerProfilePersistence;
 
 extern const base::Feature kWebUITabStrip;
 
+extern const base::Feature kWebUIFeedback;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const base::Feature kHiddenNetworkWarning;
 extern const base::Feature kSeparatePointingStickSettings;

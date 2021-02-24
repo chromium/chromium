@@ -164,6 +164,11 @@ const base::Feature kWebUIBubblePerProfilePersistence{
 const base::Feature kWebUITabStrip{"WebUITabStrip",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables a WebUI Feedback UI, as opposed to the Chrome App UI. See
+// https://crbug.com/1167223.
+const base::Feature kWebUIFeedback{"WebUIFeedback",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables a warning about connecting to hidden WiFi networks.
 // https://crbug.com/903908
