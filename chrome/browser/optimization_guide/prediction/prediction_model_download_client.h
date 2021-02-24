@@ -31,6 +31,10 @@ class PredictionModelDownloadClient : public download::Client {
       bool state_lost,
       const std::vector<download::DownloadMetaData>& downloads) override;
   void OnServiceUnavailable() override;
+  void OnDownloadStarted(
+      const std::string& guid,
+      const std::vector<GURL>& url_chain,
+      const scoped_refptr<const net::HttpResponseHeaders>& headers) override;
   void OnDownloadFailed(const std::string& guid,
                         const download::CompletionInfo& completion_info,
                         download::Client::FailureReason reason) override;

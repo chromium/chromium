@@ -5,6 +5,7 @@
 #include "chrome/browser/optimization_guide/prediction/prediction_model_download_client.h"
 
 #include "base/bind.h"
+#include "base/metrics/histogram_macros_local.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -61,6 +62,16 @@ void PredictionModelDownloadClient::OnServiceUnavailable() {
       GetPredictionModelDownloadManager();
   if (download_manager)
     download_manager->OnDownloadServiceUnavailable();
+}
+
+void PredictionModelDownloadClient::OnDownloadStarted(
+    const std::string& guid,
+    const std::vector<GURL>& url_chain,
+    const scoped_refptr<const net::HttpResponseHeaders>& headers) {
+  // Do not remove. This is a hook used by integration tests that test
+  // client-server interaction.
+  LOCAL_HISTOGRAM_BOOLEAN(
+      "OptimizationGuide.PredictionModelDownloadClient.DownloadStarted", true);
 }
 
 void PredictionModelDownloadClient::OnDownloadFailed(
