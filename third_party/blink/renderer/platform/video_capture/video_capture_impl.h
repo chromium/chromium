@@ -35,8 +35,6 @@ class GpuVideoAcceleratorFactories;
 
 namespace blink {
 
-class BrowserInterfaceBrokerProxy;
-
 extern const PLATFORM_EXPORT base::Feature kTimeoutHangingVideoCaptureStarts;
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -57,8 +55,7 @@ class PLATFORM_EXPORT VideoCaptureImpl
     : public media::mojom::blink::VideoCaptureObserver {
  public:
   VideoCaptureImpl(media::VideoCaptureSessionId session_id,
-                   scoped_refptr<base::SequencedTaskRunner> main_task_runner,
-                   BrowserInterfaceBrokerProxy* browser_interface_broker);
+                   scoped_refptr<base::SequencedTaskRunner> main_task_runner);
   ~VideoCaptureImpl() override;
 
   // Stop/resume delivering video frames to clients, based on flag |suspend|.
