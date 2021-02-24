@@ -41,21 +41,31 @@ class CommerceHintObserverImpl : public mojom::CommerceHintObserver {
 
   void OnAddToCart() override {
     VLOG(1) << "Received OnAddToCart in the browser process";
-    service_->OnAddToCart(service_->WebContents()->GetLastCommittedURL());
+    if (!service_)
+      return;
+    service_->OnAddToCart(service_->WebContents()->GetLastCommittedURL(),
+                          base::nullopt);
   }
 
   void OnVisitCart() override {
     VLOG(1) << "Received OnVisitCart in the browser process";
-    service_->OnAddToCart(service_->WebContents()->GetLastCommittedURL());
+    if (!service_)
+      return;
+    const GURL& main_frame_url = service_->WebContents()->GetLastCommittedURL();
+    service_->OnAddToCart(main_frame_url, main_frame_url);
   }
 
   void OnVisitCheckout() override {
     VLOG(1) << "Received OnVisitCheckout in the browser process";
+    if (!service_)
+      return;
     service_->OnRemoveCart(service_->WebContents()->GetLastCommittedURL());
   }
 
   void OnPurchase() override {
     VLOG(1) << "Received OnPurchase in the browser process";
+    if (!service_)
+      return;
     service_->OnRemoveCart(service_->WebContents()->GetLastCommittedURL());
   }
 
@@ -83,42 +93,24 @@ void CommerceHintService::BindCommerceHintObserver(
       std::move(receiver));
 }
 
-void CommerceHintService::OnAddToCart(const GURL& url) {
-  service_->LoadCart(eTLDPlusOne(url),
-                     base::BindOnce(&CommerceHintService::AddCartToDB,
-                                    weak_factory_.GetWeakPtr(), url));
+void CommerceHintService::OnAddToCart(const GURL& navigation_url,
+                                      const base::Optional<GURL>& cart_url) {
+  cart_db::ChromeCartContentProto proto;
+  ConstructCartProto(&proto, navigation_url);
+  service_->AddCart(eTLDPlusOne(navigation_url), cart_url, std::move(proto));
 }
 
 void CommerceHintService::OnRemoveCart(const GURL& url) {
   service_->DeleteCart(eTLDPlusOne(url));
 }
 
-void CommerceHintService::AddCartToDB(
-    const GURL& potential_cart_url,
-    bool success,
-    std::vector<CartDB::KeyAndValue> proto_pairs) {
-  if (!success)
-    return;
-  cart_db::ChromeCartContentProto proto;
-  // If there is an existing cart from that domain, update timestamp; otherwise,
-  // construct a new entry.
-  if (proto_pairs.size() > 0) {
-    DCHECK(proto_pairs.size() == 1);
-    proto = std::move(proto_pairs.at(0).second);
-    proto.set_timestamp(base::Time::Now().ToDoubleT());
-  } else {
-    ConstructCartProto(&proto, potential_cart_url);
-  }
-  service_->AddCart(proto.key(), std::move(proto));
-}
-
 void CommerceHintService::ConstructCartProto(
     cart_db::ChromeCartContentProto* proto,
-    const GURL& potential_cart_url) {
-  const std::string& domain = eTLDPlusOne(potential_cart_url);
+    const GURL& navigation_url) {
+  const std::string& domain = eTLDPlusOne(navigation_url);
   proto->set_key(domain);
   proto->set_merchant(domain);
-  proto->set_merchant_cart_url(potential_cart_url.spec());
+  proto->set_merchant_cart_url(navigation_url.spec());
   proto->set_timestamp(base::Time::Now().ToDoubleT());
 }
 

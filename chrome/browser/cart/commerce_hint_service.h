@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CART_COMMERCE_HINT_SERVICE_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/common/cart/commerce_hints.mojom.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -20,7 +21,8 @@ class CommerceHintService
   void BindCommerceHintObserver(
       mojo::PendingReceiver<mojom::CommerceHintObserver> receiver);
   content::WebContents* WebContents();
-  void OnAddToCart(const GURL& url);
+  void OnAddToCart(const GURL& navigation_url,
+                   const base::Optional<GURL>& cart_url);
   void OnRemoveCart(const GURL& url);
 
  private:
@@ -32,7 +34,7 @@ class CommerceHintService
                    std::vector<CartDB::KeyAndValue> proto_pairs);
   void OnOperationFinished(const std::string& operation, bool success);
   void ConstructCartProto(cart_db::ChromeCartContentProto* proto,
-                          const GURL& url);
+                          const GURL& navigation_url);
 
   content::WebContents* web_contents_;
   CartService* service_;

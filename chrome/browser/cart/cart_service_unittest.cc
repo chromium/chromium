@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/cart/cart_service.h"
+
+#include "base/optional.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -36,17 +38,15 @@ const cart_db::ChromeCartContentProto kMockProtoA =
     BuildProto(kMockMerchantA, kMockMerchantURLA);
 const cart_db::ChromeCartContentProto kMockProtoB =
     BuildProto(kMockMerchantB, kMockMerchantURLB);
-const std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
-    kExpectedA = {{kMockMerchantA, kMockProtoA}};
-const std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
-    kExpectedB = {{kMockMerchantB, kMockProtoB}};
-const std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
-    kExpectedAB = {
-        {kMockMerchantB, kMockProtoB},
-        {kMockMerchantA, kMockProtoA},
+using ShoppingCarts =
+    std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>;
+const ShoppingCarts kExpectedA = {{kMockMerchantA, kMockProtoA}};
+const ShoppingCarts kExpectedB = {{kMockMerchantB, kMockProtoB}};
+const ShoppingCarts kExpectedAB = {
+    {kMockMerchantB, kMockProtoB},
+    {kMockMerchantA, kMockProtoA},
 };
-const std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
-    kEmptyExpected = {};
+const ShoppingCarts kEmptyExpected = {};
 }  // namespace
 
 class CartServiceTest : public testing::Test {
@@ -68,13 +68,10 @@ class CartServiceTest : public testing::Test {
     std::move(closure).Run();
   }
 
-  void GetEvaluationURL(
-      base::OnceClosure closure,
-      std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
-          expected,
-      bool result,
-      std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
-          found) {
+  void GetEvaluationURL(base::OnceClosure closure,
+                        ShoppingCarts expected,
+                        bool result,
+                        ShoppingCarts found) {
     EXPECT_EQ(found.size(), expected.size());
     for (size_t i = 0; i < expected.size(); i++) {
       EXPECT_EQ(found[i].first, expected[i].first);
@@ -88,11 +85,27 @@ class CartServiceTest : public testing::Test {
     std::move(closure).Run();
   }
 
-  void GetEvaluationFakeDataDB(
-      base::OnceClosure closure,
-      bool result,
-      std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
-          found) {
+  std::string GetCartURL(const std::string& domain) {
+    base::RunLoop run_loop;
+    std::string cart_url;
+
+    service_->LoadCart(
+        domain, base::BindOnce(
+                    [](base::OnceClosure closure, std::string* out, bool result,
+                       ShoppingCarts found) {
+                      EXPECT_TRUE(result);
+                      EXPECT_EQ(found.size(), 1U);
+                      *out = found[0].second.merchant_cart_url();
+                      std::move(closure).Run();
+                    },
+                    run_loop.QuitClosure(), &cart_url));
+    run_loop.Run();
+    return cart_url;
+  }
+
+  void GetEvaluationFakeDataDB(base::OnceClosure closure,
+                               bool result,
+                               ShoppingCarts found) {
     EXPECT_EQ(found.size(), 6U);
     for (CartDB::KeyAndValue proto_pair : found) {
       EXPECT_EQ(proto_pair.second.key().rfind(kFakeDataPrefix, 0), 0U);
@@ -100,34 +113,28 @@ class CartServiceTest : public testing::Test {
     std::move(closure).Run();
   }
 
-  void GetEvaluationCartHiddenStatus(
-      base::OnceClosure closure,
-      bool isHidden,
-      bool result,
-      std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
-          found) {
+  void GetEvaluationCartHiddenStatus(base::OnceClosure closure,
+                                     bool isHidden,
+                                     bool result,
+                                     ShoppingCarts found) {
     EXPECT_EQ(1U, found.size());
     EXPECT_EQ(isHidden, found[0].second.is_hidden());
     std::move(closure).Run();
   }
 
-  void GetEvaluationCartRemovedStatus(
-      base::OnceClosure closure,
-      bool isRemoved,
-      bool result,
-      std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
-          found) {
+  void GetEvaluationCartRemovedStatus(base::OnceClosure closure,
+                                      bool isRemoved,
+                                      bool result,
+                                      ShoppingCarts found) {
     EXPECT_EQ(1U, found.size());
     EXPECT_EQ(isRemoved, found[0].second.is_removed());
     std::move(closure).Run();
   }
 
-  void GetEvaluationCartTimeStamp(
-      base::OnceClosure closure,
-      double expect_timestamp,
-      bool result,
-      std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
-          found) {
+  void GetEvaluationCartTimeStamp(base::OnceClosure closure,
+                                  double expect_timestamp,
+                                  bool result,
+                                  ShoppingCarts found) {
     EXPECT_EQ(1U, found.size());
     EXPECT_EQ(expect_timestamp, found[0].second.timestamp());
     std::move(closure).Run();
@@ -192,7 +199,7 @@ TEST_F(CartServiceTest, TestAddCart) {
                      run_loop[0].QuitClosure(), kEmptyExpected));
   run_loop[0].Run();
 
-  service_->AddCart(kMockMerchantA, kMockProtoA);
+  service_->AddCart(kMockMerchantA, base::nullopt, kMockProtoA);
   task_environment_.RunUntilIdle();
 
   cart_db_->LoadAllCarts(base::BindOnce(&CartServiceTest::GetEvaluationURL,
@@ -211,14 +218,14 @@ TEST_F(CartServiceTest, TestAddCartWithNoProductImages) {
   merchant_A_proto.set_timestamp(0);
   merchant_A_proto.add_product_image_urls("https://image1.com");
   merchant_A_proto.set_is_hidden(true);
-  service_->AddCart(kMockMerchantA, merchant_A_proto);
+  service_->AddCart(kMockMerchantA, base::nullopt, merchant_A_proto);
   task_environment_.RunUntilIdle();
 
   // Add a new proto with the same key and no product images.
   cart_db::ChromeCartContentProto new_proto =
       BuildProto(kMockMerchantA, kMockMerchantURLA);
   new_proto.set_timestamp(1);
-  service_->AddCart(kMockMerchantA, new_proto);
+  service_->AddCart(kMockMerchantA, base::nullopt, new_proto);
   task_environment_.RunUntilIdle();
 
   cart_db_->LoadCart(
@@ -231,9 +238,7 @@ TEST_F(CartServiceTest, TestAddCartWithNoProductImages) {
       base::BindOnce(&CartServiceTest::GetEvaluationCartTimeStamp,
                      base::Unretained(this), run_loop[1].QuitClosure(), 1));
   run_loop[1].Run();
-  const std::vector<
-      ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
-      result = {{kMockMerchantA, merchant_A_proto}};
+  const ShoppingCarts result = {{kMockMerchantA, merchant_A_proto}};
   cart_db_->LoadCart(
       kMockMerchantA,
       base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
@@ -251,7 +256,7 @@ TEST_F(CartServiceTest, TestAddCartWithProductImages) {
   merchant_A_proto.set_timestamp(0);
   merchant_A_proto.add_product_image_urls("https://image1.com");
   merchant_A_proto.set_is_hidden(true);
-  service_->AddCart(kMockMerchantA, merchant_A_proto);
+  service_->AddCart(kMockMerchantA, base::nullopt, merchant_A_proto);
   task_environment_.RunUntilIdle();
 
   // Add a new proto with the same key and some product images.
@@ -259,7 +264,7 @@ TEST_F(CartServiceTest, TestAddCartWithProductImages) {
       BuildProto(kMockMerchantA, kMockMerchantURLA);
   new_proto.set_timestamp(1);
   new_proto.add_product_image_urls("https://image2.com");
-  service_->AddCart(kMockMerchantA, new_proto);
+  service_->AddCart(kMockMerchantA, base::nullopt, new_proto);
   task_environment_.RunUntilIdle();
 
   cart_db_->LoadCart(
@@ -272,9 +277,7 @@ TEST_F(CartServiceTest, TestAddCartWithProductImages) {
       base::BindOnce(&CartServiceTest::GetEvaluationCartTimeStamp,
                      base::Unretained(this), run_loop[1].QuitClosure(), 1));
   run_loop[1].Run();
-  const std::vector<
-      ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
-      result = {{kMockMerchantA, new_proto}};
+  const ShoppingCarts result = {{kMockMerchantA, new_proto}};
   cart_db_->LoadCart(
       kMockMerchantA,
       base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
@@ -291,7 +294,7 @@ TEST_F(CartServiceTest, TestAddRemovedCart) {
   merchant_A_proto.set_timestamp(0);
   merchant_A_proto.add_product_image_urls("https://image1.com");
   merchant_A_proto.set_is_removed(true);
-  service_->AddCart(kMockMerchantA, merchant_A_proto);
+  service_->AddCart(kMockMerchantA, base::nullopt, merchant_A_proto);
   task_environment_.RunUntilIdle();
 
   // Add a new proto with the same key and some product images.
@@ -299,7 +302,7 @@ TEST_F(CartServiceTest, TestAddRemovedCart) {
       BuildProto(kMockMerchantA, kMockMerchantURLA);
   new_proto.set_timestamp(2);
   new_proto.add_product_image_urls("https://image2.com");
-  service_->AddCart(kMockMerchantA, new_proto);
+  service_->AddCart(kMockMerchantA, base::nullopt, new_proto);
   task_environment_.RunUntilIdle();
 
   cart_db_->LoadCart(
@@ -312,9 +315,7 @@ TEST_F(CartServiceTest, TestAddRemovedCart) {
       base::BindOnce(&CartServiceTest::GetEvaluationCartTimeStamp,
                      base::Unretained(this), run_loop[1].QuitClosure(), 0));
   run_loop[1].Run();
-  const std::vector<
-      ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
-      result = {{kMockMerchantA, merchant_A_proto}};
+  const ShoppingCarts result = {{kMockMerchantA, merchant_A_proto}};
   cart_db_->LoadCart(
       kMockMerchantA,
       base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
@@ -568,9 +569,7 @@ TEST_F(CartServiceTest, TestRemovedCartsDeleted) {
   cart_db::ChromeCartContentProto empty_proto;
   empty_proto.set_key(kMockMerchantA);
   empty_proto.set_is_removed(true);
-  const std::vector<
-      ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
-      result = {{kMockMerchantA, empty_proto}};
+  const ShoppingCarts result = {{kMockMerchantA, empty_proto}};
   cart_db_->LoadAllCarts(base::BindOnce(&CartServiceTest::GetEvaluationURL,
                                         base::Unretained(this),
                                         run_loop[4].QuitClosure(), result));
@@ -608,42 +607,36 @@ TEST_F(CartServiceTest, TestOrderInTimestamp) {
   cart_db::ChromeCartContentProto merchant_C_proto =
       BuildProto(kMockMerchantC, kMockMerchantURLC);
   merchant_C_proto.set_timestamp(time_now + 2);
-  service_->AddCart(kMockMerchantA, merchant_A_proto);
-  service_->AddCart(kMockMerchantB, merchant_B_proto);
-  service_->AddCart(kMockMerchantC, merchant_C_proto);
+  service_->AddCart(kMockMerchantA, base::nullopt, merchant_A_proto);
+  service_->AddCart(kMockMerchantB, base::nullopt, merchant_B_proto);
+  service_->AddCart(kMockMerchantC, base::nullopt, merchant_C_proto);
   task_environment_.RunUntilIdle();
 
-  const std::vector<
-      ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
-      result1 = {{kMockMerchantC, merchant_C_proto},
-                 {kMockMerchantB, merchant_B_proto},
-                 {kMockMerchantA, merchant_A_proto}};
+  const ShoppingCarts result1 = {{kMockMerchantC, merchant_C_proto},
+                                 {kMockMerchantB, merchant_B_proto},
+                                 {kMockMerchantA, merchant_A_proto}};
   service_->LoadAllActiveCarts(
       base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
                      run_loop[0].QuitClosure(), result1));
   run_loop[0].Run();
 
   merchant_A_proto.set_timestamp(time_now + 3);
-  service_->AddCart(kMockMerchantA, merchant_A_proto);
+  service_->AddCart(kMockMerchantA, base::nullopt, merchant_A_proto);
   task_environment_.RunUntilIdle();
-  const std::vector<
-      ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
-      result2 = {{kMockMerchantA, merchant_A_proto},
-                 {kMockMerchantC, merchant_C_proto},
-                 {kMockMerchantB, merchant_B_proto}};
+  const ShoppingCarts result2 = {{kMockMerchantA, merchant_A_proto},
+                                 {kMockMerchantC, merchant_C_proto},
+                                 {kMockMerchantB, merchant_B_proto}};
   service_->LoadAllActiveCarts(
       base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
                      run_loop[1].QuitClosure(), result2));
   run_loop[1].Run();
 
   merchant_C_proto.set_timestamp(time_now + 4);
-  service_->AddCart(kMockMerchantC, merchant_C_proto);
+  service_->AddCart(kMockMerchantC, base::nullopt, merchant_C_proto);
   task_environment_.RunUntilIdle();
-  const std::vector<
-      ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
-      result3 = {{kMockMerchantC, merchant_C_proto},
-                 {kMockMerchantA, merchant_A_proto},
-                 {kMockMerchantB, merchant_B_proto}};
+  const ShoppingCarts result3 = {{kMockMerchantC, merchant_C_proto},
+                                 {kMockMerchantA, merchant_A_proto},
+                                 {kMockMerchantB, merchant_B_proto}};
   service_->LoadAllActiveCarts(
       base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
                      run_loop[2].QuitClosure(), result3));
@@ -676,14 +669,12 @@ TEST_F(CartServiceTest, TestLookupCartInfo) {
   base::RunLoop run_loop[3];
   cart_db::ChromeCartContentProto merchant_A_proto =
       BuildProto(amazon_domain, kMockMerchantURLA);
-  service_->AddCart(amazon_domain, merchant_A_proto);
+  service_->AddCart(amazon_domain, base::nullopt, merchant_A_proto);
   task_environment_.RunUntilIdle();
 
   merchant_A_proto.set_merchant_cart_url(getDomainCartURL(amazon_domain));
   merchant_A_proto.set_merchant(getDomainName(amazon_domain));
-  const std::vector<
-      ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
-      result1 = {{amazon_domain, merchant_A_proto}};
+  const ShoppingCarts result1 = {{amazon_domain, merchant_A_proto}};
   cart_db_->LoadCart(
       amazon_domain,
       base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
@@ -696,17 +687,74 @@ TEST_F(CartServiceTest, TestLookupCartInfo) {
   const char* fake_cart_url = "fake.com/cart";
   cart_db::ChromeCartContentProto fake_proto =
       BuildProto(fake_domain, fake_cart_url);
-  service_->AddCart(fake_domain, fake_proto);
+  service_->AddCart(fake_domain, base::nullopt, fake_proto);
   task_environment_.RunUntilIdle();
 
-  const std::vector<
-      ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
-      result2 = {{fake_domain, fake_proto}};
+  const ShoppingCarts result2 = {{fake_domain, fake_proto}};
   cart_db_->LoadCart(
       fake_domain,
       base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
                      run_loop[2].QuitClosure(), result2));
   run_loop[2].Run();
+}
+
+// Tests the priority of cart URL sources.
+TEST_F(CartServiceTest, CartURLPriority) {
+  const char amazon_domain[] = "amazon.com";
+  const char example_domain[] = "example.com";
+  GURL amazon_cart = GURL("http://amazon.com/mycart");
+  GURL amazon_cart2 = GURL("http://amazon.com/shopping-cart");
+  cart_db::ChromeCartContentProto merchant_A_proto =
+      BuildProto(amazon_domain, kMockMerchantURLA);
+
+  // The priority of shopping cart URL from highest:
+  // - The navigation URL when visiting carts
+  // - The existing URL in the cart entry if exist
+  // - The look-up table by eTLD+1 domain
+  // - The navigation URL
+
+  // * Lowest priority: no overriding.
+  service_->AddCart(example_domain, base::nullopt, merchant_A_proto);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(GetCartURL(example_domain), kMockMerchantURLA);
+
+  // * Higher priority: from look up table.
+  service_->AddCart(amazon_domain, base::nullopt, merchant_A_proto);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(GetCartURL(amazon_domain),
+            "https://www.amazon.com/gp/cart/view.html");
+  service_->DeleteCart(amazon_domain);
+
+  // * Higher priority: from existing entry.
+  service_->AddCart(amazon_domain, amazon_cart, merchant_A_proto);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(GetCartURL(amazon_domain), amazon_cart.spec());
+  service_->AddCart(amazon_domain, base::nullopt, merchant_A_proto);
+  task_environment_.RunUntilIdle();
+  // Lookup table cannot override existing entry.
+  EXPECT_EQ(GetCartURL(amazon_domain), amazon_cart.spec());
+  service_->DeleteCart(amazon_domain);
+
+  // * Highest priority: overriding existing entry.
+  service_->AddCart(amazon_domain, base::nullopt, merchant_A_proto);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(GetCartURL(amazon_domain),
+            "https://www.amazon.com/gp/cart/view.html");
+  service_->AddCart(amazon_domain, amazon_cart, merchant_A_proto);
+  task_environment_.RunUntilIdle();
+  // Visiting carts can override existing entry.
+  EXPECT_EQ(GetCartURL(amazon_domain), amazon_cart.spec());
+  service_->DeleteCart(amazon_domain);
+  // New visiting carts can override existing entry from earlier visiting carts.
+  service_->AddCart(amazon_domain, amazon_cart, merchant_A_proto);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(GetCartURL(amazon_domain), amazon_cart.spec());
+  service_->AddCart(amazon_domain, amazon_cart2, merchant_A_proto);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(GetCartURL(amazon_domain), amazon_cart2.spec());
+  service_->AddCart(amazon_domain, amazon_cart, merchant_A_proto);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(GetCartURL(amazon_domain), amazon_cart.spec());
 }
 
 class CartServiceTestWithFeature : public CartServiceTest {
@@ -747,7 +795,7 @@ TEST_F(CartServiceTest, TestExpiredDataDeleted) {
 
   merchant_proto.set_timestamp(
       (base::Time::Now() - base::TimeDelta::FromDays(16)).ToDoubleT());
-  service_->AddCart(kMockMerchantA, merchant_proto);
+  service_->AddCart(kMockMerchantA, base::nullopt, merchant_proto);
   task_environment_.RunUntilIdle();
 
   // The expired entry is deleted in load results.
@@ -765,12 +813,10 @@ TEST_F(CartServiceTest, TestExpiredDataDeleted) {
 
   merchant_proto.set_timestamp(
       (base::Time::Now() - base::TimeDelta::FromDays(13)).ToDoubleT());
-  service_->AddCart(kMockMerchantA, merchant_proto);
+  service_->AddCart(kMockMerchantA, base::nullopt, merchant_proto);
   task_environment_.RunUntilIdle();
 
-  const std::vector<
-      ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
-      result = {{kMockMerchantA, merchant_proto}};
+  const ShoppingCarts result = {{kMockMerchantA, merchant_proto}};
   service_->LoadAllActiveCarts(
       base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
                      run_loop[2].QuitClosure(), result));

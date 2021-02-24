@@ -6,6 +6,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/cart/cart_db.h"
@@ -50,6 +51,7 @@ class CartService : public history::HistoryServiceObserver,
   void LoadAllActiveCarts(CartDB::LoadCallback callback);
   // Add a cart to the cart service.
   void AddCart(const std::string& domain,
+               const base::Optional<GURL>& cart_url,
                const cart_db::ChromeCartContentProto& proto);
   // Delete the cart from certain domain in the cart service.
   void DeleteCart(const std::string& domain);
@@ -98,7 +100,7 @@ class CartService : public history::HistoryServiceObserver,
   void DeleteRemovedCartsContent(bool success,
                                  std::vector<CartDB::KeyAndValue> proto_pairs);
   // A callback to filter out inactive carts for cart data loading.
-  void onLoadCarts(CartDB::LoadCallback callback,
+  void OnLoadCarts(CartDB::LoadCallback callback,
                    bool success,
                    std::vector<CartDB::KeyAndValue> proto_pairs);
   // A callback to set the hidden status of a cart.
@@ -112,7 +114,8 @@ class CartService : public history::HistoryServiceObserver,
                             bool success,
                             std::vector<CartDB::KeyAndValue> proto_pairs);
   // A callback to handle adding a cart.
-  void onAddCart(const std::string& domain,
+  void OnAddCart(const std::string& domain,
+                 const base::Optional<GURL>& cart_url,
                  cart_db::ChromeCartContentProto proto,
                  bool success,
                  std::vector<CartDB::KeyAndValue> proto_pairs);

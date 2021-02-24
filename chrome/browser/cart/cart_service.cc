@@ -109,16 +109,17 @@ void CartService::LoadCart(const std::string& domain,
 }
 
 void CartService::LoadAllActiveCarts(CartDB::LoadCallback callback) {
-  cart_db_->LoadAllCarts(base::BindOnce(&CartService::onLoadCarts,
+  cart_db_->LoadAllCarts(base::BindOnce(&CartService::OnLoadCarts,
                                         weak_ptr_factory_.GetWeakPtr(),
                                         std::move(callback)));
 }
 
 void CartService::AddCart(const std::string& domain,
+                          const base::Optional<GURL>& cart_url,
                           const cart_db::ChromeCartContentProto& proto) {
-  cart_db_->LoadCart(
-      domain, base::BindOnce(&CartService::onAddCart,
-                             weak_ptr_factory_.GetWeakPtr(), domain, proto));
+  cart_db_->LoadCart(domain, base::BindOnce(&CartService::OnAddCart,
+                                            weak_ptr_factory_.GetWeakPtr(),
+                                            domain, cart_url, proto));
 }
 
 void CartService::DeleteCart(const std::string& domain) {
@@ -176,7 +177,7 @@ bool CartService::ShouldShowWelcomSurface() {
 void CartService::LoadCartsWithFakeData(CartDB::LoadCallback callback) {
   cart_db_->LoadCartsWithPrefix(
       kFakeDataPrefix,
-      base::BindOnce(&CartService::onLoadCarts, weak_ptr_factory_.GetWeakPtr(),
+      base::BindOnce(&CartService::OnLoadCarts, weak_ptr_factory_.GetWeakPtr(),
                      std::move(callback)));
 }
 
@@ -316,7 +317,7 @@ void CartService::DeleteRemovedCartsContent(
   }
 }
 
-void CartService::onLoadCarts(CartDB::LoadCallback callback,
+void CartService::OnLoadCarts(CartDB::LoadCallback callback,
                               bool success,
                               std::vector<CartDB::KeyAndValue> proto_pairs) {
   std::set<std::string> expired_merchants;
@@ -374,7 +375,8 @@ void CartService::SetCartRemovedStatus(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void CartService::onAddCart(const std::string& domain,
+void CartService::OnAddCart(const std::string& domain,
+                            const base::Optional<GURL>& cart_url,
                             cart_db::ChromeCartContentProto proto,
                             bool success,
                             std::vector<CartDB::KeyAndValue> proto_pairs) {
@@ -385,9 +387,13 @@ void CartService::onAddCart(const std::string& domain,
   if (merchant_name) {
     proto.set_merchant(*merchant_name);
   }
-  std::string* cart_url = domain_cart_url_mapping_->FindStringKey(domain);
-  if (proto.product_image_urls().size() == 0 && cart_url) {
-    proto.set_merchant_cart_url(*cart_url);
+  if (cart_url) {
+    proto.set_merchant_cart_url(cart_url->spec());
+  } else {
+    std::string* fallback_url = domain_cart_url_mapping_->FindStringKey(domain);
+    if (fallback_url) {
+      proto.set_merchant_cart_url(*fallback_url);
+    }
   }
   if (proto_pairs.size() == 0) {
     cart_db_->AddCart(domain, std::move(proto),
@@ -406,6 +412,9 @@ void CartService::onAddCart(const std::string& domain,
   if (proto.product_image_urls().size() == 0) {
     existing_proto.set_is_hidden(false);
     existing_proto.set_timestamp(proto.timestamp());
+    if (cart_url) {
+      existing_proto.set_merchant_cart_url(cart_url->spec());
+    }
     cart_db_->AddCart(domain, std::move(existing_proto),
                       base::BindOnce(&CartService::OnOperationFinished,
                                      weak_ptr_factory_.GetWeakPtr()));
