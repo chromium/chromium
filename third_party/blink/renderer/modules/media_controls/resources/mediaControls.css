@@ -551,7 +551,7 @@ input[pseudo="-webkit-media-controls-overlay-play-button" i]::-internal-media-co
   background-size: 50%;
   background-repeat: no-repeat;
   background-position: center center;
-  background-image: -internal-light-dark(-webkit-image-set(url(ic_play_arrow.svg) 1x), -webkit-image-set(url(ic_play_arrow_white.svg) 1x));
+  background-image: -internal-light-dark(-webkit-image-set(url(ic_play_arrow.svg) 1x), -webkit-image-set(url(ic_play_arrow_dark.svg) 1x));
   background-color: rgba(255, 255, 255, .9);
   box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.10);
 
@@ -572,6 +572,12 @@ audio::-webkit-media-controls.state-buffering input[pseudo="-webkit-media-contro
 video::-webkit-media-controls.state-buffering input[pseudo="-webkit-media-controls-play-button" i],
 video::-webkit-media-controls.state-buffering input[pseudo="-webkit-media-controls-overlay-play-button" i]::-internal-media-controls-overlay-play-button-internal {
   background-image: -internal-light-dark(-webkit-image-set(url(ic_pause.svg) 1x), -webkit-image-set(url(ic_pause_white.svg) 1x));
+}
+
+video::-webkit-media-controls.state-playing input[pseudo="-webkit-media-controls-overlay-play-button" i]::-internal-media-controls-overlay-play-button-internal,
+video::-webkit-media-controls.state-loading-metadata-playing input[pseudo="-webkit-media-controls-overlay-play-button" i]::-internal-media-controls-overlay-play-button-internal,
+video::-webkit-media-controls.state-buffering input[pseudo="-webkit-media-controls-overlay-play-button" i]::-internal-media-controls-overlay-play-button-internal {
+  background-image: -internal-light-dark(-webkit-image-set(url(ic_pause.svg) 1x), -webkit-image-set(url(ic_pause_dark.svg) 1x));
 }
 
 /* For the play button inside the button panel, we want to use a white icon
@@ -1126,7 +1132,7 @@ video::-webkit-media-controls.audio-only [pseudo="-internal-media-controls-overf
 
 .state-no-source input[pseudo="-webkit-media-controls-overlay-play-button" i]::-internal-media-controls-overlay-play-button-internal {
   opacity: .3;
-  background-image: -internal-light-dark(-webkit-image-set(url(ic_no_source.svg) 1x), -webkit-image-set(url(ic_no_source_white.svg) 1x));
+  background-image: -internal-light-dark(-webkit-image-set(url(ic_no_source.svg) 1x), -webkit-image-set(url(ic_no_source_dark.svg) 1x));
 }
 
 /**
