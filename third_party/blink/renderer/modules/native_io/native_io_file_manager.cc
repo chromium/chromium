@@ -36,8 +36,14 @@ bool IsValidNativeIONameCharacter(int name_char) {
          (name_char >= '0' && name_char <= '9') || name_char == '_';
 }
 
+// Maximum allowed filename length, inclusive.
+const int kMaximumFilenameLength = 100;
+
 bool IsValidNativeIOName(const String& name) {
   if (name.IsEmpty())
+    return false;
+
+  if (name.length() > kMaximumFilenameLength)
     return false;
 
   if (name.Is8Bit()) {

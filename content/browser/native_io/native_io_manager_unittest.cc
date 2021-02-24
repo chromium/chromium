@@ -271,14 +271,6 @@ class NativeIOManagerTest : public testing::TestWithParam<bool> {
         quota_manager_proxy_.get());
   }
 
-  std::string GetTooLongFilename() {
-    int limit = base::GetMaximumPathComponentLength(data_dir_.GetPath());
-    EXPECT_GT(limit, 0);
-
-    std::string too_long_filename(limit + 1, 'x');
-    return too_long_filename;
-  }
-
   // This must be above NativeIOManager, to ensure that no file is accessed when
   // the temporary directory is deleted.
   base::ScopedTempDir data_dir_;
@@ -299,12 +291,23 @@ class NativeIOManagerTest : public testing::TestWithParam<bool> {
   std::unique_ptr<NativeIOHostSync> example_host_;
   std::unique_ptr<NativeIOHostSync> google_host_;
 
-  // Names disallowed by NativeIO
-  const std::vector<std::string> bad_names_ = {
-      "Uppercase",
-      "has-dash",
-      "has.dot",
-      "has/slash",
+  struct Filename {
+    std::string name;
+    bool valid;
+  };
+
+  const std::vector<Filename> filenames_ = {
+      {"ascii", true},
+      {"_underscores_", true},
+      {std::string(99, 'x'), true},
+      {std::string(100, 'x'), true},
+      {"Uppercase", false},
+      {"Uppercase", false},
+      {"has-dash", false},
+      {"has.dot", false},
+      {"has/slash", false},
+      {std::string(101, 'x'), false},
+      {std::string(9999, 'x'), false},
   };
 
   bool allow_set_length_ipc() { return GetParam(); }
@@ -314,27 +317,20 @@ class NativeIOManagerTest : public testing::TestWithParam<bool> {
   scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
 };
 
-TEST_P(NativeIOManagerTest, OpenFile_BadNames) {
-  for (const std::string& bad_name : bad_names_) {
+TEST_P(NativeIOManagerTest, OpenFile_Names) {
+  for (const Filename& filename : filenames_) {
     mojo::test::BadMessageObserver bad_message_observer;
 
     mojo::Remote<blink::mojom::NativeIOFileHost> file_host;
     std::pair<base::File, NativeIOErrorPtr> result = example_host_->OpenFile(
-        bad_name, file_host.BindNewPipeAndPassReceiver());
-    EXPECT_FALSE(result.first.IsValid());
-    EXPECT_EQ(result.second->type, NativeIOErrorType::kUnknown);
-    EXPECT_EQ("Invalid file name", bad_message_observer.WaitForBadMessage());
+        filename.name, file_host.BindNewPipeAndPassReceiver());
+    EXPECT_EQ(result.first.IsValid(), filename.valid);
+
+    if (!filename.valid) {
+      EXPECT_EQ(result.second->type, NativeIOErrorType::kUnknown);
+      EXPECT_EQ("Invalid file name", bad_message_observer.WaitForBadMessage());
+    }
   }
-  // TODO(rstz): Have the renderer process disallow too long filenames and then
-  // re-enable testing for long filenames on Windows.
-#if !defined(OS_WIN)
-  std::string too_long_filename = GetTooLongFilename();
-  mojo::Remote<blink::mojom::NativeIOFileHost> file_host;
-  std::pair<base::File, NativeIOErrorPtr> result = example_host_->OpenFile(
-      too_long_filename, file_host.BindNewPipeAndPassReceiver());
-  EXPECT_FALSE(result.first.IsValid());
-  EXPECT_EQ(result.second->type, NativeIOErrorType::kInvalidState);
-#endif  // !defined(OS_WIN)
 }
 
 TEST_P(NativeIOManagerTest, OpenFile_Locks_OpenFile) {
@@ -378,15 +374,17 @@ TEST_P(NativeIOManagerTest, OpenFile_SameName) {
   EXPECT_EQ(kTestData, std::string(read_buffer, kTestData.size()));
 }
 
-// TODO(rstz): Consider failing upon deletion of an overly long file name for
-// consistency with rename and open.
-TEST_P(NativeIOManagerTest, DeleteFile_BadNames) {
-  for (const std::string& bad_name : bad_names_) {
-    mojo::test::BadMessageObserver bad_message_observer;
-
-    EXPECT_EQ(example_host_->DeleteFile(bad_name)->type,
-              NativeIOErrorType::kUnknown);
-    EXPECT_EQ("Invalid file name", bad_message_observer.WaitForBadMessage());
+TEST_P(NativeIOManagerTest, DeleteFile_Names) {
+  for (const Filename& filename : filenames_) {
+    if (filename.valid) {
+      EXPECT_EQ(example_host_->DeleteFile(filename.name)->type,
+                NativeIOErrorType::kSuccess);
+    } else {
+      mojo::test::BadMessageObserver bad_message_observer;
+      EXPECT_EQ(example_host_->DeleteFile(filename.name)->type,
+                NativeIOErrorType::kUnknown);
+      EXPECT_EQ("Invalid file name", bad_message_observer.WaitForBadMessage());
+    }
   }
 }
 
@@ -486,7 +484,7 @@ TEST_P(NativeIOManagerTest, RenameFile_AfterOpenAndRename) {
   EXPECT_EQ("renamed_test_file", file_names[0]);
 }
 
-TEST_P(NativeIOManagerTest, RenameFile_BadNames) {
+TEST_P(NativeIOManagerTest, RenameFile_Names) {
   mojo::Remote<blink::mojom::NativeIOFileHost> file_host_remote;
   std::pair<base::File, NativeIOErrorPtr> result = example_host_->OpenFile(
       "test_file", file_host_remote.BindNewPipeAndPassReceiver());
@@ -494,24 +492,31 @@ TEST_P(NativeIOManagerTest, RenameFile_BadNames) {
   NativeIOFileHostSync file_host(file_host_remote.get());
   file_host.Close();
 
-  for (const std::string& bad_name : bad_names_) {
-    mojo::test::BadMessageObserver bad_message_observer;
+  for (const Filename& filename : filenames_) {
+    if (filename.valid) {
+      EXPECT_EQ(example_host_->RenameFile("test_file", filename.name)->type,
+                NativeIOErrorType::kSuccess);
+      EXPECT_EQ(example_host_->RenameFile(filename.name, "inexistant_test_file")
+                    ->type,
+                NativeIOErrorType::kSuccess);
 
-    EXPECT_EQ(example_host_->RenameFile("test_file", bad_name)->type,
-              NativeIOErrorType::kUnknown);
-    EXPECT_EQ("Invalid file name", bad_message_observer.WaitForBadMessage());
+      // Return to initial state
+      EXPECT_EQ(
+          example_host_->RenameFile("inexistant_test_file", "test_file")->type,
+          NativeIOErrorType::kSuccess);
+    } else {
+      mojo::test::BadMessageObserver bad_message_observer;
 
-    EXPECT_EQ(example_host_->RenameFile(bad_name, "inexistant_test_file")->type,
-              NativeIOErrorType::kUnknown);
-    EXPECT_EQ("Invalid file name", bad_message_observer.WaitForBadMessage());
+      EXPECT_EQ(example_host_->RenameFile("test_file", filename.name)->type,
+                NativeIOErrorType::kUnknown);
+      EXPECT_EQ("Invalid file name", bad_message_observer.WaitForBadMessage());
+
+      EXPECT_EQ(example_host_->RenameFile(filename.name, "inexistant_test_file")
+                    ->type,
+                NativeIOErrorType::kUnknown);
+      EXPECT_EQ("Invalid file name", bad_message_observer.WaitForBadMessage());
+    }
   }
-  // TODO(rstz): Have the renderer process disallow too long filenames and then
-  // re-enable testing for long filenames on Windows.
-#if !defined(OS_WIN)
-  std::string too_long_filename = GetTooLongFilename();
-  EXPECT_EQ(example_host_->RenameFile("test_file", too_long_filename)->type,
-            NativeIOErrorType::kInvalidState);
-#endif  // !defined(OS_WIN)
 }
 
 #if defined(OS_MAC)

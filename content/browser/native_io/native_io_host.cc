@@ -41,8 +41,14 @@ bool IsValidNativeIONameCharacter(char name_char) {
          name_char == '_';
 }
 
+// Maximum allowed filename length, inclusive.
+const int kMaximumFilenameLength = 100;
+
 bool IsValidNativeIOName(const std::string& name) {
   if (name.empty())
+    return false;
+
+  if (name.length() > kMaximumFilenameLength)
     return false;
 
   return std::all_of(name.begin(), name.end(), &IsValidNativeIONameCharacter);

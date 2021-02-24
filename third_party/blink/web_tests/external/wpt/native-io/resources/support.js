@@ -1,9 +1,10 @@
 // Names disallowed by NativeIO
 const kBadNativeIoNames = [
-  "Uppercase",
-  "has-dash",
-  "has.dot",
-  "has/slash",
+  'Uppercase',
+  'has-dash',
+  'has.dot',
+  'has/slash',
+  'x'.repeat(101),
 ];
 
 // Returns a handle to a newly created file that holds some data.
