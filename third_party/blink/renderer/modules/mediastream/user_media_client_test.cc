@@ -475,12 +475,16 @@ class UserMediaClientUnderTest : public UserMediaClient {
 
 class UserMediaChromeClient : public EmptyChromeClient {
  public:
-  ScreenInfo GetScreenInfo(LocalFrame&) const override {
-    ScreenInfo info;
-    info.rect = gfx::Rect(blink::kDefaultScreenCastWidth,
-                          blink::kDefaultScreenCastHeight);
-    return info;
+  UserMediaChromeClient()
+      : screen_info_({.rect = gfx::Rect(blink::kDefaultScreenCastWidth,
+                                        blink::kDefaultScreenCastHeight)}) {}
+
+  const ScreenInfo& GetScreenInfo(LocalFrame&) const override {
+    return screen_info_;
   }
+
+ private:
+  const ScreenInfo screen_info_;
 };
 
 }  // namespace

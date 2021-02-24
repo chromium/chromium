@@ -289,7 +289,8 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
                             String& result);
   virtual bool TabsToLinks() = 0;
 
-  virtual ScreenInfo GetScreenInfo(LocalFrame& frame) const = 0;
+  virtual const ScreenInfo& GetScreenInfo(LocalFrame& frame) const = 0;
+
   virtual void SetCursor(const ui::Cursor&, LocalFrame* local_root) = 0;
 
   virtual void SetCursorOverridden(bool) = 0;

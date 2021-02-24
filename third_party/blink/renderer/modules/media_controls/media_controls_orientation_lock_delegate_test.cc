@@ -139,7 +139,7 @@ class MockChromeClientForOrientationLockDelegate final
         WTF::Bind(DidExitFullscreen, WrapPersistent(frame.GetDocument())));
   }
 
-  ScreenInfo GetScreenInfo(LocalFrame&) const override {
+  const ScreenInfo& GetScreenInfo(LocalFrame&) const override {
     return mock_screen_info_;
   }
 

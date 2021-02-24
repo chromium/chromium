@@ -452,7 +452,7 @@ float ChromeClientImpl::WindowToViewportScalar(LocalFrame* frame,
   return frame->GetWidgetForLocalRoot()->DIPsToBlinkSpace(scalar_value);
 }
 
-ScreenInfo ChromeClientImpl::GetScreenInfo(LocalFrame& frame) const {
+const ScreenInfo& ChromeClientImpl::GetScreenInfo(LocalFrame& frame) const {
   return frame.GetWidgetForLocalRoot()->GetScreenInfo();
 }
 

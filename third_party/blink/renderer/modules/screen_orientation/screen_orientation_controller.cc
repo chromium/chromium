@@ -104,14 +104,14 @@ void ScreenOrientationController::UpdateOrientation() {
   DCHECK(GetPage());
   ChromeClient& chrome_client = GetPage()->GetChromeClient();
   LocalFrame& frame = *DomWindow()->GetFrame();
-  ScreenInfo screen_info = chrome_client.GetScreenInfo(frame);
+  const ScreenInfo& screen_info = chrome_client.GetScreenInfo(frame);
   mojom::blink::ScreenOrientation orientation_type =
       screen_info.orientation_type;
   if (orientation_type == mojom::blink::ScreenOrientation::kUndefined) {
     // The embedder could not provide us with an orientation, deduce it
     // ourselves.
-    orientation_type = ComputeOrientation(
-        chrome_client.GetScreenInfo(frame).rect, screen_info.orientation_angle);
+    orientation_type =
+        ComputeOrientation(screen_info.rect, screen_info.orientation_angle);
   }
   DCHECK(orientation_type != mojom::blink::ScreenOrientation::kUndefined);
 

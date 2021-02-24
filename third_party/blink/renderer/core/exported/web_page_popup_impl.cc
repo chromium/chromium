@@ -204,7 +204,7 @@ class PagePopupChromeClient final : public EmptyChromeClient {
         timeline->GetAnimationTimeline());
   }
 
-  ScreenInfo GetScreenInfo(LocalFrame&) const override {
+  const ScreenInfo& GetScreenInfo(LocalFrame&) const override {
     // LocalFrame is ignored since there is only 1 frame in a popup.
     return popup_->GetScreenInfo();
   }

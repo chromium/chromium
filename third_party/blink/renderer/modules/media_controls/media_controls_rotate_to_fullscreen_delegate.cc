@@ -266,7 +266,9 @@ MediaControlsRotateToFullscreenDelegate::ComputeScreenOrientation() const {
   if (!frame)
     return SimpleOrientation::kUnknown;
 
-  switch (frame->GetChromeClient().GetScreenInfo(*frame).orientation_type) {
+  ChromeClient& chrome_client = frame->GetChromeClient();
+  const ScreenInfo& screen_info = chrome_client.GetScreenInfo(*frame);
+  switch (screen_info.orientation_type) {
     case mojom::blink::ScreenOrientation::kPortraitPrimary:
     case mojom::blink::ScreenOrientation::kPortraitSecondary:
       return SimpleOrientation::kPortrait;

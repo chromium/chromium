@@ -1060,7 +1060,7 @@ gfx::Size UserMediaProcessor::GetScreenSize() {
   gfx::Size screen_size(blink::kDefaultScreenCastWidth,
                         blink::kDefaultScreenCastHeight);
   if (frame_) {  // Can be null in tests.
-    blink::ScreenInfo info = frame_->GetChromeClient().GetScreenInfo(*frame_);
+    const ScreenInfo& info = frame_->GetChromeClient().GetScreenInfo(*frame_);
     screen_size = info.rect.size();
   }
   return screen_size;

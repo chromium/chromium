@@ -20,7 +20,9 @@ class FakeChromeClient : public RenderingTestChromeClient {
     screen_info_.device_scale_factor = device_scale_factor;
   }
 
-  ScreenInfo GetScreenInfo(LocalFrame&) const override { return screen_info_; }
+  const ScreenInfo& GetScreenInfo(LocalFrame&) const override {
+    return screen_info_;
+  }
 
  private:
   ScreenInfo screen_info_;

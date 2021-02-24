@@ -73,7 +73,7 @@ class MockChromeClient : public EmptyChromeClient {
     Fullscreen::DidExitFullscreen(*frame.GetDocument());
   }
 
-  ScreenInfo GetScreenInfo(LocalFrame&) const override {
+  const ScreenInfo& GetScreenInfo(LocalFrame&) const override {
     return mock_screen_info_;
   }
 

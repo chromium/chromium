@@ -63,7 +63,7 @@ double MediaValues::CalculateViewportHeight(LocalFrame* frame) {
 
 int MediaValues::CalculateDeviceWidth(LocalFrame* frame) {
   DCHECK(frame && frame->View() && frame->GetSettings() && frame->GetPage());
-  blink::ScreenInfo screen_info =
+  const ScreenInfo& screen_info =
       frame->GetPage()->GetChromeClient().GetScreenInfo(*frame);
   int device_width = screen_info.rect.width();
   if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk()) {
@@ -75,7 +75,7 @@ int MediaValues::CalculateDeviceWidth(LocalFrame* frame) {
 
 int MediaValues::CalculateDeviceHeight(LocalFrame* frame) {
   DCHECK(frame && frame->View() && frame->GetSettings() && frame->GetPage());
-  blink::ScreenInfo screen_info =
+  const ScreenInfo& screen_info =
       frame->GetPage()->GetChromeClient().GetScreenInfo(*frame);
   int device_height = screen_info.rect.height();
   if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk()) {
@@ -98,7 +98,7 @@ float MediaValues::CalculateDevicePixelRatio(LocalFrame* frame) {
 int MediaValues::CalculateColorBitsPerComponent(LocalFrame* frame) {
   DCHECK(frame);
   DCHECK(frame->GetPage());
-  ScreenInfo screen_info =
+  const ScreenInfo& screen_info =
       frame->GetPage()->GetChromeClient().GetScreenInfo(*frame);
   if (screen_info.is_monochrome)
     return 0;
@@ -108,7 +108,7 @@ int MediaValues::CalculateColorBitsPerComponent(LocalFrame* frame) {
 int MediaValues::CalculateMonochromeBitsPerComponent(LocalFrame* frame) {
   DCHECK(frame);
   DCHECK(frame->GetPage());
-  ScreenInfo screen_info =
+  const ScreenInfo& screen_info =
       frame->GetPage()->GetChromeClient().GetScreenInfo(*frame);
   if (!screen_info.is_monochrome)
     return 0;

@@ -86,6 +86,7 @@ namespace blink {
 
 class CORE_EXPORT EmptyChromeClient : public ChromeClient {
  public:
+  EmptyChromeClient() = default;
   ~EmptyChromeClient() override = default;
 
   // ChromeClient implementation.
@@ -175,7 +176,9 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
   float WindowToViewportScalar(LocalFrame*, const float s) const override {
     return s;
   }
-  ScreenInfo GetScreenInfo(LocalFrame&) const override { return ScreenInfo(); }
+  const ScreenInfo& GetScreenInfo(LocalFrame&) const override {
+    return empty_screen_info_;
+  }
   void ContentsSizeChanged(LocalFrame*, const IntSize&) const override {}
   void ShowMouseOverURL(const HitTestResult&) override {}
   void SetToolTip(LocalFrame&, const String&, TextDirection) override {}
@@ -223,6 +226,9 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
   void MainFrameScrollOffsetChanged(LocalFrame& main_frame) const override {}
   void BatterySavingsChanged(LocalFrame& main_frame,
                              BatterySavingsFlags savings) override {}
+
+ private:
+  const ScreenInfo empty_screen_info_ = {};
 };
 
 class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
