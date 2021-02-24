@@ -72,10 +72,13 @@ class NotificationAlertServiceBridgeTest : public testing::Test {
               handler_remote_.Bind(std::move(handler_remote));
               run_loop.Quit();
             });
+    mojo::Remote<mac_notifications::mojom::MacNotificationProvider>
+        provider_remote;
+    provider_receiver_.Bind(provider_remote.BindNewPipeAndPassReceiver());
     bridge_.reset([[NotificationAlertServiceBridge alloc]
         initWithDisconnectHandler:on_disconnect_.Get()
-                         provider:provider_receiver_
-                                      .BindNewPipeAndPassRemote()]);
+                    actionHandler:on_action_.Get()
+                         provider:std::move(provider_remote)]);
     run_loop.Run();
   }
 
@@ -84,6 +87,7 @@ class NotificationAlertServiceBridgeTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   base::MockOnceClosure on_disconnect_;
+  base::MockRepeatingClosure on_action_;
   MockNotificationService mock_service_;
   mojo::Receiver<mac_notifications::mojom::MacNotificationService>
       service_receiver_{&mock_service_};
@@ -231,6 +235,9 @@ TEST_F(NotificationAlertServiceBridgeTest, OnNotificationAction) {
       std::move(notification_identifier), /*type=*/0, /*origin_url=*/GURL(),
       /*creator_pid=*/0);
 
+  base::RunLoop run_loop;
+  EXPECT_CALL(on_action_, Run).WillOnce([&]() { run_loop.Quit(); });
+
   auto action_info = mac_notifications::mojom::NotificationActionInfo::New(
       std::move(meta), NotificationOperation::NOTIFICATION_CLICK,
       /*button_index=*/-1, /*reply=*/base::nullopt);
@@ -238,5 +245,5 @@ TEST_F(NotificationAlertServiceBridgeTest, OnNotificationAction) {
 
   // TODO(knollr): verify expected notification action data.
   // Wait until the action has been handled.
-  task_environment_.RunUntilIdle();
+  run_loop.Run();
 }

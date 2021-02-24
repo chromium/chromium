@@ -79,7 +79,7 @@ NotificationPlatformBridgeMacUNNotification::
   LogUNNotificationBannerStyle(notification_center_.get());
 
   // TODO(crbug/1129366): Determine when to request permission.
-  NotificationPlatformBridgeMacUNNotification::RequestPermission();
+  RequestPermission();
 }
 
 NotificationPlatformBridgeMacUNNotification::
@@ -318,7 +318,7 @@ void NotificationPlatformBridgeMacUNNotification::DeliveredSuccessfully(
   [delivered_notifications_ setObject:dict
                                forKey:base::SysUTF8ToNSString(notification_id)];
 
-  NotificationPlatformBridgeMacUNNotification::MaybeStartSynchronization();
+  MaybeStartSynchronization();
 }
 
 void NotificationPlatformBridgeMacUNNotification::MaybeStartSynchronization() {

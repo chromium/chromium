@@ -7,11 +7,18 @@
 
 #import <Foundation/Foundation.h>
 
+#include <memory>
+
 #import "chrome/browser/notifications/alert_dispatcher_mac.h"
+#include "chrome/browser/notifications/mac_notification_provider_factory.h"
 
 // Implementation of the AlertDispatcher interface to display notifications via
 // a Mojo Service running in a helper process.
 @interface AlertDispatcherMojo : NSObject <AlertDispatcher>
+
+- (instancetype)initWithProviderFactory:
+    (std::unique_ptr<MacNotificationProviderFactory>)providerFactory;
+
 @end
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_ALERT_DISPATCHER_MOJO_H_

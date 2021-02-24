@@ -12,13 +12,11 @@
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
-#include "chrome/browser/service_sandbox_type.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_operation.h"
-#include "content/public/browser/service_process_host.h"
-#include "content/public/common/content_switches.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
@@ -27,6 +25,10 @@ namespace {
 class MacNotificationActionHandlerImpl
     : public mac_notifications::mojom::MacNotificationActionHandler {
  public:
+  explicit MacNotificationActionHandlerImpl(base::RepeatingClosure on_action)
+      : on_action_(std::move(on_action)) {}
+  ~MacNotificationActionHandlerImpl() override = default;
+
   // mac_notifications::mojom::MacNotificationActionHandler:
   void OnNotificationAction(
       mac_notifications::mojom::NotificationActionInfoPtr info) override {
@@ -47,16 +49,11 @@ class MacNotificationActionHandlerImpl
       notification_constants::kNotificationButtonIndex : @(info->button_index),
     };
     ProcessMacNotificationResponse(dict);
-  }
-
-  mojo::PendingRemote<mac_notifications::mojom::MacNotificationActionHandler>
-  BindRemote() {
-    return binding_.BindNewPipeAndPassRemote();
+    on_action_.Run();
   }
 
  private:
-  mojo::Receiver<mac_notifications::mojom::MacNotificationActionHandler>
-      binding_{this};
+  base::RepeatingCallback<void()> on_action_;
 };
 
 void DispatchGetNotificationsReply(
@@ -100,43 +97,26 @@ void DispatchGetAllNotificationsReply(
 @implementation NotificationAlertServiceBridge {
   mojo::Remote<mac_notifications::mojom::MacNotificationProvider> _provider;
   mojo::Remote<mac_notifications::mojom::MacNotificationService> _service;
-  MacNotificationActionHandlerImpl _handler;
-}
-
-- (instancetype)initWithDisconnectHandler:(base::OnceClosure)onDisconect {
-  return [self initWithDisconnectHandler:std::move(onDisconect)
-                                provider:mojo::NullRemote()];
 }
 
 - (instancetype)
-    initWithDisconnectHandler:(base::OnceClosure)onDisconect
+    initWithDisconnectHandler:(base::OnceClosure)onDisconnect
+                actionHandler:(base::RepeatingClosure)onAction
                      provider:
-                         (mojo::PendingRemote<
+                         (mojo::Remote<
                              mac_notifications::mojom::MacNotificationProvider>)
                              provider {
   if ((self = [super init])) {
-    if (provider) {
-      // Use the passed in |provider| to setup the mojo connection. This is used
-      // in tests so we don't have to spin up a new process and can pass in a
-      // mocked service.
-      _provider.Bind(std::move(provider));
-    } else {
-      // Launches a new helper process and sets up a mojo connection to it. If
-      // the mojo connection disconnects we call |onDisconnect| which will
-      // destroy |this| and terminate the process if it hasn't been already.
-      _provider = content::ServiceProcessHost::Launch<
-          mac_notifications::mojom::MacNotificationProvider>(
-          content::ServiceProcessHost::Options()
-              .WithExtraCommandLineSwitches({switches::kMessageLoopTypeUi})
-              // TODO(knollr): Set the correct flags so the helper launches via
-              // the app which has set the alert notifications style:
-              //.WithChildFlags(chrome::kChildProcessHelperAlerts)
-              .Pass());
-    }
+    mojo::PendingRemote<mac_notifications::mojom::MacNotificationActionHandler>
+        handlerRemote;
+    mojo::MakeSelfOwnedReceiver(
+        std::make_unique<MacNotificationActionHandlerImpl>(std::move(onAction)),
+        handlerRemote.InitWithNewPipeAndPassReceiver());
 
-    _provider.set_disconnect_handler(std::move(onDisconect));
+    _provider = std::move(provider);
+    _provider.set_disconnect_handler(std::move(onDisconnect));
     _provider->BindNotificationService(_service.BindNewPipeAndPassReceiver(),
-                                       _handler.BindRemote());
+                                       std::move(handlerRemote));
   }
   return self;
 }

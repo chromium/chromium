@@ -20,7 +20,16 @@
 #include "content/public/browser/browser_thread.h"
 
 @implementation AlertDispatcherMojo {
+  std::unique_ptr<MacNotificationProviderFactory> _providerFactory;
   base::scoped_nsobject<NotificationAlertServiceBridge> _mojoService;
+}
+
+- (instancetype)initWithProviderFactory:
+    (std::unique_ptr<MacNotificationProviderFactory>)providerFactory {
+  if ((self = [super init])) {
+    _providerFactory = std::move(providerFactory);
+  }
+  return self;
 }
 
 - (void)dispatchNotification:(NSDictionary*)data {
@@ -97,14 +106,16 @@
 
 - (id<NotificationDelivery>)serviceProxy {
   if (!_mojoService) {
-    auto onDisconnect = base::BindOnce(
-        [](base::scoped_nsobject<NotificationAlertServiceBridge>* ptr) {
-          // Reset the bridge when the mojo connection disconnects.
-          ptr->reset();
-        },
-        base::Unretained(&_mojoService));
+    auto onDisconnect = base::BindOnce(base::RetainBlock(^{
+      _mojoService.reset();
+    }));
+    auto onAction = base::BindRepeating(base::RetainBlock(^{
+        // TODO(crbug.com/1170731): Check if we can disconnect.
+    }));
     _mojoService.reset([[NotificationAlertServiceBridge alloc]
-        initWithDisconnectHandler:std::move(onDisconnect)]);
+        initWithDisconnectHandler:std::move(onDisconnect)
+                    actionHandler:std::move(onAction)
+                         provider:_providerFactory->LaunchProvider()]);
   }
   return _mojoService.get();
 }

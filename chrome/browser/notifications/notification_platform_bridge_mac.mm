@@ -24,6 +24,7 @@
 #include "base/strings/utf_string_conversions.h"
 #import "chrome/browser/notifications/alert_dispatcher_mojo.h"
 #import "chrome/browser/notifications/alert_dispatcher_xpc.h"
+#include "chrome/browser/notifications/mac_notification_provider_factory.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
@@ -41,30 +42,30 @@
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "url/gurl.h"
 
-@class NSUserNotification;
-@class NSUserNotificationCenter;
-
-// The mapping from web notifications to NsUserNotification works as follows
-
-// notification#title in NSUserNotification.title
-// notification#message in NSUserNotification.informativeText
-// notification#context_message in NSUserNotification.subtitle
-// notification#id in NSUserNotification.identifier (10.9)
-// notification#icon in NSUserNotification.contentImage (10.9)
-// Site settings button is implemented as NSUserNotification's action button
-// Not easy to implement:
-// -notification.requireInteraction
-
 // TODO(miguelg) implement the following features
 // - Sound names can be implemented by setting soundName in NSUserNotification
 //   NSUserNotificationDefaultSoundName gives you the platform default.
 
-// A Cocoa class that represents the delegate of NSUserNotificationCenter and
-// can forward commands to C++.
 @interface NotificationCenterDelegate
     : NSObject<NSUserNotificationCenterDelegate> {
 }
 @end
+
+namespace {
+
+base::scoped_nsobject<NSObject<AlertDispatcher>> CreateAlertDispatcher() {
+  base::scoped_nsobject<NSObject<AlertDispatcher>> alert_dispatcher;
+  if (base::FeatureList::IsEnabled(features::kNotificationsViaHelperApp)) {
+    auto provider_factory = std::make_unique<MacNotificationProviderFactory>();
+    alert_dispatcher.reset([[AlertDispatcherMojo alloc]
+        initWithProviderFactory:std::move(provider_factory)]);
+  } else {
+    alert_dispatcher.reset([[AlertDispatcherXPC alloc] init]);
+  }
+  return alert_dispatcher;
+}
+
+}  // namespace
 
 // /////////////////////////////////////////////////////////////////////////////
 NotificationPlatformBridgeMac::NotificationPlatformBridgeMac(
@@ -87,10 +88,8 @@ NotificationPlatformBridgeMac::~NotificationPlatformBridgeMac() {
 // static
 std::unique_ptr<NotificationPlatformBridge>
 NotificationPlatformBridge::Create() {
-  base::scoped_nsobject<NSObject<AlertDispatcher>> alert_dispatcher(
-      base::FeatureList::IsEnabled(features::kNotificationsViaHelperApp)
-          ? [[AlertDispatcherMojo alloc] init]
-          : [[AlertDispatcherXPC alloc] init]);
+  base::scoped_nsobject<NSObject<AlertDispatcher>> alert_dispatcher =
+      CreateAlertDispatcher();
 
   if (@available(macOS 10.14, *)) {
     if (base::FeatureList::IsEnabled(features::kNewMacNotificationAPI)) {
