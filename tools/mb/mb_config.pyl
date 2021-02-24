@@ -304,7 +304,7 @@
       'VR Linux': 'vr_release_bot',
       'Win 10 Fast Ring': 'release_trybot',
       'android-code-coverage': 'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild_java_coverage',
-      'android-code-coverage-native': 'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild_native_coverage',
+      'android-code-coverage-native': 'gpu_tests_android_release_bot_no_symbols_arm64_fastbuild_native_coverage',
       'android-paeverywhere-arm-fyi-dbg': 'debug_bot_paeverywhere_arm',
       'android-paeverywhere-arm-fyi-rel': 'release_trybot_paeverywhere_arm',
       'android-paeverywhere-arm64-fyi-dbg': 'debug_bot_paeverywhere_arm64',
@@ -2041,8 +2041,9 @@
     ],
 
     # TODO(crbug/1018431): Add 'resource_whitelisting' back once bug fixed.
-    'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild_native_coverage': [
-      'gpu_tests', 'android', 'release_bot', 'minimal_symbols', 'arm64',
+    # No symbols to prevent linker file too large error.
+    'gpu_tests_android_release_bot_no_symbols_arm64_fastbuild_native_coverage': [
+      'gpu_tests', 'android', 'release_bot', 'arm64',
       'static_angle', 'android_fastbuild', 'webview_google',
       'android_no_proguard', 'use_clang_coverage',
     ],

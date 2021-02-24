@@ -278,7 +278,6 @@
       "is_debug": false,
       "is_java_debug": true,
       "proprietary_codecs": true,
-      "symbol_level": 1,
       "system_webview_package_name": "com.google.android.webview",
       "target_cpu": "arm64",
       "target_os": "android",
