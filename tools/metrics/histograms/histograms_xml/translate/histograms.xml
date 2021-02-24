@@ -459,7 +459,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.PageLoad.AutofillAssistantDeferredTriggerDecision"
-    enum="BooleanDeferred" expires_after="2021-04-04">
+    enum="BooleanDeferred" expires_after="2021-08-09">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -514,7 +514,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.PageLoad.InitialSourceLanguage"
-    enum="CLD3LanguageCode" expires_after="2021-04-04">
+    enum="CLD3LanguageCode" expires_after="2021-08-09">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
