@@ -6,6 +6,9 @@
 
 #include "base/debug/stack_trace.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/platform/graphics/parkable_image_manager.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
@@ -16,6 +19,46 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace blink {
+
+namespace {
+
+void RecordReadStatistics(size_t size, base::TimeDelta duration) {
+  size_t throughput_mb_s =
+      static_cast<size_t>(size / duration.InSecondsF()) / (1024 * 1024);
+  size_t size_kb = size / 1024;  // in KiB
+
+  // Size should be <1MiB in most cases.
+  base::UmaHistogramCounts10000("Memory.ParkableImage.Read.Size", size_kb);
+  // Size is usually >1KiB, and at most ~10MiB, and throughput ranges from
+  // single-digit MB/s to ~1000MiB/s depending on the CPU/disk, hence the
+  // ranges.
+  base::UmaHistogramCustomMicrosecondsTimes(
+      "Memory.ParkableImage.Read.Latency", duration,
+      base::TimeDelta::FromMicroseconds(500), base::TimeDelta::FromSeconds(1),
+      100);
+  base::UmaHistogramCounts1000("Memory.ParkableImage.Read.Throughput",
+                               throughput_mb_s);
+}
+
+void RecordWriteStatistics(size_t size, base::TimeDelta duration) {
+  size_t throughput_mb_s =
+      static_cast<size_t>(size / duration.InSecondsF()) / (1024 * 1024);
+  size_t size_kb = size / 1024;
+
+  // Size should be <1MiB in most cases.
+  base::UmaHistogramCounts10000("Memory.ParkableImage.Write.Size", size_kb);
+  // Size is usually >1KiB, and at most ~10MiB, and throughput ranges from
+  // single-digit MB/s to ~1000MiB/s depending on the CPU/disk, hence the
+  // ranges.
+  base::UmaHistogramCustomMicrosecondsTimes(
+      "Memory.ParkableImage.Write.Latency", duration,
+      base::TimeDelta::FromMicroseconds(500), base::TimeDelta::FromSeconds(1),
+      100);
+  base::UmaHistogramCounts1000("Memory.ParkableImage.Write.Throughput",
+                               throughput_mb_s);
+}
+
+}  // namespace
 
 void ParkableImage::Append(WTF::SharedBuffer* buffer, size_t offset) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -117,8 +160,10 @@ void ParkableImage::WriteToDiskInBackground(
   // Release the lock while writing, so we don't block for too long.
   parkable_image->lock_.unlock();
 
+  base::ElapsedTimer timer;
   auto metadata = ParkableImageManager::Instance().data_allocator().Write(
       vector.data(), vector.size());
+  base::TimeDelta elapsed = timer.Elapsed();
 
   // Acquire the lock again after writing.
   parkable_image->lock_.lock();
@@ -130,6 +175,8 @@ void ParkableImage::WriteToDiskInBackground(
   if (!parkable_image->on_disk_metadata_) {
     parkable_image->background_task_in_progress_ = false;
   } else {
+    RecordWriteStatistics(parkable_image->on_disk_metadata_->size(), elapsed);
+    ParkableImageManager::Instance().RecordDiskWriteTime(elapsed);
     PostCrossThreadTask(*callback_task_runner, FROM_HERE,
                         CrossThreadBindOnce(&ParkableImage::MaybeDiscardData,
                                             std::move(parkable_image)));
@@ -198,8 +245,14 @@ void ParkableImage::Unpark() {
 
   DCHECK(on_disk_metadata_);
   WTF::Vector<uint8_t> vector(size());
+
+  base::ElapsedTimer timer;
   ParkableImageManager::Instance().data_allocator().Read(*on_disk_metadata_,
                                                          vector.data());
+  base::TimeDelta elapsed = timer.Elapsed();
+
+  RecordReadStatistics(on_disk_metadata_->size(), elapsed);
+  ParkableImageManager::Instance().RecordDiskReadTime(elapsed);
 
   ParkableImageManager::Instance().OnReadFromDisk(this);
 

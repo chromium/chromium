@@ -83,6 +83,8 @@ void ParkableImageManager::ResetForTesting() {
   unparked_images_.clear();
   on_disk_images_.clear();
   allocator_for_testing_ = nullptr;
+  total_disk_read_time_ = base::TimeDelta();
+  total_disk_write_time_ = base::TimeDelta();
 }
 
 void ParkableImageManager::Add(ParkableImage* image) {
@@ -116,7 +118,25 @@ void ParkableImageManager::RecordStatisticsAfter5Minutes() const {
   Statistics stats = ComputeStatistics();
 
   base::UmaHistogramCounts100000("Memory.ParkableImage.TotalSize.5min",
-                                 stats.total_size / 1024);  // Record in KiB.
+                                 stats.total_size / 1024);  // in KiB
+  base::UmaHistogramCounts100000("Memory.ParkableImage.OnDiskSize.5min",
+                                 stats.on_disk_size / 1024);  // in KiB
+  base::UmaHistogramCounts100000("Memory.ParkableImage.UnparkedSize.5min",
+                                 stats.unparked_size / 1024);  // in KiB
+
+  // Metrics related to parking only should be recorded if the feature is
+  // enabled.
+  if (IsParkableImagesToDiskEnabled()) {
+    base::UmaHistogramBoolean("Memory.ParkableImage.DiskIsUsable.5min",
+                              data_allocator().may_write());
+    // These metrics only make sense if the disk allocator is used.
+    if (data_allocator().may_write()) {
+      base::UmaHistogramTimes("Memory.ParkableImage.TotalWriteTime.5min",
+                              total_disk_write_time_);
+      base::UmaHistogramTimes("Memory.ParkableImage.TotalReadTime.5min",
+                              total_disk_read_time_);
+    }
+  }
 }
 
 void ParkableImageManager::Remove(ParkableImage* image) {

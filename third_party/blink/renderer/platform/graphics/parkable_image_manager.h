@@ -64,6 +64,16 @@ class PLATFORM_EXPORT ParkableImageManager
                  WTF::HashSet<ParkableImage*>* to)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
+  void RecordDiskWriteTime(base::TimeDelta write_time) LOCKS_EXCLUDED(lock_) {
+    MutexLocker lock(lock_);
+    total_disk_write_time_ += write_time;
+  }
+
+  void RecordDiskReadTime(base::TimeDelta read_time) LOCKS_EXCLUDED(lock_) {
+    MutexLocker lock(lock_);
+    total_disk_read_time_ += read_time;
+  }
+
   // Keeps track of whether the image is unparked or on disk. ParkableImage
   // should call these when written to or read from disk.
   void OnWrittenToDisk(ParkableImage* image) LOCKS_EXCLUDED(lock_);
@@ -100,6 +110,9 @@ class PLATFORM_EXPORT ParkableImageManager
 
   bool has_pending_parking_task_ GUARDED_BY(lock_) = false;
   bool has_posted_accounting_task_ = false;
+
+  base::TimeDelta total_disk_read_time_ GUARDED_BY(lock_) = base::TimeDelta();
+  base::TimeDelta total_disk_write_time_ GUARDED_BY(lock_) = base::TimeDelta();
 
   std::unique_ptr<DiskDataAllocator> allocator_for_testing_;
 };
