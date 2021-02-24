@@ -13,8 +13,21 @@
 // The content of the template is loaded into an iframe. On load, f
 // is passed the frame's content window to run assertions.
 function test_with_content(f) {
-  let t = document.currentScript.previousElementSibling;
-  test_with_window(f, t.dataset.test, t.innerHTML);
+  var t = document.currentScript.previousElementSibling;
+  // Under the foreground parser, some elements are now created
+  // interwined (like <template><iframe><template><iframe>. This means
+  // the test can sometimes pick up the previous iframe, rather than
+  // the template expected.
+  while (t) {
+    if (t.nodeName == 'TEMPLATE') {
+      test_with_window(f, t.dataset.test, t.innerHTML);
+      return;
+    }
+    t = t.previousElementSibling;
+  }
+  // Something's gone really wrong with the tree construction if we
+  // reach here.
+  assert_unreached();
 }
 
 // Searches the document for an iframe with the specified content window.

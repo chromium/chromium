@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL inserting another source before the candidate assert_equals: expected "#a" but got "#b"
-Harness: the test ran to completion.
-

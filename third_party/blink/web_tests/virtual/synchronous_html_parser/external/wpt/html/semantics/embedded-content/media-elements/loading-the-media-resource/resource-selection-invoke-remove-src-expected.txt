@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+PASS NOT invoking media load or resource selection when removing the src attribute
+Harness: the test ran to completion.
+

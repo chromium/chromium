@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL scheduler: IFRAMEs added with DOM (appendChild), javascript: URL assert_array_equals: expected property 2 to be "inline script #2" but got "JS URL" (expected array ["inline script #1", "end script #1", "inline script #2", "JS URL", "frame script"] got ["inline script #1", "end script #1", "JS URL", "frame script", "inline script #2"])
+Harness: the test ran to completion.
+

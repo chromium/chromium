@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+PASS Adding open to 'details' should fire a toggle event at the 'details' element
+PASS Removing open from 'details' should fire a toggle event at the 'details' element
+PASS Adding open to 'details' (display:none) should fire a toggle event at the 'details' element
+PASS Adding open from 'details' (no children) should fire a toggle event at the 'details' element
+PASS Calling open twice on 'details' fires only one toggle event
+PASS Calling setAttribute('open', '') to 'details' should fire a toggle event at the 'details' element
+PASS Calling removeAttribute('open') to 'details' should fire a toggle event at the 'details' element
+PASS Setting open=true to opened 'details' element should not fire a toggle event at the 'details' element
+PASS Setting open=false to closed 'details' element should not fire a toggle event at the 'details' element
+PASS Adding open to 'details' (not in the document) should fire a toggle event at the 'details' element
+Harness: the test ran to completion.
+
