@@ -52,10 +52,6 @@ LAB_DUT_HOSTNAME = 'variable_chromeos_device_hostname'
 
 SYSTEM_LOG_LOCATIONS = [
     '/var/log/chrome/',
-    # Note that journal/ will contain journald's serialized logs, which aren't
-    # human-readable. To inspect them, download the logs locally and run
-    # `journalctl -D ...`.
-    '/var/log/journal/',
     '/var/log/messages',
     '/var/log/ui/',
 ]
