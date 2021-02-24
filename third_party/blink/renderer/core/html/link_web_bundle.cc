@@ -141,7 +141,7 @@ class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
 
 // static
 bool LinkWebBundle::IsFeatureEnabled(const ExecutionContext* context) {
-  return context->IsSecureContext() &&
+  return context && context->IsSecureContext() &&
          RuntimeEnabledFeatures::SubresourceWebBundlesEnabled(context);
 }
 
