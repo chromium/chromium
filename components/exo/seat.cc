@@ -365,6 +365,11 @@ void Seat::OnClipboardDataChanged() {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+
+UILockController* Seat::GetUILockControllerForTesting() {
+  return ui_lock_controller_.get();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // ash::ImeControllerImpl::Observer overrides:
 

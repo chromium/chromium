@@ -5,9 +5,15 @@
 #ifndef COMPONENTS_EXO_UI_LOCK_CONTROLLER_H_
 #define COMPONENTS_EXO_UI_LOCK_CONTROLLER_H_
 
+#include "ash/shell.h"
+#include "ash/wm/window_state_observer.h"
 #include "base/timer/timer.h"
 #include "components/exo/seat_observer.h"
 #include "ui/events/event_handler.h"
+
+namespace views {
+class Widget;
+}
 
 namespace exo {
 
@@ -23,7 +29,9 @@ extern const base::TimeDelta kLongPressEscapeDuration;
 //
 // The "long keypress" design is inspired by Chromium's Keyboard Lock feature
 // (see https://chromestatus.com/feature/5642959835889664).
-class UILockController : public ui::EventHandler, public SeatObserver {
+class UILockController : public ui::EventHandler,
+                         public SeatObserver,
+                         public ash::WindowStateObserver {
  public:
   explicit UILockController(Seat* seat);
   UILockController(const UILockController&) = delete;
@@ -37,11 +45,21 @@ class UILockController : public ui::EventHandler, public SeatObserver {
   void OnSurfaceFocusing(Surface* gaining_focus) override {}
   void OnSurfaceFocused(Surface* gained_focus) override;
 
+  // Overridden from WindowStateObserver:
+  void OnPreWindowStateTypeChange(ash::WindowState* window_state,
+                                  chromeos::WindowStateType old_type) override {
+  }
+  void OnPostWindowStateTypeChange(ash::WindowState* window_state,
+                                   chromeos::WindowStateType old_type) override;
+
+  views::Widget* GetBubbleForTesting();
+
  private:
   void OnEscapeKey(bool pressed);
   void OnEscapeHeld();
   void StopTimer();
 
+  views::Widget* bubble_widget_ = nullptr;
   Seat* seat_;
   base::OneShotTimer exit_fullscreen_timer_;
 

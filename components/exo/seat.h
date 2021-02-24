@@ -122,6 +122,8 @@ class Seat : public aura::client::FocusChangeObserver,
   // Overridden from ash::ImeControllerImpl::Observer:
   void OnCapsLockChanged(bool enabled) override;
   void OnKeyboardLayoutNameChanged(const std::string& layout_name) override;
+
+  UILockController* GetUILockControllerForTesting();
 #endif
 
   void set_physical_code_for_currently_processing_event_for_testing(

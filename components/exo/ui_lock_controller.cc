@@ -4,14 +4,18 @@
 
 #include "components/exo/ui_lock_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_types.h"
 #include "ash/wm/window_state.h"
+#include "base/feature_list.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/exo/seat.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
+#include "components/exo/ui_lock_bubble.h"
 #include "components/exo/wm_helper.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -34,6 +38,10 @@ UILockController::UILockController(Seat* seat) : seat_(seat) {
 UILockController::~UILockController() {
   seat_->RemoveObserver(this);
   WMHelper::GetInstance()->RemovePreTargetHandler(this);
+  if (bubble_widget_) {
+    bubble_widget_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+    bubble_widget_ = nullptr;
+  }
 }
 
 void UILockController::OnKeyEvent(ui::KeyEvent* event) {
@@ -53,6 +61,54 @@ void UILockController::OnKeyEvent(ui::KeyEvent* event) {
 void UILockController::OnSurfaceFocused(Surface* gained_focus) {
   if (gained_focus != focused_surface_to_unlock_)
     StopTimer();
+
+  if (!base::FeatureList::IsEnabled(chromeos::features::kExoLockNotification))
+    return;
+
+  if (!gained_focus || !gained_focus->window())
+    return;
+
+  views::Widget* top_level_widget =
+      views::Widget::GetTopLevelWidgetForNativeView(gained_focus->window());
+  aura::Window* native_window =
+      top_level_widget ? top_level_widget->GetNativeWindow() : nullptr;
+  ash::WindowState* window_state = ash::WindowState::Get(native_window);
+
+  // If the window is not fullscreen do not display.
+  if (!window_state || !window_state->IsFullscreen())
+    return;
+
+  // If the bubble exists and is already anchored to the current view then exit.
+  if (bubble_widget_ && bubble_widget_->parent()->GetContentsView() ==
+                            top_level_widget->GetContentsView()) {
+    return;
+  }
+
+  // If the bubble exists and is anchored to a different surface, destroy that
+  // bubble before creating a new one.
+  if (bubble_widget_ && bubble_widget_->parent()->GetContentsView() !=
+                            top_level_widget->GetContentsView()) {
+    bubble_widget_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+    bubble_widget_ = nullptr;
+  }
+
+  bubble_widget_ =
+      UILockBubbleView::DisplayBubble(top_level_widget->GetContentsView());
+}
+
+void UILockController::OnPostWindowStateTypeChange(
+    ash::WindowState* window_state,
+    chromeos::WindowStateType old_type) {
+  // If the window is no longer fullscreen and there is a bubble showing, close
+  // it.
+  if (!window_state->IsFullscreen() && bubble_widget_) {
+    bubble_widget_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+    bubble_widget_ = nullptr;
+  }
+}
+
+views::Widget* UILockController::GetBubbleForTesting() {
+  return bubble_widget_;
 }
 
 namespace {
@@ -96,6 +152,11 @@ void UILockController::OnEscapeHeld() {
   if (!surface || surface != focused_surface_to_unlock_) {
     focused_surface_to_unlock_ = nullptr;
     return;
+  }
+
+  if (bubble_widget_) {
+    bubble_widget_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+    bubble_widget_ = nullptr;
   }
 
   focused_surface_to_unlock_ = nullptr;
