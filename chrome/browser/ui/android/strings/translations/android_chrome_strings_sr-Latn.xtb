@@ -56,6 +56,7 @@
 <translation id="1331212799747679585">Chrome ne može da se ažurira. Još opcija</translation>
 <translation id="1332501820983677155">Prečice za Google Chrome funkcije</translation>
 <translation id="133857033449832692">Preuzima se <ph name="LANG" />…</translation>
+<translation id="1344653310988386453">Uvrstite link do istaknutog teksta</translation>
 <translation id="1347468774581902829">Upravljajte aktivnostima</translation>
 <translation id="1360432990279830238">Odjavljujete se i isključujete sinhroniz?</translation>
 <translation id="1373696734384179344">Nema dovoljno memorije za preuzimanje izabranog sadržaja.</translation>
@@ -130,6 +131,7 @@
 <translation id="1960290143419248813">Chrome ažuriranja više nisu podržana za ovu verziju Android-a</translation>
 <translation id="1963976881984600709">Standardna zaštita</translation>
 <translation id="1966710179511230534">Ažurirajte podatke za prijavljivanje.</translation>
+<translation id="1973912524893600642">Zadrži podatke</translation>
 <translation id="1974060860693918893">Napredne opcije</translation>
 <translation id="1984417487208496350">Bez zaštite (ne preporučuje se)</translation>
 <translation id="1984705450038014246">Sinhronizujte Chrome podatke</translation>
@@ -301,6 +303,7 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="3058498974290601450">Možete da uključite sinhronizaciju u podešavanjima u bilo kom trenutku</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> obeleživač}one{<ph name="BOOKMARKS_COUNT_MANY" /> obeleživač}few{<ph name="BOOKMARKS_COUNT_MANY" /> obeleživača}other{<ph name="BOOKMARKS_COUNT_MANY" /> obeleživača}}</translation>
 <translation id="3062802207422175757">Članci o vašim interesovanjima u Chrome-u</translation>
+<translation id="3070005020161560471">Automatski prevodi</translation>
 <translation id="3089395242580810162">Otvori na kartici bez arhiv.</translation>
 <translation id="3098745985164956033">Neke slike se šalju Google-u radi poboljšanja opisa</translation>
 <translation id="3114507951000454849">Čitajte današnje vesti <ph name="NEWS_ICON" /></translation>
@@ -350,10 +353,18 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="3384347053049321195">Deli sliku</translation>
 <translation id="3387650086002190359">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspelo zbog grešaka sistema datoteka.</translation>
 <translation id="3389286852084373014">Tekst je prevelik</translation>
+<translation id="3391512812407811893">Probe Zaštićenog okruženja privatnosti</translation>
 <translation id="3398320232533725830">Otvaranje Menadžera obeleživača</translation>
 <translation id="3414952576877147120">Veličina:</translation>
 <translation id="3429160811076349561">Probne funkcije su isključene</translation>
 <translation id="3443221991560634068">Ponovno učitavanje aktuelne stranice</translation>
+<translation id="3451542610083122179">Zaštićeno okružene privatnosti je aktuelna inicijativa za očuvanje otvorenog veba koja će vam pomoći da se predostrožno zaštitite od mehanizama za praćenje.
+
+Danas se veb-sajtovi oslanjaju na mnogo tehnologija, poput kolačića trećih strana, kada su u pitanju važne usluge poput prikazivanja relevantnih oglasa i merenja učinka sajta.
+
+Zaštićeno okruženje privatnosti čuva vitalnost otvorenog veba tako što stvara bolje načine za obavljanje ovih usluga – bez narušavanja funkcija sajtova i uz sprečavanje da vas neko tajno prati širom veba.
+
+Aktivno programiranje Zaštićenog okruženja privatnosti je još uvek u toku i ono je dostupno u određenim regionima. Sajtovi za sada mogu da isprobaju Zaštićeno okruženje privatnosti, a da i dalje koriste aktuelne veb-tehnologije poput kolačića trećih strana. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">Možete da odaberete pretraživač</translation>
 <translation id="3492207499832628349">Nova kartica bez arhiviranja</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /> o predloženom sadržaju</translation>
@@ -591,6 +602,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 preuzimanje nije uspelo.}one{# preuzimanje nije uspelo.}few{# preuzimanja nisu uspela.}other{# preuzimanja nije uspelo.}}</translation>
 <translation id="5170568018924773124">Prikaži u direktorijumu</translation>
 <translation id="5184329579814168207">Otvori u Chrome-u</translation>
+<translation id="5191251636205085390">Saznajte više o novim tehnologijama čiji je cilj da zamene kolačiće trećih strana i upravljajte njima</translation>
 <translation id="5193988420012215838">Kopirano je u privremenu memoriju</translation>
 <translation id="5199929503336119739">Poslovni profil</translation>
 <translation id="5210286577605176222">Prelazak na prethodnu karticu</translation>
@@ -613,6 +625,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5355191726083956201">Poboljšana zaštita je uključena</translation>
 <translation id="5357811892247919462">Kartica je primljena</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> otvorena kartica, dodirnite da biste prešli na drugu karticu}one{<ph name="OPEN_TABS_MANY" /> otvorena kartica, dodirnite da biste prešli na drugu karticu}few{<ph name="OPEN_TABS_MANY" /> otvorene kartice, dodirnite da biste prešli na drugu karticu}other{<ph name="OPEN_TABS_MANY" /> otvorenih kartica, dodirnite da biste prešli na drugu karticu}}</translation>
+<translation id="5375577065097716013">Tražite sliku uz Objektiv <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Dozvoli samo određene sajtove</translation>
 <translation id="5414836363063783498">Verifikuju se...</translation>
 <translation id="5423934151118863508">Najčešće posećivane stranice će se pojaviti ovde</translation>
@@ -648,6 +661,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5599941490345670218">Google pomoćnik može da obavlja radnje za vas na veb-sajtovima</translation>
 <translation id="5620163320393916465">Nema sačuvanih lozinki</translation>
 <translation id="5620928963363755975">Pronađite datoteke i stranice u Preuzimanjima pomoću dugmeta Još opcija</translation>
+<translation id="562168087174703495">Pravljenje linka do istaknutog teksta nije uspelo. Delite link do stranice.</translation>
 <translation id="562289928968387744">Upravljaj reakcijama</translation>
 <translation id="5626134646977739690">Ime:</translation>
 <translation id="5628604359369369630">Nije pročitano. Dostupno je oflajn</translation>
@@ -761,6 +775,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6312687380483398334">Veb-aplikacije (tihe)</translation>
 <translation id="6316139424528454185">Nepodržana verzija Android-a</translation>
 <translation id="6324034347079777476">Sinhronizacija Android sistema je onemogućena</translation>
+<translation id="6324977638108296054">Pravljenje linka do istaknutog teksta nije uspelo</translation>
 <translation id="6333140779060797560">Deljenje preko <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Šifrovanje</translation>
 <translation id="6341580099087024258">Pitaj gde da sačuvaš datoteke</translation>
@@ -792,6 +807,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6477928892249167417">Izgleda da su vam ovi sajtovi važni:</translation>
 <translation id="6482749332252372425">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspelo zbog nedostatka memorijskog prostora.</translation>
 <translation id="6489610539826642779">Lista za čitanje <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
+<translation id="6490496612063106490">Link do istaknutog teksta</translation>
 <translation id="6496823230996795692">Da biste prvi put koristili <ph name="APP_NAME" />, povežite se na internet.</translation>
 <translation id="6508722015517270189">Ponovo pokrenite Chrome</translation>
 <translation id="6527303717912515753">Deli</translation>
@@ -990,6 +1006,7 @@ Podaci iz sesije bez arhiviranja se brišu iz Chrome-a samo kada <ph name="BEGIN
 <translation id="784934925303690534">Vremenski opseg</translation>
 <translation id="7851858861565204677">Drugi uređaji</translation>
 <translation id="7857691613771368249">Pitaj kada će se čuvati datoteke</translation>
+<translation id="7859988229622350291">Nikad ne prevodi</translation>
 <translation id="7875915731392087153">Napišite imejl</translation>
 <translation id="7876243839304621966">Ukloni sve</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> nepročitanu stranicu}one{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> nepročitanu stranicu}few{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> nepročitane stranice}other{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> nepročitanih stranica}}</translation>
@@ -1053,7 +1070,6 @@ Podaci iz sesije bez arhiviranja se brišu iz Chrome-a samo kada <ph name="BEGIN
 <translation id="8218622182176210845">Upravljajte nalogom</translation>
 <translation id="8223642481677794647">Meni kartice fida</translation>
 <translation id="8224471946457685718">Preuzimaj članke za mene preko WiFi mreže</translation>
-<translation id="8232956427053453090">Zadrži podatke</translation>
 <translation id="8233540874193135768">Da biste skenirali QR kôd, koristite uređaj sa kamerom.</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
 <translation id="825412236959742607">Ova stranica koristi previše memorije, pa je Chrome uklonio određeni sadržaj.</translation>
@@ -1067,6 +1083,7 @@ Podaci iz sesije bez arhiviranja se brišu iz Chrome-a samo kada <ph name="BEGIN
 <translation id="8310344678080805313">Standardne kartice</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> i još sajtova</translation>
 <translation id="8327155640814342956">Ako želite najbolji doživljaj pregledanja, otvorite Chrome da biste ga ažurirali</translation>
+<translation id="834313815369870491">Nikad ne prevodi sajtove</translation>
 <translation id="8349013245300336738">Sortiraj po količini iskorišćenih podataka</translation>
 <translation id="835847953965672673">Vraćena su preuzimanja (<ph name="NUMBER_OF_DOWNLOADS" />)</translation>
 <translation id="8364299278605033898">Pogledajte popularne veb-sajtove</translation>

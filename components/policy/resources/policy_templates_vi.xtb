@@ -406,6 +406,15 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
       Nếu bạn đặt chính sách <ph name="AUTH_SCHEMES_POLICY_NAME" /> và không bao gồm <ph name="BASIC_AUTH" />, thì chế độ cài đặt chính sách này bị bỏ qua (và <ph name="BASIC_AUTH" /> sẽ luôn bị cấm).</translation>
 <translation id="1575015449587326319">Chính sách cấu hình dành cho Trình kết nối OnFileDownloaded của Chrome Enterprise</translation>
 <translation id="1583248206450240930">Sử dụng <ph name="PRODUCT_FRAME_NAME" /> theo mặc định</translation>
+<translation id="1587042984081085960">Chính sách này cho phép quản trị viên chỉ định rằng một trang có thể gửi các yêu cầu XHR đồng bộ trong khi đóng trang.
+
+      Khi bạn đặt chính sách này thành bật, các trang sẽ được phép gửi các yêu cầu XHR đồng bộ trong khi đóng trang.
+
+      Khi bạn không đặt chính sách này hoặc đặt thành tắt, các trang sẽ không được phép gửi các yêu cầu XHR đồng bộ trong khi đóng trang.
+
+      Chính sách này sẽ bị loại bỏ trong Chrome 93.
+
+      Vui lòng xem tại https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="1588240398285670601">Cài đặt của trình duyệt</translation>
 <translation id="1593245608325508847">Khi bạn đặt chính sách này, tính năng đăng nhập có giới hạn của Chrome sẽ được bật trong G Suite và người dùng sẽ không thể thay đổi tùy chọn cài đặt này. Người dùng chỉ có thể truy cập vào các công cụ của Google bằng tài khoản thuộc miền được chỉ định (để cho phép tài khoản gmail hoặc googlemail, hãy thêm consumer_accounts vào danh sách miền). Tùy chọn cài đặt này ngăn người dùng đăng nhập và thêm Tài khoản phụ trên một thiết bị được quản lý có yêu cầu quy trình xác thực của Google, nếu tài khoản đó không thuộc một trong những miền được cho phép rõ ràng.
 
@@ -2054,6 +2063,17 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="377044054160169374">Thực thi can thiệp trải nghiệm lạm dụng</translation>
 <translation id="3778689139323007309">Thực hiện quá trình kiểm tra trạng thái thu hồi đối của các chứng chỉ máy chủ đã xác thực thành công, được ký theo chứng chỉ CA đã cài đặt trên máy</translation>
 <translation id="3780152581321609624">Bao gồm cổng không chuẩn trong  Kerberos SPN</translation>
+<translation id="3783569262370557918">Bật <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> cho một danh sách các URL.
+
+      Việc đặt chính sách này sẽ chỉ định những URL được phép đưa vào quy trình chứng thực để nhận được loạt tín hiệu từ máy.
+
+      Nếu bạn không đặt hoặc để trống chính sách này, thì sẽ không có thiết bị đầu cuối nào có thể bắt đầu quy trình chứng thực cũng như nhận tín hiệu từ máy.
+
+      Các URL phải có giao thức HTTPS, ví dụ: "https://example.com".
+
+      Lưu ý: Cho phép sử dụng ký tự đại diện <ph name="WILDCARD_VALUE" />.
+
+      Để biết thông tin chi tiết về các mẫu <ph name="URL_LABEL" /> hợp lệ, vui lòng xem tại https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="378495749480642482">Định cấu hình liệu các trang web mà người dùng chuyển đến có được phép tạo các phiên Thực tế tăng cường sống động bằng cách sử dụng <ph name="WEBXR_API_NAME" /> hay không.
 
       Khi bạn đặt thành bật hoặc không đặt chính sách này, <ph name="WEBXR_API_NAME" /> sẽ chấp nhận <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> trong quá trình tạo phiên, qua đó cho phép người dùng tham gia các trải nghiệm Thực tế tăng cường.
@@ -2781,6 +2801,7 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Khi bạn đặt chính sách này thành Tắt, các nhật ký này sẽ không được thu thập hoặc tải lên.
 
       Nếu bạn không đặt chính sách này trên các phiên bản M76 trở xuống, thì <ph name="PRODUCT_NAME" /> sẽ không thể thu thập và tải các nhật ký này lên theo mặc định. Kể từ phiên bản M77, theo mặc định, <ph name="PRODUCT_NAME" /> sẽ có thể thu thập và tải các nhật ký này lên từ hầu hết các hồ sơ chịu ảnh hưởng của chính sách doanh nghiệp dựa trên đám mây ở cấp người dùng. Kể từ phiên bản M77 đến M80, theo mặc định, <ph name="PRODUCT_NAME" /> cũng có thể thu thập và tải các nhật ký này lên từ các hồ sơ chịu ảnh hưởng của tính năng quản lý tại chỗ của <ph name="PRODUCT_NAME" />.</translation>
+<translation id="4913065710388638917">Bật quy trình chứng thực cho một danh sách các URL</translation>
 <translation id="4917385247580444890">Mạnh</translation>
 <translation id="4919122295221518724">Cho phép thắt chặt việc xử lý nội dung hỗn hợp</translation>
 <translation id="4920367374739265095">Việc đặt chính sách này sẽ chỉ định chính sách truy cập nào áp dụng cho cấu hình máy in số lượng lớn, kiểm soát máy in nào từ <ph name="DEVICE_PRINTERS_POLICY_NAME" /> là dành cho người dùng.
@@ -3239,6 +3260,13 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="547601067149622666">Không cho phép quảng cáo trên các trang web chứa quảng cáo xâm nhập</translation>
 <translation id="5480380613778757009">Nếu bạn tắt hoặc không đặt chính sách này, thì tất cả những chế độ cài đặt hiển thị đã đặt trong Phiên khách được quản lý sẽ được đặt lại ngay khi phiên này kết thúc. Nếu bạn đặt chính sách này thành Bật, thì các thuộc tính hiển thị sẽ vẫn giữ nguyên sau khi bạn thoát khỏi phiên khách được quản lý.</translation>
 <translation id="5483065054530244863">Cho phép các chứng chỉ SHA-1 có chữ ký do neo tin cậy cục bộ phát hành</translation>
+<translation id="5483584677807837752">Khi được bật, tính năng <ph name="PRODUCT_NAME" /> sẽ gửi tiêu đề của yêu cầu chi tiết cung cấp thông tin về trình duyệt và môi trường của người dùng.
+
+      Đây là một tính năng bổ sung nhưng tiêu đề mới có thể làm hỏng một số trang web hạn chế lượng ký tự có trong các yêu cầu.
+
+      Nếu bạn bật hoặc không đặt chính sách này, thì tính năng <ph name="PRODUCT_NAME" /> sẽ được bật. Nếu bạn tắt chính sách này, tính năng đó sẽ không hoạt động.
+
+      Chính sách doanh nghiệp này là để áp dụng trong thời gian ngắn, ít nhất là đến Chrome 93.</translation>
 <translation id="5497565614013170656">Biểu thức chính quy để so khớp với mã máy in.</translation>
 <translation id="5499375345075963939">Chính sách này chỉ hoạt động trong chế độ bán lẻ.
 

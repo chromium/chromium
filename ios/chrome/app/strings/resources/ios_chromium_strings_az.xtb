@@ -4,6 +4,7 @@
 <translation id="102360288709523007">İstifadə statistikası və qəza raportlarını Google'a göndərməklə Chromium'un gəlişməsini sağlayın.</translation>
 <translation id="1185134272377778587">Chromium haqqında</translation>
 <translation id="1257458525759135959">Şəkilləri yadda saxlamaq üçün, Ayarlara toxunaraq Chromium'a fotolarınıza əlavə etmək icazəsi verin</translation>
+<translation id="1289216811211435351">Chromium'a keçin</translation>
 <translation id="1361748954329991663">Chromium köhnəlib. <ph name="BEGIN_LINK" />App Store'da<ph name="END_LINK" /> əlçatan güncəlləmə yoxdursa, ola bilər ki, cihazınız artıq Chromium'un yeni versiyalarını dəstəkləmir.</translation>
 <translation id="1431818719585918472">Chromium'un Anonim tabları kilidləməsinə icazə verin.</translation>
 <translation id="1472013873724362412">Hesabınız Chromium üzərində işləmir. Domen administratorunuzla əlaqə saxlayın, və ya adi Google Hesab girişi istifadə edin.</translation>
@@ -34,6 +35,7 @@
 <translation id="4099085513035183040">Chromium Beta'da dəstəklənmir</translation>
 <translation id="4166206055865952171">Chromium'u Defolt Edin</translation>
 <translation id="4555020257205549924">Bu funksiya aktiv olduqda, Chromium Google Tərcümədən istifadə edərək başqa dillərdə yazılmış səhifələri tərcümə etməyi təklif edəcək. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
+<translation id="4585809515399340748">İndi istənilən vaxt mesajlar, sənədlər və digər tətbiqlərdə keçidlərə toxunduqda Chromium'u istifadə edə bilərsiniz.</translation>
 <translation id="4681781466797808448">Chromium skanerini aktiv edin</translation>
 <translation id="4787850887676698916">Başqa cihaz ilə Chromium'da açdığınız panellər burada görünəcək.</translation>
 <translation id="4828317641996116749">Chromium bütün parolları yoxlaya bilmədi. Sonra cəhd edin.</translation>
@@ -42,9 +44,9 @@
 <translation id="5224391634244552924">Yadda saxlanmış parol yoxdur. Parollarınızı yadda saxladıqda Chromium onları yoxlaya bilər.</translation>
 <translation id="5308226104666789935">Chromium güncəlləmələri yoxlaya bilmir</translation>
 <translation id="5521125884468363740">Chromium istifadə etdiyiniz hər yerdən tabları görmək üçün daxil olun və sinxronizasiyanı aktiv edin</translation>
-<translation id="5544795779875591523">Chromium datanız bu cihazdan silinsin, yoxsa saxlansın?</translation>
 <translation id="5573014823074921752">Chromium məsləhəti. Daha çox tab seçimləri üçün ekranın aşağısında və ya yuxarısında yerləşən alət panelində "Tabları Göstərin" düyməsinə basıb saxlayın.</translation>
 <translation id="5700709190537129682">Chromium parollarınızı yoxlaya bilmir</translation>
+<translation id="5742135483959137648">Keçidləri açmaq üçün Chromium istifadə edin</translation>
 <translation id="5777187867430702742">Chromium Səhifəsi</translation>
 <translation id="5862307444128926510">Chromium'a xoş gəlmisiniz</translation>
 <translation id="5945387852661427312"><ph name="DOMAIN" /> tərəfindən idarə olunan hesab ilə daxil olursunuz və onun administratoruna Chromium datanız üzərində nəzarəti verirsiniz. Datanız həmişəlik bu hesab ilə əlaqələndiriləcək. Chromium'dan çıxmaq datanızı bu cihazdan siləcək, lakin data Google Hesabında qalacaq.</translation>
@@ -63,6 +65,7 @@
 <translation id="7208566199746267865">Chromium hesablarınızı vebə gətirməklə vaxtınıza qənaət edir. Hesabları Ayarlar bölməsindən əlavə edə və ya silə bilərsiniz.</translation>
 <translation id="725427773388857052">Chromium sizi data pozuntuları, güvənli olmayan vebsaytlar və digər güvənlik məsələlərindən qoruya bilər.</translation>
 <translation id="7269362888766543920">Bəzi addonlar Chromium'da xətaya səbəb oldu. Lütfən, onları sistemdən silməyə cəhd edin.</translation>
+<translation id="7313655110045230863">Chromium'u defolt brauzeriniz etmək üçün Ayarları açın. Defolt Brauzer Tətbiqinə toxunun və Chromium'u seçin.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Seçilmiş data Chromium və sinxronizasiya olunmuş cihazdan silindi. Google Hesabınızın history.google.com linkində axtarış və digər Google xidmətlərindən fəaliyyət kimi axtarış tarixçəsi formaları ola bilər.</translation>
 <translation id="7400689562045506105">Chromium'u Hər yerdə İstifadə edin</translation>

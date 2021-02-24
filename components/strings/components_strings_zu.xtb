@@ -566,6 +566,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="3174168572213147020">Isiqhingi</translation>
 <translation id="3176929007561373547">Hlola izilungiselelo zakho zommeleli noma uxhumane nomlawuli wakho wenethiwekhi ukuze uqiniseke ukuthi iseva elibamba iyasebenza. Uma ungakholwa ukuthi kumele usebenzise iseva elibamba:
           <ph name="PLATFORM_TEXT" /></translation>
+<translation id="317878711435188021">Yazi lapho usebenzisa le divayisi</translation>
 <translation id="3188393374551744535">Ibhalansi ye-akhawunti</translation>
 <translation id="3194737229810486521">I-<ph name="URL" /> ifuna ukugcina unaphakade idatha kudivayisi yakho</translation>
 <translation id="3195213714973468956">I-<ph name="PRINTER_NAME" /> ku-<ph name="SERVER_NAME" /></translation>
@@ -743,6 +744,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="3828924085048779000">Umushwana wokungena ongenalutho awuvunyelwe.</translation>
 <translation id="3831915413245941253">I-<ph name="ENROLLMENT_DOMAIN" /> ifake izandiso zemisebenzi engeziwe. Izandiso zinokufinyelela kwenye idatha yakho.</translation>
 <translation id="3832522519263485449">Ukushaya okuningi kwesokunxele</translation>
+<translation id="3835233591525155343">Umsebenzi wedivayisi yakho</translation>
 <translation id="385051799172605136">Emuva</translation>
 <translation id="3858027520442213535">Buyekeza idethi nesikhathi</translation>
 <translation id="3884278016824448484">Isikhombi sedivayisi esishayisanayo</translation>
@@ -1037,6 +1039,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="4995216769782533993">Qinisekisa ikhodi yakho yokuvikela ukuze wabelane ngemininingwane yakho yekhadi naleli sayithi</translation>
 <translation id="4995474875135717171">Kulungiswe:</translation>
 <translation id="5002932099480077015">Uma inikwe amandla, i-Chrome izogcina ikhophi yekhadi lakho kule divayisi ngokugcwalisa ifomu ngokushesha.</translation>
+<translation id="5011561501798487822">Ulimi Olutholiwe</translation>
 <translation id="5015510746216210676">Igama lomshini:</translation>
 <translation id="5017554619425969104">Umbhalo owukopishile</translation>
 <translation id="5018422839182700155">Ayikwazi ukuvula leli khasi</translation>
@@ -1612,6 +1615,7 @@ Imininingwane engeziwe:
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">Umugqa womyalo</translation>
 <translation id="7359588939039777303">Izikhangiso zivinjewe.</translation>
+<translation id="7365849542400970216">Uyawazi umsebenzi wedivayisi yakho?</translation>
 <translation id="7372973238305370288">umphumela wosesho</translation>
 <translation id="7374733840632556089">Le nkinga yenzeka ngenxa yesitifiketi noma othile ufake kudivayisi yakho. Isitifiketi saziwa ngokusetshenziswa ukwengamela amanethiwekhi e-intercept, futhi asithembekile ku-Chrome. Ngenkathi ezinye izimo zokufinyelela zokwengamela zikhona, njengasesikoleni noma inethiwekhi yenkampani, i-Chrome ifuna ukuqinisekisa ukuthi uyaqaphela ukuthi lokhu kuyenzeka, ngisho noma ungeke ukwazi ukukumisa. Ukwengamela kungenzeka kunoma isiphi isiphequluli noma uhlelo lokusebenza olufinyelela iwebhu.</translation>
 <translation id="7375818412732305729">Ifayela linamathiselwe</translation>
@@ -2029,6 +2033,7 @@ Imininingwane engeziwe:
 <translation id="8983003182662520383">Izindlela zokukhokha namakheli asebenzisa i-Google Pay</translation>
 <translation id="8987927404178983737">Inyanga</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
+<translation id="899688752321268742">I-<ph name="URL" /> ifuna ukwazi lapho usebenzisa le divayisi</translation>
 <translation id="8996941253935762404">Isayithi elingaphambili liqukethe izinhlelo eziyingozi</translation>
 <translation id="8997023839087525404">Iseva iphrezente isitifiketi esingazange sidalulwe esidlangalaleni kusetshenziswa inqubomgomo yesitifiketi sokubonisa ngale. Lesi isidingo sezinye izitifiketi, ukuze kuqinisekiswe ukuthi zithembakele futhi kuvikelwe ngokumelene nabahlaseli.</translation>
 <translation id="9001074447101275817">Ummeleli we-<ph name="DOMAIN" /> udinga igama lomsebenzisi nephasiwedi.</translation>

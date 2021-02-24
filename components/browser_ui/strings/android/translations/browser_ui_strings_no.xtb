@@ -21,6 +21,7 @@
 <translation id="1446450296470737166">Full kontroll over MIDI-enheter</translation>
 <translation id="1509960214886564027">Det kan hende at funksjoner på mange nettsteder slutter å fungere</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1644574205037202324">Logg</translation>
 <translation id="1660204651932907780">Tillat nettsteder å spille av lyd (anbefales)</translation>
 <translation id="1677097821151855053">Informasjonskapsler og andre nettstedsdata brukes til å huske deg, for eksempel for å logge deg på eller for å vise deg personlig tilpassede annonser. For å administrere informasjonskapsler for alle nettsteder, se <ph name="BEGIN_LINK" />Innstillinger<ph name="END_LINK" />.</translation>
 <translation id="1688867105868176567">Vil du fjerne nettstedsdata?</translation>
@@ -98,6 +99,7 @@
 <translation id="3744111561329211289">Bakgrunnssynkronisering</translation>
 <translation id="3763247130972274048">Dobbelttrykk på venstre eller høyre side av videoen for å hoppe 10 sekunder</translation>
 <translation id="381841723434055211">Telefonnumre</translation>
+<translation id="3835233591525155343">Enhetsbruken din</translation>
 <translation id="385051799172605136">Tilbake</translation>
 <translation id="3859306556332390985">Spol fremover</translation>
 <translation id="3955193568934677022">Gi nettsteder tillatelse til å spille av beskyttet innhold (anbefales)</translation>
@@ -114,6 +116,7 @@
 <translation id="429312253194641664">Et nettsted spiller av medier</translation>
 <translation id="42981349822642051">Vis</translation>
 <translation id="4336434711095810371">Slett alle data</translation>
+<translation id="4402755511846832236">Blokkér nettsteder fra å vite når du bruker denne enheten aktivt</translation>
 <translation id="4433925000917964731">Forenklet versjon av siden levert av Google</translation>
 <translation id="4434045419905280838">Forgrunnsvinduer/viderekoblinger</translation>
 <translation id="445467742685312942">Tillat at nettsteder kan spille beskyttet innhold</translation>
@@ -126,6 +129,7 @@
 <translation id="4670064810192446073">Virtuell virkelighet</translation>
 <translation id="4708011789095599544">Er du sikker på at du vil slette informasjonskapsler og andre nettstedsdata for dette nettstedet?</translation>
 <translation id="4751476147751820511">Bevegelses- eller lyssensorer</translation>
+<translation id="4836046166855586901">Spør når nettsteder vil vite når du bruker denne enheten aktivt</translation>
 <translation id="4883854917563148705">Administrerte innstillinger kan ikke tilbakestilles</translation>
 <translation id="4887024562049524730">Spør før nettsteder får bruke virtuell virkelighet-enheten din eller -dataene dine (anbefales)</translation>
 <translation id="4962975101802056554">Opphev alle tillatelser for enheten</translation>

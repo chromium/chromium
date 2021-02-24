@@ -405,6 +405,7 @@
 <translation id="4421231901400348175">Էկրանի կառավարման համօգտագործում <ph name="HELPER_NAME" />-ի հետ Հեռակա օգնության միջոցով:</translation>
 <translation id="4424159417645388645">Աշխատասեղան 5</translation>
 <translation id="4430019312045809116">Ձայնի ուժգնություն</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 կարևոր ծանուցում}one{# կարևոր ծանուցում}other{# կարևոր ծանուցում}}</translation>
 <translation id="4450893287417543264">Այլևս ցույց չտալ</translation>
 <translation id="445864333228800152">Բարի երեկո,</translation>
 <translation id="4458688154122353284">Դադարեցնել էկրանի տեսագրումը</translation>
@@ -476,6 +477,10 @@
 <translation id="4961318399572185831">Էկրանի հեռարձակում</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> ժ <ph name="MINUTES" /> ր <ph name="SECONDS" /> վ</translation>
 <translation id="4975771730019223894">Նշանակների ավելացում հավելվածներին</translation>
+<translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
+        <ph name="NOTIFICATION_1" />,
+        <ph name="NOTIFICATION_2" />,
+        <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Հաջորդ նախադասությունը</translation>
 <translation id="5030687792513154421">Ժամանակը սպառվեց</translation>
 <translation id="5033299697334913360">Լիաէկրան ռեժիմում լուսանկարելու համար սեղմեք էկրանի որևէ կետ</translation>
@@ -489,6 +494,7 @@
 <translation id="5168181903108465623">Առկա են հեռարձակման սարքեր</translation>
 <translation id="5170568018924773124">Ցույց տալ պանակում</translation>
 <translation id="5176318573511391780">Տեսագրել էկրանի մի մասը</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Եվս 1 ծանուցում}one{Եվս # ծանուցում}other{Եվս # ծանուցում}}</translation>
 <translation id="5207949376430453814">Ընդգծել տեքստի նշորդը</translation>
 <translation id="5208059991603368177">Միացված է</translation>
 <translation id="5222676887888702881">Դուրս գրվել</translation>

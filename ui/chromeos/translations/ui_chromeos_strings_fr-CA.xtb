@@ -93,6 +93,7 @@
 <translation id="1942765061641586207">Résolution de l'image</translation>
 <translation id="1943097386230153518">Installer un nouveau service</translation>
 <translation id="1972984168337863910">Développer les panneaux de commentaires sur les fichiers</translation>
+<translation id="1984456723671657197">Ce type de fichier n'est pas pris en charge. <ph name="BEGIN_LINK_HELP" />Apprenez-en plus<ph name="END_LINK_HELP" /> sur l'ouverture de fichiers dans Chrome OS.</translation>
 <translation id="1995337122023280937">Accéder au dossier du fichier</translation>
 <translation id="2001796770603320721">Gérer dans Google Disque</translation>
 <translation id="2009067268969781306">Le formatage d'un lecteur effacera toutes les données qu'il contient. Cette action est irréversible.</translation>
@@ -331,7 +332,6 @@
 <translation id="4706042980341760088">Tamoul avec clavier de machine à écrire</translation>
 <translation id="4711094779914110278">Turc</translation>
 <translation id="4712283082407695269">Ouverture de « <ph name="PATH" /> » en cours…</translation>
-<translation id="4713544552769165154">Ce fichier est conçu pour un ordinateur utilisant un logiciel Macintosh. Il n'est pas compatible avec votre appareil qui exécute Chrome OS. Veuillez rechercher une application de remplacement appropriée sur le <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.<ph name="BEGIN_LINK_HELP" />En savoir plus<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> photos sauvegardées</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4732760563705710320">Désolés, cette vidéo n'est pas prise en charge par votre appareil de diffusion.</translation>
@@ -466,8 +466,6 @@
 <translation id="5833610766403489739">Ce fichier a été égaré. Veuillez vérifier l'emplacement de votre dossier de téléchargement et essayez de nouveau.</translation>
 <translation id="5838451609423551646">Toutes les entrées ont été supprimées de la sélection.</translation>
 <translation id="5838825566232597749">Workman international américain</translation>
-<translation id="5850516540536751549">Ce type de fichier n'est pas pris en charge. Veuillez accéder à la boutique <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> pour trouver une application qui permet de l'ouvrir.
-    <ph name="BEGIN_LINK_HELP" />En savoir plus<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Il n'y a rien ici...</translation>
 <translation id="5911887972742538906">Une erreur s'est produite lors de l'installation de votre application Linux.</translation>
 <translation id="5912396950572065471">Format</translation>
@@ -671,13 +669,13 @@
 <translation id="7972920761225148017">Français (Suisse)</translation>
 <translation id="7980421588063892270">Anglais (É.-U.) avec clavier Colemak</translation>
 <translation id="7982283708762922719">Hauteur</translation>
+<translation id="79907182588096956">Ce fichier est conçu pour un ordinateur fonctionnant sous un système d'exploitation Windows. Il est incompatible avec votre appareil, puisque celui-ci exécute Chrome OS. <ph name="BEGIN_LINK_HELP" />Apprenez-en plus<ph name="END_LINK_HELP" /> sur l'ouverture de fichiers dans Chrome OS.</translation>
 <translation id="8008366997883261463">Rex</translation>
 <translation id="8028993641010258682">Taille</translation>
 <translation id="803771048473350947">Fichier</translation>
 <translation id="8038111231936746805">(par défaut)</translation>
 <translation id="8042602468072383151">Audio <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">Roumain</translation>
-<translation id="8052887694493382350">Ce fichier est destiné à un ordinateur utilisant un logiciel Windows. Il est incompatible avec votre appareil, car celui-ci exécute Chrome OS. <ph name="BEGIN_LINK_HELP" />En savoir plus<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Toutes les modifications seront enregistrées dans <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Répéter</translation>
 <translation id="8106045200081704138">Partagés avec moi</translation>
@@ -751,6 +749,7 @@
 <translation id="8900820606136623064">Hongrois</translation>
 <translation id="8919081441417203123">Danois</translation>
 <translation id="8965697826696209160">Il n'y a pas suffisamment d'espace.</translation>
+<translation id="8970501467542182729">Ce fichier est conçu pour un ordinateur fonctionnant sous un système d'exploitation Macintosh. Il est incompatible avec votre appareil, puisque celui-ci exécute Chrome OS. <ph name="BEGIN_LINK_HELP" />Apprenez-en plus<ph name="END_LINK_HELP" /> sur l'ouverture de fichiers dans Chrome OS.</translation>
 <translation id="8997962250644902079">Chinois (traditionnel, Pinyin)</translation>
 <translation id="9017798300203431059">Russe (phonétique)</translation>
 <translation id="9034924485347205037">Fichiers Linux</translation>

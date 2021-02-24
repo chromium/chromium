@@ -56,6 +56,7 @@
 <translation id="1331212799747679585">Chrome не може да се актуализира. Още опции</translation>
 <translation id="1332501820983677155">Комбинации за функции на Google Chrome</translation>
 <translation id="133857033449832692">Изтегля се <ph name="LANG" />…</translation>
+<translation id="1344653310988386453">Включване на връзка към откроения текст</translation>
 <translation id="1347468774581902829">Управление на активността</translation>
 <translation id="1360432990279830238">Изход и изключване на синхронизирането?</translation>
 <translation id="1373696734384179344">Недостатъчно памет за изтегляне на избраното съдържание.</translation>
@@ -130,6 +131,7 @@
 <translation id="1960290143419248813">Актуализациите на Chrome вече не се поддържат за тази версия на Android</translation>
 <translation id="1963976881984600709">Стандартна защита</translation>
 <translation id="1966710179511230534">Моля, актуализирайте данните си за вход.</translation>
+<translation id="1973912524893600642">Запазване на данните</translation>
 <translation id="1974060860693918893">Разширени</translation>
 <translation id="1984417487208496350">Без защита (не се препоръчва)</translation>
 <translation id="1984705450038014246">Синхронизиране на данните ви в Chrome</translation>
@@ -301,6 +303,7 @@
 <translation id="3058498974290601450">Можете по всяко време да включите синхронизирането в настройките</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> отметка}other{<ph name="BOOKMARKS_COUNT_MANY" /> отметки}}</translation>
 <translation id="3062802207422175757">Статии, свързани с интересите ви, в Chrome</translation>
+<translation id="3070005020161560471">Да се превежда автоматично от</translation>
 <translation id="3089395242580810162">Отваряне в раздел „инкогнито“</translation>
 <translation id="3098745985164956033">Някои изображения се изпращат до Google с цел подобряване на описанията за вас</translation>
 <translation id="3114507951000454849">Прочетете днешните новини <ph name="NEWS_ICON" /></translation>
@@ -350,10 +353,18 @@
 <translation id="3384347053049321195">Споделяне на изображението</translation>
 <translation id="3387650086002190359">Изтеглянето на „<ph name="FILE_NAME" />“ не бе успешно поради грешки във файловата система.</translation>
 <translation id="3389286852084373014">Текстът е твърде голям</translation>
+<translation id="3391512812407811893">Изпробване на Privacy Sandbox</translation>
 <translation id="3398320232533725830">Отваряне на диспечера на отметките</translation>
 <translation id="3414952576877147120">Размер:</translation>
 <translation id="3429160811076349561">Функциите за изпробване са изключени</translation>
 <translation id="3443221991560634068">Презареждане на текущата страница</translation>
+<translation id="3451542610083122179">Privacy Sandbox е активна инициатива за запазване на свободния достъп до интернет, която ще ви предпази от механизмите за проследяване.
+
+В днешно време уебсайтовете разчитат на много технологии, например „бисквитки“ на трети страни, за да ви предоставят важни услуги, като показване на подходящи реклами и измерване на ефективността на даден сайт.
+
+Privacy Sandbox съхранява жизнеността на отворената мрежа, като създава по-добри начини за извършване на тези услуги. Това не нарушава функционалността на сайтовете, но предотвратява скритото проследяване на действията ви в мрежата.
+
+Privacy Sandbox продължава да се разработва активно и е налице в избрани региони. Засега сайтовете може да изпробват Privacy Sandbox и да продължат да използват настоящите уеб технологии, като „бисквитките“ на трети страни. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">Можете да изберете търсещата си машина</translation>
 <translation id="3492207499832628349">Нов раздел „инкогнито“</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /> за предложеното съдържание</translation>
@@ -591,6 +602,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 изтегляне не бе успешно.}other{# изтегляния не бяха успешни.}}</translation>
 <translation id="5170568018924773124">Показване в папката</translation>
 <translation id="5184329579814168207">Отваряне в Chrome</translation>
+<translation id="5191251636205085390">Научете повече за новите технологии, които имат за цел да заменят „бисквитките“ на трети страни, и как да ги контролирате</translation>
 <translation id="5193988420012215838">Копирано в буферната памет</translation>
 <translation id="5199929503336119739">Служебен потребителски профил</translation>
 <translation id="5210286577605176222">Преминаване към предишния раздел</translation>
@@ -613,6 +625,7 @@
 <translation id="5355191726083956201">Режимът за подобрена защита е включен</translation>
 <translation id="5357811892247919462">Получихте раздел</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> отворен раздел. Докоснете за превключване между разделите}other{<ph name="OPEN_TABS_MANY" /> отворени раздела. Докоснете за превключване между тях}}</translation>
+<translation id="5375577065097716013">Търсене на изобр. с Обектив <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Разрешаване само на конкретни сайтове</translation>
 <translation id="5414836363063783498">Потвърждава се…</translation>
 <translation id="5423934151118863508">Най-посещаваните от вас страници ще се показват тук</translation>
@@ -648,6 +661,7 @@
 <translation id="5599941490345670218">Google Асистент може да извършва действия в уебсайтове вместо вас</translation>
 <translation id="5620163320393916465">Няма запазени пароли</translation>
 <translation id="5620928963363755975">Използвайте бутона „Още опции“, за да намерите файловете и страниците си в „Изтегляния“</translation>
+<translation id="562168087174703495">Не може да се създаде връзка към откроения текст. Споделете тази към страницата.</translation>
 <translation id="562289928968387744">Управление на реакциите</translation>
 <translation id="5626134646977739690">Име:</translation>
 <translation id="5628604359369369630">Непрочетено – налице офлайн</translation>
@@ -761,6 +775,7 @@
 <translation id="6312687380483398334">Уеб приложения (без прекъсвания)</translation>
 <translation id="6316139424528454185">Неподдържана версия на Android</translation>
 <translation id="6324034347079777476">Системното синхронизиране под Android е деактивирано</translation>
+<translation id="6324977638108296054">Не може да се създаде връзка към откроения текст</translation>
 <translation id="6333140779060797560">Споделяне чрез <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Шифроване</translation>
 <translation id="6341580099087024258">Извеждане на запитване къде да се запазват файловете</translation>
@@ -792,6 +807,7 @@
 <translation id="6477928892249167417">Тези сайтове изглеждат важни за вас:</translation>
 <translation id="6482749332252372425">Изтеглянето на „<ph name="FILE_NAME" />“ не бе успешно поради липса на място в хранилището.</translation>
 <translation id="6489610539826642779">Списък за четене <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
+<translation id="6490496612063106490">Връзка към откроения текст</translation>
 <translation id="6496823230996795692">За да използвате <ph name="APP_NAME" /> за първи път, моля, свържете се с интернет.</translation>
 <translation id="6508722015517270189">Рестартирайте Chrome.</translation>
 <translation id="6527303717912515753">Споделяне</translation>
@@ -990,6 +1006,7 @@
 <translation id="784934925303690534">Период от време</translation>
 <translation id="7851858861565204677">Други устройства</translation>
 <translation id="7857691613771368249">Извеждане на запитване кога да се запазват файловете</translation>
+<translation id="7859988229622350291">Никога да не се превежда от</translation>
 <translation id="7875915731392087153">Създайте имейл</translation>
 <translation id="7876243839304621966">Премахване на всички</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Имате <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> непрочетена страница}other{Имате <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрочетени страници}}</translation>
@@ -1053,7 +1070,6 @@
 <translation id="8218622182176210845">Управление на профила ви</translation>
 <translation id="8223642481677794647">Меню на картата за емисията</translation>
 <translation id="8224471946457685718">Изтегляне на статиите за вас през Wi-Fi</translation>
-<translation id="8232956427053453090">Запазване на данните</translation>
 <translation id="8233540874193135768">За да сканирате QR код, използвайте устройство с камера.</translation>
 <translation id="8250920743982581267">Документи</translation>
 <translation id="825412236959742607">Тази страница използва твърде много памет, така че Chrome премахна част от съдържанието.</translation>
@@ -1067,6 +1083,7 @@
 <translation id="8310344678080805313">Стандартни раздели</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> и още сайтове</translation>
 <translation id="8327155640814342956">За оптимално сърфиране отворете, за да актуализирате Chrome</translation>
+<translation id="834313815369870491">Сайтове, които никога да не се превеждат</translation>
 <translation id="8349013245300336738">Сортиране по количеството използвани данни</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> изтегляния бяха възстановени</translation>
 <translation id="8364299278605033898">Вижте популярните уебсайтове</translation>

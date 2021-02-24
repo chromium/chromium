@@ -331,7 +331,6 @@
 <translation id="4706042980341760088">তামিল ভাষায় টাইপরাইটার কীবোর্ড</translation>
 <translation id="4711094779914110278">তুর্কি</translation>
 <translation id="4712283082407695269">"<ph name="PATH" />" খোলা হচ্ছে</translation>
-<translation id="4713544552769165154">Macintosh সফ্টওয়্যার ব্যবহার করে এমন একটি কম্পিউটারের জন্য এই ফাইলটি ডিজাইন করা হয়েছে৷ Chrome OS দ্বারা চালিত আপনার ডিভাইসটির সাথে এটি সামঞ্জস্যপূর্ণ নয়৷ একটি উপযুক্ত প্রতিস্থাপনযোগ্য অ্যাপ জন্য অনুগ্রহ করে <ph name="BEGIN_LINK" />Chrome ওয়েব স্টোর<ph name="END_LINK" />-এ সার্চ করুন৷<ph name="BEGIN_LINK_HELP" />আরও জানুন<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" />টি ফটোর ব্যাকআপ নেওয়া হয়েছে</translation>
 <translation id="4725511304875193254">কর্গি কুকুর</translation>
 <translation id="4732760563705710320">দুঃখিত, এই ভিডিওটি আপনার কাস্ট ডিভাইসে সমর্থিত নয়৷</translation>
@@ -464,8 +463,6 @@
 <translation id="5833610766403489739">এই ফাইলটির আসার পথ কোথাও বন্ধ করা আছে৷ অনুগ্রহ করে আপনার ডাউনলোড অবস্থানের সেটিংস পরীক্ষা করে আবার চেষ্টা করুন৷</translation>
 <translation id="5838451609423551646">সব বেছে নেওয়া এন্ট্রি সরিয়ে দেওয়া হয়েছে।</translation>
 <translation id="5838825566232597749">মার্কিন ওয়ার্কম্যান আন্তর্জাতিক</translation>
-<translation id="5850516540536751549">এই ফাইল প্রকারটি সমর্থিত নয়৷ এই ধরণের ফাইল খুলতে পারে এমন অ্যাপ খুঁজতে অনুগ্রহ করে <ph name="BEGIN_LINK" />Chrome ওয়েব স্টোর<ph name="END_LINK" /> দেখুন৷
-        <ph name="BEGIN_LINK_HELP" />আরও জানুন<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">এখানে দেখার মতো কিছু নেই...</translation>
 <translation id="5911887972742538906">Linux অ্যাপ্লিকেশন ইনস্টল করার সময়ে সমস্যা হয়েছে।</translation>
 <translation id="5912396950572065471">ফর্ম্যাট</translation>
@@ -675,7 +672,6 @@
 <translation id="8038111231936746805">(ডিফল্ট)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> অডিও</translation>
 <translation id="8045462269890919536">রোমানিয়</translation>
-<translation id="8052887694493382350">Windows সফ্টওয়্যার ব্যবহার করে এমন PC-এর জন্য ফাইলটি তৈরি করা হয়েছে। আপনার ডিভাইস Chrome OS-এ চলে বলে সেটি এর জন্য মানানসই নয়। <ph name="BEGIN_LINK_HELP" />আরও জানুন<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">সব এডিট <ph name="DOWNLOADS_FOLDER" />-এ সেভ করা হবে।</translation>
 <translation id="8079530767338315840">পুনরাবৃত্তি করুন</translation>
 <translation id="8106045200081704138">আমার সাথে শেয়ার করা</translation>

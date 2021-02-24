@@ -4,6 +4,7 @@
 <translation id="102360288709523007">Hjælp med at gøre Chromium bedre ved at sende brugsstatistik og nedbrudsrapporter til Google.</translation>
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1257458525759135959">Hvis du vil gemme billeder, skal du trykke på Indstillinger for at give Chromium tilladelse til at føje billeder til din mappe</translation>
+<translation id="1289216811211435351">Skift til Chromium</translation>
 <translation id="1361748954329991663">Chromium er forældet. Hvis der ikke er en tilgængelig opdatering i <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, kan det skyldes, at din enhed ikke længere understøtter nye Chromium-versioner.</translation>
 <translation id="1431818719585918472">Lad Chromium låse dine inkognitofaner.</translation>
 <translation id="1472013873724362412">Din konto fungerer ikke sammen med Chromium. Kontakt din domæneadministrator, eller brug en almindelig Google-konto til at logge ind.</translation>
@@ -34,6 +35,7 @@
 <translation id="4099085513035183040">Understøttes ikke i Chromium Beta</translation>
 <translation id="4166206055865952171">Gør Chromium til din standardbrowser</translation>
 <translation id="4555020257205549924">Når denne funktion er aktiveret, vil Chromium tilbyde at oversætte sider, der er skrevet på andre sprog, ved hjælp af Google Oversæt. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
+<translation id="4585809515399340748">Du kan nu bruge Chromium, hver gang du trykker på links i meddelelser, dokumenter og andre apps.</translation>
 <translation id="4681781466797808448">Aktivér Chromium-scanner</translation>
 <translation id="4787850887676698916">Faner, du har åbnet i Chromium på dine andre enheder, vises her.</translation>
 <translation id="4828317641996116749">Chromium kunne ikke tjekke alle adgangskoder. Prøv igen senere.</translation>
@@ -42,9 +44,9 @@
 <translation id="5224391634244552924">Der er ingen gemte adgangskoder. Chromium kan tjekke dine adgangskoder, når du gemmer dem.</translation>
 <translation id="5308226104666789935">Chromium kan ikke søge efter opdateringer</translation>
 <translation id="5521125884468363740">Log ind, og aktivér synkronisering på alle de enheder, hvor du bruger Chromium, for at se dine faner på dem</translation>
-<translation id="5544795779875591523">Vil du rydde dine Chromium-data fra denne enhed eller beholde dem?</translation>
 <translation id="5573014823074921752">Chromium-tip. Hvis du vil se flere faneindstillinger, skal du trykke på knappen Vis faner på værktøjslinjen og holde fingeren nede. Du finder knappen nederst eller øverst på skærmen.</translation>
 <translation id="5700709190537129682">Chromium kan ikke tjekke dine adgangskoder</translation>
+<translation id="5742135483959137648">Brug Chromium til at åbne links</translation>
 <translation id="5777187867430702742">Chromium-side</translation>
 <translation id="5862307444128926510">Velkommen til Chromium</translation>
 <translation id="5945387852661427312">Du er ved at logge ind med en konto, der administreres af <ph name="DOMAIN" />, hvilket giver administratoren kontrol over dine Chromium-data. Dine data tilknyttes denne konto permanent. Hvis du logger ud af Chromium, slettes dine data fra denne enhed, men de forbliver gemt på din Google-konto.</translation>
@@ -63,6 +65,7 @@
 <translation id="7208566199746267865">Med Chromium sparer du tid ved at gøre alle dine konti tilgængelige online. Du kan tilføje eller fjerne konti under Indstillinger.</translation>
 <translation id="725427773388857052">Chromium kan hjælpe med at beskytte dig mod brud på datasikkerheden, usikre websites og meget mere.</translation>
 <translation id="7269362888766543920">Nogle tilføjelser får Chromium til at gå ned. Prøv at afinstallere dem.</translation>
+<translation id="7313655110045230863">Du kan gøre Chromium til din standardbrowser ved at åbne Indstillinger. Tryk på Standardbrowserapp, og vælg derefter Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">De valgte data er fjernet fra Chromium og synkroniserede enheder. Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og aktivitet fra andre Google-tjenester, på history.google.com.</translation>
 <translation id="7400689562045506105">Brug Chromium, uanset hvor du er</translation>

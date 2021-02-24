@@ -56,6 +56,7 @@
 <translation id="1331212799747679585">Chrome nelze aktualizovat. Další možnosti</translation>
 <translation id="1332501820983677155">Zkratky funkcí prohlížeče Google Chrome</translation>
 <translation id="133857033449832692">Stahování jazyka <ph name="LANG" />…</translation>
+<translation id="1344653310988386453">Zahrnout odkaz na zvýraznění</translation>
 <translation id="1347468774581902829">Spravovat aktivitu</translation>
 <translation id="1360432990279830238">Odhlásit se a vypnout synchronizaci?</translation>
 <translation id="1373696734384179344">Ke stažení vybraného obsahu není k dispozici dostatek paměti.</translation>
@@ -130,6 +131,7 @@
 <translation id="1960290143419248813">V této verzi platformy Android již aktualizace prohlížeče Chrome nejsou podporovány</translation>
 <translation id="1963976881984600709">Standardní ochrana</translation>
 <translation id="1966710179511230534">Aktualizujte prosím své přihlašovací údaje.</translation>
+<translation id="1973912524893600642">Zachovat data</translation>
 <translation id="1974060860693918893">Rozšířená nastavení</translation>
 <translation id="1984417487208496350">Bez ochrany (nedoporučujeme)</translation>
 <translation id="1984705450038014246">Synchronizovat data prohlížeče Chrome</translation>
@@ -301,6 +303,7 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="3058498974290601450">Synchronizaci můžete kdykoliv zapnout v nastavení</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> záložka}few{<ph name="BOOKMARKS_COUNT_MANY" /> záložky}many{<ph name="BOOKMARKS_COUNT_MANY" /> záložky}other{<ph name="BOOKMARKS_COUNT_MANY" /> záložek}}</translation>
 <translation id="3062802207422175757">Články o vašich zájmech v Chromu</translation>
+<translation id="3070005020161560471">Automatický překlad</translation>
 <translation id="3089395242580810162">Otevřít na anonymní kartě</translation>
 <translation id="3098745985164956033">Za účelem zlepšení popisů se některé obrázky odesílají do Googlu</translation>
 <translation id="3114507951000454849">Přečtěte si dnešní zprávy <ph name="NEWS_ICON" /></translation>
@@ -350,10 +353,18 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="3384347053049321195">Sdílet obrázek</translation>
 <translation id="3387650086002190359">Stažení souboru <ph name="FILE_NAME" /> se nezdařilo z důvodu chyb systému souborů.</translation>
 <translation id="3389286852084373014">Text je příliš dlouhý</translation>
+<translation id="3391512812407811893">Izolovaný prostor k ochraně soukromí</translation>
 <translation id="3398320232533725830">Otevřít správce záložek</translation>
 <translation id="3414952576877147120">Velikost:</translation>
 <translation id="3429160811076349561">Zkušební funkce jsou vypnuté</translation>
 <translation id="3443221991560634068">Znovu načíst aktuální stránku</translation>
+<translation id="3451542610083122179">Izolovaný prostor k ochraně soukromí je trvalá iniciativa pro zachování otevřeného webu, která vás bude pomáhat chránit před sledováním.
+
+Weby v současné době k poskytování důležitých služeb, jako je zobrazování relevantních reklam nebo měření výkonnosti webu, využívají mnoho technologií, jako například soubory cookie třetích stran.
+
+Izolovaný prostor k ochraně soukromí zachovává zdravé prostředí otevřeného webu, protože přináší lepší možnosti, jak tyto služby poskytovat i bez narušení webů, a zároveň zabraňuje tomu, abyste byli na webu tajně sledováni.
+
+Izolovaný prostor k ochraně soukromí se stále aktivně vyvíjí a je dostupný jen ve vybraných oblastech. Prozatím mohou weby Izolovaný prostor k ochraně soukromí vyzkoušet, i když budou dál používat aktuální technologie, jako jsou soubory cookie třetích stran. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">Můžete si vybrat vyhledávač</translation>
 <translation id="3492207499832628349">Nová anonymní karta</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /> o navrhovaném obsahu</translation>
@@ -591,6 +602,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Stažení 1 souboru se nezdařilo.}few{Stažení # souborů se nezdařilo.}many{Stažení # souboru se nezdařilo.}other{Stažení # souborů se nezdařilo.}}</translation>
 <translation id="5170568018924773124">Zobrazit ve složce</translation>
 <translation id="5184329579814168207">Otevřít v Chromu</translation>
+<translation id="5191251636205085390">Další informace o správa nových technologií, které mají za cíl nahradit soubory cookie třetích stran</translation>
 <translation id="5193988420012215838">Zkopírováno do schránky</translation>
 <translation id="5199929503336119739">Pracovní profil</translation>
 <translation id="5210286577605176222">Přejít na předchozí kartu</translation>
@@ -613,6 +625,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5355191726083956201">Je zapnutá vylepšená ochrana</translation>
 <translation id="5357811892247919462">Byla přijata karta</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{Je otevřená <ph name="OPEN_TABS_ONE" /> karta, můžete mezi nimi přepínat klepnutím}few{Je otevřených <ph name="OPEN_TABS_MANY" /> karet, můžete mezi nimi přepínat klepnutím}many{Je otevřených <ph name="OPEN_TABS_MANY" /> karty, můžete mezi nimi přepínat klepnutím}other{Je otevřených <ph name="OPEN_TABS_MANY" /> karet, můžete mezi nimi přepínat klepnutím}}</translation>
+<translation id="5375577065097716013">Vyhledat obrázek pomocí Google Lens <ph name="BEGIN_NEW" />Novina<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Povolit pouze určité weby</translation>
 <translation id="5414836363063783498">Ověřování…</translation>
 <translation id="5423934151118863508">Zde se zobrazí vaše nejnavštěvovanější stránky.</translation>
@@ -648,6 +661,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5599941490345670218">Asistent Google může na webech provádět různé akce za vás</translation>
 <translation id="5620163320393916465">Nemáte žádná uložená hesla</translation>
 <translation id="5620928963363755975">Stažené soubory a stránky můžete najít pomocí tlačítka Další možnosti</translation>
+<translation id="562168087174703495">Odkaz na zvýraznění nelze vytvořit. Sdílejte odkaz na stránku.</translation>
 <translation id="562289928968387744">Spravovat reakce</translation>
 <translation id="5626134646977739690">Jméno:</translation>
 <translation id="5628604359369369630">Nepřečteno – k dispozici offline</translation>
@@ -761,6 +775,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6312687380483398334">Webové aplikace (tiché)</translation>
 <translation id="6316139424528454185">Nepodporovaná verze Androidu</translation>
 <translation id="6324034347079777476">Synchronizace systému Android je vypnuta.</translation>
+<translation id="6324977638108296054">Odkaz na zvýraznění nelze vytvořit</translation>
 <translation id="6333140779060797560">Sdílet prostřednictvím aplikace <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Šifrování</translation>
 <translation id="6341580099087024258">Zeptat se, kam se soubory mají uložit</translation>
@@ -792,6 +807,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6477928892249167417">Tyto weby jsou pro vás zřejmě důležité:</translation>
 <translation id="6482749332252372425">Stažení souboru <ph name="FILE_NAME" /> se nezdařilo z důvodu nedostatku místa v úložišti.</translation>
 <translation id="6489610539826642779">Seznam četby <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
+<translation id="6490496612063106490">Odkaz na zvýraznění</translation>
 <translation id="6496823230996795692">Chcete-li poprvé použít aplikaci <ph name="APP_NAME" />, připojte se k internetu.</translation>
 <translation id="6508722015517270189">Restartujte Chrome</translation>
 <translation id="6527303717912515753">Sdílet</translation>
@@ -990,6 +1006,7 @@ Data z anonymní relace budou vymazána jedině po <ph name="BEGIN_BOLD2" />zav
 <translation id="784934925303690534">Časové období</translation>
 <translation id="7851858861565204677">Jiná zařízení</translation>
 <translation id="7857691613771368249">Zeptat se, kdy se soubory mají uložit</translation>
+<translation id="7859988229622350291">Nikdy nepřekládat</translation>
 <translation id="7875915731392087153">Vytvořit e-mail</translation>
 <translation id="7876243839304621966">Odstranit vše</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Máte <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> nepřečtenou stránku}few{Máte <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> nepřečtené stránky}many{Máte <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> nepřečtené stránky}other{Máte <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> nepřečtených stránek}}</translation>
@@ -1053,7 +1070,6 @@ Data z anonymní relace budou vymazána jedině po <ph name="BEGIN_BOLD2" />zav
 <translation id="8218622182176210845">Správa účtu</translation>
 <translation id="8223642481677794647">Nabídka karty informačního kanálu</translation>
 <translation id="8224471946457685718">Stahovat články pro vás přes Wi-Fi</translation>
-<translation id="8232956427053453090">Zachovat data</translation>
 <translation id="8233540874193135768">Chcete-li naskenovat QR kód, použijte zařízení s kamerou.</translation>
 <translation id="8250920743982581267">Dokumenty</translation>
 <translation id="825412236959742607">Tato stránka využívá příliš mnoho paměti, Chrome proto odstranil část obsahu.</translation>
@@ -1067,6 +1083,7 @@ Data z anonymní relace budou vymazána jedině po <ph name="BEGIN_BOLD2" />zav
 <translation id="8310344678080805313">Standardní karty</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> a další weby</translation>
 <translation id="8327155640814342956">Chcete-li mít při procházení nejlepší prostředí a funkce, aktualizujte Chrome</translation>
+<translation id="834313815369870491">Weby nikdy nepřekládat</translation>
 <translation id="8349013245300336738">Seřadit podle množství využitých dat</translation>
 <translation id="835847953965672673">Obnovená stahování: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="8364299278605033898">Zobrazit populární weby</translation>

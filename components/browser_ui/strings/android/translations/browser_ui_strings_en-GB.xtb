@@ -21,6 +21,7 @@
 <translation id="1446450296470737166">Allow full control of MIDI devices</translation>
 <translation id="1509960214886564027">Features on many sites may break</translation>
 <translation id="1620510694547887537">Camera</translation>
+<translation id="1644574205037202324">History</translation>
 <translation id="1660204651932907780">Allow sites to play sound (recommended)</translation>
 <translation id="1677097821151855053">Cookies and other site data are used to remember you, for example, to sign you in or to personalise ads. To manage cookies for all sites, see <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
 <translation id="1688867105868176567">Clear site data?</translation>
@@ -98,6 +99,7 @@
 <translation id="3744111561329211289">Background sync</translation>
 <translation id="3763247130972274048">Double-tap video left or right to skip 10s</translation>
 <translation id="381841723434055211">Phone numbers</translation>
+<translation id="3835233591525155343">Your device use</translation>
 <translation id="385051799172605136">Back</translation>
 <translation id="3859306556332390985">Seek forward</translation>
 <translation id="3955193568934677022">Allow sites to play protected content (recommended)</translation>
@@ -114,6 +116,7 @@
 <translation id="429312253194641664">A site is playing media</translation>
 <translation id="42981349822642051">Expand</translation>
 <translation id="4336434711095810371">Clear all data</translation>
+<translation id="4402755511846832236">Block sites from knowing when you're actively using this device</translation>
 <translation id="4433925000917964731">Lite page provided by Google</translation>
 <translation id="4434045419905280838">Pop-ups and redirects</translation>
 <translation id="445467742685312942">Allow sites to play protected content</translation>
@@ -126,6 +129,7 @@
 <translation id="4670064810192446073">Virtual reality</translation>
 <translation id="4708011789095599544">Are you sure that you want to clear cookies and other site data for this website?</translation>
 <translation id="4751476147751820511">Motion or light sensors</translation>
+<translation id="4836046166855586901">Ask when a site wants to know when you're actively using this device</translation>
 <translation id="4883854917563148705">Managed settings cannot be reset</translation>
 <translation id="4887024562049524730">Ask before allowing sites to use your virtual reality device and data (recommended)</translation>
 <translation id="4962975101802056554">Revoke all permissions for device</translation>

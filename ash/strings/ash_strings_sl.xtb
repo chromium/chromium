@@ -405,6 +405,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="4421231901400348175">Deljenje nadzora nad zaslonom z osebo <ph name="HELPER_NAME" /> prek pomoči na daljavo.</translation>
 <translation id="4424159417645388645">Namizje 5</translation>
 <translation id="4430019312045809116">Glasnost</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 pomembno obvestilo}one{# pomembno obvestilo}two{# pomembni obvestili}few{# pomembna obvestila}other{# pomembnih obvestil}}</translation>
 <translation id="4450893287417543264">Tega ne prikaži več</translation>
 <translation id="445864333228800152">Dober večer,</translation>
 <translation id="4458688154122353284">Ustavitev snemanja zaslona</translation>
@@ -476,6 +477,10 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="4961318399572185831">Predvajanje zaslona</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Označevanje aplikacij z značko</translation>
+<translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
+        <ph name="NOTIFICATION_1" />,
+        <ph name="NOTIFICATION_2" />,
+        <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Naslednji stavek</translation>
 <translation id="5030687792513154421">Dovoljeni čas je potekel</translation>
 <translation id="5033299697334913360">Kliknite kjer koli za posnetek celotnega zaslona.</translation>
@@ -489,6 +494,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="5168181903108465623">Naprave za predvajanje so na voljo</translation>
 <translation id="5170568018924773124">Prikaži v mapi</translation>
 <translation id="5176318573511391780">Snemanje delnega zaslona</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 drugo obvestilo}one{# drugo obvestilo}two{# drugi obvestili}few{# druga obvestila}other{# drugih obvestil}}</translation>
 <translation id="5207949376430453814">Označitev kazalke v besedilu</translation>
 <translation id="5208059991603368177">Vklopljeno</translation>
 <translation id="5222676887888702881">Odjava</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
 <translation id="1018656279737460067">Cancelado</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> subprocesos, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1059913517121127803">No se pudo comenzar el escaneo</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Se detectó un firewall</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">Error desconocido.</translation>
 <translation id="1204296502688602597">Latencia de DNS</translation>
 <translation id="123124571410524056">Posible portal</translation>
-<translation id="1238191093934674082">OpenVPN</translation>
 <translation id="1238612778414822719">Latencia de HTTPS</translation>
 <translation id="1270369111467284986">Posible portal cautivo</translation>
 <translation id="1290331692326790741">Señal débil</translation>
@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">Se detuvo: sin tinta</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Agente de resolución de DNS disponible</translation>
+<translation id="1717874160321062422">Administrado por <ph name="FIRST_MANAGER" /> y <ph name="SECOND_MANAGER" />.</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Cancelando el escaneo</translation>
 <translation id="1851218745569890714">Videoconferencias</translation>
@@ -59,6 +60,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Activar Bluetooth para buscar los dispositivos cercanos</translation>
 <translation id="2364498172489649528">Aprobado</translation>
+<translation id="2365324413026422635">No se puede realizar la prueba de la carga de la batería cuando está completa.</translation>
 <translation id="2391082728065870591">Enviar informe de comentarios</translation>
 <translation id="2418150275289244458">Abrir en la configuración</translation>
 <translation id="2446553403094072641">Exactitud del punto flotante</translation>
@@ -91,6 +93,7 @@
 <translation id="3226405216343213872">Buscando escáneres</translation>
 <translation id="3246869037381808805">Se quitarán los trabajos de impresión que tengan más de 1 día</translation>
 <translation id="3268178239013324452">Error: La tapa está abierta</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">La latencia de DNS supera significativamente el umbral permitido</translation>
 <translation id="3328783797891415197">Prueba en ejecución</translation>
 <translation id="3368922792935385530">Conectado</translation>
@@ -125,6 +128,7 @@
 <translation id="4155551848414053977">Asegúrate de que el escáner esté encendido y disponible a través de tu red o una conexión directa.</translation>
 <translation id="4170700058716978431">ERROR</translation>
 <translation id="4176463684765177261">Inhabilitado</translation>
+<translation id="4222698289790462549">Velocidad actual</translation>
 <translation id="4227825898293920515">La contraseña caduca en <ph name="TIME" /></translation>
 <translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" /> GB de <ph name="TOTAL_MEMORY" /> GB de memoria disponible.</translation>
 <translation id="4238516577297848345">No hay trabajos de impresión en curso</translation>
@@ -241,6 +245,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="6325525973963619867">Se ha producido un error.</translation>
 <translation id="636850387210749493">Registro de empresa</translation>
 <translation id="641081527798843608">Coincidencia de asunto</translation>
+<translation id="6423239382391657905">VPN abierto</translation>
 <translation id="6456394469623773452">Regular</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Administrador: <ph name="MANAGER" /></translation>

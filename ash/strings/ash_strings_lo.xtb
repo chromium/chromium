@@ -405,6 +405,7 @@
 <translation id="4421231901400348175">​ການແບ່ງປັນ​ການ​ຄວບ​ຄຸມ​ໜ້າ​ຈໍ​ຂອງ​ທ່ານ​ກັບ <ph name="HELPER_NAME" /> ຜ່ານ​ຕົວ​ຊ່ວຍ​ທາງ​ໄກ.</translation>
 <translation id="4424159417645388645">ໂຕະ 5</translation>
 <translation id="4430019312045809116">ລະດັບສຽງ</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{ການແຈ້ງເຕືອນສຳຄັນ 1 ລາຍການ}other{ການແຈ້ງເຕືອນສຳຄັນ # ລາຍການ}}</translation>
 <translation id="4450893287417543264">ຢ່າສະແດງອີກ</translation>
 <translation id="445864333228800152">ສະບາຍດີຕອນແລງ,</translation>
 <translation id="4458688154122353284">ຢຸດການບັນທຶກໜ້າຈໍ</translation>
@@ -476,6 +477,10 @@
 <translation id="4961318399572185831">ຄາສທ໌ໜ້າຈໍ</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ຊມ <ph name="MINUTES" />ນທ <ph name="SECONDS" />ວິ</translation>
 <translation id="4975771730019223894">ການຕິດປ້າຍແອັບ</translation>
+<translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
+        <ph name="NOTIFICATION_1" />,
+        <ph name="NOTIFICATION_2" />,
+        <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">ປະໂຫຍດຕໍ່ໄປ</translation>
 <translation id="5030687792513154421">ໝົດເວລາແລ້ວ</translation>
 <translation id="5033299697334913360">ຄລິກບ່ອນໃດກໍໄດ້ເພື່ອຖ່າຍຮູບແບບເຕັມຈໍ</translation>
@@ -489,6 +494,7 @@
 <translation id="5168181903108465623">ອຸປະກອນຄາສທ໌ທີ່ມີໃຫ້</translation>
 <translation id="5170568018924773124">ສະ​ແດງ​ຢູ່​ໃນ​ໂຟລ​ເດີ</translation>
 <translation id="5176318573511391780">ບັນທຶກໜ້າຈໍບາງສ່ວນ</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{ການແຈ້ງເຕືອນອື່ນໆ 1 ລາຍການ}other{ການແຈ້ງເຕືອນອື່ນໆ # ລາຍການ}}</translation>
 <translation id="5207949376430453814">ໝາຍເຄື່ອງໝາຍກຸບຂໍ້ຄວາມ</translation>
 <translation id="5208059991603368177">ເປີດ</translation>
 <translation id="5222676887888702881">ອອກຈາກລະບົບ</translation>

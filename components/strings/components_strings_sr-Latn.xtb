@@ -568,6 +568,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
           biste se uverili da proksi server funkcioniše. Ako mislite da ne
           treba da koristite proksi server:
           <ph name="PLATFORM_TEXT" /></translation>
+<translation id="317878711435188021">da zna kada aktivno koristite ovaj uređaj</translation>
 <translation id="3188393374551744535">Stanje na računu</translation>
 <translation id="3194737229810486521"><ph name="URL" /> želi da trajno skladišti podatke na uređaju</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> na: <ph name="SERVER_NAME" /></translation>
@@ -746,6 +747,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3828924085048779000">Nije dozvoljeno da polje za pristupnu frazu bude prazno.</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> je instalirao dodatke za dodatne funkcije. Dodaci imaju pristup nekima od podataka.</translation>
 <translation id="3832522519263485449">Višestruko bušenje na levoj strani</translation>
+<translation id="3835233591525155343">Korišćenje uređaja</translation>
 <translation id="385051799172605136">Nazad</translation>
 <translation id="3858027520442213535">Ažurirajte datum i vreme</translation>
 <translation id="3884278016824448484">Neusaglašeni identifikator uređaja</translation>
@@ -1040,6 +1042,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4995216769782533993">Potvrdite bezbednosni kôd da biste delili detalje kartice sa ovim sajtom</translation>
 <translation id="4995474875135717171">Izmenjeno:</translation>
 <translation id="5002932099480077015">Ako je ova opcija omogućena, Chrome će skladištiti kopiju kartice na ovom uređaju radi bržeg popunjavanja obrazaca.</translation>
+<translation id="5011561501798487822">Otkriveni jezik</translation>
 <translation id="5015510746216210676">Naziv uređaja:</translation>
 <translation id="5017554619425969104">Tekst koji ste kopirali</translation>
 <translation id="5018422839182700155">Ne možemo da otvorimo ovu stranicu</translation>
@@ -1614,6 +1617,7 @@ Dodatni detalji:
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">Komandna linija</translation>
 <translation id="7359588939039777303">Oglasi su blokirani.</translation>
+<translation id="7365849542400970216">Dozvolićete sajtu da zna kada koristite uređaj?</translation>
 <translation id="7372973238305370288">rezultat pretrage</translation>
 <translation id="7374733840632556089">Ovaj problem se javlja zbog sertifikata koji ste vi ili neko drugi instalirali na uređaju. Sertifikat se koristi za nadgledanje i presretanje mreža i Chrome ga ne smatra pouzdanim. Iako postoje pojedini opravdani razlozi za nadgledanje, na primer na školskoj ili poslovnoj mreži, Chrome želi da budete svesni da se to događa, čak i ako to ne možete da sprečite. Nadgledanje je moguće u bilo kom pregledaču ili aplikaciji koja pristupa vebu.</translation>
 <translation id="7375818412732305729">Datoteka je priložena</translation>
@@ -2032,6 +2036,7 @@ Dodatni detalji:
 <translation id="8983003182662520383">Načini plaćanja i adrese iz Google Pay-a</translation>
 <translation id="8987927404178983737">Mesec</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
+<translation id="899688752321268742"><ph name="URL" /> želi da zna kada aktivno koristite ovaj uređaj</translation>
 <translation id="8996941253935762404">Sajt koji ćete posetiti sadrži štetne programe</translation>
 <translation id="8997023839087525404">Server je prikazao sertifikat koji nije javno otkriven pomoću smernica Transparentnost sertifikata. To je obavezno za neke sertifikate da bismo se uverili da su pouzdani i da štite od napadača.</translation>
 <translation id="9001074447101275817">Proksi <ph name="DOMAIN" /> zahteva korisničko ime i lozinku.</translation>

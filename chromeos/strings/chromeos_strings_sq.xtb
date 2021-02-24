@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
 <translation id="1018656279737460067">Anuluar</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> nënprocese, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1059913517121127803">Skanimi nuk mund të nisej</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">U zbulua mur mbrojtës</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">Gabim i panjohur.</translation>
 <translation id="1204296502688602597">Vonesa e DNS-së</translation>
 <translation id="123124571410524056">Dyshohet për portal</translation>
-<translation id="1238191093934674082">VPN e hapur</translation>
 <translation id="1238612778414822719">Vonesa e HTTPS</translation>
 <translation id="1270369111467284986">U dyshua portal izolues</translation>
 <translation id="1290331692326790741">Sinjal i dobët</translation>
@@ -91,6 +91,7 @@
 <translation id="3226405216343213872">Po kërkon për skanerë</translation>
 <translation id="3246869037381808805">Printimet më të vjetra se 1 ditë do të hiqen</translation>
 <translation id="3268178239013324452">Dështoi - Kapaku i hapur</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">Vonesa e DNS-së është shumë më lart se pragu i lejueshëm</translation>
 <translation id="3328783797891415197">Testi është në ekzekutim</translation>
 <translation id="3368922792935385530">Lidhur</translation>
@@ -125,6 +126,7 @@
 <translation id="4155551848414053977">Sigurohu që skaneri të jetë i ndezur dhe i disponueshëm përmes rrjetit tënd ose një lidhjeje të drejtpërdrejtë</translation>
 <translation id="4170700058716978431">DËSHTOI</translation>
 <translation id="4176463684765177261">I çaktivizuar</translation>
+<translation id="4222698289790462549">Shpejtësia aktuale</translation>
 <translation id="4227825898293920515">Fjalëkalimi skadon për <ph name="TIME" /></translation>
 <translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" /> GB nga <ph name="TOTAL_MEMORY" /> GB të disponueshme.</translation>
 <translation id="4238516577297848345">Nuk ka printime në vazhdim</translation>
@@ -236,9 +238,11 @@
 <translation id="6191293864534840972">Serverë DNS të keqformuar</translation>
 <translation id="6223752125779001553">Nuk ofrohet asnjë skaner</translation>
 <translation id="6232017090690406397">Bateria</translation>
+<translation id="6302401976930124515">Testi "<ph name="TEST_NAME" />" është anuluar</translation>
 <translation id="6325525973963619867">Dështoi</translation>
 <translation id="636850387210749493">Regjistrimi i ndërmarrjes</translation>
 <translation id="641081527798843608">Përputhja e subjektit</translation>
+<translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">I mirë</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Menaxhuar nga <ph name="MANAGER" /></translation>

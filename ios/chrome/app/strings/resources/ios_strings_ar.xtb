@@ -174,6 +174,7 @@
 <translation id="2780046210906776326">لا تتوفر حسابات بريد إلكتروني</translation>
 <translation id="2781331604911854368">مفعّل</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2783054063075604403">تعذّر إنشاء الرابط</translation>
 <translation id="2800683595868705743">الخروج من أداة تغيير علامات التبويب</translation>
 <translation id="2815198996063984598">2- انقر على تطبيق المتصفِّح التلقائي.</translation>
 <translation id="2830972654601096923">إدارة العناوين...</translation>
@@ -467,6 +468,7 @@
 <translation id="5948291296578561264">يسمح لك ذلك بحفظ الصور في مكتبة صورك.</translation>
 <translation id="5955891643922670672">عرض النسخة بلا إنترنت</translation>
 <translation id="5957613098218939406">خيارات إضافية</translation>
+<translation id="5963939892571022323">يتعذَّر إنشاء رابط يؤدي إلى النصوص التي تم تمييزها.</translation>
 <translation id="5964480694698977962">إنشاء علامة تبويب جديدة للتصفح المتخفي.</translation>
 <translation id="5965679971710331625">تم تسجيل الدخول</translation>
 <translation id="5979837087407522202">بحث عن كلمات المرور</translation>
@@ -615,6 +617,7 @@
 <translation id="734758817008927353">خيارات حفظ البطاقة</translation>
 <translation id="7348502496356775519">إشارة مرجعية</translation>
 <translation id="7383797227493018512">قائمة القراءة</translation>
+<translation id="7398893703713203428">إنشاء رابط</translation>
 <translation id="739941347996872055">علامة التبويب السابقة</translation>
 <translation id="7400418766976504921">‏عنوان URL</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> مقالة غير مقروءة</translation>
@@ -644,6 +647,7 @@
 <translation id="766891008101699113">لتصفح الويب بخصوصية تامّة، يمكنك إضافة علامة تبويب جديدة.</translation>
 <translation id="7671141431838911305">تثبيت</translation>
 <translation id="7701040980221191251">لا يوجد</translation>
+<translation id="7741325291586284254">صفحة علامة تبويب جديدة في وضع التصفّح المتخفي</translation>
 <translation id="7765158879357617694">نقل</translation>
 <translation id="7771470029643830783">‏سيؤدي تسجيل الخروج إلى إيقاف مزامنة الإشارات المرجعية والسجلّ وكلمات المرور وبيانات Chrome الأخرى مع حسابك على Google.
 

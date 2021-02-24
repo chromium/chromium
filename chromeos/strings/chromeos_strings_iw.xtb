@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
 <translation id="1018656279737460067">בוטל</translation>
+<translation id="1047458377670401304">‏<ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> שרשורים, GHz‏ <ph name="CPU_MAX_CLOCK_SPEED" />)</translation>
 <translation id="1059913517121127803">לא ניתן היה להתחיל את הסריקה</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">זוהתה חומת אש</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">שגיאה לא ידועה.</translation>
 <translation id="1204296502688602597">‏זמן אחזור של DNS</translation>
 <translation id="123124571410524056">פורטל חשוד</translation>
-<translation id="1238191093934674082">‏VPN פתוח</translation>
 <translation id="1238612778414822719">‏זמן אחזור HTTPS</translation>
 <translation id="1270369111467284986">יש חשד לפורטל שבוי</translation>
 <translation id="1290331692326790741">אות חלש</translation>
@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">הפסיקה – הדיו נגמר</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">‏מקודד DNS נוכח</translation>
+<translation id="1717874160321062422">מנוהל על ידי <ph name="FIRST_MANAGER" /> ועל ידי <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">הסריקה מתבטלת</translation>
 <translation id="1851218745569890714">שיחת ועידה בווידאו</translation>
@@ -59,6 +60,7 @@
 <translation id="2326139988748364651">‏<ph name="RESOLUTION_VALUE" /> ‏DPI</translation>
 <translation id="2338501278241028356">‏יש להפעיל את Bluetooth כדי לאתר מכשירים קרובים</translation>
 <translation id="2364498172489649528">הילד או הילדה עברו את הבדיקה בהצלחה</translation>
+<translation id="2365324413026422635">לא ניתן לבצע את הבדיקה של טעינת הסוללה כשהסוללה טעונה במלואה</translation>
 <translation id="2391082728065870591">שליחת דוח המשוב</translation>
 <translation id="2418150275289244458">פתיחה בהגדרות</translation>
 <translation id="2446553403094072641">‏רמת הדיוק של נקודה צפה (floating-point)</translation>
@@ -91,6 +93,7 @@
 <translation id="3226405216343213872">מתבצע חיפוש אחר סורקים</translation>
 <translation id="3246869037381808805">משימות הדפסה בנות יותר מיום אחד יוסרו</translation>
 <translation id="3268178239013324452">נכשלה – דלת המדפסת פתוחה</translation>
+<translation id="3286515922899063534">GHz <ph name="CURRENT" /></translation>
 <translation id="3310640316857623290">‏זמן האחזור של ה-DNS גבוה במידה משמעותית מהסף המותר</translation>
 <translation id="3328783797891415197">הבדיקה מתבצעת</translation>
 <translation id="3368922792935385530">מחובר</translation>
@@ -102,6 +105,7 @@
 <translation id="3459509316159669723">הדפסה</translation>
 <translation id="3488065109653206955">מופעל חלקית</translation>
 <translation id="3527036260304016759">נכשלה – שגיאה לא ידועה</translation>
+<translation id="3532980081107202182">נותרו <ph name="MIN_REMAINING" /> דקות בערך</translation>
 <translation id="357889014807611375">‏Wi-Fi עם חיוב לפי שימוש בנתונים</translation>
 <translation id="3595596368722241419">סוללה מלאה</translation>
 <translation id="360565022852130722">‏רשת ה-Wi-Fi מאובטחת בפרוטוקול WEP 802.1x חלש.</translation>
@@ -125,6 +129,7 @@
 <translation id="4155551848414053977">יש לוודא שהסורק מופעל וזמין דרך הרשת או דרך חיבור ישיר</translation>
 <translation id="4170700058716978431">הבדיקה הסתיימה בכישלון</translation>
 <translation id="4176463684765177261">מושבת</translation>
+<translation id="4222698289790462549">מהירות נוכחית</translation>
 <translation id="4227825898293920515">תוקף הסיסמה יפוג בעוד <ph name="TIME" /></translation>
 <translation id="4228041325992544252">‏הנפח הזמין: GB <ph name="AVAILABLE_MEMORY" /> מתוך GB <ph name="TOTAL_MEMORY" />.</translation>
 <translation id="4238516577297848345">אין משימות הדפסה שמתבצעות כרגע</translation>
@@ -241,6 +246,7 @@
 <translation id="6325525973963619867">נכשל</translation>
 <translation id="636850387210749493">‏הרשמה ל-Enterprise</translation>
 <translation id="641081527798843608">התאמת נושא</translation>
+<translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">טוב</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">מנוהל על ידי <ph name="MANAGER" /></translation>
@@ -327,6 +333,7 @@
 <translation id="8477551185774834963">‏זמן האחזור של ה-DNS חורג מעט מהסף המותר</translation>
 <translation id="8483248364096924578">‏כתובת IP</translation>
 <translation id="8503813439785031346">שם משתמש</translation>
+<translation id="8503836310948963452">רק עוד מספר דקות…</translation>
 <translation id="8576249514688522074">לא מאותחלת</translation>
 <translation id="8620617069779373398">סטטוס נדידה</translation>
 <translation id="8675354002693747642">מפתח משותף מראש</translation>
@@ -358,6 +365,7 @@
 <translation id="9106415115617144481">מתבצעת סריקה של עמוד <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">ביטול נעילה</translation>
 <translation id="9149391708638971077">הפעלה של בדיקת זיכרון</translation>
+<translation id="9173638680043580060">נותרה פחות מדקה</translation>
 <translation id="9190063653747922532">‏L2TP/‏IPSec + מפתח משותף מראש</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">לא פעיל</translation>

@@ -56,6 +56,7 @@
 <translation id="1331212799747679585">Impossible de mettre à jour Chrome. Autres options</translation>
 <translation id="1332501820983677155">Raccourcis relatifs aux fonctionnalités Google Chrome</translation>
 <translation id="133857033449832692">Téléchargement de <ph name="LANG" /> en cours…</translation>
+<translation id="1344653310988386453">Inclure le lien vers l'élément en surbrillance</translation>
 <translation id="1347468774581902829">Gérer l'activité</translation>
 <translation id="1360432990279830238">Se déconnecter et désactiver la synchro?</translation>
 <translation id="1373696734384179344">Mémoire insuffisante pour télécharger le contenu sélectionné.</translation>
@@ -130,6 +131,7 @@
 <translation id="1960290143419248813">Les mises à jour Chrome ne sont plus prises en charge pour cette version d'Android</translation>
 <translation id="1963976881984600709">Protection standard</translation>
 <translation id="1966710179511230534">Veuillez mettre à jour votre information de connexion.</translation>
+<translation id="1973912524893600642">Garder les données</translation>
 <translation id="1974060860693918893">Options avancées</translation>
 <translation id="1984417487208496350">Aucune protection (non recommandé)</translation>
 <translation id="1984705450038014246">Synchroniser vos données Chrome</translation>
@@ -301,6 +303,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="3058498974290601450">Vous pouvez activer la synchronisation à tout moment dans les paramètres</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> favori}one{<ph name="BOOKMARKS_COUNT_MANY" /> favori}other{<ph name="BOOKMARKS_COUNT_MANY" /> favoris}}</translation>
 <translation id="3062802207422175757">Articles portant sur vos centres d'intérêt dans Chrome</translation>
+<translation id="3070005020161560471">Traduire automatiquement les pages rédigées en</translation>
 <translation id="3089395242580810162">Ouvrir dans onglet nav. privée</translation>
 <translation id="3098745985164956033">Certaines images sont envoyées à Google afin d'améliorer les descriptions pour vous</translation>
 <translation id="3114507951000454849">Actualités du jour <ph name="NEWS_ICON" /></translation>
@@ -350,10 +353,18 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="3384347053049321195">Partager une image</translation>
 <translation id="3387650086002190359">Échec du téléchargement de <ph name="FILE_NAME" /> en raison d'erreurs du système de fichiers.</translation>
 <translation id="3389286852084373014">La taille du texte est trop grande</translation>
+<translation id="3391512812407811893">Essai du bac à sable de confidentialité</translation>
 <translation id="3398320232533725830">Ouvrir le gestionnaire de favoris</translation>
 <translation id="3414952576877147120">Taille :</translation>
 <translation id="3429160811076349561">Les fonctionnalités d'essai sont désactivées</translation>
 <translation id="3443221991560634068">Actualiser la page actuelle</translation>
+<translation id="3451542610083122179">Le bac à sable de confidentialité est une initiative en cours visant à préserver le Web ouvert. Il vous aidera à vous protéger des mécanismes de suivi.
+
+Aujourd'hui, les sites Web s'appuient sur de nombreuses technologies, dont des témoins tiers, pour fournir d'importants services comme la publication d'annonces pertinentes et la mesure des performances d'un site.
+
+Le bac à sable de confidentialité préserve la vitalité du Web ouvert en créant de meilleurs moyens de fournir ces services, sans avoir de répercussions néfastes sur les sites, et en empêchant toute possibilité que vous soyez suivi sur le Web.
+
+Le bac à sable de confidentialité est toujours en cours de développement et n'est offert que dans certaines régions. Pour l'instant, les sites peuvent faire l'essai du bac à sable de confidentialité tout en continuant d'utiliser les technologies Web actuelles comme les témoins tiers. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">Vous pouvez choisir votre moteur de recherche</translation>
 <translation id="3492207499832628349">Nouv. onglet nav. privée</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /> sur le contenu suggéré</translation>
@@ -591,6 +602,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Échec de 1 téléchargement.}one{Échec de # téléchargement.}other{Échec de # téléchargements.}}</translation>
 <translation id="5170568018924773124">Afficher dans le dossier</translation>
 <translation id="5184329579814168207">Ouvrir dans Chrome</translation>
+<translation id="5191251636205085390">Découvrez les nouvelles technologies qui visent à remplacer les témoins tiers et apprenez à les utiliser.</translation>
 <translation id="5193988420012215838">Copié dans votre presse-papier</translation>
 <translation id="5199929503336119739">Profil professionnel</translation>
 <translation id="5210286577605176222">Accéder à l'onglet précédent</translation>
@@ -613,6 +625,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5355191726083956201">La protection renforcée est activée</translation>
 <translation id="5357811892247919462">Onglet reçu</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> onglet ouvert, touchez pour basculer vers un autre onglet}one{<ph name="OPEN_TABS_MANY" /> onglet ouvert, touchez pour basculer vers un autre onglet}other{<ph name="OPEN_TABS_MANY" /> onglets ouverts, touchez pour basculer vers un autre onglet}}</translation>
+<translation id="5375577065097716013">Rechercher l'image avec Lentille Google <ph name="BEGIN_NEW" />Nouv.<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Autoriser uniquement certains sites</translation>
 <translation id="5414836363063783498">Vérification...</translation>
 <translation id="5423934151118863508">Les pages les plus consultées s'affichent ici</translation>
@@ -648,6 +661,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5599941490345670218">L'Assistant Google peut effectuer des actions sur des sites Web à votre place</translation>
 <translation id="5620163320393916465">Aucun mot de passe enregistré</translation>
 <translation id="5620928963363755975">Trouvez vos fichiers et vos pages dans Téléchargements à partir du bouton Plus d'options</translation>
+<translation id="562168087174703495">Impossible de créer un lien vers l'élément en surbrillance. Partagez le lien vers la page.</translation>
 <translation id="562289928968387744">Gérer les réactions</translation>
 <translation id="5626134646977739690">Nom :</translation>
 <translation id="5628604359369369630">Non lus : accessibles hors ligne</translation>
@@ -761,6 +775,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6312687380483398334">Applications Web (mode silencieux)</translation>
 <translation id="6316139424528454185">Version Android non compatible</translation>
 <translation id="6324034347079777476">La synchronisation du système Android est désactivée</translation>
+<translation id="6324977638108296054">Impossible de créer un lien vers l'élément en surbrillance</translation>
 <translation id="6333140779060797560">Partager à l'aide de <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Chiffrement</translation>
 <translation id="6341580099087024258">Demander où enregistrer les fichiers</translation>
@@ -792,6 +807,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6477928892249167417">Ces sites semblent importants pour vous :</translation>
 <translation id="6482749332252372425">Échec du téléchargement de <ph name="FILE_NAME" /> en raison d'un manque d'espace de stockage.</translation>
 <translation id="6489610539826642779">Liste de lecture <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
+<translation id="6490496612063106490">Lien vers l'élément en surbrillance</translation>
 <translation id="6496823230996795692">Pour utiliser <ph name="APP_NAME" /> pour la première fois, veuillez vous connecter à Internet.</translation>
 <translation id="6508722015517270189">Redémarrer Google Chrome</translation>
 <translation id="6527303717912515753">Partager</translation>
@@ -990,6 +1006,7 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="784934925303690534">Intervalle de temps</translation>
 <translation id="7851858861565204677">Autres appareils</translation>
 <translation id="7857691613771368249">Demander quand enregistrer les fichiers</translation>
+<translation id="7859988229622350291">Ne jamais traduire les pages rédigées en</translation>
 <translation id="7875915731392087153">Créer un courriel</translation>
 <translation id="7876243839304621966">Tout supprimer</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Vous avez <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> page non lue}one{Vous avez <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> page non lue}other{Vous avez <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> pages non lues}}</translation>
@@ -1053,7 +1070,6 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="8218622182176210845">Gérer votre compte</translation>
 <translation id="8223642481677794647">Menu de la carte du flux</translation>
 <translation id="8224471946457685718">Télécharger des articles pour vous par connexion Wi-Fi</translation>
-<translation id="8232956427053453090">Garder les données</translation>
 <translation id="8233540874193135768">Pour numériser un code QR, utilisez un appareil doté d'un appareil photo.</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="825412236959742607">Cette page utilise trop de mémoire, Chrome a donc supprimé certains contenus.</translation>
@@ -1067,6 +1083,7 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="8310344678080805313">Onglets standard</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> et d'autres sites</translation>
 <translation id="8327155640814342956">Pour profiter d'une expérience de navigation optimale, ouvrez Chrome afin de le mettre à jour</translation>
+<translation id="834313815369870491">Ne jamais traduire les sites suivants</translation>
 <translation id="8349013245300336738">Trier par quantité de données utilisées</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> téléchargements restaurés</translation>
 <translation id="8364299278605033898">Afficher des sites Web populaires</translation>

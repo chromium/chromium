@@ -18,6 +18,7 @@
 <translation id="257708665678654955">ইয়াৰ পাছত আপুনি Google Chromeএ এই ছাইটটোৰ পৰা <ph name="LANGUAGE_NAME" /> পৃষ্ঠা অনুবাদ কৰাৰ সুবিধাটো প্ৰদান কৰাটো বিচাৰেনে?</translation>
 <translation id="2695886661449553974">Chromeএ আপডে’টৰ বাবে পৰীক্ষা কৰিব নোৱাৰিলে। পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="2732745070297234559">Chromeএ সকলো পাছৱৰ্ড পৰীক্ষা কৰিব নোৱাৰিলে। কাইলৈ পুনৰ চেষ্টা কৰক।</translation>
+<translation id="2740105938841089077">লিংক খুলিবলৈ Chrome ব্যৱহাৰ কৰক</translation>
 <translation id="2919738076569633423">আপুনি Chrome ব্যৱহাৰ কৰি <ph name="BEGIN_LINK_TOS" />সেৱাৰ চৰ্তাৱলী<ph name="END_LINK_TOS" />ত সন্মত হৈছে।</translation>
 <translation id="3030414234702425231">আপুনি যিহেতু <ph name="SIGNOUT_MANAGED_DOMAIN" />এ পৰিচালনা কৰা এটা একাউণ্টৰ পৰা ছাইন আউট কৰি আছে আপোনাৰ Chrome ডেটা এই ডিভাইচটোৰ পৰা মচা হ’ব। আপোনাৰ ডেটা নিজৰ Google একাউণ্টত থাকিব।</translation>
 <translation id="3148688391461398285">আপোনাৰ অৱস্থানৰ ভিত্তিত Chromeত উন্নত সুবিধাসমূহ লাভ কৰক।</translation>
@@ -38,7 +39,6 @@
 <translation id="417201473131094001">Chrome Canaryত সমৰ্থিত নহয়</translation>
 <translation id="424864128008805179">Chromeৰ পৰা ছাইন আউট কৰিবনে?</translation>
 <translation id="4249068189593983585">Chrome ব্যৱহাৰৰ কিটিপ। টেবৰ অধিক বিকল্প পাবলৈ আপোনাৰ স্ক্রীণৰ একেবাৰে ওপৰত অথবা তলত থকা টুলবাৰৰ টেব দেখুৱাওক বুটামটো স্পৰ্শ কৰি ধৰি ৰাখক।</translation>
-<translation id="4354293865557736921">এই ডিভাইচটোৰ পৰা আপোনাৰ Chromeৰ ডেটা মচিবনে ৰাখিব সেয়া বাছনি কৰিবনে?</translation>
 <translation id="4633328489441962921">Chromeএ আপডে’ট আছেনে নাই পৰীক্ষা কৰিব নোৱাৰে</translation>
 <translation id="4698415050768537821">Chromeএ সকলো পাছৱৰ্ড পৰীক্ষা কৰিব নোৱাৰিলে। কাইলৈ পুনৰ চেষ্টা কৰক অথবা <ph name="BEGIN_LINK" />আপোনাৰ Google একাউণ্টত পাছৱর্ডসমূহ পৰীক্ষা কৰক।<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Chrome বিটাত সমৰ্থিত নহয়</translation>
@@ -52,6 +52,7 @@
 <translation id="5854621639439811139">Chrome ব্যৱহাৰৰ কীটিপ। Back, Forward আৰু Search দৰে কিছুমান বুটাম এতিয়া আপোনাৰ স্ক্ৰীণত আছে।</translation>
 <translation id="6036420186814142909">আপোনাক Google Chromeত থকা সুবিধাসমূহে নিজৰ ইণ্টাৰনেট ডেটা পৰিচালনা কৰাত আৰু কিমান ক্ষিপ্ৰতাৰে আপুনি ৱেবপৃষ্ঠাসমূহ ল'ড কৰিব পাৰে সেই ক্ষেত্ৰত সহায় কৰিব।
 <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
+<translation id="6181930887571472871">Chromeলৈ সলনি কৰক</translation>
 <translation id="6238746320622508509">Chromeক আপোনাৰ ইনক’গনিট’ টেবসমূহ লক কৰিবলৈ দিয়ক।</translation>
 <translation id="6573431926118603307">আপুনি নিজৰ অন্য ডিভাইচসমূহৰ Chromeত খোলা টেবসমূহ ইয়াত প্ৰদর্শিত হ'ব।</translation>
 <translation id="6600954340915313787">Chromeলৈ প্ৰতিলিপি কৰা হ’ল</translation>
@@ -59,6 +60,7 @@
 <translation id="6648150602980899529">আপুনি <ph name="DOMAIN" />এ পৰিচালনা কৰা এটা একাউণ্টৰ জৰিয়তে ছাইন ইন কৰিছে আৰু সেইটোৰ প্ৰশাসকে আপোনাৰ Chrome ডেটা নিয়ন্ত্ৰণ কৰিবলৈ সুবিধা দিছে। আপোনাৰ ডেটা এই একাউণ্টটোৰ সৈতে স্থায়ীভাৱে সংযুক্ত হৈ থাকিব। Chromeৰ পৰা ছাইন আউট কৰিলে আপোনাৰ ডেটা মচা যাব কিন্ত সেইবোৰ আপোনাৰ Google একাউণ্টত জমা হৈয়ে থাকিব।</translation>
 <translation id="6676840375528380067">এই ডিভাইচটোৰ পৰা Chrome ডেটা মচিবনে?</translation>
 <translation id="6822673484890854830">Chromeএ সকলো পাছৱৰ্ড পৰীক্ষা কৰিব নোৱাৰিলে। পাছত পুনৰ চেষ্টা কৰক।</translation>
+<translation id="6964931465519938134">এতিয়া আপুনি বাৰ্তা, নথি আৰু অন্য এপ্‌সমূহত থকা লিংকত টিপিলে যিকোনো সময়তে Chrome ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="7124339256045485976">Chrome আপ টু ডে’ট কৰি ৰাখক</translation>
 <translation id="7161390184744336561">Google Chrome পুৰণি হৈছে</translation>
 <translation id="7165736900384873061">Google Chrome QR স্কেনাৰ ব্যৱহাৰ কৰিবলৈ আৰম্ভ কৰক</translation>
@@ -68,6 +70,7 @@
 <translation id="7265369419224458312">আপোনাৰ কম্পিউটাৰত খুলি ৰখা টেববোৰ ইয়াত এক্সেছ কৰক। আপোনাৰ কম্পিউটাৰত Chrome খোলক আৰু মেনুলৈ গৈ “Chromeত ছাইন ইন কৰক…” বাছনি কৰক</translation>
 <translation id="7272930098487145294">প্ৰতিচ্ছবিসমূহ ছেভ কৰিবলৈ Chromeক আপোনাৰ ফট’সমূহত যোগ দিয়াৰ অনুমতি দিবলৈ ছেটিংসমূহত টিপক</translation>
 <translation id="7400722733683201933">Google Chromeৰ বিষয়ে</translation>
+<translation id="7501046334262221972">Chromeক আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰ কৰিবলৈ ছেটিং খোলক। ডিফ’ল্ট ব্ৰাউজাৰ এপত টিপক আৰু তাৰ পাছত Chrome বাছনি কৰক।</translation>
 <translation id="756809126120519699">মচা Chrome ডেটা</translation>
 <translation id="7626032353295482388">Chromeলৈ স্বাগতম</translation>
 <translation id="7662994914830945754">আপুনি Chrome ব্যৱহাৰ কৰা সকলো ডিভাইচৰ পৰা নিজৰ টেবসমূহ চাবলৈ ছাইন ইন কৰক আৰু ছিংক অন কৰক</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
 <translation id="1018656279737460067">रद्द झाले</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> थ्रेड, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1059913517121127803">स्कॅनिंग सुरू करता आले नाही</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">फायरवॉल डिटेक्ट केली</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">अज्ञात एरर.</translation>
 <translation id="1204296502688602597">DNS लेटन्सी</translation>
 <translation id="123124571410524056">पोर्टल असल्याची शक्यता आहे</translation>
-<translation id="1238191093934674082">VPN उघडा</translation>
 <translation id="1238612778414822719">HTTPS लेटन्सी</translation>
 <translation id="1270369111467284986">संशयास्पद कॅप्टिव्ह पोर्टल</translation>
 <translation id="1290331692326790741">खराब सिग्नल</translation>
@@ -91,6 +91,7 @@
 <translation id="3226405216343213872">स्कॅनर शोधत आहे</translation>
 <translation id="3246869037381808805">एक दिवसापेक्षा जुने प्रिंट जॉब काढून टाकले जातील</translation>
 <translation id="3268178239013324452">अयशस्वी झाले - दार उघडे आहे</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3310640316857623290">DNS लेटन्सी अनुमती असलेल्या सीमेपेक्षा लक्षणीयरीत्या जास्त आहे</translation>
 <translation id="3328783797891415197">चाचणी रन होत आहे</translation>
 <translation id="3368922792935385530">कनेक्ट केले</translation>
@@ -125,6 +126,7 @@
 <translation id="4155551848414053977">तुमच्या नेटवर्क किंवा थेट कनेक्शनद्वारे स्कॅनर सुरू आणि उपलब्ध असल्याची खात्री करा</translation>
 <translation id="4170700058716978431">करता आली नाही</translation>
 <translation id="4176463684765177261">अक्षम केले</translation>
+<translation id="4222698289790462549">सध्याचा वेग</translation>
 <translation id="4227825898293920515"><ph name="TIME" /> मध्ये पासवर्ड एक्स्पायर होईल</translation>
 <translation id="4228041325992544252"><ph name="TOTAL_MEMORY" /> GB पैकी <ph name="AVAILABLE_MEMORY" /> उपलब्ध आहे.</translation>
 <translation id="4238516577297848345">कोणतेही प्रिंट जॉब प्रगतीपथावर नाहीत</translation>
@@ -241,6 +243,7 @@
 <translation id="6325525973963619867">अयशस्वी</translation>
 <translation id="636850387210749493">Enterprise नावनोंदणी</translation>
 <translation id="641081527798843608">जुळणारा विषय</translation>
+<translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">फाइन</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> द्वारे व्यवस्थापित</translation>

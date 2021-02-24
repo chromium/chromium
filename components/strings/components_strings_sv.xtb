@@ -568,6 +568,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
       kontrollera att proxyservern fungerar. Om du inte tror att du ska
       använda en proxyserver:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="317878711435188021">Veta när du använder enheten aktivt</translation>
 <translation id="3188393374551744535">Kontosaldo</translation>
 <translation id="3194737229810486521"><ph name="URL" /> vill lagra data permanent på din enhet</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> på <ph name="SERVER_NAME" /></translation>
@@ -746,6 +747,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="3828924085048779000">Lösenfrasen får inte vara tom.</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> har installerat tillägg för fler funktioner. Tilläggen har åtkomst till en del av din data.</translation>
 <translation id="3832522519263485449">Flera hål till vänster</translation>
+<translation id="3835233591525155343">Enhetsanvändning</translation>
 <translation id="385051799172605136">Föregående</translation>
 <translation id="3858027520442213535">Uppdatera datum och tid</translation>
 <translation id="3884278016824448484">Motstridiga enhetsidentifierare</translation>
@@ -1040,6 +1042,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="4995216769782533993">Ange säkerhetskoden om du vill dela dina kortuppgifter med den här webbplatsen</translation>
 <translation id="4995474875135717171">Ändrades:</translation>
 <translation id="5002932099480077015">Om alternativet är aktiverat sparar Chrome en kopia av kortet på enheten så att det går snabbare att fylla i formulär.</translation>
+<translation id="5011561501798487822">upptäckt språk</translation>
 <translation id="5015510746216210676">Datornamn:</translation>
 <translation id="5017554619425969104">Texten som du kopierade</translation>
 <translation id="5018422839182700155">Det går inte att öppna den här sidan</translation>
@@ -1615,6 +1618,7 @@ Mer information.
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">Kommandorad</translation>
 <translation id="7359588939039777303">Annonser blockeras.</translation>
+<translation id="7365849542400970216">Vill du låta webbplatsen veta om du använder enheten aktivt?</translation>
 <translation id="7372973238305370288">sökresultat</translation>
 <translation id="7374733840632556089">Det här problemet uppstår på grund av ett certifikat som du eller någon annan har installerat på enheten. Certifikatet är känt för att användas för att övervaka och fånga upp nätverkstrafik och är inte betrott i Chrome. Även om det kan vara berättigat med övervakning i vissa fall, t.ex. i ett skol- eller företagsnätverk, vill vi göra dig medveten om vad som pågår även om du inte kan göra något åt det. Alla webbläsare och appar som använder internet omfattas av övervakningen.</translation>
 <translation id="7375818412732305729">Fil bifogas</translation>
@@ -2033,6 +2037,7 @@ Mer information:
 <translation id="8983003182662520383">Betalningsmetoder och adresser som används med Google Pay</translation>
 <translation id="8987927404178983737">Månad</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
+<translation id="899688752321268742"><ph name="URL" /> vill veta när du använder enheten aktivt</translation>
 <translation id="8996941253935762404">Webbplatsen som öppnas innehåller skadliga program</translation>
 <translation id="8997023839087525404">Servern visade ett certifikat som inte lämnats ut via principen Certifikattransparens. Detta är ett krav för vissa certifikat för att säkerställa att de är pålitliga och skyddar mot hackare.</translation>
 <translation id="9001074447101275817">Proxyservern <ph name="DOMAIN" /> kräver användarnamn och lösenord.</translation>

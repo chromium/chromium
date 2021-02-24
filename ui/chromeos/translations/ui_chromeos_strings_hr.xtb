@@ -93,6 +93,7 @@
 <translation id="1942765061641586207">Razlučivost slike</translation>
 <translation id="1943097386230153518">Instaliraj novu uslugu</translation>
 <translation id="1972984168337863910">Proširi ploče povratnih informacija o datotekama</translation>
+<translation id="1984456723671657197">Ta vrsta datoteke nije podržana. <ph name="BEGIN_LINK_HELP" />Saznajte više<ph name="END_LINK_HELP" /> o otvaranju datoteka u OS-u Chrome.</translation>
 <translation id="1995337122023280937">Otvorite lokaciju datoteke</translation>
 <translation id="2001796770603320721">Upravljaj na Disku</translation>
 <translation id="2009067268969781306">Formatiranjem diska izbrisat će se svi podaci koji su na njemu pohranjeni. Tu radnju nije moguće poništiti.</translation>
@@ -331,7 +332,6 @@
 <translation id="4706042980341760088">tamilski s tipkovnicom pisaćeg stroja</translation>
 <translation id="4711094779914110278">Turski</translation>
 <translation id="4712283082407695269">Otvara se dokument "<ph name="PATH" />"</translation>
-<translation id="4713544552769165154">Ova datoteka predviđena je za računalo koje upotrebljava Macintosh softver. Nije kompatibilna s vašim uređajem koji radi na Chrome OS-u. Potražite odgovarajuću zamjensku aplikaciju u <ph name="BEGIN_LINK" />Chrome web-trgovini<ph name="END_LINK" />.<ph name="BEGIN_LINK_HELP" />Saznajte više<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">Izrađene su sigurnosne kopije fotografija (ukupno <ph name="FILE_COUNT" />)</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4732760563705710320">Nažalost, vaš uređaj za emitiranje ne podržava ovaj videozapis.</translation>
@@ -465,8 +465,6 @@
 <translation id="5833610766403489739">Datoteka nije pronađena. Provjerite postavku lokacije preuzimanja i pokušajte ponovo.</translation>
 <translation id="5838451609423551646">Uklonjeni su svi unosi iz odabira.</translation>
 <translation id="5838825566232597749">Američka međunarodna Workman</translation>
-<translation id="5850516540536751549">Ta vrsta datoteke nije podržana. Posjetite <ph name="BEGIN_LINK" />Chrome web-trgovinu<ph name="END_LINK" /> da biste pronašli aplikaciju koja može otvoriti tu vrstu datoteke.
-    <ph name="BEGIN_LINK_HELP" />Saznajte više<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Ovdje nema ničega...</translation>
 <translation id="5911887972742538906">Došlo je do pogreške tijekom instalacije vaše Linux aplikacije.</translation>
 <translation id="5912396950572065471">Format</translation>
@@ -670,13 +668,13 @@
 <translation id="7972920761225148017">francuski (Švicarska)</translation>
 <translation id="7980421588063892270">engleski (SAD) s Colemak tipkovnicom</translation>
 <translation id="7982283708762922719">Visina</translation>
+<translation id="79907182588096956">Ta je datoteka predviđena za računalo sa softverom Windows. Nije kompatibilna s uređajem na kojem se izvodi OS Chrome. <ph name="BEGIN_LINK_HELP" />Saznajte više<ph name="END_LINK_HELP" /> o otvaranju datoteka u OS-u Chrome.</translation>
 <translation id="8008366997883261463">Jack Russell terijer</translation>
 <translation id="8028993641010258682">Veličina</translation>
 <translation id="803771048473350947">Datoteka</translation>
 <translation id="8038111231936746805">(zadano)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> audiozapis</translation>
 <translation id="8045462269890919536">Rumunjski</translation>
-<translation id="8052887694493382350">Ova je datoteka predviđena za računalo sa softverom Windows. Nije kompatibilna s uređajem na kojem se izvodi Chrome OS. <ph name="BEGIN_LINK_HELP" />Saznajte više<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Sva uređivanja spremit će se u mapu <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Ponovi</translation>
 <translation id="8106045200081704138">Dijeljeno sa mnom</translation>
@@ -750,6 +748,7 @@
 <translation id="8900820606136623064">Mađarski</translation>
 <translation id="8919081441417203123">Danski</translation>
 <translation id="8965697826696209160">Nema dovoljno prostora.</translation>
+<translation id="8970501467542182729">Ta je datoteka predviđena za računalo koje upotrebljava Macintosh softver. Nije kompatibilna s uređajem na kojem se izvodi OS Chrome. <ph name="BEGIN_LINK_HELP" />Saznajte više<ph name="END_LINK_HELP" /> o otvaranju datoteka u OS-u Chrome.</translation>
 <translation id="8997962250644902079">kineski (tradicionalni) pinyin</translation>
 <translation id="9017798300203431059">ruska (fonetska)</translation>
 <translation id="9034924485347205037">Linux datoteke</translation>

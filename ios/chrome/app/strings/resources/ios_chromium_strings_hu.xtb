@@ -4,6 +4,7 @@
 <translation id="102360288709523007">Használati statisztikák és hibajelentések küldésével segíthet a Chromium fejlesztésében.</translation>
 <translation id="1185134272377778587">A Chromium névjegye</translation>
 <translation id="1257458525759135959">A képek mentéséhez koppintson a Beállítások lehetőségre, hogy a Chromium hozzáadhassa őket a fotóihoz.</translation>
+<translation id="1289216811211435351">Váltás Chromiumra</translation>
 <translation id="1361748954329991663">A Chromium elavult. Ha nem áll rendelkezésre frissítés az <ph name="BEGIN_LINK" />App Store-ban<ph name="END_LINK" />, akkor lehet, hogy az eszköz már nem támogatja a Chromium újabb verzióit.</translation>
 <translation id="1431818719585918472">Az inkognitó lapok zárolásának engedélyezése a Chromium számára.</translation>
 <translation id="1472013873724362412">Fiókja nem működik a Chromium rendszeren. Lépjen kapcsolatba domainrendszergazdájával, vagy használjon normál Google-fiókot a bejelentkezéshez.</translation>
@@ -34,6 +35,7 @@
 <translation id="4099085513035183040">A Chromium bétaverziója nem támogatja</translation>
 <translation id="4166206055865952171">A Chromium beállítása alapértelmezett böngészőként</translation>
 <translation id="4555020257205549924">Ha a funkció be van kapcsolva, a Chromium felajánlja a más nyelveken írt oldalak lefordítását a Google Fordító segítségével. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
+<translation id="4585809515399340748">Mostantól bármikor használhatja a Chromiumot, amikor üzenetekben, dokumentumokban és más alkalmazásokban lévő linkekre koppint.</translation>
 <translation id="4681781466797808448">Kapcsolja be a Chromium szkennerét</translation>
 <translation id="4787850887676698916">A más eszközökön futó Chromium böngészőben megnyitott lapok itt jelennek meg.</translation>
 <translation id="4828317641996116749">A Chromium nem tudta ellenőrizni az összes jelszót. Próbálja újra később.</translation>
@@ -42,9 +44,9 @@
 <translation id="5224391634244552924">Nincsenek mentett jelszavak. A Chromium képes a jelszavak ellenőrzésére, ha Ön elmenti őket.</translation>
 <translation id="5308226104666789935">A Chromium nem tud frissítéseket keresni</translation>
 <translation id="5521125884468363740">Jelentkezzen be, és kapcsolja be a szinkronizálást, hogy bárhol hozzáférhessen a lapjaihoz, ahol a Chromiumot használja.</translation>
-<translation id="5544795779875591523">Döntse el, hogy törli-e a Chromium adatait erről az eszközről, vagy megtartja őket.</translation>
 <translation id="5573014823074921752">Tipp a Chromium használatához. A további lapbeállításokhoz érintse meg és tartsa lenyomva az eszköztárban lévő Lapok megjelenítése gombot, amely a képernyő alsó vagy felső részén található.</translation>
 <translation id="5700709190537129682">A Chromium nem tudja ellenőrizni a jelszavakat</translation>
+<translation id="5742135483959137648">A Chromium használata linkek megnyitására</translation>
 <translation id="5777187867430702742">A Chromium oldala</translation>
 <translation id="5862307444128926510">Üdvözli a Chromium!</translation>
 <translation id="5945387852661427312">Egy <ph name="DOMAIN" /> által felügyelt fiókkal jelentkezik be, és engedélyezi az adminisztrátor számára a Chromium-adatok kezelését. Adatai állandó jelleggel ehhez a fiókhoz lesznek társítva. A Chromiumból való kijelentkezéssel törli adatait erről az eszközről, de azok továbbra is megmaradnak Google-fiókjában.</translation>
@@ -63,6 +65,7 @@
 <translation id="7208566199746267865">A Chromium időt takarít meg Önnek azzal, hogy fiókjait az internetre viszi. A beállításokban tud fiókokat hozzáadni vagy eltávolítani.</translation>
 <translation id="725427773388857052">A Chromium segíthet az adatvédelmi incidensek, a nem biztonságos webhelyek és egyebek elleni védekezésben.</translation>
 <translation id="7269362888766543920">Bizonyos bővítmények a Chromium összeomlását eredményezik. Próbálja meg eltávolítani őket.</translation>
+<translation id="7313655110045230863">Ha a Chromiumot szeretné beállítani alapértelmezett böngészőként, nyissa meg a Beállítások menüt. Koppintson az Alapértelmezett böngészőalkalmazás lehetőségre, és válassza ki a Chromiumot.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">A kiválasztott adatokat eltávolítottuk a Chromiumból és a szinkronizált eszközökről. Előfordulhat, hogy Google-fiókjában (a history.google.com címen) még szerepelnek a böngészési előzmények egyéb formái, így például a keresések és egyéb tevékenységek más Google-szolgáltatásokból.</translation>
 <translation id="7400689562045506105">A Chromium mindenhol használható</translation>

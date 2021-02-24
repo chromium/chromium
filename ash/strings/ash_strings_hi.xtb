@@ -406,6 +406,7 @@
 <translation id="4421231901400348175">आपकी स्‍क्रीन का नियंत्रण दूरस्‍थ सहायक के द्वारा <ph name="HELPER_NAME" /> से शेयर किया जा रहा है.</translation>
 <translation id="4424159417645388645">डेस्क 5</translation>
 <translation id="4430019312045809116">मात्रा</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 ज़रूरी सूचना}one{# ज़रूरी सूचना}other{# ज़रूरी सूचनाएं}}</translation>
 <translation id="4450893287417543264">फिर से न दिखाएं</translation>
 <translation id="445864333228800152">गुड ईवनिंग,</translation>
 <translation id="4458688154122353284">स्क्रीन को रिकॉर्ड करना बंद करें</translation>
@@ -477,6 +478,10 @@
 <translation id="4961318399572185831">स्‍क्रीन कास्‍ट करें</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />घं॰ <ph name="MINUTES" />मि॰ <ph name="SECONDS" />से॰</translation>
 <translation id="4975771730019223894">ऐप बैजिंग</translation>
+<translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
+        <ph name="NOTIFICATION_1" />,
+        <ph name="NOTIFICATION_2" />,
+        <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">अगले वाक्य पर जाएं</translation>
 <translation id="5030687792513154421">समय पूरा हो गया</translation>
 <translation id="5033299697334913360">फ़ुल स्क्रीन कैप्चर करने के लिए कहीं पर भी क्लिक करें</translation>
@@ -490,6 +495,7 @@
 <translation id="5168181903108465623">कास्ट डिवाइस उपलब्ध हैं</translation>
 <translation id="5170568018924773124">फ़ोल्डर में दिखाएं</translation>
 <translation id="5176318573511391780">स्क्रीन के कुछ हिस्से को रिकॉर्ड करें</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 अन्य सूचना}one{# अन्य सूचना}other{# अन्य सूचनाएं}}</translation>
 <translation id="5207949376430453814">लेख कैरेट हाइलाइट करें</translation>
 <translation id="5208059991603368177">चालू करें</translation>
 <translation id="5222676887888702881">साइन आउट करें</translation>

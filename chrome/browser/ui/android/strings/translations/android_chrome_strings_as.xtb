@@ -130,6 +130,7 @@
 <translation id="1960290143419248813">Androidৰ এই সংস্কৰণটোত Chrome আপডে’টসমূহ আৰু নচলে</translation>
 <translation id="1963976881984600709">মানক সুৰক্ষা</translation>
 <translation id="1966710179511230534">অনুগ্ৰহ কৰি আপোনাৰ ছাইন ইনৰ সবিশেষ আপডে'ট কৰক।</translation>
+<translation id="1973912524893600642">ডেটাখিনি ৰাখক</translation>
 <translation id="1974060860693918893">উন্নত</translation>
 <translation id="1984417487208496350">কোনো সুৰক্ষা নাই (চুপাৰিছ কৰা নহয়)</translation>
 <translation id="1984705450038014246">আপোনাৰ Chrome ডেটা ছিংক কৰক</translation>
@@ -301,6 +302,7 @@
 <translation id="3058498974290601450">আপুনি ছেটিংসমূহ-লৈ গৈ যিকোনো সময়তে ছিংক অন কৰিব পাৰে</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" />টা বুকমাৰ্ক}one{<ph name="BOOKMARKS_COUNT_MANY" />টা বুকমাৰ্ক}other{<ph name="BOOKMARKS_COUNT_MANY" />টা বুকমাৰ্ক}}</translation>
 <translation id="3062802207422175757">Chromeত আপোনাৰ আগ্ৰহৰ বিষয়বস্তু সম্পৰ্কীয় প্ৰবন্ধসমূহ</translation>
+<translation id="3070005020161560471">স্বয়ংক্ৰিয়ভাৱে অনুবাদ কৰিবলগীয়া</translation>
 <translation id="3089395242580810162">ইনক'গনিট' টেবত খোলক</translation>
 <translation id="3098745985164956033">আপোনাৰ বাবে বিৱৰণ উন্নত কৰিবলৈ Googleলৈ কিছুমান প্ৰতিচ্ছবি পঠিওৱা হয়</translation>
 <translation id="3114507951000454849">আজিৰ বাতৰি পঢ়ক <ph name="NEWS_ICON" /></translation>
@@ -350,10 +352,18 @@
 <translation id="3384347053049321195">প্ৰতিচ্ছবি শ্বেয়াৰ কৰক</translation>
 <translation id="3387650086002190359">ফাইল ছিষ্টেম সম্পর্কীয় আসোঁৱাহৰ বাবে <ph name="FILE_NAME" /> ডাউনল’ড কৰিব পৰা নগ’ল।</translation>
 <translation id="3389286852084373014">পাঠখিনি যথেষ্ট দীঘল</translation>
+<translation id="3391512812407811893">গোপনীয়তা বিষয়ক ছেণ্ডবক্সৰ ট্ৰায়েল</translation>
 <translation id="3398320232533725830">বুকমাৰ্ক পৰিচালক খোলক</translation>
 <translation id="3414952576877147120">আকাৰ:</translation>
 <translation id="3429160811076349561">ট্ৰায়েলৰ সুবিধা অফ আছে</translation>
 <translation id="3443221991560634068">বর্তমানৰ পৃষ্ঠাটো পুনৰ ল’ড কৰক</translation>
+<translation id="3451542610083122179">গোপনীয়তা বিষয়ক ছেণ্ডবক্স হৈছে মুক্ত ৱেবক সুৰক্ষিত কৰিবলৈ সম্প্ৰতি চলি থকা এটা পদক্ষেপ, যিটোৱে ট্ৰেক কৰাৰ উপায়সমূহৰ বিৰুদ্ধে আপোনাক সুৰক্ষা প্ৰদান কৰাত সহায় কৰে।
+
+আজিকালি ৱেবছাইটসমূহে প্ৰাসংগিক বিজ্ঞাপন দেখুওৱা আৰু কোনো ছাইটৰ পাৰদৰ্শিতাৰ জোখ-মাখ কৰাৰ দৰে গুৰুত্বপূৰ্ণ সেৱাৰ বাবে তৃতীয় পক্ষৰ কুকিৰ দৰে বহুতো প্ৰযুক্তিৰ ওপৰত নিৰ্ভৰ কৰে।
+
+গোপনীয়তা বিষয়ক ছেণ্ডবক্সে ছাইটৰ কাৰ্যকাৰিতাত প্ৰভাৱ নেপেলোৱাকৈ আৰু আপোনাক সমগ্ৰ ৱেব জুৰি গোপনে ট্ৰেক কৰাৰ পৰা সুৰক্ষিত কৰি এই সেৱাসমূহ প্ৰদান কৰাৰ অধিক ভাল উপায় সৃষ্টি কৰাৰ যোগেদি মুক্ত ৱেবৰ গুৰুত্ব অক্ষুণ্ণ ৰাখে।
+
+গোপনীয়তা বিষয়ক ছেণ্ডবক্সৰ এতিয়াও সক্ৰিয়ভাৱে বিকাশ কৰি থকা হৈছে আৰু এই সুবিধাটো বাছনিকৃত কিছুমান অঞ্চলত উপলব্ধ। সদ্যহতে, ছাইটসমূহে তৃতীয় পক্ষৰ কুকিৰ দৰে বৰ্তমানৰ ৱেব প্ৰযুক্তিসমূহ ব্যৱহাৰ কৰি থাকিও গোপনীয়তা বিষয়ক ছেণ্ডবক্স ব্যৱহাৰ কৰি চাব পাৰে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">আপুনি নিজৰ সন্ধান ইঞ্জিন বাছনি কৰিব পাৰে</translation>
 <translation id="3492207499832628349">নতুন ইনক’গনিট টেব</translation>
 <translation id="3493531032208478708">পৰামৰ্শ দিয়া সমলৰ বিষয়ে <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
@@ -591,6 +601,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{১টা ডাউনল’ড কৰিব পৰা নগ’ল।}one{#টা ডাউনল’ড কৰিব পৰা নগ’ল।}other{#টা ডাউনল’ড কৰিব পৰা নগ’ল।}}</translation>
 <translation id="5170568018924773124">ফ’ল্ডাৰত দেখুৱাওক</translation>
 <translation id="5184329579814168207">Chromeত খোলক</translation>
+<translation id="5191251636205085390">তৃতীয় পক্ষৰ কুকিৰ স্থান ল'বলৈ বিচৰা নতুন প্ৰযুক্তিৰ বিষয়ে জানক আৰু সেইবোৰ নিয়ন্ত্ৰণ কৰক</translation>
 <translation id="5193988420012215838">আপোনাৰ ক্লিপব'ৰ্ডলৈ প্ৰতিলিপি কৰা হৈছে</translation>
 <translation id="5199929503336119739">কর্মস্থানৰ প্ৰ'ফাইল</translation>
 <translation id="5210286577605176222">পূর্বৱর্তী টেবলৈ যাওক</translation>
@@ -613,6 +624,7 @@
 <translation id="5355191726083956201">বৰ্ধিত সুৰক্ষা অন আছে</translation>
 <translation id="5357811892247919462">টেব পাইছে</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> টেব খোলা আছে, এটা টেবৰ পৰা আনটো টেবলৈ যাবলৈ টিপক}one{<ph name="OPEN_TABS_MANY" /> টেব খোলা আছে, এটা টেবৰ পৰা আনটো টেবলৈ যাবলৈ টিপক}other{<ph name="OPEN_TABS_MANY" /> টেব খোলা আছে, এটা টেবৰ পৰা আনটো টেবলৈ যাবলৈ টিপক}}</translation>
+<translation id="5375577065097716013">Google Lensৰে প্ৰতিচ্ছবি সন্ধান কৰক <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">কেৱল কেইটামান ছাইটকহে অনুমতি দিয়ক</translation>
 <translation id="5414836363063783498">সত্যাপন কৰি থকা হৈছে…</translation>
 <translation id="5423934151118863508">আপুনি সৰ্বাধিক চোৱা ছাইটবোৰ ইয়াত দেখা যাব।</translation>
@@ -989,6 +1001,7 @@
 <translation id="784934925303690534">সময় অৱধি</translation>
 <translation id="7851858861565204677">অন্য ডিভাইচ</translation>
 <translation id="7857691613771368249">ফাইল কেতিয়া ছেভ কৰিব লাগে সোধক</translation>
+<translation id="7859988229622350291">কেতিয়াও অনুবাদ কৰিব নলগীয়া</translation>
 <translation id="7875915731392087153">ইমেইল সৃষ্টি কৰক</translation>
 <translation id="7876243839304621966">সকলো আঁতৰাওক</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{আপোনাৰ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> খন নপঢ়া পৃষ্ঠা আছে}one{আপোনাৰ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> খন নপঢ়া পৃষ্ঠা আছে}other{আপোনাৰ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> খন নপঢ়া পৃষ্ঠা আছে}}</translation>
@@ -1052,7 +1065,6 @@
 <translation id="8218622182176210845">আপোনাৰ একাউণ্টটো পৰিচালনা কৰক</translation>
 <translation id="8223642481677794647">ফীড কাৰ্ড মেনু</translation>
 <translation id="8224471946457685718">আপোনাৰ ৱাই-ফাইৰ বাবে প্ৰবন্ধসমূহ ডাউনল'ড কৰক</translation>
-<translation id="8232956427053453090">ডেটাখিনি ৰাখক</translation>
 <translation id="8233540874193135768">কোনো কিউআৰ ক’ড স্কেন কৰিবলৈ, এটা কেমেৰা থকা ডিভাইচ ব্যৱহাৰ কৰক।</translation>
 <translation id="8250920743982581267">নথিপত্রসমূহ</translation>
 <translation id="825412236959742607">এই পৃষ্ঠাটোৱে বহুত বেছি মেম’ৰি খৰচ কৰে, সেয়েহে Chromeএ কিছুমান সমল আঁতৰাই পেলাইছে৷</translation>
@@ -1066,6 +1078,7 @@
 <translation id="8310344678080805313">মান্য টেব</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> আৰু অধিক ছাইট</translation>
 <translation id="8327155640814342956">সকলোতকৈ ভালকৈ ব্ৰাউজিং কৰাৰ অভিজ্ঞতা পাবলৈ Chrome আপডে'ট কৰক</translation>
+<translation id="834313815369870491">কেতিয়াও অনুবাদ কৰিব নলগীয়া ছাইট</translation>
 <translation id="8349013245300336738">ব্যৱহাৰ কৰা ডেটাৰ পৰিমাণ অনুসৰি সজাওক</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> টা ডাউনল’ড পুনঃস্থাপন কৰা হৈছে</translation>
 <translation id="8364299278605033898">জনপ্ৰিয় ৱেবছাইটসমূহ চাওক</translation>

@@ -89,7 +89,7 @@
 <translation id="1546370775711804143">نوار پیمایش</translation>
 <translation id="1551572888042734032">تابستان</translation>
 <translation id="1555130319947370107">آبی</translation>
-<translation id="1559739829547075274">پیمایش به عقب</translation>
+<translation id="1559739829547075274">پیمایش به‌عقب</translation>
 <translation id="1565432156062359693">فهرست بعدی وجود ندارد</translation>
 <translation id="1571643229714746283">‏ChromeVox آماده است</translation>
 <translation id="1594072653727561613">mnu</translation>
@@ -150,6 +150,7 @@
 <translation id="2045055672832940894">کنترل قبلی وجود ندارد</translation>
 <translation id="2045606329038304310">کنترل فیلد فرم</translation>
 <translation id="2063539687800151747">نقل‌قول آغازین</translation>
+<translation id="2074531330963286860">کنش‌هایی دردسترس است. برای مشاهده آن‌ها، «جستجو+نقطه» را فشار دهید</translation>
 <translation id="2086961585857038472">کلمه بعدی</translation>
 <translation id="2087981446621639008">جزئیات فهرست شرح</translation>
 <translation id="2089387485033699258">fa</translation>
@@ -286,7 +287,7 @@
 <translation id="307516670110542567">راهنمای سریع</translation>
 <translation id="3078345202707391975">عنوان بعدی سطح ۲</translation>
 <translation id="3078740164268491126">جدول</translation>
-<translation id="3082249673510793544">پیمایش به عقب</translation>
+<translation id="3082249673510793544">پیمایش به‌عقب</translation>
 <translation id="3084806535845658316">فاقد بازگویی تایپ</translation>
 <translation id="3086746722712840547">نت</translation>
 <translation id="3090227230165225418">اعلام اعلان‌های بارگیری</translation>
@@ -473,7 +474,7 @@
 <translation id="4372705107434148843">توقف گفتار</translation>
 <translation id="4376316291247992553">مشاهده گرافیک به‌صورت خط بریل</translation>
 <translation id="437809255587011096">اعلام سبک نوشتار</translation>
-<translation id="4378308539633073595">پیمایش به جلو</translation>
+<translation id="4378308539633073595">پیمایش به‌جلو</translation>
 <translation id="4384583879834880242">پرسش و پاسخ</translation>
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">آبی آسمانی پررنگ</translation>
@@ -521,7 +522,7 @@
 <translation id="4804818685124855865">قطع اتصال</translation>
 <translation id="481165870889056555">اعلام عنوان صفحه کنونی</translation>
 <translation id="4815668758102003883">فیروزه‌ای کدر</translation>
-<translation id="4826415162591436065">پیمایش به جلو</translation>
+<translation id="4826415162591436065">پیمایش به‌جلو</translation>
 <translation id="4827410568042294688">انتخاب لغو شد</translation>
 <translation id="4838490795649708173">ضربه با چهار انگشت</translation>
 <translation id="4839925464551908214">رفتن به ردیف قبلی</translation>
@@ -953,7 +954,7 @@
 <translation id="8096975275316362544">کرم نعنایی</translation>
 <translation id="8098587210054821856">سربی</translation>
 <translation id="8121539003537428024">فعال کردن همه فیلترهای رویداد</translation>
-<translation id="8123975449645947908">پیمایش به عقب</translation>
+<translation id="8123975449645947908">پیمایش به‌عقب</translation>
 <translation id="8126386426083591964">عنوان سطح ۵ قبلی وجود ندارد</translation>
 <translation id="812886159861361726">بارگیری <ph name="FILE_NAME" /> متوقف شد</translation>
 <translation id="8129445297241948503">سلولی در بالا وجود ندارد</translation>

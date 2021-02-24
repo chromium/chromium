@@ -331,7 +331,6 @@
 <translation id="4706042980341760088">Tamilisht me tastierë makine shkrimi</translation>
 <translation id="4711094779914110278">Turqisht</translation>
 <translation id="4712283082407695269">Po hap "<ph name="PATH" />"</translation>
-<translation id="4713544552769165154">Ky skedar është i projektuar për kompjuterë që përdorin softuer të Macintosh. Kjo nuk përputhet me pajisjen tënde që punon me sistemin operativ Chrome. Kërko në <ph name="BEGIN_LINK" />Dyqanin ueb të Chrome<ph name="END_LINK" /> për një aplikacion të përshtatshëm zëvendësues.<ph name="BEGIN_LINK_HELP" />Mëso më shumë<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> fotografi u rezervuan</translation>
 <translation id="4725511304875193254">Korgi</translation>
 <translation id="4732760563705710320">Na vjen keq, por kjo video nuk mbështetet nga pajisja jote e transmetimit.</translation>
@@ -464,8 +463,6 @@
 <translation id="5833610766403489739">Ky skedar ka humbur rrugën diku. Kontrollo cilësimin e vendndodhjes së shkarkimeve dhe provo përsëri.</translation>
 <translation id="5838451609423551646">Hiq të gjitha regjistrimet nga përzgjedhja.</translation>
 <translation id="5838825566232597749">Tastiera ndërkombëtare amerikane Workman</translation>
-<translation id="5850516540536751549">Ky lloj skedari nuk mbështetet. Vizito <ph name="BEGIN_LINK" />Dyqanin e uebit të Chrome<ph name="END_LINK" /> për të gjetur një aplikacion që mund ta hapë këtë lloj skedari.
-    <ph name="BEGIN_LINK_HELP" />Mëso më shumë<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Nuk ka asgjë për të parë këtu...</translation>
 <translation id="5911887972742538906">Ndodhi një gabim gjatë instalimit të aplikacionit tënd për Linux.</translation>
 <translation id="5912396950572065471">Formati</translation>
@@ -675,7 +672,6 @@
 <translation id="8038111231936746805">(parazgjedhje)</translation>
 <translation id="8042602468072383151">Audio <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">Rumanisht</translation>
-<translation id="8052887694493382350">Ky skedar është i projektuar për një kompjuter që përdor softuerë të Windows. Ai nuk përputhet me pajisjen tënde që punon me sistemin operativ Chrome. <ph name="BEGIN_LINK_HELP" />Mëso më shumë<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Të gjitha redaktimet do të ruhen te <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Përsërit</translation>
 <translation id="8106045200081704138">Të ndara me</translation>

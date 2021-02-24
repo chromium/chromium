@@ -4,6 +4,7 @@
 <translation id="102360288709523007">Hjälp till att förbättra Chrome genom att skicka användningsstatistik och felrapporter till Google.</translation>
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1257458525759135959">Om du vill spara bilder trycker du på Inställningar och låter Chromium lägga till dina foton</translation>
+<translation id="1289216811211435351">Byt till Chromium</translation>
 <translation id="1361748954329991663">Den här versionen av Chromium är inaktuell. Om det inte finns någon uppdatering i <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> kan det hända att enheten inte längre har stöd för nya versioner av Chromium.</translation>
 <translation id="1431818719585918472">Låt Chromium låsa inkognitoflikarna.</translation>
 <translation id="1472013873724362412">Kontot fungerar inte på Chromium. Kontakta domänadministratören eller logga in med ett vanligt Google-konto.</translation>
@@ -34,6 +35,7 @@
 <translation id="4099085513035183040">Stöds inte på Chromium Beta</translation>
 <translation id="4166206055865952171">Använd Chromium som standard</translation>
 <translation id="4555020257205549924">När den här funktionen har aktiverats visas alternativet i Chromium att översätta sidor som är skrivna på andra språk med hjälp av Google Översätt. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
+<translation id="4585809515399340748">Nu kan du använda Chromium varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>
 <translation id="4681781466797808448">Aktivera Chromium som skanner</translation>
 <translation id="4787850887676698916">Här visas flikar som du har öppnat i Chromium på andra enheter.</translation>
 <translation id="4828317641996116749">Chromium kunde inte kontrollera alla lösenord. Försök igen senare.</translation>
@@ -42,9 +44,9 @@
 <translation id="5224391634244552924">Inga sparade lösenord. Chromium kan bara kontrollera dina lösenord om du sparar dem.</translation>
 <translation id="5308226104666789935">Chromium kan inte söka efter uppdateringar</translation>
 <translation id="5521125884468363740">Logga in och aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter där du använder Chromium</translation>
-<translation id="5544795779875591523">Välj om din data i Chromium ska raderas från den här enheten eller vara kvar.</translation>
 <translation id="5573014823074921752">Tips för Chromium. Tryck länge på Visa flikar i verktygsfältet så visas fler flikalternativ. Du hittar verktygsfältet längst ned eller högst upp på skärmen.</translation>
 <translation id="5700709190537129682">Chromium kan inte kontrollera dina lösenord</translation>
+<translation id="5742135483959137648">Öppna länkar i Chromium</translation>
 <translation id="5777187867430702742">Chromium-sida</translation>
 <translation id="5862307444128926510">Välkommen till Chromium</translation>
 <translation id="5945387852661427312">Du håller på att logga in med ett konto som hanteras av <ph name="DOMAIN" /> vilket ger administratören kontroll över data i Chromium. Din data kopplas permanent till det här kontot. Om du loggar ut från Chromium raderas all din data från enheten, men den lagras fortfarande på Google-kontot.</translation>
@@ -63,6 +65,7 @@
 <translation id="7208566199746267865">Med Chromium sparar du tid genom att dina konton blir tillgängliga på nätet. Du kan lägga till och ta bort konton i inställningarna.</translation>
 <translation id="725427773388857052">Chromium kan skydda dig från dataintrång, osäkra webbplatser med mera.</translation>
 <translation id="7269362888766543920">Några tillägg har fått Chromium att krascha. Testa att avinstallera dem.</translation>
+<translation id="7313655110045230863">Öppna inställningarna för att välja Chromium som standardwebbläsare. Tryck på Standardwebbläsarapp och välj sedan Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Den data som markerades har tagits bort från Chromium och från synkroniserade enheter. Det kan finnas andra former av webbhistorik i Google-kontot på history.google.com, t.ex. sökningar och aktivitet på andra tjänster från Google.</translation>
 <translation id="7400689562045506105">Använd Chromium överallt</translation>

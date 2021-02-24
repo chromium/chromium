@@ -405,6 +405,7 @@
 <translation id="4421231901400348175">مشاركة التحكم في شاشتك مع <ph name="HELPER_NAME" /> عن طريق المساعدة عن بُعد.</translation>
 <translation id="4424159417645388645">سطح المكتب 5</translation>
 <translation id="4430019312045809116">مستوى الصوت</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{إشعار واحد مُهمّ}zero{# إشعار مُهمّ}two{إشعاران مُهمّان}few{# إشعارات مُهمّة}many{# إشعارًا مُهمًّا}other{# إشعار مُهمّ}}</translation>
 <translation id="4450893287417543264">عدم الإظهار مرة أخرى</translation>
 <translation id="445864333228800152">مساء الخير،</translation>
 <translation id="4458688154122353284">إيقاف تسجيل الشاشة</translation>
@@ -476,6 +477,10 @@
 <translation id="4961318399572185831">إرسال الشاشة</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> س <ph name="MINUTES" /> د <ph name="SECONDS" /> ث</translation>
 <translation id="4975771730019223894">وضع شارات على رمز التطبيق</translation>
+<translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
+        <ph name="NOTIFICATION_1" />،
+        <ph name="NOTIFICATION_2" />،
+        <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">الجملة التالية</translation>
 <translation id="5030687792513154421">انتهى الوقت</translation>
 <translation id="5033299697334913360">انقر في أي مكان لالتقاط صورة لوضع ملء الشاشة.</translation>
@@ -489,6 +494,7 @@
 <translation id="5168181903108465623">أجهزة البث متاحة</translation>
 <translation id="5170568018924773124">العرض في المجلد</translation>
 <translation id="5176318573511391780">تسجيل جزء من الشاشة</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{إشعار واحد آخر}zero{# إشعار آخر}two{إشعاران آخران}few{# إشعارات أخرى}many{# إشعارًا آخر}other{# إشعار آخر}}</translation>
 <translation id="5207949376430453814">تمييز علامة إقحام النص</translation>
 <translation id="5208059991603368177">مُفعَّل</translation>
 <translation id="5222676887888702881">تسجيل الخروج</translation>

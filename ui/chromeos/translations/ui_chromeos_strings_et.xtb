@@ -93,6 +93,7 @@
 <translation id="1942765061641586207">Kujutise eraldusvõime</translation>
 <translation id="1943097386230153518">Installi uus teenus</translation>
 <translation id="1972984168337863910">Laienda failide tagasisidepaneele</translation>
+<translation id="1984456723671657197">Seda tüüpi faili ei toetata. <ph name="BEGIN_LINK_HELP" />Vaadake lisateavet<ph name="END_LINK_HELP" /> Chrome OS-is failide avamise kohta.</translation>
 <translation id="1995337122023280937">Ava faili asukoht</translation>
 <translation id="2001796770603320721">Halda Drive'is</translation>
 <translation id="2009067268969781306">Ketta vormindamisel kustutatakse kõik sellel olevad andmed. Seda toimingut ei saa tagasi võtta.</translation>
@@ -331,7 +332,6 @@
 <translation id="4706042980341760088">tamili, kirjutusmasina klaviatuuriga</translation>
 <translation id="4711094779914110278">türgi keel</translation>
 <translation id="4712283082407695269">Faili „<ph name="PATH" />” avamine</translation>
-<translation id="4713544552769165154">See fail on loodud arvuti jaoks, mis kasutab Macintoshi tarkvara. See ei ühildu teie seadmega, mis käitab Chrome OS-i. Otsige <ph name="BEGIN_LINK" />Chrome'i veebipoest<ph name="END_LINK" /> sobivat asendusrakendust. <ph name="BEGIN_LINK_HELP" />Lisateave<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> fotot on varundatud</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4732760563705710320">Kahjuks ei toeta teie ülekandeseade seda videot.</translation>
@@ -465,8 +465,6 @@
 <translation id="5833610766403489739">See fail on kuhugi kadunud. Kontrollige allalaadimise asukoha seadet ja proovige uuesti.</translation>
 <translation id="5838451609423551646">Valikust eemaldati kõik kirjed.</translation>
 <translation id="5838825566232597749">USA Workmani rahvusvaheline klaviatuur</translation>
-<translation id="5850516540536751549">Seda failitüüpi ei toetata. Külastage <ph name="BEGIN_LINK" />Chrome'i veebipoodi<ph name="END_LINK" />, et leida rakendus, mis avab seda tüüpi faili.
-    <ph name="BEGIN_LINK_HELP" />Lisateave<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Siin ei ole midagi vaadata ...</translation>
 <translation id="5911887972742538906">Linuxi rakenduse installimisel ilmnes viga.</translation>
 <translation id="5912396950572065471">Vorming</translation>
@@ -670,13 +668,13 @@
 <translation id="7972920761225148017">prantsuse (Šveits)</translation>
 <translation id="7980421588063892270">inglise (USA), Colemaki klaviatuuriga</translation>
 <translation id="7982283708762922719">Kõrgus</translation>
+<translation id="79907182588096956">See fail on mõeldud Windowsi tarkvara kasutavale arvutile. See ei ühildu teie seadmega, mis käitab Chrome OS-i. <ph name="BEGIN_LINK_HELP" />Vaadake lisateavet<ph name="END_LINK_HELP" /> Chrome OS-is failide avamise kohta.</translation>
 <translation id="8008366997883261463">Jack Russelli terjer</translation>
 <translation id="8028993641010258682">Suurus</translation>
 <translation id="803771048473350947">Fail</translation>
 <translation id="8038111231936746805">(vaikimisi)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" />-heli</translation>
 <translation id="8045462269890919536">rumeenia keel</translation>
-<translation id="8052887694493382350">See fail on mõeldud Windowsi tarkvara kasutavale arvutile. See ei ühildu teie seadmega, mis käitab Chrome OS-i. <ph name="BEGIN_LINK_HELP" />Lisateave<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Kõik muudatused salvestatakse kausta <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Korda</translation>
 <translation id="8106045200081704138">Minuga jagatud</translation>
@@ -750,6 +748,7 @@
 <translation id="8900820606136623064">ungari keel</translation>
 <translation id="8919081441417203123">taani keel</translation>
 <translation id="8965697826696209160">Ruumi ei ole piisavalt.</translation>
+<translation id="8970501467542182729">See fail on mõeldud Macintoshi tarkvara kasutavale arvutile. See ei ühildu teie seadmega, mis käitab Chrome OS-i. <ph name="BEGIN_LINK_HELP" />Vaadake lisateavet<ph name="END_LINK_HELP" /> Chrome OS-is failide avamise kohta.</translation>
 <translation id="8997962250644902079">hiina (traditsiooniline), Pinyin</translation>
 <translation id="9017798300203431059">Vene foneetiline</translation>
 <translation id="9034924485347205037">Linuxi failid</translation>

@@ -93,6 +93,7 @@
 <translation id="1942765061641586207">Risoluzione dell'immagine</translation>
 <translation id="1943097386230153518">Installa nuovo servizio</translation>
 <translation id="1972984168337863910">Espandi i riquadri di feedback dei file</translation>
+<translation id="1984456723671657197">Questo tipo di file non è supportato. <ph name="BEGIN_LINK_HELP" />Scopri di più<ph name="END_LINK_HELP" /> sull'apertura di file in Chrome OS.</translation>
 <translation id="1995337122023280937">Vai a posizione file</translation>
 <translation id="2001796770603320721">Gestisci in Drive</translation>
 <translation id="2009067268969781306">Se formatti un'unità vengono eliminati tutti i dati in essa memorizzati. L'azione non può essere annullata.</translation>
@@ -331,7 +332,6 @@
 <translation id="4706042980341760088">Tamil con tastiera Macchina da scrivere</translation>
 <translation id="4711094779914110278">Turco</translation>
 <translation id="4712283082407695269">Apertura di "<ph name="PATH" />"…</translation>
-<translation id="4713544552769165154">Questo file è supportato su computer con software Macintosh. Non è compatibile con i dispositivi con Chrome OS. Cerca sul <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> un'app sostitutiva adatta.<ph name="BEGIN_LINK_HELP" />Ulteriori informazioni<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">Backup di <ph name="FILE_COUNT" /> foto completato</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4732760563705710320">Spiacenti, questo video non è supportato dal tuo dispositivo di trasmissione.</translation>
@@ -464,8 +464,6 @@
 <translation id="5833610766403489739">Il file deve essere altrove. Controlla l'impostazione del percorso di download e riprova.</translation>
 <translation id="5838451609423551646">Tutti gli elementi sono stati rimossi dalla selezione.</translation>
 <translation id="5838825566232597749">Internazionale Workman USA</translation>
-<translation id="5850516540536751549">Questo tipo di file non è supportato. Visita il <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> per trovare un'app in grado di aprire questo tipo di file.
-    <ph name="BEGIN_LINK_HELP" />Ulteriori informazioni<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Nessun dato presente...</translation>
 <translation id="5911887972742538906">Si è verificato un errore durante l'installazione dell'applicazione Linux.</translation>
 <translation id="5912396950572065471">Formato</translation>
@@ -669,13 +667,13 @@
 <translation id="7972920761225148017">Francese (Svizzera)</translation>
 <translation id="7980421588063892270">Inglese (USA) con tastiera Colemak</translation>
 <translation id="7982283708762922719">Altezza</translation>
+<translation id="79907182588096956">Questo file è supportato su PC con software Windows. Non è compatibile con i dispositivi con Chrome OS. <ph name="BEGIN_LINK_HELP" />Scopri di più<ph name="END_LINK_HELP" /> sull'apertura di file in Chrome OS.</translation>
 <translation id="8008366997883261463">Cane</translation>
 <translation id="8028993641010258682">Dimensioni</translation>
 <translation id="803771048473350947">Archivio</translation>
 <translation id="8038111231936746805">(predefinita)</translation>
 <translation id="8042602468072383151">Audio <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">Rumeno</translation>
-<translation id="8052887694493382350">Questo file è supportato su PC con software Windows. Non è compatibile con il tuo dispositivo Chrome OS. <ph name="BEGIN_LINK_HELP" />Ulteriori informazioni<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Tutte le modifiche verranno salvate in <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Ripeti</translation>
 <translation id="8106045200081704138">Condivisi con me</translation>
@@ -749,6 +747,7 @@
 <translation id="8900820606136623064">Ungherese</translation>
 <translation id="8919081441417203123">Danese</translation>
 <translation id="8965697826696209160">Spazio insufficiente.</translation>
+<translation id="8970501467542182729">Questo file è supportato su computer con software Macintosh. Non è compatibile con i dispositivi con Chrome OS. <ph name="BEGIN_LINK_HELP" />Scopri di più<ph name="END_LINK_HELP" /> sull'apertura di file in Chrome OS.</translation>
 <translation id="8997962250644902079">Cinese (tradizionale) Pinyin</translation>
 <translation id="9017798300203431059">Fonetica russa</translation>
 <translation id="9034924485347205037">File Linux</translation>

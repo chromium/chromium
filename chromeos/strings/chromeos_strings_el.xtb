@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="el">
 <translation id="1018656279737460067">Ακυρώθηκε</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> νήματα, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1059913517121127803">Δεν ήταν δυνατή η έναρξη της σάρωσης</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Εντοπίστηκε τείχος προστασίας</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">Άγνωστο σφάλμα.</translation>
 <translation id="1204296502688602597">Λανθάνων χρόνος DNS</translation>
 <translation id="123124571410524056">Πιθανή ύπαρξη πύλης</translation>
-<translation id="1238191093934674082">Open VPN</translation>
 <translation id="1238612778414822719">Λανθάνων χρόνος HTTPS</translation>
 <translation id="1270369111467284986">Η πύλη υποδοχής είναι ύποπτη</translation>
 <translation id="1290331692326790741">Ασθενές σήμα</translation>
@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">Διακοπή - Τελείωσε το μελάνι</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Παρουσία επίλυσης DNS</translation>
+<translation id="1717874160321062422">Διαχειρίζεται από <ph name="FIRST_MANAGER" /> και <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Ακύρωση σάρωσης</translation>
 <translation id="1851218745569890714">Συνεδρίαση με βίντεο</translation>
@@ -59,6 +60,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Ενεργοποιήστε το Bluetooth, για να εντοπίσετε κοντινές συσκευές</translation>
 <translation id="2364498172489649528">Επιτυχία</translation>
+<translation id="2365324413026422635">Η δοκιμή φόρτισης μπαταρίας δεν μπορεί να πραγματοποιηθεί όταν η μπαταρία είναι πλήρης</translation>
 <translation id="2391082728065870591">Αποστολή αναφοράς σχολίων</translation>
 <translation id="2418150275289244458">Άνοιγμα στις Ρυθμίσεις</translation>
 <translation id="2446553403094072641">Ακρίβεια κινητής υποδιαστολής</translation>
@@ -91,6 +93,7 @@
 <translation id="3226405216343213872">Αναζήτηση για σαρωτές</translation>
 <translation id="3246869037381808805">Οι εργασίες εκτύπωσης που είναι παλαιότερες της 1 ημέρας θα καταργηθούν.</translation>
 <translation id="3268178239013324452">Σφάλμα - Η θύρα είναι ανοικτή</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">Ο λανθάνων χρόνος DNS έχει υπερβεί σημαντικά το επιτρεπόμενο ελάχιστο όριο.</translation>
 <translation id="3328783797891415197">Η δοκιμή εκτελείται</translation>
 <translation id="3368922792935385530">Σε σύνδεση</translation>
@@ -102,6 +105,7 @@
 <translation id="3459509316159669723">Εκτύπωση</translation>
 <translation id="3488065109653206955">Μερικώς ενεργοποιημένο</translation>
 <translation id="3527036260304016759">Σφάλμα - Άγνωστο σφάλμα</translation>
+<translation id="3532980081107202182">Απομένουν περίπου <ph name="MIN_REMAINING" /> λεπτά</translation>
 <translation id="357889014807611375">Wi-Fi με ογκοχρέωση</translation>
 <translation id="3595596368722241419">Μπαταρία πλήρης</translation>
 <translation id="360565022852130722">Η ασφάλεια του δικτύου Wi-Fi βασίζεται σε αδύναμο πρωτόκολλο WEP 802.1x.</translation>
@@ -125,6 +129,7 @@
 <translation id="4155551848414053977">Βεβαιωθείτε ότι ο σαρωτής είναι ενεργοποιημένος και διαθέσιμος μέσω του δικτύου σας ή μέσω άμεσης σύνδεσης.</translation>
 <translation id="4170700058716978431">ΑΠΕΤΥΧΕ</translation>
 <translation id="4176463684765177261">Απενεργοποιημένη</translation>
+<translation id="4222698289790462549">Τρέχουσα ταχύτητα</translation>
 <translation id="4227825898293920515">Ο κωδικός πρόσβασης λήγει σε <ph name="TIME" /></translation>
 <translation id="4228041325992544252">Διαθέσιμα <ph name="AVAILABLE_MEMORY" /> GB από τα <ph name="TOTAL_MEMORY" /> GB.</translation>
 <translation id="4238516577297848345">Δεν υπάρχουν εργασίες εκτύπωσης σε εξέλιξη</translation>
@@ -241,6 +246,7 @@
 <translation id="6325525973963619867">Απέτυχε</translation>
 <translation id="636850387210749493">Εγγραφή επιχείρησης</translation>
 <translation id="641081527798843608">Αντιστοιχία θέματος</translation>
+<translation id="6423239382391657905">Άνοιγμα VPN</translation>
 <translation id="6456394469623773452">Καλό</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Διαχείριση από τον τομέα <ph name="MANAGER" /></translation>
@@ -327,6 +333,7 @@
 <translation id="8477551185774834963">Ο λανθάνων χρόνος DNS έχει υπερβεί ελαφρώς το επιτρεπόμενο ελάχιστο όριο.</translation>
 <translation id="8483248364096924578">Διεύθυνση IP</translation>
 <translation id="8503813439785031346">Όνομα χρήστη</translation>
+<translation id="8503836310948963452">Απομένουν λίγα μόνο λεπτά…</translation>
 <translation id="8576249514688522074">Μη προετοιμασμένο</translation>
 <translation id="8620617069779373398">Κατάσταση περιαγωγής</translation>
 <translation id="8675354002693747642">Ήδη κοινόχρηστο κλειδί</translation>
@@ -358,6 +365,7 @@
 <translation id="9106415115617144481">Σάρωση σελίδας <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Ξεκλείδωμα</translation>
 <translation id="9149391708638971077">Εκτέλεση δοκιμής μνήμης</translation>
+<translation id="9173638680043580060">Απομένει λιγότερο από ένα λεπτό</translation>
 <translation id="9190063653747922532">L2TP/IPsec + ήδη κοινόχρηστο κλειδί</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Μη ενεργοποιημένο</translation>

@@ -405,6 +405,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="4421231901400348175">Ukulawula ukwabelana kwesikrini sakho nge-<ph name="HELPER_NAME" /> nge-Remote Assistance.</translation>
 <translation id="4424159417645388645">Itafula 5</translation>
 <translation id="4430019312045809116">Ivolumu</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{isaziso esi-1 esibalulekile}one{izaziso ezingu-# ezibalulekile}other{izaziso ezingu-# ezibalulekile}}</translation>
 <translation id="4450893287417543264">Ungabonisi futhi</translation>
 <translation id="445864333228800152">Sawubona,</translation>
 <translation id="4458688154122353284">Misa ukuqopha isikrini</translation>
@@ -476,6 +477,10 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="4961318399572185831">Sakaza isikrini</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />h <ph name="MINUTES" />m <ph name="SECONDS" />s</translation>
 <translation id="4975771730019223894">Ibheji yohlelo lokusebenza</translation>
+<translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
+        <ph name="NOTIFICATION_1" />,
+        <ph name="NOTIFICATION_2" />,
+        <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Umusho olandelayo</translation>
 <translation id="5030687792513154421">Isikhathi siphelile</translation>
 <translation id="5033299697334913360">Chofoza nomaphi ukuze uthathe isikrini esigcwele</translation>
@@ -489,6 +494,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="5168181903108465623">Amadivayisi wabalingisi ayatholakala</translation>
 <translation id="5170568018924773124">Bonisa kufolda</translation>
 <translation id="5176318573511391780">Rekhoda ingxenye yesikrini</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{esinye isaziso esi-1}one{ezinye izaziso ezi-#}other{ezinye izaziso ezi-#}}</translation>
 <translation id="5207949376430453814">Gqamisa ikharethi yombhalo</translation>
 <translation id="5208059991603368177">Vuliwe</translation>
 <translation id="5222676887888702881">Phuma ngemvume</translation>

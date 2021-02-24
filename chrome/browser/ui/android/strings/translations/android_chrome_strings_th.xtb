@@ -56,6 +56,7 @@
 <translation id="1331212799747679585">อัปเดต Chrome ไม่ได้ ตัวเลือกอื่นๆ</translation>
 <translation id="1332501820983677155">แป้นพิมพ์ลัดสำหรับฟีเจอร์ของ Google Chrome</translation>
 <translation id="133857033449832692">กำลังดาวน์โหลด <ph name="LANG" />…</translation>
+<translation id="1344653310988386453">รวมลิงก์ไปยังไฮไลต์</translation>
 <translation id="1347468774581902829">จัดการกิจกรรม</translation>
 <translation id="1360432990279830238">ออกจากระบบและปิดการซิงค์ไหม</translation>
 <translation id="1373696734384179344">หน่วยความจำไม่เพียงพอที่จะดาวน์โหลดเนื้อหาที่เลือก</translation>
@@ -130,6 +131,7 @@
 <translation id="1960290143419248813">Android เวอร์ชันนี้ไม่รองรับการอัปเดต Chrome อีกต่อไปแล้ว</translation>
 <translation id="1963976881984600709">การปกป้องแบบมาตรฐาน</translation>
 <translation id="1966710179511230534">โปรดอัปเดตรายละเอียดการลงชื่อเข้าใช้ของคุณ</translation>
+<translation id="1973912524893600642">เก็บข้อมูลไว้</translation>
 <translation id="1974060860693918893">ขั้นสูง</translation>
 <translation id="1984417487208496350">ไม่มีการปกป้อง (ไม่แนะนำ)</translation>
 <translation id="1984705450038014246">ซิงค์ข้อมูล Chrome</translation>
@@ -301,6 +303,7 @@
 <translation id="3058498974290601450">คุณเปิดการซิงค์ได้ทุกเมื่อในการตั้งค่า</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{บุ๊กมาร์ก <ph name="BOOKMARKS_COUNT_ONE" /> รายการ}other{บุ๊กมาร์ก <ph name="BOOKMARKS_COUNT_MANY" /> รายการ}}</translation>
 <translation id="3062802207422175757">บทความที่เกี่ยวข้องกับความสนใจของคุณใน Chrome</translation>
+<translation id="3070005020161560471">แปลโดยอัตโนมัติ</translation>
 <translation id="3089395242580810162">เปิดในแท็บไม่ระบุตัวตน</translation>
 <translation id="3098745985164956033">ระบบจะส่งรูปภาพบางส่วนไปยัง Google เพื่อปรับปรุงคำอธิบายสำหรับคุณ</translation>
 <translation id="3114507951000454849">อ่านข่าววันนี้ <ph name="NEWS_ICON" /></translation>
@@ -350,10 +353,18 @@
 <translation id="3384347053049321195">แชร์รูปภาพ</translation>
 <translation id="3387650086002190359">การดาวน์โหลด <ph name="FILE_NAME" /> ล้มเหลวเพราะเกิดข้อผิดพลาดกับระบบไฟล์</translation>
 <translation id="3389286852084373014">ข้อความมีขนาดใหญ่เกินไป</translation>
+<translation id="3391512812407811893">ทดลองใช้แซนด์บ็อกซ์ความเป็นส่วนตัว</translation>
 <translation id="3398320232533725830">เปิดตัวจัดการบุ๊กมาร์ก</translation>
 <translation id="3414952576877147120">ขนาด:</translation>
 <translation id="3429160811076349561">ฟีเจอร์ช่วงทดลองใช้ปิดอยู่</translation>
 <translation id="3443221991560634068">โหลดหน้าปัจจุบันอีกครั้ง</translation>
+<translation id="3451542610083122179">แซนด์บ็อกซ์ความเป็นส่วนตัวคือโครงการริเริ่มที่ดำเนินอยู่ในการปกป้องเว็บแบบเปิดซึ่งจะช่วยป้องกันคุณจากกลไกการติดตามต่างๆ
+
+ในปัจจุบัน เว็บไซต์ใช้เทคโนโลยีมากมาย เช่น คุกกี้ของบุคคลที่สาม สำหรับบริการสำคัญอย่างการแสดงโฆษณาที่เกี่ยวข้องและการวัดประสิทธิภาพของเว็บไซต์
+
+แซนด์บ็อกซ์ความเป็นส่วนตัวจะช่วยคงความสามารถของเว็บแบบเปิดด้วยการสร้างวิธีที่ดียิ่งขึ้นในการให้บริการเหล่านี้โดยไม่ทำให้เว็บไซต์หยุดชะงัก แต่ในขณะเดียวกันก็ปกป้องคุณจากการถูกลอบติดตามข้ามเว็บด้วย
+
+แซนด์บ็อกซ์ความเป็นส่วนตัวยังอยู่ในระหว่างการพัฒนาและมีให้บริการในบางภูมิภาค ตอนนี้เว็บไซต์ต่างๆ อาจลองใช้แซนด์บ็อกซ์ความเป็นส่วนตัวไปพร้อมกับการใช้เทคโนโลยีเว็บปัจจุบัน เช่น คุกกี้ของบุคคลที่สาม <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">คุณเลือกเครื่องมือค้นหาได้</translation>
 <translation id="3492207499832628349">แท็บใหม่ที่ไม่ระบุตัวตน</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" />เกี่ยวกับเนื้อหาที่แนะนำ</translation>
@@ -591,6 +602,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{การดาวน์โหลดล้มเหลว 1 รายการ}other{การดาวน์โหลดล้มเหลว # รายการ}}</translation>
 <translation id="5170568018924773124">แสดงในโฟลเดอร์</translation>
 <translation id="5184329579814168207">เปิดใน Chrome</translation>
+<translation id="5191251636205085390">ดูข้อมูลและควบคุมเทคโนโลยีใหม่ๆ ที่มีจุดประสงค์เพื่อมาแทนที่คุกกี้ของบุคคลที่สาม</translation>
 <translation id="5193988420012215838">คัดลอกไปยังคลิปบอร์ดแล้ว</translation>
 <translation id="5199929503336119739">โปรไฟล์งาน</translation>
 <translation id="5210286577605176222">ข้ามไปยังแท็บก่อนหน้า</translation>
@@ -613,6 +625,7 @@
 <translation id="5355191726083956201">การปกป้องที่ปรับปรุงแล้วเปิดอยู่</translation>
 <translation id="5357811892247919462">ได้รับแท็บแล้ว</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{เปิดแท็บไว้ <ph name="OPEN_TABS_ONE" /> แท็บ แตะเพื่อเปลี่ยนแท็บ}other{เปิดแท็บไว้ <ph name="OPEN_TABS_MANY" /> แท็บ แตะเพื่อเปลี่ยนแท็บ}}</translation>
+<translation id="5375577065097716013">ค้นหาภาพด้วย Google Lens <ph name="BEGIN_NEW" />ใหม่<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">อนุญาตเฉพาะบางไซต์</translation>
 <translation id="5414836363063783498">กำลังยืนยัน…</translation>
 <translation id="5423934151118863508">หน้าที่มีการเข้าชมมากที่สุดของคุณจะปรากฏที่นี่</translation>
@@ -648,6 +661,7 @@
 <translation id="5599941490345670218">Google Assistant ทำสิ่งต่างๆ ในหลายเว็บไซต์ให้คุณได้</translation>
 <translation id="5620163320393916465">ไม่มีรหัสผ่านที่บันทึกไว้</translation>
 <translation id="5620928963363755975">หาไฟล์และหน้าในโฟลเดอร์ดาวน์โหลดจากปุ่มตัวเลือกเพิ่มเติม</translation>
+<translation id="562168087174703495">สร้างลิงก์ไปยังไฮไลต์ไม่ได้ แชร์ลิงก์ไปยังหน้าเว็บ</translation>
 <translation id="562289928968387744">จัดการการโต้ตอบ</translation>
 <translation id="5626134646977739690">ชื่อ:</translation>
 <translation id="5628604359369369630">ยังไม่อ่าน - อ่านขณะออฟไลน์ได้</translation>
@@ -761,6 +775,7 @@
 <translation id="6312687380483398334">เว็บแอป (ไม่ส่งเสียงหรือแสดงให้เห็น)</translation>
 <translation id="6316139424528454185">ไม่รองรับ Android เวอร์ชันนี้</translation>
 <translation id="6324034347079777476">ปิดใช้การซิงค์ระบบ Android อยู่</translation>
+<translation id="6324977638108296054">สร้างลิงก์ไปยังไฮไลต์ไม่ได้</translation>
 <translation id="6333140779060797560">แชร์ผ่าน <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">การเข้ารหัส</translation>
 <translation id="6341580099087024258">ถามว่าจะให้บันทึกไฟล์ไว้ที่ใด</translation>
@@ -792,6 +807,7 @@
 <translation id="6477928892249167417">ดูเหมือนว่าเว็บไซต์ต่อไปนี้จะสำคัญกับคุณ</translation>
 <translation id="6482749332252372425">การดาวน์โหลด <ph name="FILE_NAME" /> ล้มเหลวเพราะพื้นที่เก็บข้อมูลไม่เพียงพอ</translation>
 <translation id="6489610539826642779">เรื่องรออ่าน <ph name="BEGIN_NEW" />ใหม่<ph name="END_NEW" /></translation>
+<translation id="6490496612063106490">ลิงก์ไปยังไฮไลต์</translation>
 <translation id="6496823230996795692">โปรดเชื่อมต่ออินเทอร์เน็ตเพื่อใช้ <ph name="APP_NAME" /> เป็นครั้งแรก</translation>
 <translation id="6508722015517270189">รีสตาร์ท Chrome</translation>
 <translation id="6527303717912515753">แชร์</translation>
@@ -990,6 +1006,7 @@
 <translation id="784934925303690534">ช่วงเวลา</translation>
 <translation id="7851858861565204677">อุปกรณ์อื่นๆ</translation>
 <translation id="7857691613771368249">ถามว่าจะให้บันทึกไฟล์เมื่อใด</translation>
+<translation id="7859988229622350291">ไม่ต้องแปล</translation>
 <translation id="7875915731392087153">สร้างอีเมล</translation>
 <translation id="7876243839304621966">ลบทั้งหมด</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{คุณมีหน้าที่ยังไม่อ่าน <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> หน้า}other{คุณมีหน้าที่ยังไม่อ่าน <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> หน้า}}</translation>
@@ -1053,7 +1070,6 @@
 <translation id="8218622182176210845">จัดการบัญชีของคุณ</translation>
 <translation id="8223642481677794647">เมนูของการ์ดฟีด</translation>
 <translation id="8224471946457685718">ดาวน์โหลดบทความสำหรับคุณผ่าน Wi-Fi</translation>
-<translation id="8232956427053453090">เก็บข้อมูลไว้</translation>
 <translation id="8233540874193135768">โปรดใช้อุปกรณ์ที่มีกล้องเพื่อสแกนคิวอาร์โค้ด</translation>
 <translation id="8250920743982581267">เอกสาร</translation>
 <translation id="825412236959742607">หน้านี้ใช้หน่วยความจำมากเกินไป Chrome จึงนำเนื้อหาบางส่วนออก</translation>
@@ -1067,6 +1083,7 @@
 <translation id="8310344678080805313">แท็บมาตรฐาน</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> และเว็บไซต์อื่นๆ</translation>
 <translation id="8327155640814342956">โปรดเปิดเพื่ออัปเดต Chrome เพื่อให้ได้รับประสบการณ์การท่องเว็บที่ดีที่สุด</translation>
+<translation id="834313815369870491">ไม่ต้องแปลเว็บไซต์</translation>
 <translation id="8349013245300336738">จัดเรียงตามปริมาณเน็ตมือถือที่ใช้</translation>
 <translation id="835847953965672673">คืนค่าการดาวน์โหลด <ph name="NUMBER_OF_DOWNLOADS" /> รายการแล้ว</translation>
 <translation id="8364299278605033898">ดูเว็บไซต์ยอดนิยม</translation>

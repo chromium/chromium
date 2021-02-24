@@ -18,6 +18,7 @@
 <translation id="257708665678654955">Želite, da Google Chrome naslednjič ponudi prevod strani v jeziku <ph name="LANGUAGE_NAME" /> s tega spletnega mesta?</translation>
 <translation id="2695886661449553974">Chrome ni mogel preveriti, ali so na voljo posodobitve. Poskusite pozneje.</translation>
 <translation id="2732745070297234559">Chromu ni uspelo preveriti vseh gesel. Poskusite znova jutri.</translation>
+<translation id="2740105938841089077">Uporaba Chroma za odpiranje povezav</translation>
 <translation id="2919738076569633423">Če uporabljate Chrome, se strinjate s <ph name="BEGIN_LINK_TOS" />pogoji storitve<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Ker se boste odjavili iz računa, ki ga upravlja <ph name="SIGNOUT_MANAGED_DOMAIN" />, boste iz te naprave izbrisali podatke v Chromu. Vaši podatki bodo še vedno na voljo v Google Računu.</translation>
 <translation id="3148688391461398285">Zagotovite si boljšo izkušnjo uporabe Chroma na podlagi lokacije</translation>
@@ -38,7 +39,6 @@
 <translation id="417201473131094001">Ni podprto v Chromu Canary</translation>
 <translation id="424864128008805179">Se želite odjaviti iz Chroma?</translation>
 <translation id="4249068189593983585">Nasvet za Chrome. Če želite več možnosti za zavihke, pridržite gumb za prikaz zavihkov v orodni vrstici na dnu ali vrhu zaslona.</translation>
-<translation id="4354293865557736921">Izberite, ali želite izbrisati podatke v Chromu iz te naprave ali jih obdržati.</translation>
 <translation id="4523886039239821078">Nekateri dodatki povzročajo zrušitve Chroma. Odstranite jih:</translation>
 <translation id="4633328489441962921">Chrome ne more preveriti, ali so na voljo posodobitve</translation>
 <translation id="4698415050768537821">Chromu ni uspelo preveriti vseh gesel. Poskusite znova jutri ali <ph name="BEGIN_LINK" />preverite gesla v računu Google.<ph name="END_LINK" /></translation>
@@ -53,6 +53,7 @@
 <translation id="5854621639439811139">Nasvet za Chrome. Nekateri gumbi, na primer gumbi za nazaj, naprej in iskanje, so zdaj na dnu zaslona.</translation>
 <translation id="6036420186814142909">Google Chrome ima funkcije, s katerimi lažje upravljate internetne podatke in hitrost nalaganja spletnih strani.
 <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
+<translation id="6181930887571472871">Preklop na Chrome</translation>
 <translation id="6238746320622508509">Naj Chrome zaklene vaše zavihke brez beleženja dejavnosti.</translation>
 <translation id="6573431926118603307">Zavihki, ki ste jih odprli v Chromu v drugih napravah, bodo prikazani tukaj.</translation>
 <translation id="6600954340915313787">Kopirano v Chrome</translation>
@@ -60,6 +61,7 @@
 <translation id="6648150602980899529">Prijavljate se v račun, ki ga upravlja <ph name="DOMAIN" />, in nadzor nad podatki v Chromu predajate skrbniku. Vaši podatki bodo trajno povezani s tem računom. Če se odjavite iz Chroma, boste izbrisali podatke iz te naprave, vendar bodo še naprej shranjeni v Google Računu.</translation>
 <translation id="6676840375528380067">Ali želite izbrisati podatke v Chromu iz te naprave?</translation>
 <translation id="6822673484890854830">Chromu ni uspelo preveriti vseh gesel. Poskusite znova pozneje.</translation>
+<translation id="6964931465519938134">Zdaj lahko uporabljate Chrome, kadar koli se dotaknete povezav v sporočilih, dokumentih in drugih aplikacijah.</translation>
 <translation id="7124339256045485976">Posodobitev Chroma</translation>
 <translation id="7161390184744336561">Google Chrome je zastarel</translation>
 <translation id="7165736900384873061">Začetek uporabe bralnika kod QR Google Chroma</translation>
@@ -69,6 +71,7 @@
 <translation id="7265369419224458312">Do zavihkov, odprtih v računalniku, lahko dostopate tukaj. V računalniku odprite Chrome, nato meni in izberite »Prijava v Chrome …«.</translation>
 <translation id="7272930098487145294">Če želite shraniti slike, se dotaknite aplikacije Settings in dovolite, da Chrome dodaja fotografijam</translation>
 <translation id="7400722733683201933">O brskalniku Google Chrome</translation>
+<translation id="7501046334262221972">Če želite Chrome nastaviti kot privzeti brskalnik, odprite nastavitve. Dotaknite se »Privzeti brskalnik« in izberite Chrome.</translation>
 <translation id="756809126120519699">Chromovi podatki so izbrisani.</translation>
 <translation id="7626032353295482388">Dobrodošli v Chromu</translation>
 <translation id="7662994914830945754">Če si želite ogledati zavihke iz naprav, v katerih uporabljate Chrome, se prijavite in vklopite sinhronizacijo</translation>

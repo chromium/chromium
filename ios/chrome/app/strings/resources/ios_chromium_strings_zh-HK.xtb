@@ -44,7 +44,6 @@
 <translation id="5224391634244552924">沒有已儲存的密碼。儲存密碼時，Chromium 可檢查您的密碼。</translation>
 <translation id="5308226104666789935">Chromium 無法檢查更新</translation>
 <translation id="5521125884468363740">如要在任何使用 Chromium 的裝置上查看分頁，請登入並開啟同步功能</translation>
-<translation id="5544795779875591523">選擇要從此裝置上清除 Chromium 資料，還是要保留資料？</translation>
 <translation id="5573014823074921752">Chromium 提示。如果要多啲標籤選項，請㩒住螢幕底部或者頂部工具列入面中嘅 [顯示分頁] 掣。</translation>
 <translation id="5700709190537129682">Chromium 無法檢查密碼</translation>
 <translation id="5742135483959137648">使用 Chromium 開啟連結</translation>
@@ -66,6 +65,7 @@
 <translation id="7208566199746267865">Chromium 允許您將帳戶同步至網路上，以節省時間。您可在設定中新增或移除帳戶。</translation>
 <translation id="725427773388857052">Chromium 能確保系統安全，避免發生資料外洩或瀏覽不安全網站等問題。</translation>
 <translation id="7269362888766543920">部份外掛程式導致 Chromium 當機，請解除安裝那些外掛程式。</translation>
+<translation id="7313655110045230863">如要將 Chromium 設定為預設瀏覽器，請開啟 [設定]。輕按 [預設的瀏覽器應用程式]，然後選取 Chromium。</translation>
 <translation id="7337881442233988129">ChromiumHelper</translation>
 <translation id="7357211569052832586">所選資料已從 Chromium 和已同步的裝置中移除。不過，您仍可前往 history.google.com 存取 Google 帳戶中保存的其他各種瀏覽紀錄，例如在其他 Google 服務中的搜尋和活動紀錄。</translation>
 <translation id="7400689562045506105">隨時隨地使用 Chromium</translation>

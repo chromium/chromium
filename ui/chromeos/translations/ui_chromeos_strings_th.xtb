@@ -93,6 +93,7 @@
 <translation id="1942765061641586207">ความละเอียดของรูปภาพ</translation>
 <translation id="1943097386230153518">ติดตั้งบริการใหม่</translation>
 <translation id="1972984168337863910">ขยายแผงความคิดเห็นเกี่ยวกับไฟล์</translation>
+<translation id="1984456723671657197">ไม่รองรับไฟล์ประเภทนี้ <ph name="BEGIN_LINK_HELP" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_HELP" />เกี่ยวกับการเปิดไฟล์ใน Chrome OS</translation>
 <translation id="1995337122023280937">ไปยังตำแหน่งที่ตั้งไฟล์</translation>
 <translation id="2001796770603320721">จัดการใน Google ไดรฟ์</translation>
 <translation id="2009067268969781306">การฟอร์แมตไดรฟ์จะลบข้อมูลทั้งหมดที่เก็บไว้ในไดรฟ์ การดำเนินการนี้ยกเลิกไม่ได้</translation>
@@ -331,7 +332,6 @@
 <translation id="4706042980341760088">ทมิฬด้วยแป้นพิมพ์เครื่องพิมพ์ดีด</translation>
 <translation id="4711094779914110278">ตุรกี</translation>
 <translation id="4712283082407695269">กำลังเปิด "<ph name="PATH" />"</translation>
-<translation id="4713544552769165154">ไฟล์นี้ออกแบบมาสำหรับคอมพิวเตอร์ที่ใช้ซอฟต์แวร์บน Macintosh ซึ่งไม่สามารถเข้ากันได้กับอุปกรณ์ของคุณซึ่งใช้ Chrome OS โปรดค้นหาแอปทดแทนที่เหมาะสมบน <ph name="BEGIN_LINK" />Chrome เว็บสโตร์<ph name="END_LINK" /> <ph name="BEGIN_LINK_HELP" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">สำรองรูปภาพ <ph name="FILE_COUNT" /> รูปแล้ว</translation>
 <translation id="4725511304875193254">คอร์กี</translation>
 <translation id="4732760563705710320">ขออภัย เครื่องส่งไม่สนับสนุนวิดีโอนี้</translation>
@@ -465,8 +465,6 @@
 <translation id="5833610766403489739">ไฟล์นี้ไม่อยู่ในตำแหน่งที่กำหนดไว้ โปรดตรวจสอบการตั้งค่าตำแหน่งที่เก็บไฟล์ดาวน์โหลดและลองอีกครั้ง</translation>
 <translation id="5838451609423551646">นำรายการทั้งหมดออกจากรายการที่เลือกไว้</translation>
 <translation id="5838825566232597749">Workman สหรัฐฯ แบบสากล</translation>
-<translation id="5850516540536751549">ไม่สนับสนุนไฟล์ประเภทนี้ โปรดไปที่ <ph name="BEGIN_LINK" />Chrome เว็บสโตร์<ph name="END_LINK" />เพื่อหาแอปที่สามารถเปิดไฟล์ประเภทนี้
-    <ph name="BEGIN_LINK_HELP" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">ไม่มีอะไรอยู่ในนี้...</translation>
 <translation id="5911887972742538906">ข้อผิดพลาดเกิดขึ้นระหว่างการติดตั้งแอปพลิเคชัน Linux</translation>
 <translation id="5912396950572065471">รูปแบบ</translation>
@@ -670,13 +668,13 @@
 <translation id="7972920761225148017">ฝรั่งเศส (สวิตเซอร์แลนด์)</translation>
 <translation id="7980421588063892270">อังกฤษ (สหรัฐฯ) ด้วยแป้นพิมพ์ Colemak</translation>
 <translation id="7982283708762922719">ความสูง</translation>
+<translation id="79907182588096956">ไฟล์นี้ออกแบบมาสำหรับพีซีที่ใช้ซอฟต์แวร์ Windows จึงเข้ากันไม่ได้กับอุปกรณ์ของคุณซึ่งใช้ Chrome OS <ph name="BEGIN_LINK_HELP" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_HELP" />เกี่ยวกับการเปิดไฟล์ใน Chrome OS</translation>
 <translation id="8008366997883261463">สุนัข</translation>
 <translation id="8028993641010258682">ขนาด</translation>
 <translation id="803771048473350947">ไฟล์</translation>
 <translation id="8038111231936746805">(ค่าเริ่มต้น)</translation>
 <translation id="8042602468072383151">เสียง <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">โรมาเนีย</translation>
-<translation id="8052887694493382350">ไฟล์นี้ออกแบบมาสำหรับพีซีที่ใช้ซอฟต์แวร์ Windows จึงเข้ากันไม่ได้กับอุปกรณ์ของคุณซึ่งใช้ Chrome OS <ph name="BEGIN_LINK_HELP" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">การแก้ไขทั้งหมดจะบันทึกลงใน <ph name="DOWNLOADS_FOLDER" /></translation>
 <translation id="8079530767338315840">เล่นซ้ำ</translation>
 <translation id="8106045200081704138">ที่แชร์กับฉัน</translation>
@@ -750,6 +748,7 @@
 <translation id="8900820606136623064">ฮังการี</translation>
 <translation id="8919081441417203123">เดนมาร์ก</translation>
 <translation id="8965697826696209160">พื้นที่ไม่เพียงพอ</translation>
+<translation id="8970501467542182729">ไฟล์นี้ออกแบบมาสำหรับคอมพิวเตอร์ที่ใช้ซอฟต์แวร์ Macintosh จึงเข้ากันไม่ได้กับอุปกรณ์ของคุณซึ่งใช้ Chrome OS <ph name="BEGIN_LINK_HELP" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_HELP" />เกี่ยวกับการเปิดไฟล์ใน Chrome OS</translation>
 <translation id="8997962250644902079">พินอินภาษาจีน (ตัวเต็ม)</translation>
 <translation id="9017798300203431059">การออกเสียงภาษารัสเซีย</translation>
 <translation id="9034924485347205037">ไฟล์ Linux</translation>

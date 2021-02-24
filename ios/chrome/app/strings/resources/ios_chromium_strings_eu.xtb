@@ -4,6 +4,7 @@
 <translation id="102360288709523007">Hobetu Chromium Google-ri erabilera-estatistikak eta hutsegite-txostenak bidalita.</translation>
 <translation id="1185134272377778587">Chromium arakatzaileari buruz</translation>
 <translation id="1257458525759135959">Irudiak gordetzeko, sakatu Ezarpenak eta eman argazkiak gehitzeko baimena Chromium-i</translation>
+<translation id="1289216811211435351">Aldatu Chromium-era</translation>
 <translation id="1361748954329991663">Chromium zaharkituta dago. Ez badago eguneratzerik <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> dendan, baliteke gailua Chromium-en bertsio berriekin bateragarria ez izatea.</translation>
 <translation id="1431818719585918472">Utzi Chromium-i ezkutuko moduko fitxak blokeatzen.</translation>
 <translation id="1472013873724362412">Kontua ez dabil Chromium sisteman. Jarri harremanetan domeinuaren administratzailearekin edo erabili ohiko Google-ko kontu bat saioa hasteko.</translation>
@@ -34,6 +35,7 @@
 <translation id="4099085513035183040">Ez da bateragarria Chromium Beta-rekin</translation>
 <translation id="4166206055865952171">Bihurtu Chromium zure arakatzaile lehenetsi</translation>
 <translation id="4555020257205549924">Eginbide hau aktibatuta dagoenean, Chromium-ek beste hizkuntzetan idatzita dauden orriak Google Translate bidez itzultzea proposatuko dizu. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
+<translation id="4585809515399340748">Orain, mezuetan, dokumentuetan eta aplikazioetan estekak sakatzen dituzunean Chromium erabili ahalko duzu.</translation>
 <translation id="4681781466797808448">Aktibatu Chromium-en eskanerra</translation>
 <translation id="4787850887676698916">Chromium beste gailuetan erabiltzean ireki dituzun fitxak agertuko dira hemen ere.</translation>
 <translation id="4828317641996116749">Chromium-ek ezin izan ditu egiaztatu pasahitz guztiak. Saiatu berriro geroago.</translation>
@@ -42,9 +44,9 @@
 <translation id="5224391634244552924">Ez dago pasahitzik gordeta. Gordeta dituzun pasahitzak egiaztatu egin ditzake Chromium-ek.</translation>
 <translation id="5308226104666789935">Chromium-ek ezin ditu bilatu eguneratzeak</translation>
 <translation id="5521125884468363740">Chromium erabiltzen duzun gailu guztietan zure fitxak eskura izateko, hasi saioa eta aktibatu sinkronizazioa</translation>
-<translation id="5544795779875591523">Erabaki gailu honetatik Chromium-eko datuak garbitu nahi dituzun ala ez</translation>
 <translation id="5573014823074921752">Chromium-i buruzko aholkua: fitxetako aukera gehiago ikusteko, eduki sakatuta tresna-barrako Erakutsi fitxak botoia. Pantailaren goiko edo beheko aldean aurkituko duzu.</translation>
 <translation id="5700709190537129682">Chromium-ek ezin ditu egiaztatu pasahitzak</translation>
+<translation id="5742135483959137648">Estekak irekitzeko, erabili Chromium</translation>
 <translation id="5777187867430702742">Chromium-eko orri bat</translation>
 <translation id="5862307444128926510">Ongi etorri Chromium-era</translation>
 <translation id="5945387852661427312"><ph name="DOMAIN" /> domeinuak kudeatutako kontu batekin hasi duzu saioa eta administratzaileari eman diozu Chromium datuen kontrola. Datuak betiko lotuko dira kontu honekin. Saioa amaitzen baduzu, Chromium datuak ezabatu egingo dira gailutik, baina Google-ko kontuan izango dituzu gordeta.</translation>
@@ -63,6 +65,7 @@
 <translation id="7208566199746267865">Chromium-ekin denbora aurrezten duzu kontuak sarera eramanda. Ezarpenak atalean gehi edo ken ditzakezu kontuak.</translation>
 <translation id="725427773388857052">Datuen isilpekotasunaren urratzeen, seguruak ez diren webguneen eta abarren aurrean babes zaitzake Chromium-ek.</translation>
 <translation id="7269362888766543920">Gehigarri batzuek huts eginarazten diote Chromium-i. Desinstala itzazu.</translation>
+<translation id="7313655110045230863">Chromium arakatzaile lehenetsi gisa ezartzeko, ireki Ezarpenak. Sakatu Arakatzaile lehenetsia eta, gero, hautatu Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Kendu dira hautatutako datuak Chromium-etik eta sinkronizatutako gailuetatik. Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, bilaketak eta Google-ren beste zerbitzu batzuetako jarduerak) edukitzea history.google.com webgunean.</translation>
 <translation id="7400689562045506105">Erabili Chromium edonon</translation>

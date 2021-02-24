@@ -405,6 +405,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4421231901400348175">Udostępnianie sterowania ekranem użytkownikowi <ph name="HELPER_NAME" /> przy użyciu pomocy zdalnej.</translation>
 <translation id="4424159417645388645">Biurko 5</translation>
 <translation id="4430019312045809116">Głośność</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 ważne powiadomienie}few{# ważne powiadomienia}many{# ważnych powiadomień}other{# ważnego powiadomienia}}</translation>
 <translation id="4450893287417543264">Nie pokazuj ponownie</translation>
 <translation id="445864333228800152">Dobry wieczór,</translation>
 <translation id="4458688154122353284">Zatrzymaj nagrywanie ekranu</translation>
@@ -476,6 +477,10 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4961318399572185831">Przesyłanie ekranu</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> godz. <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Plakietki aplikacji</translation>
+<translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
+        <ph name="NOTIFICATION_1" />,
+        <ph name="NOTIFICATION_2" />,
+        <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Następne zdanie</translation>
 <translation id="5030687792513154421">Czas minął</translation>
 <translation id="5033299697334913360">Aby zrobić zrzut całego ekranu, kliknij w dowolnym miejscu</translation>
@@ -489,6 +494,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5168181903108465623">Dostępne są urządzenia przesyłające</translation>
 <translation id="5170568018924773124">Pokaż w folderze</translation>
 <translation id="5176318573511391780">Nagraj fragment ekranu</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 inne powiadomienie}few{# inne powiadomienia}many{# innych powiadomień}other{# innego powiadomienia}}</translation>
 <translation id="5207949376430453814">Podświetlaj kursor tekstu</translation>
 <translation id="5208059991603368177">Włączono</translation>
 <translation id="5222676887888702881">Wyloguj się</translation>

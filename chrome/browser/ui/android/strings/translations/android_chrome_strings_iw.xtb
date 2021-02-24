@@ -56,6 +56,7 @@
 <translation id="1331212799747679585">‏לא ניתן לעדכן את Chrome. אפשרויות נוספות</translation>
 <translation id="1332501820983677155">‏מקשי קיצור לתכונות של Google Chrome‏</translation>
 <translation id="133857033449832692">מתבצעת הורדה של <ph name="LANG" />…</translation>
+<translation id="1344653310988386453">עליך לכלול קישור לטקסט המודגש</translation>
 <translation id="1347468774581902829">ניהול פעילות</translation>
 <translation id="1360432990279830238">לצאת ולהשבית את הסנכרון?</translation>
 <translation id="1373696734384179344">אין מספיק זיכרון להורדת התוכן הנבחר.</translation>
@@ -130,6 +131,7 @@
 <translation id="1960290143419248813">‏עדכוני Chrome לא נתמכים יותר בגרסה הזו של Android</translation>
 <translation id="1963976881984600709">הגנה רגילה</translation>
 <translation id="1966710179511230534">יש לעדכן את פרטי הכניסה שלך.</translation>
+<translation id="1973912524893600642">שמירת הנתונים</translation>
 <translation id="1974060860693918893">מתקדם</translation>
 <translation id="1984417487208496350">ללא הגנה (לא מומלץ)</translation>
 <translation id="1984705450038014246">‏סנכרון הנתונים מ-Chrome</translation>
@@ -301,6 +303,7 @@
 <translation id="3058498974290601450">אפשר להפעיל את הסנכרון בכל זמן דרך ההגדרות</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{סימנייה אחת (<ph name="BOOKMARKS_COUNT_ONE" />)}two{<ph name="BOOKMARKS_COUNT_MANY" /> סימניות}many{<ph name="BOOKMARKS_COUNT_MANY" /> סימניות}other{<ph name="BOOKMARKS_COUNT_MANY" /> סימניות}}</translation>
 <translation id="3062802207422175757">‏ב-Chrome מחכים לך מאמרים בנושאים שמעניינים אותך</translation>
+<translation id="3070005020161560471">יש לתרגם אוטומטית</translation>
 <translation id="3089395242580810162">פתיחה בכרטיסיית גלישה בסתר</translation>
 <translation id="3098745985164956033">‏חלק מהתמונות נשלחות אל Google כדי לשפר עבורך את התיאורים</translation>
 <translation id="3114507951000454849">קראת חדשות היום? <ph name="NEWS_ICON" /></translation>
@@ -350,10 +353,18 @@
 <translation id="3384347053049321195">שיתוף תמונה</translation>
 <translation id="3387650086002190359">הורדת <ph name="FILE_NAME" /> נכשלה עקב שגיאות במערכת הקבצים.</translation>
 <translation id="3389286852084373014">הטקסט ארוך מדי</translation>
+<translation id="3391512812407811893">‏תכונות ניסיוניות של ארגז חול (Sandbox) של הגדרות פרטיות</translation>
 <translation id="3398320232533725830">פתיחת מנהל הסימניות</translation>
 <translation id="3414952576877147120">גודל:</translation>
 <translation id="3429160811076349561">התכונות הניסיוניות מושבתות</translation>
 <translation id="3443221991560634068">טעינה מחדש של הדף הנוכחי</translation>
+<translation id="3451542610083122179">‏'ארגז חול (Sandbox) של הגדרות פרטיות' הוא פרויקט מתמשך לשמירה על האופי הפתוח של רשת האינטרנט, מתוך שאיפה להגן עליך ועל שאר המשתמשים מפני אמצעי מעקב.
+
+כיום, אתרים משתמשים בטכנולוגיות שונות, כמו קובצי cookie של צד שלישי, כדי לספק שירותים חשובים כמו הצגת מודעות רלוונטיות ומדידת ביצועי האתר.
+
+'ארגז חול של הגדרות פרטיות' מאפשר לשמור על האופי הפתוח של רשת האינטרנט ולספק את השירותים האלה בדרכים טובות יותר – ללא הפעלה של שיטות חודרניות על ידי אתרים ובלי לעקוב אחריך בסתר ברחבי האינטרנט.
+
+'ארגז חול של הגדרות פרטיות' נמצא עדיין בתהליכי פיתוח וזמין רק באזורים נבחרים. נכון לעכשיו, ניתן לנסות באתרים את 'ארגז חול של הגדרות פרטיות' במקביל לשימוש בטכנולוגיות אינטרנט קיימות, כמו קובצי cookie של צד שלישי. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">אפשר לבחור את מנוע החיפוש</translation>
 <translation id="3492207499832628349">כרטיסיית מצב אנונימי חדשה</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /> על הצעות לתוכן</translation>
@@ -591,6 +602,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{הורדה אחת נכשלה.}two{# הורדות נכשלו.}many{# הורדות נכשלו.}other{# הורדות נכשלו.}}</translation>
 <translation id="5170568018924773124">הצגה בתיקייה</translation>
 <translation id="5184329579814168207">‏פתיחה ב-Chrome</translation>
+<translation id="5191251636205085390">‏מידע על טכנולוגיות חדשות שמיועדות להחליף קובצי cookie של צד שלישי והוראות לשליטה בהן.</translation>
 <translation id="5193988420012215838">הועתק אל הלוח</translation>
 <translation id="5199929503336119739">פרופיל עבודה</translation>
 <translation id="5210286577605176222">חזרה לכרטיסייה הקודמת</translation>
@@ -613,6 +625,7 @@
 <translation id="5355191726083956201">מופעלת הגנה משופרת</translation>
 <translation id="5357811892247919462">התקבלה כרטיסייה</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{כרטיסייה פתוחה אחת (<ph name="OPEN_TABS_ONE" />), יש להקיש כדי להחליף כרטיסיות}two{<ph name="OPEN_TABS_MANY" /> כרטיסיות פתוחות, יש להקיש כדי להחליף כרטיסיות}many{<ph name="OPEN_TABS_MANY" /> כרטיסיות פתוחות, יש להקיש כדי להחליף כרטיסיות}other{<ph name="OPEN_TABS_MANY" /> כרטיסיות פתוחות, יש להקיש כדי להחליף כרטיסיות}}</translation>
+<translation id="5375577065097716013">‏חיפוש תמונה בעזרת Google Lens <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">גישה רק לאתרים ספציפיים</translation>
 <translation id="5414836363063783498">בתהליך אימות…</translation>
 <translation id="5423934151118863508">הדפים שבהם ביקרת בתדירות הגבוהה ביותר יופיעו כאן</translation>
@@ -648,6 +661,7 @@
 <translation id="5599941490345670218">‏Google Assistant יכולה להשלים עבורך פעולות באתרים שונים</translation>
 <translation id="5620163320393916465">אין סיסמאות שמורות</translation>
 <translation id="5620928963363755975">איתור הקבצים והדפים שלך ב'הורדות' דרך הלחצן 'אפשרויות נוספות'</translation>
+<translation id="562168087174703495">אי אפשר ליצור קישור לטקסט המודגש. יש לשתף קישור לדף.</translation>
 <translation id="562289928968387744">ניהול התגובות</translation>
 <translation id="5626134646977739690">שם:</translation>
 <translation id="5628604359369369630">לא נקראו – זמינים במצב אופליין</translation>
@@ -761,6 +775,7 @@
 <translation id="6312687380483398334">אפליקציות אינטרנט (שקט)</translation>
 <translation id="6316139424528454185">‏אין תמיכה בגרסת Android</translation>
 <translation id="6324034347079777476">‏סנכרון מערכת Android מושבת</translation>
+<translation id="6324977638108296054">אי אפשר ליצור קישור לטקסט המודגש</translation>
 <translation id="6333140779060797560">שיתוף באמצעות <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">הצפנה</translation>
 <translation id="6341580099087024258">לשאול איפה לשמור קבצים</translation>
@@ -792,6 +807,7 @@
 <translation id="6477928892249167417">נראה שהאתרים האלה חשובים לך:</translation>
 <translation id="6482749332252372425">הורדת <ph name="FILE_NAME" /> נכשלה מאחר שחסר נפח אחסון.</translation>
 <translation id="6489610539826642779">רשימת קריאה <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
+<translation id="6490496612063106490">קישור לטקסט המודגש</translation>
 <translation id="6496823230996795692">כדי להשתמש באפליקציה <ph name="APP_NAME" /> בפעם הראשונה יש להתחבר לאינטרנט.</translation>
 <translation id="6508722015517270189">‏הפעלה מחדש של Chrome</translation>
 <translation id="6527303717912515753">שיתוף</translation>
@@ -990,6 +1006,7 @@
 <translation id="784934925303690534">טווח זמן</translation>
 <translation id="7851858861565204677">מכשירים אחרים</translation>
 <translation id="7857691613771368249">תוצג שאלה מתי יש לשמור קבצים</translation>
+<translation id="7859988229622350291">אין לתרגם אף פעם</translation>
 <translation id="7875915731392087153">הודעת אימייל חדשה</translation>
 <translation id="7876243839304621966">הסרת הכול</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{יש לך דף אחד (<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" />) שלא נקרא}two{יש לך <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> דפים שלא נקראו}many{יש לך <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> דפים שלא נקראו}other{יש לך <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> דפים שלא נקראו}}</translation>
@@ -1053,7 +1070,6 @@
 <translation id="8218622182176210845">ניהול החשבון</translation>
 <translation id="8223642481677794647">תפריט כרטיס הפיד</translation>
 <translation id="8224471946457685718">‏הורדת מאמרים עבורך ב-Wi-Fi</translation>
-<translation id="8232956427053453090">שמירת הנתונים</translation>
 <translation id="8233540874193135768">‏כדי לסרוק קוד QR, יש להשתמש במכשיר עם מצלמה.</translation>
 <translation id="8250920743982581267">מסמכים</translation>
 <translation id="825412236959742607">‏הדף הזה משתמש בנפח זיכרון גדול מדי, לכן מערכת Chrome הסירה חלק מהתוכן.</translation>
@@ -1067,6 +1083,7 @@
 <translation id="8310344678080805313">כרטיסיות רגילות</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> ועוד אתרים</translation>
 <translation id="8327155640814342956">‏כדי ליהנות מחוויית הגלישה הטובה ביותר, יש לפתוח את Chrome כדי לעדכן אותו</translation>
+<translation id="834313815369870491">אין לתרגם את האתרים אף פעם</translation>
 <translation id="8349013245300336738">מיון לפי כמות הנתונים שבהם נעשה שימוש</translation>
 <translation id="835847953965672673">שוחזרו <ph name="NUMBER_OF_DOWNLOADS" /> הורדות</translation>
 <translation id="8364299278605033898">הצגת אתרים פופולריים</translation>

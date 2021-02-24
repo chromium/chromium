@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
 <translation id="1018656279737460067">Չեղյալ են հայտարարվել</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> հոսք, <ph name="CPU_MAX_CLOCK_SPEED" /> ԳՀց)</translation>
 <translation id="1059913517121127803">Չհաջողվեց սկսել սկանավորումը</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Հայտնաբերվել է հրապատ</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">Անհայտ սխալ:</translation>
 <translation id="1204296502688602597">DNS-ի հապաղում</translation>
 <translation id="123124571410524056">Հնարավոր է, որ ցանցային պորտալ կա</translation>
-<translation id="1238191093934674082">OpenVPN</translation>
 <translation id="1238612778414822719">HTTPS-ի հապաղում</translation>
 <translation id="1270369111467284986">Հնարավոր մուտքի էջ</translation>
 <translation id="1290331692326790741">Թույլ ազդանշան</translation>
@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">Դադարեցվել է – Թանաք չկա</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS լուծիչը առկա է</translation>
+<translation id="1717874160321062422">Կառավարում են՝ <ph name="FIRST_MANAGER" /> և <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Սկանավորումը չեղարկվում է</translation>
 <translation id="1851218745569890714">Տեսակոնֆերանս</translation>
@@ -59,6 +60,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Մոտակա սարքերը գտնելու համար միացրեք Bluetooth-ը</translation>
 <translation id="2364498172489649528">Անցել է ստուգում</translation>
+<translation id="2365324413026422635">Հնարավոր չէ փորձարկել մարտկոցի լիցքավորումը, եթե այն լրիվ լիցքավորված է</translation>
 <translation id="2391082728065870591">Ուղարկել կարծիքների վերաբերյալ հաշվետվություն</translation>
 <translation id="2418150275289244458">Բացել կարգավորումներում</translation>
 <translation id="2446553403094072641">Լողացող կետի ճշգրտությունը</translation>
@@ -91,6 +93,7 @@
 <translation id="3226405216343213872">Սկաներների որոնում</translation>
 <translation id="3246869037381808805">Տպման առաջադրանքները, որոնք 1 օրից հին են, կհեռացվեն</translation>
 <translation id="3268178239013324452">Չհաջողվեց տպել – Կափարիչը բաց է</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" /> ԳՀց</translation>
 <translation id="3310640316857623290">DNS-ի հապաղումը մեծ առավելություն ունի թույլատրելի սահմանափակման նկատմամբ</translation>
 <translation id="3328783797891415197">Փորձարկում</translation>
 <translation id="3368922792935385530">Միացված է</translation>
@@ -125,6 +128,7 @@
 <translation id="4155551848414053977">Համոզվեք, որ սկաներն աշխատում է և հասանելի է ցանցի կամ ուղիղ կապի միջոցով</translation>
 <translation id="4170700058716978431">ՁԱԽՈՂՎԵՑ</translation>
 <translation id="4176463684765177261">Անջատված է</translation>
+<translation id="4222698289790462549">Ընթացիկ արագությունը</translation>
 <translation id="4227825898293920515">Գաղտնաբառի գործողության ժամկետը <ph name="TIME" />ից կսպառվի</translation>
 <translation id="4228041325992544252"><ph name="TOTAL_MEMORY" /> ԳԲ-ից հասանելի է <ph name="AVAILABLE_MEMORY" /> ԳԲ։</translation>
 <translation id="4238516577297848345">Տպելու ընթացիկ առաջադրանքներ չկան</translation>
@@ -241,6 +245,7 @@
 <translation id="6325525973963619867">Սխալ առաջացավ</translation>
 <translation id="636850387210749493">Ձեռնարկության գրանցում</translation>
 <translation id="641081527798843608">Թեմաների համընկնում</translation>
+<translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Լավ</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Ադմինիստրատոր՝ <ph name="MANAGER" /></translation>

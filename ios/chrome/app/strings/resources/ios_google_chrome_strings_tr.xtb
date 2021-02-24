@@ -39,7 +39,6 @@
 <translation id="417201473131094001">Chrome Canary'de desteklenmiyor</translation>
 <translation id="424864128008805179">Chrome oturumu kapatılsın mı?</translation>
 <translation id="4249068189593983585">Chrome için ipucu. Sekmelerle ilgili daha fazla seçenek görmek için ekranınızın altında veya üstünde görünen araç çubuğunda Sekmeleri Göster düğmesine dokunup basılı tutun.</translation>
-<translation id="4354293865557736921">Chrome verilerinizi bu cihazdan temizlemeyi veya saklamayı seçin.</translation>
 <translation id="4523886039239821078">Bazı eklentiler Chrome'un kilitlenmesine neden oluyor. Lütfen şunların yüklemelerini kaldırın:</translation>
 <translation id="4633328489441962921">Chrome, güncellemeleri denetleyemiyor</translation>
 <translation id="4698415050768537821">Chrome, şifrelerin tümünü kontrol edemedi. Yarın tekrar deneyin veya <ph name="BEGIN_LINK" />Google Hesabınızdaki şifreleri kontrol edin<ph name="END_LINK" />.</translation>
@@ -72,6 +71,7 @@
 <translation id="7265369419224458312">Bilgisayarınızda açtığınız sekmelere doğrudan buradan erişin. Bunun için bilgisayarınızda Chrome'u açmanız ve menüye gidip "Chrome'da oturum aç…" seçeneğini belirlemeniz yeterlidir.</translation>
 <translation id="7272930098487145294">Resimleri kaydetmek için Ayarlar'a dokunup Chrome'un resimlerinize eklemesine izin verin</translation>
 <translation id="7400722733683201933">Google Chrome hakkında</translation>
+<translation id="7501046334262221972">Chrome'u varsayılan tarayıcınız yapmak için Ayarlar'ı açın. Varsayılan Tarayıcı Uygulaması'na dokunup Chrome'u seçin.</translation>
 <translation id="756809126120519699">Chrome verileri temizlendi</translation>
 <translation id="7626032353295482388">Chrome'a Hoş Geldiniz</translation>
 <translation id="7662994914830945754">Chrome kullandığınız her yerde sekmelerinizi görmek için oturum açın ve senkronizasyonu etkinleştirin</translation>

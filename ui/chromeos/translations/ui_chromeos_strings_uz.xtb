@@ -331,7 +331,6 @@
 <translation id="4706042980341760088">Tamil (yozuv mashinkasi klaviaturasi)</translation>
 <translation id="4711094779914110278">Turk tili</translation>
 <translation id="4712283082407695269">“<ph name="PATH" />” ochilmoqda</translation>
-<translation id="4713544552769165154">Ushbu fayl Mac platformasidagi kompyuterlar uchun ishlab chiqilgan va qurilmangizdagi Chrome OT‘da ishga tushmaydi. Uni ochishga mos ilova topish uchun <ph name="BEGIN_LINK" />Chrome internet do‘koniga<ph name="END_LINK" /> tashrif buyuring. <ph name="BEGIN_LINK_HELP" />Batafsil<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> ta rasm saqlab qolindi</translation>
 <translation id="4725511304875193254">Korgi</translation>
 <translation id="4732760563705710320">Cast-qurilmangizda bu video qo‘llab-quvvatlanmaydi.</translation>
@@ -464,8 +463,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5833610766403489739">Fayl topilmadi. Yuklanmalarni saqlash jildi sozlamasini tekshiring va qaytadan urinib ko‘ring.</translation>
 <translation id="5838451609423551646">Barcha elementlar tanlovi bekor qilindi.</translation>
 <translation id="5838825566232597749">AQSH (Workman, xalqaro)</translation>
-<translation id="5850516540536751549">Bu turdagi fayl qo‘llab-quvvatlanmaydi. Bu faylni ocha oladigan ilovani topish uchun <ph name="BEGIN_LINK" />Chrome Internet do‘koniga<ph name="END_LINK" /> kiring.
-  <ph name="BEGIN_LINK_HELP" />Batafsil<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Hozircha hech nima yo‘q...</translation>
 <translation id="5911887972742538906">Linux ilovasini o‘rnatishda xatolik yuz berdi.</translation>
 <translation id="5912396950572065471">Format</translation>
@@ -675,7 +672,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8038111231936746805">(standart)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> audio</translation>
 <translation id="8045462269890919536">Roman tili</translation>
-<translation id="8052887694493382350">Bu fayl Windows tizimida ishlaydigan kompyuterlar uchun yaratilgan. Buni qurilmangizda oʻrnatilgan Chrome OS tizimida ochish imkonsiz. <ph name="BEGIN_LINK_HELP" />Batafsil<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Barcha tahrirlar <ph name="DOWNLOADS_FOLDER" /> jildiga saqlanadi.</translation>
 <translation id="8079530767338315840">Takrorlash</translation>
 <translation id="8106045200081704138">Menga ulashilgan</translation>

@@ -93,6 +93,7 @@
 <translation id="1942765061641586207">Rozdzielczość grafiki</translation>
 <translation id="1943097386230153518">Zainstaluj nową usługę</translation>
 <translation id="1972984168337863910">Rozwiń panele informacji zwrotnej o plikach</translation>
+<translation id="1984456723671657197">Ten typ pliku nie jest obsługiwany. <ph name="BEGIN_LINK_HELP" />Więcej informacji<ph name="END_LINK_HELP" /> o otwieraniu plików w Chrome OS.</translation>
 <translation id="1995337122023280937">Otwórz lokalizację pliku</translation>
 <translation id="2001796770603320721">Zarządzaj na Dysku</translation>
 <translation id="2009067268969781306">Sformatowanie dysku spowoduje usunięcie wszystkich zapisanych na nim danych. Nie można tego cofnąć.</translation>
@@ -331,7 +332,6 @@
 <translation id="4706042980341760088">Tamilski z klawiaturą jak na maszynie do pisania</translation>
 <translation id="4711094779914110278">Turecki</translation>
 <translation id="4712283082407695269">Otwieram plik „<ph name="PATH" />”</translation>
-<translation id="4713544552769165154">Ten plik został opracowany z myślą o komputerach Mac. Jest on niezgodny z Twoim urządzeniem z Chrome OS. Spróbuj znaleźć aplikację zastępczą w <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />. <ph name="BEGIN_LINK_HELP" />Więcej informacji<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">Kopie zapasowe <ph name="FILE_COUNT" /> zdjęć zostały utworzone</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4732760563705710320">Twoje urządzenie przesyłające nie obsługuje tego filmu.</translation>
@@ -465,8 +465,6 @@
 <translation id="5833610766403489739">Plik gdzieś się zawieruszył. Sprawdź ustawienie lokalizacji pobierania i spróbuj ponownie.</translation>
 <translation id="5838451609423551646">Usunięto wszystkie elementy z zaznaczenia.</translation>
 <translation id="5838825566232597749">Amerykańska klawiatura międzynarodowa Workman</translation>
-<translation id="5850516540536751549">Ten typ plików nie jest obsługiwany. W <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> znajdziesz aplikację umożliwiającą otwieranie plików tego typu.
-    <ph name="BEGIN_LINK_HELP" />Więcej informacji<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Niczego tu nie ma...</translation>
 <translation id="5911887972742538906">Podczas instalowania aplikacji na Linuksa wystąpił błąd.</translation>
 <translation id="5912396950572065471">Format</translation>
@@ -670,13 +668,13 @@
 <translation id="7972920761225148017">Francuski (Szwajcaria)</translation>
 <translation id="7980421588063892270">Angielski (USA) z klawiaturą Colemak</translation>
 <translation id="7982283708762922719">Wysokość</translation>
+<translation id="79907182588096956">To jest plik na komputery z oprogramowaniem Windows. Twoje urządzenie z Chrome OS go nie obsługuje. <ph name="BEGIN_LINK_HELP" />Więcej informacji<ph name="END_LINK_HELP" /> o otwieraniu plików w Chrome OS.</translation>
 <translation id="8008366997883261463">Pies</translation>
 <translation id="8028993641010258682">Rozmiar</translation>
 <translation id="803771048473350947">Plik</translation>
 <translation id="8038111231936746805">(domyślnie)</translation>
 <translation id="8042602468072383151">Plik audio <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">Rumuński</translation>
-<translation id="8052887694493382350">To jest plik na komputery z oprogramowaniem Windows. Twoje urządzenie z Chrome OS go nie obsługuje. <ph name="BEGIN_LINK_HELP" />Więcej informacji<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Wszystkie zmiany zostaną zapisane w folderze <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Powtórz</translation>
 <translation id="8106045200081704138">Udostępnione dla mnie</translation>
@@ -750,6 +748,7 @@
 <translation id="8900820606136623064">Węgierski</translation>
 <translation id="8919081441417203123">Duński</translation>
 <translation id="8965697826696209160">Nie ma wystarczającej ilości miejsca.</translation>
+<translation id="8970501467542182729">To jest plik na komputery Mac. Twoje urządzenie z Chrome OS go nie obsługuje. <ph name="BEGIN_LINK_HELP" />Więcej informacji<ph name="END_LINK_HELP" /> o otwieraniu plików w Chrome OS.</translation>
 <translation id="8997962250644902079">Chiński (tradycyjny) pinyin</translation>
 <translation id="9017798300203431059">rosyjska klawiatura fonetyczna</translation>
 <translation id="9034924485347205037">Pliki Linuksa</translation>

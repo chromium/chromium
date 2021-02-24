@@ -21,6 +21,7 @@
 <translation id="1446450296470737166">‏התרת שליטה מלאה על מכשירי MIDI</translation>
 <translation id="1509960214886564027">ייתכן שהתכונות של חלק גדול מהאתרים לא יפעלו כראוי</translation>
 <translation id="1620510694547887537">מצלמה</translation>
+<translation id="1644574205037202324">היסטוריה</translation>
 <translation id="1660204651932907780">מתן הרשאה לאתרים להשמיע צלילים (מומלץ)</translation>
 <translation id="1677097821151855053">‏קובצי cookie ונתונים אחרים מאתרים משמשים כדי לזכור את הפרטים שלך, למשל כדי להכניס אותך לחשבון או להציג מודעות בהתאמה אישית. אפשר לנהל את קובצי ה-cookie מכל האתרים דרך ה<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
 <translation id="1688867105868176567">למחוק את נתוני האתר?</translation>
@@ -98,6 +99,7 @@
 <translation id="3744111561329211289">סנכרון ברקע</translation>
 <translation id="3763247130972274048">בלחיצה פעמיים על הסרטון בצד ימין או שמאל אפשר לדלג על 10 שניות</translation>
 <translation id="381841723434055211">מספרי טלפון</translation>
+<translation id="3835233591525155343">השימוש שלך במכשיר</translation>
 <translation id="385051799172605136">חזרה</translation>
 <translation id="3859306556332390985">הרצה קדימה</translation>
 <translation id="3955193568934677022">אתרים יוכלו להפעיל תוכן מוגן (מומלץ)</translation>
@@ -114,6 +116,7 @@
 <translation id="429312253194641664">אתר מסוים מפעיל מדיה</translation>
 <translation id="42981349822642051">הרחבה</translation>
 <translation id="4336434711095810371">ניקוי כל הנתונים</translation>
+<translation id="4402755511846832236">אתרים לא יוכלו לדעת מתי המכשיר הזה משמש אותך באופן פעיל</translation>
 <translation id="4433925000917964731">‏גרסת Lite של הדף נוצרה על ידי Google</translation>
 <translation id="4434045419905280838">חלונות קופצים והפניות אוטומטיות</translation>
 <translation id="445467742685312942">מתן הרשאה לאתרים להציג תוכן מוגן</translation>
@@ -126,6 +129,7 @@
 <translation id="4670064810192446073">מציאות מדומה</translation>
 <translation id="4708011789095599544">‏האם למחוק את קובצי ה-cookie ונתוני אתר נוספים של אתר זה?</translation>
 <translation id="4751476147751820511">חיישני תנועה או אור</translation>
+<translation id="4836046166855586901">תוצג שאלה כשאתר יבקש לדעת מתי המכשיר הזה משמש אותך באופן פעיל</translation>
 <translation id="4883854917563148705">לא ניתן לאפס הגדרות מנוהלות</translation>
 <translation id="4887024562049524730">תוצג שאלה לפני מתן הרשאה לאתרים להשתמש במכשיר המציאות המדומה ובנתוני המציאות המדומה שלך (מומלץ)</translation>
 <translation id="4962975101802056554">ביטול כל ההרשאות בשביל המכשיר</translation>

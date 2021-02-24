@@ -331,7 +331,6 @@
 <translation id="4706042980341760088">Тамільська, друкарська розкладка</translation>
 <translation id="4711094779914110278">Турецька</translation>
 <translation id="4712283082407695269">Файл "<ph name="PATH" />" відкривається</translation>
-<translation id="4713544552769165154">Цей файл створено для комп’ютерів, на яких використовується програмне забезпечення Macintosh. Він несумісний із вашим пристроєм, оскільки на ньому встановлено ОС Chrome. Знайдіть відповідний додаток у <ph name="BEGIN_LINK" />Веб-магазині Chrome<ph name="END_LINK" />.<ph name="BEGIN_LINK_HELP" />Докладніше<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">Імпортовано <ph name="FILE_COUNT" /> фото</translation>
 <translation id="4725511304875193254">Коргі</translation>
 <translation id="4732760563705710320">На жаль, ваш пристрій для трансляції не підтримує це відео.</translation>
@@ -465,8 +464,6 @@
 <translation id="5833610766403489739">Файл загубився. Перевірте налаштування папки завантаження та повторіть спробу.</translation>
 <translation id="5838451609423551646">З вибраного видалено всі записи.</translation>
 <translation id="5838825566232597749">US Workman, міжнародна</translation>
-<translation id="5850516540536751549">Цей тип файлу не підтримується. Відвідайте <ph name="BEGIN_LINK" />Веб-магазин Chrome<ph name="END_LINK" />, щоб знайти додаток, який може відкрити файл цього типу.
-    <ph name="BEGIN_LINK_HELP" />Докладніше<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Тут нічого немає…</translation>
 <translation id="5911887972742538906">Сталася помилка під час встановлення додатка Linux.</translation>
 <translation id="5912396950572065471">Формат</translation>
@@ -676,7 +673,6 @@
 <translation id="8038111231936746805">(за умовчанням)</translation>
 <translation id="8042602468072383151">Аудіо <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">Румунська</translation>
-<translation id="8052887694493382350">Цей файл створено для ПК з програмним забезпеченням Windows. Він несумісний із вашим пристроєм, оскільки на ньому встановлено ОС Chrome. <ph name="BEGIN_LINK_HELP" />Докладніше<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Усі зміни буде збережено в папці "<ph name="DOWNLOADS_FOLDER" />".</translation>
 <translation id="8079530767338315840">Повторити</translation>
 <translation id="8106045200081704138">Відкриті для мене</translation>

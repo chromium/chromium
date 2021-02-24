@@ -331,7 +331,6 @@
 <translation id="4706042980341760088">టైప్‌రైటర్ కీబోర్డ్‌తో తమిళం</translation>
 <translation id="4711094779914110278">టర్కిష్</translation>
 <translation id="4712283082407695269">"<ph name="PATH" />"ను తెరుస్తోంది</translation>
-<translation id="4713544552769165154">ఈ ఫైల్ Macintosh సాఫ్ట్‌వేర్‌ను ఉపయోగించే కంప్యూటర్ కోసం రూపొందించబడింది. ఇది Chrome OSను అమలు చేసే మీ పరికరానికి అనుకూలమైనది కాదు. దయచేసి తగిన ప్రత్యామ్నాయ యాప్‌ కోసం <ph name="BEGIN_LINK" />Chrome వెబ్ స్టోర్<ph name="END_LINK" />లో శోధించండి.<ph name="BEGIN_LINK_HELP" />మరింత తెలుసుకోండి<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> ఫోటోలు బ్యాకప్ చేయబడ్డాయి</translation>
 <translation id="4725511304875193254">కార్గి</translation>
 <translation id="4732760563705710320">క్షమించండి, మీ cast పరికరం ఈ వీడియోకు మద్దతివ్వదు.</translation>
@@ -465,8 +464,6 @@
 <translation id="5833610766403489739">ఈ ఫైల్ ఉన్న స్థలం తెలియదు. దయచేసి మీ డౌన్‌లోడ్ స్థానం సెట్టింగ్‌ను తనిఖీ చేసి, మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="5838451609423551646">అన్ని నమోదుల ఎంపిక తీసివేయబడింది.</translation>
 <translation id="5838825566232597749">US వర్క్‌మాన్ అంతర్జాతీయం</translation>
-<translation id="5850516540536751549">ఈ ఫైల్ రకానికి మద్దతు లేదు. దయచేసి ఈ రకమైన ఫైల్‌ను తెరవగల యాప్‌ను కనుగొనడానికి <ph name="BEGIN_LINK" />Chrome వెబ్ స్టోర్<ph name="END_LINK" />ను సందర్శించండి.
-    <ph name="BEGIN_LINK_HELP" />మరింత తెలుసుకోండి<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">ఇక్కడ చూడటానికి ఏమీ లేదు...</translation>
 <translation id="5911887972742538906">మీ Linux అప్లికేషన్ యొక్క ఇన్‌స్టాలేషన్ సమయంలో ఎర్రర్ ఏర్పడింది.</translation>
 <translation id="5912396950572065471">ఫార్మాట్</translation>
@@ -676,7 +673,6 @@
 <translation id="8038111231936746805">(డిఫాల్ట్)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> ఆడియో</translation>
 <translation id="8045462269890919536">రొమేనియన్</translation>
-<translation id="8052887694493382350">ఈ ఫైల్ Windows సాఫ్ట్‌వేర్‌ను ఉపయోగించే PC కోసం రూపొందించినది. ఇది Chrome OSను అమలు చేసే మీ పరికరానికి అనుకూలంగా లేదు. <ph name="BEGIN_LINK_HELP" />మరింత తెలుసుకోండి<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">అన్ని సవరణలు <ph name="DOWNLOADS_FOLDER" />లో సేవ్ చేయబడతాయి.</translation>
 <translation id="8079530767338315840">పునరావృతం చేయి</translation>
 <translation id="8106045200081704138">నాతో భాగస్వామ్యం చేసినవి</translation>

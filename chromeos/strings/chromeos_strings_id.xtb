@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
 <translation id="1018656279737460067">Dibatalkan</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> thread, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1059913517121127803">Tidak dapat memulai pemindaian</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall terdeteksi</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">Kesalahan tak dikenal.</translation>
 <translation id="1204296502688602597">Latensi DNS</translation>
 <translation id="123124571410524056">Portal dicurigai</translation>
-<translation id="1238191093934674082">VPN Terbuka</translation>
 <translation id="1238612778414822719">Latensi HTTPS</translation>
 <translation id="1270369111467284986">Captive portal dicurigai</translation>
 <translation id="1290331692326790741">Sinyal lemah</translation>
@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">Dihentikan - Tinta habis</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Keberadaan DNS Resolver</translation>
+<translation id="1717874160321062422">Dikelola oleh <ph name="FIRST_MANAGER" /> dan <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Membatalkan pemindaian</translation>
 <translation id="1851218745569890714">Konferensi Video</translation>
@@ -59,6 +60,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Aktifkan Bluetooth untuk menemukan perangkat di sekitar</translation>
 <translation id="2364498172489649528">Lulus</translation>
+<translation id="2365324413026422635">Uji pengisian daya baterai tidak dapat dilakukan saat baterai penuh</translation>
 <translation id="2391082728065870591">Kirim Laporan Masukan</translation>
 <translation id="2418150275289244458">Buka di setelan</translation>
 <translation id="2446553403094072641">Akurasi floating point</translation>
@@ -91,6 +93,7 @@
 <translation id="3226405216343213872">Mencari pemindai</translation>
 <translation id="3246869037381808805">Tugas pencetakan yang sudah lebih dari 1 hari akan dihapus</translation>
 <translation id="3268178239013324452">Gagal - Tutup terbuka</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">Latensi DNS jauh melebihi ambang batas yang diizinkan</translation>
 <translation id="3328783797891415197">Pengujian sedang berjalan</translation>
 <translation id="3368922792935385530">Terhubung</translation>
@@ -102,6 +105,7 @@
 <translation id="3459509316159669723">Pencetakan</translation>
 <translation id="3488065109653206955">Diaktifkan sebagian</translation>
 <translation id="3527036260304016759">Gagal - Error tidak diketahui</translation>
+<translation id="3532980081107202182">Sekitar <ph name="MIN_REMAINING" /> menit lagi</translation>
 <translation id="357889014807611375">Wi-Fi berbayar</translation>
 <translation id="3595596368722241419">Baterai penuh</translation>
 <translation id="360565022852130722">Jaringan Wi-Fi diamankan dengan protokol WEP 802.1x yang lemah</translation>
@@ -125,6 +129,7 @@
 <translation id="4155551848414053977">Pastikan pemindai dinyalakan dan tersedia melalui jaringan Anda atau koneksi langsung</translation>
 <translation id="4170700058716978431">GAGAL</translation>
 <translation id="4176463684765177261">Dinonaktifkan</translation>
+<translation id="4222698289790462549">Kecepatan Saat Ini</translation>
 <translation id="4227825898293920515">Sandi kedaluwarsa dalam <ph name="TIME" /></translation>
 <translation id="4228041325992544252">Tersedia <ph name="AVAILABLE_MEMORY" /> GB dari <ph name="TOTAL_MEMORY" /> GB.</translation>
 <translation id="4238516577297848345">Tidak ada tugas pencetakan yang sedang berlangsung</translation>
@@ -241,6 +246,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6325525973963619867">Gagal</translation>
 <translation id="636850387210749493">Pendaftaran perusahaan</translation>
 <translation id="641081527798843608">Kecocokan subjek</translation>
+<translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Lancar</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Dikelola oleh <ph name="MANAGER" /></translation>
@@ -327,6 +333,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8477551185774834963">Latensi DNS sedikit melebihi ambang batas yang diizinkan</translation>
 <translation id="8483248364096924578">Alamat IP</translation>
 <translation id="8503813439785031346">Nama Pengguna</translation>
+<translation id="8503836310948963452">Tinggal beberapa menit lagi...</translation>
 <translation id="8576249514688522074">Tidak diinisialisasi</translation>
 <translation id="8620617069779373398">Status roaming</translation>
 <translation id="8675354002693747642">Kunci yang dibagikan sebelumnya</translation>
@@ -358,6 +365,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="9106415115617144481">Memindai halaman <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Buka kunci</translation>
 <translation id="9149391708638971077">Jalankan pengujian Memori</translation>
+<translation id="9173638680043580060">Kurang dari satu menit lagi</translation>
 <translation id="9190063653747922532">L2TP/IPSec + kunci yang dibagikan sebelumnya</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Tidak diaktifkan</translation>

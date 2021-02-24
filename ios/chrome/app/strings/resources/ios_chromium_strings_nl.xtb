@@ -4,6 +4,7 @@
 <translation id="102360288709523007">Help Chromium te verbeteren door gebruiksstatistieken en crashrapporten naar Google te verzenden.</translation>
 <translation id="1185134272377778587">Over Chromium</translation>
 <translation id="1257458525759135959">Als je afbeeldingen wilt opslaan, tik je op Instellingen om ze door Chromium aan je foto's te laten toevoegen</translation>
+<translation id="1289216811211435351">Overschakelen naar Chromium</translation>
 <translation id="1361748954329991663">Chromium is verouderd. Als er geen update beschikbaar is in de <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, ondersteunt je apparaat nieuwe versies van Chromium mogelijk niet.</translation>
 <translation id="1431818719585918472">Laat Chromium je incognitotabbladen vergrendelen.</translation>
 <translation id="1472013873724362412">Je account werkt niet in Chromium. Neem contact op met je domeinbeheerder of gebruik een gewoon Google-account om je aan te melden.</translation>
@@ -34,6 +35,7 @@
 <translation id="4099085513035183040">Niet ondersteund in Chromium (bèta)</translation>
 <translation id="4166206055865952171">Chromium instellen als je standaardbrowser</translation>
 <translation id="4555020257205549924">Als deze functie is ingeschakeld, biedt Chromium aan pagina's die zijn geschreven in andere talen te vertalen met Google Translate. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
+<translation id="4585809515399340748">Je kunt Chromium nu gebruiken als je op links in berichten, documenten en andere apps tikt.</translation>
 <translation id="4681781466797808448">Chromium-scanner inschakelen</translation>
 <translation id="4787850887676698916">Tabbladen die je op andere apparaten in Chromium hebt geopend, worden hier weergegeven.</translation>
 <translation id="4828317641996116749">Chromium kan niet alle wachtwoorden checken. Probeer het later opnieuw.</translation>
@@ -42,9 +44,9 @@
 <translation id="5224391634244552924">Geen opgeslagen wachtwoorden. Chromium kan je wachtwoorden checken als je deze hebt opgeslagen.</translation>
 <translation id="5308226104666789935">Chromium kan niet checken op updates</translation>
 <translation id="5521125884468363740">Log in en schakel synchroniseren in om je tabbladen te bekijken vanaf elk apparaat waarop je Chromium gebruikt</translation>
-<translation id="5544795779875591523">Wil je je Chromium-gegevens voor dit apparaat verwijderen of behouden?</translation>
 <translation id="5573014823074921752">Chromium-tip. Voor meer tabbladopties tik je op de werkbalk onder- of bovenaan het scherm op de knop 'Tabbladen weergeven' en houd je deze vast.</translation>
 <translation id="5700709190537129682">Chromium kan je wachtwoorden niet checken</translation>
+<translation id="5742135483959137648">Chromium gebruiken om links te openen</translation>
 <translation id="5777187867430702742">Chromium-pagina</translation>
 <translation id="5862307444128926510">Welkom bij Chromium</translation>
 <translation id="5945387852661427312">Je logt in met een account dat wordt beheerd door <ph name="DOMAIN" />, waarmee je de eigenaar beheer geeft over je Chromium-gegevens. Je gegevens worden permanent gekoppeld aan dit account. Als je uitlogt van Chromium, worden je gegevens van dit apparaat verwijderd. Ze blijven echter opgeslagen in je Google-account.</translation>
@@ -63,6 +65,7 @@
 <translation id="7208566199746267865">Chromium bespaart je tijd door je accounts beschikbaar te maken op internet. Je kunt accounts toevoegen of verwijderen bij Instellingen.</translation>
 <translation id="725427773388857052">Chromium kan je beschermen tegen gegevenslekken, niet-beveiligde websites en meer.</translation>
 <translation id="7269362888766543920">Sommige add-ons kunnen ervoor zorgen dat Chromium crasht. Verwijder deze add-ons.</translation>
+<translation id="7313655110045230863">Open Instellingen om Chromium in te stellen als standaardbrowser. Tik op 'Standaard browser-app' en selecteer Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">De geselecteerde gegevens zijn verwijderd uit Chromium en van gesynchroniseerde apparaten. Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekopdrachten en activiteit uit andere Google-services) beschikbaar zijn via history.google.com.</translation>
 <translation id="7400689562045506105">Chromium overal gebruiken</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
 <translation id="1018656279737460067">रद्द</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> थ्रेड, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1059913517121127803">स्कैन करने की प्रोसेस शुरू नहीं हो सकी</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">फ़ायरवॉल पहचाना गया</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">अज्ञात गड़बड़ी.</translation>
 <translation id="1204296502688602597">डिवाइस और डीएनएस के बीच के इंतज़ार का समय</translation>
 <translation id="123124571410524056">पोर्टल में गड़बड़ी हो सकती है</translation>
-<translation id="1238191093934674082">खुला VPN</translation>
 <translation id="1238612778414822719">एचटीटीपीएस पेजों के खुलने में इंतज़ार का समय</translation>
 <translation id="1270369111467284986">कैप्टिव पोर्टल हो सकता है</translation>
 <translation id="1290331692326790741">कमज़ोर सिग्नल</translation>
@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">बंद हो गया - स्याही खत्म हो गई</translation>
 <translation id="1703835215927279855">लेटर</translation>
 <translation id="1706391837335750954">डीएनएस रिज़ॉल्वर मौजूद है</translation>
+<translation id="1717874160321062422">इसे <ph name="FIRST_MANAGER" /> और<ph name="SECOND_MANAGER" /> मैनेज करते हैं</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">स्कैन करने की प्रोसेस रद्द की जा रही है</translation>
 <translation id="1851218745569890714">वीडियो कॉन्फ़्रेंसिंग</translation>
@@ -59,6 +60,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> डीपीआई</translation>
 <translation id="2338501278241028356">आस-पास के डिवाइस खोजने के लिए ब्लूटूथ चालू करें</translation>
 <translation id="2364498172489649528">जांच में पास</translation>
+<translation id="2365324413026422635">बैटरी पूरी तरह चार्ज होने पर, चार्ज होने की जांच नहीं की जा सकती</translation>
 <translation id="2391082728065870591">सुझाव, शिकायत या राय की रिपोर्ट भेजें</translation>
 <translation id="2418150275289244458">'सेटिंग' में जाकर खोलें</translation>
 <translation id="2446553403094072641">फ़्लोटिंग पॉइंट ऐक्युरसी</translation>
@@ -91,6 +93,7 @@
 <translation id="3226405216343213872">स्कैनर खोजे जा रहे हैं</translation>
 <translation id="3246869037381808805">एक दिन से ज़्यादा पुरानी, प्रिंट की गई फ़ाइलों को हटा दिया जाएगा</translation>
 <translation id="3268178239013324452">प्रिंट नहीं हो पाया - प्रिंटर का दरवाज़ा खुला है</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3310640316857623290">डीएनएस, इंतज़ार की समयसीमा से बहुत ऊपर है</translation>
 <translation id="3328783797891415197">टेस्ट चल रहा है</translation>
 <translation id="3368922792935385530">कनेक्ट है</translation>
@@ -102,6 +105,7 @@
 <translation id="3459509316159669723">प्रिंट करना</translation>
 <translation id="3488065109653206955">आंशिक रूप से सक्रिय किया गया</translation>
 <translation id="3527036260304016759">प्रिंट नहीं हो पाया - अज्ञात गड़बड़ी</translation>
+<translation id="3532980081107202182">करीब <ph name="MIN_REMAINING" /> मिनट बचे हैं</translation>
 <translation id="357889014807611375">सीमित डेटा वाला वाई-फ़ाई</translation>
 <translation id="3595596368722241419">बैटरी पूरी हो गई</translation>
 <translation id="360565022852130722">यह वाई-फ़ाई नेटवर्क एक कमज़ोर प्रोटोकॉल WEP 802.1x से सुरक्षित है</translation>
@@ -125,6 +129,7 @@
 <translation id="4155551848414053977">पक्का करें कि स्कैनर चालू हो और आपके नेटवर्क या डायरेक्ट कनेक्शन के ज़रिए उपलब्ध हो</translation>
 <translation id="4170700058716978431">असफल</translation>
 <translation id="4176463684765177261">बंद किया गया</translation>
+<translation id="4222698289790462549">मौजूदा स्पीड</translation>
 <translation id="4227825898293920515"><ph name="TIME" /> में पासवर्ड की समयसीमा खत्म हो जाएगी</translation>
 <translation id="4228041325992544252"><ph name="TOTAL_MEMORY" /> जीबी में से <ph name="AVAILABLE_MEMORY" /> जीबी उपलब्ध है.</translation>
 <translation id="4238516577297848345">फ़िलहाल, कुछ प्रिंट नहीं हो रहा</translation>
@@ -241,6 +246,7 @@
 <translation id="6325525973963619867">विफल</translation>
 <translation id="636850387210749493">एंटरप्राइज़ नामांकन</translation>
 <translation id="641081527798843608">विषय मिलान</translation>
+<translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">अच्छा</translation>
 <translation id="6472207088655375767">एक बार इस्तेमाल होने वाला पासवर्ड (ओटीपी)</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> प्रबंधित करता है</translation>
@@ -327,6 +333,7 @@
 <translation id="8477551185774834963">डीएनएस, इंतज़ार की समयसीमा से थोड़ा ऊपर है</translation>
 <translation id="8483248364096924578">आईपी पता</translation>
 <translation id="8503813439785031346">उपयोगकर्ता नाम</translation>
+<translation id="8503836310948963452">बस कुछ मिनट और...</translation>
 <translation id="8576249514688522074">शुरू नहीं किया गया</translation>
 <translation id="8620617069779373398">रोमिंग की स्‍थिति</translation>
 <translation id="8675354002693747642">पहले से शेयर की गई कुंजी</translation>
@@ -358,6 +365,7 @@
 <translation id="9106415115617144481">पेज <ph name="PAGE_NUMBER" /> को स्कैन किया जा रहा है</translation>
 <translation id="9111102763498581341">अनलॉक करें</translation>
 <translation id="9149391708638971077">मेमोरी टेस्ट चलाएं</translation>
+<translation id="9173638680043580060">एक मिनट से कम बचा है</translation>
 <translation id="9190063653747922532">L2TP/IPsec + पूर्व-शेयर कुंजी</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">सक्रिय नहीं किया गया</translation>

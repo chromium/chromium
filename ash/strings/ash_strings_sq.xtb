@@ -405,6 +405,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4421231901400348175">Po ndan kontrollin e ekranit me <ph name="HELPER_NAME" /> përmes "Ndihmës në distancë".</translation>
 <translation id="4424159417645388645">Tavolina e punës 5</translation>
 <translation id="4430019312045809116">Volumi</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 njoftim i rëndësishëm}other{# njoftime të rëndësishme}}</translation>
 <translation id="4450893287417543264">Mos e shfaq përsëri</translation>
 <translation id="445864333228800152">Mirëmbrëma,</translation>
 <translation id="4458688154122353284">Ndalo regjistrimin e ekranit</translation>
@@ -476,6 +477,10 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4961318399572185831">Ekrani i transmetimit</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> orë e <ph name="MINUTES" /> min. e <ph name="SECONDS" /> sek.</translation>
 <translation id="4975771730019223894">Distinktivi i aplikacionit</translation>
+<translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
+        <ph name="NOTIFICATION_1" />,
+        <ph name="NOTIFICATION_2" />,
+        <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Fjalia tjetër</translation>
 <translation id="5030687792513154421">Koha mbaroi</translation>
 <translation id="5033299697334913360">Kliko diku për të regjistruar ekranin e plotë</translation>
@@ -489,6 +494,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5168181903108465623">Pajisjet e transmetimit janë të disponueshme</translation>
 <translation id="5170568018924773124">Shfaq në dosje</translation>
 <translation id="5176318573511391780">Regjistro ekranin e pjesshëm</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 njoftim tjetër}other{# njoftime të tjera}}</translation>
 <translation id="5207949376430453814">Thekso kursorin e tekstit</translation>
 <translation id="5208059991603368177">Aktive</translation>
 <translation id="5222676887888702881">Dil</translation>

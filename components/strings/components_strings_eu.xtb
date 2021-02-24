@@ -209,7 +209,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1671391448414634642"><ph name="SOURCE_LANGUAGE" /> darabilten orriak <ph name="TARGET_LANGUAGE" /> hizkuntzara itzuliko dira.</translation>
 <translation id="1676269943528358898">Eskuarki, <ph name="SITE" /> webguneak enkriptatzea erabiltzen du informazioa babesteko. Google Chrome <ph name="SITE" /> webgunera konektatzen saiatu denean, webguneak kredentzial desegokiak eta ezohikoak bidali ditu. Erasotzaile bat <ph name="SITE" /> webgunearen plantak egiten ari delako gerta daiteke hori, edo Wi-Fi sarean saioa hasteko pantailak konexioa eten duelako. Zure informazioa seguru dago, datuak trukatu aurretik eten baitu Google Chrome-k konexioa.</translation>
 <translation id="1682696192498422849">Ertz laburra lehenbizi</translation>
-<translation id="168693727862418163">Ezin izan da balidatu gidalerroaren balioa haren eskemarekin, eta ez ikusi egingo zaio.</translation>
+<translation id="168693727862418163">Ezin izan da baliozkotu gidalerroaren balioa haren eskemarekin, eta ez ikusi egingo zaio.</translation>
 <translation id="168841957122794586">Zerbitzariaren ziurtagiriak okerreko gako kriptografikoa du.</translation>
 <translation id="1697532407822776718">Prest zaude!</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -682,7 +682,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3634530185120165534">5. erretilua</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">Aplikazioa:</translation>
-<translation id="3650584904733503804">Behar bezala balidatu da</translation>
+<translation id="3650584904733503804">Behar bezala baliozkotu da</translation>
 <translation id="3655670868607891010">Hau maiz agertzen bazaizu, saiatu honekin: <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Zuzenketa</translation>
 <translation id="3664782872746246217">Gako-hitzak:</translation>
@@ -901,7 +901,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4492519888999857993">Eginbide hauek modu lehenetsian daude desgaituta. Ez dira egongo erabilgarri Chrome-ren hurrengo bertsioetan.</translation>
 <translation id="4493480324863638523">URLak ez du balio. Eskema estandarreko URLa izan behar du, hala nola "http://adibidea.eus" edo "https://adibidea.eus".</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
-<translation id="4506176782989081258">Balidazio-errorea: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4506176782989081258">Baliozkotze-errorea: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4506599922270137252">Sistemaren administratzailearekin harremanetan jarri.</translation>
 <translation id="450710068430902550">Administratzailearekin partekatzea</translation>
 <translation id="4508814173490746936">Ezin izan da erabili Touch ID</translation>
@@ -961,7 +961,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4756388243121344051">&amp;Historia</translation>
 <translation id="4758311279753947758">Gehitu harremanetarako informazioa</translation>
 <translation id="4761104368405085019">Erabili mikrofonoa</translation>
-<translation id="4764776831041365478">Baliteke <ph name="URL" /> helbideko web-orria tarte batez ez funtzionatzea edo beste web-helbide batera behin betiko aldatu izatea.</translation>
+<translation id="4764776831041365478">Baliteke <ph name="URL" /> helbideko web-orria tarte batez ez funtzionatzea edo beste web-helbide batera betiko aldatu izatea.</translation>
 <translation id="4766713847338118463">Bi grapa behean</translation>
 <translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
         Jarduera hauek gailuan gordeko dira:
@@ -1025,6 +1025,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4995216769782533993">Berretsi segurtasun-kodea txartelaren xehetasunak webgune honekin partekatzeko</translation>
 <translation id="4995474875135717171">Aldatze-data:</translation>
 <translation id="5002932099480077015">Gaitzen bada, Chrome-k txartelaren kopia bat gordeko du gailuan, inprimakiak bizkorrago betetzeko.</translation>
+<translation id="5011561501798487822">Hautemandako hizkuntza</translation>
 <translation id="5015510746216210676">Gailuaren izena:</translation>
 <translation id="5017554619425969104">Kopiatu duzun testua</translation>
 <translation id="5018422839182700155">Ezin da ireki orri hau</translation>
@@ -1117,7 +1118,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5308380583665731573">Konektatu</translation>
 <translation id="5308689395849655368">Hutsegite-txostenak bidaltzeko aukera desgaituta dago.</translation>
 <translation id="5314967030527622926">Koadernagailua</translation>
-<translation id="5316812925700871227">Biratu ezkerrera</translation>
+<translation id="5316812925700871227">Biratu ezkerretara</translation>
 <translation id="5317780077021120954">Gorde</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="NUM_MATCHES" /> partidatik <ph name="MATCH_POSITION" />garrena</translation>
 <translation id="5324080437450482387">Aukeratu harremanetarako informazioa</translation>
@@ -1143,7 +1144,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5426179911063097041"><ph name="SITE" /> webguneak jakinarazpenak bidali nahi dizkizu</translation>
 <translation id="542872847390508405">Gonbidatu gisa arakatzen ari zara</translation>
 <translation id="5430298929874300616">Kendu laster-marka</translation>
-<translation id="5439770059721715174">Eskemaren balidazio-errorea gertatu da ("<ph name="ERROR_PATH" />"): <ph name="ERROR" /></translation>
+<translation id="5439770059721715174">Eskemaren baliozkotze-errorea gertatu da ("<ph name="ERROR_PATH" />"): <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">Alderantzizko ordenan, ahoz gora</translation>
 <translation id="5447765697759493033">Webgune hau ez da itzuliko</translation>
 <translation id="5452270690849572955">Ezin da aurkitu <ph name="HOST_NAME" /> webguneko orria</translation>
@@ -1316,7 +1317,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6080696365213338172">Administratzaileak emandako ziurtagiria erabilita atzitu duzu edukia. <ph name="DOMAIN" /> domeinuari bidalitako datuak administratzaileak atzeman ditzake.</translation>
 <translation id="6094273045989040137">Egin oharpen bat</translation>
 <translation id="6104072995492677441">JIS B6</translation>
-<translation id="6106989379647458772">Baliteke <ph name="PAGE" /> helbideko web-orria ez funtzionatzea edo beste web-helbide batera behin betiko aldatu izatea.</translation>
+<translation id="6106989379647458772">Baliteke <ph name="PAGE" /> helbideko web-orria ez funtzionatzea edo beste web-helbide batera betiko aldatu izatea.</translation>
 <translation id="6107012941649240045">Nori jaulkia:</translation>
 <translation id="610911394827799129">Google-ko kontuko arakatze-historiaren bestelako datu batzuk gera litezke <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> webgunean.</translation>
 <translation id="6116338172782435947">Ikusi arbelean kopiatzen ditudan testuak eta irudiak</translation>
@@ -1628,7 +1629,7 @@ Xehetasun gehiago:
 <translation id="7440140511386898319">Arakatu konexiorik gabe</translation>
 <translation id="7441627299479586546">Gidalerroen subjektu okerra</translation>
 <translation id="7442725080345379071">Laranja argia</translation>
-<translation id="7445762425076701745">Ezin da konektatuta zauden zerbitzariaren identitatea guztiz balidatu. Zure sarean soilik balio duen izena erabiltzen du konektatua zauden zerbitzariak eta, beraz, kanpoko ziurtagiri-emaileek ezin dute horren jabetza balidatu. Ziurtagiri-emaile batzuek, hala ere, izen horietarako ziurtagiriak jaulkiko dituztenez, ezinezkoa da ziurtatzea nahi duzun webgunera edo erasotzaile batera konektatuta zauden.</translation>
+<translation id="7445762425076701745">Ezin da konektatuta zauden zerbitzariaren identitatea guztiz baliozkotu. Zure sarean soilik balio duen izena erabiltzen du konektatua zauden zerbitzariak eta, beraz, kanpoko ziurtagiri-emaileek ezin dute horren jabetza baliozkotu. Ziurtagiri-emaile batzuek, hala ere, izen horietarako ziurtagiriak jaulkiko dituztenez, ezinezkoa da ziurtatzea nahi duzun webgunera edo erasotzaile batera konektatuta zauden.</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /> arazoari buruz.</translation>
 <translation id="7455133967321480974">Erabili ezarpen lehenetsi orokorra (blokeatzea)</translation>
 <translation id="7460618730930299168">Bideoaren bistaratze-xehetasunak ez datoz bat hautatu dituzunekin. Aurrera egin nahi duzu?</translation>

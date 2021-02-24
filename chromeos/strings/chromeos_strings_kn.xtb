@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="kn">
 <translation id="1018656279737460067">ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ಥ್ರೆಡ್‌ಗಳು, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1059913517121127803">ಸ್ಕ್ಯಾನ್ ಮಾಡುವುದನ್ನು ಪ್ರಾರಂಭಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ಫೈರ್‌ವಾಲ್ ಅನ್ನು ಪತ್ತೆಹಚ್ಚಲಾಗಿದೆ</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">ಅಪರಿಚಿತ ದೋಷ.</translation>
 <translation id="1204296502688602597">DNS ವಿಳಂಬ</translation>
 <translation id="123124571410524056">ಶಂಕಿತ ಪೋರ್ಟಲ್</translation>
-<translation id="1238191093934674082">VPN ತೆರೆಯಿರಿ</translation>
 <translation id="1238612778414822719">HTTPS ವಿಳಂಬ</translation>
 <translation id="1270369111467284986">ವೈ-ಫೈ ಪ್ರಾರಂಭ ಪೋರ್ಟಲ್ ಸಂಶಯಾಸ್ಪದವಾಗಿದೆ</translation>
 <translation id="1290331692326790741">ದುರ್ಬಲ ಸಿಗ್ನಲ್</translation>
@@ -91,6 +91,7 @@
 <translation id="3226405216343213872">ಸ್ಕ್ಯಾನರ್‌ಗಳಿಗಾಗಿ ಹುಡುಕಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3246869037381808805">1 ದಿನಕ್ಕಿಂತ ಹಳೆಯದಾದ ಮುದ್ರಣ ಕಾರ್ಯಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ</translation>
 <translation id="3268178239013324452">ವಿಫಲವಾಗಿದೆ - ಡೋರ್ ತೆರೆದಿದೆ</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3310640316857623290">ಅನುಮತಿಸಬಹುದಾದ ಥ್ರೆಶ್‌ಹೋಲ್ಡ್‌ಗಿಂತ DNS ವಿಳಂಬವು ಗಮನಾರ್ಹವಾಗಿ ಮೇಲಿದೆ</translation>
 <translation id="3328783797891415197">ಪರೀಕ್ಷೆ ರನ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="3368922792935385530">ಕನೆಕ್ಟ್ ಆಗಿದೆ</translation>
@@ -102,6 +103,7 @@
 <translation id="3459509316159669723">ಮುದ್ರಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3488065109653206955">ಭಾಗಶಃ ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="3527036260304016759">ವಿಫಲವಾಗಿದೆ - ಅಪರಿಚಿತ ದೋಷ</translation>
+<translation id="3532980081107202182">ಸುಮಾರು <ph name="MIN_REMAINING" /> ಬಾಕಿ ಉಳಿದಿದೆ</translation>
 <translation id="357889014807611375">ಮಾಪನ ಮಾಡಿದ ವೈ-ಫೈ</translation>
 <translation id="3595596368722241419">ಬ್ಯಾಟರಿ ಭರ್ತಿಯಾಗಿದೆ</translation>
 <translation id="360565022852130722">ದುರ್ಬಲ ಪ್ರೋಟೋಕಾಲ್ WEP 802.1x‌ ಮೂಲಕ ವೈಫೈ ನೆಟ್‌ವರ್ಕ್ ರಕ್ಷಿಸಲಾಗಿದೆ</translation>
@@ -125,6 +127,7 @@
 <translation id="4155551848414053977">ಸ್ಕ್ಯಾನರ್ ಆನ್ ಆಗಿದೆಯೆ ಮತ್ತು ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್ ಅಥವಾ ನೇರ ಕನೆಕ್ಷನ್ ಮೂಲಕ ಲಭ್ಯವಿದೆಯೇ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="4170700058716978431">ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="4176463684765177261">ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
+<translation id="4222698289790462549">ಪ್ರಸ್ತುತ ವೇಗ</translation>
 <translation id="4227825898293920515"><ph name="TIME" /> ಸಮಯದಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ನ ಅವಧಿ ಮುಗಿಯಲಿದೆ</translation>
 <translation id="4228041325992544252"><ph name="TOTAL_MEMORY" /> GB ಯಲ್ಲಿ <ph name="AVAILABLE_MEMORY" /> ಲಭ್ಯವಿದೆ.</translation>
 <translation id="4238516577297848345">ಯಾವುದೇ ಮುದ್ರಣ ಕಾರ್ಯಗಳು ಪ್ರಗತಿಯಲ್ಲಿಲ್ಲ</translation>
@@ -240,6 +243,7 @@
 <translation id="6325525973963619867">ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="636850387210749493">ಎಂಟರ್‌ಪ್ರೈಸ್ ದಾಖಲಾತಿ</translation>
 <translation id="641081527798843608">ವಿಷಯದ ಹೊಂದಾಣಿಕೆ</translation>
+<translation id="6423239382391657905">VPN ತೆರೆಯಿರಿ</translation>
 <translation id="6456394469623773452">ಉತ್ಕೃಷ್ಟ</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
@@ -326,6 +330,7 @@
 <translation id="8477551185774834963">ಅನುಮತಿಸಬಹುದಾದ ಥ್ರೆಶ್‌ಹೋಲ್ಡ್‌ಗಿಂತ DNS ವಿಳಂಬವು ಸ್ವಲ್ಪ ಮೇಲಿದೆ</translation>
 <translation id="8483248364096924578">ಐಪಿ ವಿಳಾಸ</translation>
 <translation id="8503813439785031346">ಬಳಕೆದಾರರಹೆಸರು</translation>
+<translation id="8503836310948963452">ಕೇವಲ ಕೆಲವೇ ನಿಮಿಷಗಳು…</translation>
 <translation id="8576249514688522074">ಪ್ರಾರಂಭಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="8620617069779373398">ರೋಮಿಂಗ್ ಸ್ಥಿತಿ</translation>
 <translation id="8675354002693747642">ಪೂರ್ವ-ಹಂಚಿಕೆಯ ಕೀಲಿ</translation>
@@ -357,6 +362,7 @@
 <translation id="9106415115617144481">ಪುಟ <ph name="PAGE_NUMBER" /> ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="9111102763498581341">ಅನ್‌ಲಾಕ್</translation>
 <translation id="9149391708638971077">ಮೆಮೊರಿ ಪರೀಕ್ಷೆ ರನ್ ಮಾಡಿ</translation>
+<translation id="9173638680043580060">ಒಂದು ನಿಮಿಷಕ್ಕಿಂತ ಕಡಿಮೆ ಸಮಯ ಉಳಿದಿದೆ</translation>
 <translation id="9190063653747922532">L2TP/IPSec + ಪೂರ್ವ ಹಂಚಿತ ಕೀಲಿ</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿಲ್ಲ</translation>

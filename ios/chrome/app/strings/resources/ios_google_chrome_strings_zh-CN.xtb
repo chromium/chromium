@@ -18,6 +18,7 @@
 <translation id="257708665678654955">下次访问这个网站时，您希望 Google Chrome 翻译其中的<ph name="LANGUAGE_NAME" />网页吗？</translation>
 <translation id="2695886661449553974">Chrome 无法检查是否有更新。请稍后再试。</translation>
 <translation id="2732745070297234559">Chrome 无法检查所有密码。请明天再试。</translation>
+<translation id="2740105938841089077">使用 Chrome 打开链接</translation>
 <translation id="2919738076569633423">使用 Chrome 即表示您同意接受<ph name="BEGIN_LINK_TOS" />服务条款<ph name="END_LINK_TOS" />。</translation>
 <translation id="3030414234702425231">由于您正要退出的帐号是由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 管理，因此系统将会从这部设备中删除您的 Chrome 数据，但这些数据仍会保留在您的 Google 帐号中。</translation>
 <translation id="3148688391461398285">要在Chrome中获得更好的使用体验，需要用到您的位置信息。</translation>
@@ -38,7 +39,6 @@
 <translation id="417201473131094001">在 Chrome Canary 版中不受支持</translation>
 <translation id="424864128008805179">退出 Chrome？</translation>
 <translation id="4249068189593983585">Chrome 提示。要查看更多的标签页选项，请轻触并按住工具栏（位于屏幕底部或顶部）中的“显示标签页”按钮。</translation>
-<translation id="4354293865557736921">请选择是要从此设备中清除您的 Chrome 数据，还是要保留这些数据。</translation>
 <translation id="4523886039239821078">部分插件导致 Chrome 崩溃，请卸载这些插件：</translation>
 <translation id="4633328489441962921">Chrome 无法检查是否有更新</translation>
 <translation id="4698415050768537821">Chrome 无法检查所有密码。请明天再试，或者<ph name="BEGIN_LINK" />检查您的 Google 帐号中的密码<ph name="END_LINK" />。</translation>
@@ -53,6 +53,7 @@
 <translation id="5854621639439811139">Chrome 提示。现在屏幕底部会显示“后退”、“前进”和“搜索”等按钮。</translation>
 <translation id="6036420186814142909">Google Chrome 的某些功能可帮助您管理互联网数据和网页加载速度。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="6181930887571472871">改用 Chrome</translation>
 <translation id="6238746320622508509">让 Chrome 锁定您的无痕式标签页。</translation>
 <translation id="6573431926118603307">您在其他设备上的 Chrome 中打开的标签页将列在此处。</translation>
 <translation id="6600954340915313787">已复制到 Chrome</translation>
@@ -60,6 +61,7 @@
 <translation id="6648150602980899529">您正要登录由 <ph name="DOMAIN" /> 管理的帐号，并要授权其管理员控制您的 Chrome 数据。您的数据将与此帐号永久关联。退出 Chrome 后，您的数据将从这台设备上删除，但仍会保留在您的 Google 帐号中。</translation>
 <translation id="6676840375528380067">从这部设备中清除您的 Chrome 数据？</translation>
 <translation id="6822673484890854830">Chrome 无法检查所有密码。请稍后再试。</translation>
+<translation id="6964931465519938134">现在，每当点按消息、文档和其他应用中的链接时，您都可以使用 Chrome 打开链接。</translation>
 <translation id="7124339256045485976">让 Chrome 保持最新状态</translation>
 <translation id="7161390184744336561">Google Chrome 版本太旧</translation>
 <translation id="7165736900384873061">开始使用 Google Chrome QR 码扫描器</translation>
@@ -69,6 +71,7 @@
 <translation id="7265369419224458312">您可直接在此处使用您在计算机上打开的标签页。只需在计算机上打开 Chrome，转到菜单，然后选择“登录 Chrome…”即可</translation>
 <translation id="7272930098487145294">若要保存图片，请点按“设置”并允许 Chrome 添加照片</translation>
 <translation id="7400722733683201933">关于Google Chrome</translation>
+<translation id="7501046334262221972">若要将 Chrome 设为默认浏览器，请打开“设置”，点按“默认浏览器应用”，然后选择“Chrome”。</translation>
 <translation id="756809126120519699">已清除 Chrome 数据</translation>
 <translation id="7626032353295482388">欢迎使用 Chrome</translation>
 <translation id="7662994914830945754">要查看您在其他设备上用 Chrome 打开的标签页，请登录帐号并开启同步功能</translation>

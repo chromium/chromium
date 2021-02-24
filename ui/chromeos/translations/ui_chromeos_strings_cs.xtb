@@ -93,6 +93,7 @@
 <translation id="1942765061641586207">Rozlišení obrázku</translation>
 <translation id="1943097386230153518">Nainstalovat novou službu</translation>
 <translation id="1972984168337863910">Rozbalit panely zpětné vazby k souborům</translation>
+<translation id="1984456723671657197">Tento typ souboru není podporován. <ph name="BEGIN_LINK_HELP" />Další informace<ph name="END_LINK_HELP" /> o otvírání souborů v systému Chrome OS.</translation>
 <translation id="1995337122023280937">Přejít do umístění souboru</translation>
 <translation id="2001796770603320721">Spravovat na Disku</translation>
 <translation id="2009067268969781306">Naformátováním jednotky smažete všechna na ní uložená data. Tuto akci nelze vrátit zpět.</translation>
@@ -331,7 +332,6 @@
 <translation id="4706042980341760088">tamilština s klávesnicí jako na psacím stroji</translation>
 <translation id="4711094779914110278">turečtina</translation>
 <translation id="4712283082407695269">Otevírání souboru „<ph name="PATH" />“</translation>
-<translation id="4713544552769165154">Tento soubor je určen pro počítač se softwarem Macintosh. Není kompatibilní s vaším zařízením se systémem Chrome OS. Vyhledejte v <ph name="BEGIN_LINK" />Internetovém obchodě Chrome<ph name="END_LINK" /> vhodnou náhradní aplikaci.<ph name="BEGIN_LINK_HELP" />Další informace<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">Počet zálohovaných fotek: <ph name="FILE_COUNT" /></translation>
 <translation id="4725511304875193254">Pes corgi</translation>
 <translation id="4732760563705710320">Je nám líto, ale vaše zařízení pro streamování obsahu toto video nepodporuje.</translation>
@@ -464,8 +464,6 @@
 <translation id="5833610766403489739">Soubor ve spravovaných umístěních nebyl nalezen. Zkontrolujte prosím nastavení umístění stažených souborů a zkuste to znovu.</translation>
 <translation id="5838451609423551646">Z výběru byly odstraněny všechny položky.</translation>
 <translation id="5838825566232597749">Americká mezinárodní klávesnice s rozložením Workman</translation>
-<translation id="5850516540536751549">Tento typ souboru není podporován. Aplikaci, pomocí které lze tento typ souboru otevřít, naleznete v <ph name="BEGIN_LINK" />Internetovém obchodu Chrome<ph name="END_LINK" />.
-    <ph name="BEGIN_LINK_HELP" />Další informace<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Tady není nic k vidění...</translation>
 <translation id="5911887972742538906">Při instalaci aplikace pro Linux došlo k chybě.</translation>
 <translation id="5912396950572065471">Formát</translation>
@@ -669,13 +667,13 @@
 <translation id="7972920761225148017">francouzština (Švýcarsko)</translation>
 <translation id="7980421588063892270">angličtina (USA) s klávesnicí Colemak</translation>
 <translation id="7982283708762922719">Výška</translation>
+<translation id="79907182588096956">Tento soubor je určen pro počítač se softwarem Windows. S vaším zařízením se systémem Chrome OS není kompatibilní. <ph name="BEGIN_LINK_HELP" />Další informace<ph name="END_LINK_HELP" /> o otvírání souborů v systému Chrome OS.</translation>
 <translation id="8008366997883261463">Jack Russell teriér</translation>
 <translation id="8028993641010258682">Velikost</translation>
 <translation id="803771048473350947">Soubor</translation>
 <translation id="8038111231936746805">(výchozí)</translation>
 <translation id="8042602468072383151">Zvuk <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">rumunština</translation>
-<translation id="8052887694493382350">Tento soubor je určen pro počítač se softwarem Windows. S vaším zařízením se systémem Chrome OS není kompatibilní. <ph name="BEGIN_LINK_HELP" />Další informace<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Všechny úpravy budou uloženy do složky <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Opakovat</translation>
 <translation id="8106045200081704138">Sdíleno se mnou</translation>
@@ -749,6 +747,7 @@
 <translation id="8900820606136623064">maďarština</translation>
 <translation id="8919081441417203123">dánština</translation>
 <translation id="8965697826696209160">Nedostatek místa.</translation>
+<translation id="8970501467542182729">Tento soubor je určen pro počítač se softwarem Macintosh. S vaším zařízením se systémem Chrome OS není kompatibilní. <ph name="BEGIN_LINK_HELP" />Další informace<ph name="END_LINK_HELP" /> o otvírání souborů v systému Chrome OS.</translation>
 <translation id="8997962250644902079">čínština (tradiční) – pchin-jin</translation>
 <translation id="9017798300203431059">Ruská fonetická klávesnice</translation>
 <translation id="9034924485347205037">Soubory systému Linux</translation>

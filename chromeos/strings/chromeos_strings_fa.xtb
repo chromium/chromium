@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
 <translation id="1018656279737460067">لغو شده</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> رشته، <ph name="CPU_MAX_CLOCK_SPEED" /> گیگاهرتز)</translation>
 <translation id="1059913517121127803">اسکن شروع نشد</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">دیوار آتش شناسایی شد</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">خطای ناشناس.</translation>
 <translation id="1204296502688602597">تأخیر ساناد</translation>
 <translation id="123124571410524056">احتمالاً درگاهی وجود دارد</translation>
-<translation id="1238191093934674082">‏باز کردن VPN</translation>
 <translation id="1238612778414822719">‏تأخیر در HTTPS</translation>
 <translation id="1270369111467284986">احتمالاً درگاه مهمان وجود دارد</translation>
 <translation id="1290331692326790741">سیگنال ضعیف</translation>
@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">متوقف شد - جوهر تمام شده است</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">موجود بودن رافع ساناد</translation>
+<translation id="1717874160321062422">تحت مدیریت <ph name="FIRST_MANAGER" /> و <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">درحال لغو اسکن کردن</translation>
 <translation id="1851218745569890714">کنفرانس ویدیویی</translation>
@@ -59,6 +60,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> نقطه در اینچ</translation>
 <translation id="2338501278241028356">برای کاوش دستگاه‌های همین اطراف، بلوتوث را روشن کنید</translation>
 <translation id="2364498172489649528">موفق</translation>
+<translation id="2365324413026422635">وقتی شارژ باتری کامل است، نمی‌توان آزمایش شارژ باتری انجام داد</translation>
 <translation id="2391082728065870591">ارسال گزارش بازخورد</translation>
 <translation id="2418150275289244458">باز کردن در تنظیمات</translation>
 <translation id="2446553403094072641">دقت نقطه شناور</translation>
@@ -91,6 +93,7 @@
 <translation id="3226405216343213872">درحال جستجوی اسکنرها</translation>
 <translation id="3246869037381808805">کارهای چاپ قدیمی‌تر از ۱ روز برداشته می‌شوند</translation>
 <translation id="3268178239013324452">انجام نشد - در باز است</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" /> گیگاهرتز</translation>
 <translation id="3310640316857623290">تأخیر در ساناد به‌میزان قابل‌توجهی از آستانه مجاز بالاتر است</translation>
 <translation id="3328783797891415197">درحال اجرای آزمایش</translation>
 <translation id="3368922792935385530">متصل</translation>
@@ -102,6 +105,7 @@
 <translation id="3459509316159669723">درحال چاپ</translation>
 <translation id="3488065109653206955">به‌طور نسبی فعال شده است</translation>
 <translation id="3527036260304016759">انجام نشد - خطای نامشخص</translation>
+<translation id="3532980081107202182">تقریباً <ph name="MIN_REMAINING" /> دقیقه باقی مانده است</translation>
 <translation id="357889014807611375">‏Wi-Fi کنتوردار</translation>
 <translation id="3595596368722241419">باتری پر است</translation>
 <translation id="360565022852130722">‏شبکه Wi-Fi با پروتکل ضعیف WEP 802.1x ایمن شده است</translation>
@@ -125,6 +129,7 @@
 <translation id="4155551848414053977">مطمئن شوید اسکنر روشن باشد و ازطریق شبکه یا اتصال مستقیم دردسترس باشد</translation>
 <translation id="4170700058716978431">ناموفق</translation>
 <translation id="4176463684765177261">غیرفعال شد</translation>
+<translation id="4222698289790462549">سرعت کنونی</translation>
 <translation id="4227825898293920515">گذرواژه <ph name="TIME" /> دیگر منقضی می‌شود</translation>
 <translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" /> گیگابایت از <ph name="TOTAL_MEMORY" /> گیگابایت دردسترس است.</translation>
 <translation id="4238516577297848345">هیچ کار چاپی درحال انجام نیست</translation>
@@ -241,6 +246,7 @@
 <translation id="6325525973963619867">ناموفق بود</translation>
 <translation id="636850387210749493">ثبت‌نام شرکت</translation>
 <translation id="641081527798843608">مطابقت موضوع</translation>
+<translation id="6423239382391657905">‏باز کردن VPN</translation>
 <translation id="6456394469623773452">عالی</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">تحت مدیریت <ph name="MANAGER" /></translation>
@@ -327,6 +333,7 @@
 <translation id="8477551185774834963">تأخیر در ساناد اندکی از آستانه مجاز بالاتر است</translation>
 <translation id="8483248364096924578">‏نشانی IP</translation>
 <translation id="8503813439785031346">نام کاربری</translation>
+<translation id="8503836310948963452">فقط چند دقیقه دیگر…</translation>
 <translation id="8576249514688522074">راه‌اندازی‌نشده</translation>
 <translation id="8620617069779373398">وضعیت فراگردی</translation>
 <translation id="8675354002693747642">کلید ازپیش هم‌رسانی‌شده</translation>
@@ -358,6 +365,7 @@
 <translation id="9106415115617144481">درحال اسکن کردن صفحه <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">باز کردن قفل</translation>
 <translation id="9149391708638971077">اجرای آزمایش حافظه</translation>
+<translation id="9173638680043580060">کمتر از یک دقیقه باقیمانده است</translation>
 <translation id="9190063653747922532">‏L2TP/IPSec + کلید از قبل مشترک شده</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">فعال نشد</translation>

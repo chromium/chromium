@@ -568,6 +568,7 @@ brukere av denne nettleseren.</translation>
       for å forsikre deg om at den fungerer. Følg disse instruksjonene hvis du
       ikke tror du trenger å bruke noen proxy-tjener:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="317878711435188021">vite når du bruker denne enheten aktivt</translation>
 <translation id="3188393374551744535">Kontosaldo</translation>
 <translation id="3194737229810486521"><ph name="URL" /> ber om å lagre data permanent på enheten din</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> på <ph name="SERVER_NAME" /></translation>
@@ -746,6 +747,7 @@ brukere av denne nettleseren.</translation>
 <translation id="3828924085048779000">Tom passordfrase er ikke tillatt.</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> har installert utvidelser for tilleggsfunksjoner. Utvidelsene har tilgang til noen av dataene dine.</translation>
 <translation id="3832522519263485449">Flere hull venstre</translation>
+<translation id="3835233591525155343">Enhetsbruken din</translation>
 <translation id="385051799172605136">Tilbake</translation>
 <translation id="3858027520442213535">Oppdater dato og klokkeslett</translation>
 <translation id="3884278016824448484">Motstridende enhetsidentifikator</translation>
@@ -1040,6 +1042,7 @@ brukere av denne nettleseren.</translation>
 <translation id="4995216769782533993">Bekreft sikkerhetskoden for å dele kortopplysningene dine med dette nettstedet</translation>
 <translation id="4995474875135717171">Endret:</translation>
 <translation id="5002932099480077015">Hvis du slår på dette alternativet, lagrer Chrome en kopi av kortet ditt på denne enheten, slik at det blir raskere å fylle ut skjemaer i fremtiden.</translation>
+<translation id="5011561501798487822">gjenkjent språk</translation>
 <translation id="5015510746216210676">Maskinnavn:</translation>
 <translation id="5017554619425969104">Teksten du kopierte</translation>
 <translation id="5018422839182700155">Kan ikke åpne denne siden</translation>
@@ -1614,6 +1617,7 @@ brukere av denne nettleseren.</translation>
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">Kommandolinje </translation>
 <translation id="7359588939039777303">Annonser er blokkert.</translation>
+<translation id="7365849542400970216">Kan nettstedet få vite når enheten er i bruk?</translation>
 <translation id="7372973238305370288">søkeresultat</translation>
 <translation id="7374733840632556089">Dette problemet oppstår på grunn av et sertifikat du eller noen andre har installert på enheten. Det er kjent at sertifikatet brukes til nettverksavlytting og -overvåking, og Chrome stoler ikke på det. Selv om det finnes legitime bruksområder for overvåking, f.eks. på skole- eller bedriftsnettverk, vil Chrome sørge for at du er klar over at det foregår, selv om du ikke kan stoppe det. Overvåking kan skje i alle nettlesere og applikasjoner som bruker nettet.</translation>
 <translation id="7375818412732305729">Filer legges ved</translation>
@@ -2031,6 +2035,7 @@ Mer informasjon:
 <translation id="8983003182662520383">Betalingsmåter og adresser som bruker Google Pay</translation>
 <translation id="8987927404178983737">Måned</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
+<translation id="899688752321268742"><ph name="URL" /> vil vite når du bruker denne enheten aktivt</translation>
 <translation id="8996941253935762404">Nettstedet du er i ferd med å åpne, inneholder skadelige programmer</translation>
 <translation id="8997023839087525404">Tjeneren har presentert et sertifikat som ikke er offentlig vist i henhold til regelen om sertifikatåpenhet. Dette er et krav for enkelte sertifikater for å sikre at de er pålitelige, og bidrar til å beskytte mot angrep.</translation>
 <translation id="9001074447101275817">Proxy-tjeneren <ph name="DOMAIN" /> krever brukernavn og passord.</translation>

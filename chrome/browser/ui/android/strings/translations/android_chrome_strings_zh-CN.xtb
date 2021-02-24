@@ -130,6 +130,7 @@
 <translation id="1960290143419248813">此版本的 Android 不再支持 Chrome 更新</translation>
 <translation id="1963976881984600709">标准保护</translation>
 <translation id="1966710179511230534">请更新您的登录详细信息。</translation>
+<translation id="1973912524893600642">保留数据</translation>
 <translation id="1974060860693918893">高级</translation>
 <translation id="1984417487208496350">不保护（不建议）</translation>
 <translation id="1984705450038014246">同步 Chrome 数据</translation>
@@ -301,6 +302,7 @@
 <translation id="3058498974290601450">您随时可在“设置”中开启同步功能</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> 个书签}other{<ph name="BOOKMARKS_COUNT_MANY" /> 个书签}}</translation>
 <translation id="3062802207422175757">Chrome 可提供您感兴趣的报道</translation>
+<translation id="3070005020161560471">自动翻译</translation>
 <translation id="3089395242580810162">在无痕式标签页中打开</translation>
 <translation id="3098745985164956033">系统会将部分图片发送给 Google 以便为您改进说明</translation>
 <translation id="3114507951000454849">阅读今日新闻 <ph name="NEWS_ICON" /></translation>
@@ -350,10 +352,18 @@
 <translation id="3384347053049321195">分享图片</translation>
 <translation id="3387650086002190359">未能成功下载 <ph name="FILE_NAME" />，因为文件系统出现了错误。</translation>
 <translation id="3389286852084373014">文本过长</translation>
+<translation id="3391512812407811893">隐私沙盒的试用版功能</translation>
 <translation id="3398320232533725830">打开书签管理器</translation>
 <translation id="3414952576877147120">大小：</translation>
 <translation id="3429160811076349561">试用版功能已关闭</translation>
 <translation id="3443221991560634068">重新加载当前网页</translation>
+<translation id="3451542610083122179">隐私沙盒是一项正在持续推进的计划，旨在保护开放网络，使您免受跟踪机制的跟踪。
+
+目前，网站需依赖第三方 Cookie 等很多技术才能提供重要服务（例如展示相关广告和衡量网站性能）。
+
+隐私沙盒既能在不干扰网站运作的前提下开辟更好的方式来执行这些服务，又能防止您的网上活动被暗中跟踪，因而可以很好地保护开放网络的活力。
+
+隐私沙盒尚处于积极开发阶段，目前只能在部分区域使用。现阶段，网站可在继续使用第三方 Cookie 等当前网络技术的同时试用隐私沙盒。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">您可自行选择要使用的搜索引擎</translation>
 <translation id="3492207499832628349">打开新的无痕式标签页</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />详细了解<ph name="END_LINK" />推荐内容</translation>
@@ -591,6 +601,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 项下载失败。}other{# 项下载失败。}}</translation>
 <translation id="5170568018924773124">在文件夹中显示</translation>
 <translation id="5184329579814168207">在 Chrome 中打开</translation>
+<translation id="5191251636205085390">了解和掌控旨在取代第三方 Cookie 的新技术</translation>
 <translation id="5193988420012215838">已复制到剪贴板</translation>
 <translation id="5199929503336119739">工作资料</translation>
 <translation id="5210286577605176222">跳转到上一个标签页</translation>
@@ -613,6 +624,7 @@
 <translation id="5355191726083956201">已开启增强型保护</translation>
 <translation id="5357811892247919462">收到了标签页</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> 个打开的标签页，点按即可切换标签页}other{<ph name="OPEN_TABS_MANY" /> 个打开的标签页，点按即可切换标签页}}</translation>
+<translation id="5375577065097716013">使用 Google 智能镜头搜索图片<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">只允许访问某些网站</translation>
 <translation id="5414836363063783498">正在验证…</translation>
 <translation id="5423934151118863508">您最常访问的网页将列在此处</translation>
@@ -990,6 +1002,7 @@
 <translation id="784934925303690534">时间范围</translation>
 <translation id="7851858861565204677">来自其他设备的同步</translation>
 <translation id="7857691613771368249">询问何时保存文件</translation>
+<translation id="7859988229622350291">一律不翻译</translation>
 <translation id="7875915731392087153">创建电子邮件</translation>
 <translation id="7876243839304621966">全部删除</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{您有 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> 个未读页面}other{您有 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> 个未读页面}}</translation>
@@ -1053,7 +1066,6 @@
 <translation id="8218622182176210845">管理您的帐号</translation>
 <translation id="8223642481677794647">动态卡片上的菜单</translation>
 <translation id="8224471946457685718">在连接到 Wi-Fi 时下载为您推荐的文章</translation>
-<translation id="8232956427053453090">保留数据</translation>
 <translation id="8233540874193135768">要扫描二维码，请使用带有摄像头的设备。</translation>
 <translation id="8250920743982581267">文档</translation>
 <translation id="825412236959742607">此网页占用的内存过多，因此 Chrome 移除了部分内容。</translation>
@@ -1067,6 +1079,7 @@
 <translation id="8310344678080805313">标准标签页</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> 及更多网站</translation>
 <translation id="8327155640814342956">要获得最好的浏览体验，请打开 Chrome 以进行更新</translation>
+<translation id="834313815369870491">一律不翻译网站</translation>
 <translation id="8349013245300336738">按已使用的数据流量排序</translation>
 <translation id="835847953965672673">已恢复 <ph name="NUMBER_OF_DOWNLOADS" /> 项下载内容</translation>
 <translation id="8364299278605033898">查看热门网站</translation>

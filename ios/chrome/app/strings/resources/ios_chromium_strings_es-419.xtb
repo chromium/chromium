@@ -4,6 +4,7 @@
 <translation id="102360288709523007">Envía estadísticas de uso e informes de fallos a Google para mejorar Chromium.</translation>
 <translation id="1185134272377778587">Acerca de Chromium</translation>
 <translation id="1257458525759135959">Para guardar imágenes, presiona en la Configuración a fin de permitir que Chromium agregue tus fotos</translation>
+<translation id="1289216811211435351">Cambia a Chromium</translation>
 <translation id="1361748954329991663">Chromium no está actualizado. Si no hay actualizaciones disponibles en <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, es posible que tu dispositivo no sea compatible con nuevas versiones de Chromium.</translation>
 <translation id="1431818719585918472">Permite que Chromium bloquee tus pestañas de incógnito.</translation>
 <translation id="1472013873724362412">Tu cuenta no funciona en Chromium. Comunícate con tu administrador de dominio o utiliza una cuenta común de Google para acceder.</translation>
@@ -34,6 +35,7 @@
 <translation id="4099085513035183040">No es compatible en la versión beta de Chromium</translation>
 <translation id="4166206055865952171">Establece Chromium como tu navegador predeterminado</translation>
 <translation id="4555020257205549924">Si activas esta función, Chromium te preguntará si deseas usar Google Traductor para traducir páginas en otros idiomas. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
+<translation id="4585809515399340748">Ahora puedes usar Chromium cada vez que presionas vínculos que aparecen en mensajes, documentos u otras apps.</translation>
 <translation id="4681781466797808448">Activar el escáner de Chromium</translation>
 <translation id="4787850887676698916">Aquí se mostrarán las pestañas que hayas abierto en Chromium en tus otros dispositivos.</translation>
 <translation id="4828317641996116749">Chromium no pudo verificar todas las contraseñas. Vuelve a intentarlo más tarde.</translation>
@@ -42,9 +44,9 @@
 <translation id="5224391634244552924">No hay contraseñas guardadas. Chromium puede revisar las contraseñas cuando las guardas.</translation>
 <translation id="5308226104666789935">Chromium no puede buscar actualizaciones.</translation>
 <translation id="5521125884468363740">Para ver tus pestañas donde sea que uses Chromium, accede a tu cuenta y activa la sincronización</translation>
-<translation id="5544795779875591523">¿Deseas borrar o conservar los datos de Chromium que tienes almacenados en este dispositivo?</translation>
 <translation id="5573014823074921752">Sugerencia de Chromium: Para obtener más opciones de pestañas, mantén presionado el botón Mostrar pestañas de la barra de herramientas, que se encuentra en la parte inferior o superior de la pantalla.</translation>
 <translation id="5700709190537129682">Chromium no puede revisar las contraseñas</translation>
+<translation id="5742135483959137648">Usa Chromium para abrir vínculos</translation>
 <translation id="5777187867430702742">Página de Chromium</translation>
 <translation id="5862307444128926510">Bienvenido a Chromium</translation>
 <translation id="5945387852661427312">Estás accediendo con una cuenta que administra <ph name="DOMAIN" /> y dándole permiso a su administrador para que controle tus datos de Chromium. Tus datos se vincularán de forma permanente a esta cuenta. Si sales de Chromium, los datos se borrarán de este dispositivo, pero quedarán almacenados en tu cuenta de Google.</translation>
@@ -63,6 +65,7 @@
 <translation id="7208566199746267865">Chromium lleva tus cuentas a la Web para ahorrarte tiempo. Puedes agregar o quitar cuentas en la configuración.</translation>
 <translation id="725427773388857052">Chromium puede protegerte ante violaciones de la seguridad de los datos, sitios web inseguros y mucho más.</translation>
 <translation id="7269362888766543920">Algunos complementos causan fallos en Chromium. Intenta desinstalarlos.</translation>
+<translation id="7313655110045230863">Para hacer que Chromium sea tu navegador predeterminado, abre Ajustes. Presiona App del navegador por omisión y, luego, selecciona Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Los datos seleccionados se quitaron de Chromium y los dispositivos sincronizados. Es posible que tu cuenta de Google tenga otros formularios del historial de navegación, como las búsquedas y la actividad de otros servicios de Google en history.google.com.</translation>
 <translation id="7400689562045506105">Usa Chromium en todas partes</translation>

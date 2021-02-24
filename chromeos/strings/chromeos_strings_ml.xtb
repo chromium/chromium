@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ml">
 <translation id="1018656279737460067">റദ്ദാക്കി</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ത്രെഡുകൾ, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1059913517121127803">സ്‌കാൻ ചെയ്യൽ ആരംഭിക്കാനായില്ല</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ഫയര്‍വാള്‍ കണ്ടെത്തി</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">അജ്ഞാത പിശക്.</translation>
 <translation id="1204296502688602597">DNS പ്രതികരണ സമയം</translation>
 <translation id="123124571410524056">പോർട്ടൽ ഉണ്ടെന്ന് സംശയിക്കുന്നു</translation>
-<translation id="1238191093934674082">VPN തുറക്കുക</translation>
 <translation id="1238612778414822719">HTTPS പ്രതികരണ സമയം</translation>
 <translation id="1270369111467284986">ക്യാപ്റ്റീവ് പോർട്ടൽ ആണെന്ന് സംശയിക്കുന്നു</translation>
 <translation id="1290331692326790741">ദുർബലമായ സിഗ്നൽ</translation>
@@ -91,6 +91,7 @@
 <translation id="3226405216343213872">സ്‌കാനറുകൾ തിരയുന്നു</translation>
 <translation id="3246869037381808805">1 ദിവസം മുമ്പുള്ള പ്രിന്റ് ജോലികൾ നീക്കം ചെയ്യും</translation>
 <translation id="3268178239013324452">പ്രിന്റ് ചെയ്യാനായില്ല - വാതിൽ തുറന്നിരിക്കുന്നു</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3310640316857623290">DNS പ്രതികരണ സമയം അനുവദിക്കപ്പെട്ട പരിധിയേക്കാൾ വളരെ മുകളിലാണ്</translation>
 <translation id="3328783797891415197">ടെസ്‌റ്റ് റൺ ചെയ്യുന്നു</translation>
 <translation id="3368922792935385530">കണക്റ്റുചെയ്തു</translation>
@@ -125,6 +126,7 @@
 <translation id="4155551848414053977">സ്‌കാനർ ഓണാക്കിയിട്ടുണ്ടെന്നും നിങ്ങളുടെ നെറ്റ്‌വർക്കോ നേരിട്ടുള്ള കണക്ഷനോ വഴി അത് ലഭ്യമാണെന്നും ഉറപ്പാക്കുക</translation>
 <translation id="4170700058716978431">പരാജയപ്പെട്ടു</translation>
 <translation id="4176463684765177261">അപ്രാപ്തമാക്കി</translation>
+<translation id="4222698289790462549">നിലവിലെ വേഗത</translation>
 <translation id="4227825898293920515">പാസ്‌വേഡ് <ph name="TIME" /> സമയത്തിനുള്ളിൽ കാലഹരണപ്പെടും</translation>
 <translation id="4228041325992544252"><ph name="TOTAL_MEMORY" /> GB-യിൽ <ph name="AVAILABLE_MEMORY" /> GB ലഭ്യമാണ്.</translation>
 <translation id="4238516577297848345">പ്രിന്റ് ജോലികളൊന്നും പുരോഗമിക്കുന്നില്ല</translation>
@@ -240,6 +242,7 @@
 <translation id="6325525973963619867">പരാജയപ്പെട്ടു</translation>
 <translation id="636850387210749493">സംരംഭ വിവരപ്പട്ടിക</translation>
 <translation id="641081527798843608">പൊരുത്തപ്പെടുന്ന വിഷയം</translation>
+<translation id="6423239382391657905">VPNതുറക്കുക</translation>
 <translation id="6456394469623773452">മിഴിവുള്ളതാക്കുക</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> മാനേജ് ചെയ്യുന്നത്</translation>

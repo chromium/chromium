@@ -331,7 +331,6 @@
 <translation id="4706042980341760088">泰米爾文 (打字機鍵盤)</translation>
 <translation id="4711094779914110278">土耳其文</translation>
 <translation id="4712283082407695269">正在開啟「<ph name="PATH" />」</translation>
-<translation id="4713544552769165154">這個檔案是專為使用 Macintosh 軟件的電腦而設，其與運行 Chrome 操作系統的裝置並不相容。請瀏覽 <ph name="BEGIN_LINK" />Chrome 網上商店<ph name="END_LINK" />尋找適用的替代應用程式。<ph name="BEGIN_LINK_HELP" />瞭解詳情<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">已備份 <ph name="FILE_COUNT" /> 張相片</translation>
 <translation id="4725511304875193254">哥基</translation>
 <translation id="4732760563705710320">很抱歉，您的投放裝置不支援這部影片。</translation>
@@ -465,8 +464,6 @@
 <translation id="5833610766403489739">這個檔案不見了！請檢查您的下載位置設定，然後再試一次。</translation>
 <translation id="5838451609423551646">喺選擇範圍入面移除所有項目。</translation>
 <translation id="5838825566232597749">美式 Workman 國際</translation>
-<translation id="5850516540536751549">系統不支援這個檔案類型。請瀏覽 <ph name="BEGIN_LINK" />Chrome 網上應用程式商店<ph name="END_LINK" />，尋找是否有可開啟這類檔案的應用程式。
-    <ph name="BEGIN_LINK_HELP" />瞭解詳情<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">此處目前空白…</translation>
 <translation id="5911887972742538906">安裝 Linux 應用程式時發生錯誤。</translation>
 <translation id="5912396950572065471">格式</translation>
@@ -676,7 +673,6 @@
 <translation id="8038111231936746805">(預設)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> 音訊</translation>
 <translation id="8045462269890919536">羅馬尼亞文</translation>
-<translation id="8052887694493382350">此檔案專為使用 Windows 軟件的個人電腦設計。由於您執行 Chrome 作業系統，因此與此檔案不相容。<ph name="BEGIN_LINK_HELP" />瞭解更多<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">所有編輯內容將儲存至「<ph name="DOWNLOADS_FOLDER" />」。</translation>
 <translation id="8079530767338315840">重複播放</translation>
 <translation id="8106045200081704138">與我共用的項目</translation>

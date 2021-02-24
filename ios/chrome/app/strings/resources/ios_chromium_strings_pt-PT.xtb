@@ -4,6 +4,7 @@
 <translation id="102360288709523007">Ajude a melhorar o Chromium ao enviar estatísticas de utilização e relatórios de falhas à Google.</translation>
 <translation id="1185134272377778587">Acerca do Chromium</translation>
 <translation id="1257458525759135959">Para guardar imagens, toque em Definições para permitir que o Chromium adicione as suas fotos.</translation>
+<translation id="1289216811211435351">Mude para o Chromium</translation>
 <translation id="1361748954329991663">O Chromium está desatualizado. Se não estiverem disponíveis atualizações na <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, é possível que o seu dispositivo já não suporte novas versões do Chromium.</translation>
 <translation id="1431818719585918472">Permita que o Chromium bloqueie os seus separadores de navegação anónima.</translation>
 <translation id="1472013873724362412">A sua conta não funciona no Chromium. Contacte o gestor do domínio ou utilize uma Conta Google normal para iniciar sessão.</translation>
@@ -34,6 +35,7 @@
 <translation id="4099085513035183040">Opção não suportada no Chromium Beta.</translation>
 <translation id="4166206055865952171">Defina o Chromium como o navegador predefinido</translation>
 <translation id="4555020257205549924">Se esta funcionalidade estiver ativada, o Chromium oferecer-se-á para traduzir páginas escritas noutros idiomas com o Google Tradutor. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="4585809515399340748">Agora, pode utilizar o Chromium sempre que tocar em links de mensagens, documentos e outras apps.</translation>
 <translation id="4681781466797808448">Ative o leitor do Chromium</translation>
 <translation id="4787850887676698916">Os separadores que abriu no Chromium nos seus outros dispositivos são apresentados aqui.</translation>
 <translation id="4828317641996116749">O Chromium não conseguiu verificar todas as palavras-passe. Tente novamente mais tarde.</translation>
@@ -42,9 +44,9 @@
 <translation id="5224391634244552924">Não existem palavras-passe guardadas. O Chromium consegue verificar as suas palavras-passe quando as guarda.</translation>
 <translation id="5308226104666789935">O Chromium não consegue verificar se existem atualizações.</translation>
 <translation id="5521125884468363740">Para ver os seus separadores onde quer que esteja a utilizar o Chromium, inicie sessão e ative a sincronização.</translation>
-<translation id="5544795779875591523">Escolha se pretende limpar os seus dados do Chromium deste dispositivo ou mantê-los</translation>
 <translation id="5573014823074921752">Sugestão para o Chromium: para obter mais opções de separadores, toque sem soltar no botão Mostrar separadores na barra de ferramentas, que se encontra na parte superior ou inferior do ecrã.</translation>
 <translation id="5700709190537129682">O Chromium não consegue verificar as suas palavras-passe.</translation>
+<translation id="5742135483959137648">Utilize o Chromium para abrir links</translation>
 <translation id="5777187867430702742">Página do Chromium</translation>
 <translation id="5862307444128926510">Bem-vindo ao Chromium</translation>
 <translation id="5945387852661427312">Está a iniciar sessão com uma conta gerida por <ph name="DOMAIN" /> e a conceder ao respetivo gestor o controlo dos seus dados do Chromium. Os dados ficarão permanentemente associados a esta conta. Terminar sessão no Chromium elimina os seus dados deste dispositivo, embora permaneçam armazenados na Conta Google.</translation>
@@ -63,6 +65,7 @@
 <translation id="7208566199746267865">O Chromium poupa o seu tempo ao trazer as suas contas para a Web. Pode adicionar ou remover contas nas Definições.</translation>
 <translation id="725427773388857052">O Chromium pode ajudar a proteger contra violações de dados, Websites inseguros e muito mais.</translation>
 <translation id="7269362888766543920">Alguns suplementos provocam falhas no sistema do Chromium. Tente desinstalá-los.</translation>
+<translation id="7313655110045230863">Para definir o Chromium como o seu navegador predefinido, abra as Definições. Toque na app de navegador predefinida e, em seguida, selecione o Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Os dados selecionados foram removidos do Chromium e dos dispositivos sincronizados. A sua Conta Google pode ter outras formas do histórico de navegação, como pesquisas e atividade de outros serviços Google, em history.google.com.</translation>
 <translation id="7400689562045506105">Utilizar o Chromium em todas as plataformas</translation>

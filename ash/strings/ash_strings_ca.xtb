@@ -405,6 +405,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4421231901400348175">Es comparteix el control de la pantalla amb <ph name="HELPER_NAME" /> mitjançant l'Assistència remota.</translation>
 <translation id="4424159417645388645">Escriptori 5</translation>
 <translation id="4430019312045809116">Volum</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 notificació important}other{# notificacions importants}}</translation>
 <translation id="4450893287417543264">No ho tornis a mostrar</translation>
 <translation id="445864333228800152">Bon vespre,</translation>
 <translation id="4458688154122353284">Atura la gravació de pantalla</translation>
@@ -476,6 +477,10 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4961318399572185831">Emet la pantalla</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Cercles a les aplicacions</translation>
+<translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
+        <ph name="NOTIFICATION_1" />,
+        <ph name="NOTIFICATION_2" />,
+        <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Frase següent</translation>
 <translation id="5030687792513154421">S'ha acabat el temps</translation>
 <translation id="5033299697334913360">Fes clic en qualsevol lloc per capturar la pantalla completa</translation>
@@ -489,6 +494,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5168181903108465623">Dispositius d'emissió disponibles</translation>
 <translation id="5170568018924773124">Mostra a la carpeta</translation>
 <translation id="5176318573511391780">Grava una part de la pantalla</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 notificació més}other{# notificacions més}}</translation>
 <translation id="5207949376430453814">Ressalta la marca d'inserció de text</translation>
 <translation id="5208059991603368177">Activat</translation>
 <translation id="5222676887888702881">Tanca la sessió</translation>

@@ -13,7 +13,6 @@
 <translation id="1195447618553298278">Bilinmeyen hata.</translation>
 <translation id="1204296502688602597">DNS Gecikmesi</translation>
 <translation id="123124571410524056">Portal olabilir</translation>
-<translation id="1238191093934674082">Open VPN</translation>
 <translation id="1238612778414822719">HTTPS Gecikmesi</translation>
 <translation id="1270369111467284986">Giriş portalı şüpheli</translation>
 <translation id="1290331692326790741">Zayıf sinyal</translation>
@@ -39,6 +38,7 @@
 <translation id="1662989795263954667">Durduruldu - Mürekkep bitti</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS Çözümleyici Varlığı</translation>
+<translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> ve <ph name="SECOND_MANAGER" /> tarafından yönetiliyor</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Tarama iptal ediliyor</translation>
 <translation id="1851218745569890714">Video Konferansı</translation>
@@ -60,6 +60,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Yakındaki cihazları keşfetmek için Bluetooth'u aç</translation>
 <translation id="2364498172489649528">Başarılı oldu</translation>
+<translation id="2365324413026422635">Pil tam doluyken şarj testi yapılamaz</translation>
 <translation id="2391082728065870591">Geri Bildirim Raporu Gönder</translation>
 <translation id="2418150275289244458">Ayarlarda aç</translation>
 <translation id="2446553403094072641">Kayan nokta doğruluğu</translation>
@@ -244,6 +245,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6325525973963619867">Başarısız</translation>
 <translation id="636850387210749493">Kurumsal kayıt</translation>
 <translation id="641081527798843608">Konu eşleştirmesi</translation>
+<translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">İyi</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> tarafından yönetiliyor</translation>

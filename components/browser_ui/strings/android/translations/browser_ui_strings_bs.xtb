@@ -21,6 +21,7 @@
 <translation id="1446450296470737166">Puna kontrola MIDI uređaja</translation>
 <translation id="1509960214886564027">Moguće je da će funkcije na mnogim web lokacijama prestati s radom</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1644574205037202324">Historija</translation>
 <translation id="1660204651932907780">Dozvolite web lokacijama da reproduciraju zvuk (preporučeno)</translation>
 <translation id="1677097821151855053">Kolačići i drugi podaci web lokacije se koriste da vas web lokacija zapamti, naprimjer radi vaše prijave ili personaliziranja oglasa. Da upravljate kolačićima za sve web lokacije, pogledajte <ph name="BEGIN_LINK" />Postavke<ph name="END_LINK" />.</translation>
 <translation id="1688867105868176567">Obrisati podatke web lokacije?</translation>
@@ -98,6 +99,7 @@
 <translation id="3744111561329211289">Sinhronizacija u pozadini</translation>
 <translation id="3763247130972274048">Dvaput dodirnite videozapis lijevo ili desno da preskočite 10 s</translation>
 <translation id="381841723434055211">Brojevi telefona</translation>
+<translation id="3835233591525155343">Korištenje vašeg uređaja</translation>
 <translation id="385051799172605136">Nazad</translation>
 <translation id="3859306556332390985">Pomakni naprijed</translation>
 <translation id="3955193568934677022">Dozvoljava web lokacijama da reproduciraju zaštićeni sadržaj (preporučeno)</translation>
@@ -114,6 +116,7 @@
 <translation id="429312253194641664">Web lokacija reproducira medij</translation>
 <translation id="42981349822642051">Proširi</translation>
 <translation id="4336434711095810371">Obriši sve podatke</translation>
+<translation id="4402755511846832236">Blokirajte web lokacijama informacije o vašem aktivnom korištenju ovog uređaja</translation>
 <translation id="4433925000917964731">Jednostavnu stranicu omogućava Google</translation>
 <translation id="4434045419905280838">Skočni proz. i preusmjeravanja</translation>
 <translation id="445467742685312942">Dozvoljava web lokacijama da reproduciraju zaštićen sadržaj</translation>
@@ -126,6 +129,7 @@
 <translation id="4670064810192446073">Virtuelna realnost</translation>
 <translation id="4708011789095599544">Jeste li sigurni da želite obrisati kolačiće i druge podatke za ovu web lokaciju?</translation>
 <translation id="4751476147751820511">Senzori pokreta ili svjetla</translation>
+<translation id="4836046166855586901">Traži odobrenje kada web lokacija želi pristupiti informacijama o mom aktivnom korištenju ovog uređaja</translation>
 <translation id="4883854917563148705">Upravljane postavke se ne mogu poništiti</translation>
 <translation id="4887024562049524730">Web lokacije moraju tražiti dozvolu za korištenje uređaja i podataka virtuelne realnosti (preporučeno)</translation>
 <translation id="4962975101802056554">Opoziv svih dopuštenja za uređaj</translation>

@@ -93,6 +93,7 @@
 <translation id="1942765061641586207">Kuvan resoluutio</translation>
 <translation id="1943097386230153518">Asenna uusi palvelu</translation>
 <translation id="1972984168337863910">Laajenna tiedostojen palautepaneelit</translation>
+<translation id="1984456723671657197">Tätä tiedostotyyppiä ei tueta. <ph name="BEGIN_LINK_HELP" />Lue lisää<ph name="END_LINK_HELP" /> tiedostojen avaamisesta Chrome-käyttöjärjestelmällä.</translation>
 <translation id="1995337122023280937">Siirry tiedoston sijaintiin</translation>
 <translation id="2001796770603320721">Ylläpidä Drivessa</translation>
 <translation id="2009067268969781306">Driven alustaminen poistaa kaiken sille tallennetun datan. Tätä toimintoa ei voi kumota.</translation>
@@ -331,7 +332,6 @@
 <translation id="4706042980341760088">tamil, kirjoituskonenäppäimistö</translation>
 <translation id="4711094779914110278">turkki</translation>
 <translation id="4712283082407695269">Avataan <ph name="PATH" /></translation>
-<translation id="4713544552769165154">Tämä tiedosto on tarkoitettu Macintosh-ohjelmistoa käyttävälle tietokoneelle. Tämä ei ole yhteensopiva Chrome-käyttöjärjestelmää käyttävän laitteesi kanssa. Etsi sopiva korvaava sovellus <ph name="BEGIN_LINK" />Chrome Web Storesta.<ph name="END_LINK" /> <ph name="BEGIN_LINK_HELP" />Lisätietoja<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> kuvaa on varmuuskopioitu.</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4732760563705710320">Lähetyslaitteesi ei valitettavasti tue tätä videota.</translation>
@@ -465,8 +465,6 @@
 <translation id="5833610766403489739">Tämä tiedosto on siirretty jonnekin muualle. Tarkista lataussijainnin asetukset ja yritä uudelleen.</translation>
 <translation id="5838451609423551646">Kaikki kohteet poistettiin valinnasta.</translation>
 <translation id="5838825566232597749">Yhdysvallat, kansainvälinen Workman</translation>
-<translation id="5850516540536751549">Tätä tiedostotyyppiä ei tueta. Etsi tämäntyyppisiä tiedostoja avaava sovellus <ph name="BEGIN_LINK" />Chrome Web Storesta<ph name="END_LINK" />.
-	      <ph name="BEGIN_LINK_HELP" />Lisätietoja<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Tyhjää täynnä…</translation>
 <translation id="5911887972742538906">Linux-sovellusta asennettaessa tapahtui virhe.</translation>
 <translation id="5912396950572065471">Muoto</translation>
@@ -670,13 +668,13 @@
 <translation id="7972920761225148017">ranska (Sveitsi)</translation>
 <translation id="7980421588063892270">englanti (Yhdysvallat), Colemak-näppäimistö</translation>
 <translation id="7982283708762922719">Korkeus</translation>
+<translation id="79907182588096956">Tämä tiedosto on tarkoitettu tietokoneelle, joka käyttää Windowsia. Se ei ole yhteensopiva Chrome-käyttöjärjestelmää käyttävän laitteesi kanssa. <ph name="BEGIN_LINK_HELP" />Lue lisää<ph name="END_LINK_HELP" /> tiedostojen avaamisesta Chrome-käyttöjärjestelmällä.</translation>
 <translation id="8008366997883261463">Jackrussellinterrieri</translation>
 <translation id="8028993641010258682">Koko</translation>
 <translation id="803771048473350947">Tiedosto</translation>
 <translation id="8038111231936746805">(oletus)</translation>
 <translation id="8042602468072383151">Äänitiedosto, jonka tyyppi on <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">romania</translation>
-<translation id="8052887694493382350">Tämä tiedosto on tarkoitettu tietokoneelle, joka käyttää Windowsia. Se ei ole yhteensopiva Chrome-käyttöjärjestelmää käyttävän laitteesi kanssa. <ph name="BEGIN_LINK_HELP" />Lue lisää<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Kaikki muokkaukset tallennetaan tänne: <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Toista</translation>
 <translation id="8106045200081704138">Jaettu minulle</translation>
@@ -750,6 +748,7 @@
 <translation id="8900820606136623064">unkari</translation>
 <translation id="8919081441417203123">tanska</translation>
 <translation id="8965697826696209160">Tallennustila ei riitä.</translation>
+<translation id="8970501467542182729">Tämä tiedosto on tarkoitettu tietokoneelle, joka käyttää Macintosh-ohjelmistoa. Se ei ole yhteensopiva Chrome-käyttöjärjestelmää käyttävän laitteesi kanssa. <ph name="BEGIN_LINK_HELP" />Lue lisää<ph name="END_LINK_HELP" /> tiedostojen avaamisesta Chrome-käyttöjärjestelmällä.</translation>
 <translation id="8997962250644902079">kiina (perinteinen, pinyin)</translation>
 <translation id="9017798300203431059">venäjä, foneettinen</translation>
 <translation id="9034924485347205037">Linux-tiedostot</translation>

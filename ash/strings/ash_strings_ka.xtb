@@ -405,6 +405,7 @@
 <translation id="4421231901400348175">თქვენი ეკრანის მართვის გაზიარება <ph name="HELPER_NAME" /> დისტანციური დამხმარეს მეშვეობით.</translation>
 <translation id="4424159417645388645">სამუშაო მაგიდა 5</translation>
 <translation id="4430019312045809116">ხმა</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 მნიშვნელოვანი შეტყობინება}other{# მნიშვნელოვანი შეტყობინება}}</translation>
 <translation id="4450893287417543264">აღარ გამოჩნდეს</translation>
 <translation id="445864333228800152">საღამო მშვიდობის,</translation>
 <translation id="4458688154122353284">ეკრანის ჩაწერის შეწყვეტა</translation>
@@ -476,6 +477,10 @@
 <translation id="4961318399572185831">ეკრანის ტრანსლირება</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> სთ, <ph name="MINUTES" /> წთ, <ph name="SECONDS" /> წმ</translation>
 <translation id="4975771730019223894">აპებზე ბეჯების მიმაგრება</translation>
+<translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
+        <ph name="NOTIFICATION_1" />,
+        <ph name="NOTIFICATION_2" />,
+        <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">შემდეგი წინადადება</translation>
 <translation id="5030687792513154421">დრო ამოიწურა</translation>
 <translation id="5033299697334913360">სრული ეკრანის აღსაბეჭდად დააწკაპუნეთ ნებისმიერ ადგილზე</translation>
@@ -489,6 +494,7 @@
 <translation id="5168181903108465623">ხელმისაწვდომია გადაცემის მოწყობილობები</translation>
 <translation id="5170568018924773124">საქაღალდეში ჩვენება</translation>
 <translation id="5176318573511391780">ეკრანის ნაწილის ჩაწერა</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 სხვა შეტყობინება}other{# სხვა შეტყობინება}}</translation>
 <translation id="5207949376430453814">ტექსტის კურსორის გამოყოფა</translation>
 <translation id="5208059991603368177">ჩართვა</translation>
 <translation id="5222676887888702881">გამოსვლა</translation>

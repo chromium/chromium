@@ -404,6 +404,15 @@
       如果設定的 <ph name="AUTH_SCHEMES_POLICY_NAME" /> 政策不含 <ph name="BASIC_AUTH" />，系統會忽略這項政策設定 (一律禁止使用 <ph name="BASIC_AUTH" />)。</translation>
 <translation id="1575015449587326319">OnFileDownloaded Chrome Enterprise Connector 的配置政策</translation>
 <translation id="1583248206450240930">根據預設使用 <ph name="PRODUCT_FRAME_NAME" /></translation>
+<translation id="1587042984081085960">這項政策可讓管理員指定頁面是否能在關閉時傳送同步 XHR 要求。
+
+      如果將這項政策設為啟用，頁面可以在關閉時傳送同步 XHR 要求。
+
+      如果將這項政策設為停用或不予設定，則頁面無法在關閉時傳送同步 XHR 要求。
+
+     這項政策將在 Chrome 第 93 版中移除。
+
+      請參閱 https://www.chromestatus.com/feature/4664843055398912。</translation>
 <translation id="1588240398285670601">瀏覽器設定</translation>
 <translation id="1593245608325508847">設定這項政策會開啟 Chrome 在 G Suite 中的限制登入功能，並防止使用者變更這項設定。使用者只能透過指定網域的帳戶存取 Google 工具，如要允許 gmail 或 googlemail 帳戶，請將 consumer_accounts 新增至網域清單。這項設定可防止使用者在需要 Google 授權的受管理裝置上，使用不屬於明確允許網域的帳戶登入及新增次要帳戶。
 
@@ -2012,6 +2021,17 @@
 <translation id="377044054160169374">強制干預濫用行為</translation>
 <translation id="3778689139323007309">針對由本機裝載 CA 憑證所簽署並經過成功驗證的伺服器憑證，執行撤銷檢查</translation>
 <translation id="3780152581321609624">Kerberos SPN 包含非標準通訊埠</translation>
+<translation id="3783569262370557918">針對清單中的網址啟用 <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" />。
+
+      透過這項政策，你可以指定要讓哪些網址加入認證流程，接收裝置傳送的信號。
+
+      如果不設定這項政策或設為空白，就沒有端點能啟動認證流程，以及接收裝置傳送的信號。
+
+      網址必須採用 HTTPS 架構，例如「https://example.com」。
+
+      注意：可以使用萬用字元 <ph name="WILDCARD_VALUE" />。
+
+      如果想進一步瞭解有效的<ph name="URL_LABEL" />格式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
 <translation id="378495749480642482">設定使用者前往的網站是否能透過 <ph name="WEBXR_API_NAME" /> 建立沉浸式擴增實境工作階段。
 
       如果未設定這項政策或設為啟用，<ph name="WEBXR_API_NAME" /> 會在工作階段建立期間接受 <ph name="WEBXR_AR_SESSION_ENUM_VALUE" />，為使用者提供擴增實境體驗。
@@ -2734,6 +2754,7 @@
       如果將這項政策設為停用，則系統不會收集或上傳這類記錄。
 
       如果不設定這項政策，<ph name="PRODUCT_NAME" /> M76 以下版本預設將無法收集與上傳這類記錄。自 M77 版起，針對大多數適用雲端式使用者層級企業政策的設定檔，<ph name="PRODUCT_NAME" /> 預設可收集與上傳這類記錄。從 M77 版到 M80 版，針對適用 <ph name="PRODUCT_NAME" /> 內部部署管理設定的設定檔，<ph name="PRODUCT_NAME" /> 預設也可收集與上傳這類記錄。</translation>
+<translation id="4913065710388638917">針對清單中的網址啟用認證流程</translation>
 <translation id="4917385247580444890">強</translation>
 <translation id="4919122295221518724">使用較嚴格的混合內容處理方式</translation>
 <translation id="4920367374739265095">你可以透過這項政策指定要套用到大量印表機設定的存取權政策，藉此控管要為使用者提供 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 的哪些印表機。
@@ -3187,6 +3208,13 @@
 <translation id="547601067149622666">禁止含侵入式廣告的網站顯示廣告</translation>
 <translation id="5480380613778757009">如果停用或不設定這項政策，當受管理訪客工作階段結束後，系統就會立即重設在此期間配置的所有顯示設定。如果將這項政策設為 True，系統就會在受管理的訪客工作階段結束後保留顯示屬性。</translation>
 <translation id="5483065054530244863">允許本機信任錨點核發的 SHA-1 簽署憑證</translation>
+<translation id="5483584677807837752">如果設為啟用，<ph name="PRODUCT_NAME" /> 功能會傳送詳細的要求標頭，提供有關使用者瀏覽器和環境的資訊。
+
+      這是附加功能，但因為有些網站會限制要求中可包含的字元，新標頭可能會導致這類網站無法正常運作。
+
+      如果啟用或不設定這項政策，系統會啟用 <ph name="PRODUCT_NAME" /> 功能。如果停用這項政策，這項功能將無法使用。
+
+      這項企業政策只是暫時性措施，至少在 Chrome 93 版前都可供使用。</translation>
 <translation id="5497565614013170656">用於比對印表機 ID 的規則運算式。</translation>
 <translation id="5499375345075963939">這項政策僅於零售模式中有效。
 

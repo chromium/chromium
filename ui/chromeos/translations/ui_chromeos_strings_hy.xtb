@@ -331,7 +331,6 @@
 <translation id="4706042980341760088">թամիլերեն (գրամեքենայի ստեղնաշար)</translation>
 <translation id="4711094779914110278">Թուրքական</translation>
 <translation id="4712283082407695269">«<ph name="PATH" />» արխիվը բացվում է</translation>
-<translation id="4713544552769165154">Այս ֆայլը նախատեսված է Macintosh ծրագրակազմով համակարգչի համար: Այն համատեղելի չէ ձեր սարքի հետ, որի վրա տեղադրված է Chrome OS-ը: Ավելի հարմար փոխարինող հավելված կարող եք որոնել <ph name="BEGIN_LINK" />Chrome Վեբ խանութում<ph name="END_LINK" />:<ph name="BEGIN_LINK_HELP" />Իմանալ ավելին<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">Կրկնօրինակվեց <ph name="FILE_COUNT" /> լուսանկար</translation>
 <translation id="4725511304875193254">Կորգի</translation>
 <translation id="4732760563705710320">Ներեցեք, ձեր հեռարձակման սարքը չի աջակցում այս տեսանյութը:</translation>
@@ -464,8 +463,6 @@
 <translation id="5833610766403489739">Ֆայլի ներբեռնման տեղը հայտնի չէ: Ստուգեք ներբեռնման տեղը և կրկին փորձեք:</translation>
 <translation id="5838451609423551646">Բոլոր գրառումներն ընտրվածքից հեռացվեցին:</translation>
 <translation id="5838825566232597749">US Workman, միջազգային</translation>
-<translation id="5850516540536751549">Ֆայլի այս տեսակը չի աջակցվում: Ֆայլի այս տեսակը բացող հավելված գտնելու համար այցելեք <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />:
-    <ph name="BEGIN_LINK_HELP" />Իմանալ ավելին<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Այստեղ ոչինչ չկա...</translation>
 <translation id="5911887972742538906">Լինուքսի հավելվածը տեղադրելիս սխալ առաջացավ:</translation>
 <translation id="5912396950572065471">Ձևաչափ</translation>
@@ -675,7 +672,6 @@
 <translation id="8038111231936746805">(կանխադրված)</translation>
 <translation id="8042602468072383151">Աուդիո ֆայլ (<ph name="AUDIO_TYPE" />)</translation>
 <translation id="8045462269890919536">Ռումինական</translation>
-<translation id="8052887694493382350">Այս ֆայլը նախատեսված է Windows ծրագրակազմով համակարգչի համար։ Այն համատեղելի չէ Chrome OS-ով աշխատող ձեր սարքի հետ: <ph name="BEGIN_LINK_HELP" />Մանրամասն<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Բոլոր փոփոխությունները կպահվեն «<ph name="DOWNLOADS_FOLDER" />» պանակում։</translation>
 <translation id="8079530767338315840">Կրկնել</translation>
 <translation id="8106045200081704138">Ինձ հասանելի</translation>

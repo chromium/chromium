@@ -405,6 +405,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4421231901400348175">Deler kontroll av skjermen med <ph name="HELPER_NAME" /> via fjernhjelp.</translation>
 <translation id="4424159417645388645">Skrivebord 5</translation>
 <translation id="4430019312045809116">Volum</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 viktig varsel}other{# viktige varsler}}</translation>
 <translation id="4450893287417543264">Ikke vis igjen</translation>
 <translation id="445864333228800152">God kveld</translation>
 <translation id="4458688154122353284">Avslutt skjermopptak</translation>
@@ -476,6 +477,10 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4961318399572185831">Cast skjermen</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> t <ph name="MINUTES" /> m <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Appmerking</translation>
+<translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
+        <ph name="NOTIFICATION_1" />,
+        <ph name="NOTIFICATION_2" />,
+        <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Neste setning</translation>
 <translation id="5030687792513154421">Tiden er ute</translation>
 <translation id="5033299697334913360">Klikk hvor som helst for å ta bilde i fullskjerm</translation>
@@ -489,6 +494,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="5168181903108465623">Cast-enheter er tilgjengelige</translation>
 <translation id="5170568018924773124">Vis i mappen</translation>
 <translation id="5176318573511391780">Ta opp en del av skjermen</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 annet varsel}other{# andre varsler}}</translation>
 <translation id="5207949376430453814">Fremhev tekstinnsettingspunktet</translation>
 <translation id="5208059991603368177">På</translation>
 <translation id="5222676887888702881">Logg av</translation>

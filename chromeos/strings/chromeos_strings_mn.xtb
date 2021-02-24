@@ -13,7 +13,6 @@
 <translation id="1195447618553298278">Үл танигдах алдаа гаргасан байна</translation>
 <translation id="1204296502688602597">DNS-н хоцролт</translation>
 <translation id="123124571410524056">Портал байж магадгүй</translation>
-<translation id="1238191093934674082">VPN-г нээх</translation>
 <translation id="1238612778414822719">HTTPS хоцролт</translation>
 <translation id="1270369111467284986">Дамжих портал гэж таамагласан</translation>
 <translation id="1290331692326790741">Муу дохио</translation>
@@ -39,6 +38,7 @@
 <translation id="1662989795263954667">Зогссон - Хэвлэгчийн хор дууссан</translation>
 <translation id="1703835215927279855">Захидал</translation>
 <translation id="1706391837335750954">DNS тайлагчийг үзүүлэх</translation>
+<translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> болон <ph name="SECOND_MANAGER" />-р удирддаг</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Скан хийхийг цуцалж байна</translation>
 <translation id="1851218745569890714">Видео хурал</translation>
@@ -60,6 +60,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Ойролцоох төхөөрөмж хайхын тулд Bluetooth-г асаана уу</translation>
 <translation id="2364498172489649528">Давсан</translation>
+<translation id="2365324413026422635">Батарей цэнэглэх туршилтыг дүүрэн үед нь явуулах боломжгүй</translation>
 <translation id="2391082728065870591">Санал хүсэлтийн тайлан илгээх</translation>
 <translation id="2418150275289244458">Тохиргоонд нээх</translation>
 <translation id="2446553403094072641">Хөвөгч цэгийн нарийвчлал</translation>
@@ -104,6 +105,7 @@
 <translation id="3459509316159669723">Хэвлэж байна</translation>
 <translation id="3488065109653206955">Хагас идэвхжсэн</translation>
 <translation id="3527036260304016759">Амжилтгүй болсон - Үл мэдэгдэх алдаа</translation>
+<translation id="3532980081107202182">Ойролцоогоор <ph name="MIN_REMAINING" /> минут үлдсэн байна</translation>
 <translation id="357889014807611375">хязгаартай Wi-Fi</translation>
 <translation id="3595596368722241419">Цэнэг дүүрсэн.</translation>
 <translation id="360565022852130722">WiFi сүлжээ WEP 802.1x-н сул протоколоор хамгаалагдсан байна</translation>
@@ -244,6 +246,7 @@
 <translation id="6325525973963619867">Амжилтгүй боллоо</translation>
 <translation id="636850387210749493">Байгууллагын бүртгэл</translation>
 <translation id="641081527798843608">Субъект тохируулах</translation>
+<translation id="6423239382391657905">VPN-г нээх</translation>
 <translation id="6456394469623773452">Сайн</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> удирддаг</translation>
@@ -330,6 +333,7 @@
 <translation id="8477551185774834963">DNS хоцролт зөвшөөрөгдөх хязгаараас бага зэрэг өндөр байна</translation>
 <translation id="8483248364096924578">IP хаяг</translation>
 <translation id="8503813439785031346">Хэрэглэгчийн нэр</translation>
+<translation id="8503836310948963452">Цөөн хэдэн минут хүлээнэ үү...</translation>
 <translation id="8576249514688522074">Бэлтгэгдээгүй</translation>
 <translation id="8620617069779373398">Роумингийн төлөв</translation>
 <translation id="8675354002693747642">Урьдчилан хуваалцсан түлхүүр</translation>
@@ -361,6 +365,7 @@
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-р хуудсыг скан хийж байна</translation>
 <translation id="9111102763498581341">Нээх</translation>
 <translation id="9149391708638971077">Санах ойн туршилтыг ажиллуулах</translation>
+<translation id="9173638680043580060">Минут хүрэхгүй хугацаа үлдлээ</translation>
 <translation id="9190063653747922532">L2TP/IPsec + урьдчилан хуваалцсан түлхүүр</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Идэвхжээгүй байна</translation>

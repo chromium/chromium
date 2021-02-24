@@ -405,6 +405,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4421231901400348175"><ph name="HELPER_NAME" /> deilir stjórn yfir skjánum þínum í gegnum fjaraðstoð.</translation>
 <translation id="4424159417645388645">Skrifborð 5</translation>
 <translation id="4430019312045809116">Hljóðstyrkur</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 mikilvæg tilkynning}one{# mikilvæg tilkynning}other{# mikilvægar tilkynningar}}</translation>
 <translation id="4450893287417543264">Ekki sýna þetta aftur</translation>
 <translation id="445864333228800152">Gott kvöld,</translation>
 <translation id="4458688154122353284">Stöðva skjáupptöku</translation>
@@ -476,6 +477,10 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4961318399572185831">Senda út skjá</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> k., <ph name="MINUTES" /> m. og <ph name="SECONDS" /> s.</translation>
 <translation id="4975771730019223894">Merking forrita</translation>
+<translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
+        <ph name="NOTIFICATION_1" />,
+        <ph name="NOTIFICATION_2" />,
+        <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Næsta setning</translation>
 <translation id="5030687792513154421">Nú er tíminn á þrotum</translation>
 <translation id="5033299697334913360">Smelltu hvar sem er til að mynda allan skjáinn</translation>
@@ -489,6 +494,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="5168181903108465623">Útsendingartæki í boði</translation>
 <translation id="5170568018924773124">Sýna í möppu</translation>
 <translation id="5176318573511391780">Upptaka á hluta skjás</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 tilkynning í viðbót}one{# tilkynning í viðbót}other{# tilkynningar í viðbót}}</translation>
 <translation id="5207949376430453814">Auðkenna textainnskotsmerki</translation>
 <translation id="5208059991603368177">Kveikt</translation>
 <translation id="5222676887888702881">Skrá út</translation>

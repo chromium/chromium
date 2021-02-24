@@ -566,6 +566,7 @@
       pentru a te asigura că serverul proxy funcționează. Dacă nu consideri că ar trebui
       să folosești un server proxy:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="317878711435188021">să afle când folosești activ dispozitivul</translation>
 <translation id="3188393374551744535">Soldul contului</translation>
 <translation id="3194737229810486521"><ph name="URL" /> dorește să stocheze permanent date pe dispozitiv</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> pe <ph name="SERVER_NAME" /></translation>
@@ -744,6 +745,7 @@
 <translation id="3828924085048779000">Trebuie să fie introdusă expresia de acces.</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> a instalat extensii pentru funcții suplimentare. Extensiile au acces la unele dintre datele tale.</translation>
 <translation id="3832522519263485449">Perforare multiplă în stânga</translation>
+<translation id="3835233591525155343">Folosirea dispozitivului</translation>
 <translation id="385051799172605136">Înapoi</translation>
 <translation id="3858027520442213535">Actualizează data și ora</translation>
 <translation id="3884278016824448484">Identificator de gadget în conflict</translation>
@@ -1038,6 +1040,7 @@
 <translation id="4995216769782533993">Confirmă codul de securitate pentru a permite accesul site-ului la detaliile cardului</translation>
 <translation id="4995474875135717171">Modificat la:</translation>
 <translation id="5002932099480077015">Dacă este activată, Chrome va stoca o copie a cardului pe acest dispozitiv, pentru completarea mai rapidă a formularelor.</translation>
+<translation id="5011561501798487822">Limba detectată</translation>
 <translation id="5015510746216210676">Numele dispozitivului:</translation>
 <translation id="5017554619425969104">Textul copiat de tine</translation>
 <translation id="5018422839182700155">Pagina nu poate fi deschisă</translation>
@@ -1613,6 +1616,7 @@ Detalii suplimentare:
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">Linie de comandă</translation>
 <translation id="7359588939039777303">Anunțurile au fost blocate.</translation>
+<translation id="7365849542400970216">Permiți detectarea folosirii dispozitivului?</translation>
 <translation id="7372973238305370288">rezultat al căutării</translation>
 <translation id="7374733840632556089">Această problemă apare din cauza unui certificat pe care tu sau altcineva l-ați instalat pe dispozitiv. Certificatul este folosit pentru a monitoriza și a intercepta rețelele, nefiind autorizat de Chrome. Deși există cazuri legitime pentru monitorizare, de exemplu, într-o rețea de la școală sau de la serviciu, Chrome vrea să se asigure că știi ce se întâmplă, chiar dacă nu poți opri acest lucru. Monitorizarea se poate face în orice browser sau aplicație care intră pe web.</translation>
 <translation id="7375818412732305729">Fișierul este atașat</translation>
@@ -2031,6 +2035,7 @@ Detalii suplimentare:
 <translation id="8983003182662520383">Metodele de plată și adresele care folosesc Google Pay</translation>
 <translation id="8987927404178983737">Lună</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
+<translation id="899688752321268742"><ph name="URL" /> vrea să afle când folosești activ dispozitivul</translation>
 <translation id="8996941253935762404">Site-ul pe care urmează să îl accesezi conține programe dăunătoare</translation>
 <translation id="8997023839087525404">Serverul a prezentat un certificat care nu a fost dezvăluit public folosind politica privind Transparența certificatului. Aceasta este o cerință pentru anumite certificate, pentru a se asigura că sunt de încredere și pentru protecție împotriva atacatorilor.</translation>
 <translation id="9001074447101275817">Pentru a accesa proxy-ul <ph name="DOMAIN" />, trebuie să introduci un nume de utilizator și o parolă.</translation>

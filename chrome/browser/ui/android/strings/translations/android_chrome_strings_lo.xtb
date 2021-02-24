@@ -130,6 +130,7 @@
 <translation id="1960290143419248813">ບໍ່ຮອງຮັບການອັບເດດ Chrome ສຳລັບ Android ເວີຊັນນີ້ອີກຕໍ່ໄປ</translation>
 <translation id="1963976881984600709">ການປົກປ້ອງມາດຕະຖານ</translation>
 <translation id="1966710179511230534">ກະ​ລຸ​ນາ​ອັບເດດລາຍລະອຽດການລົງຊື່ເຂົ້າໃຊ້​ຂອງ​ທ່ານ​.</translation>
+<translation id="1973912524893600642">ຮັກສາຂໍ້ມູນໄວ້</translation>
 <translation id="1974060860693918893">ຂັ້ນສູງ</translation>
 <translation id="1984417487208496350">ບໍ່ມີການປົກປ້ອງ (ບໍ່ແນະນຳ)</translation>
 <translation id="1984705450038014246">ຊິ້ງຂໍ້ມູນ Chrome ຂອງທ່ານ</translation>
@@ -301,6 +302,7 @@
 <translation id="3058498974290601450">ທ່ານສາມາດເປີດການຊິ້ງຂໍ້ມູນໄດ້ທຸກເວລາໃນການຕັ້ງຄ່າ</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> ບຸກມາກ}other{<ph name="BOOKMARKS_COUNT_MANY" /> ບຸກມາກ}}</translation>
 <translation id="3062802207422175757">ບົດຄວາມທີ່ທ່ານສົນໃຈໃນ Chrome</translation>
+<translation id="3070005020161560471">ແປໂດຍອັດຕະໂນມັດ</translation>
 <translation id="3089395242580810162">ເປີດ​ໃນ​ແຖບ​ບໍ່ເປີດເຜີຍຕົນຕົວ</translation>
 <translation id="3098745985164956033">ລະບົບຈະສົ່ງບາງຮູບໃຫ້ Google ເພື່ອປັບປຸງຄຳອະທິບາຍສຳລັບທ່ານ.</translation>
 <translation id="3114507951000454849">ອ່ານຂ່າວຂອງມື້ນີ້ <ph name="NEWS_ICON" /></translation>
@@ -350,10 +352,18 @@
 <translation id="3384347053049321195">ແບ່ງ​ປັນ​ຮູບ</translation>
 <translation id="3387650086002190359">ການ​ດາວ​ໂຫຼ​ດ <ph name="FILE_NAME" /> ລົ້ມເຫລວ​ເນື່ອງ​ຈາກ​ຄວາມ​ຜິດພາດ​ຂອງ​ລະບົບ​ໄຟ​ລ໌.</translation>
 <translation id="3389286852084373014">ຂໍ້ຄວາມໃຫຍ່ເກີນໄປ</translation>
+<translation id="3391512812407811893">ການທົດລອງໃຊ້ກ່ອງຊາຍຄວາມເປັນສ່ວນຕົວ</translation>
 <translation id="3398320232533725830">ເປີດຕົວຈັດການບຸກມາກ</translation>
 <translation id="3414952576877147120">ຂະໜາດ:</translation>
 <translation id="3429160811076349561">ຄຸນສົມບັດການທົດລອງໃຊ້ປິດຢູ່</translation>
 <translation id="3443221991560634068">ໂຫຼດໜ້າປັດຈຸບັນຄືນໃໝ່</translation>
+<translation id="3451542610083122179">ກ່ອງຊາຍຄວາມເປັນສ່ວນຕົວເປັນໂຄງການລິເລີ່ມທີ່ດຳເນີນຢູ່ເພື່ອປົກປ້ອງເວັບແບບເປີດ ເຊິ່ງຈະຊ່ວຍປ້ອງກັນທ່ານຈາກກົນໄກການຕິດຕາມຕ່າງໆ.
+
+ໃນທຸກມື້ນີ້, ເວັບໄຊອາໄສໃສ່ເທັກໂນໂລຢີຫຼາຍຢ່າງ ເຊັ່ນ: ຄຸກກີ້ພາກສ່ວນທີສາມ ສຳລັບການບໍລິການທີ່ສຳຄັນຕ່າງໆ ເຊັ່ນ: ການສະແດງໂຄສະນາທີ່ກ່ຽວຂ້ອງ ແລະ ການວັດແທກປະສິດທິພາບຂອງເວັບໄຊ.
+
+ກ່ອງຊາຍຄວາມເປັນສ່ວນຕົວຈະຊ່ວຍຮັກສາຄວາມສາມາດຂອງເວັບແບບເປີດດ້ວຍການສ້າງວິທີທີ່ດີຍິ່ງຂຶ້ນໃນການໃຫ້ບໍລິການເຫຼົ່ານີ້ໂດຍບໍ່ເຮັດໃຫ້ເວັບໄຊຢຸດສະງັກ, ແຕ່ໃນຂະນະດຽວກັນກໍປົກປ້ອງທ່ານຈາກການຖືກຕິດຕາມຂ້າມເວັບໄຊນຳ.
+
+ກ່ອງຊາຍຄວາມເປັນສ່ວນຕົວຍັງຢູ່ໃນລະຫວ່າງການພັດທະນາ ແລະ ມີໃຫ້ບໍລິການໃນບາງພາກພື້ນເທົ່ານັ້ນ. ສຳລັບຕອນນີ້, ເວັບໄຊອາດຈະລອງໃຊ້ກ່ອງຊາຍຄວາມເປັນສ່ວນຕົວ ໃນຂະນະທີ່ສືບຕໍ່ໃຊ້ເທັກໂນໂລຢີເວັບປັດຈຸບັນ ເຊັ່ນ: ຄຸກກີ້ພາກສ່ວນທີສາມ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">ທ່ານສາມາດເລືອກລະບົບການຊອກຫາຂອງທ່ານໄດ້</translation>
 <translation id="3492207499832628349">ແຖບບໍ່ເຜີຍຕົວຕົນໃໝ່</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /> ກ່ຽວກັບເນື້ອຫາທີ່ແນະນຳ</translation>
@@ -591,6 +601,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 ການດາວໂຫຼດບໍ່ສຳເລັດ.}other{# ການດາວໂຫຼດບໍ່ສຳເລັດ.}}</translation>
 <translation id="5170568018924773124">ສະ​ແດງ​ຢູ່​ໃນ​ໂຟລ​ເດີ</translation>
 <translation id="5184329579814168207">ເປີດ​ຢູ່ໃນ Chrome</translation>
+<translation id="5191251636205085390">ສຶກສາກ່ຽວກັບ ແລະ ຄວບຄຸມເທັກໂນໂລຢີໃໝ່ທີ່ມີຈຸດປະສົງປ່ຽນແທນຄຸກກີ້ພາກສ່ວນທີສາມ</translation>
 <translation id="5193988420012215838">ອັດສຳເນົາໃສ່ຄລິບບອດຂອງທ່ານ</translation>
 <translation id="5199929503336119739">ໂປຣໄຟລ໌ບ່ອນເຮັດວຽກ</translation>
 <translation id="5210286577605176222">ໂດດໄປຫາແຖບກ່ອນນີ້</translation>
@@ -613,6 +624,7 @@
 <translation id="5355191726083956201">ການປົກປ້ອງທີ່ປັບປຸງດີຂຶ້ນເປີດຢູ່</translation>
 <translation id="5357811892247919462">ແຖບທີ່ໄດ້ຮັບ</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> ແຖບທີ່ເປີດຢູ່, ແຕະເພື່ອປ່ຽນແຖບ}other{<ph name="OPEN_TABS_MANY" /> ແຖບທີ່ເປີດຢູ່, ແຕະເພື່ອປ່ຽນແຖບ}}</translation>
+<translation id="5375577065097716013">ຊອກຫາຮູບພາບດ້ວຍ Google Lens <ph name="BEGIN_NEW" />ໃໝ່<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">ອະນຸຍາດແຕ່ບາງເວັບໄຊສະເພາະເທົ່ານັ້ນ</translation>
 <translation id="5414836363063783498">ກໍາລັງຢືນ​ຢັນ...</translation>
 <translation id="5423934151118863508">ໜ້າເຂົ້າໄປເບິ່ງເລື້ອຍທີ່ສຸດຂອງທ່ານຈະປະກົດຂຶ້ນທີ່ນີ້</translation>
@@ -990,6 +1002,7 @@
 <translation id="784934925303690534">ຂອບເຂດເວລາ</translation>
 <translation id="7851858861565204677">ອຸ​ປະ​ກອນ​ອື່ນໆ</translation>
 <translation id="7857691613771368249">ຖາມວ່າຈະໃຫ້ບັນທຶກໄຟລ໌ເມື່ອໃດ</translation>
+<translation id="7859988229622350291">ຢ່າແປ</translation>
 <translation id="7875915731392087153">ສ້າງອີເມວ</translation>
 <translation id="7876243839304621966">ເອົາ​ອອກທັງ​ຫມົດ</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{ທ່ານມີໜ້າຍັງບໍ່ໄດ້ອ່ານ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> ໜ້າ}other{ທ່ານມີໜ້າຍັງບໍ່ໄດ້ອ່ານ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> ໜ້າ}}</translation>
@@ -1053,7 +1066,6 @@
 <translation id="8218622182176210845">ຈັດການບັນຊີຂອງທ່ານ</translation>
 <translation id="8223642481677794647">ເມນູບັດຟີດ</translation>
 <translation id="8224471946457685718">ດາວໂຫຼດບົດຄວາມສຳລັບທ່ານເມື່ອໃຊ້ Wi-Fi</translation>
-<translation id="8232956427053453090">ຮັກສາຂໍ້ມູນໄວ້</translation>
 <translation id="8233540874193135768">ເພື່ອສະແກນລະຫັດ QR, ກະລຸນາໃຊ້ອຸປະກອນທີ່ມີກ້ອງ.</translation>
 <translation id="8250920743982581267">ເອກະສານ</translation>
 <translation id="825412236959742607">ໜ້ານີ້ໃຊ້ເງິນຫຼາຍເກີນໄປ, ສະນັ້ນ Chrome ໄດ້ລຶບບາງເນື້ອຫາອອກແລ້ວ.</translation>
@@ -1067,6 +1079,7 @@
 <translation id="8310344678080805313">ແຖບມາດ​ຕະ​ຖານ</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> ແລະ ເວັບໄຊອື່ນໆອີກ</translation>
 <translation id="8327155640814342956">ເພື່ອປະສົບການທ່ອງເວັບທີ່ດີສຸດ, ໃຫ້ເປີດເພື່ອອັບເດດ Chrome</translation>
+<translation id="834313815369870491">ຢ່າແປເວັບໄຊ</translation>
 <translation id="8349013245300336738">ຮຽງຕາມປະລິມານອິນເຕີເນັດທີ່ໃຊ້</translation>
 <translation id="835847953965672673">ກູ້ຄືນການດາວໂຫຼດ <ph name="NUMBER_OF_DOWNLOADS" /> ລາຍການແລ້ວ</translation>
 <translation id="8364299278605033898">ເບິ່ງເວັບໄຊຍອດນິຍົມ</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="am">
 <translation id="1018656279737460067">ተሰርዟል</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ተከታታይ፣ <ph name="CPU_MAX_CLOCK_SPEED" />ጊኸ)</translation>
 <translation id="1059913517121127803">ቅኝትን መጀመር አልተቻለም</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ኬላ ተገኝቷል</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">ያልታወቀ ስህተት።</translation>
 <translation id="1204296502688602597">የዲኤንስ የሥርዓት ምላሽ ጊዜ</translation>
 <translation id="123124571410524056">መግቢያ ተጠርጥሯል</translation>
-<translation id="1238191093934674082">Open VPN</translation>
 <translation id="1238612778414822719">የHTTPS የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="1270369111467284986">ተያዥ መግቢያ ተጠርጥሯል</translation>
 <translation id="1290331692326790741">ደካማ ሲግናል</translation>
@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">ቆሟል - ቀለም አልቋል</translation>
 <translation id="1703835215927279855">ደብዳቤ</translation>
 <translation id="1706391837335750954">የዲኤንኤስ መፍትሔ ሰጪ አለ</translation>
+<translation id="1717874160321062422">በ <ph name="FIRST_MANAGER" /> እና <ph name="SECOND_MANAGER" /> የሚተዳደር</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">መቃኘትን በመሰረዝ ላይ</translation>
 <translation id="1851218745569890714">የቪዲዮ ጉባዔ</translation>
@@ -59,6 +60,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">በአቅራቢያ ያሉ መሣሪያዎችን ለማግኘት ብሉቱዝን ያብሩ</translation>
 <translation id="2364498172489649528">አልፏል</translation>
+<translation id="2365324413026422635">የባትሪ ኃይል መሙላት ምርመራ ሊከናወን አይችልም</translation>
 <translation id="2391082728065870591">የግብረመልስ ሪፖርት ላክ</translation>
 <translation id="2418150275289244458">በቅንብሮች ውስጥ ክፈት</translation>
 <translation id="2446553403094072641">የተንሳፋፊ ነጥብ ትክክለኛነት</translation>
@@ -91,6 +93,7 @@
 <translation id="3226405216343213872">ቃኚዎችን በመፈለግ ላይ</translation>
 <translation id="3246869037381808805">ከ1 ቀን በላይ ዕድሜ ያላቸው የህትመት ሥራዎች ይወገዳሉ</translation>
 <translation id="3268178239013324452">አልተሳካም - በር ክፍት ነው</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" />ጊኸ</translation>
 <translation id="3310640316857623290">የዲኤንኤስ ስርዓተ ምላሽ ጊዜ ከሚፈቀደው ገደብ በጉልህ ይበልጣል</translation>
 <translation id="3328783797891415197">ሙከራ በማሄድ ላይ</translation>
 <translation id="3368922792935385530">ተያይዟል</translation>
@@ -102,6 +105,7 @@
 <translation id="3459509316159669723">ማተም</translation>
 <translation id="3488065109653206955">በከፊል ገብሯል</translation>
 <translation id="3527036260304016759">አልተሳካም - ያልታወቀ ስህተት</translation>
+<translation id="3532980081107202182"><ph name="MIN_REMAINING" /> ደቂቃዎች ገደማ ይቀራል</translation>
 <translation id="357889014807611375">የተመጠነ Wi-Fi</translation>
 <translation id="3595596368722241419">ባትሪ ሙሉ ነው</translation>
 <translation id="360565022852130722">የWiFi አውታረ መረብ ደህንነት በደካማ ፕሮቶኮል WEP 802.1x የተጠበቀ ነው</translation>
@@ -125,6 +129,7 @@
 <translation id="4155551848414053977">ቃኚው መብራቱን እና በእርስዎ አውታረ መረብ ወይም በቀጥታ ግንኙነት በኩል የሚገኝ መሆኑን ያረጋግጡ</translation>
 <translation id="4170700058716978431">አልተሳካም</translation>
 <translation id="4176463684765177261">ተሰናክሏል</translation>
+<translation id="4222698289790462549">የአሁኑ ፍጥነት</translation>
 <translation id="4227825898293920515">የይለፍ ቃል በ <ph name="TIME" /> ውስጥ አገልግሎት ጊዜው ያበቃል</translation>
 <translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" /> ጊባ ከሚገኘው <ph name="TOTAL_MEMORY" /> ጊባ።</translation>
 <translation id="4238516577297848345">በሂደት ላይ ያሉ ምንም የህትመት ስራዎች የሉም</translation>
@@ -241,6 +246,7 @@
 <translation id="6325525973963619867">አልተሳካም</translation>
 <translation id="636850387210749493">የድርጅት ምዝገባ</translation>
 <translation id="641081527798843608">የርዕሰ ጉዳይ ተዛማጅ</translation>
+<translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">ጥሩ</translation>
 <translation id="6472207088655375767">ኦቲፒ</translation>
 <translation id="6480327114083866287">በ<ph name="MANAGER" /> የሚተዳደር</translation>
@@ -327,6 +333,7 @@
 <translation id="8477551185774834963">የዲኤንኤስ ስርዓተ ምላሽ ጊዜ ከሚፈቀደው ገደብ በትንሹ ይበልጣል</translation>
 <translation id="8483248364096924578">የአይፒ አድራሻ</translation>
 <translation id="8503813439785031346">የተጣቃሚ ስም</translation>
+<translation id="8503836310948963452">ጥቂት ተጨማሪ ደቂቃዎች ብቻ...</translation>
 <translation id="8576249514688522074">ያልተጀመረ</translation>
 <translation id="8620617069779373398">የውሂብ ዝውውር ሁኔታ</translation>
 <translation id="8675354002693747642">ቅድሚያ የተጋራ ቁልፍ</translation>
@@ -358,6 +365,7 @@
 <translation id="9106415115617144481">ገጽ <ph name="PAGE_NUMBER" />ን በመቃኘት ላይ</translation>
 <translation id="9111102763498581341">ክፈት</translation>
 <translation id="9149391708638971077">የማህደረ ትውስታ ሙከራን አሂድ</translation>
+<translation id="9173638680043580060">ከአንድ ደቂቃ በታች ይቀራል</translation>
 <translation id="9190063653747922532">L2TP/IPsec + ቅድሚያ የተጋራ ቁልፍ</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">አልገበረም</translation>

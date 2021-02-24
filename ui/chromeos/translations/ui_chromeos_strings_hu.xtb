@@ -93,6 +93,7 @@
 <translation id="1942765061641586207">Képfelbontás</translation>
 <translation id="1943097386230153518">Új szolgáltatás telepítése</translation>
 <translation id="1972984168337863910">A fájlokhoz tartozó visszajelzési párbeszédpanel kibontása</translation>
+<translation id="1984456723671657197">Ez a fájltípus nem támogatott. <ph name="BEGIN_LINK_HELP" />További információ<ph name="END_LINK_HELP" /> a fájlok Chrome OS-en való megnyitásáról.</translation>
 <translation id="1995337122023280937">Ugrás a fájl helyéhez</translation>
 <translation id="2001796770603320721">Kezelés a Drive-ban</translation>
 <translation id="2009067268969781306">A meghajtó formázásával törli a rajta lévő összes adatot. A művelet nem vonható vissza.</translation>
@@ -331,7 +332,6 @@
 <translation id="4706042980341760088">tamil, írógép-billentyűzettel</translation>
 <translation id="4711094779914110278">török</translation>
 <translation id="4712283082407695269">„<ph name="PATH" />” megnyitása folyamatban</translation>
-<translation id="4713544552769165154">Ezt a fájlt Macintosh-szoftvereket használó számítógéphez készítették. Nem kompatibilis az Ön Chrome OS-t futtató eszközével. A <ph name="BEGIN_LINK" />Chrome Internetes áruházban<ph name="END_LINK" /> kereshet megfelelő helyettesítő alkalmazást. <ph name="BEGIN_LINK_HELP" />További információ<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> fotó biztonsági mentése végrehajtva</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4732760563705710320">Cast-eszköze nem támogatja ezt a videót.</translation>
@@ -465,8 +465,6 @@
 <translation id="5833610766403489739">Ez a fájl elkóborolt valahová. Kérjük, ellenőrizze a letöltés helyének beállítását, és próbálja újra.</translation>
 <translation id="5838451609423551646">Összes bejegyzés eltávolítva a kijelöltek közül.</translation>
 <translation id="5838825566232597749">USA „Workman” nemzetközi</translation>
-<translation id="5850516540536751549">Ez a fájltípus nem támogatott. A fájltípus megnyitására képes alkalmazás megkereséséhez látogasson el a <ph name="BEGIN_LINK" />Chrome Internetes áruházba<ph name="END_LINK" />.
-        <ph name="BEGIN_LINK_HELP" />További információ<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Nincs itt semmi látnivaló...</translation>
 <translation id="5911887972742538906">Hiba történt a Linux-alkalmazás telepítése során.</translation>
 <translation id="5912396950572065471">Formátum</translation>
@@ -670,13 +668,13 @@
 <translation id="7972920761225148017">francia (Svájc)</translation>
 <translation id="7980421588063892270">angol (USA) billentyűzet Colemak kiosztással</translation>
 <translation id="7982283708762922719">Magasság</translation>
+<translation id="79907182588096956">Ez a fájl Windows rendszert futtató számítógéphez készült. Az Ön Chrome OS rendszert futtató eszközével nem kompatibilis. <ph name="BEGIN_LINK_HELP" />További információ<ph name="END_LINK_HELP" /> a fájlok Chrome OS-en való megnyitásáról.</translation>
 <translation id="8008366997883261463">Jack Russell-terrier</translation>
 <translation id="8028993641010258682">Méret</translation>
 <translation id="803771048473350947">Fájl</translation>
 <translation id="8038111231936746805">(alapértelmezett)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> hangfájl</translation>
 <translation id="8045462269890919536">román</translation>
-<translation id="8052887694493382350">Ez a fájl Windows rendszert futtató számítógéphez készült. Az Ön Chrome OS rendszert futtató eszközével nem kompatibilis. <ph name="BEGIN_LINK_HELP" />További információ.<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">A módosításokat a rendszer a következő mappába menti: <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Ismétlés</translation>
 <translation id="8106045200081704138">Velem megosztott</translation>
@@ -750,6 +748,7 @@
 <translation id="8900820606136623064">magyar</translation>
 <translation id="8919081441417203123">dán</translation>
 <translation id="8965697826696209160">Nincs elég tárhely.</translation>
+<translation id="8970501467542182729">A fájl Macintosh-szoftvert használó számítógéphez készült. Az Ön Chrome OS rendszert futtató eszközével nem kompatibilis. <ph name="BEGIN_LINK_HELP" />További információ<ph name="END_LINK_HELP" /> a fájlok Chrome OS-en való megnyitásáról.</translation>
 <translation id="8997962250644902079">kínai (hagyományos) pinjin</translation>
 <translation id="9017798300203431059">orosz fonetikus</translation>
 <translation id="9034924485347205037">Linux-fájlok</translation>

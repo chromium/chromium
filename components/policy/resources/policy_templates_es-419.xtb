@@ -406,6 +406,15 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Si se establece la política de <ph name="AUTH_SCHEMES_POLICY_NAME" /> y no incluye <ph name="BASIC_AUTH" />, se ignora esta política y se prohíbe siempre <ph name="BASIC_AUTH" />.</translation>
 <translation id="1575015449587326319">Política de configuración para el Conector de Chrome Enterprise OnFileDownloaded</translation>
 <translation id="1583248206450240930">Utilizar <ph name="PRODUCT_FRAME_NAME" /> de manera predeterminada</translation>
+<translation id="1587042984081085960">Esta política permite que un administrador especifique si una página puede enviar solicitudes XHR síncronas cuando el usuario la abandona (la cierra o pasa a otra página).
+
+      Si habilitas la política, cuando el usuario abandone las páginas, estas podrán enviar solicitudes XHR síncronas.
+
+      Si la inhabilitas o no la estableces, cuando el usuario abandone las páginas, estas no podrán enviar solicitudes XHR síncronas.
+
+      Se quitará esta política en Chrome 93.
+
+      Consulta https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="1588240398285670601">Configuración del navegador</translation>
 <translation id="1593245608325508847">Si estableces la política, se activará la función de acceso restringido de Chrome en G Suite, y los usuarios no podrán cambiar esta configuración. Los usuarios solo podrán acceder a las herramientas de Google mediante cuentas de dominios específicos (para permitir cuentas de gmail o googlemail, debes agregar consumer_accounts a la lista de dominios). Esta configuración no permite que los usuarios accedan ni agreguen una cuenta secundaria en un dispositivo administrado que requiera autenticación de Google, en caso de que esa cuenta no pertenezca a uno de los dominios permitidos de forma explícita.
 
@@ -2042,6 +2051,17 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 <translation id="377044054160169374">Intervención ante experiencias abusivas</translation>
 <translation id="3778689139323007309">Comprueba la revocación de los certificados del servidor validados correctamente y firmados por certificados de CA instalados de manera local</translation>
 <translation id="3780152581321609624">Incluir puerto no estándar en el SPN de Kerberos</translation>
+<translation id="3783569262370557918">Permite <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> para una lista de URL.
+
+      Si estableces esta política, se especificará qué URL pueden formar parte del flujo de certificación para obtener el conjunto de señales de la máquina.
+
+      Si dejas vacía esta política o no la estableces, ningún extremo podrá iniciar el flujo de certificación ni obtener señales de la máquina.
+
+      Las URL deben tener el esquema HTTPS, p. ej., "https://example.com".
+
+      Nota: Se permiten los comodines, <ph name="WILDCARD_VALUE" />.
+
+      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="378495749480642482">Determina si los sitios que visita el usuario pueden crear sesiones de realidad aumentada inmersiva mediante la <ph name="WEBXR_API_NAME" />.
 
       Si no estableces esta política o la habilitas, la <ph name="WEBXR_API_NAME" /> aceptará <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> durante la creación de sesiones. De esta manera, los usuarios podrán disfrutar de experiencias de realidad aumentada.
@@ -2767,6 +2787,7 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
       Si inhabilitas la política, no se recopilarán ni subirán estos registros.
 
       Si no la estableces, hasta la versión M76 inclusive, <ph name="PRODUCT_NAME" /> no podrá recopilar ni subir esos registros de forma predeterminada. A partir de la versión M77, <ph name="PRODUCT_NAME" /> podrá, de forma predeterminada, recopilar y subir esos registros de la mayoría de los perfiles afectados por las políticas empresariales en la nube para los usuarios. En las versiones posteriores a M77 y hasta la M80 inclusive, <ph name="PRODUCT_NAME" /> también podrá recopilar y subir de forma predeterminada esos registros de los perfiles afectados por la administración local de <ph name="PRODUCT_NAME" />.</translation>
+<translation id="4913065710388638917">Permite el flujo de certificación para una lista de URL</translation>
 <translation id="4917385247580444890">Fuerte</translation>
 <translation id="4919122295221518724">Habilita un tratamiento más estricto para contenido mixto</translation>
 <translation id="4920367374739265095">Si estableces la política, se designará la política de acceso que se utilizará para la configuración de impresoras en lote, lo que permitirá determinar las impresoras de <ph name="DEVICE_PRINTERS_POLICY_NAME" /> que estarán disponibles para los usuarios.
@@ -3223,6 +3244,13 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 <translation id="547601067149622666">No permitir anuncios en sitios con anuncios intrusivos</translation>
 <translation id="5480380613778757009">Si inhabilitas o no estableces esta política, apenas finalice la sesión, se restablecerán todas las opciones de configuración de pantalla que se hayan establecido en la sesión de invitado administrada. Si estableces esta política como verdadera, se conservarán las propiedades de pantalla después de salir de la sesión de invitado administrada.</translation>
 <translation id="5483065054530244863">Permitir los certificados firmados con SHA-1 y emitidos por los anclajes de confianza locales</translation>
+<translation id="5483584677807837752">Si habilitas la política, la función de <ph name="PRODUCT_NAME" /> enviará encabezados de solicitud detallados con información sobre el entorno y el navegador del usuario.
+
+      Esta es una función adicional, pero los nuevos encabezados pueden ocasionar fallos en algunos sitios web que restrinjan los caracteres que pueden contener las solicitudes.
+
+      Si habilitas esta política o no la estableces, se habilitará la función de <ph name="PRODUCT_NAME" />. Si la inhabilitas, la función no estará disponible.
+
+      Esta política es una solución alternativa orientada a la adaptación de las empresas a corto plazo y estará disponible al menos hasta la versión 93 de Chrome.</translation>
 <translation id="5497565614013170656">La expresión regular que coincide con el ID de la impresora.</translation>
 <translation id="5499375345075963939">Esta política solo se encuentra activa en el modo de venta.
 

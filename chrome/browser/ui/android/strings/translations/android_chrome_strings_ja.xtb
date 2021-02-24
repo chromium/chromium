@@ -56,6 +56,7 @@
 <translation id="1331212799747679585">Chrome を更新できません。その他のオプション</translation>
 <translation id="1332501820983677155">Google Chrome 機能のショートカット</translation>
 <translation id="133857033449832692"><ph name="LANG" /> をダウンロードしています…</translation>
+<translation id="1344653310988386453">選択箇所へのリンクを含める</translation>
 <translation id="1347468774581902829">アクティビティを管理</translation>
 <translation id="1360432990279830238">ログアウトして同期をオフにしますか？</translation>
 <translation id="1373696734384179344">選択したコンテンツをダウンロードするにはメモリが不足しています。</translation>
@@ -130,6 +131,7 @@
 <translation id="1960290143419248813">このバージョンの Android では Chrome の更新はサポートされなくなりました</translation>
 <translation id="1963976881984600709">標準保護機能</translation>
 <translation id="1966710179511230534">ログイン情報を更新してください。</translation>
+<translation id="1973912524893600642">データを残す</translation>
 <translation id="1974060860693918893">詳細設定</translation>
 <translation id="1984417487208496350">保護なし（推奨されません）</translation>
 <translation id="1984705450038014246">Chrome データを同期</translation>
@@ -657,6 +659,7 @@
 <translation id="5599941490345670218">Google アシスタントがウェブサイトでのタスクの完了をお手伝いします</translation>
 <translation id="5620163320393916465">保存されているパスワードはありません</translation>
 <translation id="5620928963363755975">[その他のオプション] から [ダウンロード] を開いて自分のファイルやページを探すことができます</translation>
+<translation id="562168087174703495">選択箇所へのリンクを作成できません。ページへのリンクを共有してください。</translation>
 <translation id="562289928968387744">リアクションを管理</translation>
 <translation id="5626134646977739690">名前:</translation>
 <translation id="5628604359369369630">未読 - オフラインで閲覧可能</translation>
@@ -770,6 +773,7 @@
 <translation id="6312687380483398334">ウェブアプリ（サイレント）</translation>
 <translation id="6316139424528454185">Android のバージョンはサポートされていません</translation>
 <translation id="6324034347079777476">Android システムの同期が無効です</translation>
+<translation id="6324977638108296054">選択箇所へのリンクを作成できません</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> で共有します</translation>
 <translation id="6337234675334993532">暗号化</translation>
 <translation id="6341580099087024258">ファイルの保存場所を確認する</translation>
@@ -801,6 +805,7 @@
 <translation id="6477928892249167417">以下のサイトは重要な可能性があります。</translation>
 <translation id="6482749332252372425">ストレージの空き容量が不足しているため、<ph name="FILE_NAME" /> をダウンロードできませんでした。</translation>
 <translation id="6489610539826642779">リーディング リスト<ph name="BEGIN_NEW" />新機能<ph name="END_NEW" /></translation>
+<translation id="6490496612063106490">選択箇所へのリンク</translation>
 <translation id="6496823230996795692"><ph name="APP_NAME" /> を初めて使用する場合は、インターネットに接続してください。</translation>
 <translation id="6508722015517270189">Chrome を再起動する</translation>
 <translation id="6527303717912515753">共有</translation>
@@ -1062,7 +1067,6 @@
 <translation id="8218622182176210845">アカウントを管理</translation>
 <translation id="8223642481677794647">フィードカード メニュー</translation>
 <translation id="8224471946457685718">Wi-Fi 接続時に記事をダウンロード</translation>
-<translation id="8232956427053453090">データを保持</translation>
 <translation id="8233540874193135768">QR コードをスキャンするには、カメラ付きのデバイスを使用してください。</translation>
 <translation id="8250920743982581267">ドキュメント</translation>
 <translation id="825412236959742607">このページは大量のメモリを使用しているため、Chrome により一部のコンテンツが削除されました。</translation>

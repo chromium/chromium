@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
 <translation id="1018656279737460067">Geannuleerd</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1059913517121127803">Kan scannen niet starten</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall waargenomen</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">Onbekende fout</translation>
 <translation id="1204296502688602597">DNS-latentie</translation>
 <translation id="123124571410524056">Vermoedelijke portal</translation>
-<translation id="1238191093934674082">Open VPN</translation>
 <translation id="1238612778414822719">HTTPS-latentie</translation>
 <translation id="1270369111467284986">Vermoedelijke captive portal</translation>
 <translation id="1290331692326790741">Zwak signaal</translation>
@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">Gestopt: geen inkt meer</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-resolver aanwezig</translation>
+<translation id="1717874160321062422">Beheerd door <ph name="FIRST_MANAGER" /> en <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Scannen annuleren</translation>
 <translation id="1851218745569890714">Videovergaderingen</translation>
@@ -59,6 +60,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Schakel Bluetooth in om apparaten in de buurt te vinden</translation>
 <translation id="2364498172489649528">Geslaagd</translation>
+<translation id="2365324413026422635">De test voor de batterijlading kan niet worden uitgevoerd als de batterij vol is</translation>
 <translation id="2391082728065870591">Feedbackrapport sturen</translation>
 <translation id="2418150275289244458">Openen in instellingen</translation>
 <translation id="2446553403094072641">Nauwkeurigheid van zwevendekommagetallen</translation>
@@ -91,6 +93,7 @@
 <translation id="3226405216343213872">Zoeken naar scanners</translation>
 <translation id="3246869037381808805">Afdruktaken ouder dan 1 dag worden verwijderd</translation>
 <translation id="3268178239013324452">Mislukt - Klep geopend</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">DNS-latentie aanzienlijk langer dan toelaatbare drempel</translation>
 <translation id="3328783797891415197">Test actief</translation>
 <translation id="3368922792935385530">Verbonden</translation>
@@ -102,6 +105,7 @@
 <translation id="3459509316159669723">Afdrukken</translation>
 <translation id="3488065109653206955">Gedeeltelijk geactiveerd</translation>
 <translation id="3527036260304016759">Mislukt - Onbekende fout</translation>
+<translation id="3532980081107202182">Nog ongeveer <ph name="MIN_REMAINING" /> minuten</translation>
 <translation id="357889014807611375">wifi met datalimiet</translation>
 <translation id="3595596368722241419">Batterij is vol</translation>
 <translation id="360565022852130722">Wifi-netwerk is beveiligd met het zwakke protocol WEP 802.1x</translation>
@@ -125,6 +129,7 @@
 <translation id="4155551848414053977">Zorg dat de scanner aanstaat en beschikbaar is via je netwerk of een directe verbinding.</translation>
 <translation id="4170700058716978431">MISLUKT</translation>
 <translation id="4176463684765177261">Uitgeschakeld</translation>
+<translation id="4222698289790462549">Huidige snelheid</translation>
 <translation id="4227825898293920515">Wachtwoord verloopt over <ph name="TIME" /></translation>
 <translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" /> GB van <ph name="TOTAL_MEMORY" /> GB beschikbaar.</translation>
 <translation id="4238516577297848345">Er worden geen afdruktaken uitgevoerd</translation>
@@ -241,6 +246,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6325525973963619867">Mislukt</translation>
 <translation id="636850387210749493">Aanmelding voor Enterprise</translation>
 <translation id="641081527798843608">Overeenkomst van onderwerp</translation>
+<translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Goed</translation>
 <translation id="6472207088655375767">Eenmalig wachtwoord (OTP)</translation>
 <translation id="6480327114083866287">Beheerd door <ph name="MANAGER" /></translation>
@@ -327,6 +333,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8477551185774834963">DNS-latentie is iets langer dan de toelaatbare drempel</translation>
 <translation id="8483248364096924578">IP-adres</translation>
 <translation id="8503813439785031346">Gebruikersnaam</translation>
+<translation id="8503836310948963452">Nog een paar minuten...</translation>
 <translation id="8576249514688522074">Niet geïnitialiseerd</translation>
 <translation id="8620617069779373398">Roamingstatus</translation>
 <translation id="8675354002693747642">Eerder gedeelde sleutel</translation>
@@ -358,6 +365,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="9106415115617144481">Pagina <ph name="PAGE_NUMBER" /> scannen</translation>
 <translation id="9111102763498581341">Ontgrendelen</translation>
 <translation id="9149391708638971077">Geheugentest uitvoeren</translation>
+<translation id="9173638680043580060">Nog minder dan een minuut</translation>
 <translation id="9190063653747922532">L2TP/IPsec + eerder gedeelde sleutel</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Niet geactiveerd</translation>

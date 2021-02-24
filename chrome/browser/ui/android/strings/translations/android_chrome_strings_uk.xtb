@@ -130,6 +130,7 @@
 <translation id="1960290143419248813">Chrome більше не оновлюється в цій версії Android</translation>
 <translation id="1963976881984600709">Стандартний захист</translation>
 <translation id="1966710179511230534">Оновіть свої дані для входу.</translation>
+<translation id="1973912524893600642">Зберігати дані</translation>
 <translation id="1974060860693918893">Розширені</translation>
 <translation id="1984417487208496350">Захист вимкнено (не рекомендовано)</translation>
 <translation id="1984705450038014246">Синхронізуйте дані Chrome</translation>
@@ -301,6 +302,7 @@
 <translation id="3058498974290601450">Ви можете будь-коли ввімкнути синхронізацію в налаштуваннях</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> закладка}one{<ph name="BOOKMARKS_COUNT_MANY" /> закладка}few{<ph name="BOOKMARKS_COUNT_MANY" /> закладки}many{<ph name="BOOKMARKS_COUNT_MANY" /> закладок}other{<ph name="BOOKMARKS_COUNT_MANY" /> закладки}}</translation>
 <translation id="3062802207422175757">Статті на цікаві вам теми в Chrome</translation>
+<translation id="3070005020161560471">Мови, з яких потрібно автоматично перекладати</translation>
 <translation id="3089395242580810162">Відкрити в анонімній вкладці</translation>
 <translation id="3098745985164956033">Деякі зображення надсилаються на сервери Google, що дає змогу покращувати їх описи</translation>
 <translation id="3114507951000454849">Читайте сьогоднішні новини <ph name="NEWS_ICON" /></translation>
@@ -350,10 +352,18 @@
 <translation id="3384347053049321195">Поділитися зображенням</translation>
 <translation id="3387650086002190359">Файл <ph name="FILE_NAME" /> не завантажено через помилки файлової системи.</translation>
 <translation id="3389286852084373014">SMS-повідомлення завелике</translation>
+<translation id="3391512812407811893">Пробні версії Privacy Sandbox</translation>
 <translation id="3398320232533725830">Відкрити Диспетчер закладок</translation>
 <translation id="3414952576877147120">Розмір:</translation>
 <translation id="3429160811076349561">Пробні функції вимкнено</translation>
 <translation id="3443221991560634068">Оновити поточну сторінку</translation>
+<translation id="3451542610083122179">Privacy Sandbox – це поточна ініціатива для збереження відкритої мережі, яка допоможе захистити вас від механізмів збору даних.
+
+Зараз веб-сайти використовують багато технологій, таких як сторонні файли cookie, щоб пропонувати важливі сервіси (наприклад, показувати доречні оголошення та оцінювати ефективність сайту).
+
+Privacy Sandbox підтримує існування відкритої мережі, пропонуючи кращі способи надання цих сервісів – ці технології не порушують роботу сайтів і не дають комусь таємно відстежувати ваші дії в Інтернеті.
+
+Технології Privacy Sandbox ще перебувають на стадії розробки й доступні лише у вибраних регіонах. Наразі сайти можуть скористатися пробною версією Privacy Sandbox, продовжуючи застосовувати наявні веб-технології (як-от сторонні файли cookie). <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">Ви можете вибрати пошукову систему</translation>
 <translation id="3492207499832628349">Нова анонімна вкладка</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /> про рекомендований контент</translation>
@@ -591,6 +601,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Не вдалося завантажити 1 файл.}one{Не вдалося завантажити # файл.}few{Не вдалося завантажити # файли.}many{Не вдалося завантажити # файлів.}other{Не вдалося завантажити # файлу.}}</translation>
 <translation id="5170568018924773124">Показати в папці</translation>
 <translation id="5184329579814168207">Відкрити в Chrome</translation>
+<translation id="5191251636205085390">Дізнайтеся про нові технології, що приходять на зміну стороннім файлам cookie, і як ними керувати</translation>
 <translation id="5193988420012215838">Скопійовано в буфер обміну</translation>
 <translation id="5199929503336119739">Робочий профіль</translation>
 <translation id="5210286577605176222">Перейти до попередньої вкладки</translation>
@@ -613,6 +624,7 @@
 <translation id="5355191726083956201">Покращений захист увімкнено</translation>
 <translation id="5357811892247919462">Вкладку отримано</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> відкрита вкладка: натисніть, щоб перейти на іншу вкладку}one{<ph name="OPEN_TABS_MANY" /> відкрита вкладка: натисніть, щоб перейти на іншу вкладку}few{<ph name="OPEN_TABS_MANY" /> відкриті вкладки: натисніть, щоб перейти на іншу вкладку}many{<ph name="OPEN_TABS_MANY" /> відкритих вкладок: натисніть, щоб перейти на іншу вкладку}other{<ph name="OPEN_TABS_MANY" /> відкритої вкладки: натисніть, щоб перейти на іншу вкладку}}</translation>
+<translation id="5375577065097716013">Пошук через Об'єктив <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Дозволити лише певні сайти</translation>
 <translation id="5414836363063783498">Підтвердження…</translation>
 <translation id="5423934151118863508">Тут відображатимуться найчастіше відвідувані сторінки</translation>
@@ -990,6 +1002,7 @@
 <translation id="784934925303690534">Період часу</translation>
 <translation id="7851858861565204677">Інші пристрої</translation>
 <translation id="7857691613771368249">Запитувати, коли зберігати файли</translation>
+<translation id="7859988229622350291">Мови, з яких не потрібно перекладати</translation>
 <translation id="7875915731392087153">Створити електронну адресу</translation>
 <translation id="7876243839304621966">Видалити все</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{У вас <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> непрочитана сторінка}one{У вас <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрочитана сторінка}few{У вас <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрочитані сторінки}many{У вас <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрочитаних сторінок}other{У вас <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрочитаної сторінки}}</translation>
@@ -1053,7 +1066,6 @@
 <translation id="8218622182176210845">Керувати обліковим записом</translation>
 <translation id="8223642481677794647">Меню картки зі стрічки</translation>
 <translation id="8224471946457685718">Завантажувати статті через Wi-Fi</translation>
-<translation id="8232956427053453090">Зберігати дані</translation>
 <translation id="8233540874193135768">Щоб зісканувати QR-код, скористайтеся пристроєм із камерою.</translation>
 <translation id="8250920743982581267">Документи</translation>
 <translation id="825412236959742607">Ця сторінка використовує забагато пам’яті, тому веб-переглядач Chrome вилучив деякий вміст.</translation>
@@ -1067,6 +1079,7 @@
 <translation id="8310344678080805313">Стандартні вкладки</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> та інші сайти</translation>
 <translation id="8327155640814342956">Оновіть Chrome для зручнішого перегляду веб-сторінок</translation>
+<translation id="834313815369870491">Сайти, які не потрібно перекладати</translation>
 <translation id="8349013245300336738">Сортувати за кількістю використаного трафіку</translation>
 <translation id="835847953965672673">Відновлено стільки завантажень: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="8364299278605033898">Перегляньте популярні сайти</translation>

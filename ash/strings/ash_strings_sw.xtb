@@ -405,6 +405,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="4421231901400348175">Kushiriki udhibiti wa skrini yako na <ph name="HELPER_NAME" /> kupitia Usaidizi wa Mbali.</translation>
 <translation id="4424159417645388645">Eneokazi la tano</translation>
 <translation id="4430019312045809116">Kiwango cha sauti</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{Arifa moja muhimu}other{Arifa # muhimu}}</translation>
 <translation id="4450893287417543264">Usionyeshe tena</translation>
 <translation id="445864333228800152">Habari za jioni,</translation>
 <translation id="4458688154122353284">Acha kunasa skrini</translation>
@@ -476,6 +477,10 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="4961318399572185831">Tuma skrini</translation>
 <translation id="4969092041573468113">Saa <ph name="HOURS" /> dak <ph name="MINUTES" /> sek <ph name="SECONDS" /></translation>
 <translation id="4975771730019223894">Kuweka beji kwenye programu</translation>
+<translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
+        <ph name="NOTIFICATION_1" />,
+        <ph name="NOTIFICATION_2" />,
+        <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Sentensi inayofuata</translation>
 <translation id="5030687792513154421">Muda wa kutumia kifaa umeisha</translation>
 <translation id="5033299697334913360">Bofya popote ili unase skrini nzima</translation>
@@ -489,6 +494,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="5168181903108465623">Vifaa vinavyorusha maudhui vinapatikana</translation>
 <translation id="5170568018924773124">Onyesha katika folda</translation>
 <translation id="5176318573511391780">Rekodi sehemu ya skrini</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Arifa nyingine moja}other{Arifa zingine #}}</translation>
 <translation id="5207949376430453814">Angazia kareti ya maandishi</translation>
 <translation id="5208059991603368177">Yamewashwa</translation>
 <translation id="5222676887888702881">Ondoka</translation>

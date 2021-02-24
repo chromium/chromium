@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lo">
 <translation id="1018656279737460067">ຍົກ​ເລີກ​ແລ້ວ</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ຫົວຂໍ້, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1059913517121127803">ບໍ່ສາມາດເລີ່ມສະແກນໄດ້</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ກວດເຫັນ Firewall</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">ຄວາມຜິດພາດທີ່ບໍ່ຮູ້ຈັກ.</translation>
 <translation id="1204296502688602597">ການຕອບສະໜອງຂອງ DNS</translation>
 <translation id="123124571410524056">ສົງໄສວ່າເປັນໜ້າເວັບ</translation>
-<translation id="1238191093934674082">ເປີດ VPN</translation>
 <translation id="1238612778414822719">ເວລາແຝງ HTTPS</translation>
 <translation id="1270369111467284986">ສົງໄສວ່າເປັນຊ່ອງທາງເຂົ້າຮັກສາໄວ້</translation>
 <translation id="1290331692326790741">ສັນຍານອ່ອນ</translation>
@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">ຢຸດພິມ, ນໍ້າໝຶກໝົດ</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">ມີ DNS Resolver</translation>
+<translation id="1717874160321062422">ຈັດການໂດຍ <ph name="FIRST_MANAGER" /> ແລະ <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">ກຳລັງຍົກເລີກການສະແກນ</translation>
 <translation id="1851218745569890714">ການປະຊຸມຜ່ານວິດີໂອ</translation>
@@ -59,6 +60,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">ເປີດ Bluetooth ເພື່ອຊອກຫາອຸປະກອນທີ່ຢູ່ໃກ້ຄຽງ</translation>
 <translation id="2364498172489649528">ຜ່ານແລ້ວ</translation>
+<translation id="2365324413026422635">ບໍ່ສາມາດເຮັດການທົດສອບການສາກແບັດເຕີຣີໄດ້ເມື່ອສາກເຕັມແລ້ວ</translation>
 <translation id="2391082728065870591">ສົ່ງລາຍງານຄຳຕິຊົມ</translation>
 <translation id="2418150275289244458">ເປີດໃນການຕັ້ງຄ່າ</translation>
 <translation id="2446553403094072641">ຄວາມຖືກຕ້ອງຂອງຈຸດລອຍຕົວ</translation>
@@ -91,6 +93,7 @@
 <translation id="3226405216343213872">ກຳລັງຊອກຫາເຄື່ອງສະແກນ</translation>
 <translation id="3246869037381808805">ວຽກພິມທີ່ເກົ່າກວ່າ 1 ມື້ຈະຖືກລຶບອອກ</translation>
 <translation id="3268178239013324452">ບໍ່ສຳເລັດ, ຝາເປີດຢູ່</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3310640316857623290">ເວລາໃນການຕອບສະໜອງ DNS ສູງກວ່າເກນທີ່ຍອມຮັບໄດ້ຫຼາຍ</translation>
 <translation id="3328783797891415197">ກຳລັງດຳເນີນການທົດສອບຢູ່</translation>
 <translation id="3368922792935385530">ເຊື່ອມ​ຕໍ່​ແລ້ວ</translation>
@@ -125,6 +128,7 @@
 <translation id="4155551848414053977">ກວດໃຫ້ແນ່ໃຈວ່າເຄື່ອງສະແກນເປີດຢູ່ ແລະ ມີໃຫ້ຜ່ານເຄືອຂ່າຍຂອງທ່ານ ຫຼື ການເຊື່ອມຕໍ່ໂດຍກົງ</translation>
 <translation id="4170700058716978431">ບໍ່ສຳເລັດ</translation>
 <translation id="4176463684765177261">ປິດໃຊ້ງານແລ້ວ</translation>
+<translation id="4222698289790462549">ຄວາມໄວປັດຈຸບັນ</translation>
 <translation id="4227825898293920515">ລະຫັດຜ່ານໝົດອາຍຸໃນ <ph name="TIME" /></translation>
 <translation id="4228041325992544252">ຫວ່າງ <ph name="AVAILABLE_MEMORY" /> GB ຈາກທັງໝົດ <ph name="TOTAL_MEMORY" /> GB.</translation>
 <translation id="4238516577297848345">ບໍ່ມີວຽກການພິມທີ່ພວມດຳເນີນຢູ່</translation>
@@ -241,6 +245,7 @@
 <translation id="6325525973963619867">ບໍ່ສຳເລັດ</translation>
 <translation id="636850387210749493">ການລົງທະບຽນວິສາຫະກິດ</translation>
 <translation id="641081527798843608">ຫົວຂໍ້ກົງກັນ</translation>
+<translation id="6423239382391657905">ເປີດVPN</translation>
 <translation id="6456394469623773452">ດີ</translation>
 <translation id="6472207088655375767">OTP​:</translation>
 <translation id="6480327114083866287">ຈັດການໂດຍ <ph name="MANAGER" /></translation>

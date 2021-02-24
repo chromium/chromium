@@ -56,6 +56,7 @@
 <translation id="1331212799747679585">‏Chrome کو اپ ڈیٹ نہیں کیا جا سکتا ہے۔ مزید اختیارات</translation>
 <translation id="1332501820983677155">‏Google Chrome خصوصیت کے شارٹ کٹس</translation>
 <translation id="133857033449832692"><ph name="LANG" /> ڈاؤن لوڈ ہو رہی ہے…</translation>
+<translation id="1344653310988386453">نمایاں کرنے کا لنک شامل کریں</translation>
 <translation id="1347468774581902829">سرگرمی کا نظم کریں</translation>
 <translation id="1360432990279830238">سائن آؤٹ کریں اور مطابقت پذیری آف کریں؟</translation>
 <translation id="1373696734384179344">منتخب مواد ڈاؤن لوڈ کرنے کیلئے ناکافی میموری۔</translation>
@@ -130,6 +131,7 @@
 <translation id="1960290143419248813">‏Chrome اپ ڈیٹس Android کے اس ورژن کیلئے مزید تعاون یافتہ نہیں ہیں</translation>
 <translation id="1963976881984600709">معیاری تحفظ</translation>
 <translation id="1966710179511230534">براہ کرم اپنے سائن ان کی تفصیلات اپ ڈیٹ کریں۔</translation>
+<translation id="1973912524893600642">ڈیٹا باقی رکھیں</translation>
 <translation id="1974060860693918893">جدید ترین</translation>
 <translation id="1984417487208496350">کوئی تحفظ نہیں (تجویز نہیں کی جاتی ہے)</translation>
 <translation id="1984705450038014246">‏اپنے Chrome ڈیٹا کو مطابقت پذیر بنائیں</translation>
@@ -350,10 +352,18 @@
 <translation id="3384347053049321195">تصویر کا اشتراک کریں</translation>
 <translation id="3387650086002190359">سسٹم کی خرابیوں کی وجہ سے <ph name="FILE_NAME" /> کو ڈاؤن لوڈ کرنا ناکام ہوگیا۔</translation>
 <translation id="3389286852084373014">متن کافی بڑا ہے</translation>
+<translation id="3391512812407811893">رازداری سینڈ باکس کا ٹرائل</translation>
 <translation id="3398320232533725830">بُک مارکس مینیجر کو کھولیں</translation>
 <translation id="3414952576877147120">سائز:</translation>
 <translation id="3429160811076349561">ٹرائل کی خصوصیات آف ہیں</translation>
 <translation id="3443221991560634068">موجودہ صفحہ دوبارہ لوڈ کریں</translation>
+<translation id="3451542610083122179">رازداری سینڈ باکس اوپن ویب کو محفوظ کرنے کا ایک جاری اقدام ہے جس کی مدد سے آپ ٹریکنگ میکانزم سے محفوظ رہیں گے۔
+
+آج، ویب سائٹس متعلقہ اشتہارات دکھانے اور سائٹ کی کارکردگی کی پیمائش کرنے جیسی اہم سروسز کے لئے فریق ثالث کوکیز جیسی متعدد ٹیکنالوجیز پر منحصر ہوتی ہیں۔
+
+رازداری سینڈ باکس، سائٹس کو توڑے بغیر اور پورے ویب پر خفیہ طریقے سے ٹریک ہونے سے آپ کو بچاتے ہوئے، ان سروسز کو انجام دینے کے بہتر طریقے تخلیق کر کے اوپن ویب کی اہمیت کو محفوظ کرتا ہے۔
+
+رازداری سینڈ باکس کا ڈیولپمنٹ ابھی بھی جاری ہے اور وہ منتخب علاقوں میں دستیاب ہے۔ ابھی کے لیے، سائٹس فریق ثالث کوکیز جیسی موجودہ ویب ٹیکنالوجیز کا استعمال جاری رکھتے ہوئے رازداری سینڈ باکس کو آزما کر دیکھ سکتی ہیں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">آپ اپنا سرچ انجن منتخب کر سکتے ہیں</translation>
 <translation id="3492207499832628349">نیا پوشیدگی ٹیب</translation>
 <translation id="3493531032208478708">تجویز کردہ مواد کے بارے میں <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
@@ -591,6 +601,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 ڈاؤن لوڈ ناکام ہو گیا۔}other{# ڈاؤن لوڈز ناکام ہو گئے۔}}</translation>
 <translation id="5170568018924773124">فولڈر میں دکھائیں</translation>
 <translation id="5184329579814168207">‏Chrome میں کھولیں</translation>
+<translation id="5191251636205085390">ان نئی ٹیکنالوجیز کے بارے میں جانیں اور کنٹرول کریں جن کا مقصد فریق ثالث کے کوکیز کو تبدیل کرنا ہے</translation>
 <translation id="5193988420012215838">آپ کے کلپ بورڈ پر کاپی کر دیا گیا</translation>
 <translation id="5199929503336119739">دفتری پروفائل</translation>
 <translation id="5210286577605176222">پچھلے ٹیب پر جائیں</translation>
@@ -648,6 +659,7 @@
 <translation id="5599941490345670218">‏Google اسسٹنٹ آپ کیلئے ویب سائٹس پر کاروائیاں مکمل کر سکتی ہے</translation>
 <translation id="5620163320393916465">کوئی محفوظ کردہ پاس ورڈز نہیں</translation>
 <translation id="5620928963363755975">مزید اختیارات بٹن سے اپنی فائلیں اور صفحات ڈاؤن لوڈز میں تلاش کریں</translation>
+<translation id="562168087174703495">نمایاں کرنے کا لنک تخلیق نہیں کیا جا سکا۔ صفحہ کے لنک کا اشتراک کریں۔</translation>
 <translation id="562289928968387744">ردعمل کا نظم کریں</translation>
 <translation id="5626134646977739690">نام:</translation>
 <translation id="5628604359369369630">بغیر پڑھا ہوا - آف لائن دستیاب ہے</translation>
@@ -761,6 +773,7 @@
 <translation id="6312687380483398334">ویب ایپس (خاموش)</translation>
 <translation id="6316139424528454185">‏Android ورژن تعاون یافتہ نہیں</translation>
 <translation id="6324034347079777476">‏Android سسٹم کی مطابقت پذیری کو غیر فعال کر دیا گیا</translation>
+<translation id="6324977638108296054">نمایاں کرنے کا لنک تخلیق نہیں کیا جا سکا</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> کے ذریعے اشتراک کریں</translation>
 <translation id="6337234675334993532">مرموزکاری</translation>
 <translation id="6341580099087024258">پوچھیں کہ فائلیں کہاں محفوظ کرنی ہیں</translation>
@@ -792,6 +805,7 @@
 <translation id="6477928892249167417">یہ سائٹس آپ کے لیے اہم معلوم ہوتی ہیں:</translation>
 <translation id="6482749332252372425">اسٹوریج کی جگہ کم ہونے کی وجہ سے <ph name="FILE_NAME" /> کو ڈاؤن لوڈ کرنا ناکام ہوگیا۔</translation>
 <translation id="6489610539826642779">پڑھنے کی فہرست <ph name="BEGIN_NEW" />نئی<ph name="END_NEW" /></translation>
+<translation id="6490496612063106490">نمایاں کرنے کا لنک</translation>
 <translation id="6496823230996795692">پہلی مرتبہ <ph name="APP_NAME" /> استعمال کرنے کے لیے، براہ کرم انٹرنیٹ سے منسلک ہوں۔</translation>
 <translation id="6508722015517270189">‏Chrome کو دوبارہ شروع کریں</translation>
 <translation id="6527303717912515753">اشتراک کریں</translation>
@@ -1053,7 +1067,6 @@
 <translation id="8218622182176210845">اپنے اکاؤنٹ کا نظم کریں</translation>
 <translation id="8223642481677794647">فیڈ کارڈ مینو</translation>
 <translation id="8224471946457685718">‏Wi-Fi پر اپنے لئے مضامین ڈاؤن لوڈ کریں</translation>
-<translation id="8232956427053453090">ڈیٹا برقرار رکھیں</translation>
 <translation id="8233540874193135768">‏QR کوڈ اسکین کرنے کے لیے، کیمرا والا آلہ استعمال کریں۔</translation>
 <translation id="8250920743982581267">دستاویزات</translation>
 <translation id="825412236959742607">‏یہ صفحہ بہت زیادہ میموری استعمال کرتا ہے، لہذا Chrome نے بعض مواد حذف کر دیا۔</translation>

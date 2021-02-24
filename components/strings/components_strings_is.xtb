@@ -569,6 +569,7 @@ og röng skilríki til baka. Þetta getur gerst þegar tölvuþrjótur reynir a�
       ganga úr skugga um að staðgengilsþjónninn starfi rétt. Ef þú heldur að þú ættir
       ekki að nota staðgengilsþjón:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="317878711435188021">Vita hvenær þú notar þetta tæki</translation>
 <translation id="3188393374551744535">Reikningsstaða</translation>
 <translation id="3194737229810486521"><ph name="URL" /> vill fá að geyma gögn varanlega í tækinu þínu</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> á <ph name="SERVER_NAME" /></translation>
@@ -747,6 +748,7 @@ og röng skilríki til baka. Þetta getur gerst þegar tölvuþrjótur reynir a�
 <translation id="3828924085048779000">Ekki er leyft að hafa autt aðgangsorð.</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> hefur sett upp viðbætur fyrir fleiri aðgerðir. Viðbætur hafa aðgang að sumum af gögnunum þínum.</translation>
 <translation id="3832522519263485449">Mörg göt vinstra megin</translation>
+<translation id="3835233591525155343">Tækjanotkun þín</translation>
 <translation id="385051799172605136">Til baka</translation>
 <translation id="3858027520442213535">Uppfæra dagsetningu og tíma</translation>
 <translation id="3884278016824448484">Ósamræmi í auðkenni tækis</translation>
@@ -1041,6 +1043,7 @@ og röng skilríki til baka. Þetta getur gerst þegar tölvuþrjótur reynir a�
 <translation id="4995216769782533993">Staðfestu öryggiskóðann til að deila kortaupplýsingum með þessu vefsvæði</translation>
 <translation id="4995474875135717171">Breytt:</translation>
 <translation id="5002932099480077015">Ef kveikt er á þessu mun Chrome vista afrit af kortinu þínu í tækinu til að greiða fyrir útfyllingu eyðublaða.</translation>
+<translation id="5011561501798487822">Greint tungumál</translation>
 <translation id="5015510746216210676">Vélarheiti:</translation>
 <translation id="5017554619425969104">Texti sem þú afritaðir</translation>
 <translation id="5018422839182700155">Ekki tókst að opna þessa síðu</translation>
@@ -1616,6 +1619,7 @@ og röng skilríki til baka. Þetta getur gerst þegar tölvuþrjótur reynir a�
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">Skipanalína</translation>
 <translation id="7359588939039777303">Lokað á auglýsingar.</translation>
+<translation id="7365849542400970216">Er þér kunnugt um notkun tækisins?</translation>
 <translation id="7372973238305370288">leitarniðurstaða</translation>
 <translation id="7374733840632556089">Þetta vandamál tengist vottorði sem þú eða einhver annar setti upp í tækinu þínu. Vitað er að þetta vottorð er notað til að fylgjast með og grípa inn í netkerfi og Chrome treystir því ekki. Þrátt fyrir að notkun þess geti í einhverjum tilvikum átt rétt á sér, svo sem á skóla- eða fyrirtækjaneti, vill Chrome tryggja að þú vitir af því, þó að þú getir ekki komið í veg fyrir notkun þess. Eftirlit getur átt sér stað í öllum vöfrum eða forritum sem nota vefinn.</translation>
 <translation id="7375818412732305729">Skrá er hengd við</translation>
@@ -2033,6 +2037,7 @@ og röng skilríki til baka. Þetta getur gerst þegar tölvuþrjótur reynir a�
 <translation id="8983003182662520383">Greiðslumátar og heimilisföng sem nota Google Pay</translation>
 <translation id="8987927404178983737">Mánuður</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
+<translation id="899688752321268742"><ph name="URL" /> vill vita hvenær þú notar þetta tæki</translation>
 <translation id="8996941253935762404">Vefsvæðið framundan inniheldur skaðleg forrit</translation>
 <translation id="8997023839087525404">Vefþjónninn birti vottorð sem var ekki opinberlega birt með gagnsæisreglu vottorða. Þess er krafist fyrir sum vottorð, til að tryggja að þeim sé treystandi og til að veita vernd gegn tölvuþrjótum.</translation>
 <translation id="9001074447101275817">Staðgengilsþjónninn <ph name="DOMAIN" /> krefst notandanafns og aðgangsorðs.</translation>

@@ -93,6 +93,7 @@
 <translation id="1942765061641586207">רזולוציית תמונה</translation>
 <translation id="1943097386230153518">התקנת שירות חדש</translation>
 <translation id="1972984168337863910">הרחבת חלוניות המשוב של קבצים</translation>
+<translation id="1984456723671657197">‏סוג הקובץ הזה אינו נתמך. <ph name="BEGIN_LINK_HELP" />לרשותך מידע נוסף<ph name="END_LINK_HELP" /> על פתיחת קבצים ב-Chrome OS.</translation>
 <translation id="1995337122023280937">מעבר אל מיקום הקובץ</translation>
 <translation id="2001796770603320721">‏ניהול ב-Drive</translation>
 <translation id="2009067268969781306">פירמוט של התקן אחסון מוחק את כל הנתונים שמאוחסנים בו. לא ניתן לבטל את הפעולה הזו.</translation>
@@ -331,7 +332,6 @@
 <translation id="4706042980341760088">‏טמילית עם מקלדת Typewriter</translation>
 <translation id="4711094779914110278">טורקית</translation>
 <translation id="4712283082407695269">הפתיחה של "<ph name="PATH" />" מתבצעת</translation>
-<translation id="4713544552769165154">‏קובץ זה מיועד למחשב עם תוכנת Macintosh. הוא אינו תואם למכשיר שלך שבו פועלת מערכת ההפעלה של Chrome. אפשר לחפש ב<ph name="BEGIN_LINK" />חנות האינטרנט של Chrome<ph name="END_LINK" /> אפליקציה חלופית מתאימה.<ph name="BEGIN_LINK_HELP" />למידע נוסף<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> תמונות גובו</translation>
 <translation id="4725511304875193254">קורגי</translation>
 <translation id="4732760563705710320">‏מצטערים, סרטון זה אינו נתמך במכשיר ה-CAST שלך.</translation>
@@ -466,8 +466,6 @@
 <translation id="5833610766403489739">הקובץ הזה עבר למקום אחר. יש לבדוק את הגדרות מיקום ההורדה ולנסות שוב.</translation>
 <translation id="5838451609423551646">הסרת את כל הפריטים מהבחירה.</translation>
 <translation id="5838825566232597749">‏US Workman בינלאומית</translation>
-<translation id="5850516540536751549">‏סוג קובץ זה אינו נתמך. אפשר לבקר ב<ph name="BEGIN_LINK" />חנות האינטרנט של Chrome‏<ph name="END_LINK" /> כדי למצוא אפליקציה שבאמצעותה ניתן לפתוח קובץ מסוג זה.
-<ph name="BEGIN_LINK_HELP" />למידע נוסף<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">אין מה לראות כאן...</translation>
 <translation id="5911887972742538906">‏קרתה שגיאה במהלך ההתקנה של אפליקציית Linux.</translation>
 <translation id="5912396950572065471">פורמט</translation>
@@ -671,13 +669,13 @@
 <translation id="7972920761225148017">צרפתית (שוויץ)</translation>
 <translation id="7980421588063892270">‏מקלדת Colemak באנגלית (US)</translation>
 <translation id="7982283708762922719">גובה</translation>
+<translation id="79907182588096956">‏הקובץ הזה מיועד למחשב PC עם מערכת ההפעלה Windows. הוא לא מתאים למכשיר שלך, שבו פועלת מערכת ההפעלה Chrome OS. <ph name="BEGIN_LINK_HELP" />לרשותך מידע נוסף<ph name="END_LINK_HELP" /> על פתיחת קבצים ב-Chrome OS.</translation>
 <translation id="8008366997883261463">כלב</translation>
 <translation id="8028993641010258682">גודל</translation>
 <translation id="803771048473350947">קובץ</translation>
 <translation id="8038111231936746805">(ברירת מחדל)</translation>
 <translation id="8042602468072383151">קובץ אודיו בפורמט <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">רומנית</translation>
-<translation id="8052887694493382350">‏הקובץ הזה מיועד למחשב PC עם מערכת ההפעלה Windows. הוא לא מתאים למכשיר שלך, שבו פועלת מערכת ההפעלה Chrome OS. <ph name="BEGIN_LINK_HELP" />מידע נוסף<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">כל העריכות יישמרו בתיקייה <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">חזרה</translation>
 <translation id="8106045200081704138">בשיתוף איתי</translation>
@@ -751,6 +749,7 @@
 <translation id="8900820606136623064">הונגרית</translation>
 <translation id="8919081441417203123">דנית</translation>
 <translation id="8965697826696209160">אין מספיק שטח.</translation>
+<translation id="8970501467542182729">‏קובץ זה מיועד למחשב המשתמש בתוכנה של Macintosh. הוא לא מתאים למכשיר שלך, שבו פועלת מערכת ההפעלה Chrome OS. <ph name="BEGIN_LINK_HELP" />לרשותך מידע נוסף<ph name="END_LINK_HELP" /> על פתיחת קבצים ב-Chrome OS.</translation>
 <translation id="8997962250644902079">‏סינית (מסורתית) Pinyin</translation>
 <translation id="9017798300203431059">רוסית פונטית</translation>
 <translation id="9034924485347205037">‏קובצי Linux</translation>

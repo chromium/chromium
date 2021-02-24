@@ -331,7 +331,6 @@
 <translation id="4706042980341760088">தமிழ் - டைப்ரைட்டர் கீபோர்டு</translation>
 <translation id="4711094779914110278">டர்கிஷ்</translation>
 <translation id="4712283082407695269">"<ph name="PATH" />" காப்பகத்தைத் திறக்கிறது</translation>
-<translation id="4713544552769165154">Macintosh மென்பொருள் பயன்படுத்தும் கம்ப்யூட்டருக்காக இந்தக் கோப்பு வடிவமைக்கப்பட்டது. இது Chrome OSஸில் இயங்கும் உங்கள் சாதனத்திற்கு ஏற்றதல்ல. சரியான மாற்று ஆப்ஸிற்கு <ph name="BEGIN_LINK" />Chrome இணைய அங்காடியில்<ph name="END_LINK" /> தேடவும்.<ph name="BEGIN_LINK_HELP" />மேலும் அறிக<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> படங்கள் காப்புப் பிரதி எடுக்கப்பட்டன</translation>
 <translation id="4725511304875193254">கோர்கி</translation>
 <translation id="4732760563705710320">அடடா, இந்த வீடியோ உங்கள் அலைபரப்பும் சாதனத்தில் ஆதரிக்கப்படவில்லை.</translation>
@@ -465,8 +464,6 @@
 <translation id="5833610766403489739">இந்தக் கோப்பு வேறு எங்கோ சேமிக்கப்பட்டுவிட்டது. உங்கள் பதிவிறக்க இருப்பிட அமைப்பைச் சரிபார்த்து, மீண்டும் முயற்சிக்கவும்.</translation>
 <translation id="5838451609423551646">தேர்ந்தெடுக்கப்பட்டதில் உள்ள அனைத்து உள்ளீடுகளும் அகற்றப்பட்டன.</translation>
 <translation id="5838825566232597749">யுஎஸ் ஒர்க்மேன் இன்டர்நேஷனல்</translation>
-<translation id="5850516540536751549">இந்தக் கோப்பு வகை ஆதரிக்கப்படவில்லை. இந்த வகையான கோப்பைத் திறக்கக்கூடிய பயன்பாட்டைக் கண்டறிய <ph name="BEGIN_LINK" />Chrome இணைய அங்காடியைப்<ph name="END_LINK" /> பார்வையிடவும்.
-    <ph name="BEGIN_LINK_HELP" />மேலும் அறிக<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">காண்பதற்கு இங்கே ஒன்றுமில்லை...</translation>
 <translation id="5911887972742538906">உங்கள் Linux ஆப்ஸை நிறுவும்போது பிழை நேர்ந்தது.</translation>
 <translation id="5912396950572065471">ஃபார்மேட்</translation>
@@ -676,7 +673,6 @@
 <translation id="8038111231936746805">(இயல்புநிலை)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> ஆடியோ</translation>
 <translation id="8045462269890919536">ரோமானியன்</translation>
-<translation id="8052887694493382350">Windows மென்பொருளைப் பயன்படுத்தும் PCக்காக இந்தக் கோப்பு வடிவமைக்கப்பட்டுள்ளது. Chrome OSஸில் இயங்கும் உங்கள் சாதனத்திற்கு இது இணக்கமானதல்ல. <ph name="BEGIN_LINK_HELP" />மேலும் அறிக<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">அனைத்து மாற்றங்களும் <ph name="DOWNLOADS_FOLDER" /> கோப்புறையில் சேமிக்கப்படும்.</translation>
 <translation id="8079530767338315840">மீண்டும் இயக்கு</translation>
 <translation id="8106045200081704138">என்னுடன் பகிர்ந்தவை</translation>

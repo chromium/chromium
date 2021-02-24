@@ -4,6 +4,7 @@
 <translation id="102360288709523007">Uzlabojiet Chromium, sūtot lietojuma statistiku un avāriju pārskatus Google serveriem.</translation>
 <translation id="1185134272377778587">Par Chromium</translation>
 <translation id="1257458525759135959">Lai saglabātu attēlus, pieskarieties vienumam Iestatījumi un atļaujiet Chromium pievienot fotoattēlus.</translation>
+<translation id="1289216811211435351">Pāriešana uz Chromium</translation>
 <translation id="1361748954329991663">Pārlūka Chromium versija ir novecojusi. Ja veikalā <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> nav pieejami atjauninājumi, iespējams, jūsu ierīcē vairs netiek atbalstītas pārlūka Chromium jaunās versijas.</translation>
 <translation id="1431818719585918472">Atļaujiet pārlūkā Chromium bloķēt inkognito cilnes.</translation>
 <translation id="1472013873724362412">Jūsu konts nedarbojas pārlūkā Chromium. Sazinieties ar savu domēna administratoru vai pierakstieties, izmantojot parastu Google kontu.</translation>
@@ -34,6 +35,7 @@
 <translation id="4099085513035183040">Netiek atbalstīta pārlūkā Chromium Beta.</translation>
 <translation id="4166206055865952171">Iestatiet Chromium kā noklusējuma pārlūku</translation>
 <translation id="4555020257205549924">Ja šī funkcija ir ieslēgta, Chromium piedāvā tulkot citās valodās rakstītas lapas, izmantojot Google tulkotāju. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
+<translation id="4585809515399340748">Tagad varat izmantot Chromium ikreiz, kad pieskaraties saitēm ziņojumos, dokumentos un citās lietotnēs.</translation>
 <translation id="4681781466797808448">Ieslēgt Chromium skeneri</translation>
 <translation id="4787850887676698916">Šeit būs redzamas cilnes, kuras esat atvēris pārlūkā Chromium citās ierīcēs.</translation>
 <translation id="4828317641996116749">Pārlūkprogrammā Chromium nevarēja pārbaudīt visas paroles. Vēlāk mēģiniet vēlreiz.</translation>
@@ -42,9 +44,9 @@
 <translation id="5224391634244552924">Nav saglabātu paroļu. Pārlūkprogrammā Chromium var pārbaudīt jūsu paroles, ja jūs tās saglabājat.</translation>
 <translation id="5308226104666789935">Pārlūkā Chromium nevar pārbaudīt atjauninājumu pieejamību.</translation>
 <translation id="5521125884468363740">Lai skatītu cilnes no visām ierīcēm, kurās izmantojat pārlūku Chromium, pierakstieties un ieslēdziet sinhronizāciju.</translation>
-<translation id="5544795779875591523">Izvēlieties, vai notīrīt Chromium datus no šīs ierīces vai tos paturēt.</translation>
 <translation id="5573014823074921752">Chromium padoms. Lai iegūtu vairāk ciļņu iespēju, rīkjoslā, kas atrodas ekrāna apakšdaļā vai augšdaļā, pieskarieties pogai Rādīt cilnes un turiet to.</translation>
 <translation id="5700709190537129682">Pārlūkprogrammā Chromium nevar pārbaudīt jūsu paroles.</translation>
+<translation id="5742135483959137648">Chromium izmantošana saišu atvēršanai</translation>
 <translation id="5777187867430702742">Chromium lapa</translation>
 <translation id="5862307444128926510">Laipni lūdzam pārlūkā Chromium!</translation>
 <translation id="5945387852661427312">Jūs pierakstāties kontā, kas tiek pārvaldīts domēnā <ph name="DOMAIN" />, un sniedzat tā administratoram kontroli pār saviem Chromium datiem. Jūsu dati tiks neatgriezeniski saistīti ar šo kontu. Izrakstoties no pārlūka Chromium, jūsu dati tiks dzēsti no šīs ierīces, taču tie tiks saglabāti jūsu Google kontā.</translation>
@@ -63,6 +65,7 @@
 <translation id="7208566199746267865">Chromium ietaupa jūsu laiku, pievienojot jūsu kontus tīmeklim. Kontus varat pievienot vai noņemt sadaļā Iestatījumi.</translation>
 <translation id="725427773388857052">Chromium var palīdzēt aizsargāt jūs pret datu pārkāpumiem, nedrošām vietnēm un citiem apdraudējumiem.</translation>
 <translation id="7269362888766543920">Daži papildinājumi var izraisīt pārlūka Chromium avarēšanu. Lūdzu, atinstalējiet tos.</translation>
+<translation id="7313655110045230863">Lai iestatītu Chromium kā noklusējuma pārlūku, atveriet iestatījumus. Pieskarieties vienumam “Noklusējuma pārlūka lietotne” un pēc tam atlasiet Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Atlasītie dati ir noņemti no pārlūka Chromium un sinhronizētajām ierīcēm. Jūsu Google kontam vietnē history.google.com var būt citu veidu pārlūkošanas vēstures dati, piemēram, meklēšanas vaicājumi un darbības citos Google pakalpojumos.</translation>
 <translation id="7400689562045506105">Chromium lietošana visur</translation>

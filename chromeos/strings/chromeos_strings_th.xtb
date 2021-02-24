@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
 <translation id="1018656279737460067">ยกเลิกแล้ว</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> เทรด, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1059913517121127803">เริ่มการสแกนไม่ได้</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ตรวจพบไฟร์วอลล์</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">ข้อผิดพลาดที่ไม่รู้จัก</translation>
 <translation id="1204296502688602597">เวลาในการตอบสนองของ DNS</translation>
 <translation id="123124571410524056">สงสัยว่าเป็นพอร์ทัล</translation>
-<translation id="1238191093934674082">เปิด VPN</translation>
 <translation id="1238612778414822719">เวลาในการตอบสนองของ HTTPS</translation>
 <translation id="1270369111467284986">สงสัยว่าเป็นแคพทีฟพอร์ทัล</translation>
 <translation id="1290331692326790741">สัญญาณไม่ดี</translation>
@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">หยุดพิมพ์ - หมึกหมด</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">มีรีโซลเวอร์ DNS</translation>
+<translation id="1717874160321062422">จัดการโดย <ph name="FIRST_MANAGER" /> และ <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">กำลังยกเลิกการสแกน</translation>
 <translation id="1851218745569890714">การประชุมทางวิดีโอ</translation>
@@ -59,6 +60,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">เปิดบลูทูธเพื่อค้นหาอุปกรณ์ใกล้เคียง</translation>
 <translation id="2364498172489649528">ผ่าน</translation>
+<translation id="2365324413026422635">ทดสอบการชาร์จขณะที่แบตเตอรี่เต็มอยู่ไม่ได้</translation>
 <translation id="2391082728065870591">ส่งรายงานความคิดเห็น</translation>
 <translation id="2418150275289244458">เปิดในการตั้งค่า</translation>
 <translation id="2446553403094072641">ความแม่นยำของจุดลอยตัว</translation>
@@ -91,6 +93,7 @@
 <translation id="3226405216343213872">กำลังค้นหาเครื่องสแกน</translation>
 <translation id="3246869037381808805">ระบบจะนำงานพิมพ์ที่เก่ากว่า 1 วันออก</translation>
 <translation id="3268178239013324452">ไม่สำเร็จ - ฝาเครื่องเปิดอยู่</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">เวลาในการตอบสนอง DNS สูงกว่าเกณฑ์ที่ยอมรับได้อย่างมีนัยสำคัญ</translation>
 <translation id="3328783797891415197">กำลังทดสอบ</translation>
 <translation id="3368922792935385530">เชื่อมต่อแล้ว</translation>
@@ -102,6 +105,7 @@
 <translation id="3459509316159669723">การพิมพ์</translation>
 <translation id="3488065109653206955">เปิดการใช้งานบางส่วน</translation>
 <translation id="3527036260304016759">ไม่สำเร็จ - ข้อผิดพลาดที่ไม่รู้จัก</translation>
+<translation id="3532980081107202182">เหลือเวลาอีกประมาณ <ph name="MIN_REMAINING" /> นาที</translation>
 <translation id="357889014807611375">Wi-Fi ที่มีการวัดปริมาณอินเทอร์เน็ต</translation>
 <translation id="3595596368722241419">แบตเตอรี่เต็ม</translation>
 <translation id="360565022852130722">เครือข่าย WiFi มีการรักษาความปลอดภัยด้วยโปรโตคอล WEP 802.1x ที่ไม่รัดกุม</translation>
@@ -125,6 +129,7 @@
 <translation id="4155551848414053977">ตรวจสอบว่าเครื่องสแกนเปิดอยู่และใช้งานได้ผ่านทางเครือข่ายของคุณหรือการเชื่อมต่อโดยตรง</translation>
 <translation id="4170700058716978431">ไม่สำเร็จ</translation>
 <translation id="4176463684765177261">ปิดการทำงาน</translation>
+<translation id="4222698289790462549">ความเร็วในปัจจุบัน</translation>
 <translation id="4227825898293920515">รหัสผ่านจะหมดอายุในอีก <ph name="TIME" /></translation>
 <translation id="4228041325992544252">ใช้ได้ <ph name="AVAILABLE_MEMORY" /> GB จาก <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="4238516577297848345">ไม่มีงานที่กำลังพิมพ์</translation>
@@ -241,6 +246,7 @@
 <translation id="6325525973963619867">ล้มเหลว</translation>
 <translation id="636850387210749493">การลงทะเบียนองค์กร</translation>
 <translation id="641081527798843608">หัวเรื่องที่ตรงกัน</translation>
+<translation id="6423239382391657905">เปิด VPN</translation>
 <translation id="6456394469623773452">ดี</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">จัดการโดย <ph name="MANAGER" /></translation>
@@ -327,6 +333,7 @@
 <translation id="8477551185774834963">เวลาในการตอบสนอง DNS สูงกว่าเกณฑ์ที่ยอมรับได้เล็กน้อย</translation>
 <translation id="8483248364096924578">ที่อยู่ IP</translation>
 <translation id="8503813439785031346">ชื่อผู้ใช้</translation>
+<translation id="8503836310948963452">อีกเพียงไม่กี่นาทีเท่านั้น...</translation>
 <translation id="8576249514688522074">ยังไม่ได้เริ่มต้น</translation>
 <translation id="8620617069779373398">สถานะการโรมมิ่ง</translation>
 <translation id="8675354002693747642">คีย์ที่แชร์ล่วงหน้า</translation>
@@ -358,6 +365,7 @@
 <translation id="9106415115617144481">กำลังสแกนหน้า <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">ปลดล็อก</translation>
 <translation id="9149391708638971077">ทดสอบหน่วยความจำ</translation>
+<translation id="9173638680043580060">เหลืออีกไม่ถึง 1 นาที</translation>
 <translation id="9190063653747922532">L2TP/IPsec + คีย์ที่แชร์ล่วงหน้า</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">ไม่ได้เปิดการใช้งาน</translation>

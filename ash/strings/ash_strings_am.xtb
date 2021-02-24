@@ -405,6 +405,7 @@
 <translation id="4421231901400348175">የማያ ገጽዎን ቁጥጥር በርቀት እርዳታ በኩል ለ<ph name="HELPER_NAME" /> በማጋራት ላይ።</translation>
 <translation id="4424159417645388645">ዴስክ 5</translation>
 <translation id="4430019312045809116">ድምፅ</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 አስፈላጊ ማሳወቂያ}one{# አስፈላጊ ማሳወቂያዎች}other{# አስፈላጊ ማሳወቂያዎች}}</translation>
 <translation id="4450893287417543264">ዳግም አታሳይ</translation>
 <translation id="445864333228800152">ደህን አመሹ ፣</translation>
 <translation id="4458688154122353284">የማያ ገጽ ቀረጻን አቁም</translation>
@@ -476,6 +477,10 @@
 <translation id="4961318399572185831">የCast ማያ ገጽ</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> ሰ <ph name="MINUTES" /> ደ <ph name="SECONDS" /> ሴ</translation>
 <translation id="4975771730019223894">የመተግበሪያ ባጅ አሰጣጥ</translation>
+<translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />፦
+        <ph name="NOTIFICATION_1" />፣
+        <ph name="NOTIFICATION_2" />፣
+        <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">ቀጣይ ዓረፍተ ነገር</translation>
 <translation id="5030687792513154421">ሰዓት አልቋል</translation>
 <translation id="5033299697334913360">ሙሉ ማያ ገጽን ለመቅረጽ በማንኛውም ቦታ ላይ ጠቅ ያድርጉ</translation>
@@ -489,6 +494,7 @@
 <translation id="5168181903108465623">የCast መሣሪያዎች ይገኛሉ</translation>
 <translation id="5170568018924773124">በአቃፊ አሳይ</translation>
 <translation id="5176318573511391780">ከፊል የማያ ገጽን ቅረጽ</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 ሌላ ማሳወቂያ}one{# ሌሎች ማሳወቂያዎች}other{# ሌሎች ማሳወቂያዎች}}</translation>
 <translation id="5207949376430453814">የጽሑፍ ድፋቱን አድምቅ</translation>
 <translation id="5208059991603368177">አብራ</translation>
 <translation id="5222676887888702881">ዘግተህ ውጣ</translation>

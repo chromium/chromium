@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
 <translation id="1018656279737460067">منسوخ کردہ</translation>
+<translation id="1047458377670401304">‏<ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> تھریڈز، GHz<ph name="CPU_MAX_CLOCK_SPEED" />)</translation>
 <translation id="1059913517121127803">اسکین کرنا شروع نہیں کیا جا سکا</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">فائروال کا پتا چلا</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">نامعلوم خرابی۔</translation>
 <translation id="1204296502688602597">‏DNS تاخیر</translation>
 <translation id="123124571410524056">پورٹل مشکوک ہے</translation>
-<translation id="1238191093934674082">Open VPN</translation>
 <translation id="1238612778414822719">‏HTTPS تاخیر</translation>
 <translation id="1270369111467284986">مشکوک کیپٹو پورٹل</translation>
 <translation id="1290331692326790741">کمزور سگنل</translation>
@@ -91,6 +91,7 @@
 <translation id="3226405216343213872">اسکینرز کی تلاش جاری ہے</translation>
 <translation id="3246869037381808805">1 دن سے پرانی پرنٹ جابز کو ہٹا دیا جائے گا</translation>
 <translation id="3268178239013324452">ناکام ہو گیا - دروازہ کھلا ہے</translation>
+<translation id="3286515922899063534">‎<ph name="CURRENT" />GHz</translation>
 <translation id="3310640316857623290">‏DNS تاخیر قابل اجازت حد سے نمایاں طور پر زیادہ ہے</translation>
 <translation id="3328783797891415197">ٹیسٹ جاری ہے</translation>
 <translation id="3368922792935385530">منسلک</translation>
@@ -102,6 +103,7 @@
 <translation id="3459509316159669723">پرنٹ کیا جا رہا ہے</translation>
 <translation id="3488065109653206955">جزوی طور پر فعال کردہ</translation>
 <translation id="3527036260304016759">ناکام ہو گیا - نامعلوم خرابی</translation>
+<translation id="3532980081107202182">تقریباً <ph name="MIN_REMAINING" /> منٹ باقی ہیں</translation>
 <translation id="357889014807611375">‏میٹرڈ Wi-Fi</translation>
 <translation id="3595596368722241419">بیٹری پوری چارج ہے</translation>
 <translation id="360565022852130722">‏WiFi نیٹ ورک کمزور پروٹوکول WEP 802.1x کے ساتھ محفوظ ہے</translation>
@@ -125,6 +127,7 @@
 <translation id="4155551848414053977">یقینی بنائیں کہ اسکینر آن ہے اور آپ کے نیٹ ورک یا براہ راست کنکشن کے ذریعے دستیاب ہے</translation>
 <translation id="4170700058716978431">ناکام</translation>
 <translation id="4176463684765177261">غیر فعال</translation>
+<translation id="4222698289790462549">موجودہ رفتار</translation>
 <translation id="4227825898293920515">پاس ورڈ کی میعاد <ph name="TIME" /> میں ختم ہونے والی ہے</translation>
 <translation id="4228041325992544252">‏<ph name="TOTAL_MEMORY" /> GB میں سے <ph name="AVAILABLE_MEMORY" /> GB دستیاب ہے۔</translation>
 <translation id="4238516577297848345">کوئی پرنٹ جاب پیشرفت میں نہیں</translation>
@@ -240,6 +243,7 @@
 <translation id="6325525973963619867">ناکام</translation>
 <translation id="636850387210749493">انٹرپرائز اندراج</translation>
 <translation id="641081527798843608">موضوع کی مماثلت</translation>
+<translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">لطیف</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> کے زیر انتظام ہے</translation>
@@ -326,6 +330,7 @@
 <translation id="8477551185774834963">‏DNS تاخیر قابل اجازت حد سے تھوڑی سی زیادہ ہے</translation>
 <translation id="8483248364096924578">‏IP پتہ</translation>
 <translation id="8503813439785031346">صارف کا نام</translation>
+<translation id="8503836310948963452">صرف چند مزید منٹ...</translation>
 <translation id="8576249514688522074">شروع نہیں کیا گیا</translation>
 <translation id="8620617069779373398">رومنگ کی صورتحال</translation>
 <translation id="8675354002693747642">پہلے سے اشتراک کردہ کلید</translation>
@@ -357,6 +362,7 @@
 <translation id="9106415115617144481">اسکین شدہ صفحہ <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">غیر مقفل کریں</translation>
 <translation id="9149391708638971077">میموری ٹیسٹ چلائیں</translation>
+<translation id="9173638680043580060">ایک منٹ سے کم باقی ہے</translation>
 <translation id="9190063653747922532">‏‎L2TP/IPsec + پیشگی اشتراک کردہ کلید</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">فعال نہیں ہے</translation>

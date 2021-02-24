@@ -130,6 +130,7 @@
 <translation id="1960290143419248813">이 버전의 Android에서는 더 이상 Chrome 업데이트가 지원되지 않습니다.</translation>
 <translation id="1963976881984600709">표준 보호 모드</translation>
 <translation id="1966710179511230534">로그인 세부정보를 업데이트하세요.</translation>
+<translation id="1973912524893600642">데이터 보관</translation>
 <translation id="1974060860693918893">고급</translation>
 <translation id="1984417487208496350">보호되지 않음(권장되지 않음)</translation>
 <translation id="1984705450038014246">Chrome 데이터 동기화</translation>
@@ -301,6 +302,7 @@
 <translation id="3058498974290601450">언제든지 설정에서 동기화를 사용 설정할 수 있습니다.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{북마크 <ph name="BOOKMARKS_COUNT_ONE" />개}other{북마크 <ph name="BOOKMARKS_COUNT_MANY" />개}}</translation>
 <translation id="3062802207422175757">Chrome에서 관심분야 기사를 읽어보세요.</translation>
+<translation id="3070005020161560471">자동으로 번역</translation>
 <translation id="3089395242580810162">시크릿 탭에서 열기</translation>
 <translation id="3098745985164956033">설명을 개선하기 위해 일부 이미지가 Google에 전송됨</translation>
 <translation id="3114507951000454849">오늘의 뉴스 읽기 <ph name="NEWS_ICON" /></translation>
@@ -350,10 +352,18 @@
 <translation id="3384347053049321195">이미지 공유</translation>
 <translation id="3387650086002190359">파일 시스템에 오류가 발생하여 <ph name="FILE_NAME" />을(를) 다운로드할 수 없습니다.</translation>
 <translation id="3389286852084373014">텍스트가 너무 큼</translation>
+<translation id="3391512812407811893">개인정보 보호 샌드박스 체험판</translation>
 <translation id="3398320232533725830">북마크 관리자 열기</translation>
 <translation id="3414952576877147120">크기:</translation>
 <translation id="3429160811076349561">무료 체험 기능 사용 안함</translation>
 <translation id="3443221991560634068">현재 페이지 새로고침</translation>
+<translation id="3451542610083122179">개인정보 보호 샌드박스는 추적 메커니즘으로부터 사용자를 보호하도록 돕는 오픈 웹을 유지하기 위해 진행되는 이니셔티브입니다.
+
+오늘날 웹사이트는 관련 광고 표시 및 사이트 실적 측정과 같은 주요 서비스를 제공하는 데 타사 쿠키와 같은 다양한 기술을 활용합니다.
+
+개인정보 보호 샌드박스는 사이트의 기능을 저해하지 않으면서 주요 서비스를 제공하는 더 나은 방식을 개발하는 동시에 사용자가 웹 전반에서 자신도 모르게 추적당하지 않도록 보호함으로써 오픈 웹의 강점을 유지합니다.
+
+개인정보 보호 샌드박스는 아직 개발 단계에 있으므로 일부 지역에서만 제공됩니다. 현재 사이트는 타사 쿠키와 같은 기존 웹 기술을 계속 사용하면서 개인정보 보호 샌드박스를 사용해 볼 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">검색엔진을 선택할 수 있습니다.</translation>
 <translation id="3492207499832628349">새 시크릿 탭</translation>
 <translation id="3493531032208478708">추천 콘텐츠 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
@@ -591,6 +601,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{다운로드 1개 실패}other{다운로드 #개 실패}}</translation>
 <translation id="5170568018924773124">폴더 열기</translation>
 <translation id="5184329579814168207">Chrome에서 열기</translation>
+<translation id="5191251636205085390">타사 쿠키를 대체하는 것을 목표로 하는 새로운 기술을 알아보고 관리하세요.</translation>
 <translation id="5193988420012215838">클립보드에 복사됨</translation>
 <translation id="5199929503336119739">직장용 프로필</translation>
 <translation id="5210286577605176222">이전 탭으로 이동</translation>
@@ -613,6 +624,7 @@
 <translation id="5355191726083956201">향상된 보호 모드를 사용 중입니다.</translation>
 <translation id="5357811892247919462">탭 수신함</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{열려 있는 탭 <ph name="OPEN_TABS_ONE" />개, 탭 간에 전환하려면 탭하세요.}other{열려 있는 탭 <ph name="OPEN_TABS_MANY" />개, 탭 간에 전환하려면 탭하세요.}}</translation>
+<translation id="5375577065097716013">Google 렌즈로 이미지 검색 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">특정 사이트만 허용</translation>
 <translation id="5414836363063783498">확인 중...</translation>
 <translation id="5423934151118863508">자주 방문한 페이지가 여기에 표시됩니다.</translation>
@@ -990,6 +1002,7 @@
 <translation id="784934925303690534">기간</translation>
 <translation id="7851858861565204677">다른 기기</translation>
 <translation id="7857691613771368249">파일을 언제 저장할지 확인</translation>
+<translation id="7859988229622350291">번역 안 함</translation>
 <translation id="7875915731392087153">이메일 만들기</translation>
 <translation id="7876243839304621966">모두 삭제</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{읽지 않은 페이지가 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" />개 있습니다.}other{읽지 않은 페이지가 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" />개 있습니다.}}</translation>
@@ -1053,7 +1066,6 @@
 <translation id="8218622182176210845">계정 관리</translation>
 <translation id="8223642481677794647">피드 카드 메뉴</translation>
 <translation id="8224471946457685718">Wi-Fi로 추천 기사 다운로드</translation>
-<translation id="8232956427053453090">데이터 보관</translation>
 <translation id="8233540874193135768">QR 코드를 스캔하려면 카메라가 있는 기기를 사용하세요.</translation>
 <translation id="8250920743982581267">문서</translation>
 <translation id="825412236959742607">페이지에서 너무 많은 메모리를 사용하므로 Chrome에서 일부 콘텐츠를 삭제했습니다.</translation>
@@ -1067,6 +1079,7 @@
 <translation id="8310344678080805313">일반 탭</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> 및 그 외 사이트</translation>
 <translation id="8327155640814342956">최고의 탐색 환경을 사용하려면 Chrome을 열고 업데이트하세요.</translation>
+<translation id="834313815369870491">사이트 번역 안 함</translation>
 <translation id="8349013245300336738">사용된 데이터 양에 따라 정렬</translation>
 <translation id="835847953965672673">다운로드 <ph name="NUMBER_OF_DOWNLOADS" />개 복원됨</translation>
 <translation id="8364299278605033898">인기 웹사이트 보기</translation>

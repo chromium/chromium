@@ -56,6 +56,7 @@
 <translation id="1331212799747679585">Δεν είναι δυνατή η ενημέρωση του Chrome. Περισσότερες επιλογές</translation>
 <translation id="1332501820983677155">Συντομεύσεις λειτουργιών Google Chrome</translation>
 <translation id="133857033449832692">Λήψη γλώσσας <ph name="LANG" />…</translation>
+<translation id="1344653310988386453">Συμπερίληψη συνδέσμου προς την επισήμανση</translation>
 <translation id="1347468774581902829">Διαχείριση δραστηριότητας</translation>
 <translation id="1360432990279830238">Αποσύνδεση και απενεργοπ. συγχρονισμού;</translation>
 <translation id="1373696734384179344">Ανεπαρκής μνήμη για τη λήψη του επιλεγμένου περιεχομένου.</translation>
@@ -130,6 +131,7 @@
 <translation id="1960290143419248813">Οι ενημερώσεις Chrome δεν υποστηρίζονται πλέον για αυτήν την έκδοση Android</translation>
 <translation id="1963976881984600709">Βασική ασφάλεια</translation>
 <translation id="1966710179511230534">Ενημερώστε τα στοιχεία σύνδεσής σας.</translation>
+<translation id="1973912524893600642">Διατήρηση δεδομένων</translation>
 <translation id="1974060860693918893">Σύνθετες</translation>
 <translation id="1984417487208496350">Χωρίς προστασία (δεν συνιστάται)</translation>
 <translation id="1984705450038014246">Συγχρονισμός των δεδομένων του Chrome</translation>
@@ -301,6 +303,7 @@
 <translation id="3058498974290601450">Μπορείτε να ενεργοποιήσετε τον συγχρονισμό ανά πάσα στιγμή στις ρυθμίσεις</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> σελιδοδείκτης}other{<ph name="BOOKMARKS_COUNT_MANY" /> σελιδοδείκτες}}</translation>
 <translation id="3062802207422175757">Άρθρα για τα ενδιαφέροντά σας στο Chrome</translation>
+<translation id="3070005020161560471">Να γίνεται μετάφραση αυτόματα</translation>
 <translation id="3089395242580810162">Άνοιγμα σε καρτ. ανών. περιήγ.</translation>
 <translation id="3098745985164956033">Ορισμένες εικόνες αποστέλλονται στην Google για τη βελτίωση των περιγραφών για εσάς.</translation>
 <translation id="3114507951000454849">Διαβάστε τις σημερινές ειδήσεις <ph name="NEWS_ICON" /></translation>
@@ -350,10 +353,18 @@
 <translation id="3384347053049321195">Κοινοποίηση εικόνας</translation>
 <translation id="3387650086002190359">Η λήψη του αρχείου <ph name="FILE_NAME" /> απέτυχε λόγω σφαλμάτων του συστήματος αρχείων.</translation>
 <translation id="3389286852084373014">Το κείμενο είναι υπερβολικά μεγάλο</translation>
+<translation id="3391512812407811893">Δοκιμές του Privacy Sandbox</translation>
 <translation id="3398320232533725830">Άνοιγμα του διαχειριστή σελιδοδεικτών</translation>
 <translation id="3414952576877147120">Μέγεθος:</translation>
 <translation id="3429160811076349561">Οι δοκιμαστικές λειτουργίες είναι απενεργοποιημένες</translation>
 <translation id="3443221991560634068">Επαναφόρτωση της τρέχουσας σελίδας</translation>
+<translation id="3451542610083122179">To Privacy Sandbox αποτελεί μια υπό εξέλιξη πρωτοβουλία για τη διατήρηση του ανοικτού ιστού, που θα συμβάλλει στην προστασία σας από μηχανισμούς παρακολούθησης.
+
+Στις μέρες μας, οι ιστότοποι βασίζονται σε πολλές τεχνολογίες, όπως τα cookie τρίτου μέρους, για την παροχή σημαντικών υπηρεσιών όπως η εμφάνιση συναφών διαφημίσεων και η μέτρηση της απόδοσης ενός ιστοτόπου.
+
+Το Privacy Sandbox διατηρεί τη δυναμική του ανοικτού ιστού, δημιουργώντας καλύτερους τρόπους για την εκτέλεση αυτών των υπηρεσιών, προφυλάσσοντας τη λειτουργία των ιστοτόπων και αποτρέποντας την κρυφή παρακολούθησή σας καθώς περιηγείστε στον ιστό.
+
+Το Privacy Sandbox βρίσκεται ακόμη υπό ενεργή ανάπτυξη και διατίθεται σε επιλεγμένες περιοχές. Προς το παρόν, οι ιστότοποι μπορούν να δοκιμάσουν το Privacy Sandbox ενώ συνεχίζουν να χρησιμοποιούν τρέχουσες τεχνολογίες ιστού, όπως τα cookie τρίτου μέρους. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">Μπορείτε να επιλέξετε τη μηχανή αναζήτησής σας</translation>
 <translation id="3492207499832628349">Νέα καρτέλα ανωνυμ. περιήγ.</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /> σχετικά με το προτεινόμενο περιεχόμενο</translation>
@@ -591,6 +602,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 λήψη απέτυχε.}other{# λήψεις απέτυχαν.}}</translation>
 <translation id="5170568018924773124">Εμφάνιση στο φάκελο</translation>
 <translation id="5184329579814168207">Άνοιγμα στο Chrome</translation>
+<translation id="5191251636205085390">Μάθετε περισσότερα και δείτε πώς μπορείτε να ελέγχετε τις νέες τεχνολογίες που προορίζονται για την αντικατάσταση των cookie τρίτου μέρους</translation>
 <translation id="5193988420012215838">Αντιγράφηκε στο πρόχειρό σας</translation>
 <translation id="5199929503336119739">Προφίλ εργασίας</translation>
 <translation id="5210286577605176222">Μετάβαση στην προηγούμενη καρτέλα</translation>
@@ -613,6 +625,7 @@
 <translation id="5355191726083956201">Η Βελτιωμένη προστασία είναι ενεργή</translation>
 <translation id="5357811892247919462">Έγινε λήψη της καρτέλας</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> ανοιχτή καρτέλα, πατήστε για εναλλαγή καρτελών}other{<ph name="OPEN_TABS_MANY" /> ανοιχτές καρτέλες, πατήστε για εναλλαγή καρτελών}}</translation>
+<translation id="5375577065097716013">Αναζήτ. εικόνας με Google Lens <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Να επιτρέπονται μόνο συγκεκριμένοι ιστότοποι</translation>
 <translation id="5414836363063783498">Γίνεται επαλήθευση…</translation>
 <translation id="5423934151118863508">Οι πιο δημοφιλείς σελίδες σας θα εμφανίζονται εδώ</translation>
@@ -648,6 +661,7 @@
 <translation id="5599941490345670218">Ο Βοηθός Google μπορεί να ολοκληρώσει ενέργειες σε ιστοτόπους για εσάς</translation>
 <translation id="5620163320393916465">Δεν υπάρχουν αποθηκευμένοι κωδικοί πρόσβασης</translation>
 <translation id="5620928963363755975">Βρείτε τα αρχεία και τις σελίδες σας στις Λήψις από το κουμπί Περισσότερες επιλογές</translation>
+<translation id="562168087174703495">Δεν είναι δυνατή η δημιουργία συνδέσμου προς την επισήμανση. Κοινοποιήστε έναν σύνδεσμο προς τη σελίδα.</translation>
 <translation id="562289928968387744">Διαχείριση αντιδράσεων</translation>
 <translation id="5626134646977739690">Όνομα:</translation>
 <translation id="5628604359369369630">Μη αναγνωσμένα - Διαθέσιμα εκτός σύνδεσης</translation>
@@ -761,6 +775,7 @@
 <translation id="6312687380483398334">Εφαρμογές ιστού (αθόρυβα)</translation>
 <translation id="6316139424528454185">Μη υποστηρ. έκδοση Android</translation>
 <translation id="6324034347079777476">Ο συγχρονισμός συστήματος Android απενεργοποιήθηκε</translation>
+<translation id="6324977638108296054">Δεν είναι δυνατή η δημιουργία συνδέσμου προς την επισήμανση</translation>
 <translation id="6333140779060797560">Μοιραστείτε μέσω <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Κρυπτογράφηση</translation>
 <translation id="6341580099087024258">Να γίνεται ερώτηση σχετικά με την τοποθεσία αποθήκευσης των αρχείων</translation>
@@ -792,6 +807,7 @@
 <translation id="6477928892249167417">Αυτοί οι ιστότοποι φαίνονται σημαντικοί για εσάς:</translation>
 <translation id="6482749332252372425">Η λήψη του αρχείου <ph name="FILE_NAME" /> απέτυχε λόγω έλλειψης αποθηκευτικού χώρου.</translation>
 <translation id="6489610539826642779">Λίστα ανάγνωσης <ph name="BEGIN_NEW" />Νέα<ph name="END_NEW" /></translation>
+<translation id="6490496612063106490">Σύνδεσμος προς την επισήμανση</translation>
 <translation id="6496823230996795692">Για να χρησιμοποιήσετε την εφαρμογή <ph name="APP_NAME" /> για πρώτη φορά, συνδεθείτε στο διαδίκτυο.</translation>
 <translation id="6508722015517270189">Επανεκκινήστε το Chrome</translation>
 <translation id="6527303717912515753">Κοινοποίηση</translation>
@@ -990,6 +1006,7 @@
 <translation id="784934925303690534">Χρονικό εύρος</translation>
 <translation id="7851858861565204677">Άλλες συσκευές</translation>
 <translation id="7857691613771368249">Να γίνεται ερώτηση σχετικά με το πότε αποθηκεύονται αρχεία</translation>
+<translation id="7859988229622350291">Να μην γίνεται ποτέ μετάφραση από</translation>
 <translation id="7875915731392087153">Δημιουργία μηνύματος ηλεκτρονικού ταχυδρομείου</translation>
 <translation id="7876243839304621966">Κατάργηση όλων</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Έχετε <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> μη αναγνωσμένη σελίδα}other{Έχετε <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> μη αναγνωσμένες σελίδες}}</translation>
@@ -1053,7 +1070,6 @@
 <translation id="8218622182176210845">Διαχείριση του λογαριασμού σας</translation>
 <translation id="8223642481677794647">Μενού της κάρτας ροής</translation>
 <translation id="8224471946457685718">Λήψη άρθρων για εσάς στο Wi-Fi</translation>
-<translation id="8232956427053453090">Διατήρηση δεδομένων</translation>
 <translation id="8233540874193135768">Για να σαρώσετε έναν κωδικό QR, χρησιμοποιήστε μια συσκευή που διαθέτει κάμερα.</translation>
 <translation id="8250920743982581267">Έγγραφα</translation>
 <translation id="825412236959742607">Αυτή η σελίδα χρησιμοποιεί πάρα πολλή μνήμη. Για αυτόν τον λόγο, το Chrome κατάργησε κάποιο περιεχόμενο.</translation>
@@ -1067,6 +1083,7 @@
 <translation id="8310344678080805313">Τυπικές καρτέλες</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> και άλλους ιστοτόπους</translation>
 <translation id="8327155640814342956">Για την καλύτερη δυνατή εμπειρία περιήγησης, ανοίξτε το Chrome για να το ενημερώσετε</translation>
+<translation id="834313815369870491">Να μην γίνεται ποτέ μετάφραση ιστοτόπων</translation>
 <translation id="8349013245300336738">Ταξινόμηση κατά όγκο δεδομένων που χρησιμοποιήθηκαν</translation>
 <translation id="835847953965672673">Έγινε επαναφορά <ph name="NUMBER_OF_DOWNLOADS" /> λήψεων.</translation>
 <translation id="8364299278605033898">Δείτε δημοφιλείς ιστοτόπους</translation>

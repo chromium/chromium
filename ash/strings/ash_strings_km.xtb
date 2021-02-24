@@ -405,6 +405,7 @@
 <translation id="4421231901400348175">ចែករំលែកការបញ្ជាអេក្រង់របស់អ្នកជាមួយ <ph name="HELPER_NAME" /> តាមរយៈជំនួយការពីចម្ងាយ។</translation>
 <translation id="4424159417645388645">តុទី 5</translation>
 <translation id="4430019312045809116">សម្លេង</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{ការជូនដំណឹងសំខាន់ 1}other{ការជូនដំណឹង​សំខាន់ #}}</translation>
 <translation id="4450893287417543264">កុំបង្ហាញម្ដងទៀត</translation>
 <translation id="445864333228800152">សាយណ្ហ​សួស្ដី</translation>
 <translation id="4458688154122353284">បញ្ឈប់​ការថត​អេក្រង់</translation>
@@ -476,6 +477,10 @@
 <translation id="4961318399572185831">ខាសអេក្រង់</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ម៉ <ph name="MINUTES" />ន <ph name="SECONDS" />វិ</translation>
 <translation id="4975771730019223894">ការដាក់គ្រឿង​សម្គាល់កម្មវិធី</translation>
+<translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />៖
+        <ph name="NOTIFICATION_1" />,
+        <ph name="NOTIFICATION_2" />,
+        <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">ប្រយោគ​បន្ទាប់</translation>
 <translation id="5030687792513154421">ដល់ពេល​ហើយ</translation>
 <translation id="5033299697334913360">ចុចកន្លែង​ណាមួយ ដើម្បីថត​ពេញអេក្រង់</translation>
@@ -489,6 +494,7 @@
 <translation id="5168181903108465623">មានឧបករណ៍ខាស</translation>
 <translation id="5170568018924773124">បង្ហាញនៅក្នុងថតឯកសារ</translation>
 <translation id="5176318573511391780">ថតវីដេអូ​អេក្រង់​ដោយផ្នែក</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{ការ​ជូនដំណឹង 1 ផ្សេងទៀត}other{ការ​ជូនដំណឹង # ផ្សេងទៀត}}</translation>
 <translation id="5207949376430453814">រំលេច​សញ្ញា​អត្ថបទ</translation>
 <translation id="5208059991603368177">បើក</translation>
 <translation id="5222676887888702881">ចាកចេញ</translation>

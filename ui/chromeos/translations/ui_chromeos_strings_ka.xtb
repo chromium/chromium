@@ -331,7 +331,6 @@
 <translation id="4706042980341760088">ტამილური საბეჭდი მანქანის კლავიატურით</translation>
 <translation id="4711094779914110278">თურქული</translation>
 <translation id="4712283082407695269">მიმდინარეობს „<ph name="PATH" />“-ის გახსნა</translation>
-<translation id="4713544552769165154">ეს ფაილი შემუშავებულია კომპიუტერისთვის, რომელიც იყენებს Macintosh პროგრამულ უზრუნველყოფას. იგი არ არის თავსებადი თქვენს მოწყობილობასთან, რომელშიც გაშვებულია Chrome OS. შესაფერისი პროგრამა მოძებნეთ <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />-ში.<ph name="BEGIN_LINK_HELP" />შეიტყვეთ მეტი<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> ფოტოს სარეზერვო ასლი შენახულია</translation>
 <translation id="4725511304875193254">კორგი</translation>
 <translation id="4732760563705710320">სამწუხაროდ, ვიდეო არ არის მხარდაჭერილი თქვენს ტრანსლირების მოწყობილობაში.</translation>
@@ -464,8 +463,6 @@
 <translation id="5833610766403489739">ეს ფაილი გაქრა. შეამოწმეთ ჩამოტვირთვების მდებარეობის პარამეტრი და ხელახლა სცადეთ.</translation>
 <translation id="5838451609423551646">არჩეულიდან ამოიშალა ყველა ჩანაწერი.</translation>
 <translation id="5838825566232597749">US Workman, საერთაშორისო</translation>
-<translation id="5850516540536751549">ფაილის ეს ტიპი არ არის მხარდაჭერილი. ესტუმრეთ <ph name="BEGIN_LINK" />Chrome ვებ მაღაზიას<ph name="END_LINK" /> რომ იპოვოთ პროგრამა, რომელსაც შეუძლია ამ ტიპის ფაილის გახსნა.
-    <ph name="BEGIN_LINK_HELP" />შეიტყვეთ მეტი<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">აქ არაფერია სანახავი…</translation>
 <translation id="5911887972742538906">თქვენი Linux აპლიკაციის ინსტალაციისას მოხდა შეცდომა.</translation>
 <translation id="5912396950572065471">ფორმატი</translation>
@@ -675,7 +672,6 @@
 <translation id="8038111231936746805">(ნაგულისხმევი)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> აუდიო</translation>
 <translation id="8045462269890919536">რუმინული</translation>
-<translation id="8052887694493382350">ეს ფაილი განკუთვნილია პერსონალური კომპიუტერისთვის, რომელიც იყენებს Windows-ის პროგრამულ უზრუნველყოფას. ის შეუთავსებელია თქვენს მოწყობილობასთან, რომელზეც გაშვებულია Chrome OS. <ph name="BEGIN_LINK_HELP" />შეიტყვეთ მეტი<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">ყველა ცვლილება შეინახება „<ph name="DOWNLOADS_FOLDER" />“-ში.</translation>
 <translation id="8079530767338315840">გამეორება</translation>
 <translation id="8106045200081704138">ჩემთვის გაზიარებული</translation>

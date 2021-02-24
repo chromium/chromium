@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
 <translation id="1018656279737460067">Отменено</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (потоки: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
 <translation id="1059913517121127803">Не удалось начать сканирование.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">обнаружен брандмауэр</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">Неизвестная ошибка.</translation>
 <translation id="1204296502688602597">Задержка DNS</translation>
 <translation id="123124571410524056">Возможно, обнаружен сетевой портал.</translation>
-<translation id="1238191093934674082">OpenVPN</translation>
 <translation id="1238612778414822719">Время ожидания HTTPS</translation>
 <translation id="1270369111467284986">Потенциальная страница входа</translation>
 <translation id="1290331692326790741">слабый сигнал</translation>
@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">Печать прервана: нет чернил</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Наличие DNS-резолвера</translation>
+<translation id="1717874160321062422">Под управлением <ph name="FIRST_MANAGER" /> и <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Отмена сканирования</translation>
 <translation id="1851218745569890714">Видеоконференции</translation>
@@ -59,6 +60,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Включите Bluetooth, чтобы найти устройства</translation>
 <translation id="2364498172489649528">Завершено</translation>
+<translation id="2365324413026422635">Невозможно запустить проверку зарядки, если батарея полностью заряжена.</translation>
 <translation id="2391082728065870591">Отправить отзыв с отчетом</translation>
 <translation id="2418150275289244458">Перейти к настройкам</translation>
 <translation id="2446553403094072641">Точность чисел с плавающей запятой</translation>
@@ -91,6 +93,7 @@
 <translation id="3226405216343213872">Поиск сканеров…</translation>
 <translation id="3246869037381808805">Задания печати, хранящиеся дольше 1 дня, будут удалены</translation>
 <translation id="3268178239013324452">Сбой: крышка открыта</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" /> ГГц</translation>
 <translation id="3310640316857623290">Задержка на сервере доменных имен существенно превышает допустимое значение.</translation>
 <translation id="3328783797891415197">Идет проверка</translation>
 <translation id="3368922792935385530">Подключено</translation>
@@ -125,6 +128,7 @@
 <translation id="4155551848414053977">Убедитесь, что сканер работает и доступен для подключения напрямую или по сети.</translation>
 <translation id="4170700058716978431">ОШИБКА</translation>
 <translation id="4176463684765177261">Отключено</translation>
+<translation id="4222698289790462549">Текущая скорость</translation>
 <translation id="4227825898293920515">Срок действия пароля истекает через <ph name="TIME" /></translation>
 <translation id="4228041325992544252">Доступно <ph name="AVAILABLE_MEMORY" /> из <ph name="TOTAL_MEMORY" /> ГБ.</translation>
 <translation id="4238516577297848345">Задания печати не выполняются</translation>
@@ -241,6 +245,7 @@
 <translation id="6325525973963619867">Ошибка</translation>
 <translation id="636850387210749493">Регистрация в корпоративном домене</translation>
 <translation id="641081527798843608">Совпадение тем</translation>
+<translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Хороший</translation>
 <translation id="6472207088655375767">Одноразовый код</translation>
 <translation id="6480327114083866287">Под управлением <ph name="MANAGER" /></translation>

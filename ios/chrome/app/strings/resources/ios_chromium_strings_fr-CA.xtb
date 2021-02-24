@@ -4,6 +4,7 @@
 <translation id="102360288709523007">Améliorer Chromium en envoyant des statistiques d'utilisation et des rapports d'erreur.</translation>
 <translation id="1185134272377778587">À propos de Chromium</translation>
 <translation id="1257458525759135959">Pour enregistrer des images, touchez Paramètres et autorisez Chromium à les ajouter à vos photos</translation>
+<translation id="1289216811211435351">Passer à Chromium</translation>
 <translation id="1361748954329991663">Chromium n'est pas à jour. Si aucune mise à jour n'est offerte dans l'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, il est possible que votre appareil ne prenne plus en charge les nouvelles versions de Chromium.</translation>
 <translation id="1431818719585918472">Chromium peut verrouiller vos onglets de navigation privée.</translation>
 <translation id="1472013873724362412">Votre compte n'est pas compatible avec Chromium. Veuillez communiquer avec l'administrateur de votre domaine ou utiliser un compte Google ordinaire pour vous connecter.</translation>
@@ -34,6 +35,7 @@
 <translation id="4099085513035183040">Fonctionnalité non prise en charge par Chromium Beta</translation>
 <translation id="4166206055865952171">Faites de Chromium votre navigateur par défaut</translation>
 <translation id="4555020257205549924">Lorsque cette fonctionnalité est activée, Chromium vous offre de traduire les pages écrites dans d'autres langues à l'aide de Google Traduction. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="4585809515399340748">Vous pouvez maintenant utiliser Chromium chaque fois que vous touchez des liens dans des messages, des documents et des applications.</translation>
 <translation id="4681781466797808448">Activer le lecteur de Chromium</translation>
 <translation id="4787850887676698916">Les onglets déjà ouverts dans Chromium sur vos autres appareils s'afficheront ici.</translation>
 <translation id="4828317641996116749">Chromium n'a pas pu vérifier tous les mots de passe. Réessayez plus tard.</translation>
@@ -42,9 +44,9 @@
 <translation id="5224391634244552924">Aucun mot de passe enregistré. Chromium ne peut vérifier vos mots de passe que si vous les enregistrez.</translation>
 <translation id="5308226104666789935">Chromium ne peut pas vérifier s'il y a des mises à jour</translation>
 <translation id="5521125884468363740">Pour voir vos onglets partout où vous utilisez Chromium, connectez-vous et activez la synchronisation</translation>
-<translation id="5544795779875591523">Voulez-vous effacer vos données Chromium de cet appareil ou les conserver?</translation>
 <translation id="5573014823074921752">Astuce pour Chromium. Pour afficher plus d'options d'onglets, maintenez le doigt sur le bouton Afficher les onglets dans la barre d'outils, qui se trouve dans le bas ou le haut de votre écran.</translation>
 <translation id="5700709190537129682">Chromium ne peut pas vérifier vos mots de passe</translation>
+<translation id="5742135483959137648">Utiliser Chromium pour ouvrir les liens</translation>
 <translation id="5777187867430702742">Page Chromium</translation>
 <translation id="5862307444128926510">Bienvenue dans Chromium</translation>
 <translation id="5945387852661427312">Vous vous connectez avec un compte géré par <ph name="DOMAIN" />, et son administrateur pourra contrôler vos données Chromium. Celles-ci seront définitivement liées à votre compte. En vous déconnectant de Chromium, vous supprimerez vos données sur cet appareil, mais celles-ci resteront stockées dans votre compte Google.</translation>
@@ -63,6 +65,7 @@
 <translation id="7208566199746267865">Chromium vous fait gagner du temps en mettant vos comptes sur le Web. Vous pouvez ajouter ou supprimer des comptes dans Paramètres.</translation>
 <translation id="725427773388857052">Chromium peut vous aider à vous protéger, entre autres, contre les violations de données et les sites Web non sécuritaires.</translation>
 <translation id="7269362888766543920">Certains modules complémentaires provoquent le plantage de Chromium. Veuillez essayer de les désinstaller.</translation>
+<translation id="7313655110045230863">Pour définir Chromium comme navigateur par défaut, ouvrez l'application Réglages, touchez Navigateur par défaut, puis sélectionnez Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Les données sélectionnées ont été supprimées de Chromium et des appareils synchronisés. D'autres formes d'historique de navigation, telles que les recherches et l'activité d'autres services Google, peuvent exister sur votre compte Google. Plus de détails à history.google.com.</translation>
 <translation id="7400689562045506105">Utiliser Chromium partout</translation>

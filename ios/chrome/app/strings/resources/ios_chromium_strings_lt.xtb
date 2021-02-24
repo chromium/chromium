@@ -4,6 +4,7 @@
 <translation id="102360288709523007">Padėkite tobulinti „Chromium“ siųsdami „Google“ naudojimo statistiką ir strigčių ataskaitas.</translation>
 <translation id="1185134272377778587">Apie „Chromium“</translation>
 <translation id="1257458525759135959">Jei norite išsaugoti vaizdus, palieskite „Nustatymai“ ir leiskite „Chromium“ pridėti jūsų nuotraukas</translation>
+<translation id="1289216811211435351">Perjungimas į „Chromium“</translation>
 <translation id="1361748954329991663">„Chromium“ versija yra pasenusi. Jei <ph name="BEGIN_LINK" />programų parduotuvėje<ph name="END_LINK" /> nėra jokio naujinio, gali būti, kad įrenginys nebepalaiko naujų versijų „Chromium“.</translation>
 <translation id="1431818719585918472">Leiskite „Chromium“ užrakinti jūsų inkognito skirtukus.</translation>
 <translation id="1472013873724362412">Paskyra neveikia sistemoje „Chromium“. Susisiekite su domeno administratoriumi arba prisijungdami naudokite įprastą „Google“ paskyrą.</translation>
@@ -34,6 +35,7 @@
 <translation id="4099085513035183040">Nepalaikoma „Chromium“ beta versijoje</translation>
 <translation id="4166206055865952171">„Chromium“ nustatymas numatytąja naršykle</translation>
 <translation id="4555020257205549924">Kai ši funkcija bus įjungta, „Chromium“ siūlys versti kitomis kalbomis parašytus puslapius naudojant „Google“ vertėją. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
+<translation id="4585809515399340748">Dabar galite naudoti „Chromium“ bet kada palietę nuorodas pranešimuose, dokumentuose ir kitose programose.</translation>
 <translation id="4681781466797808448">Įjunkite „Chromium“ skaitytuvą</translation>
 <translation id="4787850887676698916">Čia bus rodomi kituose įrenginiuose atidaryti „Chromium“ skirtukai.</translation>
 <translation id="4828317641996116749">„Chromium“ nepavyko patikrinti visų slaptažodžių. Bandykite dar kartą vėliau.</translation>
@@ -42,9 +44,9 @@
 <translation id="5224391634244552924">Nėra išsaugotų slaptažodžių. „Chromium“ gali tikrinti jūsų slaptažodžius, kai juos išsaugote.</translation>
 <translation id="5308226104666789935">„Chromium“ nepavyko patikrinti, ar yra naujinių.</translation>
 <translation id="5521125884468363740">Kad matytumėte skirtukus iš visų įrenginių, kuriuose naudojate „Chromium“, prisijunkite ir įjunkite sinchronizavimą</translation>
-<translation id="5544795779875591523">Pasirinkite, ar norite išvalyti „Chromium“ duomenis iš šio įrenginio ar juos palikti.</translation>
 <translation id="5573014823074921752">„Chromium“ patarimas. Jei reikia daugiau skirtukų parinkčių, palieskite ir palaikykite mygtuką „Rodyti skirtukus“ įrankių juostoje, kuri yra ekrano apačioje arba viršuje.</translation>
 <translation id="5700709190537129682">„Chromium“ negali patikrinti jūsų slaptažodžių</translation>
+<translation id="5742135483959137648">Nuorodų atidarymas naudojant „Chromium“</translation>
 <translation id="5777187867430702742">„Chromium“ puslapis</translation>
 <translation id="5862307444128926510">Sveiki, tai „Chromium“</translation>
 <translation id="5945387852661427312">Prisijungiate naudodami <ph name="DOMAIN" /> valdomą paskyrą ir suteikiate jos administratoriui galimybę valdyti jūsų „Chromium“ duomenis. Duomenys bus visam laikui susieti su šia paskyra. Atsijungę nuo „Chromium“ ištrinsite duomenis iš šio įrenginio, bet jie ir toliau bus saugomi „Google“ paskyroje.</translation>
@@ -63,6 +65,7 @@
 <translation id="7208566199746267865">„Chromium“ taupo laiką naudodama paskyras žiniatinklyje. Paskyras galite pridėti arba pašalinti nustatymuose.</translation>
 <translation id="725427773388857052">„Chromium“ gali padėti apsisaugoti nuo duomenų saugos pažeidimų, nesaugių svetainių ir pan.</translation>
 <translation id="7269362888766543920">Naudojant kai kuriuos priedus „Chromium“ užstringa. Pabandykite juos pašalinti.</translation>
+<translation id="7313655110045230863">Norėdami padaryti „Chromium“ numatytąja naršykle, atidarykite skiltį „Nustatymai“. Palieskite „Numatytoji naršyklės programa“ ir pasirinkite „Chromium“.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Pasirinkti duomenys pašalinti iš „Chromium“ ir sinchronizuojamų įrenginių. Adresu history.google.com gali būti pateikta kitų formų jūsų „Google“ paskyros istorija, pvz., paieškos ir veikla kitose „Google“ paslaugose.</translation>
 <translation id="7400689562045506105">„Chromium“ naudojimas visuose įrenginiuose</translation>

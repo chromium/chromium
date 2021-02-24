@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ka">
 <translation id="1018656279737460067">გაუქმდა</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ნაკადი, <ph name="CPU_MAX_CLOCK_SPEED" /> გჰც)</translation>
 <translation id="1059913517121127803">სკანირების დაწყება ვერ მოხერხდა</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">აღმოჩენილია ქსელის დაცვა</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">უცნობი შეცდომა.</translation>
 <translation id="1204296502688602597">DNS-ის რეაგირების დრო</translation>
 <translation id="123124571410524056">სავარაუდოდ, გამოიყენება პორტალი</translation>
-<translation id="1238191093934674082">OpenVPN</translation>
 <translation id="1238612778414822719">HTTPS რეაგირების დრო</translation>
 <translation id="1270369111467284986">სავარაუდოდ, გამოიყენება ავტორიზაციის პორტალი</translation>
 <translation id="1290331692326790741">სიგნალი სუსტია</translation>
@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">გაჩერდა — მელანი გათავდა</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-ის მომგვარებლის არსებობა</translation>
+<translation id="1717874160321062422">მართავს <ph name="FIRST_MANAGER" /> და <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">მიმდინარეობს სკანირების გაუქმება</translation>
 <translation id="1851218745569890714">ვიდეოკონფერენცია</translation>
@@ -59,6 +60,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">ახლომდებარე მოწყობილობების საპოვნელად ჩართეთ Bluetooth</translation>
 <translation id="2364498172489649528">გავლილია</translation>
+<translation id="2365324413026422635">ბატარეის დატენის ტესტი ვერ გაეშვება, როცა ის სავსეა</translation>
 <translation id="2391082728065870591">გამოხმაურების ანგარიშის გაგზავნა</translation>
 <translation id="2418150275289244458">გახსნა პარამეტრებში</translation>
 <translation id="2446553403094072641">მოლივლივე წერტილის სიზუსტე</translation>
@@ -91,6 +93,7 @@
 <translation id="3226405216343213872">მიმდინარეობს სკანერების ძიება</translation>
 <translation id="3246869037381808805">ბეჭდვის 1 დღეზე ძველი დავალებები ამოიშლება</translation>
 <translation id="3268178239013324452">ვერ მოხერხდა — პრინტერის კარი ღიაა</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" /> გჰც</translation>
 <translation id="3310640316857623290">DNS-ის რეაგირების დრო მნიშვნელოვნად აღემატება დასაშვებ ზღვარს</translation>
 <translation id="3328783797891415197">ტესტი გაშვებულია</translation>
 <translation id="3368922792935385530">დაკავშირებული</translation>
@@ -125,6 +128,7 @@
 <translation id="4155551848414053977">დარწმუნდით, რომ სკანერი ჩართულია და ხელმისაწვდომია თქვენი ქსელისა თუ პირდაპირი კავშირის მეშვეობით</translation>
 <translation id="4170700058716978431">ვერ შესრულდა</translation>
 <translation id="4176463684765177261">გამორთული</translation>
+<translation id="4222698289790462549">ამჟამინდელი სიჩქარე</translation>
 <translation id="4227825898293920515">პაროლი ძალაშია <ph name="TIME" /></translation>
 <translation id="4228041325992544252">ხელმისაწვდომია <ph name="TOTAL_MEMORY" /> გბაიტიდან <ph name="AVAILABLE_MEMORY" /> გბაიტი.</translation>
 <translation id="4238516577297848345">ბეჭდვის მიმდინარე დავალებები არ არის</translation>
@@ -241,6 +245,7 @@
 <translation id="6325525973963619867">ვერ შესრულდა</translation>
 <translation id="636850387210749493">ორგანიზაციის რეგისტრაცია</translation>
 <translation id="641081527798843608">თემის თანხვედრა</translation>
+<translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">კარგი</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">მართავს <ph name="MANAGER" /></translation>

@@ -406,6 +406,15 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
       L'impostazione di questo criterio viene ignorata (e il valore <ph name="BASIC_AUTH" /> è sempre vietato) se il criterio <ph name="AUTH_SCHEMES_POLICY_NAME" /> viene impostato e non include il valore <ph name="BASIC_AUTH" />.</translation>
 <translation id="1575015449587326319">Criterio di configurazione per il connettore OnFileDownloaded di Chrome Enterprise</translation>
 <translation id="1583248206450240930">Utilizza <ph name="PRODUCT_FRAME_NAME" /> per impostazione predefinita</translation>
+<translation id="1587042984081085960">Questo criterio consente a un amministratore di specificare che una pagina potrebbe inviare richieste XHR sincrone durante l'uscita dalla pagina.
+
+      Se il criterio viene attivato, le pagine possono inviare richieste XHR sincrone durante l'uscita dalle pagine.
+
+      Se il criterio viene disattivato o non viene impostato, le pagine non possono inviare richieste XHR sincrone durante l'uscita dalle pagine.
+
+      Questo criterio verrà rimosso nella versione 93 di Chrome.
+
+      Visita la pagina https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="1588240398285670601">Impostazioni del browser</translation>
 <translation id="1593245608325508847">La configurazione del criterio consente di attivare la funzionalità di accesso limitato di Chrome in G Suite e di impedire agli utenti di modificare questa impostazione. Gli utenti possono accedere solo agli strumenti Google utilizzando gli account dei domini specificati (per consentire gli account gmail o googlemail, aggiungi consumer_accounts all'elenco dei domini). Questa impostazione impedisce agli utenti di accedere a un account secondario e di aggiungerne uno su un dispositivo gestito che richiede l'autenticazione di Google, se tale account non appartiene a uno dei domini esplicitamente consentiti.
 
@@ -566,6 +575,10 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 <translation id="1803646570632580723">Elenco di applicazioni bloccate da visualizzare in Avvio applicazioni</translation>
 <translation id="1808715480127969042">Blocca cookie su questi siti</translation>
 <translation id="1810261428246410396">Consenti l'uso del tethering istantaneo.</translation>
+<translation id="1815386977045680976">Consente di definire l'elenco di utenti autorizzati ad accedere al dispositivo. Le voci sono nel formato <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, ad esempio <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />. Per autorizzare utenti arbitrari su un dominio, le voci devono essere nel formato <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
+
+      Se questo criterio non viene configurato, non ci sono limitazioni in termini di utenti autorizzati ad accedere. Tieni presente che la creazione di nuovi utenti richiede comunque la corretta configurazione del criterio <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" />.
+      Se viene attivato il criterio <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" />, saranno consentiti anche gli utenti Family Link oltre agli account definiti in questo criterio.</translation>
 <translation id="1819272352048746487">Attiva o disattiva diverse funzionalità per la tastiera sullo schermo</translation>
 <translation id="1823974945066396306">Consente di definire l'elenco di utenti autorizzati ad accedere al dispositivo. Le voci sono nel formato <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, ad esempio <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />. Per autorizzare utenti arbitrari su un dominio, le voci devono essere nel formato <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
 
@@ -874,6 +887,19 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
 <translation id="2223582957891074498">Se il criterio è impostato su True, gli screenshot acquisiti con scorciatoie da tastiera o API di estensioni non sono consentiti. Se il criterio è impostato su False, gli screenshot sono consentiti.</translation>
 <translation id="2223598546285729819">Impostazione di notifica predefinita</translation>
 <translation id="2231817271680715693">Importa cronologia di navigazione dal browser predefinito alla prima esecuzione</translation>
+<translation id="2231962946025538735">Questo criterio è deprecato. Usa <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> per controllare la disponibilità del plug-in Flash e <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> per controllare se si deve utilizzare il visualizzatore PDF integrato per aprire i file PDF.
+
+      Specifica un elenco di plug-in che l'utente può attivare o disattivare in <ph name="PRODUCT_NAME" />.
+
+      È possibile utilizzare i caratteri jolly "*" e "?" in corrispondenza delle sequenze di caratteri arbitrari. "*" corrisponde a un numero arbitrario di caratteri, mentre "?" specifica un singolo carattere facoltativo, ossia corrisponde a zero caratteri o a uno solo. Il carattere di escape è "\", quindi per rappresentare i caratteri "*", "?" o "\" effettivi puoi farli precedere da un simbolo "\".
+
+      Se attivi questa impostazione, l'elenco di plug-in specificato può essere usato in <ph name="PRODUCT_NAME" />. Gli utenti possono attivare o disattivare i plug-in in "about:plugins", anche se corrispondono a un pattern di DisabledPlugins. Gli utenti possono anche attivare e disattivare i plug-in che non corrispondono a nessun pattern in DisabledPlugins, DisabledPluginsExceptions ed EnabledPlugins.
+
+      Questo criterio è pensato per consentire un blocco rigoroso dei plug-in, dove l'elenco "DisabledPlugins" contiene voci con caratteri jolly, ad esempio per disattivare tutti i plug-in "*" o per disattivare tutti i plug-in Java "*Java*", ma è pensato anche per consentire all'amministratore di attivare qualche versione particolare come "IcedTea Java 2.3". Queste versioni particolari possono essere specificate in questo criterio.
+
+      Tieni presente che devono essere esclusi sia il nome del plug-in sia il nome del gruppo del plug-in. Ciascun gruppo di plug-in viene mostrato in una sezione separata di about:plugins; ciascuna sezione può contenere uno o più plug-in. Ad esempio, il plug-in "Shockwave Flash" appartiene al gruppo "Adobe Flash Player" ed entrambi i nomi devono avere una corrispondenza nell'elenco di eccezioni se il plug-in in questione deve essere escluso dalla lista bloccata.
+
+      Se questo criterio non viene impostato, tutti i plug-in che soddisfano i pattern in "DisabledPlugins" verranno disattivati e bloccati e l'utente non potrà attivarli.</translation>
 <translation id="2236488539271255289">Non consentire ai siti di impostare i dati locali</translation>
 <translation id="2241498944622759244">Questa funzionalità non è mai stata lanciata, pertanto il criterio è obsoleto. Se è impostato su true o non è impostato, <ph name="PRODUCT_NAME" /> suggerisce pagine correlate alla pagina corrente.
       Questi suggerimenti vengono recuperati da remoto dai server di Google.
@@ -2033,6 +2059,17 @@ Se questo criterio viene impostato su False, <ph name="PRODUCT_NAME" /> non util
 <translation id="377044054160169374">Applicazione dell'intervento in caso di esperienza intrusiva</translation>
 <translation id="3778689139323007309">Esegui i controlli delle revoche per i certificati dei server che vengono convalidati correttamente e firmati tramite certificati CA installati localmente</translation>
 <translation id="3780152581321609624">Includi porta non standard in Kerberos SPN</translation>
+<translation id="3783569262370557918">Consente di attivare <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> per un elenco di URL.
+
+      La configurazione di questo criterio consente di specificare gli URL autorizzati a far parte del flusso di attestazione per ricevere l'insieme di segnali dalla macchina.
+
+      Se questo criterio non viene impostato o se viene lasciato vuoto, nessun endpoint potrà avviare il flusso di attestazione o ricevere segnali dalla macchina.
+
+      Gli URL devono avere uno schema HTTPS, ad esempio "https://example.com".
+
+      Nota: i caratteri jolly, <ph name="WILDCARD_VALUE" />, sono consentiti.
+
+      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="378495749480642482">Consente di stabilire se i siti visitati dagli utenti possono creare sessioni di realtà aumentata immersive usando <ph name="WEBXR_API_NAME" />.
 
       Se questo criterio non viene configurato o se viene attivato, <ph name="WEBXR_API_NAME" /> accetterà <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> durante la creazione delle sessioni, consentendo così agli utenti di vivere esperienze di realtà aumentata.
@@ -2358,6 +2395,7 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
 <translation id="4247914291127524388">Se il criterio viene impostato su Attivato, verrà disattivata la sincronizzazione di <ph name="GOOGLE_DRIVE_NAME" /> nell'app File di <ph name="PRODUCT_OS_NAME" /> quando si è connessi a una rete cellulare. I dati verranno sincronizzati con Drive solo se si è connessi a una rete Wi-Fi o Ethernet.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, gli utenti potranno trasferire i file su Drive tramite la connessione a una rete cellulare.</translation>
+<translation id="4248277954659222481">Consenti la riproduzione automatica dei contenuti multimediali per una lista consentita di pattern URL</translation>
 <translation id="4250680216510889253">No</translation>
 <translation id="4261820385751181068">Lingua della schermata di accesso del dispositivo</translation>
 <translation id="4269859918103560644">Consenti all'utente di decidere</translation>
@@ -2761,6 +2799,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
       Se il criterio viene impostato su Disattivato, tali log non vengono raccolti né caricati.
 
       Se il criterio non viene impostato su versioni fino alla M76 inclusa, per impostazione predefinita <ph name="PRODUCT_NAME" /> non può raccogliere e caricare questi log. A partire dalla versione M77, per impostazione predefinita <ph name="PRODUCT_NAME" /> può raccogliere e caricare questi log dalla maggior parte dei profili interessati dai criteri aziendali a livello di utente basati su cloud. Dalla versione M77 fino alla M80 inclusa, <ph name="PRODUCT_NAME" /> può anche raccogliere e caricare questi log per impostazione predefinita dai profili soggetti alla gestione on-premise di <ph name="PRODUCT_NAME" />.</translation>
+<translation id="4913065710388638917">Attiva flusso di attestazione per un elenco di URL</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4919122295221518724">Attiva trattamento più restrittivo per i contenuti misti</translation>
 <translation id="4920367374739265095">La configurazione del criterio consente di determinare quale criterio di accesso applicare per la configurazione collettiva delle stampanti, al fine di stabilire quali stampanti del criterio <ph name="DEVICE_PRINTERS_POLICY_NAME" /> mettere a disposizione degli utenti.
@@ -3214,6 +3253,13 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
 <translation id="547601067149622666">Non consentire gli annunci su siti con annunci invasivi</translation>
 <translation id="5480380613778757009">Se questo criterio viene disattivato o se non viene configurato, tutte le impostazioni di visualizzazione configurate nella sessione Ospite gestita verranno reimpostate al termine della sessione. Se questo criterio viene impostato su Vero, le proprietà di visualizzazione verranno memorizzate dopo la chiusura della sessione Ospite gestita.</translation>
 <translation id="5483065054530244863">Consenti i certificati SHA-1 firmati emessi dai trust anchor locali</translation>
+<translation id="5483584677807837752">Se il criterio viene attivato, la funzionalità <ph name="PRODUCT_NAME" /> invierà intestazioni della richiesta granulari che forniscono informazioni sul browser e sull'ambiente degli utenti.
+
+      Si tratta di una funzionalità aggiuntiva, ma le nuove intestazioni potrebbero causare interruzioni su alcuni siti web che limitano il numero di caratteri delle richieste.
+
+      Se il criterio viene attivato o non viene configurato, la funzionalità <ph name="PRODUCT_NAME" /> verrà attivata. Se il criterio viene disattivato, la funzionalità non sarà disponibile.
+
+      Questo criterio aziendale è finalizzato al periodo di transizione e sarà disponibile almeno fino alla versione 93 di Chrome.</translation>
 <translation id="5497565614013170656">Espressione regolare per trovare corrispondenze con l'ID stampante.</translation>
 <translation id="5499375345075963939">Questa norma è attiva soltanto in modalità retail.
 
@@ -3603,6 +3649,18 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 <translation id="6066761914755798079">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> consente di specificare l'URL del motore di ricerca per fornire suggerimenti per le ricerche. L'URL dovrebbe includere la stringa <ph name="SEARCH_TERM_MARKER" />, sostituita nella query dai termini di ricerca degli utenti.
 
       Puoi specificare l'URL di ricerca di Google come: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>
+<translation id="6070374129526507093">Criterio ritirato nella versione M69. Usa il criterio OverrideSecurityRestrictionsOnInsecureOrigin.
+
+Questo criterio consente di specificare un elenco di origini (URL) o di schemi di nomi host (ad esempio "*.example.com") a cui non vengono applicate limitazioni di sicurezza previste per le origini non sicure.
+
+Lo scopo è consentire alle organizzazioni di autorizzare le origini per le applicazioni precedenti che non possono eseguire il deployment di TLS o di configurare un server di gestione temporanea per gli sviluppi web interni, affinché gli sviluppatori possano testare le funzionalità che richiedono contesti sicuri senza dover eseguire il deployment di TLS sul server di gestione temporanea. Questo criterio impedisce inoltre che l'origine venga contrassegnata come "Non sicura" nella omnibox.
+
+L'impostazione di un elenco di URL in questo criterio ha lo stesso effetto dell'impostazione del flag della riga di comando "--unsafely-treat-insecure-origin-as-secure" in un elenco separato da virgole degli stessi URL. Se viene impostato, questo criterio sostituisce il flag della riga di comando.
+
+Questo criterio è stato ritirato nella versione M69 ed è stato sostituito dal criterio OverrideSecurityRestrictionsOnInsecureOrigin. Se sono presenti entrambi i criteri, viene usato il criterio OverrideSecurityRestrictionsOnInsecureOrigin.
+
+Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.org/TR/secure-contexts/.
+      </translation>
 <translation id="6070667616071269965">Layout da tastiera della schermata di accesso del dispositivo</translation>
 <translation id="6074963268421707432">Non consentire la visualizzazione di notifiche desktop da parte dei siti</translation>
 <translation id="6074964551275531965">Imposta il periodo di tempo per le notifiche relative agli aggiornamenti</translation>
@@ -4245,6 +4303,19 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
       Se il criterio non viene impostato (o se viene impostato un URL non valido), <ph name="PRODUCT_NAME" /> non usa il criterio come fonte di regole per non cambiare browser.
 
       Nota: questo criterio rimanda a un file XML nello stesso formato del criterio <ph name="IEEM_SITELIST_POLICY" /> di <ph name="IE_PRODUCT_NAME" />. Se viene impostato, le regole vengono caricate da un file XML senza essere condivise con <ph name="IE_PRODUCT_NAME" />. Leggi ulteriori informazioni sul criterio <ph name="IEEM_SITELIST_POLICY" /> di <ph name="IE_PRODUCT_NAME" /> (https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode)</translation>
+<translation id="6967623535060479585">La configurazione del criterio consente di controllare l'attivazione dell'avviso di protezione delle password. La funzionalità di protezione delle password avvisa gli utenti quando riutilizzano le proprie password protette su siti potenzialmente sospetti.
+
+      Utilizza i criteri <ph name="PASSWORD_PROTECTION_LOGIN_URLS_POLICY_NAME" /> e <ph name="PASSWORD_PROTECTION_CHANGE_PASSWORD_URL_POLICY_NAME" /> per impostare la password da proteggere.
+
+      Se il criterio viene impostato su:
+
+      * PasswordProtectionWarningOff, non viene mostrato alcun avviso di protezione delle password.
+
+      * PasswordProtectionWarningOnPasswordReuse, l'avviso di protezione delle password viene mostrato quando l'utente riutilizza la propria password protetta su un sito non consentito.
+
+      * PasswordProtectionWarningOnPhishingReuse, l'avviso di protezione delle password viene mostrato quando l'utente riutilizza la propria password protetta su un sito di phishing.
+
+      Se il criterio non viene configurato, il servizio di protezione delle password protegge soltanto le password Google, ma gli utenti possono modificare questa impostazione.</translation>
 <translation id="6969131408525928234">La configurazione del criterio consente di disattivare i requisiti di divulgazione di Certificate Transparency per i nomi host e gli URL specificati. Anche se rilevare certificati emessi in modo scorretto diventa più difficile, gli host possono continuare a utilizzare i certificati che altrimenti non verrebbero ritenuti attendibili, in quanto non resi pubblici in modo appropriato.
 
       Se il criterio non viene configurato e se i certificati che richiedono la divulgazione tramite Certificate Transparency non vengono divulgati, <ph name="PRODUCT_NAME" /> non ritiene attendibili tali certificati.
@@ -4410,6 +4481,15 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 
       Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="7138678301420049075">Altro</translation>
+<translation id="7143539889272595839">Se questo criterio viene attivato, viene abilitata per impostazione predefinita la segnalazione anonima a Google dei dati sull'utilizzo e sugli arresti anomali di Chrome. Gli utenti potranno comunque modificare questa impostazione dalle impostazioni di Chrome.
+
+      Se questo criterio viene disattivato, viene disabilitata la segnalazione anonima e non vengono inviati a Google dati sull'utilizzo o sugli arresti anomali. Gli utenti non potranno modificare questa impostazione.
+
+      Se questo criterio non viene impostato, gli utenti possono scegliere il comportamento di segnalazione anonima al momento dell'installazione o della prima esecuzione e potranno cambiare l'impostazione in un secondo momento dalle impostazioni di Chrome.
+
+      Questo criterio è disponibile esclusivamente per le istanze di Windows che fanno parte di un dominio <ph name="MS_AD_NAME" />, così come per quelle di Windows 10 Pro o Enterprise registrate per la gestione dei dispositivi. Inoltre è disponibile per le istanze di macOS gestite tramite MDM o aggiunte a un dominio tramite MCX.
+
+      Per Chrome OS, consulta il criterio DeviceMetricsReportingEnabled.</translation>
 <translation id="7145335384492396213">Modalità di stampa PIN predefinita</translation>
 <translation id="7146198347561863646">Se il criterio viene impostato su Attivato o se non viene configurato, sono consentiti wakelock per la gestione dell'alimentazione. Le estensioni possono richiedere wakelock tramite l'API dell'estensione di gestione dell'alimentazione e le app ARC.
 
@@ -5042,6 +5122,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="8006921530139404577">Se il criterio viene disattivato, l'interfaccia utente relativa alla connessione (ad esempio, la finestra per disconnettersi) non verrà mostrata per le connessioni di accesso remoto non in modalità Curtain. Il criterio non riguarda le sessioni di accesso remoto in modalità Curtain e le sessioni di assistenza in remoto.
 
           Il criterio non ha effetto se impostato su True, se non viene impostato o se viene lasciato vuoto.</translation>
+<translation id="8008421342605619236">Consente di configurare i criteri per i messaggi nativi. Gli host di messaggi nativi bloccati non saranno consentiti se non vengono aggiunti alla lista consentita.</translation>
 <translation id="8011935490612940798">Controlla la funzionalità di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="802147957407376460">Ruota lo schermo di 0°</translation>
 <translation id="802776363472387903">L'hash SHA-256 dell'immagine <ph name="PLUGIN_VM_NAME" />.</translation>
@@ -5551,6 +5632,7 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
       Se il criterio viene impostato su Disattivato, non viene fornita alimentazione.
 
       Se il criterio non viene configurato viene considerato attivo e gli utenti non possono disattivarlo.</translation>
+<translation id="8789338675663014675">Consente di configurare i criteri relativi alle estensioni. L'utente non può installare estensioni bloccate, a meno che non siano presenti nella lista consentita. Puoi anche imporre a <ph name="PRODUCT_NAME" /> l'installazione automatica delle estensioni, specificandole nel criterio <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />. Le estensioni con installazione forzata vengono installate indipendentemente dalla loro presenza nella lista bloccata.</translation>
 <translation id="879697755145469671">La finestra coperta non viene rilevata</translation>
 <translation id="8798099450830957504">Predefinito</translation>
 <translation id="8799492680917278474">Se questo criterio viene configurato, le connessioni di accesso remoto si disconnettono automaticamente una volta trascorsi i minuti specificati nel criterio stesso. Questo non impedisce al client di riconnettersi una volta raggiunta la durata massima della sessione. Se il criterio viene impostato su un valore che non rientra nell'intervallo minimo/massimo, l'host potrebbe non essere avviato. Questo criterio non influisce sugli scenari di assistenza remota
@@ -5810,6 +5892,16 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
 <translation id="9117826695152538214">Se il criterio è impostato su True, i tasti permanenti rimangono attivati. Se il criterio è impostato su False, i tasti permanenti rimangono disattivati.
 
       Se imposti il criterio, gli utenti non possono modificarlo. Se il criterio non è impostato, i tasti permanenti risultano disattivati all'inizio, ma gli utenti possono attivarli in qualsiasi momento.</translation>
+<translation id="9121178963309901985">Questo criterio controlla le richieste di installazione delle estensioni di <ph name="PRODUCT_NAME" /> consentendo agli utenti di inviare alla Console di amministrazione Google le richieste per l'approvazione.
+
+      Se il criterio <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> non viene configurato o se viene impostato su Disattivato, questo criterio viene ignorato e le richieste di installazione delle estensioni non vengono create né caricate.
+      Se questo criterio non viene configurato o se viene impostato su Disattivato, le richieste di installazione delle estensioni non vengono create né caricate.
+      Se questo criterio viene impostato su Attivato, le richieste di installazione delle estensioni vengono create e caricate nella Console di amministrazione Google.
+
+      Le richieste di installazione delle estensioni vengono create quando gli utenti tentano di installare un'estensione non autorizzata dal criterio <ph name="EXTENSION_INSTALL_ALLOWLIST" /> o <ph name="EXTENSION_SETTINGS" />.
+
+      Questo criterio viene applicato soltanto se la macchina viene registrata con il criterio <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> per <ph name="PRODUCT_NAME" />.
+      Questo criterio viene sempre applicato per <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="9123211093995421438">Consente di specificare il numero minimo di obiettivi di <ph name="PRODUCT_OS_NAME" /> consentiti per il rollback a partire dalla versione stabile in qualsiasi momento.
 
       L'impostazione predefinita è 0 per il consumatore, 4 (circa sei mesi) per i dispositivi aziendali registrati.

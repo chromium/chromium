@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr-Latn">
 <translation id="1018656279737460067">Otkazano</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> niti, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1059913517121127803">Pokretanje skeniranja nije uspelo</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Otkriven je zaštitni zid</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">Nepoznata greška.</translation>
 <translation id="1204296502688602597">Kašnjenje DNS-a</translation>
 <translation id="123124571410524056">Sumnja se na portal</translation>
-<translation id="1238191093934674082">Otvoreni VPN</translation>
 <translation id="1238612778414822719">HTTPS kašnjenje</translation>
 <translation id="1270369111467284986">Moguć ulazni portal</translation>
 <translation id="1290331692326790741">Slab signal</translation>
@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">Zaustavljeno – nema više mastila</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Prisutan je DNS razrešivač</translation>
+<translation id="1717874160321062422">Upravljaju <ph name="FIRST_MANAGER" /> i <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Otkazuje se skeniranje</translation>
 <translation id="1851218745569890714">Video konferencije</translation>
@@ -59,6 +60,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Uključite Bluetooth da biste otkrili uređaje u blizini</translation>
 <translation id="2364498172489649528">Prošlo</translation>
+<translation id="2365324413026422635">Testiranje punjenja baterije ne može da se obavi kada je baterija puna</translation>
 <translation id="2391082728065870591">Pošalji izveštaj sa povratnim informacijama</translation>
 <translation id="2418150275289244458">Otvori u podešavanjima</translation>
 <translation id="2446553403094072641">Preciznost pokretnog zareza</translation>
@@ -91,6 +93,7 @@
 <translation id="3226405216343213872">Traže se skeneri</translation>
 <translation id="3246869037381808805">Zadaci štampanja stariji od 1 dana se uklanjaju</translation>
 <translation id="3268178239013324452">Nije uspelo – vrata su otvorena</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">Kašnjenje DNS-a znatno premašuje dozvoljenu graničnu vrednost</translation>
 <translation id="3328783797891415197">Test je u toku</translation>
 <translation id="3368922792935385530">Povezan</translation>
@@ -102,6 +105,7 @@
 <translation id="3459509316159669723">Štampanje</translation>
 <translation id="3488065109653206955">Delimično aktivirano</translation>
 <translation id="3527036260304016759">Nije uspelo – nepoznata greška</translation>
+<translation id="3532980081107202182">Preostalo je još oko <ph name="MIN_REMAINING" /> minuta</translation>
 <translation id="357889014807611375">WiFi sa ograničenjem</translation>
 <translation id="3595596368722241419">Baterija je puna</translation>
 <translation id="360565022852130722">WiFi mreža je obezbeđena slabim protokolom WEP 802.1x</translation>
@@ -125,6 +129,7 @@
 <translation id="4155551848414053977">Proverite da li je skener uključen i dostupan preko mreže ili direktne veze</translation>
 <translation id="4170700058716978431">NIJE USPELO</translation>
 <translation id="4176463684765177261">Onemogućeno</translation>
+<translation id="4222698289790462549">Trenutna brzina</translation>
 <translation id="4227825898293920515">Lozinka ističe za <ph name="TIME" /></translation>
 <translation id="4228041325992544252">Dostupno: <ph name="AVAILABLE_MEMORY" /> GB od <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="4238516577297848345">Nijedan zadatak štampanja nije u toku</translation>
@@ -241,6 +246,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="6325525973963619867">Neuspešno</translation>
 <translation id="636850387210749493">Prijavljivanje za izdanje za preduzeća</translation>
 <translation id="641081527798843608">Podudaranje naslova</translation>
+<translation id="6423239382391657905">Otvorena VPN</translation>
 <translation id="6456394469623773452">Dobar</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Upravlja <ph name="MANAGER" /></translation>
@@ -327,6 +333,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="8477551185774834963">Kašnjenje DNS-a u manjoj meri premašuje dozvoljenu graničnu vrednost</translation>
 <translation id="8483248364096924578">IP adresa</translation>
 <translation id="8503813439785031346">Korisničko ime</translation>
+<translation id="8503836310948963452">Još samo nekoliko minuta…</translation>
 <translation id="8576249514688522074">Nije pokrenuto</translation>
 <translation id="8620617069779373398">Status rominga</translation>
 <translation id="8675354002693747642">Tajni ključ</translation>
@@ -358,6 +365,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="9106415115617144481">Skenira se <ph name="PAGE_NUMBER" />. stranica</translation>
 <translation id="9111102763498581341">Otključaj</translation>
 <translation id="9149391708638971077">Pokreni test memorije</translation>
+<translation id="9173638680043580060">Preostalo je manje od minuta</translation>
 <translation id="9190063653747922532">L2TP/IPsec + tajni ključ</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Nije aktivirano</translation>

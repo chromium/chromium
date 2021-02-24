@@ -405,6 +405,7 @@
 <translation id="4421231901400348175">Споделяте с/ъс <ph name="HELPER_NAME" /> контрола върху екрана си чрез отдалечено съдействие.</translation>
 <translation id="4424159417645388645">Работен кът 5</translation>
 <translation id="4430019312045809116">Звук</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 важно известие}other{# важни известия}}</translation>
 <translation id="4450893287417543264">Да не се показва отново</translation>
 <translation id="445864333228800152">Добър вечер,</translation>
 <translation id="4458688154122353284">Спиране на записа на екрана</translation>
@@ -476,6 +477,10 @@
 <translation id="4961318399572185831">Предаване на екрана</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> ч, <ph name="MINUTES" /> мин и <ph name="SECONDS" /> сек</translation>
 <translation id="4975771730019223894">Значки за приложенията</translation>
+<translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
+<ph name="NOTIFICATION_1" />,
+<ph name="NOTIFICATION_2" />,
+<ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Следващо изречение</translation>
 <translation id="5030687792513154421">Времето свърши</translation>
 <translation id="5033299697334913360">Кликнете върху произволно място, за да се заснеме целият екран</translation>
@@ -489,6 +494,7 @@
 <translation id="5168181903108465623">Налице са устройства Cast</translation>
 <translation id="5170568018924773124">Показване в папката</translation>
 <translation id="5176318573511391780">Записване на част от екрана</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Още 1 известие}other{Още # известия}}</translation>
 <translation id="5207949376430453814">Открояване на точката на вмъкване в текста</translation>
 <translation id="5208059991603368177">Вкл.</translation>
 <translation id="5222676887888702881">Изход</translation>

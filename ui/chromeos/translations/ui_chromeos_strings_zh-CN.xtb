@@ -331,7 +331,6 @@
 <translation id="4706042980341760088">泰米尔语打字机键盘</translation>
 <translation id="4711094779914110278">土耳其语</translation>
 <translation id="4712283082407695269">正在打开“<ph name="PATH" />”</translation>
-<translation id="4713544552769165154">此文件适用于采用Macintosh软件的计算机，不适用于运行Chrome操作系统的设备。请在<ph name="BEGIN_LINK" />Chrome网上应用店<ph name="END_LINK" />中搜索合适的替代应用。<ph name="BEGIN_LINK_HELP" />了解详情<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">已备份 <ph name="FILE_COUNT" /> 张照片</translation>
 <translation id="4725511304875193254">柯基犬</translation>
 <translation id="4732760563705710320">抱歉，您的投射设备不支持此视频。</translation>
@@ -460,8 +459,6 @@
 <translation id="5833610766403489739">此文件已移至其他位置。请查看您的下载位置设置并重试。</translation>
 <translation id="5838451609423551646">已取消选择所有条目。</translation>
 <translation id="5838825566232597749">美式 Workman 国际</translation>
-<translation id="5850516540536751549">不支持此文件类型。请在<ph name="BEGIN_LINK" />Chrome网上应用店<ph name="END_LINK" />中查找可打开此类文件的应用。
-    <ph name="BEGIN_LINK_HELP" />了解详情<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">此处没有可显示的内容…</translation>
 <translation id="5911887972742538906">安装 Linux 应用时出错。</translation>
 <translation id="5912396950572065471">格式</translation>
@@ -671,7 +668,6 @@
 <translation id="8038111231936746805">（默认）</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> 音频</translation>
 <translation id="8045462269890919536">罗马尼亚语</translation>
-<translation id="8052887694493382350">此文件适用于运行 Windows 软件的 PC，不适用于运行 Chrome 操作系统的设备。<ph name="BEGIN_LINK_HELP" />了解详情<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">所有修改都会保存到<ph name="DOWNLOADS_FOLDER" />。</translation>
 <translation id="8079530767338315840">重复播放</translation>
 <translation id="8106045200081704138">与我共享</translation>

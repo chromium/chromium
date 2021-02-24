@@ -4,6 +4,7 @@
 <translation id="102360288709523007">वापर आकडेवारी आणि क्रॅश अहवाल Google कडे पाठवून Chromium ला अधिक चांगले करण्यास मदत करा.</translation>
 <translation id="1185134272377778587">Chromium बद्दल</translation>
 <translation id="1257458525759135959">इमेज सेव्ह करण्यासाठी, तुमच्या फोटोंमध्ये Chromium ला जोडण्यासाठी सेटिंग्ज वर टॅप करा</translation>
+<translation id="1289216811211435351">Chromium वर स्विच करा</translation>
 <translation id="1361748954329991663">Chromium कालबाह्य झाले आहे. <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> मध्ये अपडेट उपलब्ध नसल्यास, तुमचे डिव्हाइस यापुढे Chromium च्या नवीन आवृत्तींना सपोर्ट करत नाही याची शक्यता आहे.</translation>
 <translation id="1431818719585918472">Chromium ला तुमचे गुप्त टॅब लॉक करू द्या.</translation>
 <translation id="1472013873724362412">तुमचे खाते Chromium वर कार्य करत नाही. कृपया तुमच्या डोमेन ॲडमिनिस्ट्रेटरशी संपर्क साधा किंवा साइन इन करण्यासाठी एक नियमित Google खाते वापरा.</translation>
@@ -34,6 +35,7 @@
 <translation id="4099085513035183040">Chromium बीटा वर सपोर्ट नाही</translation>
 <translation id="4166206055865952171">Chromium ला तुमचे डीफॉल्ट बनवा</translation>
 <translation id="4555020257205549924">हे वैशिष्ट्य सुरू केल्यावर, Chromium Google भाषांतर वापरून अन्य भाषामध्ये लिहिलेल्या पृष्ठांचा भाषांतर ऑफर करेल. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
+<translation id="4585809515399340748">तुम्ही आता केव्हाही मेसेज, दस्तऐवज आणि इतर अ‍ॅप्समध्ये लिंकवर टॅप केल्यास, Chromium वापरू शकता.</translation>
 <translation id="4681781466797808448">Chromium स्कॅनर सुरू करा</translation>
 <translation id="4787850887676698916">आपल्या अन्य डिव्हाइसवर तुम्ही Chromium मध्ये उघडलेले टॅब येथे दिसतील.</translation>
 <translation id="4828317641996116749">Chromium ला सर्व पासवर्ड तपासता आले नाहीत. नंतर पुन्हा प्रयत्न करा.</translation>
@@ -42,9 +44,9 @@
 <translation id="5224391634244552924">सेव्ह केलेले पासवर्ड नाहीत. तुम्ही तुमचे पासवर्ड सेव्ह केल्यावर Chromium ते तपासू शकते.</translation>
 <translation id="5308226104666789935">Chromium अपडेट तपासू शकत नाही</translation>
 <translation id="5521125884468363740">तुम्ही जेथून Chromium वापरत असाल तेथून तुमचे टॅब पाहण्यासाठी, साइन इन करा आणि सिंक सुरू करा</translation>
-<translation id="5544795779875591523">या डिव्हाइसवरून तुमचा Chromium डेटा साफ करायचा की ठेवायचा?</translation>
 <translation id="5573014823074921752">Chromium टीप. आणखी टॅब पर्यायांसाठी, तुमच्या स्क्रीनच्या तळाशी किंवा सर्वात वर असलेल्या टूलबारवरील टॅब दाखवा बटणाला स्पर्श करा आणि धरून ठेवा.</translation>
 <translation id="5700709190537129682">Chromium तुमचे पासवर्ड तपासू शकत नाही</translation>
+<translation id="5742135483959137648">लिंक उघडण्यासाठी Chromium वापरा</translation>
 <translation id="5777187867430702742">Chromium पेज</translation>
 <translation id="5862307444128926510">Chromium वर तुमचे स्‍वागत आहे</translation>
 <translation id="5945387852661427312"><ph name="DOMAIN" /> द्वारे व्यवस्थापित केलेल्या खात्यासह तुम्ही साइन इन करत आहात आणि त्याच्या ॲडमिनिस्ट्रेटरला तुमच्या Chromium डेटाचे नियंत्रण देत आहात. तुमचा डेटा कायमचा या खात्यामध्ये असेल. Chromium मधून साइन आउट केल्याने तुमचा डेटा या डिव्हाइस वरून हटवला जाईल परंतु तो तुमच्या Google खात्यामध्ये स्टोअर केलेला असेल.</translation>

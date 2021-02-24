@@ -93,6 +93,7 @@
 <translation id="1942765061641586207">Resolution ng larawan</translation>
 <translation id="1943097386230153518">Mag-install ng bagong serbisyo</translation>
 <translation id="1972984168337863910">I-expand ang mga panel ng feedback ng mga file</translation>
+<translation id="1984456723671657197">Hindi sinusuportahan ang ganitong uri ng file. <ph name="BEGIN_LINK_HELP" />Matuto Pa<ph name="END_LINK_HELP" /> tungkol sa pagbubukas ng mga file sa Chrome OS.</translation>
 <translation id="1995337122023280937">Pumunta sa lokasyon ng file</translation>
 <translation id="2001796770603320721">Pamahalaan sa Drive</translation>
 <translation id="2009067268969781306">Kapag nag-format ng drive, made-delete ang lahat ng data na naka-store doon. Hindi puwedeng i-undo ang pagkilos na ito.</translation>
@@ -331,7 +332,6 @@
 <translation id="4706042980341760088">Tamil na may Typewriter keyboard</translation>
 <translation id="4711094779914110278">Turkish</translation>
 <translation id="4712283082407695269">Binubuksan ang "<ph name="PATH" />"</translation>
-<translation id="4713544552769165154">Idinisenyo ang file na ito para sa computer na gumagamit ng Macintosh software. Hindi ito tugma sa iyong device na nagpapatakbo ng Chrome OS. Mangyaring maghanap sa <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> para sa isang naaangkop na pamalit na app. <ph name="BEGIN_LINK_HELP" />Matuto Pa<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> (na) larawan ang na-back up</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4732760563705710320">Paumanhin, hindi sinusuportahan ang video na ito ng iyong cast device.</translation>
@@ -465,8 +465,6 @@
 <translation id="5833610766403489739">Nawala ang file na ito. Pakitingnan ang iyong setting ng lokasyon ng pag-download at subukan ulit.</translation>
 <translation id="5838451609423551646">Inalis ang lahat ng entry sa pagpipilian.</translation>
 <translation id="5838825566232597749">US Workman international</translation>
-<translation id="5850516540536751549">Hindi sinusuportahan ang uri ng file na ito. Pakibisita ang <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> upang maghanap ng app na makakapagbukas sa ganitong uri ng file.
-    <ph name="BEGIN_LINK_HELP" />Matuto Pa<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Walang itong laman...</translation>
 <translation id="5911887972742538906">Nagkaroon ng error habang ini-install ang iyong Linux application.</translation>
 <translation id="5912396950572065471">Format</translation>
@@ -670,13 +668,13 @@
 <translation id="7972920761225148017">French (Switzerland)</translation>
 <translation id="7980421588063892270">English (US) na may Colemak keyboard</translation>
 <translation id="7982283708762922719">Taas</translation>
+<translation id="79907182588096956">Idinisenyo ang file na ito para sa isang PC na gumagamit ng Windows software. Hindi ito compatible sa iyong device na gumagamit ng Chrome OS. <ph name="BEGIN_LINK_HELP" />Matuto Pa<ph name="END_LINK_HELP" /> tungkol sa pagbubukas ng mga file sa Chrome OS.</translation>
 <translation id="8008366997883261463">Aso</translation>
 <translation id="8028993641010258682">Laki</translation>
 <translation id="803771048473350947">File</translation>
 <translation id="8038111231936746805">(default)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> na audio</translation>
 <translation id="8045462269890919536">Romanian</translation>
-<translation id="8052887694493382350">Idinisenyo ang file na ito para sa PC na gumagamit ng Windows software. Hindi ito compatible sa iyong device na tumatakbo sa Chrome OS. <ph name="BEGIN_LINK_HELP" />Matuto Pa<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Mase-save ang lahat ng pag-edit sa <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Ulitin</translation>
 <translation id="8106045200081704138">Ibinahagi sa akin</translation>
@@ -750,6 +748,7 @@
 <translation id="8900820606136623064">Hungarian</translation>
 <translation id="8919081441417203123">Danish</translation>
 <translation id="8965697826696209160">Walang sapat na espasyo.</translation>
+<translation id="8970501467542182729">Idinisenyo ang file na ito para sa isang computer na gumagamit ng Macintosh software. Hindi ito compatible sa iyong device na gumagamit ng Chrome OS. <ph name="BEGIN_LINK_HELP" />Matuto Pa<ph name="END_LINK_HELP" /> tungkol sa pagbubukas ng mga file sa Chrome OS.</translation>
 <translation id="8997962250644902079">Chinese (Traditional) Pinyin</translation>
 <translation id="9017798300203431059">Russian phonetic</translation>
 <translation id="9034924485347205037">Mga Linux file</translation>

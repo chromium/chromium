@@ -56,6 +56,7 @@
 <translation id="1331212799747679585">Немагчыма абнавіць Chrome. Дадатковыя параметры</translation>
 <translation id="1332501820983677155">Спалучэнні клавіш для функцый Google Chrome</translation>
 <translation id="133857033449832692">Спампоўваецца: <ph name="LANG" />…</translation>
+<translation id="1344653310988386453">Далучыць спасылку на вылучаны тэкст</translation>
 <translation id="1347468774581902829">Кіраваць дзеяннямі</translation>
 <translation id="1360432990279830238">Выйсці і выключыць сінхранізацыю?</translation>
 <translation id="1373696734384179344">Недастаткова памяці, каб спампаваць выбранае змесціва.</translation>
@@ -130,6 +131,7 @@
 <translation id="1960290143419248813">Абнаўленні Chrome больш не падтрымліваюцца для гэтай версіі Android.</translation>
 <translation id="1963976881984600709">Стандартная абарона</translation>
 <translation id="1966710179511230534">Абнавіце ўліковыя даныя для ўваходу.</translation>
+<translation id="1973912524893600642">Захаваць даныя</translation>
 <translation id="1974060860693918893">Пашыраныя налады</translation>
 <translation id="1984417487208496350">Без абароны (не рэкамендуецца)</translation>
 <translation id="1984705450038014246">Сінхранізацыя даных Chrome</translation>
@@ -301,6 +303,7 @@
 <translation id="3058498974290601450">Сінхранізацыю можна ўключыць у любы момант у наладах</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> закладка}one{<ph name="BOOKMARKS_COUNT_MANY" /> закладка}few{<ph name="BOOKMARKS_COUNT_MANY" /> закладкі}many{<ph name="BOOKMARKS_COUNT_MANY" /> закладак}other{<ph name="BOOKMARKS_COUNT_MANY" /> закладкі}}</translation>
 <translation id="3062802207422175757">Цікавыя для вас артыкулы ў Chrome</translation>
+<translation id="3070005020161560471">Аўтаматычна перакладаць з наступных моў:</translation>
 <translation id="3089395242580810162">Адкрыць ва ўкладцы інкогніта</translation>
 <translation id="3098745985164956033">Некаторыя відарысы адпраўляюцца ў Google, каб палепшыць іх апісанне</translation>
 <translation id="3114507951000454849">Чытайце сённяшнія навіны <ph name="NEWS_ICON" /></translation>
@@ -350,10 +353,18 @@
 <translation id="3384347053049321195">Абагуліць відарыс</translation>
 <translation id="3387650086002190359">Не ўдалося спампаваць файл "<ph name="FILE_NAME" />" з-за памылак файлавай сістэмы.</translation>
 <translation id="3389286852084373014">Тэкст занадта вялікі</translation>
+<translation id="3391512812407811893">Пробныя версіі Privacy Sandbox</translation>
 <translation id="3398320232533725830">Адкрыць менеджар закладак</translation>
 <translation id="3414952576877147120">Памер:</translation>
 <translation id="3429160811076349561">Пробныя функцыі выключаны</translation>
 <translation id="3443221991560634068">Перазагрузіць бягучую старонку</translation>
+<translation id="3451542610083122179">Privacy Sandbox – ініцыятыва ў падтрымку адкрытага інтэрнэту, мэтай якой з'яўляецца абарона карыстальнікаў ад механізмаў адсочвання іх дзеянняў.
+
+Каб забяспечыць работу важных сэрвісаў (у прыватнасці, для ацэнкі эфектыўнасці сайта або паказу рэлевантнай рэкламы), вэб-сайты выкарыстоўваюць розныя тэхналогіі, напрыклад староннія файлы cookie.
+
+Privacy Sandbox падтрымлівае адкрытасць інтэрнэту, прапануючы лепшыя спосабы дасягнення тых жа вынікаў. Пры гэтым работа сайтаў не парушаецца, а вашы дзеянні на іх не адсочваюцца без вашай згоды.
+
+Тэхналогіі Privacy Sandbox яшчэ знаходзяцца на стадыі распрацоўкі і даступныя не ва ўсіх рэгіёнах. Сайты маюць магчымасць выкарыстоўваць некаторыя функцыі Privacy Sandbox, не адмаўляючыся пакуль што ад існуючых вэб-тэхналогій, такіх як староннія файлы cookie. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">Вы можаце выбраць пошукавую сістэму</translation>
 <translation id="3492207499832628349">Новая ўкладка інкогніта</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /> пра прапанаванае змесціва</translation>
@@ -591,6 +602,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Збой 1 спампоўкі.}one{Збой # спампоўкі.}few{Збой # спамповак.}many{Збой # спамповак.}other{Збой # спампоўкі.}}</translation>
 <translation id="5170568018924773124">Паказаць у папцы</translation>
 <translation id="5184329579814168207">Адкрыць у Chrome</translation>
+<translation id="5191251636205085390">Даведайцеся пра новыя тэхналогіі, якія прыходзяць на змену староннім файлам cookie, а таксама пра спосабы кіравання імі</translation>
 <translation id="5193988420012215838">Скапіравана ў буфер абмену</translation>
 <translation id="5199929503336119739">Працоўны профіль</translation>
 <translation id="5210286577605176222">Перайсці на папярэднюю ўкладку</translation>
@@ -613,6 +625,7 @@
 <translation id="5355191726083956201">Палепшаная абарона ўключана</translation>
 <translation id="5357811892247919462">Атрымана ўкладка</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> адкрытая ўкладка. Націсніце, каб пераключыцца паміж укладкамі.}one{<ph name="OPEN_TABS_MANY" /> адкрытая ўкладка. Націсніце, каб пераключыцца паміж укладкамі.}few{<ph name="OPEN_TABS_MANY" /> адкрытыя ўкладкі. Націсніце, каб пераключыцца паміж укладкамі.}many{<ph name="OPEN_TABS_MANY" /> адкрытых укладак. Націсніце, каб пераключыцца паміж укладкамі.}other{<ph name="OPEN_TABS_MANY" /> адкрытай укладкі. Націсніце, каб пераключыцца паміж укладкамі.}}</translation>
+<translation id="5375577065097716013">Шукаць праз "Аб'ектыў" <ph name="BEGIN_NEW" />Навінка<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Дазваляць толькі пэўныя сайты</translation>
 <translation id="5414836363063783498">Ідзе праверка…</translation>
 <translation id="5423934151118863508">Тут будуць паказвацца старонкі, якія вы найчасцей наведваеце</translation>
@@ -648,6 +661,7 @@
 <translation id="5599941490345670218">Памочнік Google можа выконваць для вас дзеянні на розных вэб-сайтах</translation>
 <translation id="5620163320393916465">Няма захаваных пароляў</translation>
 <translation id="5620928963363755975">Знаходзьце файлы і старонкі ў папцы "Спампоўкі" з дапамогай кнопкі "Дадатковыя параметры"</translation>
+<translation id="562168087174703495">Не ўдалося стварыць спасылку на вылучаны тэкст. Абагульце спасылку на старонку.</translation>
 <translation id="562289928968387744">Кіраваць рэакцыямі</translation>
 <translation id="5626134646977739690">Назва:</translation>
 <translation id="5628604359369369630">Непрачытана – Даступна па-за сеткай</translation>
@@ -761,6 +775,7 @@
 <translation id="6312687380483398334">Вэб-праграмы (бязгучныя)</translation>
 <translation id="6316139424528454185">Версія Android не падтрымлів.</translation>
 <translation id="6324034347079777476">Сінхранізацыя сістэмы Android выключана</translation>
+<translation id="6324977638108296054">Не ўдалося стварыць спасылку на вылучаны тэкст</translation>
 <translation id="6333140779060797560">Абагуліць праз <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Шыфраванне</translation>
 <translation id="6341580099087024258">Запытваць месца для захоўвання файлаў</translation>
@@ -792,6 +807,7 @@
 <translation id="6477928892249167417">Гэтыя сайты могуць быць важнымі для вас:</translation>
 <translation id="6482749332252372425">Не ўдалося спампаваць файл <ph name="FILE_NAME" /> з-за недахопу месца ў сховішчы.</translation>
 <translation id="6489610539826642779">Спіс на прагляд <ph name="BEGIN_NEW" />Новае<ph name="END_NEW" /></translation>
+<translation id="6490496612063106490">Спасылка на вылучаны тэкст</translation>
 <translation id="6496823230996795692">Каб выкарыстаць <ph name="APP_NAME" /> першы раз, падключыцеся да інтэрнэту.</translation>
 <translation id="6508722015517270189">Перазапусціце Chrome</translation>
 <translation id="6527303717912515753">Абагуліць</translation>
@@ -990,6 +1006,7 @@
 <translation id="784934925303690534">Прамежак часу</translation>
 <translation id="7851858861565204677">Іншыя прылады</translation>
 <translation id="7857691613771368249">Пытацца, калі захоўваць файлы</translation>
+<translation id="7859988229622350291">Ніколі не перакладаць з наступных моў:</translation>
 <translation id="7875915731392087153">Стварыць ліст электроннай пошты</translation>
 <translation id="7876243839304621966">Выдаліць усе</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{У вас <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> непрачытаная старонка}one{У вас <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрачытаная старонка}few{У вас <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрачытаныя старонкі}many{У вас <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрачытаных старонак}other{У вас <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрачытанай старонкі}}</translation>
@@ -1053,7 +1070,6 @@
 <translation id="8218622182176210845">Кіраваць уліковым запісам</translation>
 <translation id="8223642481677794647">Меню карткі стужкі</translation>
 <translation id="8224471946457685718">Спампоўваць артыкулы для вас пры падключэнні па Wi-Fi</translation>
-<translation id="8232956427053453090">Захаваць даныя</translation>
 <translation id="8233540874193135768">Каб сканіраваць QR-код, выкарыстайце прыладу з камерай.</translation>
 <translation id="8250920743982581267">Дакументы</translation>
 <translation id="825412236959742607">Гэта старонка выкарыстоўвае занадта многа памяці, таму Chrome выдаліў некаторае змесціва.</translation>
@@ -1067,6 +1083,7 @@
 <translation id="8310344678080805313">Стандартныя ўкладкі</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> і іншыя сайты</translation>
 <translation id="8327155640814342956">Каб карыстацца найлепшымі функцыямі, адкрыйце і абнавіце Chrome</translation>
+<translation id="834313815369870491">Ніколі не перакладаць наступныя сайты:</translation>
 <translation id="8349013245300336738">Сартаваць па аб'ёме выкарыстанага трафіка</translation>
 <translation id="835847953965672673">Спамповак адноўлена: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="8364299278605033898">Праглядайце папулярныя вэб-сайты</translation>

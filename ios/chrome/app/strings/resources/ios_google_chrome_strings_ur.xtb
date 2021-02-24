@@ -18,6 +18,7 @@
 <translation id="257708665678654955">‏کیا آپ چاہیں گے کہ Google Chrome اگلی بار اس سائٹ سے <ph name="LANGUAGE_NAME" /> صفحات کا ترجمہ کرنے کی پیشکش کرے؟</translation>
 <translation id="2695886661449553974">‏Chrome اپ ڈیٹس چیک نہیں کر سکا۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="2732745070297234559">‏Chrome سبھی پاس ورڈز چیک نہیں کر سکا۔ کل دوبارہ کوشش کریں۔</translation>
+<translation id="2740105938841089077">‏لنکس کھولنے کے لیے Chrome کا استعمال کریں</translation>
 <translation id="2919738076569633423">‏Chrome استعمال کر کے، آپ <ph name="BEGIN_LINK_TOS" />سروس کی شرائط<ph name="END_LINK_TOS" /> سے اتفاق کرتے ہیں۔</translation>
 <translation id="3030414234702425231">‏چونکہ آپ <ph name="SIGNOUT_MANAGED_DOMAIN" /> کے زیر انتظام ایک اکاؤنٹ سے سائن آؤٹ کر رہے ہیں، لہذا آپ کا Chrome ڈیٹا اس آلہ سے حذف ہو جائے گا۔ آپ کا ڈیٹا آپ کے Google اکاؤنٹ میں رہے گا۔</translation>
 <translation id="3148688391461398285">‏اپنے مقام کی بنیاد پر Chrome میں ایک بہتر تجربہ حاصل کریں۔</translation>
@@ -38,7 +39,6 @@
 <translation id="417201473131094001">‏Chrome Canary پر تعاون یافتہ نہیں ہے</translation>
 <translation id="424864128008805179">‏Chrome سے سائن آؤٹ کریں؟</translation>
 <translation id="4249068189593983585">‏Chrome تجویز۔ ٹیب کے مزید اختیارات کیلئے، ٹول بار میں اس "ٹیبز دکھائيں" بٹن کو ٹچ کریں اور دبائے رکھیں جو آپ کی اسکرین کے نیچے یا اوپر ہوتا ہے۔</translation>
-<translation id="4354293865557736921">‏منتخب کریں کہ آیا اپنے Chrome ڈیٹا کو اس آلے سے صاف کرنا ہے یا اسے رکھنا ہے؟</translation>
 <translation id="4523886039239821078">‏کچھ اضافے Chrome کے کریش ہونے کا سبب بنتے ہیں۔ براہ کرم اَن انسٹال کریں:</translation>
 <translation id="4633328489441962921">‏Chrome اپ ڈیٹس چیک نہیں کر سکتا ہے</translation>
 <translation id="4698415050768537821">‏Chrome سبھی پاس ورڈز چیک نہیں کر سکا۔ آئندہ کل دوبارہ کوشش کریں یا <ph name="BEGIN_LINK" />اپنے Google اکاؤنٹ میں پاس ورڈز چیک کریں۔<ph name="END_LINK" /></translation>
@@ -53,6 +53,7 @@
 <translation id="5854621639439811139">‏Chrome تجویز۔ واپس جائیں، فارورڈ کریں، اور تلاش کریں جیسے بعض بٹنز اب آپ کی اسکرین کے نیچے ہیں۔</translation>
 <translation id="6036420186814142909">‏Google Chrome میں ایسی خصوصیات ہیں جو آپ کے انٹرنیٹ ڈیٹا اور کتنی جلدی آپ ویب صفحات کو لوڈ کرنے کیلئے اہل ہیں اس کا نظم کرنے میں آپ کی مدد کرتی ہیں۔
 <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
+<translation id="6181930887571472871">‏Chrome پر سوئچ کریں</translation>
 <translation id="6238746320622508509">‏Chrome کو اپنے پوشیدگی ٹیبز مقفل کرنے دیں۔</translation>
 <translation id="6573431926118603307">‏اپنے دیگر آلات پر Chrome میں آپ نے جو ٹیبز کھولے ہیں وہ یہاں ظاہر ہوں گے۔</translation>
 <translation id="6600954340915313787">‏Chrome پر کاپی کر دیا گیا</translation>
@@ -60,6 +61,7 @@
 <translation id="6648150602980899529">‏آپ <ph name="DOMAIN" /> کے زیر انتظام ایک اکاؤنٹ کے ساتھ سائن ان کر رہے ہیں اور اس کے منتظم کو اپنے Chrome ڈیٹا پر کنٹرول دے رہے ہیں۔ آپ کا ڈیٹا اس اکاؤنٹ سے مستقل طور پر مربوط ہو جائے گا۔ Chrome سے سائن آؤٹ کرنے سے آپ کا ڈیٹا اس آلہ سے حذف ہو جائے گا، لیکن یہ آپ کے Google اکاؤنٹ میں اسٹور رہے گا۔</translation>
 <translation id="6676840375528380067">‏اس آلہ سے آپ کا Chrome ڈیٹا صاف کریں؟</translation>
 <translation id="6822673484890854830">‏Chrome سبھی پاس ورڈز چیک نہیں کر سکا۔ بعد میں دوبارہ کوشش کریں۔</translation>
+<translation id="6964931465519938134">‏اب جب بھی آپ پیغامات، دستاویزات اور دیگر ایپس میں لنکس پر تھپتھپائیں تو آپ Chrome استعمال کر سکتے ہیں۔</translation>
 <translation id="7124339256045485976">‏Chrome کو اپ ٹو ڈیٹ رکھیں</translation>
 <translation id="7161390184744336561">‏Google Chrome پرانا ہے</translation>
 <translation id="7165736900384873061">‏Google Chrome QR اسکینر استعمال کرنا شروع کریں</translation>

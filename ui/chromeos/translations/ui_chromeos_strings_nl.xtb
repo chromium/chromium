@@ -93,6 +93,7 @@
 <translation id="1942765061641586207">Afbeeldingsresolutie</translation>
 <translation id="1943097386230153518">Nieuwe service installeren</translation>
 <translation id="1972984168337863910">Feedbackvensters voor bestanden uitvouwen</translation>
+<translation id="1984456723671657197">Dit bestandstype wordt niet ondersteund. Bekijk <ph name="BEGIN_LINK_HELP" />meer informatie<ph name="END_LINK_HELP" /> over hoe je bestanden opent in Chrome OS.</translation>
 <translation id="1995337122023280937">Naar bestandslocatie</translation>
 <translation id="2001796770603320721">Beheren in Drive</translation>
 <translation id="2009067268969781306">Tijdens het formatteren van een schijf worden alle opgeslagen gegevens verwijderd. Deze actie kan niet ongedaan worden gemaakt.</translation>
@@ -331,7 +332,6 @@
 <translation id="4706042980341760088">Tamil met Typewriter-toetsenbord</translation>
 <translation id="4711094779914110278">Turks</translation>
 <translation id="4712283082407695269">'<ph name="PATH" />' openen</translation>
-<translation id="4713544552769165154">Dit bestand is ontworpen voor een computer met Macintosh-software. Dit is niet compatibel met je apparaat met Chrome OS. Zoek in de <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> naar een geschikte, vervangende app.<ph name="BEGIN_LINK_HELP" />Meer informatie<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">Er is een back-up van <ph name="FILE_COUNT" /> foto's gemaakt</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4732760563705710320">Sorry, deze video wordt niet ondersteund door je cast-apparaat.</translation>
@@ -466,8 +466,6 @@
 <translation id="5833610766403489739">Dit bestand staat ergens anders. Controleer je downloadlocatie-instelling en probeer het opnieuw.</translation>
 <translation id="5838451609423551646">Alle items uit selectie zijn verwijderd.</translation>
 <translation id="5838825566232597749">Amerikaans Workman (internationaal)</translation>
-<translation id="5850516540536751549">Dit bestandstype wordt niet ondersteund. Ga naar de <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> om een app te vinden die dit type bestand kan openen.
-    <ph name="BEGIN_LINK_HELP" />Meer informatie<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Er is hier niets te zien…</translation>
 <translation id="5911887972742538906">Er is een fout opgetreden tijdens de installatie van je Linux-app.</translation>
 <translation id="5912396950572065471">Indeling</translation>
@@ -671,13 +669,13 @@
 <translation id="7972920761225148017">Frans (Zwitserland)</translation>
 <translation id="7980421588063892270">Engels (VS) met Colemak-toetsenbord</translation>
 <translation id="7982283708762922719">Hoogte</translation>
+<translation id="79907182588096956">Dit bestand is bedoeld voor een pc met Windows-software. Het is niet geschikt voor jouw apparaat, waarop Chrome OS wordt gebruikt. Bekijk <ph name="BEGIN_LINK_HELP" />meer informatie<ph name="END_LINK_HELP" /> over hoe je bestanden opent in Chrome OS.</translation>
 <translation id="8008366997883261463">Jack Russell-terriër</translation>
 <translation id="8028993641010258682">Grootte</translation>
 <translation id="803771048473350947">Archief</translation>
 <translation id="8038111231936746805">(standaard)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" />-audio</translation>
 <translation id="8045462269890919536">Roemeens</translation>
-<translation id="8052887694493382350">Dit bestand is bedoeld voor een pc met Windows-software. Het is niet geschikt voor jouw apparaat, waarop Chrome OS wordt uitgevoerd. <ph name="BEGIN_LINK_HELP" />Meer informatie<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Alle bewerkingen worden opgeslagen in <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Herhalen</translation>
 <translation id="8106045200081704138">Gedeeld met mij</translation>
@@ -751,6 +749,7 @@
 <translation id="8900820606136623064">Hongaars</translation>
 <translation id="8919081441417203123">Deens</translation>
 <translation id="8965697826696209160">Er is onvoldoende ruimte.</translation>
+<translation id="8970501467542182729">Dit bestand is bedoeld voor een computer met Macintosh-software. Het is niet geschikt voor jouw apparaat, waarop Chrome OS wordt gebruikt. Bekijk <ph name="BEGIN_LINK_HELP" />meer informatie<ph name="END_LINK_HELP" /> over hoe je bestanden opent in Chrome OS.</translation>
 <translation id="8997962250644902079">Chinees (traditioneel, Pinyin)</translation>
 <translation id="9017798300203431059">Russisch fonetisch</translation>
 <translation id="9034924485347205037">Linux-bestanden</translation>

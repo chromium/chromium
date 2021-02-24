@@ -93,6 +93,7 @@
 <translation id="1942765061641586207">Resolució de la imatge</translation>
 <translation id="1943097386230153518">Instal·la un servei nou</translation>
 <translation id="1972984168337863910">Desplega els taulers amb informació dels fitxers</translation>
+<translation id="1984456723671657197">Aquest tipus de fitxer no és compatible. <ph name="BEGIN_LINK_HELP" />Obtén més informació<ph name="END_LINK_HELP" /> sobre com pots obrir fitxers a Chrome OS.</translation>
 <translation id="1995337122023280937">Ves a la ubicació del fitxer</translation>
 <translation id="2001796770603320721">Gestiona a Drive</translation>
 <translation id="2009067268969781306">En formatar una unitat, se'n suprimeixen totes les dades que s'hi hagin emmagatzemat. Aquesta acció no es pot desfer.</translation>
@@ -331,7 +332,6 @@
 <translation id="4706042980341760088">Tàmil amb teclat de màquina d'escriure</translation>
 <translation id="4711094779914110278">Turc</translation>
 <translation id="4712283082407695269">S'està obrint <ph name="PATH" /></translation>
-<translation id="4713544552769165154">Aquest fitxer està dissenyat per a un ordinador que faci servir programari de Macintosh. No és compatible amb el vostre dispositiu, que funciona amb Chrome OS. Podeu cercar una aplicació adequada equivalent a <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />. <ph name="BEGIN_LINK_HELP" />Més informació<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">S'ha creat una còpia de seguretat de <ph name="FILE_COUNT" /> fotos</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4732760563705710320">El dispositiu d'emissió no admet aquest vídeo.</translation>
@@ -465,8 +465,6 @@
 <translation id="5833610766403489739">Aquest fitxer s'ha extraviat en algun lloc. Comproveu el paràmetre d'ubicació de les baixades i torneu-ho a provar.</translation>
 <translation id="5838451609423551646">S'han suprimit totes les entrades de la selecció.</translation>
 <translation id="5838825566232597749">Workman nord-americà internacional</translation>
-<translation id="5850516540536751549">Aquest tipus de fitxer no és compatible. Visiteu <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> per trobar una aplicació que pugui obrir aquest tipus de fitxer.
-        <ph name="BEGIN_LINK_HELP" />Més informació<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Això és buit...</translation>
 <translation id="5911887972742538906">S'ha produït un error en instal·lar l'aplicació per a Linux.</translation>
 <translation id="5912396950572065471">Format</translation>
@@ -670,13 +668,13 @@
 <translation id="7972920761225148017">Francès (Suïssa)</translation>
 <translation id="7980421588063892270">Anglès (EUA) amb teclat Colemak</translation>
 <translation id="7982283708762922719">Alçada</translation>
+<translation id="79907182588096956">Aquest fitxer està dissenyat per a un ordinador amb programari Windows. No és compatible amb el teu dispositiu, que funciona amb Chrome OS. <ph name="BEGIN_LINK_HELP" />Obtén més informació<ph name="END_LINK_HELP" /> sobre com pots obrir fitxers a Chrome OS.</translation>
 <translation id="8008366997883261463">Gos</translation>
 <translation id="8028993641010258682">Mida</translation>
 <translation id="803771048473350947">Fitxer</translation>
 <translation id="8038111231936746805">(predeterminada)</translation>
 <translation id="8042602468072383151">Àudio <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">Romanès</translation>
-<translation id="8052887694493382350">Aquest fitxer està dissenyat per a un ordinador que faci servir programari de Windows. No és compatible amb el teu dispositiu, que funciona amb Chrome OS. <ph name="BEGIN_LINK_HELP" />Més informació<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Tots els canvis es desaran a <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Repeteix</translation>
 <translation id="8106045200081704138">Compartit amb mi</translation>
@@ -750,6 +748,7 @@
 <translation id="8900820606136623064">Hongarès</translation>
 <translation id="8919081441417203123">Danès</translation>
 <translation id="8965697826696209160">No hi ha prou espai.</translation>
+<translation id="8970501467542182729">Aquest fitxer està dissenyat per a un ordinador amb programari de Macintosh. No és compatible amb el teu dispositiu, que funciona amb Chrome OS. <ph name="BEGIN_LINK_HELP" />Obtén més informació<ph name="END_LINK_HELP" /> sobre com pots obrir fitxers a Chrome OS.</translation>
 <translation id="8997962250644902079">Xinès tradicional (pinyin)</translation>
 <translation id="9017798300203431059">Fonètic rus</translation>
 <translation id="9034924485347205037">Fitxers de Linux</translation>

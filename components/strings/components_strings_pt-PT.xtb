@@ -568,6 +568,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
       se certificar de que o servidor proxy está a funcionar. Se achar que não deve
       utilizar um servidor proxy:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="317878711435188021">Saber quando está a utilizar ativamente este dispositivo.</translation>
 <translation id="3188393374551744535">Saldo da conta</translation>
 <translation id="3194737229810486521"><ph name="URL" /> pretende armazenar permanentemente dados no seu dispositivo.</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> no servidor <ph name="SERVER_NAME" /></translation>
@@ -746,6 +747,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3828924085048779000">Não é permitida uma frase de acesso vazia.</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> instalou extensões para funções adicionais. As extensões têm acesso a alguns dos seus dados.</translation>
 <translation id="3832522519263485449">Perfuração múltipla à esquerda</translation>
+<translation id="3835233591525155343">A utilização do dispositivo</translation>
 <translation id="385051799172605136">Anterior</translation>
 <translation id="3858027520442213535">Atualizar a data e a hora</translation>
 <translation id="3884278016824448484">Identificador do dispositivo em conflito</translation>
@@ -1040,6 +1042,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4995216769782533993">Confirme o código de segurança para partilhar os detalhes do cartão com este site.</translation>
 <translation id="4995474875135717171">Modificado:</translation>
 <translation id="5002932099480077015">Quando esta opção está ativada, o Chrome armazena uma cópia do seu cartão neste dispositivo para preencher formulários mais rapidamente.</translation>
+<translation id="5011561501798487822">Idioma detetado</translation>
 <translation id="5015510746216210676">Nome do computador:</translation>
 <translation id="5017554619425969104">Texto que copiou</translation>
 <translation id="5018422839182700155">Não é possível abrir esta página</translation>
@@ -1615,6 +1618,7 @@ Detalhes adicionais:
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">Linha de comandos</translation>
 <translation id="7359588939039777303">Anúncios bloqueados.</translation>
+<translation id="7365849542400970216">Sabe qual é a utilização do seu dispositivo?</translation>
 <translation id="7372973238305370288">resultado da pesquisa</translation>
 <translation id="7374733840632556089">Este problema ocorre devido a um certificado que o utilizador ou outra pessoa instalou no dispositivo. Sabe-se que o certificado é utilizado para monitorizar e intercetar redes e não é considerado fidedigno pelo Chrome. Embora existam alguns casos legítimos para a monitorização, como numa rede escolar ou da empresa, o Chrome pretende certificar-se de que o utilizador tem conhecimento da situação, mesmo que não seja possível interrompê-la. A monitorização pode ocorrer em qualquer navegador ou aplicação que aceda à Web.</translation>
 <translation id="7375818412732305729">É anexado um ficheiro</translation>
@@ -2032,6 +2036,7 @@ Detalhes adicionais:
 <translation id="8983003182662520383">Métodos de pagamento e endereços com o Google Pay</translation>
 <translation id="8987927404178983737">Mês</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
+<translation id="899688752321268742"><ph name="URL" /> pretende saber quando está a utilizar ativamente este dispositivo.</translation>
 <translation id="8996941253935762404">O site que se segue contém programas prejudiciais</translation>
 <translation id="8997023839087525404">O servidor apresentou um certificado que não foi divulgado publicamente através da política de Transparência de certificados. Trata-se de um requisito para alguns certificados de modo a assegurar que são fidedignos e protegem contra utilizadores mal intencionados.</translation>
 <translation id="9001074447101275817">O proxy <ph name="DOMAIN" /> necessita de um nome de utilizador e de uma palavra-passe.</translation>

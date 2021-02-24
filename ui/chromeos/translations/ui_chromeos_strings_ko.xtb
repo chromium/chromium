@@ -331,7 +331,6 @@
 <translation id="4706042980341760088">타밀어(타자기 키보드)</translation>
 <translation id="4711094779914110278">터키어</translation>
 <translation id="4712283082407695269">‘<ph name="PATH" />’ 여는 중</translation>
-<translation id="4713544552769165154">이 파일은 Macintosh 소프트웨어를 사용하는 컴퓨터용으로 설계되었으며 Chrome OS를 실행하는 기기와 호환될 수 없습니다. 적합한 대체 앱을 찾으려면 <ph name="BEGIN_LINK" />Chrome 웹 스토어<ph name="END_LINK" />를 검색하세요. <ph name="BEGIN_LINK_HELP" />자세히 알아보기<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">사진 <ph name="FILE_COUNT" />장을 백업했습니다.</translation>
 <translation id="4725511304875193254">웰시 코기</translation>
 <translation id="4732760563705710320">죄송합니다. 사용 중인 전송 기기에서 지원하지 않는 동영상입니다.</translation>
@@ -465,8 +464,6 @@
 <translation id="5833610766403489739">파일이 어디론가 사라졌습니다. 다운로드 위치 설정을 확인하고 다시 시도해 주세요.</translation>
 <translation id="5838451609423551646">모든 항목이 선택 해제되었습니다.</translation>
 <translation id="5838825566232597749">미국 워크맨(국제)</translation>
-<translation id="5850516540536751549">이 파일 형식은 지원되지 않습니다. 이 파일 형식을 열 수 있는 앱을 찾으려면 <ph name="BEGIN_LINK" />Chrome 웹 스토어<ph name="END_LINK" />를 방문하세요.
-    <ph name="BEGIN_LINK_HELP" />자세히 알아보기<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">표시할 내용 없음...</translation>
 <translation id="5911887972742538906">Linux 애플리케이션을 설치하는 중에 오류가 발생했습니다.</translation>
 <translation id="5912396950572065471">포맷</translation>
@@ -676,7 +673,6 @@
 <translation id="8038111231936746805">(기본값)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> 오디오</translation>
 <translation id="8045462269890919536">루마니아어</translation>
-<translation id="8052887694493382350">이 파일은 Windows 소프트웨어를 사용하는 PC용으로 설계되었으며 Chrome OS를 실행하는 기기와 호환되지 않습니다. <ph name="BEGIN_LINK_HELP" />자세히 알아보기<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">모든 수정사항은 <ph name="DOWNLOADS_FOLDER" />에 저장됩니다.</translation>
 <translation id="8079530767338315840">반복</translation>
 <translation id="8106045200081704138">공유 문서함</translation>

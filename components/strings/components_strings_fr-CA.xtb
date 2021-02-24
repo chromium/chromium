@@ -562,6 +562,7 @@
       réseau pour vous assurer que le serveur mandataire fonctionne. Si vous
       ne pensez pas devoir utiliser de serveur mandataire, procédez comme suit :
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="317878711435188021">Savoir lorsque vous êtes en train d'utiliser cet appareil</translation>
 <translation id="3188393374551744535">Solde du compte</translation>
 <translation id="3194737229810486521">L'URL <ph name="URL" /> veut stocker de façon permanente des données sur votre appareil</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> sur <ph name="SERVER_NAME" /></translation>
@@ -740,6 +741,7 @@
 <translation id="3828924085048779000">La phrase de passe est obligatoire.</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> a installé des extensions offrant des fonctions supplémentaires. Les extensions ont accès à certaines de vos données.</translation>
 <translation id="3832522519263485449">Perforation multiple à gauche</translation>
+<translation id="3835233591525155343">Votre utilisation de l'appareil</translation>
 <translation id="385051799172605136">Retour</translation>
 <translation id="3858027520442213535">Mettre à jour la date et l'heure</translation>
 <translation id="3884278016824448484">Identifiant de périphérique en conflit</translation>
@@ -1029,6 +1031,7 @@
 <translation id="4995216769782533993">Confirmez le code de sécurité pour partager les détails de votre carte avec ce site</translation>
 <translation id="4995474875135717171">Modifié :</translation>
 <translation id="5002932099480077015">Si l’option est activée, Chrome gardera une copie de votre carte sur cet appareil pour remplir plus rapidement vos formulaires.</translation>
+<translation id="5011561501798487822">Langue détectée</translation>
 <translation id="5015510746216210676">Nom de la machine :</translation>
 <translation id="5017554619425969104">Texte que vous avez copié</translation>
 <translation id="5018422839182700155">Impossible d'ouvrir cette page</translation>
@@ -1604,6 +1607,7 @@ Détails supplémentaires :
 <translation id="7349430561505560861">A4 Extra</translation>
 <translation id="7353601530677266744">Ligne de commande</translation>
 <translation id="7359588939039777303">Annonces bloquées.</translation>
+<translation id="7365849542400970216">Autoriser le site Web à connaître votre utilisation de l'appareil?</translation>
 <translation id="7372973238305370288">résultat de la recherche</translation>
 <translation id="7374733840632556089">Ce problème survient en raison d'un certificat installé, par vous ou quelqu'un d'autre, sur votre appareil. Le certificat n'est pas considéré comme fiable par Chrome, parce qu'on sait qu'il est utilisé pour surveiller et intercepter les réseaux. Certains cas requièrent de la surveillance, comme un réseau scolaire ou d'entreprise, mais Chrome vous le mentionne pour que vous sachiez que cette surveillance se produit, même si vous ne pouvez pas l'empêcher. La surveillance peut se produire dans tous les navigateurs et toutes les applications qui accèdent au Web.</translation>
 <translation id="7375818412732305729">Un fichier est joint</translation>
@@ -2021,6 +2025,7 @@ Détails supplémentaires :
 <translation id="8983003182662520383">Modes de paiement et adresses utilisant Google Pay</translation>
 <translation id="8987927404178983737">Mois</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
+<translation id="899688752321268742"><ph name="URL" /> veut savoir si vous êtes en train d'utiliser cet appareil</translation>
 <translation id="8996941253935762404">Le site Web que vous allez ouvrir contient des logiciels malveillants</translation>
 <translation id="8997023839087525404">Le serveur a présenté un certificat qui n'a pas été divulgué publiquement par l'intermédiaire de la politique Certificate Transparency. Il s'agit d'une exigence pour certains certificats, afin d'assurer qu'ils sont dignes de confiance et qu'ils offrent une protection contre les attaques.</translation>
 <translation id="9001074447101275817">Le mandataire <ph name="DOMAIN" /> requiert un nom d'utilisateur et un mot de passe.</translation>

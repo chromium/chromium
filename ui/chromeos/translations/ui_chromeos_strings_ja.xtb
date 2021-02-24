@@ -93,6 +93,7 @@
 <translation id="1942765061641586207">画像解像度</translation>
 <translation id="1943097386230153518">新しいサービスをインストール</translation>
 <translation id="1972984168337863910">ファイルのフィードバック パネルを展開します</translation>
+<translation id="1984456723671657197">このファイル形式はサポートされていません。Chrome OS でファイルを開く方法について、詳しくは<ph name="BEGIN_LINK_HELP" />こちら<ph name="END_LINK_HELP" />をご覧ください。</translation>
 <translation id="1995337122023280937">ファイルの場所へ移動</translation>
 <translation id="2001796770603320721">ドライブで管理</translation>
 <translation id="2009067268969781306">ドライブをフォーマットすると、そのドライブに保存されているすべてのデータが削除されます。この操作は元に戻せません。</translation>
@@ -331,7 +332,6 @@
 <translation id="4706042980341760088">タミル語（タイプライター型）キーボード</translation>
 <translation id="4711094779914110278">トルコ語</translation>
 <translation id="4712283082407695269">「<ph name="PATH" />」を開いています</translation>
-<translation id="4713544552769165154">このファイルは Macintosh ソフトウェアを使用するパソコン向けのもので、Chrome OS を実行するデバイスとは互換性がありません。<ph name="BEGIN_LINK" />Chrome ウェブストア<ph name="END_LINK" />で、このデバイスで使用できる代わりのアプリをお探しください。<ph name="BEGIN_LINK_HELP" />詳細<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> 枚の写真をバックアップしました</translation>
 <translation id="4725511304875193254">コーギー</translation>
 <translation id="4732760563705710320">この動画はキャスト デバイスでサポートされていません。</translation>
@@ -465,8 +465,6 @@
 <translation id="5833610766403489739">このファイルは移動されています。ダウンロード保存先の設定を確認し、もう一度お試しください。</translation>
 <translation id="5838451609423551646">すべての項目を選択範囲から削除しました。</translation>
 <translation id="5838825566232597749">US Workman インターナショナル</translation>
-<translation id="5850516540536751549">このファイル形式はサポートされていません。<ph name="BEGIN_LINK" />Chrome ウェブストア<ph name="END_LINK" />にアクセスして、この形式のファイルを開くことができるアプリをお探しください。
-    <ph name="BEGIN_LINK_HELP" />詳細<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">ここには何もありません...</translation>
 <translation id="5911887972742538906">Linux アプリケーションのインストール中にエラーが発生しました。</translation>
 <translation id="5912396950572065471">形式</translation>
@@ -670,13 +668,13 @@
 <translation id="7972920761225148017">フランス語（スイス）</translation>
 <translation id="7980421588063892270">英語（アメリカ）（Colemak）キーボード</translation>
 <translation id="7982283708762922719">高さ</translation>
+<translation id="79907182588096956">このファイルは Windows ソフトウェアを使用する PC 向けのもので、Chrome OS を実行するデバイスとは互換性がありません。Chrome OS でファイルを開く方法について、詳しくは<ph name="BEGIN_LINK_HELP" />こちら<ph name="END_LINK_HELP" />をご覧ください。</translation>
 <translation id="8008366997883261463">犬</translation>
 <translation id="8028993641010258682">サイズ</translation>
 <translation id="803771048473350947">ファイル</translation>
 <translation id="8038111231936746805">（デフォルト）</translation>
 <translation id="8042602468072383151">音声（<ph name="AUDIO_TYPE" />）</translation>
 <translation id="8045462269890919536">ルーマニア語</translation>
-<translation id="8052887694493382350">このファイルは Windows ソフトウェアを使用する PC 向けのもので、Chrome OS を実行するデバイスとは互換性がありません。<ph name="BEGIN_LINK_HELP" />詳細<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">編集内容はすべて <ph name="DOWNLOADS_FOLDER" /> に保存されます。</translation>
 <translation id="8079530767338315840">繰り返し</translation>
 <translation id="8106045200081704138">共有アイテム</translation>
@@ -750,6 +748,7 @@
 <translation id="8900820606136623064">ハンガリー語</translation>
 <translation id="8919081441417203123">デンマーク語</translation>
 <translation id="8965697826696209160">空き容量が不足しています。</translation>
+<translation id="8970501467542182729">このファイルは Macintosh ソフトウェアを使用するパソコン向けのもので、Chrome OS を実行するデバイスとは互換性がありません。Chrome OS でファイルを開く方法について、詳しくは<ph name="BEGIN_LINK_HELP" />こちら<ph name="END_LINK_HELP" />をご覧ください。</translation>
 <translation id="8997962250644902079">中国語（繁体）（ピンイン）</translation>
 <translation id="9017798300203431059">ロシア語（表音）</translation>
 <translation id="9034924485347205037">Linux ファイル</translation>

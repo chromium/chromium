@@ -93,6 +93,7 @@
 <translation id="1942765061641586207">Ubora wa picha</translation>
 <translation id="1943097386230153518">Sakinisha huduma mpya</translation>
 <translation id="1972984168337863910">Panua vidirisha vya maoni ya faili</translation>
+<translation id="1984456723671657197">Aina hii ya faili haiwezi kutumika. <ph name="BEGIN_LINK_HELP" />Pata Maelezo Zaidi<ph name="END_LINK_HELP" /> kuhusu kufungua faili kwenye Mfumo wa Uendeshaji wa Chrome.</translation>
 <translation id="1995337122023280937">Nenda mahali faili ilipo</translation>
 <translation id="2001796770603320721">Dhibiti katika Hifadhi ya Google</translation>
 <translation id="2009067268969781306">Hatua ya kubadilisha muundo wa hifadhi itafuta data yote iliyomo. Kitendo hiki hakiwezi kutenduliwa.</translation>
@@ -331,7 +332,6 @@
 <translation id="4706042980341760088">Kitamili kwenye kibodi ya Taipureta</translation>
 <translation id="4711094779914110278">Kituruki</translation>
 <translation id="4712283082407695269">Inafungua "<ph name="PATH" />"</translation>
-<translation id="4713544552769165154">Faili hii imeundwa kwa kompyuta inayotumia programu ya Macintosh. Hii haioani na kifaa chako kinachotumia Chrome OS. Tafadhali tafuta <ph name="BEGIN_LINK" />Duka la Chrome Wavutini<ph name="END_LINK" /> kwa programu nyingine inayofaa.<ph name="BEGIN_LINK_HELP" />Pata Maelezo zaidi<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">Picha <ph name="FILE_COUNT" /> zimehifadhiwa nakala</translation>
 <translation id="4725511304875193254">Mbwa mlinzi</translation>
 <translation id="4732760563705710320">Samahani, video hii haiwezi kuchezwa na kifaa chako cha kutuma maudhui.</translation>
@@ -465,8 +465,6 @@
 <translation id="5833610766403489739">Faili hii imepotelea mahali fulani. Tafadhali angalia mipangilio yako ya mahali pa kupakulia na ujaribu tena.</translation>
 <translation id="5838451609423551646">Umeondoa vipengee vyote kwenye sehemu ya vipengee ilivyochagua.</translation>
 <translation id="5838825566232597749">Kibodi ya US Workman ya kimataifa</translation>
-<translation id="5850516540536751549">Aina hii ya faili haitumiki. Tafadhali tembelea <ph name="BEGIN_LINK" />Duka la Wavuti la Chrome<ph name="END_LINK" /> ili upate programu ambayo inaweza kufungua aina hii ya faili.
-	      <ph name="BEGIN_LINK_HELP" />Pata Maelezo zaidi<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Hapana cha kuona hapa...</translation>
 <translation id="5911887972742538906">Hitilafu imetokea wakati wa kusakinisha programu yako ya Linux.</translation>
 <translation id="5912396950572065471">Muundo</translation>
@@ -670,13 +668,13 @@
 <translation id="7972920761225148017">Kifaransa (Uswizi)</translation>
 <translation id="7980421588063892270">Kiingereza (Marekani) kwenye kibodi ya Colemak</translation>
 <translation id="7982283708762922719">Urefu</translation>
+<translation id="79907182588096956">Faili hii imeundwa kwa ajili ya kompyuta inayotumia programu ya Windows. Kwa hivyo haioani na kifaa chako kinachotumia Mfumo wa Uendeshaji wa Chrome. <ph name="BEGIN_LINK_HELP" />Pata Maelezo Zaidi<ph name="END_LINK_HELP" /> kuhusu kufungua faili kwenye Mfumo wa Uendeshaji wa Chrome.</translation>
 <translation id="8008366997883261463">Mbwa</translation>
 <translation id="8028993641010258682">Ukubwa</translation>
 <translation id="803771048473350947">Faili</translation>
 <translation id="8038111231936746805">(chaguomsingi)</translation>
 <translation id="8042602468072383151">Faili ya sauti ya <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">Kiromania</translation>
-<translation id="8052887694493382350">Faili hii imeundwa kwa ajili ya kompyuta inayotumia programu ya Windows. Kwa hivyo haioani na kifaa chako kinachotumia Mfumo wa Uendeshaji wa Chrome. <ph name="BEGIN_LINK_HELP" />Pata maelezo zaidi<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Mabadiliko yote yatahifadhiwa kwenye <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Rudia</translation>
 <translation id="8106045200081704138">Zilizoshirikiwa na mimi</translation>
@@ -750,6 +748,7 @@
 <translation id="8900820606136623064">Kihungari</translation>
 <translation id="8919081441417203123">Kidenmarki</translation>
 <translation id="8965697826696209160">Hakuna nafasi ya kutosha.</translation>
+<translation id="8970501467542182729">Faili hii imeundwa kwa ajili ya kompyuta inayotumia programu ya Macintosh. Kwa hivyo haioani na kifaa chako kinachotumia Mfumo wa Uendeshaji wa Chrome. <ph name="BEGIN_LINK_HELP" />Pata Maelezo Zaidi<ph name="END_LINK_HELP" /> kuhusu kufungua faili kwenye Mfumo wa Uendeshaji wa Chrome.</translation>
 <translation id="8997962250644902079">Pinyin ya Kichina (cha Jadi)</translation>
 <translation id="9017798300203431059">Fonetiki ya Kirusi</translation>
 <translation id="9034924485347205037">Faili za Linux</translation>

@@ -4,6 +4,7 @@
 <translation id="102360288709523007">Ajuda a millorar Chromium enviant estadístiques d'ús i informes d'error a Google.</translation>
 <translation id="1185134272377778587">Quant a Chromium</translation>
 <translation id="1257458525759135959">Si vols desar imatges, toca Configuració per permetre que Chromium les afegeixi a les teves fotos</translation>
+<translation id="1289216811211435351">Canvia a Chromium</translation>
 <translation id="1361748954329991663">Chromium no està actualitzat. Si no hi ha cap actualització disponible a l'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, pot ser que el teu dispositiu ja no admeti les versions noves de Chromium.</translation>
 <translation id="1431818719585918472">Deixa que Chromium bloquegi les teves pestanyes d'incògnit.</translation>
 <translation id="1472013873724362412">El vostre compte no funciona a Chromium. Contacteu amb l'administrador del domini o utilitzeu un compte de Google estàndard per iniciar la sessió.</translation>
@@ -34,6 +35,7 @@
 <translation id="4099085513035183040">No s'admeten a la versió beta de Chromium</translation>
 <translation id="4166206055865952171">Estableix Chromium com a predeterminat</translation>
 <translation id="4555020257205549924">Quan aquesta funció està activada, Chromium ofereix la possibilitat de traduir pàgines escrites en altres idiomes mitjançant el Traductor de Google. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
+<translation id="4585809515399340748">Ara pots utilitzar Chromium cada vegada que toquis enllaços en missatges, documents i altres aplicacions.</translation>
 <translation id="4681781466797808448">Activa l'escàner de Chromium</translation>
 <translation id="4787850887676698916">Les pestanyes que tinguis obertes a Chromium als altres dispositius es mostraran aquí.</translation>
 <translation id="4828317641996116749">Chromium no ha pogut comprovar totes les contrasenyes. Torna-ho a provar més tard.</translation>
@@ -42,9 +44,9 @@
 <translation id="5224391634244552924">No hi ha cap contrasenya desada. Chromium pot comprovar les teves contrasenyes quan les deses.</translation>
 <translation id="5308226104666789935">Chromium no pot cercar actualitzacions</translation>
 <translation id="5521125884468363740">Per veure les pestanyes des de tots els llocs on facis servir Chromium, inicia la sessió i activa la sincronització</translation>
-<translation id="5544795779875591523">Vols esborrar les dades de Chromium d'aquest dispositiu o conservar-les?</translation>
 <translation id="5573014823074921752">Consell de Chromium. Per accedir a més opcions de pestanyes, mantén premut el botó Mostra pestanyes a la barra d'eines, que és a la part inferior o superior de la pantalla.</translation>
 <translation id="5700709190537129682">Chromium no pot comprovar les teves contrasenyes</translation>
+<translation id="5742135483959137648">Utilitza Chromium per obrir els enllaços</translation>
 <translation id="5777187867430702742">Pàgina de Chromium</translation>
 <translation id="5862307444128926510">Us donem la benvinguda a Chromium</translation>
 <translation id="5945387852661427312">Estàs iniciant la sessió amb un compte gestionat per <ph name="DOMAIN" /> i estàs donant a l'administrador el control de les teves dades de Chromium. Les dades passaran a estar vinculades a aquest compte permanentment. Si tanques la sessió de Chromium, se suprimiran les teves dades d'aquest dispositiu, però continuaran emmagatzemades al teu compte de Google.</translation>
@@ -63,6 +65,7 @@
 <translation id="7208566199746267865">Per ajudar-te a estalviar temps, Chromium connecta els teus comptes al web. Pots afegir o suprimir comptes a Configuració.</translation>
 <translation id="725427773388857052">Chromium pot ajudar a protegir-te de violacions de les dades, de llocs web no segurs i més.</translation>
 <translation id="7269362888766543920">Alguns complements fan que Chromium es bloquegi. Prova de desinstal·lar-los.</translation>
+<translation id="7313655110045230863">Per establir Chromium com a navegador predeterminat, obre Configuració. Toca Aplicació de navegador predeterminada i, tot seguit, selecciona Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Les dades seleccionades s'han suprimit de Chromium i dels dispositius sincronitzats. És possible que el teu compte de Google tingui altres formes de l'historial de navegació a history.google.com, com ara les cerques i l'activitat d'altres serveis de Google.</translation>
 <translation id="7400689562045506105">Utilitza Chromium a tot arreu</translation>

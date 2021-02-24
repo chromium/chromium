@@ -405,6 +405,7 @@
 <translation id="4421231901400348175">Спільний доступ до екрана для користувача <ph name="HELPER_NAME" /> через віддалену допомогу.</translation>
 <translation id="4424159417645388645">Робочий стіл 5</translation>
 <translation id="4430019312045809116">Гучність</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 важливе сповіщення}one{# важливе сповіщення}few{# важливі сповіщення}many{# важливих сповіщень}other{# важливого сповіщення}}</translation>
 <translation id="4450893287417543264">Більше не показувати</translation>
 <translation id="445864333228800152">Доброго вечора!</translation>
 <translation id="4458688154122353284">Зупинити запис екрана</translation>
@@ -476,6 +477,10 @@
 <translation id="4961318399572185831">Трансляція екрана</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> год <ph name="MINUTES" /> хв <ph name="SECONDS" /> с</translation>
 <translation id="4975771730019223894">Лічильники сповіщень на значках додатків</translation>
+<translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
+        <ph name="NOTIFICATION_1" />,
+        <ph name="NOTIFICATION_2" />,
+        <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Наступне речення</translation>
 <translation id="5030687792513154421">Час закінчився</translation>
 <translation id="5033299697334913360">Натисніть будь-де, щоб зробити знімок усього екрана</translation>
@@ -489,6 +494,7 @@
 <translation id="5168181903108465623">Доступні пристрої для трансляції</translation>
 <translation id="5170568018924773124">Показати в папці</translation>
 <translation id="5176318573511391780">Записувати частину екрана</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 інше сповіщення}one{# інше сповіщення}few{# інші сповіщення}many{# інших сповіщень}other{# іншого сповіщення}}</translation>
 <translation id="5207949376430453814">Підсвічувати місце введення тексту</translation>
 <translation id="5208059991603368177">Увімкнено</translation>
 <translation id="5222676887888702881">Вийти</translation>

@@ -93,6 +93,7 @@
 <translation id="1942765061641586207">Prentresolusie</translation>
 <translation id="1943097386230153518">Installeer nuwe diens</translation>
 <translation id="1972984168337863910">Vou lêersterugvoerpanele uit</translation>
+<translation id="1984456723671657197">Hierdie lêertipe word nie gesteun nie. <ph name="BEGIN_LINK_HELP" />Kom meer te wete<ph name="END_LINK_HELP" /> oor hoe om lêers op Chrome OS oop te maak.</translation>
 <translation id="1995337122023280937">Gaan na lêerligging toe</translation>
 <translation id="2001796770603320721">Bestuur in Drive</translation>
 <translation id="2009067268969781306">Alle data wat op 'n skyf geberg is, sal uitgevee word wanneer dit geformateer word. Hierdie handeling kan nie ontdoen word nie.</translation>
@@ -331,7 +332,6 @@
 <translation id="4706042980341760088">Tamil met Typewriter-sleutelbord</translation>
 <translation id="4711094779914110278">Turks</translation>
 <translation id="4712283082407695269">Maak tans "<ph name="PATH" />" oop</translation>
-<translation id="4713544552769165154">Hierdie lêer is ontwerp vir 'n rekenaar wat Macintosh-sagteware gebruik. Dit is nie versoenbaar met jou toestel, wat Chrome OS gebruik nie. Deursoek die <ph name="BEGIN_LINK" />Chrome-webwinkel<ph name="END_LINK" /> vir 'n gepaste plaasvervangerprogram.<ph name="BEGIN_LINK_HELP" />Kom meer te wete<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> foto's is gerugsteun</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4732760563705710320">Jammer, hierdie video word nie deur jou uitsaaitoestel gesteun nie.</translation>
@@ -464,8 +464,6 @@
 <translation id="5833610766403489739">Die lêer het weggedwaal. Gaan asseblief jou aflaailigging na en probeer weer.</translation>
 <translation id="5838451609423551646">Het alle inskrywings uit keuse verwyder.</translation>
 <translation id="5838825566232597749">Internasionale VSA-Workman</translation>
-<translation id="5850516540536751549">Hierdie tipe lêer word nie gesteun nie. Besoek asseblief die <ph name="BEGIN_LINK" />Chrome Webwinkel<ph name="END_LINK" /> om 'n soortgelyke program te vind wat hierdie tipe lêer kan oopmaak.
-    <ph name="BEGIN_LINK_HELP" />Kom meer te wete<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Hier is niks om te sien nie …</translation>
 <translation id="5911887972742538906">Kon nie jou Linux-program installeer nie.</translation>
 <translation id="5912396950572065471">Formaat</translation>
@@ -669,13 +667,13 @@
 <translation id="7972920761225148017">Frans (Switserland)</translation>
 <translation id="7980421588063892270">Engels (VSA) met Colemak-sleutelbord</translation>
 <translation id="7982283708762922719">Hoogte</translation>
+<translation id="79907182588096956">Hierdie lêer is ontwerp vir 'n rekenaar met Windows-sagteware. Dit is nie versoenbaar met jou toestel wat Chrome OS gebruik nie. <ph name="BEGIN_LINK_HELP" />Kom meer te wete<ph name="END_LINK_HELP" /> oor hoe om lêers op Chrome OS oop te maak.</translation>
 <translation id="8008366997883261463">Jack Russell-terriër</translation>
 <translation id="8028993641010258682">Grootte</translation>
 <translation id="803771048473350947">Lêer</translation>
 <translation id="8038111231936746805">(verstek)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" />-oudio</translation>
 <translation id="8045462269890919536">Roemeens</translation>
-<translation id="8052887694493382350">Hierdie lêer is ontwerp vir 'n rekenaar wat Windows-sagteware gebruik. Dit is nie versoenbaar met jou toestel wat Chrome OS gebruik nie. <ph name="BEGIN_LINK_HELP" />Kom meer te wete<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Alle wysigings sal in <ph name="DOWNLOADS_FOLDER" /> gestoor word.</translation>
 <translation id="8079530767338315840">Herhaal</translation>
 <translation id="8106045200081704138">Met my gedeel</translation>
@@ -749,6 +747,7 @@
 <translation id="8900820606136623064">Hongaars</translation>
 <translation id="8919081441417203123">Deens</translation>
 <translation id="8965697826696209160">Daar is nie genoeg spasie nie.</translation>
+<translation id="8970501467542182729">Hierdie lêer is ontwerp vir 'n rekenaar wat Macintosh-sagteware gebruik. Dit is nie versoenbaar met jou toestel wat Chrome OS gebruik nie. <ph name="BEGIN_LINK_HELP" />Kom meer te wete<ph name="END_LINK_HELP" /> oor hoe om lêers op Chrome OS oop te maak.</translation>
 <translation id="8997962250644902079">Chinees- (tradisioneel) Pinjin</translation>
 <translation id="9017798300203431059">Russiese fonetiek</translation>
 <translation id="9034924485347205037">Linux-lêers</translation>

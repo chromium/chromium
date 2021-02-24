@@ -18,6 +18,7 @@
 <translation id="257708665678654955">คุณต้องการให้ Google Chrome เสนอการแปลหน้าภาษา<ph name="LANGUAGE_NAME" />จากเว็บไซต์นี้ในครั้งถัดไปไหม</translation>
 <translation id="2695886661449553974">Chrome ตรวจหาอัปเดตไม่ได้ โปรดลองอีกครั้งภายหลัง</translation>
 <translation id="2732745070297234559">Chrome ตรวจสอบรหัสผ่านได้ไม่ครบทั้งหมด โปรดลองอีกครั้งในวันพรุ่งนี้</translation>
+<translation id="2740105938841089077">ใช้ Chrome เพื่อเปิดลิงก์</translation>
 <translation id="2919738076569633423">การใช้ Chrome หมายความว่าคุณยอมรับ<ph name="BEGIN_LINK_TOS" />ข้อกำหนดในการให้บริการ<ph name="END_LINK_TOS" /></translation>
 <translation id="3030414234702425231">เนื่องจากคุณกำลังออกจากระบบบัญชีที่จัดการโดย <ph name="SIGNOUT_MANAGED_DOMAIN" /> ข้อมูล Chrome ของคุณจะถูกลบออกจากอุปกรณ์นี้ แต่ข้อมูลจะยังคงอยู่ในบัญชี Google</translation>
 <translation id="3148688391461398285">รับประสบการณ์ที่ดีขึ้นใน Chrome ตามสถานที่ที่คุณอยู่</translation>
@@ -38,7 +39,6 @@
 <translation id="417201473131094001">ไม่รองรับใน Chrome Canary</translation>
 <translation id="424864128008805179">ต้องการออกจากระบบ Chrome ไหม</translation>
 <translation id="4249068189593983585">เคล็ดลับสำหรับ Chrome ถ้าต้องการดูตัวเลือกแท็บเพิ่มเติม ให้แตะปุ่ม "แสดงแท็บ" ค้างไว้ในแถบเครื่องมือ ซึ่งอยู่ที่ด้านล่างหรือด้านบนของหน้าจอ</translation>
-<translation id="4354293865557736921">เลือกว่าจะล้างข้อมูล Chrome จากอุปกรณ์นี้หรือเก็บไว้</translation>
 <translation id="4523886039239821078">ส่วนเสริมบางรายการทำให้ Chrome ขัดข้อง โปรดถอนการติดตั้ง</translation>
 <translation id="4633328489441962921">Chrome ตรวจหาอัปเดตไม่ได้</translation>
 <translation id="4698415050768537821">Chrome ตรวจสอบรหัสผ่านได้ไม่ครบทั้งหมด โปรดลองอีกครั้งในวันพรุ่งนี้หรือ<ph name="BEGIN_LINK" />ตรวจสอบรหัสผ่านในบัญชี Google<ph name="END_LINK" /></translation>
@@ -53,6 +53,7 @@
 <translation id="5854621639439811139">เคล็ดลับสำหรับ Chrome ตอนนี้บางปุ่มแสดงอยู่ที่ด้านล่างของหน้าจอแล้ว เช่น ปุ่มกลับ ไปข้างหน้า และค้นหา</translation>
 <translation id="6036420186814142909">Google Chrome มีฟีเจอร์ที่ช่วยให้คุณสามารถจัดการข้อมูลอินเทอร์เน็ตและระดับความเร็วที่คุณสามารถใช้ในการโหลดหน้าเว็บ
 <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
+<translation id="6181930887571472871">เปลี่ยนไปใช้ Chrome</translation>
 <translation id="6238746320622508509">ให้ Chrome ล็อกแท็บที่ไม่ระบุตัวตน</translation>
 <translation id="6573431926118603307">แท็บที่คุณเปิดไว้ใน Chrome ในอุปกรณ์เครื่องอื่นๆ จะปรากฏที่นี่</translation>
 <translation id="6600954340915313787">คัดลอกไปยัง Chrome แล้ว</translation>
@@ -60,6 +61,7 @@
 <translation id="6648150602980899529">คุณกำลังลงชื่อเข้าใช้ด้วยบัญชีที่จัดการโดย <ph name="DOMAIN" /> และทำให้ผู้ดูแลระบบของโดเมนควบคุมข้อมูล Chrome ของคุณได้ ข้อมูลของคุณจะโยงกับบัญชีนี้อย่างถาวร การออกจากระบบ Chrome จะลบข้อมูลของคุณจากอุปกรณ์เครื่องนี้ แต่ข้อมูลจะยังจัดเก็บอยู่ในบัญชี Google</translation>
 <translation id="6676840375528380067">ล้างข้อมูล Chrome ของคุณออกจากอุปกรณ์นี้ไหม</translation>
 <translation id="6822673484890854830">Chrome ตรวจสอบรหัสผ่านได้ไม่ครบทั้งหมด โปรดลองอีกครั้งภายหลัง</translation>
+<translation id="6964931465519938134">ตอนนี้คุณจะใช้ Chrome ทุกครั้งที่แตะลิงก์ในข้อความ เอกสาร และแอปอื่นๆ</translation>
 <translation id="7124339256045485976">อัปเดต Chrome อยู่เสมอ</translation>
 <translation id="7161390184744336561">Google Chrome เป็นเวอร์ชันเก่า</translation>
 <translation id="7165736900384873061">เริ่มใช้โปรแกรมสแกนโค้ด QR ของ Google Chrome</translation>
@@ -69,6 +71,7 @@
 <translation id="7265369419224458312">เข้าถึงแท็บที่คุณเปิดไว้ในคอมพิวเตอร์ได้ที่นี่ เพียงเปิด Chrome บนคอมพิวเตอร์ของคุณ ไปที่เมนู แล้วเลือก “ลงชื่อเข้าใช้ Chrome…”</translation>
 <translation id="7272930098487145294">หากต้องการบันทึกรูปภาพ ให้แตะ "การตั้งค่า" เพื่ออนุญาตให้ Chrome เพิ่มไปยังรูปภาพ</translation>
 <translation id="7400722733683201933">เกี่ยวกับ Google Chrome</translation>
+<translation id="7501046334262221972">หากต้องการกำหนดให้ Chrome เป็นเบราว์เซอร์เริ่มต้น ให้เปิดการตั้งค่า แล้วแตะ "แอปเบราว์เซอร์เริ่มต้น" จากนั้นเลือก Chrome</translation>
 <translation id="756809126120519699">ล้างข้อมูล Chrome แล้ว</translation>
 <translation id="7626032353295482388">ยินดีต้อนรับสู่ Chrome</translation>
 <translation id="7662994914830945754">ลงชื่อเข้าใช้และเปิดการซิงค์เพื่อดูแท็บที่เปิดไว้จากอุปกรณ์ที่คุณใช้ Chrome</translation>

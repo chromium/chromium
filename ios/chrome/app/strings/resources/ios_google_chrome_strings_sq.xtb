@@ -18,6 +18,7 @@
 <translation id="257708665678654955">Dëshiron që Google Chrome të ofrojë përkthimin e faqeve në <ph name="LANGUAGE_NAME" /> nga ky sajt herën tjetër?</translation>
 <translation id="2695886661449553974">Chrome nuk mund të kontrollonte për përditësime. Provo përsëri më vonë.</translation>
 <translation id="2732745070297234559">Chrome nuk mund t'i kontrollonte të gjitha fjalëkalimet. Provo sërish nesër.</translation>
+<translation id="2740105938841089077">Përdorni Chrome për të hapur lidhjet</translation>
 <translation id="2919738076569633423">Duke përdorur Chrome, ti pranon <ph name="BEGIN_LINK_TOS" />Kushtet e shërbimit<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Duke qenë se po del nga një llogari e menaxhuar nga <ph name="SIGNOUT_MANAGED_DOMAIN" />, të dhënat e tua të Chrome do të fshihen nga kjo pajisje. Të dhënat e tua do të mbeten në "Llogarinë tënde të Google".</translation>
 <translation id="3148688391461398285">Merr një përvojë më të mirë në Chrome bazuar në vendndodhjen tënde.</translation>
@@ -38,7 +39,6 @@
 <translation id="417201473131094001">Nuk mbështetet në Chrome Canary</translation>
 <translation id="424864128008805179">Do të dalësh nga Chrome?</translation>
 <translation id="4249068189593983585">Këshillë për Chrome. Për më shumë opsione për skedat, shtyp dhe mbaj shtypur butonin "Shfaq skedat" në shiritin e veglave që ndodhet në fund ose në krye të ekranit tënd.</translation>
-<translation id="4354293865557736921">Dëshiron të zgjedhësh nëse do t'i pastrosh të dhënat e Chrome nga kjo pajisje apo t'i ruash ato?</translation>
 <translation id="4523886039239821078">Disa komponentë shtesë i shkaktojnë Chrome ndërprerje aksidentale. Çinstalo:</translation>
 <translation id="4633328489441962921">Chrome nuk mund të kontrollojë për përditësime</translation>
 <translation id="4698415050768537821">Chrome nuk mund t'i kontrollonte të gjitha fjalëkalimet. Provo përsëri nesër ose <ph name="BEGIN_LINK" />kontrollo fjalëkalimet në "Llogarinë tënde të Google".<ph name="END_LINK" /></translation>
@@ -52,6 +52,7 @@
 <translation id="571296537125272375">Jashtë linje. Chrome nuk mund të kontrollojë për përditësime</translation>
 <translation id="5854621639439811139">Këshillë për Chrome. Disa butona ndodhen tani në fund të ekranit tënd, si p.sh. "Prapa", "Përpara" dhe "Kërko".</translation>
 <translation id="6036420186814142909">Google Chrome ka funksione që të ndihmojnë të menaxhosh të dhënat e internetit dhe sa shpejt mund të ngarkosh faqet e uebit. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
+<translation id="6181930887571472871">Kalo te Chrome</translation>
 <translation id="6238746320622508509">Lejo që Chrome t'i kyçë skedat "e fshehta".</translation>
 <translation id="6573431926118603307">Skedat që ke hapur në Chrome në pajisjet e tjera do të shfaqen këtu.</translation>
 <translation id="6600954340915313787">Kopjuar në Chrome</translation>
@@ -59,6 +60,7 @@
 <translation id="6648150602980899529">Po identifikohesh me një llogari të menaxhuar nga <ph name="DOMAIN" /> dhe po i jep administratorit të saj kontroll mbi të dhënat e tua të Chrome. Duke dalë nga Chrome do të fshihen të dhënat e tua nga kjo pajisje, por do të mbeten të ruajtura në llogarinë tënde të Google.</translation>
 <translation id="6676840375528380067">Të pastrohen të dhënat e tua të Chrome nga kjo pajisje?</translation>
 <translation id="6822673484890854830">Chrome nuk mund t'i kontrollonte të gjitha fjalëkalimet. Provo sërish më vonë.</translation>
+<translation id="6964931465519938134">Tani mund të përdorësh Chrome sa herë që troket te lidhjet në mesazhe, dokumente dhe aplikacione të tjera.</translation>
 <translation id="7124339256045485976">Mbaje Chrome të përditësuar</translation>
 <translation id="7161390184744336561">Google Chrome është i papërditësuar</translation>
 <translation id="7165736900384873061">Fillo të përdorësh skanerin e kodit QR të Google Chrome</translation>

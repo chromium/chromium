@@ -406,6 +406,7 @@
 <translation id="4421231901400348175">Споделување контрола на вашиот екран со <ph name="HELPER_NAME" /> преку далечинска помош.</translation>
 <translation id="4424159417645388645">Работна површина 5</translation>
 <translation id="4430019312045809116">Гласност</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 важно известување}one{# важно известување}other{# важни известувања}}</translation>
 <translation id="4450893287417543264">Не прикажувај повторно</translation>
 <translation id="445864333228800152">Добровечер,</translation>
 <translation id="4458688154122353284">Запрете со снимање на екранот</translation>
@@ -477,6 +478,10 @@
 <translation id="4961318399572185831">Емитувај го екранот</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> ч. <ph name="MINUTES" /> м. <ph name="SECONDS" /> с.</translation>
 <translation id="4975771730019223894">Значки за апликации</translation>
+<translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
+        <ph name="NOTIFICATION_1" />,
+        <ph name="NOTIFICATION_2" />,
+        <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Следна реченица</translation>
 <translation id="5030687792513154421">Времето истече</translation>
 <translation id="5033299697334913360">Кликнете каде било за да го сликате целиот екран</translation>
@@ -490,6 +495,7 @@
 <translation id="5168181903108465623">Достапни се уреди за емитување</translation>
 <translation id="5170568018924773124">Прикажи во папка</translation>
 <translation id="5176318573511391780">Делумно снимање екран</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 друго известување}one{# друго известување}other{# други известувања}}</translation>
 <translation id="5207949376430453814">Нагласи го каретот за текст</translation>
 <translation id="5208059991603368177">Вклучено</translation>
 <translation id="5222676887888702881">Одјави се</translation>

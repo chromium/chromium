@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
 <translation id="1018656279737460067">Operazione annullata</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> thread, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1059913517121127803">Impossibile avviare la scansione</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall rilevato</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">Errore sconosciuto.</translation>
 <translation id="1204296502688602597">Latenza DNS</translation>
 <translation id="123124571410524056">Portale sospetto</translation>
-<translation id="1238191093934674082">VPN aperta</translation>
 <translation id="1238612778414822719">Latenza HTTPS</translation>
 <translation id="1270369111467284986">Il sistema sospetta la presenza di un captive portal</translation>
 <translation id="1290331692326790741">Segnale debole</translation>
@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">Operazione interrotta - Inchiostro esaurito</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Resolver DNS presente</translation>
+<translation id="1717874160321062422">Dispositivo gestito da <ph name="FIRST_MANAGER" /> e <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Annullamento scansione…</translation>
 <translation id="1851218745569890714">Videoconferenze</translation>
@@ -59,6 +60,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Attiva il Bluetooth per trovare dispositivi nelle vicinanze</translation>
 <translation id="2364498172489649528">Superato</translation>
+<translation id="2365324413026422635">Non è possibile eseguire il test della ricarica quando la batteria è completamente carica</translation>
 <translation id="2391082728065870591">Invia rapporto di feedback</translation>
 <translation id="2418150275289244458">Apri nelle impostazioni</translation>
 <translation id="2446553403094072641">Precisione rappresentazione in virgola mobile</translation>
@@ -91,6 +93,7 @@
 <translation id="3226405216343213872">Ricerca di scanner in corso…</translation>
 <translation id="3246869037381808805">I processi di stampa risalenti a oltre 1 giorno fa verranno rimossi</translation>
 <translation id="3268178239013324452">Operazione non riuscita - Sportello aperto</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">la latenza DNS è sostanzialmente al di sopra della soglia consentita</translation>
 <translation id="3328783797891415197">Test in esecuzione</translation>
 <translation id="3368922792935385530">Connesso</translation>
@@ -102,6 +105,7 @@
 <translation id="3459509316159669723">Stampa</translation>
 <translation id="3488065109653206955">Attivato parzialmente</translation>
 <translation id="3527036260304016759">Operazione non riuscita - Errore sconosciuto</translation>
+<translation id="3532980081107202182">Mancano circa <ph name="MIN_REMAINING" /> minuti</translation>
 <translation id="357889014807611375">Wi-Fi a consumo</translation>
 <translation id="3595596368722241419">Batteria carica</translation>
 <translation id="360565022852130722">la rete Wi-Fi è protetta con un protocollo WEP 802.1x inefficace</translation>
@@ -125,6 +129,7 @@
 <translation id="4155551848414053977">Assicurati che lo scanner sia acceso e disponibile tramite la tua rete o una connessione diretta</translation>
 <translation id="4170700058716978431">OPERAZIONE NON RIUSCITA</translation>
 <translation id="4176463684765177261">Disattivato</translation>
+<translation id="4222698289790462549">Velocità attuale</translation>
 <translation id="4227825898293920515">La password scade tra <ph name="TIME" /></translation>
 <translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" /> GB disponibili su <ph name="TOTAL_MEMORY" />.</translation>
 <translation id="4238516577297848345">Nessun processo di stampa in corso</translation>
@@ -241,6 +246,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6325525973963619867">Non riuscito</translation>
 <translation id="636850387210749493">Registrazione aziendale</translation>
 <translation id="641081527798843608">Corrispondenza oggetto</translation>
+<translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Accettabile</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Gestito da <ph name="MANAGER" /></translation>
@@ -327,6 +333,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="8477551185774834963">la latenza DNS è leggermente al di sopra della soglia consentita</translation>
 <translation id="8483248364096924578">Indirizzo IP</translation>
 <translation id="8503813439785031346">Nome utente</translation>
+<translation id="8503836310948963452">Solo qualche altro minuto…</translation>
 <translation id="8576249514688522074">Non inizializzato</translation>
 <translation id="8620617069779373398">Stato roaming</translation>
 <translation id="8675354002693747642">Chiave precondivisa</translation>
@@ -358,6 +365,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="9106415115617144481">Scansione pagina <ph name="PAGE_NUMBER" />…</translation>
 <translation id="9111102763498581341">Sblocca</translation>
 <translation id="9149391708638971077">Esegui test memoria</translation>
+<translation id="9173638680043580060">Manca meno di un minuto</translation>
 <translation id="9190063653747922532">L2TP/IPSec + chiave precondivisa</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Non attivo</translation>

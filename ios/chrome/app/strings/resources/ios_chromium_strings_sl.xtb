@@ -4,6 +4,7 @@
 <translation id="102360288709523007">Pomagajte izboljšati Chromium s pošiljanjem statističnih podatkov o uporabi in poročil o zrušitvah Googlu.</translation>
 <translation id="1185134272377778587">O Chromiumu</translation>
 <translation id="1257458525759135959">Če želite shraniti slike, se dotaknite aplikacije Settings in dovolite, da Chromium dodaja fotografijam</translation>
+<translation id="1289216811211435351">Preklop na Chromium</translation>
 <translation id="1361748954329991663">Chromium je zastarel. Če v trgovini <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> ni na voljo nobene posodobitve, vaša naprava morda ne podpira več novih različic Chromiuma.</translation>
 <translation id="1431818719585918472">Naj Chromium zaklene zavihke brez beleženja dejavnosti.</translation>
 <translation id="1472013873724362412">Vaš račun ne deluje v Chromiumu. Obrnite se na skrbnika domene ali za prijavo uporabite običajen Google Račun.</translation>
@@ -34,6 +35,7 @@
 <translation id="4099085513035183040">Ni podprto v Chromiumu Beta</translation>
 <translation id="4166206055865952171">Nastavite Chromium kot privzeti brskalnik</translation>
 <translation id="4555020257205549924">Kadar je vklopljena ta funkcija, bo Chromium ponudil, da z uporabo Google Prevajalnika prevede strani v drugih jezikih. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
+<translation id="4585809515399340748">Zdaj lahko uporabljate Chromium, kadar koli se dotaknete povezav v sporočilih, dokumentih in drugih aplikacijah.</translation>
 <translation id="4681781466797808448">Vklopite optični bralnik Chromium</translation>
 <translation id="4787850887676698916">Zavihki, ki ste jih odprli v Chromiumu v drugih napravah, bodo prikazani tukaj.</translation>
 <translation id="4828317641996116749">Chromiumu ni uspelo preveriti vseh gesel. Poskusite znova pozneje.</translation>
@@ -42,9 +44,9 @@
 <translation id="5224391634244552924">Ni shranjenih gesel. Chromium lahko preveri gesla, če jih shranite.</translation>
 <translation id="5308226104666789935">Chromium ne more preveriti, ali so na voljo posodobitve</translation>
 <translation id="5521125884468363740">Če si želite ogledati zavihke iz naprav, v katerih uporabljate Chromium, se prijavite in vklopite sinhronizacijo</translation>
-<translation id="5544795779875591523">Izberite, ali želite izbrisati podatke v Chromiumu iz te naprave ali jih obdržati.</translation>
 <translation id="5573014823074921752">Nasvet za Chromium. Če želite več možnosti za zavihke, pridržite gumb za prikaz zavihkov v orodni vrstici na dnu ali vrhu zaslona.</translation>
 <translation id="5700709190537129682">Chromium ne more preveriti vaših gesel</translation>
+<translation id="5742135483959137648">Uporaba Chromiuma za odpiranje povezav</translation>
 <translation id="5777187867430702742">Stran Chromiuma</translation>
 <translation id="5862307444128926510">Pozdravljeni v Chromiumu</translation>
 <translation id="5945387852661427312">Prijavljate se z računom, ki ga upravlja <ph name="DOMAIN" />, in nadzor nad podatki v Chromiumu predajate skrbniku. Vaši podatki bodo trajno povezani s tem računom. Če se odjavite iz Chromiuma, boste izbrisali podatke iz te naprave, vendar bodo še naprej shranjeni v Google Računu.</translation>
@@ -63,6 +65,7 @@
 <translation id="7208566199746267865">Chromium poskrbi, da so vaši računi v spletu, in vam tako prihrani čas. Račune lahko dodajate ali odstranjujete v nastavitvah.</translation>
 <translation id="725427773388857052">Chromium vas lahko varuje pred podatkovnimi kršitvami, spletnimi mesti, ki niso varna, in drugim.</translation>
 <translation id="7269362888766543920">Nekateri dodatki povzročajo zrušitve Chromiuma. Poskusite jih odstraniti.</translation>
+<translation id="7313655110045230863">Če želite Chromium nastaviti kot privzeti brskalnik, odprite nastavitve. Dotaknite se »Privzeti brskalnik« in izberite Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Izbrani podatki so bili odstranjeni iz Chromiuma in sinhroniziranih naprav. V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in dejavnosti iz drugih Googlovih storitev, na history.google.com.</translation>
 <translation id="7400689562045506105">Uporaba Chromiuma povsod</translation>

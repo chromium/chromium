@@ -568,6 +568,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
       seker te maak dat jou instaanbediener werk. As jy dink jy moenie
       'n instaanbediener gebruik nie:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="317878711435188021">Weet wanneer jy hierdie toestel aktief gebruik</translation>
 <translation id="3188393374551744535">Rekeningsaldo</translation>
 <translation id="3194737229810486521"><ph name="URL" /> wil data permanent op jou toestel berg</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> op <ph name="SERVER_NAME" /></translation>
@@ -746,6 +747,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3828924085048779000">Leë wagfrase word nie toegelaat nie.</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> het uitbreidings vir bykomende funksies geïnstalleer. Uitbreidings het toegang tot sommige van jou data.</translation>
 <translation id="3832522519263485449">Veelvuldige pons links</translation>
+<translation id="3835233591525155343">Jou toestelgebruik</translation>
 <translation id="385051799172605136">Terug</translation>
 <translation id="3858027520442213535">Dateer datum en tyd op</translation>
 <translation id="3884278016824448484">Teenstrydige toestelidentifiseerder</translation>
@@ -1040,6 +1042,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4995216769782533993">Bevestig die sekuriteitkode om jou kaartbesonderhede met hierdie werf te deel</translation>
 <translation id="4995474875135717171">Verander:</translation>
 <translation id="5002932099480077015">As dit geaktiveer is, sal Chrome 'n kopie van jou kaart op hierdie toestel berg om vorms vinniger in te vul.</translation>
+<translation id="5011561501798487822">Bespeurde taal</translation>
 <translation id="5015510746216210676">Masjiennaam:</translation>
 <translation id="5017554619425969104">Teks wat jy gekopieer het</translation>
 <translation id="5018422839182700155">Kan nie hierdie bladsy oopmaak nie</translation>
@@ -1615,6 +1618,7 @@ Bykomende besonderhede:
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">Bevellyn</translation>
 <translation id="7359588939039777303">Advertensies is geblokkeer.</translation>
+<translation id="7365849542400970216">Weet wanneer jy toestel gebruik?</translation>
 <translation id="7372973238305370288">soekresultaat</translation>
 <translation id="7374733840632556089">Hierdie probleem word veroorsaak deur 'n sertifikaat wat jy of iemand anders op jou toestel geïnstalleer het. Dit is bekend dat hierdie sertifikaat gebruik word om netwerke te monitor en te onderskep, en dit word nie deur Chrome vertrou nie. Terwyl sommige wettige gevalle vir monitering wel bestaan, soos op 'n skool- of maatskappynetwerk, wil Chrome seker maak dat jy weet dit gebeur, selfs al kan jy dit nie keer nie. Monitering kan in enige blaaier of program met toegang tot die web plaasvind.</translation>
 <translation id="7375818412732305729">Lêer is aangeheg</translation>
@@ -2032,6 +2036,7 @@ Bykomende besonderhede:
 <translation id="8983003182662520383">Betaalmetodes en adresse wat Google Pay gebruik</translation>
 <translation id="8987927404178983737">Maand</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
+<translation id="899688752321268742"><ph name="URL" /> wil weet wanneer jy hierdie toestel aktief gebruik</translation>
 <translation id="8996941253935762404">Die webwerf voor bevat skadelike programme</translation>
 <translation id="8997023839087525404">Die bediener het 'n sertifikaat aangebied wat nie deur die Sertifikaatdeursigtigheidbeleid publiek openbaar gemaak is nie. Dit is 'n vereiste vir sekere sertifikate om te verseker dat hulle betroubaar is en beskerming teen aanvallers bied.</translation>
 <translation id="9001074447101275817">Die instaanbediener <ph name="DOMAIN" /> vereis 'n gebruikernaam en wagwoord.</translation>

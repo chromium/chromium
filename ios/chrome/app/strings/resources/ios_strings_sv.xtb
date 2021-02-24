@@ -174,6 +174,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="2780046210906776326">Inga e-postkonton</translation>
 <translation id="2781331604911854368">På</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2783054063075604403">Det gick inte att skapa länken</translation>
 <translation id="2800683595868705743">Stäng funktionen för flikbyte</translation>
 <translation id="2815198996063984598">2. Tryck på Standardwebbläsarapp</translation>
 <translation id="2830972654601096923">Hantera adresser …</translation>
@@ -467,6 +468,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5948291296578561264">Gör så att du kan spara foton i fotobiblioteket.</translation>
 <translation id="5955891643922670672">Offlineversionen visas</translation>
 <translation id="5957613098218939406">Fler alternativ</translation>
+<translation id="5963939892571022323">Det gick inte att skapa en länk till markeringen.</translation>
 <translation id="5964480694698977962">Skapa en ny inkognitoflik.</translation>
 <translation id="5965679971710331625">Du är inloggad</translation>
 <translation id="5979837087407522202">Sök efter lösenord</translation>
@@ -615,6 +617,7 @@ Sträva efter att använda ett unikt lösenord för varje webbplats.</translatio
 <translation id="734758817008927353">Alternativ för att spara kort</translation>
 <translation id="7348502496356775519">Bokmärke</translation>
 <translation id="7383797227493018512">Läslista</translation>
+<translation id="7398893703713203428">Skapa länk</translation>
 <translation id="739941347996872055">Föregående flik</translation>
 <translation id="7400418766976504921">Webbadress</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> olästa artiklar.</translation>
@@ -644,6 +647,7 @@ Sträva efter att använda ett unikt lösenord för varje webbplats.</translatio
 <translation id="766891008101699113">Öppna en ny flik om du vill använda internet privat.</translation>
 <translation id="7671141431838911305">INSTALLERA</translation>
 <translation id="7701040980221191251">Inga</translation>
+<translation id="7741325291586284254">Ny fliksida i inkognitoläge</translation>
 <translation id="7765158879357617694">Flytta</translation>
 <translation id="7771470029643830783">När du loggar ut synkroniseras inte längre bokmärken, lösenord och annan data i Chrome till Google-kontot.
 

@@ -331,7 +331,6 @@
 <translation id="4706042980341760088">ພາສາທາມິລທີ່ໃຊ້ແປ້ນພິມເຄື່ອງພິມດີດ</translation>
 <translation id="4711094779914110278">ພາສາຕວກກີ</translation>
 <translation id="4712283082407695269">ກຳລັງເປີດ "<ph name="PATH" />"</translation>
-<translation id="4713544552769165154">ໄຟລ໌ນີ້ອອກແບບສໍາລັບຄອມພິວເຕີທີ່ໃຊ້ຊອບແວ Macintosh. ອັນນີ້ບໍ່ເຂົ້າກັບອຸປະກອນຂອງທ່ານທີ່ແລ່ນ Chrome OS. ກະລຸນາຄົ້ນຫາ <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> ສໍາລັບແອັບການປ່ຽນແທນທີ່ເໝາະສົມ.<ph name="BEGIN_LINK_HELP" />ຮຽນຮູ້ເພີ່ມເຕີມ<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">ສຳ​ຮອງ <ph name="FILE_COUNT" /> ຮູບ​ແລ້ວ</translation>
 <translation id="4725511304875193254">ໝາຄໍກິ</translation>
 <translation id="4732760563705710320">ຂໍອະໄພ, ວິດີໂອນີ້ບໍ່ຮອງຮັບໂດຍອຸປະກອນຄາສທ໌ຂອງທ່ານ.</translation>
@@ -464,8 +463,6 @@
 <translation id="5833610766403489739">ໄຟລ໌ນີ້ໄດ້ທ່ຽວໄປບ່ອນໃດໜຶ່ງ. ກະລຸນາກວດເບິ່ງການຕັ້ງຄ່າທີ່ຕັ້ງການດາວໂຫຼດ ແລະລອງໃໝ່ອີກ.</translation>
 <translation id="5838451609423551646">ລຶບລາຍການທັງໝົດອອກຈາກການເລືອກແລ້ວ.</translation>
 <translation id="5838825566232597749">US Workman ສາກົນ</translation>
-<translation id="5850516540536751549">ປະເພດໄຟລ໌ນີ້ບໍ່ຖືກຮອງຮັບ. ກະລຸນາເຂົ້າໄປເບິ່ງ <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> ເພື່ອຊອກຫາແອັບທີ່ສາມາດເປີດໄຟລ໌ປະເພດນີ້ໄດ້.
-    <ph name="BEGIN_LINK_HELP" />ຮຽນຮູ້ເພີ່ມເຕີມ<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">ບໍ່​ມີ​ຫຍັງ​ທີ່​ຈະ​ເບິ່ງ​ຢູ່ທີ່​ນີ້...</translation>
 <translation id="5911887972742538906">ເກີດຜິດພາດໃນລະຫວ່າງການຕິດຕັ້ງແອັບພລິເຄຊັນ Linux ຂອງທ່ານ.</translation>
 <translation id="5912396950572065471">ຮູບແບບ</translation>
@@ -675,7 +672,6 @@
 <translation id="8038111231936746805">(ມາດຕະຖານ)</translation>
 <translation id="8042602468072383151">ສຽງ <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">ພາສາໂຣມານີ</translation>
-<translation id="8052887694493382350">ໄຟລ໌ນີ້ຖືກອອກແບບມາສຳລັບຄອມພິວເຕີສ່ວນບຸກຄົນທີ່ໃຊ້ຊອບແວ Windows. ນີ້ເຂົ້າກັນບໍ່ໄດ້ກັບອຸປະກອນຂອງທ່ານທີ່ໃຊ້ Chrome OS. <ph name="BEGIN_LINK_HELP" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">ການແກ້ໄຂທັງໝົດຈະຖືກບັນທຶກໄວ້ໃນ <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">ຫຼິ້ນຊໍ້າ</translation>
 <translation id="8106045200081704138">ແຊຣ໌ກັບຂ້ອຍ</translation>

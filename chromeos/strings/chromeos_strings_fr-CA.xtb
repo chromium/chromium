@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr-CA">
 <translation id="1018656279737460067">Annulé</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> fils d'exécution, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1059913517121127803">Impossible de démarrer la numérisation</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Pare-feu détecté</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">Erreur inconnue.</translation>
 <translation id="1204296502688602597">Latence DNS</translation>
 <translation id="123124571410524056">Un portail semble activé</translation>
-<translation id="1238191093934674082">RPV ouvert</translation>
 <translation id="1238612778414822719">Latence HTTPS</translation>
 <translation id="1270369111467284986">Un portail captif semble être présent</translation>
 <translation id="1290331692326790741">Signal faible</translation>
@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">Tâchez arrêtée : à court d'encre</translation>
 <translation id="1703835215927279855">Lettre</translation>
 <translation id="1706391837335750954">Présence du résolveur DNS</translation>
+<translation id="1717874160321062422">Géré par <ph name="FIRST_MANAGER" /> et par <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Annulation de la numérisation en cours…</translation>
 <translation id="1851218745569890714">Vidéoconférence</translation>
@@ -59,6 +60,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2338501278241028356">Activer le Bluetooth pour découvrir les appareils à proximité</translation>
 <translation id="2364498172489649528">Vérification réussie</translation>
+<translation id="2365324413026422635">Impossible d'effectuer le test de recharge de la pile lorsqu'elle est pleine</translation>
 <translation id="2391082728065870591">Envoyer un rapport de commentaires</translation>
 <translation id="2418150275289244458">Ouvrir dans les paramètres</translation>
 <translation id="2446553403094072641">Précision en virgule flottante</translation>
@@ -91,6 +93,7 @@
 <translation id="3226405216343213872">Recherche de numériseurs en cours…</translation>
 <translation id="3246869037381808805">Les tâches d'impression de plus d'un jour seront retirées</translation>
 <translation id="3268178239013324452">Échec : porte de l'imprimante ouverte</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">La latence du DNS dépasse le seuil acceptable de manière considérable</translation>
 <translation id="3328783797891415197">Exécution du test en cours…</translation>
 <translation id="3368922792935385530">Connecté</translation>
@@ -102,6 +105,7 @@
 <translation id="3459509316159669723">Impression</translation>
 <translation id="3488065109653206955">Partiellement activé</translation>
 <translation id="3527036260304016759">Échec : erreur inconnue</translation>
+<translation id="3532980081107202182">Il reste environ <ph name="MIN_REMAINING" /> minutes</translation>
 <translation id="357889014807611375">réseau Wi-Fi mesuré</translation>
 <translation id="3595596368722241419">Batterie entièrement chargée</translation>
 <translation id="360565022852130722">Le réseau Wi-Fi est sécurisé par un protocole faible : WEP 802.1x</translation>
@@ -125,6 +129,7 @@
 <translation id="4155551848414053977">Assurez-vous que le numériseur est allumé et accessible par le biais de votre réseau ou d'une connexion directe</translation>
 <translation id="4170700058716978431">ÉCHEC</translation>
 <translation id="4176463684765177261">Désactivé</translation>
+<translation id="4222698289790462549">Vitesse actuelle</translation>
 <translation id="4227825898293920515">Le mot de passe expire dans <ph name="TIME" /></translation>
 <translation id="4228041325992544252">Espace disponible : <ph name="AVAILABLE_MEMORY" /> Go sur <ph name="TOTAL_MEMORY" /> Go.</translation>
 <translation id="4238516577297848345">Aucune tâche d'impression en cours</translation>
@@ -241,6 +246,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6325525973963619867">Échec</translation>
 <translation id="636850387210749493">Inscription d'entreprise</translation>
 <translation id="641081527798843608">Correspondance d'objet</translation>
+<translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Acceptable</translation>
 <translation id="6472207088655375767">Phr passe usage uniq</translation>
 <translation id="6480327114083866287">Géré par <ph name="MANAGER" /></translation>
@@ -327,6 +333,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8477551185774834963">La latence du DNS dépasse un peu le seuil acceptable</translation>
 <translation id="8483248364096924578">Adresse IP</translation>
 <translation id="8503813439785031346">Nom d'utilisateur</translation>
+<translation id="8503836310948963452">Il ne reste que quelques minutes…</translation>
 <translation id="8576249514688522074">Non initialisé</translation>
 <translation id="8620617069779373398">État d'itinérance</translation>
 <translation id="8675354002693747642">Clé prépartagée</translation>
@@ -358,6 +365,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="9106415115617144481">Numérisation de la page <ph name="PAGE_NUMBER" /> en cours…</translation>
 <translation id="9111102763498581341">Déverrouiller</translation>
 <translation id="9149391708638971077">Exécuter le test de mémoire</translation>
+<translation id="9173638680043580060">Il reste moins d'une minute</translation>
 <translation id="9190063653747922532">L2TP/IPSec + clé prépartagée</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Désactivé</translation>

@@ -93,6 +93,7 @@
 <translation id="1942765061641586207">Rezoluția imaginii</translation>
 <translation id="1943097386230153518">Instalează un serviciu nou</translation>
 <translation id="1972984168337863910">Extinde panourile cu feedback privind fișierele</translation>
+<translation id="1984456723671657197">Acest tip de fișier nu este acceptat. <ph name="BEGIN_LINK_HELP" />Află mai multe<ph name="END_LINK_HELP" /> despre deschiderea fișierelor în sistemul de operare Chrome.</translation>
 <translation id="1995337122023280937">Accesează locația fișierului</translation>
 <translation id="2001796770603320721">Gestionează în Drive</translation>
 <translation id="2009067268969781306">Formatarea unității va șterge toate datele stocate pe unitate. Această acțiune nu poate fi anulată.</translation>
@@ -331,7 +332,6 @@
 <translation id="4706042980341760088">Tastatură tamilă tip mașină de scris</translation>
 <translation id="4711094779914110278">Turcă</translation>
 <translation id="4712283082407695269">Se deschide „<ph name="PATH" />”</translation>
-<translation id="4713544552769165154">Acest fișier este creat pentru un computer care folosește software Macintosh. Nu este compatibil cu dispozitivul tău, care rulează sistemul de operare Chrome. Caută o aplicație adecvată similară în <ph name="BEGIN_LINK" />Magazinul web Chrome<ph name="END_LINK" />.<ph name="BEGIN_LINK_HELP" />Află mai multe<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">S-a făcut backup pentru <ph name="FILE_COUNT" /> fotografii</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4732760563705710320">Ne pare rău. Acest videoclip nu este acceptat de dispozitivul tău de proiecție.</translation>
@@ -465,8 +465,6 @@
 <translation id="5833610766403489739">Fișierul nu poate fi găsit. Verificați setarea locației de descărcare și încercați din nou.</translation>
 <translation id="5838451609423551646">S-au eliminat toate intrările din selecție.</translation>
 <translation id="5838825566232597749">Tastatură S.U.A. Workman internațională</translation>
-<translation id="5850516540536751549">Acest tip de fișier nu este acceptat. Accesați <ph name="BEGIN_LINK" />Magazinul web Chrome<ph name="END_LINK" /> pentru a găsi o aplicație care poate deschide acest tip de fișier.
-    <ph name="BEGIN_LINK_HELP" />Aflați mai multe<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Nimic de văzut aici...</translation>
 <translation id="5911887972742538906">A apărut o eroare în timpul instalării aplicației Linux.</translation>
 <translation id="5912396950572065471">Format</translation>
@@ -670,13 +668,13 @@
 <translation id="7972920761225148017">Franceză (Elveția)</translation>
 <translation id="7980421588063892270">Engleză (S.U.A.) cu tastatură Colemak</translation>
 <translation id="7982283708762922719">Înălțime</translation>
+<translation id="79907182588096956">Fișierul este creat pentru un PC care folosește software Windows. Acesta nu este compatibil cu dispozitivul tău care rulează sistemul de operare Chrome. <ph name="BEGIN_LINK_HELP" />Află mai multe<ph name="END_LINK_HELP" /> despre deschiderea fișierelor în sistemul de operare Chrome.</translation>
 <translation id="8008366997883261463">Terier</translation>
 <translation id="8028993641010258682">Dimensiune</translation>
 <translation id="803771048473350947">Fișier</translation>
 <translation id="8038111231936746805">(prestabilit)</translation>
 <translation id="8042602468072383151">Fișier audio <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">Română</translation>
-<translation id="8052887694493382350">Acest fișier este conceput pentru un PC care folosește software-ul Windows. Acesta nu este compatibil cu dispozitivul tău care rulează sistemul de operare Chrome. <ph name="BEGIN_LINK_HELP" />Află mai multe<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Toate modificările vor fi salvate în <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Repetă</translation>
 <translation id="8106045200081704138">Cu acces permis pentru mine</translation>
@@ -750,6 +748,7 @@
 <translation id="8900820606136623064">Maghiară</translation>
 <translation id="8919081441417203123">Daneză</translation>
 <translation id="8965697826696209160">Nu există spațiu suficient.</translation>
+<translation id="8970501467542182729">Fișierul este creat pentru un computer care folosește software Macintosh. Acesta nu este compatibil cu dispozitivul tău care rulează sistemul de operare Chrome. <ph name="BEGIN_LINK_HELP" />Află mai multe<ph name="END_LINK_HELP" /> despre deschiderea fișierelor în sistemul de operare Chrome.</translation>
 <translation id="8997962250644902079">Chineză (tradițională) Pinyin</translation>
 <translation id="9017798300203431059">Rusă fonetică</translation>
 <translation id="9034924485347205037">Fișiere Linux</translation>

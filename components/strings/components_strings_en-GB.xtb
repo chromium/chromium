@@ -567,6 +567,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
       make sure that the proxy server is working. If you don't believe you should
       be using a proxy server:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="317878711435188021">Know when you're actively using this device</translation>
 <translation id="3188393374551744535">Account balance</translation>
 <translation id="3194737229810486521"><ph name="URL" /> wants to permanently store data on your device</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> on <ph name="SERVER_NAME" /></translation>
@@ -745,6 +746,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3828924085048779000">Empty passphrase is not allowed.</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> has installed extensions for additional functions. Extensions have access to some of your data.</translation>
 <translation id="3832522519263485449">Multiple punch left</translation>
+<translation id="3835233591525155343">Your device use</translation>
 <translation id="385051799172605136">Back</translation>
 <translation id="3858027520442213535">Update date and time</translation>
 <translation id="3884278016824448484">Conflicting device identifier</translation>
@@ -1039,6 +1041,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4995216769782533993">Confirm the security code to share your card details with this site</translation>
 <translation id="4995474875135717171">Modified:</translation>
 <translation id="5002932099480077015">If enabled, Chrome will store a copy of your card on this device for faster form filling.</translation>
+<translation id="5011561501798487822">Detected language</translation>
 <translation id="5015510746216210676">Machine name:</translation>
 <translation id="5017554619425969104">Text that you copied</translation>
 <translation id="5018422839182700155">Can't open this page</translation>
@@ -1614,6 +1617,7 @@ Additional details:
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">Command Line</translation>
 <translation id="7359588939039777303">Ads blocked.</translation>
+<translation id="7365849542400970216">Know your device use?</translation>
 <translation id="7372973238305370288">search result</translation>
 <translation id="7374733840632556089">This problem happens because of a certificate that you or someone else installed on your device. The certificate is known to be used to monitor and intercept networks, and is not trusted by Chrome. While some legitimate cases for monitoring do exist, like on a school or company network, Chrome wants to make sure that you're aware it's happening, even if you can't stop it. Monitoring may happen in any browser or application that accesses the web.</translation>
 <translation id="7375818412732305729">File is attached</translation>
@@ -2031,6 +2035,7 @@ Additional details:
 <translation id="8983003182662520383">Payment methods and addresses using Google Pay</translation>
 <translation id="8987927404178983737">Month</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
+<translation id="899688752321268742"><ph name="URL" /> wants to know when you're actively using this device</translation>
 <translation id="8996941253935762404">The site ahead contains harmful programs</translation>
 <translation id="8997023839087525404">The server presented a certificate that was not publicly disclosed using the Certificate Transparency policy. This is a requirement for some certificates, to ensure that they are trustworthy and protect against attackers.</translation>
 <translation id="9001074447101275817">The proxy <ph name="DOMAIN" /> requires a username and password.</translation>

@@ -331,7 +331,6 @@
 <translation id="4706042980341760088">ਟਾਈਪਰਾਈਟਰ ਕੀ-ਬੋਰਡ ਨਾਲ ਤਮਿਲ</translation>
 <translation id="4711094779914110278">Turki</translation>
 <translation id="4712283082407695269">"<ph name="PATH" />" ਨੂੰ ਖੋਲ੍ਹਿਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
-<translation id="4713544552769165154">ਇਹ ਫ਼ਾਈਲ Macintosh ਸਾਫ਼ਟਵੇਅਰ ਵਰਤਣ ਵਾਲੇ ਕੰਪਿਊਟਰ ਲਈ ਤਿਆਰ ਕੀਤੀ ਗਈ ਹੈ। ਇਹ ਤੁਹਾਡੇ Chrome OS ਨਾਲ ਚਲਣ ਵਾਲੇ ਡੀਵਾਈਸ ਦੇ ਅਨੁਕੂਲ ਨਹੀਂ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਦੇ ਬਦਲਾਅ ਵਜੋਂ ਕਿਸੇ ਅਨੁਕੂਲ ਐਪ ਲਈ <ph name="BEGIN_LINK" />Chrome ਵੈੱਬ ਸਟੋਰ<ph name="END_LINK" /> ਖੋਜੋ।<ph name="BEGIN_LINK_HELP" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> ਫ਼ੋਟੋਆਂ ਬੈਕ ਅਪ ਕੀਤਾ</translation>
 <translation id="4725511304875193254">ਕੋਰਗੀ</translation>
 <translation id="4732760563705710320">ਮਾਫ਼ ਕਰਨਾ, ਇਹ ਵੀਡੀਓ ਤੁਹਾਡੀ ਕਾਸਟ ਡੀਵਾਈਸ ਵੱਲੋਂ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ।</translation>
@@ -464,8 +463,6 @@
 <translation id="5833610766403489739">ਇਹ ਫ਼ਾਈਲ ਕਿਤੇ ਹੋਰ ਚਲੀ ਗਈ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੀ ਡਾਊਨਲੋਡ ਟਿਕਾਣਾ ਸੈਟਿੰਗ ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="5838451609423551646">ਚੋਣ ਤੋਂ ਸਾਰੇ ਇੰਦਰਾਜ ਹਟਾਏ ਗਏ।</translation>
 <translation id="5838825566232597749">ਅਮਰੀਕੀ ਵਰਕਮੈਨ ਅੰਤਰਰਾਸ਼ਟਰੀ</translation>
-<translation id="5850516540536751549">ਇਹ ਫ਼ਾਈਲ ਕਿਸਮ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਅਜਿਹੀ ਐਪ ਲੱਭਣ ਲਈ <ph name="BEGIN_LINK" />Chrome ਵੈੱਬ ਸਟੋਰ<ph name="END_LINK" /> 'ਤੇ ਜਾਓ ਜੋ ਇਸ ਕਿਸਮ ਦੀ ਫ਼ਾਈਲ ਖੋਲ੍ਹ ਸਕਦੀ ਹੈ।
-    <ph name="BEGIN_LINK_HELP" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">ਇੱਥੇ  ਦੇਖਣ  ਲਈ ਕੁਝ ਨਹੀਂ...</translation>
 <translation id="5911887972742538906">ਤੁਹਾਡੀ Linux ਐਪਲੀਕੇਸ਼ਨ ਦੀ ਸਥਾਪਨਾ ਦੌਰਾਨ ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ।</translation>
 <translation id="5912396950572065471">ਫਾਰਮੈਟ</translation>
@@ -675,7 +672,6 @@
 <translation id="8038111231936746805">(ਪੂਰਵ-ਨਿਰਧਾਰਤ)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> ਆਡੀਓ</translation>
 <translation id="8045462269890919536">Romanian</translation>
-<translation id="8052887694493382350">ਇਹ ਫ਼ਾਈਲ Windows ਸਾਫ਼ਟਵੇਅਰ ਵਰਤਦੇ ਹੋਏ PC ਲਈ ਤਿਆਰ ਕੀਤੀ ਗਈ ਹੈ। ਇਹ ਤੁਹਾਡੇ ਉਸ ਡੀਵਾਈਸ ਦੇ ਅਨੁਰੂਪ ਨਹੀਂ ਹੈ, ਜੋ Chrome OS 'ਤੇ ਚੱਲਦਾ ਹੈ। <ph name="BEGIN_LINK_HELP" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">ਸਾਰੇ ਸੰਪਾਦਨ <ph name="DOWNLOADS_FOLDER" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਜਾਣਗੇ।</translation>
 <translation id="8079530767338315840">ਦੋਹਰਾਓ</translation>
 <translation id="8106045200081704138">ਮੇਰੇ ਨਾਲ ਸ਼ੇਅਰ ਕੀਤਾ</translation>

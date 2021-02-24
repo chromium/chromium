@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sw">
 <translation id="1018656279737460067">Imeghairiwa</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (michakato <ph name="THREAD_COUNT" />, GHz <ph name="CPU_MAX_CLOCK_SPEED" />)</translation>
 <translation id="1059913517121127803">Imeshindwa kuanza kuchanganua</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Kinga mtandao imetambuliwa</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">Hitilafu isiyojulikana.</translation>
 <translation id="1204296502688602597">Muda wa Kusubiri wa DNS</translation>
 <translation id="123124571410524056">Inashukiwa kuna ukurasa wa mwanzo</translation>
-<translation id="1238191093934674082">VPN ya Wazi</translation>
 <translation id="1238612778414822719">Muda wa kusubiri maombi ya HTTPS</translation>
 <translation id="1270369111467284986">Inashukiwa kwamba kuna ukurasa wa mwanzo</translation>
 <translation id="1290331692326790741">Mtandao si thabiti</translation>
@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">Imesimama - Wino umeisha</translation>
 <translation id="1703835215927279855">Barua</translation>
 <translation id="1706391837335750954">Kisuluhishaji cha DNS Kinapatikana</translation>
+<translation id="1717874160321062422">Inadhibitiwa na <ph name="FIRST_MANAGER" /> na <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Inaghairi uchanganuzi</translation>
 <translation id="1851218745569890714">Mikutano ya Video</translation>
@@ -59,6 +60,7 @@
 <translation id="2326139988748364651">Dpi <ph name="RESOLUTION_VALUE" /></translation>
 <translation id="2338501278241028356">Washa Bluetooth ili ugundue vifaa vilivyo karibu</translation>
 <translation id="2364498172489649528">Amefaulu</translation>
+<translation id="2365324413026422635">Jaribio la chaji ya betri haliwezi kutekelezwa betri ikiwa imejaa</translation>
 <translation id="2391082728065870591">Tuma Ripoti ya Maoni</translation>
 <translation id="2418150275289244458">Fungua katika mipangilio</translation>
 <translation id="2446553403094072641">Usahihi wa mfumo wa uhandisi wa kuonyesha nambari</translation>
@@ -91,6 +93,7 @@
 <translation id="3226405216343213872">Inatafuta vichanganuzi</translation>
 <translation id="3246869037381808805">Kazi za kuchapisha zilizohifadhiwa kwa zaidi ya siku moja zitaondolewa</translation>
 <translation id="3268178239013324452">Haijakamilika - Kifuniko kimefunguka</translation>
+<translation id="3286515922899063534">GHz <ph name="CURRENT" /></translation>
 <translation id="3310640316857623290">Muda wa kusubiri wa DNS umezidi zaidi kiwango cha juu kinachoruhusiwa</translation>
 <translation id="3328783797891415197">Jaribio linatekelezwa</translation>
 <translation id="3368922792935385530">Umeunganishwa</translation>
@@ -102,6 +105,7 @@
 <translation id="3459509316159669723">Kuchapisha</translation>
 <translation id="3488065109653206955">Imaeamilisha kidogo</translation>
 <translation id="3527036260304016759">Haijakamilika - Hitilafu isiyojulikana</translation>
+<translation id="3532980081107202182">Zimesalia takriban dakika <ph name="MIN_REMAINING" /></translation>
 <translation id="357889014807611375">Wi-Fi inayopima data</translation>
 <translation id="3595596368722241419">Betri imejaa</translation>
 <translation id="360565022852130722">Mtandao wa WiFi umelindwa kwa kutumia itifaki hafifu ya WEP 802.1x</translation>
@@ -125,6 +129,7 @@
 <translation id="4155551848414053977">Hakikisha kichanganuzi kimewashwa na kinapatikana kupitia mtandao wako au muunganisho wa moja kwa moja</translation>
 <translation id="4170700058716978431">HALIJAFAULU</translation>
 <translation id="4176463684765177261">Imezimwa</translation>
+<translation id="4222698289790462549">Kasi ya Sasa</translation>
 <translation id="4227825898293920515">Muda wa kutumia nenosiri utaisha baada ya <ph name="TIME" /></translation>
 <translation id="4228041325992544252">Una GB <ph name="AVAILABLE_MEMORY" /> kati ya GB <ph name="TOTAL_MEMORY" />.</translation>
 <translation id="4238516577297848345">Hakuna kazi za kuchapisha zinazoendelea</translation>
@@ -240,6 +245,7 @@
 <translation id="6325525973963619867">Imeshindwa</translation>
 <translation id="636850387210749493">Usajili wa biashara</translation>
 <translation id="641081527798843608">Mada inalingana</translation>
+<translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Bora</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Inadhibitiwa na <ph name="MANAGER" /></translation>
@@ -326,6 +332,7 @@
 <translation id="8477551185774834963">Muda wa kusubiri wa DNS umezidi kidogo kiwango cha juu kinachoruhusiwa</translation>
 <translation id="8483248364096924578">Anwani ya IP</translation>
 <translation id="8503813439785031346">Jina la mtumiaji</translation>
+<translation id="8503836310948963452">Dakika chache tu...</translation>
 <translation id="8576249514688522074">Haijaanzishwa</translation>
 <translation id="8620617069779373398">Hali ya kutumia mtandao usio wako wa kawaida</translation>
 <translation id="8675354002693747642">Kitufe kilichoshirikiwa awali</translation>
@@ -357,6 +364,7 @@
 <translation id="9106415115617144481">Inachanganua ukurasa wa <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Fungua</translation>
 <translation id="9149391708638971077">Tekeleza jaribio la Hifadhi</translation>
+<translation id="9173638680043580060">Imesalia chini ya dakika moja</translation>
 <translation id="9190063653747922532">L2TP/IPsec + ufunguo ulioshirikiwa awali</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Haijaamilishwa</translation>

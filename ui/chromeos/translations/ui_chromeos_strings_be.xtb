@@ -93,6 +93,7 @@
 <translation id="1942765061641586207">Раздзяляльнасць відарыса</translation>
 <translation id="1943097386230153518">Усталяваць новае пашырэнне</translation>
 <translation id="1972984168337863910">Разгарнуць панэлі водгукаў для файлаў</translation>
+<translation id="1984456723671657197">Гэты тып файла не падтрымліваецца. <ph name="BEGIN_LINK_HELP" />Даведайцеся больш<ph name="END_LINK_HELP" /> пра адкрыццё файлаў на Chrome OS.</translation>
 <translation id="1995337122023280937">Адкрыць месцазнаходжанне файла</translation>
 <translation id="2001796770603320721">Кіраваць на Дыску</translation>
 <translation id="2009067268969781306">Фармаціраванне дыска прывядзе да выдалення ўсіх захаваных на ім даных. Гэта дзеянне нельга адрабіць.</translation>
@@ -331,7 +332,6 @@
 <translation id="4706042980341760088">Тамільская (раскладка пішучай машынкі)</translation>
 <translation id="4711094779914110278">Турэцкая</translation>
 <translation id="4712283082407695269">Ідзе адкрыццё архіва "<ph name="PATH" />"</translation>
-<translation id="4713544552769165154">Гэты файл прызначаны для камп'ютара з праграмным забеспячэннем Macintosh. Ён несумяшчальны з вашай прыладай на Chrome OS. Пашукайце ў <ph name="BEGIN_LINK" />Вэб-краме Chrome<ph name="END_LINK" /> адпаведную праграму на замену. <ph name="BEGIN_LINK_HELP" />Даведацца больш<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">Створана рэзервовая копія фота ў колькасці <ph name="FILE_COUNT" /></translation>
 <translation id="4725511304875193254">Коргі</translation>
 <translation id="4732760563705710320">Ваша прылада для трансляцыі не падтрымлівае гэта відэа.</translation>
@@ -464,8 +464,6 @@
 <translation id="5833610766403489739">Гэты файл некуды знік. Праверце налады размяшчэння спамповак і паўтарыце спробу.</translation>
 <translation id="5838451609423551646">Скасаваны выбар усіх элементаў</translation>
 <translation id="5838825566232597749">ЗША (Workman, міжнародная)</translation>
-<translation id="5850516540536751549">Гэты тып файла не падтрымліваецца. Знайсці праграму для адкрыцця файлаў такога тыпу можна, наведаўшы <ph name="BEGIN_LINK" />Вэб-краму Chrome<ph name="END_LINK" />.
-    <ph name="BEGIN_LINK_HELP" />Даведацца больш<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Тут нічога няма...</translation>
 <translation id="5911887972742538906">Узнікла памылка падчас усталявання Linux-праграмы.</translation>
 <translation id="5912396950572065471">Фармат</translation>
@@ -669,13 +667,13 @@
 <translation id="7972920761225148017">Французская (Швейцарыя)</translation>
 <translation id="7980421588063892270">Англійская (ЗША) з раскладкай Colemak</translation>
 <translation id="7982283708762922719">Вышыня</translation>
+<translation id="79907182588096956">Гэты файл створаны для ПК з праграмным забеспячэннем Windows. Ён несумяшчальны з вашай прыладай на Chrome OS. <ph name="BEGIN_LINK_HELP" />Даведайцеся больш<ph name="END_LINK_HELP" /> пра адкрыццё файлаў на Chrome OS.</translation>
 <translation id="8008366997883261463">Сабака</translation>
 <translation id="8028993641010258682">Памер</translation>
 <translation id="803771048473350947">Файл</translation>
 <translation id="8038111231936746805">(стандартна)</translation>
 <translation id="8042602468072383151">Аўдыяфайл фармату <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">Румынская</translation>
-<translation id="8052887694493382350">Гэты файл створаны для ПК з праграмным забеспячэннем Windows. Ён несумяшчальны з вашай прыладай на Chrome OS. <ph name="BEGIN_LINK_HELP" />Даведацца больш<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Усе змены будуць захаваны ў папцы <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Паўтараць</translation>
 <translation id="8106045200081704138">Абагуленае са мной</translation>
@@ -749,6 +747,7 @@
 <translation id="8900820606136623064">Венгерская</translation>
 <translation id="8919081441417203123">Дацкая</translation>
 <translation id="8965697826696209160">Недастаткова месца.</translation>
+<translation id="8970501467542182729">Гэты файл прызначаны для камп'ютара з праграмным забеспячэннем Macintosh. Ён несумяшчальны з вашай прыладай на Chrome OS. <ph name="BEGIN_LINK_HELP" />Даведайцеся больш<ph name="END_LINK_HELP" /> пра адкрыццё файлаў на Chrome OS.</translation>
 <translation id="8997962250644902079">Кітайская (традыцыйная, піньінь)</translation>
 <translation id="9017798300203431059">Руская фанетычная</translation>
 <translation id="9034924485347205037">Файлы Linux</translation>

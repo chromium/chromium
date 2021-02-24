@@ -93,6 +93,7 @@
 <translation id="1942765061641586207">රූප විභේදනය</translation>
 <translation id="1943097386230153518">නව සේවාව ස්ථාපනය කරන්න</translation>
 <translation id="1972984168337863910">ගොනු ප්‍රතිපෝෂණ පැනල් දිග හරින්න</translation>
+<translation id="1984456723671657197">මෙම ගොනු වර්ගය සහාය නොදක්වයි. Chrome OS හි ගොනු විවෘත කිරීම ගැන <ph name="BEGIN_LINK_HELP" />තව දැන ගන්න<ph name="END_LINK_HELP" />.</translation>
 <translation id="1995337122023280937">ගොනු ස්ථානයට යන්න</translation>
 <translation id="2001796770603320721">Drive හි කළමනාකරණය කරන්න</translation>
 <translation id="2009067268969781306">ධාවකයක් ආකෘති කිරීම එහි ගබඩා කර ඇති සියලුම දත්ත මකා දමයි. මෙම ක්‍රියාව අස් කළ නොහැක.</translation>
@@ -331,7 +332,6 @@
 <translation id="4706042980341760088">යතුරුලියන යතුරු පුවරුව සමග දෙමළ</translation>
 <translation id="4711094779914110278">තුර්කි</translation>
 <translation id="4712283082407695269">"<ph name="PATH" />" විවෘත කරමින්</translation>
-<translation id="4713544552769165154">මෙම ගොනුව මැකින්ටොෂ් මෘදුකාංගයක් භාවිතයෙන් පරිගණකයකට නිර්මාණය කර ඇත. Chrome OS ධාවනය වන ඔබගේ උපාංගය සමග මෙය නොගැළපේ. කරුණාකර සුදුසු ප්‍රතිස්ථාපන යෙදුමක් සඳහා <ph name="BEGIN_LINK" />Chrome වෙබ වෙළඳසැල<ph name="END_LINK" /> පිරික්සන්න.<ph name="BEGIN_LINK_HELP" />වැඩිදුර හදාරන්න<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">ඡායාරූප <ph name="FILE_COUNT" /> ක් උපස්ථ කරන ලදි</translation>
 <translation id="4725511304875193254">කොර්ගි</translation>
 <translation id="4732760563705710320">සමාවන්න, මෙම වීඩියෝවට ඔබේ විකාශන උපාංගය සහය නොදක්වයි.</translation>
@@ -464,8 +464,6 @@
 <translation id="5833610766403489739">මෙම ගොනුව කිසියම් තැනක අස්ථානගතව තිබේ. කරුණාකර ඔබේ බාගැනීම් ස්ථානය පරීක්ෂා කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="5838451609423551646">තේරීමෙන් ඇතුළත් කිරීම් සියල්ල ඉවත් කළා.</translation>
 <translation id="5838825566232597749">US Workman අන්තර්ජාතික</translation>
-<translation id="5850516540536751549">මෙම ගොනු වර්ගය සහය නොදක්වයි. සමාන යෙදුමක් සොයාගැනීමට කරුණාකර  <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> වෙත පිවිසෙන්න.
-    <ph name="BEGIN_LINK_HELP" />තවත් දැනගන්න<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">මෙහි දැකීමට කිසිවක් නැත ...</translation>
 <translation id="5911887972742538906">ඔබගේ Linux යෙදුම ස්ථාපනය අතරතුරේදී දෝෂයක් ඇති විය.</translation>
 <translation id="5912396950572065471">ආකෘතිය</translation>
@@ -669,13 +667,13 @@
 <translation id="7972920761225148017">ප්‍රංශ (ස්විට්සර්ලන්තය)</translation>
 <translation id="7980421588063892270">Colemak යතුරුපුවරුව සමග ඉංග්‍රීසි (එ.ජ.)</translation>
 <translation id="7982283708762922719">උස</translation>
+<translation id="79907182588096956">මෙම ගොනුව Windows මෘදුකාංගය භාවිත කරන පරිගණයක් සඳහා සැලසුම් කර ඇත. මෙය Chrome OS ධාවනය වන ඔබගේ උපාංගයට නොගැළපෙයි. Chrome OS හි ගොනු විවෘත කිරීම ගැන <ph name="BEGIN_LINK_HELP" />තව දැන ගන්න<ph name="END_LINK_HELP" />.</translation>
 <translation id="8008366997883261463">ජැක් රසල් ටෙරියර්</translation>
 <translation id="8028993641010258682">ප්‍රමාණය</translation>
 <translation id="803771048473350947">ගොනුව</translation>
 <translation id="8038111231936746805">(පෙරනිමි)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> ශ්‍රව්‍ය</translation>
 <translation id="8045462269890919536">රොමේනියානු</translation>
-<translation id="8052887694493382350">මෙම ගොනුව Windows මෘදුකාංගය භාවිත කරන පරිගණයක් සඳහා සැලසුම් කර ඇත. මෙය Chrome OS ධාවන කරන ඔබේ උපාංගයට නොගැළපෙයි. <ph name="BEGIN_LINK_HELP" />තවත් දැන ගන්න<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">සංස්කරණ සියල්ල <ph name="DOWNLOADS_FOLDER" /> වෙත සුරකිනු ලැබේ.</translation>
 <translation id="8079530767338315840">නැවත ධාවනය කරන්න</translation>
 <translation id="8106045200081704138">මා සමඟ හුවමාරු කළ</translation>
@@ -749,6 +747,7 @@
 <translation id="8900820606136623064">හංගේරියානු</translation>
 <translation id="8919081441417203123">ඩෙන්මාර්ක</translation>
 <translation id="8965697826696209160">ප්‍රමාණවත් මතකයක් නැත.</translation>
+<translation id="8970501467542182729">මෙම ගොනුව Macintosh මෘදුකාංගය භාවිත කරන පරිගණකයක් සඳහා සැලසුම් කර ඇත. මෙය Chrome OS ධාවනය වන ඔබගේ උපාංගයට නොගැළපෙයි. Chrome OS හි ගොනු විවෘත කිරීම ගැන <ph name="BEGIN_LINK_HELP" />තව දැන ගන්න<ph name="END_LINK_HELP" />.</translation>
 <translation id="8997962250644902079">චීන (සාම්ප්‍රදායික) පින්යින්</translation>
 <translation id="9017798300203431059">රුසියානු ශබ්දානුකූල</translation>
 <translation id="9034924485347205037">Linux ගොනු</translation>

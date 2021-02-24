@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
 <translation id="1018656279737460067">Đã hủy</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> luồng, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1059913517121127803">Không thể bắt đầu quét</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Đã phát hiện thấy tường lửa</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">Lỗi chưa biết.</translation>
 <translation id="1204296502688602597">Độ trễ DNS</translation>
 <translation id="123124571410524056">Nghi là có cổng</translation>
-<translation id="1238191093934674082">Open VPN</translation>
 <translation id="1238612778414822719">Độ trễ HTTPS</translation>
 <translation id="1270369111467284986">Tin là có trang xác thực</translation>
 <translation id="1290331692326790741">Tín hiệu yếu</translation>
@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">Đã dừng – Hết mực</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Tồn tại trình phân giải hệ thống tên miền (DNS)</translation>
+<translation id="1717874160321062422">Do <ph name="FIRST_MANAGER" /> và <ph name="SECOND_MANAGER" /> quản lý</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Đang hủy quá trình quét</translation>
 <translation id="1851218745569890714">Hội nghị truyền hình</translation>
@@ -59,6 +60,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Bật Bluetooth để khám phá các thiết bị lân cận</translation>
 <translation id="2364498172489649528">Đã đạt</translation>
+<translation id="2365324413026422635">Không thể kiểm tra tốc độ sạc khi pin đầy</translation>
 <translation id="2391082728065870591">Gửi báo cáo phản hồi</translation>
 <translation id="2418150275289244458">Mở trong phần cài đặt</translation>
 <translation id="2446553403094072641">Độ chính xác của dấu phẩy động</translation>
@@ -91,6 +93,7 @@
 <translation id="3226405216343213872">Đang tìm máy quét</translation>
 <translation id="3246869037381808805">Các lệnh in quá 1 ngày sẽ bị xóa</translation>
 <translation id="3268178239013324452">Không thành công – Cửa máy in đang mở</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">Độ trễ của Hệ thống tên miền (DNS) vượt ngưỡng cho phép đáng kể</translation>
 <translation id="3328783797891415197">Đang chạy quá trình kiểm tra</translation>
 <translation id="3368922792935385530">Đã kết nối</translation>
@@ -125,6 +128,7 @@
 <translation id="4155551848414053977">Hãy đảm bảo máy quét đã bật và ở trạng thái sẵn sàng thông qua mạng của bạn hoặc một đường kết nối trực tiếp</translation>
 <translation id="4170700058716978431">KHÔNG THÀNH CÔNG</translation>
 <translation id="4176463684765177261">Đã tắt</translation>
+<translation id="4222698289790462549">Tốc độ hiện tại</translation>
 <translation id="4227825898293920515">Mật khẩu sẽ hết hạn sau <ph name="TIME" /></translation>
 <translation id="4228041325992544252">Còn <ph name="AVAILABLE_MEMORY" /> GB/<ph name="TOTAL_MEMORY" /> GB.</translation>
 <translation id="4238516577297848345">Không có lệnh in nào đang xử lý</translation>
@@ -241,6 +245,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6325525973963619867">Lỗi</translation>
 <translation id="636850387210749493">Đăng ký doanh nghiệp</translation>
 <translation id="641081527798843608">Khớp với chủ đề</translation>
+<translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Tốt</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Do <ph name="MANAGER" /> quản lý</translation>

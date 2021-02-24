@@ -56,6 +56,7 @@
 <translation id="1331212799747679585">Chrome tidak dapat dikemas kini. Lagi pilihan</translation>
 <translation id="1332501820983677155">Pintasan ciri Google Chrome</translation>
 <translation id="133857033449832692">Memuat turun <ph name="LANG" />…</translation>
+<translation id="1344653310988386453">Sertakan pautan kepada serlahan</translation>
 <translation id="1347468774581902829">Urus aktiviti</translation>
 <translation id="1360432990279830238">Log keluar dan matikan penyegerakan?</translation>
 <translation id="1373696734384179344">Memori tidak mencukupi untuk memuat turun kandungan yang dipilih.</translation>
@@ -130,6 +131,7 @@
 <translation id="1960290143419248813">Kemas kini Chrome tidak disokong untuk versi Android ini lagi</translation>
 <translation id="1963976881984600709">Perlindungan standard</translation>
 <translation id="1966710179511230534">Sila kemas kini butiran log masuk anda.</translation>
+<translation id="1973912524893600642">Kekalkan Data</translation>
 <translation id="1974060860693918893">Lanjutan</translation>
 <translation id="1984417487208496350">Tiada perlindungan (tidak disyorkan)</translation>
 <translation id="1984705450038014246">Segerakkan data Chrome anda</translation>
@@ -301,6 +303,7 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="3058498974290601450">Anda boleh mematikan penyegerakan pada bila-bila masa dalam tetapan</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> penanda halaman}other{<ph name="BOOKMARKS_COUNT_MANY" /> penanda halaman}}</translation>
 <translation id="3062802207422175757">Artikel tentang minat anda di Chrome</translation>
+<translation id="3070005020161560471">Terjemah secara automatik</translation>
 <translation id="3089395242580810162">Buka dalam tab inkognito</translation>
 <translation id="3098745985164956033">Sesetengah imej dihantar kepada Google untuk meningkatkan perihalan untuk anda</translation>
 <translation id="3114507951000454849">Baca berita hari ini <ph name="NEWS_ICON" /></translation>
@@ -350,10 +353,18 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="3384347053049321195">Kongsi imej</translation>
 <translation id="3387650086002190359">Muat turun <ph name="FILE_NAME" /> gagal disebabkan oleh ralat sistem fail.</translation>
 <translation id="3389286852084373014">Teks terlalu besar</translation>
+<translation id="3391512812407811893">Percubaan Kotak Pasir Privasi</translation>
 <translation id="3398320232533725830">Buka pengurus penanda halaman</translation>
 <translation id="3414952576877147120">Saiz:</translation>
 <translation id="3429160811076349561">Ciri percubaan dimatikan</translation>
 <translation id="3443221991560634068">Muat semula halaman semasa</translation>
+<translation id="3451542610083122179">Kotak Pasir Privasi ialah inisiatif berterusan untuk memelihara web terbuka yang akan membantu usaha melindungi anda daripada mekanisme penjejakan.
+
+Hari ini, laman web bergantung pada banyak teknologi, seperti kuki pihak ketiga, untuk menggunakan perkhidmatan penting seperti menyiarkan iklan yang berkaitan dan mengukur prestasi laman.
+
+Kotak Pasir Privasi memelihara kehebatan web terbuka dengan mencipta cara yang lebih baik untuk melaksanakan perkhidmatan tersebut – tanpa menjejaskan laman, dan dalam masa yang sama menghalang anda daripada dijejak secara curi-curi di seluruh web.
+
+Kotak Pasir Privasi masih aktif dibangunkan dan tersedia di rantau terpilih. Buat masa ini, laman boleh mencuba Kotak Pasir Privasi sambil terus menggunakan teknologi web semasa seperti kuki pihak ketiga. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">Anda boleh memilih enjin carian anda</translation>
 <translation id="3492207499832628349">Tab inkognito baharu</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /> tentang kandungan yang disyorkan</translation>
@@ -591,6 +602,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 muat turun gagal.}other{# muat turun gagal.}}</translation>
 <translation id="5170568018924773124">Paparkan dalam folder</translation>
 <translation id="5184329579814168207">Buka dalam Chrome</translation>
+<translation id="5191251636205085390">Ketahui tentang teknologi baharu yang disasarkan untuk menggantikan kuki pihak ketiga dan kawal teknologi tersebut</translation>
 <translation id="5193988420012215838">Disalin ke papan keratan anda</translation>
 <translation id="5199929503336119739">Profil kerja</translation>
 <translation id="5210286577605176222">Lompat ke halaman sebelumnya</translation>
@@ -613,6 +625,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5355191726083956201">Perlindungan Dipertingkat dihidupkan</translation>
 <translation id="5357811892247919462">Tab diterima</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> tab terbuka, ketik untuk beralih antara tab}other{<ph name="OPEN_TABS_MANY" /> tab terbuka, ketik untuk beralih antara tab}}</translation>
+<translation id="5375577065097716013">Cari imej dengan Google Lens <ph name="BEGIN_NEW" />Baharu<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Benarkan tapak tertentu sahaja</translation>
 <translation id="5414836363063783498">Mengesahkan…</translation>
 <translation id="5423934151118863508">Halaman yang paling kerap anda kunjungi akan muncul di sini</translation>
@@ -648,6 +661,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5599941490345670218">Google Assistant boleh melengkapkan tindakan merentas beberapa laman web untuk anda</translation>
 <translation id="5620163320393916465">Tiada kata laluan yang disimpan</translation>
 <translation id="5620928963363755975">Cari fail dan halaman anda dalam Muat Turun daripada butang Lagi Pilihan</translation>
+<translation id="562168087174703495">Tidak dapat membuat pautan kepada serlahan. Kongsi pautan kepada halaman.</translation>
 <translation id="562289928968387744">Urus reaksi</translation>
 <translation id="5626134646977739690">Nama:</translation>
 <translation id="5628604359369369630">Belum dibaca - Tersedia di luar talian</translation>
@@ -761,6 +775,7 @@ Sebagai contoh, sesetengah tapak web mungkin memberi respons kepada permintaan i
 <translation id="6312687380483398334">Apl web (senyap)</translation>
 <translation id="6316139424528454185">Versi Android tidak disokong</translation>
 <translation id="6324034347079777476">Penyegerakan sistem Android dilumpuhkan</translation>
+<translation id="6324977638108296054">Tidak dapat membuat pautan kepada serlahan</translation>
 <translation id="6333140779060797560">Kongsi melalui <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Penyulitan</translation>
 <translation id="6341580099087024258">Tanya tempat fail hendak disimpan</translation>
@@ -792,6 +807,7 @@ Sebagai contoh, sesetengah tapak web mungkin memberi respons kepada permintaan i
 <translation id="6477928892249167417">Tapak ini nampaknya penting kepada anda:</translation>
 <translation id="6482749332252372425">Muat turun <ph name="FILE_NAME" /> gagal kerana ruang storan tidak mencukupi.</translation>
 <translation id="6489610539826642779">Senarai bacaan <ph name="BEGIN_NEW" />Baharu<ph name="END_NEW" /></translation>
+<translation id="6490496612063106490">Pautkan kepada serlahan</translation>
 <translation id="6496823230996795692">Untuk menggunakan <ph name="APP_NAME" /> buat kali pertama, sila bersambung ke Internet.</translation>
 <translation id="6508722015517270189">Mulakan semula Chrome</translation>
 <translation id="6527303717912515753">Kongsi</translation>
@@ -990,6 +1006,7 @@ Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila
 <translation id="784934925303690534">Julat masa</translation>
 <translation id="7851858861565204677">Peranti lain</translation>
 <translation id="7857691613771368249">Tanya masa untuk menyimpan fail</translation>
+<translation id="7859988229622350291">Jangan terjemah</translation>
 <translation id="7875915731392087153">Buat e-mel</translation>
 <translation id="7876243839304621966">Buangkan semua</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Anda mempunyai <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> halaman belum dibaca}other{Anda mempunyai <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> halaman belum dibaca}}</translation>
@@ -1053,7 +1070,6 @@ Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila
 <translation id="8218622182176210845">Urus akaun anda</translation>
 <translation id="8223642481677794647">Menu kad suapan</translation>
 <translation id="8224471946457685718">Muat turun artikel untuk anda apabila menggunakan Wi-Fi</translation>
-<translation id="8232956427053453090">Kekalkan data</translation>
 <translation id="8233540874193135768">Untuk mengimbas kod QR, gunakan peranti yang mempunyai kamera.</translation>
 <translation id="8250920743982581267">Dokumen</translation>
 <translation id="825412236959742607">Halaman ini menggunakan terlalu banyak memori, jadi Chrome mengalih keluar sesetengah kandungan.</translation>
@@ -1067,6 +1083,7 @@ Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila
 <translation id="8310344678080805313">Tab standard</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> dan lebih banyak tapak</translation>
 <translation id="8327155640814342956">Untuk mendapatkan pengalaman penyemakan imbas yang terbaik, buka untuk mengemas kini Chrome</translation>
+<translation id="834313815369870491">Jangan terjemah laman</translation>
 <translation id="8349013245300336738">Isih mengikut jumlah data yang digunakan</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> muat turun dipulihkan</translation>
 <translation id="8364299278605033898">Lihat tapak web popular</translation>

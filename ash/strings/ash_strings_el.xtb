@@ -405,6 +405,7 @@
 <translation id="4421231901400348175">Κοινόχρηστος έλεγχος της οθόνης σας με το χρήστη <ph name="HELPER_NAME" /> μέσω της απομακρυσμένης βοήθειας.</translation>
 <translation id="4424159417645388645">Γραφείο 5</translation>
 <translation id="4430019312045809116">Ένταση</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 σημαντική ειδοποίηση}other{# σημαντικές ειδοποιήσεις}}</translation>
 <translation id="4450893287417543264">Να μην εμφανιστεί ξανά</translation>
 <translation id="445864333228800152">Καλησπέρα,</translation>
 <translation id="4458688154122353284">Διακοπή εγγραφής οθόνης</translation>
@@ -476,6 +477,10 @@
 <translation id="4961318399572185831">Μετάδοση οθόνης</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ώ. <ph name="MINUTES" />λ. <ph name="SECONDS" />δ.</translation>
 <translation id="4975771730019223894">Προσθήκη σήματος σε εφαρμογές</translation>
+<translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
+        <ph name="NOTIFICATION_1" />,
+        <ph name="NOTIFICATION_2" />,
+        <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Επόμενη πρόταση</translation>
 <translation id="5030687792513154421">Τέλος χρόνου</translation>
 <translation id="5033299697334913360">Κάντε κλικ σε οποιοδήποτε σημείο για εγγραφή ολόκληρης της οθόνης.</translation>
@@ -489,6 +494,7 @@
 <translation id="5168181903108465623">Διαθέσιμες συσκευές μετάδοσης</translation>
 <translation id="5170568018924773124">Εμφάνιση στο φάκελο</translation>
 <translation id="5176318573511391780">Εγγραφή μέρους της οθόνης</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 ακόμη ειδοποίηση}other{# ακόμη ειδοποιήσεις}}</translation>
 <translation id="5207949376430453814">Επισήμανση δρομέα κειμένου</translation>
 <translation id="5208059991603368177">Ενεργό</translation>
 <translation id="5222676887888702881">Έξοδος</translation>

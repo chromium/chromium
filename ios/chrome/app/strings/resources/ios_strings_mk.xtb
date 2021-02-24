@@ -174,6 +174,7 @@
 <translation id="2780046210906776326">Нема сметки за е-пошта</translation>
 <translation id="2781331604911854368">Вклучено</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2783054063075604403">Не може да се создаде линк</translation>
 <translation id="2800683595868705743">Излези од менувачот на картички</translation>
 <translation id="2815198996063984598">2. Допрете „Стандардна апликација за прелистување“</translation>
 <translation id="2830972654601096923">Управувајте со адресите…</translation>
@@ -467,6 +468,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5948291296578561264">Ова ви овозможува да ги зачувате фотографиите во збирката со фотографии.</translation>
 <translation id="5955891643922670672">Се прегледува офлајн верзија</translation>
 <translation id="5957613098218939406">Повеќе опции</translation>
+<translation id="5963939892571022323">Не може да се создаде линк до нагласената ставка.</translation>
 <translation id="5964480694698977962">Создај нова инкогнито картичка.</translation>
 <translation id="5965679971710331625">Најавени сте</translation>
 <translation id="5979837087407522202">Пребарајте лозинки</translation>
@@ -615,6 +617,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="734758817008927353">Опции за „Зачувај ја картичката“</translation>
 <translation id="7348502496356775519">Обележи</translation>
 <translation id="7383797227493018512">Список за читање</translation>
+<translation id="7398893703713203428">Создај линк</translation>
 <translation id="739941347996872055">Претходна картичка</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> непрочитани статии.</translation>
@@ -644,6 +647,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="766891008101699113">За приватно прелистување на интернет, додајте нова картичка.</translation>
 <translation id="7671141431838911305">ИНСТАЛИРАЈ</translation>
 <translation id="7701040980221191251">Нема</translation>
+<translation id="7741325291586284254">Нова страница во картичка „Инкогнито“</translation>
 <translation id="7765158879357617694">Премести</translation>
 <translation id="7771470029643830783">Ако се одјавите, обележувачите, историјата, лозинките и другите податоци од Chrome веќе нема да се синхронизираат со вашата сметка на Google.
 

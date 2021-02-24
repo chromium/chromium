@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
 <translation id="1018656279737460067">Скасовано</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (потоків: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
 <translation id="1059913517121127803">Не вдається почати сканування</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">виявлено брандмауер</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">Невідома помилка.</translation>
 <translation id="1204296502688602597">Затримка DNS</translation>
 <translation id="123124571410524056">Можливо, виявлено портал</translation>
-<translation id="1238191093934674082">Відкрити VPN</translation>
 <translation id="1238612778414822719">Затримка HTTPS</translation>
 <translation id="1270369111467284986">Вірогідно, є адаптивний портал</translation>
 <translation id="1290331692326790741">слабкий сигнал</translation>
@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">Зупинено – закінчилося чорнило</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Є резолвер DNS</translation>
+<translation id="1717874160321062422">Пристроєм керують <ph name="FIRST_MANAGER" /> і <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Сканування скасовується</translation>
 <translation id="1851218745569890714">Відеоконференції</translation>
@@ -59,6 +60,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Щоб знайти пристрої поблизу, увімкніть Bluetooth</translation>
 <translation id="2364498172489649528">Виконано</translation>
+<translation id="2365324413026422635">Перевірку заряджання не можна проводити, коли акумулятор повністю заряджений</translation>
 <translation id="2391082728065870591">Надіслати відгук</translation>
 <translation id="2418150275289244458">Відкрити в налаштуваннях</translation>
 <translation id="2446553403094072641">Точність рухомої коми</translation>
@@ -91,6 +93,7 @@
 <translation id="3226405216343213872">Пошук сканерів</translation>
 <translation id="3246869037381808805">Завдання друку, старіші за 1 день, буде вилучено</translation>
 <translation id="3268178239013324452">Не надруковано – відкрито кришку принтера</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" /> ГГц</translation>
 <translation id="3310640316857623290">Затримка DNS значно довша, ніж дозволено</translation>
 <translation id="3328783797891415197">Триває перевірка</translation>
 <translation id="3368922792935385530">Підключено</translation>
@@ -125,6 +128,7 @@
 <translation id="4155551848414053977">Переконайтеся, що сканер увімкнений і доступний у мережі або через пряме з'єднання</translation>
 <translation id="4170700058716978431">НЕ ПРОЙДЕНО</translation>
 <translation id="4176463684765177261">Вимкнено</translation>
+<translation id="4222698289790462549">Поточна швидкість</translation>
 <translation id="4227825898293920515">Термін дії пароля закінчиться через <ph name="TIME" /></translation>
 <translation id="4228041325992544252">Доступно <ph name="AVAILABLE_MEMORY" /> з <ph name="TOTAL_MEMORY" /> ГБ.</translation>
 <translation id="4238516577297848345">Немає активних завдань друку</translation>
@@ -241,6 +245,7 @@
 <translation id="6325525973963619867">Помилка</translation>
 <translation id="636850387210749493">Реєстрація підприємства</translation>
 <translation id="641081527798843608">Збіг суб’єкта</translation>
+<translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Оптимальний</translation>
 <translation id="6472207088655375767">Одноразовий пароль</translation>
 <translation id="6480327114083866287">Керує <ph name="MANAGER" /></translation>

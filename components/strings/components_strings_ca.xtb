@@ -562,6 +562,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
           assegurar-vos que el servidor intermediari funcioni correctament. Si  creieu que no és necessari
           utilitzar un servidor intermediari:
           <ph name="PLATFORM_TEXT" /></translation>
+<translation id="317878711435188021">Saber quan estàs utilitzant aquest dispositiu de manera activa</translation>
 <translation id="3188393374551744535">Saldo del compte</translation>
 <translation id="3194737229810486521"><ph name="URL" /> vol emmagatzemar dades al dispositiu de manera permanent</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> a <ph name="SERVER_NAME" /></translation>
@@ -740,6 +741,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3828924085048779000">Les frases de contrasenya no poder estar buides.</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> ha instal·lat extensions per obtenir funcions addicionals. Les extensions tenen accés a algunes de les teves dades.</translation>
 <translation id="3832522519263485449">Encunyació múltiple a l'esquerra</translation>
+<translation id="3835233591525155343">L'ús que fas del dispositiu</translation>
 <translation id="385051799172605136">Enrere</translation>
 <translation id="3858027520442213535">Actualitza la data i l'hora</translation>
 <translation id="3884278016824448484">L'identificador del dispositiu ja s'està utilitzant</translation>
@@ -1029,6 +1031,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4995216769782533993">Confirma el codi de seguretat per compartir els detalls de la targeta amb aquest lloc web</translation>
 <translation id="4995474875135717171">Data de modificació:</translation>
 <translation id="5002932099480077015">Si s'activa, Chrome emmagatzemarà una còpia de la targeta en aquest dispositiu per agilitzar l'emplenament de formularis.</translation>
+<translation id="5011561501798487822">Idioma detectat</translation>
 <translation id="5015510746216210676">Nom de l'ordinador:</translation>
 <translation id="5017554619425969104">Text que has copiat</translation>
 <translation id="5018422839182700155">No es pot obrir aquesta pàgina</translation>
@@ -1604,6 +1607,7 @@ Detalls addicionals:
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">Línia d'ordres</translation>
 <translation id="7359588939039777303">S'han bloquejat els anuncis.</translation>
+<translation id="7365849542400970216">Vols deixar que se sàpiga l'ús que fas del dispositiu?</translation>
 <translation id="7372973238305370288">resultat de la cerca</translation>
 <translation id="7374733840632556089">Aquest problema es produeix a causa d'un certificat que tu o una altra persona heu instal·lat al dispositiu. Se sap que aquest certificat s'utilitza per supervisar i interceptar xarxes, i Chrome no hi confia. Tot i que hi ha casos en què és legítim dur a terme una supervisió, per exemple, en el cas d'una empresa o d'un centre educatiu, Chrome vol assegurar-se que estiguis al cas d'aquesta situació, encara que no la puguis evitar. La supervisió es pot produir en qualsevol navegador o aplicació que accedeixi al web.</translation>
 <translation id="7375818412732305729">S'adjunta un fitxer</translation>
@@ -2021,6 +2025,7 @@ Detalls addicionals:
 <translation id="8983003182662520383">Formes de pagament i adreces que fan servir Google Pay</translation>
 <translation id="8987927404178983737">Mes</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
+<translation id="899688752321268742"><ph name="URL" /> vol saber quan estàs utilitzant aquest dispositiu de manera activa</translation>
 <translation id="8996941253935762404">Aquest lloc web conté programes perjudicials</translation>
 <translation id="8997023839087525404">El servidor ha presentat un certificat que no s'ha divulgat públicament mitjançant la política Transparència de certificats. Això és un requisit d'alguns certificats per garantir que són de confiança i una mesura de protecció contra els atacants.</translation>
 <translation id="9001074447101275817">El servidor intermediari del domini <ph name="DOMAIN" /> requereix un nom d'usuari i una contrasenya.</translation>

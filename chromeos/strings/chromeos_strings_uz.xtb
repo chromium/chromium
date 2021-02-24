@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
 <translation id="1018656279737460067">Bekor qilindi</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ta oqim, <ph name="CPU_MAX_CLOCK_SPEED" />GGs)</translation>
 <translation id="1059913517121127803">Skanerlash ishga tushmadi</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Himoya devori aniqlandi</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">Noma’lum xatolik.</translation>
 <translation id="1204296502688602597">DNS kechikishi</translation>
 <translation id="123124571410524056">Portal muzlatildi</translation>
-<translation id="1238191093934674082">OpenVPN</translation>
 <translation id="1238612778414822719">HTTPS kechikishi</translation>
 <translation id="1270369111467284986">Kirish portali muzlatildi</translation>
 <translation id="1290331692326790741">Signal kuchsiz</translation>
@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">Toʻxtatildi – Siyoh tugadi</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS vositasi mavjud</translation>
+<translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> va <ph name="SECOND_MANAGER" /> tomonidan boshqariladi</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Skanerlash bekor qilinmoqda</translation>
 <translation id="1851218745569890714">Videokonferensiya</translation>
@@ -59,6 +60,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Yaqin-atrofdagi qurilmalarni aniqlash uchun Bluetooth adapterini yoqing</translation>
 <translation id="2364498172489649528">Tugadi</translation>
+<translation id="2365324413026422635">Batareya toʻliq quvvatlangan vaqtda quvvat tekshiruvini amalga oshirib boʻlmaydi</translation>
 <translation id="2391082728065870591">Fikr va mulohaza hisobotini yuborish</translation>
 <translation id="2418150275289244458">Sozlamalar orqali ochish</translation>
 <translation id="2446553403094072641">Erkin harakatlanish nuqtasi aniqligi</translation>
@@ -91,6 +93,7 @@
 <translation id="3226405216343213872">Skanerlar qidirilmoqda</translation>
 <translation id="3246869037381808805">1 kundan eski chop etish vazifalari avtomatik tozalanadi</translation>
 <translation id="3268178239013324452">Bajarilmadi - Eshikchasi ochiq</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" /> GGs</translation>
 <translation id="3310640316857623290">DNS kutish vaqti ruxsat etilgan chegaradan juda baland</translation>
 <translation id="3328783797891415197">Tekshirilmoqda</translation>
 <translation id="3368922792935385530">Ulangan</translation>
@@ -125,6 +128,7 @@
 <translation id="4155551848414053977">Skaner yoqilganini va tarmoq orqali ishlashi yoki bevosita ulanganini tekshiring</translation>
 <translation id="4170700058716978431">BAJARILMADI</translation>
 <translation id="4176463684765177261">O‘chirib qo‘yilgan</translation>
+<translation id="4222698289790462549">Joriy tezlik</translation>
 <translation id="4227825898293920515">Parol muddati tugashiga <ph name="TIME" /> qoldi</translation>
 <translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" />/<ph name="TOTAL_MEMORY" /> GB joy bor.</translation>
 <translation id="4238516577297848345">Hozir hech nima chop etilmayapti</translation>
@@ -241,6 +245,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="6325525973963619867">Amalga oshmadi</translation>
 <translation id="636850387210749493">Korporativ domen ro‘yxatidan o‘tish</translation>
 <translation id="641081527798843608">Mavzu mosligi</translation>
+<translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Yaxshi</translation>
 <translation id="6472207088655375767">Bir martalik kod</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> tomonidan boshqariladi</translation>

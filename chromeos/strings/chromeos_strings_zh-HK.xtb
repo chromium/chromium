@@ -13,7 +13,6 @@
 <translation id="1195447618553298278">未知的錯誤。</translation>
 <translation id="1204296502688602597">DNS 延遲時間</translation>
 <translation id="123124571410524056">可能有網絡入口</translation>
-<translation id="1238191093934674082">Open VPN</translation>
 <translation id="1238612778414822719">HTTPS 延遲時間</translation>
 <translation id="1270369111467284986">可疑的強制網絡入口</translation>
 <translation id="1290331692326790741">訊號微弱</translation>
@@ -39,6 +38,7 @@
 <translation id="1662989795263954667">已停止 - 墨水已用完</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS 解析器存在</translation>
+<translation id="1717874160321062422">由 <ph name="FIRST_MANAGER" /> 和 <ph name="SECOND_MANAGER" /> 管理</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">取消掃瞄中</translation>
 <translation id="1851218745569890714">視像會議</translation>
@@ -60,6 +60,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">開啟藍牙即可探索附近的裝置</translation>
 <translation id="2364498172489649528">已通過</translation>
+<translation id="2365324413026422635">電池充電測試無法在電池充滿電的情況下進行</translation>
 <translation id="2391082728065870591">傳送意見反映報告</translation>
 <translation id="2418150275289244458">在設定中開啟</translation>
 <translation id="2446553403094072641">浮點準確性</translation>
@@ -244,6 +245,7 @@
 <translation id="6325525973963619867">失敗</translation>
 <translation id="636850387210749493">企業註冊</translation>
 <translation id="641081527798843608">主題比對</translation>
+<translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">良好</translation>
 <translation id="6472207088655375767">動態密碼</translation>
 <translation id="6480327114083866287">由 <ph name="MANAGER" /> 管理</translation>

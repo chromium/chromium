@@ -93,6 +93,7 @@
 <translation id="1942765061641586207">Resolução da imagem</translation>
 <translation id="1943097386230153518">Instalar novo serviço</translation>
 <translation id="1972984168337863910">Expandir painéis de feedback de arquivos</translation>
+<translation id="1984456723671657197">Esse tipo de arquivo não é compatível. <ph name="BEGIN_LINK_HELP" />Saiba mais<ph name="END_LINK_HELP" /> sobre como abrir arquivos no Chrome OS.</translation>
 <translation id="1995337122023280937">Acessar local do arquivo</translation>
 <translation id="2001796770603320721">Gerenciar no Drive</translation>
 <translation id="2009067268969781306">A formatação de uma unidade excluirá todos os dados armazenados nela. Esta ação não pode ser desfeita.</translation>
@@ -331,7 +332,6 @@
 <translation id="4706042980341760088">Tâmil com teclado de máquina de escrever</translation>
 <translation id="4711094779914110278">Turco</translation>
 <translation id="4712283082407695269">Abrindo "<ph name="PATH" />"</translation>
-<translation id="4713544552769165154">Este arquivo foi projetado para um computador que utiliza o software Macintosh. Ele não é compatível com seu dispositivo, que executa o Chrome OS. Procure um app substituto adequado na <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.<ph name="BEGIN_LINK_HELP" />Saiba mais<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">Foi realizado o backup de <ph name="FILE_COUNT" /> fotos</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4732760563705710320">Este vídeo não é suportado pelo seu dispositivo de transmissão.</translation>
@@ -465,8 +465,6 @@
 <translation id="5833610766403489739">Este arquivo está perdido em algum lugar. Verifique sua configuração de local de download e tente novamente.</translation>
 <translation id="5838451609423551646">Todas as entradas removidas da seleção.</translation>
 <translation id="5838825566232597749">Workman internacional dos EUA</translation>
-<translation id="5850516540536751549">Este tipo de arquivo não é compatível. Visite a <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> para encontrar um aplicativo que possa abri-lo.
-    <ph name="BEGIN_LINK_HELP" />Saiba mais<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Não há o que ver aqui...</translation>
 <translation id="5911887972742538906">Ocorreu um erro durante a instalação do aplicativo Linux.</translation>
 <translation id="5912396950572065471">Formato</translation>
@@ -670,13 +668,13 @@
 <translation id="7972920761225148017">Francês (Suíça)</translation>
 <translation id="7980421588063892270">Inglês (EUA) com teclado Colemak</translation>
 <translation id="7982283708762922719">Altura</translation>
+<translation id="79907182588096956">Esse arquivo foi criado para computadores que usam o software do Windows. Ele não é compatível com seu dispositivo Chrome OS. <ph name="BEGIN_LINK_HELP" />Saiba mais<ph name="END_LINK_HELP" /> sobre como abrir arquivos no Chrome OS.</translation>
 <translation id="8008366997883261463">Jack Russell Terrier</translation>
 <translation id="8028993641010258682">Tamanho</translation>
 <translation id="803771048473350947">Arquivo</translation>
 <translation id="8038111231936746805">(padrão)</translation>
 <translation id="8042602468072383151">Áudio <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">Romeno</translation>
-<translation id="8052887694493382350">Esse arquivo foi criado para computadores que utilizam o software do Windows. Ele não é compatível com seu dispositivo, que executa o Chrome OS. <ph name="BEGIN_LINK_HELP" />Saiba mais<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Todas as edições serão salvas em <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Repetir</translation>
 <translation id="8106045200081704138">Compartilhado comigo</translation>
@@ -750,6 +748,7 @@
 <translation id="8900820606136623064">Húngaro</translation>
 <translation id="8919081441417203123">Dinamarquês</translation>
 <translation id="8965697826696209160">Não há espaço suficiente.</translation>
+<translation id="8970501467542182729">Esse arquivo foi criado para computadores que usam o software Macintosh. Ele não é compatível com seu dispositivo Chrome OS. <ph name="BEGIN_LINK_HELP" />Saiba mais<ph name="END_LINK_HELP" /> sobre como abrir arquivos no Chrome OS.</translation>
 <translation id="8997962250644902079">Chinês (tradicional, pinyin)</translation>
 <translation id="9017798300203431059">Russo fonético</translation>
 <translation id="9034924485347205037">Arquivos do Linux</translation>

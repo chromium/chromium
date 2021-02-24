@@ -4,6 +4,7 @@
 <translation id="102360288709523007">Hjálpaðu til við að bæta Chromium með því að senda talnagögn um notkun og hrunskýrslur til Google.</translation>
 <translation id="1185134272377778587">Um Chromium</translation>
 <translation id="1257458525759135959">Til að vista myndir og láta Chromium bæta við myndirnar þínar skaltu ýta á Stillingar</translation>
+<translation id="1289216811211435351">Skipta yfir í Chromium</translation>
 <translation id="1361748954329991663">Chromium er úrelt. Ef engin uppfærsla er til staðar í <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> getur verið að tækið þitt styðji ekki lengur nýjar útgáfur af Chromium.</translation>
 <translation id="1431818719585918472">Leyfa Chromium að læsa huliðsflipunum þínum.</translation>
 <translation id="1472013873724362412">Reikningurinn þinn virkar ekki í Chromium. Hafðu samband við stjórnanda lénsins eða notaðu venjulegan Google reikning til að skrá þig inn.</translation>
@@ -34,6 +35,7 @@
 <translation id="4099085513035183040">Ekki stutt í Chromium Beta</translation>
 <translation id="4166206055865952171">Gerðu Chromium að sjálfgefnum vafra</translation>
 <translation id="4555020257205549924">Þegar þessi eiginleiki er virkur mun Chromium bjóðast til að þýða vefsíður sem eru ritaðar á öðru tungumáli með Google Translate. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
+<translation id="4585809515399340748">Núna geturðu notað Chromium hvenær sem þú ýtir á tengil í skilaboðum, skjölum og öðrum forritum.</translation>
 <translation id="4681781466797808448">Kveiktu á Chromium skanna</translation>
 <translation id="4787850887676698916">Flipar sem þú hefur opnað í Chromium í öðrum tækjum birtast hér.</translation>
 <translation id="4828317641996116749">Chromium gat ekki athugað öll aðgangsorð. Reyndu aftur síðar.</translation>
@@ -42,9 +44,9 @@
 <translation id="5224391634244552924">Engin vistuð aðgangsorð. Chromium getur athugað aðgangsorðin þín þegar þú vistar þau.</translation>
 <translation id="5308226104666789935">Chromium getur ekki leitað að uppfærslum</translation>
 <translation id="5521125884468363740">Skráðu þig inn og kveiktu á samstillingu til að sjá flipana þína hvar sem þú notar Chromium</translation>
-<translation id="5544795779875591523">Veldu hvort þú vilt hreinsa Chromium gögn úr þessu tæki eða geyma þau.</translation>
 <translation id="5573014823074921752">Ábending um Chromium. Til að sjá fleiri valkosti fyrir flipa skaltu halda hnappinum „Sýna flipa“ inni á tækjastikunni, sem er neðst eða efst á skjánum.</translation>
 <translation id="5700709190537129682">Chromium getur ekki athugað aðgangsorðin þín</translation>
+<translation id="5742135483959137648">Nota Chromium til að opna tengla</translation>
 <translation id="5777187867430702742">Chromium síða</translation>
 <translation id="5862307444128926510">Velkomin(n) í Chromium</translation>
 <translation id="5945387852661427312">Þú ert að skrá þig út af reikningi sem stýrt er af <ph name="DOMAIN" /> og veitir í leiðinni stjórnanda lénsins umsjón með Chromium gögnunum þínum. Gögnin þín verða tengd við þennan reikning til frambúðar. Ef þú skráir þig út af Chromium verður gögnunum þínum á þessu tæki eytt, en þau verða áfram geymd á Google reikningnum þínum.</translation>
@@ -63,6 +65,7 @@
 <translation id="7208566199746267865">Chromium sparar þér tíma með því að færa reikningana þína yfir á vefinn. Þú getur bætt við reikningum eða fjarlægt þá í stillingum.</translation>
 <translation id="725427773388857052">Chromium getur veitt þér vernd gegn öryggisbrotum, hættulegum vefsvæðum og fleira.</translation>
 <translation id="7269362888766543920">Einhverjar viðbætur valda því að Chromium hrynur. Prófaðu að fjarlægja þær.</translation>
+<translation id="7313655110045230863">Til að gera Chromium að sjálfgefnum vafra skaltu opna stillingarnar. Þar skaltu ýta á „Sjálfgefið vafraforrit“ og velja Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Völdu gögnin hafa verið fjarlægð af Chromium og samstilltum tækjum. Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, svo sem yfir leit og virkni í annarri þjónustu Google, á history.google.com.</translation>
 <translation id="7400689562045506105">Notaðu Chromium hvar sem er</translation>

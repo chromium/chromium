@@ -405,6 +405,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4421231901400348175">Ovládání obrazovky je prostřednictvím Vzdálené pomoci sdíleno s uživatelem <ph name="HELPER_NAME" />.</translation>
 <translation id="4424159417645388645">Plocha 5</translation>
 <translation id="4430019312045809116">Hlasitost</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 důležité oznámení}few{# důležitá oznámení}many{# důležitého oznámení}other{# důležitých oznámení}}</translation>
 <translation id="4450893287417543264">Tuto zprávu již nezobrazovat</translation>
 <translation id="445864333228800152">Dobrý večer,</translation>
 <translation id="4458688154122353284">Zastavit nahrávání obrazovky</translation>
@@ -476,6 +477,10 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4961318399572185831">Odesílání obrazovky</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Označování aplikací odznakem</translation>
+<translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
+        <ph name="NOTIFICATION_1" />,
+        <ph name="NOTIFICATION_2" />,
+        <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Další věta</translation>
 <translation id="5030687792513154421">Čas vypršel</translation>
 <translation id="5033299697334913360">Snímek celé obrazovky pořídíte klepnutím kamkoliv</translation>
@@ -489,6 +494,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5168181903108465623">Dostupná zařízení pro streamování obsahu</translation>
 <translation id="5170568018924773124">Zobrazit ve složce</translation>
 <translation id="5176318573511391780">Zaznamenat část obrazovky</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 další oznámení}few{# další oznámení}many{# dalšího oznámení}other{# dalších oznámení}}</translation>
 <translation id="5207949376430453814">Zvýraznit textový kurzor</translation>
 <translation id="5208059991603368177">Zap</translation>
 <translation id="5222676887888702881">Odhlásit se</translation>

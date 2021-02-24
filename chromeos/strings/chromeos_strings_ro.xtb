@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
 <translation id="1018656279737460067">Anulat</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> fire, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1059913517121127803">Nu s-a putut începe scanarea</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">S-a detectat un firewall</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">Eroare necunoscută.</translation>
 <translation id="1204296502688602597">Latența DNS</translation>
 <translation id="123124571410524056">Posibil portal</translation>
-<translation id="1238191093934674082">VPN deschisă</translation>
 <translation id="1238612778414822719">Latență a solicitărilor HTTPS</translation>
 <translation id="1270369111467284986">Posibil portal captiv</translation>
 <translation id="1290331692326790741">Semnal slab</translation>
@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">Oprită – Cerneală epuizată</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Rezolvitor DNS prezent</translation>
+<translation id="1717874160321062422">Gestionat de <ph name="FIRST_MANAGER" /> și de <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Se anulează scanarea</translation>
 <translation id="1851218745569890714">Conferințe video</translation>
@@ -59,6 +60,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Pentru a descoperi dispozitivele din apropiere, activează Bluetooth</translation>
 <translation id="2364498172489649528">Reușită</translation>
+<translation id="2365324413026422635">Testul pentru nivelul de încărcare a bateriei nu poate rula dacă bateria este încărcată complet</translation>
 <translation id="2391082728065870591">Trimite un raport de feedback</translation>
 <translation id="2418150275289244458">Deschide în setări</translation>
 <translation id="2446553403094072641">Precizia virgulei mobile</translation>
@@ -91,6 +93,7 @@
 <translation id="3226405216343213872">Se caută scanere</translation>
 <translation id="3246869037381808805">Sarcinile de printare mai vechi de o zi vor fi eliminate</translation>
 <translation id="3268178239013324452">Nereușită – Ușă deschisă</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">Latența DNS depășește semnificativ pragul permisibil</translation>
 <translation id="3328783797891415197">Se rulează testul</translation>
 <translation id="3368922792935385530">Conectat</translation>
@@ -102,6 +105,7 @@
 <translation id="3459509316159669723">Printare</translation>
 <translation id="3488065109653206955">Activat parțial</translation>
 <translation id="3527036260304016759">Nereușită – Eroare necunoscută</translation>
+<translation id="3532980081107202182">Au mai rămas aproximativ <ph name="MIN_REMAINING" /> minute</translation>
 <translation id="357889014807611375">Wi-Fi contorizat</translation>
 <translation id="3595596368722241419">Baterie încărcată</translation>
 <translation id="360565022852130722">Rețeaua Wi-Fi este securizată cu protocolul slab WEP 802.1x</translation>
@@ -125,6 +129,7 @@
 <translation id="4155551848414053977">Scanerul trebuie să fie pornit și disponibil prin rețea sau prin conexiune directă</translation>
 <translation id="4170700058716978431">NEREUȘIT</translation>
 <translation id="4176463684765177261">Dezactivat</translation>
+<translation id="4222698289790462549">Viteza actuală</translation>
 <translation id="4227825898293920515">Parola expiră în <ph name="TIME" /></translation>
 <translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" /> GB din <ph name="TOTAL_MEMORY" /> GB disponibili.</translation>
 <translation id="4238516577297848345">Nicio sarcină de printare în desfășurare</translation>
@@ -241,6 +246,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6325525973963619867">Eșuat</translation>
 <translation id="636850387210749493">Înscriere pentru întreprindere</translation>
 <translation id="641081527798843608">Potrivirea subiectului</translation>
+<translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Bun</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Gestionat de <ph name="MANAGER" /></translation>
@@ -327,6 +333,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8477551185774834963">Latența DNS depășește ușor pragul permisibil</translation>
 <translation id="8483248364096924578">Adresă IP</translation>
 <translation id="8503813439785031346">Nume utilizator</translation>
+<translation id="8503836310948963452">Mai sunt câteva minute…</translation>
 <translation id="8576249514688522074">Neinițializată</translation>
 <translation id="8620617069779373398">Stare roaming</translation>
 <translation id="8675354002693747642">Cheie predistribuită</translation>
@@ -358,6 +365,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="9106415115617144481">Se scanează pagina <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Deblochează</translation>
 <translation id="9149391708638971077">Rulează testul Memorie</translation>
+<translation id="9173638680043580060">A rămas mai puțin de un minut</translation>
 <translation id="9190063653747922532">L2TP/IPSec + cheia predistribuită</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Neactivat</translation>

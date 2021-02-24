@@ -56,6 +56,7 @@
 <translation id="1331212799747679585">Det går inte att uppdatera Chrome. Fler alternativ</translation>
 <translation id="1332501820983677155">Kortkommandon för funktioner i Google Chrome</translation>
 <translation id="133857033449832692">Laddar ned <ph name="LANG" /> …</translation>
+<translation id="1344653310988386453">Ta med länk till markering</translation>
 <translation id="1347468774581902829">Hantera aktivitet</translation>
 <translation id="1360432990279830238">Logga ut och inaktivera synkronisering?</translation>
 <translation id="1373696734384179344">Det finns inte tillräckligt med minne för att ladda ned det valda innehållet.</translation>
@@ -130,6 +131,7 @@
 <translation id="1960290143419248813">Uppdateringar av Chrome stöds inte längre för den här versionen av Android</translation>
 <translation id="1963976881984600709">Standardskydd</translation>
 <translation id="1966710179511230534">Uppdatera dina inloggningsuppgifter.</translation>
+<translation id="1973912524893600642">Behåll data</translation>
 <translation id="1974060860693918893">Avancerat</translation>
 <translation id="1984417487208496350">Inget skydd (rekommenderas inte)</translation>
 <translation id="1984705450038014246">Synkronisera data i Chrome</translation>
@@ -301,6 +303,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="3058498974290601450">Du kan när som helst inaktivera synkroniseringen i inställningarna</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bokmärke}other{<ph name="BOOKMARKS_COUNT_MANY" /> bokmärken}}</translation>
 <translation id="3062802207422175757">Artiklar om dina intressen i Chrome</translation>
+<translation id="3070005020161560471">Översätt automatiskt</translation>
 <translation id="3089395242580810162">Öppna i inkognitoflik</translation>
 <translation id="3098745985164956033">Vissa bilder skickas till Google så att du får bättre beskrivningar</translation>
 <translation id="3114507951000454849">Läs dagens nyheter <ph name="NEWS_ICON" /></translation>
@@ -350,10 +353,18 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="3384347053049321195">Dela bild</translation>
 <translation id="3387650086002190359">Det gick inte att ladda ned <ph name="FILE_NAME" /> på grund av filsystemfel.</translation>
 <translation id="3389286852084373014">Texten är för stor</translation>
+<translation id="3391512812407811893">Prova Privacy Sandbox</translation>
 <translation id="3398320232533725830">Öppna bokmärkeshanteraren</translation>
 <translation id="3414952576877147120">Storlek:</translation>
 <translation id="3429160811076349561">Provfunktionerna är inaktiverade</translation>
 <translation id="3443221991560634068">Läs in den aktuella sidan igen</translation>
+<translation id="3451542610083122179">Initiativet Privacy Sandbox syftar till att bevara den öppna webben utan att använda teknik som spårar dig.
+
+I dag används teknik som tredjepartscookies på många webbplatser för viktiga tjänster, som att visa relevanta annonser eller mäta webbplatsresultat.
+
+Privacy Sandbox bevarar den öppna webbens vitalitet genom att skapa bättre sätt att tillhandahålla dessa tjänster på – utan att webbplatserna ska sluta att fungera! – så att du inte ska behöva bli spårad från webbplats till webbplats.
+
+Privacy Sandbox är för närvarande under utveckling och tillgängligt i vissa regioner. För närvarande går det att testa Privacy Sandbox på en webbplats samtidigt som gängse webbteknik som tredjepartscookies används på den. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">Du kan välja din sökmotor</translation>
 <translation id="3492207499832628349">Ny inkognitoflik</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /> om förslag på innehåll</translation>
@@ -591,6 +602,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 nedladdning misslyckades.}other{# nedladdningar misslyckades.}}</translation>
 <translation id="5170568018924773124">Visa i mapp</translation>
 <translation id="5184329579814168207">Öppna i Chrome</translation>
+<translation id="5191251636205085390">Läs mer om ny teknik som med tiden kan ersätta tredjepartscookies och hur du kan styra den</translation>
 <translation id="5193988420012215838">Kopierat till urklipp</translation>
 <translation id="5199929503336119739">Jobbprofil</translation>
 <translation id="5210286577605176222">Hoppa till föregående flik</translation>
@@ -613,6 +625,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5355191726083956201">Förbättrat skydd är aktiverat</translation>
 <translation id="5357811892247919462">En flik har tagits emot</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> flik öppen, tryck här om du vill byta flik}other{<ph name="OPEN_TABS_MANY" /> flikar öppna, tryck här om du vill byta flik}}</translation>
+<translation id="5375577065097716013">Bildsökning med Google Lens <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Tillåt endast vissa webbplatser</translation>
 <translation id="5414836363063783498">Verifierar ...</translation>
 <translation id="5423934151118863508">Dina mest besökta sidor visas här</translation>
@@ -648,6 +661,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5599941490345670218">Google-assistenten kan utföra åtgärder åt dig på webbplatser</translation>
 <translation id="5620163320393916465">Inga sparade lösenord</translation>
 <translation id="5620928963363755975">Du hittar filerna och sidorna i Nedladdningar via knappen Fler alternativ</translation>
+<translation id="562168087174703495">Det gick inte att skapa en länk till markeringen. Dela en länk till sidan.</translation>
 <translation id="562289928968387744">Hantera reaktioner</translation>
 <translation id="5626134646977739690">Namn:</translation>
 <translation id="5628604359369369630">Oläst – Tillgänglig offline</translation>
@@ -761,6 +775,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6312687380483398334">Webbappar (tyst)</translation>
 <translation id="6316139424528454185">Android-versionen stöds inte</translation>
 <translation id="6324034347079777476">Synkronisering av Android-system har inaktiverats</translation>
+<translation id="6324977638108296054">Det gick inte att skapa en länk till markeringen</translation>
 <translation id="6333140779060797560">Dela via <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Kryptering</translation>
 <translation id="6341580099087024258">Fråga var filerna ska sparas</translation>
@@ -792,6 +807,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6477928892249167417">De här webbplatserna verkar vara viktiga för dig:</translation>
 <translation id="6482749332252372425">Det gick inte att ladda ned <ph name="FILE_NAME" /> eftersom det inte finns tillräckligt med lagringsutrymme.</translation>
 <translation id="6489610539826642779">Läslista <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
+<translation id="6490496612063106490">Länka till markering</translation>
 <translation id="6496823230996795692">Du behöver vara ansluten till internet när du använder <ph name="APP_NAME" /> för första gången.</translation>
 <translation id="6508722015517270189">Starta om Chrome</translation>
 <translation id="6527303717912515753">Dela</translation>
@@ -990,6 +1006,7 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="784934925303690534">Tidsintervall</translation>
 <translation id="7851858861565204677">Andra enheter</translation>
 <translation id="7857691613771368249">Fråga när filerna ska sparas</translation>
+<translation id="7859988229622350291">Översätt aldrig</translation>
 <translation id="7875915731392087153">Skapa ett e-postmeddelande</translation>
 <translation id="7876243839304621966">Ta bort alla</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Du har <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> oläst sida}other{Du har <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> olästa sidor}}</translation>
@@ -1053,7 +1070,6 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="8218622182176210845">Hantera kontot</translation>
 <translation id="8223642481677794647">Menyn med flödeskort</translation>
 <translation id="8224471946457685718">Ladda ned artiklar för dig via Wi-Fi</translation>
-<translation id="8232956427053453090">Behåll data</translation>
 <translation id="8233540874193135768">Du behöver en enhet med kamera för att skanna en QR-kod.</translation>
 <translation id="8250920743982581267">Dokument</translation>
 <translation id="825412236959742607">Den här sidan använder för mycket minne, så en del innehåll har tagits bort.</translation>
@@ -1067,6 +1083,7 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="8310344678080805313">Standardflikar</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> och fler webbplatser</translation>
 <translation id="8327155640814342956">Uppdatera Chrome så att du får bästa möjliga surfupplevelse</translation>
+<translation id="834313815369870491">Översätt aldrig webbplatser</translation>
 <translation id="8349013245300336738">Sortera efter dataförbrukning</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> nedladdningar har återställts</translation>
 <translation id="8364299278605033898">Visa populära webbplatser</translation>

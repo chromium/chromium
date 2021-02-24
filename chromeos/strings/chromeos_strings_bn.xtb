@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
 <translation id="1018656279737460067">বাতিল হয়েছে</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" />টি থ্রেড, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1059913517121127803">স্ক্যান শুরু করা যায়নি</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ফায়ারওয়াল শনাক্ত করা হয়েছে</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">অজানা ত্রুটি৷</translation>
 <translation id="1204296502688602597">ডিএনএস লেটেন্সি</translation>
 <translation id="123124571410524056">পোর্টাল হতে পারে</translation>
-<translation id="1238191093934674082">VPN খুলুন</translation>
 <translation id="1238612778414822719">HTTPS লেটেন্সি</translation>
 <translation id="1270369111467284986">এটি একটি অন্তরীণ পোর্টাল হতে পারে</translation>
 <translation id="1290331692326790741">সিগন্যালটি ভাল নয়</translation>
@@ -91,6 +91,7 @@
 <translation id="3226405216343213872">স্ক্যানার খোঁজা হচ্ছে</translation>
 <translation id="3246869037381808805">১ দিনের বেশি পুরনো প্রিন্ট জব সরিয়ে দেওয়া হবে</translation>
 <translation id="3268178239013324452">প্রিন্ট করা যায়নি - প্রিন্টারের ঢাকনা ভাল করে বন্ধ করা হয়নি</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3310640316857623290">যতদূর পর্যন্ত লেটেন্সির ঊর্ধ্বসীমা অনুমোদন করা যায়, ডিএনএস লেটেন্সি উল্লেখযোগ্যভাবে তার চেয়ে বেশি</translation>
 <translation id="3328783797891415197">টেস্ট করা হচ্ছে</translation>
 <translation id="3368922792935385530">সংযুক্ত</translation>
@@ -125,6 +126,7 @@
 <translation id="4155551848414053977">আপনার স্ক্যানার চালু এবং নেটওয়ার্ক বা সরাসরি কানেকশনের মাধ্যমে উপলভ্য রয়েছে তা দেখে নিন</translation>
 <translation id="4170700058716978431">ব্যর্থ হয়েছে</translation>
 <translation id="4176463684765177261">অক্ষম হয়েছে</translation>
+<translation id="4222698289790462549">এখন স্পিড</translation>
 <translation id="4227825898293920515">পাসওয়ার্ডের মেয়াদ <ph name="TIME" />-এ শেষ হবে</translation>
 <translation id="4228041325992544252"><ph name="TOTAL_MEMORY" /> জিবির মধ্যে <ph name="AVAILABLE_MEMORY" /> জিবি উপলভ্য।</translation>
 <translation id="4238516577297848345">প্রিন্ট করার কোনও কাজ চালু নেই</translation>
@@ -240,6 +242,7 @@
 <translation id="6325525973963619867">ব্যর্থ</translation>
 <translation id="636850387210749493">এন্টারপ্রাইজ নথিভুক্তিকরণ</translation>
 <translation id="641081527798843608">বিষয়ের মিল</translation>
+<translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">ভাল</translation>
 <translation id="6472207088655375767">ওটিপি</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" />-এর মাধ্যমে ম্যানেজ করা হয়</translation>

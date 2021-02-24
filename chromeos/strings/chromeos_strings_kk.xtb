@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="kk">
 <translation id="1018656279737460067">Бас тартылды</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> тізбек, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
 <translation id="1059913517121127803">Сканерлеуді қосу мүмкін болмады.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Брандмаэур анықталды.</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">Белгісіз қате.</translation>
 <translation id="1204296502688602597">DNS кідірісі</translation>
 <translation id="123124571410524056">Портал болуы мүмкін.</translation>
-<translation id="1238191093934674082">VPN ашу</translation>
 <translation id="1238612778414822719">HTTPS кідірісі</translation>
 <translation id="1270369111467284986">Адаптивті портал болуы мүмкін.</translation>
 <translation id="1290331692326790741">Әлсіз сигнал</translation>
@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">Тоқтатылды: сия бітіп қалды</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS түрлендіргіші бар</translation>
+<translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> және <ph name="SECOND_MANAGER" /> арқылы басқарылады.</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Сканерлеу тоқтатылуда</translation>
 <translation id="1851218745569890714">Бейнеконференция жасау</translation>
@@ -59,6 +60,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> нүкте/дюйм</translation>
 <translation id="2338501278241028356">Маңайдағы құрылғыларды табу үшін Bluetooth функциясын қосыңыз</translation>
 <translation id="2364498172489649528">Сынақтан өтті</translation>
+<translation id="2365324413026422635">Батарея толы кезде заряд тексерілмейді.</translation>
 <translation id="2391082728065870591">Пікірлер есебін жіберу</translation>
 <translation id="2418150275289244458">Параметрлер бөлімінен ашу</translation>
 <translation id="2446553403094072641">Жылжымалы үтір дәлдігі</translation>
@@ -91,6 +93,7 @@
 <translation id="3226405216343213872">Сканерлер ізделуде</translation>
 <translation id="3246869037381808805">1 күннен асқан баспа жұмыстары өшіріледі.</translation>
 <translation id="3268178239013324452">Сәтсіз: есігі ашық</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" /> ГГц</translation>
 <translation id="3310640316857623290">DNS кідірісі рұқсат етілетін шектен әлдеқайда жоғары.</translation>
 <translation id="3328783797891415197">Тексерілуде</translation>
 <translation id="3368922792935385530">Қосылған</translation>
@@ -102,6 +105,7 @@
 <translation id="3459509316159669723">Басып шығару</translation>
 <translation id="3488065109653206955">Ішінара белсендірілген</translation>
 <translation id="3527036260304016759">Сәтсіз: белгісіз қате шықты</translation>
+<translation id="3532980081107202182">Шамамен <ph name="MIN_REMAINING" /> минут қалды.</translation>
 <translation id="357889014807611375">шектелген Wi-Fi</translation>
 <translation id="3595596368722241419">Батарея толы</translation>
 <translation id="360565022852130722">WiFi желісі WEP 802.1x әлсіз протоколымен қорғалған.</translation>
@@ -125,6 +129,7 @@
 <translation id="4155551848414053977">Сканеріңіз қосылып тұруы керек және желі немесе тікелей қосылым арқылы қолжетімді болуы тиіс.</translation>
 <translation id="4170700058716978431">СӘТСІЗ АЯҚТАЛДЫ</translation>
 <translation id="4176463684765177261">Өшірілген</translation>
+<translation id="4222698289790462549">Қазіргі жылдамдық</translation>
 <translation id="4227825898293920515">Құпия сөздің мерзімі <ph name="TIME" /> өткен соң аяқталады.</translation>
 <translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" />/<ph name="TOTAL_MEMORY" /> ГБ қолжетімді.</translation>
 <translation id="4238516577297848345">Ешқандай баспа жұмысы орындалып жатқан жоқ.</translation>
@@ -240,6 +245,7 @@
 <translation id="6325525973963619867">Қате шықты</translation>
 <translation id="636850387210749493">Кәсіпорынды тіркеу</translation>
 <translation id="641081527798843608">Тақырып сәйкестігі</translation>
+<translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Жақсы</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> басқарады</translation>
@@ -326,6 +332,7 @@
 <translation id="8477551185774834963">DNS кідірісі рұқсат етілетін шектен сәл жоғары.</translation>
 <translation id="8483248364096924578">IP мекенжайы</translation>
 <translation id="8503813439785031346">Пайдаланушы аты</translation>
+<translation id="8503836310948963452">Бірнеше минут қана…</translation>
 <translation id="8576249514688522074">Бастаудан бас тартылды</translation>
 <translation id="8620617069779373398">Роуминг күйі</translation>
 <translation id="8675354002693747642">Алдын ала бөлісілген код</translation>
@@ -357,6 +364,7 @@
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-бет сканерленуде</translation>
 <translation id="9111102763498581341">Құлпын ашу</translation>
 <translation id="9149391708638971077">Жад тексерісін іске қосу</translation>
+<translation id="9173638680043580060">Бір минутқа жетпейтін уақыт қалды.</translation>
 <translation id="9190063653747922532">L2TP/IPsec + алдын ала бөлісілген кілт</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Белсендірілмеген</translation>

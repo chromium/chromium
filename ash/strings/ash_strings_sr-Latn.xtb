@@ -405,6 +405,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="4421231901400348175">Delite kontrolu nad ekranom sa osobom <ph name="HELPER_NAME" /> preko Daljinske pomoći.</translation>
 <translation id="4424159417645388645">Radna površina 5</translation>
 <translation id="4430019312045809116">Jačina zvuka</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 važno obaveštenje}one{# važno obaveštenje}few{# važna obaveštenja}other{# važnih obaveštenja}}</translation>
 <translation id="4450893287417543264">Ne prikazuj ponovo</translation>
 <translation id="445864333228800152">Dobro veče,</translation>
 <translation id="4458688154122353284">Zaustavite snimanje ekrana</translation>
@@ -476,6 +477,10 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="4961318399572185831">Prebacivanje ekrana</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> s <ph name="MINUTES" /> min <ph name="SECONDS" /> sek</translation>
 <translation id="4975771730019223894">Dodavanje znački na aplikacije</translation>
+<translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
+        <ph name="NOTIFICATION_1" />,
+        <ph name="NOTIFICATION_2" />,
+        <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Sledeća rečenica</translation>
 <translation id="5030687792513154421">Vreme je isteklo</translation>
 <translation id="5033299697334913360">Kliknite bilo gde da biste snimili ceo ekran</translation>
@@ -489,6 +494,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="5168181903108465623">Dostupni su uređaji za prebacivanje</translation>
 <translation id="5170568018924773124">Prikaži u direktorijumu</translation>
 <translation id="5176318573511391780">Snimi deo ekrana</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Još 1 obaveštenje}one{Još # obaveštenje}few{Još # obaveštenja}other{Još # obaveštenja}}</translation>
 <translation id="5207949376430453814">Istakni kursor za tekst</translation>
 <translation id="5208059991603368177">Uključeno</translation>
 <translation id="5222676887888702881">Odjavi me</translation>

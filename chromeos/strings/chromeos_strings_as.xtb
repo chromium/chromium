@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="as">
 <translation id="1018656279737460067">বাতিল কৰা হ’ল</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> টা থ্ৰেড, <ph name="CPU_MAX_CLOCK_SPEED" /> গিগাহাৰ্টজ)</translation>
 <translation id="1059913517121127803">স্কেনিং আৰম্ভ কৰিব পৰা নগ’ল</translation>
 <translation id="1070066693520972135">ডব্লিউইপি</translation>
 <translation id="1071587090247825784">ফায়াৰৱাল চিনাক্ত কৰা হৈছে</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">অজ্ঞাত আসোঁৱাহ।</translation>
 <translation id="1204296502688602597">DNS বিলম্বতা</translation>
 <translation id="123124571410524056">প’ৰ্টেলৰ সন্দেহ কৰা হৈছে</translation>
-<translation id="1238191093934674082">VPN খোলক</translation>
 <translation id="1238612778414822719">HTTPSৰ বিলম্বতা</translation>
 <translation id="1270369111467284986">কেপটিভ প’র্টেলৰ সন্দেহ কৰা হৈছে</translation>
 <translation id="1290331692326790741">দুৰ্বল সংকেত</translation>
@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">বন্ধ হৈছে - চিয়াঁহী শেষ হৈছে</translation>
 <translation id="1703835215927279855">লেটাৰ</translation>
 <translation id="1706391837335750954">DNS ৰিজলভাৰ প্ৰেজেণ্ট</translation>
+<translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> আৰু <ph name="SECOND_MANAGER" />এ পৰিচালনা কৰা</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">স্কেন বাতিল কৰি থকা হৈছে</translation>
 <translation id="1851218745569890714">ভিডিঅ’ কনফাৰেন্সিং</translation>
@@ -59,6 +60,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">ওচৰ-পাজৰৰ ডিভাইচসমূহ চাবলৈ ব্লুটুথ অন কৰক</translation>
 <translation id="2364498172489649528">পাছ কৰিছে</translation>
+<translation id="2365324413026422635">বেটাৰী সম্পূৰ্ণৰূপে চাৰ্জ হৈ থাকিলে চাৰ্জৰ পৰীক্ষা সম্পাদন কৰিব নোৱাৰি</translation>
 <translation id="2391082728065870591">মতামত বিষয়ক ৰিপ’ৰ্টটো পঠিয়াওক</translation>
 <translation id="2418150275289244458">ছেটিঙত খোলক</translation>
 <translation id="2446553403094072641">ওপঙি থকা বিন্দুৰ সঠিকতা</translation>
@@ -91,6 +93,7 @@
 <translation id="3226405216343213872">স্কেনাৰ বিচাৰি থকা হৈছে</translation>
 <translation id="3246869037381808805">১ দিনতকৈ পুৰণি প্ৰিণ্ট কাৰ্যসমূহ আঁতৰোৱা হ’ব</translation>
 <translation id="3268178239013324452">বিফল হৈছে - দুৱাৰ খোল খাই আছে</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" /> গিগাহাৰ্টজ</translation>
 <translation id="3310640316857623290">DNSৰ বিলম্বতা যথেষ্ট পৰিমাণে অনুমতি দিয়া সীমাতকৈ ওপৰত আছে</translation>
 <translation id="3328783797891415197">পৰীক্ষা চলি আছে</translation>
 <translation id="3368922792935385530">সংযোগ কৰা হ’ল</translation>
@@ -125,6 +128,7 @@
 <translation id="4155551848414053977">নিশ্চিত কৰক যে স্কেনাৰটো অন কৰা আছে আৰু আপোনাৰ নেটৱৰ্ক অথবা এটা পোনপটীয়া সংযোগৰ জৰিয়তে উপলব্ধ হৈ আছে</translation>
 <translation id="4170700058716978431">বিফল হৈছে</translation>
 <translation id="4176463684765177261">অক্ষম আছে</translation>
+<translation id="4222698289790462549">বৰ্তমানৰ বেগ</translation>
 <translation id="4227825898293920515">পাছৱর্ডৰ ম্যাদ উকলাৰ সময় <ph name="TIME" /></translation>
 <translation id="4228041325992544252"><ph name="TOTAL_MEMORY" /> জিবিৰ <ph name="AVAILABLE_MEMORY" /> জিবি উপলব্ধ আছে।</translation>
 <translation id="4238516577297848345">কোনো প্ৰিণ্টৰ কাম চলি থকা নাই</translation>

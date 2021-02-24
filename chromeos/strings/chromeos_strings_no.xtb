@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
 <translation id="1018656279737460067">Avbrutt</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> tråder, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1059913517121127803">Kunne ikke starte skanningen</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Oppdaget en brannmur</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">Ukjent feil.</translation>
 <translation id="1204296502688602597">DNS-tidsforsinkelse</translation>
 <translation id="123124571410524056">Mistanke om portal</translation>
-<translation id="1238191093934674082">OpenVPN</translation>
 <translation id="1238612778414822719">HTTPS-tidsforsinkelse</translation>
 <translation id="1270369111467284986">Mistanke om obligatorisk side</translation>
 <translation id="1290331692326790741">Svakt signal</translation>
@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">Stoppet – tom for blekk</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-resolveren er til stede</translation>
+<translation id="1717874160321062422">Administreres av <ph name="FIRST_MANAGER" /> og <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Avbryter skanningen</translation>
 <translation id="1851218745569890714">Videokonferanser</translation>
@@ -59,6 +60,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Slå på Bluetooth for å finne enheter i nærheten</translation>
 <translation id="2364498172489649528">Bestått</translation>
+<translation id="2365324413026422635">Batteriladingstesten kan ikke utføres når batteriet er fullt</translation>
 <translation id="2391082728065870591">Send tilbakemeldingsrapport</translation>
 <translation id="2418150275289244458">Åpne i innstillingene</translation>
 <translation id="2446553403094072641">Nøyaktighet av flytende desimalpunkt</translation>
@@ -91,6 +93,7 @@
 <translation id="3226405216343213872">Ser etter skannere</translation>
 <translation id="3246869037381808805">Utskriftsjobber som er eldre enn 1 dag, blir fjernet</translation>
 <translation id="3268178239013324452">Mislykket – luken er åpen</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">DNS-forsinkelsen er betydelig høyere enn den tillatte grenseverdien</translation>
 <translation id="3328783797891415197">Testen kjøres</translation>
 <translation id="3368922792935385530">Tilkoblet</translation>
@@ -102,6 +105,7 @@
 <translation id="3459509316159669723">Utskrift</translation>
 <translation id="3488065109653206955">Delvis aktivert</translation>
 <translation id="3527036260304016759">Mislykket – ukjent feil</translation>
+<translation id="3532980081107202182">Omtrent <ph name="MIN_REMAINING" /> minutter igjen</translation>
 <translation id="357889014807611375">Wi-Fi med datamåling</translation>
 <translation id="3595596368722241419">Batteriet er fullt</translation>
 <translation id="360565022852130722">Wi-Fi-nettverket er sikret med den svake protokollen WEP 802.1x</translation>
@@ -125,6 +129,7 @@
 <translation id="4155551848414053977">Sørg for at skanneren er påslått og tilgjengelig via nettverket eller en direktetilkobling</translation>
 <translation id="4170700058716978431">MISLYKKET</translation>
 <translation id="4176463684765177261">Deaktivert</translation>
+<translation id="4222698289790462549">Nåværende hastighet</translation>
 <translation id="4227825898293920515">Passordet utløper om <ph name="TIME" /></translation>
 <translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" /> GB av <ph name="TOTAL_MEMORY" /> GB er tilgjengelig.</translation>
 <translation id="4238516577297848345">Ingen utskriftsjobber pågår</translation>
@@ -241,6 +246,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6325525973963619867">Mislykket</translation>
 <translation id="636850387210749493">Bedriftsregistrering</translation>
 <translation id="641081527798843608">Emnetreff</translation>
+<translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Grei</translation>
 <translation id="6472207088655375767">Engangspassord</translation>
 <translation id="6480327114083866287">Administreres av <ph name="MANAGER" /></translation>
@@ -327,6 +333,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8477551185774834963">DNS-forsinkelsen er noe høyere enn den tillatte grenseverdien</translation>
 <translation id="8483248364096924578">IP-adresse</translation>
 <translation id="8503813439785031346">Brukernavn</translation>
+<translation id="8503836310948963452">Bare noen få minutter igjen …</translation>
 <translation id="8576249514688522074">Ikke initialisert</translation>
 <translation id="8620617069779373398">Status for roaming</translation>
 <translation id="8675354002693747642">Forhåndsdelt nøkkel</translation>
@@ -358,6 +365,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="9106415115617144481">Skanner side <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Lås opp</translation>
 <translation id="9149391708638971077">Kjør minnetest</translation>
+<translation id="9173638680043580060">Mindre enn et minutt igjen</translation>
 <translation id="9190063653747922532">L2TP/IPsec + forhåndsdelt nøkkel</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Ikke aktivert</translation>

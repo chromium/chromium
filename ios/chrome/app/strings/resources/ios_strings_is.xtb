@@ -174,6 +174,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2780046210906776326">Engir tölvupóstreikningar</translation>
 <translation id="2781331604911854368">Kveikt</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2783054063075604403">Ekki er hægt að búa til tengil</translation>
 <translation id="2800683595868705743">Fara úr flipavali</translation>
 <translation id="2815198996063984598">2. Ýttu á „Sjálfgefið vafraforrit“</translation>
 <translation id="2830972654601096923">Stjórna heimilisföngum ...</translation>
@@ -467,6 +468,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5948291296578561264">Þetta gerir þér kleift að vista myndir í myndasafninu þínu.</translation>
 <translation id="5955891643922670672">Skoðar útgáfu án nettengingar</translation>
 <translation id="5957613098218939406">Fleiri valkostir</translation>
+<translation id="5963939892571022323">Ekki er hægt að búa til tengil í merkta textann.</translation>
 <translation id="5964480694698977962">Búa til nýjan huliðsflipa.</translation>
 <translation id="5965679971710331625">Þú ert skráð(ur) inn</translation>
 <translation id="5979837087407522202">Leita að aðgangsorðum</translation>
@@ -615,6 +617,7 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="734758817008927353">Valkostir fyrir vistun korts</translation>
 <translation id="7348502496356775519">Bókamerki</translation>
 <translation id="7383797227493018512">Leslisti</translation>
+<translation id="7398893703713203428">Búa til tengil</translation>
 <translation id="739941347996872055">Fyrri flipi</translation>
 <translation id="7400418766976504921">Vefslóð</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> ólesnar greinar.</translation>
@@ -644,6 +647,7 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="766891008101699113">Opnaðu nýjan flipa til að vafra í einrúmi.</translation>
 <translation id="7671141431838911305">SETJA UPP</translation>
 <translation id="7701040980221191251">Ekkert</translation>
+<translation id="7741325291586284254">Síða með nýjum huliðsflipa</translation>
 <translation id="7765158879357617694">Færa</translation>
 <translation id="7771470029643830783">Ef þú skráir þig út verða bókamerkin þín, ferillinn, aðgangsorðin og önnur gögn úr Chrome ekki lengur samstillt við Google reikninginn þinn.
 

@@ -4,6 +4,7 @@
 <translation id="102360288709523007">Aiutaci a migliorare Chromium inviando a Google statistiche sull'utilizzo e rapporti sugli arresti anomali.</translation>
 <translation id="1185134272377778587">Informazioni su Chromium</translation>
 <translation id="1257458525759135959">Per salvare le immagini, tocca Impostazioni e consenti a Chromium di aggiungere le tue foto</translation>
+<translation id="1289216811211435351">Passa a Chromium</translation>
 <translation id="1361748954329991663">Chromium non è aggiornato. Se non sono disponibili aggiornamenti nell'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, è possibile che il dispositivo non supporti più le nuove versioni di Chromium.</translation>
 <translation id="1431818719585918472">Consenti a Chromium di bloccare le schede di navigazione in incognito.</translation>
 <translation id="1472013873724362412">Il tuo account non funziona su Chromium. Contatta l'amministratore di dominio o utilizza un normale Account Google per accedere.</translation>
@@ -34,6 +35,7 @@
 <translation id="4099085513035183040">Non supportata su Chromium beta</translation>
 <translation id="4166206055865952171">Imposta Chromium come browser predefinito</translation>
 <translation id="4555020257205549924">Quando questa funzione è attiva, Chromium si offre di tradurre le pagine scritte in altre lingue utilizzando Google Traduttore. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
+<translation id="4585809515399340748">Ora puoi usare Chromium ogni volta che tocchi link in messaggi, documenti e altre app.</translation>
 <translation id="4681781466797808448">Attiva lo scanner di Chromium</translation>
 <translation id="4787850887676698916">Le schede aperte in Chromium sugli altri dispositivi verranno visualizzate qui.</translation>
 <translation id="4828317641996116749">Chromium non ha potuto controllare tutte le password. Riprova più tardi.</translation>
@@ -42,9 +44,9 @@
 <translation id="5224391634244552924">Nessuna password salvata. Chromium può controllare le password quando le salvi.</translation>
 <translation id="5308226104666789935">Chromium non può controllare la disponibilità di aggiornamenti</translation>
 <translation id="5521125884468363740">Esegui l'accesso su tutti i dispositivi su cui utilizzi Chromium e attiva la sincronizzazione per visualizzare le tue schede</translation>
-<translation id="5544795779875591523">Vuoi cancellare i tuoi dati di Chromium da questo dispositivo o vuoi conservarli?</translation>
 <translation id="5573014823074921752">Suggerimento per Chromium. Per vedere più opzioni sulla scheda, tocca e tieni premuto il pulsante Mostra schede della barra degli strumenti, che si trova nella parte inferiore o superiore della schermata.</translation>
 <translation id="5700709190537129682">Chromium non può controllare le tue password</translation>
+<translation id="5742135483959137648">Usa Chromium per aprire i link</translation>
 <translation id="5777187867430702742">Pagina di Chromium</translation>
 <translation id="5862307444128926510">Benvenuto in Chromium</translation>
 <translation id="5945387852661427312">Stai per eseguire l'accesso con un account gestito da <ph name="DOMAIN" /> e consentire al relativo amministratore di avere il controllo dei tuoi dati di Chromium. I tuoi dati verranno associati definitivamente a questo account. Se esci da Chromium, i dati verranno eliminati da questo dispositivo, ma rimarranno memorizzati nel tuo Account Google.</translation>
@@ -63,6 +65,7 @@
 <translation id="7208566199746267865">Chromium ti fa risparmiare tempo portando i tuoi account sul Web. Puoi aggiungere o rimuovere account nelle impostazioni.</translation>
 <translation id="725427773388857052">Chromium può contribuire a proteggerti da violazioni dei dati, siti web non sicuri e non solo.</translation>
 <translation id="7269362888766543920">Alcuni componenti aggiuntivi provocano l'arresto anomalo di Chromium. Prova a disinstallarli.</translation>
+<translation id="7313655110045230863">Per impostare Chromium come browser predefinito, apri le Impostazioni. Tocca App browser predefinita, quindi seleziona Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">I dati selezionati sono stati rimossi da Chromium e dai dispositivi sincronizzati. Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, ad esempio ricerche e attività, di altri servizi Google alla pagina history.google.com.</translation>
 <translation id="7400689562045506105">Utilizza Chromium ovunque</translation>

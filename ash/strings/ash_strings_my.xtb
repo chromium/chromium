@@ -5,7 +5,7 @@
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> ကို <ph name="RESOLUTION" /> သို့ ပြောင်းလိုက်သည် (<ph name="REFRESH_RATE" /> Hz)။ အပြောင်းအလဲများသိမ်းရန် 'အတည်ပြုရန်' ကို နှိပ်ပါ။ ယခင်ဆက်တင်များကို <ph name="TIMEOUT_SECONDS" /> အကြာတွင် ပြန်ထားရှိပါမည်။</translation>
 <translation id="1013923882670373915">ဘလူးတုသ် ကိရိယာ"<ph name="DEVICE_NAME" />"က ချိတ်တွဲရန် ခွင့်ပြုချက် ရယူလိုသည်။ ကျေးဇူးပြုပြီး ထိုကိရိယာ ထဲသို့ ဒီPIN ကုဒ်ကို ထည့်ပေးပါ: <ph name="PINCODE" /></translation>
 <translation id="1024261588257374085">တစ်စိတ်တစ်ပိုင်း ဖန်သားပြင်ဓာတ်ပုံကို ရွေးထားသည်</translation>
-<translation id="1032891413405719768">စတိုင်လက်စ် ဓာတ်ခဲ အားနည်းနေသည်</translation>
+<translation id="1032891413405719768">စတိုင်လပ်စ် ဓာတ်ခဲ အားနည်းနေသည်</translation>
 <translation id="1036672894875463507">ကျွန်ုပ်က သင့်တစ်နေ့တာတွင် ကူညီပေးမည့် Google Assistant ပါ။
 စတင်ရန်အတွက် စမ်းကြည့်နိုင်သော အရာအချို့ကို ဖော်ပြထားပါသည်။</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> ကို ထည့်ထားသည်</translation>
@@ -163,9 +163,9 @@
 <translation id="2302092602801625023">ဤအကောင့်ကို Family Link က ကြီးကြပ်ထားသည်</translation>
 <translation id="2303600792989757991">ဝင်ဒိုး ခြုံငုံမြင်ရပုံ ကစားကြည့်ခြင်း</translation>
 <translation id="2322173485024759474">အက္ခရာအလိုက် နောက်ပြန်သွားရန်</translation>
-<translation id="2339073806695260576">မှတ်စုရေးရန်၊ ဖန်သားပြင်ဓာတ်ပုံရိုက်ရန်၊ လေဆာပွိုင်တာ သို့မဟုတ် မှန်ဘီလူးကိုသုံးရန် ခုံးနေသည့် စတိုင်လက်စ်ခလုတ်ကို တို့ပါ။</translation>
+<translation id="2339073806695260576">မှတ်စုရေးရန်၊ ဖန်သားပြင်ဓာတ်ပုံရိုက်ရန်၊ လေဆာပွိုင်တာ သို့မဟုတ် မှန်ဘီလူးကိုသုံးရန် ခုံးနေသည့် စတိုင်လပ်စ်ခလုတ်ကို တို့ပါ။</translation>
 <translation id="2341729377289034582">ထောင်လိုက်မုဒ်အဖြစ် လော့ခ်ချထားသည်</translation>
-<translation id="2352467521400612932">စတိုက်လက်စ်ခဲတံ ဆက်တင်များ</translation>
+<translation id="2352467521400612932">စတိုင်လပ်စ်ခဲတံ ဆက်တင်များ</translation>
 <translation id="2354174487190027830"><ph name="NAME" />ကို ဖွင့်သုံးနေ</translation>
 <translation id="2359808026110333948">ဆက်လုပ်ရန်</translation>
 <translation id="2365393535144473978">မိုဘိုင်းဒေတာကို ဖွင့်ပါက ဘလူးတုသ်ပွင့်ပါမည်။</translation>
@@ -240,7 +240,7 @@
 <translation id="3033545621352269033">ဖွင့်ရန်</translation>
 <translation id="3036649622769666520">ဖိုင်များ ဖွင့်ရန်</translation>
 <translation id="3038571455154067151">လက်မှတ်ထိုးဝင်ရန် သင့် Family Link မိဘသုံးကုဒ် ထည့်ပါ</translation>
-<translation id="3039939407102840004">စတိုင်လက်စ်ဘက်ထရီ <ph name="PERCENTAGE" /> ရာခိုင်နှုန်း ရှိသည်။</translation>
+<translation id="3039939407102840004">စတိုင်လပ်စ်ဘက်ထရီ <ph name="PERCENTAGE" /> ရာခိုင်နှုန်း ရှိသည်။</translation>
 <translation id="3045488863354895414">မင်္ဂလာ နေ့လယ်ခင်းပါ၊</translation>
 <translation id="3055162170959710888">သင်သည် ယနေ့အဖို့ ဤစက်ကို <ph name="USED_TIME" /> သုံးထားပါသည်</translation>
 <translation id="3077734595579995578">shift ကီး</translation>
@@ -279,7 +279,7 @@
 <translation id="3341303451326249809">ဖန်သားပြင်ဓာတ်ပုံ ဖမ်းယူပြီးပြီ</translation>
 <translation id="334252345105450327">ဖန်သားပြင်ဓာတ်ပုံတစ်ပုံရိုက်ပါ</translation>
 <translation id="3351879221545518001">သင်သည် လောလောဆယ် မျက်နှာပြင်ကို ကာ့စ်လုပ်နေပါသည်။</translation>
-<translation id="3364721542077212959">စတိုင်လက်စ်ခဲတံ</translation>
+<translation id="3364721542077212959">စတိုင်လပ်စ်ခဲတံ</translation>
 <translation id="3368922792935385530">ချိတ်ဆက်ထားပြီ</translation>
 <translation id="3371140690572404006">USB-C ကိရိယာ (ညာ ပို့တ် အရှေ့ပိုင်း)</translation>
 <translation id="3375634426936648815">ချိတ်ဆက်ထားသည်</translation>
@@ -399,12 +399,13 @@
 <translation id="4371348193907997655">ကာစ်ဆက်တင်များ</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" /> ရာခိုင်နှုန်း</translation>
 <translation id="4378551569595875038">ချိတ်ဆက်ရန်...</translation>
-<translation id="4379531060876907730">ဤအရာများသည် သင်၏ စတိုင်လက်စ်ကိရိယာများ ဖြစ်သည်</translation>
+<translation id="4379531060876907730">ဤအရာများသည် သင်၏ စတိုင်လပ်စ်ကိရိယာများ ဖြစ်သည်</translation>
 <translation id="4389184120735010762">တပ်ဆင်ထားသည့် မှန်ဘီလူးအတွက် ကီးဘုတ်ဖြတ်လမ်းလင့်ခ်ကို သင်နှိပ်လိုက်ပါသည်။ ၎င်းကို ဖွင့်လိုပါသလား။</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ပိတ်ထားသည်။</translation>
 <translation id="4421231901400348175">အဝေးမှ ထောက်ကူခြင်း ဆိုသည်မှ တဆင့် သင့်ဖန်သားပြင်အား <ph name="HELPER_NAME" /> နှင့် မျှဝေသုံးစွဲခြင်း။</translation>
 <translation id="4424159417645388645">မျက်နှာပြင်နေရာ ၅</translation>
 <translation id="4430019312045809116">ပမာဏ</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{အရေးကြီးသော အကြောင်းကြားချက် 1 ခု}other{အရေးကြီးသော အကြောင်းကြားချက် # ခု}}</translation>
 <translation id="4450893287417543264">ထပ်မပြပါနှင့်</translation>
 <translation id="445864333228800152">မင်္ဂလာ ညနေခင်းပါ၊</translation>
 <translation id="4458688154122353284">ဖန်သားပြင်ရိုက်ကူးမှု ရပ်ရန်</translation>
@@ -476,6 +477,10 @@
 <translation id="4961318399572185831">Cast ဖန်မျက်နှာပြင်</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />h <ph name="MINUTES" />m <ph name="SECONDS" />s</translation>
 <translation id="4975771730019223894">အက်ပ်သင်္ကေတ</translation>
+<translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />-
+        <ph name="NOTIFICATION_1" />၊
+        <ph name="NOTIFICATION_2" />၊
+        <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">နောက် ဝါကျ</translation>
 <translation id="5030687792513154421">အချိန်စေ့ပါပြီ</translation>
 <translation id="5033299697334913360">ဖန်သားပြင်အပြည့် ရိုက်ယူရန် မည်သည့်နေရာကိုမဆို နှိပ်ပါ</translation>
@@ -489,6 +494,7 @@
 <translation id="5168181903108465623">Cast စက်ကိရိယာများ ရနိုင်၏</translation>
 <translation id="5170568018924773124">ဖိုလ်ဒါ ထဲမှာ ပြရန်</translation>
 <translation id="5176318573511391780">ဖန်သားပြင်တစ်စိတ်တစ်ပိုင်းကို ရိုက်ကူးရန်</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{အခြား အကြောင်းကြားချက် 1 ခု}other{အခြား အကြောင်းကြားချက် # ခု}}</translation>
 <translation id="5207949376430453814">စာရိုက်ထည့်ရန်အကွက်ကို မြင်သာထင်သာဖြစ်အောင်ပြုလုပ်ရန်</translation>
 <translation id="5208059991603368177">ဖွင့်ထားသည်</translation>
 <translation id="5222676887888702881">ထွက်ခွာရန်</translation>
@@ -605,13 +611,13 @@
 <translation id="6236290670123303279">ဆက်တင်များ စီမံခန့်ခွဲရန်</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">အလျားလိုက်မုဒ်အဖြစ် လော့ခ်ချထားသည်</translation>
-<translation id="6259254695169772643">ရွေးချယ်ရန် သင့်စတိုင်လက်စ် အသုံးပြုပါ</translation>
+<translation id="6259254695169772643">ရွေးချယ်ရန် သင့်စတိုင်လပ်စ် အသုံးပြုပါ</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: ဖွင့်ပေးနေ...</translation>
 <translation id="6283712521836204486">'မနှောင့်ယှက်ရ' ကို ပိတ်ထားသည်။</translation>
 <translation id="6284232397434400372">ပုံရိပ်ပြတ်သားကိန်း ပြောင်းသွားခြင်း</translation>
 <translation id="6288235558961782912">မိဘခွင့်ပြုချက်ဖြင့် <ph name="USER_EMAIL_ADDRESS" /> ကို နောက်ပိုင်းတွင် ပြန်ထည့်နိုင်သည်။</translation>
 <translation id="6291221004442998378">အားသွင်းမနေပါ</translation>
-<translation id="6297287540776456956">အစိတ်အပိုင်းကိုရွေးရန် စတိုင်လက်စ်ခဲတံအား အသုံးပြုပါ</translation>
+<translation id="6297287540776456956">အစိတ်အပိုင်းကိုရွေးရန် စတိုင်လပ်စ်ခဲတံအား အသုံးပြုပါ</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> ကို <ph name="ROTATION" />ဆီသို့ လှည့်ပေးခဲ့</translation>
 <translation id="6315170314923504164">အသံ</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> သည် <ph name="MANAGER" /> က စီမံခန့်ခွဲထားသည့် စက်ရှင်ဖြစ်သည်</translation>
@@ -698,7 +704,7 @@
 <translation id="7029814467594812963">စက်ရှင်မှ ထွက်ရန်</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />၊ Google Assistant</translation>
 <translation id="7042322267639375032">အခြေအနေပြ နေရာကို ခေါက်ရန်</translation>
-<translation id="7055910611768509537">စတိုင်လက်စ်ကို တစ်ပတ်ကျော် အသုံးပြုမထားပါ</translation>
+<translation id="7055910611768509537">စတိုင်လပ်စ်ကို တစ်ပတ်ကျော် အသုံးပြုမထားပါ</translation>
 <translation id="7066646422045619941">ဤကွန်ယက်ကို သင့်စီမံခန့်ခွဲသူမှ ပိတ်ခဲ့သည်။</translation>
 <translation id="7067196344162293536">အလိုအလျောက် လှည့်ရန်</translation>
 <translation id="7068360136237591149">ဖိုင်များ ဖွင့်ပါ</translation>
@@ -780,7 +786,7 @@
 <translation id="7749443890790263709">အများဆုံးသတ်မှတ်ထားသည့် စားပွဲအရေအတွက် ပြည့်သွားပါပြီ။</translation>
 <translation id="776344839111254542">အပ်ဒိတ်အသေးစိတ် အချက်အလက်များကို ကြည့်ရန် နှိပ်ပါ</translation>
 <translation id="7780159184141939021">မျက်နှာပြင် လှည့်ခြင်း</translation>
-<translation id="7796353162336583443">မှတ်စုရေးရန်၊ ဖန်သားပြင်ဓာတ်ပုံ ရိုက်ရန်၊ Google Assistant ကို သုံးရန်၊ လေဆာညွှန်ပြကိရိယာ သို့မဟုတ် မှန်ဘီလူးတို့ကို သုံးရန် စင်ပေါ်ရှိ စတိုင်လက်စ်ခလုတ်ကို တို့ပါ။</translation>
+<translation id="7796353162336583443">မှတ်စုရေးရန်၊ ဖန်သားပြင်ဓာတ်ပုံ ရိုက်ရန်၊ Google Assistant ကို သုံးရန်၊ လေဆာညွှန်ပြကိရိယာ သို့မဟုတ် မှန်ဘီလူးတို့ကို သုံးရန် စင်ပေါ်ရှိ စတိုင်လပ်စ်ခလုတ်ကို တို့ပါ။</translation>
 <translation id="7798302898096527229">ပယ်ဖျက်ရန် Search သို့မဟုတ် Shift ခလုတ်ကို နှိပ်ပါ။</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> နှင့် <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">လိုင်းအားကောင်းသည်</translation>

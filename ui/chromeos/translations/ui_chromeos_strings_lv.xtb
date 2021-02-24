@@ -93,6 +93,7 @@
 <translation id="1942765061641586207">Attēla izšķirtspēja</translation>
 <translation id="1943097386230153518">Jauna pakalpojuma instalēšana</translation>
 <translation id="1972984168337863910">Notiek failu atsauksmju paneļu izvēršana</translation>
+<translation id="1984456723671657197">Šis faila tips netiek atbalstīts. <ph name="BEGIN_LINK_HELP" />Uzziniet vairāk<ph name="END_LINK_HELP" /> par failu atvēršanu operētājsistēmā Chrome OS.</translation>
 <translation id="1995337122023280937">Pāriet uz faila atrašanās vietu</translation>
 <translation id="2001796770603320721">Pārvaldīt Diskā</translation>
 <translation id="2009067268969781306">Formatējot disku, tiks dzēsti visi tajā uzglabātie dati. Šo darbību nevar atsaukt.</translation>
@@ -331,7 +332,6 @@
 <translation id="4706042980341760088">Tamilu, ar rakstāmmašīnas tastatūru</translation>
 <translation id="4711094779914110278">Turku valoda</translation>
 <translation id="4712283082407695269">Notiek dokumenta “<ph name="PATH" />” atvēršana</translation>
-<translation id="4713544552769165154">Šis fails ir paredzēts datoram, kurā tiek izmantota Macintosh programmatūra. Tas nav saderīgs ar jūsu ierīci, kurā darbojas Chrome OS. Atbilstošu lietotni meklējiet <ph name="BEGIN_LINK" />Chrome interneta veikalā<ph name="END_LINK" />. <ph name="BEGIN_LINK_HELP" />Uzziniet vairāk<ph name="END_LINK_HELP" />.</translation>
 <translation id="4724850507808590449">Dublēti <ph name="FILE_COUNT" /> fotoattēli</translation>
 <translation id="4725511304875193254">Korgijs</translation>
 <translation id="4732760563705710320">Diemžēl jūsu apraides ierīce neatbalsta šo videoklipu.</translation>
@@ -465,8 +465,6 @@
 <translation id="5833610766403489739">Šo failu nevar atrast. Lūdzu, pārbaudiet lejupielādes vietas iestatījumu un mēģiniet vēlreiz.</translation>
 <translation id="5838451609423551646">Visi vienumi noņemti no atlases.</translation>
 <translation id="5838825566232597749">Workman (ASV starptautiskā)</translation>
-<translation id="5850516540536751549">Šis faila tips netiek atbalstīts. Lūdzu, apmeklējiet <ph name="BEGIN_LINK" />Chrome interneta veikalu<ph name="END_LINK" />, lai atrastu lietotni, ar kuru var atvērt šo failu.
-    <ph name="BEGIN_LINK_HELP" />Uzziniet vairāk<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Šeit nekā nav...</translation>
 <translation id="5911887972742538906">Linux lietojumprogrammas instalēšanas laikā radās kļūda.</translation>
 <translation id="5912396950572065471">Formāts</translation>
@@ -670,13 +668,13 @@
 <translation id="7972920761225148017">Franču (Šveice)</translation>
 <translation id="7980421588063892270">Angļu (ASV), ar Colemak tastatūru</translation>
 <translation id="7982283708762922719">Augstums</translation>
+<translation id="79907182588096956">Šis fails ir paredzēts datoram ar Windows programmatūru. Tas nav saderīgs ar jūsu ierīci, kurā darbojas operētājsistēma Chrome OS. <ph name="BEGIN_LINK_HELP" />Uzziniet vairāk<ph name="END_LINK_HELP" /> par failu atvēršanu operētājsistēmā Chrome OS.</translation>
 <translation id="8008366997883261463">Džeka Rasela terjers</translation>
 <translation id="8028993641010258682">Izmērs</translation>
 <translation id="803771048473350947">Fails</translation>
 <translation id="8038111231936746805">(noklusējums)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> audio</translation>
 <translation id="8045462269890919536">Rumāņu valoda</translation>
-<translation id="8052887694493382350">Šis fails ir paredzēts datoram ar Windows programmatūru. Tas nav saderīgs ar jūsu ierīci, kurā darbojas operētājsistēma Chrome OS. <ph name="BEGIN_LINK_HELP" />Uzziniet vairāk<ph name="END_LINK_HELP" />.</translation>
 <translation id="8066773524873206594">Visi labojumi tiks saglabāti šeit: <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Atkārtot</translation>
 <translation id="8106045200081704138">Kopīgots ar mani</translation>
@@ -750,6 +748,7 @@
 <translation id="8900820606136623064">Ungāru</translation>
 <translation id="8919081441417203123">Dāņu valoda</translation>
 <translation id="8965697826696209160">Nepietiek vietas.</translation>
+<translation id="8970501467542182729">Šis fails ir paredzēts datoram ar Macintosh programmatūru. Tas nav saderīgs ar jūsu ierīci, kurā darbojas operētājsistēma Chrome OS. <ph name="BEGIN_LINK_HELP" />Uzziniet vairāk<ph name="END_LINK_HELP" /> par failu atvēršanu operētājsistēmā Chrome OS.</translation>
 <translation id="8997962250644902079">Ķīniešu (tradicionālā), piņjiņs</translation>
 <translation id="9017798300203431059">Krievu fonētiskā</translation>
 <translation id="9034924485347205037">Linux faili</translation>

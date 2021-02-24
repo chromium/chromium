@@ -405,6 +405,7 @@
 <translation id="4421231901400348175">هم‌رسانی کنترل صفحه‌تان با <ph name="HELPER_NAME" /> از طریق راهنمایی ازراه‌دور.</translation>
 <translation id="4424159417645388645">میزکار ۵</translation>
 <translation id="4430019312045809116">میزان صدا</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{۱ اعلان مهم}one{# اعلان مهم}other{# اعلان مهم}}</translation>
 <translation id="4450893287417543264">دیگر نشان داده نشود</translation>
 <translation id="445864333228800152">عصر به‌خیر،</translation>
 <translation id="4458688154122353284">توقف ضبط صفحه‌نمایش</translation>
@@ -476,6 +477,10 @@
 <translation id="4961318399572185831">فرستادن محتوای صفحه</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> س <ph name="MINUTES" /> د <ph name="SECONDS" /> ث</translation>
 <translation id="4975771730019223894">نشان‌گذاری برنامه</translation>
+<translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
+        <ph name="NOTIFICATION_1" />،
+        <ph name="NOTIFICATION_2" />،
+        <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">جمله بعدی</translation>
 <translation id="5030687792513154421">وقت تمام شد</translation>
 <translation id="5033299697334913360">برای گرفتن عکس از کل صفحه، روی هرجایی که می‌خواهید کلیک کنید</translation>
@@ -489,6 +494,7 @@
 <translation id="5168181903108465623">دستگاه‌های فرستادن موجود هستند</translation>
 <translation id="5170568018924773124">نمایش در پوشه</translation>
 <translation id="5176318573511391780">ضبط کردن بخشی از صفحه‌نمایش</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{۱ اعلان دیگر}one{# اعلان دیگر}other{# اعلان دیگر}}</translation>
 <translation id="5207949376430453814">برجسته کردن هشتک نوشتار</translation>
 <translation id="5208059991603368177">روشن</translation>
 <translation id="5222676887888702881">خروج از سیستم</translation>

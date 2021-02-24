@@ -404,6 +404,7 @@
 <translation id="4421231901400348175">আপোনাৰ স্ক্ৰীণৰ নিয়ন্ত্ৰণ ৰিম’ট সহায়কৰ দ্বাৰা <ph name="HELPER_NAME" />ৰ সৈতে শ্বেয়াৰ কৰি থকা হৈছে।</translation>
 <translation id="4424159417645388645">ডেস্ক ৫</translation>
 <translation id="4430019312045809116">ভলিউম</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{১ টা গুৰুত্বপূৰ্ণ জাননী}one{# টা গুৰুত্বপূৰ্ণ জাননী}other{# টা গুৰুত্বপূৰ্ণ জাননী}}</translation>
 <translation id="4450893287417543264">পুনৰ নেদেখুৱাব</translation>
 <translation id="445864333228800152">শুভ সন্ধ্যা,</translation>
 <translation id="4458688154122353284">স্ক্ৰীন ৰেকৰ্ডিং কৰা বন্ধ কৰক</translation>
@@ -475,6 +476,10 @@
 <translation id="4961318399572185831">স্ক্রীণ কাষ্ট কৰক</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> ঘ <ph name="MINUTES" /> মি <ph name="SECONDS" /> ছে</translation>
 <translation id="4975771730019223894">এপত বেজ লগোৱা</translation>
+<translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
+        <ph name="NOTIFICATION_1" />,
+        <ph name="NOTIFICATION_2" />,
+        <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">পৰৱৰ্তী বাক্য</translation>
 <translation id="5030687792513154421">সময় সীমা উকলিল</translation>
 <translation id="5033299697334913360">পূৰ্ণ স্ক্ৰীন কেপচাৰ কৰিবলৈ যিকোনো ঠাইতে ক্লিক কৰক</translation>
@@ -488,6 +493,7 @@
 <translation id="5168181903108465623">কাষ্ট কৰিব পৰা ডিভাইচ উপলব্ধ</translation>
 <translation id="5170568018924773124">ফ’ল্ডাৰত দেখুৱাওক</translation>
 <translation id="5176318573511391780">আংশিক স্ক্ৰীন ৰেকৰ্ড কৰক</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{১ টা অন্য জাননী}one{# টা অন্য জাননী}other{# টা অন্য জাননী}}</translation>
 <translation id="5207949376430453814">পাঠৰ কেৰেট হাইলাইট কৰক</translation>
 <translation id="5208059991603368177">অন আছে</translation>
 <translation id="5222676887888702881">ছাইন আউট কৰক</translation>

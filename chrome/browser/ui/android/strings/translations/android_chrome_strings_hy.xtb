@@ -130,6 +130,7 @@
 <translation id="1960290143419248813">Chrome-ն այլևս չի թարմացվում Android-ի այս տարբերակում</translation>
 <translation id="1963976881984600709">Սովորական պաշտպանություն</translation>
 <translation id="1966710179511230534">Թարմացրեք ձեր մուտքի տվյալները:</translation>
+<translation id="1973912524893600642">Պահպանել տվյալները</translation>
 <translation id="1974060860693918893">Լրացուցիչ</translation>
 <translation id="1984417487208496350">Առանց պաշտպանության (խորհուրդ չի տրվում)</translation>
 <translation id="1984705450038014246">Համաժամացնել Chrome-ի տվյալները</translation>
@@ -301,6 +302,7 @@
 <translation id="3058498974290601450">Համաժամացումը կարող եք ցանկացած ժամանակ միացնել կարգավորումներում:</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> էջանիշ}one{<ph name="BOOKMARKS_COUNT_MANY" /> էջանիշ}other{<ph name="BOOKMARKS_COUNT_MANY" /> էջանիշ}}</translation>
 <translation id="3062802207422175757">Ձեր հետաքրքրությունների հիման վրա ընտրված հոդվածներ՝ Chrome-ում</translation>
+<translation id="3070005020161560471">Ավտոմատ թարգմանել</translation>
 <translation id="3089395242580810162">Բացել ինկոգնիտո ներդիրում</translation>
 <translation id="3098745985164956033">Պատկերներն ուղարկվում են Google-ին՝ նկարագրությունները բարելավելու նպատակով</translation>
 <translation id="3114507951000454849">Կարդացեք այսօրվա նորությունները <ph name="NEWS_ICON" /></translation>
@@ -350,10 +352,18 @@
 <translation id="3384347053049321195">Կիսվել պատկերով</translation>
 <translation id="3387650086002190359"><ph name="FILE_NAME" /> ֆայլի ներբեռնումը ձախողվեց՝ ֆայլային համակարգի սխալի պատճառով:</translation>
 <translation id="3389286852084373014">Տեքստը չափազանց մեծ է</translation>
+<translation id="3391512812407811893">Գաղտնիության պաշտպանված միջավայրի փորձնական տարբերակներ</translation>
 <translation id="3398320232533725830">Բացել էջանիշների կառավարիչը</translation>
 <translation id="3414952576877147120">Չափը՝</translation>
 <translation id="3429160811076349561">Փորձնական գործառույթներն անջատված են</translation>
 <translation id="3443221991560634068">Վերաբեռնել ընթացիկ էջը</translation>
+<translation id="3451542610083122179">Գաղտնիության պաշտպանված միջավայրը նախաձեռնություն է, որը նպատակ ունի աջակցել բաց համացանցի պահպանմանը և պաշտպանել օգտատերերին գործողությունների հետագծման մեխանիզմներից։
+
+Կայքի արդյունավետությունը գնահատելու և համապատասխան գովազդ ցուցադրելու համար կայքերն օգտագործում են մի շարք տեխնոլոգիաներ, օրինակ՝ երրորդ կողմի քուքիներ։
+
+«Գաղտնիության պաշտպանված միջավայր» նախաձեռնությունը աջակցում է բաց համացանցի պահպանմանը՝ առաջարկելով այս ծառայությունների տրամադրման ավելի լավ եղանակներ։ Այդ տեխնոլոգիաները չեն խախտում կայքերի աշխատանքը, իսկ ձեր գործողությունները համացանցում չեն հետագծվում առանց ձեր իմացության։
+
+«Գաղտնիության պաշտպանված միջավայր» տեխնոլոգիան դեռևս մշակման փուլում է և հասանելի է միայն որոշակի տարածաշրջաններում։ Ներկայումս կայքերը կարող են օգտագործել Գաղտնիության պաշտպանված միջավայրի փորձնական տարբերակը՝ շարունակելով կիրառել առկա վեբ տեխնոլոգիաները (օրինակ՝ երրորդ կողմի քուքիները)։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">Ընտրեք այլ որոնման համակարգ</translation>
 <translation id="3492207499832628349">Նոր ինկոգնիտո ներդիր</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Իմացեք ավելին<ph name="END_LINK" /> առաջարկվող բովանդակության վերաբերյալ</translation>
@@ -591,6 +601,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Չհաջողվեց ներբեռնել 1 ֆայլ։}one{Չհաջողվեց ներբեռնել # ֆայլ։}other{Չհաջողվեց ներբեռնել # ֆայլ։}}</translation>
 <translation id="5170568018924773124">Ցույց տալ պանակում</translation>
 <translation id="5184329579814168207">Բացել Chrome-ով</translation>
+<translation id="5191251636205085390">Իմացեք ավելին նոր տեխնոլոգիաների մասին, որոնք փոխարինելու են երրորդ կողմի քուքիներին։</translation>
 <translation id="5193988420012215838">Պատճենվեց սեղմատախտակին</translation>
 <translation id="5199929503336119739">Աշխատանքային պրոֆիլ</translation>
 <translation id="5210286577605176222">Անցնել նախորդ ներդիր</translation>
@@ -613,6 +624,7 @@
 <translation id="5355191726083956201">Բարելավված պաշտպանությունը միացված է</translation>
 <translation id="5357811892247919462">Դուք ներդիր եք ստացել</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> բացված ներդիր: Հպեք՝ ներդիրների միջև անցնելու համար։}one{<ph name="OPEN_TABS_MANY" /> բացված ներդիր։ հպեք՝ ներդիրների միջև անցնելու համար։}other{<ph name="OPEN_TABS_MANY" /> բացված ներդիրներ։ հպեք՝ ներդիրների միջև անցնելու համար։}}</translation>
+<translation id="5375577065097716013">Որոնել Google Տեսապակու միջոցով <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Թույլատրել միայն որոշ կայքեր</translation>
 <translation id="5414836363063783498">Ստուգում…</translation>
 <translation id="5423934151118863508">Ձեր հաճախակի այցելած էջերը կցուցադրվեն այստեղ</translation>
@@ -990,6 +1002,7 @@
 <translation id="784934925303690534">Ժամանակի սանդղակ</translation>
 <translation id="7851858861565204677">Այլ սարքեր</translation>
 <translation id="7857691613771368249">Հարցնել, թե երբ պահել ֆայլերը</translation>
+<translation id="7859988229622350291">Երբեք չթարգմանել</translation>
 <translation id="7875915731392087153">Ստեղծեք նամակ</translation>
 <translation id="7876243839304621966">Հեռացնել բոլորը</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Դուք ունեք <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> չկարդացված էջ}one{Դուք ունեք <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> չկարդացված էջ}other{Դուք ունեք <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> չկարդացված էջ}}</translation>
@@ -1053,7 +1066,6 @@
 <translation id="8218622182176210845">Կառավարեք ձեր հաշիվը</translation>
 <translation id="8223642481677794647">Լրահոսի քարտի ընտրացանկ</translation>
 <translation id="8224471946457685718">Ներբեռնել հոդվածներ Wi-Fi-ի միջոցով</translation>
-<translation id="8232956427053453090">Պահպանել տվյալները</translation>
 <translation id="8233540874193135768">QR կոդ սկանավորելու համար օգտագործեք տեսախցիկով սարք։</translation>
 <translation id="8250920743982581267">Փաստաթղթեր</translation>
 <translation id="825412236959742607">Այս էջը չափազանց շատ հիշողություն է օգտագործում, այդ պատճառով Chrome-ը որոշակի բովանդակություն հեռացրել է:</translation>
@@ -1067,6 +1079,7 @@
 <translation id="8310344678080805313">Ստանդարտ ներդիրներ</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> և այլ կայքեր</translation>
 <translation id="8327155640814342956">Համացանցում աշխատանքը բարելավելու համար բացեք Chrome-ը և թարմացրեք այն</translation>
+<translation id="834313815369870491">Երբեք չթարգմանել կայքերը</translation>
 <translation id="8349013245300336738">Դասավորել ըստ օգտագործված տվյալների ծավալի</translation>
 <translation id="835847953965672673">Վերականգնվել է <ph name="NUMBER_OF_DOWNLOADS" /> ներբեռնում</translation>
 <translation id="8364299278605033898">Դիտեք թոփ կայքերը</translation>

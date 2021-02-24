@@ -331,7 +331,6 @@
 <translation id="4706042980341760088">Tamoul (avec clavier de machine à écrire)</translation>
 <translation id="4711094779914110278">Turc</translation>
 <translation id="4712283082407695269">Ouverture de "<ph name="PATH" />"…</translation>
-<translation id="4713544552769165154">Ce fichier est conçu pour un ordinateur utilisant un logiciel Mac. Il n'est pas compatible avec votre appareil qui exécute Chrome OS. Veuillez effectuer une recherche sur le <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> pour trouver une application de remplacement appropriée. <ph name="BEGIN_LINK_HELP" />En savoir plus<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> photos ont été sauvegardées</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4732760563705710320">Cette vidéo n'est pas compatible avec votre appareil Cast.</translation>
@@ -465,8 +464,6 @@
 <translation id="5833610766403489739">Ce fichier s'est égaré. Veuillez vérifier le paramètre correspondant à votre emplacement de téléchargement, puis réessayer.</translation>
 <translation id="5838451609423551646">Tous les éléments sélectionnés ont été supprimés.</translation>
 <translation id="5838825566232597749">Clavier Workman international américain</translation>
-<translation id="5850516540536751549">Ce type de fichier n'est pas compatible. Veuillez accéder au <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> pour trouver une application qui permet de l'ouvrir.
-    <ph name="BEGIN_LINK_HELP" />En savoir plus<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Le dossier est vide.</translation>
 <translation id="5911887972742538906">Une erreur s'est produite lors de l'installation de votre application Linux.</translation>
 <translation id="5912396950572065471">Format</translation>
@@ -676,7 +673,6 @@
 <translation id="8038111231936746805">(par défaut)</translation>
 <translation id="8042602468072383151">Fichier audio <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">Roumain</translation>
-<translation id="8052887694493382350">Ce fichier est destiné à un ordinateur utilisant un logiciel Windows. Il n'est pas compatible avec votre appareil qui exécute Chrome OS. <ph name="BEGIN_LINK_HELP" />En savoir plus<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Toutes les modifications seront enregistrées dans <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Répéter</translation>
 <translation id="8106045200081704138">Partagés avec moi</translation>

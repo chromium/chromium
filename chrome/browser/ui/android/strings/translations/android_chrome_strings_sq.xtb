@@ -130,6 +130,7 @@
 <translation id="1960290143419248813">Përditësimet e Chrome nuk mbështeten më për këtë version të Android</translation>
 <translation id="1963976881984600709">Mbrojtja standarde</translation>
 <translation id="1966710179511230534">Përditëso detajet e identifikimit.</translation>
+<translation id="1973912524893600642">Mbaj të dhënat</translation>
 <translation id="1974060860693918893">Të përparuara</translation>
 <translation id="1984417487208496350">Asnjë mbrojtje (nuk rekomandohet)</translation>
 <translation id="1984705450038014246">Sinkronizo të dhënat e tua të Chrome</translation>
@@ -350,10 +351,18 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="3384347053049321195">Shpërndaje imazhin</translation>
 <translation id="3387650086002190359">Shkarkimi i <ph name="FILE_NAME" /> dështoi për shkak të gabimeve të sistemit të skedarëve.</translation>
 <translation id="3389286852084373014">Teksti është tepër i madh</translation>
+<translation id="3391512812407811893">Provat e "Kufizuesit të privatësisë"</translation>
 <translation id="3398320232533725830">Hap menaxherin e faqeshënuesve</translation>
 <translation id="3414952576877147120">Madhësia:</translation>
 <translation id="3429160811076349561">Veçoritë e provës janë joaktive</translation>
 <translation id="3443221991560634068">Ringarko faqen aktuale</translation>
+<translation id="3451542610083122179">"Kufizuesi i privatësisë" është një nismë e vazhdueshme për të ruajtur uebin e hapur që do të të ndihmojë të mbrohesh nga mekanizmat e gjurmimit.
+
+Sot, faqet e internetit mbështeten në shumë teknologji, si kukit e palëve të treta, për shërbime të rëndësishme si shfaqja e reklamave të rëndësishme dhe matja e cilësisë së funksionimit të një sajti.
+
+"Kufizuesi i privatësisë" ruan vitalitetin e uebit të hapur duke krijuar mënyra më të mira për të kryer këto shërbime, pa prishur sajtet dhe duke parandaluar njëkohësisht që të mos gjurmohesh fshehtas nëpër ueb.
+
+"Kufizuesi i privatësisë" është ende në zhvillim aktiv dhe ofrohet në rajone të caktuara. Për momentin, sajtet mund të provojnë "Kufizuesin e privatësisë" ndërkohë që vazhdojnë të përdorin teknologjitë aktuale të uebit si kukit e palëve të treta. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">Mund të zgjedhësh motorin tënd të kërkimit</translation>
 <translation id="3492207499832628349">Skedë e re e fshehtë</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /> mbi përmbajtjen e sugjeruar</translation>
@@ -591,6 +600,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 shkarkim pa sukses.}other{# shkarkime pa sukses.}}</translation>
 <translation id="5170568018924773124">Shfaq në dosje</translation>
 <translation id="5184329579814168207">Hape në Chrome</translation>
+<translation id="5191251636205085390">Mëso dhe kontrollo teknologjitë e reja që synojnë të zëvendësojnë kukit e palëve të treta</translation>
 <translation id="5193988420012215838">Kopjuar te kujtesa e fragmenteve</translation>
 <translation id="5199929503336119739">Profili i punës</translation>
 <translation id="5210286577605176222">Kalo te skeda e mëparshme</translation>
@@ -650,6 +660,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5620928963363755975">Gjej skedarët dhe faqet e tua te "Shkarkimet" nga butoni "Më shumë opsione"</translation>
 <translation id="562289928968387744">Menaxho reagimet</translation>
 <translation id="5626134646977739690">Emri:</translation>
+<translation id="5628604359369369630">Të palexuara - ofrohen jashtë linje</translation>
 <translation id="5639724618331995626">Lejo të gjitha sajtet</translation>
 <translation id="5648166631817621825">7 ditët e fundit</translation>
 <translation id="5655963694829536461">Kërko te shkarkimet e tua</translation>
@@ -991,6 +1002,7 @@ Të dhënat nga sesioni yt "i fshehtë" do të pastrohen nga Chrome vetëm kur <
 <translation id="7857691613771368249">Pyet kur të ruhen skedarët</translation>
 <translation id="7875915731392087153">Krijo mail</translation>
 <translation id="7876243839304621966">Hiqi të gjitha</translation>
+<translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Ke <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> faqe të palexuar}other{Ke <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> faqe të palexuara}}</translation>
 <translation id="7882131421121961860">Nuk u gjet historik</translation>
 <translation id="7886917304091689118">Po ekzekutohet në Chrome</translation>
 <translation id="789763218334337857">Si ta përdorësh Chrome</translation>
@@ -1027,6 +1039,7 @@ Të dhënat nga sesioni yt "i fshehtë" do të pastrohen nga Chrome vetëm kur <
 <translation id="806745655614357130">Mbaji më vete të dhënat e mia</translation>
 <translation id="8073388330009372546">Hape imazhin në një skedë të re</translation>
 <translation id="8076492880354921740">Skedat</translation>
+<translation id="8078096376109663956">Ndaj vetëm tekstin</translation>
 <translation id="8084114998886531721">Fjalëkalimi i ruajtur</translation>
 <translation id="808747664143081553">U lidh me pajisjen</translation>
 <translation id="8103578431304235997">Skeda "e fshehtë"</translation>
@@ -1050,7 +1063,6 @@ Të dhënat nga sesioni yt "i fshehtë" do të pastrohen nga Chrome vetëm kur <
 <translation id="8218622182176210845">Menaxho llogarinë tënde</translation>
 <translation id="8223642481677794647">Menyja e kartave të furnizimit</translation>
 <translation id="8224471946457685718">Shkarko artikujt për ty në Wi-Fi</translation>
-<translation id="8232956427053453090">Mbaj të dhënat</translation>
 <translation id="8233540874193135768">Për të skanuar një kod QR, përdor një pajisje me kamerë.</translation>
 <translation id="8250920743982581267">Dokumentet</translation>
 <translation id="825412236959742607">Kjo faqe përdor shumë memorie, ndaj Chrome ka hequr disa përmbajtje.</translation>

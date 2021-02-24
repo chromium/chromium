@@ -4,6 +4,7 @@
 <translation id="102360288709523007">Aidake muuta Chromium paremaks, saates Google'ile kasutusstatistikat ja krahhiaruandeid.</translation>
 <translation id="1185134272377778587">Teave Chromiumi kohta</translation>
 <translation id="1257458525759135959">Piltide salvestamiseks puudutage valikut Seaded, et lubada Chromiumil fotode lisamine</translation>
+<translation id="1289216811211435351">Lülituge Chromiumile</translation>
 <translation id="1361748954329991663">Chromium on aegunud. Kui <ph name="BEGIN_LINK" />App Store'is<ph name="END_LINK" /> pole värskendust saadaval, on võimalik, et teie seade ei toeta enam Chromiumi uuemaid versioone.</translation>
 <translation id="1431818719585918472">Laske Chromiumil oma inkognito vahelehed lukustada.</translation>
 <translation id="1472013873724362412">Teie konto ei tööta Chromiumis. Võtke ühendust domeeni administraatoriga või kasutage sisselogimiseks tavalist Google'i kontot.</translation>
@@ -34,6 +35,7 @@
 <translation id="4099085513035183040">Ei toetata Chromiumi beetaversioonis</translation>
 <translation id="4166206055865952171">Chromium vaikebrauserina</translation>
 <translation id="4555020257205549924">Kui see funktsioon on sisse lülitatud, pakub Chromium võimalust tõlkida teistes keeltes kirjutatud lehti Google'i tõlke abil. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
+<translation id="4585809515399340748">Nüüd saate kasutada Chromiumi iga kord, kui puudutate linke sõnumites, dokumentides ja muudes rakendustes.</translation>
 <translation id="4681781466797808448">Lülitage sisse Chromiumi skanner</translation>
 <translation id="4787850887676698916">Siin kuvatakse teie teistes seadmetes Chromiumis avatud vahelehed.</translation>
 <translation id="4828317641996116749">Chromiumil ei õnnestunud kõiki paroole kontrollida. Proovige hiljem uuesti.</translation>
@@ -42,9 +44,9 @@
 <translation id="5224391634244552924">Salvestatud paroole ei ole. Chromium saab teie paroole kontrollida, kui olete need salvestanud.</translation>
 <translation id="5308226104666789935">Chromium ei saa värskendusi otsida</translation>
 <translation id="5521125884468363740">Selleks et näha vahelehti kõikjalt, kus Chromiumi kasutate, logige sisse ja lülitage sisse sünkroonimine</translation>
-<translation id="5544795779875591523">Valige, kas soovite oma Chromiumi andmed sellest seadmest kustutada või need säilitada.</translation>
 <translation id="5573014823074921752">Chromiumi nõuanne. Vahelehtede lisavalikute nägemiseks puudutage ja hoidke all ekraanikuva üla- või alaosas tööriistaribal olevat nuppu Kuva vahelehed.</translation>
 <translation id="5700709190537129682">Chromiumil ei õnnestu teie paroole kontrollida</translation>
+<translation id="5742135483959137648">Avage lingid Chromiumiga</translation>
 <translation id="5777187867430702742">Chromiumi leht</translation>
 <translation id="5862307444128926510">Tere tulemast Chromiumi</translation>
 <translation id="5945387852661427312">Logite sisse kontoga, mida haldab <ph name="DOMAIN" />, ja annate selle administraatorile üle Chromiumi andmete juhtimise. Teie andmed seotakse jäädavalt selle kontoga. Chromiumist väljalogimisel kustutatakse teie andmed sellest seadmest, kuid need jäävad alles teie Google'i kontole.</translation>
@@ -63,6 +65,7 @@
 <translation id="7208566199746267865">Chromium säästab aega, tuues teie kontod veebi. Kontosid saate lisada või eemaldada menüüs Seaded.</translation>
 <translation id="725427773388857052">Chromium aitab teid kaitsta andmetega seotud rikkumiste, ebaturvaliste veebisaitide ja muu eest</translation>
 <translation id="7269362888766543920">Mõned pistikprogrammid põhjustavad Chromiumi kokkujooksmise. Proovige need desinstallida.</translation>
+<translation id="7313655110045230863">Chromiumi vaikebrauseriks määramiseks avage jaotis Seaded. Puudutage valikut Vaikebrauserirakendus ja seejärel valige Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Valitud andmed eemaldati Chromiumist ja sünkroonitud seadmetest. Aadressil history.google.com võib teie Google'i kontol olla muus vormis sirvimisajalugu, nagu otsingud ja tegevused muudes Google'i teenustes.</translation>
 <translation id="7400689562045506105">Kasutage Chromiumit kõikjal</translation>

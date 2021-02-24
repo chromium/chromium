@@ -56,6 +56,7 @@
 <translation id="1331212799747679585">Impossibile aggiornare Chrome. Altre opzioni</translation>
 <translation id="1332501820983677155">Scorciatoie delle funzioni di Google Chrome</translation>
 <translation id="133857033449832692">Download di <ph name="LANG" />…</translation>
+<translation id="1344653310988386453">Includi link al testo evidenziato</translation>
 <translation id="1347468774581902829">Gestisci attività</translation>
 <translation id="1360432990279830238">Uscire e disattivare la sincronizzazione?</translation>
 <translation id="1373696734384179344">Memoria non sufficiente per scaricare i contenuti selezionati.</translation>
@@ -130,6 +131,7 @@
 <translation id="1960290143419248813">Gli aggiornamenti di Chrome non sono più supportati per questa versione di Android</translation>
 <translation id="1963976881984600709">Protezione standard</translation>
 <translation id="1966710179511230534">Aggiorna i dati di accesso.</translation>
+<translation id="1973912524893600642">Conserva i dati</translation>
 <translation id="1974060860693918893">Avanzate</translation>
 <translation id="1984417487208496350">Nessuna protezione (sconsigliata)</translation>
 <translation id="1984705450038014246">Sincronizza i tuoi dati di Chrome</translation>
@@ -301,6 +303,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3058498974290601450">Puoi attivare la sincronizzazione in qualsiasi momento nelle impostazioni</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> preferito}other{<ph name="BOOKMARKS_COUNT_MANY" /> preferiti}}</translation>
 <translation id="3062802207422175757">Articoli relativi ai tuoi interessi su Chrome</translation>
+<translation id="3070005020161560471">Traduci automaticamente</translation>
 <translation id="3089395242580810162">Apri in scheda in incognito</translation>
 <translation id="3098745985164956033">Alcune immagini vengono inviate a Google per migliorare le descrizioni</translation>
 <translation id="3114507951000454849">Leggi le notizie di oggi <ph name="NEWS_ICON" /></translation>
@@ -350,10 +353,18 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3384347053049321195">Condividi immagine</translation>
 <translation id="3387650086002190359">Download di <ph name="FILE_NAME" /> non riuscito a causa di errori del file system.</translation>
 <translation id="3389286852084373014">Il testo è troppo grande</translation>
+<translation id="3391512812407811893">Prove di Privacy Sandbox</translation>
 <translation id="3398320232533725830">Apri Gestione Preferiti</translation>
 <translation id="3414952576877147120">Dimensioni:</translation>
 <translation id="3429160811076349561">Le funzionalità di prova non sono attive</translation>
 <translation id="3443221991560634068">Ricarica la pagina corrente</translation>
+<translation id="3451542610083122179">Privacy Sandbox è un'iniziativa in corso per preservare il Web aperto che contribuirà a proteggerti dai meccanismi di tracciamento.
+
+Al giorno d'oggi, i siti web si affidano a tante tecnologie, come i cookie di terze parti, per servizi importanti quali la visualizzazione di annunci pertinenti e la valutazione delle prestazioni di un sito.
+
+Privacy Sandbox preserva la vitalità del Web aperto offrendo metodi migliori per eseguire questi servizi, senza interrompere il funzionamento dei siti e impedendo allo stesso tempo il tuo tracciamento furtivo sul Web.
+
+Privacy Sandbox è ancora in fase di sviluppo attivo ed è disponibile soltanto in alcune aree geografiche. Per il momento i siti possono provare Privacy Sandbox continuando a usare le attuali tecnologie web quali i cookie di terze parti. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">Puoi scegliere il motore di ricerca</translation>
 <translation id="3492207499832628349">Nuova scheda in incognito</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /> sui contenuti suggeriti</translation>
@@ -591,6 +602,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 download non riuscito.}other{# download non riusciti.}}</translation>
 <translation id="5170568018924773124">Mostra nella cartella</translation>
 <translation id="5184329579814168207">Apri in Chrome</translation>
+<translation id="5191251636205085390">Scopri e gestisci le nuove tecnologie che mirano a sostituire i cookie di terze parti</translation>
 <translation id="5193988420012215838">Copiata nei tuoi appunti</translation>
 <translation id="5199929503336119739">Profilo di lavoro</translation>
 <translation id="5210286577605176222">Vai alla scheda precedente</translation>
@@ -613,6 +625,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5355191726083956201">Protezione avanzata è attiva</translation>
 <translation id="5357811892247919462">Scheda ricevuta</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> scheda aperta, tocca per cambiare scheda}other{<ph name="OPEN_TABS_MANY" /> schede aperte, tocca per cambiare scheda}}</translation>
+<translation id="5375577065097716013">Cerca immagine con Google Lens <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Consenti solo siti specifici</translation>
 <translation id="5414836363063783498">Verifica…</translation>
 <translation id="5423934151118863508">Le pagine che visiti più spesso verranno visualizzate qui</translation>
@@ -648,6 +661,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5599941490345670218">L'Assistente Google può completare azioni per te sui siti web</translation>
 <translation id="5620163320393916465">Nessuna password salvata</translation>
 <translation id="5620928963363755975">Usa il pulsante Altre opzioni per trovare i tuoi file e le tue pagine nella cartella Download</translation>
+<translation id="562168087174703495">Impossibile creare un link al testo evidenziato. Condividi il link alla pagina.</translation>
 <translation id="562289928968387744">Gestisci reazioni</translation>
 <translation id="5626134646977739690">Nome:</translation>
 <translation id="5628604359369369630">Da leggere - Disponibili offline</translation>
@@ -761,6 +775,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6312687380483398334">App web (modalità silenziosa)</translation>
 <translation id="6316139424528454185">Vers. Android non supportata</translation>
 <translation id="6324034347079777476">Sincronizzazione del sistema Android non attiva</translation>
+<translation id="6324977638108296054">Impossibile creare un link al testo evidenziato</translation>
 <translation id="6333140779060797560">Condividi tramite <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Crittografia</translation>
 <translation id="6341580099087024258">Chiedi dove salvare i file</translation>
@@ -792,6 +807,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6477928892249167417">Questi siti sembrano importanti per te:</translation>
 <translation id="6482749332252372425">Download di <ph name="FILE_NAME" /> non riuscito a causa dello spazio di archiviazione insufficiente.</translation>
 <translation id="6489610539826642779">Elenco di lettura <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
+<translation id="6490496612063106490">Link al testo evidenziato</translation>
 <translation id="6496823230996795692">Connettiti a Internet per usare <ph name="APP_NAME" /> per la prima volta.</translation>
 <translation id="6508722015517270189">Riavvia Chrome</translation>
 <translation id="6527303717912515753">Condividi</translation>
@@ -990,6 +1006,7 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="784934925303690534">Intervallo di tempo</translation>
 <translation id="7851858861565204677">Altri dispositivi</translation>
 <translation id="7857691613771368249">Chiedi quando salvare i file</translation>
+<translation id="7859988229622350291">Non tradurre mai</translation>
 <translation id="7875915731392087153">Crea email</translation>
 <translation id="7876243839304621966">Rimuovi tutto</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Hai <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> pagina da leggere}other{Hai <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> pagine da leggere}}</translation>
@@ -1053,7 +1070,6 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="8218622182176210845">Gestisci il tuo account</translation>
 <translation id="8223642481677794647">Menu scheda feed</translation>
 <translation id="8224471946457685718">Scarica articoli per te tramite Wi-Fi</translation>
-<translation id="8232956427053453090">Conserva i dati</translation>
 <translation id="8233540874193135768">Per scansionare un codice QR, usa un dispositivo dotato di fotocamera.</translation>
 <translation id="8250920743982581267">Documenti</translation>
 <translation id="825412236959742607">Questa pagina utilizza troppa memoria, pertanto Chrome ha rimosso alcuni contenuti.</translation>
@@ -1067,6 +1083,7 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="8310344678080805313">Schede standard</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> e altri siti</translation>
 <translation id="8327155640814342956">Per un'esperienza di navigazione ottimale, apri per aggiornare Chrome</translation>
+<translation id="834313815369870491">Non tradurre mai i siti</translation>
 <translation id="8349013245300336738">Ordina per quantità di dati utilizzati</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> download ripristinati</translation>
 <translation id="8364299278605033898">Scopri i siti web più visitati</translation>

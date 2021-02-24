@@ -406,6 +406,15 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Cette règle est ignorée (et l'authentification <ph name="BASIC_AUTH" /> est toujours interdite) si la règle <ph name="AUTH_SCHEMES_POLICY_NAME" /> est définie et n'inclut pas l'authentification <ph name="BASIC_AUTH" />.</translation>
 <translation id="1575015449587326319">Règle de configuration du connecteur Chrome Enterprise OnFileDownloaded</translation>
 <translation id="1583248206450240930">Utiliser <ph name="PRODUCT_FRAME_NAME" /> par défaut</translation>
+<translation id="1587042984081085960">Cette règle permet à un administrateur de spécifier qu'une page peut envoyer des requêtes XHR synchrones pendant sa fermeture.
+
+      Si cette règle est activée, les pages sont autorisées à envoyer des requêtes XHR synchrones pendant leur fermeture.
+
+      Si cette règle est désactivée ou n'est pas configurée, les pages ne sont pas autorisées à envoyer des requêtes XHR synchrones pendant leur fermeture.
+
+      Cette règle sera supprimée dans Chrome 93.
+
+      Voir https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="1588240398285670601">Paramètres du navigateur</translation>
 <translation id="1593245608325508847">Permet d'activer la fonctionnalité de connexion limitée de Chrome dans G Suite sans que les utilisateurs puissent modifier ce paramètre. Les utilisateurs ne peuvent accéder aux outils Google que via des comptes associés aux domaines spécifiés (pour autoriser des comptes Gmail ou Googlemail, ajoutez "consumer_accounts" à la liste des domaines). Ce paramètre empêche les utilisateurs de se connecter et d'ajouter un compte secondaire sur un appareil géré qui exige l'authentification Google, si ce compte n'appartient pas à l'un des domaines explicitement autorisés.
 
@@ -2030,6 +2039,17 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="377044054160169374">Application de l'intervention en cas d'expérience abusive</translation>
 <translation id="3778689139323007309">Procéder à des vérifications de la révocation des certificats de serveur qui sont validés et signés par des certificats CA installés localement</translation>
 <translation id="3780152581321609624">Inclure un port non standard dans le SPN Kerberos</translation>
+<translation id="3783569262370557918">Activer <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> pour une liste d'URL.
+
+      La définition de cette règle indique quelles URL doivent être autorisées à faire partie du flux d'attestation pour obtenir l'ensemble de signaux depuis la machine.
+
+      Si cette règle n'est pas configurée ou si elle est vide, aucun point de terminaison ne peut démarrer le flux d'attestation ni obtenir de signaux depuis la machine.
+
+      Les URL doivent être au format HTTPS, comme "https://example.com".
+
+      Remarque : les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.
+
+      Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="378495749480642482">Définit si les sites auxquels l'utilisateur accède sont autorisés à créer des sessions de réalité augmentée immersive avec <ph name="WEBXR_API_NAME" />.
 
       Si cette règle n'est pas configurée ou qu'elle est activée, <ph name="WEBXR_API_NAME" /> accepte <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> lors de la création de sessions. Cela permet aux utilisateurs d'accéder aux expériences de réalité augmentée.
@@ -2755,6 +2775,7 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Si vous désactivez cette règle, ces journaux ne sont ni collectés, ni importés.
 
       Sur <ph name="PRODUCT_NAME" /> version M76 ou inférieure, si la règle n'est pas définie, l'application ne peut, par défaut, ni collecter, ni importer ces journaux. À partir de la version M77, <ph name="PRODUCT_NAME" /> est, par défaut, en mesure de collecter et d'importer ces journaux à partir de la plupart des profils affectés par les règles d'entreprise au niveau de l'utilisateur dans le cloud. De la version M77 à la version M80, <ph name="PRODUCT_NAME" /> peut également, par défaut, collecter et importer ces journaux à partir des profils affectés par la fonction de gestion sur site de <ph name="PRODUCT_NAME" />.</translation>
+<translation id="4913065710388638917">Activer le flux d'attestation pour une liste d'URL</translation>
 <translation id="4917385247580444890">Très bon</translation>
 <translation id="4919122295221518724">Appliquer un traitement plus strict au contenu mixte</translation>
 <translation id="4920367374739265095">Cette règle permet de désigner la règle d'accès qui s'applique à la configuration groupée des imprimantes, en déterminant les imprimantes soumises à la règle <ph name="DEVICE_PRINTERS_POLICY_NAME" /> qui sont accessibles aux utilisateurs.
@@ -3214,6 +3235,13 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="547601067149622666">Ne pas autoriser les annonces sur les sites présentant des annonces intrusives</translation>
 <translation id="5480380613778757009">Si cette règle est désactivée ou qu'elle n'est pas configurée, tous les paramètres d'affichage définis dans la session Invité gérée sont réinitialisés à la fermeture de la session. Si cette règle est définie sur "True", les propriétés d'affichage sont conservées après la fermeture de la session Invité gérée.</translation>
 <translation id="5483065054530244863">Autoriser les certificats signés SHA-1 émis par les ancres d'approbation locales</translation>
+<translation id="5483584677807837752">Lorsqu'elle est activée, la fonctionnalité <ph name="PRODUCT_NAME" /> envoie des en-têtes de requête précis qui fournissent des informations sur le navigateur et l'environnement de l'utilisateur.
+
+      Il s'agit d'une fonctionnalité complémentaire. Toutefois, les nouveaux en-têtes peuvent entraîner un dysfonctionnement de certains sites Web qui appliquent des restrictions en ce qui concerne les caractères que peuvent contenir les requêtes.
+
+      Si cette règle est activée ou qu'elle n'est pas configurée, la fonctionnalité <ph name="PRODUCT_NAME" /> est activée. Si cette règle est désactivée, la fonctionnalité n'est pas disponible.
+
+      Cette règle permet d'assurer la transition à court terme. Elle sera disponible au moins jusqu'à la version 93 de Chrome.</translation>
 <translation id="5497565614013170656">Expression régulière correspondant à l'ID de l'imprimante.</translation>
 <translation id="5499375345075963939">Cette règle n'est active qu'en mode "point de vente".
 

@@ -11,7 +11,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> gehitu da</translation>
 <translation id="1047017786576569492">partziala</translation>
 <translation id="1047773237499189053">Eginbide berri bat eskuragarri dago. Erabili gora egiteko gezi-tekla informazio gehiago lortzeko.</translation>
-<translation id="1052916631016577720">Eskaneatu elementuak</translation>
+<translation id="1052916631016577720">Elementuak fokuratzea</translation>
 <translation id="1056775291175587022">Sarerik ez</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Gailu mugikorra: <ph name="ADDRESS" /></translation>
@@ -406,6 +406,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4421231901400348175">Urruneko laguntzaren bidez <ph name="HELPER_NAME" /> laguntzailearekin pantailaren kontrola partekatzen.</translation>
 <translation id="4424159417645388645">5. lan-eremua</translation>
 <translation id="4430019312045809116">Bolumena</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 jakinarazpen garrantzitsu}other{# jakinarazpen garrantzitsu}}</translation>
 <translation id="4450893287417543264">Ez erakutsi berriro</translation>
 <translation id="445864333228800152">Arratsalde on:</translation>
 <translation id="4458688154122353284">Utzi pantaila grabatzeari</translation>
@@ -477,6 +478,10 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4961318399572185831">Igorri pantaila</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Aplikazio-multzokatzea</translation>
+<translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
+        <ph name="NOTIFICATION_1" />,
+        <ph name="NOTIFICATION_2" />,
+        <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Hurrengo esaldia</translation>
 <translation id="5030687792513154421">Amaitu egin da denbora</translation>
 <translation id="5033299697334913360">Egin klik edonon pantaila osoaren argazkia ateratzeko</translation>
@@ -490,6 +495,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5168181903108465623">Igorpen-gailuak erabilgarri</translation>
 <translation id="5170568018924773124">Erakutsi karpetan</translation>
 <translation id="5176318573511391780">Grabatu pantailaren zati bat</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Beste jakinarazpen bat}other{Beste # jakinarazpen}}</translation>
 <translation id="5207949376430453814">Nabarmendu testu-kurtsorea</translation>
 <translation id="5208059991603368177">Aktibatuta</translation>
 <translation id="5222676887888702881">Amaitu saioa</translation>

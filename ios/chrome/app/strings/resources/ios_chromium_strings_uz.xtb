@@ -4,6 +4,7 @@
 <translation id="102360288709523007">Google’ga foydalanish statistikasi va ishdan chiqish hisobotlarini yuborish</translation>
 <translation id="1185134272377778587">Chromium haqida</translation>
 <translation id="1257458525759135959">Rasmlarni saqlash uchun Sozlamalar ustiga bosib, Chromiumga rasmlarni ochishga ruxsat bering.</translation>
+<translation id="1289216811211435351">Chromiumga almashish</translation>
 <translation id="1361748954329991663">Chromium versiyasi eskirdi. Agar <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> orqali chiqmasa, demak qurilmangizda yangi versiyadagi Chromium nashrlari ishlamasligi mumkin.</translation>
 <translation id="1431818719585918472">Chromium bilan Inkognito varaqlarni himoyalang.</translation>
 <translation id="1472013873724362412">Hisobingiz Chromium tizimida ishlamaydi. Domen administratoriga murojaat qiling yoki tizimga oddiy Google hisobidan kiring.</translation>
@@ -34,6 +35,7 @@ Buning uchun kompyuteringizda Chromium brauzerini oching va menyudan “Chromium
 <translation id="4099085513035183040">Chromium Beta nashrida ishlamaydi</translation>
 <translation id="4166206055865952171">Chromium brauzerini asosiy qilib belgilang</translation>
 <translation id="4555020257205549924">Agar bu funksiya yoniq bo‘lsa, Chromium sahifalarni Google Tarjimon xizmati yordamida tarjima qilishni taklif qiladi. <ph name="BEGIN_LINK" />Batafsil...<ph name="END_LINK" /></translation>
+<translation id="4585809515399340748">Siz endi Chrome brauzerini har doim xabarlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin.</translation>
 <translation id="4681781466797808448">Chromium skanerini ochish</translation>
 <translation id="4787850887676698916">Boshqa qurilmalaringizda ochilgan Chromium sahifalari shu yerda ko‘rsatiladi.</translation>
 <translation id="4828317641996116749">Chromium barcha parollarni tekshira olmadi. Keyinroq qayta urining.</translation>
@@ -42,9 +44,9 @@ Buning uchun kompyuteringizda Chromium brauzerini oching va menyudan “Chromium
 <translation id="5224391634244552924">Hech qanday parol saqlanmagan. Chromium faqat saqlangan parollaringizni tekshira oladi.</translation>
 <translation id="5308226104666789935">Chromium yangilanishlar chiqqanini tekshira olmadi.</translation>
 <translation id="5521125884468363740">Boshqa qurilmalardagi Chromium varaqlarini koʻrish uchun hisobga kiring va sinxronizatsiyani yoqing</translation>
-<translation id="5544795779875591523">Chromium maʼlumotlari bu qurilmadan tozalansinmi?</translation>
 <translation id="5573014823074921752">Chromium maslahati. Ko‘proq varaqlarni tanlash uchun ekranning quyi yoki yuqorisida joylashgan asboblar panelidan Varaqlarni ko‘rsatish tugmasi ustiga bosib turing.</translation>
 <translation id="5700709190537129682">Chromium parollaringizni tekshira olmadi</translation>
+<translation id="5742135483959137648">Havolalarni ochish uchun Chromium ishlating</translation>
 <translation id="5777187867430702742">Chromium sahifasi</translation>
 <translation id="5862307444128926510">Chromium brauzeriga xush kelibsiz</translation>
 <translation id="5945387852661427312"><ph name="DOMAIN" /> domenida boshqariladigan hisobga kirish bilan siz administratorga Chromium ma’lumotlaringizni boshqarishiga rozilik bildirasiz. Barcha Chromium ma’lumotlaringiz bu hisobga butunlay bog‘langan. Agar hisobdan chiqadigan bo‘lsangiz, bu qurilmadagi barcha ma’lumotlaringiz o‘chib ketadi, lekin Google hisobingizda saqlanib qoladi.</translation>
@@ -63,6 +65,7 @@ Buning uchun kompyuteringizda Chromium brauzerini oching va menyudan “Chromium
 <translation id="7208566199746267865">Chromium xizmatlariga kirishda har safar foydalanuvchi nomi va parol kiritishingiz shart emas. Chromium qurilmada saqlangan hisoblardan foydalanadi. Ularni sozlamalar orqali boshqarishingiz mumkin.</translation>
 <translation id="725427773388857052">Chromium maʼlumotlaringizni axborotlar sizib chiqishi va xavfsizlikka oid boshqa muammolardan himoyalaydi.</translation>
 <translation id="7269362888766543920">Ba’zi kengaytmalar Chromium brauzerini ishdan chiqaradi. Ularni o‘chirib tashlang.</translation>
+<translation id="7313655110045230863">Chromium brauzerini asosiy deb belgilash uchun Sozlamalarni oching. Standart ilovalar &gt; Brauzer ilovasi ustiga bosing va Chromiumni tanlang.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Tanlangan ma’lumotlar Chromium va sinxronlangan qurilmalardan o‘chirildi. Google hisobingiz orqali amalga oshirilgan qidiruvlar, brauzer tarixi va boshqa internetdagi faoliyatingizni history.google.com sahifasi orqali ko‘rishingiz mumkin.</translation>
 <translation id="7400689562045506105">Chromium doim yoningizda</translation>

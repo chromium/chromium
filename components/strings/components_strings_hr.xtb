@@ -568,6 +568,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
       biste provjerili je li proxy poslužitelj u funkciji. Ako mislite da ne
       biste trebali upotrebljavati proxy poslužitelj:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="317878711435188021">znati kad aktivno upotrebljavate ovaj uređaj</translation>
 <translation id="3188393374551744535">Stanje računa</translation>
 <translation id="3194737229810486521"><ph name="URL" /> želi trajno pohraniti podatke na vaš uređaj</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> na poslužitelju <ph name="SERVER_NAME" /></translation>
@@ -745,6 +746,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3828924085048779000">Prazne zaporke nisu dopuštene.</translation>
 <translation id="3831915413245941253">Domena <ph name="ENROLLMENT_DOMAIN" /> instalirala je proširenja za dodatne funkcije. Proširenja imaju pristup nekim vašim podacima.</translation>
 <translation id="3832522519263485449">Višestruko bušenje s lijeve strane</translation>
+<translation id="3835233591525155343">Vaša upotreba uređaja</translation>
 <translation id="385051799172605136">Natrag</translation>
 <translation id="3858027520442213535">Ažuriraj datum i vrijeme</translation>
 <translation id="3884278016824448484">Identifikator uređaja sukobljen je</translation>
@@ -1040,6 +1042,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4995216769782533993">Potvrdite sigurnosni kôd da biste podijelili pojedinosti kartice s ovom web-lokacijom</translation>
 <translation id="4995474875135717171">Izmijenjeno:</translation>
 <translation id="5002932099480077015">Ako je to omogućeno, Chrome će pohraniti kopiju vaše kartice na ovom uređaju radi bržeg ispunjavanja obrazaca.</translation>
+<translation id="5011561501798487822">Otkriveni jezik</translation>
 <translation id="5015510746216210676">Naziv uređaja:</translation>
 <translation id="5017554619425969104">Tekst koji ste kopirali</translation>
 <translation id="5018422839182700155">Stranica se ne može otvoriti</translation>
@@ -1615,6 +1618,7 @@ Dodatne pojedinosti:
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">Naredbeni redak</translation>
 <translation id="7359588939039777303">Oglasi su blokirani.</translation>
+<translation id="7365849542400970216">Može li web-lokacija znati kad upotrebljavate uređaj?</translation>
 <translation id="7372973238305370288">rezultat pretraživanja</translation>
 <translation id="7374733840632556089">Do ovog problema dolazi zbog certifikata koji ste vi ili neka druga osoba instalirali na ovaj uređaj. Certifikat se upotrebljava za nadzor i presretanje mreža i Chrome ga ne smatra pouzdanim. Iako postoje opravdani razlozi za nadziranje, kao na primjer na školskoj mreži ili mreži tvrtke, Chrome želi da budete svjesni da se to događa, čak i ako to ne možete spriječiti. Nadziranje je moguće u bilo kojem pregledniku ili aplikaciji koja pristupa webu.</translation>
 <translation id="7375818412732305729">Datoteka je priložena</translation>
@@ -2033,6 +2037,7 @@ Dodatne pojedinosti:
 <translation id="8983003182662520383">Načini plaćanja i adrese s Google Paya</translation>
 <translation id="8987927404178983737">Mjesec</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
+<translation id="899688752321268742"><ph name="URL" /> želi znati kad aktivno upotrebljavate ovaj uređaj</translation>
 <translation id="8996941253935762404">Sljedeća web-lokacija sadrži štetne programe</translation>
 <translation id="8997023839087525404">Poslužitelj je prikazao certifikat koji nije javno otkriven putem pravila Transparentnost certifikata. Taj se zahtjev postavlja za neke certifikate radi provjere njihove pouzdanosti i zaštite od napada.</translation>
 <translation id="9001074447101275817">Proxy <ph name="DOMAIN" /> zahtijeva korisničko ime i zaporku.</translation>

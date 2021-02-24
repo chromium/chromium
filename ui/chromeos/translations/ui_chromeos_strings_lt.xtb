@@ -93,6 +93,7 @@
 <translation id="1942765061641586207">Vaizdo skyra</translation>
 <translation id="1943097386230153518">Naujos paslaugos diegimas</translation>
 <translation id="1972984168337863910">Išskleisti failų atsiliepimų skydelius</translation>
+<translation id="1984456723671657197">Šio tipo failas nepalaikomas. <ph name="BEGIN_LINK_HELP" />Sužinokite daugiau<ph name="END_LINK_HELP" /> apie failų atidarymą naudojant „Chrome“ OS.</translation>
 <translation id="1995337122023280937">Eiti į failo vietą</translation>
 <translation id="2001796770603320721">Tvarkyti Diske</translation>
 <translation id="2009067268969781306">Formatuojant atmintuką bus ištrinti visi jame saugomi duomenys. Šio veiksmo anuliuoti negalima.</translation>
@@ -331,7 +332,6 @@
 <translation id="4706042980341760088">Tamilų k. su rašomosios mašinėlės išdėstymo klaviatūra</translation>
 <translation id="4711094779914110278">Turkų</translation>
 <translation id="4712283082407695269">Atidaroma „<ph name="PATH" />“</translation>
-<translation id="4713544552769165154">Šis failas skirtas kompiuteriui, kuriame naudojama „Macintosh“ programinė įranga. Jis nesuderinamas su jūsų įrenginiu, kuriame veikia „Chrome“ OS. Tinkamos pakaitinės programos ieškokite <ph name="BEGIN_LINK" />„Chrome“ internetinėje parduotuvėje<ph name="END_LINK" />. <ph name="BEGIN_LINK_HELP" />Sužinokite daugiau<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">Sukurta atsarginių nuotraukų kopijų: <ph name="FILE_COUNT" /></translation>
 <translation id="4725511304875193254">Korgis</translation>
 <translation id="4732760563705710320">Apgailestaujame, perdavimo įrenginys šio vaizdo įrašo nepalaiko.</translation>
@@ -465,8 +465,6 @@
 <translation id="5833610766403489739">Šis failas kažkur perkeltas. Patikrinkite atsisiuntimo vietos nustatymą ir bandykite dar kartą.</translation>
 <translation id="5838451609423551646">Pašalinti visi įrašai pasirinkimo srityje.</translation>
 <translation id="5838825566232597749">JAV „Workman“ tarptautinė</translation>
-<translation id="5850516540536751549">Šio tipo failas nepalaikomas. Apsilankykite <ph name="BEGIN_LINK" />„Chrome“ internetinėje parduotuvėje<ph name="END_LINK" /> ir raskite programą, kuria galima atidaryti šio tipo failą.
-    <ph name="BEGIN_LINK_HELP" />Sužinokite daugiau<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Čia nieko nėra...</translation>
 <translation id="5911887972742538906">Diegiant „Linux“ programą įvyko klaida.</translation>
 <translation id="5912396950572065471">Formatas</translation>
@@ -670,13 +668,13 @@
 <translation id="7972920761225148017">Prancūzų k. (Šveicarija)</translation>
 <translation id="7980421588063892270">Anglų k. (JAV) su „Colemak“ klaviatūra</translation>
 <translation id="7982283708762922719">Aukštis</translation>
+<translation id="79907182588096956">Šis failas skirtas kompiuteriui, kuriame naudojama „Windows“ programinė įranga. Jis nesuderinamas su jūsų įrenginiu, kuriame veikia „Chrome“ OS. <ph name="BEGIN_LINK_HELP" />Sužinokite daugiau<ph name="END_LINK_HELP" /> apie failų atidarymą naudojant „Chrome“ OS.</translation>
 <translation id="8008366997883261463">Džeko Raselo terjeras</translation>
 <translation id="8028993641010258682">Dydis</translation>
 <translation id="803771048473350947">Failas</translation>
 <translation id="8038111231936746805">(numatyt.)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> garso įrašas</translation>
 <translation id="8045462269890919536">Rumunų</translation>
-<translation id="8052887694493382350">Šis failas skirtas kompiuteriui, kuriame naudojama „Windows“ programinė įranga. Jis nesuderinamas su jūsų įrenginiu, kuriame veikia „Chrome“ OS. <ph name="BEGIN_LINK_HELP" />Sužinokite daugiau<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Visi pakeitimai bus išsaugoti aplanke „<ph name="DOWNLOADS_FOLDER" />“.</translation>
 <translation id="8079530767338315840">Kartoti</translation>
 <translation id="8106045200081704138">Bendrinama su manimi</translation>
@@ -750,6 +748,7 @@
 <translation id="8900820606136623064">Vengrų</translation>
 <translation id="8919081441417203123">Danų</translation>
 <translation id="8965697826696209160">Nepakanka vietos.</translation>
+<translation id="8970501467542182729">Šis failas skirtas kompiuteriui, kuriame naudojama „Macintosh“ programinė įranga. Jis nesuderinamas su jūsų įrenginiu, kuriame veikia „Chrome“ OS. <ph name="BEGIN_LINK_HELP" />Sužinokite daugiau<ph name="END_LINK_HELP" /> apie failų atidarymą naudojant „Chrome“ OS.</translation>
 <translation id="8997962250644902079">Kinų k. (tradicinė) „Pinyin“</translation>
 <translation id="9017798300203431059">Fonetinė rusų</translation>
 <translation id="9034924485347205037">„Linux“ failai</translation>

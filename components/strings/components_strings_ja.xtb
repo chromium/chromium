@@ -562,6 +562,7 @@
       動作しているかどうかを確認してください。プロキシ サーバーを使用していない場合は
       次の方法をお試しください。
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="317878711435188021">このデバイスのアクティブ状態の検出</translation>
 <translation id="3188393374551744535">アカウント残高</translation>
 <translation id="3194737229810486521"><ph name="URL" /> から、デバイスにデータを永続的に保存する許可を求められています</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" />（<ph name="SERVER_NAME" /> 上）</translation>
@@ -740,6 +741,7 @@
 <translation id="3828924085048779000">パスフレーズは必ず指定してください。</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> によって、機能を追加する拡張機能がインストールされました。この拡張機能では、ユーザーデータの一部にアクセスする場合があります。</translation>
 <translation id="3832522519263485449">多穴パンチ（左）</translation>
+<translation id="3835233591525155343">デバイスのアクティブ状態</translation>
 <translation id="385051799172605136">戻る</translation>
 <translation id="3858027520442213535">日時を更新</translation>
 <translation id="3884278016824448484">競合するデバイス識別子です</translation>
@@ -1604,6 +1606,7 @@
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">コマンドライン</translation>
 <translation id="7359588939039777303">広告がブロックされました。</translation>
+<translation id="7365849542400970216">デバイスのアクティブ状態を知らせますか？</translation>
 <translation id="7372973238305370288">検索結果</translation>
 <translation id="7374733840632556089">この問題は、あなたまたは他のユーザーがデバイスにインストールした証明書が原因で発生します。該当の証明書は、ネットワークの監視と傍受に使われることが確認されており、Chrome では信頼されていません。学校や会社のネットワークなどで合法的に監視されているケースもありますが、ユーザーが監視を止められないとしても監視の事実を把握できるように、Chrome ではこのメッセージを表示しています。監視の対象は、ブラウザ、またはウェブにアクセスするアプリケーションです。</translation>
 <translation id="7375818412732305729">ファイルが添付された</translation>
@@ -2022,6 +2025,7 @@
 <translation id="8983003182662520383">Google Pay のお支払い方法と住所</translation>
 <translation id="8987927404178983737">月</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
+<translation id="899688752321268742"><ph name="URL" /> がこのデバイスのアクティブ状態の検出を求めています</translation>
 <translation id="8996941253935762404">この先のサイトには有害なプログラムがあります</translation>
 <translation id="8997023839087525404">サーバーから提示された証明書は、証明書の透明性ポリシーを介して公開されていません。一部の証明書は、信頼性の確保と攻撃者からの保護のため、証明書の透明性ポリシーを介して公開されることが要件となっています。</translation>
 <translation id="9001074447101275817">プロキシ <ph name="DOMAIN" /> にはユーザー名とパスワードを指定する必要があります。</translation>

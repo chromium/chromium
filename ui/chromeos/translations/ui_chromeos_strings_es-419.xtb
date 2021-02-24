@@ -331,7 +331,6 @@
 <translation id="4706042980341760088">Tamil con teclado Typewriter</translation>
 <translation id="4711094779914110278">Turco</translation>
 <translation id="4712283082407695269">Abriendo "<ph name="PATH" />"</translation>
-<translation id="4713544552769165154">Este archivo se diseñó para una computadora con software Macintosh. No es compatible con tu dispositivo que ejecuta el Sistema operativo Chrome. Busca en <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> para encontrar una aplicación equivalente. <ph name="BEGIN_LINK_HELP" />Más información<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">Se guardaron <ph name="FILE_COUNT" /> fotos en una copia de seguridad.</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4732760563705710320">El dispositivo de transmisión no admite este video.</translation>
@@ -465,8 +464,6 @@
 <translation id="5833610766403489739">Este archivo se extravió. Comprueba las opciones de la ubicación de descargas y vuelve a intentarlo.</translation>
 <translation id="5838451609423551646">Se quitó la selección de todas las entradas.</translation>
 <translation id="5838825566232597749">Internacional Workman (EE. UU.)</translation>
-<translation id="5850516540536751549">No se admite este tipo de archivo. Visita <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> para buscar una aplicación que pueda abrir este tipo de archivo.
-    <ph name="BEGIN_LINK_HELP" />Más información<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">No hay elementos aquí…</translation>
 <translation id="5911887972742538906">Se produjo un error durante la instalación de tu app de Linux.</translation>
 <translation id="5912396950572065471">Formato</translation>
@@ -676,7 +673,6 @@
 <translation id="8038111231936746805">(predeterminado)</translation>
 <translation id="8042602468072383151">Audio <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">Rumano</translation>
-<translation id="8052887694493382350">Este archivo se diseñó para computadoras que utilizan software de Windows, por lo que no es compatible con tu dispositivo, el cual ejecuta Sistema operativo Chrome. <ph name="BEGIN_LINK_HELP" />Más información<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Todas las modificaciones se guardarán en <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Repetir</translation>
 <translation id="8106045200081704138">Compartidos conmigo</translation>

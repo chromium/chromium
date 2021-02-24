@@ -93,6 +93,7 @@
 <translation id="1942765061641586207">Bildupplösning</translation>
 <translation id="1943097386230153518">Installera ny tjänst</translation>
 <translation id="1972984168337863910">Utöka panel med information om filåtgärder</translation>
+<translation id="1984456723671657197">Den här filtypen stöds inte. <ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /> om att öppna filer i Chrome OS.</translation>
 <translation id="1995337122023280937">Gå till filens plats</translation>
 <translation id="2001796770603320721">Hantera i Drive</translation>
 <translation id="2009067268969781306">Om du formaterar en enhet raderas all data som lagras på den. Det går inte att ångra åtgärden.</translation>
@@ -331,7 +332,6 @@
 <translation id="4706042980341760088">tamilskt tangentbord (skrivmaskin)</translation>
 <translation id="4711094779914110278">turkiska</translation>
 <translation id="4712283082407695269">Öppnar <ph name="PATH" /></translation>
-<translation id="4713544552769165154">Den här filen är avsedd för en Macintosh. Den är inte kompatibel med Chrome OS, det operativsystem som körs på din enhet. Sök på <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> efter en lämplig app att använda i stället.<ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> foton har säkerhetskopierats</translation>
 <translation id="4725511304875193254">Welsh corgi</translation>
 <translation id="4732760563705710320">Den här videon stöds tyvärr inte av överföringsenheten.</translation>
@@ -465,8 +465,6 @@
 <translation id="5833610766403489739">Den här filen verkar ha gått sin väg. Kontrollera inställningen för nedladdade filer och försök igen.</translation>
 <translation id="5838451609423551646">Alla poster har avmarkerats.</translation>
 <translation id="5838825566232597749">US Workman (internationellt)</translation>
-<translation id="5850516540536751549">Filtypen stöds inte. Besök <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> om du vill hitta en app som kan öppna den här filen.
-    <ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Det finns ingenting att se här ...</translation>
 <translation id="5911887972742538906">Ett fel uppstod under installationen av Linux-programmet.</translation>
 <translation id="5912396950572065471">Format</translation>
@@ -670,13 +668,13 @@
 <translation id="7972920761225148017">franska (Schweiz)</translation>
 <translation id="7980421588063892270">engelska (USA) med Colemak-tangentbord</translation>
 <translation id="7982283708762922719">Höjd</translation>
+<translation id="79907182588096956">Den här filen är avsedd för en Windows-dator. Den är inte kompatibel med din enhet, som har Chrome OS. <ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /> om att öppna filer i Chrome OS.</translation>
 <translation id="8008366997883261463">Hund</translation>
 <translation id="8028993641010258682">Storlek</translation>
 <translation id="803771048473350947">Arkiv</translation>
 <translation id="8038111231936746805">(standard)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" />-ljud</translation>
 <translation id="8045462269890919536">rumänska</translation>
-<translation id="8052887694493382350">Den här filen är avsedd för en dator med Windows-programvara. Den är inte kompatibel med din enhet, som har Chrome OS. <ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Alla ändringar sparas i <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Upprepa</translation>
 <translation id="8106045200081704138">Delade med mig</translation>
@@ -750,6 +748,7 @@
 <translation id="8900820606136623064">ungerska</translation>
 <translation id="8919081441417203123">danska</translation>
 <translation id="8965697826696209160">Det finns inte tillräckligt med ledigt utrymme.</translation>
+<translation id="8970501467542182729">Den här filen är avsedd för en Macintosh. Den är inte kompatibel med din enhet, som har Chrome OS. <ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /> om att öppna filer i Chrome OS.</translation>
 <translation id="8997962250644902079">traditionell kinesiska (pinyin)</translation>
 <translation id="9017798300203431059">Ryska (fonetiskt)</translation>
 <translation id="9034924485347205037">Linux-filer</translation>

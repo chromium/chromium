@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
 <translation id="1018656279737460067">Cancelado</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1059913517121127803">Não foi possível iniciar a digitalização</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall detectado</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">Erro desconhecido.</translation>
 <translation id="1204296502688602597">Latência de DNS</translation>
 <translation id="123124571410524056">Portal suspeito</translation>
-<translation id="1238191093934674082">Open VPN</translation>
 <translation id="1238612778414822719">Latência de HTTPS</translation>
 <translation id="1270369111467284986">Suspeita de portal cativo</translation>
 <translation id="1290331692326790741">Sinal fraco</translation>
@@ -38,6 +38,7 @@
 <translation id="1662989795263954667">Parado (sem tinta)</translation>
 <translation id="1703835215927279855">Carta</translation>
 <translation id="1706391837335750954">Resolvedor de DNS presente</translation>
+<translation id="1717874160321062422">Gerenciado por <ph name="FIRST_MANAGER" /> e <ph name="SECOND_MANAGER" /></translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Cancelando digitalização</translation>
 <translation id="1851218745569890714">Videoconferência</translation>
@@ -59,6 +60,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Ativar o Bluetooth para descobrir dispositivos nas proximidades</translation>
 <translation id="2364498172489649528">Aprovado</translation>
+<translation id="2365324413026422635">Não é possível testar o carregamento da bateria quando ela está cheia</translation>
 <translation id="2391082728065870591">Enviar relatório de feedback</translation>
 <translation id="2418150275289244458">Abrir nas configurações</translation>
 <translation id="2446553403094072641">Precisão de pontos flutuantes</translation>
@@ -91,6 +93,7 @@
 <translation id="3226405216343213872">Procurando scanners</translation>
 <translation id="3246869037381808805">Trabalhos de impressão enviados há mais de 1 dia serão removidos</translation>
 <translation id="3268178239013324452">Falha - Porta aberta</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">Latência do DNS significativamente acima do limite permitido</translation>
 <translation id="3328783797891415197">Teste em execução</translation>
 <translation id="3368922792935385530">Conectado</translation>
@@ -102,6 +105,7 @@
 <translation id="3459509316159669723">Imprimir</translation>
 <translation id="3488065109653206955">Ativado parcialmente</translation>
 <translation id="3527036260304016759">Falha - Erro desconhecido</translation>
+<translation id="3532980081107202182">Aproximadamente <ph name="MIN_REMAINING" /> minutos restantes</translation>
 <translation id="357889014807611375">Wi-Fi limitado</translation>
 <translation id="3595596368722241419">Bateria carregada</translation>
 <translation id="360565022852130722">A rede Wi-Fi é protegida pelo protocolo fraco WEP 802.1x</translation>
@@ -125,6 +129,7 @@
 <translation id="4155551848414053977">Confira se o scanner está ligado e disponível pela rede ou por uma conexão direta</translation>
 <translation id="4170700058716978431">FALHA</translation>
 <translation id="4176463684765177261">Desativado</translation>
+<translation id="4222698289790462549">Velocidade atual</translation>
 <translation id="4227825898293920515">A senha expirará em <ph name="TIME" /></translation>
 <translation id="4228041325992544252"><ph name="AVAILABLE_MEMORY" /> GB de <ph name="TOTAL_MEMORY" /> GB disponíveis.</translation>
 <translation id="4238516577297848345">Nenhum trabalho de impressão em andamento</translation>
@@ -241,6 +246,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="6325525973963619867">Falha</translation>
 <translation id="636850387210749493">Registro da empresa</translation>
 <translation id="641081527798843608">Correspondência de assunto</translation>
+<translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Bom</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Gerenciado por <ph name="MANAGER" /></translation>
@@ -327,6 +333,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="8477551185774834963">Latência do DNS um pouco acima do limite permitido</translation>
 <translation id="8483248364096924578">Endereço IP</translation>
 <translation id="8503813439785031346">Nome de usuário</translation>
+<translation id="8503836310948963452">Só mais alguns minutos…</translation>
 <translation id="8576249514688522074">Não inicializado</translation>
 <translation id="8620617069779373398">Status do roaming</translation>
 <translation id="8675354002693747642">Chave pré-compartilhada</translation>
@@ -358,6 +365,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="9106415115617144481">Digitalizando página <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>
 <translation id="9149391708638971077">Executar teste de memória</translation>
+<translation id="9173638680043580060">Menos de um minuto restante</translation>
 <translation id="9190063653747922532">L2TP/IPSEC + chave pré-compartilhada</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Desativado</translation>

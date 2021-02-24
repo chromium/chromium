@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
 <translation id="1018656279737460067">રદ કરેલા</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> થ્રેડ, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1059913517121127803">સ્કૅન કરવાનું શરૂ કરી શક્યા નથી</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ફાયરવૉલ હોવાની જાણકારી મળી</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">અજ્ઞાત ભૂલ.</translation>
 <translation id="1204296502688602597">DNS વિલંબતા</translation>
 <translation id="123124571410524056">શંકાસ્પદ પોર્ટલ</translation>
-<translation id="1238191093934674082">Open VPN</translation>
 <translation id="1238612778414822719">HTTPSની વિલંબતા</translation>
 <translation id="1270369111467284986">શંકાસ્પદ કૅપ્ટિવ પોર્ટલ</translation>
 <translation id="1290331692326790741">નબળું સિગ્નલ</translation>
@@ -91,6 +91,7 @@
 <translation id="3226405216343213872">સ્કૅનર શોધી રહ્યાં છીએ</translation>
 <translation id="3246869037381808805">1 દિવસ કરતાં જૂના પ્રિન્ટ કાર્યો કાઢી નાખવામાં આવશે</translation>
 <translation id="3268178239013324452">નિષ્ફળ રહ્યું - પ્રિન્ટરનું ઢાંકણ ખૂલ્લું છે</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">DNSની વિલંબતા મંજૂરીયોગ્ય થ્રેશોલ્ડ કરતાં ઘણી વધુ છે</translation>
 <translation id="3328783797891415197">પરીક્ષણ ચાલુ છે</translation>
 <translation id="3368922792935385530">કનેક્ટેડ</translation>
@@ -125,6 +126,7 @@
 <translation id="4155551848414053977">ખાતરી કરો કે સ્કૅનર ચાલુ કરેલું છે અને તમારા નેટવર્ક અથવા સીધા જોડાણ મારફતે ઉપલબ્ધ છે</translation>
 <translation id="4170700058716978431">નિષ્ફળ થયું</translation>
 <translation id="4176463684765177261">અક્ષમ કરેલું</translation>
+<translation id="4222698289790462549">વર્તમાન ઝડપ</translation>
 <translation id="4227825898293920515"><ph name="TIME" />માં પાસવર્ડની સમયસીમા સમાપ્ત થાય છે</translation>
 <translation id="4228041325992544252"><ph name="TOTAL_MEMORY" /> GBમાંથી <ph name="AVAILABLE_MEMORY" /> GB ઉપલબ્ધ છે.</translation>
 <translation id="4238516577297848345">કોઈ પ્રિન્ટ કામ ચાલુ નથી</translation>
@@ -240,6 +242,7 @@
 <translation id="6325525973963619867">નિષ્ફળ થયું</translation>
 <translation id="636850387210749493">સંગઠન નોંધણી</translation>
 <translation id="641081527798843608">વિષય મેળ</translation>
+<translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">સરસ</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>

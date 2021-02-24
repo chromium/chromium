@@ -4,6 +4,7 @@
 <translation id="102360288709523007">Forbedre Chromium ved å sende bruksstatistikk og programstopprapporter til Google.</translation>
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1257458525759135959">For å lagre bilder, trykk på Innstillinger for å la Chromium legge dem til i bildene dine</translation>
+<translation id="1289216811211435351">Bytt til Chromium</translation>
 <translation id="1361748954329991663">Chromium er utdatert. Hvis ingen oppdatering er tilgjengelig i <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, kan det hende at enheten din ikke støtter nye versjoner av Chromium lenger.</translation>
 <translation id="1431818719585918472">La Chromium låse inkognitofanene dine.</translation>
 <translation id="1472013873724362412">Kontoen din fungerer ikke i Chromium. Kontakt domeneadministratoren din, eller logg på med en vanlig Google-konto.</translation>
@@ -34,6 +35,7 @@
 <translation id="4099085513035183040">Støttes ikke i Chromium Beta</translation>
 <translation id="4166206055865952171">Velg Chromium som standardnettleser</translation>
 <translation id="4555020257205549924">Når denne funksjonen er slått på, tilbyr Chromium å oversette sider som er skrevet på andre språk, ved hjelp av Google Oversetter. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
+<translation id="4585809515399340748">Nå kan du bruke Chromium hver gang du trykker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="4681781466797808448">Slå på Chromium-skanneren</translation>
 <translation id="4787850887676698916">Faner du har åpnet i Chromium på de andre enhetene dine, vises her.</translation>
 <translation id="4828317641996116749">Chromium kunne ikke sjekke alle passordene. Prøv igjen senere.</translation>
@@ -42,9 +44,9 @@
 <translation id="5224391634244552924">Ingen lagrede passord. Chromium kan sjekke passordene dine når du lagrer dem.</translation>
 <translation id="5308226104666789935">Chromium kan ikke se etter oppdateringer</translation>
 <translation id="5521125884468363740">For å se fanene dine overalt hvor du bruker Chromium, logg på og slå på synkronisering</translation>
-<translation id="5544795779875591523">Vil du slette Chromium-dataene dine fra denne enheten eller beholde dem?</translation>
 <translation id="5573014823074921752">Chromium-tips. For flere fanealternativer, trykk og hold inne Vis faner-knappen på verktøylinjen, som du finner nederst eller øverst på skjermen.</translation>
 <translation id="5700709190537129682">Chromium kan ikke sjekke passordene dine</translation>
+<translation id="5742135483959137648">Bruk Chromium til å åpne linker</translation>
 <translation id="5777187867430702742">Chromium-side</translation>
 <translation id="5862307444128926510">Velkommen til Chromium</translation>
 <translation id="5945387852661427312">Du logger på med en konto som administreres av <ph name="DOMAIN" />, og du gir dermed administratoren for dette domenet kontroll over Chromium-dataene dine. Dataene dine blir knyttet til denne kontoen permanent. Når du logger av Chromium, slettes dataene dine fra denne enheten, men de er fortsatt lagret i Google-kontoen din.</translation>
@@ -63,6 +65,7 @@
 <translation id="7208566199746267865">Med Chromium kan du spare tid, siden du får tilgang til kontoene dine på nettet. Du kan legge til eller fjerne kontoer i Innstillinger.</translation>
 <translation id="725427773388857052">Chromium kan beskytte deg mot databrudd, utrygge nettsteder med mer.</translation>
 <translation id="7269362888766543920">Noen tillegg fører til at Chromium krasjer. Prøv å avinstallere dem.</translation>
+<translation id="7313655110045230863">For å gjøre Chromium til standardnettleseren din, åpne Innstillinger. Trykk på Standard nettleserapp, og velg Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">De valgte dataene er fjernet fra Chromium og alle synkroniserte enheter. Det kan hende Google-kontoen din har andre typer nettleserlogger, for eksempel for søk og aktivitet fra andre Google-tjenester, på history.google.com.</translation>
 <translation id="7400689562045506105">Bruk Chromium overalt</translation>

@@ -562,6 +562,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
       verificar se o servidor proxy está funcionando. Se você acredita que não deve
       usar um servidor proxy:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="317878711435188021">Saber quando você está usando este dispositivo</translation>
 <translation id="3188393374551744535">Saldo da conta</translation>
 <translation id="3194737229810486521"><ph name="URL" /> quer armazenar permanentemente os dados no seu dispositivo</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> em <ph name="SERVER_NAME" /></translation>
@@ -740,6 +741,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3828924085048779000">Uma senha vazia não é permitida.</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> instalou extensões para funções adicionais. As extensões têm acesso a alguns dos seus dados.</translation>
 <translation id="3832522519263485449">Perfuração múltipla no lado esquerdo</translation>
+<translation id="3835233591525155343">Uso do seu dispositivo</translation>
 <translation id="385051799172605136">Voltar</translation>
 <translation id="3858027520442213535">Atualizar data e hora</translation>
 <translation id="3884278016824448484">Identificador de dispositivo em conflito</translation>
@@ -1029,6 +1031,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4995216769782533993">Confirme o código de segurança para compartilhar os detalhes do seu cartão com este site</translation>
 <translation id="4995474875135717171">Última modificação:</translation>
 <translation id="5002932099480077015">Se ativado, o Chrome armazenará uma cópia do seu cartão neste dispositivo para preencher formulários mais rapidamente.</translation>
+<translation id="5011561501798487822">Idioma detectado</translation>
 <translation id="5015510746216210676">Nome do computador:</translation>
 <translation id="5017554619425969104">Texto que você copiou</translation>
 <translation id="5018422839182700155">Não é possível abrir essa página</translation>
@@ -1604,6 +1607,7 @@ Mais detalhes:
 <translation id="7349430561505560861">A4 Extra</translation>
 <translation id="7353601530677266744">Linha de comando</translation>
 <translation id="7359588939039777303">Anúncios bloqueados.</translation>
+<translation id="7365849542400970216">Saber o uso do seu dispositivo?</translation>
 <translation id="7372973238305370288">resultado da pesquisa</translation>
 <translation id="7374733840632556089">Esse problema acontece devido a um certificado que você ou outra pessoa instalou no dispositivo. O certificado é conhecido por ser usado para monitorar e interceptar redes, e o Chrome não o considera confiável. Embora casos legítimos de monitoramento existam, como em redes de escolas ou empresas, o Chrome quer ter certeza de que você está ciente de tudo o que está acontecendo, mesmo que você não possa fazer nada para impedir isso. O monitoramento pode acontecer em qualquer navegador ou aplicativo que acesse a Web.</translation>
 <translation id="7375818412732305729">Um arquivo é anexado</translation>
@@ -2022,6 +2026,7 @@ Mais detalhes:
 <translation id="8983003182662520383">Formas de pagamento e endereços que usam o Google Pay</translation>
 <translation id="8987927404178983737">Mês</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
+<translation id="899688752321268742"><ph name="URL" /> quer saber quando você está usando este dispositivo</translation>
 <translation id="8996941253935762404">O site a seguir contém programas prejudiciais</translation>
 <translation id="8997023839087525404">O servidor apresentou um certificado que não foi divulgado publicamente usando a política de Transparência dos certificados. Esse é um requisito para alguns certificados, a fim de garantir que eles sejam confiáveis e protejam você contra invasores.</translation>
 <translation id="9001074447101275817">O proxy <ph name="DOMAIN" /> exige um nome de usuário e uma senha.</translation>

@@ -405,6 +405,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="4421231901400348175">Ekraningiz boshqaruvini masofaviy yordamchi orqali <ph name="HELPER_NAME" /> bilan ulashish.</translation>
 <translation id="4424159417645388645">Desk 5</translation>
 <translation id="4430019312045809116">Hajmi</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 ta muhim bildirishnoma}other{# ta muhim bildirishnoma}}</translation>
 <translation id="4450893287417543264">Boshqa ko‘rsatilmasin</translation>
 <translation id="445864333228800152">Xayrli kech,</translation>
 <translation id="4458688154122353284">Ekranni yozib olishni toʻxtatish</translation>
@@ -476,6 +477,10 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="4961318399572185831">Ekranni translatsiya qilish</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />s <ph name="MINUTES" />d <ph name="SECONDS" />s</translation>
 <translation id="4975771730019223894">Ilova nishonchasi</translation>
+<translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
+        <ph name="NOTIFICATION_1" />,
+        <ph name="NOTIFICATION_2" />,
+        <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Keyingi gap</translation>
 <translation id="5030687792513154421">Vaqt tugadi</translation>
 <translation id="5033299697334913360">Butun ekranni tasvirga olish uchun istalgan joyga bosing</translation>
@@ -489,6 +494,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="5168181903108465623">Translatsiya qurilmalari mavjud</translation>
 <translation id="5170568018924773124">&amp;Jildda ko‘rsatish</translation>
 <translation id="5176318573511391780">Ekran qismini yozib olish</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Yana 1 ta bildirishnoma}other{Yana # ta bildirishnoma}}</translation>
 <translation id="5207949376430453814">Matn kiritish joyi ajratib ko‘rsatilsin</translation>
 <translation id="5208059991603368177">Yoniq</translation>
 <translation id="5222676887888702881">Tizimdan chiqish</translation>

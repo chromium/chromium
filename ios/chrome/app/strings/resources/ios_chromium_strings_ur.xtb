@@ -4,6 +4,7 @@
 <translation id="102360288709523007">‏Google کو استعمال کے اعداد و شمار اور کریش رپورٹس بھیج کر Chromium کو بہتر بنانے میں مدد کریں۔</translation>
 <translation id="1185134272377778587">‏Chromium کے بارے میں</translation>
 <translation id="1257458525759135959">‏تصاویر محفوظ کرنے کے لیے، Chromium کو آپ کی تصاویر میں شامل کرنے دینے کے لیے ترتیبات پر تھپتھپائیں</translation>
+<translation id="1289216811211435351">‏Chromium پر جائیں</translation>
 <translation id="1361748954329991663">‏Chromium پرانا ہے۔ اگر کوئی اپ ڈیٹ <ph name="BEGIN_LINK" />App اسٹور<ph name="END_LINK" /> میں دستیاب نہیں ہے تو یہ ممکن ہے کہ آپ کا آلہ مزید Chromium کے نئے ورژنز کو سپورٹ نہیں کرتا ہے۔</translation>
 <translation id="1431818719585918472">‏Chromium کو آپ کی پوشیدگی ٹیبز کو مقفل کرنے دیں۔</translation>
 <translation id="1472013873724362412">‏آپ کا اکاؤنٹ Chromium پر کام نہیں کرتا ہے۔ سائن ان کرنے کیلئے براہ کرم اپنے ڈومین کے منتظم سے رابطہ کریں یا ایک مستقل Google اکاؤنٹ استعمال کریں۔</translation>
@@ -34,6 +35,7 @@
 <translation id="4099085513035183040">‏Chromium بی ٹا پر تعاون یافتہ نہیں ہے</translation>
 <translation id="4166206055865952171">‏Chromium کو اپنا ڈیفالٹ بنائیں</translation>
 <translation id="4555020257205549924">‏یہ خصوصیت آن کیے جانے پر، Chromium دوسری زبانوں میں لکھے ہوئے صفحات کا Google ترجمہ استعمال کر کے ترجمہ کرنے کی پیشکش کرے گا۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
+<translation id="4585809515399340748">‏اب جب بھی آپ پیغامات، دستاویزات اور دیگر ایپس میں لنکس پر تھپتھپائیں تو آپ Chromium استعمال کر سکتے ہیں۔</translation>
 <translation id="4681781466797808448">‏Chromium اسکینر آن کریں</translation>
 <translation id="4787850887676698916">‏اپنے دیگر آلات پر Chromium میں آپ نے جو ٹیبز کھولے ہیں وہ یہاں ظاہر ہوں گے۔</translation>
 <translation id="4828317641996116749">‏Chromium سبھی پاس ورڈز چیک نہیں کر سکا۔ بعد میں دوبارہ کوشش کریں۔</translation>
@@ -42,9 +44,9 @@
 <translation id="5224391634244552924">‏کوئی محفوظ کردہ پاس ورڈ نہیں۔ جب آپ پاس ورڈز کو محفوظ کرتے ہیں تو Chromium انہیں چیک کر سکتا ہے۔</translation>
 <translation id="5308226104666789935">‏Chromium اپ ڈیٹس چیک نہیں کر سکتا ہے</translation>
 <translation id="5521125884468363740">‏اپنے ٹیبز کو دیکھنے کے لئے جہاں کہیں بھی آپ Chromium استعمال کرتے ہیں، سائن ان کریں اور سِنک کو آن کریں</translation>
-<translation id="5544795779875591523">‏منتخب کریں کہ آیا اپنے Chromium ڈیٹا کو اس آلے سے صاف کرنا ہے یا اسے رکھنا ہے؟</translation>
 <translation id="5573014823074921752">‏Chromium تجویز۔ ٹیب کے مزید اختیارات کیلئے، ٹول بار میں اس "ٹیبز دکھائيں" بٹن کو ٹچ کریں اور دبائے رکھیں جو آپ کی اسکرین کے نیچے یا اوپر ہوتا ہے۔</translation>
 <translation id="5700709190537129682">‏Chromium آپ کے پاس ورڈز چیک نہیں کر سکتا ہے</translation>
+<translation id="5742135483959137648">‏لنکس کھولنے کے لیے Chromium استعمال کریں</translation>
 <translation id="5777187867430702742">‏Chromium صفحہ</translation>
 <translation id="5862307444128926510">‏Chromium میں خوش آمدید</translation>
 <translation id="5945387852661427312">‏آپ <ph name="DOMAIN" /> کے زیر انتظام اکاؤنٹ کے ساتھ سائن ان کر رہے ہیں اور اس کے منتظم کو اپنے Chromium ڈیٹا پر کنٹرول دے رہے ہیں۔ آپ کا ڈیٹا اس اکاؤنٹ سے مستقل طور پر مربوط ہو جائے گا۔ Chromium سے سائن آؤٹ کرنے سے آپ کا ڈیٹا اس آلہ سے حذف ہو جائے گا، لیکن یہ آپ کے Google اکاؤنٹ میں اسٹور رہے گا۔</translation>

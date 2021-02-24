@@ -331,7 +331,6 @@
 <translation id="4706042980341760088">टाइपरायटर कीबोर्डसह तमिळ</translation>
 <translation id="4711094779914110278">तुर्की</translation>
 <translation id="4712283082407695269">"<ph name="PATH" />" उघडत आहे</translation>
-<translation id="4713544552769165154">ही फाइल Macintosh सॉफ्टवेअर वापरून एका कॉंप्युटरसाठी डिझाइन केली आहे. ही Chrome OS चालवणार्‍या तुमच्या डिव्हाइसशी सुसंगत नाही. कृपया एका सोयीस्कर रिप्लेसमेंट अ‍ॅप साठी <ph name="BEGIN_LINK" />Chrome वेब स्टोअर<ph name="END_LINK" /> शोधा.<ph name="BEGIN_LINK_HELP" />अधिक जाणून घ्या<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> फोटोंचा बॅकअप घेतला</translation>
 <translation id="4725511304875193254">कॉर्गी</translation>
 <translation id="4732760563705710320">क्षमस्‍व, आपल्‍या कास्‍ट डिव्‍हाइसद्वारे हा व्‍हिडिओ समर्थित नाही.</translation>
@@ -465,8 +464,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5833610766403489739">ही फाइल कुठेतरी हरवली आहे. कृपया तुमचे डाउनलोड स्थान सेटिंग तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="5838451609423551646">निवडीमधून सर्व नोंदी काढून टाकल्या आहेत.</translation>
 <translation id="5838825566232597749">यूएस कामगार आंतरराष्ट्रीय</translation>
-<translation id="5850516540536751549">हा फाइल प्रकार सपोर्टेड नाही. कृपया या प्रकारची फाइल उघडू शकणारे अ‍ॅप शोधण्यासाठी <ph name="BEGIN_LINK" />Chrome वेब स्टोअर<ph name="END_LINK" /> ला भेट द्या.
-<ph name="BEGIN_LINK_HELP" />अधिक जाणून घ्या<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">येथे पाहण्यासाठी काहीही नाही...</translation>
 <translation id="5911887972742538906">तुमच्या Linux ॲप्लिकेशनच्या इंस्टॉलेशन दरम्यान एरर आली आहे.</translation>
 <translation id="5912396950572065471">फॉरमॅट</translation>
@@ -676,7 +673,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8038111231936746805">(डीफॉल्ट)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> ऑडिओ</translation>
 <translation id="8045462269890919536">रोमानियन</translation>
-<translation id="8052887694493382350">ही फाइल Windows सॉफ्टवेअर वापरणार्‍या PC साठी डिझाइन केली आहे. ही तुमच्या Chrome OS रन करणार्‍या डिव्हाइससोबत कंपॅटिबल नाही. <ph name="BEGIN_LINK_HELP" />अधिक जाणून घ्या<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">सर्व संपादने <ph name="DOWNLOADS_FOLDER" /> मध्ये सेव्ह केली जातील.</translation>
 <translation id="8079530767338315840">पुनरावृत्ती करा</translation>
 <translation id="8106045200081704138">माझ्याशी शेअर केलेले</translation>

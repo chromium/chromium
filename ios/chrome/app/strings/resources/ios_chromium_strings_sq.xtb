@@ -4,6 +4,7 @@
 <translation id="102360288709523007">Ndihmo në përmirësimin e Chromium duke dërguar te Google statistika përdorimi dhe raporte të ndërprerjeve aksidentale.</translation>
 <translation id="1185134272377778587">Rreth Chromium</translation>
 <translation id="1257458525759135959">Për të ruajtur imazhet, trokit te "Cilësimet" për të lejuar që Chromium të shtojë te fotografitë e tua</translation>
+<translation id="1289216811211435351">Kalo te Chromium</translation>
 <translation id="1361748954329991663">Chromium është i papërditësuar. Nëse nuk ofrohet ndonjë përditësim në <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, ka mundësi që pajisja jote nuk i mbështet më versionet e reja të Chromium.</translation>
 <translation id="1431818719585918472">Lejo që Chromium t'i kyçë skedat "e fshehta".</translation>
 <translation id="1472013873724362412">Llogaria jote nuk punon në Chromium. Kontakto me administratorin e domenit ose përdor një llogari të rregullt të Google për t'u identifikuar.</translation>
@@ -34,6 +35,7 @@
 <translation id="4099085513035183040">Nuk mbështetet në Chromium Beta</translation>
 <translation id="4166206055865952171">Bëje Chromium shfletuesin tënd të parazgjedhur</translation>
 <translation id="4555020257205549924">Kur ky funksion është i aktivizuar, Chromium do të ofrojë që të përkthejë faqet e shkruara në gjuhë të tjera duke përdorur "Përkthe me Google". <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
+<translation id="4585809515399340748">Tani mund të përdorësh Chromium sa herë që troket te lidhjet në mesazhe, dokumente dhe aplikacione të tjera.</translation>
 <translation id="4681781466797808448">Aktivizo skanerin e Chromium</translation>
 <translation id="4787850887676698916">Skedat që ke hapur në Chromium në pajisjet e tjera do të shfaqen këtu.</translation>
 <translation id="4828317641996116749">Chromium nuk mund t'i kontrollonte të gjitha fjalëkalimet. Provo sërish më vonë.</translation>
@@ -42,9 +44,9 @@
 <translation id="5224391634244552924">Nuk ka asnjë fjalëkalim të ruajtur. Chromium mund t'i kontrollojë fjalëkalimet e tua kur ti i ruan ato.</translation>
 <translation id="5308226104666789935">Chromium nuk mund të kontrollojë për përditësime</translation>
 <translation id="5521125884468363740">Për të parë skedat e tua nga çdo vend ku përdor Chromium, identifikohu dhe aktivizo sinkronizimin</translation>
-<translation id="5544795779875591523">Dëshiron të zgjedhësh nëse do t'i pastrosh të dhënat e Chromium nga kjo pajisje apo t'i ruash ato?</translation>
 <translation id="5573014823074921752">Këshillë për Chromium. Për më shumë opsione për skedat, shtyp dhe mbaj shtypur butonin "Shfaq skedat" në shiritin e veglave që ndodhet në fund ose në krye të ekranit tënd.</translation>
 <translation id="5700709190537129682">Chromium nuk mund t'i kontrollojë fjalëkalimet e tua</translation>
+<translation id="5742135483959137648">Përdor Chromium për të hapur lidhjet</translation>
 <translation id="5777187867430702742">Faqe e Chromium</translation>
 <translation id="5862307444128926510">Mirë se vjen në Chromium</translation>
 <translation id="5945387852661427312">Po identifikohesh me një llogari të menaxhuar nga <ph name="DOMAIN" /> dhe po i jep administratorit të saj kontroll mbi të dhënat e tua të Chromium. Të dhënat e tua do të lidhen përgjithmonë me këtë llogari. Dalja nga Chromium do të bëjë që të fshihen të dhënat e tua nga kjo pajisje, por ato do të mbeten të ruajtura në llogarinë tënde të Google.</translation>

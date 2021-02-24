@@ -331,7 +331,6 @@
 <translation id="4706042980341760088">Daktilo klavye ile Tamilce</translation>
 <translation id="4711094779914110278">Türkçe</translation>
 <translation id="4712283082407695269">"<ph name="PATH" />" açılıyor</translation>
-<translation id="4713544552769165154">Bu dosya Macintosh yazılımı kullanan bilgisayarlar için tasarlanmıştır. Dolayısıyla Chrome OS işletim sistemine sahip cihazınız ile uyumlu değildir. Bunun yerine kullanılabilecek bir uygulama için lütfen <ph name="BEGIN_LINK" />Chrome Web Mağazası<ph name="END_LINK" />'nda arama yapın.<ph name="BEGIN_LINK_HELP" />Daha fazla bilgi edinin<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> fotoğraf yedeklendi</translation>
 <translation id="4725511304875193254">Korgi</translation>
 <translation id="4732760563705710320">Maalesef bu video, yayın için kullandığınız cihaz tarafından desteklenmiyor.</translation>
@@ -465,8 +464,6 @@
 <translation id="5833610766403489739">Bu dosya başka bir yere gitti. Lütfen indirilenler için konum ayarınızı kontrol edin ve tekrar deneyin.</translation>
 <translation id="5838451609423551646">Tüm girişler seçimden kaldırıldı.</translation>
 <translation id="5838825566232597749">ABD Workman uluslararası</translation>
-<translation id="5850516540536751549">Bu dosya türü desteklenmiyor. Bu dosya türünü açabilecek bir uygulama bulmak için lütfen <ph name="BEGIN_LINK" />Chrome Web Mağazası<ph name="END_LINK" />'nı ziyaret edin.
-    <ph name="BEGIN_LINK_HELP" />Daha Fazla Bilgi Edinin<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Burada görülecek bir şey yok...</translation>
 <translation id="5911887972742538906">Linux uygulamanızın yüklenmesi sırasında bir hata oluştu.</translation>
 <translation id="5912396950572065471">Biçim</translation>
@@ -676,7 +673,6 @@
 <translation id="8038111231936746805">(varsayılan)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> ses</translation>
 <translation id="8045462269890919536">Rumence</translation>
-<translation id="8052887694493382350">Bu dosya Windows yazılımı kullanan PC'ler için tasarlanmıştır. Chrome OS çalıştıran cihazınızla uyumlu değildir. <ph name="BEGIN_LINK_HELP" />Daha Fazla Bilgi<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Tüm düzenlemeler <ph name="DOWNLOADS_FOLDER" /> dosyasına kaydedilecektir.</translation>
 <translation id="8079530767338315840">Tekrarla</translation>
 <translation id="8106045200081704138">Benimle paylaşılanlar</translation>

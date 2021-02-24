@@ -405,6 +405,7 @@
 <translation id="4421231901400348175">원격 지원을 통해 <ph name="HELPER_NAME" />와(과) 화면 제어 공유</translation>
 <translation id="4424159417645388645">데스크 5</translation>
 <translation id="4430019312045809116">볼륨</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{중요 알림 1개}other{중요 알림 #개}}</translation>
 <translation id="4450893287417543264">다시 표시하지 않음</translation>
 <translation id="445864333228800152">편안한 저녁 보내세요</translation>
 <translation id="4458688154122353284">화면 녹화 중지</translation>
@@ -476,6 +477,10 @@
 <translation id="4961318399572185831">화면 전송</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />시간 <ph name="MINUTES" />분 <ph name="SECONDS" />초</translation>
 <translation id="4975771730019223894">앱 배지 설정</translation>
+<translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
+        <ph name="NOTIFICATION_1" />,
+        <ph name="NOTIFICATION_2" />,
+        <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">다음 문장</translation>
 <translation id="5030687792513154421">시간이 다 됨</translation>
 <translation id="5033299697334913360">전체 화면을 캡처하려면 아무 곳이나 클릭하세요</translation>
@@ -489,6 +494,7 @@
 <translation id="5168181903108465623">전송 기기를 사용할 수 있음</translation>
 <translation id="5170568018924773124">폴더 열기</translation>
 <translation id="5176318573511391780">화면 일부 녹화</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{기타 알림 1개}other{기타 알림 #개}}</translation>
 <translation id="5207949376430453814">텍스트 캐럿 강조표시</translation>
 <translation id="5208059991603368177">켜짐</translation>
 <translation id="5222676887888702881">로그아웃</translation>

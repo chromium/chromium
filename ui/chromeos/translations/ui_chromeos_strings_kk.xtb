@@ -93,6 +93,7 @@
 <translation id="1942765061641586207">Кескін ажыратымдылығы</translation>
 <translation id="1943097386230153518">Жаңа қызмет орнату</translation>
 <translation id="1972984168337863910">Файлдар пікірі панельдерін жаю</translation>
+<translation id="1984456723671657197">Мұндай файл түріне қолдау көрсетілмейді. Chrome OS жүйесінде файлдарды ашу туралы <ph name="BEGIN_LINK_HELP" />толығырақ<ph name="END_LINK_HELP" /> ақпарат алыңыз.</translation>
 <translation id="1995337122023280937">Файл орнына өту</translation>
 <translation id="2001796770603320721">Drive қызметінде басқару</translation>
 <translation id="2009067268969781306">Дискіні форматтасаңыз, онда сақталған деректердің барлығы өшіп қалады. Бұл әрекеттен бас тарту мүмкін емес.</translation>
@@ -331,7 +332,6 @@
 <translation id="4706042980341760088">Тамиль (жазу машинасы пернетақтасымен)</translation>
 <translation id="4711094779914110278">түрікше</translation>
 <translation id="4712283082407695269">"<ph name="PATH" />" ашылуда</translation>
-<translation id="4713544552769165154">Бұл файл Macintosh бағдарламалық жасақтамасын пайдаланатын компьютерге арналған. Бұл Chrome OS жүйесімен жұмыс істейтін құрылғымен үйлесімді емес. Сәйкес ауыстыратын қолданбаны <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> дүкенінен іздеңіз.<ph name="BEGIN_LINK_HELP" />Толығырақ<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> фотосуреттің сақтық көшірмесі жасалды</translation>
 <translation id="4725511304875193254">Корги</translation>
 <translation id="4732760563705710320">Кешіріңіз, бұл бейнеге тарату құрылғысы қолдау көрсетпейді.</translation>
@@ -464,8 +464,6 @@
 <translation id="5833610766403489739">Бұл файл жоғалып қалды. Жүктеу орны параметрін тексеріп, қайталап көріңіз.</translation>
 <translation id="5838451609423551646">Таңдалғандардан барлық жазба өшірілді.</translation>
 <translation id="5838825566232597749">АҚШ (Workman, халықаралық)</translation>
-<translation id="5850516540536751549">Бұл файл түріне қолдау көрсетілмейді. Файлдың бұл түрін ашатын қолданбаны табу үшін <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> дүкеніне кіріңіз.
-    <ph name="BEGIN_LINK_HELP" />Толығырақ<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Мұнда қарайтын ештеңе жоқ…</translation>
 <translation id="5911887972742538906">Linux қолданбасын орнату кезінде қате кетті.</translation>
 <translation id="5912396950572065471">Формат</translation>
@@ -669,13 +667,13 @@
 <translation id="7972920761225148017">Француз (Швейцария)</translation>
 <translation id="7980421588063892270">Ағылшын (АҚШ), Колемак пернетақтасымен</translation>
 <translation id="7982283708762922719">Биіктігі</translation>
+<translation id="79907182588096956">Бұл файл Windows бағдарламалық құралын пайдаланатын компьютерге арналған. Яғни Chrome OS арқылы жұмыс істейтін құрылғыңызбен үйлесімді емес. Chrome OS жүйесінде файлдарды ашу туралы <ph name="BEGIN_LINK_HELP" />толығырақ<ph name="END_LINK_HELP" /> ақпарат алыңыз.</translation>
 <translation id="8008366997883261463">Ит</translation>
 <translation id="8028993641010258682">Көлемі</translation>
 <translation id="803771048473350947">Файл</translation>
 <translation id="8038111231936746805">(әдепкі)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> аудиофайлы</translation>
 <translation id="8045462269890919536">румын</translation>
-<translation id="8052887694493382350">Бұл файл Windows бағдарламалық құралын пайдаланатын компьютерге арналған. Яғни Chrome OS арқылы жұмыс істейін құрылғыңызбен үйлесімді емес. <ph name="BEGIN_LINK_HELP" />Толығырақ<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Барлық өзгертулер <ph name="DOWNLOADS_FOLDER" /> қалтасына сақталады.</translation>
 <translation id="8079530767338315840">Қайталау</translation>
 <translation id="8106045200081704138">Маған қолжетімді</translation>
@@ -749,6 +747,7 @@
 <translation id="8900820606136623064">мадьяр</translation>
 <translation id="8919081441417203123">дат</translation>
 <translation id="8965697826696209160">Бос орын жеткіліксіз.</translation>
+<translation id="8970501467542182729">Бұл файл Macintosh бағдарламалық құралын пайдаланатын компьютерге арналған. Яғни Chrome OS арқылы жұмыс істейтін құрылғыңызбен үйлесімді емес. Chrome OS жүйесінде файлдарды ашу туралы <ph name="BEGIN_LINK_HELP" />толығырақ<ph name="END_LINK_HELP" /> ақпарат алыңыз.</translation>
 <translation id="8997962250644902079">Қытай (дәстүрлі, пиньинь)</translation>
 <translation id="9017798300203431059">Орыс фонетикалық</translation>
 <translation id="9034924485347205037">Linux файлдары</translation>

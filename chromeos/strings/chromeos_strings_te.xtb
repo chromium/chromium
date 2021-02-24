@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
 <translation id="1018656279737460067">రద్దయింది</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> థ్రెడ్‌లు, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1059913517121127803">స్కానింగ్ ప్రారంభించడం సాధ్యపడలేదు</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ఫైర్‌వాల్ గుర్తించబడింది</translation>
@@ -12,7 +13,6 @@
 <translation id="1195447618553298278">తెలియని ఎర్రర్.</translation>
 <translation id="1204296502688602597">DNS ప్రతిస్పందన సమయం</translation>
 <translation id="123124571410524056">పోర్టల్‌తో సమస్య ఉన్నట్టుగా ఉంది</translation>
-<translation id="1238191093934674082">ఓపెన్ VPN</translation>
 <translation id="1238612778414822719">HTTPS ప్రతిస్పందన సమయం</translation>
 <translation id="1270369111467284986">క్యాప్టివ్ పోర్టల్ అనుమానించబడింది</translation>
 <translation id="1290331692326790741">సిగ్నల్ బలహీనంగా ఉంది</translation>
@@ -91,6 +91,7 @@
 <translation id="3226405216343213872">స్కానర్‌ల కోసం వెతుకుతోంది</translation>
 <translation id="3246869037381808805">1 రోజుకు పైగా ఉన్న ప్రింట్ టాస్క్‌లు తీసివేయబడతాయి</translation>
 <translation id="3268178239013324452">విఫలమైంది - తలుపు తెరుచుకుని ఉంది</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3310640316857623290">DNS ప్రతిస్పందన సమయం అనుమతించదగిన పరిమితికి మించి ఉంది</translation>
 <translation id="3328783797891415197">పరీక్ష రన్ అవుతోంది</translation>
 <translation id="3368922792935385530">కనెక్ట్ అయింది</translation>
@@ -125,6 +126,7 @@
 <translation id="4155551848414053977">స్కానర్ ఆన్ చేయబడి ఉందని, అలాగే నెట్‌వర్క్ లేదా ప్రత్యక్ష కనెక్షన్ ద్వారా అందుబాటులో ఉందని నిర్ధారించుకోండి</translation>
 <translation id="4170700058716978431">విఫలమైంది</translation>
 <translation id="4176463684765177261">ఆపివేయబడింది</translation>
+<translation id="4222698289790462549">ప్రస్తుత వేగం</translation>
 <translation id="4227825898293920515"><ph name="TIME" />లో పాస్‌వర్డ్‌ గడువు ముగుస్తుంది</translation>
 <translation id="4228041325992544252"><ph name="TOTAL_MEMORY" /> GBలో <ph name="AVAILABLE_MEMORY" /> GB అందుబాటులో ఉంది.</translation>
 <translation id="4238516577297848345">ప్రింట్ టాస్క్‌లు ఏవీ ప్రోగ్రెస్‌లో లేవు</translation>
@@ -240,6 +242,7 @@
 <translation id="6325525973963619867">విఫలమైంది</translation>
 <translation id="636850387210749493">ఎంటర్‌ప్రైజ్ నమోదు</translation>
 <translation id="641081527798843608">విషయ సరిపోలిక</translation>
+<translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">శ్రేష్టమైనది</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> ద్వారా మేనేజ్ చేయబడుతోంది</translation>
