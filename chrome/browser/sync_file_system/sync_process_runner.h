@@ -61,7 +61,7 @@ class SyncProcessRunner {
     virtual bool IsRunning() = 0;
     virtual void Start(const base::Location& from_here,
                        const base::TimeDelta& delay,
-                       const base::Closure& closure) = 0;
+                       base::OnceClosure closure) = 0;
     virtual base::TimeTicks Now() const = 0;
 
    protected:
