@@ -145,6 +145,8 @@ void ArcTtsService::OnVoicesChanged(std::vector<mojom::TtsVoicePtr> voices) {
     chrome_voice.remote = voice->is_network_connection_required;
     chrome_voice.events.insert(content::TTS_EVENT_START);
     chrome_voice.events.insert(content::TTS_EVENT_END);
+    chrome_voice.events.insert(content::TTS_EVENT_INTERRUPTED);
+    chrome_voice.events.insert(content::TTS_EVENT_ERROR);
   }
 
   TtsPlatformImplChromeOs* impl = TtsPlatformImplChromeOs::GetInstance();

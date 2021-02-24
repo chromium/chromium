@@ -182,4 +182,53 @@ TEST_F(ArcTtsServiceTest, GetVoices) {
 
 }  // namespace
 
+TEST_F(ArcTtsServiceTest, ChromeVoiceEvents) {
+  std::vector<mojom::TtsVoicePtr> android_voices;
+  auto voice0 = mojom::TtsVoice::New();
+  android_voices.push_back(std::move(voice0));
+
+  auto voice1 = mojom::TtsVoice::New();
+  android_voices.push_back(std::move(voice1));
+
+  tts_service()->OnVoicesChanged(std::move(android_voices));
+
+  TtsPlatformImplChromeOs* tts_chromeos =
+      TtsPlatformImplChromeOs::GetInstance();
+  std::vector<content::VoiceData> chrome_voices;
+  tts_chromeos->GetVoices(&chrome_voices);
+
+  EXPECT_EQ(2U, chrome_voices.size());
+
+  std::set<content::TtsEventType> expected_events(
+      {content::TTS_EVENT_START, content::TTS_EVENT_END,
+       content::TTS_EVENT_INTERRUPTED, content::TTS_EVENT_ERROR});
+  EXPECT_EQ(expected_events, chrome_voices[0].events);
+  EXPECT_EQ(expected_events, chrome_voices[1].events);
+
+  chrome_voices.clear();
+  tts_chromeos->ReceivedWordEvent();
+  tts_chromeos->GetVoices(&chrome_voices);
+  expected_events.insert(content::TTS_EVENT_WORD);
+
+  EXPECT_EQ(expected_events, chrome_voices[0].events);
+  EXPECT_EQ(expected_events, chrome_voices[1].events);
+
+  // All events should have been mapped at runtime.
+  EXPECT_EQ(static_cast<size_t>(mojom::TtsEventType::kMaxValue),
+            expected_events.size() - 1);
+
+  // Setting the voice again results in all Android-side mojo events besides
+  // word.
+  auto voice2 = mojom::TtsVoice::New();
+  std::vector<mojom::TtsVoicePtr> more_android_voices;
+  more_android_voices.push_back(std::move(voice2));
+  tts_service()->OnVoicesChanged(std::move(more_android_voices));
+  chrome_voices.clear();
+  tts_chromeos->GetVoices(&chrome_voices);
+
+  expected_events.erase(content::TTS_EVENT_WORD);
+  EXPECT_EQ(1U, chrome_voices.size());
+  EXPECT_EQ(expected_events, chrome_voices[0].events);
+}
+
 }  // namespace arc
