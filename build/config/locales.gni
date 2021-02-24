@@ -5,8 +5,6 @@
 # This file creates the |locales| which is the set of current
 # locales based on the current platform. Locales in this list are formated
 # based on what .pak files expect.
-# The |locales_with_fake_bidi| variable is the same but with
-# the fake bidirectional locale added.
 
 # The following additional platform specific lists are created:
 # - |android_apk_locales| subset for Android based apk builds
@@ -123,7 +121,7 @@ all_chrome_locales = [
   "sl",
   "sq",
   "sr",
-  "sr-Latn", # -b+sr+Latn in .xml
+  "sr-Latn",  # -b+sr+Latn in .xml
   "sv",
   "sw",
   "ta",
@@ -195,14 +193,14 @@ if (is_android) {
   android_bundle_locales_as_resources -= [
     "en-rUS",
     "es-r419",
-    "sr-rLatn",
     "fil",
     "he",
     "id",
+    "sr-rLatn",
   ]
   android_bundle_locales_as_resources += [
-    "es-rUS",
     "b+sr+Latn",
+    "es-rUS",
     "in",
     "iw",
     "tl",
@@ -225,10 +223,21 @@ if (is_ios) {
   ]
 }
 
-# This doesn't actually enable the locale - it just allows it to compile.
-# In order to enable it, it needs to be in the locales variable.
-# A future CL will move it there for dev builds only.
-locales_with_fake_bidi = locales + [ "ar-XB", "en-XA" ]
+pseudolocales = [
+  "ar-XB",
+  "en-XA",
+]
+locales_and_pseudolocales = locales + pseudolocales
+
+declare_args() {
+  # We want to give pseudolocales to everyone except end-users (devs & QA).
+  enable_pseudolocales = !is_official_build
+}
+
+if (enable_pseudolocales) {
+  # Note that this only packages the locales in, and doesn't add the ui to enable them.
+  locales += pseudolocales
+}
 
 # Same as the locales list but in the format Mac expects for output files:
 # it uses underscores instead of hyphens, and "en" instead of "en-US".

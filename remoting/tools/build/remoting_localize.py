@@ -421,6 +421,7 @@ _LANGUAGE_MAP = {
   'af' : [ 1252, 'LANG_AFRIKAANS', 'SUBLANG_DEFAULT' ],
   'am' : [ 1200, 'LANG_AMHARIC', 'SUBLANG_DEFAULT' ],
   'ar' : [ 1256, 'LANG_ARABIC', 'SUBLANG_DEFAULT' ],
+  'ar-XB' : [ 1200, 'LANG_ENGLISH', 'SUBLANG_DEFAULT' ],
   'bg' : [ 1251, 'LANG_BULGARIAN', 'SUBLANG_DEFAULT' ],
   'bn' : [ 1200, 'LANG_BENGALI', 'SUBLANG_DEFAULT' ],
   'ca' : [ 1252, 'LANG_CATALAN', 'SUBLANG_DEFAULT' ],
@@ -430,6 +431,7 @@ _LANGUAGE_MAP = {
   'el' : [ 1253, 'LANG_GREEK', 'SUBLANG_DEFAULT' ],
   'en' : [ 1200, 'LANG_ENGLISH', 'SUBLANG_ENGLISH_US' ],
   'en-GB' : [ 1038, 'LANG_ENGLISH', 'SUBLANG_ENGLISH_UK' ],
+  'en-XA' : [ 1200, 'LANG_ENGLISH', 'SUBLANG_DEFAULT' ],
   'es' : [ 1252, 'LANG_SPANISH', 'SUBLANG_SPANISH_MODERN' ],
   # LCID for Mexico; Windows does not support L.A. LCID.
   'es-419' : [ 1252, 'LANG_SPANISH', 'SUBLANG_SPANISH_MEXICAN' ],
@@ -496,6 +498,7 @@ _LANGUAGE_MAP = {
 # Right-To-Left languages
 _RTL_LANGUAGES = (
   'ar',  # Arabic
+  'ar-XB',  # RTL Pseudolocale
   'fa',  # Farsi
   'iw',  # Hebrew
   'ks',  # Kashmiri

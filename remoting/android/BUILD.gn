@@ -34,7 +34,7 @@ remoting_credits("credits_resources_raw") {
 
 remoting_localize("remoting_apk_manifest") {
   sources = [ "java/AndroidManifest.xml.jinja2" ]
-  locales = [ "en" ]
+  locale_list = [ "en" ]
   variables = [ rebase_path(branding_path) ]
   output = "$root_gen_dir/remoting/android/{{source_name_part}}"
 }
@@ -160,7 +160,7 @@ remoting_apk_tmpl("remoting_apk") {
 
 remoting_localize("remoting_test_apk_manifest") {
   sources = [ "javatests/AndroidManifest.xml.jinja2" ]
-  locales = [ "en" ]
+  locale_list = [ "en" ]
   variables = [ rebase_path(branding_path) ]
   output = "$root_gen_dir/remoting/android_test/{{source_name_part}}"
 }

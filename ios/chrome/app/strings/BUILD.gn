@@ -17,7 +17,7 @@ grit("ios_strings") {
   source = "ios_strings.grd"
   output_dir = "$root_gen_dir/ios/chrome"
   outputs = [ "grit/ios_strings.h" ]
-  foreach(locale, locales_with_fake_bidi) {
+  foreach(locale, locales_and_pseudolocales) {
     outputs += [ "ios_strings_$locale.pak" ]
   }
 }
@@ -26,7 +26,7 @@ grit("ios_chromium_strings") {
   source = "ios_chromium_strings.grd"
   output_dir = "$root_gen_dir/ios/chrome"
   outputs = [ "grit/ios_chromium_strings.h" ]
-  foreach(locale, locales_with_fake_bidi) {
+  foreach(locale, locales_and_pseudolocales) {
     outputs += [ "ios_chromium_strings_$locale.pak" ]
   }
 }
@@ -35,7 +35,7 @@ grit("ios_google_chrome_strings") {
   source = "ios_google_chrome_strings.grd"
   output_dir = "$root_gen_dir/ios/chrome"
   outputs = [ "grit/ios_google_chrome_strings.h" ]
-  foreach(locale, locales_with_fake_bidi) {
+  foreach(locale, locales_and_pseudolocales) {
     outputs += [ "ios_google_chrome_strings_$locale.pak" ]
   }
 }

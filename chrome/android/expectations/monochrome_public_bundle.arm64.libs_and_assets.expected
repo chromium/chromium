@@ -7,6 +7,7 @@ apk_path=assets/chrome_100_percent.pak, compress=False, alignment=4
 apk_path=assets/icudtl.dat, compress=False, alignment=4
 apk_path=assets/locales/af.pak, compress=False, alignment=4
 apk_path=assets/locales/am.pak, compress=False, alignment=4
+apk_path=assets/locales/ar-XB.pak, compress=False, alignment=4
 apk_path=assets/locales/ar.pak, compress=False, alignment=4
 apk_path=assets/locales/as.pak, compress=False, alignment=4
 apk_path=assets/locales/az.pak, compress=False, alignment=4
@@ -21,6 +22,7 @@ apk_path=assets/locales/de.pak, compress=False, alignment=4
 apk_path=assets/locales/el.pak, compress=False, alignment=4
 apk_path=assets/locales/en-GB.pak, compress=False, alignment=4
 apk_path=assets/locales/en-US.pak, compress=False, alignment=4
+apk_path=assets/locales/en-XA.pak, compress=False, alignment=4
 apk_path=assets/locales/es-419.pak, compress=False, alignment=4
 apk_path=assets/locales/es.pak, compress=False, alignment=4
 apk_path=assets/locales/et.pak, compress=False, alignment=4
@@ -91,6 +93,7 @@ apk_path=assets/snapshot_blob_32.bin, compress=False, alignment=4
 apk_path=assets/snapshot_blob_64.bin, compress=False, alignment=4
 apk_path=assets/stored-locales/af.pak, compress=False, alignment=4
 apk_path=assets/stored-locales/am.pak, compress=False, alignment=4
+apk_path=assets/stored-locales/ar-XB.pak, compress=False, alignment=4
 apk_path=assets/stored-locales/ar.pak, compress=False, alignment=4
 apk_path=assets/stored-locales/as.pak, compress=False, alignment=4
 apk_path=assets/stored-locales/az.pak, compress=False, alignment=4
@@ -105,6 +108,7 @@ apk_path=assets/stored-locales/de.pak, compress=False, alignment=4
 apk_path=assets/stored-locales/el.pak, compress=False, alignment=4
 apk_path=assets/stored-locales/en-GB.pak, compress=False, alignment=4
 apk_path=assets/stored-locales/en-US.pak, compress=False, alignment=4
+apk_path=assets/stored-locales/en-XA.pak, compress=False, alignment=4
 apk_path=assets/stored-locales/es-419.pak, compress=False, alignment=4
 apk_path=assets/stored-locales/es.pak, compress=False, alignment=4
 apk_path=assets/stored-locales/et.pak, compress=False, alignment=4
