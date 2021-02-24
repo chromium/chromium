@@ -155,6 +155,21 @@
   DCHECK(self.incognitoTabsMediator);
   self.incognitoTabsMediator.browser = incognitoBrowser;
   self.thumbStripCoordinator.incognitoBrowser = incognitoBrowser;
+  if (incognitoBrowser) {
+    self.baseViewController.incognitoPopupMenuHandler = HandlerForProtocol(
+        incognitoBrowser->GetCommandDispatcher(), PopupMenuCommands);
+  } else {
+    self.baseViewController.incognitoPopupMenuHandler = nil;
+  }
+}
+
+- (void)setIncognitoThumbStripSupporting:
+    (id<ThumbStripSupporting>)incognitoThumbStripSupporting {
+  _incognitoThumbStripSupporting = incognitoThumbStripSupporting;
+  if (self.isThumbStripEnabled) {
+    [self.incognitoThumbStripSupporting
+        thumbStripEnabledWithPanHandler:self.thumbStripCoordinator.panHandler];
+  }
 }
 
 - (void)stopChildCoordinatorsWithCompletion:(ProceduralBlock)completion {
