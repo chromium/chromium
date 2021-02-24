@@ -1900,8 +1900,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityIframe) {
   RunHtmlTest(FILE_PATH_LITERAL("iframe.html"));
 }
 
+// Test is flaky: https://crbug.com/1181596
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityIframeAriaHidden) {
+                       DISABLED_AccessibilityIframeAriaHidden) {
   RunHtmlTest(FILE_PATH_LITERAL("iframe-aria-hidden.html"));
 }
 
