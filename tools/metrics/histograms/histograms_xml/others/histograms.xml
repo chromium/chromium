@@ -16316,7 +16316,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="TextFragmentAnchor.ElementIdFragmentFound" enum="Boolean"
-    expires_after="2021-08-01">
+    expires_after="2021-12-31">
   <owner>nburris@chromium.org</owner>
   <owner>bokan@chromium.org</owner>
   <summary>
@@ -16347,7 +16347,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.AmbiguousMatch"
-    enum="Boolean" expires_after="2021-03-07">
+    enum="Boolean" expires_after="2021-12-31">
   <owner>nburris@chromium.org</owner>
   <owner>bokan@chromium.org</owner>
   <summary>
@@ -16360,7 +16360,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.DidScrollIntoView"
-    enum="Boolean" expires_after="2021-05-09">
+    enum="Boolean" expires_after="2021-12-31">
   <owner>nburris@chromium.org</owner>
   <owner>bokan@chromium.org</owner>
   <summary>
@@ -16374,7 +16374,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.DirectiveLength"
-    units="characters" expires_after="2021-05-09">
+    units="characters" expires_after="2021-12-31">
   <owner>nburris@chromium.org</owner>
   <owner>bokan@chromium.org</owner>
   <summary>
@@ -16389,7 +16389,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.EndTextLength"
-    units="characters" expires_after="2021-03-07">
+    units="characters" expires_after="2021-12-31">
   <owner>nburris@chromium.org</owner>
   <owner>bokan@chromium.org</owner>
   <summary>
@@ -16403,7 +16403,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.ExactTextLength"
-    units="characters" expires_after="2021-05-09">
+    units="characters" expires_after="2021-12-31">
   <owner>nburris@chromium.org</owner>
   <owner>bokan@chromium.org</owner>
   <summary>
@@ -16417,7 +16417,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.ListItemMatch"
-    units="Boolean" expires_after="2021-03-07">
+    units="Boolean" expires_after="2021-12-31">
   <owner>nburris@chromium.org</owner>
   <owner>bokan@chromium.org</owner>
   <summary>
@@ -16431,7 +16431,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.MatchRate" units="%"
-    expires_after="2021-05-09">
+    expires_after="2021-12-31">
   <owner>nburris@chromium.org</owner>
   <owner>bokan@chromium.org</owner>
   <summary>
@@ -16444,7 +16444,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.Parameters"
-    enum="TextFragmentAnchorParameters" expires_after="2021-05-09">
+    enum="TextFragmentAnchorParameters" expires_after="2021-12-31">
   <owner>nburris@chromium.org</owner>
   <owner>bokan@chromium.org</owner>
   <summary>
@@ -16458,7 +16458,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.RangeMatchLength"
-    units="characters" expires_after="2021-03-07">
+    units="characters" expires_after="2021-12-31">
   <owner>nburris@chromium.org</owner>
   <owner>bokan@chromium.org</owner>
   <summary>
@@ -16472,7 +16472,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.ScrollCancelled"
-    enum="Boolean" expires_after="2021-03-07">
+    enum="Boolean" expires_after="2021-12-31">
   <owner>nburris@chromium.org</owner>
   <owner>bokan@chromium.org</owner>
   <summary>
@@ -16486,7 +16486,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.SelectorCount"
-    units="selectors" expires_after="2021-05-09">
+    units="selectors" expires_after="2021-12-31">
   <owner>nburris@chromium.org</owner>
   <owner>bokan@chromium.org</owner>
   <summary>
@@ -16499,7 +16499,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.SpansMultipleBlocks"
-    units="Boolean" expires_after="2021-05-20">
+    units="Boolean" expires_after="2021-12-31">
   <owner>bokan@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -16514,7 +16514,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.StartTextLength"
-    units="characters" expires_after="2021-03-07">
+    units="characters" expires_after="2021-12-31">
   <owner>nburris@chromium.org</owner>
   <owner>bokan@chromium.org</owner>
   <summary>
@@ -16528,7 +16528,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.TableCellMatch"
-    units="Boolean" expires_after="2021-03-07">
+    units="Boolean" expires_after="2021-12-31">
   <owner>nburris@chromium.org</owner>
   <owner>bokan@chromium.org</owner>
   <summary>
@@ -16542,7 +16542,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.TimeToScrollIntoView"
-    units="ms" expires_after="2021-05-09">
+    units="ms" expires_after="2021-12-31">
   <owner>nburris@chromium.org</owner>
   <owner>bokan@chromium.org</owner>
   <summary>
@@ -16557,7 +16557,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.TimeToScrollToTop"
-    units="ms" expires_after="2021-03-07">
+    units="ms" expires_after="2021-12-31">
   <owner>nburris@chromium.org</owner>
   <owner>bokan@chromium.org</owner>
   <summary>
