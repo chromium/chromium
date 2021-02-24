@@ -13,10 +13,8 @@ namespace web_app {
 // These values are persisted to the web_app database. Entries should not be
 // renumbered and numeric values should never be reused.
 //
-// When adding a new type, please add to the end, use an explicit number, and
-// add a corresponding value to the proto enum in web_app.proto.
-//
-// When deprecating, comment out the entry so that it's not accidently re-used.
+// When deprecating, comment out the entry so that it's not accidentally
+// re-used.
 enum class SystemAppType {
   FILE_MANAGER = 1,
   TELEMETRY = 2,
@@ -33,10 +31,16 @@ enum class SystemAppType {
   ECHE = 13,
   CROSH = 14,
 
-  // When adding a new System App, add a corresponding histogram suffix in
-  // WebAppSystemAppInternalName (histograms.xml). The suffix name should match
-  // the App's |internal_name|. This is for reporting per-app install results.
-
+  // When adding a new System App, remember to:
+  //
+  // 1. Add a corresponding histogram suffix in WebAppSystemAppInternalName
+  //    (histograms.xml). The suffix name should match the App's
+  //    |internal_name|. This is for reporting per-app install results.
+  //
+  // 2. Add a corresponding proto enum entry (with the same numerical value) to
+  //    SystemWebAppDataProto in web_app.proto. This is for identifying system
+  //    apps during Chrome start-up (i.e. when SystemWebAppManager hasn't
+  //    finished synchronizing all apps).
 };
 
 }  // namespace web_app
