@@ -33,7 +33,7 @@
 #include "third_party/boringssl/src/include/openssl/digest.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -348,4 +348,4 @@ KeyedService* CertificateProviderServiceFactory::BuildServiceInstanceFor(
   return service;
 }
 
-}  // namespace chromeos
+}  // namespace ash

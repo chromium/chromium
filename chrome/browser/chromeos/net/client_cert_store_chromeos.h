@@ -11,12 +11,12 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+// TODO(https://crbug.com/1164001): forward declare when moved to ash.
+#include "chrome/browser/ash/certificate_provider/certificate_provider.h"
 #include "chrome/browser/chromeos/net/client_cert_filter_chromeos.h"
 #include "net/ssl/client_cert_store_nss.h"
 
 namespace chromeos {
-
-class CertificateProvider;
 
 class ClientCertStoreChromeOS : public net::ClientCertStore {
  public:

@@ -115,4 +115,9 @@ class RequestPinView final : public views::DialogDelegateView,
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::RequestPinView;
+}
+
 #endif  // CHROME_BROWSER_CHROMEOS_UI_REQUEST_PIN_VIEW_H_

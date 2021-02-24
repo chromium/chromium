@@ -24,8 +24,11 @@ class ResourceContext;
 }  // namespace content
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-namespace chromeos {
+namespace ash {
 class CertificateProvider;
+}  // namespace ash
+
+namespace chromeos {
 class PolicyCertificateProvider;
 }
 #endif
@@ -126,8 +129,7 @@ class CertificateManagerModel {
     // May be nullptr.
     chromeos::PolicyCertificateProvider* policy_certs_provider = nullptr;
     // May be nullptr.
-    std::unique_ptr<chromeos::CertificateProvider>
-        extension_certificate_provider;
+    std::unique_ptr<ash::CertificateProvider> extension_certificate_provider;
 #endif
 
     Params();

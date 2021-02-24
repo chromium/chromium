@@ -30,7 +30,7 @@
 #include "net/ssl/client_cert_identity.h"
 #include "net/ssl/ssl_private_key.h"
 
-namespace chromeos {
+namespace ash {
 
 class CertificateProvider;
 
@@ -274,6 +274,12 @@ class CertificateProviderService : public KeyedService {
   base::WeakPtrFactory<CertificateProviderService> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace chromeos {
+using ::ash::CertificateProviderService;
+}
 
 #endif  // CHROME_BROWSER_ASH_CERTIFICATE_PROVIDER_CERTIFICATE_PROVIDER_SERVICE_H_

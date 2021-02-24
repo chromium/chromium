@@ -15,7 +15,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace certificate_provider {
 namespace {
 
@@ -137,4 +137,4 @@ void ThreadSafeCertificateMap::RemoveCertificatesProvidedByExtension(
 }
 
 }  // namespace certificate_provider
-}  // namespace chromeos
+}  // namespace ash

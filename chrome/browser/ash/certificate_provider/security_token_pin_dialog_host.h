@@ -12,7 +12,7 @@
 #include "chromeos/components/security_token_pin/constants.h"
 #include "components/account_id/account_id.h"
 
-namespace chromeos {
+namespace ash {
 
 // The interface that allows showing a PIN dialog requested by a certificate
 // provider extension (see the chrome.certificateProvider API).
@@ -66,6 +66,12 @@ class SecurityTokenPinDialogHost {
   virtual void CloseSecurityTokenPinDialog() = 0;
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace chromeos {
+using ::ash::SecurityTokenPinDialogHost;
+}
 
 #endif  // CHROME_BROWSER_ASH_CERTIFICATE_PROVIDER_SECURITY_TOKEN_PIN_DIALOG_HOST_H_

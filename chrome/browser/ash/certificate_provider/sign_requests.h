@@ -17,7 +17,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_private_key.h"
 
-namespace chromeos {
+namespace ash {
 namespace certificate_provider {
 
 class SignRequests {
@@ -87,6 +87,6 @@ class SignRequests {
 };
 
 }  // namespace certificate_provider
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CERTIFICATE_PROVIDER_SIGN_REQUESTS_H_

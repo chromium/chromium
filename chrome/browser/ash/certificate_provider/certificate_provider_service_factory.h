@@ -17,7 +17,7 @@ namespace content {
 class BrowserContext;
 }
 
-namespace chromeos {
+namespace ash {
 
 class CertificateProviderService;
 
@@ -45,6 +45,12 @@ class CertificateProviderServiceFactory
   DISALLOW_COPY_AND_ASSIGN(CertificateProviderServiceFactory);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace chromeos {
+using ::ash::CertificateProviderServiceFactory;
+}
 
 #endif  // CHROME_BROWSER_ASH_CERTIFICATE_PROVIDER_CERTIFICATE_PROVIDER_SERVICE_FACTORY_H_

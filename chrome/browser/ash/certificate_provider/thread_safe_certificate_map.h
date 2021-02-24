@@ -18,7 +18,7 @@ class X509Certificate;
 struct SHA256HashValue;
 }
 
-namespace chromeos {
+namespace ash {
 namespace certificate_provider {
 
 class ThreadSafeCertificateMap {
@@ -83,6 +83,6 @@ class ThreadSafeCertificateMap {
 };
 
 }  // namespace certificate_provider
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CERTIFICATE_PROVIDER_THREAD_SAFE_CERTIFICATE_MAP_H_

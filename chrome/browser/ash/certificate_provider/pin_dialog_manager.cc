@@ -9,7 +9,7 @@
 #include "base/logging.h"
 #include "base/stl_util.h"
 
-namespace chromeos {
+namespace ash {
 
 // Define timeout for issued sign_request_id.
 constexpr base::TimeDelta kSignRequestIdTimeout =
@@ -257,4 +257,4 @@ void PinDialogManager::CloseActiveDialog() {
   DCHECK(!active_dialog_state_);
 }
 
-}  // namespace chromeos
+}  // namespace ash
