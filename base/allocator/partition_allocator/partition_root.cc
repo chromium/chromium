@@ -41,7 +41,8 @@ void BeforeForkInParent() NO_THREAD_SAFETY_ANALYSIS {
   regular_root->lock_.Lock();
 
   auto* aligned_root = internal::PartitionAllocMalloc::AlignedAllocator();
-  aligned_root->lock_.Lock();
+  if (aligned_root != regular_root)
+    aligned_root->lock_.Lock();
 
   internal::ThreadCacheRegistry::GetLock().Lock();
 }
@@ -50,10 +51,12 @@ void ReleaseLocks() NO_THREAD_SAFETY_ANALYSIS {
   // In reverse order, even though there are no lock ordering dependencies.
   internal::ThreadCacheRegistry::GetLock().Unlock();
 
-  auto* aligned_root = internal::PartitionAllocMalloc::AlignedAllocator();
-  aligned_root->lock_.Unlock();
-
   auto* regular_root = internal::PartitionAllocMalloc::Allocator();
+
+  auto* aligned_root = internal::PartitionAllocMalloc::AlignedAllocator();
+  if (aligned_root != regular_root)
+    aligned_root->lock_.Unlock();
+
   regular_root->lock_.Unlock();
 }
 

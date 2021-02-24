@@ -90,7 +90,7 @@ class BASE_EXPORT PartitionStatsDumper {
 // Does not handle per-bucket stats.
 class BASE_EXPORT SimplePartitionStatsDumper : public PartitionStatsDumper {
  public:
-  SimplePartitionStatsDumper() = default;
+  SimplePartitionStatsDumper();
 
   void PartitionDumpTotals(const char* partition_name,
                            const PartitionMemoryStats* memory_stats) override;

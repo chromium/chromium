@@ -267,7 +267,8 @@ struct BASE_EXPORT PartitionRoot {
   // posix_memalign() for POSIX systems). The returned pointer may include
   // padding, and can be passed to |Free()| later.
   //
-  // NOTE: Doesn't work when DCHECK_IS_ON(), as it is incompatible with cookies.
+  // NOTE: This is incompatible with anything that adds extra data to the
+  // allocations, such as cookies (with DCHECK_IS_ON()), or reference counts.
   ALWAYS_INLINE void* AlignedAllocFlags(int flags,
                                         size_t alignment,
                                         size_t size);

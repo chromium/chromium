@@ -126,6 +126,11 @@ base::ThreadSafePartitionRoot* Allocator() {
 }
 
 base::ThreadSafePartitionRoot* AlignedAllocator() {
+#if !DCHECK_IS_ON() && !BUILDFLAG(USE_BACKUP_REF_PTR)
+  // There are no tags or cookies, so the regular allocator provides suitably
+  // aligned memory already.
+  return Allocator();
+#else
   // Since the general-purpose allocator uses the thread cache, this one cannot.
   static base::NoDestructor<base::ThreadSafePartitionRoot> aligned_allocator(
       base::PartitionOptions{base::PartitionOptions::Alignment::kAlignedAlloc,
@@ -133,6 +138,7 @@ base::ThreadSafePartitionRoot* AlignedAllocator() {
                              base::PartitionOptions::Quarantine::kAllowed,
                              base::PartitionOptions::RefCount::kDisabled});
   return aligned_allocator.get();
+#endif
 }
 
 #if defined(OS_WIN) && defined(ARCH_CPU_X86)
@@ -317,8 +323,10 @@ void EnablePartitionAllocMemoryReclaimer() {
   // This function will be called sometime appropriate after PartitionRoots are
   // initialized.
   PartitionAllocMemoryReclaimer::Instance()->RegisterPartition(Allocator());
-  PartitionAllocMemoryReclaimer::Instance()->RegisterPartition(
-      AlignedAllocator());
+  if (AlignedAllocator() != Allocator()) {
+    PartitionAllocMemoryReclaimer::Instance()->RegisterPartition(
+        AlignedAllocator());
+  }
 }
 
 // Note that ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL implies that
@@ -359,7 +367,8 @@ void ConfigurePartitionRefCountSupport(bool enable_ref_count) {
 void EnablePCScan() {
   auto& pcscan = internal::PCScan<internal::ThreadSafe>::Instance();
   pcscan.RegisterScannableRoot(Allocator());
-  pcscan.RegisterScannableRoot(AlignedAllocator());
+  if (Allocator() != AlignedAllocator())
+    pcscan.RegisterScannableRoot(AlignedAllocator());
 }
 #endif
 
@@ -415,8 +424,10 @@ SHIM_ALWAYS_EXPORT struct mallinfo mallinfo(void) __THROW {
   Allocator()->DumpStats("malloc", true, &allocator_dumper);
 
   base::SimplePartitionStatsDumper aligned_allocator_dumper;
-  AlignedAllocator()->DumpStats("posix_memalign", true,
-                                &aligned_allocator_dumper);
+  if (AlignedAllocator() != Allocator()) {
+    AlignedAllocator()->DumpStats("posix_memalign", true,
+                                  &aligned_allocator_dumper);
+  }
 
   struct mallinfo info = {0};
   info.arena = 0;  // Memory *not* allocated with mmap().

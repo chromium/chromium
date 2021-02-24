@@ -15,6 +15,7 @@ namespace internal {
 class BASE_EXPORT PartitionAllocMalloc {
  public:
   static ThreadSafePartitionRoot* Allocator();
+  // May return the same pointer as |Allocator()|.
   static ThreadSafePartitionRoot* AlignedAllocator();
 };
 
