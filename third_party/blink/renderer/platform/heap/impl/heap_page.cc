@@ -148,6 +148,15 @@ void BaseArena::CollectStatistics(std::string name,
   stats->arena_stats.emplace_back(std::move(arena_stats));
 }
 
+size_t BaseArena::AllocatedBytes() {
+  DCHECK(unswept_pages_.IsEmpty());
+  size_t result = 0;
+  for (BasePage* page : swept_pages_) {
+    result += page->AllocatedBytes();
+  }
+  return result;
+}
+
 void NormalPageArena::CollectFreeListStatistics(
     ThreadState::Statistics::FreeListStatistics* stats) {
   free_list_.CollectStatistics(stats);

@@ -395,6 +395,12 @@ class PLATFORM_EXPORT ThreadState final {
   // Returns the total size of live objects on the heap.
   size_t GetUsedSizeInBytes();
 
+  // Waits until sweeping is done and invokes the given callback with
+  // the total sizes of live objects in Node and CSS arenas.
+  void CollectNodeAndCssStatistics(
+      base::OnceCallback<void(size_t allocated_node_bytes,
+                              size_t allocated_css_bytes)>);
+
  private:
   class IncrementalMarkingScheduler;
 
@@ -536,6 +542,8 @@ class PLATFORM_EXPORT ThreadState final {
   // Schedule helpers.
   void ScheduleIdleLazySweep();
   void ScheduleConcurrentAndLazySweep();
+  // Advances sweeping and returns true if sweeping is complete.
+  bool AdvanceLazySweep(base::TimeTicks deadline);
 
   void NotifySweepDone();
   void PostSweep();

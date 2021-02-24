@@ -1014,6 +1014,7 @@ class PLATFORM_EXPORT BaseArena {
   void CollectStatistics(std::string, ThreadState::Statistics*);
   virtual void CollectFreeListStatistics(
       ThreadState::Statistics::FreeListStatistics*) {}
+  size_t AllocatedBytes();
 
 #if DCHECK_IS_ON()
   BasePage* FindPageFromAddress(ConstAddress) const;

@@ -139,4 +139,11 @@ size_t ThreadState::GetUsedSizeInBytes() {
   return stats.used_size_bytes;
 }
 
+void ThreadState::CollectNodeAndCssStatistics(
+    base::OnceCallback<void(size_t allocated_node_bytes,
+                            size_t allocated_css_bytes)> callback) {
+  // TODO(1181269): Implement.
+  std::move(callback).Run(0u, 0u);
+}
+
 }  // namespace blink
