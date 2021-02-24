@@ -2495,8 +2495,6 @@ crbug.com/626703 [ Mac10.15 ] external/wpt/css/css-color/rgba-004.html [ Failure
 crbug.com/626703 [ Mac11.0 ] external/wpt/css/css-color/rgba-004.html [ Failure ]
 crbug.com/626703 [ Win ] external/wpt/css/css-color/rgba-004.html [ Failure ]
 crbug.com/626703 virtual/system-color-compute/external/wpt/css/css-color/hsl-008.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-transforms/translate/translate-and-transform-attribute-in-svg.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-transforms/translate/translate-and-transform-css-property-in-svg.html [ Failure ]
 crbug.com/626703 external/wpt/css/selectors/focus-visible-007.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/webcodecs/videoFrame-drawImage.any.worker.html [ Crash ]
 crbug.com/626703 [ Mac10.12 ] external/wpt/webcodecs/videoFrame-drawImage.any.worker.html [ Crash ]
