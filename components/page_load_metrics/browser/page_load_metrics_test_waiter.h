@@ -6,6 +6,7 @@
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_PAGE_LOAD_METRICS_TEST_WAITER_H_
 
 #include <memory>
+#include <unordered_set>
 
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -80,6 +81,10 @@ class PageLoadMetricsTestWaiter
   // Add aggregate time spent in cpu for page expectation.
   void AddMinimumAggregateCpuTimeExpectation(base::TimeDelta minimum);
 
+  // Inserts `routing_id` into `expected_memory_update_frame_ids_`, the set of
+  // frame routing IDs expected to receive a memory measurement update.
+  void AddMemoryUpdateExpectation(int routing_id);
+
   // Whether the given TimingField was observed in the page.
   bool DidObserveInPage(TimingField field) const;
 
@@ -146,6 +151,9 @@ class PageLoadMetricsTestWaiter
         content::RenderFrameHost* rfh,
         const page_load_metrics::mojom::FrameIntersectionUpdate&
             frame_intersection_update) override;
+
+    void OnV8MemoryChanged(
+        const std::vector<MemoryUpdate>& memory_updates) override;
 
    private:
     const base::WeakPtr<PageLoadMetricsTestWaiter> waiter_;
@@ -232,6 +240,9 @@ class PageLoadMetricsTestWaiter
   void OnDidFinishSubFrameNavigation(
       content::NavigationHandle* navigation_handle);
 
+  // Called when V8 per-frame memory usage updates are available.
+  void OnV8MemoryChanged(const std::vector<MemoryUpdate>& memory_updates);
+
   void OnTrackerCreated(page_load_metrics::PageLoadTracker* tracker) override;
 
   void OnCommit(page_load_metrics::PageLoadTracker* tracker) override;
@@ -248,6 +259,8 @@ class PageLoadMetricsTestWaiter
   bool SubframeNavigationExpectationsSatisfied() const;
 
   bool SubframeDataExpectationsSatisfied() const;
+
+  bool MemoryUpdateExpectationsSatisfied() const;
 
   void AddObserver(page_load_metrics::PageLoadTracker* tracker);
 
@@ -288,6 +301,9 @@ class PageLoadMetricsTestWaiter
   bool did_add_observer_ = false;
 
   double last_main_frame_layout_shift_score_ = 0;
+
+  // Frame routing IDs of expected memory updates.
+  std::unordered_set<int> expected_memory_update_frame_ids_;
 
   base::WeakPtrFactory<PageLoadMetricsTestWaiter> weak_factory_{this};
 };

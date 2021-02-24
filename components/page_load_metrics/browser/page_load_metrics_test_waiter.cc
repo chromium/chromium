@@ -81,6 +81,10 @@ void PageLoadMetricsTestWaiter::AddMinimumAggregateCpuTimeExpectation(
   expected_minimum_aggregate_cpu_time_ = minimum;
 }
 
+void PageLoadMetricsTestWaiter::AddMemoryUpdateExpectation(int routing_id) {
+  expected_memory_update_frame_ids_.insert(routing_id);
+}
+
 bool PageLoadMetricsTestWaiter::DidObserveInPage(TimingField field) const {
   return observed_page_fields_.IsSet(field);
 }
@@ -227,6 +231,18 @@ void PageLoadMetricsTestWaiter::OnDidFinishSubFrameNavigation(
     run_loop_->Quit();
 }
 
+void PageLoadMetricsTestWaiter::OnV8MemoryChanged(
+    const std::vector<MemoryUpdate>& memory_updates) {
+  if (MemoryUpdateExpectationsSatisfied())
+    return;
+
+  for (const auto& update : memory_updates)
+    expected_memory_update_frame_ids_.erase(update.routing_id.frame_routing_id);
+
+  if (ExpectationsSatisfied() && run_loop_)
+    run_loop_->Quit();
+}
+
 void PageLoadMetricsTestWaiter::FrameSizeChanged(
     content::RenderFrameHost* render_frame_host,
     const gfx::Size& frame_size) {
@@ -349,6 +365,10 @@ bool PageLoadMetricsTestWaiter::SubframeDataExpectationsSatisfied() const {
   return !expected_subframe_data_;
 }
 
+bool PageLoadMetricsTestWaiter::MemoryUpdateExpectationsSatisfied() const {
+  return expected_memory_update_frame_ids_.empty();
+}
+
 bool PageLoadMetricsTestWaiter::ExpectationsSatisfied() const {
   return subframe_expected_fields_.Empty() && page_expected_fields_.Empty() &&
          ResourceUseExpectationsSatisfied() &&
@@ -357,7 +377,8 @@ bool PageLoadMetricsTestWaiter::ExpectationsSatisfied() const {
          SubframeDataExpectationsSatisfied() && expected_frame_sizes_.empty() &&
          CpuTimeExpectationsSatisfied() &&
          !expected_main_frame_intersection_.has_value() &&
-         !expected_main_frame_intersection_update_;
+         !expected_main_frame_intersection_update_ &&
+         MemoryUpdateExpectationsSatisfied();
 }
 
 PageLoadMetricsTestWaiter::WaiterMetricsObserver::~WaiterMetricsObserver() =
@@ -425,6 +446,12 @@ void PageLoadMetricsTestWaiter::WaiterMetricsObserver::FrameSizeChanged(
     const gfx::Size& frame_size) {
   if (waiter_)
     waiter_->FrameSizeChanged(render_frame_host, frame_size);
+}
+
+void PageLoadMetricsTestWaiter::WaiterMetricsObserver::OnV8MemoryChanged(
+    const std::vector<MemoryUpdate>& memory_updates) {
+  if (waiter_)
+    waiter_->OnV8MemoryChanged(memory_updates);
 }
 
 bool PageLoadMetricsTestWaiter::FrameSizeComparator::operator()(
