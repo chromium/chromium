@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/notifications/deprecation_notification_controller.h"
 #include "chrome/browser/chromeos/events/event_rewriter_delegate_impl.h"
 #include "chrome/browser/chromeos/input_method/input_method_configuration.h"
 #include "chrome/browser/chromeos/input_method/mock_input_method_manager_impl.h"
@@ -143,6 +144,7 @@ struct KeyTestCase {
     uint32_t scan_code = kNoScanCode;
   } input, expected;
   int device_id = kKeyboardDeviceId;
+  bool triggers_notification = false;
 };
 
 std::string GetTestCaseAsString(ui::EventType ui_type,
@@ -177,8 +179,12 @@ class EventRewriterTest : public ChromeAshTestBase {
     input_method_manager_mock_ = new input_method::MockInputMethodManagerImpl;
     chromeos::input_method::InitializeForTesting(
         input_method_manager_mock_);  // pass ownership
-    delegate_ =
-        std::make_unique<EventRewriterDelegateImpl>(nullptr, &message_center_);
+    auto deprecation_controller =
+        std::make_unique<ash::DeprecationNotificationController>(
+            &message_center_);
+    deprecation_controller_ = deprecation_controller.get();
+    delegate_ = std::make_unique<EventRewriterDelegateImpl>(
+        nullptr, std::move(deprecation_controller));
     delegate_->set_pref_service_for_testing(prefs());
     device_data_manager_test_api_.SetKeyboardDevices({});
     rewriter_ = std::make_unique<ui::EventRewriterChromeOS>(delegate_.get(),
@@ -265,8 +271,14 @@ class EventRewriterTest : public ChromeAshTestBase {
                     bool has_custom_top_row,
                     const std::vector<KeyTestCase>& tests) {
     SetupKeyboard(name, layout, type, has_custom_top_row);
-    for (const auto& test : tests)
+    for (const auto& test : tests) {
       CheckKeyTestCase(rewriter(), test);
+      const size_t expected_notification_count =
+          test.triggers_notification ? 1 : 0;
+      EXPECT_EQ(message_center_.NotificationCount(),
+                expected_notification_count);
+      ClearNotifications();
+    }
   }
 
   void TestInternalChromeKeyboard(const std::vector<KeyTestCase>& tests) {
@@ -335,6 +347,7 @@ class EventRewriterTest : public ChromeAshTestBase {
   void ClearNotifications() {
     message_center_.RemoveAllNotifications(
         false, message_center::FakeMessageCenter::RemoveType::ALL);
+    deprecation_controller_->ResetStateForTesting();
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -347,6 +360,8 @@ class EventRewriterTest : public ChromeAshTestBase {
   sync_preferences::TestingPrefServiceSyncable prefs_;
   std::unique_ptr<EventRewriterDelegateImpl> delegate_;
   std::unique_ptr<ui::EventRewriterChromeOS> rewriter_;
+  ash::DeprecationNotificationController*
+      deprecation_controller_;  // Not owned.
   message_center::FakeMessageCenter message_center_;
 };
 
@@ -1579,14 +1594,18 @@ TEST_F(EventRewriterTest, TestRewriteExtendedKeys_AltVariants_Deprecated) {
        {ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_ALT_DOWN,
         ui::DomKey::BACKSPACE},
        {ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_ALT_DOWN,
-        ui::DomKey::BACKSPACE}},
+        ui::DomKey::BACKSPACE},
+       kKeyboardDeviceId,
+       /*triggers_notification=*/true},
       // Control+Alt+Backspace -> No Rewrite
       {ui::ET_KEY_PRESSED,
        {ui::VKEY_BACK, ui::DomCode::BACKSPACE,
         ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, ui::DomKey::BACKSPACE},
        {ui::VKEY_BACK, ui::DomCode::BACKSPACE,
-        ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, ui::DomKey::BACKSPACE}},
-      // // Search+Alt+Backspace -> Alt+Delete
+        ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, ui::DomKey::BACKSPACE},
+       kKeyboardDeviceId,
+       /*triggers_notification=*/true},
+      // Search+Alt+Backspace -> Alt+Delete
       {ui::ET_KEY_PRESSED,
        {ui::VKEY_BACK, ui::DomCode::BACKSPACE,
         ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, ui::DomKey::BACKSPACE},
@@ -1603,25 +1622,33 @@ TEST_F(EventRewriterTest, TestRewriteExtendedKeys_AltVariants_Deprecated) {
        {ui::VKEY_UP, ui::DomCode::ARROW_UP, ui::EF_ALT_DOWN,
         ui::DomKey::ARROW_UP},
        {ui::VKEY_UP, ui::DomCode::ARROW_UP, ui::EF_ALT_DOWN,
-        ui::DomKey::ARROW_UP}},
+        ui::DomKey::ARROW_UP},
+       kKeyboardDeviceId,
+       /*triggers_notification=*/true},
       // Alt+Down -> No Rewrite
       {ui::ET_KEY_PRESSED,
        {ui::VKEY_DOWN, ui::DomCode::ARROW_DOWN, ui::EF_ALT_DOWN,
         ui::DomKey::ARROW_DOWN},
        {ui::VKEY_DOWN, ui::DomCode::ARROW_DOWN, ui::EF_ALT_DOWN,
-        ui::DomKey::ARROW_DOWN}},
+        ui::DomKey::ARROW_DOWN},
+       kKeyboardDeviceId,
+       /*triggers_notification=*/true},
       // Ctrl+Alt+Up -> No Rewrite
       {ui::ET_KEY_PRESSED,
        {ui::VKEY_UP, ui::DomCode::ARROW_UP,
         ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, ui::DomKey::ARROW_UP},
        {ui::VKEY_UP, ui::DomCode::ARROW_UP,
-        ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, ui::DomKey::ARROW_UP}},
+        ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, ui::DomKey::ARROW_UP},
+       kKeyboardDeviceId,
+       /*triggers_notification=*/true},
       // Ctrl+Alt+Down -> No Rewrite
       {ui::ET_KEY_PRESSED,
        {ui::VKEY_DOWN, ui::DomCode::ARROW_DOWN,
         ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, ui::DomKey::ARROW_DOWN},
        {ui::VKEY_DOWN, ui::DomCode::ARROW_DOWN,
-        ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, ui::DomKey::ARROW_DOWN}},
+        ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, ui::DomKey::ARROW_DOWN},
+       kKeyboardDeviceId,
+       /*triggers_notification=*/true},
 
       // NOTE: The following were workarounds to avoid rewriting the
       // Alt variants by additionally pressing Search.

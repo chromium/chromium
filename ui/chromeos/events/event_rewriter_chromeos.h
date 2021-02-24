@@ -120,6 +120,11 @@ class EventRewriterChromeOS : public EventRewriter {
     // returns true if the notification was shown.
     virtual bool NotifyDeprecatedRightClickRewrite() = 0;
 
+    // Used to send a notification about Alt based key rewrite being deprecated.
+    // The notification is only sent once per user session, and this function
+    // returns true if the notification was shown.
+    virtual bool NotifyDeprecatedAltBasedKeyRewrite(KeyboardCode key_code) = 0;
+
    private:
     DISALLOW_COPY_AND_ASSIGN(Delegate);
   };

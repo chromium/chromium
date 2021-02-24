@@ -11,6 +11,7 @@
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/strings/string16.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/events/keyboard_layout_util.h"
@@ -37,7 +38,7 @@ DeprecationNotificationController::~DeprecationNotificationController() =
     default;
 
 bool DeprecationNotificationController::NotifyDeprecatedRightClickRewrite() {
-  if (!show_right_click_notification_) {
+  if (right_click_notification_shown_) {
     return false;
   }
 
@@ -46,8 +47,31 @@ bool DeprecationNotificationController::NotifyDeprecatedRightClickRewrite() {
                                         IDS_ASH_SHORTCUT_DEPRECATION_ALT_CLICK);
 
   // Don't show the notification again.
-  show_right_click_notification_ = false;
+  right_click_notification_shown_ = true;
   return true;
+}
+
+bool DeprecationNotificationController::NotifyDeprecatedAltBasedKeyRewrite(
+    ui::KeyboardCode key_code) {
+  if (!ShouldShowAltBasedDeprecationNotification(key_code)) {
+    return false;
+  }
+
+  // The notification id is not user visible.
+  const std::string id =
+      std::string(kNotificationIdPrefix) + base::NumberToString(key_code);
+  const int message_id = GetAltBasedDeprecationMessageId(key_code);
+  ShowNotificationFromIdWithLauncherKey(id, message_id);
+
+  // Keep track that the notification was shown to decide whether to show it
+  // again in future.
+  RecordAltBasedDeprecationNotificationShown(key_code);
+  return true;
+}
+
+void DeprecationNotificationController::ResetStateForTesting() {
+  shown_key_notifications_.clear();
+  right_click_notification_shown_ = false;
 }
 
 void DeprecationNotificationController::ShowNotificationFromIdWithLauncherKey(
@@ -84,6 +108,36 @@ void DeprecationNotificationController::ShowNotification(
       kNotificationKeyboardIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
   message_center_->AddNotification(std::move(notification));
+}
+
+bool DeprecationNotificationController::
+    ShouldShowAltBasedDeprecationNotification(ui::KeyboardCode key_code) {
+  return !shown_key_notifications_.contains(key_code);
+}
+
+void DeprecationNotificationController::
+    RecordAltBasedDeprecationNotificationShown(ui::KeyboardCode key_code) {
+  DCHECK(!shown_key_notifications_.contains(key_code));
+  shown_key_notifications_.insert(key_code);
+}
+
+int DeprecationNotificationController::GetAltBasedDeprecationMessageId(
+    ui::KeyboardCode key_code) {
+  switch (key_code) {
+    case ui::VKEY_DELETE:
+      return IDS_ASH_SHORTCUT_DEPRECATION_ALT_BASED_DELETE;
+    case ui::VKEY_HOME:
+      return IDS_ASH_SHORTCUT_DEPRECATION_ALT_BASED_HOME;
+    case ui::VKEY_END:
+      return IDS_ASH_SHORTCUT_DEPRECATION_ALT_BASED_END;
+    case ui::VKEY_PRIOR:
+      return IDS_ASH_SHORTCUT_DEPRECATION_ALT_BASED_PAGE_UP;
+    case ui::VKEY_NEXT:
+      return IDS_ASH_SHORTCUT_DEPRECATION_ALT_BASED_PAGE_DOWN;
+    default:
+      NOTREACHED();
+      return -1;
+  }
 }
 
 }  // namespace ash

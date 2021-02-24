@@ -3466,6 +3466,7 @@ source_set("unit_tests") {
     "../ash/login/demo_mode/demo_setup_test_utils.cc",
     "../ash/login/demo_mode/demo_setup_test_utils.h",
     "../ash/mobile/mobile_activator_unittest.cc",
+    "../ash/notifications/deprecation_notification_controller_unittest.cc",
     "../ash/system/automatic_reboot_manager_unittest.cc",
     "../ash/system/device_disabling_manager_unittest.cc",
     "../ash/system/procfs_util_unittest.cc",

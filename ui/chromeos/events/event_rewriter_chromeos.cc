@@ -264,6 +264,23 @@ bool RewriteWithKeyboardRemappings(
   return false;
 }
 
+// Given a set of KeyboardRemapping structs, finds a matching struct
+// if possible, then returns the KeyboardCode that would have been the
+// result of the remapping. If there is no match then VKEY_UNKNOWN
+// is returned. No remapping actually occurs in either case.
+ui::KeyboardCode MatchedDeprecatedRemapping(
+    const KeyboardRemapping* mappings,
+    size_t num_mappings,
+    const EventRewriterChromeOS::MutableKeyState& input_state) {
+  for (size_t i = 0; i < num_mappings; ++i) {
+    const KeyboardRemapping& map = mappings[i];
+    if (MatchKeyboardRemapping(input_state, map.condition, /*strict=*/false)) {
+      return map.result.key_code;
+    }
+  }
+  return VKEY_UNKNOWN;
+}
+
 void SetMeaningForLayout(EventType type,
                          EventRewriterChromeOS::MutableKeyState* state) {
   // Currently layout is applied by creating a temporary key event with the
@@ -1283,8 +1300,7 @@ void EventRewriterChromeOS::RewriteExtendedKeys(const KeyEvent& key_event,
   }
 
   // TODO(crbug.com/1179893): Remove block once Alt rewrites are deprecated.
-  if (!::features::IsImprovedKeyboardShortcutsEnabled() &&
-      (incoming.flags & EF_ALT_DOWN) && is_alt_down_remapping_enabled_) {
+  if ((incoming.flags & EF_ALT_DOWN) && is_alt_down_remapping_enabled_) {
     static const KeyboardRemapping kNonSearchRemappings[] = {
         {// Alt+BackSpace -> Delete
          {EF_ALT_DOWN, VKEY_BACK},
@@ -1301,10 +1317,20 @@ void EventRewriterChromeOS::RewriteExtendedKeys(const KeyEvent& key_event,
         {// Alt+Down -> Next (aka PageDown)
          {EF_ALT_DOWN, VKEY_DOWN},
          {EF_NONE, DomCode::PAGE_DOWN, DomKey::PAGE_DOWN, VKEY_NEXT}}};
-    if (RewriteWithKeyboardRemappings(kNonSearchRemappings,
-                                      base::size(kNonSearchRemappings),
-                                      incoming, state)) {
-      return;
+    if (!::features::IsImprovedKeyboardShortcutsEnabled()) {
+      if (RewriteWithKeyboardRemappings(kNonSearchRemappings,
+                                        base::size(kNonSearchRemappings),
+                                        incoming, state)) {
+        return;
+      }
+    } else {
+      const ui::KeyboardCode deprecated_key = MatchedDeprecatedRemapping(
+          kNonSearchRemappings, base::size(kNonSearchRemappings), incoming);
+      if (deprecated_key != VKEY_UNKNOWN) {
+        // If the key would have matched prior to being deprecated then notify
+        // the delegate to show a notification.
+        delegate_->NotifyDeprecatedAltBasedKeyRewrite(deprecated_key);
+      }
     }
   }
 }

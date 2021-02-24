@@ -6,23 +6,24 @@
 #define CHROME_BROWSER_CHROMEOS_EVENTS_EVENT_REWRITER_DELEGATE_IMPL_H_
 
 #include "base/macros.h"
-#include "chrome/browser/ash/notifications/deprecation_notification_controller.h"
 #include "ui/chromeos/events/event_rewriter_chromeos.h"
 #include "ui/wm/public/activation_client.h"
 
 class PrefService;
 
-namespace message_center {
-class MessageCenter;
-}  // namespace message_center
+namespace ash {
+class DeprecationNotificationController;
+}
 
 namespace chromeos {
 
 class EventRewriterDelegateImpl : public ui::EventRewriterChromeOS::Delegate {
  public:
   explicit EventRewriterDelegateImpl(wm::ActivationClient* activation_client);
-  EventRewriterDelegateImpl(wm::ActivationClient* activation_client,
-                            message_center::MessageCenter* message_center);
+  EventRewriterDelegateImpl(
+      wm::ActivationClient* activation_client,
+      std::unique_ptr<ash::DeprecationNotificationController>
+          deprecation_controller);
   ~EventRewriterDelegateImpl() override;
 
   void set_pref_service_for_testing(const PrefService* pref_service) {
@@ -38,6 +39,7 @@ class EventRewriterDelegateImpl : public ui::EventRewriterChromeOS::Delegate {
                                     int flags) const override;
   bool IsSearchKeyAcceleratorReserved() const override;
   bool NotifyDeprecatedRightClickRewrite() override;
+  bool NotifyDeprecatedAltBasedKeyRewrite(ui::KeyboardCode key_code) override;
 
  private:
   const PrefService* GetPrefService() const;
@@ -47,7 +49,8 @@ class EventRewriterDelegateImpl : public ui::EventRewriterChromeOS::Delegate {
   wm::ActivationClient* activation_client_;
 
   // Handles showing notifications when deprecated event rewrites occur.
-  ash::DeprecationNotificationController deprecation_controller_;
+  std::unique_ptr<ash::DeprecationNotificationController>
+      deprecation_controller_;
 
   DISALLOW_COPY_AND_ASSIGN(EventRewriterDelegateImpl);
 };
