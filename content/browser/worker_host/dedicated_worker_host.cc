@@ -49,8 +49,7 @@ DedicatedWorkerHost::DedicatedWorkerHost(
     const url::Origin& creator_origin,
     const net::IsolationInfo& isolation_info,
     const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
-    base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter,
-    base::WeakPtr<CrossOriginEmbedderPolicyReporter> ancestor_coep_reporter,
+    CrossOriginEmbedderPolicyReporter* coep_reporter,
     mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host)
     : service_(service),
       token_(token),
@@ -65,11 +64,11 @@ DedicatedWorkerHost::DedicatedWorkerHost(
       isolation_info_(isolation_info),
       creator_cross_origin_embedder_policy_(cross_origin_embedder_policy),
       host_receiver_(this, std::move(host)),
-      creator_coep_reporter_(std::move(creator_coep_reporter)),
-      ancestor_coep_reporter_(std::move(ancestor_coep_reporter)) {
+      coep_reporter_(coep_reporter) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(worker_process_host_);
   DCHECK(worker_process_host_->IsInitializedAndNotDead());
+  DCHECK(coep_reporter_);
   DCHECK((creator_render_frame_host_id_ && !creator_worker_token_) ||
          (!creator_render_frame_host_id_ && creator_worker_token_));
 
@@ -307,15 +306,6 @@ void DedicatedWorkerHost::DidStartScriptLoad(
             ->cross_origin_embedder_policy;
   }
 
-  // Create a COEP reporter with worker's policy.
-  coep_reporter_ = std::make_unique<CrossOriginEmbedderPolicyReporter>(
-      worker_process_host_->GetStoragePartition(), final_response_url,
-      worker_cross_origin_embedder_policy_->reporting_endpoint,
-      worker_cross_origin_embedder_policy_->report_only_reporting_endpoint,
-      isolation_info_.network_isolation_key());
-  // TODO(crbug.com/1060837): Bind the receiver of ReportingObserver to the
-  // worker in the renderer process.
-
   // > 14.8 If the result of checking a global object's embedder policy with
   // worker global scope, owner, and response is false, then set response to a
   // network error.
@@ -331,28 +321,11 @@ void DedicatedWorkerHost::DidStartScriptLoad(
         worker_process_host_->GetStoragePartition()));
   }
 
-  // Return here if the ancestor's COEP reporter is destructed and the
-  // PlzDedicatedWorker feature is disabled, which means the ancestor render
-  // frame has already been closed or navigated and this worker will also be
-  // terminated soon.
-  if (!base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker) &&
-      !ancestor_coep_reporter_) {
-    client_->OnScriptLoadStartFailed();
-    return;
-  }
-  // For the non-PlzDedicatedWorker case, use ancestor's COEP reporter to keep
-  // the current behavior, but it's not aligned with the spec.
-  base::WeakPtr<CrossOriginEmbedderPolicyReporter> coep_reporter =
-      ancestor_coep_reporter_;
-  if (base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)) {
-    coep_reporter = coep_reporter_->GetWeakPtr();
-  }
   // Set up the default network loader factory.
   bool bypass_redirect_checks = false;
   subresource_loader_factories->pending_default_factory() =
       CreateNetworkFactoryForSubresources(ancestor_render_frame_host,
-                                          &bypass_redirect_checks,
-                                          std::move(coep_reporter));
+                                          &bypass_redirect_checks);
   subresource_loader_factories->set_bypass_redirect_checks(
       bypass_redirect_checks);
 
@@ -391,26 +364,25 @@ void DedicatedWorkerHost::DidStartScriptLoad(
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
 DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
     RenderFrameHostImpl* ancestor_render_frame_host,
-    bool* bypass_redirect_checks,
-    base::WeakPtr<CrossOriginEmbedderPolicyReporter> coep_reporter) {
+    bool* bypass_redirect_checks) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(ancestor_render_frame_host);
   DCHECK(bypass_redirect_checks);
-  DCHECK(coep_reporter);
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_default_factory;
   mojo::PendingReceiver<network::mojom::URLLoaderFactory>
       default_factory_receiver =
           pending_default_factory.InitWithNewPipeAndPassReceiver();
   mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-      coep_reporter_remote;
-  coep_reporter->Clone(coep_reporter_remote.InitWithNewPipeAndPassReceiver());
+      coep_reporter;
+  DCHECK(coep_reporter_);
+  coep_reporter_->Clone(coep_reporter.InitWithNewPipeAndPassReceiver());
 
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForFrame(
           ancestor_render_frame_host, worker_origin_, isolation_info_,
           ancestor_render_frame_host->BuildClientSecurityState(),
-          std::move(coep_reporter_remote), worker_process_host_,
+          std::move(coep_reporter), worker_process_host_,
           ancestor_render_frame_host->IsFeatureEnabled(
               blink::mojom::FeaturePolicyFeature::kTrustTokenRedemption)
               ? network::mojom::TrustTokenRedemptionPolicy::kPotentiallyPermit
@@ -441,11 +413,6 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
 bool DedicatedWorkerHost::CheckCrossOriginEmbedderPolicy(
     network::CrossOriginEmbedderPolicy creator_cross_origin_embedder_policy,
     network::CrossOriginEmbedderPolicy worker_cross_origin_embedder_policy) {
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
-
-  if (!creator_coep_reporter_)
-    return false;
-
   // > 4. If ownerPolicy's report-only value is "require-corp" and policy's
   // value is "unsafe-none", then queue a cross-origin embedder policy
   // inheritance violation with response, "worker initialization", owner's
@@ -454,9 +421,8 @@ bool DedicatedWorkerHost::CheckCrossOriginEmbedderPolicy(
           network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp &&
       worker_cross_origin_embedder_policy.value ==
           network::mojom::CrossOriginEmbedderPolicyValue::kNone) {
-    creator_coep_reporter_->QueueWorkerInitializationReport(
-        final_response_url_.value(),
-        /*report_only=*/true);
+    coep_reporter_->QueueWorkerInitializationReport(final_response_url_.value(),
+                                                    /*report_only=*/true);
   }
 
   // > 5. If ownerPolicy's value is "unsafe-none" or policy's value is
@@ -471,9 +437,8 @@ bool DedicatedWorkerHost::CheckCrossOriginEmbedderPolicy(
   // > 6. Queue a cross-origin embedder policy inheritance violation with
   // response, "worker initialization", owner's policy's reporting endpoint,
   // "enforce", and owner.
-  creator_coep_reporter_->QueueWorkerInitializationReport(
-      final_response_url_.value(),
-      /*report_only=*/false);
+  coep_reporter_->QueueWorkerInitializationReport(final_response_url_.value(),
+                                                  /*report_only=*/false);
 
   // > 7. Return false.
   return false;
@@ -536,19 +501,7 @@ void DedicatedWorkerHost::BindCacheStorage(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
       coep_reporter;
-  if (base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)) {
-    coep_reporter_->Clone(coep_reporter.InitWithNewPipeAndPassReceiver());
-  } else {
-    // For the non-PlzDedicatedWorker case, use ancestor's COEP reporter to keep
-    // the current behavior, but it's not aligned with the spec. Also returns
-    // here if the ancestor's COEP reporter is destructed, which means the
-    // ancestor render frame has already been closed or navigated and this
-    // worker will also be terminated soon.
-    if (!ancestor_coep_reporter_)
-      return;
-    ancestor_coep_reporter_->Clone(
-        coep_reporter.InitWithNewPipeAndPassReceiver());
-  }
+  coep_reporter_->Clone(coep_reporter.InitWithNewPipeAndPassReceiver());
   worker_process_host_->BindCacheStorage(cross_origin_embedder_policy(),
                                          std::move(coep_reporter),
                                          worker_origin_, std::move(receiver));
@@ -557,12 +510,6 @@ void DedicatedWorkerHost::BindCacheStorage(
 void DedicatedWorkerHost::CreateNestedDedicatedWorker(
     mojo::PendingReceiver<blink::mojom::DedicatedWorkerHostFactory> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // For the non-PlzDedicatedWorker case, use ancestor's COEP reporter to keep
-  // the current behavior, but it's not aligned with the spec.
-  auto creator_coep_reporter = ancestor_coep_reporter_;
-  if (base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)) {
-    creator_coep_reporter = coep_reporter_->GetWeakPtr();
-  }
   // Set this worker as the creator of the new worker and inherit the ancestor
   // render frame.
   mojo::MakeSelfOwnedReceiver(
@@ -571,7 +518,7 @@ void DedicatedWorkerHost::CreateNestedDedicatedWorker(
           /*creator_render_frame_host_id_=*/base::nullopt,
           /*creator_worker_token=*/token_, ancestor_render_frame_host_id_,
           worker_origin_, isolation_info_, cross_origin_embedder_policy(),
-          creator_coep_reporter, ancestor_coep_reporter_),
+          coep_reporter_),
       std::move(receiver));
 }
 
@@ -672,26 +619,10 @@ void DedicatedWorkerHost::UpdateSubresourceLoaderFactories() {
               partition_domain, file_url_support_,
               /*filesystem_url_support=*/true, creator_render_frame_host);
 
-  // Return here if the ancestor's COEP reporter is destructed and the
-  // PlzDedicatedWorker feature is disabled, which means the ancestor render
-  // frame has already been closed or navigated and this worker will also be
-  // terminated soon.
-  if (!base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker) &&
-      !ancestor_coep_reporter_) {
-    return;
-  }
-  // For the non-PlzDedicatedWorker case, use ancestor's COEP reporter to keep
-  // the current behavior, but it's not aligned with the spec.
-  base::WeakPtr<CrossOriginEmbedderPolicyReporter> coep_reporter =
-      ancestor_coep_reporter_;
-  if (base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)) {
-    coep_reporter = coep_reporter_->GetWeakPtr();
-  }
   bool bypass_redirect_checks = false;
   subresource_loader_factories->pending_default_factory() =
       CreateNetworkFactoryForSubresources(ancestor_render_frame_host,
-                                          &bypass_redirect_checks,
-                                          std::move(coep_reporter));
+                                          &bypass_redirect_checks);
   subresource_loader_factories->set_bypass_redirect_checks(
       bypass_redirect_checks);
 
