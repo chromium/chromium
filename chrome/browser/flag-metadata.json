@@ -4767,8 +4767,8 @@
   },
   {
     "name": "smart-suggestion-for-large-downloads",
-    "owners": [ "vuhung", "shaktisahu"],
-    "expiry_milestone": 89
+    "owners": [ "shaktisahu" ],
+    "expiry_milestone": 91
   },
   {
     "name": "smbfs-file-shares",
