@@ -133,6 +133,10 @@ const char kNearbyShareOAuth2Scope[] =
 // OAuth2 scope for access to GCM account tracker.
 const char kGCMGroupServerOAuth2Scope[] = "https://www.googleapis.com/auth/gcm";
 
+// OAuth2 scope for access to readonly Chrome web store.
+const char kChromeWebstoreOAuth2Scope[] =
+    "https://www.googleapis.com/auth/chromewebstore.readonly";
+
 // Used to mint uber auth tokens when needed.
 const char kGaiaSid[] = "sid";
 const char kGaiaLsid[] = "lsid";
