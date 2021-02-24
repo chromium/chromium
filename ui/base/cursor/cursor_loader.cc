@@ -1,18 +1,19 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/base/cursor/cursor_loader_ozone.h"
+#include "ui/base/cursor/cursor_loader.h"
 
-#include <memory>
+#include <map>
 #include <vector>
 
-#include "base/ranges/algorithm.h"
+#include "base/check.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/cursor/cursor_size.h"
 #include "ui/base/cursor/cursor_util.h"
 #include "ui/base/cursor/cursors_aura.h"
-#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace ui {
@@ -26,21 +27,40 @@ const int kAnimatedCursorFrameDelayMs = 25;
 
 }  // namespace
 
-CursorLoaderOzone::CursorLoaderOzone(bool use_platform_cursors)
+CursorLoader::CursorLoader(bool use_platform_cursors)
     : use_platform_cursors_(use_platform_cursors),
       factory_(CursorFactory::GetInstance()) {}
 
-CursorLoaderOzone::~CursorLoaderOzone() {
+CursorLoader::~CursorLoader() {
   UnloadCursors();
 }
 
-void CursorLoaderOzone::UnloadCursors() {
+void CursorLoader::UnloadCursors() {
   for (const auto& image_cursor : image_cursors_)
     factory_->UnrefImageCursor(image_cursor.second);
   image_cursors_.clear();
 }
 
-void CursorLoaderOzone::SetPlatformCursor(gfx::NativeCursor* cursor) {
+bool CursorLoader::SetDisplayData(display::Display::Rotation rotation,
+                                  float scale) {
+  if (rotation_ == rotation && scale_ == scale)
+    return false;
+
+  rotation_ = rotation;
+  scale_ = scale;
+  UnloadCursors();
+  return true;
+}
+
+void CursorLoader::SetSize(CursorSize size) {
+  if (size_ == size)
+    return;
+
+  size_ = size;
+  UnloadCursors();
+}
+
+void CursorLoader::SetPlatformCursor(Cursor* cursor) {
   DCHECK(cursor);
 
   // The platform cursor was already set via WebCursor::GetNativeCursor.
@@ -50,9 +70,9 @@ void CursorLoaderOzone::SetPlatformCursor(gfx::NativeCursor* cursor) {
   cursor->SetPlatformCursor(CursorFromType(cursor->type()));
 }
 
-void CursorLoaderOzone::LoadImageCursor(mojom::CursorType type,
-                                        int resource_id,
-                                        const gfx::Point& hot) {
+void CursorLoader::LoadImageCursor(mojom::CursorType type,
+                                   int resource_id,
+                                   const gfx::Point& hot) {
   gfx::Point hotspot = hot;
   if (base::ranges::count(kAnimatedCursorTypes, type) == 0) {
     SkBitmap bitmap;
@@ -67,7 +87,7 @@ void CursorLoaderOzone::LoadImageCursor(mojom::CursorType type,
   }
 }
 
-PlatformCursor CursorLoaderOzone::CursorFromType(mojom::CursorType type) {
+PlatformCursor CursorLoader::CursorFromType(mojom::CursorType type) {
   // An image cursor is loaded for this type.
   if (image_cursors_.count(type))
     return image_cursors_[type];
@@ -80,6 +100,7 @@ PlatformCursor CursorLoaderOzone::CursorFromType(mojom::CursorType type) {
         factory_->GetDefaultCursor(type);
     if (default_cursor)
       return *default_cursor;
+    LOG(ERROR) << "Failed to load a platform cursor of type " << type;
   }
 
   // Loads the default Aura cursor bitmap for the cursor type. Falls back on
@@ -94,8 +115,7 @@ PlatformCursor CursorLoaderOzone::CursorFromType(mojom::CursorType type) {
   return platform;
 }
 
-// Gets default Aura cursor bitmap/hotspot and creates a PlatformCursor with it.
-PlatformCursor CursorLoaderOzone::LoadCursorFromAsset(mojom::CursorType type) {
+PlatformCursor CursorLoader::LoadCursorFromAsset(mojom::CursorType type) {
   int resource_id;
   gfx::Point hotspot;
   if (GetCursorDataFor(size(), type, scale(), &resource_id, &hotspot)) {
@@ -103,10 +123,6 @@ PlatformCursor CursorLoaderOzone::LoadCursorFromAsset(mojom::CursorType type) {
     return image_cursors_[type];
   }
   return nullptr;
-}
-
-std::unique_ptr<CursorLoader> CursorLoader::Create(bool use_platform_cursors) {
-  return std::make_unique<CursorLoaderOzone>(use_platform_cursors);
 }
 
 }  // namespace ui

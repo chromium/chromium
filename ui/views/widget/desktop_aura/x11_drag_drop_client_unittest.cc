@@ -319,9 +319,9 @@ int SimpleTestDragDropClient::StartDragAndDrop(
   // Windows has a specific method, DoDragDrop(), which performs the entire
   // drag. We have to emulate this, so we spin off a nested runloop which will
   // track all cursor movement and reroute events to a specific handler.
-  auto cursor_loader = ui::CursorLoader::Create();
+  ui::CursorLoader cursor_loader;
   ui::Cursor grabbing = ui::mojom::CursorType::kGrabbing;
-  cursor_loader->SetPlatformCursor(&grabbing);
+  cursor_loader.SetPlatformCursor(&grabbing);
   auto* last_cursor = static_cast<ui::X11Cursor*>(
       source_window->GetHost()->last_cursor().platform());
   loop_->RunMoveLoop(!source_window->HasCapture(), last_cursor,

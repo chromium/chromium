@@ -30,9 +30,9 @@ namespace ui {
 namespace {
 
 PlatformCursor LoadInvisibleCursor() {
-  auto cursor_loader = CursorLoader::Create();
+  CursorLoader cursor_loader;
   Cursor cursor(mojom::CursorType::kNone);
-  cursor_loader->SetPlatformCursor(&cursor);
+  cursor_loader.SetPlatformCursor(&cursor);
   return cursor.platform();
 }
 

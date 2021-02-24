@@ -64,15 +64,15 @@ class ShellNativeCursorManager : public wm::NativeCursorManager {
   // wm::NativeCursorManager overrides.
   void SetDisplay(const display::Display& display,
                   wm::NativeCursorManagerDelegate* delegate) override {
-    if (cursor_loader_->SetDisplayData(display.panel_rotation(),
-                                       display.device_scale_factor()))
+    if (cursor_loader_.SetDisplayData(display.panel_rotation(),
+                                      display.device_scale_factor()))
       SetCursor(delegate->GetCursor(), delegate);
   }
 
   void SetCursor(gfx::NativeCursor cursor,
                  wm::NativeCursorManagerDelegate* delegate) override {
-    cursor_loader_->SetPlatformCursor(&cursor);
-    cursor.set_image_scale_factor(cursor_loader_->scale());
+    cursor_loader_.SetPlatformCursor(&cursor);
+    cursor.set_image_scale_factor(cursor_loader_.scale());
     delegate->CommitCursor(cursor);
 
     if (delegate->IsCursorVisible())
@@ -87,14 +87,14 @@ class ShellNativeCursorManager : public wm::NativeCursorManager {
       SetCursor(delegate->GetCursor(), delegate);
     } else {
       gfx::NativeCursor invisible_cursor(ui::mojom::CursorType::kNone);
-      cursor_loader_->SetPlatformCursor(&invisible_cursor);
+      cursor_loader_.SetPlatformCursor(&invisible_cursor);
       SetCursorOnAllRootWindows(invisible_cursor);
     }
   }
 
   void SetCursorSize(ui::CursorSize cursor_size,
                      wm::NativeCursorManagerDelegate* delegate) override {
-    cursor_loader_->set_size(cursor_size);
+    cursor_loader_.SetSize(cursor_size);
     delegate->CommitCursorSize(cursor_size);
     if (delegate->IsCursorVisible())
       SetCursor(delegate->GetCursor(), delegate);
@@ -116,8 +116,7 @@ class ShellNativeCursorManager : public wm::NativeCursorManager {
 
   ShellDesktopControllerAura* desktop_controller_;  // Not owned.
 
-  std::unique_ptr<ui::CursorLoader> cursor_loader_ =
-      ui::CursorLoader::Create(/*use_platform_cursors=*/false);
+  ui::CursorLoader cursor_loader_{/*use_platform_cursors=*/false};
 
   DISALLOW_COPY_AND_ASSIGN(ShellNativeCursorManager);
 };
