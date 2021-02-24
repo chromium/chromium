@@ -15,6 +15,8 @@
 
 namespace ash {
 
+class BentoDesksBarLayout;
+class BentoDesksBarScrollViewLayout;
 class DeskBarHoverObserver;
 class DeskDragProxy;
 class DeskMiniView;
@@ -161,6 +163,9 @@ class ASH_EXPORT DesksBarView : public views::View,
   void UpdateNewMiniViews(bool initializing_bar_view, bool expanding_bar_view);
 
  private:
+  friend class BentoDesksBarLayout;
+  friend class BentoDesksBarScrollViewLayout;
+
   // Returns the mini_view associated with |desk| or nullptr if no mini_view
   // has been created for it yet.
   DeskMiniView* FindMiniViewForDesk(const Desk* desk) const;
