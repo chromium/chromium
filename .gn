@@ -89,7 +89,6 @@ no_check_targets = [
   "//remoting/client/display:*",  # 55 errors
   "//remoting/client/jni:*",  # 8 errors
   "//remoting/codec:*",  # 32 errors
-  "//remoting/host/chromeos:*",  # 10 errors
   "//remoting/host/file_transfer:*",  # 43 errors
   "//remoting/host/installer/mac:*",  # 1 error
   "//remoting/host/it2me:*",  # 18 errors

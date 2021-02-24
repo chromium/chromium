@@ -81,6 +81,34 @@ source_set("client_session_control") {
   deps = [ "//remoting/protocol" ]
 }
 
+source_set("clipboard") {
+  sources = [ "clipboard.h" ]
+
+  deps = [
+    ":base",
+    "//base",
+    "//remoting/proto",
+    "//remoting/protocol",
+  ]
+
+  if (use_x11 && (!is_chromeos_ash || !use_ozone)) {
+    sources += [ "clipboard_x11.cc" ]
+
+    deps += [
+      "//remoting/host/linux:x11",
+      "//ui/gfx/x",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [ "clipboard_mac.mm" ]
+  }
+
+  if (is_win) {
+    sources += [ "clipboard_win.cc" ]
+  }
+}
+
 # This must be a static library instead of a source set because
 # remoting_unittests requires that remoting_me2me_host.cc not be pulled in,
 # which in turn depends on remoting_me2me_host_static which isn't part of that
@@ -118,7 +146,6 @@ static_library("common") {
     "client_session.cc",
     "client_session.h",
     "client_session_details.h",
-    "clipboard.h",
     "config_file_watcher.cc",
     "config_file_watcher.h",
     "config_watcher.h",
@@ -278,6 +305,7 @@ static_library("common") {
   deps = [
     ":base",
     ":client_session_control",
+    ":clipboard",
     "//base:i18n",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
@@ -341,7 +369,6 @@ static_library("common") {
 
   if (use_x11 && (!is_chromeos_ash || !use_ozone)) {
     sources += [
-      "clipboard_x11.cc",
       "desktop_resizer_x11.cc",
       "desktop_resizer_x11.h",
       "input_injector_x11.cc",
@@ -415,7 +442,6 @@ static_library("common") {
     sources += [
       "audio_capturer_mac.cc",
       "audio_capturer_mac.h",
-      "clipboard_mac.mm",
       "continue_window_mac.mm",
       "curtain_mode_mac.cc",
       "desktop_display_info_mac.mm",
@@ -447,7 +473,6 @@ static_library("common") {
     sources += [
       "audio_capturer_win.cc",
       "audio_capturer_win.h",
-      "clipboard_win.cc",
       "continue_window_win.cc",
       "curtain_mode_win.cc",
       "daemon_process_win.cc",
