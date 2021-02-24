@@ -15,7 +15,6 @@ import '../site_favicon.js';
 import './passwords_shared_css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

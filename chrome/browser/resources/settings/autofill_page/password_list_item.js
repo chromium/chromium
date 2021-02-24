@@ -34,7 +34,6 @@ Polymer({
   _template: html`{__html_template__}`,
 
   behaviors: [
-    FocusRowBehavior,
     ShowPasswordBehavior,
   ],
 
