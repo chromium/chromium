@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/content_browser_client.h"
+#include "device/vr/buildflags/buildflags.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 
 class PrefService;
@@ -23,6 +24,10 @@ namespace weblayer {
 class FeatureListCreator;
 class SafeBrowsingService;
 struct MainParams;
+
+#if BUILDFLAG(ENABLE_ARCORE)
+class XrIntegrationClientImpl;
+#endif
 
 class ContentBrowserClientImpl : public content::ContentBrowserClient {
  public:
@@ -191,6 +196,9 @@ class ContentBrowserClientImpl : public content::ContentBrowserClient {
 #endif  // OS_ANDROID
   content::SpeechRecognitionManagerDelegate*
   CreateSpeechRecognitionManagerDelegate() override;
+#if BUILDFLAG(ENABLE_ARCORE)
+  content::XrIntegrationClient* GetXrIntegrationClient() override;
+#endif  // BUILDFLAG(ENABLE_ARCORE)
   ukm::UkmService* GetUkmService() override;
   bool HasErrorPage(int http_status_code) override;
 
@@ -212,6 +220,10 @@ class ContentBrowserClientImpl : public content::ContentBrowserClient {
   std::unique_ptr<PrefService> local_state_;
 
   std::unique_ptr<FeatureListCreator> feature_list_creator_;
+
+#if BUILDFLAG(ENABLE_ARCORE)
+  std::unique_ptr<XrIntegrationClientImpl> xr_integration_client_;
+#endif
 };
 
 }  // namespace weblayer

@@ -21,6 +21,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
+#include "device/vr/buildflags/buildflags.h"
 #include "media/base/media_switches.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
@@ -152,10 +153,11 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
   std::vector<base::Feature> disabled_features = {
     // TODO(crbug.com/1025627): make webauth work with WebLayer.
     ::features::kWebAuth,
-    // TODO(crbug.com/1057106): make web-xr work with WebLayer.
+#if !BUILDFLAG(ENABLE_ARCORE)
     ::features::kWebXr,
     ::features::kWebXrArModule,
     ::features::kWebXrHitTest,
+#endif
     // TODO(crbug.com/1057770): make Background Fetch work with WebLayer.
     ::features::kBackgroundFetch,
     // TODO(crbug.com/1130989): Support GetInstalledRelatedApps on WebLayer.
