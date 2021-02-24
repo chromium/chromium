@@ -102,6 +102,7 @@
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_image_map_link.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_inline_text_box.h"
@@ -116,6 +117,7 @@
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -196,6 +198,30 @@ blink::KeyboardEvent* CreateKeyboardEvent(
   }
 
   return blink::KeyboardEvent::Create(key, local_dom_window, true);
+}
+
+unsigned TextStyleFlag(ax::mojom::blink::TextStyle text_style_enum) {
+  return static_cast<unsigned>(1 << static_cast<int>(text_style_enum));
+}
+
+ax::mojom::blink::TextDecorationStyle
+TextDecorationStyleToAXTextDecorationStyle(
+    const blink::ETextDecorationStyle text_decoration_style) {
+  switch (text_decoration_style) {
+    case blink::ETextDecorationStyle::kDashed:
+      return ax::mojom::blink::TextDecorationStyle::kDashed;
+    case blink::ETextDecorationStyle::kSolid:
+      return ax::mojom::blink::TextDecorationStyle::kSolid;
+    case blink::ETextDecorationStyle::kDotted:
+      return ax::mojom::blink::TextDecorationStyle::kDotted;
+    case blink::ETextDecorationStyle::kDouble:
+      return ax::mojom::blink::TextDecorationStyle::kDouble;
+    case blink::ETextDecorationStyle::kWavy:
+      return ax::mojom::blink::TextDecorationStyle::kWavy;
+  }
+
+  NOTREACHED();
+  return ax::mojom::blink::TextDecorationStyle::kNone;
 }
 
 }  // namespace
@@ -2034,6 +2060,106 @@ String AXNodeObject::GetText() const {
 
   auto* element = DynamicTo<Element>(node);
   return element ? element->GetInnerTextWithoutUpdate() : String();
+}
+
+ax::mojom::blink::WritingDirection AXNodeObject::GetTextDirection() const {
+  if (!GetLayoutObject())
+    return AXObject::GetTextDirection();
+
+  const ComputedStyle* style = GetLayoutObject()->Style();
+  if (!style)
+    return AXObject::GetTextDirection();
+
+  if (style->IsHorizontalWritingMode()) {
+    switch (style->Direction()) {
+      case TextDirection::kLtr:
+        return ax::mojom::blink::WritingDirection::kLtr;
+      case TextDirection::kRtl:
+        return ax::mojom::blink::WritingDirection::kRtl;
+    }
+  } else {
+    switch (style->Direction()) {
+      case TextDirection::kLtr:
+        return ax::mojom::blink::WritingDirection::kTtb;
+      case TextDirection::kRtl:
+        return ax::mojom::blink::WritingDirection::kBtt;
+    }
+  }
+
+  return AXNodeObject::GetTextDirection();
+}
+
+ax::mojom::blink::TextPosition AXNodeObject::GetTextPosition() const {
+  if (!GetLayoutObject())
+    return AXObject::GetTextPosition();
+
+  const ComputedStyle* style = GetLayoutObject()->Style();
+  if (!style)
+    return AXObject::GetTextPosition();
+
+  switch (style->VerticalAlign()) {
+    case EVerticalAlign::kBaseline:
+    case EVerticalAlign::kMiddle:
+    case EVerticalAlign::kTextTop:
+    case EVerticalAlign::kTextBottom:
+    case EVerticalAlign::kTop:
+    case EVerticalAlign::kBottom:
+    case EVerticalAlign::kBaselineMiddle:
+    case EVerticalAlign::kLength:
+      return AXObject::GetTextPosition();
+    case EVerticalAlign::kSub:
+      return ax::mojom::blink::TextPosition::kSubscript;
+    case EVerticalAlign::kSuper:
+      return ax::mojom::blink::TextPosition::kSuperscript;
+  }
+}
+
+void AXNodeObject::GetTextStyleAndTextDecorationStyle(
+    int32_t* text_style,
+    ax::mojom::blink::TextDecorationStyle* text_overline_style,
+    ax::mojom::blink::TextDecorationStyle* text_strikethrough_style,
+    ax::mojom::blink::TextDecorationStyle* text_underline_style) const {
+  if (!GetLayoutObject()) {
+    AXObject::GetTextStyleAndTextDecorationStyle(
+        text_style, text_overline_style, text_strikethrough_style,
+        text_underline_style);
+    return;
+  }
+  const ComputedStyle* style = GetLayoutObject()->Style();
+  if (!style) {
+    AXObject::GetTextStyleAndTextDecorationStyle(
+        text_style, text_overline_style, text_strikethrough_style,
+        text_underline_style);
+    return;
+  }
+
+  *text_style = 0;
+  *text_overline_style = ax::mojom::blink::TextDecorationStyle::kNone;
+  *text_strikethrough_style = ax::mojom::blink::TextDecorationStyle::kNone;
+  *text_underline_style = ax::mojom::blink::TextDecorationStyle::kNone;
+
+  if (style->GetFontWeight() == BoldWeightValue())
+    *text_style |= TextStyleFlag(ax::mojom::blink::TextStyle::kBold);
+  if (style->GetFontDescription().Style() == ItalicSlopeValue())
+    *text_style |= TextStyleFlag(ax::mojom::blink::TextStyle::kItalic);
+
+  for (const auto& decoration : style->AppliedTextDecorations()) {
+    if (EnumHasFlags(decoration.Lines(), TextDecoration::kOverline)) {
+      *text_style |= TextStyleFlag(ax::mojom::blink::TextStyle::kOverline);
+      *text_overline_style =
+          TextDecorationStyleToAXTextDecorationStyle(decoration.Style());
+    }
+    if (EnumHasFlags(decoration.Lines(), TextDecoration::kLineThrough)) {
+      *text_style |= TextStyleFlag(ax::mojom::blink::TextStyle::kLineThrough);
+      *text_strikethrough_style =
+          TextDecorationStyleToAXTextDecorationStyle(decoration.Style());
+    }
+    if (EnumHasFlags(decoration.Lines(), TextDecoration::kUnderline)) {
+      *text_style |= TextStyleFlag(ax::mojom::blink::TextStyle::kUnderline);
+      *text_underline_style =
+          TextDecorationStyleToAXTextDecorationStyle(decoration.Style());
+    }
+  }
 }
 
 ax::mojom::blink::TextAlign AXNodeObject::GetTextAlign() const {

@@ -89,14 +89,6 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
   // Properties of static elements.
   ax::mojom::blink::ListStyle GetListStyle() const final;
   String GetText() const override;
-  ax::mojom::blink::WritingDirection GetTextDirection() const final;
-  ax::mojom::blink::TextPosition GetTextPosition() const final;
-  void GetTextStyleAndTextDecorationStyle(
-      int32_t* text_style,
-      ax::mojom::blink::TextDecorationStyle* text_overline_style,
-      ax::mojom::blink::TextDecorationStyle* text_strikethrough_style,
-      ax::mojom::blink::TextDecorationStyle* text_underline_style) const final;
-
   // Inline text boxes.
   AXObject* NextOnLine() const override;
   AXObject* PreviousOnLine() const override;
@@ -159,10 +151,6 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
 
   LayoutRect ComputeElementRect() const;
   bool IsPlaceholder() const;
-
-  static ax::mojom::blink::TextDecorationStyle
-  TextDecorationStyleToAXTextDecorationStyle(
-      const ETextDecorationStyle text_decoration_style);
 
   DISALLOW_COPY_AND_ASSIGN(AXLayoutObject);
 };

@@ -150,6 +150,14 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
       HTMLInputElement* radio_button);
 
   String GetText() const override;
+  ax::mojom::blink::WritingDirection GetTextDirection() const final;
+  ax::mojom::blink::TextPosition GetTextPosition() const final;
+  void GetTextStyleAndTextDecorationStyle(
+      int32_t* text_style,
+      ax::mojom::blink::TextDecorationStyle* text_overline_style,
+      ax::mojom::blink::TextDecorationStyle* text_strikethrough_style,
+      ax::mojom::blink::TextDecorationStyle* text_underline_style) const final;
+
   String ImageDataUrl(const IntSize& max_size) const final;
   int TextLength() const override;
   int TextOffsetInFormattingContext(int offset) const override;
