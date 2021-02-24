@@ -1148,9 +1148,9 @@ void ExtensionDownloader::NotifyDelegateDownloadFinished(
   crx_info.expected_version = version;
   delegate_->OnExtensionDownloadFinished(
       crx_info, file_ownership_passed, url, ping_results_[id], request_ids,
-      from_cache ? base::BindRepeating(&ExtensionDownloader::CacheInstallDone,
-                                       weak_ptr_factory_.GetWeakPtr(),
-                                       base::Passed(&fetch_data))
+      from_cache ? base::BindOnce(&ExtensionDownloader::CacheInstallDone,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  std::move(fetch_data))
                  : ExtensionDownloaderDelegate::InstallCallback());
   if (!from_cache)
     ping_results_.erase(id);
