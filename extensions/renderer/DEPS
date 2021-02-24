@@ -10,6 +10,7 @@ include_rules = [
   "+third_party/cld_3",
 
   "+third_party/blink/public/common/associated_interfaces/associated_interface_registry.h",
+  "+third_party/blink/public/common/tokens/tokens.h",
   "+third_party/blink/public/mojom/devtools/console_message.mojom.h",
   "+third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h",
   "+third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h",

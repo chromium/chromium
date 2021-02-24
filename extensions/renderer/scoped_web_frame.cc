@@ -6,6 +6,7 @@
 
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/web/web_heap.h"
@@ -25,12 +26,11 @@ ScopedWebFrame::ScopedWebFrame()
           /*opener=*/nullptr,
           mojo::NullAssociatedReceiver(),
           *agent_group_scheduler_)),
-      frame_(blink::WebLocalFrame::CreateMainFrame(
-          view_,
-          &frame_client_,
-          nullptr,
-          base::UnguessableToken::Create(),
-          nullptr)) {}
+      frame_(blink::WebLocalFrame::CreateMainFrame(view_,
+                                                   &frame_client_,
+                                                   nullptr,
+                                                   blink::LocalFrameToken(),
+                                                   nullptr)) {}
 
 ScopedWebFrame::~ScopedWebFrame() {
   view_->Close();
