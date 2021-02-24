@@ -63,6 +63,11 @@ static_assert(alignof(std::max_align_t) >= kChannelMessageAlignment, "");
 Channel::AlignedBuffer MakeAlignedBuffer(size_t size) {
   // No need to call base::AlignedAlloc() since malloc() already had the proper
   // alignment.
+  void* ptr = malloc(size);
+  // Even though the allocator is configured in such a way that it crashes
+  // rather than return nullptr, ASAN and friends don't know about that. This
+  // CHECK() prevents Clusterfuzz from complaining. crbug.com/1180576.
+  CHECK(ptr);
   return Channel::AlignedBuffer(static_cast<char*>(malloc(size)));
 }
 
