@@ -131,7 +131,12 @@ static void **NextStackFrame(void **old_sp, const void *uc) {
       const ucontext_t* signal_context =
           reinterpret_cast<const ucontext_t*>(uc);
       void **const sp_before_signal =
-          reinterpret_cast<void**>(signal_context->uc_mcontext.gp_regs[PT_R1]);
+#if defined(__PPC64__)
+          reinterpret_cast<void **>(signal_context->uc_mcontext.gp_regs[PT_R1]);
+#else
+          reinterpret_cast<void **>(
+              signal_context->uc_mcontext.uc_regs->gregs[PT_R1]);
+#endif
       // Check that alleged sp before signal is nonnull and is reasonably
       // aligned.
       if (sp_before_signal != nullptr &&

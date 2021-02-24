@@ -573,7 +573,8 @@ ABSL_NAMESPACE_END
 
 extern "C" {
 
-ABSL_ATTRIBUTE_WEAK void AbslInternalSleepFor(absl::Duration duration) {
+ABSL_ATTRIBUTE_WEAK void ABSL_INTERNAL_C_SYMBOL(AbslInternalSleepFor)(
+    absl::Duration duration) {
   while (duration > absl::ZeroDuration()) {
     absl::Duration to_sleep = std::min(duration, absl::MaxSleep());
     absl::SleepOnce(to_sleep);

@@ -678,4 +678,25 @@
 #define ABSL_CONST_INIT
 #endif  // ABSL_HAVE_CPP_ATTRIBUTE(clang::require_constant_initialization)
 
+// ABSL_ATTRIBUTE_PURE_FUNCTION
+//
+// ABSL_ATTRIBUTE_PURE_FUNCTION is used to annotate declarations of "pure"
+// functions. A function is pure if its return value is only a function of its
+// arguments. The pure attribute prohibits a function from modifying the state
+// of the program that is observable by means other than inspecting the
+// function's return value. Declaring such functions with the pure attribute
+// allows the compiler to avoid emitting some calls in repeated invocations of
+// the function with the same argument values.
+//
+// Example:
+//
+//  ABSL_ATTRIBUTE_PURE_FUNCTION int64_t ToInt64Milliseconds(Duration d);
+#if ABSL_HAVE_CPP_ATTRIBUTE(gnu::pure)
+#define ABSL_ATTRIBUTE_PURE_FUNCTION [[gnu::pure]]
+#elif ABSL_HAVE_ATTRIBUTE(pure)
+#define ABSL_ATTRIBUTE_PURE_FUNCTION __attribute__((pure))
+#else
+#define ABSL_ATTRIBUTE_PURE_FUNCTION
+#endif
+
 #endif  // ABSL_BASE_ATTRIBUTES_H_

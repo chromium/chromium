@@ -70,7 +70,9 @@ using absl::synchronization_internal::KernelTimeout;
 using absl::synchronization_internal::PerThreadSem;
 
 extern "C" {
-ABSL_ATTRIBUTE_WEAK void AbslInternalMutexYield() { std::this_thread::yield(); }
+ABSL_ATTRIBUTE_WEAK void ABSL_INTERNAL_C_SYMBOL(AbslInternalMutexYield)() {
+  std::this_thread::yield();
+}
 }  // extern "C"
 
 namespace absl {
@@ -170,7 +172,7 @@ int MutexDelay(int32_t c, int mode) {
     ABSL_TSAN_MUTEX_PRE_DIVERT(nullptr, 0);
     if (c == limit) {
       // Yield once.
-      AbslInternalMutexYield();
+      ABSL_INTERNAL_C_SYMBOL(AbslInternalMutexYield)();
       c++;
     } else {
       // Then wait.

@@ -107,6 +107,9 @@
 // Define race annotations.
 
 #if ABSL_INTERNAL_RACE_ANNOTATIONS_ENABLED == 1
+// Some of the symbols used in this section (e.g. AnnotateBenignRaceSized) are
+// defined by the compiler-based santizer implementation, not by the Abseil
+// library. Therefore they do not use ABSL_INTERNAL_C_SYMBOL.
 
 // -------------------------------------------------------------
 // Annotations that suppress errors. It is usually better to express the
@@ -283,17 +286,22 @@ ABSL_INTERNAL_END_EXTERN_C
 // Define IGNORE_READS_BEGIN/_END annotations.
 
 #if ABSL_INTERNAL_READS_ANNOTATIONS_ENABLED == 1
+// Some of the symbols used in this section (e.g. AnnotateIgnoreReadsBegin) are
+// defined by the compiler-based implementation, not by the Abseil
+// library. Therefore they do not use ABSL_INTERNAL_C_SYMBOL.
 
 // Request the analysis tool to ignore all reads in the current thread until
 // ABSL_ANNOTATE_IGNORE_READS_END is called. Useful to ignore intentional racey
 // reads, while still checking other reads and all writes.
 // See also ABSL_ANNOTATE_UNPROTECTED_READ.
-#define ABSL_ANNOTATE_IGNORE_READS_BEGIN() \
-  ABSL_INTERNAL_GLOBAL_SCOPED(AnnotateIgnoreReadsBegin)(__FILE__, __LINE__)
+#define ABSL_ANNOTATE_IGNORE_READS_BEGIN()              \
+  ABSL_INTERNAL_GLOBAL_SCOPED(AnnotateIgnoreReadsBegin) \
+  (__FILE__, __LINE__)
 
 // Stop ignoring reads.
-#define ABSL_ANNOTATE_IGNORE_READS_END() \
-  ABSL_INTERNAL_GLOBAL_SCOPED(AnnotateIgnoreReadsEnd)(__FILE__, __LINE__)
+#define ABSL_ANNOTATE_IGNORE_READS_END()              \
+  ABSL_INTERNAL_GLOBAL_SCOPED(AnnotateIgnoreReadsEnd) \
+  (__FILE__, __LINE__)
 
 // Function prototypes of annotations provided by the compiler-based sanitizer
 // implementation.
@@ -313,16 +321,22 @@ ABSL_INTERNAL_END_EXTERN_C
 // TODO(delesley) -- The exclusive lock here ignores writes as well, but
 // allows IGNORE_READS_AND_WRITES to work properly.
 
-#define ABSL_ANNOTATE_IGNORE_READS_BEGIN() \
-  ABSL_INTERNAL_GLOBAL_SCOPED(AbslInternalAnnotateIgnoreReadsBegin)()
+#define ABSL_ANNOTATE_IGNORE_READS_BEGIN()                          \
+  ABSL_INTERNAL_GLOBAL_SCOPED(                                      \
+      ABSL_INTERNAL_C_SYMBOL(AbslInternalAnnotateIgnoreReadsBegin)) \
+  ()
 
-#define ABSL_ANNOTATE_IGNORE_READS_END() \
-  ABSL_INTERNAL_GLOBAL_SCOPED(AbslInternalAnnotateIgnoreReadsEnd)()
+#define ABSL_ANNOTATE_IGNORE_READS_END()                          \
+  ABSL_INTERNAL_GLOBAL_SCOPED(                                    \
+      ABSL_INTERNAL_C_SYMBOL(AbslInternalAnnotateIgnoreReadsEnd)) \
+  ()
 
-ABSL_INTERNAL_STATIC_INLINE void AbslInternalAnnotateIgnoreReadsBegin()
+ABSL_INTERNAL_STATIC_INLINE void ABSL_INTERNAL_C_SYMBOL(
+    AbslInternalAnnotateIgnoreReadsBegin)()
     ABSL_INTERNAL_IGNORE_READS_BEGIN_ATTRIBUTE {}
 
-ABSL_INTERNAL_STATIC_INLINE void AbslInternalAnnotateIgnoreReadsEnd()
+ABSL_INTERNAL_STATIC_INLINE void ABSL_INTERNAL_C_SYMBOL(
+    AbslInternalAnnotateIgnoreReadsEnd)()
     ABSL_INTERNAL_IGNORE_READS_END_ATTRIBUTE {}
 
 #else

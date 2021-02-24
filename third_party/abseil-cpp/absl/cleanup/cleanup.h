@@ -78,7 +78,7 @@ namespace absl {
 ABSL_NAMESPACE_BEGIN
 
 template <typename Arg, typename Callback = void()>
-class ABSL_MUST_USE_RESULT Cleanup {
+class ABSL_MUST_USE_RESULT Cleanup final {
   static_assert(cleanup_internal::WasDeduced<Arg>(),
                 "Explicit template parameters are not supported.");
 

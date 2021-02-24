@@ -458,12 +458,12 @@ Duration Hours(T n) {
 //
 //   absl::Duration d = absl::Milliseconds(1500);
 //   int64_t isec = absl::ToInt64Seconds(d);  // isec == 1
-int64_t ToInt64Nanoseconds(Duration d);
-int64_t ToInt64Microseconds(Duration d);
-int64_t ToInt64Milliseconds(Duration d);
-int64_t ToInt64Seconds(Duration d);
-int64_t ToInt64Minutes(Duration d);
-int64_t ToInt64Hours(Duration d);
+ABSL_ATTRIBUTE_PURE_FUNCTION int64_t ToInt64Nanoseconds(Duration d);
+ABSL_ATTRIBUTE_PURE_FUNCTION int64_t ToInt64Microseconds(Duration d);
+ABSL_ATTRIBUTE_PURE_FUNCTION int64_t ToInt64Milliseconds(Duration d);
+ABSL_ATTRIBUTE_PURE_FUNCTION int64_t ToInt64Seconds(Duration d);
+ABSL_ATTRIBUTE_PURE_FUNCTION int64_t ToInt64Minutes(Duration d);
+ABSL_ATTRIBUTE_PURE_FUNCTION int64_t ToInt64Hours(Duration d);
 
 // ToDoubleNanoSeconds()
 // ToDoubleMicroseconds()
@@ -480,12 +480,12 @@ int64_t ToInt64Hours(Duration d);
 //
 //   absl::Duration d = absl::Milliseconds(1500);
 //   double dsec = absl::ToDoubleSeconds(d);  // dsec == 1.5
-double ToDoubleNanoseconds(Duration d);
-double ToDoubleMicroseconds(Duration d);
-double ToDoubleMilliseconds(Duration d);
-double ToDoubleSeconds(Duration d);
-double ToDoubleMinutes(Duration d);
-double ToDoubleHours(Duration d);
+ABSL_ATTRIBUTE_PURE_FUNCTION double ToDoubleNanoseconds(Duration d);
+ABSL_ATTRIBUTE_PURE_FUNCTION double ToDoubleMicroseconds(Duration d);
+ABSL_ATTRIBUTE_PURE_FUNCTION double ToDoubleMilliseconds(Duration d);
+ABSL_ATTRIBUTE_PURE_FUNCTION double ToDoubleSeconds(Duration d);
+ABSL_ATTRIBUTE_PURE_FUNCTION double ToDoubleMinutes(Duration d);
+ABSL_ATTRIBUTE_PURE_FUNCTION double ToDoubleHours(Duration d);
 
 // FromChrono()
 //

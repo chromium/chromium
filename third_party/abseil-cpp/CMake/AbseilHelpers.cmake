@@ -41,7 +41,7 @@ endif()
 # LINKOPTS: List of link options
 # PUBLIC: Add this so that this library will be exported under absl::
 # Also in IDE, target will appear in Abseil folder while non PUBLIC will be in Abseil/internal.
-# TESTONLY: When added, this target will only be built if user passes -DABSL_RUN_TESTS=ON to CMake.
+# TESTONLY: When added, this target will only be built if BUILD_TESTING=ON.
 #
 # Note:
 # By default, absl_cc_library will always create a library named absl_${NAME},
@@ -83,7 +83,7 @@ function(absl_cc_library)
     ${ARGN}
   )
 
-  if(ABSL_CC_LIB_TESTONLY AND NOT ABSL_RUN_TESTS)
+  if(ABSL_CC_LIB_TESTONLY AND NOT BUILD_TESTING)
     return()
   endif()
 
@@ -337,7 +337,7 @@ endfunction()
 #     gtest_main
 # )
 function(absl_cc_test)
-  if(NOT ABSL_RUN_TESTS)
+  if(NOT BUILD_TESTING)
     return()
   endif()
 
