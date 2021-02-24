@@ -15,15 +15,16 @@ import "chromeos/services/machine_learning/public/mojom/model.mojom";
 // TODO(916760): This interface is temporary. Once the work is completed in
 // crbug/916760, we should look at removing this interface and any client uses
 // of it.
-//
+// Next ordinal: 2
+[Stable]
 interface HandwritingRecognizerRequestor {
   // Load a gesture based handwriting recognizer, and connect it to the
   // given pending receiver.
-  LoadGestureModel(pending_receiver<HandwritingRecognizer> receiver)
+  LoadGestureModel@0(pending_receiver<HandwritingRecognizer> receiver)
       => (LoadModelResult result);
 
   // Load a text based handwriting recognizer, and connect it to the
   // given pending receiver.
-  LoadHandwritingModel(pending_receiver<HandwritingRecognizer> receiver)
+  LoadHandwritingModel@1(pending_receiver<HandwritingRecognizer> receiver)
       => (LoadModelResult result);
 };

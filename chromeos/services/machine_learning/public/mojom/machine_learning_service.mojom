@@ -26,6 +26,7 @@ import "chromeos/services/machine_learning/public/mojom/text_classifier.mojom";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+[Stable, Extensible]
 enum LoadModelResult {
   OK = 0,
   MODEL_SPEC_ERROR = 1,
@@ -36,6 +37,7 @@ enum LoadModelResult {
 
 // Top-level interface between Chromium and the ML Service daemon.
 // Next ordinal: 8
+[Stable]
 interface MachineLearningService {
   // Binds another pipe to this instance.
   Clone@5(pending_receiver<MachineLearningService> receiver);

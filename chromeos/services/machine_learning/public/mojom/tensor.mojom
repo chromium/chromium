@@ -18,14 +18,17 @@
 
 module chromeos.machine_learning.mojom;
 
+[Stable]
 struct StringList {
   array<string> value;
 };
 
+[Stable]
 struct FloatList {
   array<double> value;
 };
 
+[Stable]
 struct Int64List {
   array<int64> value;
 };
@@ -41,6 +44,7 @@ struct Int64List {
 //
 // TODO(chromium:836098): add new types (e.g. uint8, bool) as they become
 //                        useful.
+[Stable]
 union ValueList {
   StringList string_list;
   FloatList float_list;
@@ -51,6 +55,7 @@ union ValueList {
 // the one-dimensional array `data`.
 // It is used for both the inputs (in the form of a map<string, Tensor>) and
 // outputs (in the form of an array<Tensor>) of ML inference.
+[Stable]
 struct Tensor {
   ValueList data;
 

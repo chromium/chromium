@@ -19,6 +19,7 @@ module chromeos.machine_learning.mojom;
 import "mojo/public/mojom/base/time.mojom";
 
 // A single point in an ink stroke.
+[Stable]
 struct InkPoint {
   // (x, y) coordinates of the point. The upper-left corner of the writing area
   // is (0, 0). The positive x-axis points to the right. The positive y-axis
@@ -31,12 +32,14 @@ struct InkPoint {
 };
 
 // A single ink stroke.
+[Stable]
 struct InkStroke {
   // The set of points representing the stroke.
   array<InkPoint> points;
 };
 
 // The writing guide shown to the user during input.
+[Stable]
 struct WritingGuide {
    // Size of the writing area. The writing area must have (0, 0) at the top
    // left.
@@ -47,6 +50,7 @@ struct WritingGuide {
 };
 
 // Options that will influence the recognition output.
+[Stable]
 struct RecognitionContext {
   // The writing guide shown to the user when the ink was captured.
   WritingGuide? writing_guide;
@@ -55,6 +59,7 @@ struct RecognitionContext {
 };
 
 // Defines a handwriting recognition query.
+[Stable]
 struct HandwritingRecognitionQuery {
   // The set of ink strokes to be recognized.
   array<InkStroke> ink;
@@ -69,6 +74,7 @@ struct HandwritingRecognitionQuery {
 
 // Represents a contiguous range of ink. Start and end strokes / points are
 // inclusive.
+[Stable]
 struct HandwritingRecognizerInkRange {
   // Zero-based start- and end-stroke indices in the ink strokes.
   uint32 start_stroke;
@@ -80,6 +86,7 @@ struct HandwritingRecognizerInkRange {
 
 // A segment defines the substrokes that are associated with a substring of the
 // recognized text.
+[Stable]
 struct HandwritingRecognizerSegment {
   // The substring of the recognized text represented by this segment.
   string sublabel;
@@ -88,12 +95,14 @@ struct HandwritingRecognizerSegment {
 };
 
 // The ink segmentation information.
+[Stable]
 struct HandwritingRecognizerSegmentation {
   // The grouping of the cut strokes into characters.
   array<HandwritingRecognizerSegment> segments;
 };
 
 // One possible candidate from the handwriting recognition.
+[Stable]
 struct HandwritingRecognizerCandidate {
   // The recognized text.
   string text;
@@ -105,8 +114,10 @@ struct HandwritingRecognizerCandidate {
 };
 
 // The handwriting recognition response.
+[Stable]
 struct HandwritingRecognizerResult {
   // Status of the recognition response.
+  [Stable, ExExtensible]
   enum Status {
     OK = 0,
     ERROR = 1,
@@ -119,6 +130,7 @@ struct HandwritingRecognizerResult {
 };
 
 // The specification of a handwriting recognizer.
+[Stable]
 struct HandwritingRecognizerSpec {
   // The language the recognizer will handle. Only "en" (for english) and
   // "gesture_in_context" (for gesture) are supported.
@@ -126,14 +138,17 @@ struct HandwritingRecognizerSpec {
 };
 
 // The mojom interface for performing the recognition of handwritten text.
+// Next ordinal: 1
+[Stable]
 interface HandwritingRecognizer {
   // Performs handwriting recognition on a set of ink strokes, and returns a set
   // of alternative recognition results.
-  Recognize(HandwritingRecognitionQuery query) =>
+  Recognize@0(HandwritingRecognitionQuery query) =>
       (HandwritingRecognizerResult result);
 };
 
 // Enum indicates the result of LoadHandwritingModel in mlservice.
+[Stable, Extensible]
 enum LoadHandwritingModelResult {
   OK = 0,
 

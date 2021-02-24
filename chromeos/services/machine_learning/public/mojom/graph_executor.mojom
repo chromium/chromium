@@ -20,6 +20,7 @@ import "chromeos/services/machine_learning/public/mojom/tensor.mojom";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+[Stable, Extensible]
 enum ExecuteResult {
   OK = 0,
   INPUT_MISSING_ERROR = 1,
@@ -35,10 +36,12 @@ enum ExecuteResult {
 
 // API for performing inference on a TensorFlow graph. A given graph can be
 // executed multiple times with a single instance of GraphExecutor.
+// Next ordinal: 1
+[Stable]
 interface GraphExecutor {
   // Initializes input node values as specified in `inputs`, then executes the
   // graph. The returned `outputs` are the values for the nodes specified in
   // `output_names`.
-  Execute(map<string, Tensor> inputs, array<string> output_names)
+  Execute@0(map<string, Tensor> inputs, array<string> output_names)
        => (ExecuteResult result, array<Tensor>? outputs);
 };

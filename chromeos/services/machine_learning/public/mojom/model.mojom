@@ -24,6 +24,7 @@ import "chromeos/services/machine_learning/public/mojom/graph_executor.mojom";
 // numeric values should never be reused.
 // ModelIds prefixed with UNSUPPORTED_ are no longer supported. Attempts to load
 // them will produce an error.
+[Stable, Extensible]
 enum BuiltinModelId {
   // Unknown ML model. It is marked as unsupported.
   UNSUPPORTED_UNKNOWN = 0,
@@ -43,12 +44,14 @@ enum BuiltinModelId {
 
 // Options for creating the executor.  Options are used for testing and
 // development. They are not typically used in normal, production code.
+[Stable]
 struct GraphExecutorOptions {
   bool use_nnapi = false;
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+[Stable, Extensible]
 enum CreateGraphExecutorResult {
   OK = 0,
   MODEL_INTERPRETATION_ERROR = 1,
@@ -60,6 +63,7 @@ enum CreateGraphExecutorResult {
 // Model specification for builtin models.
 // Because ml-service can retrieve a builtin model's content and metadata, only
 // an `id` is needed to specify it.
+[Stable]
 struct BuiltinModelSpec {
   BuiltinModelId id;
 };
@@ -67,6 +71,7 @@ struct BuiltinModelSpec {
 // Model specification for downloaded models.
 // For a downloaded model, both of the model content and metadata must be
 // specified.
+[Stable]
 struct FlatBufferModelSpec {
   // The content of the model's tflite model file.
   string model_string;
@@ -86,14 +91,16 @@ struct FlatBufferModelSpec {
 // The lifetime of the cached model is tied to the lifetime of the Model
 // interface pipe. The Model interface pipe can be used to acquire multiple
 // separate GraphExecutor instances.
+// Next ordinal: 2
+[Stable]
 interface Model {
-  CreateGraphExecutor(pending_receiver<GraphExecutor> receiver) =>
+  CreateGraphExecutor@0(pending_receiver<GraphExecutor> receiver) =>
       (CreateGraphExecutorResult result);
 
   // This function is temporary. We plan to rationalize this interface and
   // sync it with the interfaces at chromeos/service/machine_learning.
   // See crbug/1081597.
-  CreateGraphExecutorWithOptions(GraphExecutorOptions options,
-                                 pending_receiver<GraphExecutor> receiver) =>
+  CreateGraphExecutorWithOptions@1(GraphExecutorOptions options,
+                                   pending_receiver<GraphExecutor> receiver) =>
       (CreateGraphExecutorResult result);
 };

@@ -21,6 +21,7 @@
 module chromeos.machine_learning.mojom;
 
 // Defines a grammar check query.
+[Stable]
 struct GrammarCheckerQuery {
   // Required: Text to be checked. This is expected to be a full sentence.
   string text;
@@ -30,6 +31,7 @@ struct GrammarCheckerQuery {
 };
 
 // A span with suggested corrections.
+[Stable]
 struct GrammarCorrectionFragment {
   // The start offset in the original text.
   uint32 offset;
@@ -42,6 +44,7 @@ struct GrammarCorrectionFragment {
 };
 
 // One possible candidate returned from the grammar checker model.
+[Stable]
 struct GrammarCheckerCandidate {
   // Corrected text.
   string text;
@@ -54,8 +57,10 @@ struct GrammarCheckerCandidate {
 };
 
 // The grammar check response.
+[Stable]
 struct GrammarCheckerResult {
   // Status of the response.
+  [Stable, Extensible]
   enum Status {
     // Grammar check succeeded.
     OK = 0,
@@ -70,8 +75,10 @@ struct GrammarCheckerResult {
 };
 
 // The mojom interface for performing the grammar check.
+// Next ordinal: 1
+[Stable]
 interface GrammarChecker {
   // Performs grammar check on a piece of text, and returns a set of
   // candidates of corrected text and their scores.
-  Check(GrammarCheckerQuery query) => (GrammarCheckerResult result);
+  Check@0(GrammarCheckerQuery query) => (GrammarCheckerResult result);
 };
