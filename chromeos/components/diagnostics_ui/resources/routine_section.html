@@ -3,6 +3,10 @@
     @apply --diagnostics-routine-additional-message-font;
   }
 
+  .button-container {
+    padding: 8px 0 4px;
+  }
+
   .learn-more-button {
     background-color: rgba(var(--google-blue-600), .06);
     border-radius: 4px;
@@ -24,7 +28,7 @@
   }
 
   .result-list {
-    margin: 8px 0;
+    margin: 16px 0;
   }
 
   .routine-container {
@@ -80,7 +84,7 @@
         </span>
       </div>
     </div>
-    <div>
+    <div class="button-container">
       <cr-button id="toggleReportButton" on-click="onToggleReportClicked_"
           hidden="[[isResultButtonHidden_(executionStatus_, routines.*)]]">
         [[getReportToggleButtonText_(opened)]]
@@ -89,7 +93,7 @@
           hidden$="[[isRunTestsButtonHidden_(isTestRunning,
               executionStatus_)]]"
           on-click="onRunTestsClicked_"
-          disabled="[[isRunTestsButtonDisabled_(isTestRunning, 
+          disabled="[[isRunTestsButtonDisabled_(isTestRunning,
                                                 additionalMessage)]]">
         [[runTestsButtonText]]
       </cr-button>
