@@ -1513,7 +1513,7 @@
       'Linux TSan Tests': {
         # These are slow on the TSan bots for some reason, crbug.com/794372
         'swarming': {
-          'shards': 20,
+          'shards': 32, # Adjusted for testing, see https://crbug.com/1179567
         },
       },
       'ToTLinuxTSan': {
