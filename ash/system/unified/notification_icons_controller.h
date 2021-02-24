@@ -21,7 +21,6 @@ namespace ash {
 class UnifiedSystemTray;
 class TrayContainer;
 class TrayItemView;
-class HiddenNotificationCountView;
 class NotificationCounterView;
 class QuietModeView;
 
@@ -115,10 +114,6 @@ class ASH_EXPORT NotificationIconsController
     return tray_items_;
   }
 
-  HiddenNotificationCountView* hidden_notification_count_view() {
-    return hidden_notification_count_view_;
-  }
-
   NotificationCounterView* notification_counter_view() {
     return notification_counter_view_;
   }
@@ -153,7 +148,6 @@ class ASH_EXPORT NotificationIconsController
 
   UnifiedSystemTray* tray_;
 
-  HiddenNotificationCountView* hidden_notification_count_view_ = nullptr;
   NotificationCounterView* notification_counter_view_ = nullptr;
   QuietModeView* quiet_mode_view_ = nullptr;
   TrayItemView* separator_ = nullptr;

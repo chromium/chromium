@@ -145,8 +145,6 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
   for (TrayItemView* tray_item : notification_icons_controller_->tray_items())
     tray_items_.push_back(tray_item);
   tray_items_.push_back(
-      notification_icons_controller_->hidden_notification_count_view());
-  tray_items_.push_back(
       notification_icons_controller_->notification_counter_view());
   tray_items_.push_back(notification_icons_controller_->quiet_mode_view());
   AddTrayItemToContainer(current_locale_view_);

@@ -146,9 +146,6 @@ void NotificationIconsController::AddNotificationTrayItems(
         std::make_unique<NotificationIconTrayItemView>(tray_->shelf())));
   }
 
-  hidden_notification_count_view_ = tray_container->AddChildView(
-      std::make_unique<HiddenNotificationCountView>(tray_->shelf(), this));
-
   notification_counter_view_ = tray_container->AddChildView(
       std::make_unique<NotificationCounterView>(tray_->shelf(), this));
 
@@ -181,11 +178,8 @@ bool NotificationIconsController::ShouldShowNotificationItemsInTray() {
 }
 
 base::string16 NotificationIconsController::GetAccessibleNameString() const {
-  if (notification_counter_view_->GetVisible())
-    return notification_counter_view_->GetAccessibleNameString();
-
   if (!TrayItemHasNotification())
-    return base::EmptyString16();
+    return notification_counter_view_->GetAccessibleNameString();
 
   std::vector<base::string16> status;
   status.push_back(l10n_util::GetPluralStringFUTF16(
@@ -194,13 +188,12 @@ base::string16 NotificationIconsController::GetAccessibleNameString() const {
   for (NotificationIconTrayItemView* tray_item : tray_items_) {
     status.push_back(tray_item->GetAccessibleNameString());
   }
-  status.push_back(hidden_notification_count_view_->label()->GetTooltipText());
+  status.push_back(notification_counter_view_->GetAccessibleNameString());
   return l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_NOTIFICATIONS_ICONS_ACCESSIBLE_NAME, status, nullptr);
 }
 
 void NotificationIconsController::UpdateNotificationIndicators() {
-  hidden_notification_count_view_->Update();
   notification_counter_view_->Update();
   quiet_mode_view_->Update();
 }

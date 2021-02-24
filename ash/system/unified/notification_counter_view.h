@@ -18,8 +18,7 @@ class NotificationIconsController;
 // instead if it exceeds this limit.
 constexpr size_t kTrayNotificationMaxCount = 9;
 
-// A notification counter view in UnifiedSystemTray button. This will be shown
-// when there's notification and the tray doesn't show any notification icons.
+// A notification counter view in UnifiedSystemTray button.
 class ASH_EXPORT NotificationCounterView : public TrayItemView {
  public:
   NotificationCounterView(Shelf* shelf,
@@ -48,27 +47,6 @@ class ASH_EXPORT NotificationCounterView : public TrayItemView {
   // |kTrayNotificationMaxCount| + 1 indicates the plus icon.
   int count_for_display_ = 0;
 
-  NotificationIconsController* const controller_;
-};
-
-// An icon view to indicate the number of hidden notifications (besides from the
-// notifications that are shown in tray).
-class ASH_EXPORT HiddenNotificationCountView : public TrayItemView {
- public:
-  HiddenNotificationCountView(Shelf* shelf,
-                              NotificationIconsController* controller);
-  ~HiddenNotificationCountView() override;
-  HiddenNotificationCountView(const HiddenNotificationCountView&) = delete;
-  HiddenNotificationCountView& operator=(const HiddenNotificationCountView&) =
-      delete;
-
-  void Update();
-
-  // TrayItemView:
-  void HandleLocaleChange() override;
-  const char* GetClassName() const override;
-
- private:
   NotificationIconsController* const controller_;
 };
 
