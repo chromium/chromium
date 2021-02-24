@@ -397,6 +397,7 @@ source_set("test_support") {
     "//mojo/public/cpp/bindings",
     "//net",
     "//net:test_support",
+    "//services/device/public/cpp:test_support",
     "//services/device/public/cpp/geolocation",
     "//services/device/public/mojom:device_service",
     "//services/network:test_support",

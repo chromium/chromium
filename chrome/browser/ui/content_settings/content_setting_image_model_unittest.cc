@@ -15,7 +15,6 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
-#include "chrome/browser/geolocation/geolocation_system_permission_mac.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -46,15 +45,15 @@
 #include "content/public/test/web_contents_tester.h"
 #include "net/cookies/cookie_options.h"
 #include "services/device/public/cpp/device_features.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_mac.h"
+#include "services/device/public/cpp/geolocation/location_system_permission_status.h"
+#include "services/device/public/cpp/test/fake_geolocation_system_permission.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
 
-#if defined(OS_MAC)
-#include "chrome/browser/geolocation/geolocation_system_permission_mac.h"
-#endif
-
 using content_settings::PageSpecificContentSettings;
+using device::LocationSystemPermissionStatus;
 
 namespace {
 
@@ -119,22 +118,6 @@ class ContentSettingImageModelTest : public BrowserWithTestWindowTest {
 bool HasIcon(const ContentSettingImageModel& model) {
   return !model.GetIcon(gfx::kPlaceholderColor).IsEmpty();
 }
-
-#if defined(OS_MAC)
-class FakeSystemGeolocationPermissionsManager
-    : public GeolocationSystemPermissionManager {
- public:
-  FakeSystemGeolocationPermissionsManager() = default;
-
-  ~FakeSystemGeolocationPermissionsManager() override = default;
-
-  SystemPermissionStatus GetSystemPermission() override { return fake_status_; }
-  void SetStatus(SystemPermissionStatus status) { fake_status_ = status; }
-
- private:
-  SystemPermissionStatus fake_status_ = SystemPermissionStatus::kNotDetermined;
-};
-#endif
 
 TEST_F(ContentSettingImageModelTest, Update) {
   PageSpecificContentSettings::CreateForWebContents(
@@ -318,7 +301,8 @@ TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsChanged) {
   EXPECT_FALSE(content_setting_image_model->is_visible());
   EXPECT_TRUE(content_setting_image_model->get_tooltip().empty());
 
-  location_permission_manager->SetStatus(SystemPermissionStatus::kAllowed);
+  location_permission_manager->set_status(
+      LocationSystemPermissionStatus::kAllowed);
 
   settings_map->SetDefaultContentSetting(ContentSettingsType::GEOLOCATION,
                                          CONTENT_SETTING_ALLOW);
@@ -341,7 +325,8 @@ TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsChanged) {
             l10n_util::GetStringUTF16(IDS_BLOCKED_GEOLOCATION_MESSAGE));
   EXPECT_EQ(content_setting_image_model->explanatory_string_id(), 0);
 
-  location_permission_manager->SetStatus(SystemPermissionStatus::kDenied);
+  location_permission_manager->set_status(
+      LocationSystemPermissionStatus::kDenied);
   content_setting_image_model->Update(web_contents());
   EXPECT_TRUE(content_setting_image_model->is_visible());
   EXPECT_FALSE(content_setting_image_model->get_tooltip().empty());
@@ -364,6 +349,8 @@ TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsUndetermined) {
   feature_list.InitAndEnableFeature(features::kMacCoreLocationImplementation);
   auto test_location_permission_manager =
       std::make_unique<FakeSystemGeolocationPermissionsManager>();
+  test_location_permission_manager->set_status(
+      LocationSystemPermissionStatus::kNotDetermined);
   TestingBrowserProcess::GetGlobal()
       ->GetTestPlatformPart()
       ->SetLocationPermissionManager(

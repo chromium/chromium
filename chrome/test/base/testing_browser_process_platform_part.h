@@ -21,7 +21,7 @@ class TestingBrowserProcessPlatformPart : public BrowserProcessPlatformPart {
   ~TestingBrowserProcessPlatformPart() override;
 #if defined(OS_MAC)
   void SetLocationPermissionManager(
-      std::unique_ptr<GeolocationSystemPermissionManager>
+      std::unique_ptr<device::GeolocationSystemPermissionManager>
           location_permission_manager);
 #endif
 };

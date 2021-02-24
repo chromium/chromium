@@ -77,6 +77,7 @@ class PowerMonitorMessageBroadcaster;
 class PublicIpAddressLocationNotifier;
 class SensorProviderImpl;
 class TimeZoneMonitor;
+class GeolocationSystemPermissionManager;
 
 #if defined(OS_ANDROID)
 // NOTE: See the comments on the definitions of PublicIpAddressLocationNotifier,
@@ -100,6 +101,7 @@ std::unique_ptr<DeviceService> CreateDeviceService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     network::NetworkConnectionTracker* network_connection_tracker,
     const std::string& geolocation_api_key,
+    GeolocationSystemPermissionManager* location_permission_manager,
     const CustomLocationProviderCallback& custom_location_provider_callback,
     mojo::PendingReceiver<mojom::DeviceService> receiver);
 #endif

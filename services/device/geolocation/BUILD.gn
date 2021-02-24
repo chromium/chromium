@@ -82,12 +82,13 @@ source_set("geolocation") {
   }
 
   if (is_mac) {
-    frameworks = [ "CoreLocation.framework" ]
+    frameworks = [
+      "CoreLocation.framework",
+      "Security.framework",
+    ]
     sources += [
       "core_location_provider.h",
       "core_location_provider.mm",
-      "mac_location_permission_delegate.h",
-      "mac_location_permission_delegate.mm",
     ]
   }
 

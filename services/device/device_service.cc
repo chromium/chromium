@@ -26,6 +26,7 @@
 #include "services/device/geolocation/public_ip_address_geolocator.h"
 #include "services/device/geolocation/public_ip_address_location_notifier.h"
 #include "services/device/power_monitor/power_monitor_message_broadcaster.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_mac.h"
 #include "services/device/public/mojom/battery_monitor.mojom.h"
 #include "services/device/serial/serial_port_manager_impl.h"
 #include "services/device/time_zone_monitor/time_zone_monitor.h"
@@ -98,7 +99,8 @@ std::unique_ptr<DeviceService> CreateDeviceService(
     mojo::PendingReceiver<mojom::DeviceService> receiver) {
   GeolocationProviderImpl::SetGeolocationConfiguration(
       url_loader_factory, geolocation_api_key,
-      custom_location_provider_callback, use_gms_core_location_provider);
+      custom_location_provider_callback,
+      /*system_permission_manager=*/nullptr, use_gms_core_location_provider);
   return std::make_unique<DeviceService>(
       std::move(file_task_runner), std::move(io_task_runner),
       std::move(url_loader_factory), network_connection_tracker,
@@ -112,11 +114,12 @@ std::unique_ptr<DeviceService> CreateDeviceService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     network::NetworkConnectionTracker* network_connection_tracker,
     const std::string& geolocation_api_key,
+    GeolocationSystemPermissionManager* location_permission_manager,
     const CustomLocationProviderCallback& custom_location_provider_callback,
     mojo::PendingReceiver<mojom::DeviceService> receiver) {
   GeolocationProviderImpl::SetGeolocationConfiguration(
       url_loader_factory, geolocation_api_key,
-      custom_location_provider_callback);
+      custom_location_provider_callback, location_permission_manager);
   return std::make_unique<DeviceService>(
       std::move(file_task_runner), std::move(io_task_runner),
       std::move(url_loader_factory), network_connection_tracker,

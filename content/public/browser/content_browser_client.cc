@@ -46,6 +46,7 @@
 #include "net/ssl/client_cert_store.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_mac.h"
 #include "services/device/public/cpp/geolocation/location_provider.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -497,6 +498,11 @@ ContentBrowserClient::GetSystemNetworkContext() {
 
 std::string ContentBrowserClient::GetGeolocationApiKey() {
   return std::string();
+}
+
+device::GeolocationSystemPermissionManager*
+ContentBrowserClient::GetLocationPermissionManager() {
+  return nullptr;
 }
 
 #if defined(OS_ANDROID)

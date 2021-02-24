@@ -297,6 +297,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   GetSystemSharedURLLoaderFactory() override;
   network::mojom::NetworkContext* GetSystemNetworkContext() override;
   std::string GetGeolocationApiKey() override;
+  device::GeolocationSystemPermissionManager* GetLocationPermissionManager()
+      override;
 
 #if defined(OS_ANDROID)
   bool ShouldUseGmsCoreGeolocationProvider() override;

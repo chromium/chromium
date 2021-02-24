@@ -34,6 +34,8 @@ class SharedURLLoaderFactory;
 
 namespace device {
 
+class GeolocationSystemPermissionManager;
+
 // Callback that returns the embedder's custom location provider. This callback
 // is provided to the Device Service by its embedder.
 using CustomLocationProviderCallback =
@@ -72,6 +74,7 @@ class GeolocationProviderImpl : public GeolocationProvider,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& api_key,
       const CustomLocationProviderCallback& custom_location_provider_getter,
+      GeolocationSystemPermissionManager* system_permission_manager,
       bool use_gms_core_location_provider = false);
 
   void BindGeolocationControlReceiver(

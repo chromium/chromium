@@ -8,19 +8,21 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/ranges.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/geolocation/position_cache.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_mac.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if defined(OS_MAC)
-#include "services/device/geolocation/mac_location_permission_delegate.h"
 #include "services/device/public/cpp/device_features.h"
 #endif
 
@@ -39,6 +41,8 @@ const int kLastPositionMaxAgeSeconds = 10 * 60;  // 10 minutes
 // NetworkLocationProvider
 NetworkLocationProvider::NetworkLocationProvider(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    GeolocationSystemPermissionManager* geolocation_system_permission_manager,
+    const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
     const std::string& api_key,
     PositionCache* position_cache)
     : wifi_data_provider_manager_(nullptr),
@@ -56,12 +60,14 @@ NetworkLocationProvider::NetworkLocationProvider(
                               base::Unretained(this)))) {
   DCHECK(position_cache_);
 #if defined(OS_MAC)
-  if (base::FeatureList::IsEnabled(features::kMacCoreLocationImplementation)) {
-    permission_delegate_ = std::make_unique<MacLocationPermissionDelegate>();
-    permission_delegate_->SetPermissionUpdateCallback(
-        base::BindRepeating(&NetworkLocationProvider::OnSystemPermissionUpdated,
-                            base::Unretained(this)));
-  }
+  geolocation_permission_observation_.Observe(
+      geolocation_system_permission_manager);
+  main_task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&GeolocationSystemPermissionManager::GetSystemPermission,
+                     base::Unretained(geolocation_system_permission_manager)),
+      base::BindOnce(&NetworkLocationProvider::OnSystemPermissionUpdate,
+                     weak_factory_.GetWeakPtr()));
 #endif
 }
 
@@ -84,17 +90,16 @@ void NetworkLocationProvider::OnPermissionGranted() {
     RequestPosition();
 }
 
-#if defined(OS_MAC)
-void NetworkLocationProvider::OnSystemPermissionUpdated(
-    bool permission_granted) {
+void NetworkLocationProvider::OnSystemPermissionUpdate(
+    LocationSystemPermissionStatus new_status) {
   const bool was_permission_granted = is_system_permission_granted_;
-  is_system_permission_granted_ = permission_granted;
+  is_system_permission_granted_ =
+      (new_status == LocationSystemPermissionStatus::kAllowed);
   if (!was_permission_granted && is_system_permission_granted_ && IsStarted()) {
     wifi_data_provider_manager_->ForceRescan();
     OnWifiDataUpdate();
   }
 }
-#endif
 
 void NetworkLocationProvider::OnWifiDataUpdate() {
   DCHECK(thread_checker_.CalledOnValidThread());

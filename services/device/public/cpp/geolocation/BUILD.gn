@@ -7,7 +7,15 @@ source_set("geolocation") {
     "geoposition.cc",
     "geoposition.h",
     "location_provider.h",
+    "location_system_permission_status.h",
   ]
+  if (is_mac) {
+    frameworks = [ "CoreLocation.framework" ]
+    sources += [
+      "geolocation_system_permission_mac.h",
+      "geolocation_system_permission_mac.mm",
+    ]
+  }
 
   public_deps = [
     "//base",

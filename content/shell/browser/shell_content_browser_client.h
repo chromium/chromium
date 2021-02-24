@@ -16,6 +16,8 @@
 #include "content/shell/browser/shell_speech_recognition_manager_delegate.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 
+class FakeSystemGeolocationPermissionsManager;
+
 namespace content {
 class ShellBrowserContext;
 class ShellBrowserMainParts;
@@ -102,6 +104,8 @@ class ShellContentBrowserClient : public ContentBrowserClient {
       int child_process_id,
       content::PosixFileDescriptorInfo* mappings) override;
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+  device::GeolocationSystemPermissionManager* GetLocationPermissionManager()
+      override;
   void ConfigureNetworkContextParams(
       BrowserContext* context,
       bool in_memory,
@@ -187,6 +191,9 @@ class ShellContentBrowserClient : public ContentBrowserClient {
       create_throttles_for_navigation_callback_;
   base::RepeatingCallback<void(blink::web_pref::WebPreferences*)>
       override_web_preferences_callback_;
+#if defined(OS_MAC)
+  std::unique_ptr<FakeSystemGeolocationPermissionsManager> location_manager_;
+#endif
 
   // Owned by content::BrowserMainLoop.
   ShellBrowserMainParts* shell_browser_main_parts_ = nullptr;

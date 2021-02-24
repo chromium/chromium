@@ -17,6 +17,8 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/extensions/api/omnibox/omnibox_api.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
@@ -164,6 +166,11 @@ LocationBarView::LocationBarView(Browser* browser,
 
     focus_ring_->SetPathGenerator(
         std::make_unique<views::PillHighlightPathGenerator>());
+
+#if defined(OS_MAC)
+    geolocation_permission_observation_.Observe(
+        g_browser_process->platform_part()->location_permission_manager());
+#endif
   }
 }
 
@@ -781,6 +788,11 @@ content::WebContents* LocationBarView::GetContentSettingWebContents() {
 ContentSettingBubbleModelDelegate*
 LocationBarView::GetContentSettingBubbleModelDelegate() {
   return delegate_->GetContentSettingBubbleModelDelegate();
+}
+
+void LocationBarView::OnSystemPermissionUpdate(
+    device::LocationSystemPermissionStatus new_status) {
+  UpdateContentSettingsIcons();
 }
 
 WebContents* LocationBarView::GetWebContentsForPageActionIconView() {

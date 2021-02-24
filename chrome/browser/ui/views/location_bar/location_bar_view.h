@@ -14,6 +14,8 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_edit_controller.h"
@@ -27,6 +29,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/security_state/core/security_state.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_mac.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/font.h"
@@ -72,7 +75,9 @@ class LocationBarView : public LocationBar,
                         public IconLabelBubbleView::Delegate,
                         public LocationIconView::Delegate,
                         public ContentSettingImageView::Delegate,
-                        public PageActionIconView::Delegate {
+                        public PageActionIconView::Delegate,
+                        public device::GeolocationSystemPermissionManager::
+                            GeolocationPermissionObserver {
  public:
   METADATA_HEADER(LocationBarView);
 
@@ -202,6 +207,10 @@ class LocationBarView : public LocationBar,
   ContentSettingBubbleModelDelegate* GetContentSettingBubbleModelDelegate()
       override;
 
+  // GeolocationSystemPermissionManager::GeolocationPermissionObserver
+  void OnSystemPermissionUpdate(
+      device::LocationSystemPermissionStatus new_status) override;
+
   static bool IsVirtualKeyboardVisible(views::Widget* widget);
 
   // Returns the height available for user-entered text in the location bar.
@@ -237,6 +246,15 @@ class LocationBarView : public LocationBar,
   FRIEND_TEST_ALL_PREFIXES(TouchLocationBarViewBrowserTest,
                            IMEInlineAutocompletePosition);
   using ContentSettingViews = std::vector<ContentSettingImageView*>;
+
+#if defined(OS_MAC)
+  // Manage a subscription to GeolocationSystemPermissionManager, which may
+  // outlive this object.
+  base::ScopedObservation<
+      device::GeolocationSystemPermissionManager,
+      device::GeolocationSystemPermissionManager::GeolocationPermissionObserver>
+      geolocation_permission_observation_{this};
+#endif
 
   // Returns the amount of space required to the left of the omnibox text.
   int GetMinimumLeadingWidth() const;

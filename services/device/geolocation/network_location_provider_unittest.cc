@@ -21,6 +21,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "net/base/net_errors.h"
@@ -32,6 +33,10 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if defined(OS_MAC)
+#include "services/device/public/cpp/test/fake_geolocation_system_permission.h"
+#endif
 
 namespace device {
 
@@ -119,25 +124,43 @@ class GeolocationNetworkProviderTest : public testing::Test {
  public:
   void TearDown() override {
     WifiDataProviderManager::ResetFactoryForTesting();
+    grant_system_permission_by_default_ = true;
   }
 
   std::unique_ptr<LocationProvider> CreateProvider(
       bool set_permission_granted,
       const std::string& api_key = std::string()) {
+#if defined(OS_MAC)
+    fake_permission_manager_ =
+        std::make_unique<FakeSystemGeolocationPermissionsManager>();
     auto provider = std::make_unique<NetworkLocationProvider>(
-        test_url_loader_factory_.GetSafeWeakWrapper(), api_key,
-        &position_cache_);
+        test_url_loader_factory_.GetSafeWeakWrapper(),
+        fake_permission_manager_.get(), base::ThreadTaskRunnerHandle::Get(),
+        api_key, &position_cache_);
+    // For macOS we must simulate the granting of location permission
+    if (grant_system_permission_by_default_) {
+      fake_permission_manager_->set_status(
+          LocationSystemPermissionStatus::kAllowed);
+      base::RunLoop().RunUntilIdle();
+    }
+#else
+    auto provider = std::make_unique<NetworkLocationProvider>(
+        test_url_loader_factory_.GetSafeWeakWrapper(),
+        /*geolocation_system_permission_manager=*/nullptr,
+        base::ThreadTaskRunnerHandle::Get(), api_key, &position_cache_);
+#endif
     if (set_permission_granted)
       provider->OnPermissionGranted();
-// For macOS we must simulate the granting of location permission
-#if defined(OS_MAC)
-    if (grant_system_permission_by_default_)
-      provider->OnSystemPermissionUpdated(/*granted=*/true);
-#endif
+
     return provider;
   }
 
   bool grant_system_permission_by_default_ = true;
+
+#if defined(OS_MAC)
+  std::unique_ptr<FakeSystemGeolocationPermissionsManager>
+      fake_permission_manager_;
+#endif
 
  protected:
   GeolocationNetworkProviderTest()
@@ -598,7 +621,7 @@ TEST_F(GeolocationNetworkProviderTest, MacOSSystemPermissionsTest) {
   // Ensure that we immediately make a new network request to acquire the
   // location when permission is granted.
   static_cast<NetworkLocationProvider*>(provider.get())
-      ->OnSystemPermissionUpdated(true);
+      ->OnSystemPermissionUpdate(LocationSystemPermissionStatus::kAllowed);
   ASSERT_EQ(1, test_url_loader_factory_.NumPending());
 
   // Clear pending requests for later testing.
@@ -619,7 +642,7 @@ TEST_F(GeolocationNetworkProviderTest, MacOSSystemPermissionsTest) {
   // Ensure more network requests are not sent out when permission is denied
   // again.
   static_cast<NetworkLocationProvider*>(provider.get())
-      ->OnSystemPermissionUpdated(false);
+      ->OnSystemPermissionUpdate(LocationSystemPermissionStatus::kDenied);
   provider->StartProvider(false);
   wifi_data_provider_->SetData(CreateReferenceWifiScanData(4));
   base::RunLoop().RunUntilIdle();

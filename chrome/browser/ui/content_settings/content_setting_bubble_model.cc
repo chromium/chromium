@@ -71,6 +71,8 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/cpp/device_features.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_mac.h"
+#include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/loader/network_utils.h"
@@ -83,7 +85,6 @@
 
 #if defined(OS_MAC)
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/geolocation/geolocation_system_permission_mac.h"
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
 #endif
 
@@ -95,6 +96,7 @@ using content_settings::SETTING_SOURCE_NONE;
 using content_settings::SETTING_SOURCE_USER;
 using content_settings::SettingInfo;
 using content_settings::SettingSource;
+using device::LocationSystemPermissionStatus;
 
 namespace {
 
@@ -1231,11 +1233,11 @@ ContentSettingGeolocationBubbleModel::ContentSettingGeolocationBubbleModel(
     bool is_allowed =
         content_settings->IsContentAllowed(ContentSettingsType::GEOLOCATION);
 
-    GeolocationSystemPermissionManager* permission_delegate =
+    device::GeolocationSystemPermissionManager* permission_delegate =
         g_browser_process->platform_part()->location_permission_manager();
-    SystemPermissionStatus permission =
+    LocationSystemPermissionStatus permission =
         permission_delegate->GetSystemPermission();
-    if (permission != SystemPermissionStatus::kAllowed && is_allowed) {
+    if (permission != LocationSystemPermissionStatus::kAllowed && is_allowed) {
       // If the permission is turned off in MacOS system preferences, overwrite
       // the bubble to enable the user to trigger the system dialog.
       InitializeSystemGeolocationPermissionBubble();

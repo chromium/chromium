@@ -6,10 +6,8 @@
 #import <memory>
 
 #include "base/mac/scoped_nsobject.h"
-#include "chrome/browser/geolocation/geolocation_system_permission_mac.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/location_bar/location_bar.h"
+#include "base/sequence_checker.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_mac.h"
 
 class SystemGeolocationPermissionsManagerImpl;
 
@@ -31,7 +29,7 @@ class SystemGeolocationPermissionsManagerImpl;
 @end
 
 class SystemGeolocationPermissionsManagerImpl
-    : public GeolocationSystemPermissionManager {
+    : public device::GeolocationSystemPermissionManager {
  public:
   SystemGeolocationPermissionsManagerImpl() {
     location_manager_.reset([[CLLocationManager alloc] init]);
@@ -42,30 +40,28 @@ class SystemGeolocationPermissionsManagerImpl
 
   ~SystemGeolocationPermissionsManagerImpl() override = default;
 
-  void PermissionUpdated() {
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      LocationBar* location_bar = browser->window()->GetLocationBar();
-      if (location_bar)
-        location_bar->UpdateContentSettingsIcons();
-    }
-  }
+  void PermissionUpdated() { NotifyObservers(GetSystemPermission()); }
 
-  SystemPermissionStatus GetSystemPermission() override {
+  device::LocationSystemPermissionStatus GetSystemPermission() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (![delegate_ permissionReceived])
-      return SystemPermissionStatus::kNotDetermined;
+      return device::LocationSystemPermissionStatus::kNotDetermined;
 
     if ([delegate_ hasPermission])
-      return SystemPermissionStatus::kAllowed;
+      return device::LocationSystemPermissionStatus::kAllowed;
 
-    return SystemPermissionStatus::kDenied;
+    return device::LocationSystemPermissionStatus::kDenied;
   }
 
  private:
   base::scoped_nsobject<SystemGeolocationPermissionsDelegate> delegate_;
   base::scoped_nsobject<CLLocationManager> location_manager_;
+  SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<SystemGeolocationPermissionsManagerImpl>
       weak_ptr_factory_{this};
 };
+
+namespace device {
 
 // static
 std::unique_ptr<GeolocationSystemPermissionManager>
@@ -73,8 +69,31 @@ GeolocationSystemPermissionManager::Create() {
   return std::make_unique<SystemGeolocationPermissionsManagerImpl>();
 }
 
+GeolocationSystemPermissionManager::GeolocationSystemPermissionManager()
+    : observers_(
+          new base::ObserverListThreadSafe<GeolocationPermissionObserver>()) {}
+
 GeolocationSystemPermissionManager::~GeolocationSystemPermissionManager() =
     default;
+
+void GeolocationSystemPermissionManager::AddObserver(
+    GeolocationPermissionObserver* observer) {
+  observers_->AddObserver(observer);
+}
+
+void GeolocationSystemPermissionManager::RemoveObserver(
+    GeolocationPermissionObserver* observer) {
+  observers_->RemoveObserver(observer);
+}
+
+void GeolocationSystemPermissionManager::NotifyObservers(
+    LocationSystemPermissionStatus status) {
+  observers_->Notify(FROM_HERE,
+                     &GeolocationPermissionObserver::OnSystemPermissionUpdate,
+                     status);
+}
+
+}  // device namespace
 
 @implementation SystemGeolocationPermissionsDelegate
 

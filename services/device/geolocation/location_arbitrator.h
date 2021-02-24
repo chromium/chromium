@@ -13,6 +13,7 @@
 #include "base/callback_forward.h"
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "services/device/geolocation/geolocation_provider_impl.h"
@@ -26,7 +27,13 @@ namespace network {
 class SharedURLLoaderFactory;
 }
 
+namespace base {
+class SingleThreadTaskRunner;
+}
+
 namespace device {
+
+class GeolocationSystemPermissionManager;
 
 // This class is responsible for handling updates from multiple underlying
 // providers and resolving them to a single 'best' location fix at any given
@@ -42,7 +49,9 @@ class LocationArbitrator : public LocationProvider {
   // LocationArbitrator uses the default system location provider.
   LocationArbitrator(
       const CustomLocationProviderCallback& custom_location_provider_getter,
-      const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      GeolocationSystemPermissionManager* geolocation_system_permission_manager,
+      const scoped_refptr<base::SingleThreadTaskRunner>& main_task_runner,
+      const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
       const std::string& api_key,
       std::unique_ptr<PositionCache> position_cache);
   ~LocationArbitrator() override;
@@ -93,6 +102,8 @@ class LocationArbitrator : public LocationProvider {
                            bool from_same_provider) const;
 
   const CustomLocationProviderCallback custom_location_provider_getter_;
+  GeolocationSystemPermissionManager* geolocation_system_permission_manager_;
+  scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const std::string api_key_;
 

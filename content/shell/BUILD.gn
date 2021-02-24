@@ -248,6 +248,7 @@ static_library("content_shell_lib") {
     "//net",
     "//net:net_resources",
     "//ppapi/buildflags",
+    "//services/device/public/cpp:test_support",
     "//services/network/public/cpp",
     "//services/test/echo:lib",
     "//services/test/echo/public/mojom",

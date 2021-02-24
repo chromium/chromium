@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <Security/Security.h>
+
+#include "base/mac/scoped_cftyperef.h"
 #include "services/device/geolocation/core_location_provider.h"
 #include "services/device/public/cpp/device_features.h"
 
@@ -135,9 +138,28 @@ void CoreLocationProvider::SetManagerForTesting(
   location_manager_.get().delegate = delegate_;
 }
 
+// Returns if it's safe to call Core Location. If the app is in a state where
+// the running code doesn't match the correctly-signed binary on disk, using
+// Core Location will lose all permissions. This function will return false if
+// this process is in that state.
+//
+// static
+bool CoreLocationProvider::IsSafeToCallCoreLocation() {
+  base::ScopedCFTypeRef<SecCodeRef> self_code;
+  if (SecCodeCopySelf(kSecCSDefaultFlags, self_code.InitializeInto()) !=
+      errSecSuccess) {
+    LOG(ERROR) << "Failed to create a SecCodeRef from self.";
+    return false;
+  }
+
+  return SecCodeCheckValidity(self_code, kSecCSDefaultFlags, nullptr) ==
+         errSecSuccess;
+}
+
 // static
 std::unique_ptr<LocationProvider> NewSystemLocationProvider() {
-  if (!base::FeatureList::IsEnabled(features::kMacCoreLocationBackend))
+  if (!base::FeatureList::IsEnabled(features::kMacCoreLocationBackend) ||
+      !CoreLocationProvider::IsSafeToCallCoreLocation())
     return nullptr;
 
   return std::make_unique<CoreLocationProvider>();

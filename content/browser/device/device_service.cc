@@ -124,6 +124,7 @@ void BindDeviceServiceReceiver(
       base::MakeRefCounted<DeviceServiceURLLoaderFactory>(),
       content::GetNetworkConnectionTracker(),
       GetContentClient()->browser()->GetGeolocationApiKey(),
+      GetContentClient()->browser()->GetLocationPermissionManager(),
       base::BindRepeating(&ContentBrowserClient::OverrideSystemLocationProvider,
                           base::Unretained(GetContentClient()->browser())),
       std::move(receiver));

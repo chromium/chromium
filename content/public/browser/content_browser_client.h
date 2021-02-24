@@ -104,6 +104,7 @@ class URLLoaderThrottle;
 }  // namespace blink
 
 namespace device {
+class GeolocationSystemPermissionManager;
 class LocationProvider;
 }  // namespace device
 
@@ -813,6 +814,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   // * May be called from any thread.
   // * Default implementation returns empty string, meaning send no API key.
   virtual std::string GetGeolocationApiKey();
+
+  virtual device::GeolocationSystemPermissionManager*
+  GetLocationPermissionManager();
 
 #if defined(OS_ANDROID)
   // Allows an embedder to decide whether to use the GmsCoreLocationProvider.

@@ -39,6 +39,8 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "services/device/public/cpp/device_features.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_mac.h"
+#include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/gfx/color_palette.h"
@@ -49,7 +51,6 @@
 
 #if defined(OS_MAC)
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/geolocation/geolocation_system_permission_mac.h"
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
 #endif
 
@@ -513,19 +514,21 @@ bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
 
 #if defined(OS_MAC)
 bool ContentSettingGeolocationImageModel::IsGeolocationAllowedOnASystemLevel() {
-  GeolocationSystemPermissionManager* permission_manager =
+  device::GeolocationSystemPermissionManager* permission_manager =
       g_browser_process->platform_part()->location_permission_manager();
-  SystemPermissionStatus permission = permission_manager->GetSystemPermission();
+  device::LocationSystemPermissionStatus permission =
+      permission_manager->GetSystemPermission();
 
-  return permission == SystemPermissionStatus::kAllowed;
+  return permission == device::LocationSystemPermissionStatus::kAllowed;
 }
 
 bool ContentSettingGeolocationImageModel::IsGeolocationPermissionDetermined() {
-  GeolocationSystemPermissionManager* permission_manager =
+  device::GeolocationSystemPermissionManager* permission_manager =
       g_browser_process->platform_part()->location_permission_manager();
-  SystemPermissionStatus permission = permission_manager->GetSystemPermission();
+  device::LocationSystemPermissionStatus permission =
+      permission_manager->GetSystemPermission();
 
-  return permission != SystemPermissionStatus::kNotDetermined;
+  return permission != device::LocationSystemPermissionStatus::kNotDetermined;
 }
 
 #endif  // defined(OS_MAC)

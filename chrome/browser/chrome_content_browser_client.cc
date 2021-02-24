@@ -45,6 +45,7 @@
 #include "chrome/browser/browser_about_handler.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/captive_portal/captive_portal_service_factory.h"
 #include "chrome/browser/chrome_content_browser_client_binder_policies.h"
@@ -2793,6 +2794,15 @@ ChromeContentBrowserClient::GetSystemNetworkContext() {
 
 std::string ChromeContentBrowserClient::GetGeolocationApiKey() {
   return google_apis::GetAPIKey();
+}
+
+device::GeolocationSystemPermissionManager*
+ChromeContentBrowserClient::GetLocationPermissionManager() {
+#if defined(OS_MAC)
+  return g_browser_process->platform_part()->location_permission_manager();
+#else
+  return nullptr;
+#endif
 }
 
 #if defined(OS_ANDROID)

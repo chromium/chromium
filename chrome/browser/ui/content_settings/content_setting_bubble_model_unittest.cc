@@ -46,35 +46,14 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
 #include "services/device/public/cpp/device_features.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_mac.h"
+#include "services/device/public/cpp/geolocation/location_system_permission_status.h"
+#include "services/device/public/cpp/test/fake_geolocation_system_permission.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_MAC)
-#include "chrome/browser/geolocation/geolocation_system_permission_mac.h"
-#endif
-
 using content::WebContentsTester;
 using content_settings::PageSpecificContentSettings;
-
-namespace {
-
-#if defined(OS_MAC)
-class FakeSystemGeolocationPermissionsManager
-    : public GeolocationSystemPermissionManager {
- public:
-  FakeSystemGeolocationPermissionsManager() = default;
-
-  ~FakeSystemGeolocationPermissionsManager() override = default;
-
-  SystemPermissionStatus GetSystemPermission() override { return status_; }
-  void set_status(SystemPermissionStatus status) { status_ = status; }
-
- private:
-  SystemPermissionStatus status_ = SystemPermissionStatus::kDenied;
-};
-#endif  // defined(OS_MAC)
-
-}  // namespace
 
 class ContentSettingBubbleModelTest : public ChromeRenderViewHostTestHarness {
  protected:
@@ -794,7 +773,7 @@ TEST_F(ContentSettingBubbleModelTest, Geolocation) {
     const auto& bubble_content = content_setting_bubble_model->bubble_content();
 
     geolocation_permission_manager->set_status(
-        SystemPermissionStatus::kAllowed);
+        device::LocationSystemPermissionStatus::kAllowed);
 
     EXPECT_EQ(bubble_content.title,
               l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_MACOS));
