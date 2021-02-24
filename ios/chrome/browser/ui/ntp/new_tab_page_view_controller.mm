@@ -53,11 +53,6 @@ const CGFloat kOffsetToPinOmnibox = 100;
 // view.
 @property(nonatomic, weak) ContentSuggestionsLayout* contentSuggestionsLayout;
 
-// Content suggestions collection view height for setting the initial NTP offset
-// to be the top of the page. If value is |NAN|, then the offset was calculated
-// from the saved web state instead.
-@property(nonatomic, assign) CGFloat initialContentOffsetFromContentSuggestions;
-
 // Constraint to determine the height of the contained ContentSuggestions view.
 @property(nonatomic, strong)
     NSLayoutConstraint* contentSuggestionsHeightConstraint;
@@ -85,7 +80,6 @@ const CGFloat kOffsetToPinOmnibox = 100;
     // TODO(crbug.com/1114792): Stick the fake omnibox based on default scroll
     // position.
     _scrolledIntoFeed = NO;
-    _initialContentOffsetFromContentSuggestions = 0;
   }
 
   return self;
@@ -158,23 +152,6 @@ const CGFloat kOffsetToPinOmnibox = 100;
   [self.headerSynchronizer updateConstraints];
 }
 
-- (void)viewDidLayoutSubviews {
-  [super viewDidLayoutSubviews];
-
-  // The scroll position should not be set if
-  // |initialContentOffsetFromContentSuggestions| is NaN, because this means
-  // that it was already set from the saved web state. The scroll position
-  // should only be adjutsed until the feed inset is correctly set, because this
-  // signifies that the view has appeared.
-  if (!isnan(self.initialContentOffsetFromContentSuggestions) &&
-      self.discoverFeedWrapperViewController.feedCollectionView.contentInset
-              .top != [self adjustedContentSuggestionsHeight]) {
-    [self setContentOffset:-[self adjustedContentSuggestionsHeight]
-            fromSavedState:NO];
-  }
-
-}
-
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
 
@@ -203,6 +180,8 @@ const CGFloat kOffsetToPinOmnibox = 100;
           constraintEqualToAnchor:contentSuggestionsView.trailingAnchor],
       self.contentSuggestionsHeightConstraint,
     ]];
+
+    [self setContentOffset:-[self adjustedContentSuggestionsHeight]];
   }
 
   [self updateContentSuggestionForCurrentLayout];
@@ -275,7 +254,9 @@ const CGFloat kOffsetToPinOmnibox = 100;
 }
 
 - (void)setContentOffset:(CGFloat)offset {
-  [self setContentOffset:offset fromSavedState:YES];
+  self.discoverFeedWrapperViewController.feedCollectionView.contentOffset =
+      CGPointMake(0, offset);
+  self.scrolledIntoFeed = offset > kOffsetToPinOmnibox;
 }
 
 - (void)updateLayoutForContentSuggestions {
@@ -449,21 +430,6 @@ const CGFloat kOffsetToPinOmnibox = 100;
   // belongs. This can probably be optimized by just reloading the header, if
   // that doesn't mess up any collection/header interactions.
   [self.ntpContentDelegate reloadContentSuggestions];
-}
-
-// Sets the feed collection contentOffset to |offset| to set the initial scroll
-// position. If |fromSavedState| is NO, then the offset is set from the content
-// suggestions collection height. If |fromSavedState| is YES, then the offset is
-// forcefully set from a different source (like the cached navigation scroll
-// position).
-- (void)setContentOffset:(CGFloat)offset fromSavedState:(BOOL)isFromSavedState {
-  self.discoverFeedWrapperViewController.feedCollectionView.contentOffset =
-      CGPointMake(0, offset);
-  self.initialContentOffsetFromContentSuggestions =
-      isFromSavedState ? NAN : offset;
-  self.scrolledIntoFeed =
-      self.discoverFeedWrapperViewController.feedCollectionView.contentOffset
-          .y > kOffsetToPinOmnibox;
 }
 
 // Updates the ContentSuggestionsViewController and its header for the current
