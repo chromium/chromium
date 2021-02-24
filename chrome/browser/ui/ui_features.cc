@@ -154,6 +154,11 @@ const base::FeatureParam<bool> kTabSearchMoveActiveTabToBottom{
 const base::Feature kWebFooterExperiment{"WebFooterExperiment",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// This enables enables persistence of a WebContents in a 1-to-1 association
+// with the current Profile for WebUI bubbles. See https://crbug.com/1177048.
+const base::Feature kWebUIBubblePerProfilePersistence{
+    "WebUIBubblePerProfilePersistence", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables a web-based tab strip. See https://crbug.com/989131. Note this
 // feature only works when the ENABLE_WEBUI_TAB_STRIP buildflag is enabled.
 const base::Feature kWebUITabStrip{"WebUITabStrip",

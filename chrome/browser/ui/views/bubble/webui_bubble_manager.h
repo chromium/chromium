@@ -9,6 +9,9 @@
 #include <utility>
 
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/bubble/bubble_contents_wrapper_service.h"
+#include "chrome/browser/ui/views/bubble/bubble_contents_wrapper_service_factory.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/close_bubble_on_tab_activation_helper.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -42,14 +45,16 @@ class WebUIBubbleManager : public views::WidgetObserver {
   base::WeakPtr<WebUIBubbleDialogView> bubble_view_for_testing() {
     return bubble_view_;
   }
-
   void ResetContentsWrapperForTesting();
+  void DisableCloseBubbleHelperForTesting();
 
  protected:
-  BubbleContentsWrapper* contents_wrapper() { return contents_wrapper_.get(); }
-  void set_contents_wrapper(
-      std::unique_ptr<BubbleContentsWrapper> contents_wrapper) {
-    contents_wrapper_ = std::move(contents_wrapper);
+  BubbleContentsWrapper* cached_contents_wrapper() {
+    return cached_contents_wrapper_.get();
+  }
+  void set_cached_contents_wrapper(
+      std::unique_ptr<BubbleContentsWrapper> cached_contents_wrapper) {
+    cached_contents_wrapper_ = std::move(cached_contents_wrapper);
   }
   void set_bubble_using_cached_web_contents(bool is_cached) {
     bubble_using_cached_web_contents_ = is_cached;
@@ -61,7 +66,7 @@ class WebUIBubbleManager : public views::WidgetObserver {
   base::WeakPtr<WebUIBubbleDialogView> bubble_view_;
 
   // Stores a cached BubbleContentsWrapper for reuse in the WebUIBubbleDialog.
-  std::unique_ptr<BubbleContentsWrapper> contents_wrapper_;
+  std::unique_ptr<BubbleContentsWrapper> cached_contents_wrapper_;
 
   // Tracks whether the current bubble was created by reusing a preloaded web
   // contents.
@@ -76,6 +81,9 @@ class WebUIBubbleManager : public views::WidgetObserver {
   // This is necessary to prevent a bug closing the active tab in the bubble.
   // See https://crbug.com/1139028.
   std::unique_ptr<CloseBubbleOnTabActivationHelper> close_bubble_helper_;
+
+  // Controls whether `close_bubble_helper_` is set when ShowBubble() is called.
+  bool disable_close_bubble_helper_ = false;
 };
 
 template <typename T>
@@ -90,21 +98,56 @@ class WebUIBubbleManagerT : public WebUIBubbleManager {
         profile_(profile),
         webui_url_(webui_url),
         task_manager_string_id_(task_manager_string_id),
-        enable_extension_apis_(enable_extension_apis) {}
+        enable_extension_apis_(enable_extension_apis) {
+    if (base::FeatureList::IsEnabled(
+            features::kWebUIBubblePerProfilePersistence)) {
+      auto* service =
+          BubbleContentsWrapperServiceFactory::GetForProfile(profile_, true);
+      if (service && !service->GetBubbleContentsWrapperFromURL(webui_url_)) {
+        service->template InitBubbleContentsWrapper<T>(
+            webui_url_, task_manager_string_id_, enable_extension_apis_);
+      }
+    }
+  }
   ~WebUIBubbleManagerT() override = default;
 
   base::WeakPtr<WebUIBubbleDialogView> CreateWebUIBubbleDialog() override {
-    set_bubble_using_cached_web_contents(!!contents_wrapper());
-    if (!contents_wrapper()) {
-      set_contents_wrapper(std::make_unique<BubbleContentsWrapperT<T>>(
-          webui_url_, profile_, task_manager_string_id_,
-          enable_extension_apis_));
-      contents_wrapper()->ReloadWebContents();
+    BubbleContentsWrapper* contents_wrapper = nullptr;
+
+    // Only use per profile peristence if the flag is set and if a
+    // BubbleContentsWrapperService exists for the current profile. The service
+    // may not exist for off the record profiles.
+    auto* service =
+        BubbleContentsWrapperServiceFactory::GetForProfile(profile_, true);
+    if (service && base::FeatureList::IsEnabled(
+                       features::kWebUIBubblePerProfilePersistence)) {
+      set_bubble_using_cached_web_contents(true);
+
+      // If using per-profile WebContents persistence get the associated
+      // BubbleContentsWrapper from the BubbleContentsWrapperService.
+      contents_wrapper = service->GetBubbleContentsWrapperFromURL(webui_url_);
+      DCHECK(contents_wrapper);
+
+      // If there is a host currently associated to this contents wrapper ensure
+      // the host has closed and the association has been removed.
+      if (contents_wrapper->GetHost())
+        contents_wrapper->CloseUI();
+      DCHECK(!contents_wrapper->GetHost());
+    } else {
+      set_bubble_using_cached_web_contents(!!cached_contents_wrapper());
+
+      if (!cached_contents_wrapper()) {
+        set_cached_contents_wrapper(std::make_unique<BubbleContentsWrapperT<T>>(
+            webui_url_, profile_, task_manager_string_id_,
+            enable_extension_apis_));
+        cached_contents_wrapper()->ReloadWebContents();
+      }
+
+      contents_wrapper = cached_contents_wrapper();
     }
 
-    DCHECK(!contents_wrapper()->GetHost());
-    auto bubble_view = std::make_unique<WebUIBubbleDialogView>(
-        anchor_view_, contents_wrapper());
+    auto bubble_view =
+        std::make_unique<WebUIBubbleDialogView>(anchor_view_, contents_wrapper);
     auto weak_ptr = bubble_view->GetWeakPtr();
     views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
     return weak_ptr;

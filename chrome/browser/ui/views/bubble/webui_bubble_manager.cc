@@ -33,8 +33,10 @@ bool WebUIBubbleManager::ShowBubble() {
   bubble_view_ = CreateWebUIBubbleDialog();
 
   bubble_widget_observation_.Observe(bubble_view_->GetWidget());
-  close_bubble_helper_ = std::make_unique<CloseBubbleOnTabActivationHelper>(
-      bubble_view_.get(), BrowserList::GetInstance()->GetLastActive());
+  if (!disable_close_bubble_helper_) {
+    close_bubble_helper_ = std::make_unique<CloseBubbleOnTabActivationHelper>(
+        bubble_view_.get(), BrowserList::GetInstance()->GetLastActive());
+  }
   return true;
 }
 
@@ -54,7 +56,6 @@ void WebUIBubbleManager::OnWidgetDestroying(views::Widget* widget) {
   DCHECK(bubble_view_);
   DCHECK_EQ(bubble_view_->GetWidget(), widget);
   DCHECK(bubble_widget_observation_.IsObserving());
-  DCHECK(close_bubble_helper_);
   bubble_widget_observation_.Reset();
   close_bubble_helper_.reset();
   cache_timer_->Reset();
@@ -66,11 +67,15 @@ void WebUIBubbleManager::ResetContentsWrapperForTesting() {
 }
 
 void WebUIBubbleManager::ResetContentsWrapper() {
-  if (!contents_wrapper_)
+  if (!cached_contents_wrapper_)
     return;
 
   if (bubble_view_)
     CloseBubble();
-  DCHECK(!contents_wrapper_->GetHost());
-  contents_wrapper_.reset();
+  DCHECK(!cached_contents_wrapper_->GetHost());
+  cached_contents_wrapper_.reset();
+}
+
+void WebUIBubbleManager::DisableCloseBubbleHelperForTesting() {
+  disable_close_bubble_helper_ = true;
 }
