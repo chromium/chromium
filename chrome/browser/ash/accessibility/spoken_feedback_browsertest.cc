@@ -797,8 +797,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ChromeVoxStickyMode) {
 // sending js commands above. This variant may be subject to flakes as it
 // depends on more of the UI events stack and sticky mode invocation has a
 // timing element to it.
-// TODO(https://crbug.com/1178765) disable on ChromeOS MSAN due to flakiness
-#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
+// TODO(https://crbug.com/1178765) disable on ChromeOS due to flakiness
+#if defined(OS_CHROMEOS)
 #define MAYBE_ChromeVoxStickyModeRawKeys DISABLED_ChromeVoxStickyModeRawKeys
 #else
 #define MAYBE_ChromeVoxStickyModeRawKeys ChromeVoxStickyModeRawKeys
