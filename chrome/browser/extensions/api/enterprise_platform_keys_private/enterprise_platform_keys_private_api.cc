@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/values.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/chromeos/attestation/tpm_challenge_key.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/enterprise_platform_keys_private.h"
@@ -17,12 +18,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/manifest.h"
-
-namespace {
-// Prefix for naming machine keys used for SignedPublicKeyAndChallenge when
-// challenging the EMK with register=true.
-const char kEnterpriseMachineKeyForSpkacPrefix[] = "attest-ent-machine-";
-}  // namespace
 
 namespace extensions {
 
@@ -76,7 +71,8 @@ void EPKPChallengeKey::Run(
   std::string key_name_for_spkac;
   if (register_key && (type == chromeos::attestation::KEY_DEVICE)) {
     key_name_for_spkac =
-        kEnterpriseMachineKeyForSpkacPrefix + caller->extension()->id();
+        chromeos::attestation::kEnterpriseMachineKeyForSpkacPrefix +
+        caller->extension()->id();
   }
 
   impl_ = chromeos::attestation::TpmChallengeKeyFactory::Create();

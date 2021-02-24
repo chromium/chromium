@@ -8,6 +8,8 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
+#include "base/strings/strcat.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/chromeos/attestation/tpm_challenge_key.h"
 #include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service_factory.h"
@@ -110,19 +112,25 @@ void KeystoreServiceAsh::ChallengeAttestationOnlyKeystore(
   }
   Profile* profile = ProfileManager::GetActiveUserProfile();
 
+  std::string key_name_for_spkac;
+  if (migrate && (key_type == chromeos::attestation::KEY_DEVICE)) {
+    key_name_for_spkac = base::StrCat(
+        {chromeos::attestation::kEnterpriseMachineKeyForSpkacPrefix, "lacros-",
+         base::UnguessableToken::Create().ToString()});
+  }
+
   std::unique_ptr<chromeos::attestation::TpmChallengeKey> challenge_key =
       chromeos::attestation::TpmChallengeKeyFactory::Create();
   chromeos::attestation::TpmChallengeKey* challenge_key_ptr =
       challenge_key.get();
   outstanding_challenges_.push_back(std::move(challenge_key));
-  //  TODO(https://crbug.com/1127505): Plumb |migrate| param.
   challenge_key_ptr->BuildResponse(
       key_type, profile,
       base::BindOnce(&KeystoreServiceAsh::DidChallengeAttestationOnlyKeystore,
                      weak_factory_.GetWeakPtr(), std::move(callback),
                      challenge_key_ptr),
       challenge,
-      /*register_key=*/false, /*key_name_for_spkac=*/"");
+      /*register_key=*/migrate, key_name_for_spkac);
 }
 
 void KeystoreServiceAsh::GetKeyStores(GetKeyStoresCallback callback) {
