@@ -10,6 +10,7 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/mojom/quota_client.mojom-forward.h"
@@ -67,6 +68,26 @@ class CONTENT_EXPORT NativeIOManager {
       const url::Origin& origin,
       storage::QuotaClient::DeleteOriginDataCallback callback);
 
+  // Computes all origins with data for a given type.
+  void GetOriginsForType(
+      blink::mojom::StorageType type,
+      storage::QuotaClient::GetOriginsForTypeCallback callback);
+
+  // Computes all origins with data for a given hostname.
+  void GetOriginsForHost(
+      blink::mojom::StorageType type,
+      const std::string& host,
+      storage::QuotaClient::GetOriginsForHostCallback callback);
+
+  // Computes the amount of bytes for the given origin.
+  //
+  // This method walks the origin's entire directory and is therefore not
+  // particularly speedy.
+  // TODO(rstz): Consider a caching mechanism to improve performance.
+  void GetOriginUsage(const url::Origin& origin,
+                      blink::mojom::StorageType type,
+                      storage::QuotaClient::GetOriginUsageCallback callback);
+
   // Computes the path to the directory storing an origin's NativeIO files.
   //
   // Returns an empty path if the origin isn't supported for NativeIO.
@@ -95,6 +116,10 @@ class CONTENT_EXPORT NativeIOManager {
       base::File::Error result,
       NativeIOHost* host);
 
+  storage::QuotaManagerProxy* quota_manager_proxy() const {
+    return quota_manager_proxy_.get();
+  }
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -102,6 +127,21 @@ class CONTENT_EXPORT NativeIOManager {
   //
   // `host` must be owned by this manager.
   void MaybeDeleteHost(NativeIOHost* host);
+
+  // Called after the I/O part of GetOriginsForType() completed.
+  void DidGetOriginsForType(
+      storage::QuotaClient::GetOriginsForTypeCallback callback,
+      std::vector<url::Origin> origins);
+
+  // Called after the I/O part of GetOriginsForHost() completed.
+  void DidGetOriginsForHost(
+      storage::QuotaClient::GetOriginsForTypeCallback callback,
+      const std::string& host,
+      std::vector<url::Origin> origins);
+
+  // Called after the I/O part of GetOriginUsage() completed.
+  void DidGetOriginUsage(storage::QuotaClient::GetOriginUsageCallback callback,
+                         int64_t usage);
 
   // Points to the root directory for NativeIO files.
   //
@@ -127,6 +167,8 @@ class CONTENT_EXPORT NativeIOManager {
   // reason, it's preferable to have the receiver be destroyed as early as
   // possible during the NativeIOManager destruction process.
   mojo::Receiver<storage::mojom::QuotaClient> quota_client_receiver_;
+
+  base::WeakPtrFactory<NativeIOManager> weak_factory_{this};
 };
 
 }  // namespace content

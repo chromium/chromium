@@ -7,7 +7,11 @@
 #include <memory>
 #include <utility>
 
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "content/browser/native_io/native_io_host.h"
 #include "content/browser/native_io/native_io_quota_client.h"
@@ -28,6 +32,34 @@
 namespace content {
 
 namespace {
+
+std::vector<url::Origin> DoGetOrigins(const base::FilePath& native_io_root) {
+  std::vector<url::Origin> result;
+  // If the NativeIO directory wasn't created yet, there's no file to report.
+  if (!base::PathExists(native_io_root))
+    return result;
+
+  base::FileEnumerator file_enumerator(native_io_root, /*recursive=*/false,
+                                       base::FileEnumerator::DIRECTORIES);
+
+  for (base::FilePath file_path = file_enumerator.Next(); !file_path.empty();
+       file_path = file_enumerator.Next()) {
+    // If the directory name has a non-ASCII character, `file_name` will be the
+    // empty string. This indicates corruption as any origin creates an
+    // ASCII-only directory name, so those directories are ignored.
+    std::string directory_name = file_path.BaseName().MaybeAsASCII();
+    if (directory_name == "")
+      continue;
+    url::Origin origin = storage::GetOriginFromIdentifier(directory_name);
+    result.push_back(std::move(origin));
+  }
+  return result;
+}
+
+int64_t DoGetOriginUsage(const base::FilePath& origin_root) {
+  // Returns 0 if `origin_root` does not exist.
+  return base::ComputeDirectorySize(origin_root);
+}
 
 constexpr base::FilePath::CharType kNativeIODirectoryName[] =
     FILE_PATH_LITERAL("NativeIO");
@@ -172,6 +204,114 @@ void NativeIOManager::DeleteOriginData(
   it->second->DeleteAllData(
       base::BindOnce(&NativeIOManager::OnDeleteOriginDataCompleted,
                      base::Unretained(this), std::move(callback)));
+}
+
+void NativeIOManager::GetOriginsForType(
+    blink::mojom::StorageType type,
+    storage::QuotaClient::GetOriginsForTypeCallback callback) {
+  if (type != blink::mojom::StorageType::kTemporary) {
+    std::move(callback).Run({});
+    return;
+  }
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {
+          // Needed for file I/O.
+          base::MayBlock(),
+
+          // Reasonable compromise, given that the sitedata UI depends on this
+          // functionality.
+          base::TaskPriority::USER_VISIBLE,
+
+          // BLOCK_SHUTDOWN is definitely not appropriate. We might be able to
+          // move to CONTINUE_ON_SHUTDOWN after very careful analysis.
+          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
+      },
+      base::BindOnce(&DoGetOrigins, root_path_),
+      base::BindOnce(&NativeIOManager::DidGetOriginsForType,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+void NativeIOManager::GetOriginsForHost(
+    blink::mojom::StorageType type,
+    const std::string& host,
+    storage::QuotaClient::GetOriginsForHostCallback callback) {
+  if (type != blink::mojom::StorageType::kTemporary) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {
+          // Needed for file I/O.
+          base::MayBlock(),
+
+          // Reasonable compromise, given that the sitedata UI depends on this
+          // functionality.
+          base::TaskPriority::USER_VISIBLE,
+
+          // BLOCK_SHUTDOWN is definitely not appropriate. We might be able to
+          // move to CONTINUE_ON_SHUTDOWN after very careful analysis.
+          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
+      },
+      base::BindOnce(&DoGetOrigins, root_path_),
+      base::BindOnce(&NativeIOManager::DidGetOriginsForHost,
+                     weak_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(host)));
+}
+
+void NativeIOManager::GetOriginUsage(
+    const url::Origin& origin,
+    blink::mojom::StorageType type,
+    storage::QuotaClient::GetOriginUsageCallback callback) {
+  if (type != blink::mojom::StorageType::kTemporary) {
+    std::move(callback).Run(0);
+    return;
+  }
+
+  base::FilePath origin_root = RootPathForOrigin(origin);
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {
+          // Needed for file I/O.
+          base::MayBlock(),
+
+          // Reasonable compromise, given that the sitedata UI depends on this
+          // functionality.
+          base::TaskPriority::USER_VISIBLE,
+
+          // BLOCK_SHUTDOWN is definitely not appropriate. We might be able to
+          // move to CONTINUE_ON_SHUTDOWN after very careful analysis.
+          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
+      },
+      base::BindOnce(&DoGetOriginUsage, origin_root),
+      base::BindOnce(&NativeIOManager::DidGetOriginUsage,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void NativeIOManager::DidGetOriginsForType(
+    storage::QuotaClient::GetOriginsForTypeCallback callback,
+    std::vector<url::Origin> origins) {
+  std::move(callback).Run(origins);
+}
+
+void NativeIOManager::DidGetOriginsForHost(
+    storage::QuotaClient::GetOriginsForTypeCallback callback,
+    const std::string& host,
+    std::vector<url::Origin> origins) {
+  std::vector<url::Origin> out_origins;
+  for (const url::Origin& origin : origins) {
+    if (host == origin.host())
+      out_origins.push_back(origin);
+  }
+  std::move(callback).Run(std::move(out_origins));
+}
+
+void NativeIOManager::DidGetOriginUsage(
+    storage::QuotaClient::GetOriginUsageCallback callback,
+    int64_t usage) {
+  std::move(callback).Run(usage);
 }
 
 base::FilePath NativeIOManager::RootPathForOrigin(const url::Origin& origin) {

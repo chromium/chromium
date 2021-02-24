@@ -24,8 +24,7 @@ void NativeIOQuotaClient::GetOriginUsage(const url::Origin& origin,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
 
-  // TODO(crbug.com/1137788): Implement quota accounting.
-  std::move(callback).Run(0);
+  manager_->GetOriginUsage(origin, type, std::move(callback));
   return;
 }
 
@@ -35,9 +34,7 @@ void NativeIOQuotaClient::GetOriginsForType(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
 
-  std::vector<url::Origin> origins;
-  // TODO(crbug.com/1137788): Implement quota accounting.
-  std::move(callback).Run(std::move(origins));
+  manager_->GetOriginsForType(type, std::move(callback));
 }
 
 void NativeIOQuotaClient::GetOriginsForHost(
@@ -47,9 +44,7 @@ void NativeIOQuotaClient::GetOriginsForHost(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
 
-  std::vector<url::Origin> origins;
-  // TODO(crbug.com/1137788): Implement quota accounting.
-  std::move(callback).Run(std::move(origins));
+  manager_->GetOriginsForHost(type, std::move(host), std::move(callback));
 }
 
 void NativeIOQuotaClient::DeleteOriginData(const url::Origin& origin,
@@ -66,7 +61,6 @@ void NativeIOQuotaClient::PerformStorageCleanup(
     PerformStorageCleanupCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/1137788): Implement quota accounting.
   std::move(callback).Run();
 }
 

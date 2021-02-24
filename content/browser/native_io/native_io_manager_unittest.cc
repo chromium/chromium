@@ -21,6 +21,7 @@
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/mock_quota_manager.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom.h"
 #include "url/gurl.h"
@@ -54,6 +55,47 @@ class NativeIOManagerSync {
                     }));
     run_loop.Run();
     return success_code;
+  }
+
+  std::vector<url::Origin> GetOriginsForType(blink::mojom::StorageType type) {
+    std::vector<url::Origin> origins;
+    base::RunLoop run_loop;
+    io_manager_->GetOriginsForType(
+        type, base::BindLambdaForTesting(
+                  [&](const std::vector<url::Origin>& returned_origins) {
+                    origins = returned_origins;
+                    run_loop.Quit();
+                  }));
+    run_loop.Run();
+    return origins;
+  }
+
+  std::vector<url::Origin> GetOriginsForHost(blink::mojom::StorageType type,
+                                             const std::string& host) {
+    std::vector<url::Origin> origins;
+    base::RunLoop run_loop;
+    io_manager_->GetOriginsForHost(
+        type, host,
+        base::BindLambdaForTesting(
+            [&](const std::vector<url::Origin>& returned_origins) {
+              origins = returned_origins;
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    return origins;
+  }
+
+  int64_t GetOriginUsage(const url::Origin& origin,
+                         blink::mojom::StorageType type) {
+    int64_t usage;
+    base::RunLoop run_loop;
+    io_manager_->GetOriginUsage(
+        origin, type, base::BindLambdaForTesting([&](int64_t returned_usage) {
+          usage = returned_usage;
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    return usage;
   }
 
  private:
@@ -616,7 +658,6 @@ TEST_P(NativeIOManagerTest, DeleteOriginData_ConcurrentDeletion) {
           ->OpenFile("test_file",
                      example_host_remote.BindNewPipeAndPassReceiver())
           .first;
-  EXPECT_TRUE(example_file.IsValid());
   example_file.Close();
   NativeIOFileHostSync example_file_host(example_host_remote.get());
   example_file_host.Close();
@@ -634,6 +675,160 @@ TEST_P(NativeIOManagerTest, DeleteOriginData_ConcurrentDeletion) {
             blink::mojom::QuotaStatusCode::kOk);
 
   EXPECT_TRUE(!base::PathExists(manager_->RootPathForOrigin(example_origin)));
+}
+
+TEST_P(NativeIOManagerTest, GetOriginsByType_Empty) {
+  std::vector<url::Origin> origins =
+      sync_manager_->GetOriginsForType(blink::mojom::StorageType::kTemporary);
+
+  EXPECT_EQ(0u, origins.size());
+}
+
+TEST_P(NativeIOManagerTest, GetOriginsByType_ReturnsInactiveOrigins) {
+  mojo::Remote<blink::mojom::NativeIOFileHost> example_host_remote;
+  base::File example_file =
+      example_host_
+          ->OpenFile("test_file",
+                     example_host_remote.BindNewPipeAndPassReceiver())
+          .first;
+  example_file.Close();
+  NativeIOFileHostSync example_file_host(example_host_remote.get());
+  example_file_host.Close();
+
+  std::vector<url::Origin> origins =
+      sync_manager_->GetOriginsForType(blink::mojom::StorageType::kTemporary);
+
+  EXPECT_EQ(1u, origins.size());
+  EXPECT_EQ(url::Origin::Create(GURL(kExampleOrigin)), origins[0]);
+}
+
+TEST_P(NativeIOManagerTest, GetOriginsByType_ReturnsActiveOrigins) {
+  mojo::Remote<blink::mojom::NativeIOFileHost> example_host_remote;
+  base::File example_file =
+      example_host_
+          ->OpenFile("test_file",
+                     example_host_remote.BindNewPipeAndPassReceiver())
+          .first;
+
+  std::vector<url::Origin> origins =
+      sync_manager_->GetOriginsForType(blink::mojom::StorageType::kTemporary);
+
+  EXPECT_EQ(1u, origins.size());
+  EXPECT_EQ(url::Origin::Create(GURL(kExampleOrigin)), origins[0]);
+
+  EXPECT_TRUE(example_file.IsValid());
+  example_file.Close();
+  NativeIOFileHostSync example_file_host(example_host_remote.get());
+  example_file_host.Close();
+}
+
+TEST_P(NativeIOManagerTest,
+       GetOriginsByType_EmptyForUnimplementedStorageTypes) {
+  mojo::Remote<blink::mojom::NativeIOFileHost> example_host_remote;
+  base::File example_file =
+      example_host_
+          ->OpenFile("test_file",
+                     example_host_remote.BindNewPipeAndPassReceiver())
+          .first;
+  example_file.Close();
+  NativeIOFileHostSync example_file_host(example_host_remote.get());
+  example_file_host.Close();
+
+  std::vector<url::Origin> origins =
+      sync_manager_->GetOriginsForType(blink::mojom::StorageType::kPersistent);
+  EXPECT_EQ(0u, origins.size());
+  origins =
+      sync_manager_->GetOriginsForType(blink::mojom::StorageType::kSyncable);
+  EXPECT_EQ(0u, origins.size());
+  origins = sync_manager_->GetOriginsForType(
+      blink::mojom::StorageType::kQuotaNotManaged);
+  EXPECT_EQ(0u, origins.size());
+}
+
+TEST_P(NativeIOManagerTest, GetOriginsByHost_ReturnsActiveOrigins) {
+  mojo::Remote<blink::mojom::NativeIOFileHost> example_file_host_remote;
+  base::File example_file =
+      example_host_
+          ->OpenFile("test_file",
+                     example_file_host_remote.BindNewPipeAndPassReceiver())
+          .first;
+
+  mojo::Remote<blink::mojom::NativeIOHost> example_with_port_host_remote;
+  std::string example_with_port_origin =
+      std::string(kExampleOrigin).append(":1");
+  manager_->BindReceiver(
+      url::Origin::Create(GURL(example_with_port_origin)),
+      example_with_port_host_remote.BindNewPipeAndPassReceiver());
+  NativeIOHostSync example_with_port_host(example_with_port_host_remote.get());
+  mojo::Remote<blink::mojom::NativeIOFileHost>
+      example_with_port_file_host_remote;
+  base::File example_with_port_file =
+      example_with_port_host
+          .OpenFile(
+              "test_file",
+              example_with_port_file_host_remote.BindNewPipeAndPassReceiver())
+          .first;
+
+  mojo::Remote<blink::mojom::NativeIOFileHost> google_file_host_remote;
+  base::File google_file =
+      google_host_
+          ->OpenFile("test_file",
+                     google_file_host_remote.BindNewPipeAndPassReceiver())
+          .first;
+
+  example_file.Close();
+  NativeIOFileHostSync example_file_host(example_file_host_remote.get());
+  example_file_host.Close();
+  example_with_port_file.Close();
+  NativeIOFileHostSync example_with_port_file_host(
+      example_with_port_file_host_remote.get());
+  example_with_port_file_host.Close();
+  google_file.Close();
+  NativeIOFileHostSync google_file_host(google_file_host_remote.get());
+  google_file_host.Close();
+
+  std::vector<url::Origin> example_origins = sync_manager_->GetOriginsForHost(
+      blink::mojom::StorageType::kTemporary, "example.com");
+  EXPECT_EQ(2u, example_origins.size());
+  EXPECT_THAT(
+      example_origins,
+      testing::Contains(url::Origin::Create(GURL(example_with_port_origin))));
+  EXPECT_THAT(example_origins,
+              testing::Contains(url::Origin::Create(GURL(kExampleOrigin))));
+
+  std::vector<url::Origin> google_origins = sync_manager_->GetOriginsForHost(
+      blink::mojom::StorageType::kTemporary, "google.com");
+  EXPECT_EQ(1u, google_origins.size());
+  EXPECT_EQ(url::Origin::Create(GURL(kGoogleOrigin)), google_origins[0]);
+}
+
+TEST_P(NativeIOManagerTest, GetOriginUsage_ActiveOriginUsage) {
+  mojo::Remote<blink::mojom::NativeIOFileHost> example_host_remote;
+  base::File example_file =
+      example_host_
+          ->OpenFile("test_file",
+                     example_host_remote.BindNewPipeAndPassReceiver())
+          .first;
+  int64_t expected_usage = 100;
+  example_file.SetLength(expected_usage);
+
+  example_file.Close();
+  NativeIOFileHostSync example_file_host(example_host_remote.get());
+  example_file_host.Close();
+
+  int64_t usage =
+      sync_manager_->GetOriginUsage(url::Origin::Create(GURL(kExampleOrigin)),
+                                    blink::mojom::StorageType::kTemporary);
+
+  EXPECT_EQ(expected_usage, usage);
+}
+
+TEST_P(NativeIOManagerTest, GetOriginUsage_NonexistingOriginUsage) {
+  int64_t usage =
+      sync_manager_->GetOriginUsage(url::Origin::Create(GURL(kExampleOrigin)),
+                                    blink::mojom::StorageType::kTemporary);
+
+  EXPECT_EQ(0u, usage);
 }
 
 INSTANTIATE_TEST_CASE_P(,

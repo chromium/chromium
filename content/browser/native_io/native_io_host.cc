@@ -318,6 +318,9 @@ void NativeIOHost::DeleteFile(const std::string& name,
     return;
   }
 
+  manager_->quota_manager_proxy()->NotifyStorageAccessed(
+      origin_, blink::mojom::StorageType::kTemporary, base::Time::Now());
+
   // The deletion task runs on the file_task_runner and is skipped on shutdown,
   // as is ok for origin data deletion.
   file_task_runner_->PostTaskAndReplyWithResult(
@@ -333,6 +336,9 @@ void NativeIOHost::GetAllFileNames(GetAllFileNamesCallback callback) {
     std::move(callback).Run(false, {});
     return;
   }
+
+  manager_->quota_manager_proxy()->NotifyStorageAccessed(
+      origin_, blink::mojom::StorageType::kTemporary, base::Time::Now());
 
   file_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&DoGetAllFileNames, root_path_),
@@ -442,6 +448,12 @@ void NativeIOHost::DidOpenFile(
     return;
   }
 
+  // DoOpenFile may create a file if none exists, which justifies
+  // NotifyStorageModified.
+  manager_->quota_manager_proxy()->NotifyStorageModified(
+      storage::QuotaClientType::kNativeIO, origin_,
+      blink::mojom::StorageType::kTemporary, 0, base::Time::Now());
+
   open_file_hosts_.insert({
     name, std::make_unique<NativeIOFileHost>(this, name,
 #if defined(OS_MAC)
@@ -462,6 +474,12 @@ void NativeIOHost::DidDeleteFile(const std::string& name,
   DCHECK(!open_file_hosts_.count(name));
   io_pending_files_.erase(name);
 
+  // TODO(rstz): Update with the correct amount of quota once the remaining
+  // quota functionality is implemented.
+  manager_->quota_manager_proxy()->NotifyStorageModified(
+      storage::QuotaClientType::kNativeIO, origin_,
+      blink::mojom::StorageType::kTemporary, 0, base::Time::Now());
+
   std::move(callback).Run(std::move(delete_error));
   return;
 }
@@ -476,6 +494,10 @@ void NativeIOHost::DidRenameFile(const std::string& old_name,
   DCHECK(!open_file_hosts_.count(new_name));
   io_pending_files_.erase(old_name);
   io_pending_files_.erase(new_name);
+
+  manager_->quota_manager_proxy()->NotifyStorageModified(
+      storage::QuotaClientType::kNativeIO, origin_,
+      blink::mojom::StorageType::kTemporary, 0, base::Time::Now());
 
   std::move(callback).Run(std::move(rename_error));
   return;
