@@ -167,10 +167,6 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   void CheckOwnerCredentials(const UserContext& user_context);
   void OnOwnerSigninSuccess();
 
-  // Sets an extra flag that can hide/unhide offline login link if the offline
-  // login timer has expired for a focused user.
-  void MaybeUpdateOfflineLoginLinkVisibility(const AccountId& account_id);
-
   // State associated with a pending authentication attempt.
   struct AuthState {
     AuthState(AccountId account_id, base::OnceCallback<void(bool)> callback);
