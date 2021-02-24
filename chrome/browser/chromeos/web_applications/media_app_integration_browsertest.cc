@@ -264,7 +264,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, LoadsInkForImageAnnotation) {
 #endif  // BUILDFLAG(ENABLE_CROS_MEDIA_APP)
 
 // Test that the MediaApp can load RAW files passed on launch params.
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, HandleRawFiles) {
+// Test is flaky: https://crbug.com/1181638
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, DISABLED_HandleRawFiles) {
   WaitForTestSystemAppInstall();
 
   content::WebContents* web_ui;
@@ -487,8 +488,9 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
 // End-to-end test to ensure that the MediaApp successfully registers as a file
 // handler with the ChromeOS file manager on startup and acts as the default
 // handler for a given file.
+// Test is flaky: https://crbug.com/1181638
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
-                       FileOpenUsesMediaApp) {
+                       DISABLED_FileOpenUsesMediaApp) {
   WaitForTestSystemAppInstall();
   Browser* test_browser = chrome::FindBrowserWithActiveWindow();
 
@@ -514,8 +516,9 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
 
 // Test that the MediaApp can navigate other files in the directory of a file
 // that was opened, even if those files have changed since launch.
+// Test is flaky: https://crbug.com/1181638
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
-                       FileOpenCanTraverseDirectory) {
+                       DISABLED_FileOpenCanTraverseDirectory) {
   WaitForTestSystemAppInstall();
 
   // Initialize a folder with 2 files: 1 JPEG, 1 PNG. Note this approach doesn't
