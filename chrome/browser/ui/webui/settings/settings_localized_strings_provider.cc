@@ -220,7 +220,6 @@ void AddA11yStrings(content::WebUIDataSource* html_source) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"manageAccessibilityFeatures",
      IDS_SETTINGS_ACCESSIBILITY_MANAGE_ACCESSIBILITY_FEATURES},
-    {"androidAppsManageAppLinks", IDS_SETTINGS_ANDROID_APPS_MANAGE_APP_LINKS},
 #else  // !BUILDFLAG(IS_CHROMEOS_ASH)
     {"focusHighlightLabel",
      IDS_SETTINGS_ACCESSIBILITY_FOCUS_HIGHLIGHT_DESCRIPTION},

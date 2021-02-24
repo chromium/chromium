@@ -30,7 +30,6 @@ extern const char kInitialStartParam[];
 extern const char kRequestStartTimeParamTemplate[];
 extern const char kPlayStoreActivity[];
 extern const char kPlayStorePackage[];
-extern const char kSettingsAppDomainUrlActivity[];
 
 extern const char kCameraMigrationAppId[];
 extern const char kGmailAppId[];
@@ -134,12 +133,6 @@ bool LaunchAppShortcutItem(content::BrowserContext* context,
                            const std::string& app_id,
                            const std::string& shortcut_id,
                            int64_t display_id);
-
-// Launches a specific activity within Settings app on ARC.
-bool LaunchSettingsAppActivity(content::BrowserContext* context,
-                               const std::string& activity,
-                               int event_flags,
-                               int64_t display_id);
 
 // Sets task active.
 void SetTaskActive(int task_id);

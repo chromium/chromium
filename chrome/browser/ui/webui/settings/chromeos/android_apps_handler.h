@@ -53,7 +53,6 @@ class AndroidAppsHandler : public ::settings::SettingsPageUIHandler,
   void HandleAppChanged(const std::string& app_id);
   void SendAndroidAppsInfo();
   void ShowAndroidAppsSettings(const base::ListValue* args);
-  void ShowAndroidManageAppLinks(const base::ListValue* args);
   int64_t GetDisplayIdForCurrentProfile();
 
   base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>

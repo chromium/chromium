@@ -34,10 +34,6 @@ void AndroidAppsHandler::RegisterMessages() {
       "showAndroidAppsSettings",
       base::BindRepeating(&AndroidAppsHandler::ShowAndroidAppsSettings,
                           weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
-      "showAndroidManageAppLinks",
-      base::BindRepeating(&AndroidAppsHandler::ShowAndroidManageAppLinks,
-                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AndroidAppsHandler::OnJavascriptAllowed() {
@@ -117,15 +113,6 @@ void AndroidAppsHandler::ShowAndroidAppsSettings(const base::ListValue* args) {
       arc::kSettingsAppId, flags,
       apps::mojom::LaunchSource::kFromParentalControls,
       apps::MakeWindowInfo(GetDisplayIdForCurrentProfile()));
-}
-
-void AndroidAppsHandler::ShowAndroidManageAppLinks(
-    const base::ListValue* args) {
-  DCHECK_EQ(0U, args->GetSize());
-
-  arc::LaunchSettingsAppActivity(profile_, arc::kSettingsAppDomainUrlActivity,
-                                 ui::EF_NONE /* flags */,
-                                 GetDisplayIdForCurrentProfile());
 }
 
 int64_t AndroidAppsHandler::GetDisplayIdForCurrentProfile() {

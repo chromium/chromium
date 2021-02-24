@@ -23,9 +23,6 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
 import {loadTimeData} from '../i18n_setup.js';
 
-// <if expr="chromeos">
-import {AndroidAppsInfo, AndroidInfoBrowserProxyImpl} from './android_info_browser_proxy.js';
-// </if>
 import {SiteSettingsBehavior} from './site_settings_behavior.js';
 
 /**
@@ -87,14 +84,6 @@ Polymer({
      * @type {!Array<!HandlerEntry>}
      */
     ignoredProtocols: Array,
-
-    // <if expr="chromeos">
-    /** @private */
-    settingsAppAvailable_: {
-      type: Boolean,
-      value: false,
-    },
-    // </if>
   },
 
   /** @override */
@@ -108,26 +97,6 @@ Polymer({
         this.setIgnoredProtocolHandlers_.bind(this));
     this.browserProxy.observeProtocolHandlers();
   },
-
-  // <if expr="chromeos">
-  /** @override */
-  attached() {
-    this.addWebUIListener(
-        'android-apps-info-update', this.androidAppsInfoUpdate_.bind(this));
-    AndroidInfoBrowserProxyImpl.getInstance().requestAndroidAppsInfo();
-  },
-  // </if>
-
-  // <if expr="chromeos">
-  /**
-   * Receives updates on whether or not ARC settings app is available.
-   * @param {AndroidAppsInfo} info
-   * @private
-   */
-  androidAppsInfoUpdate_(info) {
-    this.settingsAppAvailable_ = info.settingsAppAvailable;
-  },
-  // </if>
 
   /** @private */
   categoryLabelClicked_() {
@@ -227,15 +196,5 @@ Polymer({
     /** @type {!CrActionMenuElement} */ (this.$$('cr-action-menu'))
         .showAt(
             /** @type {!Element} */ (/** @type {!Event} */ (event).target));
-  },
-
-  // <if expr="chromeos">
-  /**
-   * Opens an activity to handle App links (preferred apps).
-   * @private
-   */
-  onManageAndroidAppsClick_() {
-    this.browserProxy.showAndroidManageAppLinks();
-  },
-  // </if>
+  }
 });

@@ -164,7 +164,6 @@ js_library("protocol_handlers") {
     ":site_settings_behavior",
 
     # Must be included on all platforms to satisfy closure compiler.
-    ":android_info_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",

@@ -502,7 +502,4 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy {
 
   /** @override */
   setProtocolHandlerDefault() {}
-
-  /** @override */
-  showAndroidManageAppLinks() {}
 }
