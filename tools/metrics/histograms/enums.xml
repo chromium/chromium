@@ -35971,6 +35971,25 @@ Called by update_feature_policy_enum.py.-->
   <int value="3" label="Url override was available in the FacetGroup and used"/>
 </enum>
 
+<enum name="GetCurrentBrowsingContextMediaExplicitSelectionUserInteraction">
+  <int value="0" label="kDialogDismissed"/>
+  <int value="1" label="kUserCancelled"/>
+  <int value="2" label="kUserSelectedScreen"/>
+  <int value="3" label="kUserSelectedWindow"/>
+  <int value="4" label="kUserSelectedOtherTab"/>
+  <int value="5" label="kUserSelectedThisTabAsGenericTab"/>
+  <int value="6" label="kUserSelectedThisTab"/>
+</enum>
+
+<enum name="GetDisplayMediaUserInteraction">
+  <int value="0" label="kDialogDismissed"/>
+  <int value="1" label="kUserCancelled"/>
+  <int value="2" label="kUserSelectedScreen"/>
+  <int value="3" label="kUserSelectedWindow"/>
+  <int value="4" label="kUserSelectedOtherTab"/>
+  <int value="5" label="kUserSelectedThisTab"/>
+</enum>
+
 <enum name="GetEncryptionKeyAction">
   <int value="0" label="Key is successfully found - not first time"/>
   <int value="1" label="Key is successfully found for the first time"/>

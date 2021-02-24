@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
@@ -28,6 +29,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -46,7 +48,14 @@
 
 using content::DesktopMediaID;
 
+enum class DesktopMediaPickerDialogView::DialogSource : int {
+  kGetCurrentBrowsingContextMedia = 0,
+  kGetDisplayMedia = 1
+};
+
 namespace {
+
+using DialogSource = DesktopMediaPickerDialogView::DialogSource;
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && defined(USE_AURA)
 DesktopMediaID::Id AcceleratedWidgetToDesktopMediaId(
@@ -59,13 +68,122 @@ DesktopMediaID::Id AcceleratedWidgetToDesktopMediaId(
 }
 #endif
 
+enum class GCBCMResult {
+  kDialogDismissed = 0,                  // Tab/window closed, navigation, etc.
+  kUserCancelled = 1,                    // User explicitly cancelled.
+  kUserSelectedScreen = 2,               // Screen selected.
+  kUserSelectedWindow = 3,               // Window selected.
+  kUserSelectedOtherTab = 4,             // Other tab selected from tab-list.
+  kUserSelectedThisTabAsGenericTab = 5,  // Current tab selected from tab-list.
+  kUserSelectedThisTab = 6,  // Current tab selected from current-tab menu.
+  kMaxValue = kUserSelectedThisTab
+};
+
+enum class GDMResult {
+  kDialogDismissed = 0,       // Tab/window closed, navigation, etc.
+  kUserCancelled = 1,         // User explicitly cancelled.
+  kUserSelectedScreen = 2,    // Screen selected.
+  kUserSelectedWindow = 3,    // Window selected.
+  kUserSelectedOtherTab = 4,  // Other tab selected from tab-list.
+  kUserSelectedThisTab = 5,   // Current tab selected from tab-list.
+  kMaxValue = kUserSelectedThisTab
+};
+
+void RecordUma(GCBCMResult result) {
+  base::UmaHistogramEnumeration(
+      "Media.Ui.GetCurrentBrowsingContextMedia.ExplicitSelection."
+      "UserInteraction",
+      result);
+}
+
+void RecordUma(GDMResult result) {
+  base::UmaHistogramEnumeration("Media.Ui.GetDisplayMedia.UserInteraction",
+                                result);
+}
+
+void RecordUmaDismissal(DialogSource dialog_source) {
+  if (dialog_source == DialogSource::kGetCurrentBrowsingContextMedia) {
+    RecordUma(GCBCMResult::kDialogDismissed);
+  } else {
+    RecordUma(GDMResult::kDialogDismissed);
+  }
+}
+
+void RecordUmaCancellation(DialogSource dialog_source) {
+  if (dialog_source == DialogSource::kGetCurrentBrowsingContextMedia) {
+    RecordUma(GCBCMResult::kUserCancelled);
+  } else {
+    RecordUma(GDMResult::kUserCancelled);
+  }
+}
+
+// Convenience function for recording UMA.
+// |source_type| is there to help us distinguish the current tab being
+// selected explicitly, from it being selected from the list of all tabs.
+void RecordUmaSelection(DialogSource dialog_source,
+                        content::WebContents* web_contents,
+                        const DesktopMediaID& selected_media,
+                        DesktopMediaList::Type source_type) {
+  switch (source_type) {
+    case DesktopMediaList::Type::kNone: {
+      NOTREACHED();
+      break;
+    }
+
+    case DesktopMediaList::Type::kScreen: {
+      if (dialog_source == DialogSource::kGetCurrentBrowsingContextMedia) {
+        RecordUma(GCBCMResult::kUserSelectedScreen);
+      } else {
+        RecordUma(GDMResult::kUserSelectedScreen);
+      }
+      break;
+    }
+
+    case DesktopMediaList::Type::kWindow: {
+      if (dialog_source == DialogSource::kGetCurrentBrowsingContextMedia) {
+        RecordUma(GCBCMResult::kUserSelectedWindow);
+      } else {
+        RecordUma(GDMResult::kUserSelectedWindow);
+      }
+      break;
+    }
+
+    case DesktopMediaList::Type::kWebContents: {
+      // Whether the current tab was selected. Note that this can happen
+      // through a non-explicit selection of the current tab through the
+      // list of all available tabs.
+      const bool current_tab_selected =
+          web_contents &&
+          web_contents->GetMainFrame()->GetProcess()->GetID() ==
+              selected_media.web_contents_id.render_process_id &&
+          web_contents->GetMainFrame()->GetRoutingID() ==
+              selected_media.web_contents_id.main_render_frame_id;
+
+      if (dialog_source == DialogSource::kGetCurrentBrowsingContextMedia) {
+        RecordUma(current_tab_selected
+                      ? GCBCMResult::kUserSelectedThisTabAsGenericTab
+                      : GCBCMResult::kUserSelectedOtherTab);
+      } else {
+        RecordUma(current_tab_selected ? GDMResult::kUserSelectedThisTab
+                                       : GDMResult::kUserSelectedOtherTab);
+      }
+      break;
+    }
+
+    case DesktopMediaList::Type::kCurrentTab: {
+      RecordUma(GCBCMResult::kUserSelectedThisTab);
+      break;
+    }
+  }
+}
+
 }  // namespace
 
 DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
     const DesktopMediaPicker::Params& params,
     DesktopMediaPickerViews* parent,
     std::vector<std::unique_ptr<DesktopMediaList>> source_lists)
-    : parent_(parent) {
+    : web_contents_(params.web_contents), parent_(parent) {
   SetModalType(params.modality);
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_SHARE));
@@ -90,6 +208,10 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
   description_label_ = AddChildView(std::move(description_label));
 
   std::vector<std::pair<base::string16, std::unique_ptr<View>>> panes;
+
+  // Default assumption, but can change to kGetCurrentBrowsingContextMedia if
+  // we find the relevant MediaList among |source_lists|.
+  dialog_source_ = DialogSource::kGetDisplayMedia;
 
   int selected_tab = 0;
 
@@ -210,6 +332,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
         window_scroll_view->SetHorizontalScrollBarMode(
             views::ScrollView::ScrollBarMode::kDisabled);
         panes.emplace_back(title, std::move(window_scroll_view));
+        dialog_source_ = DialogSource::kGetCurrentBrowsingContextMedia;
         break;
       }
     }
@@ -297,6 +420,10 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
 
 DesktopMediaPickerDialogView::~DesktopMediaPickerDialogView() {}
 
+DialogSource DesktopMediaPickerDialogView::GetDialogSource() const {
+  return dialog_source_;
+}
+
 void DesktopMediaPickerDialogView::TabSelectedAt(int index) {
   OnSourceTypeSwitched(index);
   list_controllers_[index]->FocusView();
@@ -325,16 +452,26 @@ void DesktopMediaPickerDialogView::OnSourceTypeSwitched(int index) {
   }
 }
 
+int DesktopMediaPickerDialogView::GetSelectedTabIndex() const {
+  return tabbed_pane_ ? tabbed_pane_->GetSelectedTabIndex() : 0;
+}
+
 const DesktopMediaListController*
 DesktopMediaPickerDialogView::GetSelectedController() const {
-  int index = tabbed_pane_ ? tabbed_pane_->GetSelectedTabIndex() : 0;
-  return list_controllers_[index].get();
+  return list_controllers_[GetSelectedTabIndex()].get();
 }
 
 DesktopMediaListController*
 DesktopMediaPickerDialogView::GetSelectedController() {
-  int index = tabbed_pane_ ? tabbed_pane_->GetSelectedTabIndex() : 0;
-  return list_controllers_[index].get();
+  return list_controllers_[GetSelectedTabIndex()].get();
+}
+
+DesktopMediaList::Type DesktopMediaPickerDialogView::GetSelectedSourceListType()
+    const {
+  const int index = GetSelectedTabIndex();
+  DCHECK_GE(index, 0);
+  DCHECK_LT(static_cast<size_t>(index), source_types_.size());
+  return source_types_[index];
 }
 
 void DesktopMediaPickerDialogView::DetachParent() {
@@ -412,11 +549,19 @@ bool DesktopMediaPickerDialogView::Accept() {
 #endif
   }
 
+  RecordUmaSelection(dialog_source_, web_contents_, source,
+                     GetSelectedSourceListType());
+
   if (parent_)
     parent_->NotifyDialogResult(source);
 
   // Return true to close the window.
   return true;
+}
+
+bool DesktopMediaPickerDialogView::Cancel() {
+  RecordUmaCancellation(dialog_source_);
+  return views::DialogDelegateView::Cancel();
 }
 
 bool DesktopMediaPickerDialogView::ShouldShowCloseButton() const {
@@ -477,6 +622,7 @@ DesktopMediaPickerViews::DesktopMediaPickerViews() : dialog_(nullptr) {}
 
 DesktopMediaPickerViews::~DesktopMediaPickerViews() {
   if (dialog_) {
+    RecordUmaDismissal(dialog_->GetDialogSource());
     dialog_->DetachParent();
     dialog_->GetWidget()->Close();
   }

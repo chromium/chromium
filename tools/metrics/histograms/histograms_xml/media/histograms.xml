@@ -3616,6 +3616,31 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Size of HTML5 media (when known), in MB.</summary>
 </histogram>
 
+<histogram
+    name="Media.Ui.GetCurrentBrowsingContextMedia.ExplicitSelection.UserInteraction"
+    enum="GetCurrentBrowsingContextMediaExplicitSelectionUserInteraction"
+    expires_after="2022-01-01">
+  <owner>eladalon@chromium.org</owner>
+  <owner>guidou@chromium.org</owner>
+  <owner>agpalak@chromium.org</owner>
+  <summary>
+    Records the result of the user's interaction with the media picker dialog
+    which is displayed following a call to getCurrentBrowsingContextMedia. This
+    histogram refers to the explicit-selection variant of the dialog.
+  </summary>
+</histogram>
+
+<histogram name="Media.Ui.GetDisplayMedia.UserInteraction"
+    enum="GetDisplayMediaUserInteraction" expires_after="2022-01-01">
+  <owner>eladalon@chromium.org</owner>
+  <owner>guidou@chromium.org</owner>
+  <owner>agpalak@chromium.org</owner>
+  <summary>
+    Records the result of the user's interaction with the media picker dialog
+    which is displayed following a call to getDisplayMedia.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Media.UnderflowDuration2" units="ms"
     expires_after="never">
 <!-- expires-never: Media pipeline health metric. -->

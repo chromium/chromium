@@ -26,6 +26,9 @@ class DesktopMediaPickerViews;
 class DesktopMediaPickerDialogView : public views::DialogDelegateView,
                                      public views::TabbedPaneListener {
  public:
+  // Used for UMA. Visible to this class's .cc file, but opaque beyond.
+  enum class DialogSource : int;
+
   METADATA_HEADER(DesktopMediaPickerDialogView);
   DesktopMediaPickerDialogView(
       const DesktopMediaPicker::Params& params,
@@ -46,6 +49,10 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   void Reject();
   void OnSourceListLayoutChanged();
 
+  // Relevant for UMA. (E.g. for DesktopMediaPickerViews to report
+  // when the dialog gets dismissed.)
+  DialogSource GetDialogSource() const;
+
   // views::TabbedPaneListener:
   void TabSelectedAt(int index) override;
 
@@ -55,6 +62,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
   views::View* GetInitiallyFocusedView() override;
   bool Accept() override;
+  bool Cancel() override;
   bool ShouldShowCloseButton() const override;
   void DeleteDelegate() override;
 
@@ -63,8 +71,14 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 
   void OnSourceTypeSwitched(int index);
 
+  int GetSelectedTabIndex() const;
+
   const DesktopMediaListController* GetSelectedController() const;
   DesktopMediaListController* GetSelectedController();
+
+  DesktopMediaList::Type GetSelectedSourceListType() const;
+
+  content::WebContents* const web_contents_;
 
   DesktopMediaPickerViews* parent_;
 
@@ -75,6 +89,8 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   views::TabbedPane* tabbed_pane_ = nullptr;
   std::vector<std::unique_ptr<DesktopMediaListController>> list_controllers_;
   std::vector<DesktopMediaList::Type> source_types_;
+
+  DialogSource dialog_source_;
 
   base::Optional<content::DesktopMediaID> accepted_source_;
 };
