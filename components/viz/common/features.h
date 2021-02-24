@@ -21,7 +21,7 @@ VIZ_COMMON_EXPORT extern const base::Feature kDisableDeJelly;
 VIZ_COMMON_EXPORT extern const base::Feature kDynamicColorGamut;
 #endif
 VIZ_COMMON_EXPORT extern const base::Feature kFastSolidColorDraw;
-VIZ_COMMON_EXPORT extern const base::Feature kVizForWebView;
+VIZ_COMMON_EXPORT extern const base::Feature kVizForWebViewDefault;
 VIZ_COMMON_EXPORT extern const base::Feature kVizFrameSubmissionForWebView;
 VIZ_COMMON_EXPORT extern const base::Feature kUsePreferredIntervalForVideo;
 VIZ_COMMON_EXPORT extern const base::Feature kUseRealBuffersForPageFlipTest;

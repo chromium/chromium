@@ -16,6 +16,8 @@ int main(int argc, char** argv) {
   command_line->AppendSwitch(switches::kSingleProcess);
   command_line->AppendSwitchASCII(switches::kDisableFeatures,
                                   ",Vulkan,UseSkiaRenderer");
+  command_line->AppendSwitchASCII(switches::kEnableFeatures,
+                                  ",VizForWebViewDefault");
 
   gl::GLSurfaceTestSupport::InitializeNoExtensionsOneOff();
   android_webview::GpuServiceWebView::GetInstance();

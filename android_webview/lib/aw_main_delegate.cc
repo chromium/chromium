@@ -217,19 +217,15 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
     // WebView does not and should not support WebAuthN.
     features.DisableIfNotSet(::features::kWebAuth);
 
-    // Checking for command line here as FeatureList isn't initialized here yet,
-    // so we can't use FeatureList::IsEnabled. This is necessary if someone
-    // enabled feature through command line. Finch experiments will need to set
-    // all flags in trial config.
-    if (!features.IsEnabled(::features::kVizForWebView)) {
-      // Viz for WebView is required to support embedding CompositorFrameSinks
-      // which is needed for UseSurfaceLayerForVideo feature.
-      // https://crbug.com/853832
-      features.EnableIfNotSet(media::kDisableSurfaceLayerForVideo);
+    // Enable VizForWebView by default.
+    features.EnableIfNotSet(::features::kVizForWebViewDefault);
 
-      // UseSkiaRenderer requires VizForWebView.
-      features.DisableIfNotSet(::features::kUseSkiaRenderer);
-    }
+    // WebView doesn't support surface embedding without viz.The media code
+    // checks for both media::kDisableSurfaceLayerForVideo and VizForWebView to
+    // decide if it can embed, so we always enable kDisableSurfaceLayerForVideo
+    // here.
+    // https://crbug.com/853832
+    features.EnableIfNotSet(media::kDisableSurfaceLayerForVideo);
 
     // WebView does not support overlay fullscreen yet for video overlays.
     features.DisableIfNotSet(media::kOverlayFullscreenVideo);
