@@ -5685,6 +5685,16 @@ crbug.com/893480 external/wpt/uievents/interface/keyboard-accesskey-click-event.
 # Timing out on Fuchsia
 crbug.com/1171283 [ Fuchsia ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-out-slow.html [ Pass Timeout ]
 
+# Temporarily add tests here until error message is fixed
+crbug.com/v8/11356 external/wpt/wasm/jsapi/table/constructor-reftypes.tentative.any.html [ Pass Failure ]
+crbug.com/v8/11356 external/wpt/wasm/jsapi/table/constructor-reftypes.tentative.any.worker.html [ Pass Failure ]
+crbug.com/v8/11356 external/wpt/wasm/jsapi/table/constructor-types.tentative.any.html [ Pass Failure ]
+crbug.com/v8/11356 external/wpt/wasm/jsapi/table/constructor-types.tentative.any.worker.html [ Pass Failure ]
+crbug.com/v8/11356 external/wpt/wasm/jsapi/table/set-reftypes.tentative.any.html [ Pass Failure ]
+crbug.com/v8/11356 external/wpt/wasm/jsapi/table/set-reftypes.tentative.any.worker.html [ Pass Failure ]
+crbug.com/v8/11356 external/wpt/wasm/jsapi/table/type.tentative.any.html [ Pass Failure ]
+crbug.com/v8/11356 external/wpt/wasm/jsapi/table/type.tentative.any.worker.html [ Pass Failure ]
+
 # Sheriff 2021-02-09
 crbug.com/1176286 [ Linux ] http/tests/devtools/service-workers/service-workers-redundant.js [ Failure Pass ]
 crbug.com/1175901 [ Linux ] http/tests/devtools/console/console-search-reveals-messages.js [ Failure Pass ]

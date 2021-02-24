@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-FAIL Zero initial, no maximum WebAssembly.Module(): Descriptor property 'element' must be a WebAssembly reference type
-FAIL Non-zero initial, no maximum WebAssembly.Module(): Descriptor property 'element' must be a WebAssembly reference type
-FAIL Zero maximum WebAssembly.Module(): Descriptor property 'element' must be a WebAssembly reference type
-FAIL None-zero maximum WebAssembly.Module(): Descriptor property 'element' must be a WebAssembly reference type
-Harness: the test ran to completion.
-
