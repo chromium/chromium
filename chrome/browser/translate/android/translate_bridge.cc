@@ -78,13 +78,24 @@ static void JNI_TranslateBridge_TranslateToLanguage(
       ConvertJavaStringToUTF8(env, j_target_language_code));
   const std::string& source_language_code =
       client->GetLanguageState().original_language();
-  // Only translate if the source language has been determined and both
-  // languages are supported.
-  if (!source_language_code.empty() &&
-      translate::TranslateManager::IsTranslatableLanguagePair(
-          source_language_code, target_language_code)) {
-    translate::TranslateManager* manager = client->GetTranslateManager();
-    DCHECK(manager);
+  if (source_language_code.empty()) {
+    // TODO(crbug.com/1181400): Add support for specifying a target language for
+    // ManualTranslateWhenReady().
+    return;
+  }
+
+  translate::TranslateManager* manager = client->GetTranslateManager();
+  DCHECK(manager);
+  if (!translate::TranslateDownloadManager::IsSupportedLanguage(
+          target_language_code)) {
+    // If the requested target language isn't supported, show the infobar but
+    // don't start translating. If the infobar is already visible, this will
+    // leave it in its current state.
+    manager->InitiateManualTranslation(/*auto_translate=*/false,
+                                       /*triggered_from_menu=*/false);
+  } else {
+    // We don't check for source_language_code support because TranslatePage
+    // handles that case already.
     manager->TranslatePage(source_language_code, target_language_code,
                            /*triggered_from_menu=*/false,
                            /*translation_type=*/

@@ -1107,11 +1107,8 @@ void TranslateManager::FilterForPredefinedTarget(
 bool TranslateManager::IsTranslatableLanguagePair(
     const std::string& page_language_code,
     const std::string& target_language_code) {
-  translate::TranslateLanguageList* language_list =
-      translate::TranslateDownloadManager::GetInstance()->language_list();
-
   return !target_language_code.empty() &&
-         language_list->IsSupportedLanguage(target_language_code) &&
+         TranslateDownloadManager::IsSupportedLanguage(target_language_code) &&
          TranslateDownloadManager::IsSupportedLanguage(page_language_code) &&
          page_language_code != target_language_code;
 }

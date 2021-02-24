@@ -179,6 +179,26 @@ public class TranslateIntentTest {
     @MediumTest
     @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
+    public void testTranslateIntentWithIdenticalSourceAndTarget()
+            throws TimeoutException, ExecutionException {
+        if (shouldSkipDueToNetworkService()) return;
+        final String url = mActivityTestRule.getTestServer().getURL(NON_TRANSLATE_PAGE);
+        // Load a page that doesn't trigger the translate recommendation.
+        mActivityTestRule.loadUrl(url);
+
+        TranslateUtil.waitUntilTranslatable(mActivityTestRule.getActivity().getActivityTab());
+        Assert.assertTrue(mInfoBarContainer.getInfoBarsForTesting().isEmpty());
+
+        sendTranslateIntent(url, "en");
+
+        // Only the target tab is selected.
+        TranslateUtil.waitForTranslateInfoBarState(mInfoBarContainer, /*expectTranslated=*/true);
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
+    @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
     public void testTranslateIntentWithUnsupportedTargetLanguage() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         final String url = mActivityTestRule.getTestServer().getURL(NON_TRANSLATE_PAGE);
@@ -190,7 +210,8 @@ public class TranslateIntentTest {
 
         sendTranslateIntent(url, "unsupported");
 
-        Assert.assertTrue(mInfoBarContainer.getInfoBarsForTesting().isEmpty());
+        // Infobar should be shown but not translated.
+        TranslateUtil.waitForTranslateInfoBarState(mInfoBarContainer, /*expectTranslated=*/false);
     }
 
     @Test
