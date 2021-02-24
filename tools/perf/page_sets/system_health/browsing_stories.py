@@ -129,7 +129,7 @@ class _ArticleBrowsingStory(_BrowsingStory):
 ##############################################################################
 
 
-class CnnStory2020(_ArticleBrowsingStory):
+class CnnStory2021(_ArticleBrowsingStory):
   """The second top website in http://www.alexa.com/topsites/category/News"""
   NAME = 'browse:news:cnn:2021'
   URL = 'http://edition.cnn.com/'
@@ -437,7 +437,7 @@ class GoogleDesktopStory2018(_ArticleBrowsingStory):
     action_runner.ScrollPage()
 
 
-class GoogleIndiaDesktopStory2018(_ArticleBrowsingStory):
+class GoogleIndiaDesktopStory2021(_ArticleBrowsingStory):
   """
   A typical google search story in India:
     1. Start at self.URL

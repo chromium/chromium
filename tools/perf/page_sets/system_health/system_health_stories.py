@@ -105,4 +105,4 @@ class SystemHealthPCScanStorySet(story.StorySet):
 
   def __init__(self, take_memory_measurement=False):
     super(SystemHealthPCScanStorySet, self).__init__()
-    self.AddStory(browsing_stories.CnnStory2020(self, take_memory_measurement))
+    self.AddStory(browsing_stories.CnnStory2021(self, take_memory_measurement))
