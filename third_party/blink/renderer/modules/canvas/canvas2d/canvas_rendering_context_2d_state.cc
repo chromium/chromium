@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d_state.h"
 
 #include <memory>
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/renderer/core/css/resolver/filter_operation_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
@@ -601,6 +602,9 @@ void CanvasRenderingContext2DState::UpdateFilterQuality() const {
   if (!image_smoothing_enabled_) {
     UpdateFilterQualityWithSkFilterQuality(kNone_SkFilterQuality);
   } else {
+    base::UmaHistogramExactLinear("Blink.Canvas.ImageSmoothingQuality",
+                                  static_cast<int>(image_smoothing_quality_),
+                                  static_cast<int>(kLast_SkFilterQuality) + 1);
     UpdateFilterQualityWithSkFilterQuality(image_smoothing_quality_);
   }
 }

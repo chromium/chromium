@@ -38800,6 +38800,13 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="12" label="Load image metadata"/>
 </enum>
 
+<enum name="ImageSmoothingQuality">
+  <int value="0" label="Image smoothing quality sets to None"/>
+  <int value="1" label="Image smoothing quality sets to Low"/>
+  <int value="2" label="Image smoothing quality sets to Medium"/>
+  <int value="3" label="Image smoothing quality sets to High"/>
+</enum>
+
 <enum name="IMEAssistiveAction">
   <int value="0" label="GENERIC_ACTION"/>
   <int value="1" label="PERSONAL_EMAIL"/>

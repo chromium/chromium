@@ -171,6 +171,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Blink.Canvas.ImageSmoothingQuality"
+    enum="ImageSmoothingQuality" expires_after="2021-05-31">
+  <owner>fserb@chromium.org</owner>
+  <owner>yiyix@chromium.org</owner>
+  <summary>
+    Records the image smoothing quality used by draw image. Users can choose
+    between none, low, medium or high image quality.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Canvas.IsComposited" enum="Boolean"
     expires_after="2021-01-31">
   <owner>aaronhk@chromium.org</owner>
