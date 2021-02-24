@@ -46,9 +46,9 @@ void AppServiceInstanceRegistryHelper::ActiveUserChanged() {
       ProfileManager::GetActiveUserProfile());
 }
 
-void AppServiceInstanceRegistryHelper::AdditionalUserAddedToSession(
-    Profile* profile) {
-  proxy_ = apps::AppServiceProxyFactory::GetForProfile(profile);
+void AppServiceInstanceRegistryHelper::AdditionalUserAddedToSession() {
+  proxy_ = apps::AppServiceProxyFactory::GetForProfile(
+      ProfileManager::GetActiveUserProfile());
 }
 
 void AppServiceInstanceRegistryHelper::OnActiveTabChanged(

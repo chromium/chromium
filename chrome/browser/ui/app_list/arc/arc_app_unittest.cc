@@ -65,6 +65,7 @@
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/browser/ui/ash/launcher/arc_app_shelf_id.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/launcher_controller_helper.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -462,6 +463,9 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
   ChromeLauncherController* CreateLauncherController() {
     launcher_controller_ = std::make_unique<ChromeLauncherController>(
         profile_.get(), model_.get());
+    launcher_controller_->SetProfileForTest(profile_.get());
+    launcher_controller_->SetLauncherControllerHelperForTest(
+        std::make_unique<LauncherControllerHelper>(profile_.get()));
     launcher_controller_->Init();
     return launcher_controller_.get();
   }

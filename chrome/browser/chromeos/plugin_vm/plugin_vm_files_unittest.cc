@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/ash/launcher/app_window_base.h"
 #include "chrome/browser/ui/ash/launcher/app_window_launcher_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/launcher_controller_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_cicerone_client.h"
@@ -145,6 +146,9 @@ TEST_F(PluginVmFilesTest, LaunchPluginVmApp) {
               })));
   ash::ShelfModel shelf_model;
   ChromeLauncherController chrome_launcher_controller(&profile_, &shelf_model);
+  chrome_launcher_controller.SetProfileForTest(&profile_);
+  chrome_launcher_controller.SetLauncherControllerHelperForTest(
+      std::make_unique<LauncherControllerHelper>(&profile_));
   chrome_launcher_controller.Init();
 
   AppLaunchedCallback app_launched_callback;

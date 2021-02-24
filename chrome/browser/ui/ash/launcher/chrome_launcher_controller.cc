@@ -1302,15 +1302,20 @@ void ChromeLauncherController::CloseWindowedAppsFromRemovedExtension(
 }
 
 void ChromeLauncherController::AddAppUpdaterAndIconLoader(Profile* profile) {
-  latest_active_profile_ = profile;
+  latest_active_profile_ = ProfileManager::GetActiveUserProfile();
 
-  // Either add the profile to the list of known profiles and make it the active
-  // one for some functions of LauncherControllerHelper or create a new one.
-  if (!launcher_controller_helper_.get()) {
-    launcher_controller_helper_ =
-        std::make_unique<LauncherControllerHelper>(profile);
-  } else {
-    launcher_controller_helper_->set_profile(profile);
+  // For chrome restart, additional users are added during the system
+  // startup phase, but we should not run the switch user process.
+  if (profile == latest_active_profile_) {
+    // Either add the profile to the list of known profiles and make it the
+    // active one for some functions of LauncherControllerHelper or create a new
+    // one.
+    if (!launcher_controller_helper_.get()) {
+      launcher_controller_helper_ =
+          std::make_unique<LauncherControllerHelper>(profile);
+    } else {
+      launcher_controller_helper_->set_profile(profile);
+    }
   }
 
   if (!base::Contains(app_updaters_, profile)) {

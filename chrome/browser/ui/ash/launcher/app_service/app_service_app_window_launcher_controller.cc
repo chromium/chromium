@@ -160,11 +160,11 @@ void AppServiceAppWindowLauncherController::ActiveUserChanged(
 void AppServiceAppWindowLauncherController::AdditionalUserAddedToSession(
     Profile* profile) {
   // Each users InstanceRegister needs to be observed.
-  proxy_ = apps::AppServiceProxyFactory::GetForProfile(profile);
-  proxy_->InstanceRegistry().AddObserver(this);
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
+  proxy->InstanceRegistry().AddObserver(this);
   profile_list_.push_back(profile);
 
-  app_service_instance_helper_->AdditionalUserAddedToSession(profile);
+  app_service_instance_helper_->AdditionalUserAddedToSession();
 }
 
 void AppServiceAppWindowLauncherController::OnWindowInitialized(

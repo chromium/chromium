@@ -561,6 +561,9 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
   ChromeLauncherController* CreateLauncherController() {
     launcher_controller_ =
         std::make_unique<ChromeLauncherController>(profile(), model_.get());
+    launcher_controller_->SetProfileForTest(profile());
+    launcher_controller_->SetLauncherControllerHelperForTest(
+        std::make_unique<LauncherControllerHelper>(profile()));
     return launcher_controller_.get();
   }
 

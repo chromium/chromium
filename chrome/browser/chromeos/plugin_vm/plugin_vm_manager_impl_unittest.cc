@@ -19,6 +19,7 @@
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/launcher_controller_helper.h"
 #include "chrome/browser/ui/ash/launcher/shelf_spinner_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -53,6 +54,9 @@ class PluginVmManagerImplTest : public testing::Test {
     shelf_model_ = std::make_unique<ash::ShelfModel>();
     chrome_launcher_controller_ = std::make_unique<ChromeLauncherController>(
         testing_profile_.get(), shelf_model_.get());
+    chrome_launcher_controller_->SetProfileForTest(testing_profile_.get());
+    chrome_launcher_controller_->SetLauncherControllerHelperForTest(
+        std::make_unique<LauncherControllerHelper>(testing_profile_.get()));
     chrome_launcher_controller_->Init();
     histogram_tester_ = std::make_unique<base::HistogramTester>();
     chromeos::DlcserviceClient::InitializeFake();
