@@ -4,6 +4,8 @@
 
 #include "content/browser/code_cache/generated_code_cache.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions.h"
@@ -86,9 +88,9 @@ class GeneratedCodeCacheTest : public testing::Test {
 
   void FetchFromCache(const GURL& url, const GURL& origin_lock) {
     received_ = false;
-    GeneratedCodeCache::ReadDataCallback callback = base::BindRepeating(
+    GeneratedCodeCache::ReadDataCallback callback = base::BindOnce(
         &GeneratedCodeCacheTest::FetchEntryCallback, base::Unretained(this));
-    generated_code_cache_->FetchEntry(url, origin_lock, callback);
+    generated_code_cache_->FetchEntry(url, origin_lock, std::move(callback));
   }
 
   void DoomAll() {

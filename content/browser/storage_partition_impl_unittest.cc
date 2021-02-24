@@ -354,9 +354,9 @@ class RemoveCodeCacheTester {
 
   bool ContainsEntry(Cache cache, GURL url, GURL origin_lock) {
     entry_exists_ = false;
-    GeneratedCodeCache::ReadDataCallback callback = base::BindRepeating(
+    GeneratedCodeCache::ReadDataCallback callback = base::BindOnce(
         &RemoveCodeCacheTester::FetchEntryCallback, base::Unretained(this));
-    GetCache(cache)->FetchEntry(url, origin_lock, callback);
+    GetCache(cache)->FetchEntry(url, origin_lock, std::move(callback));
     await_completion_.BlockUntilNotified();
     return entry_exists_;
   }

@@ -44,8 +44,7 @@ namespace content {
 class CONTENT_EXPORT GeneratedCodeCache {
  public:
   using ReadDataCallback =
-      base::RepeatingCallback<void(const base::Time&,
-                                   mojo_base::BigBuffer data)>;
+      base::OnceCallback<void(const base::Time&, mojo_base::BigBuffer data)>;
   using GetBackendCallback = base::OnceCallback<void(disk_cache::Backend*)>;
 
   // Cache type. Used for collecting statistics for JS and Wasm in separate

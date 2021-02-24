@@ -4,6 +4,8 @@
 
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -151,10 +153,10 @@ void CodeCacheHostImpl::FetchCachedCode(blink::mojom::CodeCacheType cache_type,
     return;
   }
 
-  auto read_callback = base::BindRepeating(
-      &CodeCacheHostImpl::OnReceiveCachedCode, weak_ptr_factory_.GetWeakPtr(),
-      base::Passed(&callback));
-  code_cache->FetchEntry(url, *origin_lock, read_callback);
+  auto read_callback =
+      base::BindOnce(&CodeCacheHostImpl::OnReceiveCachedCode,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  code_cache->FetchEntry(url, *origin_lock, std::move(read_callback));
 }
 
 void CodeCacheHostImpl::ClearCodeCacheEntry(
