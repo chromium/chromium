@@ -6,8 +6,10 @@ import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
 
 declare_args() {
-  # Normally, only official Chrome Android builds will use a Google-internal
-  # list of isolated origins defined below.
+  # Normally, only Google Chrome Android and Fuchsia WebEngine builds will use
+  # a Google-internal list of isolated origins defined below.
+  # If other Fuchsia embedders are added, the associated logic may need to be
+  # updated. See crbug.com/1179087.
   #
   # You can set the variable 'use_internal_isolated_origins' to true to use this
   # Google-internal list of isolated origins even in a developer build.  Setting
@@ -15,7 +17,7 @@ declare_args() {
   # internal file is missing.
   use_internal_isolated_origins = false
 
-  if (is_chrome_branded && is_android) {
+  if (is_chrome_branded && (is_android || is_fuchsia)) {
     use_internal_isolated_origins = true
   }
 }
