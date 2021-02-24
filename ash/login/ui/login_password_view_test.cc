@@ -252,6 +252,9 @@ TEST_F(LoginPasswordViewTest, EasyUnlockClickFiresEvent) {
   LoginPasswordView::TestApi test_api(view_);
   ui::test::EventGenerator* generator = GetEventGenerator();
 
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
   // Enable icon.
   view_->SetEasyUnlockIcon(EasyUnlockIconId::SPINNER,
                            base::string16() /*accessibility_label*/);
@@ -280,6 +283,9 @@ TEST_F(LoginPasswordViewTest, EasyUnlockClickFiresEvent) {
 TEST_F(LoginPasswordViewTest, EasyUnlockMouseHover) {
   LoginPasswordView::TestApi test_api(view_);
   ui::test::EventGenerator* generator = GetEventGenerator();
+
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   // Enable icon, enable immediate hovering.
   view_->SetEasyUnlockIcon(EasyUnlockIconId::SPINNER,
