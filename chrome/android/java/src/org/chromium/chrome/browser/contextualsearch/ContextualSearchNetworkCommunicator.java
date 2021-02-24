@@ -20,8 +20,10 @@ interface ContextualSearchNetworkCommunicator {
      * @param selection the current selected text.
      * @param isExactResolve Whether the resolution should be restricted to an exact match with
      *        the given selection that cannot be expanded based on the response.
+     * @param searchContext The {@link ContextualSearchContext} that the search will use.
      */
-    void startSearchTermResolutionRequest(String selection, boolean isExactResolve);
+    void startSearchTermResolutionRequest(
+            String selection, boolean isExactResolve, ContextualSearchContext searchContext);
 
     /**
      * Handles a Search Term Resolution response.

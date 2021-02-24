@@ -65,6 +65,8 @@ class ContextualSearchPolicy {
     private boolean mDidOverrideDecidedStateForTesting;
     private boolean mDecidedStateForTesting;
     private Integer mTapTriggeredPromoLimitForTesting;
+    private boolean mDidOverrideAllowSendingPageUrlForTesting;
+    private boolean mAllowSendingPageUrlForTesting;
 
     /**
      * Tracks whether the In-Panel-Help has been shown.
@@ -422,6 +424,8 @@ class ContextualSearchPolicy {
      * @return Whether we can send a URL.
      */
     private boolean hasSendUrlPermissions() {
+        if (mDidOverrideAllowSendingPageUrlForTesting) return mAllowSendingPageUrlForTesting;
+
         // Check whether the user has enabled anonymous URL-keyed data collection.
         // This is surfaced on the relatively new "Make searches and browsing better" user setting.
         // In case an experiment is active for the legacy UI call through the unified consent
@@ -485,6 +489,16 @@ class ContextualSearchPolicy {
     void overrideDecidedStateForTesting(boolean decidedState) {
         mDidOverrideDecidedStateForTesting = true;
         mDecidedStateForTesting = decidedState;
+    }
+
+    /**
+     * Overrides the user preference for sending the page URL to Google.
+     * @param doAllowSendingPageUrl Whether to allow sending the page URL or not, for tests.
+     */
+    @VisibleForTesting
+    void overrideAllowSendingPageUrlForTesting(boolean doAllowSendingPageUrl) {
+        mDidOverrideAllowSendingPageUrlForTesting = true;
+        mAllowSendingPageUrlForTesting = doAllowSendingPageUrl;
     }
 
     /**

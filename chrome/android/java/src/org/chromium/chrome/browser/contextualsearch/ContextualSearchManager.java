@@ -529,18 +529,11 @@ public class ContextualSearchManager
     }
 
     @Override
-    public void startSearchTermResolutionRequest(String selection, boolean isExactResolve) {
-        WebContents baseWebContents = getBaseWebContents();
-        if (baseWebContents != null && mContext != null && mContext.canResolve()) {
-            mContext.prepareToResolve(
-                    isExactResolve, mPolicy.getRelatedSearchesStamp((getBasePageLanguage())));
-            ContextualSearchManagerJni.get().startSearchTermResolutionRequest(
-                    mNativeContextualSearchManagerPtr, this, mContext, getBaseWebContents());
-            ContextualSearchUma.logResolveRequested(mSelectionController.isTapSelection());
-        } else {
-            // Something went wrong and we couldn't resolve.
-            hideContextualSearch(StateChangeReason.UNKNOWN);
-        }
+    public void startSearchTermResolutionRequest(
+            String selection, boolean isExactResolve, ContextualSearchContext searchContext) {
+        ContextualSearchManagerJni.get().startSearchTermResolutionRequest(
+                mNativeContextualSearchManagerPtr, this, mContext, getBaseWebContents());
+        ContextualSearchUma.logResolveRequested(mSelectionController.isTapSelection());
     }
 
     @Override
@@ -1747,8 +1740,20 @@ public class ContextualSearchManager
 
                 String selection = mSelectionController.getSelectedText();
                 assert !TextUtils.isEmpty(selection);
-                mNetworkCommunicator.startSearchTermResolutionRequest(
-                        selection, mSelectionController.isAdjustedSelection());
+
+                WebContents baseWebContents = getBaseWebContents();
+                boolean isExactResolve = mSelectionController.isAdjustedSelection();
+                if (baseWebContents != null && mContext != null && mContext.canResolve()) {
+                    mContext.prepareToResolve(
+                            isExactResolve, mPolicy.getRelatedSearchesStamp(getBasePageLanguage()));
+                    mNetworkCommunicator.startSearchTermResolutionRequest(
+                            selection, mSelectionController.isAdjustedSelection(), mContext);
+                } else {
+                    // Something went wrong and we couldn't resolve.
+                    hideContextualSearch(StateChangeReason.UNKNOWN);
+                    return;
+                }
+
                 // If the we were unable to start the resolve, we've hidden the UI and set the
                 // context to null.
                 if (mContext == null || mSearchPanel == null) return;
