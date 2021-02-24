@@ -36,6 +36,7 @@
 #include "chromeos/services/assistant/test_support/mock_assistant_interaction_subscriber.h"
 #include "chromeos/services/assistant/test_support/scoped_assistant_client.h"
 #include "chromeos/services/assistant/test_support/scoped_device_actions.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_timer.h"
 #include "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
 #include "libassistant/shared/public/assistant_manager.h"
@@ -125,7 +126,7 @@ class AssistantAlarmTimerControllerMock
 
   MOCK_METHOD(void,
               OnTimerStateChanged,
-              (std::vector<ash::AssistantTimerPtr>),
+              (const std::vector<AssistantTimer>&),
               (override));
 };
 
@@ -784,9 +785,9 @@ TEST_F(AssistantManagerServiceImplTest,
   StartAndWaitForRunning();
 
   EXPECT_CALL(alarm_timer_controller_mock(), OnTimerStateChanged)
-      .WillOnce(Invoke([](auto timers) {
+      .WillOnce(Invoke([](const auto& timers) {
         ASSERT_EQ(1u, timers.size());
-        EXPECT_EQ(ash::AssistantTimerState::kFired, timers[0]->state);
+        EXPECT_EQ(AssistantTimerState::kFired, timers[0].state);
       }));
 
   std::vector<assistant_client::AlarmTimerEvent> events;
@@ -819,11 +820,11 @@ TEST_F(AssistantManagerServiceImplTest,
   testing::Mock::VerifyAndClearExpectations(&alarm_timer_controller_mock());
 
   EXPECT_CALL(alarm_timer_controller_mock(), OnTimerStateChanged)
-      .WillOnce(Invoke([](auto timers) {
+      .WillOnce(Invoke([](const auto& timers) {
         ASSERT_EQ(3u, timers.size());
-        EXPECT_EQ(ash::AssistantTimerState::kScheduled, timers[0]->state);
-        EXPECT_EQ(ash::AssistantTimerState::kPaused, timers[1]->state);
-        EXPECT_EQ(ash::AssistantTimerState::kFired, timers[2]->state);
+        EXPECT_EQ(AssistantTimerState::kScheduled, timers[0].state);
+        EXPECT_EQ(AssistantTimerState::kPaused, timers[1].state);
+        EXPECT_EQ(AssistantTimerState::kFired, timers[2].state);
       }));
 
   std::vector<assistant_client::AlarmTimerEvent> events;
@@ -856,9 +857,9 @@ TEST_F(AssistantManagerServiceImplTest,
   // Expect |timers| to be sent to AssistantAlarmTimerController.  Verify
   // AssistantAlarmTimerController is notified of the scheduled timer.
   EXPECT_CALL(alarm_timer_controller_mock(), OnTimerStateChanged)
-      .WillOnce(Invoke([](auto timers) {
+      .WillOnce(Invoke([](const auto& timers) {
         ASSERT_EQ(1u, timers.size());
-        EXPECT_EQ(ash::AssistantTimerState::kScheduled, timers[0]->state);
+        EXPECT_EQ(AssistantTimerState::kScheduled, timers[0].state);
       }));
 
   // Start LibAssistant.

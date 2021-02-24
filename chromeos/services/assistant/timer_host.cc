@@ -11,6 +11,7 @@
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/public/cpp/migration/libassistant_v1_api.h"
 #include "chromeos/services/assistant/service_context.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_timer.h"
 #include "libassistant/shared/internal_api/alarm_timer_manager.h"
 #include "libassistant/shared/internal_api/alarm_timer_types.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
@@ -20,22 +21,22 @@ namespace assistant {
 
 namespace {
 
-ash::AssistantTimerState GetTimerState(assistant_client::Timer::State state) {
+AssistantTimerState GetTimerState(assistant_client::Timer::State state) {
   switch (state) {
     case assistant_client::Timer::State::UNKNOWN:
-      return ash::AssistantTimerState::kUnknown;
+      return AssistantTimerState::kUnknown;
     case assistant_client::Timer::State::SCHEDULED:
-      return ash::AssistantTimerState::kScheduled;
+      return AssistantTimerState::kScheduled;
     case assistant_client::Timer::State::PAUSED:
-      return ash::AssistantTimerState::kPaused;
+      return AssistantTimerState::kPaused;
     case assistant_client::Timer::State::FIRED:
-      return ash::AssistantTimerState::kFired;
+      return AssistantTimerState::kFired;
   }
 }
 
-std::vector<ash::AssistantTimerPtr> GetTimers(
+std::vector<AssistantTimer> GetTimers(
     assistant_client::AlarmTimerManager& timer_manager) {
-  std::vector<ash::AssistantTimerPtr> result;
+  std::vector<AssistantTimer> result;
   for (const auto& event : timer_manager.GetAllEvents()) {
     // Note that we currently only handle timers, alarms are unsupported.
     if (event.type != assistant_client::AlarmTimerEvent::TIMER)
@@ -48,26 +49,26 @@ std::vector<ash::AssistantTimerPtr> GetTimers(
       continue;
     }
 
-    auto timer = std::make_unique<ash::AssistantTimer>();
-    timer->id = event.timer_data.timer_id;
-    timer->label = event.timer_data.label;
-    timer->state = GetTimerState(event.timer_data.state);
-    timer->original_duration = base::TimeDelta::FromMilliseconds(
+    AssistantTimer timer;
+    timer.id = event.timer_data.timer_id;
+    timer.label = event.timer_data.label;
+    timer.state = GetTimerState(event.timer_data.state);
+    timer.original_duration = base::TimeDelta::FromMilliseconds(
         event.timer_data.original_duration_ms);
 
     // LibAssistant provides |fire_time_ms| as an offset from unix epoch.
-    timer->fire_time =
+    timer.fire_time =
         base::Time::UnixEpoch() +
         base::TimeDelta::FromMilliseconds(event.timer_data.fire_time_ms);
 
     // If the |timer| is paused, LibAssistant will specify the amount of time
     // remaining. Otherwise we calculate it based on |fire_time|.
-    timer->remaining_time = timer->state == ash::AssistantTimerState::kPaused
-                                ? base::TimeDelta::FromMilliseconds(
-                                      event.timer_data.remaining_duration_ms)
-                                : timer->fire_time - base::Time::Now();
+    timer.remaining_time = timer.state == AssistantTimerState::kPaused
+                               ? base::TimeDelta::FromMilliseconds(
+                                     event.timer_data.remaining_duration_ms)
+                               : timer.fire_time - base::Time::Now();
 
-    result.push_back(std::move(timer));
+    result.push_back(timer);
   }
 
   return result;

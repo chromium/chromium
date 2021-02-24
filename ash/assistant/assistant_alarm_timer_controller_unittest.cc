@@ -25,6 +25,7 @@
 #include "base/time/time.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_timer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -36,6 +37,8 @@ namespace {
 using chromeos::assistant::AssistantNotification;
 using chromeos::assistant::AssistantNotificationButton;
 using chromeos::assistant::AssistantNotificationPriority;
+using chromeos::assistant::AssistantTimer;
+using chromeos::assistant::AssistantTimerState;
 
 // Constants.
 constexpr char kClientId[] = "assistant/timer<timer-id>";
@@ -72,43 +75,42 @@ typedef struct {
 class TimerEvent {
  public:
   TimerEvent& WithLabel(const std::string& label) {
-    timer_->label = label;
+    timer_.label = label;
     return *this;
   }
 
   TimerEvent& WithCreationTime(base::Optional<base::Time> creation_time) {
-    timer_->creation_time = creation_time;
+    timer_.creation_time = creation_time;
     return *this;
   }
 
   TimerEvent& WithOriginalDuration(base::TimeDelta original_duration) {
-    timer_->original_duration = original_duration;
+    timer_.original_duration = original_duration;
     return *this;
   }
 
   TimerEvent& WithRemainingTime(base::TimeDelta remaining_time) {
-    timer_->fire_time = base::Time::Now() + remaining_time;
-    timer_->remaining_time = remaining_time;
+    timer_.fire_time = base::Time::Now() + remaining_time;
+    timer_.remaining_time = remaining_time;
     return *this;
   }
 
  protected:
-  TimerEvent(const std::string& id, AssistantTimerState state)
-      : timer_(std::make_unique<AssistantTimer>()) {
-    timer_->id = id;
-    timer_->state = state;
-    timer_->fire_time = base::Time::Now();
+  TimerEvent(const std::string& id, AssistantTimerState state) : timer_() {
+    timer_.id = id;
+    timer_.state = state;
+    timer_.fire_time = base::Time::Now();
   }
 
   ~TimerEvent() {
-    std::vector<AssistantTimerPtr> timers;
-    timers.push_back(std::move(timer_));
+    std::vector<AssistantTimer> timers;
+    timers.push_back(timer_);
     AssistantAlarmTimerController::Get()->OnTimerStateChanged(
         std::move(timers));
   }
 
  private:
-  AssistantTimerPtr timer_;
+  AssistantTimer timer_;
 };
 
 class FireTimer : public TimerEvent {

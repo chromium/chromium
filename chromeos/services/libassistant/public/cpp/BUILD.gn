@@ -13,6 +13,8 @@ component("structs") {
     "assistant_feedback.h",
     "assistant_notification.cc",
     "assistant_notification.h",
+    "assistant_timer.cc",
+    "assistant_timer.h",
   ]
 
   deps = [

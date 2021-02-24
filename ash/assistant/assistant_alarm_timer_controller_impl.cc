@@ -19,6 +19,7 @@
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_timer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
@@ -35,6 +36,8 @@ using assistant::util::AlarmTimerAction;
 using chromeos::assistant::AssistantNotification;
 using chromeos::assistant::AssistantNotificationButton;
 using chromeos::assistant::AssistantNotificationPriority;
+using chromeos::assistant::AssistantTimer;
+using chromeos::assistant::AssistantTimerState;
 using chromeos::assistant::features::IsTimersV2Enabled;
 
 // Grouping key and ID prefix for timer notifications.
@@ -351,23 +354,23 @@ const AssistantAlarmTimerModel* AssistantAlarmTimerControllerImpl::GetModel()
 }
 
 void AssistantAlarmTimerControllerImpl::OnTimerStateChanged(
-    std::vector<AssistantTimerPtr> new_or_updated_timers) {
+    const std::vector<AssistantTimer>& new_or_updated_timers) {
   // First we remove all old timers that no longer exist.
   for (const auto* old_timer : model_.GetAllTimers()) {
     if (std::none_of(new_or_updated_timers.begin(), new_or_updated_timers.end(),
                      [&old_timer](const auto& new_or_updated_timer) {
-                       return old_timer->id == new_or_updated_timer->id;
+                       return old_timer->id == new_or_updated_timer.id;
                      })) {
       model_.RemoveTimer(old_timer->id);
     }
   }
 
   // Then we add any new timers and update existing ones (if allowed).
-  for (auto& new_or_updated_timer : new_or_updated_timers) {
-    const auto* original_timer = model_.GetTimerById(new_or_updated_timer->id);
+  for (const auto& new_or_updated_timer : new_or_updated_timers) {
+    const auto* original_timer = model_.GetTimerById(new_or_updated_timer.id);
     const bool is_new_timer = original_timer == nullptr;
     if (is_new_timer || ShouldAllowUpdateFromLibAssistant(
-                            *original_timer, *new_or_updated_timer)) {
+                            *original_timer, new_or_updated_timer)) {
       model_.AddOrUpdateTimer(std::move(new_or_updated_timer));
     }
   }
@@ -526,8 +529,8 @@ void AssistantAlarmTimerControllerImpl::Tick(const std::string& timer_id) {
     return;
 
   // Update |timer| to reflect the new amount of |remaining_time|.
-  AssistantTimerPtr updated_timer = std::make_unique<AssistantTimer>(*timer);
-  updated_timer->remaining_time = updated_timer->fire_time - base::Time::Now();
+  AssistantTimer updated_timer(*timer);
+  updated_timer.remaining_time = updated_timer.fire_time - base::Time::Now();
 
   // If there is no remaining time left on the timer, we ensure that our timer
   // is marked as |kFired|. Since LibAssistant may be a bit slow to notify us of
@@ -535,8 +538,8 @@ void AssistantAlarmTimerControllerImpl::Tick(const std::string& timer_id) {
   // NOTE: We use the rounded value of |remaining_time| since that's what we are
   // displaying to the user and otherwise would be out of sync for ticks
   // occurring at full second boundary values.
-  if (std::round(updated_timer->remaining_time.InSecondsF()) <= 0.f)
-    updated_timer->state = AssistantTimerState::kFired;
+  if (std::round(updated_timer.remaining_time.InSecondsF()) <= 0.f)
+    updated_timer.state = AssistantTimerState::kFired;
 
   model_.AddOrUpdateTimer(std::move(updated_timer));
 }

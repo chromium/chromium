@@ -20,13 +20,15 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantAlarmTimerModelObserver
     : public base::CheckedObserver {
  public:
   // Invoked when the specified timer has been added.
-  virtual void OnTimerAdded(const AssistantTimer& timer) {}
+  virtual void OnTimerAdded(const chromeos::assistant::AssistantTimer& timer) {}
 
   // Invoked when the specified timer has been updated.
-  virtual void OnTimerUpdated(const AssistantTimer& timer) {}
+  virtual void OnTimerUpdated(
+      const chromeos::assistant::AssistantTimer& timer) {}
 
   // Invoked when the specified timer has been removed.
-  virtual void OnTimerRemoved(const AssistantTimer& timer) {}
+  virtual void OnTimerRemoved(
+      const chromeos::assistant::AssistantTimer& timer) {}
 
  protected:
   ~AssistantAlarmTimerModelObserver() override = default;
