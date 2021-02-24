@@ -345,6 +345,97 @@ TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_TraceEvent_Candidate) {
   bool is_oopif;
   EXPECT_TRUE(arg_dict->GetBoolean("isOOPIF", &is_oopif));
   EXPECT_EQ(false, is_oopif);
+  int x;
+  EXPECT_TRUE(arg_dict->GetInteger("frame_x", &x));
+  EXPECT_GT(x, 0);
+  int y;
+  EXPECT_TRUE(arg_dict->GetInteger("frame_y", &y));
+  EXPECT_GT(y, 0);
+  int width;
+  EXPECT_TRUE(arg_dict->GetInteger("frame_width", &width));
+  EXPECT_GT(width, 0);
+  int height;
+  EXPECT_TRUE(arg_dict->GetInteger("frame_height", &height));
+  EXPECT_GT(height, 0);
+  EXPECT_TRUE(arg_dict->GetInteger("root_x", &x));
+  EXPECT_GT(x, 0);
+  EXPECT_TRUE(arg_dict->GetInteger("root_y", &y));
+  EXPECT_GT(y, 0);
+  EXPECT_TRUE(arg_dict->GetInteger("root_width", &width));
+  EXPECT_GT(width, 0);
+  EXPECT_TRUE(arg_dict->GetInteger("root_height", &height));
+  EXPECT_GT(height, 0);
+}
+
+TEST_F(TextPaintTimingDetectorTest,
+       LargestTextPaint_TraceEvent_Candidate_Frame) {
+  using trace_analyzer::Query;
+  trace_analyzer::Start("*");
+  {
+    GetDocument().SetBaseURLOverride(KURL("http://test.com"));
+    SetBodyInnerHTML(R"HTML(
+      <style>body { margin: 15px; } iframe { display: block; position: relative; margin-top: 50px; } </style>
+      <iframe> </iframe>
+    )HTML");
+    SetChildBodyInnerHTML(R"HTML(
+    <style>body { margin: 10px;} #target { width: 200px; height: 200px; }
+    </style>
+    <div>Some content</div>
+  )HTML");
+    UpdateAllLifecyclePhasesAndSimulatePresentationTime();
+    ChildFramePresentationTimeCallBack();
+  }
+  auto analyzer = trace_analyzer::Stop();
+  trace_analyzer::TraceEventVector events;
+  Query q = Query::EventNameIs("LargestTextPaint::Candidate");
+  analyzer->FindEvents(q, &events);
+  EXPECT_EQ(1u, events.size());
+  EXPECT_EQ("loading", events[0]->category);
+
+  EXPECT_TRUE(events[0]->HasArg("frame"));
+
+  EXPECT_TRUE(events[0]->HasArg("data"));
+  std::unique_ptr<base::Value> arg;
+  EXPECT_TRUE(events[0]->GetArgAsValue("data", &arg));
+  base::DictionaryValue* arg_dict;
+  EXPECT_TRUE(arg->GetAsDictionary(&arg_dict));
+  DOMNodeId node_id;
+  EXPECT_TRUE(arg_dict->GetInteger("DOMNodeId", &node_id));
+  EXPECT_GT(node_id, 0);
+  int size;
+  EXPECT_TRUE(arg_dict->GetInteger("size", &size));
+  EXPECT_GT(size, 0);
+  DOMNodeId candidate_index;
+  EXPECT_TRUE(arg_dict->GetInteger("candidateIndex", &candidate_index));
+  EXPECT_EQ(candidate_index, 1);
+  bool is_main_frame;
+  EXPECT_TRUE(arg_dict->GetBoolean("isMainFrame", &is_main_frame));
+  EXPECT_EQ(false, is_main_frame);
+  bool is_oopif;
+  EXPECT_TRUE(arg_dict->GetBoolean("isOOPIF", &is_oopif));
+  EXPECT_EQ(false, is_oopif);
+  int x;
+  EXPECT_TRUE(arg_dict->GetInteger("frame_x", &x));
+  EXPECT_EQ(x, 10);
+  int y;
+  EXPECT_TRUE(arg_dict->GetInteger("frame_y", &y));
+  // There's sometimes a 1 pixel offset for the y dimensions.
+  EXPECT_GE(y, 9);
+  EXPECT_LE(y, 10);
+  int width;
+  EXPECT_TRUE(arg_dict->GetInteger("frame_width", &width));
+  EXPECT_GT(width, 0);
+  int height;
+  EXPECT_TRUE(arg_dict->GetInteger("frame_height", &height));
+  EXPECT_GT(height, 0);
+  EXPECT_TRUE(arg_dict->GetInteger("root_x", &x));
+  EXPECT_GT(x, 25);
+  EXPECT_TRUE(arg_dict->GetInteger("root_y", &y));
+  EXPECT_GT(y, 50);
+  EXPECT_TRUE(arg_dict->GetInteger("root_width", &width));
+  EXPECT_GT(width, 0);
+  EXPECT_TRUE(arg_dict->GetInteger("root_height", &height));
+  EXPECT_GT(height, 0);
 }
 
 TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_TraceEvent_NoCandidate) {

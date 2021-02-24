@@ -49,6 +49,9 @@ void LargestTextPaintManager::PopulateTraceValue(
   value.SetBoolean("isMainFrame", frame_view_->GetFrame().IsMainFrame());
   value.SetBoolean("isOOPIF",
                    !frame_view_->GetFrame().LocalFrameRoot().IsMainFrame());
+  if (first_text_paint.lcp_rect_info_) {
+    first_text_paint.lcp_rect_info_->OutputToTraceValue(value);
+  }
 }
 
 void LargestTextPaintManager::ReportCandidateToTrace(
@@ -185,8 +188,9 @@ void TextPaintTimingDetector::RecordAggregatedText(
   if (IgnorePaintTimingScope::IgnoreDepth() == 1) {
     if (IgnorePaintTimingScope::IsDocumentElementInvisible() &&
         records_manager_.IsRecordingLargestTextPaint()) {
-      records_manager_.MaybeUpdateLargestIgnoredText(aggregator,
-                                                     aggregated_size);
+      records_manager_.MaybeUpdateLargestIgnoredText(
+          aggregator, aggregated_size, aggregated_visual_rect,
+          mapped_visual_rect);
     }
     return;
   }
@@ -198,7 +202,8 @@ void TextPaintTimingDetector::RecordAggregatedText(
         aggregator, aggregated_size,
         TextElementTiming::ComputeIntersectionRect(
             aggregator, aggregated_visual_rect, property_tree_state,
-            frame_view_));
+            frame_view_),
+        aggregated_visual_rect, mapped_visual_rect);
     if (base::Optional<PaintTimingVisualizer>& visualizer =
             frame_view_->GetPaintTimingDetector().Visualizer()) {
       visualizer->DumpTextDebuggingRect(aggregator, mapped_visual_rect);
@@ -229,14 +234,16 @@ LargestTextPaintManager::LargestTextPaintManager(
 
 void LargestTextPaintManager::MaybeUpdateLargestIgnoredText(
     const LayoutObject& object,
-    const uint64_t& size) {
+    const uint64_t& size,
+    const IntRect& frame_visual_rect,
+    const FloatRect& root_visual_rect) {
   if (size &&
       (!largest_ignored_text_ || size > largest_ignored_text_->first_size)) {
     Node* node = object.GetNode();
     DCHECK(node);
     DOMNodeId node_id = DOMNodeIds::IdForNode(node);
-    largest_ignored_text_ =
-        std::make_unique<TextRecord>(node_id, size, FloatRect());
+    largest_ignored_text_ = std::make_unique<TextRecord>(
+        node_id, size, FloatRect(), frame_visual_rect, root_visual_rect);
   }
 }
 
@@ -304,7 +311,9 @@ void TextRecordsManager::AssignPaintTimeToQueuedRecords(
 void TextRecordsManager::RecordVisibleObject(
     const LayoutObject& object,
     const uint64_t& visual_size,
-    const FloatRect& element_timing_rect) {
+    const FloatRect& element_timing_rect,
+    const IntRect& frame_visual_rect,
+    const FloatRect& root_visual_rect) {
   DCHECK_GT(visual_size, 0u);
 
   Node* node = object.GetNode();
@@ -312,7 +321,8 @@ void TextRecordsManager::RecordVisibleObject(
   DOMNodeId node_id = DOMNodeIds::IdForNode(node);
   DCHECK_NE(node_id, kInvalidDOMNodeId);
   std::unique_ptr<TextRecord> record =
-      std::make_unique<TextRecord>(node_id, visual_size, element_timing_rect);
+      std::make_unique<TextRecord>(node_id, visual_size, element_timing_rect,
+                                   frame_visual_rect, root_visual_rect);
   base::WeakPtr<TextRecord> record_weak_ptr = record->AsWeakPtr();
   if (ltp_manager_)
     ltp_manager_->InsertRecord(record_weak_ptr);
@@ -330,8 +340,8 @@ void TextRecordsManager::RecordInvisibleObject(const LayoutObject& object) {
   DOMNodeId node_id = DOMNodeIds::IdForNode(node);
   DCHECK_NE(node_id, kInvalidDOMNodeId);
   // Since it is invisible, the record will have a size of 0 and an empty rect.
-  std::unique_ptr<TextRecord> record =
-      std::make_unique<TextRecord>(node_id, 0, FloatRect());
+  std::unique_ptr<TextRecord> record = std::make_unique<TextRecord>(
+      node_id, 0, FloatRect(), IntRect(), FloatRect());
   size_zero_texts_queued_for_paint_time_.push_back(std::move(record));
 }
 
