@@ -620,10 +620,7 @@ void LoginPasswordView::TestApi::set_immediately_hover_easy_unlock_icon() {
 LoginPasswordView::LoginPasswordView(const LoginPalette& palette)
     : clear_password_timer_(std::make_unique<base::RetainingOneShotTimer>()),
       hide_password_timer_(std::make_unique<base::RetainingOneShotTimer>()),
-      palette_(palette),
-      capslock_icon_(new views::ImageView()),
-      easy_unlock_icon_(new EasyUnlockIcon(gfx::Size(kIconSizeDp, kIconSizeDp),
-                                           /*corner_radius=*/0)) {
+      palette_(palette) {
   Shell::Get()->ime_controller()->AddObserver(this);
 
   // Contains the password layout on the left and the submit button on the
@@ -645,13 +642,17 @@ LoginPasswordView::LoginPasswordView(const LoginPalette& palette)
       views::BoxLayout::CrossAxisAlignment::kCenter);
   auto* layout_ptr = password_row_->SetLayoutManager(std::move(layout));
 
-  easy_unlock_icon_->SetVisible(false);
-  capslock_icon_->SetVisible(false);
   left_icon_ =
       password_row_->AddChildView(std::make_unique<AlternateIconsView>());
   left_icon_->SetLayoutManager(std::make_unique<views::FillLayout>());
-  left_icon_->AddChildView(easy_unlock_icon_);
-  left_icon_->AddChildView(capslock_icon_);
+
+  easy_unlock_icon_ = left_icon_->AddChildView(std::make_unique<EasyUnlockIcon>(
+      gfx::Size(kIconSizeDp, kIconSizeDp), /*corner_radius=*/0));
+  easy_unlock_icon_->SetVisible(false);
+
+  capslock_icon_ =
+      left_icon_->AddChildView(std::make_unique<views::ImageView>());
+  capslock_icon_->SetVisible(false);
 
   // Password textfield. We control the textfield size by sizing the parent
   // view, as the textfield will expand to fill it.
