@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/shell.h"
+#include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_transient_descendant_iterator.h"
@@ -84,9 +85,9 @@ void PerformHitTheWallAnimation(aura::Window* root, bool going_left) {
   ui::Layer* layer = root->layer();
   const gfx::Transform end_transform = layer->GetTargetTransform();
   gfx::Transform begin_transform = end_transform;
-  // |root| will be translated out horizontally by 4% of its width and then
-  // translated back to its original transform.
-  const float displacement_factor = 0.04f * (going_left ? 1 : -1);
+  // |root| will be translated out horizontally by kEdgePaddingRatio times its
+  // width and then translated back to its original transform.
+  const float displacement_factor = kEdgePaddingRatio * (going_left ? 1 : -1);
   begin_transform.Translate(displacement_factor * root->bounds().width(), 0);
 
   // Prepare two animation elements, one for the outgoing translation:

@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/ash_features.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/root_window_desk_switch_animator_test_api.h"
@@ -103,33 +104,30 @@ TEST_F(DeskActivationAnimationTest, VisibleDeskChangeCount) {
   wait_ending_screenshot_taken(&animation);
   EXPECT_EQ(0, animation.visible_desk_changes());
 
-  const int touchpad_swipe_length_for_desk_change =
-      RootWindowDeskSwitchAnimator::kTouchpadSwipeLengthForDeskChange;
-
   // Swipe enough so that our third and fourth desk screenshots are taken, and
   // then swipe so that the fourth desk is fully shown. There should be 3
   // visible desk changes in total.
-  animation.UpdateSwipeAnimation(-touchpad_swipe_length_for_desk_change);
+  animation.UpdateSwipeAnimation(-kTouchpadSwipeLengthForDeskChange);
   wait_ending_screenshot_taken(&animation);
 
-  animation.UpdateSwipeAnimation(-touchpad_swipe_length_for_desk_change);
+  animation.UpdateSwipeAnimation(-kTouchpadSwipeLengthForDeskChange);
   wait_ending_screenshot_taken(&animation);
 
-  animation.UpdateSwipeAnimation(-3 * touchpad_swipe_length_for_desk_change);
+  animation.UpdateSwipeAnimation(-3 * kTouchpadSwipeLengthForDeskChange);
   EXPECT_EQ(3, animation.visible_desk_changes());
 
   // Do some minor swipes to the right. We should still be focused on the last
   // desk so the visible desk change count remains the same.
-  animation.UpdateSwipeAnimation(touchpad_swipe_length_for_desk_change / 10);
-  animation.UpdateSwipeAnimation(touchpad_swipe_length_for_desk_change / 10);
+  animation.UpdateSwipeAnimation(kTouchpadSwipeLengthForDeskChange / 10);
+  animation.UpdateSwipeAnimation(kTouchpadSwipeLengthForDeskChange / 10);
   EXPECT_EQ(3, animation.visible_desk_changes());
 
   // Do two full swipes to the right, and then two full swipes to the left. Test
   // that the desk change count has increased by four.
-  animation.UpdateSwipeAnimation(touchpad_swipe_length_for_desk_change);
-  animation.UpdateSwipeAnimation(touchpad_swipe_length_for_desk_change);
-  animation.UpdateSwipeAnimation(-touchpad_swipe_length_for_desk_change);
-  animation.UpdateSwipeAnimation(-touchpad_swipe_length_for_desk_change);
+  animation.UpdateSwipeAnimation(kTouchpadSwipeLengthForDeskChange);
+  animation.UpdateSwipeAnimation(kTouchpadSwipeLengthForDeskChange);
+  animation.UpdateSwipeAnimation(-kTouchpadSwipeLengthForDeskChange);
+  animation.UpdateSwipeAnimation(-kTouchpadSwipeLengthForDeskChange);
   EXPECT_EQ(7, animation.visible_desk_changes());
 }
 

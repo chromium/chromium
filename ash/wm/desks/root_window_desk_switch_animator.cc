@@ -8,6 +8,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/screen_util.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/auto_reset.h"
@@ -122,8 +123,7 @@ std::string GetScreenshotLayerName(int index) {
 // units. Convert these units so that what is considered a full touchpad swipe
 // shifts the animation layer one entire desk length.
 float TouchpadToXTranslation(float touchpad_x, int desk_length) {
-  return desk_length * touchpad_x /
-         RootWindowDeskSwitchAnimator::kTouchpadSwipeLengthForDeskChange;
+  return desk_length * touchpad_x / kTouchpadSwipeLengthForDeskChange;
 }
 
 }  // namespace

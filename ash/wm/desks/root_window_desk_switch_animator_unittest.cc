@@ -9,6 +9,7 @@
 #include "ash/public/cpp/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/root_window_desk_switch_animator_test_api.h"
@@ -30,12 +31,10 @@ gfx::Size ComputeAnimationLayerExpectedSize(int expected_screenshots) {
   const gfx::Size root_window_size =
       Shell::GetPrimaryRootWindow()->bounds().size();
   const int edge_padding =
-      std::round(RootWindowDeskSwitchAnimator::kEdgePaddingRatio *
-                 root_window_size.width());
+      std::round(kEdgePaddingRatio * root_window_size.width());
   gfx::Size expected_size = root_window_size;
   expected_size.set_width(root_window_size.width() * expected_screenshots +
-                          RootWindowDeskSwitchAnimator::kDesksSpacing *
-                              (expected_screenshots - 1) +
+                          kDesksSpacing * (expected_screenshots - 1) +
                           2 * edge_padding);
   return expected_size;
 }
@@ -357,18 +356,16 @@ TEST_F(RootWindowDeskSwitchAnimatorTest, UpdateSwipeAnimationNewScreenshot) {
   TakeStartingDeskScreenshotAndWait();
   TakeEndingDeskScreenshotAndWait();
 
-  const int touchpad_swipe_length_for_desk_change =
-      RootWindowDeskSwitchAnimator::kTouchpadSwipeLengthForDeskChange;
   // Swipe so that half of desk indexed 0 and half of desk indexed 1 is shown.
   // Verify that a new screenshot is not needed, as the screenshots of both desk
   // 0 and desk 1 were taken when initializing.
-  EXPECT_FALSE(animator()->UpdateSwipeAnimation(
-      -touchpad_swipe_length_for_desk_change / 2));
+  EXPECT_FALSE(
+      animator()->UpdateSwipeAnimation(-kTouchpadSwipeLengthForDeskChange / 2));
 
   // Swipe so that desk indexed 1 is fully shown. Verify that a new screenshot
   // is needed as we expect the user to continue swiping to show desk indexed 2.
-  EXPECT_TRUE(animator()->UpdateSwipeAnimation(
-      -touchpad_swipe_length_for_desk_change / 2));
+  EXPECT_TRUE(
+      animator()->UpdateSwipeAnimation(-kTouchpadSwipeLengthForDeskChange / 2));
 }
 
 // Tests that additional swipes do not shift the animation layer if it has
@@ -383,9 +380,7 @@ TEST_F(RootWindowDeskSwitchAnimatorTest, UpdateSwipeAnimationLimit) {
 
   // Do a large right swipe; this will ensure we reach the limit on the left of
   // the animation layer.
-  const int touchpad_swipe_length_for_desk_change =
-      RootWindowDeskSwitchAnimator::kTouchpadSwipeLengthForDeskChange;
-  animator()->UpdateSwipeAnimation(5 * touchpad_swipe_length_for_desk_change);
+  animator()->UpdateSwipeAnimation(5 * kTouchpadSwipeLengthForDeskChange);
   auto* animation_layer = test_api()->GetAnimationLayer();
   int x_translation = animation_layer->transform().To2dTranslation().x();
 
@@ -395,11 +390,11 @@ TEST_F(RootWindowDeskSwitchAnimatorTest, UpdateSwipeAnimationLimit) {
   EXPECT_EQ(x_translation, animation_layer->transform().To2dTranslation().x());
 
   // Swipe back to desk indexed 1.
-  animator()->UpdateSwipeAnimation(-2 * touchpad_swipe_length_for_desk_change);
+  animator()->UpdateSwipeAnimation(-2 * kTouchpadSwipeLengthForDeskChange);
 
   // Do a large right swipe; this will ensure we reach the limit on the left of
   // the animation layer.
-  animator()->UpdateSwipeAnimation(-5 * touchpad_swipe_length_for_desk_change);
+  animator()->UpdateSwipeAnimation(-5 * kTouchpadSwipeLengthForDeskChange);
   x_translation = animation_layer->transform().To2dTranslation().x();
 
   // Test that an additional small left swipe will not shift the animation
@@ -418,12 +413,10 @@ TEST_F(RootWindowDeskSwitchAnimatorTest, EndSwipeAnimation) {
   TakeEndingDeskScreenshotAndWait();
   auto* animation_layer = test_api()->GetAnimationLayer();
 
-  const int touchpad_swipe_length_for_desk_change =
-      RootWindowDeskSwitchAnimator::kTouchpadSwipeLengthForDeskChange;
   // Make a small left swipe headed towards desk indexed 1. Desk indexed 0
   // should still be the most visible desk, so on ending the swipe animation,
   // desk indexed 0 is the target desk.
-  animator()->UpdateSwipeAnimation(-touchpad_swipe_length_for_desk_change / 10);
+  animator()->UpdateSwipeAnimation(-kTouchpadSwipeLengthForDeskChange / 10);
   animator()->EndSwipeAnimation(/*is_fast_swipe=*/false);
   EXPECT_EQ(
       Shell::GetPrimaryRootWindow()->bounds(),
@@ -440,8 +433,7 @@ TEST_F(RootWindowDeskSwitchAnimatorTest, EndSwipeAnimation) {
   // Make a big left swipe headed towards desk indexed 1. Desk indexed 1 should
   // be the new most visible desk, so on ending the swipe animation, desk
   // indexed 1 is the target desk.
-  animator()->UpdateSwipeAnimation(-9 * touchpad_swipe_length_for_desk_change /
-                                   10);
+  animator()->UpdateSwipeAnimation(-9 * kTouchpadSwipeLengthForDeskChange / 10);
   animator()->EndSwipeAnimation(/*is_fast_swipe=*/false);
   EXPECT_EQ(
       Shell::GetPrimaryRootWindow()->bounds(),
@@ -459,12 +451,10 @@ TEST_F(RootWindowDeskSwitchAnimatorTest, FastSwipe) {
   TakeEndingDeskScreenshotAndWait();
   auto* animation_layer = test_api()->GetAnimationLayer();
 
-  const int touchpad_swipe_length_for_desk_change =
-      RootWindowDeskSwitchAnimator::kTouchpadSwipeLengthForDeskChange;
   // Make a small left swipe headed towards desk indexed 1. We should still
   // animate to desk indexed 1 even though desk indexed 0 is the most visible
   // desk since it is a fast swipe.
-  animator()->UpdateSwipeAnimation(-touchpad_swipe_length_for_desk_change / 5);
+  animator()->UpdateSwipeAnimation(-kTouchpadSwipeLengthForDeskChange / 5);
   animator()->EndSwipeAnimation(/*is_fast_swipe=*/true);
   EXPECT_EQ(
       Shell::GetPrimaryRootWindow()->bounds(),
