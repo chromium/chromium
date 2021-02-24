@@ -18,10 +18,13 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/webui/read_later/read_later_ui.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/url_formatter/url_formatter.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/time_format.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -35,6 +38,21 @@ bool EntrySorter(const read_later::mojom::ReadLaterEntryPtr& rhs,
 // This matches the function used in the ReadingListEntry implementation.
 int64_t TimeToUS(const base::Time& time) {
   return (time - base::Time::UnixEpoch()).InMicroseconds();
+}
+
+bool IsActiveTabNTP(Browser* browser) {
+  content::WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  if (web_contents) {
+    const GURL site_origin = web_contents->GetLastCommittedURL().GetOrigin();
+    // These are also the NTP urls checked for showing the bookmark bar on the
+    // NTP.
+    if (site_origin == GURL(chrome::kChromeUINewTabURL).GetOrigin() ||
+        site_origin == GURL(chrome::kChromeUINewTabPageURL).GetOrigin()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace
@@ -62,8 +80,12 @@ void ReadLaterPageHandler::GetReadLaterEntries(
 }
 
 void ReadLaterPageHandler::OpenSavedEntry(const GURL& url) {
-  content::OpenURLParams params(url, content::Referrer(),
-                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
+  // Open in active tab if the user is on the NTP.
+  WindowOpenDisposition open_location =
+      IsActiveTabNTP(browser_) ? WindowOpenDisposition::CURRENT_TAB
+                               : WindowOpenDisposition::NEW_FOREGROUND_TAB;
+
+  content::OpenURLParams params(url, content::Referrer(), open_location,
                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
   browser_->OpenURL(params);
   reading_list_model_->SetReadStatus(url, true);

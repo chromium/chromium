@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/read_later/read_later_test_utils.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "components/reading_list/core/reading_list_model.h"
@@ -135,8 +136,35 @@ TEST_F(TestReadLaterPageHandlerTest, GetReadLaterEntries) {
   handler()->GetReadLaterEntries(std::move(callback1));
 }
 
-TEST_F(TestReadLaterPageHandlerTest, OpenSavedEntry) {
-  // Check that OpenSavedEntry opens a new tab.
+TEST_F(TestReadLaterPageHandlerTest, OpenSavedEntryOnNTP) {
+  // Open and navigate to NTP.
+  AddTabWithTitle(browser(), GURL(chrome::kChromeUINewTabURL), "NTP");
+
+  // Check that OpenSavedEntry from the NTP does not open a new tab.
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 5);
+  handler()->OpenSavedEntry(GURL(kTabUrl3));
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 5);
+
+  // Get Read later entries.
+  read_later::mojom::PageHandler::GetReadLaterEntriesCallback callback1 =
+      base::BindLambdaForTesting(
+          [&](read_later::mojom::ReadLaterEntriesByStatusPtr
+                  entries_by_status) {
+            ASSERT_EQ(1u, entries_by_status->unread_entries.size());
+            ASSERT_EQ(1u, entries_by_status->read_entries.size());
+
+            auto* entry1 = entries_by_status->unread_entries[0].get();
+            ExpectNewReadLaterEntry(entry1, GURL(kTabUrl1), kTabName1);
+
+            auto* entry2 = entries_by_status->read_entries[0].get();
+            ExpectNewReadLaterEntry(entry2, GURL(kTabUrl3), kTabName3);
+          });
+
+  handler()->GetReadLaterEntries(std::move(callback1));
+}
+
+TEST_F(TestReadLaterPageHandlerTest, OpenSavedEntryNotOnNTP) {
+  // Check that OpenSavedEntry opens a new tab when not on the NTP.
   EXPECT_EQ(browser()->tab_strip_model()->count(), 4);
   handler()->OpenSavedEntry(GURL(kTabUrl3));
   EXPECT_EQ(browser()->tab_strip_model()->count(), 5);
