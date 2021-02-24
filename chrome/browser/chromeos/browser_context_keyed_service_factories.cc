@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/browser_context_keyed_service_factories.h"
 
 #include "chrome/browser/ash/account_manager/account_manager_migrator.h"
+#include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_factory.h"
 #include "chrome/browser/chromeos/android_sms/android_sms_service_factory.h"
 #include "chrome/browser/chromeos/arc/accessibility/arc_accessibility_helper_bridge.h"
 #include "chrome/browser/chromeos/authpolicy/authpolicy_credentials_manager.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/chromeos/kerberos/kerberos_credentials_manager_factory.h"
 #include "chrome/browser/chromeos/launcher_search_provider/launcher_search_provider_service_factory.h"
-#include "chrome/browser/chromeos/login/easy_unlock/easy_unlock_service_factory.h"
 #include "chrome/browser/chromeos/nearby/nearby_connections_dependencies_provider_factory.h"
 #include "chrome/browser/chromeos/nearby/nearby_process_manager_factory.h"
 #include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos_factory.h"

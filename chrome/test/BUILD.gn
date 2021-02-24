@@ -5600,11 +5600,11 @@ test("unit_tests") {
     }
     if (is_chromeos_ash) {
       sources += [
+        "../browser/ash/login/easy_unlock/easy_unlock_auth_attempt_unittest.cc",
+        "../browser/ash/login/easy_unlock/easy_unlock_notification_controller_chromeos_unittest.cc",
+        "../browser/ash/login/easy_unlock/easy_unlock_screenlock_state_handler_unittest.cc",
+        "../browser/ash/login/easy_unlock/easy_unlock_service_regular_unittest.cc",
         "../browser/chromeos/extensions/extensions_permissions_tracker_unittest.cc",
-        "../browser/chromeos/login/easy_unlock/easy_unlock_auth_attempt_unittest.cc",
-        "../browser/chromeos/login/easy_unlock/easy_unlock_notification_controller_chromeos_unittest.cc",
-        "../browser/chromeos/login/easy_unlock/easy_unlock_screenlock_state_handler_unittest.cc",
-        "../browser/chromeos/login/easy_unlock/easy_unlock_service_regular_unittest.cc",
         "../browser/extensions/api/file_system/consent_provider_unittest.cc",
         "../browser/extensions/external_pref_loader_unittest.cc",
         "../browser/media_galleries/chromeos/mtp_device_object_enumerator_unittest.cc",
