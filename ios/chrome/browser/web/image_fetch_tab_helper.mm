@@ -6,6 +6,7 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/json/string_escape.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -137,8 +138,8 @@ void ImageFetchTabHelper::GetImageDataByJs(const GURL& url,
       timeout);
 
   std::string js =
-      base::StringPrintf("__gCrWeb.imageFetch.getImageData(%d, '%s')", call_id_,
-                         url.spec().c_str());
+      base::StringPrintf("__gCrWeb.imageFetch.getImageData(%d, %s)", call_id_,
+                         base::GetQuotedJSONString(url.spec()).c_str());
 
   web_state_->ExecuteJavaScript(base::UTF8ToUTF16(js));
 }
