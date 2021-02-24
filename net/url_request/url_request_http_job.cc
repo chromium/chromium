@@ -1115,14 +1115,6 @@ std::unique_ptr<SourceStream> URLRequestHttpJob::SetUpSourceStream() {
         // Request will not be canceled; though
         // it is expected that user will see malformed / garbage response.
         return upstream;
-      case SourceStream::TYPE_GZIP_FALLBACK_DEPRECATED:
-      case SourceStream::TYPE_SDCH_DEPRECATED:
-      case SourceStream::TYPE_SDCH_POSSIBLE_DEPRECATED:
-      case SourceStream::TYPE_REJECTED:
-      case SourceStream::TYPE_INVALID:
-      case SourceStream::TYPE_MAX:
-        NOTREACHED();
-        return nullptr;
     }
   }
 
@@ -1137,14 +1129,8 @@ std::unique_ptr<SourceStream> URLRequestHttpJob::SetUpSourceStream() {
       case SourceStream::TYPE_DEFLATE:
         downstream = GzipSourceStream::Create(std::move(upstream), type);
         break;
-      case SourceStream::TYPE_GZIP_FALLBACK_DEPRECATED:
-      case SourceStream::TYPE_SDCH_DEPRECATED:
-      case SourceStream::TYPE_SDCH_POSSIBLE_DEPRECATED:
       case SourceStream::TYPE_NONE:
-      case SourceStream::TYPE_INVALID:
-      case SourceStream::TYPE_REJECTED:
       case SourceStream::TYPE_UNKNOWN:
-      case SourceStream::TYPE_MAX:
         NOTREACHED();
         return nullptr;
     }

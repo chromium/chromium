@@ -660,7 +660,6 @@ component("net") {
       "filter/gzip_source_stream.h",
       "filter/source_stream.cc",
       "filter/source_stream.h",
-      "filter/source_stream_type_list.h",
       "http/alternative_service.cc",
       "http/alternative_service.h",
       "http/bidirectional_stream.cc",
