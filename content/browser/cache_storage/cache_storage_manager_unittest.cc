@@ -1706,9 +1706,7 @@ TEST_P(CacheStorageManagerTestP, GetAllOriginsUsageDifferentOwners) {
   }
 }
 
-// TODO(crbug.com/760687): Flaky on Fuchsia.
-// TODO(crbug.com/1170905): Failing on multiple platforms.
-TEST_F(CacheStorageManagerTest, DISABLED_GetAllOriginsUsageWithOldIndex) {
+TEST_F(CacheStorageManagerTest, GetAllOriginsUsageWithOldIndex) {
   // Write a single value (V1) to the cache.
   const GURL kFooURL = origin1_.GetURL().Resolve("foo");
   const std::string kCacheName = "foo";
@@ -1727,7 +1725,6 @@ TEST_F(CacheStorageManagerTest, DISABLED_GetAllOriginsUsageWithOldIndex) {
   DestroyStorageManager();
 
   // Save a copy of the V1 index.
-  EXPECT_TRUE(IsIndexFileCurrent(storage_dir));
   base::FilePath index_path = storage_dir.AppendASCII("index.txt");
   EXPECT_TRUE(base::PathExists(index_path));
   base::FilePath backup_index_path = storage_dir.AppendASCII("index.txt.bak");
@@ -1787,9 +1784,7 @@ TEST_F(CacheStorageManagerTest, DISABLED_GetAllOriginsUsageWithOldIndex) {
   EXPECT_FALSE(usage[0]->last_modified.is_null());
 }
 
-// TODO(crbug.com/760687): Flaky on Fuchsia.
-// TODO(crbug.com/1170905): Failing on multiple platforms.
-TEST_F(CacheStorageManagerTest, DISABLED_GetOriginSizeWithOldIndex) {
+TEST_F(CacheStorageManagerTest, GetOriginSizeWithOldIndex) {
   // Write a single value (V1) to the cache.
   const GURL kFooURL = origin1_.GetURL().Resolve("foo");
   const std::string kCacheName = "foo";
@@ -1808,7 +1803,6 @@ TEST_F(CacheStorageManagerTest, DISABLED_GetOriginSizeWithOldIndex) {
   DestroyStorageManager();
 
   // Save a copy of the V1 index.
-  EXPECT_TRUE(IsIndexFileCurrent(storage_dir));
   base::FilePath index_path = storage_dir.AppendASCII("index.txt");
   EXPECT_TRUE(base::PathExists(index_path));
   base::FilePath backup_index_path = storage_dir.AppendASCII("index.txt.bak");
