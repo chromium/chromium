@@ -203,7 +203,7 @@ class CONTENT_EXPORT VideoCaptureManager
   ~VideoCaptureManager() override;
 
   void OnDeviceInfosReceived(
-      base::ElapsedTimer* timer,
+      base::ElapsedTimer timer,
       EnumerationCallback client_callback,
       const std::vector<media::VideoCaptureDeviceInfo>& device_infos);
 

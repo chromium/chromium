@@ -251,15 +251,16 @@ void ServiceVideoCaptureProvider::GetDeviceInfosAsyncForRetry(
   service_connection->SetRetryCount(retry_count);
   // Make sure that |result_callback| gets invoked with an empty result in case
   // that the service drops the request.
+  auto split_callback = base::SplitOnceCallback(std::move(result_callback));
   service_connection->source_provider()->GetSourceInfos(
       mojo::WrapCallbackWithDropHandler(
           base::BindOnce(&ServiceVideoCaptureProvider::OnDeviceInfosReceived,
                          weak_ptr_factory_.GetWeakPtr(), service_connection,
-                         result_callback, retry_count),
+                         std::move(split_callback.first), retry_count),
           base::BindOnce(
               &ServiceVideoCaptureProvider::OnDeviceInfosRequestDropped,
               weak_ptr_factory_.GetWeakPtr(), service_connection,
-              result_callback, retry_count)));
+              std::move(split_callback.second), retry_count)));
 }
 
 void ServiceVideoCaptureProvider::OnDeviceInfosReceived(

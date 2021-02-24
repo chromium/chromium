@@ -287,10 +287,10 @@ class MediaStreamDispatcherHostTest : public testing::Test {
   void SetUp() override {
     stub_video_device_ids_.emplace_back(kRegularVideoDeviceId);
     stub_video_device_ids_.emplace_back(kDepthVideoDeviceId);
-    ON_CALL(*mock_video_capture_provider_, DoGetDeviceInfosAsync(_))
+    ON_CALL(*mock_video_capture_provider_, GetDeviceInfosAsync(_))
         .WillByDefault(Invoke(
             [this](
-                VideoCaptureProvider::GetDeviceInfosCallback& result_callback) {
+                VideoCaptureProvider::GetDeviceInfosCallback result_callback) {
               std::vector<media::VideoCaptureDeviceInfo> result;
               for (const auto& device_id : stub_video_device_ids_) {
                 media::VideoCaptureDeviceInfo info;

@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/media/video_capture_manager.h"
 
 #include <algorithm>
+#include <memory>
 #include <set>
 #include <utility>
 
@@ -20,6 +21,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "content/browser/media/media_internals.h"
 #include "content/browser/renderer_host/media/video_capture_controller.h"
@@ -128,9 +130,8 @@ void VideoCaptureManager::EnumerateDevices(
 
   // Pass a timer for UMA histogram collection.
   video_capture_provider_->GetDeviceInfosAsync(media::BindToCurrentLoop(
-      base::BindRepeating(&VideoCaptureManager::OnDeviceInfosReceived, this,
-                          base::Owned(new base::ElapsedTimer()),
-                          base::Passed(&client_callback))));
+      base::BindOnce(&VideoCaptureManager::OnDeviceInfosReceived, this,
+                     base::ElapsedTimer(), std::move(client_callback))));
 }
 
 base::UnguessableToken VideoCaptureManager::Open(
@@ -702,7 +703,7 @@ void VideoCaptureManager::OnClosed(
 }
 
 void VideoCaptureManager::OnDeviceInfosReceived(
-    base::ElapsedTimer* timer,
+    base::ElapsedTimer timer,
     EnumerationCallback client_callback,
     const std::vector<media::VideoCaptureDeviceInfo>& device_infos) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -712,7 +713,7 @@ void VideoCaptureManager::OnDeviceInfosReceived(
 
   base::UmaHistogramTimes(
       "Media.VideoCaptureManager.GetAvailableDevicesInfoOnDeviceThreadTime",
-      timer->Elapsed());
+      timer.Elapsed());
   devices_info_cache_ = device_infos;
 
   std::ostringstream string_stream;
