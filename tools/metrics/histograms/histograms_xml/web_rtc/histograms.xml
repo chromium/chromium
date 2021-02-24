@@ -1942,8 +1942,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Video.DecodeTimePerFrameInMs{CodecInfo}" units="ms"
-    expires_after="2021-02-28">
+    expires_after="2022-02-23">
   <owner>kron@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
   <summary>
     The decode time per frame for a received video stream. Continously updated
     after each frame has been decoded. {CodecInfo}
@@ -2214,7 +2215,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="WebRTC.Video.HardwareDecodedFramesBetweenSoftwareFallbacks{WebRtcCodecs}"
-    units="frames" expires_after="2021-03-16">
+    units="frames" expires_after="2022-02-23">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
