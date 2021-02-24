@@ -382,8 +382,9 @@ LayoutUnit NGTableLayoutAlgorithm::ComputeTableInlineSize(
   ComputeLocationsFromColumns(
       *column_constraints, column_sizes, border_spacing.inline_size,
       /* collapse_columns */ true, &column_locations, &has_collapsed_columns);
-  return ComputeTableSizeFromColumns(column_locations, table_border_padding,
-                                     border_spacing);
+  return std::max(ComputeTableSizeFromColumns(
+                      column_locations, table_border_padding, border_spacing),
+                  caption_constraint.min_size);
 }
 
 scoped_refptr<const NGLayoutResult> NGTableLayoutAlgorithm::Layout() {
@@ -468,14 +469,25 @@ scoped_refptr<const NGLayoutResult> NGTableLayoutAlgorithm::Layout() {
         /* shrink_collapsed */ true, &column_locations, &has_collapsed_columns);
   }
 #if DCHECK_IS_ON()
-  LayoutUnit table_inline_size;
-  if (has_collapsed_columns) {
-    table_inline_size = ComputeTableSizeFromColumns(
-        column_locations, border_padding, border_spacing);
+  if (!has_collapsed_columns) {
+    // Colums define table whose inline size equals InitialFragmentGeometry.
+    DCHECK_EQ(table_inline_size_before_collapse,
+              container_builder_.InlineSize());
+  } else if (ConstraintSpace().IsFixedInlineSize()) {
+    // Collapsed columns + fixed inline size: columns define table whose
+    // inline size is less or equal InitialFragmentGeometry.
+    LayoutUnit table_inline_size =
+        std::max(ComputeTableSizeFromColumns(column_locations, border_padding,
+                                             border_spacing),
+                 caption_constraint.min_size);
+    DCHECK_LE(table_inline_size, container_builder_.InlineSize());
   } else {
-    table_inline_size = table_inline_size_before_collapse;
+    LayoutUnit table_inline_size =
+        std::max(ComputeTableSizeFromColumns(column_locations, border_padding,
+                                             border_spacing),
+                 caption_constraint.min_size);
+    DCHECK_EQ(table_inline_size, container_builder_.InlineSize());
   }
-  DCHECK_EQ(table_inline_size, container_builder_.InlineSize());
 #endif
 
   return GenerateFragment(container_builder_.InlineSize(),
@@ -512,7 +524,7 @@ MinMaxSizesResult NGTableLayoutAlgorithm::ComputeMinMaxSizes(
       NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
           Node(), *column_constraints, undistributable_space, is_fixed_layout,
           /* is_layout_pass */ false,
-          /* skip_collapsed_columns */ true);
+          /* skip_collapsed_columns */ false);
 
   MinMaxSizes min_max{
       std::max(grid_min_max.min_size, caption_constraint.min_size),
