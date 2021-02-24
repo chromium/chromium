@@ -31,6 +31,7 @@ extern const char kInlineCSSStyleMutated[];
 extern const char kInspector[];
 extern const char kLanguage[];
 extern const char kLinkColorChange[];
+extern const char kPictureSourceChanged[];
 extern const char kPlatformColorChange[];
 extern const char kPluginChanged[];
 extern const char kPopupVisibilityChange[];

@@ -30,6 +30,7 @@ const char kInlineCSSStyleMutated[] =
 const char kInspector[] = "Inspector";
 const char kLanguage[] = "Language";
 const char kLinkColorChange[] = "LinkColorChange";
+const char kPictureSourceChanged[] = "PictureSourceChange";
 const char kPlatformColorChange[] = "PlatformColorChange";
 const char kPluginChanged[] = "Plugin Changed";
 const char kPopupVisibilityChange[] = "Popup Visibility Change";

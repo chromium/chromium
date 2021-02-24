@@ -983,7 +983,7 @@ void SVGElement::SynchronizeSVGAttribute(const QualifiedName& name) const {
   }
 }
 
-void SVGElement::CollectStyleForAnimatedPresentationAttributes(
+void SVGElement::CollectExtraStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
   // TODO(fs): This re-applies all animating attributes that are also
   // presentation attributes. The precise predicate that we want is animated

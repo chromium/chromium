@@ -62,6 +62,7 @@ class HTMLSourceElement final : public HTMLElement {
 
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
+  void AttributeChanged(const AttributeModificationParams&) override;
   bool IsURLAttribute(const Attribute&) const override;
   void ParseAttribute(const AttributeModificationParams&) override;
 

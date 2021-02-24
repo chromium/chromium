@@ -161,6 +161,17 @@ bool HTMLSourceElement::MediaQueryMatches() const {
   return media_query_list_->matches();
 }
 
+void HTMLSourceElement::AttributeChanged(
+    const AttributeModificationParams& params) {
+  const QualifiedName& name = params.name;
+  if (name == html_names::kWidthAttr || name == html_names::kHeightAttr) {
+    if (auto* picture = DynamicTo<HTMLPictureElement>(parentElement()))
+      picture->SourceAttributeChanged();
+  }
+
+  HTMLElement::AttributeChanged(params);
+}
+
 bool HTMLSourceElement::IsURLAttribute(const Attribute& attribute) const {
   return attribute.GetName() == html_names::kSrcAttr ||
          HTMLElement::IsURLAttribute(attribute);

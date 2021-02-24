@@ -161,8 +161,8 @@ class CORE_EXPORT SVGElement : public Element {
   SVGUseElement* GeneratingUseElement() const;
 
   void SynchronizeSVGAttribute(const QualifiedName&) const;
-  void CollectStyleForAnimatedPresentationAttributes(
-      MutableCSSPropertyValueSet*);
+  void CollectExtraStyleForPresentationAttribute(
+      MutableCSSPropertyValueSet*) override;
 
   scoped_refptr<ComputedStyle> CustomStyleForLayoutObject(
       const StyleRecalcContext&) final;

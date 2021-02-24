@@ -6108,8 +6108,7 @@ CSSPropertyValueSet* Element::CreatePresentationAttributeStyle() {
   AttributeCollection attributes = AttributesWithoutUpdate();
   for (const Attribute& attr : attributes)
     CollectStyleForPresentationAttribute(attr.GetName(), attr.Value(), style);
-  if (IsSVGElement())
-    To<SVGElement>(this)->CollectStyleForAnimatedPresentationAttributes(style);
+  CollectExtraStyleForPresentationAttribute(style);
   return style;
 }
 
