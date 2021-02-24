@@ -244,11 +244,6 @@ Polymer({
   },
 
   /** @private */
-  onRemoteEditAddressTap_() {
-    window.open(loadTimeData.getString('manageAddressesUrl'));
-  },
-
-  /** @private */
   onAddressRemoveConfirmationDialogClose_: function() {
     // Check if the dialog was confirmed before closing it.
     if (/** @type {!SettingsAddressRemoveConfirmationDialogElement} */

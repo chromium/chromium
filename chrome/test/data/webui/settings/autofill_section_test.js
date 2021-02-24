@@ -246,30 +246,19 @@ suite('AutofillSectionAddressTests', function() {
     assertEquals(addressSummary, actualSummary);
   });
 
-  test('verifyAddressRowButtonIsDropdownWhenLocal', function() {
+  test('verifyAddressRowButtonTriggersDropdown', function() {
     const address = createAddressEntry();
-    address.metadata.isLocal = true;
     const section = createAutofillSection([address], {});
     const addressList = section.$.addressList;
     const row = addressList.children[0];
     assertTrue(!!row);
     const menuButton = row.querySelector('#addressMenu');
     assertTrue(!!menuButton);
-    const outlinkButton = row.querySelector('cr-icon-button.icon-external');
-    assertFalse(!!outlinkButton);
-  });
+    menuButton.click();
+    flush();
 
-  test('verifyAddressRowButtonIsOutlinkWhenRemote', function() {
-    const address = createAddressEntry();
-    address.metadata.isLocal = false;
-    const section = createAutofillSection([address], {});
-    const addressList = section.$.addressList;
-    const row = addressList.children[0];
-    assertTrue(!!row);
-    const menuButton = row.querySelector('#addressMenu');
-    assertFalse(!!menuButton);
-    const outlinkButton = row.querySelector('cr-icon-button.icon-external');
-    assertTrue(!!outlinkButton);
+    assertTrue(!!section.$$('#menuEditAddress'));
+    assertTrue(!!section.$$('#menuRemoveAddress'));
   });
 
   test('verifyAddAddressDialog', function() {

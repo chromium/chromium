@@ -108,8 +108,6 @@ autofill_private::AddressEntry ProfileToAddressEntry(
   metadata->summary_label = base::UTF16ToUTF8(label_pieces[0]);
   metadata->summary_sublabel = std::make_unique<std::string>(
       base::UTF16ToUTF8(label.substr(label_pieces[0].size())));
-  metadata->is_local = std::make_unique<bool>(
-      profile.record_type() == autofill::AutofillProfile::LOCAL_PROFILE);
   address.metadata = std::move(metadata);
 
   return address;
@@ -149,7 +147,7 @@ autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
         new std::string(base::UTF16ToUTF8(credit_card.nickname())));
   }
 
-  // Create address metadata and add it to |address|.
+  // Create card metadata and add it to |card|.
   std::unique_ptr<autofill_private::AutofillMetadata> metadata(
       new autofill_private::AutofillMetadata);
   std::pair<base::string16, base::string16> label_pieces =
