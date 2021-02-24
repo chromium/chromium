@@ -5,7 +5,6 @@
 const AutomationNode = chrome.automation.AutomationNode;
 export const SwitchAccessMenuAction =
     chrome.accessibilityPrivate.SwitchAccessMenuAction;
-export const PointScanState = chrome.accessibilityPrivate.PointScanState;
 
 /** Constants used in Switch Access */
 export const SAConstants = {
@@ -83,6 +82,14 @@ export const SAConstants = {
    * @const
    */
   MenuType: {MAIN_MENU: 0, TEXT_NAVIGATION: 1, POINT_SCAN_MENU: 2},
+
+  /**
+   * The modes of interaction the user can select for how to interact with the
+   * device.
+   * @enum {number}
+   * @const
+   */
+  Mode: {ITEM_SCAN: 0, POINT_SCAN: 1},
 
   /**
    * Preferences that are configurable in Switch Access.

@@ -20,7 +20,7 @@ export class SwitchAccess {
     SwitchAccess.instance = new SwitchAccess();
 
     chrome.automation.getDesktop((desktop) => {
-      // ItemScanManager must be initialized first.
+      // Navigator must be initialized first.
       Navigator.initializeSingletonInstance(desktop);
 
       Commands.initialize();
@@ -41,6 +41,9 @@ export class SwitchAccess {
         'enable-experimental-accessibility-switch-access-text', (result) => {
           this.enableImprovedTextInput_ = result;
         });
+
+    /* @private {!SAConstants.Mode} */
+    this.mode_ = SAConstants.Mode.ITEM_SCAN;
   }
 
   /**
@@ -50,6 +53,16 @@ export class SwitchAccess {
    */
   improvedTextInputEnabled() {
     return this.enableImprovedTextInput_;
+  }
+
+  /** @return {!SAConstants.Mode} */
+  get mode() {
+    return this.mode_;
+  }
+
+  /** @param {!SAConstants.Mode} newMode */
+  set mode(newMode) {
+    this.mode_ = newMode;
   }
 
   /**

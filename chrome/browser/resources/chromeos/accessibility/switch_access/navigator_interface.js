@@ -111,3 +111,18 @@ export class ItemNavigatorInterface {
    */
   get desktopNode() {}
 }
+
+/** @abstract */
+export class PointNavigatorInterface {
+  /**
+   * Returns the current point scan point.
+   * @return {!constants.Point}
+   */
+  get currentPoint() {}
+
+  /** Starts point scanning. */
+  start() {}
+
+  /** Stops point scanning. */
+  stop() {}
+}
