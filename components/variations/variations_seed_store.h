@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/variations/metrics.h"
@@ -202,7 +203,7 @@ class VariationsSeedStore {
                               std::string* output) WARN_UNUSED_RESULT;
 
   // The pref service used to persist the variations seed.
-  PrefService* local_state_;
+  CheckedPtr<PrefService> local_state_;
 
   // Cached serial number from the most recently fetched variations seed.
   std::string latest_serial_number_;

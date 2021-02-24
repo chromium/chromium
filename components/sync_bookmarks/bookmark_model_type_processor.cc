@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -69,12 +70,12 @@ class ScopedRemoteUpdateBookmarks {
   }
 
  private:
-  bookmarks::BookmarkModel* const bookmark_model_;
+  const CheckedPtr<bookmarks::BookmarkModel> bookmark_model_;
 
   // Changes made to the bookmark model due to sync should not be undoable.
   ScopedSuspendBookmarkUndo suspend_undo_;
 
-  bookmarks::BookmarkModelObserver* const observer_;
+  const CheckedPtr<bookmarks::BookmarkModelObserver> observer_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedRemoteUpdateBookmarks);
 };

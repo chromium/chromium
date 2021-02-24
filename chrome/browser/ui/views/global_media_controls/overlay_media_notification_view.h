@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_OVERLAY_MEDIA_NOTIFICATION_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_OVERLAY_MEDIA_NOTIFICATION_VIEW_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/global_media_controls/overlay_media_notification.h"
 #include "ui/views/widget/widget.h"
 
@@ -39,9 +40,9 @@ class OverlayMediaNotificationView : public OverlayMediaNotification,
   }
 
  protected:
-  OverlayMediaNotificationsManager* manager_ = nullptr;
+  CheckedPtr<OverlayMediaNotificationsManager> manager_ = nullptr;
   const std::string id_;
-  MediaNotificationContainerImplView* const notification_;
+  const CheckedPtr<MediaNotificationContainerImplView> notification_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_OVERLAY_MEDIA_NOTIFICATION_VIEW_H_

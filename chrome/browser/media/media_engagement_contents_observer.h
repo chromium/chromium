@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_MEDIA_MEDIA_ENGAGEMENT_CONTENTS_OBSERVER_H_
 #define CHROME_BROWSER_MEDIA_MEDIA_ENGAGEMENT_CONTENTS_OBSERVER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/timer/timer.h"
 #include "content/public/browser/media_player_id.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -118,7 +119,7 @@ class MediaEngagementContentsObserver : public content::WebContentsObserver {
   void SetTaskRunnerForTest(scoped_refptr<base::SequencedTaskRunner>);
 
   // |this| is owned by |service_|.
-  MediaEngagementService* service_;
+  CheckedPtr<MediaEngagementService> service_;
 
   // Timer that will fire when the playback time reaches the minimum for
   // significant media playback.
@@ -151,7 +152,7 @@ class MediaEngagementContentsObserver : public content::WebContentsObserver {
 
    private:
     // The clock is owned by |service_| which already owns |this|.
-    base::Clock* clock_;
+    CheckedPtr<base::Clock> clock_;
 
     base::Optional<base::Time> start_time_;
     base::TimeDelta recorded_time_;

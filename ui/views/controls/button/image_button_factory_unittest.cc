@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -71,7 +72,7 @@ class ImageButtonFactoryWidgetTest : public ViewsTestBase {
 
  private:
   std::unique_ptr<Widget> widget_;
-  ImageButton* button_ = nullptr;  // owned by |widget_|.
+  CheckedPtr<ImageButton> button_ = nullptr;  // owned by |widget_|.
 
   DISALLOW_COPY_AND_ASSIGN(ImageButtonFactoryWidgetTest);
 };

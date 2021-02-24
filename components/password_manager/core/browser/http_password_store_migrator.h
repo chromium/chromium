@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/password_manager/core/browser/hsts_query.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
@@ -72,8 +73,8 @@ class HttpPasswordStoreMigrator : public PasswordStoreConsumer {
  private:
   void ProcessPasswordStoreResults();
 
-  PasswordStore* const store_;
-  Consumer* consumer_;
+  const CheckedPtr<PasswordStore> store_;
+  CheckedPtr<Consumer> consumer_;
 
   // |ProcessPasswordStoreResults| requires that both |OnHSTSQueryResult| and
   // |OnGetPasswordStoreResults| have returned. Since this can happen in an

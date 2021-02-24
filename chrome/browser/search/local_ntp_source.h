@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/scoped_observer.h"
@@ -129,12 +130,12 @@ class LocalNtpSource : public content::URLDataSource,
   // Start requests for the promo and OGB.
   void InitiatePromoAndOGBRequests();
 
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
 
   std::vector<NtpBackgroundRequest> ntp_background_collections_requests_;
   std::vector<NtpBackgroundRequest> ntp_background_image_info_requests_;
 
-  NtpBackgroundService* ntp_background_service_;
+  CheckedPtr<NtpBackgroundService> ntp_background_service_;
 
   ScopedObserver<NtpBackgroundService, NtpBackgroundServiceObserver>
       ntp_background_service_observer_{this};
@@ -143,7 +144,7 @@ class LocalNtpSource : public content::URLDataSource,
   std::vector<content::URLDataSource::GotDataCallback>
       one_google_bar_callbacks_;
 
-  OneGoogleBarService* one_google_bar_service_;
+  CheckedPtr<OneGoogleBarService> one_google_bar_service_;
 
   ScopedObserver<OneGoogleBarService, OneGoogleBarServiceObserver>
       one_google_bar_service_observer_{this};
@@ -151,19 +152,19 @@ class LocalNtpSource : public content::URLDataSource,
   base::Optional<base::TimeTicks> pending_promo_request_;
   std::vector<content::URLDataSource::GotDataCallback> promo_callbacks_;
 
-  PromoService* promo_service_;
+  CheckedPtr<PromoService> promo_service_;
 
   ScopedObserver<PromoService, PromoServiceObserver> promo_service_observer_{
       this};
 
   base::Optional<base::TimeTicks> pending_search_suggest_request_;
 
-  SearchSuggestService* search_suggest_service_;
+  CheckedPtr<SearchSuggestService> search_suggest_service_;
 
   ScopedObserver<SearchSuggestService, SearchSuggestServiceObserver>
       search_suggest_service_observer_{this};
 
-  search_provider_logos::LogoService* logo_service_;
+  CheckedPtr<search_provider_logos::LogoService> logo_service_;
   std::unique_ptr<DesktopLogoObserver> logo_observer_;
 
   std::unique_ptr<SearchConfigurationProvider> search_config_provider_;

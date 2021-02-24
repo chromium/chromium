@@ -122,7 +122,7 @@ ExclusiveAccessBubbleViews::~ExclusiveAccessBubbleViews() {
   // the popup to synchronously hide, and then asynchronously close and delete
   // itself.
   popup_->Close();
-  base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, popup_);
+  base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, popup_.get());
   CHECK(!views::WidgetObserver::IsInObserverList());
 }
 

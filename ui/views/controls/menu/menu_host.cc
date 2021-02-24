@@ -8,6 +8,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
+#include "base/memory/checked_ptr.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -73,9 +74,9 @@ class PreMenuEventDispatchHandler : public ui::EventHandler,
     window_ = nullptr;
   }
 
-  MenuController* menu_controller_;
-  SubmenuView* submenu_;
-  aura::Window* window_;
+  CheckedPtr<MenuController> menu_controller_;
+  CheckedPtr<SubmenuView> submenu_;
+  CheckedPtr<aura::Window> window_;
 
   DISALLOW_COPY_AND_ASSIGN(PreMenuEventDispatchHandler);
 };

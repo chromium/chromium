@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "content/public/browser/notification_observer.h"
@@ -135,7 +136,7 @@ class TabModalConfirmDialogDelegate : public content::NotificationObserver {
   // Close the dialog.
   void CloseDialog();
 
-  TabModalConfirmDialogCloseDelegate* close_delegate_;
+  CheckedPtr<TabModalConfirmDialogCloseDelegate> close_delegate_;
 
   // True iff we are in the process of closing, to avoid running callbacks
   // multiple times.

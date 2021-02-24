@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/controls/button/button.h"
@@ -79,7 +80,7 @@ class VIEWS_EXPORT ToggleButton : public Button {
   void AnimationProgressed(const gfx::Animation* animation) override;
 
   gfx::SlideAnimation slide_animation_{this};
-  ThumbView* thumb_view_;
+  CheckedPtr<ThumbView> thumb_view_;
   base::Optional<SkColor> track_on_color_;
   base::Optional<SkColor> track_off_color_;
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_FORCED_EXTENSIONS_FORCE_INSTALLED_TEST_BASE_H_
 #define CHROME_BROWSER_EXTENSIONS_FORCED_EXTENSIONS_FORCE_INSTALLED_TEST_BASE_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -80,10 +81,10 @@ class ForceInstalledTestBase : public testing::Test {
  private:
   policy::MockConfigurationPolicyProvider policy_provider_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* profile_;
-  sync_preferences::TestingPrefServiceSyncable* prefs_;
-  ExtensionRegistry* registry_;
-  InstallStageTracker* install_stage_tracker_;
+  CheckedPtr<TestingProfile> profile_;
+  CheckedPtr<sync_preferences::TestingPrefServiceSyncable> prefs_;
+  CheckedPtr<ExtensionRegistry> registry_;
+  CheckedPtr<InstallStageTracker> install_stage_tracker_;
   std::unique_ptr<ForceInstalledTracker> force_installed_tracker_;
 };
 

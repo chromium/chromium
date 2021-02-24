@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_FEED_CORE_V2_TASKS_WAIT_FOR_STORE_INITIALIZE_TASK_H_
 #define COMPONENTS_FEED_CORE_V2_TASKS_WAIT_FOR_STORE_INITIALIZE_TASK_H_
 
+#include "base/memory/checked_ptr.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/offline_pages/task/task.h"
 
@@ -29,8 +30,8 @@ class WaitForStoreInitializeTask : public offline_pages::Task {
   void OnMetadataLoaded(std::unique_ptr<feedstore::Metadata> metadata);
   void Done(feedstore::Metadata metadata);
 
-  FeedStream* stream_;
-  FeedStore* store_;
+  CheckedPtr<FeedStream> stream_;
+  CheckedPtr<FeedStore> store_;
 };
 
 }  // namespace feed

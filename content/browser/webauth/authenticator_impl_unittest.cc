@@ -17,6 +17,7 @@
 #include "base/compiler_specific.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -483,7 +484,7 @@ class AuthenticatorTestBase : public content::RenderViewHostTestHarness {
             std::move(virtual_device_factory));
   }
 
-  device::test::VirtualFidoDeviceFactory* virtual_device_factory_;
+  CheckedPtr<device::test::VirtualFidoDeviceFactory> virtual_device_factory_;
 };
 
 class AuthenticatorImplTest : public AuthenticatorTestBase {
@@ -1650,7 +1651,7 @@ class ExtensionAuthenticatorTest : public AuthenticatorImplTest {
 
  private:
   OverrideRPIDAuthenticatorContentBrowserClient test_client_;
-  ContentBrowserClient* old_client_ = nullptr;
+  CheckedPtr<ContentBrowserClient> old_client_ = nullptr;
 };
 
 // Test that credentials can be created and used from an extension origin when
@@ -2065,7 +2066,7 @@ class AuthenticatorContentBrowserClientTest : public AuthenticatorImplTest {
     EXPECT_TRUE(cert.find(substring) != cert.npos);
   }
 
-  ContentBrowserClient* old_client_ = nullptr;
+  CheckedPtr<ContentBrowserClient> old_client_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(AuthenticatorContentBrowserClientTest);
 };
@@ -3809,10 +3810,10 @@ class UVTestAuthenticatorClientDelegate
   void FinishCollectToken() override {}
 
  private:
-  bool* collected_pin_;
-  uint32_t* min_pin_length_;
+  CheckedPtr<bool> collected_pin_;
+  CheckedPtr<uint32_t> min_pin_length_;
   base::OnceClosure bio_callback_;
-  bool* did_bio_enrollment_;
+  CheckedPtr<bool> did_bio_enrollment_;
   bool cancel_bio_enrollment_;
 };
 
@@ -3903,7 +3904,7 @@ class UVAuthenticatorImplTest : public AuthenticatorImplTest {
   UVTestAuthenticatorContentBrowserClient test_client_;
 
  private:
-  ContentBrowserClient* old_client_ = nullptr;
+  CheckedPtr<ContentBrowserClient> old_client_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(UVAuthenticatorImplTest);
 };
@@ -3967,7 +3968,7 @@ class PINTestAuthenticatorRequestDelegate
  private:
   const bool supports_pin_;
   std::list<PINExpectation> expected_;
-  base::Optional<InterestingFailureReason>* const failure_reason_;
+  const CheckedPtr<base::Optional<InterestingFailureReason>> failure_reason_;
   DISALLOW_COPY_AND_ASSIGN(PINTestAuthenticatorRequestDelegate);
 };
 
@@ -4053,7 +4054,7 @@ class PINAuthenticatorImplTest : public UVAuthenticatorImplTest {
   }
 
  private:
-  ContentBrowserClient* old_client_ = nullptr;
+  CheckedPtr<ContentBrowserClient> old_client_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(PINAuthenticatorImplTest);
 };
@@ -5338,8 +5339,8 @@ class ResidentKeyTestAuthenticatorRequestDelegate
  private:
   const std::string expected_accounts_;
   const std::vector<uint8_t> selected_user_id_;
-  base::Optional<InterestingFailureReason>* const failure_reason_;
-  bool* const is_conditional_;
+  const CheckedPtr<base::Optional<InterestingFailureReason>> failure_reason_;
+  const CheckedPtr<bool> is_conditional_;
 };
 
 class ResidentKeyTestAuthenticatorContentBrowserClient
@@ -5402,7 +5403,7 @@ class ResidentKeyAuthenticatorImplTest : public UVAuthenticatorImplTest {
   }
 
  private:
-  ContentBrowserClient* old_client_ = nullptr;
+  CheckedPtr<ContentBrowserClient> old_client_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ResidentKeyAuthenticatorImplTest);
 };

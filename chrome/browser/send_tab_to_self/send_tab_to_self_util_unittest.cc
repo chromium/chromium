@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
@@ -68,7 +69,7 @@ class SendTabToSelfUtilTest : public BrowserWithTestWindowTest {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  Profile* incognito_profile_;
+  CheckedPtr<Profile> incognito_profile_;
   GURL url_;
   base::string16 title_;
 };

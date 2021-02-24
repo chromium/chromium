@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -93,7 +94,7 @@ class TestAXRangeScreenRectDelegate : public AXRangeRectDelegate {
   }
 
  private:
-  TestAXTreeManager* const tree_manager_;
+  const CheckedPtr<TestAXTreeManager> tree_manager_;
 };
 
 class AXRangeTest : public testing::Test, public TestAXTreeManager {

@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/feedback/feedback_common.h"
 #include "components/feedback/feedback_uploader.h"
 #include "url/gurl.h"
@@ -79,7 +80,7 @@ class FeedbackData : public FeedbackCommon {
   void OnGetTraceData(int trace_id,
                       scoped_refptr<base::RefCountedString> trace_data);
 
-  feedback::FeedbackUploader* uploader_;  // Not owned.
+  CheckedPtr<feedback::FeedbackUploader> uploader_;  // Not owned.
 
   std::string attached_filename_;
   std::string attached_file_uuid_;

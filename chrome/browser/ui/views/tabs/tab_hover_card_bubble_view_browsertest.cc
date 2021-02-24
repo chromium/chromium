@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -94,7 +95,7 @@ class TabHoverCardBubbleViewBrowserTest : public DialogBrowserTest {
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  TabStrip* tab_strip_ = nullptr;
+  CheckedPtr<TabStrip> tab_strip_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewBrowserTest,

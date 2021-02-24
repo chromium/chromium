@@ -6,6 +6,7 @@
 #define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_DIAGNOSTICS_PROVIDER_IMPL_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/signin/public/identity_manager/diagnostics_provider.h"
 
 class GaiaCookieManagerService;
@@ -34,8 +35,8 @@ class DiagnosticsProviderImpl final : public DiagnosticsProvider {
   base::TimeDelta GetDelayBeforeMakingCookieRequests() const override;
 
  private:
-  GaiaCookieManagerService* gaia_cookie_manager_service_;
-  ProfileOAuth2TokenService* profile_oauth2_token_service_;
+  CheckedPtr<GaiaCookieManagerService> gaia_cookie_manager_service_;
+  CheckedPtr<ProfileOAuth2TokenService> profile_oauth2_token_service_;
 
   DISALLOW_COPY_AND_ASSIGN(DiagnosticsProviderImpl);
 };

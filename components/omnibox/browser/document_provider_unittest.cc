@@ -5,6 +5,7 @@
 #include "components/omnibox/browser/document_provider.h"
 
 #include "base/json/json_reader.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -101,7 +102,7 @@ class DocumentProviderTest : public testing::Test,
 
   std::unique_ptr<FakeAutocompleteProviderClient> client_;
   scoped_refptr<DocumentProvider> provider_;
-  TemplateURL* default_template_url_;
+  CheckedPtr<TemplateURL> default_template_url_;
 };
 
 DocumentProviderTest::DocumentProviderTest() {}

@@ -14,6 +14,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
@@ -574,8 +575,8 @@ class LayerTreeHostContextCacheTest : public LayerTreeHostTest {
                  void(bool aggressively_free_resources));
   };
 
-  MockContextSupport* mock_main_context_support_;
-  MockContextSupport* mock_worker_context_support_;
+  CheckedPtr<MockContextSupport> mock_main_context_support_;
+  CheckedPtr<MockContextSupport> mock_worker_context_support_;
 };
 
 // Test if the LTH successfully frees resources on the main/worker
@@ -1410,7 +1411,7 @@ class LayerTreeHostTestLayerListSurfaceDamage : public LayerTreeHostTest {
   }
 
  private:
-  Layer* root_;
+  CheckedPtr<Layer> root_;
   scoped_refptr<Layer> child_a_;
   scoped_refptr<Layer> child_b_;
   scoped_refptr<Layer> child_c_;
@@ -4108,13 +4109,14 @@ class LayerTreeHostTestAbortedCommitDoesntStallSynchronousCompositor
       // surface. But it needs to be done on a new stack frame.
       bool resourceless_software_draw = false;
       ImplThreadTaskRunner()->PostTask(
-          FROM_HERE, base::BindOnce(&OnDrawLayerTreeFrameSink::OnDraw,
-                                    base::Unretained(layer_tree_frame_sink_),
-                                    resourceless_software_draw));
+          FROM_HERE,
+          base::BindOnce(&OnDrawLayerTreeFrameSink::OnDraw,
+                         base::Unretained(layer_tree_frame_sink_.get()),
+                         resourceless_software_draw));
     }
   }
 
-  OnDrawLayerTreeFrameSink* layer_tree_frame_sink_ = nullptr;
+  CheckedPtr<OnDrawLayerTreeFrameSink> layer_tree_frame_sink_ = nullptr;
 };
 
 // TODO(crbug.com/1121690): Test is flaky.
@@ -5579,8 +5581,8 @@ class LayerTreeHostTestElasticOverscroll : public LayerTreeHostTest {
 
  private:
   FakeContentLayerClient client_;
-  Layer* root_layer_;
-  ScrollElasticityHelper* scroll_elasticity_helper_;
+  CheckedPtr<Layer> root_layer_;
+  CheckedPtr<ScrollElasticityHelper> scroll_elasticity_helper_;
   int content_layer_id_;
   int num_draws_;
 };
@@ -5648,7 +5650,7 @@ class TestSwapPromise : public SwapPromise {
 
  private:
   // Not owned.
-  TestSwapPromiseResult* result_;
+  CheckedPtr<TestSwapPromiseResult> result_;
   DidNotSwapAction action_ = DidNotSwapAction::BREAK_PROMISE;
 };
 
@@ -6082,7 +6084,7 @@ class SimpleSwapPromiseMonitor : public SwapPromiseMonitor {
   }
 
  private:
-  int* set_needs_commit_count_;
+  CheckedPtr<int> set_needs_commit_count_;
 };
 
 class LayerTreeHostTestSwapPromiseDuringCommit : public LayerTreeHostTest {
@@ -6283,8 +6285,8 @@ class LayerTreeHostTestGpuRasterizationDisabled : public LayerTreeHostTest {
   }
 
   FakeContentLayerClient layer_client_;
-  FakePictureLayer* layer_;
-  FakeRecordingSource* recording_source_;
+  CheckedPtr<FakePictureLayer> layer_;
+  CheckedPtr<FakeRecordingSource> recording_source_;
 };
 
 MULTI_THREAD_TEST_F(LayerTreeHostTestGpuRasterizationDisabled);
@@ -6335,8 +6337,8 @@ class LayerTreeHostTestGpuRasterizationSupportedButDisabled
   }
 
   FakeContentLayerClient layer_client_;
-  FakePictureLayer* layer_;
-  FakeRecordingSource* recording_source_;
+  CheckedPtr<FakePictureLayer> layer_;
+  CheckedPtr<FakeRecordingSource> recording_source_;
 };
 
 MULTI_THREAD_TEST_F(LayerTreeHostTestGpuRasterizationSupportedButDisabled);
@@ -6384,8 +6386,8 @@ class LayerTreeHostTestGpuRasterizationEnabled : public LayerTreeHostTest {
   }
 
   FakeContentLayerClient layer_client_;
-  FakePictureLayer* layer_;
-  FakeRecordingSource* recording_source_;
+  CheckedPtr<FakePictureLayer> layer_;
+  CheckedPtr<FakeRecordingSource> recording_source_;
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestGpuRasterizationEnabled);
@@ -6452,8 +6454,8 @@ class LayerTreeHostTestGpuRasterizationEnabledWithMSAA : public LayerTreeTest {
   }
 
   FakeContentLayerClient layer_client_;
-  FakePictureLayer* layer_;
-  FakeRecordingSource* recording_source_;
+  CheckedPtr<FakePictureLayer> layer_;
+  CheckedPtr<FakeRecordingSource> recording_source_;
 };
 
 MULTI_THREAD_TEST_F(LayerTreeHostTestGpuRasterizationEnabledWithMSAA);
@@ -7977,7 +7979,7 @@ class LayerTreeHostTestBeginFrameAcks : public LayerTreeHostTest {
   bool compositor_frame_submitted_ = false;
   bool layers_drawn_ = false;
   viz::BeginFrameArgs current_begin_frame_args_;
-  LayerTreeHostImpl::FrameData* frame_data_;
+  CheckedPtr<LayerTreeHostImpl::FrameData> frame_data_;
 };
 
 MULTI_THREAD_BLOCKNOTIFY_TEST_F(LayerTreeHostTestBeginFrameAcks);
@@ -8641,7 +8643,7 @@ class LayerTreeHostTestRequestForceSendMetadata
     }
 
    private:
-    RenderFrameMetadataObserver* target_ = nullptr;
+    CheckedPtr<RenderFrameMetadataObserver> target_ = nullptr;
   };
 
   LayerTreeHostTestRequestForceSendMetadata() = default;
@@ -8879,7 +8881,7 @@ class LayerTreeHostTestDelegatedInkMetadataOnAndOff
     }
 
    private:
-    RenderFrameMetadataObserver* target_ = nullptr;
+    CheckedPtr<RenderFrameMetadataObserver> target_ = nullptr;
   };
 
   void BeginTest() override {

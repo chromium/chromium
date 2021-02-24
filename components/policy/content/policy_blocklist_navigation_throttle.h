@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_POLICY_CONTENT_POLICY_BLOCKLIST_NAVIGATION_THROTTLE_H_
 #define COMPONENTS_POLICY_CONTENT_POLICY_BLOCKLIST_NAVIGATION_THROTTLE_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/policy/content/safe_sites_navigation_throttle.h"
@@ -58,13 +59,13 @@ class PolicyBlocklistNavigationThrottle
                                  ThrottleCheckResult cancel_result);
   SafeSitesNavigationThrottle safe_sites_navigation_throttle_;
 
-  PolicyBlocklistService* blocklist_service_;
+  CheckedPtr<PolicyBlocklistService> blocklist_service_;
 
   // While this is not null, we are not sure policies from all the possible
   // sources have been loaded. This is null if policies have been loaded.
-  policy::PolicyService* policy_service_;
+  CheckedPtr<policy::PolicyService> policy_service_;
 
-  PrefService* prefs_;
+  CheckedPtr<PrefService> prefs_;
 
   // Time where the navigation was deferred because all policies were not
   // loaded.

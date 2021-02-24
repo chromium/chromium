@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -277,7 +278,7 @@ class PrefersColorSchemeTest : public testing::WithParamInterface<bool>,
   ui::TestNativeTheme test_theme_;
 
  private:
-  content::ContentBrowserClient* original_client_ = nullptr;
+  CheckedPtr<content::ContentBrowserClient> original_client_ = nullptr;
 
   class ChromeContentBrowserClientWithWebTheme
       : public ChromeContentBrowserClient {
@@ -290,7 +291,7 @@ class PrefersColorSchemeTest : public testing::WithParamInterface<bool>,
     const ui::NativeTheme* GetWebTheme() const override { return theme_; }
 
    private:
-    const ui::NativeTheme* const theme_;
+    const CheckedPtr<const ui::NativeTheme> theme_;
   };
 
   base::test::ScopedFeatureList feature_list_;
@@ -397,7 +398,7 @@ class PrefersContrastTest
   ui::TestNativeTheme test_theme_;
 
  private:
-  content::ContentBrowserClient* original_client_ = nullptr;
+  CheckedPtr<content::ContentBrowserClient> original_client_ = nullptr;
 
   class ChromeContentBrowserClientWithWebTheme
       : public ChromeContentBrowserClient {
@@ -410,7 +411,7 @@ class PrefersContrastTest
     const ui::NativeTheme* GetWebTheme() const override { return theme_; }
 
    private:
-    const ui::NativeTheme* const theme_;
+    const CheckedPtr<const ui::NativeTheme> theme_;
   };
 
   ChromeContentBrowserClientWithWebTheme theme_client_;

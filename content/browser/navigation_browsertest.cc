@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -2033,7 +2034,7 @@ class CorsInjectingUrlLoader : public blink::URLLoaderThrottle {
 
  private:
   // See |NavigationCorsExemptBrowserTest::last_cors_header_value_| for details.
-  std::string* last_cors_header_value_;
+  CheckedPtr<std::string> last_cors_header_value_;
 };
 
 // ContentBrowserClient responsible for creating CorsInjectingUrlLoader.
@@ -2058,7 +2059,7 @@ class CorsContentBrowserClient : public TestContentBrowserClient {
 
  private:
   // See |NavigationCorsExemptBrowserTest::last_cors_header_value_| for details.
-  std::string* last_cors_header_value_;
+  CheckedPtr<std::string> last_cors_header_value_;
 };
 
 class NavigationCorsExemptBrowserTest : public NavigationBaseBrowserTest {
@@ -2092,7 +2093,7 @@ class NavigationCorsExemptBrowserTest : public NavigationBaseBrowserTest {
   std::string last_cors_header_value_;
   CorsContentBrowserClient cors_content_browser_client_{
       &last_cors_header_value_};
-  ContentBrowserClient* original_client_ = nullptr;
+  CheckedPtr<ContentBrowserClient> original_client_ = nullptr;
 };
 
 // Verifies a header added by way of SetRequestHeader() makes it into
@@ -2167,7 +2168,7 @@ class CreateWebContentsOnCrashObserver : public NotificationObserver {
   bool observed_ = false;
 
   GURL url_;
-  WebContents* first_web_contents_;
+  CheckedPtr<WebContents> first_web_contents_;
 
   ScopedAllowRendererCrashes scoped_allow_renderer_crashes_;
 
@@ -3312,7 +3313,7 @@ class NavigationUrlRewriteBrowserTest : public NavigationBaseBrowserTest {
 
  private:
   std::unique_ptr<BrowserClient> browser_client_;
-  ContentBrowserClient* old_browser_client_;
+  CheckedPtr<ContentBrowserClient> old_browser_client_;
   url::ScopedSchemeRegistryForTests scoped_registry_;
 };
 
@@ -4294,7 +4295,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
     }
 
    private:
-    WebContents* web_contents_;
+    CheckedPtr<WebContents> web_contents_;
   };
 
   auto inserter = std::make_unique<TestNavigationThrottleInserter>(
@@ -4845,14 +4846,14 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, Bug838348) {
       // At this point, the renderer has already committed the RenderFrame, but
       // on the browser side, the RenderFrameHost is still speculative. Begin
       // another navigation, which should cause `this` to be discarded.
-      EXPECT_TRUE(BeginNavigateToURLFromRenderer(shell_, url_));
+      EXPECT_TRUE(BeginNavigateToURLFromRenderer(shell_.get(), url_));
 
       // Ignore the commit message.
       return false;
     }
 
    private:
-    Shell* const shell_;
+    const CheckedPtr<Shell> shell_;
     const GURL url_;
   };
 

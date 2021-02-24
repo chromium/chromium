@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_CORE_UKM_PAGE_LOAD_METRICS_OBSERVER_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "components/memories/core/visit_data.h"
@@ -195,7 +196,7 @@ class UkmPageLoadMetricsObserver
   void RecordSiteEngagement() const;
 
   // Guaranteed to be non-null during the lifetime of |this|.
-  network::NetworkQualityTracker* network_quality_tracker_;
+  CheckedPtr<network::NetworkQualityTracker> network_quality_tracker_;
 
   // The number of body (not header) prefilter bytes consumed by requests for
   // the page.
@@ -253,7 +254,7 @@ class UkmPageLoadMetricsObserver
   uint32_t main_frame_request_redirect_count_ = 0;
 
   // The browser context this navigation is operating in.
-  content::BrowserContext* browser_context_ = nullptr;
+  CheckedPtr<content::BrowserContext> browser_context_ = nullptr;
 
   // Whether the navigation resulted in the main frame being hosted in
   // a different process.

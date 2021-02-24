@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_TOOLBAR_TEST_TOOLBAR_ACTION_VIEW_CONTROLLER_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 
 // A minimalistic and configurable ToolbarActionViewController for use in
@@ -57,7 +58,7 @@ class TestToolbarActionViewController : public ToolbarActionViewController {
   std::string id_;
 
   // The delegate of the controller, if one exists.
-  ToolbarActionViewDelegate* delegate_ = nullptr;
+  CheckedPtr<ToolbarActionViewDelegate> delegate_ = nullptr;
 
   // Action name for the controller.
   base::string16 action_name_;

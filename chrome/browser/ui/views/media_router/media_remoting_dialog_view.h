@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_MEDIA_ROUTER_MEDIA_REMOTING_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_MEDIA_ROUTER_MEDIA_REMOTING_DIALOG_VIEW_H_
 
+#include "base/memory/checked_ptr.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 
@@ -64,13 +65,13 @@ class MediaRemotingDialogView : public views::BubbleDialogDelegateView {
 
   PermissionCallback permission_callback_;
 
-  PrefService* const pref_service_;
-  MediaRouterActionController* const action_controller_;
+  const CheckedPtr<PrefService> pref_service_;
+  const CheckedPtr<MediaRouterActionController> action_controller_;
 
   // Checkbox the user can use to indicate whether the preference should be
   // sticky. If this is checked, we record the preference and don't show the
   // dialog again.
-  views::Checkbox* remember_choice_checkbox_ = nullptr;
+  CheckedPtr<views::Checkbox> remember_choice_checkbox_ = nullptr;
 };
 
 }  // namespace media_router

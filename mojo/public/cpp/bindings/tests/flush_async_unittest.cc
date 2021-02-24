@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/synchronization/lock.h"
@@ -101,7 +102,7 @@ class KeyValueStoreImpl : public base::RefCountedThreadSafe<KeyValueStoreImpl>,
     }
 
     const scoped_refptr<base::SequencedTaskRunner> task_runner_;
-    KeyValueStoreImpl* const key_value_store_;
+    const CheckedPtr<KeyValueStoreImpl> key_value_store_;
     std::unique_ptr<Receiver<mojom::Writer>> receiver_;
   };
 

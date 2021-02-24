@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
@@ -51,7 +52,7 @@ class MojoDataPipeReader {
 
   // The current buffer to be read. It is provided by Read() and should be
   // guaranteed to be valid until the current read completes.
-  uint8_t* current_buffer_ = nullptr;
+  CheckedPtr<uint8_t> current_buffer_ = nullptr;
 
   // The number of bytes to be read for the current read request.
   uint32_t current_buffer_size_ = 0;

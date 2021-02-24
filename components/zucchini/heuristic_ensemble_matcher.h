@@ -8,6 +8,7 @@
 #include <ostream>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/ensemble_matcher.h"
 
@@ -29,7 +30,7 @@ class HeuristicEnsembleMatcher : public EnsembleMatcher {
 
  private:
   // Optional stream to print detailed information during matching.
-  std::ostream* out_ = nullptr;
+  CheckedPtr<std::ostream> out_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(HeuristicEnsembleMatcher);
 };

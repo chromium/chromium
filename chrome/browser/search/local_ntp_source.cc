@@ -12,6 +12,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
@@ -660,7 +661,7 @@ class LocalNtpSource::SearchConfigurationProvider
     service_ = nullptr;
   }
 
-  TemplateURLService* service_;
+  CheckedPtr<TemplateURLService> service_;
 
   std::string config_data_js_;
   std::string config_data_integrity_;
@@ -794,22 +795,22 @@ LocalNtpSource::LocalNtpSource(Profile* profile)
   // |ntp_background_service_| is null in incognito, or when the feature is
   // disabled.
   if (ntp_background_service_)
-    ntp_background_service_observer_.Add(ntp_background_service_);
+    ntp_background_service_observer_.Add(ntp_background_service_.get());
 
   // |one_google_bar_service_| is null in incognito, or when the feature is
   // disabled.
   if (one_google_bar_service_)
-    one_google_bar_service_observer_.Add(one_google_bar_service_);
+    one_google_bar_service_observer_.Add(one_google_bar_service_.get());
 
   // |search_suggest_service_| is null in incognito, or when the feature is
   // disabled.
   if (search_suggest_service_)
-    search_suggest_service_observer_.Add(search_suggest_service_);
+    search_suggest_service_observer_.Add(search_suggest_service_.get());
 
   // |promo_service_| is null in incognito, or when the feature is
   // disabled.
   if (promo_service_)
-    promo_service_observer_.Add(promo_service_);
+    promo_service_observer_.Add(promo_service_.get());
 
   logo_service_ = LogoServiceFactory::GetForProfile(profile_);
   logo_observer_ = std::make_unique<DesktopLogoObserver>();

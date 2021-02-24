@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
@@ -86,7 +87,7 @@ class BookmarkModelObserverImpl : public bookmarks::BookmarkModelObserver {
 
   // Points to the tracker owned by the processor. It keeps the mapping between
   // bookmark nodes and corresponding sync server entities.
-  SyncedBookmarkTracker* const bookmark_tracker_;
+  const CheckedPtr<SyncedBookmarkTracker> bookmark_tracker_;
 
   // The callback used to inform the sync engine that there are local changes to
   // be committed.

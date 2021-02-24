@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "cc/test/layer_tree_test.h"
 #include "cc/trees/clip_node.h"
@@ -142,7 +143,7 @@ class LayerTreePixelTest : public LayerTreeTest {
   gl::DisableNullDrawGLBindings enable_pixel_output_;
   std::unique_ptr<PixelComparator> pixel_comparator_;
   scoped_refptr<Layer> content_root_;  // Not used in layer list mode.
-  Layer* readback_target_;
+  CheckedPtr<Layer> readback_target_;
   base::FilePath ref_file_;
   SkBitmap expected_bitmap_;
   std::unique_ptr<SkBitmap> result_bitmap_;

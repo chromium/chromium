@@ -16,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
@@ -61,7 +62,7 @@ class UsbTestGadgetImpl : public UsbTestGadget {
  private:
   std::string device_address_;
   scoped_refptr<UsbDevice> device_;
-  UsbService* usb_service_;
+  CheckedPtr<UsbService> usb_service_;
 
   DISALLOW_COPY_AND_ASSIGN(UsbTestGadgetImpl);
 };

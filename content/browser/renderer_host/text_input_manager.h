@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/i18n/rtl.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/strings/string16.h"
 #include "content/common/content_export.h"
@@ -252,7 +253,7 @@ class CONTENT_EXPORT TextInputManager {
   // The view with active text input state, i.e., a focused <input> element.
   // It will be nullptr if no such view exists. Note that the active view
   // cannot have a |TextInputState.type| of ui::TEXT_INPUT_TYPE_NONE.
-  RenderWidgetHostViewBase* active_view_;
+  CheckedPtr<RenderWidgetHostViewBase> active_view_;
 
   // The following maps track corresponding IME state for views. For each view,
   // the values in the map are initialized and cleared in Register and

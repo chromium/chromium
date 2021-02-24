@@ -11,6 +11,7 @@
 #include "base/cancelable_callback.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/scoped_observer.h"
 #include "base/time/time.h"
@@ -305,8 +306,8 @@ class DiceWebSigninInterceptor : public KeyedService,
   // via an experiment parameter.
   bool HasUserDeclinedProfileSwitch(const std::string& email) const;
 
-  Profile* const profile_;
-  signin::IdentityManager* const identity_manager_;
+  const CheckedPtr<Profile> profile_;
+  const CheckedPtr<signin::IdentityManager> identity_manager_;
   std::unique_ptr<Delegate> delegate_;
 
   // Used in the profile that was created after the interception succeeded.

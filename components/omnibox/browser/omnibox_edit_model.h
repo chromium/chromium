@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
@@ -512,9 +513,9 @@ class OmniboxEditModel {
 
   std::unique_ptr<OmniboxController> omnibox_controller_;
 
-  OmniboxView* view_;
+  CheckedPtr<OmniboxView> view_;
 
-  OmniboxEditController* controller_;
+  CheckedPtr<OmniboxEditController> controller_;
 
   OmniboxFocusState focus_state_;
 

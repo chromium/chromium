@@ -57,7 +57,7 @@ int FakeSpeechRecognitionManager::CreateSession(
     const SpeechRecognitionSessionConfig& config) {
   VLOG(1) << "FAKE CreateSession invoked.";
   EXPECT_EQ(0, session_id_);
-  EXPECT_EQ(nullptr, listener_);
+  EXPECT_EQ(nullptr, listener_.get());
   listener_ = config.event_listener.get();
   if (config.grammars.size() > 0)
     grammar_ = config.grammars[0].url.spec();
