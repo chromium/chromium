@@ -42,6 +42,7 @@
 #include "chrome/browser/component_updater/cros_component_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/startup/startup_switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -429,11 +430,31 @@ void BrowserManager::StartWithLogFile(base::ScopedFD logfd) {
                << command_line.GetCommandLineString();
 
   // Prepare to invite lacros-chrome to the Mojo universe of Crosapi.
+  mojo::PlatformChannel legacy_channel;
+  legacy_channel.PrepareToPassRemoteEndpoint(&options, &command_line);
+  DCHECK(!legacy_crosapi_id_.has_value());
+  legacy_crosapi_id_ = CrosapiManager::Get()->SendLegacyInvitation(
+      environment_provider_.get(), legacy_channel.TakeLocalEndpoint(),
+      base::BindOnce(
+          []() { LOG(WARNING) << "Legacy Crosapi Channel disconnected"; }));
+
   mojo::PlatformChannel channel;
-  channel.PrepareToPassRemoteEndpoint(&options, &command_line);
+  std::string channel_flag_value;
+  channel.PrepareToPassRemoteEndpoint(&options.fds_to_remap,
+                                      &channel_flag_value);
+  DCHECK(!channel_flag_value.empty());
+  command_line.AppendSwitchASCII(kCrosapiMojoPlatformChannelHandle,
+                                 channel_flag_value);
   DCHECK(!crosapi_id_.has_value());
+  // Use new Crosapi mojo connection to detect process termination always.
+  // If lacros-chrome is old, the channel will be left and unused,
+  // but on process termination, the socket will be closed, so the
+  // disconnect_handler should be called. Note that, in that case, we should
+  // carefully NOT send any messages via new Crosapi intefaces and its sub
+  // interfaces, but instead, we should use the ones initiated by
+  // SendLegacyInvitation just above.
   crosapi_id_ = CrosapiManager::Get()->SendInvitation(
-      environment_provider_.get(), channel.TakeLocalEndpoint(),
+      channel.TakeLocalEndpoint(),
       base::BindOnce(&BrowserManager::OnMojoDisconnected,
                      weak_factory_.GetWeakPtr()));
 
@@ -450,6 +471,7 @@ void BrowserManager::StartWithLogFile(base::ScopedFD logfd) {
   }
   state_ = State::STARTING;
   LOG(WARNING) << "Launched lacros-chrome with pid " << lacros_process_.Pid();
+  legacy_channel.RemoteProcessLaunchAttempted();
   channel.RemoteProcessLaunchAttempted();
 }
 
@@ -458,7 +480,7 @@ void BrowserManager::OnBrowserServiceConnected(
     mojo::RemoteSetElementId mojo_id,
     mojom::BrowserService* browser_service,
     uint32_t browser_service_version) {
-  if (id != crosapi_id_) {
+  if (id != crosapi_id_ && id != legacy_crosapi_id_) {
     // This BrowserService is unrelated to this instance. Skipping.
     return;
   }
@@ -495,6 +517,7 @@ void BrowserManager::OnMojoDisconnected() {
 
   browser_service_.reset();
   crosapi_id_.reset();
+  legacy_crosapi_id_.reset();
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::WithBaseSyncPrimitives()},
       base::BindOnce(&TerminateLacrosChrome, std::move(lacros_process_)),

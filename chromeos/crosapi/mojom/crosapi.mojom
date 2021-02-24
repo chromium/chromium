@@ -47,8 +47,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 15
-// Next method id: 20
+// Next version: 16
+// Next method id: 21
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -56,6 +56,17 @@ interface Crosapi {
   // Added in M87.
   [MinVersion=4]
   BindAccountManager@7(pending_receiver<AccountManager> receiver);
+
+  // Binds the BrowserServiceHost interface to prepare registering
+  // a BrowserService to crosapi.
+  // This is a part of lacros-chrome bootstrap sequence. First, Crosapi
+  // interface is bound, and then lacros-chrome calls this so that it
+  // obtains BrowserServiceHost proxy. Finally, lacros-chrome calls
+  // BrowserServiceHost::AddBrowserService to register its BrowserService
+  // so that ash-chrome can call it to ask browser operations to lacros-chrome.
+  // Added in M90.
+  [MinVersion=15]
+  BindBrowserServiceHost@20(pending_receiver<BrowserServiceHost> receiver);
 
   // Binds the CertDatabase interface for initializing certificate database in
   // client applications.
@@ -327,6 +338,8 @@ interface BrowserService {
   // The parameters are available on the browser startup.
   InitDeprecated@2(BrowserInitParams params);
 
+  // DEPRECATED: in M90. In new versions, Crosapi is the bootstrap interface.
+  // BrowserService should be registered via BrowserServiceHost.
   // Returns the pending_receiver of Crosapi.
   // Ash-chrome is expected to call this method on initialization.
   // The browser may call Crosapi APIs earlier than this invocation.
@@ -354,4 +367,16 @@ interface BrowserService {
   // Returns Url of the active tab from the browser if there is any.
   [MinVersion=8]
   GetActiveTabUrl@5() => (url.mojom.Url? url);
+};
+
+// TODO(crbug.com/1180712): move to its own file. Currently due to circular
+// dependency BrowserServiceHost -> BrowserService -> Crosapi, we cannot
+// split files.
+// This interface is used to register BrowserService provided by a
+// crosapi client.
+[Stable, Uuid="7864a7d6-c74d-4e5f-8589-8cdb99d0c92e"]
+interface BrowserServiceHost {
+  // Registers the remote as a BrowserService. Crosapi host (ash-chrome)
+  // can make requests to control the registered browser.
+  AddBrowserService@0(pending_remote<BrowserService> browser);
 };

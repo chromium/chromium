@@ -95,13 +95,19 @@ void TestMojoConnectionManager::OnTestingSocketAvailable() {
     return;
   }
 
-  mojo::PlatformChannel channel;
-  CrosapiManager::Get()->SendInvitation(
-      environment_provider_.get(), channel.TakeLocalEndpoint(),
+  mojo::PlatformChannel legacy_channel;
+  CrosapiManager::Get()->SendLegacyInvitation(
+      environment_provider_.get(), legacy_channel.TakeLocalEndpoint(),
       base::BindOnce([]() {
         // Called when the Mojo connection to lacros-chrome is disconnected.
         // It may be "just a Mojo error" or "test is finished".
-        LOG(WARNING) << "Mojo to lacros-chrome is disconnected.";
+        LOG(WARNING) << "Legacy Mojo to lacros-chrome is disconnected.";
+      }));
+
+  mojo::PlatformChannel channel;
+  CrosapiManager::Get()->SendInvitation(
+      channel.TakeLocalEndpoint(), base::BindOnce([]() {
+        LOG(WARNING) << "Mojo to lacros-chrome is disconnected";
       }));
 
   base::ScopedFD startup_fd =
@@ -112,8 +118,10 @@ void TestMojoConnectionManager::OnTestingSocketAvailable() {
   }
 
   std::vector<base::ScopedFD> fds;
-  fds.push_back(channel.TakeRemoteEndpoint().TakePlatformHandle().TakeFD());
+  fds.push_back(
+      legacy_channel.TakeRemoteEndpoint().TakePlatformHandle().TakeFD());
   fds.push_back(std::move(startup_fd));
+  fds.push_back(channel.TakeRemoteEndpoint().TakePlatformHandle().TakeFD());
 
   // Version of protocol Chrome is using.
   uint8_t protocol_version = 0;

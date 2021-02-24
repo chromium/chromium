@@ -121,6 +121,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
+#include "chromeos/crosapi/cpp/crosapi_constants.h"  // nogncheck
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
 #include "chromeos/startup/startup_switches.h"  // nogncheck
 #include "mojo/public/cpp/platform/named_platform_channel.h"
@@ -426,21 +427,29 @@ void BrowserTestBase::SetUp() {
         PLOG(ERROR) << "Error receiving message from the socket";
       ASSERT_EQ(1, size);
       EXPECT_EQ(0u, buf[0]);
+      // We have three variation of ash-chrome behaviors depending on the age.
       // Older ash-chrome gives us one FD, which will become a Mojo connection.
-      // Newer ash-chrome gives us another FD, too, which contains startup
+      // Next ash-chrome gives us another FD, too, which contains startup
       // data.
+      // The newest ash-chrome gives us yet another FD, which will become a
+      // crosapi Mojo connection.
       // TODO(crbug.com/1156033): Clean up when both ash-chrome and
       // lacros-chrome become new enough.
-      ASSERT_LE(descriptors.size(), 2u);
+      ASSERT_LE(descriptors.size(), 3u);
       // It's OK to release the FD because lacros-chrome's code will consume it.
       command_line->AppendSwitchASCII(
           mojo::PlatformChannel::kHandleSwitch,
           base::NumberToString(descriptors[0].release()));
-      if (descriptors.size() == 2) {
+      if (descriptors.size() >= 2) {
         // Ok to release the FD here, too.
         command_line->AppendSwitchASCII(
             chromeos::switches::kCrosStartupDataFD,
             base::NumberToString(descriptors[1].release()));
+      }
+      if (descriptors.size() >= 3) {
+        command_line->AppendSwitchASCII(
+            crosapi::kCrosapiMojoPlatformChannelHandle,
+            base::NumberToString(descriptors[2].release()));
       }
     }
   }

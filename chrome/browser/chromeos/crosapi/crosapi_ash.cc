@@ -113,6 +113,12 @@ void CrosapiAsh::BindAccountManager(
   account_manager_ash->BindReceiver(std::move(receiver));
 }
 
+void CrosapiAsh::BindBrowserServiceHost(
+    mojo::PendingReceiver<crosapi::mojom::BrowserServiceHost> receiver) {
+  browser_service_host_ash_->BindReceiver(receiver_set_.current_context(),
+                                          std::move(receiver));
+}
+
 void CrosapiAsh::BindFileManager(
     mojo::PendingReceiver<crosapi::mojom::FileManager> receiver) {
   file_manager_ash_->BindReceiver(std::move(receiver));

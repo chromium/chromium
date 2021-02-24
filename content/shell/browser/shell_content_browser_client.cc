@@ -468,6 +468,8 @@ ShellContentBrowserClient::GetNetworkContextsParentDirectory() {
 
 void ShellContentBrowserClient::BindBrowserControlInterface(
     mojo::ScopedMessagePipeHandle pipe) {
+  if (!pipe.is_valid())
+    return;
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<ShellControllerImpl>(),
       mojo::PendingReceiver<mojom::ShellController>(std::move(pipe)));

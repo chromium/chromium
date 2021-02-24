@@ -16,6 +16,7 @@ component("lacros") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//chromeos/crosapi/cpp",
     "//chromeos/crosapi/mojom",
     "//chromeos/process_proxy",
     "//chromeos/startup",

@@ -8,14 +8,18 @@
 #include <utility>
 
 #include "base/bind_post_task.h"
+#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/chromeos_buildflags.h"
+#include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/lacros/lacros_chrome_service_delegate.h"
 #include "chromeos/startup/startup.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/platform/platform_channel.h"
+#include "mojo/public/cpp/system/invitation.h"
 #include "url/gurl.h"
 
 namespace chromeos {
@@ -137,7 +141,7 @@ class LacrosChromeServiceNeverBlockingState
   // ash-chrome. This method binds the remote, which allows queuing of message
   // to ash-chrome. The messages will not go through until
   // RequestCrosapiReceiver() is invoked.
-  void BindCrosapiRemote() {
+  void BindCrosapi() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     pending_crosapi_receiver_ = crosapi_.BindNewPipeAndPassReceiver();
   }
@@ -149,6 +153,17 @@ class LacrosChromeServiceNeverBlockingState
       mojo::PendingReceiver<crosapi::mojom::BrowserService> receiver) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     receiver_.Bind(std::move(receiver));
+  }
+
+  void FusePipeCrosapi(
+      mojo::PendingRemote<crosapi::mojom::Crosapi> pending_remote) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    mojo::FusePipes(std::move(pending_crosapi_receiver_),
+                    std::move(pending_remote));
+    crosapi_->BindBrowserServiceHost(
+        browser_service_host_.BindNewPipeAndPassReceiver());
+    browser_service_host_->AddBrowserService(
+        receiver_.BindNewPipeAndPassRemote());
   }
 
   // These methods pass the receiver end of a mojo message pipe to ash-chrome.
@@ -290,6 +305,8 @@ class LacrosChromeServiceNeverBlockingState
   // This remote allows lacros-chrome to send messages to ash-chrome.
   mojo::Remote<crosapi::mojom::Crosapi> crosapi_;
 
+  mojo::Remote<crosapi::mojom::BrowserServiceHost> browser_service_host_;
+
   // This class holds onto the receiver for Crosapi until ash-chrome
   // is ready to bind it.
   mojo::PendingReceiver<crosapi::mojom::Crosapi> pending_crosapi_receiver_;
@@ -331,6 +348,20 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
     // Try to read the startup data. If ash-chrome is too old, the data
     // may not available, then fallback to the older approach.
     init_params_ = ReadStartupBrowserInitParams();
+
+    // Short term workaround: if --crosapi-mojo-platform-channel-handle is
+    // available, close --mojo-platform-channel-handle, and remove it
+    // from command line. It is for backward compatibility support by
+    // ash-chrome.
+    // TODO(crbug.com/1180712): Remove this, when ash-chrome stops to support
+    // legacy invitation flow.
+    auto* command_line = base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(crosapi::kCrosapiMojoPlatformChannelHandle) &&
+        command_line->HasSwitch(mojo::PlatformChannel::kHandleSwitch)) {
+      std::ignore = mojo::PlatformChannel::RecoverPassedEndpointFromCommandLine(
+          *command_line);
+      command_line->RemoveSwitch(mojo::PlatformChannel::kHandleSwitch);
+    }
   }
 
   // The sequence on which this object was constructed, and thus affine to.
@@ -351,7 +382,7 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
 
   never_blocking_sequence_->PostTask(
       FROM_HERE,
-      base::BindOnce(&LacrosChromeServiceNeverBlockingState::BindCrosapiRemote,
+      base::BindOnce(&LacrosChromeServiceNeverBlockingState::BindCrosapi,
                      weak_sequenced_state_));
 
   DCHECK(!g_instance);
@@ -366,17 +397,51 @@ LacrosChromeServiceImpl::~LacrosChromeServiceImpl() {
 
 void LacrosChromeServiceImpl::BindReceiver(
     mojo::PendingReceiver<crosapi::mojom::BrowserService> receiver) {
-  never_blocking_sequence_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &LacrosChromeServiceNeverBlockingState::BindBrowserServiceReceiver,
-          weak_sequenced_state_, std::move(receiver)));
-  // If ash-chrome is too old, BrowserInitParams may not be passed from
-  // a memory backed file directly. Then, try to wait for InitDeprecated()
-  // invocation for backward compatibility.
-  if (!init_params_)
-    sequenced_state_->WaitForInit();
+  if (receiver.is_valid()) {
+    // This is legacy invitation flow.
+    // TODO(crbug.com/1180712): Remove this after all base ash-chrome is new
+    // enough supporting new invitation flow.
+    never_blocking_sequence_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &LacrosChromeServiceNeverBlockingState::BindBrowserServiceReceiver,
+            weak_sequenced_state_, std::move(receiver)));
+
+    // If ash-chrome is too old, BrowserInitParams may not be passed from
+    // a memory backed file directly. Then, try to wait for InitDeprecated()
+    // invocation for backward compatibility.
+    if (!init_params_)
+      sequenced_state_->WaitForInit();
+  } else {
+    // Accept Crosapi invitation here. Mojo IPC support should be initialized
+    // at this stage.
+    auto* command_line = base::CommandLine::ForCurrentProcess();
+
+    // In unittests/browser_tests cases, the mojo pipe may not be set up.
+    // Just ignore the case.
+    if (!command_line->HasSwitch(crosapi::kCrosapiMojoPlatformChannelHandle))
+      return;
+
+    mojo::PlatformChannelEndpoint endpoint =
+        mojo::PlatformChannel::RecoverPassedEndpointFromString(
+            command_line->GetSwitchValueASCII(
+                crosapi::kCrosapiMojoPlatformChannelHandle));
+    auto invitation = mojo::IncomingInvitation::Accept(std::move(endpoint));
+    never_blocking_sequence_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&LacrosChromeServiceNeverBlockingState::FusePipeCrosapi,
+                       weak_sequenced_state_,
+                       mojo::PendingRemote<crosapi::mojom::Crosapi>(
+                           invitation.ExtractMessagePipe(0), /*version=*/0)));
+
+    // In this case, ash-chrome should be new enough, so init params should be
+    // passed from the startup outband file descriptor.
+  }
+
+  // In any case, |init_params_| should be initialized to a valid instance
+  // at this point.
   DCHECK(init_params_);
+
   delegate_->OnInitialized(*init_params_);
   did_bind_receiver_ = true;
 

@@ -202,10 +202,10 @@ TEST_F(TestMojoConnectionManagerTest, ConnectMultipleClients) {
   // Test connects with ash-chrome via the socket.
   std::vector<base::ScopedFD> descriptors1 =
       ConnectTestingMojoSocket(socket_path);
-  ASSERT_EQ(2u, descriptors1.size());
+  ASSERT_EQ(3u, descriptors1.size());
   std::vector<base::ScopedFD> descriptors2 =
       ConnectTestingMojoSocket(socket_path);
-  ASSERT_EQ(2u, descriptors2.size());
+  ASSERT_EQ(3u, descriptors2.size());
 
   base::RunLoop run_loop2;
   // Two BrowserService connections should be made (one for each subprocess).

@@ -227,6 +227,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // ID for the current Crosapi connection.
   // Available only when lacros-chrome is running.
   base::Optional<CrosapiId> crosapi_id_;
+  base::Optional<CrosapiId> legacy_crosapi_id_;
 
   // Proxy to BrowserService mojo service in lacros-chrome.
   // Available during lacros-chrome is running.

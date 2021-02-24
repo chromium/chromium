@@ -48,6 +48,18 @@ void BrowserServiceHostAsh::AddRemote(
                      weak_factory_.GetWeakPtr(), id, std::move(new_remote)));
 }
 
+void BrowserServiceHostAsh::BindReceiver(
+    CrosapiId id,
+    mojo::PendingReceiver<mojom::BrowserServiceHost> receiver) {
+  receiver_set_.Add(this, std::move(receiver), id);
+}
+
+void BrowserServiceHostAsh::AddBrowserService(
+    mojo::PendingRemote<mojom::BrowserService> remote) {
+  AddRemote(receiver_set_.current_context(),
+            mojo::Remote<mojom::BrowserService>(std::move(remote)));
+}
+
 void BrowserServiceHostAsh::OnVersionReady(
     CrosapiId id,
     std::unique_ptr<mojo::Remote<mojom::BrowserService>> remote,

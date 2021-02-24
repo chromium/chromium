@@ -37,14 +37,15 @@ CrosapiManager* g_instance = nullptr;
 //   query BrowserService version.
 // - Finally, on version of BrowserService got available, completion_callback is
 //   invoked.
-class CrosapiManager::InvitationFlow {
+class CrosapiManager::LegacyInvitationFlow {
  public:
-  InvitationFlow(CrosapiId crosapi_id, base::OnceClosure disconnect_handler)
+  LegacyInvitationFlow(CrosapiId crosapi_id,
+                       base::OnceClosure disconnect_handler)
       : crosapi_id_(crosapi_id),
         disconnect_handler_(std::move(disconnect_handler)) {}
-  InvitationFlow(const InvitationFlow&) = delete;
-  InvitationFlow& operator=(const InvitationFlow&) = delete;
-  ~InvitationFlow() = default;
+  LegacyInvitationFlow(const LegacyInvitationFlow&) = delete;
+  LegacyInvitationFlow& operator=(const LegacyInvitationFlow&) = delete;
+  ~LegacyInvitationFlow() = default;
 
   void Run(EnvironmentProvider* environment_provider,
            mojo::PlatformChannelEndpoint local_endpoint) {
@@ -52,7 +53,7 @@ class CrosapiManager::InvitationFlow {
     browser_service_.Bind(mojo::PendingRemote<crosapi::mojom::BrowserService>(
         invitation.AttachMessagePipe(/*token=*/0), /*version=*/0));
     browser_service_.set_disconnect_handler(base::BindOnce(
-        &InvitationFlow::OnDisconnected, weak_factory_.GetWeakPtr()));
+        &LegacyInvitationFlow::OnDisconnected, weak_factory_.GetWeakPtr()));
 
     // This is for backward compatibility.
     // TODO(crbug.com/1156033): Remove InitDeprecated() invocation when lacros
@@ -61,7 +62,7 @@ class CrosapiManager::InvitationFlow {
         browser_util::GetBrowserInitParams(environment_provider));
 
     browser_service_->RequestCrosapiReceiver(
-        base::BindOnce(&InvitationFlow::OnCrosapiReceiverReceived,
+        base::BindOnce(&LegacyInvitationFlow::OnCrosapiReceiverReceived,
                        weak_factory_.GetWeakPtr()));
     mojo::OutgoingInvitation::Send(std::move(invitation),
                                    base::kNullProcessHandle,
@@ -96,7 +97,7 @@ class CrosapiManager::InvitationFlow {
   void OnComplete() {
     auto* crosapi_manager = CrosapiManager::Get();
     base::EraseIf(crosapi_manager->pending_invitation_flow_list_,
-                  [this](const std::unique_ptr<InvitationFlow>& ptr) {
+                  [this](const std::unique_ptr<LegacyInvitationFlow>& ptr) {
                     return ptr.get() == this;
                   });
   }
@@ -105,7 +106,7 @@ class CrosapiManager::InvitationFlow {
   CrosapiId crosapi_id_;
   base::OnceClosure disconnect_handler_;
 
-  base::WeakPtrFactory<InvitationFlow> weak_factory_{this};
+  base::WeakPtrFactory<LegacyInvitationFlow> weak_factory_{this};
 };
 
 bool CrosapiManager::IsInitialized() {
@@ -129,12 +130,28 @@ CrosapiManager::~CrosapiManager() {
 }
 
 CrosapiId CrosapiManager::SendInvitation(
+    mojo::PlatformChannelEndpoint local_endpoint,
+    base::OnceClosure disconnect_handler) {
+  CrosapiId crosapi_id = crosapi_id_generator_.GenerateNextId();
+
+  mojo::OutgoingInvitation invitation;
+  crosapi_ash_->BindReceiver(mojo::PendingReceiver<crosapi::mojom::Crosapi>(
+                                 invitation.AttachMessagePipe(/*token=*/0)),
+                             crosapi_id, std::move(disconnect_handler));
+  mojo::OutgoingInvitation::Send(std::move(invitation),
+                                 base::kNullProcessHandle,
+                                 std::move(local_endpoint));
+  return crosapi_id;
+}
+
+CrosapiId CrosapiManager::SendLegacyInvitation(
     EnvironmentProvider* environment_provider,
     mojo::PlatformChannelEndpoint local_endpoint,
     base::OnceClosure disconnect_handler) {
   CrosapiId crosapi_id = crosapi_id_generator_.GenerateNextId();
-  pending_invitation_flow_list_.push_back(std::make_unique<InvitationFlow>(
-      crosapi_id, std::move(disconnect_handler)));
+  pending_invitation_flow_list_.push_back(
+      std::make_unique<LegacyInvitationFlow>(crosapi_id,
+                                             std::move(disconnect_handler)));
   pending_invitation_flow_list_.back()->Run(environment_provider,
                                             std::move(local_endpoint));
   return crosapi_id;

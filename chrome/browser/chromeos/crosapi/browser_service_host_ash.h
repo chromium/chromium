@@ -10,6 +10,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/chromeos/crosapi/crosapi_id.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
@@ -24,17 +28,25 @@ class BrowserServiceHostObserver;
 // this is for supporting multiple Crosapi clients.
 // TODO(crbug.com/1172899): Make this actual Mojo service, and
 // let client call the registration API directly.
-class BrowserServiceHostAsh {
+class BrowserServiceHostAsh : public mojom::BrowserServiceHost {
  public:
   BrowserServiceHostAsh();
   BrowserServiceHostAsh(const BrowserServiceHostAsh&) = delete;
   BrowserServiceHostAsh& operator=(const BrowserServiceHostAsh&) = delete;
-  ~BrowserServiceHostAsh();
+  ~BrowserServiceHostAsh() override;
 
   void AddObserver(BrowserServiceHostObserver* observer);
   void RemoveObserver(BrowserServiceHostObserver* observer);
 
+  // Directly register Remote BrowserService.
   void AddRemote(CrosapiId id, mojo::Remote<mojom::BrowserService> remote);
+
+  void BindReceiver(CrosapiId id,
+                    mojo::PendingReceiver<mojom::BrowserServiceHost> receiver);
+
+  // crosapi::mojom::BrowserServiceHost
+  void AddBrowserService(
+      mojo::PendingRemote<mojom::BrowserService> remote) override;
 
  private:
   void OnVersionReady(
@@ -42,6 +54,8 @@ class BrowserServiceHostAsh {
       std::unique_ptr<mojo::Remote<mojom::BrowserService>> remote,
       uint32_t version);
   void OnDisconnected(mojo::RemoteSetElementId mojo_id);
+
+  mojo::ReceiverSet<mojom::BrowserServiceHost, CrosapiId> receiver_set_;
 
   base::ObserverList<BrowserServiceHostObserver> observer_list_;
   mojo::RemoteSet<mojom::BrowserService> remote_set_;

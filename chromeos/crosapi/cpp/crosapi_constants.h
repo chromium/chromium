@@ -20,6 +20,8 @@ COMPONENT_EXPORT(CROSAPI) extern const char kReleaseChannelDev[];
 COMPONENT_EXPORT(CROSAPI) extern const char kReleaseChannelBeta[];
 COMPONENT_EXPORT(CROSAPI) extern const char kReleaseChannelStable[];
 
+COMPONENT_EXPORT(CROSAPI) extern const char kCrosapiMojoPlatformChannelHandle[];
+
 }  // namespace crosapi
 
 #endif  // CHROMEOS_CROSAPI_CPP_CROSAPI_CONSTANTS_H_

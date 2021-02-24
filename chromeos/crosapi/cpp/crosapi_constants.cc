@@ -25,4 +25,8 @@ const char kReleaseChannelDev[] = "dev-channel";
 const char kReleaseChannelBeta[] = "beta-channel";
 const char kReleaseChannelStable[] = "stable-channel";
 
+// Commandline flag whose value is the FD connected to Crosapi.
+const char kCrosapiMojoPlatformChannelHandle[] =
+    "crosapi-mojo-platform-channel-handle";
+
 }  // namespace crosapi
