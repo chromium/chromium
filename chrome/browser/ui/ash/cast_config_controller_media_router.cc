@@ -49,7 +49,7 @@ media_router::MediaRouter* GetMediaRouter() {
     return *media_router_for_test_;
 
   Profile* profile = GetProfile();
-  if (!profile)
+  if (!profile || !media_router::MediaRouterEnabled(profile))
     return nullptr;
 
   auto* router =
@@ -155,14 +155,6 @@ CastConfigControllerMediaRouter::CastConfigControllerMediaRouter() {
 }
 
 CastConfigControllerMediaRouter::~CastConfigControllerMediaRouter() = default;
-
-// static
-bool CastConfigControllerMediaRouter::MediaRouterEnabled() {
-  if (media_router_for_test_)
-    return true;
-  Profile* profile = GetProfile();
-  return profile ? media_router::MediaRouterEnabled(profile) : false;
-}
 
 // static
 void CastConfigControllerMediaRouter::SetMediaRouterForTest(

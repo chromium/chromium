@@ -26,7 +26,6 @@ class CastConfigControllerMediaRouter : public ash::CastConfigController,
   CastConfigControllerMediaRouter();
   ~CastConfigControllerMediaRouter() override;
 
-  static bool MediaRouterEnabled();
   static void SetMediaRouterForTest(media_router::MediaRouter* media_router);
 
  private:
