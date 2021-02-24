@@ -29,9 +29,15 @@ static constexpr size_t kMaxHaystack = 1024;
 static constexpr size_t kMaxNeedle = 16;
 
 struct MatchRecord {
-  MatchRecord(int start, int end, bool is_boundary, int gap_before)
-      : range(start, end), gap_before(gap_before), is_boundary(is_boundary) {}
+  MatchRecord(int start, int end, int length, bool is_boundary, int gap_before)
+      : range(start, end),
+        length(length),
+        gap_before(gap_before),
+        is_boundary(is_boundary) {}
   gfx::Range range;
+  // This can't be inferred from `range` since range is in code units for
+  // display, but `length` is in code points.
+  int length;
   int gap_before;
   bool is_boundary;
 };
@@ -63,7 +69,7 @@ double ScoreForMatches(const std::vector<MatchRecord>& matches,
       score += base_score * kRegularMultiplier * penalty_multiplier;
     }
     // ...then the rest of a contiguous match.
-    score += (match.range.length() - 1) * base_score * kRegularMultiplier;
+    score += (match.length - 1) * base_score * kRegularMultiplier;
   }
   DCHECK(score <= 1.0);
   return score;
@@ -100,27 +106,27 @@ double ConsecutiveMatchWithGaps(const base::string16& needle,
   std::vector<MatchRecord> matches;
   int gap_size_before_match = 0;
   int match_began_on_boundary = true;
-  bool in_match = false;
   int match_start = -1;
+  int match_length = 0;
 
   // Find matching ranges.
   while (!n_iter.end() && !h_iter.end()) {
     if (n_iter.get() == h_iter.get()) {
       // There's a match.
-      if (!in_match) {
+      if (match_length == 0) {
         // Match start.
-        in_match = true;
         match_start = h_iter.array_pos();
         match_began_on_boundary =
             h_iter.start() || u_isUWhiteSpace(h_iter.PreviousCodePoint());
       }
+      ++match_length;
       h_iter.Advance();
       n_iter.Advance();
     } else {
-      if (in_match) {
+      if (match_length > 0) {
         DCHECK(match_start != -1);
-        in_match = false;
-        matches.emplace_back(match_start, h_iter.array_pos(),
+        match_length = 0;
+        matches.emplace_back(match_start, h_iter.array_pos(), match_length,
                              match_began_on_boundary, gap_size_before_match);
         gap_size_before_match = 1;
         match_start = -1;
@@ -135,9 +141,9 @@ double ConsecutiveMatchWithGaps(const base::string16& needle,
     matched_ranges->clear();
     return 0;
   }
-  if (in_match) {
+  if (match_length > 0) {
     DCHECK(match_start != -1);
-    matches.emplace_back(match_start, h_iter.array_pos(),
+    matches.emplace_back(match_start, h_iter.array_pos(), match_length,
                          match_began_on_boundary, gap_size_before_match);
   }
   for (const MatchRecord& match : matches) {
