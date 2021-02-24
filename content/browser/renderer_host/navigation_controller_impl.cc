@@ -3513,8 +3513,14 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
   }
 
   if (!DoesURLMatchOriginForNavigation(dest_url, origin_to_commit)) {
-    DCHECK(false) << " url:" << dest_url
-                  << " origin:" << origin_to_commit.value();
+    if (!frame_tree_node->IsMainFrame() && dest_url.SchemeIs(url::kUrnScheme)) {
+      NOTIMPLEMENTED()
+          << "History navigation to urn:uuid resource in WebBundle is not"
+             "implemented. See crbug.com/1180697";
+    } else {
+      DCHECK(false) << " url:" << dest_url
+                    << " origin:" << origin_to_commit.value();
+    }
     return nullptr;
   }
 
