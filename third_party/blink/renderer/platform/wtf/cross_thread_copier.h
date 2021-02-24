@@ -262,15 +262,6 @@ struct CrossThreadCopier<base::WeakPtr<T>>
   STATIC_ONLY(CrossThreadCopier);
 };
 
-template <typename T>
-struct CrossThreadCopier<PassedWrapper<T>> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = PassedWrapper<typename CrossThreadCopier<T>::Type>;
-  static Type Copy(PassedWrapper<T>&& value) {
-    return WTF::Passed(CrossThreadCopier<T>::Copy(value.MoveOut()));
-  }
-};
-
 template <typename Signature>
 struct CrossThreadCopier<CrossThreadFunction<Signature>> {
   STATIC_ONLY(CrossThreadCopier);

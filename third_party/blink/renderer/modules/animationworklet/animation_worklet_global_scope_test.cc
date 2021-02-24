@@ -457,8 +457,7 @@ TEST_F(AnimationWorkletGlobalScopeTest,
   PostCrossThreadTask(
       *worklet->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
       CrossThreadBindOnce(&AnimationWorkletGlobalScopeTest::RunScriptOnWorklet,
-                          CrossThreadUnretained(this),
-                          Passed(std::move(source_code)),
+                          CrossThreadUnretained(this), std::move(source_code),
                           CrossThreadUnretained(worklet.get()),
                           CrossThreadUnretained(&waitable_event)));
   waitable_event.Wait();
