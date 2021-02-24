@@ -11,7 +11,6 @@
 #include <string>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "components/sync/base/model_type_test_util.h"
 #include "components/sync/engine/cycle/debug_info_getter.h"
 #include "components/sync/engine/cycle/mock_debug_info_getter.h"
@@ -391,8 +390,8 @@ class GetUpdatesProcessorApplyUpdatesTest : public GetUpdatesProcessorTest {
   MockUpdateHandler* GetAppliedHandler() { return autofill_handler_; }
 
  private:
-  CheckedPtr<MockUpdateHandler> bookmarks_handler_;
-  CheckedPtr<MockUpdateHandler> autofill_handler_;
+  MockUpdateHandler* bookmarks_handler_;
+  MockUpdateHandler* autofill_handler_;
 };
 
 // Verify that a normal cycle applies updates non-passively to the specified

@@ -12,7 +12,6 @@
 #include "base/base64.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/sync/protocol/unique_position.pb.h"
@@ -586,7 +585,7 @@ class IndexedLessThan {
   }
 
  private:
-  CheckedPtr<const T> values_;
+  const T* values_;
   LessThan less_than_;
 };
 

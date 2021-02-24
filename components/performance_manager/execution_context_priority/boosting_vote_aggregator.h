@@ -9,7 +9,6 @@
 #include <set>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/task/task_traits.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
@@ -59,9 +58,9 @@ class BoostingVote {
   void Reset();
 
  private:
-  CheckedPtr<BoostingVoteAggregator> aggregator_ = nullptr;
-  CheckedPtr<const ExecutionContext> input_execution_context_ = nullptr;
-  CheckedPtr<const ExecutionContext> output_execution_context_ = nullptr;
+  BoostingVoteAggregator* aggregator_ = nullptr;
+  const ExecutionContext* input_execution_context_ = nullptr;
+  const ExecutionContext* output_execution_context_ = nullptr;
   const char* reason_ = nullptr;
 };
 
@@ -270,8 +269,8 @@ class BoostingVoteAggregator : public VoteObserver {
     const ExecutionContext* dst() const { return dst_; }
 
    private:
-    CheckedPtr<const ExecutionContext> src_ = nullptr;
-    CheckedPtr<const ExecutionContext> dst_ = nullptr;
+    const ExecutionContext* src_ = nullptr;
+    const ExecutionContext* dst_ = nullptr;
   };
   using ForwardEdge = Edge<true>;
   using ReverseEdge = Edge<false>;

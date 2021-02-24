@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -95,7 +94,7 @@ class DecryptingRendererTest : public testing::Test {
   StrictMock<MockDecryptor> decryptor_;
   StrictMock<MockMediaResource> media_resource_;
   StrictMock<MockRendererClient> renderer_client_;
-  CheckedPtr<StrictMock<MockRenderer>> renderer_;
+  StrictMock<MockRenderer>* renderer_;
   std::unique_ptr<DecryptingRenderer> decrypting_renderer_;
   std::vector<std::unique_ptr<StrictMock<MockDemuxerStream>>> streams_;
 };

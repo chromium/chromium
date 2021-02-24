@@ -8,7 +8,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
@@ -36,7 +35,7 @@ class PageLoadTrackerDecoratorTest : public GraphTestHarness {
   void SetUp() override {
     Super::SetUp();
     pltd_ = new PageLoadTrackerDecorator();
-    graph()->PassToGraph(base::WrapUnique(pltd_.get()));
+    graph()->PassToGraph(base::WrapUnique(pltd_));
   }
 
   void TestPageAlmostIdleTransitions(bool timeout_waiting_for_response,
@@ -50,7 +49,7 @@ class PageLoadTrackerDecoratorTest : public GraphTestHarness {
     return PageLoadTrackerDecorator::kWaitingForIdleTimeout;
   }
 
-  CheckedPtr<PageLoadTrackerDecorator> pltd_ = nullptr;
+  PageLoadTrackerDecorator* pltd_ = nullptr;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(PageLoadTrackerDecoratorTest);

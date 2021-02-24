@@ -6,7 +6,6 @@
 #define EXTENSIONS_SHELL_BROWSER_SHELL_NATIVE_APP_WINDOW_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
 
@@ -68,7 +67,7 @@ class ShellNativeAppWindow : public NativeAppWindow {
   void SetActivateOnPointer(bool activate_on_pointer) override;
 
  private:
-  CheckedPtr<AppWindow> app_window_;
+  AppWindow* app_window_;
 
   DISALLOW_COPY_AND_ASSIGN(ShellNativeAppWindow);
 };

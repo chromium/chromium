@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SAFE_BROWSING_SAFE_BROWSING_METRICS_COLLECTOR_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -110,7 +109,7 @@ class SafeBrowsingMetricsCollector : public KeyedService {
                          base::Time since_time);
   UserState GetUserState();
 
-  CheckedPtr<PrefService> pref_service_;
+  PrefService* pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
   base::OneShotTimer metrics_collector_timer_;
 

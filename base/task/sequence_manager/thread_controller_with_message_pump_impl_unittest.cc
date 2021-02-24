@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "base/single_thread_task_runner.h"
@@ -165,7 +164,7 @@ class FakeSequencedTaskSource : public internal::SequencedTaskSource {
   bool OnSystemIdle() override { return false; }
 
  private:
-  CheckedPtr<TickClock> clock_;
+  TickClock* clock_;
   std::queue<Task> tasks_;
   std::vector<Task> running_stack_;
   bool has_pending_high_resolution_tasks = false;
@@ -204,7 +203,7 @@ class ThreadControllerWithMessagePumpTest : public testing::Test {
   }
 
  protected:
-  CheckedPtr<MockMessagePump> message_pump_;
+  MockMessagePump* message_pump_;
   SequenceManager::Settings settings_;
   SimpleTestTickClock clock_;
   ThreadControllerForTest thread_controller_;

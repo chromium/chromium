@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -146,7 +145,7 @@ class ThumbnailTabHelperBrowserTest : public InProcessBrowserTest {
   GURL url1_;
   GURL url2_;
 
-  CheckedPtr<const BrowserList> active_browser_list_ = nullptr;
+  const BrowserList* active_browser_list_ = nullptr;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

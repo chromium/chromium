@@ -9,7 +9,6 @@
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
 #include "chrome/browser/ui/browser.h"
@@ -112,7 +111,7 @@ class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
   SaveCardBubbleControllerImpl* controller() { return controller_; }
 
  private:
-  CheckedPtr<SaveCardBubbleControllerImpl> controller_ = nullptr;
+  SaveCardBubbleControllerImpl* controller_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(SaveCardBubbleControllerImplTest);
 };

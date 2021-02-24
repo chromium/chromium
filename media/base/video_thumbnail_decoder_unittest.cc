@@ -7,7 +7,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
@@ -72,7 +71,7 @@ class VideoThumbnailDecoderTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
 
-  CheckedPtr<MockVideoDecoder> mock_video_decoder_;
+  MockVideoDecoder* mock_video_decoder_;
   std::unique_ptr<VideoThumbnailDecoder> thumbnail_decoder_;
 
   // The video frame returned from the thumbnail decoder.

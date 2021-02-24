@@ -6,7 +6,6 @@
 #define UI_GFX_RENDERING_PIPELINE_H_
 
 #include "base/containers/flat_map.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
@@ -40,7 +39,7 @@ class GFX_EXPORT RenderingPipeline {
     ~ScopedPipelineActive();
 
    private:
-    const CheckedPtr<RenderingPipeline> pipeline_;
+    RenderingPipeline* const pipeline_;
   };
 
   static std::unique_ptr<RenderingPipeline> CreateRendererMain();

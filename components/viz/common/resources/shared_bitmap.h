@@ -10,7 +10,6 @@
 
 #include "base/hash/hash.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/viz_common_export.h"
@@ -41,7 +40,7 @@ class VIZ_COMMON_EXPORT SharedBitmap {
   uint8_t* pixels() { return pixels_; }
 
  private:
-  CheckedPtr<uint8_t> pixels_;
+  uint8_t* pixels_;
 
   DISALLOW_COPY_AND_ASSIGN(SharedBitmap);
 };

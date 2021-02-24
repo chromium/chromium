@@ -17,7 +17,6 @@
 #include "base/containers/queue.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
@@ -115,7 +114,7 @@ class ScopedEvent {
   ~ScopedEvent() { event_->Signal(); }
 
  private:
-  CheckedPtr<base::WaitableEvent> event_;
+  base::WaitableEvent* event_;
 };
 
 // Has to be called after Initialize.

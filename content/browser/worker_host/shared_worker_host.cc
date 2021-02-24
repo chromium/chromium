@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/task/post_task.h"
@@ -75,7 +74,7 @@ class SharedWorkerHost::ScopedDevToolsHandle {
   }
 
  private:
-  CheckedPtr<SharedWorkerHost> owner_;
+  SharedWorkerHost* owner_;
 
   // Indicates if the worker should be paused when it is started. This is set
   // when a dev tools agent host already exists for that shared worker, which
@@ -105,7 +104,7 @@ class SharedWorkerHost::ScopedProcessHostRef {
   ScopedProcessHostRef(const ScopedProcessHostRef& other) = delete;
 
  private:
-  const CheckedPtr<RenderProcessHost> render_process_host_;
+  RenderProcessHost* const render_process_host_;
 };
 
 SharedWorkerHost::SharedWorkerHost(

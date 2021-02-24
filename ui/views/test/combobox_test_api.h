@@ -6,7 +6,6 @@
 #define UI_VIEWS_TEST_COMBOBOX_TEST_API_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 namespace gfx {
 class Size;
@@ -39,7 +38,7 @@ class ComboboxTestApi {
   ui::MenuModel* menu_model();
 
  private:
-  CheckedPtr<Combobox> combobox_;
+  Combobox* combobox_;
 
   DISALLOW_COPY_AND_ASSIGN(ComboboxTestApi);
 };

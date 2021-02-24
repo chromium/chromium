@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "extensions/browser/api/api_resource_manager.h"
 #include "extensions/browser/api/usb/usb_device_manager.h"
@@ -37,7 +36,7 @@ class UsbExtensionFunction : public ExtensionFunction {
   UsbDeviceManager* usb_device_manager();
 
  private:
-  CheckedPtr<UsbDeviceManager> usb_device_manager_ = nullptr;
+  UsbDeviceManager* usb_device_manager_ = nullptr;
 };
 
 class UsbPermissionCheckingFunction : public UsbExtensionFunction {
@@ -49,7 +48,7 @@ class UsbPermissionCheckingFunction : public UsbExtensionFunction {
   void RecordDeviceLastUsed();
 
  private:
-  CheckedPtr<DevicePermissionsManager> device_permissions_manager_;
+  DevicePermissionsManager* device_permissions_manager_;
   scoped_refptr<DevicePermissionEntry> permission_entry_;
 };
 

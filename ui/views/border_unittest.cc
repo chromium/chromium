@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "cc/paint/paint_recorder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -133,7 +132,7 @@ class MockPainter : public views::Painter {
   }
 
  private:
-  CheckedPtr<gfx::Canvas> given_canvas_ = nullptr;
+  gfx::Canvas* given_canvas_ = nullptr;
   gfx::Size given_size_;
 
   DISALLOW_COPY_AND_ASSIGN(MockPainter);

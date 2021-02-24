@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/policy/core/common/cloud/external_policy_data_updater.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -56,7 +55,7 @@ class POLICY_EXPORT ComponentCloudPolicyUpdater {
   void CancelUpdate(const PolicyNamespace& ns);
 
  private:
-  const CheckedPtr<ComponentCloudPolicyStore> store_;
+  ComponentCloudPolicyStore* const store_;
   ExternalPolicyDataUpdater external_policy_data_updater_;
 
   DISALLOW_COPY_AND_ASSIGN(ComponentCloudPolicyUpdater);

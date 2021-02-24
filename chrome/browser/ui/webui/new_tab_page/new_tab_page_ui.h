@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_NEW_TAB_PAGE_UI_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "chrome/browser/promo_browser_command/promo_browser_command.mojom-forward.h"
 #include "chrome/browser/search/drive/drive.mojom.h"
@@ -144,9 +143,9 @@ class NewTabPageUI
   std::unique_ptr<FooHandler> foo_handler_;
 #endif
   std::unique_ptr<CartHandler> cart_handler_;
-  CheckedPtr<Profile> profile_;
-  CheckedPtr<InstantService> instant_service_;
-  CheckedPtr<content::WebContents> web_contents_;
+  Profile* profile_;
+  InstantService* instant_service_;
+  content::WebContents* web_contents_;
   // Time the NTP started loading. Used for logging the WebUI NTP's load
   // performance.
   base::Time navigation_start_time_;

@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "net/cert/internal/parsed_certificate.h"
 #include "net/cert/internal/trust_store.h"
 #include "net/cert/internal/verify_certificate_chain.h"
@@ -42,7 +41,7 @@ struct PemBlockMapping {
   const char* block_name;
 
   // The destination where the read value should be written to.
-  CheckedPtr<std::string> value;
+  std::string* value;
 
   // True to indicate that the block is not required to be present. If the
   // block is optional and is not present, then |value| will not be modified.

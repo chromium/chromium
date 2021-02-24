@@ -9,7 +9,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_producer.h"
@@ -86,7 +85,7 @@ class PresentationRequestNotificationProvider final
   // presentation request.
   bool HasItemForNonDefaultRequest() const { return item_ && item_->context(); }
 
-  const CheckedPtr<MediaNotificationService> notification_service_;
+  MediaNotificationService* const notification_service_;
 
   // The notification managed by this provider, if there is one.
   base::Optional<PresentationRequestNotificationItem> item_;

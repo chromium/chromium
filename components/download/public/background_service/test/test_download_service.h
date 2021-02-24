@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "components/download/public/background_service/client.h"
 #include "components/download/public/background_service/download_params.h"
@@ -75,7 +74,7 @@ class TestDownloadService : public DownloadService {
   bool fail_at_start_;
   uint64_t file_size_;
 
-  CheckedPtr<Client> client_;
+  Client* client_;
 
   std::list<DownloadParams> downloads_;
 

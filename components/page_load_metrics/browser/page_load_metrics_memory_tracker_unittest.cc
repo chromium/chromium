@@ -4,7 +4,6 @@
 
 #include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -126,7 +125,7 @@ class PageLoadMetricsMemoryTrackerTest
     observer_ = new TestMestricsWebContentsObserver(
         web_contents(), std::move(embedder_interface));
     web_contents()->SetUserData(TestMestricsWebContentsObserver::UserDataKey(),
-                                base::WrapUnique(observer_.get()));
+                                base::WrapUnique(observer_));
 
     tracker_ = embedder_interface_->GetMemoryTrackerForBrowserContext(
         browser_context());
@@ -196,14 +195,14 @@ class PageLoadMetricsMemoryTrackerTest
   }
 
  protected:
-  CheckedPtr<PageLoadMetricsMemoryTracker> tracker_;
+  PageLoadMetricsMemoryTracker* tracker_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  CheckedPtr<TestMestricsWebContentsObserver> observer_;
-  CheckedPtr<TestPageLoadMetricsEmbedder> embedder_interface_;
+  TestMestricsWebContentsObserver* observer_;
+  TestPageLoadMetricsEmbedder* embedder_interface_;
   PageLoadMetricsTestContentBrowserClient browser_client_;
-  CheckedPtr<content::ContentBrowserClient> original_browser_client_ = nullptr;
+  content::ContentBrowserClient* original_browser_client_ = nullptr;
 };
 
 }  // namespace

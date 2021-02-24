@@ -202,8 +202,7 @@ views::FlexRule WebAppToolbarButtonContainer::GetFlexRule() const {
             preferred.width(),
             toolbar_button_provider->GetToolbarButtonSize().height());
       },
-      base::Unretained(toolbar_button_provider_.get()),
-      layout->GetDefaultFlexRule());
+      base::Unretained(toolbar_button_provider_), layout->GetDefaultFlexRule());
 }
 
 void WebAppToolbarButtonContainer::DisableAnimationForTesting() {

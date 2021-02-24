@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_BROWSER_SWITCHER_BROWSER_SWITCHER_SITELIST_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -116,7 +115,7 @@ class BrowserSwitcherSitelistImpl : public BrowserSwitcherSitelist {
   RuleSet ieem_sitelist_;
   RuleSet external_sitelist_;
 
-  const CheckedPtr<const BrowserSwitcherPrefs> prefs_;
+  const BrowserSwitcherPrefs* const prefs_;
 };
 
 }  // namespace browser_switcher

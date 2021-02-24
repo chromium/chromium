@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -279,7 +278,7 @@ class AXTreeSourceWithInvalidId : public AXTreeSource<const AXNode*> {
   }
 
  private:
-  CheckedPtr<AXTree> tree_;
+  AXTree* tree_;
   int invalid_id_;
 
   DISALLOW_COPY_AND_ASSIGN(AXTreeSourceWithInvalidId);
@@ -516,7 +515,7 @@ class AXTreeSourceTestWrapper : public AXTreeSource<const AXNode*> {
   }
 
  private:
-  CheckedPtr<AXTreeSource<const AXNode*>> tree_source_;
+  AXTreeSource<const AXNode*>* tree_source_;
   std::set<AXNodeID> cleared_node_ids_;
 };
 

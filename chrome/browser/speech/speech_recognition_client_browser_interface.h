@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SPEECH_SPEECH_RECOGNITION_CLIENT_BROWSER_INTERFACE_H_
 #define CHROME_BROWSER_SPEECH_SPEECH_RECOGNITION_CLIENT_BROWSER_INTERFACE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/accessibility/soda_installer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
@@ -59,7 +58,7 @@ class SpeechRecognitionClientBrowserInterface
       speech_recognition_client_browser_interface_;
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-  CheckedPtr<PrefService> profile_prefs_;
+  PrefService* profile_prefs_;
 };
 
 }  // namespace speech

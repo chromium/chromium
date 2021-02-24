@@ -10,7 +10,6 @@
 #include <stddef.h>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "net/base/net_export.h"
 #include "net/disk_cache/blockfile/file.h"
 #include "net/disk_cache/blockfile/file_block.h"
@@ -74,7 +73,7 @@ class ScopedFlush {
     file_->Flush();
   }
  private:
-  CheckedPtr<MappedFile> file_;
+  MappedFile* file_;
 };
 
 }  // namespace disk_cache

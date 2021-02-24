@@ -10,7 +10,6 @@
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
@@ -215,7 +214,7 @@ class ObservingAutofillClient
   explicit ObservingAutofillClient(content::WebContents* web_contents) {}
   friend class content::WebContentsUserData<ObservingAutofillClient>;
 
-  CheckedPtr<base::RunLoop> run_loop_ = nullptr;
+  base::RunLoop* run_loop_ = nullptr;
   bool popup_shown_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();

@@ -5,7 +5,6 @@
 #ifndef REMOTING_PROTOCOL_WEBRTC_AUDIO_MODULE_H_
 #define REMOTING_PROTOCOL_WEBRTC_AUDIO_MODULE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "third_party/webrtc/modules/audio_device/include/audio_device.h"
@@ -117,7 +116,7 @@ class WebrtcAudioModule : public webrtc::AudioDeviceModule {
 
   bool initialized_ = false;
   bool playing_ = false;
-  CheckedPtr<webrtc::AudioTransport> audio_transport_ = nullptr;
+  webrtc::AudioTransport* audio_transport_ = nullptr;
 
   // Timer running on the |audio_task_runner_| that polls audio from
   // |audio_transport_|.

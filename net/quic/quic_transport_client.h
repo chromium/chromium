@@ -5,7 +5,6 @@
 #ifndef NET_QUIC_QUIC_TRANSPORT_CLIENT_H_
 #define NET_QUIC_QUIC_TRANSPORT_CLIENT_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/network_isolation_key.h"
 #include "net/dns/host_resolver.h"
@@ -191,7 +190,7 @@ class NET_EXPORT QuicTransportClient
         absl::optional<quic::MessageStatus> status) override;
 
    private:
-    CheckedPtr<QuicTransportClient> client_;
+    QuicTransportClient* client_;
   };
 
   // DoLoop processing the Connect() call.

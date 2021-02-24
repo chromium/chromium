@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_NAVIGATION_BUTTON_CONTAINER_H_
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_NAVIGATION_BUTTON_CONTAINER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/command_observer.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -40,11 +39,11 @@ class WebAppNavigationButtonContainer : public views::View,
 
  private:
   // The containing browser.
-  const CheckedPtr<Browser> browser_;
+  Browser* const browser_;
 
   // These members are owned by the views hierarchy.
-  CheckedPtr<WebAppToolbarBackButton> back_button_ = nullptr;
-  CheckedPtr<WebAppToolbarReloadButton> reload_button_ = nullptr;
+  WebAppToolbarBackButton* back_button_ = nullptr;
+  WebAppToolbarReloadButton* reload_button_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_NAVIGATION_BUTTON_CONTAINER_H_

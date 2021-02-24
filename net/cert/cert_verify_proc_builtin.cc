@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "crypto/sha2.h"
@@ -332,14 +331,14 @@ class PathBuilderDelegateImpl : public SimplePathBuilderDelegate {
   }
 
   // The CRLSet may be null.
-  CheckedPtr<const CRLSet> crl_set_;
-  CheckedPtr<CertNetFetcher> net_fetcher_;
+  const CRLSet* crl_set_;
+  CertNetFetcher* net_fetcher_;
   const VerificationType verification_type_;
   const int flags_;
-  CheckedPtr<const SystemTrustStore> ssl_trust_store_;
+  const SystemTrustStore* ssl_trust_store_;
   const base::StringPiece stapled_leaf_ocsp_response_;
-  CheckedPtr<const EVRootCAMetadata> ev_metadata_;
-  CheckedPtr<bool> checked_revocation_for_some_path_;
+  const EVRootCAMetadata* ev_metadata_;
+  bool* checked_revocation_for_some_path_;
 };
 
 class CertVerifyProcBuiltin : public CertVerifyProc {

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ui/views/accessibility/ax_aura_obj_cache.h"
-#include "base/memory/checked_ptr.h"
 
 #include <utility>
 
@@ -64,7 +63,7 @@ class AXAuraObjCache::A11yOverrideWindowObserver : public aura::WindowObserver {
 
   // Pointer to the AXAuraObjCache object that owns |this|. Guaranteed not to be
   // null for the lifetime of this.
-  const CheckedPtr<AXAuraObjCache> cache_;
+  AXAuraObjCache* const cache_;
 
   base::ScopedObservation<aura::Window, aura::WindowObserver> observer_{this};
 };

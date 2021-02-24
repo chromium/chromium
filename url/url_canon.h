@@ -10,7 +10,6 @@
 
 #include "base/component_export.h"
 #include "base/export_template.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "url/third_party/mozilla/url_parse.h"
 
@@ -139,7 +138,7 @@ class CanonOutputT {
     return true;
   }
 
-  CheckedPtr<T> buffer_;
+  T* buffer_;
   int buffer_len_;
 
   // Used characters in the buffer.

@@ -19,7 +19,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -324,7 +323,7 @@ class DnsUDPAttempt : public DnsAttempt {
 
   // Should be owned by the DnsSession, to which the transaction should own a
   // reference.
-  const CheckedPtr<DnsUdpTracker> udp_tracker_;
+  DnsUdpTracker* const udp_tracker_;
 
   std::unique_ptr<DnsResponse> response_;
 

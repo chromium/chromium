@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,7 +44,7 @@ class MessageBoxViewTest : public ViewsTestBase {
   }
 
   std::unique_ptr<MessageBoxView> message_box_;
-  CheckedPtr<const LayoutProvider> provider_;
+  const LayoutProvider* provider_;
 };
 
 TEST_F(MessageBoxViewTest, CheckMessageOnlySize) {

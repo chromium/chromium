@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/media_router/presentation_receiver_window_view.h"
 
 #include "base/callback.h"
@@ -105,7 +104,7 @@ class PresentationReceiverWindowViewBrowserTest : public InProcessBrowserTest {
 
   const gfx::Rect bounds_{100, 100};
   std::unique_ptr<FakeReceiverDelegate> fake_delegate_ = nullptr;
-  CheckedPtr<PresentationReceiverWindowView> receiver_view_ = nullptr;
+  PresentationReceiverWindowView* receiver_view_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(PresentationReceiverWindowViewBrowserTest);
 };

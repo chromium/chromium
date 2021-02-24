@@ -10,7 +10,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/guid.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
@@ -185,7 +184,7 @@ class ProxyCommitQueue : public syncer::CommitQueue {
   void NudgeForCommit() override { commit_queue_->NudgeForCommit(); }
 
  private:
-  CheckedPtr<CommitQueue> commit_queue_ = nullptr;
+  CommitQueue* commit_queue_ = nullptr;
 };
 
 class TestBookmarkClientWithFavicon : public bookmarks::TestBookmarkClient {

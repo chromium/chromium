@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -75,7 +74,7 @@ class MediaEngagementChangeWaiter : public content_settings::Observer {
  private:
   void Proceed() { run_loop_.Quit(); }
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   base::RunLoop run_loop_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaEngagementChangeWaiter);

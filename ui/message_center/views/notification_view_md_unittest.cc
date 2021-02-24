@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -181,7 +180,7 @@ class NotificationViewMDTest : public views::InkDropObserver,
   bool delete_on_notification_removed_ = false;
   std::set<std::string> removed_ids_;
   scoped_refptr<NotificationTestDelegate> delegate_;
-  CheckedPtr<NotificationViewMD> notification_view_ = nullptr;
+  NotificationViewMD* notification_view_ = nullptr;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(NotificationViewMDTest);

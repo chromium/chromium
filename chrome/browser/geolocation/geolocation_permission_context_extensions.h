@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -44,7 +43,7 @@ class GeolocationPermissionContextExtensions {
 
  private:
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(GeolocationPermissionContextExtensions);

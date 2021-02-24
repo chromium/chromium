@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PREVIEWS_PREVIEWS_HTTPS_NOTIFICATION_INFOBAR_DECIDER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
 
@@ -55,11 +54,10 @@ class PreviewsHTTPSNotificationInfoBarDecider
  private:
   // A reference to the DRP Settings so that |this| can be removed as an
   // observer on |Shutdown|. Not owned.
-  CheckedPtr<data_reduction_proxy::DataReductionProxySettings> drp_settings_ =
-      nullptr;
+  data_reduction_proxy::DataReductionProxySettings* drp_settings_ = nullptr;
 
   // A reference to the profile's |PrefService|.
-  CheckedPtr<PrefService> pref_service_ = nullptr;
+  PrefService* pref_service_ = nullptr;
 
   // Whether the notification infobar needs to be shown to the user.
   bool need_to_show_notification_ = false;

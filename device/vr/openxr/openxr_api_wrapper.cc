@@ -604,7 +604,7 @@ XrResult OpenXrApiWrapper::BeginFrame(
 
   const SwapChainInfo& swap_chain_info =
       color_swapchain_images_[color_swapchain_image_index];
-  *texture = swap_chain_info.d3d11_texture.get();
+  *texture = swap_chain_info.d3d11_texture;
   *mailbox_holder = swap_chain_info.mailbox_holder;
 
   return XR_SUCCESS;

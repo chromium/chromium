@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/test/task_environment.h"
@@ -63,7 +62,7 @@ class ConnectorDeletingMessageAccumulator : public MessageAccumulator {
   }
 
  private:
-  CheckedPtr<Connector*> connector_;
+  Connector** connector_;
 };
 
 class ReentrantMessageAccumulator : public MessageAccumulator {
@@ -84,7 +83,7 @@ class ReentrantMessageAccumulator : public MessageAccumulator {
   int number_of_calls() { return number_of_calls_; }
 
  private:
-  CheckedPtr<Connector> connector_;
+  Connector* connector_;
   int number_of_calls_;
 };
 

@@ -9,7 +9,6 @@
 #include <stdint.h>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
 #include "base/sequenced_task_runner.h"
@@ -141,9 +140,9 @@ class CONTENT_EXPORT BrowserMessageFilter
   // classes. Internal keeps a reference to this class, which is why there's a
   // weak pointer back. This class could outlive Internal based on what the
   // child class does in its OnDestruct method.
-  CheckedPtr<Internal> internal_;
+  Internal* internal_;
 
-  CheckedPtr<IPC::Sender> sender_;
+  IPC::Sender* sender_;
   base::Process peer_process_;
 
   std::vector<uint32_t> message_classes_to_filter_;

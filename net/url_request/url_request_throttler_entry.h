@@ -11,7 +11,6 @@
 
 #include "base/containers/queue.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/net_export.h"
@@ -145,7 +144,7 @@ class NET_EXPORT URLRequestThrottlerEntry
   BackoffEntry backoff_entry_;
 
   // Weak back-reference to the manager object managing us.
-  CheckedPtr<URLRequestThrottlerManager> manager_;
+  URLRequestThrottlerManager* manager_;
 
   // Canonicalized URL string that this entry is for; used for logging only.
   std::string url_id_;

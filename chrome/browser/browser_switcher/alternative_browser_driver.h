@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -84,7 +83,7 @@ class AlternativeBrowserDriverImpl : public AlternativeBrowserDriver {
  private:
   using StringType = base::FilePath::StringType;
 
-  const CheckedPtr<const BrowserSwitcherPrefs> prefs_;
+  const BrowserSwitcherPrefs* const prefs_;
 };
 
 }  // namespace browser_switcher

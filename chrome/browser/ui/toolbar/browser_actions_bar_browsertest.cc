@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
@@ -81,7 +80,7 @@ class BlockedActionWaiter
   // ExtensionActionRunner::TestObserver:
   void OnBlockedActionAdded() override { run_loop_->Quit(); }
 
-  CheckedPtr<extensions::ExtensionActionRunner> runner_;
+  extensions::ExtensionActionRunner* runner_;
   std::unique_ptr<base::RunLoop> run_loop_;
 
   DISALLOW_COPY_AND_ASSIGN(BlockedActionWaiter);

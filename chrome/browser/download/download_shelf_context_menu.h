@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_commands.h"
@@ -76,7 +75,7 @@ class DownloadShelfContextMenu : public ui::SimpleMenuModel::Delegate,
   std::unique_ptr<ui::SimpleMenuModel> mixed_content_download_menu_model_;
 
   // Information source.
-  CheckedPtr<DownloadUIModel> download_;
+  DownloadUIModel* download_;
   std::unique_ptr<DownloadCommands> download_commands_;
 
   DISALLOW_COPY_AND_ASSIGN(DownloadShelfContextMenu);

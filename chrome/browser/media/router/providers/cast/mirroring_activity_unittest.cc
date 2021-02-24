@@ -6,7 +6,6 @@
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -119,8 +118,8 @@ class MirroringActivityTest
   }
 
   bool route_is_local_ = true;
-  CheckedPtr<MockCastMessageChannel> channel_to_service_ = nullptr;
-  CheckedPtr<MockMirroringServiceHost> mirroring_service_ = nullptr;
+  MockCastMessageChannel* channel_to_service_ = nullptr;
+  MockMirroringServiceHost* mirroring_service_ = nullptr;
   MockMojoMediaRouter media_router_;
   base::MockCallback<MirroringActivity::OnStopCallback> on_stop_;
   std::unique_ptr<MirroringActivity> activity_;

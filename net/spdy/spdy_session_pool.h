@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -127,8 +126,8 @@ class NET_EXPORT SpdySessionPool
     const bool enable_ip_based_pooling_;
     const bool is_websocket_;
     const bool is_blocking_request_for_session_;
-    const CheckedPtr<Delegate> delegate_;
-    CheckedPtr<SpdySessionPool> spdy_session_pool_;
+    Delegate* const delegate_;
+    SpdySessionPool* spdy_session_pool_;
 
     DISALLOW_COPY_AND_ASSIGN(SpdySessionRequest);
   };
