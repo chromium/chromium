@@ -28,12 +28,12 @@ import java.util.Collection;
  */
 public class PageInfoCookiesController
         implements PageInfoSubpageController, CookieControlsObserver {
-    private PageInfoMainController mMainController;
-    private PageInfoRowView mRowView;
+    private final PageInfoMainController mMainController;
+    private final PageInfoRowView mRowView;
+    private final PageInfoControllerDelegate mDelegate;
+    private final String mFullUrl;
+    private final String mTitle;
     private CookieControlsBridge mBridge;
-    private PageInfoControllerDelegate mDelegate;
-    private String mFullUrl;
-    private String mTitle;
     private PageInfoCookiesPreference mSubPage;
 
     private int mAllowedCookies;
@@ -72,9 +72,14 @@ public class PageInfoCookiesController
     @Override
     public View createViewForSubpage(ViewGroup parent) {
         assert mSubPage == null;
+
+        FragmentManager fragmentManager = mDelegate.getFragmentManager();
+        // If the activity is getting destroyed or saved, it is not allowed to modify fragments.
+        if (fragmentManager.isStateSaved()) return null;
+
         mSubPage = new PageInfoCookiesPreference();
         mSubPage.setSiteSettingsDelegate(mDelegate.getSiteSettingsDelegate());
-        mDelegate.getFragmentManager().beginTransaction().add(mSubPage, null).commitNow();
+        fragmentManager.beginTransaction().add(mSubPage, null).commitNow();
 
         PageInfoCookiesPreference.PageInfoCookiesViewParams params =
                 new PageInfoCookiesPreference.PageInfoCookiesViewParams();

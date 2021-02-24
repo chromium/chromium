@@ -628,7 +628,9 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         mSubpageController = controller;
         CharSequence title = mSubpageController.getSubpageTitle();
         View subview = mSubpageController.createViewForSubpage(mContainer);
-        mContainer.showPage(subview, title, null);
+        if (subview != null) {
+            mContainer.showPage(subview, title, null);
+        }
     }
 
     /**

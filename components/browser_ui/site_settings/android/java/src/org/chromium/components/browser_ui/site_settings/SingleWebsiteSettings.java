@@ -334,6 +334,10 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
     @Override
     public void onDisplayPreferenceDialog(Preference preference) {
         if (preference instanceof ClearWebsiteStorage) {
+            // If the activity is getting destroyed or saved, it is not allowed to modify fragments.
+            if (getFragmentManager().isStateSaved()) {
+                return;
+            }
             Callback<Boolean> onDialogClosed = (Boolean confirmed) -> {
                 if (confirmed) {
                     mSite.clearAllStoredData(getSiteSettingsDelegate().getBrowserContextHandle(),

@@ -24,11 +24,11 @@ import java.util.List;
  */
 public class PageInfoPermissionsController
         implements PageInfoSubpageController, SingleWebsiteSettings.Observer {
-    private PageInfoMainController mMainController;
-    private PageInfoRowView mRowView;
-    private PageInfoControllerDelegate mDelegate;
-    private String mTitle;
-    private String mPageUrl;
+    private final PageInfoMainController mMainController;
+    private final PageInfoRowView mRowView;
+    private final PageInfoControllerDelegate mDelegate;
+    private final String mTitle;
+    private final String mPageUrl;
     private SingleWebsiteSettings mSubPage;
     @ContentSettingsType
     private int mHighlightedPermission = ContentSettingsType.DEFAULT;
@@ -43,7 +43,9 @@ public class PageInfoPermissionsController
         mDelegate = delegate;
         mPageUrl = pageUrl;
         mHighlightedPermission = highlightedPermission;
-        mHighlightColor = mRowView.getContext().getResources().getColor(R.color.iph_highlight_blue);
+        Resources resources = mRowView.getContext().getResources();
+        mHighlightColor = resources.getColor(R.color.iph_highlight_blue);
+        mTitle = resources.getString(R.string.page_info_permissions_title);
     }
 
     private void launchSubpage() {
@@ -59,6 +61,10 @@ public class PageInfoPermissionsController
     @Override
     public View createViewForSubpage(ViewGroup parent) {
         assert mSubPage == null;
+        FragmentManager fragmentManager = mDelegate.getFragmentManager();
+        // If the activity is getting destroyed or saved, it is not allowed to modify fragments.
+        if (fragmentManager.isStateSaved()) return null;
+
         Bundle fragmentArgs = SingleWebsiteSettings.createFragmentArgsForSite(mPageUrl);
         mSubPage = (SingleWebsiteSettings) Fragment.instantiate(
                 mRowView.getContext(), SingleWebsiteSettings.class.getName(), fragmentArgs);
@@ -68,7 +74,7 @@ public class PageInfoPermissionsController
         if (mHighlightedPermission != ContentSettingsType.DEFAULT) {
             mSubPage.setHighlightedPermission(mHighlightedPermission, mHighlightColor);
         }
-        mDelegate.getFragmentManager().beginTransaction().add(mSubPage, null).commitNow();
+        fragmentManager.beginTransaction().add(mSubPage, null).commitNow();
         return mSubPage.requireView();
     }
 
@@ -85,7 +91,6 @@ public class PageInfoPermissionsController
 
     public void setPermissions(PageInfoView.PermissionParams params) {
         Resources resources = mRowView.getContext().getResources();
-        mTitle = resources.getString(R.string.page_info_permissions_title);
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
         rowParams.title = mTitle;
         rowParams.iconResId = R.drawable.ic_tune_24dp;
