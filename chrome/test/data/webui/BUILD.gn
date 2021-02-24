@@ -81,6 +81,7 @@ if (include_js_tests) {
       "histograms/histograms_internals_ui_browsertest.js",
       "history/history_browsertest.js",
       "invalidations/about_invalidations_browsertest.js",
+      "js/i18n_process_test.js",
       "js/webui_resource_module_async_browsertest.js",
       "js2gtest_browsertest.js",
       "load_time_data_browsertest.js",
