@@ -149,18 +149,28 @@ class MockableFakeAttestationFlow : public MockAttestationFlow {
   const std::string public_key_ = GetPublicKey();
 };
 
-//================== TpmChallengeKeySubtleTest =================================
+//==================== TpmChallengeKeySubtleTestBase ===========================
 
-class TpmChallengeKeySubtleTest : public ::testing::Test {
+// Describes which kind of profile will be used with TpmChallengeKeySubtle.
+enum class TestProfileChoice {
+  // Pass nullptr as Profile.
+  kNoProfile,
+  // Pass the sign-in Profile.
+  kSigninProfile,
+  // Pass the Profile of an unaffiliated user.
+  kUnaffiliatedProfile,
+  // Pass the Profile of an affiliated user.
+  kAffiliatedProfile
+};
+
+class TpmChallengeKeySubtleTestBase : public ::testing::Test {
  public:
-  TpmChallengeKeySubtleTest();
-  ~TpmChallengeKeySubtleTest();
+  explicit TpmChallengeKeySubtleTestBase(TestProfileChoice test_profile_choice);
+  ~TpmChallengeKeySubtleTestBase();
 
  protected:
-  void InitSigninProfile();
-  void InitUnaffiliatedProfile();
-  void InitAffiliatedProfile();
-  void InitAfterProfileCreated();
+  // ::testing::Test:
+  void SetUp() override;
 
   TestingProfile* CreateUserProfile(bool is_affiliated);
   TestingProfile* GetProfile();
@@ -188,6 +198,9 @@ class TpmChallengeKeySubtleTest : public ::testing::Test {
                               const std::string& key_name,
                               const TpmChallengeKeyResult& register_result);
 
+ protected:
+  const TestProfileChoice test_profile_choice_;
+
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
@@ -199,15 +212,20 @@ class TpmChallengeKeySubtleTest : public ::testing::Test {
       user_private_token_key_permissions_manager_;
   MockMachineCertificateUploader mock_cert_uploader_;
 
+  std::unique_ptr<TpmChallengeKeySubtle> challenge_key_subtle_;
+
   TestingProfileManager testing_profile_manager_;
   chromeos::FakeChromeUserManager fake_user_manager_;
+  // A sign-in Profile is always created in SetUp().
+  TestingProfile* signin_profile_ = nullptr;
+  // The profile that will be passed to TpmChallengeKeySubtle - can be nullptr.
   TestingProfile* testing_profile_ = nullptr;
-
-  std::unique_ptr<TpmChallengeKeySubtle> challenge_key_subtle_;
 };
 
-TpmChallengeKeySubtleTest::TpmChallengeKeySubtleTest()
-    : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
+TpmChallengeKeySubtleTestBase::TpmChallengeKeySubtleTestBase(
+    TestProfileChoice test_profile_choice)
+    : test_profile_choice_(test_profile_choice),
+      testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
   ::chromeos::TpmManagerClient::InitializeFake();
   ::chromeos::AttestationClient::InitializeFake();
   CHECK(testing_profile_manager_.SetUp());
@@ -220,55 +238,59 @@ TpmChallengeKeySubtleTest::TpmChallengeKeySubtleTest()
       .WillByDefault(RunOnceCallback<0>(true));
 }
 
-TpmChallengeKeySubtleTest::~TpmChallengeKeySubtleTest() {
+TpmChallengeKeySubtleTestBase::~TpmChallengeKeySubtleTestBase() {
   ::chromeos::AttestationClient::Shutdown();
   ::chromeos::TpmManagerClient::Shutdown();
 }
 
-void TpmChallengeKeySubtleTest::InitSigninProfile() {
-  testing_profile_ =
+void TpmChallengeKeySubtleTestBase::SetUp() {
+  signin_profile_ =
       testing_profile_manager_.CreateTestingProfile(chrome::kInitialProfile);
-  InitAfterProfileCreated();
-}
+  switch (test_profile_choice_) {
+    case TestProfileChoice::kNoProfile:
+      testing_profile_ = nullptr;
+      break;
+    case TestProfileChoice::kSigninProfile:
+      testing_profile_ = signin_profile_;
+      break;
+    case TestProfileChoice::kUnaffiliatedProfile:
+      testing_profile_ = CreateUserProfile(/*is_affiliated=*/false);
+      break;
+    case TestProfileChoice::kAffiliatedProfile:
+      testing_profile_ = CreateUserProfile(/*is_affiliated=*/true);
+      testing_profile_->GetTestingPrefService()->SetManagedPref(
+          prefs::kAttestationEnabled, std::make_unique<base::Value>(true));
+      break;
+  }
 
-void TpmChallengeKeySubtleTest::InitUnaffiliatedProfile() {
-  testing_profile_ = CreateUserProfile(/*is_affiliated=*/false);
-  InitAfterProfileCreated();
-}
-
-void TpmChallengeKeySubtleTest::InitAffiliatedProfile() {
-  testing_profile_ = CreateUserProfile(/*is_affiliated=*/true);
-  InitAfterProfileCreated();
-  GetProfile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kAttestationEnabled, std::make_unique<base::Value>(true));
-}
-
-void TpmChallengeKeySubtleTest::InitAfterProfileCreated() {
   GetInstallAttributes()->SetCloudManaged("google.com", "device_id");
 
   GetCrosSettingsHelper()->ReplaceDeviceSettingsProviderWithStub();
   GetCrosSettingsHelper()->SetBoolean(chromeos::kDeviceAttestationEnabled,
                                       true);
 
-  user_private_token_key_permissions_manager_ =
-      std::make_unique<platform_keys::MockKeyPermissionsManager>();
-  platform_keys::UserPrivateTokenKeyPermissionsManagerServiceFactory::
-      GetInstance()
-          ->SetTestingFactory(
-              GetProfile(),
-              base::BindRepeating(
-                  &platform_keys::
-                      BuildFakeUserPrivateTokenKeyPermissionsManagerService,
-                  user_private_token_key_permissions_manager_.get()));
-
   system_token_key_permissions_manager_ =
       std::make_unique<platform_keys::MockKeyPermissionsManager>();
   platform_keys::KeyPermissionsManagerImpl::
       SetSystemTokenKeyPermissionsManagerForTesting(
           system_token_key_permissions_manager_.get());
+
+  if (!testing_profile_) {
+    return;
+  }
+  user_private_token_key_permissions_manager_ =
+      std::make_unique<platform_keys::MockKeyPermissionsManager>();
+  platform_keys::UserPrivateTokenKeyPermissionsManagerServiceFactory::
+      GetInstance()
+          ->SetTestingFactory(
+              testing_profile_,
+              base::BindRepeating(
+                  &platform_keys::
+                      BuildFakeUserPrivateTokenKeyPermissionsManagerService,
+                  user_private_token_key_permissions_manager_.get()));
 }
 
-TestingProfile* TpmChallengeKeySubtleTest::CreateUserProfile(
+TestingProfile* TpmChallengeKeySubtleTestBase::CreateUserProfile(
     bool is_affiliated) {
   TestingProfile* testing_profile =
       testing_profile_manager_.CreateTestingProfile(kTestUserEmail);
@@ -284,21 +306,21 @@ TestingProfile* TpmChallengeKeySubtleTest::CreateUserProfile(
   return testing_profile;
 }
 
-TestingProfile* TpmChallengeKeySubtleTest::GetProfile() {
+TestingProfile* TpmChallengeKeySubtleTestBase::GetProfile() {
   return testing_profile_;
 }
 
 chromeos::ScopedCrosSettingsTestHelper*
-TpmChallengeKeySubtleTest::GetCrosSettingsHelper() {
-  return GetProfile()->ScopedCrosSettingsTestHelper();
+TpmChallengeKeySubtleTestBase::GetCrosSettingsHelper() {
+  return signin_profile_->ScopedCrosSettingsTestHelper();
 }
 
 chromeos::StubInstallAttributes*
-TpmChallengeKeySubtleTest::GetInstallAttributes() {
+TpmChallengeKeySubtleTestBase::GetInstallAttributes() {
   return GetCrosSettingsHelper()->InstallAttributes();
 }
 
-void TpmChallengeKeySubtleTest::RunOneStepAndExpect(
+void TpmChallengeKeySubtleTestBase::RunOneStepAndExpect(
     AttestationKeyType key_type,
     bool will_register_key,
     const std::string& key_name,
@@ -312,7 +334,7 @@ void TpmChallengeKeySubtleTest::RunOneStepAndExpect(
   EXPECT_EQ(callback_observer.GetResult(), public_key);
 }
 
-void TpmChallengeKeySubtleTest::RunTwoStepsAndExpect(
+void TpmChallengeKeySubtleTestBase::RunTwoStepsAndExpect(
     AttestationKeyType key_type,
     bool will_register_key,
     const std::string& key_name,
@@ -328,7 +350,7 @@ void TpmChallengeKeySubtleTest::RunTwoStepsAndExpect(
   EXPECT_EQ(callback_observer.GetResult(), challenge_response);
 }
 
-void TpmChallengeKeySubtleTest::RunThreeStepsAndExpect(
+void TpmChallengeKeySubtleTestBase::RunThreeStepsAndExpect(
     AttestationKeyType key_type,
     bool will_register_key,
     const std::string& key_name,
@@ -346,9 +368,54 @@ void TpmChallengeKeySubtleTest::RunThreeStepsAndExpect(
 
 //==============================================================================
 
-TEST_F(TpmChallengeKeySubtleTest, DeviceKeyNonEnterpriseDevice) {
-  InitSigninProfile();
+// Tests all Profile* options where TpmChallengeKeySubtle can be used with
+// device-wide keys, including passing profile=nullptr.
+class DeviceKeysAccessTpmChallengeKeySubtleTest
+    : public TpmChallengeKeySubtleTestBase,
+      public ::testing::WithParamInterface<TestProfileChoice> {
+ public:
+  DeviceKeysAccessTpmChallengeKeySubtleTest()
+      : TpmChallengeKeySubtleTestBase(GetParam()) {}
+  ~DeviceKeysAccessTpmChallengeKeySubtleTest() = default;
+};
 
+INSTANTIATE_TEST_SUITE_P(
+    DeviceKeysAccessTpmChallengeKeySubtleTest,
+    DeviceKeysAccessTpmChallengeKeySubtleTest,
+    testing::Values(TestProfileChoice::kNoProfile,
+                    TestProfileChoice::kSigninProfile,
+                    TestProfileChoice::kAffiliatedProfile));
+
+// Tests TpmChallengeKeySubtle with the sign-in Profile only.
+class SigninProfileTpmChallengeKeySubtleTest
+    : public TpmChallengeKeySubtleTestBase {
+ public:
+  SigninProfileTpmChallengeKeySubtleTest()
+      : TpmChallengeKeySubtleTestBase(TestProfileChoice::kSigninProfile) {}
+  ~SigninProfileTpmChallengeKeySubtleTest() override = default;
+};
+
+// Tests TpmChallengeKeySubtle with an affiliated user profile only.
+class AffiliatedUserTpmChallengeKeySubtleTest
+    : public TpmChallengeKeySubtleTestBase {
+ public:
+  AffiliatedUserTpmChallengeKeySubtleTest()
+      : TpmChallengeKeySubtleTestBase(TestProfileChoice::kAffiliatedProfile) {}
+  ~AffiliatedUserTpmChallengeKeySubtleTest() override = default;
+};
+
+// Tests TpmChallengeKeySubtle with an unaffiliated user profile only.
+class UnaffiliatedUserTpmChallengeKeySubtleTest
+    : public TpmChallengeKeySubtleTestBase {
+ public:
+  UnaffiliatedUserTpmChallengeKeySubtleTest()
+      : TpmChallengeKeySubtleTestBase(TestProfileChoice::kUnaffiliatedProfile) {
+  }
+  ~UnaffiliatedUserTpmChallengeKeySubtleTest() override = default;
+};
+
+TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest,
+       DeviceKeyNonEnterpriseDevice) {
   GetInstallAttributes()->SetConsumerOwned();
 
   RunOneStepAndExpect(
@@ -357,9 +424,8 @@ TEST_F(TpmChallengeKeySubtleTest, DeviceKeyNonEnterpriseDevice) {
           TpmChallengeKeyResultCode::kNonEnterpriseDeviceError));
 }
 
-TEST_F(TpmChallengeKeySubtleTest, DeviceKeyDeviceAttestationDisabled) {
-  InitSigninProfile();
-
+TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest,
+       DeviceKeyDeviceAttestationDisabled) {
   GetCrosSettingsHelper()->SetBoolean(chromeos::kDeviceAttestationEnabled,
                                       false);
 
@@ -369,25 +435,20 @@ TEST_F(TpmChallengeKeySubtleTest, DeviceKeyDeviceAttestationDisabled) {
           TpmChallengeKeyResultCode::kDevicePolicyDisabledError));
 }
 
-TEST_F(TpmChallengeKeySubtleTest, DeviceKeyUserNotManaged) {
-  InitUnaffiliatedProfile();
-
+TEST_F(UnaffiliatedUserTpmChallengeKeySubtleTest, DeviceKeyUserNotManaged) {
   RunOneStepAndExpect(KEY_DEVICE, /*will_register_key=*/false, kEmptyKeyName,
                       TpmChallengeKeyResult::MakeError(
                           TpmChallengeKeyResultCode::kUserNotManagedError));
 }
 
-TEST_F(TpmChallengeKeySubtleTest, UserKeyUserKeyNotAvailable) {
-  InitSigninProfile();
-
+TEST_F(SigninProfileTpmChallengeKeySubtleTest, UserKeyUserKeyNotAvailable) {
   RunOneStepAndExpect(
       KEY_USER, /*will_register_key=*/false, kEmptyKeyName,
       TpmChallengeKeyResult::MakeError(
           TpmChallengeKeyResultCode::kUserKeyNotAvailableError));
 }
 
-TEST_F(TpmChallengeKeySubtleTest, UserKeyUserPolicyDisabled) {
-  InitAffiliatedProfile();
+TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, UserKeyUserPolicyDisabled) {
   GetProfile()->GetTestingPrefService()->SetManagedPref(
       prefs::kAttestationEnabled, std::make_unique<base::Value>(false));
 
@@ -397,8 +458,7 @@ TEST_F(TpmChallengeKeySubtleTest, UserKeyUserPolicyDisabled) {
 }
 
 // Checks that a user should be affiliated with a device
-TEST_F(TpmChallengeKeySubtleTest, UserKeyUserNotAffiliated) {
-  InitUnaffiliatedProfile();
+TEST_F(UnaffiliatedUserTpmChallengeKeySubtleTest, UserKeyUserNotAffiliated) {
   GetProfile()->GetTestingPrefService()->SetManagedPref(
       prefs::kAttestationEnabled, std::make_unique<base::Value>(true));
 
@@ -407,8 +467,8 @@ TEST_F(TpmChallengeKeySubtleTest, UserKeyUserNotAffiliated) {
                           TpmChallengeKeyResultCode::kUserNotManagedError));
 }
 
-TEST_F(TpmChallengeKeySubtleTest, UserKeyDeviceAttestationDisabled) {
-  InitAffiliatedProfile();
+TEST_F(AffiliatedUserTpmChallengeKeySubtleTest,
+       UserKeyDeviceAttestationDisabled) {
   GetCrosSettingsHelper()->SetBoolean(chromeos::kDeviceAttestationEnabled,
                                       false);
 
@@ -418,9 +478,7 @@ TEST_F(TpmChallengeKeySubtleTest, UserKeyDeviceAttestationDisabled) {
           TpmChallengeKeyResultCode::kDevicePolicyDisabledError));
 }
 
-TEST_F(TpmChallengeKeySubtleTest, DoesKeyExistDbusFailed) {
-  InitSigninProfile();
-
+TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest, DoesKeyExistDbusFailed) {
   AttestationClient::Get()
       ->GetTestInterface()
       ->GetMutableKeyInfoReply(/*username=*/"", kEnterpriseMachineKey)
@@ -431,8 +489,7 @@ TEST_F(TpmChallengeKeySubtleTest, DoesKeyExistDbusFailed) {
       TpmChallengeKeyResult::MakeError(TpmChallengeKeyResultCode::kDbusError));
 }
 
-TEST_F(TpmChallengeKeySubtleTest, GetCertificateFailed) {
-  InitSigninProfile();
+TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest, GetCertificateFailed) {
   const AttestationKeyType key_type = KEY_DEVICE;
 
   mock_attestation_flow_.set_status(ATTESTATION_UNSPECIFIED_FAILURE);
@@ -444,8 +501,7 @@ TEST_F(TpmChallengeKeySubtleTest, GetCertificateFailed) {
           TpmChallengeKeyResultCode::kGetCertificateFailedError));
 }
 
-TEST_F(TpmChallengeKeySubtleTest, KeyExists) {
-  InitSigninProfile();
+TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest, KeyExists) {
   const AttestationKeyType key_type = KEY_DEVICE;
 
   AttestationClient::Get()
@@ -457,9 +513,7 @@ TEST_F(TpmChallengeKeySubtleTest, KeyExists) {
                       TpmChallengeKeyResult::MakePublicKey(GetPublicKey()));
 }
 
-TEST_F(TpmChallengeKeySubtleTest, AttestationNotPrepared) {
-  InitSigninProfile();
-
+TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest, AttestationNotPrepared) {
   chromeos::AttestationClient::Get()
       ->GetTestInterface()
       ->ConfigureEnrollmentPreparations(false);
@@ -470,8 +524,7 @@ TEST_F(TpmChallengeKeySubtleTest, AttestationNotPrepared) {
 }
 
 // Test that we get a proper error message in case we don't have a TPM.
-TEST_F(TpmChallengeKeySubtleTest, AttestationUnsupported) {
-  InitSigninProfile();
+TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest, AttestationUnsupported) {
   chromeos::AttestationClient::Get()
       ->GetTestInterface()
       ->ConfigureEnrollmentPreparations(false);
@@ -486,9 +539,8 @@ TEST_F(TpmChallengeKeySubtleTest, AttestationUnsupported) {
           TpmChallengeKeyResultCode::kAttestationUnsupportedError));
 }
 
-TEST_F(TpmChallengeKeySubtleTest, AttestationPreparedDbusFailed) {
-  InitSigninProfile();
-
+TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest,
+       AttestationPreparedDbusFailed) {
   chromeos::AttestationClient::Get()
       ->GetTestInterface()
       ->ConfigureEnrollmentPreparationsStatus(::attestation::STATUS_DBUS_ERROR);
@@ -498,9 +550,8 @@ TEST_F(TpmChallengeKeySubtleTest, AttestationPreparedDbusFailed) {
       TpmChallengeKeyResult::MakeError(TpmChallengeKeyResultCode::kDbusError));
 }
 
-TEST_F(TpmChallengeKeySubtleTest, AttestationPreparedServiceInternalError) {
-  InitSigninProfile();
-
+TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest,
+       AttestationPreparedServiceInternalError) {
   chromeos::AttestationClient::Get()
       ->GetTestInterface()
       ->ConfigureEnrollmentPreparationsStatus(
@@ -512,8 +563,8 @@ TEST_F(TpmChallengeKeySubtleTest, AttestationPreparedServiceInternalError) {
           TpmChallengeKeyResultCode::kAttestationServiceInternalError));
 }
 
-TEST_F(TpmChallengeKeySubtleTest, DeviceKeyNotRegisteredSuccess) {
-  InitSigninProfile();
+TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest,
+       DeviceKeyNotRegisteredSuccess) {
   const AttestationKeyType key_type = KEY_DEVICE;
   const char* const key_name = GetDefaultKeyName(key_type);
 
@@ -532,8 +583,7 @@ TEST_F(TpmChallengeKeySubtleTest, DeviceKeyNotRegisteredSuccess) {
                            GetChallengeResponse(/*include_spkac=*/false)));
 }
 
-TEST_F(TpmChallengeKeySubtleTest, DeviceKeyRegisteredSuccess) {
-  InitSigninProfile();
+TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest, DeviceKeyRegisteredSuccess) {
   const AttestationKeyType key_type = KEY_DEVICE;
   const char* const key_name = kNonDefaultKeyName;
 
@@ -561,9 +611,7 @@ TEST_F(TpmChallengeKeySubtleTest, DeviceKeyRegisteredSuccess) {
                          TpmChallengeKeyResult::MakeSuccess());
 }
 
-TEST_F(TpmChallengeKeySubtleTest, UserKeyNotRegisteredSuccess) {
-  InitAffiliatedProfile();
-
+TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, UserKeyNotRegisteredSuccess) {
   const AttestationKeyType key_type = KEY_USER;
   const char* const key_name = GetDefaultKeyName(key_type);
 
@@ -583,9 +631,7 @@ TEST_F(TpmChallengeKeySubtleTest, UserKeyNotRegisteredSuccess) {
                            GetChallengeResponse(/*include_spkac=*/false)));
 }
 
-TEST_F(TpmChallengeKeySubtleTest, UserKeyRegisteredSuccess) {
-  InitAffiliatedProfile();
-
+TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, UserKeyRegisteredSuccess) {
   const AttestationKeyType key_type = KEY_USER;
   const char* const key_name = kNonDefaultKeyName;
 
@@ -613,8 +659,7 @@ TEST_F(TpmChallengeKeySubtleTest, UserKeyRegisteredSuccess) {
                          TpmChallengeKeyResult::MakeSuccess());
 }
 
-TEST_F(TpmChallengeKeySubtleTest, SignChallengeFailed) {
-  InitSigninProfile();
+TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest, SignChallengeFailed) {
   const AttestationKeyType key_type = KEY_DEVICE;
 
   EXPECT_CALL(mock_attestation_flow_,
@@ -627,8 +672,7 @@ TEST_F(TpmChallengeKeySubtleTest, SignChallengeFailed) {
           TpmChallengeKeyResultCode::kSignChallengeFailedError));
 }
 
-TEST_F(TpmChallengeKeySubtleTest, RestorePreparedKeyState) {
-  InitAffiliatedProfile();
+TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, RestorePreparedKeyState) {
   const AttestationKeyType key_type = KEY_USER;
   const char* const key_name = kNonDefaultKeyName;
 
@@ -681,8 +725,7 @@ TEST_F(TpmChallengeKeySubtleTest, RestorePreparedKeyState) {
   }
 }
 
-TEST_F(TpmChallengeKeySubtleTest, KeyRegistrationFailed) {
-  InitAffiliatedProfile();
+TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, KeyRegistrationFailed) {
   const AttestationKeyType key_type = KEY_USER;
   const char* const key_name = kNonDefaultKeyName;
 
@@ -704,8 +747,7 @@ TEST_F(TpmChallengeKeySubtleTest, KeyRegistrationFailed) {
                 TpmChallengeKeyResultCode::kKeyRegistrationFailedError));
 }
 
-TEST_F(TpmChallengeKeySubtleTest, GetPublicKeyFailed) {
-  InitAffiliatedProfile();
+TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, GetPublicKeyFailed) {
   const char* const key_name = kNonDefaultKeyName;
 
   EXPECT_CALL(mock_attestation_flow_, GetCertificate(_, _, _, _, key_name, _));
@@ -722,8 +764,7 @@ TEST_F(TpmChallengeKeySubtleTest, GetPublicKeyFailed) {
                           TpmChallengeKeyResultCode::kGetPublicKeyFailedError));
 }
 
-TEST_F(TpmChallengeKeySubtleTest, WaitForCertificateUploaded) {
-  InitAffiliatedProfile();
+TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, WaitForCertificateUploaded) {
   const char* const key_name = kNonDefaultKeyName;
 
   using CallbackHolderT =
@@ -755,8 +796,7 @@ TEST_F(TpmChallengeKeySubtleTest, WaitForCertificateUploaded) {
 
 // Check that the class works when MachineCertificateUploader is not provided
 // (e.g. if device is managed by Active Directory).
-TEST_F(TpmChallengeKeySubtleTest, NoCertificateUploaderSuccess) {
-  InitAffiliatedProfile();
+TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, NoCertificateUploaderSuccess) {
   const char* const key_name = kNonDefaultKeyName;
 
   challenge_key_subtle_ = std::make_unique<TpmChallengeKeySubtleImpl>(

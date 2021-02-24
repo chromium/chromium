@@ -548,7 +548,7 @@ void TpmChallengeKeySubtleImpl::PrepareKeyFinished(
     return;
   }
 
-  if (profile_ && will_register_key_) {
+  if (will_register_key_) {
     public_key_ = reply.public_key();
   }
 
@@ -648,6 +648,7 @@ void TpmChallengeKeySubtleImpl::RegisterKeyCallback(
       break;
   }
 
+  DCHECK(!public_key_.empty());
   key_permissions_manager->AllowKeyForUsage(
       base::BindOnce(&TpmChallengeKeySubtleImpl::MarkCorporateKeyCallback,
                      weak_factory_.GetWeakPtr()),
