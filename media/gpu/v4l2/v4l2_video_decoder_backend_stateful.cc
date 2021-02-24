@@ -518,7 +518,7 @@ void V4L2StatefulVideoDecoderBackend::OnStreamStopped(bool stop_input_queue) {
   DVLOGF(3);
 
   // If we are resetting, also reset the splitter.
-  if (stop_input_queue)
+  if (frame_splitter_ && stop_input_queue)
     frame_splitter_->Reset();
 }
 
