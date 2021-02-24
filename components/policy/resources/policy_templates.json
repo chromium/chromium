@@ -24726,6 +24726,28 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       The <ph name="RUN_ON_OS_LOGIN_FIELD">"run_on_os_login"</ph> field specifies if a web app can be run during OS login. If this field is set to <ph name="BLOCKED">"blocked"</ph>, the web app will not run during OS login and the user will not be able to enable this later. If this field is set to <ph name="RUN_WINDOWED">"run_windowed"</ph>, the web app will run during OS login and the user will not be able to disable this later. If this field is set to <ph name="ALLOWED">"allowed"</ph>, the user will be able to configure the web app to run at OS login. The default configuration only allows the <ph name="ALLOWED">"allowed"</ph> and <ph name="BLOCKED">"blocked"</ph> values.
       ''',
     },
+    {
+      'name': 'FetchKeepaliveDurationOnShutdown',
+      'owners': ['yhirano@chromium.org'],
+      'type': 'int',
+      'schema': { 'type': 'integer', 'minimum': 0, 'maximum': 5 },
+      'default': 0,
+      'supported_on': ['chrome.*:90-', 'chrome_os:90-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': 1,
+      'id': 827,
+      'caption': 'Fetch keepalive duration on Shutdown',
+      'tags': [],
+      'desc': '''Controls the duration (in seconds) allowed for keepalive requests on browser shutdown.
+
+      When specified, browser shutdown can be blocked up to the specified seconds,
+      to process keepalive (https://fetch.spec.whatwg.org/#request-keepalive-flag) requests.
+
+      The default value (0) means this feature is disabled.''',
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -25652,6 +25674,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 826,
+  'highest_id_currently_used': 827,
   'highest_atomic_group_id_currently_used': 40
 }

@@ -18,6 +18,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -718,7 +719,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const url::Origin& origin) override;
   ukm::UkmService* GetUkmService() override;
 
-  void OnKeepaliveRequestStarted() override;
+  void OnKeepaliveRequestStarted(
+      content::BrowserContext* browser_context) override;
   void OnKeepaliveRequestFinished() override;
 
 #if defined(OS_MAC)
@@ -735,6 +737,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   std::unique_ptr<content::IdentityRequestDialogController>
   CreateIdentityRequestDialogController() override;
+
+#if !defined(OS_ANDROID)
+  base::TimeDelta GetKeepaliveTimerTimeout(content::BrowserContext* context);
+#endif  // !defined(OS_ANDROID)
 
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
@@ -828,7 +834,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 #if !defined(OS_ANDROID)
   uint64_t num_keepalive_requests_ = 0;
   base::OneShotTimer keepalive_timer_;
-  base::TimeTicks last_keepalive_request_time_;
+  base::TimeTicks keepalive_deadline_;
 #endif
 
   base::WeakPtrFactory<ChromeContentBrowserClient> weak_factory_{this};

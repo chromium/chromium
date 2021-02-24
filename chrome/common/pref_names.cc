@@ -3180,4 +3180,10 @@ const char kCartModuleWelcomeSurfaceShownTimes[] =
 const char kWebXRImmersiveArEnabled[] = "webxr.immersive_ar_enabled";
 #endif
 
+#if !defined(OS_ANDROID)
+// The duration for keepalive requests on browser shutdown.
+const char kFetchKeepaliveDurationOnShutdown[] =
+    "fetch_keepalive_duration_on_shutdown";
+#endif
+
 }  // namespace prefs

@@ -46,11 +46,6 @@ const base::Feature kCopyLinkToText{"CopyLinkToText",
 const base::Feature kMuteNotificationsDuringScreenShare{
     "MuteNotificationsDuringScreenShare", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// When enabled, keepalive requests can block browser shutdown for a short
-// period of time.
-const base::Feature kShutdownSupportForKeepalive{
-    "ShutdownSupportForKeepalive", base::FEATURE_DISABLED_BY_DEFAULT};
-
 #endif
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)

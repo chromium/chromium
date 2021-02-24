@@ -1159,7 +1159,7 @@ ukm::UkmService* ContentBrowserClient::GetUkmService() {
   return nullptr;
 }
 
-void ContentBrowserClient::OnKeepaliveRequestStarted() {}
+void ContentBrowserClient::OnKeepaliveRequestStarted(BrowserContext*) {}
 
 void ContentBrowserClient::OnKeepaliveRequestFinished() {}
 

@@ -1977,7 +1977,7 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Called when a keepalive request
   // (https://fetch.spec.whatwg.org/#request-keepalive-flag) is requested.
-  virtual void OnKeepaliveRequestStarted();
+  virtual void OnKeepaliveRequestStarted(BrowserContext* browser_context);
 
   // Called when a keepalive request finishes either successfully or
   // unsuccessfully.

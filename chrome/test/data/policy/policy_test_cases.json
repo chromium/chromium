@@ -8544,5 +8544,42 @@
         "prefs": { "profile.web_app.policy_settings": {} }
       }
     ]
+  },
+  "FetchKeepaliveDurationOnShutdown": {
+    "os": ["win", "linux", "mac", "chromeos"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": { "fetch_keepalive_duration_on_shutdown": {
+          "location": "user_profile",
+          "expect_default": true,
+          "value": 0
+        }}
+      },
+      {
+        "policies": {"FetchKeepaliveDurationOnShutdown": 0},
+        "prefs": { "fetch_keepalive_duration_on_shutdown": {
+          "location": "user_profile",
+          "expect_default": false,
+          "value": 0
+        }}
+      },
+      {
+        "policies": {"FetchKeepaliveDurationOnShutdown": 1},
+        "prefs": { "fetch_keepalive_duration_on_shutdown": {
+          "location": "user_profile",
+          "expect_default": false,
+          "value": 1
+        }}
+      },
+      {
+        "policies": {"FetchKeepaliveDurationOnShutdown": 5},
+        "prefs": { "fetch_keepalive_duration_on_shutdown": {
+          "location": "user_profile",
+          "expect_default": false,
+          "value": 5
+        }}
+      }
+    ]
   }
 }

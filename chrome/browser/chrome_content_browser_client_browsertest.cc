@@ -16,9 +16,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/search/search.h"
@@ -502,7 +504,6 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest, ExternalProgramNotLaunched) {
   // If an external program (Chrome) was launched, it will result in a second
   // tab being opened.
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
-
   // Make sure the protocol handler redirected the navigation.
   base::string16 expected_title = base::ASCIIToUTF16("mail.google.com");
   content::TitleWatcher title_watcher(
@@ -510,5 +511,54 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest, ExternalProgramNotLaunched) {
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 }
 #endif
+
+#if !defined(OS_ANDROID)
+class KeepaliveDurationOnShutdownTest : public InProcessBrowserTest,
+                                        public InstantTestBase {
+ public:
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    client_ = static_cast<ChromeContentBrowserClient*>(
+        content::SetBrowserClientForTesting(nullptr));
+    content::SetBrowserClientForTesting(client_);
+  }
+  void TearDownOnMainThread() override {
+    client_ = nullptr;
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+  ChromeContentBrowserClient* client_ = nullptr;
+};
+
+IN_PROC_BROWSER_TEST_F(KeepaliveDurationOnShutdownTest, DefaultValue) {
+  Profile* profile =
+      g_browser_process->profile_manager()->GetPrimaryUserProfile();
+  EXPECT_EQ(client_->GetKeepaliveTimerTimeout(profile), base::TimeDelta());
+}
+
+IN_PROC_BROWSER_TEST_F(KeepaliveDurationOnShutdownTest, PolicySettings) {
+  Profile* profile =
+      g_browser_process->profile_manager()->GetPrimaryUserProfile();
+  profile->GetPrefs()->SetInteger(prefs::kFetchKeepaliveDurationOnShutdown, 2);
+
+  EXPECT_EQ(client_->GetKeepaliveTimerTimeout(profile),
+            base::TimeDelta::FromSeconds(2));
+}
+
+IN_PROC_BROWSER_TEST_F(KeepaliveDurationOnShutdownTest, DynamicUpdate) {
+  Profile* profile =
+      g_browser_process->profile_manager()->GetPrimaryUserProfile();
+  profile->GetPrefs()->SetInteger(prefs::kFetchKeepaliveDurationOnShutdown, 2);
+
+  EXPECT_EQ(client_->GetKeepaliveTimerTimeout(profile),
+            base::TimeDelta::FromSeconds(2));
+
+  profile->GetPrefs()->SetInteger(prefs::kFetchKeepaliveDurationOnShutdown, 3);
+
+  EXPECT_EQ(client_->GetKeepaliveTimerTimeout(profile),
+            base::TimeDelta::FromSeconds(3));
+}
+
+#endif  // !defined(OS_ANDROID)
 
 }  // namespace

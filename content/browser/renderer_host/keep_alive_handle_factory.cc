@@ -25,8 +25,9 @@ namespace {
 class KeepAliveHandleImpl final : public blink::mojom::KeepAliveHandle {
  public:
   explicit KeepAliveHandleImpl(int process_id) : process_id_(process_id) {
-    GetContentClient()->browser()->OnKeepaliveRequestStarted();
     RenderProcessHost* process_host = RenderProcessHost::FromID(process_id_);
+    GetContentClient()->browser()->OnKeepaliveRequestStarted(
+        process_host ? process_host->GetBrowserContext() : nullptr);
     if (!process_host || process_host->IsKeepAliveRefCountDisabled()) {
       return;
     }

@@ -6922,13 +6922,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          password_manager::features::kDetectFormSubmissionOnFormClear)},
 
-#if !defined(OS_ANDROID)
-    {"shutdown-support-for-keepalive",
-     flag_descriptions::kShutdownSupportForKeepaliveName,
-     flag_descriptions::kShutdownSupportForKeepaliveDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kShutdownSupportForKeepalive)},
-#endif  // !defined(OS_ANDROID)
-
 #if defined(OS_ANDROID)
     {"enable-autofill-infobar-account-indication-footer-for-single-account-"
      "users",

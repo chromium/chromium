@@ -1125,6 +1125,10 @@ extern const char kCartModuleWelcomeSurfaceShownTimes[];
 extern const char kWebXRImmersiveArEnabled[];
 #endif
 
+#if !defined(OS_ANDROID)
+extern const char kFetchKeepaliveDurationOnShutdown[];
+#endif
+
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

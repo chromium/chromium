@@ -1212,19 +1212,6 @@ bool IsTopChromeWebUIURL(const GURL& url) {
 
 }  // namespace
 
-#if !defined(OS_ANDROID)
-base::TimeDelta GetKeepaliveTimerTimeout() {
-  constexpr base::TimeDelta kDefaultValue = base::TimeDelta::FromSeconds(1);
-
-  const int seconds = base::GetFieldTrialParamByFeatureAsInt(
-      features::kShutdownSupportForKeepalive, "timeout", -1);
-  if (seconds < 0 || seconds > 60) {
-    return kDefaultValue;
-  }
-  return base::TimeDelta::FromSeconds(seconds);
-}
-#endif
-
 ChromeContentBrowserClient::ChromeContentBrowserClient() {
 #if BUILDFLAG(ENABLE_PLUGINS)
   extra_parts_.push_back(new ChromeContentBrowserClientPluginsPart);
@@ -1279,6 +1266,7 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
 #if !defined(OS_ANDROID)
   registry->RegisterBooleanPref(prefs::kAutoplayAllowed, false);
   registry->RegisterListPref(prefs::kAutoplayWhitelist);
+  registry->RegisterIntegerPref(prefs::kFetchKeepaliveDurationOnShutdown, 0);
 #endif
   registry->RegisterBooleanPref(prefs::kSSLErrorOverrideAllowed, true);
   registry->RegisterListPref(prefs::kSSLErrorOverrideAllowedForOrigins);
@@ -6014,52 +6002,56 @@ ukm::UkmService* ChromeContentBrowserClient::GetUkmService() {
   return g_browser_process->GetMetricsServicesManager()->GetUkmService();
 }
 
-void ChromeContentBrowserClient::OnKeepaliveRequestStarted() {
+void ChromeContentBrowserClient::OnKeepaliveRequestStarted(
+    content::BrowserContext* context) {
 #if !defined(OS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kShutdownSupportForKeepalive)) {
+  // TODO(crbug.com/1161996): Remove this entry once the investigation is
+  // done.
+  VLOG(1) << "OnKeepaliveRequestStarted: " << num_keepalive_requests_ << " ==> "
+          << num_keepalive_requests_ + 1;
+  ++num_keepalive_requests_;
+  DCHECK_GT(num_keepalive_requests_, 0u);
+
+  if (!context) {
+    // We somehow failed to associate the request and the BrowserContext. Bail
+    // out.
+    return;
+  }
+
+  const auto now = base::TimeTicks::Now();
+  const auto timeout = GetKeepaliveTimerTimeout(context);
+  keepalive_deadline_ = std::max(keepalive_deadline_, now + timeout);
+  if (keepalive_deadline_ > now && !keepalive_timer_.IsRunning()) {
     // TODO(crbug.com/1161996): Remove this entry once the investigation is
     // done.
-    VLOG(1) << "OnKeepaliveRequestStarted: " << num_keepalive_requests_
-            << " ==> " << num_keepalive_requests_ + 1;
-    ++num_keepalive_requests_;
-
-    DCHECK_GT(num_keepalive_requests_, 0u);
-    last_keepalive_request_time_ = base::TimeTicks::Now();
-    if (!keepalive_timer_.IsRunning()) {
-      const auto timeout = GetKeepaliveTimerTimeout();
-      // TODO(crbug.com/1161996): Remove this entry once the investigation is
-      // done.
-      VLOG(1) << "Starting a keepalive timer(" << timeout.InSecondsF()
-              << " seconds)";
-      keepalive_timer_.Start(
-          FROM_HERE, timeout,
-          base::BindOnce(
-              &ChromeContentBrowserClient::OnKeepaliveTimerFired,
-              weak_factory_.GetWeakPtr(),
-              std::make_unique<ScopedKeepAlive>(
-                  KeepAliveOrigin::BROWSER, KeepAliveRestartOption::DISABLED)));
-    }
+    VLOG(1) << "Starting a keepalive timer(" << timeout.InSecondsF()
+            << " seconds)";
+    keepalive_timer_.Start(
+        FROM_HERE, keepalive_deadline_ - now,
+        base::BindOnce(
+            &ChromeContentBrowserClient::OnKeepaliveTimerFired,
+            weak_factory_.GetWeakPtr(),
+            std::make_unique<ScopedKeepAlive>(
+                KeepAliveOrigin::BROWSER, KeepAliveRestartOption::DISABLED)));
   }
 #endif  // !defined(OS_ANDROID)
 }
 
 void ChromeContentBrowserClient::OnKeepaliveRequestFinished() {
 #if !defined(OS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kShutdownSupportForKeepalive)) {
-    DCHECK_GT(num_keepalive_requests_, 0u);
+  DCHECK_GT(num_keepalive_requests_, 0u);
+  // TODO(crbug.com/1161996): Remove this entry once the investigation is
+  // done.
+  VLOG(1) << "OnKeepaliveRequestFinished: " << num_keepalive_requests_
+          << " ==> " << num_keepalive_requests_ - 1;
+  --num_keepalive_requests_;
+  if (num_keepalive_requests_ == 0) {
     // TODO(crbug.com/1161996): Remove this entry once the investigation is
     // done.
-    VLOG(1) << "OnKeepaliveRequestFinished: " << num_keepalive_requests_
-            << " ==> " << num_keepalive_requests_ - 1;
-    --num_keepalive_requests_;
-    if (num_keepalive_requests_ == 0) {
-      // TODO(crbug.com/1161996): Remove this entry once the investigation is
-      // done.
-      VLOG(1) << "Stopping the keepalive timer";
-      keepalive_timer_.Stop();
-      // This deletes the keep alive handle attached to the timer function and
-      // unblock the shutdown sequence.
-    }
+    VLOG(1) << "Stopping the keepalive timer";
+    keepalive_timer_.Stop();
+    // This deletes the keep alive handle attached to the timer function and
+    // unblock the shutdown sequence.
   }
 #endif  // !defined(OS_ANDROID)
 }
@@ -6109,13 +6101,29 @@ ChromeContentBrowserClient::CreateIdentityRequestDialogController() {
 }
 
 #if !defined(OS_ANDROID)
+base::TimeDelta ChromeContentBrowserClient::GetKeepaliveTimerTimeout(
+    content::BrowserContext* context) {
+  Profile* profile = Profile::FromBrowserContext(context);
+  PrefService* prefs = profile->GetPrefs();
+  if (!prefs) {
+    return base::TimeDelta();
+  }
+
+  const int seconds =
+      prefs->GetInteger(prefs::kFetchKeepaliveDurationOnShutdown);
+  // The preference is set only be the corresponding enterprise policy, and
+  // we have minimum/maximum values on it.
+  DCHECK_LE(0, seconds);
+  DCHECK_LE(seconds, 5);
+  return base::TimeDelta::FromSeconds(seconds);
+}
+
 void ChromeContentBrowserClient::OnKeepaliveTimerFired(
     std::unique_ptr<ScopedKeepAlive> keep_alive_handle) {
   // TODO(crbug.com/1161996): Remove this entry once the investigation is done.
   VLOG(1) << "OnKeepaliveTimerFired";
-  DCHECK(base::FeatureList::IsEnabled(features::kShutdownSupportForKeepalive));
   const auto now = base::TimeTicks::Now();
-  const auto then = last_keepalive_request_time_ + GetKeepaliveTimerTimeout();
+  const auto then = keepalive_deadline_;
   if (now < then) {
     // TODO(crbug.com/1161996): Remove this entry once the investigation is
     // done.
