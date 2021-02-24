@@ -34,9 +34,8 @@ class MockDedicatedWorker
  public:
   MockDedicatedWorker(int worker_process_id,
                       GlobalFrameRoutingId render_frame_host_id) {
-    // The COEP reporter is replaced by a placeholder connection. Reports are
-    // ignored.
-    auto coep_reporter = std::make_unique<CrossOriginEmbedderPolicyReporter>(
+    // The COEP reporter is replaced by a dummy connection. Reports are ignored.
+    CrossOriginEmbedderPolicyReporter coep_reporter(
         RenderFrameHostImpl::FromID(render_frame_host_id)
             ->GetStoragePartition(),
         GURL(), base::nullopt, base::nullopt, net::NetworkIsolationKey());
@@ -46,8 +45,7 @@ class MockDedicatedWorker
             worker_process_id, render_frame_host_id,
             /*creator_worker_token=*/base::nullopt, render_frame_host_id,
             url::Origin(), net::IsolationInfo::CreateTransient(),
-            network::CrossOriginEmbedderPolicy(), coep_reporter->GetWeakPtr(),
-            coep_reporter->GetWeakPtr()),
+            network::CrossOriginEmbedderPolicy(), &coep_reporter),
         factory_.BindNewPipeAndPassReceiver());
 
     if (base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)) {
