@@ -24,8 +24,6 @@
 #include "content/public/renderer/websocket_handshake_throttle_provider.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/supported_types.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/web/web_navigation_policy.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
@@ -412,12 +410,6 @@ class CONTENT_EXPORT ContentRendererClient {
   virtual base::Optional<::media::AudioRendererAlgorithmParameters>
   GetAudioRendererAlgorithmParameters(
       ::media::AudioParameters audio_parameters);
-
-  // Proxies the URLLoaderFactory if the platform supports Chrome extensions.
-  virtual void MaybeProxyURLLoaderFactory(
-      RenderFrame* render_frame,
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory>*
-          factory_receiver);
 };
 
 }  // namespace content

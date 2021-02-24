@@ -181,7 +181,6 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/common/initialize_extensions_client.h"
-#include "chrome/common/url_loader_factory_proxy.mojom.h"
 #include "chrome/renderer/extensions/chrome_extensions_renderer_client.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_urls.h"
@@ -190,7 +189,6 @@
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/guest_view/mime_handler_view/mime_handler_view_container_manager.h"
 #include "extensions/renderer/renderer_extension_registry.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view.h"
@@ -1659,20 +1657,3 @@ bool ChromeContentRendererClient::RequiresHtmlImports(const GURL& url) {
   }
   return false;
 }
-
-// When extension is not available, we don't need to proxy the URLLoaderFactory.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-void ChromeContentRendererClient::MaybeProxyURLLoaderFactory(
-    content::RenderFrame* render_frame,
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver) {
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> original_factory;
-  mojo::PendingReceiver<::network::mojom::URLLoaderFactory> proxied_factory(
-      std::move(*factory_receiver));
-  *factory_receiver = original_factory.InitWithNewPipeAndPassReceiver();
-  mojo::Remote<chrome::mojom::UrlLoaderFactoryProxy> url_loader_factory_proxy;
-  render_frame->GetBrowserInterfaceBroker()->GetInterface(
-      url_loader_factory_proxy.BindNewPipeAndPassReceiver());
-  url_loader_factory_proxy->GetProxiedURLLoaderFactory(
-      std::move(original_factory), std::move(proxied_factory));
-}
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)

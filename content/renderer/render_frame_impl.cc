@@ -6023,15 +6023,6 @@ void RenderFrameImpl::OnStopLoading() {
     observer.OnStop();
 }
 
-void RenderFrameImpl::MaybeProxyURLLoaderFactory(
-    blink::CrossVariantMojoReceiver<
-        network::mojom::URLLoaderFactoryInterfaceBase>* factory_receiver) {
-  mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver(
-      std::move(*factory_receiver));
-  GetContentClient()->renderer()->MaybeProxyURLLoaderFactory(this, &receiver);
-  *factory_receiver = std::move(receiver);
-}
-
 void RenderFrameImpl::DraggableRegionsChanged() {
   for (auto& observer : observers_)
     observer.DraggableRegionsChanged();

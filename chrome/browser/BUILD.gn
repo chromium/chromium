@@ -5665,8 +5665,6 @@ static_library("browser") {
       "guest_view/web_view/chrome_web_view_permission_helper_delegate.h",
       "guest_view/web_view/context_menu_content_type_web_view.cc",
       "guest_view/web_view/context_menu_content_type_web_view.h",
-      "loader/url_loader_factory_proxy_impl.cc",
-      "loader/url_loader_factory_proxy_impl.h",
       "media/extension_media_access_handler.cc",
       "media/extension_media_access_handler.h",
       "media/webrtc/desktop_capture_access_handler.cc",
