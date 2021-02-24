@@ -5,6 +5,7 @@
 // Contains holistic tests of the bindings infrastructure
 
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/api/permissions/permissions_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser.h"
@@ -141,7 +142,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
 // Regression test for http://crbug.com/269149.
 // Regression test for http://crbug.com/436593.
 // Flaky on Mac. http://crbug.com/733064.
-#if defined(OS_MAC)
+// Flaky on Chrome OS. http://crbug.com/1181768
+#if (defined(OS_MAC) || defined(OS_CHROMEOS))
 #define MAYBE_EventOverriding DISABLED_EventOverriding
 #else
 #define MAYBE_EventOverriding EventOverriding
