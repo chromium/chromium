@@ -617,9 +617,6 @@ class AutofillManager : public AutofillHandler,
   void SetDataList(const std::vector<base::string16>& values,
                    const std::vector<base::string16>& labels);
 
-  std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>
-  CreateFormInteractionsUkmLogger();
-
   // Delegate to perform external processing (display, selection) on
   // our behalf.
   std::unique_ptr<AutofillExternalDelegate> external_delegate_;

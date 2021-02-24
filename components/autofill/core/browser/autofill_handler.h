@@ -227,9 +227,6 @@ class AutofillHandler
 #endif  // UNIT_TEST
 
  protected:
-  using FormInteractionsUkmLoggerFactoryCallback = base::RepeatingCallback<
-      std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>()>;
-
   AutofillHandler(AutofillDriver* driver,
                   AutofillClient* client,
                   AutofillDownloadManagerState enable_download_manager);
@@ -239,13 +236,6 @@ class AutofillHandler
                   version_info::Channel channel);
 
   LogManager* log_manager() { return log_manager_; }
-
-  // For subclass to set the |callback| to create the FormInteractionsUkmLogger
-  // as necessary. The |form_interactions_ukm_logger_| is instantiated
-  // immediately, the |callback| will be invoked later on to create a new
-  // |form_interactions_ukm_logger_| for each navigation.
-  void InitFormInteractionsUkmLogger(
-      FormInteractionsUkmLoggerFactoryCallback callback);
 
   // Retrieves the page language from |client_|
   LanguageCode GetCurrentPageLanguage() const;
@@ -340,6 +330,9 @@ class AutofillHandler
   void PropagateAutofillPredictionsToDriver(
       const std::vector<FormStructure*>& forms);
 
+  std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>
+  CreateFormInteractionsUkmLogger();
+
   // Provides driver-level context to the shared code of the component. Must
   // outlive this object.
   AutofillDriver* const driver_;
@@ -362,10 +355,6 @@ class AutofillHandler
   // Handles queries and uploads to Autofill servers. Will be nullptr if
   // the download manager functionality is disabled.
   std::unique_ptr<AutofillDownloadManager> download_manager_;
-
-  // The callback used to create |form_interactions_ukm_logger_|.
-  FormInteractionsUkmLoggerFactoryCallback
-      form_interactions_ukm_logger_factory_callback_;
 
   // Utility for logging URL keyed metrics.
   std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>

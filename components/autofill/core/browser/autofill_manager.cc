@@ -465,13 +465,6 @@ AutofillManager::AutofillManager(
       field_filler_(app_locale, client->GetAddressNormalizer()),
       autocomplete_history_manager_(
           autocomplete_history_manager->GetWeakPtr()) {
-  // The factory callback must be set first because the logger is used to create
-  // |address_form_event_logger_| and |credit_card_form_event_logger_|; and the
-  // callback can't be set in constructor of AutofillHandler because |client|
-  // is used in callback function.
-  InitFormInteractionsUkmLogger(
-      base::BindRepeating(&AutofillManager::CreateFormInteractionsUkmLogger,
-                          base::Unretained(this)));
   address_form_event_logger_ = std::make_unique<AddressFormEventLogger>(
       driver->IsInMainFrame(), form_interactions_ukm_logger(), client);
   credit_card_form_event_logger_ = std::make_unique<CreditCardFormEventLogger>(
@@ -1415,11 +1408,6 @@ void AutofillManager::SetDataList(const std::vector<base::string16>& values,
   external_delegate_->SetCurrentDataListValues(values, labels);
 }
 
-std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>
-AutofillManager::CreateFormInteractionsUkmLogger() {
-  return std::make_unique<AutofillMetrics::FormInteractionsUkmLogger>(
-      client()->GetUkmRecorder(), client()->GetUkmSourceId());
-}
 
 void AutofillManager::SelectFieldOptionsDidChange(const FormData& form) {
   // Look for a cached version of the form. It will be a null pointer if none is

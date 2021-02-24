@@ -133,6 +133,7 @@ AutofillHandler::AutofillHandler(
     : driver_(driver),
       client_(client),
       log_manager_(client ? client->GetLogManager() : nullptr),
+      form_interactions_ukm_logger_(CreateFormInteractionsUkmLogger()),
       is_rich_query_enabled_(IsRichQueryEnabled(channel)) {
   if (enable_download_manager == ENABLE_AUTOFILL_DOWNLOAD_MANAGER) {
     download_manager_ = std::make_unique<AutofillDownloadManager>(
@@ -396,12 +397,13 @@ bool AutofillHandler::GetCachedFormAndField(const FormData& form,
   return *autofill_field != nullptr;
 }
 
-void AutofillHandler::InitFormInteractionsUkmLogger(
-    FormInteractionsUkmLoggerFactoryCallback callback) {
-  DCHECK(callback);
-  form_interactions_ukm_logger_factory_callback_ = std::move(callback);
-  form_interactions_ukm_logger_ =
-      form_interactions_ukm_logger_factory_callback_.Run();
+std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>
+AutofillHandler::CreateFormInteractionsUkmLogger() {
+  if (!client())
+    return nullptr;
+
+  return std::make_unique<AutofillMetrics::FormInteractionsUkmLogger>(
+      client()->GetUkmRecorder(), client()->GetUkmSourceId());
 }
 
 size_t AutofillHandler::FindCachedFormsBySignature(
@@ -474,10 +476,7 @@ FormStructure* AutofillHandler::ParseForm(const FormData& form,
 
 void AutofillHandler::Reset() {
   form_structures_.clear();
-  if (form_interactions_ukm_logger_factory_callback_) {
-    form_interactions_ukm_logger_ =
-        form_interactions_ukm_logger_factory_callback_.Run();
-  }
+  form_interactions_ukm_logger_ = CreateFormInteractionsUkmLogger();
 }
 
 void AutofillHandler::OnLoadedServerPredictions(

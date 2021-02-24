@@ -6,9 +6,11 @@
 
 #include "base/stl_util.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "weblayer/browser/translate_client_impl.h"
 
 namespace weblayer {
@@ -61,12 +63,12 @@ autofill::StrikeDatabase* AutofillClientImpl::GetStrikeDatabase() {
 }
 
 ukm::UkmRecorder* AutofillClientImpl::GetUkmRecorder() {
-  NOTREACHED();
+  // TODO(crbug.com/1181141): Enable the autofill UKM.
   return nullptr;
 }
 
 ukm::SourceId AutofillClientImpl::GetUkmSourceId() {
-  NOTREACHED();
+  // TODO(crbug.com/1181141): Enable the autofill UKM.
   return ukm::kInvalidSourceId;
 }
 
