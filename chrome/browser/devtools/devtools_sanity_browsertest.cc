@@ -1593,6 +1593,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, MAYBE_TestPauseWhenLoadingDevTools) {
     defined(ARCH_CPU_ARM_FAMILY)
 // Timing out on linux ARM bot: https://crbug/238453
 #define MAYBE_TestPauseWhenScriptIsRunning DISABLED_TestPauseWhenScriptIsRunning
+#elif (defined(OS_LINUX) && defined(MEMORY_SANITIZER))
+// Timing out on Linux MSan: https://crbug.com/1181692
+#define MAYBE_TestPauseWhenScriptIsRunning DISABLED_TestPauseWhenScriptIsRunning
 #else
 #define MAYBE_TestPauseWhenScriptIsRunning TestPauseWhenScriptIsRunning
 #endif
