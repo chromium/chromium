@@ -75,7 +75,7 @@ UiCredential MakeUiCredential(const std::string& username,
   return UiCredential(base::UTF8ToUTF16(username), base::UTF8ToUTF16(password),
                       url::Origin::Create(GURL(kExampleCom)),
                       IsPublicSuffixMatch(false),
-                      IsAffiliationBasedMatch(false));
+                      IsAffiliationBasedMatch(false), base::Time());
 }
 
 PasswordForm MakeSavedPassword(const std::string& signon_realm,

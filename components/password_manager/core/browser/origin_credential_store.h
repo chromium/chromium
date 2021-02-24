@@ -9,6 +9,7 @@
 
 #include "base/containers/span.h"
 #include "base/strings/string16.h"
+#include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -30,7 +31,8 @@ class UiCredential {
                base::string16 password,
                url::Origin origin,
                IsPublicSuffixMatch is_public_suffix_match,
-               IsAffiliationBasedMatch is_affiliation_based_match);
+               IsAffiliationBasedMatch is_affiliation_based_match,
+               base::Time last_used);
   UiCredential(const PasswordForm& form, const url::Origin& affiliated_origin);
   UiCredential(UiCredential&&);
   UiCredential(const UiCredential&);
@@ -52,12 +54,15 @@ class UiCredential {
     return is_affiliation_based_match_;
   }
 
+  base::Time last_used() const { return last_used_; }
+
  private:
   base::string16 username_;
   base::string16 password_;
   url::Origin origin_;
   IsPublicSuffixMatch is_public_suffix_match_{false};
   IsAffiliationBasedMatch is_affiliation_based_match_{false};
+  base::Time last_used_;
 };
 
 bool operator==(const UiCredential& lhs, const UiCredential& rhs);

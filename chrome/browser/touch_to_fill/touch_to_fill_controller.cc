@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_view.h"
@@ -23,10 +24,29 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "url/origin.h"
 
+namespace {
+
 using ShowVirtualKeyboard =
     password_manager::PasswordManagerDriver::ShowVirtualKeyboard;
 using password_manager::PasswordManagerDriver;
 using password_manager::UiCredential;
+
+std::vector<UiCredential> SortCredentials(
+    base::span<const UiCredential> credentials) {
+  std::vector<UiCredential> result(credentials.begin(), credentials.end());
+  // Sort `credentials` according to the following criteria:
+  // 1) Prefer non-PSL matches over PSL matches.
+  // 2) Prefer credentials that were used recently over others.
+  //
+  // Note: This ordering matches password_manager_util::FindBestMatches().
+  base::ranges::sort(result, std::greater<>{}, [](const UiCredential& cred) {
+    return std::make_pair(!cred.is_public_suffix_match(), cred.last_used());
+  });
+
+  return result;
+}
+
+}  // namespace
 
 TouchToFillController::TouchToFillController(
     base::PassKey<TouchToFillControllerTest>) {}
@@ -63,7 +83,7 @@ void TouchToFillController::Show(base::span<const UiCredential> credentials,
       url,
       TouchToFillView::IsOriginSecure(
           network::IsOriginPotentiallyTrustworthy(url::Origin::Create(url))),
-      credentials);
+      SortCredentials(credentials));
 }
 
 void TouchToFillController::OnCredentialSelected(

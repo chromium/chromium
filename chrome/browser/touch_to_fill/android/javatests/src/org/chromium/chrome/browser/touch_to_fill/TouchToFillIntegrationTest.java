@@ -59,9 +59,9 @@ public class TouchToFillIntegrationTest {
     private static final String EXAMPLE_URL = "https://www.example.xyz";
     private static final String MOBILE_URL = "https://m.example.xyz";
     private static final Credential ANA =
-            new Credential("Ana", "S3cr3t", "Ana", EXAMPLE_URL, false, false);
+            new Credential("Ana", "S3cr3t", "Ana", EXAMPLE_URL, false, false, 0);
     private static final Credential BOB =
-            new Credential("Bob", "*****", "Bob", MOBILE_URL, true, false);
+            new Credential("Bob", "*****", "Bob", MOBILE_URL, true, false, 0);
 
     private final TouchToFillComponent mTouchToFill = new TouchToFillCoordinator();
 
