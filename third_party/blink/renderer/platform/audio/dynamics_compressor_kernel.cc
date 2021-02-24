@@ -98,7 +98,7 @@ void DynamicsCompressorKernel::SetPreDelayTime(float pre_delay_time) {
 // Exponential curve for the knee.
 // It is 1st derivative matched at m_linearThreshold and asymptotically
 // approaches the value m_linearThreshold + 1 / k.
-float DynamicsCompressorKernel::KneeCurve(float x, float k) {
+float DynamicsCompressorKernel::KneeCurve(float x, float k) const {
   // Linear up to threshold.
   if (x < linear_threshold_)
     return x;
@@ -108,7 +108,7 @@ float DynamicsCompressorKernel::KneeCurve(float x, float k) {
 }
 
 // Full compression curve with constant ratio after knee.
-float DynamicsCompressorKernel::Saturate(float x, float k) {
+float DynamicsCompressorKernel::Saturate(float x, float k) const {
   float y;
 
   if (x < knee_threshold_)
@@ -127,7 +127,7 @@ float DynamicsCompressorKernel::Saturate(float x, float k) {
 // Approximate 1st derivative with input and output expressed in dB.
 // This slope is equal to the inverse of the compression "ratio".
 // In other words, a compression ratio of 20 would be a slope of 1/20.
-float DynamicsCompressorKernel::SlopeAt(float x, float k) {
+float DynamicsCompressorKernel::SlopeAt(float x, float k) const {
   if (x < linear_threshold_)
     return 1;
 
@@ -144,7 +144,7 @@ float DynamicsCompressorKernel::SlopeAt(float x, float k) {
   return m;
 }
 
-float DynamicsCompressorKernel::KAtSlope(float desired_slope) {
+float DynamicsCompressorKernel::KAtSlope(float desired_slope) const {
   float x_db = db_threshold_ + db_knee_;
   float x = audio_utilities::DecibelsToLinear(x_db);
 

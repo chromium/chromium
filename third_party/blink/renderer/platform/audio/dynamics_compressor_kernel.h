@@ -102,10 +102,10 @@ class PLATFORM_EXPORT DynamicsCompressorKernel {
   float max_attack_compression_diff_db_;
 
   // Static compression curve.
-  float KneeCurve(float x, float k);
-  float Saturate(float x, float k);
-  float SlopeAt(float x, float k);
-  float KAtSlope(float desired_slope);
+  float KneeCurve(float x, float k) const;
+  float Saturate(float x, float k) const;
+  float SlopeAt(float x, float k) const;
+  float KAtSlope(float desired_slope) const;
 
   float UpdateStaticCurveParameters(float db_threshold,
                                     float db_knee,
