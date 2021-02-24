@@ -36,6 +36,10 @@ class FetchIconWorkerTask extends AsyncTask<Bitmap> {
     // The ID of the contact to look up.
     private String mContactId;
 
+    // If positive, the returned icon will be scaled to this size, measured along one side of a
+    // square, in pixels. Otherwise, the returned image will be returned as-is.
+    private int mDesiredIconSize;
+
     // The content resolver to use for looking up
     private ContentResolver mContentResolver;
 
@@ -55,6 +59,15 @@ class FetchIconWorkerTask extends AsyncTask<Bitmap> {
         assert !id.equals(ContactDetails.SELF_CONTACT_ID);
         mContentResolver = contentResolver;
         mCallback = callback;
+    }
+
+    /**
+     * If called, {@link FetchIconWorkerTask} will scale the icon to the given size before
+     * returning it.
+     * @param iconSize the size (both width and height) to scale to.
+     */
+    public void setDesiredIconSize(int iconSize) {
+        mDesiredIconSize = iconSize;
     }
 
     /**
@@ -78,7 +91,10 @@ class FetchIconWorkerTask extends AsyncTask<Bitmap> {
             if (cursor.moveToFirst()) {
                 byte[] data = cursor.getBlob(0);
                 if (data != null) {
-                    return BitmapFactory.decodeStream(new ByteArrayInputStream(data));
+                    Bitmap icon = BitmapFactory.decodeStream(new ByteArrayInputStream(data));
+                    return mDesiredIconSize > 0 ? Bitmap.createScaledBitmap(
+                                   icon, mDesiredIconSize, mDesiredIconSize, true)
+                                                : icon;
                 }
             }
         } finally {
