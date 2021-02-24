@@ -306,8 +306,8 @@
   <message name="IDS_FILE_BROWSER_SEND_FEEDBACK_BUTTON_LABEL" desc="Title for the action of sending user feedback.">
     Send feedback
   </message>
-  <message name="IDS_FILE_BROWSER_ADD_NEW_SERVICES_BUTTON_LABEL" desc="Title of the button in the left nav to add new services (file systems) to the Files app.">
-    Add new service
+  <message name="IDS_FILE_BROWSER_SHOW_PROVIDERS_BUTTON_LABEL" desc="Title of the button in the left nav to display services (file systems) of the Files app.">
+    Services
   </message>
   <message name="IDS_FILE_BROWSER_TASK_VIEW" desc="Title of the action to view (no edit) a file.">
     View

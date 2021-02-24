@@ -87,7 +87,7 @@
                shortcut="e|Ctrl">
       <command id="new-window" label="$i18n{NEW_WINDOW_BUTTON_LABEL}"
                shortcut="n|Ctrl">
-      <command id="new-service" label="$i18n{ADD_NEW_SERVICES_BUTTON_LABEL}">
+      <command id="show-providers-submenu" label="$i18n{SHOW_PROVIDERS_BUTTON_LABEL}">
       </command>
       <!-- Note that actual shortcut Ctrl/Meta+A is handled in
                ListSelectionController.handleKeyDown -->
@@ -296,8 +296,8 @@
         <cr-menu-item id="gear-menu-send-feedback"
                       command="#send-feedback"></cr-menu-item>
         <hr id="volume-space-info-separator">
-        <cr-menu-item id="gear-menu-newservice" command="#new-service"
-            sub-menu="#add-new-services-menu"></cr-menu-item>
+        <cr-menu-item id="gear-menu-providers" command="#show-providers-submenu"
+            sub-menu="#providers-menu"></cr-menu-item>
         <cr-menu-item id="gear-menu-format" command="#format"></cr-menu-item>
         <cr-menu-item id="gear-menu-erase" command="#erase-device"></cr-menu-item>
         <cr-menu-item id="volume-space-info" command="#volume-storage">
@@ -330,7 +330,7 @@
                   sub-menu="#share-sub-menu" hidden></cr-menu-item>
       </cr-menu>
 
-      <cr-menu id="add-new-services-menu"
+      <cr-menu id="providers-menu"
                class="chrome-menu files-menu has-icon-start"
                menu-item-selector="cr-menu-item, hr">
       </cr-menu>

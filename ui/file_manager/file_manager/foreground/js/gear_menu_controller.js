@@ -64,13 +64,15 @@
   onShowGearMenu_() {
     this.toggleRipple_.activated = true;
     this.refreshRemainingSpace_(false); /* Without loading caption. */
-    // Open the providers menu with an installed provider and an install new
-    // provider option.
-    const commandId = '#new-service';
-    const label = str('ADD_NEW_SERVICES_BUTTON_LABEL');
-    // Trigger an update of the providers submenu.
-    this.providersMenu_.updateSubMenu();
-    this.gearMenu_.setNewServiceCommand(commandId, label);
+
+    this.providersModel_.getMountableProviders().then(providers => {
+      const shouldHide = providers.length == 0;
+      if (!shouldHide) {
+        // Trigger an update of the providers submenu.
+        this.providersMenu_.updateSubMenu();
+      }
+      this.gearMenu_.updateShowProviders(shouldHide);
+    });
   }
 
   /**

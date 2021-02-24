@@ -30,14 +30,6 @@
      */
     this.menu_ = menu;
 
-    this.menu_.addSeparator();
-
-    /**
-     * @private {!Element}
-     * @const
-     */
-    this.separator_ = assert(this.menu_.firstElementChild);
-
     this.menu_.addEventListener('update', this.onUpdate_.bind(this));
   }
 
@@ -45,11 +37,8 @@
    * @private
    */
   clearProviders_() {
-    let childNode = this.menu_.firstElementChild;
-    while (childNode !== this.separator_) {
-      const node = childNode;
-      childNode = childNode.nextElementSibling;
-      this.menu_.removeChild(node);
+    while (this.menu_.firstChild) {
+      this.menu_.removeChild(this.menu_.lastChild);
     }
   }
 
@@ -79,9 +68,6 @@
 
     item.addEventListener(
         'activate', this.onItemActivate_.bind(this, providerId));
-
-    // Move the element before the separator.
-    this.menu_.insertBefore(item, this.separator_);
   }
 
   /**

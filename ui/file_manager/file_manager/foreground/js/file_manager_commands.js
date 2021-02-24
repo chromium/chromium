@@ -2955,9 +2955,10 @@ CommandHandler.COMMANDS_['volume-storage'] = new class extends FilesCommand {
 };
 
 /**
- * Opens "providers menu" to allow users to install new providers/FSPs.
+ * Opens "providers menu" to allow users to use providers/FSPs.
  */
-CommandHandler.COMMANDS_['new-service'] = new class extends FilesCommand {
+CommandHandler.COMMANDS_['show-providers-submenu'] =
+    new class extends FilesCommand {
   execute(event, fileManager) {
     fileManager.ui.gearButton.showSubMenu();
   }
