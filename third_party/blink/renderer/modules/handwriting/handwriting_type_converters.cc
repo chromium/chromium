@@ -146,4 +146,57 @@ TypeConverter<blink::HandwritingFeatureQueryResult*,
   return output;
 }
 
+// static
+blink::HandwritingDrawingSegment*
+TypeConverter<blink::HandwritingDrawingSegment*, HandwritingDrawingSegmentPtr>::
+    Convert(const HandwritingDrawingSegmentPtr& input) {
+  if (!input) {
+    return nullptr;
+  }
+  auto* output = blink::HandwritingDrawingSegment::Create();
+  output->setStrokeIndex(input->stroke_index);
+  output->setBeginPointIndex(input->begin_point_index);
+  output->setEndPointIndex(input->end_point_index);
+  return output;
+}
+
+// static
+blink::HandwritingSegment*
+TypeConverter<blink::HandwritingSegment*,
+              handwriting::mojom::blink::HandwritingSegmentPtr>::
+    Convert(const handwriting::mojom::blink::HandwritingSegmentPtr& input) {
+  if (!input) {
+    return nullptr;
+  }
+  auto* output = blink::HandwritingSegment::Create();
+  output->setGrapheme(input->grapheme);
+  output->setBeginIndex(input->begin_index);
+  output->setEndIndex(input->end_index);
+  blink::HeapVector<blink::Member<blink::HandwritingDrawingSegment>>
+      drawing_segments;
+  for (const auto& drw_seg : input->drawing_segments) {
+    drawing_segments.push_back(drw_seg.To<blink::HandwritingDrawingSegment*>());
+  }
+  output->setDrawingSegments(std::move(drawing_segments));
+  return output;
+}
+
+// static
+blink::HandwritingPrediction*
+TypeConverter<blink::HandwritingPrediction*,
+              handwriting::mojom::blink::HandwritingPredictionPtr>::
+    Convert(const handwriting::mojom::blink::HandwritingPredictionPtr& input) {
+  if (!input) {
+    return nullptr;
+  }
+  auto* output = blink::HandwritingPrediction::Create();
+  output->setText(input->text);
+  blink::HeapVector<blink::Member<blink::HandwritingSegment>> segments;
+  for (const auto& seg : input->segmentation_result) {
+    segments.push_back(seg.To<blink::HandwritingSegment*>());
+  }
+  output->setSegmentationResult(std::move(segments));
+  return output;
+}
+
 }  // namespace mojo

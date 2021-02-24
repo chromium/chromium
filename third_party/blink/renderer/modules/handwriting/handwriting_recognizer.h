@@ -6,8 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_HANDWRITING_HANDWRITING_RECOGNIZER_H_
 
 #include "base/macros.h"
+#include "third_party/blink/public/mojom/handwriting/handwriting.mojom-blink.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
 
@@ -21,11 +23,21 @@ class HandwritingRecognizer final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit HandwritingRecognizer(ExecutionContext* context);
+  explicit HandwritingRecognizer(
+      ExecutionContext* context,
+      mojo::PendingRemote<handwriting::mojom::blink::HandwritingRecognizer>
+          pending_remote);
   ~HandwritingRecognizer() override;
 
   // Used by the drawing to see if the recognizer is valid.
   bool IsValid();
+
+  // Gets prediction, called by `HandwritingDrawing`.
+  void GetPrediction(
+      Vector<handwriting::mojom::blink::HandwritingStrokePtr> strokes,
+      handwriting::mojom::blink::HandwritingHintsPtr hints,
+      handwriting::mojom::blink::HandwritingRecognizer::GetPredictionCallback
+          callback);
 
   // IDL Interface:
   HandwritingDrawing* startDrawing(ScriptState* script_state,
@@ -39,11 +51,8 @@ class HandwritingRecognizer final : public ScriptWrappable {
   // This function will invalidate the recognizer and its drawings;
   void Invalidate();
 
-  // TODO(crbug.com/1166910): We may use the status of the mojo remote as and
-  // indicator instead of having a standalone boolean. However, we can't land
-  // the mojo service until a browser side implementation is available (for
-  // security review). Until then, use this stub which never resolves.
-  bool is_valid_;
+  HeapMojoRemote<handwriting::mojom::blink::HandwritingRecognizer>
+      remote_service_;
 
   DISALLOW_COPY_AND_ASSIGN(HandwritingRecognizer);
 };

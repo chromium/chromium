@@ -5,8 +5,8 @@
 // https://github.com/WICG/handwriting-recognition/blob/main/explainer.md
 
 dictionary HandwritingHints {
-  DOMString recognitionType;
-  DOMString inputType;
-  DOMString textContext;
-  unsigned long alternatives;
+  DOMString recognitionType = "text";
+  DOMString inputType = "mouse";
+  DOMString textContext = "";
+  unsigned long alternatives = 3;
 };

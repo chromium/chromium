@@ -7,16 +7,46 @@
 #include "base/macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_drawing_segment.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_prediction.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_segment.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/handwriting/handwriting_recognizer.h"
 #include "third_party/blink/renderer/modules/handwriting/handwriting_stroke.h"
+#include "third_party/blink/renderer/modules/handwriting/handwriting_type_converters.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
 namespace blink {
 
+namespace {
+// The callback to get the recognition result.
+void OnRecognitionResult(
+    ScriptPromiseResolver* resolver,
+    ScriptState* script_state,
+    base::Optional<Vector<handwriting::mojom::blink::HandwritingPredictionPtr>>
+        predictions) {
+  // If `predictions` does not have value, it means the some error happened in
+  // recognition. Otherwise, if it has value but the vector is empty, it means
+  // the recognition works fine but it can not recognize anything from the
+  // input.
+  if (!predictions.has_value()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kUnknownError, "Internal error."));
+    return;
+  }
+  HeapVector<Member<HandwritingPrediction>> result;
+  for (const auto& pred_mojo : predictions.value()) {
+    result.push_back(pred_mojo.To<blink::HandwritingPrediction*>());
+  }
+  resolver->Resolve(std::move(result));
+}
+}  // namespace
+
 HandwritingDrawing::HandwritingDrawing(ExecutionContext* context,
-                                       HandwritingRecognizer* recognizer)
-    : recognizer_(recognizer) {}
+                                       HandwritingRecognizer* recognizer,
+                                       const HandwritingHints* hints)
+    : hints_(MakeGarbageCollected<HandwritingHints>(*hints)),
+      recognizer_(recognizer) {}
 
 HandwritingDrawing::~HandwritingDrawing() = default;
 
@@ -48,20 +78,31 @@ ScriptPromise HandwritingDrawing::getPrediction(ScriptState* script_state) {
   ScriptPromise promise = resolver->Promise();
 
   if (!IsValid()) {
-    resolver->Reject(V8ThrowException::CreateTypeError(
-        script_state->GetIsolate(), "The recognizer has been invalidated."));
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "The recognizer has been invalidated."));
     return promise;
   }
-  // TODO(crbug.com/1166910): This should call out to a mojo service. However,
-  // we can't land the mojo service until a browser side implementation is
-  // available (for security review). Until then, use this stub which never
-  // resolves.
-  resolver->Resolve();
+
+  Vector<handwriting::mojom::blink::HandwritingStrokePtr> strokes;
+  for (const auto& stroke : strokes_) {
+    strokes.push_back(
+        mojo::ConvertTo<handwriting::mojom::blink::HandwritingStrokePtr>(
+            stroke.Get()));
+  }
+
+  recognizer_->GetPrediction(
+      std::move(strokes),
+      mojo::ConvertTo<handwriting::mojom::blink::HandwritingHintsPtr>(
+          hints_.Get()),
+      WTF::Bind(&OnRecognitionResult, WrapPersistent(resolver),
+                WrapPersistent(script_state)));
 
   return promise;
 }
 
 void HandwritingDrawing::Trace(Visitor* visitor) const {
+  visitor->Trace(hints_);
   visitor->Trace(strokes_);
   visitor->Trace(recognizer_);
   ScriptWrappable::Trace(visitor);

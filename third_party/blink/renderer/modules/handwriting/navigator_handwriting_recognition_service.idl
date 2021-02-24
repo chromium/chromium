@@ -9,11 +9,11 @@
   ImplementedAs=HandwritingRecognitionService,
   RuntimeEnabled=HandwritingRecognition
 ] partial interface Navigator {
-  [CallWith=ScriptState]
+  [CallWith=ScriptState, RaisesException]
   Promise<HandwritingRecognizer>
       createHandwritingRecognizer(HandwritingModelConstraint constraint);
 
-  [CallWith=ScriptState]
+  [CallWith=ScriptState, RaisesException]
   Promise<HandwritingFeatureQueryResult>
       queryHandwritingRecognizerSupport(HandwritingFeatureQuery query);
 };

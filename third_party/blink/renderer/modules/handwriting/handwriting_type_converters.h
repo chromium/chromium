@@ -12,10 +12,13 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace blink {
+class HandwritingDrawingSegment;
 class HandwritingFeatureQuery;
 class HandwritingFeatureQueryResult;
 class HandwritingHints;
 class HandwritingPoint;
+class HandwritingPrediction;
+class HandwritingSegment;
 class HandwritingStroke;
 }  // namespace blink
 
@@ -79,6 +82,30 @@ struct MODULES_EXPORT
                   handwriting::mojom::blink::HandwritingFeatureQueryResultPtr> {
   static blink::HandwritingFeatureQueryResult* Convert(
       const handwriting::mojom::blink::HandwritingFeatureQueryResultPtr& input);
+};
+
+template <>
+struct MODULES_EXPORT
+    TypeConverter<blink::HandwritingDrawingSegment*,
+                  handwriting::mojom::blink::HandwritingDrawingSegmentPtr> {
+  static blink::HandwritingDrawingSegment* Convert(
+      const handwriting::mojom::blink::HandwritingDrawingSegmentPtr& input);
+};
+
+template <>
+struct MODULES_EXPORT
+    TypeConverter<blink::HandwritingSegment*,
+                  handwriting::mojom::blink::HandwritingSegmentPtr> {
+  static blink::HandwritingSegment* Convert(
+      const handwriting::mojom::blink::HandwritingSegmentPtr& input);
+};
+
+template <>
+struct MODULES_EXPORT
+    TypeConverter<blink::HandwritingPrediction*,
+                  handwriting::mojom::blink::HandwritingPredictionPtr> {
+  static blink::HandwritingPrediction* Convert(
+      const handwriting::mojom::blink::HandwritingPredictionPtr& input);
 };
 
 }  // namespace mojo
