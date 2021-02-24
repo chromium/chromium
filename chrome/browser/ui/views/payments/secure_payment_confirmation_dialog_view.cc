@@ -22,10 +22,6 @@
 namespace payments {
 namespace {
 
-// Size of the instrument icon shown in the payment method row.
-constexpr int kInstrumentIconWidth = 32;
-constexpr int kInstrumentIconHeight = 20;
-
 // Height of each row.
 constexpr int kRowHeight = 48;
 
@@ -380,21 +376,13 @@ std::unique_ptr<views::View> SecurePaymentConfirmationDialogView::CreateRowView(
   layout->AddView(std::move(value_text));
 
   if (icon) {
-    std::unique_ptr<views::ImageView> icon_view =
-        std::make_unique<views::ImageView>();
-
     instrument_icon_ = model_->instrument_icon();
     instrument_icon_generation_id_ =
         model_->instrument_icon()->getGenerationID();
-    gfx::ImageSkia image =
-        gfx::ImageSkia::CreateFrom1xBitmap(*model_->instrument_icon())
-            .DeepCopy();
 
-    icon_view->SetImage(image);
-    icon_view->SetImageSize(
-        gfx::Size(kInstrumentIconWidth, kInstrumentIconHeight));
-    icon_view->SetPaintToLayer();
-    icon_view->layer()->SetFillsBoundsOpaquely(false);
+    std::unique_ptr<views::ImageView> icon_view =
+        CreateSecurePaymentConfirmationInstrumentIconView(
+            *model_->instrument_icon());
     icon_view->SetID(static_cast<int>(icon_id));
     layout->AddView(std::move(icon_view));
   }

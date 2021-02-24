@@ -11,6 +11,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/payments/content/payment_credential_enrollment_model.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/layout/box_layout.h"
@@ -113,6 +114,23 @@ void PaymentCredentialEnrollmentDialogView::OnModelUpdated() {
 
   UpdateLabelView(DialogViewID::TITLE, model_->title());
   UpdateLabelView(DialogViewID::DESCRIPTION, model_->description());
+
+  // Update the instrument icon only if it's changed
+  if (model_->instrument_icon() &&
+      (model_->instrument_icon() != instrument_icon_ ||
+       model_->instrument_icon()->getGenerationID() !=
+           instrument_icon_generation_id_)) {
+    instrument_icon_generation_id_ =
+        model_->instrument_icon()->getGenerationID();
+    gfx::ImageSkia image =
+        gfx::ImageSkia::CreateFrom1xBitmap(*model_->instrument_icon())
+            .DeepCopy();
+
+    static_cast<views::ImageView*>(
+        GetViewByID(static_cast<int>(DialogViewID::INSTRUMENT_ICON)))
+        ->SetImage(image);
+  }
+  instrument_icon_ = model_->instrument_icon();
 }
 
 void PaymentCredentialEnrollmentDialogView::UpdateLabelView(
@@ -197,6 +215,7 @@ PaymentCredentialEnrollmentDialogView::CreateHeaderView() {
 // | Title                                    |
 // |                                          |
 // | Description                              |
+// | icon                                     |
 // +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
 std::unique_ptr<views::View>
 PaymentCredentialEnrollmentDialogView::CreateBodyView() {
@@ -207,7 +226,7 @@ PaymentCredentialEnrollmentDialogView::CreateBodyView() {
   views::GridLayout* layout =
       body->SetLayoutManager(std::make_unique<views::GridLayout>());
   views::ColumnSet* columns = layout->AddColumnSet(0);
-  columns->AddColumn(views::GridLayout::FILL, views::GridLayout::CENTER, 1.0,
+  columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER, 1.0,
                      views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
 
   layout->StartRow(views::GridLayout::kFixedSize, 0);
@@ -218,6 +237,16 @@ PaymentCredentialEnrollmentDialogView::CreateBodyView() {
 
   layout->StartRow(views::GridLayout::kFixedSize, 0);
   layout->AddView(CreateDescription());
+
+  layout->StartRow(views::GridLayout::kFixedSize, 0);
+  instrument_icon_ = model_->instrument_icon();
+  instrument_icon_generation_id_ = model_->instrument_icon()->getGenerationID();
+
+  std::unique_ptr<views::ImageView> icon_view =
+      CreateSecurePaymentConfirmationInstrumentIconView(
+          *model_->instrument_icon());
+  icon_view->SetID(static_cast<int>(DialogViewID::INSTRUMENT_ICON));
+  layout->AddView(std::move(icon_view));
 
   return body;
 }

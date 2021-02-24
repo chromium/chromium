@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/payments/payment_credential_enrollment_dialog_view.h"
+#include "chrome/browser/ui/views/payments/secure_payment_confirmation_views_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/test_event_waiter.h"
 #include "components/payments/content/payment_credential_enrollment_model.h"
@@ -11,9 +12,20 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 
 namespace payments {
+namespace {
+
+const SkBitmap CreateInstrumentIcon(SkColor color) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(kInstrumentIconWidth, kInstrumentIconHeight);
+  bitmap.eraseColor(color);
+  return bitmap;
+}
+
+}  // namespace
 
 class PaymentCredentialEnrollmentDialogViewTest
     : public InProcessBrowserTest,
@@ -38,6 +50,11 @@ class PaymentCredentialEnrollmentDialogViewTest
                           "bank verification next "
                           "time when you use Touch ID to verify your payment "
                           "with Visa ••••4444."));
+
+    std::unique_ptr<SkBitmap> instrument_icon =
+        std::make_unique<SkBitmap>(CreateInstrumentIcon(SK_ColorBLUE));
+    instrument_icon_ = instrument_icon.get();
+    model_.set_instrument_icon(std::move(instrument_icon));
 
     model_.set_accept_button_label(base::UTF8ToUTF16("Use Touch ID"));
     model_.set_cancel_button_label(base::UTF8ToUTF16("No thanks"));
@@ -104,6 +121,17 @@ class PaymentCredentialEnrollmentDialogViewTest
     ExpectLabelText(
         model_.description(),
         PaymentCredentialEnrollmentDialogView::DialogViewID::DESCRIPTION);
+
+    ASSERT_EQ(instrument_icon_, model_.instrument_icon());
+    EXPECT_TRUE(cc::MatchesBitmap(
+        *model_.instrument_icon(),
+        *(static_cast<views::ImageView*>(
+              dialog_view_->GetViewByID(
+                  static_cast<int>(PaymentCredentialEnrollmentDialogView::
+                                       DialogViewID::INSTRUMENT_ICON)))
+              ->GetImage()
+              .bitmap()),
+        cc::ExactPixelComparator(/*discard_alpha=*/false)));
   }
 
   void ClickAcceptAndWait() {
@@ -174,6 +202,8 @@ class PaymentCredentialEnrollmentDialogViewTest
 
   PaymentCredentialEnrollmentModel model_;
   base::WeakPtr<PaymentCredentialEnrollmentDialogView> dialog_view_;
+
+  SkBitmap* instrument_icon_ = nullptr;
 
   bool accept_called_ = false;
   bool cancel_called_ = false;
@@ -262,6 +292,32 @@ IN_PROC_BROWSER_TEST_F(PaymentCredentialEnrollmentDialogViewTest,
 
   dialog_view_->OnModelUpdated();
 
+  ExpectViewMatchesModel();
+
+  CloseDialogAndWait();
+}
+
+// Test the two reasons an instrument icon is updated: The model's bitmap
+// pointer changed, or the bitmap itself changed.
+IN_PROC_BROWSER_TEST_F(PaymentCredentialEnrollmentDialogViewTest,
+                       InstrumentIconUpdated) {
+  CreateModel();
+
+  InvokePaymentCredentialEnrollmentUI();
+
+  ExpectViewMatchesModel();
+
+  // Change the bitmap pointer
+  std::unique_ptr<SkBitmap> instrument_icon =
+      std::make_unique<SkBitmap>(CreateInstrumentIcon(SK_ColorGREEN));
+  instrument_icon_ = instrument_icon.get();
+  model_.set_instrument_icon(std::move(instrument_icon));
+  dialog_view_->OnModelUpdated();
+  ExpectViewMatchesModel();
+
+  // Change the bitmap itself without touching the model's pointer
+  *instrument_icon_ = CreateInstrumentIcon(SK_ColorRED);
+  dialog_view_->OnModelUpdated();
   ExpectViewMatchesModel();
 
   CloseDialogAndWait();

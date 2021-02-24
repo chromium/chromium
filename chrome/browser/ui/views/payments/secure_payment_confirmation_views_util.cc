@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/view.h"
@@ -56,6 +57,21 @@ std::unique_ptr<views::Label> CreateSecurePaymentConfirmationTitleLabel(
   title_label->SetBorder(views::CreateEmptyBorder(0, 0, kBodyInsets, 0));
 
   return title_label;
+}
+
+std::unique_ptr<views::ImageView>
+CreateSecurePaymentConfirmationInstrumentIconView(const SkBitmap& bitmap) {
+  gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap).DeepCopy();
+
+  std::unique_ptr<views::ImageView> icon_view =
+      std::make_unique<views::ImageView>();
+  icon_view->SetImage(image);
+  icon_view->SetImageSize(
+      gfx::Size(kInstrumentIconWidth, kInstrumentIconHeight));
+  icon_view->SetPaintToLayer();
+  icon_view->layer()->SetFillsBoundsOpaquely(false);
+
+  return icon_view;
 }
 
 }  // namespace payments

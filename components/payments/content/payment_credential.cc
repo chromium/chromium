@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <utility>
 
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
@@ -196,7 +197,7 @@ void PaymentCredential::DidDownloadIcon(
 
   // TODO(https://crbug.com/1110320): Get the best icon using |preferred size|
   // rather than the first one if multiple downloaded.
-  gfx::Image downloaded_image = gfx::Image::CreateFrom1xBitmap(bitmaps[0]);
+  gfx::Image downloaded_image = gfx::Image::CreateFrom1xBitmap(bitmaps.front());
   scoped_refptr<base::RefCountedMemory> raw_data =
       downloaded_image.As1xPNGBytes();
   encoded_icon_ =
@@ -206,6 +207,7 @@ void PaymentCredential::DidDownloadIcon(
   state_ = State::kShowingUserPrompt;
   ui_controller_->ShowDialog(
       initiator_frame_routing_id_,
+      std::make_unique<SkBitmap>(std::move(bitmaps.front())),
       base::BindOnce(&PaymentCredential::OnUserResponseFromUI,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

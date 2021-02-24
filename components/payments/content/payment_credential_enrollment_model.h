@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 namespace payments {
 
@@ -30,6 +31,12 @@ class PaymentCredentialEnrollmentModel {
   const base::string16& description() const { return description_; }
   void set_description(const base::string16& description) {
     description_ = description;
+  }
+
+  // Instrument icon.
+  const SkBitmap* instrument_icon() const { return instrument_icon_.get(); }
+  void set_instrument_icon(std::unique_ptr<SkBitmap> instrument_icon) {
+    instrument_icon_ = std::move(instrument_icon);
   }
 
   // Label for the accept button, e.g. "Use Touch ID".
@@ -83,6 +90,8 @@ class PaymentCredentialEnrollmentModel {
  private:
   base::string16 title_;
   base::string16 description_;
+
+  std::unique_ptr<SkBitmap> instrument_icon_;
 
   base::string16 accept_button_label_;
   base::string16 cancel_button_label_;

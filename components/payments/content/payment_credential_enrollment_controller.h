@@ -5,15 +5,20 @@
 #ifndef COMPONENTS_PAYMENTS_CONTENT_PAYMENT_CREDENTIAL_ENROLLMENT_CONTROLLER_H_
 #define COMPONENTS_PAYMENTS_CONTENT_PAYMENT_CREDENTIAL_ENROLLMENT_CONTROLLER_H_
 
+#include <memory>
+
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/payment_credential_enrollment_model.h"
-#include "components/payments/content/payment_credential_enrollment_view.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
+class SkBitmap;
+
 namespace payments {
+
+class PaymentCredentialEnrollmentView;
 
 // Controls the user interface in the secure payment confirmation flow.
 class PaymentCredentialEnrollmentController
@@ -57,6 +62,7 @@ class PaymentCredentialEnrollmentController
       const PaymentCredentialEnrollmentController& other) = delete;
 
   void ShowDialog(content::GlobalFrameRoutingId initiator_frame_routing_id,
+                  std::unique_ptr<SkBitmap> instrument_icon,
                   ResponseCallback response_callback);
   void CloseDialog();
   void ShowProcessingSpinner();

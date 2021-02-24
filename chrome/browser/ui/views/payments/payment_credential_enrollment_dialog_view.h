@@ -38,7 +38,8 @@ class PaymentCredentialEnrollmentDialogView
     HEADER_ICON,
     PROGRESS_BAR,
     TITLE,
-    DESCRIPTION
+    DESCRIPTION,
+    INSTRUMENT_ICON
   };
 
   // The
@@ -80,6 +81,13 @@ class PaymentCredentialEnrollmentDialogView
   CancelCallback cancel_callback_;
 
   views::ProgressBar* progress_bar_ = nullptr;
+
+  // Cache the instrument icon pointer so we don't needlessly update it in
+  // OnModelUpdated().
+  const SkBitmap* instrument_icon_ = nullptr;
+  // Cache the instrument icon generation ID to check if the instrument_icon_
+  // has changed pixels.
+  uint32_t instrument_icon_generation_id_ = 0;
 
   base::WeakPtrFactory<PaymentCredentialEnrollmentDialogView> weak_ptr_factory_{
       this};
