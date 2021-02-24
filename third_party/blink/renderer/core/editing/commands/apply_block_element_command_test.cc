@@ -192,4 +192,26 @@ TEST_F(ApplyBlockElementCommandTest, FormatBlockWithDirectChildrenOfRoot) {
             SelectionSample::GetSelectionText(*root, selection));
 }
 
+// This is a regression test for https://crbug.com/1180699
+TEST_F(ApplyBlockElementCommandTest, OutdentEmptyBlockquote) {
+  Vector<std::string> selection_texts = {
+      "<blockquote style='padding:5px'>|</blockquote>",
+      "a<blockquote style='padding:5px'>|</blockquote>",
+      "<blockquote style='padding:5px'>|</blockquote>b",
+      "a<blockquote style='padding:5px'>|</blockquote>b"};
+  Vector<std::string> expectations = {"|", "a|<br>", "|<br>b", "a<br>|b"};
+
+  GetDocument().setDesignMode("on");
+  for (unsigned i = 0; i < selection_texts.size(); ++i) {
+    Selection().SetSelection(SetSelectionTextToBody(selection_texts[i]),
+                             SetSelectionOptions());
+    auto* command = MakeGarbageCollected<IndentOutdentCommand>(
+        GetDocument(), IndentOutdentCommand::kOutdent);
+
+    // Shouldn't crash here.
+    command->Apply();
+    EXPECT_EQ(expectations[i], GetSelectionTextFromBody());
+  }
+}
+
 }  // namespace blink

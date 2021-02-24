@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/editing/commands/editing_commands_utilities.h"
 #include "third_party/blink/renderer/core/editing/commands/insert_list_command.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
+#include "third_party/blink/renderer/core/editing/relocatable_position.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
@@ -288,12 +289,20 @@ void IndentOutdentCommand::OutdentParagraph(EditingState* editing_state) {
       VisiblePosition::LastPositionInNode(*enclosing_element);
   VisiblePosition end_of_enclosing_block =
       EndOfBlock(last_position_in_enclosing_block);
+  RelocatablePosition start_of_paragraph(
+      visible_start_of_paragraph.DeepEquivalent());
+  RelocatablePosition end_of_paragraph(
+      visible_end_of_paragraph.DeepEquivalent());
   if (visible_start_of_paragraph.DeepEquivalent() ==
           start_of_enclosing_block.DeepEquivalent() &&
       visible_end_of_paragraph.DeepEquivalent() ==
           end_of_enclosing_block.DeepEquivalent()) {
     // The blockquote doesn't contain anything outside the paragraph, so it can
     // be totally removed.
+    // This procedure will make {start,end}_of_paragraph out of sync if the
+    // blockquote has children, so store the first and last children.
+    Node* first_child = enclosing_element->firstChild();
+    Node* last_child = enclosing_element->lastChild();
     Node* split_point = enclosing_element->nextSibling();
     RemoveNodePreservingChildren(enclosing_element, editing_state);
     if (editing_state->IsAborted())
@@ -312,9 +321,14 @@ void IndentOutdentCommand::OutdentParagraph(EditingState* editing_state) {
       }
     }
 
+    // Re-canonicalize visible_start_of_paragraph, make it valid again after DOM
+    // change. If enclosing_element had children, start_of_paragraph will be out
+    // of sync, so use first_child instead.
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+    DCHECK(!first_child || first_child->isConnected());
     visible_start_of_paragraph =
-        CreateVisiblePosition(visible_start_of_paragraph.DeepEquivalent());
+        CreateVisiblePosition(first_child ? Position::BeforeNode(*first_child)
+                                          : start_of_paragraph.GetPosition());
     if (visible_start_of_paragraph.IsNotNull() &&
         !IsStartOfParagraph(visible_start_of_paragraph)) {
       InsertNodeAt(MakeGarbageCollected<HTMLBRElement>(GetDocument()),
@@ -323,9 +337,14 @@ void IndentOutdentCommand::OutdentParagraph(EditingState* editing_state) {
         return;
     }
 
+    // Re-canonicalize visible_end_of_paragraph, make it valid again after DOM
+    // change. If enclosing_element had children, end_of_paragraph will be out
+    // of sync, so use last_child instead.
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+    DCHECK(!last_child || last_child->isConnected());
     visible_end_of_paragraph =
-        CreateVisiblePosition(visible_end_of_paragraph.DeepEquivalent());
+        CreateVisiblePosition(last_child ? Position::AfterNode(*last_child)
+                                         : end_of_paragraph.GetPosition());
     if (visible_end_of_paragraph.IsNotNull() &&
         !IsEndOfParagraph(visible_end_of_paragraph))
       InsertNodeAt(MakeGarbageCollected<HTMLBRElement>(GetDocument()),
@@ -370,37 +389,39 @@ void IndentOutdentCommand::OutdentParagraph(EditingState* editing_state) {
 
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
-    // Re-canonicalize visible{Start,End}OfParagraph, make them valid again
+    // Re-canonicalize visible_{start,end}_of_paragraph, make them valid again
     // after DOM change.
-    // TODO(editing-dev): We should not store a VisiblePosition and later
-    // inspect its properties when it is already invalidated.
-    // See crbug.com/648949 for details.
-    visible_start_of_paragraph = CreateVisiblePosition(
-        visible_start_of_paragraph.ToPositionWithAffinity());
-    visible_end_of_paragraph = CreateVisiblePosition(
-        visible_end_of_paragraph.ToPositionWithAffinity());
+    visible_start_of_paragraph =
+        CreateVisiblePosition(start_of_paragraph.GetPosition());
+    visible_end_of_paragraph =
+        CreateVisiblePosition(end_of_paragraph.GetPosition());
   }
 
-  // TODO(editing-dev): We should not store a VisiblePosition and later
-  // inspect its properties when it is already invalidated.
-  // See crbug.com/648949 for details.
-  VisiblePosition start_of_paragraph_to_move =
+  VisiblePosition visible_start_of_paragraph_to_move =
       StartOfParagraph(visible_start_of_paragraph);
-  VisiblePosition end_of_paragraph_to_move =
+  VisiblePosition visible_end_of_paragraph_to_move =
       EndOfParagraph(visible_end_of_paragraph);
-  if (start_of_paragraph_to_move.IsNull() || end_of_paragraph_to_move.IsNull())
+  if (visible_start_of_paragraph_to_move.IsNull() ||
+      visible_end_of_paragraph_to_move.IsNull())
     return;
+  RelocatablePosition start_of_paragraph_to_move(
+      visible_start_of_paragraph_to_move.DeepEquivalent());
+  RelocatablePosition end_of_paragraph_to_move(
+      visible_end_of_paragraph_to_move.DeepEquivalent());
   auto* placeholder = MakeGarbageCollected<HTMLBRElement>(GetDocument());
   InsertNodeBefore(placeholder, split_blockquote_node, editing_state);
   if (editing_state->IsAborted())
     return;
 
+  // Re-canonicalize visible_{start,end}_of_paragraph_to_move, make them valid
+  // again after DOM change.
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
-  start_of_paragraph_to_move = CreateVisiblePosition(
-      start_of_paragraph_to_move.ToPositionWithAffinity());
-  end_of_paragraph_to_move =
-      CreateVisiblePosition(end_of_paragraph_to_move.ToPositionWithAffinity());
-  MoveParagraph(start_of_paragraph_to_move, end_of_paragraph_to_move,
+  visible_start_of_paragraph_to_move =
+      CreateVisiblePosition(start_of_paragraph_to_move.GetPosition());
+  visible_end_of_paragraph_to_move =
+      CreateVisiblePosition(end_of_paragraph_to_move.GetPosition());
+  MoveParagraph(visible_start_of_paragraph_to_move,
+                visible_end_of_paragraph_to_move,
                 VisiblePosition::BeforeNode(*placeholder), editing_state,
                 kPreserveSelection);
 }
