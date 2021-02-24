@@ -22,6 +22,9 @@ DEFAULT_DATABASE_PATH = os.path.abspath(os.path.join(
 
 
 def main():
+  print('*** WARNING: soundwave is deprecated and will be removed soon.\n' +
+        '*** Please see go/chromeperf-bigquery for a replacement.\n')
+
   parser = argparse.ArgumentParser()
   # Default args for all actions.
   parser.add_argument(
