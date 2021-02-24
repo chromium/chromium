@@ -1166,13 +1166,15 @@ static inline bool ElementAffectsDirectionality(const Node* node) {
 void HTMLElement::ChildrenChanged(const ChildrenChange& change) {
   Element::ChildrenChanged(change);
 
-  AdjustDirectionalityIfNeededAfterChildrenChanged();
+  if (GetDocument().IsDirAttributeDirty()) {
+    AdjustDirectionalityIfNeededAfterChildrenChanged();
 
-  if (change.IsChildInsertion() && !SelfOrAncestorHasDirAutoAttribute()) {
-    auto* element = DynamicTo<HTMLElement>(change.sibling_changed);
-    if (element && !element->NeedsInheritDirectionalityFromParent() &&
-        !ElementAffectsDirectionality(element))
-      element->UpdateDirectionalityAndDescendant(CachedDirectionality());
+    if (change.IsChildInsertion() && !SelfOrAncestorHasDirAutoAttribute()) {
+      auto* element = DynamicTo<HTMLElement>(change.sibling_changed);
+      if (element && !element->NeedsInheritDirectionalityFromParent() &&
+          !ElementAffectsDirectionality(element))
+        element->UpdateDirectionalityAndDescendant(CachedDirectionality());
+    }
   }
 }
 
@@ -1747,6 +1749,8 @@ void HTMLElement::OnDirAttrChanged(const AttributeModificationParams& params) {
       !IsValidDirAttribute(params.new_value))
     return;
 
+  GetDocument().SetDirAttributeDirty();
+
   bool is_old_auto = SelfOrAncestorHasDirAutoAttribute();
   bool is_new_auto = HasDirectionAuto();
   bool needs_slot_assignment_recalc = false;
@@ -1945,16 +1949,18 @@ void HTMLElement::FinishParsingChildren() {
 void HTMLElement::BeginParsingChildren() {
   Element::BeginParsingChildren();
 
-  if (HasDirectionAuto()) {
-    SetSelfOrAncestorHasDirAutoAttribute();
-  } else if (!ElementAffectsDirectionality(this)) {
-    bool needs_slot_assignment_recalc = false;
-    auto* parent =
-        GetParentForDirectionality(this, needs_slot_assignment_recalc);
-    if (needs_slot_assignment_recalc)
-      SetNeedsInheritDirectionalityFromParent();
-    else if (parent)
-      SetCachedDirectionality(parent->CachedDirectionality());
+  if (GetDocument().IsDirAttributeDirty()) {
+    if (HasDirectionAuto()) {
+      SetSelfOrAncestorHasDirAutoAttribute();
+    } else if (!ElementAffectsDirectionality(this)) {
+      bool needs_slot_assignment_recalc = false;
+      auto* parent =
+          GetParentForDirectionality(this, needs_slot_assignment_recalc);
+      if (needs_slot_assignment_recalc)
+        SetNeedsInheritDirectionalityFromParent();
+      else if (parent)
+        SetCachedDirectionality(parent->CachedDirectionality());
+    }
   }
 }
 

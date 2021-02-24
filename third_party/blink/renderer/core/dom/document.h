@@ -1686,6 +1686,9 @@ class CORE_EXPORT Document : public ContainerNode,
     Document& document_;
   };
 
+  bool IsDirAttributeDirty() { return dir_attribute_dirty_; }
+  void SetDirAttributeDirty() { dir_attribute_dirty_ = true; }
+
  protected:
   void ClearXMLVersion() { xml_version_ = String(); }
 
@@ -2208,6 +2211,8 @@ class CORE_EXPORT Document : public ContainerNode,
   bool had_find_in_page_request_ = false;
   bool had_find_in_page_render_subtree_active_match_ = false;
   bool had_find_in_page_beforematch_expanded_hidden_matchable_ = false;
+
+  bool dir_attribute_dirty_ = false;
 
   // To reduce the API noisiness an explicit deny decision will set a
   // flag that auto rejects the promise without the need for an IPC
