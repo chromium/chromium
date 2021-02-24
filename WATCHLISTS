@@ -1320,9 +1320,6 @@
     'midi': {
       'filepath': 'midi',
     },
-    'mojo': {
-      'filepath': 'mojo',
-    },
     'multidevice': {
       'filepath': 'ash/multi_device_setup/'\
                   '|chrome/browser/chromeos/cryptauth/'\
@@ -2618,7 +2615,6 @@
                                'chromium-metrics-reviews@google.com'],
     'metrics_perf': ['cwp-reviews+chromium@google.com'],
     'midi': ['toyoshim+midi@chromium.org'],
-    'mojo': ['darin+watch@chromium.org'],
     'multidevice': ['hansberry+watch-multidevice@chromium.org',
                     'nohle+watch-multidevice@chromium.org',
                     'themaxli+watch-multidevice@chromium.org',
@@ -2887,8 +2883,7 @@
     'webcodecs': ['feature-media-reviews@chromium.org'],
     'webgpu': ['cwallez+watch@chromium.org',
                'kainino+watch@chromium.org'],
-    'weblayer': ['cricke+watch@chromium.org',
-                 'darin+watch@chromium.org'],
+    'weblayer': ['cricke+watch@chromium.org'], 
     'weblayer_safe_browsing' : ['carlosil+watch@chromium.org'],
     'weblayer_ssl' : ['carlosil+watch@chromium.org'],
     'webrtc_browser_tests': ['phoglund+watch@chromium.org'],
