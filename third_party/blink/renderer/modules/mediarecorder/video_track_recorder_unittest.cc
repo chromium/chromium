@@ -224,8 +224,10 @@ class VideoTrackRecorderTest
             : media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
         media::VideoPixelFormat::PIXEL_FORMAT_NV12);
     scoped_refptr<media::VideoFrame> video_frame2 = video_frame;
-    if (frame_type == TestFrameType::kNv12GpuMemoryBuffer)
-      video_frame2 = media::ConvertToMemoryMappedFrame(video_frame);
+    if (frame_type == TestFrameType::kNv12GpuMemoryBuffer) {
+      video_frame2 =
+          media::ConvertToMemoryMappedFrame(video_frame, nullptr, nullptr);
+    }
 
     // Fade to black.
     const uint8_t kBlackY = 0x00;

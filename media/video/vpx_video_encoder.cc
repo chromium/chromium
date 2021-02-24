@@ -268,7 +268,9 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   }
 
   if (frame->format() == PIXEL_FORMAT_NV12 && frame->HasGpuMemoryBuffer()) {
-    frame = ConvertToMemoryMappedFrame(frame);
+    // TODO(crbug.com/1181292): wire up GpuVideoAcceleratorFactories and add
+    // SharedMemoryPool to pass here to allow DXGI GMBs processing.
+    frame = ConvertToMemoryMappedFrame(frame, nullptr, nullptr);
     if (!frame) {
       std::move(done_cb).Run(
           Status(StatusCode::kEncoderFailedEncode,

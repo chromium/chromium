@@ -11,6 +11,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "media/base/media_export.h"
+#include "media/base/shared_memory_pool.h"
 #include "media/base/status.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/rect.h"
@@ -19,6 +20,8 @@
 class GrDirectContext;
 
 namespace gpu {
+class GpuMemoryBufferManager;
+
 namespace raster {
 class RasterInterface;
 }  // namespace raster
@@ -149,9 +152,15 @@ MEDIA_EXPORT gfx::Size PadToMatchAspectRatio(const gfx::Size& size,
 
 // A helper function to map GpuMemoryBuffer-based VideoFrame. This function
 // maps the given GpuMemoryBuffer of |frame| as-is without converting pixel
-// format. The returned VideoFrame owns the |frame|.
+// format, unless the video frame is backed by DXGI GMB.
+// The returned VideoFrame owns the |frame|.
+// |gpu_memory_buffer_manager| and |pool| must be provided for DXGI GMB, which
+// can't be mapped without a round-trip to GPU process. In that case pixel data
+// is readback and copied to shared memory.
 MEDIA_EXPORT scoped_refptr<VideoFrame> ConvertToMemoryMappedFrame(
-    scoped_refptr<VideoFrame> frame);
+    scoped_refptr<VideoFrame> frame,
+    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
+    media::SharedMemoryPool* pool);
 
 // This function synchronously reads pixel data from textures associated with
 // |txt_frame| and creates a new CPU memory backed frame. It's needed because

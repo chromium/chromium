@@ -605,9 +605,15 @@ VideoEncodeAcceleratorAdapter::PrepareCpuFrame(
   base::UnsafeSharedMemoryRegion* region = handle->GetRegion();
   base::WritableSharedMemoryMapping* mapping = handle->GetMapping();
 
-  auto mapped_src_frame = src_frame->HasGpuMemoryBuffer()
-                              ? ConvertToMemoryMappedFrame(src_frame)
-                              : src_frame;
+  // |output_pool_| is used here, since it's also used to allocate only a single
+  // region for the output frame. It would incur smaller overhead to use it here
+  // with a higher resolution source frame.
+  auto mapped_src_frame =
+      src_frame->HasGpuMemoryBuffer()
+          ? ConvertToMemoryMappedFrame(src_frame,
+                                       gpu_factories_->GpuMemoryBufferManager(),
+                                       output_pool_.get())
+          : src_frame;
   auto shared_frame = VideoFrame::WrapExternalData(
       PIXEL_FORMAT_I420, options_.frame_size, gfx::Rect(size), size,
       mapping->GetMemoryAsSpan<uint8_t>().data(), mapping->size(),
@@ -661,15 +667,21 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
   gpu_frame->set_color_space(src_frame->ColorSpace());
   gpu_frame->metadata().MergeMetadataFrom(src_frame->metadata());
 
-  // Don't be scared. ConvertToMemoryMappedFrame() doesn't copy pixel data
-  // it just maps GPU buffer owned by |gpu_frame| and presents it as mapped
-  // view in CPU memory. It allows us to use ConvertAndScaleFrame() without
-  // having to tinker with libyuv and GpuMemoryBuffer memory views.
+  // Don't be scared. ConvertToMemoryMappedFrame() doesn't copy pixel data if
+  // possible. It just maps GPU buffer owned by |gpu_frame| and presents it as
+  // mapped view in CPU memory. It allows us to use ConvertAndScaleFrame()
+  // without having to tinker with libyuv and GpuMemoryBuffer memory views.
   // |mapped_gpu_frame| doesn't own anything, but unmaps the buffer when freed.
-  auto mapped_gpu_frame = ConvertToMemoryMappedFrame(gpu_frame);
-  auto mapped_src_frame = src_frame->HasGpuMemoryBuffer()
-                              ? ConvertToMemoryMappedFrame(src_frame)
-                              : src_frame;
+  // This is true because |gpu_frame| is created with
+  // |VEA_READ_CAMERA_AND_CPU_READ_WRITE| usage flag.
+  auto mapped_gpu_frame =
+      ConvertToMemoryMappedFrame(gpu_frame, nullptr, nullptr);
+  auto mapped_src_frame =
+      src_frame->HasGpuMemoryBuffer()
+          ? ConvertToMemoryMappedFrame(src_frame,
+                                       gpu_factories_->GpuMemoryBufferManager(),
+                                       output_pool_.get())
+          : src_frame;
   if (!mapped_gpu_frame || !mapped_src_frame)
     return Status(StatusCode::kEncoderFailedEncode);
 

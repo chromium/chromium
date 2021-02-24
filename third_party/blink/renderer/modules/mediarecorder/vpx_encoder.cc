@@ -75,8 +75,11 @@ void VpxEncoder::EncodeOnEncodingTaskRunner(scoped_refptr<VideoFrame> frame,
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoding_sequence_checker_);
 
   if (frame->format() == media::PIXEL_FORMAT_NV12 &&
-      frame->storage_type() == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER)
-    frame = media::ConvertToMemoryMappedFrame(frame);
+      frame->storage_type() == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+    // TODO(crbug.com/1181292): wire up GpuVideoAcceleratorFactories and add
+    // SharedMemoryPool to pass here to allow DXGI GMBs processing.
+    frame = media::ConvertToMemoryMappedFrame(frame, nullptr, nullptr);
+  }
   if (!frame) {
     LOG(WARNING) << "Invalid video frame to encode";
     return;
