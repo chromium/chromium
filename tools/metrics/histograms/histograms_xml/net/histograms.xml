@@ -3904,6 +3904,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Net.QuicSession.StopSendingErrorCodeClient"
+    enum="QuicRstStreamErrorCodes" expires_after="2021-05-11">
+  <owner>dschinazi@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>The QUIC error code that we sent in a STOP_SENDING frame.</summary>
+</histogram>
+
+<histogram name="Net.QuicSession.StopSendingErrorCodeServer"
+    enum="QuicRstStreamErrorCodes" expires_after="2021-05-11">
+  <owner>dschinazi@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The QUIC error code that we received in a STOP_SENDING frame.
+  </summary>
+</histogram>
+
 <histogram name="Net.QuicSession.StreamCloseErrorCodeClient.HandshakeConfirmed"
     enum="QuicErrorCodes" expires_after="2021-08-09">
   <owner>dschinazi@chromium.org</owner>
