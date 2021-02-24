@@ -207,9 +207,9 @@ def main():
         test_server.Stop()
 
       if args.code_coverage:
-        target.GetFile(TEST_LLVM_PROFILE_PATH,
-                       args.code_coverage_dir,
-                       recursive=True)
+        # Copy all the files in the profile directory. /* is used instead
+        # of recursively copying due to permission issues for the latter.
+        target.GetFile(TEST_LLVM_PROFILE_PATH + '/*', args.code_coverage_dir)
 
       if args.test_launcher_summary_output:
         target.GetFile(TEST_RESULT_PATH,
