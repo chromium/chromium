@@ -20,6 +20,7 @@ class Layer;
 
 namespace content {
 class Compositor;
+class WebContents;
 }  // namespace content
 
 namespace weblayer {
@@ -57,6 +58,7 @@ class ContentViewRenderView : public content::CompositorClient {
                       jboolean can_be_used_with_surface_control,
                       jint width,
                       jint height,
+                      jboolean transparent_background,
                       const base::android::JavaParamRef<jobject>& surface);
   void SetNeedsRedraw(JNIEnv* env);
   void EvictCachedSurface(JNIEnv* env);
@@ -72,8 +74,11 @@ class ContentViewRenderView : public content::CompositorClient {
   ~ContentViewRenderView() override;
 
   void InitCompositor();
+  void UpdateWebContentsBaseBackgroundColor();
 
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
+  bool use_transparent_background_ = false;
+  content::WebContents* web_contents_ = nullptr;
 
   std::unique_ptr<content::Compositor> compositor_;
 

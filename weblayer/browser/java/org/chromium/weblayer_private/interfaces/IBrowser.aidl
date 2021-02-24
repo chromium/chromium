@@ -51,4 +51,5 @@ interface IBrowser {
 
   // Added in 90.
   void setDarkModeStrategy(in int strategy) = 16;
+  void setEmbeddingMode(in int mode, in IObjectWrapper valueCallback) = 17;
 }

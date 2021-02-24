@@ -6,6 +6,7 @@ package org.chromium.weblayer.shell;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -485,6 +486,8 @@ public class InstrumentationActivity extends AppCompatActivity {
     }
 
     public Fragment createBrowserFragment(int viewId, Intent intent) {
+        ViewGroup parentView = findViewById(viewId);
+        if (parentView != null) parentView.setBackgroundColor(Color.RED);
         FragmentManager fragmentManager = getSupportFragmentManager();
         String profileName = intent.hasExtra(EXTRA_PROFILE_NAME)
                 ? intent.getStringExtra(EXTRA_PROFILE_NAME)
