@@ -7344,6 +7344,26 @@ std::vector<FeatureEntry>* GetEntriesForTesting() {
   return entries.get();
 }
 
+void SetFeatureEntries(const std::vector<FeatureEntry>& entries) {
+  CHECK(GetEntriesForTesting()->empty());  // IN-TEST
+  for (const auto& entry : entries)
+    GetEntriesForTesting()->push_back(entry);  // IN-TEST
+  FlagsStateSingleton::GetInstance()->RebuildState(
+      *GetEntriesForTesting());  // IN-TEST
+}
+
+ScopedFeatureEntries::ScopedFeatureEntries(
+    const std::vector<flags_ui::FeatureEntry>& entries) {
+  SetFeatureEntries(entries);
+}
+
+ScopedFeatureEntries::~ScopedFeatureEntries() {
+  GetEntriesForTesting()->clear();  // IN-TEST
+  // Restore the flag state to the production flags.
+  FlagsStateSingleton::GetInstance()->RebuildState(
+      *GetEntriesForTesting());  // IN-TEST
+}
+
 const FeatureEntry* GetFeatureEntries(size_t* count) {
   if (!GetEntriesForTesting()->empty()) {
     *count = GetEntriesForTesting()->size();
@@ -7351,13 +7371,6 @@ const FeatureEntry* GetFeatureEntries(size_t* count) {
   }
   *count = base::size(kFeatureEntries);
   return kFeatureEntries;
-}
-
-void SetFeatureEntries(const std::vector<FeatureEntry>& entries) {
-  GetEntriesForTesting()->clear();
-  for (const auto& entry : entries)
-    GetEntriesForTesting()->push_back(entry);
-  FlagsStateSingleton::GetInstance()->RebuildState(*GetEntriesForTesting());
 }
 
 }  // namespace testing

@@ -41,20 +41,24 @@ const flags_ui::FeatureEntry::FeatureVariation kTestVariations2[] = {
 
 class ChromeLabsBubbleTest : public TestWithBrowserView {
  public:
+  ChromeLabsBubbleTest()
+      : scoped_feature_entries_(
+            {{kFirstTestFeatureId, "", "",
+              flags_ui::FlagsState::GetCurrentPlatform(),
+              FEATURE_VALUE_TYPE(kTestFeature1)},
+             {kSecondTestFeatureId, "", "",
+              flags_ui::FlagsState::GetCurrentPlatform(),
+              FEATURE_WITH_PARAMS_VALUE_TYPE(kTestFeature2,
+                                             kTestVariations2,
+                                             "TestTrial")},
+             // kThirdTestFeatureID will be the Id of a FeatureEntry that is not
+             // compatible with the current platform.
+             {kThirdTestFeatureId, "", "", 0,
+              FEATURE_VALUE_TYPE(kTestFeature3)}}) {}
+
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kChromeLabs);
-    std::vector<flags_ui::FeatureEntry> entries = {
-        {kFirstTestFeatureId, "", "",
-         flags_ui::FlagsState::GetCurrentPlatform(),
-         FEATURE_VALUE_TYPE(kTestFeature1)},
-        {kSecondTestFeatureId, "", "",
-         flags_ui::FlagsState::GetCurrentPlatform(),
-         FEATURE_WITH_PARAMS_VALUE_TYPE(kTestFeature2, kTestVariations2,
-                                        "TestTrial")},
-        // kThirdTestFeatureID will be the Id of a FeatureEntry that is not
-        // compatible with the current platform.
-        {kThirdTestFeatureId, "", "", 0, FEATURE_VALUE_TYPE(kTestFeature3)}};
-    about_flags::testing::SetFeatureEntries(entries);
+
     // Set up test data on the model.
     scoped_chrome_labs_model_data_.SetModelDataForTesting(TestLabInfo());
 
@@ -155,6 +159,7 @@ class ChromeLabsBubbleTest : public TestWithBrowserView {
     return test_feature_info;
   }
 
+  about_flags::testing::ScopedFeatureEntries scoped_feature_entries_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
   ScopedChromeLabsModelDataForTesting scoped_chrome_labs_model_data_;
