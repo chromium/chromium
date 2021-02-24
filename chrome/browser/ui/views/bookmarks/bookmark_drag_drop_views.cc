@@ -14,11 +14,14 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/platform_locale_settings.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
@@ -165,7 +168,12 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
     base::WeakPtr<BookmarkDragHelper> ptr =
         (new BookmarkDragHelper(profile, params, std::move(do_drag_callback)))
             ->GetWeakPtr();
-    ptr->Start(params.nodes.at(params.drag_node_index));
+
+    Browser* browser = FindBrowserWithWebContents(params.web_contents);
+    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+    SkColor icon_color = browser_view->GetNativeTheme()->GetSystemColor(
+        ui::NativeTheme::kColorId_LabelEnabledColor);
+    ptr->Start(params.nodes.at(params.drag_node_index), icon_color);
     return ptr;
   }
 
@@ -175,11 +183,11 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
                      DoBookmarkDragCallback do_drag_callback)
       : model_(BookmarkModelFactory::GetForBrowserContext(profile)),
         count_(params.nodes.size()),
-        native_view_(params.view),
+        web_contents_(params.web_contents),
         source_(params.source),
         start_point_(params.start_point),
         do_drag_callback_(std::move(do_drag_callback)),
-        drag_data_(std::make_unique<ui::OSExchangeData>()){
+        drag_data_(std::make_unique<ui::OSExchangeData>()) {
     observation_.Observe(model_);
 
     // Set up our OLE machinery.
@@ -191,7 +199,7 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
       operation_ |= ui::DragDropTypes::DRAG_MOVE;
   }
 
-  void Start(const BookmarkNode* drag_node) {
+  void Start(const BookmarkNode* drag_node, SkColor icon_color) {
     drag_node_id_ = drag_node->id();
 
     ui::ImageModel icon;
@@ -207,9 +215,7 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
 
       icon = ui::ImageModel::FromImage(image);
     } else {
-      icon = GetBookmarkFolderIcon(
-          ui::NativeTheme::GetInstanceForNativeUi()->GetSystemColor(
-              ui::NativeTheme::kColorId_LabelEnabledColor));
+      icon = GetBookmarkFolderIcon(icon_color);
     }
 
     OnBookmarkIconLoaded(drag_node, icon);
@@ -232,8 +238,8 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
                                   BookmarkDragImageSource::kDragImageOffsetY));
 
     std::move(do_drag_callback_)
-        .Run(std::move(drag_data_), native_view_, source_, start_point_,
-             operation_);
+        .Run(std::move(drag_data_), web_contents_->GetNativeView(), source_,
+             start_point_, operation_);
 
     delete this;
   }
@@ -263,7 +269,7 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
 
   int64_t drag_node_id_ = -1;
   int count_;
-  gfx::NativeView native_view_;
+  content::WebContents* web_contents_;
   ui::mojom::DragEventSource source_;
   const gfx::Point start_point_;
   int operation_;

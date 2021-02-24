@@ -21,6 +21,10 @@ class BookmarkNode;
 struct BookmarkNodeData;
 }
 
+namespace content {
+class WebContents;
+}
+
 namespace ui {
 class OSExchangeData;
 }
@@ -39,7 +43,7 @@ using DoBookmarkDragCallback =
 struct BookmarkDragParams {
   BookmarkDragParams(std::vector<const bookmarks::BookmarkNode*> nodes,
                      int drag_node_index,
-                     gfx::NativeView view,
+                     content::WebContents* web_contents,
                      ui::mojom::DragEventSource source,
                      gfx::Point start_point);
   ~BookmarkDragParams();
@@ -50,8 +54,8 @@ struct BookmarkDragParams {
   // The index of the main dragged node.
   int drag_node_index;
 
-  // The native view that initiated the drag.
-  gfx::NativeView view;
+  // The web contents that initiated the drag.
+  content::WebContents* web_contents;
 
   // The source of the drag.
   ui::mojom::DragEventSource source;

@@ -29,12 +29,12 @@ using ::ui::mojom::DragOperation;
 BookmarkDragParams::BookmarkDragParams(
     std::vector<const bookmarks::BookmarkNode*> nodes,
     int drag_node_index,
-    gfx::NativeView view,
+    content::WebContents* web_contents,
     ui::mojom::DragEventSource source,
     gfx::Point start_point)
     : nodes(std::move(nodes)),
       drag_node_index(drag_node_index),
-      view(view),
+      web_contents(web_contents),
       source(source),
       start_point(start_point) {}
 BookmarkDragParams::~BookmarkDragParams() = default;

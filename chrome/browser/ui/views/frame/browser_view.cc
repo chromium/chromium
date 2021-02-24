@@ -1894,7 +1894,7 @@ void BrowserView::UserChangedTheme(BrowserThemeChangeType theme_change_type) {
   if (theme_change_type == BrowserThemeChangeType::kBrowserTheme &&
       !GetRegularOrGuestSession()) {
     ui::NativeTheme::GetInstanceForDarkUI()->NotifyObservers();
-    ui::NativeTheme::GetInstanceForNativeUi()->NotifyObservers();
+    GetNativeTheme()->NotifyObservers();
 
     // Early exit. A native theme change will update all the
     // NativeThemeObservers, and then BrowserFrame will re-enter this method

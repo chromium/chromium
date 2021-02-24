@@ -257,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragSingleBookmark) {
       browser()->profile(),
       {{node},
        kDragNodeIndex,
-       platform_util::GetViewForWindow(browser()->window()->GetNativeWindow()),
+       browser()->tab_strip_model()->GetActiveWebContents(),
        ui::mojom::DragEventSource::kMouse,
        expected_point},
       std::move(cb));
@@ -303,16 +303,16 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragMultipleBookmarks) {
       });
 
   constexpr int kDragNodeIndex = 1;
-  chrome::DragBookmarksForTest(browser()->profile(),
-                               {
-                                   {node1, node2},
-                                   kDragNodeIndex,
-                                   platform_util::GetViewForWindow(
-                                       browser()->window()->GetNativeWindow()),
-                                   ui::mojom::DragEventSource::kMouse,
-                                   expected_point,
-                               },
-                               std::move(cb));
+  chrome::DragBookmarksForTest(
+      browser()->profile(),
+      {
+          {node1, node2},
+          kDragNodeIndex,
+          browser()->tab_strip_model()->GetActiveWebContents(),
+          ui::mojom::DragEventSource::kMouse,
+          expected_point,
+      },
+      std::move(cb));
 
   run_loop->Run();
 }

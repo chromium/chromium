@@ -453,10 +453,9 @@ BookmarkManagerPrivateStartDragFunction::RunOnReady() {
   if (params->is_from_touch)
     source = ui::mojom::DragEventSource::kTouch;
 
-  chrome::DragBookmarks(GetProfile(),
-                        {std::move(nodes), params->drag_node_index,
-                         web_contents->GetContentNativeView(), source,
-                         gfx::Point(params->x, params->y)});
+  chrome::DragBookmarks(
+      GetProfile(), {std::move(nodes), params->drag_node_index, web_contents,
+                     source, gfx::Point(params->x, params->y)});
 
   return NoArguments();
 }

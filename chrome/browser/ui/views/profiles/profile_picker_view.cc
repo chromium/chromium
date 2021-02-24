@@ -148,11 +148,10 @@ GURL CreateURLForEntryPoint(ProfilePicker::EntryPoint entry_point) {
   }
 }
 
-GURL GetSigninURL() {
+GURL GetSigninURL(bool dark_mode) {
   GURL signin_url = GaiaUrls::GetInstance()->signin_chrome_sync_dice();
-  if (ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
+  if (dark_mode)
     signin_url = net::AppendQueryParameter(signin_url, "color_scheme", "dark");
-  }
   return signin_url;
 }
 
@@ -170,6 +169,7 @@ void ContinueSAMLSignin(std::unique_ptr<content::WebContents> saml_wc,
                         Browser* browser) {
   DCHECK(browser);
 
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   // Attach DiceTabHelper to `saml_wc` so that sync consent dialog appears after
   // a successful sign-in.
   DiceTabHelper::CreateForWebContents(saml_wc.get());
@@ -177,7 +177,8 @@ void ContinueSAMLSignin(std::unique_ptr<content::WebContents> saml_wc,
   // Use |redirect_url| and not |continue_url|, so that the DiceTabHelper can
   // redirect to chrome:// URLs such as the NTP.
   tab_helper->InitializeSigninFlow(
-      GetSigninURL(), signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
+      GetSigninURL(browser_view->GetNativeTheme()->ShouldUseDarkColors()),
+      signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
       signin_metrics::Reason::REASON_SIGNIN_PRIMARY_ACCOUNT,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
       GURL(chrome::kChromeUINewTabURL));
@@ -712,7 +713,9 @@ void ProfilePickerView::OnProfileForSigninCreated(
 
   UpdateToolbarColor();
 
-  ShowScreen(sign_in_->contents.get(), GetSigninURL(), /*show_toolbar=*/true);
+  ShowScreen(sign_in_->contents.get(),
+             GetSigninURL(GetNativeTheme()->ShouldUseDarkColors()),
+             /*show_toolbar=*/true);
 }
 
 void ProfilePickerView::SwitchToSyncConfirmation() {
