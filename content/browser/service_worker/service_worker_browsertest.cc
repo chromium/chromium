@@ -465,20 +465,33 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, RequestOrigin) {
   // 1) The request for the worker itself ("request_origin_worker.js").
   // 2) importScripts("empty.js") from the service worker.
   // 3) fetch("empty.html") from the service worker.
-  std::set<GURL> expected_request_urls = {
-      cross_origin_server.GetURL("/service_worker/request_origin_worker.js"),
-      cross_origin_server.GetURL("/service_worker/empty.js"),
-      cross_origin_server.GetURL("/service_worker/empty.html")};
+  std::map<GURL, bool /* is_main_script */> expected_request_urls = {
+      {cross_origin_server.GetURL("/service_worker/request_origin_worker.js"),
+       true},
+      {cross_origin_server.GetURL("/service_worker/empty.js"), false},
+      {cross_origin_server.GetURL("/service_worker/empty.html"), false}};
 
   base::RunLoop request_origin_expectation_waiter;
   URLLoaderInterceptor request_listener(base::BindLambdaForTesting(
       [&](URLLoaderInterceptor::RequestParams* params) {
         auto it = expected_request_urls.find(params->url_request.url);
         if (it != expected_request_urls.end()) {
-          EXPECT_TRUE(params->url_request.originated_from_service_worker);
-          EXPECT_FALSE(
-              params->url_request.trusted_params.has_value() &&
-              !params->url_request.trusted_params->isolation_info.IsEmpty());
+          if (base::FeatureList::IsEnabled(features::kPlzServiceWorker) &&
+              it->second) {
+            // The main script is loaded in the browser process when
+            // PlzServiceWorker is enabled. In that case,
+            // `originated_from_service_worker` is set to false and the
+            // `trusted_params` is available.
+            EXPECT_FALSE(params->url_request.originated_from_service_worker);
+            EXPECT_TRUE(
+                params->url_request.trusted_params.has_value() &&
+                !params->url_request.trusted_params->isolation_info.IsEmpty());
+          } else {
+            EXPECT_TRUE(params->url_request.originated_from_service_worker);
+            EXPECT_FALSE(
+                params->url_request.trusted_params.has_value() &&
+                !params->url_request.trusted_params->isolation_info.IsEmpty());
+          }
           EXPECT_TRUE(params->url_request.request_initiator.has_value());
           EXPECT_EQ(params->url_request.request_initiator->GetURL(),
                     cross_origin_server.base_url());
@@ -3157,32 +3170,43 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCrossOriginIsolatedBrowserTest,
   EXPECT_EQ(embedded_test_server()->GetURL("/service_worker/" + worker_url),
             running_info.script_url);
 
-  // TODO(crbug.com/996511): Process allocation is broken during a fresh
-  // installation. We currently do not have the headers, and end up with a non
-  // isolated service worker script.
+  // Non-PlzServiceWorker:
+  // Process allocation is broken during a fresh installation. We currently do
+  // not have the headers, and end up with a non isolated service worker script.
+  //
+  // TODO(crbug.com/996511): Remove non-PlzSerivceWorker case once the flag
+  // sticks.
   bool is_in_process =
       shell()->web_contents()->GetMainFrame()->GetProcess()->GetID() ==
       running_info.render_process_id;
   if (!IsPageCrossOriginIsolated() && !IsServiceWorkerCrossOriginIsolated())
     EXPECT_TRUE(is_in_process);
   if (!IsPageCrossOriginIsolated() && IsServiceWorkerCrossOriginIsolated()) {
-    // Update to EXPECT_FALSE when the fix mentioned above is done.
-    EXPECT_TRUE(is_in_process);
+    // When PlzServiceWorker is enabled, the page and the worker cannot live in
+    // the same process.
+    EXPECT_NE(base::FeatureList::IsEnabled(features::kPlzServiceWorker),
+              is_in_process);
   }
   if (IsPageCrossOriginIsolated() && !IsServiceWorkerCrossOriginIsolated())
     EXPECT_FALSE(is_in_process);
   if (IsPageCrossOriginIsolated() && IsServiceWorkerCrossOriginIsolated()) {
-    // Update to EXPECT_TRUE when the fix mentioned above is done.
-    EXPECT_FALSE(is_in_process);
+    // When PlzServiceWorker is enabled, the page and the worker live in the
+    // same process.
+    EXPECT_EQ(base::FeatureList::IsEnabled(features::kPlzServiceWorker),
+              is_in_process);
   }
 
   ProcessLock process_lock =
       ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
           running_info.render_process_id);
-  // Update to equal IsServiceWorkerCrossOriginIsolated when the fixed mentioned
-  // above is done.
-  EXPECT_FALSE(
-      process_lock.coop_coep_cross_origin_isolated_info().is_isolated());
+  if (base::FeatureList::IsEnabled(features::kPlzServiceWorker)) {
+    EXPECT_EQ(
+        IsServiceWorkerCrossOriginIsolated(),
+        process_lock.coop_coep_cross_origin_isolated_info().is_isolated());
+  } else {
+    EXPECT_FALSE(
+        process_lock.coop_coep_cross_origin_isolated_info().is_isolated());
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(ServiceWorkerCrossOriginIsolatedBrowserTest,

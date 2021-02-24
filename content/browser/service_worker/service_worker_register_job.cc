@@ -30,18 +30,13 @@
 #include "content/browser/url_loader_factory_getter.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_features.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/service_worker/service_worker_type_converters.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 
 namespace content {
-namespace {
-
-constexpr base::Feature kPlzServiceWorker{"PlzServiceWorker",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
-
-}  // namespace
 
 typedef ServiceWorkerRegisterJobBase::RegistrationJobType RegistrationJobType;
 
@@ -437,7 +432,7 @@ void ServiceWorkerRegisterJob::ContinueWithRegistrationForSameScriptUrl(
 void ServiceWorkerRegisterJob::StartScriptFetchForNewWorker(
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     scoped_refptr<ServiceWorkerVersion> version) {
-  DCHECK(base::FeatureList::IsEnabled(kPlzServiceWorker));
+  DCHECK(base::FeatureList::IsEnabled(features::kPlzServiceWorker));
   DCHECK(!new_script_fetcher_);
   new_script_fetcher_ = std::make_unique<ServiceWorkerNewScriptFetcher>(
       *context_, version, std::move(loader_factory),
@@ -450,9 +445,13 @@ void ServiceWorkerRegisterJob::StartScriptFetchForNewWorker(
 void ServiceWorkerRegisterJob::OnScriptFetchCompleted(
     scoped_refptr<ServiceWorkerVersion> version,
     blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params) {
-  DCHECK(base::FeatureList::IsEnabled(kPlzServiceWorker));
+  DCHECK(base::FeatureList::IsEnabled(features::kPlzServiceWorker));
   if (!main_script_load_params) {
-    Complete(blink::ServiceWorkerStatusCode::kErrorAbort);
+    // Null `main_script_load_params` means the main script failed to be loaded.
+    // Use DeduceStartWorkerFailureReason() because it returns an error code
+    // based on the main script's net error.
+    Complete(version->DeduceStartWorkerFailureReason(
+        blink::ServiceWorkerStatusCode::kErrorFailed));
     return;
   }
   DCHECK(version->cross_origin_embedder_policy().has_value());
@@ -480,7 +479,7 @@ void ServiceWorkerRegisterJob::StartWorkerForUpdate(
         update_checker_->updated_script_url(),
         update_checker_->cross_origin_embedder_policy());
     update_checker_.reset();
-  } else if (!base::FeatureList::IsEnabled(kPlzServiceWorker)) {
+  } else if (!base::FeatureList::IsEnabled(features::kPlzServiceWorker)) {
     // When the update checker is not used, subresource loader factories needs
     // to be updated after the main script is loaded because COEP header is
     // not available until then. This flag lets the script evaluation wait
@@ -518,7 +517,7 @@ void ServiceWorkerRegisterJob::UpdateAndContinue() {
   if (!IsUpdateCheckNeeded()) {
     context_->registry()->NotifyInstallingRegistration(registration());
     base::OnceCallback<void(scoped_refptr<ServiceWorkerVersion>)> next_task;
-    if (base::FeatureList::IsEnabled(kPlzServiceWorker)) {
+    if (base::FeatureList::IsEnabled(features::kPlzServiceWorker)) {
       next_task = base::BindOnce(
           &ServiceWorkerRegisterJob::StartScriptFetchForNewWorker,
           weak_factory_.GetWeakPtr(), std::move(loader_factory));

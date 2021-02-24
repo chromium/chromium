@@ -484,6 +484,12 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // InitializeGlobalScope() to tell it's ready to proceed.
   void OnMainScriptLoaded();
 
+  // Returns the reason the embedded worker failed to start, using internal
+  // information that may not be available to the caller. Returns
+  // |default_code| if it can't deduce a reason.
+  blink::ServiceWorkerStatusCode DeduceStartWorkerFailureReason(
+      blink::ServiceWorkerStatusCode default_code);
+
   // Returns nullptr if the main script is not loaded yet and:
   //  1) The worker is a new one.
   //  OR
@@ -847,12 +853,6 @@ class CONTENT_EXPORT ServiceWorkerVersion
 
   bool MaybeTimeoutRequest(const InflightRequestTimeoutInfo& info);
   void SetAllRequestExpirations(const base::TimeTicks& expiration);
-
-  // Returns the reason the embedded worker failed to start, using information
-  // inaccessible to EmbeddedWorkerInstance. Returns |default_code| if it can't
-  // deduce a reason.
-  blink::ServiceWorkerStatusCode DeduceStartWorkerFailureReason(
-      blink::ServiceWorkerStatusCode default_code);
 
   // Sets |stale_time_| if this worker is stale, causing an update to eventually
   // occur once the worker stops or is running too long.

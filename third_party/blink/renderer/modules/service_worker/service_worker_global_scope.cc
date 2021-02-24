@@ -325,6 +325,10 @@ void ServiceWorkerGlobalScope::FetchAndRunModuleScript(
     RejectCoepUnsafeNone reject_coep_unsafe_none) {
   DCHECK(IsContextThread());
   DCHECK(!reject_coep_unsafe_none);
+  if (worker_main_script_load_params) {
+    SetWorkerMainScriptLoadingParametersForModules(
+        std::move(worker_main_script_load_params));
+  }
   ModuleScriptCustomFetchType fetch_type =
       installed_scripts_manager_
           ? ModuleScriptCustomFetchType::kInstalledServiceWorker
