@@ -101,6 +101,8 @@ class BackGestureEventHandlerTest : public AshTestBase {
     top_window_ = CreateAppWindow(gfx::Rect(), app_type);
   }
 
+  void ResetTopWindow() { top_window_.reset(); }
+
   // Generates a scroll sequence that will create a back gesture.
   void GenerateBackSequence() {
     GetEventGenerator()->GestureScrollSequence(
@@ -210,7 +212,7 @@ TEST_F(BackGestureEventHandlerTestCantGoBack, GoBackInOverviewMode) {
   EXPECT_EQ(1, target_back_release.accelerator_count());
 }
 
-TEST_F(BackGestureEventHandlerTest, DonotStartGoingBack) {
+TEST_F(BackGestureEventHandlerTest, GoBackInHomeScreenPage) {
   ui::TestAcceleratorTarget target_back_press, target_back_release;
   RegisterBackPressAndRelease(&target_back_press, &target_back_release);
 
@@ -225,19 +227,21 @@ TEST_F(BackGestureEventHandlerTest, DonotStartGoingBack) {
   EXPECT_EQ(0, target_back_press.accelerator_count());
   EXPECT_EQ(0, target_back_release.accelerator_count());
 
-  // Should not go back if home screen is visible and in |kFullscreenAllApps|
-  // state.
+  // Reset the top window to make sure the back behavior in home screen is not
+  // because of sending back event to the top window.
+  ResetTopWindow();
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::ACTIVE);
   shell->home_screen_controller()->GoHome(GetPrimaryDisplay().id());
   ASSERT_TRUE(shell->home_screen_controller()->IsHomeScreenVisible());
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
   GenerateBackSequence();
+  // Stay in home screen and none back event will be triggered.
+  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
   EXPECT_EQ(0, target_back_press.accelerator_count());
   EXPECT_EQ(0, target_back_release.accelerator_count());
+  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
 
-  // Should exit |kFullscreenSearch| to enter |kFullscreenAllApps| state while
-  // home screen search result page is opened.
   GetEventGenerator()->GestureTapAt(GetAppListTestHelper()
                                         ->GetAppListView()
                                         ->search_box_view()
@@ -245,7 +249,10 @@ TEST_F(BackGestureEventHandlerTest, DonotStartGoingBack) {
                                         .CenterPoint());
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenSearch);
   GenerateBackSequence();
-  EXPECT_EQ(1, target_back_release.accelerator_count());
+  // Exit home screen search page and back to |kFullscreenAllApps| state. But
+  // this is not triggered by sending back event.
+  EXPECT_EQ(0, target_back_press.accelerator_count());
+  EXPECT_EQ(0, target_back_release.accelerator_count());
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
 }
 
