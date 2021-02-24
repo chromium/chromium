@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/css/forced_colors.h"
 #include "third_party/blink/public/common/css/navigation_controls.h"
@@ -4133,7 +4134,14 @@ TEST_F(StyleEngineTest, AtCounterStyleUseCounter) {
   EXPECT_TRUE(IsUseCounted(WebFeature::kCSSAtRuleCounterStyle));
 }
 
-TEST_F(StyleEngineTest, CounterStyleDisabledInShadowDOM) {
+// Test is flaky: https://crbug.com/1181182
+#if defined(OS_LINUX)
+#define MAYBE_CounterStyleDisabledInShadowDOM \
+  DISABLED_CounterStyleDisabledInShadowDOM
+#else
+#define MAYBE_CounterStyleDisabledInShadowDOM CounterStyleDisabledInShadowDOM
+#endif
+TEST_F(StyleEngineTest, MAYBE_CounterStyleDisabledInShadowDOM) {
   ScopedCSSAtRuleCounterStyleForTest counter_style_enabled(true);
   ScopedCSSAtRuleCounterStyleInShadowDOMForTest
       counter_style_in_shadow_dom_disabled(false);
