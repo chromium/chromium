@@ -88,6 +88,19 @@ constexpr base::TimeDelta kHighlightHideDuration =
 constexpr base::TimeDelta kHighlightDuration =
     base::TimeDelta::FromMilliseconds(2250);
 
+// TODO(pbos): We shouldn't be using a subclass of BubbleDialogDelegateView to
+// host the WebContents for the side panel due to issues with the bubble frame.
+class WebUIBubbleSidePanelView : public WebUIBubbleDialogView {
+ public:
+  using WebUIBubbleDialogView::WebUIBubbleDialogView;
+
+  // WebUIBubbleDialogView:
+  // Override this to prevent the bubble dialog view resizing and causing
+  // crashes due to incorrect casting of its frame view.
+  void ResizeDueToAutoResize(content::WebContents* source,
+                             const gfx::Size& new_size) override {}
+};
+
 }  // namespace
 
 ReadLaterButton::ReadLaterButton(Browser* browser)
@@ -127,6 +140,13 @@ ReadLaterButton::ReadLaterButton(Browser* browser)
 
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
+
+  if (BrowserView::GetBrowserViewForBrowser(browser_)->side_panel()) {
+    contents_wrapper_ = std::make_unique<BubbleContentsWrapperT<ReadLaterUI>>(
+        GURL(chrome::kChromeUIReadLaterURL), browser_->profile(),
+        IDS_READ_LATER_TITLE, true);
+    contents_wrapper_->ReloadWebContents();
+  }
 }
 
 ReadLaterButton::~ReadLaterButton() = default;
@@ -223,19 +243,15 @@ void ReadLaterButton::ButtonPressed() {
   highlight_color_animation_->Hide();
 
   if (browser_view->side_panel()) {
-    if (!read_later_side_panel_bubble_) {
+    if (read_later_side_panel_bubble_) {
       browser_view->side_panel()->RemoveContent(read_later_side_panel_bubble_);
       read_later_side_panel_bubble_ = nullptr;
       // TODO(pbos): Observe read_later_side_panel_bubble_ so we don't need to
       // SetHighlighted(false) here.
       SetHighlighted(false);
     } else {
-      contents_wrapper_ = std::make_unique<BubbleContentsWrapperT<ReadLaterUI>>(
-          GURL(chrome::kChromeUIReadLaterURL), browser_->profile(),
-          IDS_READ_LATER_TITLE, true);
-
-      DCHECK(!contents_wrapper_->GetHost());
-      auto bubble_view = std::make_unique<WebUIBubbleDialogView>(
+      DCHECK(contents_wrapper_);
+      auto bubble_view = std::make_unique<WebUIBubbleSidePanelView>(
           this, contents_wrapper_.get());
       read_later_side_panel_bubble_ = bubble_view.get();
       browser_view->side_panel()->AddContent(std::move(bubble_view));
