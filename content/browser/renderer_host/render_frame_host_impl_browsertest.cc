@@ -211,7 +211,9 @@ class RenderFrameHostImplBrowserTest : public ContentBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
+  }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
     // TODO(https://crbug.com/794320): Remove this when the new Java Bridge code
     // is integrated into WebView.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -220,6 +222,7 @@ class RenderFrameHostImplBrowserTest : public ContentBrowserTest {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kEnableBlinkFeatures, "WebOTP");
   }
+
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
   WebContentsImpl* web_contents() const {
