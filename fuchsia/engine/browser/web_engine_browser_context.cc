@@ -16,6 +16,7 @@
 #include "base/system/sys_info.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/simple_key_map.h"
+#include "components/site_isolation/site_isolation_policy.h"
 #include "components/strings/grit/components_locale_settings.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -92,6 +93,10 @@ WebEngineBrowserContext::WebEngineBrowserContext(bool force_incognito)
   simple_factory_key_ =
       std::make_unique<SimpleFactoryKey>(GetPath(), IsOffTheRecord());
   SimpleKeyMap::GetInstance()->Associate(this, simple_factory_key_.get());
+
+  // TODO(crbug.com/1181156): Should apply any persisted isolated origins here.
+  // However, since WebEngine does not persist any, that would currently be a
+  // no-op.
 }
 
 WebEngineBrowserContext::~WebEngineBrowserContext() {
