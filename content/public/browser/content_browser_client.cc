@@ -1184,4 +1184,10 @@ ContentBrowserClient::CreateIdentityRequestDialogController() {
   return nullptr;
 }
 
+bool ContentBrowserClient::SuppressDifferentOriginSubframeJSDialogs(
+    BrowserContext* browser_context) {
+  return base::FeatureList::IsEnabled(
+      features::kSuppressDifferentOriginSubframeJSDialogs);
+}
+
 }  // namespace content

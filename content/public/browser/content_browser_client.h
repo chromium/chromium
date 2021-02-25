@@ -2003,6 +2003,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Creates a modal window that intermediates the exchange of ID tokens.
   virtual std::unique_ptr<IdentityRequestDialogController>
   CreateIdentityRequestDialogController();
+
+  // Returns true if JS dialogs from an iframe with different origin from the
+  // main frame should be disallowed.
+  virtual bool SuppressDifferentOriginSubframeJSDialogs(
+      BrowserContext* browser_context);
 };
 
 }  // namespace content

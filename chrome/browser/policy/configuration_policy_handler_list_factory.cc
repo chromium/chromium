@@ -1339,6 +1339,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::INTEGER },
 #endif  // !defined(OS_ANDROID)
 
+  { key::kSuppressDifferentOriginSubframeDialogs,
+    prefs::kSuppressDifferentOriginSubframeJSDialogs,
+    base::Value::Type::BOOLEAN },
 };
 // clang-format on
 

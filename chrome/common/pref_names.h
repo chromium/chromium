@@ -928,7 +928,6 @@ extern const char kEasyUnlockLocalStateUserPrefs[];
 
 extern const char kRecoveryComponentNeedsElevation[];
 
-
 #if !defined(OS_ANDROID)
 extern const char kCloudExtensionRequestEnabled[];
 extern const char kCloudExtensionRequestIds[];
@@ -1129,6 +1128,8 @@ extern const char kWebXRImmersiveArEnabled[];
 #if !defined(OS_ANDROID)
 extern const char kFetchKeepaliveDurationOnShutdown[];
 #endif
+
+extern const char kSuppressDifferentOriginSubframeJSDialogs[];
 
 }  // namespace prefs
 

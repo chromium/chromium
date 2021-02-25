@@ -1606,6 +1606,12 @@ const char kQuietNotificationPermissionPromoWasShown[] =
 // types.
 const char kPermissionActions[] = "profile.content_settings.permission_actions";
 
+// Boolean indicating if JS dialogs triggered from a different origin iframe
+// should be blocked. Has no effect if
+// "SuppressDifferentOriginSubframeJSDialogs" feature is disabled.
+const char kSuppressDifferentOriginSubframeJSDialogs[] =
+    "suppress_different_origin_subframe_js_dialogs";
+
 // *************** LOCAL STATE ***************
 // These are attached to the machine/installation
 

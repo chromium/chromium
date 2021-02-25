@@ -742,6 +742,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   base::TimeDelta GetKeepaliveTimerTimeout(content::BrowserContext* context);
 #endif  // !defined(OS_ANDROID)
 
+  bool SuppressDifferentOriginSubframeJSDialogs(
+      content::BrowserContext* browser_context) override;
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,

@@ -23738,6 +23738,7 @@ Called by update_document_policy_enum.py.-->
   <int value="826" label="ContextAwareAccessSignalsAllowlist"/>
   <int value="827" label="FetchKeepaliveDurationOnShutdown"/>
   <int value="828" label="AllowSystemNotifications"/>
+  <int value="829" label="SuppressDifferentOriginSubframeJSDialogs"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

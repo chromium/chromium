@@ -8591,5 +8591,14 @@
         }}
       }
     ]
+  },
+  "SuppressDifferentOriginSubframeDialogs": {
+    "os": ["win", "linux", "mac", "chromeos", "android"],
+    "policy_pref_mapping_test": [
+      {
+        "policies": { "SuppressDifferentOriginSubframeDialogs": true },
+        "prefs": { "suppress_different_origin_subframe_js_dialogs": {} }
+      }
+    ]
   }
 }

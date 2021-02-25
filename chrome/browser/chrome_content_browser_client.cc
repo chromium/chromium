@@ -1278,6 +1278,8 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
 #endif
   registry->RegisterBooleanPref(prefs::kSSLErrorOverrideAllowed, true);
   registry->RegisterListPref(prefs::kSSLErrorOverrideAllowedForOrigins);
+  registry->RegisterBooleanPref(
+      prefs::kSuppressDifferentOriginSubframeJSDialogs, true);
 #if defined(OS_ANDROID)
   registry->RegisterBooleanPref(prefs::kWebXRImmersiveArEnabled, true);
 #endif
@@ -6119,6 +6121,17 @@ bool ChromeContentBrowserClient::HasErrorPage(int http_status_code) {
 std::unique_ptr<content::IdentityRequestDialogController>
 ChromeContentBrowserClient::CreateIdentityRequestDialogController() {
   return std::make_unique<IdentityDialogController>();
+}
+
+bool ChromeContentBrowserClient::SuppressDifferentOriginSubframeJSDialogs(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  if (!profile->GetPrefs()->GetBoolean(
+          prefs::kSuppressDifferentOriginSubframeJSDialogs)) {
+    return false;
+  }
+  return ContentBrowserClient::SuppressDifferentOriginSubframeJSDialogs(
+      browser_context);
 }
 
 #if !defined(OS_ANDROID)
