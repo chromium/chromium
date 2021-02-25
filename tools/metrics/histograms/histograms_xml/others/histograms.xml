@@ -1299,7 +1299,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Records whenever a Blimp tab toggles visibility.</summary>
 </histogram>
 
-<histogram name="BlueZ.AdapterLost" units="seconds" expires_after="2021-07-18">
+<histogram name="BlueZ.AdapterLost" units="seconds" expires_after="2021-12-31">
   <owner>mcchou@chromium.org</owner>
   <summary>
     This is specific to Chrome OS. Records a duration of a Bluetooth adapter
@@ -1309,7 +1309,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BlueZ.AdvertisementMonitor.NumOfMonitors" units="count"
-    expires_after="2021-12-28">
+    expires_after="2021-12-31">
   <owner>apusaka@chromium.org</owner>
   <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
@@ -1320,7 +1320,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BlueZ.AdvertisementMonitor.{Filter}.FilterPatternsPerMinute"
-    units="count" expires_after="2021-12-28">
+    units="count" expires_after="2021-12-31">
   <owner>apusaka@chromium.org</owner>
   <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
@@ -1336,7 +1336,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BlueZ.AdvertisementMonitor.{Filter}.{Operation}.Result"
-    enum="BlueZResultOfAdvertisementMonitor" expires_after="2021-12-28">
+    enum="BlueZResultOfAdvertisementMonitor" expires_after="2021-12-31">
   <owner>apusaka@chromium.org</owner>
   <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
@@ -1355,7 +1355,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
-<histogram name="BlueZ.ChipLost2" units="seconds" expires_after="2021-07-18">
+<histogram name="BlueZ.ChipLost2" units="seconds" expires_after="2021-12-31">
   <owner>sonnysasaka@chromium.org</owner>
   <summary>
     This is specific to Chrome OS. Records a duration of a Bluetooth adapter
@@ -1365,7 +1365,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BlueZ.NumberOfExistingAdvertisements" units="advertisements"
-    expires_after="M81">
+    expires_after="2021-12-31">
   <owner>mcchou@chromium.org</owner>
   <summary>
     This is specific to Chrome OS. Records the number of existing advertisements
@@ -1376,7 +1376,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BlueZ.PerProfile.ConnectionResult"
-    enum="BlueZResultOfPerProfileConnection" expires_after="M89">
+    enum="BlueZResultOfPerProfileConnection" expires_after="2021-12-31">
 <!-- Name completed by histogram_suffixes name="BlueZPerProfileResult" -->
 
   <owner>mmandlik@google.com</owner>
@@ -1389,7 +1389,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BlueZ.PerProfile.ProbingResult"
-    enum="BlueZResultOfPerProfileProbing" expires_after="M89">
+    enum="BlueZResultOfPerProfileProbing" expires_after="2021-12-31">
 <!-- Name completed by histogram_suffixes name="BlueZPerProfileResult" -->
 
   <owner>mmandlik@google.com</owner>
@@ -1402,7 +1402,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BlueZ.ReasonOfDisconnection" enum="BlueZReasonOfDisconnection"
-    expires_after="2020-11-08">
+    expires_after="2021-12-31">
   <owner>mcchou@chromium.org</owner>
   <summary>
     This is specific to Chrome OS. Records the reason of Bluetooth disconnection
@@ -1412,7 +1412,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BlueZ.ResultOfAdvertisementRegistration"
-    enum="BlueZResultOfAdvertisementRegistration" expires_after="M85">
+    enum="BlueZResultOfAdvertisementRegistration" expires_after="2021-12-31">
   <owner>mcchou@chromium.org</owner>
   <summary>
     This is specific to Chrome OS. Records the outcomes of advertisement
@@ -1422,7 +1422,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BlueZ.ResultOfConnection" enum="BlueZResultOfConnection"
-    expires_after="2021-06-27">
+    expires_after="2021-12-31">
   <owner>mcchou@chromium.org</owner>
   <summary>
     This is specific to Chrome OS. Records the outcomes of connection requests
@@ -1432,7 +1432,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BlueZ.ResultOfPairing" enum="BlueZResultOfPairing"
-    expires_after="2021-08-15">
+    expires_after="2021-12-31">
   <owner>mcchou@chromium.org</owner>
   <summary>
     This is specific to Chrome OS. Records the outcomes of pairing with remote
@@ -1442,7 +1442,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BlueZ.TimeLengthOfAdvertisement" units="seconds"
-    expires_after="M85">
+    expires_after="2021-12-31">
   <owner>mcchou@chromium.org</owner>
   <summary>
     This is specific to Chrome OS. Records the duration when the local device is
@@ -1453,7 +1453,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BlueZ.TimeLengthOfDiscoverable" units="seconds"
-    expires_after="M81">
+    expires_after="2021-12-31">
   <owner>mcchou@chromium.org</owner>
   <summary>
     This is specific to Chrome OS. Records the duration when the local device is
@@ -1464,7 +1464,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BlueZ.TimeLengthOfDiscovering" units="seconds"
-    expires_after="2020-11-01">
+    expires_after="2021-12-31">
   <owner>mcchou@chromium.org</owner>
   <summary>
     This is specific to Chrome OS. Records the duration for the local device to
@@ -1474,7 +1474,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="BlueZ.TimeLengthOfPairing" units="seconds" expires_after="M82">
+<histogram name="BlueZ.TimeLengthOfPairing" units="seconds"
+    expires_after="2021-12-31">
   <owner>mcchou@chromium.org</owner>
   <summary>
     This is specific to Chrome OS. Records the duration taken to finish a
@@ -1484,7 +1485,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BlueZ.TimeLengthOfSetupConnection" units="seconds"
-    expires_after="M82">
+    expires_after="2021-12-31">
   <owner>mcchou@chromium.org</owner>
   <summary>
     This is specific to Chrome OS. Records the duration taken to finish a
@@ -1495,7 +1496,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BlueZ.TypeOfDiscovery" enum="BlueZTypeOfDiscovery"
-    expires_after="2020-03-01">
+    expires_after="2021-12-31">
   <owner>mcchou@chromium.org</owner>
   <summary>
     This is specific to Chrome OS. Records the types of device discovery
@@ -1505,7 +1506,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BlueZ.TypeOfFoundDevice" enum="BlueZTypeOfFoundDevice"
-    expires_after="M85">
+    expires_after="2021-12-31">
   <owner>mcchou@chromium.org</owner>
   <summary>
     This is specific to Chrome OS. Records the types of discovered devices in
