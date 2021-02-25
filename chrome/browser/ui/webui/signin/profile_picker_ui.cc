@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
+#include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -70,6 +71,11 @@ bool IsBrowserSigninAllowed() {
 
   return static_cast<policy::BrowserSigninMode>(int_browser_signin_value) !=
          policy::BrowserSigninMode::kDisabled;
+}
+
+bool IsSignInProfileCreationFlowSupported() {
+  return AccountConsistencyModeManager::IsDiceSignInAllowed() &&
+         base::FeatureList::IsEnabled(features::kSignInProfileCreation);
 }
 
 void AddStrings(content::WebUIDataSource* html_source) {
@@ -149,9 +155,8 @@ void AddStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("askOnStartup",
                           g_browser_process->local_state()->GetBoolean(
                               prefs::kBrowserShowProfilePickerOnStartup));
-  html_source->AddBoolean(
-      "signInProfileCreationFlowSupported",
-      base::FeatureList::IsEnabled(features::kSignInProfileCreation));
+  html_source->AddBoolean("signInProfileCreationFlowSupported",
+                          IsSignInProfileCreationFlowSupported());
 
   html_source->AddString("minimumPickerSize",
                          base::StringPrintf("%ipx", kMinimumPickerSizePx));

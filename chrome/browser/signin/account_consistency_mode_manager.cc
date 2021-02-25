@@ -90,8 +90,7 @@ AccountConsistencyModeManager::AccountConsistencyModeManager(Profile* profile)
   PrefService* prefs = profile->GetPrefs();
   // Propagate settings changes from the previous launch to the signin-allowed
   // pref.
-  bool signin_allowed = CanEnableDiceForBuild() &&
-                        IsBrowserSigninAllowedByCommandLine() &&
+  bool signin_allowed = IsDiceSignInAllowed() &&
                         prefs->GetBoolean(prefs::kSigninAllowedOnNextStartup);
   prefs->SetBoolean(prefs::kSigninAllowed, signin_allowed);
 
@@ -146,6 +145,11 @@ void AccountConsistencyModeManager::SetDiceMigrationCompleted() {
 // static
 bool AccountConsistencyModeManager::IsDiceMigrationCompleted(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(kDiceMigrationCompletePref);
+}
+
+// static
+bool AccountConsistencyModeManager::IsDiceSignInAllowed() {
+  return CanEnableDiceForBuild() && IsBrowserSigninAllowedByCommandLine();
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
