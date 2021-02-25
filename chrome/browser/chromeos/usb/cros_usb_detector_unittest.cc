@@ -211,21 +211,24 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
     base::RunLoop().RunUntilIdle();
   }
 
+  // The GetSingle..() functions expect only one device is present and may crash
+  // if there are no devices (we can't use ASSERT_EQ as they return values).
+
   chromeos::CrosUsbDeviceInfo GetSingleDeviceInfo() const {
-    auto devices = cros_usb_detector_->GetConnectedDevices();
+    auto devices = cros_usb_detector_->GetShareableDevices();
     EXPECT_EQ(1U, devices.size());
-    return devices.size() == 1 ? devices.front()
-                               : chromeos::CrosUsbDeviceInfo();
+    return devices.front();
   }
 
-  chromeos::CrosUsbDeviceInfo GetSingleDeviceSharableWithCrostini() const {
-    auto devices = cros_usb_detector_->GetDevicesSharableWithCrostini();
-    EXPECT_EQ(1U, devices.size());
-    if (devices.empty()) {
-      return chromeos::CrosUsbDeviceInfo();
-    }
-    EXPECT_TRUE(devices.front().sharable_with_crostini);
-    return devices.front();
+  base::Optional<uint8_t> GetSingleGuestPort() const {
+    EXPECT_EQ(1U, cros_usb_detector_->usb_devices_.size());
+    return cros_usb_detector_->usb_devices_.begin()->second.guest_port;
+  }
+
+  uint32_t GetSingleAllowedInterfacesMask() const {
+    EXPECT_EQ(1U, cros_usb_detector_->usb_devices_.size());
+    return cros_usb_detector_->usb_devices_.begin()
+        ->second.allowed_interfaces_mask;
   }
 
   void AddDisk(const std::string& name,
@@ -389,7 +392,7 @@ TEST_F(CrosUsbDetectorTest, UsbDeviceClassBlockedAdded) {
   std::string notification_id =
       chromeos::CrosUsbDetector::MakeNotificationId(device->guid());
   ASSERT_FALSE(display_service_->GetNotification(notification_id));
-  EXPECT_EQ(0U, cros_usb_detector_->GetDevicesSharableWithCrostini().size());
+  EXPECT_EQ(0U, cros_usb_detector_->GetShareableDevices().size());
 }
 
 TEST_F(CrosUsbDetectorTest, UsbDeviceClassAdbAdded) {
@@ -412,7 +415,7 @@ TEST_F(CrosUsbDetectorTest, UsbDeviceClassAdbAdded) {
       chromeos::CrosUsbDetector::MakeNotificationId(device->guid());
   ASSERT_TRUE(display_service_->GetNotification(notification_id));
   // ADB interface wins.
-  EXPECT_EQ(1U, cros_usb_detector_->GetDevicesSharableWithCrostini().size());
+  EXPECT_EQ(1U, cros_usb_detector_->GetShareableDevices().size());
 }
 
 TEST_F(CrosUsbDetectorTest, UsbDeviceClassWithoutNotificationAdded) {
@@ -428,7 +431,7 @@ TEST_F(CrosUsbDetectorTest, UsbDeviceClassWithoutNotificationAdded) {
   std::string notification_id =
       chromeos::CrosUsbDetector::MakeNotificationId(device->guid());
   ASSERT_FALSE(display_service_->GetNotification(notification_id));
-  EXPECT_EQ(1U, cros_usb_detector_->GetDevicesSharableWithCrostini().size());
+  EXPECT_EQ(1U, cros_usb_detector_->GetShareableDevices().size());
 }
 
 TEST_F(CrosUsbDetectorTest, UsbDeviceWithoutProductNameAddedAndRemoved) {
@@ -787,15 +790,16 @@ TEST_F(CrosUsbDetectorTest, AttachDeviceToVmSetsGuestPort) {
       0, 1, kManufacturerName, kProductName_1, "002");
   device_manager_.AddDevice(device_1);
   base::RunLoop().RunUntilIdle();
-  auto device_info = GetSingleDeviceInfo();
 
+  auto device_info = GetSingleDeviceInfo();
+  EXPECT_FALSE(GetSingleGuestPort().has_value());
   AttachDeviceToVm(crostini::kCrostiniDefaultVmName, device_info.guid);
-  EXPECT_FALSE(device_info.guest_port.has_value());
-  device_info = GetSingleDeviceSharableWithCrostini();
+
+  device_info = GetSingleDeviceInfo();
   EXPECT_TRUE(device_info.shared_vm_name.has_value());
   EXPECT_EQ(crostini::kCrostiniDefaultVmName, *device_info.shared_vm_name);
-  EXPECT_TRUE(device_info.guest_port.has_value());
-  EXPECT_EQ(0U, *device_info.guest_port);
+  EXPECT_TRUE(GetSingleGuestPort().has_value());
+  EXPECT_EQ(0U, *GetSingleGuestPort());
 }
 
 TEST_F(CrosUsbDetectorTest, AttachingAlreadyAttachedDeviceIsANoOp) {
@@ -907,9 +911,7 @@ TEST_F(CrosUsbDetectorTest, DeviceAllowedInterfacesMaskSetCorrectly) {
       chromeos::CrosUsbDetector::MakeNotificationId(device->guid());
   EXPECT_TRUE(display_service_->GetNotification(notification_id));
 
-  auto device_info = GetSingleDeviceInfo();
-
-  EXPECT_EQ(0x00000006U, device_info.allowed_interfaces_mask);
+  EXPECT_EQ(0x00000006U, GetSingleAllowedInterfacesMask());
 }
 
 TEST_F(CrosUsbDetectorTest, SwitchAttachedDevice) {
@@ -928,7 +930,7 @@ TEST_F(CrosUsbDetectorTest, SwitchAttachedDevice) {
   device_info = GetSingleDeviceInfo();
   EXPECT_TRUE(device_info.shared_vm_name.has_value());
   EXPECT_EQ("VM1", *device_info.shared_vm_name);
-  EXPECT_TRUE(device_info.guest_port.has_value());
+  EXPECT_TRUE(GetSingleGuestPort().has_value());
   EXPECT_FALSE(fake_concierge_client_->detach_usb_device_called());
 
   // Device is attached to VM1. We need to detach before sharing with VM2.
@@ -955,7 +957,7 @@ TEST_F(CrosUsbDetectorTest, SwitchNotAttachedDevice) {
   device_info = GetSingleDeviceInfo();
   EXPECT_TRUE(device_info.shared_vm_name.has_value());
   EXPECT_EQ("VM1", *device_info.shared_vm_name);
-  EXPECT_FALSE(device_info.guest_port.has_value());
+  EXPECT_FALSE(GetSingleGuestPort().has_value());
 
   // Device is shared with but not attached to VM1, e.g. it hasn't yet been
   // started. We don't need to detach.
@@ -1074,16 +1076,14 @@ TEST_F(CrosUsbDetectorTest, ReassignPromptForSharedDevice) {
   device_manager_.CreateAndAddDevice(0x1234, 0x5678);
   base::RunLoop().RunUntilIdle();
 
-  auto device_info = GetSingleDeviceInfo();
-  EXPECT_FALSE(cros_usb_detector_->SharingRequiresReassignPrompt(device_info));
+  EXPECT_FALSE(GetSingleDeviceInfo().prompt_before_sharing);
+  auto guid = GetSingleDeviceInfo().guid;
 
-  AttachDeviceToVm("VM1", device_info.guid);
-  device_info = GetSingleDeviceInfo();
-  EXPECT_TRUE(cros_usb_detector_->SharingRequiresReassignPrompt(device_info));
+  AttachDeviceToVm("VM1", guid);
+  EXPECT_TRUE(GetSingleDeviceInfo().prompt_before_sharing);
 
-  DetachDeviceFromVm("VM1", device_info.guid, /*expected_success=*/true);
-  device_info = GetSingleDeviceInfo();
-  EXPECT_FALSE(cros_usb_detector_->SharingRequiresReassignPrompt(device_info));
+  DetachDeviceFromVm("VM1", guid, /*expected_success=*/true);
+  EXPECT_FALSE(GetSingleDeviceInfo().prompt_before_sharing);
 }
 
 TEST_F(CrosUsbDetectorTest, ReassignPromptForStorageDevice) {
@@ -1099,21 +1099,17 @@ TEST_F(CrosUsbDetectorTest, ReassignPromptForStorageDevice) {
       /*port_number=*/5, kManufacturerName, kProductName_1, "5");
   base::RunLoop().RunUntilIdle();
 
-  auto device_info = GetSingleDeviceInfo();
-  EXPECT_TRUE(cros_usb_detector_->SharingRequiresReassignPrompt(device_info));
+  EXPECT_TRUE(GetSingleDeviceInfo().prompt_before_sharing);
 
   NotifyMountEvent("disk_early", chromeos::disks::DiskMountManager::UNMOUNTING);
-  device_info = GetSingleDeviceInfo();
-  EXPECT_FALSE(cros_usb_detector_->SharingRequiresReassignPrompt(device_info));
+  EXPECT_FALSE(GetSingleDeviceInfo().prompt_before_sharing);
 
   // A disk which fails to mount shouldn't cause the prompt to be shown.
   AddDisk("disk_error", 1, 5, /*mounted=*/false);
   NotifyMountEvent("disk_error", chromeos::disks::DiskMountManager::MOUNTING,
                    chromeos::MOUNT_ERROR_INTERNAL);
-  device_info = GetSingleDeviceInfo();
-  EXPECT_FALSE(cros_usb_detector_->SharingRequiresReassignPrompt(device_info));
+  EXPECT_FALSE(GetSingleDeviceInfo().prompt_before_sharing);
 
   AddDisk("disk_success", 1, 5, true);
-  device_info = GetSingleDeviceInfo();
-  EXPECT_TRUE(cros_usb_detector_->SharingRequiresReassignPrompt(device_info));
+  EXPECT_TRUE(GetSingleDeviceInfo().prompt_before_sharing);
 }

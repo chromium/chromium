@@ -21,14 +21,13 @@ namespace {
 
 base::ListValue GetSharableUsbDevices(CrosUsbDetector* detector) {
   base::ListValue usb_devices_list;
-  for (const auto& device : detector->GetDevicesSharableWithCrostini()) {
+  for (const auto& device : detector->GetShareableDevices()) {
     base::Value device_info(base::Value::Type::DICTIONARY);
     device_info.SetStringKey("guid", device.guid);
     device_info.SetStringKey("label", device.label);
     if (device.shared_vm_name)
       device_info.SetStringKey("sharedWith", device.shared_vm_name.value());
-    device_info.SetBoolKey("promptBeforeSharing",
-                           detector->SharingRequiresReassignPrompt(device));
+    device_info.SetBoolKey("promptBeforeSharing", device.prompt_before_sharing);
     usb_devices_list.Append(std::move(device_info));
   }
   return usb_devices_list;
