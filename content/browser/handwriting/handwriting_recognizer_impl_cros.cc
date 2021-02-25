@@ -52,9 +52,19 @@ void OnRecognitionResult(
     auto prediction_blink = handwriting::mojom::HandwritingPrediction::New();
     prediction_blink->text = candidate_ml->text;
 
-    // TODO(honglinyu): The index calculation may be wrong for unicode strings.
-    // But this should be OK for now because we currently only support English.
-    // TODO(honglinyu): Consider using `mojo::StructTraits` for the conversions.
+    // TODO(https://crbug.com/1181122): We should move the segmentation
+    // conversion code to the backend.
+    // For gesture model, there is no segmentation so candidate_ml->segmentation
+    // is null.
+    if (candidate_ml->segmentation.is_null()) {
+      result_to_blink.push_back(std::move(prediction_blink));
+      continue;
+    }
+    // TODO(honglinyu): The index calculation may be wrong for unicode
+    // strings. But this should be OK for now because we currently only
+    // support English.
+    // TODO(honglinyu): Consider using `mojo::StructTraits` for the
+    // conversions.
     int idx_in_text = 0;
     for (const auto& seg_ml : candidate_ml->segmentation->segments) {
       auto seg_blink = handwriting::mojom::HandwritingSegment::New();
@@ -78,18 +88,19 @@ void OnRecognitionResult(
           // The way CrOS's backend designates the strokes belonging to a
           // grapheme is different from that of the Javascript API and the
           // handwriting.mojom file in the renderer. It covers a range of
-          // strokes. And the first and last strokes in the range may not fully
-          // belong to the grapheme. Specifically, the meaning of members of
-          // CrOS's backend's `HandwritingRecognizerInkRange` struct is as
-          // follows,
+          // strokes. And the first and last strokes in the range may not
+          // fully belong to the grapheme. Specifically, the meaning of
+          // members of CrOS's backend's `HandwritingRecognizerInkRange`
+          // struct is as follows,
           // 1. `start_stroke`: the index of the first stroke (0-based).
-          // 2. `end_stroke`: the index of the last stroke (0-based, inclusive).
-          // 3. `start_point`: the index of the first point in the first stroke
-          // that belongs to the grapheme (0-based).
-          // 4. `end_point`: the index of the last point in the last stroke that
-          // belongs to the grapheme (0-based, inclusive).
-          // But for the JS API, we expect the last indices to be exclusive
-          // (i.e. past-the-end).
+          // 2. `end_stroke`: the index of the last stroke (0-based,
+          // inclusive).
+          // 3. `start_point`: the index of the first point in the first
+          // stroke that belongs to the grapheme (0-based).
+          // 4. `end_point`: the index of the last point in the last stroke
+          // that belongs to the grapheme (0-based, inclusive). But for the JS
+          // API, we expect the last indices to be exclusive (i.e.
+          // past-the-end).
           draw_seg->begin_point_index = (stroke_idx == ink_range->start_stroke)
                                             ? ink_range->start_point
                                             : 0;
