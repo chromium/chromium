@@ -445,7 +445,7 @@ GURL SiteInfo::GetSiteForURLInternal(const IsolationContext& isolation_context,
     // resolved prior to the isolated origin lookup.
     auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
     url::Origin isolated_origin;
-    if (policy->GetMatchingIsolatedOrigin(
+    if (policy->GetMatchingProcessIsolatedOrigin(
             isolation_context, origin, real_url_info.origin_requests_isolation,
             site_url, &isolated_origin)) {
       return isolated_origin.GetURL();
@@ -905,6 +905,12 @@ void SiteInstanceImpl::SetSiteInfoInternal(const SiteInfo& site_info) {
     ChildProcessSecurityPolicyImpl* policy =
         ChildProcessSecurityPolicyImpl::GetInstance();
     url::Origin site_origin(url::Origin::Create(site_info_.process_lock_url()));
+    // This is one of two places that origins can be marked as opted-in, the
+    // other is
+    // NavigationRequest::AddSameProcessOriginAgentClusterOptInIfNecessary().
+    // This site handles the case where OAC isolation gets a separate process.
+    // In future, when SiteInstance Groups are complete, this may revert to
+    // being the only call site.
     policy->AddOptInIsolatedOriginForBrowsingInstance(
         browsing_instance_->isolation_context(), site_origin);
   }
@@ -1404,10 +1410,10 @@ bool SiteInstanceImpl::IsSameSite(const IsolationContext& isolation_context,
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   url::Origin src_isolated_origin;
   url::Origin dest_isolated_origin;
-  bool src_origin_is_isolated = policy->GetMatchingIsolatedOrigin(
+  bool src_origin_is_isolated = policy->GetMatchingProcessIsolatedOrigin(
       isolation_context, src_origin,
       real_src_url_info.origin_requests_isolation, &src_isolated_origin);
-  bool dest_origin_is_isolated = policy->GetMatchingIsolatedOrigin(
+  bool dest_origin_is_isolated = policy->GetMatchingProcessIsolatedOrigin(
       isolation_context, dest_origin,
       real_dest_url_info.origin_requests_isolation, &dest_isolated_origin);
   if (src_origin_is_isolated || dest_origin_is_isolated) {

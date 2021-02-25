@@ -2615,9 +2615,9 @@ TEST_F(ChildProcessSecurityPolicyTest, WildcardDefaultPort) {
   // Requesting isolated_origin_with_port should return the same origin but with
   // the default port for the scheme.
   const bool kOriginRequestsIsolation = false;
-  EXPECT_TRUE(
-      p->GetMatchingIsolatedOrigin(isolation_context, isolated_origin_with_port,
-                                   kOriginRequestsIsolation, &lookup_origin));
+  EXPECT_TRUE(p->GetMatchingProcessIsolatedOrigin(
+      isolation_context, isolated_origin_with_port, kOriginRequestsIsolation,
+      &lookup_origin));
   EXPECT_EQ(url::DefaultPortForScheme(lookup_origin.scheme().data(),
                                       lookup_origin.scheme().length()),
             lookup_origin.port());
@@ -2628,9 +2628,9 @@ TEST_F(ChildProcessSecurityPolicyTest, WildcardDefaultPort) {
   // Similarly, looking up matching isolated origins for wildcard origins must
   // also return the default port for the origin's scheme, not the report of the
   // requested origin.
-  EXPECT_TRUE(p->GetMatchingIsolatedOrigin(isolation_context, wild_with_port,
-                                           kOriginRequestsIsolation,
-                                           &lookup_origin));
+  EXPECT_TRUE(p->GetMatchingProcessIsolatedOrigin(
+      isolation_context, wild_with_port, kOriginRequestsIsolation,
+      &lookup_origin));
   EXPECT_EQ(url::DefaultPortForScheme(lookup_origin.scheme().data(),
                                       lookup_origin.scheme().length()),
             lookup_origin.port());

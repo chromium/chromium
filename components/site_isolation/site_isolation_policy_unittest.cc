@@ -979,14 +979,17 @@ TEST_F(OptInOriginIsolationPolicyTest, BelowThreshold) {
     return;
 
   // Define a memory threshold at 768MB.  This is above the 512MB of physical
-  // memory that this test simulates, so opt-in origin isolation should be
-  // disabled.
+  // memory that this test simulates, so process isolation for
+  // Origin-Agent-Cluster (OAC) should be disabled. But other aspects of OAC
+  // should still take effect.
   base::test::ScopedFeatureList memory_feature;
   memory_feature.InitAndEnableFeatureWithParameters(
       features::kSitePerProcessOnlyForHighMemoryClients,
       {{features::kSitePerProcessOnlyForHighMemoryClientsParamName, "768"}});
 
-  EXPECT_FALSE(content::SiteIsolationPolicy::IsOptInOriginIsolationEnabled());
+  EXPECT_FALSE(content::SiteIsolationPolicy::
+                   IsProcessIsolationForOriginAgentClusterEnabled());
+  EXPECT_TRUE(content::SiteIsolationPolicy::IsOriginAgentClusterEnabled());
 
   // Simulate a navigation to a URL that serves an Origin-Agent-Cluster header.
   // Since we're outside of content/, it's difficult to verify that internal
@@ -1012,6 +1015,12 @@ TEST_F(OptInOriginIsolationPolicyTest, BelowThreshold) {
   content::SiteInstance* site_instance =
       simulator->GetFinalRenderFrameHost()->GetSiteInstance();
   EXPECT_FALSE(site_instance->RequiresDedicatedProcess());
+  // Despite not getting process isolation, the origin will still get logical
+  // isolation in Blink, and should still be tracked by
+  // ChildProcessSecurityPolicy to ensure consistent OAC behavior for this
+  // origin within this BrowsingInstance.
+  EXPECT_TRUE(
+      ShouldOriginGetOptInIsolation(site_instance, url::Origin::Create(kUrl)));
 }
 
 // Counterpart to the test above, but verifies that opt-in origin isolation is
@@ -1028,7 +1037,9 @@ TEST_F(OptInOriginIsolationPolicyTest, AboveThreshold) {
       features::kSitePerProcessOnlyForHighMemoryClients,
       {{features::kSitePerProcessOnlyForHighMemoryClientsParamName, "128"}});
 
-  EXPECT_TRUE(content::SiteIsolationPolicy::IsOptInOriginIsolationEnabled());
+  EXPECT_TRUE(content::SiteIsolationPolicy::
+                  IsProcessIsolationForOriginAgentClusterEnabled());
+  EXPECT_TRUE(content::SiteIsolationPolicy::IsOriginAgentClusterEnabled());
 
   // Simulate a navigation to a URL that serves an Origin-Agent-Cluster header.
   // Verify that the resulting SiteInstance requires a dedicated process.  Note

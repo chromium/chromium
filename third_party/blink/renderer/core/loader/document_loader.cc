@@ -1781,7 +1781,8 @@ bool ShouldReuseDOMWindow(LocalDOMWindow* window,
 }
 
 WindowAgent* GetWindowAgentForOrigin(LocalFrame* frame,
-                                     SecurityOrigin* origin) {
+                                     SecurityOrigin* origin,
+                                     bool is_origin_keyed) {
   // TODO(keishi): Also check if AllowUniversalAccessFromFileURLs might
   // dynamically change.
   bool has_potential_universal_access_privilege =
@@ -1789,7 +1790,17 @@ WindowAgent* GetWindowAgentForOrigin(LocalFrame* frame,
       frame->GetSettings()->GetAllowUniversalAccessFromFileURLs();
   return frame->window_agent_factory().GetAgentForOrigin(
       has_potential_universal_access_privilege,
-      V8PerIsolateData::MainThreadIsolate(), origin);
+      V8PerIsolateData::MainThreadIsolate(), origin, is_origin_keyed);
+}
+
+// Inheriting cases use their agent's "is origin-keyed" value, which is set
+// by whatever they're inheriting from.
+//
+// javascript: URLs use the calling page as their Url() value, so we need to
+// include them explicitly.
+bool ShouldInheritExplicitOriginKeying(const KURL& url, CommitReason reason) {
+  return Document::ShouldInheritSecurityOriginFromOwner(url) ||
+         reason == CommitReason::kJavascriptUrl;
 }
 
 void DocumentLoader::InitializeWindow(Document* owner_document) {
@@ -1802,6 +1813,15 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
                              ? SecurityOrigin::CreateUniqueOpaque()
                              : CalculateOrigin(owner_document, sandbox_flags);
 
+  bool origin_agent_cluster = origin_agent_cluster_;
+  if (ShouldInheritExplicitOriginKeying(Url(), commit_reason_) &&
+      owner_document && owner_document->domWindow()) {
+    // Since we're inheriting the owner document's origin, we should also use
+    // its OriginAgentCluster (OAC) in determining which WindowAgent to use,
+    // overriding the OAC value sent in the commit params.
+    origin_agent_cluster =
+        owner_document->domWindow()->GetAgent()->IsExplicitlyOriginKeyed();
+  }
   // In some rare cases, we'll re-use a LocalDOMWindow for a new Document. For
   // example, when a script calls window.open("..."), the browser gives
   // JavaScript a window synchronously but kicks off the load in the window
@@ -1811,7 +1831,8 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
   // LocalDOMWindow to the Document that results from the network load. See also
   // Document::IsSecureTransitionTo.
   if (!ShouldReuseDOMWindow(frame_->DomWindow(), security_origin.get())) {
-    auto* agent = GetWindowAgentForOrigin(frame_.Get(), security_origin.get());
+    auto* agent = GetWindowAgentForOrigin(frame_.Get(), security_origin.get(),
+                                          origin_agent_cluster);
     frame_->SetDOMWindow(MakeGarbageCollected<LocalDOMWindow>(*frame_, agent));
 
     if (origin_policy_.has_value()) {
@@ -1824,21 +1845,13 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
       frame_->DomWindow()->SetOriginPolicyIds(ids);
     }
 
-    // Inheriting cases use their agent's "is origin-keyed" value, which is set
-    // by whatever they're inheriting from.
-    //
-    // javascript: URLs use the calling page as their Url() value, so we need to
-    // exclude them explicitly.
-    //
     // TODO(https://crbug.com/1111897): This call is likely to happen happen
     // multiple times per agent, since navigations can happen multiple times per
     // agent. This is subpar. Currently a DCHECK guards against it happening
     // multiple times *with different values*, but ideally we would use a better
     // architecture.
-    if (!Document::ShouldInheritSecurityOriginFromOwner(Url()) &&
-        commit_reason_ != CommitReason::kJavascriptUrl) {
+    if (!ShouldInheritExplicitOriginKeying(Url(), commit_reason_))
       agent->SetIsExplicitlyOriginKeyed(origin_agent_cluster_);
-    }
   } else {
     if (frame_->GetSettings()->GetShouldReuseGlobalForUnownedMainFrame() &&
         frame_->IsMainFrame()) {
@@ -1846,8 +1859,8 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
       // window to be reused, we should not inherit the initial empty document's
       // Agent, which was a universal access Agent.
       // This happens only in android webview.
-      frame_->DomWindow()->ResetWindowAgent(
-          GetWindowAgentForOrigin(frame_.Get(), security_origin.get()));
+      frame_->DomWindow()->ResetWindowAgent(GetWindowAgentForOrigin(
+          frame_.Get(), security_origin.get(), origin_agent_cluster));
     }
     frame_->DomWindow()->ClearForReuse();
   }

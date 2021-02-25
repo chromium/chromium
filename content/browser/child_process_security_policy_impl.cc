@@ -1999,8 +1999,8 @@ bool ChildProcessSecurityPolicyImpl::IsIsolatedOrigin(
     const url::Origin& origin,
     bool origin_requests_isolation) {
   url::Origin unused_result;
-  return GetMatchingIsolatedOrigin(isolation_context, origin,
-                                   origin_requests_isolation, &unused_result);
+  return GetMatchingProcessIsolatedOrigin(
+      isolation_context, origin, origin_requests_isolation, &unused_result);
 }
 
 bool ChildProcessSecurityPolicyImpl::IsGloballyIsolatedOriginForTesting(
@@ -2055,7 +2055,7 @@ bool ChildProcessSecurityPolicyImpl::IsIsolatedSiteFromSource(
   return false;
 }
 
-bool ChildProcessSecurityPolicyImpl::GetMatchingIsolatedOrigin(
+bool ChildProcessSecurityPolicyImpl::GetMatchingProcessIsolatedOrigin(
     const IsolationContext& isolation_context,
     const url::Origin& origin,
     bool origin_requests_isolation,
@@ -2067,12 +2067,12 @@ bool ChildProcessSecurityPolicyImpl::GetMatchingIsolatedOrigin(
   // here, but *is* typically needed for making process model decisions. Be
   // very careful about using GetSiteForOrigin() elsewhere, and consider
   // whether you should be using GetSiteForURL() instead.
-  return GetMatchingIsolatedOrigin(isolation_context, origin,
-                                   origin_requests_isolation,
-                                   SiteInfo::GetSiteForOrigin(origin), result);
+  return GetMatchingProcessIsolatedOrigin(
+      isolation_context, origin, origin_requests_isolation,
+      SiteInfo::GetSiteForOrigin(origin), result);
 }
 
-bool ChildProcessSecurityPolicyImpl::GetMatchingIsolatedOrigin(
+bool ChildProcessSecurityPolicyImpl::GetMatchingProcessIsolatedOrigin(
     const IsolationContext& isolation_context,
     const url::Origin& origin,
     bool origin_requests_isolation,
@@ -2100,7 +2100,19 @@ bool ChildProcessSecurityPolicyImpl::GetMatchingIsolatedOrigin(
     // false, or true with result set to |origin|. We give priority to origins
     // requesting opt-in isolation over command-line isolation, but don't check
     // for opt-in if we didn't get a valid BrowsingInstance id.
-    if (ShouldOriginGetOptInIsolation(isolation_context, origin,
+    // Note: This should only return a full origin if we are doing
+    // process-isolated Origin-keyed Agent Clusters, which will only be the case
+    // when site-isolation is enabled. Otherwise we put the origin into its
+    // corresponding site, even if Origin-keyed Agent Clusters will be enabled
+    // on the renderer side.
+    // TODO(wjmaclean,alexmos,acolwell): We should revisit this when we have
+    // SiteInstanceGroups, since at that point we can again return an origin
+    // here (and thus create a new SiteInstance) even when
+    // IsProcessIsolationForOriginAgentClusterEnabled() returns false; in that
+    // case a SiteInstanceGroup will allow a logical group of SiteInstances that
+    // live same-process.
+    if (SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled() &&
+        ShouldOriginGetOptInIsolation(isolation_context, origin,
                                       origin_requests_isolation)) {
       *result = origin;
       return true;

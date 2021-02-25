@@ -243,6 +243,23 @@ class OriginIsolationOptInHeaderTest : public IsolatedOriginTestBase {
   DISALLOW_COPY_AND_ASSIGN(OriginIsolationOptInHeaderTest);
 };
 
+// As in OriginIsolationOptInHeaderTest, but with same-process origin isolation.
+class SameProcessOriginIsolationOptInHeaderTest
+    : public OriginIsolationOptInHeaderTest {
+ public:
+  SameProcessOriginIsolationOptInHeaderTest() = default;
+  ~SameProcessOriginIsolationOptInHeaderTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    OriginIsolationOptInHeaderTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kDisableSiteIsolation);
+    command_line->RemoveSwitch(switches::kSitePerProcess);
+  }
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(SameProcessOriginIsolationOptInHeaderTest);
+};
+
 // Used for a few tests that check non-HTTPS secure context behavior.
 class OriginIsolationOptInHttpServerHeaderTest : public IsolatedOriginTestBase {
  public:
@@ -474,6 +491,57 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
                 ->GetProcessLock(),
             ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
                 child_frame_node->current_frame_host()->GetProcess()->GetID()));
+
+  EXPECT_THAT(
+      histograms.GetAllSamples("Navigation.OriginAgentCluster.Result"),
+      testing::ElementsAre(
+          base::Bucket(
+              static_cast<int>(NavigationRequest::OriginAgentClusterEndResult::
+                                   kNotRequestedAndNotOriginKeyed),
+              2),
+          base::Bucket(
+              static_cast<int>(NavigationRequest::OriginAgentClusterEndResult::
+                                   kRequestedAndOriginKeyed),
+              1)));
+}
+
+// In this test the sub-origin is isolated because the header requests it. It
+// will have the same site instance as the main frame, and it will be in the
+// same process.
+IN_PROC_BROWSER_TEST_F(SameProcessOriginIsolationOptInHeaderTest,
+                       SimpleSubOriginIsolationTest) {
+  base::HistogramTester histograms;
+  SetHeaderValue("?1");
+  // Start off with an a(a) page, then navigate the subframe to an isolated sub
+  // origin.
+  GURL test_url(https_server()->GetURL("foo.com",
+                                       "/cross_site_iframe_factory.html?"
+                                       "foo.com(foo.com)"));
+  GURL isolated_suborigin_url(
+      https_server()->GetURL("isolated.foo.com", "/isolate_origin"));
+  GURL origin_url = url::Origin::Create(isolated_suborigin_url).GetURL();
+  EXPECT_FALSE(
+      SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled());
+  EXPECT_TRUE(NavigateToURL(shell(), test_url));
+  EXPECT_EQ(2u, shell()->web_contents()->GetAllFrames().size());
+
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* child_frame_node = root->child_at(0);
+  EXPECT_TRUE(
+      NavigateToURLFromRenderer(child_frame_node, isolated_suborigin_url));
+  EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
+            child_frame_node->current_frame_host()->GetSiteInstance());
+  EXPECT_FALSE(child_frame_node->current_frame_host()
+                   ->GetSiteInstance()
+                   ->RequiresDedicatedProcess());
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  EXPECT_TRUE(policy->ShouldOriginGetOptInIsolation(
+      root->current_frame_host()->GetSiteInstance()->GetIsolationContext(),
+      url::Origin::Create(isolated_suborigin_url),
+      false /* origin_requests_isolation */));
+  EXPECT_TRUE(policy->HasOriginEverRequestedOptInIsolation(
+      web_contents()->GetBrowserContext(),
+      url::Origin::Create(isolated_suborigin_url)));
 
   EXPECT_THAT(
       histograms.GetAllSamples("Navigation.OriginAgentCluster.Result"),

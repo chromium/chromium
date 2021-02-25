@@ -22,9 +22,11 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/font_access/font_enumeration_cache.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/site_instance_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -198,6 +200,15 @@ base::Value ExecuteScriptAndGetValue(RenderFrameHost* render_frame_host,
 
 bool AreAllSitesIsolatedForTesting() {
   return SiteIsolationPolicy::UseDedicatedProcessesForAllSites();
+}
+
+bool ShouldOriginGetOptInIsolation(SiteInstance* site_instance,
+                                   const url::Origin& origin) {
+  return static_cast<ChildProcessSecurityPolicyImpl*>(
+             ChildProcessSecurityPolicy::GetInstance())
+      ->ShouldOriginGetOptInIsolation(
+          static_cast<SiteInstanceImpl*>(site_instance)->GetIsolationContext(),
+          origin, false /* origin_requests_isolation */);
 }
 
 bool AreDefaultSiteInstancesEnabled() {

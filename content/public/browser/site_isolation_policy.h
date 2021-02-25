@@ -48,10 +48,13 @@ class CONTENT_EXPORT SiteIsolationPolicy {
   // isolated origins on Android.
   static bool ArePreloadedIsolatedOriginsEnabled();
 
-  // Returns true if opt-in origin isolation (e.g., via the "Origin-Isolation"
-  // header) should be enabled.  This is used to turn off opt-in origin
-  // isolation on low-memory Android devices.
-  static bool IsOptInOriginIsolationEnabled();
+  // Returns true if the "Origin-Agent-Cluster" header should result in a
+  // separate process for isolated origins.  This is used to turn off opt-in
+  // origin isolation on low-memory Android devices.
+  static bool IsProcessIsolationForOriginAgentClusterEnabled();
+
+  // Returns true if the OriginAgentCluster header will be respected.
+  static bool IsOriginAgentClusterEnabled();
 
   // Applies isolated origins from all available sources, including the
   // command-line switch, field trials, enterprise policy, and the embedder.

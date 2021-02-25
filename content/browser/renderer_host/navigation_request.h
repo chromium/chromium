@@ -847,6 +847,14 @@ class CONTENT_EXPORT NavigationRequest
   // Origin-Agent-Cluster header, and if so opts in the origin to be isolated.
   void CheckForIsolationOptIn(const GURL& url);
 
+  // Use to manually opt an origin into Origin-keyed Agent Cluster (OAC) in the
+  // event that process-isolation isn't being used for OAC.
+  // TODO(wjmaclean): When we switch to using separate SiteInstances even for
+  // same-process OAC, then this function can be removed.
+  void AddSameProcessOriginAgentClusterOptInIfNecessary(
+      const IsolationContext& isolation_context,
+      const GURL& url);
+
   // NavigationURLLoaderDelegate implementation.
   void OnRequestRedirected(
       const net::RedirectInfo& redirect_info,

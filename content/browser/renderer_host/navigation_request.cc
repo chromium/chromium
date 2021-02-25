@@ -2152,6 +2152,28 @@ void NavigationRequest::CheckForIsolationOptIn(const GURL& url) {
   }
 }
 
+void NavigationRequest::AddSameProcessOriginAgentClusterOptInIfNecessary(
+    const IsolationContext& isolation_context,
+    const GURL& url) {
+  // If site isolation isn't disabled and OriginAgentCluster is allowed to use
+  // process isolation, then no need to add the opt-in here; it will be handled
+  // when the origin's SiteInstance is created.
+  if (SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled() ||
+      !IsOptInIsolationRequested()) {
+    return;
+  }
+
+  // Since site isolation is disabled, we can't rely on the newly created
+  // SiteInstance to add the origin as OAC, so we do it manually here.
+  url::Origin origin = url::Origin::Create(url);
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  if (policy->ShouldOriginGetOptInIsolation(isolation_context, origin,
+                                            true /* is_requested */)) {
+    policy->AddOptInIsolatedOriginForBrowsingInstance(isolation_context,
+                                                      origin);
+  }
+}
+
 bool NavigationRequest::HasCommittingOrigin(const url::Origin& origin) {
   // We are only interested in checking requests that have been assigned a
   // SiteInstance.
@@ -2171,17 +2193,11 @@ bool NavigationRequest::IsOptInIsolationRequested() {
   if (!response())
     return false;
 
-  // Do not attempt isolation if the environment prevents us from enabling site
-  // isolation (e.g., when we are under the memory threshold on Android).
-  if (!SiteIsolationPolicy::IsOptInOriginIsolationEnabled())
+  // Do not attempt isolation if the feature is not enabled.
+  if (!SiteIsolationPolicy::IsOriginAgentClusterEnabled())
     return false;
 
-  if (base::FeatureList::IsEnabled(features::kOriginIsolationHeader) &&
-      response_head_->parsed_headers->origin_agent_cluster) {
-    return true;
-  }
-
-  return false;
+  return response_head_->parsed_headers->origin_agent_cluster;
 }
 
 void NavigationRequest::DetermineOriginAgentClusterEndResult(
@@ -2640,7 +2656,18 @@ void NavigationRequest::OnResponseStarted(
         site_info.RequiresDedicatedProcess(isolation_context)) {
       instance->ConvertToDefaultOrSetSite(GetUrlInfo());
     }
+    // Now that we know the IsolationContext for the assigned SiteInstance, we
+    // opt the origin into OAC here if needed.
+    // TODO(wjmaclean): Remove this call/function when same-process
+    // OriginAgentCluster moves to SiteInstanceGroup, as then all OAC origins
+    // will get a SiteInstance (regardless of process isolation) and tracking
+    // will be handled by the existing pathway in
+    // SiteInstanceImpl::SetSiteInfoInternal().
+    AddSameProcessOriginAgentClusterOptInIfNecessary(isolation_context,
+                                                     GetURL());
 
+    // TODO(wjmaclean): Once this is all working, consider combining the
+    // following code into the function above.
     // If this navigation request didn't opt-in to origin isolation, we need
     // to check here in case the origin has previously requested isolation and
     // should be marked as opted-out in this SiteInstance. At this point we know

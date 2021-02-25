@@ -516,6 +516,7 @@
       "external/wpt/FileAPI/url/multi-global-origin-serialization.sub.html",
       "external/wpt/dom/events/EventListener-incumbent-global-1.sub.html",
       "external/wpt/dom/events/EventListener-incumbent-global-2.sub.html",
+      "external/wpt/html/browsers/origin/origin-keyed-agent-clusters",
       "http/tests/dom/EventListener-incumbent-global-1.html",
       "http/tests/dom/EventListener-incumbent-global-2.html",
       "external/wpt/html/browsers/history/the-location-interface/allow_prototype_cycle_through_location.sub.html",

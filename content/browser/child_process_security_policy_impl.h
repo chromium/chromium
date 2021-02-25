@@ -364,10 +364,11 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // |isolation_context| is used to determine which origins are isolated in
   // this context.  For example, isolated origins that are dynamically added
   // will only affect future BrowsingInstances.
-  bool GetMatchingIsolatedOrigin(const IsolationContext& isolation_context,
-                                 const url::Origin& origin,
-                                 bool origin_requests_isolation,
-                                 url::Origin* result);
+  bool GetMatchingProcessIsolatedOrigin(
+      const IsolationContext& isolation_context,
+      const url::Origin& origin,
+      bool origin_requests_isolation,
+      url::Origin* result);
 
   // Removes any origin isolation opt-in entries associated with the
   // |browsing_instance_id| of the BrowsingInstance.
@@ -406,16 +407,17 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
       BrowserContext* browser_context,
       const url::Origin& origin);
 
-  // A version of GetMatchingIsolatedOrigin that takes in both the |origin| and
-  // the |site_url| that |origin| corresponds to.  |site_url| is the key by
-  // which |origin| will be looked up in |isolated_origins_| within
+  // A version of GetMatchingProcessIsolatedOrigin that takes in both the
+  // |origin| and the |site_url| that |origin| corresponds to.  |site_url| is
+  // the key by which |origin| will be looked up in |isolated_origins_| within
   // |isolation_context|; this function allows it to be passed in when it is
   // already known to avoid recomputing it internally.
-  bool GetMatchingIsolatedOrigin(const IsolationContext& isolation_context,
-                                 const url::Origin& origin,
-                                 bool origin_requests_isolation,
-                                 const GURL& site_url,
-                                 url::Origin* result);
+  bool GetMatchingProcessIsolatedOrigin(
+      const IsolationContext& isolation_context,
+      const url::Origin& origin,
+      bool origin_requests_isolation,
+      const GURL& site_url,
+      url::Origin* result);
 
   // Returns if |child_id| can read all of the |files|.
   bool CanReadAllFiles(int child_id, const std::vector<base::FilePath>& files);

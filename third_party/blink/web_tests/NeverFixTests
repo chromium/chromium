@@ -1962,6 +1962,7 @@ http/tests/devtools/isolated-code-cache/cross-origin-test.js [ Skip ]
 # feature with site isolation enabled, we use a different virtual test suite
 # than not-site-per-process, named no-auto-wpt-origin-isolation.
 external/wpt/html/browsers/origin/origin-keyed-agent-clusters/* [ Skip ]
+virtual/not-site-per-process/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/* [ Pass ]
 virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/* [ Pass ]
 # ==== Tests incompatible with the default WPT Origin Isolation end here ==^^
 
