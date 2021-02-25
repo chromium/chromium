@@ -8549,7 +8549,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LevelDB.ApproximateMemTableMemoryUse" units="bytes"
-    expires_after="2021-01-03">
+    expires_after="2021-08-24">
   <owner>nyquist@chromium.org</owner>
   <owner>salg@google.com</owner>
   <summary>
@@ -11701,14 +11701,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ProtoDB.DestroySuccess" enum="BooleanSuccess"
-    expires_after="M86">
+    expires_after="2021-08-24">
   <owner>nyquist@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>Whether a ProtoDB Destroy call was successful or not.</summary>
 </histogram>
 
 <histogram name="ProtoDB.GetErrorStatus" enum="LevelDBStatus"
-    expires_after="M86">
+    expires_after="2021-08-24">
   <owner>nyquist@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
@@ -11716,34 +11716,35 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="ProtoDB.GetFound" enum="Boolean" expires_after="M86">
+<histogram name="ProtoDB.GetFound" enum="Boolean" expires_after="2021-08-24">
   <owner>nyquist@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>Whether a ProtoDB Get call found what was requested.</summary>
 </histogram>
 
-<histogram name="ProtoDB.GetSuccess" enum="BooleanSuccess" expires_after="M86">
+<histogram name="ProtoDB.GetSuccess" enum="BooleanSuccess"
+    expires_after="2021-08-24">
   <owner>nyquist@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>Whether a ProtoDB Get call was successful or not.</summary>
 </histogram>
 
 <histogram name="ProtoDB.InitStatus" enum="LevelDBStatus"
-    expires_after="2021-08-15">
+    expires_after="2021-08-24">
   <owner>nyquist@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>The LevelDB Status from a ProtoDatabase Init call.</summary>
 </histogram>
 
 <histogram name="ProtoDB.LoadEntriesSuccess" enum="BooleanSuccess"
-    expires_after="M86">
+    expires_after="2021-08-24">
   <owner>nyquist@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>Whether a ProtoDB LoadEntries call was successful or not.</summary>
 </histogram>
 
 <histogram name="ProtoDB.LoadKeysAndEntriesSuccess" enum="BooleanSuccess"
-    expires_after="M86">
+    expires_after="2021-08-24">
   <owner>nyquist@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
@@ -11752,14 +11753,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ProtoDB.LoadKeysSuccess" enum="BooleanSuccess"
-    expires_after="M86">
+    expires_after="2021-08-24">
   <owner>nyquist@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>Whether a ProtoDB LoadKeys call was successful or not.</summary>
 </histogram>
 
 <histogram name="ProtoDB.SharedDbInitStatus" enum="ProtoDatabaseInitState"
-    expires_after="2021-08-22">
+    expires_after="2021-08-24">
   <owner>ssid@chromium.org</owner>
   <owner>salg@chromium.org</owner>
   <summary>
@@ -11773,7 +11774,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ProtoDB.UpdateErrorStatus" enum="LevelDBStatus"
-    expires_after="M86">
+    expires_after="2021-08-24">
   <owner>nyquist@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
@@ -11782,7 +11783,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ProtoDB.UpdateSuccess" enum="BooleanSuccess"
-    expires_after="M86">
+    expires_after="2021-08-24">
   <owner>nyquist@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>Whether a ProtoDB UpdateEntries call was successful or not.</summary>
