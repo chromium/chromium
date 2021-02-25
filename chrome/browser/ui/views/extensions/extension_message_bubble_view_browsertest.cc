@@ -377,12 +377,20 @@ class NtpExtensionBubbleViewBrowserTest
   }
 };
 
+// Flaky on Ozone https://crbug.com/1178732
+#if defined(USE_OZONE)
+#define MAYBE_TestControlledNewTabPageMessageBubbleLearnMore \
+  DISABLED_TestControlledNewTabPageMessageBubbleLearnMore
+#else
+#define MAYBE_TestControlledNewTabPageMessageBubbleLearnMore \
+  TestControlledNewTabPageMessageBubbleLearnMore
+#endif
 IN_PROC_BROWSER_TEST_F(NtpExtensionBubbleViewBrowserTest,
-                       TestControlledNewTabPageMessageBubbleLearnMore) {
+                       MAYBE_TestControlledNewTabPageMessageBubbleLearnMore) {
   TestControlledNewTabPageBubbleShown(true);
 }
 
-// Flaky on Mac https://crbug.com/851655
+// Flaky on Mac, Linux, and ChromeOS https://crbug.com/851655
 #if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_TestBubbleClosedAfterExtensionUninstall \
   DISABLED_TestBubbleClosedAfterExtensionUninstall
@@ -395,14 +403,28 @@ IN_PROC_BROWSER_TEST_F(NtpExtensionBubbleViewBrowserTest,
   TestBubbleClosedAfterExtensionUninstall();
 }
 
+// Flaky on Ozone https://crbug.com/1178717
+#if defined(USE_OZONE)
+#define MAYBE_TestControlledNewTabPageMessageBubble \
+  DISABLED_TestControlledNewTabPageMessageBubble
+#else
+#define MAYBE_TestControlledNewTabPageMessageBubble \
+  TestControlledNewTabPageMessageBubble
+#endif
 IN_PROC_BROWSER_TEST_F(NtpExtensionBubbleViewBrowserTest,
-                       TestControlledNewTabPageMessageBubble) {
+                       MAYBE_TestControlledNewTabPageMessageBubble) {
   TestControlledNewTabPageBubbleShown(false);
 }
 
 // BrowserUiTest for the warning bubble that appears when opening a new tab and
 // an extension is controlling it.
+// Flaky on Ozone https://crbug.com/1178733
+#if defined(USE_OZONE)
+#define MAYBE_InvokeUi_ntp_override DISABLED_InvokeUi_ntp_override
+#else
+#define MAYBE_InvokeUi_ntp_override InvokeUi_ntp_override
+#endif
 IN_PROC_BROWSER_TEST_F(NtpExtensionBubbleViewBrowserTest,
-                       InvokeUi_ntp_override) {
+                       MAYBE_InvokeUi_ntp_override) {
   ShowAndVerifyUi();
 }
