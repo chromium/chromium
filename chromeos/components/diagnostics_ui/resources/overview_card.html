@@ -12,7 +12,8 @@
 </style>
 <div id="overviewCardContainer">
   <div class="diagnostics-chip">
-    <span id="marketingName" aria-describedby="deviceInfo">
+    <span id="marketingName" aria-describedby="deviceInfo"
+        hidden="[[shouldHideMarketingName_(systemInfo_.marketingName)]]">
       [[systemInfo_.marketingName]]
     </span>
     <span id="deviceInfo" aria-hidden="true">[[deviceInfo_]]</span>

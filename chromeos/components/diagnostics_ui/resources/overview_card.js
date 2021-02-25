@@ -69,4 +69,12 @@ Polymer({
         'deviceInfo', this.systemInfo_.boardName,
         this.systemInfo_.versionInfo.milestoneVersion);
   },
+
+  /**
+   * @protected
+   * @return {boolean}
+   */
+  shouldHideMarketingName_() {
+    return this.systemInfo_.marketingName === 'TBD';
+  },
 });

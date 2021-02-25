@@ -186,6 +186,18 @@ export const fakeSystemInfoWithoutBattery = {
   versionInfo: {milestoneVersion: 'M99'},
 };
 
+/** @type {!SystemInfo} */
+export const fakeSystemInfoWithTBD = {
+  boardName: 'CrOS Board',
+  cpuModelName: 'BestCpu SoFast 1000',
+  cpuThreadsCount: 8,
+  cpuMaxClockSpeedKhz: 1000,
+  deviceCapabilities: {hasBattery: true},
+  marketingName: 'TBD',
+  totalMemoryKib: 128000,
+  versionInfo: {milestoneVersion: 'M99'},
+};
+
 /** @type {!Map<!RoutineType, !StandardRoutineResult>} */
 export const fakeRoutineResults = new Map([
   [
