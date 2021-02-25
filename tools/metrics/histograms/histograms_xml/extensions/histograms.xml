@@ -1496,7 +1496,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Extensions.ForceInstalledFailureSessionType"
+<histogram name="Extensions.ForceInstalledFailureSessionType{FailureReason}"
     enum="SessionType" expires_after="2021-08-01">
   <owner>burunduk@chromium.org</owner>
   <owner>swapnilgupta@google.com</owner>
@@ -1505,8 +1505,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The type of session in case enterprise policy forced extensions were not
     installed. Recorded for each force installed extension which failed to
     install after 5 minutes. Supported only on ChromeOS and recorded only if
-    there is an active user.
+    there is an active user. {FailureReason}
   </summary>
+  <token key="FailureReason">
+    <variant name="" summary="Any type of failure"/>
+    <variant name=".ExtensionStuckInCreatedStage"
+        summary="Extensions stuck in CREATED stage"/>
+  </token>
 </histogram>
 
 <histogram

@@ -98,6 +98,8 @@ constexpr char kSandboxUnpackFailureReason[] =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kFailureSessionStats[] =
     "Extensions.ForceInstalledFailureSessionType";
+constexpr char kStuckInCreateStageSessionType[] =
+    "Extensions.ForceInstalledFailureSessionType.ExtensionStuckInCreatedStage";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kPossibleNonMisconfigurationFailures[] =
     "Extensions.ForceInstalledSessionsWithNonMisconfigurationFailureOccured";
@@ -940,6 +942,56 @@ TEST_F(ForceInstalledMetricsTest, ReportGuestSessionOnExtensionFailure) {
   histogram_tester_.ExpectBucketCount(
       kFailureSessionStats, ForceInstalledMetrics::UserType::USER_TYPE_GUEST,
       2);
+}
+
+// Verified that the metrics related to user type are reported correctly for
+// extension stuck in NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_FORCED stage.
+TEST_F(ForceInstalledMetricsTest,
+       ReportGuestSessionForExtensionsStuckInCreatedStage) {
+  chromeos::FakeChromeUserManager* fake_user_manager =
+      new chromeos::FakeChromeUserManager();
+  user_manager::ScopedUserManager scoped_user_manager(
+      base::WrapUnique(fake_user_manager));
+  const AccountId account_id =
+      AccountId::FromUserEmail(profile()->GetProfileUserName());
+  user_manager::User* user = fake_user_manager->AddGuestUser();
+  fake_user_manager->UserLoggedIn(account_id, user->username_hash(),
+                                  false /* browser_restart */,
+                                  false /* is_child */);
+  chromeos::ProfileHelper::Get()->SetProfileToUserMappingForTesting(user);
+
+  SetupForceList(true /*is_from_store */);
+  CreateExtensionService(/*extensions_enabled=*/true);
+
+  scoped_refptr<const Extension> ext1 = CreateNewExtension(
+      kExtensionName1, kExtensionId1, ExtensionStatus::kLoaded);
+  registry()->AddEnabled(ext1.get());
+  force_installed_tracker()->OnExtensionLoaded(profile(), ext1.get());
+  install_stage_tracker()->ReportInstallationStage(
+      kExtensionId2, InstallStageTracker::Stage::CREATED);
+  install_stage_tracker()->ReportInstallCreationStage(
+      kExtensionId2, InstallStageTracker::InstallCreationStage::
+                         NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_FORCED);
+
+  EXPECT_TRUE(fake_timer_->IsRunning());
+  fake_timer_->Fire();
+  histogram_tester_.ExpectUniqueSample(
+      kFailureReasonsCWS, InstallStageTracker::FailureReason::IN_PROGRESS, 1);
+  histogram_tester_.ExpectBucketCount(kInstallationStages,
+                                      InstallStageTracker::Stage::CREATED, 1);
+  histogram_tester_.ExpectBucketCount(
+      kInstallCreationStages,
+      InstallStageTracker::InstallCreationStage::
+          NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_FORCED,
+      1);
+  histogram_tester_.ExpectUniqueSample(kStuckInCreatedStageAreExtensionsEnabled,
+                                       true, 1);
+  histogram_tester_.ExpectBucketCount(
+      kFailureSessionStats, ForceInstalledMetrics::UserType::USER_TYPE_GUEST,
+      1);
+  histogram_tester_.ExpectBucketCount(
+      kStuckInCreateStageSessionType,
+      ForceInstalledMetrics::UserType::USER_TYPE_GUEST, 1);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

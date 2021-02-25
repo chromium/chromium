@@ -419,9 +419,18 @@ void ForceInstalledMetrics::ReportMetrics() {
     if (chromeos::ProfileHelper::Get()->GetUserByProfile(profile_)) {
       InstallStageTracker::UserInfo user_info =
           InstallStageTracker::GetUserInfo(profile_);
+      ForceInstalledMetrics::UserType user_type = ConvertUserType(user_info);
       base::UmaHistogramEnumeration(
-          "Extensions.ForceInstalledFailureSessionType",
-          ConvertUserType(user_info));
+          "Extensions.ForceInstalledFailureSessionType", user_type);
+      if (failure_reason == FailureReason::IN_PROGRESS &&
+          installation.install_creation_stage ==
+              InstallStageTracker::InstallCreationStage::
+                  NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_FORCED) {
+        base::UmaHistogramEnumeration(
+            "Extensions.ForceInstalledFailureSessionType."
+            "ExtensionStuckInCreatedStage",
+            user_type);
+      }
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     VLOG(2) << "Forced extension " << extension_id
