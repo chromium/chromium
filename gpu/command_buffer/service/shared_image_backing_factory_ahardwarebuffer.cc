@@ -773,10 +773,13 @@ SharedImageBackingFactoryAHB::CreateSharedImage(
     return nullptr;
   }
 
-  return std::make_unique<SharedImageBackingAHB>(
+  auto backing = std::make_unique<SharedImageBackingAHB>(
       mailbox, resource_format, size, color_space, surface_origin, alpha_type,
       usage, std::move(handle.android_hardware_buffer), estimated_size, false,
       base::ScopedFD());
+
+  backing->SetCleared();
+  return backing;
 }
 
 }  // namespace gpu
