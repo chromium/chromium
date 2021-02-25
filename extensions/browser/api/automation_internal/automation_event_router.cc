@@ -47,7 +47,7 @@ AutomationEventRouter::AutomationEventRouter()
 #endif
 }
 
-AutomationEventRouter::~AutomationEventRouter() {}
+AutomationEventRouter::~AutomationEventRouter() = default;
 
 void AutomationEventRouter::RegisterListenerForOneTree(
     const ExtensionId& extension_id,
@@ -170,12 +170,22 @@ void AutomationEventRouter::DispatchGetTextLocationDataResult(
       ->DispatchEventToExtension(data.source_extension_id, std::move(event));
 }
 
-AutomationEventRouter::AutomationListener::AutomationListener() {}
+void AutomationEventRouter::AddObserver(
+    AutomationEventRouterObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void AutomationEventRouter::RemoveObserver(
+    AutomationEventRouterObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+AutomationEventRouter::AutomationListener::AutomationListener() = default;
 
 AutomationEventRouter::AutomationListener::AutomationListener(
     const AutomationListener& other) = default;
 
-AutomationEventRouter::AutomationListener::~AutomationListener() {}
+AutomationEventRouter::AutomationListener::~AutomationListener() = default;
 
 void AutomationEventRouter::Register(const ExtensionId& extension_id,
                                      int listener_process_id,
@@ -238,6 +248,11 @@ void AutomationEventRouter::RenderProcessHostDestroyed(
   });
   rph_observers_.Remove(host);
   UpdateActiveProfile();
+
+  if (rph_observers_.GetSourcesCount() == 0) {
+    for (AutomationEventRouterObserver& observer : observers_)
+      observer.AllAutomationExtensionsGone();
+  }
 }
 
 void AutomationEventRouter::UpdateActiveProfile() {

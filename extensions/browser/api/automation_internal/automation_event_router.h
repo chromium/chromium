@@ -35,6 +35,11 @@ struct ExtensionMsg_AccessibilityLocationChangeParams;
 namespace extensions {
 struct AutomationListener;
 
+class AutomationEventRouterObserver {
+ public:
+  virtual void AllAutomationExtensionsGone() = 0;
+};
+
 class AutomationEventRouter : public ui::AXEventBundleSink,
                               public content::RenderProcessHostObserver,
                               public AutomationEventRouterInterface {
@@ -77,6 +82,9 @@ class AutomationEventRouter : public ui::AXEventBundleSink,
   void DispatchGetTextLocationDataResult(
       const ui::AXActionData& data,
       const base::Optional<gfx::Rect>& rect) override;
+
+  void AddObserver(AutomationEventRouterObserver* observer);
+  void RemoveObserver(AutomationEventRouterObserver* observer);
 
  private:
   struct AutomationListener {
@@ -130,6 +138,8 @@ class AutomationEventRouter : public ui::AXEventBundleSink,
 
   ScopedObserver<content::RenderProcessHost, content::RenderProcessHostObserver>
       rph_observers_{this};
+
+  base::ObserverList<AutomationEventRouterObserver>::Unchecked observers_;
 
   friend struct base::DefaultSingletonTraits<AutomationEventRouter>;
 

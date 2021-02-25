@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -140,9 +141,12 @@ base::LazyInstance<OldAXTreeIdMap>::DestructorAtExit g_old_ax_tree =
 // Helper class that receives accessibility data from |WebContents|.
 class AutomationWebContentsObserver
     : public content::WebContentsObserver,
-      public content::WebContentsUserData<AutomationWebContentsObserver> {
+      public content::WebContentsUserData<AutomationWebContentsObserver>,
+      public AutomationEventRouterObserver {
  public:
-  ~AutomationWebContentsObserver() override {}
+  ~AutomationWebContentsObserver() override {
+    automation_event_router_observer_.Reset();
+  }
 
   // content::WebContentsObserver overrides.
   void AccessibilityEventReceived(const content::AXEventNotificationDetails&
@@ -232,6 +236,17 @@ class AutomationWebContentsObserver
     AccessibilityEventReceived(content_event_bundle);
   }
 
+  // AutomationEventRouterObserver overrides.
+  void AllAutomationExtensionsGone() override {
+    if (!web_contents())
+      return;
+
+    ui::AXMode new_mode = web_contents()->GetAccessibilityMode();
+    uint8_t flags = ui::kAXModeWebContentsOnly.mode();
+    new_mode.set_mode(flags, false);
+    web_contents()->SetAccessibilityMode(std::move(new_mode));
+  }
+
  private:
   friend class content::WebContentsUserData<AutomationWebContentsObserver>;
 
@@ -250,9 +265,16 @@ class AutomationWebContentsObserver
           ax::mojom::Event::kMediaStartedPlaying;
       AccessibilityEventReceived(content_event_bundle);
     }
+
+    automation_event_router_observer_.Observe(
+        AutomationEventRouter::GetInstance());
   }
 
   content::BrowserContext* browser_context_;
+
+  base::ScopedObservation<extensions::AutomationEventRouter,
+                          extensions::AutomationEventRouterObserver>
+      automation_event_router_observer_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

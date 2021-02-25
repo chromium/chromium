@@ -71,13 +71,22 @@ void AutomationManagerAura::Enable() {
       PostEvent(focus->GetUniqueId(), ax::mojom::Event::kChildrenChanged);
   }
 #endif
+
+  if (!automation_event_router_observer_.IsObserving()) {
+    automation_event_router_observer_.Observe(
+        extensions::AutomationEventRouter::GetInstance());
+  }
 }
 
 void AutomationManagerAura::Disable() {
   enabled_ = false;
   cache_ = std::make_unique<views::AXAuraObjCache>();
   tree_.reset();
-  Reset(true);
+  tree_serializer_.reset();
+  alert_window_.reset();
+
+  if (automation_event_router_observer_.IsObserving())
+    automation_event_router_observer_.Reset();
 }
 
 void AutomationManagerAura::OnViewEvent(views::View* view,
@@ -92,6 +101,10 @@ void AutomationManagerAura::OnViewEvent(views::View* view,
     return;
 
   PostEvent(obj->GetUniqueId(), event_type);
+}
+
+void AutomationManagerAura::AllAutomationExtensionsGone() {
+  Disable();
 }
 
 void AutomationManagerAura::HandleEvent(ax::mojom::Event event_type) {

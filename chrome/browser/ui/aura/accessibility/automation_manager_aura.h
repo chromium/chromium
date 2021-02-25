@@ -13,6 +13,8 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/scoped_observation.h"
+#include "extensions/browser/api/automation_internal/automation_event_router.h"
 #include "ui/accessibility/ax_action_handler.h"
 #include "ui/accessibility/ax_tree_serializer.h"
 #include "ui/views/accessibility/ax_aura_obj_cache.h"
@@ -39,7 +41,8 @@ using AuraAXTreeSerializer = ui::AXTreeSerializer<views::AXAuraObjWrapper*>;
 // Manages a tree of automation nodes backed by aura constructs.
 class AutomationManagerAura : public ui::AXActionHandler,
                               public views::AXAuraObjCache::Delegate,
-                              public views::AXEventObserver {
+                              public views::AXEventObserver,
+                              public extensions::AutomationEventRouterObserver {
  public:
   // Get the single instance of this class.
   static AutomationManagerAura* GetInstance();
@@ -68,6 +71,9 @@ class AutomationManagerAura : public ui::AXActionHandler,
 
   // views::AXEventObserver:
   void OnViewEvent(views::View* view, ax::mojom::Event event_type) override;
+
+  // AutomationEventRouterObserver:
+  void AllAutomationExtensionsGone() override;
 
   void set_event_bundle_sink(ui::AXEventBundleSink* sink) {
     event_bundle_sink_ = sink;
@@ -136,6 +142,10 @@ class AutomationManagerAura : public ui::AXActionHandler,
   std::unique_ptr<views::AXAuraObjCache> cache_;
 
   bool is_performing_action_ = false;
+
+  base::ScopedObservation<extensions::AutomationEventRouter,
+                          extensions::AutomationEventRouterObserver>
+      automation_event_router_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AutomationManagerAura);
 };
