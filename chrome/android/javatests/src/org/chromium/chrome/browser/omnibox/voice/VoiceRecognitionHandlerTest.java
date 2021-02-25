@@ -692,9 +692,24 @@ public class VoiceRecognitionHandlerTest {
 
     @Test
     @SmallTest
-    public void testStartVoiceRecognition_OnlyUpdateMicButtonStateIfPermissionsNotGranted() {
+    public void
+    testStartVoiceRecognition_DontUpdateMicIfPermissionsNotGrantedButCanRequestPermissions() {
         verify(mObserver, never()).onVoiceAvailabilityImpacted();
         mPermissionDelegate.setCanRequestPermission(true);
+        mPermissionDelegate.setPermissionResults(PackageManager.PERMISSION_DENIED);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX); });
+        Assert.assertEquals(-1, mHandler.getVoiceSearchStartEventSource());
+        verify(mObserver, never()).onVoiceAvailabilityImpacted();
+        verify(mAssistantVoiceSearchService).reportUserEligibility();
+    }
+
+    @Test
+    @SmallTest
+    public void
+    testStartVoiceRecognition_UpdateMicIfPermissionsNotGrantedAndCantRequestPermissions() {
+        verify(mObserver, never()).onVoiceAvailabilityImpacted();
+        mPermissionDelegate.setCanRequestPermission(false);
         mPermissionDelegate.setPermissionResults(PackageManager.PERMISSION_DENIED);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX); });

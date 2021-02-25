@@ -665,6 +665,10 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
     /**
      * Requests the audio permission and resolves the voice recognition request if necessary.
      *
+     * In a situation when permissions can't be requested anymore, or have been requested
+     * and the result was a denial without an option to request them again, voice
+     * functionality will become unavailable.
+     *
      * @param windowAndroid Used to request audio permissions from the Android system.
      * @param source The source of the mic button click, used to record metrics.
      * @return Whether audio permissions are granted.
@@ -688,7 +692,7 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
 
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 startVoiceRecognition(source);
-            } else {
+            } else if (!windowAndroid.canRequestPermission(Manifest.permission.RECORD_AUDIO)) {
                 notifyVoiceAvailabilityImpacted();
             }
         };
