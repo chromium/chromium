@@ -23,6 +23,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/system/timezone_util.h"
@@ -35,12 +36,14 @@
 #include "chrome/browser/chromeos/policy/bluetooth_policy_handler.h"
 #include "chrome/browser/chromeos/policy/device_cloud_policy_initializer.h"
 #include "chrome/browser/chromeos/policy/device_cloud_policy_store_chromeos.h"
+#include "chrome/browser/chromeos/policy/device_cloud_state_keys_uploader.h"
 #include "chrome/browser/chromeos/policy/device_dock_mac_address_source_handler.h"
 #include "chrome/browser/chromeos/policy/device_local_account.h"
 #include "chrome/browser/chromeos/policy/device_local_account_policy_service.h"
 #include "chrome/browser/chromeos/policy/device_network_configuration_updater.h"
 #include "chrome/browser/chromeos/policy/device_policy_cloud_external_data_manager.h"
 #include "chrome/browser/chromeos/policy/device_wifi_allowed_handler.h"
+#include "chrome/browser/chromeos/policy/dm_token_storage.h"
 #include "chrome/browser/chromeos/policy/enrollment_config.h"
 #include "chrome/browser/chromeos/policy/enrollment_requisition_manager.h"
 #include "chrome/browser/chromeos/policy/external_data_handlers/device_print_servers_external_data_handler.h"
@@ -112,6 +115,11 @@ MarketSegment TranslateMarketSegment(
   }
   NOTREACHED();
   return MarketSegment::UNKNOWN;
+}
+
+// Checks whether forced re-enrollment is enabled.
+bool IsForcedReEnrollmentEnabled() {
+  return chromeos::AutoEnrollmentController::IsFREEnabled();
 }
 
 }  // namespace
@@ -202,6 +210,17 @@ void BrowserPolicyConnectorChromeOS::Init(
             GetBackgroundTaskRunner(), GetBackgroundTaskRunner(),
             GetBackgroundTaskRunner(), url_loader_factory);
     device_local_account_policy_service_->Connect(device_management_service());
+  } else if (IsForcedReEnrollmentEnabled()) {
+    // Initialize state keys upload mechanism to DM Server in Active Directory
+    // mode.
+    state_keys_broker_ = std::make_unique<ServerBackedStateKeysBroker>(
+        chromeos::SessionManagerClient::Get());
+    state_keys_uploader_for_active_directory_ =
+        std::make_unique<DeviceCloudStateKeysUploader>(
+            /*client_id=*/GetInstallAttributes()->GetDeviceId(),
+            device_management_service(), state_keys_broker_.get(),
+            url_loader_factory, std::make_unique<DMTokenStorage>(local_state));
+    state_keys_uploader_for_active_directory_->Init();
   }
 
   if (device_cloud_policy_manager_) {
@@ -316,6 +335,9 @@ void BrowserPolicyConnectorChromeOS::Shutdown() {
 
   if (device_local_account_policy_service_)
     device_local_account_policy_service_->Shutdown();
+
+  if (state_keys_uploader_for_active_directory_)
+    state_keys_uploader_for_active_directory_->Shutdown();
 
   if (device_cloud_policy_initializer_)
     device_cloud_policy_initializer_->Shutdown();

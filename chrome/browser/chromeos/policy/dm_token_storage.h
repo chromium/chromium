@@ -16,32 +16,48 @@ class PrefService;
 
 namespace policy {
 
-// Helper class to store/retrieve DM token to/from the local state. This is
-// needed for Active Directory management because AD devices lacks DM token in
-// the policies. DM token will be used in the future for ARC integration.
-//
-// Note that requests must be made from the UI thread because SystemSaltGetter
-// calls CryptohomeClient which must be called from the UI thread.
-class DMTokenStorage {
+// Interface to store/retrieve DM token.
+// TODO(b/181210862): Refactor and align with "Impl" naming convention.
+class DMTokenStorageBase {
  public:
   using StoreCallback = base::OnceCallback<void(bool success)>;
   using RetrieveCallback =
       base::OnceCallback<void(const std::string& dm_token)>;
 
+  virtual ~DMTokenStorageBase();
+
+  // Persists |dm_token|. Signals completion via |callback|, passing true if the
+  // operation succeeded.
+  virtual void StoreDMToken(const std::string& dm_token,
+                            StoreCallback callback) = 0;
+
+  // Loads DM token. Fires callback on completion. Empty |dm_token| means error.
+  virtual void RetrieveDMToken(RetrieveCallback callback) = 0;
+};
+
+// Implementation of DMTokenStorageBase interface to store/retrieve DM token
+// to/from local state on the device. This is needed for Active Directory
+// management because AD devices lacks DM token in the policies.
+//
+// Note that requests must be made from the UI thread because SystemSaltGetter
+// calls CryptohomeClient which must be called from the UI thread.
+class DMTokenStorage : public DMTokenStorageBase {
+ public:
   explicit DMTokenStorage(PrefService* local_state);
-  ~DMTokenStorage();
+  ~DMTokenStorage() override;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // Persists |dm_token| on the device. Overwrites any previous value. Signals
   // completion via |callback|, passing true if the operation succeeded. Fails
   // if another operation is running (store or retrieve).
-  void StoreDMToken(const std::string& dm_token, StoreCallback callback);
+  void StoreDMToken(const std::string& dm_token,
+                    StoreCallback callback) override;
 
   // Loads DM token from the local state and decrypts it. Fires callback on
   // completion. Empty |dm_token| means error. Calls |callback| with empty token
   // if store operation is running.
-  void RetrieveDMToken(RetrieveCallback callback);
+  void RetrieveDMToken(RetrieveCallback callback) override;
 
  private:
   enum class SaltState {

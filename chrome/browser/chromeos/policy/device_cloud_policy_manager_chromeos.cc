@@ -73,7 +73,7 @@ constexpr base::TimeDelta kDeviceStatusUploadFrequency =
     base::TimeDelta::FromHours(3);
 
 // Checks whether forced re-enrollment is enabled.
-bool ForcedReEnrollmentEnabled() {
+bool IsForcedReEnrollmentEnabled() {
   return chromeos::AutoEnrollmentController::IsFREEnabled();
 }
 
@@ -170,7 +170,7 @@ void DeviceCloudPolicyManagerChromeOS::StartConnection(
   CHECK(!service());
 
   // Set state keys here so the first policy fetch submits them to the server.
-  if (ForcedReEnrollmentEnabled())
+  if (IsForcedReEnrollmentEnabled())
     client_to_connect->SetStateKeysToUpload(state_keys_broker_->state_keys());
 
   // Create the component cloud policy service for fetching, caching and
@@ -265,7 +265,7 @@ void DeviceCloudPolicyManagerChromeOS::SetSigninProfileSchemaRegistry(
 }
 
 void DeviceCloudPolicyManagerChromeOS::OnStateKeysUpdated() {
-  if (client() && ForcedReEnrollmentEnabled())
+  if (client() && IsForcedReEnrollmentEnabled())
     client()->SetStateKeysToUpload(state_keys_broker_->state_keys());
 }
 

@@ -32,6 +32,8 @@ std::string DecryptToken(const std::string& system_salt,
 
 namespace policy {
 
+DMTokenStorageBase::~DMTokenStorageBase() = default;
+
 DMTokenStorage::DMTokenStorage(PrefService* local_state)
     : local_state_(local_state) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
