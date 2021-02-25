@@ -31621,6 +31621,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3826" label="StorageFoundationWriteSync"/>
   <int value="3827" label="StorageFoundationFlush"/>
   <int value="3828" label="StorageFoundationFlushSync"/>
+  <int value="3829" label="UnrestrictedSharedArrayBuffer"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

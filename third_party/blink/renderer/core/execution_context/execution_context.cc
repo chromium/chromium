@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "build/build_config.h"
 #include "third_party/blink/public/common/feature_policy/document_policy_features.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-blink.h"
@@ -170,8 +171,15 @@ unsigned ExecutionContext::ContextLifecycleStateObserverCountForTesting()
 }
 
 bool ExecutionContext::SharedArrayBufferTransferAllowed() const {
-  return RuntimeEnabledFeatures::SharedArrayBufferEnabled(this) ||
-         CrossOriginIsolatedCapability();
+  if (RuntimeEnabledFeatures::SharedArrayBufferEnabled(this) ||
+      CrossOriginIsolatedCapability()) {
+    return true;
+  }
+#if defined(OS_ANDROID)
+  return false;
+#else
+  return RuntimeEnabledFeatures::UnrestrictedSharedArrayBufferEnabled(this);
+#endif
 }
 
 namespace {

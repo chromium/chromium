@@ -30,6 +30,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
+#include "build/build_config.h"
 #include "cc/input/snap_selection_strategy.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -657,6 +658,13 @@ Document* LocalDOMWindow::InstallNewDocument(const DocumentInit& init) {
       GetFrame()->IsCrossOriginToMainFrame());
 
   GetFrame()->GetPage()->GetChromeClient().InstallSupplements(*GetFrame());
+
+#if !defined(OS_ANDROID)
+  // Enable SharedArrayBuffer for the reverse Origin Trial.
+  if (RuntimeEnabledFeatures::UnrestrictedSharedArrayBufferEnabled(this)) {
+    v8::V8::SetIsCrossOriginIsolated();
+  }
+#endif
 
   return document_;
 }

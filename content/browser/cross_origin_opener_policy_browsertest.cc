@@ -2798,4 +2798,151 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(1234, EvalJs(main_document, "g_sab_size"));
 }
 
+// Ensure the UnrestrictedSharedArrayBuffer reverse origin trial is correctly
+// implemented.
+class UnrestrictedSharedArrayBufferOriginTrialBrowserTest
+    : public ContentBrowserTest {
+ public:
+  UnrestrictedSharedArrayBufferOriginTrialBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {
+            // Enabled
+        },
+        {
+            // Disabled
+            features::kSharedArrayBuffer,
+            features::kWebAssemblyThreads,
+        });
+  }
+
+  // Origin Trials key generated with:
+  //
+  // tools/origin_trials/generate_token.py --expire-days 5000 --version 3
+  // https://coop.security:9999 UnrestrictedSharedArrayBuffer
+  static std::string OriginTrialToken() {
+    return "A8TH8Ylk6lUuL84RdQ2+FTyupad3leg5sMk+MYEoVlwkURyBtVq1IFncJAc2k"
+           "Knhh5w3SvIR4XuEtyMzeI2u4wAAAABqeyJvcmlnaW4iOiAiaHR0cHM6Ly9jb2"
+           "9wLnNlY3VyaXR5Ojk5OTkiLCAiZmVhdHVyZSI6ICJVbnJlc3RyaWN0ZWRTaGF"
+           "yZWRBcnJheUJ1ZmZlciIsICJleHBpcnkiOiAyMDQ1Njk0NDMyfQ==";
+  }
+
+  // The OriginTrial token is bound to a given origin. Since the
+  // EmbeddedTestServer's port changes after every test run, it can't be used.
+  // As a result, response must be served using a URLLoaderInterceptor.
+  GURL OriginTrialURL() { return GURL("https://coop.security:9999"); }
+
+  WebContentsImpl* web_contents() const {
+    return static_cast<WebContentsImpl*>(shell()->web_contents());
+  }
+
+  RenderFrameHostImpl* current_frame_host() {
+    return web_contents()->GetMainFrame();
+  }
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+ private:
+  void SetUpOnMainThread() final {
+    ContentBrowserTest::TearDownOnMainThread();
+
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+    https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    SetupCrossSiteRedirector(https_server());
+    net::test_server::RegisterDefaultHandlers(&https_server_);
+    ASSERT_TRUE(https_server()->Start());
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) final {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  net::EmbeddedTestServer https_server_;
+};
+
+IN_PROC_BROWSER_TEST_F(UnrestrictedSharedArrayBufferOriginTrialBrowserTest,
+                       HasSharedArrayBuffer) {
+  URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](URLLoaderInterceptor::RequestParams* params) {
+        DCHECK_EQ(params->url_request.url, OriginTrialURL());
+        URLLoaderInterceptor::WriteResponse(
+            "HTTP/1.1 200 OK\n"
+            "Content-type: text/html\n"
+            "Origin-Trial: " +
+                OriginTrialToken() + "\n\n",
+            "", params->client.get());
+        return true;
+      }));
+  EXPECT_TRUE(NavigateToURL(shell(), OriginTrialURL()));
+
+  EXPECT_EQ(false, EvalJs(current_frame_host(), "self.crossOriginIsolated"));
+#if !defined(OS_ANDROID)
+  EXPECT_EQ(true,
+            EvalJs(current_frame_host(), "'SharedArrayBuffer' in globalThis"));
+#else   // defined(OS_ANDROID)
+  EXPECT_EQ(false,
+            EvalJs(current_frame_host(), "'SharedArrayBuffer' in globalThis"));
+#endif  // defined(OS_ANDROID)
+}
+
+IN_PROC_BROWSER_TEST_F(UnrestrictedSharedArrayBufferOriginTrialBrowserTest,
+                       TransferSharedArrayBuffer) {
+  URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](URLLoaderInterceptor::RequestParams* params) {
+        DCHECK_EQ(params->url_request.url, OriginTrialURL());
+        URLLoaderInterceptor::WriteResponse(
+            "HTTP/1.1 200 OK\n"
+            "Content-type: text/html\n"
+            "Origin-Trial: " +
+                OriginTrialToken() + "\n\n",
+            "", params->client.get());
+        return true;
+      }));
+  EXPECT_TRUE(NavigateToURL(shell(), OriginTrialURL()));
+
+  EXPECT_TRUE(ExecJs(current_frame_host(),
+                     "g_iframe = document.createElement('iframe');"
+                     "g_iframe.src = location.href;"
+                     "document.body.appendChild(g_iframe);"));
+  WaitForLoadStop(web_contents());
+
+  RenderFrameHostImpl* main_document = current_frame_host();
+  RenderFrameHostImpl* sub_document =
+      current_frame_host()->child_at(0)->current_frame_host();
+
+  EXPECT_EQ(false, EvalJs(main_document, "self.crossOriginIsolated"));
+  EXPECT_EQ(false, EvalJs(sub_document, "self.crossOriginIsolated"));
+
+#if !defined(OS_ANDROID)
+  EXPECT_TRUE(ExecJs(sub_document, R"(
+    g_sab_size = new Promise(resolve => {
+      addEventListener("message", event => resolve(event.data.byteLength));
+    });
+  )"));
+
+  EXPECT_TRUE(ExecJs(main_document, R"(
+    let sab = new SharedArrayBuffer(1234);
+    g_iframe.contentWindow.postMessage(sab, "*");
+  )"));
+
+  EXPECT_EQ(1234, EvalJs(sub_document, "g_sab_size"));
+#else   // defined(OS_ANDROID)
+  auto postSharedArrayBuffer = EvalJs(main_document, R"(
+    // Create a WebAssembly Memory to bypass the SAB constructor restriction.
+    const sab =
+        new WebAssembly.Memory({ shared:true, initial:1, maximum:1 }).buffer;
+    g_iframe.contentWindow.postMessage(sab,"*");
+  )");
+
+  EXPECT_THAT(
+      postSharedArrayBuffer.error,
+      HasSubstr(
+          "Failed to execute 'postMessage' on 'Window': ArrayBuffer is not "
+          "detachable and could not be cloned."));
+#endif  // defined(OS_ANDROID)
+}
+
 }  // namespace content
