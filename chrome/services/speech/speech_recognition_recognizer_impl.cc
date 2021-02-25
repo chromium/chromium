@@ -196,6 +196,9 @@ void SpeechRecognitionRecognizerImpl::
       config_msg.set_language_pack_directory(language_pack_directory);
       config_msg.set_simulate_realtime_testonly(false);
       config_msg.set_enable_lang_id(false);
+      // SODA wants to listen as CAPTION.
+      config_msg.set_recognition_mode(
+          soda::api::SerializedSodaConfigMsg::CAPTION);
       auto serialized = config_msg.SerializeAsString();
 
       SerializedSodaConfig config;
