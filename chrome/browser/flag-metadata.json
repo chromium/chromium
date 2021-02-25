@@ -2498,7 +2498,7 @@
   {
     "name": "enable-unsafe-webgpu",
     "owners": [ "//third_party/blink/renderer/modules/webgpu/OWNERS" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 98
   },
   {
     "name": "enable-use-aaudio-driver",
