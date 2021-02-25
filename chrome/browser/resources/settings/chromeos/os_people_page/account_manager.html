@@ -31,6 +31,10 @@
         max-width: 560px;
       }
 
+      .account-manager-description.full-width {
+        max-width: none;
+      }
+
       .profile-icon {
         --profile-icon-size: 40px;
         background: center / cover no-repeat;
@@ -98,18 +102,21 @@
         flex-grow: 1;
       }
 
-      .account-list-header-description > .secondary,
+      .account-list-header-description > .secondary {
+        padding-inline-end: 40px;
+      }
+
       .secondary-accounts-disabled-tooltip {
         padding-inline-end: 12px;
       }
 
       #account-list-header > h2 {
-        padding-bottom: 12px;
-        padding-top: 12px;
+        padding-bottom: 8px;
+        padding-top: 8px;
       }
 
       #account-list-header {
-        padding-bottom: 12px;
+        padding-bottom: 8px;
       }
 
       cr-policy-indicator {
@@ -215,7 +222,9 @@
     </style>
 
     <!-- Account management description -->
-    <div class="settings-box first account-manager-description">
+    <div class$="[[getAccountManagerDescriptionClassList_(
+                        'settings-box first account-manager-description',
+                        isAccountManagementFlowsV2Enabled_)]]">
       <settings-localized-link
           localized-string="[[getAccountManagerDescription_()]]"
           link-url="$i18nRaw{accountManagerLearnMoreUrl}">
@@ -322,7 +331,7 @@
               isSecondaryGoogleAccountSigninAllowed_)]]
         </cr-button>
       </template>
-  </div>
+    </div>
 
     <!-- Secondary Accounts list -->
     <div id="outer" class="layout vertical nowrap" role="list">

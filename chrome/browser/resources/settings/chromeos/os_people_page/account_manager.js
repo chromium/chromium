@@ -377,6 +377,19 @@ Polymer({
     return this.accounts_;
   },
 
+
+  /**
+   * @param {string} classList existing class list.
+   * @return {string} new class list.
+   * @private
+   */
+  getAccountManagerDescriptionClassList_(classList) {
+    if (this.isAccountManagementFlowsV2Enabled_) {
+      return classList + ' full-width';
+    }
+    return classList;
+  },
+
   /**
    * @param {!CustomEvent<!{model: !{item: !settings.Account}}>} event
    * @private
