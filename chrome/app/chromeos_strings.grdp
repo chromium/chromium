@@ -642,7 +642,7 @@
     Searching for Bluetooth and USB devices
   </message>
   <message name="IDS_HID_DETECTION_PRECONDITION_TEXT" desc="Text shown on HID detection screen beneath invitation.">
-    Please connect a mouse or a keyboard. If you are using a Bluetooth device, make sure it is ready to pair.
+    Connect a keyboard or mouse. If you are using Bluetooth devices, make sure your devices are ready to pair.
   </message>
   <message name="IDS_HID_DETECTION_PRECONDITION_TOUCHSCREEN_TEXT" desc="Text shown on HID detection screen beneath invitation.">
     Connect a keyboard or mouse, or continue setup using your touchscreen. If you are using Bluetooth devices, make sure your devices are ready to pair.
