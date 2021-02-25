@@ -84,7 +84,7 @@ declare_args() {
 
   # Set to true to lower normal bucket bitmap to PartitionPageSize() on 32bit
   # systems.
-  make_gigacage_granularity_partition_page_size = false
+  make_gigacage_granularity_partition_page_size = true
 }
 
 # Mutex priority inheritance is disabled by default due to security
