@@ -126,4 +126,30 @@ NSString* kChromeActionsErrorDomain = @"ChromeActionsError";
                             performBlock:scrollToTopBlock];
 }
 
++ (id<GREYAction>)tapAtPointAtxOriginStartPercentage:(CGFloat)x
+                              yOriginStartPercentage:(CGFloat)y {
+  DCHECK(0 <= x && x <= 1);
+  DCHECK(0 <= y && y <= 1);
+
+  id<GREYMatcher> constraints = grey_not(grey_nil());
+  NSString* actionName =
+      [NSString stringWithFormat:@"Tap at point at percentage"];
+
+  GREYPerformBlock actionBlock = ^BOOL(id view, __strong NSError** errorOrNil) {
+    __block BOOL success = NO;
+    grey_dispatch_sync_on_main_thread(^{
+      CGRect rect = [view accessibilityFrame];
+      CGPoint pointToTap =
+          CGPointMake(rect.size.width * x, rect.size.height * y);
+      success =
+          [[GREYActions actionForTapAtPoint:pointToTap] perform:view
+                                                          error:errorOrNil];
+    });
+    return success;
+  };
+  return [GREYActionBlock actionWithName:actionName
+                             constraints:constraints
+                            performBlock:actionBlock];
+}
+
 @end
