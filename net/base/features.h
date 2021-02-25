@@ -303,6 +303,11 @@ NET_EXPORT extern const base::FeatureParam<bool> kFirstPartySetsIsDogfooder;
 // compatibility risk.
 NET_EXPORT extern const base::Feature kSameSiteCookiesBugfix1166211;
 
+// When this feature is enabled, no CookieChangeDispatcher notifications will be
+// sent when loading cookies from the persistent store. All other change
+// notifications are still dispatched as usual.
+NET_EXPORT extern const base::Feature kNoCookieChangeNotificationOnLoad;
+
 }  // namespace features
 }  // namespace net
 

@@ -50,6 +50,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
@@ -65,6 +66,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/process_memory_dump.h"
+#include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
@@ -764,12 +766,16 @@ void CookieMonster::StoreLoadedCookies(
   // removed, and sync'd.
   CookieItVector cookies_with_control_chars;
 
+  bool dispatch_change = !base::FeatureList::IsEnabled(
+      features::kNoCookieChangeNotificationOnLoad);
+
   for (auto& cookie : cookies) {
     CanonicalCookie* cookie_ptr = cookie.get();
     CookieAccessResult access_result;
     access_result.access_semantics = CookieAccessSemantics::UNKNOWN;
     auto inserted = InternalInsertCookie(
-        GetKey(cookie_ptr->Domain()), std::move(cookie), false, access_result);
+        GetKey(cookie_ptr->Domain()), std::move(cookie),
+        false /* sync_to_store */, access_result, dispatch_change);
     const Time cookie_access_time(cookie_ptr->LastAccessDate());
     if (earliest_access_time_.is_null() ||
         cookie_access_time < earliest_access_time_) {
@@ -1141,7 +1147,8 @@ CookieMonster::CookieMap::iterator CookieMonster::InternalInsertCookie(
     const std::string& key,
     std::unique_ptr<CanonicalCookie> cc,
     bool sync_to_store,
-    const CookieAccessResult& access_result) {
+    const CookieAccessResult& access_result,
+    bool dispatch_change) {
   DCHECK(thread_checker_.CalledOnValidThread());
   CanonicalCookie* cc_ptr = cc.get();
 
@@ -1166,9 +1173,11 @@ CookieMonster::CookieMap::iterator CookieMonster::InternalInsertCookie(
   histogram_cookie_type_->Add(type_sample);
 
   DCHECK(access_result.status.IsInclude());
-  change_dispatcher_.DispatchChange(
-      CookieChangeInfo(*cc_ptr, access_result, CookieChangeCause::INSERTED),
-      true);
+  if (dispatch_change) {
+    change_dispatcher_.DispatchChange(
+        CookieChangeInfo(*cc_ptr, access_result, CookieChangeCause::INSERTED),
+        true);
+  }
 
   // If this is the first cookie in |cookies_| with this key, increment the
   // |num_keys_| counter.

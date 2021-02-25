@@ -460,13 +460,16 @@ class NET_EXPORT CookieMonster : public CookieStore {
       base::Time* creation_date_to_inherit,
       CookieInclusionStatus* status);
 
-  // Inserts |cc| into cookies_. Returns an iterator that points to the inserted
-  // cookie in cookies_. Guarantee: all iterators to cookies_ remain valid.
+  // Inserts `cc` into cookies_. Returns an iterator that points to the inserted
+  // cookie in `cookies_`. Guarantee: all iterators to `cookies_` remain valid.
+  // Dispatches the change to `change_dispatcher_` iff `dispatch_change` is
+  // true.
   CookieMap::iterator InternalInsertCookie(
       const std::string& key,
       std::unique_ptr<CanonicalCookie> cc,
       bool sync_to_store,
-      const CookieAccessResult& access_result);
+      const CookieAccessResult& access_result,
+      bool dispatch_change = true);
 
   // Sets all cookies from |list| after deleting any equivalent cookie.
   // For data gathering purposes, this routine is treated as if it is

@@ -4099,7 +4099,7 @@ TEST_F(CookieMonsterNotificationTest, GlobalNotBroadcast) {
 
   // Trigger load dispatch and confirm it.
   monster->GetAllCookiesAsync(CookieStore::GetAllCookiesCallback());
-  EXPECT_EQ(1u, store->commands().size());
+  ASSERT_EQ(1u, store->commands().size());
   EXPECT_EQ(CookieStoreCommand::LOAD, store->commands()[0].type);
 
   // Attach a change subscription.
@@ -4111,13 +4111,11 @@ TEST_F(CookieMonsterNotificationTest, GlobalNotBroadcast) {
 
   // Set up a set of cookies with a duplicate.
   std::vector<std::unique_ptr<CanonicalCookie>> initial_cookies;
-  AddCookieToList(GURL("http://www.foo.com"),
-                  "X=1; path=/; expires=Mon, 18-Apr-22 22:50:14 GMT",
+  AddCookieToList(GURL("http://www.foo.com"), "X=1; path=/",
                   base::Time::Now() + base::TimeDelta::FromDays(3),
                   &initial_cookies);
 
-  AddCookieToList(GURL("http://www.foo.com"),
-                  "X=2; path=/; expires=Mon, 18-Apr-22 22:50:14 GMT",
+  AddCookieToList(GURL("http://www.foo.com"), "X=2; path=/",
                   base::Time::Now() + base::TimeDelta::FromDays(1),
                   &initial_cookies);
 
@@ -4128,12 +4126,73 @@ TEST_F(CookieMonsterNotificationTest, GlobalNotBroadcast) {
   // We should see two insertions, no deletions, and only one cookie in the
   // monster.
   // TODO(rdsmith): Why yes, this is an internally inconsistent interface.
-  EXPECT_EQ(2U, cookies.size());
+  ASSERT_EQ(2U, cookies.size());
   EXPECT_EQ("X", cookies[0].Name());
   EXPECT_EQ(CookieChangeCause::INSERTED, causes[0]);
   EXPECT_EQ("X", cookies[1].Name());
   EXPECT_EQ(CookieChangeCause::INSERTED, causes[1]);
   EXPECT_EQ(1u, this->GetAllCookies(monster.get()).size());
+}
+
+// Tests that there are no changes emitted for cookie loading when the feature
+// kNoCookieChangeNotificationOnLoad is enabled.
+TEST_F(CookieMonsterNotificationTest, NoNotificationOnLoad) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kNoCookieChangeNotificationOnLoad);
+
+  // Create a persistent store that will not synchronously satisfy the
+  // loading requirement.
+  scoped_refptr<MockPersistentCookieStore> store(new MockPersistentCookieStore);
+  store->set_store_load_commands(true);
+
+  // Bind it to a CookieMonster
+  auto monster = std::make_unique<CookieMonster>(store.get(), nullptr);
+
+  // Trigger load dispatch and confirm it.
+  monster->GetAllCookiesAsync(CookieStore::GetAllCookiesCallback());
+  ASSERT_EQ(1u, store->commands().size());
+  EXPECT_EQ(CookieStoreCommand::LOAD, store->commands()[0].type);
+
+  // Attach a change subscription.
+  std::vector<CanonicalCookie> cookies;
+  std::vector<CookieChangeCause> causes;
+  std::unique_ptr<CookieChangeSubscription> subscription =
+      monster->GetChangeDispatcher().AddCallbackForAllChanges(
+          base::BindRepeating(&RecordCookieChanges, &cookies, &causes));
+
+  // Set up initial cookie.
+  std::vector<std::unique_ptr<CanonicalCookie>> initial_cookies;
+  GURL url("http://www.foo.com");
+  initial_cookies.push_back(CanonicalCookie::Create(
+      url, "X=1; path=/", base::Time::Now(), base::nullopt));
+
+  // Execute the load
+  store->TakeCallbackAt(0).Run(std::move(initial_cookies));
+  base::RunLoop().RunUntilIdle();
+
+  // There should be no notifications because kNoCookieChangeNotificationOnLoad
+  // is enabled. (The above GlobalNotBroadcast test shows that there would be
+  // notifications without the feature enabled.)
+  EXPECT_EQ(0u, cookies.size());
+  EXPECT_EQ(0u, causes.size());
+  // But there should still be a cookie in the CookieMonster.
+  EXPECT_EQ(1u, this->GetAllCookies(monster.get()).size());
+
+  // Change the cookie again to make sure that other changes do emit
+  // notifications.
+  this->CreateAndSetCookie(monster.get(), url, "X=2; path=/",
+                           CookieOptions::MakeAllInclusive());
+
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(2u, cookies.size());
+  ASSERT_EQ(2u, causes.size());
+  EXPECT_EQ("X", cookies[0].Name());
+  EXPECT_EQ("1", cookies[0].Value());
+  EXPECT_EQ(CookieChangeCause::OVERWRITE, causes[0]);
+  EXPECT_EQ("X", cookies[1].Name());
+  EXPECT_EQ("2", cookies[1].Value());
+  EXPECT_EQ(CookieChangeCause::INSERTED, causes[1]);
 }
 
 class CookieMonsterLegacyCookieAccessTest : public CookieMonsterTest {
