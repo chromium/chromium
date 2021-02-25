@@ -161,6 +161,7 @@ void ExtensionPopup::OnExtensionUnloaded(
     // try to access the host during Widget closure, destroy it immediately.
     RemoveChildViewT(extension_view_);
 
+    extension_host_observation_.Reset();
     host_.reset();
     // Stop observing the registry immediately to prevent any subsequent
     // notifications, since Widget::Close is asynchronous.
@@ -174,18 +175,11 @@ void ExtensionPopup::OnExtensionUnloaded(
 void ExtensionPopup::Observe(int type,
                              const content::NotificationSource& source,
                              const content::NotificationDetails& details) {
-  if (type == content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME) {
-    DCHECK_EQ(host_->host_contents(),
-              content::Source<content::WebContents>(source).ptr());
-    // Show when the content finishes loading and its width is computed.
-    ShowBubble();
-    return;
-  }
-
-  DCHECK_EQ(extensions::NOTIFICATION_EXTENSION_HOST_VIEW_SHOULD_CLOSE, type);
-  // If we aren't the host of the popup, then disregard the notification.
-  if (content::Details<extensions::ExtensionHost>(host_.get()) == details)
-    GetWidget()->Close();
+  DCHECK_EQ(type, content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME);
+  DCHECK_EQ(host_->host_contents(),
+            content::Source<content::WebContents>(source).ptr());
+  // Show when the content finishes loading and its width is computed.
+  ShowBubble();
 }
 
 void ExtensionPopup::OnTabStripModelChanged(
@@ -212,6 +206,12 @@ void ExtensionPopup::DevToolsAgentHostDetached(
     return;
   if (host_->host_contents() == agent_host->GetWebContents())
     show_action_ = SHOW;
+}
+
+void ExtensionPopup::OnExtensionHostShouldClose(
+    extensions::ExtensionHost* host) {
+  DCHECK_EQ(host, host_.get());
+  GetWidget()->Close();
 }
 
 ExtensionPopup::ExtensionPopup(
@@ -242,12 +242,11 @@ ExtensionPopup::ExtensionPopup(
   // See comments in OnWidgetActivationChanged().
   set_close_on_deactivate(false);
 
-  // Listen for the containing view calling window.close();
-  registrar_.Add(
-      this, extensions::NOTIFICATION_EXTENSION_HOST_VIEW_SHOULD_CLOSE,
-      content::Source<content::BrowserContext>(host_->browser_context()));
   content::DevToolsAgentHost::AddObserver(this);
   host_->browser()->tab_strip_model()->AddObserver(this);
+
+  // Listen for the containing view calling window.close();
+  extension_host_observation_.Observe(host_.get());
 
   extension_registry_observation_.Observe(
       extensions::ExtensionRegistry::Get(host_->browser_context()));

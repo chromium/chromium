@@ -15,6 +15,8 @@
 #include "content/public/browser/devtools_agent_host_observer.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
+#include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_host_observer.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -47,7 +49,8 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
                        public extensions::ExtensionRegistryObserver,
                        public content::NotificationObserver,
                        public TabStripModelObserver,
-                       public content::DevToolsAgentHostObserver {
+                       public content::DevToolsAgentHostObserver,
+                       public extensions::ExtensionHostObserver {
  public:
   METADATA_HEADER(ExtensionPopup);
 
@@ -121,6 +124,9 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
   void DevToolsAgentHostDetached(
       content::DevToolsAgentHost* agent_host) override;
 
+  // extensions::ExtensionHostObserver:
+  void OnExtensionHostShouldClose(extensions::ExtensionHost* host) override;
+
  private:
   ExtensionPopup(std::unique_ptr<extensions::ExtensionViewHost> host,
                  views::View* anchor_view,
@@ -137,6 +143,10 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
   std::unique_ptr<extensions::ExtensionViewHost> host_;
 
   ExtensionViewViews* extension_view_;
+
+  base::ScopedObservation<extensions::ExtensionHost,
+                          extensions::ExtensionHostObserver>
+      extension_host_observation_{this};
 
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>
