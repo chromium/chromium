@@ -141,7 +141,7 @@ const base::Feature kDragUnpinnedAppToPin{"DragUnpinnedAppToPin",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kScalableStatusArea{"ScalableStatusArea",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kShowDateInTrayButton{"ShowDateInTrayButton",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
