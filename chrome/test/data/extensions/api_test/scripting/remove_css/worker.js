@@ -21,6 +21,10 @@ const CSS2 = CSS.replace('green', 'yellow');
 // A file to inject. This also sets the color to `INJECTED_COLOR`.
 const FILE = '/file.css';
 
+// Aliases for brevity.
+const insertCSS = chrome.scripting.insertCSS;
+const removeCSS = chrome.scripting.removeCSS;
+
 // Returns the frame IDs from the tab with the given `tabId`.
 async function getFrameIds(tabId) {
   // TODO(devlin: Promise-ify webNavigation.
@@ -46,21 +50,16 @@ async function getFrameIds(tabId) {
 // Returns the current color of the frame with `frameId` in the tab with
 // `tabId`.
 async function getCurrentColor(tabId, frameId) {
-  return await new Promise((resolve) => {
-    chrome.scripting.executeScript(
-        {
-          target: {tabId, frameIds: [frameId]},
-          function: () => {
-            const element = document.getElementById('main');
-            const style = getComputedStyle(element);
-            return style.getPropertyValue('color');
-          },
-        },
-        (scriptResults) => {
-          chrome.test.assertEq(1, scriptResults.length)
-          resolve(scriptResults[0].result);
-        });
-    });
+  const scriptResults = await chrome.scripting.executeScript({
+    target: {tabId, frameIds: [frameId]},
+    function: () => {
+      const element = document.getElementById('main');
+      const style = getComputedStyle(element);
+      return style.getPropertyValue('color');
+    },
+  });
+  chrome.test.assertEq(1, scriptResults.length)
+  return scriptResults[0].result;
 }
 
 let tabId = -1;
@@ -95,28 +94,6 @@ async function checkColors() {
         expectedColorsForFrames[i], color,
         `Improper color value for frame: ${frameId}`);
   }
-}
-
-// Helper function to insert CSS.
-// TODO(devlin): Remove when chrome.scripting is promisified.
-async function insertCSS(args) {
-  await new Promise(resolve => {
-    chrome.scripting.insertCSS(args, () => {
-      chrome.test.assertNoLastError();
-      resolve();
-    });
-  });
-}
-
-// Helper function to remove CSS.
-// TODO(devlin): Remove when chrome.scripting is promisified.
-async function removeCSS(args) {
-  await new Promise(resolve => {
-    chrome.scripting.removeCSS(args, () => {
-      chrome.test.assertNoLastError();
-      resolve();
-    });
-  });
 }
 
 // Loads `url` in a new tab, waits for it to finish loading, and returns the
@@ -255,41 +232,37 @@ chrome.test.runTests([
   },
   async function noSuchTab() {
     const nonExistentTabId = 99999;
-    // NOTE(devlin): We can't use a fancy `await` here, because the lastError
-    // won't be properly set. This will work better with true promise support,
-    // where this could be wrapped in an e.g. expectThrows().
-    chrome.scripting.removeCSS(
-        {
-          target: {
-            tabId: nonExistentTabId,
-          },
-          css: CSS,
+    try {
+      await removeCSS({
+        target: {
+          tabId: nonExistentTabId,
         },
-        async () => {
-          chrome.test.assertLastError(`No tab with id: ${nonExistentTabId}`);
-          await checkColors();
-          chrome.test.succeed();
-        });
+        css: CSS,
+      });
+      chrome.test.fail('Invocation should have thrown');
+    } catch (e) {
+      chrome.test.assertTrue(e instanceof Error);
+      chrome.test.assertEq(
+          `Error: No tab with id: ${nonExistentTabId}`, e.toString());
+    }
+    await checkColors();
+    chrome.test.succeed();
   },
   async function noSuchFile() {
     const noSuchFile = 'no_such_file.js';
-    chrome.scripting.removeCSS(
-        {
-          target: {tabId},
-          files: [noSuchFile],
-        },
-        async () => {
-          // Edge case: When removing inserted files, we don't actually read
-          // the file content (because it's unnecessary, and would be wasteful).
-          // We also don't fire an error when there was no matching CSS inserted
-          // (see "removeCSSWithDifferentCodeShouldDoNothing()" test case). This
-          // combines to mean that even though there's no such file here, we
-          // don't actually fire an error. This will be fixed if/when we return
-          // an error for removing a non-existent stylesheet.
-          chrome.test.assertNoLastError();
-          await checkColors();
-          chrome.test.succeed();
-        });
+    // Edge case: When removing inserted files, we don't actually read
+    // the file content (because it's unnecessary, and would be wasteful).
+    // We also don't fire an error when there was no matching CSS inserted
+    // (see "removeCSSWithDifferentCodeShouldDoNothing()" test case). This
+    // combines to mean that even though there's no such file here, we
+    // don't actually fire an error. This will be fixed if/when we return
+    // an error for removing a non-existent stylesheet.
+    await removeCSS({
+      target: {tabId},
+      files: [noSuchFile],
+    });
+    await checkColors();
+    chrome.test.succeed();
   },
   async function disallowedPermission() {
     const config = await new Promise(resolve => {
@@ -301,17 +274,20 @@ chrome.test.runTests([
     // Note: We don't test the expected colors here, because that relies on the
     // extension having access to the host (in order to inject the script to
     // retrieve the colors), which it doesn't have here.
-    chrome.scripting.removeCSS(
-        {
-          target: {tabId},
-          css: CSS,
-        },
-        async () => {
-          chrome.test.assertLastError(
-              'Cannot access contents of the page. ' +
+    try {
+      await removeCSS({
+        target: {tabId},
+        css: CSS,
+      });
+      chrome.test.fail('Invocation should have thrown');
+    } catch (e) {
+      chrome.test.assertTrue(e instanceof Error);
+      chrome.test.assertEq(
+          'Error: Cannot access contents of the page. ' +
               'Extension manifest must request permission to ' +
-              'access the respective host.');
-          chrome.test.succeed();
-        });
+              'access the respective host.',
+          e.toString());
+      chrome.test.succeed();
+    }
   },
 ]);
