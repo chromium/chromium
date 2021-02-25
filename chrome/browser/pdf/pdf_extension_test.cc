@@ -332,11 +332,12 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
         "var visiblePageDimensions ="
         "    viewer.viewport.getPageScreenRect(visiblePage);"
         "var viewportPosition = viewer.viewport.position;"
+        "var offsetParent = viewer.shadowRoot.querySelector('#container');"
         "var scrollParent = viewer.shadowRoot.querySelector('#main');"
         "var screenOffsetX = visiblePageDimensions.x - viewportPosition.x +"
-        "    scrollParent.offsetLeft;"
+        "    scrollParent.offsetLeft + offsetParent.offsetLeft;"
         "var screenOffsetY = visiblePageDimensions.y - viewportPosition.y +"
-        "    scrollParent.offsetTop;"
+        "    scrollParent.offsetTop + offsetParent.offsetTop;"
         "var linkScreenPositionX ="
         "    Math.floor(" +
             base::NumberToString(point->x()) +

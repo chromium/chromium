@@ -26,15 +26,28 @@
 
   #sidenav-container {
     overflow: hidden;
-    transition: width 250ms cubic-bezier(.6, 0, 0, 1), visibility 250ms;
+    transition: transform 250ms cubic-bezier(.6, 0, 0, 1), visibility 250ms;
     visibility: visible;
     width: var(--viewer-pdf-sidenav-width);
   }
 
+  #sidenav-container.floating {
+    bottom: 0;
+    position: absolute;
+    top: 0;
+    z-index: 1;
+  }
+
   #sidenav-container[closed] {
-    transition: width 200ms cubic-bezier(.6, 0, 0, 1), visibility 200ms;
+    transform: translateX(-100%);
+    transition: transform 200ms cubic-bezier(.6, 0, 0, 1),
+        visibility 200ms, width 0ms 200ms;
     visibility: hidden;
     width: 0;
+  }
+
+  :host-context([dir='rtl']) #sidenav-container[closed] {
+    transform: translateX(100%);
   }
 
   @media(max-width: 500px),
@@ -66,6 +79,7 @@
     display: flex;
     flex: 1;
     overflow: hidden;
+    position: relative;
   }
 
   #plugin {
