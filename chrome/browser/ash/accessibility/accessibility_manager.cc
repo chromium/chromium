@@ -665,6 +665,11 @@ void AccessibilityManager::OnAccessibilityCommonChanged(
   if ((pref_count != 0 && enabled) || (pref_count == 0 && !enabled))
     return;
 
+  if (pref_name == ash::prefs::kAccessibilityDictationEnabled &&
+      !::switches::IsExperimentalAccessibilityDictationExtensionEnabled()) {
+    return;
+  }
+
   if (enabled) {
     accessibility_common_enabled_features_.insert(pref_name);
     if (!accessibility_common_extension_loader_->loaded()) {
@@ -822,6 +827,15 @@ void AccessibilityManager::OnCursorHighlightChanged() {
       AccessibilityNotificationType::kToggleCursorHighlight,
       IsCursorHighlightEnabled());
   NotifyAccessibilityStatusChanged(details);
+}
+
+void AccessibilityManager::SetDictationEnabled(bool enabled) const {
+  if (!profile_)
+    return;
+
+  PrefService* pref_service = profile_->GetPrefs();
+  pref_service->SetBoolean(ash::prefs::kAccessibilityDictationEnabled, enabled);
+  pref_service->CommitPendingWrite();
 }
 
 bool AccessibilityManager::IsDictationEnabled() const {
@@ -1098,6 +1112,7 @@ void AccessibilityManager::SetProfile(Profile* profile) {
   // All features supported by accessibility common.
   static const char* kAccessibilityCommonFeatures[] = {
       prefs::kAccessibilityAutoclickEnabled,
+      prefs::kAccessibilityDictationEnabled,
       prefs::kAccessibilityScreenMagnifierEnabled,
       prefs::kDockedMagnifierEnabled};
 

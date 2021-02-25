@@ -183,6 +183,9 @@ class AccessibilityManager
   // Returns if cursor highlighting is enabled.
   bool IsCursorHighlightEnabled() const;
 
+  // Enables or disables dictation.
+  void SetDictationEnabled(bool enabled) const;
+
   // Returns if dictation is enabled.
   bool IsDictationEnabled() const;
 
