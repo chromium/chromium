@@ -103,8 +103,10 @@ void NativeIOFileSync::setLength(uint64_t length,
     // process during the SetLength() mojo call, and the browser passes it back
     // when the call completes.
     mojom::blink::NativeIOErrorPtr set_length_result;
+    int64_t actual_length;
     backend_file_->SetLength(base::as_signed(length), std::move(backing_file_),
-                             &backing_file_, &set_length_result);
+                             &backing_file_, &actual_length,
+                             &set_length_result);
     DCHECK(backing_file_.IsValid()) << "browser returned closed file";
     if (set_length_result->type != mojom::blink::NativeIOErrorType::kSuccess)
       ThrowNativeIOWithError(exception_state, std::move(set_length_result));

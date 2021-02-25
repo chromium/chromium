@@ -85,35 +85,55 @@ scoped_refptr<base::TaskRunner> CreateFileTaskRunner() {
 }
 
 // Performs the file I/O work in OpenFile().
-base::File DoOpenFile(const base::FilePath& root_path,
-                      const std::string& name) {
+std::pair<base::File, int64_t> DoOpenFile(const base::FilePath& root_path,
+                                          const std::string& name) {
   DCHECK(IsValidNativeIOName(name));
 
   // Lazily create the origin's directory.
   base::File::Error error;
   if (!base::CreateDirectoryAndGetError(root_path, &error))
-    return base::File();
+    return {base::File(), /*file_length=*/0};
 
-  return base::File(GetNativeIOFilePath(root_path, name),
-                    base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
-                        base::File::FLAG_WRITE | base::File::FLAG_SHARE_DELETE);
+  // SHARE_DELETE allows the browser to delete files even if a compromised
+  // renderer refuses to close its file handles.
+  int open_flags = base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
+                   base::File::FLAG_WRITE | base::File::FLAG_SHARE_DELETE;
+  base::File file(GetNativeIOFilePath(root_path, name), open_flags);
+
+  int64_t file_length = file.IsValid() ? file.GetLength() : 0;
+
+  return {std::move(file), file_length};
 }
 
 // Performs the file I/O work in DeleteFile().
-NativeIOErrorPtr DoDeleteFile(const base::FilePath& root_path,
-                              const std::string& name) {
+std::pair<blink::mojom::NativeIOErrorPtr, int64_t> DoDeleteFile(
+    const base::FilePath& root_path,
+    const std::string& name) {
   DCHECK(IsValidNativeIOName(name));
 
   // If the origin's directory wasn't created yet, there's nothing to delete.
   if (!base::PathExists(root_path))
-    return NativeIOError::New(NativeIOErrorType::kSuccess, "");
+    return {NativeIOError::New(NativeIOErrorType::kSuccess, ""),
+            /*deleted_file_length=*/0};
 
-  bool success = base::DeleteFile(GetNativeIOFilePath(root_path, name));
-  if (!success) {
-    return NativeIOManager::FileErrorToNativeIOError(
-        base::File::GetLastFileError());
-  }
-  return NativeIOError::New(NativeIOErrorType::kSuccess, "");
+  int64_t deleted_file_length;
+  base::FilePath file_path = GetNativeIOFilePath(root_path, name);
+  // If the file wasn't created yet, there's nothing to delete.
+  if (!base::PathExists(file_path))
+    return {NativeIOError::New(NativeIOErrorType::kSuccess, ""),
+            /*deleted_file_length=*/0};
+  if (!base::GetFileSize(file_path, &deleted_file_length))
+    return {NativeIOManager::FileErrorToNativeIOError(
+                base::File::GetLastFileError()),
+            /*deleted_file_length=*/0};
+
+  if (!base::DeleteFile(file_path))
+    return {NativeIOManager::FileErrorToNativeIOError(
+                base::File::GetLastFileError()),
+            /*deleted_file_length=*/0};
+
+  return {NativeIOError::New(NativeIOErrorType::kSuccess, ""),
+          deleted_file_length};
 }
 
 using GetAllFileNamesResult =
@@ -185,12 +205,13 @@ NativeIOErrorPtr DoRenameFile(const base::FilePath& root_path,
   // This error cannot be used to determine the existence of files outside of
   // the origin's directory, as |old_name| is a valid NativeIO name.
   if (!base::PathExists(root_path) ||
-      !base::PathExists(GetNativeIOFilePath(root_path, old_name)))
+      !base::PathExists(GetNativeIOFilePath(root_path, old_name))) {
     return NativeIOError::New(NativeIOErrorType::kNotFound,
                               "Source file does not exist");
+  }
 
   // Do not overwrite an existing file. This error cannot be used to determine
-  // the existence of files outside of the origin's directory, as |new_name| is
+  // the existence of files outside of the origin's directory, as `new_name` is
   // a valid NativeIO name.
   if (base::PathExists(GetNativeIOFilePath(root_path, new_name)))
     return NativeIOError::New(NativeIOErrorType::kNoModificationAllowed,
@@ -256,22 +277,23 @@ void NativeIOHost::OpenFile(
 
   if (delete_all_data_in_progress()) {
     std::move(callback).Run(
-        base::File(), NativeIOError::New(NativeIOErrorType::kInvalidState,
-                                         "Data removal pending on origin"));
+        base::File(), /*file_length=*/0,
+        NativeIOError::New(NativeIOErrorType::kInvalidState,
+                           "Data removal pending on origin"));
     return;
   }
 
   if (!IsValidNativeIOName(name)) {
     mojo::ReportBadMessage("Invalid file name");
     std::move(callback).Run(
-        base::File(),
+        base::File(), /*file_length=*/0,
         NativeIOError::New(NativeIOErrorType::kUnknown, "Invalid file name"));
     return;
   }
 
   if (open_file_hosts_.find(name) != open_file_hosts_.end()) {
     std::move(callback).Run(
-        base::File(),
+        base::File(), /*file_length=*/0,
         NativeIOError::New(NativeIOErrorType::kNoModificationAllowed,
                            "File is open"));
     return;
@@ -281,8 +303,9 @@ void NativeIOHost::OpenFile(
   bool insert_success = insert_result.second;
   if (!insert_success) {
     std::move(callback).Run(
-        base::File(), NativeIOError::New(NativeIOErrorType::kInvalidState,
-                                         "Data removal pending on origin"));
+        base::File(), /*file_length=*/0,
+        NativeIOError::New(NativeIOErrorType::kNoModificationAllowed,
+                           "Operation pending on file"));
     return;
   }
 
@@ -297,21 +320,26 @@ void NativeIOHost::DeleteFile(const std::string& name,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (delete_all_data_in_progress()) {
-    std::move(callback).Run(NativeIOError::New(
-        NativeIOErrorType::kInvalidState, "Data removal pending on origin"));
+    std::move(callback).Run(
+        NativeIOError::New(NativeIOErrorType::kInvalidState,
+                           "Data removal pending on origin"),
+        /*granted_capacity_delta=*/0);
     return;
   }
 
   if (!IsValidNativeIOName(name)) {
     mojo::ReportBadMessage("Invalid file name");
     std::move(callback).Run(
-        NativeIOError::New(NativeIOErrorType::kUnknown, "Invalid file name"));
+        NativeIOError::New(NativeIOErrorType::kUnknown, "Invalid file name"),
+        /*granted_capacity_delta=*/0);
     return;
   }
 
   if (open_file_hosts_.find(name) != open_file_hosts_.end()) {
-    std::move(callback).Run(NativeIOError::New(
-        NativeIOErrorType::kNoModificationAllowed, "File is open"));
+    std::move(callback).Run(
+        NativeIOError::New(NativeIOErrorType::kNoModificationAllowed,
+                           "File is open"),
+        /*granted_capacity_delta=*/0);
     return;
   }
 
@@ -320,7 +348,8 @@ void NativeIOHost::DeleteFile(const std::string& name,
   if (!insert_success) {
     std::move(callback).Run(
         NativeIOError::New(NativeIOErrorType::kNoModificationAllowed,
-                           "Operation pending on file"));
+                           "Operation pending on file"),
+        /*granted_capacity_delta=*/0);
     return;
   }
 
@@ -404,6 +433,18 @@ void NativeIOHost::RenameFile(const std::string& old_name,
                      old_name, new_name, std::move(callback)));
 }
 
+void NativeIOHost::RequestCapacityChange(
+    int64_t capacity_delta,
+    RequestCapacityChangeCallback callback) {
+  // TODO(rstz): Implement quota limits.
+  constexpr int64_t kMaximumAllocation = int64_t{8} * 1024 * 1024 * 1024;
+  if (capacity_delta > kMaximumAllocation) {
+    std::move(callback).Run(0);
+    return;
+  }
+  std::move(callback).Run(capacity_delta);
+}
+
 void NativeIOHost::OnFileClose(NativeIOFileHost* file_host) {
   DCHECK(open_file_hosts_.count(file_host->file_name()) > 0);
   DCHECK_EQ(open_file_hosts_[file_host->file_name()].get(), file_host);
@@ -437,9 +478,11 @@ void NativeIOHost::DidOpenFile(
     const std::string& name,
     mojo::PendingReceiver<blink::mojom::NativeIOFileHost> file_host_receiver,
     OpenFileCallback callback,
-    base::File file) {
+    std::pair<base::File, int64_t> result) {
   DCHECK(io_pending_files_.count(name));
   DCHECK(!open_file_hosts_.count(name));
+  base::File file = std::move(result.first);
+  int64_t length = result.second;
   io_pending_files_.erase(name);
 
   base::File::Error open_error = file.error_details();
@@ -450,7 +493,8 @@ void NativeIOHost::DidOpenFile(
                      ? open_error
                      : base::File::FILE_ERROR_FAILED;
     std::move(callback).Run(
-        std::move(file), NativeIOManager::FileErrorToNativeIOError(open_error));
+        std::move(file), length,
+        NativeIOManager::FileErrorToNativeIOError(open_error));
     return;
   }
 
@@ -469,24 +513,24 @@ void NativeIOHost::DidOpenFile(
   });
 
   std::move(callback).Run(
-      std::move(file), NativeIOManager::FileErrorToNativeIOError(open_error));
+      std::move(file), length,
+      NativeIOManager::FileErrorToNativeIOError(open_error));
   return;
 }
 
-void NativeIOHost::DidDeleteFile(const std::string& name,
-                                 DeleteFileCallback callback,
-                                 NativeIOErrorPtr delete_error) {
+void NativeIOHost::DidDeleteFile(
+    const std::string& name,
+    DeleteFileCallback callback,
+    std::pair<blink::mojom::NativeIOErrorPtr, int64_t> delete_result) {
   DCHECK(io_pending_files_.count(name));
   DCHECK(!open_file_hosts_.count(name));
   io_pending_files_.erase(name);
 
-  // TODO(rstz): Update with the correct amount of quota once the remaining
-  // quota functionality is implemented.
   manager_->quota_manager_proxy()->NotifyStorageModified(
       storage::QuotaClientType::kNativeIO, origin_,
       blink::mojom::StorageType::kTemporary, 0, base::Time::Now());
 
-  std::move(callback).Run(std::move(delete_error));
+  std::move(callback).Run(std::move(delete_result.first), delete_result.second);
   return;
 }
 

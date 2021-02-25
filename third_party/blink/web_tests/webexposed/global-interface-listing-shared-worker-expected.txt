@@ -808,8 +808,11 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method delete
 [Worker]     method getAll
+[Worker]     method getRemainingCapacity
 [Worker]     method open
+[Worker]     method releaseCapacity
 [Worker]     method rename
+[Worker]     method requestCapacity
 [Worker] interface NavigationPreloadManager
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor

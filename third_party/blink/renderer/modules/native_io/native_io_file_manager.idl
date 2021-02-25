@@ -26,4 +26,13 @@
       DOMString old_name, DOMString new_name);
   [ Exposed = DedicatedWorker, RaisesException ] void renameSync(
       DOMString old_name, DOMString new_name);
+
+  [ CallWith = ScriptState, RaisesException ] Promise<unsigned long long>
+  requestCapacity(unsigned long long requested_capacity);
+
+  [ CallWith = ScriptState, RaisesException ] Promise<unsigned long long>
+  releaseCapacity(unsigned long long released_capacity);
+
+  [ CallWith = ScriptState, RaisesException ] Promise<unsigned long long>
+  getRemainingCapacity();
 };

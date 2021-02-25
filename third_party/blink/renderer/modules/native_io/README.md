@@ -57,3 +57,8 @@ The main reason for enforcing locking early in the API design is to avoid
 exposing the details of OS-level file descriptor sharing to the Web Platform.
 This aspect of the prototype may also change, based on research and developer
 feedback.
+
+# Design documents
+
+- [Quota Management](https://docs.google.com/document/d/1wUrtCOsyH3qGwKuqLhV9AJD-bDAjAzfPL5r1GT8H4IY)
+- [Error handling](https://docs.google.com/document/d/1rvs615AU2s8kVsmUlukbmtQNvUWFny0yzAS_gsnYZEs)

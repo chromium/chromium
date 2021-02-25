@@ -85,6 +85,8 @@ class NativeIOHost : public blink::mojom::NativeIOHost {
   void RenameFile(const std::string& old_name,
                   const std::string& new_name,
                   RenameFileCallback callback) override;
+  void RequestCapacityChange(int64_t capacity_delta,
+                             RequestCapacityChangeCallback callback) override;
 
   // Removes all data stored for the host's origin from disk. All mojo
   // connections for open files are closed.
@@ -105,12 +107,12 @@ class NativeIOHost : public blink::mojom::NativeIOHost {
       const std::string& name,
       mojo::PendingReceiver<blink::mojom::NativeIOFileHost> file_host_receiver,
       OpenFileCallback callback,
-      base::File file);
+      std::pair<base::File, int64_t> result);
 
   // Called after the file I/O part of DeleteFile() completed.
   void DidDeleteFile(const std::string& name,
                      DeleteFileCallback callback,
-                     blink::mojom::NativeIOErrorPtr delete_error);
+                     std::pair<blink::mojom::NativeIOErrorPtr, int64_t> result);
 
   // Called after the file I/O part of RenameFile() completed.
   void DidRenameFile(const std::string& old_name,

@@ -102,6 +102,20 @@ class NativeIOManagerSync {
   NativeIOManager* const io_manager_;
 };
 
+struct OpenFileResult {
+  base::File file;
+  uint64_t file_size;
+  NativeIOErrorPtr error;
+};
+
+#if defined(OS_MAC)
+struct SetLengthResult {
+  base::File file;
+  int64_t actual_length;
+  NativeIOErrorPtr error;
+};
+#endif  // defined(OS_MAC)
+
 // Synchronous proxies to a wrapped NativeIOHost's methods.
 class NativeIOHostSync {
  public:
@@ -114,34 +128,37 @@ class NativeIOHostSync {
 
   ~NativeIOHostSync() = default;
 
-  std::pair<base::File, NativeIOErrorPtr> OpenFile(
+  OpenFileResult OpenFile(
       const std::string& name,
       mojo::PendingReceiver<blink::mojom::NativeIOFileHost> file_receiver) {
-    base::File file;
-    NativeIOErrorPtr error;
+    OpenFileResult result;
     base::RunLoop run_loop;
-    io_host_->OpenFile(
-        name, std::move(file_receiver),
-        base::BindLambdaForTesting(
-            [&](base::File backend_file, NativeIOErrorPtr open_error) {
-              file = std::move(backend_file);
-              error = std::move(open_error);
-              run_loop.Quit();
-            }));
+    io_host_->OpenFile(name, std::move(file_receiver),
+                       base::BindLambdaForTesting(
+                           [&](base::File backend_file, uint64_t file_size,
+                               NativeIOErrorPtr open_error) {
+                             result.file = std::move(backend_file);
+                             result.file_size = file_size;
+                             result.error = std::move(open_error);
+                             run_loop.Quit();
+                           }));
     run_loop.Run();
-    return {std::move(file), std::move(error)};
+    return result;
   }
 
-  NativeIOErrorPtr DeleteFile(const std::string& name) {
+  std::pair<NativeIOErrorPtr, uint64_t> DeleteFile(const std::string& name) {
     NativeIOErrorPtr error;
+    uint64_t deleted_size;
     base::RunLoop run_loop;
     io_host_->DeleteFile(
-        name, base::BindLambdaForTesting([&](NativeIOErrorPtr delete_error) {
+        name, base::BindLambdaForTesting([&](NativeIOErrorPtr delete_error,
+                                             uint64_t deleted_file_size) {
           error = std::move(delete_error);
+          deleted_size = deleted_file_size;
           run_loop.Quit();
         }));
     run_loop.Run();
-    return error;
+    return {std::move(error), deleted_size};
   }
 
   std::vector<std::string> GetAllFileNames() {
@@ -197,21 +214,21 @@ class NativeIOFileHostSync {
   }
 
 #if defined(OS_MAC)
-  std::pair<base::File, NativeIOErrorPtr> SetLength(const int64_t length,
-                                                    base::File file) {
-    NativeIOErrorPtr error;
-    base::File returned_file;
+  SetLengthResult SetLength(const int64_t length, base::File file) {
+    SetLengthResult result;
     base::RunLoop run_loop;
     file_host_->SetLength(
         length, std::move(file),
-        base::BindLambdaForTesting(
-            [&](base::File backend_file, NativeIOErrorPtr set_length_error) {
-              returned_file = std::move(backend_file);
-              error = std::move(set_length_error);
-              run_loop.Quit();
-            }));
+        base::BindLambdaForTesting([&](base::File backend_file,
+                                       int64_t actual_length,
+                                       NativeIOErrorPtr set_length_error) {
+          result.file = std::move(backend_file);
+          result.actual_length = actual_length;
+          result.error = std::move(set_length_error);
+          run_loop.Quit();
+        }));
     run_loop.Run();
-    return {std::move(returned_file), std::move(error)};
+    return result;
   }
 #endif  // defined(OS_MAC)
 
@@ -322,12 +339,13 @@ TEST_P(NativeIOManagerTest, OpenFile_Names) {
     mojo::test::BadMessageObserver bad_message_observer;
 
     mojo::Remote<blink::mojom::NativeIOFileHost> file_host;
-    std::pair<base::File, NativeIOErrorPtr> result = example_host_->OpenFile(
+    OpenFileResult result = example_host_->OpenFile(
         filename.name, file_host.BindNewPipeAndPassReceiver());
-    EXPECT_EQ(result.first.IsValid(), filename.valid);
+    EXPECT_EQ(result.file.IsValid(), filename.valid);
 
     if (!filename.valid) {
-      EXPECT_EQ(result.second->type, NativeIOErrorType::kUnknown);
+      EXPECT_EQ(result.file_size, 0u);
+      EXPECT_EQ(result.error->type, NativeIOErrorType::kUnknown);
       EXPECT_EQ("Invalid file name", bad_message_observer.WaitForBadMessage());
     }
   }
@@ -335,16 +353,17 @@ TEST_P(NativeIOManagerTest, OpenFile_Names) {
 
 TEST_P(NativeIOManagerTest, OpenFile_Locks_OpenFile) {
   mojo::Remote<blink::mojom::NativeIOFileHost> file_host_remote;
-  std::pair<base::File, NativeIOErrorPtr> result = example_host_->OpenFile(
-      "test_file", file_host_remote.BindNewPipeAndPassReceiver());
-  EXPECT_TRUE(result.first.IsValid());
+  base::File file =
+      example_host_
+          ->OpenFile("test_file", file_host_remote.BindNewPipeAndPassReceiver())
+          .file;
+  EXPECT_TRUE(file.IsValid());
 
   mojo::Remote<blink::mojom::NativeIOFileHost> locked_file_host_remote;
-  std::pair<base::File, NativeIOErrorPtr> locked_result =
-      example_host_->OpenFile(
-          "test_file", locked_file_host_remote.BindNewPipeAndPassReceiver());
-  EXPECT_FALSE(locked_result.first.IsValid());
-  EXPECT_EQ(locked_result.second->type,
+  OpenFileResult locked_result = example_host_->OpenFile(
+      "test_file", locked_file_host_remote.BindNewPipeAndPassReceiver());
+  EXPECT_FALSE(locked_result.file.IsValid());
+  EXPECT_EQ(locked_result.error->type,
             NativeIOErrorType::kNoModificationAllowed)
       << "A file cannot be opened twice";
 }
@@ -353,9 +372,10 @@ TEST_P(NativeIOManagerTest, OpenFile_SameName) {
   const std::string kTestData("Test Data");
 
   mojo::Remote<blink::mojom::NativeIOFileHost> file_host_remote;
-  std::pair<base::File, NativeIOErrorPtr> result = example_host_->OpenFile(
-      "test_file", file_host_remote.BindNewPipeAndPassReceiver());
-  base::File& file = result.first;
+  base::File file =
+      example_host_
+          ->OpenFile("test_file", file_host_remote.BindNewPipeAndPassReceiver())
+          .file;
   EXPECT_TRUE(file.IsValid());
   EXPECT_EQ(static_cast<int>(kTestData.size()),
             file.Write(0, kTestData.data(), kTestData.size()));
@@ -364,24 +384,25 @@ TEST_P(NativeIOManagerTest, OpenFile_SameName) {
   file_host.Close();
 
   mojo::Remote<blink::mojom::NativeIOFileHost> same_file_host_remote;
-  std::pair<base::File, NativeIOErrorPtr> same_result = example_host_->OpenFile(
+  OpenFileResult same_result = example_host_->OpenFile(
       "test_file", same_file_host_remote.BindNewPipeAndPassReceiver());
-  base::File& same_file = same_result.first;
-  EXPECT_TRUE(same_file.IsValid());
+  EXPECT_TRUE(same_result.file.IsValid());
+  EXPECT_EQ(same_result.file_size, static_cast<uint64_t>(kTestData.size()));
   char read_buffer[kTestData.size()];
   EXPECT_EQ(static_cast<int>(kTestData.size()),
-            same_file.Read(0, read_buffer, kTestData.size()));
+            same_result.file.Read(0, read_buffer, kTestData.size()));
   EXPECT_EQ(kTestData, std::string(read_buffer, kTestData.size()));
+  same_result.file.Close();
 }
 
 TEST_P(NativeIOManagerTest, DeleteFile_Names) {
   for (const Filename& filename : filenames_) {
     if (filename.valid) {
-      EXPECT_EQ(example_host_->DeleteFile(filename.name)->type,
+      EXPECT_EQ(example_host_->DeleteFile(filename.name).first->type,
                 NativeIOErrorType::kSuccess);
     } else {
       mojo::test::BadMessageObserver bad_message_observer;
-      EXPECT_EQ(example_host_->DeleteFile(filename.name)->type,
+      EXPECT_EQ(example_host_->DeleteFile(filename.name).first->type,
                 NativeIOErrorType::kUnknown);
       EXPECT_EQ("Invalid file name", bad_message_observer.WaitForBadMessage());
     }
@@ -390,25 +411,30 @@ TEST_P(NativeIOManagerTest, DeleteFile_Names) {
 
 TEST_P(NativeIOManagerTest, OpenFile_Locks_DeleteFile) {
   mojo::Remote<blink::mojom::NativeIOFileHost> file_host;
-  std::pair<base::File, NativeIOErrorPtr> result = example_host_->OpenFile(
-      "test_file", file_host.BindNewPipeAndPassReceiver());
-  EXPECT_TRUE(result.first.IsValid());
+  base::File file =
+      example_host_
+          ->OpenFile("test_file", file_host.BindNewPipeAndPassReceiver())
+          .file;
+  EXPECT_TRUE(file.IsValid());
 
-  EXPECT_EQ(example_host_->DeleteFile("test_file")->type,
+  EXPECT_EQ(example_host_->DeleteFile("test_file").first->type,
             NativeIOErrorType::kNoModificationAllowed);
 }
 
 TEST_P(NativeIOManagerTest, OpenFile_Locks_RenameFile) {
   mojo::Remote<blink::mojom::NativeIOFileHost> file_host;
-  std::pair<base::File, NativeIOErrorPtr> result = example_host_->OpenFile(
-      "test_file_in_use", file_host.BindNewPipeAndPassReceiver());
-  EXPECT_TRUE(result.first.IsValid());
+  base::File file =
+      example_host_
+          ->OpenFile("test_file_in_use", file_host.BindNewPipeAndPassReceiver())
+          .file;
+  EXPECT_TRUE(file.IsValid());
 
   mojo::Remote<blink::mojom::NativeIOFileHost> file_host2;
-  std::pair<base::File, NativeIOErrorPtr> result_closed =
-      example_host_->OpenFile("test_file_closed",
-                              file_host2.BindNewPipeAndPassReceiver());
-  base::File& file_closed = result_closed.first;
+  base::File file_closed =
+      example_host_
+          ->OpenFile("test_file_closed",
+                     file_host2.BindNewPipeAndPassReceiver())
+          .file;
   EXPECT_TRUE(file_closed.IsValid());
   file_closed.Close();
   NativeIOFileHostSync file_host2_sync(file_host2.get());
@@ -430,9 +456,10 @@ TEST_P(NativeIOManagerTest, DeleteFile_WipesData) {
   const std::string kTestData("Test Data");
 
   mojo::Remote<blink::mojom::NativeIOFileHost> file_host_remote;
-  std::pair<base::File, NativeIOErrorPtr> result = example_host_->OpenFile(
-      "test_file", file_host_remote.BindNewPipeAndPassReceiver());
-  base::File& file = result.first;
+  base::File file =
+      example_host_
+          ->OpenFile("test_file", file_host_remote.BindNewPipeAndPassReceiver())
+          .file;
   EXPECT_TRUE(file.IsValid());
   EXPECT_EQ(static_cast<int>(kTestData.size()),
             file.Write(0, kTestData.data(), kTestData.size()));
@@ -440,16 +467,51 @@ TEST_P(NativeIOManagerTest, DeleteFile_WipesData) {
   NativeIOFileHostSync file_host(file_host_remote.get());
   file_host.Close();
 
-  EXPECT_EQ(example_host_->DeleteFile("test_file")->type,
+  EXPECT_EQ(example_host_->DeleteFile("test_file").first->type,
             NativeIOErrorType::kSuccess);
 
   mojo::Remote<blink::mojom::NativeIOFileHost> same_file_host_remote;
-  std::pair<base::File, NativeIOErrorPtr> same_result = example_host_->OpenFile(
-      "test_file", same_file_host_remote.BindNewPipeAndPassReceiver());
-  base::File& same_file = same_result.first;
+  base::File same_file =
+      example_host_
+          ->OpenFile("test_file",
+                     same_file_host_remote.BindNewPipeAndPassReceiver())
+          .file;
   EXPECT_TRUE(same_file.IsValid());
   char read_buffer[kTestData.size()];
   EXPECT_EQ(0, same_file.Read(0, read_buffer, kTestData.size()));
+}
+
+TEST_P(NativeIOManagerTest, DeleteFile_ReportsLengths) {
+  const std::string kTestData("Test Data");
+
+  mojo::Remote<blink::mojom::NativeIOFileHost> file_host_remote;
+  base::File file =
+      example_host_
+          ->OpenFile("test_file", file_host_remote.BindNewPipeAndPassReceiver())
+          .file;
+  EXPECT_TRUE(file.IsValid());
+  EXPECT_EQ(static_cast<int>(kTestData.size()),
+            file.Write(0, kTestData.data(), kTestData.size()));
+  file.Close();
+  NativeIOFileHostSync file_host(file_host_remote.get());
+  file_host.Close();
+
+  mojo::Remote<blink::mojom::NativeIOFileHost> same_file_host_remote;
+  OpenFileResult same_file_result = example_host_->OpenFile(
+      "test_file", same_file_host_remote.BindNewPipeAndPassReceiver());
+  EXPECT_TRUE(same_file_result.file.IsValid());
+  ASSERT_EQ(same_file_result.file_size,
+            static_cast<uint64_t>(kTestData.size()));
+  EXPECT_EQ(same_file_result.error->type, NativeIOErrorType::kSuccess);
+  same_file_result.file.Close();
+  NativeIOFileHostSync same_file_host(same_file_host_remote.get());
+  same_file_host.Close();
+
+  std::pair<NativeIOErrorPtr, uint64_t> delete_result =
+      example_host_->DeleteFile("test_file");
+
+  EXPECT_EQ(delete_result.first->type, NativeIOErrorType::kSuccess);
+  EXPECT_EQ(delete_result.second, static_cast<uint64_t>(kTestData.size()));
 }
 
 TEST_P(NativeIOManagerTest, GetAllFiles_Empty) {
@@ -459,9 +521,11 @@ TEST_P(NativeIOManagerTest, GetAllFiles_Empty) {
 
 TEST_P(NativeIOManagerTest, GetAllFiles_AfterOpen) {
   mojo::Remote<blink::mojom::NativeIOFileHost> file_host_remote;
-  std::pair<base::File, NativeIOErrorPtr> result = example_host_->OpenFile(
-      "test_file", file_host_remote.BindNewPipeAndPassReceiver());
-  result.first.Close();
+  base::File file =
+      example_host_
+          ->OpenFile("test_file", file_host_remote.BindNewPipeAndPassReceiver())
+          .file;
+  file.Close();
   NativeIOFileHostSync file_host(file_host_remote.get());
   file_host.Close();
 
@@ -472,9 +536,11 @@ TEST_P(NativeIOManagerTest, GetAllFiles_AfterOpen) {
 
 TEST_P(NativeIOManagerTest, RenameFile_AfterOpenAndRename) {
   mojo::Remote<blink::mojom::NativeIOFileHost> file_host_remote;
-  std::pair<base::File, NativeIOErrorPtr> result = example_host_->OpenFile(
-      "test_file", file_host_remote.BindNewPipeAndPassReceiver());
-  result.first.Close();
+  base::File file =
+      example_host_
+          ->OpenFile("test_file", file_host_remote.BindNewPipeAndPassReceiver())
+          .file;
+  file.Close();
   NativeIOFileHostSync file_host(file_host_remote.get());
   file_host.Close();
 
@@ -486,9 +552,11 @@ TEST_P(NativeIOManagerTest, RenameFile_AfterOpenAndRename) {
 
 TEST_P(NativeIOManagerTest, RenameFile_Names) {
   mojo::Remote<blink::mojom::NativeIOFileHost> file_host_remote;
-  std::pair<base::File, NativeIOErrorPtr> result = example_host_->OpenFile(
-      "test_file", file_host_remote.BindNewPipeAndPassReceiver());
-  result.first.Close();
+  base::File file =
+      example_host_
+          ->OpenFile("test_file", file_host_remote.BindNewPipeAndPassReceiver())
+          .file;
+  file.Close();
   NativeIOFileHostSync file_host(file_host_remote.get());
   file_host.Close();
 
@@ -526,28 +594,31 @@ TEST_P(NativeIOManagerTest, SetLength) {
   const int kTruncatedSize = 4;
 
   mojo::Remote<blink::mojom::NativeIOFileHost> file_host_remote;
-  std::pair<base::File, NativeIOErrorPtr> result = example_host_->OpenFile(
-      "test_file", file_host_remote.BindNewPipeAndPassReceiver());
-  base::File file = std::move(result.first);
+  base::File file =
+      example_host_
+          ->OpenFile("test_file", file_host_remote.BindNewPipeAndPassReceiver())
+          .file;
   EXPECT_TRUE(file.IsValid());
   EXPECT_EQ(kTestDataSize, file.Write(0, kTestData.data(), kTestDataSize));
 
   NativeIOFileHostSync file_host(file_host_remote.get());
 
-  std::pair<base::File, NativeIOErrorPtr> set_length_result;
+  SetLengthResult set_length_result;
 
   if (allow_set_length_ipc()) {
     set_length_result = file_host.SetLength(kTruncatedSize, std::move(file));
-    EXPECT_EQ(set_length_result.second->type, NativeIOErrorType::kSuccess);
+    EXPECT_EQ(set_length_result.error->type, NativeIOErrorType::kSuccess);
+    EXPECT_EQ(set_length_result.actual_length, kTruncatedSize);
   } else {
     mojo::test::BadMessageObserver bad_message_observer;
     set_length_result = file_host.SetLength(kTruncatedSize, std::move(file));
-    EXPECT_EQ(set_length_result.second->type, NativeIOErrorType::kUnknown);
+    EXPECT_EQ(set_length_result.error->type, NativeIOErrorType::kUnknown);
     EXPECT_EQ("SetLength() disabled on this OS.",
               bad_message_observer.WaitForBadMessage());
+    EXPECT_EQ(set_length_result.actual_length, 0);
   }
 
-  file = std::move(set_length_result.first);
+  file = std::move(set_length_result.file);
   EXPECT_TRUE(file.IsValid());
   char read_buffer[kTestData.size()];
   EXPECT_EQ(allow_set_length_ipc() ? kTruncatedSize : kTestDataSize,
@@ -556,15 +627,15 @@ TEST_P(NativeIOManagerTest, SetLength) {
 
 TEST_P(NativeIOManagerTest, SetLength_NegativeLength) {
   mojo::Remote<blink::mojom::NativeIOFileHost> file_host_remote;
-  std::pair<base::File, NativeIOErrorPtr> result = example_host_->OpenFile(
-      "test_file", file_host_remote.BindNewPipeAndPassReceiver());
-  base::File file = std::move(result.first);
+  base::File file =
+      example_host_
+          ->OpenFile("test_file", file_host_remote.BindNewPipeAndPassReceiver())
+          .file;
   NativeIOFileHostSync file_host(file_host_remote.get());
 
   mojo::test::BadMessageObserver bad_message_observer;
-  std::pair<base::File, NativeIOErrorPtr> set_length_result =
-      file_host.SetLength(-5, std::move(file));
-  EXPECT_EQ(set_length_result.second->type, NativeIOErrorType::kUnknown);
+  SetLengthResult set_length_result = file_host.SetLength(-5, std::move(file));
+  EXPECT_EQ(set_length_result.error->type, NativeIOErrorType::kUnknown);
   EXPECT_EQ(allow_set_length_ipc() ? "The file length cannot be negative."
                                    : "SetLength() disabled on this OS.",
             bad_message_observer.WaitForBadMessage());
@@ -575,9 +646,10 @@ TEST_P(NativeIOManagerTest, OriginIsolation) {
   const std::string kTestData("Test Data");
 
   mojo::Remote<blink::mojom::NativeIOFileHost> file_host_remote;
-  std::pair<base::File, NativeIOErrorPtr> result = google_host_->OpenFile(
-      "test_file", file_host_remote.BindNewPipeAndPassReceiver());
-  base::File& file = result.first;
+  base::File file =
+      google_host_
+          ->OpenFile("test_file", file_host_remote.BindNewPipeAndPassReceiver())
+          .file;
   EXPECT_TRUE(file.IsValid());
   EXPECT_EQ(static_cast<int>(kTestData.size()),
             file.Write(0, kTestData.data(), kTestData.size()));
@@ -592,9 +664,11 @@ TEST_P(NativeIOManagerTest, OriginIsolation) {
   EXPECT_EQ(0u, other_names.size());
 
   mojo::Remote<blink::mojom::NativeIOFileHost> same_file_host_remote;
-  std::pair<base::File, NativeIOErrorPtr> same_result = example_host_->OpenFile(
-      "test_file", same_file_host_remote.BindNewPipeAndPassReceiver());
-  base::File& same_file = same_result.first;
+  base::File same_file =
+      example_host_
+          ->OpenFile("test_file",
+                     same_file_host_remote.BindNewPipeAndPassReceiver())
+          .file;
   EXPECT_TRUE(same_file.IsValid());
   char read_buffer[kTestData.size()];
   EXPECT_EQ(0, same_file.Read(0, read_buffer, kTestData.size()));
@@ -618,7 +692,7 @@ TEST_P(NativeIOManagerTest, DeleteOriginData_UnsupportedOrigin) {
       example_host_
           ->OpenFile("test_file",
                      example_host_remote.BindNewPipeAndPassReceiver())
-          .first;
+          .file;
   EXPECT_TRUE(example_file.IsValid());
   example_file.Close();
   NativeIOFileHostSync example_file_host(example_host_remote.get());
@@ -640,7 +714,7 @@ TEST_P(NativeIOManagerTest, DeleteOriginData_OriginWithNoData) {
       example_host_
           ->OpenFile("test_file",
                      example_host_remote.BindNewPipeAndPassReceiver())
-          .first;
+          .file;
   EXPECT_TRUE(example_file.IsValid());
   example_file.Close();
   NativeIOFileHostSync example_file_host(example_host_remote.get());
@@ -662,7 +736,8 @@ TEST_P(NativeIOManagerTest, DeleteOriginData_ConcurrentDeletion) {
       example_host_
           ->OpenFile("test_file",
                      example_host_remote.BindNewPipeAndPassReceiver())
-          .first;
+          .file;
+  EXPECT_TRUE(example_file.IsValid());
   example_file.Close();
   NativeIOFileHostSync example_file_host(example_host_remote.get());
   example_file_host.Close();
@@ -695,7 +770,7 @@ TEST_P(NativeIOManagerTest, GetOriginsByType_ReturnsInactiveOrigins) {
       example_host_
           ->OpenFile("test_file",
                      example_host_remote.BindNewPipeAndPassReceiver())
-          .first;
+          .file;
   example_file.Close();
   NativeIOFileHostSync example_file_host(example_host_remote.get());
   example_file_host.Close();
@@ -713,7 +788,7 @@ TEST_P(NativeIOManagerTest, GetOriginsByType_ReturnsActiveOrigins) {
       example_host_
           ->OpenFile("test_file",
                      example_host_remote.BindNewPipeAndPassReceiver())
-          .first;
+          .file;
 
   std::vector<url::Origin> origins =
       sync_manager_->GetOriginsForType(blink::mojom::StorageType::kTemporary);
@@ -734,7 +809,7 @@ TEST_P(NativeIOManagerTest,
       example_host_
           ->OpenFile("test_file",
                      example_host_remote.BindNewPipeAndPassReceiver())
-          .first;
+          .file;
   example_file.Close();
   NativeIOFileHostSync example_file_host(example_host_remote.get());
   example_file_host.Close();
@@ -756,7 +831,7 @@ TEST_P(NativeIOManagerTest, GetOriginsByHost_ReturnsActiveOrigins) {
       example_host_
           ->OpenFile("test_file",
                      example_file_host_remote.BindNewPipeAndPassReceiver())
-          .first;
+          .file;
 
   mojo::Remote<blink::mojom::NativeIOHost> example_with_port_host_remote;
   std::string example_with_port_origin =
@@ -772,14 +847,14 @@ TEST_P(NativeIOManagerTest, GetOriginsByHost_ReturnsActiveOrigins) {
           .OpenFile(
               "test_file",
               example_with_port_file_host_remote.BindNewPipeAndPassReceiver())
-          .first;
+          .file;
 
   mojo::Remote<blink::mojom::NativeIOFileHost> google_file_host_remote;
   base::File google_file =
       google_host_
           ->OpenFile("test_file",
                      google_file_host_remote.BindNewPipeAndPassReceiver())
-          .first;
+          .file;
 
   example_file.Close();
   NativeIOFileHostSync example_file_host(example_file_host_remote.get());
@@ -813,7 +888,7 @@ TEST_P(NativeIOManagerTest, GetOriginUsage_ActiveOriginUsage) {
       example_host_
           ->OpenFile("test_file",
                      example_host_remote.BindNewPipeAndPassReceiver())
-          .first;
+          .file;
   int64_t expected_usage = 100;
   example_file.SetLength(expected_usage);
 

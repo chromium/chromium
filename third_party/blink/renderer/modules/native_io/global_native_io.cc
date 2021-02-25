@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
+#include "third_party/blink/renderer/modules/native_io/native_io_capacity_tracker.h"
 #include "third_party/blink/renderer/modules/native_io/native_io_file_manager.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -54,7 +55,8 @@ class GlobalNativeIOImpl final : public GarbageCollected<GlobalNativeIOImpl<T>>,
           backend.BindNewPipeAndPassReceiver(
               execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
       native_io_file_manager_ = MakeGarbageCollected<NativeIOFileManager>(
-          execution_context, std::move(backend));
+          execution_context, std::move(backend),
+          MakeGarbageCollected<NativeIOCapacityTracker>());
     }
     return native_io_file_manager_;
   }

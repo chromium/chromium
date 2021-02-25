@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
+#include "third_party/blink/renderer/modules/native_io/native_io_capacity_tracker.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -38,7 +39,9 @@ class NativeIOFile final : public ScriptWrappable {
 
  public:
   NativeIOFile(base::File backing_file,
+               int64_t backing_file_length,
                HeapMojoRemote<mojom::blink::NativeIOFileHost> backend_file,
+               NativeIOCapacityTracker* capacity_tracker,
                ExecutionContext*);
 
   NativeIOFile(const NativeIOFile&) = delete;
@@ -103,15 +106,22 @@ class NativeIOFile final : public ScriptWrappable {
       CrossThreadPersistent<ScriptPromiseResolver> resolver,
       NativeIOFile::FileState* file_state,
       scoped_refptr<base::SequencedTaskRunner> file_task_runner,
-      uint64_t new_length);
+      int64_t expected_length);
   // Performs the post file I/O part of setLength(), on the main thread.
+  //
+  // `actual_length` is negative if the I/O operation was unsuccessful and the
+  // correct length of the file could not be determined.
   void DidSetLengthIo(CrossThreadPersistent<ScriptPromiseResolver> resolver,
-                      uint64_t new_length,
+                      int64_t actual_length,
                       base::File::Error set_length_result);
 #if defined(OS_MAC)
   // Performs the post IPC part of setLength(), on the main thread.
+  //
+  // `actual_length` is negative if the I/O operation was unsuccessful and the
+  // correct length of the file could not be determined.
   void DidSetLengthIpc(ScriptPromiseResolver* resolver,
                        base::File backing_file,
+                       int64_t actual_length,
                        mojom::blink::NativeIOErrorPtr set_length_result);
 #endif  // defined(OS_MAC)
 
@@ -136,14 +146,19 @@ class NativeIOFile final : public ScriptWrappable {
       CrossThreadPersistent<ScriptPromiseResolver> resolver,
       CrossThreadPersistent<DOMSharedArrayBuffer> write_data_keepalive,
       NativeIOFile::FileState* file_state,
-      scoped_refptr<base::SequencedTaskRunner> file_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> resolver_task_runner,
       const char* write_data,
       uint64_t file_offset,
       int write_size);
   // Performs the post file I/O part of write(), on the main thread.
+  //
+  // `actual_file_length_on_failure` is negative if the I/O operation was
+  // unsuccessful and the correct length of the file could not be determined.
   void DidWrite(CrossThreadPersistent<ScriptPromiseResolver> resolver,
                 int written_bytes,
-                base::File::Error write_error);
+                base::File::Error write_error,
+                int write_size,
+                int64_t actual_file_length_on_failure);
 
   // Performs the file I/O part of flush().
   static void DoFlush(
@@ -177,7 +192,26 @@ class NativeIOFile final : public ScriptWrappable {
   // Set to true when close() is called, or when the backend goes away.
   bool closed_ = false;
 
-  // See NativeIO::FileState, declared above.
+  // The length of the file used in capacity accounting. Most of the time, this
+  // is the file's length. When `io_pending_` is true, `file_length_` may be
+  // larger than the actual length, to reflect capacity allocated for an
+  // in-progress I/O operation, or capacity that will be released by an
+  // in-progress I/O operation.
+  //
+  // Operations that increase the file's length must first allocate capacity,
+  // update `file_length_` to reflect the increased length, and then perform the
+  // I/O. If the I/O fails, GetLength() must be used to obtain the actual file
+  // length. The result must first be compared against `file_length_` to account
+  // for the unused capacity, then used to update `file_length_`.
+  //
+  // Operations that decrease the file's length must first perform the I/O, and
+  // then update `file_length_` and return freed up capacity. I/O failures can
+  // be handled using the same logic as above.
+  //
+  // TODO(rstz): Consider moving this variable into `file_state_`
+  int64_t file_length_ = 0;
+
+  // See NativeIOFile::FileState, declared above.
   const std::unique_ptr<FileState> file_state_;
 
   // Schedules resolving Promises with file I/O results.
@@ -185,6 +219,9 @@ class NativeIOFile final : public ScriptWrappable {
 
   // Mojo pipe that holds the renderer's lock on the file.
   HeapMojoRemote<mojom::blink::NativeIOFileHost> backend_file_;
+
+  // Tracks the capacity for this file's execution context.
+  Member<NativeIOCapacityTracker> capacity_tracker_;
 };
 
 }  // namespace blink

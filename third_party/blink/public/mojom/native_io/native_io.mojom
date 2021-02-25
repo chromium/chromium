@@ -69,6 +69,12 @@ interface NativeIOFileHost {
 
   // Extends or truncates a previously opened file on macOS < 10.15.
   //
+  // `actual_length` contains the file's new length, which may be different
+  //  from the desired `length` if the base:File::SetLength() call fails.
+  //
+  // A negative `actual_length` indicates a failure to get the file's length.
+  // The renderer should handle this error case by closing the file.
+  //
   // Calls ReportBadMessage() on macOS 10.15+. Disabled on other OSes.
   //
   // This call is a workaround for a sandboxing limitation in macOS < 10.15 that
@@ -90,7 +96,9 @@ interface NativeIOFileHost {
   // directly), this call returns unsanitized base::File::Error information.
   [EnableIf=is_mac, Sync] SetLength(int64 length,
                                     mojo_base.mojom.File backing_file) =>
-      (mojo_base.mojom.File backing_file, NativeIOError set_length_error);
+      (mojo_base.mojom.File backing_file,
+       int64 actual_length,
+       NativeIOError set_length_error);
 };
 
 // Origin-scoped implementation of the Web Platform's NativeIO API.
@@ -101,19 +109,64 @@ interface NativeIOFileHost {
 //
 // The interface grants access to origin-scoped data in the user's profile. A
 // compromised renderer can only use this interface to access the origin's data.
-// The origin's data will be quota-managed.
+//
+// Each instance has an associated capacity, which is the number of bytes of
+// disk space that the consumer is allowed to take up by writing to the files
+// that it opens. Operations that extend an opened file past its current size,
+// such as Write() and SetLength(), consume associated capacity. Operations that
+// reduce an opened file's size on disk, such as SetLength() and deleting the
+// file, create capacity. Empty files do not consume capacity.
+//
+// Each instance starts out with zero (0) capacity, and may call
+// RequestCapacityChange() to obtain capacity from the quota system. Capacity
+// counts as quota usage by the origin. When the instance's mojo pipe is
+// closed, any available capacity is automatically returned to the quota system.
+//
+// Consumers should never take up more disk space than available capacity.
+// Renderers that deviate from this requirement will be terminated.
 interface NativeIOHost {
+  // Requests or releases storage capacity.
+  //
+  // This interface's consumer must only create / expand file handles obtained
+  // from OpenFile() according to the capacity obtained from
+  // RequestCapacityChange(). Renderers that deviate from this requirement will
+  // be terminated.
+  //
+  // Positive deltas are requests for capacity increases. The implementation may
+  // grant less capacity than requested, but it will never decrease capacity
+  // when an increase is requested. In other words, if capacity_delta > 0,
+  // granted_capacity_delta is guaranteed to be >= 0.
+  //
+  // Negative deltas are capacity releases. Releasing unavailable capacity is a
+  // bad message. Subject to this constraint, capacity releases are guaranteed
+  // to succeed. In other words, if capacity_delta < 0, granted_capacity_delta
+  // is guaranteed to == capacity_delta.
+  RequestCapacityChange(int64 capacity_delta) =>
+      (int64 granted_capacity_delta);
+
   // Opens a previously created file. Creates a new file if necessary.
   //
   // The origin has an exclusive lock on the file until it calls Close() on the
-  // |lock_handle|, or until it disconnects from it.
+  // `backing_file`, or until it disconnects from it. Returns the file size
+  //  as needed for the quota implementation.
+  //
+  // This interface's consumer must only create / expand file handles
+  // obtained from OpenFile() according to the capacity obtained from
+  // RequestCapacityChange(). Renderers that deviate from this requirement
+  // will be terminated.
   [Sync]
   OpenFile(string name, pending_receiver<NativeIOFileHost> file_host_receiver)
-      => (mojo_base.mojom.File? backing_file, NativeIOError open_error);
+      => (mojo_base.mojom.File? backing_file, uint64 backing_file_size,
+          NativeIOError open_error);
 
   // Deletes a previously created file.
+  //
+  // The space previously occupied by the file is returned to the consumer as
+  // available capacity. The returned value conveys the capacity change, and is
+  // guaranteed to be non-negative.
   [Sync]
-  DeleteFile(string name) => (NativeIOError delete_error);
+  DeleteFile(string name) => (NativeIOError delete_error,
+                              uint64 granted_capacity_delta);
 
   // Lists all the files created by the origin.
   [Sync]
@@ -126,6 +179,4 @@ interface NativeIOHost {
   [Sync]
   RenameFile(string old_name, string new_name) =>
     (NativeIOError rename_error);
-
-  // TODO(pwnall): Build quota integration before this API exits Dev Trials.
 };

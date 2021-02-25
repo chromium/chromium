@@ -19,22 +19,30 @@ namespace {
 using blink::mojom::NativeIOError;
 using blink::mojom::NativeIOErrorType;
 
-// Performs the file I/O work in SetLength().
-std::pair<base::File, base::File::Error> DoSetLength(const int64_t length,
-                                                     base::File file) {
-  DCHECK_GE(length, 0) << "The file length should not be negative";
-  base::File::Error set_length_error;
-  bool success = file.SetLength(length);
-  set_length_error = success ? base::File::FILE_OK : file.GetLastFileError();
+struct SetLengthResult {
+  base::File file;
+  int64_t actual_length;
+  base::File::Error error;
+};
 
-  return {std::move(file), set_length_error};
+// Performs the file I/O work in SetLength().
+SetLengthResult DoSetLength(const int64_t length, base::File file) {
+  DCHECK_GE(length, 0) << "The file length should not be negative";
+  SetLengthResult result;
+  bool success = file.SetLength(length);
+  result.file = std::move(file);
+  result.error = success ? base::File::FILE_OK : file.GetLastFileError();
+  result.actual_length = success ? length : file.GetLength();
+
+  return result;
 }
 
 void DidSetLength(blink::mojom::NativeIOFileHost::SetLengthCallback callback,
-                  std::pair<base::File, base::File::Error> result) {
+                  SetLengthResult result) {
   blink::mojom::NativeIOErrorPtr error =
-      NativeIOManager::FileErrorToNativeIOError(result.second);
-  std::move(callback).Run(std::move(result.first), std::move(error));
+      NativeIOManager::FileErrorToNativeIOError(result.error);
+  std::move(callback).Run(std::move(result.file), result.actual_length,
+                          std::move(error));
 }
 
 }  // namespace
@@ -49,7 +57,8 @@ void NativeIOFileHost::SetLength(const int64_t length,
     // No error message is specified as the ReportBadMessage() call should close
     // the pipe and kill the renderer.
     std::move(callback).Run(
-        std::move(file), NativeIOError::New(NativeIOErrorType::kUnknown, ""));
+        std::move(file), /*actual_file_length=*/0,
+        NativeIOError::New(NativeIOErrorType::kUnknown, ""));
     return;
   }
 
@@ -58,7 +67,8 @@ void NativeIOFileHost::SetLength(const int64_t length,
     // No error message is specified as the ReportBadMessage() call should close
     // the pipe and kill the renderer.
     std::move(callback).Run(
-        std::move(file), NativeIOError::New(NativeIOErrorType::kUnknown, ""));
+        std::move(file), /*actual_file_length=*/0,
+        NativeIOError::New(NativeIOErrorType::kUnknown, ""));
     return;
   }
 
@@ -69,7 +79,8 @@ void NativeIOFileHost::SetLength(const int64_t length,
     // No error message is specified as the ReportBadMessage() call should close
     // the pipe and kill the renderer.
     std::move(callback).Run(
-        std::move(file), NativeIOError::New(NativeIOErrorType::kUnknown, ""));
+        std::move(file), /*actual_file_length=*/0,
+        NativeIOError::New(NativeIOErrorType::kUnknown, ""));
     return;
   }
 
