@@ -50,4 +50,13 @@ const utils = goog.require(
       canonicalUrl: canonicalLinkNode && canonicalLinkNode.getAttribute('href')
     };
   }
+
+  /**
+   * Checks if the range is suitable to attempt link generation; the feature
+   * should be disabled if this does not return true.
+   */
+  __gCrWeb.linkToText.checkPreconditions = function() {
+    return utils.isValidRangeForFragmentGeneration(
+        window.getSelection().getRangeAt(0));
+  }
 })();

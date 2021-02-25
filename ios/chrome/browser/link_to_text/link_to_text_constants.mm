@@ -11,5 +11,7 @@
 namespace link_to_text {
 
 const double kLinkGenerationTimeoutInMs = 500.0;
+const double kPreconditionsTimeoutInSeconds = 0.1;
+const double kPreconditionsWebStateTimeoutInSeconds = 1.0;
 
 }  // namespace link_to_text

@@ -31,7 +31,7 @@ class LinkToTextTabHelper : public web::WebStateObserver,
   static void CreateForWebState(web::WebState* web_state);
 
   // Returns whether the link to text feature should be offered for the current
-  // user selection
+  // user selection.
   bool ShouldOffer();
 
   // Calls the JavaScript to generate a URL linking to the current
