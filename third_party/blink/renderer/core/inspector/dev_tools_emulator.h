@@ -45,6 +45,10 @@ class CORE_EXPORT DevToolsEmulator final
   void SetAvailableHoverTypes(int);
   void SetPrimaryHoverType(mojom::blink::HoverType);
   void SetMainFrameResizesAreOrientationChanges(bool);
+  void SetDefaultPageScaleLimits(float min_scale, float max_scale);
+  void SetShrinksViewportContentToFit(bool shrink_viewport_content);
+  void SetViewportEnabled(bool);
+  void SetViewportMetaEnabled(bool);
 
   // Enables and/or sets the parameters for emulation. Returns the emulation
   // transform to be used as a result.
@@ -116,8 +120,6 @@ class CORE_EXPORT DevToolsEmulator final
   bool is_overlay_scrollbars_enabled_;
   bool is_orientation_event_enabled_;
   bool is_mobile_layout_theme_enabled_;
-  float original_default_minimum_page_scale_factor_;
-  float original_default_maximum_page_scale_factor_;
   bool embedder_text_autosizing_enabled_;
   float embedder_device_scale_adjustment_;
   bool embedder_prefer_compositing_to_lcd_text_enabled_;
@@ -128,6 +130,11 @@ class CORE_EXPORT DevToolsEmulator final
   int embedder_available_hover_types_;
   mojom::blink::HoverType embedder_primary_hover_type_;
   bool embedder_main_frame_resizes_are_orientation_changes_;
+  float embedder_min_page_scale_;
+  float embedder_max_page_scale_;
+  bool embedder_shrink_viewport_content_;
+  bool embedder_viewport_enabled_;
+  bool embedder_viewport_meta_enabled_;
 
   bool touch_event_emulation_enabled_;
   bool double_tap_to_zoom_enabled_;

@@ -68,8 +68,6 @@ DevToolsEmulator::DevToolsEmulator(WebViewImpl* web_view)
       is_overlay_scrollbars_enabled_(false),
       is_orientation_event_enabled_(false),
       is_mobile_layout_theme_enabled_(false),
-      original_default_minimum_page_scale_factor_(0),
-      original_default_maximum_page_scale_factor_(0),
       embedder_text_autosizing_enabled_(
           web_view->GetPage()->GetSettings().GetTextAutosizingEnabled()),
       embedder_device_scale_adjustment_(
@@ -94,6 +92,14 @@ DevToolsEmulator::DevToolsEmulator(WebViewImpl* web_view)
           web_view->GetPage()
               ->GetSettings()
               .GetMainFrameResizesAreOrientationChanges()),
+      embedder_min_page_scale_(web_view->DefaultMinimumPageScaleFactor()),
+      embedder_max_page_scale_(web_view->DefaultMaximumPageScaleFactor()),
+      embedder_shrink_viewport_content_(
+          web_view->GetPage()->GetSettings().GetShrinksViewportContentToFit()),
+      embedder_viewport_enabled_(
+          web_view->GetPage()->GetSettings().GetViewportEnabled()),
+      embedder_viewport_meta_enabled_(
+          web_view->GetPage()->GetSettings().GetViewportMetaEnabled()),
       touch_event_emulation_enabled_(false),
       double_tap_to_zoom_enabled_(false),
       original_max_touch_points_(0),
@@ -190,6 +196,46 @@ void DevToolsEmulator::SetMainFrameResizesAreOrientationChanges(bool value) {
     web_view_->GetPage()
         ->GetSettings()
         .SetMainFrameResizesAreOrientationChanges(value);
+  }
+}
+
+void DevToolsEmulator::SetDefaultPageScaleLimits(float min_scale,
+                                                 float max_scale) {
+  embedder_min_page_scale_ = min_scale;
+  embedder_max_page_scale_ = max_scale;
+  bool emulate_mobile_enabled =
+      device_metrics_enabled_ && emulate_mobile_enabled_;
+  if (!emulate_mobile_enabled) {
+    web_view_->GetPage()->SetDefaultPageScaleLimits(min_scale, max_scale);
+  }
+}
+
+void DevToolsEmulator::SetShrinksViewportContentToFit(
+    bool shrink_viewport_content) {
+  embedder_shrink_viewport_content_ = shrink_viewport_content;
+  bool emulate_mobile_enabled =
+      device_metrics_enabled_ && emulate_mobile_enabled_;
+  if (!emulate_mobile_enabled) {
+    web_view_->GetPage()->GetSettings().SetShrinksViewportContentToFit(
+        shrink_viewport_content);
+  }
+}
+
+void DevToolsEmulator::SetViewportEnabled(bool enabled) {
+  embedder_viewport_enabled_ = enabled;
+  bool emulate_mobile_enabled =
+      device_metrics_enabled_ && emulate_mobile_enabled_;
+  if (!emulate_mobile_enabled) {
+    web_view_->GetPage()->GetSettings().SetViewportEnabled(enabled);
+  }
+}
+
+void DevToolsEmulator::SetViewportMetaEnabled(bool enabled) {
+  embedder_viewport_meta_enabled_ = enabled;
+  bool emulate_mobile_enabled =
+      device_metrics_enabled_ && emulate_mobile_enabled_;
+  if (!emulate_mobile_enabled) {
+    web_view_->GetPage()->GetSettings().SetViewportMetaEnabled(enabled);
   }
 }
 
@@ -307,7 +353,7 @@ void DevToolsEmulator::EnableMobileEmulation() {
   web_view_->GetPage()->GetSettings().SetViewportEnabled(true);
   web_view_->GetPage()->GetSettings().SetViewportMetaEnabled(true);
   web_view_->GetPage()->GetVisualViewport().InitializeScrollbars();
-  web_view_->GetSettings()->SetShrinksViewportContentToFit(true);
+  web_view_->GetPage()->GetSettings().SetShrinksViewportContentToFit(true);
   web_view_->GetPage()->GetSettings().SetTextAutosizingEnabled(true);
   web_view_->GetPage()->GetSettings().SetPreferCompositingToLCDTextEnabled(
       true);
@@ -315,12 +361,7 @@ void DevToolsEmulator::EnableMobileEmulation() {
   web_view_->GetPage()->GetSettings().SetMainFrameResizesAreOrientationChanges(
       true);
   web_view_->SetZoomFactorOverride(1);
-
-  original_default_minimum_page_scale_factor_ =
-      web_view_->DefaultMinimumPageScaleFactor();
-  original_default_maximum_page_scale_factor_ =
-      web_view_->DefaultMaximumPageScaleFactor();
-  web_view_->SetDefaultPageScaleLimits(0.25f, 5);
+  web_view_->GetPage()->SetDefaultPageScaleLimits(0.25f, 5);
 
   // TODO(wjmaclean): Update all local frames in the WebView's frame tree, not
   // just a local main frame.
@@ -340,10 +381,13 @@ void DevToolsEmulator::DisableMobileEmulation() {
   ComputedStyle::InvalidateInitialStyle();
   Page::PlatformColorsChanged();
   web_view_->GetPage()->GetSettings().SetForceAndroidOverlayScrollbar(false);
-  web_view_->GetPage()->GetSettings().SetViewportEnabled(false);
-  web_view_->GetPage()->GetSettings().SetViewportMetaEnabled(false);
+  web_view_->GetPage()->GetSettings().SetViewportEnabled(
+      embedder_viewport_enabled_);
+  web_view_->GetPage()->GetSettings().SetViewportMetaEnabled(
+      embedder_viewport_meta_enabled_);
   web_view_->GetPage()->GetVisualViewport().InitializeScrollbars();
-  web_view_->GetSettings()->SetShrinksViewportContentToFit(false);
+  web_view_->GetSettings()->SetShrinksViewportContentToFit(
+      embedder_shrink_viewport_content_);
   web_view_->GetPage()->GetSettings().SetTextAutosizingEnabled(
       embedder_text_autosizing_enabled_);
   web_view_->GetPage()->GetSettings().SetPreferCompositingToLCDTextEnabled(
@@ -355,10 +399,9 @@ void DevToolsEmulator::DisableMobileEmulation() {
   web_view_->GetPage()->GetSettings().SetMainFrameResizesAreOrientationChanges(
       embedder_main_frame_resizes_are_orientation_changes_);
   web_view_->SetZoomFactorOverride(0);
+  web_view_->GetPage()->SetDefaultPageScaleLimits(embedder_min_page_scale_,
+                                                  embedder_max_page_scale_);
   emulate_mobile_enabled_ = false;
-  web_view_->SetDefaultPageScaleLimits(
-      original_default_minimum_page_scale_factor_,
-      original_default_maximum_page_scale_factor_);
   // MainFrameImpl() could be null during cleanup or remote <-> local swap.
   if (web_view_->MainFrameImpl())
     web_view_->MainFrameImpl()->GetFrameView()->UpdateLayout();

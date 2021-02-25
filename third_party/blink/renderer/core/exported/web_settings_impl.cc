@@ -285,7 +285,7 @@ void WebSettingsImpl::SetDOMPasteAllowed(bool enabled) {
 
 void WebSettingsImpl::SetShrinksViewportContentToFit(
     bool shrink_viewport_content) {
-  settings_->SetShrinksViewportContentToFit(shrink_viewport_content);
+  dev_tools_emulator_->SetShrinksViewportContentToFit(shrink_viewport_content);
 }
 
 void WebSettingsImpl::SetSpatialNavigationEnabled(bool enabled) {
@@ -613,11 +613,11 @@ void WebSettingsImpl::SetImmersiveModeEnabled(bool enabled) {
 }
 
 void WebSettingsImpl::SetViewportEnabled(bool enabled) {
-  settings_->SetViewportEnabled(enabled);
+  dev_tools_emulator_->SetViewportEnabled(enabled);
 }
 
 void WebSettingsImpl::SetViewportMetaEnabled(bool enabled) {
-  settings_->SetViewportMetaEnabled(enabled);
+  dev_tools_emulator_->SetViewportMetaEnabled(enabled);
 }
 
 void WebSettingsImpl::SetSyncXHRInDocumentsEnabled(bool enabled) {
