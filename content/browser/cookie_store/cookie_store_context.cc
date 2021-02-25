@@ -5,8 +5,10 @@
 #include "content/browser/cookie_store/cookie_store_context.h"
 
 #include "base/bind.h"
+#include "base/bind_post_task.h"
 #include "base/sequence_checker.h"
 #include "base/task/post_task.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -42,17 +44,10 @@ void CookieStoreContext::Initialize(
 
   RunOrPostTaskOnThread(
       FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-      base::BindOnce(
-          &CookieStoreContext::InitializeOnCoreThread, this,
-          std::move(service_worker_context),
-          base::BindOnce(
-              [](scoped_refptr<base::SequencedTaskRunner> task_runner,
-                 base::OnceCallback<void(bool)> callback, bool result) {
-                task_runner->PostTask(
-                    FROM_HERE, base::BindOnce(std::move(callback), result));
-              },
-              base::SequencedTaskRunnerHandle::Get(),
-              std::move(success_callback))));
+      base::BindOnce(&CookieStoreContext::InitializeOnCoreThread, this,
+                     std::move(service_worker_context),
+                     base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+                                        std::move(success_callback))));
 }
 
 void CookieStoreContext::ListenToCookieChanges(
@@ -69,17 +64,10 @@ void CookieStoreContext::ListenToCookieChanges(
 
   RunOrPostTaskOnThread(
       FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-      base::BindOnce(
-          &CookieStoreContext::ListenToCookieChangesOnCoreThread, this,
-          std::move(cookie_manager_remote),
-          base::BindOnce(
-              [](scoped_refptr<base::SequencedTaskRunner> task_runner,
-                 base::OnceCallback<void(bool)> callback, bool result) {
-                task_runner->PostTask(
-                    FROM_HERE, base::BindOnce(std::move(callback), result));
-              },
-              base::SequencedTaskRunnerHandle::Get(),
-              std::move(success_callback))));
+      base::BindOnce(&CookieStoreContext::ListenToCookieChangesOnCoreThread,
+                     this, std::move(cookie_manager_remote),
+                     base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+                                        std::move(success_callback))));
 }
 
 // static
