@@ -6026,11 +6026,16 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
   constexpr bool kAllowZeroCopyImages = true;
 #endif
 
-#if defined(OS_ANDROID)
+#if defined(OS_ANDROID) || defined(OS_LINUX)
   // TODO(crbug.com/1175907): Only TexImage2D seems to work with the GPU path on
   // Android M -- appears to work fine on R, but to avoid regressions in <video>
   // limit to TexImage2D only for now. Fails conformance test on Nexus 5X:
   // conformance/textures/misc/texture-corner-case-videos.html
+  //
+  // TODO(crbug.com/1181562): TexSubImage2D via the GPU path performs poorly on
+  // Linux when used with ShMem GpuMemoryBuffer backed frames. We don't have a
+  // way to differentiate between true texture backed frames and ShMem GMBs, so
+  // for now limit GPU texturing to TexImage2D.
   const bool function_supports_gpu_teximage = function_id == kTexImage2D;
 #else
   const bool function_supports_gpu_teximage =
