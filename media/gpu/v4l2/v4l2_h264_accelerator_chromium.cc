@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/v4l2/v4l2_h264_accelerator.h"
+#include "media/gpu/v4l2/v4l2_h264_accelerator_chromium.h"
 
 // TODO(987856): prevent legacy headers being included from videodev2.h until
 // v4.14
@@ -49,7 +49,7 @@ class V4L2H264Picture : public H264Picture {
   DISALLOW_COPY_AND_ASSIGN(V4L2H264Picture);
 };
 
-V4L2H264Accelerator::V4L2H264Accelerator(
+V4L2ChromiumH264Accelerator::V4L2ChromiumH264Accelerator(
     V4L2DecodeSurfaceHandler* surface_handler,
     V4L2Device* device)
     : num_slices_(0),
@@ -59,9 +59,9 @@ V4L2H264Accelerator::V4L2H264Accelerator(
   DCHECK(surface_handler_);
 }
 
-V4L2H264Accelerator::~V4L2H264Accelerator() {}
+V4L2ChromiumH264Accelerator::~V4L2ChromiumH264Accelerator() {}
 
-scoped_refptr<H264Picture> V4L2H264Accelerator::CreateH264Picture() {
+scoped_refptr<H264Picture> V4L2ChromiumH264Accelerator::CreateH264Picture() {
   scoped_refptr<V4L2DecodeSurface> dec_surface =
       surface_handler_->CreateSurface();
   if (!dec_surface)
@@ -70,7 +70,7 @@ scoped_refptr<H264Picture> V4L2H264Accelerator::CreateH264Picture() {
   return new V4L2H264Picture(dec_surface);
 }
 
-void V4L2H264Accelerator::H264PictureListToDPBIndicesList(
+void V4L2ChromiumH264Accelerator::H264PictureListToDPBIndicesList(
     const H264Picture::Vector& src_pic_list,
     uint8_t dst_list[kDPBIndicesListSize]) {
   size_t i;
@@ -83,7 +83,7 @@ void V4L2H264Accelerator::H264PictureListToDPBIndicesList(
     dst_list[i++] = VIDEO_MAX_FRAME;
 }
 
-void V4L2H264Accelerator::H264DPBToV4L2DPB(
+void V4L2ChromiumH264Accelerator::H264DPBToV4L2DPB(
     const H264DPB& dpb,
     std::vector<scoped_refptr<V4L2DecodeSurface>>* ref_surfaces) {
   memset(priv_->v4l2_decode_param.dpb, 0, sizeof(priv_->v4l2_decode_param.dpb));
@@ -113,7 +113,7 @@ void V4L2H264Accelerator::H264DPBToV4L2DPB(
   }
 }
 
-H264Decoder::H264Accelerator::Status V4L2H264Accelerator::SubmitFrameMetadata(
+H264Decoder::H264Accelerator::Status V4L2ChromiumH264Accelerator::SubmitFrameMetadata(
     const H264SPS* sps,
     const H264PPS* pps,
     const H264DPB& dpb,
@@ -298,7 +298,7 @@ H264Decoder::H264Accelerator::Status V4L2H264Accelerator::SubmitFrameMetadata(
   return Status::kOk;
 }
 
-H264Decoder::H264Accelerator::Status V4L2H264Accelerator::SubmitSlice(
+H264Decoder::H264Accelerator::Status V4L2ChromiumH264Accelerator::SubmitSlice(
     const H264PPS* pps,
     const H264SliceHeader* slice_hdr,
     const H264Picture::Vector& ref_pic_list0,
@@ -423,7 +423,7 @@ H264Decoder::H264Accelerator::Status V4L2H264Accelerator::SubmitSlice(
              : Status::kFail;
 }
 
-H264Decoder::H264Accelerator::Status V4L2H264Accelerator::SubmitDecode(
+H264Decoder::H264Accelerator::Status V4L2ChromiumH264Accelerator::SubmitDecode(
     scoped_refptr<H264Picture> pic) {
   scoped_refptr<V4L2DecodeSurface> dec_surface =
       H264PictureToV4L2DecodeSurface(pic.get());
@@ -467,7 +467,7 @@ H264Decoder::H264Accelerator::Status V4L2H264Accelerator::SubmitDecode(
   return Status::kOk;
 }
 
-bool V4L2H264Accelerator::OutputPicture(scoped_refptr<H264Picture> pic) {
+bool V4L2ChromiumH264Accelerator::OutputPicture(scoped_refptr<H264Picture> pic) {
   // TODO(crbug.com/647725): Insert correct color space.
   surface_handler_->SurfaceReady(H264PictureToV4L2DecodeSurface(pic.get()),
                                  pic->bitstream_id(), pic->visible_rect(),
@@ -475,14 +475,14 @@ bool V4L2H264Accelerator::OutputPicture(scoped_refptr<H264Picture> pic) {
   return true;
 }
 
-void V4L2H264Accelerator::Reset() {
+void V4L2ChromiumH264Accelerator::Reset() {
   num_slices_ = 0;
   memset(&priv_->v4l2_decode_param, 0, sizeof(priv_->v4l2_decode_param));
   memset(&priv_->v4l2_slice_params, 0, sizeof(priv_->v4l2_slice_params));
 }
 
 scoped_refptr<V4L2DecodeSurface>
-V4L2H264Accelerator::H264PictureToV4L2DecodeSurface(H264Picture* pic) {
+V4L2ChromiumH264Accelerator::H264PictureToV4L2DecodeSurface(H264Picture* pic) {
   V4L2H264Picture* v4l2_pic = pic->AsV4L2H264Picture();
   CHECK(v4l2_pic);
   return v4l2_pic->dec_surface();

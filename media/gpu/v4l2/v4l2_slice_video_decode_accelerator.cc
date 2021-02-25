@@ -40,7 +40,7 @@
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_decode_surface.h"
-#include "media/gpu/v4l2/v4l2_h264_accelerator.h"
+#include "media/gpu/v4l2/v4l2_h264_accelerator_chromium.h"
 #include "media/gpu/v4l2/v4l2_h264_accelerator_legacy.h"
 #include "media/gpu/v4l2/v4l2_image_processor_backend.h"
 #include "media/gpu/v4l2/v4l2_vda_helpers.h"
@@ -295,7 +295,7 @@ bool V4L2SliceVideoDecodeAccelerator::Initialize(const Config& config,
   if (video_profile_ >= H264PROFILE_MIN && video_profile_ <= H264PROFILE_MAX) {
     if (supports_requests_) {
       decoder_ = std::make_unique<H264Decoder>(
-          std::make_unique<V4L2H264Accelerator>(this, device_.get()),
+          std::make_unique<V4L2ChromiumH264Accelerator>(this, device_.get()),
           video_profile_);
     } else {
       decoder_ = std::make_unique<H264Decoder>(
