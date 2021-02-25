@@ -770,21 +770,19 @@ void NormalPageArena::PromptlyFreeObjectInFreeList(HeapObjectHeader* header,
   DCHECK(!header->IsMarked());
   Address address = reinterpret_cast<Address>(header);
   NormalPage* page = static_cast<NormalPage*>(PageFromObject(header));
-  if (page->HasBeenSwept()) {
-    Address payload = header->Payload();
-    size_t payload_size = header->PayloadSize();
-    // If the page has been swept a promptly freed object may be adjacent
-    // to other free list entries. We make the object available for future
-    // allocation right away by adding it to the free list and increase the
-    // promptly_freed_size_ counter which may result in coalescing later.
-    SET_MEMORY_INACCESSIBLE(payload, payload_size);
-    CHECK_MEMORY_INACCESSIBLE(payload, payload_size);
-    AddToFreeList(address, size);
-    promptly_freed_size_ += size;
-    GetThreadState()->Heap().stats_collector()->DecreaseAllocatedObjectSize(
-        size);
-    page->DecreaseAllocatedBytes(size);
-  }
+  DCHECK(page->HasBeenSwept());
+  Address payload = header->Payload();
+  size_t payload_size = header->PayloadSize();
+  // If the page has been swept a promptly freed object may be adjacent
+  // to other free list entries. We make the object available for future
+  // allocation right away by adding it to the free list and increase the
+  // promptly_freed_size_ counter which may result in coalescing later.
+  SET_MEMORY_INACCESSIBLE(payload, payload_size);
+  CHECK_MEMORY_INACCESSIBLE(payload, payload_size);
+  AddToFreeList(address, size);
+  promptly_freed_size_ += size;
+  GetThreadState()->Heap().stats_collector()->DecreaseAllocatedObjectSize(size);
+  page->DecreaseAllocatedBytes(size);
 }
 
 bool NormalPageArena::ExpandObject(HeapObjectHeader* header, size_t new_size) {
