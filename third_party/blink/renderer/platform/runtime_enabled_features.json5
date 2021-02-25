@@ -1171,7 +1171,7 @@
     {
       name: "LayoutNGTable",
       depends_on: ["LayoutNG"],
-      status: "stable"
+      status: "test"
     },
     {
       name: "LayoutNGTextControl",
