@@ -1043,6 +1043,9 @@ void JPEGImageDecoder::OnSetData(SegmentReader* data) {
   if (reader_)
     reader_->SetData(data);
 
+  if (allow_decode_to_yuv_)
+    return;
+
   allow_decode_to_yuv_ =
       // Incremental YUV decoding is not currently supported (crbug.com/943519).
       IsAllDataReceived() &&
@@ -1052,7 +1055,7 @@ void JPEGImageDecoder::OnSetData(SegmentReader* data) {
       // the color profile is known, and the subsampling is known.
       IsSizeAvailable() &&
       // YUV decoding to a smaller size is not supported.
-      reader_->Info()->scale_num == reader_->Info()->scale_denom &&
+      reader_ && reader_->Info()->scale_num == reader_->Info()->scale_denom &&
       // TODO(crbug.com/911246): Support color space transformations on planar
       // data.
       !ColorTransform() &&
