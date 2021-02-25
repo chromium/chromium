@@ -173,9 +173,7 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   }
 
   if (frame->format() == PIXEL_FORMAT_NV12 && frame->HasGpuMemoryBuffer()) {
-    // TODO(crbug.com/1181292): wire up GpuVideoAcceleratorFactories and add
-    // SharedMemoryPool to pass here to allow DXGI GMBs processing.
-    frame = ConvertToMemoryMappedFrame(frame, nullptr, nullptr);
+    frame = ConvertToMemoryMappedFrame(frame);
     if (!frame) {
       std::move(done_cb).Run(
           Status(StatusCode::kEncoderFailedEncode,

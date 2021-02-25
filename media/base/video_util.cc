@@ -14,7 +14,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "gpu/GLES2/gl2extchromium.h"
-#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "media/base/status_codes.h"
 #include "media/base/video_frame.h"
@@ -255,60 +254,6 @@ scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySyncOOP(
   }
 
   return result;
-}
-
-scoped_refptr<VideoFrame> ConvertToMemoryMappedFrameDXGI(
-    scoped_refptr<VideoFrame> video_frame,
-    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-    media::SharedMemoryPool* pool) {
-  DCHECK_EQ(video_frame->format(), PIXEL_FORMAT_NV12);
-
-  // TODO(crbug.com/1181292): change to DCHECK once all the users of
-  // ConvertToMemoryMappedFrame can provide the required parameters.
-  if (!gpu_memory_buffer_manager || !pool)
-    return nullptr;
-
-  auto handle = pool->MaybeAllocateBuffer(VideoFrame::AllocationSize(
-      video_frame->format(), video_frame->coded_size()));
-  if (!handle) {
-    DLOG(ERROR) << "Failed to allocate shared memory";
-    return nullptr;
-  }
-
-  base::UnsafeSharedMemoryRegion* shared_memory = handle->GetRegion();
-  auto* gmb = video_frame->GetGpuMemoryBuffer();
-  bool converted = gpu_memory_buffer_manager->CopyGpuMemoryBufferSync(
-      gmb->CloneHandle(), shared_memory->Duplicate());
-  if (!converted) {
-    DLOG(ERROR) << "Failed to copy DXGI buffer to memory";
-    return nullptr;
-  }
-  auto* mapping = handle->GetMapping();
-
-  // NV12 always has 2 planes.
-  uint8_t* src_plane0 =
-      const_cast<uint8_t*>(reinterpret_cast<const uint8_t*>(mapping->memory()));
-  uint8_t* src_plane1 =
-      src_plane0 + video_frame->row_bytes(0) * video_frame->rows(0);
-
-  auto memory_frame = VideoFrame::WrapExternalYuvData(
-      video_frame->format(), video_frame->coded_size(),
-      video_frame->visible_rect(), video_frame->natural_size(), gmb->stride(0),
-      gmb->stride(1), src_plane0, src_plane1, video_frame->timestamp());
-  if (!memory_frame) {
-    return nullptr;
-  }
-
-  memory_frame->BackWithSharedMemory(shared_memory);
-  memory_frame->set_color_space(video_frame->ColorSpace());
-  memory_frame->metadata().MergeMetadataFrom(video_frame->metadata());
-
-  // Hold onto the shared memory holder until the frame is destroyed.
-  memory_frame->AddDestructionObserver(base::BindOnce(
-      base::DoNothing::Once<
-          std::unique_ptr<media::SharedMemoryPool::SharedMemoryHandle>>(),
-      std::move(handle)));
-  return memory_frame;
 }
 
 }  // namespace
@@ -664,19 +609,11 @@ gfx::Size PadToMatchAspectRatio(const gfx::Size& size,
 }
 
 scoped_refptr<VideoFrame> ConvertToMemoryMappedFrame(
-    scoped_refptr<VideoFrame> video_frame,
-    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-    media::SharedMemoryPool* pool) {
+    scoped_refptr<VideoFrame> video_frame) {
   DCHECK(video_frame);
   DCHECK(video_frame->HasGpuMemoryBuffer());
 
   auto* gmb = video_frame->GetGpuMemoryBuffer();
-
-  if (gmb->GetType() == gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE) {
-    return ConvertToMemoryMappedFrameDXGI(video_frame,
-                                          gpu_memory_buffer_manager, pool);
-  }
-
   if (!gmb->Map())
     return nullptr;
 

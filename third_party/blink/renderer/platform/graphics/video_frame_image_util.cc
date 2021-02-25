@@ -191,12 +191,8 @@ bool DrawVideoFrameIntoResourceProvider(
   media_flags.setBlendMode(SkBlendMode::kSrc);
 
   // PaintCanvasVideoRenderer can't handle GpuMemoryBuffer frames.
-  if (frame->HasGpuMemoryBuffer() && !frame->IsMappable()) {
-    // TODO(crbug.com/1181292): wire up GpuVideoAcceleratorFactories and add
-    // SharedMemoryPool to pass here to allow DXGI GMBs processing.
-    frame =
-        media::ConvertToMemoryMappedFrame(std::move(frame), nullptr, nullptr);
-  }
+  if (frame->HasGpuMemoryBuffer() && !frame->IsMappable())
+    frame = media::ConvertToMemoryMappedFrame(std::move(frame));
 
   std::unique_ptr<media::PaintCanvasVideoRenderer> local_video_renderer;
   if (!video_renderer) {

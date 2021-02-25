@@ -13,7 +13,6 @@
 #include "base/optional.h"
 #include "base/synchronization/lock.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
-#include "media/base/shared_memory_pool.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_pool.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -88,7 +87,6 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
     media::VideoFramePool pool_;
     media::VideoFramePool pool_for_mapped_frames_;
     media::VideoFramePool pool_for_tmp_frames_;
-    scoped_refptr<media::SharedMemoryPool> shmem_pool_;
 
     scoped_refptr<viz::RasterContextProvider> raster_context_provider_
         GUARDED_BY(context_provider_lock_);

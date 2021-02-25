@@ -154,10 +154,8 @@ void PepperVideoCaptureHost::OnFrameReady(
           media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
         // NV12 is the only supported GMB pixel format at the moment.
         DCHECK_EQ(frame->format(), media::PIXEL_FORMAT_NV12);
-        // TODO(crbug.com/1181292): wire up GpuVideoAcceleratorFactories and add
-        // SharedMemoryPool to pass here to allow DXGI GMBs processing.
         scoped_refptr<media::VideoFrame> mapped_frame =
-            media::ConvertToMemoryMappedFrame(frame, nullptr, nullptr);
+            media::ConvertToMemoryMappedFrame(frame);
         scoped_refptr<media::VideoFrame> dst_frame =
             media::VideoFrame::WrapExternalData(
                 media::PIXEL_FORMAT_I420, frame->natural_size(),

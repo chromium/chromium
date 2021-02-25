@@ -454,20 +454,14 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromGpu(
   DCHECK_EQ(source_frame->storage_type(),
             media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
 
-  return media::ConvertToMemoryMappedFrame(
-      std::move(source_frame),
-      gpu_factories_ ? gpu_factories_->GpuMemoryBufferManager() : nullptr,
-      shmem_pool_.get());
+  return media::ConvertToMemoryMappedFrame(std::move(source_frame));
 }
 
 WebRtcVideoFrameAdapter::SharedResources::SharedResources(
     media::GpuVideoAcceleratorFactories* gpu_factories)
-    : shmem_pool_(base::MakeRefCounted<media::SharedMemoryPool>()),
-      gpu_factories_(gpu_factories) {}
+    : gpu_factories_(gpu_factories) {}
 
-WebRtcVideoFrameAdapter::SharedResources::~SharedResources() {
-  shmem_pool_->Shutdown();
-}
+WebRtcVideoFrameAdapter::SharedResources::~SharedResources() = default;
 
 WebRtcVideoFrameAdapter::WebRtcVideoFrameAdapter(
     scoped_refptr<media::VideoFrame> frame)
