@@ -1639,25 +1639,29 @@ body.photo.scan-barcode .barcode-scan-box {
   --text-expand-button-height: 40px;
   --text-line-height: 24px;
   --text-padding-vertical: 8px;
+  /* Avoid collision with scan-box and preview-box */
+  --top: max(8px, min(10%, 33.33% - var(--text-line-height) -
+      var(--text-expand-button-height) - 2 * var(--text-padding-vertical) -
+      var(--min-scanbox-distance)));
 
   left: 50%;
   max-width: min(80%, var(--chip-max-width));
   opacity: 1;
   pointer-events: auto;
   position: absolute;
-  /* Avoid collision with scan-box and preview-box */
-  top: max(8px, min(10%, 33.33% - var(--text-line-height) -
-      var(--text-expand-button-height) - 2 * var(--text-padding-vertical) -
-      var(--min-scanbox-distance)));
+  top: var(--top);
   transform: translateX(-50%);
-  transition: opacity var(--moderate1-duration) var(--standard-easing);
+  transition: opacity var(--fast2-duration) linear,
+              top var(--fast2-duration) var(--standard-easing);
   z-index: 50;
 }
 
 .barcode-chip-container.invisible {
   opacity: 0;
-  transition: opacity var(--moderate1-duration) var(--standard-easing),
-              visibility 0s var(--moderate1-duration);
+  top: calc(var(--top) + 2px);
+  transition: opacity var(--fast2-duration) linear,
+              top var(--fast2-duration) var(--standard-easing),
+              visibility 0s var(--fast2-duration);
 }
 
 .barcode-chip-url {
