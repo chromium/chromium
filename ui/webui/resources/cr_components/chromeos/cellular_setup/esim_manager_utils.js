@@ -61,9 +61,38 @@ cr.define('cellular_setup', function() {
     return response.euiccs[euiccIndex];
   }
 
+  /**
+   * Returns the eSIM profile with iccid in the first EUICC and null if none
+   * found.
+   * @param {string} iccid
+   * @return {!Promise<?chromeos.cellularSetup.mojom.ESimProfileRemote>}
+   */
+  /* #export */ async function getESimProfile(iccid) {
+    if (!iccid) {
+      return null;
+    }
+    const euicc = await cellular_setup.getEuicc();
+
+    if (!euicc) {
+      console.error('No Euiccs found');
+      return null;
+    }
+    const esimProfilesRemotes = await euicc.getProfileList();
+
+    for (const profileRemote of esimProfilesRemotes.profiles) {
+      const profileProperties = await profileRemote.getProperties();
+
+      if (profileProperties.properties.iccid === iccid) {
+        return profileRemote;
+      }
+    }
+    return null;
+  }
+
   // #cr_define_end
   return {
     getEuicc,
+    getESimProfile,
     getPendingESimProfiles,
   };
 });
