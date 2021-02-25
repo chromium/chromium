@@ -169,7 +169,7 @@ i like that.")
     bugs into their triage queue, just set OS to the single value of "Chrome".
     No other steps or labels are needed.
 	* If you need to ping or ask about Chrome OS bug, [ask their current
-    sheriff](go/whos-the-chromeos-sheriff).
+    sheriff](http://go/whos-the-chromeos-sheriff).
 * **If the report smells like a vulnerability, keep going.**
 
 ### Verify And Label The Bug
