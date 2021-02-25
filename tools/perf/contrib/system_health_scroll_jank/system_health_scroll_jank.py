@@ -5,26 +5,24 @@
 from benchmarks import system_health
 from telemetry import benchmark
 
-from contrib.system_health_infinite_scroll import janky_story_set
+from contrib.system_health_scroll_jank import janky_story_set
 
 
 @benchmark.Info(emails=['khokhlov@google.com'])
-class SystemHealthInfiniteScroll(system_health.MobileCommonSystemHealth):
+class SystemHealthScrollJankMobile(system_health.MobileCommonSystemHealth):
   """A subset of system_health.common_mobile benchmark.
 
-  Contains only infinite_scroll stories.
+  Contains only stories related to monitoring jank during scrolling.
   This benchmark is used for running experimental scroll jank metrics.
 
-  TODO(b/150125501): Delete this benchmark once enough jank data have been
-  obtained.
   """
 
   @classmethod
   def Name(cls):
-    return 'system_health_infinite_scroll.common_mobile'
+    return 'system_health.scroll_jank_mobile'
 
   def CreateCoreTimelineBasedMeasurementOptions(self):
-    options = super(SystemHealthInfiniteScroll,
+    options = super(SystemHealthScrollJankMobile,
                     self).CreateCoreTimelineBasedMeasurementOptions()
     options.ExtendTraceCategoryFilter(['benchmark', 'cc', 'input'])
     options.SetTimelineBasedMetrics([

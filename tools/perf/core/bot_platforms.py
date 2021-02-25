@@ -431,12 +431,11 @@ _ANDROID_PIXEL4_WEBLAYER_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('system_health.weblayer_startup')
 ])
 _ANDROID_PIXEL4A_POWER_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('power.mobile')])
-_ANDROID_NEXUS5X_FYI_BENCHMARK_CONFIGS = PerfSuite([
-    # Running a sample benchmark to help testing out the work on
-    # trace_processor_shell: crbug.com/1028612
-    _GetBenchmarkConfig('system_health_infinite_scroll.common_mobile')
+    _GetBenchmarkConfig('power.mobile'),
+    _GetBenchmarkConfig('system_health.scroll_jank_mobile')
 ])
+_ANDROID_NEXUS5X_FYI_BENCHMARK_CONFIGS = PerfSuite(
+    [_GetBenchmarkConfig('system_health.scroll_jank_mobile')])
 _ANDROID_PIXEL2_AAB_FYI_BENCHMARK_CONFIGS = PerfSuite(
     [_GetBenchmarkConfig('startup.mobile')])
 _ANDROID_PIXEL2_FYI_BENCHMARK_CONFIGS = PerfSuite([
@@ -447,7 +446,8 @@ _ANDROID_PIXEL2_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer2'),
     _GetBenchmarkConfig('rendering.mobile'),
     _GetBenchmarkConfig('octane'),
-    _GetBenchmarkConfig('jetstream')
+    _GetBenchmarkConfig('jetstream'),
+    _GetBenchmarkConfig('system_health.scroll_jank_mobile')
 ])
 _CHROMEOS_KEVIN_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('rendering.desktop')])

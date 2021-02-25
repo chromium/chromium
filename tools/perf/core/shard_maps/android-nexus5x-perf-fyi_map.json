@@ -1,7 +1,7 @@
 {
     "0": {
         "benchmarks": {
-            "system_health_infinite_scroll.common_mobile": {
+            "system_health.scroll_jank_mobile": {
                 "end": 1,
                 "abridged": false
             }
@@ -9,7 +9,7 @@
     },
     "1": {
         "benchmarks": {
-            "system_health_infinite_scroll.common_mobile": {
+            "system_health.scroll_jank_mobile": {
                 "begin": 1,
                 "end": 3,
                 "abridged": false
@@ -18,7 +18,7 @@
     },
     "2": {
         "benchmarks": {
-            "system_health_infinite_scroll.common_mobile": {
+            "system_health.scroll_jank_mobile": {
                 "begin": 3,
                 "abridged": false
             }

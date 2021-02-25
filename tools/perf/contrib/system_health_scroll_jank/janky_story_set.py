@@ -3,10 +3,10 @@
 # found in the LICENSE file.
 
 from page_sets.helpers import override_online
-from page_sets.login_helpers import pinterest_login
 from page_sets.system_health import platforms
 from page_sets.system_health import story_tags
 from page_sets.system_health import system_health_story
+from page_sets.system_health import browsing_stories
 
 from telemetry import story
 
@@ -55,17 +55,6 @@ class DiscourseJankyStory(JankyStory):
   TAGS = [story_tags.INFINITE_SCROLL, story_tags.YEAR_2019]
 
 
-class PinterestJankyStory(JankyStory):
-  NAME = 'browse:social:pinterest_infinite_scroll:2019'
-  URL = 'https://www.pinterest.co.uk'
-  TAGS = [story_tags.INFINITE_SCROLL, story_tags.YEAR_2019]
-
-  SKIP_LOGIN = False
-
-  def _Login(self, action_runner):
-    pinterest_login.LoginMobileAccount(action_runner, 'googletest')
-
-
 class TumblrJankyStory(JankyStory):
   NAME = 'browse:social:tumblr_infinite_scroll:2018'
   URL = 'https://techcrunch.tumblr.com/'
@@ -80,8 +69,10 @@ class JankyStorySet(story.StorySet):
 
     self.AddStory(FlickrJankyStory(self, False))
     self.AddStory(DiscourseJankyStory(self, False))
-    self.AddStory(PinterestJankyStory(self, False))
     self.AddStory(TumblrJankyStory(self, False))
+    self.AddStory(browsing_stories.GoogleMapsMobileStory2019(self, False))
+    self.AddStory(browsing_stories.CnnStory2021(self, False))
+    self.AddStory(browsing_stories.FacebookMobileStory2019(self, False))
 
   def GetAbridgedStorySetTagFilter(self):
     return story_tags.HEALTH_CHECK.name

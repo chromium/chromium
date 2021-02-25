@@ -3,6 +3,9 @@
         "benchmarks": {
             "power.mobile": {
                 "abridged": false
+            },
+            "system_health.scroll_jank_mobile": {
+                "abridged": false
             }
         }
     },

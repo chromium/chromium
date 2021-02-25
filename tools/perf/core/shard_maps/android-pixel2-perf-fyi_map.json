@@ -44,6 +44,9 @@
             "system_health.common_mobile": {
                 "end": 13,
                 "abridged": false
+            },
+            "system_health.scroll_jank_mobile": {
+                "abridged": false
             }
         }
     },
