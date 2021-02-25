@@ -2263,6 +2263,7 @@ if (!is_android) {
         "../browser/ui/views/autofill/payments/card_unmask_prompt_view_tester_views.h",
         "../browser/ui/views/autofill/payments/credit_card_access_manager_browsertest.cc",
         "../browser/ui/views/autofill/payments/local_card_migration_browsertest.cc",
+        "../browser/ui/views/autofill/payments/offer_notification_bubble_views_browsertest.cc",
         "../browser/ui/views/autofill/payments/save_card_bubble_views_browsertest.cc",
         "../browser/ui/views/autofill/payments/virtual_card_selection_dialog_browsertest.cc",
         "../browser/ui/views/autofill/payments/webauthn_dialog_browsertest.cc",
@@ -6348,6 +6349,8 @@ if (!is_android) {
       "../browser/ui/search/instant_test_utils.h",
       "../browser/ui/search/local_ntp_test_utils.cc",
       "../browser/ui/search/local_ntp_test_utils.h",
+      "../browser/ui/views/autofill/payments/offer_notification_bubble_views_test_base.cc",
+      "../browser/ui/views/autofill/payments/offer_notification_bubble_views_test_base.h",
       "../browser/ui/views/web_apps/web_app_integration_browsertest_base.cc",
       "../browser/ui/views/web_apps/web_app_integration_browsertest_base.h",
       "../browser/ui/webui/signin/login_ui_test_utils.cc",
@@ -6397,6 +6400,7 @@ if (!is_android) {
       "//extensions/buildflags",
       "//skia",
       "//testing/gtest",
+      "//third_party/libaddressinput",
       "//ui/base:features",
     ]
 
@@ -6701,6 +6705,7 @@ if (!is_android) {
       sources += [
         "../browser/ui/read_later/read_later_test_utils.cc",
         "../browser/ui/read_later/read_later_test_utils.h",
+        "../browser/ui/views/autofill/payments/offer_notification_bubble_views_interactive_uitest.cc",
         "../browser/ui/views/bookmarks/bookmark_bar_view_test.cc",
         "../browser/ui/views/bookmarks/bookmark_bar_view_test_helper.h",
         "../browser/ui/views/certificate_selector_browsertest.cc",

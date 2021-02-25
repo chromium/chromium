@@ -58,6 +58,13 @@ OfferNotificationBubbleControllerImpl::GetOfferNotificationBubbleView() const {
   return bubble_view();
 }
 
+const CreditCard* OfferNotificationBubbleControllerImpl::GetLinkedCard() const {
+  if (card_.has_value())
+    return &(*card_);
+
+  return nullptr;
+}
+
 bool OfferNotificationBubbleControllerImpl::IsIconVisible() const {
   return !origins_to_display_bubble_.empty();
 }
@@ -70,7 +77,8 @@ void OfferNotificationBubbleControllerImpl::OnBubbleClosed(
 }
 
 void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
-    const std::vector<GURL>& origins_to_display_bubble) {
+    const std::vector<GURL>& origins_to_display_bubble,
+    const CreditCard* card) {
   // If icon/bubble is already visible, that means we have already shown a
   // notification for this page.
   if (IsIconVisible() || bubble_view())
@@ -79,6 +87,8 @@ void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
   origins_to_display_bubble_.clear();
   for (auto origin : origins_to_display_bubble)
     origins_to_display_bubble_.emplace_back(origin);
+
+  card_ = *card;
 
   is_user_gesture_ = false;
   Show();
@@ -110,6 +120,7 @@ void OfferNotificationBubbleControllerImpl::DidFinishNavigation(
 
   // Reset variables.
   origins_to_display_bubble_.clear();
+  UpdatePageActionIcon();
 
   // Hide the bubble.
   HideBubble();
@@ -127,6 +138,9 @@ void OfferNotificationBubbleControllerImpl::DoShowBubble() {
                       ->ShowOfferNotificationBubble(web_contents(), this,
                                                     is_user_gesture_));
   DCHECK(bubble_view());
+
+  if (observer_for_testing_)
+    observer_for_testing_->OnBubbleShown();
 
   // TODO(crbug.com/1093057): Add logging metrics.
 }

@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,7 +59,8 @@ class OfferNotificationBubbleControllerImplTest
 
  protected:
   void ShowBubble(const std::vector<GURL> origins_to_display_bubble) {
-    controller()->ShowOfferNotificationIfApplicable(origins_to_display_bubble);
+    controller()->ShowOfferNotificationIfApplicable(origins_to_display_bubble,
+                                                    &card_);
   }
 
   void CloseBubble(PaymentsBubbleClosedReason closed_reason =
@@ -76,6 +78,9 @@ class OfferNotificationBubbleControllerImplTest
         TestOfferNotificationBubbleControllerImpl::FromWebContents(
             browser()->tab_strip_model()->GetActiveWebContents()));
   }
+
+ private:
+  CreditCard card_ = test::GetCreditCard();
 };
 
 TEST_F(OfferNotificationBubbleControllerImplTest, BubbleShown) {

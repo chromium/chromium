@@ -91,6 +91,7 @@
 #include "components/infobars/core/infobar.h"
 #include "ui/android/window_android.h"
 #else  // !OS_ANDROID
+#include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/save_upi_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_selection_dialog_controller_impl.h"
@@ -647,7 +648,6 @@ void ChromeAutofillClient::HideAutofillPopup(PopupHidingReason reason) {
 void ChromeAutofillClient::ShowOfferNotificationIfApplicable(
     const std::vector<GURL>& domains_to_display_bubble,
     const CreditCard* card) {
-  // TODO(crbug.com/1093057): Finish bubble controller/view and wire it up.
 #if defined(OS_ANDROID)
   if (card) {
     InfoBarService::FromWebContents(web_contents())
@@ -655,7 +655,13 @@ void ChromeAutofillClient::ShowOfferNotificationIfApplicable(
             std::make_unique<AutofillOfferNotificationInfoBarDelegateMobile>(
                 *card)));
   }
-#endif  // defined(OS_ANDROID)
+#else
+  OfferNotificationBubbleControllerImpl::CreateForWebContents(web_contents());
+  OfferNotificationBubbleControllerImpl* controller =
+      OfferNotificationBubbleControllerImpl::FromWebContents(web_contents());
+  controller->ShowOfferNotificationIfApplicable(domains_to_display_bubble,
+                                                card);
+#endif
 }
 
 bool ChromeAutofillClient::IsAutocompleteEnabled() {

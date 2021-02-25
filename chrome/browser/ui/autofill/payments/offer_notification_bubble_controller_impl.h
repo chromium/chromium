@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -21,6 +22,14 @@ class OfferNotificationBubbleControllerImpl
       public content::WebContentsUserData<
           OfferNotificationBubbleControllerImpl> {
  public:
+  // An observer class used by browsertests that gets notified whenever
+  // particular actions occur.
+  class ObserverForTest {
+   public:
+    virtual ~ObserverForTest() = default;
+    virtual void OnBubbleShown() {}
+  };
+
   ~OfferNotificationBubbleControllerImpl() override;
   OfferNotificationBubbleControllerImpl(
       const OfferNotificationBubbleControllerImpl&) = delete;
@@ -31,15 +40,17 @@ class OfferNotificationBubbleControllerImpl
   base::string16 GetWindowTitle() const override;
   base::string16 GetOkButtonLabel() const override;
   AutofillBubbleBase* GetOfferNotificationBubbleView() const override;
+  const CreditCard* GetLinkedCard() const override;
   bool IsIconVisible() const override;
   void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
 
   // Displays an offer notification on current page. Populates the value for
   // |origins_to_display_bubble_|, since the bubble and icon are sticky over a
-  // given set of origins.
-  // TODO(crbug.com/1093057): Pass in the credit card.
+  // given set of origins. For a card linked offer, The information of the
+  // |card| will be displayed in the bubble.
   void ShowOfferNotificationIfApplicable(
-      const std::vector<GURL>& origins_to_display_bubble);
+      const std::vector<GURL>& origins_to_display_bubble,
+      const CreditCard* card);
 
   // Called when user clicks on omnibox icon.
   void ReshowBubble();
@@ -57,16 +68,28 @@ class OfferNotificationBubbleControllerImpl
  private:
   friend class content::WebContentsUserData<
       OfferNotificationBubbleControllerImpl>;
+  friend class OfferNotificationBubbleViewsTestBase;
 
   // Updates the visibility of the icon as per IsIconVisible().
   void UpdateOfferIcon();
 
+  // For testing.
+  void SetEventObserverForTesting(ObserverForTest* observer) {
+    observer_for_testing_ = observer;
+  }
+
   bool is_user_gesture_ = false;
+
+  // The related credit card for a card linked offer. This can be nullopt for
+  // offer types other than card linked offers.
+  base::Optional<CreditCard> card_;
 
   // The bubble and icon are sticky over a given set of origins. This is
   // populated when ShowOfferNotificationIfApplicable() is called and is cleared
   // when navigating to a origins outside of this set.
   std::vector<GURL> origins_to_display_bubble_;
+
+  ObserverForTest* observer_for_testing_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
