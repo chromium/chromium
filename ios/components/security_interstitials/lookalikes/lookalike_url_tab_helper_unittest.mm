@@ -56,9 +56,9 @@ class LookalikeUrlTabHelperTest : public PlatformTest {
   LookalikeUrlTabAllowList* allow_list() { return allow_list_; }
 
   base::HistogramTester histogram_tester_;
+  web::FakeWebState web_state_;
 
  private:
-  web::FakeWebState web_state_;
   LookalikeUrlTabAllowList* allow_list_;
 };
 
@@ -124,4 +124,8 @@ TEST_F(LookalikeUrlTabHelperTest, ShouldAllowResponseForPunycode) {
       lookalikes::features::kLookalikeInterstitialForPunycode);
   EXPECT_FALSE(ShouldAllowResponseUrl(lookalike_url, /*main_frame=*/true)
                    .ShouldAllowNavigation());
+  std::unique_ptr<LookalikeUrlContainer::LookalikeUrlInfo> lookalike_url_info =
+      LookalikeUrlContainer::FromWebState(&web_state_)
+          ->ReleaseLookalikeUrlInfo();
+  EXPECT_TRUE(lookalike_url_info.get());
 }

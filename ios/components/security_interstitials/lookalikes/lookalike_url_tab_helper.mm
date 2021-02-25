@@ -118,6 +118,10 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
         ShouldBlockBySpoofCheckResult(navigated_domain)) {
       match_type = LookalikeUrlMatchType::kFailedSpoofChecks;
       RecordUMAFromMatchType(match_type);
+      LookalikeUrlContainer* lookalike_container =
+          LookalikeUrlContainer::FromWebState(web_state());
+      lookalike_container->SetLookalikeUrlInfo(/*suggested_url=*/GURL(),
+                                               response_url, match_type);
       std::move(callback).Run(CreateLookalikeErrorDecision());
       return;
     }
