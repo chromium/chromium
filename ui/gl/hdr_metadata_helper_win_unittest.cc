@@ -115,7 +115,7 @@ TEST_F(HDRMetadataHelperWinTest, CachesMetadataIfAvailable) {
   EXPECT_TRUE(result);
   // From MSDN.
   static constexpr int kPrimariesFixedPoint = 50000;
-  static constexpr int kLuminanceFixedPoint = 10000;
+  static constexpr int kMinLuminanceFixedPoint = 10000;
   EXPECT_EQ(result->RedPrimary[0],
             static_cast<int>(desc.RedPrimary[0] * kPrimariesFixedPoint));
   EXPECT_EQ(result->RedPrimary[1],
@@ -133,9 +133,9 @@ TEST_F(HDRMetadataHelperWinTest, CachesMetadataIfAvailable) {
   EXPECT_EQ(result->WhitePoint[1],
             static_cast<int>(desc.WhitePoint[1] * kPrimariesFixedPoint));
   EXPECT_EQ(result->MaxMasteringLuminance,
-            static_cast<unsigned>(desc.MaxLuminance * kLuminanceFixedPoint));
+            static_cast<unsigned>(desc.MaxLuminance));
   EXPECT_EQ(result->MinMasteringLuminance,
-            static_cast<unsigned>(desc.MinLuminance * kLuminanceFixedPoint));
+            static_cast<unsigned>(desc.MinLuminance * kMinLuminanceFixedPoint));
   EXPECT_EQ(result->MaxContentLightLevel, desc.MaxFullFrameLuminance);
   EXPECT_EQ(result->MaxFrameAverageLightLevel, desc.MaxFullFrameLuminance);
 }

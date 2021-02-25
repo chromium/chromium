@@ -9,7 +9,7 @@ namespace {
 // Magic constants to convert to fixed point.
 // https://docs.microsoft.com/en-us/windows/win32/api/dxgi1_5/ns-dxgi1_5-dxgi_hdr_metadata_hdr10
 static constexpr int kPrimariesFixedPoint = 50000;
-static constexpr int kLuminanceFixedPoint = 10000;
+static constexpr int kMinLuminanceFixedPoint = 10000;
 
 }  // namespace
 
@@ -91,10 +91,9 @@ void HDRMetadataHelperWin::CacheDisplayMetadata(
   auto& white_point = desc_best.WhitePoint;
   metadata.WhitePoint[0] = white_point[0] * kPrimariesFixedPoint;
   metadata.WhitePoint[1] = white_point[1] * kPrimariesFixedPoint;
-  metadata.MaxMasteringLuminance =
-      desc_best.MaxLuminance * kLuminanceFixedPoint;
+  metadata.MaxMasteringLuminance = desc_best.MaxLuminance;
   metadata.MinMasteringLuminance =
-      desc_best.MinLuminance * kLuminanceFixedPoint;
+      desc_best.MinLuminance * kMinLuminanceFixedPoint;
   // It's unclear how to set these properly, so this is a guess.
   // Also note that these are not fixed-point.
   metadata.MaxContentLightLevel = desc_best.MaxFullFrameLuminance;
@@ -121,9 +120,9 @@ DXGI_HDR_METADATA_HDR10 HDRMetadataHelperWin::HDRMetadataToDXGI(
   metadata.WhitePoint[0] = white_point.x() * kPrimariesFixedPoint;
   metadata.WhitePoint[1] = white_point.y() * kPrimariesFixedPoint;
   metadata.MaxMasteringLuminance =
-      hdr_metadata.mastering_metadata.luminance_max * kLuminanceFixedPoint;
+      hdr_metadata.mastering_metadata.luminance_max;
   metadata.MinMasteringLuminance =
-      hdr_metadata.mastering_metadata.luminance_min * kLuminanceFixedPoint;
+      hdr_metadata.mastering_metadata.luminance_min * kMinLuminanceFixedPoint;
   metadata.MaxContentLightLevel = hdr_metadata.max_content_light_level;
   metadata.MaxFrameAverageLightLevel =
       hdr_metadata.max_frame_average_light_level;
