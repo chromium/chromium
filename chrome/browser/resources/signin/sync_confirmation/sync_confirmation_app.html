@@ -134,14 +134,11 @@
     font-weight: normal;
   }
 
-  #contentContainer h3 {
-    font-size: var(--text-font-size);
-    font-weight: normal;
-  }
-
   #confirmationDescription {
-    font-size: 1em;
+    font-size: var(--text-font-size);
+    margin-inline: auto;
     margin-top: 16px;
+    max-width: 516px;
   }
 
   #buttonsContainer {
@@ -228,11 +225,16 @@
     <h2 consent-description id="syncConfirmationHeading">
       $i18n{syncConfirmationTitle}
     </h2>
-    <h3 class="secondary" consent-description>
-      $i18n{syncConfirmationSyncInfoTitle}
-    </h3>
-    <div id="confirmationDescription" class="secondary" consent-description>
-      $i18n{syncConfirmationSyncInfoDesc}
+    <div id="confirmationDescription" class="secondary">
+      <span consent-description>
+        $i18n{syncConfirmationSyncInfoTitle}.
+      </span>
+      <span>
+        $i18n{syncConfirmationSettingsInfo}
+      </span>
+      <span consent-description>
+        $i18n{syncConfirmationSyncInfoDesc}.
+      </span>
     </div>
   </div>
   <div id="buttonsContainer" class="action-container">
