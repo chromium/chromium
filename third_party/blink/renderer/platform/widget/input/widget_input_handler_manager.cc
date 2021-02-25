@@ -14,6 +14,9 @@
 #include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/trees/layer_tree_host.h"
+#include "components/power_scheduler/power_mode.h"
+#include "components/power_scheduler/power_mode_arbiter.h"
+#include "components/power_scheduler/power_mode_voter.h"
 #include "services/tracing/public/cpp/perfetto/flow_event_utils.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
@@ -210,7 +213,10 @@ WidgetInputHandlerManager::WidgetInputHandlerManager(
           main_thread_scheduler,
           /*allow_raf_aligned_input=*/!never_composited)),
       main_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      compositor_task_runner_(std::move(compositor_task_runner)) {
+      compositor_task_runner_(std::move(compositor_task_runner)),
+      response_power_mode_voter_(
+          power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
+              "PowerModeVoter.Response")) {
 #if defined(OS_ANDROID)
   if (compositor_task_runner_) {
     synchronous_compositor_registry_ =
@@ -433,6 +439,13 @@ void WidgetInputHandlerManager::
 void WidgetInputHandlerManager::DispatchEvent(
     std::unique_ptr<WebCoalescedInputEvent> event,
     mojom::blink::WidgetInputHandler::DispatchEventCallback callback) {
+  // Since we can't easily track the end of processing for a non-blocking input
+  // event from here, we just temporarily bump kResponse mode for every
+  // dispatched event.
+  response_power_mode_voter_->VoteFor(power_scheduler::PowerMode::kResponse);
+  response_power_mode_voter_->ResetVoteAfterTimeout(
+      power_scheduler::PowerModeVoter::kResponseTimeout);
+
   bool event_is_move =
       event->Event().GetType() == WebInputEvent::Type::kMouseMove ||
       event->Event().GetType() == WebInputEvent::Type::kPointerMove;
