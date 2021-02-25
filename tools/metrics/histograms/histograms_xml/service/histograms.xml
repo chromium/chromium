@@ -1195,6 +1195,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="ServiceWorkerCache.DidGenerateCacheableMetadataMessageInCacheStorage.OriginAllowed"
     enum="Boolean" expires_after="2020-12-31">
+  <obsolete>
+    Removed 2021-01-01.
+  </obsolete>
   <owner>wanderview@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

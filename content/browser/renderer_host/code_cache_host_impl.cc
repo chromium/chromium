@@ -187,14 +187,8 @@ void CodeCacheHostImpl::DidGenerateCacheableMetadataInCacheStorage(
   bool origin_allowed =
       ChildProcessSecurityPolicyImpl::GetInstance()->CanAccessDataForOrigin(
           render_process_id_, cache_storage_origin);
-  base::UmaHistogramBoolean(
-      "ServiceWorkerCache.DidGenerateCacheableMetadataMessageInCacheStorage."
-      "OriginAllowed",
-      origin_allowed);
   if (!origin_allowed) {
-    // TODO(crbug/925035): Report a bad mojo message here.  Currently we just
-    // null-route the request since this condition triggers more frequently
-    // than we expect.
+    receiver_.ReportBadMessage("Bad cache_storage origin.");
     return;
   }
 

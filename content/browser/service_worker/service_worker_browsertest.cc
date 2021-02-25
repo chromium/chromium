@@ -2492,11 +2492,15 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerV8CodeCacheForCacheStorageBadOriginTest,
   NavigateToTestPage();
   WaitUntilSideDataSizeIs(0);
 
-  // Second load: The V8 code cache should still be zero.  When a bad origin
-  // is received by CodeCacheHost it should ignore the provided metadata.
-  // TODO(crbug/925035): In the future this should instead kill the renderer.
+  RenderProcessHostBadMojoMessageWaiter rph_kill_waiter(
+      shell()->web_contents()->GetMainFrame()->GetProcess());
+
+  // Second load: This will send an invalid origin for the code cache host and
+  // should trigger a process crash.
   NavigateToTestPage();
-  WaitUntilSideDataSizeIs(0);
+
+  EXPECT_EQ("Received bad user message: Bad cache_storage origin.",
+            rph_kill_waiter.Wait());
 }
 
 class ServiceWorkerCacheStorageFullCodeCacheFromInstallEventTest
