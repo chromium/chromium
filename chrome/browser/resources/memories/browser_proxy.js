@@ -2,17 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
-import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
-
-import './memories_definition.mojom-lite.js';
-import './memories_api.mojom-lite.js';
-
+import {PageCallbackRouter, PageHandler, PageHandlerRemote} from '/chrome/browser/ui/webui/memories/memories.mojom-webui.js';
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 
 /**
@@ -23,11 +13,11 @@ import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 
 export class BrowserProxy {
   constructor() {
-    /** @type {!memories.mojom.PageHandlerRemote} */
-    this.handler = memories.mojom.PageHandler.getRemote();
+    /** @type {!PageHandlerRemote} */
+    this.handler = PageHandler.getRemote();
 
-    /** @type {!memories.mojom.PageCallbackRouter} */
-    this.callbackRouter = new memories.mojom.PageCallbackRouter();
+    /** @type {!PageCallbackRouter} */
+    this.callbackRouter = new PageCallbackRouter();
     this.handler.setPage(this.callbackRouter.$.bindNewPipeAndPassRemote());
   }
 }

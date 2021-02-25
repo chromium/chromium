@@ -12,7 +12,6 @@ static_library("core") {
     "memories_service.h",
     "visit_data.h",
   ]
-
   deps = [
     ":mojo_bindings",
     "//base",
@@ -23,7 +22,7 @@ static_library("core") {
 
 mojom("mojo_bindings") {
   sources = [ "memories.mojom" ]
-
+  webui_module_path = "/components/memories/core"
   public_deps = [
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
