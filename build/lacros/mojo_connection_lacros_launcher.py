@@ -86,7 +86,7 @@ def _ReceiveFDs(sock):
   assert len(fds) in (1, 2, 3), 'Expecting exactly 1, 2, or 3 FDs'
   legacy_mojo_fd = os.fdopen(fds[0])
   startup_fd = None if len(fds) < 2 else os.fdopen(fds[1])
-  mojo_fd = None if (fds) < 3 else os.fdopen(fds[2])
+  mojo_fd = None if len(fds) < 3 else os.fdopen(fds[2])
   return legacy_mojo_fd, startup_fd, mojo_fd
 
 
@@ -120,7 +120,7 @@ def Main():
 
   with _MaybeClosing(legacy_mojo_connection), \
        _MaybeClosing(startup_connection), \
-       _MaybeClogins(mojo_connection):
+       _MaybeClosing(mojo_connection):
     cmd = args[:]
     pass_fds = []
     if legacy_mojo_connection:
