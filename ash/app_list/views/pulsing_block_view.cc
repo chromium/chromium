@@ -38,8 +38,8 @@ void SchedulePulsingAnimation(ui::Layer* layer) {
       std::make_unique<ui::LayerAnimationSequence>();
 
   // The animations loop infinitely.
-  opacity_sequence->set_is_cyclic(true);
-  transform_sequence->set_is_cyclic(true);
+  opacity_sequence->set_is_repeating(true);
+  transform_sequence->set_is_repeating(true);
 
   const gfx::Rect local_bounds(layer->bounds().size());
   for (size_t i = 0; i < base::size(kAnimationOpacity); ++i) {

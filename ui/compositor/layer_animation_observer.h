@@ -34,8 +34,9 @@ class COMPOSITOR_EXPORT LayerAnimationObserver  {
   virtual void OnLayerAnimationEnded(
       LayerAnimationSequence* sequence) = 0;
 
-  // Called when a |sequence| cycle ends. Not called if |sequence| is aborted.
-  virtual void OnLayerAnimationCycleEnded(LayerAnimationSequence* sequence) {}
+  // Called when a |sequence| repetition ends and will repeat. Not called if
+  // |sequence| is aborted.
+  virtual void OnLayerAnimationWillRepeat(LayerAnimationSequence* sequence) {}
 
   // Called if |sequence| is aborted for any reason. Should never do anything
   // that may cause another animation to be started.

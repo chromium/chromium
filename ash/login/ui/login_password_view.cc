@@ -145,13 +145,13 @@ const FrameParams kAlternateFramesParams[] = {{500, 1.0f},
 
 const FrameParams kSpinnerFramesParams[] = {{500, 1.0f}, {500, 0.5f}};
 
-// An observer that swaps two views' visibilities at each animation cycle.
-class AnimationCycleEndObserver : public ui::LayerAnimationObserver {
+// An observer that swaps two views' visibilities at each animation repetition.
+class AnimationWillRepeatObserver : public ui::LayerAnimationObserver {
  public:
-  AnimationCycleEndObserver() {}
-  ~AnimationCycleEndObserver() override = default;
-  AnimationCycleEndObserver(const AnimationCycleEndObserver&) = delete;
-  AnimationCycleEndObserver& operator=(const AnimationCycleEndObserver&) =
+  AnimationWillRepeatObserver() {}
+  ~AnimationWillRepeatObserver() override = default;
+  AnimationWillRepeatObserver(const AnimationWillRepeatObserver&) = delete;
+  AnimationWillRepeatObserver& operator=(const AnimationWillRepeatObserver&) =
       delete;
 
   // ui::LayerAnimationObserver:
@@ -161,7 +161,7 @@ class AnimationCycleEndObserver : public ui::LayerAnimationObserver {
   void OnLayerAnimationAborted(ui::LayerAnimationSequence* sequence) override {}
 
   // ui::LayerAnimationObserver:
-  void OnLayerAnimationCycleEnded(
+  void OnLayerAnimationWillRepeat(
       ui::LayerAnimationSequence* sequence) override {
     shown_now_->SetVisible(false);
     shown_after_->SetVisible(true);
@@ -405,7 +405,7 @@ class LoginPasswordView::EasyUnlockIcon : public views::ImageButton {
         layer()->SetFillsBoundsOpaquely(false);
         std::unique_ptr<ui::LayerAnimationSequence> opacity_sequence =
             std::make_unique<ui::LayerAnimationSequence>();
-        opacity_sequence->set_is_cyclic(true);
+        opacity_sequence->set_is_repeating(true);
         for (size_t i = 0; i < base::size(kSpinnerFramesParams); ++i) {
           opacity_sequence->AddElement(
               ui::LayerAnimationElement::CreateOpacityElement(
@@ -511,12 +511,12 @@ class LoginPasswordView::AlternateIconsView : public views::View {
 
     std::unique_ptr<ui::LayerAnimationSequence> opacity_sequence =
         std::make_unique<ui::LayerAnimationSequence>();
-    observer_ = std::make_unique<AnimationCycleEndObserver>();
+    observer_ = std::make_unique<AnimationWillRepeatObserver>();
     observer_->SetDisplayOrder(shown_now, shown_after);
     // The observer will be removed automatically from the sequence whenever
     // the layer animator or the observer is destroyed.
     opacity_sequence->AddObserver(observer_.get());
-    opacity_sequence->set_is_cyclic(true);
+    opacity_sequence->set_is_repeating(true);
     for (size_t i = 0; i < base::size(kAlternateFramesParams); ++i) {
       opacity_sequence->AddElement(
           ui::LayerAnimationElement::CreateOpacityElement(
@@ -535,7 +535,7 @@ class LoginPasswordView::AlternateIconsView : public views::View {
   }
 
  private:
-  std::unique_ptr<AnimationCycleEndObserver> observer_;
+  std::unique_ptr<AnimationWillRepeatObserver> observer_;
 };
 
 LoginPasswordView::TestApi::TestApi(LoginPasswordView* view) : view_(view) {}
@@ -898,7 +898,7 @@ void LoginPasswordView::HandleLeftIconsVisibilities(bool handling_capslock) {
   if (should_show_handled_view) {
     // If the view that is currently handled should be shown, we immediately
     // show it; if the other view should be shown as well, we make it invisible
-    // for the moment and start a cyclic animation that will show these two
+    // for the moment and start a repeating animation that will show these two
     // views alternatively.
     handled_view->SetVisible(true);
     if (should_show_other_view) {
@@ -907,9 +907,9 @@ void LoginPasswordView::HandleLeftIconsVisibilities(bool handling_capslock) {
     }
   } else {
     // If the view that is currently handled should now be invisible, we
-    // immediately hide it and we abort the cyclic animation if it was running.
-    // We also make the other view visible if needed, as its current state
-    // may depend on how long the animation has been running.
+    // immediately hide it and we abort the repeating animation if it was
+    // running. We also make the other view visible if needed, as its current
+    // state may depend on how long the animation has been running.
     left_icon_->AbortAnimationIfAny();
     other_view->SetVisible(should_show_other_view);
     handled_view->SetVisible(false);

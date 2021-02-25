@@ -20,8 +20,8 @@ TestLayerAnimationObserver::TestLayerAnimationObserver()
       last_aborted_sequence_epoch_(-1),
       last_ended_sequence_(nullptr),
       last_ended_sequence_epoch_(-1),
-      last_cycle_ended_sequence_(nullptr),
-      last_cycle_ended_sequence_epoch_(-1),
+      last_repetition_ended_sequence_(nullptr),
+      last_repetition_ended_sequence_epoch_(-1),
       last_detached_sequence_(nullptr),
       last_detached_sequence_epoch_(-1),
       requires_notification_when_animator_destroyed_(false) {}
@@ -41,8 +41,8 @@ void TestLayerAnimationObserver::ResetLayerAnimationObserverations() {
   last_aborted_sequence_epoch_ = -1;
   last_ended_sequence_ = nullptr;
   last_ended_sequence_epoch_ = -1;
-  last_cycle_ended_sequence_ = nullptr;
-  last_cycle_ended_sequence_epoch_ = -1;
+  last_repetition_ended_sequence_ = nullptr;
+  last_repetition_ended_sequence_epoch_ = -1;
   last_detached_sequence_ = nullptr;
   last_detached_sequence_epoch_ = -1;
 }
@@ -77,10 +77,10 @@ void TestLayerAnimationObserver::OnLayerAnimationEnded(
   last_ended_sequence_epoch_ = next_epoch_++;
 }
 
-void TestLayerAnimationObserver::OnLayerAnimationCycleEnded(
+void TestLayerAnimationObserver::OnLayerAnimationWillRepeat(
     LayerAnimationSequence* sequence) {
-  last_cycle_ended_sequence_ = sequence;
-  last_cycle_ended_sequence_epoch_ = next_epoch_++;
+  last_repetition_ended_sequence_ = sequence;
+  last_repetition_ended_sequence_epoch_ = next_epoch_++;
 }
 
 void TestLayerAnimationObserver::OnDetachedFromSequence(
@@ -97,7 +97,7 @@ TestLayerAnimationObserver::RequiresNotificationWhenAnimatorDestroyed() const {
 testing::AssertionResult TestLayerAnimationObserver::NoEventsObserved() {
   if (!last_attached_sequence_ && !last_scheduled_sequence_ &&
       !last_started_sequence_ && !last_aborted_sequence_ &&
-      !last_ended_sequence_ && !last_cycle_ended_sequence_ &&
+      !last_ended_sequence_ && !last_repetition_ended_sequence_ &&
       !last_detached_sequence_) {
     return testing::AssertionSuccess();
   } else {
@@ -122,9 +122,9 @@ testing::AssertionResult TestLayerAnimationObserver::NoEventsObserved() {
     if (last_ended_sequence_) {
       assertion_failure << "\n\tlast_ended_sequence_" << last_ended_sequence_;
     }
-    if (last_cycle_ended_sequence_) {
+    if (last_repetition_ended_sequence_) {
       assertion_failure << "\n\tlast_cycle_ended_sequence_"
-                        << last_cycle_ended_sequence_;
+                        << last_repetition_ended_sequence_;
     }
     if (last_detached_sequence_) {
       assertion_failure << "\n\tlast_detached_sequence_="

@@ -86,7 +86,7 @@ ui::CallbackLayerAnimationObserver* BuildObserverToHideView(views::View* view) {
   if (d)
     layer_animation_sequence->AddElement(std::move(d));
 
-  layer_animation_sequence->set_is_cyclic(params.is_cyclic);
+  layer_animation_sequence->set_is_repeating(params.is_cyclic);
 
   return layer_animation_sequence;
 }
