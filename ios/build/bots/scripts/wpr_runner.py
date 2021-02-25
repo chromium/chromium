@@ -418,6 +418,9 @@ class WprProxySimulatorTestRunner(test_runner.SimulatorTestRunner):
       network_services = network_services[1:]
 
       for service in network_services:
+        # Skip disabled services on setup (denoted by leading '*')
+        if service.startswith('*'):
+          continue
         subprocess.check_call(
             ['networksetup', '-setsocksfirewallproxystate', service, 'on'])
         subprocess.check_call([
@@ -448,6 +451,9 @@ class WprProxySimulatorTestRunner(test_runner.SimulatorTestRunner):
       network_services = network_services[1:]
 
       for service in network_services:
+        # Disabled services have a '*' but calls should not include it
+        if service.startswith('*'):
+          service = service[1:]
         subprocess.check_call(
             ['networksetup', '-setsocksfirewallproxystate', service, 'off'])
 
