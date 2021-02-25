@@ -237,7 +237,9 @@ TEST_F(FileManagerFileAPIUtilTest,
   FileDefinition x_fd = {.virtual_path = x_file_url.virtual_path()},
                  y_fd = {.virtual_path = y_file_url.virtual_path()};
   ConvertFileDefinitionListToEntryDefinitionList(
-      profile, extension_id_, {x_fd, y_fd}, std::move(callback));
+      file_manager::util::GetFileSystemContextForExtensionId(profile,
+                                                             extension_id_),
+      temp_file_system.origin(), {x_fd, y_fd}, std::move(callback));
   run_loop.Run();
 }
 
@@ -259,8 +261,67 @@ TEST_F(FileManagerFileAPIUtilTest,
       base::FilePath().Append("not-found"));
   FileDefinition x_fd = {.virtual_path = x_file_url.virtual_path()};
 
-  ConvertFileDefinitionListToEntryDefinitionList(GetProfile(), extension_id_,
+  ConvertFileDefinitionListToEntryDefinitionList(
+      file_manager::util::GetFileSystemContextForExtensionId(GetProfile(),
+                                                             extension_id_),
+      temp_file_system.origin(), {x_fd}, std::move(callback));
+  run_loop.Run();
+}
+
+TEST_F(FileManagerFileAPIUtilTest,
+       ConvertFileDefinitionListToEntryDefinitionNullContext) {
+  base::RunLoop run_loop;
+  EntryDefinitionListCallback callback = base::BindOnce(
+      [](base::OnceClosure quit_closure,
+         std::unique_ptr<EntryDefinitionList> entries) {
+        ASSERT_EQ(1, entries->size());
+        EXPECT_EQ(base::File::FILE_ERROR_INVALID_OPERATION,
+                  entries->at(0).error);
+        std::move(quit_closure).Run();
+      },
+      run_loop.QuitClosure());
+
+  TempFileSystem temp_file_system(GetProfile(), extension_id_);
+  ASSERT_TRUE(temp_file_system.SetUp());
+  storage::FileSystemURL x_file_url = temp_file_system.CreateFileSystemURL(".");
+  FileDefinition x_fd = {.virtual_path = x_file_url.virtual_path()};
+
+  // Check a simple case where the context is already null before we have
+  // a chance to call the conversion function.
+  ConvertFileDefinitionListToEntryDefinitionList(
+      nullptr, temp_file_system.origin(), {x_fd}, std::move(callback));
+  run_loop.Run();
+}
+
+TEST_F(FileManagerFileAPIUtilTest,
+       ConvertFileDefinitionListToEntryDefinitionContextReset) {
+  base::RunLoop run_loop;
+  EntryDefinitionListCallback callback = base::BindOnce(
+      [](base::OnceClosure quit_closure,
+         std::unique_ptr<EntryDefinitionList> entries) {
+        ASSERT_EQ(1, entries->size());
+        EXPECT_EQ(base::File::FILE_OK, entries->at(0).error);
+        std::move(quit_closure).Run();
+      },
+      run_loop.QuitClosure());
+
+  TempFileSystem temp_file_system(GetProfile(), extension_id_);
+  ASSERT_TRUE(temp_file_system.SetUp());
+  storage::FileSystemURL x_file_url = temp_file_system.CreateFileSystemURL(".");
+  FileDefinition x_fd = {.virtual_path = x_file_url.virtual_path()};
+  scoped_refptr<storage::FileSystemContext> file_system_context =
+      file_manager::util::GetFileSystemContextForExtensionId(GetProfile(),
+                                                             extension_id_);
+
+  // Check the case where the context is not null, but is reset to null as
+  // soon as function call is completed. Conversion takes place on a
+  // different thread, after the function call returns. However, since
+  // it holds to a copy of a scoped pointer we expect it to succeed.
+  ConvertFileDefinitionListToEntryDefinitionList(file_system_context,
+                                                 temp_file_system.origin(),
                                                  {x_fd}, std::move(callback));
+  file_system_context.reset();
+
   run_loop.Run();
 }
 

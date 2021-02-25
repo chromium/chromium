@@ -736,7 +736,10 @@ void EventRouter::DispatchDirectoryChangeEventImpl(
     file_definition.is_directory = true;
 
     file_manager::util::ConvertFileDefinitionToEntryDefinition(
-        profile_, *extension_id, file_definition,
+        util::GetFileSystemContextForExtensionId(profile_, *extension_id),
+        url::Origin::Create(
+            extensions::Extension::GetBaseURLFromExtensionId(*extension_id)),
+        file_definition,
         base::BindOnce(
             &EventRouter::DispatchDirectoryChangeEventWithEntryDefinition,
             weak_factory_.GetWeakPtr(), base::Owned(extension_id), got_error));

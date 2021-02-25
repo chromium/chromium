@@ -1079,16 +1079,17 @@ FileManagerPrivateInternalResolveIsolatedEntriesFunction::Run() {
   const std::unique_ptr<Params> params(Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  const ChromeExtensionFunctionDetails chrome_details(this);
+  Profile* profile = Profile::FromBrowserContext(browser_context());
   scoped_refptr<storage::FileSystemContext> file_system_context =
       file_manager::util::GetFileSystemContextForRenderFrameHost(
-          chrome_details.GetProfile(), render_frame_host());
+          profile, render_frame_host());
   DCHECK(file_system_context.get());
 
   const storage::ExternalFileSystemBackend* external_backend =
       file_system_context->external_backend();
   DCHECK(external_backend);
 
+  const std::string& origin_id = extension_id_or_file_app_id();
   file_manager::util::FileDefinitionList file_definition_list;
   for (size_t i = 0; i < params->urls.size(); ++i) {
     const FileSystemURL file_system_url =
@@ -1099,8 +1100,8 @@ FileManagerPrivateInternalResolveIsolatedEntriesFunction::Run() {
     FileDefinition file_definition;
     const bool result =
         file_manager::util::ConvertAbsoluteFilePathToRelativeFileSystemPath(
-            chrome_details.GetProfile(), extension_id_or_file_app_id(),
-            file_system_url.path(), &file_definition.virtual_path);
+            profile, origin_id, file_system_url.path(),
+            &file_definition.virtual_path);
     if (!result)
       continue;
     // The API only supports isolated files. It still works for directories,
@@ -1110,7 +1111,10 @@ FileManagerPrivateInternalResolveIsolatedEntriesFunction::Run() {
   }
 
   file_manager::util::ConvertFileDefinitionListToEntryDefinitionList(
-      chrome_details.GetProfile(), extension_id_or_file_app_id(),
+      file_manager::util::GetFileSystemContextForExtensionId(profile,
+                                                             origin_id),
+      url::Origin::Create(
+          extensions::Extension::GetBaseURLFromExtensionId(origin_id)),
       file_definition_list,  // Safe, since copied internally.
       base::BindOnce(
           &FileManagerPrivateInternalResolveIsolatedEntriesFunction::

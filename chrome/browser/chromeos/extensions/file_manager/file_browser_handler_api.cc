@@ -40,6 +40,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
@@ -320,10 +321,10 @@ void FileBrowserHandlerInternalSelectFileFunction::OnFilePathSelected(
     return;
   }
 
-  const ChromeExtensionFunctionDetails chrome_details(this);
+  Profile* profile = Profile::FromBrowserContext(browser_context());
   storage::ExternalFileSystemBackend* external_backend =
       file_manager::util::GetFileSystemContextForRenderFrameHost(
-          chrome_details.GetProfile(), render_frame_host())
+          profile, render_frame_host())
           ->external_backend();
   DCHECK(external_backend);
 
@@ -336,7 +337,8 @@ void FileBrowserHandlerInternalSelectFileFunction::OnFilePathSelected(
   // Grant access to this particular file to target extension. This will
   // ensure that the target extension can access only this FS entry and
   // prevent from traversing FS hierarchy upward.
-  external_backend->GrantFileAccessToExtension(extension_id_or_file_app_id(),
+  const std::string& origin_id = extension_id_or_file_app_id();
+  external_backend->GrantFileAccessToExtension(origin_id,
                                                file_definition.virtual_path);
 
   // Grant access to the selected file to target extensions render view process.
@@ -344,7 +346,10 @@ void FileBrowserHandlerInternalSelectFileFunction::OnFilePathSelected(
       render_frame_host()->GetProcess()->GetID(), full_path);
 
   file_manager::util::ConvertFileDefinitionToEntryDefinition(
-      chrome_details.GetProfile(), extension_id_or_file_app_id(),
+      file_manager::util::GetFileSystemContextForExtensionId(profile,
+                                                             origin_id),
+      url::Origin::Create(
+          extensions::Extension::GetBaseURLFromExtensionId(origin_id)),
       file_definition,
       base::BindOnce(
           &FileBrowserHandlerInternalSelectFileFunction::RespondEntryDefinition,

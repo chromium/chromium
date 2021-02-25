@@ -9,7 +9,6 @@
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/file_manager/volume_manager.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
 #include "chromeos/components/file_manager/url_constants.h"
 #include "content/public/browser/child_process_security_policy.h"
@@ -28,9 +27,9 @@ FileManagerPrivateInternalGetVolumeRootFunction::Run() {
     return RespondNow(Error("Volume ID must be provided."));
   }
 
-  Profile* const profile = Profile::FromBrowserContext(browser_context());
   file_manager::VolumeManager* const volume_manager =
-      file_manager::VolumeManager::Get(profile);
+      file_manager::VolumeManager::Get(
+          Profile::FromBrowserContext(browser_context()));
   DCHECK(volume_manager);
   base::WeakPtr<file_manager::Volume> volume =
       volume_manager->FindVolumeById(volume_id);
@@ -68,7 +67,10 @@ FileManagerPrivateInternalGetVolumeRootFunction::Run() {
 
   // Convert volume's mount path to an EntryDefinition.
   file_manager::util::ConvertFileDefinitionToEntryDefinition(
-      profile, origin_id, fd,
+      file_system_context,
+      url::Origin::Create(
+          extensions::Extension::GetBaseURLFromExtensionId(origin_id)),
+      fd,
       base::BindOnce(
           &FileManagerPrivateInternalGetVolumeRootFunction::OnRequestDone,
           this));

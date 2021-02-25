@@ -71,10 +71,11 @@ EntryDefinition CreateEntryDefinitionWithError(base::File::Error error) {
 // or if shutdown is invoked during ResolveURL(). Must be called on UI thread.
 class FileDefinitionListConverter {
  public:
-  FileDefinitionListConverter(Profile* profile,
-                              const std::string& extension_id,
-                              const FileDefinitionList& file_definition_list,
-                              EntryDefinitionListCallback callback);
+  FileDefinitionListConverter(
+      scoped_refptr<storage::FileSystemContext> file_system_context,
+      const url::Origin& origin,
+      const FileDefinitionList& file_definition_list,
+      EntryDefinitionListCallback callback);
   ~FileDefinitionListConverter() = default;
 
  private:
@@ -102,25 +103,23 @@ class FileDefinitionListConverter {
       const EntryDefinition& entry_definition);
 
   scoped_refptr<storage::FileSystemContext> file_system_context_;
-  const std::string extension_id_;
+  const url::Origin origin_;
   const FileDefinitionList file_definition_list_;
   EntryDefinitionListCallback callback_;
   std::unique_ptr<EntryDefinitionList> result_;
 };
 
 FileDefinitionListConverter::FileDefinitionListConverter(
-    Profile* profile,
-    const std::string& extension_id,
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    const url::Origin& origin,
     const FileDefinitionList& file_definition_list,
     EntryDefinitionListCallback callback)
-    : extension_id_(extension_id),
+    : file_system_context_(file_system_context),
+      origin_(origin),
       file_definition_list_(file_definition_list),
       callback_(std::move(callback)),
       result_(new EntryDefinitionList) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  file_system_context_ =
-      GetFileSystemContextForExtensionId(profile, extension_id_);
 
   // Deletes the converter, once the scoped pointer gets out of scope. It is
   // either, if the conversion is finished, or ResolveURL() is terminated, and
@@ -147,9 +146,7 @@ void FileDefinitionListConverter::ConvertNextIterator(
   }
 
   storage::FileSystemURL url = file_system_context_->CreateCrackedFileSystemURL(
-      url::Origin::Create(
-          extensions::Extension::GetBaseURLFromExtensionId(extension_id_)),
-      storage::kFileSystemTypeExternal, iterator->virtual_path);
+      origin_, storage::kFileSystemTypeExternal, iterator->virtual_path);
 
   if (!url.is_valid()) {
     OnIteratorConverted(
@@ -497,20 +494,20 @@ bool ConvertAbsoluteFilePathToRelativeFileSystemPath(
 }
 
 void ConvertFileDefinitionListToEntryDefinitionList(
-    Profile* profile,
-    const std::string& extension_id,
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    const url::Origin& origin,
     const FileDefinitionList& file_definition_list,
     EntryDefinitionListCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // The converter object destroys itself.
-  new FileDefinitionListConverter(profile, extension_id, file_definition_list,
-                                  std::move(callback));
+  new FileDefinitionListConverter(file_system_context, origin,
+                                  file_definition_list, std::move(callback));
 }
 
 void ConvertFileDefinitionToEntryDefinition(
-    Profile* profile,
-    const std::string& extension_id,
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    const url::Origin& origin,
     const FileDefinition& file_definition,
     EntryDefinitionCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -518,7 +515,7 @@ void ConvertFileDefinitionToEntryDefinition(
   FileDefinitionList file_definition_list;
   file_definition_list.push_back(file_definition);
   ConvertFileDefinitionListToEntryDefinitionList(
-      profile, extension_id, file_definition_list,
+      file_system_context, origin, file_definition_list,
       base::BindOnce(&OnConvertFileDefinitionDone, std::move(callback)));
 }
 
