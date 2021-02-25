@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "media/base/win/dxgi_device_manager.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/video/video_capture_buffer_tracker_factory.h"
-#include "media/capture/video/win/video_capture_dxgi_device_manager.h"
 
 namespace media {
 
@@ -26,7 +26,7 @@ class CAPTURE_EXPORT VideoCaptureBufferTrackerFactoryWin
       const gfx::GpuMemoryBufferHandle& handle) override;
 
  private:
-  scoped_refptr<VideoCaptureDXGIDeviceManager> dxgi_device_manager_;
+  scoped_refptr<DXGIDeviceManager> dxgi_device_manager_;
   base::WeakPtrFactory<VideoCaptureBufferTrackerFactoryWin> weak_factory_{this};
 };
 

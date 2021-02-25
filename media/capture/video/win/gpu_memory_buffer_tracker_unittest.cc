@@ -16,7 +16,6 @@
 #include "media/capture/video/win/d3d_capture_test_utils.h"
 #include "media/capture/video/win/gpu_memory_buffer_tracker.h"
 #include "media/capture/video/win/video_capture_device_factory_win.h"
-#include "media/capture/video/win/video_capture_dxgi_device_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -31,14 +30,14 @@ namespace media {
 
 namespace {
 
-class MockVideoCaptureDXGIDeviceManager : public VideoCaptureDXGIDeviceManager {
+class MockDXGIDeviceManager : public DXGIDeviceManager {
  public:
-  MockVideoCaptureDXGIDeviceManager()
-      : VideoCaptureDXGIDeviceManager(nullptr, 0),
+  MockDXGIDeviceManager()
+      : DXGIDeviceManager(nullptr, 0),
         mock_d3d_device_(new MockD3D11Device()) {}
 
   // Associates a new D3D device with the DXGI Device Manager
-  bool ResetDevice() override { return true; }
+  HRESULT ResetDevice() override { return S_OK; }
 
   // Directly access D3D device stored in DXGI device manager
   Microsoft::WRL::ComPtr<ID3D11Device> GetDevice() override {
@@ -52,7 +51,7 @@ class MockVideoCaptureDXGIDeviceManager : public VideoCaptureDXGIDeviceManager {
   }
 
  protected:
-  ~MockVideoCaptureDXGIDeviceManager() override {}
+  ~MockDXGIDeviceManager() override {}
   Microsoft::WRL::ComPtr<MockD3D11Device> mock_d3d_device_;
 };
 
@@ -85,13 +84,13 @@ class GpuMemoryBufferTrackerTest : public ::testing::Test {
       GTEST_SKIP();
     }
 
-    dxgi_device_manager_ = scoped_refptr<MockVideoCaptureDXGIDeviceManager>(
-        new MockVideoCaptureDXGIDeviceManager());
+    dxgi_device_manager_ =
+        scoped_refptr<MockDXGIDeviceManager>(new MockDXGIDeviceManager());
   }
 
   base::test::TaskEnvironment task_environment_;
   const bool media_foundation_supported_;
-  scoped_refptr<MockVideoCaptureDXGIDeviceManager> dxgi_device_manager_;
+  scoped_refptr<MockDXGIDeviceManager> dxgi_device_manager_;
 };
 
 TEST_F(GpuMemoryBufferTrackerTest, TextureCreation) {

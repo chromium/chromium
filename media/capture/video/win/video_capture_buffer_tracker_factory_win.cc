@@ -12,7 +12,7 @@
 namespace media {
 
 VideoCaptureBufferTrackerFactoryWin::VideoCaptureBufferTrackerFactoryWin()
-    : dxgi_device_manager_(VideoCaptureDXGIDeviceManager::Create()) {}
+    : dxgi_device_manager_(DXGIDeviceManager::Create()) {}
 
 VideoCaptureBufferTrackerFactoryWin::~VideoCaptureBufferTrackerFactoryWin() {}
 

@@ -53,34 +53,6 @@ MediaBufferScopedPointer::~MediaBufferScopedPointer() {
   CHECK(SUCCEEDED(hr));
 }
 
-DXGIDeviceScopedHandle::DXGIDeviceScopedHandle(
-    IMFDXGIDeviceManager* device_manager)
-    : device_manager_(device_manager) {}
-
-DXGIDeviceScopedHandle::~DXGIDeviceScopedHandle() {
-  if (device_handle_ != INVALID_HANDLE_VALUE) {
-    HRESULT hr = device_manager_->CloseDeviceHandle(device_handle_);
-    CHECK(SUCCEEDED(hr));
-    device_handle_ = INVALID_HANDLE_VALUE;
-  }
-}
-
-HRESULT DXGIDeviceScopedHandle::LockDevice(REFIID riid, void** device_out) {
-  HRESULT hr;
-  if (device_handle_ == INVALID_HANDLE_VALUE) {
-    hr = device_manager_->OpenDeviceHandle(&device_handle_);
-    if (FAILED(hr)) {
-      return hr;
-    }
-  }
-  // see
-  // https://docs.microsoft.com/en-us/windows/win32/api/mfobjects/nf-mfobjects-imfdxgidevicemanager-lockdevice
-  // for details of LockDevice call.
-  hr = device_manager_->LockDevice(device_handle_, riid, device_out,
-                                   /*block=*/FALSE);
-  return hr;
-}
-
 HRESULT CopyCoTaskMemWideString(LPCWSTR in_string, LPWSTR* out_string) {
   if (!in_string || !out_string) {
     return E_INVALIDARG;

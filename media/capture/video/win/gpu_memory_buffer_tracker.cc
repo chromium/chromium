@@ -61,7 +61,7 @@ base::win::ScopedHandle CreateNV12Texture(ID3D11Device* d3d11_device,
 }  // namespace
 
 GpuMemoryBufferTracker::GpuMemoryBufferTracker(
-    scoped_refptr<VideoCaptureDXGIDeviceManager> dxgi_device_manager)
+    scoped_refptr<DXGIDeviceManager> dxgi_device_manager)
     : dxgi_device_manager_(std::move(dxgi_device_manager)),
       d3d_device_(dxgi_device_manager_->GetDevice()) {}
 

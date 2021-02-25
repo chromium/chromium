@@ -813,7 +813,7 @@ HRESULT VideoCaptureDeviceMFWin::FillCapabilities(
 VideoCaptureDeviceMFWin::VideoCaptureDeviceMFWin(
     const VideoCaptureDeviceDescriptor& device_descriptor,
     ComPtr<IMFMediaSource> source,
-    scoped_refptr<VideoCaptureDXGIDeviceManager> dxgi_device_manager)
+    scoped_refptr<DXGIDeviceManager> dxgi_device_manager)
     : VideoCaptureDeviceMFWin(device_descriptor,
                               source,
                               std::move(dxgi_device_manager),
@@ -822,7 +822,7 @@ VideoCaptureDeviceMFWin::VideoCaptureDeviceMFWin(
 VideoCaptureDeviceMFWin::VideoCaptureDeviceMFWin(
     const VideoCaptureDeviceDescriptor& device_descriptor,
     ComPtr<IMFMediaSource> source,
-    scoped_refptr<VideoCaptureDXGIDeviceManager> dxgi_device_manager,
+    scoped_refptr<DXGIDeviceManager> dxgi_device_manager,
     ComPtr<IMFCaptureEngine> engine)
     : facing_mode_(device_descriptor.facing),
       create_mf_photo_callback_(base::BindRepeating(&CreateMFPhotoCallback)),

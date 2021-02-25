@@ -7,7 +7,7 @@
 
 #include "base/win/windows_version.h"
 #include "media/base/test_helpers.h"
-#include "media/base/win/mf_helpers.h"
+#include "media/base/win/dxgi_device_manager.h"
 #include "media/base/win/mf_initializer.h"
 
 namespace media {
@@ -66,7 +66,7 @@ class DXGIDeviceScopedHandleTest : public testing::Test {
   const bool test_supported_;
 };
 
-TEST_F(DXGIDeviceScopedHandleTest, UseDXGIDeviceScopedHandle) {
+TEST_F(DXGIDeviceScopedHandleTest, LockDevice) {
   if (!test_supported_)
     return;
 
@@ -86,6 +86,26 @@ TEST_F(DXGIDeviceScopedHandleTest, UseDXGIDeviceScopedHandle) {
   DXGIDeviceScopedHandle device_handle_3(dxgi_device_man_.Get());
   ComPtr<ID3D11Device> device3;
   ASSERT_HRESULT_SUCCEEDED(device_handle_3.LockDevice(IID_PPV_ARGS(&device3)));
+}
+
+TEST_F(DXGIDeviceScopedHandleTest, GetDevice) {
+  if (!test_supported_)
+    return;
+
+  {
+    // Create DXGIDeviceScopedHandle in an inner scope.
+    DXGIDeviceScopedHandle device_handle_1(dxgi_device_man_.Get());
+  }
+  {
+    // Create DXGIDeviceScopedHandle in an inner scope with GetDevice call.
+    DXGIDeviceScopedHandle device_handle_2(dxgi_device_man_.Get());
+    ComPtr<ID3D11Device> device2 = device_handle_2.GetDevice();
+    EXPECT_NE(device2, nullptr);
+  }
+  // Use the device in an outer scope.
+  DXGIDeviceScopedHandle device_handle_3(dxgi_device_man_.Get());
+  ComPtr<ID3D11Device> device3 = device_handle_3.GetDevice();
+  EXPECT_NE(device3, nullptr);
 }
 
 }  // namespace media
