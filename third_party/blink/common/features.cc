@@ -198,10 +198,10 @@ const base::Feature kInsertKeyToggleMode = {"InsertKeyToggleMode",
 const base::Feature kRawClipboard{"RawClipboard",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables usage of getCurrentBrowsingContextMedia() that allows capturing of
+// Kill switch for getCurrentBrowsingContextMedia(), which allows capturing of
 // web content from the tab from which it is called. (crbug.com/1136940)
 const base::Feature kRTCGetCurrentBrowsingContextMedia{
-    "RTCGetCurrentBrowsingContextMedia", base::FEATURE_DISABLED_BY_DEFAULT};
+    "RTCGetCurrentBrowsingContextMedia", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Changes the default RTCPeerConnection constructor behavior to use Unified
 // Plan as the SDP semantics. When the feature is enabled, Unified Plan is used
