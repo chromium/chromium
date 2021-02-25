@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tab;
 
 import org.chromium.chrome.browser.SwipeRefreshHandler;
+import org.chromium.chrome.browser.bookmarks.shopping.ShoppingCache;
 import org.chromium.chrome.browser.complex_tasks.TaskTabHelper;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchTabHelper;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchTabHelper;
@@ -57,5 +58,6 @@ public final class TabHelpers {
         TrustedCdn.from(tab);
         TabAssociatedApp.from(tab);
         TabGestureStateListener.from(tab);
+        ShoppingCache.LocalCacheHelper.createForTab(tab);
     }
 }

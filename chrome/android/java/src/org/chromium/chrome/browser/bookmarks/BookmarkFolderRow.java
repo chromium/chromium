@@ -61,7 +61,7 @@ public class BookmarkFolderRow extends BookmarkRow {
                             : getResources().getString(R.string.no_bookmarks));
         }
 
-        setStartIconDrawable(BookmarkUtils.getFolderIcon(getContext(), item.getId().getType()));
+        setStartIconDrawable(BookmarkUtils.getFolderIcon(getContext(), bookmarkId.getType()));
         return item;
     }
 

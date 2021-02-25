@@ -153,6 +153,7 @@ public class NotificationConstants {
     public static final String GROUP_CLICK_TO_CALL = "ClickToCall";
     public static final String GROUP_SHARED_CLIPBOARD = "SharedClipboard";
     public static final String GROUP_SHARE_SAVE_IMAGE = "ShareSaveImage";
+    public static final String GROUP_SHOPPING = "Shopping";
 
     // Web notification group names are set dynamically as this prefix + notification origin.
     // For example, 'Web:chromium.org' for a notification from chromium.org.
