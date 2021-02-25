@@ -2485,11 +2485,11 @@ void AutomationInternalCustomBindings::SendAutomationEvent(
                     ax_event == ax::mojom::Event::kMediaStartedPlaying ||
                     ax_event == ax::mojom::Event::kMediaStoppedPlaying;
 
-  // If we don't explicitly recognize the event type, require a valid node
-  // target.
+  // If we don't explicitly recognize the event type, require a valid, unignored
+  // node target.
   ui::AXNode* node =
       tree_wrapper->GetNodeFromTree(tree_wrapper->GetTreeID(), event.id);
-  if (!fire_event && !node)
+  if (!fire_event && (!node || node->data().IsIgnored()))
     return;
 
   while (node && tree_wrapper && !fire_event) {
