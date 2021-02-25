@@ -128,22 +128,38 @@ void JankInjector::ScheduleJankIfNeeded(
     base::SingleThreadTaskRunner* task_runner) {
   if (ShouldJankCurrentFrame(args)) {
     ScheduleJank(args, task_runner);
+    did_jank_last_time_ = true;
   } else {
-    // TODO(sad): update internal state.
+    ++total_frames_;
+    did_jank_last_time_ = false;
   }
 }
 
 bool JankInjector::ShouldJankCurrentFrame(
     const viz::BeginFrameArgs& args) const {
-  // TODO(sad): We can do something more complicated here if/when needed. Things
-  // to take into consideration:
-  //   . number of consecutive dropped frames.
-  //   . max number of dropped frames in a specific interval.
-  //   . min number of dropped frames in a specific interval.
-  //   . e
-  //   . t
-  //   . c
-  return false;
+  // If jank was injected during the previous frame, then do not inject jank
+  // again now.
+  if (did_jank_last_time_)
+    return false;
+
+  // Do not jank during the first frame.
+  if (!total_frames_)
+    return false;
+
+  auto current_jank = janked_frames_ * 100 / total_frames_;
+  // Do not drop any more frames if the injected jank is already above or at the
+  // target.
+  if (current_jank >= config_.target_dropped_frames_percent)
+    return false;
+
+  // If janking now makes the dropped the frames goes beyond the target, then do
+  // not inject the jank yet.
+  auto next_jank = (janked_frames_ + config_.dropped_frame_cluster_size) * 100 /
+                   (total_frames_ + config_.dropped_frame_cluster_size);
+  if (next_jank > config_.target_dropped_frames_percent)
+    return false;
+
+  return true;
 }
 
 void JankInjector::ScheduleJank(const viz::BeginFrameArgs& args,
@@ -152,6 +168,9 @@ void JankInjector::ScheduleJank(const viz::BeginFrameArgs& args,
   params.jank_duration = config_.dropped_frame_cluster_size * args.interval;
   params.busy_loop = true;
   task_runner->PostTask(FROM_HERE, base::BindOnce(&RunJank, std::move(params)));
+
+  janked_frames_ += config_.dropped_frame_cluster_size;
+  total_frames_ += config_.dropped_frame_cluster_size;
 }
 
 }  // namespace cc

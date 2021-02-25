@@ -596,16 +596,8 @@ void ProxyImpl::ScheduledActionSendBeginMainFrame(
     const viz::BeginFrameArgs& args) {
   DCHECK(IsImplThread());
 
-  if (is_jank_injection_enabled_) {
-    if (!host_impl_->CanInjectJankOnMain()) {
-      jank_injector_ = nullptr;
-    } else if (!jank_injector_) {
-      jank_injector_ = std::make_unique<JankInjector>();
-    }
-
-    if (jank_injector_) {
-      jank_injector_->ScheduleJankIfNeeded(args, MainThreadTaskRunner());
-    }
+  if (is_jank_injection_enabled_ && host_impl_->CanInjectJankOnMain()) {
+    jank_injector_.ScheduleJankIfNeeded(args, MainThreadTaskRunner());
   }
 
   benchmark_instrumentation::ScopedBeginFrameTask begin_frame_task(

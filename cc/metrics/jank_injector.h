@@ -36,6 +36,8 @@ class CC_EXPORT JankInjector {
   void ScheduleJankIfNeeded(const viz::BeginFrameArgs& args,
                             base::SingleThreadTaskRunner* task_runner);
 
+  const JankConfig& config() const { return config_; }
+
  private:
   bool ShouldJankCurrentFrame(const viz::BeginFrameArgs& args) const;
   void ScheduleJank(const viz::BeginFrameArgs& args,
@@ -43,6 +45,10 @@ class CC_EXPORT JankInjector {
   void SignalJank();
 
   JankConfig config_;
+
+  uint64_t total_frames_ = 0;
+  uint64_t janked_frames_ = 0;
+  bool did_jank_last_time_ = false;
 };
 
 }  // namespace cc

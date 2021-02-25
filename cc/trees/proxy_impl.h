@@ -12,6 +12,7 @@
 #include "cc/base/completion_event.h"
 #include "cc/base/delayed_unique_notifier.h"
 #include "cc/input/browser_controls_state.h"
+#include "cc/metrics/jank_injector.h"
 #include "cc/scheduler/scheduler.h"
 #include "cc/trees/layer_tree_host_impl.h"
 
@@ -179,7 +180,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
 
   bool send_compositor_frame_ack_;
 
-  std::unique_ptr<JankInjector> jank_injector_;
+  JankInjector jank_injector_;
 
   TreePriority last_raster_priority_;
 
