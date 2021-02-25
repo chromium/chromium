@@ -2995,12 +2995,12 @@ IndexedDBBackingStore::OpenIndexCursor(
   if (!IndexCursorOptions(leveldb_transaction, database_id, object_store_id,
                           index_id, range, direction, &cursor_options, s))
     return nullptr;
-  std::unique_ptr<IndexCursorImpl> cursor(new IndexCursorImpl(
-      transaction->AsWeakPtr(), database_id, cursor_options));
+  auto cursor = std::make_unique<IndexCursorImpl>(transaction->AsWeakPtr(),
+                                                  database_id, cursor_options);
   if (!cursor->FirstSeek(s))
     return nullptr;
 
-  return std::move(cursor);
+  return cursor;
 }
 
 bool IndexedDBBackingStore::IsBlobCleanupPending() {

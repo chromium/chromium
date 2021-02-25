@@ -102,12 +102,17 @@ struct TestDatabaseConnection {
         db_name(std::move(db_name)),
         version(version),
         upgrade_txn_id(upgrade_txn_id),
-        open_callbacks(new StrictMock<MockMojoIndexedDBCallbacks>()),
+        open_callbacks(
+            std::make_unique<StrictMock<MockMojoIndexedDBCallbacks>>()),
         connection_callbacks(
-            new StrictMock<MockMojoIndexedDBDatabaseCallbacks>()) {}
-  TestDatabaseConnection& operator=(TestDatabaseConnection&& other) noexcept =
+            std::make_unique<
+                StrictMock<MockMojoIndexedDBDatabaseCallbacks>>()) {}
+
+  TestDatabaseConnection(TestDatabaseConnection&&) noexcept = default;
+  TestDatabaseConnection& operator=(TestDatabaseConnection&&) noexcept =
       default;
-  ~TestDatabaseConnection() {}
+
+  ~TestDatabaseConnection() = default;
 
   void Open(blink::mojom::IDBFactory* factory) {
     factory->Open(

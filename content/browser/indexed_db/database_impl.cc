@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_math.h"
 #include "base/sequence_checker.h"
@@ -364,9 +365,9 @@ void DatabaseImpl::Count(
     mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks>
         pending_callbacks) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  scoped_refptr<IndexedDBCallbacks> callbacks(
-      new IndexedDBCallbacks(dispatcher_host_->AsWeakPtr(), origin_,
-                             std::move(pending_callbacks), idb_runner_));
+  auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
+      dispatcher_host_->AsWeakPtr(), origin_, std::move(pending_callbacks),
+      idb_runner_);
   if (!connection_->IsConnected())
     return;
 
@@ -389,9 +390,9 @@ void DatabaseImpl::DeleteRange(
     mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks>
         pending_callbacks) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  scoped_refptr<IndexedDBCallbacks> callbacks(
-      new IndexedDBCallbacks(dispatcher_host_->AsWeakPtr(), origin_,
-                             std::move(pending_callbacks), idb_runner_));
+  auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
+      dispatcher_host_->AsWeakPtr(), origin_, std::move(pending_callbacks),
+      idb_runner_);
   if (!connection_->IsConnected())
     return;
 
@@ -412,9 +413,9 @@ void DatabaseImpl::GetKeyGeneratorCurrentNumber(
     mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks>
         pending_callbacks) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  scoped_refptr<IndexedDBCallbacks> callbacks(
-      new IndexedDBCallbacks(dispatcher_host_->AsWeakPtr(), origin_,
-                             std::move(pending_callbacks), idb_runner_));
+  auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
+      dispatcher_host_->AsWeakPtr(), origin_, std::move(pending_callbacks),
+      idb_runner_);
   if (!connection_->IsConnected())
     return;
 
@@ -435,9 +436,9 @@ void DatabaseImpl::Clear(
     mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks>
         pending_callbacks) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  scoped_refptr<IndexedDBCallbacks> callbacks(
-      new IndexedDBCallbacks(dispatcher_host_->AsWeakPtr(), origin_,
-                             std::move(pending_callbacks), idb_runner_));
+  auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
+      dispatcher_host_->AsWeakPtr(), origin_, std::move(pending_callbacks),
+      idb_runner_);
   if (!connection_->IsConnected())
     return;
 

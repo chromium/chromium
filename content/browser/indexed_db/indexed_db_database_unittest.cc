@@ -11,6 +11,7 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
@@ -113,32 +114,28 @@ class IndexedDBDatabaseTest : public ::testing::Test {
 };
 
 TEST_F(IndexedDBDatabaseTest, ConnectionLifecycle) {
-  scoped_refptr<MockIndexedDBCallbacks> request1(new MockIndexedDBCallbacks());
-  scoped_refptr<MockIndexedDBDatabaseCallbacks> callbacks1(
-      new MockIndexedDBDatabaseCallbacks());
+  auto request1 = base::MakeRefCounted<MockIndexedDBCallbacks>();
+  auto callbacks1 = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
   const int64_t transaction_id1 = 1;
   auto create_transaction_callback1 =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
-  std::unique_ptr<IndexedDBPendingConnection> connection1(
-      std::make_unique<IndexedDBPendingConnection>(
-          request1, callbacks1,
-          transaction_id1, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
-          std::move(create_transaction_callback1)));
+  auto connection1 = std::make_unique<IndexedDBPendingConnection>(
+      request1, callbacks1, transaction_id1,
+      IndexedDBDatabaseMetadata::DEFAULT_VERSION,
+      std::move(create_transaction_callback1));
   db_->ScheduleOpenConnection(IndexedDBOriginStateHandle(),
                               std::move(connection1));
   RunPostedTasks();
 
-  scoped_refptr<MockIndexedDBCallbacks> request2(new MockIndexedDBCallbacks());
-  scoped_refptr<MockIndexedDBDatabaseCallbacks> callbacks2(
-      new MockIndexedDBDatabaseCallbacks());
+  auto request2 = base::MakeRefCounted<MockIndexedDBCallbacks>();
+  auto callbacks2 = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
   const int64_t transaction_id2 = 2;
   auto create_transaction_callback2 =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
-  std::unique_ptr<IndexedDBPendingConnection> connection2(
-      std::make_unique<IndexedDBPendingConnection>(
-          request2, callbacks2,
-          transaction_id2, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
-          std::move(create_transaction_callback2)));
+  auto connection2 = std::make_unique<IndexedDBPendingConnection>(
+      request2, callbacks2, transaction_id2,
+      IndexedDBDatabaseMetadata::DEFAULT_VERSION,
+      std::move(create_transaction_callback2));
   db_->ScheduleOpenConnection(IndexedDBOriginStateHandle(),
                               std::move(connection2));
   RunPostedTasks();
@@ -157,17 +154,15 @@ TEST_F(IndexedDBDatabaseTest, ConnectionLifecycle) {
 }
 
 TEST_F(IndexedDBDatabaseTest, ForcedClose) {
-  scoped_refptr<MockIndexedDBDatabaseCallbacks> callbacks(
-      new MockIndexedDBDatabaseCallbacks());
-  scoped_refptr<MockIndexedDBCallbacks> request(new MockIndexedDBCallbacks());
+  auto callbacks = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
+  auto request = base::MakeRefCounted<MockIndexedDBCallbacks>();
   const int64_t upgrade_transaction_id = 3;
   auto create_transaction_callback =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
-  std::unique_ptr<IndexedDBPendingConnection> connection(
-      std::make_unique<IndexedDBPendingConnection>(
-          request, callbacks,
-          upgrade_transaction_id, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
-          std::move(create_transaction_callback)));
+  auto connection = std::make_unique<IndexedDBPendingConnection>(
+      request, callbacks, upgrade_transaction_id,
+      IndexedDBDatabaseMetadata::DEFAULT_VERSION,
+      std::move(create_transaction_callback));
   db_->ScheduleOpenConnection(IndexedDBOriginStateHandle(),
                               std::move(connection));
   RunPostedTasks();
@@ -190,6 +185,8 @@ TEST_F(IndexedDBDatabaseTest, ForcedClose) {
   EXPECT_TRUE(callbacks->abort_called());
 }
 
+namespace {
+
 class MockCallbacks : public IndexedDBCallbacks {
  public:
   MockCallbacks()
@@ -209,7 +206,7 @@ class MockCallbacks : public IndexedDBCallbacks {
   bool error_called() const { return error_called_; }
 
  private:
-  ~MockCallbacks() override {}
+  ~MockCallbacks() override = default;
 
   bool blocked_called_ = false;
   bool success_called_ = false;
@@ -218,18 +215,18 @@ class MockCallbacks : public IndexedDBCallbacks {
   DISALLOW_COPY_AND_ASSIGN(MockCallbacks);
 };
 
+}  // namespace
+
 TEST_F(IndexedDBDatabaseTest, PendingDelete) {
-  scoped_refptr<MockIndexedDBCallbacks> request1(new MockIndexedDBCallbacks());
-  scoped_refptr<MockIndexedDBDatabaseCallbacks> callbacks1(
-      new MockIndexedDBDatabaseCallbacks());
+  auto request1 = base::MakeRefCounted<MockIndexedDBCallbacks>();
+  auto callbacks1 = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
   const int64_t transaction_id1 = 1;
   auto create_transaction_callback1 =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
-  std::unique_ptr<IndexedDBPendingConnection> connection(
-      std::make_unique<IndexedDBPendingConnection>(
-          request1, callbacks1,
-          transaction_id1, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
-          std::move(create_transaction_callback1)));
+  auto connection = std::make_unique<IndexedDBPendingConnection>(
+      request1, callbacks1, transaction_id1,
+      IndexedDBDatabaseMetadata::DEFAULT_VERSION,
+      std::move(create_transaction_callback1));
   db_->ScheduleOpenConnection(IndexedDBOriginStateHandle(),
                               std::move(connection));
   RunPostedTasks();
@@ -239,7 +236,7 @@ TEST_F(IndexedDBDatabaseTest, PendingDelete) {
   EXPECT_EQ(db_->PendingOpenDeleteCount(), 0UL);
 
   bool deleted = false;
-  scoped_refptr<MockCallbacks> request2(new MockCallbacks());
+  auto request2 = base::MakeRefCounted<MockCallbacks>();
   db_->ScheduleDeleteDatabase(
       IndexedDBOriginStateHandle(), request2,
       base::BindLambdaForTesting([&]() { deleted = true; }));
@@ -267,18 +264,15 @@ TEST_F(IndexedDBDatabaseTest, PendingDelete) {
 TEST_F(IndexedDBDatabaseTest, OpenDeleteClear) {
   const int64_t kDatabaseVersion = 1;
 
-  scoped_refptr<MockIndexedDBCallbacks> request1(
-      new MockIndexedDBCallbacks(true));
-  scoped_refptr<MockIndexedDBDatabaseCallbacks> callbacks1(
-      new MockIndexedDBDatabaseCallbacks());
+  auto request1 = base::MakeRefCounted<MockIndexedDBCallbacks>(
+      /*expect_connection=*/true);
+  auto callbacks1 = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
   const int64_t transaction_id1 = 1;
   auto create_transaction_callback1 =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
-  std::unique_ptr<IndexedDBPendingConnection> connection1(
-      std::make_unique<IndexedDBPendingConnection>(
-          request1, callbacks1,
-          transaction_id1, kDatabaseVersion,
-          std::move(create_transaction_callback1)));
+  auto connection1 = std::make_unique<IndexedDBPendingConnection>(
+      request1, callbacks1, transaction_id1, kDatabaseVersion,
+      std::move(create_transaction_callback1));
   db_->ScheduleOpenConnection(IndexedDBOriginStateHandle(),
                               std::move(connection1));
   RunPostedTasks();
@@ -287,18 +281,15 @@ TEST_F(IndexedDBDatabaseTest, OpenDeleteClear) {
   EXPECT_EQ(db_->ActiveOpenDeleteCount(), 1UL);
   EXPECT_EQ(db_->PendingOpenDeleteCount(), 0UL);
 
-  scoped_refptr<MockIndexedDBCallbacks> request2(
-      new MockIndexedDBCallbacks(false));
-  scoped_refptr<MockIndexedDBDatabaseCallbacks> callbacks2(
-      new MockIndexedDBDatabaseCallbacks());
+  auto request2 = base::MakeRefCounted<MockIndexedDBCallbacks>(
+      /*expect_connection=*/false);
+  auto callbacks2 = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
   const int64_t transaction_id2 = 2;
   auto create_transaction_callback2 =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
-  std::unique_ptr<IndexedDBPendingConnection> connection2(
-      std::make_unique<IndexedDBPendingConnection>(
-          request2, callbacks2,
-          transaction_id2, kDatabaseVersion,
-          std::move(create_transaction_callback2)));
+  auto connection2 = std::make_unique<IndexedDBPendingConnection>(
+      request2, callbacks2, transaction_id2, kDatabaseVersion,
+      std::move(create_transaction_callback2));
   db_->ScheduleOpenConnection(IndexedDBOriginStateHandle(),
                               std::move(connection2));
   RunPostedTasks();
@@ -307,18 +298,15 @@ TEST_F(IndexedDBDatabaseTest, OpenDeleteClear) {
   EXPECT_EQ(db_->ActiveOpenDeleteCount(), 1UL);
   EXPECT_EQ(db_->PendingOpenDeleteCount(), 1UL);
 
-  scoped_refptr<MockIndexedDBCallbacks> request3(
-      new MockIndexedDBCallbacks(false));
-  scoped_refptr<MockIndexedDBDatabaseCallbacks> callbacks3(
-      new MockIndexedDBDatabaseCallbacks());
+  auto request3 = base::MakeRefCounted<MockIndexedDBCallbacks>(
+      /*expect_connection=*/false);
+  auto callbacks3 = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
   const int64_t transaction_id3 = 3;
   auto create_transaction_callback3 =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
-  std::unique_ptr<IndexedDBPendingConnection> connection3(
-      std::make_unique<IndexedDBPendingConnection>(
-          request3, callbacks3,
-          transaction_id3, kDatabaseVersion,
-          std::move(create_transaction_callback3)));
+  auto connection3 = std::make_unique<IndexedDBPendingConnection>(
+      request3, callbacks3, transaction_id3, kDatabaseVersion,
+      std::move(create_transaction_callback3));
   db_->ScheduleOpenConnection(IndexedDBOriginStateHandle(),
                               std::move(connection3));
   RunPostedTasks();
@@ -342,17 +330,15 @@ TEST_F(IndexedDBDatabaseTest, OpenDeleteClear) {
 }
 
 TEST_F(IndexedDBDatabaseTest, ForceDelete) {
-  scoped_refptr<MockIndexedDBCallbacks> request1(new MockIndexedDBCallbacks());
-  scoped_refptr<MockIndexedDBDatabaseCallbacks> callbacks1(
-      new MockIndexedDBDatabaseCallbacks());
+  auto request1 = base::MakeRefCounted<MockIndexedDBCallbacks>();
+  auto callbacks1 = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
   const int64_t transaction_id1 = 1;
   auto create_transaction_callback1 =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
-  std::unique_ptr<IndexedDBPendingConnection> connection(
-      std::make_unique<IndexedDBPendingConnection>(
-          request1, callbacks1,
-          transaction_id1, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
-          std::move(create_transaction_callback1)));
+  auto connection = std::make_unique<IndexedDBPendingConnection>(
+      request1, callbacks1, transaction_id1,
+      IndexedDBDatabaseMetadata::DEFAULT_VERSION,
+      std::move(create_transaction_callback1));
   db_->ScheduleOpenConnection(IndexedDBOriginStateHandle(),
                               std::move(connection));
   RunPostedTasks();
@@ -362,7 +348,7 @@ TEST_F(IndexedDBDatabaseTest, ForceDelete) {
   EXPECT_EQ(db_->PendingOpenDeleteCount(), 0UL);
 
   bool deleted = false;
-  scoped_refptr<MockCallbacks> request2(new MockCallbacks());
+  auto request2 = base::MakeRefCounted<MockCallbacks>();
   db_->ScheduleDeleteDatabase(
       IndexedDBOriginStateHandle(), request2,
       base::BindLambdaForTesting([&]() { deleted = true; }));
@@ -379,17 +365,15 @@ TEST_F(IndexedDBDatabaseTest, ForceDelete) {
 TEST_F(IndexedDBDatabaseTest, ForceCloseWhileOpenPending) {
   // Verify that pending connection requests are handled correctly during a
   // ForceClose.
-  scoped_refptr<MockIndexedDBCallbacks> request1(new MockIndexedDBCallbacks());
-  scoped_refptr<MockIndexedDBDatabaseCallbacks> callbacks1(
-      new MockIndexedDBDatabaseCallbacks());
+  auto request1 = base::MakeRefCounted<MockIndexedDBCallbacks>();
+  auto callbacks1 = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
   const int64_t transaction_id1 = 1;
   auto create_transaction_callback1 =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
-  std::unique_ptr<IndexedDBPendingConnection> connection(
-      std::make_unique<IndexedDBPendingConnection>(
-          request1, callbacks1,
-          transaction_id1, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
-          std::move(create_transaction_callback1)));
+  auto connection = std::make_unique<IndexedDBPendingConnection>(
+      request1, callbacks1, transaction_id1,
+      IndexedDBDatabaseMetadata::DEFAULT_VERSION,
+      std::move(create_transaction_callback1));
   db_->ScheduleOpenConnection(IndexedDBOriginStateHandle(),
                               std::move(connection));
   RunPostedTasks();
@@ -398,17 +382,15 @@ TEST_F(IndexedDBDatabaseTest, ForceCloseWhileOpenPending) {
   EXPECT_EQ(db_->ActiveOpenDeleteCount(), 0UL);
   EXPECT_EQ(db_->PendingOpenDeleteCount(), 0UL);
 
-  scoped_refptr<MockIndexedDBCallbacks> request2(
-      new MockIndexedDBCallbacks(false));
-  scoped_refptr<MockIndexedDBDatabaseCallbacks> callbacks2(
-      new MockIndexedDBDatabaseCallbacks());
+  auto request2 = base::MakeRefCounted<MockIndexedDBCallbacks>(
+      /*expect_connection=*/false);
+  auto callbacks2 = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
   const int64_t transaction_id2 = 2;
   auto create_transaction_callback2 =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
-  std::unique_ptr<IndexedDBPendingConnection> connection2(
-      std::make_unique<IndexedDBPendingConnection>(
-          request1, callbacks1,
-          transaction_id2, 3, std::move(create_transaction_callback2)));
+  auto connection2 = std::make_unique<IndexedDBPendingConnection>(
+      request1, callbacks1, transaction_id2, 3,
+      std::move(create_transaction_callback2));
   db_->ScheduleOpenConnection(IndexedDBOriginStateHandle(),
                               std::move(connection2));
   RunPostedTasks();
@@ -430,10 +412,9 @@ TEST_F(IndexedDBDatabaseTest, ForceCloseWhileOpenAndDeletePending) {
   const int64_t transaction_id1 = 1;
   auto create_transaction_callback1 =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
-  std::unique_ptr<IndexedDBPendingConnection> connection = std::make_unique<
-      IndexedDBPendingConnection>(
-      request1, callbacks1,
-      transaction_id1, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
+  auto connection = std::make_unique<IndexedDBPendingConnection>(
+      request1, callbacks1, transaction_id1,
+      IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       std::move(create_transaction_callback1));
   db_->ScheduleOpenConnection(IndexedDBOriginStateHandle(),
                               std::move(connection));
@@ -448,10 +429,9 @@ TEST_F(IndexedDBDatabaseTest, ForceCloseWhileOpenAndDeletePending) {
   const int64_t transaction_id2 = 2;
   auto create_transaction_callback2 =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
-  std::unique_ptr<IndexedDBPendingConnection> connection2(
-      std::make_unique<IndexedDBPendingConnection>(
-          request1, callbacks1,
-          transaction_id2, 3, std::move(create_transaction_callback2)));
+  auto connection2 = std::make_unique<IndexedDBPendingConnection>(
+      request1, callbacks1, transaction_id2, 3,
+      std::move(create_transaction_callback2));
   db_->ScheduleOpenConnection(IndexedDBOriginStateHandle(),
                               std::move(connection2));
   RunPostedTasks();
@@ -483,7 +463,7 @@ class IndexedDBDatabaseOperationTest : public testing::Test {
   IndexedDBDatabaseOperationTest()
       : lock_manager_(kIndexedDBLockLevelCount),
         commit_success_(leveldb::Status::OK()),
-        factory_(new MockIndexedDBFactory()) {}
+        factory_(std::make_unique<MockIndexedDBFactory>()) {}
 
   void SetUp() override {
     backing_store_ = std::make_unique<IndexedDBFakeBackingStore>();
@@ -500,16 +480,15 @@ class IndexedDBDatabaseOperationTest : public testing::Test {
         &lock_manager_);
     ASSERT_TRUE(s.ok());
 
-    request_ = new MockIndexedDBCallbacks();
-    callbacks_ = new MockIndexedDBDatabaseCallbacks();
+    request_ = base::MakeRefCounted<MockIndexedDBCallbacks>();
+    callbacks_ = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
     const int64_t transaction_id = 1;
     auto create_transaction_callback1 =
         base::BindOnce(&CreateAndBindTransactionPlaceholder);
-    std::unique_ptr<IndexedDBPendingConnection> connection(
-        std::make_unique<IndexedDBPendingConnection>(
-            request_, callbacks_,
-            transaction_id, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
-            std::move(create_transaction_callback1)));
+    auto connection = std::make_unique<IndexedDBPendingConnection>(
+        request_, callbacks_, transaction_id,
+        IndexedDBDatabaseMetadata::DEFAULT_VERSION,
+        std::move(create_transaction_callback1));
     db_->ScheduleOpenConnection(IndexedDBOriginStateHandle(),
                                 std::move(connection));
     RunPostedTasks();

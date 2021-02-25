@@ -24,8 +24,8 @@ void IndexedDBExternalObjectChangeRecord ::SetExternalObjects(
 
 std::unique_ptr<IndexedDBExternalObjectChangeRecord>
 IndexedDBExternalObjectChangeRecord ::Clone() const {
-  std::unique_ptr<IndexedDBExternalObjectChangeRecord> record(
-      new IndexedDBExternalObjectChangeRecord(object_store_data_key_));
+  auto record = std::make_unique<IndexedDBExternalObjectChangeRecord>(
+      object_store_data_key_);
   record->external_objects_ = external_objects_;
 
   return record;

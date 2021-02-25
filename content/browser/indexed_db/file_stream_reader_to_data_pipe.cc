@@ -5,6 +5,7 @@
 #include "content/browser/indexed_db/file_stream_reader_to_data_pipe.h"
 
 #include "base/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "net/base/net_errors.h"
 
 namespace content {
@@ -56,8 +57,8 @@ void FileStreamReaderToDataPipe::ReadMore() {
   uint64_t read_bytes = std::min(static_cast<uint64_t>(num_bytes),
                                  read_length_ - transferred_bytes_);
 
-  scoped_refptr<net::IOBuffer> buffer(
-      new network::NetToMojoIOBuffer(pending_write_.get()));
+  auto buffer =
+      base::MakeRefCounted<network::NetToMojoIOBuffer>(pending_write_.get());
   int result =
       reader_->Read(buffer.get(), base::checked_cast<int>(read_bytes),
                     base::BindOnce(&FileStreamReaderToDataPipe::DidRead,

@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/guid.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/process/process.h"
 #include "base/sequenced_task_runner.h"
 #include "base/stl_util.h"
@@ -273,9 +274,8 @@ void IndexedDBDispatcherHost::GetDatabaseInfo(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const auto& origin = receivers_.current_context();
-  scoped_refptr<IndexedDBCallbacks> callbacks(
-      new IndexedDBCallbacks(this->AsWeakPtr(), origin,
-                             std::move(pending_callbacks), IDBTaskRunner()));
+  auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
+      this->AsWeakPtr(), origin, std::move(pending_callbacks), IDBTaskRunner());
   base::FilePath indexed_db_path = indexed_db_context_->data_path();
   indexed_db_context_->GetIDBFactory()->GetDatabaseInfo(
       std::move(callbacks), origin, indexed_db_path);
@@ -293,13 +293,11 @@ void IndexedDBDispatcherHost::Open(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const auto& origin = receivers_.current_context();
-  scoped_refptr<IndexedDBCallbacks> callbacks(
-      new IndexedDBCallbacks(this->AsWeakPtr(), origin,
-                             std::move(pending_callbacks), IDBTaskRunner()));
-  scoped_refptr<IndexedDBDatabaseCallbacks> database_callbacks(
-      new IndexedDBDatabaseCallbacks(indexed_db_context_,
-                                     std::move(database_callbacks_remote),
-                                     IDBTaskRunner()));
+  auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
+      this->AsWeakPtr(), origin, std::move(pending_callbacks), IDBTaskRunner());
+  auto database_callbacks = base::MakeRefCounted<IndexedDBDatabaseCallbacks>(
+      indexed_db_context_, std::move(database_callbacks_remote),
+      IDBTaskRunner());
   base::FilePath indexed_db_path = indexed_db_context_->data_path();
 
   auto create_transaction_callback =
@@ -322,9 +320,8 @@ void IndexedDBDispatcherHost::DeleteDatabase(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const auto& origin = receivers_.current_context();
-  scoped_refptr<IndexedDBCallbacks> callbacks(
-      new IndexedDBCallbacks(this->AsWeakPtr(), origin,
-                             std::move(pending_callbacks), IDBTaskRunner()));
+  auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
+      this->AsWeakPtr(), origin, std::move(pending_callbacks), IDBTaskRunner());
   base::FilePath indexed_db_path = indexed_db_context_->data_path();
   indexed_db_context_->GetIDBFactory()->DeleteDatabase(
       name, std::move(callbacks), origin, indexed_db_path, force_close);

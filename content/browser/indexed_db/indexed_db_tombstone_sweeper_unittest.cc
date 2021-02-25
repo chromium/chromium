@@ -78,16 +78,16 @@ MATCHER_P(SliceEq,
 
 class MockTickClock : public base::TickClock {
  public:
-  MockTickClock() {}
-  ~MockTickClock() override {}
+  MockTickClock() = default;
+  ~MockTickClock() override = default;
 
-  MOCK_CONST_METHOD0(NowTicks, base::TimeTicks());
+  MOCK_METHOD(base::TimeTicks, NowTicks, (), (const));
 };
 
 class IndexedDBTombstoneSweeperTest : public testing::Test {
  public:
-  IndexedDBTombstoneSweeperTest() {}
-  ~IndexedDBTombstoneSweeperTest() {}
+  IndexedDBTombstoneSweeperTest() = default;
+  ~IndexedDBTombstoneSweeperTest() override = default;
 
   void PopulateMultiDBMetdata() {
     // db1

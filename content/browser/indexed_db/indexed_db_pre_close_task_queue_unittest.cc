@@ -72,10 +72,9 @@ leveldb::Status MetadataFetcher(
 class IndexedDBPreCloseTaskQueueTest : public testing::Test {
  public:
   IndexedDBPreCloseTaskQueueTest() {
-    metadata_.push_back(IndexedDBDatabaseMetadata(kDBName, kDBId, kDBVersion,
-                                                  kDBMaxObjectStoreId));
+    metadata_.emplace_back(kDBName, kDBId, kDBVersion, kDBMaxObjectStoreId);
   }
-  ~IndexedDBPreCloseTaskQueueTest() override {}
+  ~IndexedDBPreCloseTaskQueueTest() override = default;
 
  protected:
   std::vector<IndexedDBDatabaseMetadata> metadata_;
@@ -86,11 +85,10 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, NoTasks) {
   bool done_called = false;
   bool metadata_called = false;
 
-  base::MockOneShotTimer* fake_timer = new base::MockOneShotTimer;
   IndexedDBPreCloseTaskQueue queue(
       std::list<std::unique_ptr<PreCloseTask>>(),
       base::BindOnce(&SetBoolValue, &done_called, true), kTestMaxRunTime,
-      base::WrapUnique(fake_timer));
+      std::make_unique<base::MockOneShotTimer>());
 
   queue.Start(base::BindOnce(&MetadataFetcher, &metadata_called,
                              leveldb::Status::OK(), &metadata_));
@@ -105,23 +103,23 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, TaskOneRound) {
   bool done_called = false;
   bool metadata_called = false;
 
-  MockPreCloseTask* task = new testing::StrictMock<MockPreCloseTask>();
+  auto task = std::make_unique<testing::StrictMock<MockPreCloseTask>>();
+  MockPreCloseTask& task_ref = *task;
 
-  EXPECT_CALL(*task,
+  EXPECT_CALL(task_ref,
               SetMetadata(testing::Pointee(testing::ContainerEq(metadata_))));
 
-  base::MockOneShotTimer* fake_timer = new base::MockOneShotTimer;
   std::list<std::unique_ptr<PreCloseTask>> tasks;
-  tasks.push_back(base::WrapUnique(task));
+  tasks.push_back(std::move(task));
   IndexedDBPreCloseTaskQueue queue(
       std::move(tasks), base::BindOnce(&SetBoolValue, &done_called, true),
-      kTestMaxRunTime, base::WrapUnique(fake_timer));
+      kTestMaxRunTime, std::make_unique<base::MockOneShotTimer>());
 
   queue.Start(base::BindOnce(&MetadataFetcher, &metadata_called,
                              leveldb::Status::OK(), &metadata_));
 
   // Expect calls are posted as tasks.
-  EXPECT_CALL(*task, RunRound()).WillOnce(testing::Return(true));
+  EXPECT_CALL(task_ref, RunRound()).WillOnce(testing::Return(true));
 
   task_environment_.RunUntilIdle();
 
@@ -135,17 +133,17 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, TaskTwoRounds) {
   bool done_called = false;
   bool metadata_called = false;
 
-  MockPreCloseTask* task = new testing::StrictMock<MockPreCloseTask>();
+  auto task = std::make_unique<testing::StrictMock<MockPreCloseTask>>();
+  MockPreCloseTask& task_ref = *task;
 
-  EXPECT_CALL(*task,
+  EXPECT_CALL(task_ref,
               SetMetadata(testing::Pointee(testing::ContainerEq(metadata_))));
 
-  base::MockOneShotTimer* fake_timer = new base::MockOneShotTimer;
   std::list<std::unique_ptr<PreCloseTask>> tasks;
-  tasks.push_back(base::WrapUnique(task));
+  tasks.push_back(std::move(task));
   IndexedDBPreCloseTaskQueue queue(
       std::move(tasks), base::BindOnce(&SetBoolValue, &done_called, true),
-      kTestMaxRunTime, base::WrapUnique(fake_timer));
+      kTestMaxRunTime, std::make_unique<base::MockOneShotTimer>());
 
   queue.Start(base::BindOnce(&MetadataFetcher, &metadata_called,
                              leveldb::Status::OK(), &metadata_));
@@ -155,7 +153,7 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, TaskTwoRounds) {
   {
     base::RunLoop loop;
 
-    EXPECT_CALL(*task, RunRound())
+    EXPECT_CALL(task_ref, RunRound())
         .WillOnce(RunClosureThenReturn(loop.QuitClosure(), false));
 
     loop.Run();
@@ -165,7 +163,7 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, TaskTwoRounds) {
   EXPECT_TRUE(queue.started());
   EXPECT_FALSE(queue.done());
 
-  EXPECT_CALL(*task, RunRound()).WillOnce(testing::Return(true));
+  EXPECT_CALL(task_ref, RunRound()).WillOnce(testing::Return(true));
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(metadata_called);
@@ -178,19 +176,20 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, TwoTasks) {
   bool done_called = false;
   bool metadata_called = false;
 
-  MockPreCloseTask* task1 = new testing::StrictMock<MockPreCloseTask>();
-  MockPreCloseTask* task2 = new testing::StrictMock<MockPreCloseTask>();
+  auto task1 = std::make_unique<testing::StrictMock<MockPreCloseTask>>();
+  MockPreCloseTask& task1_ref = *task1;
+  auto task2 = std::make_unique<testing::StrictMock<MockPreCloseTask>>();
+  MockPreCloseTask& task2_ref = *task2;
 
-  EXPECT_CALL(*task1,
+  EXPECT_CALL(task1_ref,
               SetMetadata(testing::Pointee(testing::ContainerEq(metadata_))));
 
-  base::MockOneShotTimer* fake_timer = new base::MockOneShotTimer;
   std::list<std::unique_ptr<PreCloseTask>> tasks;
-  tasks.push_back(base::WrapUnique(task1));
-  tasks.push_back(base::WrapUnique(task2));
+  tasks.push_back(std::move(task1));
+  tasks.push_back(std::move(task2));
   IndexedDBPreCloseTaskQueue queue(
       std::move(tasks), base::BindOnce(&SetBoolValue, &done_called, true),
-      kTestMaxRunTime, base::WrapUnique(fake_timer));
+      kTestMaxRunTime, std::make_unique<base::MockOneShotTimer>());
 
   queue.Start(base::BindOnce(&MetadataFetcher, &metadata_called,
                              leveldb::Status::OK(), &metadata_));
@@ -200,9 +199,9 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, TwoTasks) {
   {
     base::RunLoop loop;
 
-    EXPECT_CALL(*task1, RunRound())
+    EXPECT_CALL(task1_ref, RunRound())
         .WillOnce(RunClosureThenReturn(loop.QuitClosure(), true));
-    EXPECT_CALL(*task2,
+    EXPECT_CALL(task2_ref,
                 SetMetadata(testing::Pointee(testing::ContainerEq(metadata_))));
 
     loop.Run();
@@ -211,7 +210,7 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, TwoTasks) {
   {
     base::RunLoop loop;
 
-    EXPECT_CALL(*task2, RunRound())
+    EXPECT_CALL(task2_ref, RunRound())
         .WillOnce(RunClosureThenReturn(loop.QuitClosure(), true));
 
     loop.Run();
@@ -227,22 +226,23 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, StopForNewConnectionBeforeStart) {
   bool done_called = false;
   bool metadata_called = false;
 
-  MockPreCloseTask* task1 = new testing::StrictMock<MockPreCloseTask>();
-  MockPreCloseTask* task2 = new testing::StrictMock<MockPreCloseTask>();
+  auto task1 = std::make_unique<testing::StrictMock<MockPreCloseTask>>();
+  MockPreCloseTask& task1_ref = *task1;
+  auto task2 = std::make_unique<testing::StrictMock<MockPreCloseTask>>();
+  MockPreCloseTask& task2_ref = *task2;
 
-  base::MockOneShotTimer* fake_timer = new base::MockOneShotTimer;
   std::list<std::unique_ptr<PreCloseTask>> tasks;
-  tasks.push_back(base::WrapUnique(task1));
-  tasks.push_back(base::WrapUnique(task2));
+  tasks.push_back(std::move(task1));
+  tasks.push_back(std::move(task2));
   IndexedDBPreCloseTaskQueue queue(
       std::move(tasks), base::BindOnce(&SetBoolValue, &done_called, true),
-      kTestMaxRunTime, base::WrapUnique(fake_timer));
+      kTestMaxRunTime, std::make_unique<base::MockOneShotTimer>());
 
   queue.Start(base::BindOnce(&MetadataFetcher, &metadata_called,
                              leveldb::Status::OK(), &metadata_));
 
-  EXPECT_CALL(*task1, Stop(StopReason::NEW_CONNECTION));
-  EXPECT_CALL(*task2, Stop(StopReason::NEW_CONNECTION));
+  EXPECT_CALL(task1_ref, Stop(StopReason::NEW_CONNECTION));
+  EXPECT_CALL(task2_ref, Stop(StopReason::NEW_CONNECTION));
 
   queue.Stop(StopReason::NEW_CONNECTION);
 
@@ -258,17 +258,17 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, StopForNewConnectionAfterRound) {
   bool done_called = false;
   bool metadata_called = false;
 
-  MockPreCloseTask* task = new testing::StrictMock<MockPreCloseTask>();
+  auto task = std::make_unique<testing::StrictMock<MockPreCloseTask>>();
+  MockPreCloseTask& task_ref = *task;
 
-  EXPECT_CALL(*task,
+  EXPECT_CALL(task_ref,
               SetMetadata(testing::Pointee(testing::ContainerEq(metadata_))));
 
-  base::MockOneShotTimer* fake_timer = new base::MockOneShotTimer;
   std::list<std::unique_ptr<PreCloseTask>> tasks;
-  tasks.push_back(base::WrapUnique(task));
+  tasks.push_back(std::move(task));
   IndexedDBPreCloseTaskQueue queue(
       std::move(tasks), base::BindOnce(&SetBoolValue, &done_called, true),
-      kTestMaxRunTime, base::WrapUnique(fake_timer));
+      kTestMaxRunTime, std::make_unique<base::MockOneShotTimer>());
 
   queue.Start(base::BindOnce(&MetadataFetcher, &metadata_called,
                              leveldb::Status::OK(), &metadata_));
@@ -276,13 +276,13 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, StopForNewConnectionAfterRound) {
   {
     base::RunLoop loop;
 
-    EXPECT_CALL(*task, RunRound())
+    EXPECT_CALL(task_ref, RunRound())
         .WillOnce(RunClosureThenReturn(loop.QuitClosure(), false));
 
     loop.Run();
   }
 
-  EXPECT_CALL(*task, Stop(StopReason::NEW_CONNECTION));
+  EXPECT_CALL(task_ref, Stop(StopReason::NEW_CONNECTION));
 
   queue.Stop(StopReason::NEW_CONNECTION);
 
@@ -298,19 +298,20 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, StopForNewConnectionAfterTaskCompletes) {
   bool done_called = false;
   bool metadata_called = false;
 
-  MockPreCloseTask* task1 = new testing::StrictMock<MockPreCloseTask>();
-  MockPreCloseTask* task2 = new testing::StrictMock<MockPreCloseTask>();
+  auto task1 = std::make_unique<testing::StrictMock<MockPreCloseTask>>();
+  MockPreCloseTask& task1_ref = *task1;
+  auto task2 = std::make_unique<testing::StrictMock<MockPreCloseTask>>();
+  MockPreCloseTask& task2_ref = *task2;
 
-  EXPECT_CALL(*task1,
+  EXPECT_CALL(task1_ref,
               SetMetadata(testing::Pointee(testing::ContainerEq(metadata_))));
 
-  base::MockOneShotTimer* fake_timer = new base::MockOneShotTimer;
   std::list<std::unique_ptr<PreCloseTask>> tasks;
-  tasks.push_back(base::WrapUnique(task1));
-  tasks.push_back(base::WrapUnique(task2));
+  tasks.push_back(std::move(task1));
+  tasks.push_back(std::move(task2));
   IndexedDBPreCloseTaskQueue queue(
       std::move(tasks), base::BindOnce(&SetBoolValue, &done_called, true),
-      kTestMaxRunTime, base::WrapUnique(fake_timer));
+      kTestMaxRunTime, std::make_unique<base::MockOneShotTimer>());
 
   queue.Start(base::BindOnce(&MetadataFetcher, &metadata_called,
                              leveldb::Status::OK(), &metadata_));
@@ -318,13 +319,13 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, StopForNewConnectionAfterTaskCompletes) {
   {
     base::RunLoop loop;
 
-    EXPECT_CALL(*task1, RunRound())
+    EXPECT_CALL(task1_ref, RunRound())
         .WillOnce(RunClosureThenReturn(loop.QuitClosure(), true));
 
     loop.Run();
   }
 
-  EXPECT_CALL(*task2, Stop(StopReason::NEW_CONNECTION));
+  EXPECT_CALL(task2_ref, Stop(StopReason::NEW_CONNECTION));
 
   queue.Stop(StopReason::NEW_CONNECTION);
 
@@ -340,19 +341,23 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, StopForTimout) {
   bool done_called = false;
   bool metadata_called = false;
 
-  MockPreCloseTask* task1 = new testing::StrictMock<MockPreCloseTask>();
-  MockPreCloseTask* task2 = new testing::StrictMock<MockPreCloseTask>();
+  auto task1 = std::make_unique<testing::StrictMock<MockPreCloseTask>>();
+  MockPreCloseTask& task1_ref = *task1;
+  auto task2 = std::make_unique<testing::StrictMock<MockPreCloseTask>>();
+  MockPreCloseTask& task2_ref = *task2;
 
   EXPECT_CALL(*task1,
               SetMetadata(testing::Pointee(testing::ContainerEq(metadata_))));
 
-  base::MockOneShotTimer* fake_timer = new base::MockOneShotTimer;
+  auto fake_timer = std::make_unique<base::MockOneShotTimer>();
+  base::MockOneShotTimer& fake_timer_ref = *fake_timer;
+
   std::list<std::unique_ptr<PreCloseTask>> tasks;
-  tasks.push_back(base::WrapUnique(task1));
-  tasks.push_back(base::WrapUnique(task2));
+  tasks.push_back(std::move(task1));
+  tasks.push_back(std::move(task2));
   IndexedDBPreCloseTaskQueue queue(
       std::move(tasks), base::BindOnce(&SetBoolValue, &done_called, true),
-      kTestMaxRunTime, base::WrapUnique(fake_timer));
+      kTestMaxRunTime, std::move(fake_timer));
 
   queue.Start(base::BindOnce(&MetadataFetcher, &metadata_called,
                              leveldb::Status::OK(), &metadata_));
@@ -362,14 +367,14 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, StopForTimout) {
   {
     base::RunLoop loop;
 
-    EXPECT_CALL(*task1, RunRound())
+    EXPECT_CALL(task1_ref, RunRound())
         .WillOnce(RunClosureThenReturn(loop.QuitClosure(), true));
 
     loop.Run();
   }
-  EXPECT_CALL(*task2, Stop(StopReason::TIMEOUT));
+  EXPECT_CALL(task2_ref, Stop(StopReason::TIMEOUT));
 
-  fake_timer->Fire();
+  fake_timer_ref.Fire();
 
   task_environment_.RunUntilIdle();
 
@@ -383,19 +388,20 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, MetadataError) {
   bool done_called = false;
   bool metadata_called = false;
 
-  MockPreCloseTask* task1 = new testing::StrictMock<MockPreCloseTask>();
-  MockPreCloseTask* task2 = new testing::StrictMock<MockPreCloseTask>();
+  auto task1 = std::make_unique<testing::StrictMock<MockPreCloseTask>>();
+  MockPreCloseTask& task1_ref = *task1;
+  auto task2 = std::make_unique<testing::StrictMock<MockPreCloseTask>>();
+  MockPreCloseTask& task2_ref = *task2;
 
-  base::MockOneShotTimer* fake_timer = new base::MockOneShotTimer;
   std::list<std::unique_ptr<PreCloseTask>> tasks;
-  tasks.push_back(base::WrapUnique(task1));
-  tasks.push_back(base::WrapUnique(task2));
+  tasks.push_back(std::move(task1));
+  tasks.push_back(std::move(task2));
   IndexedDBPreCloseTaskQueue queue(
       std::move(tasks), base::BindOnce(&SetBoolValue, &done_called, true),
-      kTestMaxRunTime, base::WrapUnique(fake_timer));
+      kTestMaxRunTime, std::make_unique<base::MockOneShotTimer>());
 
-  EXPECT_CALL(*task1, Stop(StopReason::METADATA_ERROR));
-  EXPECT_CALL(*task2, Stop(StopReason::METADATA_ERROR));
+  EXPECT_CALL(task1_ref, Stop(StopReason::METADATA_ERROR));
+  EXPECT_CALL(task2_ref, Stop(StopReason::METADATA_ERROR));
 
   queue.Start(base::BindOnce(&MetadataFetcher, &metadata_called,
                              leveldb::Status::IOError(""), &metadata_));

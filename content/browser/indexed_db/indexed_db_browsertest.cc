@@ -781,8 +781,7 @@ std::unique_ptr<net::test_server::HttpResponse> ServePath(
     std::string request_path) {
   base::FilePath resource_path =
       content::GetTestFilePath("indexeddb", request_path.c_str());
-  std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
-      new net::test_server::BasicHttpResponse);
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HTTP_OK);
 
   std::string file_contents;
@@ -877,8 +876,8 @@ std::unique_ptr<net::test_server::HttpResponse> CorruptDBRequestHandler(
         }));
     loop.Run();
 
-    std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
-        new net::test_server::BasicHttpResponse);
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
     http_response->set_code(net::HTTP_OK);
     return std::move(http_response);
   } else if (request_path == "fail" && !request_query.empty()) {
@@ -953,8 +952,8 @@ std::unique_ptr<net::test_server::HttpResponse> CorruptDBRequestHandler(
                        instance_num, call_num, loop.QuitClosure()));
     loop.Run();
 
-    std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
-        new net::test_server::BasicHttpResponse);
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
     http_response->set_code(net::HTTP_OK);
     return std::move(http_response);
   }
