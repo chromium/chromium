@@ -71,6 +71,10 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
     public static final String EXTRA_SITE = "org.chromium.chrome.preferences.site";
     public static final String EXTRA_SITE_ADDRESS = "org.chromium.chrome.preferences.site_address";
 
+    // Used to store mPreviousNotificationPermission when the activity is paused.
+    private static final String PREVIOUS_NOTIFICATION_PERMISSION_KEY =
+            "previous_notification_permission";
+
     // Preference keys, see single_website_preferences.xml
     // Headings:
     public static final String PREF_PAGE_DESCRIPTION = "page_description";
@@ -285,6 +289,26 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         // Handled in displaySitePermissions. Moving the addPreferencesFromResource call up to here
         // causes animation jank (crbug.com/985734).
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if (mPreviousNotificationPermission != null) {
+            outState.putInt(PREVIOUS_NOTIFICATION_PERMISSION_KEY, mPreviousNotificationPermission);
+        }
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onViewStateRestored(Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+
+        if (savedInstanceState == null) return;
+
+        if (savedInstanceState.containsKey(PREVIOUS_NOTIFICATION_PERMISSION_KEY)) {
+            mPreviousNotificationPermission =
+                    savedInstanceState.getInt(PREVIOUS_NOTIFICATION_PERMISSION_KEY);
+        }
     }
 
     @Override
