@@ -155,6 +155,10 @@ void PowerMetricsReporter::ReportUKMs(
   builder.SetTimeWithOpenWebRTCConnectionSeconds(
       ukm::GetExponentialBucketMinForUserTiming(
           usage_metrics.time_with_open_webrtc_connection.InSeconds()));
+  builder.SetTimeSinceInteractionWithBrowserSeconds(
+      ukm::GetExponentialBucketMinForUserTiming(
+          usage_metrics.time_since_last_user_interaction_with_browser
+              .InSeconds()));
 
   builder.Record(ukm_recorder);
 }

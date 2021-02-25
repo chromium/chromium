@@ -57,6 +57,9 @@ class UsageScenarioDataStore {
     base::TimeDelta time_capturing_video;
     // The time spent playing video in at least one visible tab.
     base::TimeDelta time_playing_video_in_visible_tab;
+    // The time since the last user interaction with the browser at the end of
+    // the interval. This time can exceed the length of the interval.
+    base::TimeDelta time_since_last_user_interaction_with_browser;
 
     // The SourceID that has been visible for the longest period of time for the
     // origin that has been visible for the longest period of time during the
@@ -195,6 +198,10 @@ class UsageScenarioDataStoreImpl : public UsageScenarioDataStore {
 
   // The application start time.
   const base::TimeTicks start_time_;
+
+  // The timestamp of the most recent call to OnUserInteraction(), equal to
+  // |start_time_| if this hasn't been called yet.
+  base::TimeTicks last_interaction_with_browser_timestamp_;
 
   // Information about the origins that have been visible during the interval.
   OriginInfoMap origin_info_map_;

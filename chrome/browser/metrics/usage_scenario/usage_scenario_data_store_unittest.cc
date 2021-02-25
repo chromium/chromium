@@ -140,6 +140,22 @@ TEST_F(UsageScenarioDataStoreTest, UserInteraction) {
   EXPECT_EQ(0U, data.user_interaction_count);
 }
 
+TEST_F(UsageScenarioDataStoreTest, TimeSinceLastInteractionWithBrowser) {
+  task_environment_.FastForwardBy(kShortDelay);
+  auto data = ResetIntervalData();
+  EXPECT_EQ(kShortDelay, data.time_since_last_user_interaction_with_browser);
+
+  task_environment_.FastForwardBy(kShortDelay);
+  data = ResetIntervalData();
+  EXPECT_EQ(2 * kShortDelay,
+            data.time_since_last_user_interaction_with_browser);
+
+  data_store()->OnUserInteraction();
+  task_environment_.FastForwardBy(kShortDelay);
+  data = ResetIntervalData();
+  EXPECT_EQ(kShortDelay, data.time_since_last_user_interaction_with_browser);
+}
+
 TEST_F(UsageScenarioDataStoreTest, FullScreenVideoOnSingleMonitorBasic) {
   data_store()->OnFullScreenVideoStartsOnSingleMonitor();
   task_environment_.FastForwardBy(kShortDelay);

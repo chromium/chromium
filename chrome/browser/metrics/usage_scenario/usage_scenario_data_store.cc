@@ -20,7 +20,8 @@ UsageScenarioDataStore::IntervalData::IntervalData(const IntervalData&) =
     default;
 
 UsageScenarioDataStoreImpl::UsageScenarioDataStoreImpl()
-    : start_time_(base::TimeTicks::Now()) {}
+    : start_time_(base::TimeTicks::Now()),
+      last_interaction_with_browser_timestamp_(start_time_) {}
 
 UsageScenarioDataStoreImpl::~UsageScenarioDataStoreImpl() = default;
 
@@ -100,6 +101,7 @@ void UsageScenarioDataStoreImpl::OnTopLevelNavigation() {
 void UsageScenarioDataStoreImpl::OnUserInteraction() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ++interval_data_.user_interaction_count;
+  last_interaction_with_browser_timestamp_ = base::TimeTicks::Now();
 }
 
 void UsageScenarioDataStoreImpl::OnFullScreenVideoStartsOnSingleMonitor() {
@@ -232,6 +234,9 @@ void UsageScenarioDataStoreImpl::FinalizeIntervalData(base::TimeTicks now) {
     interval_data_.time_playing_video_in_visible_tab +=
         now - playing_video_in_active_tab_since_;
   }
+
+  interval_data_.time_since_last_user_interaction_with_browser =
+      now - last_interaction_with_browser_timestamp_;
 
   base::TimeDelta origin_visible_for_longest_time_duration;
   // Finalize the interval data and find the origin that has been visible for
