@@ -44,6 +44,9 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
     /** Whether the controller is already processing a hide request for the tab. */
     private boolean mIsProcessingHideRequest;
 
+    /** Whether the currently processing show request is suppressing existing content. */
+    private boolean mIsSuppressingCurrentContent;
+
     /** A runnable that initializes the bottom sheet when necessary. */
     private Runnable mSheetInitializer;
 
@@ -180,9 +183,11 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
                         || (!mIsProcessingHideRequest && mSuppressionTokens.hasTokens())) {
                     return;
                 }
-                if (mBottomSheet.getCurrentSheetContent() != null) {
+                if (mBottomSheet.getCurrentSheetContent() != null
+                        && !mIsSuppressingCurrentContent) {
                     mBottomSheet.getCurrentSheetContent().destroy();
                 }
+                mIsSuppressingCurrentContent = false;
                 mIsProcessingHideRequest = false;
                 showNextContent(true);
             }
@@ -398,6 +403,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
             showNextContent(animate);
             return true;
         } else if (shouldSwapForPriorityContent) {
+            mIsSuppressingCurrentContent = true;
             mContentQueue.add(mBottomSheet.getCurrentSheetContent());
             if (!mSuppressionTokens.hasTokens()) {
                 mBottomSheet.setSheetState(SheetState.HIDDEN, animate);

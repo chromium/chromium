@@ -146,10 +146,13 @@ public class BottomSheetControllerTest {
         });
         requestContentInSheet(mLowPriorityContent, true);
         int callCount = hideCallbackHelper.getCallCount();
+        int lowPriorityDestroyCalls = mLowPriorityContent.destroyCallbackHelper.getCallCount();
         requestContentInSheet(mHighPriorityContent, true);
         hideCallbackHelper.waitForCallback(callCount);
         assertEquals("The bottom sheet is showing incorrect content.", mHighPriorityContent,
                 mSheetController.getCurrentSheetContent());
+        assertEquals("The low priority content should not have been destroyed!",
+                lowPriorityDestroyCalls, mLowPriorityContent.destroyCallbackHelper.getCallCount());
     }
 
     @Test
