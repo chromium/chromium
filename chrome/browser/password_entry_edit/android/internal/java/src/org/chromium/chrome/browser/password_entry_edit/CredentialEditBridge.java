@@ -52,6 +52,9 @@ class CredentialEditBridge implements UiDismissalHandler, CredentialActionDelega
         mCoordinator = coordinator;
         // This will result in setCredential being called from native with the required data.
         CredentialEditBridgeJni.get().getCredential(mNativeCredentialEditBridge);
+
+        // This will result in setExistingUsernames being called from native with the required data.
+        CredentialEditBridgeJni.get().getExistingUsernames(mNativeCredentialEditBridge);
     }
 
     @CalledByNative
@@ -59,6 +62,11 @@ class CredentialEditBridge implements UiDismissalHandler, CredentialActionDelega
             String displayFederationOrigin) {
         mCoordinator.setCredential(
                 displayUrlOrAppName, username, password, displayFederationOrigin);
+    }
+
+    @CalledByNative
+    void setExistingUsernames(String[] existingUsernames) {
+        mCoordinator.setExistingUsernames(existingUsernames);
     }
 
     // This can be called either before or after the native counterpart has gone away, depending
@@ -88,6 +96,7 @@ class CredentialEditBridge implements UiDismissalHandler, CredentialActionDelega
     @NativeMethods
     interface Natives {
         void getCredential(long nativeCredentialEditBridge);
+        void getExistingUsernames(long nativeCredentialEditBridge);
         void saveChanges(long nativeCredentialEditBridge, String username, String password);
         void onUIDismissed(long nativeCredentialEditBridge);
     }

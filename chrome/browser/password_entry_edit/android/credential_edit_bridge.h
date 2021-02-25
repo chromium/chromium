@@ -22,6 +22,7 @@ class CredentialEditBridge {
   // shared.
   static std::unique_ptr<CredentialEditBridge> MaybeCreate(
       const password_manager::PasswordForm* credential,
+      std::vector<base::string16> existing_usernames,
       password_manager::SavedPasswordsPresenter* saved_passwords_presenter,
       base::OnceClosure dismissal_callback,
       const base::android::JavaRef<jobject>& context,
@@ -34,6 +35,9 @@ class CredentialEditBridge {
   // Called by Java to get the credential to be edited.
   void GetCredential(JNIEnv* env);
 
+  // Called by Java to get the existing usernames.
+  void GetExistingUsernames(JNIEnv* env);
+
   // Called by Java to save the changes to the edited credential.
   void SaveChanges(JNIEnv* env,
                    const base::android::JavaParamRef<jstring>& username,
@@ -45,6 +49,7 @@ class CredentialEditBridge {
  private:
   CredentialEditBridge(
       const password_manager::PasswordForm* credential,
+      std::vector<base::string16> existing_usernames,
       password_manager::SavedPasswordsPresenter* saved_passwords_presenter,
       base::OnceClosure dismissal_callback,
       const base::android::JavaRef<jobject>& context,
@@ -62,6 +67,9 @@ class CredentialEditBridge {
 
   // The credential to be edited.
   const password_manager::PasswordForm* credential_ = nullptr;
+
+  // All the usernames saved for the current site/app.
+  std::vector<base::string16> existing_usernames_;
 
   // The backend to route the edit event to. Should be owned by the the owner of
   // the bridge.

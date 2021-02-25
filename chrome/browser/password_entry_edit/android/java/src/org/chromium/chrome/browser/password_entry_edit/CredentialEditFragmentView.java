@@ -20,17 +20,21 @@ import androidx.core.view.ViewCompat;
 import androidx.preference.PreferenceFragmentCompat;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
+import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageButton;
 
 /**
  * This class is responsible for rendering the edit fragment where users can edit a saved password.
  */
 public class CredentialEditFragmentView extends PreferenceFragmentCompat {
-    private View mDoneButton;
     private ComponentStateDelegate mComponentStateDelegate;
+    private TextInputLayout mUsernameInputLayout;
     private TextInputEditText mUsernameField;
+    private TextInputLayout mPasswordInputLayout;
     private TextInputEditText mPasswordField;
+    private ButtonCompat mDoneButton;
 
     interface UiActionHandler {
         /** Called when the user clicks the button to mask/unmask the password */
@@ -102,11 +106,12 @@ public class CredentialEditFragmentView extends PreferenceFragmentCompat {
     @Override
     public void onStart() {
         super.onStart();
-
+        mUsernameInputLayout = getView().findViewById(R.id.username_text_input_layout);
         mUsernameField = getView().findViewById(R.id.username);
         View usernameIcon = getView().findViewById(R.id.copy_username_button);
         addLayoutChangeListener(mUsernameField, usernameIcon);
 
+        mPasswordInputLayout = getView().findViewById(R.id.password_text_input_layout);
         mPasswordField = getView().findViewById(R.id.password);
         View passwordIcons = getView().findViewById(R.id.password_icons);
         addLayoutChangeListener(mPasswordField, passwordIcons);
@@ -157,6 +162,8 @@ public class CredentialEditFragmentView extends PreferenceFragmentCompat {
             dismiss();
         });
 
+        getView().findViewById(R.id.button_secondary).setOnClickListener((unusedView) -> dismiss());
+
         mUsernameField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
@@ -199,6 +206,18 @@ public class CredentialEditFragmentView extends PreferenceFragmentCompat {
         mUsernameField.setText(username);
     }
 
+    void changeUsernameError(boolean hasError) {
+        mUsernameInputLayout.setError(
+                hasError ? getString(R.string.password_entry_edit_duplicate_username_error) : "");
+        changeDoneButtonState(hasError);
+    }
+
+    void changePasswordError(boolean hasError) {
+        mPasswordInputLayout.setError(
+                hasError ? getString(R.string.password_entry_edit_empty_password_error) : "");
+        changeDoneButtonState(hasError);
+    }
+
     void setPassword(String password) {
         // Don't update the text field if it has the same contents, as this will reset the cursor
         // position to the beginning.
@@ -222,6 +241,11 @@ public class CredentialEditFragmentView extends PreferenceFragmentCompat {
                 getView().findViewById(R.id.password_visibility_button);
         passwordVisibilityButton.setImageResource(
                 visible ? R.drawable.ic_visibility_off_black : R.drawable.ic_visibility_black);
+    }
+
+    void changeDoneButtonState(boolean hasError) {
+        mDoneButton.setEnabled(!hasError);
+        mDoneButton.setClickable(!hasError);
     }
 
     private static void addLayoutChangeListener(TextInputEditText textField, View icons) {

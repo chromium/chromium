@@ -621,6 +621,12 @@ CHAR-LIMIT guidelines:
       <message name="IDS_PASSWORD_ENTRY_COPY_SET_SCREEN_LOCK" desc='Text prompting user to set up screen lock on their device in order to copy passwords'>
         To copy passwords, first set a screen lock on your device
       </message>
+      <message name="IDS_PASSWORD_ENTRY_EDIT_DUPLICATE_USERNAME_ERROR" desc='Error text displayed when the user changes the username in the editor to another username that they already saved for the same site.'>
+        You already saved this username for this site
+      </message>
+      <message name="IDS_PASSWORD_ENTRY_EDIT_EMPTY_PASSWORD_ERROR" desc='Error text displayed when the user has left the password field empty in the credential editor.'>
+        Enter password
+      </message>
       <message name="IDS_PASSWORD_EXPORT_SET_LOCK_SCREEN" desc="Text prompting user to set device lock in order to be able to export passwords">
         Turn on screen lock in Settings to export your passwords from this device
       </message>

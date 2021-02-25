@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/ptr_util.h"
@@ -21,6 +22,7 @@
 
 std::unique_ptr<CredentialEditBridge> CredentialEditBridge::MaybeCreate(
     const password_manager::PasswordForm* credential,
+    std::vector<base::string16> existing_usernames,
     password_manager::SavedPasswordsPresenter* saved_passwords_presenter,
     base::OnceClosure dismissal_callback,
     const base::android::JavaRef<jobject>& context,
@@ -32,18 +34,21 @@ std::unique_ptr<CredentialEditBridge> CredentialEditBridge::MaybeCreate(
     return nullptr;
   }
   return base::WrapUnique(new CredentialEditBridge(
-      credential, saved_passwords_presenter, std::move(dismissal_callback),
-      context, settings_launcher, std::move(java_bridge)));
+      credential, std::move(existing_usernames), saved_passwords_presenter,
+      std::move(dismissal_callback), context, settings_launcher,
+      std::move(java_bridge)));
 }
 
 CredentialEditBridge::CredentialEditBridge(
     const password_manager::PasswordForm* credential,
+    std::vector<base::string16> existing_usernames,
     password_manager::SavedPasswordsPresenter* saved_passwords_presenter,
     base::OnceClosure dismissal_callback,
     const base::android::JavaRef<jobject>& context,
     const base::android::JavaRef<jobject>& settings_launcher,
     base::android::ScopedJavaGlobalRef<jobject> java_bridge)
     : credential_(credential),
+      existing_usernames_(std::move(existing_usernames)),
       saved_passwords_presenter_(saved_passwords_presenter),
       dismissal_callback_(std::move(dismissal_callback)),
       java_bridge_(java_bridge) {
@@ -65,6 +70,12 @@ void CredentialEditBridge::GetCredential(JNIEnv* env) {
       base::android::ConvertUTF16ToJavaString(env, credential_->password_value),
       base::android::ConvertUTF16ToJavaString(env,
                                               GetDisplayFederationOrigin()));
+}
+
+void CredentialEditBridge::GetExistingUsernames(JNIEnv* env) {
+  Java_CredentialEditBridge_setExistingUsernames(
+      env, java_bridge_,
+      base::android::ToJavaArrayOfStrings(env, existing_usernames_));
 }
 
 void CredentialEditBridge::SaveChanges(

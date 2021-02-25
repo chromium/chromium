@@ -17,6 +17,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.ALL_KEYS;
+import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.DUPLICATE_USERNAME_ERROR;
+import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.EMPTY_PASSWORD_ERROR;
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.FEDERATION_ORIGIN;
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.PASSWORD;
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.PASSWORD_VISIBLE;
@@ -53,7 +55,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class CredentialEditControllerTest {
     private static final String TEST_URL = "https://m.a.xyz/signin";
     private static final String TEST_USERNAME = "TestUsername";
+    private static final String NEW_TEST_USERNAME = "TestNewUsername";
     private static final String TEST_PASSWORD = "TestPassword";
+    private static final String NEW_TEST_PASSWORD = "TestNewPassword";
 
     @Mock
     private PasswordAccessReauthenticationHelper mReauthenticationHelper;
@@ -189,5 +193,42 @@ public class CredentialEditControllerTest {
         mModel.set(PASSWORD, TEST_PASSWORD);
         mMediator.onSave();
         verify(mCredentialActionDelegate).saveChanges(TEST_USERNAME, TEST_PASSWORD);
+    }
+
+    @Test
+    public void testUsernameTextChangedUpdatesModel() {
+        mMediator.setCredential(TEST_USERNAME, TEST_PASSWORD);
+        mMediator.setExistingUsernames(new String[] {TEST_USERNAME});
+        mMediator.onUsernameTextChanged(NEW_TEST_USERNAME);
+        assertEquals(NEW_TEST_USERNAME, mModel.get(USERNAME));
+    }
+
+    @Test
+    public void testPasswordTextChangedUpdatesModel() {
+        mMediator.setCredential(TEST_USERNAME, TEST_PASSWORD);
+        mMediator.onPasswordTextChanged(NEW_TEST_PASSWORD);
+        assertEquals(NEW_TEST_PASSWORD, mModel.get(PASSWORD));
+    }
+
+    @Test
+    public void testEmptyPasswordTriggersError() {
+        mMediator.setCredential(TEST_USERNAME, TEST_PASSWORD);
+        mMediator.onPasswordTextChanged("");
+        assertTrue(mModel.get(EMPTY_PASSWORD_ERROR));
+
+        mMediator.onPasswordTextChanged(TEST_PASSWORD);
+        assertFalse(mModel.get(EMPTY_PASSWORD_ERROR));
+    }
+
+    @Test
+    public void testDuplicateUsernameTriggersError() {
+        mMediator.setCredential(TEST_USERNAME, TEST_PASSWORD);
+        mMediator.setExistingUsernames(new String[] {TEST_USERNAME, NEW_TEST_USERNAME});
+
+        mMediator.onUsernameTextChanged(NEW_TEST_USERNAME);
+        assertTrue(mModel.get(DUPLICATE_USERNAME_ERROR));
+
+        mMediator.onUsernameTextChanged(TEST_USERNAME);
+        assertFalse(mModel.get(DUPLICATE_USERNAME_ERROR));
     }
 }

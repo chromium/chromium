@@ -59,6 +59,10 @@ class CredentialEditCoordinator implements ComponentStateDelegate {
         mMediator.setCredential(username, password);
     }
 
+    void setExistingUsernames(String[] existingUsernames) {
+        mMediator.setExistingUsernames(existingUsernames);
+    }
+
     void dismiss() {
         mMediator.dismiss();
     }

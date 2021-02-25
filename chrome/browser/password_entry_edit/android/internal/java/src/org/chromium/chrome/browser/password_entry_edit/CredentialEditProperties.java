@@ -18,10 +18,14 @@ class CredentialEditProperties {
             new PropertyModel.ReadableObjectPropertyKey<>("url or app");
     static final PropertyModel.WritableObjectPropertyKey<String> USERNAME =
             new PropertyModel.WritableObjectPropertyKey<>("username");
+    static final PropertyModel.WritableBooleanPropertyKey DUPLICATE_USERNAME_ERROR =
+            new PropertyModel.WritableBooleanPropertyKey("duplicate username error");
     static final PropertyModel.WritableBooleanPropertyKey PASSWORD_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey("password visible");
     static final PropertyModel.WritableObjectPropertyKey<String> PASSWORD =
             new PropertyModel.WritableObjectPropertyKey<>("password");
+    static final PropertyModel.WritableBooleanPropertyKey EMPTY_PASSWORD_ERROR =
+            new PropertyModel.WritableBooleanPropertyKey("empty password error");
     static final PropertyModel.ReadableObjectPropertyKey<String> FEDERATION_ORIGIN =
             new PropertyModel.ReadableObjectPropertyKey<>("federation origin");
 
@@ -29,7 +33,8 @@ class CredentialEditProperties {
             new PropertyModel.WritableBooleanPropertyKey("ui dismissed by native");
 
     static final PropertyKey[] ALL_KEYS = {UI_ACTION_HANDLER, URL_OR_APP, USERNAME,
-            PASSWORD_VISIBLE, PASSWORD, FEDERATION_ORIGIN, UI_DISMISSED_BY_NATIVE};
+            DUPLICATE_USERNAME_ERROR, PASSWORD_VISIBLE, PASSWORD, EMPTY_PASSWORD_ERROR,
+            FEDERATION_ORIGIN, UI_DISMISSED_BY_NATIVE};
 
     private CredentialEditProperties() {}
 }
