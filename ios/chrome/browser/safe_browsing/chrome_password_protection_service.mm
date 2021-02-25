@@ -33,8 +33,8 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
-#include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "ios/chrome/browser/safe_browsing/user_population.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
 #include "ios/chrome/browser/sync/ios_user_event_service_factory.h"
 #include "ios/chrome/browser/sync/profile_sync_service_factory.h"
@@ -722,20 +722,7 @@ void ChromePasswordProtectionService::RemoveWarningRequestsByWebState(
 
 void ChromePasswordProtectionService::FillUserPopulation(
     LoginReputationClientRequest* request_proto) {
-  ChromeUserPopulation* population = request_proto->mutable_population();
-  population->set_user_population(ChromeUserPopulation::SAFE_BROWSING);
-  population->set_is_mbb_enabled(false);
-  population->set_is_incognito(browser_state_->IsOffTheRecord());
-  population->set_profile_management_status(
-      safe_browsing::GetProfileManagementStatus(
-          GetApplicationContext()->GetBrowserPolicyConnector()));
-
-  syncer::SyncService* sync =
-      ProfileSyncServiceFactory::GetForBrowserState(browser_state_);
-  bool is_history_sync_enabled =
-      sync && sync->IsSyncFeatureActive() && !sync->IsLocalSyncEnabled() &&
-      sync->GetActiveDataTypes().Has(syncer::HISTORY_DELETE_DIRECTIVES);
-  population->set_is_history_sync_enabled(is_history_sync_enabled);
+  *request_proto->mutable_population() = GetUserPopulation(browser_state_);
 }
 
 password_manager::PasswordStore*
