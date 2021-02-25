@@ -17,6 +17,7 @@ struct UkmSmoothnessData {
   double worst_smoothness = 0.0;
   double above_threshold = 0.0;
   double percentile_95 = 0.0;
+  base::TimeDelta time_max_delta = base::TimeDelta::FromMilliseconds(1);
 };
 
 using UkmSmoothnessDataShared = SharedMetricsBuffer<UkmSmoothnessData>;

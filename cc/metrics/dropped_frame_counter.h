@@ -119,7 +119,8 @@ class CC_EXPORT DroppedFrameCounter {
   size_t total_smoothness_dropped_ = 0;
   bool fcp_received_ = false;
   double sliding_window_max_percent_dropped_ = 0;
-
+  base::TimeTicks time_fcp_received_;
+  base::TimeDelta time_max_delta_;
   UkmSmoothnessDataShared* ukm_smoothness_data_ = nullptr;
   FrameSorter frame_sorter_;
   TotalFrameCounter* total_counter_ = nullptr;

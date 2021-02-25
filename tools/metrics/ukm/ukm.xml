@@ -6260,6 +6260,18 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="TimingSinceFCPWorstCase">
+    <summary>
+      The Time From FCP when the worst case happened
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="WorstCase">
     <summary>
       The maximum number of dropped frames (as a percentage) within a

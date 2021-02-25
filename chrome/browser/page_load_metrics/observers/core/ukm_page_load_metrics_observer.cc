@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/common/trace_event_common.h"
@@ -1125,17 +1126,25 @@ void UkmPageLoadMetricsObserver::RecordSmoothnessMetrics() {
       .SetPercentile95(smoothness_data.percentile_95)
       .SetAboveThreshold(smoothness_data.above_threshold)
       .SetWorstCase(smoothness_data.worst_smoothness)
+      .SetTimingSinceFCPWorstCase(
+          (smoothness_data.time_max_delta.InMilliseconds() > 5000)
+              ? 5000
+              : smoothness_data.time_max_delta.InMilliseconds())
       .Record(ukm::UkmRecorder::Get());
 
-  UMA_HISTOGRAM_PERCENTAGE(
+  base::UmaHistogramPercentage(
       "Graphics.Smoothness.PerSession.AveragePercentDroppedFrames",
       smoothness_data.avg_smoothness);
-  UMA_HISTOGRAM_PERCENTAGE(
+  base::UmaHistogramPercentage(
       "Graphics.Smoothness.PerSession.95pctPercentDroppedFrames_1sWindow",
       smoothness_data.percentile_95);
-  UMA_HISTOGRAM_PERCENTAGE(
+  base::UmaHistogramPercentage( 
       "Graphics.Smoothness.PerSession.MaxPercentDroppedFrames_1sWindow",
       smoothness_data.worst_smoothness);
+  base::UmaHistogramCustomTimes(
+      "Graphics.Smoothness.PerSession.TimeMaxPrecentDroppedFrame_1sWindow",
+      smoothness_data.time_max_delta, base::TimeDelta::FromMilliseconds(1),
+      base::TimeDelta::FromSeconds(5), 50);
 }
 
 void UkmPageLoadMetricsObserver::RecordMobileFriendlinessMetrics() {
