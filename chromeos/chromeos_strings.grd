@@ -699,7 +699,7 @@ Try tapping the mic to ask me anything.
         <ph name="PERCENTAGE_VALUE">$1<ex>92</ex></ph>%
       </message>
       <message name="IDS_DIAGNOSTICS_CPU_SPEED_LABEL" desc="The label for the current CPU speed.">
-        Current Speed
+        Current speed
       </message>
       <message name="IDS_DIAGNOSTICS_CPU_TEMPERATURE_TEXT" desc="The text for the current CPU temperature in Celsius.">
         <ph name="TEMPERATURE_C">$1<ex>25</ex></ph>° C
@@ -780,10 +780,10 @@ Try tapping the mic to ask me anything.
         Test running
       </message>
       <message name="IDS_DIAGNOSTICS_HIDE_REPORT_TEXT" desc="The text for the button that closes the test summary report.">
-        Hide Report
+        Hide report
       </message>
       <message name="IDS_DIAGNOSTICS_SEE_REPORT_TEXT" desc="The text for the button that shows the test summary report">
-        See Report
+        See report
       </message>
       <message name="IDS_DIANOSTICS_ROUTINE_ENTRY_TEXT" desc="The text that shows the name of a test.">
         <ph name="TEST_NAME">$1<ex>Stress</ex></ph> test
@@ -810,7 +810,7 @@ Try tapping the mic to ask me anything.
         <ph name="CURRENT">$1<ex>1.6</ex></ph>GHz
       </message>
       <message name="IDS_DIAGNOSTICS_MEMORY_AVAILABLE_TEXT" desc="The text that displays the amount of memory available on a users' device.">
-        <ph name="AVAILABLE_MEMORY">$1<ex>13.12</ex></ph> GB of <ph name="TOTAL_MEMORY">$2<ex>16</ex></ph> GB available.
+        <ph name="AVAILABLE_MEMORY">$1<ex>13.12</ex></ph> GB of <ph name="TOTAL_MEMORY">$2<ex>16</ex></ph> GB available
       </message>
       <message name="IDS_DIAGNOSTICS_CANCELLED_TEST_TEXT" desc="The text that displays the test that was cancelled.">
         <ph name="TEST_NAME">$1<ex>Stress</ex></ph> test has been cancelled
