@@ -182,7 +182,7 @@ def main():
         os.path.join(THIS_DIR, 'build.py'), '--bootstrap', '--disable-asserts',
         '--run-tests', '--pgo'
     ]
-    if sys.platform.startswith('linux'):
+    if sys.platform != 'darwin':
       build_cmd.append('--thinlto')
 
     TeeCmd(build_cmd, log)
