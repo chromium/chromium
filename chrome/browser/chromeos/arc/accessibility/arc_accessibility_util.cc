@@ -146,6 +146,8 @@ base::Optional<mojom::AccessibilityActionType> ConvertToAndroidAction(
       return arc::mojom::AccessibilityActionType::COLLAPSE;
     case ax::mojom::Action::kExpand:
       return arc::mojom::AccessibilityActionType::EXPAND;
+    case ax::mojom::Action::kShowContextMenu:
+      return arc::mojom::AccessibilityActionType::LONG_CLICK;
     default:
       return base::nullopt;
   }
