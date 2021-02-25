@@ -67,4 +67,17 @@ bool NGTableNode::AllowColumnPercentages(bool is_layout_pass) const {
   return true;
 }
 
+// True if table's intrinsic max size can be infinite.
+// Infinite intrinsic sizes are ok inside block layout, but cannot work
+// inside flex and grid layouts.
+bool NGTableNode::AllowsInfiniteMaxInlineSize() const {
+  const LayoutBlock* block = box_->ContainingBlock();
+  while (!block->IsLayoutView()) {
+    if (block->IsFlexibleBoxIncludingNG() || block->IsLayoutGridIncludingNG())
+      return false;
+    block = block->ContainingBlock();
+  }
+  return true;
+}
+
 }  // namespace blink
