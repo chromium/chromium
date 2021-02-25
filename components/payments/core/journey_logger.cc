@@ -166,6 +166,26 @@ void JourneyLogger::SetSelectedMethod(PaymentMethodCategory category) {
   }
 }
 
+void JourneyLogger::SetAvailableMethod(PaymentMethodCategory category) {
+  switch (category) {
+    case PaymentMethodCategory::kBasicCard:
+      SetEventOccurred(EVENT_AVAILABLE_METHOD_BASIC_CARD);
+      break;
+    case PaymentMethodCategory::kGoogle:
+      SetEventOccurred(EVENT_AVAILABLE_METHOD_GOOGLE);
+      break;
+    case PaymentMethodCategory::kPlayBilling:  // Intentional fallthrough.
+    case PaymentMethodCategory::kSecurePaymentConfirmation:
+      NOTREACHED();
+      break;
+    case PaymentMethodCategory::kOther:
+      SetEventOccurred(EVENT_AVAILABLE_METHOD_OTHER);
+      break;
+    default:
+      NOTREACHED();
+  }
+}
+
 void JourneyLogger::SetRequestedInformation(bool requested_shipping,
                                             bool requested_email,
                                             bool requested_phone,

@@ -78,6 +78,19 @@ void JourneyLoggerAndroid::SetSelectedMethod(
           jPaymentMethodCategory));
 }
 
+void JourneyLoggerAndroid::SetAvailableMethod(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller,
+    jint jPaymentMethodCategory) {
+  DCHECK_GE(jPaymentMethodCategory, 0);
+  DCHECK_LE(static_cast<unsigned int>(jPaymentMethodCategory),
+            static_cast<unsigned int>(
+                JourneyLogger::PaymentMethodCategory::kMaxValue));
+  journey_logger_.SetAvailableMethod(
+      static_cast<JourneyLogger::PaymentMethodCategory>(
+          jPaymentMethodCategory));
+}
+
 void JourneyLoggerAndroid::SetRequestedInformation(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,

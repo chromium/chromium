@@ -215,6 +215,9 @@ class JourneyLogger {
   // Records the category of the selected app.
   void SetSelectedMethod(PaymentMethodCategory category);
 
+  // Records the method that is supported by the available payment apps.
+  void SetAvailableMethod(PaymentMethodCategory category);
+
   // Records the user information requested by the merchant.
   void SetRequestedInformation(bool requested_shipping,
                                bool requested_email,

@@ -897,12 +897,12 @@ public class PaymentRequestService
         mHasNonAutofillApp |= !paymentApp.isAutofillInstrument();
 
         if (paymentApp.isAutofillInstrument()) {
-            mJourneyLogger.setEventOccurred(Event.AVAILABLE_METHOD_BASIC_CARD);
+            mJourneyLogger.setAvailableMethod(PaymentMethodCategory.BASIC_CARD);
         } else if (paymentApp.getInstrumentMethodNames().contains(MethodStrings.GOOGLE_PAY)
                 || paymentApp.getInstrumentMethodNames().contains(MethodStrings.ANDROID_PAY)) {
-            mJourneyLogger.setEventOccurred(Event.AVAILABLE_METHOD_GOOGLE);
+            mJourneyLogger.setAvailableMethod(PaymentMethodCategory.GOOGLE);
         } else {
-            mJourneyLogger.setEventOccurred(Event.AVAILABLE_METHOD_OTHER);
+            mJourneyLogger.setAvailableMethod(PaymentMethodCategory.OTHER);
         }
 
         mPendingApps.add(paymentApp);

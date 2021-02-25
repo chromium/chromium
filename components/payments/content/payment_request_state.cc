@@ -172,15 +172,15 @@ bool PaymentRequestState::IsOffTheRecord() const {
 
 void PaymentRequestState::OnPaymentAppCreated(std::unique_ptr<PaymentApp> app) {
   if (app->type() == PaymentApp::Type::AUTOFILL) {
-    journey_logger_->SetEventOccurred(
-        JourneyLogger::EVENT_AVAILABLE_METHOD_BASIC_CARD);
+    journey_logger_->SetAvailableMethod(
+        JourneyLogger::PaymentMethodCategory::kBasicCard);
   } else if (base::Contains(app->GetAppMethodNames(), methods::kGooglePay) ||
              base::Contains(app->GetAppMethodNames(), methods::kAndroidPay)) {
-    journey_logger_->SetEventOccurred(
-        JourneyLogger::EVENT_AVAILABLE_METHOD_GOOGLE);
+    journey_logger_->SetAvailableMethod(
+        JourneyLogger::PaymentMethodCategory::kGoogle);
   } else {
-    journey_logger_->SetEventOccurred(
-        JourneyLogger::EVENT_AVAILABLE_METHOD_OTHER);
+    journey_logger_->SetAvailableMethod(
+        JourneyLogger::PaymentMethodCategory::kOther);
   }
   available_apps_.emplace_back(std::move(app));
 }
@@ -444,8 +444,8 @@ void PaymentRequestState::AddAutofillPaymentApp(
     return;
 
   available_apps_.push_back(std::move(app));
-  journey_logger_->SetEventOccurred(
-      JourneyLogger::EVENT_AVAILABLE_METHOD_BASIC_CARD);
+  journey_logger_->SetAvailableMethod(
+      JourneyLogger::PaymentMethodCategory::kBasicCard);
 
   if (selected) {
     SetSelectedApp(available_apps_.back()->AsWeakPtr());
