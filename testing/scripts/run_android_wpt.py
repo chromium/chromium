@@ -209,6 +209,9 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
                         ' Currently only the default is expected to work.')
     parser.add_argument('--verbose', '-v', action='count',
                         help='Verbosity level.')
+    parser.add_argument('--repeat',
+                        action=WPTPassThroughArgs, type=int,
+                        help='Number of times to run the tests.')
     parser.add_argument('--include', metavar='TEST_OR_DIR',
                         action=WPTPassThroughArgs,
                         help='Test(s) to run, defaults to run all tests.')
