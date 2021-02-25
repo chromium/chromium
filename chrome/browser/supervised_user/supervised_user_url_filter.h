@@ -15,6 +15,7 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/supervised_user/supervised_user_error_page/supervised_user_error_page.h"
 #include "chrome/browser/supervised_user/supervised_user_site_list.h"
 #include "chrome/browser/supervised_user/supervised_users.h"
@@ -46,6 +47,8 @@ class SharedURLLoaderFactory;
 //     sources.
 class SupervisedUserURLFilter {
  public:
+  // TODO(crbug/1152622): Investigate whether FilteringBehavior::WARN is in
+  // use. If it is not in use, remove it.
   // A Java counterpart will be generated for this enum.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.superviseduser
   enum FilteringBehavior {
@@ -54,6 +57,53 @@ class SupervisedUserURLFilter {
     BLOCK,
     INVALID
   };
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // This enum describes the filter types of Chrome on Chrome OS, which is
+  // set by Family Link App or at families.google.com/families. These values
+  // are logged to UMA. Entries should not be renumbered and numeric values
+  // should never be reused. Please keep in sync with "FamilyLinkWebFilterType"
+  // in src/tools/metrics/histograms/enums.xml.
+  enum class WebFilterType {
+    // The web filter is set to "Allow all sites".
+    kAllowAllSites = 0,
+
+    // The web filter is set to "Try to block mature sites".
+    kTryToBlockMatureSites = 1,
+
+    // The web filter is set to "Only allow certain sites".
+    kCertainSites = 2,
+
+    // Used for UMA. Update kMaxValue to the last value. Add future entries
+    // above this comment. Sync with enums.xml.
+    kMaxValue = kCertainSites,
+  };
+
+  // This enum describes whether the approved list or blocked list is used on
+  // Chrome on Chrome OS, which is set by Family Link App or at
+  // families.google.com/families via "manage sites" setting. This is also
+  // referred to as manual behavior/filter as parent need to add everything one
+  // by one. These values are logged to UMA. Entries should not be renumbered
+  // and numeric values should never be reused. Please keep in sync with
+  // "FamilyLinkManagedSiteList" in src/tools/metrics/histograms/enums.xml.
+  enum class ManagedSiteList {
+    // The web filter has both empty blocked and approved list.
+    kEmpty = 0,
+
+    // The web filter has approved list only.
+    kApprovedListOnly = 1,
+
+    // The web filter has blocked list only.
+    kBlockedListOnly = 2,
+
+    // The web filter has both approved list and blocked list.
+    kBoth = 3,
+
+    // Used for UMA. Update kMaxValue to the last value. Add future entries
+    // above this comment. Sync with enums.xml.
+    kMaxValue = kBoth,
+  };
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   using FilteringBehaviorCallback = base::OnceCallback<void(
       FilteringBehavior,
@@ -191,6 +241,13 @@ class SupervisedUserURLFilter {
   // Sets a different task runner for testing.
   void SetBlockingTaskRunnerForTesting(
       const scoped_refptr<base::TaskRunner>& task_runner);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // // Returns WebFilterType for current web filter setting.
+  WebFilterType GetWebFilterType() const;
+  // Returns ManagedSiteList for current web filter setting.
+  ManagedSiteList GetManagedSiteList() const;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
   friend class SupervisedUserURLFilterTest;

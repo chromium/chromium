@@ -12,7 +12,6 @@
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
@@ -28,6 +27,9 @@
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
+#include "chrome/browser/supervised_user/supervised_user_service.h"
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_url_filter.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -46,7 +48,10 @@ namespace {
 
 constexpr base::TimeDelta kOneHour = base::TimeDelta::FromHours(1);
 constexpr base::TimeDelta kOneDay = base::TimeDelta::FromDays(1);
+constexpr char kStartTime[] = "1 Jan 2020 21:15";
 
+constexpr char kExampleHost0[] = "http://www.example0.com";
+constexpr char kExampleURL1[] = "http://www.example1.com/123";
 const app_time::AppId kArcApp(apps::mojom::AppType::kArc, "packageName");
 
 arc::mojom::ArcPackageInfoPtr CreateArcAppPackage(
@@ -82,6 +87,12 @@ class FamilyUserParentalControlMetricsTest : public testing::Test {
                               features::kWebTimeLimits},
         /*disabled_features=*/{});
 
+    base::Time start_time;
+    EXPECT_TRUE(base::Time::FromString(kStartTime, &start_time));
+    base::TimeDelta forward_by = start_time - base::Time::Now();
+    EXPECT_LT(base::TimeDelta(), forward_by);
+    task_environment_.AdvanceClock(forward_by);
+
     // Build a child profile.
     std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> prefs =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
@@ -93,6 +104,9 @@ class FamilyUserParentalControlMetricsTest : public testing::Test {
     EXPECT_TRUE(profile_->IsChild());
     parental_control_metrics_ =
         std::make_unique<FamilyUserParentalControlMetrics>(profile_.get());
+    supervised_user_service_ =
+        SupervisedUserServiceFactory::GetForProfile(profile_.get());
+    supervised_user_service_->Init();
   }
 
   void TearDown() override {
@@ -111,6 +125,8 @@ class FamilyUserParentalControlMetricsTest : public testing::Test {
 
   void OnNewDay() { parental_control_metrics_->OnNewDay(); }
 
+  PrefService* GetPrefs() { return profile_->GetPrefs(); }
+
   std::unique_ptr<TestingProfile> profile_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -118,6 +134,7 @@ class FamilyUserParentalControlMetricsTest : public testing::Test {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<FamilyUserParentalControlMetrics> parental_control_metrics_;
+  SupervisedUserService* supervised_user_service_ = nullptr;
 };
 
 TEST_F(FamilyUserParentalControlMetricsTest, BedAndScreenTimeLimitMetrics) {
@@ -138,7 +155,7 @@ TEST_F(FamilyUserParentalControlMetricsTest, BedAndScreenTimeLimitMetrics) {
       /*quota*/ kOneHour,
       /*last_updated=*/base::Time::Now());
 
-  profile_->GetPrefs()->Set(prefs::kUsageTimeLimit, policy_content);
+  GetPrefs()->Set(prefs::kUsageTimeLimit, policy_content);
   // Triggers report:
   OnNewDay();
 
@@ -171,10 +188,9 @@ TEST_F(FamilyUserParentalControlMetricsTest, OverrideTimeLimitMetrics) {
   utils::AddOverrideWithDuration(
       /*policy=*/&policy_content,
       /*action=*/usage_time_limit::TimeLimitOverride::Action::kLock,
-      /*created_at=*/base::Time::Now() - kOneDay -
-          base::TimeDelta::FromSeconds(1),
+      /*created_at=*/base::Time::Now() - kOneDay,
       /*duration=*/base::TimeDelta::FromHours(2));
-  profile_->GetPrefs()->Set(prefs::kUsageTimeLimit, policy_content);
+  GetPrefs()->Set(prefs::kUsageTimeLimit, policy_content);
 
   // Triggers report.
   OnNewDay();
@@ -200,7 +216,7 @@ TEST_F(FamilyUserParentalControlMetricsTest, OverrideTimeLimitMetrics) {
       /*action=*/usage_time_limit::TimeLimitOverride::Action::kLock,
       /*created_at=*/base::Time::Now() - base::TimeDelta::FromHours(23),
       /*duration=*/base::TimeDelta::FromHours(2));
-  profile_->GetPrefs()->Set(prefs::kUsageTimeLimit, policy_content);
+  GetPrefs()->Set(prefs::kUsageTimeLimit, policy_content);
 
   // Triggers report.
   OnNewDay();
@@ -254,8 +270,7 @@ TEST_F(FamilyUserParentalControlMetricsTest, AppAndWebTimeLimitMetrics) {
                            base::TimeDelta::FromHours(1), base::Time::Now()));
 
     builder.SetResetTime(6, 0);
-    DictionaryPrefUpdate update(profile_.get()->GetPrefs(),
-                                prefs::kPerAppTimeLimitsPolicy);
+    DictionaryPrefUpdate update(GetPrefs(), prefs::kPerAppTimeLimitsPolicy);
     base::Value* value = update.Get();
     *value = builder.value().Clone();
   }
@@ -278,6 +293,111 @@ TEST_F(FamilyUserParentalControlMetricsTest, AppAndWebTimeLimitMetrics) {
       FamilyUserParentalControlMetrics::
           GetTimeLimitPolicyTypesHistogramNameForTest(),
       /*expected_count=*/2);
+}
+
+TEST_F(FamilyUserParentalControlMetricsTest, WebFilterTypeMetric) {
+  base::HistogramTester histogram_tester;
+
+  GetPrefs()->SetInteger(prefs::kDefaultSupervisedUserFilteringBehavior,
+                         SupervisedUserURLFilter::ALLOW);
+  GetPrefs()->SetBoolean(prefs::kSupervisedUserSafeSites, true);
+  OnNewDay();
+  histogram_tester.ExpectUniqueSample(
+      FamilyUserParentalControlMetrics::FamilyUserParentalControlMetrics::
+          GetWebFilterTypeHistogramNameForTest(),
+      /*sample=*/
+      SupervisedUserURLFilter::WebFilterType::kTryToBlockMatureSites,
+      /*expected_count=*/1);
+
+  // Tests filter "allow all sites".
+  GetPrefs()->SetBoolean(prefs::kSupervisedUserSafeSites, false);
+  OnNewDay();
+  histogram_tester.ExpectBucketCount(
+      FamilyUserParentalControlMetrics::GetWebFilterTypeHistogramNameForTest(),
+      /*sample=*/
+      SupervisedUserURLFilter::WebFilterType::kAllowAllSites,
+      /*expected_count=*/1);
+
+  // Tests filter "only allow certain sites" on Family Link app.
+  GetPrefs()->SetInteger(prefs::kDefaultSupervisedUserFilteringBehavior,
+                         SupervisedUserURLFilter::BLOCK);
+  OnNewDay();
+  histogram_tester.ExpectBucketCount(
+      FamilyUserParentalControlMetrics::GetWebFilterTypeHistogramNameForTest(),
+      /*sample=*/
+      SupervisedUserURLFilter::WebFilterType::kCertainSites,
+      /*expected_count=*/1);
+
+  histogram_tester.ExpectTotalCount(
+      FamilyUserParentalControlMetrics::GetWebFilterTypeHistogramNameForTest(),
+      /*expected_count=*/3);
+}
+
+TEST_F(FamilyUserParentalControlMetricsTest, ManagedSiteListTypeMetric) {
+  base::HistogramTester histogram_tester;
+
+  GetPrefs()->SetInteger(prefs::kDefaultSupervisedUserFilteringBehavior,
+                         SupervisedUserURLFilter::ALLOW);
+  GetPrefs()->Set(prefs::kSupervisedUserManualHosts, base::DictionaryValue());
+  GetPrefs()->Set(prefs::kSupervisedUserManualURLs, base::DictionaryValue());
+
+  OnNewDay();
+  histogram_tester.ExpectBucketCount(
+      FamilyUserParentalControlMetrics::
+          GetManagedSiteListHistogramNameForTest(),
+      /*sample=*/
+      SupervisedUserURLFilter::ManagedSiteList::kEmpty,
+      /*expected_count=*/1);
+
+  // Blocks `kExampleHost0`.
+  {
+    DictionaryPrefUpdate hosts_update(GetPrefs(),
+                                      prefs::kSupervisedUserManualHosts);
+    base::DictionaryValue* hosts = hosts_update.Get();
+    hosts->SetKey(kExampleHost0, base::Value(false));
+  }
+  OnNewDay();
+  histogram_tester.ExpectBucketCount(
+      FamilyUserParentalControlMetrics::
+          GetManagedSiteListHistogramNameForTest(),
+      /*sample=*/
+      SupervisedUserURLFilter::ManagedSiteList::kBlockedListOnly,
+      /*expected_count=*/1);
+
+  // Approves `kExampleHost0`.
+  {
+    DictionaryPrefUpdate hosts_update(GetPrefs(),
+                                      prefs::kSupervisedUserManualHosts);
+    base::DictionaryValue* hosts = hosts_update.Get();
+    hosts->SetKey(kExampleHost0, base::Value(true));
+  }
+  OnNewDay();
+  histogram_tester.ExpectBucketCount(
+      FamilyUserParentalControlMetrics::
+          GetManagedSiteListHistogramNameForTest(),
+      /*sample=*/
+      SupervisedUserURLFilter::ManagedSiteList::kApprovedListOnly,
+      /*expected_count=*/1);
+
+  // Blocks `kExampleURL1`.
+  {
+    DictionaryPrefUpdate urls_update(GetPrefs(),
+                                     prefs::kSupervisedUserManualURLs);
+    base::DictionaryValue* urls = urls_update.Get();
+    urls->SetKey(kExampleURL1, base::Value(false));
+  }
+  OnNewDay();
+  histogram_tester.ExpectBucketCount(
+      FamilyUserParentalControlMetrics::
+          GetManagedSiteListHistogramNameForTest(),
+      /*sample=*/
+      SupervisedUserURLFilter::ManagedSiteList::kBoth,
+      /*expected_count=*/1);
+
+  histogram_tester.ExpectTotalCount(
+      FamilyUserParentalControlMetrics::
+          GetManagedSiteListHistogramNameForTest(),
+      /*expected_count=*/4);
 }
 
 }  // namespace chromeos

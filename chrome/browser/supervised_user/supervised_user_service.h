@@ -50,7 +50,7 @@ class SupervisedUserURLFilter;
 namespace base {
 class FilePath;
 class Version;
-}
+}  // namespace base
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 namespace extensions {
@@ -223,6 +223,10 @@ class SupervisedUserService : public KeyedService,
 
   void RecordExtensionEnablementUmaMetrics(bool enabled) const;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+  // Returns true if prefs::kDefaultSupervisedUserFilteringBehavior is set to
+  // default value.
+  bool IsFilteringBehaviorPrefDefault() const;
 
  private:
   friend class SupervisedUserServiceExtensionTestBase;

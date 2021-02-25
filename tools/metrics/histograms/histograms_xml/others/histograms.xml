@@ -5457,6 +5457,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="FamilyUser.ManagedSiteList" enum="FamilyLinkManagedSiteList"
+    expires_after="2021-08-12">
+  <owner>agawronska@chromium.org</owner>
+  <owner>tobyhuang@chromium.org</owner>
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Records whether managed sites approved list and blocked list are enabled for
+    currently active Family Link user. Reports at the beginning of the first
+    active session daily. Ignores the reports during OOBE and sign out.
+  </summary>
+</histogram>
+
 <histogram name="FamilyUser.NewUserAdded" enum="NewUserAdded"
     expires_after="2021-12-12">
   <owner>agawronska@chromium.org</owner>
@@ -5589,6 +5602,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Around once per day, records the number of recently used web apps in the
     past 28 days.
+  </summary>
+</histogram>
+
+<histogram name="FamilyUser.WebFilterType" enum="FamilyLinkWebFilterType"
+    expires_after="2021-08-12">
+  <owner>agawronska@chromium.org</owner>
+  <owner>tobyhuang@chromium.org</owner>
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Records the web filter type for currently active Family Link user. Reports
+    at the beginning of the first active session daily. Ignores the reports
+    during OOBE and sign out.
   </summary>
 </histogram>
 

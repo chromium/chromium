@@ -180,7 +180,6 @@ SupervisedUserURLFilter* SupervisedUserService::GetURLFilter() {
   return &url_filter_;
 }
 
-
 bool SupervisedUserService::AccessRequestsEnabled() {
   return FindEnabledPermissionRequestCreator(0) < permissions_creators_.size();
 }
@@ -405,6 +404,12 @@ void SupervisedUserService::RecordExtensionEnablementUmaMetrics(
   SupervisedUserExtensionsMetricsRecorder::RecordEnablementUmaMetrics(state);
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+bool SupervisedUserService::IsFilteringBehaviorPrefDefault() const {
+  return profile_->GetPrefs()
+      ->FindPreference(prefs::kDefaultSupervisedUserFilteringBehavior)
+      ->IsDefaultValue();
+}
 
 void SupervisedUserService::SetActive(bool active) {
   if (active_ == active)

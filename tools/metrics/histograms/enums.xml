@@ -27467,6 +27467,13 @@ Called by update_extension_permission.py.-->
   <int value="3" label="Service error"/>
 </enum>
 
+<enum name="FamilyLinkManagedSiteList">
+  <int value="0" label="Empty"/>
+  <int value="1" label="Approved List Only"/>
+  <int value="2" label="Blocked List Only"/>
+  <int value="3" label="Both"/>
+</enum>
+
 <enum name="FamilyLinkUserLogSegment">
   <summary>
     Filters family link user metrics into categories of interest.
@@ -27474,6 +27481,12 @@ Called by update_extension_permission.py.-->
   <int value="0" label="Other Not Family Link"/>
   <int value="1" label="Under Age of Consent"/>
   <int value="2" label="Over Age of Consent"/>
+</enum>
+
+<enum name="FamilyLinkWebFilterType">
+  <int value="0" label="Allow All Sites"/>
+  <int value="1" label="Try To Block Mature Sites"/>
+  <int value="2" label="Only allow Certain Sites"/>
 </enum>
 
 <enum name="FamilyUserLogSegment">

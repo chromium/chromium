@@ -11,9 +11,9 @@ class Profile;
 
 namespace chromeos {
 
-// A class for recording time limit metrics for Family Link users on Chrome OS.
-// These metrics will be recorded at the beginning of the first active session
-// daily.
+// A class for recording time limit metrics and web filter metrics for Family
+// Link users on Chrome OS. These metrics will be recorded at the beginning of
+// the first active session daily.
 class FamilyUserParentalControlMetrics
     : public FamilyUserMetricsService::Observer {
  public:
@@ -44,6 +44,8 @@ class FamilyUserParentalControlMetrics
   ~FamilyUserParentalControlMetrics() override;
 
   static const char* GetTimeLimitPolicyTypesHistogramNameForTest();
+  static const char* GetWebFilterTypeHistogramNameForTest();
+  static const char* GetManagedSiteListHistogramNameForTest();
 
   // TODO(crbug/1152622): listen to the policy by using PrefChangeRegistrar to
   // observe pref. Report when policy change in addition to OnNewDay().
@@ -51,7 +53,12 @@ class FamilyUserParentalControlMetrics
   void OnNewDay() override;
 
  private:
+  void ReportTimeLimitPolicy() const;
+  void ReportWebFilterPolicy() const;
+
+ private:
   Profile* const profile_;
+  bool first_report_on_current_device_ = false;
 };
 }  // namespace chromeos
 
