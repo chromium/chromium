@@ -759,29 +759,42 @@ void ComputeReplacedSize(const NGBlockNode& node,
   LayoutUnit block_max = ResolveMaxBlockLength(space, style, border_padding,
                                                style.LogicalMaxHeight());
 
-  // When |ComputeReplacedSizes| was written it was only used for abspos
-  // replaced elements, whose ConstraintSpaces don't have forced inline or block
-  // sizes. So |ComputeReplacedSizes| doesn't obey forced inline or
-  // block sizes; it never needed to. But to use |ComputeReplacedSizes| in
-  // NGReplacedLayoutAlgorithm, which I want to do, |ComputeReplacedSizes| needs
-  // to honor forced sizes from the constraint space, or else replaced elements
-  // that are flex/grid items will ignore the forced sizes from the parent.
-  // TODO(dgrogan): Add support for forced sizes and stretching-if-auto in these
-  // next ~20 lines.
   const Length& inline_length = style.LogicalWidth();
   const Length& block_length = style.LogicalHeight();
   base::Optional<LayoutUnit> replaced_inline;
-  if (!inline_length.IsAuto()) {
-    replaced_inline = ResolveMainInlineLength(
-        space, style, border_padding, child_min_max_sizes, inline_length);
+  if (space.IsFixedInlineSize()) {
+    replaced_inline = space.AvailableSize().inline_size;
+    DCHECK_GE(*replaced_inline, 0);
+  } else if (!inline_length.IsAuto() || space.StretchInlineSizeIfAuto()) {
+    Length inline_length_to_resolve = inline_length;
+    if (inline_length_to_resolve.IsAuto()) {
+      // TODO(dgrogan): This code block (and its corresponding block version
+      // below) didn't make any tests pass when written so it may be unnecessary
+      // or untested. Check again when launching ReplacedNG.
+      DCHECK(space.StretchInlineSizeIfAuto());
+      DCHECK(space.AvailableSize().inline_size != kIndefiniteSize);
+      inline_length_to_resolve = Length::FillAvailable();
+    }
+    replaced_inline =
+        ResolveMainInlineLength(space, style, border_padding,
+                                child_min_max_sizes, inline_length_to_resolve);
     replaced_inline =
         ConstrainByMinMax(*replaced_inline, inline_min, inline_max);
   }
   base::Optional<LayoutUnit> replaced_block;
-  if (!block_length.IsAuto()) {
-    replaced_block =
-        ResolveMainBlockLength(space, style, border_padding, block_length,
-                               space.AvailableSize().block_size);
+  if (space.IsFixedBlockSize()) {
+    replaced_block = space.AvailableSize().block_size;
+    DCHECK_GE(*replaced_block, 0);
+  } else if (!block_length.IsAuto() || space.StretchBlockSizeIfAuto()) {
+    Length block_length_to_resolve = block_length;
+    if (block_length_to_resolve.IsAuto()) {
+      DCHECK(space.StretchBlockSizeIfAuto());
+      DCHECK(space.AvailableSize().block_size != kIndefiniteSize);
+      block_length_to_resolve = Length::FillAvailable();
+    }
+    replaced_block = ResolveMainBlockLength(space, style, border_padding,
+                                            block_length_to_resolve,
+                                            space.AvailableSize().block_size);
     replaced_block = ConstrainByMinMax(*replaced_block, block_min, block_max);
   }
   if (replaced_inline && replaced_block) {
