@@ -78,15 +78,6 @@ Polymer({
     isProfileShortcutSettingVisible_: Boolean,
 
     /**
-     * True if the 'kNewProfilePicker' feature is enabled.
-     * @private
-     */
-    isNewProfilePicker_: {
-      type: Boolean,
-      value: () => loadTimeData.getBoolean('newProfilePicker')
-    },
-
-    /**
      * TODO(dpapad): Move this back to the HTML file when the Polymer2 version
      * of the code is deleted. Because of "\" being a special character in a JS
      * string, can't satisfy both Polymer2 and Polymer3 at the same time from

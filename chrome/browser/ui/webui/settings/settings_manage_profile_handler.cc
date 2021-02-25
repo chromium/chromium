@@ -24,7 +24,6 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/signin/profile_colors_util.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -151,13 +150,11 @@ std::unique_ptr<base::ListValue> ManageProfileHandler::GetAvailableIcons() {
       profiles::GetCustomProfileAvatarIconsAndLabels(selected_avatar_idx));
 
   if (entry->GetSigninState() == SigninState::kNotSignedIn) {
-    if (base::FeatureList::IsEnabled(features::kNewProfilePicker)) {
-      ProfileThemeColors colors = entry->GetProfileThemeColors();
-      auto generic_avatar_info = profiles::GetDefaultProfileAvatarIconAndLabel(
-          colors.default_avatar_fill_color, colors.default_avatar_stroke_color,
-          selected_avatar_idx == profiles::GetPlaceholderAvatarIndex());
-      avatars->Insert(0, std::move(generic_avatar_info));
-    }
+    ProfileThemeColors colors = entry->GetProfileThemeColors();
+    auto generic_avatar_info = profiles::GetDefaultProfileAvatarIconAndLabel(
+        colors.default_avatar_fill_color, colors.default_avatar_stroke_color,
+        selected_avatar_idx == profiles::GetPlaceholderAvatarIndex());
+    avatars->Insert(0, std::move(generic_avatar_info));
     return avatars;
   }
 

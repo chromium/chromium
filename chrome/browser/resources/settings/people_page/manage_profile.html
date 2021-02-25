@@ -1,129 +1,97 @@
-    <style include="cr-shared-style settings-shared iron-flex">
-      cr-input {
-        --cr-input-error-display: none;
-      }
+<style include="cr-shared-style settings-shared iron-flex">
+  cr-input {
+    --cr-input-error-display: none;
+  }
 
-      #avatarSelector {
-        margin: 16px 48px;
-      }
+  .cr-row.manage-profile-section {
+    display: block;
+    padding-bottom: 24px;
+  }
 
-      .cr-row.manage-profile-section {
-        display: block;
-        padding-bottom: 24px;
-      }
+  .cr-row:not(.first) {
+    padding-top: 4px;
+  }
 
-      .cr-row:not(.first) {
-        padding-top: 4px;
-      }
+  .content {
+    --icon-grid-gap: 25px;
+    --icon-size: 72px;
+    padding-inline-start: var(--cr-section-indent-width);
+    padding-top: 4px;
+  }
 
-      .content {
-        --icon-grid-gap: 25px;
-        --icon-size: 72px;
-        padding-inline-start: var(--cr-section-indent-width);
-        padding-top: 4px;
-      }
+  #name {
+    width: 288px;
+  }
 
-      #name {
-        width: 288px;
-      }
+  #themeSelector {
+    --selected-border: 9px; /* Selected border per side: 4.5px*/
+    --cr-customize-themes-grid-gap: calc(var(--icon-grid-gap) -
+        var(--selected-border));
+    --cr-customize-themes-icon-size: calc(var(--icon-size) +
+        var(--selected-border));
+  }
 
-      #themeSelector {
-        --selected-border: 9px; /* Selected border per side: 4.5px*/
-        --cr-customize-themes-grid-gap: calc(var(--icon-grid-gap) -
-            var(--selected-border));
-        --cr-customize-themes-icon-size: calc(var(--icon-size) +
-            var(--selected-border));
-      }
+  #profileAvatarSelector {
+    --avatar-size: var(--icon-size);
+    --avatar-spacing: var(--icon-grid-gap);
+    --avatar-grid-columns: 6;
+    padding: 4px;
+    width: calc(var(--avatar-size) * var(--avatar-grid-columns) +
+        var(--avatar-spacing) * (var(--avatar-grid-columns) - 1));
 
-      #profileAvatarSelector {
-        --avatar-size: var(--icon-size);
-        --avatar-spacing: var(--icon-grid-gap);
-        --avatar-grid-columns: 6;
-        padding: 4px;
-        width: calc(var(--avatar-size) * var(--avatar-grid-columns) +
-            var(--avatar-spacing) * (var(--avatar-grid-columns) - 1));
+  }
 
-      }
+  #outerRow {
+    align-items: center;
+    display: flex;
+    min-height: var(--settings-row-two-line-min-height);
+    padding: 0 var(--cr-section-padding);
+  }
 
-      #outerRow {
-        align-items: center;
-        display: flex;
-        min-height: var(--settings-row-two-line-min-height);
-        padding: 0 var(--cr-section-padding);
-      }
+  #labelWrapper {
+    padding: var(--cr-section-vertical-padding) 0;
+  }
+</style>
 
-      #labelWrapper {
-        padding: var(--cr-section-vertical-padding) 0;
-      }
-    </style>
-    <template is="dom-if" if="[[!isNewProfilePicker_]]">
-      <div class="cr-row first">
-        <cr-input id="name" value="[[profileName]]" pattern="[[pattern_]]"
-            on-change="onProfileNameChanged_" on-keydown="onProfileNameKeydown_"
-            disabled="[[isProfileNameDisabled_(syncStatus)]]" maxlength="500"
-            aria-label="$i18n{nameInputLabel}" auto-validate required
-            spellcheck="false">
-        </cr-input>
-      </div>
-      <template is="dom-if" if="[[isProfileShortcutSettingVisible_]]">
-        <div class="cr-row first">
-          <div id="showShortcutLabel" class="flex cr-padded-text">
-            $i18n{showShortcutLabel}
-          </div>
-          <cr-toggle id="hasShortcutToggle"
-              checked="{{hasProfileShortcut_}}"
-              on-change="onHasProfileShortcutChange_"
-              aria-labelledby="showShortcutLabel">
-          </cr-toggle>
-        </div>
-      </template>
-      <cr-profile-avatar-selector
-          id="avatarSelector" avatars="[[availableIcons]]"
-          selected-avatar="{{profileAvatar_}}" ignore-modified-key-events>
-      </cr-profile-avatar-selector>
-  </template>
-
-  <template is="dom-if" if="[[isNewProfilePicker_]]">
-    <div class="cr-row first manage-profile-section">
-      <h1 class="cr-title-text">$i18n{nameYourProfile}</h1>
-      <div class="content">
-        <cr-input id="name" value="[[profileName]]" pattern="[[pattern_]]"
-            on-change="onProfileNameChanged_"
-            on-keydown="onProfileNameKeydown_"
-            disabled="[[isProfileNameDisabled_(syncStatus)]]" maxlength="500"
-            aria-label="$i18n{nameInputLabel}" auto-validate required
-            spellcheck="false">
-        </cr-input>
-      </div>
+<div class="cr-row first manage-profile-section">
+  <h1 class="cr-title-text">$i18n{nameYourProfile}</h1>
+  <div class="content">
+    <cr-input id="name" value="[[profileName]]" pattern="[[pattern_]]"
+        on-change="onProfileNameChanged_"
+        on-keydown="onProfileNameKeydown_"
+        disabled="[[isProfileNameDisabled_(syncStatus)]]" maxlength="500"
+        aria-label="$i18n{nameInputLabel}" auto-validate required
+        spellcheck="false">
+    </cr-input>
+  </div>
+</div>
+<div class="cr-row manage-profile-section">
+  <h1 class="cr-title-text">$i18n{pickThemeColor}</h1>
+  <div class="content">
+    <cr-customize-themes id="themeSelector" auto-confirm-theme-changes>
+    </cr-customize-themes>
+ </div>
+</div>
+<div class="cr-row manage-profile-section">
+  <h1 class="cr-title-text">$i18n{pickAvatar}</h1>
+  <div class="content">
+    <cr-profile-avatar-selector
+        id="profileAvatarSelector" avatars="[[availableIcons]]"
+        selected-avatar="{{profileAvatar_}}" ignore-modified-key-events>
+    </cr-profile-avatar-selector>
+ </div>
+</div>
+<template is="dom-if" if="[[isProfileShortcutSettingVisible_]]">
+  <div id="outerRow" class="hr">
+    <div class="flex" id="labelWrapper">
+      <div>$i18n{createShortcutTitle}</div>
+      <div class="secondary">$i18n{createShortcutSubtitle}</div>
     </div>
-    <div class="cr-row manage-profile-section">
-      <h1 class="cr-title-text">$i18n{pickThemeColor}</h1>
-      <div class="content">
-        <cr-customize-themes id="themeSelector" auto-confirm-theme-changes>
-        </cr-customize-themes>
-     </div>
-    </div>
-    <div class="cr-row manage-profile-section">
-      <h1 class="cr-title-text">$i18n{pickAvatar}</h1>
-      <div class="content">
-        <cr-profile-avatar-selector
-            id="profileAvatarSelector" avatars="[[availableIcons]]"
-            selected-avatar="{{profileAvatar_}}" ignore-modified-key-events>
-        </cr-profile-avatar-selector>
-     </div>
-    </div>
-    <template is="dom-if" if="[[isProfileShortcutSettingVisible_]]">
-      <div id="outerRow" class="hr">
-        <div class="flex" id="labelWrapper">
-          <div>$i18n{createShortcutTitle}</div>
-          <div class="secondary">$i18n{createShortcutSubtitle}</div>
-        </div>
-        <cr-toggle id="hasShortcutToggle"
-            checked="{{hasProfileShortcut_}}"
-            on-change="onHasProfileShortcutChange_"
-            aria-labelledby="labelWrapper">
-        </cr-toggle>
-      </div>
-      <div class="hr"></div>
-    </template>
-  </template>
+    <cr-toggle id="hasShortcutToggle"
+        checked="{{hasProfileShortcut_}}"
+        on-change="onHasProfileShortcutChange_"
+        aria-labelledby="labelWrapper">
+    </cr-toggle>
+  </div>
+  <div class="hr"></div>
+</template>

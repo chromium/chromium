@@ -153,9 +153,6 @@
     This will delete your browsing data from this device. To retrieve your data later, sign in to Chrome as <ph name="USER_EMAIL">$1<ex>foo@example.com</ex></ph>.
   </message>
 <if expr="not chromeos">
-  <message name="IDS_SETTINGS_PROFILE_NAME_AND_PICTURE" desc="Label of the link that takes you to the page to edit your name and picture for your chrome profile.">
-    Chrome name and picture
-  </message>
   <message name="IDS_SETTINGS_CUSTOMIZE_YOUR_CHROME_PROFILE" desc="Label of the link that takes you to the page to customize your chrome profile.">
     Customize your Chrome profile
   </message>
