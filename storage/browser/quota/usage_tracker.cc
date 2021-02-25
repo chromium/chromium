@@ -236,7 +236,7 @@ void UsageTracker::AccumulateClientHostUsage(base::OnceClosure callback,
       info->usage_breakdown->backgroundFetch += usage;
       break;
     case QuotaClientType::kNativeIO:
-      info->usage_breakdown->nativeIO += usage;
+      info->usage_breakdown->fileSystem += usage;
       break;
   }
 

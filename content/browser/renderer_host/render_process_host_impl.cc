@@ -105,7 +105,7 @@
 #include "content/browser/media/capture/audio_mirroring_manager.h"
 #include "content/browser/media/media_internals.h"
 #include "content/browser/mime_registry_impl.h"
-#include "content/browser/native_io/native_io_context.h"
+#include "content/browser/native_io/native_io_context_impl.h"
 #include "content/browser/navigation_subresource_loader_params.h"
 #include "content/browser/network_service_instance_impl.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
@@ -2105,8 +2105,9 @@ void RenderProcessHostImpl::BindNativeIOHost(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto* storage_partition =
       static_cast<StoragePartitionImpl*>(GetStoragePartition());
-  storage_partition->GetNativeIOContext()->BindReceiver(origin,
-                                                        std::move(receiver));
+  auto* native_io_context = static_cast<NativeIOContextImpl*>(
+      storage_partition->GetNativeIOContext());
+  native_io_context->BindReceiver(origin, std::move(receiver));
 }
 
 void RenderProcessHostImpl::BindRestrictedCookieManagerForServiceWorker(
