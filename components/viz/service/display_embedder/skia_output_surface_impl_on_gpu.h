@@ -348,6 +348,17 @@ class SkiaOutputSurfaceImplOnGpu
   int num_readbacks_pending_ = 0;
   bool readback_poll_pending_ = false;
 
+  class AsyncReadResultLock;
+  class AsyncReadResultHelper;
+  class CopyOutputResultYUV;
+  class CopyOutputResultRGBA;
+
+  // Lock for |async_read_result_helpers_|.
+  scoped_refptr<AsyncReadResultLock> async_read_result_lock_;
+
+  // Tracking for ongoing AsyncReadResults.
+  base::flat_set<AsyncReadResultHelper*> async_read_result_helpers_;
+
 #if defined(OS_APPLE)
   using UniqueBackingPtr = std::unique_ptr<gpu::SharedImageRepresentationSkia>;
   class BackingComparator {

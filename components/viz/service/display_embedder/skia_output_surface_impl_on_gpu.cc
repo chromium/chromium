@@ -114,125 +114,6 @@ base::RepeatingCallback<void(Args...)> CreateSafeRepeatingCallback(
                              callback);
 }
 
-struct ReadPixelsContext {
-  ReadPixelsContext(std::unique_ptr<CopyOutputRequest> request,
-                    const gfx::Rect& result_rect,
-                    const gfx::ColorSpace& color_space,
-                    base::WeakPtr<SkiaOutputSurfaceImplOnGpu> impl_on_gpu)
-      : request(std::move(request)),
-        result_rect(result_rect),
-        color_space(color_space),
-        impl_on_gpu(impl_on_gpu) {}
-
-  std::unique_ptr<CopyOutputRequest> request;
-  gfx::Rect result_rect;
-  gfx::ColorSpace color_space;
-  base::WeakPtr<SkiaOutputSurfaceImplOnGpu> impl_on_gpu;
-};
-
-class CopyOutputResultYUV : public CopyOutputResult {
- public:
-  CopyOutputResultYUV(const gfx::Rect& rect,
-                      std::unique_ptr<const SkSurface::AsyncReadResult> result)
-      : CopyOutputResult(Format::I420_PLANES, rect),
-        result_(std::move(result)) {
-    DCHECK_EQ(3, result_->count());
-    DCHECK_EQ(0, size().width() % 2);
-    DCHECK_EQ(0, size().height() % 2);
-  }
-
-  // CopyOutputResult implementation.
-  bool ReadI420Planes(uint8_t* y_out,
-                      int y_out_stride,
-                      uint8_t* u_out,
-                      int u_out_stride,
-                      uint8_t* v_out,
-                      int v_out_stride) const override {
-    auto* data0 = static_cast<const uint8_t*>(result_->data(0));
-    auto* data1 = static_cast<const uint8_t*>(result_->data(1));
-    auto* data2 = static_cast<const uint8_t*>(result_->data(2));
-    libyuv::CopyPlane(data0, result_->rowBytes(0), y_out, y_out_stride,
-                      width(0), height(0));
-    libyuv::CopyPlane(data1, result_->rowBytes(1), u_out, u_out_stride,
-                      width(1), height(1));
-    libyuv::CopyPlane(data2, result_->rowBytes(2), v_out, v_out_stride,
-                      width(2), height(2));
-    return true;
-  }
-
- private:
-  uint32_t width(int plane) const {
-    if (plane == 0)
-      return size().width();
-    else
-      return size().width() / 2;
-  }
-
-  uint32_t height(int plane) const {
-    if (plane == 0)
-      return size().height();
-    else
-      return size().height() / 2;
-  }
-
-  std::unique_ptr<const SkSurface::AsyncReadResult> result_;
-};
-
-void OnYUVReadbackDone(
-    void* c,
-    std::unique_ptr<const SkSurface::AsyncReadResult> async_result) {
-  std::unique_ptr<ReadPixelsContext> context(
-      static_cast<ReadPixelsContext*>(c));
-  if (context->impl_on_gpu)
-    context->impl_on_gpu->ReadbackDone();
-
-  if (!async_result) {
-    // This will automatically send an empty result.
-    return;
-  }
-  std::unique_ptr<CopyOutputResult> result =
-      std::make_unique<CopyOutputResultYUV>(context->result_rect,
-                                            std::move(async_result));
-  context->request->SendResult(std::move(result));
-}
-
-void DestroyAsyncReadResult(void* pixels, void* context) {
-  const SkSurface::AsyncReadResult* result =
-      static_cast<const SkSurface::AsyncReadResult*>(context);
-  delete result;
-}
-
-void OnRGBAReadbackDone(
-    void* c,
-    std::unique_ptr<const SkSurface::AsyncReadResult> async_result) {
-  std::unique_ptr<ReadPixelsContext> context(
-      static_cast<ReadPixelsContext*>(c));
-  if (context->impl_on_gpu)
-    context->impl_on_gpu->ReadbackDone();
-
-  if (!async_result) {
-    // This will automatically send an empty result.
-    return;
-  }
-
-  DCHECK_EQ(1, async_result->count());
-
-  auto info = SkImageInfo::MakeN32Premul(context->result_rect.width(),
-                                         context->result_rect.height(),
-                                         context->color_space.ToSkColorSpace());
-
-  // Passing ownership of |async_result| to DestroyAsyncReadResult.
-  auto* result_ptr = async_result.release();
-  SkBitmap bitmap;
-  bitmap.installPixels(info, const_cast<void*>(result_ptr->data(0)),
-                       result_ptr->rowBytes(0), DestroyAsyncReadResult,
-                       const_cast<SkSurface::AsyncReadResult*>(result_ptr));
-
-  std::unique_ptr<CopyOutputResult> result =
-      std::make_unique<CopyOutputSkBitmapResult>(context->result_rect, bitmap);
-  context->request->SendResult(std::move(result));
-}
-
 #if BUILDFLAG(ENABLE_VULKAN)
 // Returns whether SkiaOutputDeviceX11 can be instantiated on this platform.
 bool MayFallBackToSkiaOutputDeviceX11() {
@@ -251,7 +132,215 @@ bool MayFallBackToSkiaOutputDeviceX11() {
 }
 #endif  // BUILDFLAG(ENABLE_VULKAN)
 
+struct ReadPixelsContext {
+  ReadPixelsContext(std::unique_ptr<CopyOutputRequest> request,
+                    const gfx::Rect& result_rect,
+                    const gfx::ColorSpace& color_space,
+                    base::WeakPtr<SkiaOutputSurfaceImplOnGpu> impl_on_gpu)
+      : request(std::move(request)),
+        result_rect(result_rect),
+        color_space(color_space),
+        impl_on_gpu(impl_on_gpu) {}
+
+  std::unique_ptr<CopyOutputRequest> request;
+  gfx::Rect result_rect;
+  gfx::ColorSpace color_space;
+  base::WeakPtr<SkiaOutputSurfaceImplOnGpu> impl_on_gpu;
+};
+
 }  // namespace
+
+class SkiaOutputSurfaceImplOnGpu::AsyncReadResultLock
+    : public base::RefCountedThreadSafe<
+          SkiaOutputSurfaceImplOnGpu::AsyncReadResultLock> {
+ public:
+  AsyncReadResultLock() = default;
+  base::Lock& lock() { return lock_; }
+
+ private:
+  friend class base::RefCountedThreadSafe<
+      SkiaOutputSurfaceImplOnGpu::AsyncReadResultLock>;
+  ~AsyncReadResultLock() = default;
+
+  base::Lock lock_;
+};
+
+// Helper class for holding AsyncReadResult.
+class SkiaOutputSurfaceImplOnGpu::AsyncReadResultHelper {
+ public:
+  explicit AsyncReadResultHelper(
+      SkiaOutputSurfaceImplOnGpu* impl,
+      std::unique_ptr<const SkSurface::AsyncReadResult> result)
+      : lock_(impl ? impl->async_read_result_lock_ : nullptr),
+        impl_(impl),
+        result_(std::move(result)) {
+    if (lock_) {
+      base::AutoLock auto_lock(lock());
+      impl_->async_read_result_helpers_.insert(this);
+    }
+  }
+
+  ~AsyncReadResultHelper() {
+    if (lock_) {
+      base::AutoLock auto_lock(lock());
+      if (impl_) {
+        DCHECK(impl_->async_read_result_helpers_.count(this));
+        impl_->async_read_result_helpers_.erase(this);
+      }
+    }
+  }
+
+  base::Lock& lock() const { return lock_->lock(); }
+
+  void reset() {
+    AssertLockAcquired();
+    impl_ = nullptr;
+    result_.reset();
+  }
+
+  const SkSurface::AsyncReadResult* operator->() const {
+    AssertLockAcquired();
+    return result_.get();
+  }
+
+  explicit operator bool() const {
+    AssertLockAcquired();
+    return !!result_;
+  }
+
+ private:
+  void AssertLockAcquired() const {
+    if (lock_)
+      lock().AssertAcquired();
+  }
+
+  const scoped_refptr<AsyncReadResultLock> lock_;
+  SkiaOutputSurfaceImplOnGpu* impl_;
+  std::unique_ptr<const SkSurface::AsyncReadResult> result_;
+};
+
+class SkiaOutputSurfaceImplOnGpu::CopyOutputResultYUV
+    : public CopyOutputResult {
+ public:
+  CopyOutputResultYUV(SkiaOutputSurfaceImplOnGpu* impl,
+                      const gfx::Rect& rect,
+                      std::unique_ptr<const SkSurface::AsyncReadResult> result)
+      : CopyOutputResult(Format::I420_PLANES, rect),
+        result_(impl, std::move(result)) {
+#if DCHECK_IS_ON()
+    base::AutoLock auto_lock(result_.lock());
+    DCHECK_EQ(3, result_->count());
+    DCHECK_EQ(0, size().width() % 2);
+    DCHECK_EQ(0, size().height() % 2);
+#endif
+  }
+
+  ~CopyOutputResultYUV() override = default;
+
+  static void OnReadbackDone(
+      void* c,
+      std::unique_ptr<const SkSurface::AsyncReadResult> async_result) {
+    auto context = base::WrapUnique(static_cast<ReadPixelsContext*>(c));
+
+    // This will automatically send an empty result.
+    if (!context->impl_on_gpu)
+      return;
+
+    context->impl_on_gpu->ReadbackDone();
+
+    // This will automatically send an empty result.
+    if (!async_result)
+      return;
+
+    auto result = std::make_unique<CopyOutputResultYUV>(
+        context->impl_on_gpu.get(), context->result_rect,
+        std::move(async_result));
+    context->request->SendResult(std::move(result));
+  }
+
+  // CopyOutputResult implementation:
+  bool ReadI420Planes(uint8_t* y_out,
+                      int y_out_stride,
+                      uint8_t* u_out,
+                      int u_out_stride,
+                      uint8_t* v_out,
+                      int v_out_stride) const override {
+    // Hold the lock so the AsyncReadResultHelper will not be reset during
+    // pixel data reading.
+    base::AutoLock auto_lock(result_.lock());
+
+    // The |result_| has been reset.
+    if (!result_)
+      return false;
+
+    auto* data0 = static_cast<const uint8_t*>(result_->data(0));
+    auto* data1 = static_cast<const uint8_t*>(result_->data(1));
+    auto* data2 = static_cast<const uint8_t*>(result_->data(2));
+    libyuv::CopyPlane(data0, result_->rowBytes(0), y_out, y_out_stride,
+                      width(0), height(0));
+    libyuv::CopyPlane(data1, result_->rowBytes(1), u_out, u_out_stride,
+                      width(1), height(1));
+    libyuv::CopyPlane(data2, result_->rowBytes(2), v_out, v_out_stride,
+                      width(2), height(2));
+    return true;
+  }
+
+ private:
+  uint32_t width(int plane) const {
+    return plane == 0 ? size().width() : size().width() / 2;
+  }
+
+  uint32_t height(int plane) const {
+    return plane == 0 ? size().height() : size().height() / 2;
+  }
+
+  AsyncReadResultHelper result_;
+};
+
+class SkiaOutputSurfaceImplOnGpu::CopyOutputResultRGBA {
+ public:
+  static void DestroyAsyncReadResultHelper(void* addr, void* context) {
+    auto helper =
+        base::WrapUnique(static_cast<AsyncReadResultHelper*>(context));
+  }
+
+  static void OnReadbackDone(
+      void* c,
+      std::unique_ptr<const SkSurface::AsyncReadResult> async_result) {
+    auto context = base::WrapUnique(static_cast<ReadPixelsContext*>(c));
+
+    // This will automatically send an empty result.
+    if (!context->impl_on_gpu)
+      return;
+
+    context->impl_on_gpu->ReadbackDone();
+
+    // This will automatically send an empty result.
+    if (!async_result)
+      return;
+
+    // CopyOutputSkBitmapResult uses SkBitmap which keeps a pointer for the
+    // pixel data in SkSurface::AsyncReadResult. We don't know when and where
+    // SkBitmap will be read, so we cannot track and reset
+    // AsyncReadResultHelper when GrDirectContext is abondended.
+    // TODO(crbug.com/1153592): track AyncReadResult.
+    auto helper = std::make_unique<AsyncReadResultHelper>(
+        /*impl=*/nullptr, std::move(async_result));
+    auto info = SkImageInfo::MakeN32Premul(
+        context->result_rect.width(), context->result_rect.height(),
+        context->color_space.ToSkColorSpace());
+
+    SkBitmap bitmap;
+    const auto* data = (*helper)->data(0);
+    auto row_bytes = (*helper)->rowBytes(0);
+    bitmap.installPixels(info, const_cast<void*>(data), row_bytes,
+                         &DestroyAsyncReadResultHelper, helper.release());
+
+    auto result = std::make_unique<CopyOutputSkBitmapResult>(
+        context->result_rect, bitmap);
+    context->request->SendResult(std::move(result));
+  }
+};
 
 SkiaOutputSurfaceImplOnGpu::PromiseImageAccessHelper::PromiseImageAccessHelper(
     SkiaOutputSurfaceImplOnGpu* impl_on_gpu)
@@ -457,7 +546,8 @@ SkiaOutputSurfaceImplOnGpu::SkiaOutputSurfaceImplOnGpu(
       context_lost_callback_(std::move(context_lost_callback)),
       gpu_vsync_callback_(std::move(gpu_vsync_callback)),
       gpu_preferences_(dependency_->GetGpuPreferences()),
-      display_context_(std::make_unique<DisplayContext>(deps, this)) {
+      display_context_(std::make_unique<DisplayContext>(deps, this)),
+      async_read_result_lock_(base::MakeRefCounted<AsyncReadResultLock>()) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
@@ -473,8 +563,15 @@ SkiaOutputSurfaceImplOnGpu::~SkiaOutputSurfaceImplOnGpu() {
   if (context_state_) {
     context_state_->RemoveContextLostObserver(this);
     has_context = MakeCurrent(/*need_framebuffer=*/false);
-    if (has_context)
+    if (has_context) {
       release_current_last_.emplace(gl_surface_, context_state_);
+
+      // Release all ongoing AsyncReadResults.
+      base::AutoLock auto_lock(async_read_result_lock_->lock());
+      for (auto* helper : async_read_result_helpers_)
+        helper->reset();
+      async_read_result_helpers_.clear();
+    }
   }
 
   // |output_device_| may still need |shared_image_factory_|, so release it
@@ -492,6 +589,12 @@ SkiaOutputSurfaceImplOnGpu::~SkiaOutputSurfaceImplOnGpu() {
   }
 
   sync_point_client_state_->Destroy();
+
+#if DCHECK_IS_ON()
+  // All ongoing AsyncReadResults should be released already.
+  base::AutoLock auto_lock(async_read_result_lock_->lock());
+  DCHECK(async_read_result_helpers_.empty());
+#endif
 }
 
 void SkiaOutputSurfaceImplOnGpu::Reshape(const gfx::Size& size,
@@ -835,8 +938,8 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
     surface->asyncRescaleAndReadPixelsYUV420(
         kRec709_SkYUVColorSpace, SkColorSpace::MakeSRGB(), src_rect,
         {geometry.result_selection.width(), geometry.result_selection.height()},
-        SkSurface::RescaleGamma::kSrc, rescale_mode, &OnYUVReadbackDone,
-        context.release());
+        SkSurface::RescaleGamma::kSrc, rescale_mode,
+        &CopyOutputResultYUV::OnReadbackDone, context.release());
   } else if (request->result_format() ==
              CopyOutputRequest::ResultFormat::RGBA_BITMAP) {
     // Perform swizzle during readback.
@@ -862,7 +965,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
     num_readbacks_pending_++;
     surface->asyncRescaleAndReadPixels(
         dst_info, src_rect, SkSurface::RescaleGamma::kSrc, rescale_mode,
-        &OnRGBAReadbackDone, context.release());
+        &CopyOutputResultRGBA::OnReadbackDone, context.release());
   } else if (request->result_format() ==
              CopyOutputRequest::ResultFormat::RGBA_TEXTURE) {
     gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
@@ -1633,6 +1736,14 @@ void SkiaOutputSurfaceImplOnGpu::MarkContextLost(ContextLostReason reason) {
   context_is_lost_ = true;
 
   UMA_HISTOGRAM_ENUMERATION("GPU.ContextLost.DisplayCompositor", reason);
+
+  {
+    // Release all ongoing AsyncReadResults.
+    base::AutoLock auto_lock(async_read_result_lock_->lock());
+    for (auto* helper : async_read_result_helpers_)
+      helper->reset();
+    async_read_result_helpers_.clear();
+  }
 
   context_state_->MarkContextLost();
   if (context_lost_callback_) {

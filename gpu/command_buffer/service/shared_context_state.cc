@@ -553,9 +553,18 @@ void SharedContextState::MarkContextLost(error::ContextLostReason reason) {
   if (!context_lost()) {
     scoped_refptr<SharedContextState> prevent_last_ref_drop = this;
     context_lost_reason_ = reason;
+
+    // Notify |context_lost_callback_| and |context_lost_observers_| first,
+    // since maybe they still need the GrDirectContext for releasing some skia
+    // resources.
+    std::move(context_lost_callback_).Run(!device_needs_reset_);
+    for (auto& observer : context_lost_observers_)
+      observer.OnContextLost();
+
     // context_state_ could be nullptr for some unittests.
     if (context_state_)
       context_state_->MarkContextLost();
+
     // Only abandon the GrContext if it is owned by SharedContextState, because
     // the passed in GrContext will be reused.
     // TODO(https://crbug.com/1048692): always abandon GrContext to release all
@@ -566,9 +575,6 @@ void SharedContextState::MarkContextLost(error::ContextLostReason reason) {
       gr_context_ = nullptr;
     }
     UpdateSkiaOwnedMemorySize();
-    std::move(context_lost_callback_).Run(!device_needs_reset_);
-    for (auto& observer : context_lost_observers_)
-      observer.OnContextLost();
   }
 }
 
