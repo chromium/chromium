@@ -31612,6 +31612,13 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3819" label="SanitizerAPIFromString"/>
   <int value="3820" label="SanitizerAPIFromDocument"/>
   <int value="3821" label="SanitizerAPIFromFragment"/>
+  <int value="3822" label="StorageFoundationOpen"/>
+  <int value="3823" label="StorageFoundationRead"/>
+  <int value="3824" label="StorageFoundationReadSync"/>
+  <int value="3825" label="StorageFoundationWrite"/>
+  <int value="3826" label="StorageFoundationWriteSync"/>
+  <int value="3827" label="StorageFoundationFlush"/>
+  <int value="3828" label="StorageFoundationFlushSync"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

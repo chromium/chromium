@@ -3140,6 +3140,13 @@ enum WebFeature {
   kSanitizerAPIFromString = 3819,
   kSanitizerAPIFromDocument = 3820,
   kSanitizerAPIFromFragment = 3821,
+  kStorageFoundationOpen = 3822,
+  kStorageFoundationRead = 3823,
+  kStorageFoundationReadSync = 3824,
+  kStorageFoundationWrite = 3825,
+  kStorageFoundationWriteSync = 3826,
+  kStorageFoundationFlush = 3827,
+  kStorageFoundationFlushSync = 3828,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

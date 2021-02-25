@@ -7,10 +7,10 @@
 [Exposed = (Window, Worker),
  RuntimeEnabled = NativeIO,
  SecureContext] interface NativeIOFileManager {
-  [ CallWith = ScriptState, RaisesException ] Promise<NativeIOFile> open(
-      DOMString name);
-  [ Exposed = DedicatedWorker, RaisesException ] NativeIOFileSync openSync(
-      DOMString name);
+  [ CallWith = ScriptState, RaisesException, MeasureAs = StorageFoundationOpen ]
+      Promise<NativeIOFile> open(DOMString name);
+  [ Exposed = DedicatedWorker, RaisesException, MeasureAs = StorageFoundationOpen ]
+      NativeIOFileSync openSync(DOMString name);
 
   [ CallWith = ScriptState, ImplementedAs = Delete,
     RaisesException ] Promise<void> delete (DOMString name);
