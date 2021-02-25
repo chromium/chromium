@@ -213,7 +213,8 @@ DocumentFragment* Sanitizer::SanitizeImpl(
     ElementKind kind = ElementKind::kRegular;
     if (CustomElement::IsValidName(AtomicString(name.LowerASCII()), false)) {
       kind = ElementKind::kCustom;
-    } else if (To<HTMLElement>(node)->IsHTMLUnknownElement()) {
+    } else if (IsA<HTMLElement>(node) &&
+               To<HTMLElement>(node)->IsHTMLUnknownElement()) {
       kind = ElementKind::kUnknown;
     }
 
