@@ -224,6 +224,7 @@ preprocess_if_expr("preprocess_generated") {
     "languages_page/languages_browser_proxy.m.js",
     "languages_page/add_languages_dialog.js",
     "languages_page/languages_page.js",
+    "languages_page/languages_subpage.js",
     "lifetime_browser_proxy.m.js",
     "settings_menu/settings_menu.js",
     "on_startup_page/on_startup_page.js",

@@ -66,7 +66,7 @@ suite('LanguagesPageMetricsChromeOS', function() {
   });
 
   test('records when adding languages', async () => {
-    languagesPage.$$('#addLanguages').click();
+    languagesPage.$$('settings-languages-subpage').$$('#addLanguages').click();
     flush();
 
     await languagesMetricsProxy.whenCalled('recordAddLanguages');
@@ -82,8 +82,11 @@ suite('LanguagesPageMetricsChromeOS', function() {
   });
 
   test('records when disabling translate.enable toggle', async () => {
-    languagesPage.setPrefValue('translate.enabled', true);
-    languagesPage.$$('#offerTranslateOtherLanguages').click();
+    languagesPage.$$('settings-languages-subpage')
+        .setPrefValue('translate.enabled', true);
+    languagesPage.$$('settings-languages-subpage')
+        .$$('#offerTranslateOtherLanguages')
+        .click();
     flush();
 
     assertFalse(
@@ -91,8 +94,11 @@ suite('LanguagesPageMetricsChromeOS', function() {
   });
 
   test('records when enabling translate.enable toggle', async () => {
-    languagesPage.setPrefValue('translate.enabled', false);
-    languagesPage.$$('#offerTranslateOtherLanguages').click();
+    languagesPage.$$('settings-languages-subpage')
+        .setPrefValue('translate.enabled', false);
+    languagesPage.$$('settings-languages-subpage')
+        .$$('#offerTranslateOtherLanguages')
+        .click();
     flush();
 
     assertTrue(await languagesMetricsProxy.whenCalled('recordToggleTranslate'));
@@ -127,13 +133,16 @@ suite('LanguagesPageMetricsChromeOS', function() {
     const languagesCollapse = languagesPage.$$('#languagesCollapse');
     languagesCollapse.opened = true;
 
-    const menuButtons = languagesCollapse.querySelectorAll(
-        '.list-item cr-icon-button.icon-more-vert');
+    const menuButtons =
+        languagesPage.$$('settings-languages-subpage')
+            .$$('#languagesSection')
+            .querySelectorAll('.list-item cr-icon-button.icon-more-vert');
 
     // Chooses the second language to switch system language,
     // as first language is the default language.
     menuButtons[1].click();
-    const actionMenu = languagesPage.$$('#menu').get();
+    const actionMenu =
+        languagesPage.$$('settings-languages-subpage').$$('#menu').get();
     assertTrue(actionMenu.open);
     const menuItems = actionMenu.querySelectorAll('.dropdown-item');
     for (const item of menuItems) {
@@ -150,7 +159,8 @@ suite('LanguagesPageMetricsChromeOS', function() {
     actionMenu.close();
 
     // Chooses restart button after switching system language.
-    const restartButton = languagesPage.$$('#restartButton');
+    const restartButton =
+        languagesPage.$$('settings-languages-subpage').$$('#restartButton');
     assertTrue(!!restartButton);
     restartButton.click();
 
@@ -163,13 +173,16 @@ suite('LanguagesPageMetricsChromeOS', function() {
     const languagesCollapse = languagesPage.$$('#languagesCollapse');
     languagesCollapse.opened = true;
 
-    const menuButtons = languagesCollapse.querySelectorAll(
-        '.list-item cr-icon-button.icon-more-vert');
+    const menuButtons =
+        languagesPage.$$('settings-languages-subpage')
+            .$$('#languagesSection')
+            .querySelectorAll('.list-item cr-icon-button.icon-more-vert');
 
     // Chooses the second language to change translate checkbox
     // as first language is the language used for translation.
     menuButtons[1].click();
-    const actionMenu = languagesPage.$$('#menu').get();
+    const actionMenu =
+        languagesPage.$$('settings-languages-subpage').$$('#menu').get();
     assertTrue(actionMenu.open);
     const menuItems = actionMenu.querySelectorAll('.dropdown-item');
     for (const item of menuItems) {

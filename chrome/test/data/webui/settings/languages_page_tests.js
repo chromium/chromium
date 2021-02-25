@@ -80,7 +80,8 @@ suite('languages page', function() {
       flush();
       languagesCollapse = languagesPage.$$('#languagesCollapse');
       languagesCollapse.opened = true;
-      actionMenu = languagesPage.$$('#menu').get();
+      actionMenu =
+          languagesPage.$$('settings-languages-subpage').$$('#menu').get();
 
       languageHelper = languagesPage.languageHelper;
       return languageHelper.whenReady();
@@ -109,30 +110,36 @@ suite('languages page', function() {
                 Array.from(mutation.removedNodes).includes(dialog);
           })) {
         // Sanity check: the dialog should no longer be in the DOM.
-        assertEquals(null, languagesPage.$$('settings-add-languages-dialog'));
+        assertEquals(
+            null,
+            languagesPage.$$('settings-languages-subpage')
+                .$$('settings-add-languages-dialog'));
         observer.disconnect();
         assertTrue(!!dialogClosedResolver);
         dialogClosedResolver.resolve();
       }
     };
 
-    setup(function(done) {
+    setup(function() {
       const addLanguagesButton =
-          languagesCollapse.querySelector('#addLanguages');
+          languagesPage.$$('settings-languages-subpage').$$('#addLanguages');
       const whenDialogOpen = eventToPromise('cr-dialog-open', languagesPage);
       addLanguagesButton.click();
 
       // The page stamps the dialog, registers listeners, and populates the
       // iron-list asynchronously at microtask timing, so wait for a new task.
-      whenDialogOpen.then(() => {
-        dialog = languagesPage.$$('settings-add-languages-dialog');
+      return whenDialogOpen.then(() => {
+        dialog = languagesPage.$$('settings-languages-subpage')
+                     .$$('settings-add-languages-dialog');
         assertTrue(!!dialog);
 
         // Observe the removal of the dialog via MutationObserver since the
         // HTMLDialogElement 'close' event fires at an unpredictable time.
         dialogClosedResolver = new PromiseResolver();
         dialogClosedObserver = new MutationObserver(onMutation);
-        dialogClosedObserver.observe(languagesPage.root, {childList: true});
+        dialogClosedObserver.observe(
+            languagesPage.$$('settings-languages-subpage').root,
+            {childList: true});
 
         actionButton = dialog.$$('.action-button');
         assertTrue(!!actionButton);
@@ -150,8 +157,6 @@ suite('languages page', function() {
         // No languages have been checked, so the action button is disabled.
         assertTrue(actionButton.disabled);
         assertFalse(cancelButton.disabled);
-
-        done();
       });
     });
 
@@ -184,7 +189,10 @@ suite('languages page', function() {
       // No languages have been checked, so the action button is inert.
       actionButton.click();
       flush();
-      assertEquals(dialog, languagesPage.$$('settings-add-languages-dialog'));
+      assertEquals(
+          dialog,
+          languagesPage.$$('settings-languages-subpage')
+              .$$('settings-add-languages-dialog'));
 
       // Check and uncheck one language.
       dialogItems[0].click();
@@ -291,7 +299,7 @@ suite('languages page', function() {
 
     test('structure', function() {
       const languageOptionsDropdownTrigger =
-          languagesCollapse.querySelector('cr-icon-button');
+          languagesPage.$$('settings-languages-subpage').$$('cr-icon-button');
       assertTrue(!!languageOptionsDropdownTrigger);
       languageOptionsDropdownTrigger.click();
       assertTrue(actionMenu.open);
@@ -307,7 +315,8 @@ suite('languages page', function() {
     });
 
     test('test translate.enable toggle', function() {
-      const settingsToggle = languagesPage.$$('#offerTranslateOtherLanguages');
+      const settingsToggle = languagesPage.$$('settings-languages-subpage')
+                                 .$$('#offerTranslateOtherLanguages');
       assertTrue(!!settingsToggle);
       assertTrue(!!settingsToggle);
 
@@ -335,8 +344,11 @@ suite('languages page', function() {
       let translateTargetLabel = null;
       let item = null;
 
-      const listItems = languagesCollapse.querySelectorAll('.list-item');
-      const domRepeat = languagesCollapse.querySelector('dom-repeat');
+      const listItems = languagesPage.$$('settings-languages-subpage')
+                            .$$('#languagesSection')
+                            .querySelectorAll('.list-item');
+      const domRepeat =
+          languagesPage.$$('settings-languages-subpage').$$('dom-repeat');
       assertTrue(!!domRepeat);
 
       let num_visibles = 0;
@@ -362,7 +374,7 @@ suite('languages page', function() {
     test('toggle translate for a specific language', function(done) {
       // Open options for 'sw'.
       const languageOptionsDropdownTrigger =
-          languagesCollapse.querySelectorAll('cr-icon-button')[1];
+          languagesPage.$$('settings-languages-subpage').$$('#more-sw');
       assertTrue(!!languageOptionsDropdownTrigger);
       languageOptionsDropdownTrigger.click();
       assertTrue(actionMenu.open);
@@ -390,7 +402,7 @@ suite('languages page', function() {
     test('toggle translate for target language', function() {
       // Open options for 'en'.
       const languageOptionsDropdownTrigger =
-          languagesCollapse.querySelectorAll('cr-icon-button')[0];
+          languagesPage.$$('settings-languages-subpage').$$('cr-icon-button');
       assertTrue(!!languageOptionsDropdownTrigger);
       languageOptionsDropdownTrigger.click();
       assertTrue(actionMenu.open);
@@ -406,7 +418,7 @@ suite('languages page', function() {
 
       // Open options for 'sw'.
       const languageOptionsDropdownTrigger =
-          languagesCollapse.querySelectorAll('cr-icon-button')[1];
+          languagesPage.$$('settings-languages-subpage').$$('#more-sw');
       assertTrue(!!languageOptionsDropdownTrigger);
       languageOptionsDropdownTrigger.click();
       assertTrue(actionMenu.open);
@@ -425,8 +437,11 @@ suite('languages page', function() {
       flush();
 
       // Find the new language item.
-      const items = languagesCollapse.querySelectorAll('.list-item');
-      const domRepeat = languagesCollapse.querySelector('dom-repeat');
+      const items = languagesPage.$$('settings-languages-subpage')
+                        .$$('#languagesSection')
+                        .querySelectorAll('.list-item');
+      const domRepeat =
+          languagesPage.$$('settings-languages-subpage').$$('dom-repeat');
       assertTrue(!!domRepeat);
       const item = Array.from(items).find(function(el) {
         return domRepeat.itemForElement(el) &&
@@ -453,8 +468,11 @@ suite('languages page', function() {
       assertDeepEquals(
           ['en-US'], languageHelper.prefs.translate_blocked_languages.value);
 
-      const items = languagesCollapse.querySelectorAll('.list-item');
-      const domRepeat = languagesCollapse.querySelector('dom-repeat');
+      const items = languagesPage.$$('settings-languages-subpage')
+                        .$$('#languagesSection')
+                        .querySelectorAll('.list-item');
+      const domRepeat =
+          languagesPage.$$('settings-languages-subpage').$$('dom-repeat');
       assertTrue(!!domRepeat);
       const item = Array.from(items).find(function(el) {
         return domRepeat.itemForElement(el) &&
@@ -469,8 +487,11 @@ suite('languages page', function() {
     });
 
     test('remove language when starting with 2 languages', function() {
-      const items = languagesCollapse.querySelectorAll('.list-item');
-      const domRepeat = languagesCollapse.querySelector('dom-repeat');
+      const items = languagesPage.$$('settings-languages-subpage')
+                        .$$('#languagesSection')
+                        .querySelectorAll('.list-item');
+      const domRepeat =
+          languagesPage.$$('settings-languages-subpage').$$('dom-repeat');
       assertTrue(!!domRepeat);
       const item = Array.from(items).find(function(el) {
         return domRepeat.itemForElement(el) &&
@@ -498,8 +519,10 @@ suite('languages page', function() {
 
       flush();
 
-      const menuButtons = languagesCollapse.querySelectorAll(
-          '.list-item cr-icon-button.icon-more-vert');
+      const menuButtons =
+          languagesPage.$$('settings-languages-subpage')
+              .$$('#languagesSection')
+              .querySelectorAll('.list-item cr-icon-button.icon-more-vert');
 
       // First language should not have "Move up" or "Move to top".
       menuButtons[0].click();
