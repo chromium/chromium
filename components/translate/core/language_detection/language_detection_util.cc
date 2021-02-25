@@ -79,10 +79,10 @@ bool CanModelComplementSubCode(const std::string& page_language,
                           base::CompareCase::INSENSITIVE_ASCII);
 }
 
-// Given a detected language and whether that detection is reliable, returns the
-// ISO 639 language code of |utf8_text|. Returns
-// |translate::kUnknownLanguageCode| for unreliable, "unknown", and xx-Latn
-// predictions that are currently not supported.
+}  // namespace
+
+namespace translate {
+
 std::string FilterDetectedLanguage(const std::string& utf8_text,
                                    const std::string& detected_language,
                                    bool is_detection_reliable) {
@@ -90,6 +90,8 @@ std::string FilterDetectedLanguage(const std::string& utf8_text,
   // not supported.
   if (!is_detection_reliable)
     return translate::kUnknownLanguageCode;
+  // TODO(crbug.com/1178193): Determine if ar-Latn and hi-Latn need to be added
+  // for the TFLite-based detection model.
   if (detected_language == "bg-Latn" || detected_language == "el-Latn" ||
       detected_language == "ja-Latn" || detected_language == "ru-Latn" ||
       detected_language == "zh-Latn" ||
@@ -115,10 +117,6 @@ std::string FilterDetectedLanguage(const std::string& utf8_text,
   // language detection model.
   return detected_language;
 }
-
-}  // namespace
-
-namespace translate {
 
 // Returns the ISO 639 language code of the specified |utf8_text|, or 'unknown'
 // if it failed. |is_model_reliable| will be set as true if CLD says the

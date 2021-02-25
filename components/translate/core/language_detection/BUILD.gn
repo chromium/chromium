@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
+import("//components/optimization_guide/features.gni")
 
 static_library("chinese_script_classifier") {
   sources = [
@@ -18,10 +19,19 @@ static_library("chinese_script_classifier") {
 
 static_library("language_detection") {
   sources = [
+    "embedding_lookup.cc",
+    "embedding_lookup.h",
     "language_detection_model.cc",
     "language_detection_model.h",
+    "language_detection_resolver.h",
     "language_detection_util.cc",
     "language_detection_util.h",
+    "ngram_hash.cc",
+    "ngram_hash.h",
+    "ngram_hash_ops_utils.cc",
+    "ngram_hash_ops_utils.h",
+    "quantization_utils.cc",
+    "quantization_utils.h",
   ]
 
   deps = [
@@ -30,18 +40,30 @@ static_library("language_detection") {
     "//components/language/core/common",
     "//components/translate/core/common",
     "//third_party/cld_3/src/src:cld_3",
+    "//third_party/flatbuffers",
     "//third_party/icu",
+    "//third_party/smhasher:murmurhash2",
+    "//third_party/tflite",
+    "//third_party/tflite:tflite_public_headers",
+    "//third_party/tflite-support",
+    "//third_party/tflite-support:tflite-support-proto",
+    "//third_party/utf",
     "//url",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "chinese_script_classifier_test.cc",
-    "language_detection_model_unittest.cc",
-    "language_detection_util_unittest.cc",
-  ]
+  sources = [ "chinese_script_classifier_test.cc" ]
+  if (build_with_tflite_lib) {
+    sources += [
+      "language_detection_model_unittest.cc",
+      "language_detection_util_unittest.cc",
+      "ngram_hash_ops_utils_unittest.cc",
+      "quantization_utils_unittest.cc",
+    ]
+  }
+
   deps = [
     ":chinese_script_classifier",
     ":language_detection",

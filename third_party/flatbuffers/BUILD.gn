@@ -7,6 +7,10 @@ import("//third_party/flatbuffers/flatbuffer.gni")
 
 config("flatbuffers_config") {
   include_dirs = [ "src/include" ]
+
+  # Required to prevent static initialization of locale
+  # in util.cpp
+  defines = [ "FLATBUFFERS_LOCALE_INDEPENDENT=0" ]
 }
 
 # The part of FlatBuffers that Chrome is interested in.

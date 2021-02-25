@@ -8,6 +8,16 @@
 #include <string>
 #include "base/files/memory_mapped_file.h"
 
+namespace tflite {
+namespace task {
+namespace text {
+namespace nlclassifier {
+class NLClassifier;
+}
+}  // namespace text
+}  // namespace task
+}  // namespace tflite
+
 namespace translate {
 
 // The state of the language detection model file needed for determining
@@ -58,9 +68,11 @@ class LanguageDetectionModel {
   // A memory-mapped file that contains the TFLite model used for
   // determining the language of a page. This must be valid in order
   // to evaluate the model owned by |this|.
-  //
-  // TODO(crbug.com/1151413): Add the tflite language detection model.
   base::MemoryMappedFile model_fb_;
+
+  // The tflite classifier that can determine the language of text.
+  std::unique_ptr<tflite::task::text::nlclassifier::NLClassifier>
+      lang_detection_model_;
 };
 
 }  // namespace translate

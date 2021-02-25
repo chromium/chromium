@@ -452,7 +452,6 @@ static_library("tflite") {
   }
 
   deps = [
-    ":tflite_kernels",
     "//third_party/abseil-cpp:absl",
     "//third_party/farmhash",
     "//third_party/fft2d",
@@ -465,6 +464,7 @@ static_library("tflite") {
   public_deps = [
     ":tflite-config-proto",
     ":tflite_kernel_common_headers",
+    ":tflite_kernels",
     ":tflite_public_headers",
     "//third_party/flatbuffers",
   ]
