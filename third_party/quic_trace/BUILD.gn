@@ -21,9 +21,6 @@ proto_library("quic_trace_proto") {
     "//net/third_party/quiche:quic_test_tools_core",
   ]
 
-  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-  run_under_python2 = true
-
   sources = [ "$target_gen_dir/quic_trace.proto" ]
   proto_deps = [ ":quic_trace_proto_lite_runtime" ]
   component_build_force_source_set = true

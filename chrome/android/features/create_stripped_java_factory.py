@@ -215,7 +215,7 @@ def main(args):
       'CLASS_NAME': clazz.name,
       'METHODS': '\n'.join(['    ' + m for m in formatted_public_methods])
   }
-  with build_utils.AtomicOutput(options.output) as f:
+  with build_utils.AtomicOutput(options.output, mode='w') as f:
     f.write(_FILE_TEMPLATE.format(**file_dict))
 
 

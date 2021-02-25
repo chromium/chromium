@@ -50,7 +50,7 @@ def _IsManifestEmpty(doc):
   """
   for node in doc:
     if node.tag == 'application':
-      if node.getchildren():
+      if list(node):
         return False
     elif node.tag != 'uses-sdk':
       return False

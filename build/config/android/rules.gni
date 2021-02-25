@@ -648,9 +648,6 @@ if (enable_java_templates) {
   #   }
   template("jinja_template") {
     action_with_pydeps(target_name) {
-      # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-      run_under_python2 = true
-
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
       inputs = [ invoker.input ]
       if (defined(invoker.includes)) {
@@ -854,9 +851,6 @@ if (enable_java_templates) {
     _generating_target_name = "${target_name}__template"
 
     action_with_pydeps(_generating_target_name) {
-      # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-      run_under_python2 = true
-
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
       inputs = invoker.resources
       script = "//build/android/gyp/jinja_template.py"
@@ -3281,9 +3275,6 @@ if (enable_java_templates) {
       }
       _apk_operations_target_name = "${target_name}__apk_operations"
       action_with_pydeps(_apk_operations_target_name) {
-        # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-        run_under_python2 = true
-
         _generated_script = "$root_build_dir/bin/${invoker.target_name}"
         script = "//build/android/gyp/create_apk_operations_script.py"
         outputs = [ _generated_script ]
@@ -4210,9 +4201,6 @@ if (enable_java_templates) {
     assert(_scanned_files.has_classes_jar || _scanned_files.subjars == [])
 
     action_with_pydeps(_unpack_target_name) {
-      # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-      run_under_python2 = true
-
       script = "//build/android/gyp/aar.py"  # Unzips the AAR
       args = [
         "extract",
@@ -4836,9 +4824,6 @@ if (enable_java_templates) {
 
     _bundle_target_name = "${_target_name}__bundle"
     action_with_pydeps(_bundle_target_name) {
-      # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-      run_under_python2 = true
-
       script = "//build/android/gyp/create_app_bundle.py"
       inputs = _all_module_zip_paths + _all_module_build_configs
       outputs = [ _bundle_path ]
@@ -4928,9 +4913,6 @@ if (enable_java_templates) {
     _bundle_wrapper_script_path = "$_bundle_wrapper_script_dir/$_target_name"
 
     action_with_pydeps("${_target_name}__wrapper_script") {
-      # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-      run_under_python2 = true
-
       script = "//build/android/gyp/create_bundle_wrapper_script.py"
       inputs = [ _base_module_build_config ]
       outputs = [ _bundle_wrapper_script_path ]

@@ -73,9 +73,6 @@ template("android_library_factory") {
   _base_gen_dir = "${target_gen_dir}/${target_name}"
 
   action_foreach_with_pydeps(_process_factory_target_name) {
-    # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-    run_under_python2 = true
-
     script = "//chrome/android/features/create_stripped_java_factory.py"
     sources = invoker.sources
     outputs =
