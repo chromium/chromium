@@ -161,6 +161,20 @@
   } else {
     self.baseViewController.incognitoPopupMenuHandler = nil;
   }
+
+  // If the thumb strip is enabled and the tab grid is currently on the
+  // incognito page, make sure to update the shown state as it would be visible
+  // onscreen at this point.
+  if ([self isThumbStripEnabled] &&
+      self.baseViewController.activePage == TabGridPageIncognitoTabs) {
+    if (incognitoBrowser) {
+      [self showActiveTabInPage:TabGridPageIncognitoTabs
+                   focusOmnibox:NO
+                   closeTabGrid:NO];
+    } else {
+      [self showTabViewController:nil shouldCloseTabGrid:NO completion:nil];
+    }
+  }
 }
 
 - (void)setIncognitoThumbStripSupporting:
