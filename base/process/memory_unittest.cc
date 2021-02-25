@@ -173,6 +173,8 @@ class OutOfMemoryDeathTest : public OutOfMemoryTest {
 #endif
 };
 
+// Failing on x86 android, crbug.com/1181112
+#if !defined(OS_ANDROID) || !defined(ARCH_CPU_X86)
 TEST_F(OutOfMemoryDeathTest, New) {
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
@@ -214,6 +216,7 @@ TEST_F(OutOfMemoryDeathTest, AlignedAlloc) {
     value_ = base::AlignedAlloc(test_size_, 8);
   });
 }
+#endif
 
 // POSIX does not define an aligned realloc function.
 #if defined(OS_WIN)
