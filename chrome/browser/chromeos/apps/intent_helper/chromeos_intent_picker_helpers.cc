@@ -27,6 +27,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/models/image_model.h"
 #include "ui/display/types/display_constants.h"
 
 namespace apps {
@@ -49,7 +50,7 @@ std::vector<IntentPickerAppInfo> FindAppsForUrl(
     proxy->AppRegistryCache().ForOneApp(
         app_id, [&apps](const AppUpdate& update) {
           apps.emplace(apps.begin(), GetPickerEntryType(update.AppType()),
-                       gfx::Image(), update.AppId(), update.Name());
+                       ui::ImageModel(), update.AppId(), update.Name());
         });
   }
   return apps;

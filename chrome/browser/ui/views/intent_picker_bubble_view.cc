@@ -26,6 +26,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -97,16 +98,15 @@ class IntentPickerLabelButton : public views::LabelButton {
   METADATA_HEADER(IntentPickerLabelButton);
 
   IntentPickerLabelButton(PressedCallback callback,
-                          const gfx::Image* icon,
+                          const ui::ImageModel& icon_model,
                           const std::string& display_name)
       : LabelButton(std::move(callback),
                     base::UTF8ToUTF16(base::StringPiece(display_name))) {
     SetHorizontalAlignment(gfx::ALIGN_LEFT);
     SetMinSize(gfx::Size(kMaxIntentPickerLabelButtonWidth, kRowHeight));
     SetInkDropMode(InkDropMode::ON);
-    if (!icon->IsEmpty()) {
-      SetImageModel(views::ImageButton::STATE_NORMAL,
-                    ui::ImageModel::FromImage(*icon));
+    if (!icon_model.IsEmpty()) {
+      SetImageModel(views::ImageButton::STATE_NORMAL, icon_model);
     }
     SetBorder(views::CreateEmptyBorder(8, 16, 8, 0));
     SetInkDropBaseColor(SK_ColorGRAY);
@@ -390,7 +390,7 @@ void IntentPickerBubbleView::Initialize() {
     auto app_button = std::make_unique<IntentPickerLabelButton>(
         base::BindRepeating(&IntentPickerBubbleView::AppButtonPressed,
                             base::Unretained(this), i),
-        &app_info.icon, app_info.display_name);
+        app_info.icon_model, app_info.display_name);
     scrollable_view->AddChildViewAt(std::move(app_button), i++);
   }
 

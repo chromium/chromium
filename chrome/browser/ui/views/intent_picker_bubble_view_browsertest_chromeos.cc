@@ -216,9 +216,9 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
 
   void ShowBubbleForTesting() {
     std::vector<apps::IntentPickerAppInfo> app_info;
-    app_info.emplace_back(apps::PickerEntryType::kArc, gfx::Image(),
+    app_info.emplace_back(apps::PickerEntryType::kArc, ui::ImageModel(),
                           "package_1", "dank app 1");
-    app_info.emplace_back(apps::PickerEntryType::kArc, gfx::Image(),
+    app_info.emplace_back(apps::PickerEntryType::kArc, ui::ImageModel(),
                           "package_2", "dank_app_2");
 
     browser()->window()->ShowIntentPickerBubble(

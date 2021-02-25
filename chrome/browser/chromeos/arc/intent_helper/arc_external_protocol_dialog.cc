@@ -32,8 +32,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/window_open_disposition.h"
-#include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
@@ -63,13 +63,13 @@ using IntentPickerResponseWithDevices = base::OnceCallback<void(
     bool should_persist)>;
 
 // Creates an icon for a specific |device_type|.
-gfx::Image CreateDeviceIcon(const sync_pb::SyncEnums::DeviceType device_type) {
-  SkColor color = ui::NativeTheme::GetInstanceForNativeUi()->GetSystemColor(
-      ui::NativeTheme::kColorId_DefaultIconColor);
+ui::ImageModel CreateDeviceIcon(
+    const sync_pb::SyncEnums::DeviceType device_type) {
   const gfx::VectorIcon& icon = device_type == sync_pb::SyncEnums::TYPE_TABLET
                                     ? kTabletIcon
                                     : kHardwareSmartphoneIcon;
-  return gfx::Image(gfx::CreateVectorIcon(icon, kDeviceIconSize, color));
+  return ui::ImageModel::FromVectorIcon(
+      icon, ui::NativeTheme::kColorId_DefaultIconColor, kDeviceIconSize);
 }
 
 // Adds |devices| to |picker_entries| and returns the new list. The devices are
@@ -611,7 +611,9 @@ void OnAppIconsReceived(
                                                        handler->activity_name);
     const auto it = icons->find(activity);
     app_info.emplace_back(apps::PickerEntryType::kArc,
-                          it != icons->end() ? it->second.icon16 : gfx::Image(),
+                          it != icons->end()
+                              ? ui::ImageModel::FromImage(it->second.icon16)
+                              : ui::ImageModel(),
                           handler->package_name, handler->name);
   }
 
