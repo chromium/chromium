@@ -240,8 +240,10 @@
       isGoogleDefaultSearchProvider:isGoogleDefaultSearchProvider];
   self.contentSuggestionsMediator.commandHandler = self.ntpMediator;
   self.contentSuggestionsMediator.headerProvider = self.headerController;
-  self.contentSuggestionsMediator.contentArticlesExpanded =
-      self.contentSuggestionsExpanded;
+  if (!IsRefactoredNTP()) {
+    self.contentSuggestionsMediator.contentArticlesExpanded =
+        self.contentSuggestionsExpanded;
+  }
   self.contentSuggestionsMediator.discoverFeedDelegate = self;
 
   self.headerController.promoCanShow =

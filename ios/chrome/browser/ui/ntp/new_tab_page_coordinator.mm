@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "components/feed/core/shared_prefs/pref_names.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
@@ -36,6 +37,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
+#import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/voice/voice_search_availability.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -50,7 +52,8 @@
 #error "This file requires ARC support."
 #endif
 
-@interface NewTabPageCoordinator () <NewTabPageCommands,
+@interface NewTabPageCoordinator () <BooleanObserver,
+                                     NewTabPageCommands,
                                      NewTabPageContentDelegate,
                                      OverscrollActionsControllerDelegate,
                                      PrefObserverDelegate,
@@ -115,6 +118,10 @@
 // TODO(crbug.com/1114792): Update this comment when the NTP refactors launches.
 @property(nonatomic, strong) UIViewController* containedViewController;
 
+// Whether the feed should be expanded or collapsed. Collapsed
+// means to show the feed header, but not any of the feed content.
+@property(nonatomic, strong) PrefBackedBoolean* discoverFeedExpanded;
+
 @end
 
 @implementation NewTabPageCoordinator
@@ -137,6 +144,12 @@
     _prefObserverBridge->ObserveChangesForPreference(
         DefaultSearchManager::kDefaultSearchProviderDataPrefName,
         _prefChangeRegistrar.get());
+    if (IsRefactoredNTP()) {
+      _discoverFeedExpanded = [[PrefBackedBoolean alloc]
+          initWithPrefService:prefService
+                     prefName:feed::prefs::kArticlesListVisible];
+      [_discoverFeedExpanded setObserver:self];
+    }
   }
   return self;
 }
@@ -410,6 +423,13 @@
     transitionedToActivationLevel:(SceneActivationLevel)level {
   self.sceneInForeground = level >= SceneActivationLevelForegroundInactive;
   [self updateVisible];
+}
+
+#pragma mark - BooleanObserver
+
+- (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
+  DCHECK(IsRefactoredNTP());
+  [self updateDiscoverFeedVisibility];
 }
 
 #pragma mark - OverscrollActionsControllerDelegate
