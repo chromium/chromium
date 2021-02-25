@@ -113,10 +113,9 @@ void FamilyUserMetricsProvider::OnUserSessionStarted(bool is_primary_user) {
     DCHECK(profile->GetProfilePolicyConnector()->IsManaged());
     // This is a K-12 EDU user on an unmanaged ChromeOS device.
     log_segment_ = LogSegment::kStudentAtHome;
-  } else if (!IsEnterpriseManaged() &&
-             !profile->GetProfilePolicyConnector()->IsManaged()) {
+  } else if (!profile->GetProfilePolicyConnector()->IsManaged()) {
     DCHECK(!profile->IsChild());
-    // This is a regular unmanaged user on an unmanaged device.
+    // This is a regular unmanaged user on any device.
     log_segment_ = LogSegment::kRegularUser;
   } else {
     log_segment_ = LogSegment::kOther;

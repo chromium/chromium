@@ -39,7 +39,7 @@ class FamilyUserMetricsProvider
     // K-12 EDU primary account on an unmanaged device, regardless of the
     // secondary account.
     kStudentAtHome = 3,
-    // Regular unmanaged user on unmanaged device, regardless of the secondary
+    // Regular unmanaged user on any device, regardless of the secondary
     // account.
     kRegularUser = 4,
     // Add future entries above this comment, in sync with
