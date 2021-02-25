@@ -249,6 +249,9 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddString("syncAndGoogleServicesLearnMoreURL",
                          chrome::kSyncAndGoogleServicesLearnMoreURL);
 
+  html_source->AddString("peripheralDataAccessLearnMoreURL",
+                         chrome::kPeripheralDataAccessHelpURL);
+
   html_source->AddBoolean("pciguardUiEnabled",
                           chromeos::features::IsPciguardUiEnabled());
 

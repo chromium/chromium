@@ -354,6 +354,10 @@ extern const char kOemEulaURLPath[];
 // Help URL for the OS settings page's search feature.
 extern const char kOsSettingsSearchHelpURL[];
 
+// The URL for the "Learn more" link in the peripheral data access protection
+// settings.
+extern const char kPeripheralDataAccessHelpURL[];
+
 // The URL path to offline ARC++ Terms of Service.
 extern const char kArcTermsURLPath[];
 

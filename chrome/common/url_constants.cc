@@ -402,6 +402,9 @@ const char kAdditionalToSOnlineURLPath[] =
 const char kOsSettingsSearchHelpURL[] =
     "https://support.google.com/chromebook/?p=settings_search_help";
 
+const char kPeripheralDataAccessHelpURL[] =
+    "https://support.google.com/chromebook?p=connect_thblt_usb4_accy";
+
 const char kTPMFirmwareUpdateLearnMoreURL[] =
     "https://support.google.com/chromebook/?p=tpm_update";
 
