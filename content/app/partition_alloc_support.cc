@@ -165,6 +165,10 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   // TODO(bartekn): Switch to DCHECK once confirmed there are no issues.
   CHECK(base::FeatureList::GetInstance());
 
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  base::allocator::ReconfigurePartitionAllocLazyCommit();
+#endif
+
   EnablePCScanForMallocPartitionsIfNeeded();
   // No specified process type means this is the Browser process.
   if (process_type.empty()) {

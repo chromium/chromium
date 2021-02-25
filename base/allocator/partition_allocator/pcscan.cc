@@ -719,9 +719,12 @@ PCScan<thread_safe>::PCScanTask::PCScanTask(PCScan& pcscan)
            super_page += kSuperPageSize) {
         // TODO(bikineev): Consider following freelists instead of slot spans.
         const size_t visited_slot_spans =
-            IterateActiveAndFullSlotSpans<thread_safe>(
+            IterateSlotSpans<thread_safe>(
                 super_page, true /*with_quarantine*/,
-                [this](SlotSpan* slot_span) {
+                [this](SlotSpan* slot_span) -> bool {
+                  if (slot_span->is_empty() || slot_span->is_decommitted()) {
+                    return false;
+                  }
                   auto* payload_begin = static_cast<uintptr_t*>(
                       SlotSpan::ToSlotSpanStartPtr(slot_span));
                   size_t provisioned_size = slot_span->GetProvisionedSize();
@@ -735,6 +738,7 @@ PCScan<thread_safe>::PCScanTask::PCScanTask(PCScan& pcscan)
                   } else {
                     scan_areas_.push_back({payload_begin, payload_end});
                   }
+                  return true;
                 });
         // If we haven't visited any slot spans, all the slot spans in the
         // super-page are either empty or decommitted. This means that all the

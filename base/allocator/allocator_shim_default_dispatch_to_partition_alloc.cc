@@ -336,7 +336,7 @@ void EnablePartitionAllocMemoryReclaimer() {
   // their PartitionRoots to the memory reclaimer, because doing so may allocate
   // memory. Thus, the registration to the memory reclaimer has to be done
   // some time later, when the main root is fully configured.
-  // TODO(bartekn): Aligned allocator can use the regular initilazation path.
+  // TODO(bartekn): Aligned allocator can use the regular initialization path.
   PartitionAllocMemoryReclaimer::Instance()->RegisterPartition(Allocator());
   auto* original_root = OriginalAllocator();
   if (original_root)
@@ -345,6 +345,19 @@ void EnablePartitionAllocMemoryReclaimer() {
     PartitionAllocMemoryReclaimer::Instance()->RegisterPartition(
         AlignedAllocator());
   }
+}
+
+void ReconfigurePartitionAllocLazyCommit() {
+  // Unlike other partitions, Allocator() and AlignedAllocator() do not
+  // configure lazy commit upfront, because it uses base::Feature, which in turn
+  // allocates memory. Thus, lazy commit configuration has to be done after
+  // base::FeatureList is initialized.
+  // TODO(bartekn): Aligned allocator can use the regular initialization path.
+  Allocator()->ConfigureLazyCommit();
+  auto* original_root = OriginalAllocator();
+  if (original_root)
+    original_root->ConfigureLazyCommit();
+  AlignedAllocator()->ConfigureLazyCommit();
 }
 
 // Note that ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL implies that

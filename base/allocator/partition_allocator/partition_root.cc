@@ -11,7 +11,9 @@
 #include "base/allocator/partition_allocator/partition_bucket.h"
 #include "base/allocator/partition_allocator/partition_cookie.h"
 #include "base/allocator/partition_allocator/partition_oom.h"
+#include "base/allocator/partition_allocator/partition_page.h"
 #include "base/allocator/partition_allocator/pcscan.h"
+#include "base/bits.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
@@ -580,6 +582,57 @@ PartitionRoot<thread_safe>::~PartitionRoot() {
   PA_CHECK(!with_thread_cache)
       << "Must not destroy a partition with a thread cache";
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+}
+
+template <bool thread_safe>
+void PartitionRoot<thread_safe>::ConfigureLazyCommit() {
+#if defined(OS_WIN)
+  bool new_value =
+      base::FeatureList::IsEnabled(features::kPartitionAllocLazyCommit);
+
+  internal::ScopedGuard<thread_safe> guard{lock_};
+  if (use_lazy_commit != new_value) {
+    // Lazy commit can be turned off, but turning on isn't supported.
+    PA_DCHECK(use_lazy_commit);
+    use_lazy_commit = new_value;
+
+    for (auto* super_page_extent = first_extent; super_page_extent;
+         super_page_extent = super_page_extent->next) {
+      for (char* super_page = super_page_extent->super_page_base;
+           super_page != super_page_extent->super_pages_end;
+           super_page += kSuperPageSize) {
+        internal::IterateSlotSpans<thread_safe>(
+            super_page, IsQuarantineAllowed(),
+            [this](SlotSpan* slot_span) -> bool {
+              lock_.AssertAcquired();
+              size_t provisioned_size = slot_span->GetProvisionedSize();
+              size_t size_to_commit = slot_span->bucket->get_bytes_per_span();
+              if (slot_span->is_decommitted()) {
+                return false;
+              }
+              if (slot_span->is_full()) {
+                PA_DCHECK(provisioned_size == size_to_commit);
+                return false;
+              }
+              PA_DCHECK(size_to_commit % SystemPageSize() == 0);
+              size_t already_committed_size =
+                  bits::AlignUp(provisioned_size, SystemPageSize());
+              // Free & decommitted slot spans are skipped.
+              PA_DCHECK(already_committed_size > 0);
+              if (size_to_commit > already_committed_size) {
+                char* slot_span_start = reinterpret_cast<char*>(
+                    SlotSpan::ToSlotSpanStartPtr(slot_span));
+                RecommitSystemPagesForData(
+                    slot_span_start + already_committed_size,
+                    size_to_commit - already_committed_size,
+                    PageUpdatePermissions);
+              }
+              return true;
+            });
+      }
+    }
+  }
+#endif  // defined(OS_WIN)
 }
 
 template <bool thread_safe>

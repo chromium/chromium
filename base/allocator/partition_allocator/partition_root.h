@@ -145,6 +145,7 @@ struct PartitionOptions {
 template <bool thread_safe>
 struct BASE_EXPORT PartitionRoot {
   using SlotSpan = internal::SlotSpanMetadata<thread_safe>;
+  using Page = internal::PartitionPage<thread_safe>;
   using Bucket = internal::PartitionBucket<thread_safe>;
   using SuperPageExtentEntry =
       internal::PartitionSuperPageExtentEntry<thread_safe>;
@@ -175,6 +176,17 @@ struct BASE_EXPORT PartitionRoot {
 
   bool allow_ref_count;
   bool allow_cookies;
+
+  // Lazy commit should only be enabled on Windows, because commit charge is
+  // only meaningful and limited on Windows. It affects performance on other
+  // platforms and is simply not needed there due to OS supporting overcommit.
+#if defined(OS_WIN)
+  bool use_lazy_commit = true;
+  static constexpr bool never_used_lazy_commit = false;
+#else
+  static constexpr bool use_lazy_commit = false;
+  static constexpr bool never_used_lazy_commit = true;
+#endif
 
 #if !PARTITION_EXTRAS_REQUIRED
   // Teach the compiler that `AdjustSizeForExtrasAdd` etc. can be eliminated
@@ -240,6 +252,8 @@ struct BASE_EXPORT PartitionRoot {
   // Moving it a layer lower couples PartitionRoot and PartitionBucket, but
   // preserves the layering of the includes.
   void Init(PartitionOptions);
+
+  void ConfigureLazyCommit();
 
   ALWAYS_INLINE static bool IsValidSlotSpan(SlotSpan* slot_span);
   ALWAYS_INLINE static PartitionRoot* FromSlotSpan(SlotSpan* slot_span);

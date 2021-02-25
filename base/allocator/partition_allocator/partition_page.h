@@ -614,11 +614,12 @@ ALWAYS_INLINE QuarantineBitmap* QuarantineBitmapFromPointer(
 }
 
 // Iterates over all active and full slot spans in a super-page. Returns number
-// of the visited slot spans.
+// of the visited slot spans. |Callback| must return a bool indicating whether
+// the slot was visited (true) or skipped (false).
 template <bool thread_safe, typename Callback>
-size_t IterateActiveAndFullSlotSpans(char* super_page_base,
-                                     bool with_quarantine,
-                                     Callback callback) {
+size_t IterateSlotSpans(char* super_page_base,
+                        bool with_quarantine,
+                        Callback callback) {
 #if DCHECK_IS_ON()
   PA_DCHECK(
       !(reinterpret_cast<uintptr_t>(super_page_base) % kSuperPageAlignment));
@@ -641,11 +642,8 @@ size_t IterateActiveAndFullSlotSpans(char* super_page_base,
        page <= last_page && page->slot_span_metadata.bucket;
        page += page->slot_span_metadata.bucket->get_pages_per_slot_span()) {
     auto* slot_span = &page->slot_span_metadata;
-    if (slot_span->is_empty() || slot_span->is_decommitted()) {
-      continue;
-    }
-    callback(slot_span);
-    ++visited;
+    if (callback(slot_span))
+      ++visited;
   }
   return visited;
 }

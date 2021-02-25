@@ -22,5 +22,8 @@ const Feature kPartitionAllocPCScanBrowserOnly{
     "PartitionAllocPCScanBrowserOnly", FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
+const Feature kPartitionAllocLazyCommit{"PartitionAllocLazyCommit",
+                                        FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace base
