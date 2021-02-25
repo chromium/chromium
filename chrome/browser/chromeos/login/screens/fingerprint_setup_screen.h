@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "chrome/browser/chromeos/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/base_screen.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

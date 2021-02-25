@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "chrome/browser/chromeos/login/screens/active_directory_password_change_screen.h"
+#include "chrome/browser/ash/login/screens/active_directory_password_change_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
 namespace chromeos {

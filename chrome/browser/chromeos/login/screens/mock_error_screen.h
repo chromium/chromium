@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_LOGIN_SCREENS_MOCK_ERROR_SCREEN_H_
 #define CHROME_BROWSER_CHROMEOS_LOGIN_SCREENS_MOCK_ERROR_SCREEN_H_
 
-#include "chrome/browser/chromeos/login/screens/error_screen.h"
+#include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/chromeos/login/screens/network_error.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"

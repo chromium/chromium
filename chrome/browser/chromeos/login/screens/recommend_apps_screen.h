@@ -10,7 +10,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "chrome/browser/chromeos/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/chromeos/login/screens/recommend_apps/recommend_apps_fetcher_delegate.h"
 
 namespace base {

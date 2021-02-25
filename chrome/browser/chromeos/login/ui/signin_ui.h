@@ -5,7 +5,7 @@
 #define CHROME_BROWSER_CHROMEOS_LOGIN_UI_SIGNIN_UI_H_
 
 #include "base/callback.h"
-#include "chrome/browser/chromeos/login/screens/encryption_migration_mode.h"
+#include "chrome/browser/ash/login/screens/encryption_migration_mode.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
 

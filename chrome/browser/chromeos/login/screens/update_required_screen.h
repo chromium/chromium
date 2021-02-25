@@ -13,8 +13,8 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/login/screens/base_screen.h"
-#include "chrome/browser/chromeos/login/screens/error_screen.h"
+#include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/chromeos/login/version_updater/version_updater.h"
 #include "components/user_manager/remove_user_delegate.h"
 

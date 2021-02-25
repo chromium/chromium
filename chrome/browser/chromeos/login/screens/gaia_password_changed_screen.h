@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/base_screen.h"
 #include "components/account_id/account_id.h"
 
 namespace chromeos {

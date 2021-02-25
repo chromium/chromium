@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_LOGIN_SCREENS_MOCK_ENABLE_ADB_SIDELOADING_SCREEN_H_
 #define CHROME_BROWSER_CHROMEOS_LOGIN_SCREENS_MOCK_ENABLE_ADB_SIDELOADING_SCREEN_H_
 
-#include "chrome/browser/chromeos/login/screens/enable_adb_sideloading_screen.h"
+#include "chrome/browser/ash/login/screens/enable_adb_sideloading_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/enable_adb_sideloading_screen_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

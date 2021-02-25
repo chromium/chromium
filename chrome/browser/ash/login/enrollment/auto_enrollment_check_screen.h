@@ -13,8 +13,8 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_check_screen_view.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
-#include "chrome/browser/chromeos/login/screens/base_screen.h"
-#include "chrome/browser/chromeos/login/screens/error_screen.h"
+#include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/chromeos/login/screens/network_error.h"
 #include "chromeos/network/portal_detector/network_portal_detector.h"
 

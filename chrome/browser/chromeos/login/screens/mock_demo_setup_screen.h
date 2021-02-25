@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_LOGIN_SCREENS_MOCK_DEMO_SETUP_SCREEN_H_
 
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
-#include "chrome/browser/chromeos/login/screens/demo_setup_screen.h"
+#include "chrome/browser/ash/login/screens/demo_setup_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/demo_setup_screen_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

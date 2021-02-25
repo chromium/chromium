@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/bind.h"
-#include "chrome/browser/chromeos/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/base_screen.h"
 
 namespace chromeos {
 

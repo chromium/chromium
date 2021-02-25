@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/scoped_observer.h"
-#include "chrome/browser/chromeos/login/screens/base_screen.h"
-#include "chrome/browser/chromeos/login/screens/error_screen.h"
+#include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
 
 namespace chromeos {

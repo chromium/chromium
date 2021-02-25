@@ -4,7 +4,7 @@
 
 #include "chrome/browser/chromeos/login/screens/mock_device_disabled_screen_view.h"
 
-#include "chrome/browser/chromeos/login/screens/device_disabled_screen.h"
+#include "chrome/browser/ash/login/screens/device_disabled_screen.h"
 
 using ::testing::AtLeast;
 using ::testing::AtMost;

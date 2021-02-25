@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/login/screens/error_screen.h"
+#include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ui/webui/chromeos/network_element_localized_strings_provider.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"

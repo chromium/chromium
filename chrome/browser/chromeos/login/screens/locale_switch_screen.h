@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_LOGIN_SCREENS_LOCALE_SWITCH_SCREEN_H_
 #define CHROME_BROWSER_CHROMEOS_LOGIN_SCREENS_LOCALE_SWITCH_SCREEN_H_
 
-#include "chrome/browser/chromeos/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/base_screen.h"
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
