@@ -663,7 +663,7 @@
     USB keyboard connected
   </message>
   <message name="IDS_HID_DETECTION_DETECTED_TOUCHSCREEN" desc="Text shown on HID detection screen next to touchscreen icon if a touch screen was detected.">
-    Touch screen detected
+    Touchscreen detected
   </message>
   <message name="IDS_HID_DETECTION_PAIRED_BLUETOOTH_MOUSE" desc="Text shown on HID detection screen next to mouse icon after Bluetooth mouse is connected.">
     Bluetooth mouse paired

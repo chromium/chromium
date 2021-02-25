@@ -6,10 +6,6 @@
   --oobe-hid-detection-item-border: 1px solid var(--google-grey-200);
 }
 
-.hid-selection-entry:first-of-type {
-  margin-top: 20px;
-}
-
 .hid-selection-entry {
   border-bottom: var(--oobe-hid-detection-item-border);
   color: var(--google-grey-900);
