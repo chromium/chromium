@@ -13,10 +13,10 @@
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
+#include "base/test/task_environment.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_ids_provider.h"
-#include "content/public/test/browser_task_environment.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -61,8 +61,7 @@ class MockFeedbackUploaderChrome : public FeedbackUploader {
 class FeedbackUploaderDispatchTest : public ::testing::Test {
  protected:
   FeedbackUploaderDispatchTest()
-      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
-        shared_url_loader_factory_(
+      : shared_url_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {
     EXPECT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
@@ -95,7 +94,7 @@ class FeedbackUploaderDispatchTest : public ::testing::Test {
   const base::FilePath& state_path() { return scoped_temp_dir_.GetPath(); }
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir scoped_temp_dir_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;

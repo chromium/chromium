@@ -9,16 +9,14 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/logging.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/feedback/feedback_report.h"
 #endif
-
-using content::BrowserThread;
 
 namespace system_logs {
 
@@ -96,12 +94,13 @@ SystemLogsFetcher::~SystemLogsFetcher() {
 }
 
 void SystemLogsFetcher::AddSource(std::unique_ptr<SystemLogsSource> source) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   data_sources_.emplace_back(std::move(source));
   num_pending_requests_++;
 }
 
 void SystemLogsFetcher::Fetch(SysLogsFetcherCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback_.is_null());
   DCHECK(!callback.is_null());
 
@@ -123,7 +122,7 @@ void SystemLogsFetcher::Fetch(SysLogsFetcherCallback callback) {
 void SystemLogsFetcher::OnFetched(
     const std::string& source_name,
     std::unique_ptr<SystemLogsResponse> response) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   VLOG(1) << "Received SystemLogSource: " << source_name;
 
@@ -147,6 +146,7 @@ void SystemLogsFetcher::OnFetched(
 void SystemLogsFetcher::AddResponse(
     const std::string& source_name,
     std::unique_ptr<SystemLogsResponse> response) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& it : *response) {
     // An element with a duplicate key would not be successfully inserted.
     bool ok = response_->emplace(it).second;
@@ -167,6 +167,7 @@ void SystemLogsFetcher::AddResponse(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // TODO(https://crbug.com/1156750): Add test cases to exercise this code path.
 void SystemLogsFetcher::MergeAshAndLacrosCrashReportIdsInReponse() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Merge the lacros and ash recent crash report ids into a single log entry
   // with the key defined by kCrashReportIdsKey, i.e. crash_report_ids.
   auto ash_crash_iter =
@@ -226,10 +227,10 @@ void SystemLogsFetcher::MergeAshAndLacrosCrashReportIdsInReponse() {
 #endif
 
 void SystemLogsFetcher::RunCallbackAndDeleteSoon() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback_.is_null());
   std::move(callback_).Run(std::move(response_));
-
-  content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE, this);
+  base::SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
 }
 
 }  // namespace system_logs

@@ -10,10 +10,10 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "components/feedback/feedback_report.h"
 #include "components/feedback/feedback_uploader.h"
 #include "components/prefs/testing_pref_service.h"
-#include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -95,7 +95,7 @@ class FeedbackDataTest : public testing::Test {
 
   base::OnceClosure quit_closure_;
   std::unique_ptr<base::RunLoop> run_loop_;
-  content::BrowserTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir scoped_temp_dir_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;

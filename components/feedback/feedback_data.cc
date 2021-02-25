@@ -18,9 +18,6 @@
 #include "components/feedback/feedback_util.h"
 #include "components/feedback/proto/extension.pb.h"
 #include "components/feedback/tracing_manager.h"
-#include "content/public/browser/browser_thread.h"
-
-using content::BrowserThread;
 
 namespace feedback {
 namespace {
@@ -45,16 +42,17 @@ FeedbackData::FeedbackData(feedback::FeedbackUploader* uploader)
   CHECK(uploader_);
 }
 
-FeedbackData::~FeedbackData() {
-}
+FeedbackData::~FeedbackData() = default;
 
 void FeedbackData::OnFeedbackPageDataComplete() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   pending_op_count_--;
   SendReport();
 }
 
 void FeedbackData::CompressSystemInfo() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (trace_id_ != 0) {
     TracingManager* manager = TracingManager::Get();
@@ -75,7 +73,7 @@ void FeedbackData::CompressSystemInfo() {
 }
 
 void FeedbackData::SetAndCompressHistograms(std::string histograms) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ++pending_op_count_;
   base::ThreadPool::PostTaskAndReply(
@@ -87,7 +85,7 @@ void FeedbackData::SetAndCompressHistograms(std::string histograms) {
 }
 
 void FeedbackData::AttachAndCompressFileData(std::string attached_filedata) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (attached_filedata.empty())
     return;
@@ -104,7 +102,7 @@ void FeedbackData::AttachAndCompressFileData(std::string attached_filedata) {
 void FeedbackData::OnGetTraceData(
     int trace_id,
     scoped_refptr<base::RefCountedString> trace_data) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TracingManager* manager = TracingManager::Get();
   if (manager)
     manager->DiscardTraceData(trace_id);
@@ -118,17 +116,18 @@ void FeedbackData::OnGetTraceData(
 }
 
 void FeedbackData::OnCompressComplete() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   --pending_op_count_;
   SendReport();
 }
 
 bool FeedbackData::IsDataComplete() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return pending_op_count_ == 0;
 }
 
 void FeedbackData::SendReport() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (IsDataComplete() && !report_sent_) {
     report_sent_ = true;
     userfeedback::ExtensionSubmit feedback_data;
