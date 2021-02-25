@@ -10,7 +10,6 @@
 
 #include "base/process/process_handle.h"
 #include "base/stl_util.h"
-#include "base/strings/pattern.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/accessibility/browser_accessibility_auralinux.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
@@ -25,6 +24,7 @@ namespace content {
 using ui::AtkRoleToString;
 using ui::ATSPIRoleToString;
 using ui::ATSPIStateToString;
+using ui::FindAccessible;
 
 // static
 AccessibilityEventRecorderAuraLinux*
@@ -59,17 +59,14 @@ gboolean AccessibilityEventRecorderAuraLinux::OnATKEventReceived(
 }
 
 bool AccessibilityEventRecorderAuraLinux::ShouldUseATSPI() {
-  return pid_ != base::GetCurrentProcId() ||
-         !application_name_match_pattern_.empty();
+  return pid_ != base::GetCurrentProcId() || !selector_.empty();
 }
 
 AccessibilityEventRecorderAuraLinux::AccessibilityEventRecorderAuraLinux(
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,
     const AXTreeSelector& selector)
-    : AccessibilityEventRecorder(manager),
-      pid_(pid),
-      application_name_match_pattern_(selector.pattern) {
+    : AccessibilityEventRecorder(manager), pid_(pid), selector_(selector) {
   CHECK(!instance_) << "There can be only one instance of"
                     << " AccessibilityEventRecorder at a time.";
 
@@ -351,24 +348,16 @@ void AccessibilityEventRecorderAuraLinux::ProcessATSPIEvent(
     const AtspiEvent* event) {
   GError* error = nullptr;
 
-  if (!application_name_match_pattern_.empty()) {
+  // Ignore irrelevant events, i.e. fired for other applications.
+  if (!selector_.empty()) {
     AtspiAccessible* application =
         atspi_accessible_get_application(event->source, &error);
-    if (error || !application)
-      return;
-
-    char* application_name = atspi_accessible_get_name(application, &error);
-    g_object_unref(application);
-    if (error || !application_name) {
+    if (error) {
       g_clear_error(&error);
       return;
     }
-
-    if (!base::MatchPattern(application_name,
-                            application_name_match_pattern_)) {
+    if (!application || application != FindAccessible(selector_))
       return;
-    }
-    free(application_name);
   }
 
   if (pid_) {

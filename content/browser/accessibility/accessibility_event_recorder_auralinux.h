@@ -55,7 +55,7 @@ class CONTENT_EXPORT AccessibilityEventRecorderAuraLinux
 
   AtspiEventListener* atspi_event_listener_ = nullptr;
   base::ProcessId pid_;
-  base::StringPiece application_name_match_pattern_;
+  ui::AXTreeSelector selector_;
   static AccessibilityEventRecorderAuraLinux* instance_;
 
   DISALLOW_COPY_AND_ASSIGN(AccessibilityEventRecorderAuraLinux);

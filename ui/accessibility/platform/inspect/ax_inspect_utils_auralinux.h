@@ -11,10 +11,12 @@
 #include "ui/accessibility/ax_export.h"
 
 namespace ui {
+struct AXTreeSelector;
 
 AX_EXPORT const char* ATSPIStateToString(AtspiStateType state);
 AX_EXPORT const char* ATSPIRoleToString(AtspiRole role);
 AX_EXPORT const char* AtkRoleToString(AtkRole role);
+AX_EXPORT AtspiAccessible* FindAccessible(const AXTreeSelector&);
 
 }  // namespace ui
 

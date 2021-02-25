@@ -4,10 +4,18 @@
 
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_auralinux.h"
 
+#include "base/logging.h"
 #include "base/stl_util.h"
+#include "base/strings/pattern.h"
+#include "ui/accessibility/platform/inspect/ax_inspect.h"
 
 namespace ui {
 namespace {
+
+const char kChromeTitle[] = "Google Chrome";
+const char kChromiumTitle[] = "Chromium";
+const char kFirefoxTitle[] = "Firefox";
+
 struct PlatformConstantToNameEntry {
   int32_t value;
   const char* name;
@@ -35,7 +43,14 @@ const char* GetNameForPlatformConstant(
       ((major) == ATSPI_MAJOR_VERSION && (minor) == ATSPI_MINOR_VERSION && \
        (micro) <= ATSPI_MICRO_VERSION)
 
-AX_EXPORT const char* ATSPIStateToString(AtspiStateType state) {
+#define CHECK_ATSPI_ERROR_NULLPTR(error) \
+  if (error) {                           \
+    LOG(ERROR) << error->message;        \
+    g_clear_error(&error);               \
+    return nullptr;                      \
+  }
+
+const char* ATSPIStateToString(AtspiStateType state) {
   // These roles are listed in the order they are defined in the enum so that
   // we can more easily discard ones that are too new for the version of
   // atspi2 that we are compiling against.
@@ -94,7 +109,7 @@ AX_EXPORT const char* ATSPIStateToString(AtspiStateType state) {
                                     state);
 }
 
-AX_EXPORT const char* ATSPIRoleToString(AtspiRole role) {
+const char* ATSPIRoleToString(AtspiRole role) {
   // These roles are listed in the order they are defined in the enum so that
   // we can more easily discard ones that are too new for the version of
   // atspi2 that we are compiling against.
@@ -372,6 +387,57 @@ const char* AtkRoleToString(AtkRole role) {
   if (role < G_N_ELEMENTS(kRoleNames))
     return kRoleNames[role];
   return "<unknown AtkRole>";
+}
+
+AtspiAccessible* FindAccessible(const AXTreeSelector& selector) {
+  std::string title;
+  if (selector.types & AXTreeSelector::Chrome) {
+    title = kChromeTitle;
+  } else if (selector.types & AXTreeSelector::Chromium) {
+    title = kChromiumTitle;
+  } else if (selector.types & AXTreeSelector::Firefox) {
+    title = kFirefoxTitle;
+  }
+
+  // AT-SPI2 always expects the first parameter to this call to be zero.
+  AtspiAccessible* desktop = atspi_get_desktop(0);
+  CHECK(desktop);
+
+  GError* error = nullptr;
+  int child_count = atspi_accessible_get_child_count(desktop, &error);
+  CHECK_ATSPI_ERROR_NULLPTR(error)
+
+  std::vector<std::pair<std::string, AtspiAccessible*>> matched_children;
+  for (int i = 0; i < child_count; i++) {
+    AtspiAccessible* child =
+        atspi_accessible_get_child_at_index(desktop, i, &error);
+    CHECK_ATSPI_ERROR_NULLPTR(error)
+
+    char* name = atspi_accessible_get_name(child, &error);
+    if (!error && name) {
+      if ((!title.empty() && title == name) ||
+          base::MatchPattern(name, selector.pattern)) {
+        matched_children.emplace_back(name, child);
+      }
+    }
+    free(name);
+  }
+
+  if (matched_children.size() == 0) {
+    LOG(ERROR) << "No application matched.";
+    return nullptr;
+  }
+
+  if (matched_children.size() > 1) {
+    LOG(ERROR) << "Matched more than one application. "
+               << "Try to make a more specific pattern.";
+    for (auto& match : matched_children) {
+      LOG(ERROR) << "  * " << match.first;
+    }
+    return nullptr;
+  }
+
+  return matched_children[0].second;
 }
 
 }  // namespace ui
