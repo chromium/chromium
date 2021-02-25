@@ -1121,13 +1121,13 @@ RenderFrameHostImpl::RenderFrameHostImpl(
 
   // Local roots are:
   // - main frames; or
-  // - subframes in a different SiteInstance from their parent.
+  // - subframes that use a proxy to talk to their parent.
   //
   // Local roots require a RenderWidget for input/layout/painting.
   // Note: We cannot use is_local_root() here because this block sets up the
   // fields that are used by that method.
   const bool setup_local_render_widget_host =
-      is_main_frame() || IsCrossProcessSubframe();
+      is_main_frame() || RequiresProxyToParent();
   if (setup_local_render_widget_host) {
     if (is_main_frame()) {
       // For main frames, the RenderWidgetHost is owned by the RenderViewHost.
@@ -1585,7 +1585,14 @@ size_t RenderFrameHostImpl::GetFrameDepth() {
 }
 
 bool RenderFrameHostImpl::IsCrossProcessSubframe() {
-  if (!parent_)
+  if (is_main_frame() || GetSiteInstance() == parent_->GetSiteInstance())
+    return false;
+  return GetSiteInstance()->GetProcess() !=
+         parent_->GetSiteInstance()->GetProcess();
+}
+
+bool RenderFrameHostImpl::RequiresProxyToParent() {
+  if (is_main_frame())
     return false;
   return GetSiteInstance() != parent_->GetSiteInstance();
 }
@@ -2589,8 +2596,8 @@ void RenderFrameHostImpl::PropagateEmbeddingTokenToParentFrame() {
   // See RenderFrameHost::GetEmbeddingToken for more details.
   RenderFrameProxyHost* target_render_frame_proxy = nullptr;
 
-  if (IsCrossProcessSubframe()) {
-    // Cross-process subframes should have a remote parent frame.
+  if (RequiresProxyToParent()) {
+    // This subframe should have a remote parent frame.
     target_render_frame_proxy =
         frame_tree_node()->render_manager()->GetProxyToParent();
     DCHECK(target_render_frame_proxy);
@@ -9171,9 +9178,11 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
   if (!last_committed_url_.SchemeIsHTTPOrHTTPS())
     return;
 
-  // Only generate reports for local root frames.
-  if (!is_local_root())
+  // Only generate reports for local root frames that are in a different
+  // process than their parent.
+  if (!is_main_frame() && !IsCrossProcessSubframe())
     return;
+  DCHECK(is_local_root());
 
   // Check the termination status to see if a crash occurred (and potentially
   // determine the |reason| for the crash).
@@ -9592,6 +9601,11 @@ void RenderFrameHostImpl::LogCannotCommitUrlCrashKeys(
       base::debug::AllocateCrashKeyString("is_cross_process_subframe",
                                           base::debug::CrashKeySize::Size32),
       bool_to_crash_key(IsCrossProcessSubframe()));
+
+  base::debug::SetCrashKeyString(
+      base::debug::AllocateCrashKeyString("is_local_root",
+                                          base::debug::CrashKeySize::Size32),
+      bool_to_crash_key(is_local_root()));
 
   base::debug::SetCrashKeyString(
       base::debug::AllocateCrashKeyString("site_lock",
@@ -10135,6 +10149,11 @@ void RenderFrameHostImpl::LogCannotCommitOriginCrashKeys(
       base::debug::AllocateCrashKeyString("is_cross_process_subframe",
                                           base::debug::CrashKeySize::Size32),
       bool_to_crash_key(IsCrossProcessSubframe()));
+
+  base::debug::SetCrashKeyString(
+      base::debug::AllocateCrashKeyString("is_local_root",
+                                          base::debug::CrashKeySize::Size32),
+      bool_to_crash_key(is_local_root()));
 
   if (navigation_request && navigation_request->IsNavigationStarted()) {
     base::debug::SetCrashKeyString(

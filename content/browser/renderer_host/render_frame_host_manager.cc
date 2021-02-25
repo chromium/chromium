@@ -3453,7 +3453,9 @@ void RenderFrameHostManager::CreateNewFrameForInnerDelegateAttachIfNecessary() {
     DiscardUnusedFrame(UnsetSpeculativeRenderFrameHost());
   }
 
-  if (!current_frame_host()->IsCrossProcessSubframe()) {
+  DCHECK(!current_frame_host()->is_main_frame());
+  if (current_frame_host()->GetSiteInstance() ==
+      current_frame_host()->GetParent()->GetSiteInstance()) {
     // At this point the beforeunload is dispatched and the result has been to
     // proceed with attaching. There are also no upcoming navigations which
     // would interfere with the upcoming attach. If the frame is in the same

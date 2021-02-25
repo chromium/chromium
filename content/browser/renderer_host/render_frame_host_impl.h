@@ -2708,6 +2708,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SetPolicyContainerHost(
       scoped_refptr<PolicyContainerHost> policy_container_host);
 
+  // Returns true if this frame requires a proxy to talk to its parent.
+  // Note: Using a proxy to talk to a parent does not imply that the parent
+  // is in a different process.
+  // (e.g. kProcessSharingWithStrictSiteInstances mode uses proxies for frames
+  //  that are in the same process.)
+  bool RequiresProxyToParent();
+
   // The RenderViewHost that this RenderFrameHost is associated with.
   //
   // It is kept alive as long as any RenderFrameHosts or RenderFrameProxyHosts
