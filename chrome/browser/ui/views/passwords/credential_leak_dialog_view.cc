@@ -6,7 +6,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/ui/passwords/credential_leak_dialog_controller.h"
-#include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
+#include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -22,37 +22,6 @@
 #include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
-
-// Updates the image displayed on the illustration based on the current theme.
-void UpdateImageView(NonAccessibleImageView* image_view,
-                     bool dark_mode_enabled) {
-  image_view->SetImage(
-      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-          dark_mode_enabled ? IDR_PASSWORD_CHECK_DARK : IDR_PASSWORD_CHECK));
-  gfx::Size preferred_size = image_view->GetPreferredSize();
-  if (!preferred_size.IsEmpty()) {
-    float max_width =
-        static_cast<float>(ChromeLayoutProvider::Get()->GetDistanceMetric(
-            views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
-    // Reduce width by a pixel on each side. This enforces that the banner image
-    // is rescaled during the ImageView::OnPaint step. Without the rescaling,
-    // the image will display compression artifacts due to the size mismatch.
-    // TODO(crbug.com/1171763): Remove once the scaling works automatically.
-    max_width -= 2;
-    const float scale = max_width / preferred_size.width();
-    preferred_size = gfx::ScaleToRoundedSize(preferred_size, scale);
-    image_view->SetImageSize(preferred_size);
-  }
-}
-
-// Creates the illustration which is rendered on top of the dialog.
-std::unique_ptr<NonAccessibleImageView> CreateIllustration(
-    bool dark_mode_enabled) {
-  auto image_view = std::make_unique<NonAccessibleImageView>();
-  UpdateImageView(image_view.get(), dark_mode_enabled);
-  image_view->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
-  return image_view;
-}
 
 std::unique_ptr<views::TooltipIcon> CreateInfoIcon() {
   auto explanation_tooltip = std::make_unique<views::TooltipIcon>(
@@ -126,10 +95,34 @@ void CredentialLeakDialogView::ControllerGone() {
     GetWidget()->Close();
 }
 
-void CredentialLeakDialogView::OnThemeChanged() {
-  views::DialogDelegateView::OnThemeChanged();
-  GetBubbleFrameView()->SetHeaderView(
-      CreateIllustration(GetNativeTheme()->ShouldUseDarkColors()));
+void CredentialLeakDialogView::AddedToWidget() {
+  // Set the header image.
+  ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
+  auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
+      *bundle.GetImageSkiaNamed(IDR_PASSWORD_CHECK),
+      *bundle.GetImageSkiaNamed(IDR_PASSWORD_CHECK_DARK),
+      base::BindRepeating(
+          [](CredentialLeakDialogView* view) {
+            return view->GetBubbleFrameView()->GetBackgroundColor();
+          },
+          this));
+
+  gfx::Size preferred_size = image_view->GetPreferredSize();
+  if (!preferred_size.IsEmpty()) {
+    float max_width =
+        static_cast<float>(ChromeLayoutProvider::Get()->GetDistanceMetric(
+            views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+    // Reduce width by a pixel on each side. This enforces that the banner image
+    // is rescaled during the ImageView::OnPaint step. Without the rescaling,
+    // the image will display compression artifacts due to the size mismatch.
+    // TODO(crbug.com/1171763): Remove once the scaling works automatically.
+    max_width -= 2;
+    const float scale = max_width / preferred_size.width();
+    preferred_size = gfx::ScaleToRoundedSize(preferred_size, scale);
+    image_view->SetImageSize(preferred_size);
+  }
+  image_view->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
+  GetBubbleFrameView()->SetHeaderView(std::move(image_view));
 }
 
 base::string16 CredentialLeakDialogView::GetWindowTitle() const {

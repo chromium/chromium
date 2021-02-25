@@ -32,7 +32,7 @@ class CredentialLeakDialogView : public views::DialogDelegateView,
 
  private:
   // views::DialogDelegateView:
-  void OnThemeChanged() override;
+  void AddedToWidget() override;
   base::string16 GetWindowTitle() const override;
 
   // Sets up the child views.
