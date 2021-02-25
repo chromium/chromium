@@ -35,7 +35,11 @@ base::FilePath GetDisplaySysPath(const ManagedDisplayInfo* display) {
   base::FilePath path_thus_far;
 
   for (const auto& component : components) {
-    path_thus_far = path_thus_far.Append(component);
+    if (path_thus_far.empty()) {
+      path_thus_far = base::FilePath(component);
+    } else {
+      path_thus_far = path_thus_far.Append(component);
+    }
 
     // Newer versions of the EVDI kernel driver include a symlink to the USB
     // device in the sysfs EVDI directory (e.g.
