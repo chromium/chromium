@@ -114,37 +114,6 @@ void ClientControlledShellSurfaceDelegate::OnZoomLevelChanged(
 ////////////////////////////////////////////////////////////////////////////////
 // ExoTestHelper, public:
 
-ExoTestWindow::ExoTestWindow(std::unique_ptr<gfx::GpuMemoryBuffer> gpu_buffer,
-                             bool is_modal) {
-  surface_.reset(new Surface());
-  int container = is_modal ? ash::kShellWindowId_SystemModalContainer
-                           : ash::desks_util::GetActiveDeskContainerId();
-  shell_surface_ =
-      std::make_unique<ShellSurface>(surface_.get(), gfx::Point(),
-                                     /*can minimize=*/false, container);
-
-  buffer_.reset(new Buffer(std::move(gpu_buffer)));
-  surface_->Attach(buffer_.get());
-  surface_->Commit();
-
-  ash::CenterWindow(shell_surface_->GetWidget()->GetNativeWindow());
-}
-
-ExoTestWindow::ExoTestWindow(ExoTestWindow&& other) {
-  surface_ = std::move(other.surface_);
-  buffer_ = std::move(other.buffer_);
-  shell_surface_ = std::move(other.shell_surface_);
-}
-
-ExoTestWindow::~ExoTestWindow() {}
-
-gfx::Point ExoTestWindow::origin() {
-  return surface_->window()->GetBoundsInScreen().origin();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// ExoTestHelper, public:
-
 ExoTestHelper::ExoTestHelper() {
   ash::WindowPositioner::DisableAutoPositioning(true);
 }
@@ -159,13 +128,6 @@ std::unique_ptr<gfx::GpuMemoryBuffer> ExoTestHelper::CreateGpuMemoryBuffer(
       ->GetGpuMemoryBufferManager()
       ->CreateGpuMemoryBuffer(size, format, gfx::BufferUsage::GPU_READ,
                               gpu::kNullSurfaceHandle);
-}
-
-ExoTestWindow ExoTestHelper::CreateWindow(int width,
-                                          int height,
-                                          bool is_modal) {
-  return ExoTestWindow(CreateGpuMemoryBuffer(gfx::Size(width, height)),
-                       is_modal);
 }
 
 std::unique_ptr<ClientControlledShellSurface>

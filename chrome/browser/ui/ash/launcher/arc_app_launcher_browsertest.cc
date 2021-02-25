@@ -40,7 +40,7 @@
 #include "components/arc/test/fake_app_instance.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/shell_surface_util.h"
-#include "components/exo/test/exo_test_helper.h"
+#include "components/exo/test/shell_surface_builder.h"
 #include "components/exo/wm_helper.h"
 #include "components/exo/wm_helper_chromeos.h"
 #include "content/public/test/browser_test.h"
@@ -697,13 +697,14 @@ IN_PROC_BROWSER_TEST_F(ArcAppLauncherBrowserTest, LogicalWindow) {
 
   // Create windows that will be associated with the tasks. Without this,
   // GetAppMenuItems() will only return an empty list.
-  exo::test::ExoTestHelper exo_test_helper;
-  std::vector<exo::test::ExoTestWindow> test_windows;
+  std::vector<std::unique_ptr<exo::ShellSurface>> test_windows;
+
   for (int task_id = 1; task_id <= 7; task_id++) {
-    test_windows.push_back(
-        exo_test_helper.CreateWindow(640, 480, /* is_modal= */ false));
+    test_windows.push_back(exo::test::ShellSurfaceBuilder({640, 480})
+                               .SetCentered()
+                               .BuildShellSurface());
+
     aura::Window* aura_window = test_windows[task_id - 1]
-                                    .shell_surface()
                                     ->GetWidget()
                                     ->GetNativeWindow();
     ASSERT_TRUE(aura_window);

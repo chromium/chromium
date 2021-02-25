@@ -20,12 +20,10 @@ class GpuMemoryBuffer;
 }
 
 namespace exo {
-class Buffer;
 class ClientControlledShellSurface;
 class InputMethodSurface;
 class InputMethodSurfaceManager;
 class Surface;
-class ShellSurface;
 class ToastSurface;
 class ToastSurfaceManager;
 
@@ -60,23 +58,6 @@ class ClientControlledShellSurfaceDelegate
   ClientControlledShellSurface* shell_surface_;
 };
 
-class ExoTestWindow {
- public:
-  ExoTestWindow(std::unique_ptr<gfx::GpuMemoryBuffer> gpu_buffer,
-                bool is_modal);
-  ExoTestWindow(ExoTestWindow&& window);
-  virtual ~ExoTestWindow();
-
-  Surface* surface() { return surface_.get(); }
-  ShellSurface* shell_surface() { return shell_surface_.get(); }
-  gfx::Point origin();
-
- private:
-  std::unique_ptr<Surface> surface_;
-  std::unique_ptr<Buffer> buffer_;
-  std::unique_ptr<ShellSurface> shell_surface_;
-};
-
 // A helper class that does common initialization required for Exosphere.
 class ExoTestHelper {
  public:
@@ -88,8 +69,6 @@ class ExoTestHelper {
       const gfx::Size& size,
       gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888);
 
-  // Creates window of size (width, height) at center of screen.
-  ExoTestWindow CreateWindow(int width, int height, bool is_modal);
   std::unique_ptr<ClientControlledShellSurface>
   CreateClientControlledShellSurface(Surface* surface,
                                      bool is_modal = false,

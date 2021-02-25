@@ -46,16 +46,6 @@ class TestPropertyResolver : public WMHelper::AppPropertyResolver {
 ////////////////////////////////////////////////////////////////////////////////
 // ExoTestBase, public:
 
-ExoTestBase::ShellSurfaceHolder::ShellSurfaceHolder(
-    std::unique_ptr<Buffer> buffer,
-    std::unique_ptr<Surface> surface,
-    std::unique_ptr<ShellSurface> shell_surface)
-    : buffer_(std::move(buffer)),
-      surface_(std::move(surface)),
-      shell_surface_(std::move(shell_surface)) {}
-
-ExoTestBase::ShellSurfaceHolder::~ShellSurfaceHolder() = default;
-
 ExoTestBase::ExoTestBase() = default;
 
 ExoTestBase::~ExoTestBase() = default;
@@ -79,19 +69,9 @@ viz::SurfaceManager* ExoTestBase::GetSurfaceManager() {
       ->surface_manager();
 }
 
-std::unique_ptr<ExoTestBase::ShellSurfaceHolder>
-ExoTestBase::CreateShellSurfaceHolder(const gfx::Size& buffer_size,
-                                      ShellSurface* parent) {
-  auto buffer = std::make_unique<Buffer>(
-      exo_test_helper()->CreateGpuMemoryBuffer(buffer_size));
-  auto surface = std::make_unique<Surface>();
-  auto shell_surface = std::make_unique<ShellSurface>(surface.get());
-  if (parent)
-    shell_surface->SetParent(parent);
-  surface->Attach(buffer.get());
-  surface->Commit();
-  return std::make_unique<ShellSurfaceHolder>(
-      std::move(buffer), std::move(surface), std::move(shell_surface));
+gfx::Point ExoTestBase::GetOriginOfShellSurface(
+    const ShellSurfaceBase* shell_surface) {
+  return shell_surface->GetWidget()->GetWindowBoundsInScreen().origin();
 }
 
 }  // namespace test

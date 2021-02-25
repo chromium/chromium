@@ -25,6 +25,7 @@
 #include "components/exo/surface.h"
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_helper.h"
+#include "components/exo/test/shell_surface_builder.h"
 #include "components/exo/wm_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
@@ -154,24 +155,29 @@ TEST_F(ShellSurfaceTest, SetParent) {
 
 TEST_F(ShellSurfaceTest, DeleteShellSurfaceWithTransientChildren) {
   gfx::Size buffer_size(256, 256);
-  auto parent_info = CreateShellSurfaceHolder(buffer_size, nullptr);
-  auto child1_info =
-      CreateShellSurfaceHolder(buffer_size, parent_info->shell_surface());
-  auto child2_info =
-      CreateShellSurfaceHolder(buffer_size, parent_info->shell_surface());
-  auto child3_info =
-      CreateShellSurfaceHolder(buffer_size, parent_info->shell_surface());
-  EXPECT_EQ(parent_info->shell_surface()->GetWidget()->GetNativeWindow(),
-            wm::GetTransientParent(
-                child1_info->shell_surface()->GetWidget()->GetNativeWindow()));
-  EXPECT_EQ(parent_info->shell_surface()->GetWidget()->GetNativeWindow(),
-            wm::GetTransientParent(
-                child2_info->shell_surface()->GetWidget()->GetNativeWindow()));
-  EXPECT_EQ(parent_info->shell_surface()->GetWidget()->GetNativeWindow(),
-            wm::GetTransientParent(
-                child3_info->shell_surface()->GetWidget()->GetNativeWindow()));
+  auto parent_shell_surface =
+      test::ShellSurfaceBuilder(buffer_size).BuildShellSurface();
 
-  parent_info.reset();
+  auto child1_shell_surface = test::ShellSurfaceBuilder(buffer_size)
+                                  .SetParent(parent_shell_surface.get())
+                                  .BuildShellSurface();
+  auto child2_shell_surface = test::ShellSurfaceBuilder(buffer_size)
+                                  .SetParent(parent_shell_surface.get())
+                                  .BuildShellSurface();
+  auto child3_shell_surface = test::ShellSurfaceBuilder(buffer_size)
+                                  .SetParent(parent_shell_surface.get())
+                                  .BuildShellSurface();
+
+  EXPECT_EQ(parent_shell_surface->GetWidget()->GetNativeWindow(),
+            wm::GetTransientParent(
+                child1_shell_surface->GetWidget()->GetNativeWindow()));
+  EXPECT_EQ(parent_shell_surface->GetWidget()->GetNativeWindow(),
+            wm::GetTransientParent(
+                child2_shell_surface->GetWidget()->GetNativeWindow()));
+  EXPECT_EQ(parent_shell_surface->GetWidget()->GetNativeWindow(),
+            wm::GetTransientParent(
+                child3_shell_surface->GetWidget()->GetNativeWindow()));
+  parent_shell_surface.reset();
 }
 
 TEST_F(ShellSurfaceTest, Maximize) {
@@ -1246,33 +1252,25 @@ TEST_F(ShellSurfaceTest, CaptionWithPopup) {
 }
 
 TEST_F(ShellSurfaceTest, SkipImeProcessingPropagateToSurface) {
-  gfx::Size buffer_size(256, 256);
-  auto buffer = std::make_unique<Buffer>(
-      exo_test_helper()->CreateGpuMemoryBuffer(buffer_size));
-  auto surface = std::make_unique<Surface>();
-  auto shell_surface = std::make_unique<ShellSurface>(surface.get());
-
-  surface->Attach(buffer.get());
-  surface->Commit();
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
   shell_surface->GetWidget()->SetBounds(gfx::Rect(0, 0, 256, 256));
   shell_surface->OnSetFrame(SurfaceFrameType::NORMAL);
 
   aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
   ASSERT_FALSE(window->GetProperty(aura::client::kSkipImeProcessing));
-  ASSERT_FALSE(
-      surface->window()->GetProperty(aura::client::kSkipImeProcessing));
+  ASSERT_FALSE(shell_surface->root_surface()->window()->GetProperty(
+      aura::client::kSkipImeProcessing));
 
   window->SetProperty(aura::client::kSkipImeProcessing, true);
   EXPECT_TRUE(window->GetProperty(aura::client::kSkipImeProcessing));
-  EXPECT_TRUE(surface->window()->GetProperty(aura::client::kSkipImeProcessing));
+  EXPECT_TRUE(shell_surface->root_surface()->window()->GetProperty(
+      aura::client::kSkipImeProcessing));
 }
 
 TEST_F(ShellSurfaceTest, NotifyLeaveEnter) {
-  gfx::Size buffer_size(256, 256);
-  auto buffer = std::make_unique<Buffer>(
-      exo_test_helper()->CreateGpuMemoryBuffer(buffer_size));
-  auto surface = std::make_unique<Surface>();
-  auto shell_surface = std::make_unique<ShellSurface>(surface.get());
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256}).SetNoCommit().BuildShellSurface();
 
   auto func = [](int64_t* old_display_id, int64_t* new_display_id,
                  int64_t old_id, int64_t new_id) {
@@ -1284,13 +1282,12 @@ TEST_F(ShellSurfaceTest, NotifyLeaveEnter) {
 
   int64_t old_display_id = 0, new_display_id = 0;
 
-  surface->set_leave_enter_callback(
+  shell_surface->root_surface()->set_leave_enter_callback(
       base::BindRepeating(func, &old_display_id, &new_display_id));
-  ;
+
   // Creating a new shell surface should notify on which display
   // it is created.
-  surface->Attach(buffer.get());
-  surface->Commit();
+  shell_surface->root_surface()->Commit();
   EXPECT_EQ(display::kInvalidDisplayId, old_display_id);
   EXPECT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().id(),
             new_display_id);
@@ -1328,15 +1325,10 @@ TEST_F(ShellSurfaceTest, NotifyLeaveEnter) {
 // set_server_start_resize is called, and the resize shadow is created for the
 // window.
 TEST_F(ShellSurfaceTest, ServerStartResize) {
-  gfx::Size buffer_size(64, 64);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
-  std::unique_ptr<Surface> surface(new Surface);
-  std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({64, 64}).SetNoCommit().BuildShellSurface();
   shell_surface->OnSetServerStartResize();
-
-  surface->Attach(buffer.get());
-  surface->Commit();
+  shell_surface->root_surface()->Commit();
   ASSERT_TRUE(shell_surface->GetWidget());
 
   auto* widget = shell_surface->GetWidget();

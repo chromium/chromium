@@ -13,7 +13,7 @@
 #include "components/arc/arc_util.h"
 #include "components/arc/intent_helper/custom_tab.h"
 #include "components/exo/shell_surface.h"
-#include "components/exo/test/exo_test_helper.h"
+#include "components/exo/test/shell_surface_builder.h"
 #include "components/exo/wm_helper.h"
 #include "components/exo/wm_helper_chromeos.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -91,11 +91,11 @@ class BrowserRemovalObserver final : public BrowserListObserver {
 
 IN_PROC_BROWSER_TEST_F(CustomTabSessionImplTest,
                        WebContentsAndBrowserDestroyedWithCustomTabSession) {
-  exo::test::ExoTestHelper exo_test_helper;
-  exo::test::ExoTestWindow test_window =
-      exo_test_helper.CreateWindow(640, 480, /* is_modal= */ false);
-  aura::Window* aura_window =
-      test_window.shell_surface()->GetWidget()->GetNativeWindow();
+  std::unique_ptr<exo::ShellSurface> test_window =
+      exo::test::ShellSurfaceBuilder({640, 480})
+          .SetCentered()
+          .BuildShellSurface();
+  aura::Window* aura_window = test_window->GetWidget()->GetNativeWindow();
   ASSERT_TRUE(aura_window);
 
   auto custom_tab = std::make_unique<arc::CustomTab>(aura_window);
