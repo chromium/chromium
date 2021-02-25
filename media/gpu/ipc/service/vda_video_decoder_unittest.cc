@@ -190,14 +190,14 @@ class VdaVideoDecoderTest : public testing::TestWithParam<bool> {
     RunUntilIdle();
   }
 
-  scoped_refptr<VideoFrame> PictureReady_NoRunUntilIdle(
-      int32_t bitstream_buffer_id,
-      int32_t picture_buffer_id,
-      gfx::Rect visible_rect = gfx::Rect(1920, 1080)) {
-    scoped_refptr<VideoFrame> frame;
+  void PictureReady_NoRunUntilIdle(scoped_refptr<VideoFrame>* out_frame,
+                                   int32_t bitstream_buffer_id,
+                                   int32_t picture_buffer_id,
+                                   gfx::Rect visible_rect = gfx::Rect(1920,
+                                                                      1080)) {
     Picture picture(picture_buffer_id, bitstream_buffer_id, visible_rect,
                     gfx::ColorSpace::CreateSRGB(), true);
-    EXPECT_CALL(output_cb_, Run(_)).WillOnce(SaveArg<0>(&frame));
+    EXPECT_CALL(output_cb_, Run(_)).WillOnce(SaveArg<0>(out_frame));
     if (GetParam()) {
       // TODO(sandersd): The first time a picture is output, VDAs will do so on
       // the GPU thread (because GpuVideoDecodeAccelerator required that). Test
@@ -209,15 +209,15 @@ class VdaVideoDecoderTest : public testing::TestWithParam<bool> {
           base::BindOnce(&VideoDecodeAccelerator::Client::PictureReady,
                          base::Unretained(client_), picture));
     }
-    return frame;
   }
 
   scoped_refptr<VideoFrame> PictureReady(
       int32_t bitstream_buffer_id,
       int32_t picture_buffer_id,
       gfx::Rect visible_rect = gfx::Rect(1920, 1080)) {
-    scoped_refptr<VideoFrame> frame = PictureReady_NoRunUntilIdle(
-        bitstream_buffer_id, picture_buffer_id, visible_rect);
+    scoped_refptr<VideoFrame> frame;
+    PictureReady_NoRunUntilIdle(&frame, bitstream_buffer_id, picture_buffer_id,
+                                visible_rect);
     RunUntilIdle();
     return frame;
   }
@@ -411,8 +411,8 @@ TEST_P(VdaVideoDecoderTest, Decode_OutputAndDismiss) {
   int32_t bitstream_id = Decode(base::TimeDelta());
   NotifyEndOfBitstreamBuffer(bitstream_id);
   int32_t picture_buffer_id = ProvidePictureBuffer();
-  scoped_refptr<VideoFrame> frame =
-      PictureReady_NoRunUntilIdle(bitstream_id, picture_buffer_id);
+  scoped_refptr<VideoFrame> frame;
+  PictureReady_NoRunUntilIdle(&frame, bitstream_id, picture_buffer_id);
   DismissPictureBuffer(picture_buffer_id);
 
   // Dropping the frame still requires a SyncPoint to wait on.
