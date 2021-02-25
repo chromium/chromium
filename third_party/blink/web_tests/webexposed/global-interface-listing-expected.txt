@@ -974,7 +974,15 @@ interface CanvasFormattedText
     method @@iterator
     method appendRun
     method constructor
+    method deleteRun
     method getRun
+    method insertRun
+    method setRun
+interface CanvasFormattedTextRun
+    attribute @@toStringTag
+    getter text
+    method constructor
+    setter text
 interface CanvasGradient
     attribute @@toStringTag
     method addColorStop

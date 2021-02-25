@@ -6,6 +6,7 @@ import("//third_party/blink/renderer/config.gni")
 
 modules_idl_files = [
   "canvas2d/canvas_formatted_text.idl",
+  "canvas2d/canvas_formatted_text_run.idl",
   "canvas2d/canvas_gradient.idl",
   "canvas2d/canvas_pattern.idl",
   "canvas2d/canvas_rendering_context_2d.idl",
@@ -15,7 +16,6 @@ modules_idl_files = [
 ]
 
 modules_dictionary_idl_files = [
-  "canvas2d/canvas_formatted_text_run.idl",
   "canvas2d/canvas_rendering_context_2d_settings.idl",
   "canvas2d/hit_region_options.idl",
   "htmlcanvas/canvas_context_creation_attributes_module.idl",

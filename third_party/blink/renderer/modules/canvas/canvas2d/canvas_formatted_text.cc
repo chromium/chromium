@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_formatted_text.h"
+#include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_child_layout_context.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
@@ -23,15 +24,37 @@ void CanvasFormattedText::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-CanvasFormattedText::CanvasFormattedText(Document* document) {
+CanvasFormattedText* CanvasFormattedText::Create(
+    ExecutionContext* execution_context,
+    const String text) {
+  CanvasFormattedText* canvas_formatted_text =
+      MakeGarbageCollected<CanvasFormattedText>(execution_context);
+  CanvasFormattedTextRun* run =
+      MakeGarbageCollected<CanvasFormattedTextRun>(execution_context, text);
+  canvas_formatted_text->text_runs_.push_back(run);
+  canvas_formatted_text->block_->AddChild(run->GetLayoutObject());
+  return canvas_formatted_text;
+}
+
+CanvasFormattedText::CanvasFormattedText(ExecutionContext* execution_context) {
   scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
   style->SetDisplay(EDisplay::kBlock);
-  block_ =
-      LayoutBlockFlow::CreateAnonymous(document, style, LegacyLayout::kAuto);
+  // Refrain from extending the use of document, apart from creating layout
+  // block flow. In the future we should handle execution_context's from worker
+  // threads that do not have a document.
+  auto* window = To<LocalDOMWindow>(execution_context);
+  block_ = LayoutBlockFlow::CreateAnonymous(window->document(), style,
+                                            LegacyLayout::kAuto);
   block_->SetIsLayoutNGObjectForCanvasFormattedText(true);
 }
 
 void CanvasFormattedText::Dispose() {
+  // Detach all the anonymous children we added, since block_->Destroy will
+  // destroy them. We want the lifetime of the children to be managed by their
+  // corresponding CanvasFormattedTextRun and not destroyed at this point.
+  while (block_->FirstChild()) {
+    block_->RemoveChild(block_->FirstChild());
+  }
   AllowDestroyingLayoutObjectInFinalizerScope scope;
   if (block_)
     block_->Destroy();
@@ -48,16 +71,67 @@ LayoutBlockFlow* CanvasFormattedText::GetLayoutBlock(
 }
 
 CanvasFormattedTextRun* CanvasFormattedText::appendRun(
-    CanvasFormattedTextRun* run) {
+    CanvasFormattedTextRun* run,
+    ExceptionState& exception_state) {
+  if (!CheckRunIsNotParented(run, &exception_state))
+    return nullptr;
   text_runs_.push_back(run);
-  scoped_refptr<ComputedStyle> text_style = ComputedStyle::Create();
-  text_style->SetDisplay(EDisplay::kInline);
-  LayoutText* text =
-      LayoutText::CreateAnonymous(block_->GetDocument(), std::move(text_style),
-                                  run->text().Impl(), LegacyLayout::kAuto);
-  text->SetIsLayoutNGObjectForCanvasFormattedText(true);
-  block_->AddChild(text);
+  block_->AddChild(run->GetLayoutObject());
   return run;
+}
+
+CanvasFormattedTextRun* CanvasFormattedText::setRun(
+    unsigned index,
+    CanvasFormattedTextRun* run,
+    ExceptionState& exception_state) {
+  if (!CheckRunsIndexBound(index, &exception_state) ||
+      !CheckRunIsNotParented(run, &exception_state))
+    return nullptr;
+  block_->AddChild(run->GetLayoutObject(),
+                   text_runs_[index]->GetLayoutObject());
+  block_->RemoveChild(text_runs_[index]->GetLayoutObject());
+  text_runs_[index] = run;
+  return text_runs_[index];
+}
+
+CanvasFormattedTextRun* CanvasFormattedText::insertRun(
+    unsigned index,
+    CanvasFormattedTextRun* run,
+    ExceptionState& exception_state) {
+  if (!CheckRunIsNotParented(run, &exception_state))
+    return nullptr;
+  if (index == text_runs_.size())
+    return appendRun(run, exception_state);
+  if (!CheckRunsIndexBound(index, &exception_state))
+    return nullptr;
+  block_->AddChild(run->GetLayoutObject(),
+                   text_runs_[index]->GetLayoutObject());
+  text_runs_.insert(index, run);
+  return text_runs_[index];
+}
+
+void CanvasFormattedText::deleteRun(unsigned index,
+                                    unsigned length,
+                                    ExceptionState& exception_state) {
+  if (!CheckRunsIndexBound(index, &exception_state))
+    return;
+  // Protect against overflow, do not perform math like index + length <
+  // text_runs_.size(). The length passed in can be close to INT_MAX.
+  if (text_runs_.size() - index < length) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kIndexSizeError,
+        ExceptionMessages::IndexExceedsMaximumBound("length", length,
+                                                    text_runs_.size() - index));
+    return;
+  }
+
+  for (wtf_size_t i = index; i < index + length; i++) {
+    block_->RemoveChild(text_runs_[i]->GetLayoutObject());
+  }
+  block_->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
+      layout_invalidation_reason::kCanvasFormattedTextRunChange);
+  text_runs_.EraseAt(static_cast<wtf_size_t>(index),
+                     static_cast<wtf_size_t>(length));
 }
 
 sk_sp<PaintRecord> CanvasFormattedText::PaintFormattedText(

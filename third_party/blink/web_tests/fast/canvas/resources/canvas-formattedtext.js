@@ -11,7 +11,7 @@ function RenderWithCanvas(parent)
         canvas.setAttribute("height", test_case.height ? test_case.height : 60);
         parent.appendChild(canvas);
         var text = new CanvasFormattedText();
-        text.appendRun({text: test_case.text});
+        text.appendRun(new CanvasFormattedTextRun(test_case.text));
         var context = canvas.getContext("2d", { alpha: false });
         context.clearRect(0,0,test_case.width, canvas.height);
         context.fillStyle = "#FFFFFF";

@@ -30,11 +30,22 @@ class MODULES_EXPORT CanvasFormattedText final : public ScriptWrappable {
 
  public:
   static CanvasFormattedText* Create(ExecutionContext* execution_context) {
-    auto* window = To<LocalDOMWindow>(execution_context);
-    return MakeGarbageCollected<CanvasFormattedText>(window->document());
+    return MakeGarbageCollected<CanvasFormattedText>(execution_context);
   }
 
-  explicit CanvasFormattedText(Document*);
+  static CanvasFormattedText* Create(ExecutionContext* execution_context,
+                                     const String text);
+
+  static CanvasFormattedText* Create(ExecutionContext* execution_context,
+                                     CanvasFormattedTextRun* run,
+                                     ExceptionState& exception_state) {
+    CanvasFormattedText* canvas_formatted_text =
+        MakeGarbageCollected<CanvasFormattedText>(execution_context);
+    canvas_formatted_text->appendRun(run, exception_state);
+    return canvas_formatted_text;
+  }
+
+  explicit CanvasFormattedText(ExecutionContext* execution_context);
   CanvasFormattedText(const CanvasFormattedText&) = delete;
   CanvasFormattedText& operator=(const CanvasFormattedText&) = delete;
 
@@ -56,6 +67,20 @@ class MODULES_EXPORT CanvasFormattedText final : public ScriptWrappable {
     return true;
   }
 
+  bool CheckRunIsNotParented(CanvasFormattedTextRun* run,
+                             ExceptionState* exception_state) const {
+    if (run->GetLayoutObject() && run->GetLayoutObject()->Parent()) {
+      if (exception_state) {
+        exception_state->ThrowDOMException(
+            DOMExceptionCode::kInvalidModificationError,
+            "The run is already a part of a formatted text. Remove it from "
+            "that formatted text before insertion.");
+      }
+      return false;
+    }
+    return true;
+  }
+
   CanvasFormattedTextRun* getRun(unsigned index,
                                  ExceptionState& exception_state) const {
     if (!CheckRunsIndexBound(index, &exception_state))
@@ -63,7 +88,24 @@ class MODULES_EXPORT CanvasFormattedText final : public ScriptWrappable {
     return text_runs_[index];
   }
 
-  CanvasFormattedTextRun* appendRun(CanvasFormattedTextRun* run);
+  CanvasFormattedTextRun* appendRun(CanvasFormattedTextRun* run,
+                                    ExceptionState& exception_state);
+
+  CanvasFormattedTextRun* setRun(unsigned index,
+                                 CanvasFormattedTextRun* run,
+                                 ExceptionState& exception_state);
+
+  CanvasFormattedTextRun* insertRun(unsigned index,
+                                    CanvasFormattedTextRun* run,
+                                    ExceptionState& exception_state);
+
+  void deleteRun(unsigned index, ExceptionState& exception_state) {
+    deleteRun(index, 1, exception_state);
+  }
+
+  void deleteRun(unsigned index,
+                 unsigned length,
+                 ExceptionState& exception_state);
 
   LayoutBlockFlow* GetLayoutBlock(Document& document,
                                   const FontDescription& defaultFont);

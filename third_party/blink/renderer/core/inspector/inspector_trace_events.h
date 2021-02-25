@@ -269,6 +269,7 @@ extern const char kTextControlChanged[];
 extern const char kSvgChanged[];
 extern const char kScrollbarChanged[];
 extern const char kDisplayLock[];
+extern CORE_EXPORT const char kCanvasFormattedTextRunChange[];
 }  // namespace layout_invalidation_reason
 
 // LayoutInvalidationReasonForTracing is strictly for tracing. Blink logic must
