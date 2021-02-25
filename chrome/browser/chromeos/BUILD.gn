@@ -199,6 +199,7 @@ source_set("chromeos") {
     "//chromeos/dbus/system_proxy:system_proxy_proto",
     "//chromeos/dbus/tpm_manager",
     "//chromeos/dbus/tpm_manager:tpm_manager_proto",
+    "//chromeos/dbus/typecd",
     "//chromeos/dbus/u2f",
     "//chromeos/dbus/u2f:u2f_proto",
     "//chromeos/dbus/upstart",
