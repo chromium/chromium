@@ -48,6 +48,15 @@ const unsigned kMaxCacheEntries = 100;
 // TTL for the successful resolutions. Failures are not cached.
 const unsigned kCacheEntryTTLSeconds = 60;
 
+RuleBasedHostResolverProc* CreateMockHostResolverProc(bool add_catchall) {
+  if (add_catchall) {
+    return CreateCatchAllHostResolverProc();
+  }
+
+  return new RuleBasedHostResolverProc(/*previous=*/nullptr,
+                                       /*allow_fallback=*/false);
+}
+
 }  // namespace
 
 int ParseAddressList(const std::string& host_list,
@@ -530,7 +539,8 @@ MockHostResolverBase::RequestImpl* MockHostResolverBase::request(size_t id) {
 
 // start id from 1 to distinguish from NULL RequestHandle
 MockHostResolverBase::MockHostResolverBase(bool use_caching,
-                                           int cache_invalidation_num)
+                                           int cache_invalidation_num,
+                                           bool require_matching_rule)
     : last_request_priority_(DEFAULT_PRIORITY),
       last_secure_dns_mode_override_(base::nullopt),
       synchronous_mode_(false),
@@ -541,11 +551,14 @@ MockHostResolverBase::MockHostResolverBase(bool use_caching,
       num_resolve_from_cache_(0),
       num_non_local_resolves_(0),
       tick_clock_(base::DefaultTickClock::GetInstance()) {
-  rules_map_[HostResolverSource::ANY] = CreateCatchAllHostResolverProc();
-  rules_map_[HostResolverSource::SYSTEM] = CreateCatchAllHostResolverProc();
-  rules_map_[HostResolverSource::DNS] = CreateCatchAllHostResolverProc();
+  rules_map_[HostResolverSource::ANY] =
+      CreateMockHostResolverProc(/*add_catchall=*/!require_matching_rule);
+  rules_map_[HostResolverSource::SYSTEM] =
+      CreateMockHostResolverProc(/*add_catchall=*/!require_matching_rule);
+  rules_map_[HostResolverSource::DNS] =
+      CreateMockHostResolverProc(/*add_catchall=*/!require_matching_rule);
   rules_map_[HostResolverSource::MULTICAST_DNS] =
-      CreateCatchAllHostResolverProc();
+      CreateMockHostResolverProc(/*add_catchall=*/!require_matching_rule);
 
   if (use_caching)
     cache_.reset(new HostCache(kMaxCacheEntries));
@@ -743,7 +756,8 @@ std::unique_ptr<HostResolver> MockHostResolverFactory::CreateResolver(
 
   // Explicit new to access private constructor.
   auto resolver = base::WrapUnique(new MockHostResolverBase(
-      enable_caching && use_caching_, cache_invalidation_num_));
+      enable_caching && use_caching_, cache_invalidation_num_,
+      /*require_matching_rule=*/true));
   if (rules_)
     resolver->set_rules(rules_.get());
   return resolver;
@@ -780,8 +794,10 @@ RuleBasedHostResolverProc::Rule::Rule(const Rule& other) = default;
 
 RuleBasedHostResolverProc::Rule::~Rule() = default;
 
-RuleBasedHostResolverProc::RuleBasedHostResolverProc(HostResolverProc* previous)
-    : HostResolverProc(previous), modifications_allowed_(true) {}
+RuleBasedHostResolverProc::RuleBasedHostResolverProc(HostResolverProc* previous,
+                                                     bool allow_fallback)
+    : HostResolverProc(previous, allow_fallback),
+      modifications_allowed_(true) {}
 
 void RuleBasedHostResolverProc::AddRule(const std::string& host_pattern,
                                         const std::string& replacement) {
@@ -870,16 +886,16 @@ void RuleBasedHostResolverProc::AllowDirectLookup(
 }
 
 void RuleBasedHostResolverProc::AddSimulatedFailure(
-    const std::string& host_pattern) {
-  HostResolverFlags flags = HOST_RESOLVER_LOOPBACK_ONLY;
+    const std::string& host_pattern,
+    HostResolverFlags flags) {
   Rule rule(Rule::kResolverTypeFail, host_pattern, ADDRESS_FAMILY_UNSPECIFIED,
             flags, std::string(), {} /* dns_aliases */, 0);
   AddRuleInternal(rule);
 }
 
 void RuleBasedHostResolverProc::AddSimulatedTimeoutFailure(
-    const std::string& host_pattern) {
-  HostResolverFlags flags = HOST_RESOLVER_LOOPBACK_ONLY;
+    const std::string& host_pattern,
+    HostResolverFlags flags) {
   Rule rule(Rule::kResolverTypeFailTimeout, host_pattern,
             ADDRESS_FAMILY_UNSPECIFIED, flags, std::string(),
             {} /* dns_aliases */, 0);
@@ -977,6 +993,7 @@ int RuleBasedHostResolverProc::Resolve(const std::string& host,
       }
     }
   }
+
   return ResolveUsingPrevious(host, address_family, host_resolver_flags,
                               addrlist, os_error);
 }
@@ -1008,12 +1025,14 @@ void RuleBasedHostResolverProc::AddRuleInternal(const Rule& rule) {
 }
 
 RuleBasedHostResolverProc* CreateCatchAllHostResolverProc() {
-  RuleBasedHostResolverProc* catchall = new RuleBasedHostResolverProc(nullptr);
+  RuleBasedHostResolverProc* catchall =
+      new RuleBasedHostResolverProc(/*previous=*/nullptr,
+                                    /*allow_fallback=*/false);
   // Note that IPv6 lookups fail.
   catchall->AddIPLiteralRule("*", "127.0.0.1", "localhost");
 
-  // Next add a rules-based layer the use controls.
-  return new RuleBasedHostResolverProc(catchall);
+  // Next add a rules-based layer that the test controls.
+  return new RuleBasedHostResolverProc(catchall, /*allow_fallback=*/false);
 }
 
 //-----------------------------------------------------------------------------

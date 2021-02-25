@@ -20,14 +20,18 @@ class AddressList;
 // Interface for a getaddrinfo()-like procedure. This is used by unit-tests
 // to control the underlying resolutions in HostResolverManager.
 // HostResolverProcs can be chained together; they fallback to the next
-// procedure in the chain by calling ResolveUsingPrevious().
+// procedure in the chain by calling ResolveUsingPrevious(). Unless
+// `allow_fallback_to_system_or_default` is set to false, `default_proc_`
+// (set via SetDefault()) is added to the end of the chain and the actual system
+// resolver acts as the final fallback after the default proc.
 //
 // Note that implementations of HostResolverProc *MUST BE THREADSAFE*, since
 // the HostResolver implementation using them can be multi-threaded.
 class NET_EXPORT HostResolverProc
     : public base::RefCountedThreadSafe<HostResolverProc> {
  public:
-  explicit HostResolverProc(HostResolverProc* previous);
+  explicit HostResolverProc(HostResolverProc* previous,
+                            bool allow_fallback_to_system_or_default = true);
 
   // Resolves |host| to an address list, restricting the results to addresses
   // in |address_family|. If successful returns OK and fills |addrlist| with
@@ -75,6 +79,7 @@ class NET_EXPORT HostResolverProc
   static HostResolverProc* SetDefault(HostResolverProc* proc);
   static HostResolverProc* GetDefault();
 
+  bool allow_fallback_to_system_;
   scoped_refptr<HostResolverProc> previous_proc_;
   static HostResolverProc* default_proc_;
 

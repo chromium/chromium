@@ -27,11 +27,13 @@ namespace net {
 
 HostResolverProc* HostResolverProc::default_proc_ = nullptr;
 
-HostResolverProc::HostResolverProc(HostResolverProc* previous) {
+HostResolverProc::HostResolverProc(HostResolverProc* previous,
+                                   bool allow_fallback_to_system_or_default)
+    : allow_fallback_to_system_(allow_fallback_to_system_or_default) {
   SetPreviousProc(previous);
 
   // Implicitly fall-back to the global default procedure.
-  if (!previous)
+  if (!previous && allow_fallback_to_system_or_default)
     SetPreviousProc(default_proc_);
 }
 
@@ -47,6 +49,12 @@ int HostResolverProc::ResolveUsingPrevious(
     return previous_proc_->Resolve(
         host, address_family, host_resolver_flags, addrlist, os_error);
   }
+
+  // If `allow_fallback_to_system_` is false there is no final fallback. It must
+  // be ensured that the Procs can handle any allowed requests. If this check
+  // fails while using MockHostResolver or RuleBasedHostResolverProc, it means
+  // none of the configured rules matched a host resolution request.
+  CHECK(allow_fallback_to_system_);
 
   // Final fallback is the system resolver.
   return SystemHostResolverCall(host, address_family, host_resolver_flags,

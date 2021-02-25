@@ -355,7 +355,7 @@ class PacFileDeciderQuickCheckTest : public ::testing::Test,
   }
 
  protected:
-  MockHostResolver resolver_;
+  MockHostResolver resolver_{/*require_matching_rule=*/true};
   Rules rules_;
   Rules::Rule rule_;
   TestCompletionCallback callback_;
@@ -400,22 +400,18 @@ TEST_F(PacFileDeciderQuickCheckTest, AsyncSuccess) {
   EXPECT_EQ(rule_.url, decider_->effective_config().value().pac_url());
 }
 
-#if !defined(OS_IOS)
-// This test is failing iOS device bots.
-// http://crbug.com/1181196
 // Fails if an asynchronous DNS lookup failure (i.e. an NXDOMAIN) still causes
 // PacFileDecider to yield a PAC URL.
 TEST_F(PacFileDeciderQuickCheckTest, AsyncFail) {
   resolver_.set_ondemand_mode(true);
   resolver_.rules_map()[HostResolverSource::SYSTEM]->AddSimulatedFailure(
-      "wpad");
+      "wpad", HOST_RESOLVER_AVOID_MULTICAST);
   EXPECT_THAT(StartDecider(), IsError(ERR_IO_PENDING));
   ASSERT_TRUE(resolver_.has_pending_requests());
   resolver_.ResolveAllPending();
   callback_.WaitForResult();
   EXPECT_FALSE(decider_->effective_config().value().has_pac_url());
 }
-#endif
 
 // Fails if a DNS lookup timeout either causes PacFileDecider to yield a PAC
 // URL or causes PacFileDecider not to cancel its pending resolution.
@@ -450,8 +446,6 @@ TEST_F(PacFileDeciderQuickCheckTest, QuickCheckInhibitsDhcp) {
 TEST_F(PacFileDeciderQuickCheckTest, QuickCheckDisabled) {
   const char* kPac = "function FindProxyForURL(u,h) { return \"DIRECT\"; }";
   resolver_.set_synchronous_mode(true);
-  resolver_.rules_map()[HostResolverSource::SYSTEM]->AddSimulatedFailure(
-      "wpad");
   MockPacFileFetcher fetcher;
   decider_.reset(new PacFileDecider(&fetcher, &dhcp_fetcher_, nullptr));
   EXPECT_THAT(StartDecider(), IsError(ERR_IO_PENDING));
@@ -459,15 +453,12 @@ TEST_F(PacFileDeciderQuickCheckTest, QuickCheckDisabled) {
   fetcher.NotifyFetchCompletion(OK, kPac);
 }
 
-#if !defined(OS_IOS)
-// This test is failing iOS device bots.
-// http://crbug.com/1181196
 TEST_F(PacFileDeciderQuickCheckTest, ExplicitPacUrl) {
   const char* kCustomUrl = "http://custom/proxy.pac";
   config_.set_pac_url(GURL(kCustomUrl));
   Rules::Rule rule = rules_.AddSuccessRule(kCustomUrl);
   resolver_.rules_map()[HostResolverSource::SYSTEM]->AddSimulatedFailure(
-      "wpad");
+      "wpad", HOST_RESOLVER_AVOID_MULTICAST);
   resolver_.rules_map()[HostResolverSource::SYSTEM]->AddRuleWithFlags(
       "custom", "1.2.3.4", HOST_RESOLVER_AVOID_MULTICAST);
   EXPECT_THAT(StartDecider(), IsError(ERR_IO_PENDING));
@@ -475,7 +466,6 @@ TEST_F(PacFileDeciderQuickCheckTest, ExplicitPacUrl) {
   EXPECT_TRUE(decider_->effective_config().value().has_pac_url());
   EXPECT_EQ(rule.url, decider_->effective_config().value().pac_url());
 }
-#endif
 
 TEST_F(PacFileDeciderQuickCheckTest, ShutdownDuringResolve) {
   resolver_.set_ondemand_mode(true);
