@@ -39,6 +39,9 @@
     <message name="IDS_NOTIFICATION_QUIET_PERMISSION_PROMPT_MESSAGE" desc="Text used as notification message when requesting permission for Web Notifications via a notification.">
       Notifications are automatically blocked for all sites except ones you allow
     </message>
+    <message name="IDS_NOTIFICATION_QUIET_PERMISSION_INFOBAR_PREDICTION_SERVICE_MESSAGE" desc="Text used as notification message when requesting permission for Web Notifications via a notification. Used when the prediction service has decided that the user will be very unlikely to grant this permission.">
+      Notifications were automatically blocked because you usually don't allow them
+    </message>
     <message name="IDS_MEDIA_CAPTURE_AUDIO_ONLY_INFOBAR_TEXT" desc="Text requesting permission for a site to access the computer's microphone.">
       <ph name="HOST">$1<ex>html5rocks.com</ex></ph> wants to use your microphone
     </message>

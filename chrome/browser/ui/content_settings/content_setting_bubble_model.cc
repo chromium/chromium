@@ -1507,7 +1507,6 @@ ContentSettingNotificationsBubbleModel::ContentSettingNotificationsBubbleModel(
     return;
   switch (*quiet_ui_reason) {
     case QuietUiReason::kEnabledInPrefs:
-    case QuietUiReason::kPredictedVeryUnlikelyGrant:
       set_message(l10n_util::GetStringUTF16(
           IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_DESCRIPTION));
       set_done_button_text(l10n_util::GetStringUTF16(
@@ -1539,6 +1538,15 @@ ContentSettingNotificationsBubbleModel::ContentSettingNotificationsBubbleModel(
       set_manage_text_style(ManageTextStyle::kNone);
       base::RecordAction(
           base::UserMetricsAction("Notifications.Quiet.StaticIconClicked"));
+      break;
+    case QuietUiReason::kPredictedVeryUnlikelyGrant:
+      set_message(l10n_util::GetStringUTF16(
+          IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_PREDICTION_SERVICE_DESCRIPTION));
+      set_done_button_text(l10n_util::GetStringUTF16(
+          IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_ALLOW_BUTTON));
+      set_show_learn_more(false);
+      base::RecordAction(
+          base::UserMetricsAction("Notifications.Quiet.AnimatedIconClicked"));
       break;
   }
 }

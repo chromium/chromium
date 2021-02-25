@@ -90,7 +90,6 @@ base::string16 GroupedPermissionInfoBarDelegate::GetDescriptionText() const {
     return base::string16();
   switch (*quiet_ui_reason) {
     case QuietUiReason::kEnabledInPrefs:
-    case QuietUiReason::kPredictedVeryUnlikelyGrant:
       return l10n_util::GetStringUTF16(
           IDS_NOTIFICATION_QUIET_PERMISSION_PROMPT_MESSAGE);
     case QuietUiReason::kTriggeredByCrowdDeny:
@@ -100,6 +99,9 @@ base::string16 GroupedPermissionInfoBarDelegate::GetDescriptionText() const {
     case QuietUiReason::kTriggeredDueToAbusiveContent:
       return l10n_util::GetStringUTF16(
           IDS_NOTIFICATION_QUIET_PERMISSION_INFOBAR_ABUSIVE_MESSAGE);
+    case QuietUiReason::kPredictedVeryUnlikelyGrant:
+      return l10n_util::GetStringUTF16(
+          IDS_NOTIFICATION_QUIET_PERMISSION_INFOBAR_PREDICTION_SERVICE_MESSAGE);
   }
 
   NOTREACHED();
