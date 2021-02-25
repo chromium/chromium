@@ -16,7 +16,7 @@
 namespace {
 
 // The minimum width for system tray with size of kMedium.
-constexpr int kMinWidthMediumSystemTray = 800;
+constexpr int kMinWidthMediumSystemTray = 768;
 
 // The maximum width for system tray with size of kMedium.
 constexpr int kMaxWidthMediumSystemTray = 1280;

@@ -31,7 +31,8 @@ namespace {
 
 // Maximum number of notification icons shown in the system tray button.
 constexpr int kMaxNotificationIconsShown = 2;
-constexpr int kSeparatorPadding = 3;
+constexpr int kNotificationIconSpacing = 1;
+constexpr gfx::Insets kSeparatorPadding(6, 4);
 
 // We only show notification icon in the tray if it is either:
 // *   Pinned (generally used for background process such as sharing your
@@ -49,8 +50,7 @@ class SeparatorTrayItemView : public TrayItemView {
     views::Separator* separator = new views::Separator();
     separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kSeparatorColor));
-    separator->SetBorder(
-        views::CreateEmptyBorder(gfx::Insets(kSeparatorPadding)));
+    separator->SetBorder(views::CreateEmptyBorder(kSeparatorPadding));
     AddChildView(separator);
   }
   ~SeparatorTrayItemView() override = default;
@@ -67,6 +67,8 @@ class SeparatorTrayItemView : public TrayItemView {
 NotificationIconTrayItemView::NotificationIconTrayItemView(Shelf* shelf)
     : TrayItemView(shelf) {
   CreateImageView();
+  image_view()->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets(0, kNotificationIconSpacing)));
 }
 
 NotificationIconTrayItemView::~NotificationIconTrayItemView() = default;
