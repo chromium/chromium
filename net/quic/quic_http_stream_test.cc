@@ -1796,10 +1796,18 @@ TEST_P(QuicHttpStreamTest, SendChunkedPostRequestAbortedByResetStream) {
   ProcessPacket(
       ConstructServerDataPacket(3, false, kFin, header2 + kResponseBody));
 
-  // Server resets stream with H3_NO_ERROR before request body is complete.
-  ProcessPacket(server_maker_.MakeRstPacket(4, /* include_version = */ false,
-                                            stream_id_,
-                                            quic::QUIC_STREAM_NO_ERROR));
+  if (version_.HasIetfQuicFrames()) {
+    // In IETF QUIC, the server uses a STOP_SENDING frame to notify the client
+    // that it does not need any further data to fully process the request.
+    ProcessPacket(server_maker_.MakeStopSendingPacket(
+        4, /* include_version = */ false, stream_id_,
+        quic::QUIC_STREAM_NO_ERROR));
+  } else {
+    // Server resets stream with H3_NO_ERROR before request body is complete.
+    ProcessPacket(server_maker_.MakeRstPacket(4, /* include_version = */ false,
+                                              stream_id_,
+                                              quic::QUIC_STREAM_NO_ERROR));
+  }
 
   // Finish feeding request body to QuicHttpStream.  Data will be discarded.
   chunked_upload_stream->AppendData(kUploadData, chunk_size, true);

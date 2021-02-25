@@ -219,6 +219,12 @@ class QuicTestPacketMaker {
       const std::string& quic_error_details,
       uint64_t frame_type);
 
+  std::unique_ptr<quic::QuicReceivedPacket> MakeStopSendingPacket(
+      uint64_t num,
+      bool include_version,
+      quic::QuicStreamId stream_id,
+      quic::QuicRstStreamErrorCode error_code);
+
   std::unique_ptr<quic::QuicReceivedPacket> MakeAckAndConnectionClosePacket(
       uint64_t num,
       bool include_version,

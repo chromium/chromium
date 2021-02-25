@@ -524,6 +524,20 @@ QuicTestPacketMaker::MakeDataRstAckAndConnectionClosePacket(
 }
 
 std::unique_ptr<quic::QuicReceivedPacket>
+QuicTestPacketMaker::MakeStopSendingPacket(
+    uint64_t num,
+    bool include_version,
+    quic::QuicStreamId stream_id,
+    quic::QuicRstStreamErrorCode error_code) {
+  DCHECK(version_.HasIetfQuicFrames());
+
+  InitializeHeader(num, include_version);
+  AddQuicStopSendingFrame(stream_id, error_code);
+
+  return BuildPacket();
+}
+
+std::unique_ptr<quic::QuicReceivedPacket>
 QuicTestPacketMaker::MakeAckAndConnectionClosePacket(
     uint64_t num,
     bool include_version,
