@@ -171,7 +171,8 @@ class ForceInstalledMetricsTest : public ForceInstalledTestBase {
 
   void CreateExtensionService(bool extensions_enabled) {
     base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-    command_line.AppendSwitch(::switches::kDisableExtensions);
+    if (!extensions_enabled)
+      command_line.AppendSwitch(::switches::kDisableExtensions);
     extensions::TestExtensionSystem* test_ext_system =
         static_cast<extensions::TestExtensionSystem*>(
             extensions::ExtensionSystem::Get(profile()));
