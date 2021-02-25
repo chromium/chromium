@@ -217,13 +217,13 @@ void ServiceWorkerDevToolsAgentHost::UpdateLoaderFactories(
   // |cross_origin_embedder_policy_| is nullopt. It's acceptable because the
   // factory bundles are updated with correct COEP value before any subresource
   // requests in that case.
-  auto script_bundle = EmbeddedWorkerInstance::CreateFactoryBundleOnUI(
+  auto script_bundle = EmbeddedWorkerInstance::CreateFactoryBundle(
       rph, worker_route_id_, origin,
       cross_origin_embedder_policy_ ? cross_origin_embedder_policy_.value()
                                     : network::CrossOriginEmbedderPolicy(),
       std::move(coep_reporter_for_script_loader),
       ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerScript);
-  auto subresource_bundle = EmbeddedWorkerInstance::CreateFactoryBundleOnUI(
+  auto subresource_bundle = EmbeddedWorkerInstance::CreateFactoryBundle(
       rph, worker_route_id_, origin,
       cross_origin_embedder_policy_ ? cross_origin_embedder_policy_.value()
                                     : network::CrossOriginEmbedderPolicy(),

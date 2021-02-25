@@ -232,7 +232,7 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   // The below can only be called on the UI thread. The returned factory may be
   // later supplied to UpdateLoaderFactories().
   static std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
-  CreateFactoryBundleOnUI(
+  CreateFactoryBundle(
       RenderProcessHost* rph,
       int routing_id,
       const url::Origin& origin,
