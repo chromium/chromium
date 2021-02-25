@@ -35,7 +35,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.resources.ResourceManager;
-import org.chromium.weblayer_private.interfaces.BrowserEmbeddingMode;
+import org.chromium.weblayer_private.interfaces.BrowserEmbeddabilityMode;
 
 import java.util.ArrayList;
 
@@ -201,7 +201,7 @@ public class ContentViewRenderView
             }
         }
 
-        @BrowserEmbeddingMode
+        @BrowserEmbeddabilityMode
         private final int mMode;
         private final SurfaceEventListener mListener;
         private final FrameLayout mParent;
@@ -244,7 +244,7 @@ public class ContentViewRenderView
         private final ArrayList<ValueCallback<Boolean>> mModeCallbacks = new ArrayList<>();
         private ArrayList<Runnable> mSurfaceRedrawNeededCallbacks;
 
-        public SurfaceData(@BrowserEmbeddingMode int mode, FrameLayout parent,
+        public SurfaceData(@BrowserEmbeddabilityMode int mode, FrameLayout parent,
                 SurfaceEventListener listener, int backgroundColor, boolean allowSurfaceControl,
                 Runnable evict) {
             mMode = mode;
@@ -253,7 +253,7 @@ public class ContentViewRenderView
             mAllowSurfaceControl = allowSurfaceControl;
             mEvict = evict;
             switch (mode) {
-                case BrowserEmbeddingMode.UNSUPPORTED: {
+                case BrowserEmbeddabilityMode.UNSUPPORTED: {
                     mSurfaceView = new SurfaceView(parent.getContext());
                     mSurfaceView.setZOrderMediaOverlay(true);
                     mSurfaceView.setBackgroundColor(backgroundColor);
@@ -270,10 +270,10 @@ public class ContentViewRenderView
                     mSurfaceTextureListener = null;
                     break;
                 }
-                case BrowserEmbeddingMode.SUPPORTED:
-                case BrowserEmbeddingMode.SUPPORTED_WITH_TRANSPARENT_BACKGROUND: {
+                case BrowserEmbeddabilityMode.SUPPORTED:
+                case BrowserEmbeddabilityMode.SUPPORTED_WITH_TRANSPARENT_BACKGROUND: {
                     boolean useTransparentBackground =
-                            mode == BrowserEmbeddingMode.SUPPORTED_WITH_TRANSPARENT_BACKGROUND;
+                            mode == BrowserEmbeddabilityMode.SUPPORTED_WITH_TRANSPARENT_BACKGROUND;
                     mTextureView = new TextureViewWithInvalidate(parent.getContext());
                     mSurfaceTextureListener =
                             new TextureViewSurfaceTextureListener(this, useTransparentBackground);
@@ -296,8 +296,8 @@ public class ContentViewRenderView
                 @Override
                 protected void doRun() {
                     if (mMarkedForDestroy) return;
-                    View view = (mMode == BrowserEmbeddingMode.UNSUPPORTED) ? mSurfaceView
-                                                                            : mTextureView;
+                    View view = (mMode == BrowserEmbeddabilityMode.UNSUPPORTED) ? mSurfaceView
+                                                                                : mTextureView;
                     assert view != null;
                     // Always insert view for new surface below the existing view to avoid artifacts
                     // during surface swaps. Index 0 is the lowest child.
@@ -316,7 +316,7 @@ public class ContentViewRenderView
             mPrevSurfaceDataNeedsDestroy.mNextSurfaceDataNeedsRunCallback = this;
         }
 
-        public @BrowserEmbeddingMode int getMode() {
+        public @BrowserEmbeddabilityMode int getMode() {
             return mMode;
         }
 
@@ -341,19 +341,19 @@ public class ContentViewRenderView
                 // (EGLSurface). Otherwise the surface is destroyed immediate before the
                 // SurfaceView is detached.
                 mCachedSurfaceNeedsEviction =
-                        hasNextSurface && mMode == BrowserEmbeddingMode.UNSUPPORTED;
+                        hasNextSurface && mMode == BrowserEmbeddabilityMode.UNSUPPORTED;
                 mListener.surfaceDestroyed(mCachedSurfaceNeedsEviction);
                 mNeedsOnSurfaceDestroyed = false;
             }
             runSurfaceRedrawNeededCallbacks();
 
             switch (mMode) {
-                case BrowserEmbeddingMode.UNSUPPORTED: {
+                case BrowserEmbeddabilityMode.UNSUPPORTED: {
                     mSurfaceView.getHolder().removeCallback(mSurfaceCallback);
                     break;
                 }
-                case BrowserEmbeddingMode.SUPPORTED:
-                case BrowserEmbeddingMode.SUPPORTED_WITH_TRANSPARENT_BACKGROUND: {
+                case BrowserEmbeddabilityMode.SUPPORTED:
+                case BrowserEmbeddabilityMode.SUPPORTED_WITH_TRANSPARENT_BACKGROUND: {
                     mTextureView.setSurfaceTextureListener(null);
                     break;
                 }
@@ -371,7 +371,7 @@ public class ContentViewRenderView
                 @Override
                 protected void doRun() {
                     switch (mMode) {
-                        case BrowserEmbeddingMode.UNSUPPORTED: {
+                        case BrowserEmbeddabilityMode.UNSUPPORTED: {
                             // Detaching a SurfaceView causes a flicker because the SurfaceView
                             // tears down the Surface in SurfaceFlinger before removing its hole in
                             // the view tree. This is a complicated heuristics to avoid this. It
@@ -400,8 +400,8 @@ public class ContentViewRenderView
                             mParent.postOnAnimation(outer);
                             break;
                         }
-                        case BrowserEmbeddingMode.SUPPORTED:
-                        case BrowserEmbeddingMode.SUPPORTED_WITH_TRANSPARENT_BACKGROUND: {
+                        case BrowserEmbeddabilityMode.SUPPORTED:
+                        case BrowserEmbeddabilityMode.SUPPORTED_WITH_TRANSPARENT_BACKGROUND: {
                             mParent.removeView(mTextureView);
                             runCallbackOnNextSurfaceData();
                             break;
@@ -429,7 +429,7 @@ public class ContentViewRenderView
 
         public void setBackgroundColor(int color) {
             assert !mMarkedForDestroy;
-            if (mMode == BrowserEmbeddingMode.UNSUPPORTED) {
+            if (mMode == BrowserEmbeddabilityMode.UNSUPPORTED) {
                 mSurfaceView.setBackgroundColor(color);
             }
         }
@@ -444,7 +444,7 @@ public class ContentViewRenderView
                     }
                 });
             }
-            if (mMode == BrowserEmbeddingMode.UNSUPPORTED) {
+            if (mMode == BrowserEmbeddabilityMode.UNSUPPORTED) {
                 // We have no reliable signal for when to show a SurfaceView. This is a heuristic
                 // (used by chrome as well) is to wait for 2 swaps from the chromium comopsitor
                 // as a signal that the SurfaceView has content and is ready to be displayed.
@@ -469,7 +469,7 @@ public class ContentViewRenderView
         }
 
         public View getView() {
-            return mMode == BrowserEmbeddingMode.UNSUPPORTED ? mSurfaceView : mTextureView;
+            return mMode == BrowserEmbeddabilityMode.UNSUPPORTED ? mSurfaceView : mTextureView;
         }
 
         private void destroyPreviousData() {
@@ -707,7 +707,8 @@ public class ContentViewRenderView
      * Native code should add/remove the layers to be rendered through the ContentViewLayerRenderer.
      * @param rootWindow The {@link WindowAndroid} this render view should be linked to.
      */
-    public void onNativeLibraryLoaded(WindowAndroid rootWindow, @BrowserEmbeddingMode int mode) {
+    public void onNativeLibraryLoaded(
+            WindowAndroid rootWindow, @BrowserEmbeddabilityMode int mode) {
         assert rootWindow != null;
         mNativeContentViewRenderView =
                 ContentViewRenderViewJni.get().init(ContentViewRenderView.this, rootWindow);
@@ -726,7 +727,7 @@ public class ContentViewRenderView
     }
 
     public void requestMode(
-            @BrowserEmbeddingMode int mode, @Nullable ValueCallback<Boolean> callback) {
+            @BrowserEmbeddabilityMode int mode, @Nullable ValueCallback<Boolean> callback) {
         boolean allowSurfaceControl = !mSelectionHandlesActive;
         if (mRequested != null
                 && (mRequested.getMode() != mode
@@ -843,7 +844,7 @@ public class ContentViewRenderView
         if (mSelectionHandlesActive == active) return;
         mSelectionHandlesActive = active;
         if (mCurrent == null) return;
-        if (mCurrent.getMode() != BrowserEmbeddingMode.UNSUPPORTED) return;
+        if (mCurrent.getMode() != BrowserEmbeddabilityMode.UNSUPPORTED) return;
 
         // requestMode will take into account the updated |mSelectionHandlesActive|
         // and respond appropriately, even if mode is the same.
@@ -931,7 +932,8 @@ public class ContentViewRenderView
 
     private void updateBackgroundColor() {
         boolean useTransparentBackground = mCurrent != null
-                && mCurrent.getMode() == BrowserEmbeddingMode.SUPPORTED_WITH_TRANSPARENT_BACKGROUND;
+                && mCurrent.getMode()
+                        == BrowserEmbeddabilityMode.SUPPORTED_WITH_TRANSPARENT_BACKGROUND;
         int uiMode = getContext().getResources().getConfiguration().uiMode;
         boolean darkThemeEnabled =
                 (uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
@@ -954,7 +956,7 @@ public class ContentViewRenderView
     private boolean shouldAvoidSurfaceResizeForSoftKeyboard() {
         // TextureView is more common with embedding use cases that should lead to resize.
         boolean usingSurfaceView =
-                mCurrent != null && mCurrent.getMode() == BrowserEmbeddingMode.UNSUPPORTED;
+                mCurrent != null && mCurrent.getMode() == BrowserEmbeddabilityMode.UNSUPPORTED;
         if (!usingSurfaceView) return false;
 
         boolean isFullWidth = isAttachedToWindow() && getWidth() == getRootView().getWidth();

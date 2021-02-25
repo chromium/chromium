@@ -9,10 +9,10 @@ import androidx.annotation.IntDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-@IntDef({BrowserEmbeddingMode.UNSUPPORTED, BrowserEmbeddingMode.SUPPORTED,
-        BrowserEmbeddingMode.SUPPORTED_WITH_TRANSPARENT_BACKGROUND})
+@IntDef({BrowserEmbeddabilityMode.UNSUPPORTED, BrowserEmbeddabilityMode.SUPPORTED,
+        BrowserEmbeddabilityMode.SUPPORTED_WITH_TRANSPARENT_BACKGROUND})
 @Retention(RetentionPolicy.SOURCE)
-public @interface BrowserEmbeddingMode {
+public @interface BrowserEmbeddabilityMode {
     /**
      * Does not support embedding use case.
      * The underlying implementation for this mode should remain identical to chrome.
@@ -23,7 +23,7 @@ public @interface BrowserEmbeddingMode {
      * applying View transforms or transparency. Also app should have at most one Browser
      * instance in this mode per window.
      */
-    int UNSUPPORTED = org.chromium.weblayer_private.interfaces.BrowserEmbeddingMode.UNSUPPORTED;
+    int UNSUPPORTED = org.chromium.weblayer_private.interfaces.BrowserEmbeddabilityMode.UNSUPPORTED;
 
     /**
      * Supports embedding use cases.
@@ -33,7 +33,7 @@ public @interface BrowserEmbeddingMode {
      * It is suitable for displaying general web content, though some situations may be
      * significantly less efficient.
      */
-    int SUPPORTED = org.chromium.weblayer_private.interfaces.BrowserEmbeddingMode.SUPPORTED;
+    int SUPPORTED = org.chromium.weblayer_private.interfaces.BrowserEmbeddabilityMode.SUPPORTED;
 
     /**
      * Same as SUPPORTED with the page background set to transparent.
@@ -43,6 +43,6 @@ public @interface BrowserEmbeddingMode {
      * fully controlled by the embedder, not for general web content.
      */
     int SUPPORTED_WITH_TRANSPARENT_BACKGROUND =
-            org.chromium.weblayer_private.interfaces.BrowserEmbeddingMode
+            org.chromium.weblayer_private.interfaces.BrowserEmbeddabilityMode
                     .SUPPORTED_WITH_TRANSPARENT_BACKGROUND;
 }

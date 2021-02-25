@@ -33,7 +33,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.weblayer_private.interfaces.BrowserEmbeddingMode;
+import org.chromium.weblayer_private.interfaces.BrowserEmbeddabilityMode;
 
 import java.util.ArrayList;
 
@@ -108,7 +108,7 @@ public final class BrowserViewController
         mContentViewRenderView.addOnAttachStateChangeListener(listener);
 
         mContentViewRenderView.onNativeLibraryLoaded(
-                mWindowAndroid, BrowserEmbeddingMode.UNSUPPORTED);
+                mWindowAndroid, BrowserEmbeddabilityMode.UNSUPPORTED);
         mTopControlsContainerView =
                 new BrowserControlsContainerView(context, mContentViewRenderView, this, true,
                         (savedState == null) ? null : savedState.mTopControlsState);
@@ -369,7 +369,8 @@ public final class BrowserViewController
                 + mBottomControlsContainerView.getContentHeightDelta());
     }
 
-    public void setEmbeddingMode(@BrowserEmbeddingMode int mode, ValueCallback<Boolean> callback) {
+    public void setEmbeddabilityMode(
+            @BrowserEmbeddabilityMode int mode, ValueCallback<Boolean> callback) {
         mContentViewRenderView.requestMode(mode, callback);
     }
 

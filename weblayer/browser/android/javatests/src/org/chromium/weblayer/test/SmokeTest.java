@@ -28,7 +28,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.weblayer.BrowserEmbeddingMode;
+import org.chromium.weblayer.BrowserEmbeddabilityMode;
 import org.chromium.weblayer.shell.InstrumentationActivity;
 
 import java.lang.ref.PhantomReference;
@@ -74,11 +74,12 @@ public class SmokeTest {
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @MinWebLayerVersion(90)
-    public void testSetEmbeddingMode() {
+    public void testSetEmbeddabilityMode() {
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl("about:blank");
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            activity.getBrowser().setEmbeddingMode(BrowserEmbeddingMode.SUPPORTED, (result) -> {});
+            activity.getBrowser().setEmbeddabilityMode(
+                    BrowserEmbeddabilityMode.SUPPORTED, (result) -> {});
         });
 
         // Set css background color to blue with 50% transparency. CSS format is #RRGGBBAA.
@@ -92,8 +93,8 @@ public class SmokeTest {
 
         BoundedCountDownLatch latch = new BoundedCountDownLatch(1);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            activity.getBrowser().setEmbeddingMode(
-                    BrowserEmbeddingMode.SUPPORTED_WITH_TRANSPARENT_BACKGROUND, (result) -> {
+            activity.getBrowser().setEmbeddabilityMode(
+                    BrowserEmbeddabilityMode.SUPPORTED_WITH_TRANSPARENT_BACKGROUND, (result) -> {
                         Assert.assertTrue(result);
                         latch.countDown();
                     });

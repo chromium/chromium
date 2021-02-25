@@ -9,10 +9,10 @@ import androidx.annotation.IntDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-@IntDef({BrowserEmbeddingMode.UNSUPPORTED, BrowserEmbeddingMode.SUPPORTED,
-        BrowserEmbeddingMode.SUPPORTED_WITH_TRANSPARENT_BACKGROUND})
+@IntDef({BrowserEmbeddabilityMode.UNSUPPORTED, BrowserEmbeddabilityMode.SUPPORTED,
+        BrowserEmbeddabilityMode.SUPPORTED_WITH_TRANSPARENT_BACKGROUND})
 @Retention(RetentionPolicy.SOURCE)
-public @interface BrowserEmbeddingMode {
+public @interface BrowserEmbeddabilityMode {
     int UNSUPPORTED = 0;
     int SUPPORTED = 1;
     int SUPPORTED_WITH_TRANSPARENT_BACKGROUND = 2;

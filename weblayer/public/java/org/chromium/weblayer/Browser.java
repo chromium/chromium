@@ -388,7 +388,7 @@ public class Browser {
      * need to control z-order with other views or other BrowserFragmentImpls. Note embedder should
      * keep WebLayer in the default non-embedding mode when user is interacting with the web
      * content. Embedding mode does not support encrypted video.
-     * Deprecated in 90. Use setEmbeddingMode instead.
+     * Deprecated in 90. Use setEmbeddabilityMode instead.
      *
      * @param enable Whether to support embedding
      * @param callback {@link Callback} to be called with a boolean indicating whether request
@@ -408,22 +408,22 @@ public class Browser {
     }
 
     /**
-     * See BrowserEmbeddingMode for details. The default mode is UNSUPPORTED.
+     * See BrowserEmbeddabilityMode for details. The default mode is UNSUPPORTED.
      * @param mode the requested embedding mode.
      * @param callback {@link Callback} to be called with a boolean indicating whether request
      * succeeded. A request might fail if it is subsumed by a subsequent request, or if this object
      * is destroyed.
      * @since 90
      */
-    public void setEmbeddingMode(
-            @BrowserEmbeddingMode int mode, @NonNull Callback<Boolean> callback) {
+    public void setEmbeddabilityMode(
+            @BrowserEmbeddabilityMode int mode, @NonNull Callback<Boolean> callback) {
         ThreadCheck.ensureOnUiThread();
         if (WebLayer.getSupportedMajorVersionInternal() < 90) {
             throw new UnsupportedOperationException();
         }
         throwIfDestroyed();
         try {
-            mImpl.setEmbeddingMode(
+            mImpl.setEmbeddabilityMode(
                     mode, ObjectWrapper.wrap((ValueCallback<Boolean>) callback::onResult));
         } catch (RemoteException e) {
             throw new APICallException(e);

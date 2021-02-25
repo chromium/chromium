@@ -25,7 +25,7 @@ import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.weblayer_private.interfaces.APICallException;
-import org.chromium.weblayer_private.interfaces.BrowserEmbeddingMode;
+import org.chromium.weblayer_private.interfaces.BrowserEmbeddabilityMode;
 import org.chromium.weblayer_private.interfaces.DarkModeStrategy;
 import org.chromium.weblayer_private.interfaces.IBrowser;
 import org.chromium.weblayer_private.interfaces.IBrowserClient;
@@ -258,15 +258,16 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
     @Override
     public void setSupportsEmbedding(boolean enable, IObjectWrapper valueCallback) {
         StrictModeWorkaround.apply();
-        getViewController().setEmbeddingMode(
-                enable ? BrowserEmbeddingMode.SUPPORTED : BrowserEmbeddingMode.UNSUPPORTED,
+        getViewController().setEmbeddabilityMode(
+                enable ? BrowserEmbeddabilityMode.SUPPORTED : BrowserEmbeddabilityMode.UNSUPPORTED,
                 (ValueCallback<Boolean>) ObjectWrapper.unwrap(valueCallback, ValueCallback.class));
     }
 
     @Override
-    public void setEmbeddingMode(@BrowserEmbeddingMode int mode, IObjectWrapper valueCallback) {
+    public void setEmbeddabilityMode(
+            @BrowserEmbeddabilityMode int mode, IObjectWrapper valueCallback) {
         StrictModeWorkaround.apply();
-        getViewController().setEmbeddingMode(mode,
+        getViewController().setEmbeddabilityMode(mode,
                 (ValueCallback<Boolean>) ObjectWrapper.unwrap(valueCallback, ValueCallback.class));
     }
 
