@@ -880,7 +880,6 @@ component("net") {
       "quic/platform/impl/quic_mem_slice_span_impl.h",
       "quic/platform/impl/quic_mem_slice_storage_impl.cc",
       "quic/platform/impl/quic_mem_slice_storage_impl.h",
-      "quic/platform/impl/quic_pcc_sender_impl.h",
       "quic/platform/impl/quic_prefetch_impl.h",
       "quic/platform/impl/quic_ptr_util_impl.h",
       "quic/platform/impl/quic_reference_counted_impl.h",
