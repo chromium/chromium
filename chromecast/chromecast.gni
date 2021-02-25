@@ -60,9 +60,6 @@ declare_args() {
   # TODO(thoren) merge this flag with display_web_contents_in_service
   enable_cast_fragment = false
 
-  # Set the number of lines for LogcatExtractor to send.
-  logcat_extractor_size = 512
-
   if (is_android) {
     # Set to true to get logcat from a remote service
     # If false, will only get the logs of the app.

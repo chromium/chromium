@@ -35,9 +35,6 @@ java_cpp_template("cast_shell_build_config_gen") {
     defines += [ "_ENABLE_CAST_FRAGMENT" ]
   }
 
-  # Set the logcat extractor size in lines.
-  defines += [ "_LOGCAT_EXTRACTOR_SIZE=${logcat_extractor_size}" ]
-
   if (use_remote_service_logcat) {
     defines += [ "_USE_REMOTE_SERVICE_LOGCAT" ]
   }
