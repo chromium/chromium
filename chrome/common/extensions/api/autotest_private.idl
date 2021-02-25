@@ -228,13 +228,8 @@ namespace autotestPrivate {
   dictionary AssistantQueryResponse {
     // Text response returned from server.
     DOMString? text;
-    // HTML response returned from server, usually accompanied with
-    // fallback text.
+    // HTML response returned from server.
     DOMString? htmlResponse;
-    // Text messages used as the "fallback" for HTML card rendering.
-    // Generally the fallback text is similar to transcribed TTS,
-    // e.g. "It's exactly 6 o'clock." or "Turning bluetooth off.".
-    DOMString? htmlFallback;
   };
   dictionary AssistantQueryStatus {
     // Indicates whether this might be a voice interaction.

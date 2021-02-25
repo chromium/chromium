@@ -2744,7 +2744,6 @@ class AssistantInteractionHelper
   void OnHtmlResponse(const std::string& response,
                       const std::string& fallback) override {
     result_.SetKey("htmlResponse", base::Value(response));
-    result_.SetKey("htmlFallback", base::Value(fallback));
     CheckResponseIsValid(__FUNCTION__);
   }
 
