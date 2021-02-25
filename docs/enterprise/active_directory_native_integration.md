@@ -23,7 +23,7 @@ which turns the device into
 [DEVICE_MODE_ENTERPRISE_AD](https://cs.chromium.org/chromium/src/components/policy/core/common/cloud/cloud_policy_constants.h?rcl=a2aecfd5286d50ba833241f351f32e512ceb3351&l=142).
 This mode gets written to install attributes. For devices in this mode we show
 an additional
-[step](https://cs.chromium.org/chromium/src/chrome/browser/ash/login/enrollment/enrollment_screen.cc?rcl=a2aecfd5286d50ba833241f351f32e512ceb3351&l=535)
+[step](https://cs.chromium.org/chromium/src/chrome/browser/chromeos/login/enrollment/enrollment_screen.cc?rcl=a2aecfd5286d50ba833241f351f32e512ceb3351&l=535)
 for Active Directory® domain join.
 
 ## Active Directory® sign-in
