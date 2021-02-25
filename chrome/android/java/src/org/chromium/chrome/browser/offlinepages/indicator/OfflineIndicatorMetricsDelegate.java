@@ -25,9 +25,23 @@ public class OfflineIndicatorMetricsDelegate {
     // UMA Histograms.
     public static final String OFFLINE_INDICATOR_SHOWN_DURATION_V2 =
             "OfflineIndicator.ShownDurationV2";
+    public static final String OFFLINE_INDICATOR_SHOWN_DURATION_V2_IN_FOREGROUND =
+            "OfflineIndicator.ShownDurationV2.InForeground";
+    public static final String OFFLINE_INDICATOR_SHOWN_DURATION_V2_IN_BACKGROUND =
+            "OfflineIndicator.ShownDurationV2.InBackground";
+    public static final String
+            OFFLINE_INDICATOR_SHOWN_DURATION_V2_IN_FOREGROUND_WITHOUT_BEING_BACKGROUNDED =
+                    "OfflineIndicator.ShownDurationV2.InForegroundWithoutBeingBackgrounded";
+    public static final String OFFLINE_INDICATOR_SHOWN_DURATION_V2_UNTIL_FIRST_TIME_BACKGROUNDED =
+            "OfflineIndicator.ShownDurationV2.UntilFirstTimeBackgrounded";
+    public static final String OFFLINE_INDICATOR_SHOWN_DURATION_V2_NUM_TIMES_BACKGROUNDED =
+            "OfflineIndicator.ShownDurationV2.NumTimesBackgrounded";
 
     /** Whether or not we are tracking a shown duration of the offline indicator. */
     private boolean mIsTrackingShownDuration;
+
+    /** Whether or not the application is in the foreground (true) or background (false) */
+    private boolean mIsApplicationForeground;
 
     /**
      * The wall time in milliseconds of the most recent time the offline indicator began being
@@ -35,13 +49,77 @@ public class OfflineIndicatorMetricsDelegate {
      */
     private long mIndicatorShownWallTimeMs;
 
+    /**
+     * While tracking a shown duration, the wall time in miiliseconds of the most recent state
+     * change (offline, online, foreground, or background). This value is persisted in prefs when
+     * updated.
+     */
+    private long mLastUpdateWallTimeMs;
+
+    /**
+     * While tracking a shown duration, the total time, in milliseconds, that the application was
+     * in foreground. This value is persisted in prefs when updated.
+     */
+    private long mTimeInForegroundMs;
+
+    /**
+     * While tracking a shown duration, the total time, in milliseconds, that the application was
+     * in background. This value is persisted in prefs when updated.
+     */
+    private long mTimeInBackgroundMs;
+
+    /**
+     * While tracking a shown duration, the time, in milliseconds, that the application was
+     * in foreground until the first time it was backgrounded. This value is persisted in prefs when
+     * updated.
+     */
+    private long mFirstTimeInForegroundMs;
+
+    /**
+     * While tracking a shown duration, the number of times the application changes from foreground
+     * to background. This value is persisted in prefs when updated.
+     */
+    private int mNumTimesBackgrounded;
+
     public OfflineIndicatorMetricsDelegate() {
+        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
+
         // Read stored state from Prefs
-        if (SharedPreferencesManager.getInstance().contains(
+        if (sharedPreferencesManager.contains(
                     ChromePreferenceKeys.OFFLINE_INDICATOR_V2_WALL_TIME_SHOWN_MS)) {
-            mIndicatorShownWallTimeMs = SharedPreferencesManager.getInstance().readLong(
+            mIndicatorShownWallTimeMs = sharedPreferencesManager.readLong(
                     ChromePreferenceKeys.OFFLINE_INDICATOR_V2_WALL_TIME_SHOWN_MS);
             mIsTrackingShownDuration = true;
+        }
+
+        if (sharedPreferencesManager.contains(
+                    ChromePreferenceKeys.OFFLINE_INDICATOR_V2_LAST_UPDATE_WALL_TIME_MS)) {
+            mLastUpdateWallTimeMs = sharedPreferencesManager.readLong(
+                    ChromePreferenceKeys.OFFLINE_INDICATOR_V2_LAST_UPDATE_WALL_TIME_MS);
+        }
+
+        if (sharedPreferencesManager.contains(
+                    ChromePreferenceKeys.OFFLINE_INDICATOR_V2_TIME_IN_FOREGROUND_MS)) {
+            mTimeInForegroundMs = sharedPreferencesManager.readLong(
+                    ChromePreferenceKeys.OFFLINE_INDICATOR_V2_TIME_IN_FOREGROUND_MS);
+        }
+
+        if (sharedPreferencesManager.contains(
+                    ChromePreferenceKeys.OFFLINE_INDICATOR_V2_TIME_IN_BACKGROUND_MS)) {
+            mTimeInBackgroundMs = sharedPreferencesManager.readLong(
+                    ChromePreferenceKeys.OFFLINE_INDICATOR_V2_TIME_IN_BACKGROUND_MS);
+        }
+
+        if (sharedPreferencesManager.contains(
+                    ChromePreferenceKeys.OFFLINE_INDICATOR_V2_FIRST_TIME_IN_FOREGROUND_MS)) {
+            mFirstTimeInForegroundMs = sharedPreferencesManager.readLong(
+                    ChromePreferenceKeys.OFFLINE_INDICATOR_V2_FIRST_TIME_IN_FOREGROUND_MS);
+        }
+
+        if (sharedPreferencesManager.contains(
+                    ChromePreferenceKeys.OFFLINE_INDICATOR_V2_NUM_TIMES_BACKGROUNDED)) {
+            mNumTimesBackgrounded = sharedPreferencesManager.readInt(
+                    ChromePreferenceKeys.OFFLINE_INDICATOR_V2_NUM_TIMES_BACKGROUNDED);
         }
     }
 
@@ -71,11 +149,20 @@ public class OfflineIndicatorMetricsDelegate {
     public void onIndicatorShown() {
         if (mIsTrackingShownDuration) return;
 
+        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
+
+        long currentTimeMs = sClock.currentTimeMillis();
+
         mIsTrackingShownDuration = true;
-        mIndicatorShownWallTimeMs = sClock.currentTimeMillis();
-        SharedPreferencesManager.getInstance().writeLong(
+        mIndicatorShownWallTimeMs = currentTimeMs;
+        sharedPreferencesManager.writeLong(
                 ChromePreferenceKeys.OFFLINE_INDICATOR_V2_WALL_TIME_SHOWN_MS,
                 mIndicatorShownWallTimeMs);
+
+        mLastUpdateWallTimeMs = currentTimeMs;
+        sharedPreferencesManager.writeLong(
+                ChromePreferenceKeys.OFFLINE_INDICATOR_V2_LAST_UPDATE_WALL_TIME_MS,
+                mLastUpdateWallTimeMs);
     }
 
     /**
@@ -86,16 +173,21 @@ public class OfflineIndicatorMetricsDelegate {
     public void onIndicatorHidden() {
         if (!mIsTrackingShownDuration) return;
 
+        if (mIsApplicationForeground) {
+            updateForegroundPeriod();
+        } else {
+            updateBackgroundPeriod();
+        }
+
         final long shownDurationWallTimeMs = sClock.currentTimeMillis() - mIndicatorShownWallTimeMs;
 
         // shownDurationWallTimeMs can be negative in cases where the system time is changed, so
         // we want to avoid recording metrics in cases where we know this happened.
         if (shownDurationWallTimeMs >= 0) {
-            recordShownDurationV2Histogram(shownDurationWallTimeMs);
+            recordShownDurationHistograms();
         }
 
-        clearStateFromPrefs();
-        mIsTrackingShownDuration = false;
+        reset();
     }
 
     /**
@@ -103,8 +195,10 @@ public class OfflineIndicatorMetricsDelegate {
      * indicator is shown while in the foreground or in the background.
      */
     public void onAppForegrounded() {
-        // TODO(curranmax) Track the amount of time that the application is foreground or background
-        // and the offline indicator is shown.
+        if (mIsTrackingShownDuration) {
+            updateBackgroundPeriod();
+        }
+        mIsApplicationForeground = true;
     }
 
     /**
@@ -112,17 +206,128 @@ public class OfflineIndicatorMetricsDelegate {
      * indicator is shown while in the foreground or in the background.
      */
     public void onAppBackgrounded() {
-        // TOOD(curranmax) Same as |onAppForegrounded|.
+        if (mIsTrackingShownDuration) {
+            updateForegroundPeriod();
+
+            // Updates state based on the foreground to background transition.
+            SharedPreferencesManager sharedPreferencesManager =
+                    SharedPreferencesManager.getInstance();
+            if (!sharedPreferencesManager.contains(
+                        ChromePreferenceKeys.OFFLINE_INDICATOR_V2_FIRST_TIME_IN_FOREGROUND_MS)) {
+                mFirstTimeInForegroundMs = mTimeInForegroundMs;
+                sharedPreferencesManager.writeLong(
+                        ChromePreferenceKeys.OFFLINE_INDICATOR_V2_FIRST_TIME_IN_FOREGROUND_MS,
+                        mFirstTimeInForegroundMs);
+            }
+
+            mNumTimesBackgrounded++;
+            sharedPreferencesManager.writeInt(
+                    ChromePreferenceKeys.OFFLINE_INDICATOR_V2_NUM_TIMES_BACKGROUNDED,
+                    mNumTimesBackgrounded);
+        }
+        mIsApplicationForeground = false;
     }
 
-    private void recordShownDurationV2Histogram(long shownDurationMs) {
+    /**
+     * Updates the tracked metrics given that the app has been in the foreground from
+     * |mLastUpdateWallTimeMs| until now. Metrics are persisted to prefs when updated.
+     */
+    private void updateForegroundPeriod() {
+        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
+
+        long currentTimeMs = sClock.currentTimeMillis();
+        long timeSinceLastUpdateMs = currentTimeMs - mLastUpdateWallTimeMs;
+
+        mTimeInForegroundMs += timeSinceLastUpdateMs;
+        sharedPreferencesManager.writeLong(
+                ChromePreferenceKeys.OFFLINE_INDICATOR_V2_TIME_IN_FOREGROUND_MS,
+                mTimeInForegroundMs);
+
+        mLastUpdateWallTimeMs = currentTimeMs;
+        sharedPreferencesManager.writeLong(
+                ChromePreferenceKeys.OFFLINE_INDICATOR_V2_LAST_UPDATE_WALL_TIME_MS,
+                mLastUpdateWallTimeMs);
+    }
+
+    /**
+     * Updates the tracked metrics given that the app has been in the background from
+     * |mLastUpdateWallTimeMs| until now. Metrics are persisted to prefs when updated.
+     */
+    private void updateBackgroundPeriod() {
+        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
+
+        long currentTimeMs = sClock.currentTimeMillis();
+        long timeSinceLastUpdateMs = currentTimeMs - mLastUpdateWallTimeMs;
+
+        mTimeInBackgroundMs += timeSinceLastUpdateMs;
+        sharedPreferencesManager.writeLong(
+                ChromePreferenceKeys.OFFLINE_INDICATOR_V2_TIME_IN_BACKGROUND_MS,
+                mTimeInBackgroundMs);
+
+        mLastUpdateWallTimeMs = currentTimeMs;
+        SharedPreferencesManager.getInstance().writeLong(
+                ChromePreferenceKeys.OFFLINE_INDICATOR_V2_LAST_UPDATE_WALL_TIME_MS,
+                mLastUpdateWallTimeMs);
+    }
+
+    /**
+     * Records the set of UMA histograms related to the shown duration of the Offline indicator.
+     * Some of the histograms are only recorded in certain cases.
+     */
+    private void recordShownDurationHistograms() {
         RecordHistogram.recordLongTimesHistogram100(
-                OFFLINE_INDICATOR_SHOWN_DURATION_V2, shownDurationMs);
+                OFFLINE_INDICATOR_SHOWN_DURATION_V2, mTimeInForegroundMs + mTimeInBackgroundMs);
+        RecordHistogram.recordLongTimesHistogram(
+                OFFLINE_INDICATOR_SHOWN_DURATION_V2_IN_FOREGROUND, mTimeInForegroundMs);
+        RecordHistogram.recordCount100Histogram(
+                OFFLINE_INDICATOR_SHOWN_DURATION_V2_NUM_TIMES_BACKGROUNDED, mNumTimesBackgrounded);
+
+        if (SharedPreferencesManager.getInstance().contains(
+                    ChromePreferenceKeys.OFFLINE_INDICATOR_V2_TIME_IN_BACKGROUND_MS)) {
+            // These histograms are only recorded if the app was in the background at some point
+            // while the offline indicator was shown.
+            RecordHistogram.recordLongTimesHistogram(
+                    OFFLINE_INDICATOR_SHOWN_DURATION_V2_IN_BACKGROUND, mTimeInBackgroundMs);
+            RecordHistogram.recordLongTimesHistogram(
+                    OFFLINE_INDICATOR_SHOWN_DURATION_V2_UNTIL_FIRST_TIME_BACKGROUNDED,
+                    mFirstTimeInForegroundMs);
+        } else {
+            assert mNumTimesBackgrounded == 0;
+
+            // This histogram is only recorded if the app was always in the foreground while the
+            // offline indicator was shown.
+            RecordHistogram.recordLongTimesHistogram(
+                    OFFLINE_INDICATOR_SHOWN_DURATION_V2_IN_FOREGROUND_WITHOUT_BEING_BACKGROUNDED,
+                    mTimeInForegroundMs);
+        }
     }
 
-    private void clearStateFromPrefs() {
-        SharedPreferencesManager.getInstance().removeKey(
+    /**
+     * Resets the state of this instance. Sets the member variables to zero or false, and clears the
+     * persisted values from prefs.
+     */
+    private void reset() {
+        mIndicatorShownWallTimeMs = 0;
+        mLastUpdateWallTimeMs = 0;
+        mTimeInForegroundMs = 0;
+        mTimeInBackgroundMs = 0;
+        mFirstTimeInForegroundMs = 0;
+        mNumTimesBackgrounded = 0;
+        mIsTrackingShownDuration = false;
+
+        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
+        sharedPreferencesManager.removeKey(
                 ChromePreferenceKeys.OFFLINE_INDICATOR_V2_WALL_TIME_SHOWN_MS);
+        sharedPreferencesManager.removeKey(
+                ChromePreferenceKeys.OFFLINE_INDICATOR_V2_LAST_UPDATE_WALL_TIME_MS);
+        sharedPreferencesManager.removeKey(
+                ChromePreferenceKeys.OFFLINE_INDICATOR_V2_TIME_IN_FOREGROUND_MS);
+        sharedPreferencesManager.removeKey(
+                ChromePreferenceKeys.OFFLINE_INDICATOR_V2_TIME_IN_BACKGROUND_MS);
+        sharedPreferencesManager.removeKey(
+                ChromePreferenceKeys.OFFLINE_INDICATOR_V2_FIRST_TIME_IN_FOREGROUND_MS);
+        sharedPreferencesManager.removeKey(
+                ChromePreferenceKeys.OFFLINE_INDICATOR_V2_NUM_TIMES_BACKGROUNDED);
     }
 
     @VisibleForTesting

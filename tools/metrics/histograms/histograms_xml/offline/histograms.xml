@@ -111,6 +111,83 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="OfflineIndicator.ShownDurationV2.InBackground" units="ms"
+    expires_after="2021-08-01">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    The duration the offline indicator was shown and Chrome was in the
+    background. Samples are only recorded to this histogram if Chrome was in the
+    background at some point while the offline indicator was shown. This is
+    recorded when the offline indicator stops being shown. The data for this
+    histogram is persisted in perfs, so if Chrome is killed, then we will still
+    record a sample. Note that in this case, when the user opens Chrome again
+    and the offline indicator is shown, then it will be treated as a
+    continuation from before Chrome was killed.
+  </summary>
+</histogram>
+
+<histogram name="OfflineIndicator.ShownDurationV2.InForeground" units="ms"
+    expires_after="2021-08-01">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    The duration the offline indicator was shown and Chrome was in the
+    foreground. This is recorded every time the offline indicator stops being
+    shown. The data for this histogram is persisted in perfs, so if Chrome is
+    killed, then we will still record a sample. Note that in this case, when the
+    user opens Chrome again and the offline indicator is shown, then it will be
+    treated as a continuation from before Chrome was killed.
+  </summary>
+</histogram>
+
+<histogram
+    name="OfflineIndicator.ShownDurationV2.InForegroundWithoutBeingBackgrounded"
+    units="ms" expires_after="2021-08-01">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    The duration the offline indicator was shown and Chrome was in the
+    foreground. Samples are only recorded to this histogram if Chrome was never
+    in the background while the offline indicator was shown. This is recoreded
+    when the offline indicator stops being shown. The data for this histogram is
+    persisted in perfs, so if Chrome is killed, then we will still record a
+    sample. Note that in this case, when the user opens Chrome again and the
+    offline indicator is shown, then it will be treated as a continuation from
+    before Chrome was killed.
+  </summary>
+</histogram>
+
+<histogram name="OfflineIndicator.ShownDurationV2.NumTimesBackgrounded"
+    units="times backgrounded" expires_after="2021-08-01">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    The number of times Chrome was backgrounded while the offline indicator was
+    shown. This is recorded every time the offline indicator stops being shown.
+    The data for this histogram is persisted in perfs, so if Chrome is killed,
+    then we will still record a sample. Note that in this case, when the user
+    opens Chrome again and the offline indicator is shown, then it will be
+    treated as a continuation from before Chrome was killed.
+  </summary>
+</histogram>
+
+<histogram name="OfflineIndicator.ShownDurationV2.UntilFirstTimeBackgrounded"
+    units="ms" expires_after="2021-08-01">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    The duration the offline indicator was first shown and in the foreground
+    until Chrome was backgrounded. Samples are only recorded to this histogram
+    if Chrome was in the background at some point while the offline indicator
+    was shown. This is recoreded when the offline indicator stops being shown.
+    The data for this histogram is persisted in perfs, so if Chrome is killed,
+    then we will still record a sample. Note that in this case, when the user
+    opens Chrome again and the offline indicator is shown, then it will be
+    treated as a continuation from before Chrome was killed.
+  </summary>
+</histogram>
+
 <histogram base="true" name="OfflinePages.AccessCount" units="units"
     expires_after="M85">
   <owner>jianli@chromium.org</owner>
