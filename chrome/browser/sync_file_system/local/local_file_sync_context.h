@@ -183,9 +183,8 @@ class LocalFileSyncContext
 
   void PromoteDemotedChanges(const GURL& origin,
                              storage::FileSystemContext* file_system_context,
-                             const base::Closure& callback);
-  void UpdateChangesForOrigin(const GURL& origin,
-                              const base::Closure& callback);
+                             base::OnceClosure callback);
+  void UpdateChangesForOrigin(const GURL& origin, base::OnceClosure callback);
 
   // They must be called on UI thread.
   void AddOriginChangeObserver(LocalOriginChangeObserver* observer);
@@ -222,14 +221,14 @@ class LocalFileSyncContext
   // Starts a timer to eventually call NotifyAvailableChangesOnIOThread.
   // The caller is expected to update origins_with_pending_changes_ before
   // calling this.
-  void ScheduleNotifyChangesUpdatedOnIOThread(const base::Closure& callback);
+  void ScheduleNotifyChangesUpdatedOnIOThread(base::OnceClosure callback);
 
   // Called by the internal timer on IO thread to notify changes to UI thread.
   void NotifyAvailableChangesOnIOThread();
 
   // Called from NotifyAvailableChangesOnIOThread.
   void NotifyAvailableChanges(const std::set<GURL>& origins,
-                              const std::vector<base::Closure>& callbacks);
+                              std::vector<base::OnceClosure> callbacks);
 
   // Helper routines for MaybeInitializeFileSystemContext.
   void InitializeFileSystemContextOnIOThread(
@@ -359,7 +358,7 @@ class LocalFileSyncContext
   // Used only on IO thread for available changes notifications.
   base::Time last_notified_changes_;
   std::unique_ptr<base::OneShotTimer> timer_on_io_;
-  std::vector<base::Closure> pending_completion_callbacks_;
+  std::vector<base::OnceClosure> pending_completion_callbacks_;
   std::set<GURL> origins_with_pending_changes_;
 
   // Populated while root directory deletion is being handled for
