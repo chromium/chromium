@@ -6,6 +6,7 @@ static_library("cpp") {
   sources = [
     "nearby_client_uuids.cc",
     "nearby_client_uuids.h",
+    "nearby_process_manager.cc",
     "nearby_process_manager.h",
   ]
 

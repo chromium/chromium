@@ -83,6 +83,9 @@ class NearbyConnectorImpl : public NearbyConnector, public KeyedService {
   void OnNearbyProcessStopped(
       nearby::NearbyProcessManager::NearbyProcessShutdownReason
           shutdown_reason);
+  void RecordNearbyDisconnectionForActiveBrokers(
+      nearby::NearbyProcessManager::NearbyProcessShutdownReason
+          shutdown_reason);
   void OnConnected(const base::UnguessableToken& id,
                    mojo::PendingRemote<mojom::NearbyMessageSender>
                        message_sender_pending_remote);

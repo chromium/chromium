@@ -51589,6 +51589,7 @@ Called by update_use_counter_css.py.-->
   <int value="10" label="Received unexpected payload type"/>
   <int value="11" label="Connection lost"/>
   <int value="12" label="Nearby process crash"/>
+  <int value="13" label="Nearby process Mojo dependency disconnection"/>
 </enum>
 
 <enum name="MultiDeviceNearbyMessageAction">

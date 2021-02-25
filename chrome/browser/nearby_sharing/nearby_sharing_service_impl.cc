@@ -854,8 +854,7 @@ NearbySharingServiceImpl::GetCertificateManager() {
 void NearbySharingServiceImpl::OnNearbyProcessStopped(
     NearbyProcessShutdownReason shutdown_reason) {
   DCHECK(process_reference_);
-  NS_LOG(INFO) << __func__
-               << ": Shutdown reason:" << static_cast<int>(shutdown_reason);
+  NS_LOG(INFO) << __func__ << ": Shutdown reason: " << shutdown_reason;
   CleanupAfterNearbyProcessStopped();
   ClearForegroundReceiveSurfaces();
   RestartNearbyProcessIfAppropriate(shutdown_reason);
@@ -910,7 +909,7 @@ void NearbySharingServiceImpl::RestartNearbyProcessIfAppropriate(
     case NearbyProcessShutdownReason::kMojoPipeDisconnection:
       NS_LOG(INFO) << __func__
                    << ": Attempting to restart nearby process after shutdown: "
-                   << static_cast<int>(shutdown_reason);
+                   << shutdown_reason;
       BindToNearbyProcess();
       break;
     case NearbyProcessShutdownReason::kNormal:

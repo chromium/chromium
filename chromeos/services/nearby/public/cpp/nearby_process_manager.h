@@ -64,6 +64,10 @@ class NearbyProcessManager : public KeyedService {
       NearbyProcessStoppedCallback on_process_stopped_callback) = 0;
 };
 
+std::ostream& operator<<(
+    std::ostream& os,
+    const NearbyProcessManager::NearbyProcessShutdownReason& reason);
+
 }  // namespace nearby
 }  // namespace chromeos
 
