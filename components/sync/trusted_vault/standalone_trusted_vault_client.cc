@@ -170,7 +170,13 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
       backend_task_runner_, backend_, identity_manager);
 }
 
-StandaloneTrustedVaultClient::~StandaloneTrustedVaultClient() = default;
+StandaloneTrustedVaultClient::~StandaloneTrustedVaultClient() {
+  if (backend_) {
+    // |backend_| needs to be destroyed inside backend sequence, not the current
+    // one.
+    backend_task_runner_->ReleaseSoon(FROM_HERE, std::move(backend_));
+  }
+}
 
 void StandaloneTrustedVaultClient::AddObserver(Observer* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
