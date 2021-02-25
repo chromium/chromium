@@ -10,6 +10,7 @@
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/extended_api.h"
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
+#include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/feature_list.h"
 #include "base/partition_alloc_buildflags.h"
 #include "build/build_config.h"
@@ -67,6 +68,8 @@ void ReconfigurePartitionForKnownProcess(const std::string& process_type) {
 }
 
 }  // namespace
+
+PartitionAllocSupport::PartitionAllocSupport() = default;
 
 void PartitionAllocSupport::ReconfigureEarlyish(
     const std::string& process_type) {
@@ -174,6 +177,37 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   if (process_type.empty()) {
     EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded();
   }
+}
+
+void PartitionAllocSupport::ReconfigureAfterThreadPoolInit(
+    const std::string& process_type) {
+  {
+    base::AutoLock scoped_lock(lock_);
+
+    // Init only once.
+    if (called_after_thread_pool_init_)
+      return;
+
+    DCHECK_EQ(established_process_type_, process_type);
+    // Enforce ordering.
+    DCHECK(called_earlyish_);
+    DCHECK(called_after_feature_list_init_);
+
+    called_after_thread_pool_init_ = true;
+  }
+
+  // TODO(lizeb): This is only called from the browser process for now, extend
+  // it to other processes as well.
+  DCHECK(process_type.empty());
+#if defined(PA_THREAD_CACHE_SUPPORTED) && \
+    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  if (process_type != switches::kZygoteProcess &&
+      base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocThreadCachePeriodicPurge)) {
+    base::internal::ThreadCacheRegistry::Instance().StartPeriodicPurge();
+  }
+#endif  // defined(PA_THREAD_CACHE_SUPPORTED) &&
+        // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
 }  // namespace internal

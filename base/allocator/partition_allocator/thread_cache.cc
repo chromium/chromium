@@ -172,7 +172,12 @@ void ThreadCacheRegistry::PeriodicPurge() {
     return;
 
   ThreadCache* tcache = ThreadCache::Get();
-  PA_DCHECK(ThreadCache::IsValid(tcache));
+  // Can run when there is no thread cache, in which case there is nothing to
+  // do, and the task should not be rescheduled. This would typically indicate a
+  // case where the thread cache was never enabled, or got disabled.
+  if (!ThreadCache::IsValid(tcache))
+    return;
+
   uint64_t allocations = tcache->stats_.alloc_count;
   uint64_t allocations_since_last_purge =
       allocations - allocations_at_last_purge_;

@@ -29,15 +29,20 @@ class PartitionAllocSupport {
   // *AfterFeatureListInit() is called in addition to the above, once
   // FeatureList has been initialized and ready to use. It is guaranteed to be
   // called on non-zygote processes or after the zygote has been forked.
+  // *AfterThreadPoolInit() is called once it is possible to post tasks, and
+  // after the previous steps.
   //
   // *Earlyish() must be called exactly once. *AfterZygoteFork() must be called
   // once iff *Earlyish() was called before with |process_type==kZygoteProcess|.
   //
   // *AfterFeatureListInit() may be called more than once, but will perform its
   // re-configuration steps exactly once.
+  //
+  // *AfterThreadPoolInit() may be called more than once.
   void ReconfigureEarlyish(const std::string& process_type);
   void ReconfigureAfterZygoteFork(const std::string& process_type);
   void ReconfigureAfterFeatureListInit(const std::string& process_type);
+  void ReconfigureAfterThreadPoolInit(const std::string& process_type);
 
   static PartitionAllocSupport* Get() {
     static auto* singleton = new PartitionAllocSupport();
@@ -45,10 +50,13 @@ class PartitionAllocSupport {
   }
 
  private:
+  PartitionAllocSupport();
+
   base::Lock lock_;
   bool called_earlyish_ GUARDED_BY(lock_) = false;
   bool called_after_zygote_fork_ GUARDED_BY(lock_) = false;
   bool called_after_feature_list_init_ GUARDED_BY(lock_) = false;
+  bool called_after_thread_pool_init_ GUARDED_BY(lock_) = false;
   std::string established_process_type_ GUARDED_BY(lock_) = "INVALID";
 };
 

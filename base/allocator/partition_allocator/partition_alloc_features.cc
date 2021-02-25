@@ -20,6 +20,11 @@ const Feature kPartitionAllocPCScan{"PartitionAllocPCScan",
 // If enabled, PCScan is turned on only for the browser's malloc partition.
 const Feature kPartitionAllocPCScanBrowserOnly{
     "PartitionAllocPCScanBrowserOnly", FEATURE_DISABLED_BY_DEFAULT};
+
+// If enabled, the thread cache will be periodically purged.
+const Feature kPartitionAllocThreadCachePeriodicPurge{
+    "PartitionAllocThreadCachePeriodicPurge", FEATURE_DISABLED_BY_DEFAULT};
+
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 const Feature kPartitionAllocLazyCommit{"PartitionAllocLazyCommit",
