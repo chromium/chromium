@@ -5,42 +5,25 @@
 package org.chromium.chrome.browser.installedapp;
 
 import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.WebContentsStatics;
 import org.chromium.installedapp.mojom.InstalledAppProvider;
 import org.chromium.services.service_manager.InterfaceFactory;
-import org.chromium.url.GURL;
 
 /** Factory to create instances of the InstalledAppProvider Mojo service. */
 public class InstalledAppProviderFactory implements InterfaceFactory<InstalledAppProvider> {
-    private final FrameUrlDelegateImpl mFrameUrlDelegate;
-
-    private static final class FrameUrlDelegateImpl
-            implements InstalledAppProviderImpl.FrameUrlDelegate {
-        private final RenderFrameHost mRenderFrameHost;
-
-        public FrameUrlDelegateImpl(RenderFrameHost renderFrameHost) {
-            mRenderFrameHost = renderFrameHost;
-        }
-
-        @Override
-        public GURL getUrl() {
-            GURL url = mRenderFrameHost.getLastCommittedURL();
-            return (url != null) ? url : GURL.emptyGURL();
-        }
-
-        @Override
-        public boolean isIncognito() {
-            return mRenderFrameHost.isIncognito();
-        }
-    }
+    private final RenderFrameHost mRenderFrameHost;
 
     public InstalledAppProviderFactory(RenderFrameHost renderFrameHost) {
-        mFrameUrlDelegate = new FrameUrlDelegateImpl(renderFrameHost);
+        mRenderFrameHost = renderFrameHost;
     }
 
     @Override
     public InstalledAppProvider createImpl() {
         return new InstalledAppProviderImpl(
-                mFrameUrlDelegate, new PackageManagerDelegate(), InstantAppsHandler.getInstance());
+                Profile.fromWebContents(WebContentsStatics.fromRenderFrameHost(mRenderFrameHost)),
+                mRenderFrameHost, new PackageManagerDelegate(),
+                InstantAppsHandler.getInstance()::isInstantAppAvailable);
     }
 }

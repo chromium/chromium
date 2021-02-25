@@ -4,13 +4,14 @@
 
 package org.chromium.chrome.browser.installedapp;
 
+import android.util.SparseArray;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.crypto.ByteArrayGenerator;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -40,63 +41,43 @@ import javax.crypto.spec.SecretKeySpec;
  * cleared.
  */
 class PackageHash {
-    static class Salt implements ProfileManager.Observer {
-        private static Salt sInstance;
+    // This map stores salts that have been calculated for different browser sessions (i.e. Browser
+    // Contexts). A SparseArray is used instead of a HashMap to avoid holding a reference to the key
+    // object.
+    private static SparseArray<byte[]> sSaltMap;
 
-        private byte[] mProfileSalt;
-        private byte[] mIncognitoSalt;
+    private static byte[] sGlobalSaltForTesting;
 
-        private Salt() {
-            reset(false);
-            ProfileManager.addObserver(this);
+    @VisibleForTesting
+    static byte[] getSaltBytes(BrowserContextHandle browserContext) {
+        if (sGlobalSaltForTesting != null) return sGlobalSaltForTesting;
+
+        if (sSaltMap == null) {
+            sSaltMap = new SparseArray<byte[]>();
         }
 
-        void reset(boolean onlyIncognito) {
-            try {
-                if (!onlyIncognito) {
-                    mProfileSalt = new ByteArrayGenerator().getBytes(20);
-                }
-                mIncognitoSalt = new ByteArrayGenerator().getBytes(20);
-            } catch (IOException | GeneralSecurityException e) {
-                // If this happens, the crypto source is messed up and we want the browser to crash.
-                throw new RuntimeException(e);
-            }
-        }
+        byte[] salt = sSaltMap.get(browserContext.hashCode());
+        if (salt != null) return salt;
 
-        public static Salt getInstance() {
-            if (sInstance == null) {
-                sInstance = new Salt();
-            }
-            return sInstance;
+        try {
+            salt = new ByteArrayGenerator().getBytes(20);
+        } catch (IOException | GeneralSecurityException e) {
+            // If this happens, the crypto source is messed up and we want the browser to crash.
+            throw new RuntimeException(e);
         }
+        sSaltMap.put(browserContext.hashCode(), salt);
+        return salt;
+    }
 
-        public byte[] getSaltBytes(boolean isIncognito) {
-            return isIncognito ? mIncognitoSalt : mProfileSalt;
-        }
-
-        @Override
-        public void onProfileAdded(Profile profile) {}
-
-        @Override
-        public void onProfileDestroyed(Profile profile) {
-            if (profile.isOffTheRecord()) {
-                reset(true);
-            }
-        }
-
-        @VisibleForTesting
-        public static void setGlobalSaltForTesting(byte[] salt) {
-            if (sInstance == null) getInstance();
-            sInstance.mProfileSalt = salt.clone();
-            sInstance.mIncognitoSalt = salt.clone();
-        }
+    static void setGlobalSaltForTesting(byte[] salt) {
+        sGlobalSaltForTesting = salt;
     }
 
     /**
      * Returns a SHA-256 hash of the package name, truncated to a 16-bit integer.
      */
-    public static short hashForPackage(String packageName, boolean isIncognito) {
-        byte[] salt = Salt.getInstance().getSaltBytes(isIncognito);
+    static short hashForPackage(String packageName, BrowserContextHandle browserContext) {
+        byte[] salt = getSaltBytes(browserContext);
         Mac hasher;
         try {
             hasher = Mac.getInstance("HmacSHA256");
@@ -121,11 +102,9 @@ class PackageHash {
     }
 
     @CalledByNative
-    public static void onCookiesDeleted() {
-        if (Salt.sInstance == null) {
-            // Singleton is uninitialized. No need to reset the salt.
-            return;
+    public static void onCookiesDeleted(BrowserContextHandle browserContext) {
+        if (sSaltMap != null) {
+            sSaltMap.delete(browserContext.hashCode());
         }
-        Salt.getInstance().reset(false);
     }
 }

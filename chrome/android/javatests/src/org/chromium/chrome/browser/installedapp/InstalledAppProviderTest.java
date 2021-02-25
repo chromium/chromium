@@ -19,6 +19,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
@@ -27,9 +30,10 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.content_public.browser.test.mock.MockRenderFrameHost;
 import org.chromium.installedapp.mojom.InstalledAppProvider;
 import org.chromium.installedapp.mojom.RelatedApplication;
 import org.chromium.url.GURL;
@@ -82,8 +86,9 @@ public class InstalledAppProviderTest {
     @Rule
     public JniMocker mocker = new JniMocker();
 
+    @Mock
+    private MockRenderFrameHost mMockRenderFrameHost;
     private FakePackageManager mFakePackageManager;
-    private FakeFrameUrlDelegate mFrameUrlDelegate;
     private InstalledAppProviderTestImpl mInstalledAppProvider;
     private FakeInstantAppsHandler mFakeInstantAppsHandler;
     private TestInstalledAppProviderImplJni mTestInstalledAppProviderImplJni;
@@ -135,10 +140,15 @@ public class InstalledAppProviderTest {
     private class InstalledAppProviderTestImpl extends InstalledAppProviderImpl {
         private long mLastDelayMillis;
 
-        public InstalledAppProviderTestImpl(FrameUrlDelegate frameUrlDelegate,
+        public InstalledAppProviderTestImpl(RenderFrameHost renderFrameHost,
                 PackageManagerDelegate packageManagerDelegate,
                 FakeInstantAppsHandler instantAppsHandler) {
-            super(frameUrlDelegate, packageManagerDelegate, instantAppsHandler);
+            super(new BrowserContextHandle() {
+                @Override
+                public long getNativeBrowserContextPointer() {
+                    return 1;
+                }
+            }, renderFrameHost, packageManagerDelegate, instantAppsHandler::isInstantAppAvailable);
         }
 
         public long getLastDelayMillis() {
@@ -155,11 +165,6 @@ public class InstalledAppProviderTest {
         public boolean isWebApkInstalled(String manifestUrl) {
             return mFakePackageManager.isWebApkInstalled(manifestUrl);
         }
-
-        @Override
-        protected Profile getProfile() {
-            return null;
-        }
     }
 
     private static class TestInstalledAppProviderImplJni
@@ -172,7 +177,8 @@ public class InstalledAppProviderTest {
 
         @Override
         public void checkDigitalAssetLinksRelationshipForWebApk(
-                Profile profile, String webDomain, String manifestUrl, Callback<Boolean> callback) {
+                BrowserContextHandle browserContextHandle, String webDomain, String manifestUrl,
+                Callback<Boolean> callback) {
             callback.onResult(mRelationMap.containsKey(webDomain)
                     && mRelationMap.get(webDomain).equals(manifestUrl));
         }
@@ -182,7 +188,7 @@ public class InstalledAppProviderTest {
      * FakeInstantAppsHandler lets us mock getting RelatedApplications from a URL in the absence of
      * proper GMSCore calls.
      */
-    private static class FakeInstantAppsHandler extends InstantAppsHandler {
+    private static class FakeInstantAppsHandler {
         private final List<Pair<String, Boolean>> mRelatedApplicationList;
 
         public FakeInstantAppsHandler() {
@@ -200,7 +206,6 @@ public class InstalledAppProviderTest {
         // TODO(thildebr): When the implementation of isInstantAppAvailable is complete, we need to
         // test its functionality instead of stubbing it out here. Instead we can create a wrapper
         // around the GMSCore functionality we need and override that here instead.
-        @Override
         public boolean isInstantAppAvailable(
                 String url, boolean checkHoldback, boolean includeUserPrefersBrowser) {
             for (Pair<String, Boolean> pair : mRelatedApplicationList) {
@@ -277,39 +282,6 @@ public class InstalledAppProviderTest {
             }
 
             return mValue;
-        }
-    }
-
-    private static final class FakeFrameUrlDelegate
-            implements InstalledAppProviderImpl.FrameUrlDelegate {
-        private GURL mFrameUrl;
-        private boolean mIncognito;
-
-        public FakeFrameUrlDelegate(String frameUrl) {
-            setFrameUrl(frameUrl);
-        }
-
-        public void setFrameUrl(String frameUrl) {
-            if (frameUrl == null) {
-                mFrameUrl = GURL.emptyGURL();
-                return;
-            }
-
-            mFrameUrl = new GURL(frameUrl);
-        }
-
-        @Override
-        public GURL getUrl() {
-            return mFrameUrl;
-        }
-
-        public void setIncognito(boolean incognito) {
-            mIncognito = incognito;
-        }
-
-        @Override
-        public boolean isIncognito() {
-            return mIncognito;
         }
     }
 
@@ -391,16 +363,18 @@ public class InstalledAppProviderTest {
 
     @Before
     public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
 
         mTestInstalledAppProviderImplJni = new TestInstalledAppProviderImplJni();
         mocker.mock(InstalledAppProviderImplJni.TEST_HOOKS, mTestInstalledAppProviderImplJni);
 
         mFakePackageManager = new FakePackageManager();
-        mFrameUrlDelegate = new FakeFrameUrlDelegate(URL_ON_ORIGIN);
+        Mockito.when(mMockRenderFrameHost.getLastCommittedURL())
+                .thenReturn(new GURL(URL_ON_ORIGIN));
         mFakeInstantAppsHandler = new FakeInstantAppsHandler();
         mInstalledAppProvider = new InstalledAppProviderTestImpl(
-                mFrameUrlDelegate, mFakePackageManager, mFakeInstantAppsHandler);
+                mMockRenderFrameHost, mFakePackageManager, mFakeInstantAppsHandler);
     }
 
     /** Origin of the page using the API is missing certain parts of the URI. */
@@ -413,24 +387,12 @@ public class InstalledAppProviderTest {
         setAssetStatement(PACKAGE_NAME_1, NAMESPACE_WEB, RELATION_HANDLE_ALL_URLS, ORIGIN);
         RelatedApplication[] expectedInstalledRelatedApps = new RelatedApplication[] {};
 
-        mFrameUrlDelegate.setFrameUrl(ORIGIN_MISSING_SCHEME);
+        Mockito.when(mMockRenderFrameHost.getLastCommittedURL())
+                .thenReturn(new GURL(ORIGIN_MISSING_SCHEME));
         verifyInstalledApps(manifestRelatedApps, expectedInstalledRelatedApps);
 
-        mFrameUrlDelegate.setFrameUrl(ORIGIN_MISSING_HOST);
-        verifyInstalledApps(manifestRelatedApps, expectedInstalledRelatedApps);
-    }
-
-    /** Incognito mode with one related Android app. */
-    @Test
-    @SmallTest
-    @UiThreadTest
-    public void testIncognitoWithOneInstalledRelatedApp() throws Exception {
-        RelatedApplication manifestRelatedApps[] = new RelatedApplication[] {
-                createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)};
-        setAssetStatement(PACKAGE_NAME_1, NAMESPACE_WEB, RELATION_HANDLE_ALL_URLS, ORIGIN);
-        RelatedApplication[] expectedInstalledRelatedApps = new RelatedApplication[] {};
-
-        mFrameUrlDelegate.setIncognito(true);
+        Mockito.when(mMockRenderFrameHost.getLastCommittedURL())
+                .thenReturn(new GURL(ORIGIN_MISSING_HOST));
         verifyInstalledApps(manifestRelatedApps, expectedInstalledRelatedApps);
     }
 
@@ -620,14 +582,15 @@ public class InstalledAppProviderTest {
         verifyInstalledApps(manifestRelatedApps, expectedInstalledRelatedApps);
 
         // Simulate a navigation to a different origin.
-        mFrameUrlDelegate.setFrameUrl(ORIGIN_DIFFERENT_SCHEME);
+        Mockito.when(mMockRenderFrameHost.getLastCommittedURL())
+                .thenReturn(new GURL(ORIGIN_DIFFERENT_SCHEME));
 
         // Now the result should include the Android app that relates to the new origin.
         expectedInstalledRelatedApps = manifestRelatedApps;
         verifyInstalledApps(manifestRelatedApps, expectedInstalledRelatedApps);
 
         // Simulate the native RenderFrameHost disappearing.
-        mFrameUrlDelegate.setFrameUrl(null);
+        Mockito.when(mMockRenderFrameHost.getLastCommittedURL()).thenReturn(null);
 
         expectedInstalledRelatedApps = new RelatedApplication[] {};
         verifyInstalledApps(manifestRelatedApps, expectedInstalledRelatedApps);
@@ -929,7 +892,7 @@ public class InstalledAppProviderTest {
     public void testArtificialDelay() throws Exception {
         byte[] salt = {0x64, 0x09, -0x68, -0x25, 0x70, 0x11, 0x25, 0x24, 0x68, -0x1a, 0x08, 0x79,
                 -0x12, -0x50, 0x3b, -0x57, -0x17, -0x4d, 0x46, 0x02};
-        PackageHash.Salt.setGlobalSaltForTesting(salt);
+        PackageHash.setGlobalSaltForTesting(salt);
         setAssetStatement(PACKAGE_NAME_1, NAMESPACE_WEB, RELATION_HANDLE_ALL_URLS, ORIGIN);
 
         // Installed app.

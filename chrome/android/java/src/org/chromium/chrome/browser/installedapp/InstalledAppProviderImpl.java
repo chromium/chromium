@@ -26,9 +26,9 @@ import org.chromium.base.Log;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.installedapp.mojom.InstalledAppProvider;
 import org.chromium.installedapp.mojom.RelatedApplication;
@@ -67,33 +67,37 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
 
     private static final String TAG = "InstalledAppProvider";
 
-    private final FrameUrlDelegate mFrameUrlDelegate;
-    private final PackageManagerDelegate mPackageManagerDelegate;
-    private final InstantAppsHandler mInstantAppsHandler;
-
-    /**
-     * Small interface for dynamically getting the URL of the current frame.
-     *
-     * Abstract to allow for testing.
-     */
-    public static interface FrameUrlDelegate {
+    /** Used to inject Instant Apps logic into InstalledAppProviderImpl. */
+    public interface InstantAppProvider {
         /**
-         * Gets the URL of the current frame. Can return null (if the frame has disappeared).
+         * Returns whether or not the instant app is available.
+         *
+         * @param url The URL where the instant app is located.
+         * @param checkHoldback Check if the app would be available if the user weren't in the
+         *         holdback group.
+         * @param includeUserPrefersBrowser Function should return true if there's an instant app
+         *         intent even if the user has opted out of instant apps.
+         * @return Whether or not the instant app specified by the entry in the page's manifest is
+         *         either available, or would be available if the user wasn't in the holdback group.
          */
-        public GURL getUrl();
-
-        /**
-         * Checks if we're in incognito. If the frame has disappeared this returns true.
-         */
-        public boolean isIncognito();
+        boolean isInstantAppAvailable(
+                String url, boolean checkHoldback, boolean includeUserPrefersBrowser);
     }
 
-    public InstalledAppProviderImpl(FrameUrlDelegate frameUrlDelegate,
-            PackageManagerDelegate packageManagerDelegate, InstantAppsHandler instantAppsHandler) {
-        assert instantAppsHandler != null;
-        mFrameUrlDelegate = frameUrlDelegate;
+    // May be null in tests.
+    private final BrowserContextHandle mBrowserContextHandle;
+    private final RenderFrameHost mRenderFrameHost;
+    private final PackageManagerDelegate mPackageManagerDelegate;
+    @Nullable
+    private final InstantAppProvider mInstantAppProvider;
+
+    public InstalledAppProviderImpl(BrowserContextHandle browserContextHandle,
+            RenderFrameHost renderFrameHost, PackageManagerDelegate packageManagerDelegate,
+            @Nullable InstantAppProvider instantAppProvider) {
+        mBrowserContextHandle = browserContextHandle;
+        mRenderFrameHost = renderFrameHost;
         mPackageManagerDelegate = packageManagerDelegate;
-        mInstantAppsHandler = instantAppsHandler;
+        mInstantAppProvider = instantAppProvider;
     }
 
     @Override
@@ -143,7 +147,8 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
     @UiThread
     public void filterInstalledApps(final RelatedApplication[] relatedApps, final Url manifestUrl,
             final FilterInstalledAppsResponse callback) {
-        final GURL frameUrl = mFrameUrlDelegate.getUrl();
+        GURL url = mRenderFrameHost.getLastCommittedURL();
+        final GURL frameUrl = url == null ? GURL.emptyGURL() : url;
         int delayMillis = 0;
         int numTasks = Math.min(relatedApps.length, MAX_ALLOWED_RELATED_APPS);
         ResultHolder resultHolder = new ResultHolder(numTasks, (resultPair) -> {
@@ -191,7 +196,7 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
             Integer delayMs, FilterInstalledAppsResponse callback) {
         RelatedApplication[] installedAppsArray;
 
-        if (mFrameUrlDelegate.isIncognito()) {
+        if (mRenderFrameHost.isIncognito()) {
             // Don't expose the related apps if in incognito mode. This is done at
             // the last stage to prevent using this API as an incognito detector by
             // timing how long it takes the Promise to resolve.
@@ -209,9 +214,10 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
             ResultHolder resultHolder, int taskIdx, RelatedApplication app, GURL frameUrl) {
         int delayMs = calculateDelayForPackageMs(app.id);
 
-        if (!mInstantAppsHandler.isInstantAppAvailable(frameUrl.getSpec(),
-                    INSTANT_APP_HOLDBACK_ID_STRING.equals(app.id),
-                    true /* includeUserPrefersBrowser */)) {
+        if (mInstantAppProvider != null
+                && !mInstantAppProvider.isInstantAppAvailable(frameUrl.getSpec(),
+                        INSTANT_APP_HOLDBACK_ID_STRING.equals(app.id),
+                        true /* includeUserPrefersBrowser */)) {
             delayThenRun(() -> resultHolder.onResult(null, taskIdx, delayMs), 0);
             return;
         }
@@ -255,7 +261,7 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
         int delayMs = calculateDelayForPackageMs(app.url);
 
         InstalledAppProviderImplJni.get().checkDigitalAssetLinksRelationshipForWebApk(
-                getProfile(), app.url, manifestUrl.url, (verified) -> {
+                mBrowserContextHandle, app.url, manifestUrl.url, (verified) -> {
                     if (verified) {
                         PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK,
                                 () -> checkWebApkInstalled(resultHolder, taskIdx, app));
@@ -263,10 +269,6 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
                         resultHolder.onResult(null, taskIdx, delayMs);
                     }
                 });
-    }
-
-    protected Profile getProfile() {
-        return Profile.getLastUsedRegularProfile();
     }
 
     /**
@@ -334,7 +336,7 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
         // add significant noise to the time taken to check whether this app is installed and
         // related. Otherwise, it would be possible to tell whether a non-related app is installed,
         // based on the time this operation takes.
-        short hash = PackageHash.hashForPackage(packageName, mFrameUrlDelegate.isIncognito());
+        short hash = PackageHash.hashForPackage(packageName, mBrowserContextHandle);
 
         // The time delay is the low 10 bits of the hash in 100ths of a ms (between 0 and 10ms).
         int delayHundredthsOfMs = hash & 0x3ff;
@@ -509,7 +511,7 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
 
     @NativeMethods
     interface Natives {
-        void checkDigitalAssetLinksRelationshipForWebApk(
-                Profile profile, String webDomain, String manifestUrl, Callback<Boolean> callback);
+        void checkDigitalAssetLinksRelationshipForWebApk(BrowserContextHandle handle,
+                String webDomain, String manifestUrl, Callback<Boolean> callback);
     }
 }

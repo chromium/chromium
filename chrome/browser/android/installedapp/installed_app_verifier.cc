@@ -10,8 +10,7 @@
 #include "base/android/jni_string.h"
 #include "chrome/android/chrome_jni_headers/InstalledAppProviderImpl_jni.h"
 #include "chrome/browser/installable/digital_asset_links/digital_asset_links_handler.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
+#include "components/embedder_support/android/browser_context/browser_context_handle.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -29,11 +28,12 @@ void DidGetResult(
 
 void JNI_InstalledAppProviderImpl_CheckDigitalAssetLinksRelationshipForWebApk(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jprofile,
+    const base::android::JavaParamRef<jobject>& jhandle,
     const base::android::JavaParamRef<jstring>& jwebDomain,
     const base::android::JavaParamRef<jstring>& jmanifestUrl,
     const base::android::JavaParamRef<jobject>& jcallback) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
+  content::BrowserContext* browser_context =
+      browser_context::BrowserContextFromJavaHandle(jhandle);
 
   std::string web_domain = ConvertJavaStringToUTF8(env, jwebDomain);
   std::string manifest_url = ConvertJavaStringToUTF8(env, jmanifestUrl);
@@ -43,7 +43,7 @@ void JNI_InstalledAppProviderImpl_CheckDigitalAssetLinksRelationshipForWebApk(
 
   auto handler =
       std::make_unique<digital_asset_links::DigitalAssetLinksHandler>(
-          content::BrowserContext::GetDefaultStoragePartition(profile)
+          content::BrowserContext::GetDefaultStoragePartition(browser_context)
               ->GetURLLoaderFactoryForBrowserProcess());
   auto* handler_ptr = handler.get();
 
