@@ -19,6 +19,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/values.h"
 #include "chrome/browser/chromeos/printing/enterprise_printers_provider.h"
 #include "chrome/browser/chromeos/printing/printer_configurer.h"
 #include "chrome/browser/chromeos/printing/printer_event_tracker.h"
@@ -30,11 +31,14 @@
 #include "chrome/browser/chromeos/printing/usb_printer_notification_controller.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/network/network_state_handler.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace chromeos {
 namespace {
@@ -444,6 +448,9 @@ class CupsPrintersManagerTest : public testing::Test,
   // The manager being tested.  This must be declared after the fakes, as its
   // initialization must come after that of the fakes.
   std::unique_ptr<CupsPrintersManager> manager_;
+
+  // Manages active networks.
+  network_config::CrosNetworkConfigTestHelper cros_network_config_helper_;
 };
 
 // Pseudo-constructor for inline creation of a DetectedPrinter that should (in
@@ -965,6 +972,85 @@ TEST_F(CupsPrintersManagerTest, OnServerPrintersChanged) {
   print_servers_manager_->ServerPrintersChanged({server_printer});
 
   ExpectPrintersInClassAre(PrinterClass::kAutomatic, {"ServerPrinter"});
+}
+
+// Tests that when the active network is switched to a different network the
+// list of nearby printers is cleared.
+TEST_F(CupsPrintersManagerTest, ActiveNetworkSwitched) {
+  cros_network_config_helper_.network_state_helper().ConfigureService(
+      R"({"GUID": "Wifi1", "Type": "wifi", "State": "online"})");
+
+  zeroconf_detector_->AddDetections({MakeDiscoveredPrinter("DiscoveredPrinter"),
+                                     MakeAutomaticPrinter("AutomaticPrinter")});
+
+  task_environment_.RunUntilIdle();
+  ExpectPrintersInClassAre(PrinterClass::kDiscovered, {"DiscoveredPrinter"});
+  ExpectPrintersInClassAre(PrinterClass::kAutomatic, {"AutomaticPrinter"});
+
+  cros_network_config_helper_.network_state_helper().ClearServices();
+  cros_network_config_helper_.network_state_helper().ConfigureService(
+      R"({"GUID": "Wifi2", "Type": "wifi", "State": "online"})");
+
+  ExpectPrintersInClassAre(PrinterClass::kDiscovered, {});
+  ExpectPrintersInClassAre(PrinterClass::kAutomatic, {});
+}
+
+// Tests that when the active network is disconnected the list of nearby
+// printers is cleared.
+TEST_F(CupsPrintersManagerTest, ActiveNetworkDisconnected) {
+  cros_network_config_helper_.network_state_helper().ConfigureService(
+      R"({"GUID": "Wifi1", "Type": "wifi", "State": "online"})");
+
+  zeroconf_detector_->AddDetections({MakeDiscoveredPrinter("DiscoveredPrinter"),
+                                     MakeAutomaticPrinter("AutomaticPrinter")});
+
+  task_environment_.RunUntilIdle();
+  ExpectPrintersInClassAre(PrinterClass::kDiscovered, {"DiscoveredPrinter"});
+  ExpectPrintersInClassAre(PrinterClass::kAutomatic, {"AutomaticPrinter"});
+
+  cros_network_config_helper_.network_state_helper().ClearServices();
+
+  ExpectPrintersInClassAre(PrinterClass::kDiscovered, {});
+  ExpectPrintersInClassAre(PrinterClass::kAutomatic, {});
+}
+
+// Tests that when the a new wifi network is detected, but the active network
+// remains the same, the list of nearby printers stays the same.
+TEST_F(CupsPrintersManagerTest, NewNetworkDetected) {
+  cros_network_config_helper_.network_state_helper().ConfigureService(
+      R"({"GUID": "Wifi1", "Type": "wifi", "State": "online"})");
+  zeroconf_detector_->AddDetections({MakeDiscoveredPrinter("DiscoveredPrinter"),
+                                     MakeAutomaticPrinter("AutomaticPrinter")});
+
+  task_environment_.RunUntilIdle();
+  ExpectPrintersInClassAre(PrinterClass::kDiscovered, {"DiscoveredPrinter"});
+  ExpectPrintersInClassAre(PrinterClass::kAutomatic, {"AutomaticPrinter"});
+
+  cros_network_config_helper_.network_state_helper().ConfigureService(
+      R"({"GUID": "Wifi2", "Type": "wifi", "State": "online"})");
+
+  ExpectPrintersInClassAre(PrinterClass::kDiscovered, {"DiscoveredPrinter"});
+  ExpectPrintersInClassAre(PrinterClass::kAutomatic, {"AutomaticPrinter"});
+}
+
+// Tests that when the signal strength of the active network changes, the list
+// of nearby printers stays the same.
+TEST_F(CupsPrintersManagerTest, ActiveNetworkStrengthChanged) {
+  const std::string service_path =
+      cros_network_config_helper_.network_state_helper().ConfigureService(
+          R"({"GUID": "Wifi1", "Type": "wifi", "State": "online"})");
+  zeroconf_detector_->AddDetections({MakeDiscoveredPrinter("DiscoveredPrinter"),
+                                     MakeAutomaticPrinter("AutomaticPrinter")});
+
+  task_environment_.RunUntilIdle();
+  ExpectPrintersInClassAre(PrinterClass::kDiscovered, {"DiscoveredPrinter"});
+  ExpectPrintersInClassAre(PrinterClass::kAutomatic, {"AutomaticPrinter"});
+
+  cros_network_config_helper_.network_state_helper().SetServiceProperty(
+      service_path, shill::kSignalStrengthProperty, base::Value(50));
+
+  ExpectPrintersInClassAre(PrinterClass::kDiscovered, {"DiscoveredPrinter"});
+  ExpectPrintersInClassAre(PrinterClass::kAutomatic, {"AutomaticPrinter"});
 }
 
 }  // namespace
