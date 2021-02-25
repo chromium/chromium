@@ -372,15 +372,12 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_ACCOUNT_MANAGER_MANAGEMENT_STATUS_MANAGED_ACCOUNT},
       {"accountManagerUnmanagedLabel",
        IDS_SETTINGS_ACCOUNT_MANAGER_MANAGEMENT_STATUS_UNMANAGED_ACCOUNT},
+      {"accountListDescription", IDS_SETTINGS_ACCOUNT_MANAGER_LIST_DESCRIPTION},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
   DCHECK(user);
-  html_source->AddString(
-      "accountListDescription",
-      l10n_util::GetStringFUTF16(IDS_SETTINGS_ACCOUNT_MANAGER_LIST_DESCRIPTION,
-                                 user->GetGivenName()));
   html_source->AddString(
       "accountListChildDescription",
       l10n_util::GetStringFUTF16(

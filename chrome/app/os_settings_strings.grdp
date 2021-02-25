@@ -1243,7 +1243,7 @@ Press an assigned switch to remove assignment.
     School accounts
   </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_LIST_DESCRIPTION" desc="List description for additional account List in Account Manager Settings page.">
-    You can add additional accounts for <ph name="NAME">$1<ex>John</ex></ph> to access websites and apps.
+    You can add your additional accounts to access websites and apps.
   </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_LIST_CHILD_DESCRIPTION" desc="List description for additional account List in Account Manager Settings page for Child users.">
     <ph name="USER_EMAIL">$1<ex>user@example.com</ex></ph> is supervised by Family Link. You can add school accounts to access school resources with parental supervision.
