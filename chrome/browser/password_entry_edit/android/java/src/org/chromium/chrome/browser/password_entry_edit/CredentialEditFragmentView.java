@@ -6,17 +6,20 @@ package org.chromium.chrome.browser.password_entry_edit;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import androidx.preference.PreferenceFragmentCompat;
+
+import com.google.android.material.textfield.TextInputEditText;
 
 import org.chromium.ui.widget.ChromeImageButton;
 
@@ -25,17 +28,24 @@ import org.chromium.ui.widget.ChromeImageButton;
  */
 public class CredentialEditFragmentView extends PreferenceFragmentCompat {
     private ComponentStateDelegate mComponentStateDelegate;
+    private TextInputEditText mUsernameField;
+    private TextInputEditText mPasswordField;
 
     interface UiActionHandler {
         /** Called when the user clicks the button to mask/unmask the password */
         void onMaskOrUnmaskPassword();
+
+        /** Called when the text in the username field changes */
+        void onUsernameTextChanged(String username);
+
+        /** Called when the text in the password field changes */
+        void onPasswordTextChanged(String password);
 
         /**
          * Called when the user clicks the button to copy the username
          *
          * @param context application context that can be used to get the {@link ClipboardManager}
          */
-
         void onCopyUsername(Context context);
 
         /**
@@ -88,15 +98,16 @@ public class CredentialEditFragmentView extends PreferenceFragmentCompat {
     @Override
     public void onStart() {
         super.onStart();
-        if (mComponentStateDelegate != null) mComponentStateDelegate.onStartFragment();
 
-        EditText usernameField = getView().findViewById(R.id.username);
+        mUsernameField = getView().findViewById(R.id.username);
         View usernameIcon = getView().findViewById(R.id.copy_username_button);
-        addLayoutChangeListener(usernameField, usernameIcon);
+        addLayoutChangeListener(mUsernameField, usernameIcon);
 
-        EditText passwordField = getView().findViewById(R.id.password);
+        mPasswordField = getView().findViewById(R.id.password);
         View passwordIcons = getView().findViewById(R.id.password_icons);
-        addLayoutChangeListener(passwordField, passwordIcons);
+        addLayoutChangeListener(mPasswordField, passwordIcons);
+
+        if (mComponentStateDelegate != null) mComponentStateDelegate.onStartFragment();
     }
 
     @Override
@@ -132,6 +143,32 @@ public class CredentialEditFragmentView extends PreferenceFragmentCompat {
                 getView().findViewById(R.id.password_visibility_button);
         passwordVisibilityButton.setOnClickListener(
                 (unusedView) -> uiActionHandler.onMaskOrUnmaskPassword());
+
+        mUsernameField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                uiActionHandler.onUsernameTextChanged(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {}
+        });
+
+        mPasswordField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                uiActionHandler.onPasswordTextChanged(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {}
+        });
     }
 
     void setUrlOrApp(String urlOrApp) {
@@ -143,26 +180,29 @@ public class CredentialEditFragmentView extends PreferenceFragmentCompat {
     }
 
     void setUsername(String username) {
-        EditText usernameField = getView().findViewById(R.id.username);
-        usernameField.setText(username);
+        // Don't update the text field if it has the same contents, as this will reset the cursor
+        // position to the beginning.
+        if (mUsernameField.getText().toString().equals(username)) return;
+        mUsernameField.setText(username);
     }
 
     void setPassword(String password) {
-        EditText passwordField = getView().findViewById(R.id.password);
-        passwordField.setText(password);
+        // Don't update the text field if it has the same contents, as this will reset the cursor
+        // position to the beginning.
+        if (mPasswordField.getText().toString().equals(password)) return;
+        mPasswordField.setText(password);
     }
 
     void changePasswordVisibility(boolean visible) {
-        EditText passwordText = getView().findViewById(R.id.password);
         if (visible) {
             getActivity().getWindow().setFlags(
                     WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
-            passwordText.setInputType(InputType.TYPE_CLASS_TEXT
+            mPasswordField.setInputType(InputType.TYPE_CLASS_TEXT
                     | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
                     | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
         } else {
             getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
-            passwordText.setInputType(InputType.TYPE_CLASS_TEXT
+            mPasswordField.setInputType(InputType.TYPE_CLASS_TEXT
                     | InputType.TYPE_TEXT_VARIATION_PASSWORD | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
         }
         ChromeImageButton passwordVisibilityButton =
@@ -171,7 +211,7 @@ public class CredentialEditFragmentView extends PreferenceFragmentCompat {
                 visible ? R.drawable.ic_visibility_off_black : R.drawable.ic_visibility_black);
     }
 
-    private void addLayoutChangeListener(EditText textField, View icons) {
+    private static void addLayoutChangeListener(TextInputEditText textField, View icons) {
         icons.addOnLayoutChangeListener((View v, int left, int top, int right, int bottom,
                                                 int oldLeft, int oldTop, int oldRight,
                                                 int oldBottom) -> {

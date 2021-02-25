@@ -64,6 +64,16 @@ public class CredentialEditMediator implements UiActionHandler {
     }
 
     @Override
+    public void onUsernameTextChanged(String username) {
+        mModel.set(USERNAME, username);
+    }
+
+    @Override
+    public void onPasswordTextChanged(String password) {
+        mModel.set(PASSWORD, password);
+    }
+
+    @Override
     public void onCopyUsername(Context context) {
         copyToClipboard(context, "username", USERNAME);
         Toast.makeText(context, R.string.password_entry_viewer_username_copied_into_clipboard,
