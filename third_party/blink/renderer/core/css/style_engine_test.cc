@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
+#include "third_party/blink/renderer/core/layout/layout_list_marker.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/list_marker.h"
@@ -106,6 +107,13 @@ class StyleEngineTest : public testing::Test {
   void ClearUseCounter(mojom::WebFeature feature) {
     GetDocument().ClearUseCounterForTesting(feature);
     DCHECK(!IsUseCounted(feature));
+  }
+
+  String GetListMarkerText(LayoutObject* list_item) {
+    LayoutObject* marker = ListMarker::MarkerFromListItem(list_item);
+    if (auto* legacy_marker = DynamicTo<LayoutListMarker>(marker))
+      return legacy_marker->TextAlternative();
+    return ListMarker::Get(marker)->TextAlternative(*marker);
   }
 
  private:
@@ -4134,14 +4142,7 @@ TEST_F(StyleEngineTest, AtCounterStyleUseCounter) {
   EXPECT_TRUE(IsUseCounted(WebFeature::kCSSAtRuleCounterStyle));
 }
 
-// Test is flaky: https://crbug.com/1181182
-#if defined(OS_LINUX)
-#define MAYBE_CounterStyleDisabledInShadowDOM \
-  DISABLED_CounterStyleDisabledInShadowDOM
-#else
-#define MAYBE_CounterStyleDisabledInShadowDOM CounterStyleDisabledInShadowDOM
-#endif
-TEST_F(StyleEngineTest, MAYBE_CounterStyleDisabledInShadowDOM) {
+TEST_F(StyleEngineTest, CounterStyleDisabledInShadowDOM) {
   ScopedCSSAtRuleCounterStyleForTest counter_style_enabled(true);
   ScopedCSSAtRuleCounterStyleInShadowDOMForTest
       counter_style_in_shadow_dom_disabled(false);
@@ -4172,21 +4173,15 @@ TEST_F(StyleEngineTest, MAYBE_CounterStyleDisabledInShadowDOM) {
 
   LayoutObject* document_foo =
       GetDocument().getElementById("foo")->firstChild()->GetLayoutObject();
-  LayoutText* document_foo_marker_text = To<LayoutText>(
-      ListMarker::MarkerFromListItem(document_foo)->SlowFirstChild());
-  EXPECT_EQ("A. ", document_foo_marker_text->GetText());
+  EXPECT_EQ("A. ", GetListMarkerText(document_foo));
 
   LayoutObject* shadow_foo =
       shadow_root.getElementById("foo")->firstChild()->GetLayoutObject();
-  LayoutText* shadow_foo_marker_text = To<LayoutText>(
-      ListMarker::MarkerFromListItem(shadow_foo)->SlowFirstChild());
-  EXPECT_EQ("A. ", shadow_foo_marker_text->GetText());
+  EXPECT_EQ("A. ", GetListMarkerText(shadow_foo));
 
   LayoutObject* shadow_bar =
       shadow_root.getElementById("bar")->firstChild()->GetLayoutObject();
-  LayoutText* shadow_bar_marker_text = To<LayoutText>(
-      ListMarker::MarkerFromListItem(shadow_bar)->SlowFirstChild());
-  EXPECT_EQ("1. ", shadow_bar_marker_text->GetText());
+  EXPECT_EQ("1. ", GetListMarkerText(shadow_bar));
 }
 
 }  // namespace blink
