@@ -40,12 +40,6 @@ enum NotificationType {
   // TODO(https://crbug.com/1174728): Remove.
   NOTIFICATION_CRX_INSTALLER_DONE = NOTIFICATION_EXTENSIONS_START,
 
-  // An error occurred while attempting to load an extension. The details are a
-  // string with details about why the load failed.
-  // DEPRECATED: Use extensions::LoadErrorReporter::OnLoadFailure()
-  // TODO(https://crbug.com/1174731): Remove.
-  NOTIFICATION_EXTENSION_LOAD_ERROR,
-
   // Sent when attempting to load a new extension, but they are disabled. The
   // details are an Extension, and the source is a BrowserContext*.
   // TODO(https://crbug.com/1174732): Remove.

@@ -50,11 +50,6 @@ void LoadErrorReporter::ReportLoadError(
     const std::string& error,
     content::BrowserContext* browser_context,
     bool be_noisy) {
-  content::NotificationService::current()->Notify(
-      extensions::NOTIFICATION_EXTENSION_LOAD_ERROR,
-      content::Source<Profile>(Profile::FromBrowserContext(browser_context)),
-      content::Details<const std::string>(&error));
-
   std::string path_str = base::UTF16ToUTF8(extension_path.LossyDisplayName());
   base::string16 message = base::UTF8ToUTF16(base::StringPrintf(
       "%s %s. %s",

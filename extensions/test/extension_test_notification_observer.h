@@ -36,10 +36,6 @@ class ExtensionTestNotificationObserver : public content::NotificationObserver,
   explicit ExtensionTestNotificationObserver(content::BrowserContext* context);
   ~ExtensionTestNotificationObserver() override;
 
-  // Waits for an extension load error. Returns true if the error really
-  // happened.
-  bool WaitForExtensionLoadError();
-
   // Wait for the specified extension to crash. Returns true if it really
   // crashed.
   bool WaitForExtensionCrash(const std::string& extension_id);
@@ -138,7 +134,6 @@ class ExtensionTestNotificationObserver : public content::NotificationObserver,
   std::unique_ptr<content::WindowedNotificationObserver> observer_;
 
   std::string last_loaded_extension_id_;
-  int extension_load_errors_observed_;
   int crx_installers_done_observed_;
 
   // The condition for which we are waiting. This should be checked in any

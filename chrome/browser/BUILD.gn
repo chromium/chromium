@@ -6905,6 +6905,8 @@ static_library("test_support") {
       "extensions/chrome_test_extension_loader.h",
       "extensions/extension_action_test_util.cc",
       "extensions/extension_action_test_util.h",
+      "extensions/load_error_waiter.cc",
+      "extensions/load_error_waiter.h",
       "extensions/mock_extension_special_storage_policy.cc",
       "extensions/mock_extension_special_storage_policy.h",
       "extensions/test_blocklist.cc",

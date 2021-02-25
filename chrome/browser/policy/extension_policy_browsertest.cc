@@ -22,6 +22,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/extensions/install_verifier.h"
+#include "chrome/browser/extensions/load_error_waiter.h"
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
@@ -1207,11 +1208,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallForcelist) {
   // same ID as a force-installed extension.
   base::FilePath good_extension_path(ui_test_utils::GetTestFilePath(
       base::FilePath(kTestExtensionsDir), base::FilePath(kSimpleWithPopupExt)));
-  content::WindowedNotificationObserver extension_load_error_observer(
-      extensions::NOTIFICATION_EXTENSION_LOAD_ERROR,
-      content::NotificationService::AllSources());
+  extensions::LoadErrorWaiter waiter;
   installer->Load(good_extension_path);
-  extension_load_error_observer.Wait();
+  waiter.Wait();
 
   // Loading other unpacked extensions are not blocked.
   scoped_refptr<const extensions::Extension> extension =

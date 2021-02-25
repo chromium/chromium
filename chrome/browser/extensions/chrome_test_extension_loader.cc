@@ -12,6 +12,7 @@
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/load_error_waiter.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/notification_details.h"
@@ -316,13 +317,12 @@ scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadUnpacked(
   if (install_param_.has_value()) {
     installer->set_install_param(*install_param_);
   }
+  LoadErrorWaiter waiter;
   installer->Load(file_path);
   if (!should_fail_) {
     extension = registry_observer.WaitForExtensionLoaded();
   } else {
-    EXPECT_TRUE(ExtensionTestNotificationObserver(browser_context_)
-                    .WaitForExtensionLoadError())
-        << "No load error observed";
+    EXPECT_TRUE(waiter.Wait()) << "No load error observed";
   }
 
   return extension;

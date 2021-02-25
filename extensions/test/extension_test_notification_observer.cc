@@ -113,7 +113,6 @@ void ExtensionTestNotificationObserver::NotificationSet::WebContentsDestroyed(
 ExtensionTestNotificationObserver::ExtensionTestNotificationObserver(
     content::BrowserContext* context)
     : context_(context),
-      extension_load_errors_observed_(0),
       crx_installers_done_observed_(0) {
   if (context_)
     registry_observer_.Add(ExtensionRegistry::Get(context_));
@@ -132,12 +131,6 @@ void ExtensionTestNotificationObserver::WaitForNotification(
   content::WindowedNotificationObserver(
       notification_type, content::NotificationService::AllSources())
       .Wait();
-}
-
-bool ExtensionTestNotificationObserver::WaitForExtensionLoadError() {
-  int before = extension_load_errors_observed_;
-  WaitForNotification(NOTIFICATION_EXTENSION_LOAD_ERROR);
-  return extension_load_errors_observed_ != before;
 }
 
 bool ExtensionTestNotificationObserver::WaitForExtensionCrash(
@@ -196,11 +189,6 @@ void ExtensionTestNotificationObserver::Observe(
           last_loaded_extension_id_.clear();
       }
       ++crx_installers_done_observed_;
-      break;
-
-    case NOTIFICATION_EXTENSION_LOAD_ERROR:
-      VLOG(1) << "Got EXTENSION_LOAD_ERROR notification.";
-      ++extension_load_errors_observed_;
       break;
 
     default:
