@@ -616,7 +616,7 @@ void RTCVideoDecoderAdapter::FlushOnMediaThread(FlushDoneCB flush_success_cb,
   // Send EOS frame for flush.
   video_decoder_->Decode(
       media::DecoderBuffer::CreateEOSBuffer(),
-      WTF::BindRepeating(
+      WTF::Bind(
           [](FlushDoneCB flush_success, FlushDoneCB flush_fail,
              media::Status status) {
             if (status.is_ok())
@@ -624,7 +624,7 @@ void RTCVideoDecoderAdapter::FlushOnMediaThread(FlushDoneCB flush_success_cb,
             else
               std::move(flush_fail).Run();
           },
-          base::Passed(&flush_success_cb), base::Passed(&flush_fail_cb)));
+          std::move(flush_success_cb), std::move(flush_fail_cb)));
 }
 
 }  // namespace blink
