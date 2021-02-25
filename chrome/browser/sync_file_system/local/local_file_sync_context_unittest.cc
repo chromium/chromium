@@ -85,11 +85,9 @@ class LocalFileSyncContextTest : public testing::Test {
     status_ = SYNC_STATUS_UNKNOWN;
     has_inflight_prepare_for_sync_ = true;
     sync_context_->PrepareForSync(
-        file_system_context,
-        url,
-        sync_mode,
-        base::Bind(&LocalFileSyncContextTest::DidPrepareForSync,
-                   base::Unretained(this), metadata, changes, snapshot));
+        file_system_context, url, sync_mode,
+        base::BindOnce(&LocalFileSyncContextTest::DidPrepareForSync,
+                       base::Unretained(this), metadata, changes, snapshot));
   }
 
   SyncStatusCode PrepareForSync(FileSystemContext* file_system_context,
@@ -104,17 +102,17 @@ class LocalFileSyncContextTest : public testing::Test {
     return status_;
   }
 
-  base::Closure GetPrepareForSyncClosure(
+  base::OnceClosure GetPrepareForSyncClosure(
       FileSystemContext* file_system_context,
       const FileSystemURL& url,
       LocalFileSyncContext::SyncMode sync_mode,
       SyncFileMetadata* metadata,
       FileChangeList* changes,
       storage::ScopedFile* snapshot) {
-    return base::Bind(&LocalFileSyncContextTest::StartPrepareForSync,
-                      base::Unretained(this),
-                      base::Unretained(file_system_context),
-                      url, sync_mode, metadata, changes, snapshot);
+    return base::BindOnce(&LocalFileSyncContextTest::StartPrepareForSync,
+                          base::Unretained(this),
+                          base::Unretained(file_system_context), url, sync_mode,
+                          metadata, changes, snapshot);
   }
 
   void DidPrepareForSync(SyncFileMetadata* metadata_out,
@@ -153,9 +151,9 @@ class LocalFileSyncContextTest : public testing::Test {
     status_ = SYNC_STATUS_UNKNOWN;
     sync_context_->ApplyRemoteChange(
         file_system_context, change, local_path, url,
-        base::Bind(&LocalFileSyncContextTest::DidApplyRemoteChange,
-                   base::Unretained(this),
-                   base::RetainedRef(file_system_context), url));
+        base::BindOnce(&LocalFileSyncContextTest::DidApplyRemoteChange,
+                       base::Unretained(this),
+                       base::RetainedRef(file_system_context), url));
     base::RunLoop().Run();
     return status_;
   }
