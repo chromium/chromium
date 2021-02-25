@@ -24,6 +24,7 @@
 #include "base/files/file_path.h"
 #include "base/i18n/icu_util.h"
 #include "base/lazy_instance.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
@@ -42,6 +43,8 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/hang_watcher.h"
+#include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"
@@ -408,6 +411,50 @@ mojo::ScopedMessagePipeHandle MaybeAcceptMojoInvitation() {
   return invitation.ExtractMessagePipe(0);
 }
 
+#if defined(OS_WIN)
+void HandleConsoleControlEventOnBrowserUiThread(DWORD control_type) {
+  GetContentClient()->browser()->SessionEnding();
+}
+
+// A console control event handler for browser processes that initiates end
+// session handling on the main thread and hangs the control thread.
+BOOL WINAPI BrowserConsoleControlHandler(DWORD control_type) {
+  BrowserTaskExecutor::GetUIThreadTaskRunner(
+      {base::TaskPriority::USER_BLOCKING})
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(&HandleConsoleControlEventOnBrowserUiThread,
+                                control_type));
+
+  // Block the control thread while waiting for SessionEnding to be handled.
+  base::PlatformThread::Sleep(base::TimeDelta::FromHours(1));
+
+  // This should never be hit. The process will be terminated either by
+  // ContentBrowserClient::SessionEnding or by Windows, if the former takes too
+  // long.
+  return TRUE;  // Handled.
+}
+
+// A console control event handler for non-browser processes that hangs the
+// control thread. The event will be handled by the browser process.
+BOOL WINAPI OtherConsoleControlHandler(DWORD control_type) {
+  // Block the control thread while waiting for the browser process.
+  base::PlatformThread::Sleep(base::TimeDelta::FromHours(1));
+
+  // This should never be hit. The process will be terminated by the browser
+  // process or by Windows, if the former takes too long.
+  return TRUE;  // Handled.
+}
+
+void InstallConsoleControlHandler(bool is_browser_process) {
+  if (!::SetConsoleCtrlHandler(is_browser_process
+                                   ? &BrowserConsoleControlHandler
+                                   : &OtherConsoleControlHandler,
+                               /*Add=*/TRUE)) {
+    DPLOG(ERROR) << "Failed to set console hook function";
+  }
+}
+#endif  // defined(OS_WIN)
+
 }  // namespace
 
 class ContentClientCreator {
@@ -524,6 +571,10 @@ static void RegisterMainThreadFactories() {
 // Returns the exit code for this process.
 int RunBrowserProcessMain(const MainFunctionParams& main_function_params,
                           ContentMainDelegate* delegate) {
+#if defined(OS_WIN)
+  if (delegate->ShouldHandleConsoleControlEvents())
+    InstallConsoleControlHandler(/*is_browser_process=*/true);
+#endif
   int exit_code = delegate->RunProcess("", main_function_params);
   if (exit_code >= 0)
     return exit_code;
@@ -535,6 +586,10 @@ int RunBrowserProcessMain(const MainFunctionParams& main_function_params,
 int RunOtherNamedProcessTypeMain(const std::string& process_type,
                                  const MainFunctionParams& main_function_params,
                                  ContentMainDelegate* delegate) {
+#if defined(OS_WIN)
+  if (delegate->ShouldHandleConsoleControlEvents())
+    InstallConsoleControlHandler(/*is_browser_process=*/false);
+#endif
   static const MainFunction kMainFunctions[] = {
 #if BUILDFLAG(ENABLE_PLUGINS)
     {switches::kPpapiPluginProcess, PpapiPluginMain},

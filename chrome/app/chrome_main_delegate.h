@@ -62,6 +62,9 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
   void PostEarlyInitialization(bool is_running_tests) override;
   bool ShouldCreateFeatureList() override;
   void PostFieldTrialInitialization() override;
+#if defined(OS_WIN)
+  bool ShouldHandleConsoleControlEvents() override;
+#endif
 
   content::ContentClient* CreateContentClient() override;
   content::ContentBrowserClient* CreateContentBrowserClient() override;

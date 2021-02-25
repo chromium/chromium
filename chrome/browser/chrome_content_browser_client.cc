@@ -72,6 +72,7 @@
 #include "chrome/browser/gpu/chrome_browser_main_extra_parts_gpu.h"
 #include "chrome/browser/hid/chrome_hid_delegate.h"
 #include "chrome/browser/interstitials/enterprise_util.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/lookalikes/lookalike_url_navigation_throttle.h"
 #include "chrome/browser/media/audio_service_util.h"
@@ -3891,6 +3892,10 @@ bool ChromeContentBrowserClient::IsRendererCodeIntegrityEnabled() {
       !local_state->GetBoolean(prefs::kRendererCodeIntegrityEnabled))
     return false;
   return true;
+}
+
+void ChromeContentBrowserClient::SessionEnding() {
+  chrome::SessionEnding();
 }
 
 #endif  // defined(OS_WIN)

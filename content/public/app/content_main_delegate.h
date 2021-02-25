@@ -93,6 +93,17 @@ class CONTENT_EXPORT ContentMainDelegate {
   // |is_running_tests| indicates whether it is running in tests.
   virtual void PostEarlyInitialization(bool is_running_tests) {}
 
+#if defined(OS_WIN)
+  // Allows the embedder to indicate that console control events (e.g., Ctrl-C,
+  // Ctrl-break, or closure of the console) are to be handled. By default, these
+  // events are not handled, leading to process termination. When an embedder
+  // returns true to indicate that these events are to be handled, the
+  // embedder's ContentBrowserClient::SessionEnding function will be called
+  // when a console control event is received. All non-browser processes will
+  // swallow the event.
+  virtual bool ShouldHandleConsoleControlEvents();
+#endif
+
  protected:
   friend class ContentClientCreator;
   friend class ContentClientInitializer;

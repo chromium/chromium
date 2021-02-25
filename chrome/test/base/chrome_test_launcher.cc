@@ -153,6 +153,13 @@ ChromeTestChromeMainDelegate::CreateContentBrowserClient() {
   return chrome_content_browser_client_.get();
 }
 
+#if defined(OS_WIN)
+bool ChromeTestChromeMainDelegate::ShouldHandleConsoleControlEvents() {
+  // Allow Ctrl-C and friends to terminate the test processes forthwith.
+  return false;
+}
+#endif
+
 #if !defined(OS_ANDROID)
 content::ContentMainDelegate*
 ChromeTestLauncherDelegate::CreateContentMainDelegate() {

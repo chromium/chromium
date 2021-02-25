@@ -46,6 +46,9 @@ class ChromeTestChromeMainDelegate
 
   // ChromeMainDelegateOverrides.
   content::ContentBrowserClient* CreateContentBrowserClient() override;
+#if defined(OS_WIN)
+  bool ShouldHandleConsoleControlEvents() override;
+#endif
 };
 
 // Delegate used for setting up and running chrome browser tests.

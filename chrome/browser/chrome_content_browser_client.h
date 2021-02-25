@@ -414,6 +414,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   std::wstring GetAppContainerSidForSandboxType(
       sandbox::policy::SandboxType sandbox_type) override;
   bool IsRendererCodeIntegrityEnabled() override;
+  void SessionEnding() override;
 #endif
   void ExposeInterfacesToRenderer(
       service_manager::BinderRegistry* registry,

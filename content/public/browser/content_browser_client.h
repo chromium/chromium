@@ -1230,6 +1230,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Returns whether renderer code integrity is enabled.
   // This is called on the UI thread.
   virtual bool IsRendererCodeIntegrityEnabled();
+
+  // Performs a fast and orderly shutdown of the browser.
+  virtual void SessionEnding() {}
 #endif
 
   // Binds a new media remoter service to |receiver|, if supported by the
