@@ -5776,12 +5776,10 @@ crbug.com/1180627 [ Linux ] external/wpt/css/cssom-view/MediaQueryList-addListen
 crbug.com/1180627 [ Linux ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/MediaQueryList-addListener-removeListener.html [ Pass Failure ]
 
 # Sheriff 2021-02-23
-crbug.com/1181466 [ Mac ] external/wpt/css/css-scroll-snap/snap-after-relayout/resnap-to-focused.html [ Pass Failure ]
-crbug.com/1181466 [ Mac ] virtual/threaded/external/wpt/css/css-scroll-snap/snap-after-relayout/resnap-to-focused.html [ Pass Failure ]
+crbug.com/1181466 external/wpt/css/css-scroll-snap/snap-after-relayout/resnap-to-focused.html [ Pass Failure ]
+crbug.com/1181466 virtual/threaded/external/wpt/css/css-scroll-snap/snap-after-relayout/resnap-to-focused.html [ Pass Failure ]
 
 # Sheriff 2021-02-24
-crbug.com/1181466 [ Linux ] external/wpt/css/css-scroll-snap/snap-after-relayout/resnap-to-focused.html [ Pass Failure ]
-crbug.com/1181466 [ Linux ] virtual/threaded/external/wpt/css/css-scroll-snap/snap-after-relayout/resnap-to-focused.html [ Pass Failure ]
 crbug.com/1181667 [ Linux ] external/wpt/css/selectors/focus-visible-011.html [ Pass Failure ]
 crbug.com/1045052 [ Linux ] virtual/split-http-cache-not-site-per-process/http/tests/devtools/isolated-code-cache/stale-revalidation-test.js [ Pass Failure Timeout ]
 crbug.com/1045052 [ Linux ] virtual/not-split-http-cache-not-site-per-process/http/tests/devtools/isolated-code-cache/stale-revalidation-test.js [ Pass Failure Timeout ]
