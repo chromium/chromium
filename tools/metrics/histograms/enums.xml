@@ -60745,6 +60745,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="24" label="INVALID_LICENSE"/>
   <int value="25" label="OFFLINE"/>
   <int value="26" label="LIST_VM_DISKS_FAILED"/>
+  <int value="27" label="OUT_OF_DISK_SPACE"/>
 </enum>
 
 <enum name="PluginVmSetupResult">

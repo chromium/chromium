@@ -25,6 +25,10 @@ namespace plugin_vm {
 void SetupConciergeForSuccessfulDiskImageImport(
     chromeos::FakeConciergeClient* fake_concierge_client_);
 
+void SetupConciergeForFailedDiskImageImport(
+    chromeos::FakeConciergeClient* fake_concierge_client_,
+    vm_tools::concierge::DiskImageStatus status);
+
 void SetupConciergeForCancelDiskImageOperation(
     chromeos::FakeConciergeClient* fake_concierge_client_,
     bool success);

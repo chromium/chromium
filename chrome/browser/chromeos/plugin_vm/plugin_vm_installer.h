@@ -71,12 +71,13 @@ class PluginVmInstaller : public KeyedService,
     DLC_BUSY = 20,
     DLC_NEED_REBOOT = 21,
     DLC_NEED_SPACE = 22,
-    INSUFFICIENT_DISK_SPACE = 23,
+    INSUFFICIENT_DISK_SPACE = 23,  // Pre-check based on policy.
     INVALID_LICENSE = 24,
     OFFLINE = 25,
     LIST_VM_DISKS_FAILED = 26,
+    OUT_OF_DISK_SPACE = 27,  // Hard error, we actually ran out of space.
 
-    kMaxValue = LIST_VM_DISKS_FAILED,
+    kMaxValue = OUT_OF_DISK_SPACE,
   };
 
   enum class InstallingState {

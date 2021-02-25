@@ -584,6 +584,19 @@ TEST_F(PluginVmInstallerDownloadServiceTest, ImportNonExistingImageTest) {
                                         kDownloadedPluginVmImageSizeInMb, 1);
 }
 
+TEST_F(PluginVmInstallerDownloadServiceTest, ImportFailedOutOfSpaceTest) {
+  SetupConciergeForFailedDiskImageImport(
+      fake_concierge_client_,
+      vm_tools::concierge::DISK_STATUS_NOT_ENOUGH_SPACE);
+
+  ExpectObserverEventsUntil(InstallingState::kImporting);
+  EXPECT_CALL(*observer_, OnError(FailureReason::OUT_OF_DISK_SPACE));
+  StartAndRunToCompletion();
+
+  histogram_tester_->ExpectBucketCount(kPluginVmSetupResultHistogram,
+                                       PluginVmSetupResult::kError, 1);
+}
+
 TEST_F(PluginVmInstallerDownloadServiceTest, CancelledImportTest) {
   SetupConciergeForSuccessfulDiskImageImport(fake_concierge_client_);
   SetupConciergeForCancelDiskImageOperation(fake_concierge_client_,

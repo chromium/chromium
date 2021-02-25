@@ -84,6 +84,40 @@ void SetupConciergeForSuccessfulDiskImageImport(
       disk_image_status_response);
 }
 
+void SetupConciergeForFailedDiskImageImport(
+    chromeos::FakeConciergeClient* fake_concierge_client_,
+    vm_tools::concierge::DiskImageStatus status) {
+  // Set immediate response for the ImportDiskImage call: will be that "image is
+  // in progress":
+  vm_tools::concierge::ImportDiskImageResponse import_disk_image_response;
+  import_disk_image_response.set_status(
+      vm_tools::concierge::DISK_STATUS_IN_PROGRESS);
+  import_disk_image_response.set_command_uuid(kDiskImageImportCommandUuid);
+  fake_concierge_client_->set_import_disk_image_response(
+      import_disk_image_response);
+
+  // Set a series of signals: one at 50% (in progress) and one at 75%
+  // (failed):
+  std::vector<vm_tools::concierge::DiskImageStatusResponse> signals;
+  vm_tools::concierge::DiskImageStatusResponse signal1;
+  signal1.set_status(vm_tools::concierge::DISK_STATUS_IN_PROGRESS);
+  signal1.set_progress(50);
+  signal1.set_command_uuid(kDiskImageImportCommandUuid);
+  vm_tools::concierge::DiskImageStatusResponse signal2;
+  signal2.set_status(status);
+  signal2.set_progress(75);
+  signal2.set_command_uuid(kDiskImageImportCommandUuid);
+  fake_concierge_client_->set_disk_image_status_signals({signal1, signal2});
+
+  // Finally, set a failure response for any eventual final call to
+  // DiskImageStatus:
+  vm_tools::concierge::DiskImageStatusResponse disk_image_status_response;
+  disk_image_status_response.set_status(status);
+  disk_image_status_response.set_command_uuid(kDiskImageImportCommandUuid);
+  fake_concierge_client_->set_disk_image_status_response(
+      disk_image_status_response);
+}
+
 void SetupConciergeForCancelDiskImageOperation(
     chromeos::FakeConciergeClient* fake_concierge_client_,
     bool success) {
