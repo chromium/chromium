@@ -586,9 +586,9 @@ bool IsProcessTypeInitialized() {
   return g_process_type != ProcessType::UNINITIALIZED;
 }
 
-bool IsNonBrowserProcess() {
+bool IsBrowserProcess() {
   assert(g_process_type != ProcessType::UNINITIALIZED);
-  return g_process_type != ProcessType::BROWSER_PROCESS;
+  return g_process_type == ProcessType::BROWSER_PROCESS;
 }
 
 bool IsCrashpadHandlerProcess() {

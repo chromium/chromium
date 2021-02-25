@@ -62,7 +62,7 @@ BOOL APIENTRY DllMain(HMODULE module, DWORD reason, LPVOID reserved) {
     install_static::InitializeProductDetailsForPrimaryModule();
     install_static::InitializeProcessType();
 
-    if (!install_static::IsNonBrowserProcess()) {
+    if (install_static::IsBrowserProcess()) {
       __try {
         // Initialize the blocking of third-party DLLs if the initialization of
         // the safety beacon succeeds.

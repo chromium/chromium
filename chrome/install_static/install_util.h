@@ -194,9 +194,8 @@ void InitializeProcessType();
 // Returns true if the process type is initialized. False otherwise.
 bool IsProcessTypeInitialized();
 
-// Returns true if invoked in a Chrome process other than the main browser
-// process. False otherwise.
-bool IsNonBrowserProcess();
+// Returns true if invoked in the main browser process; false, otherwise.
+bool IsBrowserProcess();
 
 // Returns true if invoked in a Crashpad handler process. False otherwise.
 bool IsCrashpadHandlerProcess();
