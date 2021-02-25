@@ -5,7 +5,7 @@
 #include "chrome/browser/chromeos/multidevice_setup/auth_token_validator_factory.h"
 
 #include "base/macros.h"
-#include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_factory.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/chromeos/multidevice_setup/auth_token_validator_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"

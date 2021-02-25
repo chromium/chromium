@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/quick_unlock/pin_backend.h"
+#include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/base64.h"
@@ -11,12 +11,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/ash/login/quick_unlock/pin_storage_cryptohome.h"
+#include "chrome/browser/ash/login/quick_unlock/pin_storage_prefs.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/login/quick_unlock/pin_storage_cryptohome.h"
-#include "chrome/browser/chromeos/login/quick_unlock/pin_storage_prefs.h"
-#include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_factory.h"
-#include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_storage.h"
-#include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/account_id/account_id.h"

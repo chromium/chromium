@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/quick_unlock_handler.h"
 
 #include "base/bind.h"
-#include "chrome/browser/chromeos/login/quick_unlock/pin_backend.h"
+#include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 #include "content/public/browser/web_ui.h"
 
 namespace chromeos {

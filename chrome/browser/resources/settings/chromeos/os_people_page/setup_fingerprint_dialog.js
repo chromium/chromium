@@ -16,7 +16,7 @@ cr.define('settings', function() {
   /**
    * Fingerprint sensor locations corresponding to the FingerprintLocation
    * enumerators in
-   * /chrome/browser/chromeos/login/quick_unlock/quick_unlock_utils.h
+   * /chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h
    * @enum {number}
    */
   /* #export */ const FingerprintLocation = {

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_LOGIN_QUICK_UNLOCK_FINGERPRINT_STORAGE_H_
-#define CHROME_BROWSER_CHROMEOS_LOGIN_QUICK_UNLOCK_FINGERPRINT_STORAGE_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_FINGERPRINT_STORAGE_H_
+#define CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_FINGERPRINT_STORAGE_H_
 
 #include "base/macros.h"
 #include "base/time/time.h"
@@ -74,4 +74,4 @@ class FingerprintStorage {
 }  // namespace quick_unlock
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_LOGIN_QUICK_UNLOCK_FINGERPRINT_STORAGE_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_FINGERPRINT_STORAGE_H_

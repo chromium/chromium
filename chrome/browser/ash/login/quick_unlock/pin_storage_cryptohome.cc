@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/quick_unlock/pin_storage_cryptohome.h"
+#include "chrome/browser/ash/login/quick_unlock/pin_storage_cryptohome.h"
 
 #include "ash/public/cpp/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/chromeos/login/quick_unlock/pin_backend.h"
+#include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/cryptohome/cryptohome_util.h"
 #include "chromeos/cryptohome/homedir_methods.h"

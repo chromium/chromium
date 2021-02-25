@@ -5,7 +5,7 @@
 #include "chrome/browser/chromeos/login/screens/fingerprint_setup_screen.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_utils.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/chromeos/login/test/js_checker.h"
 #include "chrome/browser/chromeos/login/test/oobe_base_test.h"
 #include "chrome/browser/chromeos/login/test/oobe_screen_waiter.h"
