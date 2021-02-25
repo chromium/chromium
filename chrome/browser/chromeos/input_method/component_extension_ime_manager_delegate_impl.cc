@@ -153,7 +153,24 @@ void OnFilePathChecked(Profile* profile,
                        const base::FilePath* file_path,
                        bool result) {
   if (result) {
-    DoLoadExtension(profile, *extension_id, *manifest, *file_path);
+    std::string manifest_str = *manifest;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    // Load Mojo-only background page for ChromeOS IME extension when feature
+    // 'ImeMojoDecoder' is enabled. See http://b/181170189 for more details.
+    // TODO(http://b/170278753): Remove this once NaCl decoder is removed.
+    if ((*extension_id == extension_ime_util::kXkbExtensionId) &&
+        base::FeatureList::IsEnabled(chromeos::features::kImeMojoDecoder)) {
+      const std::string bg_page = "background.html";
+      const std::string mojo_bg_page = "background_mojo.html";
+
+      // Don't update if the IME extension hasn't Mojo background page.
+      if (base::PathExists(file_path->Append(mojo_bg_page))) {
+        base::ReplaceFirstSubstringAfterOffset(&manifest_str, 0, bg_page,
+                                               mojo_bg_page);
+      }
+    }
+#endif
+    DoLoadExtension(profile, *extension_id, manifest_str, *file_path);
   } else {
     LOG_IF(ERROR, base::SysInfo::IsRunningOnChromeOS())
         << "IME extension file path does not exist: " << file_path->value();
