@@ -910,6 +910,9 @@ extern const char kNewProfilePickerDescription[];
 extern const char kSignInProfileCreationName[];
 extern const char kSignInProfileCreationDescription[];
 
+extern const char kSignInProfileCreationEnterpriseName[];
+extern const char kSignInProfileCreationEnterpriseDescription[];
+
 extern const char kSyncingCompromisedCredentialsName[];
 extern const char kSyncingCompromisedCredentialsDescription[];
 
