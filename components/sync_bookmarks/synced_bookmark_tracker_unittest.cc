@@ -665,6 +665,29 @@ TEST(SyncedBookmarkTrackerTest, ShouldNotInvalidateMetadata) {
       /*sample=*/ExpectedCorruptionReason::NO_CORRUPTION, /*expected_count=*/1);
 }
 
+TEST(SyncedBookmarkTrackerTest, ShouldNotRequireClientTagsForPermanentNodes) {
+  std::unique_ptr<bookmarks::BookmarkModel> model =
+      bookmarks::TestBookmarkClient::CreateModel();
+
+  sync_pb::BookmarkModelMetadata model_metadata =
+      CreateMetadataForPermanentNodes(model.get());
+
+  // Clear the client tag hash field in metadata, which is irrelevant for
+  // permanent nodes (and some older versions of the browser didn't populate).
+  for (sync_pb::BookmarkMetadata& bookmark_metadata :
+       *model_metadata.mutable_bookmarks_metadata()) {
+    bookmark_metadata.mutable_metadata()->clear_client_tag_hash();
+  }
+
+  std::unique_ptr<SyncedBookmarkTracker> tracker =
+      SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
+          model.get(), std::move(model_metadata));
+  ASSERT_THAT(tracker, NotNull());
+  EXPECT_THAT(tracker->GetEntityForSyncId(kBookmarkBarId), NotNull());
+  EXPECT_THAT(tracker->GetEntityForSyncId(kMobileBookmarksId), NotNull());
+  EXPECT_THAT(tracker->GetEntityForSyncId(kOtherBookmarksId), NotNull());
+}
+
 TEST(SyncedBookmarkTrackerTest, ShouldInvalidateMetadataIfMissingMobileFolder) {
   std::unique_ptr<bookmarks::BookmarkModel> model =
       bookmarks::TestBookmarkClient::CreateModel();
