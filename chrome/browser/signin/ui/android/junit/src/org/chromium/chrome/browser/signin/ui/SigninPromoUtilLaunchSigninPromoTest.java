@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.signin.ui;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -24,8 +25,13 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 
 import java.util.Set;
@@ -44,6 +50,9 @@ public class SigninPromoUtilLaunchSigninPromoTest {
             new AccountManagerTestRule(mFakeAccountManagerFacade);
 
     @Mock
+    private IdentityManager mIdentityManagerMock;
+
+    @Mock
     private SigninActivityLauncher mLauncherMock;
 
     @Mock
@@ -53,6 +62,11 @@ public class SigninPromoUtilLaunchSigninPromoTest {
 
     @Before
     public void setUp() {
+        Profile.setLastUsedProfileForTesting(mock(Profile.class));
+        IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
+        when(IdentityServicesProvider.get().getIdentityManager(Profile.getLastUsedRegularProfile()))
+                .thenReturn(mIdentityManagerMock);
+
         mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
     }
 
@@ -72,29 +86,33 @@ public class SigninPromoUtilLaunchSigninPromoTest {
 
     @Test
     public void whenNoLastShownVersionShouldReturnFalseAndSaveVersion() {
-        Assert.assertFalse(SigninPromoUtil.shouldLaunchSigninPromo(mPrefManager, 42, false, false));
+        Assert.assertFalse(SigninPromoUtil.shouldLaunchSigninPromo(mPrefManager, 42, false));
         Assert.assertEquals(42, mPrefManager.getSigninPromoLastShownVersion());
         verify(mFakeAccountManagerFacade, never()).tryGetGoogleAccounts();
     }
 
     @Test
     public void whenSignedInShouldReturnFalse() {
+        final CoreAccountInfo coreAccountInfo = mAccountManagerTestRule.toCoreAccountInfo(
+                AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        when(mIdentityManagerMock.getPrimaryAccountInfo(ConsentLevel.SYNC))
+                .thenReturn(coreAccountInfo);
         mPrefManager.setSigninPromoLastShownVersion(38);
-        Assert.assertFalse(SigninPromoUtil.shouldLaunchSigninPromo(mPrefManager, 42, true, false));
+        Assert.assertFalse(SigninPromoUtil.shouldLaunchSigninPromo(mPrefManager, 42, false));
         verify(mFakeAccountManagerFacade, never()).tryGetGoogleAccounts();
     }
 
     @Test
     public void whenWasSignedInShouldReturnFalse() {
         mPrefManager.setSigninPromoLastShownVersion(38);
-        Assert.assertFalse(SigninPromoUtil.shouldLaunchSigninPromo(mPrefManager, 42, false, true));
+        Assert.assertFalse(SigninPromoUtil.shouldLaunchSigninPromo(mPrefManager, 42, true));
         verify(mFakeAccountManagerFacade, never()).tryGetGoogleAccounts();
     }
 
     @Test
     public void whenVersionDifferenceTooSmallShouldReturnFalse() {
         mPrefManager.setSigninPromoLastShownVersion(41);
-        Assert.assertFalse(SigninPromoUtil.shouldLaunchSigninPromo(mPrefManager, 42, false, false));
+        Assert.assertFalse(SigninPromoUtil.shouldLaunchSigninPromo(mPrefManager, 42, false));
         verify(mFakeAccountManagerFacade, never()).tryGetGoogleAccounts();
     }
 
@@ -102,7 +120,7 @@ public class SigninPromoUtilLaunchSigninPromoTest {
     public void whenNoAccountsShouldReturnFalse() {
         mAccountManagerTestRule.removeAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         mPrefManager.setSigninPromoLastShownVersion(38);
-        Assert.assertFalse(SigninPromoUtil.shouldLaunchSigninPromo(mPrefManager, 42, false, false));
+        Assert.assertFalse(SigninPromoUtil.shouldLaunchSigninPromo(mPrefManager, 42, false));
         verify(mFakeAccountManagerFacade).tryGetGoogleAccounts();
     }
 
@@ -110,7 +128,7 @@ public class SigninPromoUtilLaunchSigninPromoTest {
     public void whenNoAccountListStoredShouldReturnTrue() {
         mPrefManager.setSigninPromoLastShownVersion(40);
         // Old implementation hasn't been storing account list
-        Assert.assertTrue(SigninPromoUtil.shouldLaunchSigninPromo(mPrefManager, 42, false, false));
+        Assert.assertTrue(SigninPromoUtil.shouldLaunchSigninPromo(mPrefManager, 42, false));
         verify(mFakeAccountManagerFacade).tryGetGoogleAccounts();
     }
 
@@ -120,7 +138,7 @@ public class SigninPromoUtilLaunchSigninPromoTest {
         mPrefManager.setSigninPromoLastShownVersion(40);
         mPrefManager.setSigninPromoLastAccountNames(
                 Set.of(AccountManagerTestRule.TEST_ACCOUNT_EMAIL));
-        Assert.assertTrue(SigninPromoUtil.shouldLaunchSigninPromo(mPrefManager, 42, false, false));
+        Assert.assertTrue(SigninPromoUtil.shouldLaunchSigninPromo(mPrefManager, 42, false));
         verify(mFakeAccountManagerFacade).tryGetGoogleAccounts();
     }
 
@@ -129,7 +147,7 @@ public class SigninPromoUtilLaunchSigninPromoTest {
         mPrefManager.setSigninPromoLastShownVersion(40);
         mPrefManager.setSigninPromoLastAccountNames(
                 Set.of(AccountManagerTestRule.TEST_ACCOUNT_EMAIL));
-        Assert.assertFalse(SigninPromoUtil.shouldLaunchSigninPromo(mPrefManager, 42, false, false));
+        Assert.assertFalse(SigninPromoUtil.shouldLaunchSigninPromo(mPrefManager, 42, false));
         verify(mFakeAccountManagerFacade).tryGetGoogleAccounts();
     }
 
@@ -138,7 +156,7 @@ public class SigninPromoUtilLaunchSigninPromoTest {
         mPrefManager.setSigninPromoLastShownVersion(40);
         mPrefManager.setSigninPromoLastAccountNames(
                 Set.of(AccountManagerTestRule.TEST_ACCOUNT_EMAIL, "test2@gmail.com"));
-        Assert.assertFalse(SigninPromoUtil.shouldLaunchSigninPromo(mPrefManager, 42, false, false));
+        Assert.assertFalse(SigninPromoUtil.shouldLaunchSigninPromo(mPrefManager, 42, false));
         verify(mFakeAccountManagerFacade).tryGetGoogleAccounts();
     }
 }

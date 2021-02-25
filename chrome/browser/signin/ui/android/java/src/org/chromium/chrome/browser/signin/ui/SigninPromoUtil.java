@@ -52,15 +52,10 @@ public final class SigninPromoUtil {
 
         SigninPreferencesManager preferencesManager = SigninPreferencesManager.getInstance();
         int currentMajorVersion = ChromeVersionInfo.getProductMajorVersion();
-        boolean isSignedIn = IdentityServicesProvider.get()
-                                     .getIdentityManager(Profile.getLastUsedRegularProfile())
-                                     .hasPrimaryAccount();
         boolean wasSignedIn =
                 TextUtils.isEmpty(UserPrefs.get(Profile.getLastUsedRegularProfile())
                                           .getString(Pref.GOOGLE_SERVICES_LAST_USERNAME));
-
-        if (!shouldLaunchSigninPromo(
-                    preferencesManager, currentMajorVersion, isSignedIn, wasSignedIn)) {
+        if (!shouldLaunchSigninPromo(preferencesManager, currentMajorVersion, wasSignedIn)) {
             return false;
         }
 
@@ -75,27 +70,33 @@ public final class SigninPromoUtil {
      * Launches the signin promo if it needs to be displayed.
      * @param preferencesManager the preferences manager to persist data
      * @param currentMajorVersion the current major version of Chrome
-     * @param isSignedIn is user currently signed in
      * @param wasSignedIn has used manually signed out
      * @return Whether the signin promo should be shown.
      */
     @VisibleForTesting
     static boolean shouldLaunchSigninPromo(SigninPreferencesManager preferencesManager,
-            int currentMajorVersion, boolean isSignedIn, boolean wasSignedIn) {
+            int currentMajorVersion, boolean wasSignedIn) {
         int lastPromoMajorVersion = preferencesManager.getSigninPromoLastShownVersion();
         if (lastPromoMajorVersion == 0) {
             preferencesManager.setSigninPromoLastShownVersion(currentMajorVersion);
             return false;
         }
 
+        // Promo can be shown at most once every 2 Chrome major versions.
+        if (currentMajorVersion < lastPromoMajorVersion + 2) {
+            return false;
+        }
+
         // Don't show if user is signed in.
-        if (isSignedIn) return false;
+        if (IdentityServicesProvider.get()
+                        .getIdentityManager(Profile.getLastUsedRegularProfile())
+                        .getPrimaryAccountInfo(ConsentLevel.SYNC)
+                != null) {
+            return false;
+        }
 
         // Don't show if user has manually signed out.
         if (wasSignedIn) return false;
-
-        // Promo can be shown at most once every 2 Chrome major versions.
-        if (currentMajorVersion < lastPromoMajorVersion + 2) return false;
 
         final List<String> currentAccountNames = AccountUtils.toAccountNames(
                 AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts());
