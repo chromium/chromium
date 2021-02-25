@@ -85,14 +85,14 @@ CreateSecCertificateFromX509Certificate(const X509Certificate* cert) {
 }
 
 scoped_refptr<X509Certificate> CreateX509CertificateFromSecCertificate(
-    SecCertificateRef sec_cert,
-    const std::vector<SecCertificateRef>& sec_chain) {
+    base::ScopedCFTypeRef<SecCertificateRef> sec_cert,
+    const std::vector<base::ScopedCFTypeRef<SecCertificateRef>>& sec_chain) {
   return CreateX509CertificateFromSecCertificate(sec_cert, sec_chain, {});
 }
 
 scoped_refptr<X509Certificate> CreateX509CertificateFromSecCertificate(
-    SecCertificateRef sec_cert,
-    const std::vector<SecCertificateRef>& sec_chain,
+    base::ScopedCFTypeRef<SecCertificateRef> sec_cert,
+    const std::vector<base::ScopedCFTypeRef<SecCertificateRef>>& sec_chain,
     X509Certificate::UnsafeCreateOptions options) {
   CSSM_DATA der_data;
   if (!sec_cert || SecCertificateGetData(sec_cert, &der_data) != noErr)
@@ -103,7 +103,7 @@ scoped_refptr<X509Certificate> CreateX509CertificateFromSecCertificate(
   if (!cert_handle)
     return nullptr;
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
-  for (const SecCertificateRef& sec_intermediate : sec_chain) {
+  for (const auto& sec_intermediate : sec_chain) {
     if (!sec_intermediate ||
         SecCertificateGetData(sec_intermediate, &der_data) != noErr) {
       return nullptr;

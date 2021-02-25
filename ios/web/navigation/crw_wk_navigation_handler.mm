@@ -1633,8 +1633,10 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
     // chain), thus if intermediates were considered, the keys would mismatch.
     scoped_refptr<net::X509Certificate> leafCert =
         net::x509_util::CreateX509CertificateFromSecCertificate(
-            SecTrustGetCertificateAtIndex(trust, 0),
-            std::vector<SecCertificateRef>());
+            base::ScopedCFTypeRef<SecCertificateRef>(
+                SecTrustGetCertificateAtIndex(trust, 0),
+                base::scoped_policy::RETAIN),
+            {});
     if (leafCert) {
       bool is_recoverable =
           policy == web::CERT_ACCEPT_POLICY_RECOVERABLE_ERROR_UNDECIDED_BY_USER;
