@@ -1009,13 +1009,13 @@ void TokenPreloadScanner::ScanCommon(
       return;
     }
     case HTMLToken::kStartTag: {
-      if (template_count_)
-        return;
       const StringImpl* tag_impl = TagImplFor(token.Data());
       if (Match(tag_impl, html_names::kTemplateTag)) {
         ++template_count_;
         return;
       }
+      if (template_count_)
+        return;
       if (Match(tag_impl, html_names::kStyleTag)) {
         in_style_ = true;
         return;
