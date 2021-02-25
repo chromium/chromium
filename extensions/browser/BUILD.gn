@@ -419,6 +419,7 @@ source_set("browser_sources") {
     "//skia/public/mojom",
     "//third_party/blink/public/common",
     "//third_party/blink/public/mojom/frame",
+    "//third_party/zlib/google:zip",
     "//ui/display",
   ]
 
@@ -573,6 +574,7 @@ source_set("test_support") {
     "//content/public/browser",
     "//content/test:test_support",
     "//extensions/browser",
+    "//extensions/browser/updater:updater",
     "//extensions/common",
     "//extensions/common:test_support",
     "//services/data_decoder:lib",
@@ -733,6 +735,7 @@ source_set("unit_tests") {
     "//extensions:extensions_browser_resources",
     "//extensions:test_support",
     "//extensions/browser/api/declarative_net_request/filter_list_converter:unit_tests",
+    "//extensions/browser/updater:updater",
     "//extensions/buildflags",
     "//extensions/common",
     "//extensions/common:test_support",
