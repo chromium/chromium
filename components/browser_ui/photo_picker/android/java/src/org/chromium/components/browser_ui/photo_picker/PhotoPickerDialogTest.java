@@ -459,7 +459,7 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
 
     @Test
     @LargeTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O) // Video is only supported on O+.
+    @MinAndroidSdkLevel(Build.VERSION_CODES.N) // Video is only supported on N+.
     public void testVideoPlayerPlayAndRestart() throws Throwable {
         // Requesting to play a video is not a case of an accidental disk read on the UI thread.
         StrictMode.ThreadPolicy oldPolicy = TestThreadUtils.runOnUiThreadBlocking(
@@ -525,7 +525,7 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
     @Test
     @LargeTest
     @DisableAnimationsTestRule.EnsureAnimationsOn
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O) // Video is only supported on O+.
+    @MinAndroidSdkLevel(Build.VERSION_CODES.N) // Video is only supported on N+.
     @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1092104")
     public void testVideoPlayerAnimations() throws Throwable {
         PickerVideoPlayer.setShortAnimationTimesForTesting(true);
