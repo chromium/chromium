@@ -796,6 +796,8 @@ component("ash") {
     "shelf/contextual_tooltip.h",
     "shelf/drag_handle.cc",
     "shelf/drag_handle.h",
+    "shelf/gradient_layer_delegate.cc",
+    "shelf/gradient_layer_delegate.h",
     "shelf/home_button.cc",
     "shelf/home_button.h",
     "shelf/home_button_controller.cc",

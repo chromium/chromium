@@ -21,12 +21,10 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/animation_throughput_reporter.h"
-#include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
-#include "ui/gfx/skia_paint_util.h"
 #include "ui/gfx/transform_util.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/focus/focus_search.h"
@@ -186,95 +184,6 @@ class ScrollableShelfView::DragIconDropAnimationDelegate
   // Placeholder icon representing |original_view_| that moves with the pointer
   // while being dragged.
   views::UniqueWidgetPtr proxy_view_widget_;
-};
-
-////////////////////////////////////////////////////////////////////////////////
-// GradientLayerDelegate
-
-class ScrollableShelfView::GradientLayerDelegate : public ui::LayerDelegate {
- public:
-  GradientLayerDelegate() : layer_(ui::LAYER_TEXTURED) {
-    layer_.set_delegate(this);
-    layer_.SetFillsBoundsOpaquely(false);
-  }
-
-  ~GradientLayerDelegate() override { layer_.set_delegate(nullptr); }
-
-  bool IsStartFadeZoneVisible() const {
-    return !start_fade_zone_.zone_rect.IsEmpty();
-  }
-  bool IsEndFadeZoneVisible() const {
-    return !end_fade_zone_.zone_rect.IsEmpty();
-  }
-
-  void set_start_fade_zone(const FadeZone& fade_zone) {
-    start_fade_zone_ = fade_zone;
-  }
-  void set_end_fade_zone(const FadeZone& fade_zone) {
-    end_fade_zone_ = fade_zone;
-  }
-  gfx::Rect start_fade_zone_bounds() const {
-    return start_fade_zone_.zone_rect;
-  }
-  gfx::Rect end_fade_zone_bounds() const { return end_fade_zone_.zone_rect; }
-  ui::Layer* layer() { return &layer_; }
-
- private:
-  // ui::LayerDelegate:
-  void OnPaintLayer(const ui::PaintContext& context) override {
-    const gfx::Size size = layer()->size();
-
-    views::PaintInfo paint_info =
-        views::PaintInfo::CreateRootPaintInfo(context, size);
-    const auto& paint_recording_size = paint_info.paint_recording_size();
-
-    // Pass the scale factor when constructing PaintRecorder so the MaskLayer
-    // size is not incorrectly rounded (see https://crbug.com/921274).
-    ui::PaintRecorder recorder(
-        context, paint_info.paint_recording_size(),
-        static_cast<float>(paint_recording_size.width()) / size.width(),
-        static_cast<float>(paint_recording_size.height()) / size.height(),
-        nullptr);
-
-    recorder.canvas()->DrawColor(SK_ColorBLACK, SkBlendMode::kSrc);
-
-    if (!start_fade_zone_.zone_rect.IsEmpty())
-      DrawFadeZone(start_fade_zone_, recorder.canvas());
-    if (!end_fade_zone_.zone_rect.IsEmpty())
-      DrawFadeZone(end_fade_zone_, recorder.canvas());
-  }
-  void OnDeviceScaleFactorChanged(float old_device_scale_factor,
-                                  float new_device_scale_factor) override {}
-
-  void DrawFadeZone(const FadeZone& fade_zone, gfx::Canvas* canvas) {
-    gfx::Point start_point;
-    gfx::Point end_point;
-    if (fade_zone.is_horizontal) {
-      start_point = gfx::Point(fade_zone.zone_rect.x(), 0);
-      end_point = gfx::Point(fade_zone.zone_rect.right(), 0);
-    } else {
-      start_point = gfx::Point(0, fade_zone.zone_rect.y());
-      end_point = gfx::Point(0, fade_zone.zone_rect.bottom());
-    }
-
-    cc::PaintFlags flags;
-    flags.setBlendMode(SkBlendMode::kSrc);
-    flags.setAntiAlias(false);
-
-    flags.setShader(gfx::CreateGradientShader(
-        start_point, end_point,
-        fade_zone.fade_in ? SK_ColorTRANSPARENT : SK_ColorBLACK,
-        fade_zone.fade_in ? SK_ColorBLACK : SK_ColorTRANSPARENT));
-
-    canvas->DrawRect(fade_zone.zone_rect, flags);
-  }
-
-  ui::Layer layer_;
-
-  FadeZone start_fade_zone_;
-  FadeZone end_fade_zone_;
-
-  DISALLOW_COPY_AND_ASSIGN(GradientLayerDelegate);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1793,10 +1702,10 @@ float ScrollableShelfView::CalculateTargetOffsetAfterScroll(
   return target_offset;
 }
 
-ScrollableShelfView::FadeZone ScrollableShelfView::CalculateStartGradientZone()
-    const {
+GradientLayerDelegate::FadeZone
+ScrollableShelfView::CalculateStartGradientZone() const {
   if (!should_show_start_gradient_zone_)
-    return FadeZone();
+    return GradientLayerDelegate::FadeZone();
 
   gfx::Rect zone_rect;
   bool fade_in = false;
@@ -1830,10 +1739,10 @@ ScrollableShelfView::FadeZone ScrollableShelfView::CalculateStartGradientZone()
   return {zone_rect, fade_in, is_horizontal_alignment};
 }
 
-ScrollableShelfView::FadeZone ScrollableShelfView::CalculateEndGradientZone()
+GradientLayerDelegate::FadeZone ScrollableShelfView::CalculateEndGradientZone()
     const {
   if (!should_show_end_gradient_zone_)
-    return FadeZone();
+    return GradientLayerDelegate::FadeZone();
 
   gfx::Rect zone_rect;
   bool fade_in = false;
@@ -1894,8 +1803,10 @@ void ScrollableShelfView::MaybeUpdateGradientZone() {
   // (2) Fade zone should show and the arrow button's location changes.
   UpdateGradientZoneState();
 
-  const FadeZone target_start_fade_zone = CalculateStartGradientZone();
-  const FadeZone target_end_fade_zone = CalculateEndGradientZone();
+  const GradientLayerDelegate::FadeZone target_start_fade_zone =
+      CalculateStartGradientZone();
+  const GradientLayerDelegate::FadeZone target_end_fade_zone =
+      CalculateEndGradientZone();
 
   const bool should_update_start_fade_zone =
       target_start_fade_zone.zone_rect !=
@@ -1910,8 +1821,9 @@ void ScrollableShelfView::MaybeUpdateGradientZone() {
   PaintGradientZone(CalculateStartGradientZone(), CalculateEndGradientZone());
 }
 
-void ScrollableShelfView::PaintGradientZone(const FadeZone& start_rect,
-                                            const FadeZone& end_rect) {
+void ScrollableShelfView::PaintGradientZone(
+    const GradientLayerDelegate::FadeZone& start_rect,
+    const GradientLayerDelegate::FadeZone& end_rect) {
   gradient_layer_delegate_->set_start_fade_zone(start_rect);
   gradient_layer_delegate_->set_end_fade_zone(end_rect);
   SchedulePaint();
@@ -2295,7 +2207,8 @@ void ScrollableShelfView::UpdateScrollOffset(float target_offset) {
     const bool has_gradient_zone = layer()->layer_mask_layer();
     const bool should_have_gradient_zone = ShouldApplyMaskLayerGradientZone();
     if (has_gradient_zone && !should_have_gradient_zone) {
-      PaintGradientZone(FadeZone(), FadeZone());
+      PaintGradientZone(GradientLayerDelegate::FadeZone(),
+                        GradientLayerDelegate::FadeZone());
       layer()->SetMaskLayer(nullptr);
     } else if (!has_gradient_zone && should_have_gradient_zone) {
       gradient_layer_delegate_->layer()->SetBounds(layer()->bounds());

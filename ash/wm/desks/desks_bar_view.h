@@ -22,6 +22,7 @@ class DeskBarHoverObserver;
 class DeskDragProxy;
 class DeskMiniView;
 class ExpandedStateNewDeskButton;
+class GradientLayerDelegate;
 class NewDeskButton;
 class OverviewGrid;
 class ScrollArrowButton;
@@ -207,6 +208,11 @@ class ASH_EXPORT DesksBarView : public views::View,
   // right side of the |scroll_view_|.
   void UpdateScrollButtonsVisibility();
 
+  // We will show a fade in gradient besides |left_scroll_button_| and a fade
+  // out gradient besides |right_scroll_button_|. Show the gradient only when
+  // the corresponding scroll button is visible.
+  void UpdateGradientZone();
+
   // Performs on clicking the |left_scroll_button_|, scrolls to the start
   // position of the scroll view.
   void ClickOnLeftScrollButton();
@@ -261,6 +267,10 @@ class ASH_EXPORT DesksBarView : public views::View,
   DeskMiniView* drag_view_ = nullptr;
   // Drag proxy for the dragged desk.
   std::unique_ptr<DeskDragProxy> drag_proxy_;
+
+  // The layer delegate used for |scroll_view_|'s mask layer, with left and
+  // right gradient asides the scroll buttons.
+  std::unique_ptr<GradientLayerDelegate> gradient_layer_delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(DesksBarView);
 };

@@ -11,6 +11,7 @@
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/shelf/gradient_layer_delegate.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/desks/desk_drag_proxy.h"
@@ -74,6 +75,8 @@ constexpr int kScrollButtonSize = 20;
 
 // Padding between the scroll view and the scroll buttons.
 constexpr int kScrollButtonHorizontalPadding = 4;
+
+constexpr int kGradientZoneLength = 24;
 
 gfx::Rect GetGestureEventScreenRect(const ui::Event& event) {
   DCHECK(event.IsGestureEvent());
@@ -277,6 +280,7 @@ class BentoDesksBarLayout : public views::LayoutManager {
         scroll_bounds.right() + kScrollButtonHorizontalPadding,
         scroll_bounds.y(), kScrollButtonSize, scroll_bounds.height());
     bar_view_->UpdateScrollButtonsVisibility();
+    bar_view_->UpdateGradientZone();
 
     bar_view_->scroll_view_->Layout();
   }
@@ -428,6 +432,9 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
         std::make_unique<ZeroStateNewDeskButton>());
     scroll_view_contents_->SetLayoutManager(
         std::make_unique<BentoDesksBarScrollViewLayout>(this));
+
+    gradient_layer_delegate_ = std::make_unique<GradientLayerDelegate>();
+    scroll_view_->layer()->SetMaskLayer(gradient_layer_delegate_->layer());
 
     scroll_view_->AddScrollViewObserver(this);
   } else {
@@ -926,6 +933,43 @@ void DesksBarView::UpdateScrollButtonsVisibility() {
       visible_bounds.right() < scroll_view_contents_->bounds().width();
   left_scroll_button_->SetVisible(left_visible);
   right_scroll_button_->SetVisible(right_visible);
+}
+
+void DesksBarView::UpdateGradientZone() {
+  const gfx::Rect bounds = scroll_view_->bounds();
+  const bool is_rtl = base::i18n::IsRTL();
+  const bool is_left_scroll_button_visible = left_scroll_button_->GetVisible();
+  const bool is_right_scroll_button_visible =
+      right_scroll_button_->GetVisible();
+
+  // The bounds of the start and end gradient will be the same regardless it is
+  // LTR or RTL layout. While the |left_scroll_button_| will be changed from
+  // left to right and |right_scroll_button_| will be changed from right to left
+  // if it is RTL layout.
+  const bool should_show_start_gradient =
+      is_rtl ? is_right_scroll_button_visible : is_left_scroll_button_visible;
+  const bool should_show_end_gradient =
+      is_rtl ? is_left_scroll_button_visible : is_right_scroll_button_visible;
+  gfx::Rect start_gradient_bounds, end_gradient_bounds;
+  if (should_show_start_gradient) {
+    start_gradient_bounds =
+        gfx::Rect(0, 0, kGradientZoneLength, bounds.height());
+  }
+  if (should_show_end_gradient) {
+    end_gradient_bounds = gfx::Rect(bounds.width() - kGradientZoneLength, 0,
+                                    kGradientZoneLength, bounds.height());
+  }
+  const GradientLayerDelegate::FadeZone start_gradient_zone = {
+      start_gradient_bounds,
+      /*fade_in=*/true,
+      /*is_horizontal=*/true};
+  const GradientLayerDelegate::FadeZone end_gradient_zone = {
+      end_gradient_bounds,
+      /*fade_in=*/false,
+      /*is_horizonal=*/true};
+  gradient_layer_delegate_->set_start_fade_zone(start_gradient_zone);
+  gradient_layer_delegate_->set_end_fade_zone(end_gradient_zone);
+  gradient_layer_delegate_->layer()->SetBounds(scroll_view_->layer()->bounds());
 }
 
 void DesksBarView::ClickOnLeftScrollButton() {
