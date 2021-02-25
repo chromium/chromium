@@ -581,8 +581,7 @@ static void TestBitmapWrite(Clipboard* clipboard,
 
 // Only kN32_SkColorType bitmaps are allowed in the clipboard to prevent
 // surprising buffer overflows due to bits-per-pixel assumptions.
-using ClipboardDeathTest = ClipboardTest;
-TYPED_TEST(ClipboardDeathTest, Bitmap_F16_Premul) {
+TYPED_TEST(ClipboardTest, Bitmap_F16_Premul) {
   constexpr F16x4 kRGBAF16Premul = {0x30c5, 0x2d86, 0x2606, 0x3464};
   constexpr U8x4 kRGBAPremul = {0x26, 0x16, 0x06, 0x46};
   EXPECT_DEATH(TestBitmapWrite(&this->clipboard(),
