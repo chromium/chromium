@@ -15,6 +15,7 @@
 #include "base/optional.h"
 #include "build/build_config.h"
 #include "components/viz/service/display/output_surface.h"
+#include "components/viz/service/display/output_surface_frame.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
 #include "components/viz/service/display/skia_output_surface.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
@@ -117,12 +118,12 @@ class SkiaOutputDevice {
 
   // Presents the back buffer.
   virtual void SwapBuffers(BufferPresentedCallback feedback,
-                           std::vector<ui::LatencyInfo> latency_info) = 0;
+                           OutputSurfaceFrame frame) = 0;
   virtual void PostSubBuffer(const gfx::Rect& rect,
                              BufferPresentedCallback feedback,
-                             std::vector<ui::LatencyInfo> latency_info);
+                             OutputSurfaceFrame frame);
   virtual void CommitOverlayPlanes(BufferPresentedCallback feedback,
-                                   std::vector<ui::LatencyInfo> latency_info);
+                                   OutputSurfaceFrame frame);
 
   // Set the rectangle that will be drawn into on the surface.
   virtual bool SetDrawRectangle(const gfx::Rect& draw_rectangle);
@@ -213,7 +214,7 @@ class SkiaOutputDevice {
   void FinishSwapBuffers(
       gfx::SwapCompletionResult result,
       const gfx::Size& size,
-      std::vector<ui::LatencyInfo> latency_info,
+      OutputSurfaceFrame frame,
       const base::Optional<gfx::Rect>& damage_area = base::nullopt,
       std::vector<gpu::Mailbox> released_overlays = {},
       const gpu::Mailbox& primary_plane_mailbox = gpu::Mailbox());

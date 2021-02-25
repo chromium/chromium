@@ -27,7 +27,7 @@ class SkiaOutputDeviceVulkanSecondaryCBOffscreen final
   SkSurface* BeginPaint(
       std::vector<GrBackendSemaphore>* end_semaphores) override;
   void SwapBuffers(BufferPresentedCallback feedback,
-                   std::vector<ui::LatencyInfo> latency_info) override;
+                   OutputSurfaceFrame frame) override;
 };
 
 }  // namespace viz

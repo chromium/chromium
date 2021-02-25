@@ -38,14 +38,16 @@ scoped_refptr<base::SequencedTaskRunner> CreateLatencyTracerRunner() {
 
 void ReportLatency(const gfx::SwapTimings& timings,
                    ui::LatencyTracker* tracker,
-                   std::vector<ui::LatencyInfo> latency_info) {
+                   std::vector<ui::LatencyInfo> latency_info,
+                   bool top_controls_visible_height_changed) {
   for (auto& latency : latency_info) {
     latency.AddLatencyNumberWithTimestamp(
         ui::INPUT_EVENT_GPU_SWAP_BUFFER_COMPONENT, timings.swap_start);
     latency.AddLatencyNumberWithTimestamp(
         ui::INPUT_EVENT_LATENCY_FRAME_SWAP_COMPONENT, timings.swap_end);
   }
-  tracker->OnGpuSwapBuffersCompleted(std::move(latency_info));
+  tracker->OnGpuSwapBuffersCompleted(std::move(latency_info),
+                                     top_controls_visible_height_changed);
 }
 
 }  // namespace
@@ -124,16 +126,14 @@ void SkiaOutputDevice::Submit(bool sync_cpu, base::OnceClosure callback) {
   std::move(callback).Run();
 }
 
-void SkiaOutputDevice::CommitOverlayPlanes(
-    BufferPresentedCallback feedback,
-    std::vector<ui::LatencyInfo> latency_info) {
+void SkiaOutputDevice::CommitOverlayPlanes(BufferPresentedCallback feedback,
+                                           OutputSurfaceFrame frame) {
   NOTREACHED();
 }
 
-void SkiaOutputDevice::PostSubBuffer(
-    const gfx::Rect& rect,
-    BufferPresentedCallback feedback,
-    std::vector<ui::LatencyInfo> latency_info) {
+void SkiaOutputDevice::PostSubBuffer(const gfx::Rect& rect,
+                                     BufferPresentedCallback feedback,
+                                     OutputSurfaceFrame frame) {
   NOTREACHED();
 }
 
@@ -188,7 +188,7 @@ void SkiaOutputDevice::StartSwapBuffers(BufferPresentedCallback feedback) {
 void SkiaOutputDevice::FinishSwapBuffers(
     gfx::SwapCompletionResult result,
     const gfx::Size& size,
-    std::vector<ui::LatencyInfo> latency_info,
+    OutputSurfaceFrame frame,
     const base::Optional<gfx::Rect>& damage_area,
     std::vector<gpu::Mailbox> released_overlays,
     const gpu::Mailbox& primary_plane_mailbox) {
@@ -207,14 +207,16 @@ void SkiaOutputDevice::FinishSwapBuffers(
     // Report latency off GPU main thread, but we still want this to be counted
     // as part of the critical flow so emit a flow step.
     ui::LatencyInfo::TraceIntermediateFlowEvents(
-        latency_info, ChromeLatencyInfo::STEP_FINISHED_SWAP_BUFFERS);
+        frame.latency_info, ChromeLatencyInfo::STEP_FINISHED_SWAP_BUFFERS);
     latency_tracker_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&ReportLatency, params.swap_response.timings,
-                       latency_tracker_.get(), std::move(latency_info)));
+                       latency_tracker_.get(), std::move(frame.latency_info),
+                       frame.top_controls_visible_height_changed));
   } else {
     ReportLatency(params.swap_response.timings, latency_tracker_.get(),
-                  std::move(latency_info));
+                  std::move(frame.latency_info),
+                  frame.top_controls_visible_height_changed);
   }
 
   pending_swaps_.pop();

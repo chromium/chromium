@@ -68,9 +68,8 @@ bool SkiaOutputDeviceWebView::Reshape(const gfx::Size& size,
   return !!sk_surface_;
 }
 
-void SkiaOutputDeviceWebView::SwapBuffers(
-    BufferPresentedCallback feedback,
-    std::vector<ui::LatencyInfo> latency_info) {
+void SkiaOutputDeviceWebView::SwapBuffers(BufferPresentedCallback feedback,
+                                          OutputSurfaceFrame frame) {
   StartSwapBuffers({});
 
   gfx::Size surface_size =
@@ -78,7 +77,7 @@ void SkiaOutputDeviceWebView::SwapBuffers(
 
   FinishSwapBuffers(
       gfx::SwapCompletionResult(gl_surface_->SwapBuffers(std::move(feedback))),
-      surface_size, std::move(latency_info));
+      surface_size, std::move(frame));
 }
 
 SkSurface* SkiaOutputDeviceWebView::BeginPaint(

@@ -52,12 +52,12 @@ class SkiaOutputDeviceGL final : public SkiaOutputDevice {
                gfx::BufferFormat format,
                gfx::OverlayTransform transform) override;
   void SwapBuffers(BufferPresentedCallback feedback,
-                   std::vector<ui::LatencyInfo> latency_info) override;
+                   OutputSurfaceFrame frame) override;
   void PostSubBuffer(const gfx::Rect& rect,
                      BufferPresentedCallback feedback,
-                     std::vector<ui::LatencyInfo> latency_info) override;
+                     OutputSurfaceFrame frame) override;
   void CommitOverlayPlanes(BufferPresentedCallback feedback,
-                           std::vector<ui::LatencyInfo> latency_info) override;
+                           OutputSurfaceFrame frame) override;
   bool SetDrawRectangle(const gfx::Rect& draw_rectangle) override;
   void SetGpuVSyncEnabled(bool enabled) override;
   void SetEnableDCLayers(bool enable) override;
@@ -74,12 +74,12 @@ class SkiaOutputDeviceGL final : public SkiaOutputDevice {
   // Use instead of calling FinishSwapBuffers() directly. On Windows this cleans
   // up old entries in |overlays_|.
   void DoFinishSwapBuffers(const gfx::Size& size,
-                           std::vector<ui::LatencyInfo> latency_info,
+                           OutputSurfaceFrame frame,
                            gfx::SwapCompletionResult result);
   // Used as callback for SwapBuffersAsync and PostSubBufferAsync to finish
   // operation
   void DoFinishSwapBuffersAsync(const gfx::Size& size,
-                                std::vector<ui::LatencyInfo> latency_info,
+                                OutputSurfaceFrame frame,
                                 gfx::SwapCompletionResult result);
 
   scoped_refptr<gl::GLImage> GetGLImageForMailbox(const gpu::Mailbox& mailbox);

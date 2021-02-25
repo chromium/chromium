@@ -335,9 +335,8 @@ void SkiaOutputDeviceBufferQueue::Submit(bool sync_cpu,
   SkiaOutputDevice::Submit(sync_cpu, std::move(callback));
 }
 
-void SkiaOutputDeviceBufferQueue::SwapBuffers(
-    BufferPresentedCallback feedback,
-    std::vector<ui::LatencyInfo> latency_info) {
+void SkiaOutputDeviceBufferQueue::SwapBuffers(BufferPresentedCallback feedback,
+                                              OutputSurfaceFrame frame) {
   StartSwapBuffers({});
 
   if (current_frame_has_no_primary_plane_) {
@@ -357,7 +356,7 @@ void SkiaOutputDeviceBufferQueue::SwapBuffers(
   swap_completion_callbacks_.emplace_back(
       std::make_unique<CancelableSwapCompletionCallback>(base::BindOnce(
           &SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers,
-          base::Unretained(this), GetSwapBuffersSize(), std::move(latency_info),
+          base::Unretained(this), GetSwapBuffersSize(), std::move(frame),
           submitted_image_ ? submitted_image_->GetWeakPtr() : nullptr,
           std::move(committed_overlay_mailboxes_))));
   committed_overlay_mailboxes_.clear();
@@ -370,7 +369,7 @@ void SkiaOutputDeviceBufferQueue::SwapBuffers(
 void SkiaOutputDeviceBufferQueue::PostSubBuffer(
     const gfx::Rect& rect,
     BufferPresentedCallback feedback,
-    std::vector<ui::LatencyInfo> latency_info) {
+    OutputSurfaceFrame frame) {
   StartSwapBuffers({});
 
   if (current_frame_has_no_primary_plane_) {
@@ -392,7 +391,7 @@ void SkiaOutputDeviceBufferQueue::PostSubBuffer(
   swap_completion_callbacks_.emplace_back(
       std::make_unique<CancelableSwapCompletionCallback>(base::BindOnce(
           &SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers,
-          base::Unretained(this), GetSwapBuffersSize(), std::move(latency_info),
+          base::Unretained(this), GetSwapBuffersSize(), std::move(frame),
           submitted_image_ ? submitted_image_->GetWeakPtr() : nullptr,
           std::move(committed_overlay_mailboxes_))));
   committed_overlay_mailboxes_.clear();
@@ -404,7 +403,7 @@ void SkiaOutputDeviceBufferQueue::PostSubBuffer(
 
 void SkiaOutputDeviceBufferQueue::CommitOverlayPlanes(
     BufferPresentedCallback feedback,
-    std::vector<ui::LatencyInfo> latency_info) {
+    OutputSurfaceFrame frame) {
   StartSwapBuffers({});
 
   // There is no drawing for this frame on the main buffer.
@@ -423,7 +422,7 @@ void SkiaOutputDeviceBufferQueue::CommitOverlayPlanes(
   swap_completion_callbacks_.emplace_back(
       std::make_unique<CancelableSwapCompletionCallback>(base::BindOnce(
           &SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers,
-          base::Unretained(this), GetSwapBuffersSize(), std::move(latency_info),
+          base::Unretained(this), GetSwapBuffersSize(), std::move(frame),
           submitted_image_ ? submitted_image_->GetWeakPtr() : nullptr,
           std::move(committed_overlay_mailboxes_))));
   committed_overlay_mailboxes_.clear();
@@ -435,7 +434,7 @@ void SkiaOutputDeviceBufferQueue::CommitOverlayPlanes(
 
 void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
     const gfx::Size& size,
-    std::vector<ui::LatencyInfo> latency_info,
+    OutputSurfaceFrame frame,
     const base::WeakPtr<OutputPresenter::Image>& image,
     std::vector<gpu::Mailbox> overlay_mailboxes,
     gfx::SwapCompletionResult result) {
@@ -484,7 +483,7 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
   DCHECK(!result.gpu_fence);
   const auto& mailbox =
       image ? image->skia_representation()->mailbox() : gpu::Mailbox();
-  FinishSwapBuffers(std::move(result), size, latency_info,
+  FinishSwapBuffers(std::move(result), size, std::move(frame),
                     /*damage_area=*/base::nullopt, std::move(released_overlays),
                     mailbox);
   PageFlipComplete(image.get());

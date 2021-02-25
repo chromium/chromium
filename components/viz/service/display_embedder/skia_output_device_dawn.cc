@@ -87,14 +87,12 @@ bool SkiaOutputDeviceDawn::Reshape(const gfx::Size& size,
   return true;
 }
 
-void SkiaOutputDeviceDawn::SwapBuffers(
-    BufferPresentedCallback feedback,
-    std::vector<ui::LatencyInfo> latency_info) {
+void SkiaOutputDeviceDawn::SwapBuffers(BufferPresentedCallback feedback,
+                                       OutputSurfaceFrame frame) {
   StartSwapBuffers({});
   swap_chain_.Present();
   FinishSwapBuffers(gfx::SwapCompletionResult(gfx::SwapResult::SWAP_ACK),
-                    gfx::Size(size_.width(), size_.height()),
-                    std::move(latency_info));
+                    gfx::Size(size_.width(), size_.height()), std::move(frame));
 
   base::TimeTicks timestamp = base::TimeTicks::Now();
   base::TimeTicks vsync_timebase;

@@ -76,16 +76,16 @@ bool SkiaOutputDeviceVulkanSecondaryCB::Reshape(
 
 void SkiaOutputDeviceVulkanSecondaryCB::SwapBuffers(
     BufferPresentedCallback feedback,
-    std::vector<ui::LatencyInfo> latency_info) {
+    OutputSurfaceFrame frame) {
   StartSwapBuffers(std::move(feedback));
   FinishSwapBuffers(gfx::SwapCompletionResult(gfx::SwapResult::SWAP_ACK), size_,
-                    std::move(latency_info));
+                    std::move(frame));
 }
 
 void SkiaOutputDeviceVulkanSecondaryCB::PostSubBuffer(
     const gfx::Rect& rect,
     BufferPresentedCallback feedback,
-    std::vector<ui::LatencyInfo> latency_info) {
+    OutputSurfaceFrame frame) {
   CHECK(false);
 }
 

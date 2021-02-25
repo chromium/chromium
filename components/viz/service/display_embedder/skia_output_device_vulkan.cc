@@ -109,17 +109,15 @@ void SkiaOutputDeviceVulkan::Submit(bool sync_cpu, base::OnceClosure callback) {
   SkiaOutputDevice::Submit(sync_cpu, std::move(callback));
 }
 
-void SkiaOutputDeviceVulkan::SwapBuffers(
-    BufferPresentedCallback feedback,
-    std::vector<ui::LatencyInfo> latency_info) {
+void SkiaOutputDeviceVulkan::SwapBuffers(BufferPresentedCallback feedback,
+                                         OutputSurfaceFrame frame) {
   PostSubBuffer(gfx::Rect(vulkan_surface_->image_size()), std::move(feedback),
-                std::move(latency_info));
+                std::move(frame));
 }
 
-void SkiaOutputDeviceVulkan::PostSubBuffer(
-    const gfx::Rect& rect,
-    BufferPresentedCallback feedback,
-    std::vector<ui::LatencyInfo> latency_info) {
+void SkiaOutputDeviceVulkan::PostSubBuffer(const gfx::Rect& rect,
+                                           BufferPresentedCallback feedback,
+                                           OutputSurfaceFrame frame) {
   // Reshape should have been called first.
   DCHECK(vulkan_surface_);
   DCHECK(!scoped_write_);
@@ -156,10 +154,9 @@ void SkiaOutputDeviceVulkan::PostSubBuffer(
     // present thread. So the old swapchain can be destroyed properly.
     vulkan_surface_->PostSubBufferAsync(
         rect, base::BindOnce(&SkiaOutputDeviceVulkan::OnPostSubBufferFinished,
-                             weak_ptr_factory_.GetWeakPtr(),
-                             std::move(latency_info)));
+                             weak_ptr_factory_.GetWeakPtr(), std::move(frame)));
   } else {
-    OnPostSubBufferFinished(std::move(latency_info), gfx::SwapResult::SWAP_ACK);
+    OnPostSubBufferFinished(std::move(frame), gfx::SwapResult::SWAP_ACK);
   }
 }
 
@@ -352,17 +349,16 @@ bool SkiaOutputDeviceVulkan::RecreateSwapChain(
   return true;
 }
 
-void SkiaOutputDeviceVulkan::OnPostSubBufferFinished(
-    std::vector<ui::LatencyInfo> latency_info,
-    gfx::SwapResult result) {
+void SkiaOutputDeviceVulkan::OnPostSubBufferFinished(OutputSurfaceFrame frame,
+                                                     gfx::SwapResult result) {
   if (LIKELY(result == gfx::SwapResult::SWAP_ACK)) {
     auto image_index = vulkan_surface_->swap_chain()->current_image_index();
     FinishSwapBuffers(gfx::SwapCompletionResult(result),
-                      vulkan_surface_->image_size(), std::move(latency_info),
+                      vulkan_surface_->image_size(), std::move(frame),
                       damage_of_images_[image_index]);
   } else {
     FinishSwapBuffers(gfx::SwapCompletionResult(result),
-                      vulkan_surface_->image_size(), std::move(latency_info),
+                      vulkan_surface_->image_size(), std::move(frame),
                       gfx::Rect(vulkan_surface_->image_size()));
   }
 }

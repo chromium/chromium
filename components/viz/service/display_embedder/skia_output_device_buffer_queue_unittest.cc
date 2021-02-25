@@ -379,7 +379,7 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
         base::DoNothing::Once<const gfx::PresentationFeedback&>();
 
     output_device_->SwapBuffers(std::move(present_callback),
-                                std::vector<ui::LatencyInfo>());
+                                OutputSurfaceFrame());
   }
 
   void CommitOverlayPlanes() {
@@ -387,7 +387,7 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
         base::DoNothing::Once<const gfx::PresentationFeedback&>();
 
     output_device_->CommitOverlayPlanes(std::move(present_callback),
-                                        std::vector<ui::LatencyInfo>());
+                                        OutputSurfaceFrame());
   }
 
   void PageFlipComplete() { gl_surface_->SwapComplete(); }
