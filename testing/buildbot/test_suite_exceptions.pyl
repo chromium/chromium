@@ -96,6 +96,13 @@
         ],
       },
     },
+    'replacements': {
+      'Linux FYI Release (AMD RX 5500 XT)': {
+        'args': {
+          '--max-processes': '1',
+        },
+      },
+    },
   },
   'angle_perftests': {
     'remove_from': [

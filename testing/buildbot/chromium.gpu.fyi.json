@@ -12062,7 +12062,7 @@
           "angle_end2end_tests",
           "--gtest_filter=-*Vulkan_SwiftShader*",
           "--bot-mode",
-          "--max-processes=4"
+          "--max-processes=1"
         ],
         "merge": {
           "args": [],
