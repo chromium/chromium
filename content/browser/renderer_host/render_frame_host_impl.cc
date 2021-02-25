@@ -9083,6 +9083,9 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   // of the new document, inherited at RenderFrameHost creation time, with an
   // empty PolicyContainerHost).
   SetPolicyContainerHost(navigation_request->TakePolicyContainerHost());
+
+  if (navigation_request->response())
+    last_response_head_ = navigation_request->response()->Clone();
 }
 
 void RenderFrameHostImpl::OnSameDocumentCommitProcessed(

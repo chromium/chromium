@@ -50,6 +50,7 @@ class NavigationHandleObserver : public WebContentsObserver {
     return navigation_handle_timing_;
   }
   ReloadType reload_type() { return reload_type_; }
+  std::string GetNormalizedResponseHeader(const std::string& key) const;
 
  private:
   // A reference to the NavigationHandle so this class will track only
@@ -76,6 +77,7 @@ class NavigationHandleObserver : public WebContentsObserver {
   base::TimeTicks navigation_start_;
   NavigationHandleTiming navigation_handle_timing_;
   ReloadType reload_type_ = ReloadType::NONE;
+  scoped_refptr<const net::HttpResponseHeaders> response_headers_;
 
   DISALLOW_COPY_AND_ASSIGN(NavigationHandleObserver);
 };

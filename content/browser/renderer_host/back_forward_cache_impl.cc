@@ -319,6 +319,7 @@ BackForwardCacheImpl::Entry::Entry(
     : render_frame_host(std::move(rfh)),
       proxy_hosts(std::move(proxies)),
       render_view_hosts(std::move(render_view_hosts)) {}
+
 BackForwardCacheImpl::Entry::~Entry() = default;
 
 BackForwardCacheTestDelegate::BackForwardCacheTestDelegate() {

@@ -1958,6 +1958,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void PepperSetVolume(int32_t instance_id, double volume);
 #endif
 
+  const network::mojom::URLResponseHeadPtr& last_response_head() const {
+    return last_response_head_;
+  }
+
  protected:
   friend class RenderFrameHostFactory;
 
@@ -3481,6 +3485,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Note that it is the initiator RenderFrameHost that stores these receivers.
   mojo::UniqueReceiverSet<blink::mojom::PrerenderProcessor>
       prerender_processor_receivers_;
+
+  // The current document's HTTP response head. This is used by back-forward
+  // cache, for navigating a second time toward the same document.
+  network::mojom::URLResponseHeadPtr last_response_head_;
 
   // NOTE: This must be the last member.
   base::WeakPtrFactory<RenderFrameHostImpl> weak_ptr_factory_{this};

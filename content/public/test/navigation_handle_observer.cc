@@ -27,6 +27,7 @@ void NavigationHandleObserver::DidStartNavigation(
   is_error_ = false;
   page_transition_ = ui::PAGE_TRANSITION_LINK;
   last_committed_url_ = GURL();
+  response_headers_.reset();
 
   is_main_frame_ = navigation_handle->IsInMainFrame();
   is_parent_main_frame_ = navigation_handle->IsParentMainFrame();
@@ -62,6 +63,7 @@ void NavigationHandleObserver::DidFinishNavigation(
     if (!navigation_handle->IsErrorPage()) {
       page_transition_ = navigation_handle->GetPageTransition();
       last_committed_url_ = navigation_handle->GetURL();
+      response_headers_ = navigation_handle->GetResponseHeaders();
     } else {
       is_error_ = true;
     }
@@ -73,6 +75,13 @@ void NavigationHandleObserver::DidFinishNavigation(
   navigation_handle_timing_ = navigation_handle->GetNavigationHandleTiming();
 
   handle_ = nullptr;
+}
+
+std::string NavigationHandleObserver::GetNormalizedResponseHeader(
+    const std::string& key) const {
+  std::string value;
+  response_headers_->GetNormalizedHeader(key, &value);
+  return value;
 }
 
 }  // namespace content

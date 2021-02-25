@@ -60,4 +60,5 @@ void CachedNavigationURLLoader::FollowRedirect(
     blink::PreviewsState new_previews_state) {
   NOTREACHED();
 }
+
 }  // namespace content

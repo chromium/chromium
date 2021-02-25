@@ -798,23 +798,23 @@ void NavigationURLLoaderImpl::OnStartLoadingResponseBody(
   bool known_mime_type = blink::IsSupportedMimeType(head_->mime_type);
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-    if (!head_->intercepted_by_plugin && !must_download && !known_mime_type) {
-      // No plugin throttles intercepted the response. Ask if the plugin
-      // registered to PluginService wants to handle the request.
-      CheckPluginAndContinueOnReceiveResponse(
-          std::move(head_), std::move(url_loader_client_endpoints),
-          true /* is_download_if_not_handled_by_plugin */,
-          std::vector<WebPluginInfo>());
-      return;
-    }
+  if (!head_->intercepted_by_plugin && !must_download && !known_mime_type) {
+    // No plugin throttles intercepted the response. Ask if the plugin
+    // registered to PluginService wants to handle the request.
+    CheckPluginAndContinueOnReceiveResponse(
+        std::move(head_), std::move(url_loader_client_endpoints),
+        true /* is_download_if_not_handled_by_plugin */,
+        std::vector<WebPluginInfo>());
+    return;
+  }
 #endif
 
-    // When a plugin intercepted the response, we don't want to download it.
-    bool is_download =
-        !head_->intercepted_by_plugin && (must_download || !known_mime_type);
+  // When a plugin intercepted the response, we don't want to download it.
+  bool is_download =
+      !head_->intercepted_by_plugin && (must_download || !known_mime_type);
 
-    CallOnReceivedResponse(std::move(head_),
-                           std::move(url_loader_client_endpoints), is_download);
+  CallOnReceivedResponse(std::move(head_),
+                         std::move(url_loader_client_endpoints), is_download);
 }
 
 #if BUILDFLAG(ENABLE_PLUGINS)
