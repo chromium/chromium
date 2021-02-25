@@ -6,6 +6,9 @@ import("//chrome/browser/resources/tools/optimize_webui.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 
+js_library("crt0") {
+}
+
 js_library("browser_proxy") {
 }
 
@@ -27,7 +30,11 @@ js_library("main_js") {
 }
 
 js_type_check("closure_compile") {
-  deps = [ ":main_js" ]
+  deps = [
+    ":main_js",
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:load_time_data",
+  ]
 }
 
 action("gen_main_html") {
@@ -56,12 +63,14 @@ preprocess_if_expr("preprocess") {
 
   in_files = [
     "browser_proxy.js",
+    "crt0.js",
     "main.js",
     "script_loader.js",
   ]
 
   deps = [
     ":browser_proxy",
+    ":crt0",
     ":main",
     ":script_loader",
   ]

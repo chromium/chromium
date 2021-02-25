@@ -14,7 +14,8 @@ import os
 import shutil
 import sys
 
-_SWA = '<script type="module" src="chrome://file-manager/main.js"></script>'
+_SWA = '<script type="module"'\
+       ' src="chrome://file-manager/main.rollup.js"></script>'
 
 def GenerateSwaMainHtml(source, target):
   """Copy source file to target, do SWA edits, then add BUILD time stamp."""

@@ -35,6 +35,18 @@
           fulfill(stringData);
         });
       });
+    } else {
+      this.initializationPromise_ = new Promise((fulfill, reject) => {
+        const script = document.createElement('script');
+
+        script.onload = () => {
+          // window.loadTimeData.data_ = null; // Gambiarra!
+          fulfill(window.loadTimeData.data_);
+        };
+
+        document.head.append(script);
+        script.src = 'strings.js';
+      });
     }
 
     /** @private {?LaunchHandler} */
