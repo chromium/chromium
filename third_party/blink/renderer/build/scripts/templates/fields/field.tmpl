@@ -145,6 +145,14 @@ if ({{group_expression}}.Get() != other.{{group_expression}}.Get()) {
 {% endfor %}
 {% endmacro %}
 
+{% macro diff_field(is_pointer_type, expr) %}
+{% if is_pointer_type -%}
+!DataEquivalent(a.{{expr}}, b.{{expr}})
+{%- else -%}
+a.{{expr}} != b.{{expr}}
+{%- endif %}
+{% endmacro %}
+
 {% macro fieldwise_diff(group_to_diff) %}
 {% for diff_group in group_to_diff.subgroups %}
 if (a.{{group_getter_expression(diff_group.group)}}.Get() != b.{{group_getter_expression(diff_group.group)}}.Get()) {
@@ -152,7 +160,7 @@ if (a.{{group_getter_expression(diff_group.group)}}.Get() != b.{{group_getter_ex
 }
 {% endfor %}
 {% for field in group_to_diff.fields %}
-if (a.{{getter_expression(field)}} != b.{{getter_expression(field)}})
+if ({{diff_field(field.wrapper_pointer_name, getter_expression(field))}})
   return true;
 {% endfor %}
 {% for expression in group_to_diff.expressions %}
