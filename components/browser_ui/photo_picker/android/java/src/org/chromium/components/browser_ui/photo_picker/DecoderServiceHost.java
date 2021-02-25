@@ -513,9 +513,9 @@ public class DecoderServiceHost
      * @param firstFrame True if the decoding request is for the first frame only.
      */
     private void dispatchDecodeVideoRequest(DecoderServiceParams params, boolean firstFrame) {
-        // Videos are decoded by the system (on N+) using a restricted helper process, so
+        // Videos are decoded by the system (on O+) using a restricted helper process, so
         // there's no need to use our custom sandboxed process.
-        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
+        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
 
         int frames = firstFrame ? 1 : 10;
         int intervalMs = 2000;
