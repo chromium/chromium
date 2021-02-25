@@ -965,6 +965,27 @@
             ]
         }
     ],
+    "AutofillEnableSupportForMoreStructureInAddresses": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_2020-02-25",
+                    "enable_features": [
+                        "AutofillEnableSupportForMoreStructureInAddresses"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableSupportForMoreStructureInNames": [
         {
             "platforms": [
