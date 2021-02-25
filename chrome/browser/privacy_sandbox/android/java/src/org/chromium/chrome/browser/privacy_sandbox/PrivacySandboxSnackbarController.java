@@ -8,6 +8,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -36,6 +37,7 @@ public class PrivacySandboxSnackbarController implements SnackbarManager.Snackba
      * Displays a snackbar, showing the user an option to go to Privacy Sandbox settings.
      */
     public void showSnackbar() {
+        RecordUserAction.record("Settings.PrivacySandbox.Block3PCookies");
         mSnackbarManager.dismissSnackbars(this);
         mSnackbarManager.showSnackbar(
                 Snackbar.make(mContext.getString(R.string.privacy_sandbox_snackbar_message), this,
