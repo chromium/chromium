@@ -14,9 +14,8 @@
 
 namespace {
 
-// TODO(crbug.com/1111002): Replace these with the real SODA DLC ids.
-constexpr char kSodaDlcName[] = "soda";
-constexpr char kSodaEnglishUsDlcName[] = "soda-english-us";
+constexpr char kSodaDlcName[] = "libsoda";
+constexpr char kSodaEnglishUsDlcName[] = "libsoda-model-en-us";
 
 }  // namespace
 
