@@ -32,12 +32,18 @@ class CredentialEditCoordinator implements ComponentStateDelegate {
         void onUiDismissed();
     }
 
-    CredentialEditCoordinator(
-            CredentialEditFragmentView fragmentView, UiDismissalHandler dismissalHandler) {
+    interface CredentialActionDelegate {
+        /** Called when the user has decided to save the changes to the credential.*/
+        void saveChanges(String username, String password);
+    }
+
+    CredentialEditCoordinator(CredentialEditFragmentView fragmentView,
+            UiDismissalHandler dismissalHandler,
+            CredentialActionDelegate credentialActionDelegate) {
         mFragmentView = fragmentView;
         mReauthenticationHelper = new PasswordAccessReauthenticationHelper(
                 mFragmentView.getActivity(), mFragmentView.getParentFragmentManager());
-        mMediator = new CredentialEditMediator(mReauthenticationHelper);
+        mMediator = new CredentialEditMediator(mReauthenticationHelper, credentialActionDelegate);
         mDismissalHandler = dismissalHandler;
         mFragmentView.setComponentStateDelegate(this);
     }

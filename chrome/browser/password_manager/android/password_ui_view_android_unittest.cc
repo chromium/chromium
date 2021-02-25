@@ -19,8 +19,12 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/password_manager/password_manager_test_util.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "components/password_manager/core/browser/export/password_csv_writer.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/browser/ui/credential_provider_interface.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -36,6 +40,7 @@ namespace android {
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
 using password_manager::PasswordForm;
+using password_manager::TestPasswordStore;
 
 namespace {
 
@@ -101,14 +106,18 @@ class PasswordUIViewAndroidTest : public ::testing::Test {
   void SetUp() override {
     ASSERT_TRUE(testing_profile_manager_.SetUp());
     testing_profile_ =
-        testing_profile_manager_.CreateTestingProfile("test profile");
+        testing_profile_manager_.CreateTestingProfile("TestProfile");
+    profiles::SetLastUsedProfile(
+        testing_profile_->GetPath().BaseName().MaybeAsASCII());
 
+    store_ = CreateAndUseTestPasswordStore(testing_profile_);
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   }
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager testing_profile_manager_;
   TestingProfile* testing_profile_;
+  scoped_refptr<TestPasswordStore> store_;
   JNIEnv* env_;
   base::ScopedTempDir temp_dir_;
 };

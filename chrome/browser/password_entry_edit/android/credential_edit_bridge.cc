@@ -15,11 +15,13 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/url_formatter/url_formatter.h"
 #include "ui/base/l10n/l10n_util.h"
 
 std::unique_ptr<CredentialEditBridge> CredentialEditBridge::MaybeCreate(
     const password_manager::PasswordForm* credential,
+    password_manager::SavedPasswordsPresenter* saved_passwords_presenter,
     base::OnceClosure dismissal_callback,
     const base::android::JavaRef<jobject>& context,
     const base::android::JavaRef<jobject>& settings_launcher) {
@@ -30,17 +32,19 @@ std::unique_ptr<CredentialEditBridge> CredentialEditBridge::MaybeCreate(
     return nullptr;
   }
   return base::WrapUnique(new CredentialEditBridge(
-      credential, std::move(dismissal_callback), context, settings_launcher,
-      std::move(java_bridge)));
+      credential, saved_passwords_presenter, std::move(dismissal_callback),
+      context, settings_launcher, std::move(java_bridge)));
 }
 
 CredentialEditBridge::CredentialEditBridge(
     const password_manager::PasswordForm* credential,
+    password_manager::SavedPasswordsPresenter* saved_passwords_presenter,
     base::OnceClosure dismissal_callback,
     const base::android::JavaRef<jobject>& context,
     const base::android::JavaRef<jobject>& settings_launcher,
     base::android::ScopedJavaGlobalRef<jobject> java_bridge)
     : credential_(credential),
+      saved_passwords_presenter_(saved_passwords_presenter),
       dismissal_callback_(std::move(dismissal_callback)),
       java_bridge_(java_bridge) {
   Java_CredentialEditBridge_initAndLaunchUi(
@@ -61,6 +65,19 @@ void CredentialEditBridge::GetCredential(JNIEnv* env) {
       base::android::ConvertUTF16ToJavaString(env, credential_->password_value),
       base::android::ConvertUTF16ToJavaString(env,
                                               GetDisplayFederationOrigin()));
+}
+
+void CredentialEditBridge::SaveChanges(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& username,
+    const base::android::JavaParamRef<jstring>& password) {
+  std::vector<password_manager::PasswordForm> forms_to_change{*credential_};
+
+  // TODO(crbug.com/1170289): Make sure toremove duplicates of the edited
+  // credential, before saving the new one.
+  saved_passwords_presenter_->EditSavedPasswords(
+      forms_to_change, base::android::ConvertJavaStringToUTF16(username),
+      base::android::ConvertJavaStringToUTF16(password));
 }
 
 void CredentialEditBridge::OnUIDismissed(JNIEnv* env) {

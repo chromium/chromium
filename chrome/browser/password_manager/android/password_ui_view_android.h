@@ -15,9 +15,13 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
 #include "chrome/browser/password_entry_edit/android/credential_edit_bridge.h"
+#include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/passwords/settings/password_manager_presenter.h"
 #include "chrome/browser/ui/passwords/settings/password_ui_view.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 
 namespace password_manager {
 class CredentialProviderInterface;
@@ -147,6 +151,15 @@ class PasswordUIViewAndroid : public PasswordUIView {
   SerializationResult* export_target_for_testing_ = nullptr;
 
   PasswordManagerPresenter password_manager_presenter_;
+
+  // Handle to the password store, powering `saved_passwords_presenter_`
+  scoped_refptr<password_manager::PasswordStore> password_store_ =
+      PasswordStoreFactory::GetForProfile(ProfileManager::GetLastUsedProfile(),
+                                          ServiceAccessType::EXPLICIT_ACCESS);
+
+  // Manages the list of saved passwords, including updates.
+  password_manager::SavedPasswordsPresenter saved_passwords_presenter_{
+      password_store_};
 
   // If not null, passwords for exporting will be obtained from
   // |*credential_provider_for_testing_|, otherwise from

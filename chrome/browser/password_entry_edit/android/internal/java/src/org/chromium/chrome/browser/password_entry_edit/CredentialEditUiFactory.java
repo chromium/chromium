@@ -21,6 +21,6 @@ public class CredentialEditUiFactory {
             fragmentView.dismiss();
             return;
         }
-        bridge.initialize(new CredentialEditCoordinator(fragmentView, bridge));
+        bridge.initialize(new CredentialEditCoordinator(fragmentView, bridge, bridge));
     }
 }

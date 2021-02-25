@@ -27,6 +27,7 @@ import org.chromium.ui.widget.ChromeImageButton;
  * This class is responsible for rendering the edit fragment where users can edit a saved password.
  */
 public class CredentialEditFragmentView extends PreferenceFragmentCompat {
+    private View mDoneButton;
     private ComponentStateDelegate mComponentStateDelegate;
     private TextInputEditText mUsernameField;
     private TextInputEditText mPasswordField;
@@ -54,6 +55,9 @@ public class CredentialEditFragmentView extends PreferenceFragmentCompat {
          * @param context application context that can be used to get the {@link ClipboardManager}
          */
         void onCopyPassword(Context context);
+
+        /** Called when the user clicks the button to save the changes to the credential */
+        void onSave();
     }
 
     // TODO(crbug.com/1178519): The coordinator should be made a LifecycleObserver instead.
@@ -107,6 +111,10 @@ public class CredentialEditFragmentView extends PreferenceFragmentCompat {
         View passwordIcons = getView().findViewById(R.id.password_icons);
         addLayoutChangeListener(mPasswordField, passwordIcons);
 
+        mDoneButton = getView().findViewById(R.id.button_primary);
+
+        getView().findViewById(R.id.button_secondary).setOnClickListener((unusedView) -> dismiss());
+
         if (mComponentStateDelegate != null) mComponentStateDelegate.onStartFragment();
     }
 
@@ -143,6 +151,11 @@ public class CredentialEditFragmentView extends PreferenceFragmentCompat {
                 getView().findViewById(R.id.password_visibility_button);
         passwordVisibilityButton.setOnClickListener(
                 (unusedView) -> uiActionHandler.onMaskOrUnmaskPassword());
+
+        getView().findViewById(R.id.button_primary).setOnClickListener((unusedView) -> {
+            uiActionHandler.onSave();
+            dismiss();
+        });
 
         mUsernameField.addTextChangedListener(new TextWatcher() {
             @Override

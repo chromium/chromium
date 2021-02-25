@@ -40,6 +40,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.password_entry_edit.CredentialEditCoordinator.CredentialActionDelegate;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper.ReauthReason;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -57,13 +58,16 @@ public class CredentialEditControllerTest {
     @Mock
     private PasswordAccessReauthenticationHelper mReauthenticationHelper;
 
+    @Mock
+    private CredentialActionDelegate mCredentialActionDelegate;
+
     CredentialEditMediator mMediator;
     PropertyModel mModel;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mMediator = new CredentialEditMediator(mReauthenticationHelper);
+        mMediator = new CredentialEditMediator(mReauthenticationHelper, mCredentialActionDelegate);
         mModel = new PropertyModel.Builder(ALL_KEYS)
                          .with(UI_ACTION_HANDLER, mMediator)
                          .with(URL_OR_APP, TEST_URL)
@@ -177,5 +181,13 @@ public class CredentialEditControllerTest {
                 (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData expectedClip = ClipData.newPlainText("password", TEST_PASSWORD);
         assertEquals(expectedClip.toString(), clipboard.getPrimaryClip().toString());
+    }
+
+    @Test
+    public void callsTheDelegateWithCorrectDataWhenSaving() {
+        mModel.set(USERNAME, TEST_USERNAME);
+        mModel.set(PASSWORD, TEST_PASSWORD);
+        mMediator.onSave();
+        verify(mCredentialActionDelegate).saveChanges(TEST_USERNAME, TEST_PASSWORD);
     }
 }

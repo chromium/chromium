@@ -25,9 +25,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/android/chrome_jni_headers/PasswordUIView_jni.h"
-#include "chrome/browser/password_manager/password_store_factory.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/export/password_csv_writer.h"
 #include "components/password_manager/core/browser/form_parsing/form_parser.h"
@@ -48,6 +45,7 @@ using base::android::ScopedJavaLocalRef;
 PasswordUIViewAndroid::PasswordUIViewAndroid(JNIEnv* env, jobject obj)
     : password_manager_presenter_(this), weak_java_ui_controller_(env, obj) {
   password_manager_presenter_.Initialize();
+  saved_passwords_presenter_.Init();
 }
 
 PasswordUIViewAndroid::~PasswordUIViewAndroid() {}
@@ -216,7 +214,7 @@ void PasswordUIViewAndroid::HandleShowPasswordEntryEditingView(
       password_manager_presenter_.GetPassword(index);
   if (form && !credential_edit_bridge_) {
     credential_edit_bridge_ = CredentialEditBridge::MaybeCreate(
-        form,
+        form, &saved_passwords_presenter_,
         base::BindOnce(&PasswordUIViewAndroid::OnEditUIDismissed,
                        base::Unretained(this)),
         context, settings_launcher);

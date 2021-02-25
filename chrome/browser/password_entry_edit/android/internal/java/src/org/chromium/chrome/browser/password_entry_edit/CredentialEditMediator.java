@@ -15,6 +15,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.password_entry_edit.CredentialEditCoordinator.CredentialActionDelegate;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEditFragmentView.UiActionHandler;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper.ReauthReason;
@@ -28,10 +29,13 @@ import org.chromium.ui.widget.Toast;
  */
 public class CredentialEditMediator implements UiActionHandler {
     private final PasswordAccessReauthenticationHelper mReauthenticationHelper;
+    private final CredentialActionDelegate mCredentialActionDelegate;
     private PropertyModel mModel;
 
-    CredentialEditMediator(PasswordAccessReauthenticationHelper reauthenticationHelper) {
+    CredentialEditMediator(PasswordAccessReauthenticationHelper reauthenticationHelper,
+            CredentialActionDelegate credentialActionDelegate) {
         mReauthenticationHelper = reauthenticationHelper;
+        mCredentialActionDelegate = credentialActionDelegate;
     };
 
     void initialize(PropertyModel model) {
@@ -61,6 +65,11 @@ public class CredentialEditMediator implements UiActionHandler {
 
             mModel.set(PASSWORD_VISIBLE, true);
         });
+    }
+
+    @Override
+    public void onSave() {
+        mCredentialActionDelegate.saveChanges(mModel.get(USERNAME), mModel.get(PASSWORD));
     }
 
     @Override
