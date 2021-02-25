@@ -78,28 +78,13 @@ id<GREYMatcher> ShareMenuDismissButton() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
       performAction:grey_tap()];
 
-    // Test filename label.
-  {
-    // Turn off synchronization of GREYAssert to test the appearance of open in
-    // toolbar. If synchronization is on, the UIActivityViewController could be
-    // not visible.
-    ScopedSynchronizationDisabler disabler;
-    GREYCondition* openInVisibleFilenameCondition = [GREYCondition
-        conditionWithName:@"Check that the open in toolbar is not visible"
-                    block:^BOOL {
-                      NSError* error = nil;
-                      [[EarlGrey
-                          selectElementWithMatcher:
-                              grey_allOf(grey_text(@"testpage"),
-                                         grey_sufficientlyVisible(), nil)]
-                          assertWithMatcher:grey_notNil()
-                                      error:&error];
-                      return error == nil;
-                    }];
-    BOOL openInVisibleFilename = [openInVisibleFilenameCondition
-        waitWithTimeout:base::test::ios::kWaitForUIElementTimeout];
-    GREYAssertTrue(openInVisibleFilename, @"The filename is visible.");
-  }
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Test filename label.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_text(@"testpage"),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
 
   // Check that tapping on the Cancel button closes the activity menu and hides
   // the open in toolbar.
@@ -129,28 +114,13 @@ id<GREYMatcher> ShareMenuDismissButton() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
       performAction:grey_tap()];
 
+  [ChromeEarlGreyUI waitForAppToIdle];
+
   // Test filename label.
-  {
-    // Turn off synchronization of GREYAssert to test the appearance of open in
-    // toolbar. If synchronization is on, the UIActivityViewController could be
-    // not visible.
-    ScopedSynchronizationDisabler disabler;
-    GREYCondition* openInVisibleFilenameCondition = [GREYCondition
-        conditionWithName:@"Check that the open in toolbar is not visible"
-                    block:^BOOL {
-                      NSError* error = nil;
-                      [[EarlGrey
-                          selectElementWithMatcher:
-                              grey_allOf(grey_text(@"chromium_logo"),
-                                         grey_sufficientlyVisible(), nil)]
-                          assertWithMatcher:grey_notNil()
-                                      error:&error];
-                      return error == nil;
-                    }];
-    BOOL openInVisibleFilename = [openInVisibleFilenameCondition
-        waitWithTimeout:base::test::ios::kWaitForUIElementTimeout];
-    GREYAssertTrue(openInVisibleFilename, @"The filename is visible.");
-  }
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_text(@"chromium_logo"),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
 
   // Check that tapping on the Cancel button closes the activity menu and hides
   // the open in toolbar.
