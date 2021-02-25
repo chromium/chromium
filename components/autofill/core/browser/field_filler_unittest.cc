@@ -1708,7 +1708,7 @@ TEST_F(AutofillFieldFillerTest, FillStateAbbreviationInTextField) {
 }
 
 // Tests that the state names are selected correctly even though the state
-// value saved in the address is not recognized by the StateMappingCache.
+// value saved in the address is not recognized by the AlternativeStateNameMap.
 TEST_F(AutofillFieldFillerTest, FillStateFieldWithSavedValueInProfile) {
   base::test::ScopedFeatureList feature;
   feature.InitAndEnableFeature(features::kAutofillUseAlternativeStateNameMap);
@@ -1779,6 +1779,32 @@ TEST_F(AutofillFieldFillerTest,
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
   filler.FillFormField(field, &address, &field, /*cvc=*/base::string16());
   EXPECT_EQ(ASCIIToUTF16("Colorado"), field.value);
+}
+
+// Tests that Autofill fills upper case abbreviation in the input field when
+// field length is limited.
+TEST_F(AutofillFieldFillerTest, FillUpperCaseAbbreviationInStateTextField) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(features::kAutofillUseAlternativeStateNameMap);
+
+  test::ClearAlternativeStateNameMapForTesting();
+  test::PopulateAlternativeStateNameMapForTesting("DE", "Bavaria",
+                                                  {{.canonical_name = "Bavaria",
+                                                    .abbreviations = {"by"},
+                                                    .alternative_names = {}}});
+
+  AutofillField field;
+  test::CreateTestFormField("State", "state", "", "text", &field);
+  field.set_heuristic_type(ADDRESS_HOME_STATE);
+  field.max_length = 4;
+
+  AutofillProfile address;
+  address.SetRawInfo(ADDRESS_HOME_STATE, ASCIIToUTF16("Bavaria"));
+  address.SetRawInfo(ADDRESS_HOME_COUNTRY, ASCIIToUTF16("DE"));
+
+  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
+  filler.FillFormField(field, &address, &field, /*cvc=*/base::string16());
+  EXPECT_EQ(ASCIIToUTF16("BY"), field.value);
 }
 
 }  // namespace autofill

@@ -654,7 +654,7 @@ bool FillStateText(const base::string16& value,
       // Fill with the abbreviation if possible.
       for (const auto& abbr : state->abbreviations()) {
         if (!abbr.empty() && field->max_length >= abbr.size()) {
-          field->value = base::UTF8ToUTF16(abbr);
+          field->value = base::i18n::ToUpper(base::UTF8ToUTF16(abbr));
           return true;
         }
       }
