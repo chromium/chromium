@@ -60,5 +60,4 @@ def LoginMobileAccount(action_runner, credential,
     for a detailed list of possible exceptions.
   """
   _LoginAccount(action_runner, credential, credentials_path)
-  action_runner.WaitForElement(selector='svg[aria-label="Search"]')
-
+  action_runner.WaitForElement(selector='div.mobileGrid div[role="button"]')
