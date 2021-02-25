@@ -12,18 +12,18 @@ Examples:
 
 Touch colors.xml and styles.xml in module foo:
    tools/android/modularization/convenience/touch_resources.py \
-   -m chrome/browser/foo \
+   chrome/browser/foo \
    -v colors styles
 
 Touch dimens.xml in module foo's internal dir for hdpi, xhdpi and xxdpi:
    tools/android/modularization/convenience/touch_resources.py \
-   -m chrome/browser/foo/internal \
+   chrome/browser/foo/internal \
    -v dimens \
    -q hdpi xhdpi xxhdpi
 
 Touch drawable directories in module foo for hdpi, xhdpi and xxdpi:
    tools/android/modularization/convenience/touch_resources.py \
-   -m chrome/browser/foo \
+   chrome/browser/foo \
    -d drawable \
    -q hdpi xhdpi xxhdpi
 """
@@ -66,12 +66,9 @@ def main():
       description='Creates Android resources directories and boilerplate files '
       'for a module.')
 
-  required_arg_group = arg_parser.add_argument_group('required arguments')
-  required_arg_group.add_argument('-m',
-                                  '--module',
-                                  required=True,
-                                  help='Module directory to create resources '
-                                  'for. e.g. chrome/browser/foo')
+  arg_parser.add_argument('module',
+                          help='Module directory to create resources for. e.g. '
+                          'chrome/browser/foo')
 
   arg_parser.add_argument('-v',
                           '--values',
