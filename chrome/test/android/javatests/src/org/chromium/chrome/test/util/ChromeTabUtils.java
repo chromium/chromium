@@ -234,7 +234,7 @@ public class ChromeTabUtils {
                         "Page did not load.  Tab information at time of failure -- "
                                 + "expected url: '%s', actual URL: '%s', load progress: %d, is "
                                 + "loading: %b, web contents init: %b, web contents loading: %b",
-                        url, tab.getUrlString(), Math.round(100 * tab.getProgress()),
+                        url, getUrlStringOnUiThread(tab), Math.round(100 * tab.getProgress()),
                         tab.isLoading(), webContents != null,
                         webContents == null ? false : webContents.isLoadingToDifferentDocument()));
             }
