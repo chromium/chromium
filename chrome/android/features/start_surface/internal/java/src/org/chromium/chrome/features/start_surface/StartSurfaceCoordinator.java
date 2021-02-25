@@ -32,6 +32,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -50,6 +51,7 @@ public class StartSurfaceCoordinator implements StartSurface {
     private final @SurfaceMode int mSurfaceMode;
     private final BottomSheetController mBottomSheetController;
     private final Supplier<Tab> mParentTabSupplier;
+    private final WindowAndroid mWindowAndroid;
 
     // Non-null in SurfaceMode.TASKS_ONLY, SurfaceMode.TWO_PANES and SurfaceMode.SINGLE_PANE modes.
     @Nullable
@@ -142,12 +144,13 @@ public class StartSurfaceCoordinator implements StartSurface {
     public StartSurfaceCoordinator(ChromeActivity activity, ScrimCoordinator scrimCoordinator,
             BottomSheetController sheetController,
             OneshotSupplierImpl<StartSurface> startSurfaceOneshotSupplier,
-            Supplier<Tab> parentTabSupplier, boolean hadWarmStart) {
+            Supplier<Tab> parentTabSupplier, boolean hadWarmStart, WindowAndroid windowAndroid) {
         mActivity = activity;
         mScrimCoordinator = scrimCoordinator;
         mSurfaceMode = computeSurfaceMode();
         mBottomSheetController = sheetController;
         mParentTabSupplier = parentTabSupplier;
+        mWindowAndroid = windowAndroid;
 
         boolean excludeMVTiles = StartSurfaceConfiguration.START_SURFACE_EXCLUDE_MV_TILES.getValue()
                 || mSurfaceMode == SurfaceMode.OMNIBOX_ONLY
@@ -398,7 +401,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         }
         mTasksSurface = TabManagementModuleProvider.getDelegate().createTasksSurface(mActivity,
                 mScrimCoordinator, mPropertyModel, tabSwitcherType, mParentTabSupplier,
-                !excludeMVTiles, hasTrendyTerms);
+                !excludeMVTiles, hasTrendyTerms, mWindowAndroid);
         mTasksSurface.getView().setId(R.id.primary_tasks_surface_view);
         mTasksSurface.addFakeSearchBoxShrinkAnimation();
         mOffsetChangedListenerToGenerateScrollEvents = new AppBarLayout.OnOffsetChangedListener() {
@@ -438,7 +441,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         mStartSurfaceMediator.setSecondaryTasksSurfacePropertyModel(propertyModel);
         mSecondaryTasksSurface = TabManagementModuleProvider.getDelegate().createTasksSurface(
                 mActivity, mScrimCoordinator, propertyModel, TabSwitcherType.GRID,
-                mParentTabSupplier, false, false);
+                mParentTabSupplier, false, false, mWindowAndroid);
         if (mIsInitializedWithNative) {
             mSecondaryTasksSurface.onFinishNativeInitialization(
                     mActivity, mActivity.getToolbarManager().getFakeboxDelegate());

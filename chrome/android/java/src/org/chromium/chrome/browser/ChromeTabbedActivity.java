@@ -611,7 +611,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     StartSurface startSurface = tabManagementDelegate.createStartSurface(this,
                             mRootUiCoordinator.getScrimCoordinator(),
                             mRootUiCoordinator.getBottomSheetController(), mStartSurfaceSupplier,
-                            mStartSurfaceParentTabSupplier, hadWarmStart());
+                            mStartSurfaceParentTabSupplier, hadWarmStart(), getWindowAndroid());
                 }
             }
             // clang-format off

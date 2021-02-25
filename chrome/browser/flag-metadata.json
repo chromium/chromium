@@ -3324,6 +3324,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "lens-camera-assisted-search",
+    "owners": [ "yusuyoutube", "benwgold", "fgorski", "wylieb", "lens-chrome" ],
+    "expiry_milestone": 94
+  },
+  {
     "name": "list-all-display-modes",
     "owners": [ "//ui/display/OWNERS" ],
     // This flag is used for debugging and development purposes to list all

@@ -39,6 +39,7 @@ import java.util.List;
 public class LocationBarLayout extends FrameLayout {
     protected ImageButton mDeleteButton;
     protected ImageButton mMicButton;
+    protected ImageButton mLensButton;
     protected UrlBar mUrlBar;
 
     protected UrlBarCoordinator mUrlCoordinator;
@@ -70,6 +71,7 @@ public class LocationBarLayout extends FrameLayout {
         mDeleteButton = findViewById(R.id.delete_button);
         mUrlBar = findViewById(R.id.url_bar);
         mMicButton = findViewById(R.id.mic_button);
+        mLensButton = findViewById(R.id.lens_camera_button);
         mUrlActionContainer = (LinearLayout) findViewById(R.id.url_action_container);
     }
 
@@ -285,6 +287,11 @@ public class LocationBarLayout extends FrameLayout {
     /** Sets the visibility of the mic button. */
     /* package */ void setMicButtonVisibility(boolean shouldShow) {
         mMicButton.setVisibility(shouldShow ? VISIBLE : GONE);
+    }
+
+    /** Sets the visibility of the mic button. */
+    /* package */ void setLensButtonVisibility(boolean shouldShow) {
+        mLensButton.setVisibility(shouldShow ? VISIBLE : GONE);
     }
 
     protected void setUnfocusedWidth(int unfocusedWidth) {

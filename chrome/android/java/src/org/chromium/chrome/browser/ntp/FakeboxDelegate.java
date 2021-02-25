@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ntp;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
@@ -59,4 +60,15 @@ public interface FakeboxDelegate {
      * @param listener The listener to be removed.
      */
     default void removeUrlFocusChangeListener(UrlFocusChangeListener listener) {}
+
+    /**
+     * Returns whether the Lens is currently enabled.
+     */
+    boolean isLensEnabled(@LensEntryPoint int lensEntryPoint);
+
+    /**
+     * Launches Lens from an entry point.
+     * @param lensEntryPoint the Lens entry point.
+     */
+    void startLens(@LensEntryPoint int lensEntryPoint);
 }

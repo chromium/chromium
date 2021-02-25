@@ -35,8 +35,10 @@ public class LensIntentParams {
 
         public Builder() {}
 
-        // TODO(yusuyoutube): remove the with* methods for the required params once
+        // TODO(b/180967190): remove the with* methods for the required params once
         // downstream references are updated.
+        // lensEntryPoint and isIncognito are required params when creating the
+        // LensIntentParams.
         public Builder(@LensEntryPoint int lensEntryPoint, boolean isIncognito) {
             this();
             this.mLensEntryPoint = lensEntryPoint;
@@ -149,37 +151,37 @@ public class LensIntentParams {
         }
     }
 
-    /** Retrieve the image URI for the intent. */
+    /** Returns the imageUri for this set of params. */
     public Uri getImageUri() {
         return mImageUri;
     }
 
-    /** Retrieve the page URL for the intent. */
+    /** Returns the pageUrl for this set of params. */
     public String getPageUrl() {
         return mPageUrl;
     }
 
-    /** Retrieve the image source URL for the intent. */
+    /** Returns the srcUrl for this set of params. */
     public String getSrcUrl() {
         return mSrcUrl;
     }
 
-    /** Retrieve the image title or alt text for the intent. */
+    /** Returns the imageTitleOrAltText for this set of params. */
     public String getImageTitleOrAltText() {
         return mImageTitleOrAltText;
     }
 
-    /** Retrieve whether the client is incognito for the intent. */
+    /** Returns the isIncognito for this set of params. */
     public boolean getIsIncognito() {
         return mIsIncognito;
     }
 
-    /** Retrieve whether the client requires account for the intent. */
+    /** Returns the requiresConfirmation for this set of params. */
     public boolean getRequiresConfirmation() {
         return mRequiresConfirmation;
     }
 
-    /** Retrieve the intent type. */
+    /** Returns the intentType for this set of params. */
     public int getIntentType() {
         return mIntentType;
     }

@@ -196,6 +196,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kInlineUpdateFlow,
     &kInstantStart,
     &kKitKatSupported,
+    &kLensCameraAssistedSearch,
     &kNotificationSuspender,
     &kOfflineIndicatorV2,
     &kOfflineMeasurementsBackgroundTask,
@@ -459,6 +460,9 @@ const base::Feature kContextMenuSearchAndShopWithGoogleLens{
 
 const base::Feature kContextMenuTranslateWithGoogleLens{
     "ContextMenuTranslateWithGoogleLens", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kLensCameraAssistedSearch{
+    "LensCameraAssistedSearch", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kContextualSearchDebug{"ContextualSearchDebug",
                                            base::FEATURE_DISABLED_BY_DEFAULT};

@@ -17,6 +17,10 @@ import androidx.annotation.ColorInt;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 
 import org.chromium.chrome.browser.gsa.GSAState;
+import org.chromium.chrome.browser.lens.LensController;
+import org.chromium.chrome.browser.lens.LensEntryPoint;
+import org.chromium.chrome.browser.lens.LensIntentParams;
+import org.chromium.chrome.browser.lens.LensQueryParams;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
@@ -26,6 +30,7 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -38,6 +43,7 @@ class SearchBoxMediator
     private final PropertyModel mModel;
     private final ViewGroup mView;
     private final List<OnClickListener> mVoiceSearchClickListeners = new ArrayList<>();
+    private final List<OnClickListener> mLensClickListeners = new ArrayList<>();
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private AssistantVoiceSearchService mAssistantVoiceSearchService;
     private SearchBoxChipDelegate mChipDelegate;
@@ -129,6 +135,20 @@ class SearchBoxMediator
     }
 
     /**
+     * Called to add a click listener for the voice search button.
+     */
+    void addLensButtonClickListener(OnClickListener listener) {
+        boolean hasExistingListeners = !mLensClickListeners.isEmpty();
+        mLensClickListeners.add(listener);
+        if (hasExistingListeners) return;
+        mModel.set(SearchBoxProperties.LENS_CLICK_CALLBACK, v -> {
+            for (OnClickListener clickListener : mLensClickListeners) {
+                clickListener.onClick(v);
+            }
+        });
+    }
+
+    /**
      * Called to set or clear a chip on the search box.
      * @param chipText The text to be shown on the chip.
      */
@@ -150,6 +170,29 @@ class SearchBoxMediator
         mChipDelegate.getChipIcon(bitmap -> {
             mModel.set(SearchBoxProperties.CHIP_DRAWABLE, getRoundedDrawable(bitmap));
         });
+    }
+
+    /**
+     * Launch the Lens app.
+     * @param lensEntryPoint A {@link LensEntryPoint}.
+     * @param windowAndroid A {@link WindowAndroid} instance.
+     * @param isIncognito Whether the request is from a Incognito tab.
+     */
+    void startLens(
+            @LensEntryPoint int lensEntryPoint, WindowAndroid windowAndroid, boolean isIncognito) {
+        LensController.getInstance().startLens(
+                windowAndroid, new LensIntentParams.Builder(lensEntryPoint, isIncognito).build());
+    }
+
+    /**
+     * Check whether the Lens is enabled for an entry point.
+     * @param lensEntryPoint A {@link LensEntryPoint}.
+     * @param isIncognito Whether the request is from a Incognito tab.
+     * @return Whether the Lens is currently enabled.
+     */
+    boolean isLensEnabled(@LensEntryPoint int lensEntryPoint, boolean isIncognito) {
+        return LensController.getInstance().isLensEnabled(
+                new LensQueryParams.Builder(lensEntryPoint, isIncognito).build());
     }
 
     private Drawable getRoundedDrawable(Bitmap bitmap) {

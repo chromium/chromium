@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.lens;
 
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -55,31 +57,61 @@ public class LensQueryParams {
             return this;
         }
 
-        public Builder withImageUri(Uri imageUri) {
+        /**
+         * Sets the image URI.
+         *
+         * @param imageUri The image URI to set as a parameter
+         */
+        public Builder withImageUri(@NonNull Uri imageUri) {
             this.mImageUri = imageUri;
             return this;
         }
 
+        /**
+         * Sets the URL of the top level frame of the page.
+         *
+         * @param pageUrl The page URL string to set as a parameter
+         */
         public Builder withPageUrl(String pageUrl) {
             this.mPageUrl = pageUrl;
             return this;
         }
 
+        /**
+         * Sets the image title or alt text.
+         *
+         * @param imageTitleOrAltText The image title or alt text to set as a parameter
+         */
         public Builder withImageTitleOrAltText(String imageTitleOrAltText) {
             this.mImageTitleOrAltText = imageTitleOrAltText;
             return this;
         }
 
+        /**
+         * Sets the title of the top level frame of the page.
+         *
+         * @param pageTitle The page title string to set as a parameter
+         */
         public Builder withPageTitle(String pageTitle) {
             this.mPageTitle = pageTitle;
             return this;
         }
 
+        /**
+         * Sets the web contents.
+         *
+         * @param webContents The web contents to set as a parameter
+         */
         public Builder withWebContents(WebContents webContents) {
             this.mWebContents = webContents;
             return this;
         }
 
+        /**
+         * Sets the image source URL.
+         *
+         * @param srcUrl The image source URL string to set as a parameter
+         */
         public Builder withSrcUrl(String srcUrl) {
             this.mSrcUrl = srcUrl;
             return this;
@@ -90,6 +122,9 @@ public class LensQueryParams {
             return this;
         }
 
+        /**
+         * Build LensQueryParams object from parameters set.
+         */
         public LensQueryParams build() {
             LensQueryParams lensQueryParams = new LensQueryParams();
             lensQueryParams.mLensEntryPoint = this.mLensEntryPoint;
@@ -104,34 +139,47 @@ public class LensQueryParams {
         }
     }
 
-    public void setImageUri(Uri imageUri) {
+    /**
+     * Sets the imageUri.
+     * With this setter method we can set the imageUri in a retrieve image callback.
+     * e.g., LensChipDelegate#getChipRenderParams.
+     * @param imageUri The image URI to set as a parameter
+     */
+    public void setImageUri(@NonNull Uri imageUri) {
         mImageUri = imageUri;
     }
 
+    /** Returns the image URI for this set of params. */
     public Uri getImageUri() {
         return mImageUri;
     }
 
+    /** Returns the page url for this set of params. */
     public String getPageUrl() {
         return mPageUrl;
     }
 
+    /** Returns the image title or alt text for this set of params. */
     public String getImageTitleOrAltText() {
         return mImageTitleOrAltText;
     }
 
+    /** Returns the page title for this set of params. */
     public String getPageTitle() {
         return mPageTitle;
     }
 
+    /** Returns the web contents for this set of params. */
     public WebContents getWebContents() {
         return mWebContents;
     }
 
+    /** Returns the src url for this set of params. */
     public String getSrcUrl() {
         return mSrcUrl;
     }
 
+    /** Returns the isIncognito for this set of params. */
     public boolean getIsIncognito() {
         return mIsIncognito;
     }

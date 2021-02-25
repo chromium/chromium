@@ -286,7 +286,7 @@
     <!-- The ntp_voice_search_button_width is 48dp and its icon is 24dp. Setting
          8dp start padding will result in 8dp padding between the icon and the
          end of the fakebox ((48 - 24 - 8) / 2). -->
-    <dimen name="sei_ntp_voice_button_start_padding">8dp</dimen>
+    <dimen name="sei_ntp_fakebox_button_start_padding">8dp</dimen>
     <dimen name="experimental_explore_sites_radius">8dp</dimen>
     <dimen name="experimental_explore_sites_padding">8dp</dimen>
     <dimen name="experimental_explore_sites_margin">16dp</dimen>

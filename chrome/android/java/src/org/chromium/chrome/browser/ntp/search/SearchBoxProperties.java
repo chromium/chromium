@@ -29,6 +29,9 @@ interface SearchBoxProperties {
             new WritableObjectPropertyKey<>();
     WritableObjectPropertyKey<OnClickListener> VOICE_SEARCH_CLICK_CALLBACK =
             new WritableObjectPropertyKey<>();
+    WritableBooleanPropertyKey LENS_VISIBILITY = new WritableBooleanPropertyKey();
+    WritableObjectPropertyKey<OnClickListener> LENS_CLICK_CALLBACK =
+            new WritableObjectPropertyKey<>();
     WritableObjectPropertyKey<Pair<String, Boolean>> SEARCH_TEXT =
             new WritableObjectPropertyKey<>();
     WritableBooleanPropertyKey SEARCH_HINT_VISIBILITY = new WritableBooleanPropertyKey();
@@ -47,7 +50,8 @@ interface SearchBoxProperties {
 
     PropertyKey[] ALL_KEYS = new PropertyKey[] {ALPHA, BACKGROUND, VISIBILITY,
             VOICE_SEARCH_VISIBILITY, VOICE_SEARCH_DRAWABLE, VOICE_SEARCH_COLOR_STATE_LIST,
-            VOICE_SEARCH_CLICK_CALLBACK, SEARCH_TEXT, SEARCH_HINT_VISIBILITY,
-            SEARCH_BOX_CLICK_CALLBACK, SEARCH_BOX_TEXT_WATCHER, SEARCH_BOX_HINT_COLOR, CHIP_TEXT,
-            CHIP_VISIBILITY, CHIP_DRAWABLE, CHIP_CLICK_CALLBACK, CHIP_CANCEL_CALLBACK};
+            VOICE_SEARCH_CLICK_CALLBACK, LENS_VISIBILITY, LENS_CLICK_CALLBACK, SEARCH_TEXT,
+            SEARCH_HINT_VISIBILITY, SEARCH_BOX_CLICK_CALLBACK, SEARCH_BOX_TEXT_WATCHER,
+            SEARCH_BOX_HINT_COLOR, CHIP_TEXT, CHIP_VISIBILITY, CHIP_DRAWABLE, CHIP_CLICK_CALLBACK,
+            CHIP_CANCEL_CALLBACK};
 }

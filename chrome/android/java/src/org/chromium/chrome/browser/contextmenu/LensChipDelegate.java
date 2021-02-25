@@ -30,7 +30,7 @@ public class LensChipDelegate implements ChipDelegate {
             return;
         }
         mLensQueryParams =
-                (new LensQueryParams.Builder(LensEntryPoint.CONTEXT_MENU_CHIP, isIncognito))
+                new LensQueryParams.Builder(LensEntryPoint.CONTEXT_MENU_CHIP, isIncognito)
                         .withPageUrl(pageUrl)
                         .withImageTitleOrAltText(titleOrAltText)
                         .withSrcUrl(srcUrl)

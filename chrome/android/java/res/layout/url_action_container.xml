@@ -28,6 +28,13 @@
             android:contentDescription="@string/accessibility_toolbar_btn_mic" />
 
         <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/lens_camera_button"
+            style="@style/LocationBarActionButton"
+            android:src="@drawable/lens_camera_icon"
+            android:visibility="gone"
+            android:contentDescription="@string/accessibility_btn_lens_camera" />
+
+        <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/bookmark_button"
             style="@style/LocationBarActionButton"
             android:visibility="gone"

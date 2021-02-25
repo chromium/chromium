@@ -32,6 +32,7 @@ import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceDelegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -43,9 +44,9 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
     public TasksSurface createTasksSurface(ChromeActivity activity,
             ScrimCoordinator scrimCoordinator, PropertyModel propertyModel,
             @TabSwitcherType int tabSwitcherType, Supplier<Tab> parentTabSupplier,
-            boolean hasMVTiles, boolean hasTrendyTerms) {
+            boolean hasMVTiles, boolean hasTrendyTerms, WindowAndroid windowAndroid) {
         return new TasksSurfaceCoordinator(activity, scrimCoordinator, propertyModel,
-                tabSwitcherType, parentTabSupplier, hasMVTiles, hasTrendyTerms);
+                tabSwitcherType, parentTabSupplier, hasMVTiles, hasTrendyTerms, windowAndroid);
     }
 
     @Override
@@ -99,9 +100,9 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
     public StartSurface createStartSurface(ChromeActivity activity,
             ScrimCoordinator scrimCoordinator, BottomSheetController sheetController,
             OneshotSupplierImpl<StartSurface> startSurfaceOneshotSupplier,
-            Supplier<Tab> parentTabSupplier, boolean hadWarmStart) {
+            Supplier<Tab> parentTabSupplier, boolean hadWarmStart, WindowAndroid windowAndroid) {
         return StartSurfaceDelegate.createStartSurface(activity, scrimCoordinator, sheetController,
-                startSurfaceOneshotSupplier, parentTabSupplier, hadWarmStart);
+                startSurfaceOneshotSupplier, parentTabSupplier, hadWarmStart, windowAndroid);
     }
 
     @Override

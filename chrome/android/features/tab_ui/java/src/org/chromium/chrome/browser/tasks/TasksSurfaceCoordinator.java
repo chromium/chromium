@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvi
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -47,9 +48,12 @@ public class TasksSurfaceCoordinator implements TasksSurface {
 
     public TasksSurfaceCoordinator(ChromeActivity activity, ScrimCoordinator scrimCoordinator,
             PropertyModel propertyModel, @TabSwitcherType int tabSwitcherType,
-            Supplier<Tab> parentTabSupplier, boolean hasMVTiles, boolean hasTrendyTerms) {
+            Supplier<Tab> parentTabSupplier, boolean hasMVTiles, boolean hasTrendyTerms,
+            WindowAndroid windowAndroid) {
         mView = (TasksView) LayoutInflater.from(activity).inflate(R.layout.tasks_view_layout, null);
-        mView.initialize(activity.getLifecycleDispatcher());
+        mView.initialize(activity.getLifecycleDispatcher(),
+                parentTabSupplier.hasValue() ? parentTabSupplier.get().isIncognito() : false,
+                windowAndroid);
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(propertyModel, mView, TasksViewBinder::bind);
         mPropertyModel = propertyModel;

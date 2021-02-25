@@ -6050,6 +6050,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kContextMenuTranslateWithGoogleLensDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kContextMenuTranslateWithGoogleLens)},
+
+    {"lens-camera-assisted-search",
+     flag_descriptions::kLensCameraAssistedSearchName,
+     flag_descriptions::kLensCameraAssistedSearchDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kLensCameraAssistedSearch)},
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

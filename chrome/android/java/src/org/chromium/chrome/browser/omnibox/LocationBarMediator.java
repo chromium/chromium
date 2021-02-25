@@ -34,6 +34,10 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.gsa.GSAState;
+import org.chromium.chrome.browser.lens.LensController;
+import org.chromium.chrome.browser.lens.LensEntryPoint;
+import org.chromium.chrome.browser.lens.LensIntentParams;
+import org.chromium.chrome.browser.lens.LensQueryParams;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
@@ -143,6 +147,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     private boolean mUrlFocusedWithoutAnimations;
     private boolean mIsUrlFocusChangeInProgress;
     private final boolean mIsTablet;
+    private boolean mShouldShowLensButtonWhenUnfocused;
     private boolean mShouldShowMicButtonWhenUnfocused;
     // Whether the microphone and bookmark buttons should be shown in the tablet location bar. These
     // buttons are hidden if the window size is < 600dp.
@@ -285,6 +290,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         }
         mDeferredNativeRunnables.clear();
         updateMicButtonState();
+        updateLensButtonState();
     }
 
     /*package */ void setUrlFocusChangeFraction(float fraction) {
@@ -474,6 +480,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     /* package */ void updateButtonVisibility() {
         updateDeleteButtonVisibility();
         updateMicButtonVisibility();
+        updateLensButtonVisibility();
         if (mIsTablet) {
             updateTabletButtonsVisibility();
         }
@@ -525,6 +532,12 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         RecordUserAction.record("MobileOmniboxVoiceSearch");
         mVoiceRecognitionHandler.startVoiceRecognition(
                 VoiceRecognitionHandler.VoiceInteractionSource.OMNIBOX);
+    }
+
+    /** package */ void lensButtonClicked(View view) {
+        if (!mNativeInitialized || mLocationBarDataProvider == null) return;
+        RecordUserAction.record("MobileOmniboxLens");
+        startLens(LensEntryPoint.OMNIBOX);
     }
 
     /* package */ void setUrlFocusChangeInProgress(boolean inProgress) {
@@ -628,6 +641,11 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     /* package */ void setShouldShowMicButtonWhenUnfocusedForPhone(boolean shouldShow) {
         assert !mIsTablet;
         mShouldShowMicButtonWhenUnfocused = shouldShow;
+    }
+
+    /* package */ void setShouldShowLensButtonWhenUnfocusedForPhone(boolean shouldShow) {
+        assert !mIsTablet;
+        mShouldShowLensButtonWhenUnfocused = shouldShow;
     }
 
     /**
@@ -907,11 +925,19 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         updateButtonVisibility();
     }
 
+    private void updateLensButtonState() {
+        updateButtonVisibility();
+    }
+
     /**
      * Updates the display of the mic button.
      */
     private void updateMicButtonVisibility() {
         mLocationBarLayout.setMicButtonVisibility(shouldShowMicButton());
+    }
+
+    private void updateLensButtonVisibility() {
+        mLocationBarLayout.setLensButtonVisibility(shouldShowLensButton());
     }
 
     private void updateDeleteButtonVisibility() {
@@ -950,6 +976,21 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
             boolean deleteButtonVisible = shouldShowDeleteButton();
             return mVoiceRecognitionHandler != null
                     && mVoiceRecognitionHandler.isVoiceSearchEnabled() && !deleteButtonVisible
+                    && (mUrlHasFocus || mIsUrlFocusChangeInProgress || mUrlFocusChangeFraction > 0f
+                            || mShouldShowMicButtonWhenUnfocused);
+        }
+    }
+
+    private boolean shouldShowLensButton() {
+        if (mIsTablet) {
+            // TODO(b/180967835): add logic to enable Lens for tablets.
+            return false;
+        } else if (mShouldShowButtonsWhenUnfocused) {
+            return isLensEnabled(LensEntryPoint.OMNIBOX) && mNativeInitialized
+                    && (mUrlHasFocus || mIsUrlFocusChangeInProgress);
+        } else {
+            boolean deleteButtonVisible = shouldShowDeleteButton();
+            return isLensEnabled(LensEntryPoint.OMNIBOX) && !deleteButtonVisible
                     && (mUrlHasFocus || mIsUrlFocusChangeInProgress || mUrlFocusChangeFraction > 0f
                             || mShouldShowMicButtonWhenUnfocused);
         }
@@ -1317,5 +1358,20 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         mSearchEngine = searchEngine;
         updateSearchEngineStatusIcon();
         mLocationBarLayout.updateStatusVisibility();
+    }
+
+    @Override
+    public boolean isLensEnabled(@LensEntryPoint int lensEntryPoint) {
+        return LensController.getInstance().isLensEnabled(
+                new LensQueryParams.Builder(lensEntryPoint, mLocationBarDataProvider.isIncognito())
+                        .build());
+    }
+
+    @Override
+    public void startLens(@LensEntryPoint int lensEntryPoint) {
+        // TODO(b/181067692): Report user action for this click.
+        LensController.getInstance().startLens(mWindowAndroid,
+                new LensIntentParams.Builder(lensEntryPoint, mLocationBarDataProvider.isIncognito())
+                        .build());
     }
 }

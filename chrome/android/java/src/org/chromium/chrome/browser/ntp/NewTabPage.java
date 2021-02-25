@@ -378,13 +378,14 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         mContextMenuManager = new ContextMenuManager(mNewTabPageManager.getNavigationDelegate(),
                 mFeedSurfaceProvider.getTouchEnabledDelegate(), closeContextMenuCallback,
                 NewTabPage.CONTEXT_MENU_USER_ACTION_PREFIX);
-        mTab.getWindowAndroid().addContextMenuCloseListener(mContextMenuManager);
+        windowAndroid.addContextMenuCloseListener(mContextMenuManager);
 
         mNewTabPageLayout.initialize(mNewTabPageManager, activity, mTileGroupDelegate,
                 mSearchProviderHasLogo,
                 TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle(),
                 mFeedSurfaceProvider.getScrollDelegate(), mContextMenuManager,
-                mFeedSurfaceProvider.getUiConfig(), activityTabProvider, lifecycleDispatcher, uma);
+                mFeedSurfaceProvider.getUiConfig(), activityTabProvider, lifecycleDispatcher, uma,
+                mTab.isIncognito(), windowAndroid);
         TraceEvent.end(TAG);
     }
 

@@ -838,6 +838,9 @@ extern const char kLegacyTLSEnforcedDescription[];
 extern const char kLegacyTLSWarningsName[];
 extern const char kLegacyTLSWarningsDescription[];
 
+extern const char kLensCameraAssistedSearchName[];
+extern const char kLensCameraAssistedSearchDescription[];
+
 extern const char kLiteVideoName[];
 extern const char kLiteVideoDescription[];
 

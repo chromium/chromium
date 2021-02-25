@@ -27,6 +27,7 @@ import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.module_installer.builder.ModuleInterface;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
@@ -60,11 +61,13 @@ public interface TabManagementDelegate {
      *         TasksSurface.
      * @param hasMVTiles whether has MV tiles on the surface.
      * @param hasTrendyTerms whether has trendy terms on the surface.
+     * @param windowAndroid An instance of a {@link WindowAndroid}
      * @return The {@link TasksSurface}.
      */
     TasksSurface createTasksSurface(ChromeActivity activity, ScrimCoordinator scrimCoordinator,
             PropertyModel propertyModel, @TabSwitcherType int tabSwitcherType,
-            Supplier<Tab> parentTabSupplier, boolean hasMVTiles, boolean hasTrendyTerms);
+            Supplier<Tab> parentTabSupplier, boolean hasMVTiles, boolean hasTrendyTerms,
+            WindowAndroid windowAndroid);
 
     /**
      * Create the {@link TabSwitcher} to display Tabs in grid.
@@ -118,12 +121,13 @@ public interface TabManagementDelegate {
      *         StartSurface.
      * @param hadWarmStart Whether the activity had a warm start because the native library was
      *         already fully loaded and initialized
+     * @param windowAndroid An instance of a {@link WindowAndroid}
      * @return the {@link StartSurface}
      */
     StartSurface createStartSurface(ChromeActivity activity, ScrimCoordinator scrimCoordinator,
             BottomSheetController sheetController,
             OneshotSupplierImpl<StartSurface> startSurfaceOneshotSupplier,
-            Supplier<Tab> parentTabSupplier, boolean hadWarmStart);
+            Supplier<Tab> parentTabSupplier, boolean hadWarmStart, WindowAndroid windowAndroid);
 
     /**
      * Create a {@link TabGroupModelFilter} for the given {@link TabModel}.

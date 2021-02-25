@@ -91,6 +91,7 @@ extern const base::Feature kInlineUpdateFlow;
 extern const base::Feature kInstantStart;
 extern const base::Feature kKitKatSupported;
 extern const base::Feature kLanguagesPreference;
+extern const base::Feature kLensCameraAssistedSearch;
 extern const base::Feature kNotificationSuspender;
 extern const base::Feature kOfflineIndicatorV2;
 extern const base::Feature kOfflineMeasurementsBackgroundTask;

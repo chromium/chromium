@@ -1417,6 +1417,12 @@ const char kLegacyTLSWarningsDescription[] =
     "Show security warnings for sites that use legacy TLS versions (TLS 1.0 "
     "and TLS 1.1), which are deprecated and will be removed in the future.";
 
+const char kLensCameraAssistedSearchName[] =
+    "Google Lens in Omnibox and New Tab Page";
+const char kLensCameraAssistedSearchDescription[] =
+    "Enable an entry point to Google Lens to allow users to search what they "
+    "see using their mobile camera.";
+
 const char kLiteVideoName[] = "Enable LiteVideos";
 const char kLiteVideoDescription[] =
     "Enable the LiteVideo optimization to throttle media requests to "

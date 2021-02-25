@@ -17,9 +17,11 @@ import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_FAKE_S
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_INCOGNITO_DESCRIPTION_INITIALIZED;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_INCOGNITO_DESCRIPTION_VISIBLE;
+import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_LENS_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_SURFACE_BODY_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_VOICE_RECOGNITION_BUTTON_VISIBLE;
+import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.LENS_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.MORE_TABS_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_TOP_MARGIN;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.MV_TILES_VISIBLE;
@@ -77,6 +79,9 @@ class TasksViewBinder {
                 model.get(INCOGNITO_COOKIE_CONTROLS_MANAGER).updateIfNecessary();
             }
             view.setIncognitoDescriptionVisibility(isVisible);
+        } else if (propertyKey == IS_LENS_BUTTON_VISIBLE) {
+            view.getSearchBoxCoordinator().setLensButtonVisibility(
+                    model.get(IS_LENS_BUTTON_VISIBLE));
         } else if (propertyKey == IS_SURFACE_BODY_VISIBLE) {
             view.setSurfaceBodyVisibility(model.get(IS_SURFACE_BODY_VISIBLE));
         } else if (propertyKey == IS_TAB_CAROUSEL_VISIBLE) {
@@ -84,6 +89,9 @@ class TasksViewBinder {
         } else if (propertyKey == IS_VOICE_RECOGNITION_BUTTON_VISIBLE) {
             view.getSearchBoxCoordinator().setVoiceSearchButtonVisibility(
                     model.get(IS_VOICE_RECOGNITION_BUTTON_VISIBLE));
+        } else if (propertyKey == LENS_BUTTON_CLICK_LISTENER) {
+            view.getSearchBoxCoordinator().addLensButtonClickListener(
+                    model.get(LENS_BUTTON_CLICK_LISTENER));
         } else if (propertyKey == MORE_TABS_CLICK_LISTENER) {
             view.setMoreTabsOnClickListener(model.get(MORE_TABS_CLICK_LISTENER));
         } else if (propertyKey == MV_TILES_VISIBLE) {

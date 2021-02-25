@@ -63,4 +63,13 @@
         android:src="@drawable/btn_mic"
         android:scaleType="centerInside"
         app:tint="@color/default_icon_color_tint_list" />
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/lens_camera_button"
+        android:layout_width="48dp"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/accessibility_btn_lens_camera"
+        android:src="@drawable/lens_camera_icon"
+        android:scaleType="centerInside"
+        android:visibility="gone"
+        app:tint="@color/default_icon_color_tint_list" />
 </view>
