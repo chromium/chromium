@@ -1028,11 +1028,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autocomplete.Events" enum="AutocompleteEvents"
-    expires_after="M85">
+    expires_after="M95">
   <owner>seblalancette@chromium.org</owner>
   <summary>
     Autocomplete events recorded when the user interacts with suggestions served
     from Autocomplete.
+
+    Note that this histogram was disabled after M85 and was only reenabled on
+    25.02.2021.
   </summary>
 </histogram>
 
