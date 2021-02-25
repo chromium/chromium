@@ -208,7 +208,10 @@ FetchResponseData* FetchResponseData::Clone(ScriptState* script_state,
   new_response->alpn_negotiated_protocol_ = alpn_negotiated_protocol_;
   new_response->was_fetched_via_spdy_ = was_fetched_via_spdy_;
   new_response->has_range_requested_ = has_range_requested_;
-  new_response->auth_challenge_info_ = auth_challenge_info_;
+  if (auth_challenge_info_) {
+    new_response->auth_challenge_info_ =
+        std::make_unique<net::AuthChallengeInfo>(*auth_challenge_info_);
+  }
 
   switch (type_) {
     case Type::kBasic:
@@ -287,7 +290,9 @@ mojom::blink::FetchAPIResponsePtr FetchResponseData::PopulateFetchAPIResponse(
     response->headers.insert(header.first, header.second);
   response->parsed_headers = ParseHeaders(
       HeaderList()->GetAsRawString(status_, status_message_), request_url);
-  response->auth_challenge_info = auth_challenge_info_;
+  if (auth_challenge_info_) {
+    response->auth_challenge_info = *auth_challenge_info_;
+  }
   return response;
 }
 
@@ -379,6 +384,14 @@ FetchResponseData::FetchResponseData(Type type,
       alpn_negotiated_protocol_("unknown"),
       was_fetched_via_spdy_(false),
       has_range_requested_(false) {}
+
+void FetchResponseData::SetAuthChallengeInfo(
+    const base::Optional<net::AuthChallengeInfo>& auth_challenge_info) {
+  if (auth_challenge_info) {
+    auth_challenge_info_ =
+        std::make_unique<net::AuthChallengeInfo>(*auth_challenge_info);
+  }
+}
 
 void FetchResponseData::ReplaceBodyStreamBuffer(BodyStreamBuffer* buffer) {
   if (type_ == Type::kBasic || type_ == Type::kCors) {
