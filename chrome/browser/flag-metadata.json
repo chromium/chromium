@@ -2861,6 +2861,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "filling-across-affiliated-websites",
+    "owners": [ "vsemeniuk", "vasilii" ],
+    "expiry_milestone": 93
+  },
+  {
     "name": "filling-passwords-from-any-origin",
     "owners": [ "fhorschig", "redatawfik" ],
     "expiry_milestone": 90

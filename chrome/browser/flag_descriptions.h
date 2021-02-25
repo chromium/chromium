@@ -712,6 +712,9 @@ extern const char kEffectiveConnectionType4GDescription[];
 extern const char kFileHandlingAPIName[];
 extern const char kFileHandlingAPIDescription[];
 
+extern const char kFillingAcrossAffiliatedWebsitesName[];
+extern const char kFillingAcrossAffiliatedWebsitesDescription[];
+
 extern const char kFillOnAccountSelectName[];
 extern const char kFillOnAccountSelectDescription[];
 
