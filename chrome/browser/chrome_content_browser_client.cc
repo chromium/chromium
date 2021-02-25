@@ -4354,6 +4354,12 @@ class ProtocolHandlerThrottle : public blink::URLLoaderThrottle {
 
   void WillStartRequest(network::ResourceRequest* request,
                         bool* defer) override {
+    // Don't translate the urn: scheme URL while loading the resource from the
+    // specified web bundle.
+    if (request->web_bundle_token_params &&
+        request->url.SchemeIs(url::kUrnScheme)) {
+      return;
+    }
     TranslateUrl(&request->url);
   }
 
