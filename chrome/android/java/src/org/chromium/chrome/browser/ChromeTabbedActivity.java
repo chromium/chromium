@@ -1036,7 +1036,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // showOverview(StartSurfaceState.SHOWING_START) to show MV tiles and carousels again.
         return shouldShowTabSwitcherOnStart()
                 && (!isOverviewVisible
-                        || StartSurfaceConfiguration.NEW_SURFACE_FROM_HOME_BUTTON.getValue());
+                        || StartSurfaceConfiguration.shouldShowNewSurfaceFromHomeButton());
     }
 
     private boolean shouldShowTabSwitcherOnStart() {

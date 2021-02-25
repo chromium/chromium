@@ -98,7 +98,7 @@ public class StartSurfaceToolbarCoordinator {
                 StartSurfaceConfiguration.HOME_BUTTON_ON_GRID_TAB_SWITCHER.getValue(),
                 menuButtonCoordinator, identityDiscStateSupplier, identityDiscButtonSupplier,
                 homepageEnabledSupplier, homepageManagedByPolicySupplier, homeButtonOnClickHandler,
-                StartSurfaceConfiguration.NEW_SURFACE_FROM_HOME_BUTTON.getValue());
+                StartSurfaceConfiguration.shouldShowNewSurfaceFromHomeButton());
 
         mThemeColorProvider = provider;
         mMenuButtonCoordinator = menuButtonCoordinator;
@@ -266,7 +266,7 @@ public class StartSurfaceToolbarCoordinator {
             maybeCreateIncognitoSwitchCoordinator();
         }
 
-        if (StartSurfaceConfiguration.NEW_SURFACE_FROM_HOME_BUTTON.getValue()) {
+        if (StartSurfaceConfiguration.shouldShowNewSurfaceFromHomeButton()) {
             mTabSwitcherButtonView = mView.findViewById(R.id.start_tab_switcher_button);
             if (mTabSwitcherLongClickListener != null) {
                 mTabSwitcherButtonView.setOnLongClickListener(mTabSwitcherLongClickListener);

@@ -92,10 +92,10 @@ public class StartSurfaceConfiguration {
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
                     HOME_BUTTON_ON_GRID_TAB_SWITCHER_PARAM, false);
 
-    private static final String NEW_SURFACE_PARAM = "new_surface_from_home_button";
-    public static final BooleanCachedFieldTrialParameter NEW_SURFACE_FROM_HOME_BUTTON =
-            new BooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.START_SURFACE_ANDROID, NEW_SURFACE_PARAM, false);
+    private static final String NEW_SURFACE_PARAM = "new_home_surface_from_home_button";
+    public static final StringCachedFieldTrialParameter NEW_SURFACE_FROM_HOME_BUTTON =
+            new StringCachedFieldTrialParameter(
+                    ChromeFeatureList.START_SURFACE_ANDROID, NEW_SURFACE_PARAM, "");
 
     private static final String STARTUP_UMA_PREFIX = "Startup.Android.";
     private static final String INSTANT_START_SUBFIX = ".Instant";
@@ -204,5 +204,10 @@ public class StartSurfaceConfiguration {
         if (tab == null || tab.getUrl() == null) return false;
 
         return tab.getUrl().isEmpty() && StartSurfaceUserData.getCreatedAsNtp(tab);
+    }
+
+    public static boolean shouldShowNewSurfaceFromHomeButton() {
+        return NEW_SURFACE_FROM_HOME_BUTTON.getValue().equals("hide_tab_switcher_only")
+                || NEW_SURFACE_FROM_HOME_BUTTON.getValue().equals("hide_mv_tiles_and_tab_switcher");
     }
 }

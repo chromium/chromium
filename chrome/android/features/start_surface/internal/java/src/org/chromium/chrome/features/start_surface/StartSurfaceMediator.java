@@ -166,7 +166,8 @@ class StartSurfaceMediator
     @Nullable
     private Boolean mFeedVisibilityInSharedPreferenceOnStartUp;
     private boolean mHadWarmStart;
-    private boolean mShowNewHomeSurface;
+    private boolean mHideMVForNewSurface;
+    private boolean mHideTabCarouselForNewSurface;
 
     StartSurfaceMediator(TabSwitcher.Controller controller, TabModelSelector tabModelSelector,
             @Nullable PropertyModel propertyModel,
@@ -425,14 +426,29 @@ class StartSurfaceMediator
         if (state == StartSurfaceState.SHOWING_HOMEPAGE) {
             mPropertyModel.set(RESET_TASK_SURFACE_HEADER_SCROLL_POSITION, true);
             mPropertyModel.set(RESET_FEED_SURFACE_SCROLL_POSITION, true);
-            if (StartSurfaceConfiguration.NEW_SURFACE_FROM_HOME_BUTTON.getValue()) {
-                mShowNewHomeSurface = true;
+
+            String newHomeSurface =
+                    StartSurfaceConfiguration.NEW_SURFACE_FROM_HOME_BUTTON.getValue();
+            switch (newHomeSurface) {
+                case "hide_tab_switcher_only":
+                    mHideMVForNewSurface = false;
+                    mHideTabCarouselForNewSurface = true;
+                    break;
+                case "hide_mv_tiles_and_tab_switcher":
+                    mHideMVForNewSurface = true;
+                    mHideTabCarouselForNewSurface = true;
+                    break;
+                default:
+                    mHideMVForNewSurface = false;
+                    mHideTabCarouselForNewSurface = false;
             }
         }
 
-        if (state == StartSurfaceState.SHOWING_START && !mTabModelSelector.isIncognitoSelected()
-                && StartSurfaceConfiguration.NEW_SURFACE_FROM_HOME_BUTTON.getValue()) {
-            mShowNewHomeSurface = false;
+        // Every time Chrome is started, no matter warm start or cold start, show MV tiles & tab
+        // carousel.
+        if (state == StartSurfaceState.SHOWING_START && !mTabModelSelector.isIncognitoSelected()) {
+            mHideMVForNewSurface = false;
+            mHideTabCarouselForNewSurface = false;
         }
 
         // Cache previous state.
@@ -501,8 +517,9 @@ class StartSurfaceMediator
 
             // If new home surface for home button is enabled, MV tiles and carousel tab switcher
             // will not show.
-            setTabCarouselVisibility(hasNormalTab && !mIsIncognito && !mShowNewHomeSurface);
-            setMVTilesVisibility(!mIsIncognito && !mShowNewHomeSurface);
+            setTabCarouselVisibility(
+                    hasNormalTab && !mIsIncognito && !mHideTabCarouselForNewSurface);
+            setMVTilesVisibility(!mIsIncognito && !mHideMVForNewSurface);
             setFakeBoxVisibility(!mIsIncognito);
             setSecondaryTasksSurfaceVisibility(mIsIncognito);
 

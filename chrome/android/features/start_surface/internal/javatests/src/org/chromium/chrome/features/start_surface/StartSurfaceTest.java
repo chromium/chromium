@@ -70,7 +70,6 @@ import androidx.test.filters.MediumTest;
 import com.google.android.material.appbar.AppBarLayout;
 
 import org.hamcrest.Matcher;
-import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -1721,21 +1720,17 @@ public class StartSurfaceTest {
     @Feature({"StartSurface"})
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single/exclude_mv_tiles/false"
-            + "/new_surface_from_home_button/true"})
+            + "/new_home_surface_from_home_button/hide_mv_tiles_and_tab_switcher"})
     public void testNewSurfaceFromHomeButton(){
         // clang-format on
         assumeTrue(mImmediateReturn);
-        onViewWaiting(allOf(withId(R.id.feed_stream_recycler_view), isDisplayed()));
-        onViewWaiting(
-                allOf(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_container), isDisplayed()));
-        onViewWaiting(allOf(withId(org.chromium.chrome.tab_ui.R.id.carousel_tab_switcher_container),
-                isDisplayed()));
-        onViewWaiting(allOf(withId(R.id.start_tab_switcher_button), isDisplayed()));
+        onViewWaiting(withId(R.id.feed_stream_recycler_view));
+        onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_container));
+        onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.carousel_tab_switcher_container));
+        onViewWaiting(withId(R.id.start_tab_switcher_button));
 
         // Open a tab from search box and then press home button to come back to Start Surface.
-        MatcherAssert.assertThat(
-                mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel().getCount(),
-                equalTo(1));
+        TabUiTestHelper.verifyTabModelTabCount(mActivityTestRule.getActivity(), 1, 0);
         OverviewModeBehaviorWatcher hideWatcher =
                 TabUiTestHelper.createOverviewHideWatcher(mActivityTestRule.getActivity());
         onView(withId(org.chromium.chrome.start_surface.R.id.search_box_text))
@@ -1743,9 +1738,7 @@ public class StartSurfaceTest {
         onView(withId(org.chromium.chrome.start_surface.R.id.url_bar))
                 .perform(pressKey(KeyEvent.KEYCODE_ENTER));
         hideWatcher.waitForBehavior();
-        MatcherAssert.assertThat(
-                mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel().getCount(),
-                equalTo(2));
+        TabUiTestHelper.verifyTabModelTabCount(mActivityTestRule.getActivity(), 2, 0);
         onView(withId(R.id.home_button)).perform(click());
 
         // MV tiles and carousel tab switcher should not show anymore.
@@ -1753,6 +1746,41 @@ public class StartSurfaceTest {
         onViewWaiting(allOf(withId(R.id.feed_stream_recycler_view), isDisplayed()));
         onView(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_container))
                 .check(matches(withEffectiveVisibility(GONE)));
+        onView(withId(org.chromium.chrome.tab_ui.R.id.carousel_tab_switcher_container))
+                .check(matches(withEffectiveVisibility(GONE)));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    // clang-format off
+    @CommandLineFlags.Add({BASE_PARAMS + "/single/exclude_mv_tiles/false"
+            + "/new_home_surface_from_home_button/hide_tab_switcher_only"})
+    public void testNewSurfaceHideTabOnlyFromHomeButton(){
+        // clang-format on
+        assumeTrue(mImmediateReturn);
+        onViewWaiting(withId(R.id.feed_stream_recycler_view));
+        onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_container));
+        onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.carousel_tab_switcher_container));
+        onViewWaiting(withId(R.id.start_tab_switcher_button));
+
+        // Open a tab from search box and then press home button to come back to Start Surface.
+        TabUiTestHelper.verifyTabModelTabCount(mActivityTestRule.getActivity(), 1, 0);
+        OverviewModeBehaviorWatcher hideWatcher =
+                TabUiTestHelper.createOverviewHideWatcher(mActivityTestRule.getActivity());
+        onView(withId(org.chromium.chrome.start_surface.R.id.search_box_text))
+                .perform(replaceText("about:blank"));
+        onView(withId(org.chromium.chrome.start_surface.R.id.url_bar))
+                .perform(pressKey(KeyEvent.KEYCODE_ENTER));
+        hideWatcher.waitForBehavior();
+        TabUiTestHelper.verifyTabModelTabCount(mActivityTestRule.getActivity(), 2, 0);
+        onView(withId(R.id.home_button)).perform(click());
+
+        // MV tiles should shown and carousel tab switcher should not show anymore.
+        onViewWaiting(withId(R.id.feed_stream_recycler_view));
+        onViewWaiting(withId(R.id.start_tab_switcher_button));
+        onView(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_container))
+                .check(matches(withEffectiveVisibility(VISIBLE)));
         onView(withId(org.chromium.chrome.tab_ui.R.id.carousel_tab_switcher_container))
                 .check(matches(withEffectiveVisibility(GONE)));
     }
