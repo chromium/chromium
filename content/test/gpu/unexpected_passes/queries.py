@@ -9,6 +9,8 @@ import logging
 import multiprocessing.pool
 import os
 import subprocess
+import threading
+import time
 
 from typ import expectations_parser
 from unexpected_passes import builders as builders_module
@@ -17,6 +19,7 @@ from unexpected_passes import multiprocessing_utils
 
 DEFAULT_NUM_SAMPLES = 100
 MAX_ROWS = (2**31) - 1
+ASYNC_RESULT_SLEEP_DURATION = 5
 
 # Largely written by nodir@ and modified by bsheedy@
 # This query gets us all results for tests that have had results with a
@@ -49,9 +52,7 @@ WITH
       WHERE
         status != "SKIP"
         AND STRUCT("builder", @builder_name) IN UNNEST(variant)
-        AND REGEXP_CONTAINS(
-          test_id,
-          r"gpu_tests\.{suite}\.")
+        {test_filter_clause}
       GROUP BY exported.id
       ORDER BY ANY_VALUE(partition_time) DESC
       LIMIT @num_builds
@@ -68,6 +69,49 @@ SELECT tr.*
 FROM tests t, t.test_results tr
 """
 
+# Very similar to above, but used for getting the names of tests that are of
+# interest for use as a filter.
+TEST_FILTER_QUERY_TEMPLATE = """\
+WITH
+  builds AS (
+    SELECT
+      exported.id,
+      ARRAY_AGG(STRUCT(
+          exported.id,
+          test_id,
+          status,
+          (
+            SELECT value
+            FROM tr.tags
+            WHERE key = "step_name") as step_name,
+          ARRAY(
+            SELECT value
+            FROM tr.tags
+            WHERE key = "raw_typ_expectation") as typ_expectations
+      )) as test_results,
+      FROM `luci-resultdb.chromium.gpu_{builder_type}_test_results` tr
+      WHERE
+        status != "SKIP"
+        AND STRUCT("builder", @builder_name) IN UNNEST(variant)
+        AND REGEXP_CONTAINS(
+          test_id,
+          r"gpu_tests\.{suite}\.")
+      GROUP BY exported.id
+      ORDER BY ANY_VALUE(partition_time) DESC
+      LIMIT 50
+    ),
+    tests AS (
+      SELECT ARRAY_AGG(tr) test_results
+      FROM builds b, b.test_results tr
+      WHERE
+        "RetryOnFailure" IN UNNEST(typ_expectations)
+        OR "Failure" IN UNNEST(typ_expectations)
+      GROUP BY test_id, step_name
+    )
+SELECT DISTINCT tr.test_id
+FROM tests t, t.test_results tr
+"""
+
 # The suite reported to Telemetry for selecting which suite to run is not
 # necessarily the same one that is reported to typ/ResultDB, so map any special
 # cases here.
@@ -79,29 +123,30 @@ TELEMETRY_SUITE_TO_RDB_SUITE_EXCEPTION_MAP = {
 
 
 def FillExpectationMapForCiBuilders(expectation_map, builders, suite, project,
-                                    num_samples):
+                                    num_samples, large_query_mode):
   """Fills |expectation_map| for CI builders.
 
   See _FillExpectationMapForBuilders() for more information.
   """
   logging.info('Filling test expectation map with CI results')
   return _FillExpectationMapForBuilders(expectation_map, builders, 'ci', suite,
-                                        project, num_samples)
+                                        project, num_samples, large_query_mode)
 
 
 def FillExpectationMapForTryBuilders(expectation_map, builders, suite, project,
-                                     num_samples):
+                                     num_samples, large_query_mode):
   """Fills |expectation_map| for try builders.
 
   See _FillExpectationMapForBuilders() for more information.
   """
   logging.info('Filling test expectation map with try results')
   return _FillExpectationMapForBuilders(expectation_map, builders, 'try', suite,
-                                        project, num_samples)
+                                        project, num_samples, large_query_mode)
 
 
 def _FillExpectationMapForBuilders(expectation_map, builders, builder_type,
-                                   suite, project, num_samples):
+                                   suite, project, num_samples,
+                                   large_query_mode):
   """Fills |expectation_map| with results from |builders|.
 
   Args:
@@ -114,6 +159,11 @@ def _FillExpectationMapForBuilders(expectation_map, builders, builder_type,
     project: A string containing the billing project to use for BigQuery.
     num_samples: An integer containing the number of builds to pull results
         from.
+    large_query_mode: A boolean indicating whether large query mode should be
+        used. In this mode, an initial, smaller query is made and its results
+        are used to perform additional filtering on a second, larger query in
+        BigQuery. This works around hitting a hard memory limit when running the
+        ORDER BY clause.
 
   Returns:
     A dict containing any results that were retrieved that did not have a
@@ -143,15 +193,64 @@ def _FillExpectationMapForBuilders(expectation_map, builders, builder_type,
   # officially documented, but comes up frequently when looking for information
   # on Python thread pools and is used in other places in the Chromium code
   # base.
+  #
+  # Using two pools also allows us to start processing data while queries are
+  # still running since the latter spends most of its time waiting for the
+  # query to complete.
+  #
+  # Since the ThreadPool is going to be idle most of the time, we can use many
+  # more threads than we have logical cores.
+  thread_count = 4 * multiprocessing.cpu_count()
+  query_pool = multiprocessing.pool.ThreadPool(thread_count)
   result_pool = multiprocessing_utils.GetProcessPool()
-  query_pool = multiprocessing.pool.ThreadPool()
 
-  arguments = [(b, builder_type, suite, project, num_samples) for b in builders]
-  results_list = query_pool.map(_QueryBuilderMultiprocess, arguments)
+  running_queries = set()
+  running_adds = set()
+  running_adds_lock = threading.Lock()
 
-  arguments = [(expectation_map, builder_type, bn, r)
-               for (bn, r) in results_list]
-  add_results = result_pool.map(_AddResultToMapMultiprocessing, arguments)
+  def pass_query_result_to_add(result):
+    bn, r = result
+    arg = (expectation_map, builder_type, bn, r)
+    running_adds_lock.acquire()
+    running_adds.add(result_pool.apipe(_AddResultToMapMultiprocessing, arg))
+    running_adds_lock.release()
+
+  for b in builders:
+    arg = (b, builder_type, suite, project, num_samples, large_query_mode)
+    running_queries.add(
+        query_pool.apply_async(QueryBuilder,
+                               arg,
+                               callback=pass_query_result_to_add))
+
+  # We check the AsyncResult objects here because the provided callback only
+  # gets called on success, and exceptions are not raised until the result is
+  # retrieved. This can be removed whenever this is switched to Python 3, as
+  # apply_async has an error_callback parameter there.
+  while True:
+    completed_queries = set()
+    for rq in running_queries:
+      if rq.ready():
+        completed_queries.add(rq)
+        rq.get()
+    running_queries -= completed_queries
+    if not len(running_queries):
+      break
+    time.sleep(ASYNC_RESULT_SLEEP_DURATION)
+
+  # At this point, no more AsyncResults should be getting added to
+  # |running_adds|, so we don't need to bother with the lock.
+  add_results = []
+  while True:
+    completed_adds = set()
+    for ra in running_adds:
+      if ra.ready():
+        completed_adds.add(ra)
+        add_results.append(ra.get())
+    running_adds -= completed_adds
+    if not len(running_adds):
+      break
+    time.sleep(ASYNC_RESULT_SLEEP_DURATION)
+
   tmp_expectation_map = {}
 
   for (unmatched_results, prefixed_builder_name, merge_map) in add_results:
@@ -282,12 +381,8 @@ def _AddResultToMap(result, builder, expectation_map):
   return found_matching_expectation
 
 
-def _QueryBuilderMultiprocess(inputs):
-  builder, builder_type, suite, project, num_samples = inputs
-  return QueryBuilder(builder, builder_type, suite, project, num_samples)
-
-
-def QueryBuilder(builder, builder_type, suite, project, num_samples):
+def QueryBuilder(builder, builder_type, suite, project, num_samples,
+                 large_query_mode):
   """Queries ResultDB for results from |builder|.
 
   Args:
@@ -298,6 +393,11 @@ def QueryBuilder(builder, builder_type, suite, project, num_samples):
     project: A string containing the billing project to use for BigQuery.
     num_samples: An integer containing the number of builds to pull results
         from.
+    large_query_mode: A boolean indicating whether large query mode should be
+        used. In this mode, an initial, smaller query is made and its results
+        are used to perform additional filtering on a second, larger query in
+        BigQuery. This works around hitting a hard memory limit when running the
+        ORDER BY clause.
 
   Returns:
     A tuple (builder, results). |builder| is simply the value of the input
@@ -328,26 +428,25 @@ def QueryBuilder(builder, builder_type, suite, project, num_samples):
   suite = TELEMETRY_SUITE_TO_RDB_SUITE_EXCEPTION_MAP.get(
       suite, suite + '_integration_test')
 
-  query = GPU_BQ_QUERY_TEMPLATE.format(builder_type=builder_type, suite=suite)
-  cmd = [
-      'bq',
-      'query',
-      '--max_rows=%d' % MAX_ROWS,
-      '--format=json',
-      '--project_id=%s' % project,
-      '--use_legacy_sql=false',
-      '--parameter=builder_name::%s' % builder,
-      '--parameter=num_builds:INT64:%d' % num_samples,
-      query,
-  ]
-  with open(os.devnull, 'w') as devnull:
-    try:
-      stdout = subprocess.check_output(cmd, stderr=devnull)
-    except subprocess.CalledProcessError as e:
-      logging.error(e.output)
-      raise
+  test_filter_clause = _GetTestFilterClauseForBuilder(builder, builder_type,
+                                                      suite, project,
+                                                      large_query_mode)
+  if test_filter_clause is None:
+    # No affected tests on this builder, so early return.
+    return (builder, [])
 
-  query_results = json.loads(stdout)
+  query = GPU_BQ_QUERY_TEMPLATE.format(builder_type=builder_type,
+                                       test_filter_clause=test_filter_clause,
+                                       suite=suite)
+
+  query_results = _RunBigQueryCommandForJsonOutput(query, project, {
+      '': {
+          'builder_name': builder
+      },
+      'INT64': {
+          'num_builds': num_samples
+      }
+  })
   results = []
   if not query_results:
     # Don't bother logging if we know this is a fake CI builder.
@@ -371,6 +470,111 @@ def QueryBuilder(builder, builder_type, suite, project, num_samples):
   logging.debug('Got %d results for %s builder %s', len(results), builder_type,
                 builder)
   return (builder, results)
+
+
+def _GetTestFilterClauseForBuilder(builder, builder_type, suite, project,
+                                   large_query_mode):
+  """Returns a SQL clause to only include relevant tests.
+
+  Args:
+    builder: A string containing the name of the builder to query.
+    builder_type: A string containing the type of builder to query, either "ci"
+        or "try".
+    suite: A string containing the name of the suite that is being queried for.
+    project: A string containing the billing project to use for BigQuery.
+    large_query_mode: A boolean indicating whether large query mode should be
+        used. In this mode, an initial, smaller query is made and its results
+        are used to perform additional filtering on a second, larger query in
+        BigQuery. This works around hitting a hard memory limit when running the
+        ORDER BY clause.
+
+  Returns:
+    None if |large_query_mode| is True and no tests are relevant to the
+    specified |builder|. Otherwise, a string containing a valid SQL clause.
+  """
+  if not large_query_mode:
+    # Look for all tests that match the given suite.
+    return """\
+        AND REGEXP_CONTAINS(
+          test_id,
+          r"gpu_tests\.%s\.")""" % suite
+
+  query = TEST_FILTER_QUERY_TEMPLATE.format(builder_type=builder_type,
+                                            suite=suite)
+  query_results = _RunBigQueryCommandForJsonOutput(
+      query, project, {'': {
+          'builder_name': builder
+      }})
+  test_ids = ['"%s"' % r['test_id'] for r in query_results]
+  if not test_ids:
+    return None
+  # Only consider specific test cases that were found to have active
+  # expectations in the above query.
+  test_filter_clause = 'AND test_id IN UNNEST([%s])' % ', '.join(test_ids)
+  return test_filter_clause
+
+
+def _RunBigQueryCommandForJsonOutput(query, project, parameters):
+  """Runs the given BigQuery query and returns its output as JSON.
+
+  Args:
+    query: A string containing a valid BigQuery query to run.
+    project: A string containing the billing project to use for BigQuery.
+    parameters: A dict specifying parameters to substitute in the query in
+        the format {type: {key: value}}. For example, the dict:
+        {'INT64': {'num_builds': 5}}
+        would result in --parameter=num_builds:INT64:5 being passed to BigQuery.
+
+  Returns:
+    The result of |query| as JSON.
+  """
+  cmd = _GenerateBigQueryCommand(project, parameters)
+  with open(os.devnull, 'w') as devnull:
+    p = subprocess.Popen(cmd,
+                         stdout=subprocess.PIPE,
+                         stderr=devnull,
+                         stdin=subprocess.PIPE)
+    # We pass in the query via stdin instead of including it on the commandline
+    # because we can run into command length issues in large query mode.
+    stdout, _ = p.communicate(query)
+    if p.returncode:
+      error_msg = 'Error running command %s. stdout: %s' % (cmd, stdout)
+      if 'memory' in stdout:
+        error_msg += ('\nIt looks like BigQuery may have run out of memory. '
+                      'Try lowering --num-samples or using --large-query-mode.')
+      raise RuntimeError(error_msg)
+  return json.loads(stdout)
+
+
+def _GenerateBigQueryCommand(project, parameters):
+  """Generate a BigQuery commandline.
+
+  Does not contain the actual query, as that is passed in via stdin.
+
+  Args:
+    project: A string containing the billing project to use for BigQuery.
+    parameters: A dict specifying parameters to substitute in the query in
+        the format {type: {key: value}}. For example, the dict:
+        {'INT64': {'num_builds': 5}}
+        would result in --parameter=num_builds:INT64:5 being passed to BigQuery.
+
+  Returns:
+    A list containing the BigQuery commandline, suitable to be passed to a
+    method from the subprocess module.
+  """
+  cmd = [
+      'bq',
+      'query',
+      '--max_rows=%d' % MAX_ROWS,
+      '--format=json',
+      '--project_id=%s' % project,
+      '--use_legacy_sql=false',
+  ]
+
+  for parameter_type, parameter_pairs in parameters.iteritems():
+    for k, v in parameter_pairs.iteritems():
+      cmd.append('--parameter=%s:%s:%s' % (k, parameter_type, v))
+  return cmd
 
 
 def _StripPrefixFromBuildId(build_id):

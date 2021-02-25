@@ -28,3 +28,31 @@ class FakePool(object):
     for i in inputs:
       retval.append(f(i))
     return retval
+
+  def apipe(self, f, inputs):
+    return FakeAsyncResult(f(inputs))
+
+
+class FakeAsyncResult(object):
+  """A fake AsyncResult like the one from multiprocessing or pathos."""
+
+  def __init__(self, result):
+    self._result = result
+
+  def ready(self):
+    return True
+
+  def get(self):
+    return self._result
+
+
+class FakeProcess(object):
+  """A fake subprocess Process object."""
+
+  def __init__(self, returncode=None, stdout=None, stderr=None):
+    self.returncode = returncode or 0
+    self.stdout = stdout or ''
+    self.stderr = stderr or ''
+
+  def communicate(self, _):
+    return self.stdout, self.stderr

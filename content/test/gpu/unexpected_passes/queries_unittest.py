@@ -336,27 +336,27 @@ class HelperMethodUnittest(unittest.TestCase):
 
 class QueryBuilderUnittest(unittest.TestCase):
   def setUp(self):
-    self._patcher = mock.patch.object(subprocess, 'check_output')
-    self._process_mock = self._patcher.start()
+    self._patcher = mock.patch.object(subprocess, 'Popen')
+    self._popen_mock = self._patcher.start()
     self.addCleanup(self._patcher.stop)
 
   def testQueryFailureRaised(self):
     """Tests that a query failure is properly surfaced."""
-    self._process_mock.side_effect = subprocess.CalledProcessError(1, 'cmd')
-    with self.assertRaises(subprocess.CalledProcessError):
-      queries.QueryBuilder('builder', 'ci', 'pixel', 'project', 5)
+    self._popen_mock.return_value = unittest_utils.FakeProcess(returncode=1)
+    with self.assertRaises(RuntimeError):
+      queries.QueryBuilder('builder', 'ci', 'pixel', 'project', 5, False)
 
   def testInvalidNumSamples(self):
     """Tests that the number of samples is validated."""
     with self.assertRaises(AssertionError):
-      queries.QueryBuilder('builder', 'ci', 'pixel', 'project', -1)
-    self._process_mock.assert_not_called()
+      queries.QueryBuilder('builder', 'ci', 'pixel', 'project', -1, False)
+    self._popen_mock.assert_not_called()
 
   def testNoResults(self):
     """Tests functionality if the query returns no results."""
-    self._process_mock.return_value = '[]'
+    self._popen_mock.return_value = unittest_utils.FakeProcess(stdout='[]')
     builder, results = queries.QueryBuilder('builder', 'ci', 'pixel', 'project',
-                                            5)
+                                            5, False)
     self.assertEqual(builder, 'builder')
     self.assertEqual(results, [])
 
@@ -382,9 +382,10 @@ class QueryBuilderUnittest(unittest.TestCase):
             'step_name',
         },
     ]
-    self._process_mock.return_value = json.dumps(query_results)
+    self._popen_mock.return_value = unittest_utils.FakeProcess(
+        stdout=json.dumps(query_results))
     builder, results = queries.QueryBuilder('builder', 'ci', 'pixel', 'project',
-                                            5)
+                                            5, False)
     self.assertEqual(builder, 'builder')
     self.assertEqual(len(results), 1)
     self.assertEqual(
@@ -430,9 +431,10 @@ class QueryBuilderUnittest(unittest.TestCase):
             'step_name',
         },
     ]
-    self._process_mock.return_value = json.dumps(query_results)
+    self._popen_mock.return_value = unittest_utils.FakeProcess(
+        stdout=json.dumps(query_results))
     _, results = queries.QueryBuilder('builder', 'ci', 'webgl_conformance1',
-                                      'project', 5)
+                                      'project', 5, False)
     self.assertEqual(len(results), 1)
     self.assertEqual(
         results[0],
@@ -440,7 +442,7 @@ class QueryBuilderUnittest(unittest.TestCase):
                           'step_name', '1234'))
 
     _, results = queries.QueryBuilder('builder', 'ci', 'webgl_conformance2',
-                                      'project', 5)
+                                      'project', 5, False)
     self.assertEqual(len(results), 1)
     self.assertEqual(
         results[0],
@@ -449,51 +451,57 @@ class QueryBuilderUnittest(unittest.TestCase):
 
   def testSuiteExceptionMap(self):
     """Tests that the suite passed to the query changes for some suites."""
-    # These don't actually matter, we just need to ensure that something valid
-    # is returned so QueryBuilder doesn't explode.
-    query_results = [
-        {
-            'id':
-            'build-1234',
-            'test_id': ('ninja://chrome/test:telemetry_gpu_integration_test/'
-                        'gpu_tests.webgl_conformance_integration_test.'
-                        'WebGLConformanceIntegrationTest.test_name'),
-            'status':
-            'FAIL',
-            'typ_expectations': [
-                'RetryOnFailure',
-            ],
-            'typ_tags': [
-                'webgl-version-1',
-            ],
-            'step_name':
-            'step_name',
-        },
-    ]
-    self._process_mock.return_value = json.dumps(query_results)
-
     def assertSuiteInQuery(suite, call_args):
-      cmd = call_args[0][0]
+      query = call_args[0][0]
       s = 'r"gpu_tests\\.%s\\."' % suite
-      for c in cmd:
-        if s in c:
-          return
-      self.fail()
+      self.assertIn(s, query)
 
-    # Non-special cased suite.
-    _, _ = queries.QueryBuilder('builder', 'ci', 'pixel', 'project', 5)
-    assertSuiteInQuery('pixel_integration_test', self._process_mock.call_args)
+    with mock.patch.object(queries,
+                           '_RunBigQueryCommandForJsonOutput') as query_mock:
+      # Non-special cased suite.
+      _, _ = queries.QueryBuilder('builder', 'ci', 'pixel', 'project', 5, False)
+      assertSuiteInQuery('pixel_integration_test', query_mock.call_args)
 
-    # Special-cased suites.
-    _, _ = queries.QueryBuilder('builder', 'ci', 'info_collection', 'project',
-                                5)
-    assertSuiteInQuery('info_collection_test', self._process_mock.call_args)
-    _, _ = queries.QueryBuilder('builder', 'ci', 'power', 'project', 5)
-    assertSuiteInQuery('power_measurement_integration_test',
-                       self._process_mock.call_args)
+      # Special-cased suites.
+      _, _ = queries.QueryBuilder('builder', 'ci', 'info_collection', 'project',
+                                  5, False)
+      assertSuiteInQuery('info_collection_test', query_mock.call_args)
+      _, _ = queries.QueryBuilder('builder', 'ci', 'power', 'project', 5, False)
+      assertSuiteInQuery('power_measurement_integration_test',
+                         query_mock.call_args)
 
-    _, _ = queries.QueryBuilder('builder', 'ci', 'trace_test', 'project', 5)
-    assertSuiteInQuery('trace_integration_test', self._process_mock.call_args)
+      _, _ = queries.QueryBuilder('builder', 'ci', 'trace_test', 'project', 5,
+                                  False)
+      assertSuiteInQuery('trace_integration_test', query_mock.call_args)
+
+  def testFilterInsertion(self):
+    """Tests that test filters are properly inserted into the query."""
+    with mock.patch.object(
+        queries, '_GetTestFilterClauseForBuilder',
+        return_value='a real filter'), mock.patch.object(
+            queries, '_RunBigQueryCommandForJsonOutput') as query_mock:
+      queries.QueryBuilder('builder', 'ci', 'info_collection', 'project', 5,
+                           False)
+      query_mock.assert_called_once()
+      query = query_mock.call_args[0][0]
+      self.assertIn(
+          """\
+        AND STRUCT("builder", @builder_name) IN UNNEST(variant)
+        a real filter
+      GROUP BY exported.id""", query)
+
+  def testEarlyReturnOnNoFilter(self):
+    """Tests that the absence of a test filter results in an early return."""
+    with mock.patch.object(
+        queries, '_GetTestFilterClauseForBuilder',
+        return_value=None), mock.patch.object(
+            queries, '_RunBigQueryCommandForJsonOutput') as query_mock:
+      builder, results = queries.QueryBuilder('builder', 'ci',
+                                              'info_collection', 'project', 5,
+                                              False)
+      query_mock.assert_not_called()
+      self.assertEqual(builder, 'builder')
+      self.assertEqual(results, [])
 
 
 class FillExpectationMapForBuildersUnittest(unittest.TestCase):
@@ -506,6 +514,11 @@ class FillExpectationMapForBuildersUnittest(unittest.TestCase):
     self._pool_mock = self._pool_patcher.start()
     self._pool_mock.return_value = unittest_utils.FakePool()
     self.addCleanup(self._pool_patcher.stop)
+    self._sleep_patcher = mock.patch.object(queries,
+                                            'ASYNC_RESULT_SLEEP_DURATION',
+                                            return_value=0.1)
+    self._sleep_mock = self._sleep_patcher.start()
+    self.addCleanup(self._sleep_patcher.stop)
 
   def testValidResults(self):
     """Tests functionality when valid results are returned by the query."""
@@ -531,7 +544,7 @@ class FillExpectationMapForBuildersUnittest(unittest.TestCase):
     }
     unmatched_results = queries._FillExpectationMapForBuilders(
         expectation_map, ['matched_builder', 'unmatched_builder'], 'ci',
-        'pixel', 'project', 5)
+        'pixel', 'project', 5, False)
     stats = data_types.BuildStats()
     stats.AddPassedBuild()
     expected_expectation_map = {
@@ -550,6 +563,13 @@ class FillExpectationMapForBuildersUnittest(unittest.TestCase):
                 data_types.Result('bar', [], 'Pass', 'step_name', 'build_id'),
             ],
         })
+
+  def testQueryFailureIsSurfaced(self):
+    """Tests that a query failure is properly surfaced despite being async."""
+    self._query_mock.side_effect = IndexError('failure')
+    with self.assertRaises(IndexError):
+      queries._FillExpectationMapForBuilders({}, ['matched_builder'], 'ci',
+                                             'pixel', 'project', 5, False)
 
 
 class MergeExpectationMapsUnittest(unittest.TestCase):
@@ -714,6 +734,85 @@ class MergeExpectationMapsUnittest(unittest.TestCase):
     queries._MergeExpectationMaps(base_map, merge_map, original_base_map)
     with self.assertRaises(AssertionError):
       queries._MergeExpectationMaps(base_map, merge_map, original_base_map)
+
+
+class GetTestFilterClauseForBuilderUnittest(unittest.TestCase):
+  def setUp(self):
+    self._query_patcher = mock.patch.object(queries,
+                                            '_RunBigQueryCommandForJsonOutput')
+    self._query_mock = self._query_patcher.start()
+    self.addCleanup(self._query_patcher.stop)
+
+  def testNoLargeQueryMode(self):
+    """Tests that the expected clause is returned in normal mode."""
+    clause = queries._GetTestFilterClauseForBuilder('', '', 'foo_suite', '',
+                                                    False)
+    self.assertEqual(
+        clause, """\
+        AND REGEXP_CONTAINS(
+          test_id,
+          r"gpu_tests\.foo_suite\.")""")
+    self._query_mock.assert_not_called()
+
+  def testLargeQueryModeNoTests(self):
+    """Tests that a special value is returned if no tests are found."""
+    self._query_mock.return_value = []
+    clause = queries._GetTestFilterClauseForBuilder('', '', '', '', True)
+    self.assertIsNone(clause)
+    self._query_mock.assert_called_once()
+
+  def testLargeQueryModeFoundTests(self):
+    """Tests that a clause containing found tests is returned."""
+    self._query_mock.return_value = [{
+        'test_id': 'foo_test'
+    }, {
+        'test_id': 'bar_test'
+    }]
+    clause = queries._GetTestFilterClauseForBuilder('', '', '', '', True)
+    self.assertEqual(clause, 'AND test_id IN UNNEST(["foo_test", "bar_test"])')
+
+
+class RunBigQueryCommandForJsonOutputUnittest(unittest.TestCase):
+  def setUp(self):
+    self._popen_patcher = mock.patch.object(subprocess, 'Popen')
+    self._popen_mock = self._popen_patcher.start()
+    self.addCleanup(self._popen_patcher.stop)
+
+  def testJsonReturned(self):
+    """Tests that valid JSON parsed from stdout is returned."""
+    query_output = {'foo': 'bar'}
+    self._popen_mock.return_value = unittest_utils.FakeProcess(
+        stdout=json.dumps(query_output))
+    result = queries._RunBigQueryCommandForJsonOutput('', '', {})
+    self.assertEqual(result, query_output)
+    self._popen_mock.assert_called_once()
+
+  def testExceptionRaisedOnFailure(self):
+    """Tests that an exception is raised if the query fails."""
+    self._popen_mock.return_value = unittest_utils.FakeProcess(returncode=1)
+    with self.assertRaises(RuntimeError):
+      queries._RunBigQueryCommandForJsonOutput('', '', {})
+
+
+class GenerateBigQueryCommandUnittest(unittest.TestCase):
+  def testNoParametersSpecified(self):
+    """Tests that no parameters are added if none are specified."""
+    cmd = queries._GenerateBigQueryCommand('project', {})
+    for element in cmd:
+      self.assertFalse(element.startswith('--parameter'))
+
+  def testParameterAddition(self):
+    """Tests that specified parameters are added appropriately."""
+    cmd = queries._GenerateBigQueryCommand('project', {
+        '': {
+            'string': 'string_value'
+        },
+        'INT64': {
+            'int': 1
+        }
+    })
+    self.assertIn('--parameter=string::string_value', cmd)
+    self.assertIn('--parameter=int:INT64:1', cmd)
 
 
 if __name__ == '__main__':

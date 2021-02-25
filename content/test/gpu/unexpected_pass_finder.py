@@ -122,6 +122,13 @@ def ParseArgs():
                       action='store_true',
                       default=False,
                       help='Disable logging for non-errors.')
+  parser.add_argument('--large-query-mode',
+                      action='store_true',
+                      default=False,
+                      help='Run the script in large query mode. This incurs '
+                      'a significant performance hit, but allows the use of '
+                      'larger sample sizes on large test suites by partially '
+                      'working around a hard memory limit in BigQuery.')
 
   args = parser.parse_args()
   if args.quiet:
@@ -165,12 +172,14 @@ def main():
   unmatched = queries.FillExpectationMapForCiBuilders(test_expectation_map,
                                                       ci_builders, args.suite,
                                                       args.project,
-                                                      args.num_samples)
+                                                      args.num_samples,
+                                                      args.large_query_mode)
   try_builders = builders.GetTryBuilders(ci_builders)
   unmatched.update(
       queries.FillExpectationMapForTryBuilders(test_expectation_map,
                                                try_builders, args.suite,
-                                               args.project, args.num_samples))
+                                               args.project, args.num_samples,
+                                               args.large_query_mode))
   unused_expectations = expectations.FilterOutUnusedExpectations(
       test_expectation_map)
   stale, semi_stale, active = expectations.SplitExpectationsByStaleness(
