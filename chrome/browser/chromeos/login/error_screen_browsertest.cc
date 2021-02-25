@@ -16,6 +16,7 @@
 #include "chrome/browser/chromeos/login/test/js_checker.h"
 #include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
 #include "chrome/browser/chromeos/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/chromeos/login/test/oobe_screens_utils.h"
 #include "chrome/browser/chromeos/login/wizard_context.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/app_launch_splash_screen_handler.h"
@@ -87,6 +88,9 @@ class NetworkErrorScreenTest : public InProcessBrowserTest {
 
     // Wait until network list adds the wifi test network.
     OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
+
+    EXPECT_TRUE(test::IsScanningRequestedOnErrorScreen());
+
     test::OobeJS()
         .CreateWaiter(WifiElementSelector(kWifiNetworkName) + " != null")
         ->Wait();

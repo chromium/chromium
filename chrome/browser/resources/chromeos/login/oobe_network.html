@@ -26,6 +26,7 @@
       </div>
       <div slot="content" class="layout vertical">
         <network-select-login id="networkSelectLogin"
+            enable-wifi-scans="[[enableWifiScans_]]"
             on-selected-network-connected="onNetworkConnected_"
             is-network-connected="{{isConnected_}}">
         </network-select-login>

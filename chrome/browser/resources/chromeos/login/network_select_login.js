@@ -50,6 +50,16 @@
       },
 
       /**
+       * Whether this element should trigger periodic Wi-Fi scans to update the
+       * list of networks. If true, a background scan is performed every 10
+       * seconds.
+       */
+      enableWifiScans: {
+        type: Boolean,
+        value: true,
+      },
+
+      /**
        * Whether to show technology badge on mobile network icons.
        * @private
        */

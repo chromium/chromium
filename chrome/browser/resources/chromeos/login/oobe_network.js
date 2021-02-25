@@ -47,6 +47,18 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /**
+     * Controls if periodic background Wi-Fi scans are enabled to update the
+     * list of available networks. It is enabled by default so that when user
+     * gets to screen networks are already listed, but should be off when user
+     * leaves the screen, as scanning can reduce effective bandwidth.
+     * @private
+     */
+    enableWifiScans_: {
+      type: Boolean,
+      value: true,
+    },
   },
 
   observers:
@@ -58,6 +70,7 @@ Polymer({
     var isDemoModeSetup =
         data && isDemoModeSetupKey in data && data[isDemoModeSetupKey];
     this.isDemoModeSetup = isDemoModeSetup;
+    this.enableWifiScans_ = true;
     this.$.networkSelectLogin.onBeforeShow();
     this.show();
   },
@@ -65,6 +78,7 @@ Polymer({
   /** Called when dialog is hidden. */
   onBeforeHide() {
     cr.ui.login.invokePolymerMethod(this.$.networkSelectLogin, 'onBeforeHide');
+    this.enableWifiScans_ = false;
   },
 
   /** @override */

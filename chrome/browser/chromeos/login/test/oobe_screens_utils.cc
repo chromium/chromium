@@ -176,6 +176,18 @@ void ExitScreenSyncConsent() {
   WaitForExit(SyncConsentScreenView::kScreenId);
 }
 
+bool IsScanningRequestedOnNetworkScreen() {
+  return test::OobeJS().GetAttributeBool(
+      "enableWifiScans",
+      {"network-selection", "networkSelectLogin", "networkSelect"});
+}
+
+bool IsScanningRequestedOnErrorScreen() {
+  return test::OobeJS().GetAttributeBool(
+      "enableWifiScans",
+      {"error-message", "offline-network-control", "networkSelect"});
+}
+
 LanguageReloadObserver::LanguageReloadObserver(WelcomeScreen* welcome_screen)
     : welcome_screen_(welcome_screen) {
   welcome_screen_->AddObserver(this);

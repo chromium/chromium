@@ -32,6 +32,9 @@ void TapEulaAccept();
 void WaitForSyncConsentScreen();
 void ExitScreenSyncConsent();
 
+bool IsScanningRequestedOnNetworkScreen();
+bool IsScanningRequestedOnErrorScreen();
+
 class LanguageReloadObserver : public WelcomeScreen::Observer {
  public:
   explicit LanguageReloadObserver(WelcomeScreen* welcome_screen);

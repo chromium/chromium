@@ -99,6 +99,16 @@ Polymer({
       value: false,
     },
 
+    /**
+     * Controls if periodic background Wi-Fi scans are enabled to update the
+     * list of available networks.
+     * @private
+     */
+    enableWifiScans_: {
+      type: Boolean,
+      value: false,
+    },
+
     currentNetworkName_: {
       type: String,
       value: '',
@@ -345,6 +355,7 @@ Polymer({
    * @suppress {missingProperties} clearErrors() exists
    */
   onBeforeShow(data) {
+    this.enableWifiScans_ = true;
     cr.ui.Oobe.clearErrors();
     this.$['backButton'].disabled = !this.closable;
   },
@@ -354,6 +365,7 @@ Polymer({
    * @suppress {missingProperties} setOobeUIState() exists
    */
   onBeforeHide() {
+    this.enableWifiScans_ = false;
     Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.HIDDEN);
     // Reset property to the default state.
     this.setIsPersistentError(false);

@@ -15,6 +15,7 @@
     </style>
     <network-select id="networkSelect" class="focus-on-show"
         show-scan-progress
+        enable-wifi-scans="[[enableWifiScans]]"
         custom-items="[[getNetworkCustomItems_(isNetworkConnected)]]"
         on-default-network-changed="onDefaultNetworkChanged_"
         on-network-connect-changed="onNetworkConnectChanged_"

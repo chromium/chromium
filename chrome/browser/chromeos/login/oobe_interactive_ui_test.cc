@@ -123,6 +123,8 @@ void RunWelcomeScreenChecks() {
   EXPECT_TRUE(ash::LoginScreenTestApi::IsShutdownButtonShown());
   EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
   EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
+
+  EXPECT_TRUE(test::IsScanningRequestedOnNetworkScreen());
 }
 
 void RunNetworkSelectionScreenChecks() {
@@ -133,6 +135,7 @@ void RunNetworkSelectionScreenChecks() {
   EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
 
   test::OobeJS().CreateFocusWaiter({"network-selection", "nextButton"})->Wait();
+  EXPECT_TRUE(test::IsScanningRequestedOnNetworkScreen());
 }
 
 void RunEulaScreenChecks() {
@@ -146,6 +149,7 @@ void RunEulaScreenChecks() {
   EXPECT_TRUE(ash::LoginScreenTestApi::IsShutdownButtonShown);
   EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
   EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(test::IsScanningRequestedOnNetworkScreen());
 }
 
 void WaitForGaiaSignInScreen(bool arc_available) {
