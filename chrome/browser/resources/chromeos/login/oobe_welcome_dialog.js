@@ -327,6 +327,7 @@
     onBeforeShow() {
       if (this.isNewLayout_) {
         document.documentElement.setAttribute('new-layout', '');
+        this.$.newWelcomeAnimation.setPlay(true);
       } else {
         this.$.oldDialog.onBeforeShow();
       }
@@ -456,6 +457,9 @@
         // this page is not visible
         this.welcomeVideoController_.pause();
       }
+
+      if (this.isNewLayout_)
+        this.$.newWelcomeAnimation.setPlay(visible);
     },
 
     /**

@@ -6,6 +6,7 @@
 <link rel="import" href="chrome://resources/html/action_link.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_lottie/cr_lottie.html">
 
 <link rel="import" href="/components/oobe_shared_vars_css.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
@@ -221,7 +222,9 @@
             disabled="[[!isNewLayout_]]"
             text-key="welcomeScreenGetStarted">
         </oobe-text-button>
-        <img src="images/new_welcome.png" id="newWelcomeAnimation">
+        <cr-lottie id="newWelcomeAnimation"
+                   animation-url="welcome_screen_animation.json">
+        </cr-lottie>
       </div>
     </div>
 

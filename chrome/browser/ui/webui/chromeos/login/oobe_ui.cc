@@ -731,6 +731,13 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source,
                             IDR_OOBE_COMPONENTS_OOBE_CONTENT_DIALOG_HTML);
     source->AddResourcePath(kOobeContentDialogJS,
                             IDR_OOBE_COMPONENTS_OOBE_CONTENT_DIALOG_JS);
+
+    source->AddResourcePath("welcome_screen_animation.json",
+                            IDR_LOGIN_WELCOME_SCREEN_ANIMATION);
+    source->OverrideContentSecurityPolicy(
+        network::mojom::CSPDirectiveName::WorkerSrc,
+        "worker-src blob: 'self';");
+
   } else {
     source->AddResourcePath(
         kOobeCustomVarsCssHTML,
