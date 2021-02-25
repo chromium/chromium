@@ -541,6 +541,14 @@ void FileMetricsProvider::MergeHistogramDeltasFromSource(SourceInfo* source) {
     std::unique_ptr<base::HistogramBase> histogram = histogram_iter.GetNext();
     if (!histogram)
       break;
+
+    // Keep track of which histograms are getting merged from other sources.
+    // TODO(crbug.com/1176977): Consider removing this after bug is fixed.
+    base::UmaHistogramSparse(
+        read_only ? "UMA.FileMetricsProvider.MergeHistogram.ReadOnly"
+                  : "UMA.FileMetricsProvider.MergeHistogram.NotReadOnly",
+        static_cast<base::HistogramBase::Sample>(histogram->name_hash()));
+
     if (read_only) {
       source->allocator->MergeHistogramFinalDeltaToStatisticsRecorder(
           histogram.get());

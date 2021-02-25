@@ -123,6 +123,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="UMA.FileMetricsProvider.MergeHistogram.{Type}"
+    enum="HistogramNameHash" expires_after="2021-06-20">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    Records which histograms were merged into the current log from external
+    sources. {Type}
+  </summary>
+  <token key="Type">
+    <variant name="NotReadOnly" summary="From non-read-only sources."/>
+    <variant name="ReadOnly" summary="From read-only sources."/>
+  </token>
+</histogram>
+
 <histogram name="UMA.InitSequence" enum="UmaInitSequence"
     expires_after="2021-08-22">
   <owner>asvitkine@chromium.org</owner>
