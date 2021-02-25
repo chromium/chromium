@@ -79,6 +79,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Cras.FetchDelayMilliSeconds" units="ms"
+    expires_after="2021-12-01">
+<!-- Name completed by histogram_suffixes
+     name="Cras.ClientType" and
+     name="Cras.StreamType" -->
+
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The longest additional time CRAS(Chrome OS audio server) ever waits for a
+    stream exceeding the timeout threshold. This value is recorded per stream
+    when it gets removed and used to investigate the audio glitch/skip problem
+    on Chrome OS.
+  </summary>
+</histogram>
+
 <histogram name="Cras.HfpBatteryIndicatorSupported"
     enum="CrasHfpBatteryIndicator" expires_after="2021-12-01">
   <owner>enshuo@chromium.org</owner>
@@ -726,6 +742,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The flags of stream in CRAS(Chrome OS audio server). It is the special
     handling for stream. This value is recorded when the stream is created.
+  </summary>
+</histogram>
+
+<histogram name="Cras.StreamRuntime" units="seconds" expires_after="2021-12-01">
+<!-- Name completed by histogram_suffixes
+     name="Cras.Direction" and
+     name="Cras.ClientType" and
+     name="Cras.StreamType" -->
+
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The runtime of stream in CRAS(ChromeOS audio server). The runtime is the
+    duration between creating and destroying a stream. The value is recorded
+    when the stream is destroyed.
   </summary>
 </histogram>
 

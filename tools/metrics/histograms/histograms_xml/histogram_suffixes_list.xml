@@ -3755,6 +3755,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="ServerStream" label="A client created by CRAS server."/>
   <suffix name="Test" label="A client created by cras_test_client."/>
   <suffix name="Unknown" label="Unknown client."/>
+  <affected-histogram name="Cras.FetchDelayMilliSeconds"/>
   <affected-histogram name="Cras.InputStreamRuntime"/>
   <affected-histogram name="Cras.OutputStreamRuntime"/>
   <affected-histogram name="Cras.StreamCallbackThreshold.Input"/>
@@ -3763,6 +3764,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Cras.StreamEffects.Output"/>
   <affected-histogram name="Cras.StreamFlags.Input"/>
   <affected-histogram name="Cras.StreamFlags.Output"/>
+  <affected-histogram name="Cras.StreamRuntime.Input"/>
+  <affected-histogram name="Cras.StreamRuntime.Output"/>
   <affected-histogram name="Cras.StreamSamplingFormat.Input"/>
   <affected-histogram name="Cras.StreamSamplingFormat.Output"/>
   <affected-histogram name="Cras.StreamSamplingRate.Input"/>
@@ -3808,6 +3811,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Cras.StreamCallbackThreshold"/>
   <affected-histogram name="Cras.StreamEffects"/>
   <affected-histogram name="Cras.StreamFlags"/>
+  <affected-histogram name="Cras.StreamRuntime"/>
   <affected-histogram name="Cras.StreamSamplingFormat"/>
   <affected-histogram name="Cras.StreamSamplingRate"/>
 </histogram_suffixes>
@@ -3815,6 +3819,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram_suffixes name="Cras_StreamType" separator=".">
   <suffix name="Default" label="Default"/>
   <suffix name="VoiceCommunication" label="WebRTC"/>
+  <affected-histogram name="Cras.FetchDelayMilliSeconds.ARC"/>
+  <affected-histogram name="Cras.FetchDelayMilliSeconds.Chrome"/>
+  <affected-histogram name="Cras.FetchDelayMilliSeconds.CrOSVM"/>
+  <affected-histogram name="Cras.FetchDelayMilliSeconds.LaCrOS"/>
   <affected-histogram name="Cras.InputStreamRuntime.ARC"/>
   <affected-histogram name="Cras.InputStreamRuntime.Chrome"/>
   <affected-histogram name="Cras.InputStreamRuntime.CrOSVM"/>
@@ -3823,6 +3831,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Cras.OutputStreamRuntime.Chrome"/>
   <affected-histogram name="Cras.OutputStreamRuntime.CrOSVM"/>
   <affected-histogram name="Cras.OutputStreamRuntime.LaCrOS"/>
+  <affected-histogram name="Cras.StreamRuntime.Input.ARC"/>
+  <affected-histogram name="Cras.StreamRuntime.Input.Chrome"/>
+  <affected-histogram name="Cras.StreamRuntime.Input.CrOSVM"/>
+  <affected-histogram name="Cras.StreamRuntime.Input.LaCrOS"/>
+  <affected-histogram name="Cras.StreamRuntime.Output.ARC"/>
+  <affected-histogram name="Cras.StreamRuntime.Output.Chrome"/>
+  <affected-histogram name="Cras.StreamRuntime.Output.CrOSVM"/>
+  <affected-histogram name="Cras.StreamRuntime.Output.LaCrOS"/>
   <affected-histogram name="Cras.StreamTimeoutMilliSeconds.ARC"/>
   <affected-histogram name="Cras.StreamTimeoutMilliSeconds.Chrome"/>
   <affected-histogram name="Cras.StreamTimeoutMilliSeconds.CrOSVM"/>
