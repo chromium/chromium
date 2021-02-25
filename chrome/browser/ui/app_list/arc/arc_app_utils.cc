@@ -100,7 +100,7 @@ constexpr char kAndroidFilesAppId[] = "gmiohhmfhgfclpeacmdfancbipocempm";
 constexpr char kAndroidContactsAppId[] = "kipfkokfekalckplgaikemhghlbkgpfl";
 
 constexpr char const* kAppIdsHiddenInLauncher[] = {
-    kAndroidClockAppId,   kSettingsAppId,     kAndroidFilesAppId,
+    kAndroidClockAppId, kSettingsAppId, kAndroidFilesAppId,
     kAndroidContactsAppId};
 
 // Returns true if |event_flags| came from a mouse or touch event.
@@ -168,7 +168,10 @@ bool Launch(content::BrowserContext* context,
 
   if (app_info->shortcut || intent.has_value()) {
     const std::string intent_uri = intent.value_or(app_info->intent_uri);
-    if (auto* app_instance = GET_APP_INSTANCE(LaunchIntent)) {
+    if (auto* app_instance = GET_APP_INSTANCE(LaunchIntentWithWindowInfo)) {
+      app_instance->LaunchIntentWithWindowInfo(intent_uri,
+                                               MakeWindowInfo(display_id));
+    } else if (auto* app_instance = GET_APP_INSTANCE(LaunchIntent)) {
       app_instance->LaunchIntent(intent_uri, display_id);
     } else if (auto* app_instance = GET_APP_INSTANCE(LaunchIntentDeprecated)) {
       app_instance->LaunchIntentDeprecated(intent_uri, gfx::Rect());
@@ -176,7 +179,11 @@ bool Launch(content::BrowserContext* context,
       return false;
     }
   } else {
-    if (auto* app_instance = GET_APP_INSTANCE(LaunchApp)) {
+    if (auto* app_instance = GET_APP_INSTANCE(LaunchAppWithWindowInfo)) {
+      app_instance->LaunchAppWithWindowInfo(app_info->package_name,
+                                            app_info->activity,
+                                            MakeWindowInfo(display_id));
+    } else if (auto* app_instance = GET_APP_INSTANCE(LaunchApp)) {
       app_instance->LaunchApp(app_info->package_name, app_info->activity,
                               display_id);
     } else if (auto* app_instance = GET_APP_INSTANCE(LaunchAppDeprecated)) {

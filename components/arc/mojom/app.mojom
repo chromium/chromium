@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 47
+// Next MinVersion: 48
 
 module arc.mojom;
 
@@ -100,14 +100,6 @@ struct RawIconPngData {
   array<uint8>? background_icon_png_data;
 };
 
-// The window bounds information.
-struct Bounds {
-  int32 x;
-  int32 y;
-  int32 width;
-  int32 height;
-};
-
 // The window information to launch an app.
 // This should be kept in sync with WindowInfo in
 // components/services/app_service/public/mojom/types.mojom, and
@@ -116,7 +108,7 @@ struct WindowInfo {
   int32 window_id = -1;
   int32 state = -1;
   int64 display_id = -1;
-  Bounds? bounds;
+  Rect? bounds;
 };
 
 // Describes a Play Store app discovery result.
@@ -405,7 +397,7 @@ interface AppHost {
 };
 
 // TODO(lhchavez): Migrate all request/response messages to Mojo.
-// Next method ID: 38
+// Next method ID: 40
 // Deprecated method IDs: 2, 3, 13
 interface AppInstance {
   // DEPRECATED: Please use Init@21 instead.
@@ -433,8 +425,15 @@ interface AppInstance {
 
   // Sends a request to ARC to launch an ARC app defined by |package_name| and
   // |activity|, which cannot be empty.
-  [MinVersion=23] LaunchApp@18(string package_name, string activity,
+  [MinVersion=23] LaunchApp@18(string package_name,
+                               string activity,
                                int64 display_id);
+
+  // Sends a request to ARC to launch an ARC app with specific launch window
+  // info.
+  [MinVersion=47] LaunchAppWithWindowInfo@38(string package_name,
+                                            string activity,
+                                            WindowInfo window_info);
 
   // Sends a request to ARC for the Android launcher to launch the specified app
   // shortcut.
@@ -446,7 +445,13 @@ interface AppInstance {
 
   // Sends a request to ARC to launch an intent. The intent is encoded as a URI
   // string. See Intent.toUri().
-  [MinVersion=23] LaunchIntent@19(string intent_uri, int64 display_id);
+  [MinVersion=23] LaunchIntent@19(string intent_uri,
+                                  int64 display_id);
+
+  // Sends a request to ARC to launch an ARC app with specific launch window
+  // info.
+  [MinVersion=47] LaunchIntentWithWindowInfo@39(string intent_uri,
+                                                WindowInfo window_info);
 
   // Sends a request for the ARC icon of a given resource id and
   // |pixel_size|. This is deprecated and will soon be replaced by GetAppIcon().

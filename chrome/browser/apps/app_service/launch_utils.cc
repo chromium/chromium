@@ -259,12 +259,9 @@ arc::mojom::WindowInfoPtr MakeArcWindowInfo(
   arc_window_info->state = window_info->state;
   arc_window_info->display_id = window_info->display_id;
   if (window_info->bounds) {
-    arc::mojom::BoundsPtr bounds = arc::mojom::Bounds::New();
-    bounds->x = window_info->bounds->x;
-    bounds->y = window_info->bounds->y;
-    bounds->width = window_info->bounds->width;
-    bounds->height = window_info->bounds->height;
-    arc_window_info->bounds = std::move(bounds);
+    gfx::Rect rect{window_info->bounds->x, window_info->bounds->y,
+                   window_info->bounds->width, window_info->bounds->height};
+    arc_window_info->bounds = rect;
   }
   return arc_window_info;
 }
