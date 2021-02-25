@@ -151,6 +151,10 @@ TEST(PartitionAllocAsMalloc, Realloc) {
 TEST(PartitionAllocAsMalloc, Alignment) {
   EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(PartitionAllocMalloc::Allocator()) %
                     alignof(ThreadSafePartitionRoot));
+  // This works fine even if nullptr is returned.
+  EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(
+                    PartitionAllocMalloc::OriginalAllocator()) %
+                    alignof(ThreadSafePartitionRoot));
   EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(
                     PartitionAllocMalloc::AlignedAllocator()) %
                     alignof(ThreadSafePartitionRoot));

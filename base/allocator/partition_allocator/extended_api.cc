@@ -6,23 +6,38 @@
 
 #include "base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h"
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 
 namespace base {
 
-void DisablePartitionAllocThreadCacheForProcess() {
+namespace internal {
+
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  auto* root = base::internal::PartitionAllocMalloc::Allocator();
+void DisableThreadCacheForRootIfEnabled(ThreadSafePartitionRoot* root) {
   // Some platforms don't have a thread cache, or it could already have been
   // disabled.
-  if (root->with_thread_cache) {
-    internal::ThreadCacheRegistry::Instance().PurgeAll();
-    root->with_thread_cache = false;
+  if (!root || !root->with_thread_cache)
+    return;
 
-    // Doesn't destroy the thread cache object(s). For background threads, they
-    // will be collected (and free cached memory) at thread destruction
-    // time. For the main thread, we leak it.
-  }
+  internal::ThreadCacheRegistry::Instance().PurgeAll();
+  root->with_thread_cache = false;
+  // Doesn't destroy the thread cache object(s). For background threads, they
+  // will be collected (and free cached memory) at thread destruction
+  // time. For the main thread, we leak it.
+}
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+}  // namespace internal
+
+void DisablePartitionAllocThreadCacheForProcess() {
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  internal::DisableThreadCacheForRootIfEnabled(
+      base::internal::PartitionAllocMalloc::Allocator());
+  internal::DisableThreadCacheForRootIfEnabled(
+      base::internal::PartitionAllocMalloc::OriginalAllocator());
+  internal::DisableThreadCacheForRootIfEnabled(
+      base::internal::PartitionAllocMalloc::AlignedAllocator());
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 

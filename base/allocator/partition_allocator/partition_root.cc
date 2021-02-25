@@ -40,6 +40,10 @@ void BeforeForkInParent() NO_THREAD_SAFETY_ANALYSIS {
   auto* regular_root = internal::PartitionAllocMalloc::Allocator();
   regular_root->lock_.Lock();
 
+  auto* original_root = internal::PartitionAllocMalloc::OriginalAllocator();
+  if (original_root)
+    original_root->lock_.Lock();
+
   auto* aligned_root = internal::PartitionAllocMalloc::AlignedAllocator();
   if (aligned_root != regular_root)
     aligned_root->lock_.Lock();
@@ -56,6 +60,10 @@ void ReleaseLocks() NO_THREAD_SAFETY_ANALYSIS {
   auto* aligned_root = internal::PartitionAllocMalloc::AlignedAllocator();
   if (aligned_root != regular_root)
     aligned_root->lock_.Unlock();
+
+  auto* original_root = internal::PartitionAllocMalloc::OriginalAllocator();
+  if (original_root)
+    original_root->lock_.Unlock();
 
   regular_root->lock_.Unlock();
 }

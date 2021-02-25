@@ -69,6 +69,7 @@ void ReportPartitionAllocStats(ProcessMemoryDump* pmd, bool detailed) {
   SimplePartitionStatsDumper allocator_dumper;
   internal::PartitionAllocMalloc::Allocator()->DumpStats(
       "malloc", !detailed /* is_light_dump */, &allocator_dumper);
+  // TODO(bartekn): Dump OriginalAllocator() into "malloc" as well.
 
   if (allocator_dumper.stats().has_thread_cache) {
     const auto& stats = allocator_dumper.stats().all_thread_caches_stats;
