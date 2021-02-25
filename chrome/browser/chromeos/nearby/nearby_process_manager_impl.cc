@@ -188,7 +188,7 @@ void NearbyProcessManagerImpl::OnSharingProcessCrash() {
   NS_LOG(ERROR) << "The utility process has crashed.";
 
   NearbyProcessShutdownReason shutdown_reason =
-      NearbyProcessShutdownReason::kMojoPipeDisconnection;
+      NearbyProcessShutdownReason::kCrash;
 
   ShutDownProcess(shutdown_reason);
   NotifyProcessStopped(shutdown_reason);
