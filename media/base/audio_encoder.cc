@@ -12,6 +12,7 @@
 namespace media {
 
 AudioEncoder::Options::Options() = default;
+AudioEncoder::Options::Options(const Options&) = default;
 AudioEncoder::Options::~Options() = default;
 
 EncodedAudioBuffer::EncodedAudioBuffer(const AudioParameters& params,

@@ -8,6 +8,7 @@
 #include "media/audio/audio_opus_encoder.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
+#include "media/base/offloading_audio_encoder.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_encoder_config.h"
@@ -49,7 +50,9 @@ void AudioEncoder::ProcessConfigure(Request* request) {
   DCHECK_EQ(active_config_->codec, media::kCodecOpus);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  media_encoder_ = std::make_unique<media::AudioOpusEncoder>();
+  auto software_encoder = std::make_unique<media::AudioOpusEncoder>();
+  media_encoder_ = std::make_unique<media::OffloadingAudioEncoder>(
+      std::move(software_encoder));
 
   auto output_cb = ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
       &AudioEncoder::CallOutputCallback, WrapCrossThreadWeakPersistent(this),

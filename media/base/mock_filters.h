@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/audio_decoder_config.h"
+#include "media/base/audio_encoder.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_renderer.h"
 #include "media/base/callback_registry.h"
@@ -263,6 +264,35 @@ class MockVideoDecoder : public VideoDecoder {
   const bool supports_decryption_;
   const std::string decoder_name_;
   DISALLOW_COPY_AND_ASSIGN(MockVideoDecoder);
+};
+
+class MockAudioEncoder : public AudioEncoder {
+ public:
+  MockAudioEncoder();
+  ~MockAudioEncoder() override;
+
+  // AudioEncoder implementation.
+  MOCK_METHOD(void,
+              Initialize,
+              (const AudioEncoder::Options& options,
+               AudioEncoder::OutputCB output_cb,
+               AudioEncoder::StatusCB done_cb),
+              (override));
+
+  MOCK_METHOD(void,
+              Encode,
+              (std::unique_ptr<AudioBus> audio_bus,
+               base::TimeTicks capture_time,
+               AudioEncoder::StatusCB done_cb),
+              (override));
+
+  MOCK_METHOD(void, Flush, (AudioEncoder::StatusCB done_cb), (override));
+
+  // A function for mocking destructor calls
+  MOCK_METHOD(void, OnDestruct, ());
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(MockAudioEncoder);
 };
 
 class MockVideoEncoder : public VideoEncoder {

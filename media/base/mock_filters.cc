@@ -105,6 +105,11 @@ VideoDecoderType MockVideoDecoder::GetDecoderType() const {
   return VideoDecoderType::kUnknown;
 }
 
+MockAudioEncoder::MockAudioEncoder() = default;
+MockAudioEncoder::~MockAudioEncoder() {
+  OnDestruct();
+}
+
 MockVideoEncoder::MockVideoEncoder() = default;
 MockVideoEncoder::~MockVideoEncoder() {
   Dtor();
