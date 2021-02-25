@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_METRICS_USAGE_SCENARIO_USAGE_SCENARIO_DATA_STORE_H_
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/tick_clock.h"
@@ -153,6 +154,8 @@ class UsageScenarioDataStoreImpl : public UsageScenarioDataStore {
   uint16_t current_visible_window_count_for_testing() {
     return current_visible_window_count_;
   }
+
+  base::flat_set<ukm::SourceId> GetVisibleSourceIdsForTesting();
 
  private:
   friend class metrics::TabUsageScenarioTrackerBrowserTest;

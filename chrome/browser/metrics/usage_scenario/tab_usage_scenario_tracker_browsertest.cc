@@ -150,22 +150,21 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, BasicNavigations) {
       interval_data.time_playing_video_full_screen_single_monitor.is_zero());
   EXPECT_TRUE(interval_data.time_with_open_webrtc_connection.is_zero());
   EXPECT_TRUE(interval_data.time_playing_video_in_visible_tab.is_zero());
-  // TODO(sebmarchand): This should be equal to
-  // |ukm::GetSourceIdForWebContentsDocument(content0)| once sourceIDs
-  // visibility changes are being tracked (here and with all following checks on
-  // source_id_for_longest_visible_origin).
-  EXPECT_EQ(ukm::kInvalidSourceId,
+  EXPECT_EQ(ukm::GetSourceIdForWebContentsDocument(
+                browser()->tab_strip_model()->GetActiveWebContents()),
             interval_data.source_id_for_longest_visible_origin);
-  EXPECT_TRUE(
-      interval_data.source_id_for_longest_visible_origin_duration.is_zero());
+  EXPECT_EQ(kInterval,
+            interval_data.source_id_for_longest_visible_origin_duration);
 
   // Add a second tab that will become the visible one.
   tick_clock_.Advance(kInterval);
   AddTabAtIndex(1, embedded_test_server()->GetURL("/title2.html"),
                 ui::PAGE_TRANSITION_LINK);
-  auto* content1 = browser()->tab_strip_model()->GetWebContentsAt(1);
-  EXPECT_EQ(content::Visibility::VISIBLE, content1->GetVisibility());
-  tick_clock_.Advance(kInterval);
+  auto* contents1 = browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(
+      content::Visibility::VISIBLE,
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibility());
+  tick_clock_.Advance(kInterval * 2);
   interval_data = data_store_.ResetIntervalData();
   EXPECT_EQ(2U, interval_data.max_tab_count);
   EXPECT_EQ(1U, interval_data.max_visible_window_count);
@@ -176,14 +175,16 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, BasicNavigations) {
       interval_data.time_playing_video_full_screen_single_monitor.is_zero());
   EXPECT_TRUE(interval_data.time_with_open_webrtc_connection.is_zero());
   EXPECT_TRUE(interval_data.time_playing_video_in_visible_tab.is_zero());
-  EXPECT_EQ(ukm::kInvalidSourceId,
+  EXPECT_EQ(ukm::GetSourceIdForWebContentsDocument(contents1),
             interval_data.source_id_for_longest_visible_origin);
-  EXPECT_TRUE(
-      interval_data.source_id_for_longest_visible_origin_duration.is_zero());
+  EXPECT_EQ(kInterval * 2,
+            interval_data.source_id_for_longest_visible_origin_duration);
 
   // Activate the first tab and close it.
   browser()->tab_strip_model()->ActivateTabAt(0);
-  tick_clock_.Advance(kInterval);
+  tick_clock_.Advance(kInterval * 2);
+  auto expected_source_id = ukm::GetSourceIdForWebContentsDocument(
+      browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_TRUE(browser()->tab_strip_model()->CloseWebContentsAt(
       0, TabStripModel::CLOSE_USER_GESTURE));
   tick_clock_.Advance(kInterval);
@@ -199,10 +200,10 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, BasicNavigations) {
       interval_data.time_playing_video_full_screen_single_monitor.is_zero());
   EXPECT_TRUE(interval_data.time_with_open_webrtc_connection.is_zero());
   EXPECT_TRUE(interval_data.time_playing_video_in_visible_tab.is_zero());
-  EXPECT_EQ(ukm::kInvalidSourceId,
+  EXPECT_EQ(expected_source_id,
             interval_data.source_id_for_longest_visible_origin);
-  EXPECT_TRUE(
-      interval_data.source_id_for_longest_visible_origin_duration.is_zero());
+  EXPECT_EQ(kInterval * 2,
+            interval_data.source_id_for_longest_visible_origin_duration);
 
   // There's only one visible tab remaining.
   tick_clock_.Advance(kInterval);
@@ -216,10 +217,10 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, BasicNavigations) {
       interval_data.time_playing_video_full_screen_single_monitor.is_zero());
   EXPECT_TRUE(interval_data.time_with_open_webrtc_connection.is_zero());
   EXPECT_TRUE(interval_data.time_playing_video_in_visible_tab.is_zero());
-  EXPECT_EQ(ukm::kInvalidSourceId,
+  EXPECT_EQ(ukm::GetSourceIdForWebContentsDocument(contents1),
             interval_data.source_id_for_longest_visible_origin);
-  EXPECT_TRUE(
-      interval_data.source_id_for_longest_visible_origin_duration.is_zero());
+  EXPECT_EQ(kInterval,
+            interval_data.source_id_for_longest_visible_origin_duration);
 }
 
 IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, TabCrash) {
@@ -228,6 +229,8 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, TabCrash) {
   EXPECT_EQ(content::Visibility::VISIBLE,
             browser()->tab_strip_model()->GetWebContentsAt(1)->GetVisibility());
   tick_clock_.Advance(kInterval);
+  auto expected_source_id = ukm::GetSourceIdForWebContentsDocument(
+      browser()->tab_strip_model()->GetActiveWebContents());
 
   auto interval_data = data_store_.ResetIntervalData();
   EXPECT_EQ(2U, interval_data.max_tab_count);
@@ -238,10 +241,10 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, TabCrash) {
       interval_data.time_playing_video_full_screen_single_monitor.is_zero());
   EXPECT_TRUE(interval_data.time_with_open_webrtc_connection.is_zero());
   EXPECT_TRUE(interval_data.time_playing_video_in_visible_tab.is_zero());
-  EXPECT_EQ(ukm::kInvalidSourceId,
+  EXPECT_EQ(expected_source_id,
             interval_data.source_id_for_longest_visible_origin);
-  EXPECT_TRUE(
-      interval_data.source_id_for_longest_visible_origin_duration.is_zero());
+  EXPECT_EQ(kInterval,
+            interval_data.source_id_for_longest_visible_origin_duration);
 
   // Induce a crash in the active tab.
   tick_clock_.Advance(kInterval);
@@ -257,10 +260,10 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, TabCrash) {
       interval_data.time_playing_video_full_screen_single_monitor.is_zero());
   EXPECT_TRUE(interval_data.time_with_open_webrtc_connection.is_zero());
   EXPECT_TRUE(interval_data.time_playing_video_in_visible_tab.is_zero());
-  EXPECT_EQ(ukm::kInvalidSourceId,
+  EXPECT_EQ(expected_source_id,
             interval_data.source_id_for_longest_visible_origin);
-  EXPECT_TRUE(
-      interval_data.source_id_for_longest_visible_origin_duration.is_zero());
+  EXPECT_EQ(kInterval,
+            interval_data.source_id_for_longest_visible_origin_duration);
 }
 
 IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, TabDiscard) {
@@ -269,6 +272,8 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, TabDiscard) {
   tick_clock_.Advance(kInterval);
 
   auto interval_data = data_store_.ResetIntervalData();
+  auto expected_source_id = ukm::GetSourceIdForWebContentsDocument(
+      browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_EQ(2U, interval_data.max_tab_count);
   EXPECT_EQ(1U, interval_data.max_visible_window_count);
   EXPECT_EQ(1U, interval_data.top_level_navigation_count);
@@ -277,10 +282,10 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, TabDiscard) {
       interval_data.time_playing_video_full_screen_single_monitor.is_zero());
   EXPECT_TRUE(interval_data.time_with_open_webrtc_connection.is_zero());
   EXPECT_TRUE(interval_data.time_playing_video_in_visible_tab.is_zero());
-  EXPECT_EQ(ukm::kInvalidSourceId,
+  EXPECT_EQ(expected_source_id,
             interval_data.source_id_for_longest_visible_origin);
-  EXPECT_TRUE(
-      interval_data.source_id_for_longest_visible_origin_duration.is_zero());
+  EXPECT_EQ(kInterval,
+            interval_data.source_id_for_longest_visible_origin_duration);
 
   // Induce a discard of the active tab.
   tick_clock_.Advance(kInterval);
@@ -295,10 +300,10 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, TabDiscard) {
       interval_data.time_playing_video_full_screen_single_monitor.is_zero());
   EXPECT_TRUE(interval_data.time_with_open_webrtc_connection.is_zero());
   EXPECT_TRUE(interval_data.time_playing_video_in_visible_tab.is_zero());
-  EXPECT_EQ(ukm::kInvalidSourceId,
+  EXPECT_EQ(expected_source_id,
             interval_data.source_id_for_longest_visible_origin);
-  EXPECT_TRUE(
-      interval_data.source_id_for_longest_visible_origin_duration.is_zero());
+  EXPECT_EQ(kInterval,
+            interval_data.source_id_for_longest_visible_origin_duration);
 }
 
 IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, FullScreenVideo) {
@@ -312,6 +317,7 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, FullScreenVideo) {
   tick_clock_.Advance(kInterval);
   EXPECT_TRUE(content::ExecJs(contents, "exitFullscreen()"));
   waiter.Wait(false);
+  auto expected_source_id = ukm::GetSourceIdForWebContentsDocument(contents);
 
   auto interval_data = data_store_.ResetIntervalData();
   EXPECT_EQ(1U, interval_data.max_tab_count);
@@ -324,10 +330,10 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, FullScreenVideo) {
   // The |time_playing_video_in_visible_tab| value is not currently being
   // tracked.
   EXPECT_TRUE(interval_data.time_playing_video_in_visible_tab.is_zero());
-  EXPECT_EQ(ukm::kInvalidSourceId,
+  EXPECT_EQ(expected_source_id,
             interval_data.source_id_for_longest_visible_origin);
-  EXPECT_TRUE(
-      interval_data.source_id_for_longest_visible_origin_duration.is_zero());
+  EXPECT_EQ(kInterval,
+            interval_data.source_id_for_longest_visible_origin_duration);
 }
 
 IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
@@ -344,28 +350,29 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
   FullscreenEventsWaiter waiter(contents);
   EXPECT_TRUE(content::ExecJs(contents, "makeFullscreen('small_video')"));
   waiter.Wait(true);
-  tick_clock_.Advance(kInterval);
+  tick_clock_.Advance(kInterval * 2);
+  auto expected_source_id = ukm::GetSourceIdForWebContentsDocument(contents);
   EXPECT_TRUE(browser()->tab_strip_model()->CloseWebContentsAt(
       1, TabStripModel::CLOSE_USER_GESTURE));
-
-  tick_clock_.Advance(kInterval);
 
   auto interval_data = data_store_.ResetIntervalData();
   EXPECT_EQ(2U, interval_data.max_tab_count);
   EXPECT_EQ(1U, interval_data.max_visible_window_count);
   EXPECT_EQ(2U, interval_data.top_level_navigation_count);
   EXPECT_EQ(1U, interval_data.tabs_closed_during_interval);
-  EXPECT_EQ(kInterval,
+  EXPECT_EQ(kInterval * 2,
             interval_data.time_playing_video_full_screen_single_monitor);
   EXPECT_TRUE(interval_data.time_with_open_webrtc_connection.is_zero());
   EXPECT_TRUE(interval_data.time_playing_video_in_visible_tab.is_zero());
-  EXPECT_EQ(ukm::kInvalidSourceId,
+  EXPECT_EQ(expected_source_id,
             interval_data.source_id_for_longest_visible_origin);
-  EXPECT_TRUE(
-      interval_data.source_id_for_longest_visible_origin_duration.is_zero());
+  EXPECT_EQ(kInterval * 2,
+            interval_data.source_id_for_longest_visible_origin_duration);
 
   tick_clock_.Advance(kInterval);
   interval_data = data_store_.ResetIntervalData();
+  expected_source_id = ukm::GetSourceIdForWebContentsDocument(
+      browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_EQ(1U, interval_data.max_tab_count);
   EXPECT_EQ(1U, interval_data.max_visible_window_count);
   EXPECT_EQ(0U, interval_data.top_level_navigation_count);
@@ -374,10 +381,10 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
       interval_data.time_playing_video_full_screen_single_monitor.is_zero());
   EXPECT_TRUE(interval_data.time_with_open_webrtc_connection.is_zero());
   EXPECT_TRUE(interval_data.time_playing_video_in_visible_tab.is_zero());
-  EXPECT_EQ(ukm::kInvalidSourceId,
+  EXPECT_EQ(expected_source_id,
             interval_data.source_id_for_longest_visible_origin);
-  EXPECT_TRUE(
-      interval_data.source_id_for_longest_visible_origin_duration.is_zero());
+  EXPECT_EQ(kInterval,
+            interval_data.source_id_for_longest_visible_origin_duration);
 }
 
 IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
@@ -391,6 +398,7 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
   EXPECT_TRUE(content::ExecJs(contents, "makeFullscreen('small_video')"));
   waiter.Wait(true);
   tick_clock_.Advance(kInterval);
+  auto expected_source_id = ukm::GetSourceIdForWebContentsDocument(contents);
   content::CrashTab(contents);
   tick_clock_.Advance(kInterval);
 
@@ -403,13 +411,14 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
             interval_data.time_playing_video_full_screen_single_monitor);
   EXPECT_TRUE(interval_data.time_with_open_webrtc_connection.is_zero());
   EXPECT_TRUE(interval_data.time_playing_video_in_visible_tab.is_zero());
-  EXPECT_EQ(ukm::kInvalidSourceId,
+  EXPECT_EQ(expected_source_id,
             interval_data.source_id_for_longest_visible_origin);
-  EXPECT_TRUE(
-      interval_data.source_id_for_longest_visible_origin_duration.is_zero());
+  EXPECT_EQ(kInterval,
+            interval_data.source_id_for_longest_visible_origin_duration);
 
   EXPECT_TRUE(content::NavigateToURL(
       contents, embedded_test_server()->GetURL("/title2.html")));
+  expected_source_id = ukm::GetSourceIdForWebContentsDocument(contents);
   tick_clock_.Advance(kInterval);
   interval_data = data_store_.ResetIntervalData();
   EXPECT_EQ(1U, interval_data.max_tab_count);
@@ -420,10 +429,10 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
       interval_data.time_playing_video_full_screen_single_monitor.is_zero());
   EXPECT_TRUE(interval_data.time_with_open_webrtc_connection.is_zero());
   EXPECT_TRUE(interval_data.time_playing_video_in_visible_tab.is_zero());
-  EXPECT_EQ(ukm::kInvalidSourceId,
+  EXPECT_EQ(expected_source_id,
             interval_data.source_id_for_longest_visible_origin);
-  EXPECT_TRUE(
-      interval_data.source_id_for_longest_visible_origin_duration.is_zero());
+  EXPECT_EQ(kInterval,
+            interval_data.source_id_for_longest_visible_origin_duration);
 }
 
 }  // namespace metrics

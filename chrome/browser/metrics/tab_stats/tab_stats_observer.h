@@ -36,8 +36,8 @@ class TabStatsObserver : public base::CheckedObserver {
   virtual void OnTabReplaced(content::WebContents* old_contents,
                              content::WebContents* new_contents) {}
 
-  // Called whenever a main frame navigation is committed in any of the observed
-  // tabs.
+  // Called whenever a main frame navigation to a different document is
+  // committed in any of the observed tabs.
   virtual void OnMainFrameNavigationCommitted(
       content::WebContents* web_contents) {}
 

@@ -217,6 +217,20 @@ void UsageScenarioDataStoreImpl::OnUkmSourceBecameHidden(
   source_id_iter.visible_timestamp = base::TimeTicks();
 }
 
+base::flat_set<ukm::SourceId>
+UsageScenarioDataStoreImpl::GetVisibleSourceIdsForTesting() {
+  base::flat_set<ukm::SourceId> ret;
+
+  for (auto& origin_iter : origin_info_map_) {
+    for (auto& source_ids_for_origin_iter : origin_iter.second) {
+      if (!source_ids_for_origin_iter.second.visible_timestamp.is_null()) {
+        ret.insert(source_ids_for_origin_iter.first);
+      }
+    }
+  }
+  return ret;
+}
+
 void UsageScenarioDataStoreImpl::FinalizeIntervalData(base::TimeTicks now) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Update feature usage durations in |interval_data_|.
