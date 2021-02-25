@@ -761,7 +761,7 @@ group("gn_all") {
     deps += [
       "//chrome/services/ipp_parser/public/cpp:fuzzers",
       "//testing/libfuzzer/fuzzers",
-      "//third_party/freetype-testing:freetype_truetype_render_fuzzer",
+      "//third_party/freetype-testing:fuzzers",
       "//third_party/grpc:fuzzers",
       "//third_party/icu/fuzzers",
       "//third_party/qcms:fuzzers",
