@@ -5,9 +5,9 @@
 #include "chrome/browser/chromeos/login/test/oobe_screens_utils.h"
 
 #include "ash/constants/ash_features.h"
+#include "chrome/browser/ash/login/screens/sync_consent_screen.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
-#include "chrome/browser/chromeos/login/screens/sync_consent_screen.h"
 #include "chrome/browser/chromeos/login/screens/update_screen.h"
 #include "chrome/browser/chromeos/login/test/js_checker.h"
 #include "chrome/browser/chromeos/login/test/oobe_screen_exit_waiter.h"

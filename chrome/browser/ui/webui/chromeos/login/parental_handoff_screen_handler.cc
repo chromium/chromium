@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/parental_handoff_screen_handler.h"
 
-#include "chrome/browser/chromeos/login/screens/parental_handoff_screen.h"
+#include "chrome/browser/ash/login/screens/parental_handoff_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/js_calls_container.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"

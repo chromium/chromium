@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
+
 #include <string>
 
 #include "base/values.h"
+#include "chrome/browser/ash/login/screens/signin_fatal_error_screen.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
-#include "chrome/browser/chromeos/login/screens/signin_fatal_error_screen.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"

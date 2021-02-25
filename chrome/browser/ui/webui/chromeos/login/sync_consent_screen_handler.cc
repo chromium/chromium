@@ -8,7 +8,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/login/screens/sync_consent_screen.h"
+#include "chrome/browser/ash/login/screens/sync_consent_screen.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 #include "components/user_manager/user_manager.h"
