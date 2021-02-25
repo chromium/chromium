@@ -17,6 +17,10 @@ class COMPONENT_EXPORT(TYPECD) FakeTypecdClient : public TypecdClient {
   FakeTypecdClient(const FakeTypecdClient&) = delete;
   FakeTypecdClient& operator=(const FakeTypecdClient&) = delete;
   ~FakeTypecdClient() override;
+
+  // This is a simple fake to notify observers of a simulated D-Bus received
+  // signal.
+  void EmitThunderboltDeviceConnectedSignal(bool is_thunderbolt_only);
 };
 
 }  // namespace chromeos

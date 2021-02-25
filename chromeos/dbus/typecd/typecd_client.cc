@@ -4,9 +4,14 @@
 
 #include "chromeos/dbus/typecd/typecd_client.h"
 
+#include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/typecd/fake_typecd_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
+#include "dbus/object_path.h"
+#include "dbus/object_proxy.h"
+#include "third_party/cros_system_api/dbus/typecd/dbus-constants.h"
 
 namespace chromeos {
 
@@ -21,17 +26,76 @@ class TypecdClientImpl : public TypecdClient {
   TypecdClientImpl& operator=(const TypecdClientImpl&) = delete;
   ~TypecdClientImpl() override = default;
 
-  void Init(dbus::Bus* bus) {
-    // TODO(jimmyxgong): Initialize this client with the proper D-bus service
-    // path.
-  }
+  void Init(dbus::Bus* bus);
 
  private:
-  void ThunderboltDeviceConnectedReceived(dbus::Signal* signal) {
-    // TODO(jimmyxgong): Implement this when the signal is generated.
-    NOTIMPLEMENTED();
-  }
+  void ThunderboltDeviceConnectedReceived(dbus::Signal* signal);
+  void OnSignalConnected(const std::string& interface_name,
+                         const std::string& signal_name,
+                         bool success);
+
+  dbus::ObjectProxy* typecd_proxy_ = nullptr;
+  base::WeakPtrFactory<TypecdClientImpl> weak_ptr_factory_{this};
 };
+
+// TypecdClientImpl
+void TypecdClientImpl::Init(dbus::Bus* bus) {
+  typecd_proxy_ = bus->GetObjectProxy(
+      typecd::kTypecdServiceName, dbus::ObjectPath(typecd::kTypecdServicePath));
+
+  // Listen to D-Bus signals emitted by typecd.
+  typedef void (TypecdClientImpl::*SignalMethod)(dbus::Signal*);
+  const std::pair<const char*, SignalMethod> kSignalMethods[] = {
+      {typecd::kTypecdDeviceConnected,
+       &TypecdClientImpl::ThunderboltDeviceConnectedReceived}};
+
+  auto on_connected_callback = base::BindRepeating(
+      &TypecdClientImpl::OnSignalConnected, weak_ptr_factory_.GetWeakPtr());
+
+  for (const auto& signal : kSignalMethods) {
+    typecd_proxy_->ConnectToSignal(
+        typecd::kTypecdServiceInterface, signal.first,
+        base::BindRepeating(signal.second, weak_ptr_factory_.GetWeakPtr()),
+        on_connected_callback);
+  }
+}
+
+void TypecdClientImpl::ThunderboltDeviceConnectedReceived(
+    dbus::Signal* signal) {
+  dbus::MessageReader reader(signal);
+  uint32_t device_connected_type = 0u;
+  if (!reader.PopUint32(&device_connected_type)) {
+    LOG(ERROR) << "Typecd: Unable to decode connected device type from"
+               << typecd::kTypecdDeviceConnected << " signal.";
+    return;
+  }
+
+  NotifyOnThunderboltDeviceConnected(
+      device_connected_type ==
+      static_cast<uint32_t>(typecd::DeviceConnectedType::kThunderboltOnly));
+}
+
+void TypecdClientImpl::OnSignalConnected(const std::string& interface_name,
+                                         const std::string& signal_name,
+                                         bool success) {
+  if (!success)
+    LOG(ERROR) << "Typecd: Failed to connect to signal " << signal_name << ".";
+}
+
+// TypecdClient
+void TypecdClient::AddObserver(TypecdClient::Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void TypecdClient::RemoveObserver(TypecdClient::Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
+void TypecdClient::NotifyOnThunderboltDeviceConnected(
+    bool is_thunderbolt_only) {
+  for (auto& observer : observer_list_)
+    observer.OnThunderboltDeviceConnected(is_thunderbolt_only);
+}
 
 TypecdClient::TypecdClient() {
   CHECK(!g_instance);

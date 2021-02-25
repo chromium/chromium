@@ -9,7 +9,9 @@ namespace chromeos {
 FakeTypecdClient::FakeTypecdClient() = default;
 FakeTypecdClient::~FakeTypecdClient() = default;
 
-// TODO(jimmyxgong): Implement this fake stub once the actual D-bus service is
-// available.
+void FakeTypecdClient::EmitThunderboltDeviceConnectedSignal(
+    bool is_thunderbolt_only) {
+  NotifyOnThunderboltDeviceConnected(is_thunderbolt_only);
+}
 
 }  // namespace chromeos

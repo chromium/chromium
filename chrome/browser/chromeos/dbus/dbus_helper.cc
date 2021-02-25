@@ -38,6 +38,7 @@
 #include "chromeos/dbus/system_clock/system_clock_client.h"
 #include "chromeos/dbus/system_proxy/system_proxy_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
+#include "chromeos/dbus/typecd/typecd_client.h"
 #include "chromeos/dbus/u2f/u2f_client.h"
 #include "chromeos/dbus/upstart/upstart_client.h"
 #include "chromeos/tpm/install_attributes.h"
@@ -100,6 +101,7 @@ void InitializeDBus() {
   InitializeDBusClient<SystemClockClient>(bus);
   InitializeDBusClient<SystemProxyClient>(bus);
   InitializeDBusClient<TpmManagerClient>(bus);
+  InitializeDBusClient<TypecdClient>(bus);
   InitializeDBusClient<U2FClient>(bus);
   InitializeDBusClient<UpstartClient>(bus);
 
@@ -135,6 +137,7 @@ void ShutdownDBus() {
   // Other D-Bus clients are shut down, also in reverse order of initialization.
   UpstartClient::Shutdown();
   U2FClient::Shutdown();
+  TypecdClient::Shutdown();
   TpmManagerClient::Shutdown();
   SystemProxyClient::Shutdown();
   SystemClockClient::Shutdown();
