@@ -13,6 +13,8 @@ blink_modules_sources("canvas") {
     "canvas2d/canvas_formatted_text.h",
     "canvas2d/canvas_gradient.cc",
     "canvas2d/canvas_gradient.h",
+    "canvas2d/canvas_image_source_util.cc",
+    "canvas2d/canvas_image_source_util.h",
     "canvas2d/canvas_path.cc",
     "canvas2d/canvas_path.h",
     "canvas2d/canvas_pattern.cc",
@@ -48,6 +50,8 @@ blink_modules_sources("canvas") {
   ]
 
   deps = [ "//third_party/blink/renderer/modules/webcodecs" ]
+  allow_circular_includes_from =
+      [ "//third_party/blink/renderer/modules/webcodecs" ]
 }
 
 fuzzer_test("canvas_fuzzer") {

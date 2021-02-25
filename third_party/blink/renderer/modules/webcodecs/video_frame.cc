@@ -17,19 +17,18 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_plane_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_pixel_format.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
+#include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
+#include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_factories.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
-
-// TODO(crbug.com/1175907): Remove this include once we remove
-// VideoFrame::createImageBitmap().
-#include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_factories.h"  // nogncheck
 
 namespace blink {
 
@@ -206,30 +205,47 @@ VideoFrame::VideoFrame(scoped_refptr<VideoFrameHandle> handle)
 
 // static
 VideoFrame* VideoFrame::Create(ScriptState* script_state,
-                               ImageBitmap* source,
+                               const CanvasImageSourceUnion& source,
                                VideoFrameInit* init,
                                ExceptionState& exception_state) {
-  if (!source) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotFoundError,
-                                      "No source was provided");
+  auto* image_source = ToCanvasImageSource(source, exception_state);
+  if (!image_source) {
+    // ToCanvasImageSource() will throw a source appropriate exception.
     return nullptr;
   }
 
-  if (!source->BitmapImage()) {
+  if (image_source->WouldTaintOrigin()) {
+    exception_state.ThrowSecurityError(
+        "VideoFrames can't be created from tainted sources.");
+    return nullptr;
+  }
+
+  // Special case <video> and VideoFrame to directly use the underlying frame.
+  if (source.IsVideoFrame())
+    return source.GetAsVideoFrame()->clone(script_state, exception_state);
+  if (source.IsHTMLVideoElement()) {
+    auto* video = source.GetAsHTMLVideoElement();
+    auto* wmp = video->GetWebMediaPlayer();
+    auto frame = wmp ? wmp->GetCurrentFrame() : nullptr;
+    if (!frame) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "Invalid source state");
+      return nullptr;
+    }
+    return MakeGarbageCollected<VideoFrame>(
+        std::move(frame), ExecutionContext::From(script_state));
+  }
+
+  SourceImageStatus status = kInvalidSourceImageStatus;
+  auto image = image_source->GetSourceImageForCanvas(&status, FloatSize());
+  if (!image || status != kNormalSourceImageStatus) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid source state");
     return nullptr;
   }
 
-  if (source->WouldTaintOrigin()) {
-    exception_state.ThrowSecurityError(
-        "VideoFrames can't be created from tainted ImageBitmaps.");
-    return nullptr;
-  }
-
   const auto timestamp = base::TimeDelta::FromMicroseconds(init->timestamp());
-  const auto sk_image =
-      source->BitmapImage()->PaintImageForCurrentFrame().GetSkImage();
+  const auto sk_image = image->PaintImageForCurrentFrame().GetSkImage();
   const auto sk_image_info = sk_image->imageInfo();
 
   auto sk_color_space = sk_image_info.refColorSpace();
@@ -261,8 +277,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
         kRec709_SkYUVColorSpace, sk_color_space, sk_image_info.bounds(),
         sk_image_info.dimensions(), SkImage::RescaleGamma::kSrc,
         SkImage::RescaleMode::kRepeatedCubic, &OnYUVReadbackDone, &result);
-    GrDirectContext* gr_context =
-        source->BitmapImage()->ContextProvider()->GetGrContext();
+    GrDirectContext* gr_context = image->ContextProvider()->GetGrContext();
     DCHECK(gr_context);
     gr_context->flushAndSubmit(/*syncCpu=*/true);
 

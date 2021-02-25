@@ -10,7 +10,7 @@
     RuntimeEnabled=WebCodecs
 ] interface VideoFrame {
   [CallWith=ScriptState, RaisesException]
-  constructor(ImageBitmap source, VideoFrameInit init);
+  constructor(CanvasImageSource source, VideoFrameInit init);
   [CallWith=ScriptState, RaisesException]
   constructor(VideoPixelFormat format,
               sequence<PlaneInit> planes,

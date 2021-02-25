@@ -233,8 +233,10 @@ TEST_F(VideoFrameTest, ImageBitmapCreationAndZeroCopyRoundTrip) {
   auto* image_bitmap = MakeGarbageCollected<ImageBitmap>(
       UnacceleratedStaticBitmapImage::Create(original_image), base::nullopt,
       default_options);
-  auto* video_frame = VideoFrame::Create(scope.GetScriptState(), image_bitmap,
-                                         init, scope.GetExceptionState());
+  CanvasImageSourceUnion source;
+  source.SetImageBitmap(image_bitmap);
+  auto* video_frame = VideoFrame::Create(scope.GetScriptState(), source, init,
+                                         scope.GetExceptionState());
 
   EXPECT_EQ(video_frame->handle()->sk_image(), original_image);
 
@@ -278,8 +280,10 @@ TEST_F(VideoFrameTest, VideoFrameFromGPUImageBitmap) {
   auto* init = VideoFrameInit::Create();
   init->setTimestamp(0);
 
-  auto* video_frame = VideoFrame::Create(scope.GetScriptState(), image_bitmap,
-                                         init, scope.GetExceptionState());
+  CanvasImageSourceUnion source;
+  source.SetImageBitmap(image_bitmap);
+  auto* video_frame = VideoFrame::Create(scope.GetScriptState(), source, init,
+                                         scope.GetExceptionState());
   ASSERT_TRUE(video_frame);
 }
 

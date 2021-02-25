@@ -165,7 +165,10 @@ VideoFrame* MakeVideoFrame(ScriptState* script_state,
   video_frame_init->setTimestamp(proto.timestamp());
   video_frame_init->setDuration(proto.duration());
 
-  return VideoFrame::Create(script_state, image_bitmap, video_frame_init,
+  CanvasImageSourceUnion source;
+  source.SetImageBitmap(image_bitmap);
+
+  return VideoFrame::Create(script_state, source, video_frame_init,
                             IGNORE_EXCEPTION_FOR_TESTING);
 }
 

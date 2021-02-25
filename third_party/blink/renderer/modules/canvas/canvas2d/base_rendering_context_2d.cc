@@ -12,16 +12,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/renderer/core/css/cssom/css_url_image_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/html/canvas/text_metrics.h"
-#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
-#include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
-#include "third_party/blink/renderer/core/svg/svg_image_element.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/path_2d.h"
-#include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
@@ -1263,72 +1258,6 @@ static inline void ClipRectsToImageRect(const FloatRect& image_rect,
   dst_rect->Move(offset);
 }
 
-static inline CanvasImageSource* ToImageSourceInternal(
-    const CanvasImageSourceUnion& value,
-    ExceptionState& exception_state) {
-  if (value.IsCSSImageValue()) {
-    return value.GetAsCSSImageValue();
-  }
-  if (value.IsHTMLImageElement())
-    return value.GetAsHTMLImageElement();
-  if (value.IsHTMLVideoElement()) {
-    HTMLVideoElement* video = value.GetAsHTMLVideoElement();
-    video->VideoWillBeDrawnToCanvas();
-    return video;
-  }
-  if (value.IsSVGImageElement())
-    return value.GetAsSVGImageElement();
-  if (value.IsHTMLCanvasElement()) {
-    if (static_cast<HTMLCanvasElement*>(value.GetAsHTMLCanvasElement())
-            ->Size()
-            .IsEmpty()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kInvalidStateError,
-          "The image argument is a canvas element with a width "
-          "or height of 0.");
-      return nullptr;
-    }
-    return value.GetAsHTMLCanvasElement();
-  }
-  if (value.IsImageBitmap()) {
-    if (static_cast<ImageBitmap*>(value.GetAsImageBitmap())->IsNeutered()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        "The image source is detached");
-      return nullptr;
-    }
-    return value.GetAsImageBitmap();
-  }
-  if (value.IsOffscreenCanvas()) {
-    if (static_cast<OffscreenCanvas*>(value.GetAsOffscreenCanvas())
-            ->IsNeutered()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        "The image source is detached");
-      return nullptr;
-    }
-    if (static_cast<OffscreenCanvas*>(value.GetAsOffscreenCanvas())
-            ->Size()
-            .IsEmpty()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kInvalidStateError,
-          "The image argument is an OffscreenCanvas element "
-          "with a width or height of 0.");
-      return nullptr;
-    }
-    return value.GetAsOffscreenCanvas();
-  }
-  if (value.IsVideoFrame()) {
-    auto* video_frame = static_cast<VideoFrame*>(value.GetAsVideoFrame());
-    if (!video_frame->frame()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        "The VideoFrame has been closed");
-      return nullptr;
-    }
-    return video_frame;
-  }
-  NOTREACHED();
-  return nullptr;
-}
-
 void BaseRenderingContext2D::drawImage(
     ScriptState* script_state,
     const CanvasImageSourceUnion& image_source,
@@ -1336,7 +1265,7 @@ void BaseRenderingContext2D::drawImage(
     double y,
     ExceptionState& exception_state) {
   CanvasImageSource* image_source_internal =
-      ToImageSourceInternal(image_source, exception_state);
+      ToCanvasImageSource(image_source, exception_state);
   if (!image_source_internal)
     return;
   RespectImageOrientationEnum respect_orientation =
@@ -1360,7 +1289,7 @@ void BaseRenderingContext2D::drawImage(
     double height,
     ExceptionState& exception_state) {
   CanvasImageSource* image_source_internal =
-      ToImageSourceInternal(image_source, exception_state);
+      ToCanvasImageSource(image_source, exception_state);
   if (!image_source_internal)
     return;
   FloatSize default_object_size(this->Width(), this->Height());
@@ -1384,7 +1313,7 @@ void BaseRenderingContext2D::drawImage(
     double dh,
     ExceptionState& exception_state) {
   CanvasImageSource* image_source_internal =
-      ToImageSourceInternal(image_source, exception_state);
+      ToCanvasImageSource(image_source, exception_state);
   if (!image_source_internal)
     return;
   drawImage(script_state, image_source_internal, sx, sy, sw, sh, dx, dy, dw, dh,
@@ -1742,7 +1671,7 @@ CanvasPattern* BaseRenderingContext2D::createPattern(
     const String& repetition_type,
     ExceptionState& exception_state) {
   CanvasImageSource* image_source_internal =
-      ToImageSourceInternal(image_source, exception_state);
+      ToCanvasImageSource(image_source, exception_state);
   if (!image_source_internal) {
     return nullptr;
   }
