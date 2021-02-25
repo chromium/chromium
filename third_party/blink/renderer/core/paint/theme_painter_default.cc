@@ -210,6 +210,7 @@ bool ThemePainterDefault::PaintButton(const Element& element,
   extra_params.button = WebThemeEngine::ButtonExtraParams();
   extra_params.button.has_border = true;
   extra_params.button.background_color = kDefaultButtonBackgroundColor;
+  extra_params.button.zoom = style.EffectiveZoom();
   if (style.HasBackground()) {
     extra_params.button.background_color =
         style.VisitedDependentColor(GetCSSPropertyBackgroundColor()).Rgb();
@@ -244,6 +245,7 @@ bool ThemePainterDefault::PaintTextField(const Element& element,
   extra_params.text_field.is_text_area = part == kTextAreaPart;
   extra_params.text_field.is_listbox = part == kListboxPart;
   extra_params.text_field.has_border = true;
+  extra_params.text_field.zoom = style.EffectiveZoom();
 
   cc::PaintCanvas* canvas = paint_info.context.Canvas();
 
@@ -268,6 +270,7 @@ bool ThemePainterDefault::PaintMenuList(const Element& element,
   // Match Chromium Win behaviour of showing all borders if any are shown.
   extra_params.menu_list.has_border = style.HasBorder();
   extra_params.menu_list.has_border_radius = style.HasBorderRadius();
+  extra_params.menu_list.zoom = style.EffectiveZoom();
   // Fallback to transparent if the specified color object is invalid.
   Color background_color(Color::kTransparent);
   if (style.HasBackground()) {
@@ -474,6 +477,7 @@ bool ThemePainterDefault::PaintProgressBar(const Element& element,
   extra_params.progress_bar.value_rect_y = value_rect.Y();
   extra_params.progress_bar.value_rect_width = value_rect.Width();
   extra_params.progress_bar.value_rect_height = value_rect.Height();
+  extra_params.progress_bar.zoom = o.StyleRef().EffectiveZoom();
 
   DirectionFlippingScope scope(o, i, rect);
   cc::PaintCanvas* canvas = i.context.Canvas();
