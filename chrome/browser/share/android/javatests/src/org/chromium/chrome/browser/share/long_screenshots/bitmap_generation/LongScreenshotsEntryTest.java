@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.share.long_screenshots.bitmap_generation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -18,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.LongScreenshotsEntry.EntryStatus;
@@ -55,6 +57,7 @@ public class LongScreenshotsEntryTest {
     class TestEntryListener implements LongScreenshotsEntry.EntryListener {
         @EntryStatus
         int mReturnedStatus;
+
         @Override
         public void onResult(@EntryStatus int status) {
             mReturnedStatus = status;
@@ -66,21 +69,34 @@ public class LongScreenshotsEntryTest {
     }
 
     class TestBitmapGenerator extends BitmapGenerator {
-        public TestBitmapGenerator(Rect rect, BitmapGenerator.GeneratorCallBack callback) {
-            super(mContext, mTab, rect, callback);
+        private boolean mThrowErrorOnComposite;
+
+        public TestBitmapGenerator(Rect rect) {
+            super(mContext, mTab, rect, null);
             setTabServiceAndCompositorForTest(mTabService, mCompositor);
         }
 
+        void throwErrorOnComposite() {
+            mThrowErrorOnComposite = true;
+        }
+
         public void setCompositorStatus(@CompositorStatus int status) {
-            mGeneratorCallback.onCompositorError(status);
+            mGeneratorCallBack.onCompositorResult(status);
         }
 
         public void setCaptureStatus(@Status int status) {
-            mGeneratorCallback.onCaptureError(status);
+            mGeneratorCallBack.onCaptureResult(status);
         }
 
-        public void setGeneratedBitmap(Bitmap bitmap) {
-            mGeneratorCallback.onBitmapGenerated(bitmap);
+        @Override
+        public int compositeBitmap(
+                Rect rect, Runnable errorCallback, Callback<Bitmap> onBitmapGenerated) {
+            if (mThrowErrorOnComposite) {
+                errorCallback.run();
+                return -1;
+            }
+            onBitmapGenerated.onResult(mTestBitmap);
+            return 1;
         }
     }
 
@@ -97,56 +113,30 @@ public class LongScreenshotsEntryTest {
 
     @Test
     public void testSuccessfulEntry() {
-        LongScreenshotsEntry entry = new LongScreenshotsEntry(mContext, mTab, 0, 1000, false);
+        TestBitmapGenerator testGenerator = new TestBitmapGenerator(new Rect(0, 0, 200, 1000));
+
+        LongScreenshotsEntry entry =
+                new LongScreenshotsEntry(mContext, mTab, 0, 1000, testGenerator, false);
         TestEntryListener entryListener = new TestEntryListener();
         entry.setListener(entryListener);
+        entry.generateBitmap();
 
-        TestBitmapGenerator testGenerator = new TestBitmapGenerator(
-                new Rect(0, 0, 200, 1000), entry.createBitmapGeneratorCallback());
-
-        entry.setBitmapGenerator(testGenerator);
-
-        testGenerator.setGeneratedBitmap(mTestBitmap);
+        assertEquals(mTestBitmap, entry.getBitmap());
         assertEquals(EntryStatus.BITMAP_GENERATED, entryListener.getReturnedStatus());
     }
 
     @Test
-    public void testCompositorError() {
-        LongScreenshotsEntry entry = new LongScreenshotsEntry(mContext, mTab, 0, 1000, false);
+    public void testBitmapGenerationError() {
+        TestBitmapGenerator testGenerator = new TestBitmapGenerator(new Rect(0, 0, 200, 1000));
+        testGenerator.throwErrorOnComposite();
+
+        LongScreenshotsEntry entry =
+                new LongScreenshotsEntry(mContext, mTab, 0, 1000, testGenerator, false);
         TestEntryListener entryListener = new TestEntryListener();
         entry.setListener(entryListener);
+        entry.generateBitmap();
 
-        TestBitmapGenerator testGenerator = new TestBitmapGenerator(
-                new Rect(0, 0, 200, 1000), entry.createBitmapGeneratorCallback());
-
-        entry.setBitmapGenerator(testGenerator);
-
-        testGenerator.setCompositorStatus(CompositorStatus.COMPOSITOR_CLIENT_DISCONNECT);
+        assertNull(entry.getBitmap());
         assertEquals(EntryStatus.GENERATION_ERROR, entryListener.getReturnedStatus());
-        assertEquals(EntryStatus.GENERATION_ERROR, entry.getStatus());
-
-        testGenerator.setCompositorStatus(CompositorStatus.STOPPED_DUE_TO_MEMORY_PRESSURE);
-        assertEquals(EntryStatus.INSUFFICIENT_MEMORY, entryListener.getReturnedStatus());
-        assertEquals(EntryStatus.INSUFFICIENT_MEMORY, entry.getStatus());
-    }
-
-    @Test
-    public void testCaptureError() {
-        LongScreenshotsEntry entry = new LongScreenshotsEntry(mContext, mTab, 0, 1000, false);
-        TestEntryListener entryListener = new TestEntryListener();
-        entry.setListener(entryListener);
-
-        TestBitmapGenerator testGenerator = new TestBitmapGenerator(
-                new Rect(0, 0, 200, 1000), entry.createBitmapGeneratorCallback());
-
-        entry.setBitmapGenerator(testGenerator);
-
-        testGenerator.setCaptureStatus(Status.WEB_CONTENTS_GONE);
-        assertEquals(EntryStatus.GENERATION_ERROR, entryListener.getReturnedStatus());
-        assertEquals(EntryStatus.GENERATION_ERROR, entry.getStatus());
-
-        testGenerator.setCaptureStatus(Status.LOW_MEMORY_DETECTED);
-        assertEquals(EntryStatus.INSUFFICIENT_MEMORY, entryListener.getReturnedStatus());
-        assertEquals(EntryStatus.INSUFFICIENT_MEMORY, entry.getStatus());
     }
 }

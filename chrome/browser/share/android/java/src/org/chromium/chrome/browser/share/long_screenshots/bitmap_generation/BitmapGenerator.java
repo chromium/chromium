@@ -35,7 +35,7 @@ public class BitmapGenerator implements LongScreenshotsTabService.CaptureProcess
 
     private static final String DIR_NAME = "long_screenshots_dir";
 
-    private GeneratorCallBack mGeneratorCallBack;
+    protected GeneratorCallBack mGeneratorCallBack;
 
     /**
      * Users of the {@link LongScreenshotsEntry} class have to implement and pass this interface in
@@ -140,7 +140,9 @@ public class BitmapGenerator implements LongScreenshotsTabService.CaptureProcess
             mCompositor.destroy();
             mCompositor = null;
         }
-        mTabService.longScreenshotsClosed();
+        if (mTabService != null) {
+            mTabService.longScreenshotsClosed();
+        }
     }
 
     @VisibleForTesting

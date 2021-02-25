@@ -112,8 +112,8 @@ public class LongScreenshotsEntry {
             updateStatus(EntryStatus.GENERATION_ERROR);
             return;
         }
-        mGenerator.compositeBitmap(mRect, this::onBitmapGenerationError, this::onBitmapGenerated);
         updateStatus(EntryStatus.BITMAP_GENERATION_IN_PROGRESS);
+        mGenerator.compositeBitmap(mRect, this::onBitmapGenerationError, this::onBitmapGenerated);
     }
 
     /**
@@ -178,7 +178,7 @@ public class LongScreenshotsEntry {
         updateStatus(EntryStatus.GENERATION_ERROR);
     }
 
-    protected void updateStatus(@EntryStatus int status) {
+    public void updateStatus(@EntryStatus int status) {
         mCurrentStatus = status;
         if (mEntryListener != null) {
             mEntryListener.onResult(mCurrentStatus);

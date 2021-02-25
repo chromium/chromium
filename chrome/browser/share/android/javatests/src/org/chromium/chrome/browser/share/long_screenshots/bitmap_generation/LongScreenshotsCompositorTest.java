@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.share.long_screenshots.bitmap_generation;
 
-import static org.junit.Assert.assertEquals;
 
 import android.graphics.Bitmap;
 import android.graphics.Rect;
@@ -28,6 +27,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.paint_preview.common.proto.PaintPreview.PaintPreviewProto;
 import org.chromium.components.paintpreview.browser.NativePaintPreviewServiceProvider;
+import org.chromium.components.paintpreview.player.CompositorStatus;
 import org.chromium.components.paintpreview.player.PlayerCompositorDelegate;
 import org.chromium.url.GURL;
 
@@ -41,6 +41,7 @@ public class LongScreenshotsCompositorTest {
     private TestPlayerCompositorDelegate mCompositorDelegate;
     private Bitmap mTestBitmap = Bitmap.createBitmap(512, 1024, Bitmap.Config.ARGB_8888);
     private Rect mRect = new Rect(0, 100, 200, 1100);
+    private boolean mErrorThrown;
 
     @Mock
     private GURL mTestGurl;
@@ -76,6 +77,12 @@ public class LongScreenshotsCompositorTest {
      * this into its own class when it starts to get used more.
      */
     class TestPlayerCompositorDelegate implements PlayerCompositorDelegate {
+        private boolean mRequestBitmapError;
+
+        public void setRequestBitmapError() {
+            mRequestBitmapError = true;
+        }
+
         @Override
         public void addMemoryPressureListener(Runnable runnable) {}
 
@@ -89,9 +96,14 @@ public class LongScreenshotsCompositorTest {
         @Override
         public int requestBitmap(Rect clipRect, float scaleFactor, Callback<Bitmap> bitmapCallback,
                 Runnable errorCallback) {
-            assertEquals(mRect, clipRect);
-            assertEquals(1f, scaleFactor, 0);
-            bitmapCallback.onResult(mTestBitmap);
+            Assert.assertEquals(mRect, clipRect);
+            Assert.assertEquals(1f, scaleFactor, 0);
+
+            if (!mRequestBitmapError) {
+                bitmapCallback.onResult(mTestBitmap);
+            } else {
+                errorCallback.run();
+            }
             return 1;
         }
 
@@ -115,6 +127,7 @@ public class LongScreenshotsCompositorTest {
         mCompositorDelegate = new TestPlayerCompositorDelegate();
         LongScreenshotsCompositor.overrideCompositorDelegateFactoryForTesting(
                 new TestCompositorDelegateFactory());
+        mErrorThrown = false;
     }
 
     @After
@@ -127,24 +140,69 @@ public class LongScreenshotsCompositorTest {
         Callback<Bitmap> onBitmapResult = new Callback<Bitmap>() {
             @Override
             public void onResult(Bitmap result) {
-                assertEquals(mTestBitmap, result);
+                Assert.assertEquals(mTestBitmap, result);
             }
         };
 
-        Callback<Integer> onErrorCallback = new Callback<Integer>() {
+        Callback<Integer> compositorCallback = new Callback<Integer>() {
             @Override
             public void onResult(Integer result) {
+                Assert.assertEquals((Integer) CompositorStatus.OK, result);
+            }
+        };
+
+        Runnable onErrorCallback = new Runnable() {
+            @Override
+            public void run() {
                 Assert.fail("Error should not be thrown");
             }
         };
 
         LongScreenshotsCompositor compositor = new LongScreenshotsCompositor(mTestGurl,
                 mNativePaintPreviewServiceProvider, "test_directory_key",
-                PaintPreviewProto.getDefaultInstance(), mRect, onBitmapResult, onErrorCallback);
+                PaintPreviewProto.getDefaultInstance(), compositorCallback);
 
         // Mimic the service calling onCompositorReady
         compositor.onCompositorReady(null, null, null, null, null, null, null);
 
         // RequestBitmap in mCompositorDelegate should match
+        compositor.requestBitmap(mRect, onErrorCallback, onBitmapResult);
+    }
+
+    @Test
+    public void testRequestBitmapFailture() {
+        mCompositorDelegate.setRequestBitmapError();
+        Callback<Bitmap> onBitmapResult = new Callback<Bitmap>() {
+            @Override
+            public void onResult(Bitmap result) {
+                Assert.fail("Bitmap should not be returned");
+            }
+        };
+
+        Callback<Integer> compositorCallback = new Callback<Integer>() {
+            @Override
+            public void onResult(Integer result) {
+                Assert.assertEquals((Integer) CompositorStatus.OK, result);
+            }
+        };
+
+        Runnable onErrorCallback = new Runnable() {
+            @Override
+            public void run() {
+                mErrorThrown = true;
+            }
+        };
+
+        LongScreenshotsCompositor compositor = new LongScreenshotsCompositor(mTestGurl,
+                mNativePaintPreviewServiceProvider, "test_directory_key",
+                PaintPreviewProto.getDefaultInstance(), compositorCallback);
+
+        // Mimic the service calling onCompositorReady
+        compositor.onCompositorReady(null, null, null, null, null, null, null);
+
+        // RequestBitmap in mCompositorDelegate should match
+        compositor.requestBitmap(mRect, onErrorCallback, onBitmapResult);
+
+        Assert.assertTrue(mErrorThrown);
     }
 }
