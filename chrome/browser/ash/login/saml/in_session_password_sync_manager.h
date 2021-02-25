@@ -61,8 +61,9 @@ class InSessionPasswordSyncManager
   InSessionPasswordSyncManager& operator=(const InSessionPasswordSyncManager&) =
       delete;
 
-  // Checks if the LockScreenReauthenticationEnabled policy is set to true.
-  // Note that it can be changed in session.
+  // Checks if lockscreen re-authentication is enabled for the given profile.
+  // Note that it can be changed in session. Driven by the policy
+  // SamlLockScreenReauthenticationEnabled.
   bool IsLockReauthEnabled();
 
   // Sets online re-auth on lock flag and changes the UI to online

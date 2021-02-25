@@ -62,6 +62,13 @@ class OfflineSigninLimiter : public KeyedService,
   // has expired already, sets the flag enforcing online login immediately.
   void UpdateLimit();
 
+  // Convenience method to get the time limit for SAML and no-SAML flows
+  // taking into consideration a possible override from the command line.
+  // Returns nullopt if it is an invalid time.
+  base::Optional<base::TimeDelta> GetGaiaSamlTimeLimit();
+  base::Optional<base::TimeDelta> GetGaiaNoSamlTimeLimit();
+  base::Optional<base::TimeDelta> GetTimeLimitOverrideForTesting();
+
   // Sets the flag enforcing online login. This will cause the user's next login
   // to use online authentication against GAIA.
   void ForceOnlineLogin();

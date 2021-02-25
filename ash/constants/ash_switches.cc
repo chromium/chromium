@@ -524,6 +524,18 @@ const char kSafeMode[] = "safe-mode";
 // TODO(941489): Remove when the bug is fixed.
 const char kSamlPasswordChangeUrl[] = "saml-password-change-url";
 
+// Used for overriding the time limit imposed by the policies
+// SAMLOfflineSigninTimeLimit & GaiaOfflineSigninTimeLimitDays when testing.
+// TODO(crbug.com/1177416): Clean up once testing is complete
+const char kOfflineSignInTimeLimitInSecondsOverrideForTesting[] =
+    "offline-signin-timelimit-in-seconds-override-for-testing";
+
+// Used for overriding the preference set by the policy
+// kSamlLockScreenReauthenticationEnabled to true.
+// TODO(crbug.com/1177416): Clean up once testing is complete
+const char kSamlLockScreenReauthenticationEnabledOverrideForTesting[] =
+    "saml-lockscreen-reauthentication-enabled-override-for-testing";
+
 // New modular design for the shelf with apps separated into a hotseat UI and
 // smaller shelf in clamshell mode.
 const char kShelfHotseat[] = "shelf-hotseat";

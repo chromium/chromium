@@ -7,9 +7,11 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/power_monitor_test_base.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/clock.h"
 #include "base/timer/mock_timer.h"
@@ -82,6 +84,7 @@ class OfflineSigninLimiterTest : public testing::Test {
   base::PowerMonitorTestSource* power_source_;
 
   TestingPrefServiceSimple testing_local_state_;
+  base::test::ScopedFeatureList feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(OfflineSigninLimiterTest);
 };
@@ -91,6 +94,8 @@ OfflineSigninLimiterTest::OfflineSigninLimiterTest()
       user_manager_enabler_(base::WrapUnique(user_manager_)),
       timer_(nullptr),
       limiter_(nullptr) {
+  feature_list_.InitAndEnableFeature(
+      features::kEnableSamlReauthenticationOnLockscreen);
   auto power_source = std::make_unique<base::PowerMonitorTestSource>();
   power_source_ = power_source.get();
   base::PowerMonitor::Initialize(std::move(power_source));

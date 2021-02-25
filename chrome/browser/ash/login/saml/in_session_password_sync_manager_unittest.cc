@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
 
+#include "ash/constants/ash_features.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/ash/login/saml/mock_lock_handler.h"
 #include "chrome/browser/chromeos/login/login_pref_names.h"
@@ -83,10 +85,14 @@ class InSessionPasswordSyncManagerTest : public testing::Test {
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<MockLockHandler> lock_handler_;
   std::unique_ptr<InSessionPasswordSyncManager> manager_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 InSessionPasswordSyncManagerTest::InSessionPasswordSyncManagerTest()
     : manager_(nullptr) {
+  feature_list_.InitAndEnableFeature(
+      features::kEnableSamlReauthenticationOnLockscreen);
+
   std::unique_ptr<FakeChromeUserManager> fake_user_manager =
       std::make_unique<FakeUserManagerWithLocalState>();
   scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(

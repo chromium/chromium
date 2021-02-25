@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
 
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/ash/login/auth/chrome_cryptohome_authenticator.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
@@ -48,8 +50,13 @@ InSessionPasswordSyncManager::~InSessionPasswordSyncManager() {
 }
 
 bool InSessionPasswordSyncManager::IsLockReauthEnabled() {
-  PrefService* prefs = primary_profile_->GetPrefs();
-  return prefs->GetBoolean(prefs::kLockScreenReauthenticationEnabled);
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kSamlLockScreenReauthenticationEnabledOverrideForTesting)) {
+    return true;
+  }
+
+  return primary_profile_->GetPrefs()->GetBoolean(
+      prefs::kLockScreenReauthenticationEnabled);
 }
 
 void InSessionPasswordSyncManager::MaybeForceReauthOnLockScreen(
@@ -215,6 +222,9 @@ void InSessionPasswordSyncManager::OnAuthSuccess(
 }
 
 void InSessionPasswordSyncManager::CreateAndShowDialog() {
+  if (!IsLockReauthEnabled())
+    NOTREACHED();
+
   if (!lock_screen_start_reauth_dialog_) {
     lock_screen_start_reauth_dialog_ =
         std::make_unique<LockScreenStartReauthDialog>();

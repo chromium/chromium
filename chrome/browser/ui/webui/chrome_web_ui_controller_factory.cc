@@ -689,8 +689,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<chromeos::UrgentPasswordExpiryNotificationUI>;
   }
   if (url.host_piece() == chrome::kChromeUILockScreenStartReauthHost) {
-    if (!profile->GetPrefs()->GetBoolean(
-            chromeos::prefs::kLockScreenReauthenticationEnabled)) {
+    if (!ash::features::IsSamlReauthenticationOnLockscreenEnabled()) {
       return nullptr;
     }
     return &NewWebUI<chromeos::LockScreenStartReauthUI>;

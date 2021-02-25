@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
 
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,6 +25,9 @@ InSessionPasswordSyncManagerFactory::GetInstance() {
 // static
 InSessionPasswordSyncManager*
 InSessionPasswordSyncManagerFactory::GetForProfile(Profile* profile) {
+  if (!ash::features::IsSamlReauthenticationOnLockscreenEnabled())
+    return nullptr;
+
   return static_cast<InSessionPasswordSyncManager*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }

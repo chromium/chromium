@@ -143,6 +143,8 @@ extern const base::Feature kEnableOobeChromeVoxHint;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnablePciguardUi;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kEnableSamlReauthenticationOnLockscreen;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEolWarningNotifications;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kExoOrdinalMotion;
@@ -332,56 +334,52 @@ extern const base::Feature kCameraPrivacySwitchNotifications;
 // Keep alphabetized.
 
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAccountManagementFlowsV2Enabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModeDevUseProdEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModePhotoPreviewEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModeDevUseProdEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAssistantEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCellularActivationUiEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsChildSpecificSigninEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsClipboardHistoryContextMenuNudgeEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsClipboardHistoryEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsClipboardHistoryNudgeSessionResetEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDeepLinkingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDiagnosticsAppEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEcheSWAEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsPeripheralDataAccessProtectionEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHostnameSettingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFamilyLinkOnSchoolDeviceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGaiaReauthEndpointEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHostnameSettingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsImeSandboxEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsImprovedKeyboardShortcutsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsInstantTetheringBackgroundAdvertisingSupported();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsKerberosSettingsSectionEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsLoginDeviceManagementDisclosureEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLoginDeviceManagementDisclosureEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsMinimumChromeVersionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNewOobeLayoutEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsClipboardHistoryEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsClipboardHistoryNudgeSessionResetEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsClipboardHistoryContextMenuNudgeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeChromeVoxHintEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeScreensPriorityEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPciguardUiEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPeripheralDataAccessProtectionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPhoneHubEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPhoneHubUseBleEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPinAutosubmitBackfillFeatureEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPinAutosubmitFeatureEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPinSetupForFamilyLinkEnabled();
-
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsPinAutosubmitBackfillFeatureEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorFeaturePodEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersDogfood();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersOnEditableTextEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersRichUiEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersSettingToggleEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsQuickAnswersTextAnnotatorEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersTextAnnotatorEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersTranslationCloudAPIEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersTranslationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsQuickAnswersTranslationCloudAPIEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersOnEditableTextEnabled();
+bool IsSamlReauthenticationOnLockscreenEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSplitSettingsSyncEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWallpaperWebUIEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWifiSyncAndroidEnabled();

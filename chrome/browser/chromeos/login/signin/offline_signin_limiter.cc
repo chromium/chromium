@@ -7,11 +7,14 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -56,14 +59,8 @@ void OfflineSigninLimiter::SignedIn(UserContext::AuthFlow auth_flow) {
     // the flag will be set again immediately.
     user_manager::UserManager::Get()->SaveForceOnlineSignin(account_id, false);
     prefs->SetTime(prefs::kGaiaLastOnlineSignInTime, clock_->Now());
-    const int gaia_offline_limit =
-        prefs->GetInteger(prefs::kGaiaOfflineSigninTimeLimitDays);
-    UpdateOnlineSigninData(
-        clock_->Now(),
-        gaia_offline_limit == kGaiaOfflineSigninTimeLimitDaysNotSet
-            ? base::nullopt
-            : base::make_optional<base::TimeDelta>(
-                  base::TimeDelta::FromDays(gaia_offline_limit)));
+
+    UpdateOnlineSigninData(clock_->Now(), GetGaiaNoSamlTimeLimit());
     // Clear the time of last login with SAML.
     prefs->ClearPref(prefs::kSAMLLastGAIASignInTime);
   }
@@ -76,14 +73,8 @@ void OfflineSigninLimiter::SignedIn(UserContext::AuthFlow auth_flow) {
     // the flag will be set again immediately.
     user_manager::UserManager::Get()->SaveForceOnlineSignin(account_id, false);
     prefs->SetTime(prefs::kSAMLLastGAIASignInTime, clock_->Now());
-    const int saml_offline_limit =
-        prefs->GetInteger(prefs::kSAMLOfflineSigninTimeLimit);
-    UpdateOnlineSigninData(
-        clock_->Now(),
-        saml_offline_limit == kSAMLOfflineSigninTimeLimitNotSet
-            ? base::nullopt
-            : base::make_optional<base::TimeDelta>(
-                  base::TimeDelta::FromSeconds(saml_offline_limit)));
+
+    UpdateOnlineSigninData(clock_->Now(), GetGaiaSamlTimeLimit());
     // Clear the time of last Gaia login without SAML.
     prefs->ClearPref(prefs::kGaiaLastOnlineSignInTime);
   }
@@ -154,16 +145,13 @@ void OfflineSigninLimiter::UpdateLimit() {
   bool using_saml =
       ProfileHelper::Get()->GetUserByProfile(profile_)->using_saml();
 
-  const base::TimeDelta offline_signin_time_limit =
-      using_saml ? base::TimeDelta::FromSeconds(
-                       prefs->GetInteger(prefs::kSAMLOfflineSigninTimeLimit))
-                 : base::TimeDelta::FromDays(prefs->GetInteger(
-                       prefs::kGaiaOfflineSigninTimeLimitDays));
+  const base::Optional<base::TimeDelta> offline_signin_time_limit =
+      using_saml ? GetGaiaSamlTimeLimit() : GetGaiaNoSamlTimeLimit();
   base::Time last_gaia_signin_time =
       prefs->GetTime(using_saml ? prefs::kSAMLLastGAIASignInTime
                                 : prefs::kGaiaLastOnlineSignInTime);
 
-  if (offline_signin_time_limit < base::TimeDelta()) {
+  if (!offline_signin_time_limit.has_value()) {
     UpdateOnlineSigninData(last_gaia_signin_time, base::nullopt);
     // If no limit is in force, return.
     return;
@@ -190,7 +178,7 @@ void OfflineSigninLimiter::UpdateLimit() {
   UpdateOnlineSigninData(last_gaia_signin_time, offline_signin_time_limit);
   const base::TimeDelta time_since_last_gaia_signin =
       now - last_gaia_signin_time;
-  if (time_since_last_gaia_signin >= offline_signin_time_limit) {
+  if (time_since_last_gaia_signin >= offline_signin_time_limit.value()) {
     // If the limit already expired, set the flag enforcing online login
     // immediately and return.
     ForceOnlineLogin();
@@ -202,8 +190,58 @@ void OfflineSigninLimiter::UpdateLimit() {
   // TODO(b/179636755): Use `WallClockTimer` class instead of the
   // `OneShotTimer`.
   offline_signin_limit_timer_->Start(
-      FROM_HERE, offline_signin_time_limit - time_since_last_gaia_signin, this,
+      FROM_HERE,
+      offline_signin_time_limit.value() - time_since_last_gaia_signin, this,
       &OfflineSigninLimiter::ForceOnlineLogin);
+}
+
+base::Optional<base::TimeDelta> OfflineSigninLimiter::GetGaiaSamlTimeLimit() {
+  // TODO(crbug.com/1177416): Clean up this override once testing is complete.
+  auto override_val = GetTimeLimitOverrideForTesting();
+  if (override_val.has_value())
+    return override_val;
+
+  const int saml_offline_limit =
+      profile_->GetPrefs()->GetInteger(prefs::kSAMLOfflineSigninTimeLimit);
+  if (saml_offline_limit <= kSAMLOfflineSigninTimeLimitNotSet)
+    return base::nullopt;
+
+  return base::make_optional<base::TimeDelta>(
+      base::TimeDelta::FromSeconds(saml_offline_limit));
+}
+
+base::Optional<base::TimeDelta> OfflineSigninLimiter::GetGaiaNoSamlTimeLimit() {
+  // TODO(crbug.com/1177416): Clean up this override once testing is complete.
+  auto override_val = GetTimeLimitOverrideForTesting();
+  if (override_val.has_value())
+    return override_val;
+
+  int no_saml_offline_limit =
+      profile_->GetPrefs()->GetInteger(prefs::kGaiaOfflineSigninTimeLimitDays);
+  if (no_saml_offline_limit <= kGaiaOfflineSigninTimeLimitDaysNotSet)
+    return base::nullopt;
+
+  return base::make_optional<base::TimeDelta>(
+      base::TimeDelta::FromDays(no_saml_offline_limit));
+}
+
+base::Optional<base::TimeDelta>
+OfflineSigninLimiter::GetTimeLimitOverrideForTesting() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kOfflineSignInTimeLimitInSecondsOverrideForTesting)) {
+    const std::string ascii_value =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            switches::kOfflineSignInTimeLimitInSecondsOverrideForTesting);
+    int numeric_val = 0;
+    if (base::StringToInt(ascii_value, &numeric_val) && numeric_val >= 0) {
+      return base::make_optional<base::TimeDelta>(
+          base::TimeDelta::FromSeconds(numeric_val));
+    }
+    LOG(WARNING)
+        << "Manual offline signin time limit override requested but failed.";
+  }
+
+  return base::nullopt;
 }
 
 void OfflineSigninLimiter::ForceOnlineLogin() {
