@@ -103,6 +103,18 @@ void AudioEncoder::ProcessEncode(Request* request) {
     self->ProcessRequests();
   };
 
+  if (buffer->numberOfChannels() != uint8_t{active_config_->options.channels} ||
+      buffer->sampleRate() != active_config_->options.sample_rate) {
+    media::Status error(media::StatusCode::kEncoderFailedEncode);
+    error.WithData("channels", int{buffer->numberOfChannels()});
+    error.WithData("sampleRate", buffer->sampleRate());
+
+    HandleError(logger_->MakeException(
+        "Input audio buffer is incompatible with codec parameters", error));
+    frame->close();
+    return;
+  }
+
   // Converting time at the beginning of the frame (aka timestamp) into
   // time at the end of the frame (aka capture time) that is expected by
   // media::AudioEncoder.

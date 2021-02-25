@@ -69,7 +69,6 @@ AudioParameters CreateOpusCompatibleParams(const AudioParameters& params) {
   AudioParameters result(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                          GuessChannelLayout(std::min(params.channels(), 2)),
                          used_rate, frames_per_buffer);
-  DCHECK(result.IsValid());
   return result;
 }
 
@@ -119,7 +118,17 @@ void AudioOpusEncoder::Initialize(const Options& options,
 
   options_ = options;
   input_params_ = CreateInputParams(options);
+  if (!input_params_.IsValid()) {
+    std::move(done_cb).Run(StatusCode::kEncoderInitializationError);
+    return;
+  }
+
   converted_params_ = CreateOpusCompatibleParams(input_params_);
+  if (!input_params_.IsValid()) {
+    std::move(done_cb).Run(StatusCode::kEncoderInitializationError);
+    return;
+  }
+
   converter_ =
       std::make_unique<AudioConverter>(input_params_, converted_params_,
                                        /*disable_fifo=*/false);
