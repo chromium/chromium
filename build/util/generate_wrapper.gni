@@ -88,8 +88,12 @@ template("generate_wrapper") {
       rebase_path(root_build_dir, root_build_dir),
       "--script-language",
       _script_language,
-      "--",
     ]
+
+    if (defined(invoker.use_vpython3) && invoker.use_vpython3) {
+      args += [ "--use-vpython3" ]
+    }
+    args += [ "--" ]
     args += _wrapped_arguments
 
     if (defined(invoker.write_runtime_deps)) {
