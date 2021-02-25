@@ -404,7 +404,7 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
         if (addUI) {
           passEncoder.setPipeline(pipelineForIcons);
           passEncoder.setVertexBuffer(0, verticesBufferForIcons);
-          passEncoder.draw(length * 6);
+          passEncoder.draw(videos.length * 6);
         }
         passEncoder.endPass();
         device.queue.submit([commandEncoder.finish()]);
@@ -462,7 +462,7 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
     if (addUI) {
       passEncoder.setPipeline(pipelineForIcons);
       passEncoder.setVertexBuffer(0, verticesBufferForIcons);
-      passEncoder.draw(length * 6);
+      passEncoder.draw(videos.length * 6);
     }
     passEncoder.endPass();
     device.queue.submit([commandEncoder.finish()]);
@@ -470,7 +470,7 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
     frameId++;
   }
 
-    // Call oneFrame() every 33 milliseconds to simulate 30 fps.
+  // Call oneFrame() every 33 milliseconds to simulate 30 fps.
   if (useImportTextureApi) {
     setInterval(oneFrameWithImportTextureApi, 33);
   } else {
