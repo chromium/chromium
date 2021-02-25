@@ -45,6 +45,7 @@ compile_js_files = [
   "mojo/chrome_helper.js",
   "mojo/device_operator.js",
   "mojo/image_capture.js",
+  "mojo/util.js",
   "nav.js",
   "perf.js",
   "snackbar.js",

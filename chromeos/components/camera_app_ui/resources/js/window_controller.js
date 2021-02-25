@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assertInstanceof} from './chrome_util.js';
+import {closeWhenUnload} from './mojo/util.js';
 
 /**
  * Controller to get/set/listener for window state.
@@ -35,6 +36,7 @@ export class WindowController {
 
     const windowMonitorCallbackRouter =
         new chromeosCamera.mojom.WindowStateMonitorCallbackRouter();
+    closeWhenUnload(windowMonitorCallbackRouter);
     windowMonitorCallbackRouter.onWindowStateChanged.addListener((states) => {
       this.windowStates_ = states;
     });

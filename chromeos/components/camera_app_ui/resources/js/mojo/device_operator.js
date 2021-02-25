@@ -15,6 +15,8 @@ import {
 } from '../type.js';
 import {WaitableEvent} from '../waitable_event.js';
 
+import {closeWhenUnload} from './util.js';
+
 /**
  * Parse the entry data according to its type.
  * @param {!cros.mojom.CameraMetadataEntry} entry Camera metadata entry
@@ -137,6 +139,8 @@ export class DeviceOperator {
      * @private
      */
     this.onDeviceStoppedEvents_ = new Map();
+
+    closeWhenUnload(this.deviceProvider_);
   }
 
   /**
@@ -425,6 +429,7 @@ export class DeviceOperator {
   async addMetadataObserver(deviceId, callback, streamType) {
     const observerCallbackRouter =
         new cros.mojom.ResultMetadataObserverCallbackRouter();
+    closeWhenUnload(observerCallbackRouter);
     observerCallbackRouter.onMetadataAvailable.addListener(callback);
 
     const device = await this.getDevice_(deviceId);
@@ -463,6 +468,7 @@ export class DeviceOperator {
   async addShutterObserver(deviceId, callback) {
     const observerCallbackRouter =
         new cros.mojom.CameraEventObserverCallbackRouter();
+    closeWhenUnload(observerCallbackRouter);
     observerCallbackRouter.onShutterDone.addListener(callback);
 
     const device = await this.getDevice_(deviceId);

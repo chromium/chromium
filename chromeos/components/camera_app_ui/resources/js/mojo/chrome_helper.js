@@ -4,6 +4,8 @@
 
 import {windowController} from '../window_controller.js';
 
+import {closeWhenUnload} from './util.js';
+
 /**
  * The singleton instance of ChromeHelper. Initialized by the first
  * invocation of getInstance().
@@ -24,6 +26,8 @@ export class ChromeHelper {
      * @type {!chromeosCamera.mojom.CameraAppHelperRemote}
      */
     this.remote_ = chromeosCamera.mojom.CameraAppHelper.getRemote();
+
+    closeWhenUnload(this.remote_);
   }
 
   /**
@@ -37,6 +41,7 @@ export class ChromeHelper {
   async initTabletModeMonitor(onChange) {
     const monitorCallbackRouter =
         new chromeosCamera.mojom.TabletModeMonitorCallbackRouter();
+    closeWhenUnload(monitorCallbackRouter);
     monitorCallbackRouter.update.addListener(onChange);
 
     return (await this.remote_.setTabletMonitor(
@@ -55,6 +60,7 @@ export class ChromeHelper {
   async initScreenStateMonitor(onChange) {
     const monitorCallbackRouter =
         new chromeosCamera.mojom.ScreenStateMonitorCallbackRouter();
+    closeWhenUnload(monitorCallbackRouter);
     monitorCallbackRouter.update.addListener(onChange);
 
     return (await this.remote_.setScreenStateMonitor(
@@ -71,6 +77,7 @@ export class ChromeHelper {
   async initExternalScreenMonitor(onChange) {
     const monitorCallbackRouter =
         new chromeosCamera.mojom.ExternalScreenMonitorCallbackRouter();
+    closeWhenUnload(monitorCallbackRouter);
     monitorCallbackRouter.update.addListener(onChange);
 
     return (await this.remote_.setExternalScreenMonitor(
@@ -96,6 +103,7 @@ export class ChromeHelper {
   async initCameraUsageMonitor(exploitUsage, releaseUsage) {
     const usageCallbackRouter =
         new chromeosCamera.mojom.CameraUsageOwnershipMonitorCallbackRouter();
+    closeWhenUnload(usageCallbackRouter);
 
     usageCallbackRouter.onCameraUsageOwnershipChanged.addListener(
         async (hasUsage) => {
@@ -111,12 +119,6 @@ export class ChromeHelper {
 
     const {controller} = await this.remote_.getWindowStateController();
     await windowController.bind(controller);
-
-    const closeConnection = () => {
-      usageCallbackRouter.$.close();
-      window.removeEventListener('beforeunload', closeConnection);
-    };
-    window.addEventListener('beforeunload', closeConnection);
   }
 
   /**
@@ -233,11 +235,13 @@ export class ChromeHelper {
    */
   async addOnLockListener(callback) {
     const monitorCallbackRouter = new blink.mojom.IdleMonitorCallbackRouter();
+    closeWhenUnload(monitorCallbackRouter);
     monitorCallbackRouter.update.addListener((newState) => {
       callback(newState.screen === blink.mojom.ScreenIdleState.kLocked);
     });
 
     const idleManager = blink.mojom.IdleManager.getRemote();
+    closeWhenUnload(idleManager);
     // Set a large threshold since we don't care about user idle. Note that
     // ESLint does not yet seem to know about BigInt, so it complains about an
     // uppercase "function" being used as something other than a constructor,
