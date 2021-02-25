@@ -47,7 +47,8 @@ RENDERING_BENCHMARK_UMA = [
     'Graphics.Smoothness.MaxPercentDroppedFrames_1sWindow',
     'Graphics.Smoothness.95pctPercentDroppedFrames_1sWindow',
     'Memory.GPU.PeakMemoryUsage.Scroll',
-    'Memory.GPU.PeakMemoryUsage.PageLoad',
+    # TODO(crbug/1175768): Reenable once fixed and not crashing telemetry.
+    # 'Memory.GPU.PeakMemoryUsage.PageLoad',
 ]
 
 

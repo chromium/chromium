@@ -20,7 +20,8 @@ SYSTEM_HEALTH_BENCHMARK_UMA = [
     'Event.Latency.ScrollUpdate.TimeToScrollUpdateSwapBegin2',
     'Graphics.Smoothness.PercentDroppedFrames.AllSequences',
     'Memory.GPU.PeakMemoryUsage.Scroll',
-    'Memory.GPU.PeakMemoryUsage.PageLoad',
+    # TODO(crbug/1175768): Reenable once fixed and not crashing telemetry.
+    # 'Memory.GPU.PeakMemoryUsage.PageLoad',
 ]
 
 
