@@ -104,7 +104,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sharing.DefaultSharesheetAndroid.Opened" enum="ShareOrigin"
-    expires_after="2021-08-22">
+    expires_after="M97">
   <owner>sophey@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>
   <summary>
@@ -345,6 +345,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="M97">
   <owner>ramyan@chromium.org</owner>
   <owner>jeffreycohen@chromium.org</owner>
+  <owner>src/components/send_tab_to_self/OWNERS</owner>
   <summary>
     Logged when actions are taken in the sharing screenshot image editing
     feature.
@@ -355,6 +356,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     enum="SharingScreenshotFallbackAction" expires_after="M97">
   <owner>ramyan@chromium.org</owner>
   <owner>jeffreycohen@chromium.org</owner>
+  <owner>src/components/send_tab_to_self/OWNERS</owner>
   <summary>
     Logged when actions are taken in the sharing screenshot fallback feature.
   </summary>
@@ -455,7 +457,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sharing.SharingHubAndroid.Opened" enum="ShareOrigin"
-    expires_after="2021-08-22">
+    expires_after="M97">
   <owner>sophey@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>
   <summary>
@@ -465,7 +467,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sharing.SharingHubAndroid.ThirdPartyAppUsage"
-    enum="SharingHubBottomRowIndex" expires_after="M89">
+    enum="SharingHubBottomRowIndex" expires_after="M97">
   <owner>kmilka@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>
   <summary>
@@ -475,7 +477,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sharing.SharingHubAndroid.TimeToShare" units="ms"
-    expires_after="M89">
+    expires_after="M97">
   <owner>kmilka@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>
   <summary>
@@ -485,7 +487,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sharing.SharingHubAndroid.TimeToShowShareSheet" units="ms"
-    expires_after="M89">
+    expires_after="M97">
   <owner>kmilka@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>
   <summary>
