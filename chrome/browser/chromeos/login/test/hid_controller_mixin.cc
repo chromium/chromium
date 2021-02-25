@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "chrome/browser/chromeos/login/screens/hid_detection_screen.h"
+#include "chrome/browser/ash/login/screens/hid_detection_screen.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "services/device/public/cpp/hid/fake_input_service_linux.h"
 

@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/chromeos/login/screens/network_error.h"
+#include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/chromeos/login/version_updater/update_time_estimator.h"
 #include "chromeos/dbus/update_engine_client.h"
 #include "chromeos/network/portal_detector/network_portal_detector.h"

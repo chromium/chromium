@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/gesture_navigation_screen_handler.h"
 
-#include "chrome/browser/chromeos/login/screens/gesture_navigation_screen.h"
+#include "chrome/browser/ash/login/screens/gesture_navigation_screen.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 

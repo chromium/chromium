@@ -9,7 +9,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/login/screens/network_error.h"
+#include "chrome/browser/ash/login/screens/network_error.h"
 
 namespace chromeos {
 FORWARD_DECLARE_TEST(ErrorScreensHistogramHelperTest, TestShowHideTime);

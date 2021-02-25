@@ -7,7 +7,7 @@
 #include "ash/public/cpp/ash_pref_names.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/chromeos/login/screens/marketing_opt_in_screen.h"
+#include "chrome/browser/ash/login/screens/marketing_opt_in_screen.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
