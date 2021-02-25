@@ -90,7 +90,8 @@ RenderFrameDevToolsAgentHost* FindAgentHost(FrameTreeNode* frame_tree_node) {
 bool ShouldCreateDevToolsForNode(FrameTreeNode* ftn) {
   return !ftn->parent() ||
          (ftn->current_frame_host() &&
-          ftn->current_frame_host()->IsCrossProcessSubframe());
+          RenderFrameDevToolsAgentHost::ShouldCreateDevToolsForHost(
+              ftn->current_frame_host()));
 }
 
 }  // namespace
@@ -141,13 +142,14 @@ scoped_refptr<DevToolsAgentHost> RenderFrameDevToolsAgentHost::GetOrCreateFor(
 
 // static
 bool RenderFrameDevToolsAgentHost::ShouldCreateDevToolsForHost(
-    RenderFrameHost* rfh) {
-  return rfh->IsCrossProcessSubframe() || !rfh->GetParent();
+    RenderFrameHostImpl* rfh) {
+  DCHECK(rfh);
+  return rfh->is_local_root();
 }
 
 // static
 scoped_refptr<DevToolsAgentHost>
-RenderFrameDevToolsAgentHost::CreateForCrossProcessNavigation(
+RenderFrameDevToolsAgentHost::CreateForLocalRootOrPortalNavigation(
     NavigationRequest* request) {
   // Note that this method does not use FrameTreeNode::current_frame_host(),
   // since it is used while the frame host may not be set as current yet,
@@ -404,10 +406,10 @@ void RenderFrameDevToolsAgentHost::ReadyToCommitNavigation(
 
   if (request->frame_tree_node() != frame_tree_node_) {
     if (ShouldForceCreation() && request->GetRenderFrameHost() &&
-        request->GetRenderFrameHost()->IsCrossProcessSubframe()) {
+        request->GetRenderFrameHost()->is_local_root_subframe()) {
       // An agent may have been created earlier if auto attach is on.
       if (!FindAgentHost(request->frame_tree_node()))
-        CreateForCrossProcessNavigation(request);
+        CreateForLocalRootOrPortalNavigation(request);
     }
     return;
   }
@@ -867,7 +869,7 @@ void RenderFrameDevToolsAgentHost::UpdateResourceLoaderFactories() {
     FrameTreeNode* node = queue.front();
     queue.pop();
     RenderFrameHostImpl* host = node->current_frame_host();
-    if (node != frame_tree_node_ && host->IsCrossProcessSubframe())
+    if (node != frame_tree_node_ && host->is_local_root_subframe())
       continue;
     host->UpdateSubresourceLoaderFactories();
     for (size_t i = 0; i < node->child_count(); ++i)

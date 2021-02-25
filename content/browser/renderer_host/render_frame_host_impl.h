@@ -680,12 +680,17 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // call FrameTreeNode::IsLoading.
   bool is_loading() const { return is_loading_; }
 
-  // Returns true if this is a top-level frame, or if this frame's RenderFrame
-  // is in a different process from its parent frame. Local roots are
+  // Returns true if this is a top-level frame, or if this frame
+  // uses a proxy to communicate with its parent frame. Local roots are
   // distinguished by owning a RenderWidgetHost, which manages input events
   // and painting for this frame and its contiguous local subtree in the
   // renderer process.
   bool is_local_root() const { return !!GetLocalRenderWidgetHost(); }
+
+  // Returns true if this is not a top-level frame but is still a local root.
+  bool is_local_root_subframe() const {
+    return !is_main_frame() && is_local_root();
+  }
 
   media::MediaMetricsProvider::RecordAggregateWatchTimeCallback
   GetRecordAggregateWatchTimeCallback();
