@@ -6,8 +6,8 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "remoting/base/queued_task_poster.h"
 #include "remoting/client/display/gl_renderer.h"
-#include "remoting/client/queued_task_poster.h"
 #include "remoting/client/ui/view_matrix.h"
 
 namespace remoting {

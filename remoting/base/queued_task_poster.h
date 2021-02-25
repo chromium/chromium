@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_CLIENT_QUEUED_TASK_POSTER_H_
-#define REMOTING_CLIENT_QUEUED_TASK_POSTER_H_
+#ifndef REMOTING_BASE_QUEUED_TASK_POSTER_H_
+#define REMOTING_BASE_QUEUED_TASK_POSTER_H_
 
 #include <memory>
 
@@ -47,4 +47,4 @@ class QueuedTaskPoster {
 
 }  // namespace remoting
 
-#endif  // REMOTING_CLIENT_QUEUED_TASK_POSTER_H_
+#endif  // REMOTING_BASE_QUEUED_TASK_POSTER_H_
