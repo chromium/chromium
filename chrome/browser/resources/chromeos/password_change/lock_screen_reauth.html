@@ -111,12 +111,13 @@
           display: flex;
           justify-content: center;
           align-items: center;
+          flex: 3;
         }
 
         .illustration {
           height: 100%;
           width: 100%;
-          max-width: 600px;
+          max-width: 500px;
           object-fit: contain;
         }
 
@@ -141,8 +142,8 @@
         }
 
         cr-input {
-          height: 32px;
-          border-radius: 4px;
+          --cr-input-min-height: 32px;
+          --cr-input-border-radius: 4px 4px 0 0;
           max-width: 560px;
           padding-bottom: 8px;
         }
