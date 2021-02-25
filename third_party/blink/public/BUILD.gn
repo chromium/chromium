@@ -157,7 +157,6 @@ source_set("blink_headers") {
     "platform/scheduler/web_scoped_virtual_time_pauser.h",
     "platform/scheduler/web_thread_scheduler.h",
     "platform/scheduler/web_widget_scheduler.h",
-    "platform/sync_load_response.h",
     "platform/task_type.h",
     "platform/tracked_child_url_loader_factory_bundle.h",
     "platform/url_conversion.h",

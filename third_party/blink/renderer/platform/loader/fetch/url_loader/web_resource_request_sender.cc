@@ -40,7 +40,6 @@
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
-#include "third_party/blink/public/platform/sync_load_response.h"
 #include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_request_peer.h"
 #include "third_party/blink/public/platform/web_resource_request_sender_delegate.h"
@@ -49,6 +48,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/mojo_url_loader_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_context.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_response.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 

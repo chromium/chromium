@@ -23,7 +23,6 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
-#include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"

@@ -2,25 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_SYNC_LOAD_RESPONSE_H_
-#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_SYNC_LOAD_RESPONSE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_SYNC_LOAD_RESPONSE_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_SYNC_LOAD_RESPONSE_H_
 
 #include "base/optional.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
-#include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_data.h"
-#include "third_party/blink/public/platform/web_url.h"
+#include "url/gurl.h"
 
 namespace blink {
 
 // See the SyncLoad method. (The name of this struct is not
 // suffixed with "Info" because it also contains the response data.)
-// TODO(crbug.com/1110032): Move this class to
-// blink/renderer/platform/loader/fetch/url_loader.
 struct BLINK_PLATFORM_EXPORT SyncLoadResponse {
   SyncLoadResponse();
   SyncLoadResponse(SyncLoadResponse&& other);
@@ -47,7 +44,9 @@ struct BLINK_PLATFORM_EXPORT SyncLoadResponse {
 
   // The final URL of the response.  This may differ from the request URL in
   // the case of a server redirect.
-  WebURL url;
+  // Use GURL to avoid extra conversion between KURL and GURL because non-blink
+  // types are allowed for loader here.
+  GURL url;
 
   // The response data.
   WebData data;
@@ -58,4 +57,4 @@ struct BLINK_PLATFORM_EXPORT SyncLoadResponse {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_SYNC_LOAD_RESPONSE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_SYNC_LOAD_RESPONSE_H_

@@ -124,6 +124,8 @@ blink_platform_sources("loader") {
     "fetch/url_loader/request_conversion.h",
     "fetch/url_loader/sync_load_context.cc",
     "fetch/url_loader/sync_load_context.h",
+    "fetch/url_loader/sync_load_response.cc",
+    "fetch/url_loader/sync_load_response.h",
     "fetch/url_loader/web_resource_request_sender.cc",
     "fetch/url_loader/web_url_loader.cc",
     "fetch/url_loader/web_url_loader_factory.cc",

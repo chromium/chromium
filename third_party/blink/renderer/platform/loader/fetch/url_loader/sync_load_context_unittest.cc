@@ -15,9 +15,9 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
-#include "third_party/blink/public/platform/sync_load_response.h"
 #include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_resource_request_sender.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_response.h"
 
 namespace blink {
 

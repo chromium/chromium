@@ -68,7 +68,6 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
-#include "third_party/blink/public/platform/sync_load_response.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_http_load_info.h"
@@ -83,6 +82,7 @@
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_security_policy.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_response.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "url/origin.h"
 
@@ -968,7 +968,7 @@ void WebURLLoader::LoadSynchronously(
                   timeout_interval, &sync_load_response,
                   std::move(resource_load_info_notifier_wrapper));
 
-  const WebURL& final_url = sync_load_response.url;
+  const KURL final_url(sync_load_response.url);
 
   // TODO(tc): For file loads, we may want to include a more descriptive
   // status code or status text.
