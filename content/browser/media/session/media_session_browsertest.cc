@@ -249,15 +249,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTestWithoutInternalMediaSession,
   EXPECT_TRUE(IsPlaying(shell(), "long-video"));
 }
 
-// Flaky on Linux and Android and Mac. http://crbug.com/1157239,
-// http://crbug.com/1157319
-#if defined(OS_LINUX) || defined(OS_ANDROID) || defined(OS_MAC) || \
-    defined(OS_CHROMEOS)
-#define MAYBE_SimplePlayPause DISABLED_SimplePlayPause
-#else
-#define MAYBE_SimplePlayPause SimplePlayPause
-#endif
-IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, MAYBE_SimplePlayPause) {
+IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, SimplePlayPause) {
   EXPECT_TRUE(NavigateToURL(shell(),
                             GetTestUrl("media/session", "media-session.html")));
 
@@ -275,17 +267,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, MAYBE_SimplePlayPause) {
   EXPECT_TRUE(IsPlaying(shell(), "long-video"));
 }
 
-// Flaky on Linux and Android. http://crbug.com/1157239,
-// http://crbug.com/1157319
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || defined(OS_ANDROID)
-#define MAYBE_MultiplePlayersPlayPause DISABLED_MultiplePlayersPlayPause
-#else
-#define MAYBE_MultiplePlayersPlayPause MultiplePlayersPlayPause
-#endif
-IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest,
-                       MAYBE_MultiplePlayersPlayPause) {
+IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, MultiplePlayersPlayPause) {
   EXPECT_TRUE(NavigateToURL(shell(),
                             GetTestUrl("media/session", "media-session.html")));
 
@@ -338,9 +320,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, MAYBE_WebContents_Muted) {
 #if !defined(OS_ANDROID)
 // On Android, System Audio Focus would break this test.
 
-// Flaky: http://crbug.com/1157263
-IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest,
-                       DISABLED_MultipleTabsPlayPause) {
+IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, MultipleTabsPlayPause) {
   Shell* other_shell = CreateBrowser();
 
   EXPECT_TRUE(NavigateToURL(shell(),
