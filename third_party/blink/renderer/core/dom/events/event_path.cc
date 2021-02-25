@@ -95,7 +95,7 @@ void EventPath::CalculatePath() {
   while (current) {
     if (event_ && current->KeepEventInNode(*event_))
       break;
-    if (current->IsChildOfShadowHost()) {
+    if (current->IsChildOfShadowHost() && !current->IsPseudoElement()) {
       if (HTMLSlotElement* slot = current->AssignedSlot()) {
         current = slot;
         nodes_in_path.push_back(current);
