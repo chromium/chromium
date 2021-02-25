@@ -60,6 +60,8 @@ class MODULES_EXPORT FetchRespondWithObserver : public RespondWithObserver {
   const network::mojom::RequestDestination request_destination_;
   Member<FetchEvent> event_;
   Member<ReadableStream> request_body_stream_;
+  // https://fetch.spec.whatwg.org/#concept-body-source
+  const bool request_body_has_source_;
   base::WeakPtr<CrossOriginResourcePolicyChecker> corp_checker_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };

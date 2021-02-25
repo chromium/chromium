@@ -286,6 +286,33 @@ void ServiceWorkerSubresourceLoader::DispatchFetchEventForSubresource() {
   }
 
   auto params = blink::mojom::DispatchFetchEventParams::New();
+  auto* body = resource_request_.request_body.get();
+  network::DataElementChunkedDataPipe chunked_data_pipe;
+  if (body) {
+    auto& elements = *body->elements_mutable();
+
+    if (elements.size() > 0 &&
+        elements[0].type() == network::DataElement::Tag::kChunkedDataPipe) {
+      // The streaming body (i.e., body with null source in spec words) needs
+      // extra handling here because it is not copyable.
+      // Note: DataElementChunkedDataPipe can be used in `elements` only if
+      // `elements` consists of one element, as noted in url_loader.mojom.
+      //
+      // We swap `elements[0]` with an invalid endpoint, to allow network
+      // fallback.
+      // TODO(crbug.com/1165690): Ideally we should tee the stream, give one
+      // endpoint to the fetch handler and give another to the network service,
+      // as specified at https://github.com/whatwg/fetch/pull/1144.
+      chunked_data_pipe =
+          std::move(elements[0].As<network::DataElementChunkedDataPipe>());
+      mojo::PendingRemote<network::mojom::ChunkedDataPipeGetter> invalid_getter;
+      auto unused = invalid_getter.InitWithNewPipeAndPassReceiver();
+      elements[0] = network::DataElement(network::DataElementChunkedDataPipe(
+          std::move(invalid_getter),
+          network::DataElementChunkedDataPipe::ReadOnlyOnce(true)));
+    }
+  }
+
   params->request = blink::mojom::FetchAPIRequest::From(resource_request_);
   params->client_id = controller_connector_->client_id();
 
@@ -301,6 +328,11 @@ void ServiceWorkerSubresourceLoader::DispatchFetchEventForSubresource() {
       std::move(params), std::move(response_callback),
       base::BindOnce(&ServiceWorkerSubresourceLoader::OnFetchEventFinished,
                      weak_factory_.GetWeakPtr()));
+
+  if (chunked_data_pipe.chunked_data_pipe_getter()) {
+    (*resource_request_.request_body->elements_mutable())[0] =
+        network::DataElement(std::move(chunked_data_pipe));
+  }
 }
 
 void ServiceWorkerSubresourceLoader::OnFetchEventFinished(

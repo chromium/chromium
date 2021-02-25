@@ -374,6 +374,14 @@ void FetchRespondWithObserver::OnNoResponse() {
                                request_body_stream_->IsDisturbed())) {
     GetExecutionContext()->CountUse(
         WebFeature::kFetchRespondWithNoResponseWithUsedRequestBody);
+    if (!request_body_has_source_) {
+      OnResponseRejected(
+          mojom::blink::ServiceWorkerResponseError::kRequestBodyUnusable);
+      return;
+    }
+  }
+  if (request_body_stream_ && !request_body_has_source_) {
+    // TODO(crbug.com/1165690): Cancel `request_body_stream_`.
   }
   ServiceWorkerGlobalScope* service_worker_global_scope =
       To<ServiceWorkerGlobalScope>(GetExecutionContext());
@@ -405,6 +413,7 @@ FetchRespondWithObserver::FetchRespondWithObserver(
       redirect_mode_(request.redirect_mode),
       frame_type_(request.frame_type),
       request_destination_(request.destination),
+      request_body_has_source_(request.body.FormBody()),
       corp_checker_(std::move(corp_checker)),
       task_runner_(context->GetTaskRunner(TaskType::kNetworking)) {}
 
