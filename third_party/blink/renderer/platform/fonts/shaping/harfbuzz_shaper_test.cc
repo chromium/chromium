@@ -1482,13 +1482,13 @@ TEST_F(HarfBuzzShaperTest, MAYBE_SafeToBreakArabicCommonLigatures) {
   EXPECT_EQ(3u, result->NextSafeToBreakOffset(3));
   EXPECT_EQ(4u, result->NextSafeToBreakOffset(4));
 #if defined(OS_MAC)
-  EXPECT_EQ(5u, result->NextSafeToBreakOffset(5));
-  EXPECT_EQ(11u, result->NextSafeToBreakOffset(6));
-  EXPECT_EQ(11u, result->NextSafeToBreakOffset(7));
-  EXPECT_EQ(11u, result->NextSafeToBreakOffset(8));
-  EXPECT_EQ(11u, result->NextSafeToBreakOffset(9));
-  EXPECT_EQ(11u, result->NextSafeToBreakOffset(10));
-  EXPECT_EQ(11u, result->NextSafeToBreakOffset(11));
+  EXPECT_EQ(12u, result->NextSafeToBreakOffset(5));
+  EXPECT_EQ(12u, result->NextSafeToBreakOffset(6));
+  EXPECT_EQ(12u, result->NextSafeToBreakOffset(7));
+  EXPECT_EQ(12u, result->NextSafeToBreakOffset(8));
+  EXPECT_EQ(12u, result->NextSafeToBreakOffset(9));
+  EXPECT_EQ(12u, result->NextSafeToBreakOffset(10));
+  EXPECT_EQ(12u, result->NextSafeToBreakOffset(11));
 #else
   EXPECT_EQ(5u, result->NextSafeToBreakOffset(5));
   EXPECT_EQ(7u, result->NextSafeToBreakOffset(6));
@@ -1506,13 +1506,13 @@ TEST_F(HarfBuzzShaperTest, MAYBE_SafeToBreakArabicCommonLigatures) {
   EXPECT_EQ(3u, result->PreviousSafeToBreakOffset(3));
   EXPECT_EQ(4u, result->PreviousSafeToBreakOffset(4));
 #if defined(OS_MAC)
-  EXPECT_EQ(5u, result->PreviousSafeToBreakOffset(5));
-  EXPECT_EQ(5u, result->PreviousSafeToBreakOffset(6));
-  EXPECT_EQ(5u, result->PreviousSafeToBreakOffset(7));
-  EXPECT_EQ(5u, result->PreviousSafeToBreakOffset(8));
-  EXPECT_EQ(5u, result->PreviousSafeToBreakOffset(9));
-  EXPECT_EQ(5u, result->PreviousSafeToBreakOffset(10));
-  EXPECT_EQ(11u, result->PreviousSafeToBreakOffset(11));
+  EXPECT_EQ(4u, result->PreviousSafeToBreakOffset(5));
+  EXPECT_EQ(4u, result->PreviousSafeToBreakOffset(6));
+  EXPECT_EQ(4u, result->PreviousSafeToBreakOffset(7));
+  EXPECT_EQ(4u, result->PreviousSafeToBreakOffset(8));
+  EXPECT_EQ(4u, result->PreviousSafeToBreakOffset(9));
+  EXPECT_EQ(4u, result->PreviousSafeToBreakOffset(10));
+  EXPECT_EQ(4u, result->PreviousSafeToBreakOffset(11));
 #else
   EXPECT_EQ(5u, result->PreviousSafeToBreakOffset(5));
   EXPECT_EQ(5u, result->PreviousSafeToBreakOffset(6));
