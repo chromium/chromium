@@ -162,6 +162,14 @@ self.addEventListener('unhandledrejection', (event) => {
 
 document.addEventListener('DOMContentLoaded', () => {
   // The "real" app first loads translations for populating strings in the app
-  // for the initial load, then does this.
-  document.body.appendChild(new BacklightApp());
+  // for the initial load, then does this. See go/media-app-loadapp.
+  const app = new BacklightApp();
+  document.body.appendChild(app);
+
+  if (window.customLaunchData) {
+    if (window.customLaunchData.delegate) {
+      app.setDelegate(window.customLaunchData.delegate);
+    }
+    return app.loadFiles(window.customLaunchData.files);
+  }
 });

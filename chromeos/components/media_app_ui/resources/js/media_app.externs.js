@@ -199,8 +199,8 @@ mediaApp.ClientApi.prototype.setDelegate = function(delegate) {};
 /**
  * Launch data that can be read by the app when it first loads.
  * @type {{
- *     delegate: (mediaApp.ClientApiDelegate | undefined),
- *     files: mediaApp.AbstractFileList
+ *     delegate: (!mediaApp.ClientApiDelegate | undefined),
+ *     files: !mediaApp.AbstractFileList
  * }}
  */
 window.customLaunchData;
