@@ -22,10 +22,10 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/fuchsia/scoped_service_binding.h"
+#include "base/fuchsia/test_component_controller.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
@@ -293,6 +293,10 @@ class CastRunnerIntegrationTest : public testing::Test {
   void TearDown() override {
     if (component_controller_)
       ShutdownComponent();
+
+    // Unbind the Runner channel, to prevent it from triggering an error when
+    // the CastRunner and WebEngine are torn down.
+    cast_runner_.Unbind();
   }
 
  protected:
@@ -308,7 +312,7 @@ class CastRunnerIntegrationTest : public testing::Test {
         incoming_services.NewRequest().TakeChannel());
     sys::ServiceDirectory cast_runner_services =
         StartCastRunner(std::move(incoming_services), runner_features,
-                        cast_runner_controller_.NewRequest());
+                        cast_runner_controller_.ptr().NewRequest());
 
     // Connect to the CastRunner's fuchsia.sys.Runner interface.
     cast_runner_ = cast_runner_services.Connect<fuchsia::sys::Runner>();
@@ -362,7 +366,8 @@ class CastRunnerIntegrationTest : public testing::Test {
 
   void StartAndPublishWebEngine() {
     fidl::InterfaceHandle<fuchsia::io::Directory> web_engine_outgoing_dir =
-        cr_fuchsia::StartWebEngineForTests(web_engine_controller_.NewRequest());
+        cr_fuchsia::StartWebEngineForTests(
+            web_engine_controller_.ptr().NewRequest());
     sys::ServiceDirectory web_engine_outgoing_services(
         std::move(web_engine_outgoing_dir));
 
@@ -397,8 +402,8 @@ class CastRunnerIntegrationTest : public testing::Test {
   }
 
   void CreateComponentContextAndStartComponent(
-      const char* app_id = kTestAppId) {
-    auto component_url = base::StringPrintf("cast:%s", app_id);
+      base::StringPiece app_id = kTestAppId) {
+    auto component_url = base::StrCat({"cast:", app_id});
     CreateComponentContext(component_url);
     StartCastComponent(component_url);
     WaitComponentState();
@@ -453,8 +458,8 @@ class CastRunnerIntegrationTest : public testing::Test {
     package.resolved_url = std::string(component_url);
 
     cast_runner_->StartComponent(std::move(package), std::move(startup_info),
-                                 component_controller_.NewRequest());
-    component_controller_.set_error_handler([](zx_status_t status) {
+                                 component_controller_.ptr().NewRequest());
+    component_controller_.ptr().set_error_handler([](zx_status_t status) {
       ZX_LOG(ERROR, status) << "Component launch failed";
       ADD_FAILURE();
     });
@@ -508,11 +513,22 @@ class CastRunnerIntegrationTest : public testing::Test {
     if (component_state_) {
       base::RunLoop run_loop;
       component_state_->set_on_delete(run_loop.QuitClosure());
-      component_controller_.Unbind();
+      component_controller_.ptr().Unbind();
       run_loop.Run();
     }
+  }
 
-    component_controller_ = nullptr;
+  void ExpectControllerDisconnectWithStatus(zx_status_t expected_status) {
+    DCHECK(component_controller_);
+
+    base::RunLoop loop;
+    component_controller_.ptr().set_error_handler(
+        [&loop, expected_status](zx_status_t status) {
+          loop.Quit();
+          EXPECT_EQ(expected_status, status);
+        });
+
+    loop.Run();
   }
 
   void WaitForComponentDestroyed() {
@@ -520,18 +536,8 @@ class CastRunnerIntegrationTest : public testing::Test {
     base::RunLoop state_loop;
     component_state_->set_on_delete(state_loop.QuitClosure());
 
-    base::RunLoop controller_loop;
-    if (component_controller_) {
-      component_controller_.set_error_handler(
-          [&controller_loop](zx_status_t status) {
-            controller_loop.Quit();
-            EXPECT_EQ(status, ZX_ERR_PEER_CLOSED);
-          });
-    }
-
-    if (component_controller_) {
-      controller_loop.Run();
-    }
+    if (component_controller_)
+      ExpectControllerDisconnectWithStatus(ZX_ERR_PEER_CLOSED);
 
     state_loop.Run();
 
@@ -554,8 +560,8 @@ class CastRunnerIntegrationTest : public testing::Test {
   const base::test::ScopedRunLoopTimeout scoped_timeout_{
       FROM_HERE, TestTimeouts::action_max_timeout()};
 
-  fuchsia::sys::ComponentControllerPtr web_engine_controller_;
-  fuchsia::sys::ComponentControllerPtr cast_runner_controller_;
+  base::TestComponentController web_engine_controller_;
+  base::TestComponentController cast_runner_controller_;
 
   FakeApplicationConfigManager app_config_manager_;
   FakeApiBindingsImpl api_bindings_;
@@ -571,7 +577,7 @@ class CastRunnerIntegrationTest : public testing::Test {
   base::ScopedServiceBinding<chromium::cast::ApplicationConfigManager>
       app_config_manager_binding_;
   std::unique_ptr<cr_fuchsia::FakeComponentContext> component_context_;
-  fuchsia::sys::ComponentControllerPtr component_controller_;
+  base::TestComponentController component_controller_;
   std::unique_ptr<sys::ServiceDirectory> component_services_client_;
   FakeComponentState* component_state_ = nullptr;
   fuchsia::web::MessagePortPtr test_port_;
@@ -608,25 +614,18 @@ TEST_F(CastRunnerIntegrationTest, CanRecreateContext) {
   CreateComponentContextAndStartComponent();
   CheckAppUrl(app_url);
 
-  // Disconnect the CastRunner's web.Context, by killing the ContextProvider.
-  base::RunLoop loop;
-  web_engine_controller_->Kill();
-  web_engine_controller_.set_error_handler([&loop](zx_status_t status) {
-    loop.Quit();
-    EXPECT_EQ(status, ZX_ERR_PEER_CLOSED);
-  });
-
-  // Wait for the component to be torn down.
+  // Terminate the component that provides the ContextProvider service and
+  // wait for the Cast component to terminate, without allowing the message-
+  // loop to spin in-between.
+  web_engine_controller_.ptr()->Kill();
   WaitForComponentDestroyed();
-
-  // Start a new WebEngine instance for the second component.
-  StartAndPublishWebEngine();
 
   // Create a second Cast component and verify that it has loaded.
   // There is no guarantee that the CastRunner has detected the old web.Context
   // disconnecting yet, so attempts to launch Cast components could fail.
   // WebContentRunner::CreateFrameWithParams() will synchronously verify that
   // the web.Context is not-yet-closed, to work-around that.
+  StartAndPublishWebEngine();
   app_config_manager_.AddApp(kTestAppId, app_url);
   CreateComponentContextAndStartComponent();
   CheckAppUrl(app_url);
@@ -649,12 +648,7 @@ TEST_F(CastRunnerIntegrationTest, IncorrectCastAppId) {
   StartCastComponent(kIncorrectComponentUrl);
 
   // Run the loop until the ComponentController is dropped.
-  base::RunLoop run_loop;
-  component_controller_.set_error_handler([&run_loop](zx_status_t status) {
-    EXPECT_EQ(status, ZX_ERR_PEER_CLOSED);
-    run_loop.Quit();
-  });
-  run_loop.Run();
+  ExpectControllerDisconnectWithStatus(ZX_ERR_PEER_CLOSED);
 
   EXPECT_TRUE(!component_state_);
 }
@@ -714,14 +708,9 @@ TEST_F(CastRunnerIntegrationTest, IsolatedContext) {
 TEST_F(CastRunnerIntegrationTest, NoCastAgent) {
   app_config_manager_.AddApp(kTestAppId, test_server_.GetURL(kEchoHeaderPath));
 
-  StartCastComponent(base::StringPrintf("cast:%s", kTestAppId));
+  StartCastComponent(base::StrCat({"cast:", kTestAppId}));
 
-  base::RunLoop run_loop;
-  component_controller_.set_error_handler([&run_loop](zx_status_t error) {
-    EXPECT_EQ(error, ZX_ERR_PEER_CLOSED);
-    run_loop.Quit();
-  });
-  run_loop.Run();
+  ExpectControllerDisconnectWithStatus(ZX_ERR_PEER_CLOSED);
 }
 
 // Test the CastAgent disconnecting does not cause a CastRunner crash.
@@ -730,17 +719,11 @@ TEST_F(CastRunnerIntegrationTest, DisconnectedCastAgent) {
 
   CreateComponentContextAndStartComponent();
 
-  base::RunLoop run_loop;
-  component_controller_.set_error_handler([&run_loop](zx_status_t error) {
-    EXPECT_EQ(error, ZX_ERR_PEER_CLOSED);
-    run_loop.Quit();
-  });
-
   // Tear down the ComponentState, this should close the Agent connection and
   // shut down the CastComponent.
   component_state_->Disconnect();
 
-  run_loop.Run();
+  ExpectControllerDisconnectWithStatus(ZX_ERR_PEER_CLOSED);
 }
 
 // Test that the ApiBindings and RewriteRules are received from the secondary
@@ -770,7 +753,7 @@ TEST_F(CastRunnerIntegrationTest, ApplicationConfigAgentUrl) {
   // Assign the bindings to the multi-agent binding.
   dummy_agent_api_bindings.set_bindings(std::move(binding_list));
 
-  auto component_url = base::StringPrintf("cast:%s", kTestAppId);
+  auto component_url = base::StrCat({"cast:", kTestAppId});
   CreateComponentContext(component_url);
   EXPECT_NE(component_context_, nullptr);
 
@@ -800,7 +783,7 @@ TEST_F(CastRunnerIntegrationTest, ApplicationConfigAgentUrl) {
   // Shutdown component before destroying dummy_agent_api_bindings.
   base::RunLoop shutdown_run_loop;
   dummy_component_state->set_on_delete(shutdown_run_loop.QuitClosure());
-  component_controller_.Unbind();
+  component_controller_.ptr().Unbind();
   shutdown_run_loop.Run();
 }
 
@@ -827,7 +810,7 @@ TEST_F(CastRunnerIntegrationTest, ApplicationConfigAgentUrlRewriteOptional) {
   // Assign the bindings to the multi-agent binding.
   dummy_agent_api_bindings.set_bindings(std::move(binding_list));
 
-  auto component_url = base::StringPrintf("cast:%s", kTestAppId);
+  auto component_url = base::StrCat({"cast:", kTestAppId});
   CreateComponentContext(component_url);
   base::RunLoop run_loop;
   FakeComponentState* dummy_component_state = nullptr;
@@ -855,7 +838,7 @@ TEST_F(CastRunnerIntegrationTest, ApplicationConfigAgentUrlRewriteOptional) {
   // Shutdown component before destroying dummy_agent_api_bindings.
   base::RunLoop shutdown_run_loop;
   dummy_component_state->set_on_delete(shutdown_run_loop.QuitClosure());
-  component_controller_.Unbind();
+  component_controller_.ptr().Unbind();
   shutdown_run_loop.Run();
 }
 
@@ -985,7 +968,7 @@ TEST_F(CastRunnerIntegrationTest, LegacyMetricsRedirect) {
   GURL app_url = test_server_.GetURL(kBlankAppUrl);
   app_config_manager_.AddApp(kTestAppId, app_url);
 
-  auto component_url = base::StringPrintf("cast:%s", kTestAppId);
+  auto component_url = base::StrCat({"cast:", kTestAppId});
   CreateComponentContext(component_url);
   EXPECT_NE(component_context_, nullptr);
 
@@ -1015,7 +998,7 @@ TEST_F(CastRunnerIntegrationTest, OnApplicationTerminated_WindowClose) {
 
   // It is possible to observe the ComponentController close before
   // OnApplicationTerminated() is received, so ignore that.
-  component_controller_.set_error_handler([](zx_status_t) {});
+  component_controller_.ptr().set_error_handler([](zx_status_t) {});
 
   // Have the web content close itself, and wait for OnApplicationTerminated().
   EXPECT_EQ(ExecuteJavaScript("window.close()"), "undefined");
@@ -1037,12 +1020,12 @@ TEST_F(CastRunnerIntegrationTest, OnTerminated_WindowClose) {
   // Register an handler on the ComponentController channel, for the
   // OnTerminated event.
   base::RunLoop exit_code_loop;
-  component_controller_.set_error_handler(
+  component_controller_.ptr().set_error_handler(
       [quit_loop = exit_code_loop.QuitClosure()](zx_status_t) {
         quit_loop.Run();
         ADD_FAILURE();
       });
-  component_controller_.events().OnTerminated =
+  component_controller_.ptr().events().OnTerminated =
       [quit_loop = exit_code_loop.QuitClosure()](
           int64_t exit_code, fuchsia::sys::TerminationReason reason) {
         quit_loop.Run();
@@ -1054,7 +1037,7 @@ TEST_F(CastRunnerIntegrationTest, OnTerminated_WindowClose) {
   EXPECT_EQ(ExecuteJavaScript("window.close()"), "undefined");
   exit_code_loop.Run();
 
-  component_controller_.Unbind();
+  component_controller_.ptr().Unbind();
 }
 
 // Verifies that the ComponentController reports TerminationReason::EXITED and
@@ -1069,12 +1052,12 @@ TEST_F(CastRunnerIntegrationTest, OnTerminated_ComponentKill) {
   // Register an handler on the ComponentController channel, for the
   // OnTerminated event.
   base::RunLoop exit_code_loop;
-  component_controller_.set_error_handler(
+  component_controller_.ptr().set_error_handler(
       [quit_loop = exit_code_loop.QuitClosure()](zx_status_t) {
         quit_loop.Run();
         ADD_FAILURE();
       });
-  component_controller_.events().OnTerminated =
+  component_controller_.ptr().events().OnTerminated =
       [quit_loop = exit_code_loop.QuitClosure()](
           int64_t exit_code, fuchsia::sys::TerminationReason reason) {
         quit_loop.Run();
@@ -1083,10 +1066,10 @@ TEST_F(CastRunnerIntegrationTest, OnTerminated_ComponentKill) {
       };
 
   // Kill() the component and wait for OnTerminated().
-  component_controller_->Kill();
+  component_controller_.ptr()->Kill();
   exit_code_loop.Run();
 
-  component_controller_.Unbind();
+  component_controller_.ptr().Unbind();
 }
 
 // Ensures that CastRunner handles the value not being specified.
@@ -1147,14 +1130,9 @@ TEST_F(CastRunnerIntegrationTest, MissingCorsExemptHeaderProvider) {
   app_config_manager_.AddApp(kTestAppId, app_url);
 
   // Start the Cast component, and wait for the controller to disconnect.
-  StartCastComponent(base::StringPrintf("cast:%s", kTestAppId));
+  StartCastComponent(base::StrCat({"cast:", kTestAppId}));
 
-  base::RunLoop run_loop;
-  component_controller_.set_error_handler([&run_loop](zx_status_t status) {
-    EXPECT_EQ(status, ZX_ERR_PEER_CLOSED);
-    run_loop.Quit();
-  });
-  run_loop.Run();
+  ExpectControllerDisconnectWithStatus(ZX_ERR_PEER_CLOSED);
 
   EXPECT_TRUE(!component_state_);
 }

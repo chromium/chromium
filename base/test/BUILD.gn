@@ -261,6 +261,8 @@ static_library("test_support") {
     sources += [
       "../fuchsia/test_component_context_for_process.cc",
       "../fuchsia/test_component_context_for_process.h",
+      "../fuchsia/test_component_controller.cc",
+      "../fuchsia/test_component_controller.h",
     ]
   }
 
