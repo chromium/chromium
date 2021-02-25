@@ -127,7 +127,7 @@ void LocalFileSyncContext::GetFileForLocalSync(
 void LocalFileSyncContext::ClearChangesForURL(
     FileSystemContext* file_system_context,
     const FileSystemURL& url,
-    const base::Closure& done_callback) {
+    base::OnceClosure done_callback) {
   // This is initially called on UI thread and to be relayed to FILE thread.
   DCHECK(file_system_context);
   if (!file_system_context->default_file_task_runner()->
@@ -136,7 +136,7 @@ void LocalFileSyncContext::ClearChangesForURL(
     file_system_context->default_file_task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&LocalFileSyncContext::ClearChangesForURL,
                                   this, base::RetainedRef(file_system_context),
-                                  url, done_callback));
+                                  url, std::move(done_callback)));
     return;
   }
 
@@ -147,7 +147,7 @@ void LocalFileSyncContext::ClearChangesForURL(
   backend->change_tracker()->ClearChangesForURL(url);
 
   // Call the completion callback on UI thread.
-  ui_task_runner_->PostTask(FROM_HERE, done_callback);
+  ui_task_runner_->PostTask(FROM_HERE, std::move(done_callback));
 }
 
 void LocalFileSyncContext::FinalizeSnapshotSync(
@@ -196,18 +196,19 @@ void LocalFileSyncContext::FinalizeExclusiveSync(
     storage::FileSystemContext* file_system_context,
     const storage::FileSystemURL& url,
     bool clear_local_changes,
-    const base::Closure& done_callback) {
+    base::OnceClosure done_callback) {
   DCHECK(file_system_context);
   if (!url.is_valid()) {
-    done_callback.Run();
+    std::move(done_callback).Run();
     return;
   }
 
   if (clear_local_changes) {
-    ClearChangesForURL(file_system_context, url,
-                       base::Bind(&LocalFileSyncContext::FinalizeExclusiveSync,
-                                  this, base::RetainedRef(file_system_context),
-                                  url, false, done_callback));
+    ClearChangesForURL(
+        file_system_context, url,
+        base::BindOnce(&LocalFileSyncContext::FinalizeExclusiveSync, this,
+                       base::RetainedRef(file_system_context), url, false,
+                       std::move(done_callback)));
     return;
   }
 
@@ -215,7 +216,7 @@ void LocalFileSyncContext::FinalizeExclusiveSync(
       FROM_HERE, base::BindOnce(&LocalFileSyncContext::ClearSyncFlagOnIOThread,
                                 this, url, false /* for_snapshot_sync */));
 
-  done_callback.Run();
+  std::move(done_callback).Run();
 }
 
 void LocalFileSyncContext::PrepareForSync(
@@ -247,14 +248,14 @@ void LocalFileSyncContext::PrepareForSync(
 
 void LocalFileSyncContext::RegisterURLForWaitingSync(
     const FileSystemURL& url,
-    const base::Closure& on_syncable_callback) {
+    base::OnceClosure on_syncable_callback) {
   // This is initially called on UI thread and to be relayed to IO thread.
   if (!io_task_runner_->RunsTasksInCurrentSequence()) {
     DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
     io_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&LocalFileSyncContext::RegisterURLForWaitingSync, this,
-                       url, on_syncable_callback));
+                       url, std::move(on_syncable_callback)));
     return;
   }
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
@@ -262,11 +263,11 @@ void LocalFileSyncContext::RegisterURLForWaitingSync(
     return;
   if (sync_status()->IsSyncable(url)) {
     // No need to register; fire the callback now.
-    ui_task_runner_->PostTask(FROM_HERE, on_syncable_callback);
+    ui_task_runner_->PostTask(FROM_HERE, std::move(on_syncable_callback));
     return;
   }
   url_waiting_sync_on_io_ = url;
-  url_syncable_callback_ = on_syncable_callback;
+  url_syncable_callback_ = std::move(on_syncable_callback);
 }
 
 void LocalFileSyncContext::ApplyRemoteChange(
@@ -562,8 +563,7 @@ void LocalFileSyncContext::OnSyncEnabled(const FileSystemURL& url) {
     return;
   }
   // TODO(kinuko): may want to check how many pending tasks we have.
-  ui_task_runner_->PostTask(FROM_HERE, url_syncable_callback_);
-  url_syncable_callback_.Reset();
+  ui_task_runner_->PostTask(FROM_HERE, std::move(url_syncable_callback_));
 }
 
 void LocalFileSyncContext::OnWriteEnabled(const FileSystemURL& url) {

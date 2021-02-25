@@ -104,7 +104,7 @@ class LocalFileSyncContext
   // This method must be called on UI thread.
   void ClearChangesForURL(storage::FileSystemContext* file_system_context,
                           const storage::FileSystemURL& url,
-                          const base::Closure& done_callback);
+                          base::OnceClosure done_callback);
 
   // Finalizes SnapshotSync, which must have been started by
   // PrepareForSync with SYNC_SNAPSHOT.
@@ -122,7 +122,7 @@ class LocalFileSyncContext
   void FinalizeExclusiveSync(storage::FileSystemContext* file_system_context,
                              const storage::FileSystemURL& url,
                              bool clear_local_changes,
-                             const base::Closure& done_callback);
+                             base::OnceClosure done_callback);
 
   // Prepares for sync |url| by disabling writes on |url|.
   // If the target |url| is being written and cannot start sync it
@@ -154,7 +154,7 @@ class LocalFileSyncContext
   //
   // This method must be called on UI thread.
   void RegisterURLForWaitingSync(const storage::FileSystemURL& url,
-                                 const base::Closure& on_syncable_callback);
+                                 base::OnceClosure on_syncable_callback);
 
   // Applies a remote change.
   // This method must be called on UI thread.
@@ -353,7 +353,7 @@ class LocalFileSyncContext
   // A URL and associated callback waiting for sync is enabled.
   // Accessed only on IO thread.
   storage::FileSystemURL url_waiting_sync_on_io_;
-  base::Closure url_syncable_callback_;
+  base::OnceClosure url_syncable_callback_;
 
   // Used only on IO thread for available changes notifications.
   base::Time last_notified_changes_;
