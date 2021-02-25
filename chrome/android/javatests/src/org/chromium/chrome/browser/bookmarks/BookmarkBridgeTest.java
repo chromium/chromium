@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
@@ -334,6 +335,7 @@ public class BookmarkBridgeTest {
     @UiThreadTest
     @RequiresRestart
     @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
+    @DisabledTest(message = "Broken on official bot, crbug.com/1165869")
     public void testAddToReadingList() {
         Assert.assertTrue("Read later feature is not loaded properly.",
                 ChromeFeatureList.isEnabled(ChromeFeatureList.READ_LATER));
