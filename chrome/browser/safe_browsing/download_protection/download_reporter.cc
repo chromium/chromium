@@ -181,9 +181,12 @@ void DownloadReporter::AddBypassEventToPref(download::DownloadItem* download) {
       content::DownloadItemUtils::GetBrowserContext(download);
   Profile* profile = Profile::FromBrowserContext(browser_context);
   if (profile) {
-    SafeBrowsingMetricsCollectorFactory::GetForProfile(profile)
-        ->AddSafeBrowsingEventToPref(
-            SafeBrowsingMetricsCollector::EventType::DANGEROUS_DOWNLOAD_BYPASS);
+    auto* metrics_collector =
+        SafeBrowsingMetricsCollectorFactory::GetForProfile(profile);
+    if (metrics_collector) {
+      metrics_collector->AddSafeBrowsingEventToPref(
+          SafeBrowsingMetricsCollector::EventType::DANGEROUS_DOWNLOAD_BYPASS);
+    }
   }
 }
 

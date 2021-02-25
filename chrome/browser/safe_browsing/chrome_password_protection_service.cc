@@ -983,9 +983,12 @@ void ChromePasswordProtectionService::LogDialogMetricsOnChangePassword(
 }
 
 void ChromePasswordProtectionService::AddModelWarningBypasstoPref() {
-  SafeBrowsingMetricsCollectorFactory::GetForProfile(profile_)
-      ->AddSafeBrowsingEventToPref(
-          SafeBrowsingMetricsCollector::EventType::PASSWORD_REUSE_MODAL_BYPASS);
+  auto* metrics_collector =
+      SafeBrowsingMetricsCollectorFactory::GetForProfile(profile_);
+  if (metrics_collector) {
+    metrics_collector->AddSafeBrowsingEventToPref(
+        SafeBrowsingMetricsCollector::EventType::PASSWORD_REUSE_MODAL_BYPASS);
+  }
 }
 
 void ChromePasswordProtectionService::OpenChangePasswordUrl(

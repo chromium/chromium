@@ -205,9 +205,12 @@ void SafeBrowsingBlockingPage::OnInterstitialClosing() {
   } else {
     Profile* profile =
         Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-    SafeBrowsingMetricsCollectorFactory::GetForProfile(profile)
-        ->AddSafeBrowsingEventToPref(
-            GetEventTypeFromThreatSource(threat_source_));
+    auto* metrics_collector =
+        SafeBrowsingMetricsCollectorFactory::GetForProfile(profile);
+    if (metrics_collector) {
+      metrics_collector->AddSafeBrowsingEventToPref(
+          GetEventTypeFromThreatSource(threat_source_));
+    }
   }
   BaseBlockingPage::OnInterstitialClosing();
 }
