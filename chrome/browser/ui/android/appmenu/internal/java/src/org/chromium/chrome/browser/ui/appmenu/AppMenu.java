@@ -216,6 +216,9 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
         // an incorrectly drawn background.
         mPopup.setBackgroundDrawable(ApiCompatibilityUtils.getDrawable(
                 context.getResources(), R.drawable.popup_bg_tinted));
+        // Make sure that the popup window will be closed when touch outside of it.
+        mPopup.setOutsideTouchable(true);
+
         if (!isByPermanentButton) mPopup.setAnimationStyle(R.style.OverflowMenuAnim);
 
         // Turn off window animations for low end devices.
