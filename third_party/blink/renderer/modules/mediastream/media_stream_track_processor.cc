@@ -56,29 +56,44 @@ class NullUnderlyingSink : public UnderlyingSinkBase {
 }  // namespace
 
 // A MediaStreamTrack Observer which closes the provided
-// VideoTrackUnderlyingSource whenever the provided track is ended.
+// UnderlyingSource whenever the provided track is ended.
 class MediaStreamTrackProcessor::UnderlyingSourceCloser
     : public GarbageCollected<UnderlyingSourceCloser>,
       public MediaStreamTrack::Observer {
  public:
   UnderlyingSourceCloser(
       MediaStreamTrack* track,
+      MediaStreamAudioTrackUnderlyingSource* audio_underlying_source)
+      : track_(track),
+        audio_underlying_source_(audio_underlying_source),
+        video_underlying_source_() {}
+  UnderlyingSourceCloser(
+      MediaStreamTrack* track,
       MediaStreamVideoTrackUnderlyingSource* video_underlying_source)
-      : track_(track), video_underlying_source_(video_underlying_source) {}
+      : track_(track),
+        audio_underlying_source_(),
+        video_underlying_source_(video_underlying_source) {}
 
   void TrackChangedState() override {
     if (track_->GetReadyState() == MediaStreamSource::kReadyStateEnded) {
-      video_underlying_source_->Close();
+      if (audio_underlying_source_ != nullptr) {
+        audio_underlying_source_->Close();
+      }
+      if (video_underlying_source_ != nullptr) {
+        video_underlying_source_->Close();
+      }
     }
   }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(track_);
+    visitor->Trace(audio_underlying_source_);
     visitor->Trace(video_underlying_source_);
   }
 
  private:
   Member<MediaStreamTrack> track_;
+  Member<MediaStreamAudioTrackUnderlyingSource> audio_underlying_source_;
   Member<MediaStreamVideoTrackUnderlyingSource> video_underlying_source_;
 };
 
@@ -142,6 +157,10 @@ void MediaStreamTrackProcessor::CreateAudioSourceStream(
           script_state, input_track_->Component(), buffer_size_);
   source_stream_ = ReadableStream::CreateWithCountQueueingStrategy(
       script_state, audio_underlying_source_, /*high_water_mark=*/0);
+
+  source_closer_ = MakeGarbageCollected<UnderlyingSourceCloser>(
+      input_track_, audio_underlying_source_);
+  input_track_->AddObserver(source_closer_);
 }
 
 void MediaStreamTrackProcessor::CreateVideoControlStream(
