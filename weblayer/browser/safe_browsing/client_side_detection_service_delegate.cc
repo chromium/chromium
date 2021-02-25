@@ -4,7 +4,10 @@
 
 #include "weblayer/browser/safe_browsing/client_side_detection_service_delegate.h"
 
+#include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/utils.h"
+#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "components/unified_consent/pref_names.h"
 #include "content/public/browser/storage_partition.h"
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/browser_process.h"
@@ -37,10 +40,28 @@ ClientSideDetectionServiceDelegate::GetSafeBrowsingURLLoaderFactory() {
   return sb_service ? sb_service->GetURLLoaderFactory() : nullptr;
 }
 
-safe_browsing::ChromeUserPopulation::ProfileManagementStatus
-ClientSideDetectionServiceDelegate::GetManagementStatus() {
-  // corresponds to unmanaged "unavailable" status on android
-  return safe_browsing::GetProfileManagementStatus(nullptr);
+safe_browsing::ChromeUserPopulation
+ClientSideDetectionServiceDelegate::GetUserPopulation() {
+  safe_browsing::ChromeUserPopulation population;
+  if (safe_browsing::IsEnhancedProtectionEnabled(*GetPrefs())) {
+    population.set_user_population(
+        safe_browsing::ChromeUserPopulation::ENHANCED_PROTECTION);
+  } else if (safe_browsing::IsExtendedReportingEnabled(*GetPrefs())) {
+    population.set_user_population(
+        safe_browsing::ChromeUserPopulation::EXTENDED_REPORTING);
+  } else if (safe_browsing::IsSafeBrowsingEnabled(*GetPrefs())) {
+    population.set_user_population(
+        safe_browsing::ChromeUserPopulation::SAFE_BROWSING);
+  }
+
+  population.set_profile_management_status(
+      safe_browsing::ChromeUserPopulation::UNAVAILABLE);
+  population.set_is_mbb_enabled(GetPrefs()->GetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
+  population.set_is_incognito(browser_context_->IsOffTheRecord());
+  population.set_is_history_sync_enabled(false);
+
+  return population;
 }
 
 }  // namespace weblayer

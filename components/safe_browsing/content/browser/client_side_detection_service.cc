@@ -146,16 +146,13 @@ void ClientSideDetectionService::OnPrefsUpdated() {
 
 void ClientSideDetectionService::SendClientReportPhishingRequest(
     std::unique_ptr<ClientPhishingRequest> verdict,
-    bool is_extended_reporting,
-    bool is_enhanced_reporting,
     ClientReportPhishingRequestCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &ClientSideDetectionService::StartClientReportPhishingRequest,
-          weak_factory_.GetWeakPtr(), std::move(verdict), is_extended_reporting,
-          is_enhanced_reporting, std::move(callback)));
+          weak_factory_.GetWeakPtr(), std::move(verdict), std::move(callback)));
 }
 
 bool ClientSideDetectionService::IsPrivateIPAddress(
@@ -205,8 +202,6 @@ void ClientSideDetectionService::SendModelToRenderers() {
 
 void ClientSideDetectionService::StartClientReportPhishingRequest(
     std::unique_ptr<ClientPhishingRequest> request,
-    bool is_extended_reporting,
-    bool is_enhanced_reporting,
     ClientReportPhishingRequestCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -218,20 +213,7 @@ void ClientSideDetectionService::StartClientReportPhishingRequest(
 
   // Fill in metadata about which model we used.
   request->set_model_filename(model_loader_->name());
-  if (is_extended_reporting || is_enhanced_reporting) {
-    if (is_enhanced_reporting) {
-      request->mutable_population()->set_user_population(
-          ChromeUserPopulation::ENHANCED_PROTECTION);
-    } else {
-      request->mutable_population()->set_user_population(
-          ChromeUserPopulation::EXTENDED_REPORTING);
-    }
-  } else {
-    request->mutable_population()->set_user_population(
-        ChromeUserPopulation::SAFE_BROWSING);
-  }
-  request->mutable_population()->set_profile_management_status(
-      delegate_->GetManagementStatus());
+  *request->mutable_population() = delegate_->GetUserPopulation();
 
   std::string request_data;
   request->SerializeToString(&request_data);

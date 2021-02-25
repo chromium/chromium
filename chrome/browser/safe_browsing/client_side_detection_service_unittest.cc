@@ -83,10 +83,7 @@ class ClientSideDetectionServiceTest : public testing::Test {
     csd_service_.reset();
   }
 
-  bool SendClientReportPhishingRequest(const GURL& phishing_url,
-                                       float score,
-                                       bool is_extended_reporting,
-                                       bool is_enhanced_reporting) {
+  bool SendClientReportPhishingRequest(const GURL& phishing_url, float score) {
     std::unique_ptr<ClientPhishingRequest> request =
         std::make_unique<ClientPhishingRequest>(ClientPhishingRequest());
     request->set_url(phishing_url.spec());
@@ -95,7 +92,7 @@ class ClientSideDetectionServiceTest : public testing::Test {
 
     base::RunLoop run_loop;
     csd_service_->SendClientReportPhishingRequest(
-        std::move(request), is_extended_reporting, is_enhanced_reporting,
+        std::move(request),
         base::BindOnce(&ClientSideDetectionServiceTest::SendRequestDone,
                        base::Unretained(this), run_loop.QuitWhenIdleClosure()));
     phishing_url_ = phishing_url;
@@ -246,30 +243,29 @@ TEST_F(ClientSideDetectionServiceTest, SendClientReportPhishingRequest) {
 
   // Safe browsing is not enabled.
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
-  EXPECT_FALSE(SendClientReportPhishingRequest(url, score, false, true));
+  EXPECT_FALSE(SendClientReportPhishingRequest(url, score));
 
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
   base::Time before = base::Time::Now();
 
   // Invalid response body from the server.
   SetClientReportPhishingResponse("invalid proto response", net::OK);
-  EXPECT_FALSE(SendClientReportPhishingRequest(url, score, false, false));
+  EXPECT_FALSE(SendClientReportPhishingRequest(url, score));
 
   // Normal behavior.
   ClientPhishingResponse response;
   response.set_phishy(true);
   SetClientReportPhishingResponse(response.SerializeAsString(), net::OK);
-  EXPECT_TRUE(SendClientReportPhishingRequest(url, score, false, true));
-  EXPECT_TRUE(SendClientReportPhishingRequest(url, score, true, false));
-  EXPECT_TRUE(SendClientReportPhishingRequest(url, score, false, false));
+  EXPECT_TRUE(SendClientReportPhishingRequest(url, score));
+  EXPECT_TRUE(SendClientReportPhishingRequest(url, score));
+  EXPECT_TRUE(SendClientReportPhishingRequest(url, score));
 
   // This request will fail
   GURL second_url("http://b.com/");
   response.set_phishy(false);
   SetClientReportPhishingResponse(response.SerializeAsString(),
                                   net::ERR_FAILED);
-  EXPECT_FALSE(
-      SendClientReportPhishingRequest(second_url, score, false, false));
+  EXPECT_FALSE(SendClientReportPhishingRequest(second_url, score));
 
   base::Time after = base::Time::Now();
 

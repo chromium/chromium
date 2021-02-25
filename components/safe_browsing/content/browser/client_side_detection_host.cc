@@ -451,11 +451,8 @@ void ClientSideDetectionHost::PhishingDetectionDone(
           base::BindOnce(&ClientSideDetectionHost::MaybeShowPhishingWarning,
                          weak_factory_.GetWeakPtr(),
                          /*is_from_cache=*/false);
-      csd_service_->SendClientReportPhishingRequest(
-          std::move(verdict),
-          IsExtendedReportingEnabled(*delegate_->GetPrefs()),
-          IsEnhancedProtectionEnabled(*delegate_->GetPrefs()),
-          std::move(callback));
+      csd_service_->SendClientReportPhishingRequest(std::move(verdict),
+                                                    std::move(callback));
     }
   }
 }

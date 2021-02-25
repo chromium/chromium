@@ -22,8 +22,7 @@ class ClientSideDetectionServiceDelegate
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   scoped_refptr<network::SharedURLLoaderFactory>
   GetSafeBrowsingURLLoaderFactory() override;
-  safe_browsing::ChromeUserPopulation::ProfileManagementStatus
-  GetManagementStatus() override;
+  safe_browsing::ChromeUserPopulation GetUserPopulation() override;
 
  private:
   BrowserContextImpl* browser_context_;

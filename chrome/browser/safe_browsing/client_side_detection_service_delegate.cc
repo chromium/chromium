@@ -8,6 +8,7 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/safe_browsing/user_population.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/utils.h"
 
@@ -43,10 +44,8 @@ ClientSideDetectionServiceDelegate::GetSafeBrowsingURLLoaderFactory() {
   return nullptr;
 }
 
-ChromeUserPopulation::ProfileManagementStatus
-ClientSideDetectionServiceDelegate::GetManagementStatus() {
-  return GetProfileManagementStatus(
-      g_browser_process->browser_policy_connector());
+ChromeUserPopulation ClientSideDetectionServiceDelegate::GetUserPopulation() {
+  return ::safe_browsing::GetUserPopulation(profile_);
 }
 
 }  // namespace safe_browsing
