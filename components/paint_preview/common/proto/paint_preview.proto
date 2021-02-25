@@ -75,8 +75,17 @@ message PaintPreviewFrameProto {
   optional uint32 scroll_offset_y = 8;
 }
 
+// Stores Chrome version.
+// NEXT_TAG = 5
+message ChromeVersionProto {
+  optional uint64 major = 1;
+  optional uint64 minor = 2;
+  optional uint64 build = 3;
+  optional uint64 patch = 4;
+}
+
 // Metadata for the capture.
-// NEXT_TAG = 3
+// NEXT_TAG = 4
 message MetadataProto {
   // URL of the root frame.
   // required
@@ -86,6 +95,9 @@ message MetadataProto {
   // is a breaking change to the custorm SkPicture deserialization or storage
   // system.
   optional uint64 version = 2;
+
+  // Records the version of Chrome when the capture occurred.
+  optional ChromeVersionProto chrome_version = 3;
 }
 
 // A paint preview of the entire page.

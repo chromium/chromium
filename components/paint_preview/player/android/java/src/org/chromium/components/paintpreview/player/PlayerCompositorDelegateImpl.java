@@ -54,9 +54,9 @@ public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
     @CalledByNative
     void onCompositorReady(UnguessableToken rootFrameGuid, UnguessableToken[] frameGuids,
             int[] frameContentSize, int[] scrollOffsets, int[] subFramesCount,
-            UnguessableToken[] subFrameGuids, int[] subFrameClipRects) {
+            UnguessableToken[] subFrameGuids, int[] subFrameClipRects, long nativeAxTree) {
         mCompositorListener.onCompositorReady(rootFrameGuid, frameGuids, frameContentSize,
-                scrollOffsets, subFramesCount, subFrameGuids, subFrameClipRects);
+                scrollOffsets, subFramesCount, subFrameGuids, subFrameClipRects, nativeAxTree);
     }
 
     @CalledByNative

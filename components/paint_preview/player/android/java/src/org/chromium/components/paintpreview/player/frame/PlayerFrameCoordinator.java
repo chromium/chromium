@@ -8,7 +8,6 @@ import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Size;
-import android.view.View;
 import android.view.ViewConfiguration;
 import android.widget.OverScroller;
 
@@ -16,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.UnguessableToken;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.components.paintpreview.player.OverscrollHandler;
 import org.chromium.components.paintpreview.player.PlayerCompositorDelegate;
 import org.chromium.components.paintpreview.player.PlayerGestureListener;
@@ -43,7 +43,8 @@ public class PlayerFrameCoordinator {
             UnguessableToken frameGuid, int contentWidth, int contentHeight, int initialScrollX,
             int initialScrollY, boolean canDetectZoom,
             @Nullable OverscrollHandler overscrollHandler, PlayerGestureListener gestureHandler,
-            @Nullable Runnable firstPaintListener) {
+            @Nullable Runnable firstPaintListener,
+            @Nullable Supplier<Boolean> isAccessibilityEnabled) {
         PropertyModel model = new PropertyModel.Builder(PlayerFrameProperties.ALL_KEYS).build();
         OverScroller scroller = new OverScroller(context);
         scroller.setFriction(ViewConfiguration.getScrollFriction() / 2);
@@ -54,15 +55,15 @@ public class PlayerFrameCoordinator {
         if (canDetectZoom) {
             mScaleController =
                     new PlayerFrameScaleController(model.get(PlayerFrameProperties.SCALE_MATRIX),
-                            mMediator, gestureHandler::onScale);
+                            mMediator, isAccessibilityEnabled, gestureHandler::onScale);
         }
         mScrollController = new PlayerFrameScrollController(
                 scroller, mMediator, gestureHandler::onScroll, gestureHandler::onFling);
         PlayerFrameGestureDetectorDelegate gestureDelegate = new PlayerFrameGestureDetectorDelegate(
                 mScaleController, mScrollController, mMediator);
 
-        mView = new PlayerFrameView(context, canDetectZoom, mMediator, gestureDelegate,
-                firstPaintListener);
+        mView = PlayerFrameView.create(
+                context, canDetectZoom, mMediator, gestureDelegate, firstPaintListener);
         if (overscrollHandler != null) {
             mScrollController.setOverscrollHandler(overscrollHandler);
         }
@@ -103,6 +104,26 @@ public class PlayerFrameCoordinator {
         subFrame.mView.getGestureDetector().setParentGestureDetector(mView.getGestureDetector());
     }
 
+    public PlayerFrameViewport getViewportForAccessibility() {
+        return mMediator.getViewport();
+    }
+
+    public Size getContentSizeForAccessibility() {
+        return mMediator.getContentSize();
+    }
+
+    public void handleClickForAccessibility(int x, int y, boolean isAbsolute) {
+        mMediator.onTap(x, y, isAbsolute);
+    }
+
+    public void scrollToMakeRectVisibleForAccessibility(Rect rect) {
+        mScrollController.scrollToMakeRectVisibleForAccessibility(rect);
+    }
+
+    public void setOnScrollCallbackForAccessibility(Runnable onScrollCallback) {
+        mScrollController.setOnScrollCallbackForAccessibility(onScrollCallback);
+    }
+
     /**
      * @return The mediator associated with this component.
      */
@@ -114,7 +135,7 @@ public class PlayerFrameCoordinator {
     /**
      * @return The view associated with this component.
      */
-    public View getView() {
+    public PlayerFrameView getView() {
         return mView;
     }
 

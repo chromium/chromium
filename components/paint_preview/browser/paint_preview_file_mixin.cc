@@ -6,14 +6,17 @@
 
 #include <utility>
 
+#include "base/files/file_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "ui/accessibility/mojom/ax_tree_update.mojom.h"
 
 namespace paint_preview {
 
 namespace {
 
 const char kPaintPreviewDir[] = "paint_preview";
+const char kAxTreeFilename[] = "ax_tree.message";
 
 }  // namespace
 
@@ -77,6 +80,57 @@ void PaintPreviewFileMixin::GetCapturedPaintPreviewProto(
             std::move(callback).Run(result.first, std::move(result.second));
           },
           std::move(on_read_proto_callback)));
+}
+
+void PaintPreviewFileMixin::WriteAXTreeUpdate(
+    const DirectoryKey& key,
+    base::OnceCallback<void(bool)> finished_callback,
+    const ui::AXTreeUpdate& ax_tree_update) {
+  std::vector<uint8_t> ax_data =
+      ax::mojom::AXTreeUpdate::Serialize(&ax_tree_update);
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<FileManager> file_manager, const DirectoryKey& key,
+             const std::vector<uint8_t>& ax_data) {
+            auto directory = file_manager->CreateOrGetDirectory(key, false);
+            if (!directory.has_value()) {
+              return false;
+            }
+            return base::WriteFile(directory->AppendASCII(kAxTreeFilename),
+                                   ax_data);
+          },
+          file_manager_, key, ax_data),
+      std::move(finished_callback));
+}
+
+void PaintPreviewFileMixin::GetAXTreeUpdate(const DirectoryKey& key,
+                                            OnReadAXTree callback) {
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<FileManager> file_manager,
+             const DirectoryKey& key) -> std::unique_ptr<ui::AXTreeUpdate> {
+            auto dir = file_manager->CreateOrGetDirectory(key, false);
+            if (!dir.has_value()) {
+              return nullptr;
+            }
+
+            auto path = dir->AppendASCII(kAxTreeFilename);
+            std::string content;
+            if (!base::ReadFileToString(path, &content)) {
+              return nullptr;
+            }
+
+            auto update = std::make_unique<ui::AXTreeUpdate>();
+            if (!ax::mojom::AXTreeUpdate::Deserialize(
+                    content.data(), content.size(), update.get())) {
+              return nullptr;
+            }
+            return update;
+          },
+          file_manager_, key),
+      std::move(callback));
 }
 
 }  // namespace paint_preview

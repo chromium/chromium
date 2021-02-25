@@ -168,6 +168,11 @@ TEST_P(PaintPreviewClientRenderViewHostTest, CaptureMainFrameMock) {
   auto* metadata = expected_proto.mutable_metadata();
   metadata->set_url(expected_url.spec());
   metadata->set_version(kPaintPreviewVersion);
+  auto* chromeVersion = metadata->mutable_chrome_version();
+  chromeVersion->set_major(CHROME_VERSION_MAJOR);
+  chromeVersion->set_minor(CHROME_VERSION_MINOR);
+  chromeVersion->set_build(CHROME_VERSION_BUILD);
+  chromeVersion->set_patch(CHROME_VERSION_PATCH);
   PaintPreviewFrameProto* main_frame = expected_proto.mutable_root_frame();
   main_frame->set_is_main_frame(true);
   main_frame->set_scroll_offset_x(5);

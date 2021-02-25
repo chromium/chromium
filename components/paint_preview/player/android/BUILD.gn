@@ -86,6 +86,7 @@ android_library("java") {
     "//base:jni_java",
     "//components/paint_preview/browser/android:java",
     "//components/paint_preview/common/proto:proto_java",
+    "//content/public/android:content_java",
     "//third_party/android_swipe_refresh:android_swipe_refresh_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java",

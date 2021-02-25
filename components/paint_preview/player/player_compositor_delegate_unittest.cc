@@ -201,9 +201,10 @@ class PlayerCompositorDelegateImpl : public PlayerCompositorDelegate {
 
   bool WasStatusChecked() const { return status_checked_; }
 
-  void OnCompositorReady(CompositorStatus compositor_status,
-                         mojom::PaintPreviewBeginCompositeResponsePtr
-                             composite_response) override {
+  void OnCompositorReady(
+      CompositorStatus compositor_status,
+      mojom::PaintPreviewBeginCompositeResponsePtr composite_response,
+      std::unique_ptr<ui::AXTreeUpdate> update) override {
     // Cast to int for easier debugging.
     EXPECT_EQ(static_cast<int>(expected_status_),
               static_cast<int>(compositor_status));

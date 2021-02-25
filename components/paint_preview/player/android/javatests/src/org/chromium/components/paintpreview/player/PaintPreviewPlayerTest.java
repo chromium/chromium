@@ -213,6 +213,11 @@ public class PaintPreviewPlayerTest extends DummyUiActivityTestCase {
                         public void onLinkClick(GURL url) {
                             mLinkClickHandler.onLinkClicked(url);
                         }
+
+                        @Override
+                        public boolean isAccessibilityEnabled() {
+                            return false;
+                        }
                     }, 0xffffffff, false);
             mPlayerManager.setCompressOnClose(false);
         });
@@ -417,6 +422,11 @@ public class PaintPreviewPlayerTest extends DummyUiActivityTestCase {
                         @Override
                         public void onLinkClick(GURL url) {
                             mLinkClickHandler.onLinkClicked(url);
+                        }
+
+                        @Override
+                        public boolean isAccessibilityEnabled() {
+                            return false;
                         }
                     }, 0xffffffff, false);
             mPlayerManager.setCompressOnClose(false);

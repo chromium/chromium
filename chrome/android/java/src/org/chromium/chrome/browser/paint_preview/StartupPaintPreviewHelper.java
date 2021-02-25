@@ -12,6 +12,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
@@ -35,6 +36,9 @@ import java.util.Map;
  * Glue code for the Paint Preview show-on-startup feature.
  */
 public class StartupPaintPreviewHelper {
+    public static final BooleanCachedFieldTrialParameter ACCESSIBILITY_SUPPORT_PARAM =
+            new BooleanCachedFieldTrialParameter(ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP,
+                    "has_accessibility_support", false);
     /**
      * Tracks whether a paint preview should be shown on tab restore. We use this to only attempt
      * to display a paint preview on the first tab restoration that happens on Chrome startup when
@@ -126,8 +130,12 @@ public class StartupPaintPreviewHelper {
      */
     public static void showPaintPreviewOnRestore(Tab tab) {
         if (!CachedFeatureFlags.isEnabled(ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP)
-                || !sShouldShowOnRestore
-                || ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
+                || !sShouldShowOnRestore) {
+            return;
+        }
+
+        if (ChromeAccessibilityUtil.get().isAccessibilityEnabled()
+                && !ACCESSIBILITY_SUPPORT_PARAM.getValue()) {
             return;
         }
 

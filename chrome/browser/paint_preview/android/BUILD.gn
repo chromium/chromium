@@ -35,6 +35,7 @@ android_library("java") {
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/messages/android:java",
+    "//chrome/browser/util:java",
     "//components/browser_ui/styles/android:java",
     "//components/paint_preview/browser/android:java",
     "//components/paint_preview/common/proto:proto_java",

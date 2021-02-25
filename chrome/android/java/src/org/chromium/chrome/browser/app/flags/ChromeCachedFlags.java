@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.CachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.page_annotations.PageAnnotationsServiceConfig;
+import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
@@ -98,6 +99,9 @@ public class ChromeCachedFlags {
                 ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_SESSION_TIME_MS,
                 PageAnnotationsServiceConfig.PAGE_ANNOTATIONS_BASE_URL,
                 ReturnToChromeExperimentsUtil.TAB_SWITCHER_ON_RETURN_MS,
+                ShoppingPersistedTabData.TIME_TO_LIVE_MS,
+                ShoppingPersistedTabData.DISPLAY_TIME_MS,
+                ShoppingPersistedTabData.STALE_TAB_THRESHOLD_SECONDS,
                 StartSurfaceConfiguration.HOME_BUTTON_ON_GRID_TAB_SWITCHER,
                 StartSurfaceConfiguration.NEW_SURFACE_FROM_HOME_BUTTON,
                 StartSurfaceConfiguration.OMNIBOX_FOCUSED_ON_NEW_TAB,
@@ -111,13 +115,11 @@ public class ChromeCachedFlags {
                 StartSurfaceConfiguration.TRENDY_ENDPOINT,
                 StartSurfaceConfiguration.TRENDY_FAILURE_MIN_PERIOD_MS,
                 StartSurfaceConfiguration.TRENDY_SUCCESS_MIN_PERIOD_MS,
+                StartupPaintPreviewHelper.ACCESSIBILITY_SUPPORT_PARAM,
                 TabContentManager.ALLOW_TO_REFETCH_TAB_THUMBNAIL_VARIATION,
                 TabUiFeatureUtilities.ENABLE_LAUNCH_BUG_FIX,
                 TabUiFeatureUtilities.ENABLE_LAUNCH_POLISH,
                 TabUiFeatureUtilities.ENABLE_SEARCH_CHIP,
-                ShoppingPersistedTabData.TIME_TO_LIVE_MS,
-                ShoppingPersistedTabData.DISPLAY_TIME_MS,
-                ShoppingPersistedTabData.STALE_TAB_THRESHOLD_SECONDS,
                 TabUiFeatureUtilities.ENABLE_PRICE_TRACKING,
                 TabUiFeatureUtilities.ENABLE_SEARCH_CHIP_ADAPTIVE,
                 TabUiFeatureUtilities.ZOOMING_MIN_MEMORY,

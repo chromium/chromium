@@ -49,6 +49,8 @@ class PaintPreviewTabService : public PaintPreviewBaseService {
     kCaptureFailed = 2,
     kProtoSerializationFailed = 3,
     kWebContentsGone = 4,
+    kCaptureInProgress = 5,
+    kInvalid = 6,
   };
 
   using FinishedCallback = base::OnceCallback<void(Status)>;
@@ -96,26 +98,80 @@ class PaintPreviewTabService : public PaintPreviewBaseService {
 #endif  // defined(OS_ANDROID)
 
  private:
+  class TabServiceTask {
+   public:
+    using FinishedCallback = base::OnceCallback<void(Status)>;
+
+    TabServiceTask(int tab_id,
+                   const DirectoryKey& key,
+                   int frame_tree_node_id,
+                   content::GlobalFrameRoutingId frame_routing_id);
+    ~TabServiceTask();
+
+    TabServiceTask(const TabServiceTask& other) = delete;
+    TabServiceTask& operator=(const TabServiceTask& other) = delete;
+
+    int tab_id() const { return tab_id_; }
+    const DirectoryKey& key() const { return key_; }
+    int frame_tree_node_id() const { return frame_tree_node_id_; }
+    content::GlobalFrameRoutingId frame_routing_id() const {
+      return frame_routing_id_;
+    }
+
+    void SetWaitForAccessibility() { wait_for_accessibility_ = true; }
+
+    void SetCallback(FinishedCallback callback) {
+      finished_callback_ = std::move(callback);
+    }
+
+    void OnAXTreeWritten(bool success) {
+      wait_for_accessibility_ = false;
+      if (status_ != kInvalid && finished_callback_) {
+        std::move(finished_callback_).Run(status_);
+      }
+    }
+
+    void OnCaptured(Status status) {
+      status_ = status;
+      if (!wait_for_accessibility_ && finished_callback_) {
+        std::move(finished_callback_).Run(status_);
+      }
+    }
+
+    base::WeakPtr<TabServiceTask> GetWeakPtr() {
+      return weak_ptr_factory_.GetWeakPtr();
+    }
+
+   private:
+    int tab_id_;
+    DirectoryKey key_;
+    int frame_tree_node_id_;
+    content::GlobalFrameRoutingId frame_routing_id_;
+
+    bool wait_for_accessibility_{false};
+    Status status_{kInvalid};
+
+    FinishedCallback finished_callback_;
+    base::WeakPtrFactory<TabServiceTask> weak_ptr_factory_{this};
+  };
+
+  void DeleteTask(int tab_id);
+
   // Caches current captures in |captured_tab_ids_|. Called as part of
   // initialization.
   void InitializeCache(const base::flat_set<DirectoryKey>& in_use_keys);
 
   // The FTN ID is to look-up the content::WebContents.
-  void CaptureTabInternal(int tab_id,
-                          const DirectoryKey& key,
-                          int frame_tree_node_id,
-                          content::GlobalFrameRoutingId frame_routing_id,
-                          FinishedCallback callback,
+  void CaptureTabInternal(base::WeakPtr<TabServiceTask> task,
                           const base::Optional<base::FilePath>& file_path);
 
-  void OnCaptured(int tab_id,
-                  const DirectoryKey& key,
-                  int frame_tree_node_id,
-                  FinishedCallback callback,
+  void OnAXTreeWritten(base::WeakPtr<TabServiceTask> task, bool result);
+
+  void OnCaptured(base::WeakPtr<TabServiceTask> task,
                   PaintPreviewBaseService::CaptureStatus status,
                   std::unique_ptr<CaptureResult> result);
 
-  void OnFinished(int tab_id, FinishedCallback callback, bool success);
+  void OnFinished(base::WeakPtr<TabServiceTask> task, bool success);
 
   void CleanupOldestFiles(int tab_id, const std::vector<DirectoryKey>& keys);
 
@@ -124,6 +180,7 @@ class PaintPreviewTabService : public PaintPreviewBaseService {
 
   bool cache_ready_;
   base::flat_set<int> captured_tab_ids_;
+  base::flat_map<int, std::unique_ptr<TabServiceTask>> tasks_;
 #if defined(OS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 #endif  // defined(OS_ANDROID)

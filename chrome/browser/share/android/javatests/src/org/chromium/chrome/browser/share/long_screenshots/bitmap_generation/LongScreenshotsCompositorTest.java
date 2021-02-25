@@ -163,7 +163,7 @@ public class LongScreenshotsCompositorTest {
                 PaintPreviewProto.getDefaultInstance(), compositorCallback);
 
         // Mimic the service calling onCompositorReady
-        compositor.onCompositorReady(null, null, null, null, null, null, null);
+        compositor.onCompositorReady(null, null, null, null, null, null, null, 0);
 
         // RequestBitmap in mCompositorDelegate should match
         compositor.requestBitmap(mRect, onErrorCallback, onBitmapResult);
@@ -198,7 +198,7 @@ public class LongScreenshotsCompositorTest {
                 PaintPreviewProto.getDefaultInstance(), compositorCallback);
 
         // Mimic the service calling onCompositorReady
-        compositor.onCompositorReady(null, null, null, null, null, null, null);
+        compositor.onCompositorReady(null, null, null, null, null, null, null, 0);
 
         // RequestBitmap in mCompositorDelegate should match
         compositor.requestBitmap(mRect, onErrorCallback, onBitmapResult);

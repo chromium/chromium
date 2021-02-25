@@ -12,4 +12,5 @@ include_rules = [
   "+sandbox/policy/sandbox_type.h",
   "+third_party/blink/public/common",
   "+third_party/zlib/google",
+  "+ui/accessibility",
 ]

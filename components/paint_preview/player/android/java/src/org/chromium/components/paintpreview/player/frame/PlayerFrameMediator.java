@@ -167,13 +167,14 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
     }
 
     @Override
-    public void onTap(int x, int y) {
+    public void onTap(int x, int y, boolean isAbsolute) {
         // x and y are in the View's coordinate system (scaled). This needs to be adjusted to the
         // absolute coordinate system for hit testing.
         final float scaleFactor = mViewport.getScale();
-        GURL url = mCompositorDelegate.onClick(mGuid,
-                Math.round((float) (mViewport.getTransX() + x) / scaleFactor),
-                Math.round((float) (mViewport.getTransY() + y) / scaleFactor));
+        float translationX = isAbsolute ? 0f : mViewport.getTransX();
+        float translationY = isAbsolute ? 0f : mViewport.getTransY();
+        GURL url = mCompositorDelegate.onClick(mGuid, Math.round((translationX + x) / scaleFactor),
+                Math.round((translationY + y) / scaleFactor));
         mGestureListener.onTap(url);
     }
 

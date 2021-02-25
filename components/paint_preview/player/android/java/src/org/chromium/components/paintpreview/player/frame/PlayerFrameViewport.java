@@ -25,14 +25,14 @@ public class PlayerFrameViewport {
     /**
      * @return the width of the viewport.
      */
-    int getWidth() {
+    public int getWidth() {
         return mViewportSize.getWidth();
     }
 
     /**
      * @return the height of the viewport.
      */
-    int getHeight() {
+    public int getHeight() {
         return mViewportSize.getHeight();
     }
 
@@ -58,7 +58,7 @@ public class PlayerFrameViewport {
      * Returns the scale at which to show contents.
      * @return a scale factor for the viewport.
      */
-    float getScale() {
+    public float getScale() {
         mViewportTransform.getValues(mMatrixValues);
         return mMatrixValues[Matrix.MSCALE_X]; // x and y should be identical here.
     }
@@ -68,7 +68,7 @@ public class PlayerFrameViewport {
      * snapshot and is not continually updated.
      * @return a rect of the current viewport.
      * */
-    Rect asRect() {
+    public Rect asRect() {
         mViewportTransform.getValues(mMatrixValues);
         final int left = Math.round(mMatrixValues[Matrix.MTRANS_X]);
         final int top = Math.round(mMatrixValues[Matrix.MTRANS_Y]);

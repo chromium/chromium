@@ -303,7 +303,8 @@ void PlayerCompositorDelegate::OnCompositorReadyStatusAdapter(
     default:
       NOTREACHED();
   }
-  OnCompositorReady(new_status, std::move(composite_response));
+  OnCompositorReady(new_status, std::move(composite_response),
+                    std::move(ax_tree_update_));
 }
 
 void PlayerCompositorDelegate::OnCompositorServiceDisconnected() {
@@ -336,19 +337,19 @@ void PlayerCompositorDelegate::OnProtoAvailable(
     PaintPreviewFileMixin::ProtoReadStatus proto_status,
     std::unique_ptr<PaintPreviewProto> proto) {
   if (proto_status == PaintPreviewFileMixin::ProtoReadStatus::kExpired) {
-    OnCompositorReady(CompositorStatus::CAPTURE_EXPIRED, nullptr);
+    OnCompositorReady(CompositorStatus::CAPTURE_EXPIRED, nullptr, nullptr);
     return;
   }
 
   if (proto_status == PaintPreviewFileMixin::ProtoReadStatus::kNoProto) {
-    OnCompositorReady(CompositorStatus::NO_CAPTURE, nullptr);
+    OnCompositorReady(CompositorStatus::NO_CAPTURE, nullptr, nullptr);
     return;
   }
 
   if (proto_status ==
           PaintPreviewFileMixin::ProtoReadStatus::kDeserializationError ||
       !proto || !proto->IsInitialized()) {
-    OnCompositorReady(CompositorStatus::PROTOBUF_DESERIALIZATION_ERROR,
+    OnCompositorReady(CompositorStatus::PROTOBUF_DESERIALIZATION_ERROR, nullptr,
                       nullptr);
     return;
   }
@@ -360,30 +361,50 @@ void PlayerCompositorDelegate::OnProtoAvailable(
     // - The storage structure
     // In either case, the new code is likely unable to deserialize the result
     // so we should early abort.
-    OnCompositorReady(CompositorStatus::OLD_VERSION, nullptr);
+    OnCompositorReady(CompositorStatus::OLD_VERSION, nullptr, nullptr);
     return;
   } else if (version > kPaintPreviewVersion) {
     // This shouldn't happen hence NOTREACHED(). However, in release we should
     // treat this as a new failure type to catch any possible regressions.
-    OnCompositorReady(CompositorStatus::UNEXPECTED_VERSION, nullptr);
+    OnCompositorReady(CompositorStatus::UNEXPECTED_VERSION, nullptr, nullptr);
     NOTREACHED();
     return;
   }
 
   auto proto_url = GURL(proto->metadata().url());
   if (expected_url != proto_url) {
-    OnCompositorReady(CompositorStatus::URL_MISMATCH, nullptr);
+    OnCompositorReady(CompositorStatus::URL_MISMATCH, nullptr, nullptr);
     return;
   }
 
   if (!paint_preview_compositor_client_) {
-    OnCompositorReady(CompositorStatus::COMPOSITOR_CLIENT_DISCONNECT, nullptr);
+    OnCompositorReady(CompositorStatus::COMPOSITOR_CLIENT_DISCONNECT, nullptr,
+                      nullptr);
     return;
   }
 
   paint_preview_compositor_client_->SetRootFrameUrl(proto_url);
-
   proto_ = std::move(proto);
+
+  // If the current Chrome version doesn't match the one in proto, we can't
+  // use the AXTreeUpdate.
+  auto chromeVersion = proto_->metadata().chrome_version();
+  if (proto_->metadata().has_chrome_version() &&
+      chromeVersion.major() == CHROME_VERSION_MAJOR &&
+      chromeVersion.minor() == CHROME_VERSION_MINOR &&
+      chromeVersion.build() == CHROME_VERSION_BUILD &&
+      chromeVersion.patch() == CHROME_VERSION_PATCH) {
+    paint_preview_service_->GetFileMixin()->GetAXTreeUpdate(
+        key_, base::BindOnce(&PlayerCompositorDelegate::OnAXTreeUpdateAvailable,
+                             weak_factory_.GetWeakPtr()));
+  } else {
+    PlayerCompositorDelegate::OnAXTreeUpdateAvailable(nullptr);
+  }
+}
+
+void PlayerCompositorDelegate::OnAXTreeUpdateAvailable(
+    std::unique_ptr<ui::AXTreeUpdate> update) {
+  ax_tree_update_ = std::move(update);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&PrepareCompositeRequest, *proto_),
@@ -395,13 +416,14 @@ void PlayerCompositorDelegate::SendCompositeRequest(
     mojom::PaintPreviewBeginCompositeRequestPtr begin_composite_request) {
   // TODO(crbug.com/1021590): Handle initialization errors.
   if (!begin_composite_request) {
-    OnCompositorReady(CompositorStatus::INVALID_REQUEST, nullptr);
+    OnCompositorReady(CompositorStatus::INVALID_REQUEST, nullptr, nullptr);
     return;
   }
 
   // It is possible the client was disconnected while loading the proto.
   if (!paint_preview_compositor_client_) {
-    OnCompositorReady(CompositorStatus::COMPOSITOR_CLIENT_DISCONNECT, nullptr);
+    OnCompositorReady(CompositorStatus::COMPOSITOR_CLIENT_DISCONNECT, nullptr,
+                      nullptr);
     return;
   }
 
