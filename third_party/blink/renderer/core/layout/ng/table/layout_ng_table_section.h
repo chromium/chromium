@@ -52,6 +52,16 @@ class CORE_EXPORT LayoutNGTableSection : public LayoutNGMixin<LayoutBlock>,
     return false;
   }
 
+  // Whether a section has opaque background depends on many factors, e.g.
+  // border spacing, border collapsing, missing cells, etc. For simplicity,
+  // just conservatively assume all table sections are not opaque.
+  // Copied from LayoutTableSection,
+  bool ForegroundIsKnownToBeOpaqueInRect(const PhysicalRect&,
+                                         unsigned) const override {
+    NOT_DESTROYED();
+    return false;
+  }
+
   bool BackgroundIsKnownToBeOpaqueInRect(const PhysicalRect&) const override {
     NOT_DESTROYED();
     return false;

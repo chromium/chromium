@@ -54,6 +54,12 @@ class CORE_EXPORT LayoutNGTableRow : public LayoutNGMixin<LayoutBlock>,
   // spacing, border collapsing, missing cells, etc.
   // For simplicity, just conservatively assume all table rows are not opaque.
   // Copied from Legacy's LayoutTableRow
+  bool ForegroundIsKnownToBeOpaqueInRect(const PhysicalRect&,
+                                         unsigned) const override {
+    NOT_DESTROYED();
+    return false;
+  }
+
   bool BackgroundIsKnownToBeOpaqueInRect(const PhysicalRect&) const override {
     NOT_DESTROYED();
     return false;

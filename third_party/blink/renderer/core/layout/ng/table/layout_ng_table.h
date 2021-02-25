@@ -126,6 +126,17 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGMixin<LayoutBlock>,
     return false;
   }
 
+  // Whether a table has opaque foreground depends on many factors, e.g. border
+  // spacing, missing cells, etc. For simplicity, just conservatively assume
+  // foreground of all tables are not opaque.
+  // Copied from LayoutTable.
+  bool ForegroundIsKnownToBeOpaqueInRect(
+      const PhysicalRect& local_rect,
+      unsigned max_depth_to_test) const override {
+    NOT_DESTROYED();
+    return false;
+  }
+
   // LayoutBlock methods end.
 
   // LayoutNGTableInterface methods start.
