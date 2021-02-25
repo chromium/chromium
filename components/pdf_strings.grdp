@@ -85,6 +85,21 @@
     <message name="IDS_PDF_PROPERTIES_PAGE_SIZE" desc="Name of the property describing the size of the pages of the PDF document.">
       Page size:
     </message>
+    <message name="IDS_PDF_PROPERTIES_PAGE_SIZE_VALUE_INCH" desc="Value for the page size of a PDF in inches.">
+      <ph name="WIDTH">$1<ex>8.5</ex></ph> × <ph name="HEIGHT">$2<ex>11.00</ex></ph> in (<ph name="ORIENTATION">$3<ex>portrait</ex></ph>)
+    </message>
+    <message name="IDS_PDF_PROPERTIES_PAGE_SIZE_VALUE_MM" desc="Value for the page size of a PDF in millimeters.">
+      <ph name="WIDTH">$1<ex>210</ex></ph> × <ph name="HEIGHT">$2<ex>297</ex></ph> mm (<ph name="ORIENTATION">$3<ex>portrait</ex></ph>)
+    </message>
+    <message name="IDS_PDF_PROPERTIES_PAGE_SIZE_PORTRAIT" desc="Label for a portrait page orientation.">
+      portrait
+    </message>
+    <message name="IDS_PDF_PROPERTIES_PAGE_SIZE_LANDSCAPE" desc="Label for a landscape page orientation.">
+      landscape
+    </message>
+    <message name="IDS_PDF_PROPERTIES_PAGE_SIZE_VARIABLE" desc="Value for the page size of a PDF that lacks a uniform page size.">
+      Varies
+    </message>
     <message name="IDS_PDF_PROPERTIES_FAST_WEB_VIEW" desc="Name of the property describing whether the PDF document is organized to be viewed efficiently in network environments.">
       Fast web view:
     </message>
