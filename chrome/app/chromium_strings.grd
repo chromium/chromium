@@ -1222,6 +1222,12 @@ Chromium is unable to recover your settings.
         <message name="IDS_PROFILE_PICKER_IPH_FOR_ADD_PROFILE_TEXT" desc="Text of the IPH bubble for adding new profiles.">
           If you share a device, friends and family can browse separately and set up Chromium just the way they want
         </message>
+        <message name="IDS_PROFILE_PICKER_PROFILE_SWITCH_TITLE" desc="Profile picker profile switch title">
+          Switch to existing Chromium profile?
+        </message>
+        <message name="IDS_PROFILE_PICKER_PROFILE_SWITCH_SUBTITLE" desc="Profile picker profile switch subtitle">
+          A Chromium profile with this account already exists on this device
+        </message>
       </if>
 
       <!-- Rosetta installation for protected media -->

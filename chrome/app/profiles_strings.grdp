@@ -679,5 +679,8 @@
     <message name="IDS_PROFILE_PICKER_IPH_FOR_CUSTOMIZE_PROFILE_TEXT" desc="Text of the IPH bubble for customizing profiles.">
       Choose a name and color theme to differentiate between profiles
     </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_SWITCH_SWITCH_BUTTON_LABEL" desc="Label of a button that switches user browsing to existing profile">
+      Switch
+    </message>
   </if>
 </grit-part>
