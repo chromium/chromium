@@ -211,6 +211,8 @@ ProfileSyncService::~ProfileSyncService() {
 void ProfileSyncService::Initialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  observers_.emplace();
+
   // TODO(mastiz): The controllers map should be provided as argument.
   data_type_controllers_ =
       BuildDataTypeControllerMap(sync_client_->CreateDataTypeControllers(this));
@@ -504,13 +506,14 @@ void ProfileSyncService::Shutdown() {
   // All observers must be gone now: All KeyedServices should have unregistered
   // their observers already before, in their own Shutdown(), and all others
   // should have done it now when they got the shutdown notification.
-  // TODO(crbug.com/1176498): DCHECKs are disabled during automated testing on
-  // CrOS and this check failed when tested on an experimental builder. Revert
-  // https://crrev.com/c/2683949 to re-enable this DCHECK on CrOS.
-  // See go/chrome-dcheck-on-cros or http://crbug.com/1113456 for more details.
-#if !defined(OS_CHROMEOS)
-  DCHECK(observers_.empty());
-#endif
+  // (Note that destroying the ObserverList triggers its "check_empty" check.)
+  observers_.reset();
+
+  // TODO(crbug.com/1182175): Recreating the ObserverList here shouldn't be
+  // necessary (it's not allowed to add observers after Shutdown()), but some
+  // tests call Shutdown() twice, which breaks in NotifyShutdown() if the
+  // ObserverList doesn't exist.
+  observers_.emplace();
 
   auth_manager_.reset();
 }
@@ -695,18 +698,18 @@ SyncService::TransportState ProfileSyncService::GetTransportState() const {
 }
 
 void ProfileSyncService::NotifyObservers() {
-  for (auto& observer : observers_) {
+  for (auto& observer : *observers_) {
     observer.OnStateChanged(this);
   }
 }
 
 void ProfileSyncService::NotifySyncCycleCompleted() {
-  for (auto& observer : observers_)
+  for (auto& observer : *observers_)
     observer.OnSyncCycleCompleted(this);
 }
 
 void ProfileSyncService::NotifyShutdown() {
-  for (auto& observer : observers_)
+  for (auto& observer : *observers_)
     observer.OnSyncShutdown(this);
 }
 
@@ -944,7 +947,7 @@ void ProfileSyncService::OnConfigureDone(
          user_settings_->IsEncryptedDatatypeEnabled());
 
   // Notify listeners that configuration is done.
-  for (auto& observer : observers_)
+  for (auto& observer : *observers_)
     observer.OnSyncConfigurationCompleted(this);
 
   NotifyObservers();
@@ -1070,18 +1073,18 @@ SyncClient* ProfileSyncService::GetSyncClientForTest() {
 
 void ProfileSyncService::AddObserver(SyncServiceObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  observers_.AddObserver(observer);
+  observers_->AddObserver(observer);
 }
 
 void ProfileSyncService::RemoveObserver(SyncServiceObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  observers_.RemoveObserver(observer);
+  observers_->RemoveObserver(observer);
 }
 
 bool ProfileSyncService::HasObserver(
     const SyncServiceObserver* observer) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return observers_.HasObserver(observer);
+  return observers_->HasObserver(observer);
 }
 
 ModelTypeSet ProfileSyncService::GetPreferredDataTypes() const {
