@@ -1265,6 +1265,25 @@ TEST_P(SingleRulesetTest, SharedDynamicAndSessionRegexRuleLimits) {
             service->GetRulesCountPair(extension()->id(), kSessionRulesetID));
 }
 
+// Test that getMatchedRules will return an error if an invalid tab id is
+// specified.
+TEST_P(SingleRulesetTest, GetMatchedRulesInvalidTabID) {
+  LoadAndExpectSuccess();
+  const ExtensionId extension_id = extension()->id();
+
+  auto function =
+      base::MakeRefCounted<DeclarativeNetRequestGetMatchedRulesFunction>();
+  function->set_extension(extension());
+
+  std::string expected_error = ErrorUtils::FormatErrorMessage(
+      declarative_net_request::kTabNotFoundError, "-9001");
+
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      function.get(), R"([{ "tabId": -9001 }])" /* args */, browser_context());
+
+  EXPECT_EQ(expected_error, error);
+}
+
 // Tests that multiple static rulesets are correctly indexed.
 class MultipleRulesetsTest : public DeclarativeNetRequestUnittest {
  public:

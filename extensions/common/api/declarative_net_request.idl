@@ -325,7 +325,8 @@ namespace declarativeNetRequest {
   };
 
   dictionary MatchedRulesFilter {
-    // If specified, only matches rules for the given tab.
+    // If specified, only matches rules for the given tab. Matches rules not
+    // associated with any active tab if set to -1.
     long? tabId;
 
     // If specified, only matches rules after the given timestamp.

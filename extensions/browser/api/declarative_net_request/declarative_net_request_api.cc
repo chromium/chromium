@@ -357,6 +357,17 @@ DeclarativeNetRequestGetMatchedRulesFunction::Run() {
       min_time_stamp = base::Time::FromJsTime(*params->filter->min_time_stamp);
   }
 
+  // Return an error if an invalid tab ID is specified. The unknown tab ID is
+  // valid as it would cause the API call to return all rules matched that were
+  // not associated with any currently open tabs.
+  if (tab_id && *tab_id != extension_misc::kUnknownTabId &&
+      !ExtensionsBrowserClient::Get()->IsValidTabId(browser_context(),
+                                                    *tab_id)) {
+    return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+        declarative_net_request::kTabNotFoundError,
+        base::NumberToString(*tab_id))));
+  }
+
   std::string permission_error;
   if (!CanCallGetMatchedRules(browser_context(), extension(), tab_id,
                               &permission_error)) {
