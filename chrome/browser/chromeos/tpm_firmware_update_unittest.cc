@@ -16,7 +16,7 @@
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/settings/cros_settings_names.h"

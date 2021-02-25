@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "chrome/browser/chromeos/settings/stats_reporting_controller.h"
+#include "chrome/browser/ash/settings/stats_reporting_controller.h"
 
 namespace ash {
 namespace system {

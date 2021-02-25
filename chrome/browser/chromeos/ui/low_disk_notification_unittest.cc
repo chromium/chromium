@@ -10,7 +10,7 @@
 
 #include "base/bind.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/grit/generated_resources.h"

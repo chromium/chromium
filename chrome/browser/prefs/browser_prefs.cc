@@ -176,6 +176,7 @@
 #include "extensions/browser/extension_prefs.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
+#include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/chromeos/device_name_store.h"
 #include "chrome/browser/chromeos/extensions/extensions_permissions_tracker.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_share_path.h"
@@ -183,7 +184,6 @@
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager_impl.h"
 #include "chrome/browser/chromeos/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/chromeos/policy/system_proxy_manager.h"
-#include "chrome/browser/chromeos/settings/stats_reporting_controller.h"
 #include "chrome/browser/component_updater/metadata_table_chromeos.h"
 #include "chrome/browser/ui/webui/signin/inline_login_handler_chromeos.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -283,6 +283,7 @@
 #include "chrome/browser/ash/login/quick_unlock/fingerprint_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_prefs.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
+#include "chrome/browser/ash/settings/device_settings_cache.h"
 #include "chrome/browser/ash/system/automatic_reboot_manager.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
 #include "chrome/browser/chromeos/borealis/borealis_prefs.h"
@@ -326,7 +327,6 @@
 #include "chrome/browser/chromeos/printing/cups_printers_manager.h"
 #include "chrome/browser/chromeos/printing/enterprise_printers_provider.h"
 #include "chrome/browser/chromeos/release_notes/release_notes_storage.h"
-#include "chrome/browser/chromeos/settings/device_settings_cache.h"
 #include "chrome/browser/device_identity/chromeos/device_oauth2_token_store_chromeos.h"
 #include "chrome/browser/extensions/api/enterprise_platform_keys_private/enterprise_platform_keys_private_api.h"
 #include "chrome/browser/extensions/extension_assets_manager_chromeos.h"

@@ -20,8 +20,8 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/policy/enrollment_requisition_manager.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"
 #endif
 

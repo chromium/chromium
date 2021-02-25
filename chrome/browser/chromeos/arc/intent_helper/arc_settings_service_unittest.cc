@@ -8,12 +8,12 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/chromeos/arc/arc_optin_uma.h"
 #include "chrome/browser/chromeos/arc/session/arc_provisioning_result.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "chrome/browser/chromeos/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/chromeos/settings/stats_reporting_controller.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"

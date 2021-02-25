@@ -33,8 +33,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/chromeos/login/users/scoped_test_user_manager.h"
-#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using content::WebContents;

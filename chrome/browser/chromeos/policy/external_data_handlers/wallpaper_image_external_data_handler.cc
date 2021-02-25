@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "chrome/browser/chromeos/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client.h"
 #include "components/policy/policy_constants.h"
 

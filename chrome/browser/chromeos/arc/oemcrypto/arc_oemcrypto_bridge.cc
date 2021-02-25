@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/memory/singleton.h"
 #include "base/task/post_task.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/mojom/protected_buffer_manager.mojom.h"

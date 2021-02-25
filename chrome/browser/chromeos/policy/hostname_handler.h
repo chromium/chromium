@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/network/network_state_handler_observer.h"
 
 namespace policy {

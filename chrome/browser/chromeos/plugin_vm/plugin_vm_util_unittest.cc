@@ -4,11 +4,11 @@
 
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
 
+#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_test_helper.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
-#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/tpm/stub_install_attributes.h"

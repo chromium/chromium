@@ -47,8 +47,8 @@
 #include "ui/base/resource/resource_bundle.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/settings/owner_flags_storage.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/settings/owner_flags_storage.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

@@ -24,8 +24,8 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/ash_test_views_delegate.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/chromeos/login/users/scoped_test_user_manager.h"
-#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #else
 #include "ui/views/test/scoped_views_test_helper.h"

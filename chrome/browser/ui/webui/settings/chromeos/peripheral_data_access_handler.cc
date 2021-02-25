@@ -14,7 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/pciguard/pciguard_client.h"
 #include "chromeos/settings/cros_settings_names.h"

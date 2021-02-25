@@ -14,8 +14,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/chromeos/policy/auto_enrollment_client.h"
-#include "chrome/browser/chromeos/settings/device_settings_service.h"
 
 namespace base {
 class CommandLine;

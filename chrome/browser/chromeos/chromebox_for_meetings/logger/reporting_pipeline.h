@@ -8,8 +8,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/chromeos/chromebox_for_meetings/logger/cfm_logger_service.h"
-#include "chrome/browser/chromeos/settings/device_settings_service.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue.h"
 

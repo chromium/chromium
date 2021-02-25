@@ -27,8 +27,8 @@
 #include "ui/gfx/codec/png_codec.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/chromeos/login/users/scoped_test_user_manager.h"
-#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
 #endif
 
 namespace extensions {

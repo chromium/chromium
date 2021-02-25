@@ -9,8 +9,8 @@
 #include <tuple>
 
 #include "base/macros.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
-#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chromeos/network/mock_network_device_handler.h"
 #include "chromeos/network/network_device_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"

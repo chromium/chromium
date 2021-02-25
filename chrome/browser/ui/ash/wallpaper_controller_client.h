@@ -11,7 +11,7 @@
 #include "ash/public/cpp/wallpaper_controller_client.h"
 #include "ash/public/cpp/wallpaper_types.h"
 #include "base/macros.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class AccountId;

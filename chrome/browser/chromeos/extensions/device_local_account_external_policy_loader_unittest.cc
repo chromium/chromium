@@ -49,7 +49,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using ::testing::Field;

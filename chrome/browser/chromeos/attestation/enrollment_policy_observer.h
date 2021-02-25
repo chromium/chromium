@@ -11,8 +11,8 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/chromeos/attestation/enrollment_certificate_uploader.h"
-#include "chrome/browser/chromeos/settings/device_settings_service.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 

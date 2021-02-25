@@ -5,9 +5,9 @@
 #include "chrome/browser/ash/login/auth/chrome_cryptohome_authenticator.h"
 
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos.h"
 #include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos_factory.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/ownership/owner_key_util.h"
 #include "components/user_manager/user_manager.h"

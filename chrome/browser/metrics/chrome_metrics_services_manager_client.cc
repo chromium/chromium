@@ -51,7 +51,7 @@
 #endif  // OS_WIN
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/settings/stats_reporting_controller.h"
+#include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace metrics {

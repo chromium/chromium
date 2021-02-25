@@ -65,8 +65,8 @@ which users can sign in on the device.
 
 Implementation-wise, these policies can have complex structure, and are
 usually accessed via
-[DeviceSettingsProvider](https://cs.chromium.org/chromium/src/chrome/browser/chromeos/settings/device_settings_provider.h)
-or its wrapper [CrosSettings](https://cs.chromium.org/chromium/src/chrome/browser/chromeos/settings/cros_settings.h).
+[DeviceSettingsProvider](https://cs.chromium.org/chromium/src/chrome/browser/ash/settings/device_settings_provider.h)
+or its wrapper [CrosSettings](https://cs.chromium.org/chromium/src/chrome/browser/ash/settings/cros_settings.h).
 
 ## User policies
 

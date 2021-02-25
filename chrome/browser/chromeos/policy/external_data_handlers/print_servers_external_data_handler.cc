@@ -7,9 +7,9 @@
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/printing/print_servers_provider.h"
 #include "chrome/browser/chromeos/printing/print_servers_provider_factory.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "components/policy/policy_constants.h"
 
 namespace policy {

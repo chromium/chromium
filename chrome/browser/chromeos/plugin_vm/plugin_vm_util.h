@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/observer_list_types.h"
 #include "base/optional.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 

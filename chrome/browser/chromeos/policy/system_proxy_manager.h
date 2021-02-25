@@ -13,7 +13,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util.h"
 #include "chromeos/dbus/system_proxy/system_proxy_service.pb.h"
 #include "chromeos/network/network_state_handler_observer.h"

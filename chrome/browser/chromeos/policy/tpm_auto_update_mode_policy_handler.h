@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/ui/tpm_auto_update_notification.h"
 
 class PrefRegistrySimple;
