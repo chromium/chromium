@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/metrics/accessibility_metrics_provider.h"
+#include "components/metrics/content/accessibility_metrics_provider.h"
 
 #include "content/public/browser/browser_accessibility_state.h"
+
+namespace metrics {
 
 AccessibilityMetricsProvider::AccessibilityMetricsProvider() {}
 
@@ -15,3 +17,5 @@ void AccessibilityMetricsProvider::ProvideCurrentSessionData(
   content::BrowserAccessibilityState::GetInstance()
       ->UpdateUniqueUserHistograms();
 }
+
+}  // namespace metrics

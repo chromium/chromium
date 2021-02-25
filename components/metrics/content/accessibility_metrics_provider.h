@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_METRICS_ACCESSIBILITY_METRICS_PROVIDER_H_
-#define CHROME_BROWSER_METRICS_ACCESSIBILITY_METRICS_PROVIDER_H_
+#ifndef COMPONENTS_METRICS_CONTENT_ACCESSIBILITY_METRICS_PROVIDER_H_
+#define COMPONENTS_METRICS_CONTENT_ACCESSIBILITY_METRICS_PROVIDER_H_
 
 #include "components/metrics/metrics_provider.h"
+
+namespace metrics {
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -28,4 +30,6 @@ class AccessibilityMetricsProvider : public metrics::MetricsProvider {
   DISALLOW_COPY_AND_ASSIGN(AccessibilityMetricsProvider);
 };
 
-#endif  // CHROME_BROWSER_METRICS_ACCESSIBILITY_METRICS_PROVIDER_H_
+}  // namespace metrics
+
+#endif  // COMPONENTS_METRICS_CONTENT_ACCESSIBILITY_METRICS_PROVIDER_H_

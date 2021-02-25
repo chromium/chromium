@@ -175,8 +175,8 @@
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/metrics/accessibility_metrics_provider.h"
 #include "chrome/browser/signin/chrome_signin_status_metrics_provider_delegate.h"
+#include "components/metrics/content/accessibility_metrics_provider.h"
 #include "components/signin/core/browser/signin_status_metrics_provider.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -777,7 +777,7 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
           std::make_unique<ChromeSigninStatusMetricsProviderDelegate>()));
   // ChromeOS uses ChromeOSMetricsProvider for accessibility metrics provider.
   metrics_service_->RegisterMetricsProvider(
-      std::make_unique<AccessibilityMetricsProvider>());
+      std::make_unique<metrics::AccessibilityMetricsProvider>());
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   metrics_service_->RegisterMetricsProvider(
