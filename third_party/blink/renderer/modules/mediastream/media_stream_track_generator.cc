@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_audio_track_underlying_sink.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track_generator_init.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_utils.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track_underlying_sink.h"
@@ -28,6 +29,8 @@ namespace blink {
 
 namespace {
 
+const wtf_size_t kDefaultMaxSignalBufferSize = 20u;
+
 class NullUnderlyingSource : public UnderlyingSourceBase {
  public:
   explicit NullUnderlyingSource(ScriptState* script_state)
@@ -36,19 +39,88 @@ class NullUnderlyingSource : public UnderlyingSourceBase {
 
 }  // namespace
 
+MediaStreamTrackGenerator* MediaStreamTrackGenerator::Create(
+    ScriptState* script_state,
+    const String& kind,
+    ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Invalid context");
+    return nullptr;
+  }
+
+  MediaStreamSource::StreamType type;
+  if (kind == "video") {
+    type = MediaStreamSource::kTypeVideo;
+  } else if (kind == "audio") {
+    type = MediaStreamSource::kTypeAudio;
+  } else {
+    exception_state.ThrowTypeError("Invalid track generator kind");
+    return nullptr;
+  }
+
+  return MakeGarbageCollected<MediaStreamTrackGenerator>(
+      script_state, type,
+      /*track_id=*/WTF::CreateCanonicalUUIDString(), nullptr,
+      kDefaultMaxSignalBufferSize);
+}
+
+MediaStreamTrackGenerator* MediaStreamTrackGenerator::Create(
+    ScriptState* script_state,
+    MediaStreamTrackGeneratorInit* init,
+    ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Invalid context");
+    return nullptr;
+  }
+
+  if (!init->hasKind()) {
+    exception_state.ThrowTypeError("kind must be specified");
+    return nullptr;
+  }
+
+  if (init->hasSignalTarget() && init->signalTarget()->kind() != init->kind()) {
+    exception_state.ThrowTypeError("kind and signalTarget.kind() do not match");
+    return nullptr;
+  }
+
+  MediaStreamSource::StreamType type;
+  if (init->kind() == "video") {
+    type = MediaStreamSource::kTypeVideo;
+  } else if (init->kind() == "audio") {
+    type = MediaStreamSource::kTypeAudio;
+  } else {
+    exception_state.ThrowTypeError("Invalid track generator kind");
+    return nullptr;
+  }
+
+  wtf_size_t max_signal_buffer_size = kDefaultMaxSignalBufferSize;
+  if (init->hasMaxSignalBufferSize())
+    max_signal_buffer_size = init->maxSignalBufferSize();
+
+  return MakeGarbageCollected<MediaStreamTrackGenerator>(
+      script_state, type,
+      /*track_id=*/WTF::CreateCanonicalUUIDString(), init->signalTarget(),
+      max_signal_buffer_size);
+}
+
 MediaStreamTrackGenerator::MediaStreamTrackGenerator(
     ScriptState* script_state,
     MediaStreamSource::StreamType type,
-    const String& track_id)
+    const String& track_id,
+    MediaStreamTrack* signal_target,
+    wtf_size_t max_signal_buffer_size)
     : MediaStreamTrack(
           ExecutionContext::From(script_state),
           MakeGarbageCollected<MediaStreamComponent>(
               MakeGarbageCollected<MediaStreamSource>(track_id,
                                                       type,
                                                       track_id,
-                                                      /*remote=*/false))) {
+                                                      /*remote=*/false))),
+      max_signal_buffer_size_(max_signal_buffer_size) {
   if (type == MediaStreamSource::kTypeVideo) {
-    CreateVideoOutputPlatformTrack();
+    CreateVideoOutputPlatformTrack(signal_target);
   } else {
     DCHECK_EQ(type, MediaStreamSource::kTypeAudio);
     CreateAudioOutputPlatformTrack();
@@ -89,9 +161,19 @@ PushableMediaStreamVideoSource* MediaStreamTrackGenerator::PushableVideoSource()
       MediaStreamVideoSource::GetVideoSource(Component()->Source()));
 }
 
-void MediaStreamTrackGenerator::CreateVideoOutputPlatformTrack() {
+void MediaStreamTrackGenerator::CreateVideoOutputPlatformTrack(
+    MediaStreamTrack* signal_target) {
+  base::WeakPtr<MediaStreamVideoSource> signal_target_upstream_source;
+  if (signal_target) {
+    MediaStreamVideoSource* upstream_source =
+        MediaStreamVideoSource::GetVideoSource(
+            signal_target->Component()->Source());
+    signal_target_upstream_source = upstream_source->GetWeakPtr();
+  }
+
   std::unique_ptr<PushableMediaStreamVideoSource> platform_source =
-      std::make_unique<PushableMediaStreamVideoSource>();
+      std::make_unique<PushableMediaStreamVideoSource>(
+          signal_target_upstream_source);
   PushableMediaStreamVideoSource* platform_source_ptr = platform_source.get();
   Component()->Source()->SetPlatformSource(std::move(platform_source));
   std::unique_ptr<MediaStreamVideoTrack> platform_track =
@@ -144,8 +226,8 @@ void MediaStreamTrackGenerator::CreateVideoControlStream(
   // TODO(crbug.com/1142955): Make the queue size configurable from the
   // constructor.
   control_underlying_source_ =
-      MakeGarbageCollected<VideoTrackSignalUnderlyingSource>(script_state, this,
-                                                             /*queue_size=*/20);
+      MakeGarbageCollected<VideoTrackSignalUnderlyingSource>(
+          script_state, this, max_signal_buffer_size_);
   readable_control_ = ReadableStream::CreateWithCountQueueingStrategy(
       script_state, control_underlying_source_, /*high_water_mark=*/0);
 }
@@ -160,32 +242,6 @@ void MediaStreamTrackGenerator::CreateAudioControlStream(
       MakeGarbageCollected<NullUnderlyingSource>(script_state);
   readable_control_ = ReadableStream::CreateWithCountQueueingStrategy(
       script_state, control_underlying_source_, /*high_water_mark=*/0);
-}
-
-MediaStreamTrackGenerator* MediaStreamTrackGenerator::Create(
-    ScriptState* script_state,
-    const String& kind,
-    ExceptionState& exception_state) {
-  if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Invalid context");
-    return nullptr;
-  }
-
-  MediaStreamSource::StreamType type;
-
-  if (kind == "video") {
-    type = MediaStreamSource::kTypeVideo;
-  } else if (kind == "audio") {
-    type = MediaStreamSource::kTypeAudio;
-  } else {
-    exception_state.ThrowTypeError("Invalid track generator kind");
-    return nullptr;
-  }
-
-  return MakeGarbageCollected<MediaStreamTrackGenerator>(
-      script_state, type,
-      /*track_id=*/WTF::CreateCanonicalUUIDString());
 }
 
 void MediaStreamTrackGenerator::Trace(Visitor* visitor) const {

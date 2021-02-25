@@ -25,6 +25,7 @@ modules_dictionary_idl_files = [
   "media_stream_constraints.idl",
   "media_stream_event_init.idl",
   "media_stream_track_event_init.idl",
+  "media_stream_track_generator_init.idl",
   "media_stream_track_processor_init.idl",
   "media_stream_track_signal.idl",
   "media_track_capabilities.idl",

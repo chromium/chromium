@@ -11,6 +11,8 @@
 interface MediaStreamTrackGenerator : MediaStreamTrack {
   [CallWith=ScriptState, RaisesException, MeasureAs=MediaStreamTrackGenerator]
   constructor(DOMString kind);
+  [CallWith=ScriptState, RaisesException, MeasureAs=MediaStreamTrackGenerator]
+  constructor(MediaStreamTrackGeneratorInit init);
 
   // This streams takes VideoFrame or AudioFrame objects.
   [CallWith=ScriptState] readonly attribute WritableStream writable;

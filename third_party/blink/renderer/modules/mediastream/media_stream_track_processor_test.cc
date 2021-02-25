@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track_generator.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track_generator_init.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_audio_sink.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_sink.h"
@@ -351,9 +352,10 @@ TEST_F(MediaStreamTrackProcessorTest, ProcessorConnectsToGenerator) {
           exception_state);
 
   // Create generator and connect it to a mock sink.
+  MediaStreamTrackGeneratorInit* init = MediaStreamTrackGeneratorInit::Create();
+  init->setKind("video");
   MediaStreamTrackGenerator* track_generator =
-      MakeGarbageCollected<MediaStreamTrackGenerator>(
-          script_state, MediaStreamSource::kTypeVideo, "track_id");
+      MediaStreamTrackGenerator::Create(script_state, init, exception_state);
   MockMediaStreamVideoSink mock_video_sink;
   mock_video_sink.ConnectToTrack(
       WebMediaStreamTrack(track_generator->Component()));

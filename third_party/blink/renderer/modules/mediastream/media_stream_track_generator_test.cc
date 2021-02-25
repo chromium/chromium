@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track_generator_init.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track_processor.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_audio_sink.h"
@@ -329,6 +330,26 @@ TEST_F(MediaStreamTrackGeneratorTest, SignalsFlowFromGeneratorToProcessor) {
       .WillOnce(base::test::RunOnceClosure(loop.QuitClosure()));
   generator->PushableVideoSource()->RequestRefreshFrame();
   loop.Run();
+}
+
+TEST_F(MediaStreamTrackGeneratorTest, ImplicitSignalsAreForwarded) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+
+  MockMediaStreamVideoSource* mock_source = CreateMockVideoSource();
+  MediaStreamTrack* signal_target =
+      CreateVideoMediaStreamTrack(v8_scope.GetExecutionContext(), mock_source);
+  mock_source->StartMockedSource();
+
+  auto* init = MediaStreamTrackGeneratorInit::Create();
+  init->setKind("video");
+  init->setSignalTarget(signal_target);
+  auto* generator = MediaStreamTrackGenerator::Create(script_state, init,
+                                                      ASSERT_NO_EXCEPTION);
+  // Send a signal to the generator. It should be forwarded to the source of the
+  // |signal_target| track.
+  EXPECT_CALL(*mock_source, OnRequestRefreshFrame());
+  generator->PushableVideoSource()->RequestRefreshFrame();
 }
 
 }  // namespace blink

@@ -39,7 +39,8 @@ class VideoTrackSignalUnderlyingSourceTest : public testing::Test {
 
   MediaStreamTrackGenerator* CreateGenerator(ScriptState* script_state) {
     return MakeGarbageCollected<MediaStreamTrackGenerator>(
-        script_state, MediaStreamSource::kTypeVideo, "test-generator");
+        script_state, MediaStreamSource::kTypeVideo, "test-generator",
+        /*signal_target=*/nullptr, /*max_signal_buffer_size=*/10u);
   }
 
   VideoTrackSignalUnderlyingSource* CreateSource(
