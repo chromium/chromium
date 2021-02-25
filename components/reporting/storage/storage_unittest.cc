@@ -15,7 +15,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "build/build_config.h"
 #include "components/reporting/encryption/decryption.h"
 #include "components/reporting/encryption/encryption.h"
 #include "components/reporting/encryption/test_encryption_module.h"
@@ -745,16 +744,16 @@ TEST_P(StorageTest, WriteIntoNewStorageAndUpload) {
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 }
 
-#if !defined(OS_IOS)
-// This test is failing iOS ipad device bots.
-// http://crbug.com/1181652
 TEST_P(StorageTest, WriteIntoNewStorageAndUploadWithKeyUpdate) {
   // Run the test only when encryption is enabled.
   if (!is_encryption_enabled()) {
     return;
   }
 
-  CreateTestStorageOrDie(BuildTestStorageOptions());
+  static constexpr auto kKeyRenewalTime = base::TimeDelta::FromSeconds(5);
+  CreateTestStorageOrDie(
+      BuildTestStorageOptions(),
+      base::MakeRefCounted<EncryptionModule>(kKeyRenewalTime));
   WriteStringOrDie(MANUAL_BATCH, kData[0]);
   WriteStringOrDie(MANUAL_BATCH, kData[1]);
   WriteStringOrDie(MANUAL_BATCH, kData[2]);
@@ -785,8 +784,9 @@ TEST_P(StorageTest, WriteIntoNewStorageAndUploadWithKeyUpdate) {
   WriteStringOrDie(MANUAL_BATCH, kMoreData[1]);
   WriteStringOrDie(MANUAL_BATCH, kMoreData[2]);
 
-  // Wait for a long time to trigger encryption key request on the next upload
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(30 + 1));
+  // Wait to trigger encryption key request on the next upload
+  task_environment_.FastForwardBy(kKeyRenewalTime +
+                                  base::TimeDelta::FromSeconds(1));
 
   // Set uploader expectations with encryption key request.
   EXPECT_CALL(
@@ -806,7 +806,6 @@ TEST_P(StorageTest, WriteIntoNewStorageAndUploadWithKeyUpdate) {
   // Trigger upload with key update after a long wait.
   EXPECT_OK(storage_->Flush(MANUAL_BATCH));
 }
-#endif
 
 TEST_P(StorageTest, WriteIntoNewStorageReopenWriteMoreAndUpload) {
   CreateTestStorageOrDie(BuildTestStorageOptions());
