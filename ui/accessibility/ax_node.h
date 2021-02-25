@@ -453,8 +453,7 @@ class AX_EXPORT AXNode final {
   // element.
   bool IsEmbeddedGroup() const;
 
-  // Returns true if this node has the ignored state or the ignored role.
-  // Focused nodes are, by design, not ignored.
+  // Returns true if node has ignored state or ignored role.
   bool IsIgnored() const;
 
   // Some nodes are not ignored but should be skipped during text navigation.
@@ -462,14 +461,11 @@ class AX_EXPORT AXNode final {
   // encountering a splitter during character and word navigation.
   bool IsIgnoredForTextNavigation() const;
 
-  // Returns true if node is invisible, or if it is ignored as determined by
-  // `AXNode::IsIgnored()`.
+  // Returns true if node is invisible or ignored.
   bool IsInvisibleOrIgnored() const;
 
-  // Returns true if this node is focused in the current tree. Every
-  // accessibility tree may have its own independent focus, e.g. an iframe may
-  // have a different focus from the main web page.
-  bool IsFocusedInThisTree() const;
+  // Returns true if node is focused within this tree.
+  bool IsFocusedWithinThisTree() const;
 
   // Returns true if an ancestor of this node (not including itself) is a
   // leaf node, meaning that this node is not actually exposed to any

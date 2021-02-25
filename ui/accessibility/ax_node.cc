@@ -1240,7 +1240,7 @@ std::string AXNode::GetValueForTextField() const {
 }
 
 bool AXNode::IsIgnored() const {
-  return data().IsIgnored() && !IsFocusedInThisTree();
+  return data().IsIgnored();
 }
 
 bool AXNode::IsIgnoredForTextNavigation() const {
@@ -1261,10 +1261,13 @@ bool AXNode::IsIgnoredForTextNavigation() const {
 }
 
 bool AXNode::IsInvisibleOrIgnored() const {
-  return data().IsInvisibleOrIgnored() && !IsFocusedInThisTree();
+  if (!data().IsInvisibleOrIgnored())
+    return false;
+
+  return !IsFocusedWithinThisTree();
 }
 
-bool AXNode::IsFocusedInThisTree() const {
+bool AXNode::IsFocusedWithinThisTree() const {
   return id() == tree_->data().focus_id;
 }
 
