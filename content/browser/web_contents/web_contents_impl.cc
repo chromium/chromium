@@ -4934,15 +4934,13 @@ int WebContentsImpl::DownloadImageInFrame(
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::DownloadImageInFrame");
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   static int next_image_download_id = 0;
+  const int download_id = ++next_image_download_id;
 
   RenderFrameHostImpl* initiator_frame =
       initiator_frame_routing_id.child_id
           ? RenderFrameHostImpl::FromID(initiator_frame_routing_id)
           : GetMainFrame();
-  const mojo::Remote<blink::mojom::ImageDownloader>& mojo_image_downloader =
-      initiator_frame->GetMojoImageDownloader();
-  const int download_id = ++next_image_download_id;
-  if (!mojo_image_downloader) {
+  if (!initiator_frame->IsRenderFrameLive()) {
     // If the renderer process is dead (i.e. crash, or memory pressure on
     // Android), the downloader service will be invalid. Pre-Mojo, this would
     // hang the callback indefinitely since the IPC would be dropped. Now,
@@ -4956,7 +4954,7 @@ int WebContentsImpl::DownloadImageInFrame(
     return download_id;
   }
 
-  mojo_image_downloader->DownloadImage(
+  initiator_frame->GetMojoImageDownloader()->DownloadImage(
       url, is_favicon, preferred_size, max_bitmap_size, bypass_cache,
       base::BindOnce(&WebContentsImpl::OnDidDownloadImage,
                      weak_factory_.GetWeakPtr(), std::move(callback),
