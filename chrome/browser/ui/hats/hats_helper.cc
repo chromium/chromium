@@ -21,8 +21,19 @@ HatsHelper::HatsHelper(content::WebContents* web_contents)
 
 void HatsHelper::DidFinishLoad(content::RenderFrameHost* render_frame_host,
                                const GURL& validated_url) {
-  const bool demo_enabled = base::FeatureList::IsEnabled(
-      features::kHappinessTrackingSurveysForDesktopDemo);
+  // If the demo HaTS feature is enabled display a test survey on every page
+  // load unless the "auto_prompt" parameter is explicitly set to false. The
+  // demo feature also disables client-side HaTS rate limiting, thus setting
+  // "auto_prompt" to false allows testing of non-demo surveys without
+  // triggering a demo survey on every page load.
+  const bool demo_enabled =
+      base::FeatureList::IsEnabled(
+          features::kHappinessTrackingSurveysForDesktopDemo) &&
+      base::FeatureParam<bool>(
+          &features::kHappinessTrackingSurveysForDesktopDemo, "auto_prompt",
+          true)
+          .Get();
+
   if (!render_frame_host->GetParent() &&
       (search::IsInstantNTP(web_contents()) || demo_enabled)) {
     HatsService* hats_service = HatsServiceFactory::GetForProfile(
