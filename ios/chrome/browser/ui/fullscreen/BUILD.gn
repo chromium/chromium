@@ -10,6 +10,7 @@ source_set("fullscreen") {
     "fullscreen_controller_observer.h",
     "fullscreen_ui_updater.h",
     "scoped_fullscreen_disabler.h",
+    "scoped_fullscreen_disabler.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
