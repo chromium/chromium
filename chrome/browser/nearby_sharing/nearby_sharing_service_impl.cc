@@ -3719,7 +3719,7 @@ void NearbySharingServiceImpl::OnStartDiscoveryResult(
                          status);
   }
   for (auto& observer : observers_) {
-    observer.OnStartAdvertisingResult(success);
+    observer.OnStartDiscoveryResult(success);
   }
 }
 
