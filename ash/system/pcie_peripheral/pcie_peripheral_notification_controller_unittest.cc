@@ -7,13 +7,17 @@
 #include <memory>
 #include <vector>
 
+#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/optional.h"
+#include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/message_center/fake_message_center.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 
@@ -77,6 +81,13 @@ class PciePeripheralNotificationControllerTest : public AshTestBase {
     return GetSystemTrayClient()->show_os_settings_privacy_and_security_count();
   }
 
+  int GetPrefNotificationCount() {
+    PrefService* prefs =
+        Shell::Get()->session_controller()->GetActivePrefService();
+    return prefs->GetInteger(
+        prefs::kPciePeripheralDisplayNotificationRemaining);
+  }
+
   void ClickLimitedNotificationButton(base::Optional<int> button_index) {
     // No button index means the notification body was clicked.
     if (!button_index.has_value()) {
@@ -104,63 +115,24 @@ class PciePeripheralNotificationControllerTest : public AshTestBase {
         kPciePeripheralLimitedPerformanceGuestModeNotificationId);
   }
 
+  void RemoveAllNotifications() {
+    MessageCenter::Get()->RemoveAllNotifications(
+        /*by_user=*/false, message_center::MessageCenter::RemoveType::ALL);
+  }
+
  private:
   MockNewWindowDelegate new_window_delegate_;
 };
-
-TEST_F(PciePeripheralNotificationControllerTest,
-       LimitedPerformanceNotification) {
-  EXPECT_EQ(0u, MessageCenter::Get()->NotificationCount());
-
-  controller()->NotifyLimitedPerformance();
-  EXPECT_EQ(1u, MessageCenter::Get()->NotificationCount());
-
-  message_center::Notification* notification =
-      GetLimitedPerformanceNotification();
-
-  EXPECT_TRUE(notification);
-
-  // Ensure this notification has the two correct buttons.
-  EXPECT_EQ(2u, notification->buttons().size());
-
-  EXPECT_EQ(0, GetNumOsPrivacySettingsOpened());
-  // Click on the Settings button and expect it to reach the OS Settings privacy
-  // page.
-  ClickLimitedNotificationButton(/*button_index=*/0);
-  EXPECT_EQ(1, GetNumOsPrivacySettingsOpened());
-  // Clicking on the notification will close it.
-  EXPECT_EQ(0u, MessageCenter::Get()->NotificationCount());
-
-  // Open new notification and click on its body.
-  controller()->NotifyLimitedPerformance();
-  EXPECT_EQ(1u, MessageCenter::Get()->NotificationCount());
-  ClickLimitedNotificationButton(base::nullopt);
-  EXPECT_EQ(2, GetNumOsPrivacySettingsOpened());
-  EXPECT_EQ(0u, MessageCenter::Get()->NotificationCount());
-
-  // Open new notification and click on the Learn More button.
-  controller()->NotifyLimitedPerformance();
-  EXPECT_EQ(1u, MessageCenter::Get()->NotificationCount());
-  EXPECT_CALL(new_window_delegate(), NewTabWithUrl)
-      .WillOnce([](const GURL& url, bool from_user_interaction) {
-        EXPECT_EQ(GURL(kLearnMoreHelpUrl), url);
-        EXPECT_TRUE(from_user_interaction);
-      });
-  ClickLimitedNotificationButton(/*button_index=*/1);
-  EXPECT_EQ(0u, MessageCenter::Get()->NotificationCount());
-}
 
 TEST_F(PciePeripheralNotificationControllerTest, GuestNotificationTbtOnly) {
   EXPECT_EQ(0u, MessageCenter::Get()->NotificationCount());
 
   controller()->NotifyGuestModeNotification(/*is_thunderbolt_only=*/true);
-
   EXPECT_EQ(1u, MessageCenter::Get()->NotificationCount());
 
   message_center::Notification* notification =
       GetGuestModeNotSupportedNotification();
-
-  EXPECT_TRUE(notification);
+  ASSERT_TRUE(notification);
 
   // This notification has no buttons.
   EXPECT_EQ(0u, notification->buttons().size());
@@ -186,8 +158,7 @@ TEST_F(PciePeripheralNotificationControllerTest, GuestNotificationTbtAltMode) {
 
   message_center::Notification* notification =
       GetLimitedPerformanceGuestModeNotification();
-
-  EXPECT_TRUE(notification);
+  ASSERT_TRUE(notification);
 
   // This notification has no buttons.
   EXPECT_EQ(0u, notification->buttons().size());
@@ -203,6 +174,172 @@ TEST_F(PciePeripheralNotificationControllerTest, GuestNotificationTbtAltMode) {
       });
   ClickGuestNotification(/*is_thunderbolt_only=*/false);
   EXPECT_EQ(0u, MessageCenter::Get()->NotificationCount());
+}
+
+TEST_F(PciePeripheralNotificationControllerTest,
+       LimitedPerformanceNotificationLearnMoreClick) {
+  EXPECT_EQ(0u, MessageCenter::Get()->NotificationCount());
+  EXPECT_EQ(3, GetPrefNotificationCount());
+
+  controller()->NotifyLimitedPerformance();
+  EXPECT_EQ(1u, MessageCenter::Get()->NotificationCount());
+
+  message_center::Notification* notification =
+      GetLimitedPerformanceNotification();
+  ASSERT_TRUE(notification);
+
+  // Ensure this notification has the two correct buttons.
+  EXPECT_EQ(2u, notification->buttons().size());
+
+  EXPECT_CALL(new_window_delegate(), NewTabWithUrl)
+      .WillOnce([](const GURL& url, bool from_user_interaction) {
+        EXPECT_EQ(GURL(kLearnMoreHelpUrl), url);
+        EXPECT_TRUE(from_user_interaction);
+      });
+  // Click the learn more link.
+  ClickLimitedNotificationButton(/*button_index=*/1);
+  EXPECT_EQ(2, GetPrefNotificationCount());
+  EXPECT_EQ(0u, MessageCenter::Get()->NotificationCount());
+
+  EXPECT_CALL(new_window_delegate(), NewTabWithUrl)
+      .WillOnce([](const GURL& url, bool from_user_interaction) {
+        EXPECT_EQ(GURL(kLearnMoreHelpUrl), url);
+        EXPECT_TRUE(from_user_interaction);
+      });
+  controller()->NotifyLimitedPerformance();
+  ClickLimitedNotificationButton(/*button_index=*/1);
+  EXPECT_EQ(1, GetPrefNotificationCount());
+  EXPECT_EQ(0u, MessageCenter::Get()->NotificationCount());
+
+  EXPECT_CALL(new_window_delegate(), NewTabWithUrl)
+      .WillOnce([](const GURL& url, bool from_user_interaction) {
+        EXPECT_EQ(GURL(kLearnMoreHelpUrl), url);
+        EXPECT_TRUE(from_user_interaction);
+      });
+  controller()->NotifyLimitedPerformance();
+  ClickLimitedNotificationButton(/*button_index=*/1);
+  EXPECT_EQ(0, GetPrefNotificationCount());
+  EXPECT_EQ(0u, MessageCenter::Get()->NotificationCount());
+
+  controller()->NotifyLimitedPerformance();
+  // Pref is currently at 0, so no new notifications should appear.
+  EXPECT_EQ(0u, MessageCenter::Get()->NotificationCount());
+}
+
+TEST_F(PciePeripheralNotificationControllerTest,
+       LimitedPerformanceNotificationBodyClick) {
+  EXPECT_EQ(0u, MessageCenter::Get()->NotificationCount());
+  EXPECT_EQ(3, GetPrefNotificationCount());
+
+  controller()->NotifyLimitedPerformance();
+  EXPECT_EQ(1u, MessageCenter::Get()->NotificationCount());
+  // New notifications will decrement the counter.
+  EXPECT_EQ(2, GetPrefNotificationCount());
+
+  message_center::Notification* notification =
+      GetLimitedPerformanceNotification();
+  ASSERT_TRUE(notification);
+
+  // Ensure this notification has the two correct buttons.
+  EXPECT_EQ(2u, notification->buttons().size());
+
+  // Click the notification body.
+  ClickLimitedNotificationButton(base::nullopt);
+  EXPECT_EQ(0, GetPrefNotificationCount());
+  EXPECT_EQ(0u, MessageCenter::Get()->NotificationCount());
+  EXPECT_EQ(1, GetNumOsPrivacySettingsOpened());
+
+  // No new notifications can appear.
+  controller()->NotifyLimitedPerformance();
+  EXPECT_EQ(0u, MessageCenter::Get()->NotificationCount());
+}
+
+TEST_F(PciePeripheralNotificationControllerTest,
+       LimitedPerformanceNotificationSettingsButtonClick) {
+  EXPECT_EQ(0u, MessageCenter::Get()->NotificationCount());
+  EXPECT_EQ(3, GetPrefNotificationCount());
+
+  controller()->NotifyLimitedPerformance();
+  EXPECT_EQ(1u, MessageCenter::Get()->NotificationCount());
+  // New notifications will decrement the counter.
+  EXPECT_EQ(2, GetPrefNotificationCount());
+
+  message_center::Notification* notification =
+      GetLimitedPerformanceNotification();
+  ASSERT_TRUE(notification);
+
+  // Ensure this notification has the two correct buttons.
+  EXPECT_EQ(2u, notification->buttons().size());
+
+  // Click the Settings button.
+  ClickLimitedNotificationButton(/*button_index=*/0);
+  EXPECT_EQ(0, GetPrefNotificationCount());
+  EXPECT_EQ(1, GetNumOsPrivacySettingsOpened());
+  EXPECT_EQ(0u, MessageCenter::Get()->NotificationCount());
+
+  // No new notifications can appear.
+  controller()->NotifyLimitedPerformance();
+  EXPECT_EQ(0u, MessageCenter::Get()->NotificationCount());
+}
+
+TEST_F(PciePeripheralNotificationControllerTest,
+       ClickGuestNotificationTbtOnly) {
+  EXPECT_EQ(0u, MessageCenter::Get()->NotificationCount());
+  EXPECT_EQ(3, GetPrefNotificationCount());
+
+  controller()->NotifyGuestModeNotification(/*is_thunderbolt_only=*/true);
+  EXPECT_EQ(1u, MessageCenter::Get()->NotificationCount());
+
+  message_center::Notification* notification =
+      GetGuestModeNotSupportedNotification();
+  ASSERT_TRUE(notification);
+
+  // This notification has no buttons.
+  EXPECT_EQ(0u, notification->buttons().size());
+
+  // We will always show guest notifications, expect that the pref did not
+  // decrement.
+  EXPECT_CALL(new_window_delegate(), NewTabWithUrl)
+      .WillOnce([](const GURL& url, bool from_user_interaction) {
+        EXPECT_EQ(GURL(kLearnMoreHelpUrl), url);
+        EXPECT_TRUE(from_user_interaction);
+      });
+  ClickGuestNotification(/*is_thunderbolt_only=*/true);
+  EXPECT_EQ(3, GetPrefNotificationCount());
+  EXPECT_EQ(0u, MessageCenter::Get()->NotificationCount());
+
+  controller()->NotifyGuestModeNotification(/*is_thunderbolt_only=*/true);
+  EXPECT_EQ(1u, MessageCenter::Get()->NotificationCount());
+}
+
+TEST_F(PciePeripheralNotificationControllerTest,
+       ClickGuestNotificationTbtAltMode) {
+  EXPECT_EQ(0u, MessageCenter::Get()->NotificationCount());
+  EXPECT_EQ(3, GetPrefNotificationCount());
+
+  controller()->NotifyGuestModeNotification(/*is_thunderbolt_only=*/false);
+  EXPECT_EQ(1u, MessageCenter::Get()->NotificationCount());
+
+  message_center::Notification* notification =
+      GetLimitedPerformanceGuestModeNotification();
+  ASSERT_TRUE(notification);
+
+  // This notification has no buttons.
+  EXPECT_EQ(0u, notification->buttons().size());
+
+  // We will always show guest notifications, expect that the pref did not
+  // decrement.
+  EXPECT_CALL(new_window_delegate(), NewTabWithUrl)
+      .WillOnce([](const GURL& url, bool from_user_interaction) {
+        EXPECT_EQ(GURL(kLearnMoreHelpUrl), url);
+        EXPECT_TRUE(from_user_interaction);
+      });
+  ClickGuestNotification(/*is_thunderbolt_only=*/false);
+  EXPECT_EQ(3, GetPrefNotificationCount());
+  EXPECT_EQ(0u, MessageCenter::Get()->NotificationCount());
+
+  controller()->NotifyGuestModeNotification(/*is_thunderbolt_only=*/false);
+  EXPECT_EQ(1u, MessageCenter::Get()->NotificationCount());
 }
 
 }  // namespace ash

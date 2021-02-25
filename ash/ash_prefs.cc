@@ -34,6 +34,7 @@
 #include "ash/system/night_light/night_light_controller_impl.h"
 #include "ash/system/palette/palette_tray.h"
 #include "ash/system/palette/palette_welcome_bubble.h"
+#include "ash/system/pcie_peripheral/pcie_peripheral_notification_controller.h"
 #include "ash/system/power/power_prefs.h"
 #include "ash/system/session/logout_button_tray.h"
 #include "ash/system/unified/top_shortcuts_view.h"
@@ -75,6 +76,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   NightLightControllerImpl::RegisterProfilePrefs(registry);
   PaletteTray::RegisterProfilePrefs(registry);
   PaletteWelcomeBubble::RegisterProfilePrefs(registry);
+  PciePeripheralNotificationController::RegisterProfilePrefs(registry);
   PrivacyScreenController::RegisterProfilePrefs(registry);
   ShelfController::RegisterProfilePrefs(registry);
   TouchDevicesController::RegisterProfilePrefs(registry, for_test);

@@ -225,6 +225,9 @@ ASH_PUBLIC_EXPORT extern const char kAppNotificationBadgingEnabled[];
 
 ASH_PUBLIC_EXPORT extern const char kGlobalMediaControlsPinned[];
 
+ASH_PUBLIC_EXPORT extern const char
+    kPciePeripheralDisplayNotificationRemaining[];
+
 }  // namespace prefs
 
 }  // namespace ash

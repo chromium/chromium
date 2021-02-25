@@ -4,6 +4,7 @@
 
 #include "ash/system/pcie_peripheral/pcie_peripheral_notification_controller.h"
 
+#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
@@ -15,6 +16,8 @@
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -27,6 +30,7 @@ namespace {
 const char kNotifierPciePeripheral[] = "ash.pcie_peripheral";
 const char kLearnMoreHelpUrl[] =
     "https://www.support.google.com/chromebook?p=connect_thblt_usb4_accy";
+const int kNotificationsClicksThreshold = 3;
 
 const char kPciePeripheralLimitedPerformanceNotificationId[] =
     "cros_pcie_peripheral_limited_performance_notification_id";
@@ -37,6 +41,35 @@ const char kPciePeripheralGuestModeNotSupportedNotificationId[] =
 
 // Represents the buttons in the notification.
 enum ButtonIndex { kSettings, kLearnMore };
+
+int GetNotificationClickPrefCount() {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+
+  return prefs->GetInteger(prefs::kPciePeripheralDisplayNotificationRemaining);
+}
+
+void UpdateNotificationPrefCount(bool clicked_settings) {
+  int current_pref_val = GetNotificationClickPrefCount();
+
+  // We're already not showing any new notifications, don't update.
+  if (current_pref_val == 0)
+    return;
+
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+
+  // If the user has reached the settings page through the notification, do
+  // not show any more new notifications.
+  if (clicked_settings) {
+    prefs->SetInteger(prefs::kPciePeripheralDisplayNotificationRemaining, 0);
+    return;
+  }
+
+  // Otherwise, decrement the pref count.
+  prefs->SetInteger(prefs::kPciePeripheralDisplayNotificationRemaining,
+                    current_pref_val - 1);
+}
 
 void ShowPrivacyAndSecuritySettings() {
   Shell::Get()->system_tray_model()->client()->ShowPrivacyAndSecuritySettings();
@@ -51,6 +84,7 @@ void OnPeripheralLimitedNotificationClicked(base::Optional<int> button_index) {
   // Clicked on body.
   if (!button_index) {
     ShowPrivacyAndSecuritySettings();
+    UpdateNotificationPrefCount(/*clicked_settings=*/true);
     RemoveNotification(kPciePeripheralLimitedPerformanceNotificationId);
     return;
   }
@@ -58,6 +92,7 @@ void OnPeripheralLimitedNotificationClicked(base::Optional<int> button_index) {
   switch (*button_index) {
     case ButtonIndex::kSettings:
       ShowPrivacyAndSecuritySettings();
+      UpdateNotificationPrefCount(/*clicked_settings=*/true);
       break;
     case ButtonIndex::kLearnMore:
       NewWindowDelegate::GetInstance()->NewTabWithUrl(
@@ -108,7 +143,9 @@ void PciePeripheralNotificationController::
 }
 
 void PciePeripheralNotificationController::NotifyLimitedPerformance() {
-  if (!ShouldDisplayNotification())
+  // Don't show the notification if the user has already clicked on the
+  // notification three times.
+  if (!ShouldDisplayNotification() || GetNotificationClickPrefCount() == 0)
     return;
 
   message_center::RichNotificationData optional;
@@ -138,6 +175,7 @@ void PciePeripheralNotificationController::NotifyLimitedPerformance() {
           message_center::SystemNotificationWarningLevel::WARNING);
 
   message_center_->AddNotification(std::move(notification));
+  UpdateNotificationPrefCount(/*clicked_settings=*/false);
 }
 
 void PciePeripheralNotificationController::NotifyGuestModeNotification(
@@ -183,4 +221,13 @@ void PciePeripheralNotificationController::OnGuestModeNotificationReceived(
   NotifyGuestModeNotification(is_thunderbolt_only);
 }
 
+// static
+void PciePeripheralNotificationController::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  // By default, we let the user click on the notifications three times before
+  // hiding future notifications.
+  registry->RegisterIntegerPref(
+      prefs::kPciePeripheralDisplayNotificationRemaining,
+      kNotificationsClicksThreshold);
+}
 }  // namespace ash

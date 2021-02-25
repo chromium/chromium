@@ -8,6 +8,8 @@
 #include "ash/ash_export.h"
 #include "ash/components/pcie_peripheral/pcie_peripheral_manager.h"
 
+class PrefRegistrySimple;
+
 namespace message_center {
 class MessageCenter;
 }  // namespace message_center
@@ -30,6 +32,8 @@ class ASH_EXPORT PciePeripheralNotificationController
   PciePeripheralNotificationController& operator=(
       const PciePeripheralNotificationController&) = delete;
   ~PciePeripheralNotificationController() override;
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Call when PciePeripheralManager is initialized so that this class can start
   // observering requests for notifications.

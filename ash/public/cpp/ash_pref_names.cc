@@ -607,6 +607,11 @@ const char kAppNotificationBadgingEnabled[] =
 const char kGlobalMediaControlsPinned[] =
     "ash.system.global_media_controls_pinned";
 
+// An integer pref that tracks how many times the user is able to click on
+// PciePeripheral-related notifications before hiding new notifications.
+const char kPciePeripheralDisplayNotificationRemaining[] =
+    "ash.pcie_peripheral_display_notification_remaining";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 
