@@ -26,7 +26,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/web_applications/system_web_app_manager.h"
-#include "chrome/browser/web_applications/system_web_app_manager_browsertest.h"
+#include "chrome/browser/web_applications/test/system_web_app_browsertest_base.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"

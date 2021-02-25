@@ -1,9 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APP_MANAGER_BROWSERTEST_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APP_MANAGER_BROWSERTEST_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_SYSTEM_WEB_APP_BROWSERTEST_BASE_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_TEST_SYSTEM_WEB_APP_BROWSERTEST_BASE_H_
 
 #include <memory>
 
@@ -29,19 +29,18 @@ enum class SystemAppType;
 
 // Clients should use SystemWebAppManagerBrowserTest, so test can be run with
 // both the new web apps provider and the legacy bookmark apps provider.
-class SystemWebAppManagerBrowserTestBase : public InProcessBrowserTest {
+class SystemWebAppBrowserTestBase : public InProcessBrowserTest {
  public:
   // Performs common initialization for testing SystemWebAppManager features.
   // If true, |install_mock| installs a WebUIController that serves a mock
   // System PWA, and ensures the WebAppProvider associated with the startup
   // profile is a TestWebAppProviderCreator.
-  explicit SystemWebAppManagerBrowserTestBase(bool install_mock = true);
-  SystemWebAppManagerBrowserTestBase(
-      const SystemWebAppManagerBrowserTestBase&) = delete;
-  SystemWebAppManagerBrowserTestBase& operator=(
-      const SystemWebAppManagerBrowserTestBase&) = delete;
+  explicit SystemWebAppBrowserTestBase(bool install_mock = true);
+  SystemWebAppBrowserTestBase(const SystemWebAppBrowserTestBase&) = delete;
+  SystemWebAppBrowserTestBase& operator=(const SystemWebAppBrowserTestBase&) =
+      delete;
 
-  ~SystemWebAppManagerBrowserTestBase() override;
+  ~SystemWebAppBrowserTestBase() override;
 
   // Returns the SystemWebAppManager for browser()->profile(). For incognito
   // profiles, this will be the SystemWebAppManager of the original profile.
@@ -107,7 +106,7 @@ enum class InstallationType { kManifestInstall, kWebAppInfoInstall };
 using SystemWebAppManagerTestParams = std::tuple<TestProfileType>;
 
 class SystemWebAppManagerBrowserTest
-    : public SystemWebAppManagerBrowserTestBase,
+    : public SystemWebAppBrowserTestBase,
       public ::testing::WithParamInterface<SystemWebAppManagerTestParams> {
  public:
   explicit SystemWebAppManagerBrowserTest(bool install_mock = true);
@@ -118,8 +117,6 @@ class SystemWebAppManagerBrowserTest
   // InProcessBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override;
 };
-
-using SystemWebAppManagerWebAppInfoBrowserTest = SystemWebAppManagerBrowserTest;
 
 std::string SystemWebAppManagerTestParamsToString(
     const ::testing::TestParamInfo<SystemWebAppManagerTestParams>& param_info);
@@ -149,4 +146,4 @@ std::string SystemWebAppManagerTestParamsToString(
   INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_P(                           \
       SUITE, ::testing::Values(TestProfileType::kGuest))
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APP_MANAGER_BROWSERTEST_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_SYSTEM_WEB_APP_BROWSERTEST_BASE_H_

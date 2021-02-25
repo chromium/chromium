@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "chrome/browser/web_applications/system_web_app_manager_browsertest.h"
+#include "chrome/browser/web_applications/test/system_web_app_browsertest_base.h"
 #include "url/gurl.h"
 
 namespace web_app {
