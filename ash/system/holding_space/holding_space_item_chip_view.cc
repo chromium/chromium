@@ -11,6 +11,7 @@
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
+#include "ash/system/holding_space/holding_space_item_view_delegate.h"
 #include "ash/system/holding_space/holding_space_util.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/compositor/paint_recorder.h"
@@ -81,6 +82,7 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
       std::make_unique<RoundedImageView>(
           kHoldingSpaceChipIconSize / 2,
           RoundedImageView::Alignment::kLeading));
+  image_->SetID(kHoldingSpaceItemImageId);
 
   // Shrink circular background by a single pixel to prevent painting outside of
   // the image which may otherwise occur due to pixel rounding. Failure to do so
@@ -155,9 +157,14 @@ void HoldingSpaceItemChipView::OnPinVisibilityChanged(bool pin_visible) {
   label_->SchedulePaint();
 }
 
-void HoldingSpaceItemChipView::OnSelectedChanged() {
-  HoldingSpaceItemView::OnSelectedChanged();
-  image_->SetVisible(!selected());
+void HoldingSpaceItemChipView::OnSelectionUiChanged() {
+  HoldingSpaceItemView::OnSelectionUiChanged();
+
+  const bool multiselect =
+      delegate()->selection_ui() ==
+      HoldingSpaceItemViewDelegate::SelectionUi::kMultiSelect;
+
+  image_->SetVisible(!selected() || !multiselect);
   UpdateLabel();
 }
 
@@ -197,11 +204,16 @@ void HoldingSpaceItemChipView::UpdateImage() {
 }
 
 void HoldingSpaceItemChipView::UpdateLabel() {
+  const bool multiselect =
+      delegate()->selection_ui() ==
+      HoldingSpaceItemViewDelegate::SelectionUi::kMultiSelect;
+
   label_->SetEnabledColor(
-      selected() ? AshColorProvider::Get()->GetControlsLayerColor(
-                       AshColorProvider::ControlsLayerType::kFocusRingColor)
-                 : AshColorProvider::Get()->GetContentLayerColor(
-                       AshColorProvider::ContentLayerType::kTextColorPrimary));
+      selected() && multiselect
+          ? AshColorProvider::Get()->GetControlsLayerColor(
+                AshColorProvider::ControlsLayerType::kFocusRingColor)
+          : AshColorProvider::Get()->GetContentLayerColor(
+                AshColorProvider::ContentLayerType::kTextColorPrimary));
 }
 
 BEGIN_METADATA(HoldingSpaceItemChipView, HoldingSpaceItemView)

@@ -196,6 +196,12 @@ void HoldingSpaceItemViewsSection::Reset() {
   // when asynchronously closing the holding space bubble. To prevent accessing
   // `delegate_` after deletion, prevent animation callbacks from being run.
   weak_factory_.InvalidateWeakPtrs();
+
+  // Propagate `Reset()` to children.
+  for (views::View* view : container_->children()) {
+    DCHECK(HoldingSpaceItemView::IsInstance(view));
+    HoldingSpaceItemView::Cast(view)->Reset();
+  }
 }
 
 std::vector<HoldingSpaceItemView*>

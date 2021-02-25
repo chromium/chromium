@@ -38,6 +38,7 @@ HoldingSpaceItemScreenCaptureView::HoldingSpaceItemScreenCaptureView(
 
   image_ = AddChildView(std::make_unique<RoundedImageView>(
       kHoldingSpaceCornerRadius, RoundedImageView::Alignment::kLeading));
+  image_->SetID(kHoldingSpaceItemImageId);
 
   // Subscribe to be notified of changes to `item_`'s image.
   image_subscription_ = item->image().AddImageSkiaChangedCallback(

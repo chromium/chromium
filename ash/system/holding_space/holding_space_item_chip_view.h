@@ -39,7 +39,7 @@ class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView {
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
   void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item) override;
   void OnPinVisibilityChanged(bool pin_visible) override;
-  void OnSelectedChanged() override;
+  void OnSelectionUiChanged() override;
   void OnThemeChanged() override;
 
   // Invoked during `label_`'s paint sequence to paint its optional mask. Note

@@ -124,10 +124,19 @@ HoldingSpaceItemView::HoldingSpaceItemView(
           &HoldingSpaceItemView::OnPaintSelect, base::Unretained(this)));
   layer()->Add(selected_layer_owner_->layer());
 
+  // This view's `selected_` state is represented differently depending on
+  // `delegate_`'s selection UI. Register to be notified of changes.
+  selection_ui_changed_subscription_ =
+      delegate_->AddSelectionUiChangedCallback(base::BindRepeating(
+          &HoldingSpaceItemView::OnSelectionUiChanged, base::Unretained(this)));
+
   delegate_->OnHoldingSpaceItemViewCreated(this);
 }
 
-HoldingSpaceItemView::~HoldingSpaceItemView() = default;
+HoldingSpaceItemView::~HoldingSpaceItemView() {
+  if (delegate_)
+    delegate_->OnHoldingSpaceItemViewDestroying(this);
+}
 
 // static
 HoldingSpaceItemView* HoldingSpaceItemView::Cast(views::View* view) {
@@ -138,6 +147,10 @@ HoldingSpaceItemView* HoldingSpaceItemView::Cast(views::View* view) {
 // static
 bool HoldingSpaceItemView::IsInstance(views::View* view) {
   return view->GetProperty(kIsHoldingSpaceItemViewProperty);
+}
+
+void HoldingSpaceItemView::Reset() {
+  delegate_ = nullptr;
 }
 
 bool HoldingSpaceItemView::HandleAccessibleAction(
@@ -244,12 +257,15 @@ void HoldingSpaceItemView::SetSelected(bool selected) {
 
   selected_ = selected;
   InvalidateLayer(selected_layer_owner_->layer());
-  OnSelectedChanged();
+
+  delegate_->OnHoldingSpaceItemViewSelectedChanged(this);
+  OnSelectionUiChanged();
 }
 
 views::ImageView* HoldingSpaceItemView::AddCheckmark(views::View* parent) {
   DCHECK(!checkmark_);
   checkmark_ = parent->AddChildView(std::make_unique<views::ImageView>());
+  checkmark_->SetID(kHoldingSpaceItemCheckmarkId);
   checkmark_->SetVisible(selected());
   return checkmark_;
 }
@@ -284,8 +300,12 @@ views::ToggleImageButton* HoldingSpaceItemView::AddPin(views::View* parent) {
   return pin_;
 }
 
-void HoldingSpaceItemView::OnSelectedChanged() {
-  checkmark_->SetVisible(selected());
+void HoldingSpaceItemView::OnSelectionUiChanged() {
+  const bool multiselect =
+      delegate_->selection_ui() ==
+      HoldingSpaceItemViewDelegate::SelectionUi::kMultiSelect;
+
+  checkmark_->SetVisible(selected() && multiselect);
 }
 
 void HoldingSpaceItemView::OnPaintFocus(gfx::Canvas* canvas, gfx::Size size) {

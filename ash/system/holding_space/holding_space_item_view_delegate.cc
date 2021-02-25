@@ -141,6 +141,14 @@ HoldingSpaceItemViewDelegate::HoldingSpaceItemViewDelegate(
     : bubble_(bubble) {
   DCHECK_EQ(nullptr, instance);
   instance = this;
+
+  // Multi-select is the only selection UI in tablet mode. Outside of tablet
+  // mode, selection UI is based on the `selection_size_`.
+  selection_ui_ = TabletMode::Get()->InTabletMode()
+                      ? SelectionUi::kMultiSelect
+                      : SelectionUi::kSingleSelect;
+
+  tablet_mode_observer_.Observe(TabletMode::Get());
 }
 
 HoldingSpaceItemViewDelegate::~HoldingSpaceItemViewDelegate() {
@@ -150,7 +158,25 @@ HoldingSpaceItemViewDelegate::~HoldingSpaceItemViewDelegate() {
 
 void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewCreated(
     HoldingSpaceItemView* view) {
-  view_observations_.AddObservation(view);
+  if (view->selected()) {
+    ++selection_size_;
+    UpdateSelectionUi();
+  }
+}
+
+void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewDestroying(
+    HoldingSpaceItemView* view) {
+  // If either endpoint of the selected range is destroyed, clear the cache so
+  // that the next range-based selection attempt will start from scratch.
+  if (selected_range_start_ == view || selected_range_end_ == view) {
+    selected_range_start_ = nullptr;
+    selected_range_end_ = nullptr;
+  }
+
+  if (view->selected()) {
+    --selection_size_;
+    UpdateSelectionUi();
+  }
 }
 
 bool HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewAccessibleAction(
@@ -320,6 +346,12 @@ void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewMouseReleased(
   SetSelection(view);
 }
 
+void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewSelectedChanged(
+    HoldingSpaceItemView* view) {
+  selection_size_ += view->selected() ? 1 : -1;
+  UpdateSelectionUi();
+}
+
 bool HoldingSpaceItemViewDelegate::OnHoldingSpaceTrayBubbleKeyPressed(
     const ui::KeyEvent& event) {
   // The ENTER key should open all selected holding space items.
@@ -341,6 +373,12 @@ void HoldingSpaceItemViewDelegate::OnHoldingSpaceTrayChildBubbleGestureEvent(
 void HoldingSpaceItemViewDelegate::OnHoldingSpaceTrayChildBubbleMousePressed(
     const ui::MouseEvent& event) {
   ClearSelection();
+}
+
+base::RepeatingClosureList::Subscription
+HoldingSpaceItemViewDelegate::AddSelectionUiChangedCallback(
+    base::RepeatingClosureList::CallbackType callback) {
+  return selection_ui_changed_callbacks_.Add(std::move(callback));
 }
 
 void HoldingSpaceItemViewDelegate::ShowContextMenuForViewImpl(
@@ -417,17 +455,6 @@ void HoldingSpaceItemViewDelegate::WriteDragDataForView(
   data->SetFilenames(filenames);
 }
 
-void HoldingSpaceItemViewDelegate::OnViewIsDeleting(views::View* view) {
-  view_observations_.RemoveObservation(view);
-
-  // If either endpoint of the selected range is destroyed, clear the cache so
-  // that the next range-based selection attempt will start from scratch.
-  if (selected_range_start_ == view || selected_range_end_ == view) {
-    selected_range_start_ = nullptr;
-    selected_range_end_ = nullptr;
-  }
-}
-
 void HoldingSpaceItemViewDelegate::ExecuteCommand(int command_id,
                                                   int event_flags) {
   std::vector<const HoldingSpaceItemView*> selection = GetSelection();
@@ -471,6 +498,14 @@ void HoldingSpaceItemViewDelegate::ExecuteCommand(int command_id,
       NOTREACHED();
       break;
   }
+}
+
+void HoldingSpaceItemViewDelegate::OnTabletModeStarted() {
+  UpdateSelectionUi();
+}
+
+void HoldingSpaceItemViewDelegate::OnTabletModeEnded() {
+  UpdateSelectionUi();
 }
 
 ui::SimpleMenuModel* HoldingSpaceItemViewDelegate::BuildMenuModel() {
@@ -555,6 +590,7 @@ HoldingSpaceItemViewDelegate::GetSelection() {
     if (view->selected())
       selection.push_back(view);
   }
+  DCHECK_EQ(selection.size(), selection_size_);
   return selection;
 }
 
@@ -603,6 +639,19 @@ void HoldingSpaceItemViewDelegate::SetSelectedRange(HoldingSpaceItemView* start,
        GetViewsInRange(views, selected_range_start_, selected_range_end_)) {
     view->SetSelected(true);
   }
+}
+
+void HoldingSpaceItemViewDelegate::UpdateSelectionUi() {
+  const SelectionUi selection_ui =
+      TabletMode::Get()->InTabletMode() || selection_size_ > 1u
+          ? SelectionUi::kMultiSelect
+          : SelectionUi::kSingleSelect;
+
+  if (selection_ui_ == selection_ui)
+    return;
+
+  selection_ui_ = selection_ui;
+  selection_ui_changed_callbacks_.Notify();
 }
 
 }  // namespace ash

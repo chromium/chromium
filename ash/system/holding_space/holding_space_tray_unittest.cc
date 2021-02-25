@@ -18,6 +18,7 @@
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
+#include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
@@ -2229,6 +2230,141 @@ TEST_P(HoldingSpaceTrayTest, MultiselectInTouchMode) {
           }));
   GestureTap(item_views[2]);
   testing::Mock::VerifyAndClearExpectations(client());
+}
+
+// Verifies that selection UI is correctly represented depending on device state
+// and the number of selected holding space item views.
+TEST_P(HoldingSpaceTrayTest, SelectionUi) {
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  StartSession();
+
+  // Add both a chip-style and screen-capture-style holding space item.
+  AddItem(HoldingSpaceItem::Type::kPinnedFile, base::FilePath("/tmp/fake1"));
+  AddItem(HoldingSpaceItem::Type::kScreenshot, base::FilePath("/tmp/fake2"));
+
+  // Show holding space UI.
+  test_api()->Show();
+  ASSERT_TRUE(test_api()->IsShowing());
+
+  // Cache holding space item views.
+  std::vector<views::View*> pinned_file_chips =
+      test_api()->GetPinnedFileChips();
+  ASSERT_EQ(pinned_file_chips.size(), 1u);
+  std::vector<views::View*> screen_capture_views =
+      test_api()->GetScreenCaptureViews();
+  ASSERT_EQ(screen_capture_views.size(), 1u);
+  std::vector<HoldingSpaceItemView*> item_views = {
+      HoldingSpaceItemView::Cast(pinned_file_chips[0]),
+      HoldingSpaceItemView::Cast(screen_capture_views[0])};
+
+  // Expects visibility of `view` to match `visible`.
+  auto expect_visible = [](views::View* view, bool visible) {
+    ASSERT_TRUE(view);
+    EXPECT_EQ(view->GetVisible(), visible);
+  };
+
+  // Expects visibility of `item_view`'s checkmark to match `visible`.
+  auto expect_checkmark_visible = [&](HoldingSpaceItemView* item_view,
+                                      bool visible) {
+    auto* checkmark = item_view->GetViewByID(kHoldingSpaceItemCheckmarkId);
+    expect_visible(checkmark, visible);
+  };
+
+  // Expects visibility of `item_view`'s image to match `visible`.
+  auto expect_image_visible = [&](HoldingSpaceItemView* item_view,
+                                  bool visible) {
+    auto* image = item_view->GetViewByID(kHoldingSpaceItemImageId);
+    expect_visible(image, visible);
+  };
+
+  // Initially no holding space item views are selected.
+  for (HoldingSpaceItemView* item_view : item_views) {
+    EXPECT_FALSE(item_view->selected());
+    expect_checkmark_visible(item_view, false);
+    expect_image_visible(item_view, true);
+  }
+
+  // Select the first holding space item view.
+  Click(item_views[0]);
+  EXPECT_TRUE(item_views[0]->selected());
+  EXPECT_FALSE(item_views[1]->selected());
+
+  // Since the device is not in tablet mode and only a single holding space item
+  // view is selected, no checkmarks should be shown.
+  for (HoldingSpaceItemView* item_view : item_views) {
+    expect_checkmark_visible(item_view, false);
+    expect_image_visible(item_view, true);
+  }
+
+  // Add the second holding space item view to the selection.
+  Click(item_views[1], ui::EF_CONTROL_DOWN);
+
+  // Because there are multiple holding space item views selected, checkmarks
+  // should be shown. For chip-style holding space item views the checkmark
+  // replaces the image.
+  for (HoldingSpaceItemView* item_view : item_views) {
+    EXPECT_TRUE(item_view->selected());
+    expect_checkmark_visible(item_view, true);
+    expect_image_visible(item_view, item_view->item()->IsScreenCapture());
+  }
+
+  // Remove the second holding space item. Note that its view was selected.
+  HoldingSpaceController::Get()->model()->RemoveItem(item_views[1]->item_id());
+
+  // Re-cache holding space item views as they will have been destroyed and
+  // recreated when animating item view removal.
+  pinned_file_chips = test_api()->GetPinnedFileChips();
+  ASSERT_EQ(pinned_file_chips.size(), 1u);
+  screen_capture_views = test_api()->GetScreenCaptureViews();
+  EXPECT_EQ(screen_capture_views.size(), 0u);
+  item_views = {HoldingSpaceItemView::Cast(pinned_file_chips[0])};
+
+  // The first (and only) holding space item view should still be selected
+  // although it should no longer show its checkmark since now only a single
+  // holding space item view is selected.
+  EXPECT_TRUE(item_views[0]->selected());
+  expect_checkmark_visible(item_views[0], false);
+  expect_image_visible(item_views[0], true);
+
+  // Switch to tablet mode. Note that this closes holding space UI.
+  ShellTestApi().SetTabletModeEnabledForTest(true);
+  EXPECT_FALSE(test_api()->IsShowing());
+
+  // Re-show holding space UI.
+  test_api()->Show();
+  ASSERT_TRUE(test_api()->IsShowing());
+
+  // Cache holding space item views.
+  pinned_file_chips = test_api()->GetPinnedFileChips();
+  ASSERT_EQ(pinned_file_chips.size(), 1u);
+  screen_capture_views = test_api()->GetScreenCaptureViews();
+  EXPECT_EQ(screen_capture_views.size(), 0u);
+  item_views = {HoldingSpaceItemView::Cast(pinned_file_chips[0])};
+
+  // Initially no holding space item views are selected.
+  EXPECT_FALSE(item_views[0]->selected());
+
+  // Select the first (and only) holding space item view.
+  Click(item_views[0]);
+
+  // In tablet mode, a selected holding space item view should always show its
+  // checkmark even if it is the only holding space item view selected.
+  EXPECT_TRUE(item_views[0]->selected());
+  expect_checkmark_visible(item_views[0], true);
+  expect_image_visible(item_views[0], false);
+
+  // Switch out of tablet mode. Note that this *doesn't* close holding space UI.
+  ShellTestApi().SetTabletModeEnabledForTest(false);
+  ASSERT_TRUE(test_api()->IsShowing());
+
+  // The first (and only) holding space item should still be selected but it
+  // should update checkmark/image visibility given that it is the only holding
+  // space item view selected.
+  EXPECT_TRUE(item_views[0]->selected());
+  expect_checkmark_visible(item_views[0], false);
+  expect_image_visible(item_views[0], true);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, HoldingSpaceTrayTest, testing::Bool());

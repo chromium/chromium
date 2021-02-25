@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
+#include "base/callback_list.h"
 #include "base/scoped_observation.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -45,6 +46,10 @@ class ASH_EXPORT HoldingSpaceItemView : public views::View,
   // Returns if `view` is an instance of `HoldingSpaceItemView`.
   static bool IsInstance(views::View* view);
 
+  // Resets the view. Called when the tray bubble starts closing to ensure
+  // that any references that may be outlived are cleared out.
+  void Reset();
+
   // views::View:
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
@@ -76,8 +81,9 @@ class ASH_EXPORT HoldingSpaceItemView : public views::View,
   views::ImageView* AddCheckmark(views::View* parent);
   views::ToggleImageButton* AddPin(views::View* parent);
   virtual void OnPinVisibilityChanged(bool pin_visible) {}
-  virtual void OnSelectedChanged();
+  virtual void OnSelectionUiChanged();
 
+  HoldingSpaceItemViewDelegate* delegate() { return delegate_; }
   views::ImageView* checkmark() { return checkmark_; }
   views::ToggleImageButton* pin() { return pin_; }
 
@@ -87,7 +93,10 @@ class ASH_EXPORT HoldingSpaceItemView : public views::View,
   void OnPinPressed();
   void UpdatePin();
 
-  HoldingSpaceItemViewDelegate* const delegate_;
+  // NOTE: This view may outlive `delegate_` and/or `item_` during destruction
+  // since the widget is closed asynchronously and the model is updated prior
+  // to animation completion.
+  HoldingSpaceItemViewDelegate* delegate_;
   const HoldingSpaceItem* const item_;
 
   // Cache the id of the associated holding space item so that it can be
@@ -105,6 +114,9 @@ class ASH_EXPORT HoldingSpaceItemView : public views::View,
 
   // Whether or not this view is selected.
   bool selected_ = false;
+
+  // Subscription to be notified of changes to `delegate_''s selection UI.
+  base::RepeatingClosureList::Subscription selection_ui_changed_subscription_;
 
   base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
       model_observer_{this};
