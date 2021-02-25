@@ -31,7 +31,7 @@ void CreateAssistantStructureAndRunCallback(
     ax::mojom::AssistantExtraPtr assistant_extra,
     const ui::AXTreeUpdate& update) {
   std::move(callback).Run(std::move(assistant_extra),
-                          ui::CreateAssistantTree(update, false));
+                          ui::CreateAssistantTree(update));
 }
 
 ax::mojom::AssistantExtraPtr CreateAssistantExtra(

@@ -102,7 +102,7 @@ base::string16 GetInnerText(const AXNode* node) {
   return text;
 }
 
-base::string16 GetValue(const AXNode* node, bool show_password) {
+base::string16 GetValue(const AXNode* node) {
   base::string16 value =
       node->data().GetString16Attribute(ax::mojom::StringAttribute::kValue);
 
@@ -113,16 +113,14 @@ base::string16 GetValue(const AXNode* node, bool show_password) {
     value = GetInnerText(node);
   }
 
-  if (node->data().HasState(ax::mojom::State::kProtected)) {
-    if (!show_password) {
-      value = base::string16(value.size(), kSecurePasswordBullet);
-    }
-  }
+  // Always obscure passwords.
+  if (node->data().HasState(ax::mojom::State::kProtected))
+    value = base::string16(value.size(), kSecurePasswordBullet);
 
   return value;
 }
 
-base::string16 GetText(const AXNode* node, bool show_password) {
+base::string16 GetText(const AXNode* node) {
   if (node->data().role == ax::mojom::Role::kPdfRoot ||
       node->data().role == ax::mojom::Role::kIframe ||
       node->data().role == ax::mojom::Role::kIframePresentational) {
@@ -135,7 +133,7 @@ base::string16 GetText(const AXNode* node, bool show_password) {
     return base::string16();
   }
 
-  base::string16 value = GetValue(node, show_password);
+  base::string16 value = GetValue(node);
 
   if (!value.empty()) {
     if (node->data().HasState(ax::mojom::State::kEditable))
@@ -183,7 +181,7 @@ base::string16 GetText(const AXNode* node, bool show_password) {
   if (text.empty() && IsLeaf(node)) {
     for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i) {
       AXNode* child = node->GetUnignoredChildAtIndex(i);
-      text += GetText(child, show_password);
+      text += GetText(child);
     }
   }
 
@@ -249,7 +247,6 @@ AssistantNode* AddChild(AssistantTree* tree) {
 
 struct WalkAXTreeConfig {
   bool should_select_leaf;
-  const bool show_password;
 };
 
 void WalkAXTreeDepthFirst(const AXNode* node,
@@ -259,7 +256,7 @@ void WalkAXTreeDepthFirst(const AXNode* node,
                           WalkAXTreeConfig* config,
                           AssistantTree* assistant_tree,
                           AssistantNode* result) {
-  result->text = GetText(node, config->show_password);
+  result->text = GetText(node);
   result->class_name =
       AXRoleToAndroidClassName(node->data().role, node->GetUnignoredParent());
   result->role = AXRoleToString(node->data().role);
@@ -312,8 +309,7 @@ void WalkAXTreeDepthFirst(const AXNode* node,
     }
 
     if (config->should_select_leaf) {
-      end_selection =
-          static_cast<int32_t>(GetText(node, config->show_password).length());
+      end_selection = static_cast<int32_t>(GetText(node).length());
     }
 
     if (unignored_selection.focus_object_id == node->id()) {
@@ -351,8 +347,7 @@ AssistantTree::AssistantTree(const AssistantTree& other) {
     nodes.emplace_back(std::make_unique<AssistantNode>(*node));
 }
 
-std::unique_ptr<AssistantTree> CreateAssistantTree(const AXTreeUpdate& update,
-                                                   bool show_password) {
+std::unique_ptr<AssistantTree> CreateAssistantTree(const AXTreeUpdate& update) {
   auto tree = std::make_unique<AXSerializableTree>();
   auto assistant_tree = std::make_unique<AssistantTree>();
   auto* root = AddChild(assistant_tree.get());
@@ -360,7 +355,6 @@ std::unique_ptr<AssistantTree> CreateAssistantTree(const AXTreeUpdate& update,
     LOG(FATAL) << tree->error();
   WalkAXTreeConfig config{
       false,         // should_select_leaf
-      show_password  // show_password
   };
   WalkAXTreeDepthFirst(tree->root(), gfx::Rect(), update, tree.get(), &config,
                        assistant_tree.get(), root);
