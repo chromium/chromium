@@ -423,3 +423,7 @@ external/wpt/css/css-page/page-size-012.xht [ Skip ]
 # crbug.com/1167318
 external/wpt/webdriver/tests/find_element_from_shadow_root/find.py [ Skip ]
 external/wpt/webdriver/tests/find_elements_from_shadow_root/find.py [ Skip ]
+
+# Temporarily skipped due to crbug.com/1181880; can be unskipped once we
+# resolve the underlying bug blocking tools rolling.
+external/wpt/service-workers/service-worker/no-dynamic-import-in-module.any.js [ Skip ]
