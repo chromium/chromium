@@ -809,7 +809,9 @@ bool LayoutFlexibleBox::UseChildAspectRatio(const LayoutBox& child) const {
 
 LayoutUnit LayoutFlexibleBox::ComputeMainSizeFromAspectRatioUsing(
     const LayoutBox& child,
-    const Length& cross_size_length) const {
+    const Length& cross_size_length,
+    LayoutUnit main_axis_border_and_padding,
+    LayoutUnit cross_axis_border_and_padding) const {
   NOT_DESTROYED();
   DCHECK(HasAspectRatio(child));
 
@@ -826,17 +828,22 @@ LayoutUnit LayoutFlexibleBox::ComputeMainSizeFromAspectRatioUsing(
 
   LayoutSize aspect_ratio = child.IntrinsicSize();
   EAspectRatioType ar_type = child.StyleRef().AspectRatio().GetType();
+  LayoutUnit border_and_padding;
   if (ar_type == EAspectRatioType::kRatio ||
       (ar_type == EAspectRatioType::kAutoAndRatio && aspect_ratio.IsEmpty())) {
     FloatSize int_ratio = child.StyleRef().AspectRatio().GetRatio();
     aspect_ratio = LayoutSize{int_ratio.Width(), int_ratio.Height()};
+    if (child.StyleRef().BoxSizingForAspectRatio() == EBoxSizing::kContentBox) {
+      cross_size -= cross_axis_border_and_padding;
+      border_and_padding = main_axis_border_and_padding;
+    }
   }
   double ratio =
       aspect_ratio.Width().ToFloat() / aspect_ratio.Height().ToFloat();
   // TODO(cbiesinger): box sizing?
   if (IsHorizontalFlow())
-    return LayoutUnit(cross_size * ratio);
-  return LayoutUnit(cross_size / ratio);
+    return LayoutUnit(cross_size * ratio) + border_and_padding;
+  return LayoutUnit(cross_size / ratio) + border_and_padding;
 }
 
 void LayoutFlexibleBox::SetFlowAwareLocationForChild(
@@ -970,6 +977,7 @@ DISABLE_CFI_PERF
 LayoutUnit LayoutFlexibleBox::ComputeInnerFlexBaseSizeForChild(
     LayoutBox& child,
     LayoutUnit main_axis_border_and_padding,
+    LayoutUnit cross_axis_border_and_padding,
     ChildLayoutType child_layout_type) {
   NOT_DESTROYED();
   if (child.IsImage() || IsA<LayoutVideo>(child) || child.IsCanvas())
@@ -993,9 +1001,12 @@ LayoutUnit LayoutFlexibleBox::ComputeInnerFlexBaseSizeForChild(
     const Length& cross_size_length = IsHorizontalFlow()
                                           ? child.StyleRef().Height()
                                           : child.StyleRef().Width();
-    LayoutUnit result =
-        ComputeMainSizeFromAspectRatioUsing(child, cross_size_length);
-    result = AdjustChildSizeForAspectRatioCrossAxisMinAndMax(child, result);
+    LayoutUnit result = ComputeMainSizeFromAspectRatioUsing(
+        child, cross_size_length, main_axis_border_and_padding,
+        cross_axis_border_and_padding);
+    result = AdjustChildSizeForAspectRatioCrossAxisMinAndMax(
+        child, result, main_axis_border_and_padding,
+        cross_axis_border_and_padding);
     return result - main_axis_border_and_padding;
   }
 
@@ -1153,7 +1164,8 @@ DISABLE_CFI_PERF
 MinMaxSizes LayoutFlexibleBox::ComputeMinAndMaxSizesForChild(
     const FlexLayoutAlgorithm& algorithm,
     const LayoutBox& child,
-    LayoutUnit border_and_padding) const {
+    LayoutUnit border_and_padding,
+    LayoutUnit cross_axis_border_and_padding) const {
   NOT_DESTROYED();
   MinMaxSizes sizes{LayoutUnit(), LayoutUnit::Max()};
 
@@ -1179,9 +1191,11 @@ MinMaxSizes LayoutFlexibleBox::ComputeMinAndMaxSizesForChild(
     LayoutUnit content_size = ComputeMainAxisExtentForChild(
         child, kMinSize, Length::MinContent(), border_and_padding);
     DCHECK_GE(content_size, LayoutUnit());
-    if (HasAspectRatio(child) && child.IntrinsicSize().Height() > 0)
-      content_size =
-          AdjustChildSizeForAspectRatioCrossAxisMinAndMax(child, content_size);
+    if (HasAspectRatio(child) && child.IntrinsicSize().Height() > 0) {
+      content_size = AdjustChildSizeForAspectRatioCrossAxisMinAndMax(
+          child, content_size, border_and_padding,
+          cross_axis_border_and_padding);
+    }
     if (child.IsTable() && !IsColumnFlow()) {
       // Avoid resolving minimum size to something narrower than the minimum
       // preferred logical width of the table.
@@ -1205,10 +1219,12 @@ MinMaxSizes LayoutFlexibleBox::ComputeMinAndMaxSizesForChild(
         const Length& cross_size_length = IsHorizontalFlow()
                                               ? child.StyleRef().Height()
                                               : child.StyleRef().Width();
-        LayoutUnit transferred_size =
-            ComputeMainSizeFromAspectRatioUsing(child, cross_size_length);
+        LayoutUnit transferred_size = ComputeMainSizeFromAspectRatioUsing(
+            child, cross_size_length, border_and_padding,
+            cross_axis_border_and_padding);
         transferred_size = AdjustChildSizeForAspectRatioCrossAxisMinAndMax(
-            child, transferred_size);
+            child, transferred_size, border_and_padding,
+            cross_axis_border_and_padding);
         sizes.min_size = std::min(transferred_size, content_size);
       } else {
         sizes.min_size = content_size;
@@ -1264,7 +1280,9 @@ bool LayoutFlexibleBox::UseOverrideLogicalHeightForPerentageResolution(
 
 LayoutUnit LayoutFlexibleBox::AdjustChildSizeForAspectRatioCrossAxisMinAndMax(
     const LayoutBox& child,
-    LayoutUnit child_size) const {
+    LayoutUnit child_size,
+    LayoutUnit main_axis_border_and_padding,
+    LayoutUnit cross_axis_border_and_padding) const {
   NOT_DESTROYED();
   const Length& cross_min = IsHorizontalFlow() ? child.StyleRef().MinHeight()
                                                : child.StyleRef().MinWidth();
@@ -1272,14 +1290,16 @@ LayoutUnit LayoutFlexibleBox::AdjustChildSizeForAspectRatioCrossAxisMinAndMax(
                                                : child.StyleRef().MaxWidth();
 
   if (CrossAxisLengthIsDefinite(child, cross_max)) {
-    LayoutUnit max_value =
-        ComputeMainSizeFromAspectRatioUsing(child, cross_max);
+    LayoutUnit max_value = ComputeMainSizeFromAspectRatioUsing(
+        child, cross_max, main_axis_border_and_padding,
+        cross_axis_border_and_padding);
     child_size = std::min(max_value, child_size);
   }
 
   if (CrossAxisLengthIsDefinite(child, cross_min)) {
-    LayoutUnit min_value =
-        ComputeMainSizeFromAspectRatioUsing(child, cross_min);
+    LayoutUnit min_value = ComputeMainSizeFromAspectRatioUsing(
+        child, cross_min, main_axis_border_and_padding,
+        cross_axis_border_and_padding);
     child_size = std::max(min_value, child_size);
   }
 
@@ -1330,10 +1350,10 @@ void LayoutFlexibleBox::ConstructAndAppendFlexItem(
                                              : child.BorderAndPaddingWidth();
 
   LayoutUnit child_inner_flex_base_size = ComputeInnerFlexBaseSizeForChild(
-      child, main_axis_border_padding, layout_type);
+      child, main_axis_border_padding, cross_axis_border_padding, layout_type);
 
-  MinMaxSizes sizes = ComputeMinAndMaxSizesForChild(*algorithm, child,
-                                                    main_axis_border_padding);
+  MinMaxSizes sizes = ComputeMinAndMaxSizesForChild(
+      *algorithm, child, main_axis_border_padding, cross_axis_border_padding);
 
   NGPhysicalBoxStrut physical_margins(child.MarginTop(), child.MarginRight(),
                                       child.MarginBottom(), child.MarginLeft());
