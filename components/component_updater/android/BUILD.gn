@@ -47,3 +47,27 @@ android_aidl("component_provider_service_aidl") {
 android_library("component_provider_service_aidl_java") {
   srcjar_deps = [ ":component_provider_service_aidl" ]
 }
+
+static_library("embedded_component_loader") {
+  sources = [
+    "embedded_component_loader.cc",
+    "embedded_component_loader.h",
+  ]
+  deps = [
+    "//base",
+    "//components/component_updater",
+    "//components/update_client",
+  ]
+}
+
+source_set("embedded_component_loader_unittests") {
+  testonly = true
+  sources = [ "embedded_component_loader_unittests.cc" ]
+  deps = [
+    ":embedded_component_loader",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
