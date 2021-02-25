@@ -148,6 +148,10 @@ void LowerWindow(x11::Window window);
 COMPONENT_EXPORT(UI_BASE_X)
 void DefineCursor(x11::Window window, x11::Cursor cursor);
 
+COMPONENT_EXPORT(UI_BASE_X)
+size_t RowBytesForVisualWidth(const x11::Connection::VisualInfo& visual_info,
+                              int width);
+
 // Draws an SkPixmap on |drawable| using the given |gc|, converting to the
 // server side visual as needed.
 COMPONENT_EXPORT(UI_BASE_X)
