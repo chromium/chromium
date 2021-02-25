@@ -2238,7 +2238,6 @@ crbug.com/626703 external/wpt/fullscreen/api/element-request-fullscreen-cross-or
 crbug.com/626703 external/wpt/pointerevents/html/pointerevent_drag_interaction-manual.html [ Skip ]
 crbug.com/626703 external/wpt/uievents/order-of-events/focus-events/focus-contained-manual.html [ Skip ]
 crbug.com/626703 external/wpt/pointerevents/pointerevent_multiple_primary_pointers_boundary_events-manual.html [ Skip ]
-crbug.com/626703 external/wpt/touch-events/multi-touch-interactions-manual.html [ Skip ]
 crbug.com/626703 external/wpt/uievents/order-of-events/focus-events/legacy-manual.html [ Skip ]
 crbug.com/626703 external/wpt/pointerevents/pointerevent_pointerId_scope-manual.html [ Skip ]
 
