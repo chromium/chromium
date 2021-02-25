@@ -37,6 +37,7 @@ android_library("java") {
     "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_java",
   ]
+
   srcjar_deps = [ ":message_enums_java" ]
 }
 

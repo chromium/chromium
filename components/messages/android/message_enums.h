@@ -33,6 +33,16 @@ enum class DismissReason {
   // Controlled by client: A message is dismissed because the activity is
   // destroyed.
   ACTIVITY_DESTROYED = 7,
+  // A message was dismissed due to the destruction of the corresponding scopes.
+  SCOPE_DESTROYED = 8
+};
+
+// The constants of message scope type.
+//
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.messages
+enum class MessageScopeType {
+  WINDOW = 0,
+  WEB_CONTENTS = 1,
 };
 
 }  // namespace messages

@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
@@ -20,9 +21,6 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserv
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
-import org.chromium.chrome.browser.tabmodel.TabModelObserver;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageQueueDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -45,7 +43,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
     @Nullable
     private LayoutStateProvider mLayoutStateProvider;
     @Nullable
-    private TabModelSelector mTabModelSelector;
+    private ActivityTabProvider mActivityTabProvider;
     @Nullable
     private ModalDialogManager mModalDialogManager;
 
@@ -104,49 +102,31 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
                 }
             };
 
-    private TabModelObserver mTabModelObserver = new TabModelObserver() {
-        @Override
-        public void didSelectTab(Tab tab, int type, int lastId) {
-            if (mQueueController != null) {
-                mQueueController.dismissAllMessages(DismissReason.TAB_SWITCHED);
-            }
-        }
-        @Override
-        public void willCloseTab(Tab tab, boolean animate) {
-            assert mTabModelSelector != null;
-            if (tab != mTabModelSelector.getCurrentTab()) return;
-            if (mQueueController != null) {
-                mQueueController.dismissAllMessages(DismissReason.TAB_DESTROYED);
-            }
-        }
-    };
-
     /**
      * @param browserControlsManager The browser controls manager able to toggle the visibility of
      *                               browser controls.
      * @param messageContainerCoordinator The coordinator able to show and hide message container.
      * @param fullscreenManager The full screen manager able to notify the fullscreen mode change.
+     * @param activityTabProvider The {@link ActivityTabProvider} to get current tab of activity.
      * @param layoutStateProviderOneShotSupplier Supplier of the {@link LayoutStateProvider}.
-     * @param tabModelSelectorSupplier Supplier of the {@link TabModelSelector}.
      * @param modalDialogManagerSupplier Supplier of the {@link ModalDialogManager}.
      * @param messageDispatcher The {@link ManagedMessageDispatcher} able to suspend/resume queue.
      */
     public ChromeMessageQueueMediator(BrowserControlsManager browserControlsManager,
             MessageContainerCoordinator messageContainerCoordinator,
-            FullscreenManager fullscreenManager,
+            FullscreenManager fullscreenManager, ActivityTabProvider activityTabProvider,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderOneShotSupplier,
-            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             ManagedMessageDispatcher messageDispatcher) {
         mBrowserControlsManager = browserControlsManager;
         mContainerCoordinator = messageContainerCoordinator;
         mFullscreenManager = fullscreenManager;
         mQueueController = messageDispatcher;
+        mActivityTabProvider = activityTabProvider;
         mFullscreenManager.addObserver(mFullScreenObserver);
         mBrowserControlsObserver = new BrowserControlsObserver();
         mBrowserControlsManager.addObserver(mBrowserControlsObserver);
         layoutStateProviderOneShotSupplier.onAvailable(this::setLayoutStateProvider);
-        tabModelSelectorSupplier.addObserver(this::setTabModelSelector);
         modalDialogManagerSupplier.addObserver(this::setModalDialogManager);
     }
 
@@ -156,17 +136,17 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
         if (mLayoutStateProvider != null) {
             mLayoutStateProvider.removeObserver(mLayoutStateObserver);
         }
-        if (mTabModelSelector != null) {
-            mTabModelSelector.getTabModelFilterProvider().removeTabModelFilterObserver(
-                    mTabModelObserver);
-        }
         if (mModalDialogManager != null) {
             mModalDialogManager.removeObserver(mModalDialogManagerObserver);
         }
-        mTabModelSelector = null;
+        mActivityTabProvider = null;
         mLayoutStateProvider = null;
         mQueueController = null;
         mContainerCoordinator = null;
+        if (mBrowserControlsToken != TokenHolder.INVALID_TOKEN) {
+            mBrowserControlsManager.getBrowserVisibilityDelegate().releasePersistentShowingToken(
+                    mBrowserControlsToken);
+        }
         mBrowserControlsManager = null;
         mFullscreenManager = null;
         mModalDialogManager = null;
@@ -177,7 +157,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
         mBrowserControlsToken =
                 mBrowserControlsManager.getBrowserVisibilityDelegate().showControlsPersistent();
         mContainerCoordinator.showMessageContainer();
-        final Tab tab = mTabModelSelector != null ? mTabModelSelector.getCurrentTab() : null;
+        final Tab tab = mActivityTabProvider.get();
         if (TabBrowserControlsConstraintsHelper.getConstraints(tab) == BrowserControlsState.HIDDEN
                 || BrowserControlsUtils.areBrowserControlsFullyVisible(mBrowserControlsManager)) {
             runnable.run();
@@ -188,6 +168,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
 
     @Override
     public void onFinishHiding() {
+        if (mBrowserControlsManager == null) return;
         mBrowserControlsManager.getBrowserVisibilityDelegate().releasePersistentShowingToken(
                 mBrowserControlsToken);
         mContainerCoordinator.hideMessageContainer();
@@ -218,16 +199,6 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
         mLayoutStateProvider = layoutStateProvider;
         if (layoutStateProvider == null) return;
         mLayoutStateProvider.addObserver(mLayoutStateObserver);
-    }
-
-    private void setTabModelSelector(TabModelSelector tabModelSelector) {
-        if (mTabModelSelector != null) {
-            mTabModelSelector.getTabModelFilterProvider().removeTabModelFilterObserver(
-                    mTabModelObserver);
-        }
-        mTabModelSelector = tabModelSelector;
-        if (tabModelSelector == null) return;
-        mTabModelSelector.getTabModelFilterProvider().addTabModelFilterObserver(mTabModelObserver);
     }
 
     private void setModalDialogManager(ModalDialogManager modalDialogManager) {

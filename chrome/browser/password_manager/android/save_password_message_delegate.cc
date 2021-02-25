@@ -116,8 +116,8 @@ void SavePasswordMessageDelegate::DisplaySavePasswordPromptInternal(
       &SavePasswordMessageDelegate::HandleNeverClick, base::Unretained(this)));
 
   RecordMessageShownMetrics();
-  messages::MessageDispatcherBridge::Get()->EnqueueMessage(message_.get(),
-                                                           web_contents_);
+  messages::MessageDispatcherBridge::Get()->EnqueueMessage(
+      message_.get(), web_contents_, messages::MessageScopeType::WEB_CONTENTS);
 }
 
 void SavePasswordMessageDelegate::HandleSaveClick() {

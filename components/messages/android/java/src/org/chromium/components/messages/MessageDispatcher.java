@@ -4,6 +4,7 @@
 
 package org.chromium.components.messages;
 
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -14,8 +15,11 @@ public interface MessageDispatcher {
     /**
      * Enqueues a message defined by its properties.
      * @param messageProperties The PropertyModel with message's visual properties.
+     * @param webContents The webContents the message is associated with.
+     * @param scopeType The {@link MessageScopeType} of the message.
      */
-    void enqueueMessage(PropertyModel messageProperties);
+    void enqueueMessage(PropertyModel messageProperties, WebContents webContents,
+            @MessageScopeType int scopeType);
 
     /**
      * Dismisses a message referenced by its PropertyModel. Hides the message if it is currently

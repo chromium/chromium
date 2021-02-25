@@ -15,10 +15,11 @@ import org.chromium.content_public.browser.WebContents;
 @JNINamespace("messages")
 public class MessageDispatcherBridge {
     @CalledByNative
-    private static void enqueueMessage(MessageWrapper message, WebContents webContents) {
+    private static void enqueueMessage(
+            MessageWrapper message, WebContents webContents, @MessageScopeType int scopeType) {
         MessageDispatcher messageDispatcher =
                 MessageDispatcherProvider.from(webContents.getTopLevelNativeWindow());
-        messageDispatcher.enqueueMessage(message.getMessageProperties());
+        messageDispatcher.enqueueMessage(message.getMessageProperties(), webContents, scopeType);
     }
 
     @CalledByNative

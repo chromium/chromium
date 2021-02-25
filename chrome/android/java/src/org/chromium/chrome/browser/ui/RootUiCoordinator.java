@@ -448,7 +448,7 @@ public class RootUiCoordinator
             mMessageQueueMediator =
                     new ChromeMessageQueueMediator(mActivity.getBrowserControlsManager(),
                             mMessageContainerCoordinator, mActivity.getFullscreenManager(),
-                            mLayoutStateProviderOneShotSupplier, mTabModelSelectorSupplier,
+                            mActivityTabProvider, mLayoutStateProviderOneShotSupplier,
                             mActivity.getModalDialogManagerSupplier(), mMessageDispatcher);
             mMessageDispatcher.setDelegate(mMessageQueueMediator);
             MessagesFactory.attachMessageDispatcher(

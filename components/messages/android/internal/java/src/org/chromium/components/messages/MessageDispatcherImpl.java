@@ -8,6 +8,7 @@ import android.animation.Animator;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.AccessibilityUtil;
 
@@ -21,6 +22,7 @@ public class MessageDispatcherImpl implements ManagedMessageDispatcher {
     private final Supplier<Integer> mMessageMaxTranslationSupplier;
     private final AccessibilityUtil mAccessibilityUtil;
     private final Callback<Animator> mAnimatorStartCallback;
+    private final ScopeChangeController mScopeChangeController;
 
     /**
      * Build a new message dispatcher
@@ -38,24 +40,30 @@ public class MessageDispatcherImpl implements ManagedMessageDispatcher {
         mMessageMaxTranslationSupplier = messageMaxTranslation;
         mAccessibilityUtil = accessibilityUtil;
         mAnimatorStartCallback = animatorStartCallback;
+        mScopeChangeController = new ScopeChangeController(mMessageQueueManager);
     }
 
     @Override
-    public void enqueueMessage(PropertyModel messageProperties) {
+    public void enqueueMessage(PropertyModel messageProperties, WebContents webContents,
+            @MessageScopeType int scopeType) {
         MessageStateHandler messageStateHandler =
                 new SingleActionMessage(mMessageContainer, messageProperties, this::dismissMessage,
                         mMessageMaxTranslationSupplier, mAccessibilityUtil, mAnimatorStartCallback);
-        mMessageQueueManager.enqueueMessage(messageStateHandler, messageProperties);
+        mMessageQueueManager.enqueueMessage(
+                messageStateHandler, messageProperties, scopeType, webContents);
+        mScopeChangeController.observe(messageProperties, webContents);
     }
 
     @Override
     public void dismissMessage(PropertyModel messageProperties, @DismissReason int dismissReason) {
         mMessageQueueManager.dismissMessage(messageProperties, dismissReason);
+        mScopeChangeController.stopObservation(messageProperties);
     }
 
     @Override
     public void dismissAllMessages(@DismissReason int dismissReason) {
         mMessageQueueManager.dismissAllMessages(dismissReason);
+        mScopeChangeController.stopAllObservation();
     }
 
     @Override

@@ -34,13 +34,13 @@ void MessageDispatcherBridge::SetInstanceForTesting(
   g_message_dospatcher_bridge_for_testing = instance;
 }
 
-void MessageDispatcherBridge::EnqueueMessage(
-    MessageWrapper* message,
-    content::WebContents* web_contents) {
+void MessageDispatcherBridge::EnqueueMessage(MessageWrapper* message,
+                                             content::WebContents* web_contents,
+                                             MessageScopeType scopeType) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_MessageDispatcherBridge_enqueueMessage(
-      env, message->GetJavaMessageWrapper(),
-      web_contents->GetJavaWebContents());
+      env, message->GetJavaMessageWrapper(), web_contents->GetJavaWebContents(),
+      static_cast<int>(scopeType));
 }
 
 void MessageDispatcherBridge::DismissMessage(MessageWrapper* message,
