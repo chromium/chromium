@@ -13,8 +13,18 @@
  * tab-traversal.
  */
 
+import {Polymer, html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {IronA11yAnnouncer} from '//resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
+import '../cr_button/cr_button.m.js';
+import '../cr_icon_button/cr_icon_button.m.js';
+import '../icons.m.js';
+import '../shared_vars_css.m.js';
+
 Polymer({
   is: 'cr-toolbar-selection-overlay',
+
+  _template: html`{__html_template__}`,
 
   properties: {
     show: {
@@ -70,7 +80,7 @@ Polymer({
           this.show ? this.selectionLabel : this.selectionLabel_;
       this.setAttribute('aria-label', this.selectionLabel_);
 
-      Polymer.IronA11yAnnouncer.requestAvailability();
+      IronA11yAnnouncer.requestAvailability();
       this.fire('iron-announce', {text: this.selectionLabel});
     });
   },

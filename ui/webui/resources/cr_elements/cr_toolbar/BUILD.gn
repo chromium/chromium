@@ -7,20 +7,13 @@ import("//tools/polymer/polymer.gni")
 
 js_type_check("closure_compile") {
   uses_legacy_modules = true
-  deps = [
-    ":cr_toolbar_search_field",
-    ":cr_toolbar_selection_overlay",
-  ]
+  deps = [ ":cr_toolbar_search_field" ]
 }
 
 js_library("cr_toolbar_search_field") {
   deps = [
     "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field_behavior",
   ]
-}
-
-js_library("cr_toolbar_selection_overlay") {
-  deps = [ "//third_party/polymer/v1_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer-extracted" ]
 }
 
 group("polymer3_elements") {
@@ -47,7 +40,7 @@ polymer_modulizer("cr_toolbar_search_field") {
 polymer_modulizer("cr_toolbar_selection_overlay") {
   js_file = "cr_toolbar_selection_overlay.js"
   html_file = "cr_toolbar_selection_overlay.html"
-  html_type = "dom-module"
+  html_type = "v3-ready"
 }
 
 js_type_check("closure_compile_module") {
@@ -55,7 +48,7 @@ js_type_check("closure_compile_module") {
   deps = [
     ":cr_toolbar",
     ":cr_toolbar_search_field.m",
-    ":cr_toolbar_selection_overlay.m",
+    ":cr_toolbar_selection_overlay",
   ]
 }
 
@@ -75,11 +68,9 @@ js_library("cr_toolbar_search_field.m") {
   extra_deps = [ ":cr_toolbar_search_field_module" ]
 }
 
-js_library("cr_toolbar_selection_overlay.m") {
-  sources = [ "$root_gen_dir/ui/webui/resources/cr_elements/cr_toolbar/cr_toolbar_selection_overlay.m.js" ]
+js_library("cr_toolbar_selection_overlay") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":cr_toolbar_selection_overlay_module" ]
 }
