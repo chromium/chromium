@@ -32,6 +32,8 @@ const int kMaxIOLoop = 5;
 
 const int kDefaultBufferSize = 2048;
 
+constexpr size_t kMax2ByteSize = std::numeric_limits<uint16_t>::max();
+
 }  // namespace
 
 class SmallMessageSocket::BufferWrapper : public ::net::IOBuffer {
@@ -146,14 +148,14 @@ void SmallMessageSocket::RemoveBufferPool() {
 }
 
 void* SmallMessageSocket::PrepareSend(size_t message_size) {
-  DCHECK_LE(message_size, std::numeric_limits<uint16_t>::max());
   if (write_buffer_->remaining()) {
     send_blocked_ = true;
     return nullptr;
   }
+  size_t bytes_for_size = SizeDataBytes(message_size);
 
   write_storage_->set_offset(0);
-  const size_t total_size = sizeof(uint16_t) + message_size;
+  const size_t total_size = bytes_for_size + message_size;
   // TODO(lethalantidote): Remove cast once capacity converted to size_t.
   if (static_cast<size_t>(write_storage_->capacity()) < total_size) {
     write_storage_->SetCapacity(total_size);
@@ -161,8 +163,8 @@ void* SmallMessageSocket::PrepareSend(size_t message_size) {
 
   write_buffer_->SetUnderlyingBuffer(write_storage_, total_size);
   char* data = write_buffer_->data();
-  base::WriteBigEndian(data, static_cast<uint16_t>(message_size));
-  return data + sizeof(uint16_t);
+  WriteSizeData(data, message_size);
+  return data + bytes_for_size;
 }
 
 bool SmallMessageSocket::SendBuffer(scoped_refptr<net::IOBuffer> data,
@@ -175,6 +177,24 @@ bool SmallMessageSocket::SendBuffer(scoped_refptr<net::IOBuffer> data,
   write_buffer_->SetUnderlyingBuffer(std::move(data), size);
   Send();
   return true;
+}
+
+// static
+size_t SmallMessageSocket::SizeDataBytes(size_t message_size) {
+  return (message_size < kMax2ByteSize ? 2 : 6);
+}
+
+// static
+size_t SmallMessageSocket::WriteSizeData(char* ptr, size_t message_size) {
+  if (message_size < kMax2ByteSize) {
+    base::WriteBigEndian(ptr, static_cast<uint16_t>(message_size));
+    return 2;
+  }
+
+  base::WriteBigEndian(ptr, static_cast<uint16_t>(kMax2ByteSize));
+  base::WriteBigEndian(ptr + sizeof(uint16_t),
+                       static_cast<uint32_t>(message_size));
+  return 6;
 }
 
 void SmallMessageSocket::Send() {
@@ -305,41 +325,70 @@ bool SmallMessageSocket::HandleReadResult(int result) {
   }
 }
 
+// static
+bool SmallMessageSocket::ReadSize(char* ptr,
+                                  size_t bytes_read,
+                                  size_t& data_offset,
+                                  size_t& message_size) {
+  if (bytes_read < sizeof(uint16_t)) {
+    return false;
+  }
+
+  uint16_t first_size;
+  base::ReadBigEndian(ptr, &first_size);
+
+  if (first_size < kMax2ByteSize) {
+    data_offset = sizeof(uint16_t);
+    message_size = first_size;
+  } else {
+    if (bytes_read < sizeof(uint16_t) + sizeof(uint32_t)) {
+      return false;
+    }
+    uint32_t real_size;
+    base::ReadBigEndian(ptr + sizeof(uint16_t), &real_size);
+    data_offset = sizeof(uint16_t) + sizeof(uint32_t);
+    message_size = real_size;
+  }
+  return true;
+}
+
 bool SmallMessageSocket::HandleCompletedMessages() {
   DCHECK(!buffer_pool_);
   bool keep_reading = true;
   size_t bytes_read = read_storage_->offset();
   char* start_ptr = read_storage_->StartOfBuffer();
-  while (bytes_read >= sizeof(uint16_t) && keep_reading) {
-    uint16_t message_size;
-    base::ReadBigEndian(start_ptr, &message_size);
+  while (keep_reading) {
+    size_t data_offset;
+    size_t message_size;
+    if (!ReadSize(start_ptr, bytes_read, data_offset, message_size)) {
+      break;
+    }
+    size_t total_size = data_offset + message_size;
 
-    size_t required_size = sizeof(uint16_t) + message_size;
-    if (static_cast<size_t>(read_storage_->capacity()) < required_size) {
+    if (static_cast<size_t>(read_storage_->capacity()) < total_size) {
       if (start_ptr != read_storage_->StartOfBuffer()) {
         memmove(read_storage_->StartOfBuffer(), start_ptr, bytes_read);
         read_storage_->set_offset(bytes_read);
       }
-      read_storage_->SetCapacity(required_size);
+      read_storage_->SetCapacity(total_size);
       return true;
     }
 
-    if (bytes_read < required_size) {
+    if (bytes_read < total_size) {
       break;  // Haven't received the full message yet.
     }
 
     // Take a weak pointer in case OnMessage() causes this to be deleted.
     auto self = weak_factory_.GetWeakPtr();
     in_message_ = true;
-    keep_reading =
-        delegate_->OnMessage(start_ptr + sizeof(uint16_t), message_size);
+    keep_reading = delegate_->OnMessage(start_ptr + data_offset, message_size);
     if (!self) {
       return false;
     }
     in_message_ = false;
 
-    start_ptr += required_size;
-    bytes_read -= required_size;
+    start_ptr += total_size;
+    bytes_read -= total_size;
 
     if (buffer_pool_) {
       // A buffer pool was added within OnMessage().
@@ -359,21 +408,25 @@ bool SmallMessageSocket::HandleCompletedMessages() {
 bool SmallMessageSocket::HandleCompletedMessageBuffers() {
   DCHECK(buffer_pool_);
   size_t bytes_read;
-  while ((bytes_read = read_buffer_->used()) >= sizeof(uint16_t)) {
-    uint16_t message_size;
-    base::ReadBigEndian(read_buffer_->StartOfBuffer(), &message_size);
+  while ((bytes_read = read_buffer_->used())) {
+    size_t data_offset;
+    size_t message_size;
+    if (!ReadSize(read_buffer_->StartOfBuffer(), bytes_read, data_offset,
+                  message_size)) {
+      break;
+    }
+    size_t total_size = data_offset + message_size;
 
-    size_t required_size = sizeof(uint16_t) + message_size;
-    if (read_buffer_->size() < required_size) {
+    if (read_buffer_->size() < total_size) {
       // Current buffer is not big enough.
-      auto new_buffer = base::MakeRefCounted<::net::IOBuffer>(required_size);
+      auto new_buffer = base::MakeRefCounted<::net::IOBuffer>(total_size);
       memcpy(new_buffer->data(), read_buffer_->StartOfBuffer(), bytes_read);
-      read_buffer_->SetUnderlyingBuffer(std::move(new_buffer), required_size);
+      read_buffer_->SetUnderlyingBuffer(std::move(new_buffer), total_size);
       read_buffer_->DidConsume(bytes_read);
       return true;
     }
 
-    if (bytes_read < required_size) {
+    if (bytes_read < total_size) {
       break;  // Haven't received the full message yet.
     }
 
@@ -381,15 +434,14 @@ bool SmallMessageSocket::HandleCompletedMessageBuffers() {
     auto new_buffer = buffer_pool_->GetBuffer();
     CHECK(new_buffer);
     size_t new_buffer_size = buffer_pool_->buffer_size();
-    size_t extra_size = bytes_read - required_size;
+    size_t extra_size = bytes_read - total_size;
     if (extra_size > 0) {
       // Copy extra data to new buffer.
       if (extra_size > buffer_pool_->buffer_size()) {
         new_buffer = base::MakeRefCounted<::net::IOBuffer>(extra_size);
         new_buffer_size = extra_size;
       }
-      memcpy(new_buffer->data(), old_buffer->data() + required_size,
-             extra_size);
+      memcpy(new_buffer->data(), old_buffer->data() + total_size, extra_size);
     }
     read_buffer_->SetUnderlyingBuffer(std::move(new_buffer), new_buffer_size);
     read_buffer_->DidConsume(extra_size);
@@ -397,7 +449,7 @@ bool SmallMessageSocket::HandleCompletedMessageBuffers() {
     // Take a weak pointer in case OnMessageBuffer() causes this to be deleted.
     auto self = weak_factory_.GetWeakPtr();
     bool keep_reading =
-        delegate_->OnMessageBuffer(std::move(old_buffer), required_size);
+        delegate_->OnMessageBuffer(std::move(old_buffer), total_size);
     if (!self || !keep_reading) {
       return false;
     }
@@ -413,7 +465,8 @@ bool SmallMessageSocket::HandleCompletedMessageBuffers() {
 bool SmallMessageSocket::Delegate::OnMessageBuffer(
     scoped_refptr<net::IOBuffer> buffer,
     size_t size) {
-  return OnMessage(buffer->data() + sizeof(uint16_t), size - sizeof(uint16_t));
+  size_t offset = SizeDataBytes(size);
+  return OnMessage(buffer->data() + offset, size - offset);
 }
 
 }  // namespace chromecast
