@@ -475,14 +475,18 @@ public class InstantStartTest {
 
         StartSurfaceToolbarCoordinator startSurfaceToolbarCoordinator =
                 topToolbarCoordinator.getStartSurfaceToolbarForTesting();
-        // Verifies that the IncognitoSwitchCoordinator hasn't been created when the
-        // {@link StartSurfaceToolbarCoordinator#inflate()} is called.
-        Assert.assertNull(startSurfaceToolbarCoordinator.getIncognitoSwitchCoordinatorForTesting());
+        // Verifies that the TabCountProvider for incognito toggle tab layout hasn't been set when
+        // the {@link StartSurfaceToolbarCoordinator#inflate()} is called.
+        Assert.assertNull(
+                startSurfaceToolbarCoordinator.getIncognitoToggleTabCountProviderForTesting());
 
         // Initializes native.
         startAndWaitNativeInitialization();
-        Assert.assertNotNull(
-                startSurfaceToolbarCoordinator.getIncognitoSwitchCoordinatorForTesting());
+        CriteriaHelper.pollInstrumentationThread(
+                ()
+                        -> startSurfaceToolbarCoordinator
+                                   .getIncognitoToggleTabCountProviderForTesting()
+                        != null);
     }
 
     /**

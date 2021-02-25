@@ -12,6 +12,7 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewPropertyAnimator;
+import android.view.ViewStub;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
@@ -23,8 +24,11 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.HomeButton;
+import org.chromium.chrome.browser.toolbar.IncognitoToggleTabLayout;
 import org.chromium.chrome.browser.toolbar.NewTabButton;
+import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
@@ -33,9 +37,10 @@ import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 class StartSurfaceToolbarView extends RelativeLayout {
     private NewTabButton mNewTabButton;
     private HomeButton mHomeButton;
-    private View mIncognitoSwitch;
     private View mLogo;
     private View mTabSwitcherButtonView;
+    @Nullable
+    private IncognitoToggleTabLayout mIncognitoToggleTabLayout;
     @Nullable
     private ImageButton mIdentityDiscButton;
     private int mPrimaryColor;
@@ -63,7 +68,8 @@ class StartSurfaceToolbarView extends RelativeLayout {
         super.onFinishInflate();
         mNewTabButton = findViewById(R.id.new_tab_button);
         mHomeButton = findViewById(R.id.home_button_on_tab_switcher);
-        mIncognitoSwitch = findViewById(R.id.incognito_switch);
+        ViewStub incognitoToggleTabsStub = findViewById(R.id.incognito_tabs_stub);
+        mIncognitoToggleTabLayout = (IncognitoToggleTabLayout) incognitoToggleTabsStub.inflate();
         mLogo = findViewById(R.id.logo);
         mIdentityDiscButton = findViewById(R.id.identity_disc_button);
         mTabSwitcherButtonView = findViewById(R.id.start_tab_switcher_button);
@@ -193,28 +199,14 @@ class StartSurfaceToolbarView extends RelativeLayout {
      */
     void setButtonClickableState(boolean isClickable) {
         mNewTabButton.setClickable(isClickable);
-        mIncognitoSwitch.setClickable(isClickable);
+        mIncognitoToggleTabLayout.setClickable(isClickable);
     }
 
     /**
-     * @param isVisible Whether the Incognito switcher is visible.
+     * @param isVisible Whether the Incognito toggle tab layout is visible.
      */
-    void setIncognitoSwitcherVisibility(boolean isVisible) {
-        mIncognitoSwitch.setVisibility(isVisible ? VISIBLE : GONE);
-    }
-
-    /**
-     * @param isAtStart Whether the new tab button is at start.
-     */
-    void setNewTabButtonAtStart(boolean isAtStart) {
-        assert isAtStart;
-        if (isAtStart) {
-            ((LayoutParams) mNewTabButton.getLayoutParams()).removeRule(RelativeLayout.START_OF);
-
-            LayoutParams params = (LayoutParams) mIncognitoSwitch.getLayoutParams();
-            params.removeRule(RelativeLayout.ALIGN_PARENT_START);
-            params.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        }
+    void setIncognitoToggleTabVisibility(boolean isVisible) {
+        mIncognitoToggleTabLayout.setVisibility(isVisible ? VISIBLE : GONE);
     }
 
     /**
@@ -318,6 +310,26 @@ class StartSurfaceToolbarView extends RelativeLayout {
      */
     void setTabSwitcherButtonVisibility(boolean isVisible) {
         mTabSwitcherButtonView.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+    }
+
+    /**
+     * Set TabCountProvider for incognito toggle view.
+     * @param tabCountProvider The {@link TabCountProvider} to update the incognito toggle view.
+     */
+    void setTabCountProvider(TabCountProvider tabCountProvider) {
+        if (mIncognitoToggleTabLayout != null) {
+            mIncognitoToggleTabLayout.setTabCountProvider(tabCountProvider);
+        }
+    }
+
+    /**
+     * Set TabModelSelector for incognito toggle view.
+     * @param selector  A {@link TabModelSelector} to provide information about open tabs.
+     */
+    void setTabModelSelector(TabModelSelector selector) {
+        if (mIncognitoToggleTabLayout != null) {
+            mIncognitoToggleTabLayout.setTabModelSelector(selector);
+        }
     }
 
     /**

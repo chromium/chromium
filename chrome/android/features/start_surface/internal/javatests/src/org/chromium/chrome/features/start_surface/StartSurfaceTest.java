@@ -280,7 +280,7 @@ public class StartSurfaceTest {
 
         if (!isInstantReturn()) {
             // TODO(crbug.com/1076274): fix toolbar to make incognito switch part of the view.
-            onView(withId(org.chromium.chrome.tab_ui.R.id.incognito_switch))
+            onView(withId(org.chromium.chrome.tab_ui.R.id.incognito_toggle_tabs))
                     .check(matches(withEffectiveVisibility(GONE)));
         }
         mActivityTestRule.waitForActivityNativeInitializationComplete();
@@ -295,7 +295,7 @@ public class StartSurfaceTest {
         TabUiTestHelper.enterTabSwitcher(cta);
         if (!isInstantReturn()) {
             // TODO(crbug.com/1076274): fix toolbar to make incognito switch part of the view.
-            onView(withId(org.chromium.chrome.tab_ui.R.id.incognito_switch))
+            onView(withId(org.chromium.chrome.tab_ui.R.id.incognito_toggle_tabs))
                     .check(matches(isDisplayed()));
         }
         TestThreadUtils.runOnUiThreadBlocking(
@@ -304,7 +304,7 @@ public class StartSurfaceTest {
         assertTrue(mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
         if (!isInstantReturn()) {
             // TODO(crbug.com/1076274): fix toolbar to make incognito switch part of the view.
-            onView(withId(org.chromium.chrome.tab_ui.R.id.incognito_switch))
+            onView(withId(org.chromium.chrome.tab_ui.R.id.incognito_toggle_tabs))
                     .check(matches(withEffectiveVisibility(GONE)));
         }
 
@@ -340,7 +340,7 @@ public class StartSurfaceTest {
 
         if (!isInstantReturn()) {
             // TODO(crbug.com/1076274): fix toolbar to make incognito switch part of the view.
-            onView(withId(org.chromium.chrome.tab_ui.R.id.incognito_switch))
+            onView(withId(org.chromium.chrome.tab_ui.R.id.incognito_toggle_tabs))
                     .check(matches(withEffectiveVisibility(GONE)));
         }
         mActivityTestRule.waitForActivityNativeInitializationComplete();
@@ -355,7 +355,7 @@ public class StartSurfaceTest {
         TabUiTestHelper.enterTabSwitcher(cta);
         if (!isInstantReturn()) {
             // TODO(crbug.com/1076274): fix toolbar to make incognito switch part of the view.
-            onView(withId(org.chromium.chrome.tab_ui.R.id.incognito_switch))
+            onView(withId(org.chromium.chrome.tab_ui.R.id.incognito_toggle_tabs))
                     .check(matches(isDisplayed()));
         }
         TestThreadUtils.runOnUiThreadBlocking(
@@ -364,7 +364,7 @@ public class StartSurfaceTest {
         assertTrue(mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
         if (!isInstantReturn()) {
             // TODO(crbug.com/1076274): fix toolbar to make incognito switch part of the view.
-            onView(withId(org.chromium.chrome.tab_ui.R.id.incognito_switch))
+            onView(withId(org.chromium.chrome.tab_ui.R.id.incognito_toggle_tabs))
                     .check(matches(withEffectiveVisibility(GONE)));
         }
 
@@ -473,12 +473,11 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.Add({BASE_PARAMS + "/single/hide_incognito_switch/true"})
+    @CommandLineFlags.Add({BASE_PARAMS + "/single"})
     public void testShow_SingleAsHomepage_NoIncognitoSwitch() {
         if (!mImmediateReturn) {
             onView(withId(org.chromium.chrome.tab_ui.R.id.home_button)).perform(click());
         }
-        Assert.assertTrue(StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH.getValue());
 
         CriteriaHelper.pollUiThread(
                 ()
@@ -499,7 +498,7 @@ public class StartSurfaceTest {
                 .check(matches(withEffectiveVisibility(GONE)));
 
         // TODO(crbug.com/1076274): fix toolbar to make incognito switch part of the view.
-        onView(withId(org.chromium.chrome.tab_ui.R.id.incognito_switch))
+        onView(withId(org.chromium.chrome.tab_ui.R.id.incognito_toggle_tabs))
                 .check(matches(withEffectiveVisibility(GONE)));
 
         // Note that onView(R.id.more_tabs).perform(click()) can not be used since it requires 90
@@ -516,7 +515,7 @@ public class StartSurfaceTest {
             fail("Failed to tap 'more tabs' " + e.toString());
         }
         onViewWaiting(withId(R.id.secondary_tasks_surface_view));
-        onView(withId(org.chromium.chrome.tab_ui.R.id.incognito_switch))
+        onView(withId(org.chromium.chrome.tab_ui.R.id.incognito_toggle_tabs))
                 .check(matches(withEffectiveVisibility(VISIBLE)));
 
         pressBack();
@@ -525,13 +524,14 @@ public class StartSurfaceTest {
         if (isInstantReturn()
                 && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
                         && Build.VERSION.SDK_INT < Build.VERSION_CODES.O)) {
-            // TODO(crbug.com/1139515): Fix incognito_switch visibility AssertionFailedError issue.
+            // TODO(crbug.com/1139515): Fix incognito_toggle_tabs visibility AssertionFailedError
+            // issue.
             // TODO(crbug.com/1092642): Fix androidx.test.espresso.PerformException issue when
             // performing a single click on position: 0. See code below.
             return;
         }
 
-        onView(withId(org.chromium.chrome.tab_ui.R.id.incognito_switch))
+        onView(withId(org.chromium.chrome.tab_ui.R.id.incognito_toggle_tabs))
                 .check(matches(withEffectiveVisibility(GONE)));
 
         OverviewModeBehaviorWatcher hideWatcher =
@@ -574,7 +574,7 @@ public class StartSurfaceTest {
 
         if (!isInstantReturn()) {
             // TODO(crbug.com/1076274): fix toolbar to make incognito switch part of the view.
-            onView(withId(org.chromium.chrome.tab_ui.R.id.incognito_switch))
+            onView(withId(org.chromium.chrome.tab_ui.R.id.incognito_toggle_tabs))
                     .check(matches(withEffectiveVisibility(GONE)));
         }
 
@@ -646,7 +646,7 @@ public class StartSurfaceTest {
 
         if (!isInstantReturn()) {
             // TODO(crbug.com/1076274): fix toolbar to make incognito switch part of the view.
-            onView(withId(org.chromium.chrome.tab_ui.R.id.incognito_switch))
+            onView(withId(org.chromium.chrome.tab_ui.R.id.incognito_toggle_tabs))
                     .check(matches(withEffectiveVisibility(GONE)));
         }
         onViewWaiting(allOf(
@@ -831,7 +831,7 @@ public class StartSurfaceTest {
             // relate to crbug.com/1076274 above since it doesn't exist for the other combinations.
             assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
         } else {
-            onView(withId(R.id.incognito_switch)).perform(click());
+            onView(withId(R.id.incognito_toggle_tabs)).perform(click());
         }
         assertTrue(mActivityTestRule.getActivity().getTabModelSelector().isIncognitoSelected());
 

@@ -16,11 +16,12 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.INCOGNITO_STATE_PROVIDER;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.INCOGNITO_SWITCHER_VISIBLE;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.INCOGNITO_TAB_COUNT_PROVIDER;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.INCOGNITO_TAB_MODEL_SELECTOR;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IN_START_SURFACE_MODE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.LOGO_IS_VISIBLE;
-import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_BUTTON_AT_START;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_BUTTON_HIGHLIGHT;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_BUTTON_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_CLICK_HANDLER;
@@ -35,6 +36,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -43,6 +45,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.toolbar.ButtonData;
+import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -55,11 +58,11 @@ class StartSurfaceToolbarMediator {
     private final PropertyModel mPropertyModel;
     private final Callback<IPHCommandBuilder> mShowIPHCallback;
     private final boolean mHideIncognitoSwitchWhenNoTabs;
-    private final boolean mHideIncognitoSwitchOnHomePage;
     private final boolean mShouldShowTabSwitcherButtonOnHomepage;
     private final Supplier<ButtonData> mIdentityDiscButtonSupplier;
 
     private TabModelSelector mTabModelSelector;
+    private TabCountProvider mTabCountProvider;
     private TemplateUrlServiceObserver mTemplateUrlObserver;
     private TabModelSelectorObserver mTabModelSelectorObserver;
     private LayoutStateProvider mLayoutStateProvider;
@@ -75,8 +78,8 @@ class StartSurfaceToolbarMediator {
     private boolean mShowHomeButtonOnTabSwitcher;
 
     StartSurfaceToolbarMediator(PropertyModel model, Callback<IPHCommandBuilder> showIPHCallback,
-            boolean hideIncognitoSwitchWhenNoTabs, boolean hideIncognitoSwitchOnHomePage,
-            boolean showHomeButtonOnTabSwitcher, MenuButtonCoordinator menuButtonCoordinator,
+            boolean hideIncognitoSwitchWhenNoTabs, boolean showHomeButtonOnTabSwitcher,
+            MenuButtonCoordinator menuButtonCoordinator,
             ObservableSupplier<Boolean> identityDiscStateSupplier,
             Supplier<ButtonData> identityDiscButtonSupplier,
             ObservableSupplier<Boolean> homepageEnabledSupplier,
@@ -87,7 +90,6 @@ class StartSurfaceToolbarMediator {
         mOverviewModeState = StartSurfaceState.NOT_SHOWN;
         mShowIPHCallback = showIPHCallback;
         mHideIncognitoSwitchWhenNoTabs = hideIncognitoSwitchWhenNoTabs;
-        mHideIncognitoSwitchOnHomePage = hideIncognitoSwitchOnHomePage;
         mMenuButtonCoordinator = menuButtonCoordinator;
         mIdentityDiscButtonSupplier = identityDiscButtonSupplier;
         identityDiscStateSupplier.addObserver((canShowHint) -> {
@@ -141,7 +143,7 @@ class StartSurfaceToolbarMediator {
             @StartSurfaceState int newState, boolean shouldShowStartSurfaceToolbar) {
         mOverviewModeState = newState;
         setStartSurfaceToolbarVisibility(shouldShowStartSurfaceToolbar);
-        updateIncognitoSwitchVisibility();
+        updateIncognitoToggleTabVisibility();
         updateNewTabButtonVisibility();
         updateHomeButtonVisibility();
         updateLogoVisibility(mIsGoogleSearchEngine);
@@ -170,6 +172,10 @@ class StartSurfaceToolbarMediator {
         mPropertyModel.set(NEW_TAB_CLICK_HANDLER, listener);
     }
 
+    void setTabCountProvider(TabCountProvider tabCountProvider) {
+        mTabCountProvider = tabCountProvider;
+    }
+
     void setTabModelSelector(TabModelSelector selector) {
         mTabModelSelector = selector;
 
@@ -179,18 +185,33 @@ class StartSurfaceToolbarMediator {
                 public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
                     mPropertyModel.set(IS_INCOGNITO, mTabModelSelector.isIncognitoSelected());
                     updateIdentityDisc(mIdentityDiscButtonSupplier.get());
-                    updateIncognitoSwitchVisibility();
+                    updateIncognitoToggleTabVisibility();
+                }
+
+                @Override
+                public void onTabStateInitialized() {
+                    maybeInitializeIncognitoToggle();
                 }
             };
+        }
+        if (mTabModelSelector.isTabStateInitialized()) {
+            maybeInitializeIncognitoToggle();
         }
         mPropertyModel.set(IS_INCOGNITO, mTabModelSelector.isIncognitoSelected());
         updateIdentityDisc(mIdentityDiscButtonSupplier.get());
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
     }
 
-    private void updateIncognitoSwitchVisibility() {
-        if (mOverviewModeState == StartSurfaceState.SHOWN_HOMEPAGE
-                && mHideIncognitoSwitchOnHomePage) {
+    private void maybeInitializeIncognitoToggle() {
+        if (IncognitoUtils.isIncognitoModeEnabled()) {
+            assert mTabCountProvider != null;
+            mPropertyModel.set(INCOGNITO_TAB_COUNT_PROVIDER, mTabCountProvider);
+            mPropertyModel.set(INCOGNITO_TAB_MODEL_SELECTOR, mTabModelSelector);
+        }
+    }
+
+    private void updateIncognitoToggleTabVisibility() {
+        if (mOverviewModeState == StartSurfaceState.SHOWN_HOMEPAGE) {
             mPropertyModel.set(INCOGNITO_SWITCHER_VISIBLE, false);
             return;
         }
@@ -240,12 +261,7 @@ class StartSurfaceToolbarMediator {
             @Override
             public void onStartedShowing(@LayoutType int layoutType, boolean showToolbar) {
                 if (layoutType == LayoutType.TAB_SWITCHER) {
-                    updateIncognitoSwitchVisibility();
-                    if (mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_OMNIBOX_ONLY
-                            || mOverviewModeState
-                                    == StartSurfaceState.SHOWN_TABSWITCHER_TRENDY_TERMS) {
-                        mPropertyModel.set(NEW_TAB_BUTTON_AT_START, true);
-                    }
+                    updateIncognitoToggleTabVisibility();
                 }
             }
             @Override

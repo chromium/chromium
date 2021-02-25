@@ -26,18 +26,14 @@
         android:visibility="gone"
         app:tint="@color/default_icon_color_tint_list" />
 
-    <Switch
-        tools:ignore="UseSwitchCompatOrMaterialXml"
-        android:id="@+id/incognito_switch"
+    <ViewStub
+        android:id="@+id/incognito_tabs_stub"
+        android:inflatedId="@+id/incognito_toggle_tabs"
+        android:layout="@layout/incognito_toggle_tabs"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toEndOf="@+id/home_button_on_tab_switcher"
-        android:layout_centerVertical="true"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        android:thumb="@drawable/incognito_switch"
-        android:track="@drawable/incognito_switch_track"
-        android:visibility="gone"/>
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="4dp"/>
 
     <ImageView
         android:id="@+id/logo"

@@ -383,8 +383,7 @@ public final class ReturnToChromeExperimentsUtil {
      * @return Whether hides the home button on an incognito tab.
      */
     public static boolean shouldHideHomeButtonForStartSurface(boolean incognito, boolean isTablet) {
-        return incognito && StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH.getValue()
-                && shouldShowStartSurfaceAsTheHomePageOnPhone(isTablet);
+        return incognito && shouldShowStartSurfaceAsTheHomePageOnPhone(isTablet);
     }
 
     /**

@@ -1,0 +1,5 @@
+include_rules = [
+  "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel",
+  "+chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar",
+  "+chrome/android/java/src/org/chromium/chrome/browser/incognito/IncognitoUtils.java",
+]
