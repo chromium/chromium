@@ -10851,6 +10851,17 @@ histogram as enum -->
   <int value="1" label="A hash is saved"/>
 </enum>
 
+<enum name="ChromeStartupDelegateFailureType">
+  <int value="0" label="Other"/>
+  <int value="1" label="Service Missing"/>
+  <int value="2" label="Service Version Update Required"/>
+  <int value="3" label="Service Disabled"/>
+  <int value="4" label="Network Error"/>
+  <int value="5" label="Service Invalid"/>
+  <int value="6" label="Developer Error"/>
+  <int value="7" label="API Unavailable"/>
+</enum>
+
 <enum name="ChromeStartupDelegateResult">
   <int value="0" label="Failure"/>
   <int value="1" label="Allow"/>

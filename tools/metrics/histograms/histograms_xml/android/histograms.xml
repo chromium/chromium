@@ -358,19 +358,33 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Android.ChromeStartupDelegate.FailureReason"
+    enum="ChromeStartupDelegateFailureType" expires_after="2021-07-01">
+  <owner>gangwu@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    Records the failure reason for ChromeStartupDelegate requests. Recorded at
+    most once on application startup.
+  </summary>
+</histogram>
+
 <histogram name="Android.ChromeStartupDelegate.Result"
     enum="ChromeStartupDelegateResult" expires_after="2021-07-01">
-  <owner>chouinard@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
-  <summary>Records the result for ChromeStartupDelegate.</summary>
+  <summary>
+    Records the result for ChromeStartupDelegate. Recorded on application
+    startup.
+  </summary>
 </histogram>
 
 <histogram name="Android.ChromeStartupDelegate.{Result}.Time" units="ms"
     expires_after="2021-07-01">
-  <owner>chouinard@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
-    Records the time taken to fetch a result for ChromeStartupDelegate.
+    Records the time taken to fetch a result for ChromeStartupDelegate. Recorded
+    on application startup.
   </summary>
   <token key="Result">
     <variant name="All"/>
