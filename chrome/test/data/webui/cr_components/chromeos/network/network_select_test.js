@@ -35,4 +35,20 @@ suite('NetworkSelectTest', function() {
     paperProgress = networkSelect.$$('paper-progress');
     assertTrue(!!paperProgress);
   });
+
+  test('Disable Wi-Fi scan', function() {
+    // When |networkSelect| is attached to the DOM, it should schedule periodic
+    // Wi-Fi scans.
+    assertTrue(networkSelect.scanIntervalId_ !== null);
+
+    // Setting |enableWifiScans| to false should clear the scheduled scans.
+    networkSelect.enableWifiScans = false;
+    Polymer.dom.flush();
+    assertTrue(networkSelect.scanIntervalId_ === null);
+
+    // Setting |enableWifiScans| back to true should re-schedule them.
+    networkSelect.enableWifiScans = true;
+    Polymer.dom.flush();
+    assertTrue(networkSelect.scanIntervalId_ !== null);
+  });
 });
