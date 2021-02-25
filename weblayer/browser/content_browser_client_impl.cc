@@ -33,6 +33,7 @@
 #include "components/no_state_prefetch/common/prerender_url_loader_throttle.h"
 #include "components/page_load_metrics/browser/metrics_navigation_throttle.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
+#include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/permissions/quota_permission_context_impl.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -381,6 +382,8 @@ bool ContentBrowserClientImpl::AllowWorkerWebLocks(
 content::WebContentsViewDelegate*
 ContentBrowserClientImpl::GetWebContentsViewDelegate(
     content::WebContents* web_contents) {
+  performance_manager::PerformanceManagerRegistry::GetInstance()
+      ->MaybeCreatePageNodeForWebContents(web_contents);
   return new WebContentsViewDelegateImpl(web_contents);
 }
 
@@ -875,6 +878,9 @@ void ContentBrowserClientImpl::ExposeInterfacesToRenderer(
     service_manager::BinderRegistry* registry,
     blink::AssociatedInterfaceRegistry* associated_registry,
     content::RenderProcessHost* render_process_host) {
+  performance_manager::PerformanceManagerRegistry::GetInstance()
+      ->CreateProcessNodeAndExposeInterfacesToRendererProcess(
+          registry, render_process_host);
 #if defined(OS_ANDROID)
   auto create_spellcheck_host =
       [](mojo::PendingReceiver<spellcheck::mojom::SpellCheckHost> receiver) {
@@ -906,6 +912,8 @@ void ContentBrowserClientImpl::RegisterBrowserInterfaceBindersForFrame(
     content::RenderFrameHost* render_frame_host,
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map) {
   PopulateWebLayerFrameBinders(render_frame_host, map);
+  performance_manager::PerformanceManagerRegistry::GetInstance()
+      ->ExposeInterfacesToRenderFrame(map);
 }
 
 void ContentBrowserClientImpl::RenderProcessWillLaunch(

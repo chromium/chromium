@@ -29,6 +29,7 @@
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/render_view.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "weblayer/common/features.h"
 #include "weblayer/renderer/error_page_helper.h"
@@ -214,6 +215,7 @@ void ContentRendererClientImpl::AddSupportedKeySystems(
 
 void ContentRendererClientImpl::
     SetRuntimeFeaturesDefaultsBeforeBlinkInitialization() {
+  blink::WebRuntimeFeatures::EnablePerformanceManagerInstrumentation(true);
 #if defined(OS_ANDROID)
   // Web Share is experimental by default, and explicitly enabled on Android
   // (for both Chrome and WebLayer).

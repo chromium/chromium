@@ -16,6 +16,10 @@
 
 class PrefService;
 
+namespace performance_manager {
+class PerformanceManagerLifetime;
+}
+
 namespace weblayer {
 class BrowserProcess;
 struct MainParams;
@@ -31,6 +35,7 @@ class BrowserMainPartsImpl : public content::BrowserMainParts {
   int PreCreateThreads() override;
   int PreEarlyInitialization() override;
   void PreMainMessageLoopStart() override;
+  void PostCreateThreads() override;
   void PreMainMessageLoopRun() override;
   void PostMainMessageLoopRun() override;
   bool MainMessageLoopRun(int* result_code) override;
@@ -40,6 +45,8 @@ class BrowserMainPartsImpl : public content::BrowserMainParts {
   MainParams* params_;
 
   std::unique_ptr<BrowserProcess> browser_process_;
+  std::unique_ptr<performance_manager::PerformanceManagerLifetime>
+      performance_manager_lifetime_;
 #if defined(OS_ANDROID)
   std::unique_ptr<metrics::MemoryMetricsLogger> memory_metrics_logger_;
 #endif  // defined(OS_ANDROID)

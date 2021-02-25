@@ -15,6 +15,8 @@
 #include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
 #include "components/captive_portal/core/buildflags.h"
+#include "components/performance_manager/embedder/performance_manager_lifetime.h"
+#include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/prefs/pref_service.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
@@ -209,6 +211,12 @@ int BrowserMainPartsImpl::PreEarlyInitialization() {
   return content::RESULT_CODE_NORMAL_EXIT;
 }
 
+void BrowserMainPartsImpl::PostCreateThreads() {
+  performance_manager_lifetime_ =
+      std::make_unique<performance_manager::PerformanceManagerLifetime>(
+          performance_manager::Decorators::kMinimal, base::DoNothing());
+}
+
 void BrowserMainPartsImpl::PreMainMessageLoopRun() {
   FeatureListCreator::GetInstance()->PerformPreMainMessageLoopStartup();
 
@@ -276,11 +284,6 @@ bool BrowserMainPartsImpl::MainMessageLoopRun(int* result_code) {
   return !run_message_loop_;
 }
 
-void BrowserMainPartsImpl::PostMainMessageLoopRun() {
-  params_->delegate->PostMainMessageLoopRun();
-  browser_process_->StartTearDown();
-}
-
 void BrowserMainPartsImpl::PreDefaultMainMessageLoopRun(
     base::OnceClosure quit_closure) {
   // Wrap the method that stops the message loop so we can do other shutdown
@@ -289,4 +292,10 @@ void BrowserMainPartsImpl::PreDefaultMainMessageLoopRun(
       base::BindOnce(StopMessageLoop, std::move(quit_closure)));
 }
 
+void BrowserMainPartsImpl::PostMainMessageLoopRun() {
+  params_->delegate->PostMainMessageLoopRun();
+  browser_process_->StartTearDown();
+
+  performance_manager_lifetime_.reset();
+}
 }  // namespace weblayer
