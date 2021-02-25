@@ -396,6 +396,8 @@ bool ServiceImageTransferCacheEntry::Deserialize(
   if (plane_config_ != SkYUVAInfo::PlaneConfig::kUnknown) {
     SkYUVAInfo::Subsampling subsampling;
     reader.Read(&subsampling);
+    if (subsampling == SkYUVAInfo::Subsampling::kUnknown)
+      return false;
     subsampling_ = subsampling;
     uint32_t needs_mips;
     reader.Read(&needs_mips);
