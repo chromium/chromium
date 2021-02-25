@@ -40,6 +40,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantActionsCarouselCoordinator;
@@ -297,6 +298,7 @@ public class AutofillAssistantUiTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug/1180011")
     public void testBottomSheetHideExpandWithAnimationDoesNotCrash() throws Exception {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
         BottomSheetController bottomSheetController =
