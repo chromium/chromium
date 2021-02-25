@@ -12,7 +12,9 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
@@ -44,13 +46,12 @@ OfferNotificationBubbleControllerImpl::OfferNotificationBubbleControllerImpl(
     : AutofillBubbleControllerBase(web_contents) {}
 
 base::string16 OfferNotificationBubbleControllerImpl::GetWindowTitle() const {
-  // TODO(crbug/1093057): Finalize string for the offer notification bubble.
-  return base::string16();
+  return l10n_util::GetStringUTF16(IDS_AUTOFILL_OFFERS_REMINDER_TITLE);
 }
 
 base::string16 OfferNotificationBubbleControllerImpl::GetOkButtonLabel() const {
-  // TODO(crbug/1093057): Finalize string.
-  return base::string16();
+  return l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_OFFERS_REMINDER_POSITIVE_BUTTON_LABEL);
 }
 
 AutofillBubbleBase*

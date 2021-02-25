@@ -6,6 +6,9 @@
 
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/layout/flex_layout.h"
@@ -42,7 +45,14 @@ void OfferNotificationBubbleViews::Init() {
   views::FlexLayout* layout =
       SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kVertical);
-  // TODO(crbug.com/1093057): Implement the explanation text view.
+  auto* explanatory_message = AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_OFFERS_REMINDER_DESCRIPTION_TEXT,
+          controller_->GetLinkedCard()
+              ->CardIdentifierStringForAutofillDisplay()),
+      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY));
+  explanatory_message->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  explanatory_message->SetMultiLine(true);
 }
 
 void OfferNotificationBubbleViews::AddedToWidget() {

@@ -21,7 +21,7 @@ namespace autofill {
 //  ------------------------------------------------
 // |  G Pay | Google Pay offer available         X |
 // |                                               |
-// |  Pay with |VISA| Visa ****4545 at checkout    |
+// |  Pay with Visa ****4545 at checkout           |
 // |                                               |
 // |                                   [Got it]    |
 //  ------------------------------------------------
