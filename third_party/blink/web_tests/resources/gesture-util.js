@@ -160,6 +160,37 @@ function waitForScrollEvent(eventTarget) {
   });
 }
 
+// Event driven scroll promise. This method has the advantage over timing
+// methods, as it is more forgiving to delays in event dispatch or between
+// chained smooth scrolls. It has an additional advantage of completing sooner
+// once the end condition is reached.
+// The promise is resolved when the result of calling getValue matches the
+// target value. The timeout timer starts once the first event has been
+// received.
+function waitForScrollEnd(eventTarget, getValue, targetValue) {
+  // Give up if the animation still isn't done after this many milliseconds from
+  // the time of the first scroll event.
+  const TIMEOUT_MS = 1000;
+
+  return new Promise((resolve, reject) => {
+    let timeout = undefined;
+    const scrollListener = () => {
+      if (!timeout)
+        timeout = setTimeout(reject, TIMEOUT_MS);
+
+      if (getValue() == targetValue) {
+        clearTimeout(timeout);
+        eventTarget.removeEventListener('scroll', scrollListener);
+        resolve();
+      }
+    };
+    if (getValue() == targetValue)
+      resolve();
+    else
+      eventTarget.addEventListener('scroll', scrollListener);
+  });
+}
+
 // Enums for gesture_source_type parameters in gpuBenchmarking synthetic
 // gesture methods. Must match C++ side enums in synthetic_gesture_params.h
 const GestureSourceType = (function() {

@@ -665,6 +665,9 @@ WebInputEventResult ScrollManager::HandleGestureScrollUpdate(
   scroll_state_data->from_user_input = true;
   scroll_state_data->delta_consumed_for_scroll_sequence =
       delta_consumed_for_scroll_sequence_;
+  // Scrollbar interactions trigger scroll snap depending on the scrollbar part.
+  if (gesture_event.SourceDevice() == WebGestureDevice::kScrollbar)
+    AdjustForSnapAtScrollUpdate(gesture_event, scroll_state_data.get());
   auto* scroll_state =
       MakeGarbageCollected<ScrollState>(std::move(scroll_state_data));
   if (previous_gesture_scrolled_node_) {
@@ -708,6 +711,50 @@ WebInputEventResult ScrollManager::HandleGestureScrollUpdate(
   }
 
   return WebInputEventResult::kNotHandled;
+}
+
+void ScrollManager::AdjustForSnapAtScrollUpdate(
+    const WebGestureEvent& gesture_event,
+    ScrollStateData* scroll_state_data) {
+  // Scrollbar interactions outside of the scroll thumb behave like logical
+  // scrolls with respect to scroll snap behavior.
+  // Scrollbar arrows trigger scroll by line, whereas the scrollbar track
+  // triggers scroll by page.
+  DCHECK(gesture_event.SourceDevice() == WebGestureDevice::kScrollbar);
+  ui::ScrollGranularity granularity = gesture_event.DeltaUnits();
+  if (granularity != ui::ScrollGranularity::kScrollByLine &&
+      granularity != ui::ScrollGranularity::kScrollByPage) {
+    return;
+  }
+
+  Node* node = scroll_gesture_handling_node_;
+  ScrollableArea* scrollable_area = nullptr;
+  if (node && node->GetLayoutObject()) {
+    LayoutBox* layout_box = node->GetLayoutBox();
+    if (!layout_box)
+      return;
+    scrollable_area = ScrollableArea::GetForScrolling(layout_box);
+  }
+
+  if (!scrollable_area)
+    return;
+
+  FloatPoint current_position = scrollable_area->ScrollPosition();
+  std::unique_ptr<cc::SnapSelectionStrategy> strategy =
+      cc::SnapSelectionStrategy::CreateForDirection(
+          gfx::ScrollOffset(current_position.X(), current_position.Y()),
+          gfx::ScrollOffset(scroll_state_data->delta_x,
+                            scroll_state_data->delta_y),
+          RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled());
+
+  base::Optional<FloatPoint> snap_point =
+      scrollable_area->GetSnapPositionAndSetTarget(*strategy);
+  if (!snap_point)
+    return;
+
+  scroll_state_data->delta_x = (snap_point->X() - current_position.X());
+  scroll_state_data->delta_y = (snap_point->Y() - current_position.Y());
+  scroll_state_data->delta_granularity = ui::ScrollGranularity::kScrollByPixel;
 }
 
 // This method is used as a ScrollCallback which requires a void return. Since

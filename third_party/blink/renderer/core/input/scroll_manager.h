@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/page/event_with_hit_test_results.h"
+#include "third_party/blink/renderer/core/page/scrolling/scroll_state.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
@@ -158,6 +159,9 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager>,
 
   bool SnapAtGestureScrollEnd(const WebGestureEvent& end_event,
                               base::ScopedClosureRunner callback);
+
+  void AdjustForSnapAtScrollUpdate(const WebGestureEvent& gesture_event,
+                                   ScrollStateData* scroll_state_data);
 
   void NotifyScrollPhaseBeginForCustomizedScroll(const ScrollState&);
   void NotifyScrollPhaseEndForCustomizedScroll();
