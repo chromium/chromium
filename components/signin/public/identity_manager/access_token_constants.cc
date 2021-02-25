@@ -27,8 +27,10 @@ const std::set<std::string> GetUnconsentedOAuth2Scopes() {
       GaiaConstants::kGoogleUserInfoEmail,
       GaiaConstants::kGoogleUserInfoProfile,
 
-      // Chrome sync is accessible for tab sharing and other datatypes that
-      // require in-feature consent.
+      // The "ChromeSync" scope is used by Sync-the-transport, which does
+      // not require consent. Instead, features built on top of it (e.g., tab
+      // sharing, account-scoped passwords, or Sync-the-feature) have their own
+      // in-feature consent.
       GaiaConstants::kChromeSyncOAuth2Scope,
       GaiaConstants::kFCMOAuthScope,
 
