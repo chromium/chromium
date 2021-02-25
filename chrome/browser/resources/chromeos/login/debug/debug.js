@@ -751,6 +751,29 @@ cr.define('cr.ui.login.debug', function() {
     {
       id: 'terms-of-service',
       kind: ScreenKind.NORMAL,
+      handledSteps: 'loading,loaded,error',
+      states: [
+        {
+          id: 'loading',
+          trigger: (screen) => {
+            screen.setManager('TestCompany');
+            screen.setUIStep('loading');
+          },
+        },
+        {
+          id: 'loaded',
+          trigger: (screen) => {
+            screen.setManager('TestCompany');
+            screen.setTermsOfService('TOS BEGIN\nThese are the terms\nTOS END');
+          },
+        },
+        {
+          id: 'error',
+          trigger: (screen) => {
+            screen.setTermsOfServiceLoadError();
+          },
+        },
+      ],
     },
     {
       id: 'sync-consent',

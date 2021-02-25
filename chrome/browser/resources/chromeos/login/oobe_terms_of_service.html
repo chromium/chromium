@@ -2,16 +2,15 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 
 <link rel="import" href="chrome://oobe/custom_elements.html">
 
 <link rel="import" href="/components/common_styles.html">
 <link rel="import" href="/components/hd_iron_icon.html">
-<link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
+<link rel="import" href="/components/oobe_loading_dialog.html">
 <link rel="import" href="/components/throbber_notice.html">
 <link rel="import" href="/components/oobe_dialog_host_behavior.html">
 
@@ -19,16 +18,20 @@
   <template>
     <style include="oobe-dialog-host"></style>
     <link rel="stylesheet" href="chrome://resources/css/throbber.css">
-    <link rel="stylesheet" href="oobe_terms_of_service.css">
 
     <!-- ERROR DIALOG -->
-    <oobe-dialog id="termsOfServiceErrorDialog" role="dialog"
-        title-key="termsOfServiceError"
-        subtitle-key="termsOfServiceTryAgain"
+    <oobe-adaptive-dialog id="termsOfServiceErrorDialog" role="dialog"
         aria-label$="[[i18nDynamic(locale, 'termsOfServiceError')]]"
-        for-step="error" has-buttons>
-      <iron-icon icon="cr:warning" slot="oobe-icon" class="warning">
-      </iron-icon>
+        for-step="error">
+      <hd-iron-icon slot="icon" icon1x="oobe-32:warning"
+          icon2x="oobe-64:warning">
+      </hd-iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'termsOfServiceError')]]
+      </h1>
+      <p slot="subtitle">
+        [[i18nDynamic(locale, 'termsOfServiceTryAgain')]]
+      </p>
       <div slot="back-navigation">
         <oobe-back-button id="errorBackButton"
             disabled="[[backButtonDisabled_]]"
@@ -36,38 +39,32 @@
       </div>
       <div slot="bottom-buttons">
         <oobe-text-button id="retryButton" inverse
+            class="focus-on-show"
             text-key="termsOfServiceRetryButton"
             disabled="[[retryButtonDisabled_]]"
             on-click="onTosRetryButtonPressed_"></oobe-text-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
+
+    <!-- LOADING DIALOG -->
+    <oobe-loading-dialog text-key="termsOfServiceLoading" for-step="loading">
+    </oobe-loading-dialog>
 
     <!-- NORMAL DIALOG -->
     <!-- As this dialog have pre-loading logic that require access to elements,
          dialog is marked as no-lazy. -->
-    <oobe-dialog id="termsOfServiceDialog" role="dialog"
-        aria-labelledby="title"
-        for-step="loading, loaded" has-buttons no-lazy>
-      <hd-iron-icon slot="oobe-icon" id="termsOfServiceGoogleIcon"
+    <oobe-adaptive-dialog id="termsOfServiceDialog" role="dialog"
+        aria-labelledby="title" for-step="loaded" no-lazy>
+      <hd-iron-icon slot="icon" id="termsOfServiceGoogleIcon"
           icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
       </hd-iron-icon>
 
-      <h1 id="title" slot="title">
-        <div id="tosHeading">[[i18nDynamic(locale,
-                                           'termsOfServiceScreenHeading',
-                                           tosManager_)]]</div>
-      </h1>
-      <div slot="subtitle">
-        <div id="tosSubheading">[[i18nDynamic(locale,
-                                              'termsOfServiceScreenSubheading',
-                                              tosManager_)]]</div>
-      </div>
-      <div slot="footer" class="flex layout center-justified vertical">
-        <div hidden="[[!isLoading_()]]">
-          <throbber-notice text-key="termsOfServiceLoading">
-          </throbber-notice>
-        </div>
-        <webview id="termsOfServiceFrame" hidden="[[isLoading_()]]"
+      <h1 id="tosHeading" slot="title">[[i18nDynamic(locale,
+        'termsOfServiceScreenHeading', tosManager_)]]</h1>
+      <p id="tosSubheading" slot="subtitle">[[i18nDynamic(locale,
+        'termsOfServiceScreenSubheading', tosManager_)]]</p>
+      <div slot="content" class="flex layout center-justified vertical">
+        <webview id="termsOfServiceFrame"
             role="document" allowTransparency
             class="focus-on-show flex oobe-tos-webview">
         </webview>
@@ -82,6 +79,6 @@
             disabled="[[acceptButtonDisabled_]]"
             on-click="onTermsOfServiceAccepted_"></oobe-text-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
   </template>
 </dom-module>
