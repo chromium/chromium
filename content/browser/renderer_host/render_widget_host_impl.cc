@@ -3107,6 +3107,16 @@ void RenderWidgetHostImpl::GotResponseToKeyboardLockRequest(bool allowed) {
 }
 
 void RenderWidgetHostImpl::GotResponseToForceRedraw(int snapshot_id) {
+  // Snapshots from surface do not need to wait for the screen update.
+  if (!pending_surface_browser_snapshots_.empty()) {
+    GetView()->CopyFromSurface(
+        gfx::Rect(), gfx::Size(),
+        base::BindOnce(&RenderWidgetHostImpl::OnSnapshotFromSurfaceReceived,
+                       weak_factory_.GetWeakPtr(), snapshot_id, 0));
+  }
+
+  if (pending_browser_snapshots_.empty())
+    return;
 #if defined(OS_MAC) || defined(OS_WIN)
   // On Mac, when using CoreAnimation, or Win32 when using GDI, there is a
   // delay between when content is drawn to the screen, and when the
@@ -3130,13 +3140,6 @@ void RenderWidgetHostImpl::DetachDelegate() {
 
 void RenderWidgetHostImpl::WindowSnapshotReachedScreen(int snapshot_id) {
   DCHECK(base::CurrentUIThread::IsSet());
-
-  if (!pending_surface_browser_snapshots_.empty()) {
-    GetView()->CopyFromSurface(
-        gfx::Rect(), gfx::Size(),
-        base::BindOnce(&RenderWidgetHostImpl::OnSnapshotFromSurfaceReceived,
-                       weak_factory_.GetWeakPtr(), snapshot_id, 0));
-  }
 
   if (!pending_browser_snapshots_.empty()) {
 #if defined(OS_ANDROID)
