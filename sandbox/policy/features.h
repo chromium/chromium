@@ -17,7 +17,7 @@ namespace sandbox {
 namespace policy {
 namespace features {
 
-#if !defined(OS_MAC)
+#if !defined(OS_MAC) && !defined(OS_FUCHSIA)
 SANDBOX_POLICY_EXPORT extern const base::Feature kNetworkServiceSandbox;
 #endif
 

@@ -639,7 +639,7 @@ void SetCertVerifierServiceFactoryForTesting(
 }
 
 bool IsNetworkSandboxEnabled() {
-#if defined(OS_MAC)
+#if defined(OS_MAC) || defined(OS_FUCHSIA)
   return true;
 #else
 #if defined(OS_WIN)
@@ -658,7 +658,7 @@ bool IsNetworkSandboxEnabled() {
 #endif  // defined(OS_WIN)
   return base::FeatureList::IsEnabled(
       sandbox::policy::features::kNetworkServiceSandbox);
-#endif  // defined(OS_MAC)
+#endif  // defined(OS_MAC) || defined(OS_FUCHSIA)
 }
 
 }  // namespace content
