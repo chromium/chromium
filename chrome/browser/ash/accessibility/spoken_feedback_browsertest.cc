@@ -797,14 +797,16 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ChromeVoxStickyMode) {
 // sending js commands above. This variant may be subject to flakes as it
 // depends on more of the UI events stack and sticky mode invocation has a
 // timing element to it.
-// TODO(https://crbug.com/1178765) disable on ChromeOS due to flakiness
-#if defined(OS_CHROMEOS)
-#define MAYBE_ChromeVoxStickyModeRawKeys DISABLED_ChromeVoxStickyModeRawKeys
-#else
-#define MAYBE_ChromeVoxStickyModeRawKeys ChromeVoxStickyModeRawKeys
-#endif
-IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, MAYBE_ChromeVoxStickyModeRawKeys) {
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ChromeVoxStickyModeRawKeys) {
   EnableChromeVox();
+
+  sm_.Call([this]() {
+    ui_test_utils::NavigateToURL(browser(),
+                                 GURL("data:text/html;charset=utf-8,<button "
+                                      "autofocus>Click me</button>"));
+  });
+  sm_.ExpectSpeech("Click me");
+
   sm_.Call([this]() {
     SendKeyPress(ui::VKEY_LWIN);
     SendKeyPress(ui::VKEY_LWIN);
