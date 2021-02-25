@@ -2532,10 +2532,8 @@ enum WebFeature {
 
   kV8Document_HasTrustToken_Method = 3202,
   kForceLoadAtTop = 3203,
-  kLegacyLayoutByDeprecatedFlexBox = 3205,
   kLegacyLayoutByDetailsMarker = 3206,
   kLegacyLayoutByEditing = 3207,
-  kLegacyLayoutByFlexBox = 3210,
   kLegacyLayoutByFrameSet = 3211,
   kLegacyLayoutByGrid = 3212,
   kLegacyLayoutByMultiCol = 3214,
@@ -2545,7 +2543,6 @@ enum WebFeature {
   kLegacyLayoutByTextCombine = 3220,
   kLegacyLayoutByTextControl = 3221,
   kLegacyLayoutByVTTCue = 3222,
-  kLegacyLayoutByWebkitBoxWithoutVerticalLineClamp = 3223,
   kLegacyLayoutByTableFlexGridBlockInNGFragmentationContext = 3224,
   kDocumentPolicyHeader = 3225,
   kDocumentPolicyReportOnlyHeader = 3226,

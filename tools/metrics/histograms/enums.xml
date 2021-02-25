@@ -30972,12 +30972,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3202" label="V8Document_HasTrustToken_Method"/>
   <int value="3203" label="ForceLoadAtTop"/>
   <int value="3204" label="OBSOLETE_LegacyLayoutByButton"/>
-  <int value="3205" label="LegacyLayoutByDeprecatedFlexBox"/>
+  <int value="3205" label="OBSOLETE_LegacyLayoutByDeprecatedFlexBox"/>
   <int value="3206" label="LegacyLayoutByDetailsMarker"/>
   <int value="3207" label="LegacyLayoutByEditing"/>
   <int value="3208" label="OBSOLETE_LegacyLayoutByFieldSet"/>
   <int value="3209" label="OBSOLETE_LegacyLayoutByFileUploadControl"/>
-  <int value="3210" label="LegacyLayoutByFlexBox"/>
+  <int value="3210" label="OBSOLETE_LegacyLayoutByFlexBox"/>
   <int value="3211" label="LegacyLayoutByFrameSet"/>
   <int value="3212" label="LegacyLayoutByGrid"/>
   <int value="3213" label="OBSOLETE_LegacyLayoutByMenuList"/>
@@ -30990,7 +30990,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3220" label="LegacyLayoutByTextCombine"/>
   <int value="3221" label="LegacyLayoutByTextControl"/>
   <int value="3222" label="LegacyLayoutByVTTCue"/>
-  <int value="3223" label="LegacyLayoutByWebkitBoxWithoutVerticalLineClamp"/>
+  <int value="3223"
+      label="OBSOLETE_LegacyLayoutByWebkitBoxWithoutVerticalLineClamp"/>
   <int value="3224"
       label="LegacyLayoutByTableFlexGridBlockInNGFragmentationContext"/>
   <int value="3225" label="DocumentPolicyHeader"/>
