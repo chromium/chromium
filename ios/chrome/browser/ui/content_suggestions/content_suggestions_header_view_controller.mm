@@ -361,7 +361,7 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   [toolbar addSubview:self.fakeTapButton];
   [self.headerView addToolbarView:toolbar];
   [self.fakeTapButton addTarget:self
-                         action:@selector(fakeboxTapped)
+                         action:@selector(fakeTapViewTapped)
                forControlEvents:UIControlEventTouchUpInside];
   AddSameConstraints(self.fakeTapButton, toolbar);
 }
@@ -425,6 +425,13 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
                 action:@selector(preloadVoiceSearch:)
       forControlEvents:UIControlEventTouchDown];
   [self.dispatcher preloadVoiceSearch];
+}
+
+- (void)fakeTapViewTapped {
+  if ([self.delegate ignoreLoadRequests])
+    return;
+  base::RecordAction(base::UserMetricsAction("MobileFakeViewNTPTapped"));
+  [self focusFakebox];
 }
 
 - (void)fakeboxTapped {
