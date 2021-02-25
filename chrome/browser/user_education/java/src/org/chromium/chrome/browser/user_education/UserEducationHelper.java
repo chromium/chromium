@@ -95,7 +95,9 @@ public class UserEducationHelper {
         textBubble.setAutoDismissTimeout(iphCommand.autoDismissTimeout);
 
         if (iphCommand.shouldHighlight) {
-            if (iphCommand.circleHighlight) {
+            if (iphCommand.highlighter != null) {
+                ViewHighlighter.attachViewAsHighlight(anchorView, iphCommand.highlighter);
+            } else if (iphCommand.circleHighlight) {
                 ViewHighlighter.turnOnCircularHighlight(anchorView);
             } else {
                 ViewHighlighter.turnOnRectangularHighlight(anchorView);

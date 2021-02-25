@@ -10,6 +10,7 @@ import android.view.View;
 
 import androidx.annotation.StringRes;
 
+import org.chromium.components.browser_ui.widget.highlight.PulseDrawable;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.ui.widget.ViewRectProvider;
 
@@ -36,6 +37,7 @@ public class IPHCommandBuilder {
     private Rect mInsetRect;
     private long mAutoDismissTimeout = TextBubble.NO_TIMEOUT;
     private ViewRectProvider mViewRectProvider;
+    private PulseDrawable mHighlighter;
 
     /**
      * Constructor for IPHCommandBuilder when you would like your strings to be resolved for you.
@@ -113,6 +115,17 @@ public class IPHCommandBuilder {
     }
 
     /**
+     * This is for views where it's necessary to have custom min/max pulse calculations.
+     * Will override circleHighlight settings.
+     *
+     * @param highlighter The PulseDrawable to use for the view highlight.
+     */
+    public IPHCommandBuilder setHighlighter(PulseDrawable highlighter) {
+        mHighlighter = highlighter;
+        return this;
+    }
+
+    /**
      *
      * @param insetRect The inset rectangle to use when shrinking the anchor view to show the IPH
      * bubble.
@@ -182,6 +195,6 @@ public class IPHCommandBuilder {
 
         return new IPHCommand(mFeatureName, mContentString, mAccessibilityText, mCircleHighlight,
                 mShouldHighlight, mDismissOnTouch, mAnchorView, mOnDismissCallback, mOnShowCallback,
-                mInsetRect, mAutoDismissTimeout, mViewRectProvider);
+                mInsetRect, mAutoDismissTimeout, mViewRectProvider, mHighlighter);
     }
 }

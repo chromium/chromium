@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.feed.FeedUma;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.browser_ui.widget.highlight.PulseDrawable;
 import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
@@ -196,17 +197,35 @@ public class SectionHeaderView extends LinearLayout implements View.OnClickListe
         };
         int yInsetPx =
                 getResources().getDimensionPixelOffset(R.dimen.text_bubble_menu_anchor_y_inset);
-        helper.requestShowIPH(new IPHCommandBuilder(mMenuView.getContext().getResources(),
-                FeatureConstants.FEED_HEADER_MENU_FEATURE, R.string.ntp_feed_menu_iph,
-                R.string.accessibility_ntp_feed_menu_iph)
-                                      .setAnchorView(mMenuView)
-                                      .setCircleHighlight(true)
-                                      .setShouldHighlight(true)
-                                      .setDismissOnTouch(false)
-                                      .setInsetRect(new Rect(0, 0, 0, -yInsetPx))
-                                      .setAutoDismissTimeout(5 * 1000)
-                                      .setViewRectProvider(rectProvider)
-                                      .build());
+        PulseDrawable pulseDrawable = PulseDrawable.createCustomCircle(
+                mMenuView.getContext(), new PulseDrawable.Bounds() {
+                    @Override
+                    public float getMaxRadiusPx(Rect bounds) {
+                        return Math.max(bounds.width(), bounds.height()) / 2.f;
+                    }
+
+                    @Override
+                    public float getMinRadiusPx(Rect bounds) {
+                        return Math.min(bounds.width(), bounds.height()) / 1.5f;
+                    }
+                });
+        helper.requestShowIPH(
+                new IPHCommandBuilder(mMenuView.getContext().getResources(),
+                        FeatureConstants.FEED_HEADER_MENU_FEATURE, R.string.ntp_feed_menu_iph,
+                        R.string.accessibility_ntp_feed_menu_iph)
+                        .setAnchorView(mMenuView)
+                        .setCircleHighlight(true)
+                        .setShouldHighlight(true)
+                        .setDismissOnTouch(false)
+                        .setInsetRect(new Rect(0, 0, 0, -yInsetPx))
+                        .setAutoDismissTimeout(5 * 1000)
+                        .setViewRectProvider(rectProvider)
+                        // Set clipChildren is important to make sure the bubble does not get
+                        // clipped. Set back for better performance during layout.
+                        .setOnShowCallback(() -> setClipChildren(false))
+                        .setOnDismissCallback(() -> setClipChildren(true))
+                        .setHighlighter(pulseDrawable)
+                        .build());
     }
 
     private void displayMenu() {

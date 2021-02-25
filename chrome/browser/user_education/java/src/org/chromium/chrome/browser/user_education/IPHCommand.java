@@ -9,6 +9,7 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.components.browser_ui.widget.highlight.PulseDrawable;
 import org.chromium.ui.widget.ViewRectProvider;
 
 /**
@@ -34,11 +35,12 @@ public class IPHCommand {
     public final Rect insetRect;
     public final long autoDismissTimeout;
     public final ViewRectProvider viewRectProvider;
+    public final PulseDrawable highlighter;
 
     IPHCommand(@Nullable String featureName, String contentString, String accessibilityText,
             boolean circleHighlight, boolean shouldHighlight, boolean dismissOnTouch,
             View anchorView, Runnable onDismissCallback, Runnable onShowCallback, Rect insetRect,
-            long autoDismissTimeout, ViewRectProvider viewRectProvider) {
+            long autoDismissTimeout, ViewRectProvider viewRectProvider, PulseDrawable highlighter) {
         this.featureName = featureName;
         this.contentString = contentString;
         this.accessibilityText = accessibilityText;
@@ -51,5 +53,6 @@ public class IPHCommand {
         this.insetRect = insetRect;
         this.autoDismissTimeout = autoDismissTimeout;
         this.viewRectProvider = viewRectProvider;
+        this.highlighter = highlighter;
     }
 }
