@@ -8,15 +8,14 @@
 files."""
 
 import argparse
-import collections
 import os
-import re
 import shutil
 import sys
 import zipfile
 
 from util import build_utils
 from util import jar_info_utils
+from util import md5_check
 from util import resources_parser
 from util import resource_utils
 
@@ -135,21 +134,7 @@ def _GenerateRTxt(options, r_txt_path):
                                  ignore_pattern).WriteRTxtFile(r_txt_path)
 
 
-def main(args):
-  args = build_utils.ExpandFileArgs(args)
-  options = _ParseArgs(args)
-
-  # Resource files aren't explicitly listed in GN. Listing them in the depfile
-  # ensures the target will be marked stale when resource files are removed.
-  depfile_deps = []
-  for resource_dir in options.resource_dirs:
-    for resource_file in build_utils.FindInDirectory(resource_dir, '*'):
-      # Don't list the empty .keep file in depfile. Since it doesn't end up
-      # included in the .zip, it can lead to -w 'dupbuild=err' ninja errors
-      # if ever moved.
-      if not resource_file.endswith(os.path.join('empty', '.keep')):
-        depfile_deps.append(resource_file)
-
+def _OnStaleMd5(options):
   with resource_utils.BuildContext() as build:
     if options.sources:
       _CheckAllFilesListed(options.sources, options.resource_dirs)
@@ -169,11 +154,54 @@ def main(args):
       _ZipResources(options.resource_dirs, options.resource_zip_out,
                     ignore_pattern)
 
-  if options.depfile:
-    # Order of output must match order specified in GN so that the correct one
-    # appears first in the depfile.
-    build_utils.WriteDepfile(options.depfile, options.resource_zip_out
-                             or options.r_text_out, depfile_deps)
+
+def main(args):
+  args = build_utils.ExpandFileArgs(args)
+  options = _ParseArgs(args)
+
+  # Order of these must match order specified in GN so that the correct one
+  # appears first in the depfile.
+  output_paths = [
+      options.resource_zip_out,
+      options.resource_zip_out + '.info',
+      options.r_text_out,
+  ]
+
+  input_paths = [options.res_sources_path]
+  if options.r_text_in:
+    input_paths += [options.r_text_in]
+
+  # Resource files aren't explicitly listed in GN. Listing them in the depfile
+  # ensures the target will be marked stale when resource files are removed.
+  depfile_deps = []
+  resource_names = []
+  for resource_dir in options.resource_dirs:
+    for resource_file in build_utils.FindInDirectory(resource_dir, '*'):
+      # Don't list the empty .keep file in depfile. Since it doesn't end up
+      # included in the .zip, it can lead to -w 'dupbuild=err' ninja errors
+      # if ever moved.
+      if not resource_file.endswith(os.path.join('empty', '.keep')):
+        input_paths.append(resource_file)
+        depfile_deps.append(resource_file)
+      resource_names.append(os.path.relpath(resource_file, resource_dir))
+
+  # Resource filenames matter to the output, so add them to strings as well.
+  # This matters if a file is renamed but not changed (http://crbug.com/597126).
+  input_strings = sorted(resource_names) + [
+      options.shared_resources,
+      options.strip_drawables,
+  ]
+
+  # Since android_resources targets like *__all_dfm_resources depend on java
+  # targets that they do not need (in reality it only needs the transitive
+  # resource targets that those java targets depend on), md5_check is used to
+  # prevent outputs from being re-written when real inputs have not changed.
+  md5_check.CallAndWriteDepfileIfStale(lambda: _OnStaleMd5(options),
+                                       options,
+                                       input_paths=input_paths,
+                                       input_strings=input_strings,
+                                       output_paths=output_paths,
+                                       depfile_deps=depfile_deps)
 
 
 if __name__ == '__main__':

@@ -2115,12 +2115,8 @@ if (enable_java_templates) {
         invoker.r_text_out_path,
       ]
 
-      inputs = [
-        invoker.build_config,
-        invoker.res_sources_path,
-      ]
+      inputs = [ invoker.res_sources_path ]
 
-      _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
       _rebased_res_sources_path =
           rebase_path(invoker.res_sources_path, root_build_dir)
 

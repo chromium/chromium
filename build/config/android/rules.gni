@@ -1073,12 +1073,10 @@ if (enable_java_templates) {
                                "visibility",
                              ])
       deps = _deps
-      deps += [ ":$_build_config_target_name" ]
 
       res_sources_path = _res_sources_path
       sources = _resource_files
 
-      build_config = _build_config
       resources_zip = _resources_zip
       r_text_out_path = _r_text_out_path
 
