@@ -35,6 +35,7 @@ class PlaneInit;
 class ScriptPromise;
 class ScriptState;
 class VideoFrameInit;
+class VideoFramePlaneInit;
 
 class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
                                         public CanvasImageSource,
@@ -53,12 +54,12 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   // video_frame.idl implementation.
   static VideoFrame* Create(ScriptState*,
                             const CanvasImageSourceUnion&,
-                            VideoFrameInit*,
+                            const VideoFrameInit*,
                             ExceptionState&);
   static VideoFrame* Create(ScriptState*,
                             const String& format,
-                            const HeapVector<Member<PlaneInit>>& planes,
-                            VideoFrameInit* init,
+                            const HeapVector<Member<PlaneInit>>&,
+                            const VideoFramePlaneInit*,
                             ExceptionState&);
 
   String format() const;
