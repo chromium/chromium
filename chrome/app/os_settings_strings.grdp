@@ -2252,13 +2252,13 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_NETWORK_MENU_RENAME" desc="Settings > Internet > Network details > Dot menu: Label for the button to rename an eSIM cellular network">
     Rename
   </message>
-  <message name="IDS_SETTINGS_INTERNET_NETWORK_CONFIRMATION_CODE_DIALOG_TITLE" desc="Settings > Network > Mobile data > Download > Confirmation code dialog: Title for the dialog prompting the user to enter the confirmation code required to activate the eSIM profile they are attempting to install">
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_INSTALL_ERROR_DIALOG_TITLE" desc="Settings > Network > Mobile data > Download > Install error dialog: Title for the dialog prompting the user to enter the confirmation code required to activate the eSIM profile they are attempting to install">
     Set up new network
   </message>
-  <message name="IDS_SETTINGS_INTERNET_NETWORK_CONFIRMATION_CODE_DIALOG_MESSAGE" desc="Settings > Network > Mobile data > Download > Confirmation code dialog: Message for the dialog prompting the user to enter the confirmation code required to activate the eSIM profile they are attempting to install">
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_INSTALL_ERROR_DIALOG_CONFIRMATION_CODE_MESSAGE" desc="Settings > Network > Mobile data > Download > Install error dialog: Message for the dialog prompting the user to enter the confirmation code required to activate the eSIM profile they are attempting to install">
     Please enter your confirmation code.
   </message>
-  <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_DIALOG_ERROR" desc="Settings > Network > Mobile data > Download > Confirmation code dialog: Error indicating that installing the eSIM profile was unsuccessful.">
+  <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_INSTALL_ERROR_DIALOG_CONFIRMATION_CODE_ERROR" desc="Settings > Network > Mobile data > Download > Install error dialog: Error indicating that installing the eSIM profile was unsuccessful.">
     Unable to connect to this profile. For technical support, please contact your carrier.
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_RENAME_DIALOG_RENAME_PROFILE" desc="Settings > Internet > Network details > Rename profile dialog: Label for the dialog informing the user to rename an eSIM cellular network">

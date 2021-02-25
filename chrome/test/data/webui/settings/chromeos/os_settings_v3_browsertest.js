@@ -354,7 +354,7 @@ TEST_F(
  ['CupsPrinterLandingPage', 'cups_printer_landing_page_tests.m.js'],
  ['CupsPrinterPage', 'cups_printer_page_tests.m.js'],
  ['DateTimePage', 'date_time_page_tests.m.js'],
- ['EsimConfirmationCodeDialog', 'esim_confirmation_code_dialog_test.m.js'],
+ ['EsimInstallErrorDialog', 'esim_install_error_dialog_test.m.js'],
  ['EsimRemoveProfileDialog', 'esim_remove_profile_dialog_test.m.js'],
  ['EsimRenameDialog', 'esim_rename_dialog_test.m.js'],
  ['FilesPage', 'os_files_page_test.m.js'],

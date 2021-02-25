@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Polymer element to enter a confirmation code if required when
- * installing an eSIM profile.
+ * @fileoverview Polymer element handling errors when installing an eSIM
+ * profile, such as requiring a confirmation code.
  */
 
 Polymer({
-  is: 'esim-confirmation-code-dialog',
+  is: 'esim-install-error-dialog',
 
   behaviors: [
     I18nBehavior,
@@ -58,7 +58,7 @@ Polymer({
       this.isInstallInProgress_ = false;
       if (response.result ===
           chromeos.cellularSetup.mojom.ESimOperationResult.kSuccess) {
-        this.$.confirmationCodeDialog.close();
+        this.$.installErrorDialog.close();
         return;
       }
       this.showError_ = true;
@@ -70,7 +70,7 @@ Polymer({
    * @private
    */
   onCancelClicked_(event) {
-    this.$.confirmationCodeDialog.close();
+    this.$.installErrorDialog.close();
   },
 
   /** @private */

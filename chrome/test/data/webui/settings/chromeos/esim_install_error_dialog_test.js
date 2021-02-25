@@ -12,8 +12,8 @@
 // #import {assertEquals, assertTrue} from '../../chai_assert.js';
 // clang-format on
 
-suite('EsimConfirmationCodeDialog', function() {
-  let esimConfirmationCodeDialog;
+suite('EsimInstallErrorDialog', function() {
+  let esimInstallErrorDialog;
   let eSimManagerRemote;
   let input;
   let doneButton;
@@ -33,16 +33,16 @@ suite('EsimConfirmationCodeDialog', function() {
 
     await flushAsync();
 
-    esimConfirmationCodeDialog =
-        document.createElement('esim-confirmation-code-dialog');
-    esimConfirmationCodeDialog.profile = profile;
-    document.body.appendChild(esimConfirmationCodeDialog);
-    assertTrue(!!esimConfirmationCodeDialog);
+    esimInstallErrorDialog =
+        document.createElement('esim-install-error-dialog');
+    esimInstallErrorDialog.profile = profile;
+    document.body.appendChild(esimInstallErrorDialog);
+    assertTrue(!!esimInstallErrorDialog);
 
     await flushAsync();
 
-    input = esimConfirmationCodeDialog.$$('#confirmationCode');
-    doneButton = esimConfirmationCodeDialog.$$('#done');
+    input = esimInstallErrorDialog.$$('#confirmationCode');
+    doneButton = esimInstallErrorDialog.$$('#done');
 
     assertTrue(!!input);
     assertTrue(!!doneButton);
@@ -67,7 +67,7 @@ suite('EsimConfirmationCodeDialog', function() {
     assertEquals(
         profileProperties.state,
         chromeos.cellularSetup.mojom.ProfileState.kActive);
-    assertFalse(esimConfirmationCodeDialog.$.confirmationCodeDialog.open);
+    assertFalse(esimInstallErrorDialog.$.installErrorDialog.open);
   });
 
   test('Install profile unsuccessful', async function() {
@@ -94,7 +94,7 @@ suite('EsimConfirmationCodeDialog', function() {
     assertEquals(
         profileProperties.state,
         chromeos.cellularSetup.mojom.ProfileState.kPending);
-    assertTrue(esimConfirmationCodeDialog.$.confirmationCodeDialog.open);
+    assertTrue(esimInstallErrorDialog.$.installErrorDialog.open);
 
     input.value = 'CONFIRMATION_COD';
     assertFalse(input.invalid);

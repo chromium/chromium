@@ -107,7 +107,7 @@ Polymer({
     },
 
     /** @private {boolean} */
-    shouldShowConfirmationCodeDialog_: {
+    shouldShowInstallErrorDialog_: {
       type: Boolean,
       value: false,
     },
@@ -338,18 +338,18 @@ Polymer({
       if (response.result ===
           chromeos.cellularSetup.mojom.ProfileInstallResult
               .kErrorNeedsConfirmationCode) {
-        this.showConfirmationCodeDialog_();
+        this.showInstallErrorDialog_();
       }
     });
   },
 
   /** @private */
-  showConfirmationCodeDialog_() {
-    this.shouldShowConfirmationCodeDialog_ = true;
+  showInstallErrorDialog_() {
+    this.shouldShowInstallErrorDialog_ = true;
   },
 
   /** @private */
-  onCloseConfirmationCodeDialog_() {
-    this.shouldShowConfirmationCodeDialog_ = false;
+  onCloseInstallErrorDialog_() {
+    this.shouldShowInstallErrorDialog_ = false;
   },
 });

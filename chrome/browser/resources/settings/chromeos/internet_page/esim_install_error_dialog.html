@@ -6,7 +6,7 @@
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
 
-<dom-module id="esim-confirmation-code-dialog">
+<dom-module id="esim-install-error-dialog">
   <template>
     <style include="iron-flex iron-positioning">
       :host {
@@ -29,18 +29,18 @@
         margin-inline-end: 8px;
       }
     </style>
-    <cr-dialog id="confirmationCodeDialog" show-on-attach>
-      <div slot="title">$i18n{eSimConfirmationCodeDialogTitle}</div>
+    <cr-dialog id="installErrorDialog" show-on-attach>
+      <div slot="title">$i18n{eSimInstallErrorDialogTitle}</div>
       <div slot="body">
         <div id="message">
-          $i18n{eSimConfirmationCodeDialogMessage}
+          $i18n{eSimInstallErrorDialogConfirmationCodeMessage}
         </div>
         <div class="relative">
           <cr-input id="confirmationCode"
               value="{{confirmationCode_}}"
               spellcheck="false"
               disabled="[[isInstallInProgress_]]"
-              error-message="$i18n{eSimConfirmationCodeDialogError}"
+              error-message="$i18n{eSimInstallErrorDialogConfirmationCodeError}"
               invalid="[[showError_]]">
           </cr-input>
           <paper-spinner-lite active
@@ -63,5 +63,5 @@
       </div>
     </cr-dialog>
   </template>
-  <script src="esim_confirmation_code_dialog.js"></script>
+  <script src="esim_install_error_dialog.js"></script>
 </dom-module>

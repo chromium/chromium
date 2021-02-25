@@ -15,7 +15,7 @@
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="../../chromeos/os_settings_icons_css.html">
-<link rel="import" href="esim_confirmation_code_dialog.html">
+<link rel="import" href="esim_install_error_dialog.html">
 
 <dom-module id="cellular-networks-list">
   <template>
@@ -154,11 +154,11 @@
       </div>
     </template>
 
-    <template is="dom-if" if="[[shouldShowConfirmationCodeDialog_]]" restamp>
-      <esim-confirmation-code-dialog id="confirmationCodeDialog"
-          on-close="onCloseConfirmationCodeDialog_"
+    <template is="dom-if" if="[[shouldShowInstallErrorDialog_]]" restamp>
+      <esim-install-error-dialog id="installErrorDialog"
+          on-close="onCloseInstallErrorDialog_"
           profile="[[installingESimProfile_]]">
-      </esim-confirmation-code-dialog>
+      </esim-install-error-dialog>
     </template>
   </template>
   <script src="cellular_networks_list.js"></script>
