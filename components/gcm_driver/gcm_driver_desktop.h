@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -235,8 +236,15 @@ class GCMDriverDesktop : public GCMDriver,
   // Callback for SetGCMRecording.
   GCMStatisticsRecordingCallback gcm_statistics_recording_callback_;
 
-  // Callbacks for GetInstanceIDData.
-  std::map<std::string, GetInstanceIDDataCallback>
+  // Callbacks for GetInstanceIDData. Initializing InstanceID is asynchronous,
+  // which leads to a race condition when recreating an InstanceID before such
+  // initialization has finished, causing multiple callbacks to be in flight.
+  // Expecting all InstanceID users to care for that is fragile and complicated,
+  // so allow for a queue of callbacks to be stored here instead.
+  //
+  // Note that other InstanceID callbacks don't have this concern, as they all
+  // wait for initialization of the InstanceID instance to have completed.
+  std::map<std::string, base::queue<GetInstanceIDDataCallback>>
       get_instance_id_data_callbacks_;
 
   // Callbacks for GetToken/DeleteToken.

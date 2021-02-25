@@ -1048,7 +1048,6 @@ void GCMDriverDesktop::DoRemoveInstanceIDData(const std::string& app_id) {
 
 void GCMDriverDesktop::GetInstanceIDData(const std::string& app_id,
                                          GetInstanceIDDataCallback callback) {
-  DCHECK(!get_instance_id_data_callbacks_.count(app_id));
   DCHECK(ui_thread_->RunsTasksInCurrentSequence());
 
   GCMClient::Result result = EnsureStarted(GCMClient::IMMEDIATE_START);
@@ -1067,7 +1066,7 @@ void GCMDriverDesktop::GetInstanceIDData(const std::string& app_id,
     return;
   }
 
-  get_instance_id_data_callbacks_[app_id] = std::move(callback);
+  get_instance_id_data_callbacks_[app_id].push(std::move(callback));
 
   // Delay the operation until GCMClient is ready.
   if (!delayed_task_controller_->CanRunTaskWithoutDelay()) {
@@ -1090,10 +1089,16 @@ void GCMDriverDesktop::GetInstanceIDDataFinished(
     const std::string& app_id,
     const std::string& instance_id,
     const std::string& extra_data) {
-  DCHECK(get_instance_id_data_callbacks_.count(app_id));
-  std::move(get_instance_id_data_callbacks_[app_id])
-      .Run(instance_id, extra_data);
-  get_instance_id_data_callbacks_.erase(app_id);
+  auto iter = get_instance_id_data_callbacks_.find(app_id);
+  DCHECK(iter != get_instance_id_data_callbacks_.end());
+
+  base::queue<GetInstanceIDDataCallback>& callbacks = iter->second;
+  std::move(callbacks.front()).Run(instance_id, extra_data);
+
+  callbacks.pop();
+
+  if (!callbacks.size())
+    get_instance_id_data_callbacks_.erase(iter);
 }
 
 void GCMDriverDesktop::GetTokenFinished(const std::string& app_id,
