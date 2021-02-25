@@ -5373,14 +5373,6 @@ TEST_F(HeapTest, SuccessfulUnsanitizedAccessToObjectHeader) {
 }
 #endif  // ADDRESS_SANITIZER
 
-TEST_F(HeapTest, GetUsedSizeInBytes) {
-  PreciselyCollectGarbage();
-  size_t before = ThreadState::Current()->GetUsedSizeInBytes();
-  MakeGarbageCollected<LargeHeapObject>();
-  size_t after = ThreadState::Current()->GetUsedSizeInBytes();
-  EXPECT_LE(before + sizeof(LargeHeapObject), after);
-}
-
 namespace {
 class FakeCSSValue : public GarbageCollected<FakeCSSValue> {
  public:

@@ -1691,12 +1691,6 @@ void ThreadState::NotifyGarbageCollection(v8::GCType type,
   }
 }
 
-size_t ThreadState::GetUsedSizeInBytes() {
-  Statistics stats = ThreadState::StatisticsCollector(this).CollectStatistics(
-      Statistics::kBrief);
-  return stats.used_size_bytes;
-}
-
 void ThreadState::CollectNodeAndCssStatistics(
     base::OnceCallback<void(size_t allocated_node_bytes,
                             size_t allocated_css_bytes)> callback) {

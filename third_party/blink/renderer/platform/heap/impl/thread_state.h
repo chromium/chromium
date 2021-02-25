@@ -392,9 +392,6 @@ class PLATFORM_EXPORT ThreadState final {
 
   void NotifyGarbageCollection(v8::GCType, v8::GCCallbackFlags);
 
-  // Returns the total size of live objects on the heap.
-  size_t GetUsedSizeInBytes();
-
   // Waits until sweeping is done and invokes the given callback with
   // the total sizes of live objects in Node and CSS arenas.
   void CollectNodeAndCssStatistics(

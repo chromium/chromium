@@ -115,9 +115,6 @@ class PLATFORM_EXPORT ThreadState final {
         IsGarbageCollectionAllowed(cpp_heap().GetHeapHandle());
   }
 
-  // Returns the total size of live objects on the heap.
-  size_t GetUsedSizeInBytes();
-
   // Waits until sweeping is done and invokes the given callback with
   // the total sizes of live objects in Node and CSS arenas.
   void CollectNodeAndCssStatistics(
