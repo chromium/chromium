@@ -15203,6 +15203,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="5" label="DISK_STATUS_DESTROYED"/>
   <int value="6" label="DISK_STATUS_IN_PROGRESS"/>
   <int value="7" label="DISK_STATUS_RESIZED"/>
+  <int value="8" label="DISK_STATUS_NOT_ENOUGH_SPACE"/>
 </enum>
 
 <!-- Keep this in sync with CrostiniDiskImageType in crostini_simple_types.h -->
