@@ -41,7 +41,6 @@ public class AwPacProcessor {
 
     public AwPacProcessor() {
         mNativePacProcessor = AwPacProcessorJni.get().createNativePacProcessor();
-        registerNetworkCallback();
     }
 
     private static ConnectivityManager getConnectivityManager() {
@@ -67,6 +66,8 @@ public class AwPacProcessor {
     }
 
     private void registerNetworkCallback() {
+        if (mNetworkCallback != null) return;
+
         mNetworkCallback = new ConnectivityManager.NetworkCallback() {
             @Override
             public void onLinkPropertiesChanged(Network network, LinkProperties linkProperties) {
@@ -99,8 +100,13 @@ public class AwPacProcessor {
 
     @UsedByReflection("Android")
     public void setNetwork(Network network) {
-        updateNetworkLinkAddress(network, getConnectivityManager().getLinkProperties(network));
         mNetwork = network;
+        if (mNetwork != null) {
+            registerNetworkCallback();
+        } else if (mNetworkCallback != null) {
+            getConnectivityManager().unregisterNetworkCallback(mNetworkCallback);
+        }
+        updateNetworkLinkAddress(network, getConnectivityManager().getLinkProperties(network));
     }
 
     @UsedByReflection("Android")
