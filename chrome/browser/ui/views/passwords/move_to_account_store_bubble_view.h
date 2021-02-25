@@ -21,7 +21,6 @@ class MoveToAccountStoreBubbleView : public PasswordBubbleViewBase {
  private:
   // PasswordBubbleViewBase
   void AddedToWidget() override;
-  void OnThemeChanged() override;
   MoveToAccountStoreBubbleController* GetController() override;
   const MoveToAccountStoreBubbleController* GetController() const override;
 

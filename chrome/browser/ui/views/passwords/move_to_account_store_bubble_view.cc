@@ -11,7 +11,7 @@
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/move_to_account_store_bubble_controller.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
-#include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
+#include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
@@ -186,22 +186,6 @@ void ImageWithBadge::Render() {
 BEGIN_METADATA(ImageWithBadge, views::ImageView)
 END_METADATA
 
-std::unique_ptr<views::View> CreateHeaderImage(int image_id) {
-  auto image_view = std::make_unique<NonAccessibleImageView>();
-  image_view->SetImage(
-      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(image_id));
-  gfx::Size preferred_size = image_view->GetPreferredSize();
-  if (preferred_size.width()) {
-    preferred_size = gfx::ScaleToRoundedSize(
-        preferred_size,
-        static_cast<float>(ChromeLayoutProvider::Get()->GetDistanceMetric(
-            views::DISTANCE_BUBBLE_PREFERRED_WIDTH)) /
-            preferred_size.width());
-    image_view->SetImageSize(preferred_size);
-  }
-  return image_view;
-}
-
 std::unique_ptr<views::Label> CreateDescription() {
   auto description = std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MOVE_HINT),
@@ -326,14 +310,28 @@ MoveToAccountStoreBubbleView::~MoveToAccountStoreBubbleView() = default;
 void MoveToAccountStoreBubbleView::AddedToWidget() {
   static_cast<views::Label*>(GetBubbleFrameView()->title())
       ->SetAllowCharacterBreak(true);
-}
 
-void MoveToAccountStoreBubbleView::OnThemeChanged() {
-  PasswordBubbleViewBase::OnThemeChanged();
-  GetBubbleFrameView()->SetHeaderView(CreateHeaderImage(
-      color_utils::IsDark(GetBubbleFrameView()->GetBackgroundColor())
-          ? IDR_SAVE_PASSWORD_MULTI_DEVICE_DARK
-          : IDR_SAVE_PASSWORD_MULTI_DEVICE));
+  // Set the header image.
+  ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
+  auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
+      *bundle.GetImageSkiaNamed(IDR_SAVE_PASSWORD_MULTI_DEVICE),
+      *bundle.GetImageSkiaNamed(IDR_SAVE_PASSWORD_MULTI_DEVICE_DARK),
+      base::BindRepeating(
+          [](MoveToAccountStoreBubbleView* view) {
+            return view->GetBubbleFrameView()->GetBackgroundColor();
+          },
+          this));
+
+  gfx::Size preferred_size = image_view->GetPreferredSize();
+  if (preferred_size.width()) {
+    float scale =
+        static_cast<float>(ChromeLayoutProvider::Get()->GetDistanceMetric(
+            views::DISTANCE_BUBBLE_PREFERRED_WIDTH)) /
+        preferred_size.width();
+    preferred_size = gfx::ScaleToRoundedSize(preferred_size, scale);
+    image_view->SetImageSize(preferred_size);
+  }
+  GetBubbleFrameView()->SetHeaderView(std::move(image_view));
 }
 
 MoveToAccountStoreBubbleController*
