@@ -2179,8 +2179,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (TabUiFeatureUtilities.supportInstantStart(isTablet())
                 || (getTabModelSelector().isTabStateInitialized() && isLayoutManagerCreated())) {
             if (StartSurfaceConfiguration.OMNIBOX_FOCUSED_ON_NEW_TAB.getValue()) {
-                ReturnToChromeExperimentsUtil.handleLoadUrlFromStartSurfaceAsNewTab(
-                        null, PageTransition.AUTO_TOPLEVEL, incognito, parentTab);
+                Runnable emptyTabCloseCallback = isInOverviewMode() ? () -> {
+                    showOverview(StartSurfaceState.SHOWING_PREVIOUS);
+                } : null;
+                ReturnToChromeExperimentsUtil.handleLoadUrlFromStartSurfaceAsNewTab(null,
+                        PageTransition.AUTO_TOPLEVEL, incognito, parentTab, getCurrentTabModel(),
+                        emptyTabCloseCallback);
             } else {
                 showOverview(StartSurfaceState.SHOWING_HOMEPAGE);
             }

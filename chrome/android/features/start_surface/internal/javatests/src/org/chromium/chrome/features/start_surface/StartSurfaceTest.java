@@ -1623,9 +1623,12 @@ public class StartSurfaceTest {
     @LargeTest
     @Feature({"StartSurface"})
     @DisableIf.Build(sdk_is_less_than = M, message = "https://crbug.com/1170553")
-    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1170553")
+    @DisableIf.Build(sdk_is_greater_than = M, supported_abis_includes = "x86",
+            message = "https://crbug.com/1170553")
+    // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single/omnibox_focused_on_new_tab/true"})
-    public void testOmnibox_FocusedOnNewTabInSingleSurface_WithBackButton() {
+    public void testOmnibox_FocusedOnNewTabInSingleSurface_BackButtonDeleteBlankTab() {
+        // clang-format on
         if (!mImmediateReturn) {
             onView(withId(org.chromium.chrome.tab_ui.R.id.home_button)).perform(click());
         }
@@ -1635,7 +1638,7 @@ public class StartSurfaceTest {
                 mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel().getCount(),
                 equalTo(1));
 
-        // Launches a new Tab from the Start surface, and verify the omnibox is focused.
+        // Launches a new Tab from the Start surface, and verifies the omnibox is focused.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.getActivity().getTabCreator(false).launchNTP());
         TabUiTestHelper.verifyTabModelTabCount(mActivityTestRule.getActivity(), 2, 0);
@@ -1655,20 +1658,8 @@ public class StartSurfaceTest {
             assertTrue(TextUtils.equals(toolbarDataProvider.getCurrentUrl(), UrlConstants.NTP_URL));
         });
 
-        // Verifies that if the new created tab doesn't navigate, tapping back button will deleted
-        // it from the TabModel.
-        TestThreadUtils.runOnUiThreadBlocking(() -> urlBar.clearFocus());
-        waitForView(withId(R.id.toolbar_buttons));
-        CriteriaHelper.pollUiThread(()
-                                            -> !isKeyboardShown() && !urlBar.isFocused(),
-                MAX_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-
-        // Back to the Start surface.
         pressBack();
-        if (Build.VERSION.SDK_INT >= P) {
-            pressBack();
-        }
-        CriteriaHelper.pollUiThread(this::isOverviewVisible);
+        waitForView(withId(R.id.primary_tasks_surface_view));
         TabUiTestHelper.verifyTabModelTabCount(mActivityTestRule.getActivity(), 1, 0);
     }
 

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks;
 import android.app.Activity;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -17,16 +18,18 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.locale.LocaleManager;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
+import org.chromium.chrome.browser.ntp.FakeboxDelegate;
+import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -34,7 +37,6 @@ import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
@@ -46,6 +48,62 @@ import java.util.List;
  */
 public final class ReturnToChromeExperimentsUtil {
     private static final String TAG = "TabSwitcherOnReturn";
+
+    /** An inner class to monitor the state of a newly create Tab. */
+    private static class TabStateObserver implements UrlFocusChangeListener {
+        private final Tab mNewTab;
+        private final TabModel mCurrentTabModel;
+        private final FakeboxDelegate mFakeboxDelegate;
+        private final @Nullable Runnable mEmptyTabCloseCallback;
+        private final ActivityTabProvider mActivityTabProvider;
+        private boolean mIsOmniboxFocused;
+
+        TabStateObserver(@NonNull Tab newTab, @NonNull TabModel currentTabModel,
+                @NonNull FakeboxDelegate fakeboxDelegate, @Nullable Runnable emptyTabCloseCallback,
+                ActivityTabProvider activityTabProvider) {
+            mNewTab = newTab;
+            mCurrentTabModel = currentTabModel;
+            mEmptyTabCloseCallback = emptyTabCloseCallback;
+            mFakeboxDelegate = fakeboxDelegate;
+            mActivityTabProvider = activityTabProvider;
+            mIsOmniboxFocused = false;
+            mFakeboxDelegate.addUrlFocusChangeListener(this);
+        }
+
+        @Override
+        public void onUrlFocusChange(boolean hasFocus) {
+            if (hasFocus) {
+                // It is possible that unfocusing event happens before the Omnibox
+                // first gets focused, use this flag to skip the cases.
+                mIsOmniboxFocused = true;
+                return;
+            }
+
+            if (!hasFocus && mIsOmniboxFocused) {
+                if (mNewTab.getUrl().isEmpty()) {
+                    if (mEmptyTabCloseCallback != null && mNewTab == mActivityTabProvider.get()) {
+                        mEmptyTabCloseCallback.run();
+                    }
+                    // Closes the Tab after any necessary transition is done. This
+                    // is safer than closing the Tab first, especially if it is the
+                    // only Tab in the TabModel.
+                    if (!mNewTab.isClosing()) {
+                        mCurrentTabModel.closeTab(mNewTab);
+                    }
+                } else {
+                    // After the tab navigates, we will set the keep tab property,
+                    // and the new tab won't be deleted from the TabModel when the
+                    // back button is tapped.
+                    StartSurfaceUserData.setKeepTab(mNewTab, true);
+                }
+
+                // No matter whether the back button is tapped or the Tab navigates,
+                // {@link onUrlFocusChanged} with focus == false is always called.
+                // Removes the observer here.
+                mFakeboxDelegate.removeUrlFocusChangeListener(this);
+            }
+        }
+    }
 
     @VisibleForTesting
     public static final String TAB_SWITCHER_ON_RETURN_MS_PARAM = "tab_switcher_on_return_time_ms";
@@ -158,12 +216,23 @@ public final class ReturnToChromeExperimentsUtil {
     /**
      * Check if we should handle the navigation as opening a new Tab. If so, create a new tab and
      * load the URL.
+     *
+     * @param url The URL to load.
+     * @param transition The page transition type.
+     * @param incognito Whether to load URL in an incognito Tab.
+     * @param parentTab  The parent tab used to create a new tab if needed.
+     * @param currentTabModel The current TabModel.
+     * @param emptyTabCloseCallback The callback to run when the newly created empty Tab will be
+     *                              closing.
+     * @return true if we have handled the navigation, false otherwise.
      */
     public static boolean handleLoadUrlFromStartSurfaceAsNewTab(String url,
-            @PageTransition int transition, @Nullable Boolean incognito, @Nullable Tab parentTab) {
+            @PageTransition int transition, @Nullable Boolean incognito, @Nullable Tab parentTab,
+            TabModel currentTabModel, @Nullable Runnable emptyTabCloseCallback) {
         LoadUrlParams params = new LoadUrlParams(url, transition);
         return handleLoadUrlWithPostDataFromStartSurface(params, null, null, incognito, parentTab,
-                true /*focusOnOmnibox*/, true /*skipOverviewCheck*/);
+                /*focusOnOmnibox*/ true, /*skipOverviewCheck*/ true, currentTabModel,
+                emptyTabCloseCallback);
     }
 
     /**
@@ -183,7 +252,7 @@ public final class ReturnToChromeExperimentsUtil {
             @Nullable String postDataType, @Nullable byte[] postData, @Nullable Boolean incognito,
             @Nullable Tab parentTab) {
         return handleLoadUrlWithPostDataFromStartSurface(
-                params, postDataType, postData, incognito, parentTab, false, false);
+                params, postDataType, postData, incognito, parentTab, false, false, null, null);
     }
 
     /**
@@ -199,12 +268,15 @@ public final class ReturnToChromeExperimentsUtil {
      * @param parentTab  The parent tab used to create a new tab if needed.
      * @param focusOnOmnibox Whether to focus on the omnibox when a new Tab is created.
      * @param skipOverviewCheck Whether to skip a check of whether it is in the overview mode.
+     * @param currentTabModel The current TabModel.
+     * @param emptyTabCloseCallback The callback to run when the newly created empty Tab will be
+     *                              closing.
      * @return true if we have handled the navigation, false otherwise.
      */
-
     private static boolean handleLoadUrlWithPostDataFromStartSurface(LoadUrlParams params,
             @Nullable String postDataType, @Nullable byte[] postData, @Nullable Boolean incognito,
-            @Nullable Tab parentTab, boolean focusOnOmnibox, boolean skipOverviewCheck) {
+            @Nullable Tab parentTab, boolean focusOnOmnibox, boolean skipOverviewCheck,
+            @Nullable TabModel currentTabModel, @Nullable Runnable emptyTabCloseCallback) {
         String url = params.getUrl();
         ChromeActivity chromeActivity =
                 getActivityPresentingOverviewWithOmnibox(url, skipOverviewCheck);
@@ -223,29 +295,16 @@ public final class ReturnToChromeExperimentsUtil {
             params.setPostData(ResourceRequestBody.createFromBytes(postData));
         }
 
-        TabObserver observer = null;
-        if (focusOnOmnibox) {
-            observer = new EmptyTabObserver() {
-                @Override
-                public void onDidFinishNavigation(Tab tab, NavigationHandle navigationHandle) {
-                    super.onDidFinishNavigation(tab, navigationHandle);
-                    if (!TextUtils.isEmpty(navigationHandle.getUrl().getSpec())) {
-                        // After the tab is navigated, we will set the keep tab property, and the
-                        // new tab won't be deleted from the TabModel when the back button is
-                        // tapped.
-                        StartSurfaceUserData.setKeepTab(tab, true);
-                    }
-                    tab.removeObserver(this);
-                }
-            };
-        }
-
-        Tab tab = chromeActivity.getTabCreator(incognitoParam)
-                          .createNewTab(params, TabLaunchType.FROM_START_SURFACE, parentTab);
-        if (focusOnOmnibox && tab != null) {
-            tab.addObserver(observer);
-            StartSurfaceUserData.setFocusOnOmnibox(tab, true);
-            StartSurfaceUserData.setCreatedAsNtp(tab);
+        Tab newTab = chromeActivity.getTabCreator(incognitoParam)
+                             .createNewTab(params, TabLaunchType.FROM_START_SURFACE, parentTab);
+        if (focusOnOmnibox && newTab != null) {
+            // This observer lives for as long as the user is focused in the Omnibox. It stops
+            // observing once the focus is cleared, e.g, Tab navigates or user taps the back button.
+            new TabStateObserver(newTab, currentTabModel,
+                    chromeActivity.getToolbarManager().getFakeboxDelegate(), emptyTabCloseCallback,
+                    chromeActivity.getActivityTabProvider());
+            StartSurfaceUserData.setFocusOnOmnibox(newTab, true);
+            StartSurfaceUserData.setCreatedAsNtp(newTab);
         }
 
         if (params.getTransitionType() == PageTransition.AUTO_BOOKMARK) {
