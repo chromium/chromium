@@ -10,8 +10,10 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.RadioGroup;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
@@ -33,6 +35,22 @@ import org.chromium.ui.widget.Toast;
  */
 public class ImageDescriptionsDialog
         implements ModalDialogProperties.Controller, RadioGroup.OnCheckedChangeListener {
+    // Please treat this list as append only and keep it in sync with
+    // AccessibilityImageLabelModeAndroid in enums.xml
+    @IntDef({ImageDescriptionsDialogAction.ENABLED,
+            ImageDescriptionsDialogAction.ENABLED_ONLY_ON_WIFI,
+            ImageDescriptionsDialogAction.JUST_ONCE,
+            ImageDescriptionsDialogAction.JUST_ONCE_DONT_ASK_AGAIN,
+            ImageDescriptionsDialogAction.CANCEL})
+    public @interface ImageDescriptionsDialogAction {
+        int ENABLED = 0;
+        int ENABLED_ONLY_ON_WIFI = 1;
+        int JUST_ONCE = 2;
+        int JUST_ONCE_DONT_ASK_AGAIN = 3;
+        int CANCEL = 4;
+        int NUM_ENTRIES = 5;
+    }
+
     private ImageDescriptionsControllerDelegate mControllerDelegate;
 
     private ModalDialogManager mModalDialogManager;
@@ -164,6 +182,7 @@ public class ImageDescriptionsDialog
     @Override
     public void onClick(PropertyModel model, int buttonType) {
         int toastMessage = -1;
+        int userAction = -1;
 
         // User has elected to get image descriptions
         if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
@@ -172,6 +191,9 @@ public class ImageDescriptionsDialog
                 toastMessage = R.string.image_descriptions_toast_on;
                 mControllerDelegate.enableImageDescriptions(mProfile);
                 mControllerDelegate.setOnlyOnWifiRequirement(mOnlyOnWifiState, mProfile);
+
+                userAction = mOnlyOnWifiState ? ImageDescriptionsDialogAction.ENABLED_ONLY_ON_WIFI
+                                              : ImageDescriptionsDialogAction.ENABLED;
 
                 // If user requested "only on wifi" and we have no wifi, provide alt toast.
                 if (mOnlyOnWifiState
@@ -182,15 +204,23 @@ public class ImageDescriptionsDialog
             } else if (mOptionJustOnceRadioButton.isChecked()) {
                 mControllerDelegate.getImageDescriptionsJustOnce(mDontAskAgainState, mWebContents);
                 toastMessage = R.string.image_descriptions_toast_just_once;
+
+                userAction = mDontAskAgainState
+                        ? ImageDescriptionsDialogAction.JUST_ONCE_DONT_ASK_AGAIN
+                        : ImageDescriptionsDialogAction.JUST_ONCE;
             }
 
             mDismissalCause = DialogDismissalCause.POSITIVE_BUTTON_CLICKED;
         } else {
             mDismissalCause = DialogDismissalCause.NEGATIVE_BUTTON_CLICKED;
+            userAction = ImageDescriptionsDialogAction.CANCEL;
         }
 
         // Make a toast, if necessary.
         if (toastMessage != -1) Toast.makeText(mContext, toastMessage, Toast.LENGTH_LONG).show();
+
+        // On user action, record histogram metric.
+        recordHistogramMetric(userAction);
 
         // Dismiss the dialog and unregister observer.
         unregisterObserverAndDismiss();
@@ -230,5 +260,15 @@ public class ImageDescriptionsDialog
      */
     private void dismiss() {
         mModalDialogManager.dismissDialog(mPropertyModel, mDismissalCause);
+    }
+
+    /**
+     * Helper method to record metrics for user choice when interacting with dialog.
+     *
+     * @param action    @ImageDescriptionsDialogAction int, action user has taken on the dialog
+     */
+    private void recordHistogramMetric(@ImageDescriptionsDialogAction int action) {
+        RecordHistogram.recordEnumeratedHistogram("Accessibility.ImageLabels.Android.DialogOption",
+                action, ImageDescriptionsDialogAction.NUM_ENTRIES);
     }
 }

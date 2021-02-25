@@ -181,6 +181,19 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="3" label="Disabled"/>
 </enum>
 
+<enum name="AccessibilityImageLabelModeAndroid">
+  <summary>
+    Tracks what mode the user has selected for accessibility image labels on
+    Android, either always enabled, always enabled but only on Wi-Fi, just once,
+    just once and don't ask again, or if they cancel.
+  </summary>
+  <int value="0" label="Enabled (always)"/>
+  <int value="1" label="Enabled (Only on WiFi)"/>
+  <int value="2" label="Just once"/>
+  <int value="3" label="Just once (Don't ask again)"/>
+  <int value="4" label="Cancel"/>
+</enum>
+
 <enum name="AccessibilityModeFlagEnum">
   <summary>Track individual accessibility mode flags that are enabled.</summary>
   <int value="0" label="Native APIs"/>

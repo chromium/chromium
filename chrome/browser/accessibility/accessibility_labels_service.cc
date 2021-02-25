@@ -297,6 +297,18 @@ void AccessibilityLabelsService::UpdateAccessibilityLabelsHistograms() {
   base::UmaHistogramBoolean("Accessibility.ImageLabels",
                             profile_->GetPrefs()->GetBoolean(
                                 prefs::kAccessibilityImageLabelsEnabled));
+
+#if defined(OS_ANDROID)
+  // For Android we will track additional histograms.
+  base::UmaHistogramBoolean(
+      "Accessibility.ImageLabels.Android",
+      profile_->GetPrefs()->GetBoolean(
+          prefs::kAccessibilityImageLabelsEnabledAndroid));
+
+  base::UmaHistogramBoolean("Accessibility.ImageLabels.Android.OnlyOnWifi",
+                            profile_->GetPrefs()->GetBoolean(
+                                prefs::kAccessibilityImageLabelsOnlyOnWifi));
+#endif
 }
 
 #if defined(OS_ANDROID)
