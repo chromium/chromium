@@ -222,11 +222,15 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     private class ScrollableContainerDelegateImpl implements ScrollableContainerDelegate {
         @Override
         public void addScrollListener(ScrollListener listener) {
+            if (mStream == null) return;
+
             mStream.addScrollListener(listener);
         }
 
         @Override
         public void removeScrollListener(ScrollListener listener) {
+            if (mStream == null) return;
+
             mStream.removeScrollListener(listener);
         }
 
@@ -317,6 +321,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
 
     @Override
     public void destroy() {
+        stopIph();
         mMediator.destroy();
         if (mStreamLifecycleManager != null) mStreamLifecycleManager.destroy();
         mStreamLifecycleManager = null;
@@ -324,11 +329,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         if (mEnhancedProtectionPromoController != null) {
             mEnhancedProtectionPromoController.destroy();
         }
-        if (mScrollableContainerDelegate != null && mHeaderIphScrollListener != null) {
-            mScrollableContainerDelegate.removeScrollListener(mHeaderIphScrollListener);
-        }
         mScrollableContainerDelegate = null;
-        mHeaderIphScrollListener = null;
     }
 
     @Override
@@ -603,8 +604,16 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     /**
      * Initializes things related to the IPH which will start listening to scroll events to
      * determine whether the IPH should be triggered.
+     *
+     * You must stop the IPH with #stopIph before tearing down feed components, e.g., on #destroy.
+     * This also applies for the case where the feed stream is deleted when disabled (e.g., by
+     * policy).
      */
-    public void initializeIph() {
+    void initializeIph() {
+        // Don't do anything when there is no feed stream because the IPH isn't needed in that
+        // case.
+        if (mStream == null) return;
+
         // Provide a delegate for the container of the feed surface that is handled by the feed
         // coordinator itself when not provided externally (e.g., by the Start surface).
         if (mScrollableContainerDelegate == null) {
@@ -642,6 +651,20 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         mHeaderIphScrollListener =
                 new HeaderIphScrollListener(delegate, mScrollableContainerDelegate);
         mScrollableContainerDelegate.addScrollListener(mHeaderIphScrollListener);
+    }
+
+    /**
+     * Stops and deletes things related to the IPH. Must be called before tearing down feed
+     * components, e.g., on #destroy. This also applies for the case where the feed stream is
+     * deleted when disabled (e.g., by policy).
+     */
+    void stopIph() {
+        if (mStream != null && mScrollableContainerDelegate != null
+                && mHeaderIphScrollListener != null) {
+            mScrollableContainerDelegate.removeScrollListener(mHeaderIphScrollListener);
+        }
+        mHeaderIphScrollListener = null;
+        mScrollableContainerDelegate = null;
     }
 
     private boolean isFeedHeaderPositionInContainerSuitableForIPH(float headerMaxPosFraction) {
