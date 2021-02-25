@@ -37,7 +37,7 @@ struct URLLoaderCompletionStatus;
 
 namespace blink {
 class BackForwardCacheLoaderHelper;
-class WebMojoURLLoaderClientObserver;
+class WebResourceRequestSender;
 
 // MojoURLLoaderClient is an implementation of
 // network::mojom::URLLoaderClient to receive messages from a single URLLoader.
@@ -45,7 +45,7 @@ class BLINK_PLATFORM_EXPORT MojoURLLoaderClient final
     : public network::mojom::URLLoaderClient {
  public:
   MojoURLLoaderClient(
-      WebMojoURLLoaderClientObserver* url_loader_client_observer,
+      WebResourceRequestSender* resource_request_sender,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       bool bypass_redirect_checks,
       const GURL& request_url,
@@ -111,7 +111,7 @@ class BLINK_PLATFORM_EXPORT MojoURLLoaderClient final
   WebURLLoader::DeferType deferred_state_ =
       WebURLLoader::DeferType::kNotDeferred;
   int32_t accumulated_transfer_size_diff_during_deferred_ = 0;
-  WebMojoURLLoaderClientObserver* const url_loader_client_observer_;
+  WebResourceRequestSender* const resource_request_sender_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   bool bypass_redirect_checks_ = false;
   KURL last_loaded_url_;

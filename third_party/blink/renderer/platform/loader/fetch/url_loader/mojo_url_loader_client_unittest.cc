@@ -23,7 +23,7 @@
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
-#include "third_party/blink/public/platform/web_mojo_url_loader_client_observer.h"
+#include "third_party/blink/public/platform/web_resource_request_sender.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
@@ -34,12 +34,11 @@ namespace {
 
 constexpr size_t kDataPipeCapacity = 4096;
 
-class MockWebURLLoaderClientObserver
-    : public blink::WebMojoURLLoaderClientObserver {
+class MockWebResourceRequestSender : public WebResourceRequestSender {
  public:
   struct Context;
-  MockWebURLLoaderClientObserver() : context_(new Context()) {}
-  ~MockWebURLLoaderClientObserver() override = default;
+  MockWebResourceRequestSender() : context_(new Context()) {}
+  ~MockWebResourceRequestSender() override = default;
 
   void OnUploadProgress(int64_t position, int64_t size) override {
     EXPECT_FALSE(context_->complete);
@@ -164,7 +163,7 @@ std::string ReadOneChunk(mojo::ScopedDataPipeConsumerHandle* handle) {
 }
 
 std::string GetRequestPeerContextBody(
-    MockWebURLLoaderClientObserver::Context* context) {
+    MockWebResourceRequestSender::Context* context) {
   if (context->body_handle) {
     context->data += ReadOneChunk(&context->body_handle);
   }
@@ -187,7 +186,7 @@ class WebMojoURLLoaderClientTest : public ::testing::Test,
                                    public ::testing::WithParamInterface<bool> {
  protected:
   WebMojoURLLoaderClientTest()
-      : url_loader_client_observer_(new MockWebURLLoaderClientObserver()) {
+      : resource_request_sender_(new MockWebResourceRequestSender()) {
     if (DeferWithBackForwardCacheEnabled()) {
       scoped_feature_list_.InitAndEnableFeature(
           blink::features::kLoadingTasksUnfreezable);
@@ -203,11 +202,11 @@ class WebMojoURLLoaderClientTest : public ::testing::Test,
         blink::scheduler::GetSingleThreadTaskRunnerForTesting();
 
     client_ = std::make_unique<MojoURLLoaderClient>(
-        url_loader_client_observer_.get(), loading_task_runner,
+        resource_request_sender_.get(), loading_task_runner,
         url_loader_factory->BypassRedirectChecks(), request->url,
         WebBackForwardCacheLoaderHelper(
             MakeGarbageCollected<TestBackForwardCacheLoaderHelper>()));
-    context_ = url_loader_client_observer_->context();
+    context_ = resource_request_sender_->context();
     context_->url_laoder_client = client_.get();
     url_loader_ = ThrottlingURLLoader::CreateLoaderAndStart(
         std::move(url_loader_factory),
@@ -263,8 +262,8 @@ class WebMojoURLLoaderClientTest : public ::testing::Test,
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ThrottlingURLLoader> url_loader_;
   std::unique_ptr<MojoURLLoaderClient> client_;
-  std::unique_ptr<MockWebURLLoaderClientObserver> url_loader_client_observer_;
-  MockWebURLLoaderClientObserver::Context* context_;
+  std::unique_ptr<MockWebResourceRequestSender> resource_request_sender_;
+  MockWebResourceRequestSender::Context* context_;
   int request_id_ = 0;
   mojo::Remote<network::mojom::URLLoaderClient> url_loader_client_;
 };
