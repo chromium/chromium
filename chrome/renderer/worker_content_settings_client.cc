@@ -58,6 +58,23 @@ WorkerContentSettingsClient::Clone() {
   return base::WrapUnique(new WorkerContentSettingsClient(*this));
 }
 
+void WorkerContentSettingsClient::AllowStorageAccess(
+    StorageType storage_type,
+    base::OnceCallback<void(bool)> callback) {
+  if (is_unique_origin_) {
+    std::move(callback).Run(false);
+    return;
+  }
+  EnsureContentSettingsManager();
+
+  content_settings_manager_->AllowStorageAccess(
+      render_frame_id_,
+      content_settings::ContentSettingsAgentImpl::ConvertToMojoStorageType(
+          storage_type),
+      document_origin_, site_for_cookies_, top_frame_origin_,
+      std::move(callback));
+}
+
 bool WorkerContentSettingsClient::AllowStorageAccessSync(
     StorageType storage_type) {
   if (is_unique_origin_)

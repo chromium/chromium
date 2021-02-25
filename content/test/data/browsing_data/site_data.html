@@ -176,6 +176,22 @@
     open.onerror = failure_;
   }
 
+  function worker_(command) {
+    let worker = new Worker("site_data_worker.js");
+    worker.onmessage = e => {
+      domAutomationController.send(e.data);
+    };
+    worker.postMessage(command)
+  }
+
+  function hasWorkerFileSystemAccess() {
+    worker_("hasFileSystemAccess");
+  }
+
+  function setWorkerFileSystemAccess() {
+    worker_("setFileSystemAccess");
+  }
+
   function setHistory() {
     history.pushState({}, "foo");
     success_();
