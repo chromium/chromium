@@ -97,8 +97,6 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
     static final String FEEDBACK_REPORT_TYPE =
             "com.google.chrome.feed.USER_INITIATED_FEEDBACK_REPORT";
     @VisibleForTesting
-    static final String FEEDBACK_CONTEXT = "mobile_browser";
-    @VisibleForTesting
     static final String XSURFACE_CARD_URL = "Card URL";
     // For testing some functionality in the public APK.
     @VisibleForTesting
@@ -806,13 +804,11 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
 
         Map<String, String> feedContext = convertNameFormat(productSpecificDataMap);
 
-        // FEEDBACK_CONTEXT: This identifies this feedback as coming from Chrome for Android (as
-        // opposed to desktop).
         // FEEDBACK_REPORT_TYPE: Reports for Chrome mobile must have a contextTag of the form
         // com.chrome.feed.USER_INITIATED_FEEDBACK_REPORT, or they will be discarded for not
         // matching an allow list rule.
         mHelpAndFeedbackLauncher.showFeedback(
-                mActivity, profile, url, FEEDBACK_REPORT_TYPE, feedContext, FEEDBACK_CONTEXT);
+                mActivity, profile, url, FEEDBACK_REPORT_TYPE, feedContext);
     }
 
     // Since the XSurface client strings are slightly different than the Feed strings, convert the

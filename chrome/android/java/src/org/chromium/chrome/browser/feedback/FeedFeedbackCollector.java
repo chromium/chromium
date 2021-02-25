@@ -36,9 +36,8 @@ public class FeedFeedbackCollector
     }
 
     public FeedFeedbackCollector(Activity activity, @Nullable String categoryTag,
-            @Nullable String description, @Nullable String feedbackContext,
-            @Nullable ScreenshotSource screenshotSource, InitParams initParams,
-            Callback<FeedbackCollector> callback) {
+            @Nullable String description, @Nullable ScreenshotSource screenshotSource,
+            InitParams initParams, Callback<FeedbackCollector> callback) {
         super(categoryTag, description, callback);
 
         init(activity, screenshotSource, initParams);

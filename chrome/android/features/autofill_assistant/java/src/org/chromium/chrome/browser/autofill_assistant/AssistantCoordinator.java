@@ -89,9 +89,9 @@ public class AssistantCoordinator {
         Profile profile =
                 Profile.fromWebContents(mActivity.getActivityTabProvider().get().getWebContents());
 
-        // TODO(b/172422690): Add the debugContext to the feedback.
         HelpAndFeedbackLauncherImpl.getInstance().showFeedback(mActivity, profile,
-                mActivity.getActivityTab().getUrlString(), FEEDBACK_CATEGORY_TAG, screenshotMode);
+                mActivity.getActivityTab().getUrlString(), FEEDBACK_CATEGORY_TAG, screenshotMode,
+                debugContext);
     }
 
     public void show() {
