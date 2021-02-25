@@ -2540,13 +2540,13 @@
           'scripts': 'chromium_mac_scripts',
         }
       },
-      'Mac10.13 Tests (dbg)': {
+      'Mac11.0 Tests': {
         'mixins': [
-            'mac_10.15',
+            'mac_11.0_beta',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_mac_gtests',
-          'isolated_scripts': 'chromium_dbg_isolated_scripts',
+          'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
         },
       },
       'Site Isolation Android': {
@@ -5139,6 +5139,15 @@
           'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
         },
       },
+      'Mac10.13 Tests (dbg)': {
+        'mixins': [
+            'mac_10.15',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_mac_gtests',
+          'isolated_scripts': 'chromium_dbg_isolated_scripts',
+        },
+      },
       'Mac10.14 Tests': {
         'mixins': [
             'mac_10.14',
@@ -5155,15 +5164,6 @@
         ],
         'test_suites': {
           'gtest_tests': 'chromium_mac_gtests_no_nacl',
-          'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
-        },
-      },
-      'Mac11.0 Tests': {
-        'mixins': [
-            'mac_11.0_beta',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_mac_gtests',
           'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
         },
       },
