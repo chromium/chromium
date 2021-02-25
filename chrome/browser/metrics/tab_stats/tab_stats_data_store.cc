@@ -123,9 +123,8 @@ void TabStatsDataStore::RecordSamplingMetaData() {
 }
 
 void TabStatsDataStore::OnTabVisibilityChanged(
-    content::WebContents* web_contents,
-    content::Visibility visibility) {
-  if (visibility == content::Visibility::VISIBLE)
+    content::WebContents* web_contents) {
+  if (web_contents->GetVisibility() == content::Visibility::VISIBLE)
     OnTabAudibleOrVisible(web_contents);
 }
 

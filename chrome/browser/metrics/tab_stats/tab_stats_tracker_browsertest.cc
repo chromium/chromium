@@ -19,10 +19,16 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/content_browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/screen.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace metrics {
 
@@ -32,9 +38,13 @@ class TestTabStatsObserver : public TabStatsObserver {
  public:
   // Functions used to update the window/tab count.
   void OnWindowAdded() override { ++window_count_; }
-  void OnWindowRemoved() override { --window_count_; }
+  void OnWindowRemoved() override {
+    EXPECT_GT(window_count_, 0U);
+    --window_count_;
+  }
   void OnTabAdded(content::WebContents* web_contents) override { ++tab_count_; }
   void OnTabRemoved(content::WebContents* web_contents) override {
+    EXPECT_GT(tab_count_, 0U);
     --tab_count_;
   }
 
@@ -328,4 +338,162 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
 }
 
 #endif  // defined(OS_WIN)
+
+namespace {
+
+class LenientMockTabStatsObserver : public TabStatsObserver {
+ public:
+  LenientMockTabStatsObserver() = default;
+  ~LenientMockTabStatsObserver() override = default;
+  LenientMockTabStatsObserver(const LenientMockTabStatsObserver& other) =
+      delete;
+  LenientMockTabStatsObserver& operator=(const LenientMockTabStatsObserver&) =
+      delete;
+
+  MOCK_METHOD0(OnWindowAdded, void());
+  MOCK_METHOD0(OnWindowRemoved, void());
+  MOCK_METHOD1(OnTabAdded, void(content::WebContents*));
+  MOCK_METHOD1(OnTabRemoved, void(content::WebContents*));
+  MOCK_METHOD2(OnTabReplaced,
+               void(content::WebContents*, content::WebContents*));
+  MOCK_METHOD1(OnMainFrameNavigationCommitted, void(content::WebContents*));
+  MOCK_METHOD1(OnTabInteraction, void(content::WebContents*));
+  MOCK_METHOD1(OnTabAudible, void(content::WebContents*));
+  MOCK_METHOD1(OnTabVisibilityChanged, void(content::WebContents*));
+  MOCK_METHOD2(OnMediaEffectivelyFullscreenChanged,
+               void(content::WebContents*, bool));
+};
+using MockTabStatsObserver = testing::StrictMock<LenientMockTabStatsObserver>;
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest, TabStatsObserverBasics) {
+  MockTabStatsObserver mock_observer;
+  TestTabStatsObserver count_observer;
+  tab_stats_tracker_->AddObserverAndSetInitialState(&count_observer);
+
+  auto* window1_tab1 = browser()->tab_strip_model()->GetWebContentsAt(0);
+  EXPECT_EQ(content::Visibility::VISIBLE, window1_tab1->GetVisibility());
+
+  // The browser starts with one window and one visible tab, the observer will
+  // be notified immediately about those.
+  EXPECT_CALL(mock_observer, OnWindowAdded());
+  EXPECT_CALL(mock_observer, OnTabAdded(window1_tab1));
+  tab_stats_tracker_->AddObserverAndSetInitialState(&mock_observer);
+  ::testing::Mock::VerifyAndClear(&mock_observer);
+
+  // Mark the tab as hidden.
+  EXPECT_CALL(mock_observer, OnTabVisibilityChanged(window1_tab1));
+  window1_tab1->WasHidden();
+  ::testing::Mock::VerifyAndClear(&mock_observer);
+
+  // Make it visible again.
+  EXPECT_CALL(mock_observer, OnTabVisibilityChanged(window1_tab1));
+  window1_tab1->WasShown();
+  ::testing::Mock::VerifyAndClear(&mock_observer);
+
+  // Create a second browser window. This will cause one visible tab to be
+  // created and its main frame will do a navigation.
+  EXPECT_CALL(mock_observer, OnWindowAdded());
+  EXPECT_CALL(mock_observer, OnTabAdded(::testing::_));
+  EXPECT_CALL(mock_observer, OnMainFrameNavigationCommitted(::testing::_));
+  EXPECT_CALL(mock_observer, OnTabVisibilityChanged(::testing::_));
+  Browser* window2 = CreateBrowser(ProfileManager::GetActiveUserProfile());
+  ::testing::Mock::VerifyAndClear(&mock_observer);
+
+  // Make sure that the 2 windows don't overlap to avoid some unexpected
+  // visibility change events because one tab occludes the other.
+  // This resizes the two windows so they're right next to each other.
+  const gfx::NativeWindow window = browser()->window()->GetNativeWindow();
+  gfx::Rect work_area =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window).work_area();
+  const gfx::Size size(work_area.width() / 3, work_area.height() / 2);
+  gfx::Rect browser_rect(work_area.origin(), size);
+  browser()->window()->SetBounds(browser_rect);
+  browser_rect.set_x(browser_rect.right());
+  window2->window()->SetBounds(browser_rect);
+
+  auto* window2_tab1 = window2->tab_strip_model()->GetWebContentsAt(0);
+
+  // Adding a tab to the second window will cause its previous frame to become
+  // hidden.
+  EXPECT_CALL(mock_observer, OnTabAdded(::testing::_));
+  EXPECT_CALL(mock_observer, OnMainFrameNavigationCommitted(::testing::_));
+  EXPECT_CALL(mock_observer, OnTabVisibilityChanged(window2_tab1));
+  AddTabAtIndexToBrowser(window2, 1, GURL("about:blank"),
+                         ui::PAGE_TRANSITION_TYPED, true);
+  ::testing::Mock::VerifyAndClear(&mock_observer);
+
+  auto* window2_tab2 = window2->tab_strip_model()->GetWebContentsAt(1);
+  EXPECT_EQ(content::Visibility::HIDDEN, window2_tab1->GetVisibility());
+  EXPECT_EQ(content::Visibility::VISIBLE, window2_tab2->GetVisibility());
+
+  // Make sure that the visibility change events are properly forwarded.
+  EXPECT_CALL(mock_observer, OnTabVisibilityChanged(window2_tab2));
+  EXPECT_CALL(mock_observer, OnTabVisibilityChanged(window2_tab1));
+  window2->tab_strip_model()->ActivateTabAt(0);
+  ::testing::Mock::VerifyAndClear(&mock_observer);
+
+  EXPECT_EQ(content::Visibility::VISIBLE, window2_tab1->GetVisibility());
+  EXPECT_EQ(content::Visibility::HIDDEN, window2_tab2->GetVisibility());
+  EXPECT_CALL(mock_observer, OnTabVisibilityChanged(window2_tab1));
+  EXPECT_CALL(mock_observer, OnTabRemoved(window2_tab1));
+  EXPECT_CALL(mock_observer, OnTabRemoved(window2_tab2));
+  EXPECT_CALL(mock_observer, OnWindowRemoved());
+  CloseBrowserSynchronously(window2);
+  ::testing::Mock::VerifyAndClear(&mock_observer);
+
+  EXPECT_EQ(content::Visibility::VISIBLE, window1_tab1->GetVisibility());
+  EXPECT_CALL(mock_observer, OnTabRemoved(window1_tab1));
+  EXPECT_CALL(mock_observer, OnTabVisibilityChanged(window1_tab1));
+  EXPECT_CALL(mock_observer, OnWindowRemoved());
+  CloseBrowserSynchronously(browser());
+  ::testing::Mock::VerifyAndClear(&mock_observer);
+
+  tab_stats_tracker_->RemoveObserver(&mock_observer);
+  tab_stats_tracker_->RemoveObserver(&count_observer);
+  EXPECT_EQ(0U, count_observer.tab_count());
+  EXPECT_EQ(0U, count_observer.window_count());
+}
+
+IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest, TabSwitch) {
+  MockTabStatsObserver mock_observer;
+  TestTabStatsObserver count_observer;
+  tab_stats_tracker_->AddObserverAndSetInitialState(&count_observer);
+
+  auto* window1_tab1 = browser()->tab_strip_model()->GetWebContentsAt(0);
+  EXPECT_EQ(content::Visibility::VISIBLE, window1_tab1->GetVisibility());
+
+  // The browser starts with one window and one visible tab, the observer will
+  // be notified immediately about those.
+  EXPECT_CALL(mock_observer, OnWindowAdded());
+  EXPECT_CALL(mock_observer, OnTabAdded(::testing::_));
+  tab_stats_tracker_->AddObserverAndSetInitialState(&mock_observer);
+  ::testing::Mock::VerifyAndClear(&mock_observer);
+
+  EXPECT_CALL(mock_observer, OnTabAdded(::testing::_));
+  EXPECT_CALL(mock_observer, OnMainFrameNavigationCommitted(::testing::_));
+  EXPECT_CALL(mock_observer, OnTabVisibilityChanged(window1_tab1));
+  AddTabAtIndexToBrowser(browser(), 1, GURL("about:blank"),
+                         ui::PAGE_TRANSITION_TYPED, true);
+
+  EXPECT_EQ(content::Visibility::HIDDEN, window1_tab1->GetVisibility());
+  auto* window1_tab2 = browser()->tab_strip_model()->GetWebContentsAt(1);
+  EXPECT_EQ(content::Visibility::VISIBLE, window1_tab2->GetVisibility());
+
+  // A tab switch should cause 2 visibility change events. The "tab hidden"
+  // notification should arrive before the "tab visible" one.
+  {
+    ::testing::InSequence s;
+    EXPECT_CALL(mock_observer, OnTabVisibilityChanged(window1_tab2));
+    EXPECT_CALL(mock_observer, OnTabVisibilityChanged(window1_tab1));
+    browser()->tab_strip_model()->ActivateTabAt(0);
+  }
+
+  tab_stats_tracker_->RemoveObserver(&mock_observer);
+  tab_stats_tracker_->RemoveObserver(&count_observer);
+  EXPECT_EQ(2U, count_observer.tab_count());
+  EXPECT_EQ(1U, count_observer.window_count());
+}
+
 }  // namespace metrics

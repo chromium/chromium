@@ -8,10 +8,15 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/origin.h"
+
+namespace metrics {
+class TabUsageScenarioTrackerBrowserTest;
+}
 
 // Stores the data necessary to analyze the usage pattern during a given
 // interval of time. There are 2 types of data tracked by this class:
@@ -144,7 +149,16 @@ class UsageScenarioDataStoreImpl : public UsageScenarioDataStore {
     return weak_factory_.GetWeakPtr();
   }
 
+  uint16_t current_tab_count_for_testing() { return current_tab_count_; }
+  uint16_t current_visible_window_count_for_testing() {
+    return current_visible_window_count_;
+  }
+
  private:
+  friend class metrics::TabUsageScenarioTrackerBrowserTest;
+
+  explicit UsageScenarioDataStoreImpl(const base::TickClock* tick_clock);
+
   // Information about a ukm::SourceId that has been visible during an interval
   // of time.
   struct SourceIdData {
@@ -161,6 +175,9 @@ class UsageScenarioDataStoreImpl : public UsageScenarioDataStore {
   // |interval_details_| and |origin_info_map_| and remove the SourceIdData that
   // don't need to be tracked anymore.
   void FinalizeIntervalData(base::TimeTicks now);
+
+  // The clock used by this class.
+  const base::TickClock* tick_clock_;
 
   // The current tab count.
   uint16_t current_tab_count_ = 0;

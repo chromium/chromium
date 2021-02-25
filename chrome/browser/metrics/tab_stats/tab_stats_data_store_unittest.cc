@@ -128,8 +128,7 @@ TEST_F(TabStatsDataStoreTest, TrackTabUsageDuringInterval) {
 
   // Make the first WebContents visible.
   web_contents_vec[0].get()->WasShown();
-  data_store_->OnTabVisibilityChanged(web_contents_vec[0].get(),
-                                      content::Visibility::VISIBLE);
+  data_store_->OnTabVisibilityChanged(web_contents_vec[0].get());
   EXPECT_TRUE(interval_map->find(web_contents_id_vec[0])
                   ->second.visible_or_audible_during_interval);
   EXPECT_FALSE(interval_map->find(web_contents_id_vec[1])

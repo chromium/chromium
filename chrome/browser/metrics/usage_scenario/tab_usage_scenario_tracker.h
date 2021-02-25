@@ -34,8 +34,9 @@ class TabUsageScenarioTracker : public TabStatsObserver,
   // TabStatsObserver:
   void OnTabAdded(content::WebContents* web_contents) override;
   void OnTabRemoved(content::WebContents* web_contents) override;
-  void OnTabVisibilityChanged(content::WebContents* web_contents,
-                              content::Visibility visibility) override;
+  void OnTabReplaced(content::WebContents* old_contents,
+                     content::WebContents* new_contents) override;
+  void OnTabVisibilityChanged(content::WebContents* web_contents) override;
   void OnTabInteraction(content::WebContents* web_contents) override;
   void OnMediaEffectivelyFullscreenChanged(content::WebContents* web_contents,
                                            bool is_fullscreen) override;
@@ -48,15 +49,15 @@ class TabUsageScenarioTracker : public TabStatsObserver,
   void OnDisplayAdded(const display::Display& new_display) override;
   void OnDisplayRemoved(const display::Display& new_display) override;
 
-  // Testing trampolines:
-  void OnTabAddedForTesting(content::WebContents* web_contents,
-                            content::Visibility initial_visibility);
-
  private:
-  // Internal versions of the TabStatsObserver functions that are more easily
-  // testable.
-  void OnTabAdded(content::WebContents* web_contents,
-                  content::Visibility initial_visibility);
+  // Should be called every time |content_with_media_playing_fullscreen_| needs
+  // to be reset.
+  void OnContentStoppedPlayingMediaFullScreen();
+
+  // Should be called when |visible_tab_iter| switch from being visible to non
+  // visible. |visible_tab_iter| should be an iterator in |visible_contents_|.
+  void OnTabBecameHidden(
+      base::flat_set<content::WebContents*>::iterator* visible_tab_iter);
 
   // Non-owning. Needs to outlive this class.
   UsageScenarioDataStoreImpl* usage_scenario_data_store_
@@ -68,8 +69,8 @@ class TabUsageScenarioTracker : public TabStatsObserver,
   // Keep track of the WebContents currently playing video.
   base::flat_set<content::WebContents*> contents_playing_video_;
 
-  // Indicates if there's a media currently playing fullscreen.
-  bool media_playing_fullscreen_ = false;
+  // WebContents currently playing video fullscreen, nullptr if there's none.
+  content::WebContents* content_with_media_playing_fullscreen_ = nullptr;
 
   // Used to verify that all access to |usage_scenario_data_store_| goes through
   // the same sequence as the one that created this object.

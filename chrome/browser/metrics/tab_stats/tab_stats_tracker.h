@@ -58,6 +58,10 @@ class TabStatsTracker : public TabStripModelObserver,
   // of the observer is made to match the current browser/tab state.
   void AddObserverAndSetInitialState(TabStatsObserver* observer);
 
+  void RemoveObserver(TabStatsObserver* observer) {
+    tab_stats_observers_.RemoveObserver(observer);
+  }
+
   // Registers prefs used to track tab stats.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 

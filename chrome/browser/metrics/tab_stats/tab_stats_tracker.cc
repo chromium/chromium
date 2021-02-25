@@ -309,7 +309,7 @@ class TabStatsTracker::WebContentsUsageObserver
   void OnVisibilityChanged(content::Visibility visibility) override {
     for (TabStatsObserver& tab_stats_observer :
          tab_stats_tracker_->tab_stats_observers_) {
-      tab_stats_observer.OnTabVisibilityChanged(web_contents(), visibility);
+      tab_stats_observer.OnTabVisibilityChanged(web_contents());
     }
   }
 

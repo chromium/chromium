@@ -35,18 +35,6 @@ TabUsageScenarioTracker::~TabUsageScenarioTracker() {
 }
 
 void TabUsageScenarioTracker::OnTabAdded(content::WebContents* web_contents) {
-  OnTabAdded(web_contents, web_contents->GetVisibility());
-}
-
-void TabUsageScenarioTracker::OnTabAddedForTesting(
-    content::WebContents* web_contents,
-    content::Visibility initial_visibility) {
-  OnTabAdded(web_contents, initial_visibility);
-}
-
-void TabUsageScenarioTracker::OnTabAdded(
-    content::WebContents* web_contents,
-    content::Visibility initial_visibility) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   usage_scenario_data_store_->OnTabAdded();
 
@@ -62,15 +50,33 @@ void TabUsageScenarioTracker::OnTabAdded(
 
 void TabUsageScenarioTracker::OnTabRemoved(content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto iter = visible_contents_.find(web_contents);
+  DCHECK_EQ(iter != visible_contents_.end(),
+            web_contents->GetVisibility() == content::Visibility::VISIBLE);
+  auto video_iter = contents_playing_video_.find(web_contents);
+  // If |web_contents| is tracked in the list of visible WebContents then a
+  // synthetic visibility change event should be emitted.
+  if (iter != visible_contents_.end()) {
+    OnTabBecameHidden(&iter);
+  }
+  if (video_iter != contents_playing_video_.end()) {
+    contents_playing_video_.erase(video_iter);
+  }
   usage_scenario_data_store_->OnTabClosed();
 }
 
+void TabUsageScenarioTracker::OnTabReplaced(
+    content::WebContents* old_contents,
+    content::WebContents* new_contents) {
+  DCHECK(!base::Contains(visible_contents_, old_contents));
+  DCHECK(!base::Contains(contents_playing_video_, old_contents));
+}
+
 void TabUsageScenarioTracker::OnTabVisibilityChanged(
-    content::WebContents* web_contents,
-    content::Visibility visibility) {
+    content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (visibility == content::Visibility::VISIBLE) {
+  if (web_contents->GetVisibility() == content::Visibility::VISIBLE) {
     // If web-content was not already reported as visible notify data store.
     if (visible_contents_.insert(web_contents).second) {
       usage_scenario_data_store_->OnWindowVisible();
@@ -80,12 +86,10 @@ void TabUsageScenarioTracker::OnTabVisibilityChanged(
       usage_scenario_data_store_->OnVideoStartsInVisibleTab();
     }
   } else {
-    // If this tab is playing video then record that it became non visible.
-    if (base::Contains(contents_playing_video_, web_contents)) {
-      usage_scenario_data_store_->OnVideoStopsInVisibleTab();
-    }
-    visible_contents_.erase(web_contents);
-    usage_scenario_data_store_->OnWindowHidden();
+    auto iter = visible_contents_.find(web_contents);
+    // The tab was previously visible and it's now hidden or occluded.
+    if (iter != visible_contents_.end())
+      OnTabBecameHidden(&iter);
   }
 }
 
@@ -99,14 +103,15 @@ void TabUsageScenarioTracker::OnMediaEffectivelyFullscreenChanged(
     content::WebContents* web_contents,
     bool is_fullscreen) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  media_playing_fullscreen_ = is_fullscreen;
   auto* screen = display::Screen::GetScreen();
   DCHECK(screen);
   if (screen->GetNumDisplays() == 1) {
     if (is_fullscreen) {
+      DCHECK(!content_with_media_playing_fullscreen_);
+      content_with_media_playing_fullscreen_ = web_contents;
       usage_scenario_data_store_->OnFullScreenVideoStartsOnSingleMonitor();
     } else {
-      usage_scenario_data_store_->OnFullScreenVideoEndsOnSingleMonitor();
+      OnContentStoppedPlayingMediaFullScreen();
     }
   }
 }
@@ -133,7 +138,7 @@ void TabUsageScenarioTracker::OnDisplayAdded(const display::Display& unused) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto* screen = display::Screen::GetScreen();
   if (screen->GetNumDisplays() == 1) {
-    if (media_playing_fullscreen_) {
+    if (content_with_media_playing_fullscreen_ != nullptr) {
       DCHECK(usage_scenario_data_store_
                  ->is_playing_full_screen_video_single_monitor_since()
                  .is_null());
@@ -156,7 +161,8 @@ void TabUsageScenarioTracker::OnDisplayRemoved(const display::Display& unused) {
   DCHECK(screen);
   // Update the data store if there's only one display now running media
   // fullscreen.
-  if (screen->GetNumDisplays() == 1 && media_playing_fullscreen_) {
+  if (screen->GetNumDisplays() == 1 &&
+      content_with_media_playing_fullscreen_ != nullptr) {
     DCHECK(usage_scenario_data_store_
                ->is_playing_full_screen_video_single_monitor_since()
                .is_null());
@@ -168,6 +174,30 @@ void TabUsageScenarioTracker::OnMainFrameNavigationCommitted(
     content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   usage_scenario_data_store_->OnTopLevelNavigation();
+}
+
+void TabUsageScenarioTracker::OnContentStoppedPlayingMediaFullScreen() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  usage_scenario_data_store_->OnFullScreenVideoEndsOnSingleMonitor();
+  content_with_media_playing_fullscreen_ = nullptr;
+}
+
+void TabUsageScenarioTracker::OnTabBecameHidden(
+    base::flat_set<content::WebContents*>::iterator* visible_tab_iter) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // If this tab is playing video then record that it became non visible.
+  if (base::Contains(contents_playing_video_, **visible_tab_iter)) {
+    usage_scenario_data_store_->OnVideoStopsInVisibleTab();
+  }
+
+  // |OnMediaEffectivelyFullscreenChanged| doesn't get called if a tab playing
+  // media fullscreen gets closed.
+  if (**visible_tab_iter == content_with_media_playing_fullscreen_)
+    OnContentStoppedPlayingMediaFullScreen();
+
+  visible_contents_.erase(*visible_tab_iter);
+  usage_scenario_data_store_->OnWindowHidden();
 }
 
 }  // namespace metrics

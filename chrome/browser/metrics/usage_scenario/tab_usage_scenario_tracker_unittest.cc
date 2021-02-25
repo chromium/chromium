@@ -63,8 +63,7 @@ class TabUsageScenarioTrackerTest : public ChromeRenderViewHostTestHarness {
 
 TEST_F(TabUsageScenarioTrackerTest, NewVisibleTabMeansOneVisibleWindow) {
   auto contents = CreateWebContents();
-  tab_usage_scenario_tracker_->OnTabAddedForTesting(
-      contents.get(), content::Visibility::VISIBLE);
+  tab_usage_scenario_tracker_->OnTabAdded(contents.get());
 
   // Only one WebContent was shown which means only one visible window.
   UsageScenarioDataStore::IntervalData interval_data =
@@ -74,10 +73,7 @@ TEST_F(TabUsageScenarioTrackerTest, NewVisibleTabMeansOneVisibleWindow) {
 
 TEST_F(TabUsageScenarioTrackerTest, VisibilityUpdateOnVisibleWindowIsNoop) {
   auto contents = CreateWebContents();
-  tab_usage_scenario_tracker_->OnTabAddedForTesting(
-      contents.get(), content::Visibility::VISIBLE);
-  tab_usage_scenario_tracker_->OnTabVisibilityChanged(
-      contents.get(), content::Visibility::VISIBLE);
+  tab_usage_scenario_tracker_->OnTabAdded(contents.get());
 
   // Only one WebContent was shown which means only one visible window.
   // The call to OnVisibilityChanged should not create a visible window count
@@ -90,14 +86,11 @@ TEST_F(TabUsageScenarioTrackerTest, VisibilityUpdateOnVisibleWindowIsNoop) {
 TEST_F(TabUsageScenarioTrackerTest, HidingWebContentsMakesWindowInvisible) {
   // WebContents starts out visible.
   auto contents = CreateWebContents();
-  tab_usage_scenario_tracker_->OnTabAddedForTesting(
-      contents.get(), content::Visibility::VISIBLE);
-  tab_usage_scenario_tracker_->OnTabVisibilityChanged(
-      contents.get(), content::Visibility::VISIBLE);
+  tab_usage_scenario_tracker_->OnTabAdded(contents.get());
 
   // WebContents is hidden.
-  tab_usage_scenario_tracker_->OnTabVisibilityChanged(
-      contents.get(), content::Visibility::HIDDEN);
+  contents->WasHidden();
+  tab_usage_scenario_tracker_->OnTabVisibilityChanged(contents.get());
 
   // Grab the interval data.
   UsageScenarioDataStore::IntervalData interval_data =
@@ -112,11 +105,76 @@ TEST_F(TabUsageScenarioTrackerTest, HidingWebContentsMakesWindowInvisible) {
   EXPECT_EQ(interval_data.max_visible_window_count, 0);
 }
 
+TEST_F(TabUsageScenarioTrackerTest, TrackingOfVisibleWebContents) {
+  // Start with 2 hidden WebContents.
+  auto contents1 = CreateWebContents();
+  contents1->WasHidden();
+  auto contents2 = CreateWebContents();
+  contents2->WasHidden();
+  tab_usage_scenario_tracker_->OnTabAdded(contents1.get());
+  tab_usage_scenario_tracker_->OnTabAdded(contents2.get());
+  EXPECT_EQ(usage_scenario_data_store_.current_tab_count_for_testing(), 2);
+  EXPECT_EQ(
+      usage_scenario_data_store_.current_visible_window_count_for_testing(), 0);
+
+  // Make one contents visible.
+  contents1->WasShown();
+  tab_usage_scenario_tracker_->OnTabVisibilityChanged(contents1.get());
+  EXPECT_EQ(usage_scenario_data_store_.current_tab_count_for_testing(), 2);
+  EXPECT_EQ(
+      usage_scenario_data_store_.current_visible_window_count_for_testing(), 1);
+
+  // |contents1| is visible, removing it should update the number of currently
+  // visible windows.
+  tab_usage_scenario_tracker_->OnTabRemoved(contents1.get());
+  EXPECT_EQ(usage_scenario_data_store_.current_tab_count_for_testing(), 1);
+  EXPECT_EQ(
+      usage_scenario_data_store_.current_visible_window_count_for_testing(), 0);
+
+  tab_usage_scenario_tracker_->OnTabRemoved(contents2.get());
+  EXPECT_EQ(usage_scenario_data_store_.current_tab_count_for_testing(), 0);
+  EXPECT_EQ(
+      usage_scenario_data_store_.current_visible_window_count_for_testing(), 0);
+}
+
+TEST_F(TabUsageScenarioTrackerTest, TrackingOfOccludedWebContents) {
+  // Start with 2 hidden WebContents.
+  auto contents1 = CreateWebContents();
+  contents1->WasHidden();
+  auto contents2 = CreateWebContents();
+  contents2->WasHidden();
+  tab_usage_scenario_tracker_->OnTabAdded(contents1.get());
+  tab_usage_scenario_tracker_->OnTabAdded(contents2.get());
+  EXPECT_EQ(usage_scenario_data_store_.current_tab_count_for_testing(), 2);
+  EXPECT_EQ(
+      usage_scenario_data_store_.current_visible_window_count_for_testing(), 0);
+
+  // Make one contents occluded.
+  contents1->WasOccluded();
+  tab_usage_scenario_tracker_->OnTabVisibilityChanged(contents1.get());
+  EXPECT_EQ(usage_scenario_data_store_.current_tab_count_for_testing(), 2);
+  EXPECT_EQ(
+      usage_scenario_data_store_.current_visible_window_count_for_testing(), 0);
+
+  // Make one content visible.
+  contents2->WasShown();
+  tab_usage_scenario_tracker_->OnTabVisibilityChanged(contents2.get());
+  EXPECT_EQ(usage_scenario_data_store_.current_tab_count_for_testing(), 2);
+  EXPECT_EQ(
+      usage_scenario_data_store_.current_visible_window_count_for_testing(), 1);
+
+  // Then make it occluded.
+  contents2->WasOccluded();
+  tab_usage_scenario_tracker_->OnTabVisibilityChanged(contents2.get());
+  EXPECT_EQ(usage_scenario_data_store_.current_tab_count_for_testing(), 2);
+  EXPECT_EQ(
+      usage_scenario_data_store_.current_visible_window_count_for_testing(), 0);
+}
+
 TEST_F(TabUsageScenarioTrackerTest, FullScreenVideoSingleMonitor) {
   // WebContents starts out visible.
   auto contents = CreateWebContents();
-  tab_usage_scenario_tracker_->OnTabAddedForTesting(
-      contents.get(), content::Visibility::VISIBLE);
+  tab_usage_scenario_tracker_->OnTabAdded(contents.get());
 
   // WebContents is playing video fullscreen.
   tab_usage_scenario_tracker_->OnMediaEffectivelyFullscreenChanged(
@@ -165,10 +223,9 @@ TEST_F(TabUsageScenarioTrackerTest, VideoInVisibleTab) {
   // Create 2 tabs, one visible and one hidden.
   auto contents1 = CreateWebContents();
   auto contents2 = CreateWebContents();
-  tab_usage_scenario_tracker_->OnTabAddedForTesting(
-      contents1.get(), content::Visibility::VISIBLE);
-  tab_usage_scenario_tracker_->OnTabAddedForTesting(
-      contents1.get(), content::Visibility::HIDDEN);
+  contents2->WasHidden();
+  tab_usage_scenario_tracker_->OnTabAdded(contents1.get());
+  tab_usage_scenario_tracker_->OnTabAdded(contents2.get());
 
   // Pretend that |content1| is playing a video while being visible.
   tab_usage_scenario_tracker_->OnVideoStartedPlaying(contents1.get());
@@ -193,12 +250,12 @@ TEST_F(TabUsageScenarioTrackerTest, VideoInVisibleTab) {
   tab_usage_scenario_tracker_->OnVideoStoppedPlaying(contents1.get());
   task_environment()->FastForwardBy(kInterval);
   interval_data = usage_scenario_data_store_.ResetIntervalData();
-  EXPECT_EQ(interval_data.time_playing_video_in_visible_tab, base::TimeDelta());
+  EXPECT_TRUE(interval_data.time_playing_video_in_visible_tab.is_zero());
 
   // There's still a video playing in the second tab, make it visible and ensure
   // that things are reported properly.
-  tab_usage_scenario_tracker_->OnTabVisibilityChanged(
-      contents2.get(), content::Visibility::VISIBLE);
+  contents2->WasShown();
+  tab_usage_scenario_tracker_->OnTabVisibilityChanged(contents2.get());
   task_environment()->FastForwardBy(kInterval);
   interval_data = usage_scenario_data_store_.ResetIntervalData();
   EXPECT_EQ(interval_data.time_playing_video_in_visible_tab, kInterval);
@@ -208,7 +265,25 @@ TEST_F(TabUsageScenarioTrackerTest, VideoInVisibleTab) {
   tab_usage_scenario_tracker_->OnVideoStoppedPlaying(contents2.get());
   task_environment()->FastForwardBy(kInterval);
   interval_data = usage_scenario_data_store_.ResetIntervalData();
-  EXPECT_EQ(interval_data.time_playing_video_in_visible_tab, base::TimeDelta());
+  EXPECT_TRUE(interval_data.time_playing_video_in_visible_tab.is_zero());
+}
+
+TEST_F(TabUsageScenarioTrackerTest, VisibleTabPlayingVideoRemoved) {
+  auto contents1 = CreateWebContents();
+  tab_usage_scenario_tracker_->OnTabAdded(contents1.get());
+
+  // Pretend that |content1| is playing a video while being visible.
+  tab_usage_scenario_tracker_->OnVideoStartedPlaying(contents1.get());
+  static constexpr base::TimeDelta kInterval = base::TimeDelta::FromMinutes(2);
+  task_environment()->FastForwardBy(kInterval);
+  UsageScenarioDataStore::IntervalData interval_data =
+      usage_scenario_data_store_.ResetIntervalData();
+  EXPECT_EQ(kInterval, interval_data.time_playing_video_in_visible_tab);
+
+  tab_usage_scenario_tracker_->OnTabRemoved(contents1.get());
+  task_environment()->FastForwardBy(kInterval);
+  interval_data = usage_scenario_data_store_.ResetIntervalData();
+  EXPECT_TRUE(interval_data.time_playing_video_in_visible_tab.is_zero());
 }
 
 }  // namespace metrics
