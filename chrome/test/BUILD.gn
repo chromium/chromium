@@ -2597,6 +2597,7 @@ if (!is_android) {
         "../browser/chromeos/login/proxy_auth_dialog_browsertest.cc",
         "../browser/chromeos/login/quick_unlock/pin_migration_browsertest.cc",
         "../browser/chromeos/login/reset_browsertest.cc",
+        "../browser/chromeos/login/saml/fake_saml_idp_mixin.cc",
         "../browser/chromeos/login/saml/password_change_extension_browsertest.cc",
         "../browser/chromeos/login/saml/password_change_success_detection_browsertest.cc",
         "../browser/chromeos/login/saml/saml_browsertest.cc",
