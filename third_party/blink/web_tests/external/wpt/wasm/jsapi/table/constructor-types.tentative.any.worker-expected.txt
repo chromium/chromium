@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL Initializing with both initial and minimum assert_throws_js: function "() => new WebAssembly.Table(argument)" did not throw
+FAIL Zero minimum WebAssembly.Table(): Property 'initial' is required
+FAIL Non-zero minimum WebAssembly.Table(): Property 'initial' is required
+Harness: the test ran to completion.
+
