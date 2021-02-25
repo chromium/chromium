@@ -274,7 +274,8 @@ NativeIOFileSync* NativeIOFileManager::openSync(
   DCHECK(backing_file.IsValid()) << "File is invalid but no error set";
 
   return MakeGarbageCollected<NativeIOFileSync>(
-      std::move(backing_file), std::move(backend_file), execution_context);
+      std::move(backing_file), base::as_signed(backing_file_length),
+      std::move(backend_file), capacity_tracker_.Get(), execution_context);
 }
 
 void NativeIOFileManager::deleteSync(String name,
@@ -310,6 +311,11 @@ void NativeIOFileManager::deleteSync(String name,
     return;
   }
   DCHECK(call_succeeded) << "Mojo call failed";
+
+  if (deleted_file_size > 0) {
+    capacity_tracker_->ChangeAvailableCapacity(
+        base::as_signed(deleted_file_size));
+  }
 }
 
 Vector<String> NativeIOFileManager::getAllSync(
@@ -545,6 +551,70 @@ bool NativeIOFileManager::CheckStorageAccessAllowedSync(
         WebContentSettingsClient::StorageType::kFileSystem);
   }
   return true;
+}
+
+uint64_t NativeIOFileManager::requestCapacitySync(
+    uint64_t requested_capacity,
+    ExceptionState& exception_state) {
+  if (!backend_.is_bound()) {
+    ThrowNativeIOWithError(exception_state,
+                           mojom::blink::NativeIOError::New(
+                               mojom::blink::NativeIOErrorType::kInvalidState,
+                               "NativeIOHost backend went away"));
+    return 0;
+  }
+  if (!base::IsValueInRangeForNumericType<int64_t>(requested_capacity)) {
+    ThrowNativeIOWithError(exception_state,
+                           mojom::blink::NativeIOError::New(
+                               mojom::blink::NativeIOErrorType::kNoSpace,
+                               "No capacity available for this operation"));
+    return 0;
+  }
+
+  int64_t granted_capacity_delta;
+
+  bool call_succeeded = backend_->RequestCapacityChange(
+      requested_capacity, &granted_capacity_delta);
+  DCHECK(call_succeeded) << "Mojo call failed";
+
+  capacity_tracker_->ChangeAvailableCapacity(granted_capacity_delta);
+  return capacity_tracker_->GetAvailableCapacity();
+}
+
+uint64_t NativeIOFileManager::releaseCapacitySync(
+    uint64_t requested_release,
+    ExceptionState& exception_state) {
+  if (!backend_.is_bound()) {
+    ThrowNativeIOWithError(exception_state,
+                           mojom::blink::NativeIOError::New(
+                               mojom::blink::NativeIOErrorType::kInvalidState,
+                               "NativeIOHost backend went away"));
+    return 0;
+  }
+  if (!base::IsValueInRangeForNumericType<int64_t>(requested_release)) {
+    ThrowNativeIOWithError(exception_state,
+                           mojom::blink::NativeIOError::New(
+                               mojom::blink::NativeIOErrorType::kNoSpace,
+                               "No capacity available for this operation"));
+    return 0;
+  }
+
+  int64_t requested_difference = -base::as_signed(requested_release);
+
+  int64_t granted_capacity_delta;
+  bool call_succeeded = backend_->RequestCapacityChange(
+      requested_difference, &granted_capacity_delta);
+  DCHECK(call_succeeded) << "Mojo call failed";
+
+  capacity_tracker_->ChangeAvailableCapacity(granted_capacity_delta);
+  return capacity_tracker_->GetAvailableCapacity();
+}
+
+uint64_t NativeIOFileManager::getRemainingCapacitySync(
+    ExceptionState& exception_state) {
+  uint64_t available_capacity =
+      base::as_unsigned(capacity_tracker_->GetAvailableCapacity());
+  return available_capacity;
 }
 
 void NativeIOFileManager::OnBackendDisconnect() {

@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
+#include "third_party/blink/renderer/modules/native_io/native_io_capacity_tracker.h"
 #include "third_party/blink/renderer/modules/native_io/native_io_error.h"
 #include "third_party/blink/renderer/modules/native_io/native_io_file.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -35,10 +36,16 @@ int OperationSize(const DOMArrayBufferView& buffer) {
 
 NativeIOFileSync::NativeIOFileSync(
     base::File backing_file,
+    int64_t backing_file_length,
     HeapMojoRemote<mojom::blink::NativeIOFileHost> backend_file,
+    NativeIOCapacityTracker* capacity_tracker,
     ExecutionContext* execution_context)
     : backing_file_(std::move(backing_file)),
-      backend_file_(std::move(backend_file)) {
+      file_length_(backing_file_length),
+      backend_file_(std::move(backend_file)),
+      capacity_tracker_(capacity_tracker) {
+  DCHECK_GE(backing_file_length, 0);
+  DCHECK(capacity_tracker);
   backend_file_.set_disconnect_handler(WTF::Bind(
       &NativeIOFileSync::OnBackendDisconnect, WrapWeakPersistent(this)));
 }
@@ -69,6 +76,8 @@ uint64_t NativeIOFileSync::getLength(ExceptionState& exception_state) {
     ThrowNativeIOWithError(exception_state, backing_file_.GetLastFileError());
     return 0;
   }
+  DCHECK_EQ(file_length_, length)
+      << "The file size should equal the actual length";
   // getLength returns an unsigned integer, which is different from e.g.,
   // base::File and POSIX. The uses for negative integers are error handling,
   // which is done through exceptions, and seeking from an offset without type
@@ -76,9 +85,10 @@ uint64_t NativeIOFileSync::getLength(ExceptionState& exception_state) {
   return base::as_unsigned(length);
 }
 
-void NativeIOFileSync::setLength(uint64_t length,
+void NativeIOFileSync::setLength(uint64_t new_length,
                                  ExceptionState& exception_state) {
-  if (!base::IsValueInRangeForNumericType<int64_t>(length)) {
+  if (!base::IsValueInRangeForNumericType<int64_t>(new_length)) {
+    // TODO(rstz): Consider throwing QuotaExceededError here.
     exception_state.ThrowTypeError("Length out of bounds");
     return;
   }
@@ -88,6 +98,26 @@ void NativeIOFileSync::setLength(uint64_t length,
                                mojom::blink::NativeIOErrorType::kInvalidState,
                                "NativeIOHost backend went away"));
     return;
+  }
+  int64_t expected_length = base::as_signed(new_length);
+
+  DCHECK_GE(expected_length, 0);
+  DCHECK_GE(file_length_, 0);
+  static_assert(0 - std::numeric_limits<int32_t>::max() >=
+                    std::numeric_limits<int32_t>::min(),
+                "The `length_delta` computation below may overflow");
+  // Since both values are non-negative, the arithmetic will not overflow.
+  int64_t length_delta = expected_length - file_length_;
+
+  if (length_delta > 0) {
+    if (!capacity_tracker_->ChangeAvailableCapacity(-length_delta)) {
+      ThrowNativeIOWithError(exception_state,
+                             mojom::blink::NativeIOError::New(
+                                 mojom::blink::NativeIOErrorType::kNoSpace,
+                                 "No capacity available for this operation"));
+      return;
+    }
+    file_length_ = expected_length;
   }
 
 #if defined(OS_MAC)
@@ -104,18 +134,81 @@ void NativeIOFileSync::setLength(uint64_t length,
     // when the call completes.
     mojom::blink::NativeIOErrorPtr set_length_result;
     int64_t actual_length;
-    backend_file_->SetLength(base::as_signed(length), std::move(backing_file_),
-                             &backing_file_, &actual_length,
-                             &set_length_result);
+    backend_file_->SetLength(base::as_signed(expected_length),
+                             std::move(backing_file_), &backing_file_,
+                             &actual_length, &set_length_result);
     DCHECK(backing_file_.IsValid()) << "browser returned closed file";
-    if (set_length_result->type != mojom::blink::NativeIOErrorType::kSuccess)
+
+    if (actual_length >= 0) {
+      DCHECK_LE(actual_length, file_length_)
+          << "file_length_ should be an upper bound during I/O";
+      if (actual_length < file_length_) {
+        // For successful length decreases, this logic returns freed up
+        // capacity. For unsuccessful length increases, this logic returns
+        // unused capacity.
+        bool change_success = capacity_tracker_->ChangeAvailableCapacity(
+            file_length_ - actual_length);
+        DCHECK(change_success) << "Capacity increases should always succeed";
+        file_length_ = actual_length;
+      }
+    } else {
+      DCHECK(set_length_result->type !=
+             mojom::blink::NativeIOErrorType::kSuccess);
+      // base::File::SetLength() failed. Then, attempting to File::GetLength()
+      // failed as well. We don't have a reliable measure of the file's length,
+      // and the file descriptor is probably unusable. Force-closing the file
+      // without reclaiming any capacity minimizes the risk of overusing our
+      // allocation.
+      backing_file_.Close();
+      if (backend_file_.is_bound())
+        backend_file_->Close();
+    }
+
+    if (set_length_result->type != mojom::blink::NativeIOErrorType::kSuccess) {
       ThrowNativeIOWithError(exception_state, std::move(set_length_result));
+      return;
+    }
     return;
   }
 #endif  // defined(OS_MAC)
 
-  if (!backing_file_.SetLength(base::as_signed(length)))
-    ThrowNativeIOWithError(exception_state, backing_file_.GetLastFileError());
+  base::File::Error set_length_result = base::File::FILE_OK;
+  int64_t actual_length = expected_length;
+
+  if (!backing_file_.SetLength(expected_length)) {
+    set_length_result = backing_file_.GetLastFileError();
+    actual_length = backing_file_.GetLength();
+    if (actual_length < 0)
+      set_length_result = backing_file_.GetLastFileError();
+  }
+
+  if (actual_length >= 0) {
+    DCHECK_LE(actual_length, file_length_)
+        << "file_length_ should be an upper bound during I/O";
+    if (actual_length < file_length_) {
+      // For successful length decreases, this logic returns freed up
+      // capacity. For unsuccessful length increases, this logic returns
+      // unused capacity.
+      bool change_success = capacity_tracker_->ChangeAvailableCapacity(
+          file_length_ - actual_length);
+      DCHECK(change_success) << "Capacity increases should always succeed";
+      file_length_ = actual_length;
+    }
+  } else {
+    DCHECK(set_length_result != base::File::FILE_OK);
+    // base::File::SetLength() failed. Then, attempting to File::GetLength()
+    // failed as well. We don't have a reliable measure of the file's length,
+    // and the file descriptor is probably unusable. Force-closing the file
+    // without reclaiming any capacity minimizes the risk of overusing our
+    // allocation.
+    backing_file_.Close();
+    if (backend_file_.is_bound())
+      backend_file_->Close();
+  }
+  if (set_length_result != base::File::FILE_OK) {
+    ThrowNativeIOWithError(exception_state, set_length_result);
+    return;
+  }
 }
 
 uint64_t NativeIOFileSync::read(MaybeShared<DOMArrayBufferView> buffer,
@@ -150,11 +243,74 @@ uint64_t NativeIOFileSync::write(MaybeShared<DOMArrayBufferView> buffer,
                                "The file was already closed"));
     return 0;
   }
-  int written_bytes = backing_file_.Write(file_offset, write_data, write_size);
-  if (written_bytes < 0) {
-    ThrowNativeIOWithError(exception_state, backing_file_.GetLastFileError());
+
+  int64_t write_end_offset;
+  if (!base::CheckAdd(file_offset, write_size)
+           .AssignIfValid(&write_end_offset)) {
+    ThrowNativeIOWithError(exception_state,
+                           mojom::blink::NativeIOError::New(
+                               mojom::blink::NativeIOErrorType::kNoSpace,
+                               "No capacity available for this operation"));
     return 0;
   }
+
+  DCHECK_GE(write_end_offset, 0);
+  DCHECK_GE(file_length_, 0);
+  static_assert(0 - std::numeric_limits<int32_t>::max() >=
+                    std::numeric_limits<int32_t>::min(),
+                "The `length_delta` computation below may overflow");
+  // Since both values are positive, the arithmetic will not overflow.
+  int64_t length_delta = write_end_offset - file_length_;
+  // The available capacity must be reduced before performing an I/O operation
+  // that increases the file length. This prevents double-spending by concurrent
+  // I/O operations on different files.
+  if (length_delta > 0) {
+    if (!capacity_tracker_->ChangeAvailableCapacity(-length_delta)) {
+      ThrowNativeIOWithError(exception_state,
+                             mojom::blink::NativeIOError::New(
+                                 mojom::blink::NativeIOErrorType::kNoSpace,
+                                 "No capacity available for this operation"));
+      return 0;
+    }
+    file_length_ = write_end_offset;
+  }
+
+  base::File::Error write_error = base::File::FILE_OK;
+  int64_t actual_file_length_on_failure = file_length_;
+
+  int written_bytes = backing_file_.Write(file_offset, write_data, write_size);
+  if (written_bytes < 0) {
+    write_error = backing_file_.GetLastFileError();
+    actual_file_length_on_failure = backing_file_.GetLength();
+  }
+  if (write_error != base::File::FILE_OK || written_bytes < write_size) {
+    if (actual_file_length_on_failure >= 0) {
+      DCHECK_LE(actual_file_length_on_failure, file_length_)
+          << "file_length_ should be an upper bound during I/O";
+      if (actual_file_length_on_failure < file_length_) {
+        bool change_success = capacity_tracker_->ChangeAvailableCapacity(
+            file_length_ - actual_file_length_on_failure);
+        DCHECK(change_success) << "Capacity increases should always succeed";
+        file_length_ = actual_file_length_on_failure;
+      }
+    } else {
+      DCHECK(write_error != base::File::FILE_OK);
+      // base::File::Write() failed. Then, attempting to File::GetLength()
+      // failed as well. We don't have a reliable measure of the file's length,
+      // and the file descriptor is probably unusable. Force-closing the file
+      // without reclaiming any capacity minimizes the risk of overusing our
+      // allocation.
+      backing_file_.Close();
+      if (backend_file_.is_bound())
+        backend_file_->Close();
+    }
+  }
+
+  if (write_error != base::File::FILE_OK) {
+    ThrowNativeIOWithError(exception_state, write_error);
+    return 0;
+  }
+
   return base::as_unsigned(written_bytes);
 }
 
@@ -174,6 +330,7 @@ void NativeIOFileSync::flush(ExceptionState& exception_state) {
 
 void NativeIOFileSync::Trace(Visitor* visitor) const {
   visitor->Trace(backend_file_);
+  visitor->Trace(capacity_tracker_);
   ScriptWrappable::Trace(visitor);
 }
 

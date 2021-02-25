@@ -60,6 +60,9 @@ class NativeIOFileManager final : public ScriptWrappable,
   void deleteSync(String name, ExceptionState&);
   Vector<String> getAllSync(ExceptionState&);
   void renameSync(String old_name, String new_name, ExceptionState&);
+  uint64_t requestCapacitySync(uint64_t requested_capacity, ExceptionState&);
+  uint64_t releaseCapacitySync(uint64_t released_capacity, ExceptionState&);
+  uint64_t getRemainingCapacitySync(ExceptionState&);
 
   // GarbageCollected
   void Trace(Visitor* visitor) const override;

@@ -897,12 +897,15 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method getAll
 [Worker]     method getAllSync
 [Worker]     method getRemainingCapacity
+[Worker]     method getRemainingCapacitySync
 [Worker]     method open
 [Worker]     method openSync
 [Worker]     method releaseCapacity
+[Worker]     method releaseCapacitySync
 [Worker]     method rename
 [Worker]     method renameSync
 [Worker]     method requestCapacity
+[Worker]     method requestCapacitySync
 [Worker] interface NativeIOFileSync
 [Worker]     attribute @@toStringTag
 [Worker]     method close

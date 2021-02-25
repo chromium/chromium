@@ -141,6 +141,10 @@ interface NativeIOHost {
   // bad message. Subject to this constraint, capacity releases are guaranteed
   // to succeed. In other words, if capacity_delta < 0, granted_capacity_delta
   // is guaranteed to == capacity_delta.
+  //
+  // The synchronous interface is needed as NativeIO implements a fully
+  // synchronous version of its API.
+  [Sync]
   RequestCapacityChange(int64 capacity_delta) =>
       (int64 granted_capacity_delta);
 
