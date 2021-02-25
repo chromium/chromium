@@ -64,6 +64,7 @@ js_modulizer("modulize") {
     "cups_printer_test_utils.js",
     "date_time_page_tests.js",
     "device_page_tests.js",
+    "esim_confirmation_code_dialog_test.js",
     "esim_remove_profile_dialog_test.js",
     "esim_rename_dialog_test.js",
     "fake_bluetooth.js",

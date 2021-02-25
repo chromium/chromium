@@ -106,6 +106,12 @@ Polymer({
       value: false,
     },
 
+    /** @private {boolean} */
+    shouldShowConfirmationCodeDialog_: {
+      type: Boolean,
+      value: false,
+    },
+
     /**
      * Euicc object representing the active euicc_ module on the device
      * @private {?chromeos.cellularSetup.mojom.EuiccRemote}
@@ -113,7 +119,17 @@ Polymer({
     euicc_: {
       type: Object,
       value: null,
-    }
+    },
+
+    /**
+     * The current eSIM profile being installed.
+     * @type {?chromeos.cellularSetup.mojom.ESimProfileRemote}
+     * @private
+     */
+    installingESimProfile_: {
+      type: Object,
+      value: null,
+    },
   },
 
   listeners: {
@@ -316,12 +332,24 @@ Polymer({
    * @private
    */
   installProfile_(event) {
-    const profileIccid = event.detail.iccid;
-    const profile = this.profilesMap_.get(profileIccid);
-    profile.installProfile('').then(
-        () => {
-            // TODO(crbug.com/1093185) Show error if install fails.
-            // Show confirmation code page if required.
-        });
+    this.installingESimProfile_ = this.profilesMap_.get(event.detail.iccid);
+    this.installingESimProfile_.installProfile('').then((response) => {
+      // TODO(crbug.com/1093185) Show error if install fails.
+      if (response.result ===
+          chromeos.cellularSetup.mojom.ProfileInstallResult
+              .kErrorNeedsConfirmationCode) {
+        this.showConfirmationCodeDialog_();
+      }
+    });
+  },
+
+  /** @private */
+  showConfirmationCodeDialog_() {
+    this.shouldShowConfirmationCodeDialog_ = true;
+  },
+
+  /** @private */
+  onCloseConfirmationCodeDialog_() {
+    this.shouldShowConfirmationCodeDialog_ = false;
   },
 });

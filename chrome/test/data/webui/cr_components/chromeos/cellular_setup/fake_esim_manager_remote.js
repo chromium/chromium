@@ -44,7 +44,12 @@ cr.define('cellular_setup', function() {
      *     chromeos.cellularSetup.mojom.ProfileInstallResult},}>}
      */
     installProfile(confirmationCode) {
-      this.properties.state = chromeos.cellularSetup.mojom.ProfileState.kActive;
+      if (!this.profileInstallResult_ ||
+          this.profileInstallResult_ ===
+              chromeos.cellularSetup.mojom.ProfileInstallResult.kSuccess) {
+        this.properties.state =
+            chromeos.cellularSetup.mojom.ProfileState.kActive;
+      }
       this.fakeEuicc_.notifyProfileChangedForTest(this);
       this.fakeEuicc_.notifyProfileListChangedForTest();
       return Promise.resolve({
