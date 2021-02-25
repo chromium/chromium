@@ -90,3 +90,7 @@ void DumpProcessWithoutCrash() {
 void SetMetricsClientId(const char* client_id) {
   elf_crash::SetMetricsClientIdImpl(client_id);
 }
+
+bool IsBrowserProcess() {
+  return install_static::IsBrowserProcess();
+}

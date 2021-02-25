@@ -8,6 +8,7 @@
 #include <tchar.h>
 
 #include <algorithm>
+#include <array>
 #include <string>
 
 #include "base/at_exit.h"
@@ -16,6 +17,7 @@
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/memory.h"
@@ -55,6 +57,26 @@ int main();
 #endif
 
 namespace {
+
+// Sets the current working directory for the process to the directory holding
+// the executable if this is the browser process. This avoids leaking a handle
+// to an arbitrary directory to child processes (e.g., the crashpad handler
+// process) created before MainDllLoader changes the current working directory
+// to the browser's version directory.
+void SetCwdForBrowserProcess() {
+  if (!::IsBrowserProcess())
+    return;
+
+  std::array<wchar_t, MAX_PATH + 1> buffer;
+  buffer[0] = L'\0';
+  DWORD length = ::GetModuleFileName(nullptr, &buffer[0], buffer.size());
+  if (!length || length >= buffer.size())
+    return;
+
+  base::SetCurrentDirectory(
+      base::FilePath(base::FilePath::StringPieceType(&buffer[0], length))
+          .DirName());
+}
 
 bool IsFastStartSwitch(const std::string& command_line_switch) {
   return command_line_switch == switches::kProfileDirectory;
@@ -162,10 +184,6 @@ int RunFallbackCrashHandler(const base::CommandLine& cmd_line) {
       base::WideToUTF8(channel_name));
 }
 
-}  // namespace
-
-namespace {
-
 // In 32-bit builds, the main thread starts with the default (small) stack size.
 // The ARCH_CPU_32_BITS blocks here and below are in support of moving the main
 // thread to a fiber with a larger stack size.
@@ -247,6 +265,7 @@ int main() {
   // If we are already a fiber then continue normal execution.
 #endif  // defined(ARCH_CPU_32_BITS)
 
+  SetCwdForBrowserProcess();
   install_static::InitializeFromPrimaryModule();
   SignalInitializeCrashReporting();
 #if defined(ARCH_CPU_32_BITS)
