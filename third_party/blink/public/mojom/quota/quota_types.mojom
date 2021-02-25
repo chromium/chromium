@@ -32,4 +32,5 @@ struct UsageBreakdown {
   int64 serviceWorkerCache = 0;
   int64 serviceWorker = 0;
   int64 backgroundFetch = 0;
+  int64 nativeIO = 0;
 };

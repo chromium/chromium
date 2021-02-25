@@ -67,7 +67,6 @@ class FileSystemAccessEntryFactory;
 class PlatformNotificationContext;
 class ServiceWorkerContext;
 class SharedWorkerService;
-class NativeIOContext;
 
 #if !defined(OS_ANDROID)
 class HostZoomLevelContext;
@@ -143,7 +142,6 @@ class CONTENT_EXPORT StoragePartition {
   virtual DevToolsBackgroundServicesContext*
   GetDevToolsBackgroundServicesContext() = 0;
   virtual ContentIndexContext* GetContentIndexContext() = 0;
-  virtual NativeIOContext* GetNativeIOContext() = 0;
 #if !defined(OS_ANDROID)
   virtual HostZoomMap* GetHostZoomMap() = 0;
   virtual HostZoomLevelContext* GetHostZoomLevelContext() = 0;

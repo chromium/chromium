@@ -179,8 +179,7 @@ void BrowsingDataSizeCalculator::PerformCalculation() {
         new browsing_data::IndexedDBHelper(storage_partition),
         browsing_data::FileSystemHelper::Create(
             storage_partition->GetFileSystemContext(),
-            browsing_data_file_system_util::GetAdditionalFileSystemTypes(),
-            storage_partition->GetNativeIOContext()),
+            browsing_data_file_system_util::GetAdditionalFileSystemTypes()),
         new browsing_data::ServiceWorkerHelper(
             storage_partition->GetServiceWorkerContext()),
         new browsing_data::CacheStorageHelper(storage_partition));
