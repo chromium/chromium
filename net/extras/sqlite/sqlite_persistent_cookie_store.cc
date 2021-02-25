@@ -30,6 +30,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
@@ -154,6 +155,7 @@ namespace {
 
 // Version number of the database.
 //
+// Version 14 - 2021/02/23 - https://crrev.com/c/2036899
 // Version 13 - 2020/10/28 - https://crrev.com/c/2505468
 // Version 12 - 2019/11/20 - https://crrev.com/c/1898301
 // Version 11 - 2019/04/17 - https://crrev.com/c/1570416
@@ -166,6 +168,10 @@ namespace {
 // Version 6  - 2013/04/23 - https://codereview.chromium.org/14208017
 // Version 5  - 2011/12/05 - https://codereview.chromium.org/8533013
 // Version 4  - 2009/09/01 - https://codereview.chromium.org/183021
+//
+// Version 14 just reads all encrypted cookies and re-writes them out again to
+// make sure the new encryption key is in use. This active migration only
+// happens on Windows, on other OS, this migration is a no-op.
 //
 // Version 13 adds two new fields: "source_port" (the port number of the source
 // origin, and "same_party" (boolean indicating whether the cookie had a
@@ -224,8 +230,8 @@ namespace {
 // Version 3 updated the database to include the last access time, so we can
 // expire them in decreasing order of use when we've reached the maximum
 // number of cookies.
-const int kCurrentVersionNumber = 13;
-const int kCompatibleVersionNumber = 13;
+const int kCurrentVersionNumber = 14;
+const int kCompatibleVersionNumber = 14;
 
 }  // namespace
 
@@ -653,6 +659,13 @@ bool CreateV13Schema(sql::Database* db) {
   return true;
 }
 
+// Initializes the cookies table, returning true on success.
+// The table cannot exist when calling this function.
+bool CreateV14Schema(sql::Database* db) {
+  // Schema did not change between v13 and v14.
+  return CreateV13Schema(db);
+}
+
 }  // namespace
 
 void SQLitePersistentCookieStore::Backend::Load(
@@ -806,7 +819,7 @@ bool SQLitePersistentCookieStore::Backend::CreateDatabaseSchema() {
   if (db()->DoesTableExist("cookies"))
     return true;
 
-  return CreateV13Schema(db());
+  return CreateV14Schema(db());
 }
 
 bool SQLitePersistentCookieStore::Backend::DoInitializeDatabase() {
@@ -1131,6 +1144,73 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
         std::min(cur_version, kCompatibleVersionNumber));
     transaction.Commit();
     base::UmaHistogramTimes(kMigrationSuccessHistogram,
+                            base::TimeTicks::Now() - start_time);
+  }
+
+  if (cur_version == 13) {
+    const base::TimeTicks start_time = base::TimeTicks::Now();
+    sql::Transaction transaction(db());
+    if (!transaction.Begin())
+      return base::nullopt;
+
+#if defined(OS_WIN)
+    // Migration is only needed on Windows. On other platforms, this is a no-op.
+    if (crypto_ && crypto_->ShouldEncrypt()) {
+      sql::Statement select_smt, update_smt;
+
+      select_smt.Assign(
+          db()->GetCachedStatement(SQL_FROM_HERE,
+                                   "SELECT rowid, encrypted_value "
+                                   "FROM cookies WHERE encrypted_value != ''"));
+
+      update_smt.Assign(
+          db()->GetCachedStatement(SQL_FROM_HERE,
+                                   "UPDATE cookies SET encrypted_value=? WHERE "
+                                   "rowid=?"));
+
+      if (!select_smt.is_valid() || !update_smt.is_valid())
+        return base::nullopt;
+
+      bool okay = true;
+
+      std::map<int64_t, std::string> encrypted_values;
+
+      while (select_smt.Step()) {
+        int64_t rowid = select_smt.ColumnInt64(0);
+        std::string encrypted_value = select_smt.ColumnString(1);
+        DCHECK(!encrypted_value.empty());
+        std::string decrypted_value;
+        if (!crypto_->DecryptString(encrypted_value, &decrypted_value)) {
+          RecordCookieLoadProblem(COOKIE_LOAD_PROBLEM_DECRYPT_FAILED);
+          okay = false;
+          continue;
+        }
+        std::string new_encrypted_value;
+        if (!crypto_->EncryptString(decrypted_value, &new_encrypted_value)) {
+          RecordCookieCommitProblem(COOKIE_COMMIT_PROBLEM_ENCRYPT_FAILED);
+          okay = false;
+          continue;
+        }
+        encrypted_values[rowid] = new_encrypted_value;
+      }
+
+      for (const auto& entry : encrypted_values) {
+        update_smt.Reset(true);
+        update_smt.BindString(0, entry.second);
+        update_smt.BindInt64(1, entry.first);
+        if (!update_smt.Run())
+          return base::nullopt;
+      }
+
+      UMA_HISTOGRAM_BOOLEAN("Cookie.MigratedEncryptionKeySuccess", okay);
+    }
+#endif
+    ++cur_version;
+    meta_table()->SetVersionNumber(cur_version);
+    meta_table()->SetCompatibleVersionNumber(
+        std::min(cur_version, kCompatibleVersionNumber));
+    transaction.Commit();
+    base::UmaHistogramTimes("Cookie.TimeDatabaseMigrationToV14",
                             base::TimeTicks::Now() - start_time);
   }
 
