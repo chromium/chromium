@@ -96,6 +96,9 @@
 
         <!-- Multi-device Setup animation. -->
         <structure name="IDR_MULTIDEVICE_SETUP_ANIMATION" file="resources\chromeos\login\images\multidevice_setup.json" compress="gzip" type="chrome_html" />
+
+        <!-- Apps downloading animation. -->
+        <structure name="IDR_APPS_DOWNLOADING_ANIMATION" file="resources\chromeos\login\images\downloading_apps.json" compress="gzip" type="chrome_html" />
       </if>
     </structures>
     <includes>

@@ -309,6 +309,11 @@ void AddMultiDeviceSetupResources(content::WebUIDataSource* source) {
       network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
 }
 
+void AddAppDownloadingResources(content::WebUIDataSource* source) {
+  source->AddResourcePath("downloading_apps.json",
+                          IDR_APPS_DOWNLOADING_ANIMATION);
+}
+
 void AddDebuggerResources(content::WebUIDataSource* source) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   bool enable_debugger =
@@ -389,6 +394,7 @@ content::WebUIDataSource* CreateOobeUIDataSource(
   AddGestureNavigationResources(source);
   AddMarketingOptInResources(source);
   AddMultiDeviceSetupResources(source);
+  AddAppDownloadingResources(source);
 
   AddDebuggerResources(source);
   AddTestAPIResources(source);

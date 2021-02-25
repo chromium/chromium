@@ -20,6 +20,29 @@ Polymer({
       type: Boolean,
       computed: 'hasSingleApp_(numOfApps)',
     },
+
+    /**
+     * Whether new OOBE layout is enabled.
+     *
+     * @type {boolean}
+     */
+    newLayoutEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('newLayoutEnabled') &&
+            loadTimeData.getBoolean('newLayoutEnabled');
+      }
+    },
+
+    pluralTitleVisible_: {
+      type: Boolean,
+      value: false,
+    },
+
+    singularTitleVisible_: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   ready() {
@@ -50,15 +73,25 @@ Polymer({
   /** Called when dialog is shown */
   onBeforeShow(data) {
     this.numOfApps = data.numOfApps;
-    if (this.$.video) {
+    if (!this.newLayoutEnabled_) {
+      this.singularTitleVisible_ = this.hasSingleApp_(this.numOfApps);
+      this.pluralTitleVisible_ = !this.hasSingleApp_(this.numOfApps);
+    }
+    if (this.$.video && !this.newLayoutEnabled_) {
       this.$.video.play();
+    }
+    if (this.$.downloadingApps && this.newLayoutEnabled_) {
+      this.$.downloadingApps.setPlay(true);
     }
   },
 
   /** Called when dialog is hidden */
   onBeforeHide() {
-    if (this.$.video) {
+    if (this.$.video && !this.newLayoutEnabled_) {
       this.$.video.pause();
+    }
+    if (this.$.downloadingApps && this.newLayoutEnabled_) {
+      this.$.downloadingApps.setPlay(false);
     }
   },
 
@@ -74,6 +107,8 @@ Polymer({
 
   /** @private */
   getDialogTitleA11yString_(numOfApps) {
+    if (this.newLayoutEnabled_)
+      return this.i18n('appDownloadingScreenTitle');
     if (this.hasSingleApp_(numOfApps)) {
       return this.i18n('appDownloadingScreenTitleSingular');
     } else {

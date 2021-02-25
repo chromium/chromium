@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
@@ -36,6 +37,7 @@ namespace {
 
 constexpr char kAppDownloadingId[] = "app-downloading";
 
+const test::UIPath kTitle = {kAppDownloadingId, "title"};
 const test::UIPath kTitlePlural = {kAppDownloadingId, "title-plural"};
 const test::UIPath kTitleSingular = {kAppDownloadingId, "title-singular"};
 const test::UIPath kContinueSetupButton = {kAppDownloadingId,
@@ -99,13 +101,17 @@ IN_PROC_BROWSER_TEST_F(AppDownloadingScreenTest, NoAppsSelected) {
   test::OobeJS().CreateVisibilityWaiter(true, kContinueSetupButton)->Wait();
   test::OobeJS().ExpectEnabledPath(kContinueSetupButton);
 
-  test::OobeJS().ExpectVisiblePath(kTitlePlural);
-  test::OobeJS().ExpectHiddenPath(kTitleSingular);
+  if (features::IsNewOobeLayoutEnabled()) {
+    test::OobeJS().ExpectVisiblePath(kTitle);
+  } else {
+    test::OobeJS().ExpectVisiblePath(kTitlePlural);
+    test::OobeJS().ExpectHiddenPath(kTitleSingular);
 
-  test::OobeJS().ExpectElementText(
-      l10n_util::GetStringFUTF8(IDS_LOGIN_APP_DOWNLOADING_SCREEN_TITLE_PLURAL,
-                                base::ASCIIToUTF16("0")),
-      kTitlePlural);
+    test::OobeJS().ExpectElementText(
+        l10n_util::GetStringFUTF8(IDS_LOGIN_APP_DOWNLOADING_SCREEN_TITLE_PLURAL,
+                                  base::ASCIIToUTF16("0")),
+        kTitlePlural);
+  }
 
   test::OobeJS().TapOnPath(kContinueSetupButton);
 
@@ -124,12 +130,17 @@ IN_PROC_BROWSER_TEST_F(AppDownloadingScreenTest, SingleAppSelected) {
   test::OobeJS().CreateVisibilityWaiter(true, kContinueSetupButton)->Wait();
   test::OobeJS().ExpectEnabledPath(kContinueSetupButton);
 
-  test::OobeJS().ExpectVisiblePath(kTitleSingular);
-  test::OobeJS().ExpectHiddenPath(kTitlePlural);
+  if (features::IsNewOobeLayoutEnabled()) {
+    test::OobeJS().ExpectVisiblePath(kTitle);
+  } else {
+    test::OobeJS().ExpectVisiblePath(kTitleSingular);
+    test::OobeJS().ExpectHiddenPath(kTitlePlural);
 
-  test::OobeJS().ExpectElementText(
-      l10n_util::GetStringUTF8(IDS_LOGIN_APP_DOWNLOADING_SCREEN_TITLE_SINGULAR),
-      kTitleSingular);
+    test::OobeJS().ExpectElementText(
+        l10n_util::GetStringUTF8(
+            IDS_LOGIN_APP_DOWNLOADING_SCREEN_TITLE_SINGULAR),
+        kTitleSingular);
+  }
 
   test::OobeJS().TapOnPath(kContinueSetupButton);
 
@@ -150,13 +161,17 @@ IN_PROC_BROWSER_TEST_F(AppDownloadingScreenTest, MultipleAppsSelected) {
   test::OobeJS().CreateVisibilityWaiter(true, kContinueSetupButton)->Wait();
   test::OobeJS().ExpectEnabledPath(kContinueSetupButton);
 
-  test::OobeJS().ExpectVisiblePath(kTitlePlural);
-  test::OobeJS().ExpectHiddenPath(kTitleSingular);
+  if (features::IsNewOobeLayoutEnabled()) {
+    test::OobeJS().ExpectVisiblePath(kTitle);
+  } else {
+    test::OobeJS().ExpectVisiblePath(kTitlePlural);
+    test::OobeJS().ExpectHiddenPath(kTitleSingular);
 
-  test::OobeJS().ExpectElementText(
-      l10n_util::GetStringFUTF8(IDS_LOGIN_APP_DOWNLOADING_SCREEN_TITLE_PLURAL,
-                                base::ASCIIToUTF16("2")),
-      kTitlePlural);
+    test::OobeJS().ExpectElementText(
+        l10n_util::GetStringFUTF8(IDS_LOGIN_APP_DOWNLOADING_SCREEN_TITLE_PLURAL,
+                                  base::ASCIIToUTF16("2")),
+        kTitlePlural);
+  }
 
   test::OobeJS().TapOnPath(kContinueSetupButton);
 
