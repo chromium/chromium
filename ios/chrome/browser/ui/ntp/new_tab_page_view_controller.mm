@@ -231,12 +231,21 @@ const CGFloat kOffsetToPinOmnibox = 100;
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+
+  if (previousTraitCollection.horizontalSizeClass !=
+      self.traitCollection.horizontalSizeClass) {
+    [self.contentSuggestionsViewController.view setNeedsLayout];
+    [self.contentSuggestionsViewController.view layoutIfNeeded];
+    [self.ntpContentDelegate reloadContentSuggestions];
+  }
+
   if (previousTraitCollection.preferredContentSizeCategory !=
       self.traitCollection.preferredContentSizeCategory) {
     [self.contentSuggestionsViewController.collectionView
             .collectionViewLayout invalidateLayout];
     [self.headerSynchronizer updateFakeOmniboxForScrollPosition];
   }
+
   [self.headerSynchronizer updateConstraints];
   [self updateOverscrollActionsState];
 }
