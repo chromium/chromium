@@ -17,13 +17,16 @@ import android.util.SparseArray;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * AndroidPermissionDelegate that implements much of the logic around requesting permissions.
  * Subclasses need to implement only the basic permissions checking and requesting methods.
  */
 public abstract class AndroidPermissionDelegateWithRequester implements AndroidPermissionDelegate {
     private Handler mHandler;
-    private SparseArray<PermissionCallback> mOutstandingPermissionRequests;
+    private SparseArray<PermissionRequestInfo> mOutstandingPermissionRequests;
     private int mNextRequestCode;
 
     // Constants used for permission request code bounding.
@@ -45,7 +48,7 @@ public abstract class AndroidPermissionDelegateWithRequester implements AndroidP
 
     public AndroidPermissionDelegateWithRequester() {
         mHandler = new Handler();
-        mOutstandingPermissionRequests = new SparseArray<PermissionCallback>();
+        mOutstandingPermissionRequests = new SparseArray<PermissionRequestInfo>();
     }
 
     @Override
@@ -137,21 +140,45 @@ public abstract class AndroidPermissionDelegateWithRequester implements AndroidP
     @Override
     public final boolean handlePermissionResult(
             int requestCode, String[] permissions, int[] grantResults) {
-        SharedPreferences.Editor editor = ContextUtils.getAppSharedPreferences().edit();
+        PermissionRequestInfo requestInfo = mOutstandingPermissionRequests.get(requestCode);
+        mOutstandingPermissionRequests.delete(requestCode);
+
+        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
+        SharedPreferences.Editor editor = prefs.edit();
         for (int i = 0; i < permissions.length; i++) {
             if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
                 editor.remove(getPermissionWasDeniedKey(permissions[i]));
-            } else {
+            } else if (shouldPersistDenial(requestInfo, permissions[i])) {
                 editor.putBoolean(getPermissionWasDeniedKey(permissions[i]), true);
             }
         }
         editor.apply();
 
-        PermissionCallback callback = mOutstandingPermissionRequests.get(requestCode);
-        mOutstandingPermissionRequests.delete(requestCode);
-        if (callback == null) return false;
-        callback.onRequestPermissionsResult(permissions, grantResults);
+        if (requestInfo == null || requestInfo.callback == null) return false;
+        requestInfo.callback.onRequestPermissionsResult(permissions, grantResults);
         return true;
+    }
+
+    /**
+     * Returns if an information about permission denial should be stored. Denial should not be
+     * stored iff:
+     * <ul>
+     *   <li> Android version >= Android.R
+     *   <li> The information about initial @see Activity.shouldShowRequestPermissionRationale is
+     *        present and the value is false
+     *   <li> The current value of @see Activity.shouldShowRequestPermissionRationale is false as
+     *        well
+     * </ul>
+     */
+    private boolean shouldPersistDenial(PermissionRequestInfo requestInfo, String permission) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return true;
+
+        boolean initialShowRationaleState = false;
+        if (requestInfo != null) {
+            initialShowRationaleState = requestInfo.getInitialShowRationaleStateFor(permission);
+        }
+
+        return initialShowRationaleState || shouldShowRequestPermissionRationale(permission);
     }
 
     /** @see Activity.requestPermissions */
@@ -166,7 +193,8 @@ public abstract class AndroidPermissionDelegateWithRequester implements AndroidP
 
         int requestCode = REQUEST_CODE_PREFIX + mNextRequestCode;
         mNextRequestCode = (mNextRequestCode + 1) % REQUEST_CODE_RANGE_SIZE;
-        mOutstandingPermissionRequests.put(requestCode, callback);
+        mOutstandingPermissionRequests.put(
+                requestCode, new PermissionRequestInfo(permissions, callback));
         if (!requestPermissionsFromRequester(permissions, requestCode)) {
             mOutstandingPermissionRequests.delete(requestCode);
             return false;
@@ -207,5 +235,33 @@ public abstract class AndroidPermissionDelegateWithRequester implements AndroidP
      */
     private String getPermissionWasDeniedKey(String permission) {
         return PERMISSION_WAS_DENIED_KEY_PREFIX + normalizePermissionName(permission);
+    }
+
+    /** Wrapper holding information relevant to a permission request. */
+    private class PermissionRequestInfo {
+        public final PermissionCallback callback;
+        public final Map<String, Boolean> initialShowRationaleState;
+
+        public PermissionRequestInfo(String[] permissions, PermissionCallback callback) {
+            initialShowRationaleState = new HashMap<>();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                for (String permission : permissions) {
+                    initialShowRationaleState.put(
+                            permission, shouldShowRequestPermissionRationale(permission));
+                }
+            }
+            this.callback = callback;
+        }
+
+        /**
+         * Returns initial value of @see Activity.shouldShowRequestPermissionRationale
+         * for the given {@code permission} or false if not found.
+         */
+        public boolean getInitialShowRationaleStateFor(String permission) {
+            assert initialShowRationaleState.get(permission) != null;
+            return initialShowRationaleState.get(permission) != null
+                    ? initialShowRationaleState.get(permission)
+                    : false;
+        }
     }
 }
