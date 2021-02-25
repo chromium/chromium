@@ -10,17 +10,22 @@
 #include "content/public/common/content_client.h"
 #include "device/gamepad/public/mojom/gamepad.mojom.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
+#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
 namespace content {
 
 namespace {
 
 // Register mojo binder policies for prerendering for content/ interfaces.
+// TODO(https://crbug.com/1145976): Set same-origin policies and cross-origin
+// policies separately. The polices set in this function are for same-origin
+// prerendering.
 void RegisterContentBinderPoliciesForPrerendering(MojoBinderPolicyMap& map) {
   map.SetPolicy<device::mojom::GamepadHapticsManager>(
       MojoBinderPolicy::kCancel);
   map.SetPolicy<device::mojom::GamepadMonitor>(MojoBinderPolicy::kCancel);
 
+  map.SetPolicy<blink::mojom::IDBFactory>(MojoBinderPolicy::kGrant);
   map.SetPolicy<network::mojom::RestrictedCookieManager>(
       MojoBinderPolicy::kGrant);
 }
