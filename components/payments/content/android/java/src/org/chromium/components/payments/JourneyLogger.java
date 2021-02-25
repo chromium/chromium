@@ -86,6 +86,16 @@ public class JourneyLogger {
         JourneyLoggerJni.get().setEventOccurred(mJourneyLoggerAndroid, JourneyLogger.this, event);
     }
 
+    /**
+     * Records the method that has been selected and invoked.
+     *
+     * @param category The category of the method.
+     */
+    public void setSelectedMethod(@PaymentMethodCategory int category) {
+        JourneyLoggerJni.get().setSelectedMethod(
+                mJourneyLoggerAndroid, JourneyLogger.this, category);
+    }
+
     /*
      * Records what user information were requested by the merchant to complete the Payment Request.
      *
@@ -208,6 +218,8 @@ public class JourneyLogger {
         void setHasEnrolledInstrumentValue(
                 long nativeJourneyLoggerAndroid, JourneyLogger caller, boolean value);
         void setEventOccurred(long nativeJourneyLoggerAndroid, JourneyLogger caller, int event);
+        void setSelectedMethod(
+                long nativeJourneyLoggerAndroid, JourneyLogger caller, int paymentMethodCategory);
         void setRequestedInformation(long nativeJourneyLoggerAndroid, JourneyLogger caller,
                 boolean requestShipping, boolean requestEmail, boolean requestPhone,
                 boolean requestName);

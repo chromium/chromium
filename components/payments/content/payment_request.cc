@@ -738,24 +738,24 @@ void PaymentRequest::OnPaymentResponseAvailable(
   // Log the correct "selected instrument" metric according to its type and
   // the method name in response.
   DCHECK(state_->selected_app());
-  JourneyLogger::Event selected_event =
-      JourneyLogger::Event::EVENT_SELECTED_OTHER;
+  JourneyLogger::PaymentMethodCategory category =
+      JourneyLogger::PaymentMethodCategory::kOther;
   switch (state_->selected_app()->type()) {
     case PaymentApp::Type::AUTOFILL:
-      selected_event = JourneyLogger::Event::EVENT_SELECTED_CREDIT_CARD;
+      category = JourneyLogger::PaymentMethodCategory::kBasicCard;
       break;
     case PaymentApp::Type::SERVICE_WORKER_APP:
       // Intentionally fall through.
     case PaymentApp::Type::NATIVE_MOBILE_APP: {
-      selected_event = IsGooglePaymentMethod(response->method_name)
-                           ? JourneyLogger::Event::EVENT_SELECTED_GOOGLE
-                           : JourneyLogger::Event::EVENT_SELECTED_OTHER;
+      category = IsGooglePaymentMethod(response->method_name)
+                     ? JourneyLogger::PaymentMethodCategory::kGoogle
+                     : JourneyLogger::PaymentMethodCategory::kOther;
       break;
     }
     case PaymentApp::Type::INTERNAL: {
       if (response->method_name == methods::kSecurePaymentConfirmation) {
-        selected_event =
-            JourneyLogger::Event::EVENT_SELECTED_SECURE_PAYMENT_CONFIRMATION;
+        category =
+            JourneyLogger::PaymentMethodCategory::kSecurePaymentConfirmation;
       }
       break;
     }
@@ -763,7 +763,7 @@ void PaymentRequest::OnPaymentResponseAvailable(
       NOTREACHED();
       break;
   }
-  journey_logger_.SetEventOccurred(selected_event);
+  journey_logger_.SetSelectedMethod(category);
 
   // If currently interactive, show the processing spinner. Autofill payment
   // apps request a CVC, so they are always interactive at this point. A payment

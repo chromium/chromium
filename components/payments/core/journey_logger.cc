@@ -9,6 +9,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -141,6 +142,28 @@ void JourneyLogger::SetHasEnrolledInstrumentValue(bool value) {
 
 void JourneyLogger::SetEventOccurred(Event event) {
   events_ |= event;
+}
+
+void JourneyLogger::SetSelectedMethod(PaymentMethodCategory category) {
+  switch (category) {
+    case PaymentMethodCategory::kBasicCard:
+      SetEventOccurred(EVENT_SELECTED_CREDIT_CARD);
+      break;
+    case PaymentMethodCategory::kGoogle:
+      SetEventOccurred(EVENT_SELECTED_GOOGLE);
+      break;
+    case PaymentMethodCategory::kPlayBilling:
+      NOTREACHED();
+      break;
+    case PaymentMethodCategory::kSecurePaymentConfirmation:
+      SetEventOccurred(EVENT_SELECTED_SECURE_PAYMENT_CONFIRMATION);
+      break;
+    case PaymentMethodCategory::kOther:
+      SetEventOccurred(EVENT_SELECTED_OTHER);
+      break;
+    default:
+      NOTREACHED();
+  }
 }
 
 void JourneyLogger::SetRequestedInformation(bool requested_shipping,

@@ -706,11 +706,11 @@ public class PaymentRequestService
             }
         }
         if (isAutofillCard) {
-            mJourneyLogger.setEventOccurred(Event.SELECTED_CREDIT_CARD);
+            mJourneyLogger.setSelectedMethod(PaymentMethodCategory.BASIC_CARD);
         } else if (isGooglePaymentApp) {
-            mJourneyLogger.setEventOccurred(Event.SELECTED_GOOGLE);
+            mJourneyLogger.setSelectedMethod(PaymentMethodCategory.GOOGLE);
         } else {
-            mJourneyLogger.setEventOccurred(Event.SELECTED_OTHER);
+            mJourneyLogger.setSelectedMethod(PaymentMethodCategory.OTHER);
         }
     }
 

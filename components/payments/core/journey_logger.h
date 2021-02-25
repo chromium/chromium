@@ -157,6 +157,18 @@ class JourneyLogger {
     kMaxValue = kRegularTransaction,
   };
 
+  // The categories of the payment methods.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.payments
+  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: PaymentMethodCategory
+  enum class PaymentMethodCategory {
+    kBasicCard = 0,
+    kGoogle = 1,
+    kPlayBilling = 2,
+    kSecurePaymentConfirmation = 3,
+    kOther = 4,
+    kMaxValue = kOther,
+  };
+
   // Records different checkout steps for payment requests. The difference
   // between number of requests recorded for each step and its successor shows
   // the drop-off that happened during that step.
@@ -199,6 +211,9 @@ class JourneyLogger {
 
   // Records that an event occurred.
   void SetEventOccurred(Event event);
+
+  // Records the category of the selected app.
+  void SetSelectedMethod(PaymentMethodCategory category);
 
   // Records the user information requested by the merchant.
   void SetRequestedInformation(bool requested_shipping,
