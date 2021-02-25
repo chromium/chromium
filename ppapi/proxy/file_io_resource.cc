@@ -214,7 +214,7 @@ int32_t FileIOResource::Query(PP_FileInfo* info,
       base::BindOnce(&FileIOResource::QueryOp::DoWork, query_op),
       RunWhileLocked(base::BindOnce(&TrackedCallback::Run, callback)));
   callback->set_completion_task(
-      BindRepeating(&FileIOResource::OnQueryComplete, this, query_op, info));
+      base::BindOnce(&FileIOResource::OnQueryComplete, this, query_op, info));
 
   return PP_OK_COMPLETIONPENDING;
 }
@@ -475,8 +475,8 @@ int32_t FileIOResource::ReadValidated(int64_t offset,
       PpapiGlobals::Get()->GetFileTaskRunner(), FROM_HERE,
       base::BindOnce(&FileIOResource::ReadOp::DoWork, read_op),
       RunWhileLocked(base::BindOnce(&TrackedCallback::Run, callback)));
-  callback->set_completion_task(BindRepeating(&FileIOResource::OnReadComplete,
-                                              this, read_op, array_output));
+  callback->set_completion_task(base::BindOnce(&FileIOResource::OnReadComplete,
+                                               this, read_op, array_output));
 
   return PP_OK_COMPLETIONPENDING;
 }
@@ -517,7 +517,7 @@ int32_t FileIOResource::WriteValidated(
       base::BindOnce(&FileIOResource::WriteOp::DoWork, write_op),
       RunWhileLocked(base::BindOnce(&TrackedCallback::Run, callback)));
   callback->set_completion_task(
-      BindRepeating(&FileIOResource::OnWriteComplete, this));
+      base::BindOnce(&FileIOResource::OnWriteComplete, this));
 
   return PP_OK_COMPLETIONPENDING;
 }
@@ -609,7 +609,7 @@ void FileIOResource::OnRequestWriteQuotaComplete(
         base::BindOnce(&FileIOResource::WriteOp::DoWork, write_op),
         RunWhileLocked(base::BindOnce(&TrackedCallback::Run, callback)));
     callback->set_completion_task(
-        BindRepeating(&FileIOResource::OnWriteComplete, this));
+        BindOnce(&FileIOResource::OnWriteComplete, this));
   }
 }
 

@@ -185,9 +185,9 @@ void UDPSocketFilter::RecvQueue::DataReceivedOnIOThread(
     //     that the resource will be deleted and abort the callback before it
     //     is actually run.)
     std::unique_ptr<std::string> data_to_pass(new std::string(data));
-    recvfrom_callback_->set_completion_task(base::BindRepeating(
-        &SetRecvFromOutput, pp_instance_, base::Passed(std::move(data_to_pass)),
-        addr, base::Unretained(read_buffer_), bytes_to_read_,
+    recvfrom_callback_->set_completion_task(base::BindOnce(
+        &SetRecvFromOutput, pp_instance_, std::move(data_to_pass), addr,
+        base::Unretained(read_buffer_), bytes_to_read_,
         base::Unretained(recvfrom_addr_resource_)));
     last_recvfrom_addr_ = addr;
     PpapiGlobals::Get()->GetMainThreadMessageLoop()->PostTask(
