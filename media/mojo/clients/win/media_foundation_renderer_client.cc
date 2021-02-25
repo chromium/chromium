@@ -4,6 +4,8 @@
 
 #include "media/mojo/clients/win/media_foundation_renderer_client.h"
 
+#include <utility>
+
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -230,7 +232,7 @@ void MediaFoundationRendererClient::MojoGetDCOMPSurface() {
         FROM_HERE,
         base::BindOnce(
             &MediaFoundationRendererClient::OnReceivedRemoteDCOMPSurface,
-            weak_factory_.GetWeakPtr(), base::Passed(mojo::ScopedHandle())));
+            weak_factory_.GetWeakPtr(), mojo::ScopedHandle()));
     return;
   }
   waiting_for_dcomp_surface_handle_ = true;

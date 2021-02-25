@@ -18,6 +18,7 @@
 #undef SECURITY_WIN32
 
 #include <memory>
+#include <utility>
 
 #include "chrome/browser/password_manager/password_manager_util_win.h"
 
@@ -335,8 +336,8 @@ void GetOsPasswordStatus() {
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&GetOsPasswordStatusInternal, prefs_weak, status_weak),
-      base::BindOnce(&ReplyOsPasswordStatus, base::Passed(&prefs),
-                     base::Passed(&status)));
+      base::BindOnce(&ReplyOsPasswordStatus, std::move(prefs),
+                     std::move(status)));
 }
 
 }  // namespace

@@ -143,7 +143,7 @@ void PlatformVerificationImpl::GetStorageId(uint32_t version,
     ComputeStorageId(
         GetStorageIdSaltFromProfile(render_frame_host_), origin(),
         base::BindOnce(&PlatformVerificationImpl::OnStorageIdResponse,
-                       weak_factory_.GetWeakPtr(), base::Passed(&callback)));
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
     return;
   }
 #endif  // BUILDFLAG(ENABLE_CDM_STORAGE_ID)

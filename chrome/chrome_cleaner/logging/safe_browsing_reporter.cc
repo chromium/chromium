@@ -298,7 +298,7 @@ void SafeBrowsingReporter::UploadWithRetry(
             << static_cast<int>(result);
   done_callback_runner_->PostTask(
       FROM_HERE, base::BindOnce(done_callback_, result, serialized_report,
-                                base::Passed(&response)));
+                                std::move(response)));
 }
 
 SafeBrowsingReporter::Result SafeBrowsingReporter::PerformUploadWithRetries(

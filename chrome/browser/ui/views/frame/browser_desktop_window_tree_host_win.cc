@@ -135,7 +135,7 @@ void VirtualDesktopHelper::UpdateWindowDesktopId(
       base::BindOnce(&VirtualDesktopHelper::GetWindowDesktopIdImpl, hwnd,
                      virtual_desktop_manager_),
       base::BindOnce(&VirtualDesktopHelper::SetWorkspace, this,
-                     base::Passed(std::move(callback))));
+                     std::move(callback)));
 }
 
 bool VirtualDesktopHelper::GetInitialWorkspaceRemembered() const {

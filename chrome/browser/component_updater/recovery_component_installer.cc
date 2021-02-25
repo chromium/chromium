@@ -238,8 +238,7 @@ void DoElevatedInstallRecoveryComponent(const base::FilePath& path) {
       FROM_HERE,
       {base::WithBaseSyncPrimitives(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&WaitForElevatedInstallToComplete,
-                     base::Passed(&process)));
+      base::BindOnce(&WaitForElevatedInstallToComplete, std::move(process)));
 }
 
 void ElevatedInstallRecoveryComponent(const base::FilePath& installer_path) {
@@ -383,7 +382,7 @@ bool RecoveryComponentInstaller::RunInstallCommand(
       FROM_HERE,
       {base::WithBaseSyncPrimitives(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&WaitForInstallToComplete, base::Passed(&process),
+      base::BindOnce(&WaitForInstallToComplete, std::move(process),
                      installer_folder, prefs_));
 
   // Returns true regardless of install result since from updater service

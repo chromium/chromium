@@ -680,9 +680,8 @@ void SetAsDefaultBrowserUsingSystemSettings(
   // interaction.
   static const wchar_t* const kProtocols[] = {L"http", L"https", nullptr};
   OpenSystemSettingsHelper::Begin(
-      kProtocols,
-      base::BindOnce(&OnSettingsAppFinished, base::Passed(&recorder),
-                     std::move(on_finished_callback)));
+      kProtocols, base::BindOnce(&OnSettingsAppFinished, std::move(recorder),
+                                 std::move(on_finished_callback)));
 }
 
 bool SetAsDefaultProtocolClientUsingIntentPicker(const std::string& protocol) {
