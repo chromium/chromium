@@ -81,8 +81,7 @@ class CORE_EXPORT WebDevToolsAgentImpl final
 
   WebInputEventResult HandleInputEvent(const WebInputEvent&);
   void DispatchBufferedTouchEvents();
-  void PageScrollStarted();
-  void PageScrollEnded();
+  void SetPageIsScrolling(bool is_scrolling);
   void BindReceiver(
       mojo::PendingAssociatedRemote<mojom::blink::DevToolsAgentHost>,
       mojo::PendingAssociatedReceiver<mojom::blink::DevToolsAgent>);

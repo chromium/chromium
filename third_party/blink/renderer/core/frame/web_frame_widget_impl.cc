@@ -1107,9 +1107,6 @@ void WebFrameWidgetImpl::SendOverscrollEventFromImplSide(
 
 void WebFrameWidgetImpl::SendScrollEndEventFromImplSide(
     cc::ElementId scroll_latched_element_id) {
-  if (WebDevToolsAgentImpl* devtools = LocalRootImpl()->DevToolsAgentImpl())
-    devtools->PageScrollEnded();
-
   if (!RuntimeEnabledFeatures::OverscrollCustomizationEnabled())
     return;
 
@@ -1121,10 +1118,8 @@ void WebFrameWidgetImpl::SendScrollEndEventFromImplSide(
 
 void WebFrameWidgetImpl::UpdateCompositorScrollState(
     const cc::CompositorCommitData& commit_data) {
-  if (commit_data.manipulation_info != cc::kManipulationInfoNone) {
-    if (WebDevToolsAgentImpl* devtools = LocalRootImpl()->DevToolsAgentImpl())
-      devtools->PageScrollStarted();
-  }
+  if (WebDevToolsAgentImpl* devtools = LocalRootImpl()->DevToolsAgentImpl())
+    devtools->SetPageIsScrolling(commit_data.is_scroll_active);
 
   RecordManipulationTypeCounts(commit_data.manipulation_info);
 

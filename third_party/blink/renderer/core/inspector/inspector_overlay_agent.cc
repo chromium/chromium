@@ -908,14 +908,8 @@ void InspectorOverlayAgent::DispatchBufferedTouchEvents() {
   OverlayMainFrame()->GetEventHandler().DispatchBufferedTouchEvents();
 }
 
-void InspectorOverlayAgent::PageScrollStarted() {
-  // The new scroll can start without the previous ending.
-  is_page_scrolling_ = true;
-}
-
-void InspectorOverlayAgent::PageScrollEnded() {
-  DCHECK(is_page_scrolling_);
-  is_page_scrolling_ = false;
+void InspectorOverlayAgent::SetPageIsScrolling(bool is_scrolling) {
+  is_page_scrolling_ = is_scrolling;
 }
 
 WebInputEventResult InspectorOverlayAgent::HandleInputEvent(

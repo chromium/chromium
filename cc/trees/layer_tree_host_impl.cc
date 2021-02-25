@@ -3926,6 +3926,8 @@ LayerTreeHostImpl::ProcessCompositorDeltas() {
   commit_data->page_scale_delta =
       active_tree_->page_scale_factor()->PullDeltaForMainThread();
   commit_data->is_pinch_gesture_active = active_tree_->PinchGestureActive();
+  commit_data->is_scroll_active =
+      input_delegate_ && GetInputHandler().IsCurrentlyScrolling();
   // We should never process non-unit page_scale_delta for an OOPIF subframe.
   // TODO(wjmaclean): Remove this DCHECK as a pre-condition to closing the bug.
   // https://crbug.com/845097

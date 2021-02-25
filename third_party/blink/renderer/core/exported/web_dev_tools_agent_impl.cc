@@ -484,14 +484,9 @@ void WebDevToolsAgentImpl::DispatchBufferedTouchEvents() {
     it.value->DispatchBufferedTouchEvents();
 }
 
-void WebDevToolsAgentImpl::PageScrollStarted() {
+void WebDevToolsAgentImpl::SetPageIsScrolling(bool is_scrolling) {
   for (auto& it : overlay_agents_)
-    it.value->PageScrollStarted();
-}
-
-void WebDevToolsAgentImpl::PageScrollEnded() {
-  for (auto& it : overlay_agents_)
-    it.value->PageScrollEnded();
+    it.value->SetPageIsScrolling(is_scrolling);
 }
 
 WebInputEventResult WebDevToolsAgentImpl::HandleInputEvent(

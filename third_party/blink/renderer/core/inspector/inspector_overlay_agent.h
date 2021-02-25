@@ -237,8 +237,7 @@ class CORE_EXPORT InspectorOverlayAgent final
   void Inspect(Node*);
   void EnsureAXContext(Node*);
   void DispatchBufferedTouchEvents();
-  void PageScrollStarted();
-  void PageScrollEnded();
+  void SetPageIsScrolling(bool is_scrolling);
   WebInputEventResult HandleInputEvent(const WebInputEvent&);
   WebInputEventResult HandleInputEventInOverlay(const WebInputEvent&);
   void PageLayoutInvalidated(bool resized);
