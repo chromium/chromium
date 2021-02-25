@@ -126,9 +126,10 @@ base::ThreadSafePartitionRoot* Allocator() {
 }
 
 base::ThreadSafePartitionRoot* AlignedAllocator() {
-#if !DCHECK_IS_ON() && !BUILDFLAG(USE_BACKUP_REF_PTR)
-  // There are no tags or cookies, so the regular allocator provides suitably
-  // aligned memory already.
+#if !DCHECK_IS_ON() && (!BUILDFLAG(USE_BACKUP_REF_PTR) || \
+                        BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION))
+  // There are no tags or cookies in front of the allocation, so the regular
+  // allocator provides suitably aligned memory already.
   return Allocator();
 #else
   // Since the general-purpose allocator uses the thread cache, this one cannot.

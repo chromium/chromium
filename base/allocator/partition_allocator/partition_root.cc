@@ -472,6 +472,11 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
     if (opts.alignment == PartitionOptions::Alignment::kAlignedAlloc) {
       allow_cookies = false;
       allow_ref_count = false;
+      // There should be no configuration where aligned root and ref-count are
+      // requested at the same time. In theory REF_COUNT_AT_END_OF_ALLOCATION
+      // allows these to co-exist, but in this case aligned root is not even
+      // created.
+      PA_CHECK(opts.ref_count == PartitionOptions::RefCount::kDisabled);
     } else {
       allow_cookies = true;
       // Allow ref-count if it's explicitly requested *and* GigaCage is enabled.
