@@ -256,7 +256,7 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness {
 
     auto test_os_integration_manager =
         std::make_unique<TestOsIntegrationManager>(profile(), nullptr, nullptr,
-                                                   nullptr);
+                                                   nullptr, nullptr);
     provider->SetOsIntegrationManager(std::move(test_os_integration_manager));
 
     auto web_app_policy_manager =

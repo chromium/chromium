@@ -242,6 +242,12 @@ std::vector<DisplayMode> BookmarkAppRegistrar::GetAppDisplayModeOverride(
   return std::vector<DisplayMode>();
 }
 
+apps::UrlHandlers BookmarkAppRegistrar::GetAppUrlHandlers(
+    const web_app::AppId& app_id) const {
+  NOTIMPLEMENTED();
+  return std::vector<apps::UrlHandlerInfo>();
+}
+
 base::Time BookmarkAppRegistrar::GetAppLastLaunchTime(
     const web_app::AppId& app_id) const {
   const Extension* extension = GetBookmarkAppDchecked(app_id);

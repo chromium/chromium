@@ -16,14 +16,16 @@ namespace web_app {
 class AppShortcutManager;
 class FileHandlerManager;
 class ProtocolHandlerManager;
+class UrlHandlerManager;
 
 class TestOsIntegrationManager : public OsIntegrationManager {
  public:
-  explicit TestOsIntegrationManager(
+  TestOsIntegrationManager(
       Profile* profile,
       std::unique_ptr<AppShortcutManager> shortcut_manager,
       std::unique_ptr<FileHandlerManager> file_handler_manager,
-      std::unique_ptr<ProtocolHandlerManager> protocol_handler_manager);
+      std::unique_ptr<ProtocolHandlerManager> protocol_handler_manager,
+      std::unique_ptr<UrlHandlerManager> url_handler_manager);
   ~TestOsIntegrationManager() override;
 
   // OsIntegrationManager:
@@ -56,6 +58,10 @@ class TestOsIntegrationManager : public OsIntegrationManager {
     return num_add_app_to_quick_launch_bar_calls_;
   }
 
+  size_t num_register_url_handlers_calls() const {
+    return num_register_url_handlers_calls_;
+  }
+
   void set_can_create_shortcuts(bool can_create_shortcuts) {
     can_create_shortcuts_ = can_create_shortcuts;
   }
@@ -76,6 +82,9 @@ class TestOsIntegrationManager : public OsIntegrationManager {
   void SetProtocolHandlerManager(
       std::unique_ptr<ProtocolHandlerManager> protocol_handler_manager);
 
+  void SetUrlHandlerManager(
+      std::unique_ptr<UrlHandlerManager> url_handler_manager);
+
   TestOsIntegrationManager* AsTestOsIntegrationManager() override;
 
  private:
@@ -83,6 +92,7 @@ class TestOsIntegrationManager : public OsIntegrationManager {
   size_t num_create_file_handlers_calls_ = 0;
   size_t num_register_run_on_os_login_calls_ = 0;
   size_t num_add_app_to_quick_launch_bar_calls_ = 0;
+  size_t num_register_url_handlers_calls_ = 0;
   base::Optional<bool> did_add_to_desktop_;
   base::Optional<InstallOsHooksOptions> last_options_;
 

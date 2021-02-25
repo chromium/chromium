@@ -28,7 +28,8 @@ void TestWebAppRegistryController::SetUp(Profile* profile) {
   os_integration_manager_ = std::make_unique<TestOsIntegrationManager>(
       profile, /*app_shortcut_manager=*/nullptr,
       /*file_handler_manager=*/nullptr,
-      /*protocol_handler_manager=*/nullptr);
+      /*protocol_handler_manager=*/nullptr,
+      /*url_handler_manager=*/nullptr);
 
   mutable_registrar_->SetSubsystems(os_integration_manager_.get());
 

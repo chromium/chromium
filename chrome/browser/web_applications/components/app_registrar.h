@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 class GURL;
@@ -112,6 +113,9 @@ class AppRegistrar {
   virtual DisplayMode GetAppUserDisplayMode(const AppId& app_id) const = 0;
   virtual std::vector<DisplayMode> GetAppDisplayModeOverride(
       const AppId& app_id) const = 0;
+
+  // Returns the "url_handlers" field from the app manifest.
+  virtual apps::UrlHandlers GetAppUrlHandlers(const AppId& app_id) const = 0;
 
   virtual base::Time GetAppLastLaunchTime(const AppId& app_id) const = 0;
   virtual base::Time GetAppInstallTime(const AppId& app_id) const = 0;

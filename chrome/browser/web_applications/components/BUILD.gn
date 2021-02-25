@@ -40,6 +40,8 @@ source_set("components") {
     "system_web_app_background_task.cc",
     "system_web_app_background_task.h",
     "system_web_app_types.h",
+    "url_handler_manager.cc",
+    "url_handler_manager.h",
     "web_app_audio_focus_id_map.cc",
     "web_app_audio_focus_id_map.h",
     "web_app_chromeos_data.cc",
@@ -144,6 +146,8 @@ source_set("components") {
 
   if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
     sources += [
+      "url_handler_manager_impl.cc",
+      "url_handler_manager_impl.h",
       "url_handler_prefs.cc",
       "url_handler_prefs.h",
     ]
@@ -245,7 +249,10 @@ source_set("unit_tests") {
   }
 
   if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
-    sources += [ "url_handler_prefs_unittest.cc" ]
+    sources += [
+      "url_handler_manager_impl_unittest.cc",
+      "url_handler_prefs_unittest.cc",
+    ]
   }
 
   deps = [

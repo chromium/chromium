@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/components/app_shortcut_manager.h"
 #include "chrome/browser/web_applications/components/file_handler_manager.h"
 #include "chrome/browser/web_applications/components/protocol_handler_manager.h"
+#include "chrome/browser/web_applications/components/url_handler_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_run_on_os_login.h"
@@ -72,7 +73,8 @@ class OsIntegrationManager {
       Profile* profile,
       std::unique_ptr<AppShortcutManager> shortcut_manager,
       std::unique_ptr<FileHandlerManager> file_handler_manager,
-      std::unique_ptr<ProtocolHandlerManager> protocol_handler_manager);
+      std::unique_ptr<ProtocolHandlerManager> protocol_handler_manager,
+      std::unique_ptr<UrlHandlerManager> url_handler_manager);
   virtual ~OsIntegrationManager();
 
   void SetSubsystems(AppRegistrar* registrar,
@@ -143,6 +145,9 @@ class OsIntegrationManager {
   ProtocolHandlerManager* protocol_handler_manager() {
     return protocol_handler_manager_.get();
   }
+  UrlHandlerManager* url_handler_manager() {
+    return url_handler_manager_.get();
+  }
   void set_shortcut_manager(
       std::unique_ptr<AppShortcutManager> shortcut_manager) {
     shortcut_manager_ = std::move(shortcut_manager);
@@ -155,7 +160,10 @@ class OsIntegrationManager {
       std::unique_ptr<ProtocolHandlerManager> protocol_handler_manager) {
     protocol_handler_manager_ = std::move(protocol_handler_manager);
   }
-
+  void set_url_handler_manager(
+      std::unique_ptr<UrlHandlerManager> url_handler_manager) {
+    url_handler_manager_ = std::move(url_handler_manager);
+  }
   virtual void CreateShortcuts(const AppId& app_id,
                                bool add_to_desktop,
                                CreateShortcutsCallback callback);
@@ -165,6 +173,9 @@ class OsIntegrationManager {
       const AppId& app_id,
       base::OnceCallback<void(bool success)> callback);
   virtual void RegisterProtocolHandlers(
+      const AppId& app_id,
+      base::OnceCallback<void(bool success)> callback);
+  virtual void RegisterUrlHandlers(
       const AppId& app_id,
       base::OnceCallback<void(bool success)> callback);
   virtual void RegisterShortcutsMenu(
@@ -195,9 +206,13 @@ class OsIntegrationManager {
                                DeleteShortcutsCallback callback);
   virtual void UnregisterFileHandlers(const AppId& app_id);
   virtual void UnregisterProtocolHandlers(const AppId& app_id);
+  virtual void UnregisterUrlHandlers(const AppId& app_id);
   virtual void UnregisterWebAppOsUninstallation(const AppId& app_id);
 
-  // Utility mathods:
+  // Update:
+  virtual void UpdateUrlHandlers(const AppId& app_id);
+
+  // Utility methods:
   virtual std::unique_ptr<ShortcutInfo> BuildShortcutInfo(const AppId& app_id);
 
  private:
@@ -224,6 +239,7 @@ class OsIntegrationManager {
   std::unique_ptr<AppShortcutManager> shortcut_manager_;
   std::unique_ptr<FileHandlerManager> file_handler_manager_;
   std::unique_ptr<ProtocolHandlerManager> protocol_handler_manager_;
+  std::unique_ptr<UrlHandlerManager> url_handler_manager_;
 
   base::WeakPtrFactory<OsIntegrationManager> weak_ptr_factory_{this};
 };

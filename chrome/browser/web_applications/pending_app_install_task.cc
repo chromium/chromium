@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
@@ -308,6 +309,12 @@ void PendingAppInstallTask::OnWebAppInstalled(bool is_placeholder,
   options.os_hooks[OsHookType::kFileHandlers] = true;
   options.os_hooks[OsHookType::kProtocolHandlers] = true;
   options.os_hooks[OsHookType::kUninstallationViaOsSettings] = true;
+#if defined(OS_WIN) || defined(OS_MAC) || \
+    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+  options.os_hooks[web_app::OsHookType::kUrlHandlers] = true;
+#else
+  options.os_hooks[web_app::OsHookType::kUrlHandlers] = false;
+#endif
 
   os_integration_manager_->InstallOsHooks(
       app_id,

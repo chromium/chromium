@@ -156,6 +156,13 @@ std::vector<DisplayMode> WebAppRegistrar::GetAppDisplayModeOverride(
                  : std::vector<DisplayMode>();
 }
 
+apps::UrlHandlers WebAppRegistrar::GetAppUrlHandlers(
+    const AppId& app_id) const {
+  auto* web_app = GetAppById(app_id);
+  return web_app ? web_app->url_handlers()
+                 : std::vector<apps::UrlHandlerInfo>();
+}
+
 base::Time WebAppRegistrar::GetAppLastLaunchTime(const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
   return web_app ? web_app->last_launch_time() : base::Time();

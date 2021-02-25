@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -843,6 +844,12 @@ void WebAppInstallTask::OnInstallFinalizedCreateShortcuts(
   options.os_hooks[OsHookType::kFileHandlers] = true;
   options.os_hooks[OsHookType::kProtocolHandlers] = true;
   options.os_hooks[OsHookType::kUninstallationViaOsSettings] = true;
+#if defined(OS_WIN) || defined(OS_MAC) || \
+    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+  options.os_hooks[web_app::OsHookType::kUrlHandlers] = true;
+#else
+  options.os_hooks[web_app::OsHookType::kUrlHandlers] = false;
+#endif
 
   if (install_source_ == webapps::WebappInstallSource::SYNC)
     options.add_to_quick_launch_bar = false;

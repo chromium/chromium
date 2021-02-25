@@ -135,6 +135,8 @@ source_set("web_applications_test_support") {
   sources = [
     "test/fake_protocol_handler_manager.cc",
     "test/fake_protocol_handler_manager.h",
+    "test/fake_url_handler_manager.cc",
+    "test/fake_url_handler_manager.h",
     "test/service_worker_registration_waiter.cc",
     "test/service_worker_registration_waiter.h",
     "test/test_app_registrar.cc",
@@ -192,6 +194,7 @@ source_set("web_applications_test_support") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications/components",
     "//components/crx_file:crx_file",
+    "//components/services/app_service/public/cpp:app_url_handling",
     "//components/sync:test_support_model",
     "//content/test:test_support",
     "//testing/gtest",

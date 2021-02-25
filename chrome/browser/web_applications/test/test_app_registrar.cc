@@ -152,6 +152,12 @@ std::vector<DisplayMode> TestAppRegistrar::GetAppDisplayModeOverride(
   return std::vector<DisplayMode>();
 }
 
+apps::UrlHandlers TestAppRegistrar::GetAppUrlHandlers(
+    const AppId& app_id) const {
+  NOTIMPLEMENTED();
+  return std::vector<apps::UrlHandlerInfo>();
+}
+
 base::Time TestAppRegistrar::GetAppLastLaunchTime(const AppId& app_id) const {
   NOTIMPLEMENTED();
   return base::Time();

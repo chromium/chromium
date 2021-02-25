@@ -95,7 +95,6 @@ class BookmarkAppInstallFinalizerTest : public ChromeRenderViewHostTestHarness {
     ~FakeCrxInstaller() override = default;
 
     base::RunLoop run_loop_;
-
   };
 
   BookmarkAppInstallFinalizerTest() = default;
@@ -123,7 +122,8 @@ class BookmarkAppInstallFinalizerTest : public ChromeRenderViewHostTestHarness {
         std::make_unique<web_app::TestOsIntegrationManager>(
             profile(), /*shortcut_manager=*/nullptr,
             /*file_handler_manager=*/nullptr,
-            /*protocol_handler_manager=*/nullptr);
+            /*protocol_handler_manager=*/nullptr,
+            /*url_handler_manager=*/nullptr);
 
     finalizer_ = std::make_unique<BookmarkAppInstallFinalizer>(profile());
     finalizer_->SetSubsystems(registrar_.get(), ui_manager_.get(),

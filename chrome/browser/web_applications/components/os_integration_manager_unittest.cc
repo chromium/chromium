@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -26,7 +27,7 @@ namespace {
 class MockOsIntegrationManager : public OsIntegrationManager {
  public:
   MockOsIntegrationManager()
-      : OsIntegrationManager(nullptr, nullptr, nullptr, nullptr) {}
+      : OsIntegrationManager(nullptr, nullptr, nullptr, nullptr, nullptr) {}
   ~MockOsIntegrationManager() override = default;
 
   // Installation:
@@ -48,7 +49,11 @@ class MockOsIntegrationManager : public OsIntegrationManager {
               (const AppId& app_id,
                base::OnceCallback<void(bool success)> callback),
               (override));
-
+  MOCK_METHOD(void,
+              RegisterUrlHandlers,
+              (const AppId& app_id,
+               base::OnceCallback<void(bool success)> callback),
+              (override));
   MOCK_METHOD(void,
               RegisterShortcutsMenu,
               (const AppId& app_id,
@@ -102,10 +107,15 @@ class MockOsIntegrationManager : public OsIntegrationManager {
               UnregisterProtocolHandlers,
               (const AppId& app_id),
               (override));
+  MOCK_METHOD(void, UnregisterUrlHandlers, (const AppId& app_id), (override));
   MOCK_METHOD(void,
               UnregisterWebAppOsUninstallation,
               (const AppId& app_id),
               (override));
+
+  // Update:
+  // TODO(crbug/1072058): Add test case that runs UpdateOsHooks.
+  MOCK_METHOD(void, UpdateUrlHandlers, (const AppId& app_id), (override));
 
   // Utility methods:
   MOCK_METHOD(std::unique_ptr<ShortcutInfo>,
@@ -135,11 +145,15 @@ std::unique_ptr<ShortcutInfo> CreateTestShorcutInfo(
 
 class OsIntegrationManagerTest : public testing::Test {
  public:
-  OsIntegrationManagerTest() = default;
+  OsIntegrationManagerTest() {
+    features_.InitAndEnableFeature(blink::features::kWebAppEnableUrlHandlers);
+  }
+
   ~OsIntegrationManagerTest() override = default;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList features_;
 };
 
 TEST_F(OsIntegrationManagerTest, InstallOsHooksOnlyShortcuts) {
@@ -187,6 +201,7 @@ TEST_F(OsIntegrationManagerTest, InstallOsHooksEverything) {
       .WillOnce(base::test::RunOnceCallback<2>(true));
   EXPECT_CALL(manager, RegisterFileHandlers(app_id, testing::_)).Times(1);
   EXPECT_CALL(manager, RegisterProtocolHandlers(app_id, testing::_)).Times(1);
+  EXPECT_CALL(manager, RegisterUrlHandlers(app_id, testing::_)).Times(1);
   EXPECT_CALL(manager, AddAppToQuickLaunchBar(app_id)).Times(1);
   EXPECT_CALL(manager, ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
                            app_id, testing::_))
@@ -202,6 +217,7 @@ TEST_F(OsIntegrationManagerTest, InstallOsHooksEverything) {
   EXPECT_TRUE(install_results[OsHookType::kShortcuts]);
   EXPECT_TRUE(install_results[OsHookType::kFileHandlers]);
   EXPECT_TRUE(install_results[OsHookType::kProtocolHandlers]);
+  EXPECT_TRUE(install_results[OsHookType::kUrlHandlers]);
   EXPECT_TRUE(install_results[OsHookType::kRunOnOsLogin]);
   // Note: We asked for these to be installed, but their methods were not
   // called. This is because the features are turned off. We only set these
@@ -236,6 +252,7 @@ TEST_F(OsIntegrationManagerTest, UninstallOsHooksEverything) {
       .WillOnce(base::test::RunOnceCallback<3>(true));
   EXPECT_CALL(manager, UnregisterFileHandlers(app_id)).Times(1);
   EXPECT_CALL(manager, UnregisterProtocolHandlers(app_id)).Times(1);
+  EXPECT_CALL(manager, UnregisterUrlHandlers(app_id)).Times(1);
   EXPECT_CALL(manager, UnregisterWebAppOsUninstallation(app_id)).Times(1);
   EXPECT_CALL(manager, UnregisterShortcutsMenu(app_id))
       .WillOnce(testing::Return(true));
@@ -245,6 +262,7 @@ TEST_F(OsIntegrationManagerTest, UninstallOsHooksEverything) {
   EXPECT_TRUE(uninstall_results[OsHookType::kShortcuts]);
   EXPECT_TRUE(uninstall_results[OsHookType::kFileHandlers]);
   EXPECT_TRUE(uninstall_results[OsHookType::kProtocolHandlers]);
+  EXPECT_TRUE(uninstall_results[OsHookType::kUrlHandlers]);
   EXPECT_TRUE(uninstall_results[OsHookType::kRunOnOsLogin]);
   EXPECT_TRUE(uninstall_results[OsHookType::kShortcutsMenu]);
   EXPECT_TRUE(uninstall_results[OsHookType::kUninstallationViaOsSettings]);

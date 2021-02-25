@@ -248,7 +248,6 @@ class TestPendingAppInstallFinalizer : public InstallFinalizer {
   // url and the result of trying to uninstall it.
   std::map<GURL, std::pair<AppId, bool>>
       next_uninstall_external_web_app_results_;
-
 };
 
 }  // namespace
@@ -281,7 +280,8 @@ class PendingAppInstallTaskTest : public ChromeRenderViewHostTestHarness {
     auto os_integration_manager = std::make_unique<TestOsIntegrationManager>(
         profile(), /*app_shortcut_manager=*/nullptr,
         /*file_handler_manager=*/nullptr,
-        /*protocol_handler_manager=*/nullptr);
+        /*protocol_handler_manager=*/nullptr,
+        /*url_handler_manager*/ nullptr);
     os_integration_manager_ = os_integration_manager.get();
 
     auto ui_manager = std::make_unique<TestWebAppUiManager>();

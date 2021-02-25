@@ -27,8 +27,8 @@ class PreinstalledWebAppsBrowserTest : public InProcessBrowserTest {
     ForceUsePreinstalledWebAppsForTesting();
     WebAppProvider::SetOsIntegrationManagerFactoryForTesting(
         [](Profile* profile) -> std::unique_ptr<OsIntegrationManager> {
-          return std::make_unique<TestOsIntegrationManager>(profile, nullptr,
-                                                            nullptr, nullptr);
+          return std::make_unique<TestOsIntegrationManager>(
+              profile, nullptr, nullptr, nullptr, nullptr);
         });
   }
 

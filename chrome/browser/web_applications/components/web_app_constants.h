@@ -47,7 +47,8 @@ enum Type {
   kUninstallationViaOsSettings,
   kFileHandlers,
   kProtocolHandlers,
-  kMaxValue = kProtocolHandlers,
+  kUrlHandlers,
+  kMaxValue = kUrlHandlers,
 };
 }  // namespace OsHookType
 

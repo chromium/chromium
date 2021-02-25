@@ -40,7 +40,7 @@ namespace {
 std::unique_ptr<KeyedService> CreateTestWebAppProvider(Profile* profile) {
   auto provider = std::make_unique<TestWebAppProvider>(profile);
   provider->SetOsIntegrationManager(std::make_unique<TestOsIntegrationManager>(
-      profile, nullptr, nullptr, nullptr));
+      profile, nullptr, nullptr, nullptr, nullptr));
   provider->Start();
   DCHECK(provider);
   return provider;
@@ -644,6 +644,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NoShortcutsCreatedOnSync) {
   expected_os_hook_requests[OsHookType::kUninstallationViaOsSettings] = true;
   expected_os_hook_requests[OsHookType::kFileHandlers] = true;
   expected_os_hook_requests[OsHookType::kProtocolHandlers] = true;
+  expected_os_hook_requests[OsHookType::kUrlHandlers] = false;
   EXPECT_EQ(expected_os_hook_requests, last_options->os_hooks);
   EXPECT_TRUE(last_options->add_to_desktop);
   EXPECT_FALSE(last_options->add_to_quick_launch_bar);
