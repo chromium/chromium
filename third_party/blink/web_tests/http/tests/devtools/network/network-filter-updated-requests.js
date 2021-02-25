@@ -10,7 +10,7 @@
   var target = UI.panels.network._networkLogView;
   var types = Common.resourceTypes;
 
-  var categoryName = types.XHR.category().title;
+  var categoryName = types.XHR.category().title();
   target._resourceCategoryFilterUI._toggleTypeFilter(categoryName, false);
   TestRunner.addResult('Clicked \'' + categoryName + '\' button.');
 

@@ -8,7 +8,7 @@
   await TestRunner.showPanel('network');
 
   var target = UI.panels.network._networkLogView;
-  target._resourceCategoryFilterUI._toggleTypeFilter(Common.resourceTypes.XHR.category().title, false);
+  target._resourceCategoryFilterUI._toggleTypeFilter(Common.resourceTypes.XHR.category().title(), false);
   TestRunner.addResult('Clicked \'' + Common.resourceTypes.XHR.name() + '\' button.');
   target._reset();
 
