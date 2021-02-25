@@ -12226,6 +12226,11 @@ be describing additional metrics about the same event.
       value: 500.
     </summary>
   </metric>
+  <metric name="BrowserShuttingDown" enum="Boolean">
+    <summary>
+      Indicates if the browser is shutting down when this event is reported.
+    </summary>
+  </metric>
   <metric name="CPUTimeMs">
     <summary>
       The CPU time spent executing code, across all Chrome processes in the
@@ -12270,6 +12275,11 @@ be describing additional metrics about the same event.
       Sum of package exits from all Chrome processes (Mac-only).
     </summary>
   </metric>
+  <metric name="PlayingAudioSeconds">
+    <summary>
+      The time spent playing audio in at least one tab, in seconds.
+    </summary>
+  </metric>
   <metric name="TabClosed">
     <summary>
       The number of tabs that have been closed during the interval.
@@ -12278,6 +12288,18 @@ be describing additional metrics about the same event.
   <metric name="TimePlayingVideoInVisibleTab">
     <summary>
       The time spent playing video in at least one visible tab, in seconds.
+    </summary>
+  </metric>
+  <metric name="TimeSinceInteractionWithBrowserSeconds">
+    <summary>
+      The time since the last interaction with the browser when this event gets
+      recorded, in seconds.
+    </summary>
+  </metric>
+  <metric name="TimeSinceInteractionWithSystemSeconds">
+    <summary>
+      The time since the last interaction with the system when this event gets
+      recorded, in seconds.
     </summary>
   </metric>
   <metric name="TimeWithOpenWebRTCConnectionSeconds">
@@ -12303,6 +12325,11 @@ be describing additional metrics about the same event.
   <metric name="UserInteractionCount">
     <summary>
       Number of user interaction (scroll, click or typing) during the interval.
+    </summary>
+  </metric>
+  <metric name="VideoCaptureSeconds">
+    <summary>
+      The time spent capturing video in at least one tab, in seconds.
     </summary>
   </metric>
 </event>
