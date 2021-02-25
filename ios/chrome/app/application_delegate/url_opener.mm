@@ -35,13 +35,15 @@ const char* const kUMAMobileSessionStartFromAppsHistogram =
         applicationActive:(BOOL)applicationActive
                 tabOpener:(id<TabOpening>)tabOpener
     connectionInformation:(id<ConnectionInformation>)connectionInformation
-       startupInformation:(id<StartupInformation>)startupInformation {
+       startupInformation:(id<StartupInformation>)startupInformation
+          inIncognitoMode:(BOOL)openInIncognito {
   NSURL* URL = options.URL;
   NSString* sourceApplication = options.sourceApplication;
 
   ChromeAppStartupParameters* params = [ChromeAppStartupParameters
       newChromeAppStartupParametersWithURL:URL
                      fromSourceApplication:sourceApplication];
+  params.launchInIncognito = openInIncognito;
 
   MobileSessionCallerApp callerApp = [params callerApp];
 
@@ -115,7 +117,8 @@ const char* const kUMAMobileSessionStartFromAppsHistogram =
                   tabOpener:(id<TabOpening>)tabOpener
       connectionInformation:(id<ConnectionInformation>)connectionInformation
          startupInformation:(id<StartupInformation>)startupInformation
-                   appState:(AppState*)appState {
+                   appState:(AppState*)appState
+            inIncognitoMode:(BOOL)openInIncognito {
   if (options.URL) {
     // This method is always called when the SceneState transitions to
     // SceneActivationLevelForegroundActive, and before the handling of
@@ -125,7 +128,8 @@ const char* const kUMAMobileSessionStartFromAppsHistogram =
                           applicationActive:NO
                                   tabOpener:tabOpener
                       connectionInformation:connectionInformation
-                         startupInformation:startupInformation];
+                         startupInformation:startupInformation
+                            inIncognitoMode:openInIncognito];
     [appState launchFromURLHandled:openURLResult];
   }
 }

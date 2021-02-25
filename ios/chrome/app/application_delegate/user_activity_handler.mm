@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
 #include "ios/chrome/browser/metrics/first_user_action_recorder.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/u2f/u2f_tab_helper.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
@@ -156,6 +157,11 @@ std::vector<GURL> createGURLVectorFromIntentURLs(NSArray<NSURL*>* intentURLs) {
     AppStartupParameters* startupParams = [[AppStartupParameters alloc]
         initWithExternalURL:GURL(kChromeUINewTabURL)
                 completeURL:GURL(kChromeUINewTabURL)];
+
+    if (IsIncognitoModeForced(browserState->GetPrefs())) {
+      // Set incognito mode to yes if only incognito mode is available.
+      startupParams.launchInIncognito = YES;
+    }
 
     SearchInChromeIntent* intent =
         base::mac::ObjCCastStrict<SearchInChromeIntent>(
@@ -437,13 +443,22 @@ std::vector<GURL> createGURLVectorFromIntentURLs(NSArray<NSURL*>* intentURLs) {
     return;
   }
 
-  if (!connectionInformation.startupParameters.URLs.empty()) {
+  if (!connectionInformation.startupParameters.URLs.empty() &&
+      !connectionInformation.startupParameters.isUnexpectedMode) {
     [self openMultipleTabsWithConnectionInformation:connectionInformation
                                           tabOpener:tabOpener];
     return;
   }
 
   GURL externalURL = connectionInformation.startupParameters.externalURL;
+
+  // If the user intent to open a url in a unavailable mode, don't fulfill the
+  // request.
+  if (externalURL != kChromeUINewTabURL &&
+      connectionInformation.startupParameters.isUnexpectedMode) {
+    return;
+  }
+
   // Check if it's an U2F call. If so, route it to correct tab.
   // If not, open or reuse tab in main BVC.
   if (U2FTabHelper::IsU2FUrl(externalURL)) {
@@ -511,6 +526,16 @@ std::vector<GURL> createGURLVectorFromIntentURLs(NSArray<NSURL*>* intentURLs) {
                                                 setStartupParameters:nil];
                                           }];
   }
+}
+
++ (BOOL)canProceeedWithUserActivity:(NSUserActivity*)userActivity
+                        prefService:(PrefService*)prefService {
+  return ([userActivity.activityType
+              isEqualToString:kSiriShortcutOpenInChrome] &&
+          IsIncognitoModeForced(prefService)) ||
+         ([userActivity.activityType
+              isEqualToString:kSiriShortcutOpenInIncognito] &&
+          IsIncognitoModeDisabled(prefService));
 }
 
 #pragma mark - Internal methods.

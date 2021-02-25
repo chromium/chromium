@@ -38,6 +38,9 @@
                    completionHandler:(void (^)(BOOL succeeded))completionHandler
     API_AVAILABLE(ios(13));
 
+// Return YES if incognito mode is forced by enterprise policy.
+- (BOOL)isIncognitoForced;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_MAIN_SCENE_CONTROLLER_H_

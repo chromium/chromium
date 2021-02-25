@@ -60,7 +60,7 @@ class TabOpenerTest : public PlatformTest {
         [URLOpener class],
         @selector(handleLaunchOptions:
                             tabOpener:connectionInformation:startupInformation
-                                     :appState:),
+                                     :appState:inIncognitoMode:),
         swizzle_block_));
   }
 

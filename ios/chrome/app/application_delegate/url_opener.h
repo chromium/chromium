@@ -23,14 +23,16 @@
         applicationActive:(BOOL)applicationActive
                 tabOpener:(id<TabOpening>)tabOpener
     connectionInformation:(id<ConnectionInformation>)connectionInformation
-       startupInformation:(id<StartupInformation>)startupInformation;
+       startupInformation:(id<StartupInformation>)startupInformation
+          inIncognitoMode:(BOOL)openInIncognito;
 
 // Handles open URL at application startup.
 + (void)handleLaunchOptions:(URLOpenerParams*)options
                   tabOpener:(id<TabOpening>)tabOpener
       connectionInformation:(id<ConnectionInformation>)connectionInformation
          startupInformation:(id<StartupInformation>)startupInformation
-                   appState:(AppState*)appState;
+                   appState:(AppState*)appState
+            inIncognitoMode:(BOOL)openInIncognito;
 @end
 
 #endif  // IOS_CHROME_APP_APPLICATION_DELEGATE_URL_OPENER_H_

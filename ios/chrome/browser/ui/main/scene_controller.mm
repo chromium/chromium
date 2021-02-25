@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/main/scene_controller.h"
 
+#import <MaterialComponents/MaterialSnackbar.h>
+
 #include "base/callback_helpers.h"
 #include "base/i18n/message_formatter.h"
 #import "base/ios/ios_util.h"
@@ -251,9 +253,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 @property(nonatomic, weak)
     WelcomeToChromeViewController* welcomeToChromeController;
 
-// Properties related to the incognito policy.
-@property(nonatomic, readonly) BOOL forceIncognitoByPolicy;
-
 @end
 
 @implementation SceneController {
@@ -491,6 +490,18 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     }
 
     if (self.startupParameters) {
+      if ([self isIncognitoForced]) {
+        [self.startupParameters
+            setUnexpectedMode:!self.startupParameters.launchInIncognito];
+        // When only incognito mode is available.
+        [self.startupParameters setLaunchInIncognito:YES];
+      } else if ([self isIncognitoDisabled]) {
+        [self.startupParameters
+            setUnexpectedMode:self.startupParameters.launchInIncognito];
+        // When incognito mode is disabled.
+        [self.startupParameters setLaunchInIncognito:NO];
+      }
+
       [UserActivityHandler
           handleStartupParametersWithTabOpener:self
                          connectionInformation:self
@@ -498,6 +509,11 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                                                    .startupInformation
                                   browserState:self.currentInterface
                                                    .browserState];
+
+      // Show a toast if the browser is opened in an unexpected mode.
+      if (self.startupParameters.isUnexpectedMode) {
+        [self showToastWhenOpenExternalIntentInUnexpectedMode];
+      }
     }
 
   } else {
@@ -602,6 +618,10 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                    completionHandler:(void (^)(BOOL succeeded))completionHandler
     API_AVAILABLE(ios(13)) {
   self.sceneState.startupHadExternalIntent = YES;
+
+  // Perform the action in incognito when only incognito mode is available.
+  [self.startupParameters setLaunchInIncognito:[self isIncognitoForced]];
+
   [UserActivityHandler
       performActionForShortcutItem:shortcutItem
                  completionHandler:completionHandler
@@ -623,13 +643,24 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     sceneIsActive = NO;
   }
   self.sceneState.startupHadExternalIntent = YES;
-  [UserActivityHandler
-       continueUserActivity:userActivity
-        applicationIsActive:sceneIsActive
-                  tabOpener:self
-      connectionInformation:self
-         startupInformation:self.sceneState.appState.startupInformation
-               browserState:self.currentInterface.browserState];
+
+  if (![UserActivityHandler
+          canProceeedWithUserActivity:userActivity
+                          prefService:self.currentInterface.browserState
+                                          ->GetPrefs()]) {
+    // If users request opening url in a unavailable mode, don't open the url
+    // but show a toast.
+    [self showToastWhenOpenExternalIntentInUnexpectedMode];
+  } else {
+    [UserActivityHandler
+         continueUserActivity:userActivity
+          applicationIsActive:sceneIsActive
+                    tabOpener:self
+        connectionInformation:self
+           startupInformation:self.sceneState.appState.startupInformation
+                 browserState:self.currentInterface.browserState];
+  }
+
   if (sceneIsActive) {
     // It is necessary to reset the pendingUserActivity after handling it.
     // Handle the reset asynchronously to avoid interfering with other
@@ -676,10 +707,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 // In these cases if a restore prompt was shown, it may be dismissed immediately
 // and the user will not have a chance to restore the session.
 - (BOOL)shouldShowRestorePrompt {
-  BOOL shouldShow =
-      !self.startupParameters &&
-      !IsIncognitoModeForced(
-          self.mainInterface.browser->GetBrowserState()->GetPrefs());
+  BOOL shouldShow = !self.startupParameters && ![self isIncognitoForced];
   if (shouldShow && base::ios::IsSceneStartupSupported()) {
     if (@available(iOS 13, *)) {
       for (NSUserActivity* activity in self.sceneState.connectionOptions
@@ -751,12 +779,10 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   }
 
   BOOL startInIncognito;
-  PrefService* prefService =
-      self.mainInterface.browser->GetBrowserState()->GetPrefs();
-  if (IsIncognitoModeForced(prefService)) {
+  if ([self isIncognitoForced]) {
     // When only incognito mode is available.
     startInIncognito = YES;
-  } else if (IsIncognitoModeDisabled(prefService)) {
+  } else if ([self isIncognitoDisabled]) {
     // When incognito mode is disabled.
     startInIncognito = NO;
   } else {
@@ -959,10 +985,57 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   UMA_HISTOGRAM_ENUMERATION("IOS.LocationPermissionsUI", experimentGroup);
 }
 
-- (BOOL)forceIncognitoByPolicy {
-  PrefService* prefService =
-      self.mainInterface.browser->GetBrowserState()->GetPrefs();
-  return IsIncognitoModeForced(prefService);
+// If users request to open tab or search and Chrome is not opened in the mode
+// they expected, show a toast to clarify that the expected mode is not
+// available.
+- (void)showToastWhenOpenExternalIntentInUnexpectedMode {
+  id<SnackbarCommands> handler = HandlerForProtocol(
+      self.mainInterface.browser->GetCommandDispatcher(), SnackbarCommands);
+  BOOL inIncognitoMode = [self isIncognitoForced];
+
+  UrlLoadParams params = UrlLoadParams::InNewTab(GURL(kChromeUIManagementURL));
+  params.web_params.transition_type = ui::PAGE_TRANSITION_TYPED;
+  ProceduralBlock moreAction = ^{
+    [self dismissModalsAndOpenSelectedTabInMode:
+              inIncognitoMode ? ApplicationModeForTabOpening::INCOGNITO
+                              : ApplicationModeForTabOpening::NORMAL
+                              withUrlLoadParams:params
+                                 dismissOmnibox:YES
+                                     completion:nil];
+  };
+
+  MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
+  action.handler = moreAction;
+  action.title = l10n_util::GetNSString(IDS_IOS_NAVIGATION_BAR_MORE_BUTTON);
+  action.accessibilityIdentifier =
+      l10n_util::GetNSString(IDS_IOS_NAVIGATION_BAR_MORE_BUTTON);
+
+  NSString* text =
+      inIncognitoMode
+          ? l10n_util::GetNSString(IDS_IOS_SNACKBAR_MESSAGE_ICOGNITO_FORCED)
+          : l10n_util::GetNSString(IDS_IOS_SNACKBAR_MESSAGE_ICOGNITO_DISABLED);
+
+  MDCSnackbarMessage* message = [MDCSnackbarMessage messageWithText:text];
+  message.action = action;
+
+  [handler showSnackbarMessage:message];
+}
+
+- (BOOL)isIncognitoDisabled {
+  return IsIncognitoModeDisabled(
+      self.mainInterface.browser->GetBrowserState()->GetPrefs());
+}
+
+- (BOOL)isIncognitoForced {
+  // TODO(crbug.com/1182280):remove the decision only for testing and set up a
+  // proper scene controller in unittests.
+  if (!self.incognitoInterface) {
+    // ONLY for testing.
+    return NO;
+  }
+
+  return IsIncognitoModeForced(
+      self.incognitoInterface.browser->GetBrowserState()->GetPrefs());
 }
 
 #pragma mark - First Run
@@ -1121,8 +1194,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   params.web_params.transition_type = ui::PAGE_TRANSITION_TYPED;
   ProceduralBlock completion = ^{
     ApplicationModeForTabOpening mode =
-        self.forceIncognitoByPolicy ? ApplicationModeForTabOpening::INCOGNITO
-                                    : ApplicationModeForTabOpening::NORMAL;
+        [self isIncognitoForced] ? ApplicationModeForTabOpening::INCOGNITO
+                                 : ApplicationModeForTabOpening::NORMAL;
     [self dismissModalsAndOpenSelectedTabInMode:mode
                               withUrlLoadParams:params
                                  dismissOmnibox:YES
@@ -1967,7 +2040,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                          tabOpener:self
              connectionInformation:self
                 startupInformation:startupInformation
-                          appState:appState];
+                          appState:appState
+                   inIncognitoMode:[self isIncognitoForced]];
   }
 }
 
@@ -2631,7 +2705,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
             applicationActive:active
                     tabOpener:self
         connectionInformation:self
-           startupInformation:self.sceneState.appState.startupInformation];
+           startupInformation:self.sceneState.appState.startupInformation
+              inIncognitoMode:[self isIncognitoForced]];
   }
 }
 

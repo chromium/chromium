@@ -170,7 +170,8 @@ TEST_F(URLOpenerTest, HandleOpenURL) {
                          applicationActive:applicationIsActive
                                  tabOpener:tabOpener
                      connectionInformation:connectionInformation
-                        startupInformation:startupInformation];
+                        startupInformation:startupInformation
+                           inIncognitoMode:NO];
 
           // Tests.
           EXPECT_EQ(isValid, result);
@@ -242,7 +243,8 @@ TEST_F(URLOpenerTest, VerifyLaunchOptions) {
                        tabOpener:tabOpenerMock
            connectionInformation:connectionInformationMock
               startupInformation:startupInformationMock
-                        appState:appStateMock];
+                        appState:appStateMock
+                 inIncognitoMode:NO];
 
   // Test.
   EXPECT_OCMOCK_VERIFY(startupInformationMock);
@@ -264,7 +266,8 @@ TEST_F(URLOpenerTest, VerifyLaunchOptionsNil) {
                        tabOpener:nil
            connectionInformation:connectionInformationMock
               startupInformation:startupInformationMock
-                        appState:appStateMock];
+                        appState:appStateMock
+                 inIncognitoMode:NO];
 }
 
 // Tests that -handleApplication set startup parameters as expected with no
@@ -305,7 +308,8 @@ TEST_F(URLOpenerTest, VerifyLaunchOptionsWithNoSourceApplication) {
                        tabOpener:tabOpenerMock
            connectionInformation:connectionInformationMock
               startupInformation:startupInformationMock
-                        appState:appStateMock];
+                        appState:appStateMock
+                 inIncognitoMode:NO];
 
   // Test.
   EXPECT_OCMOCK_VERIFY(startupInformationMock);
@@ -333,7 +337,8 @@ TEST_F(URLOpenerTest, VerifyLaunchOptionsWithNoURL) {
                        tabOpener:nil
            connectionInformation:connectionInformationMock
               startupInformation:startupInformationMock
-                        appState:appStateMock];
+                        appState:appStateMock
+                 inIncognitoMode:NO];
 }
 
 // Tests that -handleApplication set startup parameters as expected with a bad
@@ -368,7 +373,8 @@ TEST_F(URLOpenerTest, VerifyLaunchOptionsWithBadURL) {
                        tabOpener:tabOpenerMock
            connectionInformation:connectionInformationMock
               startupInformation:startupInformationMock
-                        appState:appStateMock];
+                        appState:appStateMock
+                 inIncognitoMode:NO];
 
   // Test.
   EXPECT_OCMOCK_VERIFY(startupInformationMock);
@@ -410,7 +416,8 @@ TEST_F(URLOpenerTest, PresentingFirstRunUI) {
                        tabOpener:tabOpenerMock
            connectionInformation:connectionInformationMock
               startupInformation:startupInformationMock
-                        appState:appStateMock];
+                        appState:appStateMock
+                 inIncognitoMode:NO];
 
   // Test.
   EXPECT_OCMOCK_VERIFY(tabOpenerMock);

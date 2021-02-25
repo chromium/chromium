@@ -10,6 +10,7 @@
 @protocol BrowserInterfaceProvider;
 @protocol ConnectionInformation;
 class ChromeBrowserState;
+class PrefService;
 @protocol StartupInformation;
 @protocol TabOpening;
 
@@ -53,6 +54,11 @@ class ChromeBrowserState;
                           startupInformation:
                               (id<StartupInformation>)startupInformation
                                 browserState:(ChromeBrowserState*)browserState;
+
+// Return YES if the user intends to open links in a certain mode and the
+// browser will proceed the request.
++ (BOOL)canProceeedWithUserActivity:(NSUserActivity*)userActivity
+                        prefService:(PrefService*)prefService;
 
 @end
 

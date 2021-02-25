@@ -436,7 +436,8 @@ const int kMainIntentCheckDelay = 1;
           applicationActive:applicationActive
                   tabOpener:_tabOpener
       connectionInformation:self.sceneController
-         startupInformation:_startupInformation];
+         startupInformation:_startupInformation
+            inIncognitoMode:[self.sceneController isIncognitoForced]];
 }
 
 #pragma mark - Testing methods
