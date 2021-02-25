@@ -106,10 +106,10 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
       DontClassifyForPhishing(NO_CLASSIFY_OFF_THE_RECORD);
     }
 
-    // Don't start classification if |url_| is whitelisted by enterprise policy.
+    // Don't start classification if |url_| is allowlisted by enterprise policy.
     if (host_->delegate_->GetPrefs() &&
         IsURLAllowlistedByPolicy(url_, *host_->delegate_->GetPrefs())) {
-      DontClassifyForPhishing(NO_CLASSIFY_WHITELISTED_BY_POLICY);
+      DontClassifyForPhishing(NO_CLASSIFY_ALLOWLISTED_BY_POLICY);
     }
 
     // If the tab has a delayed warning, ignore this second verdict. We don't
@@ -118,10 +118,10 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
       DontClassifyForPhishing(NO_CLASSIFY_HAS_DELAYED_WARNING);
     }
 
-    // We lookup the csd-whitelist before we lookup the cache because
-    // a URL may have recently been whitelisted.  If the URL matches
-    // the csd-whitelist we won't start phishing classification.  The
-    // csd-whitelist check has to be done on the IO thread because it
+    // We lookup the csd-allowlist before we lookup the cache because
+    // a URL may have recently been allowlisted.  If the URL matches
+    // the csd-allowlist we won't start phishing classification.  The
+    // csd-allowlist check has to be done on the IO thread because it
     // uses the SafeBrowsing service class.
     if (ShouldClassifyForPhishing()) {
       content::GetIOThreadTaskRunner({})->PostTask(
@@ -150,7 +150,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     OBSOLETE_NO_CLASSIFY_PROXY_FETCH = 0,
     NO_CLASSIFY_PRIVATE_IP = 1,
     NO_CLASSIFY_OFF_THE_RECORD = 2,
-    NO_CLASSIFY_MATCH_CSD_WHITELIST = 3,
+    NO_CLASSIFY_MATCH_CSD_ALLOWLIST = 3,
     NO_CLASSIFY_TOO_MANY_REPORTS = 4,
     NO_CLASSIFY_UNSUPPORTED_MIME_TYPE = 5,
     NO_CLASSIFY_NO_DATABASE_MANAGER = 6,
@@ -159,7 +159,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     NO_CLASSIFY_RESULT_FROM_CACHE = 9,
     DEPRECATED_NO_CLASSIFY_NOT_HTTP_URL = 10,
     NO_CLASSIFY_SCHEME_NOT_SUPPORTED = 11,
-    NO_CLASSIFY_WHITELISTED_BY_POLICY = 12,
+    NO_CLASSIFY_ALLOWLISTED_BY_POLICY = 12,
     CLASSIFY = 13,
     NO_CLASSIFY_HAS_DELAYED_WARNING = 14,
 
@@ -190,32 +190,32 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
     PreClassificationCheckResult phishing_reason = NO_CLASSIFY_MAX;
     if (!database_manager_.get()) {
-      // We cannot check the Safe Browsing whitelists so we stop here
+      // We cannot check the Safe Browsing allowlists so we stop here
       // for safety.
-      OnWhitelistCheckDoneOnIO(url, NO_CLASSIFY_NO_DATABASE_MANAGER,
-                               /*match_whitelist=*/false);
+      OnAllowlistCheckDoneOnIO(url, NO_CLASSIFY_NO_DATABASE_MANAGER,
+                               /*match_allowlist=*/false);
       return;
     }
 
-    // Query the CSD Whitelist asynchronously. We're already on the IO thread so
+    // Query the CSD Allowlist asynchronously. We're already on the IO thread so
     // can call AllowlistCheckerClient directly.
     base::OnceCallback<void(bool)> result_callback =
         base::BindOnce(&ClientSideDetectionHost::ShouldClassifyUrlRequest::
-                           OnWhitelistCheckDoneOnIO,
+                           OnAllowlistCheckDoneOnIO,
                        this, url, phishing_reason);
     AllowlistCheckerClient::StartCheckCsdAllowlist(database_manager_, url,
                                                    std::move(result_callback));
   }
 
-  void OnWhitelistCheckDoneOnIO(const GURL& url,
+  void OnAllowlistCheckDoneOnIO(const GURL& url,
                                 PreClassificationCheckResult phishing_reason,
-                                bool match_whitelist) {
+                                bool match_allowlist) {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
     // We don't want to call the classification callbacks from the IO
     // thread so we simply pass the results of this method to CheckCache()
     // which is called on the UI thread;
-    if (match_whitelist) {
-      phishing_reason = NO_CLASSIFY_MATCH_CSD_WHITELIST;
+    if (match_allowlist) {
+      phishing_reason = NO_CLASSIFY_MATCH_CSD_ALLOWLIST;
     }
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&ShouldClassifyUrlRequest::CheckCache, this,
