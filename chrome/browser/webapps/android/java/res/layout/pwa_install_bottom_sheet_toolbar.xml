@@ -74,7 +74,7 @@
             android:singleLine="true"
             android:gravity="center"
             android:text="@string/app_banner_install"
-            style="FilledButton.Flat" />
+            style="@style/FilledButton.Flat"/>
 
     </LinearLayout>
 </FrameLayout>
