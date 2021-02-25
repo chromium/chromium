@@ -23,7 +23,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 class KeyboardAccessoryTabLayoutViewBinder
         implements ListModelChangeProcessor.ViewBinder<ListModel<KeyboardAccessoryData.Tab>,
-                KeyboardAccessoryTabLayoutView> {
+                KeyboardAccessoryTabLayoutView, Void> {
     @Override
     public void onItemsInserted(ListModel<KeyboardAccessoryData.Tab> model,
             KeyboardAccessoryTabLayoutView view, int index, int count) {
@@ -40,7 +40,7 @@ class KeyboardAccessoryTabLayoutViewBinder
 
     @Override
     public void onItemsChanged(ListModel<KeyboardAccessoryData.Tab> model,
-            KeyboardAccessoryTabLayoutView view, int index, int count) {
+            KeyboardAccessoryTabLayoutView view, int index, int count, Void payload) {
         updateAllTabs(view, model);
     }
 
@@ -59,7 +59,7 @@ class KeyboardAccessoryTabLayoutViewBinder
         for (int i = 0; i < model.size(); i++) {
             final int observedIconIndex = i;
             model.get(i).addIconObserver((unusedTypeId, unusedDrawable) -> {
-                onItemsChanged(model, view, observedIconIndex, 1);
+                onItemsChanged(model, view, observedIconIndex, 1, null);
             });
         }
     }

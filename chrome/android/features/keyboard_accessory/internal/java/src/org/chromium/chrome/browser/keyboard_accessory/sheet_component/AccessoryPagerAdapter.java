@@ -25,7 +25,7 @@ import java.util.Map;
  * {@link ViewPager}. It instantiates the tab views based on the layout they provide.
  */
 class AccessoryPagerAdapter extends PagerAdapter
-        implements ListModelChangeProcessor.ViewBinder<ListModel<Tab>, ViewPager> {
+        implements ListModelChangeProcessor.ViewBinder<ListModel<Tab>, ViewPager, Void> {
     private final ListModel<Tab> mTabList;
     private final Map<Tab, ViewGroup> mViews;
 
@@ -100,7 +100,8 @@ class AccessoryPagerAdapter extends PagerAdapter
     }
 
     @Override
-    public void onItemsChanged(ListModel<Tab> model, ViewPager view, int index, int count) {
+    public void onItemsChanged(
+            ListModel<Tab> model, ViewPager view, int index, int count, Void payload) {
         notifyDataSetChanged();
     }
 }
