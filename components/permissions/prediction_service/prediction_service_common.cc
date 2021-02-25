@@ -14,9 +14,9 @@ namespace permissions {
 ClientFeatures_Platform GetCurrentPlatformProto() {
 #if defined(OS_WIN)
   return permissions::ClientFeatures_Platform_PLATFORM_WINDOWS;
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
   return permissions::ClientFeatures_Platform_PLATFORM_LINUX;
-#elif defined(OS_ANDROID)
+#elif defined(OS_ANDROID) || defined(OS_FUCHSIA)
   return permissions::ClientFeatures_Platform_PLATFORM_ANDROID;
 #elif defined(OS_MAC)
   return permissions::ClientFeatures_Platform_PLATFORM_MAC_OS;
