@@ -95,10 +95,15 @@ Polymer({
 
   /** Shortcut method to control animation */
   setAnimationPlay_(played) {
-    if (this.newLayoutEnabled_) {
-      this.$$('.new-marketing-animation').setPlay(played);
+    if (!this.newLayoutEnabled_) {
+      this.$.oldAnimation.setPlay(played);
+      return;
+    }
+
+    if (this.hasAnimationInContent_) {
+      this.$.newAnimationInContentArea.setPlay(played);
     } else {
-      this.$$('.marketing-animation').setPlay(played);
+      this.$.newAnimationInSubtitle.setPlay(played);
     }
   },
 
@@ -113,7 +118,9 @@ Polymer({
     this.hasTopLongDisclaimer_ =
         !this.newLayoutEnabled_ && this.hasLegalFooter_;
     this.hasAnimationInContent_ =
-        !this.newLayoutEnabled_ && !this.hasLegalFooter_;
+        this.newLayoutEnabled_ && !this.marketingOptInVisible_;
+    this.hasNewLayoutOrLegalFooter =
+        this.newLayoutEnabled_ || this.hasLegalFooter_;
     this.isAccessibilitySettingsShown_ = false;
     this.setAnimationPlay_(true);
     this.$.marketingOptInOverviewDialog.show();

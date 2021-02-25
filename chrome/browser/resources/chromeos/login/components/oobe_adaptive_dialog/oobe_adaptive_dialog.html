@@ -133,7 +133,7 @@
       }
 
       #oobe-title {
-        padding-top: 40px;
+        padding-top: var(--oobe-adaptive-dialog-title-top-padding);
       }
 
       #oobe-progress ::slotted(paper-progress) {
@@ -186,8 +186,8 @@
 
       #oobe-icon-div ::slotted(hd-iron-icon),
       #oobe-icon-div ::slotted(iron-icon) {
-        --iron-icon-height: 32px;
-        --iron-icon-width: 32px;
+        --iron-icon-height: var(--oobe-adaptive-dialog-icon-size);
+        --iron-icon-width: var(--oobe-adaptive-dialog-icon-size);
         --iron-icon-fill-color: var(--google-blue-600);
       }
     </style>
