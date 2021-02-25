@@ -17,6 +17,9 @@ namespace payments {
 
 autofill::AutofillProfile CreateProfileWithPartialAddress() {
   autofill::AutofillProfile profile = autofill::test::GetFullProfile2();
+  profile.SetRawInfo(autofill::ADDRESS_HOME_ADDRESS, base::ASCIIToUTF16(""));
+  profile.SetRawInfo(autofill::ADDRESS_HOME_STREET_ADDRESS,
+                     base::ASCIIToUTF16(""));
   profile.SetRawInfo(autofill::ADDRESS_HOME_LINE1, base::ASCIIToUTF16(""));
   profile.SetRawInfo(autofill::ADDRESS_HOME_LINE2, base::ASCIIToUTF16(""));
   profile.SetRawInfo(autofill::ADDRESS_HOME_CITY, base::ASCIIToUTF16(""));
@@ -26,13 +29,15 @@ autofill::AutofillProfile CreateProfileWithPartialAddress() {
 
 class PaymentRequestProfileListTest : public PaymentRequestBrowserTestBase {
  protected:
-  PaymentRequestProfileListTest() {}
+  PaymentRequestProfileListTest() = default;
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestProfileListTest, PrioritizeCompleteness) {
   NavigateTo("/payment_request_free_shipping_test.html");
   autofill::AutofillProfile complete = autofill::test::GetFullProfile();
   autofill::AutofillProfile partial = CreateProfileWithPartialAddress();
+  complete.FinalizeAfterImport();
+  partial.FinalizeAfterImport();
   partial.set_use_count(1000);
 
   AddAutofillProfile(complete);

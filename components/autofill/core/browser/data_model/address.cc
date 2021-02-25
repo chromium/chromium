@@ -316,6 +316,9 @@ void Address::SetRawInfoWithVerificationStatus(ServerFieldType type,
     case ADDRESS_HOME_FLOOR:
       break;
 
+    case ADDRESS_HOME_ADDRESS:
+      break;
+
     default:
       NOTREACHED();
   }
