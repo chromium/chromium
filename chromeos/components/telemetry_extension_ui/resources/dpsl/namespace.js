@@ -13,6 +13,7 @@
 var dpsl = {};
 dpsl.telemetry = null;
 dpsl.diagnostics = null;
+dpsl.system_events = null;
 dpsl.internal = {};
 dpsl.internal.messagePipe =
   new MessagePipe('chrome://telemetry-extension', window.parent);

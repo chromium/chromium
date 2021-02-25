@@ -13,3 +13,4 @@
 // <include src="dpsl_types.js">
 // <include src="telemetry_requester.js">
 // <include src="diagnostics_manager.js">
+// <include src="events_service.js">

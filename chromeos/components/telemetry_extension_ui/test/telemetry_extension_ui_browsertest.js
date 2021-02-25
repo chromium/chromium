@@ -566,6 +566,7 @@ const untrustedTests = [
     'UntrustedOsResumeEventListener',
     'TelemetryExtensionUIWithOsResumeEventBrowserTest'
   ],
+  ['UntrustedEventsServiceGetAvailableEvents'],
 ].forEach(test => registerUntrustedTest(...test));
 
 /**

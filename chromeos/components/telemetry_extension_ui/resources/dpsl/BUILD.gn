@@ -21,6 +21,7 @@ js_type_check("dpsl_closure_compile") {
 js_library("dpsl") {
   sources = [
     "diagnostics_manager.js",
+    "events_service.js",
     "telemetry_requester.js",
   ]
   deps = [

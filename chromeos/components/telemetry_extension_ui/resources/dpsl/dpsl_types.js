@@ -143,3 +143,16 @@ dpsl.TelemetryInfoTypes;
  * @typedef {!Array<!string>}
  */
 dpsl.AvailableRoutinesList;
+
+//////////////////// dpsl.system_events.* type definitions /////////////////////
+
+/**
+ * The list of supported system events: ['ac-inserted', 'ac-removed',
+ * 'bluetooth-adapter-added', 'bluetooth-adapter-property-changed',
+ * 'bluetooth-adapter-removed', 'bluetooth-device-added',
+ * 'bluetooth-device-property-changed', 'bluetooth-device-removed',
+ * 'lid-closed', 'lid-opened', 'os-resume', 'os-suspend']
+]
+ * @typedef {!Array<!string>}
+ */
+dpsl.EventTypes;

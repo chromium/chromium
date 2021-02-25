@@ -876,3 +876,16 @@ UNTRUSTED_TEST('UntrustedRequestTelemetryInfoWithErrors', async () => {
         JSON.stringify(expectedResult.bluetoothResult.error))
   ]);
 });
+
+// Tests that dpsl.system_events.getAvailableEvents() return the correct list.
+UNTRUSTED_TEST('UntrustedEventsServiceGetAvailableEvents', async () => {
+  assertDeepEquals(
+      [
+        'ac-inserted', 'ac-removed', 'bluetooth-adapter-added',
+        'bluetooth-adapter-property-changed', 'bluetooth-adapter-removed',
+        'bluetooth-device-added', 'bluetooth-device-property-changed',
+        'bluetooth-device-removed', 'lid-closed', 'lid-opened', 'os-resume',
+        'os-suspend'
+      ],
+      dpsl.system_events.getAvailableEvents());
+});
