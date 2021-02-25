@@ -1904,9 +1904,10 @@
             ],
             "experiments": [
                 {
-                    "name": "ShoppingChipEnabled1Percent_20201216",
+                    "name": "ShoppingChipEnabled1Percent_20210211",
                     "params": {
-                        "disableOnIncognito": "true"
+                        "disableOnIncognito": "true",
+                        "logUkm": "true"
                     },
                     "enable_features": [
                         "ContextMenuGoogleLensChip"
@@ -1922,9 +1923,10 @@
             ],
             "experiments": [
                 {
-                    "name": "DirectIntentEnabled_20201026",
+                    "name": "DirectIntentEnabled_20210211",
                     "params": {
                         "disableOnIncognito": "true",
+                        "minAgsaVersionForDirectIntent": "12.3.8",
                         "useDirectIntent": "true"
                     },
                     "enable_features": [
