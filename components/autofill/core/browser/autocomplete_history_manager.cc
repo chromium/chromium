@@ -15,10 +15,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
+#include "components/autofill/core/browser/autofill_regexes.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/prefs/pref_service.h"
@@ -40,6 +42,22 @@ bool IsTextField(const FormFieldData& field) {
       field.form_control_type == "tel" ||
       field.form_control_type == "url" ||
       field.form_control_type == "email";
+}
+
+// Returns true if the field has a meaningful name.
+// An input field name 'field_2' bears no semantic meaning and there is a chance
+// that a different website or different form uses the same field name for a
+// totally different purpose.
+bool IsMeaningfulFieldName(const base::string16& name) {
+  // If the corresponding feature is not enabled, every field name is considered
+  // as meaningful.
+  if (!base::FeatureList::IsEnabled(
+          features::kAutocompleteFilterForMeaningfulNames)) {
+    return true;
+  }
+  return !MatchesPattern(
+      name,
+      base::UTF8ToUTF16("^(((field|input)(_|-)?\\d+)|tan|otp|title|captcha)$"));
 }
 
 }  // namespace
@@ -153,7 +171,8 @@ void AutocompleteHistoryManager::OnGetAutocompleteSuggestions(
     base::WeakPtr<SuggestionsHandler> handler) {
   CancelPendingQueries(handler.get());
 
-  if (!is_autocomplete_enabled || form_control_type == "textarea" ||
+  if (!IsMeaningfulFieldName(name) || !is_autocomplete_enabled ||
+      form_control_type == "textarea" ||
       IsInAutofillSuggestionsDisabledExperiment()) {
     SendSuggestions({}, QueryHandler(query_id, autoselect_first_suggestion,
                                      prefix, handler));
@@ -372,7 +391,8 @@ bool AutocompleteHistoryManager::IsFieldValueSaveable(
     }
   }
 
-  return is_value_valid && !field.name.empty() && IsTextField(field) &&
+  return IsMeaningfulFieldName(field.name) && is_value_valid &&
+         !field.name.empty() && IsTextField(field) &&
          field.should_autocomplete && !IsValidCreditCardNumber(field.value) &&
          !IsSSN(field.value) &&
          (field.properties_mask & kUserTyped || field.is_focusable) &&

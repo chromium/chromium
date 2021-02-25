@@ -21,6 +21,12 @@
 namespace autofill {
 namespace features {
 
+// Controls if Autocomplete suggestions are only shown/stored for meaningful
+// field names.
+// TODO(crbug.com/1181759): Remove once launched.
+const base::Feature kAutocompleteFilterForMeaningfulNames{
+    "AutocompleteFilterForMeaningfulNames", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls if Autofill sends votes for the new address types.
 const base::Feature kAutofillAddressEnhancementVotes{
     "kAutofillAddressEnhancementVotes", base::FEATURE_DISABLED_BY_DEFAULT};

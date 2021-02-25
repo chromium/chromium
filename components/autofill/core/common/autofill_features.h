@@ -21,6 +21,7 @@ namespace autofill {
 namespace features {
 
 // All features in alphabetical order.
+extern const base::Feature kAutocompleteFilterForMeaningfulNames;
 extern const base::Feature kAutofillAddressEnhancementVotes;
 extern const base::Feature kAutofillAddressProfileSavePrompt;
 extern const base::Feature kAutofillAllowDuplicateFormSubmissions;
