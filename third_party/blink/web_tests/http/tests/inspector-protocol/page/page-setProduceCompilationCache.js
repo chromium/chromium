@@ -26,7 +26,7 @@
     const url2 = result.params.url.replace(/-1/, '-2');
     testRunner.log('Poisoning cache for: ' + url2);
     await dp.Page.addCompilationCache({url: url2, data: result.params.data});
-    testRunner.log('Loading script 2, but script 1 should load from cache...');
+    testRunner.log('Loading script 2 with cache poisoined with script 1...');
     await session.evaluate('loadScript2()');
   });
 

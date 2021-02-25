@@ -1,8 +1,8 @@
 Tests that compilation cache is being generated and used
 Loading script 1...
-Script 1 completed
 Compilation cache produced for: http://127.0.0.1:8000/inspector-protocol/page/resources/script-1.js
 Poisoning cache for: http://127.0.0.1:8000/inspector-protocol/page/resources/script-2.js
-Loading script 2, but script 1 should load from cache...
 Script 1 completed
+Loading script 2 with cache poisoined with script 1...
+Script 2 completed
 
