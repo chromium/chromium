@@ -246,7 +246,9 @@ class TabHoverCardBubbleView::ThumbnailObserver {
 };
 
 TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
-    : BubbleDialogDelegateView(tab, views::BubbleBorder::TOP_LEFT),
+    : BubbleDialogDelegateView(tab,
+                               views::BubbleBorder::TOP_LEFT,
+                               views::BubbleBorder::STANDARD_SHADOW),
       using_rounded_corners_(CustomShadowsSupported()) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
 
