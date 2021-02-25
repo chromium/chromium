@@ -1,6 +1,7 @@
 include_rules = [
   "+ash/components/account_manager",
   "+ash/components/audio",
+  "+ash/components/pcie_peripheral",
   "+chrome/browser/image_decoder",
   # TODO(ananta): Remove this when we move files which display UI in
   # chrome/browser/chromeos to chrome/browser/ui/views/chromeos
@@ -47,6 +48,7 @@ specific_include_rules = {
   "chrome_browser_main_chromeos\.cc": [
     "+ash/shell.h",
     "+ash/sticky_keys/sticky_keys_controller.h",
+    "+ash/system/pcie_peripheral/pcie_peripheral_notification_controller.h",
   ],
   "device_status_collector_browsertest.cc": [
     "+mojo/core/embedder/embedder.h",

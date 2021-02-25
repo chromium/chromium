@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_PCIE_PERIPHERAL_PCIE_PERIPHERAL_NOTIFICATION_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "ash/components/pcie_peripheral/pcie_peripheral_manager.h"
 
 namespace message_center {
 class MessageCenter;
@@ -19,7 +20,8 @@ namespace ash {
 // direct memory accessing. Other WARNING notifications are used to inform users
 // that their peripherals may not be working due to data access protection
 // enabled in OS Settings.
-class ASH_EXPORT PciePeripheralNotificationController {
+class ASH_EXPORT PciePeripheralNotificationController
+    : public PciePeripheralManager::Observer {
  public:
   explicit PciePeripheralNotificationController(
       message_center::MessageCenter* message_center);
@@ -27,7 +29,15 @@ class ASH_EXPORT PciePeripheralNotificationController {
       const PciePeripheralNotificationController&) = delete;
   PciePeripheralNotificationController& operator=(
       const PciePeripheralNotificationController&) = delete;
-  ~PciePeripheralNotificationController();
+  ~PciePeripheralNotificationController() override;
+
+  // Call when PciePeripheralManager is initialized so that this class can start
+  // observering requests for notifications.
+  void OnPciePeripheralManagerInitialized();
+
+  // chromeos::PciePeripheral::Observer
+  void OnLimitedPerformancePeripheralReceived() override;
+  void OnGuestModeNotificationReceived(bool is_thunderbolt_only) override;
 
   // Call to show a notification to indicate that the recently plugged in
   // Thunderbolt/USB4 peripheral performance is limited.

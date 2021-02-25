@@ -1,4 +1,5 @@
 include_rules = [
+  "+ash/components/pcie_peripheral",
   "+components/account_manager_core",
   "+chrome/services/local_search_service",
   "+device/udev_linux/fake_udev_loader.h",      # For keyboard unit test.

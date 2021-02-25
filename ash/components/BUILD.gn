@@ -13,6 +13,7 @@ source_set("unit_tests") {
   deps = [
     "//ash/components/account_manager:unit_tests",
     "//ash/components/audio:unit_tests",
+    "//ash/components/pcie_peripheral:unit_tests",
   ]
 
   data_deps = [

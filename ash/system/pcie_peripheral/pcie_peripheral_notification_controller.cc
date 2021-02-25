@@ -8,6 +8,7 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
@@ -78,6 +79,14 @@ void OnGuestNotificationClicked(bool is_thunderbolt_only) {
   RemoveNotification(kPciePeripheralLimitedPerformanceGuestModeNotificationId);
 }
 
+// We only display notifications for active user sessions (signed-in/guest with
+// desktop ready). Also do not show notifications in signin or lock screen.
+bool ShouldDisplayNotification() {
+  return Shell::Get()->session_controller()->GetSessionState() ==
+             session_manager::SessionState::ACTIVE &&
+         !Shell::Get()->session_controller()->IsUserSessionBlocked();
+}
+
 }  // namespace
 
 PciePeripheralNotificationController::PciePeripheralNotificationController(
@@ -86,10 +95,22 @@ PciePeripheralNotificationController::PciePeripheralNotificationController(
   DCHECK(message_center_);
 }
 
-PciePeripheralNotificationController::~PciePeripheralNotificationController() =
-    default;
+PciePeripheralNotificationController::~PciePeripheralNotificationController() {
+  if (ash::PciePeripheralManager::IsInitialized())
+    ash::PciePeripheralManager::Get()->RemoveObserver(this);
+}
+
+void PciePeripheralNotificationController::
+    OnPciePeripheralManagerInitialized() {
+  DCHECK(ash::PciePeripheralManager::IsInitialized());
+
+  ash::PciePeripheralManager::Get()->AddObserver(this);
+}
 
 void PciePeripheralNotificationController::NotifyLimitedPerformance() {
+  if (!ShouldDisplayNotification())
+    return;
+
   message_center::RichNotificationData optional;
   optional.buttons.push_back(
       message_center::ButtonInfo(l10n_util::GetStringUTF16(
@@ -121,6 +142,9 @@ void PciePeripheralNotificationController::NotifyLimitedPerformance() {
 
 void PciePeripheralNotificationController::NotifyGuestModeNotification(
     bool is_thunderbolt_only) {
+  if (!ShouldDisplayNotification())
+    return;
+
   std::unique_ptr<message_center::Notification> notification =
       CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE,
@@ -147,6 +171,16 @@ void PciePeripheralNotificationController::NotifyGuestModeNotification(
               : message_center::SystemNotificationWarningLevel::WARNING);
 
   message_center_->AddNotification(std::move(notification));
+}
+
+void PciePeripheralNotificationController::
+    OnLimitedPerformancePeripheralReceived() {
+  NotifyLimitedPerformance();
+}
+
+void PciePeripheralNotificationController::OnGuestModeNotificationReceived(
+    bool is_thunderbolt_only) {
+  NotifyGuestModeNotification(is_thunderbolt_only);
 }
 
 }  // namespace ash

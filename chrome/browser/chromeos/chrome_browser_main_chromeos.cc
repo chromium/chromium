@@ -12,6 +12,7 @@
 
 #include "ash/components/audio/audio_devices_pref_handler_impl.h"
 #include "ash/components/audio/cras_audio_handler.h"
+#include "ash/components/pcie_peripheral/pcie_peripheral_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/keyboard/ui/resources/keyboard_resource_util.h"
@@ -19,6 +20,7 @@
 #include "ash/public/cpp/event_rewriter_controller.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/shell.h"
+#include "ash/system/pcie_peripheral/pcie_peripheral_notification_controller.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
@@ -1103,13 +1105,24 @@ void ChromeBrowserMainPartsChromeos::PostBrowserStart() {
                  base::BindOnce(&CrosUsbDetector::ConnectToDeviceManager,
                                 base::Unretained(cros_usb_detector_.get())));
 
+  bool pcie_tunneling_allowed = false;
+  CrosSettings::Get()->GetBoolean(chromeos::kDevicePeripheralDataAccessEnabled,
+                                  &pcie_tunneling_allowed);
+
   // External PCI devices are only allowed in non-guest, primary users.
   if (!user_manager::UserManager::Get()->IsLoggedInAsGuest() &&
       ProfileHelper::IsPrimaryProfile(profile())) {
-    bool enabled = false;
-    CrosSettings::Get()->GetBoolean(
-        chromeos::kDevicePeripheralDataAccessEnabled, &enabled);
-    PciguardClient::Get()->SendExternalPciDevicesPermissionState(enabled);
+    PciguardClient::Get()->SendExternalPciDevicesPermissionState(
+        pcie_tunneling_allowed);
+  }
+
+  if (chromeos::features::IsPciguardUiEnabled()) {
+    ash::PciePeripheralManager::Initialize(
+        user_manager::UserManager::Get()->IsLoggedInAsGuest(),
+        pcie_tunneling_allowed);
+    ash::Shell::Get()
+        ->pcie_peripheral_notification_controller()
+        ->OnPciePeripheralManagerInitialized();
   }
 
   crostini_unsupported_action_notifier_ =
