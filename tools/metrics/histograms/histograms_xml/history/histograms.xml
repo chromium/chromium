@@ -238,6 +238,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="History.ClearBrowsingData.InstalledAppsDialogAction"
+    enum="InstalledAppsDialogActions" expires_after="2022-02-22">
+  <owner>jarrydg@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Recorded after the InstalledApps dialog is closed. This records the manner
+    in which the dialog was closed.
+  </summary>
+</histogram>
+
+<histogram name="History.ClearBrowsingData.InstalledAppsDialogShown"
+    units="Boolean" expires_after="2022-02-22">
+  <owner>jarrydg@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Recorded after the user clicks clear data on the CleaerBrowsingData dialog,
+    but before the installed apps dialog is shown to the user. The value will be
+    true if there are installed apps (and thus, the installed app dialog will be
+    shown), and false otherwise.
+  </summary>
+</histogram>
+
 <histogram name="History.ClearBrowsingData.InstalledDeselectedNum"
     units="units" expires_after="2022-02-16">
   <owner>jarrydg@chromium.org</owner>

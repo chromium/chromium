@@ -34,6 +34,19 @@ import {Route, RouteObserverBehavior, Router} from '../router.m.js';
 import {ClearBrowsingDataBrowserProxy, ClearBrowsingDataBrowserProxyImpl, InstalledApp} from './clear_browsing_data_browser_proxy.js';
 
 /**
+ * InstalledAppsDialogActions enum.
+ * These values are persisted to logs and should not be renumbered or
+ * re-used.
+ * See tools/metrics/histograms/enums.xml.
+ * @enum {number}
+ */
+const InstalledAppsDialogActions = {
+  CLOSE: 0,
+  CANCEL_BUTTON: 1,
+  CLEAR_BUTTON: 2,
+};
+
+/**
  * @param {!CrDialogElement} dialog the dialog to close
  * @param {boolean} isLast whether this is the last CBD-related dialog
  * @private
@@ -456,7 +469,6 @@ Polymer({
     this.shadowRoot.querySelectorAll('settings-checkbox[no-set-pref]')
         .forEach(checkbox => checkbox.sendPrefChange());
 
-    this.recordInstalledAppsInteractions_();
     const {showHistoryNotice, showPasswordsNotice} =
         await this.browserProxy_.clearBrowsingData(
             dataTypes, timePeriod, this.installedApps_);
@@ -605,6 +617,10 @@ Polymer({
   onClearBrowsingDataClick_: async function() {
     await this.getInstalledApps_();
     if (this.shouldShowInstalledApps_()) {
+      chrome.metricsPrivate.recordEnumerationValue(
+          'History.ClearBrowsingData.InstalledAppsDialogAction',
+          InstalledAppsDialogActions.CLEAR_BUTTON,
+          Object.keys(InstalledAppsDialogActions).length);
       replaceDialog(
           /** @type {!CrDialogElement} */ (this.$.clearBrowsingDataDialog),
           /** @type {!CrDialogElement} */ (this.$.installedAppsDialog));
@@ -615,6 +631,21 @@ Polymer({
 
   /** @private */
   hideInstalledApps_() {
+    chrome.metricsPrivate.recordEnumerationValue(
+        'History.ClearBrowsingData.InstalledAppsDialogAction',
+        InstalledAppsDialogActions.CLOSE,
+        Object.keys(InstalledAppsDialogActions).length);
+    replaceDialog(
+        /** @type {!CrDialogElement} */ (this.$.installedAppsDialog),
+        /** @type {!CrDialogElement} */ (this.$.clearBrowsingDataDialog));
+  },
+
+  /** @private */
+  onCancelInstalledApps_() {
+    chrome.metricsPrivate.recordEnumerationValue(
+        'History.ClearBrowsingData.InstalledAppsDialogAction',
+        InstalledAppsDialogActions.CANCEL_BUTTON,
+        Object.keys(InstalledAppsDialogActions).length);
     replaceDialog(
         /** @type {!CrDialogElement} */ (this.$.installedAppsDialog),
         /** @type {!CrDialogElement} */ (this.$.clearBrowsingDataDialog));
@@ -625,6 +656,7 @@ Polymer({
    * @private
    */
   onInstalledAppsConfirmClick_: async function() {
+    this.recordInstalledAppsInteractions_();
     await this.clearBrowsingData_();
   }
 });
