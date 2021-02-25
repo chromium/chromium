@@ -334,7 +334,10 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   GridTrackSizingDirection AutoFlowDirection() const;
 
   LogicalSize border_box_size_;
-  LogicalSize child_percentage_size_;
+
+  LogicalSize grid_available_size_;
+  LogicalSize grid_min_available_size_;
+  LogicalSize grid_max_available_size_;
 };
 
 }  // namespace blink

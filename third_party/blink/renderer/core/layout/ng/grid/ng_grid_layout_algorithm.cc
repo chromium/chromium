@@ -21,8 +21,52 @@ NGGridLayoutAlgorithm::NGGridLayoutAlgorithm(
   DCHECK(!params.break_token);
 
   border_box_size_ = container_builder_.InitialBorderBoxSize();
-  child_percentage_size_ = CalculateChildPercentageSize(
-      ConstraintSpace(), Node(), ChildAvailableSize());
+
+  // At various stages of this algorithm we need to know if the grid
+  // available-size. If it is initially indefinite, we need to know the min/max
+  // sizes as well. Initialize all these to the same value.
+  grid_available_size_ = grid_min_available_size_ = grid_max_available_size_ =
+      ChildAvailableSize();
+
+  // Next if our inline-size is indefinite, compute the min/max inline-sizes.
+  if (grid_available_size_.inline_size == kIndefiniteSize) {
+    const LayoutUnit border_scrollbar_padding =
+        BorderScrollbarPadding().InlineSum();
+    const MinMaxSizes sizes = ComputeMinMaxInlineSizes(
+        ConstraintSpace(), Style(), container_builder_.BorderPadding(),
+        [&border_scrollbar_padding](MinMaxSizesType) -> MinMaxSizesResult {
+          // If we've reached here we are inside the ComputeMinMaxSizes pass,
+          // and also have something like "min-width: min-content". This is
+          // cyclic. Just return the border/scrollbar/padding as our
+          // "intrinsic" size.
+          return MinMaxSizesResult(
+              {border_scrollbar_padding, border_scrollbar_padding},
+              /* depends_on_percentage_block_size */ false);
+        });
+
+    grid_min_available_size_.inline_size =
+        (sizes.min_size - border_scrollbar_padding).ClampNegativeToZero();
+    grid_max_available_size_.inline_size =
+        (sizes.max_size == LayoutUnit::Max())
+            ? sizes.max_size
+            : (sizes.max_size - border_scrollbar_padding).ClampNegativeToZero();
+  }
+
+  // And similar for the min/max block-sizes.
+  if (grid_available_size_.block_size == kIndefiniteSize) {
+    const LayoutUnit border_scrollbar_padding =
+        BorderScrollbarPadding().BlockSum();
+    const MinMaxSizes sizes = ComputeMinMaxBlockSizes(
+        ConstraintSpace(), Style(), container_builder_.BorderPadding(),
+        kIndefiniteSize);
+
+    grid_min_available_size_.block_size =
+        (sizes.min_size - border_scrollbar_padding).ClampNegativeToZero();
+    grid_max_available_size_.block_size =
+        (sizes.max_size == LayoutUnit::Max())
+            ? sizes.max_size
+            : (sizes.max_size - border_scrollbar_padding).ClampNegativeToZero();
+  }
 }
 
 scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
@@ -63,7 +107,7 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
 
   // Determine the final (used) column set geometry.
   grid_geometry.column_geometry = ComputeSetGeometry(
-      column_track_collection, ChildAvailableSize().inline_size);
+      column_track_collection, grid_available_size_.inline_size);
 
   // Resolve block size.
   ComputeUsedTrackSizes(SizingConstraint::kLayout, grid_geometry,
@@ -71,7 +115,7 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
 
   // Determine the final (used) row set geometry.
   grid_geometry.row_geometry =
-      ComputeSetGeometry(row_track_collection, ChildAvailableSize().block_size);
+      ComputeSetGeometry(row_track_collection, grid_available_size_.block_size);
 
   // Intrinsic block size is based on the final row offset. Because gutters are
   // included in row offsets, subtract out the final gutter (if there is one).
@@ -92,7 +136,7 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
 
   // If we had an indefinite available block-size, we now need to re-calculate
   // our grid-gap, and alignment using our new block-size.
-  if (ChildAvailableSize().block_size == kIndefiniteSize) {
+  if (grid_available_size_.block_size == kIndefiniteSize) {
     const LayoutUnit resolved_available_block_size =
         (block_size - BorderScrollbarPadding().BlockSum())
             .ClampNegativeToZero();
@@ -579,50 +623,18 @@ wtf_size_t NGGridLayoutAlgorithm::ComputeAutomaticRepetitions(
   if (!track_list.HasAutoRepeater())
     return 0;
 
-  // TODO(ikilpatrick): Move this block up to the constructor, and create two
-  // members for "grid_available_size_" and "max_grid_available_size_".
   LayoutUnit available_size = (track_direction == kForColumns)
-                                  ? ChildAvailableSize().inline_size
-                                  : ChildAvailableSize().block_size;
-
-  // Represents the largest available-size the grid can consume. Typically this
-  // is the same as available-size, but if the initial border-box size is
-  // indefinite it may be larger. This is used for determining the number of
-  // auto repetitions.
+                                  ? grid_available_size_.inline_size
+                                  : grid_available_size_.block_size;
   LayoutUnit max_available_size = available_size;
 
   if (available_size == kIndefiniteSize) {
-    MinMaxSizes sizes;
-    LayoutUnit border_scrollbar_padding;
-    if (track_direction == kForColumns) {
-      border_scrollbar_padding =
-          container_builder_.BorderScrollbarPadding().InlineSum();
-      sizes = ComputeMinMaxInlineSizes(
-          ConstraintSpace(), Style(), container_builder_.BorderPadding(),
-          [&border_scrollbar_padding](MinMaxSizesType) -> MinMaxSizesResult {
-            // If we've reached here we are inside the ComputeMinMaxSizes pass,
-            // and also have something like "min-width: min-content". This is
-            // cyclic. Just return the border/scrollbar/padding as our
-            // "intrinsic" size.
-            return MinMaxSizesResult(
-                {border_scrollbar_padding, border_scrollbar_padding},
-                /* depends_on_percentage_block_size */ false);
-          });
-    } else {
-      border_scrollbar_padding =
-          container_builder_.BorderScrollbarPadding().BlockSum();
-      sizes = ComputeMinMaxBlockSizes(ConstraintSpace(), Style(),
-                                      container_builder_.BorderPadding(),
-                                      /* intrinsic_size */ kIndefiniteSize);
-    }
-
-    // Keep an infinite max-size as infinite.
-    max_available_size =
-        sizes.max_size == LayoutUnit::Max()
-            ? LayoutUnit::Max()
-            : (sizes.max_size - border_scrollbar_padding).ClampNegativeToZero();
-    available_size =
-        (sizes.min_size - border_scrollbar_padding).ClampNegativeToZero();
+    max_available_size = (track_direction == kForColumns)
+                             ? grid_max_available_size_.inline_size
+                             : grid_max_available_size_.block_size;
+    available_size = (track_direction == kForColumns)
+                         ? grid_min_available_size_.inline_size
+                         : grid_min_available_size_.block_size;
   }
 
   const LayoutUnit grid_gap = GridGap(track_direction, available_size);
@@ -906,11 +918,11 @@ void NGGridLayoutAlgorithm::BuildAlgorithmTrackCollections(
   // Build algorithm track collections from the block track collections.
   *column_track_collection = NGGridLayoutAlgorithmTrackCollection(
       column_block_track_collection,
-      child_percentage_size_.inline_size == kIndefiniteSize);
+      grid_available_size_.inline_size == kIndefiniteSize);
 
   *row_track_collection = NGGridLayoutAlgorithmTrackCollection(
       row_block_track_collection,
-      child_percentage_size_.block_size == kIndefiniteSize);
+      grid_available_size_.block_size == kIndefiniteSize);
 }
 
 void NGGridLayoutAlgorithm::EnsureTrackCoverageForGridItems(
@@ -997,9 +1009,9 @@ NGGridLayoutAlgorithm::SetGeometry NGGridLayoutAlgorithm::InitializeTrackSizes(
   DCHECK(track_collection);
   const GridTrackSizingDirection track_direction =
       track_collection->Direction();
-  LayoutUnit content_box_size = (track_direction == kForColumns)
-                                    ? child_percentage_size_.inline_size
-                                    : child_percentage_size_.block_size;
+  LayoutUnit available_size = (track_direction == kForColumns)
+                                  ? grid_available_size_.inline_size
+                                  : grid_available_size_.block_size;
 
   LayoutUnit set_offset = (track_direction == kForColumns)
                               ? BorderScrollbarPadding().inline_start
@@ -1020,19 +1032,19 @@ NGGridLayoutAlgorithm::SetGeometry NGGridLayoutAlgorithm::InitializeTrackSizes(
     if (track_size.IsFitContent()) {
       // Indefinite lengths cannot occur, as they must be normalized to 'auto'.
       DCHECK(!track_size.FitContentTrackBreadth().HasPercentage() ||
-             content_box_size != kIndefiniteSize);
+             available_size != kIndefiniteSize);
       current_set.SetFitContentLimit(MinimumValueForLength(
-          track_size.FitContentTrackBreadth().length(), content_box_size));
+          track_size.FitContentTrackBreadth().length(), available_size));
     }
 
     if (track_size.HasFixedMinTrackBreadth()) {
       DCHECK(!track_size.MinTrackBreadth().HasPercentage() ||
-             content_box_size != kIndefiniteSize);
+             available_size != kIndefiniteSize);
 
       // A fixed sizing function: Resolve to an absolute length and use that
       // size as the track’s initial base size.
       LayoutUnit fixed_min_breadth = MinimumValueForLength(
-          track_size.MinTrackBreadth().length(), content_box_size);
+          track_size.MinTrackBreadth().length(), available_size);
       current_set.SetBaseSize(fixed_min_breadth * current_set.TrackCount());
     } else {
       // An intrinsic sizing function: Use an initial base size of zero.
@@ -1044,13 +1056,13 @@ NGGridLayoutAlgorithm::SetGeometry NGGridLayoutAlgorithm::InitializeTrackSizes(
     // an intrinsic or flexible sizing function needs no further resolution.
     if (track_size.HasFixedMaxTrackBreadth()) {
       DCHECK(!track_size.MaxTrackBreadth().HasPercentage() ||
-             content_box_size != kIndefiniteSize);
+             available_size != kIndefiniteSize);
 
       // A fixed sizing function: Resolve to an absolute length and use that
       // size as the track’s initial growth limit; if the growth limit is less
       // than the base size, increase the growth limit to match the base size.
       LayoutUnit fixed_max_breadth = MinimumValueForLength(
-          track_size.MaxTrackBreadth().length(), content_box_size);
+          track_size.MaxTrackBreadth().length(), available_size);
       current_set.SetGrowthLimit(
           std::max(current_set.BaseSize(),
                    fixed_max_breadth * current_set.TrackCount()));
@@ -1750,36 +1762,11 @@ void NGGridLayoutAlgorithm::StretchAutoTracks(
   // If the free space is indefinite, but the grid container has a definite
   // min-width/height, use that size to calculate the free space for this step
   // instead.
-  // TODO(janewman): This logic is very similar to getting the min size in
-  // ComputeAutomaticRepetitions, this should use grid_available_size_ once
-  // available.
   if (free_space == kIndefiniteSize) {
-    if (track_direction == kForColumns) {
-      const Length& min_length = Style().LogicalMinWidth();
-
-      // A style of "min-width: min-content" isn't resolvable in the intrinsic
-      // phase as it'd be a circular definition.
-      if (min_length.IsAuto() ||
-          InlineLengthUnresolvable(ConstraintSpace(), min_length) ||
-          min_length.IsContentOrIntrinsic()) {
-        return;
-      }
-      free_space =
-          ComputeMinMaxInlineSizes(ConstraintSpace(), Style(),
-                                   container_builder_.BorderPadding(),
-                                   base::Optional<MinMaxSizes>(), &min_length)
-              .min_size;
-    } else {
-      const Length& min_length = Style().LogicalMinHeight();
-
-      if (BlockLengthUnresolvable(ConstraintSpace(), min_length))
-        return;
-
-      free_space = ComputeMinMaxBlockSizes(ConstraintSpace(), Style(),
-                                           container_builder_.BorderPadding(),
-                                           kIndefiniteSize)
-                       .min_size;
-    }
+    free_space = (track_direction == kForColumns)
+                     ? grid_min_available_size_.inline_size
+                     : grid_min_available_size_.block_size;
+    DCHECK_NE(free_space, kIndefiniteSize);
     free_space -= ComputeTotalTrackSize(*track_collection,
                                         GridGap(track_direction, free_space));
   }
@@ -1975,6 +1962,8 @@ LayoutUnit NGGridLayoutAlgorithm::GridGap(
   return MinimumValueForLength(*gap, available_size);
 }
 
+// TODO(ikilpatrick): Determine if other uses of this method need to respect
+// |grid_min_available_size_| similar to |StretchAutoTracks|.
 LayoutUnit NGGridLayoutAlgorithm::DetermineFreeSpace(
     SizingConstraint sizing_constraint,
     const NGGridLayoutAlgorithmTrackCollection& track_collection) const {
@@ -1983,8 +1972,8 @@ LayoutUnit NGGridLayoutAlgorithm::DetermineFreeSpace(
       const GridTrackSizingDirection track_direction =
           track_collection.Direction();
       LayoutUnit free_space = (track_direction == kForColumns)
-                                  ? ChildAvailableSize().inline_size
-                                  : ChildAvailableSize().block_size;
+                                  ? grid_available_size_.inline_size
+                                  : grid_available_size_.block_size;
       if (free_space != kIndefiniteSize) {
         free_space -= ComputeTotalTrackSize(
             track_collection, GridGap(track_direction, free_space));

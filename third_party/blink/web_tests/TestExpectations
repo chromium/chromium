@@ -3660,7 +3660,6 @@ crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-items/gr
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-items/grid-minimum-size-grid-items-024.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-items/grid-minimum-size-grid-items-025.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-layout-properties.html [ Failure ]
-crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-model/grid-box-sizing-001.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-model/iner-ignores-first-letter-001.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-model/grid-gutters-and-flex-content-001.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-tracks-stretched-with-different-flex-factors-sum.html [ Failure ]
