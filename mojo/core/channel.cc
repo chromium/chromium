@@ -68,7 +68,7 @@ Channel::AlignedBuffer MakeAlignedBuffer(size_t size) {
   // rather than return nullptr, ASAN and friends don't know about that. This
   // CHECK() prevents Clusterfuzz from complaining. crbug.com/1180576.
   CHECK(ptr);
-  return Channel::AlignedBuffer(static_cast<char*>(malloc(size)));
+  return Channel::AlignedBuffer(static_cast<char*>(ptr));
 }
 
 }  // namespace
