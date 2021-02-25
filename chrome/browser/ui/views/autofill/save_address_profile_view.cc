@@ -8,7 +8,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/autofill/save_address_profile_bubble_controller.h"
-#include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
+#include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
@@ -233,16 +233,18 @@ void SaveAddressProfileView::Hide() {
   controller_ = nullptr;
 }
 
-void SaveAddressProfileView::OnThemeChanged() {
-  LocationBarBubbleDelegateView::OnThemeChanged();
+void SaveAddressProfileView::AddedToWidget() {
   // TODO(crbug.com/1167060): Update upon having final mocks.
-  int id = color_utils::IsDark(GetBubbleFrameView()->GetBackgroundColor())
-               ? IDR_SAVE_PASSWORD_MULTI_DEVICE_DARK
-               : IDR_SAVE_PASSWORD_MULTI_DEVICE;
-
-  auto image_view = std::make_unique<NonAccessibleImageView>();
-  image_view->SetImage(
-      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(id));
+  // Set the header image.
+  ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
+  auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
+      *bundle.GetImageSkiaNamed(IDR_SAVE_PASSWORD_MULTI_DEVICE),
+      *bundle.GetImageSkiaNamed(IDR_SAVE_PASSWORD_MULTI_DEVICE_DARK),
+      base::BindRepeating(
+          [](SaveAddressProfileView* view) {
+            return view->GetBubbleFrameView()->GetBackgroundColor();
+          },
+          this));
   GetBubbleFrameView()->SetHeaderView(std::move(image_view));
 }
 

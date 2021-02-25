@@ -42,7 +42,7 @@ class SaveAddressProfileView : public AutofillBubbleBase,
   void Hide() override;
 
   // View:
-  void OnThemeChanged() override;
+  void AddedToWidget() override;
 
  private:
   SaveAddressProfileBubbleController* controller_;
