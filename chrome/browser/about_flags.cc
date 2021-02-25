@@ -463,6 +463,35 @@ const FeatureEntry::FeatureVariation kReaderModeDiscoverabilityVariations[] = {
 #endif  // OS_ANDROID
 
 #if defined(OS_ANDROID)
+const FeatureEntry::FeatureVariation kAdaptiveButtonInTopToolbarVariations[] = {
+    {
+        "Always None",
+        (FeatureEntry::FeatureParam[]){{"mode", "always-none"}},
+        1,
+        nullptr,
+    },
+    {
+        "Always New Tab",
+        (FeatureEntry::FeatureParam[]){{"mode", "always-new-tab"}},
+        1,
+        nullptr,
+    },
+    {
+        "Always Share",
+        (FeatureEntry::FeatureParam[]){{"mode", "always-share"}},
+        1,
+        nullptr,
+    },
+    {
+        "Always Voice",
+        (FeatureEntry::FeatureParam[]){{"mode", "always-voice"}},
+        1,
+        nullptr,
+    },
+};
+#endif  // OS_ANDROID
+
+#if defined(OS_ANDROID)
 const FeatureEntry::FeatureParam kHideDismissButton[] = {
     {"dismiss_button", "hide"}};
 
@@ -3213,11 +3242,15 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kSystemNotifications)},
 #endif  // BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #if defined(OS_ANDROID)
+    {"adaptive-button-in-top-toolbar",
+     flag_descriptions::kAdaptiveButtonInTopToolbarName,
+     flag_descriptions::kAdaptiveButtonInTopToolbarDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kAdaptiveButtonInTopToolbar,
+                                    kAdaptiveButtonInTopToolbarVariations,
+                                    "AdaptiveButtonInTopToolbar")},
     {"reader-mode-heuristics", flag_descriptions::kReaderModeHeuristicsName,
      flag_descriptions::kReaderModeHeuristicsDescription, kOsAndroid,
      MULTI_VALUE_TYPE(kReaderModeHeuristicsChoices)},
-#endif  // OS_ANDROID
-#if defined(OS_ANDROID)
     {"voice-button-in-top-toolbar",
      flag_descriptions::kVoiceButtonInTopToolbarName,
      flag_descriptions::kVoiceButtonInTopToolbarDescription, kOsAndroid,

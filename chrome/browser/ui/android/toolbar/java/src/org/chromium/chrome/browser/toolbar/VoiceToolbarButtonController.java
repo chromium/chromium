@@ -17,6 +17,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
@@ -154,9 +156,7 @@ public class VoiceToolbarButtonController
     }
 
     private boolean shouldShowVoiceButton(Tab tab) {
-        if (!FeatureList.isInitialized()
-                || !ChromeFeatureList.isEnabled(ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR)
-                || tab == null || tab.isIncognito()
+        if (!FeatureList.isInitialized() || !isFeatureEnabled() || tab == null || tab.isIncognito()
                 || !mVoiceSearchDelegate.isVoiceSearchEnabled()) {
             return false;
         }
@@ -171,6 +171,15 @@ public class VoiceToolbarButtonController
         if (!isDeviceWideEnough) return false;
 
         return UrlUtilities.isHttpOrHttps(tab.getUrl());
+    }
+
+    private static boolean isFeatureEnabled() {
+        if (AdaptiveToolbarFeatures.isEnabled()) {
+            return AdaptiveToolbarFeatures.getSingleVariantMode()
+                    == AdaptiveToolbarButtonVariant.VOICE;
+        } else {
+            return ChromeFeatureList.isEnabled(ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR);
+        }
     }
 
     private void notifyObservers(boolean hint) {

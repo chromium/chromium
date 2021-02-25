@@ -1195,6 +1195,14 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="Failed (missing product details)"/>
 </enum>
 
+<enum name="AdaptiveToolbarButtonVariant">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="None"/>
+  <int value="2" label="New tab"/>
+  <int value="3" label="Share"/>
+  <int value="4" label="Voice"/>
+</enum>
+
 <enum name="AdbSideloadingPromptEvent">
   <int value="0" label="Prompt shown"/>
   <int value="1" label="Prompt skipped"/>
@@ -45966,6 +45974,7 @@ from previous Chrome versions.
       label="AutofillSendExperimentIdsInPaymentsRPCs:disabled"/>
   <int value="418769094" label="MixedContentSiteSetting:enabled"/>
   <int value="420160748" label="CornerShortcuts:enabled"/>
+  <int value="420682005" label="AdaptiveButtonInTopToolbar:enabled"/>
   <int value="422307097" label="PhysicalWeb:disabled"/>
   <int value="422670720" label="ContextualSearchLongpressPanelHelp:disabled"/>
   <int value="423615350" label="enable-tab-audio-muting"/>
@@ -47692,6 +47701,7 @@ from previous Chrome versions.
   <int value="2001520126" label="AccountManagementFlowsV2:enabled"/>
   <int value="2001562962"
       label="enable-manual-fallback-for-password-saving:enabled"/>
+  <int value="2002113900" label="AdaptiveButtonInTopToolbar:disabled"/>
   <int value="2002573873" label="ChromeHomeMenuItemsExpandSheet:enabled"/>
   <int value="2003568209" label="TouchpadAndWheelScrollLatching:disabled"/>
   <int value="2003811018" label="enable-touch-support-for-screen-magnifier"/>

@@ -1622,9 +1622,6 @@ extern const char kCCTTargetTranslateLanguageDescription[];
 extern const char kContinuousSearchName[];
 extern const char kContinuousSearchDescription[];
 
-extern const char kShareButtonInTopToolbarName[];
-extern const char kShareButtonInTopToolbarDescription[];
-
 extern const char kChromeShareHighlightsAndroidName[];
 extern const char kChromeShareHighlightsAndroidDescription[];
 
@@ -1946,6 +1943,10 @@ extern const char kVideoTutorialsDescription[];
 extern const char kVideoTutorialsInstantFetchName[];
 extern const char kVideoTutorialsInstantFetchDescription[];
 
+extern const char kAdaptiveButtonInTopToolbarName[];
+extern const char kAdaptiveButtonInTopToolbarDescription[];
+extern const char kShareButtonInTopToolbarName[];
+extern const char kShareButtonInTopToolbarDescription[];
 extern const char kVoiceButtonInTopToolbarName[];
 extern const char kVoiceButtonInTopToolbarDescription[];
 

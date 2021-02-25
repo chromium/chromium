@@ -22,6 +22,8 @@ import org.chromium.chrome.browser.share.ShareDelegateImpl.ShareOrigin;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -162,8 +164,7 @@ public class ShareButtonController implements ButtonDataProvider, ConfigurationC
 
     private void updateButtonVisibility(Tab tab) {
         if (tab == null || tab.getWebContents() == null || mTabProvider == null
-                || mTabProvider.get() == null
-                || !ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_BUTTON_IN_TOP_TOOLBAR)) {
+                || mTabProvider.get() == null || !isFeatureEnabled()) {
             mButtonData.canShow = false;
             return;
         }
@@ -181,6 +182,15 @@ public class ShareButtonController implements ButtonDataProvider, ConfigurationC
         }
 
         mButtonData.canShow = mShareUtils.shouldEnableShare(tab);
+    }
+
+    private static boolean isFeatureEnabled() {
+        if (AdaptiveToolbarFeatures.isEnabled()) {
+            return AdaptiveToolbarFeatures.getSingleVariantMode()
+                    == AdaptiveToolbarButtonVariant.SHARE;
+        } else {
+            return ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_BUTTON_IN_TOP_TOOLBAR);
+        }
     }
 
     private void notifyObservers(boolean hint) {

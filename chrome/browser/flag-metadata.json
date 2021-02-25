@@ -54,6 +54,11 @@
     "expiry_milestone": 93
   },
   {
+    "name": "adaptive-button-in-top-toolbar",
+    "owners": [ "bttk", "chrome-segmentation-platform@google.com" ],
+    "expiry_milestone": 93
+  },
+  {
     "name": "aggregated-ml-app-ranking",
     "owners": [ "pdyson", "jiameng" ],
     "expiry_milestone": 81

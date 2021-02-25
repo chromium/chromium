@@ -76,6 +76,9 @@ import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.VoiceToolbarButtonController;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonController;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
@@ -648,8 +651,19 @@ public class RootUiCoordinator
                             AppCompatResources.getDrawable(mActivity, R.drawable.btn_mic),
                             mActivityTabProvider, mActivity.getLifecycleDispatcher(),
                             mActivity.getModalDialogManager(), voiceSearchDelegate);
-            mButtonDataProviders = Arrays.asList(
-                    mIdentityDiscController, shareButtonController, voiceToolbarButtonController);
+            if (AdaptiveToolbarFeatures.isEnabled()) {
+                AdaptiveToolbarButtonController adaptiveToolbarButtonController =
+                        new AdaptiveToolbarButtonController();
+                adaptiveToolbarButtonController.addButtonVariant(
+                        AdaptiveToolbarButtonVariant.SHARE, shareButtonController);
+                adaptiveToolbarButtonController.addButtonVariant(
+                        AdaptiveToolbarButtonVariant.VOICE, voiceToolbarButtonController);
+                mButtonDataProviders =
+                        Arrays.asList(mIdentityDiscController, adaptiveToolbarButtonController);
+            } else {
+                mButtonDataProviders = Arrays.asList(mIdentityDiscController, shareButtonController,
+                        voiceToolbarButtonController);
+            }
             mToolbarManager = new ToolbarManager(mActivity, mActivity.getBrowserControlsManager(),
                     mActivity.getFullscreenManager(), toolbarContainer,
                     mActivity.getCompositorViewHolder(), urlFocusChangedCallback,

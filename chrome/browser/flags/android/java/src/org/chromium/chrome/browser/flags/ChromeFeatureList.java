@@ -187,7 +187,8 @@ public abstract class ChromeFeatureList {
                 featureName, paramName, defaultValue);
     }
 
-    /** Alphabetical: */
+    /* Alphabetical: */
+    public static final String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR = "AdaptiveButtonInTopToolbar";
     public static final String ALLOW_NEW_INCOGNITO_TAB_INTENTS = "AllowNewIncognitoTabIntents";
     public static final String ALLOW_REMOTE_CONTEXT_FOR_NOTIFICATIONS =
             "AllowRemoteContextForNotifications";
