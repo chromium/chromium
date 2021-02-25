@@ -138,7 +138,8 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
       body->SetInteger("lineNumber", line_number);
     if (column_number)
       body->SetInteger("columnNumber", column_number);
-    QueueReport(url, "default", "feature-policy-violation", std::move(body));
+    QueueReport(url, "default", "permissions-policy-violation",
+                std::move(body));
   }
 
   void QueueDocumentPolicyViolationReport(
