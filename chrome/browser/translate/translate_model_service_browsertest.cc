@@ -147,11 +147,13 @@ class TranslateModelServiceBrowserTest
 };
 
 base::FilePath model_file_path() {
-  base::FilePath model_file_path;
-  EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &model_file_path));
-  // TODO(crbug/1151400): Update this to a path that leads to an actual model.
-  return model_file_path.AppendASCII(
-      "chrome/test/data/translate/english_page.html");
+  base::FilePath source_root_dir;
+  base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
+  return source_root_dir.AppendASCII("components")
+      .AppendASCII("test")
+      .AppendASCII("data")
+      .AppendASCII("translate")
+      .AppendASCII("valid_model.tflite");
 }
 
 IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,

@@ -11,6 +11,15 @@
 
 namespace translate {
 
+// Given a detected language and whether that detection is reliable, returns the
+// ISO 639 language code of |utf8_text|. Returns
+// |translate::kUnknownLanguageCode|
+//  for unreliable, "unknown", and xx-Latn predictions that are currently not
+// supported.
+std::string FilterDetectedLanguage(const std::string& utf8_text,
+                                   const std::string& detected_language,
+                                   bool is_detection_reliable);
+
 // Returns the ISO 639 language code of the specified |utf8_text|, or
 // |translate::kUnknownLanguageCode| if it failed. |is_model_reliable| will be
 // set as true if CLD says the detection is reliable and

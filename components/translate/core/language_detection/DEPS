@@ -1,4 +1,9 @@
 include_rules = [
   # CLD library.
   "+third_party/cld_3",
+  "+third_party/flatbuffers",
+  "+third_party/smhasher",
+  "+third_party/tflite",
+  "+third_party/tflite-support",
+  "+third_party/utf",
 ]
