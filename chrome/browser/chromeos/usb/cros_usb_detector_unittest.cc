@@ -914,7 +914,39 @@ TEST_F(CrosUsbDetectorTest, DeviceAllowedInterfacesMaskSetCorrectly) {
   EXPECT_EQ(0x00000006U, GetSingleAllowedInterfacesMask());
 }
 
-TEST_F(CrosUsbDetectorTest, SwitchAttachedDevice) {
+TEST_F(CrosUsbDetectorTest, SwitchDeviceWithAttachSuccess) {
+  ConnectToDeviceManager();
+  base::RunLoop().RunUntilIdle();
+
+  auto device_1 = base::MakeRefCounted<device::FakeUsbDeviceInfo>(
+      0, 1, kManufacturerName, kProductName_1, "002");
+  device_manager_.AddDevice(device_1);
+  base::RunLoop().RunUntilIdle();
+
+  auto device_info = GetSingleDeviceInfo();
+  EXPECT_FALSE(device_info.shared_vm_name.has_value());
+
+  AttachDeviceToVm("VM1", device_info.guid, /*success=*/false);
+  device_info = GetSingleDeviceInfo();
+  ASSERT_TRUE(device_info.shared_vm_name.has_value());
+  EXPECT_EQ("VM1", *device_info.shared_vm_name);
+
+  // Shared but not attached to VM1 -> attached to VM2
+  AttachDeviceToVm("VM2", device_info.guid);
+  device_info = GetSingleDeviceInfo();
+  ASSERT_TRUE(device_info.shared_vm_name.has_value());
+  EXPECT_EQ("VM2", *device_info.shared_vm_name);
+  EXPECT_FALSE(fake_concierge_client_->detach_usb_device_called());
+
+  // Attached to VM2 -> attached to VM3
+  AttachDeviceToVm("VM3", device_info.guid);
+  device_info = GetSingleDeviceInfo();
+  ASSERT_TRUE(device_info.shared_vm_name.has_value());
+  EXPECT_EQ("VM3", *device_info.shared_vm_name);
+  EXPECT_TRUE(fake_concierge_client_->detach_usb_device_called());
+}
+
+TEST_F(CrosUsbDetectorTest, SwitchDeviceWithAttachFailure) {
   ConnectToDeviceManager();
   base::RunLoop().RunUntilIdle();
 
@@ -930,42 +962,19 @@ TEST_F(CrosUsbDetectorTest, SwitchAttachedDevice) {
   device_info = GetSingleDeviceInfo();
   EXPECT_TRUE(device_info.shared_vm_name.has_value());
   EXPECT_EQ("VM1", *device_info.shared_vm_name);
-  EXPECT_TRUE(GetSingleGuestPort().has_value());
-  EXPECT_FALSE(fake_concierge_client_->detach_usb_device_called());
 
-  // Device is attached to VM1. We need to detach before sharing with VM2.
-  AttachDeviceToVm("VM2", device_info.guid);
+  // Attached to VM1 -> shared but not attached to VM2
+  AttachDeviceToVm("VM2", device_info.guid, /*success=*/false);
   device_info = GetSingleDeviceInfo();
   EXPECT_TRUE(device_info.shared_vm_name.has_value());
   EXPECT_EQ("VM2", *device_info.shared_vm_name);
   EXPECT_TRUE(fake_concierge_client_->detach_usb_device_called());
-}
 
-TEST_F(CrosUsbDetectorTest, SwitchNotAttachedDevice) {
-  ConnectToDeviceManager();
-  base::RunLoop().RunUntilIdle();
-
-  auto device_1 = base::MakeRefCounted<device::FakeUsbDeviceInfo>(
-      0, 1, kManufacturerName, kProductName_1, "002");
-  device_manager_.AddDevice(device_1);
-  base::RunLoop().RunUntilIdle();
-
-  auto device_info = GetSingleDeviceInfo();
-  EXPECT_FALSE(device_info.shared_vm_name.has_value());
-
-  AttachDeviceToVm("VM1", device_info.guid, /*success=*/false);
+  // Shared but not attached to VM2 -> shared but not attached to VM3
+  AttachDeviceToVm("VM3", device_info.guid, /*success=*/false);
   device_info = GetSingleDeviceInfo();
   EXPECT_TRUE(device_info.shared_vm_name.has_value());
-  EXPECT_EQ("VM1", *device_info.shared_vm_name);
-  EXPECT_FALSE(GetSingleGuestPort().has_value());
-
-  // Device is shared with but not attached to VM1, e.g. it hasn't yet been
-  // started. We don't need to detach.
-  AttachDeviceToVm("VM2", device_info.guid);
-  device_info = GetSingleDeviceInfo();
-  EXPECT_TRUE(device_info.shared_vm_name.has_value());
-  EXPECT_EQ("VM2", *device_info.shared_vm_name);
-  EXPECT_FALSE(fake_concierge_client_->detach_usb_device_called());
+  EXPECT_EQ("VM3", *device_info.shared_vm_name);
 }
 
 TEST_F(CrosUsbDetectorTest, DetachFromDifferentVM) {

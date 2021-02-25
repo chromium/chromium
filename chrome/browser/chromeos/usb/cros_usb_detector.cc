@@ -784,12 +784,6 @@ void CrosUsbDetector::OnUnmountFilesystems(
                        weak_ptr_factory_.GetWeakPtr(), vm_name, guid,
                        device.allowed_interfaces_mask, std::move(callback)));
   } else {
-    // Mark the USB device shared so that we know to reattach it on VM
-    // restart. Setting this flag early also allows the UI not to flicker
-    // because of the notification resulting from the default VM detach below.
-    device.shared_vm_name = vm_name;
-    // The guest port will be set on completion.
-
     // The device isn't attached.
     AttachAfterDetach(vm_name, guid, device.allowed_interfaces_mask,
                       std::move(callback),
@@ -816,7 +810,12 @@ void CrosUsbDetector::AttachAfterDetach(
     return;
   }
 
-  const auto& device_info = it->second.info;
+  auto& device = it->second;
+
+  // Mark the USB device shared so that it will be shared when the VM starts
+  // if it isn't started yet. This also ensures the UI will show the device as
+  // shared. The guest_port will be set later.
+  device.shared_vm_name = vm_name;
 
   auto claim_it = devices_claimed_.find(guid);
   if (claim_it != devices_claimed_.end()) {
@@ -824,7 +823,7 @@ void CrosUsbDetector::AttachAfterDetach(
       // We take a dup here which will be closed if DoVmAttach fails.
       base::ScopedFD device_fd(
           claim_it->second.device_file.Duplicate().TakePlatformFile());
-      DoVmAttach(vm_name, device_info.Clone(), std::move(device_fd),
+      DoVmAttach(vm_name, device.info.Clone(), std::move(device_fd),
                  std::move(callback));
     } else {
       LOG(WARNING) << "Device " << guid << " already claimed and awaiting fd.";
@@ -851,7 +850,7 @@ void CrosUsbDetector::AttachAfterDetach(
       guid, allowed_interfaces_mask, mojo::PlatformHandle(std::move(read_end)),
       base::BindOnce(&CrosUsbDetector::OnAttachUsbDeviceOpened,
                      weak_ptr_factory_.GetWeakPtr(), vm_name,
-                     device_info.Clone(), std::move(callback)));
+                     device.info.Clone(), std::move(callback)));
 
   // Close any associated notifications (the user isn't using them). This
   // destroys the CrosUsbNotificationDelegate and vm_name and guid args may be
