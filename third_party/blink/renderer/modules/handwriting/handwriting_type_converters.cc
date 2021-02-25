@@ -79,8 +79,10 @@ TypeConverter<HandwritingFeatureQueryPtr, blink::HandwritingFeatureQuery*>::
     return nullptr;
   }
   auto output = handwriting::mojom::blink::HandwritingFeatureQuery::New();
-  for (const auto& lang : input->languages()) {
-    output->languages.push_back(lang);
+  if (input->hasLanguages()) {
+    for (const auto& lang : input->languages()) {
+      output->languages.push_back(lang);
+    }
   }
   output->alternatives = input->hasAlternatives();
   output->segmentation_result = input->hasSegmentationResult();

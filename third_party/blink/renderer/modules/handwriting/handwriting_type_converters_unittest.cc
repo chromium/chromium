@@ -100,6 +100,22 @@ TEST(HandwritingTypeConvertersTest, IdlHandwritingFeatureQueryToMojo) {
   EXPECT_EQ(mojo_query->segmentation_result, false);
 }
 
+TEST(HandwritingTypeConvertersTest,
+     IdlEmptyLanguageHandwritingFeatureQueryToMojo) {
+  V8TestingScope v8_testing_scope;
+  auto* idl_query = blink::HandwritingFeatureQuery::Create();
+  // Intentionally does not set `languages`.
+  // Intentionally does not set `alternatives`.
+  idl_query->setSegmentationResult(
+      blink::ScriptValue::From(v8_testing_scope.GetScriptState(), "a"));
+
+  auto mojo_query = mojo::ConvertTo<HandwritingFeatureQueryPtr>(idl_query);
+  ASSERT_FALSE(mojo_query.is_null());
+  ASSERT_EQ(mojo_query->languages.size(), 0u);
+  EXPECT_EQ(mojo_query->alternatives, false);
+  EXPECT_EQ(mojo_query->segmentation_result, true);
+}
+
 TEST(HandwritingTypeConvertersTest, MojoHandwritingPointToIdl) {
   auto mojo_point = handwriting::mojom::blink::HandwritingPoint::New();
   mojo_point->location = gfx::PointF(0.3, 0.4);
