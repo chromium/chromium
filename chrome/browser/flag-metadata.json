@@ -5266,12 +5266,12 @@
   {
     "name": "webui-tab-strip",
     "owners": [ "dfried", "collinbaker", "johntlee" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 99
   },
   {
     "name": "webui-tab-strip-tab-drag-integration",
     "owners": [ "dfried", "collinbaker", "johntlee" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 99
   },
   {
     "name": "webxr-incubations",
