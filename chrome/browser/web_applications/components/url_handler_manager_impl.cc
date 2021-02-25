@@ -4,14 +4,17 @@
 
 #include "chrome/browser/web_applications/components/url_handler_manager_impl.h"
 
+#include <utility>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/optional.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/url_handler_prefs.h"
+#include "chrome/browser/web_applications/components/web_app_origin_association_manager.h"
 #include "chrome/common/chrome_switches.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/url_constants.h"
@@ -19,7 +22,9 @@
 namespace web_app {
 
 UrlHandlerManagerImpl::UrlHandlerManagerImpl(Profile* profile)
-    : UrlHandlerManager(profile) {}
+    : UrlHandlerManager(profile),
+      association_manager_(std::make_unique<WebAppOriginAssociationManager>()) {
+}
 
 UrlHandlerManagerImpl::~UrlHandlerManagerImpl() = default;
 
@@ -73,17 +78,39 @@ UrlHandlerManagerImpl::GetUrlHandlerMatches(
   return results;
 }
 
-bool UrlHandlerManagerImpl::RegisterUrlHandlers(const AppId& app_id) {
-  if (!base::FeatureList::IsEnabled(blink::features::kWebAppEnableUrlHandlers))
-    return false;
+void UrlHandlerManagerImpl::RegisterUrlHandlers(
+    const AppId& app_id,
+    base::OnceCallback<void(bool success)> callback) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kWebAppEnableUrlHandlers)) {
+    std::move(callback).Run(false);
+    return;
+  }
 
   auto url_handlers = registrar()->GetAppUrlHandlers(app_id);
-  if (url_handlers.empty())
-    return true;
+  // TODO(crbug/1072058): Only get associations for user-enabled url handlers.
+  if (url_handlers.empty()) {
+    std::move(callback).Run(true);
+    return;
+  }
 
-  UrlHandlerPrefs url_handler_prefs(GetLocalState());
-  url_handler_prefs.AddWebApp(app_id, profile()->GetPath(), url_handlers);
-  return true;
+  association_manager_->GetWebAppOriginAssociations(
+      registrar()->GetAppManifestUrl(app_id), std::move(url_handlers),
+      base::BindOnce(&UrlHandlerManagerImpl::OnDidGetAssociationsAtInstall,
+                     weak_ptr_factory_.GetWeakPtr(), app_id,
+                     std::move(callback)));
+}
+
+void UrlHandlerManagerImpl::OnDidGetAssociationsAtInstall(
+    const AppId& app_id,
+    base::OnceCallback<void(bool success)> callback,
+    apps::UrlHandlers url_handlers) {
+  if (!url_handlers.empty()) {
+    UrlHandlerPrefs url_handler_prefs(GetLocalState());
+    url_handler_prefs.AddWebApp(app_id, profile()->GetPath(),
+                                std::move(url_handlers));
+  }
+  std::move(callback).Run(true);
 }
 
 bool UrlHandlerManagerImpl::UnregisterUrlHandlers(const AppId& app_id) {
@@ -108,6 +135,11 @@ bool UrlHandlerManagerImpl::UpdateUrlHandlers(const AppId& app_id) {
 
 void UrlHandlerManagerImpl::SetLocalStateForTesting(PrefService* local_state) {
   override_pref_service_ = local_state;
+}
+
+void UrlHandlerManagerImpl::SetAssociationManagerForTesting(
+    std::unique_ptr<WebAppOriginAssociationManager> manager) {
+  association_manager_ = std::move(manager);
 }
 
 PrefService* UrlHandlerManagerImpl::GetLocalState() {

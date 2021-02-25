@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_URL_HANDLER_MANAGER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_URL_HANDLER_MANAGER_H_
 
+#include "base/callback.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 
 class Profile;
@@ -28,7 +29,9 @@ class UrlHandlerManager {
   void SetSubsystems(AppRegistrar* const registrar);
 
   // Returns true if registration succeeds, false otherwise.
-  virtual bool RegisterUrlHandlers(const AppId& app_id) = 0;
+  virtual void RegisterUrlHandlers(
+      const AppId& app_id,
+      base::OnceCallback<void(bool success)> callback) = 0;
   // Returns true if unregistration succeeds, false otherwise.
   virtual bool UnregisterUrlHandlers(const AppId& app_id) = 0;
   // Returns true if update succeeds, false otherwise.

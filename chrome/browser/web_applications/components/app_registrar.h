@@ -117,6 +117,8 @@ class AppRegistrar {
   // Returns the "url_handlers" field from the app manifest.
   virtual apps::UrlHandlers GetAppUrlHandlers(const AppId& app_id) const = 0;
 
+  virtual GURL GetAppManifestUrl(const AppId& app_id) const = 0;
+
   virtual base::Time GetAppLastLaunchTime(const AppId& app_id) const = 0;
   virtual base::Time GetAppInstallTime(const AppId& app_id) const = 0;
 

@@ -158,6 +158,11 @@ apps::UrlHandlers TestAppRegistrar::GetAppUrlHandlers(
   return std::vector<apps::UrlHandlerInfo>();
 }
 
+GURL TestAppRegistrar::GetAppManifestUrl(const web_app::AppId& app_id) const {
+  NOTIMPLEMENTED();
+  return GURL::EmptyGURL();
+}
+
 base::Time TestAppRegistrar::GetAppLastLaunchTime(const AppId& app_id) const {
   NOTIMPLEMENTED();
   return base::Time();

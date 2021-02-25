@@ -363,10 +363,7 @@ void OsIntegrationManager::RegisterUrlHandlers(
     return;
   }
 
-  // TODO(crbug.com/1072058): callback should be run after all hooks are
-  // deployed. Refactor UrlHandlerManager to allow this.
-  const bool success = url_handler_manager_->RegisterUrlHandlers(app_id);
-  std::move(callback).Run(success);
+  url_handler_manager_->RegisterUrlHandlers(app_id, std::move(callback));
 }
 
 void OsIntegrationManager::RegisterShortcutsMenu(

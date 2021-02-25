@@ -35,11 +35,12 @@ class WebAppOriginAssociationManager {
       delete;
   WebAppOriginAssociationManager& operator=(
       const WebAppOriginAssociationManager&) = delete;
-  ~WebAppOriginAssociationManager();
+  virtual ~WebAppOriginAssociationManager();
 
-  void GetWebAppOriginAssociations(const GURL& manifest_url,
-                                   apps::UrlHandlers url_handlers,
-                                   OnDidGetWebAppOriginAssociations callback);
+  virtual void GetWebAppOriginAssociations(
+      const GURL& manifest_url,
+      apps::UrlHandlers url_handlers,
+      OnDidGetWebAppOriginAssociations callback);
   void SetFetcherForTest(
       std::unique_ptr<webapps::WebAppOriginAssociationFetcher> fetcher);
 

@@ -7,10 +7,13 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/url_handler_prefs.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/test/fake_web_app_origin_association_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -52,6 +55,19 @@ class UrlHandlerManagerImplTest : public WebAppTest {
     url_handler_manager_ = url_handler_manager.get();
     url_handler_manager->SetSubsystems(&test_registry_controller_->registrar());
     url_handler_manager->SetLocalStateForTesting(&test_pref_service_);
+
+    auto association_manager =
+        std::make_unique<FakeWebAppOriginAssociationManager>();
+    std::map<apps::UrlHandlerInfo, apps::UrlHandlerInfo> data = {
+        {apps::UrlHandlerInfo(origin_1_),
+         apps::UrlHandlerInfo(origin_1_, false, {"/abc"}, {"/foo"})},
+        {apps::UrlHandlerInfo(origin_2_),
+         apps::UrlHandlerInfo(origin_1_, false, {"/abc"}, {"/bar"})},
+    };
+    association_manager->SetData(std::move(data));
+    url_handler_manager->SetAssociationManagerForTesting(
+        std::move(association_manager));
+
     test_os_integration_manager().SetUrlHandlerManager(
         std::move(url_handler_manager));
     test_registry_controller_->Init();
@@ -91,7 +107,14 @@ class UrlHandlerManagerImplTest : public WebAppTest {
     const AppId& app_id = web_app->app_id();
 
     controller().RegisterApp(std::move(web_app));
-    EXPECT_TRUE(url_handler_manager().RegisterUrlHandlers(app_id));
+
+    base::RunLoop run_loop;
+    url_handler_manager().RegisterUrlHandlers(
+        app_id, base::BindLambdaForTesting([&](bool success) {
+          EXPECT_TRUE(success);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
     return app_id;
   }
 
@@ -224,8 +247,14 @@ TEST_F(UrlHandlerManagerImplTest, FeatureFlagDisabled_Register) {
                                              {apps::UrlHandlerInfo(origin_1_)});
   const AppId& app_id = web_app->app_id();
   controller().RegisterApp(std::move(web_app));
+  base::RunLoop run_loop;
   // Expect early return if feature is disabled.
-  EXPECT_FALSE(url_handler_manager().RegisterUrlHandlers(app_id));
+  url_handler_manager().RegisterUrlHandlers(
+      app_id, base::BindLambdaForTesting([&](bool success) {
+        EXPECT_FALSE(success);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 }
 
 TEST_F(UrlHandlerManagerImplTest, FeatureFlagDisabled_Unregister) {
@@ -270,6 +299,15 @@ TEST_F(UrlHandlerManagerImplTest, FeatureFlagDisabled_Update) {
   auto matches =
       UrlHandlerManagerImpl::GetUrlHandlerMatches(pref_service(), cmd);
   ASSERT_EQ(matches.size(), 0u);
+}
+
+TEST_F(UrlHandlerManagerImplTest, GetUrlHandlerMatches_CommandlineNoMatch) {
+  const AppId app_Id = RegisterAppAndUrlHandlers();
+  base::CommandLine cmd = base::CommandLine(base::CommandLine::NO_PROGRAM);
+  cmd.AppendArg("https://origin-1.com/foo");
+  auto matches =
+      UrlHandlerManagerImpl::GetUrlHandlerMatches(pref_service(), cmd);
+  EXPECT_TRUE(matches.empty());
 }
 
 }  // namespace web_app

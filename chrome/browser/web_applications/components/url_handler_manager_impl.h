@@ -5,18 +5,24 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_URL_HANDLER_MANAGER_IMPL_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_URL_HANDLER_MANAGER_IMPL_H_
 
+#include <memory>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/components/url_handler_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
+#include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "url/gurl.h"
 
 class PrefService;
 class Profile;
 
 namespace web_app {
+
+class WebAppOriginAssociationManager;
 
 // |UrlHandlerLaunchParams| contains a profile path, an AppId and the
 // launch URL needed to launch a web app through commandline arguments.
@@ -51,7 +57,9 @@ class UrlHandlerManagerImpl : public UrlHandlerManager {
       const base::CommandLine& command_line);
 
   // Returns false if blink::features::kWebAppEnableUrlHandlers is disabled.
-  bool RegisterUrlHandlers(const AppId& app_id) override;
+  void RegisterUrlHandlers(
+      const AppId& app_id,
+      base::OnceCallback<void(bool success)> callback) override;
 
   bool UnregisterUrlHandlers(const AppId& app_id) override;
 
@@ -61,13 +69,24 @@ class UrlHandlerManagerImpl : public UrlHandlerManager {
 
   void SetLocalStateForTesting(PrefService* local_state);
 
+  void SetAssociationManagerForTesting(
+      std::unique_ptr<WebAppOriginAssociationManager> manager);
+
  private:
+  void OnDidGetAssociationsAtInstall(
+      const AppId& app_id,
+      base::OnceCallback<void(bool success)> callback,
+      apps::UrlHandlers url_handlers);
   // Returns the local state pref service of the browser process.
   // Returns override_pref_service_ instead if not null.
   PrefService* GetLocalState();
 
   // PrefService can be overridden for testing.
   PrefService* override_pref_service_ = nullptr;
+
+  std::unique_ptr<WebAppOriginAssociationManager> association_manager_;
+
+  base::WeakPtrFactory<UrlHandlerManagerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace web_app
