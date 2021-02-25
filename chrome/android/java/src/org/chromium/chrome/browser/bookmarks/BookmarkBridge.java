@@ -186,6 +186,7 @@ public class BookmarkBridge {
         private long mDateAdded;
         private boolean mRead;
 
+        @VisibleForTesting
         public BookmarkItem(BookmarkId id, String title, GURL url, boolean isFolder,
                 BookmarkId parentId, boolean isEditable, boolean isManaged, long dateAdded,
                 boolean read) {

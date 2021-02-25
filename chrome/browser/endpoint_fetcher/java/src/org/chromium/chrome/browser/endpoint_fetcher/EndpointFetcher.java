@@ -40,16 +40,6 @@ public final class EndpointFetcher {
     public static void fetchUsingOAuth(Callback<EndpointResponse> callback, Profile profile,
             String oathConsumerName, String url, String httpsMethod, String contentType,
             String[] scopes, String postData, long timeout) {
-        android.util.Log.w("mdjones", "----------------------------------------");
-        android.util.Log.w("mdjones", "Endpoint fetcher call:");
-        android.util.Log.w("mdjones", "     consumer: " + oathConsumerName);
-        android.util.Log.w("mdjones", "      profile: " + profile);
-        android.util.Log.w("mdjones", "          url: " + url);
-        android.util.Log.w("mdjones", "       method: " + httpsMethod);
-        android.util.Log.w("mdjones", "      content: " + contentType);
-        android.util.Log.w("mdjones", "      timeout: " + timeout);
-        android.util.Log.w("mdjones", "    post data: " + postData);
-
         // EndpointFetcher currently does not support incognito mode
         assert !profile.isOffTheRecord();
         EndpointFetcherJni.get().nativeFetchOAuth(profile, oathConsumerName, url, httpsMethod,

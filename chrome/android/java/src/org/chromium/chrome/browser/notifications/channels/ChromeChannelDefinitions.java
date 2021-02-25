@@ -68,8 +68,7 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
             ChannelId.WEBAPP_ACTIONS, ChannelId.SITES, ChannelId.SHARING, ChannelId.UPDATES,
             ChannelId.COMPLETED_DOWNLOADS, ChannelId.PERMISSION_REQUESTS,
             ChannelId.PERMISSION_REQUESTS_HIGH, ChannelId.ANNOUNCEMENT,
-            ChannelId.TWA_DISCLOSURE_INITIAL, ChannelId.TWA_DISCLOSURE_SUBSEQUENT,
-            ChannelId.SHOPPING})
+            ChannelId.TWA_DISCLOSURE_INITIAL, ChannelId.TWA_DISCLOSURE_SUBSEQUENT})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ChannelId {
         String BROWSER = "browser";
@@ -91,7 +90,6 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
         String TWA_DISCLOSURE_INITIAL = "twa_disclosure_initial";
         String TWA_DISCLOSURE_SUBSEQUENT = "twa_disclosure_subsequent";
         String WEBRTC_CAM_AND_MIC = "webrtc_cam_and_mic";
-        String SHOPPING = "shopping";
     }
 
     @StringDef({ChannelGroupId.GENERAL, ChannelGroupId.SITES})
@@ -216,10 +214,6 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
                     PredefinedChannel.create(ChannelId.TWA_DISCLOSURE_SUBSEQUENT,
                             R.string.twa_running_in_chrome_channel_name_subsequent,
                             NotificationManager.IMPORTANCE_MIN, ChannelGroupId.GENERAL));
-
-            map.put(ChannelId.SHOPPING,
-                    PredefinedChannel.create(ChannelId.SHOPPING, R.string.shopping_channel_name,
-                            NotificationManager.IMPORTANCE_LOW, ChannelGroupId.GENERAL));
 
             MAP = Collections.unmodifiableMap(map);
             STARTUP = Collections.unmodifiableSet(startup);

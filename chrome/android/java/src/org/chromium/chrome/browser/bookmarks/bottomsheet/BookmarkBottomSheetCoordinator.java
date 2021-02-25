@@ -110,14 +110,15 @@ public class BookmarkBottomSheetCoordinator {
         ModelList modelList = new ModelList();
         for (BookmarkId folderId : topLevelFolderIDs) {
             BookmarkItem folderItem = mBookmarkModel.getBookmarkById(folderId);
-            modelList.add(new ListItem(
-                    ItemType.FOLDER_ROW, buildItemModel(folderItem, folderId.getType())));
+            modelList.add(new ListItem(ItemType.FOLDER_ROW, buildItemModel(folderItem)));
         }
         return modelList;
     }
 
     // Build the model for a single item in the bookmark bottom sheet.
-    private PropertyModel buildItemModel(BookmarkItem bookmarkItem, @BookmarkType int type) {
+    private PropertyModel buildItemModel(BookmarkItem bookmarkItem) {
+        @BookmarkType
+        int type = bookmarkItem.getId().getType();
         PropertyModel model =
                 new PropertyModel.Builder(BookmarkBottomSheetItemProperties.ALL_KEYS)
                         .with(BookmarkBottomSheetItemProperties.TITLE, getTitle(bookmarkItem))

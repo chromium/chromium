@@ -4,12 +4,9 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,19 +14,15 @@ import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityManager;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkModelObserver;
-import org.chromium.chrome.browser.bookmarks.shopping.ShoppingCoordinator;
-import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksReader;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -42,7 +35,6 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectableListL
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.SearchDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.favicon.LargeIconBridge;
-import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
 import java.util.Stack;
@@ -76,14 +68,10 @@ public class BookmarkManager
     private String mInitialUrl;
     private boolean mIsDialogUi;
     private boolean mIsDestroyed;
-    private Intent mStartupIntent;
 
     private BookmarkItemsAdapter mAdapter;
     private BookmarkDragStateDelegate mDragStateDelegate;
     private AdapterDataObserver mAdapterDataObserver;
-
-    private BookmarkId mShoppingFolderId;
-    private ShoppingCoordinator mShoppingCoordinator;
 
     private final BookmarkModelObserver mBookmarkModelObserver = new BookmarkModelObserver() {
         @Override
@@ -122,11 +110,6 @@ public class BookmarkManager
             }
         }
     };
-
-    /** Set the intent that started the bookmark activity. */
-    public void setStartupIntent(Intent intent) {
-        mStartupIntent = intent;
-    }
 
     /**
      * Keeps track of whether drag is enabled / active for bookmark lists.
@@ -242,9 +225,6 @@ public class BookmarkManager
         initializeToLoadingState();
         if (!sPreventLoadingForTesting) {
             Runnable modelLoadedRunnable = () -> {
-                BookmarkUtils.findOrCreateShoppingFolder(
-                        (id) -> mShoppingFolderId = id, mBookmarkModel);
-
                 mDragStateDelegate.onBookmarkDelegateInitialized(BookmarkManager.this);
                 mAdapter.onBookmarkDelegateInitialized(BookmarkManager.this);
                 mToolbar.onBookmarkDelegateInitialized(BookmarkManager.this);
@@ -294,10 +274,6 @@ public class BookmarkManager
         mIsDestroyed = true;
         RecordUserAction.record("MobileBookmarkManagerClose");
         mSelectableListLayout.onDestroyed();
-
-        if (mShoppingCoordinator != null) {
-            mShoppingCoordinator.destroy();
-        }
 
         for (BookmarkUIObserver observer : mUIObservers) {
             observer.onDestroy();
@@ -380,15 +356,7 @@ public class BookmarkManager
                 searchState = mStateStack.pop();
             }
 
-            BookmarkUIState state = BookmarkUIState.createStateFromUrl(url, mBookmarkModel);
-            if (state.mFolder.getId() == mShoppingFolderId.getId()) {
-                showShoppingSurface();
-                setState(BookmarkUIState.createFolderState(
-                        mBookmarkModel.getDefaultFolder(), mBookmarkModel));
-                return;
-            } else {
-                setState(state);
-            }
+            setState(BookmarkUIState.createStateFromUrl(url, mBookmarkModel));
 
             if (searchState != null) setState(searchState);
         } else {
@@ -488,55 +456,10 @@ public class BookmarkManager
 
     @Override
     public void openFolder(BookmarkId folder) {
-        if (folder.getId() == mShoppingFolderId.getId()) {
-            showShoppingSurface();
-            return;
-        }
-
         RecordUserAction.record("MobileBookmarkManagerOpenFolder");
         if (mToolbar.isSearching()) mToolbar.hideSearchView();
         setState(BookmarkUIState.createFolderState(folder, mBookmarkModel));
         mRecyclerView.scrollToPosition(0);
-    }
-
-    private void showShoppingSurface() {
-        if (mShoppingCoordinator == null) {
-            mShoppingCoordinator = new ShoppingCoordinator(mContext, this::handleShoppingBack,
-                    this::handleShoppingClose, this::openLinkInCCT, mBookmarkModel,
-                    mShoppingFolderId, mStartupIntent);
-        }
-        mMainView.addView(mShoppingCoordinator.getView());
-        mSelectableListLayout.setVisibility(View.GONE);
-    }
-
-    private void handleShoppingBack() {
-        mSelectableListLayout.setVisibility(View.VISIBLE);
-        mMainView.removeView(mShoppingCoordinator.getView());
-    }
-
-    private void handleShoppingClose() {
-        handleShoppingBack();
-    }
-
-    private void openLinkInCCT(String url) {
-        if (url == null) return;
-
-        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-        builder.setShowTitle(true);
-        builder.setColorScheme(ColorUtils.inNightMode(mContext)
-                ? CustomTabsIntent.COLOR_SCHEME_DARK
-                : CustomTabsIntent.COLOR_SCHEME_LIGHT);
-        CustomTabsIntent customTabsIntent = builder.build();
-        customTabsIntent.intent.setClassName(mContext, CustomTabActivity.class.getName());
-        customTabsIntent.intent.putExtra(
-                CustomTabsIntent.EXTRA_SHARE_STATE, CustomTabsIntent.SHARE_STATE_ON);
-
-        /*// This is gated by flag ChromeFeatureList.CCT_INCOGNITO.
-        if (incognito) {
-            customTabsIntent.intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
-        }*/
-
-        customTabsIntent.launchUrl(mContext, Uri.parse(url));
     }
 
     @Override
