@@ -68,13 +68,12 @@ class HatsNotificationControllerTest : public BrowserWithTestWindowTest {
     // present on device.
     ON_CALL(mock_network_portal_detector_,
             AddAndFireObserver(hats_notification_controller.get()))
-        .WillByDefault(Invoke(
-            [&hats_notification_controller](NetworkPortalDetector::Observer*) {
-              NetworkState network_state("");
-              hats_notification_controller->OnPortalDetectionCompleted(
-                  &network_state,
-                  NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
-            }));
+        .WillByDefault(Invoke([](NetworkPortalDetector::Observer* observer) {
+          NetworkState network_state("");
+          observer->OnPortalDetectionCompleted(
+              &network_state,
+              NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+        }));
 
     return hats_notification_controller;
   }
