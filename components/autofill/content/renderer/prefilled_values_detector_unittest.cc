@@ -12,7 +12,7 @@ namespace autofill {
 // Ensure that all entries in KnownUsernamePlaceholders() are lowercase because
 // the lowercase string of the website is tested against this set.
 TEST(PossiblePrefilledUsernameValue, AllLowerCase) {
-  for (const auto& entry : KnownUsernamePlaceholders())
+  for (auto entry : KnownUsernamePlaceholders())
     EXPECT_EQ(entry, base::ToLowerASCII(entry));
 }
 

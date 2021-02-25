@@ -4,87 +4,88 @@
 
 #include "components/autofill/content/renderer/prefilled_values_detector.h"
 
-#include "base/no_destructor.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/strings/string_util.h"
 
 namespace autofill {
 
-const base::flat_set<std::string, std::less<>>& KnownUsernamePlaceholders() {
-  // Explicitly create a |StringFlatSet| when constructing
-  // kPrefilledUsernameValues to work around GCC bug 84849, which causes the
-  // initializer list not to be properly forwarded to base::flat_set's
-  // constructor.
-  using StringFlatSet = base::flat_set<std::string, std::less<>>;
-  static base::NoDestructor<StringFlatSet> kPrefilledUsernameValues(
-      StringFlatSet({"___.___.___-__",
-                     "+1",
-                     "3~15个字符,中文字符7个以内",
-                     "benutzername",
-                     "client id",
-                     "codice titolare",
-                     "digite seu cpf ou e-mail",
-                     "ds logon username",
-                     "email",
-                     "email address",
-                     "email masih kosong",
-                     "email/手機號碼",
-                     "e-mail/username",
-                     "e-mail address",
-                     "enter username",
-                     "enter user name",
-                     "identifiant",
-                     "kullanıcı adı",
-                     "kunden-id",
-                     "login",
-                     "nick",
-                     "nom d'usuari",
-                     "nom utilisateur",
-                     "rut",
-                     "siret",
-                     "this is usually your email address",
-                     "tu dni",
-                     "uid/用戶名/email",
-                     "uporabnik...",
-                     "user/codice",
-                     "user id",
-                     "user name",
-                     "username",
-                     "username or email",
-                     "username or email:",
-                     "username/email",
-                     "usuario",
-                     "your email address",
-                     "ååååmmddxxxx",
-                     "아이디 or @이하 모두 입력",
-                     "Имя",
-                     "Имя (логин)",
-                     "Логин",
-                     "Логин...",
-                     "Логин (e-mail)",
-                     "שם משתמש",
-                     "כתובת דוא''ל",
-                     "اسم العضو",
-                     "اسم المستخدم",
-                     "الاسم",
-                     "نام کاربری",
-                     "メールアドレス",
-                     "อีเมล",
-                     "用户名",
-                     "用户名/email",
-                     "邮箱/手机",
-                     "帳號",
-                     "請輸入身份證字號",
-                     "请用微博帐号登录",
-                     "请输入手机号或邮箱",
-                     "请输入邮箱或手机号",
-                     "邮箱/手机/展位号"}));
-  return *kPrefilledUsernameValues;
+namespace {
+
+constexpr auto kKnownUsernamePlaceholders =
+    base::MakeFixedFlatSet<base::StringPiece>({
+        "___.___.___-__",
+        "+1",
+        "3~15个字符,中文字符7个以内",
+        "benutzername",
+        "client id",
+        "codice titolare",
+        "digite seu cpf ou e-mail",
+        "ds logon username",
+        "email",
+        "email address",
+        "email masih kosong",
+        "email/手機號碼",
+        "e-mail/username",
+        "e-mail address",
+        "enter username",
+        "enter user name",
+        "identifiant",
+        "kullanıcı adı",
+        "kunden-id",
+        "login",
+        "nick",
+        "nom d'usuari",
+        "nom utilisateur",
+        "rut",
+        "siret",
+        "this is usually your email address",
+        "tu dni",
+        "uid/用戶名/email",
+        "uporabnik...",
+        "user/codice",
+        "user id",
+        "user name",
+        "username",
+        "username or email",
+        "username or email:",
+        "username/email",
+        "usuario",
+        "your email address",
+        "ååååmmddxxxx",
+        "아이디 or @이하 모두 입력",
+        "Имя",
+        "Имя (логин)",
+        "Логин",
+        "Логин...",
+        "Логин (e-mail)",
+        "שם משתמש",
+        "כתובת דוא''ל",
+        "اسم العضو",
+        "اسم المستخدم",
+        "الاسم",
+        "نام کاربری",
+        "メールアドレス",
+        "อีเมล",
+        "用户名",
+        "用户名/email",
+        "邮箱/手机",
+        "帳號",
+        "請輸入身份證字號",
+        "请用微博帐号登录",
+        "请输入手机号或邮箱",
+        "请输入邮箱或手机号",
+        "邮箱/手机/展位号",
+    });
+
+}  // namespace
+
+base::span<const base::StringPiece> KnownUsernamePlaceholders() {
+  return base::make_span(kKnownUsernamePlaceholders.begin(),
+                         kKnownUsernamePlaceholders.end());
 }
 
 bool PossiblePrefilledUsernameValue(const std::string& username_value,
                                     const std::string& possible_email_domain) {
-  const auto& placeholders = KnownUsernamePlaceholders();
-
   std::string normalized_username_value = base::ToLowerASCII(
       base::TrimWhitespaceASCII(username_value, base::TRIM_ALL));
 
@@ -101,7 +102,7 @@ bool PossiblePrefilledUsernameValue(const std::string& username_value,
     return true;
   }
 
-  return placeholders.find(normalized_username_value) != placeholders.end();
+  return kKnownUsernamePlaceholders.contains(normalized_username_value);
 }
 
 }  // namespace autofill

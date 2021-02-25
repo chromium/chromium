@@ -7,14 +7,15 @@
 
 #include <string>
 
-#include "base/containers/flat_set.h"
+#include "base/containers/span.h"
+#include "base/strings/string_piece.h"
 
 namespace autofill {
 
-// Returns a set of known username placeholders, all guaranteed to be lower
+// Returns a list of known username placeholders, all guaranteed to be lower
 // case.
 // This is only exposed for testing.
-const base::flat_set<std::string, std::less<>>& KnownUsernamePlaceholders();
+base::span<const base::StringPiece> KnownUsernamePlaceholders();
 
 // Checks if the prefilled value of the username element is one of the known
 // values possibly used as placeholders. The list of possible placeholder
