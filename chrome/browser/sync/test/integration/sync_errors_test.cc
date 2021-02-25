@@ -4,33 +4,38 @@
 
 #include "base/macros.h"
 #include "base/test/bind.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/preferences_helper.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
-#include "chrome/browser/sync/test/integration/session_hierarchy_match_checker.h"
-#include "chrome/browser/sync/test/integration/sessions_helper.h"
 #include "chrome/browser/sync/test/integration/sync_disabled_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
+#include "chrome/browser/sync/test/integration/user_events_helper.h"
+#include "chrome/browser/sync/user_event_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/protocol/sync_protocol_error.h"
+#include "components/sync/protocol/user_event_specifics.pb.h"
+#include "components/sync_user_events/user_event_service.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 using bookmarks::BookmarkNode;
 using bookmarks_helper::AddFolder;
 using bookmarks_helper::SetTitle;
-using sessions_helper::OpenTab;
 using syncer::ProfileSyncService;
+using user_events_helper::CreateTestEvent;
 
 namespace {
+
+constexpr int64_t kUserEventTimeUsec = 123456;
 
 class SyncEngineStoppedChecker : public SingleClientStatusChangeChecker {
  public:
@@ -61,32 +66,25 @@ class TypeDisabledChecker : public SingleClientStatusChangeChecker {
   syncer::ModelType type_;
 };
 
-bool HasSessionURLInEntity(const sync_pb::SyncEntity& entity, const GURL& url) {
-  for (const sync_pb::TabNavigation& navigation :
-       entity.specifics().session().tab().navigation()) {
-    if (navigation.virtual_url() == url.spec()) {
-      return true;
-    }
-  }
-  return false;
-}
-
-class LastSessionsCommitChecker : public SingleClientStatusChangeChecker {
+// Wait for a commit message containing the expected user event (even if the
+// commit request fails).
+class UserEventCommitChecker : public SingleClientStatusChangeChecker {
  public:
-  LastSessionsCommitChecker(ProfileSyncService* service,
-                            fake_server::FakeServer* fake_server,
-                            const GURL& expected_url)
+  UserEventCommitChecker(ProfileSyncService* service,
+                         fake_server::FakeServer* fake_server,
+                         int64_t expected_event_time_usec)
       : SingleClientStatusChangeChecker(service),
         fake_server_(fake_server),
-        expected_url_(expected_url) {}
+        expected_event_time_usec_(expected_event_time_usec) {}
 
   bool IsExitConditionSatisfied(std::ostream* os) override {
-    *os << "Waiting for sessions url " << expected_url_ << " to be committed";
+    *os << "Waiting for user event to be committed";
 
     sync_pb::ClientToServerMessage message;
     fake_server_->GetLastCommitMessage(&message);
     for (const sync_pb::SyncEntity& entity : message.commit().entries()) {
-      if (HasSessionURLInEntity(entity, expected_url_)) {
+      if (entity.specifics().user_event().event_time_usec() ==
+          expected_event_time_usec_) {
         return true;
       }
     }
@@ -95,7 +93,7 @@ class LastSessionsCommitChecker : public SingleClientStatusChangeChecker {
 
  private:
   fake_server::FakeServer* const fake_server_ = nullptr;
-  const GURL expected_url_;
+  const int64_t expected_event_time_usec_;
 };
 
 class SyncErrorTest : public SyncTest {
@@ -321,27 +319,46 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, DisableDatatypeWhileRunning) {
 // Tests that the unsynced entity will be eventually committed even after failed
 // commit request.
 IN_PROC_BROWSER_TEST_F(SyncErrorTest,
-                       ShouldResendUncommittedEntitiesOnCommitFailure) {
-  const GURL kURL{"data:text/html,<html><title>Test</title></html>"};
-
+                       PRE_ShouldResendUncommittedEntitiesAfterBrowserRestart) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   GetFakeServer()->SetHttpError(net::HTTP_INTERNAL_SERVER_ERROR);
-  ASSERT_TRUE(OpenTab(0, kURL));
+  syncer::UserEventService* event_service =
+      browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
+  const sync_pb::UserEventSpecifics specifics =
+      CreateTestEvent(base::Time::FromDeltaSinceWindowsEpoch(
+          base::TimeDelta::FromMicroseconds(kUserEventTimeUsec)));
+  event_service->RecordUserEvent(specifics);
 
-  ASSERT_TRUE(
-      LastSessionsCommitChecker(GetSyncService(0), GetFakeServer(), kURL)
-          .Wait());
+  // Wait for a commit message containing the user event. However the commit
+  // request will fail.
+  ASSERT_TRUE(UserEventCommitChecker(GetSyncService(0), GetFakeServer(),
+                                     kUserEventTimeUsec)
+                  .Wait());
 
-  // Check that the server doesn't have this session yet.
+  // Check that the server doesn't have this event yet.
   for (const sync_pb::SyncEntity& entity :
-       GetFakeServer()->GetSyncEntitiesByModelType(syncer::SESSIONS)) {
-    ASSERT_FALSE(HasSessionURLInEntity(entity, kURL));
+       GetFakeServer()->GetSyncEntitiesByModelType(syncer::USER_EVENTS)) {
+    ASSERT_NE(kUserEventTimeUsec,
+              entity.specifics().user_event().event_time_usec());
   }
+}
 
-  GetFakeServer()->ClearHttpError();
-  EXPECT_TRUE(SessionHierarchyMatchChecker({{kURL.spec()}}, GetSyncService(0),
-                                           GetFakeServer())
+IN_PROC_BROWSER_TEST_F(SyncErrorTest,
+                       ShouldResendUncommittedEntitiesAfterBrowserRestart) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // signin::SetRefreshTokenForPrimaryAccount() is needed on ChromeOS in order
+  // to get a non-empty refresh token on startup.
+  GetClient(0)->SignInPrimaryAccount();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
+
+  const sync_pb::UserEventSpecifics expected_specifics =
+      CreateTestEvent(base::Time::FromDeltaSinceWindowsEpoch(
+          base::TimeDelta::FromMicroseconds(kUserEventTimeUsec)));
+  EXPECT_TRUE(UserEventEqualityChecker(GetSyncService(0), GetFakeServer(),
+                                       {{expected_specifics}})
                   .Wait());
 }
 

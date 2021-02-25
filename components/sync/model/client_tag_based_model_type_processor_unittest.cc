@@ -199,13 +199,20 @@ class TestModelTypeSyncBridge : public FakeModelTypeSyncBridge {
     }
   }
 
-  void OnCommitAttemptFailed(syncer::SyncCommitError commit_error) override {
+  CommitAttemptFailedBehavior OnCommitAttemptFailed(
+      syncer::SyncCommitError commit_error) override {
     commit_failures_count_++;
+    return commit_attempt_failed_behaviour_;
   }
 
   void SetOnCommitAttemptErrorsCallback(
       base::OnceCallback<void(const FailedCommitResponseDataList&)> callback) {
     on_commit_attempt_errors_callback_ = std::move(callback);
+  }
+
+  void EnableRetriesOnCommitFailure() {
+    commit_attempt_failed_behaviour_ =
+        CommitAttemptFailedBehavior::kShouldRetryOnNextCycle;
   }
 
  private:
@@ -231,6 +238,9 @@ class TestModelTypeSyncBridge : public FakeModelTypeSyncBridge {
   // Whether to return GetData results synchronously. Overrides the default
   // callback capture behavior if set to true.
   bool synchronous_data_callback_ = false;
+
+  CommitAttemptFailedBehavior commit_attempt_failed_behaviour_ =
+      CommitAttemptFailedBehavior::kDontRetryOnNextCycle;
 
   base::OnceCallback<void(const FailedCommitResponseDataList&)>
       on_commit_attempt_errors_callback_;
@@ -1351,11 +1361,8 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
 // there is an HTTP error.
 TEST_F(ClientTagBasedModelTypeProcessorTest,
        ShouldRetryCommitAfterFullCommitFailure) {
-  base::test::ScopedFeatureList override_features_;
-  override_features_.InitAndEnableFeature(
-      switches::kSyncResetEntitiesStateOnCommitFailure);
-
   InitializeToReadyState();
+  bridge()->EnableRetriesOnCommitFailure();
   bridge()->WriteItem(kKey1, kValue1);
   worker()->VerifyPendingCommits({{GetHash(kKey1)}});
 
@@ -1371,7 +1378,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   type_processor()->GetLocalChanges(
       INT_MAX, base::BindOnce(&CaptureCommitRequest, &commit_request));
   OnCommitDataLoaded();
-  EXPECT_EQ(1U, commit_request.size());
+  ASSERT_EQ(1U, commit_request.size());
   EXPECT_EQ(GetHash(kKey1), commit_request[0]->entity->client_tag_hash);
 }
 

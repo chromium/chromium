@@ -33,10 +33,4 @@ const base::FeatureParam<int> kSyncSharingMessageNudgeDelayMilliseconds{
     &kSyncCustomSharingMessageNudgeDelay,
     "SyncSharingMessageNudgeDelayMilliseconds", 50};
 
-// Enable resend of entities after failed commit. This feature toggle enables
-// state resetting of all entities in transient state.
-// TODO(crbug.com/1137817): Remove the feature toggle when it hits Stable.
-const base::Feature kSyncResetEntitiesStateOnCommitFailure = {
-    "SyncResetEntitiesStateOnCommitFailure", base::FEATURE_ENABLED_BY_DEFAULT};
-
 }  // namespace switches

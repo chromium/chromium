@@ -23,6 +23,7 @@
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/model_type_processor_proxy.h"
 #include "components/sync/model/client_tag_based_remote_update_handler.h"
+#include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/processor_entity.h"
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/protocol/proto_value_conversions.h"
@@ -693,14 +694,19 @@ void ClientTagBasedModelTypeProcessor::OnCommitFailed(
     SyncCommitError commit_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (base::FeatureList::IsEnabled(
-          switches::kSyncResetEntitiesStateOnCommitFailure)) {
-    // Entities weren't committed. Reset their
-    // |commit_requested_sequence_number| to commit them again on next sync
-    // cycle.
-    entity_tracker_->ClearTransientSyncState();
+  switch (bridge_->OnCommitAttemptFailed(commit_error)) {
+    case ModelTypeSyncBridge::CommitAttemptFailedBehavior::
+        kShouldRetryOnNextCycle:
+      // Entities weren't committed. Reset their
+      // |commit_requested_sequence_number| to commit them again on next sync
+      // cycle.
+      entity_tracker_->ClearTransientSyncState();
+      break;
+    case ModelTypeSyncBridge::CommitAttemptFailedBehavior::
+        kDontRetryOnNextCycle:
+      // Do nothing and leave all entities in a transient state.
+      break;
   }
-  bridge_->OnCommitAttemptFailed(commit_error);
 }
 
 void ClientTagBasedModelTypeProcessor::OnUpdateReceived(

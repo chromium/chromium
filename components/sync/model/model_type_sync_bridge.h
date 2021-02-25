@@ -37,7 +37,21 @@ class ModelTypeSyncBridge {
   using DataCallback = base::OnceCallback<void(std::unique_ptr<DataBatch>)>;
   using StorageKeyList = std::vector<std::string>;
 
-  ModelTypeSyncBridge(
+  // When commit fails, all entities from the commit request are in transient
+  // state. This state is normally (by default) kept until the next successful
+  // commit of the data type or until the change processor is disconnected.
+  // However, the bridge can return the preferred option to reset state of all
+  // entities from the last failed commit.
+  enum class CommitAttemptFailedBehavior {
+    // Keep transient state of entities from the last commit request.
+    kDontRetryOnNextCycle,
+
+    // The processor should reset the transient state and include all entities
+    // into the next sync cycle.
+    kShouldRetryOnNextCycle,
+  };
+
+  explicit ModelTypeSyncBridge(
       std::unique_ptr<ModelTypeChangeProcessor> change_processor);
 
   virtual ~ModelTypeSyncBridge();
@@ -173,10 +187,9 @@ class ModelTypeSyncBridge {
   virtual void OnCommitAttemptErrors(
       const syncer::FailedCommitResponseDataList& error_response_list);
 
-  // Called only when a commit failed due to server error. The commit will
-  // automatically be retried, so most implementations don't need to handle
-  // this.
-  virtual void OnCommitAttemptFailed(SyncCommitError commit_error);
+  // Called only when a commit failed due to server error.
+  virtual CommitAttemptFailedBehavior OnCommitAttemptFailed(
+      SyncCommitError commit_error);
 
   // Returns an estimate of memory usage attributed to sync (that is, excludes
   // the actual model). Because the resulting UMA metrics are often used to
