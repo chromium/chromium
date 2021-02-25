@@ -3998,6 +3998,11 @@
     "expiry_milestone": 91
   },
   {
+    "name": "overscroll-history-navigation",
+    "owners": [ "mohsen", "jinsukkim" ],
+    "expiry_milestone": 88
+  },
+  {
     "name": "page-info-discoverability",
     "owners": [ "eokoyomon", "dullweber" ],
     "expiry_milestone": 93
