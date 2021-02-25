@@ -43,7 +43,8 @@ class StyleDifference {
         visual_rect_update_(false),
         property_specific_differences_(0),
         scroll_anchor_disabling_property_changed_(false),
-        compositing_reasons_changed_(false) {}
+        compositing_reasons_changed_(false),
+        compositable_paint_effect_changed_(false) {}
 
   void Merge(StyleDifference other) {
     needs_paint_invalidation_ |= other.needs_paint_invalidation_;
@@ -55,13 +56,15 @@ class StyleDifference {
     scroll_anchor_disabling_property_changed_ |=
         other.scroll_anchor_disabling_property_changed_;
     compositing_reasons_changed_ |= other.compositing_reasons_changed_;
+    compositable_paint_effect_changed_ |=
+        other.compositable_paint_effect_changed_;
   }
 
   bool HasDifference() const {
     return needs_paint_invalidation_ || layout_type_ || needs_reshape_ ||
            property_specific_differences_ || recompute_visual_overflow_ ||
            visual_rect_update_ || scroll_anchor_disabling_property_changed_ ||
-           compositing_reasons_changed_;
+           compositing_reasons_changed_ || compositable_paint_effect_changed_;
   }
 
   bool HasAtMostPropertySpecificDifferences(
@@ -167,6 +170,12 @@ class StyleDifference {
     return compositing_reasons_changed_;
   }
   void SetCompositingReasonsChanged() { compositing_reasons_changed_ = true; }
+  bool CompositablePaintEffectChanged() const {
+    return compositable_paint_effect_changed_;
+  }
+  void SetCompositablePaintEffectChanged() {
+    compositable_paint_effect_changed_ = true;
+  }
 
  private:
   static constexpr int kPropertyDifferenceCount = 9;
@@ -184,6 +193,9 @@ class StyleDifference {
   unsigned property_specific_differences_ : kPropertyDifferenceCount;
   unsigned scroll_anchor_disabling_property_changed_ : 1;
   unsigned compositing_reasons_changed_ : 1;
+  // Designed for the effects such as background-color, whose animation can be
+  // composited using paint worklet infra.
+  unsigned compositable_paint_effect_changed_ : 1;
 };
 
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const StyleDifference&);

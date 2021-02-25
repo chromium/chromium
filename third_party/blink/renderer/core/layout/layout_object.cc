@@ -2455,6 +2455,10 @@ void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
        diff.CompositingReasonsChanged())) {
     SetNeedsPaintPropertyUpdate();
   }
+
+  if (!IsText() && diff.CompositablePaintEffectChanged()) {
+    SetShouldDoFullPaintInvalidationWithoutGeometryChange();
+  }
 }
 
 void LayoutObject::UpdateImageObservers(const ComputedStyle* old_style,
