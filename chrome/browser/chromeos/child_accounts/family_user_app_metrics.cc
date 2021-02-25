@@ -13,6 +13,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/user_manager/user_manager.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
@@ -23,7 +24,7 @@ namespace chromeos {
 
 namespace {
 // Recently launched apps this many days ago in the past will be recorded.
-constexpr base::TimeDelta k28Days = base::TimeDelta::FromDays(28);
+constexpr base::TimeDelta kOneDay = base::TimeDelta::FromDays(1);
 
 // UMA metrics for a snapshot count of installed and enabled extensions for a
 // given family user.
@@ -87,11 +88,14 @@ FamilyUserAppMetrics::FamilyUserAppMetrics(Profile* profile)
     : extension_registry_(extensions::ExtensionRegistry::Get(profile)),
       app_registry_(&apps::AppServiceProxyFactory::GetForProfile(profile)
                          ->AppRegistryCache()),
+      instance_registry_(&apps::AppServiceProxyFactory::GetForProfile(profile)
+                              ->InstanceRegistry()),
       first_report_on_current_device_(
           user_manager::UserManager::Get()->IsCurrentUserNew()) {
   DCHECK(extension_registry_);
   DCHECK(app_registry_);
   Observe(app_registry_);
+  DCHECK(instance_registry_);
 }
 
 FamilyUserAppMetrics::~FamilyUserAppMetrics() = default;
@@ -184,19 +188,25 @@ void FamilyUserAppMetrics::RecordRecentlyUsedAppsCount(
   base::Time now = base::Time::Now();
   // The below will execute synchronously.
   app_registry_->ForEachApp(
-      [app_type, now, &app_count](const apps::AppUpdate& update) {
+      [app_type, now, this, &app_count](const apps::AppUpdate& update) {
         if (update.AppType() != app_type)
           return;
         // Only count apps that have been used recently.
-        if (now - update.LastLaunchTime() > k28Days)
-          return;
-        app_count++;
+        if (now - update.LastLaunchTime() <= kOneDay ||
+            IsAppWindowOpen(update.AppId())) {
+          app_count++;
+        }
       });
   // If a family user has more than a thousand apps installed, then that count
   // is going into an overflow bucket. We don't expect this scenario to happen
   // often.
   const std::string histogram_name = GetAppsCountHistogramName(app_type);
   base::UmaHistogramCounts1000(histogram_name, app_count);
+}
+
+bool FamilyUserAppMetrics::IsAppWindowOpen(const std::string& app_id) {
+  // An app is active if it has an open window.
+  return !instance_registry_->GetWindows(app_id).empty();
 }
 
 }  // namespace chromeos

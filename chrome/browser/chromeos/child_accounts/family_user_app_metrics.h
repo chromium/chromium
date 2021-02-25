@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_CHILD_ACCOUNTS_FAMILY_USER_APP_METRICS_H_
 
 #include <set>
+#include <string>
 
 #include "chrome/browser/chromeos/child_accounts/family_user_metrics_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -16,6 +17,10 @@ class Profile;
 namespace extensions {
 class ExtensionRegistry;
 }  // namespace extensions
+
+namespace apps {
+class InstanceRegistry;
+}  // namespace apps
 
 namespace chromeos {
 
@@ -64,8 +69,12 @@ class FamilyUserAppMetrics : public FamilyUserMetricsService::Observer,
   // recently used.
   void RecordRecentlyUsedAppsCount(apps::mojom::AppType app_type);
 
+  // Returns true if the app is currently open.
+  bool IsAppWindowOpen(const std::string& app_id);
+
   const extensions::ExtensionRegistry* const extension_registry_;
   apps::AppRegistryCache* const app_registry_;
+  apps::InstanceRegistry* const instance_registry_;
 
   bool should_record_metrics_on_new_day_ = false;
   bool first_report_on_current_device_ = false;

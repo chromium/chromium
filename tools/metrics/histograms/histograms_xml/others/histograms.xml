@@ -5594,7 +5594,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>cros-families-eng@google.com</owner>
   <summary>
     Around once per day, records the number of recently used {AppType} apps in
-    the past 28 days.
+    the past day.
   </summary>
   <token key="AppType">
     <variant name="Arc"/>

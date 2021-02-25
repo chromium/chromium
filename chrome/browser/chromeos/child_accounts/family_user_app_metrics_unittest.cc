@@ -18,12 +18,16 @@
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/instance.h"
+#include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/window.h"
+#include "ui/compositor/layer_type.h"
 
 namespace chromeos {
 
@@ -145,9 +149,10 @@ class FamilyUserAppMetricsTest
     deltas.push_back(MakeApp(/*app_id=*/"u", /*app_name=*/"unknown",
                              /*last_launch_time=*/base::Time::Now(),
                              apps::mojom::AppType::kUnknown));
-    deltas.push_back(MakeApp(/*app_id=*/"a", /*app_name=*/"arc",
-                             /*last_launch_time=*/base::Time::Now(),
-                             apps::mojom::AppType::kArc));
+    deltas.push_back(
+        MakeApp(/*app_id=*/"a", /*app_name=*/"arc",
+                /*last_launch_time=*/base::Time::Now() - 28 * kOneDay,
+                apps::mojom::AppType::kArc));
     deltas.push_back(MakeApp(/*app_id=*/"bu", /*app_name=*/"builtin",
                              /*last_launch_time=*/base::Time::Now(),
                              apps::mojom::AppType::kBuiltIn));
@@ -162,25 +167,35 @@ class FamilyUserAppMetricsTest
                              apps::mojom::AppType::kWeb));
     deltas.push_back(MakeApp(
         /*app_id=*/"m", /*app_name=*/"macos",
-        /*last_launch_time=*/base::Time::Now() - 28 * kOneDay,
+        /*last_launch_time=*/base::Time::Now() - kOneDay,
         apps::mojom::AppType::kMacOs));
     deltas.push_back(MakeApp(
         /*app_id=*/"p", /*app_name=*/"pluginvm",
-        /*last_launch_time=*/base::Time::Now() - 28 * kOneDay,
+        /*last_launch_time=*/base::Time::Now() - kOneDay,
         apps::mojom::AppType::kPluginVm));
     deltas.push_back(MakeApp(
         /*app_id=*/"l", /*app_name=*/"lacros",
-        /*last_launch_time=*/base::Time::Now() - 28 * kOneDay,
+        /*last_launch_time=*/base::Time::Now() - kOneDay,
         apps::mojom::AppType::kLacros));
     deltas.push_back(MakeApp(
         /*app_id=*/"r", /*app_name=*/"remote",
-        /*last_launch_time=*/base::Time::Now() - 28 * kOneDay,
+        /*last_launch_time=*/base::Time::Now() - kOneDay,
         apps::mojom::AppType::kRemote));
     deltas.push_back(MakeApp(/*app_id=*/"bo", /*app_name=*/"borealis",
                              /*last_launch_time=*/base::Time::Now(),
                              apps::mojom::AppType::kBorealis));
     cache.OnApps(std::move(deltas), apps::mojom::AppType::kUnknown,
                  false /* should_notify_initialized */);
+
+    apps::InstanceRegistry::Instances instances;
+    apps::InstanceRegistry& instance_registry =
+        apps::AppServiceProxyFactory::GetForProfile(profile())
+            ->InstanceRegistry();
+    window_ = std::make_unique<aura::Window>(nullptr);
+    window_->Init(ui::LAYER_NOT_DRAWN);
+    instances.push_back(
+        std::make_unique<apps::Instance>(/*app_id=*/"a", window_.get()));
+    instance_registry.OnInstances(instances);
   }
 
   SupervisedUserService* supervised_user_service() {
@@ -190,6 +205,7 @@ class FamilyUserAppMetricsTest
   bool IsFamilyLink() const { return GetParam(); }
 
   std::unique_ptr<FamilyUserAppMetricsDerivedForTest> family_user_app_metrics_;
+  std::unique_ptr<aura::Window> window_;
 };
 
 // Tests the UMA metrics that count the number of installed and enabled
