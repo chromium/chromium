@@ -31,6 +31,11 @@ from common import SDK_ROOT, DIR_SOURCE_ROOT
 PackageSizes = collections.namedtuple('PackageSizes',
                                       ['compressed', 'uncompressed'])
 
+# Structure representing a Fuchsia package blob and its compressed and
+# uncompressed sizes.
+Blob = collections.namedtuple('Blob',
+                              ['name', 'hash', 'compressed', 'uncompressed'])
+
 
 def CreateSizesExternalDiagnostic(sizes_guid):
   """Creates a histogram external sizes diagnostic."""
@@ -281,7 +286,7 @@ def FarBaseName(name):
   return name
 
 
-def GetBlobSizes(far_file, build_out_dir, extract_dir):
+def GetBlobs(far_file, build_out_dir, extract_dir):
   """Calculates compressed and uncompressed blob sizes for specified FAR file.
   Does not count blobs from SDK libraries."""
 
@@ -306,18 +311,18 @@ def GetBlobSizes(far_file, build_out_dir, extract_dir):
   excluded_files = GetSdkModulesForExclusion() | set(['icudtl.dat'])
 
   # Sum compresses and uncompressed blob sizes, except for SDK blobs.
-  blob_sizes = {}
-  for blob_name in blob_name_hashes:
+  blobs = {}
+  for blob_name, blob_hash in blob_name_hashes.items():
     if os.path.basename(blob_name) not in excluded_files:
-      blob_path = os.path.join(far_extract_dir, blob_name_hashes[blob_name])
-      compressed_size = GetCompressedSize(blob_path)
-      uncompressed_size = os.path.getsize(blob_path)
-      blob_sizes[blob_name] = PackageSizes(compressed_size, uncompressed_size)
+      extracted_blob_path = os.path.join(far_extract_dir, blob_hash)
+      compressed = GetCompressedSize(extracted_blob_path)
+      uncompressed = os.path.getsize(extracted_blob_path)
+      blobs[blob_name] = Blob(blob_name, blob_hash, compressed, uncompressed)
 
-  return blob_sizes
+  return blobs
 
 
-def GetPackageSizes(far_files, build_out_dir, extract_dir, print_sizes):
+def GetPackageSizes(far_files, build_out_dir, extract_dir):
   """Calculates compressed and uncompressed package sizes from blob sizes.
   Does not count blobs from SDK libraries."""
 
@@ -325,39 +330,42 @@ def GetPackageSizes(far_files, build_out_dir, extract_dir, print_sizes):
   # non Chrome-Fuchsia packages.
 
   # Get sizes for blobs contained in packages.
-  package_blob_sizes = {}
+  package_blobs = {}
   for far_file in far_files:
     package_name = FarBaseName(far_file)
-    package_blob_sizes[package_name] = GetBlobSizes(far_file, build_out_dir,
-                                                    extract_dir)
+    package_blobs[package_name] = GetBlobs(far_file, build_out_dir, extract_dir)
 
-  # Optionally print package blob sizes (does not count sharing).
-  if print_sizes:
-    for package_name in sorted(package_blob_sizes.keys()):
-      print('Package: %s' % package_name)
-      for blob_name in sorted(package_blob_sizes[package_name].keys()):
-        size = package_blob_sizes[package_name][blob_name]
-        print('blob: %s %d %d' %
-              (blob_name, size.compressed, size.uncompressed))
+  # Print package blob sizes (does not count sharing).
+  for package_name in sorted(package_blobs.keys()):
+    print('Package blob sizes: %s' % package_name)
+    print('%-64s %12s %12s %s' %
+          ('blob hash', 'compressed', 'uncompressed', 'path'))
+    print('%s %s %s %s' % (64 * '-', 12 * '-', 12 * '-', 20 * '-'))
+    for blob_name in sorted(package_blobs[package_name].keys()):
+      blob_hash = package_blobs[package_name][blob_name].hash
+      compressed = package_blobs[package_name][blob_name].compressed
+      uncompressed = package_blobs[package_name][blob_name].uncompressed
+      print('%64s %12d %12d %s' %
+            (blob_hash, compressed, uncompressed, blob_name))
 
   # Count number of packages sharing blobs (a count of 1 is not shared).
   blob_counts = collections.defaultdict(int)
-  for package_name in package_blob_sizes:
-    for blob_name in package_blob_sizes[package_name]:
+  for package_name in package_blobs:
+    for blob_name in package_blobs[package_name]:
       blob_counts[blob_name] += 1
 
   # Package sizes are the sum of blob sizes divided by their share counts.
   package_sizes = {}
-  for package_name in package_blob_sizes:
-    compressed_size = 0
-    uncompressed_size = 0
-    for blob_name in package_blob_sizes[package_name]:
+  for package_name in package_blobs:
+    compressed_total = 0
+    uncompressed_total = 0
+    for blob_name in package_blobs[package_name]:
       count = blob_counts[blob_name]
-      size = package_blob_sizes[package_name][blob_name]
-      compressed_size += size.compressed / count
-      uncompressed_size += size.uncompressed / count
-    package_sizes[package_name] = PackageSizes(compressed_size,
-                                               uncompressed_size)
+      blob = package_blobs[package_name][blob_name]
+      compressed_total += blob.compressed / count
+      uncompressed_total += blob.uncompressed / count
+    package_sizes[package_name] = PackageSizes(compressed_total,
+                                               uncompressed_total)
 
   return package_sizes
 
@@ -371,7 +379,7 @@ def GetBinarySizes(args, sizes_config):
   # Calculate compressed and uncompressed package sizes.
   extract_dir = args.extract_dir if args.extract_dir else tempfile.mkdtemp()
   package_sizes = GetPackageSizes(sizes_config['far_files'], args.build_out_dir,
-                                  extract_dir, args.verbose)
+                                  extract_dir)
   if not args.extract_dir:
     shutil.rmtree(extract_dir)
 
@@ -383,7 +391,7 @@ def GetBinarySizes(args, sizes_config):
         compressed, uncompressed)
 
   for name, size in package_sizes.items():
-    print('%s: compressed %d, uncompressed %d' %
+    print('%s: compressed size %d, uncompressed size %d' %
           (name, size.compressed, size.uncompressed))
 
   return package_sizes
