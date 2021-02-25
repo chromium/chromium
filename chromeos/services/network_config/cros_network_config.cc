@@ -479,6 +479,7 @@ std::vector<mojom::SIMInfoPtr> CellularSIMInfosToMojo(
     sim_info_mojo->slot_id = sim_slot.slot_id;
     sim_info_mojo->iccid = sim_slot.iccid;
     sim_info_mojo->eid = sim_slot.eid;
+    sim_info_mojo->is_primary = sim_slot.primary;
     sim_info_mojos.push_back(std::move(sim_info_mojo));
   }
   return sim_info_mojos;

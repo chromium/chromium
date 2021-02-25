@@ -135,6 +135,8 @@ struct SIMInfo {
   // ICCID of the eSIM profile or the physical SIM
   // card active on this slot when available from Shill.
   string iccid;
+  // True when this slot is currently active.
+  bool is_primary;
 };
 
 struct CellularStateProperties {

@@ -79,7 +79,7 @@ struct COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularSIMSlotInfo {
   std::string eid;      // For eSIM capable SIM cards only, the EID of
                         // the SIM Card.
   std::string iccid;    // The ICCID of the SIM Card.
-  std::string primary;  // "true" if the slot is primary (active).
+  bool primary;         // True if the slot is primary (active).
 };
 
 typedef std::vector<WifiAccessPoint> WifiAccessPointVector;

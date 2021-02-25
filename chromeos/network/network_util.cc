@@ -22,6 +22,7 @@
 #include "chromeos/network/onc/onc_signature.h"
 #include "chromeos/network/onc/onc_translation_tables.h"
 #include "chromeos/network/onc/onc_translator.h"
+#include "components/device_event_log/device_event_log.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
@@ -185,10 +186,9 @@ bool ParseCellularSIMSlotInfo(
     if (iccid)
       sim_slot_info.iccid = *iccid;
 
-    const std::string* primary =
-        value.FindStringKey(shill::kSIMSlotInfoPrimary);
-    if (primary)
-      sim_slot_info.primary = *primary;
+    base::Optional<bool> primary =
+        value.FindBoolKey(shill::kSIMSlotInfoPrimary);
+    sim_slot_info.primary = primary.has_value() ? *primary : false;
 
     sim_slot_infos->push_back(sim_slot_info);
   }

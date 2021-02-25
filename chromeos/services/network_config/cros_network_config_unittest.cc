@@ -159,11 +159,11 @@ class CrosNetworkConfigTest : public testing::Test {
       base::Value::ListStorage& ordered_sim_slot_info_list,
       const std::string& eid,
       const std::string& iccid,
-      const std::string& primary = "") {
+      bool primary = false) {
     base::Value item(base::Value::Type::DICTIONARY);
     item.SetStringKey(shill::kSIMSlotInfoEID, eid);
     item.SetStringKey(shill::kSIMSlotInfoICCID, iccid);
-    item.SetStringKey(shill::kSIMSlotInfoPrimary, primary);
+    item.SetBoolKey(shill::kSIMSlotInfoPrimary, primary);
     ordered_sim_slot_info_list.push_back(std::move(item));
   }
 
@@ -705,7 +705,8 @@ TEST_F(CrosNetworkConfigTest, ESimAndPSimSlotInfo) {
   base::Value::ListStorage ordered_sim_slot_info_list;
   // Add pSIM first to correspond to |psim_physical_slot| index. Note that
   // pSIMs do not have EIDs.
-  AddSimSlotInfoToList(ordered_sim_slot_info_list, /*eid=*/"", kTestPSimIccid);
+  AddSimSlotInfoToList(ordered_sim_slot_info_list, /*eid=*/"", kTestPSimIccid,
+                       /*primary=*/true);
   // Add eSIM next to correspond to |esim_1_physical_slot| index. Intentionally
   // exclude the EID; it's expected that Hermes will fill in the missing EID.
   AddSimSlotInfoToList(ordered_sim_slot_info_list, /*eid=*/"", kTestESimIccid);
@@ -726,17 +727,20 @@ TEST_F(CrosNetworkConfigTest, ESimAndPSimSlotInfo) {
   EXPECT_EQ(psim_physical_slot, (*cellular->sim_infos)[0]->slot_id);
   ASSERT_TRUE((*cellular->sim_infos)[0]->eid.empty());
   EXPECT_EQ(kTestPSimIccid, (*cellular->sim_infos)[0]->iccid);
+  EXPECT_TRUE((*cellular->sim_infos)[0]->is_primary);
 
   // Check eSIM 1 slot info.
   EXPECT_EQ(esim_1_physical_slot, (*cellular->sim_infos)[1]->slot_id);
   EXPECT_EQ(kTestEid1, (*cellular->sim_infos)[1]->eid);
   EXPECT_EQ(kTestESimIccid, (*cellular->sim_infos)[1]->iccid);
+  EXPECT_FALSE((*cellular->sim_infos)[1]->is_primary);
 
   // Check eSIM 2 slot info. Note that the ICCID is empty here but the
   // EID still exists.
   EXPECT_EQ(esim_2_physical_slot, (*cellular->sim_infos)[2]->slot_id);
   EXPECT_EQ(kTestEid2, (*cellular->sim_infos)[2]->eid);
   ASSERT_TRUE((*cellular->sim_infos)[2]->iccid.empty());
+  EXPECT_FALSE((*cellular->sim_infos)[2]->is_primary);
 }
 
 TEST_F(CrosNetworkConfigTest, ESimNetworkNameComesFromHermes) {
