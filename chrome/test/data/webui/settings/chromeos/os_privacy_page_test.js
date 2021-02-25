@@ -118,7 +118,7 @@ suite('PrivacyPageTests', function() {
     Polymer.dom.flush();
 
     const deepLinkElement =
-        privacyPage.$$('#enable-verified-access').$$('cr-toggle');
+        privacyPage.$$('#enableVerifiedAccess').$$('cr-toggle');
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -272,6 +272,7 @@ suite('PeripheralDataAccessTest', function() {
     Polymer.dom.flush();
 
     await browserProxy.whenCalled('isThunderboltSupported');
+    await test_util.waitAfterNextRender();
     Polymer.dom.flush();
   });
 

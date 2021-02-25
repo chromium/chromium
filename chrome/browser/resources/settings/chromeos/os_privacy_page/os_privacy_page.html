@@ -29,6 +29,10 @@
         cursor: pointer;
         opacity: 1;
       }
+
+      #dataAccessProtectionWrapper:focus {
+        outline: none;
+      }
     </style>
     <settings-animated-pages id="pages" section="osPrivacy"
         focus-config="[[focusConfig_]]">
@@ -69,7 +73,7 @@
         </settings-toggle-button>
         <div class="hr"></div>
         <settings-toggle-button
-            id="enable-verified-access"
+            id="enableVerifiedAccess"
             pref="{{
               prefs.cros.device.attestation_for_content_protection_enabled}}"
             label="$i18n{enableContentProtectionAttestation}"
@@ -81,18 +85,23 @@
             <!-- This toggle is always disabled. The underlying pref state is
                  handled by the JS impl. This is to prevent toggling the pref
                  before the user confirms the action. -->
-            <settings-toggle-button
-                id="peripheralDataAccessProtection"
-                pref="{{prefs.cros.device.peripheral_data_access_enabled}}"
-                label="$i18n{peripheralDataAccessProtectionToggleTitle}"
-                sub-label=
-                    "$i18n{peripheralDataAccessProtectionToggleDescription}"
-                deep-link-focus-id$=
-                    "[[Setting.kPeripheralDataAccessProtection]]"
-                on-click="onPeripheralProtectionClick_"
-                disabled
-                inverted>
-            </settings-toggle-button>
+            <div id="dataAccessProtectionWrapper"
+                tabindex="0"
+                on-focus="onDataAccessToggleFocus_"
+                on-keypress="onDataAccessToggleKeyPress_">
+              <settings-toggle-button
+                  id="peripheralDataAccessProtection"
+                  pref="{{prefs.cros.device.peripheral_data_access_enabled}}"
+                  label="$i18n{peripheralDataAccessProtectionToggleTitle}"
+                  sub-label=
+                      "$i18n{peripheralDataAccessProtectionToggleDescription}"
+                  deep-link-focus-id$=
+                      "[[Setting.kPeripheralDataAccessProtection]]"
+                  on-click="onPeripheralProtectionClick_"
+                  disabled
+                  inverted>
+              </settings-toggle-button>
+            </div>
           </template>
         </template>
       </div>

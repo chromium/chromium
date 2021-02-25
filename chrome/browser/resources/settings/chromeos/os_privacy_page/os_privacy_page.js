@@ -137,10 +137,18 @@ Polymer({
           'prefs.cros.device.peripheral_data_access_enabled.*)',
       reflectToAttribute: true,
     },
+
+    /** @private */
+    dataAccessShiftTabPressed_: {
+      type: Boolean,
+      value: false,
+    }
   },
 
   /** @private {?settings.PeripheralDataAccessBrowserProxy} */
   browserProxy_: null,
+
+  observers: ['onDataAccessFlagsSet_(isThunderboltSupported_.*)'],
 
   /** @override */
   created() {
@@ -315,5 +323,67 @@ Polymer({
   computeIsPeripheralProtectionToggleEnforced_() {
     return this.prefs['cros']['device']['peripheral_data_access_enabled']
                .enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;
-  }
+  },
+
+  /** @private */
+  onDataAccessToggleFocus_() {
+    if (this.isPeripheralProtectionToggleEnforced_) {
+      return;
+    }
+
+    // Don't consume the shift+tab focus event here. Instead redirect it to the
+    // previous element.
+    if (this.dataAccessShiftTabPressed_) {
+      this.dataAccessShiftTabPressed_ = false;
+      this.$$('#enableVerifiedAccess').focus();
+      return;
+    }
+
+    this.$$('#peripheralDataAccessProtection').focus();
+  },
+
+  /**
+   * Handles keyboard events in regards to #peripheralDataAccessProtection.
+   * The underlying cr-toggle is disabled so we need to handle the keyboard
+   * events manually.
+   * @param {!Event} event
+   * @private
+   */
+  onDataAccessToggleKeyPress_(event) {
+    // Handle Shift + Tab, we don't want to redirect back to the same toggle.
+    if (event.shiftKey && event.key === 'Tab') {
+      this.dataAccessShiftTabPressed_ = true;
+      return;
+    }
+
+    if ((event.key !== 'Enter' && event.key !== ' ') ||
+        this.isPeripheralProtectionToggleEnforced_) {
+      return;
+    }
+
+    event.stopPropagation();
+
+    if (!this.prefs['cros']['device']['peripheral_data_access_enabled'].value) {
+      this.showDisableProtectionDialog_ = true;
+      return;
+    }
+    this.setPrefValue('cros.device.peripheral_data_access_enabled', false);
+  },
+
+  /**
+   * This is used to add a keydown listener event for handling keyboard
+   * navigation inputs. We have to wait until #peripheralDataAccessProtection
+   * is rendered before adding the observer.
+   * @private
+   */
+  onDataAccessFlagsSet_() {
+    if (this.isThunderboltSupported_ && this.isPciguardUiEnabled_) {
+      Polymer.RenderStatus.afterNextRender(this, () => {
+        this.$$('#peripheralDataAccessProtection')
+            .$$('#control')
+            .addEventListener(
+                'keydown', this.onDataAccessToggleKeyPress_.bind(this));
+      });
+    }
+  },
 });
