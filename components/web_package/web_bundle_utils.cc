@@ -4,6 +4,7 @@
 
 #include "components/web_package/web_bundle_utils.h"
 
+#include "base/guid.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
@@ -62,6 +63,14 @@ bool HasNoSniffHeader(const network::mojom::URLResponseHead& response) {
   response.headers->EnumerateHeader(nullptr, kContentTypeOptionsHeaderName,
                                     &content_type_options);
   return base::LowerCaseEqualsASCII(content_type_options, kNoSniffHeaderValue);
+}
+
+bool IsValidUrnUuidURL(const GURL& url) {
+  std::string spec = url.spec();
+  return base::StartsWith(spec,
+                          "urn:uuid:", base::CompareCase::INSENSITIVE_ASCII) &&
+         base::GUID::ParseCaseInsensitive(base::StringPiece(spec).substr(9))
+             .is_valid();
 }
 
 }  // namespace web_package

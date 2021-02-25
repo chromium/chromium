@@ -295,6 +295,32 @@ TEST_F(WebBundleParserTest, RequestURLHasFragment) {
   ExpectFormatErrorWithFallbackURL(ParseBundle(&data_source));
 }
 
+TEST_F(WebBundleParserTest, RequestURLIsValidUrnUuid) {
+  const char urn_uuid[] = "urn:uuid:f81d4fae-7dec-11d0-a765-00a0c91e6bf6";
+  test::WebBundleBuilder builder(kFallbackUrl, kManifestUrl);
+  builder.AddExchange(urn_uuid,
+                      {{":status", "200"}, {"content-type", "text/plain"}},
+                      "payload");
+  TestDataSource data_source(builder.CreateBundle());
+
+  mojom::BundleMetadataPtr metadata = ParseBundle(&data_source).first;
+  ASSERT_TRUE(metadata);
+  ASSERT_EQ(metadata->requests.size(), 1u);
+  auto location = FindResponse(metadata, GURL(urn_uuid));
+  ASSERT_TRUE(location);
+}
+
+TEST_F(WebBundleParserTest, RequestURLIsInvalidUrnUuid) {
+  const char urn_uuid[] = "urn:uuid:invalid";
+  test::WebBundleBuilder builder(kFallbackUrl, kManifestUrl);
+  builder.AddExchange(urn_uuid,
+                      {{":status", "200"}, {"content-type", "text/plain"}},
+                      "payload");
+  TestDataSource data_source(builder.CreateBundle());
+
+  ExpectFormatErrorWithFallbackURL(ParseBundle(&data_source));
+}
+
 TEST_F(WebBundleParserTest, NoStatusInResponseHeaders) {
   test::WebBundleBuilder builder(kFallbackUrl, kManifestUrl);
   builder.AddExchange("https://test.example.com/",

@@ -43,6 +43,7 @@ source_set("unit_tests") {
   sources = [
     "web_bundle_parser_factory_unittest.cc",
     "web_bundle_parser_unittest.cc",
+    "web_bundle_utils_unittest.cc",
   ]
   deps = [
     ":test_support",
