@@ -40,6 +40,10 @@
     /* scroll-behavior: smooth; */
   }
 
+  .divider {
+    border-top: 1px solid var(--cr-secondary-text-color);
+  }
+
   .sr-only {
     color: transparent;
     position: absolute;
@@ -76,6 +80,8 @@
   </div>
 
   <div class="sr-only" role="heading" aria-level="1">Emoji Groups</div>
+
+  <div class="divider"></div>
 
   <div id="groups" on-scroll="onEmojiScroll">
     <!--
