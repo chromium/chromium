@@ -8,12 +8,15 @@
 #include <tuple>
 
 #include "base/bind.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/browser/media/audible_metrics.h"
 #include "content/browser/media/audio_stream_monitor.h"
 #include "content/browser/media/media_devices_util.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/media/media_player_delegate_messages.h"
 #include "content/public/browser/render_frame_host.h"
@@ -573,6 +576,42 @@ void MediaWebContentsObserver::OnMediaPlayerAdded(
     mojo::PendingAssociatedRemote<media::mojom::MediaPlayer> player_remote,
     MediaPlayerId player_id) {
   if (media_player_remotes_.contains(player_id)) {
+    // Collect debug information to help explain the numbers of attempts at
+    // |player_id| reuse that we're seeing.
+    // TODO(https://crbug.com/1172882): Remove once enough data has been
+    // collected.
+    RenderFrameHost* const rfh = player_id.render_frame_host;
+    const auto rfh_player_count = base::ranges::count_if(
+        media_player_remotes_, [rfh](const auto& player_id_and_remote) {
+          return player_id_and_remote.first.render_frame_host == rfh;
+        });
+    const auto renderer_exit_count =
+        RenderFrameHostImpl::FromID(rfh->GetGlobalFrameRoutingId())
+            ->renderer_exit_count();
+
+    NavigationEntry* const previous_entry =
+        web_contents()->GetController().GetEntryAtOffset(-1);
+    const GURL previous_main_url =
+        previous_entry ? previous_entry->GetURL() : GURL();
+    // Also get the next entry in case this was a Back navigation.
+    NavigationEntry* const next_entry =
+        web_contents()->GetController().GetEntryAtOffset(1);
+    const GURL next_main_url = next_entry ? next_entry->GetURL() : GURL();
+
+    SCOPED_CRASH_KEY_BOOL("bug1172882", "is_main_frame", !rfh->GetParent());
+    SCOPED_CRASH_KEY_NUMBER("bug1172882", "rfh_player_count", rfh_player_count);
+    SCOPED_CRASH_KEY_NUMBER("bug1172882", "renderer_exit_count",
+                            renderer_exit_count);
+    SCOPED_CRASH_KEY_STRING256("bug1172882", "last_committed_url",
+                               rfh->GetLastCommittedURL().spec());
+    SCOPED_CRASH_KEY_STRING256("bug1172882", "main_url",
+                               web_contents()->GetLastCommittedURL().spec());
+    SCOPED_CRASH_KEY_STRING256("bug1172882", "previous_main_url",
+                               previous_main_url.spec());
+    SCOPED_CRASH_KEY_STRING256("bug1172882", "next_main_url",
+                               next_main_url.spec());
+    base::debug::DumpWithoutCrashing();
+
     mojo::ReportBadMessage("Unexpected player_id reuse");
     return;
   }

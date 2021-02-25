@@ -2135,6 +2135,8 @@ void RenderFrameHostImpl::SetPolicyContainerHost(
 void RenderFrameHostImpl::RenderProcessExited(
     RenderProcessHost* host,
     const ChildProcessTerminationInfo& info) {
+  ++renderer_exit_count_;
+
   if (base::FeatureList::IsEnabled(features::kCrashReporting))
     MaybeGenerateCrashReport(info.status, info.exit_code);
 

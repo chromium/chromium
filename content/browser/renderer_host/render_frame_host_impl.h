@@ -1599,6 +1599,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // TODO(https://crbug.com/936696): Remove this.
   void reset_must_be_replaced() { must_be_replaced_ = false; }
 
+  int renderer_exit_count() const { return renderer_exit_count_; }
+
   // Re-creates loader factories and pushes them to |RenderFrame|.
   // Used in case we need to add or remove intercepting proxies to the
   // running renderer, or in case of Network Service connection errors.
@@ -3069,6 +3071,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // RenderFrame. It is reset after a renderer process crash.
   bool has_committed_any_navigation_ = false;
   bool must_be_replaced_ = false;
+
+  // Counts the number of times the associated renderer process has exited.
+  // This is used to track problematic RenderFrameHost reuse.
+  // TODO(https://crbug.com/1172882): Remove once enough data has been
+  // collected.
+  int renderer_exit_count_ = 0;
 
   // Receivers must be reset in InvalidateMojoConnection().
   mojo::AssociatedReceiver<mojom::FrameHost> frame_host_associated_receiver_{
