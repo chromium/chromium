@@ -18,6 +18,7 @@
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/cdm_context.h"
 #include "media/base/decoder.h"
@@ -579,8 +580,11 @@ void PipelineImpl::RendererWrapper::CreateRendererInternal(
       << "CDM should be available now if has encrypted stream";
 
   base::Optional<RendererFactoryType> factory_type;
+
+#if defined(OS_WIN)
   if (cdm_context_ && cdm_context_->RequiresMediaFoundationRenderer())
     factory_type = RendererFactoryType::kMediaFoundation;
+#endif  // defined(OS_WIN)
 
   // TODO(xhwang): During Resume(), the |default_renderer_| might already match
   // the |factory_type|, in which case we shouldn't need to create a new one.

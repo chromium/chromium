@@ -1707,6 +1707,7 @@ ACTION(ReportHaveEnough) {
                                BUFFERING_CHANGE_REASON_UNKNOWN);
 }
 
+#if defined(OS_WIN)
 TEST_F(WebMediaPlayerImplTest, FallbackToMediaFoundationRenderer) {
   InitializeWebMediaPlayerImpl();
   // To avoid PreloadMetadataLazyLoad.
@@ -1746,6 +1747,7 @@ TEST_F(WebMediaPlayerImplTest, FallbackToMediaFoundationRenderer) {
   LoadAndWaitForReadyState(kEncryptedVideoOnlyTestFile,
                            blink::WebMediaPlayer::kReadyStateHaveCurrentData);
 }
+#endif  // defined(OS_WIN)
 
 TEST_F(WebMediaPlayerImplTest, VideoConfigChange) {
   InitializeWebMediaPlayerImpl();

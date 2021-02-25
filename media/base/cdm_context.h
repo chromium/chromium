@@ -86,10 +86,6 @@ class MEDIA_EXPORT CdmContext {
   // occurs implicitly along with decoding).
   virtual Decryptor* GetDecryptor();
 
-  // Returns whether the CDM requires Media Foundation-based media Renderer.
-  // Should only return true on Windows.
-  virtual bool RequiresMediaFoundationRenderer();
-
   // Returns an ID that can be used to find a remote CDM, in which case this CDM
   // serves as a proxy to the remote one. Returns base::nullopt when remote CDM
   // is not supported (e.g. this CDM is a local CDM).
@@ -98,6 +94,11 @@ class MEDIA_EXPORT CdmContext {
   static std::string CdmIdToString(const base::UnguessableToken* cdm_id);
 
 #if defined(OS_WIN)
+  // Returns whether the CDM requires Media Foundation-based media Renderer.
+  // This is separate from GetMediaFoundationCdmProxy() since it needs to be
+  // a sync call called in the render process to setup the media pipeline.
+  virtual bool RequiresMediaFoundationRenderer();
+
   using GetMediaFoundationCdmProxyCB =
       base::OnceCallback<void(Microsoft::WRL::ComPtr<IMFCdmProxy>)>;
   // This allows a CdmContext to expose an IMFTrustedInput instance for use in

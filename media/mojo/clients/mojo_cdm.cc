@@ -278,6 +278,15 @@ base::Optional<base::UnguessableToken> MojoCdm::GetCdmId() const {
   return cdm_id_;
 }
 
+#if defined(OS_WIN)
+bool MojoCdm::RequiresMediaFoundationRenderer() {
+  DVLOG(2) << __func__ << " this:" << this
+           << " is_mf_renderer_content_:" << is_mf_renderer_content_;
+
+  return is_mf_renderer_content_;
+}
+#endif  // defined(OS_WIN)
+
 void MojoCdm::OnSessionMessage(const std::string& session_id,
                                MessageType message_type,
                                const std::vector<uint8_t>& message) {
@@ -353,17 +362,6 @@ void MojoCdm::OnNewSessionCdmPromiseResult(uint32_t promise_id,
                                        result->system_code,
                                        result->error_message);
   }
-}
-
-bool MojoCdm::RequiresMediaFoundationRenderer() {
-#if defined(OS_WIN)
-  DVLOG(2) << __func__ << " this:" << this
-           << " is_mf_renderer_content_:" << is_mf_renderer_content_;
-
-  return is_mf_renderer_content_;
-#endif  // defined(OS_WIN)
-
-  return false;
 }
 
 }  // namespace media

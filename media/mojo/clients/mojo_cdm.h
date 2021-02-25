@@ -79,8 +79,9 @@ class MojoCdm final : public ContentDecryptionModule,
   std::unique_ptr<CallbackRegistration> RegisterEventCB(EventCB event_cb) final;
   Decryptor* GetDecryptor() final;
   base::Optional<base::UnguessableToken> GetCdmId() const final;
-
+#if defined(OS_WIN)
   bool RequiresMediaFoundationRenderer() final;
+#endif  // defined(OS_WIN)
 
  private:
   ~MojoCdm() final;
