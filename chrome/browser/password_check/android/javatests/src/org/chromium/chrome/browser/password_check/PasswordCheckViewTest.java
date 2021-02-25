@@ -639,7 +639,7 @@ public class PasswordCheckViewTest {
         mModel.set(DELETION_ORIGIN, ANA.getDisplayOrigin());
         runOnUiThreadBlocking(() -> mModel.set(DELETION_CONFIRMATION_HANDLER, fakeHandler));
 
-        onView(withText(R.string.password_check_delete_credential_dialog_confirm))
+        onView(withText(R.string.password_entry_edit_delete_credential_dialog_confirm))
                 .inRoot(withDecorView(
                         not(is(mPasswordCheckView.getActivity().getWindow().getDecorView()))))
                 .perform(click());

@@ -567,6 +567,15 @@ CHAR-LIMIT guidelines:
       <message name="IDS_PASSWORD_EDIT_HINT" desc="Small hint on the editing screens that advises users to store the same password as they use on the currently edited site.">
         Make sure the password you are saving matches your password for <ph name="SITE">%1$s<ex>example.com</ex></ph>
       </message>
+      <message name="IDS_PASSWORD_ENTRY_EDIT_DELETION_DIALOG_BODY" desc="Text explaining the user that deleting the credential that they are viewing will not remove their account on the reaspective website.">
+        Deleting this password will not delete your account on <ph name="SITE">%1$s<ex>example.com</ex></ph>
+      </message>
+      <message name="IDS_PASSWORD_ENTRY_EDIT_DELETE_CREDENTIAL_DIALOG_TITLE" desc="The title of a prompt to confirm that the user intends to delete the stored password.">
+        Delete password?
+      </message>
+      <message name="IDS_PASSWORD_ENTRY_EDIT_DELETE_CREDENTIAL_DIALOG_CONFIRM" desc="The caption the button confirming that the user intends to delete the stored password.">
+        Delete password
+      </message>
       <message name="IDS_PASSWORD_ENTRY_VIEWER_TITLE" desc='Title of the overview screen for a saved password.'>
         Saved password
       </message>

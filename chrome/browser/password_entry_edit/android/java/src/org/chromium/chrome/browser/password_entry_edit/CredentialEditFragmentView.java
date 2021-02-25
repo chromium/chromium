@@ -116,6 +116,9 @@ public class CredentialEditFragmentView extends PreferenceFragmentCompat {
         View passwordIcons = getView().findViewById(R.id.password_icons);
         addLayoutChangeListener(mPasswordField, passwordIcons);
 
+        // TODO(crbug.com/1175785): Use this string for the deletion dialog body.
+        getString(R.string.password_entry_edit_deletion_dialog_body);
+
         mDoneButton = getView().findViewById(R.id.button_primary);
 
         getView().findViewById(R.id.button_secondary).setOnClickListener((unusedView) -> dismiss());
