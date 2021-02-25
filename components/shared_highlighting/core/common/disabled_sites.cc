@@ -23,7 +23,10 @@ bool ShouldOfferLinkToText(const GURL& url) {
         // TODO(crbug.com/1157981): special case this to cover other Google TLDs
         {"google.com", "^\\/amp\\/.*"},
         {"instagram.com", ".*"},
+        {"mail.google.com", ".*"},
+        {"outlook.live.com", ".*"},
         {"reddit.com", ".*"},
+        {"twitter.com", ".*"},
         {"web.whatsapp.com", ".*"},
         {"youtube.com", ".*"},
 
@@ -34,6 +37,8 @@ bool ShouldOfferLinkToText(const GURL& url) {
       domain = domain.substr(4);
     } else if (domain.compare(0, 2, "m.") == 0) {
       domain = domain.substr(2);
+    } else if (domain.compare(0, 7, "mobile.") == 0) {
+      domain = domain.substr(7);
     }
 
     auto it = kBlocklist.find(domain);
