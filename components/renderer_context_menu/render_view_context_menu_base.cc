@@ -19,7 +19,6 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "third_party/blink/public/common/context_menu_data/menu_item.h"
 #include "ui/base/models/image_model.h"
 #include "url/origin.h"
 
@@ -36,32 +35,34 @@ namespace {
 int content_context_custom_first = -1;
 int content_context_custom_last = -1;
 
-bool IsCustomItemEnabledInternal(const std::vector<blink::MenuItem>& items,
-                                 int id) {
+bool IsCustomItemEnabledInternal(
+    const std::vector<blink::mojom::CustomContextMenuItemPtr>& items,
+    int id) {
   DCHECK(RenderViewContextMenuBase::IsContentCustomCommandId(id));
-  for (size_t i = 0; i < items.size(); ++i) {
+  for (const auto& item : items) {
     int action_id = RenderViewContextMenuBase::ConvertToContentCustomCommandId(
-        items[i].action);
+        item->action);
     if (action_id == id)
-      return items[i].enabled;
-    if (items[i].type == blink::MenuItem::SUBMENU) {
-      if (IsCustomItemEnabledInternal(items[i].submenu, id))
+      return item->enabled;
+    if (item->type == blink::mojom::CustomContextMenuItemType::kSubMenu) {
+      if (IsCustomItemEnabledInternal(item->submenu, id))
         return true;
     }
   }
   return false;
 }
 
-bool IsCustomItemCheckedInternal(const std::vector<blink::MenuItem>& items,
-                                 int id) {
+bool IsCustomItemCheckedInternal(
+    const std::vector<blink::mojom::CustomContextMenuItemPtr>& items,
+    int id) {
   DCHECK(RenderViewContextMenuBase::IsContentCustomCommandId(id));
-  for (size_t i = 0; i < items.size(); ++i) {
+  for (const auto& item : items) {
     int action_id = RenderViewContextMenuBase::ConvertToContentCustomCommandId(
-        items[i].action);
+        item->action);
     if (action_id == id)
-      return items[i].checked;
-    if (items[i].type == blink::MenuItem::SUBMENU) {
-      if (IsCustomItemCheckedInternal(items[i].submenu, id))
+      return item->checked;
+    if (item->type == blink::mojom::CustomContextMenuItemType::kSubMenu) {
+      if (IsCustomItemCheckedInternal(item->submenu, id))
         return true;
     }
   }
@@ -72,7 +73,7 @@ const size_t kMaxCustomMenuDepth = 5;
 const size_t kMaxCustomMenuTotalItems = 1000;
 
 void AddCustomItemsToMenu(
-    const std::vector<blink::MenuItem>& items,
+    const std::vector<blink::mojom::CustomContextMenuItemPtr>& items,
     size_t depth,
     size_t* total_items,
     std::vector<std::unique_ptr<ui::SimpleMenuModel>>* submenus,
@@ -82,9 +83,9 @@ void AddCustomItemsToMenu(
     LOG(ERROR) << "Custom menu too deeply nested.";
     return;
   }
-  for (size_t i = 0; i < items.size(); ++i) {
+  for (const auto& item : items) {
     int command_id = RenderViewContextMenuBase::ConvertToContentCustomCommandId(
-        items[i].action);
+        item->action);
     if (!RenderViewContextMenuBase::IsContentCustomCommandId(command_id)) {
       LOG(ERROR) << "Custom menu action value out of range.";
       return;
@@ -94,36 +95,35 @@ void AddCustomItemsToMenu(
       return;
     }
     (*total_items)++;
-    switch (items[i].type) {
-      case blink::MenuItem::OPTION:
+    switch (item->type) {
+      case blink::mojom::CustomContextMenuItemType::kOption:
         menu_model->AddItem(
             RenderViewContextMenuBase::ConvertToContentCustomCommandId(
-                items[i].action),
-            items[i].label);
+                item->action),
+            item->label);
         break;
-      case blink::MenuItem::CHECKABLE_OPTION:
+      case blink::mojom::CustomContextMenuItemType::kCheckableOption:
         menu_model->AddCheckItem(
             RenderViewContextMenuBase::ConvertToContentCustomCommandId(
-                items[i].action),
-            items[i].label);
+                item->action),
+            item->label);
         break;
-      case blink::MenuItem::GROUP:
+      case blink::mojom::CustomContextMenuItemType::kGroup:
         // TODO(viettrungluu): I don't know what this is supposed to do.
         NOTREACHED();
         break;
-      case blink::MenuItem::SEPARATOR:
+      case blink::mojom::CustomContextMenuItemType::kSeparator:
         menu_model->AddSeparator(ui::NORMAL_SEPARATOR);
         break;
-      case blink::MenuItem::SUBMENU: {
+      case blink::mojom::CustomContextMenuItemType::kSubMenu: {
         ui::SimpleMenuModel* submenu = new ui::SimpleMenuModel(delegate);
         submenus->push_back(base::WrapUnique(submenu));
-        AddCustomItemsToMenu(items[i].submenu, depth + 1, total_items, submenus,
+        AddCustomItemsToMenu(item->submenu, depth + 1, total_items, submenus,
                              delegate, submenu);
         menu_model->AddSubMenu(
             RenderViewContextMenuBase::ConvertToContentCustomCommandId(
-                items[i].action),
-            items[i].label,
-            submenu);
+                item->action),
+            item->label, submenu);
         break;
       }
       default:
@@ -434,9 +434,8 @@ void RenderViewContextMenuBase::OpenURLWithExtraHeaders(
     const std::string& extra_headers,
     bool started_from_context_menu) {
   content::Referrer referrer = content::Referrer::SanitizeForRequest(
-      url,
-      content::Referrer(referring_url.GetAsReferrer(),
-                        params_.referrer_policy));
+      url, content::Referrer(referring_url.GetAsReferrer(),
+                             params_.referrer_policy));
 
   if (params_.link_url == url &&
       disposition != WindowOpenDisposition::OFF_THE_RECORD)

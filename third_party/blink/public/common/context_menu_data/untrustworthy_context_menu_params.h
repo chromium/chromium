@@ -15,9 +15,8 @@
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
-#include "third_party/blink/public/common/context_menu_data/menu_item.h"
 #include "third_party/blink/public/common/navigation/impression.h"
-#include "third_party/blink/public/mojom/context_menu/context_menu.mojom-shared.h"
+#include "third_party/blink/public/mojom/context_menu/context_menu.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -31,6 +30,8 @@ namespace blink {
 struct BLINK_COMMON_EXPORT UntrustworthyContextMenuParams {
   UntrustworthyContextMenuParams();
   UntrustworthyContextMenuParams(const UntrustworthyContextMenuParams& other);
+  UntrustworthyContextMenuParams& operator=(
+      const UntrustworthyContextMenuParams& other);
   ~UntrustworthyContextMenuParams();
 
   // This is the type of Context Node that the context menu was invoked on.
@@ -119,7 +120,7 @@ struct BLINK_COMMON_EXPORT UntrustworthyContextMenuParams {
   network::mojom::ReferrerPolicy referrer_policy;
 
   GURL link_followed;
-  std::vector<blink::MenuItem> custom_items;
+  std::vector<blink::mojom::CustomContextMenuItemPtr> custom_items;
 
   ui::MenuSourceType source_type;
 
@@ -131,6 +132,9 @@ struct BLINK_COMMON_EXPORT UntrustworthyContextMenuParams {
 
   // Start position of the selection text.
   int selection_start_offset;
+
+ private:
+  void Assign(const UntrustworthyContextMenuParams& other);
 };
 
 }  // namespace blink

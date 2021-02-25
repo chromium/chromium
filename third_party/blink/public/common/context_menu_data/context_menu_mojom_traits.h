@@ -18,15 +18,6 @@ namespace mojo {
 
 template <>
 struct BLINK_COMMON_EXPORT
-    EnumTraits<blink::mojom::CustomContextMenuItemType, blink::MenuItem::Type> {
-  static blink::mojom::CustomContextMenuItemType ToMojom(
-      blink::MenuItem::Type input);
-  static bool FromMojom(blink::mojom::CustomContextMenuItemType input,
-                        blink::MenuItem::Type* output);
-};
-
-template <>
-struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::ImpressionDataView, blink::Impression> {
   static url::Origin conversion_destination(const blink::Impression& r) {
     return r.conversion_destination;
@@ -46,39 +37,6 @@ struct BLINK_COMMON_EXPORT
   }
 
   static bool Read(blink::mojom::ImpressionDataView r, blink::Impression* out);
-};
-
-template <>
-struct BLINK_COMMON_EXPORT
-    StructTraits<blink::mojom::CustomContextMenuItemDataView, blink::MenuItem> {
-  static base::string16 label(const blink::MenuItem& r) { return r.label; }
-
-  static base::string16 icon(const blink::MenuItem& r) { return r.icon; }
-
-  static base::string16 tool_tip(const blink::MenuItem& r) {
-    return r.tool_tip;
-  }
-
-  static blink::MenuItem::Type type(const blink::MenuItem& r) { return r.type; }
-
-  static int32_t action(const blink::MenuItem& r) { return r.action; }
-
-  static bool rtl(const blink::MenuItem& r) { return r.rtl; }
-
-  static bool has_directional_override(const blink::MenuItem& r) {
-    return r.has_directional_override;
-  }
-
-  static bool enabled(const blink::MenuItem& r) { return r.enabled; }
-
-  static bool checked(const blink::MenuItem& r) { return r.checked; }
-
-  static std::vector<blink::MenuItem> submenu(const blink::MenuItem& r) {
-    return r.submenu;
-  }
-
-  static bool Read(blink::mojom::CustomContextMenuItemDataView r,
-                   blink::MenuItem* out);
 };
 
 template <>
@@ -199,8 +157,8 @@ struct BLINK_COMMON_EXPORT
     return r.link_followed;
   }
 
-  static std::vector<blink::MenuItem> custom_items(
-      const blink::UntrustworthyContextMenuParams& r) {
+  static const std::vector<blink::mojom::CustomContextMenuItemPtr>&
+  custom_items(const blink::UntrustworthyContextMenuParams& r) {
     return r.custom_items;
   }
 

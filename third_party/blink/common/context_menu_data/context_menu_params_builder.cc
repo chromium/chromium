@@ -8,10 +8,33 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
-#include "third_party/blink/public/common/context_menu_data/menu_item.h"
 #include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
+#include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 
 namespace blink {
+
+namespace {
+
+blink::mojom::CustomContextMenuItemPtr MenuItemBuild(
+    const blink::MenuItemInfo& item) {
+  auto result = blink::mojom::CustomContextMenuItem::New();
+
+  result->label = item.label;
+  result->tool_tip = item.tool_tip;
+  result->type =
+      static_cast<blink::mojom::CustomContextMenuItemType>(item.type);
+  result->action = item.action;
+  result->rtl = (item.text_direction == base::i18n::RIGHT_TO_LEFT);
+  result->has_directional_override = item.has_text_direction_override;
+  result->enabled = item.enabled;
+  result->checked = item.checked;
+  for (const auto& sub_menu_item : item.sub_menu_items)
+    result->submenu.push_back(MenuItemBuild(sub_menu_item));
+
+  return result;
+}
+
+}  // namespace
 
 // static
 UntrustworthyContextMenuParams ContextMenuParamsBuilder::Build(
@@ -41,13 +64,11 @@ UntrustworthyContextMenuParams ContextMenuParamsBuilder::Build(
   params.suggested_filename = base::UTF8ToUTF16(data.suggested_filename);
   params.input_field_type = data.input_field_type;
 
-  for (size_t i = 0; i < data.dictionary_suggestions.size(); ++i)
-    params.dictionary_suggestions.push_back(data.dictionary_suggestions[i]);
+  for (const auto& suggestion : data.dictionary_suggestions)
+    params.dictionary_suggestions.push_back(suggestion);
 
-  for (size_t i = 0; i < data.custom_items.size(); ++i) {
-    params.custom_items.push_back(
-        blink::MenuItemBuilder::Build(data.custom_items[i]));
-  }
+  for (const auto& item : data.custom_items)
+    params.custom_items.push_back(MenuItemBuild(item));
 
   params.link_text = base::UTF8ToUTF16(data.link_text);
 

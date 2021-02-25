@@ -70,7 +70,6 @@ source_set("headers") {
     "context_menu_data/context_menu_data.h",
     "context_menu_data/context_menu_params_builder.h",
     "context_menu_data/edit_flags.h",
-    "context_menu_data/menu_item.h",
     "context_menu_data/menu_item_info.h",
     "context_menu_data/untrustworthy_context_menu_params.h",
     "css/forced_colors.h",

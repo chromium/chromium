@@ -5,6 +5,7 @@
 #include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
+#include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 
 namespace blink {
 
@@ -29,7 +30,56 @@ UntrustworthyContextMenuParams::UntrustworthyContextMenuParams()
       selection_start_offset(0) {}
 
 UntrustworthyContextMenuParams::UntrustworthyContextMenuParams(
-    const UntrustworthyContextMenuParams& other) = default;
+    const UntrustworthyContextMenuParams& other) {
+  Assign(other);
+}
+
+UntrustworthyContextMenuParams& UntrustworthyContextMenuParams::operator=(
+    const UntrustworthyContextMenuParams& other) {
+  if (&other == this)
+    return *this;
+  Assign(other);
+  return *this;
+}
+
+void UntrustworthyContextMenuParams::Assign(
+    const UntrustworthyContextMenuParams& other) {
+  media_type = other.media_type;
+  x = other.x;
+  y = other.y;
+  link_url = other.link_url;
+  link_text = other.link_text;
+  impression = other.impression;
+  unfiltered_link_url = other.unfiltered_link_url;
+  src_url = other.src_url;
+  has_image_contents = other.has_image_contents;
+  media_flags = other.media_flags;
+  selection_text = other.selection_text;
+  title_text = other.title_text;
+  alt_text = other.alt_text;
+  suggested_filename = other.suggested_filename;
+  misspelled_word = other.misspelled_word;
+  dictionary_suggestions = other.dictionary_suggestions;
+  spellcheck_enabled = other.spellcheck_enabled;
+  is_editable = other.is_editable;
+  writing_direction_default = other.writing_direction_default;
+  writing_direction_left_to_right = other.writing_direction_left_to_right;
+  writing_direction_right_to_left = other.writing_direction_right_to_left;
+  edit_flags = other.edit_flags;
+  frame_charset = other.frame_charset;
+  referrer_policy = other.referrer_policy;
+  link_followed = other.link_followed;
+  for (auto& item : other.custom_items) {
+    custom_items.push_back(blink::mojom::CustomContextMenuItem::New(
+        item->label, item->icon, item->tool_tip, item->type, item->action,
+        item->rtl, item->has_directional_override, item->enabled, item->checked,
+        std::move(item->submenu)));
+  }
+  source_type = other.source_type;
+  input_field_type = other.input_field_type;
+  selection_rect = other.selection_rect;
+  selection_start_offset = other.selection_start_offset;
+}
 
 UntrustworthyContextMenuParams::~UntrustworthyContextMenuParams() = default;
 

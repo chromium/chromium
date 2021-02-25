@@ -265,43 +265,43 @@ void ChromePluginPlaceholder::ShowContextMenu(
   blink::UntrustworthyContextMenuParams params;
 
   if (!title_.empty()) {
-    blink::MenuItem name_item;
-    name_item.label = title_;
-    params.custom_items.push_back(name_item);
+    auto name_item = blink::mojom::CustomContextMenuItem::New();
+    name_item->label = title_;
+    params.custom_items.push_back(std::move(name_item));
 
-    blink::MenuItem separator_item;
-    separator_item.type = blink::MenuItem::SEPARATOR;
-    params.custom_items.push_back(separator_item);
+    auto separator_item = blink::mojom::CustomContextMenuItem::New();
+    separator_item->type = blink::mojom::CustomContextMenuItemType::kSeparator;
+    params.custom_items.push_back(std::move(separator_item));
   }
 
   bool flash_hidden =
       status_ == chrome::mojom::PluginStatus::kFlashHiddenPreferHtml;
   if (!GetPluginInfo().path.value().empty() && !flash_hidden) {
-    blink::MenuItem run_item;
-    run_item.action = MENU_COMMAND_PLUGIN_RUN;
+    auto run_item = blink::mojom::CustomContextMenuItem::New();
+    run_item->action = MENU_COMMAND_PLUGIN_RUN;
     // Disable this menu item if the plugin is blocked by policy.
-    run_item.enabled = LoadingAllowed();
-    run_item.label = l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_PLUGIN_RUN);
-    params.custom_items.push_back(run_item);
+    run_item->enabled = LoadingAllowed();
+    run_item->label = l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_PLUGIN_RUN);
+    params.custom_items.push_back(std::move(run_item));
   }
 
   if (flash_hidden) {
-    blink::MenuItem enable_flash_item;
-    enable_flash_item.action = MENU_COMMAND_ENABLE_FLASH;
-    enable_flash_item.enabled = true;
-    enable_flash_item.label =
+    auto enable_flash_item = blink::mojom::CustomContextMenuItem::New();
+    enable_flash_item->action = MENU_COMMAND_ENABLE_FLASH;
+    enable_flash_item->enabled = true;
+    enable_flash_item->label =
         l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_ENABLE_FLASH);
-    params.custom_items.push_back(enable_flash_item);
+    params.custom_items.push_back(std::move(enable_flash_item));
   }
 
-  blink::MenuItem hide_item;
-  hide_item.action = MENU_COMMAND_PLUGIN_HIDE;
+  auto hide_item = blink::mojom::CustomContextMenuItem::New();
+  hide_item->action = MENU_COMMAND_PLUGIN_HIDE;
   bool is_main_frame_plugin_document =
       render_frame()->IsMainFrame() &&
       render_frame()->GetWebFrame()->GetDocument().IsPluginDocument();
-  hide_item.enabled = !is_main_frame_plugin_document;
-  hide_item.label = l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_PLUGIN_HIDE);
-  params.custom_items.push_back(hide_item);
+  hide_item->enabled = !is_main_frame_plugin_document;
+  hide_item->label = l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_PLUGIN_HIDE);
+  params.custom_items.push_back(std::move(hide_item));
 
   gfx::Point point =
       gfx::Point(event.PositionInWidget().x(), event.PositionInWidget().y());
