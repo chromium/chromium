@@ -32,6 +32,26 @@ def _CheckNoInterfacesInBase(input_api, output_api):
   return []
 
 
+def _FindLocations(input_api, search_regexes, files_to_check, files_to_skip):
+  """Returns locations matching one of the search_regexes."""
+  def FilterFile(affected_file):
+    return input_api.FilterSourceFile(
+      affected_file,
+      files_to_check=files_to_check,
+      files_to_skip=files_to_skip)
+
+  no_presubmit = r"// no-presubmit-check"
+  locations = []
+  for f in input_api.AffectedSourceFiles(FilterFile):
+    for line_num, line in f.ChangedContents():
+      for search_regex in search_regexes:
+        if (input_api.re.search(search_regex, line) and
+            not input_api.re.search(no_presubmit, line)):
+          locations.append("    %s:%d" % (f.LocalPath(), line_num))
+          break
+  return locations
+
+
 def _CheckNoTraceEventInclude(input_api, output_api):
   """Verify that //base includes base_tracing.h instead of trace event headers.
 
@@ -41,6 +61,7 @@ def _CheckNoTraceEventInclude(input_api, output_api):
   """
   discouraged_includes = [
     r'^#include "base/trace_event/(?!base_tracing\.h)',
+    r'^#include "third_party/perfetto/include/',
   ]
 
   files_to_check = [
@@ -51,23 +72,9 @@ def _CheckNoTraceEventInclude(input_api, output_api):
     r".*[\\/]trace_event[\\/].*",
     r".*[\\/]tracing[\\/].*",
   ]
-  no_presubmit = r"// no-presubmit-check"
 
-  def FilterFile(affected_file):
-    return input_api.FilterSourceFile(
-      affected_file,
-      files_to_check=files_to_check,
-      files_to_skip=files_to_skip)
-
-  locations = []
-  for f in input_api.AffectedSourceFiles(FilterFile):
-    for line_num, line in f.ChangedContents():
-      for include in discouraged_includes:
-        if (input_api.re.search(include, line) and
-            not input_api.re.search(no_presubmit, line)):
-          locations.append("    %s:%d" % (f.LocalPath(), line_num))
-          break
-
+  locations = _FindLocations(input_api, discouraged_includes, files_to_check,
+                             files_to_skip)
   if locations:
     return [ output_api.PresubmitError(
         'Base code should include "base/trace_event/base_tracing.h" instead\n' +
@@ -79,11 +86,45 @@ def _CheckNoTraceEventInclude(input_api, output_api):
   return []
 
 
+def _WarnPbzeroIncludes(input_api, output_api):
+  """Warn to check enable_base_tracing=false when including a pbzero header.
+
+  Emits a warning when including a perfetto pbzero header, encouraging the
+  user to verify that //base still builds with enable_base_tracing=false.
+  """
+  warn_includes = [
+    r'^#include "third_party/perfetto/protos/',
+    r'^#include "base/tracing/protos/',
+  ]
+
+  files_to_check = [
+    r".*\.(h|cc|mm)$",
+  ]
+  files_to_skip = [
+    r".*[\\/]test[\\/].*",
+    r".*[\\/]trace_event[\\/].*",
+    r".*[\\/]tracing[\\/].*",
+  ]
+
+  locations = _FindLocations(input_api, warn_includes, files_to_check,
+                             files_to_skip)
+  if locations:
+    return [ output_api.PresubmitPromptWarning(
+        'Please verify that base_unittests still builds & passes with gn\n' +
+        'arg "enable_base_tracing = false" when adding typed trace events\n' +
+        'to //base. You can use "#if BUILDFLAG(ENABLE_BASE_TRACING)" to\n' +
+        'exclude pbzero headers and anything not supported by\n' +
+        '//base/trace_event/trace_event_stub.h.\n' +
+        '\n'.join(locations)) ]
+  return []
+
+
 def _CommonChecks(input_api, output_api):
   """Checks common to both upload and commit."""
   results = []
   results.extend(_CheckNoInterfacesInBase(input_api, output_api))
   results.extend(_CheckNoTraceEventInclude(input_api, output_api))
+  results.extend(_WarnPbzeroIncludes(input_api, output_api))
   return results
 
 

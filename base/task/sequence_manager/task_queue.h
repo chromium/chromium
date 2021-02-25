@@ -16,7 +16,7 @@
 #include "base/task/task_observer.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
-#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
+#include "base/trace_event/base_tracing.h"
 
 namespace base {
 
@@ -257,8 +257,10 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   // Can be called on any thread.
   virtual const char* GetName() const;
 
+#if BUILDFLAG(ENABLE_BASE_TRACING)
   // Serialise this object into a trace.
   void WriteIntoTracedValue(perfetto::TracedValue context) const;
+#endif
 
   // Set the priority of the queue to |priority|. NOTE this must be called on
   // the thread this TaskQueue was created by.
