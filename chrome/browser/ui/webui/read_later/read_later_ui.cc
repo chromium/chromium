@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/read_later/read_later_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -64,7 +65,9 @@ ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kReadLaterResources, kReadLaterResourcesSize),
-      IDR_READ_LATER_READ_LATER_HTML);
+      base::FeatureList::IsEnabled(features::kSidePanel)
+          ? IDR_READ_LATER_SIDE_PANEL_SIDE_PANEL_HTML
+          : IDR_READ_LATER_READ_LATER_HTML);
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 source);
 }
