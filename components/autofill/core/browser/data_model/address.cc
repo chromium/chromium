@@ -476,7 +476,7 @@ bool Address::SetInfoWithVerificationStatusImpl(const AutofillType& type,
     } else {
       country_code_ = country_code;
     }
-    return !country_code_.empty();
+    return !GetRawInfo(ADDRESS_HOME_COUNTRY).empty();
   }
 
   SetRawInfoWithVerificationStatus(storable_type, value, status);
