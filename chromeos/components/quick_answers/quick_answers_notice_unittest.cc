@@ -41,9 +41,9 @@ class QuickAnswersNoticeTest : public testing::Test {
 TEST_F(QuickAnswersNoticeTest, ShouldShowNoticeShouldBeTrueIfUserHasNoticeed) {
   EXPECT_TRUE(notice_->ShouldShowNotice());
 
-  pref_service()->SetBoolean(prefs::kQuickAnswersConsented, true);
+  pref_service()->SetBoolean(prefs::kQuickAnswersNoticed, true);
 
-  // Verify that it is consented.
+  // Verify that the notice has been accepted.
   EXPECT_FALSE(notice_->ShouldShowNotice());
 }
 
@@ -77,20 +77,20 @@ TEST_F(QuickAnswersNoticeTest, AcceptNotice) {
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(6));
   notice_->AcceptNotice(NoticeInteractionType::kAccept);
 
-  // Verify that it is consented.
-  ASSERT_TRUE(pref_service()->GetBoolean(prefs::kQuickAnswersConsented));
+  // Verify that the notice has been accepted.
+  ASSERT_TRUE(pref_service()->GetBoolean(prefs::kQuickAnswersNoticed));
   // Verify that the duration is recorded.
   ASSERT_EQ(6, pref_service()->GetInteger(
                    prefs::kQuickAnswersNoticeImpressionDuration));
-  // Verify that it is consented.
+  // Verify that the notice has been accepted.
   EXPECT_FALSE(notice_->ShouldShowNotice());
 }
 
 TEST_F(QuickAnswersNoticeTest, DismissNotice) {
-  // Start consent.
+  // Start showing the notice.
   notice_->StartNotice();
 
-  // Dismiss consent after reaching the impression cap.
+  // Dismiss the notice after reaching the impression cap.
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(8));
   notice_->DismissNotice();
 
