@@ -6,6 +6,7 @@
 
 #include "ash/clipboard/clipboard_history.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
+#include "ash/clipboard/clipboard_nudge.h"
 #include "ash/clipboard/clipboard_nudge_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/session/session_controller_impl.h"
@@ -16,8 +17,37 @@
 #include "base/test/simple_test_clock.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/clipboard_non_backed.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace ash {
+namespace {
+
+class NudgeWigetObserver : public views::WidgetObserver {
+ public:
+  NudgeWigetObserver(views::Widget* widget) : widget_(widget) {
+    if (widget_)
+      widget_->AddObserver(this);
+  }
+
+  ~NudgeWigetObserver() override { CleanupWidget(); }
+
+  bool WidgetClosed() const { return !widget_; }
+
+  // views::WidgetObserver:
+  void OnWidgetClosing(views::Widget* widget) override { CleanupWidget(); }
+
+  void CleanupWidget() {
+    if (widget_) {
+      widget_->RemoveObserver(this);
+      widget_ = nullptr;
+    }
+  }
+
+ private:
+  views::Widget* widget_;
+};
+}  // namespace
 
 class ClipboardNudgeControllerTest : public AshTestBase {
  public:
@@ -204,6 +234,31 @@ TEST_F(ClipboardNudgeControllerTest, ShowNewFeatureNudge) {
   // expect to show the badge the next time.
   nudge_controller_->MarkNewFeatureBadgeShown();
   EXPECT_FALSE(nudge_controller_->ShouldShowNewFeatureBadge());
+}
+
+// Verifies that controller cleans up and closes an old nudge before displaying
+// another one.
+TEST_F(ClipboardNudgeControllerTest, ShowZeroStateNudgeAfterOngoingNudge) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  nudge_controller_->ShowNudge(ClipboardNudgeType::kOnboardingNudge);
+
+  ClipboardNudge* nudge = nudge_controller_->GetClipboardNudgeForTesting();
+  views::Widget* nudge_widget = nudge->widget();
+  ASSERT_TRUE(nudge_widget->GetLayer()->GetAnimator()->is_animating());
+  EXPECT_FALSE(nudge_widget->IsClosed());
+  EXPECT_EQ(ClipboardNudgeType::kOnboardingNudge, nudge->nudge_type());
+
+  NudgeWigetObserver widget_close_observer(nudge_widget);
+
+  nudge_controller_->ShowNudge(ClipboardNudgeType::kZeroStateNudge);
+  // Verify the old nudge widget was closed.
+  EXPECT_TRUE(widget_close_observer.WidgetClosed());
+
+  nudge = nudge_controller_->GetClipboardNudgeForTesting();
+  EXPECT_FALSE(nudge->widget()->IsClosed());
+  EXPECT_EQ(ClipboardNudgeType::kZeroStateNudge, nudge->nudge_type());
 }
 
 }  // namespace ash

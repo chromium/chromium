@@ -58,6 +58,9 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   // Returns bounds for the contextual menu in screen coordinates.
   gfx::Rect GetMenuBoundsInScreenForTest() const;
 
+  // Whether the ClipboardHistory has items.
+  bool IsEmpty() const;
+
   // Returns the history which tracks what is being copied to the clipboard.
   const ClipboardHistory* history() const { return clipboard_history_.get(); }
 

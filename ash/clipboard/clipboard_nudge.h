@@ -6,6 +6,7 @@
 #define ASH_CLIPBOARD_CLIPBOARD_NUDGE_H_
 
 #include "ash/ash_export.h"
+#include "ash/clipboard/clipboard_nudge_constants.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_observer.h"
 #include "base/scoped_observation.h"
@@ -16,7 +17,7 @@ namespace ash {
 // Implements a contextual nudge for multipaste.
 class ASH_EXPORT ClipboardNudge : public ShelfObserver {
  public:
-  ClipboardNudge();
+  explicit ClipboardNudge(ClipboardNudgeType nudge_type);
   ClipboardNudge(const ClipboardNudge&) = delete;
   ClipboardNudge& operator=(const ClipboardNudge&) = delete;
   ~ClipboardNudge() override;
@@ -28,6 +29,7 @@ class ASH_EXPORT ClipboardNudge : public ShelfObserver {
   void Close();
 
   views::Widget* widget() { return widget_.get(); }
+  ClipboardNudgeType nudge_type() { return nudge_type_; }
 
  private:
   class ClipboardNudgeView;
@@ -39,6 +41,8 @@ class ASH_EXPORT ClipboardNudge : public ShelfObserver {
   std::unique_ptr<views::Widget> widget_;
 
   ClipboardNudgeView* nudge_view_ = nullptr;  // not_owned
+
+  ClipboardNudgeType nudge_type_;
 
   aura::Window* const root_window_;
 

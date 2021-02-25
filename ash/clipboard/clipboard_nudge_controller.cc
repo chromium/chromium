@@ -7,7 +7,6 @@
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/clipboard_nudge.h"
-#include "ash/clipboard/clipboard_nudge_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
@@ -146,7 +145,7 @@ void ClipboardNudgeController::OnClipboardDataRead() {
       return;
     case ClipboardState::kSecondCopy:
       if (GetTime() - last_paste_timestamp_ < kMaxTimeBetweenPaste) {
-        ShowNudge();
+        ShowNudge(ClipboardNudgeType::kOnboardingNudge);
         HandleNudgeShown();
       } else {
         // ClipboardState should be reset to kFirstPaste when timed out.
@@ -169,22 +168,37 @@ void ClipboardNudgeController::OnActiveUserPrefServiceChanged(
   update->SetIntPath(kNewFeatureBadgeCount, 0);
 }
 
-void ClipboardNudgeController::ShowNudge() {
+void ClipboardNudgeController::ShowNudge(ClipboardNudgeType nudge_type) {
+  if (nudge_ && !nudge_->widget()->IsClosed()) {
+    hide_nudge_timer_.AbandonAndStop();
+    nudge_->Close();
+  }
+
   // Create and show the nudge.
-  nudge_ = std::make_unique<ClipboardNudge>();
+  nudge_ = std::make_unique<ClipboardNudge>(nudge_type);
   StartFadeAnimation(/*show=*/true);
 
   // Start a timer to close the nudge after a set amount of time.
   hide_nudge_timer_.Start(FROM_HERE, kNudgeShowTime,
                           base::BindOnce(&ClipboardNudgeController::HideNudge,
                                          weak_ptr_factory_.GetWeakPtr()));
-  last_shown_time_ = GetTime();
 
   // Tracks the number of times the ClipboardHistory nudge is shown.
   // This allows us to understand the conversion rate of showing a nudge to
   // a user opening and then using the clipboard history feature.
-  base::UmaHistogramExactLinear(
-      "Ash.ClipboardHistory.ContextualNudge.ShownCount", 1, 1);
+  switch (nudge_type) {
+    case ClipboardNudgeType::kOnboardingNudge:
+      last_shown_time_ = GetTime();
+      base::UmaHistogramExactLinear(
+          "Ash.ClipboardHistory.ContextualNudge.ShownCount", 1, 1);
+      break;
+    case ClipboardNudgeType::kZeroStateNudge:
+      base::UmaHistogramExactLinear(
+          "Ash.ClipboardHistory.ZeroStateContextualNudge.ShownCount", 1, 1);
+      break;
+    default:
+      NOTREACHED();
+  }
 }
 
 void ClipboardNudgeController::HideNudge() {

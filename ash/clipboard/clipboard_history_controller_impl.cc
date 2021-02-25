@@ -10,6 +10,7 @@
 #include "ash/clipboard/clipboard_history_menu_model_adapter.h"
 #include "ash/clipboard/clipboard_history_resource_manager.h"
 #include "ash/clipboard/clipboard_history_util.h"
+#include "ash/clipboard/clipboard_nudge_constants.h"
 #include "ash/clipboard/clipboard_nudge_controller.h"
 #include "ash/clipboard/scoped_clipboard_history_pause_impl.h"
 #include "ash/constants/ash_features.h"
@@ -221,6 +222,12 @@ void ClipboardHistoryControllerImpl::ShowMenuByAccelerator() {
     ExecuteSelectedMenuItem(ui::EF_COMMAND_DOWN);
     return;
   }
+
+  if (ClipboardHistoryUtil::IsEnabledInCurrentMode() && IsEmpty()) {
+    nudge_controller_->ShowNudge(ClipboardNudgeType::kZeroStateNudge);
+    return;
+  }
+
   ShowMenu(CalculateAnchorRect(), ui::MENU_SOURCE_KEYBOARD,
            ShowSource::kAccelerator);
 }
@@ -288,8 +295,11 @@ void ClipboardHistoryControllerImpl::MarkNewFeatureBadgeShown() {
 }
 
 bool ClipboardHistoryControllerImpl::CanShowMenu() const {
-  return !clipboard_history_->IsEmpty() &&
-         ClipboardHistoryUtil::IsEnabledInCurrentMode();
+  return !IsEmpty() && ClipboardHistoryUtil::IsEnabledInCurrentMode();
+}
+
+bool ClipboardHistoryControllerImpl::IsEmpty() const {
+  return clipboard_history_->IsEmpty();
 }
 
 std::unique_ptr<ScopedClipboardHistoryPause>

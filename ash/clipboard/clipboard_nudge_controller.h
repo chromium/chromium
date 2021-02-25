@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/clipboard/clipboard_history.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
+#include "ash/clipboard/clipboard_nudge_constants.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/memory/weak_ptr.h"
@@ -72,6 +73,9 @@ class ASH_EXPORT ClipboardNudgeController
   void OnClipboardHistoryMenuShown() override;
   void OnClipboardHistoryPasted() override;
 
+  // Shows the nudge widget.
+  void ShowNudge(ClipboardNudgeType nudge_type);
+
   // Test methods for overriding and resetting the clock used by GetTime.
   void OverrideClockForTesting(base::Clock* test_clock);
   void ClearClockOverrideForTesting();
@@ -90,9 +94,6 @@ class ASH_EXPORT ClipboardNudgeController
   bool ShouldShowNudge(PrefService* prefs);
   // Gets the current time. Can be overridden for testing.
   base::Time GetTime();
-
-  // Shows the nudge widget.
-  void ShowNudge();
 
   // Hides the nudge widget.
   void HideNudge();

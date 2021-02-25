@@ -66,7 +66,7 @@ bool IsAssistantAvailable() {
 
 class ClipboardNudge::ClipboardNudgeView : public views::View {
  public:
-  ClipboardNudgeView() {
+  explicit ClipboardNudgeView(ClipboardNudgeType nudge_type) {
     SetPaintToLayer(ui::LAYER_SOLID_COLOR);
     layer()->SetColor(ShelfConfig::Get()->GetDefaultShelfColor());
     if (features::IsBackgroundBlurEnabled())
@@ -82,8 +82,9 @@ class ClipboardNudge::ClipboardNudgeView : public views::View {
     clipboard_icon_->layer()->SetFillsBoundsOpaquely(false);
     clipboard_icon_->SetBounds(kNudgePadding, kNudgePadding, kClipboardIconSize,
                                kClipboardIconSize);
-    clipboard_icon_->SetImage(
-        gfx::CreateVectorIcon(kClipboardIcon, icon_color));
+    clipboard_icon_->SetImage(gfx::CreateVectorIcon(
+        nudge_type == kZeroStateNudge ? kClipboardEmptyIcon : kClipboardIcon,
+        icon_color));
 
     label_ = AddChildView(std::make_unique<views::StyledLabel>());
     label_->SetPaintToLayer();
@@ -121,7 +122,10 @@ class ClipboardNudge::ClipboardNudgeView : public views::View {
                          : IDS_ASH_SHORTCUT_MODIFIER_SEARCH);
     size_t offset;
     base::string16 label_text = l10n_util::GetStringFUTF16(
-        IDS_ASH_MULTIPASTE_CONTEXTUAL_NUDGE, shortcut_key, &offset);
+        nudge_type == kZeroStateNudge
+            ? IDS_ASH_MULTIPASTE_ZERO_STATE_CONTEXTUAL_NUDGE
+            : IDS_ASH_MULTIPASTE_CONTEXTUAL_NUDGE,
+        shortcut_key, &offset);
     offset = offset + shortcut_key.length();
     label_->SetText(label_text);
 
@@ -149,8 +153,9 @@ class ClipboardNudge::ClipboardNudgeView : public views::View {
   views::ImageView* clipboard_icon_ = nullptr;
 };
 
-ClipboardNudge::ClipboardNudge()
+ClipboardNudge::ClipboardNudge(ClipboardNudgeType nudge_type)
     : widget_(std::make_unique<views::Widget>()),
+      nudge_type_(nudge_type),
       root_window_(Shell::GetRootWindowForNewWindows()) {
   shelf_observation_.Observe(
       RootWindowController::ForWindow(root_window_)->shelf());
@@ -166,8 +171,8 @@ ClipboardNudge::ClipboardNudge()
       root_window_->GetChildById(kShellWindowId_SettingBubbleContainer);
   widget_->Init(std::move(params));
 
-  nudge_view_ =
-      widget_->SetContentsView(std::make_unique<ClipboardNudgeView>());
+  nudge_view_ = widget_->SetContentsView(
+      std::make_unique<ClipboardNudgeView>(nudge_type));
   CalculateAndSetWidgetBounds();
   widget_->Show();
 }
