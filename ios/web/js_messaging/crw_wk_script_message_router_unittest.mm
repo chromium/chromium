@@ -10,12 +10,66 @@
 #include "ios/web/public/test/scoped_testing_web_client.h"
 #include "ios/web/public/test/web_test.h"
 #import "ios/web/public/web_client.h"
+#import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
+#import "testing/gtest_mac.h"
 #include "third_party/ocmock/OCMock/OCMock.h"
 #include "third_party/ocmock/gtest_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+// A subclass of WKUserContentController that checks what scripts handler are
+// added or removed.
+// Mocks are not used as WKUserContentController mocks cause crashes on iPads.
+@interface WKUserContentControllerForTests : WKUserContentController
+// The ordered list of script handler names expected to be added.
+- (void)expectAddScriptCallWithName:(NSArray*)names;
+// The ordered list of script handler names expected to be removed.
+- (void)expectRemoveScriptCallWithName:(NSArray*)names;
+// Checks that exactly the expected calls have been made.
+- (void)checkExpectations;
+
+@end
+
+@implementation WKUserContentControllerForTests {
+  NSArray* _addScriptExpected;
+  NSArray* _removeScriptExpected;
+}
+
+- (void)expectAddScriptCallWithName:(NSArray*)names {
+  EXPECT_EQ(_addScriptExpected.count, 0u);
+  _addScriptExpected = names;
+}
+
+- (void)expectRemoveScriptCallWithName:(NSArray*)names {
+  EXPECT_EQ(_removeScriptExpected.count, 0u);
+  _removeScriptExpected = names;
+}
+
+- (void)checkExpectations {
+  EXPECT_EQ(_addScriptExpected.count, 0u);
+  EXPECT_EQ(_removeScriptExpected.count, 0u);
+}
+
+- (void)addScriptMessageHandler:(id<WKScriptMessageHandler>)scriptMessageHandler
+                           name:(NSString*)name {
+  ASSERT_GT(_addScriptExpected.count, 0u);
+  EXPECT_NSEQ(_addScriptExpected[0], name);
+  _addScriptExpected = [_addScriptExpected
+      subarrayWithRange:NSMakeRange(1, _addScriptExpected.count - 1)];
+  [super addScriptMessageHandler:scriptMessageHandler name:name];
+}
+
+- (void)removeScriptMessageHandlerForName:(NSString*)name {
+  ASSERT_GT(_removeScriptExpected.count, 0u);
+  EXPECT_NSEQ(_removeScriptExpected[0], name);
+  _removeScriptExpected = [_removeScriptExpected
+      subarrayWithRange:NSMakeRange(1, _removeScriptExpected.count - 1)];
+  [super removeScriptMessageHandlerForName:name];
+}
+
+@end
 
 namespace {
 
@@ -34,20 +88,24 @@ id GetScriptMessageMock(WKFrameInfo* frame_info,
 class CRWWKScriptMessageRouterTest : public web::WebTest {
  public:
   CRWWKScriptMessageRouterTest()
-      : web_client_(base::WrapUnique(new web::WebClient)) {}
+      : web_client_(base::WrapUnique(new web::WebClient())) {}
 
  protected:
   void SetUp() override {
     web::WebTest::SetUp();
+
+    web::WKWebViewConfigurationProvider& configuration_provider =
+        web::WKWebViewConfigurationProvider::FromBrowserState(&browser_state_);
+    WKWebViewConfiguration* configuration =
+        configuration_provider.GetWebViewConfiguration();
     // Mock WKUserContentController object.
-    controller_mock_ =
-        [OCMockObject mockForClass:[WKUserContentController class]];
-    [controller_mock_ setExpectationOrderMatters:YES];
+    user_content_controller_ = [[WKUserContentControllerForTests alloc] init];
+    configuration.userContentController = user_content_controller_;
 
     // Create testable CRWWKScriptMessageRouter.
     router_ = static_cast<id<WKScriptMessageHandler>>(
         [[CRWWKScriptMessageRouter alloc]
-            initWithUserContentController:controller_mock_]);
+            initWithUserContentController:user_content_controller_]);
 
     // Prepare test data.
     handler1_ = [^{
@@ -64,12 +122,12 @@ class CRWWKScriptMessageRouterTest : public web::WebTest {
     web_view3_ = web::BuildWKWebView(CGRectZero, &browser_state_);
   }
   void TearDown() override {
-    EXPECT_OCMOCK_VERIFY(controller_mock_);
+    [user_content_controller_ checkExpectations];
     web::WebTest::TearDown();
   }
 
-  // WKUserContentController mock used to create testable router.
-  id controller_mock_;
+  // WKUserContentController used to create testable router.
+  WKUserContentControllerForTests* user_content_controller_;
 
   // CRWWKScriptMessageRouter set up for testing.
   id router_;
@@ -99,11 +157,8 @@ TEST_F(CRWWKScriptMessageRouterTest, Initialization) {
 
 // Tests registration/deregistation of message handlers.
 TEST_F(CRWWKScriptMessageRouterTest, HandlerRegistration) {
-  [[controller_mock_ expect] addScriptMessageHandler:router_ name:name1_];
-  [[controller_mock_ expect] addScriptMessageHandler:router_ name:name2_];
-
-  [[controller_mock_ expect] removeScriptMessageHandlerForName:name1_];
-  [[controller_mock_ expect] removeScriptMessageHandlerForName:name2_];
+  [user_content_controller_ expectAddScriptCallWithName:@[ name1_, name2_ ]];
+  [user_content_controller_ expectRemoveScriptCallWithName:@[ name1_, name2_ ]];
 
   [router_ setScriptMessageHandler:handler1_ name:name1_ webView:web_view1_];
   [router_ setScriptMessageHandler:handler2_ name:name2_ webView:web_view2_];
@@ -118,8 +173,7 @@ TEST_F(CRWWKScriptMessageRouterTest, HandlerRegistration) {
 // WKScriptMessageHandler is not removed if CRWWKScriptMessageRouter has valid
 // message handlers.
 TEST_F(CRWWKScriptMessageRouterTest, HandlerRegistrationLeak) {
-  [[controller_mock_ expect] addScriptMessageHandler:router_ name:name1_];
-
+  [user_content_controller_ expectAddScriptCallWithName:@[ name1_ ]];
   // -removeScriptMessageHandlerForName must not be called.
 
   [router_ setScriptMessageHandler:handler1_ name:name1_ webView:web_view1_];
@@ -130,11 +184,8 @@ TEST_F(CRWWKScriptMessageRouterTest, HandlerRegistrationLeak) {
 
 // Tests deregistation of all message handlers.
 TEST_F(CRWWKScriptMessageRouterTest, RemoveAllHandlers) {
-  [[controller_mock_ expect] addScriptMessageHandler:router_ name:name1_];
-  [[controller_mock_ expect] addScriptMessageHandler:router_ name:name2_];
-
-  [[controller_mock_ expect] removeScriptMessageHandlerForName:name2_];
-  [[controller_mock_ expect] removeScriptMessageHandlerForName:name1_];
+  [user_content_controller_ expectAddScriptCallWithName:@[ name1_, name2_ ]];
+  [user_content_controller_ expectRemoveScriptCallWithName:@[ name2_, name1_ ]];
 
   [router_ setScriptMessageHandler:handler1_ name:name1_ webView:web_view1_];
   [router_ setScriptMessageHandler:handler2_ name:name2_ webView:web_view1_];
@@ -148,11 +199,9 @@ TEST_F(CRWWKScriptMessageRouterTest, RemoveAllHandlers) {
 // WKScriptMessageHandler is not removed if CRWWKScriptMessageRouter has valid
 // message handlers.
 TEST_F(CRWWKScriptMessageRouterTest, RemoveAllHandlersLeak) {
-  [[controller_mock_ expect] addScriptMessageHandler:router_ name:name1_];
-  [[controller_mock_ expect] addScriptMessageHandler:router_ name:name2_];
-  [[controller_mock_ expect] addScriptMessageHandler:router_ name:name3_];
-
-  [[controller_mock_ expect] removeScriptMessageHandlerForName:name2_];
+  [user_content_controller_
+      expectAddScriptCallWithName:@[ name1_, name2_, name3_ ]];
+  [user_content_controller_ expectRemoveScriptCallWithName:@[ name2_ ]];
   // -removeScriptMessageHandlerForName:name1_ must not be called.
 
   [router_ setScriptMessageHandler:handler1_ name:name1_ webView:web_view1_];
@@ -188,18 +237,17 @@ TEST_F(CRWWKScriptMessageRouterTest, Routing) {
     last_called_handler = 3;
   };
 
-  [[controller_mock_ expect] addScriptMessageHandler:router_ name:name1_];
-  [[controller_mock_ expect] addScriptMessageHandler:router_ name:name2_];
+  [user_content_controller_ expectAddScriptCallWithName:@[ name1_, name2_ ]];
 
   [router_ setScriptMessageHandler:handler1 name:name1_ webView:web_view1_];
   [router_ setScriptMessageHandler:handler2 name:name2_ webView:web_view2_];
   [router_ setScriptMessageHandler:handler3 name:name2_ webView:web_view3_];
 
-  [router_ userContentController:controller_mock_
+  [router_ userContentController:user_content_controller_
          didReceiveScriptMessage:message1];
-  [router_ userContentController:controller_mock_
+  [router_ userContentController:user_content_controller_
          didReceiveScriptMessage:message2];
-  [router_ userContentController:controller_mock_
+  [router_ userContentController:user_content_controller_
          didReceiveScriptMessage:message3];
 
   EXPECT_EQ(3, last_called_handler);

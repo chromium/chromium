@@ -37,7 +37,7 @@ class WebFramesManagerImplTest : public PlatformTest,
  protected:
   WebFramesManagerImplTest()
       : frames_manager_(*this),
-        user_content_controller_(OCMClassMock([WKUserContentController class])),
+        user_content_controller_([[WKUserContentController alloc] init]),
         router_([[CRWWKScriptMessageRouter alloc]
             initWithUserContentController:user_content_controller_]),
         web_view_(OCMClassMock([WKWebView class])),
