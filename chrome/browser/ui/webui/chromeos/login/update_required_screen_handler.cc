@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "base/values.h"
+#include "chrome/browser/ash/login/screens/update_required_screen.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
-#include "chrome/browser/chromeos/login/screens/update_required_screen.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"

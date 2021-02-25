@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/screens/user_creation_screen.h"
+#include "chrome/browser/ash/login/screens/user_creation_screen.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen.h"

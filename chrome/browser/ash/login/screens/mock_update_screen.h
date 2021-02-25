@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_MOCK_UPDATE_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_MOCK_UPDATE_SCREEN_H_
 
-#include "chrome/browser/chromeos/login/screens/update_screen.h"
+#include "chrome/browser/ash/login/screens/update_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/update_screen_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/screens/wrong_hwid_screen.h"
+#include "chrome/browser/ash/login/screens/wrong_hwid_screen.h"
 
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"

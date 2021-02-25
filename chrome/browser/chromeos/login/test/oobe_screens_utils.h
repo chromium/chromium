@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_LOGIN_TEST_OOBE_SCREENS_UTILS_H_
 
 #include "base/run_loop.h"
-#include "chrome/browser/chromeos/login/screens/welcome_screen.h"
+#include "chrome/browser/ash/login/screens/welcome_screen.h"
 
 namespace chromeos {
 namespace test {

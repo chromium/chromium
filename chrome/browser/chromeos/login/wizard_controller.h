@@ -52,10 +52,10 @@
 #include "chrome/browser/ash/login/screens/signin_fatal_error_screen.h"
 #include "chrome/browser/ash/login/screens/sync_consent_screen.h"
 #include "chrome/browser/ash/login/screens/terms_of_service_screen.h"
+#include "chrome/browser/ash/login/screens/update_screen.h"
+#include "chrome/browser/ash/login/screens/user_creation_screen.h"
+#include "chrome/browser/ash/login/screens/welcome_screen.h"
 #include "chrome/browser/chromeos/login/screen_manager.h"
-#include "chrome/browser/chromeos/login/screens/update_screen.h"
-#include "chrome/browser/chromeos/login/screens/user_creation_screen.h"
-#include "chrome/browser/chromeos/login/screens/welcome_screen.h"
 // TODO(https://crbug.com/1164001): move LoginDisplayHost to forward
 // declaration when moved to chrome/browser/ash/.
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
