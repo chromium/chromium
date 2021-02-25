@@ -193,4 +193,7 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceEnabled) {
   TableViewImageItem* encryption_item = advanced_settings_items[0];
   ASSERT_EQ(encryption_item.type, SyncSettingsItemType::EncryptionItemType);
   ASSERT_TRUE(encryption_item.enabled);
+
+  ASSERT_FALSE([mediator_.consumer.tableViewModel
+      hasSectionForSectionIdentifier:SyncErrorsSectionIdentifier]);
 }

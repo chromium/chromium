@@ -567,9 +567,6 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   // The |self.consumer.tableViewModel| will be reset prior to this method.
   // Ignore any previous value the |self.syncErrorItem| may have contained.
   self.syncErrorItem = nil;
-
-  [self.consumer.tableViewModel
-      addSectionWithIdentifier:SyncErrorsSectionIdentifier];
   [self updateSyncErrorsSection:NO];
 }
 
@@ -646,6 +643,8 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   } else {
     self.syncErrorItem = [self createSyncErrorItemWithItemType:type];
   }
+  [self.consumer.tableViewModel
+      addSectionWithIdentifier:SyncErrorsSectionIdentifier];
   [model insertItem:self.syncErrorItem
       inSectionWithIdentifier:SyncErrorsSectionIdentifier
                       atIndex:0];
