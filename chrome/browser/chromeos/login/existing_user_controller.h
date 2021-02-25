@@ -27,7 +27,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chrome/browser/chromeos/login/saml/password_sync_token_checkers_collection.h"
+#include "chrome/browser/ash/login/saml/password_sync_token_checkers_collection.h"
 #include "chrome/browser/chromeos/login/screens/encryption_migration_mode.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager.h"
 #include "chrome/browser/chromeos/login/ui/login_display.h"

@@ -7,7 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/login/saml/in_session_password_change_manager.h"
+#include "chrome/browser/ash/login/saml/in_session_password_change_manager.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace chromeos {
