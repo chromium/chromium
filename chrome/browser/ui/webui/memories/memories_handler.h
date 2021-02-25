@@ -12,11 +12,22 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+#if !defined(OFFICIAL_BUILD)
+#include "base/memory/weak_ptr.h"
+#include "base/task/cancelable_task_tracker.h"
+#endif
+
 class Profile;
 
 namespace content {
 class WebContents;
 }  // namespace content
+
+#if !defined(OFFICIAL_BUILD)
+namespace history {
+class QueryResults;
+}  // namespace history
+#endif
 
 // Handles bidirectional communication between memories page and the browser.
 class MemoriesHandler : public memories::mojom::PageHandler {
@@ -34,15 +45,28 @@ class MemoriesHandler : public memories::mojom::PageHandler {
   void SetPage(
       mojo::PendingRemote<memories::mojom::Page> pending_page) override;
 
-  using MemoryCallback = base::OnceCallback<void(memories::mojom::MemoryPtr)>;
-  void GetSampleMemory(MemoryCallback callback) override;
+  using MemoriesResultCallback =
+      base::OnceCallback<void(memories::mojom::MemoriesResultPtr)>;
+  void GetSampleMemories(const std::string& query,
+                         MemoriesResultCallback callback) override;
 
  private:
+#if !defined(OFFICIAL_BUILD)
+  void OnHistoryQueryResults(const std::string& query,
+                             MemoriesResultCallback callback,
+                             history::QueryResults results);
+#endif
+
   Profile* profile_;
   content::WebContents* web_contents_;
 
   mojo::Remote<memories::mojom::Page> page_;
   mojo::Receiver<memories::mojom::PageHandler> page_handler_;
+
+#if !defined(OFFICIAL_BUILD)
+  base::CancelableTaskTracker history_task_tracker_;
+  base::WeakPtrFactory<MemoriesHandler> weak_ptr_factory_{this};
+#endif
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_MEMORIES_MEMORIES_HANDLER_H_

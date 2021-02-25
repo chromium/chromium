@@ -4,7 +4,12 @@
 
 import {BrowserProxy} from './browser_proxy.js';
 
-BrowserProxy.getInstance().handler.getSampleMemory().then(
-    (/** @type {!memories.mojom.Memory} */ memory) => {
-      console.log(memory);
-    });
+// <if expr="not is_official_build">
+const query = decodeURI(window.location.hash.substr(1));
+if (query) {
+  BrowserProxy.getInstance().handler.getSampleMemories(query).then(
+      (/** @type {!Array<memories.mojom.Memory>} */ memories) => {
+        console.log(memories);
+      });
+}
+// </if>
