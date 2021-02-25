@@ -710,6 +710,13 @@ namespace {
 // https://blogs.windows.com/blog/tag/code-integrity-guard/.
 const base::Feature kRendererCodeIntegrity{"RendererCodeIntegrity",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
+// Enables pre-launch Code Integrity Guard (CIG) for Chrome network service
+// process, when running on Windows 10 1511 and above. This has no effect if
+// NetworkServiceSandbox feature is disabled. See
+// https://blogs.windows.com/blog/tag/code-integrity-guard/.
+const base::Feature kNetworkServiceCodeIntegrity{
+    "NetworkServiceCodeIntegrity", base::FEATURE_DISABLED_BY_DEFAULT};
+
 #endif  // defined(OS_WIN) && !defined(COMPONENT_BUILD) &&
         // !defined(ADDRESS_SANITIZER)
 
@@ -3811,44 +3818,23 @@ bool ChromeContentBrowserClient::PreSpawnChild(
     sandbox::TargetPolicy* policy,
     sandbox::policy::SandboxType sandbox_type,
     ChildSpawnFlags flags) {
-  switch (sandbox_type) {
-    case sandbox::policy::SandboxType::kRenderer: {
-      // Does not work under component build because all the component DLLs
-      // would need to be manually added and maintained. Does not work under
-      // ASAN build because ASAN has not yet fully initialized its
-      // instrumentation by the time the CIG intercepts run.
+// Does not work under component build because all the component DLLs would need
+// to be manually added and maintained. Does not work under ASAN build because
+// ASAN has not yet fully initialized its instrumentation by the time the CIG
+// intercepts run.
 #if !defined(COMPONENT_BUILD) && !defined(ADDRESS_SANITIZER)
-      if ((flags & ChildSpawnFlags::RENDERER_CODE_INTEGRITY) == 0)
-        return true;
-      if (!base::FeatureList::IsEnabled(kRendererCodeIntegrity))
-        return true;
+  bool enforce_code_integrity = false;
 
-      // Only enable signing mitigation if launching from chrome.exe.
-      base::FilePath exe_path;
-      if (!base::PathService::Get(base::FILE_EXE, &exe_path))
-        return true;
-      if (chrome::kBrowserProcessExecutableName != exe_path.BaseName().value())
-        return true;
-
-      sandbox::MitigationFlags mitigations = policy->GetProcessMitigations();
-      mitigations |= sandbox::MITIGATION_FORCE_MS_SIGNED_BINS;
-      sandbox::ResultCode result = policy->SetProcessMitigations(mitigations);
-      if (result != sandbox::SBOX_ALL_OK)
-        return false;
-
-      // Allow loading Chrome's DLLs.
-      for (const auto* dll : {chrome::kBrowserResourcesDll, chrome::kElfDll}) {
-        result = policy->AddRule(sandbox::TargetPolicy::SUBSYS_SIGNED_BINARY,
-                                 sandbox::TargetPolicy::SIGNED_ALLOW_LOAD,
-                                 GetModulePath(dll).value().c_str());
-        if (result != sandbox::SBOX_ALL_OK)
-          return false;
-      }
-      return true;
-#endif  // !defined(COMPONENT_BUILD) && !defined(ADDRESS_SANITIZER)
-      return true;
-    }
+  switch (sandbox_type) {
+    case sandbox::policy::SandboxType::kRenderer:
+      enforce_code_integrity =
+          ((flags & ChildSpawnFlags::RENDERER_CODE_INTEGRITY) &&
+           base::FeatureList::IsEnabled(kRendererCodeIntegrity));
+      break;
     case sandbox::policy::SandboxType::kNetwork:
+      enforce_code_integrity =
+          base::FeatureList::IsEnabled(kNetworkServiceCodeIntegrity);
+      break;
     case sandbox::policy::SandboxType::kUtility:
     case sandbox::policy::SandboxType::kGpu:
     case sandbox::policy::SandboxType::kPpapi:
@@ -3865,8 +3851,35 @@ bool ChromeContentBrowserClient::PreSpawnChild(
     case sandbox::policy::SandboxType::kVideoCapture:
     case sandbox::policy::SandboxType::kIconReader:
     case sandbox::policy::SandboxType::kMediaFoundationCdm:
-      return true;
+      break;
   }
+
+  if (!enforce_code_integrity)
+    return true;
+
+  // Only enable signing mitigation if launching from chrome.exe.
+  base::FilePath exe_path;
+  if (!base::PathService::Get(base::FILE_EXE, &exe_path))
+    return true;
+  if (chrome::kBrowserProcessExecutableName != exe_path.BaseName().value())
+    return true;
+
+  sandbox::MitigationFlags mitigations = policy->GetProcessMitigations();
+  mitigations |= sandbox::MITIGATION_FORCE_MS_SIGNED_BINS;
+  sandbox::ResultCode result = policy->SetProcessMitigations(mitigations);
+  if (result != sandbox::SBOX_ALL_OK)
+    return false;
+
+  // Allow loading Chrome's DLLs.
+  for (const auto* dll : {chrome::kBrowserResourcesDll, chrome::kElfDll}) {
+    result = policy->AddRule(sandbox::TargetPolicy::SUBSYS_SIGNED_BINARY,
+                             sandbox::TargetPolicy::SIGNED_ALLOW_LOAD,
+                             GetModulePath(dll).value().c_str());
+    if (result != sandbox::SBOX_ALL_OK)
+      return false;
+  }
+#endif  // !defined(COMPONENT_BUILD) && !defined(ADDRESS_SANITIZER)
+  return true;
 }
 
 bool ChromeContentBrowserClient::IsRendererCodeIntegrityEnabled() {
