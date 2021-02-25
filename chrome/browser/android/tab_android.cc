@@ -392,7 +392,8 @@ TabAndroid::TabLoadStatus TabAndroid::LoadUrl(
     jboolean has_user_gesture,
     jboolean should_clear_history_list,
     jlong input_start_timestamp,
-    jlong intent_received_timestamp) {
+    jlong intent_received_timestamp,
+    jint ua_override_option) {
   if (!web_contents())
     return PAGE_LOAD_FAILED;
 
@@ -449,6 +450,9 @@ TabAndroid::TabLoadStatus TabAndroid::LoadUrl(
       load_params.input_start =
           base::TimeTicks::FromUptimeMillis(intent_received_timestamp);
     }
+    load_params.override_user_agent =
+        static_cast<NavigationController::UserAgentOverrideOption>(
+            ua_override_option);
     web_contents()->GetController().LoadURLWithParams(load_params);
   }
   return DEFAULT_PAGE_LOAD;

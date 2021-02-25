@@ -4417,6 +4417,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "request-desktop-site-for-tablets",
+    "owners": [ "gangwu@chromium.org", "fgorski@chromium.org" ],
+    "expiry_milestone": 96
+  },
+  {
     "name": "restore-gaia-cookies-if-deleted",
     "owners": [ "fernandex", "chrome-signin-team" ],
     "expiry_milestone": 96

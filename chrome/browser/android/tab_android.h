@@ -173,7 +173,8 @@ class TabAndroid : public base::SupportsUserData {
       jboolean has_user_gesture,
       jboolean should_clear_history_list,
       jlong omnibox_input_received_timestamp,
-      jlong intent_received_timestamp);
+      jlong intent_received_timestamp,
+      jint ua_override_option);
   void SetActiveNavigationEntryTitleForUrl(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& jurl,

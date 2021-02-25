@@ -55,7 +55,9 @@ import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
+import org.chromium.content_public.browser.navigation_controller.UserAgentOverrideOption;
 import org.chromium.content_public.common.ResourceRequestBody;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.ColorUtils;
@@ -73,6 +75,8 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     private static final String TAG = "Tab";
 
     private static final String PRODUCT_VERSION = ChromeVersionInfo.getProductVersion();
+
+    private static final String REQUEST_DESKTOP_ENABLED_PARAM = "enabled";
 
     private long mNativeTabAndroid;
 
@@ -198,6 +202,9 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     private final TabThemeColorHelper mThemeColorHelper;
     private int mThemeColor;
     private boolean mUsedCriticalPersistedTabData;
+
+    /** Whether or not the user manually changed the user agent. */
+    private boolean mUserForcedUserAgent;
 
     /**
      * Creates an instance of a {@link TabImpl}.
@@ -481,6 +488,9 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
                 throw new RuntimeException("Tab.loadUrl called when no native side exists");
             }
 
+            // Request desktop sites for large screen tablets.
+            params.setOverrideUserAgent(calculateUserAgentOverrideOption());
+
             // We load the URL from the tab rather than directly from the ContentView so the tab has
             // a chance of using a prerenderer page is any.
             int loadType = TabImplJni.get().loadUrl(mNativeTabAndroid, params.getUrl(),
@@ -493,7 +503,8 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
                     params.getReferrer() != null ? params.getReferrer().getPolicy() : 0,
                     params.getIsRendererInitiated(), params.getShouldReplaceCurrentEntry(),
                     params.getHasUserGesture(), params.getShouldClearHistoryList(),
-                    params.getInputStartTimestamp(), params.getIntentReceivedTimestamp());
+                    params.getInputStartTimestamp(), params.getIntentReceivedTimestamp(),
+                    params.getUserAgentOverrideOption());
 
             for (TabObserver observer : mObservers) {
                 observer.onLoadUrl(this, params, loadType);
@@ -539,13 +550,21 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
             OfflinePageUtils.reload(getWebContents(),
                     /*loadUrlDelegate=*/new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(this));
         } else {
-            if (getWebContents() != null) getWebContents().getNavigationController().reload(true);
+            if (getWebContents() != null) {
+                if (calculateUserAgentOverrideOption() != UserAgentOverrideOption.INHERIT) {
+                    TabUtils.switchUserAgent(this, /* forcedByUser */ false);
+                }
+                getWebContents().getNavigationController().reload(true);
+            }
         }
     }
 
     @Override
     public void reloadIgnoringCache() {
         if (getWebContents() != null) {
+            if (calculateUserAgentOverrideOption() != UserAgentOverrideOption.INHERIT) {
+                TabUtils.switchUserAgent(this, /* forcedByUser */ false);
+            }
             getWebContents().getNavigationController().reloadBypassingCache(true);
         }
     }
@@ -1607,6 +1626,31 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         }
     }
 
+    private @UserAgentOverrideOption int calculateUserAgentOverrideOption() {
+        if (mUserForcedUserAgent || !DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())
+                || !CachedFeatureFlags.isEnabled(ChromeFeatureList.REQUEST_DESKTOP_SITE_FOR_TABLETS)
+                || !ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.REQUEST_DESKTOP_SITE_FOR_TABLETS,
+                        REQUEST_DESKTOP_ENABLED_PARAM, false)) {
+            return UserAgentOverrideOption.INHERIT;
+        }
+
+        boolean shouldRequestDesktopSite = TabUtils.isTabLargeEnoughForDesktopSite(this);
+        boolean currentRequestDesktopSite = getWebContents() == null
+                ? false
+                : getWebContents().getNavigationController().getUseDesktopUserAgent();
+        if (shouldRequestDesktopSite == currentRequestDesktopSite) {
+            return UserAgentOverrideOption.INHERIT;
+        }
+
+        return shouldRequestDesktopSite ? UserAgentOverrideOption.TRUE
+                                        : UserAgentOverrideOption.FALSE;
+    }
+
+    void setUserForcedUserAgent() {
+        mUserForcedUserAgent = true;
+    }
+
     @NativeMethods
     interface Natives {
         TabImpl fromWebContents(WebContents webContents);
@@ -1626,7 +1670,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
                 ResourceRequestBody postData, int transition, String referrerUrl,
                 int referrerPolicy, boolean isRendererInitiated, boolean shoulReplaceCurrentEntry,
                 boolean hasUserGesture, boolean shouldClearHistoryList, long inputStartTimestamp,
-                long intentReceivedTimestamp);
+                long intentReceivedTimestamp, int userAgentOverrideOption);
         void setActiveNavigationEntryTitleForUrl(long nativeTabAndroid, String url, String title);
         void loadOriginalImage(long nativeTabAndroid);
         void setAddApi2TransitionToFutureNavigations(long nativeTabAndroid, boolean shouldAdd);

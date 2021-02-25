@@ -789,6 +789,11 @@ const base::Feature kRemoveSupervisedUsersOnStartup{
 #endif
 
 #if defined(OS_ANDROID)
+const base::Feature kRequestDesktopSiteForTablets{
+    "RequestDesktopSiteForTablets", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
+#if defined(OS_ANDROID)
 const base::Feature kSafetyCheckAndroid{"SafetyCheckAndroid",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 #endif

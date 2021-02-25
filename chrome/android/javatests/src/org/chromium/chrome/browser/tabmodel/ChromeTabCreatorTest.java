@@ -21,6 +21,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.WarmupManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -28,10 +29,12 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.EmbeddedTestServerRule;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -118,6 +121,53 @@ public class ChromeTabCreatorTest {
         // Verify that the background tab is loaded.
         Assert.assertNotNull(bgTab.getView());
         ChromeTabUtils.waitForTabPageLoaded(bgTab, mTestServer.getURL(TEST_PATH));
+
+        // Both foreground and background do not request desktop sites.
+        Assert.assertFalse("Should not request desktop sites by default.",
+                fgTab.getWebContents().getNavigationController().getUseDesktopUserAgent());
+        Assert.assertFalse("Should not request desktop sites by default.",
+                bgTab.getWebContents().getNavigationController().getUseDesktopUserAgent());
+    }
+
+    /**
+     * Verify that Request Desktop Sites enabled on tablets, but not on phone.
+     */
+    @Test
+    @MediumTest
+    @Feature({"Browser"})
+    @EnableFeatures({ChromeFeatureList.REQUEST_DESKTOP_SITE_FOR_TABLETS + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:screen_width_dp/100/enabled/true"})
+    public void
+    testCreateNewTabRequestDesktopSites() throws ExecutionException {
+        final Tab fgTab = sActivityTestRule.getActivity().getActivityTab();
+        // Foreground tab should request desktop sites on tablets, since it is newly created.
+        if (DeviceFormFactor.isTablet()) {
+            Assert.assertTrue("Newly created tab should request desktop sites for tablets.",
+                    fgTab.getWebContents().getNavigationController().getUseDesktopUserAgent());
+        } else {
+            Assert.assertFalse("Newly created tab should request mobile sites for phones.",
+                    fgTab.getWebContents().getNavigationController().getUseDesktopUserAgent());
+        }
+
+        Tab bgTab = TestThreadUtils.runOnUiThreadBlocking(() -> {
+            return sActivityTestRule.getActivity().getCurrentTabCreator().createNewTab(
+                    new LoadUrlParams(mTestServer.getURL(TEST_PATH)),
+                    TabLaunchType.FROM_LONGPRESS_BACKGROUND, fgTab);
+        });
+
+        // Verify that the background tab is loaded.
+        Assert.assertNotNull(bgTab.getView());
+        ChromeTabUtils.waitForTabPageLoaded(bgTab, mTestServer.getURL(TEST_PATH));
+
+        // Background tab should request desktop sites on tablets, since it is newly created.
+        if (DeviceFormFactor.isTablet()) {
+            Assert.assertTrue("Newly created tab should request desktop sites for tablets.",
+                    bgTab.getWebContents().getNavigationController().getUseDesktopUserAgent());
+        } else {
+            Assert.assertFalse("Newly created tab should request mobile sites for phones.",
+                    bgTab.getWebContents().getNavigationController().getUseDesktopUserAgent());
+        }
     }
 
     /**

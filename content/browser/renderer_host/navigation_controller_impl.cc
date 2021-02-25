@@ -1083,8 +1083,15 @@ bool NavigationControllerImpl::RendererDidNavigate(
             GetLastCommittedEntry()->GetIsOverridingUserAgent())
       overriding_user_agent_changed = true;
   } else {
+    // GetLastCommittedEntry() is null, so this is the first entry.
     details->previous_main_frame_url = GURL();
     details->previous_entry_index = -1;
+    if (pending_entry_ && pending_entry_->GetIsOverridingUserAgent()) {
+      // Default setting is NOT override the user agent, so overriding the user
+      // agent in first entry should be considered as user agent changed as
+      // well.
+      overriding_user_agent_changed = true;
+    }
   }
 
   // TODO(altimin, crbug.com/933147): Remove this logic after we are done with

@@ -148,6 +148,7 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModel;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -2296,11 +2297,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
 
         if (id == R.id.request_desktop_site_id || id == R.id.request_desktop_site_check_id) {
-            final boolean reloadOnChange = !currentTab.isNativePage();
-            final boolean usingDesktopUserAgent =
-                    currentTab.getWebContents().getNavigationController().getUseDesktopUserAgent();
-            currentTab.getWebContents().getNavigationController().setUseDesktopUserAgent(
-                    !usingDesktopUserAgent, reloadOnChange);
+            TabUtils.switchUserAgent(currentTab, /* forcedByUser */ true);
             RecordUserAction.record("MobileMenuRequestDesktopSite");
             return true;
         }

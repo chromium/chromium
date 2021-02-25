@@ -14,6 +14,10 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/public/mojom/x_frame_options.mojom.h"
 
+#if defined(OS_ANDROID)
+#include "ui/base/device_form_factor.h"
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/extension_urls.h"
 #endif
@@ -22,6 +26,7 @@ namespace {
 
 #if defined(OS_ANDROID)
 const char kCCTClientDataHeader[] = "X-CCT-Client-Data";
+const char kRequestDesktopDataHeader[] = "X-Eligible-Tablet";
 #endif
 
 }  // namespace
@@ -42,12 +47,14 @@ GoogleURLLoaderThrottle::GoogleURLLoaderThrottle(
 #if defined(OS_ANDROID)
     const std::string& client_data_header,
     bool night_mode_enabled,
+    bool is_tab_large_enough,
 #endif
     chrome::mojom::DynamicParams dynamic_params)
     :
 #if defined(OS_ANDROID)
       client_data_header_(client_data_header),
       night_mode_enabled_(night_mode_enabled),
+      is_tab_large_enough_(is_tab_large_enough),
 #endif
       dynamic_params_(std::move(dynamic_params)) {
 }
@@ -104,6 +111,14 @@ void GoogleURLLoaderThrottle::WillStartRequest(
     }
     base::UmaHistogramBoolean("Android.DarkTheme.DarkSearchRequested",
                               night_mode_enabled_);
+
+    if (base::FeatureList::IsEnabled(features::kRequestDesktopSiteForTablets) &&
+        ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+      request->headers.SetHeader(kRequestDesktopDataHeader,
+                                 is_tab_large_enough_ ? "1" : "0");
+      base::UmaHistogramBoolean("Android.RequestDesktopSite.TabletEligible",
+                                is_tab_large_enough_);
+    }
   }
 #endif
 }

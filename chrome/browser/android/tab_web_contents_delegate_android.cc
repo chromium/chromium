@@ -560,6 +560,15 @@ bool TabWebContentsDelegateAndroid::CanShowAppBanners() const {
   return Java_TabWebContentsDelegateAndroidImpl_canShowAppBanners(env, obj);
 }
 
+bool TabWebContentsDelegateAndroid::IsTabLargeEnoughForDesktopSite() const {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null())
+    return false;
+  return Java_TabWebContentsDelegateAndroidImpl_isTabLargeEnoughForDesktopSite(
+      env, obj);
+}
+
 const GURL TabWebContentsDelegateAndroid::GetManifestScope() const {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
