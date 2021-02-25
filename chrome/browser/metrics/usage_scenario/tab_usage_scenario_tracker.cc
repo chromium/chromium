@@ -93,8 +93,11 @@ void TabUsageScenarioTracker::OnTabVisibilityChanged(
     content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (web_contents->GetVisibility() == content::Visibility::VISIBLE) {
-    DCHECK(!base::Contains(visible_tabs_, web_contents));
+  auto iter = visible_tabs_.find(web_contents);
+  // The first content::Visibility::VISIBLE notification is always sent, even
+  // if the tab starts in the visible state.
+  if (iter == visible_tabs_.end() &&
+      web_contents->GetVisibility() == content::Visibility::VISIBLE) {
     usage_scenario_data_store_->OnWindowVisible();
 
     // If this tab is playing video then record that it became visible.
@@ -103,11 +106,10 @@ void TabUsageScenarioTracker::OnTabVisibilityChanged(
     }
 
     InsertContentsInMapOfVisibleTabs(web_contents);
-  } else {
-    auto iter = visible_tabs_.find(web_contents);
+  } else if (iter != visible_tabs_.end() &&
+             web_contents->GetVisibility() != content::Visibility::VISIBLE) {
     // The tab was previously visible and it's now hidden or occluded.
-    if (iter != visible_tabs_.end())
-      OnTabBecameHidden(&iter);
+    OnTabBecameHidden(&iter);
   }
 }
 

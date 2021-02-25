@@ -17,7 +17,9 @@
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
@@ -430,6 +432,37 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
   EXPECT_TRUE(interval_data.time_with_open_webrtc_connection.is_zero());
   EXPECT_TRUE(interval_data.time_playing_video_in_visible_tab.is_zero());
   EXPECT_EQ(expected_source_id,
+            interval_data.source_id_for_longest_visible_origin);
+  EXPECT_EQ(kInterval,
+            interval_data.source_id_for_longest_visible_origin_duration);
+}
+
+IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
+                       InitialVisibleNotification) {
+  // This test causes a WebContents::OnVisibilityChanged(VISIBLE) signal to be
+  // emitted for a tab that was already visible when adding it.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), embedded_test_server()->GetURL("/title2.html"),
+      WindowOpenDisposition::NEW_WINDOW,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
+  Browser* browser2 = BrowserList::GetInstance()->get(1);
+
+  EXPECT_TRUE(browser2->tab_strip_model()->CloseWebContentsAt(
+      0, TabStripModel::CLOSE_USER_GESTURE));
+
+  tick_clock_.Advance(kInterval);
+  auto interval_data = data_store_.ResetIntervalData();
+  EXPECT_EQ(2U, interval_data.max_tab_count);
+  EXPECT_EQ(2U, interval_data.max_visible_window_count);
+  EXPECT_EQ(0U, interval_data.top_level_navigation_count);
+  EXPECT_EQ(1U, interval_data.tabs_closed_during_interval);
+  EXPECT_EQ(0U, interval_data.user_interaction_count);
+  EXPECT_TRUE(
+      interval_data.time_playing_video_full_screen_single_monitor.is_zero());
+  EXPECT_TRUE(interval_data.time_with_open_webrtc_connection.is_zero());
+  EXPECT_TRUE(interval_data.time_playing_video_in_visible_tab.is_zero());
+  EXPECT_EQ(ukm::GetSourceIdForWebContentsDocument(
+                browser()->tab_strip_model()->GetActiveWebContents()),
             interval_data.source_id_for_longest_visible_origin);
   EXPECT_EQ(kInterval,
             interval_data.source_id_for_longest_visible_origin_duration);
