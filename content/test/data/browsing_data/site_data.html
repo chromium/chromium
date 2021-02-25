@@ -131,6 +131,24 @@
     }
   }
 
+  async function setStorageFoundation() {
+    try {
+      await storageFoundation.open('foo');
+      success_();
+    } catch (e) {
+      failure_();
+    }
+  }
+
+  async function hasStorageFoundation() {
+    try {
+      let dir = await storageFoundation.getAll();
+      domAutomationController.send(dir.indexOf('foo') != -1);
+    } catch (e) {
+      failure_();
+    }
+  }
+
   function setWebSql() {
     var db = openDatabase('testdb', '1.0', 'a test db', 1024);
     db.transaction(function (tx) {

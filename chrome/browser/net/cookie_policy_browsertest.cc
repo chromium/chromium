@@ -51,6 +51,11 @@ class CookiePolicyBrowserTest : public InProcessBrowserTest {
     // HTTPS server only serves a valid cert for localhost, so this is needed
     // to load pages from other hosts without an error.
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+    // Storage Foundation has to be enabled, since it is accessed from the tests
+    // that use chrome/browser/net/storage_test_utils.cc.
+    // TODO(fivedots): Remove this switch once Storage Foundation
+    // is enabled by default.
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures, "NativeIO");
   }
 
   GURL GetURL(const std::string& host) {

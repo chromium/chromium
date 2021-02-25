@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/mojom/native_io/native_io.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/native_io/native_io_capacity_tracker.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -64,6 +65,35 @@ class NativeIOFileManager final : public ScriptWrappable,
   void Trace(Visitor* visitor) const override;
 
  private:
+  // Checks whether storage access should be allowed in the provided context,
+  // and calls the callback with the result.
+  void CheckStorageAccessAllowed(ExecutionContext* context,
+                                 ScriptPromiseResolver* resolver,
+                                 base::OnceCallback<void()> callback);
+
+  // Called after CheckStoraAccessAllowed is done checking access. Calls the
+  // callback if access is allowed, rejects through the resolver if not.
+  void DidCheckStorageAccessAllowed(ScriptPromiseResolver* resolver,
+                                    base::OnceCallback<void()> callback,
+                                    bool allowed_access);
+
+  // Checks whether storage access should be allowed in the provided context.
+  bool CheckStorageAccessAllowedSync(ExecutionContext* context);
+
+  // Executes the actual open, after preconditions have been checked.
+  void OpenImpl(String name, ScriptPromiseResolver* resolver);
+
+  // Executes the actual delete, after preconditions have been checked.
+  void DeleteImpl(String name, ScriptPromiseResolver* resolver);
+
+  // Executes the actual getAll, after preconditions have been checked.
+  void GetAllImpl(ScriptPromiseResolver* resolver);
+
+  // Executes the actual rename, after preconditions have been checked.
+  void RenameImpl(String old_name,
+                  String new_name,
+                  ScriptPromiseResolver* resolver);
+
   // Called when the mojo backend disconnects.
   void OnBackendDisconnect();
 
@@ -93,6 +123,9 @@ class NativeIOFileManager final : public ScriptWrappable,
 
   // Wraps an always-on Mojo pipe for sending requests to the storage backend.
   HeapMojoRemote<mojom::blink::NativeIOHost> backend_;
+
+  // Caches results of checking if storage access is allowed.
+  base::Optional<bool> storage_access_allowed_;
 };
 
 }  // namespace blink

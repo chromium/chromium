@@ -63,6 +63,9 @@ class StorageAccessAPIBrowserTest : public InProcessBrowserTest {
     // HTTPS server only serves a valid cert for localhost, so this is needed
     // to load pages from other hosts without an error.
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+    // TODO(fivedots): Remove this switch once Storage Foundation is enabled
+    // by default.
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures, "NativeIO");
   }
 
   GURL GetURL(const std::string& host) {

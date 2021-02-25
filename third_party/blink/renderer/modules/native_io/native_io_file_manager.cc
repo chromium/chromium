@@ -11,12 +11,15 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/native_io/native_io_capacity_tracker.h"
 #include "third_party/blink/renderer/modules/native_io/native_io_error.h"
 #include "third_party/blink/renderer/modules/native_io/native_io_file.h"
@@ -26,6 +29,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -53,6 +57,15 @@ bool IsValidNativeIOName(const String& name) {
   }
   return std::all_of(name.Span16().begin(), name.Span16().end(),
                      &IsValidNativeIONameCharacter);
+}
+
+void ThrowStorageAccessError(ExceptionState& exception_state) {
+  // TODO(fivedots): Switch to security error after it's available as a
+  // NativeIOErrorType.
+  ThrowNativeIOWithError(exception_state,
+                         mojom::blink::NativeIOError::New(
+                             mojom::blink::NativeIOErrorType::kUnknown,
+                             "Storage access is denied"));
 }
 
 void OnGetAllResult(ScriptPromiseResolver* resolver,
@@ -124,18 +137,15 @@ ScriptPromise NativeIOFileManager::open(ScriptState* script_state,
   ExecutionContext* execution_context = GetExecutionContext();
   DCHECK(execution_context);
 
-  HeapMojoRemote<mojom::blink::NativeIOFileHost> backend_file(
-      execution_context);
-  mojo::PendingReceiver<mojom::blink::NativeIOFileHost> backend_file_receiver =
-      backend_file.BindNewPipeAndPassReceiver(receiver_task_runner_);
-
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  backend_->OpenFile(
-      name, std::move(backend_file_receiver),
-      WTF::Bind(&NativeIOFileManager::OnOpenResult, WrapPersistent(this),
-                WrapPersistent(resolver),
-                WrapPersistent(WrapDisallowNew(std::move(backend_file)))));
-  return resolver->Promise();
+  auto promise = resolver->Promise();
+
+  CheckStorageAccessAllowed(
+      execution_context, resolver,
+      WTF::Bind(&NativeIOFileManager::OpenImpl, WrapWeakPersistent(this), name,
+                WrapPersistent(resolver)));
+
+  return promise;
 }
 
 ScriptPromise NativeIOFileManager::Delete(ScriptState* script_state,
@@ -155,10 +165,16 @@ ScriptPromise NativeIOFileManager::Delete(ScriptState* script_state,
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  backend_->DeleteFile(
-      name, WTF::Bind(&NativeIOFileManager::OnDeleteResult,
-                      WrapPersistent(this), WrapPersistent(resolver)));
-  return resolver->Promise();
+  auto promise = resolver->Promise();
+  ExecutionContext* execution_context = GetExecutionContext();
+  DCHECK(execution_context);
+
+  CheckStorageAccessAllowed(
+      execution_context, resolver,
+      WTF::Bind(&NativeIOFileManager::DeleteImpl, WrapWeakPersistent(this),
+                name, WrapPersistent(resolver)));
+
+  return promise;
 }
 
 ScriptPromise NativeIOFileManager::getAll(ScriptState* script_state,
@@ -172,9 +188,16 @@ ScriptPromise NativeIOFileManager::getAll(ScriptState* script_state,
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  backend_->GetAllFileNames(
-      WTF::Bind(&OnGetAllResult, WrapPersistent(resolver)));
-  return resolver->Promise();
+  auto promise = resolver->Promise();
+  ExecutionContext* execution_context = GetExecutionContext();
+  DCHECK(execution_context);
+
+  CheckStorageAccessAllowed(
+      execution_context, resolver,
+      WTF::Bind(&NativeIOFileManager::GetAllImpl, WrapWeakPersistent(this),
+                WrapPersistent(resolver)));
+
+  return promise;
 }
 
 ScriptPromise NativeIOFileManager::rename(ScriptState* script_state,
@@ -195,9 +218,16 @@ ScriptPromise NativeIOFileManager::rename(ScriptState* script_state,
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  backend_->RenameFile(old_name, new_name,
-                       WTF::Bind(&OnRenameResult, WrapPersistent(resolver)));
-  return resolver->Promise();
+  auto promise = resolver->Promise();
+  ExecutionContext* execution_context = GetExecutionContext();
+  DCHECK(execution_context);
+
+  CheckStorageAccessAllowed(
+      execution_context, resolver,
+      WTF::Bind(&NativeIOFileManager::RenameImpl, WrapWeakPersistent(this),
+                old_name, new_name, WrapPersistent(resolver)));
+
+  return promise;
 }
 
 NativeIOFileSync* NativeIOFileManager::openSync(
@@ -218,6 +248,11 @@ NativeIOFileSync* NativeIOFileManager::openSync(
 
   ExecutionContext* execution_context = GetExecutionContext();
   DCHECK(execution_context);
+
+  if (!CheckStorageAccessAllowedSync(execution_context)) {
+    ThrowStorageAccessError(exception_state);
+    return nullptr;
+  }
 
   HeapMojoRemote<mojom::blink::NativeIOFileHost> backend_file(
       execution_context);
@@ -257,6 +292,14 @@ void NativeIOFileManager::deleteSync(String name,
     return;
   }
 
+  ExecutionContext* execution_context = GetExecutionContext();
+  DCHECK(execution_context);
+
+  if (!CheckStorageAccessAllowedSync(execution_context)) {
+    ThrowStorageAccessError(exception_state);
+    return;
+  }
+
   mojom::blink::NativeIOErrorPtr delete_error;
   uint64_t deleted_file_size;
   bool call_succeeded =
@@ -277,6 +320,14 @@ Vector<String> NativeIOFileManager::getAllSync(
                            mojom::blink::NativeIOError::New(
                                mojom::blink::NativeIOErrorType::kInvalidState,
                                "NativeIOHost backend went away"));
+    return result;
+  }
+
+  ExecutionContext* execution_context = GetExecutionContext();
+  DCHECK(execution_context);
+
+  if (!CheckStorageAccessAllowedSync(execution_context)) {
+    ThrowStorageAccessError(exception_state);
     return result;
   }
 
@@ -304,6 +355,14 @@ void NativeIOFileManager::renameSync(String old_name,
                            mojom::blink::NativeIOError::New(
                                mojom::blink::NativeIOErrorType::kInvalidState,
                                "NativeIOHost backend went away"));
+    return;
+  }
+
+  ExecutionContext* execution_context = GetExecutionContext();
+  DCHECK(execution_context);
+
+  if (!CheckStorageAccessAllowedSync(execution_context)) {
+    ThrowStorageAccessError(exception_state);
     return;
   }
 
@@ -398,11 +457,94 @@ ScriptPromise NativeIOFileManager::getRemainingCapacity(
   return promise;
 }
 
-void NativeIOFileManager::Trace(Visitor* visitor) const {
-  visitor->Trace(backend_);
-  visitor->Trace(capacity_tracker_);
-  ScriptWrappable::Trace(visitor);
-  ExecutionContextClient::Trace(visitor);
+void NativeIOFileManager::CheckStorageAccessAllowed(
+    ExecutionContext* context,
+    ScriptPromiseResolver* resolver,
+    base::OnceCallback<void()> callback) {
+  DCHECK(context->IsWindow() || context->IsWorkerGlobalScope());
+
+  auto wrapped_callback = WTF::Bind(
+      &NativeIOFileManager::DidCheckStorageAccessAllowed,
+      WrapWeakPersistent(this), WrapPersistent(resolver), std::move(callback));
+
+  // TODO(crbug/1180185): consider removing caching, if the worker
+  // WebContentSettingsClient does it for us.
+  if (storage_access_allowed_.has_value()) {
+    std::move(wrapped_callback).Run(storage_access_allowed_.value());
+    return;
+  }
+
+  WebContentSettingsClient* content_settings_client = nullptr;
+  if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
+    LocalFrame* frame = window->GetFrame();
+    if (!frame) {
+      std::move(wrapped_callback).Run(false);
+      return;
+    }
+    content_settings_client = frame->GetContentSettingsClient();
+  } else {
+    content_settings_client =
+        To<WorkerGlobalScope>(context)->ContentSettingsClient();
+  }
+
+  // TODO(fivedots): Switch storage type once we stop aliasing under Filesystem.
+  if (content_settings_client) {
+    content_settings_client->AllowStorageAccess(
+        WebContentSettingsClient::StorageType::kFileSystem,
+        std::move(wrapped_callback));
+    return;
+  }
+  std::move(wrapped_callback).Run(true);
+}
+
+void NativeIOFileManager::DidCheckStorageAccessAllowed(
+    ScriptPromiseResolver* resolver,
+    base::OnceCallback<void()> callback,
+    bool allowed_access) {
+  storage_access_allowed_ = allowed_access;
+
+  if (allowed_access) {
+    std::move(callback).Run();
+    return;
+  }
+
+  ScriptState* script_state = resolver->GetScriptState();
+  if (!script_state->ContextIsValid())
+    return;
+  ScriptState::Scope scope(script_state);
+
+  blink::RejectNativeIOWithError(resolver,
+                                 mojom::blink::NativeIOError::New(
+                                     mojom::blink::NativeIOErrorType::kUnknown,
+                                     "Storage access is denied"));
+  return;
+}
+
+bool NativeIOFileManager::CheckStorageAccessAllowedSync(
+    ExecutionContext* context) {
+  DCHECK(context->IsWindow() || context->IsWorkerGlobalScope());
+
+  if (storage_access_allowed_.has_value()) {
+    return storage_access_allowed_.value();
+  }
+
+  WebContentSettingsClient* content_settings_client = nullptr;
+  if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
+    LocalFrame* frame = window->GetFrame();
+    if (!frame) {
+      return false;
+    }
+    content_settings_client = frame->GetContentSettingsClient();
+  } else {
+    content_settings_client =
+        To<WorkerGlobalScope>(context)->ContentSettingsClient();
+  }
+
+  if (content_settings_client) {
+    return content_settings_client->AllowStorageAccessSync(
+        WebContentSettingsClient::StorageType::kFileSystem);
+  }
+  return true;
 }
 
 void NativeIOFileManager::OnBackendDisconnect() {
@@ -472,6 +614,72 @@ void NativeIOFileManager::OnRequestCapacityChangeResult(
   uint64_t available_capacity = capacity_tracker_->GetAvailableCapacity();
 
   resolver->Resolve(available_capacity);
+}
+
+void NativeIOFileManager::OpenImpl(String name,
+                                   ScriptPromiseResolver* resolver) {
+  DCHECK(storage_access_allowed_.has_value())
+      << "called without checking if storage access was allowed";
+  DCHECK(storage_access_allowed_.value())
+      << "called even though storage access was denied";
+
+  ScriptState* script_state = resolver->GetScriptState();
+  if (!script_state->ContextIsValid())
+    return;
+
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  HeapMojoRemote<mojom::blink::NativeIOFileHost> backend_file(
+      execution_context);
+
+  mojo::PendingReceiver<mojom::blink::NativeIOFileHost> backend_file_receiver =
+      backend_file.BindNewPipeAndPassReceiver(receiver_task_runner_);
+
+  backend_->OpenFile(
+      name, std::move(backend_file_receiver),
+      WTF::Bind(&NativeIOFileManager::OnOpenResult, WrapPersistent(this),
+                WrapPersistent(resolver),
+                WrapPersistent(WrapDisallowNew(std::move(backend_file)))));
+}
+
+void NativeIOFileManager::DeleteImpl(String name,
+                                     ScriptPromiseResolver* resolver) {
+  DCHECK(storage_access_allowed_.has_value())
+      << "called without checking if storage access was allowed";
+  DCHECK(storage_access_allowed_.value())
+      << "called even though storage access was denied";
+
+  backend_->DeleteFile(
+      name, WTF::Bind(&NativeIOFileManager::OnDeleteResult,
+                      WrapPersistent(this), WrapPersistent(resolver)));
+}
+
+void NativeIOFileManager::GetAllImpl(ScriptPromiseResolver* resolver) {
+  DCHECK(storage_access_allowed_.has_value())
+      << "called without checking if storage access was allowed";
+  DCHECK(storage_access_allowed_.value())
+      << "called even though storage access was denied";
+
+  backend_->GetAllFileNames(
+      WTF::Bind(&OnGetAllResult, WrapPersistent(resolver)));
+}
+
+void NativeIOFileManager::RenameImpl(String old_name,
+                                     String new_name,
+                                     ScriptPromiseResolver* resolver) {
+  DCHECK(storage_access_allowed_.has_value())
+      << "called without checking if storage access was allowed";
+  DCHECK(storage_access_allowed_.value())
+      << "called even though storage access was denied";
+
+  backend_->RenameFile(old_name, new_name,
+                       WTF::Bind(&OnRenameResult, WrapPersistent(resolver)));
+}
+
+void NativeIOFileManager::Trace(Visitor* visitor) const {
+  visitor->Trace(backend_);
+  visitor->Trace(capacity_tracker_);
+  ScriptWrappable::Trace(visitor);
+  ExecutionContextClient::Trace(visitor);
 }
 
 }  // namespace blink

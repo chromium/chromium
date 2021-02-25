@@ -186,6 +186,13 @@ class CookieSettingsTest
       set_secure_scheme();
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // TODO(fivedots): Remove this switch once Storage Foundation is enabled
+    // by default.
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures, "NativeIO");
+    ContentSettingsTest::SetUpCommandLine(command_line);
+  }
+
   void set_secure_scheme() { secure_scheme_ = true; }
 
   std::string ReadCookie(Browser* browser) {
@@ -708,6 +715,94 @@ IN_PROC_BROWSER_TEST_P(CookieSettingsTest, BlockCookiesAlsoBlocksFileSystem) {
   for (auto& op : kTestOps) {
     EXPECT_EQ(base::StringPrintf(kBaseExpected, op.name, op.error),
               EvalJs(tab, base::StringPrintf(kBaseScript, op.name, op.code)));
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(CookieSettingsTest,
+                       BlockCookiesAlsoBlocksStorageFoundation) {
+  set_secure_scheme();
+  ui_test_utils::NavigateToURL(browser(), GetPageURL());
+  content_settings::CookieSettings* settings =
+      CookieSettingsFactory::GetForProfile(browser()->profile()).get();
+  settings->SetCookieSetting(GetPageURL(), CONTENT_SETTING_BLOCK);
+
+  const char kBaseExpected[] = "%s - Storage access is denied";
+
+  const char kBaseScript[] = R"(
+      (async function() {
+        const name = `%s`;
+        try {
+          await %s;
+        } catch(e) {
+          const error = e.toString();
+          const n = error.lastIndexOf(`: `);
+          const message = error.substring(n + 2)
+          return `${name} - ${message}`;
+        }
+        return `${name} - success`;
+      }())
+  )";
+
+  struct TestOp {
+    const char* name;
+    const char* code;
+  };
+
+  // TODO(fivedots): Add test cases for getRemainingCapacity(),
+  // requestCapacity(), releaseCapacity() once they land.
+  const TestOp kTestOps[] = {
+      {.name = "storageFoundation.open()",
+       .code = "storageFoundation.open('foo')"},
+      {.name = "storageFoundation.delete()",
+       .code = "storageFoundation.delete('foo')"},
+      {.name = "storageFoundation.rename()",
+       .code = "storageFoundation.rename('foo', 'bar')"},
+      {.name = "storageFoundation.getAll()",
+       .code = "storageFoundation.getAll()"},
+  };
+
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  for (auto& op : kTestOps) {
+    EXPECT_EQ(base::StringPrintf(kBaseExpected, op.name),
+              EvalJs(tab, base::StringPrintf(kBaseScript, op.name, op.code)));
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(CookieSettingsTest,
+                       BlockCookiesAlsoBlocksSyncStorageFoundation) {
+  set_secure_scheme();
+  GURL url = GetServer()->GetURL("/sync_storage_foundation.html");
+  ui_test_utils::NavigateToURL(browser(), url);
+  content_settings::CookieSettings* settings =
+      CookieSettingsFactory::GetForProfile(browser()->profile()).get();
+  settings->SetCookieSetting(GetPageURL(), CONTENT_SETTING_BLOCK);
+
+  const char kBaseExpected[] = "%s - Storage access is denied";
+  const char kBaseUnexpected[] = "%s - Success";
+  const char kBaseCall[] = "run('%s')";
+
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // TODO(fivedots): Add test cases for getRemainingCapacitySync(),
+  // requestCapacitySync(), releaseCapacitySync() once they land.
+  const char* kTestOps[] = {"openSync", "deleteSync", "renameSync",
+                            "getAllSync"};
+
+  for (auto* op : kTestOps) {
+    EXPECT_TRUE(ExecJs(tab, base::StringPrintf(kBaseCall, op)));
+
+    base::string16 expected_title(
+        base::ASCIIToUTF16(base::StringPrintf(kBaseExpected, op)));
+    content::TitleWatcher title_watcher(tab, expected_title);
+
+    base::string16 unexpected_title(
+        base::ASCIIToUTF16(base::StringPrintf(kBaseUnexpected, op)));
+    title_watcher.AlsoWaitForTitle(unexpected_title);
+
+    EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   }
 }
 
