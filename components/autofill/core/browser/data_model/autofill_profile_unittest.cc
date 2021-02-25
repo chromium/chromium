@@ -1123,18 +1123,25 @@ TEST_P(AutofillProfileTest, MergeDataFrom_DifferentProfile) {
   AutofillProfile b = a;
   b.set_guid(base::GenerateGUID());
   b.set_origin(kSettingsOrigin);
-  b.SetRawInfo(ADDRESS_HOME_LINE2, ASCIIToUTF16("Unit 5, area 51"));
-  b.SetRawInfo(COMPANY_NAME, base::string16());
+  b.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_LINE2, ASCIIToUTF16("Unit 5, area 51"),
+      structured_address::VerificationStatus::kObserved);
+  b.SetRawInfoWithVerificationStatus(
+      COMPANY_NAME, base::string16(),
+      structured_address::VerificationStatus::kObserved);
 
   b.SetRawInfo(NAME_MIDDLE, ASCIIToUTF16("M."));
   b.SetRawInfo(NAME_FULL, ASCIIToUTF16("Marion M. Morrison"));
   b.set_language_code("en");
+  b.FinalizeAfterImport();
+  a.FinalizeAfterImport();
 
   EXPECT_TRUE(a.MergeDataFrom(b, "en-US"));
   // Merge has modified profile a, the validation is not updated.
   EXPECT_FALSE(a.is_client_validity_states_updated());
   EXPECT_EQ(kSettingsOrigin, a.origin());
-  EXPECT_EQ(ASCIIToUTF16("Unit 5, area 51"), a.GetRawInfo(ADDRESS_HOME_LINE2));
+  EXPECT_EQ("Unit 5, area 51",
+            base::UTF16ToUTF8(a.GetRawInfo(ADDRESS_HOME_LINE2)));
   EXPECT_EQ(ASCIIToUTF16("Fox"), a.GetRawInfo(COMPANY_NAME));
   base::string16 name = a.GetInfo(NAME_FULL, "en-US");
   EXPECT_EQ(ASCIIToUTF16("Marion Mitchell Morrison"), name);

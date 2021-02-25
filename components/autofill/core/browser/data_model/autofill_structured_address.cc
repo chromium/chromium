@@ -348,7 +348,7 @@ SortingCode::SortingCode(AddressComponent* parent)
 
 SortingCode::~SortingCode() = default;
 
-Address::Address() : Address{nullptr} {}
+Address::Address() : Address(nullptr) {}
 
 Address::Address(const Address& other) : Address() {
   CopyFrom(other);
@@ -359,13 +359,6 @@ Address& Address::operator=(const Address& other) {
   return *this;
 }
 
-bool Address::WipeInvalidStructure() {
-  // For structured addresses, currently it is sufficient to wipe the structure
-  // of the street address, because this is the only directly assignable value
-  // that has a substructure.
-  return street_address_.WipeInvalidStructure();
-}
-
 // Addresses are mergeable when all of their children are mergeable.
 // Reformat the address from the children after merge if it changed.
 Address::Address(AddressComponent* parent)
@@ -374,6 +367,13 @@ Address::Address(AddressComponent* parent)
                        MergeMode::kMergeChildrenAndReformatIfNeeded) {}
 
 Address::~Address() = default;
+
+bool Address::WipeInvalidStructure() {
+  // For structured addresses, currently it is sufficient to wipe the structure
+  // of the street address, because this is the only directly assignable value
+  // that has a substructure.
+  return street_address_.WipeInvalidStructure();
+}
 
 void Address::MigrateLegacyStructure(bool is_verified_profile) {
   // If this component already has a verification status, no profile is regarded

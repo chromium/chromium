@@ -1805,7 +1805,7 @@ TEST_P(FormDataImporterTest,
       NAME_FIRST, base::ASCIIToUTF16("Marion"),
       structured_address::VerificationStatus::kParsed);
   profile.SetRawInfoWithVerificationStatus(
-      NAME_FIRST, base::ASCIIToUTF16("Mitchell"),
+      NAME_MIDDLE, base::ASCIIToUTF16("Mitchell"),
       structured_address::VerificationStatus::kParsed);
 
   base::RunLoop run_loop;

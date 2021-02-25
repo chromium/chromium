@@ -722,26 +722,42 @@ TEST_P(AutofillProfileSyncBridgeTest, MergeSyncData_SyncAllFieldsToClient) {
 
 TEST_P(AutofillProfileSyncBridgeTest, MergeSyncData_IdenticalProfiles) {
   AutofillProfile local1 = AutofillProfile(kGuidA, kHttpOrigin);
-  local1.SetRawInfo(NAME_FIRST, ASCIIToUTF16("John"));
-  local1.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, ASCIIToUTF16("1 1st st"));
+  local1.SetRawInfoWithVerificationStatus(
+      NAME_FIRST, ASCIIToUTF16("John"),
+      structured_address::VerificationStatus::kObserved);
+  local1.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_ADDRESS, ASCIIToUTF16("1 1st st"),
+      structured_address::VerificationStatus::kObserved);
+  local1.FinalizeAfterImport();
 
   AutofillProfile local2 = AutofillProfile(kGuidB, kSettingsOrigin);
-  local2.SetRawInfo(NAME_FIRST, ASCIIToUTF16("Tom"));
-  local2.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, ASCIIToUTF16("2 2nd st"));
-
+  local2.SetRawInfoWithVerificationStatus(
+      NAME_FIRST, ASCIIToUTF16("Tom"),
+      structured_address::VerificationStatus::kObserved);
+  local2.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_ADDRESS, ASCIIToUTF16("2 2nd st"),
+      structured_address::VerificationStatus::kObserved);
+  local2.FinalizeAfterImport();
   AddAutofillProfilesToTable({local1, local2});
 
   // The synced profiles are identical to the local ones, except that the guids
   // are different.
-
   AutofillProfile remote1 = AutofillProfile(kGuidC, kHttpsOrigin);
-  remote1.SetRawInfo(NAME_FIRST, ASCIIToUTF16("John"));
-  remote1.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, ASCIIToUTF16("1 1st st"));
+  remote1.SetRawInfoWithVerificationStatus(
+      NAME_FIRST, ASCIIToUTF16("John"),
+      structured_address::VerificationStatus::kObserved);
+  remote1.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_ADDRESS, ASCIIToUTF16("1 1st st"),
+      structured_address::VerificationStatus::kObserved);
   remote1.FinalizeAfterImport();
 
   AutofillProfile remote2 = AutofillProfile(kGuidD, kHttpsOrigin);
-  remote2.SetRawInfo(NAME_FIRST, ASCIIToUTF16("Tom"));
-  remote2.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, ASCIIToUTF16("2 2nd st"));
+  remote2.SetRawInfoWithVerificationStatus(
+      NAME_FIRST, ASCIIToUTF16("Tom"),
+      structured_address::VerificationStatus::kObserved);
+  remote2.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_ADDRESS, ASCIIToUTF16("2 2nd st"),
+      structured_address::VerificationStatus::kObserved);
   remote2.FinalizeAfterImport();
 
   AutofillProfileSpecifics remote1_specifics =
@@ -1120,17 +1136,25 @@ TEST_P(AutofillProfileSyncBridgeTest,
   remote.set_address_home_street_address(
       "456 El Camino Real\n"
       "Suite #1337");
+  remote.set_address_home_street_address_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
   EXPECT_CALL(*backend(), CommitChanges());
-
   StartSyncing({remote});
 
   // Verify that full street address takes precedence over address lines.
   AutofillProfile local(kGuidA, kHttpsOrigin);
-  local.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS,
-                   ASCIIToUTF16("456 El Camino Real\n"
-                                "Suite #1337"));
-  local.SetRawInfo(ADDRESS_HOME_LINE1, ASCIIToUTF16("456 El Camino Real"));
-  local.SetRawInfo(ADDRESS_HOME_LINE2, ASCIIToUTF16("Suite #1337"));
+  local.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_ADDRESS,
+      ASCIIToUTF16("456 El Camino Real\n"
+                   "Suite #1337"),
+      structured_address::VerificationStatus::kObserved);
+  local.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_LINE1, ASCIIToUTF16("456 El Camino Real"),
+      structured_address::VerificationStatus::kObserved);
+  local.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_LINE2, ASCIIToUTF16("Suite #1337"),
+      structured_address::VerificationStatus::kObserved);
+  local.FinalizeAfterImport();
   EXPECT_THAT(GetAllLocalData(), ElementsAre(local));
 }
 
@@ -1142,8 +1166,10 @@ TEST_P(AutofillProfileSyncBridgeTest,
 TEST_P(AutofillProfileSyncBridgeTest,
        RemoteWithSameGuid_StreetAddress_NoUpdateToEmptyStreetAddressSyncedUp) {
   AutofillProfile local(kGuidA, kHttpsOrigin);
-  local.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, ASCIIToUTF16("123 Example St.\n"
-                                                             "Apt. 42"));
+  local.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_ADDRESS, ASCIIToUTF16("123 Example St.\nApt. 42"),
+      structured_address::VerificationStatus::kObserved);
+  local.FinalizeAfterImport();
   AddAutofillProfilesToTable({local});
 
   // Create a Sync profile identical to |profile|, except without street address

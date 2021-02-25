@@ -724,21 +724,25 @@ class AutofillManagerStructuredProfileTest
 
   void InitializeFeatures();
 
-  bool StructuredNames() const { return structured_names_enabled_; }
+  bool StructuredNamesAndAddresses() const {
+    return structured_names_and_addresses_;
+  }
 
  private:
-  bool structured_names_enabled_;
+  bool structured_names_and_addresses_;
   base::test::ScopedFeatureList scoped_features_;
 };
 
 void AutofillManagerStructuredProfileTest::InitializeFeatures() {
-  structured_names_enabled_ = GetParam();
-  if (structured_names_enabled_) {
-    scoped_features_.InitAndEnableFeature(
-        features::kAutofillEnableSupportForMoreStructureInNames);
+  structured_names_and_addresses_ = GetParam();
+
+  std::vector<base::Feature> features = {
+      features::kAutofillEnableSupportForMoreStructureInAddresses,
+      features::kAutofillEnableSupportForMoreStructureInNames};
+  if (structured_names_and_addresses_) {
+    scoped_features_.InitWithFeatures(features, {});
   } else {
-    scoped_features_.InitAndDisableFeature(
-        features::kAutofillEnableSupportForMoreStructureInNames);
+    scoped_features_.InitWithFeatures({}, features);
   }
 }
 
@@ -5517,24 +5521,27 @@ class ProfileMatchingTypesTest
     InitializeFeatures();
   }
 
-  bool StructuredNames() const { return structured_names_enabled_; }
+  bool StructuredNamesAndAddresses() const {
+    return structured_names_and_addresses_;
+  }
 
   void InitializeFeatures();
 
  private:
-  bool structured_names_enabled_;
+  bool structured_names_and_addresses_;
   base::test::ScopedFeatureList scoped_features_;
 };
 
 void ProfileMatchingTypesTest::InitializeFeatures() {
-  structured_names_enabled_ = std::get<2>(GetParam());
+  structured_names_and_addresses_ = std::get<2>(GetParam());
 
-  if (structured_names_enabled_) {
-    scoped_features_.InitAndEnableFeature(
-        features::kAutofillEnableSupportForMoreStructureInNames);
+  std::vector<base::Feature> features = {
+      features::kAutofillEnableSupportForMoreStructureInAddresses,
+      features::kAutofillEnableSupportForMoreStructureInNames};
+  if (structured_names_and_addresses_) {
+    scoped_features_.InitWithFeatures(features, {});
   } else {
-    scoped_features_.InitAndDisableFeature(
-        features::kAutofillEnableSupportForMoreStructureInNames);
+    scoped_features_.InitWithFeatures({}, features);
   }
 }
 
@@ -5548,7 +5555,11 @@ const ProfileMatchingTypesTestCase kProfileMatchingTypesTestCases[] = {
     {"theking@gmail.com", {EMAIL_ADDRESS}, {EMAIL_ADDRESS}},
     {"RCA", {COMPANY_NAME}, {COMPANY_NAME}},
     {"3734 Elvis Presley Blvd.", {ADDRESS_HOME_LINE1}, {ADDRESS_HOME_LINE1}},
-    {"Apt. 10", {ADDRESS_HOME_LINE2}, {ADDRESS_HOME_LINE2}},
+    {"3734", {UNKNOWN_TYPE}, {ADDRESS_HOME_HOUSE_NUMBER}},
+    {"Elvis Presley Blvd.", {UNKNOWN_TYPE}, {ADDRESS_HOME_STREET_NAME}},
+    {"Apt. 10",
+     {ADDRESS_HOME_LINE2},
+     {ADDRESS_HOME_LINE2, ADDRESS_HOME_SUBPREMISE}},
     {"Memphis", {ADDRESS_HOME_CITY}, {ADDRESS_HOME_CITY}},
     {"Tennessee", {ADDRESS_HOME_STATE}, {ADDRESS_HOME_STATE}},
     {"38116", {ADDRESS_HOME_ZIP}, {ADDRESS_HOME_ZIP}},
@@ -5660,13 +5671,14 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
       "structured_names=%s ",
       test_case.input_value,
       AutofillType(*test_case.field_types.begin()).ToString().c_str(),
-      validity_state, validation_source, StructuredNames() ? "true" : "false"));
+      validity_state, validation_source,
+      StructuredNamesAndAddresses() ? "true" : "false"));
 
   // Take the field types depending on the state of the structured names
   // feature.
   const ServerFieldTypeSet& expected_possible_types =
-      StructuredNames() ? test_case.structured_field_types
-                        : test_case.field_types;
+      StructuredNamesAndAddresses() ? test_case.structured_field_types
+                                    : test_case.field_types;
 
   ASSERT_LE(AutofillDataModel::UNVALIDATED, validity_state);
   ASSERT_LE(validity_state, AutofillDataModel::UNSUPPORTED);
@@ -6081,12 +6093,13 @@ TEST_P(AutofillManagerStructuredProfileTest, DisambiguateUploadTypes) {
         // For structured names it is possible that a field as two out of three
         // possible classifications: NAME_FULL, NAME_LAST,
         // NAME_LAST_FIRST/SECOND. Note, all cases contain NAME_LAST.
-        if (StructuredNames() && possible_types.size() == 2) {
+        if (StructuredNamesAndAddresses() && possible_types.size() == 2) {
           EXPECT_TRUE(possible_types.count(NAME_LAST) &&
                       (possible_types.count(NAME_LAST_SECOND) ||
                        possible_types.count(NAME_LAST_FIRST) ||
                        possible_types.count(NAME_FULL)));
-        } else if (StructuredNames() && possible_types.size() == 3) {
+        } else if (StructuredNamesAndAddresses() &&
+                   possible_types.size() == 3) {
           // Or even all three.
           EXPECT_TRUE(possible_types.count(NAME_FULL) &&
                       possible_types.count(NAME_LAST) &&
@@ -6553,7 +6566,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   test::CreateTestFormField("Last Name", "lastname", "", "text", &field);
   form.fields.push_back(field);
   types.clear();
-  if (StructuredNames())
+  if (StructuredNamesAndAddresses())
     types.insert(NAME_LAST_SECOND);
   types.insert(NAME_LAST);
   expected_types.push_back(types);
@@ -6607,7 +6620,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   test::CreateTestFormField("Last Name", "lastname", "", "text", &field);
   form.fields.push_back(field);
   types.clear();
-  if (StructuredNames())
+  if (StructuredNamesAndAddresses())
     types.insert(NAME_LAST_SECOND);
   types.insert(NAME_LAST);
   expected_types.push_back(types);
@@ -8406,8 +8419,9 @@ TEST_F(AutofillManagerTest, DontImportUpiIdWhenIncognito) {
 // Tests the vote generation for the address enhancement types.
 TEST_F(AutofillManagerTest, PossibleFieldTypesForEnhancementVotes) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillAddressEnhancementVotes);
+  scoped_feature_list.InitWithFeatures(
+      {features::kAutofillAddressEnhancementVotes},
+      {features::kAutofillEnableSupportForMoreStructureInAddresses});
 
   std::vector<AutofillProfile> profiles = {AutofillProfile()};
   profiles[0].SetRawInfo(ADDRESS_HOME_STREET_NAME,

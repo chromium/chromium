@@ -4154,9 +4154,10 @@ TEST_P(SaveImportedProfileTest, SaveImportedProfile) {
     // date were properly updated.
     EXPECT_EQ(1U, saved_profiles.front()->use_count());
     EXPECT_EQ(kSomeLaterTime, saved_profiles.front()->use_date());
-    // For structured names, the modification date is only updated when the
+
+    // For structured addresses, the modification date is only updated when the
     // profile actually changes.
-    if (StructuredNamesEnabled()) {
+    if (StructuredNamesEnabled() || StructuredAddressesEnabled()) {
       EXPECT_EQ(*saved_profiles.front() == original_profile ? kArbitraryTime
                                                             : kSomeLaterTime,
                 saved_profiles.front()->modification_date());
@@ -4996,9 +4997,11 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_VerifiedProfileFirst) {
 
   // Create a verified profile with a higher frecency score.
   AutofillProfile profile1(base::GenerateGUID(), kSettingsOrigin);
-  test::SetProfileInfo(&profile1, "Homer", "Jay", "Simpson",
-                       "homer.simpson@abc.com", "", "742 Evergreen Terrace", "",
-                       "Springfield", "IL", "91601", "", "12345678910");
+  test::SetProfileInfo(
+      &profile1, "Homer", "Jay", "Simpson", "homer.simpson@abc.com", "",
+      "742 Evergreen Terrace", "", "Springfield", "IL", "91601", "",
+      "12345678910", /*finalize=*/true,
+      /*status=*/structured_address::VerificationStatus::kUserVerified);
   profile1.set_use_count(7);
   profile1.set_use_date(kMuchLaterTime);
 
@@ -5044,6 +5047,13 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_VerifiedProfileFirst) {
   histogram_tester.ExpectUniqueSample(
       "Autofill.NumberOfProfilesRemovedDuringDedupe", 2, 1);
 
+  // Although the profile was verified, the structure of the  street address
+  // still evolved with future observations. In this case, the "." was added
+  // from a later observation.
+  profile1.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_NAME, base::UTF8ToUTF16("Evergreen Terrace"),
+      structured_address::VerificationStatus::kParsed);
+  //
   // Only the verified |profile1| with its original data should have been kept.
   EXPECT_EQ(profile1.guid(), profiles[0]->guid());
   EXPECT_TRUE(profile1 == *profiles[0]);
@@ -5076,9 +5086,11 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_VerifiedProfileLast) {
 
   // Create a similar verified profile with a lower frecency score.
   AutofillProfile profile3(base::GenerateGUID(), kSettingsOrigin);
-  test::SetProfileInfo(&profile3, "Homer", "Jay", "Simpson",
-                       "homer.simpson@abc.com", "", "742 Evergreen Terrace", "",
-                       "Springfield", "IL", "91601", "", "12345678910");
+  test::SetProfileInfo(
+      &profile3, "Homer", "Jay", "Simpson", "homer.simpson@abc.com", "",
+      "742 Evergreen Terrace", "", "Springfield", "IL", "91601", "",
+      "12345678910", /*finalize=*/true,
+      /*status=*/structured_address::VerificationStatus::kUserVerified);
   profile3.set_use_count(3);
   profile3.set_use_date(kArbitraryTime);
 
@@ -5131,17 +5143,22 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleVerifiedProfiles) {
 
   // Create a similar verified profile with a medium frecency score.
   AutofillProfile profile2(base::GenerateGUID(), kSettingsOrigin);
-  test::SetProfileInfo(&profile2, "Homer", "J", "Simpson",
-                       "homer.simpson@abc.com", "Fox", "742 Evergreen Terrace.",
-                       "", "Springfield", "IL", "91601", "", "");
+  test::SetProfileInfo(
+      &profile2, "Homer", "J", "Simpson", "homer.simpson@abc.com", "Fox",
+      "742 Evergreen Terrace.", "", "Springfield", "IL", "91601", "", "",
+      /*finalize=*/true,
+      /*status=*/structured_address::VerificationStatus::kUserVerified);
+
   profile2.set_use_count(5);
   profile2.set_use_date(kSomeLaterTime);
 
   // Create a similar verified profile with a lower frecency score.
   AutofillProfile profile3(base::GenerateGUID(), kSettingsOrigin);
-  test::SetProfileInfo(&profile3, "Homer", "Jay", "Simpson",
-                       "homer.simpson@abc.com", "", "742 Evergreen Terrace", "",
-                       "Springfield", "IL", "91601", "", "12345678910");
+  test::SetProfileInfo(
+      &profile3, "Homer", "Jay", "Simpson", "homer.simpson@abc.com", "",
+      "742 Evergreen Terrace", "", "Springfield", "IL", "91601", "",
+      "12345678910", /*finalize=*/true,
+      /*status*/ structured_address::VerificationStatus::kUserVerified);
   profile3.set_use_count(3);
   profile3.set_use_date(kArbitraryTime);
 
@@ -5161,6 +5178,13 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleVerifiedProfiles) {
   // Get the profiles, sorted by frecency to have a deterministic order.
   std::vector<AutofillProfile*> profiles =
       personal_data_->GetProfilesToSuggest();
+
+  // Although the profile was verified, the structure of the  street address
+  // still evolved with future observations. In this case, the "." was removed
+  // from a later observation.
+  profile2.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_NAME, base::UTF8ToUTF16("Evergreen Terrace"),
+      structured_address::VerificationStatus::kParsed);
 
   // |profile1| should have been discarded because the saved profile with the
   // highest frecency score is verified (|profile2|). Therefore, |profile1|'s

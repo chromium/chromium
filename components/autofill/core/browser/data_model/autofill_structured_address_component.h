@@ -365,10 +365,17 @@ class AddressComponent {
                                         bool* validity_status,
                                         bool wipe_if_not = false);
 
-  // Deletes the stored structure if it contains strings that are not a
-  // substring of the unstructured representation.
-  // Return true if a wipe operation was performed.
+  // Deletes the stored structure and returns true if |IsStructureValid()|
+  // returns false.
   virtual bool WipeInvalidStructure();
+
+  // Returns if the structure in the tree below this node is valid. A structure
+  // becomes invalid when it contains information that is not contained in the
+  // value of this node.
+  bool IsStructureValid() const;
+
+  // Returns true if all values of all descendent nodes are empty.
+  bool AllDescendantsAreEmpty() const;
 
 #ifdef UNIT_TEST
   // Initiates the formatting of the values from the subcomponents.

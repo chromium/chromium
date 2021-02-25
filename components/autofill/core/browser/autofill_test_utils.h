@@ -230,7 +230,9 @@ void SetProfileInfo(AutofillProfile* profile,
                     const char* zipcode,
                     const char* country,
                     const char* phone,
-                    bool finalize = true);
+                    bool finalize = true,
+                    structured_address::VerificationStatus =
+                        structured_address::VerificationStatus::kObserved);
 
 // This one doesn't require the |dependent_locality|.
 void SetProfileInfo(AutofillProfile* profile,
@@ -246,23 +248,28 @@ void SetProfileInfo(AutofillProfile* profile,
                     const char* zipcode,
                     const char* country,
                     const char* phone,
-                    bool finalize = true);
+                    bool finalize = true,
+                    structured_address::VerificationStatus =
+                        structured_address::VerificationStatus::kObserved);
 
-void SetProfileInfoWithGuid(AutofillProfile* profile,
-                            const char* guid,
-                            const char* first_name,
-                            const char* middle_name,
-                            const char* last_name,
-                            const char* email,
-                            const char* company,
-                            const char* address1,
-                            const char* address2,
-                            const char* city,
-                            const char* state,
-                            const char* zipcode,
-                            const char* country,
-                            const char* phone,
-                            bool finalize = true);
+void SetProfileInfoWithGuid(
+    AutofillProfile* profile,
+    const char* guid,
+    const char* first_name,
+    const char* middle_name,
+    const char* last_name,
+    const char* email,
+    const char* company,
+    const char* address1,
+    const char* address2,
+    const char* city,
+    const char* state,
+    const char* zipcode,
+    const char* country,
+    const char* phone,
+    bool finalize = true,
+    structured_address::VerificationStatus =
+        structured_address::VerificationStatus::kObserved);
 
 // A unit testing utility that is common to a number of the Autofill unit
 // tests.  |SetCreditCardInfo| provides a quick way to populate a credit card

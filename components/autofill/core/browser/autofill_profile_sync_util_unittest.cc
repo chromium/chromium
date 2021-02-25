@@ -71,15 +71,17 @@ AutofillProfile ConstructCompleteProfile() {
   profile.SetRawInfo(EMAIL_ADDRESS, ASCIIToUTF16("user@example.com"));
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, ASCIIToUTF16("1.800.555.1234"));
   profile.SetRawInfo(COMPANY_NAME, ASCIIToUTF16("Google, Inc."));
-  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_ADDRESS,
-                                           ASCIIToUTF16("123 Fake St.\n"
-                                                        "Apt. 42"),
-                                           VerificationStatus::kObserved);
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_ADDRESS,
+      ASCIIToUTF16("123 Fake St. Dep Premise\n"
+                   "Apt. 10 Floor 2"),
+      VerificationStatus::kObserved);
 
   // Set testing values and statuses for the address.
-  EXPECT_EQ(ASCIIToUTF16("123 Fake St."),
+  EXPECT_EQ(ASCIIToUTF16("123 Fake St. Dep Premise"),
             profile.GetRawInfo(ADDRESS_HOME_LINE1));
-  EXPECT_EQ(ASCIIToUTF16("Apt. 42"), profile.GetRawInfo(ADDRESS_HOME_LINE2));
+  EXPECT_EQ(ASCIIToUTF16("Apt. 10 Floor 2"),
+            profile.GetRawInfo(ADDRESS_HOME_LINE2));
 
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_CITY,
                                            ASCIIToUTF16("Mountain View"),
@@ -104,18 +106,18 @@ AutofillProfile ConstructCompleteProfile() {
                                            VerificationStatus::kObserved);
 
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_NAME,
-                                           ASCIIToUTF16("Street Name"),
+                                           ASCIIToUTF16("Fake St."),
                                            VerificationStatus::kFormatted);
-  profile.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_DEPENDENT_STREET_NAME, ASCIIToUTF16("Dependent Street Name"),
-      VerificationStatus::kFormatted);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_DEPENDENT_STREET_NAME,
+                                           ASCIIToUTF16("Dep"),
+                                           VerificationStatus::kFormatted);
 
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER,
-                                           ASCIIToUTF16("House Number"),
+                                           ASCIIToUTF16("123"),
                                            VerificationStatus::kFormatted);
 
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_SUBPREMISE,
-                                           ASCIIToUTF16("Apt 10 Floor 2"),
+                                           ASCIIToUTF16("Apt. 10 Floor 2"),
                                            VerificationStatus::kObserved);
   profile.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_APT_NUM, ASCIIToUTF16("10"), VerificationStatus::kParsed);
@@ -196,29 +198,28 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
   // Set values and statuses for the address.
   // Address lines are derived from the home street address and do not have an
   // independent status.
-  specifics.set_address_home_line1("123 Fake St.");
-  specifics.set_address_home_line2("Apt. 42");
+  specifics.set_address_home_line1("123 Fake St. Dep Premise");
+  specifics.set_address_home_line2("Apt. 10 Floor 2");
   specifics.set_address_home_street_address(
-      "123 Fake St.\n"
-      "Apt. 42");
+      "123 Fake St. Dep Premise\n"
+      "Apt. 10 Floor 2");
   specifics.set_address_home_street_address_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus::
           AutofillProfileSpecifics_VerificationStatus_OBSERVED);
 
-  specifics.set_address_home_thoroughfare_name("Street Name");
+  specifics.set_address_home_thoroughfare_name("Fake St.");
   specifics.set_address_home_thoroughfare_name_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_FORMATTED);
 
-  specifics.set_address_home_dependent_thoroughfare_name(
-      "Dependent Street Name");
+  specifics.set_address_home_dependent_thoroughfare_name("Dep");
   specifics.set_address_home_dependent_thoroughfare_name_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_FORMATTED);
 
-  specifics.set_address_home_thoroughfare_number("House Number");
+  specifics.set_address_home_thoroughfare_number("123");
   specifics.set_address_home_thoroughfare_number_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_FORMATTED);
 
-  specifics.set_address_home_subpremise_name("Apt 10 Floor 2");
+  specifics.set_address_home_subpremise_name("Apt. 10 Floor 2");
   specifics.set_address_home_subpremise_name_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
 

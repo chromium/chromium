@@ -247,6 +247,10 @@ void CreateTestAddressFormData(FormData* form,
   form->fields.push_back(field);
   type_set.clear();
   type_set.insert(ADDRESS_HOME_LINE2);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForMoreStructureInAddresses)) {
+    type_set.insert(ADDRESS_HOME_SUBPREMISE);
+  }
   types->push_back(type_set);
   test::CreateTestFormField("City", "city", "", "text", &field);
   form->fields.push_back(field);
@@ -355,13 +359,15 @@ void CreateTestCreditCardFormData(FormData* form,
   form->fields.push_back(field);
 }
 
-inline void check_and_set(FormGroup* profile,
-                          ServerFieldType type,
-                          const char* value) {
+inline void check_and_set(
+    FormGroup* profile,
+    ServerFieldType type,
+    const char* value,
+    structured_address::VerificationStatus status =
+        structured_address::VerificationStatus::kObserved) {
   if (value) {
-    profile->SetRawInfoWithVerificationStatus(
-        type, base::UTF8ToUTF16(value),
-        structured_address::VerificationStatus::kObserved);
+    profile->SetRawInfoWithVerificationStatus(type, base::UTF8ToUTF16(value),
+                                              status);
   }
 }
 
@@ -650,20 +656,22 @@ void SetProfileInfo(AutofillProfile* profile,
                     const char* zipcode,
                     const char* country,
                     const char* phone,
-                    bool finalize) {
-  check_and_set(profile, NAME_FIRST, first_name);
-  check_and_set(profile, NAME_MIDDLE, middle_name);
-  check_and_set(profile, NAME_LAST, last_name);
-  check_and_set(profile, EMAIL_ADDRESS, email);
-  check_and_set(profile, COMPANY_NAME, company);
-  check_and_set(profile, ADDRESS_HOME_LINE1, address1);
-  check_and_set(profile, ADDRESS_HOME_LINE2, address2);
-  check_and_set(profile, ADDRESS_HOME_DEPENDENT_LOCALITY, dependent_locality);
-  check_and_set(profile, ADDRESS_HOME_CITY, city);
-  check_and_set(profile, ADDRESS_HOME_STATE, state);
-  check_and_set(profile, ADDRESS_HOME_ZIP, zipcode);
-  check_and_set(profile, ADDRESS_HOME_COUNTRY, country);
-  check_and_set(profile, PHONE_HOME_WHOLE_NUMBER, phone);
+                    bool finalize,
+                    structured_address::VerificationStatus status) {
+  check_and_set(profile, NAME_FIRST, first_name, status);
+  check_and_set(profile, NAME_MIDDLE, middle_name, status);
+  check_and_set(profile, NAME_LAST, last_name, status);
+  check_and_set(profile, EMAIL_ADDRESS, email, status);
+  check_and_set(profile, COMPANY_NAME, company, status);
+  check_and_set(profile, ADDRESS_HOME_LINE1, address1, status);
+  check_and_set(profile, ADDRESS_HOME_LINE2, address2, status);
+  check_and_set(profile, ADDRESS_HOME_DEPENDENT_LOCALITY, dependent_locality,
+                status);
+  check_and_set(profile, ADDRESS_HOME_CITY, city, status);
+  check_and_set(profile, ADDRESS_HOME_STATE, state, status);
+  check_and_set(profile, ADDRESS_HOME_ZIP, zipcode, status);
+  check_and_set(profile, ADDRESS_HOME_COUNTRY, country, status);
+  check_and_set(profile, PHONE_HOME_WHOLE_NUMBER, phone, status);
   if (finalize)
     profile->FinalizeAfterImport();
 }
@@ -681,19 +689,20 @@ void SetProfileInfo(AutofillProfile* profile,
                     const char* zipcode,
                     const char* country,
                     const char* phone,
-                    bool finalize) {
-  check_and_set(profile, NAME_FIRST, first_name);
-  check_and_set(profile, NAME_MIDDLE, middle_name);
-  check_and_set(profile, NAME_LAST, last_name);
-  check_and_set(profile, EMAIL_ADDRESS, email);
-  check_and_set(profile, COMPANY_NAME, company);
-  check_and_set(profile, ADDRESS_HOME_LINE1, address1);
-  check_and_set(profile, ADDRESS_HOME_LINE2, address2);
-  check_and_set(profile, ADDRESS_HOME_CITY, city);
-  check_and_set(profile, ADDRESS_HOME_STATE, state);
-  check_and_set(profile, ADDRESS_HOME_ZIP, zipcode);
-  check_and_set(profile, ADDRESS_HOME_COUNTRY, country);
-  check_and_set(profile, PHONE_HOME_WHOLE_NUMBER, phone);
+                    bool finalize,
+                    structured_address::VerificationStatus status) {
+  check_and_set(profile, NAME_FIRST, first_name, status);
+  check_and_set(profile, NAME_MIDDLE, middle_name, status);
+  check_and_set(profile, NAME_LAST, last_name, status);
+  check_and_set(profile, EMAIL_ADDRESS, email, status);
+  check_and_set(profile, COMPANY_NAME, company, status);
+  check_and_set(profile, ADDRESS_HOME_LINE1, address1, status);
+  check_and_set(profile, ADDRESS_HOME_LINE2, address2, status);
+  check_and_set(profile, ADDRESS_HOME_CITY, city, status);
+  check_and_set(profile, ADDRESS_HOME_STATE, state, status);
+  check_and_set(profile, ADDRESS_HOME_ZIP, zipcode, status);
+  check_and_set(profile, ADDRESS_HOME_COUNTRY, country, status);
+  check_and_set(profile, PHONE_HOME_WHOLE_NUMBER, phone, status);
   if (finalize)
     profile->FinalizeAfterImport();
 }
@@ -712,12 +721,13 @@ void SetProfileInfoWithGuid(AutofillProfile* profile,
                             const char* zipcode,
                             const char* country,
                             const char* phone,
-                            bool finalize) {
+                            bool finalize,
+                            structured_address::VerificationStatus status) {
   if (guid)
     profile->set_guid(guid);
   SetProfileInfo(profile, first_name, middle_name, last_name, email, company,
                  address1, address2, city, state, zipcode, country, phone,
-                 finalize);
+                 finalize, status);
 }
 
 void SetCreditCardInfo(CreditCard* credit_card,

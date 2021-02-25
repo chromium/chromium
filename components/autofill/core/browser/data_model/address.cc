@@ -104,7 +104,9 @@ bool Address::MergeStructuredAddress(const Address& newer,
 
 base::Optional<AlternativeStateNameMap::CanonicalStateName>
 Address::GetCanonicalizedStateName() const {
-  return AlternativeStateNameMap::GetCanonicalStateName(country_code_, state_);
+  return AlternativeStateNameMap::GetCanonicalStateName(
+      base::UTF16ToUTF8(GetRawInfo(ADDRESS_HOME_COUNTRY)),
+      GetRawInfo(ADDRESS_HOME_STATE));
 }
 
 bool Address::IsStructuredAddressMergeable(const Address& newer) const {
@@ -176,6 +178,10 @@ base::string16 Address::GetRawInfo(ServerFieldType type) const {
 
     case ADDRESS_HOME_SUBPREMISE:
       return subpremise_;
+
+    case ADDRESS_HOME_ADDRESS:
+    case ADDRESS_HOME_ADDRESS_WITH_NAME:
+      return base::string16();
 
     default:
       NOTREACHED() << "Unrecognized type: " << type;

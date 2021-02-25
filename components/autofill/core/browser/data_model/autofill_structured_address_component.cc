@@ -536,23 +536,30 @@ void AddressComponent::ParseValueAndAssignSubcomponentsByFallbackMethod() {
   DCHECK(success);
 }
 
-bool AddressComponent::WipeInvalidStructure() {
-  if (IsAtomic()) {
-    return false;
-  }
+bool AddressComponent::AllDescendantsAreEmpty() const {
+  return base::ranges::all_of(Subcomponents(), [](const auto* c) {
+    return c->GetValue().empty() && c->AllDescendantsAreEmpty();
+  });
+}
 
+bool AddressComponent::IsStructureValid() const {
+  if (IsAtomic()) {
+    return true;
+  }
   // Test that each structured token is part of the subcomponent.
   // This is not perfect, because different components can match with an
   // overlapping portion of the unstructured string, but it guarantees that all
   // information in the components is contained in the unstructured
   // representation.
-  for (const auto* component : Subcomponents()) {
-    if (GetValue().find(component->GetValue()) == base::string16::npos) {
-      // If the value of one component could not have been found, wipe the full
-      // structure.
-      RecursivelyUnsetSubcomponents();
-      return true;
-    }
+  return base::ranges::all_of(Subcomponents(), [this](const auto* c) {
+    return GetValue().find(c->GetValue()) != base::string16::npos;
+  });
+}
+
+bool AddressComponent::WipeInvalidStructure() {
+  if (!IsStructureValid()) {
+    RecursivelyUnsetSubcomponents();
+    return true;
   }
   return false;
 }
@@ -879,7 +886,6 @@ bool AddressComponent::MergeWithComponent(
 
   const base::string16 value = ValueForComparison();
   const base::string16 value_newer = newer_component.ValueForComparison();
-
   if (SameAs(newer_component))
     return true;
 
@@ -887,11 +893,15 @@ bool AddressComponent::MergeWithComponent(
   // Use the non empty one if the corresponding mode is active.
   if (merge_mode_ & kReplaceEmpty) {
     if (value.empty()) {
-      CopyFrom(newer_component);
+      // Only replace the value if the verification status is not kUserVerified.
+      if (GetVerificationStatus() != VerificationStatus::kUserVerified) {
+        CopyFrom(newer_component);
+      }
       return true;
     }
-    if (value_newer.empty())
+    if (value_newer.empty()) {
       return true;
+    }
   }
 
   // If the normalized values are the same, optimize the verification status.
@@ -915,8 +925,11 @@ bool AddressComponent::MergeWithComponent(
 
   // Replace the subset with the superset if the corresponding mode is active.
   if ((merge_mode_ & kReplaceSubset) && token_comparison_result.OneIsSubset()) {
-    if (token_comparison_result.status == SUBSET)
+    if (token_comparison_result.status == SUBSET &&
+        !IsLessSignificantVerificationStatus(
+            newer_component.GetVerificationStatus(), GetVerificationStatus())) {
       CopyFrom(newer_component);
+    }
     return true;
   }
 
@@ -931,8 +944,11 @@ bool AddressComponent::MergeWithComponent(
   // If the tokens are already equivalent, use the more recently used one.
   if ((merge_mode_ & (kReplaceSuperset | kReplaceSubset)) &&
       token_comparison_result.status == MATCH) {
-    if (newer_was_more_recently_used)
+    if (newer_was_more_recently_used &&
+        !IsLessSignificantVerificationStatus(
+            newer_component.GetVerificationStatus(), GetVerificationStatus())) {
       CopyFrom(newer_component);
+    }
     return true;
   }
 
@@ -964,15 +980,20 @@ bool AddressComponent::MergeWithComponent(
   if ((merge_mode_ & kUseMostRecentSubstring) &&
       (value.find(value_newer) != base::string16::npos ||
        value_newer.find(value) != base::string16::npos)) {
-    if (newer_was_more_recently_used)
+    if (newer_was_more_recently_used &&
+        !IsLessSignificantVerificationStatus(
+            newer_component.GetVerificationStatus(), GetVerificationStatus()))
       CopyFrom(newer_component);
     return true;
   }
 
   if ((merge_mode_ & kPickShorterIfOneContainsTheOther) &&
       token_comparison_result.ContainEachOther()) {
-    if (newer_component.GetValue().size() <= GetValue().size())
+    if (newer_component.GetValue().size() <= GetValue().size() &&
+        !IsLessSignificantVerificationStatus(
+            newer_component.GetVerificationStatus(), GetVerificationStatus())) {
       CopyFrom(newer_component);
+    }
     return true;
   }
 
@@ -1059,9 +1080,28 @@ bool AddressComponent::MergeTokenEquivalentComponent(
   // this component or the other depending on which substructure is better in
   // terms of the number of validated tokens.
 
+  const std::vector<AddressComponent*> other_subcomponents =
+      newer_component.Subcomponents();
+  DCHECK(subcomponents_.size() == other_subcomponents.size());
+
   if (HasNewerValuePrecendenceInMerging(newer_component)) {
     SetValue(newer_component.GetValue(),
              newer_component.GetVerificationStatus());
+  }
+
+  if (IsAtomic())
+    return true;
+
+  // If the other component has subtree, just keep this one.
+  if (newer_component.AllDescendantsAreEmpty()) {
+    return true;
+  } else if (AllDescendantsAreEmpty()) {
+    // Otherwise, replace this subtree with the other one if this subtree is
+    // empty.
+    for (size_t i = 0; i < subcomponents_.size(); ++i) {
+      subcomponents_[i]->CopyFrom(*other_subcomponents[i]);
+    }
+    return true;
   }
 
   // Now, the substructure of the node must be merged. There are three cases:
@@ -1087,11 +1127,6 @@ bool AddressComponent::MergeTokenEquivalentComponent(
   // components. It is assumed that the other component is the newer of the two
   // components. By favoring the other component in a tie, the most recently
   // used structure wins.
-
-  const std::vector<AddressComponent*> other_subcomponents =
-      newer_component.Subcomponents();
-
-  DCHECK(subcomponents_.size() == other_subcomponents.size());
 
   int this_component_verification_score = 0;
   int newer_component_verification_score = 0;
@@ -1120,10 +1155,10 @@ bool AddressComponent::MergeTokenEquivalentComponent(
   // component is equal or larger than the score of this component, use its
   // subcomponents including their substructure for all unmerged components.
   if (newer_component_verification_score >= this_component_verification_score) {
-    for (size_t i : unmerged_indices)
+    for (size_t i : unmerged_indices) {
       subcomponents_[i]->CopyFrom(*other_subcomponents[i]);
+    }
   }
-
   return true;
 }
 
