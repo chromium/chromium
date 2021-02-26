@@ -174,9 +174,9 @@ def main():
   executable_args = [
       'instrumentation',
       '--output-directory',
-      args.test_runner_outdir,
+      args.client_outdir,
       '--runtime-deps-path',
-      os.path.join(args.test_runner_outdir,
+      os.path.join(args.client_outdir,
                    ('gen.runtime/weblayer/browser/android/javatests/' +
                     'weblayer_instrumentation_test_apk.runtime_deps')),
       '--test-apk',
