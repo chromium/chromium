@@ -106,7 +106,7 @@ bool OverlayStrategyUnderlayCast::Attempt(
 
   if (is_using_overlay_ != found_underlay) {
     is_using_overlay_ = found_underlay;
-    VLOG(1) << (found_underlay ? "Overlay activated" : "Overlay deactivated");
+    LOG(INFO) << (found_underlay ? "Overlay activated" : "Overlay deactivated");
   }
 
   if (found_underlay) {
@@ -246,7 +246,7 @@ bool OverlayStrategyUnderlayCast::AttemptPrioritized(
 
   if (is_using_overlay_ != found_underlay) {
     is_using_overlay_ = found_underlay;
-    VLOG(1) << (found_underlay ? "Overlay activated" : "Overlay deactivated");
+    LOG(INFO) << (found_underlay ? "Overlay activated" : "Overlay deactivated");
   }
 
   if (found_underlay) {
