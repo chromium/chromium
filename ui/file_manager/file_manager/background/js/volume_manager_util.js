@@ -107,6 +107,68 @@ volumeManagerUtil.createVolumeInfo = volumeMetadata => {
   }
 
   console.debug(`Getting file system '${volumeMetadata.volumeId}'`);
+  if (window.isSWA) {
+    return util
+        .timeoutPromise(
+            new Promise((resolve, reject) => {
+              chrome.fileManagerPrivate.getVolumeRoot(
+                  {
+                    volumeId: volumeMetadata.volumeId,
+                    writable: !volumeMetadata.isReadOnly
+                  },
+                  rootDirectoryEntry => {
+                    if (chrome.runtime.lastError) {
+                      reject(chrome.runtime.lastError.message);
+                    } else {
+                      resolve(rootDirectoryEntry);
+                    }
+                  });
+            }),
+            volumeManagerUtil.TIMEOUT,
+            volumeManagerUtil.TIMEOUT_STR_REQUEST_FILE_SYSTEM + ': ' +
+                volumeMetadata.volumeId)
+        .then(rootDirectoryEntry => {
+          return new VolumeInfoImpl(
+              /** @type {VolumeManagerCommon.VolumeType} */
+              (volumeMetadata.volumeType), volumeMetadata.volumeId,
+              rootDirectoryEntry.filesystem, volumeMetadata.mountCondition,
+              volumeMetadata.deviceType, volumeMetadata.devicePath,
+              volumeMetadata.isReadOnly,
+              volumeMetadata.isReadOnlyRemovableDevice, volumeMetadata.profile,
+              localizedLabel, volumeMetadata.providerId,
+              volumeMetadata.hasMedia, volumeMetadata.configurable,
+              volumeMetadata.watchable,
+              /** @type {VolumeManagerCommon.Source} */
+              (volumeMetadata.source),
+              /** @type {VolumeManagerCommon.FileSystemType} */
+              (volumeMetadata.diskFileSystemType), volumeMetadata.iconSet,
+              volumeMetadata.driveLabel, volumeMetadata.remoteMountPath);
+        })
+        .catch(
+            /** @param {*} error */
+            error => {
+              console.error(`Cannot mount file system '${
+                  volumeMetadata.volumeId}': ${error.stack || error}`);
+
+              // TODO(crbug/847729): Report a mount error via UMA.
+
+              return new VolumeInfoImpl(
+                  /** @type {VolumeManagerCommon.VolumeType} */
+                  (volumeMetadata.volumeType), volumeMetadata.volumeId,
+                  null,  // File system is not found.
+                  volumeMetadata.mountCondition, volumeMetadata.deviceType,
+                  volumeMetadata.devicePath, volumeMetadata.isReadOnly,
+                  volumeMetadata.isReadOnlyRemovableDevice,
+                  volumeMetadata.profile, localizedLabel,
+                  volumeMetadata.providerId, volumeMetadata.hasMedia,
+                  volumeMetadata.configurable, volumeMetadata.watchable,
+                  /** @type {VolumeManagerCommon.Source} */
+                  (volumeMetadata.source),
+                  /** @type {VolumeManagerCommon.FileSystemType} */
+                  (volumeMetadata.diskFileSystemType), volumeMetadata.iconSet,
+                  volumeMetadata.driveLabel, volumeMetadata.remoteMountPath);
+            });
+  }
   return util
       .timeoutPromise(
           new Promise((resolve, reject) => {
