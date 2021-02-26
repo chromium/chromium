@@ -82,11 +82,11 @@ class HistoryMenuBridgeTest : public BrowserWithTestWindowTest {
     bridge_->ClearMenuSection(menu, tag);
   }
 
-  void AddItemToBridgeMenu(HistoryMenuBridge::HistoryItem* item,
+  void AddItemToBridgeMenu(std::unique_ptr<HistoryMenuBridge::HistoryItem> item,
                            NSMenu* menu,
                            NSInteger tag,
                            NSInteger index) {
-    bridge_->AddItemToMenu(item, menu, tag, index);
+    bridge_->AddItemToMenu(std::move(item), menu, tag, index);
   }
 
   NSMenuItem* AddItemToMenu(NSMenu* menu,
@@ -104,9 +104,9 @@ class HistoryMenuBridgeTest : public BrowserWithTestWindowTest {
     return item;
   }
 
-  HistoryMenuBridge::HistoryItem* CreateItem(const base::string16& title) {
-    HistoryMenuBridge::HistoryItem* item =
-        new HistoryMenuBridge::HistoryItem();
+  std::unique_ptr<HistoryMenuBridge::HistoryItem> CreateItem(
+      const base::string16& title) {
+    auto item = std::make_unique<HistoryMenuBridge::HistoryItem>();
     item->title = title;
     item->url = GURL(title);
     return item;
@@ -220,13 +220,8 @@ TEST_F(HistoryMenuBridgeTest, AddItemToMenu) {
       "or.be.reasonably-displayed-in-a-menu"
       "without.looking-ridiculous.com/"); // 140 chars total
 
-  // HistoryItems are owned by the HistoryMenuBridge when AddItemToBridgeMenu()
-  // is called, which places them into the |menu_item_map_|, which owns them.
-  HistoryMenuBridge::HistoryItem* item1 = CreateItem(short_url);
-  AddItemToBridgeMenu(item1, menu, 100, 0);
-
-  HistoryMenuBridge::HistoryItem* item2 = CreateItem(long_url);
-  AddItemToBridgeMenu(item2, menu, 101, 1);
+  AddItemToBridgeMenu(CreateItem(short_url), menu, 100, 0);
+  AddItemToBridgeMenu(CreateItem(long_url), menu, 101, 1);
 
   EXPECT_EQ(2, [menu numberOfItems]);
 

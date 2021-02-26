@@ -112,14 +112,6 @@ HistoryMenuBridge::~HistoryMenuBridge() {
 
   if (tab_restore_service_)
     tab_restore_service_->RemoveObserver(this);
-
-  // Since the map owns the HistoryItems, delete anything that still exists.
-  std::map<NSMenuItem*, HistoryItem*>::iterator it = menu_item_map_.begin();
-  while (it != menu_item_map_.end()) {
-    HistoryItem* item  = it->second;
-    menu_item_map_.erase(it++);
-    delete item;
-  }
 }
 
 void HistoryMenuBridge::TabRestoreServiceChanged(
@@ -150,7 +142,7 @@ void HistoryMenuBridge::TabRestoreServiceChanged(
       // the actual number of items that are in the menu will not be known until
       // things like the NTP are filtered out, which is done when the tab items
       // are actually created.
-      HistoryItem* item = new HistoryItem();
+      auto item = std::make_unique<HistoryItem>();
       item->session_id = entry_win->id;
 
       // Create the submenu.
@@ -167,18 +159,18 @@ void HistoryMenuBridge::TabRestoreServiceChanged(
       // Duplicate the HistoryItem otherwise the different NSMenuItems will
       // point to the same HistoryItem, which would then be double-freed when
       // removing the items from the map or in the dtor.
-      HistoryItem* dup_item = new HistoryItem(*item);
-      menu_item_map_.insert(std::make_pair(restore_item.get(), dup_item));
+      auto dup_item = std::make_unique<HistoryItem>(*item);
+      menu_item_map_.emplace(restore_item.get(), std::move(dup_item));
       [submenu addItem:restore_item.get()];
       [submenu addItem:[NSMenuItem separatorItem]];
 
       // Loop over the window's tabs and add them to the submenu.
       NSInteger subindex = [[submenu itemArray] count];
       for (const auto& tab : tabs) {
-        HistoryItem* tab_item = HistoryItemForTab(*tab);
+        std::unique_ptr<HistoryItem> tab_item = HistoryItemForTab(*tab);
         if (tab_item) {
-          item->tabs.push_back(tab_item);
-          AddItemToMenu(tab_item, submenu.get(), kRecentlyClosed + 1,
+          item->tabs.push_back(tab_item.get());
+          AddItemToMenu(std::move(tab_item), submenu.get(), kRecentlyClosed + 1,
                         subindex++);
         }
       }
@@ -193,15 +185,15 @@ void HistoryMenuBridge::TabRestoreServiceChanged(
       if ([[submenu itemArray] count] > 2) {
         // Create the menu item parent.
         NSMenuItem* parent_item =
-            AddItemToMenu(item, menu, kRecentlyClosed, index++);
+            AddItemToMenu(std::move(item), menu, kRecentlyClosed, index++);
         [parent_item setSubmenu:submenu.get()];
         ++added_count;
       }
     } else if (entry->type == sessions::TabRestoreService::TAB) {
       const auto& tab = static_cast<sessions::TabRestoreService::Tab&>(*entry);
-      HistoryItem* item = HistoryItemForTab(tab);
+      std::unique_ptr<HistoryItem> item = HistoryItemForTab(tab);
       if (item) {
-        AddItemToMenu(item, menu, kRecentlyClosed, index++);
+        AddItemToMenu(std::move(item), menu, kRecentlyClosed, index++);
         ++added_count;
       }
     }
@@ -228,11 +220,11 @@ void HistoryMenuBridge::BuildMenu() {
 
 HistoryMenuBridge::HistoryItem* HistoryMenuBridge::HistoryItemForMenuItem(
     NSMenuItem* item) {
-  std::map<NSMenuItem*, HistoryItem*>::iterator it = menu_item_map_.find(item);
+  auto it = menu_item_map_.find(item);
   if (it != menu_item_map_.end()) {
-    return it->second;
+    return it->second.get();
   }
-  return NULL;
+  return nullptr;
 }
 
 void HistoryMenuBridge::SetIsMenuOpen(bool flag) {
@@ -270,7 +262,6 @@ void HistoryMenuBridge::ClearMenuSection(NSMenu* menu, NSInteger tag) {
       if (item) {
         CancelFaviconRequest(item);
         menu_item_map_.erase(menu_item);
-        delete item;
       }
 
       // If this menu item has a submenu, recurse.
@@ -284,7 +275,7 @@ void HistoryMenuBridge::ClearMenuSection(NSMenu* menu, NSInteger tag) {
   }
 }
 
-NSMenuItem* HistoryMenuBridge::AddItemToMenu(HistoryItem* item,
+NSMenuItem* HistoryMenuBridge::AddItemToMenu(std::unique_ptr<HistoryItem> item,
                                              NSMenu* menu,
                                              NSInteger tag,
                                              NSInteger index) {
@@ -314,9 +305,10 @@ NSMenuItem* HistoryMenuBridge::AddItemToMenu(HistoryItem* item,
   }
 
   [menu insertItem:item->menu_item.get() atIndex:index];
-  menu_item_map_.insert(std::make_pair(item->menu_item.get(), item));
 
-  return item->menu_item.get();
+  NSMenuItem* menu_item = item->menu_item.get();
+  menu_item_map_.emplace(menu_item, std::move(item));
+  return menu_item;
 }
 
 void HistoryMenuBridge::Init() {
@@ -359,15 +351,15 @@ void HistoryMenuBridge::OnVisitedHistoryResults(history::QueryResults results) {
   for (size_t i = 0; i < count; ++i) {
     const history::URLResult& result = results[i];
 
-    HistoryItem* item = new HistoryItem;
+    auto item = std::make_unique<HistoryItem>();
     item->title = result.title();
     item->url = result.url();
 
     // Need to explicitly get the favicon for each row.
-    GetFaviconForHistoryItem(item);
+    GetFaviconForHistoryItem(item.get());
 
     // This will add |item| to the |menu_item_map_|, which takes ownership.
-    AddItemToMenu(item, HistoryMenu(), kVisited, top_item + i);
+    AddItemToMenu(std::move(item), HistoryMenu(), kVisited, top_item + i);
   }
 
   // We are already invalid by the time we finished, darn.
@@ -377,19 +369,20 @@ void HistoryMenuBridge::OnVisitedHistoryResults(history::QueryResults results) {
   create_in_progress_ = false;
 }
 
-HistoryMenuBridge::HistoryItem* HistoryMenuBridge::HistoryItemForTab(
+std::unique_ptr<HistoryMenuBridge::HistoryItem>
+HistoryMenuBridge::HistoryItemForTab(
     const sessions::TabRestoreService::Tab& entry) {
   DCHECK(!entry.navigations.empty());
 
   const sessions::SerializedNavigationEntry& current_navigation =
       entry.navigations.at(entry.current_navigation_index);
-  HistoryItem* item = new HistoryItem();
+  auto item = std::make_unique<HistoryItem>();
   item->title = current_navigation.title();
   item->url = current_navigation.virtual_url();
   item->session_id = entry.id;
 
   // Tab navigations don't come with icons, so we always have to request them.
-  GetFaviconForHistoryItem(item);
+  GetFaviconForHistoryItem(item.get());
 
   return item;
 }

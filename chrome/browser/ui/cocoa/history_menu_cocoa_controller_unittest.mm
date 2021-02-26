@@ -51,18 +51,21 @@ class HistoryMenuCocoaControllerTest : public BrowserWithTestWindowTest {
   }
 
   void CreateItems(NSMenu* menu) {
-    HistoryMenuBridge::HistoryItem* item = new HistoryMenuBridge::HistoryItem();
+    auto item = std::make_unique<HistoryMenuBridge::HistoryItem>();
     item->url = GURL("http://google.com");
     item->session_id = SessionID::FromSerializedValue(1);
-    bridge_->AddItemToMenu(item, menu, HistoryMenuBridge::kVisited, 0);
+    bridge_->AddItemToMenu(std::move(item), menu, HistoryMenuBridge::kVisited,
+                           0);
 
-    item = new HistoryMenuBridge::HistoryItem();
+    item = std::make_unique<HistoryMenuBridge::HistoryItem>();
     item->url = GURL("http://apple.com");
     item->session_id = SessionID::FromSerializedValue(2);
-    bridge_->AddItemToMenu(item, menu, HistoryMenuBridge::kVisited, 1);
+    bridge_->AddItemToMenu(std::move(item), menu, HistoryMenuBridge::kVisited,
+                           1);
   }
 
-  std::map<NSMenuItem*, HistoryMenuBridge::HistoryItem*>& menu_item_map() {
+  std::map<NSMenuItem*, std::unique_ptr<HistoryMenuBridge::HistoryItem>>&
+  menu_item_map() {
     return bridge_->menu_item_map_;
   }
 
@@ -79,15 +82,12 @@ TEST_F(HistoryMenuCocoaControllerTest, OpenURLForItem) {
   base::scoped_nsobject<NSMenu> menu([[NSMenu alloc] initWithTitle:@"History"]);
   CreateItems(menu.get());
 
-  std::map<NSMenuItem*, HistoryMenuBridge::HistoryItem*>& items =
-      menu_item_map();
-  std::map<NSMenuItem*, HistoryMenuBridge::HistoryItem*>::iterator it =
-      items.begin();
-
-  for ( ; it != items.end(); ++it) {
-    HistoryMenuBridge::HistoryItem* item = it->second;
+  std::map<NSMenuItem*, std::unique_ptr<HistoryMenuBridge::HistoryItem>>&
+      items = menu_item_map();
+  for (const auto& pair : items) {
+    HistoryMenuBridge::HistoryItem* item = pair.second.get();
     EXPECT_FALSE(controller()->_opened[item->session_id.id()]);
-    [controller() openHistoryMenuItem:it->first];
+    [controller() openHistoryMenuItem:pair.first];
     EXPECT_TRUE(controller()->_opened[item->session_id.id()]);
   }
 }
