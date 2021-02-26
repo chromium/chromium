@@ -386,8 +386,6 @@ class RTCVideoEncoder::Impl
 
   webrtc::VideoCodecType video_codec_type() const { return video_codec_type_; }
 
-  static const char* ImplementationName() { return "ExternalEncoder"; }
-
   // media::VideoEncodeAccelerator::Client implementation.
   void RequireBitstreamBuffers(unsigned int input_count,
                                const gfx::Size& input_coded_size,
@@ -549,11 +547,20 @@ RTCVideoEncoder::Impl::Impl(media::GpuVideoAcceleratorFactories* gpu_factories,
   DETACH_FROM_SEQUENCE(sequence_checker_);
 
   // The default values of EncoderInfo.
-  encoder_info_.implementation_name =
-      RTCVideoEncoder::Impl::ImplementationName();
+  encoder_info_.scaling_settings = webrtc::VideoEncoder::ScalingSettings::kOff;
+  encoder_info_.requested_resolution_alignment = 1;
+  encoder_info_.apply_alignment_to_all_simulcast_layers = false;
   encoder_info_.supports_native_handle = true;
+  encoder_info_.implementation_name = "ExternalEncoder";
+  encoder_info_.has_trusted_rate_controller = true;
   encoder_info_.is_hardware_accelerated = true;
   encoder_info_.has_internal_source = false;
+  encoder_info_.fps_allocation[0] = {
+      webrtc::VideoEncoder::EncoderInfo::kMaxFramerateFraction};
+  DCHECK(encoder_info_.resolution_bitrate_limits.empty());
+  encoder_info_.supports_simulcast = false;
+  encoder_info_.preferred_pixel_formats = {
+      webrtc::VideoFrameBuffer::Type::kI420};
 }
 
 void RTCVideoEncoder::Impl::CreateAndInitializeVEA(
@@ -624,6 +631,10 @@ void RTCVideoEncoder::Impl::CreateAndInitializeVEA(
     storage_type =
         media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
     use_native_input_ = true;
+
+    base::AutoLock lock(lock_);
+    encoder_info_.preferred_pixel_formats = {
+        webrtc::VideoFrameBuffer::Type::kNV12};
   }
   const media::VideoEncodeAccelerator::Config config(
       pixel_format, input_visible_size_, profile, bitrate * 1000, base::nullopt,
