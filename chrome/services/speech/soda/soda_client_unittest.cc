@@ -54,14 +54,14 @@ void OnSodaResponse(const char* serialized_proto,
                     int length,
                     void* callback_handle) {
   ASSERT_TRUE(callback_handle);
-  speech::soda::api::SodaResponse response;
+  speech::soda::chrome::SodaResponse response;
   if (!response.ParseFromArray(serialized_proto, length)) {
     LOG(ERROR) << "Unable to parse result from SODA.";
     NOTREACHED();
   }
 
-  if (response.soda_type() == speech::soda::api::SodaResponse::RECOGNITION) {
-    speech::soda::api::SodaRecognitionResult result =
+  if (response.soda_type() == speech::soda::chrome::SodaResponse::RECOGNITION) {
+    speech::soda::chrome::SodaRecognitionResult result =
         response.recognition_result();
     ASSERT_TRUE(result.hypothesis_size());
     static_cast<soda::SodaClientUnitTest*>(callback_handle)
@@ -100,7 +100,7 @@ TEST_F(SodaClientUnitTest, CreateSodaClient) {
           .Append(base::FilePath(kSodaTestonfigRelativePath));
   ASSERT_TRUE(base::PathExists(config_file_path));
 
-  speech::soda::api::SerializedSodaConfigMsg config_msg;
+  speech::soda::chrome::ExtendedSodaConfigMsg config_msg;
   config_msg.set_channel_count(handler->num_channels());
   config_msg.set_sample_rate(handler->sample_rate());
   config_msg.set_language_pack_directory(config_file_path.value().c_str());

@@ -6,7 +6,7 @@
 
 syntax = "proto2";
 
-package speech.soda.api;
+package speech.soda.chrome;
 
 // Optimize generated output for Lite, since it's going to be running on
 // end-user devices.
@@ -14,7 +14,7 @@ option optimize_for = LITE_RUNTIME;
 option java_multiple_files = true;
 
 // Next ID to use: 12
-message SerializedSodaConfigMsg {
+message ExtendedSodaConfigMsg {
   // Number of channels in RAW audio that will be provided to SODA.
   optional int32 channel_count = 1;
   // Sample rate, in Hz.

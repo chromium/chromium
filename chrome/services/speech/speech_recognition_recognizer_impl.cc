@@ -49,22 +49,23 @@ void OnSodaResponse(const char* serialized_proto,
                     int length,
                     void* callback_handle) {
   DCHECK(callback_handle);
-  soda::api::SodaResponse response;
+  soda::chrome::SodaResponse response;
   if (!response.ParseFromArray(serialized_proto, length)) {
     LOG(ERROR) << "Unable to parse result from SODA.";
     return;
   }
 
-  if (response.soda_type() == soda::api::SodaResponse::RECOGNITION) {
-    soda::api::SodaRecognitionResult result = response.recognition_result();
+  if (response.soda_type() == soda::chrome::SodaResponse::RECOGNITION) {
+    soda::chrome::SodaRecognitionResult result = response.recognition_result();
     DCHECK(result.hypothesis_size());
     static_cast<SpeechRecognitionRecognizerImpl*>(callback_handle)
         ->recognition_event_callback()
-        .Run(std::string(result.hypothesis(0)),
-             result.result_type() == soda::api::SodaRecognitionResult::FINAL);
+        .Run(
+            std::string(result.hypothesis(0)),
+            result.result_type() == soda::chrome::SodaRecognitionResult::FINAL);
   }
 
-  if (response.soda_type() == soda::api::SodaResponse::LANGID) {
+  if (response.soda_type() == soda::chrome::SodaResponse::LANGID) {
     // TODO(crbug.com/1175357): Use the langid event to prompt users to switch
     // languages.
   }
@@ -189,7 +190,7 @@ void SpeechRecognitionRecognizerImpl::
       std::string language_pack_directory = config_path_.AsUTF8Unsafe();
 
       // Initialize the SODA instance with the serialized config.
-      soda::api::SerializedSodaConfigMsg config_msg;
+      soda::chrome::ExtendedSodaConfigMsg config_msg;
       config_msg.set_channel_count(channel_count);
       config_msg.set_sample_rate(sample_rate);
       config_msg.set_api_key(api_key);
@@ -198,7 +199,7 @@ void SpeechRecognitionRecognizerImpl::
       config_msg.set_enable_lang_id(false);
       // SODA wants to listen as CAPTION.
       config_msg.set_recognition_mode(
-          soda::api::SerializedSodaConfigMsg::CAPTION);
+          soda::chrome::ExtendedSodaConfigMsg::CAPTION);
       auto serialized = config_msg.SerializeAsString();
 
       SerializedSodaConfig config;
