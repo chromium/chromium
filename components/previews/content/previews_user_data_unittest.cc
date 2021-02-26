@@ -100,17 +100,16 @@ TEST(PreviewsUserDataTest, TestCoinFlip_AllowedPreviewsState) {
   std::unique_ptr<PreviewsUserData> data =
       std::make_unique<PreviewsUserData>(id);
 
-  data->set_allowed_previews_state(blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON);
+  data->set_allowed_previews_state(blink::PreviewsTypes::PREVIEWS_OFF);
   data->set_coin_flip_holdback_result(CoinFlipHoldbackResult::kHoldback);
   EXPECT_EQ(data->AllowedPreviewsState(), blink::PreviewsTypes::PREVIEWS_OFF);
   EXPECT_EQ(data->PreHoldbackAllowedPreviewsState(),
-            blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON);
+            blink::PreviewsTypes::PREVIEWS_OFF);
 
   data->set_coin_flip_holdback_result(CoinFlipHoldbackResult::kAllowed);
-  EXPECT_EQ(data->AllowedPreviewsState(),
-            blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON);
+  EXPECT_EQ(data->AllowedPreviewsState(), blink::PreviewsTypes::PREVIEWS_OFF);
   EXPECT_EQ(data->PreHoldbackAllowedPreviewsState(),
-            blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON);
+            blink::PreviewsTypes::PREVIEWS_OFF);
 }
 
 TEST(PreviewsUserDataTest, TestCoinFlip_CommittedPreviewsState) {
@@ -118,17 +117,16 @@ TEST(PreviewsUserDataTest, TestCoinFlip_CommittedPreviewsState) {
   std::unique_ptr<PreviewsUserData> data =
       std::make_unique<PreviewsUserData>(id);
 
-  data->set_committed_previews_state(blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON);
+  data->set_committed_previews_state(blink::PreviewsTypes::PREVIEWS_OFF);
   data->set_coin_flip_holdback_result(CoinFlipHoldbackResult::kHoldback);
   EXPECT_EQ(data->CommittedPreviewsState(), blink::PreviewsTypes::PREVIEWS_OFF);
   EXPECT_EQ(data->PreHoldbackCommittedPreviewsState(),
-            blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON);
+            blink::PreviewsTypes::PREVIEWS_OFF);
 
   data->set_coin_flip_holdback_result(CoinFlipHoldbackResult::kAllowed);
-  EXPECT_EQ(data->CommittedPreviewsState(),
-            blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON);
+  EXPECT_EQ(data->CommittedPreviewsState(), blink::PreviewsTypes::PREVIEWS_OFF);
   EXPECT_EQ(data->PreHoldbackCommittedPreviewsState(),
-            blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON);
+            blink::PreviewsTypes::PREVIEWS_OFF);
 }
 
 }  // namespace previews

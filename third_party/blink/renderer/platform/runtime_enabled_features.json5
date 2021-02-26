@@ -979,9 +979,6 @@
       status: "stable",
     },
     {
-      name: "ForceDeferScriptIntervention",
-    },
-    {
       // This is used in tests to perform memory measurement without
       // waiting for GC.
       name:"ForceEagerMeasureMemory",

@@ -307,7 +307,10 @@ bool PendingScript::IsControlledByScriptRunner() const {
     case ScriptSchedulingType::kParserBlocking:
     case ScriptSchedulingType::kParserBlockingInline:
     case ScriptSchedulingType::kImmediate:
-    case ScriptSchedulingType::kForceDefer:
+      return false;
+    case ScriptSchedulingType::kDeprecatedForceDefer:
+      NOTREACHED()
+          << "kDeprecatedForceDefer is deprecated and should not be in use";
       return false;
 
     case ScriptSchedulingType::kInOrder:

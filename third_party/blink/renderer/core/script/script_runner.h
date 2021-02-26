@@ -55,7 +55,6 @@ class CORE_EXPORT ScriptRunner final
     return !pending_in_order_scripts_.IsEmpty() ||
            !pending_async_scripts_.IsEmpty();
   }
-  void SetForceDeferredExecution(bool force_deferred);
   void NotifyScriptReady(PendingScript*);
   void NotifyDelayedAsyncScriptsMilestoneReached();
   void ContextLifecycleStateChanged(mojom::FrameLifecycleState) final;
@@ -110,11 +109,6 @@ class CORE_EXPORT ScriptRunner final
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   int number_of_in_order_scripts_with_pending_notification_ = 0;
-
-  // Whether script execution is suspended due to there being force deferred
-  // scripts that have not yet been executed. This is expected to be in sync
-  // with HTMLParserScriptRunner::suspended_async_script_execution_.
-  bool is_force_deferred_ = false;
 
   // Scripts in |pending_delayed_async_scripts_| are delayed until the
   // |NotifyDelayedAsyncScriptsMilestoneReached()| is called. After this point,

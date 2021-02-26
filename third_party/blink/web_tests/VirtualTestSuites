@@ -621,11 +621,6 @@
     "args": ["--enable-blink-features=DelayAsyncScriptExecutionUntilFirstPaintOrFinishedParsing"]
   },
   {
-    "prefix": "force-defer-script",
-    "bases": ["defer-script"],
-    "args": ["--enable-blink-features=ForceDeferScriptIntervention"]
-  },
-  {
     "prefix": "force-eager",
     "bases": ["external/wpt/measure-memory"],
     "args": ["--enable-blink-features=MeasureMemory,ForceEagerMeasureMemory"]

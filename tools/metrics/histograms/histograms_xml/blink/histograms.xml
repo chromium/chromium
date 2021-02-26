@@ -1940,6 +1940,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Blink.Script.ForceDeferredScripts.Mainframe" units="count"
     expires_after="2021-05-02">
+  <obsolete>
+    Obsoleted Feb 2021.
+  </obsolete>
   <owner>dougarnett@chromium.org</owner>
   <owner>hiroshige@chromium.org</owner>
   <summary>
@@ -1952,6 +1955,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Blink.Script.ForceDeferredScripts.Mainframe.External"
     units="count" expires_after="2021-05-02">
+  <obsolete>
+    Obsoleted Feb 2021.
+  </obsolete>
   <owner>dougarnett@chromium.org</owner>
   <owner>hiroshige@chromium.org</owner>
   <summary>
@@ -1963,6 +1969,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Blink.Script.ForceDeferredScripts.Subframe" units="count"
     expires_after="2021-02-28">
+  <obsolete>
+    Obsoleted Feb 2021.
+  </obsolete>
   <owner>dougarnett@chromium.org</owner>
   <owner>hiroshige@chromium.org</owner>
   <summary>
@@ -1975,6 +1984,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Blink.Script.ForceDeferredScripts.Subframe.External"
     units="count" expires_after="2021-02-28">
+  <obsolete>
+    Obsoleted Feb 2021.
+  </obsolete>
   <owner>dougarnett@chromium.org</owner>
   <owner>hiroshige@chromium.org</owner>
   <summary>

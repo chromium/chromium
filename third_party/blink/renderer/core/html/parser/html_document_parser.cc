@@ -552,9 +552,6 @@ void HTMLDocumentParser::PrepareToStopParsing() {
   if (IsDetached())
     return;
 
-  if (script_runner_)
-    script_runner_->RecordMetricsAtParseEnd();
-
   AttemptToRunDeferredScriptsAndEnd();
 }
 
