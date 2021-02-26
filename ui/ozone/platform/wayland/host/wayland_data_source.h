@@ -95,7 +95,7 @@ class DataSource {
   Delegate* const delegate_;
 
   // Action selected by the compositor
-  uint32_t dnd_action_;
+  uint32_t dnd_action_ = 0;
 };
 
 }  // namespace wl

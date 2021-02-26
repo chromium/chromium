@@ -204,7 +204,10 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
           // drag sessions end up with no data transfer (cancelled). Otherwise,
           // it might lead to issues like https://crbug.com/1109324.
           EXPECT_CALL(*self->drop_handler(), OnDragLeave).Times(1);
-          EXPECT_CALL(*self->drag_handler(), OnDragFinished).Times(1);
+          // If DnD was cancelled, or data was dropped where it was not
+          // accepted, the operation result must be None (0).
+          // Regression test for https://crbug.com/1136751.
+          EXPECT_CALL(*self->drag_handler(), OnDragFinished(0)).Times(1);
 
           self->Sync();
         },
