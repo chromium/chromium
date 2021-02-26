@@ -793,28 +793,65 @@ class CONTENT_EXPORT RenderFrameHostImpl
     // can only be created in this state and no transitions happen to this
     // state.
     //
-    // Transitions from this state happen to either kActive (when navigation
-    // commits) or kReadyToBeDeleted (when the navigation redirects
-    // or gets cancelled). Note that the term speculative is used, because the
-    // navigation might be canceled or redirected and the RenderFrameHost might
-    // get deleted before being used.
+    // Transitions from this state happen to one of:
+    // - kActive -- The navigation commits in the primary frame tree.
+    // - kPrerendering -- The navigation commits in the prerendering frame tree.
+    // - kReadyToBeDeleted -- The navigation redirects or gets cancelled.
+    //
+    // Note that the term speculative is used, because the navigation might be
+    // canceled or redirected and the RenderFrameHost might get deleted before
+    // being used.
     kSpeculative,
 
+    // Prerender2:
     // This state corresponds to when a RenderFrameHost is the current one in
-    // its RenderFrameHostManager and FrameTreeNode. In this state,
-    // RenderFrameHost is visible to the user. Transition to kActive state may
-    // happen from either kSpeculative (when navigation commits) or
-    // kInBackForwardCache (when restoring from BackForwardCache) states.
+    // its RenderFrameHostManager and FrameTreeNode for a prerendered frame
+    // tree. Documents in this state are invisible to the user and aren't
+    // allowed to show any UI changes, but the page is allowed to load and run
+    // in the background. Documents in kPrerendering state can be evicted
+    // (cancelling prerendering) at any time.
+    //
+    // A prerendered page is created by an initial navigation in a prerendered
+    // frame tree. For the prerendered page to be shown to the user, another
+    // navigation in the primary frame tree activates the prerendered page.
+    //
+    // Transitions from this state happen to one of:
+    // - kActive -- when the prerendered page is activated.
+    // - kRunningUnloadHandlers -- when a cross-site navigation commits in a
+    // prerendered frame tree, unloading the previous one.
+    // - kReadyToBeDeleted -- when prerendering is cancelled and the prerendered
+    // page is deleted.
+    //
+    // Document can be created in kPrerendering state (while initializing root
+    // and child in a prerendered frame tree).
+    //
+    // Transition to kPrerendering can happen from kSpeculative (when cross-site
+    // navigation commits inside a prerendered frame tree).
+    //
+    // Please note that Prerender2 is an experimental feature behind the flag.
+    kPrerendering,
+
+    // This state corresponds to when a RenderFrameHost is the current one in
+    // its RenderFrameHostManager and FrameTreeNode for a primary frame tree. In
+    // this state, RenderFrameHost is visible to the user.
+    //
+    // Transition to kActive state may happen from one of:
+    // - kSpeculative -- when navigation commits.
+    // - kInBackForwardCache -- when restoring from BackForwardCache.
+    // - kPrerendering -- when a prerendered page activates.
     //
     // RenderFrameHost can also be created in this state for an empty document
     // in a FrameTreeNode (e.g initializing root and child in an empty
-    // FrameTree).
+    // primary FrameTree).
     kActive,
 
     // This state corresponds to when RenderFrameHost is stored in
     // BackForwardCache. This happens when the user navigates away from a
     // document, so that the RenderFrameHost can be re-used after a history
     // navigation. Transition to this state happens only from kActive state.
+    // BackForwardCache is disabled in prerendering frame trees because a
+    // prerendered page is invisible, and the user can't perform any
+    // back/forward navigations.
     kInBackForwardCache,
 
     // This state corresponds to when RenderFrameHost has started running unload
@@ -825,24 +862,26 @@ class CONTENT_EXPORT RenderFrameHostImpl
     // execute unload handlers and deletes the RenderFrame. The RenderFrameHost
     // waits for an ACK from the renderer process, either
     // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame for a navigating
-    // frame or FrameHostMsg_Detach for
-    // its subframes, after which the RenderFrameHost transitions to
-    // kReadyToBeDeleted state.
+    // frame or FrameHostMsg_Detach for its subframes, after which the
+    // RenderFrameHost transitions to kReadyToBeDeleted state.
     //
-    // Transition to this state happens only from kActive state. Note that
-    // eviction from BackForwardCache does not run unload handlers, and
-    // kInBackForwardCache moves to kReadyToBeDeleted.
+    // Transition to this state happens only from kActive and kPrerendering
+    // states. Note that eviction from BackForwardCache does not run unload
+    // handlers, and kInBackForwardCache moves to kReadyToBeDeleted. Similarly,
+    // canceling prerendering does not run unload handlers, and kPrerendering
+    // moves to kReadyToBeDeleted.
     kRunningUnloadHandlers,
 
     // This state corresponds to when RenderFrameHost has completed running the
     // unload handlers. Once all the descendant frames in other processes are
     // gone, this RenderFrameHost will delete itself. Transition to this state
-    // may happen from one of kSpeculative, kActive, kInBackForwardCache or
-    // kRunningUnloadHandlers states.
+    // may happen from one of kSpeculative, kPrerendering, kActive,
+    // kInBackForwardCache or kRunningUnloadHandlers states.
     kReadyToBeDeleted,
   };
   LifecycleState lifecycle_state() const { return lifecycle_state_; }
   void SetLifecycleStateToActive();
+  void SetLifecycleStateToPrerendering();
 
   // Sets |has_pending_lifecycle_state_update_| to true for this RenderFrameHost
   // and its children. Called when this RenderFrameHost stops being the current
@@ -1517,6 +1556,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Prerender2:
   // Returns true if this frame is for a prerendering page.
+  // Please note that this method considers the frame tree rather than the
+  // document lifecycle and can return true even if lifecycle_state() !=
+  // kPrerendering.
   bool IsPrerendering() const;
 
   // Prerender2:

@@ -73,6 +73,8 @@
 
 namespace content {
 
+using LifecycleState = RenderFrameHostImpl::LifecycleState;
+
 namespace {
 
 bool IsDataOrAbout(const GURL& url) {
@@ -2423,11 +2425,21 @@ RenderFrameHostManager::CreateRenderFrameHost(
         /*swapped_out=*/false, renderer_initiated_creation);
   }
   CHECK(render_view_host);
-  // Lifecycle state of newly created RenderFrameHostImpl.
-  RenderFrameHostImpl::LifecycleState lifecycle_state =
-      create_frame_case == CreateFrameCase::kCreateSpeculative
-          ? RenderFrameHostImpl::LifecycleState::kSpeculative
-          : RenderFrameHostImpl::LifecycleState::kActive;
+
+  // LifecycleState of newly created RenderFrameHost.
+  LifecycleState lifecycle_state;
+
+  if (create_frame_case == CreateFrameCase::kCreateSpeculative) {
+    lifecycle_state = LifecycleState::kSpeculative;
+  } else {
+    // For the creation of initial documents:
+    // - We create RenderFrameHost in kPrerendering state in case of
+    // prerendering frame tree.
+    // - We create RenderFrameHost in kActive state in all other cases.
+    lifecycle_state = frame_tree->is_prerendering()
+                          ? LifecycleState::kPrerendering
+                          : LifecycleState::kActive;
+  }
 
   return RenderFrameHostFactory::Create(
       site_instance, std::move(render_view_host),
@@ -3210,21 +3222,47 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostManager::SetRenderFrameHost(
       std::move(render_frame_host_);
   render_frame_host_ = std::move(render_frame_host);
 
-  if (render_frame_host_ && render_frame_host_->lifecycle_state() !=
-                                RenderFrameHostImpl::LifecycleState::kActive) {
-    // Set the |render_frame_host_| LifecycleState to kActive after the swap
-    // with the current RenderFrameHost if it is not null. RenderFrameHost can
-    // be either be in kspeculative or kInBackForwardCache before setting the
-    // lifecycle_state to kActive here.
-    render_frame_host_->SetLifecycleStateToActive();
+  FrameTree* frame_tree = frame_tree_node_->frame_tree();
+
+  // Swapping the current RenderFrameHost in a FrameTreeNode comes along with an
+  // update to its LifecycleState.
+
+  // The lifecycle state of the old RenderFrameHost is either:
+  // - kActive: starts unloading or enters the BackForwardCache.
+  // - kPrerendering: starts unloading.
+
+  // The lifecycle state of the new RenderFrameHost is either:
+  // - kSpeculative: for regular navigation.
+  // - kBackForwardCache: for BackForwardCache restore navigation.
+  // - kPrerendering: for a prerender activation navigation.
+  // It should become kActive in the primary frame tree and kPrerendering for
+  // navigations inside the prerendered frame tree.
+
+  // Note that Prerender2 introduces the concept of a prerendered frame tree.
+  // It also allows navigations within the prerendered tree to enable loading
+  // and running pages while in the background. Here, the old RenderFrameHost's
+  // state isn't kActive, but kPrerendering. The new RenderFrameHost doesn't
+  // become kActive, but kPrerendering because documents in kPrerendering state
+  // are considered current in the prerendered frame tree and invisible to the
+  // user, unlike kActive state.
+  if (render_frame_host_) {
+    if (frame_tree->is_prerendering()) {
+      DCHECK(render_frame_host_->IsPrerendering());
+      if (render_frame_host_->lifecycle_state() == LifecycleState::kSpeculative)
+        render_frame_host_->SetLifecycleStateToPrerendering();
+    } else {
+      if (render_frame_host_->lifecycle_state() != LifecycleState::kActive)
+        render_frame_host_->SetLifecycleStateToActive();
+    }
   }
 
-  if (old_render_frame_host &&
-      old_render_frame_host->lifecycle_state() ==
-          RenderFrameHostImpl::LifecycleState::kActive) {
-    // After the old RenderFrameHost is no longer the current one and is in
-    // LifecycleState::kActive state, set the value of
-    // |has_pending_lifecycle_state_update_| to true if it is not null.
+  // Note that we don't know yet what the next state will be, so it is
+  // temporarily marked with SetHasPendingLifecycleStateUpdate().
+  // TODO(https://crbug.com/1182237): Determine the next state earlier and
+  // remove SetHasPendingLifecycleStateUpdate().
+  if (old_render_frame_host && !old_render_frame_host->IsPendingDeletion()) {
+    // After the old RenderFrameHost is no longer the current one, set the value
+    // of |has_pending_lifecycle_state_update_| to true if it is not null.
     old_render_frame_host->SetHasPendingLifecycleStateUpdate();
   }
 

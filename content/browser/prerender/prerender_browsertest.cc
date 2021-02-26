@@ -22,6 +22,7 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_client.h"
@@ -30,6 +31,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/test_content_browser_client.h"
 #include "content/test/test_mojo_binder_policy_applier_unittest.mojom.h"
@@ -114,6 +116,8 @@ class PrerenderBrowserTest
     : public ContentBrowserTest,
       public testing::WithParamInterface<PrerenderBrowserTestType> {
  public:
+  using LifecycleState = RenderFrameHostImpl::LifecycleState;
+
   PrerenderBrowserTest() {
     std::map<std::string, std::string> parameters;
     if (IsMPArchActive()) {
@@ -226,6 +230,14 @@ class PrerenderBrowserTest
     return request_count_by_path_[url.PathForRequest()];
   }
 
+  WebContentsImpl* web_contents() const {
+    return static_cast<WebContentsImpl*>(shell()->web_contents());
+  }
+
+  RenderFrameHostImpl* current_frame_host() {
+    return web_contents()->GetMainFrame();
+  }
+
   bool IsActivationDisabled() const { return IsMPArchActive(); }
 
   bool IsMPArchActive() const {
@@ -262,6 +274,10 @@ class PrerenderBrowserTest
         prerendered_render_frame_host->GetFramesInSubtree();
     for (auto* frame : frames) {
       auto* rfhi = static_cast<RenderFrameHostImpl*>(frame);
+      // All the subframes should be in LifecycleState::kPrerendering state
+      // before activation.
+      EXPECT_EQ(rfhi->lifecycle_state(),
+                RenderFrameHostImpl::LifecycleState::kPrerendering);
       EXPECT_TRUE(rfhi->IsPrerendering());
     }
 
@@ -277,6 +293,10 @@ class PrerenderBrowserTest
     frames = navigated_render_frame_host->GetFramesInSubtree();
     for (auto* frame : frames) {
       auto* rfhi = static_cast<RenderFrameHostImpl*>(frame);
+      // All the subframes should be transitioned to LifecycleState::kActive
+      // state after activation.
+      EXPECT_EQ(rfhi->lifecycle_state(),
+                RenderFrameHostImpl::LifecycleState::kActive);
       EXPECT_FALSE(rfhi->IsPrerendering());
     }
   }
@@ -1038,6 +1058,60 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
 
   // The prerender host should be consumed.
   EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
+}
+
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, RenderFrameHostLifecycleState) {
+  // This test is only meaningful with activation.
+  if (IsActivationDisabled())
+    return;
+
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/cross_site_iframe_factory.html?a(b)");
+  const GURL kCrossSitePrerenderingUrl =
+      GetCrossOriginUrl("/cross_site_iframe_factory.html?c(d)");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  EXPECT_EQ(current_frame_host()->lifecycle_state(), LifecycleState::kActive);
+
+  // Start a prerender.
+  AddPrerender(kPrerenderingUrl);
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  PrerenderHost* prerender_host =
+      registry.FindHostByUrlForTesting(kPrerenderingUrl);
+  ASSERT_TRUE(prerender_host);
+
+  RenderFrameHostImpl* rfh_a =
+      prerender_host->GetPrerenderedMainFrameHostForTesting();
+  RenderFrameHostImpl* rfh_b = rfh_a->child_at(0)->current_frame_host();
+
+  // Both rfh_a and rfh_b lifecycle state's should be kPrerendering.
+  EXPECT_EQ(LifecycleState::kPrerendering, rfh_a->lifecycle_state());
+  EXPECT_EQ(LifecycleState::kPrerendering, rfh_b->lifecycle_state());
+
+  RenderFrameHostImpl* prerendered_render_frame_host =
+      prerender_host->GetPrerenderedMainFrameHostForTesting();
+
+  // Navigate cross-site from the prerendered page.
+  EXPECT_TRUE(ExecJs(
+      prerendered_render_frame_host,
+      JsReplace("window.location.href = $1", kCrossSitePrerenderingUrl)));
+  prerender_host->WaitForLoadStopForTesting();
+
+  RenderFrameHostImpl* rfh_c =
+      prerender_host->GetPrerenderedMainFrameHostForTesting();
+  RenderFrameHostImpl* rfh_d = rfh_c->child_at(0)->current_frame_host();
+
+  // Both rfh_c and rfh_d lifecycle state's should be kPrerendering.
+  EXPECT_EQ(LifecycleState::kPrerendering, rfh_c->lifecycle_state());
+  EXPECT_EQ(LifecycleState::kPrerendering, rfh_d->lifecycle_state());
+
+  // Activate the prerendered page.
+  NavigateWithLocation(kPrerenderingUrl);
+
+  // Both rfh_c and rfh_d lifecycle state's should be kActive after activation.
+  EXPECT_EQ(LifecycleState::kActive, rfh_c->lifecycle_state());
+  EXPECT_EQ(LifecycleState::kActive, rfh_d->lifecycle_state());
 }
 
 // Tests that prerendering pages can access local storage.

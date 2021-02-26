@@ -749,6 +749,8 @@ const char* LifecycleStateToString(RenderFrameHostImpl::LifecycleState state) {
   switch (state) {
     case LifecycleState::kSpeculative:
       return "Speculative";
+    case LifecycleState::kPrerendering:
+      return "Prerendering";
     case LifecycleState::kActive:
       return "Active";
     case LifecycleState::kInBackForwardCache:
@@ -1058,6 +1060,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       lifecycle_state_(lifecycle_state) {
   DCHECK(delegate_);
   DCHECK(lifecycle_state_ == LifecycleState::kSpeculative ||
+         lifecycle_state_ == LifecycleState::kPrerendering ||
          lifecycle_state_ == LifecycleState::kActive);
   // Only main frames have `waiting_for_init_` set.
   DCHECK(!waiting_for_init_ || !parent_);
@@ -4558,6 +4561,11 @@ void RenderFrameHostImpl::SendAccessibilityEventsToManager(
 
 bool RenderFrameHostImpl::IsInactiveAndDisallowReactivation() {
   switch (lifecycle_state_) {
+    // TODO(https://crbug.com/1177729): Cancel prerendering when
+    // IsInactiveAndDisallowReactivation() is called in
+    // LifecycleState:kPrerendering state.
+    case LifecycleState::kPrerendering:
+      return false;
     case LifecycleState::kRunningUnloadHandlers:
     case LifecycleState::kReadyToBeDeleted:
       return true;
@@ -7294,17 +7302,21 @@ bool RenderFrameHostImpl::IsRenderFrameLive() {
 }
 
 bool RenderFrameHostImpl::IsCurrent() {
-  // Only documents in the kActive lifecycle state are considered current.
-  if (lifecycle_state_ != LifecycleState::kActive)
-    return false;
-
-  // When the document is transitioning away from kActive to a
+  // When the document is transitioning away from kActive/kPrerendering to a
   // yet-to-be-determined state, the RenderFrameHostManager has already
   // updated its current RenderFrameHost, and the old document is no longer
   // the current one. In that case, return false.
   if (has_pending_lifecycle_state_update_)
     return false;
-  return true;
+
+  // TODO(https://crbug.com/1177743): Remove this check and replace all the
+  // navigation-related IsCurrent checks with explicit checks allowing
+  // navigation when the document is in kPrerendering state.
+  if (lifecycle_state_ == LifecycleState::kPrerendering)
+    return true;
+
+  // Only documents in the kActive lifecycle state are considered current.
+  return lifecycle_state_ == LifecycleState::kActive;
 }
 
 size_t RenderFrameHostImpl::GetProxyCount() {
@@ -7859,6 +7871,9 @@ void RenderFrameHostImpl::OnPrerenderedPageActivated() {
   // TODO(crbug.com/1174506): Temporary until we understand the cause of the
   // crash. Return to DCHECKs after the bug is fixed.
   CHECK(blink::features::IsPrerender2Enabled());
+  // Update the |lifecycle_state_| to kActive on activation.
+  DCHECK_EQ(lifecycle_state_, LifecycleState::kPrerendering);
+  SetLifecycleState(LifecycleState::kActive);
   broker_.ReleaseMojoBinderPolicies();
   for (auto& child : children_)
     child->current_frame_host()->OnPrerenderedPageActivated();
@@ -10326,6 +10341,16 @@ void RenderFrameHostImpl::SetLifecycleStateToActive() {
   SetLifecycleState(LifecycleState::kActive);
 }
 
+void RenderFrameHostImpl::SetLifecycleStateToPrerendering() {
+  // Update the |lifecycle_state_| to kPrerendering on navigation commit when a
+  // speculative RenderFrameHost is created for navigation inside prerendered
+  // frame tree. This should happen before activation.
+  DCHECK(IsPrerendering());
+  DCHECK_EQ(lifecycle_state_, LifecycleState::kSpeculative);
+  DCHECK(children_.empty());
+  SetLifecycleState(LifecycleState::kPrerendering);
+}
+
 void RenderFrameHostImpl::SetLifecycleState(LifecycleState state) {
   TRACE_EVENT2("content", "RenderFrameHostImpl::SetLifecycleState",
                "render_frame_host", base::trace_event::ToTracedValue(this),
@@ -10341,7 +10366,12 @@ void RenderFrameHostImpl::SetLifecycleState(LifecycleState state) {
           // transitions happen to this state during its lifetime.
           StateTransitions<LifecycleState>({
               {LifecycleState::kSpeculative,
-               {LifecycleState::kActive, LifecycleState::kReadyToBeDeleted}},
+               {LifecycleState::kActive, LifecycleState::kPrerendering,
+                LifecycleState::kReadyToBeDeleted}},
+
+              {LifecycleState::kPrerendering,
+               {LifecycleState::kActive, LifecycleState::kRunningUnloadHandlers,
+                LifecycleState::kReadyToBeDeleted}},
 
               {LifecycleState::kActive,
                {LifecycleState::kInBackForwardCache,
