@@ -34,6 +34,7 @@ const char kTestCellularDeviceImei[] = "testDeviceImei";
 const char kTestCellularDeviceMdn[] = "testDeviceMdn";
 
 const char kTestCellularServicePath[] = "/service/cellular0";
+const char kTestCellularServiceIccid[] = "1234567890";
 const char kTestCellularServiceGuid[] = "testServiceGuid";
 const char kTestCellularServiceName[] = "testServiceName";
 const char kTestCellularServicePaymentUrl[] = "testServicePaymentUrl.com";
@@ -71,7 +72,7 @@ class CellularSetupOtaActivatorImplTest : public testing::Test {
     carrier_portal_handler_remote_.Bind(ota_activator_->GenerateRemote());
   }
 
-  void AddCellularDevice(bool has_valid_sim) {
+  void AddCellularDevice(bool has_valid_sim, bool has_physical_slots = true) {
     ShillDeviceClient::TestInterface* device_test = test_helper_.device_test();
     device_test->AddDevice(kTestCellularDevicePath, shill::kTypeCellular,
                            kTestCellularDeviceName);
@@ -80,6 +81,12 @@ class CellularSetupOtaActivatorImplTest : public testing::Test {
       device_test->SetDeviceProperty(
           kTestCellularDevicePath, shill::kSIMPresentProperty,
           base::Value(true), false /* notify_changed */);
+
+      device_test->SetDeviceProperty(
+          kTestCellularDevicePath, shill::kSIMSlotInfoProperty,
+          CreateCellularSIMSlotInfo(kTestCellularServiceIccid),
+          false /* notify_changed */);
+
       base::DictionaryValue home_provider;
       home_provider.SetString(shill::kOperatorNameKey,
                               kTestCellularDeviceCarrier);
@@ -95,6 +102,11 @@ class CellularSetupOtaActivatorImplTest : public testing::Test {
       device_test->SetDeviceProperty(
           kTestCellularDevicePath, shill::kMdnProperty,
           base::Value(kTestCellularDeviceMdn), false /* notify_changed */);
+    } else if (has_physical_slots) {
+      device_test->SetDeviceProperty(
+          kTestCellularDevicePath, shill::kSIMSlotInfoProperty,
+          CreateCellularSIMSlotInfo(kTestCellularServiceIccid),
+          false /* notify_changed */);
     }
 
     base::RunLoop().RunUntilIdle();
@@ -114,6 +126,9 @@ class CellularSetupOtaActivatorImplTest : public testing::Test {
         kTestCellularServicePath, kTestCellularServiceGuid,
         kTestCellularServiceName, shill::kTypeCellular,
         is_connected ? shill::kStateOnline : shill::kStateIdle, true);
+    service_test->SetServiceProperty(kTestCellularServicePath,
+                                     shill::kIccidProperty,
+                                     base::Value(kTestCellularServiceIccid));
     service_test->SetServiceProperty(
         kTestCellularServicePath, shill::kActivationStateProperty,
         is_already_activated
@@ -217,6 +232,16 @@ class CellularSetupOtaActivatorImplTest : public testing::Test {
     is_finished_ = true;
   }
 
+  base::Value CreateCellularSIMSlotInfo(const std::string& iccid) {
+    base::Value::ListStorage sim_slot_infos;
+    base::Value slot_info_item(base::Value::Type::DICTIONARY);
+    slot_info_item.SetStringKey(shill::kSIMSlotInfoEID, std::string());
+    slot_info_item.SetStringKey(shill::kSIMSlotInfoICCID, iccid);
+    slot_info_item.SetBoolKey(shill::kSIMSlotInfoPrimary, false);
+    sim_slot_infos.push_back(std::move(slot_info_item));
+    return base::Value(sim_slot_infos);
+  }
+
   base::test::TaskEnvironment task_environment_;
   NetworkStateTestHelper test_helper_;
 
@@ -254,6 +279,16 @@ TEST_F(CellularSetupOtaActivatorImplTest, Success) {
   FlushForTesting();
   VerifyActivationFinished(
       mojom::ActivationResult::kSuccessfullyStartedActivation);
+}
+
+TEST_F(CellularSetupOtaActivatorImplTest, HasNoPhysicalSlots) {
+  AddCellularDevice(false /* has_valid_sim */, false /* has_physical_slots */);
+
+  BuildOtaActivator();
+
+  FlushForTesting();
+
+  VerifyActivationFinished(mojom::ActivationResult::kFailedToActivate);
 }
 
 TEST_F(CellularSetupOtaActivatorImplTest,
