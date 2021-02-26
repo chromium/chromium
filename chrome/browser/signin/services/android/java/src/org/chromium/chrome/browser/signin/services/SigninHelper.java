@@ -127,13 +127,14 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
             return;
         }
 
-        final List<Account> accounts =
-                AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts();
-        // Always check for account deleted.
-        if (AccountUtils.findAccountByName(accounts, syncAccount.getEmail()) == null) {
+        AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(accounts -> {
+            if (AccountUtils.findAccountByName(accounts, syncAccount.getEmail()) != null) {
+                // Do nothing if the signed-in account is still on device
+                return;
+            }
             // It is possible that Chrome got to this point without account
             // rename notification. Let us signout before doing a rename.
-            AsyncTask<Void> task = new AsyncTask<Void>() {
+            new AsyncTask<Void>() {
                 @Override
                 protected Void doInBackground() {
                     updateAccountRenameData(
@@ -152,10 +153,8 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
                         mSigninManager.signOut(SignoutReason.ACCOUNT_REMOVED_FROM_DEVICE);
                     }
                 }
-            };
-            task.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
-            return;
-        }
+            }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+        });
 
         if (accountsChanged) {
             // Account details have changed so inform the token service that credentials
