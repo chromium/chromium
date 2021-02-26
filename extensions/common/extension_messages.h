@@ -35,7 +35,6 @@
 #include "extensions/common/host_id.h"
 #include "extensions/common/message_bundle.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
-#include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/socket_permission_data.h"
 #include "extensions/common/permissions/usb_device_permission_data.h"
@@ -53,8 +52,6 @@
 
 IPC_ENUM_TRAITS_MAX_VALUE(extensions::CSSOrigin, extensions::CSSOrigin::kLast)
 
-IPC_ENUM_TRAITS_MAX_VALUE(extensions::mojom::ViewType,
-                          extensions::mojom::ViewType::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(content::SocketPermissionRequest::OperationType,
                           content::SocketPermissionRequest::OPERATION_TYPE_LAST)
 
@@ -616,10 +613,6 @@ IPC_MESSAGE_CONTROL3(ExtensionMsg_ClearTabSpecificPermissions,
                      std::vector<std::string> /* extension_ids */,
                      bool /* update origin whitelist */,
                      int /* tab_id */)
-
-// Tell the renderer which type this view is.
-IPC_MESSAGE_ROUTED1(ExtensionMsg_NotifyRenderViewType,
-                    extensions::mojom::ViewType /* view_type */)
 
 // The browser's response to the ExtensionMsg_WakeEventPage IPC.
 IPC_MESSAGE_CONTROL2(ExtensionMsg_WakeEventPageResponse,

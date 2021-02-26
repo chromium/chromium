@@ -4,6 +4,8 @@
 
 module extensions.mojom;
 
+import "extensions/common/mojom/view_type.mojom";
+
 // Implemented in the renderer, this interface defines the local frame specific
 // methods.
 interface LocalFrame {
@@ -18,4 +20,7 @@ interface LocalFrame {
 
   // Notifies the renderer that its window has closed.
   AppWindowClosed(bool send_onclosed);
+
+  // Tells the renderer which type this view is.
+  NotifyRenderViewType(ViewType view_type);
 };

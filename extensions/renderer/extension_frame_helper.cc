@@ -385,8 +385,6 @@ bool ExtensionFrameHelper::OnMessageReceived(const IPC::Message& message) {
                         OnExtensionDispatchOnDisconnect)
     IPC_MESSAGE_HANDLER(ExtensionMsg_UpdateBrowserWindowId,
                         OnUpdateBrowserWindowId)
-    IPC_MESSAGE_HANDLER(ExtensionMsg_NotifyRenderViewType,
-                        OnNotifyRendererViewType)
     IPC_MESSAGE_HANDLER(ExtensionMsg_Response, OnExtensionResponse)
     IPC_MESSAGE_HANDLER(ExtensionMsg_MessageInvoke, OnExtensionMessageInvoke)
     IPC_MESSAGE_UNHANDLED(handled = false)
@@ -449,7 +447,7 @@ void ExtensionFrameHelper::OnUpdateBrowserWindowId(int browser_window_id) {
   browser_window_id_ = browser_window_id;
 }
 
-void ExtensionFrameHelper::OnNotifyRendererViewType(mojom::ViewType type) {
+void ExtensionFrameHelper::NotifyRenderViewType(mojom::ViewType type) {
   // TODO(devlin): It'd be really nice to be able to
   // DCHECK_EQ(mojom::ViewType::kInvalid, view_type_) here.
   view_type_ = type;

@@ -90,8 +90,8 @@ void ExtensionWebContentsObserver::InitializeRenderFrame(
       process_id, url::Origin::Create(frame_extension->url()));
 
   // Notify the render frame of the view type.
-  render_frame_host->Send(new ExtensionMsg_NotifyRenderViewType(
-      render_frame_host->GetRoutingID(), GetViewType(web_contents())));
+  GetLocalFrame(render_frame_host)
+      ->NotifyRenderViewType(GetViewType(web_contents()));
 
   ProcessManager::Get(browser_context_)
       ->RegisterRenderFrameHost(web_contents(), render_frame_host,

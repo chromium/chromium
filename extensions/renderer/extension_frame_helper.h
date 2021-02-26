@@ -104,6 +104,7 @@ class ExtensionFrameHelper
   void SetSpatialNavigationEnabled(bool enabled) override;
   void SetTabId(int32_t id) override;
   void AppWindowClosed(bool send_onclosed) override;
+  void NotifyRenderViewType(mojom::ViewType view_type) override;
 
   // Called when the document element has been inserted in this frame. This
   // method may invoke untrusted JavaScript code that invalidate the frame and
@@ -162,7 +163,6 @@ class ExtensionFrameHelper
                                        const PortId& id,
                                        const std::string& error_message);
   void OnUpdateBrowserWindowId(int browser_window_id);
-  void OnNotifyRendererViewType(mojom::ViewType view_type);
   void OnExtensionResponse(int request_id,
                            bool success,
                            const base::ListValue& response,
