@@ -3436,6 +3436,15 @@ ci.fyi_builder(
 )
 
 ci.fyi_builder(
+    name = "Linux Builder (goma cache silo)",
+    console_view_entry = consoles.console_view_entry(
+        category = "linux",
+        short_name = "lgc",
+    ),
+    os = os.LINUX_DEFAULT,
+)
+
+ci.fyi_builder(
     name = "Linux Builder (reclient)",
     console_view_entry = consoles.console_view_entry(
         category = "linux",
