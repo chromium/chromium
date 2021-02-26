@@ -39,14 +39,8 @@ class ASH_EXPORT NotificationIconTrayItemView : public TrayItemView {
   // Reset notification pointer, id, image and tooltip text.
   void Reset();
 
-  // Update the tooltip text of the tray item.
-  void UpdateTooltipText();
-
-  // Return true if the view is containing and displaying a notification.
-  bool HasNotification();
-
   // Returns a string describing the current state for accessibility.
-  base::string16 GetAccessibleNameString() const;
+  const base::string16& GetAccessibleNameString() const;
 
   const std::string& GetNotificationId() const;
 
@@ -55,11 +49,6 @@ class ASH_EXPORT NotificationIconTrayItemView : public TrayItemView {
   const char* GetClassName() const override;
 
  private:
-  // Pointer to a notification which is set when the view is displaying
-  // information for the notification. When the associated notification gets
-  // removed, calling Reset() will ensure that this pointer is reset
-  message_center::Notification* notification_ = nullptr;
-
   // Store the id to make sure we still have it when notification is removed and
   // goes out of scope.
   std::string notification_id_;
