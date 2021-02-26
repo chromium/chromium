@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/settings/privacy/privacy_table_view_controller.h"
 
+#import <LocalAuthentication/LocalAuthentication.h>
+
 #include "base/check.h"
 #import "base/mac/foundation_util.h"
 #include "base/metrics/user_metrics.h"
@@ -30,6 +32,7 @@
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
@@ -60,6 +63,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypePrivacyFooter,
   ItemTypeOtherDevicesHandoff,
   ItemTypeIncognitoReauth,
+  ItemTypeIncognitoReauthFooter,
 };
 
 // Only used in this class to openn the Sync and Google services settings.
@@ -176,6 +180,13 @@ const char kGoogleServicesSettingsURL[] = "settings://open_google_services";
     // Incognito authentication item.
     [model addItem:self.incognitoReauthItem
         toSectionWithIdentifier:SectionIdentifierIncognitoAuth];
+
+    // If necessary, add the instuctional footer
+    if ([self shouldShowReauthFooter]) {
+      [model setFooter:[PrivacyTableViewController
+                           newIncognitoReauthSetupPasscodeFooter]
+          forSectionWithIdentifier:SectionIdentifierIncognitoAuth];
+    }
   }
 }
 
@@ -219,6 +230,18 @@ const char kGoogleServicesSettingsURL[] = "settings://open_google_services";
           accessibilityIdentifier:kSettingsClearBrowsingDataCellId];
 }
 
+// Footer to the incognito reauth section that appears when the user has no
+// passcode/biometric auth set up.
++ (TableViewHeaderFooterItem*)newIncognitoReauthSetupPasscodeFooter {
+  TableViewLinkHeaderFooterItem* setupPasscodeFooter =
+      [[TableViewLinkHeaderFooterItem alloc]
+          initWithType:ItemTypeIncognitoReauthFooter];
+  setupPasscodeFooter.text =
+      l10n_util::GetNSString(IDS_IOS_INCOGNITO_REAUTH_SET_UP_PASSCODE_HINT);
+
+  return setupPasscodeFooter;
+}
+
 - (SettingsSwitchItem*)incognitoReauthItem {
   DCHECK(base::FeatureList::IsEnabled(kIncognitoAuthentication));
 
@@ -230,6 +253,7 @@ const char kGoogleServicesSettingsURL[] = "settings://open_google_services";
   _incognitoReauthItem.text =
       l10n_util::GetNSString(IDS_IOS_INCOGNITO_REAUTH_SETTING_NAME);
   _incognitoReauthItem.on = self.incognitoReauthPref.value;
+  _incognitoReauthItem.enabled = [self deviceSupportsAuthentication];
   return _incognitoReauthItem;
 }
 
@@ -353,8 +377,8 @@ const char kGoogleServicesSettingsURL[] = "settings://open_google_services";
 // switchView.on is YES.
 - (void)switchTapped:(UISwitch*)switchView {
   if (switchView.isOn && ![self.reauthModule canAttemptReauth]) {
-    // TODO(crbug.com/1148818): add error message here or maybe even disable
-    // the switch?
+    // This should normally not happen: the switch should not even be enabled.
+    // Fallback behaviour added just in case.
     switchView.on = false;
     return;
   }
@@ -376,6 +400,22 @@ const char kGoogleServicesSettingsURL[] = "settings://open_google_services";
                                  [switchView setOn:enabled animated:YES];
                                  weakSelf.incognitoReauthPref.value = enabled;
                                }];
+}
+
+// Whether the explanatory footer for the incognito reauth setting should be
+// shown. It's shown when the setting cannot be enabled due to the device state.
+- (BOOL)shouldShowReauthFooter {
+  if (!base::FeatureList::IsEnabled(kIncognitoAuthentication)) {
+    return NO;
+  }
+  return ![self deviceSupportsAuthentication];
+}
+
+// Checks if the device has Passcode, Face ID, or Touch ID set up.
+- (BOOL)deviceSupportsAuthentication {
+  LAContext* context = [[LAContext alloc] init];
+  return [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthentication
+                              error:nil];
 }
 
 @end

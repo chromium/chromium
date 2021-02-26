@@ -45,6 +45,7 @@ source_set("privacy_ui") {
     "//ios/chrome/common/ui/reauthentication",
     "//ui/base",
   ]
+  frameworks = [ "LocalAuthentication.framework" ]
 }
 
 source_set("privacy") {
