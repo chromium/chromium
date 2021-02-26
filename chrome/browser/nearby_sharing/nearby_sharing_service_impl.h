@@ -191,11 +191,15 @@ class NearbySharingServiceImpl
   void FinishEndpointDiscoveryEvent();
   void OnOutgoingAdvertisementDecoded(
       const std::string& endpoint_id,
+      const std::vector<uint8_t>& endpoint_info,
       sharing::mojom::AdvertisementPtr advertisement);
   void OnOutgoingDecryptedCertificate(
       const std::string& endpoint_id,
+      const std::vector<uint8_t>& endpoint_info,
       sharing::mojom::AdvertisementPtr advertisement,
       base::Optional<NearbyShareDecryptedPublicCertificate> certificate);
+  void ScheduleCertificateDownloadDuringDiscovery(size_t attempt_count);
+  void OnCertificateDownloadDuringDiscoveryTimerFired(size_t attempt_count);
 
   bool IsBluetoothPresent() const;
   bool IsBluetoothPowered() const;
@@ -384,6 +388,7 @@ class NearbySharingServiceImpl
   NearbyFileHandler file_handler_;
   bool is_screen_locked_ = false;
   base::OneShotTimer rotate_background_advertisement_timer_;
+  base::OneShotTimer certificate_download_during_discovery_timer_;
   base::OneShotTimer process_shutdown_pending_timer_;
 
   // A list of service observers.
@@ -432,6 +437,12 @@ class NearbySharingServiceImpl
   // For metrics. The IDs of ShareTargets that are cancelled while trying to
   // establish an outgoing connection.
   base::flat_set<base::UnguessableToken> cancelled_share_target_ids_;
+  // A map from endpoint ID to endpoint info from discovered, contact-based
+  // advertisements that could not decrypt any available public certificates.
+  // During discovery, if certificates are downloaded, we revist this map and
+  // retry certificate decryption.
+  base::flat_map<std::string, std::vector<uint8_t>>
+      discovered_advertisements_to_retry_map_;
 
   // A mapping of Attachment Id to additional AttachmentInfo related to the
   // Attachment.
