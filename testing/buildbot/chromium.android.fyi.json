@@ -182,7 +182,8 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android29.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android29.textpb",
+          "--replace-system-package=org.chromium.weblayer.shell,apks/WebLayerShellSystemWebView.apk"
         ],
         "merge": {
           "args": [
@@ -723,7 +724,8 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android23.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android23.textpb",
+          "--replace-system-package=org.chromium.weblayer.shell,apks/WebLayerShellSystemWebView.apk"
         ],
         "merge": {
           "args": [
