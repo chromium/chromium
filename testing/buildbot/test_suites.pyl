@@ -6676,6 +6676,11 @@
 
   'matrix_compound_suites': {
     'android_weblayer_x86_marshmallow_10_gtests': {
+      'weblayer_instrumentation_tests': {
+        'variants': [
+          {'identifier': 'ToT_Tests'}
+        ]
+      },
       'weblayer_instrumentation_version_tests': {
         'variants': [
           'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MILESTONE',
@@ -7146,7 +7151,7 @@
         ]
       },
     },
-    
+
     # These tests run on Ozone/X11 CQ tester.
     # Only essential tests are running as long as
     # the capacity is limited.
