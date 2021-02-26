@@ -9,9 +9,8 @@
     {
       "name": "LayoutNGTableRow TR",
       "bounds": [73, 23],
-      "backgroundColor": "#008000",
       "invalidations": [
-        [0, 0, 37, 23]
+        [0, 0, 36, 23]
       ],
       "transform": 1
     }

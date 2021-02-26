@@ -304,6 +304,41 @@ void ComputeEdgeJoints(const NGTableBorders& collapsed_borders,
   }
 }
 
+// When painting background in a cell (for the cell or its ancestor table part),
+// if any ancestor table part has a layer and the table collapses borders, the
+// background is painted after the collapsed borders. We need to clip the
+// background to prevent it from covering the collapsed borders around the cell.
+// TODO(crbug.com/1181813): Investigate other methods.
+class TableCellBackgroundClipper {
+ public:
+  TableCellBackgroundClipper(GraphicsContext& context,
+                             const LayoutNGTableCell& table_cell,
+                             const PhysicalRect& cell_rect,
+                             bool is_painting_scrolling_background = false)
+      : context_(context),
+        needs_clip_(!is_painting_scrolling_background &&
+                    (table_cell.HasLayer() || table_cell.Parent()->HasLayer() ||
+                     table_cell.Parent()->Parent()->HasLayer()) &&
+                    table_cell.TableInterface()->ShouldCollapseBorders()) {
+    if (!needs_clip_)
+      return;
+
+    PhysicalRect clip_rect = cell_rect;
+    clip_rect.Expand(table_cell.BorderInsets());
+    context.Save();
+    context.Clip(PixelSnappedIntRect(clip_rect));
+  }
+
+  ~TableCellBackgroundClipper() {
+    if (needs_clip_)
+      context_.Restore();
+  }
+
+ private:
+  GraphicsContext& context_;
+  bool needs_clip_;
+};
+
 }  // namespace
 
 void NGTablePainter::PaintBoxDecorationBackground(
@@ -482,12 +517,9 @@ void NGTablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
     } else {
       box_side = edge.IsInlineAxis() ? BoxSide::kLeft : BoxSide::kTop;
     }
-    ObjectPainter::DrawLineForBoxSide(
-        paint_info.context, physical_border_rect.offset.left,
-        physical_border_rect.offset.top,
-        physical_border_rect.offset.left + physical_border_rect.size.width,
-        physical_border_rect.offset.top + physical_border_rect.size.height,
-        box_side, edge.BorderColor(), edge.BorderStyle(), 0, 0, true);
+    ObjectPainter::DrawBoxSide(
+        paint_info.context, PixelSnappedIntRect(physical_border_rect), box_side,
+        edge.BorderColor(), edge.BorderStyle());
   }
 }
 
@@ -645,19 +677,22 @@ void NGTableCellPainter::PaintBoxDecorationBackground(
     const PhysicalOffset& paint_offset,
     const IntRect& visual_rect) {
   BoxDecorationData box_decoration_data(paint_info, fragment_);
-
   if (!box_decoration_data.ShouldPaint())
     return;
-  const LayoutObject* layout_cell = fragment_.GetLayoutObject();
+
+  const auto& layout_cell = *To<LayoutNGTableCell>(fragment_.GetLayoutObject());
   if (DrawingRecorder::UseCachedDrawingIfPossible(
-          paint_info.context, *layout_cell,
+          paint_info.context, layout_cell,
           DisplayItem::kBoxDecorationBackground))
     return;
 
-  DrawingRecorder recorder(paint_info.context, *layout_cell,
+  DrawingRecorder recorder(paint_info.context, layout_cell,
                            DisplayItem::kBoxDecorationBackground, visual_rect);
 
   PhysicalRect paint_rect(paint_offset, fragment_.Size());
+  TableCellBackgroundClipper clipper(
+      paint_info.context, layout_cell, paint_rect,
+      box_decoration_data.IsPaintingScrollingBackground());
   NGBoxFragmentPainter(fragment_).PaintBoxDecorationBackgroundWithRectImpl(
       paint_info, paint_rect, box_decoration_data);
 }
@@ -683,29 +718,8 @@ void NGTableCellPainter::PaintBackgroundForTablePart(
                                      table_part, table_part_paint_rect.size);
     PhysicalRect cell_rect(table_part_paint_rect.offset + table_cell_offset,
                            fragment_.Size());
-
-    bool should_clip =
-        table_part.HasLayer() && table_part.IsTableRow() &&
-        layout_table_cell.Parent()->Parent()->StyleRef().BorderCollapse() ==
-            EBorderCollapse::kCollapse;
-    GraphicsContextStateSaver state_saver(paint_info.context, should_clip);
-    if (should_clip) {
-      // Clipping does not pixel-snap correctly.
-      // If we clip too much, background is not painted.
-      // If we clip too little, borders are painted over by background.
-      // FF does not clip at all, that is another option.
-      //
-      // When table part has a paint layer, it will paint after collapsed
-      // borders are painted.
-      // To avoid painting over the collapsed borders, background is clipped.
-      // Because pixel snapping does not guarantee correct snapping between
-      // different layers, borders might still disappear, or not enough
-      // background will be painted.
-      // This happens less often in Legacy layout, because it snaps column
-      // locations during layout.
-      PhysicalRect clip_rect = cell_rect;
-      paint_info.context.Clip(FloatRect(clip_rect));
-    }
+    TableCellBackgroundClipper clipper(paint_info.context, layout_table_cell,
+                                       cell_rect);
     BoxModelObjectPainter(layout_table_cell)
         .PaintFillLayers(paint_info, color, background_layers, cell_rect,
                          geometry);

@@ -354,42 +354,44 @@ void CollapsedBorderPainter::PaintCollapsedBorders(
   IntRect rect = PixelSnappedIntRect(
       TableCellPainter(cell_).PaintRectNotIncludingVisualOverflow(
           paint_state.PaintOffset()));
-  // |paint_rect| covers the whole collapsed borders.
-  IntRect paint_rect = rect;
-  paint_rect.Expand(IntRectOutsets(before_.outer_width, end_.outer_width,
-                                   after_.outer_width, start_.outer_width));
 
   // We never paint diagonals at the joins.  We simply let the border with the
   // highest precedence paint on top of borders with lower precedence.
   if (before_.value) {
-    ObjectPainter::DrawLineForBoxSide(
-        context, rect.X() - before_.begin_outset,
-        rect.Y() - before_.outer_width, rect.MaxX() + before_.end_outset,
-        rect.Y() + before_.inner_width, BoxSide::kTop,
-        before_.value->GetColor(), CollapsedBorderStyle(before_.value->Style()),
-        0, 0, true);
+    IntRect edge_rect(rect.X() - before_.begin_outset,
+                      rect.Y() - before_.outer_width,
+                      rect.Width() + before_.begin_outset + before_.end_outset,
+                      before_.outer_width + before_.inner_width);
+    ObjectPainter::DrawBoxSide(context, edge_rect, BoxSide::kTop,
+                               before_.value->GetColor(),
+                               CollapsedBorderStyle(before_.value->Style()));
   }
   if (after_.value) {
-    ObjectPainter::DrawLineForBoxSide(
-        context, rect.X() - after_.begin_outset,
-        rect.MaxY() - after_.inner_width, rect.MaxX() + after_.end_outset,
-        rect.MaxY() + after_.outer_width, BoxSide::kBottom,
-        after_.value->GetColor(), CollapsedBorderStyle(after_.value->Style()),
-        0, 0, true);
+    IntRect edge_rect(rect.X() - after_.begin_outset,
+                      rect.MaxY() - after_.inner_width,
+                      rect.Width() + after_.begin_outset + after_.end_outset,
+                      after_.inner_width + after_.outer_width);
+    ObjectPainter::DrawBoxSide(context, edge_rect, BoxSide::kBottom,
+                               after_.value->GetColor(),
+                               CollapsedBorderStyle(after_.value->Style()));
   }
   if (start_.value) {
-    ObjectPainter::DrawLineForBoxSide(
-        context, rect.X() - start_.outer_width, rect.Y() - start_.begin_outset,
-        rect.X() + start_.inner_width, rect.MaxY() + start_.end_outset,
-        BoxSide::kLeft, start_.value->GetColor(),
-        CollapsedBorderStyle(start_.value->Style()), 0, 0, true);
+    IntRect edge_rect(rect.X() - start_.outer_width,
+                      rect.Y() - start_.begin_outset,
+                      start_.outer_width + start_.inner_width,
+                      rect.Height() + start_.begin_outset + start_.end_outset);
+    ObjectPainter::DrawBoxSide(context, edge_rect, BoxSide::kLeft,
+                               start_.value->GetColor(),
+                               CollapsedBorderStyle(start_.value->Style()));
   }
   if (end_.value) {
-    ObjectPainter::DrawLineForBoxSide(
-        context, rect.MaxX() - end_.inner_width, rect.Y() - end_.begin_outset,
-        rect.MaxX() + end_.outer_width, rect.MaxY() + end_.end_outset,
-        BoxSide::kRight, end_.value->GetColor(),
-        CollapsedBorderStyle(end_.value->Style()), 0, 0, true);
+    IntRect edge_rect(rect.MaxX() - end_.inner_width,
+                      rect.Y() - end_.begin_outset,
+                      end_.inner_width + end_.outer_width,
+                      rect.Height() + end_.begin_outset + end_.end_outset);
+    ObjectPainter::DrawBoxSide(context, edge_rect, BoxSide::kRight,
+                               end_.value->GetColor(),
+                               CollapsedBorderStyle(end_.value->Style()));
   }
 }
 

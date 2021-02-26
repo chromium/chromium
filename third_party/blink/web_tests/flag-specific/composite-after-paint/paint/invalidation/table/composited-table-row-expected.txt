@@ -8,10 +8,10 @@
     },
     {
       "name": "LayoutNGTableRow TR",
-      "bounds": [73, 23],
-      "backgroundColor": "#008000",
+      "position": [-1, -1],
+      "bounds": [74, 24],
       "invalidations": [
-        [0, 0, 37, 23]
+        [0, 0, 37, 24]
       ],
       "transform": 1
     }

@@ -64,11 +64,8 @@ void MultiColumnSetPainter::PaintColumnRules(
 
   for (auto& bound : column_rule_bounds) {
     IntRect pixel_snapped_rule_rect = PixelSnappedIntRect(bound);
-    ObjectPainter::DrawLineForBoxSide(
-        paint_info.context, pixel_snapped_rule_rect.X(),
-        pixel_snapped_rule_rect.Y(), pixel_snapped_rule_rect.MaxX(),
-        pixel_snapped_rule_rect.MaxY(), box_side, rule_color, rule_style, 0, 0,
-        true);
+    ObjectPainter::DrawBoxSide(paint_info.context, pixel_snapped_rule_rect,
+                               box_side, rule_color, rule_style);
   }
 }
 

@@ -1027,30 +1027,18 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackgroundWithRectImpl(
   }
 
   bool needs_end_layer = false;
-  if (!box_decoration_data.IsPaintingScrollingBackground()) {
-    if (box_fragment_.HasSelfPaintingLayer() && layout_box.IsTableCell() &&
-        ToInterface<LayoutNGTableCellInterface>(layout_box)
-            .TableInterface()
-            ->ShouldCollapseBorders()) {
-      // We have to clip here because the background would paint on top of the
-      // collapsed table borders otherwise, since this is a self-painting layer.
-      PhysicalRect clip_rect = paint_rect;
-      clip_rect.Expand(layout_box.BorderInsets());
-      state_saver.Save();
-      paint_info.context.Clip(PixelSnappedIntRect(clip_rect));
-    } else if (BleedAvoidanceIsClipping(
-                   box_decoration_data.GetBackgroundBleedAvoidance())) {
-      state_saver.Save();
-      FloatRoundedRect border =
-          RoundedBorderGeometry::PixelSnappedRoundedBorder(
-              style, paint_rect, box_fragment_.SidesToInclude());
-      paint_info.context.ClipRoundedRect(border);
+  if (!box_decoration_data.IsPaintingScrollingBackground() &&
+      BleedAvoidanceIsClipping(
+          box_decoration_data.GetBackgroundBleedAvoidance())) {
+    state_saver.Save();
+    FloatRoundedRect border = RoundedBorderGeometry::PixelSnappedRoundedBorder(
+        style, paint_rect, box_fragment_.SidesToInclude());
+    paint_info.context.ClipRoundedRect(border);
 
-      if (box_decoration_data.GetBackgroundBleedAvoidance() ==
-          kBackgroundBleedClipLayer) {
-        paint_info.context.BeginLayer();
-        needs_end_layer = true;
-      }
+    if (box_decoration_data.GetBackgroundBleedAvoidance() ==
+        kBackgroundBleedClipLayer) {
+      paint_info.context.BeginLayer();
+      needs_end_layer = true;
     }
   }
 
@@ -1202,10 +1190,8 @@ void NGBoxFragmentPainter::PaintColumnRules(
 
     rule.Move(paint_offset);
     IntRect snapped_rule = PixelSnappedIntRect(rule);
-    ObjectPainter::DrawLineForBoxSide(paint_info.context, snapped_rule.X(),
-                                      snapped_rule.Y(), snapped_rule.MaxX(),
-                                      snapped_rule.MaxY(), box_side, rule_color,
-                                      rule_style, 0, 0, true);
+    ObjectPainter::DrawBoxSide(paint_info.context, snapped_rule, box_side,
+                               rule_color, rule_style);
     recorder.UniteVisualRect(snapped_rule);
 
     previous_column = current_column;
