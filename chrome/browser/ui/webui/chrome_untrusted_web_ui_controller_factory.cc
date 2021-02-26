@@ -19,7 +19,7 @@
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/web_applications/terminal_ui.h"
+#include "chrome/browser/ash/web_applications/terminal_ui.h"
 #if !defined(OFFICIAL_BUILD)
 #include "chromeos/components/sample_system_web_app_ui/untrusted_sample_system_web_app_ui.h"
 #endif  // !defined(OFFICIAL_BUILD)

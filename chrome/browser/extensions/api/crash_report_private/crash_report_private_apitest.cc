@@ -6,7 +6,7 @@
 #include "base/system/sys_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
-#include "chrome/browser/chromeos/web_applications/system_web_app_integration_test.h"
+#include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/error_reporting/mock_chrome_js_error_report_processor.h"
 #include "chrome/browser/extensions/api/crash_report_private/crash_report_private_api.h"

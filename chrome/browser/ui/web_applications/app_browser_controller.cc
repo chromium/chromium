@@ -11,7 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 // TODO(b/174811949): Hide behind ChromeOS build flag.
-#include "chrome/browser/chromeos/web_applications/chrome_camera_app_ui_constants.h"
+#include "chrome/browser/ash/web_applications/chrome_camera_app_ui_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/themes/browser_theme_pack.h"

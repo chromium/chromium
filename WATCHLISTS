@@ -785,7 +785,7 @@
     },
     'chromeos_media_app': {
       'filepath': 'chromeos/components/media_app_ui/|'\
-                  'chrome/browser/chromeos/web_applications/',
+                  'chrome/browser/ash/web_applications/',
     },
     'chromeos_net': {
       'filepath': 'ash/system/network/|'\

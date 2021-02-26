@@ -2518,6 +2518,16 @@ if (!is_android) {
         "../browser/ash/profiles/profile_helper_browsertest.cc",
         "../browser/ash/system/device_disabling_browsertest.cc",
         "../browser/ash/system/tray_accessibility_browsertest.cc",
+        "../browser/ash/web_applications/camera_app_integration_browsertest.cc",
+        "../browser/ash/web_applications/diagnostics_app_integration_browsertest.cc",
+        "../browser/ash/web_applications/eche_app_integration_browsertest.cc",
+        "../browser/ash/web_applications/help_app_integration_browsertest.cc",
+        "../browser/ash/web_applications/media_app_integration_browsertest.cc",
+        "../browser/ash/web_applications/print_management_app_integration_browsertest.cc",
+        "../browser/ash/web_applications/scanning_app_integration_browsertest.cc",
+        "../browser/ash/web_applications/settings_app_integration_browsertest.cc",
+        "../browser/ash/web_applications/system_web_app_integration_test.cc",
+        "../browser/ash/web_applications/system_web_app_integration_test.h",
         "../browser/chrome_main_browsertest.cc",
         "../browser/chromeos/apps/apk_web_app_installer_browsertest.cc",
         "../browser/chromeos/arc/accessibility/arc_accessibility_helper_bridge_browsertest.cc",
@@ -2761,16 +2771,6 @@ if (!is_android) {
         "../browser/chromeos/scoped_test_system_nss_key_slot_mixin.h",
         "../browser/chromeos/shutdown_policy_browsertest.cc",
         "../browser/chromeos/startup_settings_cache_browsertest.cc",
-        "../browser/chromeos/web_applications/camera_app_integration_browsertest.cc",
-        "../browser/chromeos/web_applications/diagnostics_app_integration_browsertest.cc",
-        "../browser/chromeos/web_applications/eche_app_integration_browsertest.cc",
-        "../browser/chromeos/web_applications/help_app_integration_browsertest.cc",
-        "../browser/chromeos/web_applications/media_app_integration_browsertest.cc",
-        "../browser/chromeos/web_applications/print_management_app_integration_browsertest.cc",
-        "../browser/chromeos/web_applications/scanning_app_integration_browsertest.cc",
-        "../browser/chromeos/web_applications/settings_app_integration_browsertest.cc",
-        "../browser/chromeos/web_applications/system_web_app_integration_test.cc",
-        "../browser/chromeos/web_applications/system_web_app_integration_test.h",
         "../browser/chromeos/wilco_dtc_supportd/wilco_dtc_supportd_web_request_service_browsertest.cc",
         "../browser/device_api/device_attribute_api_browsertest.cc",
         "../browser/download/notification/download_notification_browsertest.cc",
@@ -2881,8 +2881,8 @@ if (!is_android) {
       data += [ "../browser/resources/chromeos/accessibility/switch_access/test_support.js" ]
       if (!is_official_build) {
         sources += [
-          "../browser/chromeos/web_applications/sample_system_web_app_integration_browsertest.cc",
-          "../browser/chromeos/web_applications/telemetry_extension_integration_browsertest.cc",
+          "../browser/ash/web_applications/sample_system_web_app_integration_browsertest.cc",
+          "../browser/ash/web_applications/telemetry_extension_integration_browsertest.cc",
         ]
       }
       if (use_cups) {

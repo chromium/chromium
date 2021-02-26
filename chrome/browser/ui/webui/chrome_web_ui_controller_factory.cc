@@ -152,6 +152,9 @@
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_factory.h"
+#include "chrome/browser/ash/web_applications/chrome_camera_app_ui_delegate.h"
+#include "chrome/browser/ash/web_applications/chrome_help_app_ui_delegate.h"
+#include "chrome/browser/ash/web_applications/chrome_media_app_ui_delegate.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/device_sync/device_sync_client_factory.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
@@ -165,9 +168,6 @@
 #include "chrome/browser/chromeos/scanning/scanning_paths_provider_impl.h"
 #include "chrome/browser/chromeos/scanning/scanning_util.h"
 #include "chrome/browser/chromeos/secure_channel/secure_channel_client_provider.h"
-#include "chrome/browser/chromeos/web_applications/chrome_camera_app_ui_delegate.h"
-#include "chrome/browser/chromeos/web_applications/chrome_help_app_ui_delegate.h"
-#include "chrome/browser/chromeos/web_applications/chrome_media_app_ui_delegate.h"
 #include "chrome/browser/feedback/feedback_dialog_utils.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/ui/webui/chromeos/account_manager/account_manager_error_ui.h"
@@ -232,7 +232,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
-#include "chrome/browser/chromeos/web_applications/chrome_file_manager_ui_delegate.h"
+#include "chrome/browser/ash/web_applications/chrome_file_manager_ui_delegate.h"
 #include "chrome/browser/ui/webui/chromeos/emulator/device_emulator_ui.h"
 #include "chromeos/components/file_manager/file_manager_ui.h"
 #include "chromeos/components/file_manager/url_constants.h"
