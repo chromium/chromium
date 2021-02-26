@@ -319,7 +319,7 @@ void TestWebContents::AddPendingContents(
 }
 
 RenderFrameHostDelegate* TestWebContents::CreateNewWindow(
-    RenderFrameHost* opener,
+    RenderFrameHostImpl* opener,
     const mojom::CreateNewWindowParams& params,
     bool is_new_browsing_instance,
     bool has_user_gesture,
@@ -337,7 +337,7 @@ RenderWidgetHostImpl* TestWebContents::CreateNewPopupWidget(
   return nullptr;
 }
 
-void TestWebContents::ShowCreatedWindow(RenderFrameHost* opener,
+void TestWebContents::ShowCreatedWindow(RenderFrameHostImpl* opener,
                                         int route_id,
                                         WindowOpenDisposition disposition,
                                         const gfx::Rect& initial_rect,
