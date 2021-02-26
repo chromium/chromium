@@ -130,6 +130,7 @@
     "contexts": ["webui"],
     "matches": [
       "chrome://bookmarks/*",
+      "chrome://read-later.top-chrome/*",
       "chrome://welcome/*"
     ]
   }],
@@ -795,6 +796,7 @@
     "contexts": ["webui"],
     "matches": [
       "chrome://bookmarks/*",
+      "chrome://read-later.top-chrome/*",
       "chrome://tab-strip/*"
     ]
   }, {
