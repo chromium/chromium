@@ -10,9 +10,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/commander/entity_match.h"
 #include "chrome/browser/ui/commander/fuzzy_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/grit/generated_resources.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/list_selection_model.h"
 
 namespace commander {
@@ -73,6 +76,46 @@ void CloseUnpinnedTabs(Browser* browser) {
       model->CloseWebContentsAt(i, TabStripModel::CLOSE_CREATE_HISTORICAL_TAB |
                                        TabStripModel::CLOSE_USER_GESTURE);
   }
+}
+
+bool CanMoveTabsToExistingWindow(const Browser* browser_to_exclude) {
+  const BrowserList* browser_list = BrowserList::GetInstance();
+  return std::any_of(
+      browser_list->begin(), browser_list->end(),
+      [browser_to_exclude](Browser* browser) {
+        return browser != browser_to_exclude && browser->is_type_normal() &&
+               browser->profile() == browser_to_exclude->profile();
+      });
+}
+
+void MoveTabsToExistingWindow(base::WeakPtr<Browser> source,
+                              base::WeakPtr<Browser> target) {
+  if (!source.get() || !target.get())
+    return;
+  const ui::ListSelectionModel::SelectedIndices& sel =
+      source->tab_strip_model()->selection_model().selected_indices();
+  chrome::MoveTabsToExistingWindow(source.get(), target.get(),
+                                   std::vector<int>(sel.begin(), sel.end()));
+}
+
+std::unique_ptr<CommandItem> CreateMoveTabsToWindowItem(
+    Browser* source,
+    const WindowMatch& match) {
+  auto item = match.ToCommandItem();
+  item->command = base::BindOnce(&MoveTabsToExistingWindow, source->AsWeakPtr(),
+                                 match.browser->AsWeakPtr());
+  return item;
+}
+
+CommandSource::CommandResults MoveTabsToWindowCommandsForWindowsMatching(
+    Browser* source,
+    const base::string16& input) {
+  CommandSource::CommandResults results;
+  // TODO(https://crbug.com/1181879): Add "New window" here when issue 1181879
+  // is fixed.
+  for (auto& match : WindowsMatchingInput(source, input))
+    results.push_back(CreateMoveTabsToWindowItem(source, match));
+  return results;
 }
 
 }  // namespace
@@ -145,6 +188,29 @@ CommandSource::CommandResults TabCommandSource::GetCommands(
     item->command = base::BindOnce(chrome::PinTab, base::Unretained(browser));
     results.push_back(std::move(item));
   }
+
+  // TODO(https://crbug.com/1181879): This should handle all selected tabs.
+  if (chrome::CanMoveActiveTabToNewWindow(browser)) {
+    if (auto item =
+            ItemForTitle(l10n_util::GetStringUTF16(IDS_MOVE_TAB_TO_NEW_WINDOW),
+                         finder, &ranges)) {
+      item->command = base::BindOnce(chrome::MoveActiveTabToNewWindow,
+                                     base::Unretained(browser));
+      results.push_back(std::move(item));
+    }
+  }
+
+  if (CanMoveTabsToExistingWindow(browser)) {
+    if (auto item = ItemForTitle(base::ASCIIToUTF16("Move tabs to window..."),
+                                 finder, &ranges)) {
+      item->command = std::make_pair(
+          base::ASCIIToUTF16("Move tabs to..."),
+          base::BindRepeating(&MoveTabsToWindowCommandsForWindowsMatching,
+                              base::Unretained(browser)));
+      results.push_back(std::move(item));
+    }
+  }
+
   return results;
 }
 
