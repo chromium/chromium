@@ -614,6 +614,72 @@ void RecordSearchPlusDigitFKeyRewrite(ui::EventType event_type,
   }
 }
 
+// Records metrics for the Alt and Search based variants of keys in the
+// "six pack" eg. Home, End, PageUp, PageDown, Delete, Insert.
+void RecordSixPackEventRewrites(ui::EventType event_type,
+                                ui::KeyboardCode key_code,
+                                bool search_variant) {
+  if (event_type != ET_KEY_PRESSED) {
+    return;
+  }
+
+  if (search_variant) {
+    switch (key_code) {
+      case ui::VKEY_DELETE:
+        base::RecordAction(
+            base::UserMetricsAction("SearchBasedKeyRewrite_Delete"));
+        break;
+      case ui::VKEY_INSERT:
+        base::RecordAction(
+            base::UserMetricsAction("SearchBasedKeyRewrite_Insert"));
+        break;
+      case ui::VKEY_HOME:
+        base::RecordAction(
+            base::UserMetricsAction("SearchBasedKeyRewrite_Home"));
+        break;
+      case ui::VKEY_END:
+        base::RecordAction(
+            base::UserMetricsAction("SearchBasedKeyRewrite_End"));
+        break;
+      case ui::VKEY_PRIOR:
+        base::RecordAction(
+            base::UserMetricsAction("SearchBasedKeyRewrite_PageUp"));
+        break;
+      case ui::VKEY_NEXT:
+        base::RecordAction(
+            base::UserMetricsAction("SearchBasedKeyRewrite_PageDown"));
+        break;
+      default:
+        NOTREACHED();
+        break;
+    }
+  } else {
+    switch (key_code) {
+      case ui::VKEY_DELETE:
+        base::RecordAction(
+            base::UserMetricsAction("AltBasedKeyRewrite_Delete"));
+        break;
+      case ui::VKEY_HOME:
+        base::RecordAction(base::UserMetricsAction("AltBasedKeyRewrite_Home"));
+        break;
+      case ui::VKEY_END:
+        base::RecordAction(base::UserMetricsAction("AltBasedKeyRewrite_End"));
+        break;
+      case ui::VKEY_PRIOR:
+        base::RecordAction(
+            base::UserMetricsAction("AltBasedKeyRewrite_PageUp"));
+        break;
+      case ui::VKEY_NEXT:
+        base::RecordAction(
+            base::UserMetricsAction("AltBasedKeyRewrite_PageDown"));
+        break;
+      default:
+        NOTREACHED();
+        break;
+    }
+  }
+}
+
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1346,6 +1412,8 @@ void EventRewriterChromeOS::RewriteExtendedKeys(const KeyEvent& key_event,
         RewriteWithKeyboardRemappings(kSearchRemappings,
                                       base::size(kSearchRemappings), incoming,
                                       state, strict)) {
+      RecordSixPackEventRewrites(key_event.type(), state->key_code,
+                                 /*search_variant=*/true);
       return;
     }
   }
@@ -1372,6 +1440,8 @@ void EventRewriterChromeOS::RewriteExtendedKeys(const KeyEvent& key_event,
       if (RewriteWithKeyboardRemappings(kNonSearchRemappings,
                                         base::size(kNonSearchRemappings),
                                         incoming, state)) {
+        RecordSixPackEventRewrites(key_event.type(), state->key_code,
+                                   /*search_variant=*/false);
         return;
       }
     } else {
