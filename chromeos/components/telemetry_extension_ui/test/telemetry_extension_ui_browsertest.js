@@ -511,7 +511,15 @@ const untrustedTests = [
     'TelemetryExtensionUIWithInteractiveRoutineUpdateBrowserTest'
   ],
   [
+    'UntrustedDiagnosticsInteractiveRoutineCommand',
+    'TelemetryExtensionUIWithInteractiveRoutineUpdateBrowserTest'
+  ],
+  [
     'UntrustedDiagnosticsRequestNonInteractiveRoutineUpdate',
+    'TelemetryExtensionUIWithNonInteractiveRoutineUpdateBrowserTest'
+  ],
+  [
+    'UntrustedDiagnosticsNonInteractiveRoutineCommand',
     'TelemetryExtensionUIWithNonInteractiveRoutineUpdateBrowserTest'
   ],
   [
@@ -702,5 +710,206 @@ TEST_F(
       [chromeos.health.mojom.ProbeCategoryEnum.kBluetooth],
     ]);
 
-    testDone();
-  });
+      testDone();
+    });
+
+
+/**
+ * @implements {chromeos.health.mojom.DiagnosticsServiceInterface}
+ */
+class TestDiagnosticsService {
+  constructor() {
+    /**
+     * @type {chromeos.health.mojom.DiagnosticsServiceReceiver}
+     */
+    this.receiver_ = null;
+
+    /**
+     * @type {!chromeos.health.mojom.RunRoutineResponse}
+     */
+    this.routineResponse =
+        /** @type {!chromeos.health.mojom.RunRoutineResponse}*/ (
+            {id: 123, status: 'ready'});
+
+    /**
+     * @type {!Object}
+     * @private
+     */
+    this.noninteractiveRoutineUpdateResponse = {
+      progressPercent: 0,
+      output: '',
+      routineUpdateUnion: {
+        noninteractiveUpdate:
+            {status: 'ready', statusMessage: 'Routine ran by Google.'}
+      }
+    };
+
+    /**
+     * @type {!Object}
+     * @private
+     */
+    this.interactiveRoutineUpdateResponse = {
+      progressPercent: 50,
+      output: 'This routine is running!',
+      routineUpdateUnion: {interactiveUpdate: {userMessage: 'unplug-ac-power'}}
+    };
+
+    /**
+     * @type {!Object}
+     * @private
+     */
+    this.routineUpdateResponse = this.noninteractiveRoutineUpdateResponse;
+
+    /**
+     * History of the called method and passed argument in this class's.
+     * @type {Array<!Array<!Object>>}
+     */
+    this.callHistory = [];
+  }
+
+  setInteractiveUpdateResponse() {
+    this.routineUpdateResponse = this.interactiveRoutineUpdateResponse;
+  }
+
+  /**
+   * @param {!MojoHandle} handle
+   */
+  bind(handle) {
+    this.receiver_ = new chromeos.health.mojom.DiagnosticsServiceReceiver(this);
+    this.receiver_.$.bindHandle(handle);
+  }
+
+  /** @override */
+  getAvailableRoutines() {}
+  /** @override */
+  runAcPowerRoutine() {}
+  /** @override */
+  runBatteryChargeRoutine() {}
+  /** @override */
+  runBatteryDischargeRoutine() {}
+  /** @override */
+  runBatteryHealthRoutine() {}
+  /** @override */
+  runCpuCacheRoutine() {}
+  /** @override */
+  runCpuStressRoutine() {}
+  /** @override */
+  runDiskReadRoutine() {}
+  /** @override */
+  runFloatingPointAccuracyRoutine() {}
+  /** @override */
+  runNvmeSelfTestRoutine() {}
+  /** @override */
+  runNvmeWearLevelRoutine() {}
+  /** @override */
+  runPrimeSearchRoutine() {}
+  /** @override */
+  runSmartctlCheckRoutine() {}
+
+  /**
+   * @override
+   * @return {!Promise<{response: !chromeos.health.mojom.RunRoutineResponse}>}
+   */
+  runBatteryCapacityRoutine() {
+    this.callHistory.push(['runBatteryCapacityRoutine']);
+
+    let response = this.routineResponse;
+    return Promise.resolve({response});
+  }
+
+  /**
+   * @override
+   * @param {!number} routineId
+   * @param {!chromeos.health.mojom.DiagnosticRoutineCommandEnum} command
+   * @param {!boolean} includeOutput
+   * @return { !Promise<{routineUpdate: !chromeos.health.mojom.RoutineUpdate}> }
+   */
+  getRoutineUpdate(routineId, command, includeOutput) {
+    this.callHistory.push([
+      'getRoutineUpdate',
+      {routineId: routineId, command: command, includeOutput: includeOutput}
+    ]);
+
+    let routineUpdate = /** @type {!chromeos.health.mojom.RoutineUpdate} */ (
+        this.routineUpdateResponse);
+    return Promise.resolve({routineUpdate});
+  }
+};
+
+// Tests with a fake Mojo diagnostics service.
+var TelemetryExtensionUIWithDiagnosticsInterceptorBrowserTest =
+    class extends TelemetryExtensionUIBrowserTest {
+  constructor() {
+    super();
+
+    /**
+     * @type {TestDiagnosticsService}
+     */
+    this.diagnosticsService = null;
+
+    this.diagnosticsServiceInterceptor = null;
+  }
+
+  /** @override */
+  setUp() {
+    this.diagnosticsService = new TestDiagnosticsService();
+
+    /** @suppress {undefinedVars} */
+    this.diagnosticsServiceInterceptor = new MojoInterfaceInterceptor(
+        chromeos.health.mojom.DiagnosticsService.$interfaceName);
+    this.diagnosticsServiceInterceptor.oninterfacerequest = (e) => {
+      this.diagnosticsService.bind(e.handle);
+    };
+    this.diagnosticsServiceInterceptor.start();
+  }
+};
+
+// See implementations in untrusted_browsertest.js.
+
+// Tests that a routine is created and routine.{getStatus(), resume(), stop()}
+// send the correct parameters to the fake Mojo service.
+TEST_F(
+    'TelemetryExtensionUIWithDiagnosticsInterceptorBrowserTest',
+    'UntrustedDiagnosticsRoutineCommandWithInterceptor', async function() {
+      await runTestInUntrusted(
+          'UntrustedDiagnosticsRoutineCommandWithInterceptor');
+      assertDeepEquals(
+          [
+            ['runBatteryCapacityRoutine'],
+            [
+              'getRoutineUpdate', {
+                routineId: 123,
+                command: chromeos.health.mojom.DiagnosticRoutineCommandEnum
+                             .kGetStatus,
+                includeOutput: true
+              }
+            ],
+            [
+              'getRoutineUpdate', {
+                routineId: 123,
+                command: chromeos.health.mojom.DiagnosticRoutineCommandEnum
+                             .kContinue,
+                includeOutput: true
+              }
+            ],
+            [
+              'getRoutineUpdate', {
+                routineId: 123,
+                command:
+                    chromeos.health.mojom.DiagnosticRoutineCommandEnum.kCancel,
+                includeOutput: true
+              }
+            ],
+            [
+              'getRoutineUpdate', {
+                routineId: 123,
+                command:
+                    chromeos.health.mojom.DiagnosticRoutineCommandEnum.kRemove,
+                includeOutput: true
+              }
+            ]
+          ],
+          this.diagnosticsService.callHistory);
+
+      testDone();
+    });

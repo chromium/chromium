@@ -122,15 +122,42 @@ UNTRUSTED_TEST(
 UNTRUSTED_TEST(
     'UntrustedDiagnosticsRequestRunBatteryCapacityRoutine', async () => {
       const response =
-          await chromeos.diagnostics.runBatteryCapacityRoutine();
+        await chromeos.diagnostics.runBatteryCapacityRoutine();
       assertDeepEquals({id: 123456789, status: 'ready'}, response);
+    });
+
+// Tests that a routine is created and routine.{getStatus(), resume(), stop()}
+// return correct responses.
+UNTRUSTED_TEST(
+    'UntrustedDiagnosticsRoutineCommandWithInterceptor', async () => {
+      let expectedRoutineStatus = {
+        progressPercent: 0,
+        output: '',
+        status: 'ready',
+        statusMessage: 'Routine ran by Google.',
+        userMessage: ''
+      };
+
+      // The order must be kept.
+      // See UntrustedDiagnosticsRoutineCommandWithInterceptor test in
+      // telemetry_extension_ui_browsertests.js.
+      let routine = await dpsl.diagnostics.battery.runCapacityRoutine();
+
+      let routineGetStatus = await routine.getStatus();
+      assertDeepEquals(expectedRoutineStatus, routineGetStatus);
+
+      let routineResume = await routine.resume();
+      assertDeepEquals(expectedRoutineStatus, routineResume);
+
+      let routineStop = await routine.stop();
+      assertDeepEquals(expectedRoutineStatus, routineStop);
     });
 
 // Tests that runBatteryHealthRoutine returns the correct Object.
 UNTRUSTED_TEST(
     'UntrustedDiagnosticsRequestRunBatteryHealthRoutine', async () => {
       const response =
-          await chromeos.diagnostics.runBatteryHealthRoutine();
+        await chromeos.diagnostics.runBatteryHealthRoutine();
       assertDeepEquals({id: 123456789, status: 'ready'}, response);
     });
 
@@ -721,6 +748,25 @@ UNTRUSTED_TEST(
           response);
     });
 
+// Tests that an interactive routine.getStatus() returns the correct Object.
+// Note: this is an end-to-end test using fake cros_healthd.
+// TODO(mgawad): use real interactive routine.
+// TODO(b:181324455): merge this test with
+// UntrustedDiagnosticsRequestInteractiveRoutineUpdate once the bug is resolved.
+UNTRUSTED_TEST('UntrustedDiagnosticsInteractiveRoutineCommand', async () => {
+  const dpslRoutine = await dpsl.diagnostics.battery.runCapacityRoutine();
+  const routineStatus = await dpslRoutine.getStatus();
+  assertDeepEquals(
+      {
+        progressPercent: 0,
+        output: 'This routine is running!',
+        status: 'waiting',
+        statusMessage: '',
+        userMessage: 'unplug-ac-power'
+      },
+      routineStatus);
+});
+
 // Tests that sendCommandToRoutine returns the correct Object
 // for a non-interactive routine.
 UNTRUSTED_TEST(
@@ -738,6 +784,25 @@ UNTRUSTED_TEST(
           },
           response);
     });
+
+// Tests that a non-interactive routine.getStatus() returns the correct Object.
+// Note: this is an end-to-end test using fake cros_healthd.
+// TODO(b:181324455): merge this test with
+// UntrustedDiagnosticsRequestNonInteractiveRoutineUpdate once the bug is
+// resolved.
+UNTRUSTED_TEST('UntrustedDiagnosticsNonInteractiveRoutineCommand', async () => {
+  const dpslRoutine = await dpsl.diagnostics.battery.runCapacityRoutine();
+  const routineStatus = await dpslRoutine.getStatus();
+  assertDeepEquals(
+      {
+        progressPercent: 3147483771,
+        output: '',
+        status: 'ready',
+        statusMessage: 'Routine ran by Google.',
+        userMessage: ''
+      },
+      routineStatus);
+});
 
 // Tests that TelemetryInfo can be successfully requested from
 // from chrome-untrusted://.

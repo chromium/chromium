@@ -144,6 +144,24 @@ dpsl.TelemetryInfoTypes;
  */
 dpsl.AvailableRoutinesList;
 
+/**
+ * |progressPercent| percentage of the routine progress.
+ * |output| accumulated output, like logs.
+ * |status| current status of the routine.
+ * |detail| more detailed status message.
+ * |userMessage| Request user action. Should be localized and displayed to the
+ * user. Note: used in interactive routines only, two possible values are
+ * returned: 'unplug-ac-power' or 'plug-in-ac-power'.
+ * @typedef {{
+ *   progressPercent: number,
+ *   output: string,
+ *   status: string,
+ *   statusMessage: string,
+ *   userMessage: string
+  }}
+ */
+dpsl.RoutineStatus;
+
 //////////////////// dpsl.system_events.* type definitions /////////////////////
 
 /**

@@ -13,10 +13,151 @@
   const messagePipe = dpsl.internal.messagePipe;
 
   /**
+   * @type {!string}
+   * @const
+   * @private
+   */
+  const ROUTINE_STATUS_WAITING_USER_ACTION = 'waiting';
+
+  /**
+   * @param {!string} messageName
+   * @param {(!Object|undefined)=} message
+   * @returns {!Object}
+   */
+  async function genericSendMessage(messageName, message) {
+    const response = await messagePipe.sendMessage(messageName, message);
+    if (response instanceof Error) {
+      throw response;
+    }
+    return /** @type {!Object} */ (response);
+  }
+
+  /**
+   * Keeps track of Routine status when running dpsl.diagnostics.* diagnostics
+   * routines.
+   */
+  class Routine {
+    /**
+     * @param {!number} id
+     * @private
+     */
+    constructor(id) {
+      /**
+       * Routine ID created when the routine is first requested to run.
+       * @type { !number }
+       * @const
+       * @private
+       */
+      this.id = id;
+    }
+
+    /**
+     * Sends |command| on this routine to the backend.
+     * @param {!string} command
+     * @returns {!Promise<!dpsl.RoutineStatus>}
+     * @private
+     */
+    async _genericSendCommand(command) {
+      const message =
+          /** @type {!dpsl_internal.DiagnosticsGetRoutineUpdateRequest} */ ({
+          routineId: this.id,
+          command: command,
+          includeOutput: true
+        });
+      const response =
+          /**
+            @type {{
+            progressPercent: number,
+            output: string,
+            routineUpdateUnion: ({interactiveUpdate: {userMessage:
+            string}}|{noninteractiveUpdate:{status: string, statusMessage:
+            string}})
+            }}
+          */
+          (await genericSendMessage(
+              dpsl_internal.Message.DIAGNOSTICS_ROUTINE_UPDATE, message));
+
+      let status = /** @type {dpsl.RoutineStatus} */ ({
+        progressPercent: 0,
+        output: '',
+        status: '',
+        statusMessage: '',
+        userMessage: ''
+      });
+
+      // fill in the status object and return it.
+      status.progressPercent = response.progressPercent;
+      status.output = response.output || '';
+      if (response.routineUpdateUnion.noninteractiveUpdate) {
+        status.status = response.routineUpdateUnion.noninteractiveUpdate.status;
+        status.statusMessage =
+            response.routineUpdateUnion.noninteractiveUpdate.statusMessage;
+      } else {
+        status.userMessage =
+            response.routineUpdateUnion.interactiveUpdate.userMessage;
+        status.status = ROUTINE_STATUS_WAITING_USER_ACTION;
+      }
+      return status;
+    }
+
+    /**
+     * Returns current status of this routine.
+     * @return { !Promise<!dpsl.RoutineStatus> }
+     * @public
+     */
+    async getStatus() {
+      return this._genericSendCommand('get-status');
+    }
+
+    /**
+     * Resumes this routine, e.g. when user prompts to run a waiting routine.
+     * @return { !Promise<!dpsl.RoutineStatus> }
+     * @public
+     */
+    async resume() {
+      return this._genericSendCommand('continue');
+    }
+
+    /**
+     * Stops this routine, if running, or remove otherwise.
+     * Note: The routine cannot be restarted again.
+     * @return { !Promise<!dpsl.RoutineStatus> }
+     * @public
+     */
+    async stop() {
+      this._genericSendCommand('cancel');
+      return this._genericSendCommand('remove');
+    }
+  }
+
+  /**
+   * Diagnostics Battery Manager for dpsl.diagnostics.battery.* APIs.
+   */
+  class BatteryManager {
+    /**
+     * Runs battery capacity test.
+     * @return { !Promise<!Routine> }
+     * @public
+     */
+    async runCapacityRoutine() {
+      const response =
+          /** @type {{id: number, status: string}} */ (await genericSendMessage(
+              dpsl_internal.Message.DIAGNOSTICS_RUN_BATTERY_CAPACITY_ROUTINE));
+      return new Routine(response.id);
+    }
+  }
+
+  /**
    * DPSL Diagnostics Manager for dpsl.diagnostics.* APIs.
    */
   class DPSLDiagnosticsManager {
-    constructor() {}
+    constructor() {
+      /**
+       * @type {!BatteryManager}
+       * @public
+       */
+      this.battery = new BatteryManager();
+    }
 
     /**
      * Requests a list of available diagnostics routines.
@@ -89,13 +230,12 @@
      * @public
      */
     async runBatteryCapacityRoutine() {
-      const response =
-          /** @type {!Object} */ (await messagePipe.sendMessage(
-              dpsl_internal.Message.DIAGNOSTICS_RUN_BATTERY_CAPACITY_ROUTINE));
-      if (response instanceof Error) {
-        throw response;
-      }
-      return response;
+      console.warn(
+          'chromeos.diagnostics.runBatteryCapacityRoutine API function is',
+          'deprecated and will be removed. Use',
+          'dpsl.diagnostics.battery.runCapacityRoutine, instead');
+      return /** @type {!Object} */ (await genericSendMessage(
+          dpsl_internal.Message.DIAGNOSTICS_RUN_BATTERY_CAPACITY_ROUTINE));
     }
 
     /**
