@@ -302,9 +302,10 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
 
   bool IsInDisplayLockedSubtree();
 
-  void SetCanCompositeBGColorAnim() { can_composite_bgcolor_anim_ = true; }
-  void ResetCanCompositeBGColorAnim() { can_composite_bgcolor_anim_ = false; }
-  bool CanCompositeBGColorAnim() const { return can_composite_bgcolor_anim_; }
+  void SetFailureReasons(CompositorAnimations::FailureReasons failure_reasons) {
+    supplemental_failure_reasons_ = failure_reasons;
+  }
+  void ResetFailureReasons() { supplemental_failure_reasons_ = base::nullopt; }
 
  protected:
   DispatchEventResult DispatchEventInternal(Event&) override;
@@ -524,12 +525,10 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
 
   bool effect_suppressed_;
 
-  // True if the background color animation can be composited. Set by the
-  // BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams. We keep it here
-  // instead of ElementAnimations such that when we create a compositor
-  // animation, we know which animation should fall back. Note that when we
-  // extend the native paint worklet to composite other types of animations in
-  // the future, we might need to extend this to be a fall back reasons.
+  // For background color animation, this should be determined during the paint
+  // stage with the CompositeBGColorAnimation feature.
+  base::Optional<CompositorAnimations::FailureReasons>
+      supplemental_failure_reasons_;
   bool can_composite_bgcolor_anim_ = false;
 
   // Animations with an owning element stop ticking if there is an active

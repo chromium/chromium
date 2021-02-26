@@ -1486,7 +1486,6 @@ TEST_F(AnimationAnimationTestCompositing, BackgroundColorComposited) {
   animation->play();
   // A basic condition for an animation to be compositable is that it is set so
   // by BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams.
-  animation->SetCanCompositeBGColorAnim();
   EXPECT_EQ(animation->CheckCanStartAnimationOnCompositor(nullptr),
             CompositorAnimations::kNoFailure);
 }

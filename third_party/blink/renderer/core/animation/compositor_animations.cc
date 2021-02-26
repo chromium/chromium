@@ -284,8 +284,7 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
           // like regular filters do, so they can still be composited.
           break;
         case CSSPropertyID::kBackgroundColor:
-          if (!RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() ||
-              !animation_to_add->CanCompositeBGColorAnim()) {
+          if (!RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled()) {
             DefaultToUnsupportedProperty(unsupported_properties, property,
                                          &reasons);
           }

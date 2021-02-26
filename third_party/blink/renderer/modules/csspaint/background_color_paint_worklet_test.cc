@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
@@ -124,7 +125,6 @@ TEST_F(BackgroundColorPaintWorkletTest, FallbackToMainCompositeAccumulate) {
       exception_state);
   UpdateAllLifecyclePhasesForTest();
   animation->play();
-  EXPECT_FALSE(animation->CanCompositeBGColorAnim());
 
   EXPECT_TRUE(element->GetElementAnimations());
   EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
@@ -132,12 +132,9 @@ TEST_F(BackgroundColorPaintWorkletTest, FallbackToMainCompositeAccumulate) {
   Vector<double> offsets;
   EXPECT_FALSE(BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams(
       element, &animated_colors, &offsets));
-  EXPECT_FALSE(animation->CanCompositeBGColorAnim());
 }
 
-// Test that when there are multiple bgcolor animations on an Element, we
-// composite the animation with the highest compositing order.
-TEST_F(BackgroundColorPaintWorkletTest, MultipleAnimationsNotFallback) {
+TEST_F(BackgroundColorPaintWorkletTest, MultipleAnimationsFallback) {
   ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   SetBodyInnerHTML(R"HTML(
     <div id ="target" style="width: 100px; height: 100px">
@@ -184,26 +181,14 @@ TEST_F(BackgroundColorPaintWorkletTest, MultipleAnimationsNotFallback) {
   UpdateAllLifecyclePhasesForTest();
   animation1->play();
   animation2->play();
-  EXPECT_FALSE(animation1->CanCompositeBGColorAnim());
-  EXPECT_FALSE(animation2->CanCompositeBGColorAnim());
 
   // Two active background-color animations, fall back to main.
   EXPECT_TRUE(element->GetElementAnimations());
   EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 2u);
   Vector<Color> animated_colors;
   Vector<double> offsets;
-  EXPECT_TRUE(BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams(
+  EXPECT_FALSE(BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams(
       element, &animated_colors, &offsets));
-  EXPECT_FALSE(animation1->CanCompositeBGColorAnim());
-  EXPECT_TRUE(animation2->CanCompositeBGColorAnim());
-  EXPECT_EQ(animated_colors.size(), 2u);
-  // The animated_colors should be blue and yellow.
-  EXPECT_EQ(animated_colors[0].Red(), 0);
-  EXPECT_EQ(animated_colors[0].Green(), 0);
-  EXPECT_EQ(animated_colors[0].Blue(), 255);
-  EXPECT_EQ(animated_colors[1].Red(), 255);
-  EXPECT_EQ(animated_colors[1].Green(), 255);
-  EXPECT_EQ(animated_colors[1].Blue(), 0);
 }
 
 // Test that calling BackgroundColorPaintWorkletProxyClient::Paint won't crash

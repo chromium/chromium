@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/csspaint/background_color_paint_worklet.h"
 
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
+#include "third_party/blink/renderer/core/animation/compositor_animations.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_double.h"
 #include "third_party/blink/renderer/core/animation/css_color_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
@@ -176,21 +177,49 @@ bool GetBGColorPaintWorkletParamsInternal(Element* element,
                                           Vector<double>* offsets) {
   if (!element->GetElementAnimations())
     return false;
-  // We composite the background color animation that has the highest composite
-  // order. Or if we have only one animation on background color and other
-  // animation(s) are on other properties, then we can also composite the
-  // background color animation.
+  element->GetLayoutObject()->GetMutableForPainting().EnsureId();
+  size_t count = 0;
+  for (const auto& animation : element->GetElementAnimations()->Animations()) {
+    animation.key->ResetFailureReasons();
+    if (animation.key->CalculateAnimationPlayState() == Animation::kIdle ||
+        !animation.key->Affects(*element, GetCSSPropertyBackgroundColor()))
+      continue;
+    count++;
+  }
+  // We'd composite the background-color only if it is the only background color
+  // animation on this element.
   Animation* composited_animation = nullptr;
   for (const auto& animation : element->GetElementAnimations()->Animations()) {
     if (animation.key->CalculateAnimationPlayState() == Animation::kIdle ||
         !animation.key->Affects(*element, GetCSSPropertyBackgroundColor()))
       continue;
-    animation.key->ResetCanCompositeBGColorAnim();
-    if (!composited_animation ||
-        Animation::HasLowerCompositeOrdering(
-            composited_animation, animation.key,
-            Animation::CompareAnimationsOrdering::kPointerOrder))
-      composited_animation = animation.key;
+    if (count > 1) {
+      // TODO(crbug.com/1182261): when we try to have one call of
+      // CheckCanStartAnimationOnCompositor, then we should call it here to make
+      // sure we have the correct UMA stats (e.g. collect all of the failure
+      // reasons).
+      animation.key->SetFailureReasons(
+          CompositorAnimations::kTargetHasInvalidCompositingState);
+      continue;
+    }
+
+    if (!element->GetDocument().View() ||
+        !element->GetDocument().View()->GetPaintArtifactCompositor())
+      continue;
+
+    // By default don't composite this background color animation.
+    animation.key->SetFailureReasons(
+        CompositorAnimations::kTargetHasInvalidCompositingState);
+    PropertyHandleSet unsupported_properties;
+    CompositorAnimations::FailureReasons failure_reasons =
+        animation.key->CheckCanStartAnimationOnCompositor(
+            element->GetDocument().View()->GetPaintArtifactCompositor(),
+            &unsupported_properties);
+    if (failure_reasons != CompositorAnimations::kNoFailure) {
+      animation.key->SetFailureReasons(failure_reasons);
+      continue;
+    }
+    composited_animation = animation.key;
   }
   if (!composited_animation)
     return false;
@@ -217,7 +246,9 @@ bool GetBGColorPaintWorkletParamsInternal(Element* element,
     }
     GetCompositorKeyframeOffset(frame, offsets);
   }
-  composited_animation->SetCanCompositeBGColorAnim();
+  // If we get here, then we are very sure that the animation will start on
+  // compositor.
+  composited_animation->SetFailureReasons(CompositorAnimations::kNoFailure);
   return true;
 }
 
@@ -244,7 +275,6 @@ scoped_refptr<Image> BackgroundColorPaintWorklet::Paint(
     const Node* node,
     const Vector<Color>& animated_colors,
     const Vector<double>& offsets) {
-  node->GetLayoutObject()->GetMutableForPainting().EnsureId();
   CompositorElementId element_id = CompositorElementIdFromUniqueObjectId(
       node->GetLayoutObject()->UniqueId(),
       CompositorAnimations::CompositorElementNamespaceForProperty(
