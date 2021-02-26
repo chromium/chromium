@@ -71,7 +71,9 @@ void PartitionAddressSpace::Init() {
   PA_CHECK(requested_address == actual_address)
       << "QuarantineCardTable is required to be allocated in the beginning of "
          "the NormalBucketPool";
-  SetSystemPagesAccess(actual_address, kSuperPageSize, PageInaccessible);
+  SetSystemPagesAccess(actual_address, kSuperPageSize, PageReadWrite);
+  // Don't take physical memory since PCScan may be switched off.
+  DiscardSystemPages(actual_address, kSuperPageSize);
 #endif
 
   PA_DCHECK(reserved_base_address_ + kDesiredAddressSpaceSize == current);

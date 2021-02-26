@@ -62,10 +62,6 @@ void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {
       MaxSystemPagesPerSlotSpan() < (1 << 8),
       "System pages per slot span must be less than 128.");
 
-#if defined(PA_HAS_64_BITS_POINTERS)
-  internal::PartitionAddressSpace::Init();
-#endif
-
   PA_DCHECK(on_out_of_memory);
   internal::g_oom_handling_function = on_out_of_memory;
 }
