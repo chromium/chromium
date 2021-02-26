@@ -342,13 +342,6 @@ LayoutObject::LayoutObject(Node* node)
   InstanceCounters::IncrementCounter(InstanceCounters::kLayoutObjectCounter);
   if (node_)
     GetFrameView()->IncrementLayoutObjectCount();
-
-  if (UNLIKELY(!IsLayoutNGObject())) {
-    if (const auto* element = DynamicTo<Element>(GetNode())) {
-      if (element->ShouldForceLegacyLayout())
-        SetForceLegacyLayout();
-    }
-  }
 }
 
 LayoutObject::~LayoutObject() {

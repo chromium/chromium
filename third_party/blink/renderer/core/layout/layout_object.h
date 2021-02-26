@@ -2012,6 +2012,7 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   virtual void SetFirstInlineFragmentItemIndex(wtf_size_t) { NOT_DESTROYED(); }
   void SetForceLegacyLayout() {
     NOT_DESTROYED();
+    DCHECK(!IsLayoutNGObject());
     bitfields_.SetForceLegacyLayout(true);
   }
 
