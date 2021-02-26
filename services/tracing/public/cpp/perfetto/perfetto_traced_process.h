@@ -136,10 +136,6 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
                            const base::trace_event::TraceConfig&,
                            bool privacy_filtering_enabled);
 
-  // Initialize the Perfetto client library (i.e., perfetto::Tracing) for this
-  // process. Should be called early during startup.
-  void SetupClientLibrary();
-
   // Called on the process's main thread once the thread pool is ready.
   void OnThreadPoolAvailable();
 
@@ -196,6 +192,10 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
 
  private:
   friend class base::NoDestructor<PerfettoTracedProcess>;
+
+  // Initialize the Perfetto client library (i.e., perfetto::Tracing) for this
+  // process.
+  void SetupClientLibrary();
 
   base::Lock data_sources_lock_;
   // The canonical set of DataSourceBases alive in this process. These will be

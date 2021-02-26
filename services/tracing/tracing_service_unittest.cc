@@ -66,7 +66,6 @@ class TracingServiceTest : public testing::Test {
     // Also tell PerfettoTracedProcess to use the current task environment.
     PerfettoTracedProcess::ResetTaskRunnerForTesting(
         base::ThreadTaskRunnerHandle::Get());
-    PerfettoTracedProcess::Get()->SetupClientLibrary();
     perfetto_service()->SetActiveServicePidsInitialized();
   }
   ~TracingServiceTest() override = default;

@@ -50,6 +50,8 @@ RebindableTaskRunner* GetPerfettoTaskRunner() {
 class PerfettoIntegrationTest : public testing::Test {
  public:
   void SetUp() override {
+    // Run both the client library and the PerfettoTracedProcess on the same
+    // thread (current thread).
     auto* perfetto_task_runner = GetPerfettoTaskRunner();
     auto* perfetto_platform =
         PerfettoTracedProcess::Get()->perfetto_platform_for_testing();
@@ -57,7 +59,8 @@ class PerfettoIntegrationTest : public testing::Test {
       perfetto_platform->StartTaskRunner(perfetto_task_runner);
     perfetto_task_runner->set_task_runner(base::ThreadTaskRunnerHandle::Get());
 
-    PerfettoTracedProcess::ResetTaskRunnerForTesting();
+    PerfettoTracedProcess::ResetTaskRunnerForTesting(
+        base::ThreadTaskRunnerHandle::Get());
     PerfettoTracedProcess::Get()->ClearDataSourcesForTesting();
     data_source_ = TestDataSource::CreateAndRegisterDataSource(
         kPerfettoTestDataSourceName, 0);
@@ -398,7 +401,6 @@ TEST_F(PerfettoIntegrationTest, PerfettoPlatformTest) {
 }
 
 TEST_F(PerfettoIntegrationTest, PerfettoClientLibraryTest) {
-  PerfettoTracedProcess::Get()->SetupClientLibrary();
   // Create a dummy tracing session without a real backend to check that
   // the client library was initialized.
   constexpr perfetto::BackendType kInvalidBackend(

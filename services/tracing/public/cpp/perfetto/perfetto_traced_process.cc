@@ -181,17 +181,11 @@ PerfettoTaskRunner* PerfettoTracedProcess::GetTaskRunner() {
 void PerfettoTracedProcess::ResetTaskRunnerForTesting(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   GetTaskRunner()->ResetTaskRunnerForTesting(task_runner);
+  // On the first call within the process's lifetime, this will call
+  // PerfettoTracedProcess::Get(), ensuring PerfettoTracedProcess is created.
   InitTracingPostThreadPoolStartAndFeatureList();
-  // Detaching the sequence_checker_ must happen after we reset the task runner.
-  // This is because the Get() could call the constructor (if this is the first
-  // call to Get()) which would then PostTask which would create races if we
-  // reset the task runner right afterwards.
+  // Disassociate the PerfettoTracedProcess from any prior task runner.
   DETACH_FROM_SEQUENCE(PerfettoTracedProcess::Get()->sequence_checker_);
-  // Call Get() explicitly. This ensures that we constructed the
-  // PerfettoTracedProcess. On some tests (like cast linux) the DETACH macro is
-  // compiled to nothing, which woud cause this PostTask to access a nullptr the
-  // producer requires a PostTask from inside the constructor.
-  PerfettoTracedProcess::Get();
   PerfettoTracedProcess::GetTaskRunner()->GetOrCreateTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce([]() {
         PerfettoTracedProcess::Get()
@@ -264,6 +258,8 @@ void PerfettoTracedProcess::SetupClientLibrary() {
 }
 
 void PerfettoTracedProcess::OnThreadPoolAvailable() {
+  SetupClientLibrary();
+
   // Create our task runner now, so that ProducerClient/SystemProducer are
   // notified about future data source registrations and schedule any necessary
   // startup tracing timeouts.

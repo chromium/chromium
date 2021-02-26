@@ -410,9 +410,6 @@ MockProducer::MockProducer(const std::string& producer_name,
 
 MockProducer::~MockProducer() = default;
 
-RebindableTaskRunner::RebindableTaskRunner() = default;
-RebindableTaskRunner::~RebindableTaskRunner() = default;
-
 void MockProducer::WritePacketBigly(base::OnceClosure on_write_complete) {
   PerfettoTracedProcess::Get()
       ->GetTaskRunner()
@@ -422,6 +419,9 @@ void MockProducer::WritePacketBigly(base::OnceClosure on_write_complete) {
                                         base::Unretained(data_source())),
                          std::move(on_write_complete));
 }
+
+RebindableTaskRunner::RebindableTaskRunner() = default;
+RebindableTaskRunner::~RebindableTaskRunner() = default;
 
 bool RebindableTaskRunner::PostDelayedTask(const base::Location& from_here,
                                            base::OnceClosure task,
