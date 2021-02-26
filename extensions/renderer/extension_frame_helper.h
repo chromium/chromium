@@ -105,6 +105,10 @@ class ExtensionFrameHelper
   void SetTabId(int32_t id) override;
   void AppWindowClosed(bool send_onclosed) override;
   void NotifyRenderViewType(mojom::ViewType view_type) override;
+  void MessageInvoke(const std::string& extension_id,
+                     const std::string& module_name,
+                     const std::string& function_name,
+                     const base::Value args) override;
 
   // Called when the document element has been inserted in this frame. This
   // method may invoke untrusted JavaScript code that invalidate the frame and
@@ -167,10 +171,6 @@ class ExtensionFrameHelper
                            bool success,
                            const base::ListValue& response,
                            const std::string& error);
-  void OnExtensionMessageInvoke(const std::string& extension_id,
-                                const std::string& module_name,
-                                const std::string& function_name,
-                                const base::ListValue& args);
 
   // Type of view associated with the RenderFrame.
   mojom::ViewType view_type_ = mojom::ViewType::kInvalid;

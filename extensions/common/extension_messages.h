@@ -543,20 +543,6 @@ IPC_MESSAGE_CONTROL2(ExtensionMsg_DispatchEvent,
                      ExtensionMsg_DispatchEvent_Params /* params */,
                      base::ListValue /* event_args */)
 
-// This message is optionally routed.  If used as a control message, it will
-// call a javascript function |function_name| from module |module_name| in
-// every registered context in the target process.  If routed, it will be
-// restricted to the contexts that are part of the target RenderView.
-//
-// If |extension_id| is non-empty, the function will be invoked only in
-// contexts owned by the extension. |args| is a list of primitive Value types
-// that are passed to the function.
-IPC_MESSAGE_ROUTED4(ExtensionMsg_MessageInvoke,
-                    std::string /* extension_id */,
-                    std::string /* module_name */,
-                    std::string /* function_name */,
-                    base::ListValue /* args */)
-
 // Notifies the renderer that extensions were loaded in the browser.
 IPC_MESSAGE_CONTROL1(ExtensionMsg_Loaded,
                      std::vector<ExtensionMsg_Loaded_Params>)

@@ -244,10 +244,6 @@ class Dispatcher : public content::RenderThreadObserver,
                               const std::string& error_message);
   void OnLoaded(
       const std::vector<ExtensionMsg_Loaded_Params>& loaded_extensions);
-  void OnMessageInvoke(const std::string& extension_id,
-                       const std::string& module_name,
-                       const std::string& function_name,
-                       const base::ListValue& args);
   void OnDispatchEvent(const ExtensionMsg_DispatchEvent_Params& params,
                        const base::ListValue& event_args);
   void OnShouldSuspend(const std::string& extension_id, uint64_t sequence_id);

@@ -386,7 +386,6 @@ bool ExtensionFrameHelper::OnMessageReceived(const IPC::Message& message) {
     IPC_MESSAGE_HANDLER(ExtensionMsg_UpdateBrowserWindowId,
                         OnUpdateBrowserWindowId)
     IPC_MESSAGE_HANDLER(ExtensionMsg_Response, OnExtensionResponse)
-    IPC_MESSAGE_HANDLER(ExtensionMsg_MessageInvoke, OnExtensionMessageInvoke)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;
@@ -463,13 +462,13 @@ void ExtensionFrameHelper::OnExtensionResponse(int request_id,
                                              error);
 }
 
-void ExtensionFrameHelper::OnExtensionMessageInvoke(
-    const std::string& extension_id,
-    const std::string& module_name,
-    const std::string& function_name,
-    const base::ListValue& args) {
+void ExtensionFrameHelper::MessageInvoke(const std::string& extension_id,
+                                         const std::string& module_name,
+                                         const std::string& function_name,
+                                         const base::Value args) {
   extension_dispatcher_->InvokeModuleSystemMethod(
-      render_frame(), extension_id, module_name, function_name, args);
+      render_frame(), extension_id, module_name, function_name,
+      base::Value::AsListValue(args));
 }
 
 void ExtensionFrameHelper::SetFrameName(const std::string& name) {

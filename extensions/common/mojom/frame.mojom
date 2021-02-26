@@ -5,6 +5,7 @@
 module extensions.mojom;
 
 import "extensions/common/mojom/view_type.mojom";
+import "mojo/public/mojom/base/values.mojom";
 
 // Implemented in the renderer, this interface defines the local frame specific
 // methods.
@@ -23,4 +24,13 @@ interface LocalFrame {
 
   // Tells the renderer which type this view is.
   NotifyRenderViewType(ViewType view_type);
+
+  // Asks the renderer to invoke |function_name| with |args| in |module_name|.
+  // If |extension_id| is non-empty, the function will be invoked only in
+  // contexts owned by the extension. |args| is a list of primitive Value types
+  // that are passed to the function.
+  MessageInvoke(string extension_id,
+                string module_name,
+                string function_name,
+                mojo_base.mojom.ListValue args);
 };

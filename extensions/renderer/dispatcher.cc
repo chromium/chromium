@@ -871,7 +871,6 @@ bool Dispatcher::OnControlMessageReceived(const IPC::Message& message) {
   IPC_MESSAGE_HANDLER(ExtensionMsg_DispatchOnConnect, OnDispatchOnConnect)
   IPC_MESSAGE_HANDLER(ExtensionMsg_DispatchOnDisconnect, OnDispatchOnDisconnect)
   IPC_MESSAGE_HANDLER(ExtensionMsg_Loaded, OnLoaded)
-  IPC_MESSAGE_HANDLER(ExtensionMsg_MessageInvoke, OnMessageInvoke)
   IPC_MESSAGE_HANDLER(ExtensionMsg_DispatchEvent, OnDispatchEvent)
   IPC_MESSAGE_HANDLER(ExtensionMsg_ShouldSuspend, OnShouldSuspend)
   IPC_MESSAGE_HANDLER(ExtensionMsg_Suspend, OnSuspend)
@@ -1138,14 +1137,6 @@ void Dispatcher::OnLoaded(
   // an externally_connectable extension was loaded that can connect to an
   // open webpage.
   UpdateAllBindings();
-}
-
-void Dispatcher::OnMessageInvoke(const std::string& extension_id,
-                                 const std::string& module_name,
-                                 const std::string& function_name,
-                                 const base::ListValue& args) {
-  InvokeModuleSystemMethod(nullptr, extension_id, module_name, function_name,
-                           args);
 }
 
 void Dispatcher::OnDispatchEvent(
