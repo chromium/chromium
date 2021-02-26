@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import 'chrome://resources/cr_elements/cr_slider/cr_slider.m.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {flushTasks, eventToPromise} from '../test_util.m.js';
-// #import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import 'chrome://resources/cr_elements/cr_slider/cr_slider.m.js';
+
+import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import {eventToPromise, flushTasks} from '../test_util.m.js';
 // clang-format on
 
 suite('cr-slider', function() {
@@ -29,7 +31,7 @@ suite('cr-slider', function() {
     crSlider = /** @type {!CrSliderElement} */ (
         document.body.querySelector('cr-slider'));
     crSlider.value = 0;
-    return test_util.flushTasks();
+    return flushTasks();
   });
 
   /** @param {boolean} expected */
@@ -42,35 +44,35 @@ suite('cr-slider', function() {
   }
 
   function pressArrowRight() {
-    MockInteractions.pressAndReleaseKeyOn(crSlider, 39, [], 'ArrowRight');
+    pressAndReleaseKeyOn(crSlider, 39, [], 'ArrowRight');
   }
 
   function pressArrowLeft() {
-    MockInteractions.pressAndReleaseKeyOn(crSlider, 37, [], 'ArrowLeft');
+    pressAndReleaseKeyOn(crSlider, 37, [], 'ArrowLeft');
   }
 
   function pressPageUp() {
-    MockInteractions.pressAndReleaseKeyOn(crSlider, 33, [], 'PageUp');
+    pressAndReleaseKeyOn(crSlider, 33, [], 'PageUp');
   }
 
   function pressPageDown() {
-    MockInteractions.pressAndReleaseKeyOn(crSlider, 34, [], 'PageDown');
+    pressAndReleaseKeyOn(crSlider, 34, [], 'PageDown');
   }
 
   function pressArrowUp() {
-    MockInteractions.pressAndReleaseKeyOn(crSlider, 38, [], 'ArrowUp');
+    pressAndReleaseKeyOn(crSlider, 38, [], 'ArrowUp');
   }
 
   function pressArrowDown() {
-    MockInteractions.pressAndReleaseKeyOn(crSlider, 40, [], 'ArrowDown');
+    pressAndReleaseKeyOn(crSlider, 40, [], 'ArrowDown');
   }
 
   function pressHome() {
-    MockInteractions.pressAndReleaseKeyOn(crSlider, 36, [], 'Home');
+    pressAndReleaseKeyOn(crSlider, 36, [], 'Home');
   }
 
   function pressEnd() {
-    MockInteractions.pressAndReleaseKeyOn(crSlider, 35, [], 'End');
+    pressAndReleaseKeyOn(crSlider, 35, [], 'End');
   }
 
   function pointerEvent(eventType, ratio) {
@@ -191,7 +193,7 @@ suite('cr-slider', function() {
     assertTrue(crSlider.$$('#markers').hidden);
     crSlider.markerCount = 10;
     assertFalse(crSlider.$$('#markers').hidden);
-    Polymer.dom.flush();
+    flush();
     const markers = Array.from(crSlider.root.querySelectorAll('#markers div'));
     assertEquals(9, markers.length);
     markers.forEach((marker, i) => {
@@ -346,7 +348,7 @@ suite('cr-slider', function() {
     const knobAndLabel =
         /** @type {!HTMLElement} */ (crSlider.$$('#knobAndLabel'));
 
-    await test_util.eventToPromise('transitionend', knobAndLabel);
+    await eventToPromise('transitionend', knobAndLabel);
     assertNoTransition();
     // Other operations that change the value do not have transitions.
     pointerMove(0);
@@ -364,7 +366,7 @@ suite('cr-slider', function() {
     crSlider.value = 0;
     pointerDown(0);
     assertTransition();
-    await test_util.eventToPromise('transitionend', knobAndLabel);
+    await eventToPromise('transitionend', knobAndLabel);
     assertNoTransition();
   });
 
@@ -380,13 +382,13 @@ suite('cr-slider', function() {
   });
 
   test('cr-slider-value-changed event when mouse clicked', () => {
-    const wait = test_util.eventToPromise('cr-slider-value-changed', crSlider);
+    const wait = eventToPromise('cr-slider-value-changed', crSlider);
     pointerDown(.1);
     return wait;
   });
 
   test('cr-slider-value-changed event when key pressed', () => {
-    const wait = test_util.eventToPromise('cr-slider-value-changed', crSlider);
+    const wait = eventToPromise('cr-slider-value-changed', crSlider);
     pressArrowRight();
     return wait;
   });

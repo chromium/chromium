@@ -3,18 +3,21 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+
+import {keyDownOn, keyEventOn, tap} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from '../chai_assert.js';
 //
-// #import {eventToPromise, flushTasks} from '../test_util.m.js';
-// #import {keyDownOn, keyEventOn, tap} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-// #import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from '../chai_assert.js';
+import {eventToPromise, flushTasks} from '../test_util.m.js';
+
 // clang-format on
 
 suite('cr-dialog', function() {
   /** @type {!HTMLElement} element */
   function pressEnter(element) {
-    MockInteractions.keyEventOn(element, 'keypress', 13, undefined, 'Enter');
+    keyEventOn(element, 'keypress', 13, undefined, 'Enter');
   }
 
   /**
@@ -62,7 +65,7 @@ suite('cr-dialog', function() {
 
     const dialog = /** @type {!CrDialogElement} */ (
         document.body.querySelector('cr-dialog'));
-    const whenFired = test_util.eventToPromise('cr-dialog-open', dialog);
+    const whenFired = eventToPromise('cr-dialog-open', dialog);
     dialog.showModal();
     return whenFired;
   });
@@ -77,7 +80,7 @@ suite('cr-dialog', function() {
     const dialog = /** @type {!CrDialogElement} */ (
         document.body.querySelector('cr-dialog'));
     dialog.showModal();
-    const whenFired = test_util.eventToPromise('close', dialog);
+    const whenFired = eventToPromise('close', dialog);
     dialog.close();
     return whenFired.then(() => {
       assertEquals('success', dialog.getNative().returnValue);
@@ -92,14 +95,14 @@ suite('cr-dialog', function() {
     const outer = dialogs[0];
     const inner = dialogs[1];
 
-    let whenFired = test_util.eventToPromise('close', window);
+    let whenFired = eventToPromise('close', window);
     inner.close();
 
     return whenFired
         .then(e => {
           // Check that the event's target is the inner dialog.
           assertEquals(inner, e.target);
-          whenFired = test_util.eventToPromise('close', window);
+          whenFired = eventToPromise('close', window);
           outer.close();
           return whenFired;
         })
@@ -119,8 +122,8 @@ suite('cr-dialog', function() {
     const dialog = /** @type {!CrDialogElement} */ (
         document.body.querySelector('cr-dialog'));
     dialog.showModal();
-    const whenCancelFired = test_util.eventToPromise('cancel', dialog);
-    const whenCloseFired = test_util.eventToPromise('close', dialog);
+    const whenCancelFired = eventToPromise('cancel', dialog);
+    const whenCloseFired = eventToPromise('close', dialog);
     dialog.cancel();
     return Promise.all([whenCancelFired, whenCloseFired]).then(() => {
       assertEquals('', dialog.getNative().returnValue);
@@ -135,14 +138,14 @@ suite('cr-dialog', function() {
     const outer = dialogs[0];
     const inner = dialogs[1];
 
-    let whenFired = test_util.eventToPromise('cancel', window);
+    let whenFired = eventToPromise('cancel', window);
     inner.cancel();
 
     return whenFired
         .then(e => {
           // Check that the event's target is the inner dialog.
           assertEquals(inner, e.target);
-          whenFired = test_util.eventToPromise('cancel', window);
+          whenFired = eventToPromise('cancel', window);
           outer.cancel();
           return whenFired;
         })
@@ -360,7 +363,7 @@ suite('cr-dialog', function() {
     const bottomShadow = dialog.$$('#cr-container-shadow-bottom');
     assertTrue(!!bottomShadow);
 
-    return test_util.flushTasks().then(() => {
+    return flushTasks().then(() => {
       assertFalse(topShadow.classList.contains('has-shadow'));
       assertFalse(bottomShadow.classList.contains('has-shadow'));
     });
@@ -517,9 +520,9 @@ suite('cr-dialog', function() {
     }
     document.addEventListener('keydown', assertKeydownNotReached);
 
-    return test_util.flushTasks().then(() => {
-      MockInteractions.keyDownOn(dialog, 65, undefined, 'a');
-      MockInteractions.keyDownOn(document.body, 65, undefined, 'a');
+    return flushTasks().then(() => {
+      keyDownOn(dialog, 65, undefined, 'a');
+      keyDownOn(document.body, 65, undefined, 'a');
       document.removeEventListener('keydown', assertKeydownNotReached);
     });
   });
@@ -542,8 +545,8 @@ suite('cr-dialog', function() {
     }
     document.addEventListener('keydown', assertKeydownCount);
 
-    return test_util.flushTasks().then(() => {
-      MockInteractions.keyDownOn(dialog, 65, undefined, 'a');
+    return flushTasks().then(() => {
+      keyDownOn(dialog, 65, undefined, 'a');
       assertEquals(1, keydownCounter);
       document.removeEventListener('keydown', assertKeydownCount);
     });

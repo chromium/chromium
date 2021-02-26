@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
-//
-// #import {eventToPromise} from '../test_util.m.js';
-// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-// #import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../chai_assert.js';
+import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
+
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../chai_assert.js';
+import {eventToPromise} from '../test_util.m.js';
 // clang-format on
 
 suite('cr-expand-button-focus-tests', () => {
@@ -37,7 +38,7 @@ suite('cr-expand-button-focus-tests', () => {
    * @return {!Promise<void>}
    */
   function waitForExpansion(toggler) {
-    const wait = test_util.eventToPromise('expanded-changed', button);
+    const wait = eventToPromise('expanded-changed', button);
     toggler();
     return wait;
   }
@@ -45,7 +46,7 @@ suite('cr-expand-button-focus-tests', () => {
   /** @return {!Promise<void>} */
   function click() {
     return waitForExpansion(() => {
-      // This is used in cr.ui.focusWithoutInk to change mode into ink hidden
+      // This is used in focusWithoutInk to change mode into ink hidden
       // when focused.
       button.dispatchEvent(new PointerEvent('pointerdown'));
       // Used to simulate releasing the mouse button.
@@ -59,14 +60,14 @@ suite('cr-expand-button-focus-tests', () => {
   /** @return {!Promise<void>} */
   function enter() {
     return waitForExpansion(() => {
-      MockInteractions.pressAndReleaseKeyOn(icon, 0, '', 'Enter');
+      pressAndReleaseKeyOn(icon, 0, '', 'Enter');
     });
   }
 
   /** @return {!Promise<void>} */
   function space() {
     return waitForExpansion(() => {
-      MockInteractions.pressAndReleaseKeyOn(icon, 0, '', ' ');
+      pressAndReleaseKeyOn(icon, 0, '', ' ');
     });
   }
 

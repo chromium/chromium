@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.m.js';
-// #import {eventToPromise} from '../test_util.m.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.m.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import {eventToPromise} from '../test_util.m.js';
 // clang-format on
 
 suite('cr-toast-manager', () => {
@@ -20,7 +21,7 @@ suite('cr-toast-manager', () => {
   });
 
   test('getToastManager', () => {
-    assertEquals(toastManager, cr.toastManager.getToastManager());
+    assertEquals(toastManager, getToastManager());
   });
 
   test('simple show/hide', () => {

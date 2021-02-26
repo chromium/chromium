@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.m.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {keyDownOn, pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.m.js';
+
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {keyDownOn, pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for cr-profile-avatar-selector. */
@@ -57,7 +59,7 @@ suite('cr-profile-avatar-selector', function() {
   setup(function() {
     avatarSelector = createElement();
     document.body.appendChild(avatarSelector);
-    Polymer.dom.flush();
+    flush();
   });
 
   teardown(function() {
@@ -70,7 +72,7 @@ suite('cr-profile-avatar-selector', function() {
 
   test('Can update avatars', function() {
     avatarSelector.pop('avatars');
-    Polymer.dom.flush();
+    flush();
     assertEquals(2, getGridItems().length);
   });
 
@@ -89,10 +91,10 @@ suite('cr-profile-avatar-selector', function() {
 
     // Tab key should not move the focus.
     items[0].focus();
-    MockInteractions.pressAndReleaseKeyOn(items[0], 9);
+    pressAndReleaseKeyOn(items[0], 9);
     assertEquals(getDeepActiveElement(), items[0]);
 
-    MockInteractions.keyDownOn(items[0], 39, [], 'ArrowRight');
+    keyDownOn(items[0], 39, [], 'ArrowRight');
     assertEquals(getDeepActiveElement(), items[1]);
 
     items[1].click();
@@ -117,7 +119,7 @@ suite('cr-profile-avatar-selector', function() {
         selected: true
       }
     ];
-    Polymer.dom.flush();
+    flush();
     items = getGridItems();
     assertTrue(items[1].classList.contains('iron-selected'));
     verifyTabIndex(items, [-1, 0]);
@@ -131,7 +133,7 @@ suite('cr-profile-avatar-selector', function() {
     const items = getGridItems();
     verifyTabIndex(items, [0, -1, -1]);
     avatarSelector.selectedAvatar = avatarSelector.avatars[1];
-    Polymer.dom.flush();
+    flush();
     verifyTabIndex(getGridItems(), [-1, 0, -1]);
 
     items[0].click();
@@ -157,38 +159,38 @@ suite('cr-profile-avatar-selector', function() {
     items[0].focus();
     assertEquals(getDeepActiveElement(), items[0]);
 
-    MockInteractions.keyDownOn(items[0], 39, [], 'ArrowRight');
+    keyDownOn(items[0], 39, [], 'ArrowRight');
     assertEquals(getDeepActiveElement(), items[1]);
 
-    MockInteractions.keyDownOn(items[0], 37, [], 'ArrowLeft');
+    keyDownOn(items[0], 37, [], 'ArrowLeft');
     assertEquals(getDeepActiveElement(), items[0]);
 
     avatarSelector.ignoreModifiedKeyEvents = true;
 
-    MockInteractions.keyDownOn(items[0], 39, 'alt', 'ArrowRight');
+    keyDownOn(items[0], 39, 'alt', 'ArrowRight');
     assertEquals(getDeepActiveElement(), items[0]);
 
-    MockInteractions.keyDownOn(items[0], 39, 'ctrl', 'ArrowRight');
+    keyDownOn(items[0], 39, 'ctrl', 'ArrowRight');
     assertEquals(getDeepActiveElement(), items[0]);
 
-    MockInteractions.keyDownOn(items[0], 39, 'meta', 'ArrowRight');
+    keyDownOn(items[0], 39, 'meta', 'ArrowRight');
     assertEquals(getDeepActiveElement(), items[0]);
 
-    MockInteractions.keyDownOn(items[0], 39, 'shift', 'ArrowRight');
+    keyDownOn(items[0], 39, 'shift', 'ArrowRight');
     assertEquals(getDeepActiveElement(), items[0]);
 
     // Test RTL case.
     selector.dir = 'rtl';
-    MockInteractions.keyDownOn(items[0], 37, [], 'ArrowLeft');
+    keyDownOn(items[0], 37, [], 'ArrowLeft');
     assertEquals(getDeepActiveElement(), items[1]);
 
-    MockInteractions.keyDownOn(items[0], 37, [], 'ArrowLeft');
+    keyDownOn(items[0], 37, [], 'ArrowLeft');
     assertEquals(getDeepActiveElement(), items[2]);
 
-    MockInteractions.keyDownOn(items[0], 37, [], 'ArrowRight');
+    keyDownOn(items[0], 37, [], 'ArrowRight');
     assertEquals(getDeepActiveElement(), items[1]);
 
-    MockInteractions.keyDownOn(items[0], 37, [], 'ArrowRight');
+    keyDownOn(items[0], 37, [], 'ArrowRight');
     assertEquals(getDeepActiveElement(), items[0]);
   });
 });

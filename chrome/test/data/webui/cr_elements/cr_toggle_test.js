@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
-// #import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-// #import {eventToPromise} from '../test_util.m.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
+
+import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import {eventToPromise} from '../test_util.m.js';
 // clang-format on
 
 suite('cr-toggle', function() {
@@ -84,7 +86,7 @@ suite('cr-toggle', function() {
   // Test that the control is toggled when the |checked| attribute is
   // programmatically changed.
   test('ToggleByAttribute', function() {
-    test_util.eventToPromise('change', toggle).then(function() {
+    eventToPromise('change', toggle).then(function() {
       // Should not fire 'change' event when state is changed programmatically.
       // Only user interaction should result in 'change' event.
       assertFalse(true);
@@ -100,12 +102,12 @@ suite('cr-toggle', function() {
   // Test that the control is toggled when the user taps on it (no movement
   // between pointerdown and pointerup).
   test('ToggleByPointerTap', function() {
-    let whenChanged = test_util.eventToPromise('change', toggle);
+    let whenChanged = eventToPromise('change', toggle);
     triggerPointerDownMoveUpTapSequence(0 /* no pointermove */);
     return whenChanged
         .then(function() {
           assertChecked();
-          whenChanged = test_util.eventToPromise('change', toggle);
+          whenChanged = eventToPromise('change', toggle);
           triggerPointerDownMoveUpTapSequence(0 /* no pointermove */);
           return whenChanged;
         })
@@ -117,13 +119,13 @@ suite('cr-toggle', function() {
   // Test that the control is toggled if the user moves the pointer by a
   // MOVE_THRESHOLD_PX pixels accidentally (shaky hands) in any direction.
   test('ToggleByShakyPointerTap', function() {
-    let whenChanged = test_util.eventToPromise('change', toggle);
+    let whenChanged = eventToPromise('change', toggle);
     triggerPointerDownMoveUpTapSequence(
         1 /* right */, toggle.MOVE_THRESHOLD_PX - 1);
     return whenChanged
         .then(function() {
           assertChecked();
-          whenChanged = test_util.eventToPromise('change', toggle);
+          whenChanged = eventToPromise('change', toggle);
           triggerPointerDownMoveUpTapSequence(
               1 /* right */, toggle.MOVE_THRESHOLD_PX - 1);
           return whenChanged;
@@ -136,20 +138,20 @@ suite('cr-toggle', function() {
   // Test that the control is toggled when the user moves the pointer while
   // holding down.
   test('ToggleByPointerMove', function() {
-    let whenChanged = test_util.eventToPromise('change', toggle);
+    let whenChanged = eventToPromise('change', toggle);
     triggerPointerDownMoveUpTapSequence(
         1 /* right */, toggle.MOVE_THRESHOLD_PX);
     return whenChanged
         .then(function() {
           assertChecked();
-          whenChanged = test_util.eventToPromise('change', toggle);
+          whenChanged = eventToPromise('change', toggle);
           triggerPointerDownMoveUpTapSequence(
               -1 /* left */, toggle.MOVE_THRESHOLD_PX);
           return whenChanged;
         })
         .then(function() {
           assertNotChecked();
-          whenChanged = test_util.eventToPromise('change', toggle);
+          whenChanged = eventToPromise('change', toggle);
 
           // Test simple tapping after having dragged.
           triggerPointerDownMoveUpTapSequence(0 /* no pointermove */);

@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
-// #import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
-//
-// #import {eventToPromise} from '../test_util.m.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
+import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
+
+import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import {eventToPromise} from '../test_util.m.js';
 // clang-format on
 
 suite('cr-radio-group', () => {
@@ -18,9 +19,6 @@ suite('cr-radio-group', () => {
 
   /** @override */
   suiteSetup(() => {
-    /* #ignore */ return PolymerTest.importHtml(
-        /* #ignore */ 'chrome://resources/cr_elements/cr_radio_button/' +
-        /* #ignore */ 'cr_radio_button.html');
   });
 
   setup(() => {
@@ -32,7 +30,7 @@ suite('cr-radio-group', () => {
         </cr-radio-group>`;
     radioGroup = /** @type {!CrRadioGroupElement} */ (
         document.body.querySelector('cr-radio-group'));
-    Polymer.dom.flush();
+    flush();
   });
 
 
@@ -78,7 +76,7 @@ suite('cr-radio-group', () => {
   function press(key, target) {
     target = target || /** @type {!CrRadioButtonElement} */
         (radioGroup.querySelector('[name="1"]'));
-    MockInteractions.pressAndReleaseKeyOn(target, -1, [], key);
+    pressAndReleaseKeyOn(target, -1, [], key);
   }
 
   /**
@@ -114,7 +112,7 @@ suite('cr-radio-group', () => {
   }
 
   test('selected-changed bubbles', () => {
-    const whenFired = test_util.eventToPromise('selected-changed', radioGroup);
+    const whenFired = eventToPromise('selected-changed', radioGroup);
     radioGroup.selected = '1';
     return whenFired;
   });

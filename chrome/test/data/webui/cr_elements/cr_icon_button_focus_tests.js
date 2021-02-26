@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-//
-// #import {flushTasks} from '../test_util.m.js';
-// #import {assertFalse, assertTrue} from '../chai_assert.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+
+import {assertFalse, assertTrue} from '../chai_assert.js';
+import {flushTasks} from '../test_util.m.js';
 // clang-format on
 
 suite('cr-icon-button-focus-tests', function() {
@@ -18,7 +18,7 @@ suite('cr-icon-button-focus-tests', function() {
     button = /** @type {!CrIconButtonElement} */ (
         document.createElement('cr-icon-button'));
     document.body.appendChild(button);
-    await test_util.flushTasks();
+    await flushTasks();
   });
 
   test('focus shows ripple', () => {

@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
+import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 // clang-format on
 
 suite('cr-radio-button', function() {

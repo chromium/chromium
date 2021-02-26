@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
-// #import './cr_policy_strings.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
+import './cr_policy_strings.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for cr_policy-pref-indicator. */
@@ -38,7 +38,7 @@ suite('CrPolicyPrefIndicator', function() {
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: false,
     };
-    Polymer.dom.flush();
+    flush();
     assertTrue(icon.hidden);
 
     // Check indicator behavior for a preference controlled by the device owner.
@@ -47,7 +47,7 @@ suite('CrPolicyPrefIndicator', function() {
     indicator.set('pref.controlledByName', 'owner_name');
     indicator.set(
         'pref.enforcement', chrome.settingsPrivate.Enforcement.ENFORCED);
-    Polymer.dom.flush();
+    flush();
     assertFalse(icon.hidden);
     assertEquals('cr:person', icon.iconClass);
     assertEquals('owner: owner_name', icon.tooltipText);
@@ -58,7 +58,7 @@ suite('CrPolicyPrefIndicator', function() {
     indicator.set('pref.recommendedValue', 'bar');
     indicator.set(
         'pref.enforcement', chrome.settingsPrivate.Enforcement.RECOMMENDED);
-    Polymer.dom.flush();
+    flush();
     assertFalse(icon.hidden);
     assertEquals('cr20:domain', icon.iconClass);
     assertEquals('differs', icon.tooltipText);
@@ -66,7 +66,7 @@ suite('CrPolicyPrefIndicator', function() {
     // Check indicator behavior for a preference with a recommended value that
     // is the same as the current value of the preference.
     indicator.set('pref.value', 'bar');
-    Polymer.dom.flush();
+    flush();
     assertEquals('matches', icon.tooltipText);
 
     // Check indicator behavior for a preference that is enforced for a
@@ -74,10 +74,11 @@ suite('CrPolicyPrefIndicator', function() {
     indicator.set(
         'pref.enforcement',
         chrome.settingsPrivate.Enforcement.PARENT_SUPERVISED);
-    Polymer.dom.flush();
+    flush();
     assertFalse(icon.hidden);
     assertEquals('cr20:kite', icon.iconClass);
-    assertEquals(CrPolicyStrings.controlledSettingParent, icon.tooltipText);
+    assertEquals(
+        window.CrPolicyStrings.controlledSettingParent, icon.tooltipText);
 
     // Check indicator behavior for a preference that is enforced by device
     // policy.
@@ -85,10 +86,11 @@ suite('CrPolicyPrefIndicator', function() {
         'pref.enforcement', chrome.settingsPrivate.Enforcement.ENFORCED);
     indicator.set(
         'pref.controlledBy', chrome.settingsPrivate.ControlledBy.DEVICE_POLICY);
-    Polymer.dom.flush();
+    flush();
     assertFalse(icon.hidden);
     assertEquals('cr20:domain', icon.iconClass);
-    assertEquals(CrPolicyStrings.controlledSettingPolicy, icon.tooltipText);
+    assertEquals(
+        window.CrPolicyStrings.controlledSettingPolicy, icon.tooltipText);
 
     // Check indicator behavior for an preference that is enforced whilst also
     // having a recommended value.
@@ -100,12 +102,12 @@ suite('CrPolicyPrefIndicator', function() {
     indicator.set('associatedValue', indicatorPrefValue);
     indicator.set(
         'pref.userSelectableValues', [indicatorPrefValue, differentPrefValue]);
-    Polymer.dom.flush();
+    flush();
     assertTrue(icon.hidden);
 
     indicator.set('pref.recommendedValue', differentPrefValue);
     indicator.set('pref.value', differentPrefValue);
-    Polymer.dom.flush();
+    flush();
     assertTrue(icon.hidden);
 
     indicator.set('pref.recommendedValue', indicatorPrefValue);
@@ -113,7 +115,7 @@ suite('CrPolicyPrefIndicator', function() {
     assertEquals('differs', icon.tooltipText);
 
     indicator.set('pref.value', indicatorPrefValue);
-    Polymer.dom.flush();
+    flush();
     assertEquals('matches', icon.tooltipText);
 
     // Check indicator behavior for an preference that is recommended whilst the
@@ -124,7 +126,7 @@ suite('CrPolicyPrefIndicator', function() {
     indicator.set('pref.value', differentPrefValue);
 
     indicator.set('pref.recommendedValue', differentPrefValue);
-    Polymer.dom.flush();
+    flush();
     assertTrue(icon.hidden);
 
     indicator.set('pref.recommendedValue', indicatorPrefValue);
@@ -132,7 +134,7 @@ suite('CrPolicyPrefIndicator', function() {
     assertEquals('differs', icon.tooltipText);
 
     indicator.set('pref.value', indicatorPrefValue);
-    Polymer.dom.flush();
+    flush();
     assertEquals('matches', icon.tooltipText);
 
   });

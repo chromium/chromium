@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {CrScrollableBehavior} from 'chrome://resources/cr_elements/cr_scrollable_behavior.m.js';
-// #import {Polymer, Base, flush, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {waitBeforeNextRender} from '../test_util.m.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import {CrScrollableBehavior} from 'chrome://resources/cr_elements/cr_scrollable_behavior.m.js';
+import { Base, flush, html,Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import {waitBeforeNextRender} from '../test_util.m.js';
 // clang-format on
 
 suite('cr-scrollable-behavior', function() {
@@ -98,7 +99,7 @@ suite('cr-scrollable-behavior', function() {
     // Wait for CrScrollableBehavior to set the initial scrollable class
     // properties.
     window.requestAnimationFrame(() => {
-      test_util.waitBeforeNextRender(testElement).then(done);
+      waitBeforeNextRender(testElement).then(done);
     });
   });
 
@@ -107,7 +108,7 @@ suite('cr-scrollable-behavior', function() {
   function scrollToIndex(index) {
     ironList.scrollToIndex(index);
     container.dispatchEvent(new CustomEvent('scroll'));
-    Polymer.dom.flush();
+    flush();
   }
 
   test('scroll', function() {
@@ -129,8 +130,8 @@ suite('cr-scrollable-behavior', function() {
     testElement.saveScroll(ironList);
     testElement.items = ['apple', 'bannana', 'cactus', 'cucumber', 'doughnut'];
     testElement.restoreScroll(ironList);
-    Polymer.dom.flush();
-    Polymer.Base.async(function() {
+    flush();
+    Base.async(function() {
       assertEquals(scrollTop, container.scrollTop);
       done();
     });
