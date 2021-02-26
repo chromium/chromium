@@ -341,7 +341,7 @@ v8::Local<v8::Value> V8ValueConverterImpl::ToArrayBuffer(
   DCHECK(creation_context->CreationContext() == isolate->GetCurrentContext());
   v8::Local<v8::ArrayBuffer> buffer =
       v8::ArrayBuffer::New(isolate, value->GetBlob().size());
-  memcpy(buffer->GetContents().Data(), value->GetBlob().data(),
+  memcpy(buffer->GetBackingStore()->Data(), value->GetBlob().data(),
          value->GetBlob().size());
   return buffer;
 }
@@ -497,10 +497,10 @@ std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8ArrayBuffer(
   }
 
   if (val->IsArrayBuffer()) {
-    auto contents = val.As<v8::ArrayBuffer>()->GetContents();
-    const auto* data = static_cast<const uint8_t*>(contents.Data());
+    auto backing_store = val.As<v8::ArrayBuffer>()->GetBackingStore();
+    const auto* data = static_cast<const uint8_t*>(backing_store->Data());
     return base::Value::ToUniquePtrValue(
-        base::Value(base::make_span(data, contents.ByteLength())));
+        base::Value(base::make_span(data, backing_store->ByteLength())));
   }
   if (val->IsArrayBufferView()) {
     v8::Local<v8::ArrayBufferView> view = val.As<v8::ArrayBufferView>();
