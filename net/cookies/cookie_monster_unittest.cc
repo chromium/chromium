@@ -2528,8 +2528,7 @@ TEST_F(CookieMonsterTest, SetAllCookies) {
                              NetLogEventPhase::END);
 }
 
-// Check that DeleteAll does flush (as a sanity check that flush_count()
-// works).
+// Check that DeleteAll does flush (as a quick check that flush_count() works).
 TEST_F(CookieMonsterTest, DeleteAll) {
   scoped_refptr<FlushablePersistentStore> store(new FlushablePersistentStore());
   auto cm = std::make_unique<CookieMonster>(store.get(), &net_log_);

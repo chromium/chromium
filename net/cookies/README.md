@@ -76,9 +76,10 @@ name and value.
 The `ParsedCookie` is then converted into a `CanonicalCookie`. This is the main
 data type representing cookies. Any cookie consumer that does not deal directly
 with HTTP headers operates on `CanonicalCookie`s. A `CanonicalCookie` has some
-additional guarantees of validity over a `ParsedCookie`, such as sane expiration
-times, valid domain and path attributes, etc. Once a `CanonicalCookie` is
-created, you will almost never see a `ParsedCookie` used for anything else.
+additional guarantees of validity over a `ParsedCookie`, such as valid
+expiration times, valid domain and path attributes, etc. Once a
+`CanonicalCookie` is created, you will almost never see a `ParsedCookie` used
+for anything else.
 
 If a valid `CanonicalCookie` could not be created (due to some illegal syntax,
 inconsistent attribute values, or other circumstances preventing parsing), then
