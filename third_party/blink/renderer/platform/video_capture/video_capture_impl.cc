@@ -488,23 +488,21 @@ struct VideoCaptureImpl::ClientInfo {
 
 VideoCaptureImpl::VideoCaptureImpl(
     media::VideoCaptureSessionId session_id,
-    scoped_refptr<base::SequencedTaskRunner> main_task_runner,
-    media::GpuVideoAcceleratorFactories* gpu_factories)
+    scoped_refptr<base::SequencedTaskRunner> main_task_runner)
     : device_id_(session_id),
       session_id_(session_id),
       video_capture_host_for_testing_(nullptr),
       state_(blink::VIDEO_CAPTURE_STATE_STOPPED),
-      gpu_factories_(gpu_factories),
       main_task_runner_(std::move(main_task_runner)),
       gpu_memory_buffer_support_(new gpu::GpuMemoryBufferSupport()) {
   CHECK(!session_id.is_empty());
-  // Some unit tests invoke the ctor from the main thread, so detach from it
-  // here and let it get re-attached in the next call.
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   DETACH_FROM_THREAD(io_thread_checker_);
 
   Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
       pending_video_capture_host_.InitWithNewPipeAndPassReceiver());
 
+  gpu_factories_ = Platform::Current()->GetGpuFactories();
   if (gpu_factories_) {
     media_task_runner_ = gpu_factories_->GetTaskRunner();
   }
