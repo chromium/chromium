@@ -4731,7 +4731,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, GetUkmSourceIds) {
 
   const auto& document_created_entries =
       recorder.GetEntriesByName("DocumentCreated");
-  // There should one DocumentCreated entry for each of the two frames.
+  // There should be one DocumentCreated entry for each of the two frames.
   ASSERT_EQ(2u, document_created_entries.size());
 
   auto* main_frame_document_created_entry =
@@ -4747,6 +4747,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, GetUkmSourceIds) {
                                        "IsMainFrame"));
   EXPECT_FALSE(*recorder.GetEntryMetric(main_frame_document_created_entry,
                                         "IsCrossOriginFrame"));
+  EXPECT_FALSE(*recorder.GetEntryMetric(main_frame_document_created_entry,
+                                        "IsCrossSiteFrame"));
 
   EXPECT_EQ(page_ukm_source_id,
             *recorder.GetEntryMetric(sub_frame_document_created_entry,
@@ -4755,6 +4757,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, GetUkmSourceIds) {
                                         "IsMainFrame"));
   EXPECT_TRUE(*recorder.GetEntryMetric(sub_frame_document_created_entry,
                                        "IsCrossOriginFrame"));
+  EXPECT_TRUE(*recorder.GetEntryMetric(sub_frame_document_created_entry,
+                                       "IsCrossSiteFrame"));
 
   // Verify source creations. Main frame document source should have the URL;
   // no source should have been created for the sub-frame document.
@@ -4768,6 +4772,29 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, GetUkmSourceIds) {
   for (const auto* entry : blink_entries) {
     EXPECT_EQ(main_frame_doc_ukm_source_id, entry->source_id);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, CrossSiteFrame) {
+  ukm::TestAutoSetUkmRecorder recorder;
+  // This test site has one cross-origin but same-site iframe (b.x.com).
+  GURL main_frame_url(embedded_test_server()->GetURL(
+      "a.x.com", "/frame_tree/page_with_cross_origin_same_site_iframe.html"));
+  WebContents* web_contents = shell()->web_contents();
+  DocumentUkmSourceIdObserver observer(web_contents);
+
+  ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
+
+  auto* sub_frame_document_created_entry =
+      recorder.GetDocumentCreatedEntryForSourceId(
+          observer.GetSubFrameDocumentUkmSourceId());
+
+  // Verify the recorded values on the sub frame's DocumentCreated entry.
+  EXPECT_FALSE(*recorder.GetEntryMetric(sub_frame_document_created_entry,
+                                        "IsMainFrame"));
+  EXPECT_TRUE(*recorder.GetEntryMetric(sub_frame_document_created_entry,
+                                       "IsCrossOriginFrame"));
+  EXPECT_FALSE(*recorder.GetEntryMetric(sub_frame_document_created_entry,
+                                        "IsCrossSiteFrame"));
 }
 
 // TODO(https://crbug.com/794320): the code below is temporary and will be
