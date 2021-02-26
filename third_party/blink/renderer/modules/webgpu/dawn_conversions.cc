@@ -616,6 +616,98 @@ WGPUInputStepMode AsDawnEnum<WGPUInputStepMode>(
 
 template <>
 WGPUVertexFormat AsDawnEnum<WGPUVertexFormat>(const WTF::String& webgpu_enum) {
+  if (webgpu_enum == "uint8x2") {
+    return WGPUVertexFormat_Uint8x2;
+  }
+  if (webgpu_enum == "uint8x4") {
+    return WGPUVertexFormat_Uint8x4;
+  }
+  if (webgpu_enum == "sint8x2") {
+    return WGPUVertexFormat_Sint8x2;
+  }
+  if (webgpu_enum == "sint8x4") {
+    return WGPUVertexFormat_Sint8x4;
+  }
+  if (webgpu_enum == "unorm8x2") {
+    return WGPUVertexFormat_Unorm8x2;
+  }
+  if (webgpu_enum == "unorm8x4") {
+    return WGPUVertexFormat_Unorm8x4;
+  }
+  if (webgpu_enum == "snorm8x2") {
+    return WGPUVertexFormat_Snorm8x2;
+  }
+  if (webgpu_enum == "snorm8x4") {
+    return WGPUVertexFormat_Snorm8x4;
+  }
+  if (webgpu_enum == "uint16x2") {
+    return WGPUVertexFormat_Uint16x2;
+  }
+  if (webgpu_enum == "uint16x4") {
+    return WGPUVertexFormat_Uint16x4;
+  }
+  if (webgpu_enum == "sint16x2") {
+    return WGPUVertexFormat_Sint16x2;
+  }
+  if (webgpu_enum == "sint16x4") {
+    return WGPUVertexFormat_Sint16x4;
+  }
+  if (webgpu_enum == "unorm16x2") {
+    return WGPUVertexFormat_Unorm16x2;
+  }
+  if (webgpu_enum == "unorm16x4") {
+    return WGPUVertexFormat_Unorm16x4;
+  }
+  if (webgpu_enum == "snorm16x2") {
+    return WGPUVertexFormat_Snorm16x2;
+  }
+  if (webgpu_enum == "snorm16x4") {
+    return WGPUVertexFormat_Snorm16x4;
+  }
+  if (webgpu_enum == "float16x2") {
+    return WGPUVertexFormat_Float16x2;
+  }
+  if (webgpu_enum == "float16x4") {
+    return WGPUVertexFormat_Float16x4;
+  }
+  if (webgpu_enum == "float32") {
+    return WGPUVertexFormat_Float32;
+  }
+  if (webgpu_enum == "float32x2") {
+    return WGPUVertexFormat_Float32x2;
+  }
+  if (webgpu_enum == "float32x3") {
+    return WGPUVertexFormat_Float32x3;
+  }
+  if (webgpu_enum == "float32x4") {
+    return WGPUVertexFormat_Float32x4;
+  }
+  if (webgpu_enum == "uint32") {
+    return WGPUVertexFormat_Uint32;
+  }
+  if (webgpu_enum == "uint32x2") {
+    return WGPUVertexFormat_Uint32x2;
+  }
+  if (webgpu_enum == "uint32x3") {
+    return WGPUVertexFormat_Uint32x3;
+  }
+  if (webgpu_enum == "uint32x4") {
+    return WGPUVertexFormat_Uint32x4;
+  }
+  if (webgpu_enum == "sint32") {
+    return WGPUVertexFormat_Sint32;
+  }
+  if (webgpu_enum == "sint32x2") {
+    return WGPUVertexFormat_Sint32x2;
+  }
+  if (webgpu_enum == "sint32x3") {
+    return WGPUVertexFormat_Sint32x3;
+  }
+  if (webgpu_enum == "sint32x4") {
+    return WGPUVertexFormat_Sint32x4;
+  }
+
+  // Deprecated formats
   if (webgpu_enum == "uchar2") {
     return WGPUVertexFormat_UChar2;
   }

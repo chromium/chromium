@@ -42,6 +42,7 @@ struct OwnedRenderPipelineDescriptor {
 };
 
 void ConvertToDawnType(v8::Isolate* isolate,
+                       GPUDevice* device,
                        const GPURenderPipelineDescriptor* webgpu_desc,
                        OwnedRenderPipelineDescriptor* dawn_desc_info,
                        ExceptionState& exception_state);

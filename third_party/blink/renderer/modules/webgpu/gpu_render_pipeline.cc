@@ -86,8 +86,76 @@ WGPUDepthStencilStateDescriptor AsDawnType(
   return dawn_desc;
 }
 
+const char* GetUpdatedVertexFormat(WGPUVertexFormat format) {
+  switch (format) {
+    case WGPUVertexFormat_UChar2:
+      return "uint8x2";
+    case WGPUVertexFormat_UChar4:
+      return "uint8x4";
+    case WGPUVertexFormat_Char2:
+      return "sint8x2";
+    case WGPUVertexFormat_Char4:
+      return "sint8x4";
+    case WGPUVertexFormat_UChar2Norm:
+      return "unorm8x2";
+    case WGPUVertexFormat_UChar4Norm:
+      return "unorm8x4";
+    case WGPUVertexFormat_Char2Norm:
+      return "snorm8x2";
+    case WGPUVertexFormat_Char4Norm:
+      return "snorm8x4";
+    case WGPUVertexFormat_UShort2:
+      return "uint16x2";
+    case WGPUVertexFormat_UShort4:
+      return "uint16x4";
+    case WGPUVertexFormat_Short2:
+      return "sint16x2";
+    case WGPUVertexFormat_Short4:
+      return "sint16x4";
+    case WGPUVertexFormat_UShort2Norm:
+      return "unorm16x2";
+    case WGPUVertexFormat_UShort4Norm:
+      return "unorm16x4";
+    case WGPUVertexFormat_Short2Norm:
+      return "snorm16x2";
+    case WGPUVertexFormat_Short4Norm:
+      return "snorm16x4";
+    case WGPUVertexFormat_Half2:
+      return "float16x2";
+    case WGPUVertexFormat_Half4:
+      return "float16x4";
+    case WGPUVertexFormat_Float:
+      return "float32";
+    case WGPUVertexFormat_Float2:
+      return "float32x2";
+    case WGPUVertexFormat_Float3:
+      return "float32x3";
+    case WGPUVertexFormat_Float4:
+      return "float32x4";
+    case WGPUVertexFormat_UInt:
+      return "uint32";
+    case WGPUVertexFormat_UInt2:
+      return "uint32x2";
+    case WGPUVertexFormat_UInt3:
+      return "uint32x3";
+    case WGPUVertexFormat_UInt4:
+      return "uint32x4";
+    case WGPUVertexFormat_Int:
+      return "sint32";
+    case WGPUVertexFormat_Int2:
+      return "sint32x2";
+    case WGPUVertexFormat_Int3:
+      return "sint32x3";
+    case WGPUVertexFormat_Int4:
+      return "sint32x4";
+    default:
+      return "";
+  }
+}
+
 void GPUVertexStateAsWGPUVertexState(
     v8::Isolate* isolate,
+    GPUDevice* device,
     const GPUVertexStateDescriptor* descriptor,
     WGPUVertexStateDescriptor* dawn_desc,
     Vector<WGPUVertexBufferLayoutDescriptor>* dawn_vertex_buffers,
@@ -161,6 +229,13 @@ void GPUVertexStateAsWGPUVertexState(
         dawn_vertex_attribute.offset = attribute->offset();
         dawn_vertex_attribute.format =
             AsDawnEnum<WGPUVertexFormat>(attribute->format());
+        if (dawn_vertex_attribute.format >= WGPUVertexFormat_UChar2) {
+          WTF::String message =
+              String("The vertex format '") + attribute->format() +
+              String("' has been deprecated in favor of '") +
+              GetUpdatedVertexFormat(dawn_vertex_attribute.format) + "'.";
+          device->AddConsoleWarning(message.Utf8().data());
+        }
         dawn_vertex_attributes->push_back(dawn_vertex_attribute);
       }
     }
@@ -201,6 +276,7 @@ WGPURasterizationStateDescriptor AsDawnType(
 }  // anonymous namespace
 
 void ConvertToDawnType(v8::Isolate* isolate,
+                       GPUDevice* device,
                        const GPURenderPipelineDescriptor* webgpu_desc,
                        OwnedRenderPipelineDescriptor* dawn_desc_info,
                        ExceptionState& exception_state) {
@@ -209,8 +285,8 @@ void ConvertToDawnType(v8::Isolate* isolate,
   DCHECK(dawn_desc_info);
 
   GPUVertexStateAsWGPUVertexState(
-      isolate, webgpu_desc->vertexState(), &dawn_desc_info->vertex_state,
-      &dawn_desc_info->vertex_buffer_layouts,
+      isolate, device, webgpu_desc->vertexState(),
+      &dawn_desc_info->vertex_state, &dawn_desc_info->vertex_buffer_layouts,
       &dawn_desc_info->vertex_attributes, exception_state);
   if (exception_state.HadException()) {
     return;
@@ -275,7 +351,8 @@ GPURenderPipeline* GPURenderPipeline::Create(
   v8::Isolate* isolate = script_state->GetIsolate();
   ExceptionState exception_state(isolate, ExceptionState::kConstructionContext,
                                  "GPUVertexStateDescriptor");
-  ConvertToDawnType(isolate, webgpu_desc, &dawn_desc_info, exception_state);
+  ConvertToDawnType(isolate, device, webgpu_desc, &dawn_desc_info,
+                    exception_state);
   if (exception_state.HadException()) {
     return nullptr;
   }

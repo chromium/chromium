@@ -297,7 +297,8 @@ ScriptPromise GPUDevice::createRenderPipelineAsync(
   v8::Isolate* isolate = script_state->GetIsolate();
   ExceptionState exception_state(isolate, ExceptionState::kConstructionContext,
                                  "GPUVertexStateDescriptor");
-  ConvertToDawnType(isolate, descriptor, &dawn_desc_info, exception_state);
+  ConvertToDawnType(isolate, this, descriptor, &dawn_desc_info,
+                    exception_state);
   if (exception_state.HadException()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kOperationError,
