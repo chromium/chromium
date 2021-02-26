@@ -20,7 +20,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feed.FeedUma;
-import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.widget.highlight.PulseDrawable;
@@ -37,20 +36,13 @@ import org.chromium.ui.widget.ViewRectProvider;
  * View for the header of the personalized feed that has a context menu to
  * manage the feed.
  */
-public class SectionHeaderView extends LinearLayout implements View.OnClickListener {
-    private static final int IPH_TIMEOUT_MS = 10000;
+public class SectionHeaderView extends LinearLayout {
     private static final int ANIMATION_DURATION_MS = 200;
 
     // Views in the header layout that are set during inflate.
     private TextView mTitleView;
-    private TextView mStatusView;
     private ListMenuButton mMenuView;
 
-    // Properties that are set after construction & inflate using setters.
-    @Nullable
-    private SectionHeader mHeader;
-
-    private boolean mHasMenu;
     private boolean mAnimatePaddingWhenDisabled;
 
     public SectionHeaderView(Context context, @Nullable AttributeSet attrs) {
@@ -71,107 +63,79 @@ public class SectionHeaderView extends LinearLayout implements View.OnClickListe
         super.onFinishInflate();
 
         mTitleView = findViewById(R.id.header_title);
-        mStatusView = findViewById(R.id.header_status);
         mMenuView = findViewById(R.id.header_menu);
 
-        // Use the menu instead of the status text when the menu is available from the inflated
-        // layout.
-        mHasMenu = mMenuView != null;
+        int touchPadding;
+        // If we are animating padding, add additional touch area around the menu.
+        if (mAnimatePaddingWhenDisabled) {
+            touchPadding =
+                    getResources().getDimensionPixelSize(R.dimen.feed_v2_header_menu_touch_padding);
+        } else {
+            touchPadding = 0;
+        }
+        post(() -> {
+            Rect rect = new Rect();
+            mMenuView.getHitRect(rect);
 
-        if (mHasMenu) {
-            mMenuView.setOnClickListener((View v) -> { displayMenu(); });
-            int touchPadding;
-            // If we are animating padding, add additional touch area around the menu.
-            if (mAnimatePaddingWhenDisabled) {
-                touchPadding = getResources().getDimensionPixelSize(
-                        R.dimen.feed_v2_header_menu_touch_padding);
-            } else {
-                touchPadding = 0;
-            }
-            post(() -> {
-                Rect rect = new Rect();
-                mMenuView.getHitRect(rect);
+            rect.top -= touchPadding;
+            rect.bottom += touchPadding;
+            rect.left -= touchPadding;
+            rect.right += touchPadding;
 
-                rect.top -= touchPadding;
-                rect.bottom += touchPadding;
-                rect.left -= touchPadding;
-                rect.right += touchPadding;
+            setTouchDelegate(new TouchDelegate(rect, mMenuView));
+        });
+    }
 
-                setTouchDelegate(new TouchDelegate(rect, mMenuView));
+    /** Updates header text for this view. */
+    public void setHeaderText(String text) {
+        mTitleView.setText(text);
+    }
+
+    /** Sets the delegate for the gear/settings icon. */
+    public void setMenuDelegate(ModelList listItems, ListMenu.Delegate listMenuDelegate) {
+        mMenuView.setOnClickListener((v) -> { displayMenu(listItems, listMenuDelegate); });
+    }
+
+    /** Expand the header to indicate the section has been enabled. */
+    public void expandHeader() {
+        if (mAnimatePaddingWhenDisabled) {
+            int finalHorizontalPadding = 0;
+            setBackgroundResource(0);
+            ValueAnimator animator = ValueAnimator.ofInt(getPaddingLeft(), finalHorizontalPadding);
+            animator.addUpdateListener((ValueAnimator animation) -> {
+                int horizontalPadding = (Integer) animation.getAnimatedValue();
+                setPadding(/*left*/ horizontalPadding, getPaddingTop(),
+                        /*right*/ horizontalPadding, getPaddingBottom());
             });
+            animator.setDuration(ANIMATION_DURATION_MS);
+            animator.start();
+        } else {
+            setBackgroundResource(0);
         }
     }
 
-    @Override
-    public void onClick(View view) {
-        assert mHeader.isExpandable() : "onClick() is called on a non-expandable section header.";
-        mHeader.toggleHeader();
-        FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_TOGGLED_FEED);
-        SuggestionsMetrics.recordExpandableHeaderTapped(mHeader.isExpanded());
-        SuggestionsMetrics.recordArticlesListVisible();
-    }
-
-    /** @param header The {@link SectionHeader} that holds the data for this class. */
-    public void setHeader(SectionHeader header) {
-        mHeader = header;
-        if (mHeader == null) return;
-
-        // Set visuals with the menu view when present.
-        if (mHasMenu) {
-            updateVisuals();
-            return;
-        }
-
-        // Set visuals with the status view when no menu.
-        mStatusView.setVisibility(mHeader.isExpandable() ? View.VISIBLE : View.GONE);
-        updateVisuals();
-        setOnClickListener(mHeader.isExpandable() ? this : null);
-    }
-
-    /** Update the header view based on whether the header is expanded and its text contents. */
-    public void updateVisuals() {
-        if (mHeader == null) return;
-
-        mTitleView.setText(mHeader.getHeaderText());
-
-        if (mHeader.isExpandable()) {
-            if (!mHasMenu) {
-                mStatusView.setText(
-                        mHeader.isExpanded() ? R.string.hide_content : R.string.show_content);
-            }
-            if (mAnimatePaddingWhenDisabled) {
-                int finalHorizontalPadding = 0;
-                boolean isClosingHeader = !mHeader.isExpanded();
-                if (isClosingHeader) {
-                    // If closing header, add additional padding.
-                    finalHorizontalPadding = getResources().getDimensionPixelSize(
-                            R.dimen.feed_v2_header_menu_disabled_padding);
-                } else {
-                    // Otherwise, remove the background now.
-                    setBackgroundResource(0);
+    /** Collapse the header to indicate the section has been disabled. */
+    public void collapseHeader() {
+        if (mAnimatePaddingWhenDisabled) {
+            int finalHorizontalPadding = getResources().getDimensionPixelSize(
+                    R.dimen.feed_v2_header_menu_disabled_padding);
+            ValueAnimator animator = ValueAnimator.ofInt(getPaddingLeft(), finalHorizontalPadding);
+            animator.addUpdateListener((ValueAnimator animation) -> {
+                int horizontalPadding = (Integer) animation.getAnimatedValue();
+                setPadding(/*left*/ horizontalPadding, getPaddingTop(),
+                        /*right*/ horizontalPadding, getPaddingBottom());
+            });
+            animator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    // Add the hairline after animation.
+                    setBackgroundResource(R.drawable.hairline_border_card_background);
                 }
-                ValueAnimator animator =
-                        ValueAnimator.ofInt(getPaddingLeft(), finalHorizontalPadding);
-                animator.addUpdateListener((ValueAnimator animation) -> {
-                    int horizontalPadding = (Integer) animation.getAnimatedValue();
-                    setPadding(/*left*/ horizontalPadding, getPaddingTop(),
-                            /*right*/ horizontalPadding, getPaddingBottom());
-                });
-                animator.addListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        // If we closed the header, add the hairline after animation.
-                        if (isClosingHeader) {
-                            setBackgroundResource(R.drawable.hairline_border_card_background);
-                        }
-                    }
-                });
-                animator.setDuration(ANIMATION_DURATION_MS);
-                animator.start();
-            } else {
-                setBackgroundResource(
-                        mHeader.isExpanded() ? 0 : R.drawable.hairline_border_card_background);
-            }
+            });
+            animator.setDuration(ANIMATION_DURATION_MS);
+            animator.start();
+        } else {
+            setBackgroundResource(R.drawable.hairline_border_card_background);
         }
     }
 
@@ -228,21 +192,14 @@ public class SectionHeaderView extends LinearLayout implements View.OnClickListe
                         .build());
     }
 
-    private void displayMenu() {
+    private void displayMenu(ModelList listItems, ListMenu.Delegate listMenuDelegate) {
         FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_CLICKED_FEED_HEADER_MENU);
 
-        if (mMenuView == null) {
-            assert false : "No menu view to display the menu";
-            return;
-        }
-
-        ModelList listItems = mHeader.getMenuModelList();
         if (listItems == null) {
             assert false : "No list items model to display the menu";
             return;
         }
 
-        ListMenu.Delegate listMenuDelegate = mHeader.getListMenuDelegate();
         if (listMenuDelegate == null) {
             assert false : "No list menu delegate for the menu";
             return;

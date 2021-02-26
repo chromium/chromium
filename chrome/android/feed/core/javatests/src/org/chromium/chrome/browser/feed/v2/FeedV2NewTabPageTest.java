@@ -343,10 +343,8 @@ public class FeedV2NewTabPageTest {
         TextView headerStatusView = sectionHeaderView.findViewById(R.id.header_title);
 
         // Assert that the feed is expanded and that the header title text is correct.
-        Assert.assertTrue(mNtp.getCoordinatorForTesting()
-                                  .getMediatorForTesting()
-                                  .getSectionHeaderForTesting()
-                                  .isExpanded());
+        Assert.assertTrue(
+                mNtp.getCoordinatorForTesting().getSectionHeaderModel().isSectionEnabled());
         Assert.assertEquals(sectionHeaderView.getContext().getString(R.string.ntp_discover_on),
                 headerStatusView.getText());
 
@@ -354,10 +352,8 @@ public class FeedV2NewTabPageTest {
         toggleHeader(false);
 
         // Assert that the feed is collapsed and that the header title text is correct.
-        Assert.assertFalse(mNtp.getCoordinatorForTesting()
-                                   .getMediatorForTesting()
-                                   .getSectionHeaderForTesting()
-                                   .isExpanded());
+        Assert.assertFalse(
+                mNtp.getCoordinatorForTesting().getSectionHeaderModel().isSectionEnabled());
         Assert.assertEquals(sectionHeaderView.getContext().getString(R.string.ntp_discover_off),
                 headerStatusView.getText());
     }

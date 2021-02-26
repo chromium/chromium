@@ -29,7 +29,6 @@ import static org.junit.Assert.assertEquals;
 
 import static org.chromium.chrome.browser.tabmodel.TestTabModelDirectory.M26_GOOGLE_COM;
 import static org.chromium.chrome.test.util.ViewUtils.onViewWaiting;
-import static org.chromium.chrome.test.util.ViewUtils.waitForView;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -91,7 +90,6 @@ import org.chromium.chrome.browser.compositor.layouts.StaticLayout;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.feed.FeedV2;
-import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -1286,27 +1284,15 @@ public class InstantStartTest {
      * @param expanded Whether the header should be expanded.
      */
     private void toggleHeader(boolean expanded) {
-        if (FeedFeatures.isV2Enabled()) {
-            onView(allOf(instanceOf(RecyclerView.class), withId(R.id.feed_stream_recycler_view)))
-                    .perform(RecyclerViewActions.scrollToPosition(ARTICLE_SECTION_HEADER_POSITION));
-            onView(withId(R.id.header_menu)).perform(click());
+        onView(allOf(instanceOf(RecyclerView.class), withId(R.id.feed_stream_recycler_view)))
+                .perform(RecyclerViewActions.scrollToPosition(ARTICLE_SECTION_HEADER_POSITION));
+        onView(withId(R.id.header_menu)).perform(click());
 
-            onView(withText(expanded ? R.string.ntp_turn_on_feed : R.string.ntp_turn_off_feed))
-                    .perform(click());
+        onView(withText(expanded ? R.string.ntp_turn_on_feed : R.string.ntp_turn_off_feed))
+                .perform(click());
 
-            onView(withText(expanded ? R.string.ntp_discover_on : R.string.ntp_discover_off))
-                    .check(matches(isDisplayed()));
-        } else {
-            onView(allOf(instanceOf(RecyclerView.class), withId(R.id.feed_stream_recycler_view)))
-                    .perform(RecyclerViewActions.scrollToPosition(ARTICLE_SECTION_HEADER_POSITION),
-                            RecyclerViewActions.actionOnItemAtPosition(
-                                    ARTICLE_SECTION_HEADER_POSITION, click()));
-
-            waitForView((ViewGroup) mActivityTestRule.getActivity().findViewById(
-                                R.id.feed_stream_recycler_view),
-                    allOf(withId(R.id.header_status),
-                            withText(expanded ? R.string.hide_content : R.string.show_content)));
-        }
+        onView(withText(expanded ? R.string.ntp_discover_on : R.string.ntp_discover_off))
+                .check(matches(isDisplayed()));
     }
 
     public static Matcher<View> matchesBackgroundAlpha(final int expectedAlpha) {

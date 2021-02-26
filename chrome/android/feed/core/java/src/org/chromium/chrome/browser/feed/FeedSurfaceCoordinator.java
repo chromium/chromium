@@ -40,7 +40,10 @@ import org.chromium.chrome.browser.ntp.ScrollListener;
 import org.chromium.chrome.browser.ntp.ScrollableContainerDelegate;
 import org.chromium.chrome.browser.ntp.SnapScrollHelper;
 import org.chromium.chrome.browser.ntp.cards.promo.enhanced_protection.EnhancedProtectionPromoController;
+import org.chromium.chrome.browser.ntp.snippets.SectionHeaderList;
+import org.chromium.chrome.browser.ntp.snippets.SectionHeaderListMcp;
 import org.chromium.chrome.browser.ntp.snippets.SectionHeaderView;
+import org.chromium.chrome.browser.ntp.snippets.SectionHeaderViewBinder;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -125,7 +128,9 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     // Used when Feed is enabled.
     private @Nullable Stream mStream;
     private @Nullable StreamLifecycleManager mStreamLifecycleManager;
+    private @Nullable SectionHeaderList mSectionHeaderModel;
     private @Nullable SectionHeaderView mSectionHeaderView;
+    private @Nullable SectionHeaderListMcp mSectionHeaderChangeProcessor;
     private @Nullable PersonalizedSigninPromoView mSigninPromoView;
     private @Nullable ViewResizer mStreamViewResizer;
     private @Nullable NativePageNavigationDelegate mPageNavigationDelegate;
@@ -285,7 +290,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         mActivity = activity;
         mSnackbarManager = snackbarManager;
         mNtpHeader = ntpHeader;
-        mSectionHeaderView = sectionHeaderView;
         mShowDarkBackground = showDarkBackground;
         mIsPlaceholderShownInitially = isPlaceholderShownInitially;
         mDelegate = delegate;
@@ -312,6 +316,15 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
                     new EnhancedProtectionPromoController(mActivity, mProfile);
         }
 
+        // MVC setup for feed header.
+        mSectionHeaderView = sectionHeaderView;
+        if (mSectionHeaderView != null) {
+            mSectionHeaderModel = new SectionHeaderList();
+            SectionHeaderViewBinder binder = new SectionHeaderViewBinder();
+            mSectionHeaderChangeProcessor =
+                    new SectionHeaderListMcp(mSectionHeaderModel, mSectionHeaderView, binder);
+        }
+
         // Mediator should be created before any Stream changes.
         mMediator = new FeedSurfaceMediator(this, snapScrollHelper, mPageNavigationDelegate);
 
@@ -330,6 +343,9 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
             mEnhancedProtectionPromoController.destroy();
         }
         mScrollableContainerDelegate = null;
+        if (mSectionHeaderChangeProcessor != null) {
+            mSectionHeaderChangeProcessor.destroy();
+        }
     }
 
     @Override
@@ -498,6 +514,13 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         return mSectionHeaderView;
     }
 
+    /** @return The {@link SectionHeaderList} model for the Feed section header. */
+    // TODO(chili): Make this package-private when we remove v2 folder.
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public SectionHeaderList getSectionHeaderModel() {
+        return mSectionHeaderModel;
+    }
+
     /** @return The {@link PersonalizedSigninPromoView} for this class. */
     PersonalizedSigninPromoView getSigninPromoView() {
         if (mSigninPromoView == null) {
@@ -632,7 +655,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
             }
             @Override
             public boolean isFeedExpanded() {
-                return mMediator.isExpanded();
+                return mSectionHeaderModel.isSectionEnabled();
             }
             @Override
             public boolean isSignedIn() {

@@ -805,8 +805,6 @@ chrome_java_resources = [
   "java/res/layout/new_tab_page_feed_v2_expandable_header.xml",
   "java/res/layout/new_tab_page_incognito.xml",
   "java/res/layout/new_tab_page_layout.xml",
-  "java/res/layout/new_tab_page_snippets_expandable_header.xml",
-  "java/res/layout/new_tab_page_snippets_expandable_header_with_menu.xml",
   "java/res/layout/new_tab_page_tile_grid_placeholder.xml",
   "java/res/layout/omnibox_answer_suggestion.xml",
   "java/res/layout/omnibox_basic_suggestion.xml",
