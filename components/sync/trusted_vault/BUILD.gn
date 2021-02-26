@@ -8,8 +8,6 @@ static_library("trusted_vault") {
     "download_keys_response_handler.h",
     "proto_string_bytes_conversion.cc",
     "proto_string_bytes_conversion.h",
-    "register_authentication_factor_request.cc",
-    "register_authentication_factor_request.h",
     "securebox.cc",
     "securebox.h",
     "standalone_trusted_vault_backend.cc",
