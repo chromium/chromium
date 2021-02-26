@@ -1040,6 +1040,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   UICollectionView* collectionView = self.collectionView;
 
+  // Make sure the collection view isn't in the middle of a transition.
+  DCHECK(![collectionView.collectionViewLayout
+      isKindOfClass:[UICollectionViewTransitionLayout class]]);
   if (panHandler.currentState == ViewRevealState::Revealed) {
     collectionView.collectionViewLayout = self.gridLayout;
     self.currentLayout = self.gridLayout;
@@ -1059,6 +1062,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   UICollectionView* collectionView = self.collectionView;
   FlowLayout* gridLayout = self.gridLayout;
 
+  // Make sure the collection view isn't in the middle of a transition.
+  DCHECK(![collectionView.collectionViewLayout
+      isKindOfClass:[UICollectionViewTransitionLayout class]]);
   collectionView.collectionViewLayout = gridLayout;
   self.currentLayout = gridLayout;
 
