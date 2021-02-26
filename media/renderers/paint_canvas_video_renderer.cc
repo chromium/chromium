@@ -647,7 +647,12 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
 }
 
 // Valid gl texture internal format that can try to use direct uploading path.
-bool ValidFormatForDirectUploading(GrGLenum format, unsigned int type) {
+bool ValidFormatForDirectUploading(
+    viz::RasterContextProvider* raster_context_provider,
+    GrGLenum format,
+    unsigned int type) {
+  const gpu::Capabilities& context_caps =
+      raster_context_provider->ContextCapabilities();
   switch (format) {
     case GL_RGBA:
       return type == GL_UNSIGNED_BYTE || type == GL_UNSIGNED_SHORT_4_4_4_4;
@@ -660,7 +665,7 @@ bool ValidFormatForDirectUploading(GrGLenum format, unsigned int type) {
     case GL_RGB8:
     case GL_RGB10_A2:
     case GL_RGBA4:
-      return true;
+      return context_caps.major_version >= 3;
     default:
       return false;
   }
@@ -1405,23 +1410,19 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     if (!gr_context &&
         !raster_context_provider->ContextCapabilities().supports_oop_raster)
       return false;
-// TODO(crbug.com/1108154): Expand this uploading path to macOS, linux
-// chromeOS after collecting perf data and resolve failure cases.
-#if defined(OS_WIN)
     // Since skia always produces premultiply alpha outputs,
     // trying direct uploading path when video format is opaque or premultiply
     // alpha been requested. And dst texture mipLevel must be 0.
     // TODO(crbug.com/1155003): Figure out whether premultiply options here are
     // accurate.
     if ((media::IsOpaque(video_frame->format()) || premultiply_alpha) &&
-        level == 0) {
+        level == 0 && video_frame->NumTextures() > 1) {
       if (UploadVideoFrameToGLTexture(raster_context_provider, destination_gl,
                                       video_frame, target, texture,
                                       internal_format, format, type, flip_y)) {
         return true;
       }
     }
-#endif  //  defined(OS_WIN)
 
     if (!UpdateLastImage(video_frame, raster_context_provider,
                          true /* allow_wrap_texture */)) {
@@ -1503,7 +1504,8 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
     return false;
   }
 
-  if (!ValidFormatForDirectUploading(static_cast<GLenum>(internal_format),
+  if (!ValidFormatForDirectUploading(raster_context_provider,
+                                     static_cast<GLenum>(internal_format),
                                      type)) {
     return false;
   }
