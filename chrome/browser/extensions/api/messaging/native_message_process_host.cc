@@ -84,7 +84,7 @@ NativeMessageProcessHost::~NativeMessageProcessHost() {
 #if defined(OS_MAC)
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(&base::EnsureProcessTerminated, Passed(&process_)));
+        base::BindOnce(&base::EnsureProcessTerminated, std::move(process_)));
 #else
     base::EnsureProcessTerminated(std::move(process_));
 #endif

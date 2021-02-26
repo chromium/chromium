@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/big_endian.h"
@@ -556,7 +557,7 @@ void H264VideoToolboxEncoder::CompressionCallback(void* encoder_opaque,
   encoder->cast_environment_->GetTaskRunner(CastEnvironment::MAIN)
       ->PostTask(FROM_HERE,
                  base::BindOnce(std::move(request->frame_encoded_callback),
-                                base::Passed(&encoded_frame)));
+                                std::move(encoded_frame)));
 }
 
 }  // namespace cast
