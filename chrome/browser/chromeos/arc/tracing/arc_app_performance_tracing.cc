@@ -124,6 +124,7 @@ ArcAppPerformanceTracing* ArcAppPerformanceTracing::GetForBrowserContext(
   return ArcAppPerformanceTracingFactory::GetForBrowserContext(context);
 }
 
+// static
 ArcAppPerformanceTracing*
 ArcAppPerformanceTracing::GetForBrowserContextForTesting(
     content::BrowserContext* context) {
