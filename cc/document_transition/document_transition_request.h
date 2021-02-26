@@ -37,17 +37,21 @@ class CC_EXPORT DocumentTransitionRequest {
 
   DocumentTransitionRequest& operator=(DocumentTransitionRequest&) = delete;
 
-  // The callback is run when the request is committed from the main thread onto
-  // the compositor thread. This is used to indicate that the request has been
-  // submitted for processing and that script may now change the page in some
-  // way. In other words, this callback would resolve the prepare promise that
-  // script may be waiting for.
-  base::OnceClosure TakeCommitCallback() { return std::move(commit_callback_); }
+  // The callback is run when the request is sufficiently processed for us to be
+  // able to begin the next step in the animation. In other words, when this
+  // callback is invoked it can resolve a script promise that is gating this
+  // step.
+  base::OnceClosure TakeFinishedCallback() {
+    return std::move(commit_callback_);
+  }
 
   // This constructs a viz directive. Note that repeated calls to this function
   // would create a new sequence id for the directive, which means it would be
   // processed again by viz.
   viz::CompositorFrameTransitionDirective ConstructDirective() const;
+
+  // Returns the sequence id for this request.
+  uint32_t sequence_id() const { return sequence_id_; }
 
   // Testing / debugging functionality.
   std::string ToString() const;
@@ -64,6 +68,7 @@ class CC_EXPORT DocumentTransitionRequest {
   const Effect effect_ = Effect::kNone;
   const base::TimeDelta duration_;
   base::OnceClosure commit_callback_;
+  const uint32_t sequence_id_;
 
   static uint32_t s_next_sequence_id_;
 };

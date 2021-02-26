@@ -614,6 +614,8 @@ void ProxyImpl::ScheduledActionSendBeginMainFrame(
   begin_main_frame_state->commit_data = host_impl_->ProcessCompositorDeltas();
   begin_main_frame_state->completed_image_decode_requests =
       host_impl_->TakeCompletedImageDecodeRequests();
+  begin_main_frame_state->finished_transition_request_sequence_ids =
+      host_impl_->TakeFinishedTransitionRequestSequenceIds();
   begin_main_frame_state->mutator_events = host_impl_->TakeMutatorEvents();
   begin_main_frame_state->active_sequence_trackers =
       host_impl_->FrameSequenceTrackerActiveTypes();

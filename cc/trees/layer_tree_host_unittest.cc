@@ -9477,6 +9477,7 @@ class LayerTreeHostTestDocumentTransitionsPropagatedToMetadata
       const viz::CompositorFrame& frame) override {
     ASSERT_EQ(2u, frame.metadata.transition_directives.size());
     const auto& save = frame.metadata.transition_directives[0];
+    submitted_sequence_ids_.push_back(save.sequence_id());
 
     EXPECT_EQ(save.type(),
               viz::CompositorFrameTransitionDirective::Type::kSave);
@@ -9488,12 +9489,18 @@ class LayerTreeHostTestDocumentTransitionsPropagatedToMetadata
     EXPECT_GT(animate.sequence_id(), save.sequence_id());
     EXPECT_EQ(animate.type(),
               viz::CompositorFrameTransitionDirective::Type::kAnimate);
+    submitted_sequence_ids_.push_back(animate.sequence_id());
+  }
 
+  void DidReceiveCompositorFrameAck() override {
+    layer_tree_host()->NotifyTransitionRequestsFinished(
+        submitted_sequence_ids_);
     EndTest();
   }
 
   void AfterTest() override { EXPECT_EQ(2, num_lambda_calls_); }
 
+  std::vector<uint32_t> submitted_sequence_ids_;
   int num_lambda_calls_ = 0;
 };
 

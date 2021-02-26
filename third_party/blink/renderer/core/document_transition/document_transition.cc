@@ -105,7 +105,7 @@ ScriptPromise DocumentTransition::prepare(
   pending_request_ = Request::CreatePrepare(
       effect_, duration_,
       ConvertToBaseOnceCallback(CrossThreadBindOnce(
-          &DocumentTransition::NotifyPrepareCommitted,
+          &DocumentTransition::NotifyPrepareFinished,
           WrapCrossThreadWeakPersistent(this), prepare_sequence_id_)));
 
   NotifyHasChangesToCommit();
@@ -118,7 +118,7 @@ void DocumentTransition::start() {
 
   state_ = State::kStarted;
   pending_request_ = Request::CreateStart(ConvertToBaseOnceCallback(
-      CrossThreadBindOnce(&DocumentTransition::NotifyStartCommitted,
+      CrossThreadBindOnce(&DocumentTransition::NotifyStartFinished,
                           WrapCrossThreadWeakPersistent(this))));
   NotifyHasChangesToCommit();
 }
@@ -135,9 +135,13 @@ void DocumentTransition::NotifyHasChangesToCommit() {
   document_->View()->SetPaintArtifactCompositorNeedsUpdate();
 }
 
-void DocumentTransition::NotifyPrepareCommitted(uint32_t sequence_id) {
+void DocumentTransition::NotifyPrepareFinished(uint32_t sequence_id) {
   // This notification is for a different sequence id.
   if (sequence_id != prepare_sequence_id_)
+    return;
+
+  // We could have detached the resolver if the execution context was destroyed.
+  if (!prepare_promise_resolver_)
     return;
 
   DCHECK(state_ == State::kPreparing);
@@ -148,9 +152,7 @@ void DocumentTransition::NotifyPrepareCommitted(uint32_t sequence_id) {
   state_ = State::kPrepared;
 }
 
-void DocumentTransition::NotifyStartCommitted() {
-  // TODO(vmpstr): This should only be cleared when the animation is actually
-  // over which means we need to plumb the callback all the way to viz.
+void DocumentTransition::NotifyStartFinished() {
   state_ = State::kIdle;
 }
 

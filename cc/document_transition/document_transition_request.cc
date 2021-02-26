@@ -83,11 +83,14 @@ DocumentTransitionRequest::DocumentTransitionRequest(
     : type_(Type::kSave),
       effect_(effect),
       duration_(duration),
-      commit_callback_(std::move(commit_callback)) {}
+      commit_callback_(std::move(commit_callback)),
+      sequence_id_(s_next_sequence_id_++) {}
 
 DocumentTransitionRequest::DocumentTransitionRequest(
     base::OnceClosure commit_callback)
-    : type_(Type::kAnimate), commit_callback_(std::move(commit_callback)) {}
+    : type_(Type::kAnimate),
+      commit_callback_(std::move(commit_callback)),
+      sequence_id_(s_next_sequence_id_++) {}
 
 DocumentTransitionRequest::~DocumentTransitionRequest() = default;
 
@@ -99,15 +102,16 @@ DocumentTransitionRequest::ConstructDirective() const {
       duration_ < viz::CompositorFrameTransitionDirective::kMaxDuration
           ? duration_
           : viz::CompositorFrameTransitionDirective::kMaxDuration;
-  return viz::CompositorFrameTransitionDirective(s_next_sequence_id_++, type_,
-                                                 effect_, clamped_duration);
+  return viz::CompositorFrameTransitionDirective(sequence_id_, type_, effect_,
+                                                 clamped_duration);
 }
 
 std::string DocumentTransitionRequest::ToString() const {
   std::ostringstream str;
   str << "[type: " << TypeToString(type_)
       << " effect: " << EffectToString(effect_)
-      << " duration: " << duration_.InMillisecondsF() << "ms]";
+      << " duration: " << duration_.InMillisecondsF() << "ms"
+      << " sequence_id: " << sequence_id_ << "]";
   return str.str();
 }
 

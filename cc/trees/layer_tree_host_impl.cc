@@ -2163,8 +2163,8 @@ void LayerTreeHostImpl::OnDraw(const gfx::Transform& transform,
 
 void LayerTreeHostImpl::OnCompositorFrameTransitionDirectiveProcessed(
     uint32_t sequence_id) {
-  // TODO(vmpstr): Tie this callback to resolving a promise that spawned the
-  // directive.
+  finished_transition_request_sequence_ids_.push_back(sequence_id);
+  SetNeedsCommit();
 }
 
 void LayerTreeHostImpl::OnCanDrawStateChangedForTree() {
@@ -3529,6 +3529,13 @@ std::unique_ptr<MutatorEvents> LayerTreeHostImpl::TakeMutatorEvents() {
   std::swap(events, mutator_events_);
   mutator_host_->TakeTimeUpdatedEvents(events.get());
   return events;
+}
+
+std::vector<uint32_t>
+LayerTreeHostImpl::TakeFinishedTransitionRequestSequenceIds() {
+  std::vector<uint32_t> result;
+  result.swap(finished_transition_request_sequence_ids_);
+  return result;
 }
 
 void LayerTreeHostImpl::ClearCaches() {

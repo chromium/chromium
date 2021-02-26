@@ -212,6 +212,9 @@ void SingleThreadProxy::DoCommit(const viz::BeginFrameArgs& commit_args) {
     IssueImageDecodeFinishedCallbacks();
     host_impl_->CommitComplete();
 
+    layer_tree_host_->NotifyTransitionRequestsFinished(
+        host_impl_->TakeFinishedTransitionRequestSequenceIds());
+
     // Commit goes directly to the active tree, but we need to synchronously
     // "activate" the tree still during commit to satisfy any potential
     // SetNextCommitWaitsForActivation calls.  Unfortunately, the tree
@@ -516,6 +519,9 @@ void SingleThreadProxy::NotifyImageDecodeRequestFinished() {
     DebugScopedSetImplThread impl(task_runner_provider_);
 
     IssueImageDecodeFinishedCallbacks();
+
+    layer_tree_host_->NotifyTransitionRequestsFinished(
+        host_impl_->TakeFinishedTransitionRequestSequenceIds());
     return;
   }
   SetNeedsCommitOnImplThread();

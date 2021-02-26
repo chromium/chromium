@@ -629,6 +629,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void RecordEndOfFrameMetrics(base::TimeTicks frame_begin_time,
                                ActiveFrameSequenceTrackers trackers);
   void NotifyThroughputTrackerResults(CustomTrackerResults results);
+  void NotifyTransitionRequestsFinished(
+      const std::vector<uint32_t>& sequence_ids);
 
   LayerTreeHostClient* client() { return client_; }
   LayerTreeHostSchedulingClient* scheduling_client() {
@@ -978,10 +980,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   std::vector<std::unique_ptr<DocumentTransitionRequest>>
       document_transition_requests_;
 
-  // A list of callbacks that need to be invoked in commit callback,
-  // representing document transitions that have been committed to
-  // LayerTreeImpl.
-  std::vector<base::OnceClosure> committed_document_transition_callbacks_;
+  // A list of callbacks that need to be invoked when they are processed.
+  base::flat_map<uint32_t, base::OnceClosure> document_transition_callbacks_;
 
   // Used to vend weak pointers to LayerTreeHost to ScopedDeferMainFrameUpdate
   // objects.

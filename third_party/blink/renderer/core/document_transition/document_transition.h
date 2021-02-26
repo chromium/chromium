@@ -53,8 +53,8 @@ class CORE_EXPORT DocumentTransition
 
   void NotifyHasChangesToCommit();
 
-  void NotifyPrepareCommitted(uint32_t sequence_id);
-  void NotifyStartCommitted();
+  void NotifyPrepareFinished(uint32_t sequence_id);
+  void NotifyStartFinished();
 
   void ParseAndSetTransitionParameters(const DocumentTransitionInit* params);
 

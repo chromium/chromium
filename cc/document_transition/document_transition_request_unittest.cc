@@ -20,9 +20,9 @@ TEST(DocumentTransitionRequestTest, PrepareRequest) {
       base::TimeDelta::FromMilliseconds(123), std::move(callback));
 
   EXPECT_FALSE(called);
-  request->TakeCommitCallback().Run();
+  request->TakeFinishedCallback().Run();
   EXPECT_TRUE(called);
-  EXPECT_TRUE(request->TakeCommitCallback().is_null());
+  EXPECT_TRUE(request->TakeFinishedCallback().is_null());
 
   auto directive = request->ConstructDirective();
   EXPECT_GT(directive.sequence_id(), 0u);
@@ -32,7 +32,7 @@ TEST(DocumentTransitionRequestTest, PrepareRequest) {
             directive.type());
 
   auto duplicate = request->ConstructDirective();
-  EXPECT_GT(duplicate.sequence_id(), directive.sequence_id());
+  EXPECT_EQ(duplicate.sequence_id(), directive.sequence_id());
   EXPECT_EQ(duplicate.effect(), directive.effect());
   EXPECT_EQ(duplicate.duration(), directive.duration());
   EXPECT_EQ(duplicate.type(), directive.type());
@@ -60,9 +60,9 @@ TEST(DocumentTransitionRequestTest, StartRequest) {
   auto request = DocumentTransitionRequest::CreateStart(std::move(callback));
 
   EXPECT_FALSE(called);
-  request->TakeCommitCallback().Run();
+  request->TakeFinishedCallback().Run();
   EXPECT_TRUE(called);
-  EXPECT_TRUE(request->TakeCommitCallback().is_null());
+  EXPECT_TRUE(request->TakeFinishedCallback().is_null());
 
   auto directive = request->ConstructDirective();
   EXPECT_GT(directive.sequence_id(), 0u);

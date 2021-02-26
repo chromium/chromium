@@ -33,7 +33,7 @@ class DocumentTransitionTest : public RenderingTest,
     for (auto& request : GetChromeClient()
                              .layer_tree_host()
                              ->TakeDocumentTransitionRequestsForTesting()) {
-      request->TakeCommitCallback().Run();
+      request->TakeFinishedCallback().Run();
     }
   }
 

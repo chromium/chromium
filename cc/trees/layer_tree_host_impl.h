@@ -791,6 +791,9 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // Returns mutator events to be handled by BeginMainFrame.
   std::unique_ptr<MutatorEvents> TakeMutatorEvents();
 
+  // Returns all of the transition request sequence ids that were finished.
+  std::vector<uint32_t> TakeFinishedTransitionRequestSequenceIds();
+
   void ClearCaches();
 
   void UpdateImageDecodingHints(
@@ -1253,6 +1256,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // When enabled, calculates which frame sinks can be throttled based on
   // some pre-defined criteria.
   ThrottleDecider throttle_decider_;
+
+  std::vector<uint32_t> finished_transition_request_sequence_ids_;
 
   // Must be the last member to ensure this is destroyed first in the
   // destruction order and invalidates all weak pointers.
