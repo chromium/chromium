@@ -40,6 +40,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/skia_util.h"
 
 namespace chrome_pdf {
@@ -137,6 +138,17 @@ void PdfViewPluginBase::ScrollToY(int y_screen_coords) {
   base::Value message(base::Value::Type::DICTIONARY);
   message.SetStringKey("type", "setScrollPosition");
   message.SetDoubleKey("y", y_scroll_pos);
+  SendMessage(std::move(message));
+}
+
+void PdfViewPluginBase::ScrollBy(const gfx::Vector2d& delta) {
+  const float x_delta = delta.x() / device_scale_;
+  const float y_delta = delta.y() / device_scale_;
+
+  base::Value message(base::Value::Type::DICTIONARY);
+  message.SetStringKey("type", "scrollBy");
+  message.SetDoubleKey("x", x_delta);
+  message.SetDoubleKey("y", y_delta);
   SendMessage(std::move(message));
 }
 

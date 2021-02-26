@@ -199,8 +199,6 @@ void PdfViewWebPlugin::DidFailLoading(const blink::WebURLError& error) {}
 
 void PdfViewWebPlugin::DidScroll(const gfx::Vector2d& offset) {}
 
-void PdfViewWebPlugin::ScrollBy(const gfx::Vector2d& scroll_delta) {}
-
 void PdfViewWebPlugin::ScrollToPage(int page) {}
 
 void PdfViewWebPlugin::NavigateTo(const std::string& url,

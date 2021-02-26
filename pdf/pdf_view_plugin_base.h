@@ -53,6 +53,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void Invalidate(const gfx::Rect& rect) override;
   void ScrollToX(int x_screen_coords) override;
   void ScrollToY(int y_screen_coords) override;
+  void ScrollBy(const gfx::Vector2d& delta) override;
   SkColor GetBackgroundColor() override;
   void SetIsSelecting(bool is_selecting) override;
 

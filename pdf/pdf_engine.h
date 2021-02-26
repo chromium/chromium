@@ -140,7 +140,7 @@ class PDFEngine {
     virtual void ScrollToY(int y_screen_coords) {}
 
     // Scroll by a given delta relative to the current position.
-    virtual void ScrollBy(const gfx::Vector2d& scroll_delta) {}
+    virtual void ScrollBy(const gfx::Vector2d& delta) {}
 
     // Scroll to zero-based |page|.
     virtual void ScrollToPage(int page) {}

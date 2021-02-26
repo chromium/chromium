@@ -155,10 +155,6 @@ constexpr char kJSPrintPreviewPageCount[] = "pageCount";
 constexpr char kJSLoadPreviewPageType[] = "loadPreviewPage";
 constexpr char kJSPreviewPageUrl[] = "url";
 constexpr char kJSPreviewPageIndex[] = "index";
-// Scroll by (Plugin -> Page)
-constexpr char kJSScrollByType[] = "scrollBy";
-constexpr char kJSPositionX[] = "x";
-constexpr char kJSPositionY[] = "y";
 // Navigate to the given URL (Plugin -> Page)
 constexpr char kJSNavigateType[] = "navigate";
 constexpr char kJSNavigateUrl[] = "url";
@@ -1057,14 +1053,6 @@ pp::VarArray OutOfProcessInstance::GetDocumentAttachments() {
 void OutOfProcessInstance::DidScroll(const gfx::Vector2d& offset) {
   if (!image_data().drawsNothing())
     paint_manager().ScrollRect(available_area(), offset);
-}
-
-void OutOfProcessInstance::ScrollBy(const gfx::Vector2d& scroll_delta) {
-  pp::VarDictionary position;
-  position.Set(kType, kJSScrollByType);
-  position.Set(kJSPositionX, pp::Var(scroll_delta.x() / device_scale()));
-  position.Set(kJSPositionY, pp::Var(scroll_delta.y() / device_scale()));
-  PostMessage(position);
 }
 
 void OutOfProcessInstance::ScrollToPage(int page) {
