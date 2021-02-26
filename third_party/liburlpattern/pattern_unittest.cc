@@ -36,6 +36,10 @@ TEST(PatternRegexTest, Name) {
   RunRegexTest(":foo", R"(^([^\/#\?]+?)[\/#\?]?$)", {"foo"});
 }
 
+TEST(PatternRegexTest, NameWithUnicode) {
+  RunRegexTest(":fooßar", R"(^([^\/#\?]+?)[\/#\?]?$)", {"fooßar"});
+}
+
 TEST(PatternRegexTest, NameWithOptionalModifier) {
   RunRegexTest(":foo?", R"(^([^\/#\?]+?)?[\/#\?]?$)", {"foo"});
 }

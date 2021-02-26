@@ -121,20 +121,6 @@ bool IsAbsolutePathname(const String& pathname, ValueType type) {
   return false;
 }
 
-// Utility function to validate that a pattern value contains only ASCII.
-void ValidatePatternEncoding(const String& pattern,
-                             StringView label,
-                             ExceptionState& exception_state) {
-  if (pattern.ContainsOnlyASCIIOrEmpty())
-    return;
-
-  // TODO: Consider if we should canonicalize patterns instead.  See:
-  //       https://github.com/WICG/urlpattern/issues/33
-  exception_state.ThrowTypeError("Illegal character in " + label +
-                                 " pattern '" + pattern +
-                                 "'. Patterns must be URL encoded ASCII.");
-}
-
 String StringFromCanonOutput(const url::CanonOutput& output,
                              url::Component component) {
   return String::FromUTF8(output.data() + component.begin, component.len);
@@ -147,7 +133,6 @@ String CanonicalizeProtocol(const String& input,
                             ValueType type,
                             ExceptionState& exception_state) {
   if (type == ValueType::kPattern) {
-    ValidatePatternEncoding(input, "protocol", exception_state);
     return input;
   }
 
@@ -183,12 +168,6 @@ void CanonicalizeUsernameAndPassword(const String& username,
                                      String& password_out,
                                      ExceptionState& exception_state) {
   if (type == ValueType::kPattern) {
-    ValidatePatternEncoding(username, "username", exception_state);
-    if (exception_state.HadException())
-      return;
-    ValidatePatternEncoding(password, "password", exception_state);
-    if (exception_state.HadException())
-      return;
     username_out = username;
     password_out = password;
     return;
@@ -239,7 +218,6 @@ String CanonicalizeHostname(const String& input,
                             ValueType type,
                             ExceptionState& exception_state) {
   if (type == ValueType::kPattern) {
-    ValidatePatternEncoding(input, "hostname", exception_state);
     return input;
   }
 
@@ -262,7 +240,6 @@ String CanonicalizePort(const String& input,
                         const String& protocol,
                         ExceptionState& exception_state) {
   if (type == ValueType::kPattern) {
-    ValidatePatternEncoding(input, "port", exception_state);
     return input;
   }
 
@@ -295,7 +272,6 @@ String CanonicalizePathname(const String& input,
                             ValueType type,
                             ExceptionState& exception_state) {
   if (type == ValueType::kPattern) {
-    ValidatePatternEncoding(input, "pathname", exception_state);
     return input;
   }
 
@@ -333,7 +309,6 @@ String CanonicalizeSearch(const String& input,
                           ValueType type,
                           ExceptionState& exception_state) {
   if (type == ValueType::kPattern) {
-    ValidatePatternEncoding(input, "search", exception_state);
     return input;
   }
 
@@ -359,7 +334,6 @@ String CanonicalizeHash(const String& input,
                         ValueType type,
                         ExceptionState& exception_state) {
   if (type == ValueType::kPattern) {
-    ValidatePatternEncoding(input, "hash", exception_state);
     return input;
   }
 
@@ -632,8 +606,7 @@ URLPattern::Component* URLPattern::CompilePattern(
   wtf_name_list.ReserveInitialCapacity(
       static_cast<wtf_size_t>(name_list.size()));
   for (const auto& name : name_list) {
-    DCHECK(base::IsStringASCII(name));
-    wtf_name_list.push_back(String(name.data(), name.size()));
+    wtf_name_list.push_back(String::FromUTF8(name.data(), name.size()));
   }
 
   return MakeGarbageCollected<URLPattern::Component>(std::move(regexp),

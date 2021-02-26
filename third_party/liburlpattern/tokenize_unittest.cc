@@ -136,8 +136,64 @@ TEST(TokenizeTest, NameWithZeroLength) {
                   absl::InvalidArgumentError("Missing parameter name"));
 }
 
-TEST(TokenizeTest, NameWithInvalidChar) {
-  RunTokenizeTest("/:fooßar", absl::InvalidArgumentError("Invalid character"));
+TEST(TokenizeTest, NameWithUnicodeChar) {
+  std::vector<Token> expected_tokens = {
+      Token(TokenType::kChar, 0, "/"),
+      Token(TokenType::kName, 1, "fooßar"),
+      Token(TokenType::kEnd, 9, absl::string_view()),
+  };
+  RunTokenizeTest("/:fooßar", expected_tokens);
+}
+
+TEST(TokenizeTest, NameWithSpaceFirstChar) {
+  RunTokenizeTest("/: bad",
+                  absl::InvalidArgumentError("Missing parameter name"));
+}
+
+TEST(TokenizeTest, NameWithDollarFirst) {
+  std::vector<Token> expected_tokens = {
+      Token(TokenType::kChar, 0, "/"),
+      Token(TokenType::kName, 1, "$foo"),
+      Token(TokenType::kEnd, 6, absl::string_view()),
+  };
+  RunTokenizeTest("/:$foo", expected_tokens);
+}
+
+TEST(TokenizeTest, NameWithDollarLater) {
+  std::vector<Token> expected_tokens = {
+      Token(TokenType::kChar, 0, "/"),
+      Token(TokenType::kName, 1, "foo$"),
+      Token(TokenType::kEnd, 6, absl::string_view()),
+  };
+  RunTokenizeTest("/:foo$", expected_tokens);
+}
+
+TEST(TokenizeTest, NameWithUnderscoreFirst) {
+  std::vector<Token> expected_tokens = {
+      Token(TokenType::kChar, 0, "/"),
+      Token(TokenType::kName, 1, "_foo"),
+      Token(TokenType::kEnd, 6, absl::string_view()),
+  };
+  RunTokenizeTest("/:_foo", expected_tokens);
+}
+
+TEST(TokenizeTest, NameWithUnderscoreLater) {
+  std::vector<Token> expected_tokens = {
+      Token(TokenType::kChar, 0, "/"),
+      Token(TokenType::kName, 1, "foo_"),
+      Token(TokenType::kEnd, 6, absl::string_view()),
+  };
+  RunTokenizeTest("/:foo_", expected_tokens);
+}
+
+TEST(TokenizeTest, NameFollowedByEscapedChar) {
+  std::vector<Token> expected_tokens = {
+      Token(TokenType::kChar, 0, "/"),
+      Token(TokenType::kName, 1, "foo"),
+      Token(TokenType::kEscapedChar, 5, ":"),
+      Token(TokenType::kEnd, 7, absl::string_view()),
+  };
+  RunTokenizeTest("/:foo\\:", expected_tokens);
 }
 
 TEST(TokenizeTest, NameAndFileExtension) {

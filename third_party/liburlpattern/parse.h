@@ -17,9 +17,10 @@ namespace liburlpattern {
 class Pattern;
 
 // Parse a pattern string and return the result.  The input |pattern| must
-// consist of ASCII characters.  Any non-ASCII characters should be UTF-8
-// encoded and % escaped, similar to URLs, prior to calling this function.
-// An |options| value may be provided to override default behavior.
+// consist of UTF-8 characters.  Currently only group names may actually
+// contain non-ASCII characters, however.  Unicode characters in other parts
+// of the pattern will cause an error to be returned.  An |options| value may
+// be provided to override default behavior.
 COMPONENT_EXPORT(LIBURLPATTERN)
 absl::StatusOr<Pattern> Parse(absl::string_view pattern,
                               const Options& options = Options());
