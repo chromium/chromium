@@ -24,11 +24,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-#include <fcntl.h>
-#include <sys/stat.h>
-#endif
-
 namespace media {
 
 namespace {
@@ -101,41 +96,6 @@ TEST_F(VideoFrameStructTraitsTest, MojoSharedBufferVideoFrame) {
     EXPECT_TRUE(mojo_shared_buffer_frame->Handle().is_valid());
   }
 }
-
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-TEST_F(VideoFrameStructTraitsTest, DmabufVideoFrame) {
-  const size_t num_planes = media::VideoFrame::NumPlanes(PIXEL_FORMAT_NV12);
-  std::vector<int> strides = {1280, 1280};
-  std::vector<size_t> sizes = {1280 * 720, 1280 * 720 / 2};
-  auto layout = media::VideoFrameLayout::CreateWithPlanes(
-      PIXEL_FORMAT_NV12, gfx::Size(1280, 720),
-      {media::ColorPlaneLayout(strides[0], 0, sizes[0]),
-       media::ColorPlaneLayout(strides[1], 0, sizes[1])});
-
-  // DMABUF needs device to create, use file fd instead.
-  std::vector<int> fake_fds = {open("/dev/null", O_RDWR),
-                               open("/dev/zero", O_RDWR)};
-  std::vector<base::ScopedFD> dmabuf_fds;
-  dmabuf_fds.reserve(num_planes);
-  for (size_t i = 0; i < num_planes; i++)
-    dmabuf_fds.emplace_back(fake_fds[i]);
-
-  scoped_refptr<VideoFrame> frame = VideoFrame::WrapExternalDmabufs(
-      *layout, gfx::Rect(0, 0, 1280, 720), gfx::Size(1280, 720),
-      std::move(dmabuf_fds), base::TimeDelta::FromSeconds(100));
-
-  ASSERT_TRUE(RoundTrip(&frame));
-  ASSERT_TRUE(frame);
-  EXPECT_FALSE(frame->metadata().end_of_stream);
-  EXPECT_EQ(frame->format(), PIXEL_FORMAT_NV12);
-  EXPECT_EQ(frame->coded_size(), gfx::Size(1280, 720));
-  EXPECT_EQ(frame->visible_rect(), gfx::Rect(0, 0, 1280, 720));
-  EXPECT_EQ(frame->natural_size(), gfx::Size(1280, 720));
-  EXPECT_EQ(frame->timestamp(), base::TimeDelta::FromSeconds(100));
-  ASSERT_TRUE(frame->HasDmaBufs());
-  ASSERT_EQ(frame->storage_type(), VideoFrame::STORAGE_DMABUFS);
-}
-#endif
 
 TEST_F(VideoFrameStructTraitsTest, MailboxVideoFrame) {
   gpu::Mailbox mailbox = gpu::Mailbox::Generate();

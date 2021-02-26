@@ -134,18 +134,6 @@ void MojoVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
   DCHECK_EQ(num_planes, frame->layout().num_planes());
   DCHECK(vea_.is_bound());
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  // TODO(crbug.com/1003197): Remove this once we stop supporting STORAGE_DMABUF
-  // in VideoEncodeAccelerator.
-  if (frame->storage_type() == VideoFrame::STORAGE_DMABUFS) {
-    DCHECK(frame->HasDmaBufs());
-    vea_->Encode(
-        frame, force_keyframe,
-        base::BindOnce(base::DoNothing::Once<scoped_refptr<VideoFrame>>(),
-                       frame));
-    return;
-  }
-#endif
   if (frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     vea_->Encode(
         frame, force_keyframe,

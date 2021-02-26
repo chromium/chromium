@@ -63,23 +63,6 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
             std::move(offsets)));
   }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  if (input->storage_type() == media::VideoFrame::STORAGE_DMABUFS) {
-    std::vector<mojo::PlatformHandle> dmabuf_fds;
-
-    const size_t num_planes = media::VideoFrame::NumPlanes(input->format());
-    dmabuf_fds.reserve(num_planes);
-    for (size_t i = 0; i < num_planes; i++) {
-      const int dmabuf_fd = HANDLE_EINTR(dup(input->DmabufFds()[i].get()));
-      dmabuf_fds.emplace_back(base::ScopedFD(dmabuf_fd));
-      DCHECK(dmabuf_fds.back().is_valid());
-    }
-
-    return media::mojom::VideoFrameData::NewDmabufData(
-        media::mojom::DmabufVideoFrameData::New(std::move(dmabuf_fds)));
-  }
-#endif
-
   std::vector<gpu::MailboxHolder> mailbox_holder(media::VideoFrame::kMaxPlanes);
   DCHECK_LE(input->NumTextures(), mailbox_holder.size());
   // STORAGE_GPU_MEMORY_BUFFER may carry meaningful or dummy mailboxes,
@@ -167,45 +150,6 @@ bool StructTraits<media::mojom::VideoFrameDataView,
         shared_buffer_data.TakeFrameData(),
         shared_buffer_data.frame_data_size(), std::move(offsets),
         std::move(strides), timestamp);
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  } else if (data.is_dmabuf_data()) {
-    media::mojom::DmabufVideoFrameDataDataView dmabuf_data;
-    data.GetDmabufDataDataView(&dmabuf_data);
-
-    std::vector<mojo::PlatformHandle> dmabuf_fds_data;
-    if (!dmabuf_data.ReadDmabufFds(&dmabuf_fds_data))
-      return false;
-
-    const size_t num_planes = media::VideoFrame::NumPlanes(format);
-    std::vector<int> strides =
-        media::VideoFrame::ComputeStrides(format, coded_size);
-    if (num_planes != strides.size())
-      return false;
-    if (num_planes != dmabuf_fds_data.size())
-      return false;
-
-    std::vector<media::ColorPlaneLayout> planes(num_planes);
-    for (size_t i = 0; i < num_planes; i++) {
-      planes[i].stride = strides[i];
-      planes[i].offset = 0;
-      planes[i].size = static_cast<size_t>(
-          media::VideoFrame::PlaneSize(format, i, coded_size).GetArea());
-    }
-
-    auto layout = media::VideoFrameLayout::CreateWithPlanes(format, coded_size,
-                                                            std::move(planes));
-    if (!layout)
-      return false;
-
-    std::vector<base::ScopedFD> dmabuf_fds;
-    dmabuf_fds.reserve(num_planes);
-    for (size_t i = 0; i < num_planes; i++) {
-      dmabuf_fds.push_back(dmabuf_fds_data[i].TakeFD());
-      DCHECK(dmabuf_fds.back().is_valid());
-    }
-    frame = media::VideoFrame::WrapExternalDmabufs(
-        *layout, visible_rect, natural_size, std::move(dmabuf_fds), timestamp);
-#endif
   } else if (data.is_gpu_memory_buffer_data()) {
     media::mojom::GpuMemoryBufferVideoFrameDataDataView gpu_memory_buffer_data;
     data.GetGpuMemoryBufferDataDataView(&gpu_memory_buffer_data);

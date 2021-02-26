@@ -372,7 +372,6 @@ struct VideoFrame {
 union VideoFrameData {
   EosVideoFrameData eos_data;
   SharedBufferVideoFrameData shared_buffer_data;
-  DmabufVideoFrameData dmabuf_data;
   GpuMemoryBufferVideoFrameData gpu_memory_buffer_data;
   MailboxVideoFrameData mailbox_data;
 };
@@ -391,12 +390,6 @@ struct SharedBufferVideoFrameData {
   // of |frame_data|.
   array<int32> strides;
   array<uint32> offsets;
-};
-
-// This defines video frame data stored in dmabuf.
-struct DmabufVideoFrameData {
-  // Size depends on media::VideoFrame::NumPlanes with frame format.
-  array<handle<platform>> dmabuf_fds;
 };
 
 struct GpuMemoryBufferVideoFrameData {
