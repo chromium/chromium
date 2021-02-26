@@ -230,6 +230,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
   // is known to the system.
   virtual bool HasAuthenticator(const std::string& authentiator_id) const;
 
+  // Subclasses may override this method to set a value for
+  // |has_recognized_platform_authenticator_credential|. |done_callback| must be
+  // invoked once a value has been set. This method runs only after the platform
+  // discovery has started successfully.
+  virtual void FillHasRecognizedPlatformCredential(
+      base::OnceCallback<void()> done_callback);
+
   TransportAvailabilityInfo& transport_availability_info() {
     return transport_availability_info_;
   }
@@ -290,6 +297,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
   void InitializeAuthenticatorAndDispatchRequest(
       const std::string& authenticator_id);
   void ConstructBleAdapterPowerManager();
+  void OnHasRecognizedPlatformCredentialFilled();
 
   AuthenticatorMap active_authenticators_;
   std::vector<std::unique_ptr<FidoDiscoveryBase>> discoveries_;

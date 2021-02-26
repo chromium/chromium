@@ -51,11 +51,12 @@ void FakeU2FClient::GetAssertion(
   NOTREACHED();
 }
 
-base::Optional<u2f::HasCredentialsResponse>
-FakeU2FClient::HasCredentialsBlocking(
-    const u2f::HasCredentialsRequest& request) {
-  NOTREACHED();
-  return base::nullopt;
+void FakeU2FClient::HasCredentials(
+    const u2f::HasCredentialsRequest& request,
+    DBusMethodCallback<u2f::HasCredentialsResponse> callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), u2f::HasCredentialsResponse()));
 }
 
 void FakeU2FClient::HasLegacyU2FCredentials(

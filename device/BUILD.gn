@@ -394,6 +394,10 @@ test("device_unittests") {
       "//services/device/hid:mocks",
     ]
   }
+
+  if (is_chromeos_ash) {
+    deps += [ "//chromeos/dbus/u2f" ]
+  }
 }
 
 if (is_android) {
