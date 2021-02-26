@@ -202,7 +202,16 @@ IN_PROC_BROWSER_TEST_F(AppViewTest, KillGuestWithInvalidInstanceID) {
   EXPECT_FALSE(exit_observer.did_exit_normally());
 }
 
-IN_PROC_BROWSER_TEST_F(AppViewTest, KillGuestCommunicatingWithWrongAppView) {
+// TODO(https://crbug.com/1179298): this is flaky on wayland-ozone.
+#if defined(USE_OZONE)
+#define MAYBE_KillGuestCommunicatingWithWrongAppView \
+  DISABLED_KillGuestCommunicatingWithWrongAppView
+#else
+#define MAYBE_KillGuestCommunicatingWithWrongAppView \
+  KillGuestCommunicatingWithWrongAppView
+#endif
+IN_PROC_BROWSER_TEST_F(AppViewTest,
+                       MAYBE_KillGuestCommunicatingWithWrongAppView) {
   const extensions::Extension* host_app =
       LoadAndLaunchPlatformApp("app_view/host_app", "AppViewTest.LAUNCHED");
   const extensions::Extension* guest_app =
