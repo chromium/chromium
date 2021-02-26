@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/session_id.h"
@@ -46,7 +47,11 @@ void SetSessionTabFromSyncData(const sync_pb::SessionTab& sync_data,
 // SerializedNavigationEntry::ToSyncData to convert |navigations|. Note that the
 // protocol buffer doesn't contain all SerializedNavigationEntry fields, and
 // that the returned protocol buffer doesn't have any favicon data.
-sync_pb::SessionTab SessionTabToSyncData(const sessions::SessionTab& tab);
+// |browser_type| needs to be provided separately because its (in local terms) a
+// property of the window.
+sync_pb::SessionTab SessionTabToSyncData(
+    const sessions::SessionTab& tab,
+    base::Optional<sync_pb::SessionWindow::BrowserType> browser_type);
 
 // A Sync wrapper for a SessionWindow.
 struct SyncedSessionWindow {

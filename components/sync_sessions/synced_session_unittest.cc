@@ -261,7 +261,8 @@ TEST(SyncedSessionTest, SessionTabToSyncData) {
   }
   tab.session_storage_persistent_id = "fake";
 
-  const sync_pb::SessionTab sync_data = SessionTabToSyncData(tab);
+  const sync_pb::SessionTab sync_data =
+      SessionTabToSyncData(tab, /*browser_type=*/base::nullopt);
   EXPECT_EQ(5, sync_data.tab_id());
   EXPECT_EQ(10, sync_data.window_id());
   EXPECT_EQ(13, sync_data.tab_visual_index());
@@ -278,6 +279,18 @@ TEST(SyncedSessionTest, SessionTabToSyncData) {
   EXPECT_FALSE(sync_data.has_favicon());
   EXPECT_FALSE(sync_data.has_favicon_type());
   EXPECT_FALSE(sync_data.has_favicon_source());
+  EXPECT_FALSE(sync_data.has_browser_type());
+}
+
+TEST(SyncedSessionTest, SessionTabToSyncDataWithBrowserType) {
+  EXPECT_EQ(sync_pb::SessionWindow_BrowserType_TYPE_TABBED,
+            SessionTabToSyncData(sessions::SessionTab(),
+                                 sync_pb::SessionWindow_BrowserType_TYPE_TABBED)
+                .browser_type());
+  EXPECT_EQ(sync_pb::SessionWindow_BrowserType_TYPE_POPUP,
+            SessionTabToSyncData(sessions::SessionTab(),
+                                 sync_pb::SessionWindow_BrowserType_TYPE_POPUP)
+                .browser_type());
 }
 
 }  // namespace

@@ -308,7 +308,9 @@ void SetSessionTabFromSyncData(const sync_pb::SessionTab& sync_data,
   tab->session_storage_persistent_id.clear();
 }
 
-sync_pb::SessionTab SessionTabToSyncData(const sessions::SessionTab& tab) {
+sync_pb::SessionTab SessionTabToSyncData(
+    const sessions::SessionTab& tab,
+    base::Optional<sync_pb::SessionWindow::BrowserType> browser_type) {
   sync_pb::SessionTab sync_data;
   sync_data.set_tab_id(tab.tab_id.id());
   sync_data.set_window_id(tab.window_id.id());
@@ -318,6 +320,9 @@ sync_pb::SessionTab SessionTabToSyncData(const sessions::SessionTab& tab) {
   sync_data.set_extension_app_id(tab.extension_app_id);
   for (const SerializedNavigationEntry& navigation : tab.navigations) {
     SessionNavigationToSyncData(navigation).Swap(sync_data.add_navigation());
+  }
+  if (browser_type.has_value()) {
+    sync_data.set_browser_type(*browser_type);
   }
   return sync_data;
 }
