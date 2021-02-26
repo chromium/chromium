@@ -150,6 +150,11 @@ void CounterStyleMap::ResolveExtendsFor(CounterStyle& counter_style) {
   // all of the counter styles participating in the cycle must be treated as if
   // they were extending the 'decimal' counter style instead.
   if (extends_chain.back() && extends_chain.back()->HasUnresolvedExtends()) {
+    // Predefined counter styles should not have 'extends' cycles, otherwise
+    // we'll enter an infinite recursion to look for 'decimal'.
+    DCHECK(owner_document_)
+        << "'extends' cycle detected for predefined counter style "
+        << counter_style.GetName();
     CounterStyle* cycle_start = extends_chain.back();
     do {
       extends_chain.back()->ResolveExtends(CounterStyle::GetDecimal());
@@ -163,6 +168,12 @@ void CounterStyleMap::ResolveExtendsFor(CounterStyle& counter_style) {
     if (next) {
       extends_chain.back()->ResolveExtends(*next);
     } else {
+      // Predefined counter styles should not use inexistent 'extends' names,
+      // otherwise we'll enter an infinite recursion to look for 'decimal'.
+      DCHECK(owner_document_) << "Can't resolve 'extends: "
+                              << extends_chain.back()->GetExtendsName()
+                              << "' for predefined counter style "
+                              << extends_chain.back()->GetName();
       extends_chain.back()->ResolveExtends(CounterStyle::GetDecimal());
       extends_chain.back()->SetHasInexistentReferences();
     }
@@ -178,6 +189,13 @@ void CounterStyleMap::ResolveFallbackFor(CounterStyle& counter_style) {
   if (fallback_style) {
     counter_style.ResolveFallback(*fallback_style);
   } else {
+    // UA counter styles shouldn't use inexistent fallback style names,
+    // otherwise we'll enter an infinite recursion to look for 'decimal'.
+    // TODO(crbug.com/1180992): We currently fail the CHECK in some cases. Fix
+    // it and turn it into a DCHECK.
+    CHECK(owner_document_) << "Can't resolve fallback " << fallback_name
+                           << " for predefined counter style "
+                           << counter_style.GetName();
     counter_style.ResolveFallback(CounterStyle::GetDecimal());
     counter_style.SetHasInexistentReferences();
   }
