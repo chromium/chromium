@@ -83,10 +83,7 @@ const CGFloat kGridCellIconDiameter = 16.0f;
 const CGFloat kGridCellSelectionRingGapWidth = 2.0f;
 const CGFloat kGridCellSelectionRingTintWidth = 5.0f;
 
-// The plus sign image should be at the center of a view with width equal to
-// kGridCellSizeSmall.width / 2.
-const CGFloat kPlusSignImageTrailingCenterDistance =
-    kGridCellSizeSmall.width / 4;
+const CGFloat kPlusSignImageTrailingCenterDistance = 55.5;
 // The threshold is set so that the hide transition starts at the moment the
 // plus sign image from the button and the one from the plus sign cell coincide
 // in position.
@@ -97,11 +94,5 @@ const CGFloat kScrollThresholdForPlusSignButtonHide =
 const CGFloat kPlusSignImageYCenterConstant =
     kGridLayoutLineSpacingCompactCompactLimitedWidth +
     kGridCellSelectionRingGapWidth + kGridCellSelectionRingTintWidth +
-    kGridCellSizeSmall.height / 2 - 1.5f;
-// The width is set so that when the scrollThresholdForPlusSignButtonHide is
-// attained by the user scroll, the plus sign button does not overlap with
-// second cell from right to left (the first being the plus sign cell)
-const CGFloat kPlusSignButtonWidth =
-    kGridCellSizeSmall.width / 2 +
-    kGridLayoutLineSpacingCompactCompactLimitedWidth +
-    kPlusSignImageTrailingCenterDistance;
+    kGridCellSizeSmall.height / 2 + 2;
+const CGFloat kPlusSignButtonWidth = 156;
