@@ -72,9 +72,7 @@ void CaptionController::Init() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Return early if current profile is a signin profile (as opposed to a user
-  // profile). See crbug.com/1180706
-  // TODO(crbug.com/1180706): Remove this check if bug can be resolved through
-  // other means.
+  // profile).
   if (ash::ProfileHelper::IsSigninProfile(profile_))
     return;
 #endif
