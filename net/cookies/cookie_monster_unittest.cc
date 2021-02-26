@@ -197,8 +197,9 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
   }
 
   // Helper for PredicateSeesAllCookies test; repopulates CM with same layout
-  // each time.
-  void PopulateCmForPredicateCheck(CookieMonster* cm) {
+  // each time. Returns the time which is strictly greater than any creation
+  // time which was passed to created cookies.
+  base::Time PopulateCmForPredicateCheck(CookieMonster* cm) {
     std::string url_top_level_domain_plus_1(GURL(kTopLevelDomainPlus1).host());
     std::string url_top_level_domain_plus_2(GURL(kTopLevelDomainPlus2).host());
     std::string url_top_level_domain_plus_3(GURL(kTopLevelDomainPlus3).host());
@@ -217,83 +218,84 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
     //    * Two host path cookies (w.c.b.a/dir1, w.c.b.a/dir1/dir2)
 
     std::vector<std::unique_ptr<CanonicalCookie>> cookies;
+    const base::Time now = base::Time::Now();
 
     // Domain cookies
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
-        "dom_1", "A", ".harvard.edu", "/", base::Time(), base::Time(),
-        base::Time(), false, false, CookieSameSite::LAX_MODE,
-        COOKIE_PRIORITY_DEFAULT, false));
+        "dom_1", "A", ".harvard.edu", "/", now, base::Time(), base::Time(),
+        false, false, CookieSameSite::LAX_MODE, COOKIE_PRIORITY_DEFAULT,
+        false));
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
-        "dom_2", "B", ".math.harvard.edu", "/", base::Time(), base::Time(),
-        base::Time(), false, false, CookieSameSite::LAX_MODE,
-        COOKIE_PRIORITY_DEFAULT, false));
+        "dom_2", "B", ".math.harvard.edu", "/", now, base::Time(), base::Time(),
+        false, false, CookieSameSite::LAX_MODE, COOKIE_PRIORITY_DEFAULT,
+        false));
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
-        "dom_3", "C", ".bourbaki.math.harvard.edu", "/", base::Time(),
-        base::Time(), base::Time(), false, false, CookieSameSite::LAX_MODE,
+        "dom_3", "C", ".bourbaki.math.harvard.edu", "/", now, base::Time(),
+        base::Time(), false, false, CookieSameSite::LAX_MODE,
         COOKIE_PRIORITY_DEFAULT, false));
 
     // Host cookies
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
-        "host_1", "A", url_top_level_domain_plus_1, "/", base::Time(),
-        base::Time(), base::Time(), false, false, CookieSameSite::LAX_MODE,
+        "host_1", "A", url_top_level_domain_plus_1, "/", now, base::Time(),
+        base::Time(), false, false, CookieSameSite::LAX_MODE,
         COOKIE_PRIORITY_DEFAULT, false));
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
-        "host_2", "B", url_top_level_domain_plus_2, "/", base::Time(),
-        base::Time(), base::Time(), false, false, CookieSameSite::LAX_MODE,
+        "host_2", "B", url_top_level_domain_plus_2, "/", now, base::Time(),
+        base::Time(), false, false, CookieSameSite::LAX_MODE,
         COOKIE_PRIORITY_DEFAULT, false));
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
-        "host_3", "C", url_top_level_domain_plus_3, "/", base::Time(),
-        base::Time(), base::Time(), false, false, CookieSameSite::LAX_MODE,
+        "host_3", "C", url_top_level_domain_plus_3, "/", now, base::Time(),
+        base::Time(), false, false, CookieSameSite::LAX_MODE,
         COOKIE_PRIORITY_DEFAULT, false));
 
     // http_only cookie
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
-        "httpo_check", "A", url_top_level_domain_plus_2, "/", base::Time(),
-        base::Time(), base::Time(), false, true, CookieSameSite::LAX_MODE,
+        "httpo_check", "A", url_top_level_domain_plus_2, "/", now, base::Time(),
+        base::Time(), false, true, CookieSameSite::LAX_MODE,
         COOKIE_PRIORITY_DEFAULT, false));
 
     // same-site cookie
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
-        "same_site_check", "A", url_top_level_domain_plus_2, "/", base::Time(),
+        "same_site_check", "A", url_top_level_domain_plus_2, "/", now,
         base::Time(), base::Time(), false, false, CookieSameSite::STRICT_MODE,
         COOKIE_PRIORITY_DEFAULT, false));
 
     // same-party cookie
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
-        "same_party_check", "A", url_top_level_domain_plus_2, "/", base::Time(),
+        "same_party_check", "A", url_top_level_domain_plus_2, "/", now,
         base::Time(), base::Time(), true /* secure */, false,
         CookieSameSite::LAX_MODE, COOKIE_PRIORITY_DEFAULT,
         true /* same_party */));
 
     // Secure cookies
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
-        "sec_dom", "A", ".math.harvard.edu", "/", base::Time(), base::Time(),
+        "sec_dom", "A", ".math.harvard.edu", "/", now, base::Time(),
         base::Time(), true, false, CookieSameSite::NO_RESTRICTION,
         COOKIE_PRIORITY_DEFAULT, false));
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
-        "sec_host", "B", url_top_level_domain_plus_2, "/", base::Time(),
-        base::Time(), base::Time(), true, false, CookieSameSite::NO_RESTRICTION,
+        "sec_host", "B", url_top_level_domain_plus_2, "/", now, base::Time(),
+        base::Time(), true, false, CookieSameSite::NO_RESTRICTION,
         COOKIE_PRIORITY_DEFAULT, false));
 
     // Domain path cookies
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
-        "dom_path_1", "A", ".math.harvard.edu", "/dir1", base::Time(),
-        base::Time(), base::Time(), false, false, CookieSameSite::LAX_MODE,
+        "dom_path_1", "A", ".math.harvard.edu", "/dir1", now, base::Time(),
+        base::Time(), false, false, CookieSameSite::LAX_MODE,
         COOKIE_PRIORITY_DEFAULT, false));
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
-        "dom_path_2", "B", ".math.harvard.edu", "/dir1/dir2", base::Time(),
-        base::Time(), base::Time(), false, false, CookieSameSite::LAX_MODE,
+        "dom_path_2", "B", ".math.harvard.edu", "/dir1/dir2", now, base::Time(),
+        base::Time(), false, false, CookieSameSite::LAX_MODE,
         COOKIE_PRIORITY_DEFAULT, false));
 
     // Host path cookies
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
-        "host_path_1", "A", url_top_level_domain_plus_2, "/dir1", base::Time(),
+        "host_path_1", "A", url_top_level_domain_plus_2, "/dir1", now,
         base::Time(), base::Time(), false, false, CookieSameSite::LAX_MODE,
         COOKIE_PRIORITY_DEFAULT, false));
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
-        "host_path_2", "B", url_top_level_domain_plus_2, "/dir1/dir2",
-        base::Time(), base::Time(), base::Time(), false, false,
-        CookieSameSite::LAX_MODE, COOKIE_PRIORITY_DEFAULT, false));
+        "host_path_2", "B", url_top_level_domain_plus_2, "/dir1/dir2", now,
+        base::Time(), base::Time(), false, false, CookieSameSite::LAX_MODE,
+        COOKIE_PRIORITY_DEFAULT, false));
 
     for (auto& cookie : cookies) {
       GURL source_url = cookie_util::SimulatedCookieSource(
@@ -303,6 +305,7 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
     }
 
     EXPECT_EQ(cookies.size(), this->GetAllCookies(cm).size());
+    return now + base::TimeDelta::FromMilliseconds(100);
   }
 
   Time GetFirstCookieAccessDate(CookieMonster* cm) {
@@ -1752,17 +1755,19 @@ TEST_F(CookieMonsterTest, GetExcludedCookiesForURLPathMatching) {
 
 TEST_F(CookieMonsterTest, CookieSorting) {
   std::unique_ptr<CookieMonster> cm(new CookieMonster(nullptr, &net_log_));
-
-  EXPECT_TRUE(SetCookie(cm.get(), http_www_foo_.url(), "B=B1; path=/"));
-  EXPECT_TRUE(SetCookie(cm.get(), http_www_foo_.url(), "B=B2; path=/foo"));
-  EXPECT_TRUE(SetCookie(cm.get(), http_www_foo_.url(), "B=B3; path=/foo/bar"));
-  EXPECT_TRUE(SetCookie(cm.get(), http_www_foo_.url(), "A=A1; path=/"));
-  EXPECT_TRUE(SetCookie(cm.get(), http_www_foo_.url(), "A=A2; path=/foo"));
-  EXPECT_TRUE(SetCookie(cm.get(), http_www_foo_.url(), "A=A3; path=/foo/bar"));
+  base::Time system_time = base::Time::Now();
+  for (const char* cookie_line :
+       {"B=B1; path=/", "B=B2; path=/foo", "B=B3; path=/foo/bar",
+        "A=A1; path=/", "A=A2; path=/foo", "A=A3; path=/foo/bar"}) {
+    EXPECT_TRUE(SetCookieWithSystemTime(cm.get(), http_www_foo_.url(),
+                                        cookie_line, system_time));
+    system_time += base::TimeDelta::FromMilliseconds(100);
+  }
 
   // Re-set cookie which should not change sort order, as the creation date
   // will be retained, as per RFC 6265 5.3.11.3.
-  EXPECT_TRUE(SetCookie(cm.get(), http_www_foo_.url(), "B=B3; path=/foo/bar"));
+  EXPECT_TRUE(SetCookieWithSystemTime(cm.get(), http_www_foo_.url(),
+                                      "B=B3; path=/foo/bar", system_time));
 
   CookieList cookies = GetAllCookies(cm.get());
   ASSERT_EQ(6u, cookies.size());
@@ -1949,10 +1954,10 @@ TEST_F(CookieMonsterTest, ImportDuplicateCreationTimes) {
 
 TEST_F(CookieMonsterTest, PredicateSeesAllCookies) {
   std::unique_ptr<CookieMonster> cm(new CookieMonster(nullptr, &net_log_));
-  PopulateCmForPredicateCheck(cm.get());
+  const base::Time now = PopulateCmForPredicateCheck(cm.get());
   // We test that we can see all cookies with |delete_info|. This includes
   // host, http_only, host secure, and all domain cookies.
-  CookieDeletionInfo delete_info(base::Time(), base::Time::Now());
+  CookieDeletionInfo delete_info(base::Time(), now);
   delete_info.value_for_testing = "A";
 
   EXPECT_EQ(8u, DeleteAllMatchingInfo(cm.get(), std::move(delete_info)));
