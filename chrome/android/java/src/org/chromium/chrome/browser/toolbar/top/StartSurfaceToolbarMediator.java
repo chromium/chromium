@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.HOMEPAGE_MANAGED_BY_POLICY_SUPPLIER;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.HOME_BUTTON_CLICK_HANDLER;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.HOME_BUTTON_IS_VISIBLE;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_AT_START;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_CLICK_HANDLER;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_DESCRIPTION;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_IMAGE;
@@ -344,6 +345,8 @@ class StartSurfaceToolbarMediator {
         // shown.
         boolean shouldTabSwitcherButton = mOverviewModeState == StartSurfaceState.SHOWN_HOMEPAGE;
         mPropertyModel.set(TAB_SWITCHER_BUTTON_IS_VISIBLE, shouldTabSwitcherButton);
+        // If tab switcher button is visible, we should move identity disc to the left.
+        mPropertyModel.set(IDENTITY_DISC_AT_START, shouldTabSwitcherButton);
     }
 
     private void updateTranslationY(float transY) {
