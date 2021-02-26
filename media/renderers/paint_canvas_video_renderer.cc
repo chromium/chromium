@@ -1951,7 +1951,9 @@ bool PaintCanvasVideoRenderer::PrepareVideoFrame(
 }
 
 PaintCanvasVideoRenderer::YUVTextureCache::YUVTextureCache() = default;
-PaintCanvasVideoRenderer::YUVTextureCache::~YUVTextureCache() = default;
+PaintCanvasVideoRenderer::YUVTextureCache::~YUVTextureCache() {
+  Reset();
+}
 
 void PaintCanvasVideoRenderer::YUVTextureCache::Reset() {
   if (mailbox.IsZero())
