@@ -11,16 +11,19 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/notreached.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 @interface CRBProtocolObservers () {
-  base::scoped_nsobject<Protocol> _protocol;
+  Protocol* _protocol;
   // ivars declared here are private to the implementation but must be
   // public for allowing the C++ |Iterator| class access to those ivars.
  @public
   // vector of weak pointers to observers.
-  std::vector<__unsafe_unretained id> _observers;
+  std::vector<__weak id> _observers;
   // The nested level of observer iteration.
   // A depth of 0 means nobody is currently iterating on the list of observers.
   int _invocationDepth;
@@ -74,14 +77,14 @@ id Iterator::GetNext() {
 @interface CRBProtocolObservers ()
 
 // Designated initializer.
-- (id)initWithProtocol:(Protocol*)protocol;
+- (instancetype)initWithProtocol:(Protocol*)protocol;
 
 @end
 
 @implementation CRBProtocolObservers
 
 + (instancetype)observersWithProtocol:(Protocol*)protocol {
-  return [[[self alloc] initWithProtocol:protocol] autorelease];
+  return [[self alloc] initWithProtocol:protocol];
 }
 
 - (id)init {
@@ -92,13 +95,13 @@ id Iterator::GetNext() {
 - (id)initWithProtocol:(Protocol*)protocol {
   self = [super init];
   if (self) {
-    _protocol.reset([protocol retain]);
+    _protocol = protocol;
   }
   return self;
 }
 
 - (Protocol*)protocol {
-  return _protocol.get();
+  return _protocol;
 }
 
 - (void)addObserver:(id)observer {

@@ -168,6 +168,7 @@ source_set("application_delegate_internal") {
     ":tab_opening",
     ":url_opener_params",
     "//base",
+    "//base/ios",
     "//build:branding_buildflags",
     "//components/crash/core/common",
     "//components/feature_engagement",

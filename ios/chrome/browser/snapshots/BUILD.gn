@@ -26,6 +26,7 @@ source_set("snapshots") {
   ]
   deps = [
     "//base",
+    "//base/ios",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui:feature_flags",

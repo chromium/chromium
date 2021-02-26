@@ -372,7 +372,9 @@ TEST_F(TabGridMediatorTest, ConsumerReplaceItem) {
   TabIdTabHelper::CreateForWebState(new_web_state.get());
   NSString* new_item_identifier =
       TabIdTabHelper::FromWebState(new_web_state.get())->tab_id();
-  web_state_list_->ReplaceWebStateAt(1, std::move(new_web_state));
+  @autoreleasepool {
+    web_state_list_->ReplaceWebStateAt(1, std::move(new_web_state));
+  }
   EXPECT_EQ(3UL, consumer_.items.count);
   EXPECT_NSEQ(new_item_identifier, consumer_.selectedItemID);
   EXPECT_NSEQ(new_item_identifier, consumer_.items[1]);
