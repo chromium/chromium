@@ -28,6 +28,7 @@
     <output filename="platform_locale_settings_hr.pak" type="data_package" lang="hr" />
     <output filename="platform_locale_settings_hu.pak" type="data_package" lang="hu" />
     <output filename="platform_locale_settings_id.pak" type="data_package" lang="id" />
+    <output filename="platform_locale_settings_is.pak" type="data_package" lang="is" />
     <output filename="platform_locale_settings_it.pak" type="data_package" lang="it" />
     <output filename="platform_locale_settings_ja.pak" type="data_package" lang="ja" />
     <output filename="platform_locale_settings_kn.pak" type="data_package" lang="kn" />

@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 # This file creates the |locales| which is the set of current
 # locales based on the current platform. Locales in this list are formated
 # based on what .pak files expect.
@@ -172,6 +174,9 @@ android_bundle_only_locales = [
   "zu",
 ]
 
+# New locales added to ChromeOS builds.
+chromeos_only_locales = [ "is" ]
+
 if (is_android) {
   locales = all_chrome_locales
 
@@ -207,8 +212,12 @@ if (is_android) {
     "iw",
     "tl",
   ]
+} else if (is_chromeos_ash || is_chromeos_lacros) {
+  # In ChromeOS we support a few more locales than standard Chrome.
+  locales =
+      all_chrome_locales - android_bundle_only_locales + chromeos_only_locales
 } else {
-  # Change if other platforms support more locales
+  # Change if other platforms support more locales.
   locales = all_chrome_locales - android_bundle_only_locales
 }
 

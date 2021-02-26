@@ -53,6 +53,9 @@ third_party/libaddressinput/BUILD.gn.
       <output filename="address_input_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
       <output filename="address_input_strings_zu.pak" type="data_package" lang="zu" />
     </if>
+    <if expr="chromeos or lacros">
+      <output filename="address_input_strings_is.pak" type="data_package" lang="is" />
+    </if>
     <output filename="address_input_strings_am.pak" type="data_package" lang="am" />
     <output filename="address_input_strings_ar.pak" type="data_package" lang="ar" />
     <output filename="address_input_strings_bg.pak" type="data_package" lang="bg" />

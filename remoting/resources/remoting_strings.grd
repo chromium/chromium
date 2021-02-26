@@ -17,7 +17,7 @@
     <output filename="remoting/resources/de.pak" lang="de" type="data_package"/>
     <output filename="remoting/resources/el.pak" lang="el" type="data_package"/>
     <output filename="remoting/resources/en-GB.pak" lang="en-GB" type="data_package"/>
-    <if expr="chromeos">
+    <if expr="chromeos or lacros">
       <output filename="remoting/resources/en-US.pak" lang="en" type="data_package"/>
     </if>
     <output filename="remoting/resources/en.pak" lang="en" type="data_package"/>
@@ -40,6 +40,9 @@
     <output filename="remoting/resources/hr.pak" lang="hr" type="data_package"/>
     <output filename="remoting/resources/hu.pak" lang="hu" type="data_package"/>
     <output filename="remoting/resources/id.pak" lang="id" type="data_package"/>
+    <if expr="chromeos or lacros">
+      <output filename="remoting/resources/is.pak" lang="is" type="data_package"/>
+    </if>
     <output filename="remoting/resources/it.pak" lang="it" type="data_package"/>
     <output filename="remoting/resources/ja.pak" lang="ja" type="data_package"/>
     <output filename="remoting/resources/kn.pak" lang="kn" type="data_package"/>
@@ -88,7 +91,7 @@
     <output filename="remoting/resources/_locales/fa/messages.json" lang="fa" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/el/messages.json" lang="el" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/en/messages.json" lang="en" type="chrome_messages_json"/>
-    <if expr="chromeos">
+    <if expr="chromeos or lacros">
       <!-- lang="en-US" will create an empty json file. -->
       <output filename="remoting/resources/_locales/en_US/messages.json" lang="en" type="chrome_messages_json"/>
     </if>
@@ -111,6 +114,9 @@
     <output filename="remoting/resources/_locales/hr/messages.json" lang="hr" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/hu/messages.json" lang="hu" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/id/messages.json" lang="id" type="chrome_messages_json"/>
+    <if expr="chromeos or lacros">
+      <output filename="remoting/resources/_locales/is/messages.json" lang="is" type="chrome_messages_json"/>
+    </if>
     <output filename="remoting/resources/_locales/it/messages.json" lang="it" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/ja/messages.json" lang="ja" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/kn/messages.json" lang="kn" type="chrome_messages_json"/>

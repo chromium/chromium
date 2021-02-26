@@ -38,6 +38,9 @@
       <output filename="omnibox_resources_zh-HK.pak" type="data_package" lang="zh-HK" />
       <output filename="omnibox_resources_zu.pak" type="data_package" lang="zu" />
     </if>
+    <if expr="chromeos or lacros">
+      <output filename="omnibox_resources_is.pak" type="data_package" lang="is" />
+    </if>
     <output filename="omnibox_resources_am.pak" type="data_package" lang="am" />
     <output filename="omnibox_resources_ar.pak" type="data_package" lang="ar" />
     <output filename="omnibox_resources_bg.pak" type="data_package" lang="bg" />
