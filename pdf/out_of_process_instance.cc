@@ -96,8 +96,6 @@ constexpr char kJSBeepType[] = "beep";
 constexpr char kJSUpdateScrollType[] = "updateScroll";
 constexpr char kJSUpdateScrollX[] = "x";
 constexpr char kJSUpdateScrollY[] = "y";
-// Stop scrolling message (Page -> Plugin)
-constexpr char kJSStopScrollingType[] = "stopScrolling";
 // Document dimension arguments (Plugin -> Page).
 constexpr char kJSDocumentDimensionsType[] = "documentDimensions";
 constexpr char kJSDocumentWidth[] = "width";
@@ -761,8 +759,6 @@ void OutOfProcessInstance::HandleMessage(const pp::Var& message) {
     HandleResetPrintPreviewModeMessage(dict);
   } else if (type == kJSLoadPreviewPageType) {
     HandleLoadPreviewPageMessage(dict);
-  } else if (type == kJSStopScrollingType) {
-    set_stop_scrolling(true);
   } else if (type == kJSGetThumbnailType) {
     HandleGetThumbnailMessage(dict);
   } else {

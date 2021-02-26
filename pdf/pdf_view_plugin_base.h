@@ -211,9 +211,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   float device_scale() const { return device_scale_; }
 
   bool stop_scrolling() const { return stop_scrolling_; }
-  void set_stop_scrolling(bool stop_scrolling) {
-    stop_scrolling_ = stop_scrolling;
-  }
 
   DocumentLoadState document_load_state() { return document_load_state_; }
   void set_document_load_state(DocumentLoadState state) {
@@ -233,6 +230,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void HandleSetBackgroundColorMessage(const base::Value& message);
   void HandleSetReadOnlyMessage(const base::Value& message);
   void HandleSetTwoUpViewMessage(const base::Value& message);
+  void HandleStopScrollingMessage(const base::Value& /*message*/);
   void HandleViewportMessage(const base::Value& message);
 
   // Paints the given invalid area of the plugin to the given graphics device.

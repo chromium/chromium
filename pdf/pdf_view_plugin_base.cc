@@ -117,6 +117,7 @@ void PdfViewPluginBase::HandleMessage(const base::Value& message) {
            &PdfViewPluginBase::HandleSetBackgroundColorMessage},
           {"setReadOnly", &PdfViewPluginBase::HandleSetReadOnlyMessage},
           {"setTwoUpView", &PdfViewPluginBase::HandleSetTwoUpViewMessage},
+          {"stopScrolling", &PdfViewPluginBase::HandleStopScrollingMessage},
           {"viewport", &PdfViewPluginBase::HandleViewportMessage},
       });
 
@@ -482,6 +483,11 @@ void PdfViewPluginBase::HandleSetReadOnlyMessage(const base::Value& message) {
 
 void PdfViewPluginBase::HandleSetTwoUpViewMessage(const base::Value& message) {
   engine()->SetTwoUpView(message.FindBoolKey("enableTwoUpView").value());
+}
+
+void PdfViewPluginBase::HandleStopScrollingMessage(
+    const base::Value& /*message*/) {
+  stop_scrolling_ = true;
 }
 
 void PdfViewPluginBase::HandleViewportMessage(const base::Value& message) {
