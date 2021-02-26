@@ -16,6 +16,7 @@
 
 namespace blink {
 
+namespace {
 // At a class A break point [1], the break value with the highest precedence
 // wins. If the two values have the same precedence (e.g. "left" and "right"),
 // the value specified on a latter object wins.
@@ -54,6 +55,25 @@ inline int FragmentainerBreakPrecedence(EBreakBetween break_value) {
       return 6;
   }
 }
+
+// Return layout overflow block-size that's not clipped (or simply the
+// block-size if it *is* clipped).
+LayoutUnit BlockAxisLayoutOverflow(const NGPhysicalFragment& fragment,
+                                   WritingDirectionMode writing_direction) {
+  const auto* box = DynamicTo<NGPhysicalBoxFragment>(fragment);
+  if (box && box->HasNonVisibleOverflow()) {
+    OverflowClipAxes block_axis =
+        writing_direction.IsHorizontal() ? kOverflowClipY : kOverflowClipX;
+    if (box->GetOverflowClipAxes() & block_axis)
+      box = nullptr;
+  }
+  PhysicalRect rect = fragment.LocalRect();
+  if (box)
+    rect.UniteEvenIfEmpty(box->LayoutOverflow());
+  return writing_direction.IsHorizontal() ? rect.Bottom() : rect.Right();
+}
+
+}  // anonymous namespace
 
 EBreakBetween JoinFragmentainerBreakValues(EBreakBetween first_value,
                                            EBreakBetween second_value) {
@@ -639,7 +659,10 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
         builder->SetBreakAppeal(appeal_inside);
       return true;
     }
-  } else if (refuse_break_before || fragment.BlockSize() <= space_left) {
+  } else if (refuse_break_before ||
+             BlockAxisLayoutOverflow(physical_fragment,
+                                     space.GetWritingDirection()) <=
+                 space_left) {
     // The child either fits, or we are not allowed to break. So we can move
     // past this breakpoint.
     if (child.IsBlock() && builder) {
