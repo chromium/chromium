@@ -100,6 +100,7 @@
 #include "third_party/blink/renderer/core/page/pointer_lock_controller.h"
 #include "third_party/blink/renderer/core/page/scrolling/fragment_anchor.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
+#include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/core/paint/first_meaningful_paint_detector.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
@@ -3710,6 +3711,16 @@ void WebFrameWidgetImpl::SetPageScaleStateAndLimits(
 
     NotifyPageScaleFactorChanged(page_scale_factor, is_pinch_gesture_active);
   }
+}
+
+void WebFrameWidgetImpl::UpdateViewportDescription(
+    const ViewportDescription& viewport) {
+  bool is_device_width = viewport.max_width.IsDeviceWidth();
+  bool is_zoom_one = viewport.zoom_is_explicit && viewport.zoom == 1.0;
+  widget_base_->LayerTreeHost()->UpdateViewportIsMobileOptimized(
+      (is_device_width && is_zoom_one) ||
+      (is_device_width && !viewport.zoom_is_explicit) ||
+      (viewport.max_width.IsAuto() && is_zoom_one));
 }
 
 bool WebFrameWidgetImpl::UpdateScreenRects(

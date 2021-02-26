@@ -750,6 +750,10 @@ class CC_EXPORT LayerTreeImpl {
     return device_viewport_rect_changed_;
   }
 
+  bool viewport_mobile_optimized() const {
+    return host_impl_->viewport_mobile_optimized();
+  }
+
   // Add a document transition request from the embedder.
   void AddDocumentTransitionRequest(
       std::unique_ptr<DocumentTransitionRequest> request);

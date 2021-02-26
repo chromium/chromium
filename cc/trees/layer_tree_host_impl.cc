@@ -20,6 +20,7 @@
 #include "base/containers/flat_map.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -172,7 +173,10 @@ bool HasMobileViewport(LayerTreeImpl* active_tree) {
 bool IsMobileOptimized(LayerTreeImpl* active_tree) {
   bool has_mobile_viewport = HasMobileViewport(active_tree);
   bool has_fixed_page_scale = HasFixedPageScale(active_tree);
-  return has_fixed_page_scale || has_mobile_viewport;
+  return has_fixed_page_scale || has_mobile_viewport ||
+         (base::FeatureList::IsEnabled(
+              ::features::kRemoveMobileViewportDoubleTap) &&
+          active_tree->viewport_mobile_optimized());
 }
 
 viz::ResourceFormat TileRasterBufferFormat(

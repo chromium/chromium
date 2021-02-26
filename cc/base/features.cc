@@ -4,6 +4,7 @@
 
 #include "cc/base/features.h"
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 
 namespace features {
@@ -62,6 +63,9 @@ bool IsMainLatencyRecoveryEnabled() {
   return base::FeatureList::IsEnabled(kMainLatencyRecovery);
 #endif
 }
+
+const base::Feature kRemoveMobileViewportDoubleTap{
+    "RemoveMobileViewportDoubleTap", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kScrollUnification{"ScrollUnification",
                                        base::FEATURE_DISABLED_BY_DEFAULT};

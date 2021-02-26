@@ -23,6 +23,11 @@ CC_BASE_EXPORT extern const base::Feature kMainLatencyRecovery;
 CC_BASE_EXPORT bool IsImplLatencyRecoveryEnabled();
 CC_BASE_EXPORT bool IsMainLatencyRecoveryEnabled();
 
+// When enabled, the double tap to zoom will be disabled when the viewport
+// meta tag is properly set for mobile using content=width=device-width
+// or content=initial-scale=1.0
+CC_BASE_EXPORT extern const base::Feature kRemoveMobileViewportDoubleTap;
+
 // When enabled, all scrolling is performed on the compositor thread -
 // delegating only the hit test to Blink. This causes Blink to send additional
 // information in the scroll property tree. When a scroll can't be hit tested

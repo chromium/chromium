@@ -1704,6 +1704,10 @@
       status: {"Android": "stable", "default": ""},
     },
     {
+      name: "RemoveMobileViewportDoubleTap",
+      status: "experimental"
+    },
+    {
       // See https://crbug.com/1012063
       name: "RequestVideoFrameCallback",
       status: "stable",

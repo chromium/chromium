@@ -331,6 +331,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableCompositeRelativeKeyframes,
      features::kCompositeRelativeKeyframes},
     {wf::EnableKeyboardAccessibleTooltip, features::kKeyboardAccessibleTooltip},
+    {wf::EnableRemoveMobileViewportDoubleTap,
+     features::kRemoveMobileViewportDoubleTap},
   };
   for (const auto& mapping : blinkFeatureToBaseFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(

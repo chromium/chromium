@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/core/html/battery_savings.h"
 #include "third_party/blink/renderer/core/page/event_with_hit_test_results.h"
 #include "third_party/blink/renderer/core/page/page_widget_delegate.h"
+#include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/platform/graphics/apply_viewport_changes.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -519,6 +520,8 @@ class CORE_EXPORT WebFrameWidgetImpl
                                   bool is_pinch_gesture_active,
                                   float minimum,
                                   float maximum);
+  void UpdateViewportDescription(
+      const ViewportDescription& viewport_description);
 
   // The value of the applied battery-savings META element in the document
   // changed.

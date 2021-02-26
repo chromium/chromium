@@ -424,6 +424,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   gfx::Rect device_viewport_rect() const { return device_viewport_rect_; }
 
+  void UpdateViewportIsMobileOptimized(bool is_viewport_mobile_optimized);
+
   void SetBrowserControlsParams(const BrowserControlsParams& params);
   void SetBrowserControlsShownRatio(float top_ratio, float bottom_ratio);
 
@@ -881,6 +883,12 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   gfx::Rect device_viewport_rect_;
   gfx::Rect visual_device_viewport_intersection_rect_;
   gfx::Size visual_device_viewport_size_;
+
+  // Set to true if viewport is mobile optimized by using meta tag
+  // <meta name="viewport" content="width=device-width">
+  // or
+  // <meta name="viewport" content="initial-scale=1.0">
+  bool is_viewport_mobile_optimized_ = false;
 
   bool have_scroll_event_handlers_ = false;
   EventListenerProperties event_listener_properties_
