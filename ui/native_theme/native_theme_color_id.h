@@ -95,9 +95,8 @@
   OP(kColorId_NotificationActionsRowBackground),                               \
   OP(kColorId_NotificationInlineSettingsBackground),                           \
   OP(kColorId_NotificationLargeImageBackground),                               \
-  OP(kColorId_NotificationPlaceholderIconColor),                               \
-  OP(kColorId_NotificationEmptyPlaceholderIconColor),                          \
-  OP(kColorId_NotificationEmptyPlaceholderTextColor),                          \
+  OP(kColorId_NotificationColor),                                              \
+  OP(kColorId_NotificationPlaceholderColor),                                   \
   OP(kColorId_NotificationDefaultAccentColor),                                 \
   OP(kColorId_NotificationInkDropBase),                                        \
   /* Slider */                                                                 \

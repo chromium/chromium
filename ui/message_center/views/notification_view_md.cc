@@ -419,10 +419,11 @@ void NotificationInputContainerMD::OnThemeChanged() {
   auto* theme = GetNativeTheme();
   SetBackground(views::CreateSolidBackground(theme->GetSystemColor(
       ui::NativeTheme::kColorId_NotificationActionsRowBackground)));
-  textfield_->SetTextColor(SK_ColorWHITE);
+  textfield_->SetTextColor(
+      theme->GetSystemColor(ui::NativeTheme::kColorId_NotificationColor));
   textfield_->SetBackgroundColor(SK_ColorTRANSPARENT);
   textfield_->set_placeholder_text_color(theme->GetSystemColor(
-      ui::NativeTheme::kColorId_NotificationEmptyPlaceholderTextColor));
+      ui::NativeTheme::kColorId_NotificationPlaceholderColor));
   SetButtonImage();
 }
 
@@ -450,15 +451,14 @@ void NotificationInputContainerMD::OnAfterUserAction(views::Textfield* sender) {
 }
 
 void NotificationInputContainerMD::SetButtonImage() {
-  auto placeholder_icon_color_id =
+  auto icon_color_id =
       textfield_->GetText().empty()
-          ? ui::NativeTheme::kColorId_NotificationEmptyPlaceholderIconColor
-          : ui::NativeTheme::kColorId_NotificationPlaceholderIconColor;
+          ? ui::NativeTheme::kColorId_NotificationPlaceholderColor
+          : ui::NativeTheme::kColorId_NotificationColor;
   button_->SetImage(
       views::Button::STATE_NORMAL,
-      gfx::CreateVectorIcon(
-          kNotificationInlineReplyIcon, kInputReplyButtonSize,
-          GetNativeTheme()->GetSystemColor(placeholder_icon_color_id)));
+      gfx::CreateVectorIcon(kNotificationInlineReplyIcon, kInputReplyButtonSize,
+                            GetNativeTheme()->GetSystemColor(icon_color_id)));
 }
 
 // InlineSettingsRadioButton ///////////////////////////////////////////////////

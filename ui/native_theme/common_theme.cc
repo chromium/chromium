@@ -359,17 +359,15 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
 
     // Notification
     case NativeTheme::kColorId_NotificationDefaultBackground:
-    case NativeTheme::kColorId_NotificationPlaceholderIconColor:
+    case NativeTheme::kColorId_NotificationColor:
       return base_theme->GetSystemColor(NativeTheme::kColorId_WindowBackground,
                                         color_scheme);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case NativeTheme::kColorId_NotificationButtonBackground:
       return SkColorSetA(SK_ColorWHITE, 0.9 * 0xff);
 #endif
-    case NativeTheme::kColorId_NotificationEmptyPlaceholderTextColor:
+    case NativeTheme::kColorId_NotificationPlaceholderColor:
       return SkColorSetA(SK_ColorWHITE, gfx::kDisabledControlAlpha);
-    case NativeTheme::kColorId_NotificationEmptyPlaceholderIconColor:
-      return SkColorSetA(SK_ColorWHITE, 0x60);
     case NativeTheme::kColorId_NotificationActionsRowBackground:
     case NativeTheme::kColorId_NotificationInlineSettingsBackground: {
       const SkColor bg = base_theme->GetSystemColor(
