@@ -20,7 +20,7 @@
   // are provided. If data is still being received, the promise won't be
   // resolved or rejected until the given |options.frameIndex| is available,
   // all data is received, or a decoding error occurs.
-  Promise<ImageFrame> decode(optional ImageDecodeOptions options);
+  Promise<ImageDecodeResult> decode(optional ImageDecodeOptions options);
 
   // Decodes only the metadata for an image; resolves the promise when metadata
   // can be decoded. Normally this is done automatically at construction time.

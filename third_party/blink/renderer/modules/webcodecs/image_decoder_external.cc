@@ -8,22 +8,24 @@
 
 #include "base/logging.h"
 #include "base/time/time.h"
+#include "media/base/video_frame.h"
+#include "media/base/video_util.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_decode_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_image_decode_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_decoder_init.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_image_frame.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_track.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/fetch/readable_stream_bytes_consumer.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
@@ -71,8 +73,13 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
   DCHECK(init->hasData());
   DCHECK(!init->data().IsNull());
 
-  options_ =
-      init->hasOptions() ? init->options() : ImageBitmapOptions::Create();
+  constexpr char kNoneOption[] = "none";
+  if (init->colorSpaceConversion() == kNoneOption)
+    color_behavior_ = ColorBehavior::Ignore();
+  if (init->premultiplyAlpha() == kNoneOption)
+    alpha_option_ = ImageDecoder::kAlphaNotPremultiplied;
+  if (init->hasDesiredWidth() && init->hasDesiredHeight())
+    desired_size_ = SkISize::Make(init->desiredWidth(), init->desiredHeight());
 
   mime_type_ = init->type().LowerASCII();
   if (!canDecodeType(mime_type_)) {
@@ -91,11 +98,11 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
           "locked to a reader");
       return;
     }
-    consumer_ = MakeGarbageCollected<ReadableStreamBytesConsumer>(
-        script_state, init->data().GetAsReadableStream());
-
     stream_buffer_ = WTF::SharedBuffer::Create();
     CreateImageDecoder();
+
+    consumer_ = MakeGarbageCollected<ReadableStreamBytesConsumer>(
+        script_state, init->data().GetAsReadableStream());
 
     // We need one initial call to OnStateChange() to start reading, but
     // thereafter calls will be driven by the ReadableStreamBytesConsumer.
@@ -240,11 +247,10 @@ void ImageDecoderExternal::OnStateChange() {
 
     if (result == BytesConsumer::Result::kError) {
       data_complete_ = true;
-      return;
+    } else {
+      data_complete_ = result == BytesConsumer::Result::kDone;
+      decoder_->SetData(stream_buffer_, data_complete_);
     }
-
-    data_complete_ = result == BytesConsumer::Result::kDone;
-    decoder_->SetData(stream_buffer_, data_complete_);
 
     MaybeUpdateMetadata();
     MaybeSatisfyPendingDecodes();
@@ -262,7 +268,6 @@ void ImageDecoderExternal::Trace(Visitor* visitor) const {
   visitor->Trace(pending_decodes_);
   visitor->Trace(pending_metadata_decodes_);
   visitor->Trace(init_data_);
-  visitor->Trace(options_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
@@ -281,23 +286,6 @@ void ImageDecoderExternal::CreateImageDecoder() {
   // ImageDecoder::SetMemoryAllocator() so that we can recycle frame buffers for
   // decoded images.
 
-  constexpr char kNoneOption[] = "none";
-
-  auto color_behavior = ColorBehavior::Tag();
-  if (options_->colorSpaceConversion() == kNoneOption)
-    color_behavior = ColorBehavior::Ignore();
-
-  auto premultiply_alpha = ImageDecoder::kAlphaPremultiplied;
-  if (options_->premultiplyAlpha() == kNoneOption)
-    premultiply_alpha = ImageDecoder::kAlphaNotPremultiplied;
-
-  // TODO(crbug.com/1073995): Is it okay to use resize size like this?
-  auto desired_size = SkISize::MakeEmpty();
-  if (options_->hasResizeWidth() && options_->hasResizeHeight()) {
-    desired_size =
-        SkISize::Make(options_->resizeWidth(), options_->resizeHeight());
-  }
-
   if (stream_buffer_) {
     if (!segment_reader_)
       segment_reader_ = SegmentReader::CreateFromSharedBuffer(stream_buffer_);
@@ -307,8 +295,8 @@ void ImageDecoderExternal::CreateImageDecoder() {
 
   DCHECK(canDecodeType(mime_type_));
   decoder_ = ImageDecoder::CreateByMimeType(
-      mime_type_, segment_reader_, data_complete_, premultiply_alpha,
-      ImageDecoder::kHighBitDepthToHalfFloat, color_behavior, desired_size);
+      mime_type_, segment_reader_, data_complete_, alpha_option_,
+      ImageDecoder::kHighBitDepthToHalfFloat, color_behavior_, desired_size_);
 
   // CreateByImageType() can't fail if we use a supported image type. Which we
   // DCHECK above via canDecodeType().
@@ -379,17 +367,63 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
       incomplete_frames_.erase(request->frame_index);
     }
 
-    auto* result = ImageFrameExternal::Create();
-    result->setImage(MakeGarbageCollected<ImageBitmap>(
-        UnacceleratedStaticBitmapImage::Create(std::move(sk_image),
-                                               decoder_->Orientation()),
-        base::nullopt, options_));
-    result->setDuration(
-        decoder_->FrameDurationAtIndex(request->frame_index).InMicroseconds());
-    result->setOrientation(
-        static_cast<uint32_t>(decoder_->Orientation().Orientation()));
-    result->setComplete(is_complete);
-    request->result = result;
+    const auto duration = decoder_->FrameDurationAtIndex(request->frame_index);
+
+    // TODO(crbug.com/1073995): Add timestamp support to ImageDecoder if we end
+    // up encountering a lot of variable duration images.
+    const auto timestamp = duration * request->frame_index;
+
+    // This is zero copy; the VideoFrame points into the SkBitmap.
+    const gfx::Size coded_size(sk_image->width(), sk_image->height());
+    auto frame = media::CreateFromSkImage(sk_image, gfx::Rect(coded_size),
+                                          coded_size, timestamp);
+
+    if (!frame) {
+      request->exception = MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kOperationError, "Failed to create frame");
+      continue;
+    }
+
+    const auto orientation = decoder_->Orientation().Orientation();
+    switch (orientation) {
+      case ImageOrientationEnum::kOriginTopLeft:
+        break;
+      case ImageOrientationEnum::kOriginTopRight:
+        frame->metadata().transformation = media::VideoTransformation(
+            media::VIDEO_ROTATION_0, /*mirrored=*/true);
+        break;
+      case ImageOrientationEnum::kOriginBottomRight:
+        frame->metadata().transformation = media::VIDEO_ROTATION_180;
+        break;
+      case ImageOrientationEnum::kOriginBottomLeft:
+        frame->metadata().transformation = media::VideoTransformation(
+            media::VIDEO_ROTATION_180, /*mirrored=*/true);
+        break;
+      case ImageOrientationEnum::kOriginLeftTop:
+        frame->metadata().transformation = media::VideoTransformation(
+            media::VIDEO_ROTATION_270, /*mirrored=*/true);
+        break;
+      case ImageOrientationEnum::kOriginRightTop:
+        frame->metadata().transformation = media::VIDEO_ROTATION_90;
+        break;
+      case ImageOrientationEnum::kOriginRightBottom:
+        frame->metadata().transformation = media::VideoTransformation(
+            media::VIDEO_ROTATION_90, /*mirrored=*/true);
+        break;
+      case ImageOrientationEnum::kOriginLeftBottom:
+        frame->metadata().transformation = media::VIDEO_ROTATION_270;
+        break;
+    };
+
+    frame->metadata().frame_duration =
+        decoder_->FrameDurationAtIndex(request->frame_index);
+
+    request->result = ImageDecodeResult::Create();
+    request->result->setImage(
+        MakeGarbageCollected<VideoFrame>(base::MakeRefCounted<VideoFrameHandle>(
+            std::move(frame), std::move(sk_image),
+            ExecutionContext::From(script_state_))));
+    request->result->setComplete(is_complete);
   }
 
   auto* new_end =

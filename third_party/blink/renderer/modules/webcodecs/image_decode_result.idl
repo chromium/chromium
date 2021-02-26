@@ -4,19 +4,10 @@
 
 // https://github.com/WICG/web-codecs
 
-[ImplementedAs=ImageFrameExternal]
-dictionary ImageFrame {
+dictionary ImageDecodeResult {
   // Actual decoded image; includes resolution information.
-  required ImageBitmap image;
+  required VideoFrame image;
 
   // Indicates if the decoded image is actually complete.
   required boolean complete;
-
-  // Expected on screen duration for the image in microseconds.
-  required unsigned long long duration;
-
-  // JEITA CP-3451 EXIF orientation code.
-  required unsigned long orientation;
-
-  // TODO: Color space information?
 };

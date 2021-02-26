@@ -13,17 +13,16 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
 
 namespace blink {
 
 class ExceptionState;
 class ScriptState;
-class ImageBitmapOptions;
 class ImageDecodeOptions;
-class ImageDecoder;
 class ImageDecoderInit;
-class ImageFrameExternal;
+class ImageDecodeResult;
 class ImageTrackExternal;
 class ReadableStreamBytesConsumer;
 class ScriptPromiseResolver;
@@ -93,7 +92,9 @@ class MODULES_EXPORT ImageDecoderExternal final
 
   // Construction parameters.
   Member<const ImageDecoderInit> init_data_;
-  Member<const ImageBitmapOptions> options_;
+  ImageDecoder::AlphaOption alpha_option_ = ImageDecoder::kAlphaPremultiplied;
+  ColorBehavior color_behavior_ = ColorBehavior::Tag();
+  SkISize desired_size_;
 
   // Copy of |preferAnimation| from |init_data_|. Will be modified based on
   // calls to selectTrack().
@@ -118,7 +119,7 @@ class MODULES_EXPORT ImageDecoderExternal final
     Member<ScriptPromiseResolver> resolver;
     uint32_t frame_index;
     bool complete_frames_only;
-    Member<ImageFrameExternal> result;
+    Member<ImageDecodeResult> result;
     Member<DOMException> exception;
   };
   HeapVector<Member<DecodeRequest>> pending_decodes_;

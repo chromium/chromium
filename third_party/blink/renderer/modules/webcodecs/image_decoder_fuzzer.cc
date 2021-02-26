@@ -5,7 +5,6 @@
 #include "base/run_loop.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_decode_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_decoder_init.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -28,15 +27,6 @@ namespace blink {
 
 namespace {
 
-String ToImageOrientation(wc_fuzzer::ImageBitmapOptions_ImageOrientation type) {
-  switch (type) {
-    case wc_fuzzer::ImageBitmapOptions_ImageOrientation_ORIENTATION_NONE:
-      return "none";
-    case wc_fuzzer::ImageBitmapOptions_ImageOrientation_FLIPY:
-      return "flipY";
-  }
-}
-
 String ToPremultiplyAlpha(wc_fuzzer::ImageBitmapOptions_PremultiplyAlpha type) {
   switch (type) {
     case wc_fuzzer::ImageBitmapOptions_PremultiplyAlpha_PREMULTIPLY_NONE:
@@ -55,19 +45,6 @@ String ToColorSpaceConversion(
       return "none";
     case wc_fuzzer::ImageBitmapOptions_ColorSpaceConversion_CS_DEFAULT:
       return "default";
-  }
-}
-
-String ToResizeQuality(wc_fuzzer::ImageBitmapOptions_ResizeQuality type) {
-  switch (type) {
-    case wc_fuzzer::ImageBitmapOptions_ResizeQuality_PIXELATED:
-      return "pixelated";
-    case wc_fuzzer::ImageBitmapOptions_ResizeQuality_LOW:
-      return "low";
-    case wc_fuzzer::ImageBitmapOptions_ResizeQuality_MEDIUM:
-      return "medium";
-    case wc_fuzzer::ImageBitmapOptions_ResizeQuality_HIGH:
-      return "high";
   }
 }
 
@@ -106,25 +83,17 @@ DEFINE_BINARY_PROTO_FUZZER(
     image_decoder_init->setData(
         ArrayBufferOrArrayBufferViewOrReadableStream::FromArrayBuffer(
             data_copy));
-
-    Persistent<ImageBitmapOptions> options = ImageBitmapOptions::Create();
-    options->setImageOrientation(
-        ToImageOrientation(proto.config().options().image_orientation()));
-    options->setPremultiplyAlpha(
+    image_decoder_init->setPremultiplyAlpha(
         ToPremultiplyAlpha(proto.config().options().premultiply_alpha()));
-    options->setColorSpaceConversion(ToColorSpaceConversion(
+    image_decoder_init->setColorSpaceConversion(ToColorSpaceConversion(
         proto.config().options().color_space_conversion()));
 
     // Limit resize support to a reasonable value to prevent fuzzer oom.
     constexpr uint32_t kMaxDimension = 4096u;
-    options->setResizeWidth(
+    image_decoder_init->setDesiredWidth(
         std::min(proto.config().options().resize_width(), kMaxDimension));
-    options->setResizeHeight(
+    image_decoder_init->setDesiredHeight(
         std::min(proto.config().options().resize_height(), kMaxDimension));
-    options->setResizeQuality(
-        ToResizeQuality(proto.config().options().resize_quality()));
-    image_decoder_init->setOptions(options);
-
     image_decoder_init->setPreferAnimation(proto.config().prefer_animation());
 
     Persistent<ImageDecoderExternal> image_decoder =

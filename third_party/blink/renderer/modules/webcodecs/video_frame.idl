@@ -47,8 +47,11 @@
   // Presentation duration, in microseconds.
   readonly attribute unsigned long long? duration;
 
+  // JEITA CP-3451 EXIF orientation code. See page 18:
+  // http://www.exif.org/Exif2-2.PDF
+  readonly attribute unsigned short orientation;
+
   // TODO(sandersd): color space metadata.
-  // TODO(sandersd): rotation metadata.
 
   // DEPRECATED: use close() instead.
   // Release held resources immediately.

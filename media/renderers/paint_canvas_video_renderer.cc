@@ -987,8 +987,9 @@ void PaintCanvasVideoRenderer::Paint(
   const bool need_scaling =
       dest_rect.size() != gfx::SizeF(video_frame->visible_rect().size());
   const bool need_translation = !dest_rect.origin().IsOrigin();
-  // TODO(tmathmeyer): apply horizontal / vertical mirroring if needed.
-  bool need_transform = need_rotation || need_scaling || need_translation;
+  const bool needs_y_flip = video_transformation.mirrored;
+  bool need_transform =
+      need_rotation || need_scaling || need_translation || needs_y_flip;
   if (need_transform) {
     canvas->save();
     canvas->translate(
@@ -1016,8 +1017,9 @@ void PaintCanvasVideoRenderer::Paint(
       rotated_dest_size =
           gfx::SizeF(rotated_dest_size.height(), rotated_dest_size.width());
     }
-    canvas->scale(SkFloatToScalar(rotated_dest_size.width() /
-                                  video_frame->visible_rect().width()),
+    canvas->scale((needs_y_flip ? -1 : 1) *
+                      SkFloatToScalar(rotated_dest_size.width() /
+                                      video_frame->visible_rect().width()),
                   SkFloatToScalar(rotated_dest_size.height() /
                                   video_frame->visible_rect().height()));
     canvas->translate(

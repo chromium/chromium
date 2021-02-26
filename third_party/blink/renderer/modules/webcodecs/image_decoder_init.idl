@@ -12,10 +12,14 @@ dictionary ImageDecoderInit {
   // failure.
   required USVString type;
 
-  // Options to use when creating ImageBitmap objects from decoded frames. The
-  // resize width and height are additionally used to facilitate reduced
-  // resolution decoding.
-  ImageBitmapOptions options;
+  // Options used for setting up the decoder. See ImageBitmapOptions.
+  PremultiplyAlpha premultiplyAlpha = "default";
+  ColorSpaceConversion colorSpaceConversion = "default";
+
+  // Some image decoders support reduced resolution decoding. The desired size
+  // can optionally be provided to trigger this behavior.
+  unsigned long desiredWidth;
+  unsigned long desiredHeight;
 
   // For multi-track images, indicates that the animation is preferred over any
   // still images that are present. When unspecified the decoder will use hints

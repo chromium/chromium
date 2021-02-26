@@ -10,11 +10,12 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_decode_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_image_decode_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_decoder_init.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_image_frame.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_track.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -38,9 +39,9 @@ class ImageDecoderTest : public testing::Test {
                                         v8_scope->GetExceptionState());
   }
 
-  ImageFrameExternal* ToImageFrame(V8TestingScope* v8_scope,
-                                   ScriptValue value) {
-    return NativeValueTraits<ImageFrameExternal>::NativeValue(
+  ImageDecodeResult* ToImageDecodeResult(V8TestingScope* v8_scope,
+                                         ScriptValue value) {
+    return NativeValueTraits<ImageDecodeResult>::NativeValue(
         v8_scope->GetIsolate(), value.V8Value(), v8_scope->GetExceptionState());
   }
 
@@ -205,13 +206,14 @@ TEST_F(ImageDecoderTest, DecodeGif) {
     ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
     tester.WaitUntilSettled();
     ASSERT_TRUE(tester.IsFulfilled());
-    auto* frame = ToImageFrame(&v8_scope, tester.Value());
-    EXPECT_TRUE(frame->complete());
+    auto* result = ToImageDecodeResult(&v8_scope, tester.Value());
+    EXPECT_TRUE(result->complete());
+
+    auto* frame = result->image();
     EXPECT_EQ(frame->duration(), 0u);
     EXPECT_EQ(frame->orientation(), 1u);
-
-    auto* bitmap = frame->image();
-    EXPECT_EQ(bitmap->Size(), IntSize(16, 16));
+    EXPECT_EQ(frame->displayWidth(), 16u);
+    EXPECT_EQ(frame->displayHeight(), 16u);
   }
 
   {
@@ -219,13 +221,14 @@ TEST_F(ImageDecoderTest, DecodeGif) {
     ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
     tester.WaitUntilSettled();
     ASSERT_TRUE(tester.IsFulfilled());
-    auto* frame = ToImageFrame(&v8_scope, tester.Value());
-    EXPECT_TRUE(frame->complete());
+    auto* result = ToImageDecodeResult(&v8_scope, tester.Value());
+    EXPECT_TRUE(result->complete());
+
+    auto* frame = result->image();
     EXPECT_EQ(frame->duration(), 0u);
     EXPECT_EQ(frame->orientation(), 1u);
-
-    auto* bitmap = frame->image();
-    EXPECT_EQ(bitmap->Size(), IntSize(16, 16));
+    EXPECT_EQ(frame->displayWidth(), 16u);
+    EXPECT_EQ(frame->displayHeight(), 16u);
   }
 
   // Decoding past the end should result in a rejected promise.

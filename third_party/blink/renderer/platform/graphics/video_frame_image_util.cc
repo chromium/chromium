@@ -85,8 +85,10 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     media::PaintCanvasVideoRenderer* video_renderer,
     const gfx::Rect& dest_rect) {
   DCHECK(frame);
+  const auto transform =
+      frame->metadata().transformation.value_or(media::kNoTransformation);
   if (allow_zero_copy_images && dest_rect.IsEmpty() &&
-      CanUseZeroCopyImages(*frame)) {
+      transform == media::kNoTransformation && CanUseZeroCopyImages(*frame)) {
     // TODO(sandersd): Do we need to be able to handle limited-range RGB? It
     // may never happen, and SkColorSpace doesn't know about it.
     auto sk_color_space =
@@ -126,6 +128,10 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     const auto& visible_rect = frame->visible_rect();
     final_dest_rect =
         gfx::Rect(0, 0, visible_rect.width(), visible_rect.height());
+    if (transform.rotation == media::VIDEO_ROTATION_90 ||
+        transform.rotation == media::VIDEO_ROTATION_270) {
+      final_dest_rect.Transpose();
+    }
   } else if (!resource_provider) {
     DLOG(ERROR) << "An external CanvasResourceProvider must be provided when "
                    "providing a custom destination rect.";
