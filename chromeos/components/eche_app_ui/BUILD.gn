@@ -16,6 +16,10 @@ static_library("eche_app_ui") {
     "eche_app_ui.h",
     "eche_notification_click_handler.cc",
     "eche_notification_click_handler.h",
+    "feature_status.cc",
+    "feature_status.h",
+    "feature_status_provider.cc",
+    "feature_status_provider.h",
     "url_constants.cc",
     "url_constants.h",
   ]
