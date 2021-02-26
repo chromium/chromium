@@ -316,11 +316,11 @@ class CrostiniManager::CrostiniRestarter
     FinishRestart(result);
   }
 
-  void Abort(base::OnceClosure callback) {
+  void Abort(base::OnceClosure callback, CrostiniResult abort_result) {
     is_aborted_ = true;
     observer_list_.Clear();
     abort_callbacks_.push_back(std::move(callback));
-    result_ = CrostiniResult::RESTART_ABORTED;
+    result_ = abort_result;
     // Don't want to use FinishRestart here, because the next restarter in
     // line needs to run.
     RunCallback(result_);
@@ -579,6 +579,13 @@ class CrostiniManager::CrostiniRestarter
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     for (auto& observer : observer_list_) {
       observer.OnVmStarted(success);
+    }
+    // Declare success now if |start_vm_only|.
+    if (options_.start_vm_only) {
+      Abort(base::BindOnce(&CrostiniManager::OnAbortRestartCrostini,
+                           crostini_manager_->weak_ptr_factory_.GetWeakPtr(),
+                           restart_id_, base::DoNothing::Once()),
+            CrostiniResult::SUCCESS);
     }
     if (ReturnEarlyIfAborted()) {
       return;
@@ -1705,23 +1712,6 @@ vm_tools::cicerone::UpgradeContainerRequest::Version ConvertVersion(
   }
 }
 
-// Watches the Crostini restarter until the VM started phase, then aborts the
-// sequence.
-class AbortOnVmStartObserver : public CrostiniManager::RestartObserver {
- public:
-  explicit AbortOnVmStartObserver(
-      base::WeakPtr<CrostiniManager> crostini_manager)
-      : crostini_manager_(crostini_manager) {}
-  void OnVmStarted(bool success) override {
-    if (crostini_manager_) {
-      crostini_manager_->AbortRestartCrostini(restart_id(), base::DoNothing());
-    }
-  }
-
- private:
-  base::WeakPtr<CrostiniManager> crostini_manager_;
-};
-
 }  // namespace
 
 void CrostiniManager::UpgradeContainer(const ContainerId& key,
@@ -1780,43 +1770,6 @@ void CrostiniManager::UpgradeContainer(const ContainerId& key,
     RestartCrostini(key, std::move(do_upgrade_container));
   } else {
     std::move(do_upgrade_container).Run(CrostiniResult::SUCCESS);
-  }
-}
-
-void CrostiniManager::EnsureVmRunning(const ContainerId& key,
-                                      CrostiniResultCallback callback) {
-  const auto& vm_name = key.vm_name;
-  const auto& container_name = key.container_name;
-  if (vm_name.empty()) {
-    LOG(ERROR) << "vm_name is required";
-    std::move(callback).Run(CrostiniResult::CLIENT_ERROR);
-    return;
-  }
-  if (container_name.empty()) {
-    LOG(ERROR) << "container_name is required";
-    std::move(callback).Run(CrostiniResult::CLIENT_ERROR);
-    return;
-  }
-
-  CrostiniResultCallback inner_callback = base::BindOnce(
-      [](CrostiniResultCallback final_callback, CrostiniResult result) {
-        if (result == CrostiniResult::SUCCESS ||
-            result == CrostiniResult::RESTART_ABORTED) {
-          // RESTART_ABORTED is expected when we successfully abort after
-          // launching the VM, turn it into a success since that's what we were
-          // asked for.
-          std::move(final_callback).Run(CrostiniResult::SUCCESS);
-        } else {
-          std::move(final_callback).Run(result);
-        }
-      },
-      std::move(callback));
-
-  if (!IsVmRunning(vm_name)) {
-    RestartCrostini(key, std::move(inner_callback),
-                    new AbortOnVmStartObserver(weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    std::move(inner_callback).Run(CrostiniResult::SUCCESS);
   }
 }
 
@@ -2171,12 +2124,12 @@ CrostiniManager::RestartId CrostiniManager::RestartCrostiniWithOptions(
   restarters_by_container_.emplace(container_id, restart_id);
   restarters_by_id_[restart_id] = std::move(restarter);
 
-  // Observers should observe the first restarter which actually runs.
+  // Observers will watch this restarter and any others that run before it.
   if (observer) {
-    observer->set_restart_id(restart_id);
     auto range = restarters_by_container_.equal_range(container_id);
-    auto restarting_id = range.first->second;
-    restarters_by_id_[restarting_id]->AddObserver(observer);
+    for (auto it = range.first; it != range.second; ++it) {
+      restarters_by_id_[it->second]->AddObserver(observer);
+    }
   }
 
   if (restarters_by_container_.count(container_id) > 1) {
@@ -2203,9 +2156,11 @@ void CrostiniManager::AbortRestartCrostini(
                                                  std::move(callback));
     return;
   }
-  restarter_it->second->Abort(base::BindOnce(
-      &CrostiniManager::OnAbortRestartCrostini, weak_ptr_factory_.GetWeakPtr(),
-      restart_id, std::move(callback)));
+  restarter_it->second->Abort(
+      base::BindOnce(&CrostiniManager::OnAbortRestartCrostini,
+                     weak_ptr_factory_.GetWeakPtr(), restart_id,
+                     std::move(callback)),
+      CrostiniResult::RESTART_ABORTED);
 }
 
 void CrostiniManager::OnAbortRestartCrostini(
@@ -2232,10 +2187,10 @@ void CrostiniManager::OnAbortRestartCrostini(
   // so those shouldn't be accessed after this.
   restarters_by_id_.erase(restarter_it);
 
-  // Kick off the "next" (in no order) pending Restart() if any.
-  auto pending_it = restarters_by_container_.find(key);
-  if (pending_it != restarters_by_container_.end()) {
-    restarters_by_id_[pending_it->second]->Restart();
+  // Kick off the "next" (in order of arrival) pending Restart() if any.
+  range = restarters_by_container_.equal_range(key);
+  if (range.first != range.second) {
+    restarters_by_id_[range.first->second]->Restart();
   }
   std::move(callback).Run();
 }

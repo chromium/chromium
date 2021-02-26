@@ -200,16 +200,10 @@ class CrostiniManager : public KeyedService,
     virtual void OnContainerStarted(CrostiniResult result) {}
     virtual void OnSshKeysFetched(bool success) {}
     virtual void OnContainerMounted(bool success) {}
-
-    RestartId restart_id() const { return restart_id_; }
-
-   protected:
-    friend class CrostiniManager;
-    void set_restart_id(RestartId restart_id) { restart_id_ = restart_id; }
-    RestartId restart_id_ = kUninitializedRestartId;
   };
 
   struct RestartOptions {
+    bool start_vm_only = false;
     // These two options only affect new containers.
     base::Optional<std::string> container_username;
     base::Optional<int64_t> disk_size_bytes;

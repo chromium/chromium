@@ -58,11 +58,13 @@ class CrostiniDiskTestDbus : public CrostiniDiskTest {
 
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
+    test_helper_ = std::make_unique<CrostiniTestHelper>(profile_.get());
     CrostiniManager::GetForProfile(profile_.get())
-        ->AddRunningVmForTesting("vm_name");
+        ->set_skip_restart_for_testing();
   }
 
   void TearDown() override {
+    test_helper_.reset();
     profile_.reset();
     chromeos::DBusThreadManager::Shutdown();
   }
@@ -92,6 +94,7 @@ class CrostiniDiskTestDbus : public CrostiniDiskTest {
   chromeos::FakeConciergeClient* fake_concierge_client_;
 
   std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<CrostiniTestHelper> test_helper_;
 };
 
 TEST_F(CrostiniDiskTest, NonResizeableDiskReturnsEarly) {
