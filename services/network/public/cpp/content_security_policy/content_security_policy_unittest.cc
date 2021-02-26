@@ -647,6 +647,37 @@ TEST(ContentSecurityPolicy, ParseDirectives) {
   }
 }
 
+TEST(ContentSecurityPolicy, ParseAllow) {
+  std::vector<mojom::ContentSecurityPolicyPtr> policies =
+      ParseCSP("allow    'none'");
+  EXPECT_EQ(policies[0]->directives.size(), 0u);
+  EXPECT_EQ(
+      policies[0]->parsing_errors[0],
+      "The 'allow' directive has been replaced with 'default-src'. Please "
+      "use that directive instead, as 'allow' has no effect.");
+}
+
+TEST(ContentSecurityPolicy, ParseOptions) {
+  std::vector<mojom::ContentSecurityPolicyPtr> policies =
+      ParseCSP("options 'unsafe-inline'");
+  EXPECT_EQ(policies[0]->directives.size(), 0u);
+  EXPECT_EQ(policies[0]->parsing_errors[0],
+            "The 'options' directive has been replaced with the "
+            "'unsafe-inline' and 'unsafe-eval' source expressions for the "
+            "'script-src' and 'style-src' directives. Please use those "
+            "directives instead, as 'options' has no effect.");
+}
+
+TEST(ContentSecurityPolicy, ParsePolicyUri) {
+  std::vector<mojom::ContentSecurityPolicyPtr> policies =
+      ParseCSP("policy-uri   https://example.com/my-csp");
+  EXPECT_EQ(policies[0]->directives.size(), 0u);
+  EXPECT_EQ(policies[0]->parsing_errors[0],
+            "The 'policy-uri' directive has been removed from the "
+            "specification. Please specify a complete policy via the "
+            "Content-Security-Policy header.");
+}
+
 TEST(ContentSecurityPolicy, ParsePluginTypes) {
   std::vector<mojom::ContentSecurityPolicyPtr> policies =
       ParseCSP("plugin-types    application/pdf text/plain");
@@ -789,10 +820,9 @@ TEST(ContentSecurityPolicy, ParseReportEndpoint) {
   {
     scoped_refptr<net::HttpResponseHeaders> headers(
         new net::HttpResponseHeaders("HTTP/1.1 200 OK"));
-    headers->SetHeader("Content-Security-Policy",
-                       "report-uri http://example.com/report");
+    headers->SetHeader("Content-Security-Policy", "report-uri report");
     std::vector<mojom::ContentSecurityPolicyPtr> policies;
-    AddContentSecurityPolicyFromHeaders(*headers, GURL("https://example.com/"),
+    AddContentSecurityPolicyFromHeaders(*headers, GURL("http://example.com/"),
                                         &policies);
 
     auto& report_endpoints = policies[0]->report_endpoints;
@@ -801,20 +831,59 @@ TEST(ContentSecurityPolicy, ParseReportEndpoint) {
     EXPECT_FALSE(policies[0]->use_reporting_api);
   }
 
-  // report-to directive.
+  // report-uri directive, url ignored because of mixed content.
   {
     scoped_refptr<net::HttpResponseHeaders> headers(
         new net::HttpResponseHeaders("HTTP/1.1 200 OK"));
     headers->SetHeader("Content-Security-Policy",
-                       "report-to http://example.com/report");
+                       "report-uri http://example.com/report");
+    std::vector<mojom::ContentSecurityPolicyPtr> policies;
+    AddContentSecurityPolicyFromHeaders(*headers, GURL("https://example.com/"),
+                                        &policies);
+
+    auto& report_endpoints = policies[0]->report_endpoints;
+    EXPECT_TRUE(report_endpoints.empty());
+    EXPECT_EQ(policies[0]->parsing_errors.size(), 1U);
+    EXPECT_EQ(policies[0]->parsing_errors[0],
+              "The Content Security Policy directive 'report-uri' specifies as "
+              "endpoint 'http://example.com/report'. This endpoint will be "
+              "ignored since it violates the policy for Mixed Content.");
+  }
+
+  // report-to directive.
+  {
+    scoped_refptr<net::HttpResponseHeaders> headers(
+        new net::HttpResponseHeaders("HTTP/1.1 200 OK"));
+    headers->SetHeader("Content-Security-Policy", "report-to group");
     std::vector<mojom::ContentSecurityPolicyPtr> policies;
     AddContentSecurityPolicyFromHeaders(*headers, GURL("https://example.com/"),
                                         &policies);
 
     auto& report_endpoints = policies[0]->report_endpoints;
     EXPECT_EQ(report_endpoints.size(), 1U);
-    EXPECT_EQ(report_endpoints[0], "http://example.com/report");
+    EXPECT_EQ(report_endpoints[0], "group");
     EXPECT_TRUE(policies[0]->use_reporting_api);
+  }
+
+  // Multiple report-to directive.
+  {
+    scoped_refptr<net::HttpResponseHeaders> headers(
+        new net::HttpResponseHeaders("HTTP/1.1 200 OK"));
+    headers->SetHeader("Content-Security-Policy",
+                       "report-to group1 group2 group3");
+    std::vector<mojom::ContentSecurityPolicyPtr> policies;
+    AddContentSecurityPolicyFromHeaders(*headers, GURL("https://example.com/"),
+                                        &policies);
+
+    auto& report_endpoints = policies[0]->report_endpoints;
+    EXPECT_EQ(report_endpoints.size(), 1U);
+    EXPECT_EQ(report_endpoints[0], "group1");
+    EXPECT_TRUE(policies[0]->use_reporting_api);
+    EXPECT_EQ(policies[0]->parsing_errors.size(), 1U);
+    EXPECT_EQ(policies[0]->parsing_errors[0],
+              "The Content Security Policy directive 'report-to' contains more "
+              "than one endpoint. Only the first one will be used, the other "
+              "ones will be ignored.");
   }
 
   // Multiple directives. The report-to directive always takes priority.
@@ -834,6 +903,7 @@ TEST(ContentSecurityPolicy, ParseReportEndpoint) {
     EXPECT_EQ(report_endpoints[0], "http://example.com/report3");
     EXPECT_TRUE(policies[0]->use_reporting_api);
   }
+
   {
     scoped_refptr<net::HttpResponseHeaders> headers(
         new net::HttpResponseHeaders("HTTP/1.1 200 OK"));
@@ -842,7 +912,7 @@ TEST(ContentSecurityPolicy, ParseReportEndpoint) {
     headers->AddHeader("Content-Security-Policy",
                        "report-uri http://example.com/report2");
     std::vector<mojom::ContentSecurityPolicyPtr> policies;
-    AddContentSecurityPolicyFromHeaders(*headers, GURL("https://example.com/"),
+    AddContentSecurityPolicyFromHeaders(*headers, GURL("http://example.com/"),
                                         &policies);
 
     auto& report_endpoints = policies[0]->report_endpoints;

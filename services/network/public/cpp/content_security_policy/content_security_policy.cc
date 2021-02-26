@@ -723,16 +723,23 @@ network::mojom::CSPTrustedTypesPtr ParseTrustedTypes(
 
 // Parses a reporting directive.
 // https://w3c.github.io/webappsec-csp/#directives-reporting
-// TODO(lfg): The report-to should be treated as a single token according to the
-// spec, but this implementation accepts multiple endpoints
-// https://crbug.com/916265.
 void ParseReportDirective(const GURL& request_url,
                           base::StringPiece value,
                           bool using_reporting_api,
-                          std::vector<std::string>* report_endpoints) {
-  for (const auto& uri : base::SplitStringPiece(value, base::kWhitespaceASCII,
-                                                base::TRIM_WHITESPACE,
-                                                base::SPLIT_WANT_NONEMPTY)) {
+                          std::vector<std::string>* report_endpoints,
+                          std::vector<std::string>& parsing_errors) {
+  std::vector<base::StringPiece> values =
+      base::SplitStringPiece(value, base::kWhitespaceASCII,
+                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  if (using_reporting_api && values.size() > 1) {
+    parsing_errors.emplace_back(
+        "The Content Security Policy directive 'report-to' contains more than "
+        "one endpoint. Only the first one will be used, the other ones will be "
+        "ignored.");
+  }
+
+  for (const auto& uri : values) {
     // There are two types of reporting directive:
     //
     // - "report-uri (uri)+"
@@ -744,15 +751,28 @@ void ParseReportDirective(const GURL& request_url,
     if (using_reporting_api) {
       report_endpoints->push_back(uri.as_string());
 
-      // 'report-to' only allows for a single token. The following ones are
-      // ignored. A console error warning is displayed from blink's CSP parser.
+      // 'report-to' only allows for a single token.
       break;
     } else {
       GURL url = request_url.Resolve(uri);
 
-      // TODO(lfg): Emit a warning when parsing an invalid reporting URL.
-      if (!url.is_valid())
+      if (request_url.SchemeIs(url::kHttpsScheme) &&
+          !IsUrlPotentiallyTrustworthy(url)) {
+        parsing_errors.emplace_back(base::StringPrintf(
+            "The Content Security Policy directive 'report-uri' specifies as "
+            "endpoint '%s'. This endpoint will be ignored since it violates "
+            "the policy for Mixed Content.",
+            uri.as_string().c_str()));
         continue;
+      }
+
+      if (!url.is_valid()) {
+        parsing_errors.emplace_back(base::StringPrintf(
+            "The Content Security Policy directive 'report-uri' specifies an "
+            "invalid endpoint '%s'. It will be ignored.",
+            uri.as_string().c_str()));
+        continue;
+      }
       report_endpoints->push_back(url.spec());
     }
   }
@@ -787,11 +807,28 @@ mojom::CSPSourcePtr ComputeSelfOrigin(const GURL& url) {
 
 std::string UnrecognizedDirectiveErrorMessage(
     const std::string& directive_name) {
+  if (base::EqualsCaseInsensitiveASCII(directive_name, "allow")) {
+    return "The 'allow' directive has been replaced with 'default-src'. Please "
+           "use that directive instead, as 'allow' has no effect.";
+  }
+
+  if (base::EqualsCaseInsensitiveASCII(directive_name, "options")) {
+    return "The 'options' directive has been replaced with the 'unsafe-inline' "
+           "and 'unsafe-eval' source expressions for the 'script-src' and "
+           "'style-src' directives. Please use those directives instead, as "
+           "'options' has no effect.";
+  }
+
+  if (base::EqualsCaseInsensitiveASCII(directive_name, "policy-uri")) {
+    return "The 'policy-uri' directive has been removed from the "
+           "specification. Please specify a complete policy via the "
+           "Content-Security-Policy header.";
+  }
+
   if (base::EqualsCaseInsensitiveASCII(directive_name, "plugin-types")) {
     return "The Content-Security-Policy directive 'plugin-types' has been "
-           "removed from the "
-           "specification. If you want to block plugins, consider specifying "
-           "\"object-src 'none'\" instead.";
+           "removed from the specification. If you want to block plugins, "
+           "consider specifying \"object-src 'none'\" instead.";
   }
 
   return base::StringPrintf(
@@ -895,7 +932,10 @@ void AddContentSecurityPolicyFromHeader(base::StringPiece header,
                                                mojom::WebSandboxFlags::kNone);
           out->sandbox = sandbox.flags;
           if (!sandbox.error_message.empty())
-            out->parsing_errors.emplace_back(std::move(sandbox.error_message));
+            out->parsing_errors.emplace_back(
+                "Error while parsing the 'sandbox' Content Security Policy "
+                "directive: " +
+                sandbox.error_message);
         }
         break;
       case CSPDirectiveName::UpgradeInsecureRequests:
@@ -925,13 +965,13 @@ void AddContentSecurityPolicyFromHeader(base::StringPiece header,
         out->use_reporting_api = true;
         out->report_endpoints.clear();
         ParseReportDirective(base_url, directive.second, out->use_reporting_api,
-                             &(out->report_endpoints));
+                             &(out->report_endpoints), out->parsing_errors);
         break;
       case CSPDirectiveName::ReportURI:
         if (!out->use_reporting_api)
           ParseReportDirective(base_url, directive.second,
-                               out->use_reporting_api,
-                               &(out->report_endpoints));
+                               out->use_reporting_api, &(out->report_endpoints),
+                               out->parsing_errors);
         break;
       case CSPDirectiveName::Unknown:
         break;
