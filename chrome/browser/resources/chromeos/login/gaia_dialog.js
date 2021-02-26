@@ -216,6 +216,12 @@ Polymer({
       'dialogHidden': (e) => {
         this.navigationEnabled = true;
       },
+      'exit': (e) => {
+        this.fire('exit', e.detail);
+      },
+      'removeUserByEmail': (e) => {
+        this.fire('removeuserbyemail', e.detail);
+      },
     };
 
     for (var eventName in authenticatorEventListeners) {

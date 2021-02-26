@@ -48,7 +48,9 @@
         on-webviewerror="onLoadAbortMessage_"
         on-ready="onAuthReady_"
         on-showview="onShowView_"
-        on-startenrollment="onStartEnrollment_">
+        on-startenrollment="onStartEnrollment_"
+        on-exit="onExitMessage_"
+        on-removeuserbyemail="onRemoveUserByEmailMessage_">
     </gaia-dialog>
     <security-token-pin id="pinDialog" parameters="[[pinDialogParameters_]]"
         for-step="pin" on-cancel="onPinDialogCanceled_"
