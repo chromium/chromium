@@ -157,7 +157,7 @@
 
         <!-- List of networks (empty if no networks exist). -->
         <template is="dom-if"
-            if="[[shouldShowNetworkList_(networkStateList_)]]">
+            if="[[shouldShowNetworkList_(networkStateList_, deviceState)]]">
           <network-list id="networkList" show-buttons
               show-technology-badge="[[showTechnologyBadge_]]"
               networks="[[networkStateList_]]"
@@ -168,7 +168,8 @@
 
         <!-- List of cellular and instant tethering networks -->
         <template is="dom-if"
-            if="[[shouldShowCellularNetworkList_(networkStateList_)]]">
+            if="[[shouldShowCellularNetworkList_(networkStateList_,
+                                                 deviceState)]]">
           <cellular-networks-list id="cellularNetworkList"
               networks="[[networkStateList_]]"
               show-technology-badge="[[showTechnologyBadge_]]"
@@ -202,7 +203,7 @@
         <!-- Text shown if no networks exist. -->
         <settings-localized-link
             class="no-networks"
-            hidden="[[hideNoNetworksMessage_(networkStateList_)]]"
+            hidden="[[hideNoNetworksMessage_(networkStateList_, deviceState)]]"
             localized-string=
                 "[[getNoNetworksInnerHtml_(deviceState, tetherDeviceState)]]">
         </settings-localized-link>
