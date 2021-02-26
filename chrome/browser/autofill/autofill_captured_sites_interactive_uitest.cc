@@ -46,6 +46,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
@@ -238,6 +239,8 @@ class AutofillCapturedSitesInteractiveTest
         /*enabled_features=*/{features::kAutofillShowTypePredictions},
         /*disabled_features=*/{features::kAutofillCacheQueryResponses});
     command_line->AppendSwitch(switches::kShowAutofillTypePredictions);
+    command_line->AppendSwitchASCII(
+        variations::switches::kVariationsOverrideCountry, "us");
     command_line->AppendSwitchASCII(::switches::kForceFieldTrials, "Foo/Bar");
 
     captured_sites_test_utils::TestRecipeReplayer::SetUpCommandLine(
