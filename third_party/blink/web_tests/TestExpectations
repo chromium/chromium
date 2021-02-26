@@ -5763,3 +5763,5 @@ crbug.com/1182682 [ Linux ] http/tests/devtools/service-workers/service-workers-
 crbug.com/1182688 [ Mac10.14 ] external/wpt/css/css-color/rgba-004.html [ Failure ]
 crbug.com/1182689 [ Mac10.14 ] external/wpt/editing/run/delete.html?6001-last [ Failure ]
 crbug.com/1182690 [ Mac10.14 ] virtual/system-color-compute/external/wpt/css/css-color/rgba-004.html [ Failure ]
+crbug.com/1182511 [ Linux ] external/wpt/pointerevents/pointerevent_movementxy.html?touch [ Pass Failure ]
+crbug.com/1182691 [ Linux ] external/wpt/webcodecs/audio-encoder.any.html [ Pass Failure ]
