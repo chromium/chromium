@@ -4,6 +4,9 @@
 
 #include "components/autofill_assistant/browser/web/web_controller.h"
 
+#include <chrono>
+#include <thread>
+
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
@@ -239,26 +242,57 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
     }
   }
 
-  void ScrollToElementPosition(const Selector& selector,
-                               const TopPadding& top_padding) {
+  void ScrollToElementPosition(
+      const Selector& selector,
+      const TopPadding& top_padding,
+      const Selector& container_selector = Selector()) {
     base::RunLoop run_loop;
     ClientStatus result;
+    if (container_selector.empty()) {
+      web_controller_->FindElement(
+          selector, /* strict_mode= */ true,
+          base::BindOnce(
+              &WebControllerBrowserTest::FindScrollToElementPositionCallback,
+              base::Unretained(this), top_padding, run_loop.QuitClosure(),
+              &result, nullptr));
+    } else {
+      web_controller_->FindElement(
+          container_selector, /* strict_mode= */ true,
+          base::BindOnce(&WebControllerBrowserTest::FindContainerCallback,
+                         base::Unretained(this), selector, top_padding,
+                         run_loop.QuitClosure(), &result));
+    }
+
+    run_loop.Run();
+    EXPECT_EQ(ACTION_APPLIED, result.proto_status());
+  }
+
+  void FindContainerCallback(
+      const Selector& selector,
+      const TopPadding& top_padding,
+      base::OnceClosure done_callback,
+      ClientStatus* result_output,
+      const ClientStatus& status,
+      std::unique_ptr<ElementFinder::Result> container_result) {
+    if (!status.ok()) {
+      *result_output = status;
+      std::move(done_callback).Run();
+      return;
+    }
 
     web_controller_->FindElement(
         selector, /* strict_mode= */ true,
         base::BindOnce(
             &WebControllerBrowserTest::FindScrollToElementPositionCallback,
-            base::Unretained(this), top_padding, run_loop.QuitClosure(),
-            &result));
-
-    run_loop.Run();
-    EXPECT_EQ(ACTION_APPLIED, result.proto_status());
+            base::Unretained(this), top_padding, std::move(done_callback),
+            result_output, std::move(container_result)));
   }
 
   void FindScrollToElementPositionCallback(
       const TopPadding& top_padding,
       base::OnceClosure done_callback,
       ClientStatus* result_output,
+      std::unique_ptr<ElementFinder::Result> container_result,
       const ClientStatus& status,
       std::unique_ptr<ElementFinder::Result> element_result) {
     if (!status.ok()) {
@@ -270,7 +304,7 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
     ASSERT_TRUE(element_result != nullptr);
     const ElementFinder::Result* element_result_ptr = element_result.get();
     web_controller_->ScrollToElementPosition(
-        *element_result_ptr, top_padding,
+        std::move(container_result), *element_result_ptr, top_padding,
         base::BindOnce(&WebControllerBrowserTest::ElementRetainingCallback,
                        base::Unretained(this), std::move(element_result),
                        std::move(done_callback), result_output));
@@ -1736,6 +1770,29 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, ScrollToElementPosition) {
   TopPadding top_padding;
   ScrollToElementPosition(selector, top_padding);
   EXPECT_EQ(true, content::EvalJs(shell(), checkVisibleScript));
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
+                       ScrollToElementPositionWithContainer) {
+  Selector selector({"#scroll_item_2"});
+  Selector container_selector({"#scroll_container"});
+
+  TopPadding top_padding{0, TopPadding::Unit::PIXELS};
+
+  // std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+  ScrollToElementPosition(selector, top_padding, container_selector);
+  base::ListValue eval_result = content::EvalJs(shell(), R"(
+      let item = document.querySelector("#scroll_item_2");
+      let itemRect = item.getBoundingClientRect();
+      let container = document.querySelector("#scroll_container");
+      let containerRect = container.getBoundingClientRect();
+      [itemRect.top, containerRect.top])")
+                                    .ExtractList();
+  double element_top = eval_result.GetList()[0].GetDouble();
+  double container_top = eval_result.GetList()[1].GetDouble();
+
+  // Element is at the desired position.
+  EXPECT_NEAR(element_top, container_top, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,

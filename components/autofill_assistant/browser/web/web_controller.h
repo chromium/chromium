@@ -149,9 +149,12 @@ class WebController {
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
-  // Scroll to an |element|'s position. |top_padding| specifies the padding
-  // between the focused element and the top.
+  // Scrolls |container| to an |element|'s position. |top_padding|
+  // specifies the padding between the focused element and the top of the
+  // container. If |scrollable_element| is not specified, the window will be
+  // scrolled instead.
   virtual void ScrollToElementPosition(
+      std::unique_ptr<ElementFinder::Result> container,
       const ElementFinder::Result& element,
       const TopPadding& top_padding,
       base::OnceCallback<void(const ClientStatus&)> callback);

@@ -88,13 +88,16 @@ class MockWebController : public WebController {
                     base::OnceCallback<void(const ClientStatus&)>& callback));
 
   void ScrollToElementPosition(
+      std::unique_ptr<ElementFinder::Result> scrollable_element,
       const ElementFinder::Result& element,
       const TopPadding& top_padding,
       base::OnceCallback<void(const ClientStatus&)> callback) override {
-    OnScrollToElementPosition(element, top_padding, callback);
+    OnScrollToElementPosition(std::move(scrollable_element), element,
+                              top_padding, callback);
   }
-  MOCK_METHOD3(OnScrollToElementPosition,
-               void(const ElementFinder::Result& element,
+  MOCK_METHOD4(OnScrollToElementPosition,
+               void(std::unique_ptr<ElementFinder::Result> scrollable_element,
+                    const ElementFinder::Result& element,
                     const TopPadding& top_padding,
                     base::OnceCallback<void(const ClientStatus&)>& callback));
 

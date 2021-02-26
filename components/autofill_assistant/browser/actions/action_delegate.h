@@ -214,6 +214,8 @@ class ActionDelegate {
 
   // Scroll to an |element|'s position. |top_padding| specifies the padding
   // between the focused element and the top.
+  // If |container| is specified, that container will be scrolled, if
+  // it's null the window will be scrolled.
   // TODO(b/168107066): The selector is only used for storing the previously
   // selected element and is not being used to resolve it. This is required for
   // the current implementation of |ScriptExecutor| that repeats the focus
@@ -221,6 +223,7 @@ class ActionDelegate {
   virtual void ScrollToElementPosition(
       const Selector& selector,
       const TopPadding& top_padding,
+      std::unique_ptr<ElementFinder::Result> container,
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) = 0;
 
