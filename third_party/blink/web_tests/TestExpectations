@@ -5766,3 +5766,4 @@ crbug.com/1182690 [ Mac10.14 ] virtual/system-color-compute/external/wpt/css/css
 crbug.com/1182511 [ Linux ] external/wpt/pointerevents/pointerevent_movementxy.html?touch [ Pass Failure ]
 crbug.com/1182691 [ Linux ] external/wpt/webcodecs/audio-encoder.any.html [ Pass Failure ]
 crbug.com/1182727 [ Mac10.13 ] http/tests/inspector-protocol/page/page-setProduceCompilationCache.js [ Pass Failure ]
+crbug.com/1182749 [ Win7 ] virtual/synchronous_html_parser/http/tests/inspector-protocol/page/page-setProduceCompilationCache.js [ Pass Failure ]
