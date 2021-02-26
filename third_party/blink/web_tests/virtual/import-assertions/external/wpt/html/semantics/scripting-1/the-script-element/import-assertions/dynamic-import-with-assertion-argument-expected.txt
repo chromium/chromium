@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS Dynamic import with an empty assert clause should succeed
+PASS Dynamic import with an unsupported import assertion should succeed
+PASS Dynamic import with an unsupported type assertion should fail
+Harness: the test ran to completion.
+
