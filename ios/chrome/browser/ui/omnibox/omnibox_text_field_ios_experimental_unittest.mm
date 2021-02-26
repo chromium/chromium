@@ -1,8 +1,8 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/omnibox/omnibox_text_field_legacy.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_text_field_experimental.h"
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -24,14 +24,14 @@
 
 namespace {
 
-class OmniboxTextFieldTest : public PlatformTest {
+class OmniboxTextFieldExperimentalTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
     // This rect is fairly arbitrary. The text field just needs a non-zero width
     // so that the pre-edit label's text alignment can be tested.
     CGRect rect = CGRectMake(0, 0, 100, 20);
-    textfield_ = [[OmniboxTextFieldLegacy alloc] initWithFrame:rect];
+    textfield_ = [[OmniboxTextFieldExperimental alloc] initWithFrame:rect];
     [[[UIApplication sharedApplication] keyWindow] addSubview:textfield_];
   }
 
@@ -72,8 +72,8 @@ class OmniboxTextFieldTest : public PlatformTest {
     // |positionFromPosition:offset:| is documented to return nil.  This is used
     // as a signal to stop incrementing that offset and reset (or end the test).
     while (start) {
-      UITextPosition* end =
-          [textfield_ positionFromPosition:beginning offset:j];
+      UITextPosition* end = [textfield_ positionFromPosition:beginning
+                                                      offset:j];
       while (end) {
         [textfield_
             setSelectedTextRange:[textfield_ textRangeFromPosition:start
@@ -109,43 +109,13 @@ class OmniboxTextFieldTest : public PlatformTest {
   OmniboxTextFieldIOS* textfield_;
 };
 
-TEST_F(OmniboxTextFieldTest, enterPreEditState_preEditTextAlignment_short) {
-  [textfield_ setText:@"s"];
-  [textfield_ becomeFirstResponder];
-  [textfield_ enterPreEditState];
-  UILabel* preEditLabel = [textfield_ preEditStaticLabel];
-  EXPECT_EQ(NSTextAlignmentLeft, preEditLabel.textAlignment);
-  [textfield_ resignFirstResponder];
-}
-
-TEST_F(OmniboxTextFieldTest, enterPreEditState_preEditTextAlignment_long) {
-  [textfield_ setText:@"some really long text that is wider than the omnibox"];
-  [textfield_ becomeFirstResponder];
-  [textfield_ enterPreEditState];
-  UILabel* preEditLabel = [textfield_ preEditStaticLabel];
-  EXPECT_EQ(NSTextAlignmentRight, preEditLabel.textAlignment);
-  [textfield_ resignFirstResponder];
-}
-
-TEST_F(OmniboxTextFieldTest, enterPreEditState_preEditTextAlignment_change) {
-  [textfield_ setText:@"s"];
-  [textfield_ becomeFirstResponder];
-  [textfield_ enterPreEditState];
-  // Simulate changing the omnibox text while in pre-edit state.
-  [textfield_ setText:@"some really long text that is wider than the omnibox"];
-  [textfield_ layoutSubviews];
-  UILabel* preEditLabel = [textfield_ preEditStaticLabel];
-  EXPECT_EQ(NSTextAlignmentLeft, preEditLabel.textAlignment);
-  [textfield_ resignFirstResponder];
-}
-
 // TODO:(crbug.com/1156541): Re-enable this test on devices.
 #if TARGET_OS_SIMULATOR
 #define MAYBE_SelectedRanges SelectedRanges
 #else
 #define MAYBE_SelectedRanges FLAKY_SelectedRanges
 #endif
-TEST_F(OmniboxTextFieldTest, MAYBE_SelectedRanges) {
+TEST_F(OmniboxTextFieldExperimentalTest, MAYBE_SelectedRanges) {
   base::FilePath test_data_directory;
   ASSERT_TRUE(base::PathService::Get(ios::DIR_TEST_DATA, &test_data_directory));
   base::FilePath test_file = test_data_directory.Append(
@@ -164,21 +134,21 @@ TEST_F(OmniboxTextFieldTest, MAYBE_SelectedRanges) {
   }
 }
 
-TEST_F(OmniboxTextFieldTest, SelectExitsPreEditState) {
+TEST_F(OmniboxTextFieldExperimentalTest, SelectExitsPreEditState) {
   [textfield_ enterPreEditState];
   EXPECT_TRUE([textfield_ isPreEditing]);
   [textfield_ select:nil];
   EXPECT_FALSE([textfield_ isPreEditing]);
 }
 
-TEST_F(OmniboxTextFieldTest, SelectAllExitsPreEditState) {
+TEST_F(OmniboxTextFieldExperimentalTest, SelectAllExitsPreEditState) {
   [textfield_ enterPreEditState];
   EXPECT_TRUE([textfield_ isPreEditing]);
   [textfield_ selectAll:nil];
   EXPECT_FALSE([textfield_ isPreEditing]);
 }
 
-TEST_F(OmniboxTextFieldTest, CopyInPreedit) {
+TEST_F(OmniboxTextFieldExperimentalTest, CopyInPreedit) {
   id delegateMock = OCMProtocolMock(@protocol(OmniboxTextFieldDelegate));
   NSString* testString = @"omnibox test string";
   [textfield_ setText:testString];
@@ -192,7 +162,7 @@ TEST_F(OmniboxTextFieldTest, CopyInPreedit) {
   [delegateMock verify];
 }
 
-TEST_F(OmniboxTextFieldTest, CutInPreedit) {
+TEST_F(OmniboxTextFieldExperimentalTest, CutInPreedit) {
   id delegateMock = OCMProtocolMock(@protocol(OmniboxTextFieldDelegate));
   NSString* testString = @"omnibox test string";
   [textfield_ setText:testString];

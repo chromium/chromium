@@ -114,8 +114,12 @@ source_set("omnibox_internal") {
     "omnibox_mediator.mm",
     "omnibox_text_change_delegate.h",
     "omnibox_text_field_delegate.h",
+    "omnibox_text_field_experimental.h",
+    "omnibox_text_field_experimental.mm",
     "omnibox_text_field_ios.h",
     "omnibox_text_field_ios.mm",
+    "omnibox_text_field_legacy.h",
+    "omnibox_text_field_legacy.mm",
     "omnibox_text_field_paste_delegate.h",
     "omnibox_text_field_paste_delegate.mm",
     "omnibox_view_controller.h",
@@ -251,6 +255,7 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
+    "omnibox_text_field_ios_experimental_unittest.mm",
     "omnibox_text_field_ios_unittest.mm",
     "omnibox_view_ios_unittest.mm",
   ]

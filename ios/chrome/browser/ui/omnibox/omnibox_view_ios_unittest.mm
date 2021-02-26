@@ -6,6 +6,7 @@
 
 #include "base/test/task_environment.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_text_field_legacy.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -22,7 +23,7 @@ class OmniboxViewIOSTest : public PlatformTest {
     PlatformTest::SetUp();
     TestChromeBrowserState::Builder test_cbs_builder;
     browser_state_ = test_cbs_builder.Build();
-    mockOmniboxTextfield_ = OCMClassMock([OmniboxTextFieldIOS class]);
+    mockOmniboxTextfield_ = OCMClassMock([OmniboxTextFieldLegacy class]);
     view_ = std::make_unique<OmniboxViewIOS>(
         mockOmniboxTextfield_, /* WebOmniboxEditController*/ nullptr,
         /*id<OmniboxLeftImageConsumer> */ nil, browser_state_.get(),
@@ -33,7 +34,7 @@ class OmniboxViewIOSTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   // The tested object.
   std::unique_ptr<OmniboxViewIOS> view_;
-  // Mock for the OmniboxTextFieldIOS.
+  // Mock for the OmniboxTextFieldLegacy.
   id mockOmniboxTextfield_;
   // Message loop for the main test thread.
   base::test::TaskEnvironment environment_;

@@ -30,6 +30,7 @@
 #include "ios/chrome/browser/ui/omnibox/omnibox_text_field_paste_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
 #include "ios/chrome/browser/ui/omnibox/web_omnibox_edit_controller.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -451,12 +452,14 @@ bool OmniboxViewIOS::OnWillChange(NSRange range, NSString* new_text) {
   if ([field_ isPreEditing]) {
     [field_ setClearingPreEditText:YES];
 
-    // Exit the pre-editing state in OnWillChange() instead of OnDidChange(), as
-    // that allows IME to continue working.  The following code selects the text
-    // as if the pre-edit fake selection was real.
-    [field_ exitPreEditState];
+    if (!base::FeatureList::IsEnabled(kIOSNewOmniboxImplementation)) {
+      // Exit the pre-editing state in OnWillChange() instead of OnDidChange(),
+      // as that allows IME to continue working.  The following code selects the
+      // text as if the pre-edit fake selection was real.
+      [field_ exitPreEditState];
 
-    field_.text = @"";
+      field_.text = @"";
+    }
 
     // Reset |range| to be of zero-length at location zero, as the field will be
     // now cleared.
@@ -490,8 +493,12 @@ bool OmniboxViewIOS::OnWillChange(NSRange range, NSString* new_text) {
             NSMakeRange(field_.text.length, field_.autocompleteText.length);
       }
     } else if (deleting_text) {
-      if ([new_text length] == 0 &&
-          range.location == [field_.text length] - 1) {
+      NSString* userText = field_.text;
+      if (base::FeatureList::IsEnabled(kIOSNewOmniboxImplementation)) {
+        userText = field_.userText;
+      }
+
+      if ([new_text length] == 0 && range.location == [userText length] - 1) {
         ok_to_change = false;
       }
     }
@@ -521,6 +528,11 @@ bool OmniboxViewIOS::OnWillChange(NSRange range, NSString* new_text) {
 }
 
 void OmniboxViewIOS::OnDidChange(bool processing_user_event) {
+  if (base::FeatureList::IsEnabled(kIOSNewOmniboxImplementation)) {
+    if (field_.isPreEditing)
+      [field_ exitPreEditState];
+  }
+
   // Sanitize pasted text.
   if (model() && model()->is_pasting()) {
     base::string16 pastedText = base::SysNSStringToUTF16(field_.text);
@@ -600,7 +612,11 @@ void OmniboxViewIOS::OnCopy() {
   NSString* selectedText = nil;
   NSInteger start_location = 0;
   if ([field_ isPreEditing]) {
-    selectedText = field_.preEditText;
+    if (base::FeatureList::IsEnabled(kIOSNewOmniboxImplementation)) {
+      selectedText = field_.text;
+    } else {
+      selectedText = field_.preEditText;
+    }
     start_location = 0;
   } else {
     UITextRange* selected_range = [field_ selectedTextRange];
