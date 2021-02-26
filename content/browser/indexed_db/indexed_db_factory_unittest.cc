@@ -658,6 +658,13 @@ TEST_F(IndexedDBFactoryTest, DeleteDatabaseWithForceClose) {
   std::tie(connection, db_callbacks) =
       CreateConnectionForDatatabase(origin, name);
 
+  base::RunLoop run_loop;
+  factory()->CallOnDatabaseDeletedForTesting(base::BindLambdaForTesting(
+      [&origin, &run_loop](const url::Origin& deleted_origin) {
+        if (deleted_origin == origin)
+          run_loop.Quit();
+      }));
+
   auto callbacks = base::MakeRefCounted<MockIndexedDBCallbacks>(
       /*expect_connection=*/false);
 
@@ -670,6 +677,10 @@ TEST_F(IndexedDBFactoryTest, DeleteDatabaseWithForceClose) {
   EXPECT_TRUE(db_callbacks->forced_close_called());
   EXPECT_TRUE(factory()->GetOriginFactory(origin));
   EXPECT_TRUE(factory()->GetOriginFactory(origin)->IsClosing());
+
+  // Wait until the DB is deleted before tearing down since these concurrent
+  // operations may conflict.
+  run_loop.Run();
 }
 
 TEST_F(IndexedDBFactoryTest, GetDatabaseNames_NoFactory) {

@@ -140,6 +140,10 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
                        leveldb::Status s,
                        const char* message);
 
+  using OnDatabaseDeletedCallback =
+      base::RepeatingCallback<void(const url::Origin& deleted_origin)>;
+  void CallOnDatabaseDeletedForTesting(OnDatabaseDeletedCallback callback);
+
  protected:
   // Used by unittests to allow subclassing of IndexedDBBackingStore.
   virtual std::unique_ptr<IndexedDBBackingStore> CreateBackingStore(
@@ -226,6 +230,8 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
       factories_per_origin_;
 
   std::set<url::Origin> backends_opened_since_startup_;
+
+  OnDatabaseDeletedCallback call_on_database_deleted_for_testing_;
 
   // Weak pointers from this factory are used to bind the RemoveOriginState()
   // function, which deletes the IndexedDBOriginState object. This allows those

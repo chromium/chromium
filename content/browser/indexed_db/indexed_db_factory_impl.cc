@@ -965,6 +965,9 @@ void IndexedDBFactoryImpl::OnDatabaseError(const url::Origin& origin,
 
 void IndexedDBFactoryImpl::OnDatabaseDeleted(const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (call_on_database_deleted_for_testing_)
+    call_on_database_deleted_for_testing_.Run(origin);
+
   if (!context_)
     return;
   context_->DatabaseDeleted(origin);
@@ -1056,6 +1059,11 @@ bool IndexedDBFactoryImpl::OnMemoryDump(
                        total_memory_in_flight.ValueOrDefault(0));
   }
   return true;
+}
+
+void IndexedDBFactoryImpl::CallOnDatabaseDeletedForTesting(
+    OnDatabaseDeletedCallback callback) {
+  call_on_database_deleted_for_testing_ = std::move(callback);
 }
 
 }  // namespace content
