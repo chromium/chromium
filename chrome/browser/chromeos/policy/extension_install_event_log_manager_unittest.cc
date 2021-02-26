@@ -22,7 +22,6 @@
 #include "base/values.h"
 #include "chrome/browser/chromeos/policy/extension_install_event_log.h"
 #include "chrome/browser/chromeos/policy/install_event_log_util.h"
-#include "chrome/browser/policy/messaging_layer/public/mock_report_queue.h"
 #include "chrome/browser/profiles/reporting_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/system/fake_statistics_provider.h"
@@ -30,6 +29,7 @@
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/reporting/client/mock_report_queue.h"
 #include "components/reporting/util/status.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/quota_service.h"
@@ -122,18 +122,13 @@ base::Value ConvertEventsToValue(const Events& events, Profile* profile) {
 }
 
 MATCHER_P(MatchEvents, expected, "contains events") {
-  std::string arg_serialized_string;
-  JSONStringValueSerializer arg_serializer(&arg_serialized_string);
-  if (!arg_serializer.Serialize(arg))
-    return false;
-
   DCHECK(expected);
   std::string expected_serialized_string;
   JSONStringValueSerializer expected_serializer(&expected_serialized_string);
   if (!expected_serializer.Serialize(*expected))
     return false;
 
-  return arg_serialized_string == expected_serialized_string;
+  return arg == expected_serialized_string;
 }
 
 class TestLogTaskRunnerWrapper
@@ -244,9 +239,9 @@ class ExtensionInstallEventLogManagerTest : public testing::Test {
     BuildReport();
 
     EXPECT_CALL(*mock_report_queue_,
-                ValueEnqueue_(MatchEvents(&events_value_), _, _))
+                AddRecord(MatchEvents(&events_value_), _, _))
         .WillOnce(
-            Invoke([callback](const base::Value&, reporting::Priority priority,
+            Invoke([callback](base::StringPiece, reporting::Priority priority,
                               reporting::MockReportQueue::EnqueueCallback cb) {
               *callback = std::move(cb);
               return reporting::Status::StatusOK();
@@ -264,9 +259,9 @@ class ExtensionInstallEventLogManagerTest : public testing::Test {
     BuildReport();
 
     EXPECT_CALL(*mock_report_queue_,
-                ValueEnqueue_(MatchEvents(&events_value_), _, _))
+                AddRecord(MatchEvents(&events_value_), _, _))
         .WillOnce(
-            Invoke([](const base::Value&, reporting::Priority priority,
+            Invoke([](base::StringPiece, reporting::Priority priority,
                       reporting::MockReportQueue::EnqueueCallback callback) {
               std::move(callback).Run(reporting::Status::StatusOK());
               return reporting::Status::StatusOK();

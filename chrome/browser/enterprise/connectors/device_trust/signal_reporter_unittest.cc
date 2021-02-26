@@ -6,15 +6,19 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/signal_reporter.h"
 
+#include "base/json/json_reader.h"
+#include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/policy/messaging_layer/public/mock_report_queue.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/policy/core/common/cloud/dm_token.h"
+#include "components/reporting/client/mock_report_queue.h"
+#include "components/reporting/client/report_queue.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
 using testing::Invoke;
+
 namespace enterprise_connectors {
 
 class DeviceTrustSignalReporterForTest : public DeviceTrustSignalReporter {
@@ -91,11 +95,14 @@ class DeviceTrustSignalReporterTest : public testing::Test {
 
     if (success) {
       ASSERT_NE(reporter_.GetReportQueue(), nullptr);
-      EXPECT_CALL(*(reporter_.GetReportQueue()), ValueEnqueue_(_, _, _))
-          .WillRepeatedly(Invoke(
-              [this](const base::Value& val, reporting::Priority priority,
-                     reporting::MockReportQueue::EnqueueCallback cb) {
-                msg_received_ = val.Clone();
+      EXPECT_CALL(*(reporter_.GetReportQueue()), AddRecord(_, _, _))
+          .WillRepeatedly(
+              Invoke([this](base::StringPiece val, reporting::Priority priority,
+                            reporting::MockReportQueue::EnqueueCallback cb) {
+                base::Optional<base::Value> msg_result =
+                    base::JSONReader::Read(val);
+                ASSERT_TRUE(msg_result.has_value());
+                msg_received_ = std::move(msg_result.value());
                 std::move(cb).Run(reporting::Status::StatusOK());
               }));
     }

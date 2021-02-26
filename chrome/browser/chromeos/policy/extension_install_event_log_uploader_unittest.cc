@@ -18,12 +18,12 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/policy/install_event_log_util.h"
-#include "chrome/browser/policy/messaging_layer/public/mock_report_queue.h"
 #include "chrome/browser/profiles/reporting_util.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/reporting/client/mock_report_queue.h"
 #include "components/reporting/util/status.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -47,18 +47,13 @@ constexpr base::TimeDelta kMaxRetryBackoff = base::TimeDelta::FromDays(1);
 static const char kExtensionId[] = "abcdefghabcdefghabcdefghabcdefgh";
 
 MATCHER_P(MatchEvents, expected, "contains events") {
-  std::string arg_serialized_string;
-  JSONStringValueSerializer arg_serializer(&arg_serialized_string);
-  if (!arg_serializer.Serialize(arg))
-    return false;
-
   DCHECK(expected);
   std::string expected_serialized_string;
   JSONStringValueSerializer expected_serializer(&expected_serialized_string);
   if (!expected_serializer.Serialize(*expected))
     return false;
 
-  return arg_serialized_string == expected_serialized_string;
+  return arg == expected_serialized_string;
 }
 
 class TestCallbackWaiter {
@@ -188,9 +183,9 @@ class ExtensionInstallEventLogUploaderTest : public testing::Test {
     waiter_.IncreaseCounterLimit();
 
     EXPECT_CALL(*mock_report_queue_,
-                ValueEnqueue_(MatchEvents(&value_report_), _, _))
+                AddRecord(MatchEvents(&value_report_), _, _))
         .WillOnce(
-            Invoke([=](const base::Value&, reporting::Priority priority,
+            Invoke([=](base::StringPiece, reporting::Priority priority,
                        reporting::MockReportQueue::EnqueueCallback callback) {
               reporting::Status status =
                   success ? reporting::Status::StatusOK()
@@ -215,9 +210,9 @@ class ExtensionInstallEventLogUploaderTest : public testing::Test {
         std::move(events), std::move(context));
 
     EXPECT_CALL(*mock_report_queue_,
-                ValueEnqueue_(MatchEvents(&value_report_), _, _))
+                AddRecord(MatchEvents(&value_report_), _, _))
         .WillOnce(
-            Invoke([callback](const base::Value&, reporting::Priority priority,
+            Invoke([callback](base::StringPiece, reporting::Priority priority,
                               reporting::MockReportQueue::EnqueueCallback cb) {
               *callback = std::move(cb);
               return reporting::Status::StatusOK();
@@ -338,7 +333,7 @@ TEST_F(ExtensionInstallEventLogUploaderTest, RequestCancelAndSerialize) {
   uploader_->CancelUpload();
   Mock::VerifyAndClearExpectations(mock_report_queue_);
 
-  EXPECT_CALL(*mock_report_queue_, ValueEnqueue_(_, _, _)).Times(0);
+  EXPECT_CALL(*mock_report_queue_, AddRecord(_, _, _)).Times(0);
   EXPECT_CALL(delegate_, OnExtensionLogUploadSuccess()).Times(0);
   std::move(serialization_callback).Run(&log_);
 }

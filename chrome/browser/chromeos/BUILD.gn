@@ -307,6 +307,7 @@ source_set("chromeos") {
     "//components/proxy_config",
     "//components/quirks",
     "//components/renderer_context_menu",
+    "//components/reporting/client:report_queue",
     "//components/reporting/util:status",
     "//components/reporting/util:task_runner_context",
     "//components/rlz",
@@ -3215,6 +3216,7 @@ source_set("chromeos") {
       "//chromeos/dbus/chromebox_for_meetings",
       "//chromeos/services/chromebox_for_meetings/public/cpp",
       "//chromeos/services/chromebox_for_meetings/public/mojom",
+      "//components/reporting/client:report_queue",
       "//components/reporting/proto:record_constants",
       "//components/variations/field_trial_config",
     ]

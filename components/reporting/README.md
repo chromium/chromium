@@ -7,7 +7,7 @@ Chrome:
     Code shared between Chrome and Chrome OS.
   - //chrome/browser/policy/messaging_layer
     Code that lives only in the browser, primary interfaces for reporting data
-    such as ReportQueue and ReportQueueConfiguration.
+    such as ReportQueueImpl and ReportQueueConfiguration.
 Chrome OS:
   - //platform2/missived
     Daemon for encryption and storage of reports.

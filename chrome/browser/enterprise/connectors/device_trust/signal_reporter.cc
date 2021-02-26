@@ -24,7 +24,7 @@ void DeviceTrustSignalReporter::Init(
       return;
     }
     case CreateQueueStatus::DONE: {
-      // CreateReportQueue should not be retried if previously failed; need
+      // CreateReportQueueImpl should not be retried if previously failed; need
       // browser restart or further investigation about why creation of
       // ReportQueue failed.
       std::move(done_cb).Run(report_queue_.get() != nullptr);
@@ -108,7 +108,7 @@ void DeviceTrustSignalReporter::PostCreateReportQueueTask(
     reporting::ReportingClient::CreateReportQueueCallback create_queue_cb,
     std::unique_ptr<reporting::ReportQueueConfiguration> config) {
   auto create_queue_task =
-      base::BindOnce(&reporting::ReportingClient::CreateReportQueue,
+      base::BindOnce(&reporting::ReportingClient::CreateReportQueueImpl,
                      std::move(config), std::move(create_queue_cb));
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, std::move(create_queue_task));

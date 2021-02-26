@@ -12,10 +12,12 @@
 #include "base/values.h"
 #include "chrome/browser/chromeos/policy/install_event_log_util.h"
 #include "chrome/browser/policy/dm_token_utils.h"
+#include "chrome/browser/policy/messaging_layer/public/report_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/reporting_util.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/reporting/client/report_queue.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -148,8 +150,8 @@ ExtensionInstallEventLogUploader::ReportQueueBuilder::~ReportQueueBuilder() =
 void ExtensionInstallEventLogUploader::ReportQueueBuilder::OnStart() {
   auto promo_result = leader_tracker_->RequestLeaderPromotion();
   if (!promo_result.ok()) {
-    // There is already a ReportQueueBuilder building a ReportQueue - go ahead
-    // and exit.
+    // There is already a ReportQueueBuilder building a ReportQueue - go
+    // ahead and exit.
     Complete();
     return;
   }
@@ -179,7 +181,7 @@ void ExtensionInstallEventLogUploader::ReportQueueBuilder::
 void ExtensionInstallEventLogUploader::ReportQueueBuilder::BuildReportQueue(
     std::unique_ptr<::reporting::ReportQueueConfiguration>
         report_queue_config) {
-  ::reporting::ReportingClient::CreateReportQueue(
+  ::reporting::ReportingClient::CreateReportQueueImpl(
       std::move(report_queue_config),
       base::BindOnce(&ReportQueueBuilder::OnReportQueueResult,
                      base::Unretained(this)));
@@ -249,10 +251,10 @@ void ExtensionInstallEventLogUploader::OnSerialized(
   // If another ReportQueueBuilder starts while the previous one is running, it
   // will exit early because the first ReportQueueBuilder will acquire leader
   // role from ReportQueueBuilderLeaderTracker.
-  // If the ReportQueueBuilder fails to build a ReportQueue, it will release the
-  // leader and the next ReportQueueBuilder will acquire the leader role.
-  // If a ReportQueueBuilder sets the report_queue_ after it has been checked
-  // here, a new ReportQueueBuilder will spawn, but will be unable to set the
+  // If the ReportQueueBuilder fails to build, it will release the leader and
+  // the next ReportQueueBuilder will acquire the leader role. If a
+  // ReportQueueBuilder sets the report_queue_ after it has been checked here,
+  // a new ReportQueueBuilder will spawn, but will be unable to set the
   // report_queue_.
   if (report_queue_ == nullptr) {
     auto set_report_queue_cb = base::BindOnce(

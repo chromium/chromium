@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/policy/messaging_layer/public/report_queue.h"
+#include "chrome/browser/policy/messaging_layer/public/report_queue_impl.h"
 
 #include <stdio.h>
 
@@ -77,11 +77,12 @@ class TestEvent {
   ResType result_;
 };
 
-// Creates a |ReportQueue| using |TestStorageModule| and |TestEncryptionModule|.
-// Allows access to the storage module for checking stored values.
-class ReportQueueTest : public testing::Test {
+// Creates a |ReportQueue| using |TestStorageModule| and
+// |TestEncryptionModule|. Allows access to the storage module for checking
+// stored values.
+class ReportQueueImplTest : public testing::Test {
  protected:
-  ReportQueueTest()
+  ReportQueueImplTest()
       : priority_(Priority::IMMEDIATE),
         dm_token_(DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN")),
         destination_(Destination::UPLOAD_EVENTS),
@@ -100,9 +101,9 @@ class ReportQueueTest : public testing::Test {
 
     ASSERT_TRUE(config_result.ok());
 
-    StatusOr<std::unique_ptr<ReportQueue>> report_queue_result =
-        ReportQueue::Create(std::move(config_result.ValueOrDie()),
-                            storage_module_);
+    StatusOr<std::unique_ptr<ReportQueueImpl>> report_queue_result =
+        ReportQueueImpl::Create(std::move(config_result.ValueOrDie()),
+                                storage_module_);
 
     ASSERT_TRUE(report_queue_result.ok());
 
@@ -122,7 +123,7 @@ class ReportQueueTest : public testing::Test {
 
   const Priority priority_;
 
-  std::unique_ptr<ReportQueue> report_queue_;
+  std::unique_ptr<ReportQueueImpl> report_queue_;
   base::OnceCallback<void(Status)> callback_;
 
  private:
@@ -134,7 +135,7 @@ class ReportQueueTest : public testing::Test {
 
 // Enqueues a random string and ensures that the string arrives unaltered in the
 // |StorageModuleInterface|.
-TEST_F(ReportQueueTest, SuccessfulStringRecord) {
+TEST_F(ReportQueueImplTest, SuccessfulStringRecord) {
   constexpr char kTestString[] = "El-Chupacabra";
   TestEvent<Status> a;
   report_queue_->Enqueue(kTestString, priority_, a.cb());
@@ -145,7 +146,7 @@ TEST_F(ReportQueueTest, SuccessfulStringRecord) {
 
 // Enqueues a |base::Value| dictionary and ensures it arrives unaltered in the
 // |StorageModuleInterface|.
-TEST_F(ReportQueueTest, SuccessfulBaseValueRecord) {
+TEST_F(ReportQueueImplTest, SuccessfulBaseValueRecord) {
   constexpr char kTestKey[] = "TEST_KEY";
   constexpr char kTestValue[] = "TEST_VALUE";
   base::Value test_dict(base::Value::Type::DICTIONARY);
@@ -164,7 +165,7 @@ TEST_F(ReportQueueTest, SuccessfulBaseValueRecord) {
 
 // Enqueues a |TestMessage| and ensures that it arrives unaltered in the
 // |StorageModuleInterface|.
-TEST_F(ReportQueueTest, SuccessfulProtoRecord) {
+TEST_F(ReportQueueImplTest, SuccessfulProtoRecord) {
   reporting::test::TestMessage test_message;
   test_message.set_test("TEST_MESSAGE");
   TestEvent<Status> a;
@@ -182,7 +183,7 @@ TEST_F(ReportQueueTest, SuccessfulProtoRecord) {
 // The call to enqueue should succeed, indicating that the storage operation has
 // been scheduled. The callback should fail, indicating that storage was
 // unsuccessful.
-TEST_F(ReportQueueTest, CallSuccessCallbackFailure) {
+TEST_F(ReportQueueImplTest, CallSuccessCallbackFailure) {
   EXPECT_CALL(*test_storage_module(), AddRecord(_, _, _))
       .WillOnce(
           WithArg<2>(Invoke([](base::OnceCallback<void(Status)> callback) {
@@ -198,7 +199,7 @@ TEST_F(ReportQueueTest, CallSuccessCallbackFailure) {
   EXPECT_EQ(result.error_code(), error::UNKNOWN);
 }
 
-TEST_F(ReportQueueTest, EnqueueStringFailsOnPolicy) {
+TEST_F(ReportQueueImplTest, EnqueueStringFailsOnPolicy) {
   EXPECT_CALL(mocked_policy_check_, Call())
       .WillOnce(Return(Status(error::UNAUTHENTICATED, "Failing for tests")));
   constexpr char kTestString[] = "El-Chupacabra";
@@ -209,7 +210,7 @@ TEST_F(ReportQueueTest, EnqueueStringFailsOnPolicy) {
   EXPECT_EQ(result.error_code(), error::UNAUTHENTICATED);
 }
 
-TEST_F(ReportQueueTest, EnqueueProtoFailsOnPolicy) {
+TEST_F(ReportQueueImplTest, EnqueueProtoFailsOnPolicy) {
   EXPECT_CALL(mocked_policy_check_, Call())
       .WillOnce(Return(Status(error::UNAUTHENTICATED, "Failing for tests")));
   reporting::test::TestMessage test_message;
@@ -221,7 +222,7 @@ TEST_F(ReportQueueTest, EnqueueProtoFailsOnPolicy) {
   EXPECT_EQ(result.error_code(), error::UNAUTHENTICATED);
 }
 
-TEST_F(ReportQueueTest, EnqueueValueFailsOnPolicy) {
+TEST_F(ReportQueueImplTest, EnqueueValueFailsOnPolicy) {
   EXPECT_CALL(mocked_policy_check_, Call())
       .WillOnce(Return(Status(error::UNAUTHENTICATED, "Failing for tests")));
   constexpr char kTestKey[] = "TEST_KEY";

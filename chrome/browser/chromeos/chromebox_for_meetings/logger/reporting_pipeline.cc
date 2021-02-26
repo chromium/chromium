@@ -9,7 +9,8 @@
 
 #include "base/bind_post_task.h"
 #include "base/callback_helpers.h"
-#include "chrome/browser/policy/messaging_layer/public/report_queue_configuration.h"
+#include "chrome/browser/policy/messaging_layer/public/report_client.h"
+#include "components/reporting/client/report_queue.h"
 #include "components/reporting/proto/record_constants.pb.h"
 
 namespace chromeos {
@@ -128,18 +129,16 @@ void ReportingPipeline::UpdateToken(std::string request_token) {
       FROM_HERE,
       base::BindOnce(
           [](std::unique_ptr<reporting::ReportQueueConfiguration> config,
-             base::OnceCallback<void(
-                 reporting::StatusOr<std::unique_ptr<reporting::ReportQueue>>)>
+             reporting::ReportingClient::CreateReportQueueCallback
                  queue_callback) {
-            reporting::ReportingClient::CreateReportQueue(
+            reporting::ReportingClient::CreateReportQueueImpl(
                 std::move(config), std::move(queue_callback));
           },
           std::move(config_result).ValueOrDie(), std::move(queue_callback)));
 }
 
 void ReportingPipeline::OnReportQueueUpdated(
-    reporting::StatusOr<std::unique_ptr<reporting::ReportQueue>>
-        report_queue_result) {
+    reporting::ReportingClient::CreateReportQueueResponse report_queue_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!report_queue_result.ok()) {

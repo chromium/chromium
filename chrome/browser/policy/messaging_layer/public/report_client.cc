@@ -19,8 +19,8 @@
 #include "base/threading/sequence_bound.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/browser/policy/messaging_layer/public/report_queue.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue_configuration.h"
+#include "chrome/browser/policy/messaging_layer/public/report_queue_impl.h"
 #include "chrome/browser/policy/messaging_layer/util/get_cloud_policy_client.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -430,7 +430,7 @@ ReportingClient* ReportingClient::GetInstance() {
   return base::Singleton<ReportingClient>::get();
 }
 
-void ReportingClient::CreateReportQueue(
+void ReportingClient::CreateReportQueueImpl(
     std::unique_ptr<ReportQueueConfiguration> config,
     CreateReportQueueCallback create_cb) {
   if (!IsEncryptedReportingPipelineEnabled()) {
@@ -544,7 +544,7 @@ void ReportingClient::BuildRequestQueue(
                      [](scoped_refptr<StorageModuleInterface> storage_module,
                         CreateReportQueueRequest report_queue_request) {
                        std::move(report_queue_request.create_cb())
-                           .Run(ReportQueue::Create(
+                           .Run(ReportQueueImpl::Create(
                                report_queue_request.config(), storage_module));
                      },
                      config_->storage, std::move(pop_result.ValueOrDie())));

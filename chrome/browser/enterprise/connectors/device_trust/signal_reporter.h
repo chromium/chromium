@@ -17,9 +17,9 @@ class DeviceTrustSignalReporter {
 
   // Before sending each message, |policy_check| is used to verify that
   // the specific ReportQueue is still allowed. Because the creation of
-  // ReportQueue is posted as an asynchronous task, |done_cb| is always called
-  // when ReportQueue initialization is finished, but this class is only usable
-  // after |done_cb| is called back with true.
+  // ReportQueue is posted as an asynchronous task, |done_cb| is always
+  // called when ReportQueue initialization is finished, but this class
+  // is only usable after |done_cb| is called back with true.
   void Init(base::RepeatingCallback<bool(void)> policy_check,
             base::OnceCallback<void(bool)> done_cb);
 

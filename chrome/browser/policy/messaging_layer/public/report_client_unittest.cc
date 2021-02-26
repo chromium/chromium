@@ -10,8 +10,8 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/policy/messaging_layer/public/report_queue.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue_configuration.h"
+#include "chrome/browser/policy/messaging_layer/public/report_queue_impl.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/reporting/proto/record_constants.pb.h"
@@ -133,8 +133,8 @@ TEST_F(ReportClientTest, CreatesReportQueue) {
   ASSERT_OK(config_result);
 
   TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> a;
-  ReportingClient::CreateReportQueue(std::move(config_result.ValueOrDie()),
-                                     a.cb());
+  ReportingClient::CreateReportQueueImpl(std::move(config_result.ValueOrDie()),
+                                         a.cb());
   ASSERT_OK(a.result());
 }
 
@@ -145,8 +145,8 @@ TEST_F(ReportClientTest, CreatesTwoDifferentReportQueues) {
   EXPECT_TRUE(config_result.ok());
 
   TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> a1;
-  ReportingClient::CreateReportQueue(std::move(config_result.ValueOrDie()),
-                                     a1.cb());
+  ReportingClient::CreateReportQueueImpl(std::move(config_result.ValueOrDie()),
+                                         a1.cb());
   auto result = a1.result();
   ASSERT_OK(result);
   auto report_queue_1 = std::move(result.ValueOrDie());
@@ -154,8 +154,8 @@ TEST_F(ReportClientTest, CreatesTwoDifferentReportQueues) {
   TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> a2;
   config_result = ReportQueueConfiguration::Create(dm_token_, destination_,
                                                    policy_checker_callback_);
-  ReportingClient::CreateReportQueue(std::move(config_result.ValueOrDie()),
-                                     a2.cb());
+  ReportingClient::CreateReportQueueImpl(std::move(config_result.ValueOrDie()),
+                                         a2.cb());
   result = a2.result();
   ASSERT_OK(result);
   auto report_queue_2 = std::move(result.ValueOrDie());

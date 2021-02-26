@@ -10,8 +10,8 @@
 
 #include "base/feature_list.h"
 #include "base/memory/singleton.h"
-#include "chrome/browser/policy/messaging_layer/public/report_queue.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue_configuration.h"
+#include "chrome/browser/policy/messaging_layer/public/report_queue_impl.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 #include "components/reporting//proto/record.pb.h"
 #include "components/reporting/storage/storage_module_interface.h"
@@ -21,8 +21,9 @@
 
 namespace reporting {
 
-// ReportingClient acts a single point for creating |reporting::ReportQueue|s.
-// It ensures that all ReportQueues are created with the same storage settings.
+// ReportingClient acts a single point for creating
+// |reporting::ReportQueue|s. It ensures that all ReportQueues are
+// created with the same storage settings.
 //
 // In order to utilize the ReportingClient the EncryptedReportingPipeline
 // feature must be turned on using --enable-features=EncryptedReportingPipeline.
@@ -45,13 +46,14 @@ namespace reporting {
 //              reporting::ReportQueue::EnqueueCallback done_cb,
 //              std::unique_ptr<reporting::ReportQueueConfiguration> config) {
 //             // Asynchronously create ReportingQueue.
-//             reporting::ReportingClient::CreateReportQueue(
+//             reporting::ReportingClient::CreateReportQueueImpl(
 //                 std::move(config),
 //                 base::BindOnce(
 //                     [](base::StringPiece data,
-//                        reporting::ReportQueue::EnqueueCallback done_cb,
-//                        reporting::StatusOr<std::unique_ptr<
-//                            reporting::ReportQueue>> report_queue_result) {
+//                        reporting::ReportQueue::EnqueueCallback
+//                        done_cb, reporting::StatusOr<std::unique_ptr<
+//                            reporting::ReportQueue>>
+//                            report_queue_result) {
 //                       // Bail out if queue failed to create.
 //                       if (!report_queue_result.ok()) {
 //                         std::move(done_cb).Run(report_queue_result.status());
@@ -209,10 +211,10 @@ class ReportingClient {
   ReportingClient(const ReportingClient& other) = delete;
   ReportingClient& operator=(const ReportingClient& other) = delete;
 
-  // Allows a user to asynchronously create a |ReportQueue|. Will create an
-  // underlying ReportingClient if it doesn't exists. The callback will contain
-  // an error if |storage_| cannot be instantiated for any reason.
-  static void CreateReportQueue(
+  // Allows a user to asynchronously create a |ReportQueue|. Will
+  // create an underlying ReportingClient if it doesn't exists. The callback
+  // will contain an error if |storage_| cannot be instantiated for any reason.
+  static void CreateReportQueueImpl(
       std::unique_ptr<ReportQueueConfiguration> config,
       CreateReportQueueCallback create_cb);
 
