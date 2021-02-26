@@ -366,8 +366,9 @@ void PasswordAccessoryControllerImpl::RefreshSuggestionsForField(
     }
   }
 
-  if (source_observer_ && base::FeatureList::IsEnabled(
-                              autofill::features::kAutofillKeyboardAccessory)) {
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillKeyboardAccessory)) {
+    DCHECK(source_observer_);
     // The "Manage Passwords" entry point always justifies showing this fallback
     // sheet — given that the field is fillable at all.
     source_observer_.Run(this, IsFillingSourceAvailable(
