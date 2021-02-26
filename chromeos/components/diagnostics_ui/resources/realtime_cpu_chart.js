@@ -160,8 +160,6 @@ Polymer({
 
   /** @private */
   updateChartWidth_() {
-    // TODO(michaelcheco): Enforce 600px as the minimum window size.
-
     // parseFloat() is used to convert the string returned by
     // getComputedStyleValue() into a number ("642px" --> 642).
     this.width_ = parseFloat(this.getComputedStyleValue('--chart-width'));

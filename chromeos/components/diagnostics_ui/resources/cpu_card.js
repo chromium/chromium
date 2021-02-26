@@ -127,7 +127,6 @@ Polymer({
    * @private
    */
   onSystemInfoReceived_(systemInfo) {
-    // TODO(michaelcheco): Update when number of cores is added to the api.
     this.cpuChipInfo_ = loadTimeData.getStringF(
         'cpuChipText', systemInfo.cpuModelName, systemInfo.cpuThreadsCount,
         this.convertKhzToGhz_(systemInfo.cpuMaxClockSpeedKhz));
@@ -141,7 +140,6 @@ Polymer({
 
   /** @protected */
   getCpuUsageTooltipText_() {
-    // TODO(michaelcheco): Update when number of cores is added to the api.
     return loadTimeData.getString('cpuUsageTooltipText');
   },
 
