@@ -80,7 +80,8 @@ void PaymentCredential::DownloadIconAndShowUserPrompt(
       0,                 // no max size
       false,             // normal cache policy (a.k.a. do not bypass cache)
       base::BindOnce(&PaymentCredential::DidDownloadIcon,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     base::UTF8ToUTF16(instrument->display_name)));
 }
 
 void PaymentCredential::StorePaymentCredentialAndHideUserPrompt(
@@ -179,6 +180,7 @@ bool PaymentCredential::IsCurrentStateValid() const {
 
 void PaymentCredential::DidDownloadIcon(
     DownloadIconAndShowUserPromptCallback callback,
+    const base::string16 instrument_name,
     int request_id,
     int unused_http_status_code,
     const GURL& image_url,
@@ -207,7 +209,7 @@ void PaymentCredential::DidDownloadIcon(
   state_ = State::kShowingUserPrompt;
   ui_controller_->ShowDialog(
       initiator_frame_routing_id_,
-      std::make_unique<SkBitmap>(std::move(bitmaps.front())),
+      std::make_unique<SkBitmap>(std::move(bitmaps.front())), instrument_name,
       base::BindOnce(&PaymentCredential::OnUserResponseFromUI,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

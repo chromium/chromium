@@ -12,7 +12,10 @@
 #include "build/build_config.h"
 #include "components/payments/content/payment_credential_enrollment_model.h"
 #include "components/payments/content/payment_credential_enrollment_view.h"
+#include "components/strings/grit/components_strings.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace payments {
 
@@ -44,6 +47,7 @@ PaymentCredentialEnrollmentController::
 void PaymentCredentialEnrollmentController::ShowDialog(
     content::GlobalFrameRoutingId initiator_frame_routing_id,
     std::unique_ptr<SkBitmap> instrument_icon,
+    const base::string16& instrument_name,
     ResponseCallback response_callback) {
 #if defined(OS_ANDROID)
   NOTREACHED();
@@ -59,7 +63,25 @@ void PaymentCredentialEnrollmentController::ShowDialog(
   model_.set_accept_button_enabled(true);
   model_.set_cancel_button_enabled(true);
 
-  // TODO(crbug.com/1176368): Set dialog strings on the model.
+  model_.set_title(
+      l10n_util::GetStringUTF16(IDS_PAYMENT_CREDENTIAL_ENROLLMENT_TITLE));
+
+  model_.set_description(
+      l10n_util::GetStringUTF16(IDS_PAYMENT_CREDENTIAL_ENROLLMENT_DESCRIPTION));
+
+  model_.set_instrument_name(instrument_name);
+
+  model_.set_extra_description(
+      web_contents()->GetBrowserContext()->IsOffTheRecord()
+          ? l10n_util::GetStringUTF16(
+                IDS_PAYMENT_CREDENTIAL_ENROLLMENT_OFF_THE_RECORD_DESCRIPTION)
+          : base::string16());
+
+  model_.set_accept_button_label(l10n_util::GetStringUTF16(
+      IDS_PAYMENT_CREDENTIAL_ENROLLMENT_ACCEPT_BUTTON_LABEL));
+
+  model_.set_cancel_button_label(l10n_util::GetStringUTF16(
+      IDS_PAYMENT_CREDENTIAL_ENROLLMENT_CANCEL_BUTTON_LABEL));
 
   view_ = PaymentCredentialEnrollmentView::Create();
   view_->ShowDialog(

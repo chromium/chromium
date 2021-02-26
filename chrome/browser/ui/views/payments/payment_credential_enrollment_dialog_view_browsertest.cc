@@ -2,15 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/payments/payment_credential_enrollment_dialog_view.h"
 #include "chrome/browser/ui/views/payments/secure_payment_confirmation_views_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/test_event_waiter.h"
 #include "components/payments/content/payment_credential_enrollment_model.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -41,23 +44,23 @@ class PaymentCredentialEnrollmentDialogViewTest
   }
 
   void CreateModel() {
-    // TODO(crbug.com/1176368): Use l10n strings.
-    model_.set_title(base::UTF8ToUTF16(
-        "Use Touch ID to verify and complete your purchase?"));
+    model_.set_title(
+        l10n_util::GetStringUTF16(IDS_PAYMENT_CREDENTIAL_ENROLLMENT_TITLE));
 
-    model_.set_description(
-        base::UTF8ToUTF16("Save payment information to this device and skip "
-                          "bank verification next "
-                          "time when you use Touch ID to verify your payment "
-                          "with Visa ••••4444."));
+    model_.set_description(l10n_util::GetStringUTF16(
+        IDS_PAYMENT_CREDENTIAL_ENROLLMENT_DESCRIPTION));
 
     std::unique_ptr<SkBitmap> instrument_icon =
         std::make_unique<SkBitmap>(CreateInstrumentIcon(SK_ColorBLUE));
     instrument_icon_ = instrument_icon.get();
     model_.set_instrument_icon(std::move(instrument_icon));
 
-    model_.set_accept_button_label(base::UTF8ToUTF16("Use Touch ID"));
-    model_.set_cancel_button_label(base::UTF8ToUTF16("No thanks"));
+    model_.set_instrument_name(base::UTF8ToUTF16("Visa ••••4444"));
+
+    model_.set_accept_button_label(l10n_util::GetStringUTF16(
+        IDS_PAYMENT_CREDENTIAL_ENROLLMENT_ACCEPT_BUTTON_LABEL));
+    model_.set_cancel_button_label(l10n_util::GetStringUTF16(
+        IDS_PAYMENT_CREDENTIAL_ENROLLMENT_CANCEL_BUTTON_LABEL));
   }
 
   void InvokePaymentCredentialEnrollmentUI() {
@@ -132,6 +135,20 @@ class PaymentCredentialEnrollmentDialogViewTest
               ->GetImage()
               .bitmap()),
         cc::ExactPixelComparator(/*discard_alpha=*/false)));
+
+    ExpectLabelText(
+        model_.instrument_name(),
+        PaymentCredentialEnrollmentDialogView::DialogViewID::INSTRUMENT_NAME);
+
+    if (!model_.extra_description().empty()) {
+      ExpectLabelText(model_.extra_description(),
+                      PaymentCredentialEnrollmentDialogView::DialogViewID::
+                          EXTRA_DESCRIPTION);
+    } else {
+      EXPECT_EQ(nullptr, dialog_view_->GetViewByID(static_cast<int>(
+                             PaymentCredentialEnrollmentDialogView::
+                                 DialogViewID::EXTRA_DESCRIPTION)));
+    }
   }
 
   void ClickAcceptAndWait() {
@@ -287,6 +304,7 @@ IN_PROC_BROWSER_TEST_F(PaymentCredentialEnrollmentDialogViewTest,
 
   model_.set_title(base::UTF8ToUTF16("Test Title"));
   model_.set_description(base::UTF8ToUTF16("Test description"));
+  model_.set_instrument_name(base::UTF8ToUTF16("Test instrument"));
   model_.set_accept_button_label(base::UTF8ToUTF16("Test accept"));
   model_.set_cancel_button_label(base::UTF8ToUTF16("Test cancel"));
 
@@ -318,6 +336,20 @@ IN_PROC_BROWSER_TEST_F(PaymentCredentialEnrollmentDialogViewTest,
   // Change the bitmap itself without touching the model's pointer
   *instrument_icon_ = CreateInstrumentIcon(SK_ColorRED);
   dialog_view_->OnModelUpdated();
+  ExpectViewMatchesModel();
+
+  CloseDialogAndWait();
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentCredentialEnrollmentDialogViewTest,
+                       ExtraIncognitoDescription) {
+  CreateModel();
+
+  model_.set_extra_description(l10n_util::GetStringUTF16(
+      IDS_PAYMENT_CREDENTIAL_ENROLLMENT_OFF_THE_RECORD_DESCRIPTION));
+
+  InvokePaymentCredentialEnrollmentUI();
+
   ExpectViewMatchesModel();
 
   CloseDialogAndWait();

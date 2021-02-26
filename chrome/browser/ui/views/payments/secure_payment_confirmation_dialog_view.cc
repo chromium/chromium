@@ -17,13 +17,11 @@
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace payments {
 namespace {
-
-// Height of each row.
-constexpr int kRowHeight = 48;
 
 // Records UMA metric for the authentication dialog result.
 void RecordAuthenticationDialogResult(
@@ -67,6 +65,9 @@ void SecurePaymentConfirmationDialogView::ShowDialog(
     CancelCallback cancel_callback) {
   DCHECK(model);
   model_ = model;
+
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   InitChildViews();
 
@@ -357,7 +358,7 @@ std::unique_ptr<views::View> SecurePaymentConfirmationDialogView::CreateRowView(
                        kInstrumentIconWidth, kInstrumentIconWidth);
   }
 
-  layout->StartRow(views::GridLayout::kFixedSize, 0, kRowHeight);
+  layout->StartRow(views::GridLayout::kFixedSize, 0, kPaymentInfoRowHeight);
 
   std::unique_ptr<views::Label> label_text = std::make_unique<views::Label>(
       label, views::style::CONTEXT_DIALOG_BODY_TEXT,

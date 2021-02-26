@@ -42,6 +42,9 @@ constexpr int kBodyExtraInset = 24;
 constexpr int kInstrumentIconWidth = 32;
 constexpr int kInstrumentIconHeight = 20;
 
+// Height of each payment information row.
+constexpr int kPaymentInfoRowHeight = 48;
+
 int GetSecurePaymentConfirmationHeaderWidth();
 
 // Creates the view for the SPC fingerprint header icon.

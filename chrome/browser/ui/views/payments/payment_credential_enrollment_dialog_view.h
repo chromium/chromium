@@ -6,8 +6,10 @@
 #define CHROME_BROWSER_UI_VIEWS_PAYMENTS_PAYMENT_CREDENTIAL_ENROLLMENT_DIALOG_VIEW_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string16.h"
 #include "components/payments/content/payment_credential_enrollment_view.h"
 #include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
@@ -39,7 +41,9 @@ class PaymentCredentialEnrollmentDialogView
     PROGRESS_BAR,
     TITLE,
     DESCRIPTION,
-    INSTRUMENT_ICON
+    INSTRUMENT_ICON,
+    INSTRUMENT_NAME,
+    EXTRA_DESCRIPTION
   };
 
   // The
@@ -70,7 +74,10 @@ class PaymentCredentialEnrollmentDialogView
 
   std::unique_ptr<views::View> CreateHeaderView();
   std::unique_ptr<views::View> CreateBodyView();
-  std::unique_ptr<views::View> CreateDescription();
+  std::unique_ptr<views::View> CreateDescription(const base::string16& text,
+                                                 views::style::TextStyle style,
+                                                 DialogViewID view_id);
+  std::unique_ptr<views::View> CreateInstrumentRow();
 
   void UpdateLabelView(DialogViewID id, const base::string16& text);
 

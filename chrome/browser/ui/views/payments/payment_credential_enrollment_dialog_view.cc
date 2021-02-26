@@ -16,6 +16,7 @@
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace payments {
@@ -48,6 +49,9 @@ void PaymentCredentialEnrollmentDialogView::ShowDialog(
     CancelCallback cancel_callback) {
   DCHECK(model);
   model_ = model;
+
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   InitChildViews();
 
@@ -131,6 +135,13 @@ void PaymentCredentialEnrollmentDialogView::OnModelUpdated() {
         ->SetImage(image);
   }
   instrument_icon_ = model_->instrument_icon();
+
+  UpdateLabelView(DialogViewID::INSTRUMENT_NAME, model_->instrument_name());
+
+  if (!model_->extra_description().empty()) {
+    UpdateLabelView(DialogViewID::EXTRA_DESCRIPTION,
+                    model_->extra_description());
+  }
 }
 
 void PaymentCredentialEnrollmentDialogView::UpdateLabelView(
@@ -215,13 +226,14 @@ PaymentCredentialEnrollmentDialogView::CreateHeaderView() {
 // | Title                                    |
 // |                                          |
 // | Description                              |
-// | icon                                     |
+// | [icon] instrument                        |
+// | Extra incognito description              |
 // +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
 std::unique_ptr<views::View>
 PaymentCredentialEnrollmentDialogView::CreateBodyView() {
   auto body = std::make_unique<views::View>();
   body->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(kBodyInsets, kBodyInsets, kBodyExtraInset, kBodyInsets)));
+      gfx::Insets(kBodyInsets, kBodyInsets, kBodyInsets, kBodyInsets)));
 
   views::GridLayout* layout =
       body->SetLayoutManager(std::make_unique<views::GridLayout>());
@@ -236,17 +248,19 @@ PaymentCredentialEnrollmentDialogView::CreateBodyView() {
   layout->AddView(std::move(title_text));
 
   layout->StartRow(views::GridLayout::kFixedSize, 0);
-  layout->AddView(CreateDescription());
+  layout->AddView(CreateDescription(model_->description(),
+                                    views::style::STYLE_SECONDARY,
+                                    DialogViewID::DESCRIPTION));
 
   layout->StartRow(views::GridLayout::kFixedSize, 0);
-  instrument_icon_ = model_->instrument_icon();
-  instrument_icon_generation_id_ = model_->instrument_icon()->getGenerationID();
+  layout->AddView(CreateInstrumentRow());
 
-  std::unique_ptr<views::ImageView> icon_view =
-      CreateSecurePaymentConfirmationInstrumentIconView(
-          *model_->instrument_icon());
-  icon_view->SetID(static_cast<int>(DialogViewID::INSTRUMENT_ICON));
-  layout->AddView(std::move(icon_view));
+  if (!model_->extra_description().empty()) {
+    layout->StartRow(views::GridLayout::kFixedSize, 0);
+    layout->AddView(CreateDescription(model_->extra_description(),
+                                      views::style::STYLE_SECONDARY,
+                                      DialogViewID::EXTRA_DESCRIPTION));
+  }
 
   return body;
 }
@@ -256,7 +270,10 @@ PaymentCredentialEnrollmentDialogView::CreateBodyView() {
 // | Description                              |
 // +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
 std::unique_ptr<views::View>
-PaymentCredentialEnrollmentDialogView::CreateDescription() {
+PaymentCredentialEnrollmentDialogView::CreateDescription(
+    const base::string16& text,
+    views::style::TextStyle style,
+    DialogViewID view_id) {
   auto description = std::make_unique<views::View>();
 
   description->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -265,15 +282,57 @@ PaymentCredentialEnrollmentDialogView::CreateDescription() {
           views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
   auto description_label = std::make_unique<views::Label>(
-      model_->description(), views::style::CONTEXT_DIALOG_BODY_TEXT);
+      text, views::style::CONTEXT_DIALOG_BODY_TEXT, style);
   description_label->SetMultiLine(true);
   description_label->SetLineHeight(kDescriptionLineHeight);
   description_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   description_label->SetAllowCharacterBreak(true);
-  description_label->SetID(static_cast<int>(DialogViewID::DESCRIPTION));
+  description_label->SetID(static_cast<int>(view_id));
   description->AddChildView(description_label.release());
 
   return description;
+}
+
+// Creates the instrument row view.
+// +------------------------------------------+
+// | [icon] instrument                        |
+// +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
+std::unique_ptr<views::View>
+PaymentCredentialEnrollmentDialogView::CreateInstrumentRow() {
+  std::unique_ptr<views::View> row = std::make_unique<views::View>();
+
+  views::GridLayout* layout =
+      row->SetLayoutManager(std::make_unique<views::GridLayout>());
+  views::ColumnSet* columns = layout->AddColumnSet(0);
+
+  // Icon column
+  columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER,
+                     views::GridLayout::kFixedSize,
+                     views::GridLayout::ColumnSize::kFixed,
+                     kInstrumentIconWidth, kInstrumentIconWidth);
+
+  constexpr int kPaddingAfterIcon = 12;
+  columns->AddPaddingColumn(views::GridLayout::kFixedSize, kPaddingAfterIcon);
+
+  // Instrument column
+  columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER, 1.0,
+                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+  layout->StartRow(views::GridLayout::kFixedSize, 0, kPaymentInfoRowHeight);
+
+  instrument_icon_ = model_->instrument_icon();
+  instrument_icon_generation_id_ = model_->instrument_icon()->getGenerationID();
+
+  std::unique_ptr<views::ImageView> icon_view =
+      CreateSecurePaymentConfirmationInstrumentIconView(
+          *model_->instrument_icon());
+  icon_view->SetID(static_cast<int>(DialogViewID::INSTRUMENT_ICON));
+  layout->AddView(std::move(icon_view));
+
+  layout->AddView(CreateDescription(model_->instrument_name(),
+                                    views::style::STYLE_PRIMARY,
+                                    DialogViewID::INSTRUMENT_NAME));
+
+  return row;
 }
 
 BEGIN_METADATA(PaymentCredentialEnrollmentDialogView, views::DialogDelegateView)

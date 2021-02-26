@@ -33,6 +33,18 @@ class PaymentCredentialEnrollmentModel {
     description_ = description;
   }
 
+  // Payment instrument name.
+  const base::string16& instrument_name() const { return instrument_name_; }
+  void set_instrument_name(const base::string16& instrument_name) {
+    instrument_name_ = instrument_name;
+  }
+
+  // Extra description text, used for additional incognito information.
+  const base::string16& extra_description() const { return extra_description_; }
+  void set_extra_description(const base::string16& extra_description) {
+    extra_description_ = extra_description;
+  }
+
   // Instrument icon.
   const SkBitmap* instrument_icon() const { return instrument_icon_.get(); }
   void set_instrument_icon(std::unique_ptr<SkBitmap> instrument_icon) {
@@ -90,6 +102,8 @@ class PaymentCredentialEnrollmentModel {
  private:
   base::string16 title_;
   base::string16 description_;
+  base::string16 instrument_name_;
+  base::string16 extra_description_;
 
   std::unique_ptr<SkBitmap> instrument_icon_;
 

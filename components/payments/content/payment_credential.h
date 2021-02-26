@@ -13,6 +13,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string16.h"
 #include "components/payments/content/payment_credential_enrollment_controller.h"
 #include "components/webdata/common/web_data_service_base.h"
 #include "components/webdata/common/web_data_service_consumer.h"
@@ -82,6 +83,7 @@ class PaymentCredential : public mojom::PaymentCredential,
   bool IsCurrentStateValid() const;
 
   void DidDownloadIcon(DownloadIconAndShowUserPromptCallback callback,
+                       const base::string16 instrument_name,
                        int request_id,
                        int unused_http_status_code,
                        const GURL& image_url,
