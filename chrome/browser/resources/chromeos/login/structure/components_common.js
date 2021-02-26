@@ -18,7 +18,6 @@ function loadCommonComponents() {
 // <include src="../gaia_dialog.js">
 
 // <include src="../gaia_buttons.js">
-// <include src="../gaia_card.js">
 // <include src="../gaia_header.js">
 // <include src="../gaia_input_form.js">
 // <include src="../navigation_bar.js">

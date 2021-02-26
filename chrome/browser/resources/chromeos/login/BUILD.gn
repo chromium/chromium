@@ -26,7 +26,6 @@ js_type_check("closure_compile_local") {
     ":family_link_notice",
     ":fingerprint_setup",
     ":gaia_buttons",
-    ":gaia_card",
     ":gaia_header",
     ":gaia_input_form",
     ":gaia_password_changed",
@@ -191,9 +190,6 @@ js_library("fingerprint_setup") {
 }
 
 js_library("gaia_buttons") {
-}
-
-js_library("gaia_card") {
 }
 
 js_library("gaia_header") {
