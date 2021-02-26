@@ -62,7 +62,8 @@ void CaptionController::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
   // Initially default the language to en-US.
-  registry->RegisterStringPref(prefs::kLiveCaptionLanguageCode, "en-US");
+  registry->RegisterStringPref(prefs::kLiveCaptionLanguageCode, "en-US",
+                               user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
 void CaptionController::Init() {

@@ -511,6 +511,10 @@ const base::Feature kLiveCaption{"LiveCaption",
 const base::Feature kUseSodaForLiveCaption{"UseSodaForLiveCaption",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Live Caption can be used in multiple languages, as opposed to just English.
+const base::Feature kLiveCaptionMultiLanguage{
+    "LiveCaptionMultiLanguage", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Live Caption runs system-wide on ChromeOS, as opposed to just in the browser.
 const base::Feature kLiveCaptionSystemWideOnChromeOS{
     "LiveCaptionSystemWideOnChromeOS", base::FEATURE_DISABLED_BY_DEFAULT};

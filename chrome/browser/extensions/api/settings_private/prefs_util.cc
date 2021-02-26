@@ -409,6 +409,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
 #if !defined(OS_ANDROID)
   (*s_allowlist)[::prefs::kLiveCaptionEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[::prefs::kLiveCaptionLanguageCode] =
+      settings_api::PrefType::PREF_TYPE_STRING;
 #endif
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   (*s_allowlist)[::prefs::kAccessibilityFocusHighlightEnabled] =

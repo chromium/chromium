@@ -18,6 +18,10 @@ import './captions_subpage.m.js';
 import '../settings_page/settings_subpage.m.js';
 // </if>
 
+// <if expr="is_win or is_macosx">
+import './live_caption_section.m.js';
+// </if>
+
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -61,17 +65,6 @@ Polymer({
       value: function() {
         return loadTimeData.getBoolean('enableLiveCaption');
       },
-    },
-
-    /**
-     * The subtitle to display under the Live Caption heading. Generally, this
-     * is a generic subtitle describing the feature. While the SODA model is
-     * being downloading, this displays the download progress.
-     * @private
-     */
-    enableLiveCaptionSubtitle_: {
-      type: String,
-      value: loadTimeData.getString('captionsEnableLiveCaptionSubtitle'),
     },
 
     /**
@@ -134,21 +127,8 @@ Polymer({
         'screen-reader-state-changed',
         this.onScreenReaderStateChanged_.bind(this));
 
-    // <if expr="not chromeos">
-    this.addWebUIListener(
-        'enable-live-caption-subtitle-changed',
-        this.onEnableLiveCaptionSubtitleChanged_.bind(this));
-    // </if>
-
     // Enables javascript and gets the screen reader state.
     chrome.send('a11yPageReady');
-
-    if (this.captionSettingsOpensExternally_) {
-      // If captions settings open externally, then this page doesn't have a
-      // separate captions subpage. Send a captionsSubpageReady notification in
-      // order to start observing SODA events.
-      chrome.send('captionsSubpageReady');
-    }
   },
 
   /**
@@ -187,25 +167,6 @@ Polymer({
   },
 
   // <if expr="not chromeos">
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onA11yLiveCaptionChange_(event) {
-    const a11yLiveCaptionOn = event.target.checked;
-    chrome.metricsPrivate.recordBoolean(
-        'Accessibility.LiveCaption.EnableFromSettings', a11yLiveCaptionOn);
-  },
-
-  /**
-   * @private
-   * @param {!string} enableLiveCaptionSubtitle The message sent from the webui
-   *     to be displayed as a subtitle to Live Captions.
-   */
-  onEnableLiveCaptionSubtitleChanged_(enableLiveCaptionSubtitle) {
-    this.enableLiveCaptionSubtitle_ = enableLiveCaptionSubtitle;
-  },
-
   /**
    * @private
    * @param {!Event} event

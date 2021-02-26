@@ -168,6 +168,7 @@ preprocess_if_expr("preprocess_generated") {
   in_files = [
     "a11y_page/a11y_page.js",
     "a11y_page/captions_subpage.m.js",
+    "a11y_page/live_caption_section.m.js",
     "about_page/about_page_browser_proxy.m.js",
     "about_page/about_page.js",
     "appearance_page/appearance_fonts_page.js",

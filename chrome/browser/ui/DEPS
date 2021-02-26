@@ -10,6 +10,7 @@ include_rules = [
   "+components/page_load_metrics/browser",
   "+components/qr_code_generator",
   "+components/safety_check",
+  "+components/soda",
   "+components/translate/content/android",
   "+services/content/public",
   "+services/device/public/mojom",

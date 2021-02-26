@@ -295,6 +295,7 @@ preprocess_if_expr("preprocess_gen_v3") {
   out_manifest = "$target_gen_dir/$preprocess_gen_v3_manifest"
   in_files = [
     "a11y_page/captions_subpage.m.js",
+    "a11y_page/live_caption_section.m.js",
     "appearance_page/fonts_browser_proxy.m.js",
     "about_page/about_page_browser_proxy.m.js",
     "chromeos/ambient_mode_page/album_item.m.js",
@@ -580,6 +581,8 @@ preprocess_if_expr("preprocess_v2") {
   in_files = [
     "a11y_page/captions_subpage.html",
     "a11y_page/captions_subpage.js",
+    "a11y_page/live_caption_section.html",
+    "a11y_page/live_caption_section.js",
     "about_page/about_page_browser_proxy.html",
     "about_page/about_page_browser_proxy.js",
     "appearance_page/fonts_browser_proxy.html",
@@ -1315,6 +1318,7 @@ group("polymer3_elements") {
     "..:settings_vars_css_module",
     "../../settings:settings_page_css_module",
     "../a11y_page:captions_subpage_module",
+    "../a11y_page:live_caption_section_module",
     "../about_page:modulize",
     "../appearance_page:modulize",
     "../prefs:modulize",

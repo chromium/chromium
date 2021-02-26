@@ -249,8 +249,14 @@ void MediaDialogView::Init() {
       SkColor(gfx::kGoogleGrey700)));
   live_caption_container->AddChildView(std::move(live_caption_image));
 
+  // Live Caption multi language is only enabled when SODA is also enabled.
+  const int live_caption_title_message =
+      base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage) &&
+              base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)
+          ? IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION
+          : IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_ENGLISH_ONLY;
   auto live_caption_title = std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION));
+      l10n_util::GetStringUTF16(live_caption_title_message));
   live_caption_title->SetHorizontalAlignment(
       gfx::HorizontalAlignment::ALIGN_LEFT);
   live_caption_title_ =
@@ -261,7 +267,7 @@ void MediaDialogView::Init() {
   // initialization of the MediaDialogView.
   if (!profile_->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled)) {
     auto live_caption_title_new_badge = std::make_unique<NewBadgeLabel>(
-        l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION));
+        l10n_util::GetStringUTF16(live_caption_title_message));
     live_caption_title_new_badge->SetHorizontalAlignment(
         gfx::HorizontalAlignment::ALIGN_LEFT);
     live_caption_title_new_badge_ = live_caption_container->AddChildView(
@@ -314,8 +320,14 @@ void MediaDialogView::ToggleLiveCaption(bool enabled) {
 
 void MediaDialogView::OnSodaInstalled() {
   speech::SodaInstaller::GetInstance()->RemoveObserver(this);
+  // Live Caption multi language is only enabled when SODA is also enabled.
+  const int live_caption_title_message =
+      base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage) &&
+              base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)
+          ? IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION
+          : IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_ENGLISH_ONLY;
   live_caption_title_->SetText(
-      l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION));
+      l10n_util::GetStringUTF16(live_caption_title_message));
 }
 
 void MediaDialogView::OnSodaError() {

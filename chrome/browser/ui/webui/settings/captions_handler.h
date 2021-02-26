@@ -27,7 +27,7 @@ class CaptionsHandler : public SettingsPageUIHandler,
   void OnJavascriptDisallowed() override;
 
  private:
-  void HandleCaptionsSubpageReady(const base::ListValue* args);
+  void HandleLiveCaptionSectionReady(const base::ListValue* args);
   void HandleOpenSystemCaptionsDialog(const base::ListValue* args);
 
   // SodaInstaller::Observer overrides:

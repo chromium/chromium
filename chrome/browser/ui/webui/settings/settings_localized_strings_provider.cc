@@ -211,10 +211,6 @@ void AddA11yStrings(content::WebUIDataSource* html_source) {
      IDS_SETTINGS_ACCESSIBLE_IMAGE_LABELS_SUBTITLE},
     {"settingsSliderRoleDescription",
      IDS_SETTINGS_SLIDER_MIN_MAX_ARIA_ROLE_DESCRIPTION},
-    {"captionsEnableLiveCaptionTitle",
-     IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_TITLE},
-    {"captionsEnableLiveCaptionSubtitle",
-     IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE},
     {"caretBrowsingTitle", IDS_SETTINGS_ENABLE_CARET_BROWSING_TITLE},
     {"caretBrowsingSubtitle", IDS_SETTINGS_ENABLE_CARET_BROWSING_SUBTITLE},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -240,9 +236,6 @@ void AddA11yStrings(content::WebUIDataSource* html_source) {
       "showFocusHighlightOption",
       base::FeatureList::IsEnabled(features::kAccessibilityFocusHighlight));
 #endif
-
-  html_source->AddBoolean("enableLiveCaption",
-                          base::FeatureList::IsEnabled(media::kLiveCaption));
 
   AddCaptionSubpageStrings(html_source);
 }

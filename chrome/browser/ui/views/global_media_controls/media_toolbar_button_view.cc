@@ -90,20 +90,26 @@ void MediaToolbarButtonView::Hide() {
 void MediaToolbarButtonView::Enable() {
   SetEnabled(true);
 
-  // Live Caption only works for English-language speech for now, so we only
-  // show the promo to users whose fluent languages include english. Fluent
-  // languages are set in chrome://settings/languages.
-  // TODO(crbug.com/1161569): Remove this when Live Caption supports additional
-  // languages.
-  language::LanguageModel* language_model =
-      LanguageModelManagerFactory::GetForBrowserContext(browser_->profile())
-          ->GetPrimaryModel();
-  for (const auto& lang : language_model->GetLanguages()) {
-    if (base::MatchPattern(lang.lang_code, "en*") &&
-        base::FeatureList::IsEnabled(media::kLiveCaption)) {
+  if (base::FeatureList::IsEnabled(media::kLiveCaption)) {
+    // Live Caption multi language is only enabled when SODA is also enabled.
+    if (base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage) &&
+        base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {
       feature_promo_controller_->MaybeShowPromo(
           feature_engagement::kIPHLiveCaptionFeature);
-      break;
+    } else {
+      // Live Caption only works for English-language speech for now, so we only
+      // show the promo to users whose fluent languages include english. Fluent
+      // languages are set in chrome://settings/languages.
+      language::LanguageModel* language_model =
+          LanguageModelManagerFactory::GetForBrowserContext(browser_->profile())
+              ->GetPrimaryModel();
+      for (const auto& lang : language_model->GetLanguages()) {
+        if (base::MatchPattern(lang.lang_code, "en*")) {
+          feature_promo_controller_->MaybeShowPromo(
+              feature_engagement::kIPHLiveCaptionFeature);
+          break;
+        }
+      }
     }
   }
 

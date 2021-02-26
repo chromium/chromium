@@ -6,26 +6,14 @@
 <link rel="import" href="../appearance_page/fonts_browser_proxy.html">
 <link rel="import" href="../controls/settings_dropdown_menu.html">
 <link rel="import" href="../controls/settings_slider.html">
-<link rel="import" href="../controls/settings_toggle_button.html">
 <link rel="import" href="../i18n_setup.html">
 <link rel="import" href="../prefs/prefs_behavior.html">
 <link rel="import" href="../settings_shared_css.html">
+<link rel="import" href="./live_caption_section.html">
 
 <dom-module id="settings-captions">
   <template>
     <style include="cr-shared-style settings-shared">
-      /* Override the default padding of a cr-row to 0. The template inside has
-         left and right padding. */
-      .cr-row-with-template {
-        padding: 0;
-      }
-
-      /* Ensure the toggle button stretches the width of its container despite
-         removing its parent's padding. */
-      #liveCaptionToggleButton {
-        width: 100%;
-      }
-
       .preview-box {
         all: initial;
         align-items: center;
@@ -43,14 +31,7 @@
       }
     </style>
     <template is="dom-if" if="[[enableLiveCaption_]]">
-      <div class="cr-row cr-row-with-template first">
-        <settings-toggle-button id="liveCaptionToggleButton"
-            pref="{{prefs.accessibility.captions.live_caption_enabled}}"
-            on-change="onA11yLiveCaptionChange_"
-            label="$i18n{captionsEnableLiveCaptionTitle}"
-            sub-label="[[enableLiveCaptionSubtitle_]]">
-        </settings-toggle-button>
-      </div>
+      <settings-live-caption prefs="{{prefs}}"></settings-live-caption>
     </template>
     <div class="cr-row">
       <h2 class="start">$i18n{captionsPreferencesTitle}</h2>

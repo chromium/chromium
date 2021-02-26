@@ -15,9 +15,12 @@
   </message>
   <message name="IDS_GLOBAL_MEDIA_CONTROLS_STOP_CASTING_BUTTON_LABEL" desc="Label for a button that stops the current cast session.">
    Stop casting
- </message>
-  <message name="IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION" desc="Label for the toggle that enables the Live Caption feature. Live Caption only works for English captions.">
+  </message>
+  <message name="IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_ENGLISH_ONLY" desc="Label for the toggle that enables the Live Caption feature. Live Caption only works for English captions.">
    Live Caption (English only)
+  </message>
+  <message name="IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION" desc="Label for the toggle that enables the Live Caption feature.">
+   Live Caption
   </message>
   <message name="IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_DOWNLOAD_PROGRESS" desc="Download progress indicator after Live Caption is enabled. The user needs to download certain files for the feature to work.">
     Downloading... <ph name="PERCENT">$1<ex>17</ex></ph>%

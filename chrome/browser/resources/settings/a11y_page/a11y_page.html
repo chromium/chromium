@@ -12,13 +12,7 @@
 <if expr="not chromeos">
         <template is="dom-if" if="[[captionSettingsOpensExternally_]]">
           <template is="dom-if" if="[[enableLiveCaption_]]">
-            <settings-toggle-button
-                class="hr"
-                pref="{{prefs.accessibility.captions.live_caption_enabled}}"
-                on-change="onA11yLiveCaptionChange_"
-                label="$i18n{captionsEnableLiveCaptionTitle}"
-                sub-label="[[enableLiveCaptionSubtitle_]]">
-            </settings-toggle-button>
+            <settings-live-caption prefs="{{prefs}}"></settings-live-caption>
           </template>
           <cr-link-row id="captions"
               label="$i18n{captionsPreferencesTitle}"
@@ -62,13 +56,13 @@
             external>
         </cr-link-row>
       </div>
-<if expr="not is_macosx and not chromeos">
-      <template is="dom-if" route-path="/captions">
-        <settings-subpage
-            associated-control="[[$$('#captions')]]"
-            page-title="$i18n{captionsTitle}">
-          <settings-captions prefs="{{prefs}}"></settings-captions>
-        </settings-subpage>
+      <template is="dom-if" if="[[!captionSettingsOpensExternally_]]">
+        <template is="dom-if" route-path="/captions">
+          <settings-subpage
+              associated-control="[[$$('#captions')]]"
+              page-title="$i18n{captionsTitle}">
+            <settings-captions prefs="{{prefs}}"></settings-captions>
+          </settings-subpage>
+        </template>
       </template>
-</if>
     </settings-animated-pages>

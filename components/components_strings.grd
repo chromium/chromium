@@ -319,6 +319,7 @@
       <part file="security_state_strings.grdp" />
       <part file="send_tab_to_self_strings.grdp" />
       <part file="sms_strings.grdp" />
+      <part file="soda_strings.grdp" />
       <part file="ssl_errors_strings.grdp" />
       <part file="subresource_filter_strings.grdp" />
       <part file="sync_ui_strings.grdp" />
