@@ -24,30 +24,16 @@
     this.dialogs = {};
 
     // Initializes the strings. This needs for the volume manager.
-    if (!window.isSWA) {
-      this.initializationPromise_ = new Promise((fulfill, reject) => {
-        chrome.fileManagerPrivate.getStrings(stringData => {
-          if (chrome.runtime.lastError) {
-            console.error(chrome.runtime.lastError.message);
-            return;
-          }
-          loadTimeData.data = assert(stringData);
-          fulfill(stringData);
-        });
+    this.initializationPromise_ = new Promise((fulfill, reject) => {
+      chrome.fileManagerPrivate.getStrings(stringData => {
+        if (chrome.runtime.lastError) {
+          console.error(chrome.runtime.lastError.message);
+          return;
+        }
+        loadTimeData.data = assert(stringData);
+        fulfill(stringData);
       });
-    } else {
-      this.initializationPromise_ = new Promise((fulfill, reject) => {
-        const script = document.createElement('script');
-
-        script.onload = () => {
-          // window.loadTimeData.data_ = null; // Gambiarra!
-          fulfill(window.loadTimeData.data_);
-        };
-
-        document.head.append(script);
-        script.src = 'strings.js';
-      });
-    }
+    });
 
     /** @private {?LaunchHandler} */
     this.launchHandler_ = null;
