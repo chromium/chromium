@@ -1556,13 +1556,6 @@ TEST_F(BindTest, UnwrapUnretained) {
   EXPECT_EQ(&i, internal::Unwrap(std::move(unretained)));
 }
 
-TEST_F(BindTest, UnwrapConstRef) {
-  int p = 0;
-  auto const_ref = std::cref(p);
-  EXPECT_EQ(&p, &internal::Unwrap(const_ref));
-  EXPECT_EQ(&p, &internal::Unwrap(std::move(const_ref)));
-}
-
 TEST_F(BindTest, UnwrapRetainedRef) {
   auto p = MakeRefCounted<RefCountedData<int>>();
   auto retained_ref = RetainedRef(p);

@@ -1007,11 +1007,6 @@ struct BindUnwrapTraits<internal::UnretainedWrapper<T>> {
 };
 
 template <typename T>
-struct BindUnwrapTraits<std::reference_wrapper<T>> {
-  static T& Unwrap(std::reference_wrapper<T> o) { return o.get(); }
-};
-
-template <typename T>
 struct BindUnwrapTraits<internal::RetainedRefWrapper<T>> {
   static T* Unwrap(const internal::RetainedRefWrapper<T>& o) { return o.get(); }
 };
