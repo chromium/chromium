@@ -136,9 +136,6 @@ vars = {
   # e.g. with custom_vars.
   'checkout_ios_webkit': False,
 
-  # By default, do not checkout the re-client binaries.
-  'checkout_reclient': False,
-
   # Fetches only the SDK boot images which match at least one of the whitelist
   # entries in a comma-separated list.
   #
@@ -187,6 +184,9 @@ vars = {
   # See //docs/testing/regression-test-selection.md
   # for info on RTS
   'checkout_rts_model': False,
+
+  # By default, do not check out the re-client binaries.
+  'checkout_reclient': False,
 
   # reclient CIPD package version
   'reclient_version': 're_client_version:0.22.0.d95c8de',

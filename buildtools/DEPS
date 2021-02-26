@@ -3,7 +3,8 @@ use_relative_paths = True
 vars = {
   'chromium_url': 'https://chromium.googlesource.com',
 
-  #
+  # TODO(crbug.com/1177288): Remove this file. Please don't add to it.
+
   # TODO(crbug.com/941824): The values below need to be kept in sync
   # between //DEPS and //buildtools/DEPS, so if you're updating one,
   # update the other. There is a presubmit check that checks that
@@ -11,16 +12,9 @@ vars = {
   # hence new revisions to this list, make sure you update the
   # _CheckBuildtoolsRevsAreInSync in PRESUBMIT.py to include the additional
   # revisions.
-  #
 
   # GN CIPD package version.
   'gn_version': 'git_revision:dfcbc6fed0a8352696f92d67ccad54048ad182b3',
-
-  # By default, do not checkout the re-client binaries.
-  'checkout_reclient': False,
-
-  # reclient CIPD package version
-  'reclient_version': 're_client_version:0.22.0.d95c8de',
 
   # When changing these, also update the svn revisions in deps_revisions.gni
   # TODO(crbug.com/1166332) rename to clang_format_revision.
@@ -71,15 +65,5 @@ deps = {
     ],
     'dep_type': 'cipd',
     'condition': 'host_os == "win"',
-  },
-  'reclient': {
-    'packages': [
-      {
-        'package': 'infra/rbe/client/${{platform}}',
-        'version': Var('reclient_version'),
-      }
-    ],
-    'dep_type': 'cipd',
-    'condition': '(host_os == "linux" or host_os == "win") and checkout_reclient',
   },
 }
