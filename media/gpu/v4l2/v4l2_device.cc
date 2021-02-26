@@ -1479,7 +1479,7 @@ uint32_t V4L2Device::VideoCodecProfileToV4L2PixFmt(VideoCodecProfile profile,
     else
       return V4L2_PIX_FMT_VP9;
   } else {
-    LOG(ERROR) << "Unknown profile: " << GetProfileName(profile);
+    DVLOGF(1) << "Unsupported profile: " << GetProfileName(profile);
     return 0;
   }
 }
