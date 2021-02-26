@@ -36,7 +36,6 @@
 #include "pdf/accessibility.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/document_attachment_info.h"
-#include "pdf/document_layout.h"
 #include "pdf/document_metadata.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/ppapi_migration/bitmap.h"
@@ -96,16 +95,6 @@ constexpr char kJSBeepType[] = "beep";
 constexpr char kJSUpdateScrollType[] = "updateScroll";
 constexpr char kJSUpdateScrollX[] = "x";
 constexpr char kJSUpdateScrollY[] = "y";
-// Document dimension arguments (Plugin -> Page).
-constexpr char kJSDocumentDimensionsType[] = "documentDimensions";
-constexpr char kJSDocumentWidth[] = "width";
-constexpr char kJSDocumentHeight[] = "height";
-constexpr char kJSLayoutOptions[] = "layoutOptions";
-constexpr char kJSPageDimensions[] = "pageDimensions";
-constexpr char kJSPageX[] = "x";
-constexpr char kJSPageY[] = "y";
-constexpr char kJSPageWidth[] = "width";
-constexpr char kJSPageHeight[] = "height";
 // Document print preview loaded (Plugin -> Page)
 constexpr char kJSPreviewLoadedType[] = "printPreviewLoaded";
 // Attachments (Plugin -> Page)
@@ -1074,31 +1063,6 @@ pp::VarArray OutOfProcessInstance::GetDocumentAttachments() {
     attachments.Set(i, dict);
   }
   return attachments;
-}
-
-void OutOfProcessInstance::ProposeDocumentLayout(const DocumentLayout& layout) {
-  pp::VarDictionary dimensions;
-  dimensions.Set(kType, kJSDocumentDimensionsType);
-  dimensions.Set(kJSDocumentWidth, pp::Var(layout.size().width()));
-  dimensions.Set(kJSDocumentHeight, pp::Var(layout.size().height()));
-  dimensions.Set(kJSLayoutOptions, VarFromValue(layout.options().ToValue()));
-  pp::VarArray page_dimensions_array;
-  for (size_t i = 0; i < layout.page_count(); ++i) {
-    const gfx::Rect& page_rect = layout.page_rect(i);
-    pp::VarDictionary page_dimensions;
-    page_dimensions.Set(kJSPageX, pp::Var(page_rect.x()));
-    page_dimensions.Set(kJSPageY, pp::Var(page_rect.y()));
-    page_dimensions.Set(kJSPageWidth, pp::Var(page_rect.width()));
-    page_dimensions.Set(kJSPageHeight, pp::Var(page_rect.height()));
-    page_dimensions_array.Set(i, page_dimensions);
-  }
-  dimensions.Set(kJSPageDimensions, page_dimensions_array);
-  PostMessage(dimensions);
-
-  // Reload the accessibility tree on layout changes because the relative page
-  // bounds are no longer valid.
-  if (layout.dirty() && accessibility_state() == AccessibilityState::kLoaded)
-    LoadAccessibility();
 }
 
 void OutOfProcessInstance::DidScroll(const gfx::Vector2d& offset) {

@@ -29,6 +29,7 @@
 #include "base/values.h"
 #include "pdf/accessibility.h"
 #include "pdf/accessibility_structs.h"
+#include "pdf/document_layout.h"
 #include "pdf/paint_ready_rect.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_engine.h"
@@ -85,6 +86,31 @@ base::Value PrepareReplyMessage(base::StringPiece reply_type,
 PdfViewPluginBase::PdfViewPluginBase() = default;
 
 PdfViewPluginBase::~PdfViewPluginBase() = default;
+
+void PdfViewPluginBase::ProposeDocumentLayout(const DocumentLayout& layout) {
+  base::Value message(base::Value::Type::DICTIONARY);
+  message.SetStringKey("type", "documentDimensions");
+  message.SetIntKey("width", layout.size().width());
+  message.SetIntKey("height", layout.size().height());
+  message.SetKey("layoutOptions", layout.options().ToValue());
+  base::Value page_dimensions_list(base::Value::Type::LIST);
+  for (size_t i = 0; i < layout.page_count(); ++i) {
+    const gfx::Rect& page_rect = layout.page_rect(i);
+    base::Value page_dimensions(base::Value::Type::DICTIONARY);
+    page_dimensions.SetIntKey("x", page_rect.x());
+    page_dimensions.SetIntKey("y", page_rect.y());
+    page_dimensions.SetIntKey("width", page_rect.width());
+    page_dimensions.SetIntKey("height", page_rect.height());
+    page_dimensions_list.Append(std::move(page_dimensions));
+  }
+  message.SetKey("pageDimensions", std::move(page_dimensions_list));
+  SendMessage(std::move(message));
+
+  // Reload the accessibility tree on layout changes because the relative page
+  // bounds are no longer valid.
+  if (layout.dirty() && accessibility_state_ == AccessibilityState::kLoaded)
+    LoadAccessibility();
+}
 
 void PdfViewPluginBase::Invalidate(const gfx::Rect& rect) {
   if (in_paint_) {

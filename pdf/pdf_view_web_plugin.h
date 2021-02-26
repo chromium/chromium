@@ -57,7 +57,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void DidFailLoading(const blink::WebURLError& error) override;
 
   // PdfViewPluginBase:
-  void ProposeDocumentLayout(const DocumentLayout& layout) override;
   void DidScroll(const gfx::Vector2d& offset) override;
   void ScrollToX(int x_in_screen_coords) override;
   void ScrollToY(int y_in_screen_coords) override;

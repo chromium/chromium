@@ -49,6 +49,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   PdfViewPluginBase& operator=(const PdfViewPluginBase& other) = delete;
 
   // PDFEngine::Client:
+  void ProposeDocumentLayout(const DocumentLayout& layout) override;
   void Invalidate(const gfx::Rect& rect) override;
   SkColor GetBackgroundColor() override;
   void SetIsSelecting(bool is_selecting) override;
