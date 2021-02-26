@@ -71,14 +71,14 @@ bool ShowAndFocusNativeWindow(gfx::NativeWindow window) {
     wchar_t window_title[256];
     GetWindowText(foreground_window, window_title, base::size(window_title));
 
-    base::string16 lineage_str;
-    base::string16 window_contents;
+    std::wstring lineage_str;
+    std::wstring window_contents;
     DWORD foreground_process_id = 0;
     if (foreground_window) {
       GetWindowThreadProcessId(foreground_window, &foreground_process_id);
       ProcessLineage lineage = ProcessLineage::Create(foreground_process_id);
       if (!lineage.IsEmpty()) {
-        lineage_str = STRING16_LITERAL(", process lineage: ");
+        lineage_str = L", process lineage: ";
         lineage_str.append(lineage.ToString());
       }
 

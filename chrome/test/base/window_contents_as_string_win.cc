@@ -27,28 +27,28 @@ constexpr long kCachedProperties[] = {
 };
 
 // Returns a string representation of the cached properties of |element|.
-base::string16 CachedElementContentsAsString(IUIAutomationElement* element) {
-  base::string16 contents;
+std::wstring CachedElementContentsAsString(IUIAutomationElement* element) {
+  std::wstring contents;
 
   base::win::ScopedVariant variant;
   HRESULT result = element->GetCachedPropertyValue(
       UIA_IsInvokePatternAvailablePropertyId, variant.Receive());
   if (SUCCEEDED(result) && variant.type() == VT_BOOL &&
       V_BOOL(variant.ptr()) == VARIANT_TRUE) {
-    contents.append(STRING16_LITERAL("[invokable] "));
+    contents.append(L"[invokable] ");
   }
 
   base::win::ScopedBstr value;
   result = element->get_CachedLocalizedControlType(value.Receive());
   if (SUCCEEDED(result))
-    contents.append(STRING16_LITERAL("type: ")).append(value.Get());
+    contents.append(L"type: ").append(value.Get());
 
   value.Reset();
   result = element->get_CachedName(value.Receive());
   if (SUCCEEDED(result)) {
     if (!contents.empty())
-      contents.append(STRING16_LITERAL(", "));
-    contents.append(STRING16_LITERAL("name: ")).append(value.Get());
+      contents.append(L", ");
+    contents.append(L"name: ").append(value.Get());
   }
 
   return contents;
@@ -57,18 +57,18 @@ base::string16 CachedElementContentsAsString(IUIAutomationElement* element) {
 void TreeAsString(IUIAutomationTreeWalker* walker,
                   IUIAutomationCacheRequest* cache_request,
                   IUIAutomationElement* element,
-                  const base::string16& padding,
-                  base::string16* contents) {
+                  const std::wstring& padding,
+                  std::wstring* contents) {
   contents->append(padding)
       .append(CachedElementContentsAsString(element))
-      .append(STRING16_LITERAL("\n"));
+      .append(L"\n");
 
   Microsoft::WRL::ComPtr<IUIAutomationElement> child_element;
   HRESULT result = walker->GetFirstChildElementBuildCache(
       element, cache_request, &child_element);
   if (FAILED(result))
     return;
-  const base::string16 next_padding = padding + STRING16_LITERAL("  ");
+  const std::wstring next_padding = padding + L"  ";
   while (child_element.Get()) {
     TreeAsString(walker, cache_request, child_element.Get(), next_padding,
                  contents);
@@ -83,7 +83,7 @@ void TreeAsString(IUIAutomationTreeWalker* walker,
 
 }  // namespace
 
-base::string16 WindowContentsAsString(HWND window_handle) {
+std::wstring WindowContentsAsString(HWND window_handle) {
   DCHECK(window_handle);
   base::win::AssertComInitialized();
 
@@ -93,12 +93,12 @@ base::string16 WindowContentsAsString(HWND window_handle) {
       ::CoCreateInstance(CLSID_CUIAutomation, nullptr, CLSCTX_INPROC_SERVER,
                          IID_PPV_ARGS(&automation));
   if (FAILED(result))
-    return base::string16();
+    return std::wstring();
 
   Microsoft::WRL::ComPtr<IUIAutomationCacheRequest> cache_request;
   result = automation->CreateCacheRequest(&cache_request);
   if (FAILED(result))
-    return base::string16();
+    return std::wstring();
   for (auto property_id : kCachedProperties)
     cache_request->AddProperty(property_id);
 
@@ -106,16 +106,16 @@ base::string16 WindowContentsAsString(HWND window_handle) {
   result = automation->ElementFromHandleBuildCache(
       window_handle, cache_request.Get(), &window_element);
   if (FAILED(result))
-    return base::string16();
+    return std::wstring();
 
   Microsoft::WRL::ComPtr<IUIAutomationTreeWalker> walker;
   result = automation->get_RawViewWalker(&walker);
   if (FAILED(result))
-    return base::string16();
+    return std::wstring();
 
-  base::string16 contents;
+  std::wstring contents;
   TreeAsString(walker.Get(), cache_request.Get(), window_element.Get(),
-               base::string16(), &contents);
+               std::wstring(), &contents);
   // Strip the trailing newline.
   if (!contents.empty())
     contents.pop_back();

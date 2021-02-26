@@ -100,8 +100,8 @@ IN_PROC_BROWSER_TEST_F(AutofillAccessibilityWinBrowserTest,
       FindAccessibilityNode(GetWebContents(), find_criteria), {"checkbox"});
 
   UiaAccessibilityWaiterInfo info = {
-      GetWebPageHwnd(), base::ASCIIToUTF16("combobox"),
-      base::ASCIIToUTF16("input"), ax::mojom::Event::kControlsChanged};
+      GetWebPageHwnd(), base::ASCIIToWide("combobox"),
+      base::ASCIIToWide("input"), ax::mojom::Event::kControlsChanged};
 
   std::unique_ptr<UiaAccessibilityEventWaiter> control_waiter =
       std::make_unique<UiaAccessibilityEventWaiter>(info);

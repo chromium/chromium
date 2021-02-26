@@ -39,7 +39,6 @@ class Switches {
 
   void SetSwitch(const std::string& name);
   void SetSwitch(const std::string& name, const std::string& value);
-  void SetSwitch(const std::string& name, const base::string16& value);
   void SetSwitch(const std::string& name, const base::FilePath& value);
 
   // In case of same key, |switches| will override.

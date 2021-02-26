@@ -41,17 +41,16 @@ ProcessLineage::ProcessLineage(ProcessLineage&& other) = default;
 ProcessLineage& ProcessLineage::operator=(ProcessLineage&& other) = default;
 ProcessLineage::~ProcessLineage() = default;
 
-base::string16 ProcessLineage::ToString() const {
+std::wstring ProcessLineage::ToString() const {
   std::wostringstream sstream;
   std::wstring sep;
   for (const auto& prop : lineage_) {
     sstream << sep << L"(process_id: " << prop.process_id
-            << L", command_line: \"" << base::AsWString(prop.command_line)
-            << L"\")";
+            << L", command_line: \"" << prop.command_line << L"\")";
     if (sep.empty())
       sep = L", ";
   }
-  return base::AsString16(sstream.str());
+  return sstream.str();
 }
 
 ProcessLineage::ProcessLineage(std::vector<ProcessProperties> lineage)

@@ -232,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
 
   EXPECT_EQ(1,
             content::EvalJs(web_contents, "window.launchParams.files.length"));
-  EXPECT_EQ(test_file_path.BaseName().value(),
+  EXPECT_EQ(test_file_path.BaseName().AsUTF8Unsafe(),
             content::EvalJs(web_contents, "window.launchParams.files[0].name"));
 }
 
@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
 
   EXPECT_EQ(1,
             content::EvalJs(web_contents, "window.launchParams.files.length"));
-  EXPECT_EQ(test_file_path.BaseName().value(),
+  EXPECT_EQ(test_file_path.BaseName().AsUTF8Unsafe(),
             content::EvalJs(web_contents, "window.launchParams.files[0].name"));
 }
 

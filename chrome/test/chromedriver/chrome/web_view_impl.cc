@@ -1084,7 +1084,7 @@ Status WebViewImpl::SetFileInputFiles(const std::string& frame,
       return Status(kUnknownError,
                     "path is not canonical: " + files[i].AsUTF8Unsafe());
     }
-    file_list.AppendString(files[i].value());
+    file_list.AppendString(files[i].AsUTF8Unsafe());
   }
 
   base::DictionaryValue setFilesParams;

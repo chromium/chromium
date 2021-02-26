@@ -199,7 +199,7 @@ Status PrepareDesktopCommandLine(const Capabilities& capabilities,
     if (!user_data_dir_temp_dir->CreateUniqueTempDir())
       return Status(kUnknownError, "cannot create temp dir for user data dir");
     switches.SetSwitch("user-data-dir",
-                       user_data_dir_temp_dir->GetPath().value());
+                       user_data_dir_temp_dir->GetPath().AsUTF8Unsafe());
     *user_data_dir = user_data_dir_temp_dir->GetPath();
   }
 
@@ -1023,10 +1023,10 @@ Status ProcessExtension(const std::string& extension,
 
 void UpdateExtensionSwitch(Switches* switches,
                            const char name[],
-                           const base::FilePath::StringType& extension) {
-  base::FilePath::StringType value = switches->GetSwitchValueNative(name);
+                           const std::string& extension) {
+  std::string value = switches->GetSwitchValue(name);
   if (value.length())
-    value += FILE_PATH_LITERAL(",");
+    value += ",";
   value += extension;
   switches->SetSwitch(name, value);
 }
@@ -1036,7 +1036,7 @@ Status ProcessExtensions(const std::vector<std::string>& extensions,
                          Switches* switches,
                          std::vector<std::string>* bg_pages) {
   std::vector<std::string> bg_pages_tmp;
-  std::vector<base::FilePath::StringType> extension_paths;
+  std::vector<std::string> extension_paths;
   for (size_t i = 0; i < extensions.size(); ++i) {
     base::FilePath path;
     std::string bg_page;
@@ -1047,14 +1047,13 @@ Status ProcessExtensions(const std::vector<std::string>& extensions,
           base::StringPrintf("cannot process extension #%" PRIuS, i + 1),
           status);
     }
-    extension_paths.push_back(path.value());
+    extension_paths.push_back(path.AsUTF8Unsafe());
     if (bg_page.length())
       bg_pages_tmp.push_back(bg_page);
   }
 
   if (extension_paths.size()) {
-    base::FilePath::StringType extension_paths_value = base::JoinString(
-        extension_paths, base::FilePath::StringType(1, ','));
+    std::string extension_paths_value = base::JoinString(extension_paths, ",");
     UpdateExtensionSwitch(switches, "load-extension", extension_paths_value);
   }
   bg_pages->swap(bg_pages_tmp);

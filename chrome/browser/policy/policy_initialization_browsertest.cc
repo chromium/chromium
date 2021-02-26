@@ -81,7 +81,7 @@ class PolicyInitializationBrowserTest : public InProcessBrowserTest {
     ASSERT_EQ(ERROR_SUCCESS, key.Create(root, policy::kRegistryChromePolicyKey,
                                         KEY_SET_VALUE | KEY_WOW64_32KEY));
     ASSERT_EQ(ERROR_SUCCESS,
-              key.WriteValue(base::ASCIIToUTF16(kMockPolicyName).c_str(), 1));
+              key.WriteValue(base::ASCIIToWide(kMockPolicyName).c_str(), 1));
   }
 
   registry_util::RegistryOverrideManager registry_override_manager_;

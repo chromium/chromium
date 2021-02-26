@@ -67,7 +67,7 @@ bool ProfileIsTagged(Profile* profile) {
 // Saves |value| in the registry at the value name corresponding to the cleanup
 // completed state.
 void SetCompletedState(DWORD value) {
-  base::string16 cleaner_key_path(
+  std::wstring cleaner_key_path(
       chrome_cleaner::kSoftwareRemovalToolRegistryKey);
   cleaner_key_path.append(L"\\").append(chrome_cleaner::kCleanerSubKey);
 

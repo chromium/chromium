@@ -4076,14 +4076,12 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_DownloadTest_CrazyFilenames) {
 
   for (size_t index = 0; index < base::size(kCrazyFilenames); ++index) {
     SCOPED_TRACE(testing::Message() << "Index " << index);
-    base::string16 crazy16;
     std::string crazy8;
     const wchar_t* const crazy_w = kCrazyFilenames[index];
     ASSERT_TRUE(base::WideToUTF8(crazy_w, wcslen(crazy_w), &crazy8));
-    ASSERT_TRUE(base::WideToUTF16(crazy_w, wcslen(crazy_w), &crazy16));
     base::FilePath file_path(origin_directory.Append(
 #if defined(OS_WIN)
-        crazy16
+        crazy_w
 #elif defined(OS_POSIX)
         crazy8
 #endif

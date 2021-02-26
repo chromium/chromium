@@ -60,7 +60,7 @@ const char kTestUrlWithLineEnding[] = "http://example.com/foobar\n";
 
 #if defined(OS_WIN)
 std::string NativeToUTF8(const std::wstring& native) {
-  return base::UTF16ToUTF8(native);
+  return base::WideToUTF8(native);
 }
 #else
 std::string NativeToUTF8(const std::string& native) {

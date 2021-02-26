@@ -5,10 +5,10 @@
 #ifndef CHROME_TEST_BASE_PROCESS_LINEAGE_WIN_H_
 #define CHROME_TEST_BASE_PROCESS_LINEAGE_WIN_H_
 
+#include <string>
 #include <utility>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/win/windows_types.h"
 
 // Holds the lineage of a process; specifically, the pid and command line of the
@@ -22,7 +22,7 @@ class ProcessLineage {
  public:
   struct ProcessProperties {
     DWORD process_id;
-    base::string16 command_line;
+    std::wstring command_line;
   };
 
   // Returns the lineage of |process_id| or an empty instance in case of error.
@@ -33,7 +33,7 @@ class ProcessLineage {
   ~ProcessLineage();
 
   bool IsEmpty() const { return lineage_.empty(); }
-  base::string16 ToString() const;
+  std::wstring ToString() const;
 
   ProcessLineage(const ProcessLineage&) = delete;
   ProcessLineage& operator=(const ProcessLineage&) = delete;

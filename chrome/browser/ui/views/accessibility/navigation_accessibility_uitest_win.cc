@@ -141,7 +141,7 @@ void WinAccessibilityEventMonitor::WaitForNextEvent(
   base::win::ScopedBstr name_bstr;
   HRESULT hr = acc_obj->get_accName(child_variant, name_bstr.Receive());
   if (S_OK == hr)
-    *out_name = base::UTF16ToUTF8(base::string16(name_bstr.Get()));
+    *out_name = base::WideToUTF8(name_bstr.Get());
   else
     *out_name = "";
 }

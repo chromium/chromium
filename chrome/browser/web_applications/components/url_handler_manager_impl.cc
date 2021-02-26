@@ -10,6 +10,8 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/optional.h"
+#include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
@@ -46,7 +48,11 @@ UrlHandlerManagerImpl::GetUrlHandlerMatches(
 
   std::vector<GURL> urls;
   for (const auto& arg : command_line.GetArgs()) {
+#if defined(OS_WIN)
+    GURL potential_url(base::WideToUTF16(arg));
+#else
     GURL potential_url(arg);
+#endif
     if (potential_url.is_valid() && potential_url.IsStandard())
       urls.push_back(potential_url);
   }

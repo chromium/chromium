@@ -36,8 +36,8 @@
 namespace {
 
 struct FaviconGroup {
-  const base::char16* favicon_url;
-  const base::char16* site_url;
+  const wchar_t* favicon_url;
+  const wchar_t* site_url;
 };
 
 class TestObserver : public ProfileWriter,
@@ -85,9 +85,11 @@ class TestObserver : public ProfileWriter,
     // Importer should group the favicon information for each favicon URL.
     ASSERT_EQ(expected_favicon_groups_.size(), usage.size());
     for (size_t i = 0; i < expected_favicon_groups_.size(); ++i) {
-      GURL favicon_url(expected_favicon_groups_[i].favicon_url);
+      GURL favicon_url(
+          base::WideToUTF16(expected_favicon_groups_[i].favicon_url));
       std::set<GURL> urls;
-      urls.insert(GURL(expected_favicon_groups_[i].site_url));
+      urls.insert(
+          GURL(base::WideToUTF16(expected_favicon_groups_[i].site_url)));
 
       bool expected_favicon_url_found = false;
       for (size_t j = 0; j < usage.size(); ++j) {
@@ -209,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(EdgeImporterBrowserTest, EdgeImporter) {
     ASSERT_TRUE(DecompressDatabase(temp_path.AppendASCII("edge_profile")));
   }
 
-  base::string16 key_path(importer::GetEdgeSettingsKey());
+  std::wstring key_path(importer::GetEdgeSettingsKey());
   base::win::RegKey key;
   ASSERT_EQ(ERROR_SUCCESS,
             key.Create(HKEY_CURRENT_USER, key_path.c_str(), KEY_WRITE));
@@ -288,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(EdgeImporterBrowserTest, EdgeImporterNoDatabase) {
   std::vector<BookmarkInfo> bookmark_entries;
   std::vector<FaviconGroup> favicon_groups;
 
-  base::string16 key_path(importer::GetEdgeSettingsKey());
+  std::wstring key_path(importer::GetEdgeSettingsKey());
   base::win::RegKey key;
   ASSERT_EQ(ERROR_SUCCESS,
             key.Create(HKEY_CURRENT_USER, key_path.c_str(), KEY_WRITE));

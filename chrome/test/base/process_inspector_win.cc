@@ -104,7 +104,7 @@ class Inspector : public ProcessInspector {
 
   // ProcessInspector:
   DWORD GetParentPid() const override;
-  const base::string16& command_line() const override;
+  const std::wstring& command_line() const override;
 
  private:
   // ProcessInspector:
@@ -113,7 +113,7 @@ class Inspector : public ProcessInspector {
   ProcessInformation<Traits> process_basic_information_;
   ProcessExecutionBlock<Traits> peb_;
   RtlUserProcessParameters<Traits> process_parameters_;
-  base::string16 command_line_;
+  std::wstring command_line_;
 };
 
 #if !defined(_WIN64)
@@ -203,7 +203,7 @@ DWORD Inspector<Traits>::GetParentPid() const {
 }
 
 template <class Traits>
-const base::string16& Inspector<Traits>::command_line() const {
+const std::wstring& Inspector<Traits>::command_line() const {
   return command_line_;
 }
 

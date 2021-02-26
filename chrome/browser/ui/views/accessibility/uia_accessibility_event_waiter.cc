@@ -219,9 +219,9 @@ bool UiaAccessibilityEventWaiter::Thread::EventHandler::MatchesNameRole(
   sender->get_CachedAriaRole(aria_role.Receive());
   sender->get_CachedName(name.Receive());
 
-  if (base::string16(aria_role.Get(), SysStringLen(aria_role.Get())) ==
+  if (std::wstring(aria_role.Get(), SysStringLen(aria_role.Get())) ==
           owner_->info_.role &&
-      base::string16(name.Get(), SysStringLen(name.Get())) ==
+      std::wstring(name.Get(), SysStringLen(name.Get())) ==
           owner_->info_.name) {
     return true;
   }

@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, DownloadDirectory) {
   PolicyMap policies;
   policies.Set(key::kDownloadDirectory, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-               base::Value(forced_dir.value()), nullptr);
+               base::Value(forced_dir.AsUTF8Unsafe()), nullptr);
   UpdateProviderPolicy(policies);
   DownloadAndVerifyFile(browser(), forced_dir, file);
   // Verify that the first download location wasn't affected.

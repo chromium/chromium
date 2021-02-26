@@ -35,8 +35,8 @@ IN_PROC_BROWSER_TEST_F(TooltipAuraUiaTest, DISABLED_TooltipUiaEvents) {
   // Setup accessibility waiter
   HWND window_handle = GetDesktopWindow();
   UiaAccessibilityWaiterInfo opened_info = {
-      window_handle, base::ASCIIToUTF16("tooltip"),
-      base::ASCIIToUTF16("Reload this page"), ax::mojom::Event::kTooltipOpened};
+      window_handle, base::ASCIIToWide("tooltip"),
+      base::ASCIIToWide("Reload this page"), ax::mojom::Event::kTooltipOpened};
   UiaAccessibilityEventWaiter opened_waiter(opened_info);
 
   // Move mouse to Refresh button
@@ -52,8 +52,8 @@ IN_PROC_BROWSER_TEST_F(TooltipAuraUiaTest, DISABLED_TooltipUiaEvents) {
 
   // Setup accessibility waiter
   UiaAccessibilityWaiterInfo closed_info = {
-      window_handle, base::ASCIIToUTF16("tooltip"),
-      base::ASCIIToUTF16("Reload this page"), ax::mojom::Event::kTooltipClosed};
+      window_handle, base::ASCIIToWide("tooltip"),
+      base::ASCIIToWide("Reload this page"), ax::mojom::Event::kTooltipClosed};
   UiaAccessibilityEventWaiter closed_waiter(closed_info);
 
   // Move mouse away from the refresh button

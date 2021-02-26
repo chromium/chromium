@@ -216,8 +216,8 @@ class UserDataDowngradeBrowserCopyAndCleanTest
     ASSERT_EQ(base::win::RegKey(root_key(),
                                 install_static::GetClientStateKeyPath().c_str(),
                                 KEY_SET_VALUE | KEY_WOW64_32KEY)
-                  .WriteValue(STRING16_LITERAL("DowngradeVersion"),
-                              base::ASCIIToUTF16(downgrade_version).c_str()),
+                  .WriteValue(L"DowngradeVersion",
+                              base::ASCIIToWide(downgrade_version).c_str()),
               ERROR_SUCCESS);
   }
 

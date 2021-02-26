@@ -800,10 +800,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsUIATest, AccessibleOmnibox) {
 
   HWND window_handle =
       browser()->window()->GetNativeWindow()->GetHost()->GetAcceleratedWidget();
-  UiaAccessibilityWaiterInfo info = {
-      window_handle, base::ASCIIToUTF16("textbox"),
-      base::ASCIIToUTF16("Address and search bar"),
-      ax::mojom::Event::kControlsChanged};
+  UiaAccessibilityWaiterInfo info = {window_handle, L"textbox",
+                                     L"Address and search bar",
+                                     ax::mojom::Event::kControlsChanged};
   UiaAccessibilityEventWaiter open_waiter(info);
 
   // Populate suggestions for the omnibox popup.

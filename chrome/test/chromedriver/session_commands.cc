@@ -210,8 +210,9 @@ std::unique_ptr<base::DictionaryValue> CreateCapabilities(
   if (status.IsOk()) {
     const std::string userDataDirKey = base::StringPrintf(
         "%s.userDataDir", base::ToLowerASCII(kBrowserShortName).c_str());
-    caps->SetString(userDataDirKey,
-                    desktop->command().GetSwitchValueNative("user-data-dir"));
+    caps->SetString(
+        userDataDirKey,
+        desktop->command().GetSwitchValuePath("user-data-dir").AsUTF8Unsafe());
     caps->SetBoolean("networkConnectionEnabled",
                      desktop->IsNetworkConnectionEnabled());
   }
@@ -1244,7 +1245,7 @@ Status ExecuteUploadFile(Session* session,
   if (status.IsError())
     return Status(kUnknownError, "unable to unzip 'file'", status);
 
-  value->reset(new base::Value(upload.value()));
+  *value = std::make_unique<base::Value>(upload.AsUTF8Unsafe());
   return Status(kOk);
 }
 

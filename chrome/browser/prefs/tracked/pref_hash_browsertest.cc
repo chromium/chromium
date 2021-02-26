@@ -1123,7 +1123,7 @@ class PrefHashBrowserTestRegistryValidationFailure
                                       KEY_SET_VALUE | KEY_WOW64_32KEY));
     // An incorrect hash should still have the correct size.
     ASSERT_EQ(ERROR_SUCCESS,
-              key.WriteValue(L"homepage", base::string16(64, 'A').c_str()));
+              key.WriteValue(L"homepage", std::wstring(64, 'A').c_str()));
   }
 
   void VerifyReactionToPrefAttack() override {

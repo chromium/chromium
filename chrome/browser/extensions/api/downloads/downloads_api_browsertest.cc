@@ -1450,9 +1450,9 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   ASSERT_EQ(1UL, result_list->GetSize());
   base::DictionaryValue* item_value = NULL;
   ASSERT_TRUE(result_list->GetDictionary(0, &item_value));
-  base::FilePath::StringType item_name;
+  std::string item_name;
   ASSERT_TRUE(item_value->GetString("filename", &item_name));
-  ASSERT_EQ(items[2]->GetTargetFilePath().value(), item_name);
+  ASSERT_EQ(items[2]->GetTargetFilePath().AsUTF8Unsafe(), item_name);
 }
 
 // Test that incognito downloads are only visible in incognito contexts, and
@@ -1465,7 +1465,7 @@ IN_PROC_BROWSER_TEST_F(
   std::unique_ptr<base::Value> result_value;
   base::ListValue* result_list = NULL;
   base::DictionaryValue* result_dict = NULL;
-  base::FilePath::StringType filename;
+  std::string filename;
   bool is_incognito = false;
   std::string error;
   std::string on_item_arg;
@@ -1498,12 +1498,14 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(result_list->GetDictionary(0, &result_dict));
   ASSERT_TRUE(result_dict->GetString("filename", &filename));
   ASSERT_TRUE(result_dict->GetBoolean("incognito", &is_incognito));
-  EXPECT_TRUE(on_item->GetTargetFilePath() == base::FilePath(filename));
+  EXPECT_TRUE(on_item->GetTargetFilePath() ==
+              base::FilePath::FromUTF8Unsafe(filename));
   EXPECT_FALSE(is_incognito);
   ASSERT_TRUE(result_list->GetDictionary(1, &result_dict));
   ASSERT_TRUE(result_dict->GetString("filename", &filename));
   ASSERT_TRUE(result_dict->GetBoolean("incognito", &is_incognito));
-  EXPECT_TRUE(off_item->GetTargetFilePath() == base::FilePath(filename));
+  EXPECT_TRUE(off_item->GetTargetFilePath() ==
+              base::FilePath::FromUTF8Unsafe(filename));
   EXPECT_TRUE(is_incognito);
 
   // Extensions running in the on-record window should have access only to the
@@ -1516,7 +1518,8 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(1UL, result_list->GetSize());
   ASSERT_TRUE(result_list->GetDictionary(0, &result_dict));
   ASSERT_TRUE(result_dict->GetString("filename", &filename));
-  EXPECT_TRUE(on_item->GetTargetFilePath() == base::FilePath(filename));
+  EXPECT_TRUE(on_item->GetTargetFilePath() ==
+              base::FilePath::FromUTF8Unsafe(filename));
   ASSERT_TRUE(result_dict->GetBoolean("incognito", &is_incognito));
   EXPECT_FALSE(is_incognito);
 
