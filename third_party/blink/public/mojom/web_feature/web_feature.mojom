@@ -3145,17 +3145,17 @@ enum WebFeature {
   kStorageFoundationFlush = 3827,
   kStorageFoundationFlushSync = 3828,
   kUnrestrictedSharedArrayBuffer = 3829,
+  kFeaturePolicyJSAPIAllowsFeatureIFrame = 3830,
+  kFeaturePolicyJSAPIAllowsFeatureDocument = 3831,
+  kFeaturePolicyJSAPIAllowsFeatureOriginIFrame = 3832,
+  kFeaturePolicyJSAPIAllowsFeatureOriginDocument = 3833,
+  kFeaturePolicyJSAPIAllowedFeaturesIFrame = 3834,
+  kFeaturePolicyJSAPIAllowedFeaturesDocument = 3835,
+  kFeaturePolicyJSAPIFeaturesIFrame = 3836,
+  kFeaturePolicyJSAPIFeaturesDocument = 3837,
+  kFeaturePolicyJSAPIGetAllowlistIFrame = 3838,
+  kFeaturePolicyJSAPIGetAllowlistDocument = 3839,
 
-  kFeaturePolicyJSAPIAllowsFeatureIFrame = 4000,
-  kFeaturePolicyJSAPIAllowsFeatureDocument = 4001,
-  kFeaturePolicyJSAPIAllowsFeatureOriginIFrame = 4002,
-  kFeaturePolicyJSAPIAllowsFeatureOriginDocument = 4003,
-  kFeaturePolicyJSAPIAllowedFeaturesIFrame = 4004,
-  kFeaturePolicyJSAPIAllowedFeaturesDocument = 4005,
-  kFeaturePolicyJSAPIFeaturesIFrame = 4006,
-  kFeaturePolicyJSAPIFeaturesDocument = 4007,
-  kFeaturePolicyJSAPIGetAllowlistIFrame = 4008,
-  kFeaturePolicyJSAPIGetAllowlistDocument = 4009,
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
   // Also, run update_use_counter_feature_enum.py in
