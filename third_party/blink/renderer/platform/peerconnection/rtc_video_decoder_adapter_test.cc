@@ -420,4 +420,102 @@ TEST_F(RTCVideoDecoderAdapterTest, HandlesFlushFailure) {
             WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE);
 }
 
+TEST_F(RTCVideoDecoderAdapterTest, DecoderCountIsIncrementedByDecode) {
+  // Make sure that low-resolution decoders fall back if there are too many.
+  webrtc::VideoCodec codec_settings;
+  codec_settings.codecType = webrtc::kVideoCodecVP9;
+
+  // If the count is nonzero, then fail immediately -- the test isn't sane.
+  ASSERT_EQ(RTCVideoDecoderAdapter::GetCurrentDecoderCountForTesting(), 0);
+
+  // Creating a decoder should not increment the count, since we haven't sent
+  // anything to decode.
+  ASSERT_TRUE(CreateAndInitialize(true));
+  EXPECT_EQ(RTCVideoDecoderAdapter::GetCurrentDecoderCountForTesting(), 0);
+
+  // The first decode should increment the count.
+  EXPECT_CALL(*video_decoder_, Decode_)
+      .WillOnce(base::test::RunOnceCallback<1>(media::DecodeStatus::OK));
+  EXPECT_EQ(Decode(0), WEBRTC_VIDEO_CODEC_OK);
+  EXPECT_EQ(RTCVideoDecoderAdapter::GetCurrentDecoderCountForTesting(), 1);
+
+  // Make sure that it goes back to zero.
+  EXPECT_EQ(RTCVideoDecoderAdapter::GetCurrentDecoderCountForTesting(), 1);
+  media_thread_.task_runner()->DeleteSoon(
+      FROM_HERE, std::move(rtc_video_decoder_adapter_));
+  media_thread_.FlushForTesting();
+  EXPECT_EQ(RTCVideoDecoderAdapter::GetCurrentDecoderCountForTesting(), 0);
+}
+
+TEST_F(RTCVideoDecoderAdapterTest, FallsBackForLowResolution) {
+  // Make sure that low-resolution decoders fall back if there are too many.
+  webrtc::VideoCodec codec_settings;
+  codec_settings.codecType = webrtc::kVideoCodecVP9;
+
+  // Pretend that we have many decoders already.
+  for (int i = 0; i < RTCVideoDecoderAdapter::kMaxDecoderInstances; i++)
+    RTCVideoDecoderAdapter::IncrementCurrentDecoderCountForTesting();
+
+  // Creating a decoder should not increment the count, since we haven't sent
+  // anything to decode.
+  ASSERT_TRUE(CreateAndInitialize(true));
+  // Initialize the codec with something below the threshold.
+  codec_settings.width = sqrt(RTCVideoDecoderAdapter::kMinResolution);
+  codec_settings.height =
+      RTCVideoDecoderAdapter::kMinResolution / codec_settings.width - 1;
+  EXPECT_EQ(rtc_video_decoder_adapter_->InitDecode(&codec_settings, 1),
+            WEBRTC_VIDEO_CODEC_OK);
+
+  // The first decode should fail.  It shouldn't forward the decode call to the
+  // underlying decoder.
+  EXPECT_CALL(*video_decoder_, Decode_(_, _)).Times(0);
+  EXPECT_EQ(Decode(0), WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE);
+  // It should not increment the count, else more decoders might fall back.
+  const auto max_decoder_instances =
+      RTCVideoDecoderAdapter::kMaxDecoderInstances;
+  EXPECT_EQ(RTCVideoDecoderAdapter::GetCurrentDecoderCountForTesting(),
+            max_decoder_instances);
+
+  // Reset the count, since it's static.
+  for (int i = 0; i < RTCVideoDecoderAdapter::kMaxDecoderInstances; i++)
+    RTCVideoDecoderAdapter::DecrementCurrentDecoderCountForTesting();
+
+  // Deleting the decoder should not decrement the count.
+  media_thread_.task_runner()->DeleteSoon(
+      FROM_HERE, std::move(rtc_video_decoder_adapter_));
+  media_thread_.FlushForTesting();
+  EXPECT_EQ(RTCVideoDecoderAdapter::GetCurrentDecoderCountForTesting(), 0);
+}
+
+TEST_F(RTCVideoDecoderAdapterTest, DoesNotFallBackForHighResolution) {
+  // Make sure that high-resolution decoders don't fall back.
+  webrtc::VideoCodec codec_settings;
+  codec_settings.codecType = webrtc::kVideoCodecVP9;
+
+  // Pretend that we have many decoders already.
+  for (int i = 0; i < RTCVideoDecoderAdapter::kMaxDecoderInstances; i++)
+    RTCVideoDecoderAdapter::IncrementCurrentDecoderCountForTesting();
+
+  // Creating a decoder should not increment the count, since we haven't sent
+  // anything to decode.
+  ASSERT_TRUE(CreateAndInitialize(true));
+  // Initialize the codec with something above the threshold.
+  codec_settings.width = sqrt(RTCVideoDecoderAdapter::kMinResolution);
+  codec_settings.height =
+      RTCVideoDecoderAdapter::kMinResolution / codec_settings.width + 1;
+  EXPECT_EQ(rtc_video_decoder_adapter_->InitDecode(&codec_settings, 1),
+            WEBRTC_VIDEO_CODEC_OK);
+
+  // The first decode should increment the count and succeed.
+  EXPECT_CALL(*video_decoder_, Decode_(_, _))
+      .WillOnce(base::test::RunOnceCallback<1>(media::DecodeStatus::OK));
+  EXPECT_EQ(Decode(0), WEBRTC_VIDEO_CODEC_OK);
+  EXPECT_EQ(RTCVideoDecoderAdapter::GetCurrentDecoderCountForTesting(),
+            RTCVideoDecoderAdapter::kMaxDecoderInstances + 1);
+
+  // Reset the count, since it's static.
+  for (int i = 0; i < RTCVideoDecoderAdapter::kMaxDecoderInstances; i++)
+    RTCVideoDecoderAdapter::DecrementCurrentDecoderCountForTesting();
+}
+
 }  // namespace blink

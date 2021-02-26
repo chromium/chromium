@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_decoder_adapter.h"
 
 #include <algorithm>
+#include <atomic>
 #include <functional>
 #include <utility>
 
@@ -56,19 +57,45 @@ namespace blink {
 namespace {
 
 // Any reasonable size, will be overridden by the decoder anyway.
-const gfx::Size kDefaultSize(640, 480);
+constexpr gfx::Size kDefaultSize(640, 480);
 
 // Maximum number of buffers that we will queue in |pending_buffers_|.
-const int32_t kMaxPendingBuffers = 8;
+constexpr int32_t kMaxPendingBuffers = 8;
 
 // Maximum number of timestamps that will be maintained in |decode_timestamps_|.
 // Really only needs to be a bit larger than the maximum reorder distance (which
 // is presumably 0 for WebRTC), but being larger doesn't hurt much.
-const int32_t kMaxDecodeHistory = 32;
+constexpr int32_t kMaxDecodeHistory = 32;
 
 // Maximum number of consecutive frames that can fail to decode before
 // requesting fallback to software decode.
-const int32_t kMaxConsecutiveErrors = 5;
+constexpr int32_t kMaxConsecutiveErrors = 5;
+
+// Number of RTCVideoDecoder instances right now that have started decoding.
+class DecoderCounter {
+ public:
+  int Count() { return count_.load(); }
+
+  void IncrementCount() {
+    int c = ++count_;
+    DCHECK_GT(c, 0);
+  }
+
+  void DecrementCount() {
+    int c = --count_;
+    DCHECK_GE(c, 0);
+  }
+
+ private:
+  std::atomic_int count_{0};
+};
+
+DecoderCounter* GetDecoderCounter() {
+  static base::NoDestructor<DecoderCounter> s_counter;
+  // Note that this will init only in the first call in the ctor, so it's still
+  // single threaded.
+  return s_counter.get();
+}
 
 // Map webrtc::SdpVideoFormat to a guess for media::VideoCodecProfile.
 media::VideoCodecProfile GuessVideoCodecProfile(
@@ -235,6 +262,8 @@ RTCVideoDecoderAdapter::RTCVideoDecoderAdapter(
 RTCVideoDecoderAdapter::~RTCVideoDecoderAdapter() {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+  if (have_started_decoding_)
+    GetDecoderCounter()->DecrementCount();
 }
 
 bool RTCVideoDecoderAdapter::InitializeSync(
@@ -277,6 +306,11 @@ int32_t RTCVideoDecoderAdapter::InitDecode(
   DCHECK_EQ(webrtc::PayloadStringToCodecType(format_.name), video_codec_type_);
 
   base::AutoLock auto_lock(lock_);
+
+  // Save the initial resolution so that we can fall back later, if needed.
+  current_resolution_ =
+      static_cast<int32_t>(codec_settings->width) * codec_settings->height;
+
   UMA_HISTOGRAM_BOOLEAN("Media.RTCVideoDecoderInitDecodeSuccess", !has_error_);
   if (!has_error_) {
     UMA_HISTOGRAM_ENUMERATION("Media.RTCVideoDecoderProfile",
@@ -291,6 +325,27 @@ int32_t RTCVideoDecoderAdapter::Decode(const webrtc::EncodedImage& input_image,
                                        int64_t render_time_ms) {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
+
+  // If this is the first decode, then increment the count of working decoders.
+  if (!have_started_decoding_) {
+    have_started_decoding_ = true;
+    GetDecoderCounter()->IncrementCount();
+  }
+
+  // Don't allow hardware decode for small videos if there are too many
+  // decoder instances.  This includes the case where our resolution drops while
+  // too many decoders exist.
+  {
+    base::AutoLock auto_lock(lock_);
+    if (current_resolution_ < kMinResolution &&
+        GetDecoderCounter()->Count() > kMaxDecoderInstances) {
+      // Decrement the count and clear the flag, so that other decoders don't
+      // fall back also.
+      have_started_decoding_ = false;
+      GetDecoderCounter()->DecrementCount();
+      return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+    }
+  }
 
   // Hardware VP9 decoders don't handle more than one spatial layer. Fall back
   // to software decoding. See https://crbug.com/webrtc/9304.
@@ -546,6 +601,11 @@ void RTCVideoDecoderAdapter::OnOutput(scoped_refptr<media::VideoFrame> frame) {
 
   base::AutoLock auto_lock(lock_);
 
+  // Update `current_resolution_`, in case it's changed.  This lets us fall back
+  // to software, or avoid doing so, if we're over the decoder limit.
+  current_resolution_ =
+      static_cast<int32_t>(rtc_frame.width()) * rtc_frame.height();
+
   if (!base::Contains(decode_timestamps_, timestamp)) {
     DVLOG(2) << "Discarding frame with timestamp " << timestamp;
     return;
@@ -625,6 +685,21 @@ void RTCVideoDecoderAdapter::FlushOnMediaThread(FlushDoneCB flush_success_cb,
               std::move(flush_fail).Run();
           },
           std::move(flush_success_cb), std::move(flush_fail_cb)));
+}
+
+// static
+int RTCVideoDecoderAdapter::GetCurrentDecoderCountForTesting() {
+  return GetDecoderCounter()->Count();
+}
+
+// static
+void RTCVideoDecoderAdapter::IncrementCurrentDecoderCountForTesting() {
+  GetDecoderCounter()->IncrementCount();
+}
+
+// static
+void RTCVideoDecoderAdapter::DecrementCurrentDecoderCountForTesting() {
+  GetDecoderCounter()->DecrementCount();
 }
 
 }  // namespace blink
