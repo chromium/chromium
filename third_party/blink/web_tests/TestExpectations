@@ -2482,6 +2482,8 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-206.xht [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Linux ] wpt_internal/modal-close-watcher/basic.html [ Crash ]
+crbug.com/626703 [ Mac10.13 ] wpt_internal/modal-close-watcher/basic.html [ Crash ]
 crbug.com/626703 [ Linux ] external/wpt/css/css-color/hsl-008.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/css/css-color/hsl-008.html [ Pass Failure ]
 crbug.com/626703 [ Win ] external/wpt/css/css-color/hsl-008.html [ Failure ]

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 309 tests; 305 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 321 tests; 316 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing origin: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -318,5 +318,17 @@ PASS Parsing origin: <tag:joe@example.org,2001:foo/bar> against <about:blank>
 PASS Parsing origin: <non-special:cannot-be-a-base-url-\0~> against <about:blank>
 PASS Parsing origin: <https://www.example.com/path{path.html?query'=query#fragment<fragment> against <about:blank>
 PASS Parsing origin: <https://user:pass[@foo/bar> against <http://example.org>
+PASS Parsing origin: <foo:// !"$%&'()*+,-.;<=>@[\]^_`{|}~@host/> against <about:blank>
+PASS Parsing origin: <wss:// !"$%&'()*+,-.;<=>@[]^_`{|}~@host/> against <about:blank>
+PASS Parsing origin: <foo://joe: !"$%&'()*+,-.:;<=>@[\]^_`{|}~@host/> against <about:blank>
+PASS Parsing origin: <wss://joe: !"$%&'()*+,-.:;<=>@[]^_`{|}~@host/> against <about:blank>
+PASS Parsing origin: <foo://!"$%&'()*+,-.;=_`{}~/> against <about:blank>
+FAIL Parsing origin: <wss://!"$&'()*+,-.;=_`{}~/> against <about:blank> assert_equals: origin expected "wss://!\"$&'()*+,-.;=_`{}~" but got "null"
+PASS Parsing origin: <foo://host/ !"$%&'()*+,-./:;<=>@[\]^_`{|}~> against <about:blank>
+PASS Parsing origin: <wss://host/ !"$%&'()*+,-./:;<=>@[\]^_`{|}~> against <about:blank>
+PASS Parsing origin: <foo://host/dir/? !"$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank>
+PASS Parsing origin: <wss://host/dir/? !"$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank>
+PASS Parsing origin: <foo://host/dir/# !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank>
+PASS Parsing origin: <wss://host/dir/# !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank>
 Harness: the test ran to completion.
 

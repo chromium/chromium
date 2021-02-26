@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 309 tests; 300 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 321 tests; 311 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Origin parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -318,5 +318,17 @@ PASS Origin parsing: <tag:joe@example.org,2001:foo/bar> against <about:blank>
 PASS Origin parsing: <non-special:cannot-be-a-base-url-\0~> against <about:blank>
 PASS Origin parsing: <https://www.example.com/path{path.html?query'=query#fragment<fragment> against <about:blank>
 PASS Origin parsing: <https://user:pass[@foo/bar> against <http://example.org>
+PASS Origin parsing: <foo:// !"$%&'()*+,-.;<=>@[\]^_`{|}~@host/> against <about:blank>
+PASS Origin parsing: <wss:// !"$%&'()*+,-.;<=>@[]^_`{|}~@host/> against <about:blank>
+PASS Origin parsing: <foo://joe: !"$%&'()*+,-.:;<=>@[\]^_`{|}~@host/> against <about:blank>
+PASS Origin parsing: <wss://joe: !"$%&'()*+,-.:;<=>@[]^_`{|}~@host/> against <about:blank>
+PASS Origin parsing: <foo://!"$%&'()*+,-.;=_`{}~/> against <about:blank>
+FAIL Origin parsing: <wss://!"$&'()*+,-.;=_`{}~/> against <about:blank> Failed to construct 'URL': Invalid URL
+PASS Origin parsing: <foo://host/ !"$%&'()*+,-./:;<=>@[\]^_`{|}~> against <about:blank>
+PASS Origin parsing: <wss://host/ !"$%&'()*+,-./:;<=>@[\]^_`{|}~> against <about:blank>
+PASS Origin parsing: <foo://host/dir/? !"$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank>
+PASS Origin parsing: <wss://host/dir/? !"$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank>
+PASS Origin parsing: <foo://host/dir/# !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank>
+PASS Origin parsing: <wss://host/dir/# !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank>
 Harness: the test ran to completion.
 

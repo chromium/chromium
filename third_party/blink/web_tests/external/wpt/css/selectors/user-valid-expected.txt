@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL :user-valid selector should be supported Failed to execute 'matches' on 'Element': ':user-valid' is not a valid selector.
+Harness: the test ran to completion.
+

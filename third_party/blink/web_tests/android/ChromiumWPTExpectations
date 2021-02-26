@@ -4000,7 +4000,6 @@ crbug.com/1050754 external/wpt/service-workers/service-worker/fetch-request-css-
 crbug.com/1050754 external/wpt/service-workers/service-worker/fetch-request-xhr-sync.https.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/service-workers/service-worker/fetch-request-xhr.https.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/service-workers/service-worker/fetch-waits-for-activate.https.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/service-workers/service-worker/import-module-scripts.https.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/service-workers/service-worker/import-scripts-redirect.https.html [ Timeout ]
 crbug.com/1050754 external/wpt/service-workers/service-worker/local-url-inherit-controller.https.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/service-workers/service-worker/multiple-update.https.html [ Pass Timeout ]
