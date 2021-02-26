@@ -1,1 +1,7 @@
 file://components/omnibox/browser/android/OWNERS
+
+# For changes to Suggestions/Autocomplete:
+ender@google.com
+
+# For changes to LocationBar:
+pnoland@chromium.org
