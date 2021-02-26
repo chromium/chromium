@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/speech/soda_speech_recognizer.h"
+#include "chrome/browser/speech/on_device_speech_recognizer.h"
 
 #include "chrome/browser/speech/speech_recognizer_delegate.h"
 
-bool SodaSpeechRecognizer::IsSodaSpeechRecognizerAvailable() {
+bool OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable() {
   return false;
 }
 
-SodaSpeechRecognizer::SodaSpeechRecognizer(
+OnDeviceSpeechRecognizer::OnDeviceSpeechRecognizer(
     const base::WeakPtr<SpeechRecognizerDelegate>& delegate)
     : SpeechRecognizer(delegate) {}
 
-SodaSpeechRecognizer::~SodaSpeechRecognizer() {
+OnDeviceSpeechRecognizer::~OnDeviceSpeechRecognizer() {
   Stop();
 }
 
-void SodaSpeechRecognizer::Start() {}
+void OnDeviceSpeechRecognizer::Start() {}
 
-void SodaSpeechRecognizer::Stop() {}
+void OnDeviceSpeechRecognizer::Stop() {}
