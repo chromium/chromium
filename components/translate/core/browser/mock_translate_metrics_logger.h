@@ -45,6 +45,7 @@ class MockTranslateMetricsLogger : public TranslateMetricsLogger {
   MOCK_METHOD1(LogTargetLanguage, void(const std::string&));
   MOCK_METHOD1(LogUIInteraction, void(UIInteraction));
   MOCK_METHOD0(GetNextManualTranslationType, TranslationType());
+  MOCK_METHOD1(SetHasHrefTranslateTarget, void(bool));
 
  private:
   base::WeakPtrFactory<MockTranslateMetricsLogger> weak_method_factory_{this};

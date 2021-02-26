@@ -39,6 +39,7 @@ extern const char kTranslatePageLoadNumReversions[];
 extern const char kTranslatePageLoadRankerDecision[];
 extern const char kTranslatePageLoadRankerVersion[];
 extern const char kTranslatePageLoadTriggerDecision[];
+extern const char kTranslatePageLoadHrefTriggerDecision[];
 
 class NullTranslateMetricsLogger : public TranslateMetricsLogger {
  public:
@@ -66,6 +67,7 @@ class NullTranslateMetricsLogger : public TranslateMetricsLogger {
   void LogTargetLanguage(const std::string& target_language_code) override {}
   void LogUIInteraction(UIInteraction ui_interaction) override {}
   TranslationType GetNextManualTranslationType() override;
+  void SetHasHrefTranslateTarget(bool has_href_translate_target) override {}
 };
 
 class TranslateManager;
@@ -112,6 +114,7 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   void LogTargetLanguage(const std::string& target_language_code) override;
   void LogUIInteraction(UIInteraction ui_interaction) override;
   TranslationType GetNextManualTranslationType() override;
+  void SetHasHrefTranslateTarget(bool has_href_translate_target) override;
 
   // TODO(curranmax): Add appropriate functions for the Translate code to log
   // relevant events. https://crbug.com/1114868.
@@ -235,6 +238,10 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
 
   // Tracks if any translations has started on this page load.
   bool has_any_translation_started_ = false;
+
+  // Tracks if this page load has an href translate target language on a link
+  // from Google Search.
+  bool has_href_translate_target_ = false;
 
   base::WeakPtrFactory<TranslateMetricsLoggerImpl> weak_method_factory_{this};
 };

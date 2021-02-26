@@ -49,6 +49,8 @@ const char kTranslatePageLoadRankerVersion[] =
     "Translate.PageLoad.Ranker.Version";
 const char kTranslatePageLoadTriggerDecision[] =
     "Translate.PageLoad.TriggerDecision";
+const char kTranslatePageLoadHrefTriggerDecision[] =
+    "Translate.PageLoad.HrefHint.TriggerDecision";
 
 TranslationType NullTranslateMetricsLogger::GetNextManualTranslationType() {
   return TranslationType::kUninitialized;
@@ -162,6 +164,10 @@ void TranslateMetricsLoggerImpl::RecordPageLoadUmaMetrics(
                            int(ranker_version_));
   base::UmaHistogramEnumeration(kTranslatePageLoadTriggerDecision,
                                 trigger_decision_);
+  if (has_href_translate_target_) {
+    base::UmaHistogramEnumeration(kTranslatePageLoadHrefTriggerDecision,
+                                  trigger_decision_);
+  }
   base::UmaHistogramBoolean(
       kTranslatePageLoadAutofillAssistantDeferredTriggerDecision,
       autofill_assistant_deferred_trigger_decision_);
@@ -375,6 +381,11 @@ TranslationType TranslateMetricsLoggerImpl::GetNextManualTranslationType() {
   return has_any_translation_started_
              ? TranslationType::kManualReTranslation
              : TranslationType::kManualInitialTranslation;
+}
+
+void TranslateMetricsLoggerImpl::SetHasHrefTranslateTarget(
+    bool has_href_translate_target) {
+  has_href_translate_target_ = has_href_translate_target;
 }
 
 TranslateState TranslateMetricsLoggerImpl::ConvertToTranslateState(

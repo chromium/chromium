@@ -513,6 +513,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Translate.PageLoad.HrefHint.TriggerDecision"
+    enum="TranslateTriggerDecision" expires_after="2021-08-09">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Logs the highest priority reason for the initial state of Translate for the
+    page load. Only logs for navigations from Google with an href translate
+    attribute. This value is logged at the end of the page load or the first
+    time Chrome is backgrounded during the page load, whichever comes first.
+  </summary>
+</histogram>
+
 <histogram name="Translate.PageLoad.InitialSourceLanguage"
     enum="CLD3LanguageCode" expires_after="2021-08-09">
   <owner>curranmax@google.com</owner>
