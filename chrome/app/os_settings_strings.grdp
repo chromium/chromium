@@ -203,7 +203,7 @@
   <message name="IDS_OS_SETTINGS_PROFILE_LABEL_V2" desc="Label underneath the profile's real name, listing the number of accounts">
     {COUNT, plural,
      =1 {1 Google Account added}
-     other {<ph name="EXTRA_ACCOUNTS">$2<ex>2</ex></ph> Google Accounts added}}
+     other {<ph name="EXTRA_ACCOUNTS">$2<ex>2</ex></ph> Google Accounts}}
   </message>
   <message name="IDS_OS_SETTINGS_SYNC_PAGE_TITLE" desc="Settings sub-page title for sync.">
     Sync your settings
@@ -1274,6 +1274,9 @@ Press an assigned switch to remove assignment.
   </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DISABLED_TEXT" desc="Text for 'secondary accounts disabled' message in Settings page.">
     Your administrator has disabled the addition of more Google Accounts
+  </message>
+  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DISABLED_TEXT_V2" desc="Text for 'secondary accounts disabled' message in Settings page.">
+   Your administrator doesn’t allow additional Google Accounts
   </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DISABLED_CHILD_TEXT" desc="Text for 'secondary accounts disabled' message for child accounts in Settings page.">
     Addition of more Google Accounts is disabled

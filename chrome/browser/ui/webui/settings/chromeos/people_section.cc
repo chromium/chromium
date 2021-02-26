@@ -350,8 +350,6 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
       {"removeAccountLabel", IDS_SETTINGS_ACCOUNT_MANAGER_REMOVE_ACCOUNT_LABEL},
       {"addSchoolAccountLabel",
        IDS_SETTINGS_ACCOUNT_MANAGER_ADD_SCHOOL_ACCOUNT_LABEL},
-      {"accountManagerSecondaryAccountsDisabledText",
-       IDS_SETTINGS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DISABLED_TEXT},
       {"accountManagerSecondaryAccountsDisabledChildText",
        IDS_SETTINGS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DISABLED_CHILD_TEXT},
       {"accountManagerSignedOutAccountName",
@@ -403,6 +401,8 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
          IDS_SETTINGS_ACCOUNT_MANAGER_DESCRIPTION_V2},
         {"accountManagerChildDescription",
          IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_DESCRIPTION_V2},
+        {"accountManagerSecondaryAccountsDisabledText",
+         IDS_SETTINGS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DISABLED_TEXT_V2},
     };
     html_source->AddLocalizedStrings(kLocalizedStringsV2);
   } else {
@@ -412,6 +412,8 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
          IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_DESCRIPTION},
         {"addAccountLabel", IDS_SETTINGS_ACCOUNT_MANAGER_ADD_ACCOUNT_LABEL},
         {"accountListHeader", IDS_SETTINGS_ACCOUNT_MANAGER_LIST_HEADER},
+        {"accountManagerSecondaryAccountsDisabledText",
+         IDS_SETTINGS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DISABLED_TEXT},
     };
     html_source->AddLocalizedStrings(kLocalizedStringsV1);
   }
