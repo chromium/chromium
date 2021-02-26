@@ -15,6 +15,16 @@ Polymer({
   ],
 
   properties: {
+    /**
+     * The error code returned when profile install attempt was made in networks
+     * list.
+     * @type {?chromeos.cellularSetup.mojom.ProfileInstallResult}
+     */
+    errorCode: {
+      type: Object,
+      value: null,
+    },
+
     /** @type {?chromeos.cellularSetup.mojom.ESimProfileRemote} */
     profile: {
       type: Object,
@@ -35,7 +45,7 @@ Polymer({
     },
 
     /** @private {boolean} */
-    showError_: {
+    isConfirmationCodeInvalid_: {
       type: Boolean,
       value: false,
     },
@@ -43,7 +53,7 @@ Polymer({
 
   /** @private */
   onConfirmationCodeChanged_() {
-    this.showError_ = false;
+    this.isConfirmationCodeInvalid_ = false;
   },
 
   /**
@@ -51,8 +61,12 @@ Polymer({
    * @private
    */
   onDoneClicked_(event) {
+    if (!this.isConfirmationCodeError_()) {
+      this.$.installErrorDialog.close();
+      return;
+    }
     this.isInstallInProgress_ = true;
-    this.showError_ = false;
+    this.isConfirmationCodeInvalid_ = false;
 
     this.profile.installProfile(this.confirmationCode_).then((response) => {
       this.isInstallInProgress_ = false;
@@ -61,7 +75,9 @@ Polymer({
         this.$.installErrorDialog.close();
         return;
       }
-      this.showError_ = true;
+      // TODO(crbug.com/1093185) Only display confirmation code entry if the
+      // error was an invalid confirmation code, else display generic error.
+      this.isConfirmationCodeInvalid_ = true;
     });
   },
 
@@ -73,8 +89,23 @@ Polymer({
     this.$.installErrorDialog.close();
   },
 
+  /**
+   * @return {boolean}
+   * @private
+   */
   /** @private */
+  isConfirmationCodeError_() {
+    return this.errorCode ===
+        chromeos.cellularSetup.mojom.ProfileInstallResult
+            .kErrorNeedsConfirmationCode;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
   isDoneButtonDisabled_() {
-    return !this.confirmationCode_ || this.isInstallInProgress_;
+    return this.isConfirmationCodeError_() &&
+        (!this.confirmationCode_ || this.isInstallInProgress_);
   },
 });

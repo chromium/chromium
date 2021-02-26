@@ -130,6 +130,16 @@ Polymer({
       type: Object,
       value: null,
     },
+
+    /**
+     * The error code returned when eSIM profile install attempt was made.
+     * @type {?chromeos.cellularSetup.mojom.ProfileInstallResult}
+     * @private
+     */
+    eSimProfileInstallError_: {
+      type: Object,
+      value: null,
+    },
   },
 
   listeners: {
@@ -334,10 +344,12 @@ Polymer({
   installProfile_(event) {
     this.installingESimProfile_ = this.profilesMap_.get(event.detail.iccid);
     this.installingESimProfile_.installProfile('').then((response) => {
-      // TODO(crbug.com/1093185) Show error if install fails.
       if (response.result ===
-          chromeos.cellularSetup.mojom.ProfileInstallResult
-              .kErrorNeedsConfirmationCode) {
+          chromeos.cellularSetup.mojom.ProfileInstallResult.kSuccess) {
+        this.eSimProfileInstallError_ = null;
+        this.installingESimProfile_ = null;
+      } else {
+        this.eSimProfileInstallError_ = response.result;
         this.showInstallErrorDialog_();
       }
     });

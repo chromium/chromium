@@ -2264,6 +2264,9 @@ Press an assigned switch to remove assignment.
   <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_INSTALL_ERROR_DIALOG_CONFIRMATION_CODE_ERROR" desc="Settings > Network > Mobile data > Download > Install error dialog: Error indicating that installing the eSIM profile was unsuccessful.">
     Unable to connect to this profile. For technical support, please contact your carrier.
   </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_INSTALL_ERROR_DIALOG_GENERIC_ERROR_MESSAGE" desc="Settings > Network > Mobile data > Download > Install error dialog: Message for the dialog informing the user that there was an error installing their eSIM profile.">
+    Profile could not be downloaded. Please try again later or contact carrier for help.
+  </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_RENAME_DIALOG_RENAME_PROFILE" desc="Settings > Internet > Network details > Rename profile dialog: Label for the dialog informing the user to rename an eSIM cellular network">
     Rename Profile
   </message>

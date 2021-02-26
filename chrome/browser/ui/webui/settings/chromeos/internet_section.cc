@@ -710,6 +710,8 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INTERNET_NETWORK_INSTALL_ERROR_DIALOG_CONFIRMATION_CODE_MESSAGE},
       {"eSimInstallErrorDialogConfirmationCodeError",
        IDS_CELLULAR_SETUP_ESIM_PAGE_INSTALL_ERROR_DIALOG_CONFIRMATION_CODE_ERROR},
+      {"eSimInstallErrorDialogGenericErrorMessage",
+       IDS_SETTINGS_INTERNET_NETWORK_INSTALL_ERROR_DIALOG_GENERIC_ERROR_MESSAGE},
       {"eSimRenameProfileDialogLabel",
        IDS_SETTINGS_INTERNET_NETWORK_RENAME_DIALOG_RENAME_PROFILE},
       {"eSimRenameProfileDialogDone",

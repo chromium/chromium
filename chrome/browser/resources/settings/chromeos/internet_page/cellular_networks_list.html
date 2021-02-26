@@ -157,6 +157,7 @@
     <template is="dom-if" if="[[shouldShowInstallErrorDialog_]]" restamp>
       <esim-install-error-dialog id="installErrorDialog"
           on-close="onCloseInstallErrorDialog_"
+          error-code="[[eSimProfileInstallError_]]"
           profile="[[installingESimProfile_]]">
       </esim-install-error-dialog>
     </template>
