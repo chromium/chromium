@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.share.long_screenshots.bitmap_generation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -26,8 +27,6 @@ import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.Long
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.paintpreview.player.CompositorStatus;
-import org.chromium.content.browser.RenderCoordinatesImpl;
-import org.chromium.content.browser.webcontents.WebContentsImpl;
 
 /** Tests for the LongScreenshotsEntry. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -41,16 +40,13 @@ public class LongScreenshotsEntryTest {
     private Tab mTab;
 
     @Mock
-    private RenderCoordinatesImpl mRenderCoordinates;
-
-    @Mock
-    private WebContentsImpl mWebContents;
-
-    @Mock
     private LongScreenshotsCompositor mCompositor;
 
     @Mock
     private LongScreenshotsTabService mTabService;
+
+    @Mock
+    private ScreenshotBoundsManager mBoundsManager;
 
     private Bitmap mTestBitmap = Bitmap.createBitmap(512, 1024, Bitmap.Config.ARGB_8888);
 
@@ -72,7 +68,7 @@ public class LongScreenshotsEntryTest {
         private boolean mThrowErrorOnComposite;
 
         public TestBitmapGenerator(Rect rect) {
-            super(mContext, mTab, rect, null);
+            super(mTab, mBoundsManager, null);
             setTabServiceAndCompositorForTest(mTabService, mCompositor);
         }
 
@@ -104,11 +100,9 @@ public class LongScreenshotsEntryTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        when(mTab.getWebContents()).thenReturn(mWebContents);
-        when(mWebContents.getRenderCoordinates()).thenReturn(mRenderCoordinates);
-        when(mRenderCoordinates.getPageScaleFactorInt()).thenReturn(1);
-        when(mRenderCoordinates.getScrollYPixInt()).thenReturn(100);
-        when(mRenderCoordinates.getContentWidthPixInt()).thenReturn(200);
+        when(mBoundsManager.getCaptureBounds()).thenReturn(new Rect(0, 100, 0, 1000));
+        when(mBoundsManager.calculateBoundsRelativeToCapture(any(Rect.class)))
+                .thenReturn(new Rect(0, 100, 0, 500));
     }
 
     @Test
@@ -116,7 +110,7 @@ public class LongScreenshotsEntryTest {
         TestBitmapGenerator testGenerator = new TestBitmapGenerator(new Rect(0, 0, 200, 1000));
 
         LongScreenshotsEntry entry =
-                new LongScreenshotsEntry(mContext, mTab, 0, 1000, testGenerator, false);
+                new LongScreenshotsEntry(testGenerator, new Rect(0, 1000, 0, 2000));
         TestEntryListener entryListener = new TestEntryListener();
         entry.setListener(entryListener);
         entry.generateBitmap();
@@ -131,7 +125,7 @@ public class LongScreenshotsEntryTest {
         testGenerator.throwErrorOnComposite();
 
         LongScreenshotsEntry entry =
-                new LongScreenshotsEntry(mContext, mTab, 0, 1000, testGenerator, false);
+                new LongScreenshotsEntry(testGenerator, new Rect(0, 1000, 0, 2000));
         TestEntryListener entryListener = new TestEntryListener();
         entry.setListener(entryListener);
         entry.generateBitmap();

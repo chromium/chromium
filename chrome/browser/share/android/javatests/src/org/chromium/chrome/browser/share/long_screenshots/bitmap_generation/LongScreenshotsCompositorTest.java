@@ -170,7 +170,7 @@ public class LongScreenshotsCompositorTest {
     }
 
     @Test
-    public void testRequestBitmapFailture() {
+    public void testRequestBitmapFailure() {
         mCompositorDelegate.setRequestBitmapError();
         Callback<Bitmap> onBitmapResult = new Callback<Bitmap>() {
             @Override
@@ -202,7 +202,6 @@ public class LongScreenshotsCompositorTest {
 
         // RequestBitmap in mCompositorDelegate should match
         compositor.requestBitmap(mRect, onErrorCallback, onBitmapResult);
-
         Assert.assertTrue(mErrorThrown);
     }
 }

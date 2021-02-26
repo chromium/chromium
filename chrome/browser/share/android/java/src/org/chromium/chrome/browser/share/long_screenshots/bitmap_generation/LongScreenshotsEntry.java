@@ -4,15 +4,11 @@
 
 package org.chromium.chrome.browser.share.long_screenshots.bitmap_generation;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
-
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.content_public.browser.RenderCoordinates;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -30,9 +26,7 @@ import java.lang.annotation.RetentionPolicy;
  * {@link getBitmap} to retrieve the generated bitmap.
  */
 public class LongScreenshotsEntry {
-    private Context mContext;
     private Rect mRect;
-    private Tab mTab;
     private BitmapGenerator mGenerator;
     private @EntryStatus int mCurrentStatus;
 
@@ -67,19 +61,12 @@ public class LongScreenshotsEntry {
     }
 
     /**
-     * @param context An instance of current Android {@link Context}.
-     * @param tab The tab to capture the results for.
-     * @param yAxisRef Y-axis reference used to calculate the coordinates of the bitmap to generate.
-     * @param clipHeight Height of the capture.
      * @param generator BitmapGenerator to be used to capture and composite the website.
      * @param generatingAbove Whether to use the yAxisRef as the top (generatingAbove = false) or
      *            bottom yAxis coordinate (generatingAbove = true);
      */
-    public LongScreenshotsEntry(Context context, Tab tab, int yAxisRef, int clipHeight,
-            BitmapGenerator generator, boolean generatingAbove) {
-        mContext = context;
-        mTab = tab;
-        calculateClipBounds(yAxisRef, clipHeight, generatingAbove);
+    public LongScreenshotsEntry(BitmapGenerator generator, Rect bounds) {
+        mRect = bounds;
         mGenerator = generator;
     }
 
@@ -130,37 +117,6 @@ public class LongScreenshotsEntry {
      */
     public Bitmap getBitmap() {
         return mGeneratedBitmap;
-    }
-
-    /**
-     * Defines the bounds of the capture and compositing. Only the starting height and the height of
-     * the clip is needed. The entire width is always captured.
-     *
-     * @param yAxisRef Where on the scrolled page the capture and compositing should start.
-     * @param clipHeight The length of the webpage that should be captured.
-     * @param generatingAbove Whether to use the yAxisRef as the top (generatingAbove = false) or
-     *            bottom yAxis coordinate (generatingAbove = true);
-     */
-    private void calculateClipBounds(int yAxisRef, int clipHeight, boolean generatingAbove) {
-        RenderCoordinates coords = RenderCoordinates.fromWebContents(mTab.getWebContents());
-
-        int startYAxis;
-        int endYAxis;
-        int clipHeightScaled = (int) (clipHeight * coords.getPageScaleFactor());
-        if (generatingAbove) {
-            endYAxis = yAxisRef;
-            startYAxis = yAxisRef - clipHeightScaled;
-            startYAxis = startYAxis < 0 ? 0 : startYAxis;
-        } else {
-            startYAxis = yAxisRef;
-            // TODO(tgupta): Address the case where the Y axis supersedes the length of the page.
-            endYAxis = startYAxis + clipHeightScaled;
-        }
-
-        int clipWidth =
-                (int) Math.floor(coords.getContentWidthPixInt() / coords.getPageScaleFactor());
-
-        mRect = new Rect(0, startYAxis, 0, endYAxis);
     }
 
     @VisibleForTesting

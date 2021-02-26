@@ -51,7 +51,11 @@ public class BitmapGeneratorTest {
 
     @After
     public void tearDown() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mGenerator.destroy(); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            if (mGenerator != null) {
+                mGenerator.destroy();
+            }
+        });
     }
 
     /**
@@ -95,8 +99,9 @@ public class BitmapGeneratorTest {
         final String url = testServer.getURL("/chrome/test/data/android/about.html");
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mGenerator = new BitmapGenerator(mActivityTestRule.getActivity(), mTab,
-                    new Rect(0, 0, 100, 100), new Listener());
+            mGenerator = new BitmapGenerator(mTab,
+                    new ScreenshotBoundsManager(mActivityTestRule.getActivity(), mTab),
+                    new Listener());
             PaintPreviewCompositorUtils.warmupCompositor();
             mTab.loadUrl(new LoadUrlParams(url));
             mGenerator.captureTab();
