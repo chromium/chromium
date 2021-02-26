@@ -732,8 +732,7 @@ void PaymentRequest::OnPaymentResponseAvailable(
   DCHECK(!response->method_name.empty());
   DCHECK(!response->stringified_details.empty());
 
-  journey_logger_.SetEventOccurred(
-      JourneyLogger::EVENT_RECEIVED_INSTRUMENT_DETAILS);
+  journey_logger_.SetReceivedInstrumentDetails();
 
   // Log the correct "selected instrument" metric according to its type and
   // the method name in response.
