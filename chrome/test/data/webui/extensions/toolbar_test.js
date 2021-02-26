@@ -97,7 +97,7 @@ suite(extension_toolbar_tests.suiteName, function() {
   test(assert(extension_toolbar_tests.TestNames.ClickHandlers), function() {
     toolbar.set('inDevMode', true);
     flush();
-
+    const toastManager = getToastManager();
     toolbar.$.devMode.click();
     return mockDelegate.whenCalled('setProfileInDevMode')
         .then(function(arg) {
@@ -108,11 +108,22 @@ suite(extension_toolbar_tests.suiteName, function() {
         })
         .then(function(arg) {
           assertTrue(arg);
+          mockDelegate.setLoadUnpackedSuccess(true);
           toolbar.$.loadUnpacked.click();
-          return mockDelegate.whenCalled('loadUnpacked');
+          return mockDelegate.whenCalled('loadUnpacked').then(() => {
+            assertTrue(toastManager.isToastOpen);
+          });
         })
         .then(function() {
-          const toastManager = getToastManager();
+          // Hide toast since it is open for 3000ms in previous Promise.
+          toastManager.hide();
+          mockDelegate.setLoadUnpackedSuccess(false);
+          toolbar.$.loadUnpacked.click();
+          return mockDelegate.whenCalled('loadUnpacked').then(() => {
+            assertFalse(toastManager.isToastOpen);
+          });
+        })
+        .then(function() {
           assertFalse(toastManager.isToastOpen);
           toolbar.$.updateNow.click();
           // Simulate user rapidly clicking update button multiple times.

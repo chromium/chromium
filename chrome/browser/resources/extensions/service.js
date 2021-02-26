@@ -185,8 +185,10 @@ export class Service {
         if (loadError) {
           return reject(loadError);
         }
-
-        resolve();
+        // The load was successful if there's no lastError indicated (and
+        // no loadError, which is checked above).
+        const loadSuccessful = typeof chrome.runtime.lastError === 'undefined';
+        resolve(loadSuccessful);
       });
     });
   }

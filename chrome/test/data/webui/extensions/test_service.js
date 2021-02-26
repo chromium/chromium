@@ -47,6 +47,9 @@ export class TestService extends TestBrowserProxy {
 
     /** @type {!chrome.activityLogPrivate.ActivityResultSet|undefined} */
     this.testActivities;
+
+    /** @type {boolean} */
+    this.loadUnpackedSuccess_ = true;
   }
 
   /**
@@ -61,6 +64,13 @@ export class TestService extends TestBrowserProxy {
    */
   setForceReloadItemError(force) {
     this.forceReloadItemError_ = force;
+  }
+
+  /**
+   * @param {boolean} success
+   */
+  setLoadUnpackedSuccess(success) {
+    this.loadUnpackedSuccess_ = success;
   }
 
   /** @override */
@@ -134,7 +144,7 @@ export class TestService extends TestBrowserProxy {
   /** @override */
   loadUnpacked() {
     this.methodCalled('loadUnpacked');
-    return Promise.resolve();
+    return Promise.resolve(this.loadUnpackedSuccess_);
   }
 
   /** @override */

@@ -388,6 +388,9 @@
   <message name="IDS_EXTENSIONS_TOOLBAR_LOAD_UNPACKED" desc="The text displayed in the toolbar to load an unpacked extension.">
     Load unpacked
   </message>
+  <message name="IDS_EXTENSIONS_TOOLBAR_LOAD_UNPACKED_DONE" desc="Text displayed in a toast popup message when extension has been loaded.">
+    Extension loaded
+  </message>
   <message name="IDS_EXTENSIONS_TOOLBAR_PACK" desc="The text displayed in the toolbar to pack an extension directory.">
     Pack extension
   </message>

@@ -154,9 +154,17 @@ Polymer({
 
   /** @private */
   onLoadUnpackedTap_() {
-    this.delegate.loadUnpacked().catch(loadError => {
-      this.fire('load-error', loadError);
-    });
+    this.delegate.loadUnpacked()
+        .then((success) => {
+          if (success) {
+            const toastManager = getToastManager();
+            toastManager.duration = 3000;
+            toastManager.show(this.i18n('toolbarLoadUnpackedDone'));
+          }
+        })
+        .catch(loadError => {
+          this.fire('load-error', loadError);
+        });
     chrome.metricsPrivate.recordUserAction('Options_LoadUnpackedExtension');
   },
 
