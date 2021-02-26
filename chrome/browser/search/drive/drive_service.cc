@@ -79,25 +79,29 @@ DriveService::DriveService(
 
 void DriveService::GetDriveFiles(GetFilesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  callbacks_.push_back(std::move(callback));
+  if (callbacks_.size() > 1) {
+    return;
+  }
 
-  // TODO(crbug/1168763) May need to handle multiple requests after
-  // token_fetcher has been set.
   token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
       "ntp_drive_module", identity_manager_, signin::ScopeSet({kDriveScope}),
-      base::BindOnce(&DriveService::OnTokenReceived, weak_factory_.GetWeakPtr(),
-                     std::move(callback)),
+      base::BindOnce(&DriveService::OnTokenReceived,
+                     weak_factory_.GetWeakPtr()),
       signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
       signin::ConsentLevel::kSync);
 }
 
-void DriveService::OnTokenReceived(GetFilesCallback callback,
-                                   GoogleServiceAuthError error,
+void DriveService::OnTokenReceived(GoogleServiceAuthError error,
                                    signin::AccessTokenInfo token_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   token_fetcher_.reset();
   if (error.state() != GoogleServiceAuthError::NONE) {
-    std::move(callback).Run(std::vector<drive::mojom::FilePtr>());
+    for (auto& callback : callbacks_) {
+      std::move(callback).Run(std::vector<drive::mojom::FilePtr>());
+    }
+    callbacks_.clear();
     return;
   }
 
@@ -114,24 +118,18 @@ void DriveService::OnTokenReceived(GetFilesCallback callback,
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
                                       "Bearer " + token_info.token);
 
-  // TODO(crbug/1168763) Also need to handle multiple pending requests
-  // here as well.
-  if (url_loader_) {
-    return;
-  }
+  DCHECK(!url_loader_);
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  kTrafficAnnotation);
   url_loader_->SetRetryOptions(0, network::SimpleURLLoader::RETRY_NEVER);
   url_loader_->AttachStringForUpload(kRequestBody, "application/json");
   url_loader_->DownloadToString(
       url_loader_factory_.get(),
-      base::BindOnce(&DriveService::OnJsonReceived, weak_factory_.GetWeakPtr(),
-                     std::move(callback)),
+      base::BindOnce(&DriveService::OnJsonReceived, weak_factory_.GetWeakPtr()),
       kMaxResponseSize);
 }
 
 void DriveService::OnJsonReceived(
-    GetFilesCallback callback,
     const std::unique_ptr<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -139,58 +137,68 @@ void DriveService::OnJsonReceived(
   url_loader_.reset();
 
   if (net_error != net::OK || !response_body) {
-    std::move(callback).Run(std::vector<drive::mojom::FilePtr>());
+    for (auto& callback : callbacks_) {
+      std::move(callback).Run(std::vector<drive::mojom::FilePtr>());
+    }
+    callbacks_.clear();
     return;
   }
   data_decoder::DataDecoder::ParseJsonIsolated(
       *response_body,
-      base::BindOnce(&DriveService::OnJsonParsed, weak_factory_.GetWeakPtr(),
-                     std::move(callback)));
+      base::BindOnce(&DriveService::OnJsonParsed, weak_factory_.GetWeakPtr()));
 }
 
 void DriveService::OnJsonParsed(
-    GetFilesCallback callback,
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.value) {
-    std::move(callback).Run(std::vector<drive::mojom::FilePtr>());
+    for (auto& callback : callbacks_) {
+      std::move(callback).Run(std::vector<drive::mojom::FilePtr>());
+    }
+    callbacks_.clear();
     return;
   }
   auto* items = result.value->FindListPath("item");
   if (!items) {
-    std::move(callback).Run(std::vector<drive::mojom::FilePtr>());
+    for (auto& callback : callbacks_) {
+      std::move(callback).Run(std::vector<drive::mojom::FilePtr>());
+    }
+    callbacks_.clear();
     return;
   }
-  std::vector<drive::mojom::FilePtr> document_list;
-  for (const auto& item : items->GetList()) {
-    auto* title = item.FindStringPath("driveItem.title");
-    auto* mime_type = item.FindStringPath("driveItem.mimeType");
-    auto* justification_text_segments =
-        item.FindListPath("justification.displayText.textSegment");
-    if (!justification_text_segments ||
-        justification_text_segments->GetList().size() == 0) {
-      continue;
+  for (auto& callback : callbacks_) {
+    std::vector<drive::mojom::FilePtr> document_list;
+    for (const auto& item : items->GetList()) {
+      auto* title = item.FindStringPath("driveItem.title");
+      auto* mime_type = item.FindStringPath("driveItem.mimeType");
+      auto* justification_text_segments =
+          item.FindListPath("justification.displayText.textSegment");
+      if (!justification_text_segments ||
+          justification_text_segments->GetList().size() == 0) {
+        continue;
+      }
+      // TODO(crbug/1179370): Verify what textSegments will be from ItemSuggest.
+      auto* justification_text =
+          justification_text_segments->GetList()[0].FindStringPath("text");
+      auto* id = item.FindStringKey("itemId");
+      if (!title || !mime_type || !justification_text || !id) {
+        continue;
+      }
+      auto mojo_drive_doc = drive::mojom::File::New();
+      mojo_drive_doc->title = *title;
+      if (*mime_type == "application/vnd.google-apps.document") {
+        mojo_drive_doc->type = drive::mojom::FileType::kDoc;
+      } else if (*mime_type == "application/vnd.google-apps.spreadsheet") {
+        mojo_drive_doc->type = drive::mojom::FileType::kSheet;
+      } else if (*mime_type == "application/vnd.google-apps.presentation") {
+        mojo_drive_doc->type = drive::mojom::FileType::kSlide;
+      } else {
+        mojo_drive_doc->type = drive::mojom::FileType::kOther;
+      }
+      mojo_drive_doc->justification_text = *justification_text;
+      mojo_drive_doc->id = *id;
+      document_list.push_back(std::move(mojo_drive_doc));
     }
-    // TODO(crbug/1179370): Verify what textSegments will be from ItemSuggest.
-    auto* justification_text =
-        justification_text_segments->GetList()[0].FindStringPath("text");
-    auto* id = item.FindStringKey("itemId");
-    if (!title || !mime_type || !justification_text || !id) {
-      continue;
-    }
-    auto mojo_drive_doc = drive::mojom::File::New();
-    mojo_drive_doc->title = *title;
-    if (*mime_type == "application/vnd.google-apps.document") {
-      mojo_drive_doc->type = drive::mojom::FileType::kDoc;
-    } else if (*mime_type == "application/vnd.google-apps.spreadsheet") {
-      mojo_drive_doc->type = drive::mojom::FileType::kSheet;
-    } else if (*mime_type == "application/vnd.google-apps.presentation") {
-      mojo_drive_doc->type = drive::mojom::FileType::kSlide;
-    } else {
-      mojo_drive_doc->type = drive::mojom::FileType::kOther;
-    }
-    mojo_drive_doc->justification_text = *justification_text;
-    mojo_drive_doc->id = *id;
-    document_list.push_back(std::move(mojo_drive_doc));
+    std::move(callback).Run(std::move(document_list));
   }
-  std::move(callback).Run(std::move(document_list));
+  callbacks_.clear();
 }

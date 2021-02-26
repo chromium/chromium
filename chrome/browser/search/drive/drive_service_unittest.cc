@@ -113,6 +113,97 @@ TEST_F(DriveServiceTest, PassesDataOnSuccess) {
   EXPECT_EQ("Foo", actual_documents.at(1)->justification_text);
 }
 
+TEST_F(DriveServiceTest, PassesDataToMultipleRequestsToDriveService) {
+  std::vector<drive::mojom::FilePtr> response1;
+  std::vector<drive::mojom::FilePtr> response2;
+  std::vector<drive::mojom::FilePtr> response3;
+  std::vector<drive::mojom::FilePtr> response4;
+
+  base::MockCallback<DriveService::GetFilesCallback> callback1;
+  base::MockCallback<DriveService::GetFilesCallback> callback2;
+  base::MockCallback<DriveService::GetFilesCallback> callback3;
+  base::MockCallback<DriveService::GetFilesCallback> callback4;
+  EXPECT_CALL(callback1, Run(testing::_))
+      .Times(1)
+      .WillOnce(
+          testing::Invoke([&](std::vector<drive::mojom::FilePtr> documents) {
+            response1 = std::move(documents);
+          }));
+  EXPECT_CALL(callback2, Run(testing::_))
+      .Times(1)
+      .WillOnce(
+          testing::Invoke([&](std::vector<drive::mojom::FilePtr> documents) {
+            response2 = std::move(documents);
+          }));
+  EXPECT_CALL(callback3, Run(testing::_))
+      .Times(1)
+      .WillOnce(
+          testing::Invoke([&](std::vector<drive::mojom::FilePtr> documents) {
+            response3 = std::move(documents);
+          }));
+  EXPECT_CALL(callback4, Run(testing::_))
+      .Times(1)
+      .WillOnce(
+          testing::Invoke([&](std::vector<drive::mojom::FilePtr> documents) {
+            response4 = std::move(documents);
+          }));
+  service_->GetDriveFiles(callback1.Get());
+  service_->GetDriveFiles(callback2.Get());
+  service_->GetDriveFiles(callback3.Get());
+  service_->GetDriveFiles(callback4.Get());
+
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "foo", base::Time());
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://appsitemsuggest-pa.googleapis.com/v1/items",
+      R"(
+        {
+          "item": [
+            {
+              "itemId":"234",
+              "driveItem": {
+                "title": "Foo foo",
+                "mimeType": "application/vnd.google-apps.spreadsheet"
+              },
+              "justification": {
+                "displayText": {
+                  "textSegment": [
+                    {
+                      "text": "Foo foo"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      )",
+      net::HTTP_OK,
+      network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
+
+  EXPECT_EQ(1u, response1.size());
+  EXPECT_EQ(1u, response2.size());
+  EXPECT_EQ(1u, response3.size());
+  EXPECT_EQ(1u, response4.size());
+  EXPECT_EQ("Foo foo", response1.at(0)->title);
+  EXPECT_EQ(drive::mojom::FileType::kSheet, response1.at(0)->type);
+  EXPECT_EQ("Foo foo", response1.at(0)->justification_text);
+  EXPECT_EQ("234", response1.at(0)->id);
+  EXPECT_EQ("Foo foo", response2.at(0)->title);
+  EXPECT_EQ(drive::mojom::FileType::kSheet, response2.at(0)->type);
+  EXPECT_EQ("Foo foo", response2.at(0)->justification_text);
+  EXPECT_EQ("234", response2.at(0)->id);
+  EXPECT_EQ("Foo foo", response3.at(0)->title);
+  EXPECT_EQ(drive::mojom::FileType::kSheet, response3.at(0)->type);
+  EXPECT_EQ("Foo foo", response3.at(0)->justification_text);
+  EXPECT_EQ("234", response3.at(0)->id);
+  EXPECT_EQ("Foo foo", response4.at(0)->title);
+  EXPECT_EQ(drive::mojom::FileType::kSheet, response4.at(0)->type);
+  EXPECT_EQ("Foo foo", response4.at(0)->justification_text);
+  EXPECT_EQ("234", response4.at(0)->id);
+}
+
 TEST_F(DriveServiceTest, PassesNoDataOnAuthError) {
   bool token_is_valid = true;
 

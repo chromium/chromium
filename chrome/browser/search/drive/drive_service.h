@@ -36,19 +36,17 @@ class DriveService : public KeyedService {
   void GetDriveFiles(GetFilesCallback callback);
 
  private:
-  void OnTokenReceived(GetFilesCallback callback,
-                       GoogleServiceAuthError error,
+  void OnTokenReceived(GoogleServiceAuthError error,
                        signin::AccessTokenInfo token_info);
-  void OnJsonReceived(GetFilesCallback callback,
-                      const std::unique_ptr<std::string> json_response);
-  void OnJsonParsed(GetFilesCallback callback,
-                    data_decoder::DataDecoder::ValueOrError result);
+  void OnJsonReceived(const std::unique_ptr<std::string> json_response);
+  void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
 
   // Used for fetching OAuth2 access tokens. Only non-null when a token
   // is made available, or a token is being fetched.
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> token_fetcher_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  std::vector<GetFilesCallback> callbacks_;
   signin::IdentityManager* identity_manager_;
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<DriveService> weak_factory_{this};
