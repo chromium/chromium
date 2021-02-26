@@ -88,8 +88,6 @@ source_set("libc++abi") {
     configs += [ "//build/config/gcc:symbol_visibility_default" ]
   }
 
-  # TODO(thakis): This is a gross workaround for https:/llvm.org/PR49313
-  # We had to copy refstring.h into libc++abi for the relative path to work,
-  # but the copy includes more stuff from libc++'s internal headers.
-  include_dirs = [ "../libc++/trunk/src/include" ]
+  # stdlib_stdexcept.cpp depends on libc++ internals.
+  include_dirs = [ "../libc++/trunk" ]
 }

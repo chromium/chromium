@@ -9,8 +9,3 @@ Security Critical: yes
 Description:
 
 libc++abi for Chromium.
-
-Local changes:
-- Copied buildtools/third_party/libc++/trunk/src/include/refstring.h to
-  buildtools/third_party/libc++abi/libcxx/src/include/refstring.h to work
-  around https://llvm.org/PR49313
