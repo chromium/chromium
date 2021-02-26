@@ -129,6 +129,7 @@ class OtaActivatorImpl : public OtaActivator,
 
   State state_ = State::kNotYetStarted;
   base::Optional<mojom::CarrierPortalStatus> last_carrier_portal_status_;
+  std::string iccid_;
   bool has_sent_metadata_ = false;
   bool has_called_complete_activation_ = false;
 

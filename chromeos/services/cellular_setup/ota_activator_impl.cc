@@ -13,12 +13,14 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
+#include "chromeos/network/cellular_utils.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/network_activation_handler.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
+#include "chromeos/network/network_util.h"
 #include "dbus/object_path.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "url/gurl.h"
@@ -139,11 +141,15 @@ const DeviceState* OtaActivatorImpl::GetCellularDeviceState() const {
 }
 
 const NetworkState* OtaActivatorImpl::GetCellularNetworkState() const {
-  // Note: Chrome OS only supports up to one Cellular network at a time. Other
-  // configurations (e.g., a USB modem dongle in addition to an integrated SIM)
-  // are not supported.
-  return network_state_handler_->FirstNetworkByType(
-      NetworkTypePattern::Cellular());
+  NetworkStateHandler::NetworkStateList network_list;
+  network_state_handler_->GetVisibleNetworkListByType(
+      NetworkTypePattern::Cellular(), &network_list);
+  for (const NetworkState* network_state : network_list) {
+    if (network_state->iccid() == iccid_) {
+      return network_state;
+    }
+  }
+  return nullptr;
 }
 
 void OtaActivatorImpl::StartActivation() {
@@ -213,30 +219,37 @@ void OtaActivatorImpl::AttemptToDiscoverSim() {
   if (!cellular_device)
     return;
 
+  // Find status of first available pSIM slot.
+  // Note: We currently only support setting up devices with single physical
+  // SIM slots. This excludes other configurations such as multiple physical
+  // SIM slots and SIM cards in external dongles.
+  bool has_psim_slots = false;
+  for (const CellularSIMSlotInfo& sim_slot_info :
+       GetSimSlotInfosWithUpdatedEid(cellular_device)) {
+    if (sim_slot_info.eid.empty()) {
+      has_psim_slots = true;
+      iccid_ = sim_slot_info.iccid;
+      break;
+    }
+  }
+
+  if (!has_psim_slots) {
+    NET_LOG(ERROR) << "No PSim slots found";
+    FinishActivationAttempt(mojom::ActivationResult::kFailedToActivate);
+    return;
+  }
+
   // If no SIM card is present, it may be due to the fact that some devices do
   // not have hardware support for determining whether a SIM has been inserted.
   // Restart the modem to see if the SIM is detected when the modem powers back
   // on.
-  if (!cellular_device->sim_present()) {
+  if (iccid_.empty()) {
     NET_LOG(DEBUG) << "No SIM detected; restarting modem.";
     ShillDeviceClient::Get()->Reset(
         dbus::ObjectPath(cellular_device->path()),
         base::BindOnce(&OtaActivatorImpl::AttemptNextActivationStep,
                        weak_ptr_factory_.GetWeakPtr()),
         base::BindOnce(&OnModemResetError));
-    return;
-  }
-
-  // The device must have the properties required for the activation flow;
-  // namely, the operator name, IMEI, and MDN must be available. Return
-  // and wait to see if DevicePropertiesUpdated() is invoked with valid
-  // properties.
-  if (cellular_device->operator_name().empty() ||
-      cellular_device->imei().empty() || cellular_device->mdn().empty()) {
-    NET_LOG(DEBUG) << "Insufficient activation data: "
-                   << "Operator name: " << cellular_device->operator_name()
-                   << ", IMEI: " << cellular_device->imei() << ", "
-                   << "MDN: " << cellular_device->mdn();
     return;
   }
 
@@ -253,24 +266,6 @@ void OtaActivatorImpl::AttemptConnectionToCellularNetwork() {
   if (!cellular_network)
     return;
 
-  // If the network is already activated, there is no need to complete the rest
-  // of the flow.
-  if (cellular_network->activation_state() ==
-      shill::kActivationStateActivated) {
-    FinishActivationAttempt(mojom::ActivationResult::kAlreadyActivated);
-    return;
-  }
-
-  // The network must have payment information; at minimum, a payment URL is
-  // required in order to contact the carrier payment portal. Return and wait to
-  // see if NetworkPropertiesUpdated() is invoked with valid properties.
-  if (cellular_network->payment_url().empty()) {
-    NET_LOG(DEBUG) << "Insufficient activation data: "
-                   << "Payment URL: " << cellular_network->payment_url() << ", "
-                   << "Post Data: " << cellular_network->payment_post_data();
-    return;
-  }
-
   // The network is disconnected; trigger a connection and wait for
   // NetworkPropertiesUpdated() to be called when the network connects.
   if (!cellular_network->IsConnectingOrConnected()) {
@@ -285,6 +280,36 @@ void OtaActivatorImpl::AttemptConnectionToCellularNetwork() {
   // NetworkPropertiesUpdated() to be called if/when the network connects.
   if (cellular_network->IsConnectingState())
     return;
+
+  // If the network is already activated, there is no need to complete the rest
+  // of the flow.
+  if (cellular_network->activation_state() ==
+      shill::kActivationStateActivated) {
+    FinishActivationAttempt(mojom::ActivationResult::kAlreadyActivated);
+    return;
+  }
+
+  const DeviceState* cellular_device = GetCellularDeviceState();
+  // The device must have the properties required for the actication flow;
+  // namely, the operator name and IMEI. Return and wait to see if
+  // DevicePropertiesUpdated() is invoked with valid properties.
+  if (cellular_device->operator_name().empty() ||
+      cellular_device->imei().empty()) {
+    NET_LOG(DEBUG) << "Insufficient activation data: "
+                   << "Operator name: " << cellular_device->operator_name()
+                   << ", IMEI: " << cellular_device->imei();
+    return;
+  }
+
+  // The network must have payment information; at minimum, a payment URL is
+  // required in order to contact the carrier payment portal. Return and wait to
+  // see if NetworkPropertiesUpdated() is invoked with valid properties.
+  if (cellular_network->payment_url().empty()) {
+    NET_LOG(DEBUG) << "Insufficient activation data: "
+                   << "Payment URL: " << cellular_network->payment_url() << ", "
+                   << "Post Data: " << cellular_network->payment_post_data();
+    return;
+  }
 
   ChangeStateAndAttemptNextStep(State::kWaitingForCellularPayment);
 }
