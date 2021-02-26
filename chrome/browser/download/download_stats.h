@@ -7,6 +7,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/download/download_prompt_status.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_path_reservation_tracker.h"
 
@@ -153,6 +154,8 @@ enum class DownloadShelfDragEvent {
 };
 
 void RecordDownloadShelfDragEvent(DownloadShelfDragEvent drag_event);
+
+void RecordDownloadStartPerProfileType(Profile* profile);
 
 #ifdef OS_ANDROID
 // Records whether the download dialog is shown to the user.
