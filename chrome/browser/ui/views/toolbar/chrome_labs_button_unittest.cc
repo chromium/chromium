@@ -28,15 +28,12 @@ const base::Feature kTestFeature2{"FeatureName2",
 
 class ChromeLabsButtonTest : public TestWithBrowserView {
  public:
+  ChromeLabsButtonTest()
+      : scoped_feature_entries_({{kFirstTestFeatureId, "", "",
+                                  flags_ui::FlagsState::GetCurrentPlatform(),
+                                  FEATURE_VALUE_TYPE(kTestFeature1)}}) {}
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kChromeLabs);
-
-    std::vector<flags_ui::FeatureEntry> entries = {
-        {kFirstTestFeatureId, "", "",
-         flags_ui::FlagsState::GetCurrentPlatform(),
-         FEATURE_VALUE_TYPE(kTestFeature1)}};
-
-    about_flags::testing::SetFeatureEntries(entries);
 
     std::vector<LabInfo> test_feature_info = {
         {kFirstTestFeatureId, base::ASCIIToUTF16(""), base::ASCIIToUTF16(""),
@@ -49,6 +46,7 @@ class ChromeLabsButtonTest : public TestWithBrowserView {
   }
 
  private:
+  about_flags::testing::ScopedFeatureEntries scoped_feature_entries_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
   ScopedChromeLabsModelDataForTesting scoped_chrome_labs_model_data_;
@@ -76,13 +74,11 @@ TEST_F(ChromeLabsButtonTest, ShouldButtonShowTest) {
 
 class ChromeLabsButtonNoExperimentsAvailableTest : public TestWithBrowserView {
  public:
+  ChromeLabsButtonNoExperimentsAvailableTest()
+      : scoped_feature_entries_({{kSecondTestFeatureId, "", "", 0,
+                                  FEATURE_VALUE_TYPE(kTestFeature2)}}) {}
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kChromeLabs);
-
-    std::vector<flags_ui::FeatureEntry> entries = {
-        {kSecondTestFeatureId, "", "", 0, FEATURE_VALUE_TYPE(kTestFeature2)}};
-
-    about_flags::testing::SetFeatureEntries(entries);
 
     std::vector<LabInfo> test_feature_info = {
         {kSecondTestFeatureId, base::ASCIIToUTF16(""), base::ASCIIToUTF16(""),
@@ -95,6 +91,7 @@ class ChromeLabsButtonNoExperimentsAvailableTest : public TestWithBrowserView {
   }
 
  private:
+  about_flags::testing::ScopedFeatureEntries scoped_feature_entries_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
   ScopedChromeLabsModelDataForTesting scoped_chrome_labs_model_data_;

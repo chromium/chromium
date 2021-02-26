@@ -65,7 +65,7 @@ TEST(ChromeBrowserMainWinTest, GetRestartCommand) {
   prefs.registry()->RegisterDictionaryPref(
       flags_ui::prefs::kAboutFlagsOriginLists);
   const char kExperimentName[] = "exp-flag";
-  about_flags::testing::SetFeatureEntries(
+  about_flags::testing::ScopedFeatureEntries scoped_feature_entries(
       {{kExperimentName, "Exp", "description", -1,
         ORIGIN_LIST_VALUE_TYPE("flag-switch", "")}});
   about_flags::SetFeatureEntryEnabled(&flags_storage, kExperimentName,

@@ -133,6 +133,22 @@ void WaitForExperimentalFeatures(content::WebContents* contents) {
       &unused));
 }
 
+const std::vector<flags_ui::FeatureEntry> GetFeatureEntries(
+    const std::string& unexpire_name) {
+  std::vector<flags_ui::FeatureEntry> entries = {
+      {kFlagName, "name-1", "description-1", -1,
+       ORIGIN_LIST_VALUE_TYPE(kSwitchName, "")},
+      {kExpiredFlagName, "name-2", "description-2", -1,
+       SINGLE_VALUE_TYPE(kExpiredFlagSwitchName)},
+      {kFlagWithOptionSelectorName, "name-3", "description-3", -1,
+       SINGLE_VALUE_TYPE(kFlagWithOptionSelectorSwitchName)}};
+  flags_ui::FeatureEntry expiry_entry = {
+      unexpire_name.c_str(), "unexpire name", "unexpire desc", -1,
+      SINGLE_VALUE_TYPE("unexpire-dummy-switch")};
+  entries.push_back(expiry_entry);
+  return entries;
+}
+
 // In these tests, valid origins in the existing command line flag will be
 // appended to the list entered by the user in chrome://flags.
 // The tests are run twice for each bool value: Once with an existing command
@@ -140,22 +156,10 @@ void WaitForExperimentalFeatures(content::WebContents* contents) {
 class AboutFlagsBrowserTest : public InProcessBrowserTest,
                               public testing::WithParamInterface<bool> {
  public:
-  AboutFlagsBrowserTest() {
-    std::vector<flags_ui::FeatureEntry> entries = {
-        {kFlagName, "name-1", "description-1", -1,
-         ORIGIN_LIST_VALUE_TYPE(kSwitchName, "")},
-        {kExpiredFlagName, "name-2", "description-2", -1,
-         SINGLE_VALUE_TYPE(kExpiredFlagSwitchName)},
-        {kFlagWithOptionSelectorName, "name-3", "description-3", -1,
-         SINGLE_VALUE_TYPE(kFlagWithOptionSelectorSwitchName)}};
-    unexpire_name_ = base::StringPrintf("temporary-unexpire-flags-m%d",
-                                        CHROME_VERSION_MAJOR - 1);
-    flags_ui::FeatureEntry expiry_entry = {
-        unexpire_name_.c_str(), "unexpire name", "unexpire desc", -1,
-        SINGLE_VALUE_TYPE("unexpire-dummy-switch")};
-    entries.push_back(expiry_entry);
-    about_flags::testing::SetFeatureEntries(entries);
-
+  AboutFlagsBrowserTest()
+      : unexpire_name_(base::StringPrintf("temporary-unexpire-flags-m%d",
+                                          CHROME_VERSION_MAJOR - 1)),
+        scoped_feature_entries_(GetFeatureEntries(unexpire_name_)) {
     flags::testing::SetFlagExpiration(kExpiredFlagName,
                                       CHROME_VERSION_MAJOR - 1);
   }
@@ -189,6 +193,7 @@ class AboutFlagsBrowserTest : public InProcessBrowserTest,
   bool expiration_enabled_ = true;
   std::string unexpire_name_;
 
+  about_flags::testing::ScopedFeatureEntries scoped_feature_entries_;
   base::test::ScopedFeatureList feature_list_;
 };
 
