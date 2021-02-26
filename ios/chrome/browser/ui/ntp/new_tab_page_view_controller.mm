@@ -281,6 +281,8 @@ const CGFloat kOffsetToPinOmnibox = 100;
   [self.headerSynchronizer unfocusOmnibox];
   [self.contentSuggestionsViewController.collectionView
           .collectionViewLayout invalidateLayout];
+  [self.view setNeedsLayout];
+  [self.view layoutIfNeeded];
 }
 
 #pragma mark - UIScrollViewDelegate
