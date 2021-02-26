@@ -1,0 +1,126 @@
+// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_HOVER_CARD_CONTROLLER_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_TAB_HOVER_CARD_CONTROLLER_H_
+
+#include <memory>
+
+#include "base/callback_list.h"
+#include "base/scoped_observation.h"
+#include "base/timer/timer.h"
+#include "chrome/browser/ui/views/tabs/tab_controller.h"
+#include "ui/events/event.h"
+#include "ui/views/animation/bubble_slide_animator.h"
+#include "ui/views/animation/widget_fade_animator.h"
+#include "ui/views/view.h"
+#include "ui/views/view_observer.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/metrics_util.h"
+#include "base/optional.h"
+#endif
+
+namespace gfx {
+class ImageSkia;
+}
+
+class TabHoverCardBubbleView;
+class TabHoverCardThumbnailObserver;
+class Tab;
+class TabStrip;
+
+class TabHoverCardController : public views::ViewObserver {
+ public:
+  explicit TabHoverCardController(TabStrip* tab_strip);
+  ~TabHoverCardController() override;
+
+  // Returns whether the hover card preview images feature is enabled.
+  static bool AreHoverCardImagesEnabled();
+
+  bool IsHoverCardVisible() const;
+  bool IsHoverCardShowingForTab(Tab* tab) const;
+  void UpdateHoverCard(Tab* tab,
+                       TabController::HoverCardUpdateType update_type);
+  void PreventImmediateReshow();
+  void TabSelectedViaMouse();
+
+ private:
+  friend class TabHoverCardBubbleViewBrowserTest;
+  friend class TabHoverCardBubbleViewInteractiveUiTest;
+  class CardCounter;
+  class EventSniffer;
+
+  static bool UseAnimations();
+
+  // views::ViewObserver
+  void OnViewIsDeleting(views::View* observed_view) override;
+
+  void CreateHoverCard(Tab* tab);
+
+  void RecordTimeSinceLastSeenMetric(base::TimeDelta elapsed_time);
+
+  void UpdateAndShow(Tab* tab);
+  void FadeInToShow();
+  void FadeOutToHide();
+
+  bool ShouldShowImmediately(const Tab* tab) const;
+
+  const views::View* GetTargetAnchorView() const;
+
+  // Animator events:
+  void OnFadeAnimationEnded(views::WidgetFadeAnimator* animator,
+                            views::WidgetFadeAnimator::FadeType fade_type);
+  void OnSlideAnimationProgressed(views::BubbleSlideAnimator* animator,
+                                  double value);
+  void OnSlideAnimationComplete(views::BubbleSlideAnimator* animator);
+
+  void OnPreviewImageAvaialble(TabHoverCardThumbnailObserver* observer,
+                               gfx::ImageSkia thumbnail_image);
+
+  int GetCardsSeenCountForTesting() const;
+
+  // Timestamp of the last time a hover card was visible, recorded before it is
+  // hidden. This is used for metrics.
+  base::TimeTicks last_visible_timestamp_;
+
+  // Timestamp of the last time the hover card is hidden by the mouse leaving
+  // the tab strip. This is used for reshowing the hover card without delay if
+  // the mouse reenters within a given amount of time.
+  base::TimeTicks last_mouse_exit_timestamp_;
+
+  base::OneShotTimer delayed_show_timer_;
+
+  // The view tracker is used to keep track of if the hover card has been
+  // destroyed by its widget.
+  TabStrip* const tab_strip_;
+  TabHoverCardBubbleView* hover_card_ = nullptr;
+  base::ScopedObservation<views::View, views::ViewObserver>
+      hover_card_observation_{this};
+  std::unique_ptr<EventSniffer> event_sniffer_;
+
+  // Counter used to keep track of the number of tab hover cards seen before a
+  // tab is selected by mouse press.
+  std::unique_ptr<CardCounter> cards_seen_counter_;
+
+  // Fade animations interfere with browser tests so we disable them in tests.
+  static bool disable_animations_for_testing_;
+  std::unique_ptr<views::WidgetFadeAnimator> fade_animator_;
+
+  // Used to animate the tab hover card's movement between tabs.
+  std::unique_ptr<views::BubbleSlideAnimator> slide_animator_;
+
+  std::unique_ptr<TabHoverCardThumbnailObserver> thumbnail_observer_;
+  base::CallbackListSubscription thumbnail_subscription_;
+  bool waiting_for_decompress_ = false;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  base::Optional<ui::ThroughputTracker> throughput_tracker_;
+#endif
+  base::CallbackListSubscription fade_complete_subscription_;
+  base::CallbackListSubscription slide_progressed_subscription_;
+  base::CallbackListSubscription slide_complete_subscription_;
+};
+
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_HOVER_CARD_CONTROLLER_H_

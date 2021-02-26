@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_bubble_view.h"
+#include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -33,7 +34,7 @@ class TabHoverCardBubbleViewBrowserTest : public DialogBrowserTest {
   TabHoverCardBubbleViewBrowserTest()
       : animation_mode_reset_(gfx::AnimationTestApi::SetRichAnimationRenderMode(
             gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED)) {
-    TabHoverCardBubbleView::disable_animations_for_testing_ = true;
+    TabHoverCardController::disable_animations_for_testing_ = true;
     scoped_feature_list_.InitAndEnableFeature(features::kTabHoverCards);
   }
   TabHoverCardBubbleViewBrowserTest(const TabHoverCardBubbleViewBrowserTest&) =
@@ -49,7 +50,9 @@ class TabHoverCardBubbleViewBrowserTest : public DialogBrowserTest {
 
   TabStrip* tab_strip() { return tab_strip_; }
 
-  TabHoverCardBubbleView* hover_card() { return tab_strip()->hover_card_; }
+  TabHoverCardBubbleView* hover_card() {
+    return tab_strip()->hover_card_controller_->hover_card_;
+  }
 
   base::string16 GetHoverCardTitle() {
     return hover_card()->title_label_->GetText();
@@ -59,7 +62,9 @@ class TabHoverCardBubbleViewBrowserTest : public DialogBrowserTest {
     return hover_card()->domain_label_->GetText();
   }
 
-  int GetHoverCardsSeenCount() { return hover_card()->hover_cards_seen_count_; }
+  int GetHoverCardsSeenCount() {
+    return tab_strip()->hover_card_controller_->GetCardsSeenCountForTesting();
+  }
 
   void MouseExitTabStrip() {
     ui::MouseEvent stop_hover_event(ui::ET_MOUSE_EXITED, gfx::Point(),
@@ -79,7 +84,8 @@ class TabHoverCardBubbleViewBrowserTest : public DialogBrowserTest {
     // We don't use Tab::OnMouseEntered here to invoke the hover card because
     // that path is disabled in browser tests. If we enabled it, the real mouse
     // might interfere with the test.
-    tab_strip()->UpdateHoverCard(tab_strip()->tab_at(index));
+    tab_strip()->UpdateHoverCard(tab_strip()->tab_at(index),
+                                 TabController::HoverCardUpdateType::kHover);
   }
 
   // DialogBrowserTest:
