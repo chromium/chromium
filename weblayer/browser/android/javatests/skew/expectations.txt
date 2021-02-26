@@ -4,10 +4,12 @@
 # Lines tagged with "impl_lte_$VERSION" will be active when testing trunk client
 # with versions less than or equal to $VERSION of the implementation.
 #
-# tags: [ impl_lte_83 client_lte_83 client_lte_84 client_lte_87 client_lte_88 ]
+# tags: [ impl_lte_83 client_lte_83 client_lte_84 client_lte_87 client_lte_88 client_lte_89 ]
 # results: [ Skip ]
 # conflicts_allowed: True
 
+# The test was fixed for tip of tree tests in crrev.com/c/2691313, however the change will not be merged into M89
+crbug.com/1172938 [ client_lte_89 ] org.chromium.weblayer.test.NavigationTest#testServedFromBackForwardCache [ Skip ]
 
 # Changes were landed in crrev.com/c/2683084 which modified the test. The CL was not cherry picked into M87.
 crbug.com/1174169 [ client_lte_87 ] org.chromium.weblayer.test.NavigationTest#testLoadError [ Skip ]
