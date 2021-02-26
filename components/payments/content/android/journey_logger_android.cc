@@ -55,14 +55,10 @@ void JourneyLoggerAndroid::SetHasEnrolledInstrumentValue(
   journey_logger_.SetHasEnrolledInstrumentValue(jvalue);
 }
 
-void JourneyLoggerAndroid::SetEventOccurred(
+void JourneyLoggerAndroid::SetSkippedShow(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    jint jevent) {
-  DCHECK_GE(jevent, 0);
-  DCHECK_LE(static_cast<unsigned int>(jevent),
-            static_cast<unsigned int>(JourneyLogger::Event::EVENT_ENUM_MAX));
-  journey_logger_.SetEventOccurred(static_cast<JourneyLogger::Event>(jevent));
+    const base::android::JavaParamRef<jobject>& jcaller) {
+  journey_logger_.SetSkippedShow();
 }
 
 void JourneyLoggerAndroid::SetShown(

@@ -78,12 +78,10 @@ public class JourneyLogger {
     }
 
     /**
-     * Records that an event occurred.
-     *
-     * @param event The event that occurred.
+     * Records that a payment app has been invoked without any payment UI being shown before that.
      */
-    public void setEventOccurred(int event) {
-        JourneyLoggerJni.get().setEventOccurred(mJourneyLoggerAndroid, JourneyLogger.this, event);
+    public void setSkippedShow() {
+        JourneyLoggerJni.get().setSkippedShow(mJourneyLoggerAndroid, JourneyLogger.this);
     }
 
     /** Records that a payment UI has been shown. */
@@ -243,7 +241,7 @@ public class JourneyLogger {
                 long nativeJourneyLoggerAndroid, JourneyLogger caller, boolean value);
         void setHasEnrolledInstrumentValue(
                 long nativeJourneyLoggerAndroid, JourneyLogger caller, boolean value);
-        void setEventOccurred(long nativeJourneyLoggerAndroid, JourneyLogger caller, int event);
+        void setSkippedShow(long nativeJourneyLoggerAndroid, JourneyLogger caller);
         void setShown(long nativeJourneyLoggerAndroid, JourneyLogger caller);
         void setReceivedInstrumentDetails(long nativeJourneyLoggerAndroid, JourneyLogger caller);
         void setPayClicked(long nativeJourneyLoggerAndroid, JourneyLogger caller);

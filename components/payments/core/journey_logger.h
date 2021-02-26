@@ -212,6 +212,10 @@ class JourneyLogger {
   // Records that an event occurred.
   void SetEventOccurred(Event event);
 
+  // Records that a payment app has been shown without payment UIs being shown
+  // before that.
+  void SetSkippedShow();
+
   // Records that a payment UI has been shown.
   void SetShown();
 

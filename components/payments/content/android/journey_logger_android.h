@@ -36,9 +36,8 @@ class JourneyLoggerAndroid {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcaller,
       jboolean jvalue);
-  void SetEventOccurred(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& jcaller,
-                        jint jevent);
+  void SetSkippedShow(JNIEnv* env,
+                      const base::android::JavaParamRef<jobject>& jcaller);
   void SetShown(JNIEnv* env,
                 const base::android::JavaParamRef<jobject>& jcaller);
   void SetReceivedInstrumentDetails(

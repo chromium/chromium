@@ -7,7 +7,6 @@ package org.chromium.weblayer_private.payments;
 import androidx.annotation.Nullable;
 
 import org.chromium.components.payments.BrowserPaymentRequest;
-import org.chromium.components.payments.Event;
 import org.chromium.components.payments.JourneyLogger;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppFactoryDelegate;
@@ -127,7 +126,7 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
                 + "available app.";
         PaymentApp selectedPaymentApp = mAvailableApps.get(0);
         if (mShouldSkipAppSelector) {
-            mJourneyLogger.setEventOccurred(Event.SKIPPED_SHOW);
+            mJourneyLogger.setSkippedShow();
             PaymentResponseHelperInterface paymentResponseHelper = new PaymentResponseHelper(
                     selectedPaymentApp.handlesShippingAddress(), mSpec.getPaymentOptions());
             mPaymentRequestService.invokePaymentApp(selectedPaymentApp, paymentResponseHelper);

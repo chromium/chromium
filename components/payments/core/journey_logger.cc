@@ -144,6 +144,10 @@ void JourneyLogger::SetEventOccurred(Event event) {
   events_ |= event;
 }
 
+void JourneyLogger::SetSkippedShow() {
+  SetEventOccurred(EVENT_SKIPPED_SHOW);
+}
+
 void JourneyLogger::SetShown() {
   SetEventOccurred(EVENT_SHOWN);
 }

@@ -23,7 +23,6 @@ import org.chromium.components.payments.AbortReason;
 import org.chromium.components.payments.AndroidPaymentApp;
 import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.ErrorStrings;
-import org.chromium.components.payments.Event;
 import org.chromium.components.payments.JourneyLogger;
 import org.chromium.components.payments.MethodStrings;
 import org.chromium.components.payments.PackageManagerDelegate;
@@ -425,7 +424,7 @@ public class ChromePaymentRequestService
             assert !mPaymentUiService.getPaymentApps().isEmpty();
             PaymentApp selectedApp = mPaymentUiService.getSelectedPaymentApp();
             dimBackgroundIfNotPaymentHandler(selectedApp);
-            mJourneyLogger.setEventOccurred(Event.SKIPPED_SHOW);
+            mJourneyLogger.setSkippedShow();
             invokePaymentApp(null /* selectedShippingAddress */, null /* selectedShippingOption */,
                     selectedApp);
         } else {
