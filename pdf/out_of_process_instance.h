@@ -194,9 +194,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   void HandleSaveMessage(const pp::VarDictionary& dict);
   void HandleUpdateScrollMessage(const pp::VarDictionary& dict);
 
-  // Repaints plugin contents based on the current scroll position.
-  void UpdateScroll();
-
   void ResetRecentlySentFindUpdate(int32_t);
 
   // Returns a VarArray of Attachments. Each Attachment is a VarDictionary

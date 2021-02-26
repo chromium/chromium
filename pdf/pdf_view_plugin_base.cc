@@ -358,6 +358,15 @@ void PdfViewPluginBase::CalculateBackgroundParts() {
     background_parts_.push_back(part);
 }
 
+void PdfViewPluginBase::UpdateScroll() {
+  DCHECK(!stop_scrolling_);
+  const gfx::PointF scaled_scroll_position = gfx::ScalePoint(
+      BoundScrollPositionToDocument(gfx::PointF(scroll_position_)),
+      device_scale_);
+  engine()->ScrolledToXPosition(scaled_scroll_position.x());
+  engine()->ScrolledToYPosition(scaled_scroll_position.y());
+}
+
 gfx::PointF PdfViewPluginBase::BoundScrollPositionToDocument(
     const gfx::PointF& scroll_position) {
   float max_x = std::max(

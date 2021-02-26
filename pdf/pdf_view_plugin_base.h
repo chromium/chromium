@@ -155,6 +155,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // aren't painted by the PDF engine).
   void CalculateBackgroundParts();
 
+  // Repaints the plugin contents based on the current scroll position.
+  void UpdateScroll();
+
   // Bound the given scroll position to the document.
   gfx::PointF BoundScrollPositionToDocument(const gfx::PointF& scroll_position);
 
@@ -214,7 +217,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   float device_scale() const { return device_scale_; }
 
-  const gfx::Point& scroll_position() const { return scroll_position_; }
   void set_scroll_position(const gfx::Point& scroll_position) {
     scroll_position_ = scroll_position;
   }

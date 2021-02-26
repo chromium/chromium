@@ -828,15 +828,6 @@ void OutOfProcessInstance::DidChangeView(const pp::View& view) {
   // HandleUpdateScrollMessage().
 }
 
-void OutOfProcessInstance::UpdateScroll() {
-  DCHECK(!stop_scrolling());
-  gfx::PointF scaled_scroll_position = gfx::ScalePoint(
-      BoundScrollPositionToDocument(gfx::PointF(scroll_position())),
-      device_scale());
-  engine()->ScrolledToXPosition(scaled_scroll_position.x());
-  engine()->ScrolledToYPosition(scaled_scroll_position.y());
-}
-
 void OutOfProcessInstance::DidChangeFocus(bool has_focus) {
   engine()->UpdateFocus(has_focus);
 }
