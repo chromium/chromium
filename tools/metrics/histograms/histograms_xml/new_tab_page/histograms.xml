@@ -804,6 +804,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
   <token key="Interaction">
     <variant name="" summary="any interaction"/>
+    <variant name=".Customize" summary="the customize dialog"/>
     <variant name=".ModuleRequest"
         summary="a module request (e.g. action menu in header)"/>
   </token>
@@ -822,6 +823,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram base="true" name="NewTabPage.Modules.EnabledOnNTPLoad"
+    enum="BooleanEnabled" expires_after="2022-01-01">
+  <owner>danielms@google.com</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs for each NTP module whether it was enabled after the NTP has
+    instantiated the modules. Only logged on the 1P NTP. Note that even if the
+    user has Google as their default search engine, Incognito and Guest mode
+    NTPs are not considered 1P and don't log this histogram.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Modules.Enabled{Interaction}" enum="NtpModules"
     expires_after="2022-01-01">
   <owner>danielms@google.com</owner>
@@ -835,6 +849,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
   <token key="Interaction">
     <variant name="" summary="any interaction"/>
+    <variant name=".Customize" summary="the customize dialog"/>
     <variant name=".Toast" summary="clicking undo on the module disable toast"/>
   </token>
 </histogram>

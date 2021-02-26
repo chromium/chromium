@@ -38,6 +38,14 @@ export class FakeMetricsPrivate {
 
   /**
    * @param {string} metricName
+   * @param {boolean} value
+   */
+  recordBoolean(metricName, value) {
+    this.get_(metricName).push(value);
+  }
+
+  /**
+   * @param {string} metricName
    * @return {!Map<string, !Array>}
    * @private
    */

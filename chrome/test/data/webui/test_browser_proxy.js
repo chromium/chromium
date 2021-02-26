@@ -7,7 +7,7 @@
 
 /**
  * @typedef {{resolver: !PromiseResolver,
- *            callCount: number,
+ *            args: !Array<*>,
  *            resultMapper: (!Function|undefined)}}
  */
 let MethodData;
@@ -105,7 +105,7 @@ let MethodData;
    */
   methodCalled(methodName, opt_arg) {
     const methodData = this.resolverMap_.get(methodName);
-    methodData.callCount += 1;
+    methodData.args.push(opt_arg);
     this.resolverMap_.set(methodName, methodData);
     methodData.resolver.resolve(opt_arg);
   }
@@ -167,7 +167,16 @@ let MethodData;
    * @return {number}
    */
   getCallCount(methodName) {
-    return this.getMethodData_(methodName).callCount;
+    return this.getMethodData_(methodName).args.length;
+  }
+
+  /**
+   * Returns the arguments of calls made to |method|.
+   * @param {string} methodName
+   * @return {!Array<*>}
+   */
+  getArgs(methodName) {
+    return this.getMethodData_(methodName).args;
   }
 
   /**
@@ -212,6 +221,6 @@ let MethodData;
    */
   createMethodData_(methodName) {
     this.resolverMap_.set(
-        methodName, {resolver: new PromiseResolver(), callCount: 0});
+        methodName, {resolver: new PromiseResolver(), args: []});
   }
 }

@@ -125,6 +125,7 @@ js_library("customize_dialog") {
   deps = [
     ":customize_backgrounds",
     ":customize_dialog_types",
+    ":customize_modules",
     ":customize_shortcuts",
     ":utils",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -157,6 +158,21 @@ js_library("customize_shortcuts") {
     ":mini_page",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
+  ]
+}
+
+js_library("customize_modules") {
+  deps = [
+    ":browser_proxy",
+    "modules:module_registry",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button.m",
+    "//ui/webui/resources/cr_elements/cr_radio_group:cr_radio_group.m",
+    "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
+    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 

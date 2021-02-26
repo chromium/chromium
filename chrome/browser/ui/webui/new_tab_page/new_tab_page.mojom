@@ -322,12 +322,10 @@ interface PageHandler {
   OnRestoreModule(string module_id);
   // If |visible| the modules will be shown.
   SetModulesVisible(bool visible);
-  // Triggers a call to |SetModulesVisible| with the current visibility setting.
-  UpdateModulesVisible();
   // Disables module with ID |module_id| if |disabled|. Enables otherwise.
   SetModuleDisabled(string module_id, bool disabled);
-  // Returns IDs of disabled modules.
-  GetDisabledModules() => (array<string> module_ids);
+  // Triggers a call to |SetDisabledModules|.
+  UpdateDisabledModules();
 
   // ======= METRICS =======
   // Logs that |tiles| were displayed / updated at |time|. The first instance of
@@ -398,6 +396,7 @@ interface Page {
   SetMostVisitedInfo(MostVisitedInfo info);
   // Sets the current theme.
   SetTheme(Theme theme);
-  // Updates the module visibility.
-  SetModulesVisible(bool visible);
+  // Disables the modules in |ids|. If |all|, disables all modules and passes an
+  // empty list for |ids|.
+  SetDisabledModules(bool all, array<string> ids);
 };

@@ -22,7 +22,7 @@ suite('NewTabPageAppTest', () => {
   let testProxy;
 
   /** @type {FakeMetricsPrivate} */
-  let fakeMetricsPrivate;
+  let metrics;
 
   /**
    * @implements {BackgroundManager}
@@ -65,10 +65,11 @@ suite('NewTabPageAppTest', () => {
     BackgroundManager.instance_ = backgroundManager;
     const moduleRegistry = TestBrowserProxy.fromClass(ModuleRegistry);
     moduleResolver = new PromiseResolver();
+    moduleRegistry.setResultFor('getDescriptors', []);
     moduleRegistry.setResultFor('initializeModules', moduleResolver.promise);
     ModuleRegistry.instance_ = moduleRegistry;
-    fakeMetricsPrivate = new FakeMetricsPrivate();
-    chrome.metricsPrivate = fakeMetricsPrivate;
+    metrics = new FakeMetricsPrivate();
+    chrome.metricsPrivate = metrics;
 
     app = document.createElement('ntp-app');
     document.body.appendChild(app);
@@ -467,16 +468,18 @@ suite('NewTabPageAppTest', () => {
             .dispatchEvent(new Event(
                 'ntp-middle-slot-promo-loaded',
                 {bubbles: true, composed: true}));
-        testProxy.callbackRouterRemote.setModulesVisible(visible);
+        testProxy.callbackRouterRemote.setDisabledModules(!visible, ['bar']);
         await flushTasks();  // Wait for module descriptor resolution.
 
         // Assert.
         const modules = app.shadowRoot.querySelectorAll('ntp-module-wrapper');
         assertEquals(2, modules.length);
+        assertEquals(1, testProxy.handler.getCallCount('onModulesRendered'));
+        const histogram = 'NewTabPage.Modules.EnabledOnNTPLoad';
+        assertEquals(1, metrics.count(`${histogram}.foo`, visible));
+        assertEquals(1, metrics.count(`${histogram}.bar`, false));
         assertEquals(
-            visible ? 1 : 0,
-            testProxy.handler.getCallCount('onModulesRendered'));
-        assertEquals(1, testProxy.handler.getCallCount('updateModulesVisible'));
+            1, testProxy.handler.getCallCount('updateDisabledModules'));
       });
     });
 
@@ -563,12 +566,9 @@ suite('NewTabPageAppTest', () => {
           'hello "bar"',
           $$(app, '#removeModuleToastMessage').textContent.trim());
       assertNotStyle($$(app, '#undoRemoveModuleButton'), 'display', 'none');
+      assertEquals(1, metrics.count('NewTabPage.Modules.Disabled', 'foo'));
       assertEquals(
-          1, fakeMetricsPrivate.count('NewTabPage.Modules.Disabled', 'foo'));
-      assertEquals(
-          1,
-          fakeMetricsPrivate.count(
-              'NewTabPage.Modules.Disabled.ModuleRequest', 'foo'));
+          1, metrics.count('NewTabPage.Modules.Disabled.ModuleRequest', 'foo'));
 
       // Act.
       $$(app, '#undoRemoveModuleButton').click();
@@ -576,11 +576,8 @@ suite('NewTabPageAppTest', () => {
 
       // Assert.
       assertFalse($$(app, '#removeModuleToast').open);
-      assertEquals(
-          1, fakeMetricsPrivate.count('NewTabPage.Modules.Enabled', 'foo'));
-      assertEquals(
-          1,
-          fakeMetricsPrivate.count('NewTabPage.Modules.Enabled.Toast', 'foo'));
+      assertEquals(1, metrics.count('NewTabPage.Modules.Enabled', 'foo'));
+      assertEquals(1, metrics.count('NewTabPage.Modules.Enabled.Toast', 'foo'));
     });
   });
 });
