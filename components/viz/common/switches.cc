@@ -49,7 +49,7 @@ const char kEnableVizDevTools[] = "enable-viz-devtools";
 // Enables hit-test debug logging.
 const char kEnableVizHitTestDebug[] = "enable-viz-hit-test-debug";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 // ChromeOS uses one of two VideoDecoder implementations based on SoC/board
 // specific configurations that are signalled via this command line flag.
 // TODO(b/159825227): remove when the "old" video decoder is fully launched.

@@ -109,7 +109,7 @@ D3D11VideoDecoder::GetD3D11DeviceCB GetD3D11DeviceCallback() {
 // use.
 bool ShouldUseChromeOSDirectVideoDecoder(
     const gpu::GpuPreferences& gpu_preferences) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   return gpu_preferences.enable_chromeos_direct_video_decoder;
 #else
   return false;
