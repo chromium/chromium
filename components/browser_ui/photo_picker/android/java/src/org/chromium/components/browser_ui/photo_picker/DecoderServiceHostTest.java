@@ -201,6 +201,7 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
 
     @Test
     @LargeTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O) // Video is only supported on O+.
     public void testDecodingOrder() throws Throwable {
         DecoderServiceHost host =
                 new DecoderServiceHost(this, mContext, /* animatedThumbnailsSupported = */ true);
@@ -266,6 +267,7 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
 
     @Test
     @LargeTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O) // Video is only supported on O+.
     public void testDecodingOrderNoAnimationSupported() throws Throwable {
         DecoderServiceHost host =
                 new DecoderServiceHost(this, mContext, /* animatedThumbnailsSupported = */ false);
@@ -327,6 +329,7 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
 
     @Test
     @LargeTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O) // Video is only supported on O+.
     public void testDecodingSizes() throws Throwable {
         DecoderServiceHost host =
                 new DecoderServiceHost(this, mContext, /* animatedThumbnailsSupported = */ true);
