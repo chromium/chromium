@@ -7,6 +7,8 @@
 #import <Foundation/Foundation.h>
 #include <stddef.h>
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
@@ -286,7 +288,7 @@ void CookieStoreIOS::GetCookieListWithOptionsAsync(
   system_store_->GetCookiesForURLAsync(
       url,
       base::BindOnce(&CookieStoreIOS::RunGetCookieListCallbackOnSystemCookies,
-                     weak_factory_.GetWeakPtr(), base::Passed(&callback)));
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void CookieStoreIOS::GetAllCookiesAsync(GetAllCookiesCallback callback) {
@@ -300,7 +302,7 @@ void CookieStoreIOS::GetAllCookiesAsync(GetAllCookiesCallback callback) {
   // to pass options in here as well.
   system_store_->GetAllCookiesAsync(
       base::BindOnce(&CookieStoreIOS::RunGetAllCookiesCallbackOnSystemCookies,
-                     weak_factory_.GetWeakPtr(), base::Passed(&callback)));
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void CookieStoreIOS::DeleteCanonicalCookieAsync(const CanonicalCookie& cookie,
