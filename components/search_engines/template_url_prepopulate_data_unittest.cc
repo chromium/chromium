@@ -316,9 +316,9 @@ TEST_F(TemplateURLPrepopulateDataTest, GetEngineTypeAdvanced) {
 
   // Non-Google URLs.
   const char* kYahooURLs[] = {
-      ("http://search.yahoo.com/search?"
+      ("https://search.yahoo.com/search?"
        "ei={inputEncoding}&fr=crmas&p={searchTerms}"),
-      "http://search.yahoo.com/search?p={searchTerms}",
+      "https://search.yahoo.com/search?p={searchTerms}",
       // Aggressively match types by checking just TLD+1.
       "http://someothersite.yahoo.com/",
   };
