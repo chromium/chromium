@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
 #include "components/payments/content/secure_payment_confirmation_controller.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
@@ -105,8 +106,7 @@ class SecurePaymentConfirmationApp : public PaymentApp,
 
   // Used only for comparison with the RenderFrameHost pointer in
   // RenderFrameDeleted() method.
-  const content::RenderFrameHost* const
-      authenticator_render_frame_host_pointer_do_not_dereference_;
+  content::GlobalFrameRoutingId authenticator_frame_routing_id_;
 
   const std::string effective_relying_party_identity_;
   const std::unique_ptr<SkBitmap> icon_;

@@ -99,8 +99,8 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
     std::unique_ptr<autofill::InternalAuthenticator> authenticator)
     : PaymentApp(/*icon_resource_id=*/0, PaymentApp::Type::INTERNAL),
       content::WebContentsObserver(web_contents_to_observe),
-      authenticator_render_frame_host_pointer_do_not_dereference_(
-          authenticator->GetRenderFrameHost()),
+      authenticator_frame_routing_id_(
+          authenticator->GetRenderFrameHost()->GetGlobalFrameRoutingId()),
       effective_relying_party_identity_(effective_relying_party_identity),
       icon_(std::move(icon)),
       label_(label),
@@ -110,8 +110,8 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
       spec_(spec),
       request_(std::move(request)),
       authenticator_(std::move(authenticator)) {
-  DCHECK_EQ(web_contents_to_observe->GetMainFrame(),
-            authenticator_render_frame_host_pointer_do_not_dereference_);
+  DCHECK(web_contents_to_observe->GetMainFrame()->GetGlobalFrameRoutingId() ==
+         authenticator_frame_routing_id_);
   DCHECK(!credential_id_.empty());
 
   app_method_names_.insert(methods::kSecurePaymentConfirmation);
@@ -264,7 +264,7 @@ void SecurePaymentConfirmationApp::AbortPaymentApp(
 
 void SecurePaymentConfirmationApp::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
-  if (authenticator_render_frame_host_pointer_do_not_dereference_ ==
+  if (content::RenderFrameHost::FromID(authenticator_frame_routing_id_) ==
       render_frame_host) {
     // The authenticator requires to be deleted before the render frame.
     authenticator_.reset();
