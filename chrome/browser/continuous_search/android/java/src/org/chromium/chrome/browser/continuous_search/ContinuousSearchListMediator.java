@@ -19,7 +19,7 @@ import org.chromium.url.GURL;
  * Business logic for the UI component of Continuous Search Navigation. This class updates the UI on
  * search result updates.
  */
-class ContinuousSearchListMediator implements SearchResultUserDataObserver {
+class ContinuousSearchListMediator implements SearchResultUserDataObserver, Callback<Tab> {
     private final ModelList mModelList;
     private final Callback<Boolean> mSetLayoutVisibility;
     private Tab mCurrentTab;
@@ -38,16 +38,25 @@ class ContinuousSearchListMediator implements SearchResultUserDataObserver {
         mCurrentTab.loadUrl(params);
     }
 
-    void onObserverNewTab(Tab tab) {
+    /**
+     * Called on observing a new tab.
+     */
+    @Override
+    public void onResult(Tab tab) {
         mSetLayoutVisibility.onResult(false);
         if (mCurrentSearchUserData != null) {
             mCurrentSearchUserData.removeObserver(this);
+            mCurrentSearchUserData = null;
         }
-        mCurrentSearchUserData = SearchResultUserData.getForTab(tab);
-        if (mCurrentSearchUserData != null) {
-            mCurrentSearchUserData.addObserver(this);
-        }
+
         mCurrentTab = tab;
+        if (mCurrentTab == null) {
+            onInvalidate();
+            return;
+        }
+
+        mCurrentSearchUserData = SearchResultUserData.getOrCreateForTab(tab);
+        mCurrentSearchUserData.addObserver(this);
     }
 
     @Override

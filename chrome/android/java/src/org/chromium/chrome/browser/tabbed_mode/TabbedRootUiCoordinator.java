@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabbed_mode;
 
 import android.view.ViewGroup;
+import android.view.ViewStub;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -30,6 +31,7 @@ import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTa
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
+import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCoordinator;
 import org.chromium.chrome.browser.datareduction.DataReductionPromoScreen;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedFollowIntroController;
@@ -103,6 +105,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private LayoutManagerImpl mLayoutManager;
     private ObservableSupplierImpl<Tab> mTabSupplier;
     private ActivityTabTabObserver mTabObserver;
+    private ContinuousSearchContainerCoordinator mContinuousSearchContainerCoordinator;
+    private Callback<Integer> mContinuousSearchObserver;
+
+    private int mStatusIndicatorHeight;
+    private int mContinuousSearchHeight;
 
     /**
      * Construct a new TabbedRootUiCoordinator.
@@ -193,6 +200,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mHistoryNavigationCoordinator != null) {
             mHistoryNavigationCoordinator.destroy();
             mHistoryNavigationCoordinator = null;
+        }
+
+        if (mContinuousSearchContainerCoordinator != null) {
+            mContinuousSearchContainerCoordinator.removeHeightObserver(mContinuousSearchObserver);
+            mContinuousSearchContainerCoordinator.destroy();
+            mContinuousSearchContainerCoordinator = null;
+            mContinuousSearchObserver = null;
         }
         super.destroy();
     }
@@ -307,6 +321,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 PwaBottomSheetControllerFactory.createPwaBottomSheetController(mActivity);
         PwaBottomSheetControllerFactory.attach(
                 mActivity.getWindowAndroid(), mPwaBottomSheetController);
+        initContinuousSearchCoordinator();
     }
 
     // Protected class methods
@@ -408,6 +423,17 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
     }
 
+    private void updateTopControlsHeight() {
+        final BrowserControlsSizer browserControlsSizer = mActivity.getBrowserControlsManager();
+        final int resourceId = mActivity.getControlContainerHeightResource();
+        final int topControlsNewHeight = mActivity.getResources().getDimensionPixelSize(resourceId)
+                + mStatusIndicatorHeight + mContinuousSearchHeight;
+
+        browserControlsSizer.setAnimateBrowserControlsHeightChanges(true);
+        browserControlsSizer.setTopControlsHeight(topControlsNewHeight, mStatusIndicatorHeight);
+        browserControlsSizer.setAnimateBrowserControlsHeightChanges(false);
+    }
+
     private void initStatusIndicatorCoordinator(LayoutManagerImpl layoutManager) {
         // TODO(crbug.com/1035584): Disable on tablets for now as we need to do one or two extra
         // things for tablets.
@@ -426,13 +452,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mStatusIndicatorObserver = new StatusIndicatorCoordinator.StatusIndicatorObserver() {
             @Override
             public void onStatusIndicatorHeightChanged(int indicatorHeight) {
-                final int resourceId = mActivity.getControlContainerHeightResource();
-                final int topControlsNewHeight =
-                        mActivity.getResources().getDimensionPixelSize(resourceId)
-                        + indicatorHeight;
-                browserControlsSizer.setAnimateBrowserControlsHeightChanges(true);
-                browserControlsSizer.setTopControlsHeight(topControlsNewHeight, indicatorHeight);
-                browserControlsSizer.setAnimateBrowserControlsHeightChanges(false);
+                mStatusIndicatorHeight = indicatorHeight;
+                updateTopControlsHeight();
             }
         };
         mStatusIndicatorCoordinator.addObserver(mStatusIndicatorObserver);
@@ -467,6 +488,27 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mToolbarManager.getFakeboxDelegate() != null) {
             mToolbarManager.getFakeboxDelegate().addUrlFocusChangeListener(mUrlFocusChangeListener);
         }
+    }
+
+    private void initContinuousSearchCoordinator() {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CONTINUOUS_SEARCH)) {
+            return;
+        }
+
+        Supplier<Integer> defaultTopContainerHeightSupplier = ()
+                -> mActivity.getResources().getDimensionPixelSize(
+                        mActivity.getControlContainerHeightResource());
+        final ViewStub viewStub = mActivity.findViewById(R.id.continuous_search_container_stub);
+        final BrowserControlsSizer browserControlsSizer = mActivity.getBrowserControlsManager();
+        mContinuousSearchContainerCoordinator = new ContinuousSearchContainerCoordinator(viewStub,
+                mLayoutManager, mActivity.getCompositorViewHolder().getResourceManager(),
+                mTabSupplier, browserControlsSizer, mCanAnimateBrowserControls,
+                defaultTopContainerHeightSupplier);
+        mContinuousSearchObserver = newHeight -> {
+            mContinuousSearchHeight = newHeight;
+            updateTopControlsHeight();
+        };
+        mContinuousSearchContainerCoordinator.addHeightObserver(mContinuousSearchObserver);
     }
 
     @Override

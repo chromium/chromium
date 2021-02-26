@@ -16,13 +16,15 @@ import org.chromium.url.GURL;
  * Responsible for binding the {@link PropertyModel} for a search result item to a View.
  */
 class ContinuousSearchListViewBinder {
-    public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
+    static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         if (ContinuousSearchListProperties.LABEL == propertyKey) {
             TextView textView = view.findViewById(R.id.continuous_search_list_item_text);
             textView.setText(model.get(ContinuousSearchListProperties.LABEL));
         } else if (ContinuousSearchListProperties.URL == propertyKey) {
             GURL url = model.get(ContinuousSearchListProperties.URL);
             TextView textView = view.findViewById(R.id.continuous_search_list_item_description);
+            if (textView == null) return;
+
             String domain = "";
             if (url != null) {
                 domain = UrlUtilities.getDomainAndRegistry(url.getSpec(), true);

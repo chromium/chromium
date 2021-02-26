@@ -25,7 +25,6 @@ public class ContinuousSearchTabHelper {
 
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CONTINUOUS_SEARCH)) return;
 
-        SearchResultUserData.createForTab(tab);
         new ContinuousSearchTabObserver(tab);
     }
 }

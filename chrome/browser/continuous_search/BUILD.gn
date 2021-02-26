@@ -5,11 +5,18 @@
 import("//build/config/android/rules.gni")
 
 android_library("java") {
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
   sources = [
+    "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchContainerCoordinator.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchContainerMediator.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchContainerProperties.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchContainerViewBinder.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchListCoordinator.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchListMediator.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchListProperties.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchListViewBinder.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchSceneLayer.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchTabHelper.java",
   ]
 
@@ -37,12 +44,17 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "android/java/res/layout/continuous_search_container.xml",
     "android/java/res/layout/continuous_search_list_ad.xml",
     "android/java/res/layout/continuous_search_list_group_label.xml",
     "android/java/res/layout/continuous_search_list_item.xml",
   ]
 
   deps = [ "//chrome/android:chrome_app_java_resources" ]
+}
+
+generate_jni("jni_headers") {
+  sources = [ "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchSceneLayer.java" ]
 }
 
 android_library("javatests") {

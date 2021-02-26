@@ -28,15 +28,12 @@ public class SearchResultUserData implements UserData {
 
     private static SearchResultUserData sInstanceForTesting;
 
-    static void createForTab(Tab tab) {
-        assert tab.getUserDataHost().getUserData(USER_DATA_KEY) == null;
-        tab.getUserDataHost().setUserData(USER_DATA_KEY, new SearchResultUserData());
-    }
-
-    static SearchResultUserData getForTab(Tab tab) {
+    static SearchResultUserData getOrCreateForTab(Tab tab) {
         if (sInstanceForTesting != null) return sInstanceForTesting;
 
-        assert tab.getUserDataHost().getUserData(USER_DATA_KEY) != null;
+        if (tab.getUserDataHost().getUserData(USER_DATA_KEY) == null) {
+            tab.getUserDataHost().setUserData(USER_DATA_KEY, new SearchResultUserData());
+        }
         return tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }
 

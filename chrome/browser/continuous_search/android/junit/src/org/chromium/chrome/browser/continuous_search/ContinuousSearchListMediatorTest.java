@@ -62,7 +62,7 @@ public class ContinuousSearchListMediatorTest {
                 mLayoutVisibilityFalse.getCallCount());
 
         // UI should hide on observing a new tab.
-        mMediator.onObserverNewTab(Mockito.mock(Tab.class));
+        mMediator.onResult(Mockito.mock(Tab.class));
         Assert.assertEquals("mLayoutVisibilityTrue should not have been called.", 0,
                 mLayoutVisibilityTrue.getCallCount());
         Assert.assertEquals("mLayoutVisibilityFalse should have been called.", 1,

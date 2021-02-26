@@ -12,9 +12,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ListItemType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /**
@@ -24,24 +28,25 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 public class ContinuousSearchListCoordinator {
     private final ContinuousSearchListMediator mListMediator;
     private final SimpleRecyclerViewAdapter mRecyclerViewAdapter;
+    private final ObservableSupplier<Tab> mTabSupplier;
 
-    public ContinuousSearchListCoordinator(Callback<Boolean> setLayoutVisibility) {
+    public ContinuousSearchListCoordinator(
+            ObservableSupplier<Tab> tabSupplier, Callback<Boolean> setLayoutVisibility) {
         ModelList listItems = new ModelList();
         mRecyclerViewAdapter = new SimpleRecyclerViewAdapter(listItems);
+
+        final PropertyModelChangeProcessor.ViewBinder<PropertyModel, View, PropertyKey> viewBinder =
+                ContinuousSearchListViewBinder::bind;
         mRecyclerViewAdapter.registerType(ListItemType.GROUP_LABEL,
-                (parent)
-                        -> inflateListItemView(parent, ListItemType.GROUP_LABEL),
-                ContinuousSearchListViewBinder::bind);
+                (parent) -> inflateListItemView(parent, ListItemType.GROUP_LABEL), viewBinder);
         mRecyclerViewAdapter.registerType(ListItemType.SEARCH_RESULT,
-                (parent)
-                        -> inflateListItemView(parent, ListItemType.SEARCH_RESULT),
-                ContinuousSearchListViewBinder::bind);
+                (parent) -> inflateListItemView(parent, ListItemType.SEARCH_RESULT), viewBinder);
         mRecyclerViewAdapter.registerType(ListItemType.AD,
-                (parent)
-                        -> inflateListItemView(parent, ListItemType.AD),
-                ContinuousSearchListViewBinder::bind);
+                (parent) -> inflateListItemView(parent, ListItemType.AD), viewBinder);
 
         mListMediator = new ContinuousSearchListMediator(listItems, setLayoutVisibility);
+        mTabSupplier = tabSupplier;
+        mTabSupplier.addObserver(mListMediator);
     }
 
     private View inflateListItemView(ViewGroup parentView, @ListItemType int listItemType) {
@@ -69,11 +74,8 @@ public class ContinuousSearchListCoordinator {
         recyclerView.setAdapter(mRecyclerViewAdapter);
     }
 
-    void onObserverNewTab(Tab tab) {
-        mListMediator.onObserverNewTab(tab);
-    }
-
     void destroy() {
+        mTabSupplier.removeObserver(mListMediator);
         mListMediator.destroy();
     }
 }
