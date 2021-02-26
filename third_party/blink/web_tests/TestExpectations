@@ -3477,11 +3477,11 @@ virtual/layout-ng-grid/external/wpt/css/css-grid/grid-definition/grid-auto-repea
 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-definition/grid-auto-repeat-aspect-ratio-002.html [ Pass ]
 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-definition/grid-auto-repeat-dynamic-001.html [ Pass ]
 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-definition/grid-auto-repeat-dynamic-003.html [ Pass ]
+virtual/layout-ng-grid/external/wpt/css/css-grid/grid-items/grid-auto-margin-and-replaced-item-001.html [ Pass ]
 
 ### Tests failing with LayoutNGGrid enabled:
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/absolute-positioning-definite-sizes-001.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/absolute-positioning-grid-container-parent-001.html [ Failure ]
-crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/grid-positioned-item-dynamic-change-001.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/grid-positioned-items-and-autofit-tracks-004.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/grid-positioned-items-and-autofit-tracks-005.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/grid-positioned-items-and-autofit-tracks-006.html [ Failure ]

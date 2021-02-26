@@ -78,6 +78,7 @@
 #include "third_party/blink/renderer/core/layout/ng/custom/layout_worklet.h"
 #include "third_party/blink/renderer/core/layout/ng/custom/layout_worklet_global_scope_proxy.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
+#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
@@ -726,18 +727,27 @@ void LayoutBox::UpdateShapeOutsideInfoAfterStyleChange(
 void LayoutBox::UpdateGridPositionAfterStyleChange(
     const ComputedStyle* old_style) {
   NOT_DESTROYED();
-  // TODO(crbug.com/1045599): Implement similar logic for GridNG (trigger full
-  // layout).
-  if (!old_style || !Parent() || !Parent()->IsLayoutGrid())
+  LayoutBlock* containing_block = ContainingBlock();
+  if (!old_style || !containing_block ||
+      !containing_block->IsLayoutGridIncludingNG()) {
     return;
+  }
 
   if (old_style->GridColumnStart() == StyleRef().GridColumnStart() &&
       old_style->GridColumnEnd() == StyleRef().GridColumnEnd() &&
       old_style->GridRowStart() == StyleRef().GridRowStart() &&
       old_style->GridRowEnd() == StyleRef().GridRowEnd() &&
       old_style->Order() == StyleRef().Order() &&
-      old_style->HasOutOfFlowPosition() == StyleRef().HasOutOfFlowPosition())
+      old_style->HasOutOfFlowPosition() == StyleRef().HasOutOfFlowPosition()) {
     return;
+  }
+
+  if (containing_block->IsLayoutNGGrid()) {
+    // Trigger a full layout for GridNG.
+    containing_block->SetNeedsLayout(layout_invalidation_reason::kGridChanged,
+                                     kMarkContainerChain);
+    return;
+  }
 
   // Positioned items don't participate on the layout of the grid,
   // so we don't need to mark the grid as dirty if they change positions.
@@ -747,7 +757,7 @@ void LayoutBox::UpdateGridPositionAfterStyleChange(
   // It should be possible to not dirty the grid in some cases (like moving an
   // explicitly placed grid item).
   // For now, it's more simple to just always recompute the grid.
-  To<LayoutGrid>(Parent())->DirtyGrid();
+  To<LayoutGrid>(containing_block)->DirtyGrid();
 }
 
 void LayoutBox::UpdateScrollSnapMappingAfterStyleChange(
