@@ -360,6 +360,7 @@ viz_source_set("unit_tests") {
     "frame_sinks/copy_output_util_unittest.cc",
     "frame_sinks/delay_based_time_source_unittest.cc",
     "gpu/context_cache_controller_unittest.cc",
+    "quads/compositor_frame_metadata_unittest.cc",
     "quads/compositor_frame_transition_directive_unittest.cc",
     "quads/compositor_render_pass_unittest.cc",
     "quads/draw_quad_unittest.cc",
@@ -404,6 +405,7 @@ viz_source_set("unit_tests") {
     "//ui/gfx",
     "//ui/gfx:color_space",
     "//ui/gfx/geometry",
+    "//ui/latency",
   ]
 }
 
