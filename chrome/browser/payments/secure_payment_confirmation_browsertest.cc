@@ -551,7 +551,6 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest, NonexistentIcon) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
-  RespondToFutureEnrollments(/*confirm=*/true);
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
 
   EXPECT_EQ(
@@ -567,7 +566,6 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest, NonexistentIcon) {
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest, InsecureIcon) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
-  RespondToFutureEnrollments(/*confirm=*/true);
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
 
   // Get the instrument icon from an insecure http server.
@@ -583,6 +581,28 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest, InsecureIcon) {
           content::JsReplace("createCredentialAndReturnItsIdentifier($1)",
                              icon_url))
           .error);
+}
+
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
+                       CreatePaymentCredentialTwice) {
+  ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
+  NavigateTo("a.com", "/secure_payment_confirmation.html");
+  RespondToFutureEnrollments(/*confirm=*/true);
+
+  EXPECT_EQ("OK",
+            content::EvalJs(GetActiveWebContents(),
+                            content::JsReplace("createPaymentCredential($1)",
+                                               GetDefaultIconURL())));
+
+  EXPECT_EQ("OK",
+            content::EvalJs(GetActiveWebContents(),
+                            content::JsReplace("createPaymentCredential($1)",
+                                               GetDefaultIconURL())));
+
+  // Verify that credential id size gets recorded.
+  histogram_tester_.ExpectTotalCount(
+      "PaymentRequest.SecurePaymentConfirmationCredentialIdSizeInBytes", 2U);
+  ExpectNoFunnelCount();
 }
 
 #endif  // !defined(OS_ANDROID)

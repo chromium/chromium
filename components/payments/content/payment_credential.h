@@ -93,7 +93,7 @@ class PaymentCredential : public mojom::PaymentCredential,
   void OnUserResponseFromUI(DownloadIconAndShowUserPromptCallback callback,
                             bool user_confirm_from_ui);
 
-  void AbortAndCleanup();
+  void Reset();
 
   State state_ = State::kIdle;
   const content::GlobalFrameRoutingId initiator_frame_routing_id_;
