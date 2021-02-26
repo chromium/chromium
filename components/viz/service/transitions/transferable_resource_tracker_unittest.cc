@@ -21,7 +21,8 @@ std::unique_ptr<SurfaceSavedFrame> CreateFrameWithResult(
     base::OnceCallback<void(const gpu::SyncToken&, bool)> callback) {
   CompositorFrameTransitionDirective directive(
       1, CompositorFrameTransitionDirective::Type::kSave);
-  auto frame = std::make_unique<SurfaceSavedFrame>(directive);
+  auto frame = std::make_unique<SurfaceSavedFrame>(
+      std::move(directive), base::BindRepeating([](uint32_t sequence_id) {}));
   frame->CompleteSavedFrameForTesting(std::move(callback));
   return frame;
 }

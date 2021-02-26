@@ -205,6 +205,8 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
     return copy_output_requests_;
   }
 
+  void OnCompositorFrameTransitionDirectiveProcessed(uint32_t sequence_id);
+
  private:
   friend class CompositorFrameSinkSupportTest;
   friend class DisplayTest;

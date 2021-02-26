@@ -83,6 +83,8 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
   void OnBeginFramePausedChanged(bool paused) final {}
   void ReclaimResources(
       const WTF::Vector<viz::ReturnedResource>& resources) final;
+  void OnCompositorFrameTransitionDirectiveProcessed(
+      uint32_t sequence_id) final {}
 
   void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
                                const gpu::Mailbox& id);

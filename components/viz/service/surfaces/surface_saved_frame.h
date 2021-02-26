@@ -21,6 +21,9 @@ class Surface;
 
 class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
  public:
+  using TransitionDirectiveCompleteCallback =
+      base::RepeatingCallback<void(uint32_t)>;
+
   struct TextureResult {
     TextureResult();
     TextureResult(TextureResult&& other);
@@ -34,14 +37,14 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
     std::unique_ptr<SingleReleaseCallback> release_callback;
   };
 
-  explicit SurfaceSavedFrame(
-      const CompositorFrameTransitionDirective& directive);
+  SurfaceSavedFrame(CompositorFrameTransitionDirective directive,
+                    TransitionDirectiveCompleteCallback finished_callback);
   ~SurfaceSavedFrame();
 
   // Returns true iff the frame is valid and complete.
   bool IsValid() const;
 
-  CompositorFrameTransitionDirective directive() const { return directive_; }
+  const CompositorFrameTransitionDirective& directive() { return directive_; }
 
   // Appends copy output requests to the needed render passes in the active
   // frame.
@@ -60,6 +63,7 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   void NotifyCopyOfOutputComplete(std::unique_ptr<CopyOutputResult> result);
 
   CompositorFrameTransitionDirective directive_;
+  TransitionDirectiveCompleteCallback directive_finished_callback_;
 
   TextureResult texture_result_;
 

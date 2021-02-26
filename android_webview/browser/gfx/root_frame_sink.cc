@@ -53,6 +53,8 @@ class RootFrameSink::ChildCompositorFrameSink
     owner_->ReturnResources(frame_sink_id_, layer_tree_frame_sink_id_,
                             resources);
   }
+  void OnCompositorFrameTransitionDirectiveProcessed(
+      uint32_t sequence_id) override {}
 
   const viz::FrameSinkId frame_sink_id() { return frame_sink_id_; }
 

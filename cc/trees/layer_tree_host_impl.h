@@ -549,6 +549,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
               const gfx::Rect& viewport,
               bool resourceless_software_draw,
               bool skip_draw) override;
+  void OnCompositorFrameTransitionDirectiveProcessed(
+      uint32_t sequence_id) override;
 
   // Called from LayerTreeImpl.
   void OnCanDrawStateChangedForTree();

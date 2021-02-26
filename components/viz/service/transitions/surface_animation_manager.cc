@@ -13,8 +13,24 @@
 #include "components/viz/service/surfaces/surface_saved_frame_storage.h"
 
 namespace viz {
+namespace {
+
+// TODO(vmpstr): This is here to make sure that we can compute the progress by
+// dividing by duration. However, when we use the animation curves that don't
+// rely on progress, this can be removed.
+constexpr base::TimeDelta kMinimumAnimationDuration =
+    base::TimeDelta::FromMilliseconds(1);
+
+}  // namespace
+
 SurfaceAnimationManager::SurfaceAnimationManager() = default;
 SurfaceAnimationManager::~SurfaceAnimationManager() = default;
+
+void SurfaceAnimationManager::SetDirectiveFinishedCallback(
+    SurfaceSavedFrame::TransitionDirectiveCompleteCallback
+        sequence_id_finished_callback) {
+  sequence_id_finished_callback_ = std::move(sequence_id_finished_callback);
+}
 
 bool SurfaceAnimationManager::ProcessTransitionDirectives(
     base::TimeTicks last_frame_time,
@@ -31,26 +47,36 @@ bool SurfaceAnimationManager::ProcessTransitionDirectives(
       continue;
     last_processed_sequence_id_ = directive.sequence_id();
 
+    bool handled = false;
     // Dispatch to a specialized function based on type.
     switch (directive.type()) {
       case CompositorFrameTransitionDirective::Type::kSave:
-        ProcessSaveDirective(directive, storage);
+        handled = ProcessSaveDirective(directive, storage);
         break;
       case CompositorFrameTransitionDirective::Type::kAnimate:
-        started_animation |= ProcessAnimateDirective(directive, storage);
+        handled = ProcessAnimateDirective(directive, storage);
+        started_animation |= handled;
         break;
     }
+
+    // If we didn't handle the directive, it means that we're in a state that
+    // does not permit the directive to be processed, and it was ignored. We
+    // should notify that we've fully processed the directive in this case to
+    // allow code that is waiting for this to continue.
+    if (!handled)
+      sequence_id_finished_callback_.Run(directive.sequence_id());
   }
   return started_animation;
 }
 
-void SurfaceAnimationManager::ProcessSaveDirective(
+bool SurfaceAnimationManager::ProcessSaveDirective(
     const CompositorFrameTransitionDirective& directive,
     SurfaceSavedFrameStorage* storage) {
   // We need to be in the idle state in order to save.
   if (state_ != State::kIdle)
-    return;
-  storage->ProcessSaveDirective(directive);
+    return false;
+  storage->ProcessSaveDirective(directive, sequence_id_finished_callback_);
+  return true;
 }
 
 bool SurfaceAnimationManager::ProcessAnimateDirective(
@@ -69,7 +95,8 @@ bool SurfaceAnimationManager::ProcessAnimateDirective(
     return false;
 
   // Convert the texture result into a transferable resource.
-  saved_directive_ = saved_frame->directive();
+  save_directive_.emplace(saved_frame->directive());
+  animate_directive_sequence_id_.emplace(directive.sequence_id());
   saved_root_texture_.emplace(
       transferable_resource_tracker_.ImportResource(std::move(saved_frame)));
 
@@ -103,8 +130,12 @@ void SurfaceAnimationManager::NotifyFrameAdvanced(base::TimeTicks new_time) {
 void SurfaceAnimationManager::FinishAnimationIfNeeded() {
   DCHECK_EQ(state_, State::kAnimating);
   DCHECK(saved_root_texture_.has_value());
-  if (current_time_ >= started_time_ + saved_directive_.duration())
+  DCHECK(save_directive_.has_value());
+  DCHECK(animate_directive_sequence_id_.has_value());
+  if (current_time_ >= started_time_ + save_directive_->duration()) {
     state_ = State::kDone;
+    sequence_id_finished_callback_.Run(*animate_directive_sequence_id_);
+  }
 }
 
 void SurfaceAnimationManager::FinalizeAndDisposeOfState() {
@@ -117,8 +148,9 @@ void SurfaceAnimationManager::FinalizeAndDisposeOfState() {
   transferable_resource_tracker_.UnrefResource(saved_root_texture_->id);
   saved_root_texture_.reset();
 
-  // Other resets so that we don't accidentally access stale values.
-  saved_directive_ = CompositorFrameTransitionDirective();
+  save_directive_.reset();
+  animate_directive_sequence_id_.reset();
+
   started_time_ = base::TimeTicks();
 }
 
@@ -127,7 +159,12 @@ double SurfaceAnimationManager::CalculateAnimationProgress() const {
   if (state_ == State::kDone)
     return 1.;
 
-  double result = (current_time_ - started_time_) / saved_directive_.duration();
+  DCHECK(save_directive_);
+  base::TimeDelta duration = save_directive_->duration();
+  if (duration < kMinimumAnimationDuration)
+    duration = kMinimumAnimationDuration;
+
+  double result = (current_time_ - started_time_) / duration;
   DCHECK_GE(result, 0.);
   DCHECK_LE(result, 1.);
   return result;

@@ -14,13 +14,18 @@
 namespace viz {
 
 SurfaceSavedFrame::SurfaceSavedFrame(
-    const CompositorFrameTransitionDirective& directive)
-    : directive_(directive) {
+    CompositorFrameTransitionDirective directive,
+    TransitionDirectiveCompleteCallback directive_finished_callback)
+    : directive_(std::move(directive)),
+      directive_finished_callback_(std::move(directive_finished_callback)) {
   // We should only be constructing a saved frame from a save directive.
-  DCHECK_EQ(directive.type(), CompositorFrameTransitionDirective::Type::kSave);
+  DCHECK_EQ(directive_.type(), CompositorFrameTransitionDirective::Type::kSave);
 }
 
-SurfaceSavedFrame::~SurfaceSavedFrame() = default;
+SurfaceSavedFrame::~SurfaceSavedFrame() {
+  if (directive_finished_callback_)
+    directive_finished_callback_.Run(directive_.sequence_id());
+}
 
 bool SurfaceSavedFrame::IsValid() const {
   // TODO(crbug.com/1174129): This needs to be updated with software copies as
@@ -39,6 +44,10 @@ void SurfaceSavedFrame::RequestCopyOfOutput(Surface* surface) {
 
 void SurfaceSavedFrame::NotifyCopyOfOutputComplete(
     std::unique_ptr<CopyOutputResult> result) {
+  // Even if we early out, we can notify that the save directive is completed.
+  directive_finished_callback_.Run(directive_.sequence_id());
+  directive_finished_callback_.Reset();
+
   // Return if the result is empty.
   // TODO(vmpstr): We should log / trace this.
   if (result->IsEmpty())

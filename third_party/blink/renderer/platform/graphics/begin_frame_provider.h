@@ -59,6 +59,10 @@ class PLATFORM_EXPORT BeginFrameProvider
       const WTF::Vector<viz::ReturnedResource>& resources) final {
     NOTIMPLEMENTED();
   }
+  void OnCompositorFrameTransitionDirectiveProcessed(
+      uint32_t sequence_id) final {
+    NOTIMPLEMENTED();
+  }
 
   // viz::mojom::blink::EmbeddedFrameSinkClient implementation.
   void BindSurfaceEmbedder(

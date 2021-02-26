@@ -277,6 +277,11 @@ void AsyncLayerTreeFrameSink::ReclaimResources(
   client_->ReclaimResources(resources);
 }
 
+void AsyncLayerTreeFrameSink::OnCompositorFrameTransitionDirectiveProcessed(
+    uint32_t sequence_id) {
+  client_->OnCompositorFrameTransitionDirectiveProcessed(sequence_id);
+}
+
 void AsyncLayerTreeFrameSink::OnNeedsBeginFrames(bool needs_begin_frames) {
   DCHECK(compositor_frame_sink_ptr_);
   if (needs_begin_frames_ != needs_begin_frames) {

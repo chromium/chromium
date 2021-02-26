@@ -66,6 +66,10 @@ CompositorFrameSinkSupport::CompositorFrameSinkSupport(
       animation_power_mode_voter_(
           power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
               "PowerModeVoter.Animation")) {
+  surface_animation_manager_.SetDirectiveFinishedCallback(
+      base::BindRepeating(&CompositorFrameSinkSupport::
+                              OnCompositorFrameTransitionDirectiveProcessed,
+                          weak_factory_.GetWeakPtr()));
   // This may result in SetBeginFrameSource() being called.
   frame_sink_manager_->RegisterCompositorFrameSinkSupport(frame_sink_id_, this);
 }
@@ -149,30 +153,31 @@ void CompositorFrameSinkSupport::OnSurfaceActivated(Surface* surface) {
     UpdateNeedsBeginFramesInternal();
 
   // Let the animation manager process any new directives on the surface.
-  // TODO(vmpstr): Figure out if `last_frame_time_` is correct here.
-  // SurfaceAcitvation may have happened some time after we sent the last
-  // BeginFrame to the client (which is when the frame time is updated). We may
-  // need to keep track of a separate time that updates when OnBeginFrame
-  // happens whether or not it is sent to the client.
-  bool started_animation =
-      surface_animation_manager_.ProcessTransitionDirectives(
-          last_frame_time_,
-          surface->GetActiveFrameMetadata().transition_directives,
-          surface->GetSurfaceSavedFrameStorage());
-  // If processing the new directives caused us to start an animation, then
-  // interpoate the frame immediately. This is needed since if we wait until the
-  // next BeginFrame to do the first interpolation, then we maybe have already
-  // drawn this destination frame.
-  if (started_animation)
-    surface_animation_manager_.InterpolateFrame(surface);
+  const auto& transition_directives =
+      surface->GetActiveFrameMetadata().transition_directives;
+  if (!transition_directives.empty()) {
+    // TODO(vmpstr): Figure out if `last_frame_time_` is correct here.
+    // SurfaceAcitvation may have happened some time after we sent the last
+    // BeginFrame to the client (which is when the frame time is updated). We
+    // may need to keep track of a separate time that updates when OnBeginFrame
+    // happens whether or not it is sent to the client.
+    bool started_animation =
+        surface_animation_manager_.ProcessTransitionDirectives(
+            last_frame_time_, transition_directives,
+            surface->GetSurfaceSavedFrameStorage());
+    // If processing the new directives caused us to start an animation, then
+    // interpoate the frame immediately. This is needed since if we wait until
+    // the next BeginFrame to do the first interpolation, then we maybe have
+    // already drawn this destination frame.
+    if (started_animation)
+      surface_animation_manager_.InterpolateFrame(surface);
 
-  // The above call can cause us to start an animation, meaning we need begin
-  // frames. If that's the case, make sure to update the begin frame
-  // observation.
-  // TODO(vmpstr): Note that if we need to produce an interpolation to the
-  // latest frame, then this is where we would do that.
-  if (surface_animation_manager_.NeedsBeginFrame())
-    UpdateNeedsBeginFramesInternal();
+    // The above call can cause us to start an animation, meaning we need begin
+    // frames. If that's the case, make sure to update the begin frame
+    // observation.
+    if (surface_animation_manager_.NeedsBeginFrame())
+      UpdateNeedsBeginFramesInternal();
+  }
 
   if (surface->surface_id() == last_activated_surface_id_)
     return;
@@ -979,6 +984,12 @@ void CompositorFrameSinkSupport::CheckPendingSurfaces() {
   for (Surface* surface : pending_surfaces) {
     surface->ActivateIfDeadlinePassed();
   }
+}
+
+void CompositorFrameSinkSupport::OnCompositorFrameTransitionDirectiveProcessed(
+    uint32_t sequence_id) {
+  if (client_)
+    client_->OnCompositorFrameTransitionDirectiveProcessed(sequence_id);
 }
 
 }  // namespace viz

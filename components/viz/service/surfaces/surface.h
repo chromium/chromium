@@ -167,6 +167,9 @@ class VIZ_SERVICE_EXPORT Surface final {
   const CompositorFrame& GetActiveFrame() const;
   const CompositorFrameMetadata& GetActiveFrameMetadata() const;
 
+  std::vector<CompositorFrameTransitionDirective>
+  TakeActiveFrameTransitionDirectives();
+
   // Returns the currently pending frame. You must check where HasPendingFrame()
   // returns true before calling this method.
   const CompositorFrame& GetPendingFrame();

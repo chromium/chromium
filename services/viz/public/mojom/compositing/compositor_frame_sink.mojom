@@ -117,4 +117,8 @@ interface CompositorFrameSinkClient {
 
   // Returns resources sent to SubmitCompositorFrame to be reused or freed.
   ReclaimResources(array<ReturnedResource> resources);
+
+  // Inform the client that a compositor frame transition directive was fully
+  // processed.
+  OnCompositorFrameTransitionDirectiveProcessed(uint32 sequence_id);
 };

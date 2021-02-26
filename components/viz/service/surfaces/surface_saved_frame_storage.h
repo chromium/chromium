@@ -8,12 +8,12 @@
 #include <memory>
 
 #include "base/cancelable_callback.h"
+#include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/service/surfaces/surface_saved_frame.h"
 #include "components/viz/service/viz_service_export.h"
 
 namespace viz {
 
-class CompositorFrameTransitionDirective;
 class Surface;
 
 // This class is responsible for keeping the saved frame information for
@@ -32,7 +32,9 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrameStorage {
   // the Surface to append copy output requests, so it should only be called
   // after the surface with the save directive has been activated.
   void ProcessSaveDirective(
-      const CompositorFrameTransitionDirective& directive);
+      const CompositorFrameTransitionDirective& directive,
+      SurfaceSavedFrame::TransitionDirectiveCompleteCallback
+          directive_finished_callback);
 
   // This takes the saved frame stored on this storage. Returns nullptr if there
   // is no saved frame, or the frame has expired.

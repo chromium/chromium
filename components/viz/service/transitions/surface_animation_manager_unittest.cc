@@ -5,6 +5,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/callback_helpers.h"
 #include "base/time/time.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
@@ -21,18 +22,22 @@ namespace {
 
 constexpr FrameSinkId kArbitraryFrameSinkId(1, 1);
 
-CompositorFrameTransitionDirective CreateSaveDirective(
+std::vector<CompositorFrameTransitionDirective> CreateSaveDirectiveAsVector(
     uint32_t sequence_id,
-    base::TimeDelta duration) {
-  return CompositorFrameTransitionDirective(
+    base::TimeDelta duration = base::TimeDelta::FromMilliseconds(100)) {
+  std::vector<CompositorFrameTransitionDirective> result;
+  result.emplace_back(
       sequence_id, CompositorFrameTransitionDirective::Type::kSave,
       CompositorFrameTransitionDirective::Effect::kCoverDown, duration);
+  return result;
 }
 
-CompositorFrameTransitionDirective CreateAnimateDirective(
+std::vector<CompositorFrameTransitionDirective> CreateAnimateDirectiveAsVector(
     uint32_t sequence_id) {
-  return CompositorFrameTransitionDirective(
-      sequence_id, CompositorFrameTransitionDirective::Type::kAnimate);
+  std::vector<CompositorFrameTransitionDirective> result;
+  result.emplace_back(sequence_id,
+                      CompositorFrameTransitionDirective::Type::kAnimate);
+  return result;
 }
 
 }  // namespace
@@ -86,6 +91,7 @@ class SurfaceAnimationManagerTest : public testing::Test {
 
 TEST_F(SurfaceAnimationManagerTest, DefaultState) {
   SurfaceAnimationManager manager;
+  manager.SetDirectiveFinishedCallback(base::DoNothing());
   EXPECT_FALSE(manager.NeedsBeginFrame());
 
   manager.ProcessTransitionDirectives(current_time(), {}, storage());
@@ -95,17 +101,16 @@ TEST_F(SurfaceAnimationManagerTest, DefaultState) {
 
 TEST_F(SurfaceAnimationManagerTest, SaveAnimateNeedsBeginFrame) {
   SurfaceAnimationManager manager;
+  manager.SetDirectiveFinishedCallback(base::DoNothing());
   EXPECT_FALSE(manager.NeedsBeginFrame());
 
   manager.ProcessTransitionDirectives(
-      current_time(),
-      {CreateSaveDirective(1, base::TimeDelta::FromMilliseconds(100))},
-      storage());
+      current_time(), CreateSaveDirectiveAsVector(1), storage());
 
   storage()->CompleteForTesting();
 
-  manager.ProcessTransitionDirectives(current_time(),
-                                      {CreateAnimateDirective(2)}, storage());
+  manager.ProcessTransitionDirectives(
+      current_time(), CreateAnimateDirectiveAsVector(2), storage());
 
   EXPECT_TRUE(manager.NeedsBeginFrame());
 
@@ -125,42 +130,40 @@ TEST_F(SurfaceAnimationManagerTest, SaveAnimateNeedsBeginFrame) {
 
 TEST_F(SurfaceAnimationManagerTest, AnimateWithoutSaveIsNoop) {
   SurfaceAnimationManager manager;
+  manager.SetDirectiveFinishedCallback(base::DoNothing());
   EXPECT_FALSE(manager.NeedsBeginFrame());
 
-  manager.ProcessTransitionDirectives(current_time(),
-                                      {CreateAnimateDirective(2)}, storage());
+  manager.ProcessTransitionDirectives(
+      current_time(), CreateAnimateDirectiveAsVector(1), storage());
   EXPECT_FALSE(manager.NeedsBeginFrame());
 }
 
 TEST_F(SurfaceAnimationManagerTest, SaveTimesOut) {
   SurfaceAnimationManager manager;
+  manager.SetDirectiveFinishedCallback(base::DoNothing());
   EXPECT_FALSE(manager.NeedsBeginFrame());
 
   manager.ProcessTransitionDirectives(
-      current_time(),
-      {CreateSaveDirective(1, base::TimeDelta::FromMilliseconds(100))},
-      storage());
+      current_time(), CreateSaveDirectiveAsVector(1), storage());
   EXPECT_FALSE(manager.NeedsBeginFrame());
 
   storage()->ExpireForTesting();
 
   manager.ProcessTransitionDirectives(
-      AdvanceTime(base::TimeDelta::FromSeconds(6)), {CreateAnimateDirective(2)},
-      storage());
+      AdvanceTime(base::TimeDelta::FromSeconds(6)),
+      CreateAnimateDirectiveAsVector(2), storage());
   EXPECT_FALSE(manager.NeedsBeginFrame());
 }
 
 TEST_F(SurfaceAnimationManagerTest, RepeatedSavesAreOk) {
   SurfaceAnimationManager manager;
+  manager.SetDirectiveFinishedCallback(base::DoNothing());
   EXPECT_FALSE(manager.NeedsBeginFrame());
 
   uint32_t sequence_id = 1;
   for (int i = 0; i < 200; ++i) {
     manager.ProcessTransitionDirectives(
-        current_time(),
-        {CreateSaveDirective(sequence_id,
-                             base::TimeDelta::FromMilliseconds(100))},
-        storage());
+        current_time(), CreateSaveDirectiveAsVector(sequence_id), storage());
 
     EXPECT_FALSE(manager.NeedsBeginFrame());
 
@@ -171,7 +174,7 @@ TEST_F(SurfaceAnimationManagerTest, RepeatedSavesAreOk) {
   storage()->CompleteForTesting();
 
   manager.ProcessTransitionDirectives(
-      current_time(), {CreateAnimateDirective(sequence_id)}, storage());
+      current_time(), CreateAnimateDirectiveAsVector(sequence_id), storage());
   EXPECT_TRUE(manager.NeedsBeginFrame());
 
   manager.NotifyFrameAdvanced(

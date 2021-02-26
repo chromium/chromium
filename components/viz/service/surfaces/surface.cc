@@ -619,6 +619,14 @@ const CompositorFrameMetadata& Surface::GetActiveFrameMetadata() const {
   return active_frame_data_->frame.metadata;
 }
 
+std::vector<CompositorFrameTransitionDirective>
+Surface::TakeActiveFrameTransitionDirectives() {
+  DCHECK(active_frame_data_);
+  std::vector<CompositorFrameTransitionDirective> result;
+  result.swap(active_frame_data_->frame.metadata.transition_directives);
+  return result;
+}
+
 const CompositorFrame& Surface::GetPendingFrame() {
   DCHECK(pending_frame_data_);
   return pending_frame_data_->frame;

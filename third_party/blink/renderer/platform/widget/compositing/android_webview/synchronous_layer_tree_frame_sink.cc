@@ -91,6 +91,8 @@ class SoftwareCompositorFrameSinkClient
     DCHECK(resources.empty());
   }
   void OnBeginFramePausedChanged(bool paused) override {}
+  void OnCompositorFrameTransitionDirectiveProcessed(
+      uint32_t sequence_id) override {}
 
  private:
   DISALLOW_COPY_AND_ASSIGN(SoftwareCompositorFrameSinkClient);

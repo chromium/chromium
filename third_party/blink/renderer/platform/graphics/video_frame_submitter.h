@@ -78,6 +78,8 @@ class PLATFORM_EXPORT VideoFrameSubmitter
   void OnBeginFramePausedChanged(bool paused) override {}
   void ReclaimResources(
       const WTF::Vector<viz::ReturnedResource>& resources) override;
+  void OnCompositorFrameTransitionDirectiveProcessed(
+      uint32_t sequence_id) override {}
 
   // viz::SharedBitmapReporter implementation.
   void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion,

@@ -47,6 +47,7 @@ CompositorFrameMetadata::CompositorFrameMetadata(
     delegated_ink_metadata = std::make_unique<DelegatedInkMetadata>(
         *other.delegated_ink_metadata.get());
   }
+  // TODO(vmpstr): We should also copy transition directives.
 }
 
 }  // namespace viz

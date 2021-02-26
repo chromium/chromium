@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/common/resources/resource_id.h"
+#include "components/viz/service/surfaces/surface_saved_frame.h"
 #include "components/viz/service/transitions/transferable_resource_tracker.h"
 #include "components/viz/service/viz_service_export.h"
 
@@ -31,6 +32,10 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
  public:
   SurfaceAnimationManager();
   ~SurfaceAnimationManager();
+
+  void SetDirectiveFinishedCallback(
+      SurfaceSavedFrame::TransitionDirectiveCompleteCallback
+          sequence_id_finished_callback);
 
   // Process any new transitions on the compositor frame metadata. Note that
   // this keeps track of the latest processed sequence id and repeated calls
@@ -62,7 +67,7 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
 
  private:
   // Helpers to process specific directives.
-  void ProcessSaveDirective(const CompositorFrameTransitionDirective& directive,
+  bool ProcessSaveDirective(const CompositorFrameTransitionDirective& directive,
                             SurfaceSavedFrameStorage* storage);
   // Returns true if the animation has started.
   bool ProcessAnimateDirective(
@@ -83,6 +88,9 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
 
   enum class State { kIdle, kAnimating, kDone };
 
+  SurfaceSavedFrame::TransitionDirectiveCompleteCallback
+      sequence_id_finished_callback_;
+
   uint32_t last_processed_sequence_id_ = 0;
 
   State state_ = State::kIdle;
@@ -93,7 +101,8 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
   TransferableResourceTracker transferable_resource_tracker_;
 
   base::Optional<TransferableResource> saved_root_texture_;
-  CompositorFrameTransitionDirective saved_directive_;
+  base::Optional<CompositorFrameTransitionDirective> save_directive_;
+  base::Optional<uint32_t> animate_directive_sequence_id_;
 };
 
 }  // namespace viz

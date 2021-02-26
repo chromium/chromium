@@ -29,12 +29,15 @@ SurfaceSavedFrameStorage::SurfaceSavedFrameStorage(Surface* surface)
 SurfaceSavedFrameStorage::~SurfaceSavedFrameStorage() = default;
 
 void SurfaceSavedFrameStorage::ProcessSaveDirective(
-    const CompositorFrameTransitionDirective& directive) {
+    const CompositorFrameTransitionDirective& directive,
+    SurfaceSavedFrame::TransitionDirectiveCompleteCallback
+        directive_finished_callback) {
   // Create a new saved frame, destroying the old one if it existed.
   // TODO(vmpstr): This may need to change if the directive refers to a local
   // subframe (RP) of the compositor frame. However, as of now, the save
   // directive can only reference the root render pass.
-  saved_frame_ = std::make_unique<SurfaceSavedFrame>(directive);
+  saved_frame_ = std::make_unique<SurfaceSavedFrame>(
+      std::move(directive), std::move(directive_finished_callback));
 
   // Let the saved frame append copy output requests to the render pass list.
   // This is how we save the pixel output of the frame.
@@ -50,11 +53,6 @@ void SurfaceSavedFrameStorage::ProcessSaveDirective(
 }
 
 std::unique_ptr<SurfaceSavedFrame> SurfaceSavedFrameStorage::TakeSavedFrame() {
-  // If the saved frame is not valid, then we should reset it. An example of an
-  // invalid frame is a frame that never received a response to the scheduled
-  // copy output requests.
-  if (!saved_frame_ || !saved_frame_->IsValid())
-    saved_frame_.reset();
   expiry_closure_.Cancel();
   return std::move(saved_frame_);
 }

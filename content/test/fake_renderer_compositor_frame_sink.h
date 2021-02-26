@@ -38,6 +38,8 @@ class FakeRendererCompositorFrameSink
   void OnBeginFramePausedChanged(bool paused) override {}
   void ReclaimResources(
       const std::vector<viz::ReturnedResource>& resources) override;
+  void OnCompositorFrameTransitionDirectiveProcessed(
+      uint32_t sequence_id) override {}
 
   // Resets test data.
   void Reset();
