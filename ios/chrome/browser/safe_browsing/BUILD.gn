@@ -166,13 +166,19 @@ source_set("eg2_tests") {
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  sources = [ "safe_browsing_egtest.mm" ]
+  sources = [
+    "password_protection_egtest.mm",
+    "safe_browsing_egtest.mm",
+  ]
   deps = [
     "//base",
+    "//components/password_manager/core/common",
     "//components/safe_browsing/core:features",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/strings:components_strings_grit",
+    "//ios/chrome/browser/passwords:eg_test_support+eg2",
     "//ios/chrome/browser/ui/bookmarks:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/passwords:constants",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:features",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

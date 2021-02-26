@@ -13,14 +13,13 @@ source_set("passwords") {
     "password_breach_presenter.h",
     "password_breach_view_controller.h",
     "password_breach_view_controller.mm",
-    "password_constants.h",
-    "password_constants.mm",
     "password_protection_coordinator.h",
     "password_protection_coordinator.mm",
     "password_protection_view_controller.h",
     "password_protection_view_controller.mm",
   ]
   deps = [
+    ":constants",
     "resources",
     "//base",
     "//components/password_manager/core/browser",
@@ -40,6 +39,14 @@ source_set("passwords") {
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "password_constants.h",
+    "password_constants.mm",
+  ]
 }
 
 source_set("app_support+eg2") {
@@ -69,12 +76,11 @@ source_set("test_support+eg2") {
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  sources = [
-    "password_breach_app_interface.h",
-    "password_constants.h",
-    "password_constants.mm",
+  sources = [ "password_breach_app_interface.h" ]
+  deps = [
+    ":constants",
+    "//base",
   ]
-  deps = [ "//base" ]
 }
 
 source_set("eg2_tests") {
@@ -86,6 +92,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "password_breach_egtest.mm" ]
   deps = [
+    ":constants",
     ":test_support+eg2",
     "//base",
     "//base/test:test_support",

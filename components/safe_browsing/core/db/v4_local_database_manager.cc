@@ -117,6 +117,7 @@ ListInfos GetListInfos() {
 std::vector<CommandLineSwitchAndThreatType> GetSwitchAndThreatTypes() {
   static const std::vector<CommandLineSwitchAndThreatType>
       command_line_switch_and_threat_type = {
+          {"mark_as_allowlisted_for_phish_guard", CSD_WHITELIST},
           {"mark_as_allowlisted_for_real_time", HIGH_CONFIDENCE_ALLOWLIST},
           {"mark_as_phishing", SOCIAL_ENGINEERING},
           {"mark_as_malware", MALWARE_THREAT},
@@ -477,7 +478,12 @@ AsyncMatch V4LocalDatabaseManager::CheckCsdAllowlistUrl(const GURL& url,
   DCHECK(CurrentlyOnThread(ThreadID::IO));
 
   StoresToCheck stores_to_check({GetUrlCsdAllowlistId()});
-  if (!AreAllStoresAvailableNow(stores_to_check) || !CanCheckUrl(url)) {
+  // If any artificial matches are present, consider the allowlist as ready.
+  bool is_artificial_prefix_empty =
+      artificially_marked_store_and_hash_prefixes_.empty();
+  if ((!AreAllStoresAvailableNow(stores_to_check) &&
+       is_artificial_prefix_empty) ||
+      !CanCheckUrl(url)) {
     // Fail open: Allowlist everything. Otherwise we may run the
     // CSD phishing/malware detector on popular domains and generate
     // undue load on the client and server, or send Password Reputation

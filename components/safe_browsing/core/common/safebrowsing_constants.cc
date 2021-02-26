@@ -20,6 +20,9 @@ const int kNetErrorCodeForSafeBrowsing = net::ERR_BLOCKED_BY_CLIENT;
 
 const char kSafeBrowsingEnabledHistogramName[] = "SafeBrowsing.Pref.General";
 
+const char kArtificialCachedPhishGuardVerdictFlag[] =
+    "mark_as_phish_guard_phishing";
+
 const std::vector<std::string> GetExcludedCountries() {
   // Safe Browsing endpoint doesn't exist.
   return {"cn"};

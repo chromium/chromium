@@ -56,6 +56,28 @@ class ChromePasswordProtectionService
       const std::string& verdict_token,
       safe_browsing::ReusedPasswordAccountType password_type) override;
 
+  // Stores |verdict| in the cache based on its |trigger_type|, |url|,
+  // reused |password_type|, |verdict| and |receive_time|.
+  void CacheVerdict(
+      const GURL& url,
+      safe_browsing::LoginReputationClientRequest::TriggerType trigger_type,
+      safe_browsing::ReusedPasswordAccountType password_type,
+      const safe_browsing::LoginReputationClientResponse& verdict,
+      const base::Time& receive_time) override;
+
+  // Looks up the cached verdict response. If verdict is not available or is
+  // expired, return VERDICT_TYPE_UNSPECIFIED. Can be called on any thread.
+  safe_browsing::LoginReputationClientResponse::VerdictType GetCachedVerdict(
+      const GURL& url,
+      safe_browsing::LoginReputationClientRequest::TriggerType trigger_type,
+      safe_browsing::ReusedPasswordAccountType password_type,
+      safe_browsing::LoginReputationClientResponse* out_response) override;
+
+  // Returns the number of saved verdicts for the given |trigger_type|.
+  int GetStoredVerdictCount(
+      safe_browsing::LoginReputationClientRequest::TriggerType trigger_type)
+      override;
+
   void MaybeReportPasswordReuseDetected(
       safe_browsing::PasswordProtectionRequest* request,
       const std::string& username,

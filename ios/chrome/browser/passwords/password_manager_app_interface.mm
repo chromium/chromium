@@ -16,6 +16,8 @@
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/testing/nserror_util.h"
 #import "ios/web/public/web_state.h"
+#include "net/base/mac/url_conversions.h"
+#include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -53,7 +55,8 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
 @implementation PasswordManagerAppInterface
 
 + (NSError*)storeCredentialWithUsername:(NSString*)username
-                               password:(NSString*)password {
+                               password:(NSString*)password
+                                    URL:(NSURL*)URL {
   // Obtain a PasswordStore.
   scoped_refptr<password_manager::PasswordStore> passwordStore =
       IOSChromePasswordStoreFactory::GetForBrowserState(
@@ -69,13 +72,21 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
   password_manager::PasswordForm passwordCredentialForm;
   passwordCredentialForm.username_value = base::SysNSStringToUTF16(username);
   passwordCredentialForm.password_value = base::SysNSStringToUTF16(password);
-  passwordCredentialForm.url =
-      chrome_test_util::GetCurrentWebState()->GetLastCommittedURL().GetOrigin();
+  passwordCredentialForm.url = net::GURLWithNSURL(URL).GetOrigin();
   passwordCredentialForm.signon_realm = passwordCredentialForm.url.spec();
   passwordCredentialForm.scheme = password_manager::PasswordForm::Scheme::kHtml;
   passwordStore->AddLogin(passwordCredentialForm);
 
   return nil;
+}
+
++ (NSError*)storeCredentialWithUsername:(NSString*)username
+                               password:(NSString*)password {
+  NSURL* URL = net::NSURLWithGURL(
+      chrome_test_util::GetCurrentWebState()->GetLastCommittedURL());
+  return [PasswordManagerAppInterface storeCredentialWithUsername:username
+                                                         password:password
+                                                              URL:URL];
 }
 
 + (void)clearCredentials {
