@@ -70,6 +70,8 @@ NGGridLayoutAlgorithm::NGGridLayoutAlgorithm(
 }
 
 scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
+  PaintLayerScrollableArea::DelayScrollOffsetClampScope delay_clamp_scope;
+
   // Measure items.
   GridItems grid_items;
   Vector<GridItemData> out_of_flow_items;

@@ -3697,7 +3697,6 @@ crbug.com/1045599 virtual/layout-ng-grid/fast/css-grid-layout/grid-item-addition
 crbug.com/1045599 virtual/layout-ng-grid/fast/css-grid-layout/grid-item-grid-container-percentage-rows.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/fast/css-grid-layout/grid-item-positioning-with-orthogonal-flows.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/fast/css-grid-layout/grid-item-removal-track-breadth-update.html [ Failure Crash ]
-crbug.com/1045599 virtual/layout-ng-grid/fast/css-grid-layout/grid-item-scroll-position.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/fast/css-grid-layout/grid-item-spanning-and-orthogonal-flows.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/fast/css-grid-layout/grid-item-with-border-in-fr.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/fast/css-grid-layout/grid-only-abspos-item-computed-style-crash.html [ Failure ]
