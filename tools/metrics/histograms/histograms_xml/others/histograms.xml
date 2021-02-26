@@ -17152,7 +17152,6 @@ regressions. -->
 <histogram name="Webapp.CheckServiceWorker.Status"
     enum="ServiceWorkerOfflineCapability" expires_after="2021-08-01">
   <owner>asamidoi@chromium.org</owner>
-  <owner>shimazu@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
     Records the result of the check if a PWA has a service worker with a fetch
@@ -17165,7 +17164,6 @@ regressions. -->
 <histogram name="Webapp.CheckServiceWorker.Time" units="ms"
     expires_after="2021-08-01">
   <owner>asamidoi@chromium.org</owner>
-  <owner>shimazu@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
     Records the time to complete the check if a PWA has a service worker with a
