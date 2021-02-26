@@ -210,6 +210,11 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   float device_scale() const { return device_scale_; }
 
+  const gfx::Point& scroll_position() const { return scroll_position_; }
+  void set_scroll_position(const gfx::Point& scroll_position) {
+    scroll_position_ = scroll_position;
+  }
+
   bool stop_scrolling() const { return stop_scrolling_; }
 
   DocumentLoadState document_load_state() { return document_load_state_; }
@@ -296,6 +301,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // True if we request a new bitmap rendering.
   bool needs_reraster_ = true;
+
+  // The scroll position in CSS pixels.
+  gfx::Point scroll_position_;
 
   // The scroll position for the last raster, before any transformations are
   // applied.

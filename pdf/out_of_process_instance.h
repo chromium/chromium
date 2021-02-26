@@ -26,7 +26,6 @@
 #include "ppapi/cpp/instance.h"
 #include "ppapi/cpp/private/find_private.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace gfx {
@@ -300,9 +299,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
 
   // The current cursor.
   PP_CursorType_Dev cursor_ = PP_CURSORTYPE_POINTER;
-
-  // The scroll position in CSS pixels.
-  gfx::Point scroll_position_;
 
   // True if the plugin is full-page.
   bool full_ = false;

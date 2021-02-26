@@ -836,7 +836,7 @@ void OutOfProcessInstance::DidChangeView(const pp::View& view) {
                               view.GetDeviceScale());
 
   if (is_print_preview_ && !stop_scrolling()) {
-    scroll_position_ = PointFromPPPoint(view.GetScrollOffset());
+    set_scroll_position(PointFromPPPoint(view.GetScrollOffset()));
     UpdateScroll();
   }
 
@@ -846,10 +846,11 @@ void OutOfProcessInstance::DidChangeView(const pp::View& view) {
 
 void OutOfProcessInstance::UpdateScroll() {
   DCHECK(!stop_scrolling());
-  gfx::PointF scroll_position_float(scroll_position_.x(), scroll_position_.y());
-  scroll_position_float = BoundScrollPositionToDocument(scroll_position_float);
-  engine()->ScrolledToXPosition(scroll_position_float.x() * device_scale());
-  engine()->ScrolledToYPosition(scroll_position_float.y() * device_scale());
+  gfx::PointF scaled_scroll_position = gfx::ScalePoint(
+      BoundScrollPositionToDocument(gfx::PointF(scroll_position())),
+      device_scale());
+  engine()->ScrolledToXPosition(scaled_scroll_position.x());
+  engine()->ScrolledToYPosition(scaled_scroll_position.y());
 }
 
 void OutOfProcessInstance::DidChangeFocus(bool has_focus) {
@@ -1647,7 +1648,7 @@ void OutOfProcessInstance::HandleUpdateScrollMessage(
 
   int x = dict.Get(pp::Var(kJSUpdateScrollX)).AsInt();
   int y = dict.Get(pp::Var(kJSUpdateScrollY)).AsInt();
-  scroll_position_ = gfx::Point(x, y);
+  set_scroll_position(gfx::Point(x, y));
   UpdateScroll();
 }
 
