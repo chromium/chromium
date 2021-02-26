@@ -1,0 +1,28 @@
+From 6891e6dfb271c471a09bf92c74b3e47b7dd50c39 Mon Sep 17 00:00:00 2001
+From: Andrew Grieve <agrieve@chromium.org>
+Date: Wed, 21 Oct 2020 10:59:42 -0400
+Subject: [PATCH 3/3] Allow access modification everywhere
+
+Chrome does not need need -keep to maintain original visibility.
+Loosening this constraint allows for better optimization, and is easier
+than adding ",allowaccessmodification" to every single -keep rule.
+---
+ .../java/com/android/tools/r8/shaking/AppInfoWithLiveness.java  | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/main/java/com/android/tools/r8/shaking/AppInfoWithLiveness.java b/src/main/java/com/android/tools/r8/shaking/AppInfoWithLiveness.java
+index baa118963..e0ec96ea8 100644
+--- a/src/main/java/com/android/tools/r8/shaking/AppInfoWithLiveness.java
++++ b/src/main/java/com/android/tools/r8/shaking/AppInfoWithLiveness.java
+@@ -903,7 +903,7 @@ public class AppInfoWithLiveness extends AppInfoWithClassHierarchy
+ 
+   public boolean isAccessModificationAllowed(DexReference reference) {
+     assert options().getProguardConfiguration().isAccessModificationAllowed();
+-    return keepInfo.getInfo(reference, this).isAccessModificationAllowed(options());
++    return true;
+   }
+ 
+   public boolean isRepackagingAllowed(DexProgramClass clazz) {
+-- 
+2.30.0.365.g02bc693789-goog
+

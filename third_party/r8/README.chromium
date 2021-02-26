@@ -9,6 +9,8 @@ Security Critical: no
 Description:
 lib/r8.jar
  - Contains R8 (proguard replacement) as well as D8 (dexer).
+3pp
+ - Contains our experimental code for using 3pp to package and upload r8.
 desugar_jdk_libs.json
  - Configuration for Java library desugaring.
  - Taken from
