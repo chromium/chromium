@@ -2002,7 +2002,7 @@
             ],
             "experiments": [
                 {
-                    "name": "ContextualSearchTranslations",
+                    "name": "Translations_20210224",
                     "params": {
                         "availability": "any",
                         "event_trigger": "name:translations_bubble_shown;comparator:<5;window:90;storage:90",
