@@ -15,9 +15,14 @@ PciePeripheralManager* g_instance = nullptr;
 PciePeripheralManager::PciePeripheralManager(bool is_guest_profile,
                                              bool is_pcie_tunneling_allowed)
     : is_guest_profile_(is_guest_profile),
-      is_pcie_tunneling_allowed_(is_pcie_tunneling_allowed) {}
+      is_pcie_tunneling_allowed_(is_pcie_tunneling_allowed) {
+  DCHECK(chromeos::TypecdClient::Get());
+  chromeos::TypecdClient::Get()->AddObserver(this);
+}
 
 PciePeripheralManager::~PciePeripheralManager() {
+  chromeos::TypecdClient::Get()->RemoveObserver(this);
+
   CHECK_EQ(this, g_instance);
   g_instance = nullptr;
 }
@@ -43,6 +48,19 @@ void PciePeripheralManager::NotifyGuestModeNotificationReceived(
     bool is_thunderbolt_only) {
   for (auto& observer : observer_list_)
     observer.OnGuestModeNotificationReceived(is_thunderbolt_only);
+}
+
+void PciePeripheralManager::OnThunderboltDeviceConnected(
+    bool is_thunderbolt_only) {
+  if (is_guest_profile_) {
+    NotifyGuestModeNotificationReceived(is_thunderbolt_only);
+    return;
+  }
+
+  // Only show notifications if the peripheral is operating at limited
+  // performance.
+  if (!is_pcie_tunneling_allowed_)
+    NotifyLimitedPerformancePeripheralReceived();
 }
 
 void PciePeripheralManager::SetPcieTunnelingAllowedState(

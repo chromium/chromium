@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "chromeos/dbus/typecd/typecd_client.h"
 
 namespace ash {
 
@@ -17,7 +18,8 @@ namespace ash {
 // and translating those signals to notification observer events. It handles
 // additional logic such determining if notifications are required or whether a
 // guest-session notification is needed.
-class COMPONENT_EXPORT(ASH_PCIE_PERIPHERAL) PciePeripheralManager {
+class COMPONENT_EXPORT(ASH_PCIE_PERIPHERAL) PciePeripheralManager
+    : public chromeos::TypecdClient::Observer {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -57,7 +59,10 @@ class COMPONENT_EXPORT(ASH_PCIE_PERIPHERAL) PciePeripheralManager {
   PciePeripheralManager(bool is_guest_profile, bool is_pcie_tunneling_allowed);
   PciePeripheralManager(const PciePeripheralManager&) = delete;
   PciePeripheralManager& operator=(const PciePeripheralManager&) = delete;
-  ~PciePeripheralManager();
+  ~PciePeripheralManager() override;
+
+  // TypecdClient::Observer:
+  void OnThunderboltDeviceConnected(bool is_thunderbolt_only) override;
 
   // Call to notify observers that a new notification is needed.
   void NotifyLimitedPerformancePeripheralReceived();
