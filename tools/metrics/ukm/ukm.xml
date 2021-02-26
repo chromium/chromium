@@ -10672,6 +10672,14 @@ be describing additional metrics about the same event.
       sebsequently un-bookmarked is counted as false.
     </summary>
   </metric>
+  <metric name="IsNTPCustomLink" enum="Boolean">
+    <summary>
+      Marked true if the page has been explicitly added (by the user) to the
+      list of custom links displayed in the NTP. Links added to the NTP by
+      History TopSites don't count for this. Always false on Android, because
+      Android does not have NTP custom links.
+    </summary>
+  </metric>
   <metric name="IsPlacedInTabGroup" enum="Boolean">
     <summary>
       Roughly: measures if the page was added to a tab group. Specifically: this

@@ -60,8 +60,10 @@
 #endif
 
 #if !defined(OS_ANDROID)
+#include "base/containers/contains.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/ntp_tiles/custom_links_store.h"
 #endif  // !defined(OS_ANDROID)
 
 namespace {
@@ -1065,6 +1067,20 @@ void UkmPageLoadMetricsObserver::RecordMemoriesMetrics(
       !memories_signals_.is_existing_bookmark &&
       IsPageBookmarked(web_contents, committed_url_);
 
+// Android does not have NTP Custom Links.
+#if !defined(OS_ANDROID)
+  {
+    // This queries the prefs directly if |committed_url_| is stored as an NTP
+    // custom link, bypassing the CustomLinksManager.
+    PrefService* pref_service =
+        Profile::FromBrowserContext(browser_context_)->GetPrefs();
+    ntp_tiles::CustomLinksStore custom_link_store(pref_service);
+    memories_signals_.is_ntp_custom_link =
+        base::Contains(custom_link_store.RetrieveLinks(), committed_url_,
+                       [](const auto& link) { return link.url; });
+  }
+#endif  // !defined(OS_ANDROID)
+
   // Send ALL Memories signals to UKM at page end. This is to harmonize with
   // the fact that they may only be recorded into History at page end, when
   // we can be sure that the visit row already exists.
@@ -1077,6 +1093,7 @@ void UkmPageLoadMetricsObserver::RecordMemoriesMetrics(
   builder.SetIsPlacedInTabGroup(memories_signals_.is_placed_in_tab_group);
   builder.SetIsExistingBookmark(memories_signals_.is_existing_bookmark);
   builder.SetIsNewBookmark(memories_signals_.is_new_bookmark);
+  builder.SetIsNTPCustomLink(memories_signals_.is_ntp_custom_link);
 
   // Forward the finished structure to the MemoriesService for local recording.
   memories::MemoriesService* service =

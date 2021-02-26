@@ -35,6 +35,12 @@ struct VisitContextSignals {
   // If |is_existing_bookmark| is true, that implies |is_new_bookmark| is false.
   bool is_new_bookmark = false;
 
+  // True if the page has been explicitly added (by the user) to the list of
+  // custom links displayed in the NTP. Links added to the NTP by History
+  // TopSites don't count for this.  Always false on Android, because Android
+  // does not have NTP custom links.
+  bool is_ntp_custom_link = false;
+
   // ---------------------------------------------------------------------------
   // The below metrics are all already recorded by UKM for non-memories reasons.
   // We are duplicating them below to persist on-device and send to an offline

@@ -12,6 +12,7 @@
 #include "base/test/trace_event_analyzer.h"
 #include "base/time/time.h"
 #include "base/trace_event/traced_value.h"
+#include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
@@ -24,6 +25,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/ntp_tiles/custom_links_store.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
@@ -1942,6 +1944,31 @@ TEST_F(UkmPageLoadMetricsObserverTest, IsNewBookmark) {
   tester()->test_ukm_recorder().ExpectEntryMetric(
       entry, PageLoad::kIsNewBookmarkName, 1);
 }
+
+// Android does not have NTP Custom Links.
+#if !defined(OS_ANDROID)
+TEST_F(UkmPageLoadMetricsObserverTest, IsNTPCustomLink) {
+  GURL url(kTestUrl1);
+
+  NavigateAndCommit(url);
+
+  ntp_tiles::CustomLinksStore custom_link_store(profile()->GetPrefs());
+  custom_link_store.StoreLinks({
+      {url, base::ASCIIToUTF16("Test Title")},
+  });
+
+  // Simulate closing the tab.
+  DeleteContents();
+
+  const auto& ukm_recorder = tester()->test_ukm_recorder();
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      ukm_recorder.GetMergedEntriesByName(PageLoad::kEntryName);
+  EXPECT_EQ(1ul, merged_entries.size());
+  const ukm::mojom::UkmEntry* entry = merged_entries.begin()->second.get();
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry, PageLoad::kIsNTPCustomLinkName, 1);
+}
+#endif  // !defined(OS_ANDROID)
 
 class TestOfflinePreviewsUkmPageLoadMetricsObserver
     : public UkmPageLoadMetricsObserver {
