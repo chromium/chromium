@@ -506,6 +506,7 @@ VideoCaptureImpl::VideoCaptureImpl(
   if (gpu_factories_) {
     media_task_runner_ = gpu_factories_->GetTaskRunner();
   }
+  weak_this_ = weak_factory_.GetWeakPtr();
 }
 
 void VideoCaptureImpl::OnGpuContextLost(
@@ -1058,6 +1059,10 @@ void VideoCaptureImpl::ProcessFeedback(
     const media::VideoFrameFeedback& feedback) {
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
   feedback_ = feedback;
+}
+
+base::WeakPtr<VideoCaptureImpl> VideoCaptureImpl::GetWeakPtr() {
+  return weak_this_;
 }
 
 }  // namespace blink

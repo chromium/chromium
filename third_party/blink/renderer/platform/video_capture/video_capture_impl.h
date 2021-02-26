@@ -113,6 +113,9 @@ class PLATFORM_EXPORT VideoCaptureImpl
 
   void ProcessFeedback(const media::VideoFrameFeedback& feedback);
 
+  // The returned weak pointer can only be dereferenced on the IO thread.
+  base::WeakPtr<VideoCaptureImpl> GetWeakPtr();
+
   static constexpr base::TimeDelta kCaptureStartTimeout =
       base::TimeDelta::FromSeconds(10);
 
@@ -274,6 +277,7 @@ class PLATFORM_EXPORT VideoCaptureImpl
 
   base::OneShotTimer startup_timeout_;
 
+  base::WeakPtr<VideoCaptureImpl> weak_this_;
   // WeakPtrFactory pointing back to |this| object, for use with
   // media::VideoFrames constructed in OnBufferReceived() from buffers cached
   // in |client_buffers_|.
